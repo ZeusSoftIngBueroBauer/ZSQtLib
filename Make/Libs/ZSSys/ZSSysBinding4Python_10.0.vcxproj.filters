@@ -1,0 +1,297 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Generated Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Generated Files\Win32">
+      <UniqueIdentifier>{14907a20-3fe3-4577-bbac-6aae7034e744}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\Win32\Debug">
+      <UniqueIdentifier>{2edc22d6-c7b6-4b8b-a8a7-fafb5631fc70}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\Win32\Release">
+      <UniqueIdentifier>{aa9a514b-571d-4dfc-b9a0-75c6b23a1a9e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
+    </Filter>
+    <Filter Include="Include Files">
+      <UniqueIdentifier>{f5913586-696d-4b15-bcae-bb41d01af952}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSSys\zs_cenumeration_wrapper.cpp">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSSys\zs_cenumval_wrapper.cpp">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSSys\zs_cenumvalarr_wrapper.cpp">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSSys\zs_cerrlog_wrapper.cpp">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSSys\zs_cexception_wrapper.cpp">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSSys\zs_clogfile_wrapper.cpp">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSSys\zs_cmsg_wrapper.cpp">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSSys\zs_cmsgack_wrapper.cpp">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSSys\zs_cmsgcon_wrapper.cpp">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSSys\zs_cmsgconstarttimer_wrapper.cpp">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSSys\zs_cmsgconstoptimer_wrapper.cpp">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSSys\zs_cmsgerr_wrapper.cpp">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSSys\zs_cmsgind_wrapper.cpp">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSSys\zs_cmsgreq_wrapper.cpp">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSSys\zs_cmsgreqaddlogitem_wrapper.cpp">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSSys\zs_cmsgreqcontinue_wrapper.cpp">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSSys\zs_cmsgreqstarttimer_wrapper.cpp">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSSys\zs_cmsgreqstoptimer_wrapper.cpp">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSSys\zs_cmsgsndrcvdestroyedhandler_wrapper.cpp">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSSys\zs_cobjpool_wrapper.cpp">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSSys\zs_cobjpoollistentry_wrapper.cpp">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSSys\zs_cobjpooltreeentry_wrapper.cpp">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSSys\zs_crequest_wrapper.cpp">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSSys\zs_crequestexectree_wrapper.cpp">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSSys\zs_crequestqueue_wrapper.cpp">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSSys\zs_crequestsequencer_wrapper.cpp">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSSys\zs_senumentry_wrapper.cpp">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSSys\zs_serrlogentry_wrapper.cpp">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSSys\zs_serrresult_wrapper.cpp">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSSys\zs_serrresultinfo_wrapper.cpp">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSSys\zs_srequestdscr_wrapper.cpp">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSSys\zs_srequestseqentry_wrapper.cpp">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSSys\zs_trace_cmethodtracer_wrapper.cpp">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSSys\zs_trace_ctrcadminobj_wrapper.cpp">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSSys\zs_trace_ctrcadminobjpool_wrapper.cpp">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSSys\zs_trace_ctrcdata_wrapper.cpp">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSSys\zs_trace_ctrcmthfile_wrapper.cpp">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSSys\zs_trace_ctrcserverbase_wrapper.cpp">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSSys\zs_trace_strcserversettings_wrapper.cpp">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSSys\zs_trace_wrapper.cpp">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSSys\zssys_module_wrapper.cpp">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSSys\zs_cenumeration_wrapper.h">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSSys\zs_cenumval_wrapper.h">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSSys\zs_cenumvalarr_wrapper.h">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSSys\zs_cerrlog_wrapper.h">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSSys\zs_cexception_wrapper.h">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSSys\zs_clogfile_wrapper.h">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSSys\zs_cmsg_wrapper.h">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSSys\zs_cmsgack_wrapper.h">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSSys\zs_cmsgcon_wrapper.h">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSSys\zs_cmsgconstarttimer_wrapper.h">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSSys\zs_cmsgconstoptimer_wrapper.h">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSSys\zs_cmsgerr_wrapper.h">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSSys\zs_cmsgind_wrapper.h">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSSys\zs_cmsgreq_wrapper.h">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSSys\zs_cmsgreqaddlogitem_wrapper.h">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSSys\zs_cmsgreqcontinue_wrapper.h">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSSys\zs_cmsgreqstarttimer_wrapper.h">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSSys\zs_cmsgreqstoptimer_wrapper.h">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSSys\zs_cmsgsndrcvdestroyedhandler_wrapper.h">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSSys\zs_cobjpool_wrapper.h">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSSys\zs_cobjpoollistentry_wrapper.h">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSSys\zs_cobjpooltreeentry_wrapper.h">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSSys\zs_crequest_wrapper.h">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSSys\zs_crequestexectree_wrapper.h">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSSys\zs_crequestqueue_wrapper.h">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSSys\zs_crequestsequencer_wrapper.h">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSSys\zs_senumentry_wrapper.h">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSSys\zs_serrlogentry_wrapper.h">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSSys\zs_serrresult_wrapper.h">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSSys\zs_serrresultinfo_wrapper.h">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSSys\zs_srequestdscr_wrapper.h">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSSys\zs_srequestseqentry_wrapper.h">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSSys\zs_trace_cmethodtracer_wrapper.h">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSSys\zs_trace_ctrcadminobj_wrapper.h">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSSys\zs_trace_ctrcadminobjpool_wrapper.h">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSSys\zs_trace_ctrcdata_wrapper.h">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSSys\zs_trace_ctrcmthfile_wrapper.h">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSSys\zs_trace_ctrcserverbase_wrapper.h">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSSys\zs_trace_strcserversettings_wrapper.h">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSSys\zs_trace_wrapper.h">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSSys\zssys_python.h">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClInclude>
+    <ClInclude Include="ZSSysBinding4PythonGlobalFunctionsWrapper.h">
+      <Filter>Include Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="ZSSysBinding4Python.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ZSSysBinding4Python.xml">
+      <Filter>Resource Files</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="ZSSysBinding4Python.h">
+      <Filter>Include Files</Filter>
+    </CustomBuild>
+  </ItemGroup>
+</Project>

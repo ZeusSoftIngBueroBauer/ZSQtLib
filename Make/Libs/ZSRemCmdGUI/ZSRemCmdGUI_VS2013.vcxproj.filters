@@ -1,0 +1,92 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
+    </Filter>
+    <Filter Include="Generated Files">
+      <UniqueIdentifier>{cd763241-6a2e-4da8-b36f-ca22dd1f5297}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\Win32">
+      <UniqueIdentifier>{df0592c9-2ee8-4a9a-9fed-6babca6ca5c6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\Win32\Debug">
+      <UniqueIdentifier>{29d2fc59-5897-409d-bdb0-a88986330817}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\Win32\Release">
+      <UniqueIdentifier>{120b1f63-4294-4bf6-843b-99170577f990}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\x64">
+      <UniqueIdentifier>{cc0edd8d-f188-4c6f-b954-cfe3ea3e3ec3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\x64\Debug">
+      <UniqueIdentifier>{e232b223-9f83-49d2-b45f-d654f07a096b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\x64\Release">
+      <UniqueIdentifier>{b8ed680e-f6b9-4cf2-beb0-31d0a67db7a9}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\Source\Libs\ZSRemCmdGUI\ZSRemCmdGUIDllMain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSRemCmdGUI\ZSRemCmdObjPoolModel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSRemCmdGUI\ZSRemCmdObjPoolWdgt.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSRemCmdGUI\ZSRemCmdsDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSRemCmdGUI\Win32\Debug\moc_ZSRemCmdObjPoolWdgt.cpp">
+      <Filter>Generated Files\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSRemCmdGUI\Win32\Debug\moc_ZSRemCmdsDlg.cpp">
+      <Filter>Generated Files\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSRemCmdGUI\Win32\Release\moc_ZSRemCmdObjPoolWdgt.cpp">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSRemCmdGUI\Win32\Release\moc_ZSRemCmdsDlg.cpp">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSRemCmdGUI\x64\Debug\moc_ZSRemCmdObjPoolWdgt.cpp">
+      <Filter>Generated Files\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSRemCmdGUI\x64\Debug\moc_ZSRemCmdsDlg.cpp">
+      <Filter>Generated Files\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSRemCmdGUI\x64\Release\moc_ZSRemCmdObjPoolWdgt.cpp">
+      <Filter>Generated Files\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSRemCmdGUI\x64\Release\moc_ZSRemCmdsDlg.cpp">
+      <Filter>Generated Files\x64\Release</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\Include\Libs\ZSRemCmdGUI\ZSRemCmdGUIDllMain.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Libs\ZSRemCmdGUI\ZSRemCmdObjPoolModel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\..\Include\Libs\ZSRemCmdGUI\ZSRemCmdObjPoolWdgt.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\Libs\ZSRemCmdGUI\ZSRemCmdsDlg.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+  </ItemGroup>
+</Project>

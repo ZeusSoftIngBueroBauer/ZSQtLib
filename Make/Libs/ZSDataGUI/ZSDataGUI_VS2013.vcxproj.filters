@@ -1,0 +1,430 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Source Files\DataSet">
+      <UniqueIdentifier>{3492052c-10f3-4a9a-9a57-8ead95b7103b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\DataSet\Enumeration">
+      <UniqueIdentifier>{e46f9fef-7cb9-477f-85de-7a555369af17}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\DataSet\Constraints">
+      <UniqueIdentifier>{829f12b4-9629-4548-beb2-2707e06b713c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\DataSet\DataSet">
+      <UniqueIdentifier>{ceab7b05-5db1-42c3-a517-7f6d9507115d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\DataSet\Table">
+      <UniqueIdentifier>{fb5e6f7c-2c3b-43d0-b414-7ce5beb1c9a1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\DataSet\Parameter">
+      <UniqueIdentifier>{bc8ce26f-aee7-406f-a800-bd528eba39d9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\DataSet\ObjGroup">
+      <UniqueIdentifier>{9ee09f5d-08d9-4430-837a-b4d73e946f7a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Database">
+      <UniqueIdentifier>{63420fcd-8561-4595-a012-bf8370929b32}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Main">
+      <UniqueIdentifier>{b9b2f18b-4688-4bc6-b9f6-4379431aff0a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\DataExceptions">
+      <UniqueIdentifier>{3f70b4fc-ec35-43f6-a112-11b783a32baf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\DatabaseClient">
+      <UniqueIdentifier>{003106ff-07c5-431c-ac04-ff6d80241397}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Generated Files\Win32">
+      <UniqueIdentifier>{6dbe43b6-ccd2-4dc6-aa50-dc1c8767faba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\Win32\Debug">
+      <UniqueIdentifier>{3e0556ff-c63e-4b62-b3b3-fa94d82d7e5d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\Win32\Debug\DataSet">
+      <UniqueIdentifier>{3130cd23-d531-4e5b-be84-80a54113c4af}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\Win32\Debug\Database">
+      <UniqueIdentifier>{54ce7163-4dcb-4164-b4f1-becfa43f6dfa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\Win32\Debug\DatabaseClient">
+      <UniqueIdentifier>{796158d5-a652-45e8-8e72-fab0563690c0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\Win32\Release">
+      <UniqueIdentifier>{71f4828d-c997-4f9f-b9fd-9550aa47c11f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\Win32\Release\DataSet">
+      <UniqueIdentifier>{2e8d4c2a-987b-4c37-90ee-c0a5f58c9216}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\Win32\Release\Database">
+      <UniqueIdentifier>{1f06341e-acc5-41fa-b2e0-bbca5d3f5720}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\Win32\Release\DatabaseClient">
+      <UniqueIdentifier>{fbe957d1-6c15-43c1-b663-a1298590fab3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
+    </Filter>
+    <Filter Include="Resource Files\Explorer">
+      <UniqueIdentifier>{56138b3a-e42c-4320-b1d8-a2c9e33eb70e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Connection">
+      <UniqueIdentifier>{ff685737-8f31-4482-90d4-f781dc51fe33}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Menu">
+      <UniqueIdentifier>{9220af1a-034b-439b-a8c9-00a69e28a35f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\DSObjTypes">
+      <UniqueIdentifier>{c978c615-a194-45f6-84b9-ed035008f725}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include Files">
+      <UniqueIdentifier>{3caf0af8-9d30-4bc8-9509-c91a5bba3c5f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include Files\Database">
+      <UniqueIdentifier>{61a37ae6-0858-43ca-905b-545d5e60800d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include Files\DataExceptions">
+      <UniqueIdentifier>{84d2cdfb-4af0-4948-97d9-80919d9ecf5d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include Files\DataSet">
+      <UniqueIdentifier>{f88660e2-3540-4002-b755-6bedb93f4d88}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include Files\DataSet\Enumeration">
+      <UniqueIdentifier>{17586262-4931-4bca-9626-803337a4fac0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include Files\DataSet\Constraints">
+      <UniqueIdentifier>{4b357da7-dd67-446d-91f6-c3a03431bf4d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include Files\DataSet\Parameter">
+      <UniqueIdentifier>{2509c87d-b4ff-41e5-aa4a-6d220e147e28}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include Files\DataSet\Table">
+      <UniqueIdentifier>{6e2ee997-35a7-406e-a89d-72aa8057f213}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include Files\DataSet\DataSet">
+      <UniqueIdentifier>{c8806642-4a1e-4650-8811-2f2e53127bec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include Files\DataSet\ObjGroup">
+      <UniqueIdentifier>{ee17433b-591b-484a-8740-6d92c126a53d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include Files\Main">
+      <UniqueIdentifier>{195844d7-df3b-4607-84b3-85061ee72bda}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include Files\DatabaseClient">
+      <UniqueIdentifier>{3f944ca8-da70-4359-8da4-27857eec8498}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\x64">
+      <UniqueIdentifier>{1d8bcd31-877e-43ed-9db8-f2378184744a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\x64\Debug">
+      <UniqueIdentifier>{889e5cad-0df4-428f-9fe4-6abbac3720d7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\x64\Release">
+      <UniqueIdentifier>{41c2066b-49d3-4af8-9fc0-cb2fc4d1ecdf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\x64\Debug\Database">
+      <UniqueIdentifier>{25428de3-e7d3-4bbd-96ad-05a2f2b9f52d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\x64\Debug\DatabaseClient">
+      <UniqueIdentifier>{455c2d5e-1c53-493f-946a-7791cbefa6c7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\x64\Debug\DataSet">
+      <UniqueIdentifier>{78881418-4d00-4fa3-9216-0219370d30ad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\x64\Release\Database">
+      <UniqueIdentifier>{f2b764cf-afdf-4b5a-907c-9ac3cb5dfc1f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\x64\Release\DatabaseClient">
+      <UniqueIdentifier>{c1e95f52-f768-4b08-9ea3-166a51cc4348}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\x64\Release\DataSet">
+      <UniqueIdentifier>{bd89727c-c3f4-4a28-bef9-3019400eefab}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\Source\Libs\ZSDataGUI\ZSDataSetModel.cpp">
+      <Filter>Source Files\DataSet\DataSet</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSDataGUI\ZSDataSetWdgt.cpp">
+      <Filter>Source Files\DataSet\DataSet</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSDataGUI\ZSDatabaseConnectionsDlg.cpp">
+      <Filter>Source Files\Database</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSDataGUI\ZSDatabaseConnectionsModel.cpp">
+      <Filter>Source Files\Database</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSDataGUI\ZSDatabaseConnectionsWdgt.cpp">
+      <Filter>Source Files\Database</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSDataGUI\ZSDatabaseTrcMsgLogWdgt.cpp">
+      <Filter>Source Files\Database</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSDataGUI\ZSDataGUIAux.cpp">
+      <Filter>Source Files\Main</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSDataGUI\ZSDataGUICommon.cpp">
+      <Filter>Source Files\Main</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSDataGUI\ZSDataGUIDllMain.cpp">
+      <Filter>Source Files\Main</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSDataGUI\ZSDatabaseClientConnectionDlg.cpp">
+      <Filter>Source Files\DatabaseClient</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSDataGUI\ZSDatabaseClientConnectionWdgt.cpp">
+      <Filter>Source Files\DatabaseClient</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSDataGUI\ZSDatabaseClientTrcMsgLogWdgt.cpp">
+      <Filter>Source Files\DatabaseClient</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDataGUI\Win32\Debug\emb_ZSDataGUI.cpp">
+      <Filter>Generated Files\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDataGUI\Win32\Debug\moc_ZSDataSetModel.cpp">
+      <Filter>Generated Files\Win32\Debug\DataSet</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDataGUI\Win32\Debug\moc_ZSDataSetWdgt.cpp">
+      <Filter>Generated Files\Win32\Debug\DataSet</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDataGUI\Win32\Debug\moc_ZSDatabaseConnectionsDlg.cpp">
+      <Filter>Generated Files\Win32\Debug\Database</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDataGUI\Win32\Debug\moc_ZSDatabaseConnectionsModel.cpp">
+      <Filter>Generated Files\Win32\Debug\Database</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDataGUI\Win32\Debug\moc_ZSDatabaseConnectionsWdgt.cpp">
+      <Filter>Generated Files\Win32\Debug\Database</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDataGUI\Win32\Debug\moc_ZSDatabaseTrcMsgLogWdgt.cpp">
+      <Filter>Generated Files\Win32\Debug\Database</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDataGUI\Win32\Debug\moc_ZSDatabaseClientConnectionDlg.cpp">
+      <Filter>Generated Files\Win32\Debug\DatabaseClient</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDataGUI\Win32\Debug\moc_ZSDatabaseClientConnectionWdgt.cpp">
+      <Filter>Generated Files\Win32\Debug\DatabaseClient</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDataGUI\Win32\Debug\moc_ZSDatabaseClientTrcMsgLogWdgt.cpp">
+      <Filter>Generated Files\Win32\Debug\DatabaseClient</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDataGUI\Win32\Release\emb_ZSDataGUI.cpp">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDataGUI\Win32\Release\moc_ZSDataSetModel.cpp">
+      <Filter>Generated Files\Win32\Release\DataSet</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDataGUI\Win32\Release\moc_ZSDataSetWdgt.cpp">
+      <Filter>Generated Files\Win32\Release\DataSet</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDataGUI\Win32\Release\moc_ZSDatabaseConnectionsDlg.cpp">
+      <Filter>Generated Files\Win32\Release\Database</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDataGUI\Win32\Release\moc_ZSDatabaseConnectionsModel.cpp">
+      <Filter>Generated Files\Win32\Release\Database</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDataGUI\Win32\Release\moc_ZSDatabaseConnectionsWdgt.cpp">
+      <Filter>Generated Files\Win32\Release\Database</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDataGUI\Win32\Release\moc_ZSDatabaseTrcMsgLogWdgt.cpp">
+      <Filter>Generated Files\Win32\Release\Database</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDataGUI\Win32\Release\moc_ZSDatabaseClientConnectionDlg.cpp">
+      <Filter>Generated Files\Win32\Release\DatabaseClient</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDataGUI\Win32\Release\moc_ZSDatabaseClientConnectionWdgt.cpp">
+      <Filter>Generated Files\Win32\Release\DatabaseClient</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDataGUI\Win32\Release\moc_ZSDatabaseClientTrcMsgLogWdgt.cpp">
+      <Filter>Generated Files\Win32\Release\DatabaseClient</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDataGUI\x64\Debug\emb_ZSDataGUI.cpp">
+      <Filter>Generated Files\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDataGUI\x64\Release\emb_ZSDataGUI.cpp">
+      <Filter>Generated Files\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDataGUI\x64\Debug\moc_ZSDatabaseClientConnectionDlg.cpp">
+      <Filter>Generated Files\x64\Debug\DatabaseClient</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDataGUI\x64\Debug\moc_ZSDatabaseClientConnectionWdgt.cpp">
+      <Filter>Generated Files\x64\Debug\DatabaseClient</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDataGUI\x64\Debug\moc_ZSDatabaseClientTrcMsgLogWdgt.cpp">
+      <Filter>Generated Files\x64\Debug\DatabaseClient</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDataGUI\x64\Release\moc_ZSDatabaseClientConnectionDlg.cpp">
+      <Filter>Generated Files\x64\Release\DatabaseClient</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDataGUI\x64\Release\moc_ZSDatabaseClientConnectionWdgt.cpp">
+      <Filter>Generated Files\x64\Release\DatabaseClient</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDataGUI\x64\Release\moc_ZSDatabaseClientTrcMsgLogWdgt.cpp">
+      <Filter>Generated Files\x64\Release\DatabaseClient</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDataGUI\x64\Release\moc_ZSDatabaseConnectionsDlg.cpp">
+      <Filter>Generated Files\x64\Release\Database</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDataGUI\x64\Release\moc_ZSDatabaseConnectionsModel.cpp">
+      <Filter>Generated Files\x64\Release\Database</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDataGUI\x64\Release\moc_ZSDatabaseConnectionsWdgt.cpp">
+      <Filter>Generated Files\x64\Release\Database</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDataGUI\x64\Release\moc_ZSDatabaseTrcMsgLogWdgt.cpp">
+      <Filter>Generated Files\x64\Release\Database</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDataGUI\x64\Debug\moc_ZSDatabaseConnectionsDlg.cpp">
+      <Filter>Generated Files\x64\Debug\Database</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDataGUI\x64\Debug\moc_ZSDatabaseConnectionsModel.cpp">
+      <Filter>Generated Files\x64\Debug\Database</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDataGUI\x64\Debug\moc_ZSDatabaseConnectionsWdgt.cpp">
+      <Filter>Generated Files\x64\Debug\Database</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDataGUI\x64\Debug\moc_ZSDatabaseTrcMsgLogWdgt.cpp">
+      <Filter>Generated Files\x64\Debug\Database</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDataGUI\x64\Debug\moc_ZSDataSetModel.cpp">
+      <Filter>Generated Files\x64\Debug\DataSet</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDataGUI\x64\Debug\moc_ZSDataSetWdgt.cpp">
+      <Filter>Generated Files\x64\Debug\DataSet</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDataGUI\x64\Release\moc_ZSDataSetModel.cpp">
+      <Filter>Generated Files\x64\Release\DataSet</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDataGUI\x64\Release\moc_ZSDataSetWdgt.cpp">
+      <Filter>Generated Files\x64\Release\DataSet</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\..\..\Images\ZSData\ModelNodeTypeDataRow16x16.bmp">
+      <Filter>Resource Files\Explorer</Filter>
+    </Image>
+    <Image Include="..\..\..\Images\ZSData\ModelNodeTypeDataSet16x16.bmp">
+      <Filter>Resource Files\Explorer</Filter>
+    </Image>
+    <Image Include="..\..\..\Images\ZSData\ModelNodeTypeEnumeration16x16.bmp">
+      <Filter>Resource Files\Explorer</Filter>
+    </Image>
+    <Image Include="..\..\..\Images\ZSData\ModelNodeTypeGroup16x16.bmp">
+      <Filter>Resource Files\Explorer</Filter>
+    </Image>
+    <Image Include="..\..\..\Images\ZSData\ModelNodeTypeParameter16x16.bmp">
+      <Filter>Resource Files\Explorer</Filter>
+    </Image>
+    <Image Include="..\..\..\Images\ZSData\ModelNodeTypeRoot16x16.bmp">
+      <Filter>Resource Files\Explorer</Filter>
+    </Image>
+    <Image Include="..\..\..\Images\ZSData\ModelNodeTypeTable16x16.bmp">
+      <Filter>Resource Files\Explorer</Filter>
+    </Image>
+    <Image Include="..\..\..\Images\ZSData\Db16x16.bmp">
+      <Filter>Resource Files\Connection</Filter>
+    </Image>
+    <Image Include="..\..\..\Images\ZSData\DbClient16x16.bmp">
+      <Filter>Resource Files\Connection</Filter>
+    </Image>
+    <Image Include="..\..\..\Images\ZSData\DbConnection16x16.bmp">
+      <Filter>Resource Files\Connection</Filter>
+    </Image>
+    <Image Include="..\..\..\Images\ZSData\DbRead16x16.bmp">
+      <Filter>Resource Files\Connection</Filter>
+    </Image>
+    <Image Include="..\..\..\Images\ZSData\DbServer16x16.bmp">
+      <Filter>Resource Files\Connection</Filter>
+    </Image>
+    <Image Include="..\..\..\Images\ZSData\DbWrite16x16.bmp">
+      <Filter>Resource Files\Connection</Filter>
+    </Image>
+    <Image Include="..\..\..\Images\ZSData\MenuFileAddDataSet16x16.bmp">
+      <Filter>Resource Files\Menu</Filter>
+    </Image>
+    <Image Include="..\..\..\Images\ZSData\MenuFileAddEnumeration16x16.bmp">
+      <Filter>Resource Files\Menu</Filter>
+    </Image>
+    <Image Include="..\..\..\Images\ZSData\MenuFileAddGroup16x16.bmp">
+      <Filter>Resource Files\Menu</Filter>
+    </Image>
+    <Image Include="..\..\..\Images\ZSData\MenuFileAddParameter16x16.bmp">
+      <Filter>Resource Files\Menu</Filter>
+    </Image>
+    <Image Include="..\..\..\Images\ZSData\MenuFileAddTable16x16.bmp">
+      <Filter>Resource Files\Menu</Filter>
+    </Image>
+    <Image Include="..\..\..\Images\ZSData\MenuFileEditDataSet16x16.bmp">
+      <Filter>Resource Files\Menu</Filter>
+    </Image>
+    <Image Include="..\..\..\Images\ZSData\MenuFileEditTable16x16.bmp">
+      <Filter>Resource Files\Menu</Filter>
+    </Image>
+    <Image Include="..\..\..\Images\ZSData\DSObjTypeDataSet.bmp">
+      <Filter>Resource Files\DSObjTypes</Filter>
+    </Image>
+    <Image Include="..\..\..\Images\ZSData\DSObjTypeEnumeration.bmp">
+      <Filter>Resource Files\DSObjTypes</Filter>
+    </Image>
+    <Image Include="..\..\..\Images\ZSData\DSObjTypeGroup.bmp">
+      <Filter>Resource Files\DSObjTypes</Filter>
+    </Image>
+    <Image Include="..\..\..\Images\ZSData\DSObjTypeParameter.bmp">
+      <Filter>Resource Files\DSObjTypes</Filter>
+    </Image>
+    <Image Include="..\..\..\Images\ZSData\DSObjTypeTable.bmp">
+      <Filter>Resource Files\DSObjTypes</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\Include\Libs\ZSDataGUI\ZSDataGUIAux.h">
+      <Filter>Include Files\Main</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Libs\ZSDataGUI\ZSDataGUICommon.h">
+      <Filter>Include Files\Main</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Libs\ZSDataGUI\ZSDataGUIDllMain.h">
+      <Filter>Include Files\Main</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\..\Include\Libs\ZSDataGUI\ZSDatabaseConnectionsDlg.h">
+      <Filter>Include Files\Database</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\Libs\ZSDataGUI\ZSDatabaseConnectionsModel.h">
+      <Filter>Include Files\Database</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\Libs\ZSDataGUI\ZSDatabaseConnectionsWdgt.h">
+      <Filter>Include Files\Database</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\Libs\ZSDataGUI\ZSDatabaseTrcMsgLogWdgt.h">
+      <Filter>Include Files\Database</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\Libs\ZSDataGUI\ZSDataSetModel.h">
+      <Filter>Include Files\DataSet\DataSet</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\Libs\ZSDataGUI\ZSDataSetWdgt.h">
+      <Filter>Include Files\DataSet\DataSet</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\Libs\ZSDataGUI\ZSDatabaseClientConnectionDlg.h">
+      <Filter>Include Files\DatabaseClient</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\Libs\ZSDataGUI\ZSDatabaseClientConnectionWdgt.h">
+      <Filter>Include Files\DatabaseClient</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\Libs\ZSDataGUI\ZSDatabaseClientTrcMsgLogWdgt.h">
+      <Filter>Include Files\DatabaseClient</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Images\Libs\ZSData\ZSData.qrc">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+  </ItemGroup>
+</Project>

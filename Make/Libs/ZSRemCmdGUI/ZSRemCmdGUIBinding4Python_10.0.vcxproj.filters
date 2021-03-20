@@ -1,0 +1,87 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Generated Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Generated Files\Win32">
+      <UniqueIdentifier>{56a086ba-8023-4979-b2d4-e78b28caf574}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\Win32\Debug">
+      <UniqueIdentifier>{48553bd8-2f82-4231-ba5e-3f52264cacd0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\Win32\Release">
+      <UniqueIdentifier>{3f8e9b68-4c34-43a7-a4c5-50cd0a19e524}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
+    </Filter>
+    <Filter Include="Include Files">
+      <UniqueIdentifier>{1f4def42-db1f-4799-a515-ba9162210289}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSRemCmdGUI\zs_remcmd_gui_cdelegateremcmdobjpool_wrapper.cpp">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSRemCmdGUI\zs_remcmd_gui_cdlgremcmdobjpool_wrapper.cpp">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSRemCmdGUI\zs_remcmd_gui_cdlgremcmdserver_wrapper.cpp">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSRemCmdGUI\zs_remcmd_gui_cremcmdobjpoolmodel_wrapper.cpp">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSRemCmdGUI\zs_remcmd_gui_cwdgtremcmdobjpool_wrapper.cpp">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSRemCmdGUI\zsremcmdgui_module_wrapper.cpp">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSRemCmdGUI\zs_remcmd_gui_cdelegateremcmdobjpool_wrapper.h">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSRemCmdGUI\zs_remcmd_gui_cdlgremcmdobjpool_wrapper.h">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSRemCmdGUI\zs_remcmd_gui_cdlgremcmdserver_wrapper.h">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSRemCmdGUI\zs_remcmd_gui_cremcmdobjpoolmodel_wrapper.h">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSRemCmdGUI\zs_remcmd_gui_cwdgtremcmdobjpool_wrapper.h">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSRemCmdGUI\zsremcmdgui_python.h">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClInclude>
+    <ClInclude Include="ZSRemCmdGUIBinding4PythonGlobalFunctionsWrapper.h">
+      <Filter>Include Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="ZSRemCmdGUIBinding4Python.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ZSRemCmdGUIBinding4Python.xml">
+      <Filter>Resource Files</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="ZSRemCmdGUIBinding4Python.h">
+      <Filter>Include Files</Filter>
+    </CustomBuild>
+  </ItemGroup>
+</Project>

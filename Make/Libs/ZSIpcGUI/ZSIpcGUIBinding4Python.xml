@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<typesystem package="ZSQtLib.ZSIpcGUI">
+    <load-typesystem name="typesystem_core.xml" generate="no"/>
+    <load-typesystem name="typesystem_xml.xml" generate="no"/>
+    <load-typesystem name="typesystem_network.xml" generate="no"/>
+    <load-typesystem name="typesystem_gui.xml" generate="no"/>
+    <load-typesystem name="ZSSysBinding4Python.xml" generate="no"/>
+    <load-typesystem name="ZSIpcBinding4Python.xml" generate="no"/>
+    <load-typesystem name="ZSSysGUIBinding4Python.xml" generate="no"/>
+    <namespace-type name="ZS" generate="no">
+        <namespace-type name="Ipc" generate="no">
+            <namespace-type name="GUI" generate="no">
+                <!-- ZSIpcGUIDllMain.h -->
+                <!-- ZSIpcClientDlg.h -->
+                <object-type name="CDlgIpcClient"/>
+                <!-- ZSIpcClientWdgt.h -->
+                <object-type name="CWdgtIpcClient"/>
+                <!-- ZSIpcServerDlg.h -->
+                <object-type name="CDlgIpcServer"/>
+                <!-- ZSIpcServerWdgt.h -->
+                <object-type name="CWdgtIpcServer"/>
+                <!-- ZSIpcModelSrvCltConnection.h -->
+                <object-type name="CModelSrvCltConnection">
+                    <enum-type name="EColumn"/>
+                </object-type>
+                <!-- ZSIpcTrcMsgLogWdgt.h -->
+                <value-type name="STrcMsgLogSettings"/>
+                <object-type name="CWdgtTrcMsgLog"/>
+            </namespace-type>
+        </namespace-type>
+    </namespace-type>
+</typesystem>

@@ -1,0 +1,684 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectName>ZSDataGUI</ProjectName>
+    <ProjectGuid>{AAAAD015-085D-446C-983E-B1486D42CE59}</ProjectGuid>
+    <RootNamespace>ZSDataGUI</RootNamespace>
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>12.0.30501.0</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>..\..\..\Tmp\Out\Libs\$(ProjectName)\Win32\$(Configuration)\</OutDir>
+    <IntDir>..\..\..\Tmp\Int\Libs\$(ProjectName)\Win32\$(Configuration)\</IntDir>
+    <LinkIncremental>false</LinkIncremental>
+    <TargetName>$(ProjectName)d</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>..\..\..\Tmp\Out\Libs\$(ProjectName)\x64\$(Configuration)\</OutDir>
+    <IntDir>..\..\..\Tmp\Int\Libs\$(ProjectName)\x64\$(Configuration)\</IntDir>
+    <TargetName>$(ProjectName)d</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>..\..\..\Tmp\Out\Libs\$(ProjectName)\Win32\$(Configuration)\</OutDir>
+    <IntDir>..\..\..\Tmp\Int\Libs\$(ProjectName)\Win32\$(Configuration)\</IntDir>
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>..\..\..\Tmp\Out\Libs\$(ProjectName)\x64\$(Configuration)\</OutDir>
+    <IntDir>..\..\..\Tmp\Int\Libs\$(ProjectName)\x64\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <AdditionalIncludeDirectories>..\..\..\Include\Libs;$(QTDIR)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;_ZSTRACE;ZSDATAGUIDLL_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <MinimalRebuild>false</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <PrecompiledHeader />
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
+      <BrowseInformation>true</BrowseInformation>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>ZSSysd.lib;ZSSysGUId.lib;ZSIpcd.lib;ZSIpcGUId.lib;ZSTraced.lib;ZSPhysVald.lib;ZSPhysValGUId.lib;ZSDiagramd.lib;ZSDatad.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)$(ProjectName)d.dll</OutputFile>
+      <AdditionalLibraryDirectories>$(QTDIR)\lib;..\..\..\Lib\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention />
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+    <Bscmake>
+      <OutputFile>$(IntDir)$(ProjectName).bsc</OutputFile>
+    </Bscmake>
+    <PostBuildEvent>
+      <Message>..\..\CopyOutput.bat Win32 $(OutDir) $(TargetName)</Message>
+      <Command>..\..\CopyOutput.bat Win32 $(OutDir) $(TargetName)</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <AdditionalIncludeDirectories>..\..\..\Include\Libs;$(QTDIR)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;_ZSTRACE;ZSDATAGUIDLL_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
+      <BrowseInformation>true</BrowseInformation>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>ZSSysd.lib;ZSSysGUId.lib;ZSIpcd.lib;ZSIpcGUId.lib;ZSTraced.lib;ZSPhysVald.lib;ZSPhysValGUId.lib;ZSDiagramd.lib;ZSDatad.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)$(ProjectName)d.dll</OutputFile>
+      <AdditionalLibraryDirectories>$(QTDIR)\lib;..\..\..\Lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+    </Link>
+    <Bscmake>
+      <OutputFile>$(IntDir)$(ProjectName).bsc</OutputFile>
+    </Bscmake>
+    <PostBuildEvent>
+      <Message>..\..\CopyOutput.bat x64 $(OutDir) $(TargetName)</Message>
+      <Command>..\..\CopyOutput.bat x64 $(OutDir) $(TargetName)</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <AdditionalIncludeDirectories>..\..\..\Include\Libs;$(QTDIR)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;_ZSTRACE;ZSDATAGUIDLL_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <PrecompiledHeader />
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
+      <BrowseInformation>true</BrowseInformation>
+      <BrowseInformationFile>$(IntDir)</BrowseInformationFile>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>ZSSys.lib;ZSSysGUI.lib;ZSIpc.lib;ZSIpcGUI.lib;ZSTrace.lib;ZSPhysVal.lib;ZSPhysValGUI.lib;ZSDiagram.lib;ZSData.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(QTDIR)\lib;..\..\..\Lib\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <LinkTimeCodeGeneration />
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention />
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+    <Bscmake>
+      <OutputFile>$(IntDir)$(ProjectName).bsc</OutputFile>
+    </Bscmake>
+    <PostBuildEvent>
+      <Message>..\..\CopyOutput.bat Win32 $(OutDir) $(TargetName)</Message>
+      <Command>..\..\CopyOutput.bat Win32 $(OutDir) $(TargetName)</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <AdditionalIncludeDirectories>..\..\..\Include\Libs;$(QTDIR)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;_ZSTRACE;ZSDATAGUIDLL_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
+      <BrowseInformation>true</BrowseInformation>
+      <BrowseInformationFile>$(IntDir)</BrowseInformationFile>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>ZSSys.lib;ZSSysGUI.lib;ZSIpc.lib;ZSIpcGUI.lib;ZSTrace.lib;ZSPhysVal.lib;ZSPhysValGUI.lib;ZSDiagram.lib;ZSData.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(QTDIR)\lib;..\..\..\Lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <LinkTimeCodeGeneration>
+      </LinkTimeCodeGeneration>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+    </Link>
+    <Bscmake>
+      <OutputFile>$(IntDir)$(ProjectName).bsc</OutputFile>
+    </Bscmake>
+    <PostBuildEvent>
+      <Message>..\..\CopyOutput.bat x64 $(OutDir) $(TargetName)</Message>
+      <Command>..\..\CopyOutput.bat x64 $(OutDir) $(TargetName)</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\Source\Libs\ZSDataGUI\ZSDatabaseClientConnectionDlg.cpp" />
+    <ClCompile Include="..\..\..\Source\Libs\ZSDataGUI\ZSDatabaseClientConnectionWdgt.cpp" />
+    <ClCompile Include="..\..\..\Source\Libs\ZSDataGUI\ZSDatabaseClientTrcMsgLogWdgt.cpp" />
+    <ClCompile Include="..\..\..\Source\Libs\ZSDataGUI\ZSDatabaseConnectionsDlg.cpp" />
+    <ClCompile Include="..\..\..\Source\Libs\ZSDataGUI\ZSDatabaseConnectionsModel.cpp" />
+    <ClCompile Include="..\..\..\Source\Libs\ZSDataGUI\ZSDatabaseConnectionsWdgt.cpp" />
+    <ClCompile Include="..\..\..\Source\Libs\ZSDataGUI\ZSDatabaseTrcMsgLogWdgt.cpp" />
+    <ClCompile Include="..\..\..\Source\Libs\ZSDataGUI\ZSDataGUIAux.cpp" />
+    <ClCompile Include="..\..\..\Source\Libs\ZSDataGUI\ZSDataGUICommon.cpp" />
+    <ClCompile Include="..\..\..\Source\Libs\ZSDataGUI\ZSDataGUIDllMain.cpp" />
+    <ClCompile Include="..\..\..\Source\Libs\ZSDataGUI\ZSDataSetModel.cpp" />
+    <ClCompile Include="..\..\..\Source\Libs\ZSDataGUI\ZSDataSetWdgt.cpp" />
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDataGUI\Win32\Debug\emb_ZSDataGUI.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDataGUI\Win32\Debug\moc_ZSDatabaseClientConnectionDlg.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDataGUI\Win32\Debug\moc_ZSDatabaseClientConnectionWdgt.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDataGUI\Win32\Debug\moc_ZSDatabaseClientTrcMsgLogWdgt.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDataGUI\Win32\Debug\moc_ZSDatabaseConnectionsDlg.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDataGUI\Win32\Debug\moc_ZSDatabaseConnectionsModel.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDataGUI\Win32\Debug\moc_ZSDatabaseConnectionsWdgt.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDataGUI\Win32\Debug\moc_ZSDatabaseTrcMsgLogWdgt.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDataGUI\Win32\Debug\moc_ZSDataSetModel.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDataGUI\Win32\Debug\moc_ZSDataSetWdgt.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDataGUI\Win32\Release\emb_ZSDataGUI.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDataGUI\Win32\Release\moc_ZSDatabaseClientConnectionDlg.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDataGUI\Win32\Release\moc_ZSDatabaseClientConnectionWdgt.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDataGUI\Win32\Release\moc_ZSDatabaseClientTrcMsgLogWdgt.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDataGUI\Win32\Release\moc_ZSDatabaseConnectionsDlg.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDataGUI\Win32\Release\moc_ZSDatabaseConnectionsModel.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDataGUI\Win32\Release\moc_ZSDatabaseConnectionsWdgt.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDataGUI\Win32\Release\moc_ZSDatabaseTrcMsgLogWdgt.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDataGUI\Win32\Release\moc_ZSDataSetModel.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDataGUI\Win32\Release\moc_ZSDataSetWdgt.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDataGUI\x64\Debug\emb_ZSDataGUI.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDataGUI\x64\Debug\moc_ZSDatabaseClientConnectionDlg.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDataGUI\x64\Debug\moc_ZSDatabaseClientConnectionWdgt.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDataGUI\x64\Debug\moc_ZSDatabaseClientTrcMsgLogWdgt.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDataGUI\x64\Debug\moc_ZSDatabaseConnectionsDlg.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDataGUI\x64\Debug\moc_ZSDatabaseConnectionsModel.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDataGUI\x64\Debug\moc_ZSDatabaseConnectionsWdgt.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDataGUI\x64\Debug\moc_ZSDatabaseTrcMsgLogWdgt.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDataGUI\x64\Debug\moc_ZSDataSetModel.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDataGUI\x64\Debug\moc_ZSDataSetWdgt.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDataGUI\x64\Release\emb_ZSDataGUI.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDataGUI\x64\Release\moc_ZSDatabaseClientConnectionDlg.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDataGUI\x64\Release\moc_ZSDatabaseClientConnectionWdgt.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDataGUI\x64\Release\moc_ZSDatabaseClientTrcMsgLogWdgt.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDataGUI\x64\Release\moc_ZSDatabaseConnectionsDlg.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDataGUI\x64\Release\moc_ZSDatabaseConnectionsModel.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDataGUI\x64\Release\moc_ZSDatabaseConnectionsWdgt.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDataGUI\x64\Release\moc_ZSDatabaseTrcMsgLogWdgt.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDataGUI\x64\Release\moc_ZSDataSetModel.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDataGUI\x64\Release\moc_ZSDataSetWdgt.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\..\Images\Libs\ZSData\ZSData.qrc">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">rcc -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\Win32\$(Configuration)\emb_$(ProjectName).cpp %(FullPath)</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">rcc -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\x64\$(Configuration)\emb_$(ProjectName).cpp %(FullPath)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">rcc -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\Win32\$(Configuration)\emb_$(ProjectName).cpp %(FullPath)
+</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">rcc -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\x64\$(Configuration)\emb_$(ProjectName).cpp %(FullPath)
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\..\Tmp\Moc\Libs\$(ProjectName)\Win32\$(Configuration)\emb_$(ProjectName).cpp;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">..\..\..\Tmp\Moc\Libs\$(ProjectName)\x64\$(Configuration)\emb_$(ProjectName).cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">rcc -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\Win32\$(Configuration)\emb_$(ProjectName).cpp %(FullPath)</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">rcc -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\x64\$(Configuration)\emb_$(ProjectName).cpp %(FullPath)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">rcc -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\Win32\$(Configuration)\emb_$(ProjectName).cpp %(FullPath)
+</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">rcc -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\x64\$(Configuration)\emb_$(ProjectName).cpp %(FullPath)
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\..\Tmp\Moc\Libs\$(ProjectName)\Win32\$(Configuration)\emb_$(ProjectName).cpp;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">..\..\..\Tmp\Moc\Libs\$(ProjectName)\x64\$(Configuration)\emb_$(ProjectName).cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\..\..\Images\ZSData\Db16x16.bmp" />
+    <Image Include="..\..\..\Images\ZSData\DbClient16x16.bmp" />
+    <Image Include="..\..\..\Images\ZSData\DbConnection16x16.bmp" />
+    <Image Include="..\..\..\Images\ZSData\DbRead16x16.bmp" />
+    <Image Include="..\..\..\Images\ZSData\DbServer16x16.bmp" />
+    <Image Include="..\..\..\Images\ZSData\DbWrite16x16.bmp" />
+    <Image Include="..\..\..\Images\ZSData\DSObjTypeDataSet.bmp" />
+    <Image Include="..\..\..\Images\ZSData\DSObjTypeEnumeration.bmp" />
+    <Image Include="..\..\..\Images\ZSData\DSObjTypeGroup.bmp" />
+    <Image Include="..\..\..\Images\ZSData\DSObjTypeParameter.bmp" />
+    <Image Include="..\..\..\Images\ZSData\DSObjTypeTable.bmp" />
+    <Image Include="..\..\..\Images\ZSData\MenuFileAddDataSet16x16.bmp" />
+    <Image Include="..\..\..\Images\ZSData\MenuFileAddEnumeration16x16.bmp" />
+    <Image Include="..\..\..\Images\ZSData\MenuFileAddGroup16x16.bmp" />
+    <Image Include="..\..\..\Images\ZSData\MenuFileAddParameter16x16.bmp" />
+    <Image Include="..\..\..\Images\ZSData\MenuFileAddTable16x16.bmp" />
+    <Image Include="..\..\..\Images\ZSData\MenuFileEditDataSet16x16.bmp" />
+    <Image Include="..\..\..\Images\ZSData\MenuFileEditTable16x16.bmp" />
+    <Image Include="..\..\..\Images\ZSData\ModelNodeTypeDataRow16x16.bmp" />
+    <Image Include="..\..\..\Images\ZSData\ModelNodeTypeDataSet16x16.bmp" />
+    <Image Include="..\..\..\Images\ZSData\ModelNodeTypeEnumeration16x16.bmp" />
+    <Image Include="..\..\..\Images\ZSData\ModelNodeTypeGroup16x16.bmp" />
+    <Image Include="..\..\..\Images\ZSData\ModelNodeTypeParameter16x16.bmp" />
+    <Image Include="..\..\..\Images\ZSData\ModelNodeTypeRoot16x16.bmp" />
+    <Image Include="..\..\..\Images\ZSData\ModelNodeTypeTable16x16.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\..\Include\Libs\ZSDataGUI\ZSDatabaseClientConnectionDlg.h">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\x64\$(Configuration)\moc_%(Filename).cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\x64\$(Configuration)\moc_%(Filename).cpp</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\..\Tmp\Moc\Libs\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">..\..\..\Tmp\Moc\Libs\$(ProjectName)\x64\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\x64\$(Configuration)\moc_%(Filename).cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\x64\$(Configuration)\moc_%(Filename).cpp</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\..\Tmp\Moc\Libs\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">..\..\..\Tmp\Moc\Libs\$(ProjectName)\x64\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\Libs\ZSDataGUI\ZSDatabaseClientConnectionWdgt.h">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\x64\$(Configuration)\moc_%(Filename).cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\x64\$(Configuration)\moc_%(Filename).cpp</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\..\Tmp\Moc\Libs\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">..\..\..\Tmp\Moc\Libs\$(ProjectName)\x64\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\x64\$(Configuration)\moc_%(Filename).cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\x64\$(Configuration)\moc_%(Filename).cpp</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\..\Tmp\Moc\Libs\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">..\..\..\Tmp\Moc\Libs\$(ProjectName)\x64\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\Libs\ZSDataGUI\ZSDatabaseClientTrcMsgLogWdgt.h">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\x64\$(Configuration)\moc_%(Filename).cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\x64\$(Configuration)\moc_%(Filename).cpp</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\..\Tmp\Moc\Libs\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">..\..\..\Tmp\Moc\Libs\$(ProjectName)\x64\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\x64\$(Configuration)\moc_%(Filename).cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\x64\$(Configuration)\moc_%(Filename).cpp</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\..\Tmp\Moc\Libs\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">..\..\..\Tmp\Moc\Libs\$(ProjectName)\x64\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\Libs\ZSDataGUI\ZSDatabaseConnectionsDlg.h">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\x64\$(Configuration)\moc_%(Filename).cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\x64\$(Configuration)\moc_%(Filename).cpp</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\..\Tmp\Moc\Libs\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">..\..\..\Tmp\Moc\Libs\$(ProjectName)\x64\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\x64\$(Configuration)\moc_%(Filename).cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\x64\$(Configuration)\moc_%(Filename).cpp</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\..\Tmp\Moc\Libs\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">..\..\..\Tmp\Moc\Libs\$(ProjectName)\x64\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\Libs\ZSDataGUI\ZSDatabaseConnectionsModel.h">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\x64\$(Configuration)\moc_%(Filename).cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\x64\$(Configuration)\moc_%(Filename).cpp</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\..\Tmp\Moc\Libs\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">..\..\..\Tmp\Moc\Libs\$(ProjectName)\x64\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\x64\$(Configuration)\moc_%(Filename).cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\x64\$(Configuration)\moc_%(Filename).cpp</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\..\Tmp\Moc\Libs\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">..\..\..\Tmp\Moc\Libs\$(ProjectName)\x64\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\Libs\ZSDataGUI\ZSDatabaseConnectionsWdgt.h">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\x64\$(Configuration)\moc_%(Filename).cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\x64\$(Configuration)\moc_%(Filename).cpp</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\..\Tmp\Moc\Libs\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">..\..\..\Tmp\Moc\Libs\$(ProjectName)\x64\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\x64\$(Configuration)\moc_%(Filename).cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\x64\$(Configuration)\moc_%(Filename).cpp</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\..\Tmp\Moc\Libs\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">..\..\..\Tmp\Moc\Libs\$(ProjectName)\x64\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\Libs\ZSDataGUI\ZSDatabaseTrcMsgLogWdgt.h">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\x64\$(Configuration)\moc_%(Filename).cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\x64\$(Configuration)\moc_%(Filename).cpp</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\..\Tmp\Moc\Libs\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">..\..\..\Tmp\Moc\Libs\$(ProjectName)\x64\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\x64\$(Configuration)\moc_%(Filename).cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\x64\$(Configuration)\moc_%(Filename).cpp</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\..\Tmp\Moc\Libs\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">..\..\..\Tmp\Moc\Libs\$(ProjectName)\x64\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+    <ClInclude Include="..\..\..\Include\Libs\ZSDataGUI\ZSDataGUIAux.h" />
+    <ClInclude Include="..\..\..\Include\Libs\ZSDataGUI\ZSDataGUICommon.h" />
+    <ClInclude Include="..\..\..\Include\Libs\ZSDataGUI\ZSDataGUIDllMain.h" />
+    <CustomBuild Include="..\..\..\Include\Libs\ZSDataGUI\ZSDataSetModel.h">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\x64\$(Configuration)\moc_%(Filename).cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\x64\$(Configuration)\moc_%(Filename).cpp</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\..\Tmp\Moc\Libs\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">..\..\..\Tmp\Moc\Libs\$(ProjectName)\x64\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\x64\$(Configuration)\moc_%(Filename).cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\x64\$(Configuration)\moc_%(Filename).cpp</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\..\Tmp\Moc\Libs\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">..\..\..\Tmp\Moc\Libs\$(ProjectName)\x64\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\Libs\ZSDataGUI\ZSDataSetWdgt.h">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\x64\$(Configuration)\moc_%(Filename).cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\x64\$(Configuration)\moc_%(Filename).cpp</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\..\Tmp\Moc\Libs\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">..\..\..\Tmp\Moc\Libs\$(ProjectName)\x64\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\x64\$(Configuration)\moc_%(Filename).cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\x64\$(Configuration)\moc_%(Filename).cpp</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\..\Tmp\Moc\Libs\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">..\..\..\Tmp\Moc\Libs\$(ProjectName)\x64\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

@@ -1,0 +1,35 @@
+<!DOCTYPE RCC>
+<RCC version="1.0">
+    <qresource prefix="ZS/Data/Connection">
+        <file alias="Db">Db16x16.bmp</file>
+        <file alias="DbConnection">DbConnection16x16.bmp</file>
+        <file alias="DbClient">DbClient16x16.bmp</file>
+        <file alias="DbServer">DbServer16x16.bmp</file>
+        <file alias="DbRead">DbRead16x16.bmp</file>
+        <file alias="DbWrite">DbWrite16x16.bmp</file>
+    </qresource>
+    <qresource prefix="ZS/Data/DSObjTypes">
+        <file alias="DataSet">DSObjTypeDataSet.bmp</file>
+        <file alias="Enumeration">DSObjTypeEnumeration.bmp</file>
+        <file alias="Group">DSObjTypeGroup.bmp</file>
+        <file alias="Table">DSObjTypeTable.bmp</file>
+        <file alias="Parameter">DSObjTypeParameter.bmp</file>
+    </qresource>
+    <qresource prefix="ZS/Data/Explorer">
+        <file alias="Root">ModelNodeTypeRoot16x16.bmp</file>
+        <file alias="DataSet">ModelNodeTypeDataSet16x16.bmp</file>
+        <file alias="Enumeration">ModelNodeTypeEnumeration16x16.bmp</file>
+        <file alias="Group">ModelNodeTypeGroup16x16.bmp</file>
+        <file alias="Table">ModelNodeTypeTable16x16.bmp</file>
+        <file alias="Parameter">ModelNodeTypeParameter16x16.bmp</file>
+    </qresource>
+    <qresource prefix="ZS/Data/Menu">
+        <file alias="AddDataSet">MenuFileAddDataSet16x16.bmp</file>
+        <file alias="AddEnumeration">MenuFileAddEnumeration16x16.bmp</file>
+        <file alias="AddGroup">MenuFileAddGroup16x16.bmp</file>
+        <file alias="AddTable">MenuFileAddTable16x16.bmp</file>
+        <file alias="AddParameter">MenuFileAddParameter16x16.bmp</file>
+        <file alias="EditDataSet">MenuFileEditDataSet16x16.bmp</file>
+        <file alias="EditTable">MenuFileEditTable16x16.bmp</file>
+    </qresource>
+</RCC>

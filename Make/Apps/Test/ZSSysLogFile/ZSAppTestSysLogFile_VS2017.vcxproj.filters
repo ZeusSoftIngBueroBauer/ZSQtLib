@@ -1,0 +1,191 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="..\..\..\..\Source\Apps\Test\ZSSysLogFile\App.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Source\Apps\Test\ZSSysLogFile\Main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Source\Apps\Test\ZSSysLogFile\MainWindow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Source\Apps\Test\ZSSysLogFile\Test.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Source\Apps\Test\ZSSysLogFile\WidgetCentral.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Tmp\Moc\Apps\Test\ZSAppTestSysLogFile\Release_msvc2015\x64\moc_App.cpp">
+      <Filter>Generated Files\msvc2015\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Tmp\Moc\Apps\Test\ZSAppTestSysLogFile\Release_msvc2015\x64\moc_MainWindow.cpp">
+      <Filter>Generated Files\msvc2015\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Tmp\Moc\Apps\Test\ZSAppTestSysLogFile\Release_msvc2015\x64\moc_Test.cpp">
+      <Filter>Generated Files\msvc2015\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Tmp\Moc\Apps\Test\ZSAppTestSysLogFile\Debug_msvc2017\x64\moc_App.cpp">
+      <Filter>Generated Files\msvc2017\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Tmp\Moc\Apps\Test\ZSAppTestSysLogFile\Debug_msvc2017\x64\moc_MainWindow.cpp">
+      <Filter>Generated Files\msvc2017\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Tmp\Moc\Apps\Test\ZSAppTestSysLogFile\Debug_msvc2017\x64\moc_Test.cpp">
+      <Filter>Generated Files\msvc2017\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Tmp\Moc\Apps\Test\ZSAppTestSysLogFile\Debug_msvc2015\x64\moc_App.cpp">
+      <Filter>Generated Files\msvc2015\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Tmp\Moc\Apps\Test\ZSAppTestSysLogFile\Debug_msvc2015\x64\moc_MainWindow.cpp">
+      <Filter>Generated Files\msvc2015\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Tmp\Moc\Apps\Test\ZSAppTestSysLogFile\Debug_msvc2015\x64\moc_Test.cpp">
+      <Filter>Generated Files\msvc2015\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Tmp\Moc\Apps\Test\ZSAppTestSysLogFile\Release_msvc2017\Win32\moc_App.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Tmp\Moc\Apps\Test\ZSAppTestSysLogFile\Release_msvc2017\Win32\moc_MainWindow.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Tmp\Moc\Apps\Test\ZSAppTestSysLogFile\Release_msvc2017\Win32\moc_Test.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Tmp\Moc\Apps\Test\ZSAppTestSysLogFile\Release_msvc2015\Win32\moc_App.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Tmp\Moc\Apps\Test\ZSAppTestSysLogFile\Release_msvc2015\Win32\moc_MainWindow.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Tmp\Moc\Apps\Test\ZSAppTestSysLogFile\Release_msvc2015\Win32\moc_Test.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Tmp\Moc\Apps\Test\ZSAppTestSysLogFile\Debug_msvc2017\Win32\moc_App.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Tmp\Moc\Apps\Test\ZSAppTestSysLogFile\Debug_msvc2017\Win32\moc_MainWindow.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Tmp\Moc\Apps\Test\ZSAppTestSysLogFile\Debug_msvc2017\Win32\moc_Test.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Tmp\Moc\Apps\Test\ZSAppTestSysLogFile\Debug_msvc2015\Win32\moc_App.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Tmp\Moc\Apps\Test\ZSAppTestSysLogFile\Debug_msvc2015\Win32\moc_MainWindow.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Tmp\Moc\Apps\Test\ZSAppTestSysLogFile\Debug_msvc2015\Win32\moc_Test.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Tmp\Moc\Apps\Test\ZSAppTestSysLogFile\Release_msvc2017\x64\moc_App.cpp">
+      <Filter>Generated Files\msvc2017\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Tmp\Moc\Apps\Test\ZSAppTestSysLogFile\Release_msvc2017\x64\moc_MainWindow.cpp">
+      <Filter>Generated Files\msvc2017\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Tmp\Moc\Apps\Test\ZSAppTestSysLogFile\Release_msvc2017\x64\moc_Test.cpp">
+      <Filter>Generated Files\msvc2017\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Tmp\Moc\Apps\Test\ZSAppTestSysLogFile\Debug_msvc2019\x64\moc_App.cpp">
+      <Filter>Generated Files\msvc2019\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Tmp\Moc\Apps\Test\ZSAppTestSysLogFile\Debug_msvc2019\x64\moc_MainWindow.cpp">
+      <Filter>Generated Files\msvc2019\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Tmp\Moc\Apps\Test\ZSAppTestSysLogFile\Debug_msvc2019\x64\moc_Test.cpp">
+      <Filter>Generated Files\msvc2019\x64\Debug</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\..\..\Include\Apps\Test\ZSSysLogFile\App.h">
+      <Filter>Include Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Include\Apps\Test\ZSSysLogFile\MainWindow.h">
+      <Filter>Include Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Include\Apps\Test\ZSSysLogFile\Test.h">
+      <Filter>Include Files</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Generated Files">
+      <UniqueIdentifier>{499c366e-69b7-4d09-a692-d29d77b56f17}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{7185e466-20d0-4be5-8fa6-cd012e44aedb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include Files">
+      <UniqueIdentifier>{c5484544-1cb0-42f8-b2f1-5e58aed344e2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2017">
+      <UniqueIdentifier>{56d7ecde-d64e-4322-bfa4-3ce82cc723ef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2017\Win32">
+      <UniqueIdentifier>{8e6cc18f-cb3c-4004-ba1c-d3fe83293fff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2017\Win32\Debug">
+      <UniqueIdentifier>{dc6130c6-baef-45da-8227-367aba90ebe9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2017\Win32\Release">
+      <UniqueIdentifier>{874f2035-bbcf-4d00-8bee-929f6823d6a0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2017\x64">
+      <UniqueIdentifier>{30aa83a1-d630-4d2c-b6ec-369ff5781133}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2017\x64\Debug">
+      <UniqueIdentifier>{6cd04f58-d540-4f25-bee9-b6a33ba451e1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2017\x64\Release">
+      <UniqueIdentifier>{fa2f7823-a4e6-47e7-8d80-851fd4fdc43c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2015">
+      <UniqueIdentifier>{3b15d60d-d004-4047-86cc-c05a13121eef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2015\Win32">
+      <UniqueIdentifier>{daa6a9ae-7b83-43c9-804c-6c43e83adff9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2015\x64">
+      <UniqueIdentifier>{ba3eefa9-a06e-4df2-a8d3-e2e50a5a75ba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2015\x64\Debug">
+      <UniqueIdentifier>{640f0de2-d414-4c9e-9a25-32ac5ddd7ffb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2015\x64\Release">
+      <UniqueIdentifier>{dbbed8f7-8073-4f49-a088-ffcc20ee11bb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2015\Win32\Debug">
+      <UniqueIdentifier>{c0b72031-55d7-46f1-a282-ceea96b80604}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2015\Win32\Release">
+      <UniqueIdentifier>{1e94df17-6d7f-442a-8689-0acb18808c50}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2019">
+      <UniqueIdentifier>{a3e0f36a-e6d0-4fe4-a4dc-f16aecfb299b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2019\x64">
+      <UniqueIdentifier>{7e1a89ef-cdf5-4a80-9355-53bfb41d1a1c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2019\x64\Debug">
+      <UniqueIdentifier>{2dced331-89f2-4615-9744-a2ccab3b94b0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2019\x64\Release">
+      <UniqueIdentifier>{426f49ca-bd01-4c32-87bb-a020759ca592}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2019\Win32">
+      <UniqueIdentifier>{c6772608-1aa1-452a-b7f0-a91485c764a2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2019\Win32\Debug">
+      <UniqueIdentifier>{0d4e666d-ab82-48fa-a0c7-1ec420851b6f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2019\Win32\Release">
+      <UniqueIdentifier>{a3d6a410-d1e4-493a-8709-2b0d65a19993}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\Include\Apps\Test\ZSSysLogFile\WidgetCentral.h">
+      <Filter>Include Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

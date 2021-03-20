@@ -1,0 +1,395 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectName>ZSIpc</ProjectName>
+    <ProjectGuid>{13BAEBFE-DF24-45A2-BB4A-BA5CB8C61402}</ProjectGuid>
+    <RootNamespace>ZSIpc</RootNamespace>
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\..\Tmp\Out\$(ProjectName)\Win32\$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\..\Tmp\Int\$(ProjectName)\Win32\$(Configuration)\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\..\Tmp\Out\$(ProjectName)\Win32\$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\..\Tmp\Int\$(ProjectName)\Win32\$(Configuration)\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <AdditionalIncludeDirectories>..\..\..\Include;$(QTDIR)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;_ZSTRACE;ZSIPCDLL_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
+      <BrowseInformation>true</BrowseInformation>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>ZSSysd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)$(ProjectName)d.dll</OutputFile>
+      <AdditionalLibraryDirectories>$(QTDIR)\lib;..\..\..\Lib\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+    <PostBuildEvent>
+      <Message>..\CopyOutput.bat Win32 $(OutDir) $(TargetName)</Message>
+      <Command>..\CopyOutput.bat Win32 $(OutDir) $(TargetName)</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <AdditionalIncludeDirectories>..\..\..\Include;$(QTDIR)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;_ZSTRACE;ZSIPCDLL_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <MinimalRebuild>false</MinimalRebuild>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
+      <BrowseInformation>true</BrowseInformation>
+      <BrowseInformationFile>$(IntDir)</BrowseInformationFile>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>ZSSys.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(QTDIR)\lib;..\..\..\Lib\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <LinkTimeCodeGeneration>
+      </LinkTimeCodeGeneration>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+    <PostBuildEvent>
+      <Message>..\CopyOutput.bat Win32 $(OutDir) $(TargetName)</Message>
+      <Command>..\CopyOutput.bat Win32 $(OutDir) $(TargetName)</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\Source\ZSIpc\ZSIpcClient.cpp" />
+    <ClCompile Include="..\..\..\Source\ZSIpc\ZSIpcClientGateway.cpp" />
+    <ClCompile Include="..\..\..\Source\ZSIpc\ZSIpcDllMain.cpp" />
+    <ClCompile Include="..\..\..\Source\ZSIpc\ZSIpcInProcMsgServer.cpp" />
+    <ClCompile Include="..\..\..\Source\ZSIpc\ZSIpcInProcMsgSocket.cpp" />
+    <ClCompile Include="..\..\..\Source\ZSIpc\ZSIpcServer.cpp" />
+    <ClCompile Include="..\..\..\Source\ZSIpc\ZSIpcServerGateway.cpp" />
+    <ClCompile Include="..\..\..\Source\ZSIpc\ZSIpcServerWrapper.cpp" />
+    <ClCompile Include="..\..\..\Source\ZSIpc\ZSIpcServerWrapperInProcMsg.cpp" />
+    <ClCompile Include="..\..\..\Source\ZSIpc\ZSIpcServerWrapperShm.cpp" />
+    <ClCompile Include="..\..\..\Source\ZSIpc\ZSIpcServerWrapperTcp.cpp" />
+    <ClCompile Include="..\..\..\Source\ZSIpc\ZSIpcSocketWrapper.cpp" />
+    <ClCompile Include="..\..\..\Source\ZSIpc\ZSIpcSocketWrapperInProcMsg.cpp" />
+    <ClCompile Include="..\..\..\Source\ZSIpc\ZSIpcSocketWrapperShm.cpp" />
+    <ClCompile Include="..\..\..\Source\ZSIpc\ZSIpcSocketWrapperTcp.cpp" />
+    <ClCompile Include="..\..\..\Source\ZSIpc\ZSIpcSrvCltBaseGateway.cpp" />
+    <ClCompile Include="..\..\..\Source\ZSIpc\ZSIpcSrvCltMsg.cpp" />
+    <ClCompile Include="..\..\..\Tmp\Moc\ZSIpc\Win32\Debug\moc_ZSIpcClient.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\ZSIpc\Win32\Debug\moc_ZSIpcClientGateway.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\ZSIpc\Win32\Debug\moc_ZSIpcInProcMsgServer.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\ZSIpc\Win32\Debug\moc_ZSIpcInProcMsgSocket.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\ZSIpc\Win32\Debug\moc_ZSIpcServer.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\ZSIpc\Win32\Debug\moc_ZSIpcServerGateway.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\ZSIpc\Win32\Debug\moc_ZSIpcServerWrapper.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\ZSIpc\Win32\Debug\moc_ZSIpcServerWrapperInProcMsg.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\ZSIpc\Win32\Debug\moc_ZSIpcServerWrapperShm.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\ZSIpc\Win32\Debug\moc_ZSIpcServerWrapperTcp.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\ZSIpc\Win32\Debug\moc_ZSIpcSocketWrapper.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\ZSIpc\Win32\Debug\moc_ZSIpcSocketWrapperInProcMsg.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\ZSIpc\Win32\Debug\moc_ZSIpcSocketWrapperShm.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\ZSIpc\Win32\Debug\moc_ZSIpcSocketWrapperTcp.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\ZSIpc\Win32\Debug\moc_ZSIpcSrvCltBaseGateway.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\ZSIpc\Win32\Release\moc_ZSIpcClient.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\ZSIpc\Win32\Release\moc_ZSIpcClientGateway.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\ZSIpc\Win32\Release\moc_ZSIpcInProcMsgServer.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\ZSIpc\Win32\Release\moc_ZSIpcInProcMsgSocket.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\ZSIpc\Win32\Release\moc_ZSIpcServer.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\ZSIpc\Win32\Release\moc_ZSIpcServerGateway.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\ZSIpc\Win32\Release\moc_ZSIpcServerWrapper.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\ZSIpc\Win32\Release\moc_ZSIpcServerWrapperInProcMsg.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\ZSIpc\Win32\Release\moc_ZSIpcServerWrapperShm.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\ZSIpc\Win32\Release\moc_ZSIpcServerWrapperTcp.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\ZSIpc\Win32\Release\moc_ZSIpcSocketWrapper.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\ZSIpc\Win32\Release\moc_ZSIpcSocketWrapperInProcMsg.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\ZSIpc\Win32\Release\moc_ZSIpcSocketWrapperShm.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\ZSIpc\Win32\Release\moc_ZSIpcSocketWrapperTcp.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\ZSIpc\Win32\Release\moc_ZSIpcSrvCltBaseGateway.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\..\Include\ZSIpc\ZSIpcClient.h">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\ZSIpc\ZSIpcClientGateway.h">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+    <ClInclude Include="..\..\..\Include\ZSIpc\ZSIpcDllMain.h" />
+    <CustomBuild Include="..\..\..\Include\ZSIpc\ZSIpcInProcMsgServer.h">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\ZSIpc\ZSIpcInProcMsgSocket.h">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\ZSIpc\ZSIpcServer.h">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\ZSIpc\ZSIpcServerGateway.h">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\ZSIpc\ZSIpcServerWrapper.h">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\ZSIpc\ZSIpcServerWrapperInProcMsg.h">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\ZSIpc\ZSIpcServerWrapperShm.h">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\ZSIpc\ZSIpcServerWrapperTcp.h">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\ZSIpc\ZSIpcSocketWrapper.h">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\ZSIpc\ZSIpcSocketWrapperInProcMsg.h">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\ZSIpc\ZSIpcSocketWrapperShm.h">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\ZSIpc\ZSIpcSocketWrapperTcp.h">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\ZSIpc\ZSIpcSrvCltBaseGateway.h">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+    <ClInclude Include="..\..\..\Include\ZSIpc\ZSIpcSrvCltMsg.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ZSSys\ZSSys_9.0.vcxproj">
+      <Project>{ea947c05-2dce-4908-aa0c-dedd7d8c360a}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

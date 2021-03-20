@@ -1,0 +1,82 @@
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ZSAppSNMPExplorer", "ZSAppSNMPExplorer_8.0.vcproj", "{562E4135-26C0-46CC-8E71-317D6D03CEDB}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ZSSNMP", "..\..\..\ZSSNMP\Make\Windows\ZSSNMP_8.0.vcproj", "{C9D5A314-59B7-4C39-B0C3-311C131EEB06}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+	ProjectSection(ProjectDependencies) = postProject
+		{AB697890-8577-4DFB-9328-F6988325FB60} = {AB697890-8577-4DFB-9328-F6988325FB60}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ZSTrace", "..\..\..\ZSTrace\Make\Windows\ZSTrace_8.0.vcproj", "{AB697890-8577-4DFB-9328-F6988325FB60}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+	ProjectSection(ProjectDependencies) = postProject
+		{8D778948-9C48-4E3B-83F4-9F630F6215A5} = {8D778948-9C48-4E3B-83F4-9F630F6215A5}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ZSIpc", "..\..\..\ZSIpc\Make\Windows\ZSIpc_8.0.vcproj", "{8D778948-9C48-4E3B-83F4-9F630F6215A5}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+	ProjectSection(ProjectDependencies) = postProject
+		{AB0FAF9C-5813-4296-9BCB-F63232FCB23E} = {AB0FAF9C-5813-4296-9BCB-F63232FCB23E}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ZSSys", "..\..\..\ZSSys\Make\Windows\ZSSys_8.0.vcproj", "{AB0FAF9C-5813-4296-9BCB-F63232FCB23E}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "ZSAppSNMPExplorerSetup", "ZSAppSNMPExplorerSetup_8.0.vdproj", "{68866BBE-7867-4D92-9F7D-A49099D90B91}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{562E4135-26C0-46CC-8E71-317D6D03CEDB}.Debug|Win32.ActiveCfg = Debug|Win32
+		{562E4135-26C0-46CC-8E71-317D6D03CEDB}.Debug|Win32.Build.0 = Debug|Win32
+		{562E4135-26C0-46CC-8E71-317D6D03CEDB}.Release|Win32.ActiveCfg = Release|Win32
+		{562E4135-26C0-46CC-8E71-317D6D03CEDB}.Release|Win32.Build.0 = Release|Win32
+		{C9D5A314-59B7-4C39-B0C3-311C131EEB06}.Debug|Win32.ActiveCfg = Debug|Win32
+		{C9D5A314-59B7-4C39-B0C3-311C131EEB06}.Debug|Win32.Build.0 = Debug|Win32
+		{C9D5A314-59B7-4C39-B0C3-311C131EEB06}.Release|Win32.ActiveCfg = Release|Win32
+		{C9D5A314-59B7-4C39-B0C3-311C131EEB06}.Release|Win32.Build.0 = Release|Win32
+		{AB697890-8577-4DFB-9328-F6988325FB60}.Debug|Win32.ActiveCfg = Debug|Win32
+		{AB697890-8577-4DFB-9328-F6988325FB60}.Debug|Win32.Build.0 = Debug|Win32
+		{AB697890-8577-4DFB-9328-F6988325FB60}.Release|Win32.ActiveCfg = Release|Win32
+		{AB697890-8577-4DFB-9328-F6988325FB60}.Release|Win32.Build.0 = Release|Win32
+		{8D778948-9C48-4E3B-83F4-9F630F6215A5}.Debug|Win32.ActiveCfg = Debug|Win32
+		{8D778948-9C48-4E3B-83F4-9F630F6215A5}.Debug|Win32.Build.0 = Debug|Win32
+		{8D778948-9C48-4E3B-83F4-9F630F6215A5}.Release|Win32.ActiveCfg = Release|Win32
+		{8D778948-9C48-4E3B-83F4-9F630F6215A5}.Release|Win32.Build.0 = Release|Win32
+		{AB0FAF9C-5813-4296-9BCB-F63232FCB23E}.Debug|Win32.ActiveCfg = Debug|Win32
+		{AB0FAF9C-5813-4296-9BCB-F63232FCB23E}.Debug|Win32.Build.0 = Debug|Win32
+		{AB0FAF9C-5813-4296-9BCB-F63232FCB23E}.Release|Win32.ActiveCfg = Release|Win32
+		{AB0FAF9C-5813-4296-9BCB-F63232FCB23E}.Release|Win32.Build.0 = Release|Win32
+		{68866BBE-7867-4D92-9F7D-A49099D90B91}.Debug|Win32.ActiveCfg = Debug
+		{68866BBE-7867-4D92-9F7D-A49099D90B91}.Debug|Win32.Build.0 = Debug
+		{68866BBE-7867-4D92-9F7D-A49099D90B91}.Release|Win32.ActiveCfg = Release
+		{68866BBE-7867-4D92-9F7D-A49099D90B91}.Release|Win32.Build.0 = Release
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

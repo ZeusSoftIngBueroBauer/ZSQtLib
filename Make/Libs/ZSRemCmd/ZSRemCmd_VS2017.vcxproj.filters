@@ -1,0 +1,292 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{B282602D-3637-4ea0-AD3C-83718E2DF981}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{78A07175-575C-4234-A0E5-F5FB38CD8456}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{4E7942DA-03FB-4235-849B-08EDF428DCE8}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
+    </Filter>
+    <Filter Include="Generated Files">
+      <UniqueIdentifier>{ccb0047a-debe-40e6-a7ae-6fbe086a07ec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2015">
+      <UniqueIdentifier>{d0514fc1-6e7d-4458-bb0a-ace7973c6f9c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2017">
+      <UniqueIdentifier>{096caedf-0205-4211-bad0-2dad68e92a5d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2017\Win32">
+      <UniqueIdentifier>{7341a3bb-69a8-4999-916d-ed6f0263575f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2017\Win32\Debug">
+      <UniqueIdentifier>{34f22edd-356e-45e0-b777-cd502fbb5d57}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2017\Win32\Release">
+      <UniqueIdentifier>{f7df84df-e719-4dd1-8312-714baafb88e9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2017\x64">
+      <UniqueIdentifier>{72d49bc8-83f5-4353-8472-63aa63c48a13}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2017\x64\Debug">
+      <UniqueIdentifier>{6322c144-54a9-4c71-983b-7ab3c96755b0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2017\x64\Release">
+      <UniqueIdentifier>{c1a79f36-20ee-4402-99e3-c293f9a9805f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2015\Win32">
+      <UniqueIdentifier>{a429184d-5e37-4e1c-a303-b1243790614d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2015\x64">
+      <UniqueIdentifier>{8a52de51-77bd-4216-a181-0cb151e1d513}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2015\x64\Debug">
+      <UniqueIdentifier>{e2a5fed2-b5d5-4fa5-a2eb-440e2b53db9a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2015\x64\Release">
+      <UniqueIdentifier>{4fd1215d-a496-457b-8758-cd24e051237e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2015\Win32\Debug">
+      <UniqueIdentifier>{d041d5e1-f414-4f05-97e8-8ba4a172b9df}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2015\Win32\Release">
+      <UniqueIdentifier>{78fcf986-80d5-49e9-bdd5-3cfa4cb464c5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2019">
+      <UniqueIdentifier>{146c2e94-633a-4521-83d1-21f3423f6745}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2019\x64">
+      <UniqueIdentifier>{c77a8733-c0f2-400c-9240-5a8ade0992b0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2019\x64\Debug">
+      <UniqueIdentifier>{9952c25e-ec7d-436d-a13c-8027a007bbb1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2019\x64\Release">
+      <UniqueIdentifier>{4577101c-461d-4e11-83d1-5bfddf84bb16}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2019\Win32">
+      <UniqueIdentifier>{1b92616a-1bd9-4b08-a34e-2c864d532978}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2019\Win32\Debug">
+      <UniqueIdentifier>{8752eb8c-5f55-4b82-9949-15802face7b6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2019\Win32\Release">
+      <UniqueIdentifier>{1f5de464-019b-4c34-964b-7ca33bd1aa5f}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\Source\Libs\ZSRemCmd\ZSRemCmdClient.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSRemCmd\ZSRemCmdDllMain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSRemCmd\ZSRemCmdErrNumbers.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSRemCmd\ZSRemCmdMsg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSRemCmd\ZSRemCmdObj.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSRemCmd\ZSRemCmdObjPool.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSRemCmd\ZSRemCmdParser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSRemCmd\ZSRemCmdServer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSRemCmd\ZSRemCmdsSyst.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSRemCmd\ZSRemCmdSubSysNode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSRemCmd\Debug_msvc2015\x64\moc_ZSRemCmdClient.cpp">
+      <Filter>Generated Files\msvc2015\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSRemCmd\Debug_msvc2015\x64\moc_ZSRemCmdObj.cpp">
+      <Filter>Generated Files\msvc2015\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSRemCmd\Debug_msvc2015\x64\moc_ZSRemCmdServer.cpp">
+      <Filter>Generated Files\msvc2015\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSRemCmd\Debug_msvc2015\x64\moc_ZSRemCmdsSyst.cpp">
+      <Filter>Generated Files\msvc2015\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSRemCmd\Debug_msvc2015\x64\moc_ZSRemCmdSubSysNode.cpp">
+      <Filter>Generated Files\msvc2015\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSRemCmd\Release_msvc2015\x64\moc_ZSRemCmdClient.cpp">
+      <Filter>Generated Files\msvc2015\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSRemCmd\Release_msvc2015\x64\moc_ZSRemCmdObj.cpp">
+      <Filter>Generated Files\msvc2015\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSRemCmd\Release_msvc2015\x64\moc_ZSRemCmdServer.cpp">
+      <Filter>Generated Files\msvc2015\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSRemCmd\Release_msvc2015\x64\moc_ZSRemCmdsSyst.cpp">
+      <Filter>Generated Files\msvc2015\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSRemCmd\Release_msvc2015\x64\moc_ZSRemCmdSubSysNode.cpp">
+      <Filter>Generated Files\msvc2015\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSRemCmd\Debug_msvc2015\Win32\moc_ZSRemCmdClient.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSRemCmd\Debug_msvc2015\Win32\moc_ZSRemCmdObj.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSRemCmd\Debug_msvc2015\Win32\moc_ZSRemCmdServer.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSRemCmd\Debug_msvc2015\Win32\moc_ZSRemCmdsSyst.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSRemCmd\Debug_msvc2015\Win32\moc_ZSRemCmdSubSysNode.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSRemCmd\Release_msvc2015\Win32\moc_ZSRemCmdClient.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSRemCmd\Release_msvc2015\Win32\moc_ZSRemCmdObj.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSRemCmd\Release_msvc2015\Win32\moc_ZSRemCmdServer.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSRemCmd\Release_msvc2015\Win32\moc_ZSRemCmdsSyst.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSRemCmd\Release_msvc2015\Win32\moc_ZSRemCmdSubSysNode.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSRemCmd\Debug_msvc2017\Win32\moc_ZSRemCmdClient.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSRemCmd\Debug_msvc2017\Win32\moc_ZSRemCmdObj.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSRemCmd\Debug_msvc2017\Win32\moc_ZSRemCmdServer.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSRemCmd\Debug_msvc2017\Win32\moc_ZSRemCmdsSyst.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSRemCmd\Debug_msvc2017\Win32\moc_ZSRemCmdSubSysNode.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSRemCmd\Release_msvc2017\Win32\moc_ZSRemCmdClient.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSRemCmd\Release_msvc2017\Win32\moc_ZSRemCmdObj.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSRemCmd\Release_msvc2017\Win32\moc_ZSRemCmdServer.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSRemCmd\Release_msvc2017\Win32\moc_ZSRemCmdsSyst.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSRemCmd\Release_msvc2017\Win32\moc_ZSRemCmdSubSysNode.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSRemCmd\Debug_msvc2017\x64\moc_ZSRemCmdClient.cpp">
+      <Filter>Generated Files\msvc2017\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSRemCmd\Debug_msvc2017\x64\moc_ZSRemCmdObj.cpp">
+      <Filter>Generated Files\msvc2017\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSRemCmd\Debug_msvc2017\x64\moc_ZSRemCmdServer.cpp">
+      <Filter>Generated Files\msvc2017\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSRemCmd\Debug_msvc2017\x64\moc_ZSRemCmdsSyst.cpp">
+      <Filter>Generated Files\msvc2017\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSRemCmd\Debug_msvc2017\x64\moc_ZSRemCmdSubSysNode.cpp">
+      <Filter>Generated Files\msvc2017\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSRemCmd\Release_msvc2017\x64\moc_ZSRemCmdClient.cpp">
+      <Filter>Generated Files\msvc2017\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSRemCmd\Release_msvc2017\x64\moc_ZSRemCmdObj.cpp">
+      <Filter>Generated Files\msvc2017\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSRemCmd\Release_msvc2017\x64\moc_ZSRemCmdServer.cpp">
+      <Filter>Generated Files\msvc2017\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSRemCmd\Release_msvc2017\x64\moc_ZSRemCmdsSyst.cpp">
+      <Filter>Generated Files\msvc2017\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSRemCmd\Release_msvc2017\x64\moc_ZSRemCmdSubSysNode.cpp">
+      <Filter>Generated Files\msvc2017\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSRemCmd\Debug_msvc2019\x64\moc_ZSRemCmdClient.cpp">
+      <Filter>Generated Files\msvc2019\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSRemCmd\Debug_msvc2019\x64\moc_ZSRemCmdObj.cpp">
+      <Filter>Generated Files\msvc2019\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSRemCmd\Debug_msvc2019\x64\moc_ZSRemCmdServer.cpp">
+      <Filter>Generated Files\msvc2019\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSRemCmd\Debug_msvc2019\x64\moc_ZSRemCmdsSyst.cpp">
+      <Filter>Generated Files\msvc2019\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSRemCmd\Debug_msvc2019\x64\moc_ZSRemCmdSubSysNode.cpp">
+      <Filter>Generated Files\msvc2019\x64\Debug</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\Include\Libs\ZSRemCmd\ZSRemCmdDllMain.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Libs\ZSRemCmd\ZSRemCmdErrNumbers.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Libs\ZSRemCmd\ZSRemCmdMsg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Libs\ZSRemCmd\ZSRemCmdObjPool.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Libs\ZSRemCmd\ZSRemCmdParser.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Resource Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="ZSRemCmd.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\..\Include\Libs\ZSRemCmd\ZSRemCmdClient.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\Libs\ZSRemCmd\ZSRemCmdObj.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\Libs\ZSRemCmd\ZSRemCmdServer.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\Libs\ZSRemCmd\ZSRemCmdsSyst.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\Libs\ZSRemCmd\ZSRemCmdSubSysNode.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+  </ItemGroup>
+</Project>

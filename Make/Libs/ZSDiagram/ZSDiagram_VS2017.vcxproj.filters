@@ -1,0 +1,520 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx</Extensions>
+    </Filter>
+    <Filter Include="Generated Files">
+      <UniqueIdentifier>{c3c9472b-3d38-4212-937f-a54eeca3d601}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2015">
+      <UniqueIdentifier>{aaf2b5af-dffd-479b-a3fa-939f1bb4cf1f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2017">
+      <UniqueIdentifier>{054869ae-ef7b-4ebf-8bca-b802d6fa219e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2017\Win32">
+      <UniqueIdentifier>{847595bb-7a64-4f32-9231-8697b855d9fa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2017\Win32\Debug">
+      <UniqueIdentifier>{b2948238-acdb-4bb8-8cf2-27878b4e3fca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2017\Win32\Release">
+      <UniqueIdentifier>{f376a9a1-8a19-4e7f-ace4-036292efaea4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2017\x64">
+      <UniqueIdentifier>{631d1f0d-a442-4b0e-a47d-fdc35e487f92}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2017\x64\Debug">
+      <UniqueIdentifier>{2e85e0aa-044e-481c-9cb2-e628674a41c3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2017\x64\Release">
+      <UniqueIdentifier>{01889ad5-2f1a-486c-80ca-589f129a1ad2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2015\Win32">
+      <UniqueIdentifier>{ba586d3e-36b8-4f9e-be55-1314ed49a20d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2015\x64">
+      <UniqueIdentifier>{e4af3367-7dbc-427e-9c36-b32d279b3350}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2015\x64\Debug">
+      <UniqueIdentifier>{a99343f3-828c-4ed9-8990-919c6f22a991}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2015\x64\Release">
+      <UniqueIdentifier>{ff082161-c3e4-43df-9094-27e55dfaecc5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2015\Win32\Debug">
+      <UniqueIdentifier>{b91958ce-ab43-41ac-9d33-29a44412854f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2015\Win32\Release">
+      <UniqueIdentifier>{d1093a8a-2cab-4249-b296-cdcaf18ea791}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2019">
+      <UniqueIdentifier>{63dbf404-81a4-479e-8732-9dc3990281f0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2019\x64">
+      <UniqueIdentifier>{534916b9-0967-4632-a7c4-b616032519e0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2019\x64\Debug">
+      <UniqueIdentifier>{9494094c-ea6b-4659-a82a-318f70fd6a0f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2019\x64\Release">
+      <UniqueIdentifier>{5a2f3c78-4ea4-4fd3-bd35-84a813708216}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2019\Win32">
+      <UniqueIdentifier>{224f02ea-e91c-47ff-b445-affefdf1fb5d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2019\Win32\Debug">
+      <UniqueIdentifier>{e0388e2e-4aa4-4367-89ce-4cbb09958a19}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2019\Win32\Release">
+      <UniqueIdentifier>{9384e26e-cb46-440f-b322-495b9a23551e}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\Source\Libs\ZSDiagram\ZSDiagObj.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSDiagram\ZSDiagObjAxisLabel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSDiagram\ZSDiagObjCurve.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSDiagram\ZSDiagObjErrInfo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSDiagram\ZSDiagObjGrid.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSDiagram\ZSDiagObjHistogram.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSDiagram\ZSDiagObjLabel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSDiagram\ZSDiagObjLine.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSDiagram\ZSDiagObjMarker.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSDiagram\ZSDiagObjProgressBar.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSDiagram\ZSDiagObjTable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSDiagram\ZSDiagObjValueProvider.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSDiagram\ZSDiagram.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSDiagram\ZSDiagramAux.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSDiagram\ZSDiagramDllMain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSDiagram\ZSDiagramFrameStyles.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSDiagram\ZSDiagramImageStyles.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSDiagram\ZSDiagramLabelStyles.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSDiagram\ZSDiagramLineStyles.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSDiagram\ZSDiagramMsg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSDiagram\ZSDiagramToolTipStyles.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSDiagram\ZSDiagScale.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSDiagram\ZSDiagTrace.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSDiagram\ZSDiagObjRect.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDiagram\Debug_msvc2017\x64\emb_ZSDiagram.cpp">
+      <Filter>Generated Files\msvc2017\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDiagram\Debug_msvc2017\x64\moc_ZSDiagObj.cpp">
+      <Filter>Generated Files\msvc2017\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDiagram\Debug_msvc2017\x64\moc_ZSDiagObjErrInfo.cpp">
+      <Filter>Generated Files\msvc2017\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDiagram\Debug_msvc2017\x64\moc_ZSDiagObjMarker.cpp">
+      <Filter>Generated Files\msvc2017\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDiagram\Debug_msvc2017\x64\moc_ZSDiagObjProgressBar.cpp">
+      <Filter>Generated Files\msvc2017\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDiagram\Debug_msvc2017\x64\moc_ZSDiagObjTable.cpp">
+      <Filter>Generated Files\msvc2017\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDiagram\Debug_msvc2017\x64\moc_ZSDiagObjValueProvider.cpp">
+      <Filter>Generated Files\msvc2017\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDiagram\Debug_msvc2017\x64\moc_ZSDiagram.cpp">
+      <Filter>Generated Files\msvc2017\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDiagram\Debug_msvc2017\x64\moc_ZSDiagScale.cpp">
+      <Filter>Generated Files\msvc2017\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDiagram\Debug_msvc2017\x64\moc_ZSDiagTrace.cpp">
+      <Filter>Generated Files\msvc2017\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDiagram\Release_msvc2015\x64\emb_ZSDiagram.cpp">
+      <Filter>Generated Files\msvc2015\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDiagram\Release_msvc2015\x64\moc_ZSDiagObj.cpp">
+      <Filter>Generated Files\msvc2015\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDiagram\Release_msvc2015\x64\moc_ZSDiagObjErrInfo.cpp">
+      <Filter>Generated Files\msvc2015\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDiagram\Release_msvc2015\x64\moc_ZSDiagObjMarker.cpp">
+      <Filter>Generated Files\msvc2015\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDiagram\Release_msvc2015\x64\moc_ZSDiagObjProgressBar.cpp">
+      <Filter>Generated Files\msvc2015\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDiagram\Release_msvc2015\x64\moc_ZSDiagObjTable.cpp">
+      <Filter>Generated Files\msvc2015\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDiagram\Release_msvc2015\x64\moc_ZSDiagObjValueProvider.cpp">
+      <Filter>Generated Files\msvc2015\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDiagram\Release_msvc2015\x64\moc_ZSDiagram.cpp">
+      <Filter>Generated Files\msvc2015\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDiagram\Release_msvc2015\x64\moc_ZSDiagScale.cpp">
+      <Filter>Generated Files\msvc2015\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDiagram\Release_msvc2015\x64\moc_ZSDiagTrace.cpp">
+      <Filter>Generated Files\msvc2015\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDiagram\Debug_msvc2015\x64\emb_ZSDiagram.cpp">
+      <Filter>Generated Files\msvc2015\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDiagram\Debug_msvc2015\x64\moc_ZSDiagObj.cpp">
+      <Filter>Generated Files\msvc2015\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDiagram\Debug_msvc2015\x64\moc_ZSDiagObjErrInfo.cpp">
+      <Filter>Generated Files\msvc2015\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDiagram\Debug_msvc2015\x64\moc_ZSDiagObjMarker.cpp">
+      <Filter>Generated Files\msvc2015\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDiagram\Debug_msvc2015\x64\moc_ZSDiagObjProgressBar.cpp">
+      <Filter>Generated Files\msvc2015\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDiagram\Debug_msvc2015\x64\moc_ZSDiagObjTable.cpp">
+      <Filter>Generated Files\msvc2015\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDiagram\Debug_msvc2015\x64\moc_ZSDiagObjValueProvider.cpp">
+      <Filter>Generated Files\msvc2015\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDiagram\Debug_msvc2015\x64\moc_ZSDiagram.cpp">
+      <Filter>Generated Files\msvc2015\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDiagram\Debug_msvc2015\x64\moc_ZSDiagScale.cpp">
+      <Filter>Generated Files\msvc2015\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDiagram\Debug_msvc2015\x64\moc_ZSDiagTrace.cpp">
+      <Filter>Generated Files\msvc2015\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDiagram\Release_msvc2017\Win32\emb_ZSDiagram.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDiagram\Release_msvc2017\Win32\moc_ZSDiagObj.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDiagram\Release_msvc2017\Win32\moc_ZSDiagObjErrInfo.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDiagram\Release_msvc2017\Win32\moc_ZSDiagObjMarker.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDiagram\Release_msvc2017\Win32\moc_ZSDiagObjProgressBar.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDiagram\Release_msvc2017\Win32\moc_ZSDiagObjTable.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDiagram\Release_msvc2017\Win32\moc_ZSDiagObjValueProvider.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDiagram\Release_msvc2017\Win32\moc_ZSDiagram.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDiagram\Release_msvc2017\Win32\moc_ZSDiagScale.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDiagram\Release_msvc2017\Win32\moc_ZSDiagTrace.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDiagram\Debug_msvc2017\Win32\emb_ZSDiagram.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDiagram\Debug_msvc2017\Win32\moc_ZSDiagObj.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDiagram\Debug_msvc2017\Win32\moc_ZSDiagObjErrInfo.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDiagram\Debug_msvc2017\Win32\moc_ZSDiagObjMarker.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDiagram\Debug_msvc2017\Win32\moc_ZSDiagObjProgressBar.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDiagram\Debug_msvc2017\Win32\moc_ZSDiagObjTable.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDiagram\Debug_msvc2017\Win32\moc_ZSDiagObjValueProvider.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDiagram\Debug_msvc2017\Win32\moc_ZSDiagram.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDiagram\Debug_msvc2017\Win32\moc_ZSDiagScale.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDiagram\Debug_msvc2017\Win32\moc_ZSDiagTrace.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDiagram\Release_msvc2015\Win32\emb_ZSDiagram.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDiagram\Release_msvc2015\Win32\moc_ZSDiagObj.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDiagram\Release_msvc2015\Win32\moc_ZSDiagObjErrInfo.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDiagram\Release_msvc2015\Win32\moc_ZSDiagObjMarker.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDiagram\Release_msvc2015\Win32\moc_ZSDiagObjProgressBar.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDiagram\Release_msvc2015\Win32\moc_ZSDiagObjTable.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDiagram\Release_msvc2015\Win32\moc_ZSDiagObjValueProvider.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDiagram\Release_msvc2015\Win32\moc_ZSDiagram.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDiagram\Release_msvc2015\Win32\moc_ZSDiagScale.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDiagram\Release_msvc2015\Win32\moc_ZSDiagTrace.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDiagram\Debug_msvc2015\Win32\emb_ZSDiagram.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDiagram\Debug_msvc2015\Win32\moc_ZSDiagObj.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDiagram\Debug_msvc2015\Win32\moc_ZSDiagObjErrInfo.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDiagram\Debug_msvc2015\Win32\moc_ZSDiagObjMarker.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDiagram\Debug_msvc2015\Win32\moc_ZSDiagObjProgressBar.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDiagram\Debug_msvc2015\Win32\moc_ZSDiagObjTable.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDiagram\Debug_msvc2015\Win32\moc_ZSDiagObjValueProvider.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDiagram\Debug_msvc2015\Win32\moc_ZSDiagram.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDiagram\Debug_msvc2015\Win32\moc_ZSDiagScale.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDiagram\Debug_msvc2015\Win32\moc_ZSDiagTrace.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDiagram\Release_msvc2017\x64\emb_ZSDiagram.cpp">
+      <Filter>Generated Files\msvc2017\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDiagram\Release_msvc2017\x64\moc_ZSDiagObj.cpp">
+      <Filter>Generated Files\msvc2017\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDiagram\Release_msvc2017\x64\moc_ZSDiagObjErrInfo.cpp">
+      <Filter>Generated Files\msvc2017\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDiagram\Release_msvc2017\x64\moc_ZSDiagObjMarker.cpp">
+      <Filter>Generated Files\msvc2017\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDiagram\Release_msvc2017\x64\moc_ZSDiagObjProgressBar.cpp">
+      <Filter>Generated Files\msvc2017\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDiagram\Release_msvc2017\x64\moc_ZSDiagObjTable.cpp">
+      <Filter>Generated Files\msvc2017\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDiagram\Release_msvc2017\x64\moc_ZSDiagObjValueProvider.cpp">
+      <Filter>Generated Files\msvc2017\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDiagram\Release_msvc2017\x64\moc_ZSDiagram.cpp">
+      <Filter>Generated Files\msvc2017\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDiagram\Release_msvc2017\x64\moc_ZSDiagScale.cpp">
+      <Filter>Generated Files\msvc2017\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDiagram\Release_msvc2017\x64\moc_ZSDiagTrace.cpp">
+      <Filter>Generated Files\msvc2017\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDiagram\Debug_msvc2019\x64\moc_ZSDiagObj.cpp">
+      <Filter>Generated Files\msvc2019\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDiagram\Debug_msvc2019\x64\moc_ZSDiagObjErrInfo.cpp">
+      <Filter>Generated Files\msvc2019\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDiagram\Debug_msvc2019\x64\moc_ZSDiagObjMarker.cpp">
+      <Filter>Generated Files\msvc2019\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDiagram\Debug_msvc2019\x64\moc_ZSDiagObjProgressBar.cpp">
+      <Filter>Generated Files\msvc2019\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDiagram\Debug_msvc2019\x64\moc_ZSDiagObjTable.cpp">
+      <Filter>Generated Files\msvc2019\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDiagram\Debug_msvc2019\x64\moc_ZSDiagObjValueProvider.cpp">
+      <Filter>Generated Files\msvc2019\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDiagram\Debug_msvc2019\x64\moc_ZSDiagram.cpp">
+      <Filter>Generated Files\msvc2019\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDiagram\Debug_msvc2019\x64\moc_ZSDiagScale.cpp">
+      <Filter>Generated Files\msvc2019\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDiagram\Debug_msvc2019\x64\moc_ZSDiagTrace.cpp">
+      <Filter>Generated Files\msvc2019\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDiagram\Debug_msvc2019\x64\emb_ZSDiagram.cpp">
+      <Filter>Generated Files\msvc2019\x64\Debug</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\Include\Libs\ZSDiagram\ZSDiagObjAxisLabel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Libs\ZSDiagram\ZSDiagObjCurve.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Libs\ZSDiagram\ZSDiagObjGrid.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Libs\ZSDiagram\ZSDiagObjHistogram.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Libs\ZSDiagram\ZSDiagObjLabel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Libs\ZSDiagram\ZSDiagObjLine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Libs\ZSDiagram\ZSDiagramAux.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Libs\ZSDiagram\ZSDiagramDllMain.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Libs\ZSDiagram\ZSDiagramFrameStyles.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Libs\ZSDiagram\ZSDiagramImageStyles.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Libs\ZSDiagram\ZSDiagramLabelStyles.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Libs\ZSDiagram\ZSDiagramLineStyles.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Libs\ZSDiagram\ZSDiagramMsg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Libs\ZSDiagram\ZSDiagramToolTipStyles.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Libs\ZSDiagram\ZSDiagObjRect.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\..\..\Images\ZSDiagram\SplitHCursorEditing.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\..\..\Images\ZSDiagram\SplitHCursorFocused.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\..\..\Images\ZSDiagram\SplitVCursorEditing.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\..\..\Images\ZSDiagram\SplitVCursorFocused.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\..\Include\Libs\ZSDiagram\ZSDiagObj.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\Libs\ZSDiagram\ZSDiagObjErrInfo.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\Libs\ZSDiagram\ZSDiagObjMarker.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\Libs\ZSDiagram\ZSDiagObjProgressBar.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\Libs\ZSDiagram\ZSDiagObjTable.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\Libs\ZSDiagram\ZSDiagObjValueProvider.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\Libs\ZSDiagram\ZSDiagram.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\Libs\ZSDiagram\ZSDiagScale.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\Libs\ZSDiagram\ZSDiagTrace.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Images\Libs\ZSDiagram\ZSDiagram.qrc">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+  </ItemGroup>
+</Project>

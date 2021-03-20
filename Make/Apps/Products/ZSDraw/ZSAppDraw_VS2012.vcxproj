@@ -1,0 +1,587 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectName>ZSAppDraw</ProjectName>
+    <ProjectGuid>{2E5D678D-B6B4-4DF7-AE94-14F332EAE177}</ProjectGuid>
+    <RootNamespace>ZSAppDraw</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v110</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v110</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v110</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v110</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>11.0.60315.1</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>..\..\..\..\..\Tmp\Out\Apps\Products\$(ProjectName)\$(Configuration)\$(Platform)\</OutDir>
+    <IntDir>..\..\..\..\..\Tmp\Int\Apps\Products\$(ProjectName)\$(Configuration)\$(Platform)\</IntDir>
+    <LinkIncremental>true</LinkIncremental>
+    <TargetName>$(ProjectName)d</TargetName>
+    <LibraryPath>$(QTDIR)\lib\$(Platform);..\..\..\..\..\lib\$(Platform);$(LibraryPath)</LibraryPath>
+    <IncludePath>$(QTDIR)\include;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>..\..\..\..\..\Tmp\Out\Apps\Products\$(ProjectName)\$(Configuration)\$(Platform)\</OutDir>
+    <IntDir>..\..\..\..\..\Tmp\Int\Apps\Products\$(ProjectName)\$(Configuration)\$(Platform)\</IntDir>
+    <TargetName>$(ProjectName)d</TargetName>
+    <LibraryPath>$(QTDIR)\lib\$(Platform);..\..\..\..\..\lib\$(Platform);$(LibraryPath)</LibraryPath>
+    <IncludePath>$(QTDIR)\include;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>..\..\..\..\..\Tmp\Out\Apps\Products\$(ProjectName)\$(Configuration)\$(Platform)\</OutDir>
+    <IntDir>..\..\..\..\..\Tmp\Int\Apps\Products\$(ProjectName)\$(Configuration)\$(Platform)\</IntDir>
+    <LinkIncremental>true</LinkIncremental>
+    <LibraryPath>$(QTDIR)\lib\$(Platform);..\..\..\..\..\lib\$(Platform);$(LibraryPath)</LibraryPath>
+    <IncludePath>$(QTDIR)\include;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>..\..\..\..\..\Tmp\Out\Apps\Products\$(ProjectName)\$(Configuration)\$(Platform)\</OutDir>
+    <IntDir>..\..\..\..\..\Tmp\Int\Apps\Products\$(ProjectName)\$(Configuration)\$(Platform)\</IntDir>
+    <LibraryPath>$(QTDIR)\lib\$(Platform);..\..\..\..\..\lib\$(Platform);$(LibraryPath)</LibraryPath>
+    <IncludePath>$(QTDIR)\include;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Midl>
+      <TypeLibraryName>.\Debug/ZSAppDraw.tlb</TypeLibraryName>
+      <HeaderFileName />
+    </Midl>
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <AdditionalIncludeDirectories>..\..\Include;..\..\..\..\..\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_ZSTRACE;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>false</StringPooling>
+      <MinimalRebuild>false</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <PrecompiledHeaderOutputFile>$(IntDir)$(TargetName).pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ProgramDataBaseFileName>$(IntDir)$(TargetName)_local.pdb</ProgramDataBaseFileName>
+      <BrowseInformation>true</BrowseInformation>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0407</Culture>
+    </ResourceCompile>
+    <Link>
+      <AdditionalDependencies>ZSSysd.lib;ZSSysGUId.lib;ZSTestd.lib;ZSTestGUId.lib;ZSIpcd.lib;ZSIpcGUId.lib;ZSTraced.lib;ZSTraceGUId.lib;ZSPhysVald.lib;ZSPhysValGUId.lib;ZSPhysSizesGeometryd.lib;ZSDrawd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)$(ProjectName)d.exe</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDatabaseFile>$(OutDir)$(TargetName).pdb</ProgramDatabaseFile>
+      <SubSystem>Windows</SubSystem>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention />
+      <TargetMachine>MachineX86</TargetMachine>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+      <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
+      <OptimizeReferences>false</OptimizeReferences>
+      <EnableCOMDATFolding>false</EnableCOMDATFolding>
+    </Link>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>$(OutDir)$(ProjectName).bsc</OutputFile>
+    </Bscmake>
+    <PostBuildEvent>
+      <Command>..\..\..\..\..\Make\Windows\CopyOutput.bat  $(Platform) $(OutDir) $(TargetName)</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Midl>
+      <TypeLibraryName>.\Debug/ZSAppDraw.tlb</TypeLibraryName>
+      <HeaderFileName>
+      </HeaderFileName>
+    </Midl>
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <AdditionalIncludeDirectories>..\..\Include;..\..\..\..\..\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_ZSTRACE;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <MinimalRebuild>false</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <PrecompiledHeaderOutputFile>.\Debug/ZSAppDraw.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>
+      </AssemblerListingLocation>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ProgramDataBaseFileName>$(IntDir)$(TargetName)_local.pdb</ProgramDataBaseFileName>
+      <BrowseInformation>true</BrowseInformation>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <FloatingPointExceptions>true</FloatingPointExceptions>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0407</Culture>
+    </ResourceCompile>
+    <Link>
+      <AdditionalDependencies>ZSSysd.lib;ZSSysGUId.lib;ZSTestd.lib;ZSTestGUId.lib;ZSIpcd.lib;ZSTraced.lib;ZSTraceGUId.lib;ZSPhysVald.lib;ZSPhysSizesGeometryd.lib;ZSDrawd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)$(ProjectName)d.exe</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDatabaseFile>$(OutDir)$(TargetName).pdb</ProgramDatabaseFile>
+      <SubSystem>Windows</SubSystem>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+      <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
+      <OptimizeReferences>false</OptimizeReferences>
+      <EnableCOMDATFolding>false</EnableCOMDATFolding>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+    </Link>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>$(OutDir)$(ProjectName).bsc</OutputFile>
+    </Bscmake>
+    <PostBuildEvent>
+      <Command>..\..\..\..\..\Make\Windows\CopyOutput.bat  $(Platform) $(OutDir) $(TargetName)</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Midl>
+      <TypeLibraryName>.\Release/ZSAppDraw.tlb</TypeLibraryName>
+      <HeaderFileName />
+    </Midl>
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <AdditionalIncludeDirectories>..\..\Include;..\..\..\..\..\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_ZSTRACE;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>false</StringPooling>
+      <MinimalRebuild>false</MinimalRebuild>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <PrecompiledHeaderOutputFile>$(IntDir)$(TargetName).pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ProgramDataBaseFileName>$(IntDir)$(TargetName)_local.pdb</ProgramDataBaseFileName>
+      <BrowseInformation>true</BrowseInformation>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0407</Culture>
+    </ResourceCompile>
+    <Link>
+      <AdditionalDependencies>ZSSys.lib;ZSSysGUI.lib;ZSTest.lib;ZSTestGUI.lib;ZSIpc.lib;ZSIpcGUI.lib;ZSTrace.lib;ZSTraceGUI.lib;ZSPhysVal.lib;ZSPhysValGUI.lib;ZSPhysSizesGeometry.lib;ZSDraw.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)$(ProjectName).exe</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDatabaseFile>$(OutDir)$(TargetName).pdb</ProgramDatabaseFile>
+      <SubSystem>Windows</SubSystem>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention />
+      <TargetMachine>MachineX86</TargetMachine>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+      <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
+      <OptimizeReferences>false</OptimizeReferences>
+      <EnableCOMDATFolding>false</EnableCOMDATFolding>
+    </Link>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>$(OutDir)$(ProjectName).bsc</OutputFile>
+    </Bscmake>
+    <PostBuildEvent>
+      <Command>..\..\..\..\..\Make\Windows\CopyOutput.bat  $(Platform) $(OutDir) $(TargetName)</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Midl>
+      <TypeLibraryName>.\Release/ZSAppDraw.tlb</TypeLibraryName>
+      <HeaderFileName>
+      </HeaderFileName>
+    </Midl>
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <AdditionalIncludeDirectories>..\..\Include;..\..\..\..\..\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_ZSTRACE;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <MinimalRebuild>false</MinimalRebuild>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
+      <PrecompiledHeaderOutputFile>.\Release/ZSAppDraw.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>
+      </AssemblerListingLocation>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ProgramDataBaseFileName>$(IntDir)$(TargetName)_local.pdb</ProgramDataBaseFileName>
+      <BrowseInformation>true</BrowseInformation>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <FloatingPointExceptions>true</FloatingPointExceptions>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0407</Culture>
+    </ResourceCompile>
+    <Link>
+      <AdditionalDependencies>ZSSys.lib;ZSSysGUI.lib;ZSTest.lib;ZSTestGUI.lib;ZSIpc.lib;ZSTrace.lib;ZSTraceGUI.lib;ZSPhysVal.lib;ZSPhysSizesGeometry.lib;ZSDraw.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)$(ProjectName).exe</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDatabaseFile>$(OutDir)$(TargetName).pdb</ProgramDatabaseFile>
+      <SubSystem>Windows</SubSystem>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+      <OptimizeReferences>false</OptimizeReferences>
+      <EnableCOMDATFolding>false</EnableCOMDATFolding>
+      <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+    </Link>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>$(OutDir)$(ProjectName).bsc</OutputFile>
+    </Bscmake>
+    <PostBuildEvent>
+      <Command>..\..\..\..\..\Make\Windows\CopyOutput.bat  $(Platform) $(OutDir) $(TargetName)</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\..\..\Tmp\Moc\Apps\Products\ZSAppDraw\Win32\Debug\emb_ZSAppDraw.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Tmp\Moc\Apps\Products\ZSAppDraw\Win32\Debug\moc_App.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Tmp\Moc\Apps\Products\ZSAppDraw\Win32\Debug\moc_MainWindow.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Tmp\Moc\Apps\Products\ZSAppDraw\Win32\Debug\moc_Test.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Tmp\Moc\Apps\Products\ZSAppDraw\Win32\Release\emb_ZSAppDraw.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Tmp\Moc\Apps\Products\ZSAppDraw\Win32\Release\moc_App.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Tmp\Moc\Apps\Products\ZSAppDraw\Win32\Release\moc_MainWindow.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Tmp\Moc\Apps\Products\ZSAppDraw\Win32\Release\moc_Test.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Tmp\Moc\Apps\Products\ZSAppDraw\x64\Debug\emb_ZSAppDraw.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Tmp\Moc\Apps\Products\ZSAppDraw\x64\Debug\moc_App.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Tmp\Moc\Apps\Products\ZSAppDraw\x64\Debug\moc_MainWindow.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Tmp\Moc\Apps\Products\ZSAppDraw\x64\Debug\moc_Test.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Tmp\Moc\Apps\Products\ZSAppDraw\x64\Release\emb_ZSAppDraw.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Tmp\Moc\Apps\Products\ZSAppDraw\x64\Release\moc_App.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Tmp\Moc\Apps\Products\ZSAppDraw\x64\Release\moc_MainWindow.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Tmp\Moc\Apps\Products\ZSAppDraw\x64\Release\moc_Test.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\App.cpp" />
+    <ClCompile Include="..\..\Source\Main.cpp" />
+    <ClCompile Include="..\..\Source\MainWindow.cpp" />
+    <ClCompile Include="..\..\Source\Test.cpp" />
+    <ClCompile Include="..\..\Source\TestStepElectricity.cpp" />
+    <ClCompile Include="..\..\Source\TestStepElectricityCapacitors.cpp" />
+    <ClCompile Include="..\..\Source\TestStepElectricityInductors.cpp" />
+    <ClCompile Include="..\..\Source\TestStepElectricityResistors.cpp" />
+    <ClCompile Include="..\..\Source\TestStepElectricitySwitches.cpp" />
+    <ClCompile Include="..\..\Source\TestStepElectricityTransistors.cpp" />
+    <ClCompile Include="..\..\Source\TestStepStandardShapes.cpp" />
+    <ClCompile Include="..\..\Source\TestStepStandardShapesConnections.cpp" />
+    <ClCompile Include="..\..\Source\TestStepStandardShapesEllipses.cpp" />
+    <ClCompile Include="..\..\Source\TestStepStandardShapesGroups.cpp" />
+    <ClCompile Include="..\..\Source\TestStepStandardShapesImages.cpp" />
+    <ClCompile Include="..\..\Source\TestStepStandardShapesLines.cpp" />
+    <ClCompile Include="..\..\Source\TestStepStandardShapesPoints.cpp" />
+    <ClCompile Include="..\..\Source\TestStepStandardShapesPolygons.cpp" />
+    <ClCompile Include="..\..\Source\TestStepStandardShapesPolylines.cpp" />
+    <ClCompile Include="..\..\Source\TestStepStandardShapesRectangles.cpp" />
+    <ClCompile Include="..\..\Source\TestStepStandardShapesTexts.cpp" />
+    <ClCompile Include="..\..\Source\ZSDrawGraphObjElectricity.cpp" />
+    <ClCompile Include="..\..\Source\ZSDrawGraphObjElectricityCapacitor.cpp" />
+    <ClCompile Include="..\..\Source\ZSDrawGraphObjElectricityDiode.cpp" />
+    <ClCompile Include="..\..\Source\ZSDrawGraphObjElectricityInductor.cpp" />
+    <ClCompile Include="..\..\Source\ZSDrawGraphObjElectricityResistor.cpp" />
+    <ClCompile Include="..\..\Source\ZSDrawGraphObjElectricitySwitch.cpp" />
+    <ClCompile Include="..\..\Source\ZSDrawGraphObjElectricityTransistor.cpp" />
+    <ClCompile Include="..\..\Source\ZSDrawGraphObjElectricityVoltageSource.cpp" />
+    <ClCompile Include="..\..\Source\ZSDrawGraphObjWdgt.cpp" />
+    <ClCompile Include="..\..\Source\ZSDrawGraphObjWdgtCheckBox.cpp" />
+    <ClCompile Include="..\..\Source\ZSDrawGraphObjWdgtComboBox.cpp" />
+    <ClCompile Include="..\..\Source\ZSDrawGraphObjWdgtGroupBox.cpp" />
+    <ClCompile Include="..\..\Source\ZSDrawGraphObjWdgtLabel.cpp" />
+    <ClCompile Include="..\..\Source\ZSDrawGraphObjWdgtLineEdit.cpp" />
+    <ClCompile Include="..\..\Source\ZSDrawGraphObjWdgtPushButton.cpp" />
+    <ClCompile Include="..\..\Source\ZSDrawObjFactoryElectricityCapacitor.cpp" />
+    <ClCompile Include="..\..\Source\ZSDrawObjFactoryElectricityDiode.cpp" />
+    <ClCompile Include="..\..\Source\ZSDrawObjFactoryElectricityInductor.cpp" />
+    <ClCompile Include="..\..\Source\ZSDrawObjFactoryElectricityResistor.cpp" />
+    <ClCompile Include="..\..\Source\ZSDrawObjFactoryElectricitySwitch.cpp" />
+    <ClCompile Include="..\..\Source\ZSDrawObjFactoryElectricityTransistor.cpp" />
+    <ClCompile Include="..\..\Source\ZSDrawObjFactoryElectricityVoltageSource.cpp" />
+    <ClCompile Include="..\..\Source\ZSDrawObjFactoryWdgtCheckBox.cpp" />
+    <ClCompile Include="..\..\Source\ZSDrawObjFactoryWdgtComboBox.cpp" />
+    <ClCompile Include="..\..\Source\ZSDrawObjFactoryWdgtGroupBox.cpp" />
+    <ClCompile Include="..\..\Source\ZSDrawObjFactoryWdgtLabel.cpp" />
+    <ClCompile Include="..\..\Source\ZSDrawObjFactoryWdgtLineEdit.cpp" />
+    <ClCompile Include="..\..\Source\ZSDrawObjFactoryWdgtPushButton.cpp" />
+    <ClCompile Include="..\..\Source\ZSDrawWdgtFormatGraphObjsElectricityCapacitor.cpp" />
+    <ClCompile Include="..\..\Source\ZSDrawWdgtFormatGraphObjsElectricityDiode.cpp" />
+    <ClCompile Include="..\..\Source\ZSDrawWdgtFormatGraphObjsElectricityInductor.cpp" />
+    <ClCompile Include="..\..\Source\ZSDrawWdgtFormatGraphObjsElectricityResistor.cpp" />
+    <ClCompile Include="..\..\Source\ZSDrawWdgtFormatGraphObjsElectricitySwitch.cpp" />
+    <ClCompile Include="..\..\Source\ZSDrawWdgtFormatGraphObjsElectricityTransistor.cpp" />
+    <ClCompile Include="..\..\Source\ZSDrawWdgtFormatGraphObjsElectricityVoltageSource.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\Include\App.h">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">moc %(FullPath) -o ..\..\..\..\..\Tmp\Moc\Apps\Products\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">moc %(FullPath) -o ..\..\..\..\..\Tmp\Moc\Apps\Products\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">moc %(FullPath) -o ..\..\..\..\..\Tmp\Moc\Apps\Products\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">moc %(FullPath) -o ..\..\..\..\..\Tmp\Moc\Apps\Products\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\..\..\..\Tmp\Moc\Apps\Products\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">..\..\..\..\..\Tmp\Moc\Apps\Products\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">moc %(FullPath) -o ..\..\..\..\..\Tmp\Moc\Apps\Products\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">moc %(FullPath) -o ..\..\..\..\..\Tmp\Moc\Apps\Products\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">moc %(FullPath) -o ..\..\..\..\..\Tmp\Moc\Apps\Products\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">moc %(FullPath) -o ..\..\..\..\..\Tmp\Moc\Apps\Products\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\..\..\..\Tmp\Moc\Apps\Products\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">..\..\..\..\..\Tmp\Moc\Apps\Products\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="..\..\Include\MainWindow.h">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">moc %(FullPath) -o ..\..\..\..\..\Tmp\Moc\Apps\Products\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">moc %(FullPath) -o ..\..\..\..\..\Tmp\Moc\Apps\Products\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">moc %(FullPath) -o ..\..\..\..\..\Tmp\Moc\Apps\Products\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">moc %(FullPath) -o ..\..\..\..\..\Tmp\Moc\Apps\Products\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\..\..\..\Tmp\Moc\Apps\Products\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">..\..\..\..\..\Tmp\Moc\Apps\Products\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">moc %(FullPath) -o ..\..\..\..\..\Tmp\Moc\Apps\Products\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">moc %(FullPath) -o ..\..\..\..\..\Tmp\Moc\Apps\Products\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">moc %(FullPath) -o ..\..\..\..\..\Tmp\Moc\Apps\Products\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">moc %(FullPath) -o ..\..\..\..\..\Tmp\Moc\Apps\Products\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\..\..\..\Tmp\Moc\Apps\Products\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">..\..\..\..\..\Tmp\Moc\Apps\Products\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="..\..\Include\Test.h">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">moc %(FullPath) -o ..\..\..\..\..\Tmp\Moc\Apps\Products\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">moc %(FullPath) -o ..\..\..\..\..\Tmp\Moc\Apps\Products\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">moc %(FullPath) -o ..\..\..\..\..\Tmp\Moc\Apps\Products\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">moc %(FullPath) -o ..\..\..\..\..\Tmp\Moc\Apps\Products\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\..\..\..\Tmp\Moc\Apps\Products\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">..\..\..\..\..\Tmp\Moc\Apps\Products\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">moc %(FullPath) -o ..\..\..\..\..\Tmp\Moc\Apps\Products\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">moc %(FullPath) -o ..\..\..\..\..\Tmp\Moc\Apps\Products\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">moc %(FullPath) -o ..\..\..\..\..\Tmp\Moc\Apps\Products\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">moc %(FullPath) -o ..\..\..\..\..\Tmp\Moc\Apps\Products\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\..\..\..\Tmp\Moc\Apps\Products\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">..\..\..\..\..\Tmp\Moc\Apps\Products\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\..\Images\Electricity\Capacitor16x16.bmp" />
+    <Image Include="..\..\Images\Electricity\Diode16x16.bmp" />
+    <Image Include="..\..\Images\Electricity\Inductor16x10.bmp" />
+    <Image Include="..\..\Images\Electricity\Inductor16x16.bmp" />
+    <Image Include="..\..\Images\Electricity\Resistor16x16.bmp" />
+    <Image Include="..\..\Images\Electricity\Switch16x16.bmp" />
+    <Image Include="..\..\Images\Electricity\Transistor16x16.bmp" />
+    <Image Include="..\..\Images\Electricity\VoltageSource16x16.bmp" />
+    <Image Include="..\..\Images\QtWidgets\CheckBox16x16.bmp" />
+    <Image Include="..\..\Images\QtWidgets\ComboBox16x16.bmp" />
+    <Image Include="..\..\Images\QtWidgets\GroupBox16x16.bmp" />
+    <Image Include="..\..\Images\QtWidgets\Label16x16.bmp" />
+    <Image Include="..\..\Images\QtWidgets\LineEdit16x16.bmp" />
+    <Image Include="..\..\Images\QtWidgets\PushButton16x16.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\Images\ZSDraw.qrc">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\rcc -o ..\..\..\..\..\Tmp\Moc\Apps\Products\$(ProjectName)\$(Configuration)\$(Platform)\emb_$(ProjectName).cpp %(FullPath)</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\rcc -o ..\..\..\..\..\Tmp\Moc\Apps\Products\$(ProjectName)\$(Configuration)\$(Platform)\emb_$(ProjectName).cpp %(FullPath)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(QTDIR)\bin\rcc -o ..\..\..\..\..\Tmp\Moc\Apps\Products\$(ProjectName)\$(Configuration)\$(Platform)\emb_$(ProjectName).cpp %(FullPath)</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(QTDIR)\bin\rcc -o ..\..\..\..\..\Tmp\Moc\Apps\Products\$(ProjectName)\$(Configuration)\$(Platform)\emb_$(ProjectName).cpp %(FullPath)</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\..\..\..\Tmp\Moc\Apps\Products\$(ProjectName)\$(Configuration)\$(Platform)\emb_$(ProjectName).cpp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\..\..\..\Tmp\Moc\Apps\Products\$(ProjectName)\$(Configuration)\$(Platform)\emb_$(ProjectName).cpp</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(QTDIR)\bin\rcc -o ..\..\..\..\..\Tmp\Moc\Apps\Products\$(ProjectName)\$(Configuration)\$(Platform)\emb_$(ProjectName).cpp %(FullPath)</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(QTDIR)\bin\rcc -o ..\..\..\..\..\Tmp\Moc\Apps\Products\$(ProjectName)\$(Configuration)\$(Platform)\emb_$(ProjectName).cpp %(FullPath)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(QTDIR)\bin\rcc -o ..\..\..\..\..\Tmp\Moc\Apps\Products\$(ProjectName)\$(Configuration)\$(Platform)\emb_$(ProjectName).cpp %(FullPath)</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(QTDIR)\bin\rcc -o ..\..\..\..\..\Tmp\Moc\Apps\Products\$(ProjectName)\$(Configuration)\$(Platform)\emb_$(ProjectName).cpp %(FullPath)</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">..\..\..\..\..\Tmp\Moc\Apps\Products\$(ProjectName)\$(Configuration)\$(Platform)\emb_$(ProjectName).cpp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">..\..\..\..\..\Tmp\Moc\Apps\Products\$(ProjectName)\$(Configuration)\$(Platform)\emb_$(ProjectName).cpp</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\Include\ZSDrawGraphObjElectricity.h" />
+    <ClInclude Include="..\..\Include\ZSDrawGraphObjElectricityCapacitor.h" />
+    <ClInclude Include="..\..\Include\ZSDrawGraphObjElectricityDiode.h" />
+    <ClInclude Include="..\..\Include\ZSDrawGraphObjElectricityInductor.h" />
+    <ClInclude Include="..\..\Include\ZSDrawGraphObjElectricityResistor.h" />
+    <ClInclude Include="..\..\Include\ZSDrawGraphObjElectricitySwitch.h" />
+    <ClInclude Include="..\..\Include\ZSDrawGraphObjElectricityTransistor.h" />
+    <ClInclude Include="..\..\Include\ZSDrawGraphObjElectricityVoltageSource.h" />
+    <ClInclude Include="..\..\Include\ZSDrawGraphObjWdgt.h" />
+    <ClInclude Include="..\..\Include\ZSDrawGraphObjWdgtCheckBox.h" />
+    <ClInclude Include="..\..\Include\ZSDrawGraphObjWdgtComboBox.h" />
+    <ClInclude Include="..\..\Include\ZSDrawGraphObjWdgtGroupBox.h" />
+    <ClInclude Include="..\..\Include\ZSDrawGraphObjWdgtLabel.h" />
+    <ClInclude Include="..\..\Include\ZSDrawGraphObjWdgtLineEdit.h" />
+    <ClInclude Include="..\..\Include\ZSDrawGraphObjWdgtPushButton.h" />
+    <ClInclude Include="..\..\Include\ZSDrawObjFactoryElectricityCapacitor.h" />
+    <ClInclude Include="..\..\Include\ZSDrawObjFactoryElectricityDiode.h" />
+    <ClInclude Include="..\..\Include\ZSDrawObjFactoryElectricityInductor.h" />
+    <ClInclude Include="..\..\Include\ZSDrawObjFactoryElectricityResistor.h" />
+    <ClInclude Include="..\..\Include\ZSDrawObjFactoryElectricitySwitch.h" />
+    <ClInclude Include="..\..\Include\ZSDrawObjFactoryElectricityTransistor.h" />
+    <ClInclude Include="..\..\Include\ZSDrawObjFactoryElectricityVoltageSource.h" />
+    <ClInclude Include="..\..\Include\ZSDrawObjFactoryWdgtCheckBox.h" />
+    <ClInclude Include="..\..\Include\ZSDrawObjFactoryWdgtComboBox.h" />
+    <ClInclude Include="..\..\Include\ZSDrawObjFactoryWdgtGroupBox.h" />
+    <ClInclude Include="..\..\Include\ZSDrawObjFactoryWdgtLabel.h" />
+    <ClInclude Include="..\..\Include\ZSDrawObjFactoryWdgtLineEdit.h" />
+    <ClInclude Include="..\..\Include\ZSDrawObjFactoryWdgtPushButton.h" />
+    <ClInclude Include="..\..\Include\ZSDrawWdgtFormatGraphObjsElectricityCapacitor.h" />
+    <ClInclude Include="..\..\Include\ZSDrawWdgtFormatGraphObjsElectricityDiode.h" />
+    <ClInclude Include="..\..\Include\ZSDrawWdgtFormatGraphObjsElectricityInductor.h" />
+    <ClInclude Include="..\..\Include\ZSDrawWdgtFormatGraphObjsElectricityResistor.h" />
+    <ClInclude Include="..\..\Include\ZSDrawWdgtFormatGraphObjsElectricitySwitch.h" />
+    <ClInclude Include="..\..\Include\ZSDrawWdgtFormatGraphObjsElectricityTransistor.h" />
+    <ClInclude Include="..\..\Include\ZSDrawWdgtFormatGraphObjsElectricityVoltageSource.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

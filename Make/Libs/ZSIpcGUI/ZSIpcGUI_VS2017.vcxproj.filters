@@ -1,0 +1,293 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Generated Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
+    </Filter>
+    <Filter Include="Include Files">
+      <UniqueIdentifier>{f53fe127-0353-4513-94eb-67cb6c5a3b3d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2015">
+      <UniqueIdentifier>{1107722a-a26b-4796-9ff5-822156f3ec5c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2015\Win32">
+      <UniqueIdentifier>{f0ec6265-6768-418a-8654-8fb506346f3c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2015\Win32\Debug">
+      <UniqueIdentifier>{1b8db5b4-8e89-4c89-9aa1-cc726438b438}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2015\Win32\Release">
+      <UniqueIdentifier>{1744178b-2449-4145-aee1-368602fdc862}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2015\x64">
+      <UniqueIdentifier>{a2adc40b-6f77-4068-9de8-5a2c0017719a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2015\x64\Debug">
+      <UniqueIdentifier>{0bbd5502-1960-44e4-950b-03122a6dc2ea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2015\x64\Release">
+      <UniqueIdentifier>{e55e7a95-fb21-4173-8bac-2770f02d833b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2017">
+      <UniqueIdentifier>{4ec92887-a4e4-4c12-9d6e-5b2f9808f161}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2017\Win32">
+      <UniqueIdentifier>{202154f3-70d6-4e10-ae12-b828f69ea7b2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2017\Win32\Debug">
+      <UniqueIdentifier>{15bcdb44-cf1b-4913-9ccc-57a9e38fd0fb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2017\Win32\Release">
+      <UniqueIdentifier>{3e54721c-417d-4e05-84fd-cd32866eb6e7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2017\x64">
+      <UniqueIdentifier>{bc47149c-3acf-458b-a770-dfdc878619e7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2017\x64\Debug">
+      <UniqueIdentifier>{2b44e92d-d601-49bc-acee-7684f8e9952a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2017\x64\Release">
+      <UniqueIdentifier>{8a8aa3d6-beac-4f67-a534-131ffe9944cd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2019">
+      <UniqueIdentifier>{a59a98cc-95d7-4f39-b3cd-b54dc3fde2b0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2019\x64">
+      <UniqueIdentifier>{f5681726-0b12-42bd-b73a-bf489e0e3b55}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2019\x64\Debug">
+      <UniqueIdentifier>{679a8afe-9224-4e5f-8683-679b51df7e7a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2019\x64\Release">
+      <UniqueIdentifier>{2ec282ac-4a4e-43cf-93ee-ff7b73f7eba1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2019\Win32">
+      <UniqueIdentifier>{373caf06-34c3-4891-a458-fd7d3c8348ef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2019\Win32\Debug">
+      <UniqueIdentifier>{34486df8-82e6-492c-85d5-ce41765791d9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2019\Win32\Release">
+      <UniqueIdentifier>{219862ba-30db-42f0-87b4-f08a8c3637f9}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\Source\Libs\ZSIpcGUI\ZSIpcClientDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSIpcGUI\ZSIpcClientWdgt.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSIpcGUI\ZSIpcGUIDllMain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSIpcGUI\ZSIpcModelSrvCltConnection.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSIpcGUI\ZSIpcServerDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSIpcGUI\ZSIpcServerWdgt.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSIpcGUI\ZSIpcTrcMsgLogWdgt.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpcGUI\Debug_msvc2015\Win32\moc_ZSIpcClientDlg.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpcGUI\Debug_msvc2015\Win32\moc_ZSIpcClientWdgt.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpcGUI\Debug_msvc2015\Win32\moc_ZSIpcModelSrvCltConnection.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpcGUI\Debug_msvc2015\Win32\moc_ZSIpcServerDlg.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpcGUI\Debug_msvc2015\Win32\moc_ZSIpcServerWdgt.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpcGUI\Debug_msvc2015\Win32\moc_ZSIpcTrcMsgLogWdgt.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpcGUI\Debug_msvc2017\x64\moc_ZSIpcClientDlg.cpp">
+      <Filter>Generated Files\msvc2017\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpcGUI\Debug_msvc2017\x64\moc_ZSIpcClientWdgt.cpp">
+      <Filter>Generated Files\msvc2017\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpcGUI\Debug_msvc2017\x64\moc_ZSIpcModelSrvCltConnection.cpp">
+      <Filter>Generated Files\msvc2017\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpcGUI\Debug_msvc2017\x64\moc_ZSIpcServerDlg.cpp">
+      <Filter>Generated Files\msvc2017\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpcGUI\Debug_msvc2017\x64\moc_ZSIpcServerWdgt.cpp">
+      <Filter>Generated Files\msvc2017\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpcGUI\Debug_msvc2017\x64\moc_ZSIpcTrcMsgLogWdgt.cpp">
+      <Filter>Generated Files\msvc2017\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpcGUI\Release_msvc2015\x64\moc_ZSIpcClientDlg.cpp">
+      <Filter>Generated Files\msvc2015\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpcGUI\Release_msvc2015\x64\moc_ZSIpcClientWdgt.cpp">
+      <Filter>Generated Files\msvc2015\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpcGUI\Release_msvc2015\x64\moc_ZSIpcModelSrvCltConnection.cpp">
+      <Filter>Generated Files\msvc2015\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpcGUI\Release_msvc2015\x64\moc_ZSIpcServerDlg.cpp">
+      <Filter>Generated Files\msvc2015\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpcGUI\Release_msvc2015\x64\moc_ZSIpcServerWdgt.cpp">
+      <Filter>Generated Files\msvc2015\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpcGUI\Release_msvc2015\x64\moc_ZSIpcTrcMsgLogWdgt.cpp">
+      <Filter>Generated Files\msvc2015\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpcGUI\Debug_msvc2015\x64\moc_ZSIpcClientDlg.cpp">
+      <Filter>Generated Files\msvc2015\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpcGUI\Debug_msvc2015\x64\moc_ZSIpcClientWdgt.cpp">
+      <Filter>Generated Files\msvc2015\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpcGUI\Debug_msvc2015\x64\moc_ZSIpcModelSrvCltConnection.cpp">
+      <Filter>Generated Files\msvc2015\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpcGUI\Debug_msvc2015\x64\moc_ZSIpcServerDlg.cpp">
+      <Filter>Generated Files\msvc2015\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpcGUI\Debug_msvc2015\x64\moc_ZSIpcServerWdgt.cpp">
+      <Filter>Generated Files\msvc2015\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpcGUI\Debug_msvc2015\x64\moc_ZSIpcTrcMsgLogWdgt.cpp">
+      <Filter>Generated Files\msvc2015\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpcGUI\Release_msvc2017\Win32\moc_ZSIpcClientDlg.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpcGUI\Release_msvc2017\Win32\moc_ZSIpcClientWdgt.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpcGUI\Release_msvc2017\Win32\moc_ZSIpcModelSrvCltConnection.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpcGUI\Release_msvc2017\Win32\moc_ZSIpcServerDlg.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpcGUI\Release_msvc2017\Win32\moc_ZSIpcServerWdgt.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpcGUI\Release_msvc2017\Win32\moc_ZSIpcTrcMsgLogWdgt.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpcGUI\Debug_msvc2017\Win32\moc_ZSIpcClientDlg.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpcGUI\Debug_msvc2017\Win32\moc_ZSIpcClientWdgt.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpcGUI\Debug_msvc2017\Win32\moc_ZSIpcModelSrvCltConnection.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpcGUI\Debug_msvc2017\Win32\moc_ZSIpcServerDlg.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpcGUI\Debug_msvc2017\Win32\moc_ZSIpcServerWdgt.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpcGUI\Debug_msvc2017\Win32\moc_ZSIpcTrcMsgLogWdgt.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpcGUI\Release_msvc2015\Win32\moc_ZSIpcClientDlg.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpcGUI\Release_msvc2015\Win32\moc_ZSIpcClientWdgt.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpcGUI\Release_msvc2015\Win32\moc_ZSIpcModelSrvCltConnection.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpcGUI\Release_msvc2015\Win32\moc_ZSIpcServerDlg.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpcGUI\Release_msvc2015\Win32\moc_ZSIpcServerWdgt.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpcGUI\Release_msvc2015\Win32\moc_ZSIpcTrcMsgLogWdgt.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpcGUI\Release_msvc2017\x64\moc_ZSIpcClientDlg.cpp">
+      <Filter>Generated Files\msvc2017\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpcGUI\Release_msvc2017\x64\moc_ZSIpcClientWdgt.cpp">
+      <Filter>Generated Files\msvc2017\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpcGUI\Release_msvc2017\x64\moc_ZSIpcModelSrvCltConnection.cpp">
+      <Filter>Generated Files\msvc2017\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpcGUI\Release_msvc2017\x64\moc_ZSIpcServerDlg.cpp">
+      <Filter>Generated Files\msvc2017\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpcGUI\Release_msvc2017\x64\moc_ZSIpcServerWdgt.cpp">
+      <Filter>Generated Files\msvc2017\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpcGUI\Release_msvc2017\x64\moc_ZSIpcTrcMsgLogWdgt.cpp">
+      <Filter>Generated Files\msvc2017\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpcGUI\Debug_msvc2019\x64\moc_ZSIpcClientDlg.cpp">
+      <Filter>Generated Files\msvc2019\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpcGUI\Debug_msvc2019\x64\moc_ZSIpcClientWdgt.cpp">
+      <Filter>Generated Files\msvc2019\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpcGUI\Debug_msvc2019\x64\moc_ZSIpcModelSrvCltConnection.cpp">
+      <Filter>Generated Files\msvc2019\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpcGUI\Debug_msvc2019\x64\moc_ZSIpcServerDlg.cpp">
+      <Filter>Generated Files\msvc2019\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpcGUI\Debug_msvc2019\x64\moc_ZSIpcServerWdgt.cpp">
+      <Filter>Generated Files\msvc2019\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpcGUI\Debug_msvc2019\x64\moc_ZSIpcTrcMsgLogWdgt.cpp">
+      <Filter>Generated Files\msvc2019\x64\Debug</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\..\Include\Libs\ZSIpcGUI\ZSIpcClientDlg.h">
+      <Filter>Include Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\Libs\ZSIpcGUI\ZSIpcClientWdgt.h">
+      <Filter>Include Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\Libs\ZSIpcGUI\ZSIpcModelSrvCltConnection.h">
+      <Filter>Include Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\Libs\ZSIpcGUI\ZSIpcServerDlg.h">
+      <Filter>Include Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\Libs\ZSIpcGUI\ZSIpcServerWdgt.h">
+      <Filter>Include Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\Libs\ZSIpcGUI\ZSIpcTrcMsgLogWdgt.h">
+      <Filter>Include Files</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\Include\Libs\ZSIpcGUI\ZSIpcGUIDllMain.h">
+      <Filter>Include Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

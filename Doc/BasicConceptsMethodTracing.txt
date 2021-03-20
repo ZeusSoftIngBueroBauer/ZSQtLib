@@ -1,0 +1,7 @@
+/*!
+@defgroup _GRP_BasicConcepts_MethodTracing Method Tracing
+@ingroup _GRP_BasicConcepts
+@brief Introduction to method tracing.
+
+
+*/

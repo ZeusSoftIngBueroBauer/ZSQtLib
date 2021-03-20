@@ -1,0 +1,152 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Generated Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
+    </Filter>
+    <Filter Include="Include Files">
+      <UniqueIdentifier>{96e4b82e-e31d-4f2a-959c-912ae39cb520}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\Win32">
+      <UniqueIdentifier>{53c356be-fd41-4e9a-9435-5b3cafd92886}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\x64">
+      <UniqueIdentifier>{006f933b-3512-496c-ab08-890f94d86221}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\x64\Debug">
+      <UniqueIdentifier>{84500323-a235-4e4c-acc8-bd0c22b96538}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\x64\Release">
+      <UniqueIdentifier>{91b70a9d-39b3-4180-9974-230b4f43fad9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\Win32\Debug">
+      <UniqueIdentifier>{043a829e-4e24-4a10-8adf-7e926fc3d2f1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\Win32\Release">
+      <UniqueIdentifier>{35a16529-d2c8-434e-a011-749debbc416f}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\Include\WidgetCentral.h">
+      <Filter>Include Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\Source\App.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\MainWindow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Test.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\WidgetCentral.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Tmp\Moc\Apps\Test\ZSAppTestData\x64\Debug\moc_MainWindow.cpp">
+      <Filter>Generated Files\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Tmp\Moc\Apps\Test\ZSAppTestData\Win32\Debug\moc_MainWindow.cpp">
+      <Filter>Generated Files\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Tmp\Moc\Apps\Test\ZSAppTestData\Win32\Release\moc_MainWindow.cpp">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Tmp\Moc\Apps\Test\ZSAppTestData\x64\Release\moc_MainWindow.cpp">
+      <Filter>Generated Files\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\TestStepGroupDataValArr.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\TestStepGroupDbCltUpdate.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Tmp\Moc\Apps\Test\ZSAppTestData\x64\Release\moc_Test.cpp">
+      <Filter>Generated Files\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Tmp\Moc\Apps\Test\ZSAppTestData\x64\Debug\moc_Test.cpp">
+      <Filter>Generated Files\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Tmp\Moc\Apps\Test\ZSAppTestData\Win32\Release\moc_Test.cpp">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Tmp\Moc\Apps\Test\ZSAppTestData\Win32\Debug\moc_Test.cpp">
+      <Filter>Generated Files\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\TestAux.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Tmp\Moc\Apps\Test\ZSAppTestData\x64\Release\moc_App.cpp">
+      <Filter>Generated Files\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Tmp\Moc\Apps\Test\ZSAppTestData\x64\Debug\moc_App.cpp">
+      <Filter>Generated Files\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Tmp\Moc\Apps\Test\ZSAppTestData\Win32\Release\moc_App.cpp">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Tmp\Moc\Apps\Test\ZSAppTestData\Win32\Debug\moc_App.cpp">
+      <Filter>Generated Files\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\TestStepGroupDbCltGUICreate.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\TestStepGroupDbCltGUIDestroy.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\TestStepGroupDbCreate.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\TestStepGroupDbDestroy.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\TestStepGroupDbDPDataChangesMoreDimEnumValues.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\TestStepGroupDbDPDataChangesMoreDimPhysValues.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\TestStepGroupDbDPDataChangesOneDimEnumValues.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\TestStepGroupDbDPDataChangesOneDimPhysValues.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\TestStepGroupDbDPDataChangesSingleEnumValue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\TestStepGroupDbDPDataChangesSinglePhysValue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\TestStepGroupDbDSInitData.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\TestStepGroupDbDSInitSchema.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\Include\MainWindow.h">
+      <Filter>Include Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\Include\Test.h">
+      <Filter>Include Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\Include\App.h">
+      <Filter>Include Files</Filter>
+    </CustomBuild>
+  </ItemGroup>
+</Project>

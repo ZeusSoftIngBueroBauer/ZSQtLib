@@ -1,0 +1,64 @@
+#Windows Thumbnails
+Thumbs.db
+
+#Visual Studio Dateien
+*.obj
+*.exe
+*.dll
+*.pdb
+*.user
+*.aps
+*.pch
+*.ipch
+*.vspscc
+*_i.c
+*_p.c
+*.ncb
+*.suo
+*.tlb
+*.tlh
+*.bak
+*.cache
+*.ilk
+*.log
+[Bb]in
+[Dd]ebug*/
+*.lib
+*.exp
+*.sbr
+*.sdf
+*.opensdf
+*.VC.opendb
+*.VC.db
+*.VC.db-shm
+*.VC.db-wal
+obj/
+[Rr]elease*/
+_ReSharper*/
+
+#Python Dateien
+*.pyc
+__pycache__*/
+[Bb]uild
+[Dd]ist
+*.egg-info*/
+
+#Generated Make Files
+*.db
+#Makefile
+#Makefile.Debug
+#Makefile.Release
+#Make/ZSSys/Makefile#Make/ZSSys/Makefile.Debug#Make/ZSSys/Makefile.Release
+
+#Output Directories
+/Bin
+/Config
+/Lib
+/Log
+/Tmp
+/Doc/html
+/Doc/latex
+
+#Explizit
+#RemoteRepositories.txt
+#Remote Repositories.txt

@@ -1,0 +1,203 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Generated Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Generated Files\Win32">
+      <UniqueIdentifier>{176c5f72-e2cc-4b1e-aa81-b4fd63e61a6f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\Win32\Debug">
+      <UniqueIdentifier>{629d2f20-3a7a-4078-ab1a-30006652306c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\Win32\Release">
+      <UniqueIdentifier>{e5a1841d-1f02-43d5-a779-3edc3d951c47}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
+    </Filter>
+    <Filter Include="Include Files">
+      <UniqueIdentifier>{d848d2c6-1882-4397-ac67-c65c3217a66e}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\Source\ZSTraceGUI\ZSTrcAdminObjPoolDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\ZSTraceGUI\ZSTrcAdminObjPoolModel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\ZSTraceGUI\ZSTrcAdminObjPoolWdgt.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\ZSTraceGUI\ZSTrcAdminObjPoolWdgtNameSpaceContent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\ZSTraceGUI\ZSTrcAdminObjPoolWdgtNameSpaces.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\ZSTraceGUI\ZSTrcClientDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\ZSTraceGUI\ZSTrcCtxModel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\ZSTraceGUI\ZSTrcCtxWdgt.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\ZSTraceGUI\ZSTrcGUIDllMain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\ZSTraceGUI\ZSTrcMsgModel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\ZSTraceGUI\ZSTrcMsgWdgt.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\ZSTraceGUI\ZSTrcMthModel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\ZSTraceGUI\ZSTrcMthWdgt.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\ZSTraceGUI\ZSTrcServerDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\ZSTraceGUI\ZSTrcSettingsWdgt.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\ZSTraceGUI\Win32\Debug\moc_ZSTrcAdminObjPoolModel.cpp">
+      <Filter>Generated Files\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\ZSTraceGUI\Win32\Debug\moc_ZSTrcAdminObjPoolWdgt.cpp">
+      <Filter>Generated Files\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\ZSTraceGUI\Win32\Debug\moc_ZSTrcAdminObjPoolWdgtNameSpaceContent.cpp">
+      <Filter>Generated Files\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\ZSTraceGUI\Win32\Debug\moc_ZSTrcAdminObjPoolWdgtNameSpaces.cpp">
+      <Filter>Generated Files\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\ZSTraceGUI\Win32\Debug\moc_ZSTrcClientDlg.cpp">
+      <Filter>Generated Files\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\ZSTraceGUI\Win32\Debug\moc_ZSTrcCtxModel.cpp">
+      <Filter>Generated Files\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\ZSTraceGUI\Win32\Debug\moc_ZSTrcCtxWdgt.cpp">
+      <Filter>Generated Files\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\ZSTraceGUI\Win32\Debug\moc_ZSTrcMsgModel.cpp">
+      <Filter>Generated Files\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\ZSTraceGUI\Win32\Debug\moc_ZSTrcMsgWdgt.cpp">
+      <Filter>Generated Files\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\ZSTraceGUI\Win32\Debug\moc_ZSTrcMthModel.cpp">
+      <Filter>Generated Files\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\ZSTraceGUI\Win32\Debug\moc_ZSTrcMthWdgt.cpp">
+      <Filter>Generated Files\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\ZSTraceGUI\Win32\Debug\moc_ZSTrcServerDlg.cpp">
+      <Filter>Generated Files\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\ZSTraceGUI\Win32\Debug\moc_ZSTrcSettingsWdgt.cpp">
+      <Filter>Generated Files\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\ZSTraceGUI\Win32\Release\moc_ZSTrcAdminObjPoolModel.cpp">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\ZSTraceGUI\Win32\Release\moc_ZSTrcAdminObjPoolWdgt.cpp">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\ZSTraceGUI\Win32\Release\moc_ZSTrcAdminObjPoolWdgtNameSpaceContent.cpp">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\ZSTraceGUI\Win32\Release\moc_ZSTrcAdminObjPoolWdgtNameSpaces.cpp">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\ZSTraceGUI\Win32\Release\moc_ZSTrcClientDlg.cpp">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\ZSTraceGUI\Win32\Release\moc_ZSTrcCtxModel.cpp">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\ZSTraceGUI\Win32\Release\moc_ZSTrcCtxWdgt.cpp">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\ZSTraceGUI\Win32\Release\moc_ZSTrcMsgModel.cpp">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\ZSTraceGUI\Win32\Release\moc_ZSTrcMsgWdgt.cpp">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\ZSTraceGUI\Win32\Release\moc_ZSTrcMthModel.cpp">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\ZSTraceGUI\Win32\Release\moc_ZSTrcMthWdgt.cpp">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\ZSTraceGUI\Win32\Release\moc_ZSTrcServerDlg.cpp">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\ZSTraceGUI\Win32\Release\moc_ZSTrcSettingsWdgt.cpp">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\Include\ZSTraceGUI\ZSTrcAdminObjPoolDlg.h">
+      <Filter>Include Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\ZSTraceGUI\ZSTrcGUIDllMain.h">
+      <Filter>Include Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\..\Include\ZSTraceGUI\ZSTrcAdminObjPoolModel.h">
+      <Filter>Include Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\ZSTraceGUI\ZSTrcAdminObjPoolWdgt.h">
+      <Filter>Include Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\ZSTraceGUI\ZSTrcAdminObjPoolWdgtNameSpaceContent.h">
+      <Filter>Include Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\ZSTraceGUI\ZSTrcAdminObjPoolWdgtNameSpaces.h">
+      <Filter>Include Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\ZSTraceGUI\ZSTrcClientDlg.h">
+      <Filter>Include Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\ZSTraceGUI\ZSTrcCtxModel.h">
+      <Filter>Include Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\ZSTraceGUI\ZSTrcCtxWdgt.h">
+      <Filter>Include Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\ZSTraceGUI\ZSTrcMsgModel.h">
+      <Filter>Include Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\ZSTraceGUI\ZSTrcMsgWdgt.h">
+      <Filter>Include Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\ZSTraceGUI\ZSTrcMthModel.h">
+      <Filter>Include Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\ZSTraceGUI\ZSTrcMthWdgt.h">
+      <Filter>Include Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\ZSTraceGUI\ZSTrcServerDlg.h">
+      <Filter>Include Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\ZSTraceGUI\ZSTrcSettingsWdgt.h">
+      <Filter>Include Files</Filter>
+    </CustomBuild>
+  </ItemGroup>
+</Project>

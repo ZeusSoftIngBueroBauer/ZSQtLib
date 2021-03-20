@@ -1,0 +1,95 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ZSAppTestRemCmdServer", "ZSAppTestRemCmdServer_9.0.vcproj", "{27E58F39-8E83-4A80-9840-AA2DAC2679A9}"
+	ProjectSection(ProjectDependencies) = postProject
+		{37EA1175-4CB4-4E22-AF56-125870535E4B} = {37EA1175-4CB4-4E22-AF56-125870535E4B}
+		{A8E7CAA4-C1D3-4948-B648-FD338D841316} = {A8E7CAA4-C1D3-4948-B648-FD338D841316}
+		{A88089A6-8D1E-4D7C-A087-2B38FA086DE4} = {A88089A6-8D1E-4D7C-A087-2B38FA086DE4}
+		{A3FB7FD1-B3F1-43E9-9D09-81A83A8AE31B} = {A3FB7FD1-B3F1-43E9-9D09-81A83A8AE31B}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ZSSys", "..\..\..\..\..\Make\Windows\ZSSys\ZSSys_9.0.vcproj", "{EA947C05-2DCE-4908-AA0C-DEDD7D8C360A}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ZSIpc", "..\..\..\..\..\Make\Windows\ZSIpc\ZSIpc_9.0.vcproj", "{13BAEBFE-DF24-45A2-BB4A-BA5CB8C61402}"
+	ProjectSection(ProjectDependencies) = postProject
+		{EA947C05-2DCE-4908-AA0C-DEDD7D8C360A} = {EA947C05-2DCE-4908-AA0C-DEDD7D8C360A}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ZSIpcGUI", "..\..\..\..\..\Make\Windows\ZSIpcGUI\ZSIpcGUI_9.0.vcproj", "{A8E7CAA4-C1D3-4948-B648-FD338D841316}"
+	ProjectSection(ProjectDependencies) = postProject
+		{13BAEBFE-DF24-45A2-BB4A-BA5CB8C61402} = {13BAEBFE-DF24-45A2-BB4A-BA5CB8C61402}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ZSTrace", "..\..\..\..\..\Make\Windows\ZSTrace\ZSTrace_9.0.vcproj", "{21BF28FD-CE9B-46FF-B361-CC00DE6D3864}"
+	ProjectSection(ProjectDependencies) = postProject
+		{13BAEBFE-DF24-45A2-BB4A-BA5CB8C61402} = {13BAEBFE-DF24-45A2-BB4A-BA5CB8C61402}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ZSTraceGUI", "..\..\..\..\..\Make\Windows\ZSTraceGUI\ZSTraceGUI_9.0.vcproj", "{37EA1175-4CB4-4E22-AF56-125870535E4B}"
+	ProjectSection(ProjectDependencies) = postProject
+		{21BF28FD-CE9B-46FF-B361-CC00DE6D3864} = {21BF28FD-CE9B-46FF-B361-CC00DE6D3864}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ZSRemCmd", "..\..\..\..\..\Make\Windows\ZSRemCmd\ZSRemCmd_9.0.vcproj", "{9B5BEF42-1CA3-4568-A60D-679D39294AE5}"
+	ProjectSection(ProjectDependencies) = postProject
+		{21BF28FD-CE9B-46FF-B361-CC00DE6D3864} = {21BF28FD-CE9B-46FF-B361-CC00DE6D3864}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ZSRemCmdGUI", "..\..\..\..\..\Make\Windows\ZSRemCmdGUI\ZSRemCmdGUI_9.0.vcproj", "{A3FB7FD1-B3F1-43E9-9D09-81A83A8AE31B}"
+	ProjectSection(ProjectDependencies) = postProject
+		{9B5BEF42-1CA3-4568-A60D-679D39294AE5} = {9B5BEF42-1CA3-4568-A60D-679D39294AE5}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ZSSysGUI", "..\..\..\..\..\Make\Windows\ZSSysGUI\ZSSysGUI_9.0.vcproj", "{A88089A6-8D1E-4D7C-A087-2B38FA086DE4}"
+	ProjectSection(ProjectDependencies) = postProject
+		{EA947C05-2DCE-4908-AA0C-DEDD7D8C360A} = {EA947C05-2DCE-4908-AA0C-DEDD7D8C360A}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{27E58F39-8E83-4A80-9840-AA2DAC2679A9}.Debug|Win32.ActiveCfg = Debug|Win32
+		{27E58F39-8E83-4A80-9840-AA2DAC2679A9}.Debug|Win32.Build.0 = Debug|Win32
+		{27E58F39-8E83-4A80-9840-AA2DAC2679A9}.Release|Win32.ActiveCfg = Release|Win32
+		{27E58F39-8E83-4A80-9840-AA2DAC2679A9}.Release|Win32.Build.0 = Release|Win32
+		{EA947C05-2DCE-4908-AA0C-DEDD7D8C360A}.Debug|Win32.ActiveCfg = Debug|Win32
+		{EA947C05-2DCE-4908-AA0C-DEDD7D8C360A}.Debug|Win32.Build.0 = Debug|Win32
+		{EA947C05-2DCE-4908-AA0C-DEDD7D8C360A}.Release|Win32.ActiveCfg = Release|Win32
+		{EA947C05-2DCE-4908-AA0C-DEDD7D8C360A}.Release|Win32.Build.0 = Release|Win32
+		{13BAEBFE-DF24-45A2-BB4A-BA5CB8C61402}.Debug|Win32.ActiveCfg = Debug|Win32
+		{13BAEBFE-DF24-45A2-BB4A-BA5CB8C61402}.Debug|Win32.Build.0 = Debug|Win32
+		{13BAEBFE-DF24-45A2-BB4A-BA5CB8C61402}.Release|Win32.ActiveCfg = Release|Win32
+		{13BAEBFE-DF24-45A2-BB4A-BA5CB8C61402}.Release|Win32.Build.0 = Release|Win32
+		{A8E7CAA4-C1D3-4948-B648-FD338D841316}.Debug|Win32.ActiveCfg = Debug|Win32
+		{A8E7CAA4-C1D3-4948-B648-FD338D841316}.Debug|Win32.Build.0 = Debug|Win32
+		{A8E7CAA4-C1D3-4948-B648-FD338D841316}.Release|Win32.ActiveCfg = Release|Win32
+		{A8E7CAA4-C1D3-4948-B648-FD338D841316}.Release|Win32.Build.0 = Release|Win32
+		{21BF28FD-CE9B-46FF-B361-CC00DE6D3864}.Debug|Win32.ActiveCfg = Debug|Win32
+		{21BF28FD-CE9B-46FF-B361-CC00DE6D3864}.Debug|Win32.Build.0 = Debug|Win32
+		{21BF28FD-CE9B-46FF-B361-CC00DE6D3864}.Release|Win32.ActiveCfg = Release|Win32
+		{21BF28FD-CE9B-46FF-B361-CC00DE6D3864}.Release|Win32.Build.0 = Release|Win32
+		{37EA1175-4CB4-4E22-AF56-125870535E4B}.Debug|Win32.ActiveCfg = Debug|Win32
+		{37EA1175-4CB4-4E22-AF56-125870535E4B}.Debug|Win32.Build.0 = Debug|Win32
+		{37EA1175-4CB4-4E22-AF56-125870535E4B}.Release|Win32.ActiveCfg = Release|Win32
+		{37EA1175-4CB4-4E22-AF56-125870535E4B}.Release|Win32.Build.0 = Release|Win32
+		{9B5BEF42-1CA3-4568-A60D-679D39294AE5}.Debug|Win32.ActiveCfg = Debug|Win32
+		{9B5BEF42-1CA3-4568-A60D-679D39294AE5}.Debug|Win32.Build.0 = Debug|Win32
+		{9B5BEF42-1CA3-4568-A60D-679D39294AE5}.Release|Win32.ActiveCfg = Release|Win32
+		{9B5BEF42-1CA3-4568-A60D-679D39294AE5}.Release|Win32.Build.0 = Release|Win32
+		{A3FB7FD1-B3F1-43E9-9D09-81A83A8AE31B}.Debug|Win32.ActiveCfg = Debug|Win32
+		{A3FB7FD1-B3F1-43E9-9D09-81A83A8AE31B}.Debug|Win32.Build.0 = Debug|Win32
+		{A3FB7FD1-B3F1-43E9-9D09-81A83A8AE31B}.Release|Win32.ActiveCfg = Release|Win32
+		{A3FB7FD1-B3F1-43E9-9D09-81A83A8AE31B}.Release|Win32.Build.0 = Release|Win32
+		{A88089A6-8D1E-4D7C-A087-2B38FA086DE4}.Debug|Win32.ActiveCfg = Debug|Win32
+		{A88089A6-8D1E-4D7C-A087-2B38FA086DE4}.Debug|Win32.Build.0 = Debug|Win32
+		{A88089A6-8D1E-4D7C-A087-2B38FA086DE4}.Release|Win32.ActiveCfg = Release|Win32
+		{A88089A6-8D1E-4D7C-A087-2B38FA086DE4}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

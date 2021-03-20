@@ -1,0 +1,397 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectName>ZSSysGUI</ProjectName>
+    <ProjectGuid>{A88089A6-8D1E-4D7C-A087-2B38FA086DE4}</ProjectGuid>
+    <RootNamespace>ZSSysGUI</RootNamespace>
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\..\Tmp\Out\$(ProjectName)\Win32\$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\..\Tmp\Int\$(ProjectName)\Win32\$(Configuration)\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\..\Tmp\Out\$(ProjectName)\Win32\$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\..\Tmp\Int\$(ProjectName)\Win32\$(Configuration)\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <AdditionalIncludeDirectories>..\..\..\Include;$(QTDIR)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;_ZSTRACE;ZSSYSGUIDLL_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
+      <BrowseInformation>true</BrowseInformation>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>ZSSysd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)$(ProjectName)d.dll</OutputFile>
+      <AdditionalLibraryDirectories>$(QTDIR)\lib;..\..\..\Lib\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+    <PostBuildEvent>
+      <Message>..\CopyOutput.bat Win32 $(OutDir) $(TargetName)</Message>
+      <Command>..\CopyOutput.bat Win32 $(OutDir) $(TargetName)</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <AdditionalIncludeDirectories>..\..\..\Include;$(QTDIR)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;_ZSTRACE;ZSSYSGUIDLL_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <MinimalRebuild>false</MinimalRebuild>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
+      <BrowseInformation>true</BrowseInformation>
+      <BrowseInformationFile>$(IntDir)</BrowseInformationFile>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>ZSSys.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(QTDIR)\lib;..\..\..\Lib\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <LinkTimeCodeGeneration>
+      </LinkTimeCodeGeneration>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+    <PostBuildEvent>
+      <Message>..\CopyOutput.bat Win32 $(OutDir) $(TargetName)</Message>
+      <Command>..\CopyOutput.bat Win32 $(OutDir) $(TargetName)</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\Source\ZSSysGUI\ZSSysErrLogDlg.cpp" />
+    <ClCompile Include="..\..\..\Source\ZSSysGUI\ZSSysErrLogModel.cpp" />
+    <ClCompile Include="..\..\..\Source\ZSSysGUI\ZSSysErrLogWdgt.cpp" />
+    <ClCompile Include="..\..\..\Source\ZSSysGUI\ZSSysFindTextDlg.cpp" />
+    <ClCompile Include="..\..\..\Source\ZSSysGUI\ZSSysGUIDllMain.cpp" />
+    <ClCompile Include="..\..\..\Source\ZSSysGUI\ZSSysGUIEnum.cpp" />
+    <ClCompile Include="..\..\..\Source\ZSSysGUI\ZSSysObjPoolModel.cpp" />
+    <ClCompile Include="..\..\..\Source\ZSSysGUI\ZSSysProgressBar.cpp" />
+    <ClCompile Include="..\..\..\Source\ZSSysGUI\ZSSysPushButton.cpp" />
+    <ClCompile Include="..\..\..\Source\ZSSysGUI\ZSSysRequestExecTreeDlg.cpp" />
+    <ClCompile Include="..\..\..\Source\ZSSysGUI\ZSSysRequestExecTreeModel.cpp" />
+    <ClCompile Include="..\..\..\Source\ZSSysGUI\ZSSysRequestExecTreeWdgt.cpp" />
+    <ClCompile Include="..\..\..\Source\ZSSysGUI\ZSSysRequestSequencerDlg.cpp" />
+    <ClCompile Include="..\..\..\Source\ZSSysGUI\ZSSysRequestSequencerModel.cpp" />
+    <ClCompile Include="..\..\..\Source\ZSSysGUI\ZSSysRequestSequencerWdgt.cpp" />
+    <ClCompile Include="..\..\..\Source\ZSSysGUI\ZSSysSepLine.cpp" />
+    <ClCompile Include="..\..\..\Tmp\Moc\ZSSysGUI\Win32\Debug\emb_ZSSysGUI.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\ZSSysGUI\Win32\Debug\moc_ZSSysErrLogModel.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\ZSSysGUI\Win32\Debug\moc_ZSSysErrLogWdgt.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\ZSSysGUI\Win32\Debug\moc_ZSSysFindTextDlg.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\ZSSysGUI\Win32\Debug\moc_ZSSysObjPoolModel.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\ZSSysGUI\Win32\Debug\moc_ZSSysProgressBar.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\ZSSysGUI\Win32\Debug\moc_ZSSysPushButton.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\ZSSysGUI\Win32\Debug\moc_ZSSysRequestExecTreeModel.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\ZSSysGUI\Win32\Debug\moc_ZSSysRequestExecTreeWdgt.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\ZSSysGUI\Win32\Debug\moc_ZSSysRequestSequencerModel.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\ZSSysGUI\Win32\Debug\moc_ZSSysRequestSequencerWdgt.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\ZSSysGUI\Win32\Release\emb_ZSSysGUI.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\ZSSysGUI\Win32\Release\moc_ZSSysErrLogModel.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\ZSSysGUI\Win32\Release\moc_ZSSysErrLogWdgt.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\ZSSysGUI\Win32\Release\moc_ZSSysFindTextDlg.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\ZSSysGUI\Win32\Release\moc_ZSSysObjPoolModel.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\ZSSysGUI\Win32\Release\moc_ZSSysProgressBar.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\ZSSysGUI\Win32\Release\moc_ZSSysPushButton.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\ZSSysGUI\Win32\Release\moc_ZSSysRequestExecTreeModel.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\ZSSysGUI\Win32\Release\moc_ZSSysRequestExecTreeWdgt.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\ZSSysGUI\Win32\Release\moc_ZSSysRequestSequencerModel.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\ZSSysGUI\Win32\Release\moc_ZSSysRequestSequencerWdgt.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="resource.h" />
+    <CustomBuildStep Include="..\..\..\Include\ZSSysGUI\ZSSysErrLogDlg.h" />
+    <CustomBuild Include="..\..\..\Include\ZSSysGUI\ZSSysErrLogModel.h">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\ZSSysGUI\ZSSysErrLogWdgt.h">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\ZSSysGUI\ZSSysFindTextDlg.h">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+    <ClInclude Include="..\..\..\Include\ZSSysGUI\ZSSysGUIDllMain.h" />
+    <ClInclude Include="..\..\..\Include\ZSSysGUI\ZSSysGUIEnum.h" />
+    <CustomBuild Include="..\..\..\Include\ZSSysGUI\ZSSysObjPoolModel.h">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\ZSSysGUI\ZSSysProgressBar.h">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\ZSSysGUI\ZSSysPushButton.h">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+    <ClInclude Include="..\..\..\Include\ZSSysGUI\ZSSysRequestExecTreeDlg.h" />
+    <CustomBuild Include="..\..\..\Include\ZSSysGUI\ZSSysRequestExecTreeModel.h">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\ZSSysGUI\ZSSysRequestExecTreeWdgt.h">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+    <ClInclude Include="..\..\..\Include\ZSSysGUI\ZSSysRequestSequencerDlg.h" />
+    <CustomBuild Include="..\..\..\Include\ZSSysGUI\ZSSysRequestSequencerModel.h">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\ZSSysGUI\ZSSysRequestSequencerWdgt.h">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">moc %(FullPath) -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+    <ClInclude Include="..\..\..\Include\ZSSysGUI\ZSSysSepLine.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\..\Images\ZSSys\ZSSys.qrc">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">rcc -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\emb_$(ProjectName).cpp %(FullPath)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">rcc -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\emb_$(ProjectName).cpp %(FullPath)
+
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\emb_$(ProjectName).cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">rcc -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\emb_$(ProjectName).cpp %(FullPath)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">rcc -o ..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\emb_$(ProjectName).cpp %(FullPath)
+
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\..\Tmp\Moc\$(ProjectName)\Win32\$(Configuration)\emb_$(ProjectName).cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+    <None Include="..\..\..\Images\ZSSys\MenuFileAdd16x16.bmp" />
+    <None Include="..\..\..\Images\ZSSys\MenuFileEdit16x16.bmp" />
+    <None Include="..\..\..\Images\ZSSys\MenuFileNew16x16.bmp" />
+    <None Include="..\..\..\Images\ZSSys\MenuFileOpen16x16.bmp" />
+    <None Include="..\..\..\Images\ZSSys\MenuFileSave16x16.bmp" />
+    <None Include="..\..\..\Images\ZSSys\MenuFileSaveAs16x16.bmp" />
+    <None Include="..\..\..\Images\ZSSys\LedCircleBlue.png" />
+    <None Include="..\..\..\Images\ZSSys\LedCircleGreen.png" />
+    <None Include="..\..\..\Images\ZSSys\LedCircleGrey.png" />
+    <None Include="..\..\..\Images\ZSSys\LedCircleRed.png" />
+    <None Include="..\..\..\Images\ZSSys\LedCircleYellow.png" />
+    <None Include="..\..\..\Images\ZSSys\ObjPoolEntryTypeNameSpaceNormalOff.bmp" />
+    <None Include="..\..\..\Images\ZSSys\ObjPoolEntryTypeNameSpaceSelectedOff.bmp" />
+    <None Include="..\..\..\Images\ZSSys\ObjPoolEntryTypeObjectNormalOff.bmp" />
+    <None Include="..\..\..\Images\ZSSys\ObjPoolEntryTypeObjectSelectedOff.bmp" />
+    <None Include="..\..\..\Images\ZSSys\ResultSeverityCritical.bmp" />
+    <None Include="..\..\..\Images\ZSSys\ResultSeverityError.bmp" />
+    <None Include="..\..\..\Images\ZSSys\ResultSeverityInfo.bmp" />
+    <None Include="..\..\..\Images\ZSSys\ResultSeveritySuccess.bmp" />
+    <None Include="..\..\..\Images\ZSSys\ResultSeverityWarning.bmp" />
+    <None Include="..\..\..\Images\ZSSys\ModeEdit16x16.bmp" />
+    <None Include="..\..\..\Images\ZSSys\ModeEdit24x24.bmp" />
+    <None Include="..\..\..\Images\ZSSys\ModeEdit32x32.bmp" />
+    <None Include="..\..\..\Images\ZSSys\ModeSimulation16x16.bmp" />
+    <None Include="..\..\..\Images\ZSSys\ModeSimulation24x24.bmp" />
+    <None Include="..\..\..\Images\ZSSys\ModeSimulation32x32.bmp" />
+    <None Include="..\..\..\Images\ZSSys\RSIcon.ico" />
+    <None Include="..\..\..\Images\ZSSys\RSIcon16x16.bmp" />
+    <None Include="..\..\..\Images\ZSSys\RSIcon32x32.bmp" />
+    <None Include="..\..\..\Images\ZSSys\Zeus.ico" />
+    <None Include="..\..\..\Images\ZSSys\Zeus16x16.bmp" />
+    <None Include="..\..\..\Images\ZSSys\Zeus32x32.bmp" />
+    <None Include="..\..\..\Images\ZSSys\ButtonAdd16x16.bmp" />
+    <None Include="..\..\..\Images\ZSSys\ButtonAdd24x24.bmp" />
+    <None Include="..\..\..\Images\ZSSys\ButtonDelete16x16.bmp" />
+    <None Include="..\..\..\Images\ZSSys\ButtonDelete24x24.bmp" />
+    <None Include="..\..\..\Images\ZSSys\ButtonFileNew16x16.bmp" />
+    <None Include="..\..\..\Images\ZSSys\ButtonFileOpen16x16.bmp" />
+    <None Include="..\..\..\Images\ZSSys\ButtonFileSave16x16.bmp" />
+    <None Include="..\..\..\Images\ZSSys\ButtonFileSaveAs16x16.bmp" />
+    <None Include="..\..\..\Images\ZSSys\ButtonMoveDown16x16.bmp" />
+    <None Include="..\..\..\Images\ZSSys\ButtonMoveDown24x24.bmp" />
+    <None Include="..\..\..\Images\ZSSys\ButtonMoveLeft16x16.bmp" />
+    <None Include="..\..\..\Images\ZSSys\ButtonMoveLeft24x24.bmp" />
+    <None Include="..\..\..\Images\ZSSys\ButtonMoveRight16x16.bmp" />
+    <None Include="..\..\..\Images\ZSSys\ButtonMoveRight24x24.bmp" />
+    <None Include="..\..\..\Images\ZSSys\ButtonMoveUp16x16.bmp" />
+    <None Include="..\..\..\Images\ZSSys\ButtonMoveUp24x24.bmp" />
+    <None Include="..\..\..\Images\ZSSys\ButtonRedo16x16.bmp" />
+    <None Include="..\..\..\Images\ZSSys\ButtonRedo24x24.bmp" />
+    <None Include="..\..\..\Images\ZSSys\ButtonUndo16x16.bmp" />
+    <None Include="..\..\..\Images\ZSSys\ButtonUndo24x24.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="ZSSysGUI.rc">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ZSSys\ZSSys_9.0.vcxproj">
+      <Project>{ea947c05-2dce-4908-aa0c-dedd7d8c360a}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

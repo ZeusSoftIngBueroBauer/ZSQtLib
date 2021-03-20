@@ -1,0 +1,646 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{df584292-a14b-4492-878b-6683385f7a11}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
+    </Filter>
+    <Filter Include="Source Files\GraphObjs">
+      <UniqueIdentifier>{c0720d91-b9d9-4765-bfd3-1a58fc49b4c7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\GraphObjs\QtWidgets">
+      <UniqueIdentifier>{9e17bfc6-cd0d-40d2-bb28-260b0aea51df}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\GraphObjs\Electricity">
+      <UniqueIdentifier>{d2dc44d6-591c-4456-a40d-0b01dba9b09d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\GraphObjFactories">
+      <UniqueIdentifier>{918461ca-822f-4f7e-a595-782025cb8278}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\GraphObjFactories\QtWidgets">
+      <UniqueIdentifier>{23bafcb3-0378-4eff-a075-4afb51235613}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\GraphObjFactories\Electricity">
+      <UniqueIdentifier>{da97ad1b-4063-443e-8555-e41f769cd1c6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Test">
+      <UniqueIdentifier>{8d6823db-7c0f-46a3-930e-a3be3bf5bda3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Test\Standard">
+      <UniqueIdentifier>{3294162f-5798-47ba-9369-8f3ff4e09075}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Test\Electricity">
+      <UniqueIdentifier>{f7aa830b-2e35-4fb5-9f10-a6142c50f0d4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Test\QtWidgets">
+      <UniqueIdentifier>{62f95f5a-0dc4-4b30-80d0-a3bf310b5da6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Dialogs">
+      <UniqueIdentifier>{d05ff7ad-1f7b-4974-a30d-6e5ecaa7598b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Dialogs\Electricity">
+      <UniqueIdentifier>{343e2d83-540f-47f3-88dd-8317b602c674}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Dialogs\QtWidgets">
+      <UniqueIdentifier>{81223c79-9add-4fe9-a11d-9a36dc6d4a0d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{87c9c437-1e3c-40c1-9fdf-136677177303}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl</Extensions>
+    </Filter>
+    <Filter Include="Header Files\GraphObjs">
+      <UniqueIdentifier>{c5764e92-559e-407d-b60b-4eab0e575626}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\GraphObjs\QtWidgets">
+      <UniqueIdentifier>{9b80bc1e-d842-4ff1-8b8e-fbb72bf0cf83}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\GraphObjs\Electricity">
+      <UniqueIdentifier>{3c760d86-21d5-4d1d-8292-9b367bc4d7d0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\GraphObjFactories">
+      <UniqueIdentifier>{413cef55-04e7-4ca9-adc2-954711d982e5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\GraphObjFactories\QtWidgets">
+      <UniqueIdentifier>{bfe2615a-58de-4155-b49a-8aef8c33c549}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\GraphObjFactories\Electricity">
+      <UniqueIdentifier>{3588549c-1c94-45f8-9d71-c98aec3a8378}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Test">
+      <UniqueIdentifier>{4448e56b-6ede-4a5f-acfc-9b76841b0dda}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Dialogs">
+      <UniqueIdentifier>{eb2bcab3-470b-4c5d-a74a-34557e81cb10}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Dialogs\Electricity">
+      <UniqueIdentifier>{250bfc88-870c-4b70-9c1d-19568b5269e4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Dialogs\QtWidgets">
+      <UniqueIdentifier>{6ca8c075-365d-4866-b6a3-508c492ffd30}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{a8fab98c-6290-417b-8f40-2c459915e27b}</UniqueIdentifier>
+      <Extensions>ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe</Extensions>
+    </Filter>
+    <Filter Include="Resource Files\QtWidgets">
+      <UniqueIdentifier>{699956db-7af0-437a-b568-bc3ca093505e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Electricity">
+      <UniqueIdentifier>{ce1e5d97-92e4-4b1a-b94d-89b10beadcdf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files">
+      <UniqueIdentifier>{c2c522a9-12bb-4b5a-8465-5a545f02046a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Test\InterferenceChecks">
+      <UniqueIdentifier>{0a67a358-cf98-43e2-b12a-50e77fa87b89}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2017">
+      <UniqueIdentifier>{41652333-f1fa-49ec-8bcd-3d1e395e7c66}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2017\Win32">
+      <UniqueIdentifier>{7cd3665f-31e1-4974-a0de-96b68279fcc0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2017\Win32\Debug">
+      <UniqueIdentifier>{721c19b6-be74-4689-bbee-a46ccb59bd8c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2017\Win32\Release">
+      <UniqueIdentifier>{65a2abd6-dd49-4dd4-ad29-4adfaeb73569}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2017\x64">
+      <UniqueIdentifier>{e7cd6484-0f22-4a48-b32d-2e9ddd18a0be}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2017\x64\Debug">
+      <UniqueIdentifier>{5e70c616-b8a9-41c5-ad84-f1267665d829}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2017\x64\Release">
+      <UniqueIdentifier>{1fd08a97-f626-41c2-b9f4-38e538b05805}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2015">
+      <UniqueIdentifier>{3a830959-0780-4da5-9f28-39a3648a16fd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2015\Win32">
+      <UniqueIdentifier>{06e1e70e-d438-4027-93f7-226f8ad31423}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2015\x64">
+      <UniqueIdentifier>{ce11f776-f161-4050-b7be-1de7cc92449c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2015\x64\Debug">
+      <UniqueIdentifier>{18c3fff2-e4f1-40ec-a380-44355d6944da}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2015\x64\Release">
+      <UniqueIdentifier>{ee507592-5635-4f36-8589-44bd210055d6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2015\Win32\Debug">
+      <UniqueIdentifier>{69eab30d-aab3-48ad-bf7a-101ae68912f9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2015\Win32\Release">
+      <UniqueIdentifier>{e70560de-f0ec-4dcd-b90b-24e08a061a7a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2019">
+      <UniqueIdentifier>{8947f1cf-5ba5-48d0-9622-ebc0d4ff8416}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2019\x64">
+      <UniqueIdentifier>{539739cb-f80e-461d-9031-a5f126835c42}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2019\x64\Debug">
+      <UniqueIdentifier>{fe0253c2-f5d9-4c54-9282-4e4cd8e21ebe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2019\x64\Release">
+      <UniqueIdentifier>{31d0935c-157a-4b8a-b715-105177e2338a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2019\Win32">
+      <UniqueIdentifier>{05fa5ab2-55a4-48d9-9cb4-61709c93b8bc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2019\Win32\Debug">
+      <UniqueIdentifier>{2f04747b-a0b5-4c9a-91a6-1ad3a342ddbd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2019\Win32\Release">
+      <UniqueIdentifier>{5cfbc040-da65-4dbf-8346-7f541b0232c0}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\..\Source\Apps\Products\ZSDraw\App.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Source\Apps\Products\ZSDraw\Main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Source\Apps\Products\ZSDraw\MainWindow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Source\Apps\Products\ZSDraw\ZSDrawGraphObjWdgt.cpp">
+      <Filter>Source Files\GraphObjs\QtWidgets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Source\Apps\Products\ZSDraw\ZSDrawGraphObjWdgtCheckBox.cpp">
+      <Filter>Source Files\GraphObjs\QtWidgets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Source\Apps\Products\ZSDraw\ZSDrawGraphObjWdgtComboBox.cpp">
+      <Filter>Source Files\GraphObjs\QtWidgets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Source\Apps\Products\ZSDraw\ZSDrawGraphObjWdgtGroupBox.cpp">
+      <Filter>Source Files\GraphObjs\QtWidgets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Source\Apps\Products\ZSDraw\ZSDrawGraphObjWdgtLabel.cpp">
+      <Filter>Source Files\GraphObjs\QtWidgets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Source\Apps\Products\ZSDraw\ZSDrawGraphObjWdgtLineEdit.cpp">
+      <Filter>Source Files\GraphObjs\QtWidgets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Source\Apps\Products\ZSDraw\ZSDrawGraphObjWdgtPushButton.cpp">
+      <Filter>Source Files\GraphObjs\QtWidgets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Source\Apps\Products\ZSDraw\ZSDrawGraphObjElectricity.cpp">
+      <Filter>Source Files\GraphObjs\Electricity</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Source\Apps\Products\ZSDraw\ZSDrawGraphObjElectricityCapacitor.cpp">
+      <Filter>Source Files\GraphObjs\Electricity</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Source\Apps\Products\ZSDraw\ZSDrawGraphObjElectricityDiode.cpp">
+      <Filter>Source Files\GraphObjs\Electricity</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Source\Apps\Products\ZSDraw\ZSDrawGraphObjElectricityInductor.cpp">
+      <Filter>Source Files\GraphObjs\Electricity</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Source\Apps\Products\ZSDraw\ZSDrawGraphObjElectricityResistor.cpp">
+      <Filter>Source Files\GraphObjs\Electricity</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Source\Apps\Products\ZSDraw\ZSDrawGraphObjElectricitySwitch.cpp">
+      <Filter>Source Files\GraphObjs\Electricity</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Source\Apps\Products\ZSDraw\ZSDrawGraphObjElectricityTransistor.cpp">
+      <Filter>Source Files\GraphObjs\Electricity</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Source\Apps\Products\ZSDraw\ZSDrawGraphObjElectricityVoltageSource.cpp">
+      <Filter>Source Files\GraphObjs\Electricity</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Source\Apps\Products\ZSDraw\ZSDrawObjFactoryWdgtCheckBox.cpp">
+      <Filter>Source Files\GraphObjFactories\QtWidgets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Source\Apps\Products\ZSDraw\ZSDrawObjFactoryWdgtComboBox.cpp">
+      <Filter>Source Files\GraphObjFactories\QtWidgets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Source\Apps\Products\ZSDraw\ZSDrawObjFactoryWdgtGroupBox.cpp">
+      <Filter>Source Files\GraphObjFactories\QtWidgets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Source\Apps\Products\ZSDraw\ZSDrawObjFactoryWdgtLabel.cpp">
+      <Filter>Source Files\GraphObjFactories\QtWidgets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Source\Apps\Products\ZSDraw\ZSDrawObjFactoryWdgtLineEdit.cpp">
+      <Filter>Source Files\GraphObjFactories\QtWidgets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Source\Apps\Products\ZSDraw\ZSDrawObjFactoryWdgtPushButton.cpp">
+      <Filter>Source Files\GraphObjFactories\QtWidgets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Source\Apps\Products\ZSDraw\ZSDrawObjFactoryElectricityCapacitor.cpp">
+      <Filter>Source Files\GraphObjFactories\Electricity</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Source\Apps\Products\ZSDraw\ZSDrawObjFactoryElectricityDiode.cpp">
+      <Filter>Source Files\GraphObjFactories\Electricity</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Source\Apps\Products\ZSDraw\ZSDrawObjFactoryElectricityInductor.cpp">
+      <Filter>Source Files\GraphObjFactories\Electricity</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Source\Apps\Products\ZSDraw\ZSDrawObjFactoryElectricityResistor.cpp">
+      <Filter>Source Files\GraphObjFactories\Electricity</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Source\Apps\Products\ZSDraw\ZSDrawObjFactoryElectricitySwitch.cpp">
+      <Filter>Source Files\GraphObjFactories\Electricity</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Source\Apps\Products\ZSDraw\ZSDrawObjFactoryElectricityTransistor.cpp">
+      <Filter>Source Files\GraphObjFactories\Electricity</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Source\Apps\Products\ZSDraw\ZSDrawObjFactoryElectricityVoltageSource.cpp">
+      <Filter>Source Files\GraphObjFactories\Electricity</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Source\Apps\Products\ZSDraw\Test.cpp">
+      <Filter>Source Files\Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Source\Apps\Products\ZSDraw\TestStepStandardShapes.cpp">
+      <Filter>Source Files\Test\Standard</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Source\Apps\Products\ZSDraw\TestStepStandardShapesConnections.cpp">
+      <Filter>Source Files\Test\Standard</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Source\Apps\Products\ZSDraw\TestStepStandardShapesEllipses.cpp">
+      <Filter>Source Files\Test\Standard</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Source\Apps\Products\ZSDraw\TestStepStandardShapesGroups.cpp">
+      <Filter>Source Files\Test\Standard</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Source\Apps\Products\ZSDraw\TestStepStandardShapesImages.cpp">
+      <Filter>Source Files\Test\Standard</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Source\Apps\Products\ZSDraw\TestStepStandardShapesLines.cpp">
+      <Filter>Source Files\Test\Standard</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Source\Apps\Products\ZSDraw\TestStepStandardShapesPoints.cpp">
+      <Filter>Source Files\Test\Standard</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Source\Apps\Products\ZSDraw\TestStepStandardShapesPolygons.cpp">
+      <Filter>Source Files\Test\Standard</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Source\Apps\Products\ZSDraw\TestStepStandardShapesPolylines.cpp">
+      <Filter>Source Files\Test\Standard</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Source\Apps\Products\ZSDraw\TestStepStandardShapesRectangles.cpp">
+      <Filter>Source Files\Test\Standard</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Source\Apps\Products\ZSDraw\TestStepStandardShapesTexts.cpp">
+      <Filter>Source Files\Test\Standard</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Source\Apps\Products\ZSDraw\TestStepElectricity.cpp">
+      <Filter>Source Files\Test\Electricity</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Source\Apps\Products\ZSDraw\TestStepElectricityCapacitors.cpp">
+      <Filter>Source Files\Test\Electricity</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Source\Apps\Products\ZSDraw\TestStepElectricityInductors.cpp">
+      <Filter>Source Files\Test\Electricity</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Source\Apps\Products\ZSDraw\TestStepElectricityResistors.cpp">
+      <Filter>Source Files\Test\Electricity</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Source\Apps\Products\ZSDraw\TestStepElectricitySwitches.cpp">
+      <Filter>Source Files\Test\Electricity</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Source\Apps\Products\ZSDraw\TestStepElectricityTransistors.cpp">
+      <Filter>Source Files\Test\Electricity</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Source\Apps\Products\ZSDraw\ZSDrawWdgtFormatGraphObjsElectricityCapacitor.cpp">
+      <Filter>Source Files\Dialogs\Electricity</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Source\Apps\Products\ZSDraw\ZSDrawWdgtFormatGraphObjsElectricityDiode.cpp">
+      <Filter>Source Files\Dialogs\Electricity</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Source\Apps\Products\ZSDraw\ZSDrawWdgtFormatGraphObjsElectricityInductor.cpp">
+      <Filter>Source Files\Dialogs\Electricity</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Source\Apps\Products\ZSDraw\ZSDrawWdgtFormatGraphObjsElectricityResistor.cpp">
+      <Filter>Source Files\Dialogs\Electricity</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Source\Apps\Products\ZSDraw\ZSDrawWdgtFormatGraphObjsElectricitySwitch.cpp">
+      <Filter>Source Files\Dialogs\Electricity</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Source\Apps\Products\ZSDraw\ZSDrawWdgtFormatGraphObjsElectricityTransistor.cpp">
+      <Filter>Source Files\Dialogs\Electricity</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Source\Apps\Products\ZSDraw\ZSDrawWdgtFormatGraphObjsElectricityVoltageSource.cpp">
+      <Filter>Source Files\Dialogs\Electricity</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Source\Apps\Products\ZSDraw\TestGroupInterferenceChecks.cpp">
+      <Filter>Source Files\Test\InterferenceChecks</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Tmp\Moc\Apps\Products\ZSAppDraw\Debug_msvc2017\x64\emb_ZSAppDraw.cpp">
+      <Filter>Generated Files\msvc2017\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Tmp\Moc\Apps\Products\ZSAppDraw\Debug_msvc2017\x64\moc_App.cpp">
+      <Filter>Generated Files\msvc2017\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Tmp\Moc\Apps\Products\ZSAppDraw\Debug_msvc2017\x64\moc_MainWindow.cpp">
+      <Filter>Generated Files\msvc2017\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Tmp\Moc\Apps\Products\ZSAppDraw\Debug_msvc2017\x64\moc_Test.cpp">
+      <Filter>Generated Files\msvc2017\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Tmp\Moc\Apps\Products\ZSAppDraw\Release_msvc2015\x64\emb_ZSAppDraw.cpp">
+      <Filter>Generated Files\msvc2015\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Tmp\Moc\Apps\Products\ZSAppDraw\Release_msvc2015\x64\moc_App.cpp">
+      <Filter>Generated Files\msvc2015\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Tmp\Moc\Apps\Products\ZSAppDraw\Release_msvc2015\x64\moc_MainWindow.cpp">
+      <Filter>Generated Files\msvc2015\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Tmp\Moc\Apps\Products\ZSAppDraw\Release_msvc2015\x64\moc_Test.cpp">
+      <Filter>Generated Files\msvc2015\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Tmp\Moc\Apps\Products\ZSAppDraw\Debug_msvc2015\x64\emb_ZSAppDraw.cpp">
+      <Filter>Generated Files\msvc2015\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Tmp\Moc\Apps\Products\ZSAppDraw\Debug_msvc2015\x64\moc_App.cpp">
+      <Filter>Generated Files\msvc2015\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Tmp\Moc\Apps\Products\ZSAppDraw\Debug_msvc2015\x64\moc_MainWindow.cpp">
+      <Filter>Generated Files\msvc2015\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Tmp\Moc\Apps\Products\ZSAppDraw\Debug_msvc2015\x64\moc_Test.cpp">
+      <Filter>Generated Files\msvc2015\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Tmp\Moc\Apps\Products\ZSAppDraw\Release_msvc2017\Win32\emb_ZSAppDraw.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Tmp\Moc\Apps\Products\ZSAppDraw\Release_msvc2017\Win32\moc_App.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Tmp\Moc\Apps\Products\ZSAppDraw\Release_msvc2017\Win32\moc_MainWindow.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Tmp\Moc\Apps\Products\ZSAppDraw\Release_msvc2017\Win32\moc_Test.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Tmp\Moc\Apps\Products\ZSAppDraw\Release_msvc2015\Win32\emb_ZSAppDraw.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Tmp\Moc\Apps\Products\ZSAppDraw\Release_msvc2015\Win32\moc_App.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Tmp\Moc\Apps\Products\ZSAppDraw\Release_msvc2015\Win32\moc_MainWindow.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Tmp\Moc\Apps\Products\ZSAppDraw\Release_msvc2015\Win32\moc_Test.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Tmp\Moc\Apps\Products\ZSAppDraw\Debug_msvc2017\Win32\emb_ZSAppDraw.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Tmp\Moc\Apps\Products\ZSAppDraw\Debug_msvc2017\Win32\moc_App.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Tmp\Moc\Apps\Products\ZSAppDraw\Debug_msvc2017\Win32\moc_MainWindow.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Tmp\Moc\Apps\Products\ZSAppDraw\Debug_msvc2017\Win32\moc_Test.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Tmp\Moc\Apps\Products\ZSAppDraw\Debug_msvc2015\Win32\emb_ZSAppDraw.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Tmp\Moc\Apps\Products\ZSAppDraw\Debug_msvc2015\Win32\moc_App.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Tmp\Moc\Apps\Products\ZSAppDraw\Debug_msvc2015\Win32\moc_MainWindow.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Tmp\Moc\Apps\Products\ZSAppDraw\Debug_msvc2015\Win32\moc_Test.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Tmp\Moc\Apps\Products\ZSAppDraw\Release_msvc2017\x64\emb_ZSAppDraw.cpp">
+      <Filter>Generated Files\msvc2017\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Tmp\Moc\Apps\Products\ZSAppDraw\Release_msvc2017\x64\moc_App.cpp">
+      <Filter>Generated Files\msvc2017\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Tmp\Moc\Apps\Products\ZSAppDraw\Release_msvc2017\x64\moc_MainWindow.cpp">
+      <Filter>Generated Files\msvc2017\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Tmp\Moc\Apps\Products\ZSAppDraw\Release_msvc2017\x64\moc_Test.cpp">
+      <Filter>Generated Files\msvc2017\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Tmp\Moc\Apps\Products\ZSAppDraw\Debug_msvc2019\x64\moc_App.cpp">
+      <Filter>Generated Files\msvc2019\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Tmp\Moc\Apps\Products\ZSAppDraw\Debug_msvc2019\x64\moc_MainWindow.cpp">
+      <Filter>Generated Files\msvc2019\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Tmp\Moc\Apps\Products\ZSAppDraw\Debug_msvc2019\x64\moc_Test.cpp">
+      <Filter>Generated Files\msvc2019\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Tmp\Moc\Apps\Products\ZSAppDraw\Debug_msvc2019\x64\emb_ZSAppDraw.cpp">
+      <Filter>Generated Files\msvc2019\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Tmp\Moc\Apps\Products\ZSAppDraw\Release_msvc2019\x64\emb_ZSAppDraw.cpp">
+      <Filter>Generated Files\msvc2019\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Tmp\Moc\Apps\Products\ZSAppDraw\Release_msvc2019\x64\moc_App.cpp">
+      <Filter>Generated Files\msvc2019\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Tmp\Moc\Apps\Products\ZSAppDraw\Release_msvc2019\x64\moc_MainWindow.cpp">
+      <Filter>Generated Files\msvc2019\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Tmp\Moc\Apps\Products\ZSAppDraw\Release_msvc2019\x64\moc_Test.cpp">
+      <Filter>Generated Files\msvc2019\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Tmp\Moc\Apps\Products\ZSAppDraw\Release_msvc2019\Win32\emb_ZSAppDraw.cpp">
+      <Filter>Generated Files\msvc2019\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Tmp\Moc\Apps\Products\ZSAppDraw\Release_msvc2019\Win32\moc_App.cpp">
+      <Filter>Generated Files\msvc2019\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Tmp\Moc\Apps\Products\ZSAppDraw\Release_msvc2019\Win32\moc_MainWindow.cpp">
+      <Filter>Generated Files\msvc2019\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Tmp\Moc\Apps\Products\ZSAppDraw\Release_msvc2019\Win32\moc_Test.cpp">
+      <Filter>Generated Files\msvc2019\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Tmp\Moc\Apps\Products\ZSAppDraw\Debug_msvc2019\Win32\emb_ZSAppDraw.cpp">
+      <Filter>Generated Files\msvc2019\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Tmp\Moc\Apps\Products\ZSAppDraw\Debug_msvc2019\Win32\moc_App.cpp">
+      <Filter>Generated Files\msvc2019\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Tmp\Moc\Apps\Products\ZSAppDraw\Debug_msvc2019\Win32\moc_MainWindow.cpp">
+      <Filter>Generated Files\msvc2019\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Tmp\Moc\Apps\Products\ZSAppDraw\Debug_msvc2019\Win32\moc_Test.cpp">
+      <Filter>Generated Files\msvc2019\Win32\Debug</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\Include\Apps\Products\ZSDraw\ZSDrawGraphObjWdgt.h">
+      <Filter>Header Files\GraphObjs\QtWidgets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Include\Apps\Products\ZSDraw\ZSDrawGraphObjWdgtCheckBox.h">
+      <Filter>Header Files\GraphObjs\QtWidgets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Include\Apps\Products\ZSDraw\ZSDrawGraphObjWdgtComboBox.h">
+      <Filter>Header Files\GraphObjs\QtWidgets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Include\Apps\Products\ZSDraw\ZSDrawGraphObjWdgtGroupBox.h">
+      <Filter>Header Files\GraphObjs\QtWidgets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Include\Apps\Products\ZSDraw\ZSDrawGraphObjWdgtLabel.h">
+      <Filter>Header Files\GraphObjs\QtWidgets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Include\Apps\Products\ZSDraw\ZSDrawGraphObjWdgtLineEdit.h">
+      <Filter>Header Files\GraphObjs\QtWidgets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Include\Apps\Products\ZSDraw\ZSDrawGraphObjWdgtPushButton.h">
+      <Filter>Header Files\GraphObjs\QtWidgets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Include\Apps\Products\ZSDraw\ZSDrawGraphObjElectricity.h">
+      <Filter>Header Files\GraphObjs\Electricity</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Include\Apps\Products\ZSDraw\ZSDrawGraphObjElectricityCapacitor.h">
+      <Filter>Header Files\GraphObjs\Electricity</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Include\Apps\Products\ZSDraw\ZSDrawGraphObjElectricityDiode.h">
+      <Filter>Header Files\GraphObjs\Electricity</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Include\Apps\Products\ZSDraw\ZSDrawGraphObjElectricityInductor.h">
+      <Filter>Header Files\GraphObjs\Electricity</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Include\Apps\Products\ZSDraw\ZSDrawGraphObjElectricityResistor.h">
+      <Filter>Header Files\GraphObjs\Electricity</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Include\Apps\Products\ZSDraw\ZSDrawGraphObjElectricitySwitch.h">
+      <Filter>Header Files\GraphObjs\Electricity</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Include\Apps\Products\ZSDraw\ZSDrawGraphObjElectricityTransistor.h">
+      <Filter>Header Files\GraphObjs\Electricity</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Include\Apps\Products\ZSDraw\ZSDrawGraphObjElectricityVoltageSource.h">
+      <Filter>Header Files\GraphObjs\Electricity</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Include\Apps\Products\ZSDraw\ZSDrawObjFactoryWdgtCheckBox.h">
+      <Filter>Header Files\GraphObjFactories\QtWidgets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Include\Apps\Products\ZSDraw\ZSDrawObjFactoryWdgtComboBox.h">
+      <Filter>Header Files\GraphObjFactories\QtWidgets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Include\Apps\Products\ZSDraw\ZSDrawObjFactoryWdgtGroupBox.h">
+      <Filter>Header Files\GraphObjFactories\QtWidgets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Include\Apps\Products\ZSDraw\ZSDrawObjFactoryWdgtLabel.h">
+      <Filter>Header Files\GraphObjFactories\QtWidgets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Include\Apps\Products\ZSDraw\ZSDrawObjFactoryWdgtLineEdit.h">
+      <Filter>Header Files\GraphObjFactories\QtWidgets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Include\Apps\Products\ZSDraw\ZSDrawObjFactoryWdgtPushButton.h">
+      <Filter>Header Files\GraphObjFactories\QtWidgets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Include\Apps\Products\ZSDraw\ZSDrawObjFactoryElectricityCapacitor.h">
+      <Filter>Header Files\GraphObjFactories\Electricity</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Include\Apps\Products\ZSDraw\ZSDrawObjFactoryElectricityDiode.h">
+      <Filter>Header Files\GraphObjFactories\Electricity</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Include\Apps\Products\ZSDraw\ZSDrawObjFactoryElectricityInductor.h">
+      <Filter>Header Files\GraphObjFactories\Electricity</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Include\Apps\Products\ZSDraw\ZSDrawObjFactoryElectricityResistor.h">
+      <Filter>Header Files\GraphObjFactories\Electricity</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Include\Apps\Products\ZSDraw\ZSDrawObjFactoryElectricitySwitch.h">
+      <Filter>Header Files\GraphObjFactories\Electricity</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Include\Apps\Products\ZSDraw\ZSDrawObjFactoryElectricityTransistor.h">
+      <Filter>Header Files\GraphObjFactories\Electricity</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Include\Apps\Products\ZSDraw\ZSDrawObjFactoryElectricityVoltageSource.h">
+      <Filter>Header Files\GraphObjFactories\Electricity</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Include\Apps\Products\ZSDraw\ZSDrawWdgtFormatGraphObjsElectricityCapacitor.h">
+      <Filter>Header Files\Dialogs\Electricity</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Include\Apps\Products\ZSDraw\ZSDrawWdgtFormatGraphObjsElectricityDiode.h">
+      <Filter>Header Files\Dialogs\Electricity</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Include\Apps\Products\ZSDraw\ZSDrawWdgtFormatGraphObjsElectricityInductor.h">
+      <Filter>Header Files\Dialogs\Electricity</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Include\Apps\Products\ZSDraw\ZSDrawWdgtFormatGraphObjsElectricityResistor.h">
+      <Filter>Header Files\Dialogs\Electricity</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Include\Apps\Products\ZSDraw\ZSDrawWdgtFormatGraphObjsElectricitySwitch.h">
+      <Filter>Header Files\Dialogs\Electricity</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Include\Apps\Products\ZSDraw\ZSDrawWdgtFormatGraphObjsElectricityTransistor.h">
+      <Filter>Header Files\Dialogs\Electricity</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Include\Apps\Products\ZSDraw\ZSDrawWdgtFormatGraphObjsElectricityVoltageSource.h">
+      <Filter>Header Files\Dialogs\Electricity</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\..\Images\QtWidgets\CheckBox16x16.bmp">
+      <Filter>Resource Files\QtWidgets</Filter>
+    </Image>
+    <Image Include="..\..\Images\QtWidgets\ComboBox16x16.bmp">
+      <Filter>Resource Files\QtWidgets</Filter>
+    </Image>
+    <Image Include="..\..\Images\QtWidgets\GroupBox16x16.bmp">
+      <Filter>Resource Files\QtWidgets</Filter>
+    </Image>
+    <Image Include="..\..\Images\QtWidgets\Label16x16.bmp">
+      <Filter>Resource Files\QtWidgets</Filter>
+    </Image>
+    <Image Include="..\..\Images\QtWidgets\LineEdit16x16.bmp">
+      <Filter>Resource Files\QtWidgets</Filter>
+    </Image>
+    <Image Include="..\..\Images\QtWidgets\PushButton16x16.bmp">
+      <Filter>Resource Files\QtWidgets</Filter>
+    </Image>
+    <Image Include="..\..\Images\Electricity\Capacitor16x16.bmp">
+      <Filter>Resource Files\Electricity</Filter>
+    </Image>
+    <Image Include="..\..\Images\Electricity\Diode16x16.bmp">
+      <Filter>Resource Files\Electricity</Filter>
+    </Image>
+    <Image Include="..\..\Images\Electricity\Inductor16x10.bmp">
+      <Filter>Resource Files\Electricity</Filter>
+    </Image>
+    <Image Include="..\..\Images\Electricity\Inductor16x16.bmp">
+      <Filter>Resource Files\Electricity</Filter>
+    </Image>
+    <Image Include="..\..\Images\Electricity\Resistor16x16.bmp">
+      <Filter>Resource Files\Electricity</Filter>
+    </Image>
+    <Image Include="..\..\Images\Electricity\Switch16x16.bmp">
+      <Filter>Resource Files\Electricity</Filter>
+    </Image>
+    <Image Include="..\..\Images\Electricity\Transistor16x16.bmp">
+      <Filter>Resource Files\Electricity</Filter>
+    </Image>
+    <Image Include="..\..\Images\Electricity\VoltageSource16x16.bmp">
+      <Filter>Resource Files\Electricity</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\..\..\Include\Apps\Products\ZSDraw\App.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Include\Apps\Products\ZSDraw\MainWindow.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Include\Apps\Products\ZSDraw\Test.h">
+      <Filter>Header Files\Test</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Images\Apps\Products\ZSDraw\ZSDraw.qrc">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="CMakeLists.txt" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,73 @@
+<?xml version="1.0"?>
+<typesystem package="ZSQtLib.ZSTraceGUI">
+    <load-typesystem name="typesystem_core.xml" generate="no"/>
+    <load-typesystem name="typesystem_xml.xml" generate="no"/>
+    <load-typesystem name="typesystem_network.xml" generate="no"/>
+    <load-typesystem name="typesystem_gui.xml" generate="no"/>
+    <load-typesystem name="ZSSysBinding4Python.xml" generate="no"/>
+    <load-typesystem name="ZSIpcBinding4Python.xml" generate="no"/>
+    <load-typesystem name="ZSTraceBinding4Python.xml" generate="no"/>
+    <load-typesystem name="ZSSysGUIBinding4Python.xml" generate="no"/>
+    <load-typesystem name="ZSIpcGUIBinding4Python.xml" generate="no"/>
+    <namespace-type name="ZS" generate="no">
+        <namespace-type name="Trace" generate="no">
+            <namespace-type name="GUI" generate="no">
+                <!-- ZSTraceGUIDllMain.h -->
+                <!-- ZSTrcAdminObjPoolDlg.h -->
+                <object-type name="CDlgTrcAdminObjPool"/>
+                <!-- ZSTrcAdminObjPoolModel.h -->
+                <object-type name="CTrcAdminObjPoolModel">
+                    <enum-type name="EColumn"/>
+                </object-type>
+                <!-- ZSTrcAdminObjPoolWdgt.h -->
+                <object-type name="CDelegateAdminObjPool"/>
+                <object-type name="CTreeViewAdminObjPool"/>
+                <object-type name="CWdgtAdminObjPool"/>
+                <!-- ZSTrcAdminObjPoolWdgtNameSpaceContent.h -->
+                <object-type name="CModelAdminObjPoolNameSpaceContent"/>
+                <object-type name="CWdgtAdminObjPoolNameSpaceContent"/>
+                <!-- ZSTrcAdminObjPoolWdgtNameSpaces.h -->
+                <object-type name="CModelAdminObjPoolNameSpaces">
+                    <enum-type name="EColumn"/>
+                </object-type>
+                <object-type name="CWdgtAdminObjPoolNameSpaces"/>
+                <!-- ZSTrcClientDlg.h -->
+                <object-type name="CDlgTrcClient"/>
+                <!-- ZSTrcServerDlg.h -->
+                <object-type name="CDlgTrcServer"/>
+                <!-- ZSTrcCtxModel.h -->
+                <value-type name="CTrcModelEntryCtx"/>
+                <object-type name="CModelTrcCtx">
+                    <enum-type name="EColumn"/>
+                </object-type>
+                <!-- ZSTrcCtxWdgt.h -->
+                <value-type name="STrcCtxThreadEntry"/>
+                <object-type name="CWdgtTrcCtxList"/>
+                <!-- ZSTrcMsgModel.h -->
+                <value-type name="CTrcModelEntryMsg"/>
+                <object-type name="CModelTrcMsg">
+                    <enum-type name="EColumn"/>
+                </object-type>
+                <!-- ZSTrcMsgWdgt.h -->
+                <object-type name="CWdgtTrcMsgList"/>
+                <!-- ZSTrcMthModel.h -->
+                <object-type name="CTrcModelEntryMth">
+                    <enum-type name="EEntryType"/>
+                </object-type>
+                <object-type name="CTrcModelEntryMthThread"/>
+                <object-type name="CTrcModelEntryMthMethod"/>
+                <object-type name="CModelTrcMthTimeTable">
+                    <enum-type name="EColumn"/>
+                </object-type>
+                <object-type name="CModelTrcMthThreadTree">
+                    <enum-type name="EColumn"/>
+                </object-type>
+                <!-- ZSTrcMthWdgt.h -->
+                <value-type name="STrcMthThreadEntry"/>
+                <object-type name="CWdgtTrcMthList"/>
+                <!-- ZSTrcSettingsWdgt.h -->
+                <object-type name="CWdgtTrcSettings"/>
+            </namespace-type>
+        </namespace-type>
+    </namespace-type>
+</typesystem>

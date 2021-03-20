@@ -1,0 +1,73 @@
+<?xml version="1.0"?>
+<typesystem package="ZSQtLib.ZSSysGUI">
+    <load-typesystem name="typesystem_core.xml" generate="no"/>
+    <load-typesystem name="typesystem_xml.xml" generate="no"/>
+    <load-typesystem name="typesystem_network.xml" generate="no"/>
+    <load-typesystem name="typesystem_gui.xml" generate="no"/>
+    <load-typesystem name="ZSSysBinding4Python.xml" generate="no"/>
+    <!-- ZSSysGUIDllMain.h -->
+    <!-- ZSSysErrLogDlg.h -->
+    <!-- ZSSysErrLogModel.h -->
+    <!-- ZSSysErrLogWdgt.h -->
+    <!-- ZSSysFindTextDlg.h -->
+    <!-- ZSSysGUIEnum.h -->
+    <!-- ZSSysObjPoolModel.h -->
+    <!-- ZSSysProgressBar.h -->
+    <!-- ZSSysPushButton.h -->
+    <!-- ZSSysRequestExecTreeDlg.h -->
+    <!-- ZSSysRequestExecTreeModel.h -->
+    <!-- ZSSysRequestExecTreeWdgt.h -->
+    <!-- ZSSysRequestSequencerDlg.h -->
+    <!-- ZSSysRequestSequencerModel.h -->
+    <!-- ZSSysRequestSequencerWdgt.h -->
+    <!-- ZSSysSepLine.h -->
+    <namespace-type name="ZS" generate="no">
+        <namespace-type name="System" generate="no">
+            <namespace-type name="GUI" generate="no">
+                <!-- ZSSysGUIDllMain.h -->
+                <!-- ZSSysErrLogDlg.h -->
+                <object-type name="CDlgErrLog"/>
+                <!-- ZSSysErrLogModel.h -->
+                <object-type name="CModelErrLog">
+                    <enum-type name="EColumn"/>
+                </object-type>
+                <!-- ZSSysErrLogWdgt.h -->
+                <object-type name="CWdgtErrLog"/>
+                <!-- ZSSysFindTextDlg.h -->
+                <object-type name="CDlgFindText"/>
+                <!-- ZSSysGUIEnum.h -->
+                <value-type name="SEnumEntry"/>
+                <object-type name="CEnumeration"/>
+                <object-type name="CEnumerationModel"/>
+                <!-- ZSSysObjPoolModel.h -->
+                <object-type name="CModelObjPool">
+                    <enum-type name="EColumn"/>
+                </object-type>
+                <!-- ZSSysProgressBar.h -->
+                <object-type name="CProgressBar"/>
+                <!-- ZSSysPushButton.h -->
+                <object-type name="CPushButton"/>
+                <!-- ZSSysRequestExecTreeDlg.h -->
+                <object-type name="CDlgRequestExecTree"/>
+                <!-- ZSSysRequestExecTreeModel.h -->
+                <value-type name="SRequestExecTreeModelNode"/>
+                <object-type name="CModelRequestExecTree">
+                    <enum-type name="EColumn"/>
+                </object-type>
+                <!-- ZSSysRequestExecTreeWdgt.h -->
+                <object-type name="CWdgtRequestExecTree"/>
+                <!-- ZSSysRequestSequencerDlg.h -->
+                <object-type name="CDlgRequestSequencer"/>
+                <!-- ZSSysRequestSequencerModel.h -->
+                <value-type name="SRequestSeqEntryModelNode"/>
+                <object-type name="CModelRequestSequencer">
+                    <enum-type name="EColumn"/>
+                </object-type>
+                <!-- ZSSysRequestSequencerWdgt.h -->
+                <object-type name="CWdgtRequestSequencer"/>
+                <!-- ZSSysSepLine.h -->
+                <object-type name="CSepLine"/>
+            </namespace-type>
+        </namespace-type>
+    </namespace-type>
+</typesystem>

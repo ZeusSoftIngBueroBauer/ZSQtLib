@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Drawing Rect="0.0/0.0, 800.0/0.0, 800.0/600.0, 0.0/600.0">
+    <GraphObj NameSpace="ZS::Draw" ClassName="CGraphObjConnectionPoint" ObjectType="ConnectionPoint" ObjectName="ConnectionPoint17" ObjectId="ConnectionPoint17">
+        <DrawSettings/>
+        <Geometry>
+            <Pos>305.0/281.0</Pos>
+        </Geometry>
+        <ZValue>0</ZValue>
+    </GraphObj>
+    <GraphObj NameSpace="ZS::Draw" ClassName="CGraphObjConnectionPoint" ObjectType="ConnectionPoint" ObjectName="ConnectionPoint16" ObjectId="ConnectionPoint16">
+        <DrawSettings/>
+        <Geometry>
+            <Pos>305.0/161.0</Pos>
+        </Geometry>
+        <ZValue>0</ZValue>
+    </GraphObj>
+    <GraphObj NameSpace="ZS::Draw::Electricity" ClassName="CGraphObjTransistor" ObjectType="Transistor" ObjectName="T1" ObjectId="T1">
+        <ElectricalParameters>
+            <DopingType>NPN</DopingType>
+        </ElectricalParameters>
+        <DrawSettings>
+            <FillStyle>SolidPattern</FillStyle>
+        </DrawSettings>
+        <Geometry>
+            <Pos>346.0/262.0</Pos>
+            <Size>42.0/48.0</Size>
+            <RotAngleDeg>0</RotAngleDeg>
+        </Geometry>
+        <ZValue>0</ZValue>
+    </GraphObj>
+    <GraphObj NameSpace="ZS::Draw::Electricity" ClassName="CGraphObjDiode" ObjectType="Diode" ObjectName="D1" ObjectId="D1">
+        <ElectricalParameters>
+            <CutOffVoltage>1</CutOffVoltage>
+        </ElectricalParameters>
+        <DrawSettings>
+            <FillStyle>SolidPattern</FillStyle>
+        </DrawSettings>
+        <Geometry>
+            <Pos>356.0/333.0</Pos>
+            <Size>42.0/24.0</Size>
+            <RotAngleDeg>-90</RotAngleDeg>
+        </Geometry>
+        <ZValue>0</ZValue>
+    </GraphObj>
+    <GraphObj NameSpace="ZS::Draw::Electricity" ClassName="CGraphObjSwitch" ObjectType="Switch" ObjectName="S1" ObjectId="S1">
+        <ElectricalParameters>
+            <State>Opened</State>
+        </ElectricalParameters>
+        <DrawSettings/>
+        <Geometry>
+            <Pos>156.0/132.0</Pos>
+            <Size>24.0/10.0</Size>
+            <RotAngleDeg>0</RotAngleDeg>
+        </Geometry>
+        <ZValue>0</ZValue>
+    </GraphObj>
+    <GraphObj NameSpace="ZS::Draw::Electricity" ClassName="CGraphObjCapacitor" ObjectType="Capacitor" ObjectName="C1" ObjectId="C1">
+        <ElectricalParameters>
+            <Capacitance>1</Capacitance>
+        </ElectricalParameters>
+        <DrawSettings>
+            <FillStyle>SolidPattern</FillStyle>
+        </DrawSettings>
+        <Geometry>
+            <Pos>236.0/245.0</Pos>
+            <Size>24.0/24.0</Size>
+            <RotAngleDeg>90</RotAngleDeg>
+        </Geometry>
+        <ZValue>0</ZValue>
+    </GraphObj>
+    <GraphObj NameSpace="ZS::Draw::Electricity" ClassName="CGraphObjInductor" ObjectType="Inductor" ObjectName="L1" ObjectId="L1">
+        <ElectricalParameters>
+            <Inductance>1</Inductance>
+        </ElectricalParameters>
+        <DrawSettings/>
+        <Geometry>
+            <Pos>289.0/221.0</Pos>
+            <Size>42.0/10.0</Size>
+            <RotAngleDeg>90</RotAngleDeg>
+        </Geometry>
+        <ZValue>0</ZValue>
+    </GraphObj>
+    <GraphObj NameSpace="ZS::Draw::Electricity" ClassName="CGraphObjResistor" ObjectType="Resistor" ObjectName="R1" ObjectId="R1">
+        <ElectricalParameters>
+            <Resistance>1000</Resistance>
+        </ElectricalParameters>
+        <DrawSettings>
+            <FillStyle>SolidPattern</FillStyle>
+        </DrawSettings>
+        <Geometry>
+            <Pos>227.0/197.0</Pos>
+            <Size>42.0/8.0</Size>
+            <RotAngleDeg>-90</RotAngleDeg>
+        </Geometry>
+        <ZValue>0</ZValue>
+    </GraphObj>
+    <GraphObj NameSpace="ZS::Draw::Electricity" ClassName="CGraphObjVoltageSource" ObjectType="VoltageSource" ObjectName="V1" ObjectId="V1">
+        <ElectricalParameters>
+            <Voltage>1</Voltage>
+        </ElectricalParameters>
+        <DrawSettings>
+            <FillStyle>SolidPattern</FillStyle>
+        </DrawSettings>
+        <Geometry>
+            <Pos>93.0/208.0</Pos>
+            <Size>36.0/16.0</Size>
+            <RotAngleDeg>90</RotAngleDeg>
+        </Geometry>
+        <ZValue>0</ZValue>
+    </GraphObj>
+    <GraphObj NameSpace="ZS::Draw" ClassName="CGraphObjConnectionLine" ObjectType="ConnectionLine" ObjectName="ConnectionLine9" ObjectId="ConnectionLine9">
+        <ObjIdCnctPtStart>L1/CnctPt1</ObjIdCnctPtStart>
+        <ObjIdCnctPtEnd>ConnectionPoint17</ObjIdCnctPtEnd>
+        <DrawSettings/>
+        <Geometry>
+            <Pt0>310.0/244.5</Pt0>
+            <Pt1>310.0/286.0</Pt1>
+        </Geometry>
+        <ZValue>0</ZValue>
+    </GraphObj>
+    <GraphObj NameSpace="ZS::Draw" ClassName="CGraphObjConnectionLine" ObjectType="ConnectionLine" ObjectName="ConnectionLine8" ObjectId="ConnectionLine8">
+        <ObjIdCnctPtStart>C1/CnctPt1</ObjIdCnctPtStart>
+        <ObjIdCnctPtEnd>ConnectionPoint17</ObjIdCnctPtEnd>
+        <DrawSettings/>
+        <Geometry>
+            <Pt0>248.0/266.5</Pt0>
+            <Pt1>248.0/286.0</Pt1>
+            <Pt2>310.0/286.0</Pt2>
+        </Geometry>
+        <ZValue>0</ZValue>
+    </GraphObj>
+    <GraphObj NameSpace="ZS::Draw" ClassName="CGraphObjConnectionLine" ObjectType="ConnectionLine" ObjectName="ConnectionLine7" ObjectId="ConnectionLine7">
+        <ObjIdCnctPtStart>R1/CnctPt2</ObjIdCnctPtStart>
+        <ObjIdCnctPtEnd>C1/CnctPt2</ObjIdCnctPtEnd>
+        <DrawSettings/>
+        <Geometry>
+            <Pt0>248.0/219.5</Pt0>
+            <Pt1>248.0/247.5</Pt1>
+        </Geometry>
+        <ZValue>0</ZValue>
+    </GraphObj>
+    <GraphObj NameSpace="ZS::Draw" ClassName="CGraphObjConnectionLine" ObjectType="ConnectionLine" ObjectName="ConnectionLine6" ObjectId="ConnectionLine6">
+        <ObjIdCnctPtStart>ConnectionPoint16</ObjIdCnctPtStart>
+        <ObjIdCnctPtEnd>L1/CnctPt2</ObjIdCnctPtEnd>
+        <DrawSettings/>
+        <Geometry>
+            <Pt0>310.0/166.0</Pt0>
+            <Pt1>310.0/207.5</Pt1>
+        </Geometry>
+        <ZValue>0</ZValue>
+    </GraphObj>
+    <GraphObj NameSpace="ZS::Draw" ClassName="CGraphObjConnectionLine" ObjectType="ConnectionLine" ObjectName="ConnectionLine4" ObjectId="ConnectionLine4">
+        <ObjIdCnctPtStart>ConnectionPoint16</ObjIdCnctPtStart>
+        <ObjIdCnctPtEnd>R1/CnctPt1</ObjIdCnctPtEnd>
+        <DrawSettings/>
+        <Geometry>
+            <Pt0>310.0/166.0</Pt0>
+            <Pt1>248.0/166.0</Pt1>
+            <Pt2>248.0/182.5</Pt2>
+        </Geometry>
+        <ZValue>0</ZValue>
+    </GraphObj>
+    <GraphObj NameSpace="ZS::Draw" ClassName="CGraphObjConnectionLine" ObjectType="ConnectionLine" ObjectName="ConnectionLine3" ObjectId="ConnectionLine3">
+        <ObjIdCnctPtStart>S1/CnctPt2</ObjIdCnctPtStart>
+        <ObjIdCnctPtEnd>ConnectionPoint16</ObjIdCnctPtEnd>
+        <DrawSettings/>
+        <Geometry>
+            <Pt0>177.5/139.5</Pt0>
+            <Pt1>310.0/139.5</Pt1>
+            <Pt2>310.0/166.0</Pt2>
+        </Geometry>
+        <ZValue>0</ZValue>
+    </GraphObj>
+    <GraphObj NameSpace="ZS::Draw" ClassName="CGraphObjConnectionLine" ObjectType="ConnectionLine" ObjectName="ConnectionLine1" ObjectId="ConnectionLine1">
+        <ObjIdCnctPtStart>V1/CnctPt2</ObjIdCnctPtStart>
+        <ObjIdCnctPtEnd>S1/CnctPt1</ObjIdCnctPtEnd>
+        <DrawSettings/>
+        <Geometry>
+            <Pt0>111.0/200.5</Pt0>
+            <Pt1>111.0/139.0</Pt1>
+            <Pt2>158.5/139.5</Pt2>
+        </Geometry>
+        <ZValue>0</ZValue>
+    </GraphObj>
+    <GraphObj NameSpace="ZS::Draw" ClassName="CGraphObjConnectionLine" ObjectType="ConnectionLine" ObjectName="ConnectionLine8" ObjectId="ConnectionLine10">
+        <ObjIdCnctPtStart>ConnectionPoint17</ObjIdCnctPtStart>
+        <ObjIdCnctPtEnd>T1/CnctPt1</ObjIdCnctPtEnd>
+        <DrawSettings/>
+        <Geometry>
+            <Pt0>310.0/286.0</Pt0>
+            <Pt1>348.5/286.0</Pt1>
+        </Geometry>
+        <ZValue>0</ZValue>
+    </GraphObj>
+    <GraphObj NameSpace="ZS::Draw" ClassName="CGraphObjConnectionLine" ObjectType="ConnectionLine" ObjectName="ConnectionLine10" ObjectId="ConnectionLine12">
+        <ObjIdCnctPtStart>T1/CnctPt2</ObjIdCnctPtStart>
+        <ObjIdCnctPtEnd>ConnectionPoint16</ObjIdCnctPtEnd>
+        <DrawSettings/>
+        <Geometry>
+            <Pt0>377.4/264.5</Pt0>
+            <Pt1>377.0/166.0</Pt1>
+            <Pt2>310.0/166.0</Pt2>
+        </Geometry>
+        <ZValue>0</ZValue>
+    </GraphObj>
+    <GraphObj NameSpace="ZS::Draw" ClassName="CGraphObjConnectionLine" ObjectType="ConnectionLine" ObjectName="ConnectionLine11" ObjectId="ConnectionLine11">
+        <ObjIdCnctPtStart>T1/CnctPt3</ObjIdCnctPtStart>
+        <ObjIdCnctPtEnd>D1/CnctPt1</ObjIdCnctPtEnd>
+        <DrawSettings/>
+        <Geometry>
+            <Pt0>377.4/307.5</Pt0>
+            <Pt1>377.0/325.0</Pt1>
+            <Pt2>377.0/326.5</Pt2>
+        </Geometry>
+        <ZValue>0</ZValue>
+    </GraphObj>
+    <GraphObj NameSpace="ZS::Draw" ClassName="CGraphObjConnectionLine" ObjectType="ConnectionLine" ObjectName="ConnectionLine12" ObjectId="ConnectionLine14">
+        <ObjIdCnctPtStart>V1/CnctPt1</ObjIdCnctPtStart>
+        <ObjIdCnctPtEnd>D1/CnctPt2</ObjIdCnctPtEnd>
+        <DrawSettings/>
+        <Geometry>
+            <Pt0>111.0/231.5</Pt0>
+            <Pt1>111.0/378.0</Pt1>
+            <Pt2>377.0/378.0</Pt2>
+            <Pt3>377.0/364.0</Pt3>
+        </Geometry>
+        <ZValue>0</ZValue>
+    </GraphObj>
+</Drawing>

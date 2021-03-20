@@ -1,0 +1,234 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectName>ZSIpcBinding4Python</ProjectName>
+    <ProjectGuid>{43474112-302F-4BFD-AE6A-BFBF7D8482FB}</ProjectGuid>
+    <RootNamespace>ZSIpcBinding4Python</RootNamespace>
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\..\Tmp\Out\$(ProjectName)\Win32\$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\..\Tmp\Int\$(ProjectName)\Win32\$(Configuration)\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\..\Tmp\Out\$(ProjectName)\Win32\$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\..\Tmp\Int\$(ProjectName)\Win32\$(Configuration)\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <PreBuildEvent>
+      <Command>
+      </Command>
+    </PreBuildEvent>
+    <ClCompile>
+      <AdditionalOptions>/wd4522 %(AdditionalOptions)</AdditionalOptions>
+      <Optimization>Disabled</Optimization>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <AdditionalIncludeDirectories>.\;..\..\..\Include;..\..\..\Include\ZSSys;..\..\..\Include\ZSIpc;..\..\..\Tmp\Shiboken\Python27\Win32\$(Configuration)\ZSSys;$(QTDIR)\include;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtXml;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtGui;$(PYTHONDIR)\Include;$(PYTHONDIR)\Lib\site-packages\PySide\include\shiboken;$(PYTHONDIR)\Lib\site-packages\PySide\include\PySide;$(PYTHONDIR)\Lib\site-packages\PySide\include\PySide\QtCore;$(PYTHONDIR)\Lib\site-packages\PySide\include\PySide\QtXml;$(PYTHONDIR)\Lib\site-packages\PySide\include\PySide\QtNetwork;$(PYTHONDIR)\Lib\site-packages\PySide\include\PySide\QtGui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;_ZSTRACE;ZSIPCBINDING4PYTHONDLL_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
+      <BrowseInformation>true</BrowseInformation>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+    </ClCompile>
+    <PreLinkEvent>
+      <Message>.\ZSSysBinding4Python.bat</Message>
+      <Command>.\ZSSysBinding4Python.bat</Command>
+    </PreLinkEvent>
+    <Link>
+      <AdditionalDependencies>QtCored4.lib;QtNetworkd4.lib;QtXmld4.lib;shiboken-python2.7_d.lib;pyside-python2.7_d.lib;ZSSysd.lib;ZSIpcd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)$(ProjectName)d.dll</OutputFile>
+      <AdditionalLibraryDirectories>$(QTDIR)\lib;$(PYTHONDIR)\libs;$(PYTHONDIR)\Lib\site-packages\PySide;..\..\..\Lib\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+    <PostBuildEvent>
+      <Message>..\CopyBinding4Python.bat ..\..\..\Tmp\Out ZSIpc Win32 $(Configuration)</Message>
+      <Command>..\CopyBinding4Python.bat ..\..\..\Tmp\Out ZSIpc Win32 $(Configuration)</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <PreBuildEvent>
+      <Command>
+      </Command>
+    </PreBuildEvent>
+    <ClCompile>
+      <AdditionalOptions>/wd4522 %(AdditionalOptions)</AdditionalOptions>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <AdditionalIncludeDirectories>.\;..\..\..\Include;..\..\..\Include\ZSSys;..\..\..\Include\ZSIpc;..\..\..\Tmp\Shiboken\Python27\Win32\$(Configuration)\ZSSys;$(QTDIR)\include;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtXml;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtGui;$(PYTHONDIR)\Include;$(PYTHONDIR)\Lib\site-packages\PySide\include\shiboken;$(PYTHONDIR)\Lib\site-packages\PySide\include\PySide;$(PYTHONDIR)\Lib\site-packages\PySide\include\PySide\QtCore;$(PYTHONDIR)\Lib\site-packages\PySide\include\PySide\QtXml;$(PYTHONDIR)\Lib\site-packages\PySide\include\PySide\QtNetwork;$(PYTHONDIR)\Lib\site-packages\PySide\include\PySide\QtGui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;_ZSTRACE;ZSIPCBINDING4PYTHONDLL_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
+      <BrowseInformation>true</BrowseInformation>
+      <BrowseInformationFile>$(IntDir)</BrowseInformationFile>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <PreLinkEvent>
+      <Command>
+      </Command>
+    </PreLinkEvent>
+    <Link>
+      <AdditionalDependencies>QtCore4.lib;QtNetwork4.lib;QtXml4.lib;shiboken-python2.7.lib;pyside-python2.7.lib;ZSSys.lib;ZSIpc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(QTDIR)\lib;$(PYTHONDIR)\libs;$(PYTHONDIR)\Lib\site-packages\PySide;..\..\..\Lib\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <LinkTimeCodeGeneration>
+      </LinkTimeCodeGeneration>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+    <PostBuildEvent>
+      <Message>..\CopyBinding4Python.bat ..\..\..\Tmp\Out ZSIpc Win32 $(Configuration)</Message>
+      <Command>..\CopyBinding4Python.bat ..\..\..\Tmp\Out ZSIpc Win32 $(Configuration)</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSIpc\zs_ipc_cblktype_wrapper.cpp" />
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSIpc\zs_ipc_cclient_wrapper.cpp" />
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSIpc\zs_ipc_cclientgateway_wrapper.cpp" />
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSIpc\zs_ipc_cclientgatewaythread_wrapper.cpp" />
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSIpc\zs_ipc_cipcserverwrapper_wrapper.cpp" />
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSIpc\zs_ipc_cipcsocketwrapper_wrapper.cpp" />
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSIpc\zs_ipc_cmsgconchangesettings_wrapper.cpp" />
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSIpc\zs_ipc_cmsgconconnect_wrapper.cpp" />
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSIpc\zs_ipc_cmsgcondisconnect_wrapper.cpp" />
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSIpc\zs_ipc_cmsgconshutdown_wrapper.cpp" />
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSIpc\zs_ipc_cmsgconstartup_wrapper.cpp" />
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSIpc\zs_ipc_cmsgindconnected_wrapper.cpp" />
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSIpc\zs_ipc_cmsginddisconnected_wrapper.cpp" />
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSIpc\zs_ipc_cmsgindreceiveddata_wrapper.cpp" />
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSIpc\zs_ipc_cmsgreqchangesettings_wrapper.cpp" />
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSIpc\zs_ipc_cmsgreqconnect_wrapper.cpp" />
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSIpc\zs_ipc_cmsgreqdisconnect_wrapper.cpp" />
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSIpc\zs_ipc_cmsgreqreceivedata_wrapper.cpp" />
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSIpc\zs_ipc_cmsgreqsenddata_wrapper.cpp" />
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSIpc\zs_ipc_cmsgreqshutdown_wrapper.cpp" />
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSIpc\zs_ipc_cmsgreqstartup_wrapper.cpp" />
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSIpc\zs_ipc_cserver_wrapper.cpp" />
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSIpc\zs_ipc_cservergateway_wrapper.cpp" />
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSIpc\zs_ipc_cservergatewaythread_wrapper.cpp" />
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSIpc\zs_ipc_csrvcltbasegateway_wrapper.cpp" />
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSIpc\zs_ipc_csrvcltbasegatewaythread_wrapper.cpp" />
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSIpc\zs_ipc_sclienthostsettings_wrapper.cpp" />
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSIpc\zs_ipc_sserverhostsettings_wrapper.cpp" />
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSIpc\zs_ipc_ssocketdscr_wrapper.cpp" />
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSIpc\zs_ipc_stimersettings_wrapper.cpp" />
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSIpc\zsipc_module_wrapper.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSIpc\zs_ipc_cblktype_wrapper.h" />
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSIpc\zs_ipc_cclient_wrapper.h" />
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSIpc\zs_ipc_cclientgateway_wrapper.h" />
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSIpc\zs_ipc_cclientgatewaythread_wrapper.h" />
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSIpc\zs_ipc_cipcserverwrapper_wrapper.h" />
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSIpc\zs_ipc_cipcsocketwrapper_wrapper.h" />
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSIpc\zs_ipc_cmsgconchangesettings_wrapper.h" />
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSIpc\zs_ipc_cmsgconconnect_wrapper.h" />
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSIpc\zs_ipc_cmsgcondisconnect_wrapper.h" />
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSIpc\zs_ipc_cmsgconshutdown_wrapper.h" />
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSIpc\zs_ipc_cmsgconstartup_wrapper.h" />
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSIpc\zs_ipc_cmsgindconnected_wrapper.h" />
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSIpc\zs_ipc_cmsginddisconnected_wrapper.h" />
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSIpc\zs_ipc_cmsgindreceiveddata_wrapper.h" />
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSIpc\zs_ipc_cmsgreqchangesettings_wrapper.h" />
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSIpc\zs_ipc_cmsgreqconnect_wrapper.h" />
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSIpc\zs_ipc_cmsgreqdisconnect_wrapper.h" />
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSIpc\zs_ipc_cmsgreqreceivedata_wrapper.h" />
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSIpc\zs_ipc_cmsgreqsenddata_wrapper.h" />
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSIpc\zs_ipc_cmsgreqshutdown_wrapper.h" />
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSIpc\zs_ipc_cmsgreqstartup_wrapper.h" />
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSIpc\zs_ipc_cserver_wrapper.h" />
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSIpc\zs_ipc_cservergateway_wrapper.h" />
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSIpc\zs_ipc_cservergatewaythread_wrapper.h" />
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSIpc\zs_ipc_csrvcltbasegateway_wrapper.h" />
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSIpc\zs_ipc_csrvcltbasegatewaythread_wrapper.h" />
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSIpc\zs_ipc_sclienthostsettings_wrapper.h" />
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSIpc\zs_ipc_sserverhostsettings_wrapper.h" />
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSIpc\zs_ipc_ssocketdscr_wrapper.h" />
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSIpc\zs_ipc_stimersettings_wrapper.h" />
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSIpc\zsipc_python.h" />
+    <CustomBuild Include="ZSIpcBinding4Python.h">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\CreateBinding4Python ZSIpc</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\CreateBinding4Python ZSIpc
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\..\Tmp\Shiboken\Python27\Win32\$(Configuration)\zsipc_python.h;..\..\..\Tmp\Shiboken\Python27\Win32\$(Configuration)\zsipc_module_wrapper.cpp;..\..\..\Tmp\Shiboken\Python27\Win32\$(Configuration)\zs_wrapper.h;..\..\..\Tmp\Shiboken\Python27\Win32\$(Configuration)\zs_wrapper.cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\CreateBinding4Python ZSIpc</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\CreateBinding4Python ZSIpc
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\..\Tmp\Shiboken\Python27\Win32\$(Configuration)\zsipc_python.h;..\..\..\Tmp\Shiboken\Python27\Win32\$(Configuration)\zsipc_module_wrapper.cpp;..\..\..\Tmp\Shiboken\Python27\Win32\$(Configuration)\zs_wrapper.h;..\..\..\Tmp\Shiboken\Python27\Win32\$(Configuration)\zs_wrapper.cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+    <ClInclude Include="ZSIpcBinding4PythonGlobalFunctionsWrapper.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="ZSIpcBinding4Python.rc">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ZSIpcBinding4Python.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ZSSys\ZSSysBinding4Python_9.0.vcxproj">
+      <Project>{6e3b2332-e0f8-4c46-a5cb-436fc073368c}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

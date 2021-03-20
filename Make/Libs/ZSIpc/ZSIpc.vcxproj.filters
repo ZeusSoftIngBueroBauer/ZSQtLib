@@ -1,0 +1,782 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Generated Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
+    </Filter>
+    <Filter Include="Include Files">
+      <UniqueIdentifier>{501951dc-1a84-493b-bdc3-88e7be0df3d7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2015">
+      <UniqueIdentifier>{a7bc281c-7207-4f62-ac9d-22575e052663}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2015\Win32">
+      <UniqueIdentifier>{43823b2e-43d1-497d-8d20-ee3532200adc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2015\Win32\Debug">
+      <UniqueIdentifier>{1f5826ed-4777-40ab-b130-e1260eb2062d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2015\Win32\Release">
+      <UniqueIdentifier>{24136e77-b5af-4afe-a397-b1b27388b46f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2015\x64">
+      <UniqueIdentifier>{91b42368-594f-45a7-bb72-b6ea6edf83e4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2015\x64\Debug">
+      <UniqueIdentifier>{d7d6b6e1-1d40-44f0-8546-8aba4d51beec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2015\x64\Release">
+      <UniqueIdentifier>{84b7ee3f-a53d-4d9a-b393-e661836acb5d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2017">
+      <UniqueIdentifier>{3b774846-4def-4c79-b0e7-1502e512692d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2017\Win32">
+      <UniqueIdentifier>{4756249f-ab45-4c99-8f1a-d23cc171ff14}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2017\Win32\Debug">
+      <UniqueIdentifier>{bdd24cfb-faeb-4461-a53c-da0a0e596e6d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2017\Win32\Release">
+      <UniqueIdentifier>{0f43fb2c-ea03-4fcd-94d7-aa4ea8492173}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2017\x64">
+      <UniqueIdentifier>{997ad474-7c2a-49f5-83cb-7f230c1840cb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2017\x64\Debug">
+      <UniqueIdentifier>{a44a55c4-fd9e-4bf9-b307-762a7047ffad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2017\x64\Release">
+      <UniqueIdentifier>{3df838e5-c7b3-49ee-8212-3367261b1fee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2019">
+      <UniqueIdentifier>{2bf907ae-c724-42bf-ad14-8d990270a492}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2019\x64">
+      <UniqueIdentifier>{aa359279-431e-4ccc-a43b-4c16987b2ab5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2019\x64\Debug">
+      <UniqueIdentifier>{ee5b9aff-5cb6-4be7-bd54-c27cfef4ebd7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2019\x64\Release">
+      <UniqueIdentifier>{b08c2f85-5e75-49a9-9489-339c5222499b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2019\Win32">
+      <UniqueIdentifier>{7c1719c4-7268-4a96-903d-f4da578ef879}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2019\Win32\Debug">
+      <UniqueIdentifier>{1b124d46-8ebb-48ef-aab8-337279a728fe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2019\Win32\Release">
+      <UniqueIdentifier>{71556c7c-0865-4d56-9345-2c85abd7d20a}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\Source\Libs\ZSIpc\ZSIpcClient.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSIpc\ZSIpcClientGateway.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSIpc\ZSIpcDllMain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSIpc\ZSIpcServer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSIpc\ZSIpcServerGateway.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSIpc\ZSIpcServerWrapper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSIpc\ZSIpcServerWrapperShm.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSIpc\ZSIpcServerWrapperTcp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSIpc\ZSIpcSocketWrapper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSIpc\ZSIpcSocketWrapperShm.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSIpc\ZSIpcSocketWrapperTcp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSIpc\ZSIpcSrvCltBaseGateway.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSIpc\ZSIpcSrvCltMsg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSIpc\ZSIpcServerWrapperInProcMsg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSIpc\ZSIpcSocketWrapperInProcMsg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSIpc\ZSIpcInProcMsgServer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSIpc\ZSIpcInProcMsgSocket.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSIpc\ZSIpcCommon.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSIpc\ZSIpcBlkType.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSIpc\ZSIpcBlkTypeE.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSIpc\ZSIpcBlkTypeL.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSIpc\ZSIpcBlkTypeNone.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSIpc\ZSIpcBlkTypeSL.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSIpc\ZSIpcBlkTypeTLV.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSIpc\ZSIpcBlkTypeUser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Debug_msvc2015\Win32\moc_ZSIpcClient.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Debug_msvc2015\Win32\moc_ZSIpcClientGateway.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Debug_msvc2015\Win32\moc_ZSIpcInProcMsgServer.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Debug_msvc2015\Win32\moc_ZSIpcInProcMsgSocket.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Debug_msvc2015\Win32\moc_ZSIpcServer.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Debug_msvc2015\Win32\moc_ZSIpcServerGateway.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Debug_msvc2015\Win32\moc_ZSIpcServerWrapper.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Debug_msvc2015\Win32\moc_ZSIpcServerWrapperInProcMsg.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Debug_msvc2015\Win32\moc_ZSIpcServerWrapperShm.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Debug_msvc2015\Win32\moc_ZSIpcServerWrapperTcp.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Debug_msvc2015\Win32\moc_ZSIpcSocketWrapper.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Debug_msvc2015\Win32\moc_ZSIpcSocketWrapperInProcMsg.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Debug_msvc2015\Win32\moc_ZSIpcSocketWrapperShm.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Debug_msvc2015\Win32\moc_ZSIpcSocketWrapperTcp.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Debug_msvc2015\Win32\moc_ZSIpcSrvCltBaseGateway.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Release_msvc2015\Win32\moc_ZSIpcClient.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Release_msvc2015\Win32\moc_ZSIpcClientGateway.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Release_msvc2015\Win32\moc_ZSIpcInProcMsgServer.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Release_msvc2015\Win32\moc_ZSIpcInProcMsgSocket.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Release_msvc2015\Win32\moc_ZSIpcServer.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Release_msvc2015\Win32\moc_ZSIpcServerGateway.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Release_msvc2015\Win32\moc_ZSIpcServerWrapper.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Release_msvc2015\Win32\moc_ZSIpcServerWrapperInProcMsg.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Release_msvc2015\Win32\moc_ZSIpcServerWrapperShm.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Release_msvc2015\Win32\moc_ZSIpcServerWrapperTcp.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Release_msvc2015\Win32\moc_ZSIpcSocketWrapper.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Release_msvc2015\Win32\moc_ZSIpcSocketWrapperInProcMsg.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Release_msvc2015\Win32\moc_ZSIpcSocketWrapperShm.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Release_msvc2015\Win32\moc_ZSIpcSocketWrapperTcp.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Release_msvc2015\Win32\moc_ZSIpcSrvCltBaseGateway.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Debug_msvc2017\Win32\moc_ZSIpcClient.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Debug_msvc2017\Win32\moc_ZSIpcClientGateway.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Debug_msvc2017\Win32\moc_ZSIpcInProcMsgServer.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Debug_msvc2017\Win32\moc_ZSIpcInProcMsgSocket.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Debug_msvc2017\Win32\moc_ZSIpcServer.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Debug_msvc2017\Win32\moc_ZSIpcServerGateway.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Debug_msvc2017\Win32\moc_ZSIpcServerWrapper.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Debug_msvc2017\Win32\moc_ZSIpcServerWrapperInProcMsg.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Debug_msvc2017\Win32\moc_ZSIpcServerWrapperShm.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Debug_msvc2017\Win32\moc_ZSIpcServerWrapperTcp.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Debug_msvc2017\Win32\moc_ZSIpcSocketWrapper.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Debug_msvc2017\Win32\moc_ZSIpcSocketWrapperInProcMsg.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Debug_msvc2017\Win32\moc_ZSIpcSocketWrapperShm.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Debug_msvc2017\Win32\moc_ZSIpcSocketWrapperTcp.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Debug_msvc2017\Win32\moc_ZSIpcSrvCltBaseGateway.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Release_msvc2017\Win32\moc_ZSIpcClient.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Release_msvc2017\Win32\moc_ZSIpcClientGateway.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Release_msvc2017\Win32\moc_ZSIpcInProcMsgServer.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Release_msvc2017\Win32\moc_ZSIpcInProcMsgSocket.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Release_msvc2017\Win32\moc_ZSIpcServer.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Release_msvc2017\Win32\moc_ZSIpcServerGateway.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Release_msvc2017\Win32\moc_ZSIpcServerWrapper.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Release_msvc2017\Win32\moc_ZSIpcServerWrapperInProcMsg.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Release_msvc2017\Win32\moc_ZSIpcServerWrapperShm.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Release_msvc2017\Win32\moc_ZSIpcServerWrapperTcp.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Release_msvc2017\Win32\moc_ZSIpcSocketWrapper.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Release_msvc2017\Win32\moc_ZSIpcSocketWrapperInProcMsg.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Release_msvc2017\Win32\moc_ZSIpcSocketWrapperShm.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Release_msvc2017\Win32\moc_ZSIpcSocketWrapperTcp.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Release_msvc2017\Win32\moc_ZSIpcSrvCltBaseGateway.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Debug_msvc2017\x64\moc_ZSIpcClient.cpp">
+      <Filter>Generated Files\msvc2017\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Debug_msvc2017\x64\moc_ZSIpcClientGateway.cpp">
+      <Filter>Generated Files\msvc2017\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Debug_msvc2017\x64\moc_ZSIpcInProcMsgServer.cpp">
+      <Filter>Generated Files\msvc2017\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Debug_msvc2017\x64\moc_ZSIpcInProcMsgSocket.cpp">
+      <Filter>Generated Files\msvc2017\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Debug_msvc2017\x64\moc_ZSIpcServer.cpp">
+      <Filter>Generated Files\msvc2017\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Debug_msvc2017\x64\moc_ZSIpcServerGateway.cpp">
+      <Filter>Generated Files\msvc2017\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Debug_msvc2017\x64\moc_ZSIpcServerWrapper.cpp">
+      <Filter>Generated Files\msvc2017\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Debug_msvc2017\x64\moc_ZSIpcServerWrapperInProcMsg.cpp">
+      <Filter>Generated Files\msvc2017\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Debug_msvc2017\x64\moc_ZSIpcServerWrapperShm.cpp">
+      <Filter>Generated Files\msvc2017\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Debug_msvc2017\x64\moc_ZSIpcServerWrapperTcp.cpp">
+      <Filter>Generated Files\msvc2017\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Debug_msvc2017\x64\moc_ZSIpcSocketWrapper.cpp">
+      <Filter>Generated Files\msvc2017\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Debug_msvc2017\x64\moc_ZSIpcSocketWrapperInProcMsg.cpp">
+      <Filter>Generated Files\msvc2017\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Debug_msvc2017\x64\moc_ZSIpcSocketWrapperShm.cpp">
+      <Filter>Generated Files\msvc2017\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Debug_msvc2017\x64\moc_ZSIpcSocketWrapperTcp.cpp">
+      <Filter>Generated Files\msvc2017\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Debug_msvc2017\x64\moc_ZSIpcSrvCltBaseGateway.cpp">
+      <Filter>Generated Files\msvc2017\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Release_msvc2015\x64\moc_ZSIpcClient.cpp">
+      <Filter>Generated Files\msvc2015\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Release_msvc2015\x64\moc_ZSIpcClientGateway.cpp">
+      <Filter>Generated Files\msvc2015\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Release_msvc2015\x64\moc_ZSIpcInProcMsgServer.cpp">
+      <Filter>Generated Files\msvc2015\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Release_msvc2015\x64\moc_ZSIpcInProcMsgSocket.cpp">
+      <Filter>Generated Files\msvc2015\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Release_msvc2015\x64\moc_ZSIpcServer.cpp">
+      <Filter>Generated Files\msvc2015\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Release_msvc2015\x64\moc_ZSIpcServerGateway.cpp">
+      <Filter>Generated Files\msvc2015\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Release_msvc2015\x64\moc_ZSIpcServerWrapper.cpp">
+      <Filter>Generated Files\msvc2015\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Release_msvc2015\x64\moc_ZSIpcServerWrapperInProcMsg.cpp">
+      <Filter>Generated Files\msvc2015\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Release_msvc2015\x64\moc_ZSIpcServerWrapperShm.cpp">
+      <Filter>Generated Files\msvc2015\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Release_msvc2015\x64\moc_ZSIpcServerWrapperTcp.cpp">
+      <Filter>Generated Files\msvc2015\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Release_msvc2015\x64\moc_ZSIpcSocketWrapper.cpp">
+      <Filter>Generated Files\msvc2015\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Release_msvc2015\x64\moc_ZSIpcSocketWrapperInProcMsg.cpp">
+      <Filter>Generated Files\msvc2015\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Release_msvc2015\x64\moc_ZSIpcSocketWrapperShm.cpp">
+      <Filter>Generated Files\msvc2015\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Release_msvc2015\x64\moc_ZSIpcSocketWrapperTcp.cpp">
+      <Filter>Generated Files\msvc2015\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Release_msvc2015\x64\moc_ZSIpcSrvCltBaseGateway.cpp">
+      <Filter>Generated Files\msvc2015\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Debug_msvc2015\x64\moc_ZSIpcClient.cpp">
+      <Filter>Generated Files\msvc2015\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Debug_msvc2015\x64\moc_ZSIpcClientGateway.cpp">
+      <Filter>Generated Files\msvc2015\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Debug_msvc2015\x64\moc_ZSIpcInProcMsgServer.cpp">
+      <Filter>Generated Files\msvc2015\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Debug_msvc2015\x64\moc_ZSIpcInProcMsgSocket.cpp">
+      <Filter>Generated Files\msvc2015\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Debug_msvc2015\x64\moc_ZSIpcServer.cpp">
+      <Filter>Generated Files\msvc2015\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Debug_msvc2015\x64\moc_ZSIpcServerGateway.cpp">
+      <Filter>Generated Files\msvc2015\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Debug_msvc2015\x64\moc_ZSIpcServerWrapper.cpp">
+      <Filter>Generated Files\msvc2015\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Debug_msvc2015\x64\moc_ZSIpcServerWrapperInProcMsg.cpp">
+      <Filter>Generated Files\msvc2015\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Debug_msvc2015\x64\moc_ZSIpcServerWrapperShm.cpp">
+      <Filter>Generated Files\msvc2015\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Debug_msvc2015\x64\moc_ZSIpcServerWrapperTcp.cpp">
+      <Filter>Generated Files\msvc2015\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Debug_msvc2015\x64\moc_ZSIpcSocketWrapper.cpp">
+      <Filter>Generated Files\msvc2015\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Debug_msvc2015\x64\moc_ZSIpcSocketWrapperInProcMsg.cpp">
+      <Filter>Generated Files\msvc2015\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Debug_msvc2015\x64\moc_ZSIpcSocketWrapperShm.cpp">
+      <Filter>Generated Files\msvc2015\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Debug_msvc2015\x64\moc_ZSIpcSocketWrapperTcp.cpp">
+      <Filter>Generated Files\msvc2015\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Debug_msvc2015\x64\moc_ZSIpcSrvCltBaseGateway.cpp">
+      <Filter>Generated Files\msvc2015\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Release_msvc2017\x64\moc_ZSIpcClient.cpp">
+      <Filter>Generated Files\msvc2017\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Release_msvc2017\x64\moc_ZSIpcClientGateway.cpp">
+      <Filter>Generated Files\msvc2017\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Release_msvc2017\x64\moc_ZSIpcInProcMsgServer.cpp">
+      <Filter>Generated Files\msvc2017\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Release_msvc2017\x64\moc_ZSIpcInProcMsgSocket.cpp">
+      <Filter>Generated Files\msvc2017\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Release_msvc2017\x64\moc_ZSIpcServer.cpp">
+      <Filter>Generated Files\msvc2017\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Release_msvc2017\x64\moc_ZSIpcServerGateway.cpp">
+      <Filter>Generated Files\msvc2017\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Release_msvc2017\x64\moc_ZSIpcServerWrapper.cpp">
+      <Filter>Generated Files\msvc2017\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Release_msvc2017\x64\moc_ZSIpcServerWrapperInProcMsg.cpp">
+      <Filter>Generated Files\msvc2017\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Release_msvc2017\x64\moc_ZSIpcServerWrapperShm.cpp">
+      <Filter>Generated Files\msvc2017\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Release_msvc2017\x64\moc_ZSIpcServerWrapperTcp.cpp">
+      <Filter>Generated Files\msvc2017\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Release_msvc2017\x64\moc_ZSIpcSocketWrapper.cpp">
+      <Filter>Generated Files\msvc2017\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Release_msvc2017\x64\moc_ZSIpcSocketWrapperInProcMsg.cpp">
+      <Filter>Generated Files\msvc2017\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Release_msvc2017\x64\moc_ZSIpcSocketWrapperShm.cpp">
+      <Filter>Generated Files\msvc2017\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Release_msvc2017\x64\moc_ZSIpcSocketWrapperTcp.cpp">
+      <Filter>Generated Files\msvc2017\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Release_msvc2017\x64\moc_ZSIpcSrvCltBaseGateway.cpp">
+      <Filter>Generated Files\msvc2017\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Debug_msvc2019\x64\moc_ZSIpcClient.cpp">
+      <Filter>Generated Files\msvc2019\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Debug_msvc2019\x64\moc_ZSIpcClientGateway.cpp">
+      <Filter>Generated Files\msvc2019\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Debug_msvc2019\x64\moc_ZSIpcInProcMsgServer.cpp">
+      <Filter>Generated Files\msvc2019\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Debug_msvc2019\x64\moc_ZSIpcInProcMsgSocket.cpp">
+      <Filter>Generated Files\msvc2019\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Debug_msvc2019\x64\moc_ZSIpcServer.cpp">
+      <Filter>Generated Files\msvc2019\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Debug_msvc2019\x64\moc_ZSIpcServerGateway.cpp">
+      <Filter>Generated Files\msvc2019\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Debug_msvc2019\x64\moc_ZSIpcServerWrapper.cpp">
+      <Filter>Generated Files\msvc2019\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Debug_msvc2019\x64\moc_ZSIpcServerWrapperInProcMsg.cpp">
+      <Filter>Generated Files\msvc2019\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Debug_msvc2019\x64\moc_ZSIpcServerWrapperShm.cpp">
+      <Filter>Generated Files\msvc2019\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Debug_msvc2019\x64\moc_ZSIpcServerWrapperTcp.cpp">
+      <Filter>Generated Files\msvc2019\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Debug_msvc2019\x64\moc_ZSIpcSocketWrapper.cpp">
+      <Filter>Generated Files\msvc2019\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Debug_msvc2019\x64\moc_ZSIpcSocketWrapperInProcMsg.cpp">
+      <Filter>Generated Files\msvc2019\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Debug_msvc2019\x64\moc_ZSIpcSocketWrapperShm.cpp">
+      <Filter>Generated Files\msvc2019\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Debug_msvc2019\x64\moc_ZSIpcSocketWrapperTcp.cpp">
+      <Filter>Generated Files\msvc2019\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Debug_msvc2019\x64\moc_ZSIpcSrvCltBaseGateway.cpp">
+      <Filter>Generated Files\msvc2019\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Release_msvc2019\x64\moc_ZSIpcClient.cpp">
+      <Filter>Generated Files\msvc2019\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Release_msvc2019\x64\moc_ZSIpcClientGateway.cpp">
+      <Filter>Generated Files\msvc2019\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Release_msvc2019\x64\moc_ZSIpcInProcMsgServer.cpp">
+      <Filter>Generated Files\msvc2019\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Release_msvc2019\x64\moc_ZSIpcInProcMsgSocket.cpp">
+      <Filter>Generated Files\msvc2019\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Release_msvc2019\x64\moc_ZSIpcServer.cpp">
+      <Filter>Generated Files\msvc2019\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Release_msvc2019\x64\moc_ZSIpcServerGateway.cpp">
+      <Filter>Generated Files\msvc2019\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Release_msvc2019\x64\moc_ZSIpcServerWrapper.cpp">
+      <Filter>Generated Files\msvc2019\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Release_msvc2019\x64\moc_ZSIpcServerWrapperInProcMsg.cpp">
+      <Filter>Generated Files\msvc2019\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Release_msvc2019\x64\moc_ZSIpcServerWrapperShm.cpp">
+      <Filter>Generated Files\msvc2019\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Release_msvc2019\x64\moc_ZSIpcServerWrapperTcp.cpp">
+      <Filter>Generated Files\msvc2019\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Release_msvc2019\x64\moc_ZSIpcSocketWrapper.cpp">
+      <Filter>Generated Files\msvc2019\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Release_msvc2019\x64\moc_ZSIpcSocketWrapperInProcMsg.cpp">
+      <Filter>Generated Files\msvc2019\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Release_msvc2019\x64\moc_ZSIpcSocketWrapperShm.cpp">
+      <Filter>Generated Files\msvc2019\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Release_msvc2019\x64\moc_ZSIpcSocketWrapperTcp.cpp">
+      <Filter>Generated Files\msvc2019\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Release_msvc2019\x64\moc_ZSIpcSrvCltBaseGateway.cpp">
+      <Filter>Generated Files\msvc2019\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Release_msvc2019\Win32\moc_ZSIpcClient.cpp">
+      <Filter>Generated Files\msvc2019\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Release_msvc2019\Win32\moc_ZSIpcClientGateway.cpp">
+      <Filter>Generated Files\msvc2019\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Release_msvc2019\Win32\moc_ZSIpcInProcMsgServer.cpp">
+      <Filter>Generated Files\msvc2019\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Release_msvc2019\Win32\moc_ZSIpcInProcMsgSocket.cpp">
+      <Filter>Generated Files\msvc2019\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Release_msvc2019\Win32\moc_ZSIpcServer.cpp">
+      <Filter>Generated Files\msvc2019\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Release_msvc2019\Win32\moc_ZSIpcServerGateway.cpp">
+      <Filter>Generated Files\msvc2019\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Release_msvc2019\Win32\moc_ZSIpcServerWrapper.cpp">
+      <Filter>Generated Files\msvc2019\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Release_msvc2019\Win32\moc_ZSIpcServerWrapperInProcMsg.cpp">
+      <Filter>Generated Files\msvc2019\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Release_msvc2019\Win32\moc_ZSIpcServerWrapperShm.cpp">
+      <Filter>Generated Files\msvc2019\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Release_msvc2019\Win32\moc_ZSIpcServerWrapperTcp.cpp">
+      <Filter>Generated Files\msvc2019\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Release_msvc2019\Win32\moc_ZSIpcSocketWrapper.cpp">
+      <Filter>Generated Files\msvc2019\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Release_msvc2019\Win32\moc_ZSIpcSocketWrapperInProcMsg.cpp">
+      <Filter>Generated Files\msvc2019\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Release_msvc2019\Win32\moc_ZSIpcSocketWrapperShm.cpp">
+      <Filter>Generated Files\msvc2019\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Release_msvc2019\Win32\moc_ZSIpcSocketWrapperTcp.cpp">
+      <Filter>Generated Files\msvc2019\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Release_msvc2019\Win32\moc_ZSIpcSrvCltBaseGateway.cpp">
+      <Filter>Generated Files\msvc2019\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Debug_msvc2019\Win32\moc_ZSIpcClient.cpp">
+      <Filter>Generated Files\msvc2019\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Debug_msvc2019\Win32\moc_ZSIpcClientGateway.cpp">
+      <Filter>Generated Files\msvc2019\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Debug_msvc2019\Win32\moc_ZSIpcInProcMsgServer.cpp">
+      <Filter>Generated Files\msvc2019\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Debug_msvc2019\Win32\moc_ZSIpcInProcMsgSocket.cpp">
+      <Filter>Generated Files\msvc2019\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Debug_msvc2019\Win32\moc_ZSIpcServer.cpp">
+      <Filter>Generated Files\msvc2019\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Debug_msvc2019\Win32\moc_ZSIpcServerGateway.cpp">
+      <Filter>Generated Files\msvc2019\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Debug_msvc2019\Win32\moc_ZSIpcServerWrapper.cpp">
+      <Filter>Generated Files\msvc2019\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Debug_msvc2019\Win32\moc_ZSIpcServerWrapperInProcMsg.cpp">
+      <Filter>Generated Files\msvc2019\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Debug_msvc2019\Win32\moc_ZSIpcServerWrapperShm.cpp">
+      <Filter>Generated Files\msvc2019\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Debug_msvc2019\Win32\moc_ZSIpcServerWrapperTcp.cpp">
+      <Filter>Generated Files\msvc2019\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Debug_msvc2019\Win32\moc_ZSIpcSocketWrapper.cpp">
+      <Filter>Generated Files\msvc2019\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Debug_msvc2019\Win32\moc_ZSIpcSocketWrapperInProcMsg.cpp">
+      <Filter>Generated Files\msvc2019\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Debug_msvc2019\Win32\moc_ZSIpcSocketWrapperShm.cpp">
+      <Filter>Generated Files\msvc2019\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Debug_msvc2019\Win32\moc_ZSIpcSocketWrapperTcp.cpp">
+      <Filter>Generated Files\msvc2019\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSIpc\Debug_msvc2019\Win32\moc_ZSIpcSrvCltBaseGateway.cpp">
+      <Filter>Generated Files\msvc2019\Win32\Debug</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\Include\Libs\ZSIpc\ZSIpcDllMain.h">
+      <Filter>Include Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Libs\ZSIpc\ZSIpcSrvCltMsg.h">
+      <Filter>Include Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Libs\ZSIpc\ZSIpcCommon.h">
+      <Filter>Include Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Libs\ZSIpc\ZSIpcBlkType.h">
+      <Filter>Include Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Libs\ZSIpc\ZSIpcBlkTypeE.h">
+      <Filter>Include Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Libs\ZSIpc\ZSIpcBlkTypeL.h">
+      <Filter>Include Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Libs\ZSIpc\ZSIpcBlkTypeNone.h">
+      <Filter>Include Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Libs\ZSIpc\ZSIpcBlkTypeSL.h">
+      <Filter>Include Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Libs\ZSIpc\ZSIpcBlkTypeTLV.h">
+      <Filter>Include Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Libs\ZSIpc\ZSIpcBlkTypeUser.h">
+      <Filter>Include Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\..\Include\Libs\ZSIpc\ZSIpcClient.h">
+      <Filter>Include Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\Libs\ZSIpc\ZSIpcClientGateway.h">
+      <Filter>Include Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\Libs\ZSIpc\ZSIpcServer.h">
+      <Filter>Include Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\Libs\ZSIpc\ZSIpcServerGateway.h">
+      <Filter>Include Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\Libs\ZSIpc\ZSIpcServerWrapper.h">
+      <Filter>Include Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\Libs\ZSIpc\ZSIpcServerWrapperShm.h">
+      <Filter>Include Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\Libs\ZSIpc\ZSIpcServerWrapperTcp.h">
+      <Filter>Include Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\Libs\ZSIpc\ZSIpcSocketWrapper.h">
+      <Filter>Include Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\Libs\ZSIpc\ZSIpcSocketWrapperShm.h">
+      <Filter>Include Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\Libs\ZSIpc\ZSIpcSocketWrapperTcp.h">
+      <Filter>Include Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\Libs\ZSIpc\ZSIpcSrvCltBaseGateway.h">
+      <Filter>Include Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\Libs\ZSIpc\ZSIpcServerWrapperInProcMsg.h">
+      <Filter>Include Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\Libs\ZSIpc\ZSIpcSocketWrapperInProcMsg.h">
+      <Filter>Include Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\Libs\ZSIpc\ZSIpcInProcMsgServer.h">
+      <Filter>Include Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\Libs\ZSIpc\ZSIpcInProcMsgSocket.h">
+      <Filter>Include Files</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="CMakeLists.txt" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,250 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectName>ZSTraceGUIBinding4Python</ProjectName>
+    <ProjectGuid>{73D23452-C84A-4116-9450-17EFB7421804}</ProjectGuid>
+    <RootNamespace>ZSTraceGUIBinding4Python</RootNamespace>
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\..\Tmp\Out\$(ProjectName)\Win32\$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\..\Tmp\Int\$(ProjectName)\Win32\$(Configuration)\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\..\Tmp\Out\$(ProjectName)\Win32\$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\..\Tmp\Int\$(ProjectName)\Win32\$(Configuration)\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <PreBuildEvent>
+      <Command>
+      </Command>
+    </PreBuildEvent>
+    <ClCompile>
+      <AdditionalOptions>/wd4522 %(AdditionalOptions)</AdditionalOptions>
+      <Optimization>Disabled</Optimization>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <AdditionalIncludeDirectories>.\;..\..\..\Include;..\..\..\Include\ZSSys;..\..\..\Include\ZSIpc;..\..\..\Include\ZSSysGUI;..\..\..\Include\ZSIpcGUI;..\..\..\Include\ZSTrace;..\..\..\Include\ZSTraceGUI;..\..\..\Tmp\Shiboken\Python27\Win32\$(Configuration)\ZSSys;..\..\..\Tmp\Shiboken\Python27\Win32\$(Configuration)\ZSIpc;..\..\..\Tmp\Shiboken\Python27\Win32\$(Configuration)\ZSTrace;..\..\..\Tmp\Shiboken\Python27\Win32\$(Configuration)\ZSSysGUI;..\..\..\Tmp\Shiboken\Python27\Win32\$(Configuration)\ZSIpcGUI;..\..\..\Tmp\Shiboken\Python27\Win32\$(Configuration)\ZSTraceGUI;$(QTDIR)\include;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtXml;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtGui;$(PYTHONDIR)\Include;$(PYTHONDIR)\Lib\site-packages\PySide\include\shiboken;$(PYTHONDIR)\Lib\site-packages\PySide\include\PySide;$(PYTHONDIR)\Lib\site-packages\PySide\include\PySide\QtCore;$(PYTHONDIR)\Lib\site-packages\PySide\include\PySide\QtXml;$(PYTHONDIR)\Lib\site-packages\PySide\include\PySide\QtNetwork;$(PYTHONDIR)\Lib\site-packages\PySide\include\PySide\QtGui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;_ZSTRACE;ZSTRACEGUIBINDING4PYTHONDLL_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
+      <BrowseInformation>true</BrowseInformation>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+    </ClCompile>
+    <PreLinkEvent>
+      <Message>.\ZSTraceGUIBinding4Python.bat</Message>
+      <Command>.\ZSTraceGUIBinding4Python.bat</Command>
+    </PreLinkEvent>
+    <Link>
+      <AdditionalDependencies>QtCored4.lib;QtXmld4.lib;QtGuid4.lib;shiboken-python2.7_d.lib;pyside-python2.7_d.lib;ZSSysd.lib;ZSSysGUId.lib;ZSIpcd.lib;ZSIpcGUId.lib;ZSTraced.lib;ZSTraceGUId.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)$(ProjectName)d.dll</OutputFile>
+      <AdditionalLibraryDirectories>$(QTDIR)\lib;$(PYTHONDIR)\libs;$(PYTHONDIR)\Lib\site-packages\PySide;..\..\..\Lib\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+    <PostBuildEvent>
+      <Message>..\CopyBinding4Python.bat ..\..\..\Tmp\Out ZSTraceGUI Win32 $(Configuration)</Message>
+      <Command>..\CopyBinding4Python.bat ..\..\..\Tmp\Out ZSTraceGUI Win32 $(Configuration)</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <PreBuildEvent>
+      <Command>
+      </Command>
+    </PreBuildEvent>
+    <ClCompile>
+      <AdditionalOptions>/wd4522 %(AdditionalOptions)</AdditionalOptions>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <AdditionalIncludeDirectories>.\;..\..\..\Include;..\..\..\Include\ZSSys;..\..\..\Include\ZSIpc;..\..\..\Include\ZSSysGUI;..\..\..\Include\ZSIpcGUI;..\..\..\Include\ZSTrace;..\..\..\Include\ZSTraceGUI;..\..\..\Tmp\Shiboken\Python27\Win32\$(Configuration)\ZSSys;..\..\..\Tmp\Shiboken\Python27\Win32\$(Configuration)\ZSIpc;..\..\..\Tmp\Shiboken\Python27\Win32\$(Configuration)\ZSTrace;..\..\..\Tmp\Shiboken\Python27\Win32\$(Configuration)\ZSSysGUI;..\..\..\Tmp\Shiboken\Python27\Win32\$(Configuration)\ZSIpcGUI;..\..\..\Tmp\Shiboken\Python27\Win32\$(Configuration)\ZSTraceGUI;$(QTDIR)\include;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtXml;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtGui;$(PYTHONDIR)\Include;$(PYTHONDIR)\Lib\site-packages\PySide\include\shiboken;$(PYTHONDIR)\Lib\site-packages\PySide\include\PySide;$(PYTHONDIR)\Lib\site-packages\PySide\include\PySide\QtCore;$(PYTHONDIR)\Lib\site-packages\PySide\include\PySide\QtXml;$(PYTHONDIR)\Lib\site-packages\PySide\include\PySide\QtNetwork;$(PYTHONDIR)\Lib\site-packages\PySide\include\PySide\QtGui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;_ZSTRACE;ZSTRACEGUIBINDING4PYTHONDLL_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
+      <BrowseInformation>true</BrowseInformation>
+      <BrowseInformationFile>$(IntDir)</BrowseInformationFile>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <PreLinkEvent>
+      <Command>
+      </Command>
+    </PreLinkEvent>
+    <Link>
+      <AdditionalDependencies>QtCore4.lib;QtXml4.lib;QtGui4.lib;shiboken-python2.7.lib;pyside-python2.7.lib;ZSSys.lib;ZSSysGUI.lib;ZSIpc.lib;ZSIpcGUI.lib;ZSTrace.lib;ZSTraceGUI.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(QTDIR)\lib;$(PYTHONDIR)\libs;$(PYTHONDIR)\Lib\site-packages\PySide;..\..\..\Lib\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <LinkTimeCodeGeneration>
+      </LinkTimeCodeGeneration>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+    <PostBuildEvent>
+      <Message>..\CopyBinding4Python.bat ..\..\..\Tmp\Out ZSTraceGUI Win32 $(Configuration)</Message>
+      <Command>..\CopyBinding4Python.bat ..\..\..\Tmp\Out ZSTraceGUI Win32 $(Configuration)</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSTraceGUI\zs_trace_gui_cdelegateadminobjpool_wrapper.cpp" />
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSTraceGUI\zs_trace_gui_cdlgtrcadminobjpool_wrapper.cpp" />
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSTraceGUI\zs_trace_gui_cdlgtrcclient_wrapper.cpp" />
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSTraceGUI\zs_trace_gui_cdlgtrcserver_wrapper.cpp" />
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSTraceGUI\zs_trace_gui_cmodeladminobjpoolnamespacecontent_wrapper.cpp" />
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSTraceGUI\zs_trace_gui_cmodeladminobjpoolnamespaces_wrapper.cpp" />
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSTraceGUI\zs_trace_gui_cmodeltrcctx_wrapper.cpp" />
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSTraceGUI\zs_trace_gui_cmodeltrcmsg_wrapper.cpp" />
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSTraceGUI\zs_trace_gui_cmodeltrcmththreadtree_wrapper.cpp" />
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSTraceGUI\zs_trace_gui_cmodeltrcmthtimetable_wrapper.cpp" />
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSTraceGUI\zs_trace_gui_ctrcadminobjpoolmodel_wrapper.cpp" />
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSTraceGUI\zs_trace_gui_ctrcmodelentryctx_wrapper.cpp" />
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSTraceGUI\zs_trace_gui_ctrcmodelentrymsg_wrapper.cpp" />
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSTraceGUI\zs_trace_gui_ctrcmodelentrymth_wrapper.cpp" />
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSTraceGUI\zs_trace_gui_ctrcmodelentrymthmethod_wrapper.cpp" />
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSTraceGUI\zs_trace_gui_ctrcmodelentrymththread_wrapper.cpp" />
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSTraceGUI\zs_trace_gui_ctreeviewadminobjpool_wrapper.cpp" />
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSTraceGUI\zs_trace_gui_cwdgtadminobjpool_wrapper.cpp" />
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSTraceGUI\zs_trace_gui_cwdgtadminobjpoolnamespacecontent_wrapper.cpp" />
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSTraceGUI\zs_trace_gui_cwdgtadminobjpoolnamespaces_wrapper.cpp" />
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSTraceGUI\zs_trace_gui_cwdgttrcctxlist_wrapper.cpp" />
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSTraceGUI\zs_trace_gui_cwdgttrcmsglist_wrapper.cpp" />
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSTraceGUI\zs_trace_gui_cwdgttrcmthlist_wrapper.cpp" />
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSTraceGUI\zs_trace_gui_cwdgttrcsettings_wrapper.cpp" />
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSTraceGUI\zs_trace_gui_strcctxthreadentry_wrapper.cpp" />
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSTraceGUI\zs_trace_gui_strcmththreadentry_wrapper.cpp" />
+    <ClCompile Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSTraceGUI\zstracegui_module_wrapper.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSTraceGUI\zs_trace_gui_cdelegateadminobjpool_wrapper.h" />
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSTraceGUI\zs_trace_gui_cdlgtrcadminobjpool_wrapper.h" />
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSTraceGUI\zs_trace_gui_cdlgtrcclient_wrapper.h" />
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSTraceGUI\zs_trace_gui_cdlgtrcserver_wrapper.h" />
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSTraceGUI\zs_trace_gui_cmodeladminobjpoolnamespacecontent_wrapper.h" />
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSTraceGUI\zs_trace_gui_cmodeladminobjpoolnamespaces_wrapper.h" />
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSTraceGUI\zs_trace_gui_cmodeltrcctx_wrapper.h" />
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSTraceGUI\zs_trace_gui_cmodeltrcmsg_wrapper.h" />
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSTraceGUI\zs_trace_gui_cmodeltrcmththreadtree_wrapper.h" />
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSTraceGUI\zs_trace_gui_cmodeltrcmthtimetable_wrapper.h" />
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSTraceGUI\zs_trace_gui_ctrcadminobjpoolmodel_wrapper.h" />
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSTraceGUI\zs_trace_gui_ctrcmodelentryctx_wrapper.h" />
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSTraceGUI\zs_trace_gui_ctrcmodelentrymsg_wrapper.h" />
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSTraceGUI\zs_trace_gui_ctrcmodelentrymth_wrapper.h" />
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSTraceGUI\zs_trace_gui_ctrcmodelentrymthmethod_wrapper.h" />
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSTraceGUI\zs_trace_gui_ctrcmodelentrymththread_wrapper.h" />
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSTraceGUI\zs_trace_gui_ctreeviewadminobjpool_wrapper.h" />
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSTraceGUI\zs_trace_gui_cwdgtadminobjpool_wrapper.h" />
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSTraceGUI\zs_trace_gui_cwdgtadminobjpoolnamespacecontent_wrapper.h" />
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSTraceGUI\zs_trace_gui_cwdgtadminobjpoolnamespaces_wrapper.h" />
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSTraceGUI\zs_trace_gui_cwdgttrcctxlist_wrapper.h" />
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSTraceGUI\zs_trace_gui_cwdgttrcmsglist_wrapper.h" />
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSTraceGUI\zs_trace_gui_cwdgttrcmthlist_wrapper.h" />
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSTraceGUI\zs_trace_gui_cwdgttrcsettings_wrapper.h" />
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSTraceGUI\zs_trace_gui_strcctxthreadentry_wrapper.h" />
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSTraceGUI\zs_trace_gui_strcmththreadentry_wrapper.h" />
+    <ClInclude Include="..\..\..\Tmp\Shiboken\Python27\Win32\Release\ZSTraceGUI\zstracegui_python.h" />
+    <CustomBuild Include="ZSTraceGUIBinding4Python.h">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\CreateBinding4Python ZSTraceGUI</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\CreateBinding4Python ZSTraceGUI
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\..\Tmp\Shiboken\Python27\Win32\$(Configuration)\ZSSys\zssys_python.h;..\..\..\Tmp\Shiboken\Python27\Win32\$(Configuration)\ZSSys\zssys_module_wrapper.cpp;..\..\..\Tmp\Shiboken\Python27\Win32\$(Configuration)\ZSSys\zs_wrapper.h;..\..\..\Tmp\Shiboken\Python27\Win32\$(Configuration)\ZSSysGUI\zs_wrapper.cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\CreateBinding4Python ZSTraceGUI</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\CreateBinding4Python ZSTraceGUI
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\..\Tmp\Shiboken\Python27\Win32\$(Configuration)\ZSSys\zssys_python.h;..\..\..\Tmp\Shiboken\Python27\Win32\$(Configuration)\ZSSys\zssys_module_wrapper.cpp;..\..\..\Tmp\Shiboken\Python27\Win32\$(Configuration)\ZSSys\zs_wrapper.h;..\..\..\Tmp\Shiboken\Python27\Win32\$(Configuration)\ZSSysGUI\zs_wrapper.cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+    <ClInclude Include="ZSTraceGUIBinding4PythonGlobalFunctionsWrapper.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="ZSTraceGUIBinding4Python.rc">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ZSTraceGUIBinding4Python.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ZSIpcGUI\ZSIpcGUIBinding4Python_9.0.vcxproj">
+      <Project>{7cd23452-c84a-4d16-9450-07efb7422804}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\ZSIpcGUI\ZSIpcGUI_9.0.vcxproj">
+      <Project>{a8e7caa4-c1d3-4948-b648-fd338d841316}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\ZSIpc\ZSIpcBinding4Python_9.0.vcxproj">
+      <Project>{43474112-302f-4bfd-ae6a-bfbf7d8482fb}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\ZSSysGUI\ZSSysGUIBinding4Python_9.0.vcxproj">
+      <Project>{a135078b-1ac1-4c42-9eaf-bbcb84ce7972}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\ZSSysGUI\ZSSysGUI_9.0.vcxproj">
+      <Project>{a88089a6-8d1e-4d7c-a087-2b38fa086de4}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\ZSTrace\ZSTraceBinding4Python_9.0.vcxproj">
+      <Project>{fb41d42f-9555-49d0-9120-9e265393a785}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="ZSTraceGUI_9.0.vcxproj">
+      <Project>{37ea1175-4cb4-4e22-af56-125870535e4b}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

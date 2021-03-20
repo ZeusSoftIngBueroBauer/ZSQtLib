@@ -1,0 +1,224 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Generated Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Generated Files\Win32">
+      <UniqueIdentifier>{be64c2b2-817d-4791-b151-bb6a2aae7d3e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\Win32\Debug">
+      <UniqueIdentifier>{2233cca5-9345-4ba3-9209-fa2a11ff8fb5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\Win32\Release">
+      <UniqueIdentifier>{3334f8de-174d-44f0-a743-c9ab44143378}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
+    </Filter>
+    <Filter Include="Include Files">
+      <UniqueIdentifier>{20d13c9e-da47-45c1-a579-4c5ca887bcf3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\x64">
+      <UniqueIdentifier>{a6a4db7a-8478-42e9-a47e-9def2702f4a3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\x64\Debug">
+      <UniqueIdentifier>{81012ce6-6579-436c-9c2b-83c43ea06d0a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\x64\Release">
+      <UniqueIdentifier>{4304e8f6-be82-4e13-80d0-93d4bb86e730}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\TestGroups">
+      <UniqueIdentifier>{307622c0-fd24-46d5-a7bd-d1be97d68d03}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include Files\TestGroups">
+      <UniqueIdentifier>{b171fed3-c88c-458f-b4d4-477761384112}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\TestGroups\Startup">
+      <UniqueIdentifier>{1b02f4b5-0afd-49a3-a89e-5dba2dd0eeae}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\TestGroups\Shutdown">
+      <UniqueIdentifier>{af7ff743-87a9-457f-8bae-8e5e3ab23488}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\TestGroups\Shutdown\Db">
+      <UniqueIdentifier>{9d0a87b0-8dd7-4f52-967e-141ad4fa4ec4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\TestGroups\Shutdown\DbClts">
+      <UniqueIdentifier>{e2b10abc-5697-4f39-9575-8312b2b3b1b8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\TestGroups\Startup\Db">
+      <UniqueIdentifier>{d3655532-a87e-4615-a256-fd403b5cb699}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\TestGroups\Startup\DbClts">
+      <UniqueIdentifier>{8a5c9532-801c-41dd-a076-79d6f48f61c5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include Files\TestGroups\Startup">
+      <UniqueIdentifier>{c0498f8e-c0a8-4134-afc2-e382340efd72}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include Files\TestGroups\Shutdown">
+      <UniqueIdentifier>{11e0e5c3-7d29-43e1-accc-b04b45ef09e8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include Files\TestGroups\Shutdown\Db">
+      <UniqueIdentifier>{9c99920f-7e35-41a6-8932-4a60e59b7549}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include Files\TestGroups\Shutdown\DbClts">
+      <UniqueIdentifier>{33ac1bdb-7df4-49ce-88e6-f81ae5fd0854}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include Files\TestGroups\Startup\Db">
+      <UniqueIdentifier>{5afce994-a382-411a-8531-63b8163dbbf3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include Files\TestGroups\Startup\DbClts">
+      <UniqueIdentifier>{c63a3203-8eef-4396-b04a-4fe168210a24}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\..\Source\Apps\Test\ZSData\App.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Source\Apps\Test\ZSData\Main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Source\Apps\Test\ZSData\MainWindow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Source\Apps\Test\ZSData\Test.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Source\Apps\Test\ZSData\TestAux.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Source\Apps\Test\ZSData\WidgetCentral.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Tmp\Moc\Apps\Test\ZSAppTestData\x64\Debug\moc_App.cpp">
+      <Filter>Generated Files\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Tmp\Moc\Apps\Test\ZSAppTestData\x64\Debug\moc_MainWindow.cpp">
+      <Filter>Generated Files\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Tmp\Moc\Apps\Test\ZSAppTestData\x64\Debug\moc_Test.cpp">
+      <Filter>Generated Files\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Tmp\Moc\Apps\Test\ZSAppTestData\Win32\Debug\moc_App.cpp">
+      <Filter>Generated Files\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Tmp\Moc\Apps\Test\ZSAppTestData\Win32\Debug\moc_MainWindow.cpp">
+      <Filter>Generated Files\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Tmp\Moc\Apps\Test\ZSAppTestData\Win32\Debug\moc_Test.cpp">
+      <Filter>Generated Files\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Tmp\Moc\Apps\Test\ZSAppTestData\Win32\Release\moc_App.cpp">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Tmp\Moc\Apps\Test\ZSAppTestData\Win32\Release\moc_MainWindow.cpp">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Tmp\Moc\Apps\Test\ZSAppTestData\Win32\Release\moc_Test.cpp">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Tmp\Moc\Apps\Test\ZSAppTestData\x64\Release\moc_App.cpp">
+      <Filter>Generated Files\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Tmp\Moc\Apps\Test\ZSAppTestData\x64\Release\moc_MainWindow.cpp">
+      <Filter>Generated Files\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Tmp\Moc\Apps\Test\ZSAppTestData\x64\Release\moc_Test.cpp">
+      <Filter>Generated Files\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Source\Apps\Test\ZSData\TSGrpStartup.cpp">
+      <Filter>Source Files\TestGroups\Startup</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Source\Apps\Test\ZSData\TSGrpStartupDb.cpp">
+      <Filter>Source Files\TestGroups\Startup\Db</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Source\Apps\Test\ZSData\TSGrpStartupDbClt1.cpp">
+      <Filter>Source Files\TestGroups\Startup\DbClts</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Source\Apps\Test\ZSData\TSGrpStartupDbClt2.cpp">
+      <Filter>Source Files\TestGroups\Startup\DbClts</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Source\Apps\Test\ZSData\TSGrpStartupDbClt3.cpp">
+      <Filter>Source Files\TestGroups\Startup\DbClts</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Source\Apps\Test\ZSData\TSGrpStartupDbClts.cpp">
+      <Filter>Source Files\TestGroups\Startup\DbClts</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Source\Apps\Test\ZSData\TSGrpShutdown.cpp">
+      <Filter>Source Files\TestGroups\Shutdown</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Source\Apps\Test\ZSData\TSGrpShutdownDb.cpp">
+      <Filter>Source Files\TestGroups\Shutdown\Db</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Source\Apps\Test\ZSData\TSGrpShutdownDbClt1.cpp">
+      <Filter>Source Files\TestGroups\Shutdown\DbClts</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Source\Apps\Test\ZSData\TSGrpShutdownDbClt2.cpp">
+      <Filter>Source Files\TestGroups\Shutdown\DbClts</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Source\Apps\Test\ZSData\TSGrpShutdownDbClt3.cpp">
+      <Filter>Source Files\TestGroups\Shutdown\DbClts</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Source\Apps\Test\ZSData\TSGrpShutdownDbClts.cpp">
+      <Filter>Source Files\TestGroups\Shutdown\DbClts</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\Include\Apps\Test\ZSData\WidgetCentral.h">
+      <Filter>Include Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Include\Apps\Test\ZSData\TSGrpShutdown.h">
+      <Filter>Include Files\TestGroups\Shutdown</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Include\Apps\Test\ZSData\TSGrpShutdownDb.h">
+      <Filter>Include Files\TestGroups\Shutdown\Db</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Include\Apps\Test\ZSData\TSGrpShutdownDbClt1.h">
+      <Filter>Include Files\TestGroups\Shutdown\DbClts</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Include\Apps\Test\ZSData\TSGrpShutdownDbClt2.h">
+      <Filter>Include Files\TestGroups\Shutdown\DbClts</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Include\Apps\Test\ZSData\TSGrpShutdownDbClt3.h">
+      <Filter>Include Files\TestGroups\Shutdown\DbClts</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Include\Apps\Test\ZSData\TSGrpShutdownDbClts.h">
+      <Filter>Include Files\TestGroups\Shutdown\DbClts</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Include\Apps\Test\ZSData\TSGrpStartup.h">
+      <Filter>Include Files\TestGroups\Startup</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Include\Apps\Test\ZSData\TSGrpStartupDb.h">
+      <Filter>Include Files\TestGroups\Startup\Db</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Include\Apps\Test\ZSData\TSGrpStartupDbClt1.h">
+      <Filter>Include Files\TestGroups\Startup\DbClts</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Include\Apps\Test\ZSData\TSGrpStartupDbClt2.h">
+      <Filter>Include Files\TestGroups\Startup\DbClts</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Include\Apps\Test\ZSData\TSGrpStartupDbClt3.h">
+      <Filter>Include Files\TestGroups\Startup\DbClts</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Include\Apps\Test\ZSData\TSGrpStartupDbClts.h">
+      <Filter>Include Files\TestGroups\Startup\DbClts</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\..\..\Include\Apps\Test\ZSData\App.h">
+      <Filter>Include Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Include\Apps\Test\ZSData\MainWindow.h">
+      <Filter>Include Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Include\Apps\Test\ZSData\Test.h">
+      <Filter>Include Files</Filter>
+    </CustomBuild>
+  </ItemGroup>
+</Project>

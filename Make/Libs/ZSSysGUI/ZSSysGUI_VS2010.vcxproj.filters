@@ -1,0 +1,386 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Generated Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Generated Files\Win32">
+      <UniqueIdentifier>{65545ad5-92c0-4233-aeae-f0a7ab738ef3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\Win32\Debug">
+      <UniqueIdentifier>{5c20ff39-0519-425c-8af2-7f9358ec6531}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\Win32\Release">
+      <UniqueIdentifier>{72888189-2b50-498c-a39d-13e3469c4fb2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
+    </Filter>
+    <Filter Include="Resource Files\Menu">
+      <UniqueIdentifier>{e2cf5d3c-6cd9-4487-a89e-d7cd4094293e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\CnctState">
+      <UniqueIdentifier>{2e7b1a1c-d645-4dc3-a5c5-cd2020d3218f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\ObjPoolExplorer">
+      <UniqueIdentifier>{813cd08f-05fa-4583-9f02-18344a246e46}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Result">
+      <UniqueIdentifier>{483fdd6e-f9a1-4352-8a69-75541e27faf9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\App">
+      <UniqueIdentifier>{354e9b3a-6863-4d14-b54f-e8bd2ba37a74}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Button">
+      <UniqueIdentifier>{cfc62129-87ea-4ed6-909e-9d3f50ec6631}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include Files">
+      <UniqueIdentifier>{6040c1dd-63a5-405d-9123-78b73bdeacd5}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\Source\ZSSysGUI\ZSSysErrLogDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\ZSSysGUI\ZSSysErrLogModel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\ZSSysGUI\ZSSysErrLogWdgt.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\ZSSysGUI\ZSSysFindTextDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\ZSSysGUI\ZSSysGUIDllMain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\ZSSysGUI\ZSSysGUIEnum.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\ZSSysGUI\ZSSysObjPoolModel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\ZSSysGUI\ZSSysProgressBar.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\ZSSysGUI\ZSSysPushButton.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\ZSSysGUI\ZSSysRequestExecTreeDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\ZSSysGUI\ZSSysRequestExecTreeModel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\ZSSysGUI\ZSSysRequestExecTreeWdgt.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\ZSSysGUI\ZSSysRequestSequencerDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\ZSSysGUI\ZSSysRequestSequencerModel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\ZSSysGUI\ZSSysRequestSequencerWdgt.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\ZSSysGUI\ZSSysSepLine.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\ZSSysGUI\Win32\Debug\emb_ZSSysGUI.cpp">
+      <Filter>Generated Files\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\ZSSysGUI\Win32\Debug\moc_ZSSysErrLogModel.cpp">
+      <Filter>Generated Files\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\ZSSysGUI\Win32\Debug\moc_ZSSysErrLogWdgt.cpp">
+      <Filter>Generated Files\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\ZSSysGUI\Win32\Debug\moc_ZSSysFindTextDlg.cpp">
+      <Filter>Generated Files\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\ZSSysGUI\Win32\Debug\moc_ZSSysObjPoolModel.cpp">
+      <Filter>Generated Files\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\ZSSysGUI\Win32\Debug\moc_ZSSysProgressBar.cpp">
+      <Filter>Generated Files\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\ZSSysGUI\Win32\Debug\moc_ZSSysPushButton.cpp">
+      <Filter>Generated Files\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\ZSSysGUI\Win32\Debug\moc_ZSSysRequestExecTreeModel.cpp">
+      <Filter>Generated Files\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\ZSSysGUI\Win32\Debug\moc_ZSSysRequestExecTreeWdgt.cpp">
+      <Filter>Generated Files\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\ZSSysGUI\Win32\Debug\moc_ZSSysRequestSequencerModel.cpp">
+      <Filter>Generated Files\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\ZSSysGUI\Win32\Debug\moc_ZSSysRequestSequencerWdgt.cpp">
+      <Filter>Generated Files\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\ZSSysGUI\Win32\Release\emb_ZSSysGUI.cpp">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\ZSSysGUI\Win32\Release\moc_ZSSysErrLogModel.cpp">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\ZSSysGUI\Win32\Release\moc_ZSSysErrLogWdgt.cpp">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\ZSSysGUI\Win32\Release\moc_ZSSysFindTextDlg.cpp">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\ZSSysGUI\Win32\Release\moc_ZSSysObjPoolModel.cpp">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\ZSSysGUI\Win32\Release\moc_ZSSysProgressBar.cpp">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\ZSSysGUI\Win32\Release\moc_ZSSysPushButton.cpp">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\ZSSysGUI\Win32\Release\moc_ZSSysRequestExecTreeModel.cpp">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\ZSSysGUI\Win32\Release\moc_ZSSysRequestExecTreeWdgt.cpp">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\ZSSysGUI\Win32\Release\moc_ZSSysRequestSequencerModel.cpp">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\ZSSysGUI\Win32\Release\moc_ZSSysRequestSequencerWdgt.cpp">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="resource.h">
+      <Filter>Resource Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\ZSSysGUI\ZSSysGUIDllMain.h">
+      <Filter>Include Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\ZSSysGUI\ZSSysGUIEnum.h">
+      <Filter>Include Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\ZSSysGUI\ZSSysRequestExecTreeDlg.h">
+      <Filter>Include Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\ZSSysGUI\ZSSysRequestSequencerDlg.h">
+      <Filter>Include Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\ZSSysGUI\ZSSysSepLine.h">
+      <Filter>Include Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\Images\ZSSys\MenuFileAdd16x16.bmp">
+      <Filter>Resource Files\Menu</Filter>
+    </None>
+    <None Include="..\..\..\Images\ZSSys\MenuFileEdit16x16.bmp">
+      <Filter>Resource Files\Menu</Filter>
+    </None>
+    <None Include="..\..\..\Images\ZSSys\MenuFileNew16x16.bmp">
+      <Filter>Resource Files\Menu</Filter>
+    </None>
+    <None Include="..\..\..\Images\ZSSys\MenuFileOpen16x16.bmp">
+      <Filter>Resource Files\Menu</Filter>
+    </None>
+    <None Include="..\..\..\Images\ZSSys\MenuFileSave16x16.bmp">
+      <Filter>Resource Files\Menu</Filter>
+    </None>
+    <None Include="..\..\..\Images\ZSSys\MenuFileSaveAs16x16.bmp">
+      <Filter>Resource Files\Menu</Filter>
+    </None>
+    <None Include="..\..\..\Images\ZSSys\LedCircleBlue.png">
+      <Filter>Resource Files\CnctState</Filter>
+    </None>
+    <None Include="..\..\..\Images\ZSSys\LedCircleGreen.png">
+      <Filter>Resource Files\CnctState</Filter>
+    </None>
+    <None Include="..\..\..\Images\ZSSys\LedCircleGrey.png">
+      <Filter>Resource Files\CnctState</Filter>
+    </None>
+    <None Include="..\..\..\Images\ZSSys\LedCircleRed.png">
+      <Filter>Resource Files\CnctState</Filter>
+    </None>
+    <None Include="..\..\..\Images\ZSSys\LedCircleYellow.png">
+      <Filter>Resource Files\CnctState</Filter>
+    </None>
+    <None Include="..\..\..\Images\ZSSys\ObjPoolEntryTypeNameSpaceNormalOff.bmp">
+      <Filter>Resource Files\ObjPoolExplorer</Filter>
+    </None>
+    <None Include="..\..\..\Images\ZSSys\ObjPoolEntryTypeNameSpaceSelectedOff.bmp">
+      <Filter>Resource Files\ObjPoolExplorer</Filter>
+    </None>
+    <None Include="..\..\..\Images\ZSSys\ObjPoolEntryTypeObjectNormalOff.bmp">
+      <Filter>Resource Files\ObjPoolExplorer</Filter>
+    </None>
+    <None Include="..\..\..\Images\ZSSys\ObjPoolEntryTypeObjectSelectedOff.bmp">
+      <Filter>Resource Files\ObjPoolExplorer</Filter>
+    </None>
+    <None Include="..\..\..\Images\ZSSys\ResultSeverityCritical.bmp">
+      <Filter>Resource Files\Result</Filter>
+    </None>
+    <None Include="..\..\..\Images\ZSSys\ResultSeverityError.bmp">
+      <Filter>Resource Files\Result</Filter>
+    </None>
+    <None Include="..\..\..\Images\ZSSys\ResultSeverityInfo.bmp">
+      <Filter>Resource Files\Result</Filter>
+    </None>
+    <None Include="..\..\..\Images\ZSSys\ResultSeveritySuccess.bmp">
+      <Filter>Resource Files\Result</Filter>
+    </None>
+    <None Include="..\..\..\Images\ZSSys\ResultSeverityWarning.bmp">
+      <Filter>Resource Files\Result</Filter>
+    </None>
+    <None Include="..\..\..\Images\ZSSys\ModeEdit16x16.bmp">
+      <Filter>Resource Files\App</Filter>
+    </None>
+    <None Include="..\..\..\Images\ZSSys\ModeEdit24x24.bmp">
+      <Filter>Resource Files\App</Filter>
+    </None>
+    <None Include="..\..\..\Images\ZSSys\ModeEdit32x32.bmp">
+      <Filter>Resource Files\App</Filter>
+    </None>
+    <None Include="..\..\..\Images\ZSSys\ModeSimulation16x16.bmp">
+      <Filter>Resource Files\App</Filter>
+    </None>
+    <None Include="..\..\..\Images\ZSSys\ModeSimulation24x24.bmp">
+      <Filter>Resource Files\App</Filter>
+    </None>
+    <None Include="..\..\..\Images\ZSSys\ModeSimulation32x32.bmp">
+      <Filter>Resource Files\App</Filter>
+    </None>
+    <None Include="..\..\..\Images\ZSSys\RSIcon.ico">
+      <Filter>Resource Files\App</Filter>
+    </None>
+    <None Include="..\..\..\Images\ZSSys\RSIcon16x16.bmp">
+      <Filter>Resource Files\App</Filter>
+    </None>
+    <None Include="..\..\..\Images\ZSSys\RSIcon32x32.bmp">
+      <Filter>Resource Files\App</Filter>
+    </None>
+    <None Include="..\..\..\Images\ZSSys\Zeus.ico">
+      <Filter>Resource Files\App</Filter>
+    </None>
+    <None Include="..\..\..\Images\ZSSys\Zeus16x16.bmp">
+      <Filter>Resource Files\App</Filter>
+    </None>
+    <None Include="..\..\..\Images\ZSSys\Zeus32x32.bmp">
+      <Filter>Resource Files\App</Filter>
+    </None>
+    <None Include="..\..\..\Images\ZSSys\ButtonAdd16x16.bmp">
+      <Filter>Resource Files\Button</Filter>
+    </None>
+    <None Include="..\..\..\Images\ZSSys\ButtonAdd24x24.bmp">
+      <Filter>Resource Files\Button</Filter>
+    </None>
+    <None Include="..\..\..\Images\ZSSys\ButtonDelete16x16.bmp">
+      <Filter>Resource Files\Button</Filter>
+    </None>
+    <None Include="..\..\..\Images\ZSSys\ButtonDelete24x24.bmp">
+      <Filter>Resource Files\Button</Filter>
+    </None>
+    <None Include="..\..\..\Images\ZSSys\ButtonFileNew16x16.bmp">
+      <Filter>Resource Files\Button</Filter>
+    </None>
+    <None Include="..\..\..\Images\ZSSys\ButtonFileOpen16x16.bmp">
+      <Filter>Resource Files\Button</Filter>
+    </None>
+    <None Include="..\..\..\Images\ZSSys\ButtonFileSave16x16.bmp">
+      <Filter>Resource Files\Button</Filter>
+    </None>
+    <None Include="..\..\..\Images\ZSSys\ButtonFileSaveAs16x16.bmp">
+      <Filter>Resource Files\Button</Filter>
+    </None>
+    <None Include="..\..\..\Images\ZSSys\ButtonMoveDown16x16.bmp">
+      <Filter>Resource Files\Button</Filter>
+    </None>
+    <None Include="..\..\..\Images\ZSSys\ButtonMoveDown24x24.bmp">
+      <Filter>Resource Files\Button</Filter>
+    </None>
+    <None Include="..\..\..\Images\ZSSys\ButtonMoveLeft16x16.bmp">
+      <Filter>Resource Files\Button</Filter>
+    </None>
+    <None Include="..\..\..\Images\ZSSys\ButtonMoveLeft24x24.bmp">
+      <Filter>Resource Files\Button</Filter>
+    </None>
+    <None Include="..\..\..\Images\ZSSys\ButtonMoveRight16x16.bmp">
+      <Filter>Resource Files\Button</Filter>
+    </None>
+    <None Include="..\..\..\Images\ZSSys\ButtonMoveRight24x24.bmp">
+      <Filter>Resource Files\Button</Filter>
+    </None>
+    <None Include="..\..\..\Images\ZSSys\ButtonMoveUp16x16.bmp">
+      <Filter>Resource Files\Button</Filter>
+    </None>
+    <None Include="..\..\..\Images\ZSSys\ButtonMoveUp24x24.bmp">
+      <Filter>Resource Files\Button</Filter>
+    </None>
+    <None Include="..\..\..\Images\ZSSys\ButtonRedo16x16.bmp">
+      <Filter>Resource Files\Button</Filter>
+    </None>
+    <None Include="..\..\..\Images\ZSSys\ButtonRedo24x24.bmp">
+      <Filter>Resource Files\Button</Filter>
+    </None>
+    <None Include="..\..\..\Images\ZSSys\ButtonUndo16x16.bmp">
+      <Filter>Resource Files\Button</Filter>
+    </None>
+    <None Include="..\..\..\Images\ZSSys\ButtonUndo24x24.bmp">
+      <Filter>Resource Files\Button</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="ZSSysGUI.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuildStep Include="..\..\..\Include\ZSSysGUI\ZSSysErrLogDlg.h">
+      <Filter>Include Files</Filter>
+    </CustomBuildStep>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\..\Images\ZSSys\ZSSys.qrc">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\ZSSysGUI\ZSSysErrLogModel.h">
+      <Filter>Include Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\ZSSysGUI\ZSSysErrLogWdgt.h">
+      <Filter>Include Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\ZSSysGUI\ZSSysFindTextDlg.h">
+      <Filter>Include Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\ZSSysGUI\ZSSysObjPoolModel.h">
+      <Filter>Include Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\ZSSysGUI\ZSSysProgressBar.h">
+      <Filter>Include Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\ZSSysGUI\ZSSysPushButton.h">
+      <Filter>Include Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\ZSSysGUI\ZSSysRequestExecTreeModel.h">
+      <Filter>Include Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\ZSSysGUI\ZSSysRequestExecTreeWdgt.h">
+      <Filter>Include Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\ZSSysGUI\ZSSysRequestSequencerModel.h">
+      <Filter>Include Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\ZSSysGUI\ZSSysRequestSequencerWdgt.h">
+      <Filter>Include Files</Filter>
+    </CustomBuild>
+  </ItemGroup>
+</Project>

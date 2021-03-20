@@ -1,0 +1,8 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource prefix="ZSDiagram">
+    <file>SplitHCursorEditing.bmp</file>
+    <file>SplitHCursorFocused.bmp</file>
+    <file>SplitVCursorEditing.bmp</file>
+    <file>SplitVCursorFocused.bmp</file>
+</qresource>
+</RCC>

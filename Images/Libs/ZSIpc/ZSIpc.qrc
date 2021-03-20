@@ -1,0 +1,8 @@
+<!DOCTYPE RCC>
+<RCC version="1.0">
+    <qresource prefix="ZS/Ipc">
+        <file>Client203x248.bmp</file>
+        <file>ServerListen120x120.bmp</file>
+        <file>Socket228x221.bmp</file>
+    </qresource>
+</RCC>

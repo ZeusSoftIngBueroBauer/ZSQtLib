@@ -1,0 +1,932 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{dfcca915-4a5e-454b-892e-d40c36e8f928}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
+    </Filter>
+    <Filter Include="Source Files\GraphObjFactories">
+      <UniqueIdentifier>{db573f7d-c23a-45eb-ae7f-e5f6389b4d87}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\GraphObjs">
+      <UniqueIdentifier>{ec8d680d-c6bc-4dcd-88e0-2b85cc6c9ba0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Dialogs">
+      <UniqueIdentifier>{f4ca69e9-29cc-42fc-806f-cf04c6563733}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Drawing">
+      <UniqueIdentifier>{e1ade6fa-2b03-413d-8d3b-26231161991d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\GraphObjsModel">
+      <UniqueIdentifier>{f8bca213-0c76-41aa-8b67-72326b25b0fe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\GraphObjFactoriesModel">
+      <UniqueIdentifier>{6556cc4e-5254-46ee-a42f-1ef78ceff54e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{4b77f5d7-4e5a-4030-a216-6002a12ed072}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl</Extensions>
+    </Filter>
+    <Filter Include="Header Files\GraphObjFactories">
+      <UniqueIdentifier>{8887d05b-c584-4c8d-8627-a2b9f4696262}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\GraphObjs">
+      <UniqueIdentifier>{52bbd06d-965e-4089-bfa4-e8a2bc543cfb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Dialogs">
+      <UniqueIdentifier>{8121bbda-c410-4d7e-81b4-001a7289554c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Drawing">
+      <UniqueIdentifier>{30bd3cad-6027-406f-9ad7-3294d96854b9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\GraphObjsModel">
+      <UniqueIdentifier>{eeb860f4-607e-4192-a853-9ca890f8406a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\GraphObjFactoriesModel">
+      <UniqueIdentifier>{2d42fcf5-eb12-4d1d-b829-e94136050a03}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{92cd529d-9ca5-4010-b29b-a81bf6532fea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\ToolBars">
+      <UniqueIdentifier>{53c19bd6-fa8f-479d-82ec-279ba5b4b061}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Menu">
+      <UniqueIdentifier>{ffad3759-8e97-4b07-b536-149a13608fd5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files">
+      <UniqueIdentifier>{a4be58be-de1f-4b72-99ec-0901204b4406}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2017">
+      <UniqueIdentifier>{202bc80f-395c-429c-98c5-9a1b18f35463}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2017\Win32">
+      <UniqueIdentifier>{86575737-2e04-427d-9e38-dd51bf5dd441}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2017\Win32\Debug">
+      <UniqueIdentifier>{008aad1f-fa0a-49a2-871d-a76a2bf27e22}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2017\Win32\Release">
+      <UniqueIdentifier>{226d9576-7947-4d68-8c59-9e4b8f2999d2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2017\x64">
+      <UniqueIdentifier>{1eb50fad-2919-4865-9438-c96ca55d9084}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2017\x64\Debug">
+      <UniqueIdentifier>{fe0e7e32-e032-4d89-a539-56c2a78b13e3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2017\x64\Release">
+      <UniqueIdentifier>{610b7845-59f5-49b1-86f7-b1124b0d4ed3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2015">
+      <UniqueIdentifier>{b781e757-d2c0-42af-b3ba-2dbb4ca5f95c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2015\Win32">
+      <UniqueIdentifier>{f34034f6-a4b6-415d-aea1-2b12066fb982}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2015\x64">
+      <UniqueIdentifier>{80282fc5-06fe-4354-863a-550a0f0f72c8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2015\x64\Debug">
+      <UniqueIdentifier>{2701027c-4d51-4e59-9537-6c0b283ce153}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2015\x64\Release">
+      <UniqueIdentifier>{9ce60cdd-e26b-47bf-8f93-09cf01abcd31}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2015\Win32\Debug">
+      <UniqueIdentifier>{27db21ce-c9a0-4dc0-8741-4abed82966cb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2015\Win32\Release">
+      <UniqueIdentifier>{78e6d2df-dc1c-4ab4-ab58-d471ce20cd18}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2019">
+      <UniqueIdentifier>{c10de8d1-1050-413c-b858-ed5cfe22499d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2019\x64">
+      <UniqueIdentifier>{3e5a076f-0dc4-4f32-b248-18a6a71d701e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2019\x64\Debug">
+      <UniqueIdentifier>{60b08430-aa6c-41ac-a050-96598707c149}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2019\x64\Release">
+      <UniqueIdentifier>{3725b065-0723-47ff-a4f5-95e502d95211}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2019\Win32">
+      <UniqueIdentifier>{26701bde-ad36-451d-8fdd-5aa6cd3d28dd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2019\Win32\Debug">
+      <UniqueIdentifier>{8075f48f-7c30-45ba-a992-58a0e8d88223}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\msvc2019\Win32\Release">
+      <UniqueIdentifier>{9aeb7e8b-1b61-4137-a31c-07947a4141e6}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\Source\Libs\ZSDraw\ZSDrawDllMain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSDraw\ZSDrawObjFactory.cpp">
+      <Filter>Source Files\GraphObjFactories</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSDraw\ZSDrawObjFactoryConnectionLine.cpp">
+      <Filter>Source Files\GraphObjFactories</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSDraw\ZSDrawObjFactoryConnectionPoint.cpp">
+      <Filter>Source Files\GraphObjFactories</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSDraw\ZSDrawObjFactoryEllipse.cpp">
+      <Filter>Source Files\GraphObjFactories</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSDraw\ZSDrawObjFactoryGroup.cpp">
+      <Filter>Source Files\GraphObjFactories</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSDraw\ZSDrawObjFactoryImage.cpp">
+      <Filter>Source Files\GraphObjFactories</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSDraw\ZSDrawObjFactoryLine.cpp">
+      <Filter>Source Files\GraphObjFactories</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSDraw\ZSDrawObjFactoryPoint.cpp">
+      <Filter>Source Files\GraphObjFactories</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSDraw\ZSDrawObjFactoryPolygon.cpp">
+      <Filter>Source Files\GraphObjFactories</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSDraw\ZSDrawObjFactoryPolyline.cpp">
+      <Filter>Source Files\GraphObjFactories</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSDraw\ZSDrawObjFactoryRect.cpp">
+      <Filter>Source Files\GraphObjFactories</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSDraw\ZSDrawObjFactoryText.cpp">
+      <Filter>Source Files\GraphObjFactories</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSDraw\ZSDrawGraphObj.cpp">
+      <Filter>Source Files\GraphObjs</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSDraw\ZSDrawGraphObjConnectionLine.cpp">
+      <Filter>Source Files\GraphObjs</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSDraw\ZSDrawGraphObjConnectionPoint.cpp">
+      <Filter>Source Files\GraphObjs</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSDraw\ZSDrawGraphObjEllipse.cpp">
+      <Filter>Source Files\GraphObjs</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSDraw\ZSDrawGraphObjGroup.cpp">
+      <Filter>Source Files\GraphObjs</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSDraw\ZSDrawGraphObjImage.cpp">
+      <Filter>Source Files\GraphObjs</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSDraw\ZSDrawGraphObjLabel.cpp">
+      <Filter>Source Files\GraphObjs</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSDraw\ZSDrawGraphObjLine.cpp">
+      <Filter>Source Files\GraphObjs</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSDraw\ZSDrawGraphObjPoint.cpp">
+      <Filter>Source Files\GraphObjs</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSDraw\ZSDrawGraphObjPolygon.cpp">
+      <Filter>Source Files\GraphObjs</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSDraw\ZSDrawGraphObjPolyline.cpp">
+      <Filter>Source Files\GraphObjs</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSDraw\ZSDrawGraphObjRect.cpp">
+      <Filter>Source Files\GraphObjs</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSDraw\ZSDrawGraphObjSelectionPoint.cpp">
+      <Filter>Source Files\GraphObjs</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSDraw\ZSDrawGraphObjText.cpp">
+      <Filter>Source Files\GraphObjs</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSDraw\ZSDrawDlgFormatGraphObjs.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSDraw\ZSDrawDlgPageSetup.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSDraw\ZSDrawWdgtFormatGraphObjs.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSDraw\ZSDrawWdgtFormatGraphObjsFillStyle.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSDraw\ZSDrawWdgtFormatGraphObjsGeometry.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSDraw\ZSDrawWdgtFormatGraphObjsLineStyle.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSDraw\ZSDrawWdgtFormatGraphObjsObjName.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSDraw\ZSDrawWdgtFormatGraphObjsText.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSDraw\ZSDrawWdgtFormatGraphObjsTextStyle.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSDraw\ZSDrawWdgtPageSetup.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSDraw\ZSDrawWdgtPageSetupDrawingPaper.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSDraw\ZSDrawWdgtPageSetupDrawingScene.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSDraw\ZSDrawingScene.cpp">
+      <Filter>Source Files\Drawing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSDraw\ZSDrawingView.cpp">
+      <Filter>Source Files\Drawing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSDraw\ZSDrawPageSetup.cpp">
+      <Filter>Source Files\Drawing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSDraw\ZSDrawSettings.cpp">
+      <Filter>Source Files\Drawing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSDraw\ZSDrawGraphicsItemsModel.cpp">
+      <Filter>Source Files\GraphObjsModel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSDraw\ZSDrawGraphObjModelEntry.cpp">
+      <Filter>Source Files\GraphObjsModel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSDraw\ZSDrawObjFactoriesModel.cpp">
+      <Filter>Source Files\GraphObjFactoriesModel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2017\x64\emb_ZSDraw.cpp">
+      <Filter>Generated Files\msvc2017\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2017\x64\moc_ZSDrawDlgFormatGraphObjs.cpp">
+      <Filter>Generated Files\msvc2017\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2017\x64\moc_ZSDrawDlgPageSetup.cpp">
+      <Filter>Generated Files\msvc2017\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2017\x64\moc_ZSDrawGraphicsItemsModel.cpp">
+      <Filter>Generated Files\msvc2017\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2017\x64\moc_ZSDrawingScene.cpp">
+      <Filter>Generated Files\msvc2017\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2017\x64\moc_ZSDrawingView.cpp">
+      <Filter>Generated Files\msvc2017\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2017\x64\moc_ZSDrawObjFactory.cpp">
+      <Filter>Generated Files\msvc2017\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2017\x64\moc_ZSDrawWdgtFormatGraphObjsFillStyle.cpp">
+      <Filter>Generated Files\msvc2017\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2017\x64\moc_ZSDrawWdgtFormatGraphObjsGeometry.cpp">
+      <Filter>Generated Files\msvc2017\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2017\x64\moc_ZSDrawWdgtFormatGraphObjsLineStyle.cpp">
+      <Filter>Generated Files\msvc2017\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2017\x64\moc_ZSDrawWdgtFormatGraphObjsObjName.cpp">
+      <Filter>Generated Files\msvc2017\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2017\x64\moc_ZSDrawWdgtFormatGraphObjsText.cpp">
+      <Filter>Generated Files\msvc2017\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2017\x64\moc_ZSDrawWdgtFormatGraphObjsTextStyle.cpp">
+      <Filter>Generated Files\msvc2017\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2017\x64\moc_ZSDrawWdgtPageSetup.cpp">
+      <Filter>Generated Files\msvc2017\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2017\x64\moc_ZSDrawWdgtPageSetupDrawingPaper.cpp">
+      <Filter>Generated Files\msvc2017\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2017\x64\moc_ZSDrawWdgtPageSetupDrawingScene.cpp">
+      <Filter>Generated Files\msvc2017\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2015\x64\emb_ZSDraw.cpp">
+      <Filter>Generated Files\msvc2015\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2015\x64\moc_ZSDrawDlgFormatGraphObjs.cpp">
+      <Filter>Generated Files\msvc2015\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2015\x64\moc_ZSDrawDlgPageSetup.cpp">
+      <Filter>Generated Files\msvc2015\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2015\x64\moc_ZSDrawGraphicsItemsModel.cpp">
+      <Filter>Generated Files\msvc2015\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2015\x64\moc_ZSDrawingScene.cpp">
+      <Filter>Generated Files\msvc2015\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2015\x64\moc_ZSDrawingView.cpp">
+      <Filter>Generated Files\msvc2015\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2015\x64\moc_ZSDrawObjFactory.cpp">
+      <Filter>Generated Files\msvc2015\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2015\x64\moc_ZSDrawWdgtFormatGraphObjsFillStyle.cpp">
+      <Filter>Generated Files\msvc2015\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2015\x64\moc_ZSDrawWdgtFormatGraphObjsGeometry.cpp">
+      <Filter>Generated Files\msvc2015\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2015\x64\moc_ZSDrawWdgtFormatGraphObjsLineStyle.cpp">
+      <Filter>Generated Files\msvc2015\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2015\x64\moc_ZSDrawWdgtFormatGraphObjsObjName.cpp">
+      <Filter>Generated Files\msvc2015\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2015\x64\moc_ZSDrawWdgtFormatGraphObjsText.cpp">
+      <Filter>Generated Files\msvc2015\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2015\x64\moc_ZSDrawWdgtFormatGraphObjsTextStyle.cpp">
+      <Filter>Generated Files\msvc2015\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2015\x64\moc_ZSDrawWdgtPageSetup.cpp">
+      <Filter>Generated Files\msvc2015\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2015\x64\moc_ZSDrawWdgtPageSetupDrawingPaper.cpp">
+      <Filter>Generated Files\msvc2015\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2015\x64\moc_ZSDrawWdgtPageSetupDrawingScene.cpp">
+      <Filter>Generated Files\msvc2015\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2015\x64\emb_ZSDraw.cpp">
+      <Filter>Generated Files\msvc2015\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2015\x64\moc_ZSDrawDlgFormatGraphObjs.cpp">
+      <Filter>Generated Files\msvc2015\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2015\x64\moc_ZSDrawDlgPageSetup.cpp">
+      <Filter>Generated Files\msvc2015\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2015\x64\moc_ZSDrawGraphicsItemsModel.cpp">
+      <Filter>Generated Files\msvc2015\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2015\x64\moc_ZSDrawingScene.cpp">
+      <Filter>Generated Files\msvc2015\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2015\x64\moc_ZSDrawingView.cpp">
+      <Filter>Generated Files\msvc2015\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2015\x64\moc_ZSDrawObjFactory.cpp">
+      <Filter>Generated Files\msvc2015\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2015\x64\moc_ZSDrawWdgtFormatGraphObjsFillStyle.cpp">
+      <Filter>Generated Files\msvc2015\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2015\x64\moc_ZSDrawWdgtFormatGraphObjsGeometry.cpp">
+      <Filter>Generated Files\msvc2015\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2015\x64\moc_ZSDrawWdgtFormatGraphObjsLineStyle.cpp">
+      <Filter>Generated Files\msvc2015\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2015\x64\moc_ZSDrawWdgtFormatGraphObjsObjName.cpp">
+      <Filter>Generated Files\msvc2015\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2015\x64\moc_ZSDrawWdgtFormatGraphObjsText.cpp">
+      <Filter>Generated Files\msvc2015\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2015\x64\moc_ZSDrawWdgtFormatGraphObjsTextStyle.cpp">
+      <Filter>Generated Files\msvc2015\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2015\x64\moc_ZSDrawWdgtPageSetup.cpp">
+      <Filter>Generated Files\msvc2015\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2015\x64\moc_ZSDrawWdgtPageSetupDrawingPaper.cpp">
+      <Filter>Generated Files\msvc2015\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2015\x64\moc_ZSDrawWdgtPageSetupDrawingScene.cpp">
+      <Filter>Generated Files\msvc2015\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2017\Win32\emb_ZSDraw.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2017\Win32\moc_ZSDrawDlgFormatGraphObjs.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2017\Win32\moc_ZSDrawDlgPageSetup.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2017\Win32\moc_ZSDrawGraphicsItemsModel.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2017\Win32\moc_ZSDrawingScene.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2017\Win32\moc_ZSDrawingView.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2017\Win32\moc_ZSDrawObjFactory.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2017\Win32\moc_ZSDrawWdgtFormatGraphObjsFillStyle.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2017\Win32\moc_ZSDrawWdgtFormatGraphObjsGeometry.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2017\Win32\moc_ZSDrawWdgtFormatGraphObjsLineStyle.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2017\Win32\moc_ZSDrawWdgtFormatGraphObjsObjName.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2017\Win32\moc_ZSDrawWdgtFormatGraphObjsText.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2017\Win32\moc_ZSDrawWdgtFormatGraphObjsTextStyle.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2017\Win32\moc_ZSDrawWdgtPageSetup.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2017\Win32\moc_ZSDrawWdgtPageSetupDrawingPaper.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2017\Win32\moc_ZSDrawWdgtPageSetupDrawingScene.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2017\Win32\emb_ZSDraw.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2017\Win32\moc_ZSDrawDlgFormatGraphObjs.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2017\Win32\moc_ZSDrawDlgPageSetup.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2017\Win32\moc_ZSDrawGraphicsItemsModel.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2017\Win32\moc_ZSDrawingScene.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2017\Win32\moc_ZSDrawingView.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2017\Win32\moc_ZSDrawObjFactory.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2017\Win32\moc_ZSDrawWdgtFormatGraphObjsFillStyle.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2017\Win32\moc_ZSDrawWdgtFormatGraphObjsGeometry.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2017\Win32\moc_ZSDrawWdgtFormatGraphObjsLineStyle.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2017\Win32\moc_ZSDrawWdgtFormatGraphObjsObjName.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2017\Win32\moc_ZSDrawWdgtFormatGraphObjsText.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2017\Win32\moc_ZSDrawWdgtFormatGraphObjsTextStyle.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2017\Win32\moc_ZSDrawWdgtPageSetup.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2017\Win32\moc_ZSDrawWdgtPageSetupDrawingPaper.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2017\Win32\moc_ZSDrawWdgtPageSetupDrawingScene.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2015\Win32\emb_ZSDraw.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2015\Win32\moc_ZSDrawDlgFormatGraphObjs.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2015\Win32\moc_ZSDrawDlgPageSetup.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2015\Win32\moc_ZSDrawGraphicsItemsModel.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2015\Win32\moc_ZSDrawingScene.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2015\Win32\moc_ZSDrawingView.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2015\Win32\moc_ZSDrawObjFactory.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2015\Win32\moc_ZSDrawWdgtFormatGraphObjsFillStyle.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2015\Win32\moc_ZSDrawWdgtFormatGraphObjsGeometry.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2015\Win32\moc_ZSDrawWdgtFormatGraphObjsLineStyle.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2015\Win32\moc_ZSDrawWdgtFormatGraphObjsObjName.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2015\Win32\moc_ZSDrawWdgtFormatGraphObjsText.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2015\Win32\moc_ZSDrawWdgtFormatGraphObjsTextStyle.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2015\Win32\moc_ZSDrawWdgtPageSetup.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2015\Win32\moc_ZSDrawWdgtPageSetupDrawingPaper.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2015\Win32\moc_ZSDrawWdgtPageSetupDrawingScene.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2015\Win32\emb_ZSDraw.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2015\Win32\moc_ZSDrawDlgFormatGraphObjs.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2015\Win32\moc_ZSDrawDlgPageSetup.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2015\Win32\moc_ZSDrawGraphicsItemsModel.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2015\Win32\moc_ZSDrawingScene.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2015\Win32\moc_ZSDrawingView.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2015\Win32\moc_ZSDrawObjFactory.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2015\Win32\moc_ZSDrawWdgtFormatGraphObjsFillStyle.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2015\Win32\moc_ZSDrawWdgtFormatGraphObjsGeometry.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2015\Win32\moc_ZSDrawWdgtFormatGraphObjsLineStyle.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2015\Win32\moc_ZSDrawWdgtFormatGraphObjsObjName.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2015\Win32\moc_ZSDrawWdgtFormatGraphObjsText.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2015\Win32\moc_ZSDrawWdgtFormatGraphObjsTextStyle.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2015\Win32\moc_ZSDrawWdgtPageSetup.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2015\Win32\moc_ZSDrawWdgtPageSetupDrawingPaper.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2015\Win32\moc_ZSDrawWdgtPageSetupDrawingScene.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2017\x64\emb_ZSDraw.cpp">
+      <Filter>Generated Files\msvc2017\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2017\x64\moc_ZSDrawDlgFormatGraphObjs.cpp">
+      <Filter>Generated Files\msvc2017\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2017\x64\moc_ZSDrawDlgPageSetup.cpp">
+      <Filter>Generated Files\msvc2017\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2017\x64\moc_ZSDrawGraphicsItemsModel.cpp">
+      <Filter>Generated Files\msvc2017\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2017\x64\moc_ZSDrawingScene.cpp">
+      <Filter>Generated Files\msvc2017\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2017\x64\moc_ZSDrawingView.cpp">
+      <Filter>Generated Files\msvc2017\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2017\x64\moc_ZSDrawObjFactory.cpp">
+      <Filter>Generated Files\msvc2017\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2017\x64\moc_ZSDrawWdgtFormatGraphObjsFillStyle.cpp">
+      <Filter>Generated Files\msvc2017\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2017\x64\moc_ZSDrawWdgtFormatGraphObjsGeometry.cpp">
+      <Filter>Generated Files\msvc2017\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2017\x64\moc_ZSDrawWdgtFormatGraphObjsLineStyle.cpp">
+      <Filter>Generated Files\msvc2017\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2017\x64\moc_ZSDrawWdgtFormatGraphObjsObjName.cpp">
+      <Filter>Generated Files\msvc2017\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2017\x64\moc_ZSDrawWdgtFormatGraphObjsText.cpp">
+      <Filter>Generated Files\msvc2017\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2017\x64\moc_ZSDrawWdgtFormatGraphObjsTextStyle.cpp">
+      <Filter>Generated Files\msvc2017\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2017\x64\moc_ZSDrawWdgtPageSetup.cpp">
+      <Filter>Generated Files\msvc2017\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2017\x64\moc_ZSDrawWdgtPageSetupDrawingPaper.cpp">
+      <Filter>Generated Files\msvc2017\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2017\x64\moc_ZSDrawWdgtPageSetupDrawingScene.cpp">
+      <Filter>Generated Files\msvc2017\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2019\x64\moc_ZSDrawDlgFormatGraphObjs.cpp">
+      <Filter>Generated Files\msvc2019\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2019\x64\moc_ZSDrawDlgPageSetup.cpp">
+      <Filter>Generated Files\msvc2019\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2019\x64\moc_ZSDrawingScene.cpp">
+      <Filter>Generated Files\msvc2019\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2019\x64\moc_ZSDrawingView.cpp">
+      <Filter>Generated Files\msvc2019\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2019\x64\moc_ZSDrawObjFactory.cpp">
+      <Filter>Generated Files\msvc2019\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2019\x64\moc_ZSDrawWdgtFormatGraphObjsFillStyle.cpp">
+      <Filter>Generated Files\msvc2019\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2019\x64\moc_ZSDrawWdgtFormatGraphObjsGeometry.cpp">
+      <Filter>Generated Files\msvc2019\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2019\x64\moc_ZSDrawWdgtFormatGraphObjsLineStyle.cpp">
+      <Filter>Generated Files\msvc2019\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2019\x64\moc_ZSDrawWdgtFormatGraphObjsObjName.cpp">
+      <Filter>Generated Files\msvc2019\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2019\x64\moc_ZSDrawWdgtFormatGraphObjsText.cpp">
+      <Filter>Generated Files\msvc2019\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2019\x64\moc_ZSDrawWdgtFormatGraphObjsTextStyle.cpp">
+      <Filter>Generated Files\msvc2019\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2019\x64\moc_ZSDrawWdgtPageSetup.cpp">
+      <Filter>Generated Files\msvc2019\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2019\x64\moc_ZSDrawWdgtPageSetupDrawingPaper.cpp">
+      <Filter>Generated Files\msvc2019\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2019\x64\moc_ZSDrawWdgtPageSetupDrawingScene.cpp">
+      <Filter>Generated Files\msvc2019\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2019\x64\emb_ZSDraw.cpp">
+      <Filter>Generated Files\msvc2019\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2019\x64\moc_ZSDrawGraphicsItemsModel.cpp">
+      <Filter>Generated Files\msvc2019\x64\Debug</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\Include\Libs\ZSDraw\ZSDrawDllMain.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Libs\ZSDraw\ZSDrawObjFactoryConnectionLine.h">
+      <Filter>Header Files\GraphObjFactories</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Libs\ZSDraw\ZSDrawObjFactoryConnectionPoint.h">
+      <Filter>Header Files\GraphObjFactories</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Libs\ZSDraw\ZSDrawObjFactoryEllipse.h">
+      <Filter>Header Files\GraphObjFactories</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Libs\ZSDraw\ZSDrawObjFactoryGroup.h">
+      <Filter>Header Files\GraphObjFactories</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Libs\ZSDraw\ZSDrawObjFactoryImage.h">
+      <Filter>Header Files\GraphObjFactories</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Libs\ZSDraw\ZSDrawObjFactoryLine.h">
+      <Filter>Header Files\GraphObjFactories</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Libs\ZSDraw\ZSDrawObjFactoryPoint.h">
+      <Filter>Header Files\GraphObjFactories</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Libs\ZSDraw\ZSDrawObjFactoryPolygon.h">
+      <Filter>Header Files\GraphObjFactories</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Libs\ZSDraw\ZSDrawObjFactoryPolyline.h">
+      <Filter>Header Files\GraphObjFactories</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Libs\ZSDraw\ZSDrawObjFactoryRect.h">
+      <Filter>Header Files\GraphObjFactories</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Libs\ZSDraw\ZSDrawObjFactoryText.h">
+      <Filter>Header Files\GraphObjFactories</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Libs\ZSDraw\ZSDrawGraphObj.h">
+      <Filter>Header Files\GraphObjs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Libs\ZSDraw\ZSDrawGraphObjConnectionLine.h">
+      <Filter>Header Files\GraphObjs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Libs\ZSDraw\ZSDrawGraphObjConnectionPoint.h">
+      <Filter>Header Files\GraphObjs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Libs\ZSDraw\ZSDrawGraphObjEllipse.h">
+      <Filter>Header Files\GraphObjs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Libs\ZSDraw\ZSDrawGraphObjGroup.h">
+      <Filter>Header Files\GraphObjs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Libs\ZSDraw\ZSDrawGraphObjImage.h">
+      <Filter>Header Files\GraphObjs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Libs\ZSDraw\ZSDrawGraphObjLabel.h">
+      <Filter>Header Files\GraphObjs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Libs\ZSDraw\ZSDrawGraphObjLine.h">
+      <Filter>Header Files\GraphObjs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Libs\ZSDraw\ZSDrawGraphObjPoint.h">
+      <Filter>Header Files\GraphObjs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Libs\ZSDraw\ZSDrawGraphObjPolygon.h">
+      <Filter>Header Files\GraphObjs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Libs\ZSDraw\ZSDrawGraphObjPolyline.h">
+      <Filter>Header Files\GraphObjs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Libs\ZSDraw\ZSDrawGraphObjRect.h">
+      <Filter>Header Files\GraphObjs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Libs\ZSDraw\ZSDrawGraphObjSelectionPoint.h">
+      <Filter>Header Files\GraphObjs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Libs\ZSDraw\ZSDrawGraphObjText.h">
+      <Filter>Header Files\GraphObjs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Libs\ZSDraw\ZSDrawPageSetup.h">
+      <Filter>Header Files\Drawing</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Libs\ZSDraw\ZSDrawSettings.h">
+      <Filter>Header Files\Drawing</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Libs\ZSDraw\ZSDrawGraphObjModelEntry.h">
+      <Filter>Header Files\GraphObjsModel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Libs\ZSDraw\ZSDrawObjFactoriesModel.h">
+      <Filter>Header Files\GraphObjFactoriesModel</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Resource Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="ZSDraw.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\..\..\Images\ZSDraw\CursorPin16x16.bmp">
+      <Filter>Resource Files\ToolBars</Filter>
+    </Image>
+    <Image Include="..\..\..\Images\ZSDraw\CursorPin32x32.bmp">
+      <Filter>Resource Files\ToolBars</Filter>
+    </Image>
+    <Image Include="..\..\..\Images\ZSDraw\CursorRotateFree16x16.bmp">
+      <Filter>Resource Files\ToolBars</Filter>
+    </Image>
+    <Image Include="..\..\..\Images\ZSDraw\CursorSelect16x16.bmp">
+      <Filter>Resource Files\ToolBars</Filter>
+    </Image>
+    <Image Include="..\..\..\Images\ZSDraw\DrawConnectionLine16x16.bmp">
+      <Filter>Resource Files\ToolBars</Filter>
+    </Image>
+    <Image Include="..\..\..\Images\ZSDraw\DrawConnectionPoint16x16.bmp">
+      <Filter>Resource Files\ToolBars</Filter>
+    </Image>
+    <Image Include="..\..\..\Images\ZSDraw\DrawEllipse16x16.bmp">
+      <Filter>Resource Files\ToolBars</Filter>
+    </Image>
+    <Image Include="..\..\..\Images\ZSDraw\DrawImage16x16.bmp">
+      <Filter>Resource Files\ToolBars</Filter>
+    </Image>
+    <Image Include="..\..\..\Images\ZSDraw\DrawLine16x16.bmp">
+      <Filter>Resource Files\ToolBars</Filter>
+    </Image>
+    <Image Include="..\..\..\Images\ZSDraw\DrawPoint16x16.bmp">
+      <Filter>Resource Files\ToolBars</Filter>
+    </Image>
+    <Image Include="..\..\..\Images\ZSDraw\DrawPolygon16x16.bmp">
+      <Filter>Resource Files\ToolBars</Filter>
+    </Image>
+    <Image Include="..\..\..\Images\ZSDraw\DrawPolyline16x16.bmp">
+      <Filter>Resource Files\ToolBars</Filter>
+    </Image>
+    <Image Include="..\..\..\Images\ZSDraw\DrawRect16x16.bmp">
+      <Filter>Resource Files\ToolBars</Filter>
+    </Image>
+    <Image Include="..\..\..\Images\ZSDraw\DrawText16x16.bmp">
+      <Filter>Resource Files\ToolBars</Filter>
+    </Image>
+    <Image Include="..\..\..\Images\ZSDraw\DrawToolBrush16x16.bmp">
+      <Filter>Resource Files\ToolBars</Filter>
+    </Image>
+    <Image Include="..\..\..\Images\ZSDraw\DrawToolGeometry16x16.bmp">
+      <Filter>Resource Files\ToolBars</Filter>
+    </Image>
+    <Image Include="..\..\..\Images\ZSDraw\DrawToolLine16x16.bmp">
+      <Filter>Resource Files\ToolBars</Filter>
+    </Image>
+    <Image Include="..\..\..\Images\ZSDraw\DrawToolMirrorHorizontal16x16.bmp">
+      <Filter>Resource Files\ToolBars</Filter>
+    </Image>
+    <Image Include="..\..\..\Images\ZSDraw\DrawToolMirrorVertical16x16.bmp">
+      <Filter>Resource Files\ToolBars</Filter>
+    </Image>
+    <Image Include="..\..\..\Images\ZSDraw\DrawToolPen16x16.bmp">
+      <Filter>Resource Files\ToolBars</Filter>
+    </Image>
+    <Image Include="..\..\..\Images\ZSDraw\DrawToolRotateLeftBy90Degrees16x16.bmp">
+      <Filter>Resource Files\ToolBars</Filter>
+    </Image>
+    <Image Include="..\..\..\Images\ZSDraw\DrawToolRotateRightBy90Degrees16x16.bmp">
+      <Filter>Resource Files\ToolBars</Filter>
+    </Image>
+    <Image Include="..\..\..\Images\ZSDraw\DrawToolText16x16.bmp">
+      <Filter>Resource Files\ToolBars</Filter>
+    </Image>
+    <Image Include="..\..\..\Images\ZSDraw\EditGroup16x16.bmp">
+      <Filter>Resource Files\ToolBars</Filter>
+    </Image>
+    <Image Include="..\..\..\Images\ZSDraw\EditUngroup16x16.bmp">
+      <Filter>Resource Files\ToolBars</Filter>
+    </Image>
+    <Image Include="..\..\..\Images\ZSDraw\Key16x16.bmp">
+      <Filter>Resource Files\ToolBars</Filter>
+    </Image>
+    <Image Include="..\..\..\Images\ZSDraw\FilePageSetup16x16.bmp">
+      <Filter>Resource Files\Menu</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\..\Include\Libs\ZSDraw\ZSDrawObjFactory.h">
+      <Filter>Header Files\GraphObjFactories</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\Libs\ZSDraw\ZSDrawDlgFormatGraphObjs.h">
+      <Filter>Header Files\Dialogs</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\Libs\ZSDraw\ZSDrawDlgPageSetup.h">
+      <Filter>Header Files\Dialogs</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\Libs\ZSDraw\ZSDrawWdgtFormatGraphObjs.h">
+      <Filter>Header Files\Dialogs</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\Libs\ZSDraw\ZSDrawWdgtFormatGraphObjsFillStyle.h">
+      <Filter>Header Files\Dialogs</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\Libs\ZSDraw\ZSDrawWdgtFormatGraphObjsGeometry.h">
+      <Filter>Header Files\Dialogs</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\Libs\ZSDraw\ZSDrawWdgtFormatGraphObjsLineStyle.h">
+      <Filter>Header Files\Dialogs</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\Libs\ZSDraw\ZSDrawWdgtFormatGraphObjsObjName.h">
+      <Filter>Header Files\Dialogs</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\Libs\ZSDraw\ZSDrawWdgtFormatGraphObjsText.h">
+      <Filter>Header Files\Dialogs</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\Libs\ZSDraw\ZSDrawWdgtFormatGraphObjsTextStyle.h">
+      <Filter>Header Files\Dialogs</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\Libs\ZSDraw\ZSDrawWdgtPageSetup.h">
+      <Filter>Header Files\Dialogs</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\Libs\ZSDraw\ZSDrawWdgtPageSetupDrawingPaper.h">
+      <Filter>Header Files\Dialogs</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\Libs\ZSDraw\ZSDrawWdgtPageSetupDrawingScene.h">
+      <Filter>Header Files\Dialogs</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\Libs\ZSDraw\ZSDrawingScene.h">
+      <Filter>Header Files\Drawing</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\Libs\ZSDraw\ZSDrawingView.h">
+      <Filter>Header Files\Drawing</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\Libs\ZSDraw\ZSDrawGraphicsItemsModel.h">
+      <Filter>Header Files\GraphObjsModel</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Images\Libs\ZSDraw\ZSDraw.qrc">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+  </ItemGroup>
+</Project>

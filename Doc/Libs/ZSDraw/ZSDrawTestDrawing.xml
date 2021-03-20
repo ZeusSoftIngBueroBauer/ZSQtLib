@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Drawing Rect="0.0/0.0, 800.0/0.0, 800.0/600.0, 0.0/600.0">
+    <GraphObj NameSpace="ZS::Draw" ClassName="CGraphObjImage" ObjectType="Image" ObjectName="Image1" ObjectId="IdImage1">
+        <DrawSettings>
+            <LineStyle>NoLine</LineStyle>
+        </DrawSettings>
+        <Image>C:/Projekte/ZSQtLib/Images/ZSSys/Zeus32x32.bmp</Image>
+        <Geometry>
+            <Pos>586.2/347.4</Pos>
+            <Size>32.0/32.0</Size>
+            <RotAngleDeg>45</RotAngleDeg>
+        </Geometry>
+        <ZValue>1</ZValue>
+        <Labels>
+            <Label Key="ObjName" Text="Image1" SelectionPoint="TC" Distance="36.0/-10.0" Visible="true"/>
+            <Label Key="ObjId" Text="IdImage1" SelectionPoint="TC" Distance="33.0/11.0" Visible="true"/>
+        </Labels>
+    </GraphObj>
+    <GraphObj NameSpace="ZS::Draw" ClassName="CGraphObjEllipse" ObjectType="Ellipse" ObjectName="Ellipse1" ObjectId="IdEllipse1">
+        <DrawSettings>
+            <PenColor>#00557f</PenColor>
+            <PenWidth>2</PenWidth>
+            <LineStyle>DashDotDotLine</LineStyle>
+            <FillColor>#ffaa00</FillColor>
+            <FillStyle>Dense6Pattern</FillStyle>
+        </DrawSettings>
+        <Geometry>
+            <Pos>437.0/184.0</Pos>
+            <Size>56.0/42.0</Size>
+            <RotAngleDeg>45</RotAngleDeg>
+        </Geometry>
+        <ZValue>1</ZValue>
+        <Labels>
+            <Label Key="ObjName" Text="Ellipse1" SelectionPoint="TC" Distance="-50.0/4.0" Visible="true"/>
+            <Label Key="ObjId" Text="IdEllipse1" SelectionPoint="TC" Distance="-58.0/22.0" Visible="true"/>
+        </Labels>
+    </GraphObj>
+    <GraphObj NameSpace="ZS::Draw" ClassName="CGraphObjPoint" ObjectType="Point" ObjectName="Point1" ObjectId="IdPoint1">
+        <DrawSettings>
+            <PenColor>#0055ff</PenColor>
+            <PenWidth>3</PenWidth>
+        </DrawSettings>
+        <Geometry>
+            <Pos>86.0/60.0</Pos>
+        </Geometry>
+        <ZValue>1</ZValue>
+        <Labels>
+            <Label Key="ObjName" Text="Point1" SelectionPoint="TC" Distance="10.0/-15.0" Visible="true"/>
+            <Label Key="ObjId" Text="IdPoint1" SelectionPoint="TC" Distance="10.0/2.0" Visible="true"/>
+        </Labels>
+    </GraphObj>
+    <GraphObj NameSpace="ZS::Draw" ClassName="CGraphObjLine" ObjectType="Line" ObjectName="Line3" ObjectId="IdLine3">
+        <DrawSettings>
+            <PenColor>#ff0000</PenColor>
+            <PenWidth>3</PenWidth>
+            <LineStyle>DotLine</LineStyle>
+            <LineStartLineEndStyle>ArrowHead</LineStartLineEndStyle>
+            <LineStartLineEndBaseLineType>Normal</LineStartLineEndBaseLineType>
+            <LineEndLineEndStyle>ArrowHead</LineEndLineEndStyle>
+            <LineEndLineEndBaseLineType>Indented</LineEndLineEndBaseLineType>
+        </DrawSettings>
+        <Geometry>
+            <ShapePoints>
+                <P1>148.0/146.0</P1>
+                <P2>215.0/211.0</P2>
+            </ShapePoints>
+        </Geometry>
+        <ZValue>1</ZValue>
+        <Labels>
+            <Label Key="ObjName" Text="Line3" SelectionPoint="TC" Distance="-1.0/-21.0" Visible="true"/>
+            <Label Key="ObjId" Text="IdLine3" SelectionPoint="TC" Distance="13.0/-5.0" Visible="true"/>
+        </Labels>
+    </GraphObj>
+    <GraphObj NameSpace="ZS::Draw" ClassName="CGraphObjRect" ObjectType="Rect" ObjectName="Rect1" ObjectId="IdRect1">
+        <DrawSettings>
+            <PenColor>#00ffff</PenColor>
+            <PenWidth>2</PenWidth>
+            <LineStyle>DashLine</LineStyle>
+            <FillColor>#ffff7f</FillColor>
+            <FillStyle>Dense1Pattern</FillStyle>
+        </DrawSettings>
+        <Geometry>
+            <Pos>320.0/109.0</Pos>
+            <Size>52.0/45.0</Size>
+            <RotAngleDeg>30</RotAngleDeg>
+        </Geometry>
+        <ZValue>1</ZValue>
+        <Labels>
+            <Label Key="ObjName" Text="Rect1" SelectionPoint="TC" Distance="-16.0/-20.0" Visible="true"/>
+            <Label Key="ObjId" Text="IdRect1" SelectionPoint="TC" Distance="33.0/-22.0" Visible="true"/>
+        </Labels>
+    </GraphObj>
+    <GraphObj NameSpace="ZS::Draw" ClassName="CGraphObjPolyline" ObjectType="Polyline" ObjectName="Polyline2" ObjectId="IdPolyline2">
+        <DrawSettings>
+            <PenColor>#aaaa00</PenColor>
+            <PenWidth>3</PenWidth>
+            <LineStyle>DashLine</LineStyle>
+            <LineStartLineEndStyle>ArrowHead</LineStartLineEndStyle>
+            <LineStartLineEndBaseLineType>Normal</LineStartLineEndBaseLineType>
+            <LineEndLineEndStyle>ArrowHead</LineEndLineEndStyle>
+            <LineEndLineEndBaseLineType>Indented</LineEndLineEndBaseLineType>
+            <LineEndLineEndFillStyle>SolidPattern</LineEndLineEndFillStyle>
+        </DrawSettings>
+        <Geometry>
+            <Pos>69.0/289.0</Pos>
+            <RotAngleDeg>30</RotAngleDeg>
+            <Pt0>69.0/107.0</Pt0>
+            <Pt1>123.0/149.0</Pt1>
+            <Pt2>162.0/128.0</Pt2>
+            <Pt3>182.0/86.0</Pt3>
+            <Pt4>168.0/46.0</Pt4>
+            <Pt5>100.0/0.0</Pt5>
+            <Pt6>0.0/25.0</Pt6>
+            <Pt7>30.0/61.0</Pt7>
+            <Pt8>16.0/88.0</Pt8>
+            <Pt9>47.0/99.0</Pt9>
+        </Geometry>
+        <ZValue>1</ZValue>
+        <Labels>
+            <Label Key="ObjName" Text="Polyline2" SelectionPoint="TC" Distance="-32.0/-24.0" Visible="true"/>
+            <Label Key="ObjId" Text="IdPolyline2" SelectionPoint="TC" Distance="28.0/-21.0" Visible="true"/>
+        </Labels>
+    </GraphObj>
+    <GraphObj NameSpace="ZS::Draw" ClassName="CGraphObjPolygon" ObjectType="Polygon" ObjectName="Polygon1" ObjectId="IdPolygon1">
+        <DrawSettings>
+            <PenColor>#aaff00</PenColor>
+            <PenWidth>2</PenWidth>
+            <FillColor>#ffaa00</FillColor>
+            <FillStyle>Dense3Pattern</FillStyle>
+        </DrawSettings>
+        <Geometry>
+            <Pos>352.0/279.0</Pos>
+            <RotAngleDeg>60</RotAngleDeg>
+            <Pt0>53.0/44.0</Pt0>
+            <Pt1>97.0/63.0</Pt1>
+            <Pt2>93.0/85.0</Pt2>
+            <Pt3>55.0/115.0</Pt3>
+            <Pt4>17.0/89.0</Pt4>
+            <Pt5>0.0/49.0</Pt5>
+            <Pt6>24.0/0.0</Pt6>
+        </Geometry>
+        <ZValue>1</ZValue>
+        <Labels>
+            <Label Key="ObjName" Text="Polygon1" SelectionPoint="TC" Distance="2.0/-1.0" Visible="true"/>
+            <Label Key="ObjId" Text="IdPolygon1" SelectionPoint="TC" Distance="45.0/-34.0" Visible="true"/>
+        </Labels>
+    </GraphObj>
+    <GraphObj NameSpace="ZS::Draw" ClassName="CGraphObjText" ObjectType="Text" ObjectName="Text1" ObjectId="IdText1">
+        <Text>hello world</Text>
+        <DrawSettings>
+            <LineStyle>NoLine</LineStyle>
+            <TextFont>Algerian,12,-1,5,50,0,0,0,0,0</TextFont>
+            <TextStyle>Bold</TextStyle>
+            <TextSize>14</TextSize>
+        </DrawSettings>
+        <Geometry>
+            <Pos>525.0/91.0</Pos>
+            <RotAngleDeg>49</RotAngleDeg>
+        </Geometry>
+        <ZValue>1</ZValue>
+        <Labels>
+            <Label Key="ObjName" Text="Text1" SelectionPoint="TC" Distance="-43.0/-4.0" Visible="true"/>
+            <Label Key="ObjId" Text="IdText1" SelectionPoint="TC" Distance="-6.0/-25.0" Visible="true"/>
+        </Labels>
+    </GraphObj>
+    <GraphObj NameSpace="ZS::Draw" ClassName="CGraphObjConnectionPoint" ObjectType="ConnectionPoint" ObjectName="ConnectionPoint2" ObjectId="IdConnectionPoint2">
+        <DrawSettings/>
+        <Geometry>
+            <Pos>618.0/146.0</Pos>
+        </Geometry>
+        <ZValue>0</ZValue>
+        <Labels>
+            <Label Key="ObjName" Text="ConnectionPoint2" SelectionPoint="TC" Distance="0.0/-13.0" Visible="true"/>
+            <Label Key="ObjId" Text="IdConnectionPoint2" SelectionPoint="TC" Distance="22.0/2.0" Visible="true"/>
+        </Labels>
+    </GraphObj>
+    <GraphObj NameSpace="ZS::Draw" ClassName="CGraphObjConnectionPoint" ObjectType="ConnectionPoint" ObjectName="ConnectionPoint1" ObjectId="IdConnectionPoint1">
+        <DrawSettings/>
+        <Geometry>
+            <Pos>576.0/119.0</Pos>
+        </Geometry>
+        <ZValue>0</ZValue>
+        <Labels>
+            <Label Key="ObjName" Text="ConnectionPoint1" SelectionPoint="TC" Distance="0.0/-13.0" Visible="true"/>
+            <Label Key="ObjId" Text="IdConnectionPoint1" SelectionPoint="TC" Distance="25.0/1.0" Visible="true"/>
+        </Labels>
+    </GraphObj>
+    <GraphObj NameSpace="ZS::Draw" ClassName="CGraphObjGroup" ObjectType="Group" ObjectName="Group1" ObjectId="IdGroup1">
+        <DrawSettings/>
+        <Geometry>
+            <Pos>216.9/41.5</Pos>
+            <RotAngleDeg>14</RotAngleDeg>
+        </Geometry>
+        <ZValue>0</ZValue>
+        <Labels>
+            <Label Key="ObjName" Text="Group1" SelectionPoint="TC" Distance="0.0/-13.0" Visible="true"/>
+            <Label Key="ObjId" Text="IdGroup1" SelectionPoint="TC" Distance="38.0/11.0" Visible="true"/>
+        </Labels>
+        <GraphObj NameSpace="ZS::Draw" ClassName="CGraphObjRect" ObjectType="Rect" ObjectName="Rect2" ObjectId="Rect2">
+            <DrawSettings>
+                <FillStyle>SolidPattern</FillStyle>
+            </DrawSettings>
+            <Geometry>
+                <Pos>11.9/10.9</Pos>
+                <Size>39.2/44.8</Size>
+                <RotAngleDeg>0</RotAngleDeg>
+            </Geometry>
+            <ZValue>0</ZValue>
+        </GraphObj>
+        <GraphObj NameSpace="ZS::Draw" ClassName="CGraphObjLine" ObjectType="Line" ObjectName="Line4" ObjectId="Line4">
+            <DrawSettings/>
+            <Geometry>
+                <ShapePoints>
+                    <P1>72.4/34.0</P1>
+                    <P2>-3.6/34.0</P2>
+                </ShapePoints>
+            </Geometry>
+            <ZValue>0.1</ZValue>
+        </GraphObj>
+        <GraphObj NameSpace="ZS::Draw" ClassName="CGraphObjLine" ObjectType="Line" ObjectName="Line5" ObjectId="Line5">
+            <DrawSettings/>
+            <Geometry>
+                <ShapePoints>
+                    <P1>33.3/67.9</P1>
+                    <P2>32.1/1.4</P2>
+                </ShapePoints>
+            </Geometry>
+            <ZValue>0.1</ZValue>
+        </GraphObj>
+        <GraphObj NameSpace="ZS::Draw" ClassName="CGraphObjLine" ObjectType="Line" ObjectName="Line2" ObjectId="Line2">
+            <DrawSettings/>
+            <Geometry>
+                <ShapePoints>
+                    <P1>0.0/62.5</P1>
+                    <P2>64.1/1.4</P2>
+                </ShapePoints>
+            </Geometry>
+            <ZValue>0.1</ZValue>
+        </GraphObj>
+        <GraphObj NameSpace="ZS::Draw" ClassName="CGraphObjLine" ObjectType="Line" ObjectName="Line3" ObjectId="Line3">
+            <DrawSettings/>
+            <Geometry>
+                <ShapePoints>
+                    <P1>2.4/0.0</P1>
+                    <P2>60.6/65.2</P2>
+                </ShapePoints>
+            </Geometry>
+            <ZValue>0.1</ZValue>
+        </GraphObj>
+    </GraphObj>
+    <GraphObj NameSpace="ZS::Draw" ClassName="CGraphObjConnectionLine" ObjectType="ConnectionLine" ObjectName="ConnectionLine1" ObjectId="ConnectionLine1">
+        <ObjIdCnctPtStart>IdConnectionPoint1</ObjIdCnctPtStart>
+        <ObjIdCnctPtEnd>IdConnectionPoint2</ObjIdCnctPtEnd>
+        <DrawSettings/>
+        <Geometry>
+            <Pt0>581.0/124.0</Pt0>
+            <Pt1>576.0/167.0</Pt1>
+            <Pt2>623.0/151.0</Pt2>
+        </Geometry>
+        <ZValue>0.1</ZValue>
+    </GraphObj>
+</Drawing>

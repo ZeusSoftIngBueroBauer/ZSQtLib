@@ -1,0 +1,215 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Generated Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
+    </Filter>
+    <Filter Include="Include Files">
+      <UniqueIdentifier>{0928a3f5-70ef-4810-8fc4-02278f6588e5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\Win32">
+      <UniqueIdentifier>{2e506a4f-561d-4cb4-a794-bdf18d1dc310}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\Win32\Debug">
+      <UniqueIdentifier>{9fb7ab4f-892b-442c-939d-88b5bd206e2f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\Win32\Release">
+      <UniqueIdentifier>{9b4118b7-9e30-4b2b-9fdd-064369f59182}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\x64">
+      <UniqueIdentifier>{e37db574-a4b1-428e-affd-071f94080f64}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\x64\Debug">
+      <UniqueIdentifier>{30ef1f76-105a-48cf-b861-d55fda09373b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\x64\Release">
+      <UniqueIdentifier>{6734fbd8-0115-4a41-87cb-e94275984893}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\Source\App.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\MainWindow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\WidgetCentral.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Tmp\Moc\Apps\Test\ZSAppTestAsyncReqs\Win32\Debug\moc_WidgetCentral.cpp">
+      <Filter>Generated Files\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Tmp\Moc\Apps\Test\ZSAppTestAsyncReqs\Win32\Debug\moc_MainWindow.cpp">
+      <Filter>Generated Files\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Tmp\Moc\Apps\Test\ZSAppTestAsyncReqs\Win32\Debug\moc_App.cpp">
+      <Filter>Generated Files\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Tmp\Moc\Apps\Test\ZSAppTestAsyncReqs\Win32\Release\moc_App.cpp">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Tmp\Moc\Apps\Test\ZSAppTestAsyncReqs\Win32\Release\moc_MainWindow.cpp">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Tmp\Moc\Apps\Test\ZSAppTestAsyncReqs\Win32\Release\moc_WidgetCentral.cpp">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Tmp\Moc\Apps\Test\ZSAppTestAsyncReqs\x64\Debug\moc_App.cpp">
+      <Filter>Generated Files\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Tmp\Moc\Apps\Test\ZSAppTestAsyncReqs\x64\Debug\moc_MainWindow.cpp">
+      <Filter>Generated Files\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Tmp\Moc\Apps\Test\ZSAppTestAsyncReqs\x64\Debug\moc_WidgetCentral.cpp">
+      <Filter>Generated Files\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Tmp\Moc\Apps\Test\ZSAppTestAsyncReqs\x64\Release\moc_App.cpp">
+      <Filter>Generated Files\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Tmp\Moc\Apps\Test\ZSAppTestAsyncReqs\x64\Release\moc_MainWindow.cpp">
+      <Filter>Generated Files\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Tmp\Moc\Apps\Test\ZSAppTestAsyncReqs\x64\Release\moc_WidgetCentral.cpp">
+      <Filter>Generated Files\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Database.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Msg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Tmp\Moc\Apps\Test\ZSAppTestAsyncReqs\Win32\Debug\moc_Database.cpp">
+      <Filter>Generated Files\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Tmp\Moc\Apps\Test\ZSAppTestAsyncReqs\x64\Release\moc_Database.cpp">
+      <Filter>Generated Files\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Tmp\Moc\Apps\Test\ZSAppTestAsyncReqs\x64\Debug\moc_Database.cpp">
+      <Filter>Generated Files\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Tmp\Moc\Apps\Test\ZSAppTestAsyncReqs\Win32\Release\moc_Database.cpp">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Tmp\Moc\Apps\Test\ZSAppTestAsyncReqs\x64\Debug\moc_DbClient.cpp">
+      <Filter>Generated Files\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Tmp\Moc\Apps\Test\ZSAppTestAsyncReqs\x64\Release\moc_DbClient.cpp">
+      <Filter>Generated Files\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Tmp\Moc\Apps\Test\ZSAppTestAsyncReqs\Win32\Release\moc_DbClient.cpp">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Tmp\Moc\Apps\Test\ZSAppTestAsyncReqs\Win32\Debug\moc_DbClient.cpp">
+      <Filter>Generated Files\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\DbClient.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\DbClientThread.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\DatabaseThread.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Tmp\Moc\Apps\Test\ZSAppTestAsyncReqs\Win32\Debug\moc_DatabaseThread.cpp">
+      <Filter>Generated Files\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Tmp\Moc\Apps\Test\ZSAppTestAsyncReqs\Win32\Debug\moc_DbClientThread.cpp">
+      <Filter>Generated Files\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Tmp\Moc\Apps\Test\ZSAppTestAsyncReqs\Win32\Release\moc_DatabaseThread.cpp">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Tmp\Moc\Apps\Test\ZSAppTestAsyncReqs\Win32\Release\moc_DbClientThread.cpp">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Tmp\Moc\Apps\Test\ZSAppTestAsyncReqs\x64\Debug\moc_DatabaseThread.cpp">
+      <Filter>Generated Files\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Tmp\Moc\Apps\Test\ZSAppTestAsyncReqs\x64\Debug\moc_DbClientThread.cpp">
+      <Filter>Generated Files\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Tmp\Moc\Apps\Test\ZSAppTestAsyncReqs\x64\Release\moc_DatabaseThread.cpp">
+      <Filter>Generated Files\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Tmp\Moc\Apps\Test\ZSAppTestAsyncReqs\x64\Release\moc_DbClientThread.cpp">
+      <Filter>Generated Files\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\DbClientGateway.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Tmp\Moc\Apps\Test\ZSAppTestAsyncReqs\Win32\Debug\moc_DbClientGateway.cpp">
+      <Filter>Generated Files\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Tmp\Moc\Apps\Test\ZSAppTestAsyncReqs\Win32\Release\moc_DbClientGateway.cpp">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Tmp\Moc\Apps\Test\ZSAppTestAsyncReqs\x64\Debug\moc_DbClientGateway.cpp">
+      <Filter>Generated Files\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Tmp\Moc\Apps\Test\ZSAppTestAsyncReqs\x64\Release\moc_DbClientGateway.cpp">
+      <Filter>Generated Files\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\DatabaseGateway.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Tmp\Moc\Apps\Test\ZSAppTestAsyncReqs\Win32\Debug\moc_DatabaseGateway.cpp">
+      <Filter>Generated Files\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Tmp\Moc\Apps\Test\ZSAppTestAsyncReqs\Win32\Release\moc_DatabaseGateway.cpp">
+      <Filter>Generated Files\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Tmp\Moc\Apps\Test\ZSAppTestAsyncReqs\x64\Debug\moc_DatabaseGateway.cpp">
+      <Filter>Generated Files\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Tmp\Moc\Apps\Test\ZSAppTestAsyncReqs\x64\Release\moc_DatabaseGateway.cpp">
+      <Filter>Generated Files\x64\Release</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\Include\App.h">
+      <Filter>Include Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\Include\MainWindow.h">
+      <Filter>Include Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\Include\WidgetCentral.h">
+      <Filter>Include Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\Include\Database.h">
+      <Filter>Include Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\Include\DbClient.h">
+      <Filter>Include Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\Include\DatabaseThread.h">
+      <Filter>Include Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\Include\DbClientThread.h">
+      <Filter>Include Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\Include\DbClientGateway.h">
+      <Filter>Include Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\Include\DatabaseGateway.h">
+      <Filter>Include Files</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\Include\Msg.h">
+      <Filter>Include Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

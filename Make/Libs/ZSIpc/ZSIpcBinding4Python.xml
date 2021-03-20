@@ -1,0 +1,102 @@
+<?xml version="1.0"?>
+<typesystem package="ZSQtLib.ZSIpc">
+    <load-typesystem name="typesystem_core.xml" generate="no"/>
+    <load-typesystem name="typesystem_xml.xml" generate="no"/>
+    <load-typesystem name="typesystem_network.xml" generate="no"/>
+    <load-typesystem name="typesystem_gui.xml" generate="no"/>
+    <load-typesystem name="ZSSysBinding4Python.xml" generate="no"/>
+    <!-- ZSIpcDllMain.h -->
+    <rejection class="ZS::Ipc" field-name="ESocketIdAllSockets"/>
+    <rejection class="ZS::Ipc" field-name="ESocketIdUndefined"/>
+    <rejection class="ZS::Ipc" field-name="ESocketIdMin"/>
+    <rejection class="ZS::Ipc" field-name="ESocketIdMax"/>
+    <function signature="socket_type_to_str(int)"/>
+    <function signature="str_to_socket_type(QString)"/>
+    <namespace-type name="ZS" generate="no">
+        <namespace-type name="Ipc" generate="no">
+            <!-- ZSIpcDllMain.h -->
+            <enum-type name="ESrvCltType"/>
+            <enum-type name="ESocketType"/>
+            <enum-type name="ESocketState"/>
+            <enum-type name="EBlkType"/>
+            <enum-type name="EBlkLenDataType">
+                <reject-enum-value name="EBlkLenDataTypeBinMin"/>
+                <reject-enum-value name="EBlkLenDataTypeBinMax"/>
+                <reject-enum-value name="EBlkLenDataTypeStrMin"/>
+                <reject-enum-value name="EBlkLenDataTypeStrBase10Min"/>
+                <reject-enum-value name="EBlkLenDataTypeStrBase10Max"/>
+                <reject-enum-value name="EBlkLenDataTypeStrMax"/>
+                <reject-enum-value name="EBlkLenDataTypeStrBase16Min"/>
+                <reject-enum-value name="EBlkLenDataTypeStrBase16Max"/>
+                <reject-enum-value name="EBlkLenDataTypeStrMax"/>
+            </enum-type>
+            <object-type name="CBlkType"/>
+            <value-type name="SSocketDscr"/>
+            <value-type name="SClientHostSettings"/>
+            <value-type name="SServerHostSettings"/>
+            <value-type name="STimerSettings"/>
+            <!-- ZSIpcSrvCltBaseGateway.h -->
+            <object-type name="CSrvCltBaseGatewayThread"/>
+            <object-type name="CSrvCltBaseGateway">
+                <enum-type name="ERequest"/>
+            </object-type>
+            <!-- ZSIpcClientGateway.h -->
+            <object-type name="CClientGatewayThread"/>
+            <object-type name="CClientGateway"/>
+            <!-- ZSIpcServerGateway.h -->
+            <object-type name="CServerGatewayThread"/>
+            <object-type name="CServerGateway"/>
+            <!-- ZSIpcClient.h -->
+            <object-type name="CClient">
+                <enum-type name="EState"/>
+                <enum-type name="ERequest"/>
+            </object-type>
+            <!-- ZSIpcServer.h -->
+            <object-type name="CServer">
+                <enum-type name="EState"/>
+                <enum-type name="ERequest"/>
+            </object-type>
+            <!-- ZSIpcSrvCltMsg.h -->
+            <enum-type name="EMsgType">
+                <reject-enum-value name="EMsgTypeMin"/>
+                <reject-enum-value name="EMsgTypeMax"/>
+            </enum-type>
+            <object-type name="CMsgReqStartup"/>
+            <object-type name="CMsgConStartup"/>
+            <object-type name="CMsgReqShutdown"/>
+            <object-type name="CMsgConShutdown"/>
+            <object-type name="CMsgReqConnect"/>
+            <object-type name="CMsgConConnect"/>
+            <object-type name="CMsgIndConnected"/>
+            <object-type name="CMsgReqDisconnect"/>
+            <object-type name="CMsgConDisconnect"/>
+            <object-type name="CMsgIndDisconnected"/>
+            <object-type name="CMsgReqChangeSettings"/>
+            <object-type name="CMsgConChangeSettings"/>
+            <object-type name="CMsgReqSendData"/>
+            <object-type name="CMsgReqReceiveData"/>
+            <object-type name="CMsgIndReceivedData"/>
+            <!-- ZSIpcServerWrapper.h -->
+            <object-type name="CIpcServerWrapper"/>
+            <!-- ZSIpcSocketWrapper.h -->
+            <object-type name="CIpcSocketWrapper"/>
+            <!-- ZSIpcServerWrapperInProcMsg.h -->
+            <!-- object-type name="CInProcMsgServerWrapper"/-->
+            <!-- ZSIpcServerWrapperTcp.h -->
+            <!-- object-type name="CTcpServerWrapper"/-->
+            <!-- ZSIpcServerWrapperShm.h -->
+            <!-- ZSIpcSocketWrapperInProcMsg.h -->
+            <!-- object-type name="CInProcMsgSocketThread"/-->
+            <!-- object-type name="CInProcMsgSocketWrapper"/-->
+            <!-- ZSIpcSocketWrapperShm.h -->
+            <!-- ZSIpcSocketWrapperTcp.h -->
+            <!-- object-type name="CTcpSocketWrapper"/-->
+            <!-- ZSIpcInProcMsgServer.h -->
+            <!-- object-type name="CInProcMsgServersAdminObj"/-->
+            <!-- object-type name="CInProcMsgServer"/-->
+            <!-- ZSIpcInProcMsgSocket.h -->
+            <!-- object-type name="CInProcMsgSocketsAdminObj"/-->
+            <!-- object-type name="CInProcMsgSocket"/-->
+        </namespace-type>
+    </namespace-type>
+</typesystem>
