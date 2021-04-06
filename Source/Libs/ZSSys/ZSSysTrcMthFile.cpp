@@ -563,7 +563,7 @@ void CTrcMthFile::traceMethodEnter(
         currentThreadName(),
         QDateTime::currentDateTime(),
         Time::getProcTimeInSec(),
-        EMethodDir::Enter,
+        EMethodDirEnter,
         i_strMethod,
         i_strMethodInArgs );
 
@@ -584,7 +584,7 @@ void CTrcMthFile::traceMethod(
         currentThreadName(),
         QDateTime::currentDateTime(),
         Time::getProcTimeInSec(),
-        EMethodDir::None,
+        EMethodDirNone,
         i_strMethod,
         i_strAddInfo );
 
@@ -607,7 +607,7 @@ void CTrcMthFile::traceMethodLeave(
         currentThreadName(),
         QDateTime::currentDateTime(),
         Time::getProcTimeInSec(),
-        EMethodDir::Leave,
+        EMethodDirLeave,
         i_strMethod,
         i_strMethdReturn,
         i_strMethodOutArgs );
@@ -647,7 +647,7 @@ void CTrcMthFile::traceMethodEnter(
         i_strMthThreadName,
         i_dt,
         i_fSysTimeInSec,
-        EMethodDir::Enter,
+        EMethodDirEnter,
         i_strMethod,
         i_strMethodInArgs );
 
@@ -682,7 +682,7 @@ void CTrcMthFile::traceMethod(
         i_strMthThreadName,
         i_dt,
         i_fSysTimeInSec,
-        EMethodDir::None,
+        EMethodDirNone,
         i_strMethod,
         i_strAddInfo );
 
@@ -719,7 +719,7 @@ void CTrcMthFile::traceMethodLeave(
         i_strMthThreadName,
         i_dt,
         i_fSysTimeInSec,
-        EMethodDir::Leave,
+        EMethodDirLeave,
         i_strMethod,
         i_strMethdReturn,
         i_strMethodOutArgs );
@@ -792,7 +792,7 @@ void CTrcMthFile::addEntry(
         m_hashThreadCallDepths.insert(i_strMthThreadName, 0);
     }
 
-    if( i_mthDir == EMethodDir::Enter )
+    if( i_mthDir == EMethodDirEnter )
     {
         //        '<MthThreadName> '     + 'yyyy-mm-dd hh:mm:ss:zzz' + ' (12345.123456): '     + '-> '            + '()' + 'bla bla bla'
         iStrLen = (c_iStrLenThreadMax+3) + 23                        + (c_iStrLenSysTimeMax+5) + 3*(iCallDepth+1) + 2 + i_strMethod.length() + i_strAddInfo.length();
@@ -840,7 +840,7 @@ void CTrcMthFile::addEntry(
     str.replace(iPos, 2, "): ");
     iPos += 3;
 
-    if( i_mthDir == EMethodDir::Enter )
+    if( i_mthDir == EMethodDirEnter )
     {
         for( idx = 0; idx < iCallDepth; idx++ )
         {
@@ -852,7 +852,7 @@ void CTrcMthFile::addEntry(
 
         iCallDepth++;
     }
-    else if( i_mthDir == EMethodDir::Leave )
+    else if( i_mthDir == EMethodDirLeave )
     {
         for( idx = 0; idx < iCallDepth-1; idx++ )
         {
@@ -885,7 +885,7 @@ void CTrcMthFile::addEntry(
     str.replace(iPos, 1, "(");
     iPos += 1;
 
-    if( i_mthDir != EMethodDir::Leave )
+    if( i_mthDir != EMethodDirLeave )
     {
         if( i_strAddInfo.length() > 0 )
         {
@@ -893,7 +893,7 @@ void CTrcMthFile::addEntry(
             iPos += i_strAddInfo.length();
         }
     }
-    else // if( i_mthDir == EMethodDir::Leave )
+    else // if( i_mthDir == EMethodDirLeave )
     {
         if( i_strMethodOutArgs.length() > 0 )
         {
@@ -905,7 +905,7 @@ void CTrcMthFile::addEntry(
     str.replace(iPos, 1, ")");
     iPos += 1;
 
-    if( i_mthDir == EMethodDir::Leave )
+    if( i_mthDir == EMethodDirLeave )
     {
         if( i_strAddInfo.length() > 0 )
         {

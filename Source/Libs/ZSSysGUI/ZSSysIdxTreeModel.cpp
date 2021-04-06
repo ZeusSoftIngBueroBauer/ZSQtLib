@@ -136,8 +136,8 @@ bool CModelIdxTree::iterator::operator == ( const iterator& i_other ) const
     {
         bEqual = false;
     }
-    else if( m_traversalOrder != ETraversalOrder::Undefined
-         && i_other.m_traversalOrder != ETraversalOrder::Undefined
+    else if( m_traversalOrder != ETraversalOrderUndefined
+         && i_other.m_traversalOrder != ETraversalOrderUndefined
          && m_traversalOrder != i_other.m_traversalOrder )
     {
         bEqual = false;
@@ -160,8 +160,8 @@ bool CModelIdxTree::iterator::operator == ( iterator& i_other ) const
     {
         bEqual = false;
     }
-    else if( m_traversalOrder != ETraversalOrder::Undefined
-         && i_other.m_traversalOrder != ETraversalOrder::Undefined
+    else if( m_traversalOrder != ETraversalOrderUndefined
+         && i_other.m_traversalOrder != ETraversalOrderUndefined
          && m_traversalOrder != i_other.m_traversalOrder )
     {
         bEqual = false;
@@ -195,7 +195,7 @@ CModelIdxTree::iterator& CModelIdxTree::iterator::operator ++ ()
 
     CModelAbstractTreeEntry* pModelTreeEntryNew = nullptr;
 
-    if( m_traversalOrder == ETraversalOrder::Index )
+    if( m_traversalOrder == ETraversalOrderIndex )
     {
         CAbstractIdxTreeEntry* pTreeEntry = m_pModelTreeEntryCurr->treeEntry();
         int                 idxInTree  = pTreeEntry->indexInTree();
@@ -210,7 +210,7 @@ CModelIdxTree::iterator& CModelIdxTree::iterator::operator ++ ()
             }
         }
     }
-    else if( m_traversalOrder == ETraversalOrder::PreOrder )
+    else if( m_traversalOrder == ETraversalOrderPreOrder )
     {
         if( m_pModelTreeEntryCurr == m_pModel->m_pModelRoot )
         {
@@ -272,7 +272,7 @@ CModelIdxTree::iterator& CModelIdxTree::iterator::operator ++ ()
                 }
             }
         } // if( m_pModelTreeEntryCurr != m_pModel->m_pModelRoot )
-    } // if( m_traversalOrder == ETraversalOrder::PreOrder )
+    } // if( m_traversalOrder == ETraversalOrderPreOrder )
 
     m_pModelTreeEntryCurr = pModelTreeEntryNew;
 
@@ -1273,7 +1273,7 @@ public: // iterator methods
 {
     CModelIdxTree::iterator itModelIdxTree(this, i_traversalOrder);
 
-    if( i_traversalOrder == iterator::ETraversalOrder::Index )
+    if( i_traversalOrder == iterator::ETraversalOrderIndex )
     {
         CAbstractIdxTreeEntry* pTreeEntry;
         int                 idxInTree;
@@ -1288,7 +1288,7 @@ public: // iterator methods
             }
         }
     }
-    else if( i_traversalOrder == iterator::ETraversalOrder::PreOrder )
+    else if( i_traversalOrder == iterator::ETraversalOrderPreOrder )
     {
         itModelIdxTree.m_pModelTreeEntryCurr = m_pModelRoot;
     }
@@ -1301,7 +1301,7 @@ public: // iterator methods
 /*typename*/ CModelIdxTree::iterator CModelIdxTree::end()
 //------------------------------------------------------------------------------
 {
-    CModelIdxTree::iterator itModelIdxTree(this, iterator::ETraversalOrder::Undefined);
+    CModelIdxTree::iterator itModelIdxTree(this, iterator::ETraversalOrderUndefined);
     itModelIdxTree.m_pModelTreeEntryCurr = nullptr;
     return itModelIdxTree;
 

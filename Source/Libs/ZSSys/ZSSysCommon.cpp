@@ -25,10 +25,13 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include "ZSSys/ZSSysCommon.h"
+#if (CXX_STANDARD >= 11)
 #include "ZSSys/ZSSysMemLeakDump.h"
+#endif
 
 
 using namespace ZS::System;
+//using namespace EComparisonOperator;
 
 
 /*******************************************************************************
@@ -39,33 +42,33 @@ global type definitions and constants
 Enum EMode
 ==============================================================================*/
 
-QMutex CEnum<EMode>::s_mtxArMapsStr2Enumerators;
-QVector<QHash<QString, int>> CEnum<EMode>::s_armapsStr2Enumerators;
+QMutex CEnumMode::s_mtxArMapsStr2Enumerators;
+QVector<QHash<QString, int>> CEnumMode::s_armapsStr2Enumerators;
 
 #if QT_VERSION < 0x050000
 //------------------------------------------------------------------------------
-const QVector<SEnumEntry> CEnum<EMode>::s_arEnumEntries;
+const QVector<SEnumEntry> CEnumMode::s_arEnumEntries;
 //------------------------------------------------------------------------------
 class CInitEnumMode
 {
 public: // ctor
     CInitEnumMode() {
-        QVector<SEnumEntry>* pVEnumEntries = const_cast<QVector<SEnumEntry>*>(&CEnum<EMode>::s_arEnumEntries);
+        QVector<SEnumEntry>* pVEnumEntries = const_cast<QVector<SEnumEntry>*>(&CEnumMode::s_arEnumEntries);
                                                      // Enumerator,                       Name,      Symbol, Text,  SCIPShort, SCPILong, Alias6, Alias7
-        pVEnumEntries->append( /* 0 */ SEnumEntry( static_cast<int>(EMode::Edit),       "Edit",       "E", "Edit",       "", "", "Design",     "Edit"      ) );
-        pVEnumEntries->append( /* 1 */ SEnumEntry( static_cast<int>(EMode::Simulation), "Simulation", "S", "Simulation", "", "", "Simulation", "View"      ) );
-        pVEnumEntries->append( /* 3 */ SEnumEntry( static_cast<int>(EMode::Undefined),  "Undefined",  "?", "Undefined",  "", "", "Undefined",  "Undefined" ) );
+        pVEnumEntries->append( /* 0 */ SEnumEntry( static_cast<int>(EModeEdit),       "Edit",       "E", "Edit",       "", "", "Design",     "Edit"      ) );
+        pVEnumEntries->append( /* 1 */ SEnumEntry( static_cast<int>(EModeSimulation), "Simulation", "S", "Simulation", "", "", "Simulation", "View"      ) );
+        pVEnumEntries->append( /* 3 */ SEnumEntry( static_cast<int>(EModeUndefined),  "Undefined",  "?", "Undefined",  "", "", "Undefined",  "Undefined" ) );
     }
 };
 static CInitEnumMode s_initEnumMode;
 #else // #if QT_VERSION >= 0x050000
 //------------------------------------------------------------------------------
-const QVector<SEnumEntry> CEnum<EMode>::s_arEnumEntries =
+const QVector<SEnumEntry> CEnumMode::s_arEnumEntries =
 //------------------------------------------------------------------------------
 {                       // Enumerator,                       Name,      Symbol, Text,  SCIPShort, SCPILong, Alias6, Alias7
-    /* 0 */ SEnumEntry( static_cast<int>(EMode::Edit),       "Edit",       "E", "Edit",       "", "", "Design",     "Edit"      ),
-    /* 1 */ SEnumEntry( static_cast<int>(EMode::Simulation), "Simulation", "S", "Simulation", "", "", "Simulation", "View"      ),
-    /* 3 */ SEnumEntry( static_cast<int>(EMode::Undefined),  "Undefined",  "?", "Undefined",  "", "", "Undefined",  "Undefined" )
+    /* 0 */ SEnumEntry( static_cast<int>(EModeEdit),       "Edit",       "E", "Edit",       "", "", "Design",     "Edit"      ),
+    /* 1 */ SEnumEntry( static_cast<int>(EModeSimulation), "Simulation", "S", "Simulation", "", "", "Simulation", "View"      ),
+    /* 3 */ SEnumEntry( static_cast<int>(EModeUndefined),  "Undefined",  "?", "Undefined",  "", "", "Undefined",  "Undefined" )
 };
 #endif // #if QT_VERSION < 0x050000
 
@@ -74,32 +77,32 @@ const QVector<SEnumEntry> CEnum<EMode>::s_arEnumEntries =
 Enum ERunMode
 ==============================================================================*/
 
-QMutex CEnum<ERunMode>::s_mtxArMapsStr2Enumerators;
-QVector<QHash<QString, int>> CEnum<ERunMode>::s_armapsStr2Enumerators;
+QMutex CEnumRunMode::s_mtxArMapsStr2Enumerators;
+QVector<QHash<QString, int>> CEnumRunMode::s_armapsStr2Enumerators;
 
 #if QT_VERSION < 0x050000
 //------------------------------------------------------------------------------
-const QVector<SEnumEntry> CEnum<ERunMode>::s_arEnumEntries;
+const QVector<SEnumEntry> CEnumRunMode::s_arEnumEntries;
 //------------------------------------------------------------------------------
 class CInitEnumRunMode
 {
 public: // ctor
     CInitEnumRunMode() {
-        QVector<SEnumEntry>* pVEnumEntries = const_cast<QVector<SEnumEntry>*>(&CEnum<ERunMode>::s_arEnumEntries);
-        pVEnumEntries->append( /*  0 */ SEnumEntry( static_cast<int>(ERunMode::Continuous), "Continuous", "Cont", "Continuous", "CONT", "CONTinuous" ) );
-        pVEnumEntries->append( /*  1 */ SEnumEntry( static_cast<int>(ERunMode::SingleStep), "SingleStep", "Sing", "SingleStep", "SST",  "SSTep"      ) );
-        pVEnumEntries->append( /*  2 */ SEnumEntry( static_cast<int>(ERunMode::Undefined),  "Undefined",  "?",    "Undefined",  "UND",  "UNDefined"  ) );
+        QVector<SEnumEntry>* pVEnumEntries = const_cast<QVector<SEnumEntry>*>(&CEnumRunMode::s_arEnumEntries);
+        pVEnumEntries->append( /*  0 */ SEnumEntry( static_cast<int>(ERunModeContinuous), "Continuous", "Cont", "Continuous", "CONT", "CONTinuous" ) );
+        pVEnumEntries->append( /*  1 */ SEnumEntry( static_cast<int>(ERunModeSingleStep), "SingleStep", "Sing", "SingleStep", "SST",  "SSTep"      ) );
+        pVEnumEntries->append( /*  2 */ SEnumEntry( static_cast<int>(ERunModeUndefined),  "Undefined",  "?",    "Undefined",  "UND",  "UNDefined"  ) );
     }
 };
 static CInitEnumRunMode s_initEnumRunMode;
 #else // #if QT_VERSION >= 0x050000
 //------------------------------------------------------------------------------
-const QVector<SEnumEntry> CEnum<ERunMode>::s_arEnumEntries =
+const QVector<SEnumEntry> CEnumRunMode::s_arEnumEntries =
 //------------------------------------------------------------------------------
 {                        // Enumerator,                          Name,         Symbol, Text,      SCPIShort, SCPILong
-    /*  0 */ SEnumEntry( static_cast<int>(ERunMode::Continuous), "Continuous", "Cont", "Continuous", "CONT", "CONTinuous" ),
-    /*  1 */ SEnumEntry( static_cast<int>(ERunMode::SingleStep), "SingleStep", "Sing", "SingleStep", "SST",  "SSTep"      ),
-    /*  2 */ SEnumEntry( static_cast<int>(ERunMode::Undefined),  "Undefined",  "?",    "Undefined",  "UND",  "UNDefined"  )
+    /*  0 */ SEnumEntry( static_cast<int>(ERunModeContinuous), "Continuous", "Cont", "Continuous", "CONT", "CONTinuous" ),
+    /*  1 */ SEnumEntry( static_cast<int>(ERunModeSingleStep), "SingleStep", "Sing", "SingleStep", "SST",  "SSTep"      ),
+    /*  2 */ SEnumEntry( static_cast<int>(ERunModeUndefined),  "Undefined",  "?",    "Undefined",  "UND",  "UNDefined"  )
 };
 #endif // #if QT_VERSION < 0x050000
 
@@ -108,32 +111,32 @@ const QVector<SEnumEntry> CEnum<ERunMode>::s_arEnumEntries =
 Enum EYesNo
 ==============================================================================*/
 
-QMutex CEnum<EYesNo>::s_mtxArMapsStr2Enumerators;
-QVector<QHash<QString, int>> CEnum<EYesNo>::s_armapsStr2Enumerators;
+QMutex CEnumYesNo::s_mtxArMapsStr2Enumerators;
+QVector<QHash<QString, int>> CEnumYesNo::s_armapsStr2Enumerators;
 
 #if QT_VERSION < 0x050000
 //------------------------------------------------------------------------------
-const QVector<SEnumEntry> CEnum<EYesNo>::s_arEnumEntries;
+const QVector<SEnumEntry> CEnumYesNo::s_arEnumEntries;
 //------------------------------------------------------------------------------
 class CInitEnumYesNo
 {
 public: // ctor
     CInitEnumYesNo() {
-        QVector<SEnumEntry>* pVEnumEntries = const_cast<QVector<SEnumEntry>*>(&CEnum<EYesNo>::s_arEnumEntries);
-        pVEnumEntries->append( /*  0 */ SEnumEntry( static_cast<int>(EYesNo::No),        "No",        "No",  "No",        "NO",  "NO",       "false",      "False"     ) );
-        pVEnumEntries->append( /*  1 */ SEnumEntry( static_cast<int>(EYesNo::Yes),       "Yes",       "Yes", "Yes",       "YES", "YES",       "true",      "True"      ) );
-        pVEnumEntries->append( /*  2 */ SEnumEntry( static_cast<int>(EYesNo::Undefined), "Undefined", "?",   "Undefined", "UND", "UNDefined", "Undefined", "Undefined" ) );
+        QVector<SEnumEntry>* pVEnumEntries = const_cast<QVector<SEnumEntry>*>(&CEnumYesNo::s_arEnumEntries);
+        pVEnumEntries->append( /*  0 */ SEnumEntry( static_cast<int>(EYesNoNo),        "No",        "No",  "No",        "NO",  "NO",       "false",      "False"     ) );
+        pVEnumEntries->append( /*  1 */ SEnumEntry( static_cast<int>(EYesNoYes),       "Yes",       "Yes", "Yes",       "YES", "YES",       "true",      "True"      ) );
+        pVEnumEntries->append( /*  2 */ SEnumEntry( static_cast<int>(EYesNoUndefined), "Undefined", "?",   "Undefined", "UND", "UNDefined", "Undefined", "Undefined" ) );
     }
 };
 static CInitEnumYesNo s_initEnumYesNo;
 #else // #if QT_VERSION >= 0x050000
 //------------------------------------------------------------------------------
-const QVector<SEnumEntry> CEnum<EYesNo>::s_arEnumEntries =
+const QVector<SEnumEntry> CEnumYesNo::s_arEnumEntries =
 //------------------------------------------------------------------------------
 {                        // Enumerator,                       Name,      Symbol,  Text,   SCPIShort, SCPILong,     Alias6,      Alias7
-    /*  0 */ SEnumEntry( static_cast<int>(EYesNo::No),        "No",        "No",  "No",        "NO",  "NO",       "false",      "False"     ),
-    /*  1 */ SEnumEntry( static_cast<int>(EYesNo::Yes),       "Yes",       "Yes", "Yes",       "YES", "YES",       "true",      "True"      ),
-    /*  2 */ SEnumEntry( static_cast<int>(EYesNo::Undefined), "Undefined", "?",   "Undefined", "UND", "UNDefined", "Undefined", "Undefined" )
+    /*  0 */ SEnumEntry( static_cast<int>(EYesNoNo),        "No",        "No",  "No",        "NO",  "NO",       "false",      "False"     ),
+    /*  1 */ SEnumEntry( static_cast<int>(EYesNoYes),       "Yes",       "Yes", "Yes",       "YES", "YES",       "true",      "True"      ),
+    /*  2 */ SEnumEntry( static_cast<int>(EYesNoUndefined), "Undefined", "?",   "Undefined", "UND", "UNDefined", "Undefined", "Undefined" )
 };
 #endif // #if QT_VERSION < 0x050000
 
@@ -142,32 +145,32 @@ const QVector<SEnumEntry> CEnum<EYesNo>::s_arEnumEntries =
 Enum EStateOnOff
 ==============================================================================*/
 
-QMutex CEnum<EStateOnOff>::s_mtxArMapsStr2Enumerators;
-QVector<QHash<QString, int>> CEnum<EStateOnOff>::s_armapsStr2Enumerators;
+QMutex CEnumStateOnOff::s_mtxArMapsStr2Enumerators;
+QVector<QHash<QString, int>> CEnumStateOnOff::s_armapsStr2Enumerators;
 
 #if QT_VERSION < 0x050000
 //------------------------------------------------------------------------------
-const QVector<SEnumEntry> CEnum<EStateOnOff>::s_arEnumEntries;
+const QVector<SEnumEntry> CEnumStateOnOff::s_arEnumEntries;
 //------------------------------------------------------------------------------
 class CInitEnumStateOnOff
 {
 public: // ctor
     CInitEnumStateOnOff() {
-        QVector<SEnumEntry>* pVEnumEntries = const_cast<QVector<SEnumEntry>*>(&CEnum<EStateOnOff>::s_arEnumEntries);
-        pVEnumEntries->append( /*  0 */ SEnumEntry( static_cast<int>(EStateOnOff::Off),        "Off"       ) );
-        pVEnumEntries->append( /*  1 */ SEnumEntry( static_cast<int>(EStateOnOff::On),         "On"        ) );
-        pVEnumEntries->append( /*  2 */ SEnumEntry( static_cast<int>(EStateOnOff::Undefined),  "Undefined" ) );
+        QVector<SEnumEntry>* pVEnumEntries = const_cast<QVector<SEnumEntry>*>(&CEnumStateOnOff::s_arEnumEntries);
+        pVEnumEntries->append( /*  0 */ SEnumEntry( static_cast<int>(EStateOnOffOff),        "Off"       ) );
+        pVEnumEntries->append( /*  1 */ SEnumEntry( static_cast<int>(EStateOnOffOn),         "On"        ) );
+        pVEnumEntries->append( /*  2 */ SEnumEntry( static_cast<int>(EStateOnOffUndefined),  "Undefined" ) );
     }
 };
 static CInitEnumStateOnOff s_initEnumStateOnOff;
 #else // #if QT_VERSION >= 0x050000
 //------------------------------------------------------------------------------
-const QVector<SEnumEntry> CEnum<EStateOnOff>::s_arEnumEntries =
+const QVector<SEnumEntry> CEnumStateOnOff::s_arEnumEntries =
 //------------------------------------------------------------------------------
 {                        // Enumerator,                             Name
-    /*  0 */ SEnumEntry( static_cast<int>(EStateOnOff::Off),        "Off"       ),
-    /*  1 */ SEnumEntry( static_cast<int>(EStateOnOff::On),         "On"        ),
-    /*  2 */ SEnumEntry( static_cast<int>(EStateOnOff::Undefined),  "Undefined" )
+    /*  0 */ SEnumEntry( static_cast<int>(EStateOnOffOff),        "Off"       ),
+    /*  1 */ SEnumEntry( static_cast<int>(EStateOnOffOn),         "On"        ),
+    /*  2 */ SEnumEntry( static_cast<int>(EStateOnOffUndefined),  "Undefined" )
 };
 #endif // #if QT_VERSION < 0x050000
 
@@ -176,32 +179,32 @@ const QVector<SEnumEntry> CEnum<EStateOnOff>::s_arEnumEntries =
 Enum EEnabled
 ==============================================================================*/
 
-QMutex CEnum<EEnabled>::s_mtxArMapsStr2Enumerators;
-QVector<QHash<QString, int>> CEnum<EEnabled>::s_armapsStr2Enumerators;
+QMutex CEnumEnabled::s_mtxArMapsStr2Enumerators;
+QVector<QHash<QString, int>> CEnumEnabled::s_armapsStr2Enumerators;
 
 #if QT_VERSION < 0x050000
 //------------------------------------------------------------------------------
-const QVector<SEnumEntry> CEnum<EEnabled>::s_arEnumEntries;
+const QVector<SEnumEntry> CEnumEnabled::s_arEnumEntries;
 //------------------------------------------------------------------------------
 class CInitEnumEnabled
 {
 public: // ctor
     CInitEnumEnabled() {
-        QVector<SEnumEntry>* pVEnumEntries = const_cast<QVector<SEnumEntry>*>(&CEnum<EEnabled>::s_arEnumEntries);
-        pVEnumEntries->append( /*  0 */ SEnumEntry( static_cast<int>(EEnabled::No),        "No"  ) );
-        pVEnumEntries->append( /*  1 */ SEnumEntry( static_cast<int>(EEnabled::Yes),       "Yes" ) );
-        pVEnumEntries->append( /*  2 */ SEnumEntry( static_cast<int>(EEnabled::Undefined), "Undefined" ) );
+        QVector<SEnumEntry>* pVEnumEntries = const_cast<QVector<SEnumEntry>*>(&CEnumEnabled::s_arEnumEntries);
+        pVEnumEntries->append( /*  0 */ SEnumEntry( static_cast<int>(EEnabledNo),        "No"  ) );
+        pVEnumEntries->append( /*  1 */ SEnumEntry( static_cast<int>(EEnabledYes),       "Yes" ) );
+        pVEnumEntries->append( /*  2 */ SEnumEntry( static_cast<int>(EEnabledUndefined), "Undefined" ) );
     }
 };
 static CInitEnumEnabled s_initEnumEnabled;
 #else // #if QT_VERSION >= 0x050000
 //------------------------------------------------------------------------------
-const QVector<SEnumEntry> CEnum<EEnabled>::s_arEnumEntries =
+const QVector<SEnumEntry> CEnumEnabled::s_arEnumEntries =
 //------------------------------------------------------------------------------
 {                        // Enumerator,                         Name
-    /*  0 */ SEnumEntry( static_cast<int>(EEnabled::No),        "No"  ),
-    /*  1 */ SEnumEntry( static_cast<int>(EEnabled::Yes),       "Yes" ),
-    /*  2 */ SEnumEntry( static_cast<int>(EEnabled::Undefined), "Undefined" )
+    /*  0 */ SEnumEntry( static_cast<int>(EEnabledNo),        "No"  ),
+    /*  1 */ SEnumEntry( static_cast<int>(EEnabledYes),       "Yes" ),
+    /*  2 */ SEnumEntry( static_cast<int>(EEnabledUndefined), "Undefined" )
 };
 #endif // #if QT_VERSION < 0x050000
 
@@ -210,32 +213,32 @@ const QVector<SEnumEntry> CEnum<EEnabled>::s_arEnumEntries =
 Enum ECopyDepth
 ==============================================================================*/
 
-QMutex CEnum<ECopyDepth>::s_mtxArMapsStr2Enumerators;
-QVector<QHash<QString, int>> CEnum<ECopyDepth>::s_armapsStr2Enumerators;
+QMutex CEnumCopyDepth::s_mtxArMapsStr2Enumerators;
+QVector<QHash<QString, int>> CEnumCopyDepth::s_armapsStr2Enumerators;
 
 #if QT_VERSION < 0x050000
 //------------------------------------------------------------------------------
-const QVector<SEnumEntry> CEnum<ECopyDepth>::s_arEnumEntries;
+const QVector<SEnumEntry> CEnumCopyDepth::s_arEnumEntries;
 //------------------------------------------------------------------------------
 class CInitEnumCopyDepth
 {
 public: // ctor
     CInitEnumCopyDepth() {
-        QVector<SEnumEntry>* pVEnumEntries = const_cast<QVector<SEnumEntry>*>(&CEnum<ECopyDepth>::s_arEnumEntries);
-        pVEnumEntries->append( /*  0 */ SEnumEntry( static_cast<int>(ECopyDepth::FlatKeepOwnership),     "FlatKeepOwnership",     "FKO" ) );
-        pVEnumEntries->append( /*  1 */ SEnumEntry( static_cast<int>(ECopyDepth::FlatReleaseOwnwership), "FlatReleaseOwnwership", "FRO" ) );
-        pVEnumEntries->append( /*  2 */ SEnumEntry( static_cast<int>(ECopyDepth::Deep),                  "Deep",                  "DEE" ) );
+        QVector<SEnumEntry>* pVEnumEntries = const_cast<QVector<SEnumEntry>*>(&CEnumCopyDepth::s_arEnumEntries);
+        pVEnumEntries->append( /*  0 */ SEnumEntry( static_cast<int>(ECopyDepthFlatKeepOwnership),     "FlatKeepOwnership",     "FKO" ) );
+        pVEnumEntries->append( /*  1 */ SEnumEntry( static_cast<int>(ECopyDepthFlatReleaseOwnwership), "FlatReleaseOwnwership", "FRO" ) );
+        pVEnumEntries->append( /*  2 */ SEnumEntry( static_cast<int>(ECopyDepthDeep),                  "Deep",                  "DEE" ) );
     }
 };
 static CInitEnumCopyDepth s_initEnumCopyDepth;
 #else // #if QT_VERSION >= 0x050000
 //------------------------------------------------------------------------------
-const QVector<SEnumEntry> CEnum<ECopyDepth>::s_arEnumEntries =
+const QVector<SEnumEntry> CEnumCopyDepth::s_arEnumEntries =
 //------------------------------------------------------------------------------
 {                        // Enumerator,                                       Name,                    Symbol
-    /*  0 */ SEnumEntry( static_cast<int>(ECopyDepth::FlatKeepOwnership),     "FlatKeepOwnership",     "FKO" ),
-    /*  1 */ SEnumEntry( static_cast<int>(ECopyDepth::FlatReleaseOwnwership), "FlatReleaseOwnwership", "FRO" ),
-    /*  2 */ SEnumEntry( static_cast<int>(ECopyDepth::Deep),                  "Deep",                  "DEE" )
+    /*  0 */ SEnumEntry( static_cast<int>(ECopyDepthFlatKeepOwnership),     "FlatKeepOwnership",     "FKO" ),
+    /*  1 */ SEnumEntry( static_cast<int>(ECopyDepthFlatReleaseOwnwership), "FlatReleaseOwnwership", "FRO" ),
+    /*  2 */ SEnumEntry( static_cast<int>(ECopyDepthDeep),                  "Deep",                  "DEE" )
 };
 #endif // #if QT_VERSION < 0x050000
 
@@ -244,38 +247,38 @@ const QVector<SEnumEntry> CEnum<ECopyDepth>::s_arEnumEntries =
 Enum EObjState
 ==============================================================================*/
 
-QMutex CEnum<EObjState>::s_mtxArMapsStr2Enumerators;
-QVector<QHash<QString, int>> CEnum<EObjState>::s_armapsStr2Enumerators;
+QMutex CEnumObjState::s_mtxArMapsStr2Enumerators;
+QVector<QHash<QString, int>> CEnumObjState::s_armapsStr2Enumerators;
 
 #if QT_VERSION < 0x050000
 //------------------------------------------------------------------------------
-const QVector<SEnumEntry> CEnum<EObjState>::s_arEnumEntries;
+const QVector<SEnumEntry> CEnumObjState::s_arEnumEntries;
 //------------------------------------------------------------------------------
 class CInitEnumObjState
 {
 public: // ctor
     CInitEnumObjState() {
-        QVector<SEnumEntry>* pVEnumEntries = const_cast<QVector<SEnumEntry>*>(&CEnum<EObjState>::s_arEnumEntries);
-        pVEnumEntries->append( /*  0 */ SEnumEntry( static_cast<int>(EObjState::Detached),   "Detached"   ) );
-        pVEnumEntries->append( /*  1 */ SEnumEntry( static_cast<int>(EObjState::Creating),   "Creating"   ) );
-        pVEnumEntries->append( /*  2 */ SEnumEntry( static_cast<int>(EObjState::Created),    "Created"    ) );
-        pVEnumEntries->append( /*  3 */ SEnumEntry( static_cast<int>(EObjState::Destroying), "Destroying" ) );
-        pVEnumEntries->append( /*  4 */ SEnumEntry( static_cast<int>(EObjState::Destroyed),  "Destroyed"  ) );
-        pVEnumEntries->append( /*  5 */ SEnumEntry( static_cast<int>(EObjState::Undefined),  "Undefined"  ) );
+        QVector<SEnumEntry>* pVEnumEntries = const_cast<QVector<SEnumEntry>*>(&CEnumObjState::s_arEnumEntries);
+        pVEnumEntries->append( /*  0 */ SEnumEntry( static_cast<int>(EObjStateDetached),   "Detached"   ) );
+        pVEnumEntries->append( /*  1 */ SEnumEntry( static_cast<int>(EObjStateCreating),   "Creating"   ) );
+        pVEnumEntries->append( /*  2 */ SEnumEntry( static_cast<int>(EObjStateCreated),    "Created"    ) );
+        pVEnumEntries->append( /*  3 */ SEnumEntry( static_cast<int>(EObjStateDestroying), "Destroying" ) );
+        pVEnumEntries->append( /*  4 */ SEnumEntry( static_cast<int>(EObjStateDestroyed),  "Destroyed"  ) );
+        pVEnumEntries->append( /*  5 */ SEnumEntry( static_cast<int>(EObjStateUndefined),  "Undefined"  ) );
     }
 };
 static CInitEnumObjState s_initEnumObjState;
 #else // #if QT_VERSION >= 0x050000
 //------------------------------------------------------------------------------
-const QVector<SEnumEntry> CEnum<EObjState>::s_arEnumEntries =
+const QVector<SEnumEntry> CEnumObjState::s_arEnumEntries =
 //------------------------------------------------------------------------------
 {                        // Enumerator,                           Name
-    /*  0 */ SEnumEntry( static_cast<int>(EObjState::Detached),   "Detached"   ),
-    /*  1 */ SEnumEntry( static_cast<int>(EObjState::Creating),   "Creating"   ),
-    /*  2 */ SEnumEntry( static_cast<int>(EObjState::Created),    "Created"    ),
-    /*  3 */ SEnumEntry( static_cast<int>(EObjState::Destroying), "Destroying" ),
-    /*  4 */ SEnumEntry( static_cast<int>(EObjState::Destroyed),  "Destroyed"  ),
-    /*  5 */ SEnumEntry( static_cast<int>(EObjState::Undefined),  "Undefined"  )
+    /*  0 */ SEnumEntry( static_cast<int>(EObjStateDetached),   "Detached"   ),
+    /*  1 */ SEnumEntry( static_cast<int>(EObjStateCreating),   "Creating"   ),
+    /*  2 */ SEnumEntry( static_cast<int>(EObjStateCreated),    "Created"    ),
+    /*  3 */ SEnumEntry( static_cast<int>(EObjStateDestroying), "Destroying" ),
+    /*  4 */ SEnumEntry( static_cast<int>(EObjStateDestroyed),  "Destroyed"  ),
+    /*  5 */ SEnumEntry( static_cast<int>(EObjStateUndefined),  "Undefined"  )
 };
 #endif // #if QT_VERSION < 0x050000
 
@@ -284,36 +287,36 @@ const QVector<SEnumEntry> CEnum<EObjState>::s_arEnumEntries =
 enum ERowVersion
 ==============================================================================*/
 
-QMutex CEnum<ERowVersion>::s_mtxArMapsStr2Enumerators;
-QVector<QHash<QString, int>> CEnum<ERowVersion>::s_armapsStr2Enumerators;
+QMutex CEnumRowVersion::s_mtxArMapsStr2Enumerators;
+QVector<QHash<QString, int>> CEnumRowVersion::s_armapsStr2Enumerators;
 
 #if QT_VERSION < 0x050000
 //------------------------------------------------------------------------------
-const QVector<SEnumEntry> CEnum<ERowVersion>::s_arEnumEntries;
+const QVector<SEnumEntry> CEnumRowVersion::s_arEnumEntries;
 //------------------------------------------------------------------------------
 class CInitEnumRowVersion
 {
 public: // ctor
     CInitEnumRowVersion() {
-        QVector<SEnumEntry>* pVEnumEntries = const_cast<QVector<SEnumEntry>*>(&CEnum<ERowVersion>::s_arEnumEntries);
-        pVEnumEntries->append( /* 0 */ SEnumEntry( static_cast<int>(ERowVersion::Original),  "Original",  "O",    "Original",  "ORIG",    "ORIGinal",  "Ori" ) );
-        pVEnumEntries->append( /* 1 */ SEnumEntry( static_cast<int>(ERowVersion::Current),   "Current",   "C",    "Current",   "CURR",    "CURRent",   "Cur" ) );
-        pVEnumEntries->append( /* 2 */ SEnumEntry( static_cast<int>(ERowVersion::Proposed),  "Proposed",  "P",    "Proposed",  "PROP",    "PROPosed",  "Prp" ) );
-        pVEnumEntries->append( /* 3 */ SEnumEntry( static_cast<int>(ERowVersion::Default),   "Default",   "D",    "Default",   "DEF",     "DEFault",   "Def" ) );
-        pVEnumEntries->append( /* 4 */ SEnumEntry( static_cast<int>(ERowVersion::Undefined), "Undefined", "?",    "Undefined", "UND",     "UNDefined", "Und" ) );
+        QVector<SEnumEntry>* pVEnumEntries = const_cast<QVector<SEnumEntry>*>(&CEnumRowVersion::s_arEnumEntries);
+        pVEnumEntries->append( /* 0 */ SEnumEntry( static_cast<int>(ERowVersionOriginal),  "Original",  "O",    "Original",  "ORIG",    "ORIGinal",  "Ori" ) );
+        pVEnumEntries->append( /* 1 */ SEnumEntry( static_cast<int>(ERowVersionCurrent),   "Current",   "C",    "Current",   "CURR",    "CURRent",   "Cur" ) );
+        pVEnumEntries->append( /* 2 */ SEnumEntry( static_cast<int>(ERowVersionProposed),  "Proposed",  "P",    "Proposed",  "PROP",    "PROPosed",  "Prp" ) );
+        pVEnumEntries->append( /* 3 */ SEnumEntry( static_cast<int>(ERowVersionDefault),   "Default",   "D",    "Default",   "DEF",     "DEFault",   "Def" ) );
+        pVEnumEntries->append( /* 4 */ SEnumEntry( static_cast<int>(ERowVersionUndefined), "Undefined", "?",    "Undefined", "UND",     "UNDefined", "Und" ) );
     }
 };
 static CInitEnumRowVersion s_initEnumRowVersion;
 #else // #if QT_VERSION >= 0x050000
 //------------------------------------------------------------------------------
-const QVector<SEnumEntry> CEnum<ERowVersion>::s_arEnumEntries =
+const QVector<SEnumEntry> CEnumRowVersion::s_arEnumEntries =
 //------------------------------------------------------------------------------
 {                       // Enumerator,                            Name,        Symbol, Text,        SCPIShort, SCPILong,    Alias6
-    /* 0 */ SEnumEntry( static_cast<int>(ERowVersion::Original),  "Original",  "O",    "Original",  "ORIG",    "ORIGinal",  "Ori" ),
-    /* 1 */ SEnumEntry( static_cast<int>(ERowVersion::Current),   "Current",   "C",    "Current",   "CURR",    "CURRent",   "Cur" ),
-    /* 2 */ SEnumEntry( static_cast<int>(ERowVersion::Proposed),  "Proposed",  "P",    "Proposed",  "PROP",    "PROPosed",  "Prp" ),
-    /* 3 */ SEnumEntry( static_cast<int>(ERowVersion::Default),   "Default",   "D",    "Default",   "DEF",     "DEFault",   "Def" ),
-    /* 4 */ SEnumEntry( static_cast<int>(ERowVersion::Undefined), "Undefined", "?",    "Undefined", "UND",     "UNDefined", "Und" )
+    /* 0 */ SEnumEntry( static_cast<int>(ERowVersionOriginal),  "Original",  "O",    "Original",  "ORIG",    "ORIGinal",  "Ori" ),
+    /* 1 */ SEnumEntry( static_cast<int>(ERowVersionCurrent),   "Current",   "C",    "Current",   "CURR",    "CURRent",   "Cur" ),
+    /* 2 */ SEnumEntry( static_cast<int>(ERowVersionProposed),  "Proposed",  "P",    "Proposed",  "PROP",    "PROPosed",  "Prp" ),
+    /* 3 */ SEnumEntry( static_cast<int>(ERowVersionDefault),   "Default",   "D",    "Default",   "DEF",     "DEFault",   "Def" ),
+    /* 4 */ SEnumEntry( static_cast<int>(ERowVersionUndefined), "Undefined", "?",    "Undefined", "UND",     "UNDefined", "Und" )
 };
 #endif // #if QT_VERSION < 0x050000
 
@@ -322,38 +325,38 @@ const QVector<SEnumEntry> CEnum<ERowVersion>::s_arEnumEntries =
 enum ERowState
 ==============================================================================*/
 
-QMutex CEnum<ERowState>::s_mtxArMapsStr2Enumerators;
-QVector<QHash<QString, int>> CEnum<ERowState>::s_armapsStr2Enumerators;
+QMutex CEnumRowState::s_mtxArMapsStr2Enumerators;
+QVector<QHash<QString, int>> CEnumRowState::s_armapsStr2Enumerators;
 
 #if QT_VERSION < 0x050000
 //------------------------------------------------------------------------------
-const QVector<SEnumEntry> CEnum<ERowState>::s_arEnumEntries;
+const QVector<SEnumEntry> CEnumRowState::s_arEnumEntries;
 //------------------------------------------------------------------------------
 class CInitEnumRowState
 {
 public: // ctor
     CInitEnumRowState() {
-        QVector<SEnumEntry>* pVEnumEntries = const_cast<QVector<SEnumEntry>*>(&CEnum<ERowState>::s_arEnumEntries);
-        pVEnumEntries->append( /* 0 */ SEnumEntry( static_cast<int>(ERowState::Unchanged), "Unchanged", "",    "Unchanged", "UNCH",    "UNCHanged", "Unc" ) );
-        pVEnumEntries->append( /* 1 */ SEnumEntry( static_cast<int>(ERowState::Detached),  "Detached",  "~",   "Detached",  "DET",     "DETached",  "Det" ) );
-        pVEnumEntries->append( /* 2 */ SEnumEntry( static_cast<int>(ERowState::Added),     "Added",     "+",   "Added",     "ADD",     "ADDed",     "Add" ) );
-        pVEnumEntries->append( /* 3 */ SEnumEntry( static_cast<int>(ERowState::Removed),   "Removed",   "-",   "Removed",   "REM",     "REMoved",   "Rem" ) );
-        pVEnumEntries->append( /* 4 */ SEnumEntry( static_cast<int>(ERowState::Modified),  "Modified",  "*",   "Modified",  "MOD",     "MODified",  "Mod" ) );
-        pVEnumEntries->append( /* 5 */ SEnumEntry( static_cast<int>(ERowState::Undefined), "Undefined", "?",   "Undefined", "UND",     "UNDefined", "Und" ) );
+        QVector<SEnumEntry>* pVEnumEntries = const_cast<QVector<SEnumEntry>*>(&CEnumRowState::s_arEnumEntries);
+        pVEnumEntries->append( /* 0 */ SEnumEntry( static_cast<int>(ERowStateUnchanged), "Unchanged", "",    "Unchanged", "UNCH",    "UNCHanged", "Unc" ) );
+        pVEnumEntries->append( /* 1 */ SEnumEntry( static_cast<int>(ERowStateDetached),  "Detached",  "~",   "Detached",  "DET",     "DETached",  "Det" ) );
+        pVEnumEntries->append( /* 2 */ SEnumEntry( static_cast<int>(ERowStateAdded),     "Added",     "+",   "Added",     "ADD",     "ADDed",     "Add" ) );
+        pVEnumEntries->append( /* 3 */ SEnumEntry( static_cast<int>(ERowStateRemoved),   "Removed",   "-",   "Removed",   "REM",     "REMoved",   "Rem" ) );
+        pVEnumEntries->append( /* 4 */ SEnumEntry( static_cast<int>(ERowStateModified),  "Modified",  "*",   "Modified",  "MOD",     "MODified",  "Mod" ) );
+        pVEnumEntries->append( /* 5 */ SEnumEntry( static_cast<int>(ERowStateUndefined), "Undefined", "?",   "Undefined", "UND",     "UNDefined", "Und" ) );
     }
 };
 static CInitEnumRowState s_initEnumRowState;
 #else // #if QT_VERSION >= 0x050000
 //------------------------------------------------------------------------------
-const QVector<SEnumEntry> CEnum<ERowState>::s_arEnumEntries =
+const QVector<SEnumEntry> CEnumRowState::s_arEnumEntries =
 //------------------------------------------------------------------------------
 {                       // Enumerator,                          Name,       Symbol, Text,       SCPIShort, SCPILong,    Alias6
-    /* 0 */ SEnumEntry( static_cast<int>(ERowState::Unchanged), "Unchanged", "",    "Unchanged", "UNCH",    "UNCHanged", "Unc" ),
-    /* 1 */ SEnumEntry( static_cast<int>(ERowState::Detached),  "Detached",  "~",   "Detached",  "DET",     "DETached",  "Det" ),
-    /* 2 */ SEnumEntry( static_cast<int>(ERowState::Added),     "Added",     "+",   "Added",     "ADD",     "ADDed",     "Add" ),
-    /* 3 */ SEnumEntry( static_cast<int>(ERowState::Removed),   "Removed",   "-",   "Removed",   "REM",     "REMoved",   "Rem" ),
-    /* 4 */ SEnumEntry( static_cast<int>(ERowState::Modified),  "Modified",  "*",   "Modified",  "MOD",     "MODified",  "Mod" ),
-    /* 5 */ SEnumEntry( static_cast<int>(ERowState::Undefined), "Undefined", "?",   "Undefined", "UND",     "UNDefined", "Und" )
+    /* 0 */ SEnumEntry( static_cast<int>(ERowStateUnchanged), "Unchanged", "",    "Unchanged", "UNCH",    "UNCHanged", "Unc" ),
+    /* 1 */ SEnumEntry( static_cast<int>(ERowStateDetached),  "Detached",  "~",   "Detached",  "DET",     "DETached",  "Det" ),
+    /* 2 */ SEnumEntry( static_cast<int>(ERowStateAdded),     "Added",     "+",   "Added",     "ADD",     "ADDed",     "Add" ),
+    /* 3 */ SEnumEntry( static_cast<int>(ERowStateRemoved),   "Removed",   "-",   "Removed",   "REM",     "REMoved",   "Rem" ),
+    /* 4 */ SEnumEntry( static_cast<int>(ERowStateModified),  "Modified",  "*",   "Modified",  "MOD",     "MODified",  "Mod" ),
+    /* 5 */ SEnumEntry( static_cast<int>(ERowStateUndefined), "Undefined", "?",   "Undefined", "UND",     "UNDefined", "Und" )
 };
 #endif // #if QT_VERSION < 0x050000
 
@@ -362,32 +365,32 @@ const QVector<SEnumEntry> CEnum<ERowState>::s_arEnumEntries =
 Enum EContentToStrFormat
 ==============================================================================*/
 
-QMutex CEnum<EContentToStrFormat>::s_mtxArMapsStr2Enumerators;
-QVector<QHash<QString, int>> CEnum<EContentToStrFormat>::s_armapsStr2Enumerators;
+QMutex CEnumContentToStrFormat::s_mtxArMapsStr2Enumerators;
+QVector<QHash<QString, int>> CEnumContentToStrFormat::s_armapsStr2Enumerators;
 
 #if QT_VERSION < 0x050000
 //------------------------------------------------------------------------------
-const QVector<SEnumEntry> CEnum<EContentToStrFormat>::s_arEnumEntries;
+const QVector<SEnumEntry> CEnumContentToStrFormat::s_arEnumEntries;
 //------------------------------------------------------------------------------
 class CInitEnumContentToStrFormat
 {
 public: // ctor
     CInitEnumContentToStrFormat() {
-        QVector<SEnumEntry>* pVEnumEntries = const_cast<QVector<SEnumEntry>*>(&CEnum<EContentToStrFormat>::s_arEnumEntries);
-        pVEnumEntries->append( /* 0 */ SEnumEntry( static_cast<int>(EContentToStrFormat::PlainText), "PlainText" ) );
-        pVEnumEntries->append( /* 1 */ SEnumEntry( static_cast<int>(EContentToStrFormat::HtmlText),  "HtmlText"  ) );
-        pVEnumEntries->append( /* 2 */ SEnumEntry( static_cast<int>(EContentToStrFormat::Undefined), "Undefined" ) );
+        QVector<SEnumEntry>* pVEnumEntries = const_cast<QVector<SEnumEntry>*>(&CEnumContentToStrFormat::s_arEnumEntries);
+        pVEnumEntries->append( /* 0 */ SEnumEntry( static_cast<int>(EContentToStrFormatPlainText), "PlainText" ) );
+        pVEnumEntries->append( /* 1 */ SEnumEntry( static_cast<int>(EContentToStrFormatHtmlText),  "HtmlText"  ) );
+        pVEnumEntries->append( /* 2 */ SEnumEntry( static_cast<int>(EContentToStrFormatUndefined), "Undefined" ) );
     }
 };
 static CInitEnumContentToStrFormat s_initEnumContentToStrFormat;
 #else // #if QT_VERSION >= 0x050000
 //------------------------------------------------------------------------------
-const QVector<SEnumEntry> CEnum<EContentToStrFormat>::s_arEnumEntries =
+const QVector<SEnumEntry> CEnumContentToStrFormat::s_arEnumEntries =
 //------------------------------------------------------------------------------
 {                       // Enumerator,                                    Name
-    /* 0 */ SEnumEntry( static_cast<int>(EContentToStrFormat::PlainText), "PlainText" ),
-    /* 1 */ SEnumEntry( static_cast<int>(EContentToStrFormat::HtmlText),  "HtmlText"  ),
-    /* 2 */ SEnumEntry( static_cast<int>(EContentToStrFormat::Undefined), "Undefined" )
+    /* 0 */ SEnumEntry( static_cast<int>(EContentToStrFormatPlainText), "PlainText" ),
+    /* 1 */ SEnumEntry( static_cast<int>(EContentToStrFormatHtmlText),  "HtmlText"  ),
+    /* 2 */ SEnumEntry( static_cast<int>(EContentToStrFormatUndefined), "Undefined" )
 };
 #endif // #if QT_VERSION < 0x050000
 
@@ -396,34 +399,34 @@ const QVector<SEnumEntry> CEnum<EContentToStrFormat>::s_arEnumEntries =
 Enum EMethodDir
 ==============================================================================*/
 
-QMutex CEnum<EMethodDir>::s_mtxArMapsStr2Enumerators;
-QVector<QHash<QString, int>> CEnum<EMethodDir>::s_armapsStr2Enumerators;
+QMutex CEnumMethodDir::s_mtxArMapsStr2Enumerators;
+QVector<QHash<QString, int>> CEnumMethodDir::s_armapsStr2Enumerators;
 
 #if QT_VERSION < 0x050000
 //------------------------------------------------------------------------------
-const QVector<SEnumEntry> CEnum<EMethodDir>::s_arEnumEntries;
+const QVector<SEnumEntry> CEnumMethodDir::s_arEnumEntries;
 //------------------------------------------------------------------------------
 class CInitEnumMethodDir
 {
 public: // ctor
     CInitEnumMethodDir() {
-        QVector<SEnumEntry>* pVEnumEntries = const_cast<QVector<SEnumEntry>*>(&CEnum<EMethodDir>::s_arEnumEntries);
-        pVEnumEntries->append( /* 0 */ SEnumEntry( static_cast<int>(EMethodDir::Enter),     "Enter",     "E" ) );
-        pVEnumEntries->append( /* 1 */ SEnumEntry( static_cast<int>(EMethodDir::Leave),     "Leave",     "L" ) );
-        pVEnumEntries->append( /* 2 */ SEnumEntry( static_cast<int>(EMethodDir::None),      "None",      "N" ) );
-        pVEnumEntries->append( /* 3 */ SEnumEntry( static_cast<int>(EMethodDir::Undefined), "Undefined", "?" ) );
+        QVector<SEnumEntry>* pVEnumEntries = const_cast<QVector<SEnumEntry>*>(&CEnumMethodDir::s_arEnumEntries);
+        pVEnumEntries->append( /* 0 */ SEnumEntry( static_cast<int>(EMethodDirEnter),     "Enter",     "E" ) );
+        pVEnumEntries->append( /* 1 */ SEnumEntry( static_cast<int>(EMethodDirLeave),     "Leave",     "L" ) );
+        pVEnumEntries->append( /* 2 */ SEnumEntry( static_cast<int>(EMethodDirNone),      "None",      "N" ) );
+        pVEnumEntries->append( /* 3 */ SEnumEntry( static_cast<int>(EMethodDirUndefined), "Undefined", "?" ) );
     }
 };
 static CInitEnumMethodDir s_initEnumMethodDir;
 #else // #if QT_VERSION >= 0x050000
 //------------------------------------------------------------------------------
-const QVector<SEnumEntry> CEnum<EMethodDir>::s_arEnumEntries =
+const QVector<SEnumEntry> CEnumMethodDir::s_arEnumEntries =
 //------------------------------------------------------------------------------
 {                       // Enumerator,                           Name,       Symbol
-    /* 0 */ SEnumEntry( static_cast<int>(EMethodDir::Enter),     "Enter",     "E" ),
-    /* 1 */ SEnumEntry( static_cast<int>(EMethodDir::Leave),     "Leave",     "L" ),
-    /* 2 */ SEnumEntry( static_cast<int>(EMethodDir::None),      "None",      "N" ),
-    /* 3 */ SEnumEntry( static_cast<int>(EMethodDir::Undefined), "Undefined", "?" )
+    /* 0 */ SEnumEntry( static_cast<int>(EMethodDirEnter),     "Enter",     "E" ),
+    /* 1 */ SEnumEntry( static_cast<int>(EMethodDirLeave),     "Leave",     "L" ),
+    /* 2 */ SEnumEntry( static_cast<int>(EMethodDirNone),      "None",      "N" ),
+    /* 3 */ SEnumEntry( static_cast<int>(EMethodDirUndefined), "Undefined", "?" )
 };
 #endif // #if QT_VERSION < 0x050000
 
@@ -432,32 +435,32 @@ const QVector<SEnumEntry> CEnum<EMethodDir>::s_arEnumEntries =
 Enum ETransmitDir
 ==============================================================================*/
 
-QMutex CEnum<ETransmitDir>::s_mtxArMapsStr2Enumerators;
-QVector<QHash<QString, int>> CEnum<ETransmitDir>::s_armapsStr2Enumerators;
+QMutex CEnumTransmitDir::s_mtxArMapsStr2Enumerators;
+QVector<QHash<QString, int>> CEnumTransmitDir::s_armapsStr2Enumerators;
 
 #if QT_VERSION < 0x050000
 //------------------------------------------------------------------------------
-const QVector<SEnumEntry> CEnum<ETransmitDir>::s_arEnumEntries;
+const QVector<SEnumEntry> CEnumTransmitDir::s_arEnumEntries;
 //------------------------------------------------------------------------------
 class CInitEnumTransmitDir
 {
 public: // ctor
     CInitEnumTransmitDir() {
-        QVector<SEnumEntry>* pVEnumEntries = const_cast<QVector<SEnumEntry>*>(&CEnum<ETransmitDir>::s_arEnumEntries);
-        pVEnumEntries->append( /* 0 */ SEnumEntry( static_cast<int>(ETransmitDir::Receive),   "Receive",   "RCV",  "In",  "I", "Read",  "R" ) );
-        pVEnumEntries->append( /* 1 */ SEnumEntry( static_cast<int>(ETransmitDir::Send),      "Send",      "SND",  "Out", "O", "Write", "W" ) );
-        pVEnumEntries->append( /* 2 */ SEnumEntry( static_cast<int>(ETransmitDir::Undefined), "Undefined", "?",    "",    "",  "",      ""  ) );
+        QVector<SEnumEntry>* pVEnumEntries = const_cast<QVector<SEnumEntry>*>(&CEnumTransmitDir::s_arEnumEntries);
+        pVEnumEntries->append( /* 0 */ SEnumEntry( static_cast<int>(ETransmitDirReceive),   "Receive",   "RCV",  "In",  "I", "Read",  "R" ) );
+        pVEnumEntries->append( /* 1 */ SEnumEntry( static_cast<int>(ETransmitDirSend),      "Send",      "SND",  "Out", "O", "Write", "W" ) );
+        pVEnumEntries->append( /* 2 */ SEnumEntry( static_cast<int>(ETransmitDirUndefined), "Undefined", "?",    "",    "",  "",      ""  ) );
     }
 };
 static CInitEnumTransmitDir s_initEnumTransmitDir;
 #else // #if QT_VERSION >= 0x050000
 //------------------------------------------------------------------------------
-const QVector<SEnumEntry> CEnum<ETransmitDir>::s_arEnumEntries =
+const QVector<SEnumEntry> CEnumTransmitDir::s_arEnumEntries =
 //------------------------------------------------------------------------------
 {                       // Enumerator,                             Name,        Symbol
-    /* 0 */ SEnumEntry( static_cast<int>(ETransmitDir::Receive),   "Receive",   "RCV",  "In",  "I", "Read",  "R" ),
-    /* 1 */ SEnumEntry( static_cast<int>(ETransmitDir::Send),      "Send",      "SND",  "Out", "O", "Write", "W" ),
-    /* 2 */ SEnumEntry( static_cast<int>(ETransmitDir::Undefined), "Undefined", "?",    "",    "",  "",      ""  )
+    /* 0 */ SEnumEntry( static_cast<int>(ETransmitDirReceive),   "Receive",   "RCV",  "In",  "I", "Read",  "R" ),
+    /* 1 */ SEnumEntry( static_cast<int>(ETransmitDirSend),      "Send",      "SND",  "Out", "O", "Write", "W" ),
+    /* 2 */ SEnumEntry( static_cast<int>(ETransmitDirUndefined), "Undefined", "?",    "",    "",  "",      ""  )
 };
 #endif // #if QT_VERSION < 0x050000
 
@@ -466,32 +469,32 @@ const QVector<SEnumEntry> CEnum<ETransmitDir>::s_arEnumEntries =
 Enum EIODir
 ==============================================================================*/
 
-QMutex CEnum<EIODir>::s_mtxArMapsStr2Enumerators;
-QVector<QHash<QString, int>> CEnum<EIODir>::s_armapsStr2Enumerators;
+QMutex CEnumIODir::s_mtxArMapsStr2Enumerators;
+QVector<QHash<QString, int>> CEnumIODir::s_armapsStr2Enumerators;
 
 #if QT_VERSION < 0x050000
 //------------------------------------------------------------------------------
-const QVector<SEnumEntry> CEnum<EIODir>::s_arEnumEntries;
+const QVector<SEnumEntry> CEnumIODir::s_arEnumEntries;
 //------------------------------------------------------------------------------
 class CInitEnumIODir
 {
 public: // ctor
     CInitEnumIODir() {
-        QVector<SEnumEntry>* pVEnumEntries = const_cast<QVector<SEnumEntry>*>(&CEnum<EIODir>::s_arEnumEntries);
-        pVEnumEntries->append( /* 0 */ SEnumEntry( static_cast<int>(EIODir::Out),       "In",        "I",    "In",        "IN",      "IN"        ) );
-        pVEnumEntries->append( /* 1 */ SEnumEntry( static_cast<int>(EIODir::In),        "Out",       "O",    "Out",       "OUT",     "OUT"       ) );
-        pVEnumEntries->append( /* 2 */ SEnumEntry( static_cast<int>(EIODir::Undefined), "Undefined", "?",    "Undefined", "UND",     "UNDefined" ) );
+        QVector<SEnumEntry>* pVEnumEntries = const_cast<QVector<SEnumEntry>*>(&CEnumIODir::s_arEnumEntries);
+        pVEnumEntries->append( /* 0 */ SEnumEntry( static_cast<int>(EIODirOut),       "In",        "I",    "In",        "IN",      "IN"        ) );
+        pVEnumEntries->append( /* 1 */ SEnumEntry( static_cast<int>(EIODirIn),        "Out",       "O",    "Out",       "OUT",     "OUT"       ) );
+        pVEnumEntries->append( /* 2 */ SEnumEntry( static_cast<int>(EIODirUndefined), "Undefined", "?",    "Undefined", "UND",     "UNDefined" ) );
     }
 };
 static CInitEnumIODir s_initEnumIODir;
 #else // #if QT_VERSION >= 0x050000
 //------------------------------------------------------------------------------
-const QVector<SEnumEntry> CEnum<EIODir>::s_arEnumEntries =
+const QVector<SEnumEntry> CEnumIODir::s_arEnumEntries =
 //------------------------------------------------------------------------------
 {                       // Enumerator,                       Name,     Symbol,    Text,        SCPIShort, SCPILong
-    /* 0 */ SEnumEntry( static_cast<int>(EIODir::Out),       "In",        "I",    "In",        "IN",      "IN"        ),
-    /* 1 */ SEnumEntry( static_cast<int>(EIODir::In),        "Out",       "O",    "Out",       "OUT",     "OUT"       ),
-    /* 2 */ SEnumEntry( static_cast<int>(EIODir::Undefined), "Undefined", "?",    "Undefined", "UND",     "UNDefined" )
+    /* 0 */ SEnumEntry( static_cast<int>(EIODirOut),       "In",        "I",    "In",        "IN",      "IN"        ),
+    /* 1 */ SEnumEntry( static_cast<int>(EIODirIn),        "Out",       "O",    "Out",       "OUT",     "OUT"       ),
+    /* 2 */ SEnumEntry( static_cast<int>(EIODirUndefined), "Undefined", "?",    "Undefined", "UND",     "UNDefined" )
 };
 #endif // #if QT_VERSION < 0x050000
 
@@ -500,32 +503,32 @@ const QVector<SEnumEntry> CEnum<EIODir>::s_arEnumEntries =
 Enum EDirection
 ==============================================================================*/
 
-QMutex CEnum<EDirection>::s_mtxArMapsStr2Enumerators;
-QVector<QHash<QString, int>> CEnum<EDirection>::s_armapsStr2Enumerators;
+QMutex CEnumDirection::s_mtxArMapsStr2Enumerators;
+QVector<QHash<QString, int>> CEnumDirection::s_armapsStr2Enumerators;
 
 #if QT_VERSION < 0x050000
 //------------------------------------------------------------------------------
-const QVector<SEnumEntry> CEnum<EDirection>::s_arEnumEntries;
+const QVector<SEnumEntry> CEnumDirection::s_arEnumEntries;
 //------------------------------------------------------------------------------
 class CInitEnumDirection
 {
 public: // ctor
     CInitEnumDirection() {
-        QVector<SEnumEntry>* pVEnumEntries = const_cast<QVector<SEnumEntry>*>(&CEnum<EDirection>::s_arEnumEntries);
-        pVEnumEntries->append( /* 0 */ SEnumEntry( static_cast<int>(EDirection::Vertical),   "Vertical",   "Ver"  ) );
-        pVEnumEntries->append( /* 1 */ SEnumEntry( static_cast<int>(EDirection::Horizontal), "Horizontal", "Hor"  ) );
-        pVEnumEntries->append( /* 3 */ SEnumEntry( static_cast<int>(EDirection::Undefined),  "Undefined",  "?"    ) );
+        QVector<SEnumEntry>* pVEnumEntries = const_cast<QVector<SEnumEntry>*>(&CEnumDirection::s_arEnumEntries);
+        pVEnumEntries->append( /* 0 */ SEnumEntry( static_cast<int>(EDirectionVertical),   "Vertical",   "Ver"  ) );
+        pVEnumEntries->append( /* 1 */ SEnumEntry( static_cast<int>(EDirectionHorizontal), "Horizontal", "Hor"  ) );
+        pVEnumEntries->append( /* 3 */ SEnumEntry( static_cast<int>(EDirectionUndefined),  "Undefined",  "?"    ) );
     }
 };
 static CInitEnumDirection s_initEnumDirection;
 #else // #if QT_VERSION >= 0x050000
 //------------------------------------------------------------------------------
-const QVector<SEnumEntry> CEnum<EDirection>::s_arEnumEntries =
+const QVector<SEnumEntry> CEnumDirection::s_arEnumEntries =
 //------------------------------------------------------------------------------
 {                       // Enumerator,                            Name,         Symbol
-    /* 0 */ SEnumEntry( static_cast<int>(EDirection::Vertical),   "Vertical",   "Ver"  ),
-    /* 1 */ SEnumEntry( static_cast<int>(EDirection::Horizontal), "Horizontal", "Hor"  ),
-    /* 3 */ SEnumEntry( static_cast<int>(EDirection::Undefined),  "Undefined",  "?"    )
+    /* 0 */ SEnumEntry( static_cast<int>(EDirectionVertical),   "Vertical",   "Ver"  ),
+    /* 1 */ SEnumEntry( static_cast<int>(EDirectionHorizontal), "Horizontal", "Hor"  ),
+    /* 3 */ SEnumEntry( static_cast<int>(EDirectionUndefined),  "Undefined",  "?"    )
 };
 #endif // #if QT_VERSION < 0x050000
 
@@ -534,32 +537,32 @@ const QVector<SEnumEntry> CEnum<EDirection>::s_arEnumEntries =
 Enum EComparisonOperator
 ==============================================================================*/
 
-QMutex CEnum<EComparisonOperator>::s_mtxArMapsStr2Enumerators;
-QVector<QHash<QString, int>> CEnum<EComparisonOperator>::s_armapsStr2Enumerators;
+QMutex CEnumComparisonOperator::s_mtxArMapsStr2Enumerators;
+QVector<QHash<QString, int>> CEnumComparisonOperator::s_armapsStr2Enumerators;
 
 #if QT_VERSION < 0x050000
 //------------------------------------------------------------------------------
-const QVector<SEnumEntry> CEnum<EComparisonOperator>::s_arEnumEntries;
+const QVector<SEnumEntry> CEnumComparisonOperator::s_arEnumEntries;
 //------------------------------------------------------------------------------
 class CInitEnumComparisonOperator
 {
 public: // ctor
     CInitEnumComparisonOperator() {
-        QVector<SEnumEntry>* pVEnumEntries = const_cast<QVector<SEnumEntry>*>(&CEnum<EComparisonOperator>::s_arEnumEntries);
-        pVEnumEntries->append( /* 0 */ SEnumEntry( static_cast<int>(EComparisonOperator::Equal),     "Equal",     "==" ) );
-        pVEnumEntries->append( /* 1 */ SEnumEntry( static_cast<int>(EComparisonOperator::Unequal),   "Unequal",   "!=" ) );
-        pVEnumEntries->append( /* 2 */ SEnumEntry( static_cast<int>(EComparisonOperator::Undefined), "Undefined", "?"  ) );
+        QVector<SEnumEntry>* pVEnumEntries = const_cast<QVector<SEnumEntry>*>(&CEnumComparisonOperator::s_arEnumEntries);
+        pVEnumEntries->append( /* 0 */ SEnumEntry( static_cast<int>(EComparisonOperatorEqual),     "Equal",     "==" ) );
+        pVEnumEntries->append( /* 1 */ SEnumEntry( static_cast<int>(EComparisonOperatorUnequal),   "Unequal",   "!=" ) );
+        pVEnumEntries->append( /* 2 */ SEnumEntry( static_cast<int>(EComparisonOperatorUndefined), "Undefined", "?"  ) );
     }
 };
 static CInitEnumComparisonOperator s_initEnumComparisonOperator;
 #else // #if QT_VERSION >= 0x050000
 //------------------------------------------------------------------------------
-const QVector<SEnumEntry> CEnum<EComparisonOperator>::s_arEnumEntries =
+const QVector<SEnumEntry> CEnumComparisonOperator::s_arEnumEntries =
 //------------------------------------------------------------------------------
 {                       // Enumerator,                                    Name,      Symbol
-    /* 0 */ SEnumEntry( static_cast<int>(EComparisonOperator::Equal),     "Equal",     "==" ),
-    /* 1 */ SEnumEntry( static_cast<int>(EComparisonOperator::Unequal),   "Unequal",   "!=" ),
-    /* 2 */ SEnumEntry( static_cast<int>(EComparisonOperator::Undefined), "Undefined", "?"  )
+    /* 0 */ SEnumEntry( static_cast<int>(EComparisonOperator:Equal),     "Equal",     "==" ),
+    /* 1 */ SEnumEntry( static_cast<int>(EComparisonOperator:Unequal),   "Unequal",   "!=" ),
+    /* 2 */ SEnumEntry( static_cast<int>(EComparisonOperatorUndefined), "Undefined", "?"  )
 };
 #endif // #if QT_VERSION < 0x050000
 
@@ -568,34 +571,34 @@ const QVector<SEnumEntry> CEnum<EComparisonOperator>::s_arEnumEntries =
 Enum EValueValidity
 ==============================================================================*/
 
-QMutex CEnum<EValueValidity>::s_mtxArMapsStr2Enumerators;
-QVector<QHash<QString, int>> CEnum<EValueValidity>::s_armapsStr2Enumerators;
+QMutex CEnumValueValidity::s_mtxArMapsStr2Enumerators;
+QVector<QHash<QString, int>> CEnumValueValidity::s_armapsStr2Enumerators;
 
 #if QT_VERSION < 0x050000
 //------------------------------------------------------------------------------
-const QVector<SEnumEntry> CEnum<EValueValidity>::s_arEnumEntries;
+const QVector<SEnumEntry> CEnumValueValidity::s_arEnumEntries;
 //------------------------------------------------------------------------------
 class CInitEnumValueValidity
 {
 public: // ctor
     CInitEnumValueValidity() {
-        QVector<SEnumEntry>* pVEnumEntries = const_cast<QVector<SEnumEntry>*>(&CEnum<EValueValidity>::s_arEnumEntries);
-        pVEnumEntries->append( /* 0 */ SEnumEntry( static_cast<int>(EValueValidity::Invalid),   "Invalid",   "---",    "Invalid",   "INV",     "INValid",   "Inv",      "-" ) );
-        pVEnumEntries->append( /* 1 */ SEnumEntry( static_cast<int>(EValueValidity::Null),      "Null",      "(null)", "Null",      "nullptr", "nullptr",   "N",        "n" ) );
-        pVEnumEntries->append( /* 2 */ SEnumEntry( static_cast<int>(EValueValidity::Valid),     "Valid",     "",       "Valid",     "VAL",     "VALid",     "Val",       "" ) );
-        pVEnumEntries->append( /* 3 */ SEnumEntry( static_cast<int>(EValueValidity::Undefined), "Undefined", "?",      "Undefined", "UND",     "UNDefined", "Undefined", "" ) );
+        QVector<SEnumEntry>* pVEnumEntries = const_cast<QVector<SEnumEntry>*>(&CEnumValueValidity::s_arEnumEntries);
+        pVEnumEntries->append( /* 0 */ SEnumEntry( static_cast<int>(EValueValidityInvalid),   "Invalid",   "---",    "Invalid",   "INV",     "INValid",   "Inv",      "-" ) );
+        pVEnumEntries->append( /* 1 */ SEnumEntry( static_cast<int>(EValueValidityNull),      "Null",      "(null)", "Null",      "nullptr", "nullptr",   "N",        "n" ) );
+        pVEnumEntries->append( /* 2 */ SEnumEntry( static_cast<int>(EValueValidityValid),     "Valid",     "",       "Valid",     "VAL",     "VALid",     "Val",       "" ) );
+        pVEnumEntries->append( /* 3 */ SEnumEntry( static_cast<int>(EValueValidityUndefined), "Undefined", "?",      "Undefined", "UND",     "UNDefined", "Undefined", "" ) );
     }
 };
 static CInitEnumValueValidity s_initEnumValueValidity;
 #else // #if QT_VERSION >= 0x050000
 //------------------------------------------------------------------------------
-const QVector<SEnumEntry> CEnum<EValueValidity>::s_arEnumEntries =
+const QVector<SEnumEntry> CEnumValueValidity::s_arEnumEntries =
 //------------------------------------------------------------------------------
 {                       // Enumerator,                               Name,        Symbol,   Text,        SCPIShort, SCPILong,    Alias6,    Alias7
-    /* 0 */ SEnumEntry( static_cast<int>(EValueValidity::Invalid),   "Invalid",   "---",    "Invalid",   "INV",     "INValid",   "Inv",      "-" ),
-    /* 1 */ SEnumEntry( static_cast<int>(EValueValidity::Null),      "Null",      "(null)", "Null",      "nullptr", "nullptr",   "N",        "n" ),
-    /* 2 */ SEnumEntry( static_cast<int>(EValueValidity::Valid),     "Valid",     "",       "Valid",     "VAL",     "VALid",     "Val",       "" ),
-    /* 3 */ SEnumEntry( static_cast<int>(EValueValidity::Undefined), "Undefined", "?",      "Undefined", "UND",     "UNDefined", "Undefined", "" )
+    /* 0 */ SEnumEntry( static_cast<int>(EValueValidityInvalid),   "Invalid",   "---",    "Invalid",   "INV",     "INValid",   "Inv",      "-" ),
+    /* 1 */ SEnumEntry( static_cast<int>(EValueValidityNull),      "Null",      "(null)", "Null",      "nullptr", "nullptr",   "N",        "n" ),
+    /* 2 */ SEnumEntry( static_cast<int>(EValueValidityValid),     "Valid",     "",       "Valid",     "VAL",     "VALid",     "Val",       "" ),
+    /* 3 */ SEnumEntry( static_cast<int>(EValueValidityUndefined), "Undefined", "?",      "Undefined", "UND",     "UNDefined", "Undefined", "" )
 };
 #endif // #if QT_VERSION < 0x050000
 
@@ -604,34 +607,34 @@ const QVector<SEnumEntry> CEnum<EValueValidity>::s_arEnumEntries =
 enum EDimensionType
 ==============================================================================*/
 
-QMutex CEnum<EDimensionType>::s_mtxArMapsStr2Enumerators;
-QVector<QHash<QString, int>> CEnum<EDimensionType>::s_armapsStr2Enumerators;
+QMutex CEnumDimensionType::s_mtxArMapsStr2Enumerators;
+QVector<QHash<QString, int>> CEnumDimensionType::s_armapsStr2Enumerators;
 
 #if QT_VERSION < 0x050000
 //------------------------------------------------------------------------------
-const QVector<SEnumEntry> CEnum<EDimensionType>::s_arEnumEntries;
+const QVector<SEnumEntry> CEnumDimensionType::s_arEnumEntries;
 //------------------------------------------------------------------------------
 class CInitEnumDimensionType
 {
 public: // ctor
     CInitEnumDimensionType() {
-        QVector<SEnumEntry>* pVEnumEntries = const_cast<QVector<SEnumEntry>*>(&CEnum<EDimensionType>::s_arEnumEntries);
-        pVEnumEntries->append( /* 0 */ SEnumEntry( static_cast<int>(EDimensionType::SingleValue),     "SingleValue",     "S", "Single Value",     "SING", "SINGle"       ) );
-        pVEnumEntries->append( /* 1 */ SEnumEntry( static_cast<int>(EDimensionType::OneDimensional),  "OneDimensional",  "O", "One Dimensional",  "ONED", "ODIMensional" ) );
-        pVEnumEntries->append( /* 2 */ SEnumEntry( static_cast<int>(EDimensionType::MoreDimensional), "MoreDimensional", "M", "More Dimensional", "MDIM", "MDIMensional" ) );
-        pVEnumEntries->append( /* 3 */ SEnumEntry( static_cast<int>(EDimensionType::Undefined),       "Undefined",       "?", "Undefined",        "UND",  "UNDefined"    ) );
+        QVector<SEnumEntry>* pVEnumEntries = const_cast<QVector<SEnumEntry>*>(&CEnumDimensionType::s_arEnumEntries);
+        pVEnumEntries->append( /* 0 */ SEnumEntry( static_cast<int>(EDimensionTypeSingleValue),     "SingleValue",     "S", "Single Value",     "SING", "SINGle"       ) );
+        pVEnumEntries->append( /* 1 */ SEnumEntry( static_cast<int>(EDimensionTypeOneDimensional),  "OneDimensional",  "O", "One Dimensional",  "ONED", "ODIMensional" ) );
+        pVEnumEntries->append( /* 2 */ SEnumEntry( static_cast<int>(EDimensionTypeMoreDimensional), "MoreDimensional", "M", "More Dimensional", "MDIM", "MDIMensional" ) );
+        pVEnumEntries->append( /* 3 */ SEnumEntry( static_cast<int>(EDimensionTypeUndefined),       "Undefined",       "?", "Undefined",        "UND",  "UNDefined"    ) );
     }
 };
 static CInitEnumDimensionType s_initEnumDimensionType;
 #else // #if QT_VERSION >= 0x050000
 //------------------------------------------------------------------------------
-const QVector<SEnumEntry> CEnum<EDimensionType>::s_arEnumEntries =
+const QVector<SEnumEntry> CEnumDimensionType::s_arEnumEntries =
 //------------------------------------------------------------------------------
 {                       // Enumerator,                                     Name,           Symbol, Text,            SCPIShort, SCPILong
-    /* 0 */ SEnumEntry( static_cast<int>(EDimensionType::SingleValue),     "SingleValue",     "S", "Single Value",     "SING", "SINGle"       ),
-    /* 1 */ SEnumEntry( static_cast<int>(EDimensionType::OneDimensional),  "OneDimensional",  "O", "One Dimensional",  "ONED", "ODIMensional" ),
-    /* 2 */ SEnumEntry( static_cast<int>(EDimensionType::MoreDimensional), "MoreDimensional", "M", "More Dimensional", "MDIM", "MDIMensional" ),
-    /* 3 */ SEnumEntry( static_cast<int>(EDimensionType::Undefined),       "Undefined",       "?", "Undefined",        "UND",  "UNDefined"    )
+    /* 0 */ SEnumEntry( static_cast<int>(EDimensionTypeSingleValue),     "SingleValue",     "S", "Single Value",     "SING", "SINGle"       ),
+    /* 1 */ SEnumEntry( static_cast<int>(EDimensionTypeOneDimensional),  "OneDimensional",  "O", "One Dimensional",  "ONED", "ODIMensional" ),
+    /* 2 */ SEnumEntry( static_cast<int>(EDimensionTypeMoreDimensional), "MoreDimensional", "M", "More Dimensional", "MDIM", "MDIMensional" ),
+    /* 3 */ SEnumEntry( static_cast<int>(EDimensionTypeUndefined),       "Undefined",       "?", "Undefined",        "UND",  "UNDefined"    )
 };
 #endif // #if QT_VERSION < 0x050000
 

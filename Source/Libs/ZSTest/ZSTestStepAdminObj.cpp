@@ -59,7 +59,7 @@ CTestStepAdminObj::CTestStepAdminObj(
     m_pObjPool(i_pObjPool),
     m_strName(i_strName),
     m_pTreeEntry(i_pTreeEntry),
-    m_enabled(EEnabled::Yes),
+    m_enabled(EEnabledYes),
     m_bTestRunning(false),
     m_testResult(ETestResultUndefined),
     m_fTimeTestStart_s(0.0),
@@ -80,7 +80,7 @@ CTestStepAdminObj::CTestStepAdminObj( CTest* i_pTest, const QString& i_strName )
     m_pObjPool(nullptr),
     m_strName(i_strName),
     m_pTreeEntry(nullptr),
-    m_enabled(EEnabled::Yes),
+    m_enabled(EEnabledYes),
     m_bTestRunning(false),
     m_testResult(ETestResultUndefined),
     m_fTimeTestStart_s(0.0),
@@ -211,9 +211,9 @@ void CTestStepAdminObj::setEnabled( EEnabled i_enabled )
 bool CTestStepAdminObj::isEnabled() const
 //------------------------------------------------------------------------------
 {
-    bool bEnabled = (m_enabled == EEnabled::Yes);
+    bool bEnabled = (m_enabled == EEnabledYes);
 
-    if( m_enabled == EEnabled::No )
+    if( m_enabled == EEnabledNo )
     {
         if( isGroup() || m_pObjPool->isInitializingTest() )
         {

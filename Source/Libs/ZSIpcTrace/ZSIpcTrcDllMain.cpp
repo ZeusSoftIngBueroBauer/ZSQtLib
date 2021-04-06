@@ -350,7 +350,7 @@ ZSIPCTRACEDLL_EXTERN_API void TrcAdminObj_setEnabled(
 
             if( pTrcAdminObj != nullptr )
             {
-                pTrcAdminObj->setEnabled(i_bEnabled ? EEnabled::Yes : EEnabled::No);
+                pTrcAdminObj->setEnabled(i_bEnabled ? EEnabledYes : EEnabledNo);
             }
         } // if( pTrcServer != nullptr )
     } // if( i_pTrcAdminObj != nullptr )
@@ -761,7 +761,7 @@ ZSIPCTRACEDLL_EXTERN_API DllIf::CTrcAdminObj* TrcServer_GetTraceAdminObj(
             /* strNameSpace        */ strNameSpace,
             /* strClassName        */ strClassName,
             /* strObjName          */ strObjName,
-            /* bEnabledAsDefault   */ i_bEnabledAsDefault ? EEnabled::Yes : EEnabled::No,
+            /* bEnabledAsDefault   */ i_bEnabledAsDefault ? EEnabledYes : EEnabledNo,
             /* iDefaultDetailLevel */ i_iDefaultDetailLevel,
             /* strServerName       */ strServerName );
 

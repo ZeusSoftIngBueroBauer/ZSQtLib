@@ -109,7 +109,7 @@ public: // type definitions and constants
     private:
         CModelIdxTree*           m_pModel = nullptr;
         CModelAbstractTreeEntry* m_pModelTreeEntryCurr = nullptr;
-        ETraversalOrder          m_traversalOrder = ETraversalOrder::Index;
+        ETraversalOrder          m_traversalOrder = ETraversalOrderIndex;
     };
 public: // type definitions and constants
     enum EColumn {
@@ -165,7 +165,7 @@ public: // instance methods
 public: // instance methods
     QModelIndex index( const QString& i_strKeyInTree, int i_iClm ) const;
 public: // iterator methods
-    iterator begin( iterator::ETraversalOrder i_traversalOrder = iterator::ETraversalOrder::Index );
+    iterator begin( iterator::ETraversalOrder i_traversalOrder = iterator::ETraversalOrderIndex );
     iterator end();
 protected slots:
     void onIdxTreeAboutToBeDestroyed( QObject* i_pIdxTree );

@@ -103,20 +103,21 @@ namespace System
     @see ZS::System::CEnum
     @see _GRP_BasicConcepts_Enumerations
 */
-enum class EMode
+enum EMode
 //==============================================================================
 {
-    Edit       = 0, /*!< Indicates that the control is in Edit mode. */
-    Design     = 0, /*!< Indicates that the control is in Design mode (alias for Edit mode). */
-    Simulation = 1, /*!< Indicates that the control is in Simulation mode. */
-    Run        = 1, /*!< Indicates that the control is in Run mode (alias for Simulation mode). */
-    View       = 1, /*!< Indicates that the control is in View mode (alias for Simulation mode). */
-    Undefined  = 2, /*!< Indicates that the control is in Undefined mode. */
-    Ignore     = 2  /*!< Indicates that the Mode parameter should be ignored (alias for Undefined mode). */
+    EModeEdit       = 0, /*!< Indicates that the control is in Edit mode. */
+    EModeDesign     = 0, /*!< Indicates that the control is in Design mode (alias for Edit mode). */
+    EModeSimulation = 1, /*!< Indicates that the control is in Simulation mode. */
+    EModeRun        = 1, /*!< Indicates that the control is in Run mode (alias for Simulation mode). */
+    EModeView       = 1, /*!< Indicates that the control is in View mode (alias for Simulation mode). */
+    EModeUndefined  = 2, /*!< Indicates that the control is in Undefined mode. */
+    EModeIgnore     = 2  /*!< Indicates that the Mode parameter should be ignored (alias for Undefined mode). */
 };
 
 template class ZSSYSDLL_API CEnum<EMode>;
 typedef CEnum<EMode> CEnumMode;
+
 
 //==============================================================================
 /*! The run mode enumeration is used to distinguish between two different run
@@ -128,16 +129,17 @@ typedef CEnum<EMode> CEnumMode;
     @see ZS::System::CEnum
     @see _GRP_BasicConcepts_Enumerations
 */
-enum class ERunMode
+enum ERunMode
 //==============================================================================
 {
-    Continuous = 0, /*! The sequence should run continuosly. */
-    SingleStep = 1, /*! The sequence should perform just one step. */
-    Undefined  = 2  /*! The run mode is not set and unknown. */
+    ERunModeContinuous = 0, /*! The sequence should run continuosly. */
+    ERunModeSingleStep = 1, /*! The sequence should perform just one step. */
+    ERunModeUndefined  = 2  /*! The run mode is not set and unknown. */
 };
 
 template class ZSSYSDLL_API CEnum<ERunMode>;
 typedef CEnum<ERunMode> CEnumRunMode;
+
 
 //==============================================================================
 /*! "Yes" and "No" might be more readable to reflect a boolean value instead
@@ -149,12 +151,12 @@ typedef CEnum<ERunMode> CEnumRunMode;
     @see ZS::System::CEnum
     @see _GRP_BasicConcepts_Enumerations
 */
-enum class EYesNo
+enum EYesNo
 //==============================================================================
 {
-    No        = 0,  /*! Indicates that the option has not been chosen (alias for false). */
-    Yes       = 1,  /*! Indicates that the option has been chosen (alias for true). */
-    Undefined = 2   /*! The variable is not yet initialised and its value is unknown. */
+    EYesNoNo        = 0,  /*! Indicates that the option has not been chosen (alias for false). */
+    EYesNoYes       = 1,  /*! Indicates that the option has been chosen (alias for true). */
+    EYesNoUndefined = 2   /*! The variable is not yet initialised and its value is unknown. */
 };
 
 template class ZSSYSDLL_API CEnum<EYesNo>;
@@ -170,12 +172,12 @@ typedef CEnum<EYesNo> CEnumYesNo;
     @see ZS::System::CEnum
     @see _GRP_BasicConcepts_Enumerations
 */
-enum class EStateOnOff
+enum EStateOnOff
 //==============================================================================
 {
-    Off       = 0,  /*! Indicates that the state is switched off (alias for false). */
-    On        = 1,  /*! Indicates that the state is switched on (alias for true). */
-    Undefined = 2   /*! The variable is not yet initialised and its value is unknown. */
+    EStateOnOffOff       = 0,  /*! Indicates that the state is switched off (alias for false). */
+    EStateOnOffOn        = 1,  /*! Indicates that the state is switched on (alias for true). */
+    EStateOnOffUndefined = 2   /*! The variable is not yet initialised and its value is unknown. */
 };
 
 template class ZSSYSDLL_API CEnum<EStateOnOff>;
@@ -191,12 +193,12 @@ typedef CEnum<EStateOnOff> CEnumStateOnOff;
     @see ZS::System::CEnum
     @see _GRP_BasicConcepts_Enumerations
 */
-enum class EEnabled
+enum EEnabled
 //==============================================================================
 {
-    No        = 0, /*! Indicates that the option is disabled (alias for false). */
-    Yes       = 1, /*! Indicates that the option is enabled (alias for true). */
-    Undefined = 2  /*! The variable is not yet initialised and its value is unknown. */
+    EEnabledNo        = 0, /*! Indicates that the option is disabled (alias for false). */
+    EEnabledYes       = 1, /*! Indicates that the option is enabled (alias for true). */
+    EEnabledUndefined = 2  /*! The variable is not yet initialised and its value is unknown. */
 };
 
 template class ZSSYSDLL_API CEnum<EEnabled>;
@@ -245,12 +247,12 @@ typedef CEnum<EEnabled> CEnumEnabled;
     @see ZS::System::CEnum
     @see _GRP_BasicConcepts_Enumerations
 */
-enum class ECopyDepth
+enum ECopyDepth
 //==============================================================================
 {
-    FlatKeepOwnership     = 0, /*! The source object keeps the ownership of the pointer. */
-    FlatReleaseOwnwership = 1, /*! The source object releases the ownership of the pointer. */
-    Deep                  = 2  /*! The addressed memory will be cloned and both the source and target use their own and different pointers. */
+    ECopyDepthFlatKeepOwnership     = 0, /*! The source object keeps the ownership of the pointer. */
+    ECopyDepthFlatReleaseOwnwership = 1, /*! The source object releases the ownership of the pointer. */
+    ECopyDepthDeep                  = 2  /*! The addressed memory will be cloned and both the source and target use their own and different pointers. */
 };
 
 template class ZSSYSDLL_API CEnum<ECopyDepth>;
@@ -264,15 +266,15 @@ typedef CEnum<ECopyDepth> CEnumCopyDepth;
     @see ZS::System::CEnum
     @see _GRP_BasicConcepts_Enumerations
 */
-enum class EObjState
+enum EObjState
 //==============================================================================
 {
-    Detached   = 0, /*!< A created object may be set to this state to indicate that it has not been added to or has been removed from the target collection or has not yet been created. */
-    Creating   = 1, /*!< The object is being created. */
-    Created    = 2, /*!< The object has been created. */
-    Destroying = 3, /*!< The object is beeing destroyed. */
-    Destroyed  = 4, /*!< The object has been destroyed. */
-    Undefined  = 5  /*!< The object state is not defined. */
+    EObjStateDetached   = 0, /*!< A created object may be set to this state to indicate that it has not been added to or has been removed from the target collection or has not yet been created. */
+    EObjStateCreating   = 1, /*!< The object is being created. */
+    EObjStateCreated    = 2, /*!< The object has been created. */
+    EObjStateDestroying = 3, /*!< The object is beeing destroyed. */
+    EObjStateDestroyed  = 4, /*!< The object has been destroyed. */
+    EObjStateUndefined  = 5  /*!< The object state is not defined. */
 };
 
 template class ZSSYSDLL_API CEnum<EObjState>;
@@ -286,14 +288,14 @@ typedef CEnum<EObjState> CEnumObjState;
     @see ZS::System::CEnum
     @see _GRP_BasicConcepts_Enumerations
 */
-enum class ERowVersion
+enum ERowVersion
 //==============================================================================
 {
-    Original  = 0,  /*!< Original version before changing the value. */
-    Current   = 1,  /*!< After editing a value the current version might be differet from the original value. */
-    Proposed  = 2,  /*!< When editing a value the proposed value may be differnt from the current version. */
-    Default   = 3,  /*!< Use either Original, Current or Proposed version depending on current state. */
-    Undefined = 4   /*!< The row version is not defined. */
+    ERowVersionOriginal  = 0,  /*!< Original version before changing the value. */
+    ERowVersionCurrent   = 1,  /*!< After editing a value the current version might be differet from the original value. */
+    ERowVersionProposed  = 2,  /*!< When editing a value the proposed value may be differnt from the current version. */
+    ERowVersionDefault   = 3,  /*!< Use either Original, Current or Proposed version depending on current state. */
+    ERowVersionUndefined = 4   /*!< The row version is not defined. */
 };
 
 template class ZSSYSDLL_API CEnum<ERowVersion>;
@@ -307,23 +309,23 @@ typedef CEnum<ERowVersion> CEnumRowVersion;
     @see ZS::System::CEnum
     @see _GRP_BasicConcepts_Enumerations
 */
-enum class ERowState
+enum ERowState
 //==============================================================================
 {
-    Unchanged = 0, /*!< After merging changes between different versions and accepting
-                        the changes the state is set to Unchanged. For Removed objects
-                        and DataRows accepting the changes means destroying the object. */
-    Detached  = 1, /*!< After initially creating the object the row state is set to
-                        Detached. The object is not added to its parent, rows don't
-                        belong to tables yet. */
-    Added     = 2, /*!< After adding the object to its parent the row state is changed
-                        from Detached to Added. */
-    Removed   = 3, /*!< After removing the object from its parent the row state is set
-                        to Removed. The object is still alive. On accepting the change
-                        the object or the data row got to be deleted. */
-    Modified  = 4, /*!< On changing any property or value of an Unchanged object the
-                        state may be set to Modified. */
-    Undefined = 5  /*!< The row state is not defined. */
+    ERowStateUnchanged = 0, /*!< After merging changes between different versions and accepting
+                                 the changes the state is set to Unchanged. For Removed objects
+                                 and DataRows accepting the changes means destroying the object. */
+    ERowStateDetached  = 1, /*!< After initially creating the object the row state is set to
+                                 Detached. The object is not added to its parent, rows don't
+                                  belong to tables yet. */
+    ERowStateAdded     = 2, /*!< After adding the object to its parent the row state is changed
+                                 from Detached to Added. */
+    ERowStateRemoved   = 3, /*!< After removing the object from its parent the row state is set
+                                 to Removed. The object is still alive. On accepting the change
+                                 the object or the data row got to be deleted. */
+    ERowStateModified  = 4, /*!< On changing any property or value of an Unchanged object the
+                                 state may be set to Modified. */
+    ERowStateUndefined = 5  /*!< The row state is not defined. */
 };
 
 template class ZSSYSDLL_API CEnum<ERowState>;
@@ -337,12 +339,12 @@ typedef CEnum<ERowState> CEnumRowState;
     @see ZS::System::CEnum
     @see _GRP_BasicConcepts_Enumerations
 */
-enum class EContentToStrFormat
+enum EContentToStrFormat
 //==============================================================================
 {
-    PlainText = 0,  /*!< Plain text without formatting characters. */
-    HtmlText  = 1,  /*!< Text containing HTML format strings. */
-    Undefined = 2   /*!< The desired format is not defined. */
+    EContentToStrFormatPlainText = 0,  /*!< Plain text without formatting characters. */
+    EContentToStrFormatHtmlText  = 1,  /*!< Text containing HTML format strings. */
+    EContentToStrFormatUndefined = 2   /*!< The desired format is not defined. */
 };
 
 template class ZSSYSDLL_API CEnum<EContentToStrFormat>;
@@ -357,13 +359,13 @@ typedef CEnum<EContentToStrFormat> CEnumContentToStrFormat;
     @see ZS::System::CEnum
     @see _GRP_BasicConcepts_Enumerations
 */
-enum class EMethodDir
+enum EMethodDir
 //==============================================================================
 {
-    Enter     = 0,  /*!< The method has been entered (indicating usually with "->" in text output). */
-    Leave     = 1,  /*!< The method will be left (indicating usually with "<-" in text output). */
-    None      = 2,  /*!< The method in somewhere in the middle (indicating usually with "  " in text output). */
-    Undefined = 3   /*!< The direction is not defined. */
+    EMethodDirEnter     = 0,  /*!< The method has been entered (indicating usually with "->" in text output). */
+    EMethodDirLeave     = 1,  /*!< The method will be left (indicating usually with "<-" in text output). */
+    EMethodDirNone      = 2,  /*!< The method in somewhere in the middle (indicating usually with "  " in text output). */
+    EMethodDirUndefined = 3   /*!< The direction is not defined. */
 };
 
 template class ZSSYSDLL_API CEnum<EMethodDir>;
@@ -377,16 +379,16 @@ typedef CEnum<EMethodDir> CEnumMethodDir;
     @see ZS::System::CEnum
     @see _GRP_BasicConcepts_Enumerations
 */
-enum class ETransmitDir
+enum ETransmitDir
 //==============================================================================
 {
-    Receive   = 0,  /*!< The data (message) is received. */
-    In        = 0,  /*!< The data (message) is input (alias for Receive). */
-    Read      = 0,  /*!< The data (message) is read (alias for Receive). */
-    Send      = 1,  /*!< The data (message) is sent. */
-    Out       = 1,  /*!< The data (message) is output (alias for Send). */
-    Write     = 1,  /*!< The data (message) is written (alias for Send). */
-    Undefined = 2   /*!< The transmission direction is undefined. */
+    ETransmitDirReceive   = 0,  /*!< The data (message) is received. */
+    ETransmitDirIn        = 0,  /*!< The data (message) is input (alias for Receive). */
+    ETransmitDirRead      = 0,  /*!< The data (message) is read (alias for Receive). */
+    ETransmitDirSend      = 1,  /*!< The data (message) is sent. */
+    ETransmitDirOut       = 1,  /*!< The data (message) is output (alias for Send). */
+    ETransmitDirWrite     = 1,  /*!< The data (message) is written (alias for Send). */
+    ETransmitDirUndefined = 2   /*!< The transmission direction is undefined. */
 };
 
 template class ZSSYSDLL_API CEnum<ETransmitDir>;
@@ -402,18 +404,18 @@ typedef CEnum<ETransmitDir> CEnumTransmitDir;
     @see ZS::System::CEnum
     @see _GRP_BasicConcepts_Enumerations
 */
-enum class EIODir
+enum EIODir
 //==============================================================================
 {
-    In        = 0,  /*!< The data (message) is input. */
-    Receive   = 0,  /*!< The data (message) is received (alias for In). */
-    Get       = 0,  /*!< The data (message) is get (alias for In). */
-    Read      = 0,  /*!< The data (message) is read (alias for In). */
-    Out       = 1,  /*!< The data (message) is output. */
-    Send      = 1,  /*!< The data (message) is send (alias for Out). */
-    Set       = 1,  /*!< The data (message) is set (alias for Out). */
-    Write     = 1,  /*!< The data (message) is written (alias for Out). */
-    Undefined = 2   /*!< The IO direction is undefined. */
+    EIODirIn        = 0,  /*!< The data (message) is input. */
+    EIODirReceive   = 0,  /*!< The data (message) is received (alias for In). */
+    EIODirGet       = 0,  /*!< The data (message) is get (alias for In). */
+    EIODirRead      = 0,  /*!< The data (message) is read (alias for In). */
+    EIODirOut       = 1,  /*!< The data (message) is output. */
+    EIODirSend      = 1,  /*!< The data (message) is send (alias for Out). */
+    EIODirSet       = 1,  /*!< The data (message) is set (alias for Out). */
+    EIODirWrite     = 1,  /*!< The data (message) is written (alias for Out). */
+    EIODirUndefined = 2   /*!< The IO direction is undefined. */
 };
 
 template class ZSSYSDLL_API CEnum<EIODir>;
@@ -427,12 +429,12 @@ typedef CEnum<EIODir> CEnumIODir;
     @see ZS::System::CEnum
     @see _GRP_BasicConcepts_Enumerations
 */
-enum class EDirection
+enum EDirection
 //==============================================================================
 {
-    Vertical   = 0, /*!< Vertically aligned. */
-    Horizontal = 1, /*!< Horizontally aligned. */
-    Undefined  = 2  /*!< The direction is undefined. */
+    EDirectionVertical   = 0, /*!< Vertically aligned. */
+    EDirectionHorizontal = 1, /*!< Horizontally aligned. */
+    EDirectionUndefined  = 2  /*!< The direction is undefined. */
 };
 
 template class ZSSYSDLL_API CEnum<EDirection>;
@@ -449,9 +451,9 @@ typedef CEnum<EDirection> CEnumDirection;
 enum EComparisonOperator
 //==============================================================================
 {
-    Equal     = 0,  /*!< To be compared for equality (==). */
-    Unequal   = 1,  /*!< To be compared for inequality (!=). */
-    Undefined = 2   /*!< Comparison operator not defined. */
+    EComparisonOperatorEqual     = 0,  /*!< To be compared for equality (==). */
+    EComparisonOperatorUnequal   = 1,  /*!< To be compared for inequality (!=). */
+    EComparisonOperatorUndefined = 2   /*!< Comparison operator not defined. */
 };
 
 template class ZSSYSDLL_API CEnum<EComparisonOperator>;
@@ -472,13 +474,13 @@ typedef CEnum<EComparisonOperator> CEnumComparisonOperator;
     @see ZS::System::CEnum
     @see _GRP_BasicConcepts_Enumerations
 */
-enum class EValueValidity
+enum EValueValidity
 //==============================================================================
 {
-    Invalid   = 0,  /*!< The value is invalid. */
-    Null      = 1,  /*!< The value is valid but set to null. */
-    Valid     = 2,  /*!< The value is valid. */
-    Undefined = 3   /*!< The validity is undefined. */
+    EValueValidityInvalid   = 0,  /*!< The value is invalid. */
+    EValueValidityNull      = 1,  /*!< The value is valid but set to null. */
+    EValueValidityValid     = 2,  /*!< The value is valid. */
+    EValueValidityUndefined = 3   /*!< The validity is undefined. */
 };
 
 template class ZSSYSDLL_API CEnum<EValueValidity>;
@@ -492,27 +494,26 @@ typedef CEnum<EValueValidity> CEnumValueValidity;
     @see ZS::System::CEnum
     @see _GRP_BasicConcepts_Enumerations
 */
-enum class EDimensionType
+enum EDimensionType
 //==============================================================================
 {
-    SingleValue     = 0,    /*!< No array just a single value. */
-    OneDimensional  = 1,    /*!< An one dimensional array. */
-    MoreDimensional = 2,    /*!< More dimensional arrays (an array of arrrays). */
-    Undefined       = 3     /*!< The dimension type is undefined. */
+    EDimensionTypeSingleValue     = 0,    /*!< No array just a single value. */
+    EDimensionTypeOneDimensional  = 1,    /*!< An one dimensional array. */
+    EDimensionTypeMoreDimensional = 2,    /*!< More dimensional arrays (an array of arrrays). */
+    EDimensionTypeUndefined       = 3     /*!< The dimension type is undefined. */
 };
 
-#ifdef _WINDOWS
-#pragma warning( push )
-#pragma warning( disable : 4661 )
-#elif defined __linux__
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wunused-result"
-#pragma GCC diagnostic pop
-#endif
-// The static array "CEnum<ERunMode>::s_arEnumEntries" is defined in the cpp file.
 template class ZSSYSDLL_API CEnum<EDimensionType>;
 typedef CEnum<EDimensionType> CEnumDimensionType;
 
+//#ifdef _WINDOWS
+//#pragma warning( push )
+//#pragma warning( disable : 4661 )
+//#elif defined __linux__
+//#pragma GCC diagnostic push
+//#pragma GCC diagnostic ignored "-Wunused-result"
+//#pragma GCC diagnostic pop
+//#endif
 
 // Negative values for array indices are invalid. Some of those negative values
 // are used to indicate special ranges or special elements within the array.

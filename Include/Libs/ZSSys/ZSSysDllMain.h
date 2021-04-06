@@ -64,6 +64,79 @@ global type definitions and constants
 #define __ERROR__ __FILELINE__ "Error: "
 #define __TODO__ __FILELINE__ "TODO: "
 
+/*
+Visual Studio version           | _MSC_VER
+--------------------------------+---------------
+Visual Studio 6.0               | 1200
+Visual Studio .NET 2002 (7.0)   | 1300
+Visual Studio .NET 2003 (7.1)   | 1310
+Visual Studio 2005 (8.0)        | 1400
+Visual Studio 2008 (9.0)        | 1500
+Visual Studio 2010 (10.0)       | 1600
+Visual Studio 2012 (11.0)       | 1700
+Visual Studio 2013 (12.0)       | 1800
+Visual Studio 2015 (14.0)       | 1900
+Visual Studio 2017 RTW (15.0)   | 1910
+Visual Studio 2017 version 15.3 | 1911
+Visual Studio 2017 version 15.5 | 1912
+Visual Studio 2017 version 15.6 | 1913
+Visual Studio 2017 version 15.7 | 1914
+Visual Studio 2017 version 15.8 | 1915
+Visual Studio 2017 version 15.9 | 1916
+Visual Studio 2019 RTW (16.0)   | 1920
+Visual Studio 2019 version 16.1 | 1921
+Visual Studio 2019 version 16.2 | 1922
+Visual Studio 2019 version 16.3 | 1923
+Visual Studio 2019 version 16.4 | 1924
+Visual Studio 2019 version 16.5 | 1925
+Visual Studio 2019 version 16.6 | 1926
+Visual Studio 2019 version 16.7 | 1927
+Visual Studio 2019 version 16.8 | 1928
+*/
+#if _MSC_VER <= 1200
+#define __CXX_STANDARD__ 1
+#elif _MSC_VER >= 1300 && _MSC_VER <= 1300
+#define __CXX_STANDARD__ 1
+#elif _MSC_VER >= 1310 && _MSC_VER <= 1310
+#define __CXX_STANDARD__ 1
+#elif _MSC_VER >= 1400 && _MSC_VER <= 1400
+#define __CXX_STANDARD__ 1
+#elif _MSC_VER >= 1500 && _MSC_VER <= 1500
+#define __CXX_STANDARD__ 1
+#elif _MSC_VER >= 1600 && _MSC_VER <= 1600
+#define __CXX_STANDARD__ 1
+#elif _MSC_VER >= 1700 && _MSC_VER <= 1700
+#define __CXX_STANDARD__ 1
+#elif _MSC_VER >= 1800 && _MSC_VER <= 1800
+#define __CXX_STANDARD__ 201402
+#define CXX_STANDARD CPP17
+#elif _MSC_VER >= 1900 && _MSC_VER <= 1900
+#define __CXX_STANDARD__ 201703
+#define CXX_STANDARD CPP17
+#elif _MSC_VER >= 1910 && _MSC_VER <= 1916
+#define __CXX_STANDARD__ 201703
+#elif _MSC_VER >= 1920 && _MSC_VER <= 1928
+#define __CXX_STANDARD__ 201703
+#else
+#define __CXX_STANDARD__ 1
+#endif
+
+#if (__CXX_STANDARD__ == 201703)
+#define CXX_STANDARD 17
+#elif (__CXX_STANDARD__ == 201402)
+#define CXX_STANDARD 14
+#elif (__CXX_STANDARD__ == 201103)
+#define CXX_STANDARD 11
+#elif (__CXX_STANDARD__ == 19971)
+#define CXX_STANDARD 98
+#elif (__CXX_STANDARD__ == 1)
+#define CXX_STANDARD 1
+#endif
+
+#ifndef nullptr
+#define nullptr NULL
+#endif
+
 namespace ZS
 {
 namespace System

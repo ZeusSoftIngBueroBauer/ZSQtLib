@@ -84,20 +84,20 @@ public: // instance methods to add, remove and modify test step groups
     CTestStepGroup* addTestStepGroup(
         const QString&       i_strGroupName,
         const QString&       i_strGroupPathParent,
-        ZS::System::EEnabled i_enabled = ZS::System::EEnabled::Undefined );
+        ZS::System::EEnabled i_enabled = ZS::System::EEnabledUndefined );
     CTestStepGroup* addTestStepGroup(
         const QString&       i_strGroupName,
         CTestStepGroup*      i_pTestGroupParent,
-        ZS::System::EEnabled i_enabled = ZS::System::EEnabled::Undefined );
+        ZS::System::EEnabled i_enabled = ZS::System::EEnabledUndefined );
     void addTestStepGroup( CTestStepGroup* i_pTSGrp, CTestStepGroup* i_pTSGrpParent );
     CTestStepGroup* getTestStepGroup( // implicitely creates and adds the object if not yet existing
         const QString&       i_strGroupName,
         const QString&       i_strGroupPathParent,
-        ZS::System::EEnabled i_enabled = ZS::System::EEnabled::Undefined );
+        ZS::System::EEnabled i_enabled = ZS::System::EEnabledUndefined );
     CTestStepGroup* getTestStepGroup( // implicitely creates and adds the object if not yet existing
         const QString&       i_strGroupName,
         CTestStepGroup*      i_pTestGroupParent,
-        ZS::System::EEnabled i_enabled = ZS::System::EEnabled::Undefined );
+        ZS::System::EEnabled i_enabled = ZS::System::EEnabledUndefined );
     void onTestStepGroupChanged( CTestStepGroup* i_pTSGrp ); // triggers the "nodeChanged" and "dataChanged" signals
 public: // instance methods to add, remove and modify test steps
     CTestStep* getTestStep( int i_iObjId );
@@ -106,21 +106,21 @@ public: // instance methods to add, remove and modify test steps
     CTestStep* addTestStep(
         const QString&       i_strName,
         const QString&       i_strGroupPathParent,
-        ZS::System::EEnabled i_enabled = ZS::System::EEnabled::Undefined );
+        ZS::System::EEnabled i_enabled = ZS::System::EEnabledUndefined );
     CTestStep* addTestStep(
         const QString&       i_strName,
         CTestStepGroup*      i_pTestGroupParent,
-        ZS::System::EEnabled i_enabled = ZS::System::EEnabled::Undefined );
+        ZS::System::EEnabled i_enabled = ZS::System::EEnabledUndefined );
     void addTestStep( CTestStep* i_pTestStep, CTestStepGroup* i_pTSGrpParent );
     CTestStep* getTestStep( // implicitely creates and adds the object if not yet existing
         const QString&       i_strName,
         const QString&       i_strGroupPathParent,
-        ZS::System::EEnabled i_enabled = ZS::System::EEnabled::Undefined,
+        ZS::System::EEnabled i_enabled = ZS::System::EEnabledUndefined,
         int                  i_iObjId = -1 );
     CTestStep* getTestStep( // implicitely creates and adds the object if not yet existing
         const QString&       i_strName,
         CTestStepGroup*      i_pTestGroupParent,
-        ZS::System::EEnabled i_enabled = ZS::System::EEnabled::Undefined,
+        ZS::System::EEnabled i_enabled = ZS::System::EEnabledUndefined,
         int                  i_iObjId = -1 );
 public: // instance methods
     void onTestStepChanged( CTestStep* i_pTestStep ); // triggers the "nodeChanged" and "dataChanged" signals of the model

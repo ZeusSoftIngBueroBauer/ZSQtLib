@@ -79,7 +79,7 @@ SMthTrcData() :
     m_strMthThreadName(),
     m_dt(),
     m_fSysTimeInSec(0.0),
-    m_mthDir(EMethodDir::None),
+    m_mthDir(EMethodDirNone),
     m_iTrcAdminObjId(-1),
     m_strNameSpace(),
     m_strClassName(),
@@ -120,16 +120,16 @@ SMthTrcData(
     m_strMthRet(),
     m_strMthAddInfo()
 {
-    if( i_mthDir == EMethodDir::Enter )
+    if( i_mthDir == EMethodDirEnter )
     {
         m_strMthInArgs = i_strAddInfo;
     }
-    else if( i_mthDir == EMethodDir::Leave )
+    else if( i_mthDir == EMethodDirLeave )
     {
         m_strMthOutArgs = i_strMethodOutArgs;
         m_strMthRet = i_strAddInfo;
     }
-    else if( i_mthDir == EMethodDir::None )
+    else if( i_mthDir == EMethodDirNone )
     {
         m_strMthAddInfo = i_strAddInfo;
     }
@@ -177,7 +177,7 @@ QString toXmlString() const
     /*    11 */ str += "Dir=\"" + CEnumMethodDir::toString(m_mthDir) + "\" ";
     /*    23 */ str += "DateTime=\"" + m_dt.toString("yyyy-MM-dd hh:mm:ss:zzz") + "\" ";
     /*    23 */ str += "SysTime=\"" + QString::number(m_fSysTimeInSec,'f',6) + "\" ";
-    if( m_mthDir == EMethodDir::Enter )
+    if( m_mthDir == EMethodDirEnter )
     {
         QString strMthInArgs = m_strMthInArgs;
         if( strMthInArgs.contains('<') )
@@ -190,7 +190,7 @@ QString toXmlString() const
         }
     /*    10 */ str += "InArgs=\"" + strMthInArgs + "\" ";
     }
-    else if( m_mthDir == EMethodDir::Leave )
+    else if( m_mthDir == EMethodDirLeave )
     {
         QString strMthRet = m_strMthRet;
         if( strMthRet.contains('<') )
@@ -213,7 +213,7 @@ QString toXmlString() const
     /*    10 */ str += "Return=\"" + strMthRet + "\" ";
     /*    10 */ str += "OutArgs=\"" + strMthOutArgs + "\" ";
     }
-    else // if( i_dir == EMethodDir::None )
+    else // if( i_dir == EMethodDirNone )
     {
         QString strMthAddInfo = m_strMthAddInfo;
         if( strMthAddInfo.contains('<') )
@@ -942,7 +942,7 @@ void CIpcTrcServer::traceMethodEnter(
             /* strThreadName */ currentThreadName(),
             /* dt            */ QDateTime::currentDateTime(),
             /* fSysTimeInSec */ Time::getProcTimeInSec(),
-            /* mthDir        */ EMethodDir::Enter,
+            /* mthDir        */ EMethodDirEnter,
             /* pTrcAdminObj  */ i_pTrcAdminObj,
             /* strObjName    */ i_pTrcAdminObj->getObjectName(),
             /* strMethod     */ i_strMethod,
@@ -970,7 +970,7 @@ void CIpcTrcServer::traceMethodEnter(
             /* strThreadName */ currentThreadName(),
             /* dt            */ QDateTime::currentDateTime(),
             /* fSysTimeInSec */ Time::getProcTimeInSec(),
-            /* mthDir        */ EMethodDir::Enter,
+            /* mthDir        */ EMethodDirEnter,
             /* pTrcAdminObj  */ i_pTrcAdminObj,
             /* strObjName    */ i_strObjName,
             /* strMethod     */ i_strMethod,
@@ -1002,7 +1002,7 @@ void CIpcTrcServer::traceMethod(
             /* strThreadName */ currentThreadName(),
             /* dt            */ QDateTime::currentDateTime(),
             /* fSysTimeInSec */ Time::getProcTimeInSec(),
-            /* mthDir        */ EMethodDir::None,
+            /* mthDir        */ EMethodDirNone,
             /* pTrcAdminObj  */ i_pTrcAdminObj,
             /* strObjName    */ i_pTrcAdminObj->getObjectName(),
             /* strMethod     */ i_strMethod,
@@ -1035,7 +1035,7 @@ void CIpcTrcServer::traceMethod(
             /* strThreadName */ currentThreadName(),
             /* dt            */ QDateTime::currentDateTime(),
             /* fSysTimeInSec */ Time::getProcTimeInSec(),
-            /* mthDir        */ EMethodDir::None,
+            /* mthDir        */ EMethodDirNone,
             /* pTrcAdminObj  */ i_pTrcAdminObj,
             /* strObjName    */ i_strObjName,
             /* strMethod     */ i_strMethod,
@@ -1068,7 +1068,7 @@ void CIpcTrcServer::traceMethodLeave(
             /* strThreadName */ currentThreadName(),
             /* dt            */ QDateTime::currentDateTime(),
             /* fSysTimeInSec */ Time::getProcTimeInSec(),
-            /* mthDir        */ EMethodDir::Leave,
+            /* mthDir        */ EMethodDirLeave,
             /* pTrcAdminObj  */ i_pTrcAdminObj,
             /* strObjName    */ i_pTrcAdminObj->getObjectName(),
             /* strMethod     */ i_strMethod,
@@ -1103,7 +1103,7 @@ void CIpcTrcServer::traceMethodLeave(
             /* strThreadName */ currentThreadName(),
             /* dt            */ QDateTime::currentDateTime(),
             /* fSysTimeInSec */ Time::getProcTimeInSec(),
-            /* mthDir        */ EMethodDir::Leave,
+            /* mthDir        */ EMethodDirLeave,
             /* pTrcAdminObj  */ i_pTrcAdminObj,
             /* strObjName    */ i_strObjName,
             /* strMethod     */ i_strMethod,
@@ -2220,7 +2220,7 @@ void CIpcTrcServer::onIpcServerReceivedReqUpdate( int i_iSocketId, const QString
                     {
                         strAttr = xmlStreamReader.attributes().value("Enabled").toString();
                         enabled = CEnumEnabled::toEnumerator(strAttr);
-                        if( enabled == EEnabled::Undefined )
+                        if( enabled == EEnabledUndefined )
                         {
                             xmlStreamReader.raiseError("Attribute \"Enabled\" (" + strAttr + ") for \"" + strElemName + "\" is out of range");
                         }
@@ -2276,7 +2276,7 @@ void CIpcTrcServer::onIpcServerReceivedReqUpdate( int i_iSocketId, const QString
                 if( strElemName == "TrcAdminObj" )
                 {
                     iObjId = -1;
-                    enabled = EEnabled::Undefined;
+                    enabled = EEnabledUndefined;
                     iDetailLevel = -1;
 
                     if( xmlStreamReader.attributes().hasAttribute("ObjId") )
@@ -2292,7 +2292,7 @@ void CIpcTrcServer::onIpcServerReceivedReqUpdate( int i_iSocketId, const QString
                     {
                         strAttr = xmlStreamReader.attributes().value("Enabled").toString();
                         enabled = CEnumEnabled::toEnumerator(strAttr);
-                        if( enabled == EEnabled::Undefined )
+                        if( enabled == EEnabledUndefined )
                         {
                             xmlStreamReader.raiseError("Attribute \"Enabled\" (" + strAttr + ") for \"" + strElemName + "\" is out of range");
                         }
@@ -2330,7 +2330,7 @@ void CIpcTrcServer::onIpcServerReceivedReqUpdate( int i_iSocketId, const QString
                 if( strElemName == "NameSpace" )
                 {
                     iObjId = -1;
-                    enabled = EEnabled::Undefined;
+                    enabled = EEnabledUndefined;
                     iDetailLevel = -1;
 
                     if( xmlStreamReader.attributes().hasAttribute("ObjId") )
@@ -2346,7 +2346,7 @@ void CIpcTrcServer::onIpcServerReceivedReqUpdate( int i_iSocketId, const QString
                     {
                         strAttr = xmlStreamReader.attributes().value("Enabled").toString();
                         enabled = CEnumEnabled::toEnumerator(strAttr);
-                        if( enabled == EEnabled::Undefined )
+                        if( enabled == EEnabledUndefined )
                         {
                             xmlStreamReader.raiseError("Attribute \"Enabled\" (" + strAttr + ") for \"" + strElemName + "\" is out of range");
                         }

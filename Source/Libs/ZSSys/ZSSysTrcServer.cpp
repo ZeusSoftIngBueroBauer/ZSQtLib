@@ -356,7 +356,7 @@ CTrcAdminObj* CTrcServer::GetTraceAdminObj(
             /* strNameSpace        */ i_strNameSpace,
             /* strClassName        */ i_strClassName,
             /* strObjName          */ i_strObjName,
-            /* bEnabledAsDefault   */ EEnabled::Undefined,
+            /* bEnabledAsDefault   */ EEnabledUndefined,
             /* iDefaultDetailLevel */ -1 );
     }
 
@@ -596,10 +596,10 @@ CTrcAdminObj* CTrcServer::getTraceAdminObj(
 
     if( pTrcAdminObj != nullptr )
     {
-        EEnabled bEnabled     = m_trcSettings.m_bNewTrcAdminObjsEnabledAsDefault ? EEnabled::Yes : EEnabled::No;
+        EEnabled bEnabled     = m_trcSettings.m_bNewTrcAdminObjsEnabledAsDefault ? EEnabledYes : EEnabledNo;
         int      iDetailLevel = m_trcSettings.m_iNewTrcAdminObjsDefaultDetailLevel;
 
-        if( i_bEnabledAsDefault != EEnabled::Undefined )
+        if( i_bEnabledAsDefault != EEnabledUndefined )
         {
             bEnabled = i_bEnabledAsDefault;
         }
@@ -677,7 +677,7 @@ void CTrcServer::traceMethodEnter(
             /* strThreadName */ currentThreadName(),
             /* dt            */ QDateTime::currentDateTime(),
             /* fSysTimeInSec */ Time::getProcTimeInSec(),
-            /* mthDir        */ EMethodDir::Enter,
+            /* mthDir        */ EMethodDirEnter,
             /* strNameSpace  */ i_pTrcAdminObj->getNameSpace(),
             /* strClassName  */ i_pTrcAdminObj->getClassName(),
             /* strObjName    */ i_pTrcAdminObj->getObjectName(),
@@ -706,7 +706,7 @@ void CTrcServer::traceMethodEnter(
             /* strThreadName */ currentThreadName(),
             /* dt            */ QDateTime::currentDateTime(),
             /* fSysTimeInSec */ Time::getProcTimeInSec(),
-            /* mthDir        */ EMethodDir::Enter,
+            /* mthDir        */ EMethodDirEnter,
             /* strNameSpace  */ i_pTrcAdminObj->getNameSpace(),
             /* strClassName  */ i_pTrcAdminObj->getClassName(),
             /* strObjName    */ i_strObjName,
@@ -739,7 +739,7 @@ void CTrcServer::traceMethod(
             /* strThreadName */ currentThreadName(),
             /* dt            */ QDateTime::currentDateTime(),
             /* fSysTimeInSec */ Time::getProcTimeInSec(),
-            /* mthDir        */ EMethodDir::None,
+            /* mthDir        */ EMethodDirNone,
             /* strNameSpace  */ i_pTrcAdminObj->getNameSpace(),
             /* strClassName  */ i_pTrcAdminObj->getClassName(),
             /* strObjName    */ i_pTrcAdminObj->getObjectName(),
@@ -773,7 +773,7 @@ void CTrcServer::traceMethod(
             /* strThreadName */ currentThreadName(),
             /* dt            */ QDateTime::currentDateTime(),
             /* fSysTimeInSec */ Time::getProcTimeInSec(),
-            /* mthDir        */ EMethodDir::None,
+            /* mthDir        */ EMethodDirNone,
             /* strNameSpace  */ i_pTrcAdminObj->getNameSpace(),
             /* strClassName  */ i_pTrcAdminObj->getClassName(),
             /* strObjName    */ i_strObjName,
@@ -807,7 +807,7 @@ void CTrcServer::traceMethodLeave(
             /* strThreadName */ currentThreadName(),
             /* dt            */ QDateTime::currentDateTime(),
             /* fSysTimeInSec */ Time::getProcTimeInSec(),
-            /* mthDir        */ EMethodDir::Leave,
+            /* mthDir        */ EMethodDirLeave,
             /* strNameSpace  */ i_pTrcAdminObj->getNameSpace(),
             /* strClassName  */ i_pTrcAdminObj->getClassName(),
             /* strObjName    */ i_pTrcAdminObj->getObjectName(),
@@ -843,7 +843,7 @@ void CTrcServer::traceMethodLeave(
             /* strThreadName */ currentThreadName(),
             /* dt            */ QDateTime::currentDateTime(),
             /* fSysTimeInSec */ Time::getProcTimeInSec(),
-            /* mthDir        */ EMethodDir::Leave,
+            /* mthDir        */ EMethodDirLeave,
             /* strNameSpace  */ i_pTrcAdminObj->getNameSpace(),
             /* strClassName  */ i_pTrcAdminObj->getClassName(),
             /* strObjName    */ i_strObjName,
@@ -878,7 +878,7 @@ void CTrcServer::traceMethodEnter(
             /* strThreadName */ currentThreadName(),
             /* dt            */ QDateTime::currentDateTime(),
             /* fSysTimeInSec */ Time::getProcTimeInSec(),
-            /* mthDir        */ EMethodDir::Enter,
+            /* mthDir        */ EMethodDirEnter,
             /* strNameSpace  */ i_strNameSpace,
             /* strClassName  */ i_strClassName,
             /* strObjName    */ i_strObjName,
@@ -913,7 +913,7 @@ void CTrcServer::traceMethod(
             /* strThreadName */ currentThreadName(),
             /* dt            */ QDateTime::currentDateTime(),
             /* fSysTimeInSec */ Time::getProcTimeInSec(),
-            /* mthDir        */ EMethodDir::None,
+            /* mthDir        */ EMethodDirNone,
             /* strNameSpace  */ i_strNameSpace,
             /* strClassName  */ i_strClassName,
             /* strObjName    */ i_strObjName,
@@ -949,7 +949,7 @@ void CTrcServer::traceMethodLeave(
             /* strThreadName */ currentThreadName(),
             /* dt            */ QDateTime::currentDateTime(),
             /* fSysTimeInSec */ Time::getProcTimeInSec(),
-            /* mthDir        */ EMethodDir::Leave,
+            /* mthDir        */ EMethodDirLeave,
             /* strNameSpace  */ i_strNameSpace,
             /* strClassName  */ i_strClassName,
             /* strObjName    */ i_strObjName,
@@ -1768,7 +1768,7 @@ void CTrcServer::addEntry(
             strMth = "<" + buildPathStr("::", i_strNameSpace, i_strClassName) + "> " + i_strObjName + "." + i_strMethod;
         }
 
-        if( i_mthDir == EMethodDir::Enter )
+        if( i_mthDir == EMethodDirEnter )
         {
             m_pTrcMthFile->traceMethodEnter(
                 /* strMthThreadName */ i_strThreadName,
@@ -1777,7 +1777,7 @@ void CTrcServer::addEntry(
                 /* strMethod        */ strMth,
                 /* strMthInArgs     */ i_strAddInfo );
         }
-        else if( i_mthDir == EMethodDir::Leave )
+        else if( i_mthDir == EMethodDirLeave )
         {
             m_pTrcMthFile->traceMethodLeave(
                 /* strMthThreadName */ i_strThreadName,
@@ -1787,7 +1787,7 @@ void CTrcServer::addEntry(
                 /* strMthRet        */ i_strAddInfo,
                 /* strMthOutArgs    */ i_strMethodOutArgs );
         }
-        else if( i_mthDir == EMethodDir::None )
+        else if( i_mthDir == EMethodDirNone )
         {
             m_pTrcMthFile->traceMethod(
                 /* strMthThreadName */ i_strThreadName,

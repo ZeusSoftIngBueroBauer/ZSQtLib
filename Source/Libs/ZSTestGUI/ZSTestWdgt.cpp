@@ -327,7 +327,7 @@ void CDelegateModelTest::paint(
                 {
                     rectCheckBox.moveTop(styleOption.rect.top()+(styleOption.rect.height()-m_rectChkBoxEnabled.height())/2);
                 }
-                if( pTSAdmObj->getEnabled() == EEnabled::Yes )
+                if( pTSAdmObj->getEnabled() == EEnabledYes )
                 {
                     checkState = Qt::Checked;
                 }
@@ -582,13 +582,13 @@ void CTreeViewModelTest::keyPressEvent( QKeyEvent* i_pEv )
                     }
                     case CTestStepAdminObjPoolModel::EColumnEnabled:
                     {
-                        if( pTSAdmObj->getEnabled() == EEnabled::Yes )
+                        if( pTSAdmObj->getEnabled() == EEnabledYes )
                         {
-                            pTSAdmObj->setEnabled(EEnabled::No);
+                            pTSAdmObj->setEnabled(EEnabledNo);
                         }
                         else
                         {
-                            pTSAdmObj->setEnabled(EEnabled::Yes);
+                            pTSAdmObj->setEnabled(EEnabledYes);
                         }
                         pTSAdmObj->update();
                         bEventHandled = true;
@@ -749,13 +749,13 @@ void CTreeViewModelTest::mouseReleaseEvent( QMouseEvent* i_pEv )
 
                 if( pDelegate != nullptr && pDelegate->isCheckBoxEnabledHit(rectVisual,i_pEv->pos(),modelIdxSelected) )
                 {
-                    if( pTSAdmObj->getEnabled() == EEnabled::Yes )
+                    if( pTSAdmObj->getEnabled() == EEnabledYes )
                     {
-                        pTSAdmObj->setEnabled(EEnabled::No);
+                        pTSAdmObj->setEnabled(EEnabledNo);
                     }
                     else
                     {
-                        pTSAdmObj->setEnabled(EEnabled::Yes);
+                        pTSAdmObj->setEnabled(EEnabledYes);
                     }
                     pTSAdmObj->update();
                     bEventHandled = true;
@@ -876,7 +876,7 @@ void CTreeViewModelTest::onActionEnableTestGroupsTriggered( bool /*i_bChecked*/ 
     {
         //m_pTestStepsModel->updateGroup(
         //    /* pTreeEntry */ m_pTreeEntryGroupContextAction,
-        //    /* enabled    */ EEnabled::Yes );
+        //    /* enabled    */ EEnabledYes );
     }
 
 } // onActionEnableTestGroupsTriggered
@@ -889,7 +889,7 @@ void CTreeViewModelTest::onActionDisableTestGroupsTriggered( bool /*i_bChecked*/
     {
         //m_pTestStepsModel->updateGroup(
         //    /* pTreeEntry */ m_pTreeEntryGroupContextAction,
-        //    /* enabled    */ EEnabled::No );
+        //    /* enabled    */ EEnabledNo );
     }
 
 } // onActionDisableTestGroupsTriggered

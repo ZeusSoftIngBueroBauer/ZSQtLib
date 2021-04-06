@@ -44,13 +44,13 @@ namespace System
 class CIdxTree;
 class CBranchIdxTreeEntry;
 
-enum class EIdxTreeEntryType
+enum EIdxTreeEntryType
 {
-    Root    = 0,
-    Branch  = 1,
-    Leave   = 2,
-    Count,
-    Undefined
+    EIdxTreeEntryTypeRoot    = 0,
+    EIdxTreeEntryTypeBranch  = 1,
+    EIdxTreeEntryTypeLeave   = 2,
+    EIdxTreeEntryTypeCount,
+    EIdxTreeEntryTypeUndefined
 };
 ZSSYSDLL_API QString idxTreeEntryType2Str( EIdxTreeEntryType i_eVal, int i_alias = ZS::System::EEnumEntryAliasStrName );
 ZSSYSDLL_API QString idxTreeEntryType2Str( int i_iVal, int i_alias = ZS::System::EEnumEntryAliasStrName );

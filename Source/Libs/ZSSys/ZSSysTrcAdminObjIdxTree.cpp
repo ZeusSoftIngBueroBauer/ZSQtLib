@@ -835,7 +835,7 @@ SErrResultInfo CIdxTreeTrcAdminObjs::recall( const QString& i_strAbsFilePath )
                             strClassName = "";
                             strObjName = "";
                             strThread = "";
-                            enabled = EEnabled::Yes;
+                            enabled = EEnabledYes;
                             iDetailLevel = ETraceDetailLevelNone;
 
                             if( xmlStreamReader.attributes().hasAttribute("NameSpace") )
@@ -866,7 +866,7 @@ SErrResultInfo CIdxTreeTrcAdminObjs::recall( const QString& i_strAbsFilePath )
                                 {
                                     strAttr = xmlStreamReader.attributes().value("Enabled").toString();
                                     enabled = CEnumEnabled::toEnumerator(strAttr);
-                                    if( enabled == EEnabled::Undefined )
+                                    if( enabled == EEnabledUndefined )
                                     {
                                         xmlStreamReader.raiseError("Attribute \"Enabled\" (" + strAttr + ") for \"" + strPath + "\" is out of range");
                                     }

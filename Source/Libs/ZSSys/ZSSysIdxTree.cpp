@@ -78,8 +78,8 @@ bool CIdxTree::iterator::operator == ( const iterator& i_other ) const
     {
         bEqual = false;
     }
-    else if( m_traversalOrder != ETraversalOrder::Undefined
-         && i_other.m_traversalOrder != ETraversalOrder::Undefined
+    else if( m_traversalOrder != ETraversalOrderUndefined
+         && i_other.m_traversalOrder != ETraversalOrderUndefined
          && m_traversalOrder != i_other.m_traversalOrder )
     {
         bEqual = false;
@@ -108,8 +108,8 @@ bool CIdxTree::iterator::operator == ( iterator& i_other ) const
     {
         bEqual = false;
     }
-    else if( m_traversalOrder != ETraversalOrder::Undefined
-         && i_other.m_traversalOrder != ETraversalOrder::Undefined
+    else if( m_traversalOrder != ETraversalOrderUndefined
+         && i_other.m_traversalOrder != ETraversalOrderUndefined
          && m_traversalOrder != i_other.m_traversalOrder )
     {
         bEqual = false;
@@ -161,7 +161,7 @@ CIdxTree::iterator& CIdxTree::iterator::operator ++ ()
 
     CAbstractIdxTreeEntry* pTreeEntryNew = nullptr;
 
-    if( m_traversalOrder == ETraversalOrder::Index )
+    if( m_traversalOrder == ETraversalOrderIndex )
     {
         int idxInTree = m_pTreeEntryCurr->indexInTree();
 
@@ -174,7 +174,7 @@ CIdxTree::iterator& CIdxTree::iterator::operator ++ ()
             }
         }
     }
-    else if( m_traversalOrder == ETraversalOrder::PreOrder )
+    else if( m_traversalOrder == ETraversalOrderPreOrder )
     {
         if( m_pTreeEntryCurr == m_pIdxTree->root() )
         {
@@ -236,7 +236,7 @@ CIdxTree::iterator& CIdxTree::iterator::operator ++ ()
                 }
             }
         } // if( m_pTreeEntryCurr != m_pIdxTree->root() )
-    } // if( m_traversalOrder == ETraversalOrder::PreOrder )
+    } // if( m_traversalOrder == ETraversalOrderPreOrder )
 
     m_pTreeEntryCurr = pTreeEntryNew;
 
@@ -6625,7 +6625,7 @@ CIdxTree::iterator CIdxTree::begin( iterator::ETraversalOrder i_traversalOrder )
     QMutexLocker mtxLocker(m_pMtx);
 
     CIdxTree::iterator itIdxTree(this, i_traversalOrder);
-    if( i_traversalOrder == iterator::ETraversalOrder::Index )
+    if( i_traversalOrder == iterator::ETraversalOrderIndex )
     {
         for( int idxInTree = 0; idxInTree < m_arpTreeEntries.size(); ++idxInTree )
         {
@@ -6636,7 +6636,7 @@ CIdxTree::iterator CIdxTree::begin( iterator::ETraversalOrder i_traversalOrder )
             }
         }
     }
-    else if( i_traversalOrder == iterator::ETraversalOrder::PreOrder )
+    else if( i_traversalOrder == iterator::ETraversalOrderPreOrder )
     {
         itIdxTree.m_pTreeEntryCurr = m_pRoot;
     }
@@ -6654,7 +6654,7 @@ CIdxTree::iterator CIdxTree::end()
 {
     QMutexLocker mtxLocker(m_pMtx);
 
-    CIdxTree::iterator itIdxTree(this, iterator::ETraversalOrder::Undefined);
+    CIdxTree::iterator itIdxTree(this, iterator::ETraversalOrderUndefined);
     itIdxTree.m_pTreeEntryCurr = nullptr;
     return itIdxTree;
 

@@ -695,7 +695,7 @@ void CIpcTrcClient::onReceivedData( const QByteArray& i_byteArr )
                 int      iParentPranchIdxInTree = -1;
                 QString  strBranchName;
                 int      idxInTree = -1;
-                EEnabled enabled = EEnabled::Undefined;
+                EEnabled enabled = EEnabledUndefined;
                 int      iDetailLevel = -1;
 
                 if( !xmlStreamReader.attributes().hasAttribute("IdxInTree") )
@@ -727,7 +727,7 @@ void CIpcTrcClient::onReceivedData( const QByteArray& i_byteArr )
                     {
                         strAttr = xmlStreamReader.attributes().value("Enabled").toString();
                         enabled = CEnumEnabled::toEnumerator(strAttr);
-                        if( enabled == EEnabled::Undefined ) xmlStreamReader.raiseError("Attribute \"Enabled\" (" + strAttr + ") is out of range");
+                        if( enabled == EEnabledUndefined ) xmlStreamReader.raiseError("Attribute \"Enabled\" (" + strAttr + ") is out of range");
                     }
                     if( !xmlStreamReader.hasError() && xmlStreamReader.attributes().hasAttribute("DetailLevel") )
                     {
@@ -751,7 +751,7 @@ void CIpcTrcClient::onReceivedData( const QByteArray& i_byteArr )
                         }
                         if( pBranch != nullptr )
                         {
-                            if( enabled != EEnabled::Undefined ) m_pTrcAdminObjIdxTree->setEnabled(pBranch, enabled);
+                            if( enabled != EEnabledUndefined ) m_pTrcAdminObjIdxTree->setEnabled(pBranch, enabled);
                             if( iDetailLevel >= 0 ) m_pTrcAdminObjIdxTree->setTraceDetailLevel(pBranch, iDetailLevel);
                         }
                     } // if( !xmlStreamReader.hasError() )
@@ -764,7 +764,7 @@ void CIpcTrcClient::onReceivedData( const QByteArray& i_byteArr )
                 QString  strObjName;
                 int      idxInTree = -1;
                 QString  strThreadName;
-                EEnabled enabled = EEnabled::Undefined;
+                EEnabled enabled = EEnabledUndefined;
                 int      iDetailLevel = -1;
                 int      iRefCount = -1;
 
@@ -801,7 +801,7 @@ void CIpcTrcClient::onReceivedData( const QByteArray& i_byteArr )
                     {
                         strAttr = xmlStreamReader.attributes().value("Enabled").toString();
                         enabled = CEnumEnabled::toEnumerator(strAttr);
-                        if( enabled == EEnabled::Undefined ) xmlStreamReader.raiseError("Attribute \"Enabled\" (" + strAttr + ") is out of range");
+                        if( enabled == EEnabledUndefined ) xmlStreamReader.raiseError("Attribute \"Enabled\" (" + strAttr + ") is out of range");
                     }
                     if( !xmlStreamReader.hasError() && xmlStreamReader.attributes().hasAttribute("DetailLevel") )
                     {
@@ -835,7 +835,7 @@ void CIpcTrcClient::onReceivedData( const QByteArray& i_byteArr )
                                 bool bSignalsBlocked = pTrcAdminObj->blockTreeEntryChangedSignal(true);
 
                                 if( !strThreadName.isEmpty() ) pTrcAdminObj->setObjectThreadName(strThreadName);
-                                if( enabled != EEnabled::Undefined ) pTrcAdminObj->setEnabled(enabled);
+                                if( enabled != EEnabledUndefined ) pTrcAdminObj->setEnabled(enabled);
                                 if( iDetailLevel >= 0 ) pTrcAdminObj->setTraceDetailLevel(iDetailLevel);
                                 if( iRefCount >= 0 ) pTrcAdminObj->setRefCount(iRefCount);
 
@@ -849,7 +849,7 @@ void CIpcTrcClient::onReceivedData( const QByteArray& i_byteArr )
                             bool bSignalsBlocked = pTrcAdminObj->blockTreeEntryChangedSignal(true);
 
                             if( !strThreadName.isEmpty() ) pTrcAdminObj->setObjectThreadName(strThreadName);
-                            if( enabled != EEnabled::Undefined ) pTrcAdminObj->setEnabled(enabled);
+                            if( enabled != EEnabledUndefined ) pTrcAdminObj->setEnabled(enabled);
                             if( iDetailLevel >= 0 ) pTrcAdminObj->setTraceDetailLevel(iDetailLevel);
                             if( iRefCount >= 0 ) pTrcAdminObj->setRefCount(iRefCount);
 

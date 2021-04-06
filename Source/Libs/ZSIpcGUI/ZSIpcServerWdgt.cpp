@@ -664,7 +664,7 @@ void CWdgtIpcServer::setServer( CServer* i_pServer )
     //{
     //    if( bIsTrcServer )
     //    {
-    //        m_pTrcAdminObj->setEnabled(EEnabled::No);
+    //        m_pTrcAdminObj->setEnabled(EEnabledNo);
 
     //        CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
     //        m_pTrcAdminObj = nullptr;

@@ -2989,8 +2989,8 @@ void CTest::doTestStepChangeViews( ZS::Test::CTestStep* i_pTestStep )
         {
             // If sort order is Config the model iterator and the index tree iterator must point
             // to the same index tree entry.
-            itIdxTree      = pIdxTree->begin(CIdxTree::iterator::ETraversalOrder::PreOrder);
-            itModelIdxTree = pModelIdxTree->begin(CModelIdxTree::iterator::ETraversalOrder::PreOrder);
+            itIdxTree      = pIdxTree->begin(CIdxTree::iterator::ETraversalOrderPreOrder);
+            itModelIdxTree = pModelIdxTree->begin(CModelIdxTree::iterator::ETraversalOrderPreOrder);
             idxItStep      = 0;
             while( itIdxTree != pIdxTree->end() && itModelIdxTree != pModelIdxTree->end() )
             {
@@ -3139,7 +3139,7 @@ void CTest::doTestStepChangeViews( ZS::Test::CTestStep* i_pTestStep )
     if( sortOrder == EIdxTreeSortOrder::Ascending )
     {
         // If sort order is Ascending the entries in the index tree model must be in aplphabetical order.
-        itModelIdxTree = pModelIdxTree->begin(CModelIdxTree::iterator::ETraversalOrder::PreOrder);
+        itModelIdxTree = pModelIdxTree->begin(CModelIdxTree::iterator::ETraversalOrderPreOrder);
         idxItStep      = 0;
         while( itModelIdxTree != pModelIdxTree->end() )
         {

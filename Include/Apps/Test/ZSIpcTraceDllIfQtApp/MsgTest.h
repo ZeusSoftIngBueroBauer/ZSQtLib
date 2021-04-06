@@ -75,11 +75,11 @@ public: // ctors and dtor
         qint64   i_iMsgId = -1 );
     virtual ~CMsgReqTest();
 public: // must overridables of base class CMsg
-    virtual ZS::System::CMsg* clone( ZS::System::ECopyDepth i_copyDepth = ZS::System::ECopyDepth::FlatKeepOwnership );
-    virtual ZS::System::CMsgCon* createConfirmationMessage( ZS::System::ECopyDepth i_copyDepth = ZS::System::ECopyDepth::FlatKeepOwnership ); // not used, throws exception
+    virtual ZS::System::CMsg* clone( ZS::System::ECopyDepth i_copyDepth = ZS::System::ECopyDepthFlatKeepOwnership );
+    virtual ZS::System::CMsgCon* createConfirmationMessage( ZS::System::ECopyDepth i_copyDepth = ZS::System::ECopyDepthFlatKeepOwnership ); // not used, throws exception
 public: // overridables of base class CMsg
     virtual QString msgTypeToStr() const;
-    virtual QString getAddTrcInfoStr( int i_iDetailLevel = 0, ZS::System::EContentToStrFormat i_format = ZS::System::EContentToStrFormat::PlainText );
+    virtual QString getAddTrcInfoStr( int i_iDetailLevel = 0, ZS::System::EContentToStrFormat i_format = ZS::System::EContentToStrFormatPlainText );
 
 }; // CMsgReqTest
 
@@ -97,9 +97,9 @@ public: // ctors and dtor
         int                               i_iProgressInPerCent );
     virtual ~CMsgConTest();
 public: // overridables of base class CMsg
-    virtual ZS::System::CMsg* clone( ZS::System::ECopyDepth i_copyDepth = ZS::System::ECopyDepth::FlatKeepOwnership );
+    virtual ZS::System::CMsg* clone( ZS::System::ECopyDepth i_copyDepth = ZS::System::ECopyDepthFlatKeepOwnership );
     virtual QString msgTypeToStr() const;
-    virtual QString getAddTrcInfoStr( int i_iDetailLevel = 0, ZS::System::EContentToStrFormat i_format = ZS::System::EContentToStrFormat::PlainText );
+    virtual QString getAddTrcInfoStr( int i_iDetailLevel = 0, ZS::System::EContentToStrFormat i_format = ZS::System::EContentToStrFormatPlainText );
 
 }; // CMsgConTest
 

@@ -272,7 +272,7 @@ void CDelegateIdxTreeTrcAdminObjs::paint(
                 {
                     rectCheckBox.moveTop(styleOption.rect.top()+(styleOption.rect.height()-m_rectChkBoxTraceEnabled.height())/2);
                 }
-                if( pTrcAdminObj->getEnabled() == EEnabled::Yes )
+                if( pTrcAdminObj->getEnabled() == EEnabledYes )
                 {
                     checkState = Qt::Checked;
                 }
@@ -914,13 +914,13 @@ void CTreeViewIdxTreeTrcAdminObjs::keyPressEvent( QKeyEvent* i_pEv )
                     {
                         case CModelIdxTreeTrcAdminObjs::EColumnEnabled:
                         {
-                            if( pTrcAdminObj->getEnabled() == EEnabled::Yes )
+                            if( pTrcAdminObj->getEnabled() == EEnabledYes )
                             {
-                                pTrcAdminObj->setEnabled(EEnabled::No);
+                                pTrcAdminObj->setEnabled(EEnabledNo);
                             }
                             else
                             {
-                                pTrcAdminObj->setEnabled(EEnabled::Yes);
+                                pTrcAdminObj->setEnabled(EEnabledYes);
                             }
                             bEventHandled = true;
                             break;
@@ -1070,13 +1070,13 @@ void CTreeViewIdxTreeTrcAdminObjs::mouseReleaseEvent( QMouseEvent* i_pEv )
 
                         if( pDelegate != nullptr && pDelegate->isCheckBoxEnabledHit(rectVisual,i_pEv->pos(),m_modelIdxSelectedOnMouseReleaseEvent) )
                         {
-                            if( pTrcAdminObj->getEnabled() == EEnabled::Yes )
+                            if( pTrcAdminObj->getEnabled() == EEnabledYes )
                             {
-                                pTrcAdminObj->setEnabled(EEnabled::No);
+                                pTrcAdminObj->setEnabled(EEnabledNo);
                             }
                             else
                             {
-                                pTrcAdminObj->setEnabled(EEnabled::Yes);
+                                pTrcAdminObj->setEnabled(EEnabledYes);
                             }
                             bEventHandled = true;
                         }
@@ -1198,7 +1198,7 @@ void CTreeViewIdxTreeTrcAdminObjs::onActionNameSpaceEnableAdmObjectsTriggered( b
             {
                 CBranchIdxTreeEntry* pBranch = dynamic_cast<CBranchIdxTreeEntry*>(pModelBranch->treeEntry());
 
-                pIdxTree->setEnabled(pBranch, EEnabled::Yes);
+                pIdxTree->setEnabled(pBranch, EEnabledYes);
             }
         }
     }
@@ -1242,7 +1242,7 @@ void CTreeViewIdxTreeTrcAdminObjs::onActionNameSpaceDisableAdmObjectsTriggered( 
             {
                 CBranchIdxTreeEntry* pBranch = dynamic_cast<CBranchIdxTreeEntry*>(pModelBranch->treeEntry());
 
-                pIdxTree->setEnabled(pBranch, EEnabled::No);
+                pIdxTree->setEnabled(pBranch, EEnabledNo);
             }
         }
     }

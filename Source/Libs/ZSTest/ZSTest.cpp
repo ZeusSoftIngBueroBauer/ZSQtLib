@@ -171,7 +171,7 @@ CTestStepGroup* CTest::getTestStepGroup( const QString& i_strGroupName, const QS
     return m_pAdminObjPool->getTestStepGroup(
         /* strGroupName       */ i_strGroupName,
         /* strGroupPathParent */ i_strGroupNameParent,
-        /* enabled            */ EEnabled::Undefined );
+        /* enabled            */ EEnabledUndefined );
 }
 
 //------------------------------------------------------------------------------
@@ -186,7 +186,7 @@ CTestStepGroup* CTest::getTestStepGroup( const QString& i_strGroupName, CTestSte
     return m_pAdminObjPool->getTestStepGroup(
         /* strGroupName     */ i_strGroupName,
         /* pTestGroupParent */ i_pTestGroupParent,
-        /* enabled          */ EEnabled::Undefined );
+        /* enabled          */ EEnabledUndefined );
 }
 
 //------------------------------------------------------------------------------
@@ -201,7 +201,7 @@ CTestStep* CTest::getTestStep( const QString& i_strName, const QString& i_strGro
     return m_pAdminObjPool->getTestStep(
         /* strName            */ i_strName,
         /* strGroupPathParent */ i_strGroupNameParent,
-        /* enabled            */ EEnabled::Undefined );
+        /* enabled            */ EEnabledUndefined );
 }
 
 //------------------------------------------------------------------------------
@@ -216,7 +216,7 @@ CTestStep* CTest::getTestStep( const QString& i_strName, CTestStepGroup* i_pTest
     return m_pAdminObjPool->getTestStep(
         /* strName          */ i_strName,
         /* pTestGroupParent */ i_pTestGroupParent,
-        /* enabled          */ EEnabled::Undefined );
+        /* enabled          */ EEnabledUndefined );
 }
 
 /*==============================================================================

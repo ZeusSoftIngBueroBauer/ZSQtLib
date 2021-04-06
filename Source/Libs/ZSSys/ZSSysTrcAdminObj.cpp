@@ -98,7 +98,7 @@ CTrcAdminObj::CTrcAdminObj( const QString& i_strObjName, const QString& i_strObj
     m_iBlockTreeEntryChangedSignalCounter(0),
     m_strObjThreadName(),
     m_iRefCount(0),
-    m_enabled(EEnabled::Yes),
+    m_enabled(EEnabledYes),
     m_iTrcDetailLevel(ETraceDetailLevelNone)
 {
     m_pMtx = new QMutex(QMutex::Recursive);
@@ -490,7 +490,7 @@ bool CTrcAdminObj::isEnabled() const
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(m_pMtx);
-    return (m_enabled == EEnabled::Yes);
+    return (m_enabled == EEnabledYes);
 }
 
 /*==============================================================================
@@ -585,7 +585,7 @@ bool CTrcAdminObj::isActive( int i_iDetailLevel ) const
 
     if( i_iDetailLevel > ETraceDetailLevelNone )
     {
-        if( m_enabled == EEnabled::Yes && m_iTrcDetailLevel >= i_iDetailLevel )
+        if( m_enabled == EEnabledYes && m_iTrcDetailLevel >= i_iDetailLevel )
         {
             bActive = true;
         }

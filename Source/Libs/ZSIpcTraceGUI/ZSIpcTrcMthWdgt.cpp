@@ -980,7 +980,7 @@ void CWdgtTrcMthList::onTraceDataReceived( QObject* /*i_pObjSender*/, const QStr
                         strObjName = "";
                         strMthName = "";
                         strMthThreadName = "";
-                        mthDir = EMethodDir::Undefined;
+                        mthDir = EMethodDirUndefined;
                         strDateTime = "";
                         fSysTime_s = -1.0;
                         threadEntry = STrcMthThreadEntry();
@@ -1045,7 +1045,7 @@ void CWdgtTrcMthList::onTraceDataReceived( QObject* /*i_pObjSender*/, const QStr
                         strTrace += strSysTime;
                         strTrace += "):&nbsp;";
 
-                        if( mthDir == EMethodDir::Enter )
+                        if( mthDir == EMethodDirEnter )
                         {
                             for( int idx = 0; idx < threadEntry.m_iCallDepth; idx++ )
                             {
@@ -1055,7 +1055,7 @@ void CWdgtTrcMthList::onTraceDataReceived( QObject* /*i_pObjSender*/, const QStr
 
                             strTrace += "-&gt;&nbsp;";
                         }
-                        else if( mthDir == EMethodDir::Leave )
+                        else if( mthDir == EMethodDirLeave )
                         {
                             for( int idx = 0; idx < threadEntry.m_iCallDepth-1; idx++ )
                             {
@@ -1109,13 +1109,13 @@ void CWdgtTrcMthList::onTraceDataReceived( QObject* /*i_pObjSender*/, const QStr
                         normalize(strMthRet);
                         normalize(strAddInfo);
 
-                        if( mthDir == EMethodDir::Enter )
+                        if( mthDir == EMethodDirEnter )
                         {
                             strTrace += "(";
                             strTrace += strMthInArgs;
                             strTrace += ")";
                         }
-                        else if( mthDir == EMethodDir::Leave )
+                        else if( mthDir == EMethodDirLeave )
                         {
                             strTrace += "(";
                             strTrace += strMthOutArgs;
@@ -1189,7 +1189,7 @@ void CWdgtTrcMthList::onTraceDataReceived( QObject* /*i_pObjSender*/, const QStr
                         {
                             strAttr = xmlStreamReader.attributes().value("Dir").toString();
                             mthDir = CEnumMethodDir::toEnumerator(strAttr);
-                            if( mthDir == EMethodDir::Undefined ) xmlStreamReader.raiseError("Attribute \"Dir\" (" + strAttr + ") of Element \"" + strElemName + "\" is out of range");
+                            if( mthDir == EMethodDirUndefined ) xmlStreamReader.raiseError("Attribute \"Dir\" (" + strAttr + ") of Element \"" + strElemName + "\" is out of range");
                         }
                         if( xmlStreamReader.attributes().hasAttribute("DateTime") )
                         {

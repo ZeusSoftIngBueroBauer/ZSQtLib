@@ -87,11 +87,11 @@ public: // instance methods
     CBlkType* getBlkType( bool i_bReleaseOwnerShip = false );
     void setBlkType( CBlkType* i_pBlkType );    // The block will be cloned.
 public: // must overridables of base class CMsg
-    virtual ZS::System::CMsg* clone( ZS::System::ECopyDepth i_copyDepth = ZS::System::ECopyDepth::FlatKeepOwnership );
-    virtual ZS::System::CMsgCon* createConfirmationMessage( ZS::System::ECopyDepth i_copyDepth = ZS::System::ECopyDepth::FlatKeepOwnership );
+    virtual ZS::System::CMsg* clone( ZS::System::ECopyDepth i_copyDepth = ZS::System::ECopyDepthFlatKeepOwnership );
+    virtual ZS::System::CMsgCon* createConfirmationMessage( ZS::System::ECopyDepth i_copyDepth = ZS::System::ECopyDepthFlatKeepOwnership );
 public: // overridables of base class CMsg
     virtual QString msgTypeToStr() const;
-    virtual QString getAddTrcInfoStr( int i_iDetailLevel = 0, ZS::System::EContentToStrFormat i_format = ZS::System::EContentToStrFormat::PlainText );
+    virtual QString getAddTrcInfoStr( int i_iDetailLevel = 0, ZS::System::EContentToStrFormat i_format = ZS::System::EContentToStrFormatPlainText );
 protected: // instance members
     SServerHostSettings m_hostSettings;
     CBlkType*           m_pBlkType;
@@ -126,10 +126,10 @@ public: // instance methods
     SServerHostSettings getHostSettings() const { return m_hostSettings; }
     void setHostSettings( const SServerHostSettings& i_hostSettings );
 public: // must overridables of base class CMsg
-    virtual ZS::System::CMsg* clone( ZS::System::ECopyDepth i_copyDepth = ZS::System::ECopyDepth::FlatKeepOwnership );
+    virtual ZS::System::CMsg* clone( ZS::System::ECopyDepth i_copyDepth = ZS::System::ECopyDepthFlatKeepOwnership );
 public: // overridables of base class CMsg
     virtual QString msgTypeToStr() const;
-    virtual QString getAddTrcInfoStr( int i_iDetailLevel = 0, ZS::System::EContentToStrFormat i_format = ZS::System::EContentToStrFormat::PlainText );
+    virtual QString getAddTrcInfoStr( int i_iDetailLevel = 0, ZS::System::EContentToStrFormat i_format = ZS::System::EContentToStrFormatPlainText );
 protected: // instance members
     SServerHostSettings  m_hostSettings;
     ESocketState         m_socketState;
@@ -149,11 +149,11 @@ public: // ctors and dtor
         qint64   i_iMsgId = -1 );
     virtual ~CMsgReqShutdown();
 public: // must overridables of base class CMsg
-    virtual ZS::System::CMsg* clone( ZS::System::ECopyDepth i_copyDepth = ZS::System::ECopyDepth::FlatKeepOwnership );
-    virtual ZS::System::CMsgCon* createConfirmationMessage( ZS::System::ECopyDepth i_copyDepth = ZS::System::ECopyDepth::FlatKeepOwnership );
+    virtual ZS::System::CMsg* clone( ZS::System::ECopyDepth i_copyDepth = ZS::System::ECopyDepthFlatKeepOwnership );
+    virtual ZS::System::CMsgCon* createConfirmationMessage( ZS::System::ECopyDepth i_copyDepth = ZS::System::ECopyDepthFlatKeepOwnership );
 public: // overridables of base class CMsg
     virtual QString msgTypeToStr() const;
-    virtual QString getAddTrcInfoStr( int i_iDetailLevel = 0, ZS::System::EContentToStrFormat i_format = ZS::System::EContentToStrFormat::PlainText );
+    virtual QString getAddTrcInfoStr( int i_iDetailLevel = 0, ZS::System::EContentToStrFormat i_format = ZS::System::EContentToStrFormatPlainText );
 
 }; // CMsgReqShutdown
 
@@ -174,10 +174,10 @@ public: // instance methods
     ESocketState getSocketState() const { return m_socketState; }
     void setSocketState( ESocketState i_socketState );
 public: // must overridables of base class CMsg
-    virtual ZS::System::CMsg* clone( ZS::System::ECopyDepth i_copyDepth = ZS::System::ECopyDepth::FlatKeepOwnership );
+    virtual ZS::System::CMsg* clone( ZS::System::ECopyDepth i_copyDepth = ZS::System::ECopyDepthFlatKeepOwnership );
 public: // overridables of base class CMsg
     virtual QString msgTypeToStr() const;
-    virtual QString getAddTrcInfoStr( int i_iDetailLevel = 0, ZS::System::EContentToStrFormat i_format = ZS::System::EContentToStrFormat::PlainText );
+    virtual QString getAddTrcInfoStr( int i_iDetailLevel = 0, ZS::System::EContentToStrFormat i_format = ZS::System::EContentToStrFormatPlainText );
 protected: // instance members
     ESocketState m_socketState;
 
@@ -207,11 +207,11 @@ public: // instance methods
     CBlkType* getBlkType( bool i_bReleaseOwnerShip = false );
     void setBlkType( CBlkType* i_pBlkType );    // The block will be cloned.
 public: // must overridables of base class CMsg
-    virtual ZS::System::CMsg* clone( ZS::System::ECopyDepth i_copyDepth = ZS::System::ECopyDepth::FlatKeepOwnership );
-    virtual ZS::System::CMsgCon* createConfirmationMessage( ZS::System::ECopyDepth i_copyDepth = ZS::System::ECopyDepth::FlatKeepOwnership );
+    virtual ZS::System::CMsg* clone( ZS::System::ECopyDepth i_copyDepth = ZS::System::ECopyDepthFlatKeepOwnership );
+    virtual ZS::System::CMsgCon* createConfirmationMessage( ZS::System::ECopyDepth i_copyDepth = ZS::System::ECopyDepthFlatKeepOwnership );
 public: // overridables of base class CMsg
     virtual QString msgTypeToStr() const;
-    virtual QString getAddTrcInfoStr( int i_iDetailLevel = 0, ZS::System::EContentToStrFormat i_format = ZS::System::EContentToStrFormat::PlainText );
+    virtual QString getAddTrcInfoStr( int i_iDetailLevel = 0, ZS::System::EContentToStrFormat i_format = ZS::System::EContentToStrFormatPlainText );
 protected: // instance members
     SClientHostSettings m_hostSettings;
     STimerSettings      m_watchDogSettings;
@@ -242,10 +242,10 @@ public: // instance methods
 public: // instance methods
     ESocketType getSocketType() const { return m_socketDscr.m_socketType; }
 public: // must overridables of base class CMsg
-    virtual ZS::System::CMsg* clone( ZS::System::ECopyDepth i_copyDepth = ZS::System::ECopyDepth::FlatKeepOwnership );
+    virtual ZS::System::CMsg* clone( ZS::System::ECopyDepth i_copyDepth = ZS::System::ECopyDepthFlatKeepOwnership );
 public: // overridables of base class CMsg
     virtual QString msgTypeToStr() const;
-    virtual QString getAddTrcInfoStr( int i_iDetailLevel = 0, ZS::System::EContentToStrFormat i_format = ZS::System::EContentToStrFormat::PlainText );
+    virtual QString getAddTrcInfoStr( int i_iDetailLevel = 0, ZS::System::EContentToStrFormat i_format = ZS::System::EContentToStrFormatPlainText );
 protected: // instance members
     SSocketDscr m_socketDscr;
 
@@ -269,11 +269,11 @@ public: // instance methods
     SSocketDscr getSocketDscr() const { return m_socketDscr; }
     void setSocketDscr( const ZS::Ipc::SSocketDscr& i_socketDscr );
 public: // must overridables of base class CMsg
-    virtual ZS::System::CMsg* clone( ZS::System::ECopyDepth i_copyDepth = ZS::System::ECopyDepth::FlatKeepOwnership );
-    virtual ZS::System::CMsgAck* createAcknowledgeMessage( ZS::System::ECopyDepth i_copyDepth = ZS::System::ECopyDepth::FlatKeepOwnership ); // not used, throws exception
+    virtual ZS::System::CMsg* clone( ZS::System::ECopyDepth i_copyDepth = ZS::System::ECopyDepthFlatKeepOwnership );
+    virtual ZS::System::CMsgAck* createAcknowledgeMessage( ZS::System::ECopyDepth i_copyDepth = ZS::System::ECopyDepthFlatKeepOwnership ); // not used, throws exception
 public: // overridables of base class CMsg
     virtual QString msgTypeToStr() const;
-    virtual QString getAddTrcInfoStr( int i_iDetailLevel = 0, ZS::System::EContentToStrFormat i_format = ZS::System::EContentToStrFormat::PlainText );
+    virtual QString getAddTrcInfoStr( int i_iDetailLevel = 0, ZS::System::EContentToStrFormat i_format = ZS::System::EContentToStrFormatPlainText );
 protected: // instance members
     SSocketDscr m_socketDscr;
 
@@ -299,11 +299,11 @@ public: // instance methods
     SSocketDscr getSocketDscr() const { return m_socketDscr; }
     void setSocketDscr( const ZS::Ipc::SSocketDscr& i_socketDscr );
 public: // must overridables of base class CMsg
-    virtual ZS::System::CMsg* clone( ZS::System::ECopyDepth i_copyDepth = ZS::System::ECopyDepth::FlatKeepOwnership );
-    virtual ZS::System::CMsgCon* createConfirmationMessage( ZS::System::ECopyDepth i_copyDepth = ZS::System::ECopyDepth::FlatKeepOwnership );
+    virtual ZS::System::CMsg* clone( ZS::System::ECopyDepth i_copyDepth = ZS::System::ECopyDepthFlatKeepOwnership );
+    virtual ZS::System::CMsgCon* createConfirmationMessage( ZS::System::ECopyDepth i_copyDepth = ZS::System::ECopyDepthFlatKeepOwnership );
 public: // overridables of base class CMsg
     virtual QString msgTypeToStr() const;
-    virtual QString getAddTrcInfoStr( int i_iDetailLevel = 0, ZS::System::EContentToStrFormat i_format = ZS::System::EContentToStrFormat::PlainText );
+    virtual QString getAddTrcInfoStr( int i_iDetailLevel = 0, ZS::System::EContentToStrFormat i_format = ZS::System::EContentToStrFormatPlainText );
 protected: // instance members
     SSocketDscr m_socketDscr;
 
@@ -331,10 +331,10 @@ public: // instance methods
     SSocketDscr getSocketDscr() const { return m_socketDscr; }
     void setSocketDscr( const ZS::Ipc::SSocketDscr& i_socketDscr );
 public: // must overridables of base class CMsg
-    virtual ZS::System::CMsg* clone( ZS::System::ECopyDepth i_copyDepth = ZS::System::ECopyDepth::FlatKeepOwnership );
+    virtual ZS::System::CMsg* clone( ZS::System::ECopyDepth i_copyDepth = ZS::System::ECopyDepthFlatKeepOwnership );
 public: // overridables of base class CMsg
     virtual QString msgTypeToStr() const;
-    virtual QString getAddTrcInfoStr( int i_iDetailLevel = 0, ZS::System::EContentToStrFormat i_format = ZS::System::EContentToStrFormat::PlainText );
+    virtual QString getAddTrcInfoStr( int i_iDetailLevel = 0, ZS::System::EContentToStrFormat i_format = ZS::System::EContentToStrFormatPlainText );
 protected: // instance members
     SSocketDscr m_socketDscr;
 
@@ -359,11 +359,11 @@ public: // instance methods
     SSocketDscr getSocketDscr() const { return m_socketDscr; }
     void setSocketDscr( const ZS::Ipc::SSocketDscr& i_socketDscr );
 public: // must overridables of base class CMsg
-    virtual ZS::System::CMsg* clone( ZS::System::ECopyDepth i_copyDepth = ZS::System::ECopyDepth::FlatKeepOwnership );
-    virtual ZS::System::CMsgAck* createAcknowledgeMessage( ZS::System::ECopyDepth i_copyDepth = ZS::System::ECopyDepth::FlatKeepOwnership ); // not used, throws exception
+    virtual ZS::System::CMsg* clone( ZS::System::ECopyDepth i_copyDepth = ZS::System::ECopyDepthFlatKeepOwnership );
+    virtual ZS::System::CMsgAck* createAcknowledgeMessage( ZS::System::ECopyDepth i_copyDepth = ZS::System::ECopyDepthFlatKeepOwnership ); // not used, throws exception
 public: // overridables of base class CMsg
     virtual QString msgTypeToStr() const;
-    virtual QString getAddTrcInfoStr( int i_iDetailLevel = 0, ZS::System::EContentToStrFormat i_format = ZS::System::EContentToStrFormat::PlainText );
+    virtual QString getAddTrcInfoStr( int i_iDetailLevel = 0, ZS::System::EContentToStrFormat i_format = ZS::System::EContentToStrFormatPlainText );
 protected: // instance members
     SSocketDscr m_socketDscr;
 
@@ -400,11 +400,11 @@ public: // instance methods
     void setBlkType( CBlkType* i_pBlkType );  // the block will be cloned
     CBlkType* getBlkType( bool i_bReleaseOwnerShip = false );
 public: // must overridables of base class CMsg
-    virtual ZS::System::CMsg* clone( ZS::System::ECopyDepth i_copyDepth = ZS::System::ECopyDepth::FlatKeepOwnership );
-    virtual ZS::System::CMsgCon* createConfirmationMessage( ZS::System::ECopyDepth i_copyDepth = ZS::System::ECopyDepth::FlatKeepOwnership );
+    virtual ZS::System::CMsg* clone( ZS::System::ECopyDepth i_copyDepth = ZS::System::ECopyDepthFlatKeepOwnership );
+    virtual ZS::System::CMsgCon* createConfirmationMessage( ZS::System::ECopyDepth i_copyDepth = ZS::System::ECopyDepthFlatKeepOwnership );
 public: // overridables of base class CMsg
     virtual QString msgTypeToStr() const;
-    virtual QString getAddTrcInfoStr( int i_iDetailLevel = 0, ZS::System::EContentToStrFormat i_format = ZS::System::EContentToStrFormat::PlainText );
+    virtual QString getAddTrcInfoStr( int i_iDetailLevel = 0, ZS::System::EContentToStrFormat i_format = ZS::System::EContentToStrFormatPlainText );
 protected: // instance members
     Ipc::ESrvCltType    m_srvCltType;
     SServerHostSettings m_serverHostSettings;
@@ -448,10 +448,10 @@ public: // instance methods
     void setBlkType( CBlkType* i_pBlkType );  // the block will be cloned
     CBlkType* getBlkType( bool i_bReleaseOwnerShip = false );
 public: // must overridables of base class CMsg
-    virtual ZS::System::CMsg* clone( ZS::System::ECopyDepth i_copyDepth = ZS::System::ECopyDepth::FlatKeepOwnership );
+    virtual ZS::System::CMsg* clone( ZS::System::ECopyDepth i_copyDepth = ZS::System::ECopyDepthFlatKeepOwnership );
 public: // overridables of base class CMsg
     virtual QString msgTypeToStr() const;
-    virtual QString getAddTrcInfoStr( int i_iDetailLevel = 0, ZS::System::EContentToStrFormat i_format = ZS::System::EContentToStrFormat::PlainText );
+    virtual QString getAddTrcInfoStr( int i_iDetailLevel = 0, ZS::System::EContentToStrFormat i_format = ZS::System::EContentToStrFormatPlainText );
 protected: // instance members
     Ipc::ESrvCltType         m_srvCltType;
     Ipc::SServerHostSettings m_serverHostSettings;
@@ -479,11 +479,11 @@ public: // instance methods
     QByteArray getByteArray() { return m_byteArr; }
     void setByteArray( const QByteArray& i_byteArr );
 public: // must overridables of base class CMsg
-    virtual ZS::System::CMsg* clone( ZS::System::ECopyDepth i_copyDepth = ZS::System::ECopyDepth::FlatKeepOwnership );
-    virtual ZS::System::CMsgCon* createConfirmationMessage( ZS::System::ECopyDepth i_copyDepth = ZS::System::ECopyDepth::FlatKeepOwnership ); // not used, throws exception
+    virtual ZS::System::CMsg* clone( ZS::System::ECopyDepth i_copyDepth = ZS::System::ECopyDepthFlatKeepOwnership );
+    virtual ZS::System::CMsgCon* createConfirmationMessage( ZS::System::ECopyDepth i_copyDepth = ZS::System::ECopyDepthFlatKeepOwnership ); // not used, throws exception
 public: // overridables of base class CMsg
     virtual QString msgTypeToStr() const;
-    virtual QString getAddTrcInfoStr( int i_iDetailLevel = 0, ZS::System::EContentToStrFormat i_format = ZS::System::EContentToStrFormat::PlainText );
+    virtual QString getAddTrcInfoStr( int i_iDetailLevel = 0, ZS::System::EContentToStrFormat i_format = ZS::System::EContentToStrFormatPlainText );
 protected: // instance members
     int        m_iSocketId;
     QByteArray m_byteArr;
@@ -506,11 +506,11 @@ public: // ctors and dtor
 public: // instance methods
     int getSocketId() const { return m_iSocketId; }
 public: // must overridables of base class CMsg
-    virtual ZS::System::CMsg* clone( ZS::System::ECopyDepth i_copyDepth = ZS::System::ECopyDepth::FlatKeepOwnership );
-    virtual ZS::System::CMsgCon* createConfirmationMessage( ZS::System::ECopyDepth i_copyDepth = ZS::System::ECopyDepth::FlatKeepOwnership ); // not used, throws exception
+    virtual ZS::System::CMsg* clone( ZS::System::ECopyDepth i_copyDepth = ZS::System::ECopyDepthFlatKeepOwnership );
+    virtual ZS::System::CMsgCon* createConfirmationMessage( ZS::System::ECopyDepth i_copyDepth = ZS::System::ECopyDepthFlatKeepOwnership ); // not used, throws exception
 public: // overridables of base class CMsg
     virtual QString msgTypeToStr() const;
-    virtual QString getAddTrcInfoStr( int i_iDetailLevel = 0, ZS::System::EContentToStrFormat i_format = ZS::System::EContentToStrFormat::PlainText );
+    virtual QString getAddTrcInfoStr( int i_iDetailLevel = 0, ZS::System::EContentToStrFormat i_format = ZS::System::EContentToStrFormatPlainText );
 protected: // instance members
     int m_iSocketId;
 
@@ -533,11 +533,11 @@ public: // instance methods
     QByteArray getByteArray() { return m_byteArr; }
     void setByteArray( const QByteArray& i_byteArr );
 public: // must overridables of base class CMsg
-    virtual ZS::System::CMsg* clone( ZS::System::ECopyDepth i_copyDepth = ZS::System::ECopyDepth::FlatKeepOwnership );
-    virtual ZS::System::CMsgAck* createAcknowledgeMessage( ZS::System::ECopyDepth i_copyDepth = ZS::System::ECopyDepth::FlatKeepOwnership ); // not used, throws exception
+    virtual ZS::System::CMsg* clone( ZS::System::ECopyDepth i_copyDepth = ZS::System::ECopyDepthFlatKeepOwnership );
+    virtual ZS::System::CMsgAck* createAcknowledgeMessage( ZS::System::ECopyDepth i_copyDepth = ZS::System::ECopyDepthFlatKeepOwnership ); // not used, throws exception
 public: // overridables of base class CMsg
     virtual QString msgTypeToStr() const;
-    virtual QString getAddTrcInfoStr( int i_iDetailLevel = 0, ZS::System::EContentToStrFormat i_format = ZS::System::EContentToStrFormat::PlainText );
+    virtual QString getAddTrcInfoStr( int i_iDetailLevel = 0, ZS::System::EContentToStrFormat i_format = ZS::System::EContentToStrFormatPlainText );
 protected: // instance members
     int        m_iSocketId;
     QByteArray m_byteArr;

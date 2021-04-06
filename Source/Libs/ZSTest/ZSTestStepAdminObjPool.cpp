@@ -84,7 +84,7 @@ CTestStepAdminObjPool::CTestStepAdminObjPool(
     m_pTSGrpRoot = getTestStepGroup(
         /* strGroupName     */ i_pTest->objectName(),
         /* pTestGroupParent */ nullptr,
-        /* enabled          */ EEnabled::Undefined );
+        /* enabled          */ EEnabledUndefined );
 
     // Set default value for file name
     //--------------------------------
@@ -394,7 +394,7 @@ CTestStepGroup* CTestStepAdminObjPool::addTestStepGroup(
 
     pTSGrp = new CTestStepGroup(this, i_strGroupName, pTreeEntry);
 
-    if( i_enabled != EEnabled::Undefined )
+    if( i_enabled != EEnabledUndefined )
     {
         pTSGrp->setEnabled(i_enabled);
     }
@@ -527,7 +527,7 @@ CTestStepGroup* CTestStepAdminObjPool::getTestStepGroup(
         {
             pTSGrp = new CTestStepGroup(this, i_strGroupName, pTreeEntry);
 
-            if( i_enabled != EEnabled::Undefined )
+            if( i_enabled != EEnabledUndefined )
             {
                 pTSGrp->setEnabled(i_enabled);
             }
@@ -546,7 +546,7 @@ CTestStepGroup* CTestStepAdminObjPool::getTestStepGroup(
         {
             bool bNodeChanged = false;
 
-            if( i_enabled != EEnabled::Undefined && i_enabled != pTSGrp->getEnabled() )
+            if( i_enabled != EEnabledUndefined && i_enabled != pTSGrp->getEnabled() )
             {
                 pTSGrp->setEnabled(i_enabled);
                 bNodeChanged = true;
@@ -749,7 +749,7 @@ CTestStep* CTestStepAdminObjPool::addTestStep(
 
     pTestStep->setObjId(iObjId);
 
-    if( i_enabled != EEnabled::Undefined )
+    if( i_enabled != EEnabledUndefined )
     {
         pTestStep->setEnabled(i_enabled);
     }
@@ -932,7 +932,7 @@ CTestStep* CTestStepAdminObjPool::getTestStep(
             pTestStep = new CTestStep(this,i_strName,pTreeEntry,pListEntry);
             pTestStep->setObjId(iObjId);
 
-            if( i_enabled != EEnabled::Undefined )
+            if( i_enabled != EEnabledUndefined )
             {
                 pTestStep->setEnabled(i_enabled);
             }
@@ -952,7 +952,7 @@ CTestStep* CTestStepAdminObjPool::getTestStep(
         {
             bool bNodeChanged = false;
 
-            if( i_enabled != EEnabled::Undefined && i_enabled != pTestStep->getEnabled() )
+            if( i_enabled != EEnabledUndefined && i_enabled != pTestStep->getEnabled() )
             {
                 pTestStep->setEnabled(i_enabled);
                 bNodeChanged = true;
@@ -1224,7 +1224,7 @@ void CTestStepAdminObjPool::updateGroup( CObjPoolTreeEntry* i_pTreeEntry, EEnabl
 
                 if( pTestStep != nullptr )
                 {
-                    if( i_enabled != EEnabled::Undefined && pTestStep->getEnabled() != i_enabled )
+                    if( i_enabled != EEnabledUndefined && pTestStep->getEnabled() != i_enabled )
                     {
                         pTestStep->setEnabled(i_enabled);
                     }
@@ -1484,7 +1484,7 @@ SErrResultInfo CTestStepAdminObjPool::deserialize( QXmlStreamReader* i_pxmlStrea
     CTestStep*      pTestStep = nullptr;
     QString         strName;
     QString         strVal;
-    EEnabled        enabled = EEnabled::No;
+    EEnabled        enabled = EEnabledNo;
     bool            bVal = false;
     bool            bConverted = false;
 
@@ -1526,7 +1526,7 @@ SErrResultInfo CTestStepAdminObjPool::deserialize( QXmlStreamReader* i_pxmlStrea
                             {
                                 strVal = i_pxmlStreamReader->attributes().value("Enabled").toString();
                                 enabled = CEnumEnabled::toEnumerator(strVal);
-                                if( enabled == EEnabled::Undefined )
+                                if( enabled == EEnabledUndefined )
                                 {
                                     strAddErrInfo = "Attribute \"Enabled\" for " + strElemName + " \"" + pTSGrp->getName(true) + "\" is out of range.";
                                     errResultInfoTmp.setSeverity(EResultSeverityError);
@@ -1583,7 +1583,7 @@ SErrResultInfo CTestStepAdminObjPool::deserialize( QXmlStreamReader* i_pxmlStrea
                             {
                                 strVal = i_pxmlStreamReader->attributes().value("Enabled").toString();
                                 enabled = CEnumEnabled::toEnumerator(strVal);
-                                if( enabled == EEnabled::Undefined )
+                                if( enabled == EEnabledUndefined )
                                 {
                                     strAddErrInfo = "Attribute \"Enabled\" for " + strElemName + " \"" + pTestStep->getName(true) + "\" is out of range.";
                                     errResultInfoTmp.setSeverity(EResultSeverityError);

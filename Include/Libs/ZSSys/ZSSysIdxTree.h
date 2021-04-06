@@ -105,14 +105,19 @@ public: // type definitions and constants
     public:
         /*! Enumeration to define how to itereator through the tree. */
         enum ETraversalOrder {
-            Index,      /*!< Iterate through the vector (index based). */
-            PreOrder,   /*!< Iterate through the tree using preorder (top to bottom, first to last child index of branches). */
-            Count,      /*!< Number of different iteration methods. */
-            Undefined   /*!< To indicate that the iteration method is not defined. */
+            ETraversalOrderIndex,      /*!< Iterate through the vector (index based). */
+            ETraversalOrderPreOrder,   /*!< Iterate through the tree using preorder (top to bottom, first to last child index of branches). */
+            ETraversalOrderCount,      /*!< Number of different iteration methods. */
+            ETraversalOrderUndefined   /*!< To indicate that the iteration method is not defined. */
         };
     public:
         /*! Creates an iterator. */
-        iterator() {}
+        iterator() :
+            m_pIdxTree(nullptr),
+            m_pTreeEntryCurr(nullptr),
+            m_traversalOrder(ETraversalOrderIndex)
+        {
+        }
     protected:
         /*! Creates an iterator.
             @param i_pIdxTree [in] Pointer to index tree.
@@ -131,9 +136,9 @@ public: // type definitions and constants
         bool operator != ( iterator& i_other ) const;
         iterator& operator ++ ();
     private:
-        CIdxTree*              m_pIdxTree = nullptr;                        /*!< Pointer to the index tree. */
-        CAbstractIdxTreeEntry* m_pTreeEntryCurr = nullptr;                  /*!< Current position in the index tree. */
-        ETraversalOrder        m_traversalOrder = ETraversalOrder::Index;   /*!< Iteration method. */
+        CIdxTree*              m_pIdxTree;          /*!< Pointer to the index tree. */
+        CAbstractIdxTreeEntry* m_pTreeEntryCurr;    /*!< Current position in the index tree. */
+        ETraversalOrder        m_traversalOrder;    /*!< Iteration method. */
     };
 public: // ctors and dtor
     CIdxTree(
@@ -360,7 +365,7 @@ public: // instance methods for testing
         to lock the index tree before accessing the elements and unlock the tree afterwards. */
     QMap<int, int> freeIdxsMap() const { return m_mapFreeIdxs; }
 public: // iterator methods
-    iterator begin( iterator::ETraversalOrder i_traversalOrder = iterator::ETraversalOrder::Index );
+    iterator begin( iterator::ETraversalOrder i_traversalOrder = iterator::ETraversalOrderIndex );
     iterator end();
 public: // overridable instance methods (used by friend class CAbstractIdxTreeEntry and its derivates to avoid that the tree entry base classes must inherit QObject to emit signals)
     virtual void onTreeEntryChanged( CAbstractIdxTreeEntry* i_pTreeEntry );
