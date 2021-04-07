@@ -316,6 +316,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ZSAppRemCmdClient", "Apps\P
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ZSAppTestTemplate", "Apps\Test\ZSTestTemplate\ZSAppTestTemplate.vcxproj", "{25A4FF11-71ED-416B-9639-79C51DA071F4}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{F4F9C111-EA81-41FA-B656-F82CF9F7BE3A}"
+	ProjectSection(SolutionItems) = preProject
+		CMakeLists.txt = CMakeLists.txt
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug_msvc2015|Any CPU = Debug_msvc2015|Any CPU
