@@ -305,34 +305,37 @@ bool STreeEntryDscr::operator == (const STreeEntryDscr& i_other) const
 {
     bool bEqual = true;
 
-    if( m_entryType != i_other.m_entryType )
+    if (m_entryType != i_other.m_entryType)
     {
         bEqual = false;
     }
-    else if( m_strName != i_other.m_strName )
+    // The index in the tree may be compared as entries will not be moved
+    // within the tree and the index must remain the same.
+    else if (m_idxInTree != i_other.m_idxInTree)
     {
         bEqual = false;
     }
-    else if( m_strKeyInTree != i_other.m_strKeyInTree )
+    else if (m_strName != i_other.m_strName)
     {
         bEqual = false;
     }
-    else if( m_idxInTree != i_other.m_idxInTree )
+    else if (m_strKeyInTree != i_other.m_strKeyInTree)
     {
         bEqual = false;
     }
-    else if( m_strParentBranchPath != i_other.m_strParentBranchPath )
+    else if (m_strParentBranchPath != i_other.m_strParentBranchPath)
     {
         bEqual = false;
     }
-    else if( m_strKeyInParentBranch != i_other.m_strKeyInParentBranch )
+    else if (m_strKeyInParentBranch != i_other.m_strKeyInParentBranch)
     {
         bEqual = false;
     }
-    else if( m_idxInParentBranch != i_other.m_idxInParentBranch )
-    {
-        bEqual = false;
-    }
+    // The index in the parent branch may not be compared as on removing
+    // entries the index of following siblings will be corrected.
+    //else if( m_idxInParentBranch != i_other.m_idxInParentBranch )
+    //{
+    //}
 
     return bEqual;
 
