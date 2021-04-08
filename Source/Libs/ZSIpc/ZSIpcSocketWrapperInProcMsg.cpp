@@ -190,7 +190,7 @@ CInProcMsgSocketWrapper::CInProcMsgSocketWrapper(
         /* iTrcMthFileDetailLevel */ i_iTrcMthFileDetailLevel ),
     m_pInProcMsgSocketThread(nullptr),
     m_pInProcMsgSocket(i_pInProcMsgSocket),
-    m_copyDepthMsgReadBuff(ECopyDepth::FlatReleaseOwnwership),
+    m_copyDepthMsgReadBuff(ECopyDepthFlatReleaseOwnwership),
     m_bSlotOnConnectedConnected(false),
     m_bSlotOnDisconnectedConnected(false),
     m_bSlotOnErrorConnected(false),

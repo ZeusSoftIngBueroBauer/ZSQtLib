@@ -90,7 +90,7 @@ public: // instance methods
 protected slots:
     void onTmrMessagesTimeout();
 protected: // overridables of base class QObject
-    virtual bool event( QEvent* i_pEv ) override;
+    virtual bool event( QEvent* i_pEv );
 private: // instance members
     CTestModule2Thread*      m_pTestModule2Thread;
     QTimer*                  m_pTmrMessages;

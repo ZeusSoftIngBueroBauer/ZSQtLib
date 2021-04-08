@@ -190,6 +190,12 @@ Version History:
           Method to return detail level of admin object.
 ==============================================================================*/
 
+#if QT_VERSION >= 0x050000
+#define QT_VERSION_MAJOR 5
+#elif QT_VERSION >= 0x040804
+#define QT_VERSION_MAJOR 4
+#endif
+
 #define _ZSSYS_STRINGIFY(x) #x
 #define _ZSSYS_TOSTRING(x) _ZSSYS_STRINGIFY(x)
 

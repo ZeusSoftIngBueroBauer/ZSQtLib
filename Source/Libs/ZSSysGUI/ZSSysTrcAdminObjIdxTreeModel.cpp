@@ -109,8 +109,8 @@ QIcon CModelIdxTreeTrcAdminObjs::GetIcon( EIdxTreeEntryType i_entryType )
 
     switch( i_entryType )
     {
-        case EIdxTreeEntryType::Root:
-        case EIdxTreeEntryType::Branch:
+        case EIdxTreeEntryTypeRoot:
+        case EIdxTreeEntryTypeBranch:
         {
             if( s_pIconBranch != nullptr )
             {
@@ -118,7 +118,7 @@ QIcon CModelIdxTreeTrcAdminObjs::GetIcon( EIdxTreeEntryType i_entryType )
             }
             break;
         }
-        case EIdxTreeEntryType::Leave:
+        case EIdxTreeEntryTypeLeave:
         {
             if( s_pIconLeave != nullptr )
             {
@@ -479,11 +479,11 @@ QVariant CModelIdxTreeTrcAdminObjs::data( const QModelIndex& i_modelIdx, int i_i
 
         CTrcAdminObj* pTrcAdminObj = nullptr;
 
-        if( pModelTreeEntry->entryType() == EIdxTreeEntryType::Root || pModelTreeEntry->entryType() == EIdxTreeEntryType::Branch )
+        if( pModelTreeEntry->entryType() == EIdxTreeEntryTypeRoot || pModelTreeEntry->entryType() == EIdxTreeEntryTypeBranch )
         {
             pModelBranch = dynamic_cast<CModelBranchTreeEntry*>(pModelTreeEntry);
         }
-        else if( pModelTreeEntry->entryType() == EIdxTreeEntryType::Leave )
+        else if( pModelTreeEntry->entryType() == EIdxTreeEntryTypeLeave )
         {
             pModelLeave = dynamic_cast<CModelLeaveTreeEntry*>(pModelTreeEntry);
             pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(pModelLeave->treeEntry());
@@ -753,11 +753,11 @@ bool CModelIdxTreeTrcAdminObjs::setData( const QModelIndex& i_modelIdx, const QV
 
             CTrcAdminObj* pTrcAdminObj = nullptr;
 
-            if( pModelTreeEntry->entryType() == EIdxTreeEntryType::Root || pModelTreeEntry->entryType() == EIdxTreeEntryType::Branch )
+            if( pModelTreeEntry->entryType() == EIdxTreeEntryTypeRoot || pModelTreeEntry->entryType() == EIdxTreeEntryTypeBranch )
             {
                 //pModelBranch = dynamic_cast<CModelBranchTreeEntry*>(pModelTreeEntry);
             }
-            else if( pModelTreeEntry->entryType() == EIdxTreeEntryType::Leave )
+            else if( pModelTreeEntry->entryType() == EIdxTreeEntryTypeLeave )
             {
                 pModelLeave = dynamic_cast<CModelLeaveTreeEntry*>(pModelTreeEntry);
                 pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(pModelLeave->treeEntry());

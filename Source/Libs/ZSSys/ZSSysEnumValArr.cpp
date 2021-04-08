@@ -59,7 +59,7 @@ CEnumValArr::CEnumValArr( int i_iValCount ) :
     m_pEnum(nullptr),
     m_strEnumUId(),
     m_ariEnumEntryIdx(i_iValCount),
-    m_arValidities(i_iValCount, static_cast<int>(EValueValidity::Invalid)),
+    m_arValidities(i_iValCount, static_cast<int>(EValueValidityInvalid)),
     m_ararEnumEntryValidities()
 {
 } // ctor
@@ -86,7 +86,7 @@ CEnumValArr::CEnumValArr( CEnumeration* i_pEnum, int i_iValCount ) :
     m_pEnum(i_pEnum),
     m_strEnumUId(),
     m_ariEnumEntryIdx(i_iValCount),
-    m_arValidities(i_iValCount, static_cast<int>(EValueValidity::Invalid)),
+    m_arValidities(i_iValCount, static_cast<int>(EValueValidityInvalid)),
     m_ararEnumEntryValidities()
 {
     if( m_pEnum != nullptr )
@@ -102,7 +102,7 @@ CEnumValArr::CEnumValArr( CEnumeration* i_pEnum, int i_iValCount, int i_iEnumEnt
     m_pEnum(i_pEnum),
     m_strEnumUId(),
     m_ariEnumEntryIdx(i_iValCount,i_iEnumEntryIdx),
-    m_arValidities(i_iValCount, static_cast<int>(EValueValidity::Invalid)),
+    m_arValidities(i_iValCount, static_cast<int>(EValueValidityInvalid)),
     m_ararEnumEntryValidities()
 {
     if( m_pEnum != nullptr )
@@ -118,7 +118,7 @@ CEnumValArr::CEnumValArr( CEnumeration* i_pEnum, int i_iValCount, int i_iEnumEnt
 
             if( pEntry != nullptr )
             {
-                m_arValidities[idxVal] = static_cast<int>(EValueValidity::Valid);
+                m_arValidities[idxVal] = static_cast<int>(EValueValidityValid);
             }
         }
     }
@@ -131,7 +131,7 @@ CEnumValArr::CEnumValArr( CEnumeration* i_pEnum, int i_iValCount, const QString&
     m_pEnum(i_pEnum),
     m_strEnumUId(),
     m_ariEnumEntryIdx(i_iValCount,-1),
-    m_arValidities(i_iValCount, static_cast<int>(EValueValidity::Invalid)),
+    m_arValidities(i_iValCount, static_cast<int>(EValueValidityInvalid)),
     m_ararEnumEntryValidities()
 {
     if( m_pEnum != nullptr )
@@ -148,7 +148,7 @@ CEnumValArr::CEnumValArr( CEnumeration* i_pEnum, int i_iValCount, const QString&
             if( pEntry != nullptr )
             {
                 m_ariEnumEntryIdx[idxVal] = pEntry->m_iEnumerator;
-                m_arValidities[idxVal] = static_cast<int>(EValueValidity::Valid);
+                m_arValidities[idxVal] = static_cast<int>(EValueValidityValid);
             }
         }
     }
@@ -161,7 +161,7 @@ CEnumValArr::CEnumValArr( CEnumeration* i_pEnum, int i_iValCount, const QVariant
     m_pEnum(i_pEnum),
     m_strEnumUId(),
     m_ariEnumEntryIdx(i_iValCount,-1),
-    m_arValidities(i_iValCount, static_cast<int>(EValueValidity::Invalid)),
+    m_arValidities(i_iValCount, static_cast<int>(EValueValidityInvalid)),
     m_ararEnumEntryValidities()
 {
     if( m_pEnum != nullptr )
@@ -178,7 +178,7 @@ CEnumValArr::CEnumValArr( CEnumeration* i_pEnum, int i_iValCount, const QVariant
             if( pEntry != nullptr )
             {
                 m_ariEnumEntryIdx[idxVal] = pEntry->m_iEnumerator;
-                m_arValidities[idxVal] = static_cast<int>(EValueValidity::Valid);
+                m_arValidities[idxVal] = static_cast<int>(EValueValidityValid);
             }
         }
     }
@@ -191,7 +191,7 @@ CEnumValArr::CEnumValArr( CEnumeration* i_pEnum, const QVector<int>& i_ariEnumEn
     m_pEnum(i_pEnum),
     m_strEnumUId(),
     m_ariEnumEntryIdx(i_ariEnumEntryIdx),
-    m_arValidities(i_ariEnumEntryIdx.size(), static_cast<int>(EValueValidity::Invalid)),
+    m_arValidities(i_ariEnumEntryIdx.size(), static_cast<int>(EValueValidityInvalid)),
     m_ararEnumEntryValidities()
 {
     if( m_pEnum != nullptr )
@@ -207,7 +207,7 @@ CEnumValArr::CEnumValArr( CEnumeration* i_pEnum, const QVector<int>& i_ariEnumEn
 
             if( pEntry != nullptr )
             {
-                m_arValidities[idxVal] = static_cast<int>(EValueValidity::Valid);
+                m_arValidities[idxVal] = static_cast<int>(EValueValidityValid);
             }
         }
     }
@@ -220,7 +220,7 @@ CEnumValArr::CEnumValArr( CEnumeration* i_pEnum, const QStringList& i_strlstIdxN
     m_pEnum(i_pEnum),
     m_strEnumUId(),
     m_ariEnumEntryIdx(i_strlstIdxNames.size()),
-    m_arValidities(i_strlstIdxNames.size(), static_cast<int>(EValueValidity::Invalid)),
+    m_arValidities(i_strlstIdxNames.size(), static_cast<int>(EValueValidityInvalid)),
     m_ararEnumEntryValidities()
 {
     SEnumEntry* pEntry;
@@ -237,7 +237,7 @@ CEnumValArr::CEnumValArr( CEnumeration* i_pEnum, const QStringList& i_strlstIdxN
             if( pEntry != nullptr )
             {
                 m_ariEnumEntryIdx[idxVal] = pEntry->m_iEnumerator;
-                m_arValidities[idxVal] = static_cast<int>(EValueValidity::Valid);
+                m_arValidities[idxVal] = static_cast<int>(EValueValidityValid);
             }
         }
     }
@@ -250,7 +250,7 @@ CEnumValArr::CEnumValArr( CEnumeration* i_pEnum, const QVector<QVariant>& i_arVa
     m_pEnum(i_pEnum),
     m_strEnumUId(),
     m_ariEnumEntryIdx(i_arValsEnumEntries.size()),
-    m_arValidities(i_arValsEnumEntries.size(), static_cast<int>(EValueValidity::Invalid)),
+    m_arValidities(i_arValsEnumEntries.size(), static_cast<int>(EValueValidityInvalid)),
     m_ararEnumEntryValidities()
 {
     SEnumEntry* pEntry;
@@ -267,7 +267,7 @@ CEnumValArr::CEnumValArr( CEnumeration* i_pEnum, const QVector<QVariant>& i_arVa
             if( pEntry != nullptr )
             {
                 m_ariEnumEntryIdx[idxVal] = pEntry->m_iEnumerator;
-                m_arValidities[idxVal] = static_cast<int>(EValueValidity::Valid);
+                m_arValidities[idxVal] = static_cast<int>(EValueValidityValid);
             }
         }
     }
@@ -280,7 +280,7 @@ CEnumValArr::CEnumValArr( int i_iValCount, const CEnumVal& i_enumVal ) :
     m_pEnum(i_enumVal.getEnumeration()),
     m_strEnumUId(i_enumVal.getEnumerationUId()),
     m_ariEnumEntryIdx(i_iValCount,i_enumVal.getEnumEntryIndex()),
-    m_arValidities(i_iValCount, static_cast<int>(EValueValidity::Valid)),
+    m_arValidities(i_iValCount, static_cast<int>(EValueValidityValid)),
     m_ararEnumEntryValidities()
 {
     if( m_pEnum != nullptr )
@@ -291,7 +291,7 @@ CEnumValArr::CEnumValArr( int i_iValCount, const CEnumVal& i_enumVal ) :
 
         if( pEntry == nullptr )
         {
-            m_arValidities = QVector<quint8>(i_iValCount, static_cast<int>(EValueValidity::Invalid));
+            m_arValidities = QVector<quint8>(i_iValCount, static_cast<int>(EValueValidityInvalid));
         }
     }
 
@@ -303,7 +303,7 @@ CEnumValArr::CEnumValArr( const QVector<CEnumVal>& i_arEnumVals ) :
     m_pEnum(nullptr),
     m_strEnumUId(),
     m_ariEnumEntryIdx(i_arEnumVals.size(),-1),
-    m_arValidities(i_arEnumVals.size(), static_cast<int>(EValueValidity::Valid)),
+    m_arValidities(i_arEnumVals.size(), static_cast<int>(EValueValidityValid)),
     m_ararEnumEntryValidities()
 {
     if( i_arEnumVals.size() > 0 )
@@ -324,7 +324,7 @@ CEnumValArr::CEnumValArr( const QVector<CEnumVal>& i_arEnumVals ) :
             if( pEntry == nullptr )
             {
                 m_ariEnumEntryIdx[idxVal] = pEntry->m_iEnumerator;
-                m_arValidities[idxVal] = static_cast<int>(EValueValidity::Invalid);
+                m_arValidities[idxVal] = static_cast<int>(EValueValidityInvalid);
             }
         }
     }
@@ -348,7 +348,7 @@ CEnumValArr::CEnumValArr( const QString& i_strEnumUId, int i_iValCount ) :
     m_pEnum(nullptr),
     m_strEnumUId(i_strEnumUId),
     m_ariEnumEntryIdx(i_iValCount),
-    m_arValidities(i_iValCount, static_cast<int>(EValueValidity::Invalid)),
+    m_arValidities(i_iValCount, static_cast<int>(EValueValidityInvalid)),
     m_ararEnumEntryValidities()
 {
 } // ctor
@@ -359,7 +359,7 @@ CEnumValArr::CEnumValArr( const QString& i_strEnumUId, int i_iValCount, int i_iE
     m_pEnum(nullptr),
     m_strEnumUId(i_strEnumUId),
     m_ariEnumEntryIdx(i_iValCount,i_iEnumEntryIdx),
-    m_arValidities(i_iValCount, static_cast<int>(EValueValidity::Valid)),
+    m_arValidities(i_iValCount, static_cast<int>(EValueValidityValid)),
     m_ararEnumEntryValidities()
 {
 } // ctor
@@ -370,7 +370,7 @@ CEnumValArr::CEnumValArr( const QString& i_strEnumUId, const QVector<int>& i_ari
     m_pEnum(nullptr),
     m_strEnumUId(i_strEnumUId),
     m_ariEnumEntryIdx(i_ariEnumEntryIdx),
-    m_arValidities(i_ariEnumEntryIdx.size(), static_cast<int>(EValueValidity::Valid)),
+    m_arValidities(i_ariEnumEntryIdx.size(), static_cast<int>(EValueValidityValid)),
     m_ararEnumEntryValidities()
 {
 } // ctor
@@ -547,7 +547,7 @@ void CEnumValArr::setEnumeration( CEnumeration* i_pEnum )
         m_pEnum = i_pEnum;
         m_strEnumUId = "";
 
-        m_arValidities.fill(static_cast<int>(EValueValidity::Invalid));
+        m_arValidities.fill(static_cast<int>(EValueValidityInvalid));
         m_ararEnumEntryValidities.clear();
 
         if( m_pEnum != nullptr )
@@ -563,7 +563,7 @@ void CEnumValArr::setEnumeration( CEnumeration* i_pEnum )
 
                 if( pEntry != nullptr )
                 {
-                    m_arValidities[idxVal] = static_cast<int>(EValueValidity::Valid);
+                    m_arValidities[idxVal] = static_cast<int>(EValueValidityValid);
                 }
             }
         }
@@ -633,7 +633,7 @@ void CEnumValArr::resize( int i_iSize )
 
     if( i_iSize > iSizePrev )
     {
-        memset( &m_arValidities.data()[iSizePrev], static_cast<int>(EValueValidity::Invalid), (i_iSize-iSizePrev)*sizeof(m_arValidities.data()[0]) );
+        memset( &m_arValidities.data()[iSizePrev], static_cast<int>(EValueValidityInvalid), (i_iSize-iSizePrev)*sizeof(m_arValidities.data()[0]) );
     }
 
 } // resize
@@ -660,14 +660,14 @@ public: // instance methods
 bool CEnumValArr::isValid( int i_idxVal ) const
 //------------------------------------------------------------------------------
 {
-    return (m_arValidities[i_idxVal] == static_cast<int>(EValueValidity::Valid));
+    return (m_arValidities[i_idxVal] == static_cast<int>(EValueValidityValid));
 }
 
 //------------------------------------------------------------------------------
 bool CEnumValArr::isNull( int i_idxVal ) const
 //------------------------------------------------------------------------------
 {
-    return (m_arValidities[i_idxVal] == static_cast<int>(EValueValidity::Null));
+    return (m_arValidities[i_idxVal] == static_cast<int>(EValueValidityNull));
 }
 
 //------------------------------------------------------------------------------
@@ -898,16 +898,16 @@ void CEnumValArr::setValByEnumEntryIndex( int i_idxVal, int i_iEnumEntryIdx )
 
         if( pEntry == nullptr )
         {
-            m_arValidities[i_idxVal] = static_cast<int>(EValueValidity::Invalid);
+            m_arValidities[i_idxVal] = static_cast<int>(EValueValidityInvalid);
         }
         else
         {
-            m_arValidities[i_idxVal] = static_cast<int>(EValueValidity::Valid);
+            m_arValidities[i_idxVal] = static_cast<int>(EValueValidityValid);
         }
     }
     else
     {
-        m_arValidities[i_idxVal] = static_cast<int>(EValueValidity::Valid);
+        m_arValidities[i_idxVal] = static_cast<int>(EValueValidityValid);
     }
 
 } // setValByEnumEntryIndex
@@ -926,11 +926,11 @@ void CEnumValArr::setValByEnumEntryName( int i_idxVal, const QString& i_strName,
     if( pEntry != nullptr )
     {
         m_ariEnumEntryIdx[i_idxVal] = pEntry->m_iEnumerator;
-        m_arValidities[i_idxVal] = static_cast<int>(EValueValidity::Valid);
+        m_arValidities[i_idxVal] = static_cast<int>(EValueValidityValid);
     }
     else
     {
-        m_arValidities[i_idxVal] = static_cast<int>(EValueValidity::Invalid);
+        m_arValidities[i_idxVal] = static_cast<int>(EValueValidityInvalid);
     }
 
 } // setValByEnumEntryName
@@ -944,7 +944,7 @@ void CEnumValArr::setValByEnumEntryVal( int i_idxVal, const QVariant& i_valEnumE
         throw ZS::System::CException( __FILE__, __LINE__, EResultInvalidMethodCall, "Can only set index value by value of enum entries if enum is known" );
     }
 
-    m_arValidities[i_idxVal] = static_cast<int>(EValueValidity::Invalid);
+    m_arValidities[i_idxVal] = static_cast<int>(EValueValidityInvalid);
 
     if( m_pEnum != nullptr )
     {
@@ -953,7 +953,7 @@ void CEnumValArr::setValByEnumEntryVal( int i_idxVal, const QVariant& i_valEnumE
         if( pEntry != nullptr )
         {
             m_ariEnumEntryIdx[i_idxVal] = pEntry->m_iEnumerator;
-            m_arValidities[i_idxVal] = static_cast<int>(EValueValidity::Valid);
+            m_arValidities[i_idxVal] = static_cast<int>(EValueValidityValid);
         }
     }
 
@@ -983,16 +983,16 @@ void CEnumValArr::setVal( int i_idxVal, const CEnumVal& i_enumVal )
 
         if( pEntry == nullptr )
         {
-            m_arValidities[i_idxVal] = static_cast<int>(EValueValidity::Invalid);
+            m_arValidities[i_idxVal] = static_cast<int>(EValueValidityInvalid);
         }
         else
         {
-            m_arValidities[i_idxVal] = static_cast<int>(EValueValidity::Valid);
+            m_arValidities[i_idxVal] = static_cast<int>(EValueValidityValid);
         }
     }
     else
     {
-        m_arValidities[i_idxVal] = static_cast<int>(EValueValidity::Invalid);
+        m_arValidities[i_idxVal] = static_cast<int>(EValueValidityInvalid);
     }
 
 } // setVal
@@ -1013,16 +1013,16 @@ void CEnumValArr::insertValByEnumEntryIndex( int i_idxVal, int i_iEnumEntryIdx )
 
         if( pEntry == nullptr )
         {
-            m_arValidities.insert(i_idxVal, static_cast<int>(EValueValidity::Invalid) );
+            m_arValidities.insert(i_idxVal, static_cast<int>(EValueValidityInvalid) );
         }
         else
         {
-            m_arValidities.insert( i_idxVal, static_cast<int>(EValueValidity::Valid) );
+            m_arValidities.insert( i_idxVal, static_cast<int>(EValueValidityValid) );
         }
     }
     else
     {
-        m_arValidities.insert( i_idxVal, static_cast<int>(EValueValidity::Valid) );
+        m_arValidities.insert( i_idxVal, static_cast<int>(EValueValidityValid) );
     }
 
 } // insertValByEnumEntryIndex
@@ -1041,11 +1041,11 @@ void CEnumValArr::insertValByEnumEntryName( int i_idxVal, const QString& i_strNa
     if( pEntry != nullptr )
     {
         m_ariEnumEntryIdx.insert( i_idxVal, pEntry->m_iEnumerator );
-        m_arValidities.insert( i_idxVal, static_cast<int>(EValueValidity::Valid) );
+        m_arValidities.insert( i_idxVal, static_cast<int>(EValueValidityValid) );
     }
     else
     {
-        m_arValidities.insert( i_idxVal, static_cast<int>(EValueValidity::Invalid) );
+        m_arValidities.insert( i_idxVal, static_cast<int>(EValueValidityInvalid) );
     }
 
 } // insertValByEnumEntryName
@@ -1059,7 +1059,7 @@ void CEnumValArr::insertValByEnumEntryVal( int i_idxVal, const QVariant& i_valEn
         throw ZS::System::CException( __FILE__, __LINE__, EResultInvalidMethodCall, "Can only set index value by value of enum entries if enum is known" );
     }
 
-    m_arValidities.insert( i_idxVal, static_cast<int>(EValueValidity::Invalid) );
+    m_arValidities.insert( i_idxVal, static_cast<int>(EValueValidityInvalid) );
 
     if( m_pEnum != nullptr )
     {
@@ -1068,7 +1068,7 @@ void CEnumValArr::insertValByEnumEntryVal( int i_idxVal, const QVariant& i_valEn
         if( pEntry != nullptr )
         {
             m_ariEnumEntryIdx.insert( i_idxVal, pEntry->m_iEnumerator );
-            m_arValidities.insert( i_idxVal, static_cast<int>(EValueValidity::Valid) );
+            m_arValidities.insert( i_idxVal, static_cast<int>(EValueValidityValid) );
         }
     }
 
@@ -1098,16 +1098,16 @@ void CEnumValArr::insertVal( int i_idxVal, const CEnumVal& i_enumVal )
 
         if( pEntry == nullptr )
         {
-            m_arValidities.insert( i_idxVal, static_cast<int>(EValueValidity::Invalid) );
+            m_arValidities.insert( i_idxVal, static_cast<int>(EValueValidityInvalid) );
         }
         else
         {
-            m_arValidities.insert( i_idxVal, static_cast<int>(EValueValidity::Valid) );
+            m_arValidities.insert( i_idxVal, static_cast<int>(EValueValidityValid) );
         }
     }
     else
     {
-        m_arValidities.insert( i_idxVal, static_cast<int>(EValueValidity::Invalid) );
+        m_arValidities.insert( i_idxVal, static_cast<int>(EValueValidityInvalid) );
     }
 
 } // insertVal
@@ -1130,16 +1130,16 @@ void CEnumValArr::appendValByEnumEntryIndex( int i_iEnumEntryIdx )
 
         if( pEntry != nullptr )
         {
-            m_arValidities.append(static_cast<int>(EValueValidity::Valid));
+            m_arValidities.append(static_cast<int>(EValueValidityValid));
         }
         else
         {
-            m_arValidities.append(static_cast<int>(EValueValidity::Invalid));
+            m_arValidities.append(static_cast<int>(EValueValidityInvalid));
         }
     }
     else
     {
-        m_arValidities.append(static_cast<int>(EValueValidity::Valid));
+        m_arValidities.append(static_cast<int>(EValueValidityValid));
     }
 
     if( m_ararEnumEntryValidities.size() > 0 )
@@ -1168,12 +1168,12 @@ void CEnumValArr::appendValByEnumEntryName( const QString& i_strName, Qt::CaseSe
     if( pEntry != nullptr )
     {
         m_ariEnumEntryIdx.append( pEntry->m_iEnumerator );
-        m_arValidities.append(static_cast<int>(EValueValidity::Valid));
+        m_arValidities.append(static_cast<int>(EValueValidityValid));
     }
     else
     {
         m_ariEnumEntryIdx.append(-1);
-        m_arValidities.append(static_cast<int>(EValueValidity::Invalid));
+        m_arValidities.append(static_cast<int>(EValueValidityInvalid));
     }
 
     if( m_ararEnumEntryValidities.size() > 0 )
@@ -1197,12 +1197,12 @@ void CEnumValArr::appendValByEnumEntryVal( const QVariant& i_valEnumEntry )
     if( pEntry != nullptr )
     {
         m_ariEnumEntryIdx.append(pEntry->m_iEnumerator);
-        m_arValidities.append(static_cast<int>(EValueValidity::Valid));
+        m_arValidities.append(static_cast<int>(EValueValidityValid));
     }
     else
     {
         m_ariEnumEntryIdx.append(-1);
-        m_arValidities.append(static_cast<int>(EValueValidity::Invalid));
+        m_arValidities.append(static_cast<int>(EValueValidityInvalid));
     }
 
     if( m_ararEnumEntryValidities.size() > 0 )
@@ -1236,16 +1236,16 @@ void CEnumValArr::appendVal( const CEnumVal& i_enumVal )
 
         if( pEntry != nullptr )
         {
-            m_arValidities.append(static_cast<int>(EValueValidity::Valid));
+            m_arValidities.append(static_cast<int>(EValueValidityValid));
         }
         else
         {
-            m_arValidities.append(static_cast<int>(EValueValidity::Invalid));
+            m_arValidities.append(static_cast<int>(EValueValidityInvalid));
         }
     }
     else
     {
-        m_arValidities.append(static_cast<int>(EValueValidity::Valid));
+        m_arValidities.append(static_cast<int>(EValueValidityValid));
     }
 
     if( m_ararEnumEntryValidities.size() > 0 )
@@ -1293,7 +1293,7 @@ void CEnumValArr::setValuesByEnumEntryIndex( int i_idxStart, int i_iValCount, in
 
         QVector<int> ariIdxs(iValCount,i_iEnumEntryIdx);
         memcpy( &m_ariEnumEntryIdx.data()[idxStart], ariIdxs.data(), iValCount*sizeof(m_ariEnumEntryIdx.data()[0]) );
-        memset( &m_arValidities.data()[idxStart], static_cast<int>(EValueValidity::Valid), iValCount );
+        memset( &m_arValidities.data()[idxStart], static_cast<int>(EValueValidityValid), iValCount );
 
         if( m_pEnum != nullptr )
         {
@@ -1306,7 +1306,7 @@ void CEnumValArr::setValuesByEnumEntryIndex( int i_idxStart, int i_iValCount, in
 
                 if( pEntry == nullptr )
                 {
-                    m_arValidities[idxVal] = static_cast<int>(EValueValidity::Invalid);
+                    m_arValidities[idxVal] = static_cast<int>(EValueValidityInvalid);
                 }
             }
         }
@@ -1339,13 +1339,13 @@ void CEnumValArr::setValuesByEnumEntryName( int i_idxStart, int i_iValCount, con
         {
             QVector<int> ariIdxs(iValCount,-1);
             memcpy( &m_ariEnumEntryIdx.data()[idxStart], ariIdxs.data(), iValCount*sizeof(m_ariEnumEntryIdx.data()[0]) );
-            memset( &m_arValidities.data()[idxStart], static_cast<int>(EValueValidity::Invalid), iValCount );
+            memset( &m_arValidities.data()[idxStart], static_cast<int>(EValueValidityInvalid), iValCount );
         }
         else // if( pEntry != nullptr )
         {
             QVector<int> ariIdxs(iValCount,pEntry->m_iEnumerator);
             memcpy( &m_ariEnumEntryIdx.data()[idxStart], ariIdxs.data(), iValCount*sizeof(m_ariEnumEntryIdx.data()[0]) );
-            memset( &m_arValidities.data()[idxStart], static_cast<int>(EValueValidity::Valid), iValCount );
+            memset( &m_arValidities.data()[idxStart], static_cast<int>(EValueValidityValid), iValCount );
         }
     }
 
@@ -1376,13 +1376,13 @@ void CEnumValArr::setValuesByEnumEntryVal( int i_idxStart, int i_iValCount, cons
         {
             QVector<int> ariIdxs(iValCount,-1);
             memcpy( &m_ariEnumEntryIdx.data()[idxStart], ariIdxs.data(), iValCount*sizeof(m_ariEnumEntryIdx.data()[0]) );
-            memset( &m_arValidities.data()[idxStart], static_cast<int>(EValueValidity::Invalid), iValCount );
+            memset( &m_arValidities.data()[idxStart], static_cast<int>(EValueValidityInvalid), iValCount );
         }
         else // if( pEntry != nullptr )
         {
             QVector<int> ariIdxs(iValCount,pEntry->m_iEnumerator);
             memcpy( &m_ariEnumEntryIdx.data()[idxStart], ariIdxs.data(), iValCount*sizeof(m_ariEnumEntryIdx.data()[0]) );
-            memset( &m_arValidities.data()[idxStart], static_cast<int>(EValueValidity::Valid), iValCount );
+            memset( &m_arValidities.data()[idxStart], static_cast<int>(EValueValidityValid), iValCount );
         }
     }
 
@@ -1427,16 +1427,16 @@ void CEnumValArr::setValues( int i_idxStart, int i_iValCount, const CEnumVal& i_
 
             if( pEntry == nullptr )
             {
-                memset( &m_arValidities.data()[idxStart], static_cast<int>(EValueValidity::Invalid), iValCount );
+                memset( &m_arValidities.data()[idxStart], static_cast<int>(EValueValidityInvalid), iValCount );
             }
             else
             {
-                memset( &m_arValidities.data()[idxStart], static_cast<int>(EValueValidity::Valid), iValCount );
+                memset( &m_arValidities.data()[idxStart], static_cast<int>(EValueValidityValid), iValCount );
             }
         }
         else
         {
-            memset( &m_arValidities.data()[idxStart], static_cast<int>(EValueValidity::Valid), iValCount );
+            memset( &m_arValidities.data()[idxStart], static_cast<int>(EValueValidityValid), iValCount );
         }
     }
 
@@ -1463,7 +1463,7 @@ void CEnumValArr::setValuesByEnumEntryIndices( int i_idxStart, const QVector<int
     for( idxVal = i_idxStart; idxVal < (i_idxStart + i_ariEnumEntryIdx.size()); idxVal++ )
     {
         m_ariEnumEntryIdx[idxVal] = i_ariEnumEntryIdx[idxVal-i_idxStart];
-        m_arValidities[idxVal] = static_cast<int>(EValueValidity::Valid);
+        m_arValidities[idxVal] = static_cast<int>(EValueValidityValid);
 
         if( m_pEnum != nullptr )
         {
@@ -1471,7 +1471,7 @@ void CEnumValArr::setValuesByEnumEntryIndices( int i_idxStart, const QVector<int
 
             if( pEntry == nullptr )
             {
-                m_arValidities[idxVal] = static_cast<int>(EValueValidity::Invalid);
+                m_arValidities[idxVal] = static_cast<int>(EValueValidityInvalid);
             }
         }
     }
@@ -1500,7 +1500,7 @@ void CEnumValArr::setValuesByEnumEntryNames( int i_idxStart, const QStringList& 
     for( idxVal = i_idxStart; idxVal < (i_idxStart + i_strlstIdxNames.size()); idxVal++ )
     {
         m_ariEnumEntryIdx[idxVal] = -1;
-        m_arValidities[idxVal] = static_cast<int>(EValueValidity::Invalid);
+        m_arValidities[idxVal] = static_cast<int>(EValueValidityInvalid);
 
         if( m_pEnum != nullptr )
         {
@@ -1509,7 +1509,7 @@ void CEnumValArr::setValuesByEnumEntryNames( int i_idxStart, const QStringList& 
             if( pEntry != nullptr )
             {
                 m_ariEnumEntryIdx[idxVal] = pEntry->m_iEnumerator;
-                m_arValidities[idxVal] = static_cast<int>(EValueValidity::Valid);
+                m_arValidities[idxVal] = static_cast<int>(EValueValidityValid);
             }
         }
     }
@@ -1538,7 +1538,7 @@ void CEnumValArr::setValuesByEnumEntryVals( int i_idxStart, const QVector<QVaria
     for( idxVal = i_idxStart; idxVal < (i_idxStart + i_arValsEnumEntries.size()); idxVal++ )
     {
         m_ariEnumEntryIdx[idxVal] = -1;
-        m_arValidities[idxVal] = static_cast<int>(EValueValidity::Invalid);
+        m_arValidities[idxVal] = static_cast<int>(EValueValidityInvalid);
 
         if( m_pEnum != nullptr )
         {
@@ -1547,7 +1547,7 @@ void CEnumValArr::setValuesByEnumEntryVals( int i_idxStart, const QVector<QVaria
             if( pEntry != nullptr )
             {
                 m_ariEnumEntryIdx[idxVal] = pEntry->m_iEnumerator;
-                m_arValidities[idxVal] = static_cast<int>(EValueValidity::Valid);
+                m_arValidities[idxVal] = static_cast<int>(EValueValidityValid);
             }
         }
     }
@@ -1571,7 +1571,7 @@ void CEnumValArr::setValues( int i_idxStart, const QVector<CEnumVal>& i_arEnumVa
     for( idxVal = i_idxStart; idxVal < (i_idxStart + i_arEnumVals.size()); idxVal++ )
     {
         m_ariEnumEntryIdx[idxVal] = i_arEnumVals[idxVal-i_idxStart].getEnumEntryIndex();
-        m_arValidities[idxVal] = static_cast<int>(EValueValidity::Invalid);
+        m_arValidities[idxVal] = static_cast<int>(EValueValidityInvalid);
 
         if( m_pEnum == nullptr )
         {
@@ -1593,16 +1593,16 @@ void CEnumValArr::setValues( int i_idxStart, const QVector<CEnumVal>& i_arEnumVa
 
             if( pEntry == nullptr )
             {
-                m_arValidities[idxVal] = static_cast<int>(EValueValidity::Invalid);
+                m_arValidities[idxVal] = static_cast<int>(EValueValidityInvalid);
             }
             else
             {
-                m_arValidities[idxVal] = static_cast<int>(EValueValidity::Valid);
+                m_arValidities[idxVal] = static_cast<int>(EValueValidityValid);
             }
         }
         else
         {
-            m_arValidities[idxVal] = static_cast<int>(EValueValidity::Valid);
+            m_arValidities[idxVal] = static_cast<int>(EValueValidityValid);
         }
     }
 
@@ -1717,7 +1717,7 @@ QString CEnumValArr::enumEntryIndex2Name( int i_idxVal, int i_alias, EValueValid
 //------------------------------------------------------------------------------
 {
     QString        strName;
-    EValueValidity validity = EValueValidity::Invalid;
+    EValueValidity validity = EValueValidityInvalid;
 
     if( m_pEnum != nullptr )
     {
@@ -1729,7 +1729,7 @@ QString CEnumValArr::enumEntryIndex2Name( int i_idxVal, int i_alias, EValueValid
         }
         else
         {
-            validity = EValueValidity::Invalid;
+            validity = EValueValidityInvalid;
         }
     }
     if( o_pValidity != nullptr )
@@ -1738,7 +1738,7 @@ QString CEnumValArr::enumEntryIndex2Name( int i_idxVal, int i_alias, EValueValid
     }
     if( strName.isEmpty() )
     {
-        if( validity != EValueValidity::Valid )
+        if( validity != EValueValidityValid )
         {
             strName = CEnumValueValidity::toString(validity);
         }
@@ -1752,7 +1752,7 @@ QVariant CEnumValArr::enumEntryIndex2Val( int i_idxVal, EValueValidity* o_pValid
 //------------------------------------------------------------------------------
 {
     QVariant       valEnumEntry;
-    EValueValidity validity = EValueValidity::Invalid;
+    EValueValidity validity = EValueValidityInvalid;
 
     if( m_pEnum != nullptr )
     {
@@ -1764,7 +1764,7 @@ QVariant CEnumValArr::enumEntryIndex2Val( int i_idxVal, EValueValidity* o_pValid
         }
         else
         {
-            validity = EValueValidity::Invalid;
+            validity = EValueValidityInvalid;
         }
     }
     if( o_pValidity != nullptr )

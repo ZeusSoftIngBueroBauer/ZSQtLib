@@ -223,7 +223,7 @@ CRequestExecTree::~CRequestExecTree()
     {
         pReqDscr = it.value();
 
-        if( pReqDscr->m_objState != EObjState::Destroyed )
+        if( pReqDscr->m_objState != EObjStateDestroyed )
         {
             QString strAddErrInfo = "Request {" + pReqDscr->getAddTrcInfoStr(2) + "} has not been destroyed.";
             SErrResultInfo errResultInfo(
@@ -380,7 +380,7 @@ void CRequestExecTree::updateRequest( const SRequestDscr& i_reqDscr )
 
             bChanged = true;
 
-            if( pReqDscr->m_objState != EObjState::Created )
+            if( pReqDscr->m_objState != EObjStateCreated )
             {
                 if( m_hshRequests.contains(i_reqDscr.m_iId) )
                 {
@@ -1365,7 +1365,7 @@ void CRequestExecTree::onTmrGarbageCollectorTimeout()
     {
         pReqDscr = arReqDscrs[idxReq];
 
-        if( pReqDscr->m_objState == EObjState::Destroyed )
+        if( pReqDscr->m_objState == EObjStateDestroyed )
         {
             fElapsed_s = ZS::System::Time::getProcTimeInSec() - pReqDscr->m_fTimeEnd_s;
 

@@ -90,8 +90,8 @@ SRequestDscr::SRequestDscr() :
     m_valResult(),
     m_pMsgConResult(nullptr),
     m_pvResultData(nullptr),
-    m_objStateAborting(EObjState::Detached),
-    m_objState(EObjState::Detached),
+    m_objStateAborting(EObjStateDetached),
+    m_objState(EObjStateDetached),
     m_bIsBlocking(false),
     m_iTimeout_ms(0),
     m_fTimeStart_s(0.0),
@@ -131,8 +131,8 @@ SRequestDscr::SRequestDscr(
     m_valResult(),
     m_pMsgConResult(nullptr),
     m_pvResultData(nullptr),
-    m_objStateAborting(EObjState::Detached),
-    m_objState(EObjState::Detached),
+    m_objStateAborting(EObjStateDetached),
+    m_objState(EObjStateDetached),
     m_bIsBlocking(i_bIsBlocking),
     m_iTimeout_ms(i_iTimeout_ms),
     m_fTimeStart_s(0.0),
@@ -470,7 +470,7 @@ QString SRequestDscr::getAddTrcInfoStr( int i_iDetailLevel ) const
         strAddTrcInfo += "Progress: " + QString::number(m_iProgress_perCent);
         strAddTrcInfo += ", Result: " + m_errResultInfo.getResultStr();
 
-        if( i_iDetailLevel == 1 && m_objState != EObjState::Created )
+        if( i_iDetailLevel == 1 && m_objState != EObjStateCreated )
         {
             strAddTrcInfo += ", ObjState: " + CEnumObjState::toString(m_objState);
         }
@@ -485,17 +485,17 @@ QString SRequestDscr::getAddTrcInfoStr( int i_iDetailLevel ) const
 
             switch( m_objStateAborting )
             {
-                case EObjState::Destroying:
+                case EObjStateDestroying:
                 {
                     strAddTrcInfo += ", Aborting";
                     break;
                 }
-                case EObjState::Destroyed:
+                case EObjStateDestroyed:
                 {
                     strAddTrcInfo += ", Aborted";
                     break;
                 }
-                case EObjState::Detached:
+                case EObjStateDetached:
                 default:
                 {
                     break;
@@ -723,7 +723,7 @@ CRequest::CRequest(
         }
     } // if( m_dscr.m_pThread != nullptr )
 
-    m_dscr.m_objState = EObjState::Created;
+    m_dscr.m_objState = EObjStateCreated;
 
     m_dscr.m_fTimeStart_s = ZS::System::Time::getProcTimeInSec();
 
@@ -857,7 +857,7 @@ CRequest::CRequest( const SRequestDscr& i_reqDscr ) :
         }
     } // if( m_dscr.m_pThread != nullptr )
 
-    m_dscr.m_objState = EObjState::Created;
+    m_dscr.m_objState = EObjStateCreated;
 
     m_dscr.m_fTimeStart_s = ZS::System::Time::getProcTimeInSec();
 
@@ -889,7 +889,7 @@ CRequest::~CRequest()
         }
     }
 
-    m_dscr.m_objState = EObjState::Destroyed;
+    m_dscr.m_objState = EObjStateDestroyed;
 
 
     try
@@ -1656,9 +1656,9 @@ public: // instance methods
 void CRequest::abort()
 //------------------------------------------------------------------------------
 {
-    if( m_dscr.m_objStateAborting != EObjState::Destroying && m_dscr.m_objStateAborting != EObjState::Destroyed )
+    if( m_dscr.m_objStateAborting != EObjStateDestroying && m_dscr.m_objStateAborting != EObjStateDestroyed )
     {
-        m_dscr.m_objStateAborting = EObjState::Destroying;
+        m_dscr.m_objStateAborting = EObjStateDestroying;
         m_bChanged = true;
 
         if( !m_dscr.m_errResultInfo.isErrorResult() )
@@ -1677,9 +1677,9 @@ void CRequest::abort()
 void CRequest::setHasBeenAborted()
 //------------------------------------------------------------------------------
 {
-    if( m_dscr.m_objStateAborting != EObjState::Destroyed )
+    if( m_dscr.m_objStateAborting != EObjStateDestroyed )
     {
-        m_dscr.m_objStateAborting = EObjState::Destroyed;
+        m_dscr.m_objStateAborting = EObjStateDestroyed;
         m_bChanged = true;
     }
 

@@ -89,7 +89,7 @@ CTest::CTest(
     m_arfctsDoTestStepGroups(),
     m_iTestStepInterval_ms(i_iTestStepInterval_ms),
     m_state(EStateIdle),
-    m_runMode(ERunMode::Continuous),
+    m_runMode(ERunModeContinuous),
     m_bDoTestStepPending(false),
     m_pTrcAdminObj(nullptr)
 {
@@ -329,7 +329,7 @@ void CTest::start()
     if( m_state == EStateIdle || m_state == EStatePaused )
     {
         setState(EStateRunning);
-        setRunMode(ERunMode::Continuous);
+        setRunMode(ERunModeContinuous);
 
         triggerNextTestStep();
 
@@ -367,7 +367,7 @@ void CTest::step()
     if( m_state == EStateIdle || m_state == EStatePaused )
     {
         setState(EStateRunning);
-        setRunMode(ERunMode::SingleStep);
+        setRunMode(ERunModeSingleStep);
 
         triggerNextTestStep();
 
@@ -472,7 +472,7 @@ void CTest::resume()
     if( m_state == EStatePaused )
     {
         setState(EStateRunning);
-        setRunMode(ERunMode::Continuous);
+        setRunMode(ERunModeContinuous);
 
         triggerNextTestStep();
     }
@@ -760,7 +760,7 @@ void CTest::onCurrentTestStepFinished( CTestStep* i_pTestStep )
 
     if( m_state == EStateInit || m_state == EStateRunning ) // not Paused or Stopped
     {
-        if( m_runMode == ERunMode::Continuous )
+        if( m_runMode == ERunModeContinuous )
         {
             CTestStep* pTestStepNext = getNextTestStep(m_pTestStepCurr);
 
@@ -773,7 +773,7 @@ void CTest::onCurrentTestStepFinished( CTestStep* i_pTestStep )
                 triggerNextTestStep();
             }
         }
-        else if( m_runMode == ERunMode::SingleStep )
+        else if( m_runMode == ERunModeSingleStep )
         {
             pause();
         }

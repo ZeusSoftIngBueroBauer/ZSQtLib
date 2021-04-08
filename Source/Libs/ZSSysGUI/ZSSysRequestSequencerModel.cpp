@@ -521,7 +521,7 @@ void CModelRequestSequencer::onRequestChanged( qint64 i_iReqIdOld, qint64 i_iReq
 
         if( pReqSeqEntry == nullptr )
         {
-            pNode->m_reqSeqEntry.m_reqDscr.m_objState = EObjState::Destroyed;
+            pNode->m_reqSeqEntry.m_reqDscr.m_objState = EObjStateDestroyed;
         }
         else
         {
@@ -734,7 +734,7 @@ void CModelRequestSequencer::updateNode( SRequestSeqEntryModelNode* i_pNode )
 {
     int iRow;
 
-    if( i_pNode->m_reqSeqEntry.m_reqDscr.m_objState == EObjState::Created )
+    if( i_pNode->m_reqSeqEntry.m_reqDscr.m_objState == EObjStateCreated )
     {
         if( i_pNode->m_reqSeqEntry.m_reqDscr.m_iProgress_perCent < 100 )
         {
@@ -1033,7 +1033,7 @@ QVariant CModelRequestSequencer::data( const QModelIndex& i_modelIdx, int i_iRol
             {
                 if( pNode != m_pRootEntry )
                 {
-                    if( pNode->m_reqSeqEntry.m_reqDscr.m_objState == EObjState::Detached )
+                    if( pNode->m_reqSeqEntry.m_reqDscr.m_objState == EObjStateDetached )
                     {
                         varData = "-";
                     }
@@ -1051,7 +1051,7 @@ QVariant CModelRequestSequencer::data( const QModelIndex& i_modelIdx, int i_iRol
             {
                 if( pNode != m_pRootEntry )
                 {
-                    if( pNode->m_reqSeqEntry.m_reqDscr.m_objState == EObjState::Detached )
+                    if( pNode->m_reqSeqEntry.m_reqDscr.m_objState == EObjStateDetached )
                     {
                         varData = "-";
                     }
@@ -1070,7 +1070,7 @@ QVariant CModelRequestSequencer::data( const QModelIndex& i_modelIdx, int i_iRol
             {
                 if( pNode != m_pRootEntry )
                 {
-                    if( pNode->m_reqSeqEntry.m_reqDscr.m_objState == EObjState::Detached )
+                    if( pNode->m_reqSeqEntry.m_reqDscr.m_objState == EObjStateDetached )
                     {
                         varData = "-";
                     }
@@ -1088,7 +1088,7 @@ QVariant CModelRequestSequencer::data( const QModelIndex& i_modelIdx, int i_iRol
             {
                 if( pNode != m_pRootEntry )
                 {
-                    if( pNode->m_reqSeqEntry.m_reqDscr.m_objState == EObjState::Detached )
+                    if( pNode->m_reqSeqEntry.m_reqDscr.m_objState == EObjStateDetached )
                     {
                         varData = "-";
                     }
@@ -1106,7 +1106,7 @@ QVariant CModelRequestSequencer::data( const QModelIndex& i_modelIdx, int i_iRol
             {
                 if( pNode != m_pRootEntry )
                 {
-                    if( pNode->m_reqSeqEntry.m_reqDscr.m_objState == EObjState::Detached )
+                    if( pNode->m_reqSeqEntry.m_reqDscr.m_objState == EObjStateDetached )
                     {
                         varData = "-";
                     }

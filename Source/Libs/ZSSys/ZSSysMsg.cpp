@@ -1709,7 +1709,7 @@ QString CMsgErr::getAddTrcInfoStr( int /*i_iDetailLevel*/, ZS::System::EContentT
     QString strClmBeg;
     QString strClmEnd;
 
-    if( i_format == EContentToStrFormat::HtmlText )
+    if( i_format == EContentToStrFormatHtmlText )
     {
         strTblBeg = "<table>";
         strTblEnd = "</table>";

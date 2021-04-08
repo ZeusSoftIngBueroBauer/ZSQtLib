@@ -48,7 +48,7 @@ CEnumVal::CEnumVal() :
     m_pEnum(nullptr),
     m_strEnumUId(),
     m_iEnumEntryIdx(-1),
-    m_validity(EValueValidity::Invalid),
+    m_validity(EValueValidityInvalid),
     m_arEnumEntryValidities()
 {
 } // ctor
@@ -59,7 +59,7 @@ CEnumVal::CEnumVal( CEnumeration* i_pEnum ) :
     m_pEnum(i_pEnum),
     m_strEnumUId(),
     m_iEnumEntryIdx(-1),
-    m_validity(EValueValidity::Invalid),
+    m_validity(EValueValidityInvalid),
     m_arEnumEntryValidities()
 {
     if( m_pEnum != nullptr )
@@ -75,7 +75,7 @@ CEnumVal::CEnumVal( CEnumeration* i_pEnum, int i_iEnumEntryIdx ) :
     m_pEnum(i_pEnum),
     m_strEnumUId(),
     m_iEnumEntryIdx(i_iEnumEntryIdx),
-    m_validity(EValueValidity::Invalid),
+    m_validity(EValueValidityInvalid),
     m_arEnumEntryValidities()
 {
     if( m_pEnum != nullptr )
@@ -86,7 +86,7 @@ CEnumVal::CEnumVal( CEnumeration* i_pEnum, int i_iEnumEntryIdx ) :
 
         if( pEntry != nullptr )
         {
-            m_validity = EValueValidity::Valid;
+            m_validity = EValueValidityValid;
         }
     }
 
@@ -98,7 +98,7 @@ CEnumVal::CEnumVal( CEnumeration* i_pEnum, const QString& i_strName, Qt::CaseSen
     m_pEnum(i_pEnum),
     m_strEnumUId(),
     m_iEnumEntryIdx(-1),
-    m_validity(EValueValidity::Invalid),
+    m_validity(EValueValidityInvalid),
     m_arEnumEntryValidities()
 {
     if( m_pEnum != nullptr )
@@ -110,7 +110,7 @@ CEnumVal::CEnumVal( CEnumeration* i_pEnum, const QString& i_strName, Qt::CaseSen
         if( pEntry != nullptr )
         {
             m_iEnumEntryIdx = pEntry->m_iEnumerator;
-            m_validity = EValueValidity::Valid;
+            m_validity = EValueValidityValid;
         }
     }
 
@@ -122,7 +122,7 @@ CEnumVal::CEnumVal( CEnumeration* i_pEnum, const QVariant& i_valEnumEntry ) :
     m_pEnum(i_pEnum),
     m_strEnumUId(),
     m_iEnumEntryIdx(-1),
-    m_validity(EValueValidity::Invalid),
+    m_validity(EValueValidityInvalid),
     m_arEnumEntryValidities()
 {
     if( m_pEnum != nullptr )
@@ -134,7 +134,7 @@ CEnumVal::CEnumVal( CEnumeration* i_pEnum, const QVariant& i_valEnumEntry ) :
         if( pEntry != nullptr )
         {
             m_iEnumEntryIdx = pEntry->m_iEnumerator;
-            m_validity = EValueValidity::Valid;
+            m_validity = EValueValidityValid;
         }
     }
 
@@ -146,7 +146,7 @@ CEnumVal::CEnumVal( const QString& i_strEnumUId ) :
     m_pEnum(nullptr),
     m_strEnumUId(i_strEnumUId),
     m_iEnumEntryIdx(-1),
-    m_validity(EValueValidity::Invalid),
+    m_validity(EValueValidityInvalid),
     m_arEnumEntryValidities()
 {
 } // ctor
@@ -157,7 +157,7 @@ CEnumVal::CEnumVal( const QString& i_strEnumUId, int i_iEnumEntryIdx ) :
     m_pEnum(nullptr),
     m_strEnumUId(i_strEnumUId),
     m_iEnumEntryIdx(i_iEnumEntryIdx),
-    m_validity(EValueValidity::Invalid),
+    m_validity(EValueValidityInvalid),
     m_arEnumEntryValidities()
 {
 } // ctor
@@ -250,7 +250,7 @@ EValueValidity CEnumVal::setEnumeration( CEnumeration* i_pEnum )
 {
     m_pEnum = i_pEnum;
 
-    m_validity = EValueValidity::Invalid;
+    m_validity = EValueValidityInvalid;
     m_arEnumEntryValidities.clear();
 
     if( m_pEnum != nullptr )
@@ -263,7 +263,7 @@ EValueValidity CEnumVal::setEnumeration( CEnumeration* i_pEnum )
 
             if( pEntry != nullptr )
             {
-                m_validity = EValueValidity::Valid;
+                m_validity = EValueValidityValid;
             }
         }
     }
@@ -329,7 +329,7 @@ EValueValidity CEnumVal::setValByEnumEntryIndex( int i_iEnumEntryIdx )
         if( m_pEnum == nullptr )
         {
             // Cannot check whether index is in valid range.
-            m_validity = EValueValidity::Valid;
+            m_validity = EValueValidityValid;
         }
         else // if( m_pEnum != nullptr )
         {
@@ -337,17 +337,17 @@ EValueValidity CEnumVal::setValByEnumEntryIndex( int i_iEnumEntryIdx )
 
             if( pEntry == nullptr )
             {
-                m_validity = EValueValidity::Invalid;
+                m_validity = EValueValidityInvalid;
             }
             else if( pEntry != nullptr )
             {
-                m_validity = EValueValidity::Valid;
+                m_validity = EValueValidityValid;
             }
         } // if( m_pEnum != nullptr )
     }
     else // if( m_iEnumEntryIdx < 0 )
     {
-        m_validity = EValueValidity::Invalid;
+        m_validity = EValueValidityInvalid;
     }
 
     return m_validity;
@@ -360,7 +360,7 @@ EValueValidity CEnumVal::setValByEnumEntryName( const QString& i_strName, Qt::Ca
 {
     if( m_pEnum == nullptr )
     {
-        m_validity = EValueValidity::Invalid;
+        m_validity = EValueValidityInvalid;
     }
     else
     {
@@ -368,12 +368,12 @@ EValueValidity CEnumVal::setValByEnumEntryName( const QString& i_strName, Qt::Ca
 
         if( pEntry == nullptr )
         {
-            m_validity = EValueValidity::Invalid;
+            m_validity = EValueValidityInvalid;
         }
         else
         {
             m_iEnumEntryIdx = pEntry->m_iEnumerator;
-            m_validity = EValueValidity::Valid;
+            m_validity = EValueValidityValid;
         }
     }
     return m_validity;
@@ -386,7 +386,7 @@ EValueValidity CEnumVal::setValByEnumEntryVal( const QVariant& i_valEnumEntry )
 {
     if( m_pEnum == nullptr )
     {
-        m_validity = EValueValidity::Invalid;
+        m_validity = EValueValidityInvalid;
     }
     else
     {
@@ -394,12 +394,12 @@ EValueValidity CEnumVal::setValByEnumEntryVal( const QVariant& i_valEnumEntry )
 
         if( pEntry == nullptr )
         {
-            m_validity = EValueValidity::Invalid;
+            m_validity = EValueValidityInvalid;
         }
         else if( pEntry != nullptr )
         {
             m_iEnumEntryIdx = pEntry->m_iEnumerator;
-            m_validity = EValueValidity::Valid;
+            m_validity = EValueValidityValid;
         }
     }
     return m_validity;
@@ -419,7 +419,7 @@ QString CEnumVal::enumEntryIndex2Name( int i_alias, EValueValidity* o_pValidity 
 
     if( m_pEnum == nullptr || m_iEnumEntryIdx < 0 )
     {
-        validity = EValueValidity::Invalid;
+        validity = EValueValidityInvalid;
     }
     else // if( m_pEnum != nullptr && m_iEnumEntryIdx >= 0 )
     {
@@ -431,7 +431,7 @@ QString CEnumVal::enumEntryIndex2Name( int i_alias, EValueValidity* o_pValidity 
         }
         else
         {
-            validity = EValueValidity::Invalid;
+            validity = EValueValidityInvalid;
         }
     }
     if( o_pValidity != nullptr )
@@ -440,7 +440,7 @@ QString CEnumVal::enumEntryIndex2Name( int i_alias, EValueValidity* o_pValidity 
     }
     if( strName.isEmpty() )
     {
-        if( validity != EValueValidity::Valid )
+        if( validity != EValueValidityValid )
         {
             strName = CEnumValueValidity::toString(validity);
         }
@@ -458,7 +458,7 @@ QVariant CEnumVal::enumEntryIndex2Val( EValueValidity* o_pValidity ) const
 
     if( m_pEnum == nullptr || m_iEnumEntryIdx < 0 )
     {
-        validity = EValueValidity::Invalid;
+        validity = EValueValidityInvalid;
     }
     else // if( m_pEnum != nullptr && m_iEnumEntryIdx >= 0 )
     {
@@ -470,7 +470,7 @@ QVariant CEnumVal::enumEntryIndex2Val( EValueValidity* o_pValidity ) const
         }
         else
         {
-            validity = EValueValidity::Invalid;
+            validity = EValueValidityInvalid;
         }
     }
     if( o_pValidity != nullptr )

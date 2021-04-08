@@ -180,7 +180,7 @@ protected: // instance methods
     bool isMethodTraceActive( int i_iFilterDetailLevel ) const;
     int getMethodTraceDetailLevel() const;
 protected: // overridables of inherited class QObject (state machine)
-    virtual bool event( QEvent* i_pEv ) override;
+    virtual bool event( QEvent* i_pEv );
 protected: // instance members
     QMutex*                    m_pMtx;
     QString                    m_strObjName;

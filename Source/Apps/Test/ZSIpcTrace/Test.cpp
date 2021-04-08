@@ -447,9 +447,9 @@ void CTest::doTestStepTraceClientConnect( ZS::Test::CTestStep* i_pTestStep )
 
     QVector<CAbstractIdxTreeEntry*> arpTreeEntriesServer = pIdxTreeServer->treeEntriesVec();
 
-    for( auto& pTreeEntry : arpTreeEntriesServer )
+    foreach( CAbstractIdxTreeEntry* pTreeEntry, arpTreeEntriesServer )
     {
-        if( pTreeEntry != nullptr && pTreeEntry->entryType() == EIdxTreeEntryType::Leave)
+        if( pTreeEntry != nullptr && pTreeEntry->entryType() == EIdxTreeEntryTypeLeave)
         {
             CTrcAdminObj* pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(pTreeEntry);
 
@@ -968,9 +968,9 @@ void CTest::onTraceClientTraceAdminObjInserted( QObject* i_pTrcClient, const QSt
                 strActualValue += ")";
                 strlstActualValues.append(strActualValue);
 
-                for( auto& pTreeEntry : arpTreeEntriesClient )
+                foreach( CAbstractIdxTreeEntry* pTreeEntry, arpTreeEntriesClient )
                 {
-                    if( pTreeEntry != nullptr && pTreeEntry->entryType() == EIdxTreeEntryType::Leave)
+                    if( pTreeEntry != nullptr && pTreeEntry->entryType() == EIdxTreeEntryTypeLeave)
                     {
                         CTrcAdminObj* pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(pTreeEntry);
 

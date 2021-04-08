@@ -443,8 +443,8 @@ public: // operators
 public: // struct methods
     bool isAsynchronousRequest() const { return (m_errResultInfo.getResult() == EResultUndefined); }
 public: // struct methods
-    bool isBeingAborted() const { return (m_objStateAborting == EObjState::Destroying); }
-    bool hasBeenAborted() const { return (m_objStateAborting == EObjState::Destroyed); }
+    bool isBeingAborted() const { return (m_objStateAborting == EObjStateDestroying); }
+    bool hasBeenAborted() const { return (m_objStateAborting == EObjStateDestroyed); }
 public: // struct methods
     // Sometimes it is necessary to keep the original parent id and the child ids of the request descriptor.
     void initFrom( const SRequestDscr& i_other );  // pvResultData, ParentId, PendingRequestIds and ChildIds will not be taken over.
@@ -515,7 +515,7 @@ private: // ctors and operators which are not allowed
     bool operator != ( const CRequest& i_other ) const;
 signals:
     // Please note that the progress values 0 and 100 are reserved to indicate the start and the end of a request.
-    // The signal is also emitted if the request instance will be destroyed with "dscr.m_objState = EObjState::Destroyed".
+    // The signal is also emitted if the request instance will be destroyed with "dscr.m_objState = EObjStateDestroyed".
     void changed( ZS::System::SRequestDscr i_dscr );
 public: // instance methods
     void setKeepReqDscrInExecTree( bool i_bKeep );
@@ -579,8 +579,8 @@ public: // instance methods
 public: // instance methods
     EObjState getObjState() const { return m_dscr.m_objState; }
 public: // instance methods
-    bool isBeingAborted() const { return (m_dscr.m_objStateAborting == EObjState::Destroying); }
-    bool hasBeenAborted() const { return (m_dscr.m_objStateAborting == EObjState::Destroyed); }
+    bool isBeingAborted() const { return (m_dscr.m_objStateAborting == EObjStateDestroying); }
+    bool hasBeenAborted() const { return (m_dscr.m_objStateAborting == EObjStateDestroyed); }
 public: // instance methods
     void setIsBlockingRequest( bool i_bIsBlocking );
     bool isBlockingRequest() const { return m_dscr.m_bIsBlocking; }
@@ -706,7 +706,7 @@ inline bool deleteRequest( CRequest* i_pReq )
 
     if( i_pReq != nullptr && !i_pReq->isLocked() )
     {
-        if( i_pReq->getObjState() == EObjState::Created || i_pReq->getObjState() == EObjState::Detached )
+        if( i_pReq->getObjState() == EObjStateCreated || i_pReq->getObjState() == EObjStateDetached )
         {
             delete i_pReq;
             bDeleted = true;

@@ -43,11 +43,11 @@ Type definitions and constants
 ==============================================================================*/
 
 static const SEnumEntry s_arEnumStrIdxTreeEntryTypes[] = {           // IdxName,     Symbol
-    /*  0 */ SEnumEntry( static_cast<int>(EIdxTreeEntryType::Root),      "Root",      "R" ),
-    /*  1 */ SEnumEntry( static_cast<int>(EIdxTreeEntryType::Branch),    "Branch",    "B" ),
-    /*  2 */ SEnumEntry( static_cast<int>(EIdxTreeEntryType::Leave),     "Leave",     "L" ),
-    /*  3 */ SEnumEntry( static_cast<int>(EIdxTreeEntryType::Count),     "Count",     "*" ),
-    /*  4 */ SEnumEntry( static_cast<int>(EIdxTreeEntryType::Undefined), "Undefined", "?" )
+    /*  0 */ SEnumEntry( static_cast<int>(EIdxTreeEntryTypeRoot),      "Root",      "R" ),
+    /*  1 */ SEnumEntry( static_cast<int>(EIdxTreeEntryTypeBranch),    "Branch",    "B" ),
+    /*  2 */ SEnumEntry( static_cast<int>(EIdxTreeEntryTypeLeave),     "Leave",     "L" ),
+    /*  3 */ SEnumEntry( static_cast<int>(EIdxTreeEntryTypeCount),     "Count",     "*" ),
+    /*  4 */ SEnumEntry( static_cast<int>(EIdxTreeEntryTypeUndefined), "Undefined", "?" )
 };
 
 //------------------------------------------------------------------------------
@@ -108,11 +108,11 @@ QString ZS::System::idxTreeEntryType2Str( int i_iVal, int i_alias )
 EIdxTreeEntryType ZS::System::str2IdxTreeEntryType( const QString& i_str, int i_alias )
 //------------------------------------------------------------------------------
 {
-    EIdxTreeEntryType entryType = EIdxTreeEntryType::Undefined;
+    EIdxTreeEntryType entryType = EIdxTreeEntryTypeUndefined;
 
     int iVal = SEnumEntry::str2Enumerator(s_arEnumStrIdxTreeEntryTypes, _ZSArrLen(s_arEnumStrIdxTreeEntryTypes), i_str, i_alias, Qt::CaseInsensitive);
 
-    if( iVal >= 0 && iVal < static_cast<int>(EIdxTreeEntryType::Count) )
+    if( iVal >= 0 && iVal < static_cast<int>(EIdxTreeEntryTypeCount) )
     {
         entryType = static_cast<EIdxTreeEntryType>(iVal);
     }
@@ -302,7 +302,7 @@ QString CAbstractIdxTreeEntry::keyInTree() const
 
     QString strKeyInTree;
 
-    if( m_entryType == EIdxTreeEntryType::Root )
+    if( m_entryType == EIdxTreeEntryTypeRoot )
     {
         // Just to have something to write into the log file.
         // The root does not really have a key in the tree.
@@ -335,7 +335,7 @@ QString CAbstractIdxTreeEntry::parentBranchName() const
 
     QString strName;
 
-    if( m_pParentBranch != nullptr && m_pParentBranch->entryType() != EIdxTreeEntryType::Root )
+    if( m_pParentBranch != nullptr && m_pParentBranch->entryType() != EIdxTreeEntryTypeRoot )
     {
         strName = m_pParentBranch->name();
     }
@@ -358,7 +358,7 @@ QString CAbstractIdxTreeEntry::parentBranchPath() const
 
     QString strPath;
 
-    if( m_pParentBranch != nullptr && m_pParentBranch->entryType() != EIdxTreeEntryType::Root )
+    if( m_pParentBranch != nullptr && m_pParentBranch->entryType() != EIdxTreeEntryTypeRoot )
     {
         strPath = m_pParentBranch->path();
     }
@@ -521,7 +521,7 @@ public: // ctors and dtor
 */
 CBranchIdxTreeEntry::CBranchIdxTreeEntry( const QString& i_strName ) :
 //-----------------------------------------------------------------------------
-    CAbstractIdxTreeEntry(EIdxTreeEntryType::Branch, i_strName),
+    CAbstractIdxTreeEntry(EIdxTreeEntryTypeBranch, i_strName),
     m_mappTreeEntries(),
     m_arpTreeEntries()
 {
@@ -1106,7 +1106,7 @@ public: // ctors and dtor
 */
 CRootIdxTreeEntry::CRootIdxTreeEntry( const QString& i_strName ) :
 //-----------------------------------------------------------------------------
-    CBranchIdxTreeEntry(EIdxTreeEntryType::Root, i_strName)
+    CBranchIdxTreeEntry(EIdxTreeEntryTypeRoot, i_strName)
 {
 } // ctor
 
@@ -1167,7 +1167,7 @@ public: // ctors and dtor
 */
 CLeaveIdxTreeEntry::CLeaveIdxTreeEntry( const QString& i_strName ) :
 //-----------------------------------------------------------------------------
-    CAbstractIdxTreeEntry(EIdxTreeEntryType::Leave, i_strName)
+    CAbstractIdxTreeEntry(EIdxTreeEntryTypeLeave, i_strName)
 {
 } // ctor
 

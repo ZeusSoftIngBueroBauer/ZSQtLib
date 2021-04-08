@@ -55,7 +55,7 @@ CModelIdxTreeBranchContent::CModelIdxTreeBranchContent(
 //------------------------------------------------------------------------------
     QAbstractTableModel(i_pObjParent),
     m_pIdxTree(i_pIdxTree),
-    m_sortOrder(EIdxTreeSortOrder::Config),
+    m_sortOrder(EIdxTreeSortOrderConfig),
     m_pBranch(nullptr),
     m_pModelBranch(nullptr),
     m_iTrcDetailLevel(i_iTrcDetailLevel)
@@ -340,15 +340,15 @@ void CModelIdxTreeBranchContent::setSortOrder( EIdxTreeSortOrder i_sortOrder )
 
             m_pModelBranch->setSortOrder(i_sortOrder);
 
-            if( i_sortOrder == EIdxTreeSortOrder::Ascending )
+            if( i_sortOrder == EIdxTreeSortOrderAscending )
             {
-                for( auto strKeyInParentBranch : mappTreeEntries.keys() )
+                foreach( const QString& strKeyInParentBranch, mappTreeEntries.keys() )
                 {
                     pModelTreeEntryChild = mappTreeEntries.value(strKeyInParentBranch, nullptr);
                     m_pModelBranch->add(pModelTreeEntryChild);
                 }
             }
-            else // if( i_sortOrder == EIdxTreeSortOrder::None )
+            else // if( i_sortOrder == EIdxTreeSortOrderNone )
             {
                 CBranchIdxTreeEntry*   pBranch = dynamic_cast<CBranchIdxTreeEntry*>(m_pModelBranch->treeEntry());
                 CAbstractIdxTreeEntry* pTreeEntryChild;
@@ -359,7 +359,7 @@ void CModelIdxTreeBranchContent::setSortOrder( EIdxTreeSortOrder i_sortOrder )
                     pModelTreeEntryChild = mappTreeEntries.value(pTreeEntryChild->keyInParentBranch());
                     m_pModelBranch->add(pModelTreeEntryChild);
                 }
-            }  // if( i_sortOrder == EIdxTreeSortOrder::None )
+            }  // if( i_sortOrder == EIdxTreeSortOrderNone )
 
             endInsertRows();
 
@@ -543,12 +543,12 @@ void CModelIdxTreeBranchContent::onIdxTreeEntryAdded(
 
         if( i_pTreeEntry->isChildOf(m_pBranch) )
         {
-            if( i_pTreeEntry->entryType() == EIdxTreeEntryType::Branch )
+            if( i_pTreeEntry->entryType() == EIdxTreeEntryTypeBranch )
             {
                 pBranch = dynamic_cast<CBranchIdxTreeEntry*>(i_pTreeEntry);
                 pModelTreeEntry = new CModelBranchTreeEntry(pBranch);
             }
-            else if( i_pTreeEntry->entryType() == EIdxTreeEntryType::Leave )
+            else if( i_pTreeEntry->entryType() == EIdxTreeEntryTypeLeave )
             {
                 pLeave = dynamic_cast<CLeaveIdxTreeEntry*>(i_pTreeEntry);
                 pModelTreeEntry = new CModelLeaveTreeEntry(pLeave);
@@ -634,7 +634,7 @@ void CModelIdxTreeBranchContent::onIdxTreeEntryAboutToBeRemoved(
 
     if( pModelTreeEntry != nullptr )
     {
-        if( pModelTreeEntry->entryType() == EIdxTreeEntryType::Branch )
+        if( pModelTreeEntry->entryType() == EIdxTreeEntryTypeBranch )
         {
             clear(dynamic_cast<CModelBranchTreeEntry*>(pModelTreeEntry));
         }
@@ -1132,15 +1132,15 @@ Qt::ItemFlags CModelIdxTreeBranchContent::flags( const QModelIndex& i_modelIdx )
 
     if( pModelTreeEntry != nullptr )
     {
-        if( pModelTreeEntry->entryType() == EIdxTreeEntryType::Root )
+        if( pModelTreeEntry->entryType() == EIdxTreeEntryTypeRoot )
         {
             uFlags = uFlags | Qt::ItemIsDropEnabled;
         }
-        else if( pModelTreeEntry->entryType() == EIdxTreeEntryType::Branch )
+        else if( pModelTreeEntry->entryType() == EIdxTreeEntryTypeBranch )
         {
             uFlags = uFlags | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled;
         }
-        else if( pModelTreeEntry->entryType() == EIdxTreeEntryType::Leave )
+        else if( pModelTreeEntry->entryType() == EIdxTreeEntryTypeLeave )
         {
             uFlags = uFlags | Qt::ItemIsDragEnabled;
         }
@@ -1270,11 +1270,11 @@ QVariant CModelIdxTreeBranchContent::data( const QModelIndex& i_modelIdx, int i_
         CModelBranchTreeEntry* pModelBranch = nullptr;
         //CModelLeaveTreeEntry*  pModelLeave  = nullptr;
 
-        if( pModelTreeEntry->entryType() == EIdxTreeEntryType::Root || pModelTreeEntry->entryType() == EIdxTreeEntryType::Branch )
+        if( pModelTreeEntry->entryType() == EIdxTreeEntryTypeRoot || pModelTreeEntry->entryType() == EIdxTreeEntryTypeBranch )
         {
             pModelBranch = dynamic_cast<CModelBranchTreeEntry*>(pModelTreeEntry);
         }
-        else if( pModelTreeEntry->entryType() == EIdxTreeEntryType::Leave )
+        else if( pModelTreeEntry->entryType() == EIdxTreeEntryTypeLeave )
         {
             //pModelLeave = dynamic_cast<CModelLeaveTreeEntry*>(pModelTreeEntry);
         }

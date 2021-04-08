@@ -41,6 +41,7 @@ may result in using the software modules.
 #include "ZSTest/ZSTestStepAdminObjPool.h"
 #include "ZSTest/ZSTestStep.h"
 #include "ZSSys/ZSSysApp.h"
+#include "ZSSys/ZSSysVersion.h"
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
@@ -259,7 +260,17 @@ void CTest::doTestStepLoadDll( ZS::Test::CTestStep* i_pTestStep )
     // Test Step
     //----------
 
-    bool bOk = ZS::Trace::DllIf::loadDll();
+    #ifdef _DEBUG
+    ZS::Trace::DllIf::EBuildConfiguration buildConfiguration = ZS::Trace::DllIf::EBuildConfigurationDebug;
+    #else
+    ZS::Trace::DllIf::EBuildConfiguration buildConfiguration = ZS::Trace::DllIf::EBuildConfigurationRelease;
+    #endif
+
+    const char* szCompiler = COMPILERLIBINFIX;  // from "ZSSysVersion.h"
+    const char* szPlatform = PLATFORMLIBINFIX;  // from "ZSSysVersion.h"
+    int iQtVersionMajor = QT_VERSION_MAJOR;     // from "ZSSysVersion.h"
+
+    bool bOk = ZS::Trace::DllIf::loadDll(szCompiler, szPlatform, buildConfiguration, QT_VERSION_MAJOR);
 
     // Actual Values
     //---------------
@@ -733,7 +744,7 @@ void CTest::doTestStepCreateModule1( ZS::Test::CTestStep* i_pTestStep )
 
     strInfoText  = "Do you see the following lines?";
 
-    for( const auto& strTrc : strlstMthTraces )
+    foreach( const QString& strTrc, strlstMthTraces )
     {
         strInfoText += "\n" + strTrc;
     }
@@ -809,7 +820,7 @@ void CTest::doTestStepDeleteModule1( ZS::Test::CTestStep* i_pTestStep )
 
     strInfoText  = "Do you see the following lines?";
 
-    for( const auto& strTrc : strlstMthTraces )
+    foreach( const QString& strTrc, strlstMthTraces )
     {
         strInfoText += "\n" + strTrc;
     }
@@ -887,7 +898,7 @@ void CTest::doTestStepCreateModule2( ZS::Test::CTestStep* i_pTestStep )
 
     strInfoText  = "Do you see the following lines?";
 
-    for( const auto& strTrc : strlstMthTraces )
+    foreach( const QString& strTrc, strlstMthTraces )
     {
         strInfoText += "\n" + strTrc;
     }
@@ -966,7 +977,7 @@ void CTest::doTestStepDeleteModule2( ZS::Test::CTestStep* i_pTestStep )
 
     strInfoText  = "Do you see the following lines?";
 
-    for( const auto& strTrc : strlstMthTraces )
+    foreach( const QString& strTrc, strlstMthTraces )
     {
         strInfoText += "\n" + strTrc;
     }

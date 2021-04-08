@@ -49,11 +49,11 @@ Type definitions and constants
 ==============================================================================*/
 
 static const SEnumEntry s_arEnumStrIdxTreeSortOrders[] = {                    // IdxName,             Symbol, Text
-    /*  0 */ SEnumEntry( static_cast<int>(EIdxTreeSortOrder::Config),            "Config",            "-",    "As Configured"        ),
-    /*  1 */ SEnumEntry( static_cast<int>(EIdxTreeSortOrder::Ascending),         "Ascending",         "A"     "Ascending"            )
-    //  2 ** SEnumEntry( static_cast<int>(EIdxTreeSortOrder::LogicalDescending), "LogicalDescending", "LD",   "Descending Logically" ),
-    //  3 ** SEnumEntry( static_cast<int>(EIdxTreeSortOrder::ByNameAscending),   "ByNameAscending",   "NA",   "Ascending By Name"    ),
-    //  4 ** SEnumEntry( static_cast<int>(EIdxTreeSortOrder::ByNameDescending),  "ByNameDescending",  "ND",   "Descending By Name"   )
+    /*  0 */ SEnumEntry( static_cast<int>(EIdxTreeSortOrderConfig),            "Config",            "-",    "As Configured"        ),
+    /*  1 */ SEnumEntry( static_cast<int>(EIdxTreeSortOrderAscending),         "Ascending",         "A"     "Ascending"            )
+    //  2 ** SEnumEntry( static_cast<int>(EIdxTreeSortOrderLogicalDescending), "LogicalDescending", "LD",   "Descending Logically" ),
+    //  3 ** SEnumEntry( static_cast<int>(EIdxTreeSortOrderByNameAscending),   "ByNameAscending",   "NA",   "Ascending By Name"    ),
+    //  4 ** SEnumEntry( static_cast<int>(EIdxTreeSortOrderByNameDescending),  "ByNameDescending",  "ND",   "Descending By Name"   )
 };
 
 //------------------------------------------------------------------------------
@@ -92,11 +92,11 @@ QPixmap ZS::System::GUI::idxTreeSortOrder2Pixmap( int i_iVal, const QSize& i_sz 
 EIdxTreeSortOrder ZS::System::GUI::str2IdxTreeSortOrder( const QString& i_strVal, int i_alias )
 //------------------------------------------------------------------------------
 {
-    EIdxTreeSortOrder sortOrder = EIdxTreeSortOrder::Undefined;
+    EIdxTreeSortOrder sortOrder = EIdxTreeSortOrderUndefined;
 
     int iVal = SEnumEntry::str2Enumerator(s_arEnumStrIdxTreeSortOrders, _ZSArrLen(s_arEnumStrIdxTreeSortOrders), i_strVal, i_alias, Qt::CaseInsensitive);
 
-    if( iVal >= 0 && iVal < static_cast<int>(EIdxTreeSortOrder::Count) )
+    if( iVal >= 0 && iVal < static_cast<int>(EIdxTreeSortOrderCount) )
     {
         sortOrder = static_cast<EIdxTreeSortOrder>(iVal);
     }
@@ -223,7 +223,7 @@ CModelIdxTree::iterator& CModelIdxTree::iterator::operator ++ ()
         }
         else // if( m_pModelTreeEntryCurr != m_pModel->m_pModelRoot )
         {
-            if( m_pModelTreeEntryCurr->entryType() == EIdxTreeEntryType::Leave )
+            if( m_pModelTreeEntryCurr->entryType() == EIdxTreeEntryTypeLeave )
             {
                 int idxInParentBranch = m_pModelTreeEntryCurr->modelIndexInParentBranch();
                 CModelBranchTreeEntry* pModelBranchParent = m_pModelTreeEntryCurr->modelParentBranch();
@@ -245,7 +245,7 @@ CModelIdxTree::iterator& CModelIdxTree::iterator::operator ++ ()
                     pModelTreeEntryNew = pModelBranchParent->at(idxInParentBranch+1);
                 }
             }
-            else // if( m_pModelTreeEntryCurr->entryType() == EIdxTreeEntryType::Branch )
+            else // if( m_pModelTreeEntryCurr->entryType() == EIdxTreeEntryTypeBranch )
             {
                 CModelBranchTreeEntry* pModelBranchCurr = dynamic_cast<CModelBranchTreeEntry*>(m_pModelTreeEntryCurr);
 
@@ -329,7 +329,7 @@ QIcon CModelIdxTree::GetIcon( EIdxTreeEntryType i_entryType )
 
     switch( i_entryType )
     {
-        case EIdxTreeEntryType::Root:
+        case EIdxTreeEntryTypeRoot:
         {
             if( s_pIconRoot != nullptr )
             {
@@ -337,7 +337,7 @@ QIcon CModelIdxTree::GetIcon( EIdxTreeEntryType i_entryType )
             }
             break;
         }
-        case EIdxTreeEntryType::Branch:
+        case EIdxTreeEntryTypeBranch:
         {
             if( s_pIconBranch != nullptr )
             {
@@ -345,7 +345,7 @@ QIcon CModelIdxTree::GetIcon( EIdxTreeEntryType i_entryType )
             }
             break;
         }
-        case EIdxTreeEntryType::Leave:
+        case EIdxTreeEntryTypeLeave:
         {
             if( s_pIconLeave != nullptr )
             {
@@ -397,8 +397,8 @@ CModelIdxTree::CModelIdxTree( CIdxTree* i_pIdxTree, QObject* i_pObjParent, int i
 //------------------------------------------------------------------------------
     QAbstractItemModel(i_pObjParent),
     m_pIdxTree(nullptr),
-    m_entryTypeFilter(EIdxTreeEntryType::Undefined),
-    m_sortOrder(EIdxTreeSortOrder::Config),
+    m_entryTypeFilter(EIdxTreeEntryTypeUndefined),
+    m_sortOrder(EIdxTreeSortOrderConfig),
     m_mappModelTreeEntries(),
     m_pModelRoot(nullptr),
     m_iTrcDetailLevel(i_iTrcDetailLevel)
@@ -794,7 +794,7 @@ void CModelIdxTree::setFilter(
         {
             pModelTreeEntryChild = i_pModelBranch->at(idxTreeEntryChild);
 
-            if( pModelTreeEntryChild->entryType() == EIdxTreeEntryType::Branch )
+            if( pModelTreeEntryChild->entryType() == EIdxTreeEntryTypeBranch )
             {
                 pModelBranchChild = dynamic_cast<CModelBranchTreeEntry*>(pModelTreeEntryChild);
 
@@ -826,14 +826,14 @@ void CModelIdxTree::setFilter(
     QMap<QString, CAbstractIdxTreeEntry*> mappTreeEntriesNew;
     QVector<CAbstractIdxTreeEntry*>       arpTreeEntriesNew;
 
-    if( i_pModelBranch->sortOrder() == EIdxTreeSortOrder::Config )
+    if( i_pModelBranch->sortOrder() == EIdxTreeSortOrderConfig )
     {
         for( idxTreeEntryChild = 0; idxTreeEntryChild < pBranch->count(); ++idxTreeEntryChild )
         {
             pTreeEntryChild = pBranch->at(idxTreeEntryChild);
             strKeyInParentBranch = pTreeEntryChild->keyInParentBranch();
 
-            if( i_entryType == EIdxTreeEntryType::Undefined )
+            if( i_entryType == EIdxTreeEntryTypeUndefined )
             {
                 arpTreeEntriesNew << pTreeEntryChild;
                 mappTreeEntriesNew.insert(strKeyInParentBranch, pTreeEntryChild);
@@ -844,16 +844,16 @@ void CModelIdxTree::setFilter(
                 mappTreeEntriesNew.insert(strKeyInParentBranch, pTreeEntryChild);
             }
         }
-    } // if( i_pModelBranch->sortOrder() == EIdxTreeSortOrder::Config )
+    } // if( i_pModelBranch->sortOrder() == EIdxTreeSortOrderConfig )
 
-    else if( i_pModelBranch->sortOrder() == EIdxTreeSortOrder::Ascending )
+    else if( i_pModelBranch->sortOrder() == EIdxTreeSortOrderAscending )
     {
         for( idxTreeEntryChild = 0; idxTreeEntryChild < pBranch->count(); ++idxTreeEntryChild )
         {
             pTreeEntryChild = pBranch->at(idxTreeEntryChild);
             strKeyInParentBranch = pTreeEntryChild->keyInParentBranch();
 
-            if( i_entryType == EIdxTreeEntryType::Undefined )
+            if( i_entryType == EIdxTreeEntryTypeUndefined )
             {
                 mappTreeEntriesNew.insert(strKeyInParentBranch, pTreeEntryChild);
             }
@@ -862,12 +862,12 @@ void CModelIdxTree::setFilter(
                 mappTreeEntriesNew.insert(strKeyInParentBranch, pTreeEntryChild);
             }
         }
-        for( auto strKeyInParentBranch : mappTreeEntriesNew.keys() )
+        foreach( const QString& strKeyInParentBranch, mappTreeEntriesNew.keys() )
         {
             pTreeEntryChild = mappTreeEntriesNew[strKeyInParentBranch];
             arpTreeEntriesNew << pTreeEntryChild;
         }
-    } // if( i_pModelBranch->sortOrder() == EIdxTreeSortOrder::Ascending )
+    } // if( i_pModelBranch->sortOrder() == EIdxTreeSortOrderAscending )
 
     // Remove all model entries which should no longer belong to the branch.
     //----------------------------------------------------------------------
@@ -903,7 +903,7 @@ void CModelIdxTree::setFilter(
                 _endRemoveRows();
             }
         } // for( idxTreeEntryChild = 0; idxTreeEntryChild < pBranch->count(); ++idxTreeEntryChild )
-    } // if( i_pModelBranch->sortOrder() == EIdxTreeSortOrder::None )
+    } // if( i_pModelBranch->sortOrder() == EIdxTreeSortOrderNone )
 
     // Create and add model entries which should be newly added.
     //----------------------------------------------------------
@@ -925,14 +925,14 @@ void CModelIdxTree::setFilter(
         {
             pModelTreeEntryChild = nullptr;
 
-            if( pTreeEntryChild->entryType() == EIdxTreeEntryType::Branch )
+            if( pTreeEntryChild->entryType() == EIdxTreeEntryTypeBranch )
             {
                 CModelBranchTreeEntry* pModelBranch = new CModelBranchTreeEntry(dynamic_cast<CBranchIdxTreeEntry*>(pTreeEntryChild));
                 pModelBranch->setSortOrder(i_pModelBranch->sortOrder());
                 pModelBranch->setFilter(i_entryType);
                 pModelTreeEntryChild = pModelBranch;
             }
-            else if( pTreeEntryChild->entryType() == EIdxTreeEntryType::Leave )
+            else if( pTreeEntryChild->entryType() == EIdxTreeEntryTypeLeave )
             {
                 pModelTreeEntryChild = new CModelLeaveTreeEntry(dynamic_cast<CLeaveIdxTreeEntry*>(pTreeEntryChild));
             }
@@ -997,7 +997,7 @@ void CModelIdxTree::setSortOrder(
             {
                 pModelTreeEntry = i_pModelBranch->at(idxModelTreeEntry);
 
-                if( pModelTreeEntry->entryType() == EIdxTreeEntryType::Branch )
+                if( pModelTreeEntry->entryType() == EIdxTreeEntryTypeBranch )
                 {
                     pModelBranch = dynamic_cast<CModelBranchTreeEntry*>(pModelTreeEntry);
 
@@ -1030,15 +1030,15 @@ void CModelIdxTree::setSortOrder(
 
             i_pModelBranch->setSortOrder(i_sortOrder);
 
-            if( i_sortOrder == EIdxTreeSortOrder::Ascending )
+            if( i_sortOrder == EIdxTreeSortOrderAscending )
             {
-                for( auto strKeyInParentBranch : mappTreeEntries.keys() )
+                foreach( const QString& strKeyInParentBranch, mappTreeEntries.keys() )
                 {
                     pModelTreeEntryChild = mappTreeEntries.value(strKeyInParentBranch, nullptr);
                     i_pModelBranch->add(pModelTreeEntryChild);
                 }
             }
-            else // if( i_sortOrder == EIdxTreeSortOrder::None )
+            else // if( i_sortOrder == EIdxTreeSortOrderNone )
             {
                 CBranchIdxTreeEntry*   pBranch = dynamic_cast<CBranchIdxTreeEntry*>(i_pModelBranch->treeEntry());
                 CAbstractIdxTreeEntry* pTreeEntryChild;
@@ -1054,7 +1054,7 @@ void CModelIdxTree::setSortOrder(
                         i_pModelBranch->add(pModelTreeEntryChild);
                     }
                 }
-            }  // if( i_sortOrder == EIdxTreeSortOrder::None )
+            }  // if( i_sortOrder == EIdxTreeSortOrderNone )
 
             _endInsertRows();
 
@@ -1166,7 +1166,7 @@ void CModelIdxTree::setIsSelected(
 
     if( i_bRecursive )
     {
-        if( i_pModelTreeEntry->entryType() == EIdxTreeEntryType::Root || i_pModelTreeEntry->entryType() == EIdxTreeEntryType::Branch )
+        if( i_pModelTreeEntry->entryType() == EIdxTreeEntryTypeRoot || i_pModelTreeEntry->entryType() == EIdxTreeEntryTypeBranch )
         {
             CModelBranchTreeEntry* pModelBranch = dynamic_cast<CModelBranchTreeEntry*>(i_pModelTreeEntry);
 
@@ -1419,9 +1419,9 @@ void CModelIdxTree::onIdxTreeEntryAdded(
 
         pModelTreeEntry = nullptr;
 
-        if( i_pTreeEntry->entryType() == EIdxTreeEntryType::Branch )
+        if( i_pTreeEntry->entryType() == EIdxTreeEntryTypeBranch )
         {
-            if( m_entryTypeFilter == EIdxTreeEntryType::Undefined || m_entryTypeFilter == EIdxTreeEntryType::Branch )
+            if( m_entryTypeFilter == EIdxTreeEntryTypeUndefined || m_entryTypeFilter == EIdxTreeEntryTypeBranch )
             {
                 pBranch = dynamic_cast<CBranchIdxTreeEntry*>(i_pTreeEntry);
                 CModelBranchTreeEntry* pModelBranch = new CModelBranchTreeEntry(pBranch);
@@ -1430,9 +1430,9 @@ void CModelIdxTree::onIdxTreeEntryAdded(
                 pModelTreeEntry = pModelBranch;
             }
         }
-        else if( i_pTreeEntry->entryType() == EIdxTreeEntryType::Leave )
+        else if( i_pTreeEntry->entryType() == EIdxTreeEntryTypeLeave )
         {
-            if( m_entryTypeFilter == EIdxTreeEntryType::Undefined || m_entryTypeFilter == EIdxTreeEntryType::Leave )
+            if( m_entryTypeFilter == EIdxTreeEntryTypeUndefined || m_entryTypeFilter == EIdxTreeEntryTypeLeave )
             {
                 pLeave = dynamic_cast<CLeaveIdxTreeEntry*>(i_pTreeEntry);
                 pModelTreeEntry = new CModelLeaveTreeEntry(pLeave);
@@ -1452,7 +1452,7 @@ void CModelIdxTree::onIdxTreeEntryAdded(
             _beginInsertRows(modelIdxParent, idxInParentBranch, idxInParentBranch);
             _endInsertRows();
 
-            if( i_pTreeEntry->entryType() == EIdxTreeEntryType::Branch && pBranch != nullptr )
+            if( i_pTreeEntry->entryType() == EIdxTreeEntryTypeBranch && pBranch != nullptr )
             {
                 CAbstractIdxTreeEntry* pTreeEntry;
                 int                    idxEntry;
@@ -1462,7 +1462,7 @@ void CModelIdxTree::onIdxTreeEntryAdded(
                     pTreeEntry = pBranch->at(idxEntry);
                     onIdxTreeEntryAdded(i_pIdxTree, pTreeEntry);
                 }
-            } // if( i_pTreeEntry->entryType() == EIdxTreeEntryType::Branch )
+            } // if( i_pTreeEntry->entryType() == EIdxTreeEntryTypeBranch )
         } // if( pModelTreeEntry != nullptr )
     } // if( pModelTreeEntry == nullptr )
 
@@ -1546,7 +1546,7 @@ void CModelIdxTree::onIdxTreeEntryAboutToBeRemoved(
     // may have been applied.
     if( pModelTreeEntry != nullptr )
     {
-        if( pModelTreeEntry->entryType() == EIdxTreeEntryType::Branch )
+        if( pModelTreeEntry->entryType() == EIdxTreeEntryTypeBranch )
         {
             clear(dynamic_cast<CModelBranchTreeEntry*>(pModelTreeEntry));
         }
@@ -1777,7 +1777,7 @@ void CModelIdxTree::clear( CModelBranchTreeEntry* i_pModelBranch, bool i_bDestro
     {
         pModelTreeEntry = i_pModelBranch->at(idxEntry);
 
-        if( pModelTreeEntry->entryType() == EIdxTreeEntryType::Branch )
+        if( pModelTreeEntry->entryType() == EIdxTreeEntryTypeBranch )
         {
             clear(dynamic_cast<CModelBranchTreeEntry*>(pModelTreeEntry), i_bDestroyTreeEntries);
         }
@@ -1889,13 +1889,13 @@ int CModelIdxTree::rowCount( const QModelIndex& i_modelIdxParent ) const
             throw CException(__FILE__, __LINE__, EResultInternalProgramError);
         }
 
-        if( pModelParentTreeEntry->entryType() == EIdxTreeEntryType::Root
-         || pModelParentTreeEntry->entryType() == EIdxTreeEntryType::Branch )
+        if( pModelParentTreeEntry->entryType() == EIdxTreeEntryTypeRoot
+         || pModelParentTreeEntry->entryType() == EIdxTreeEntryTypeBranch )
         {
             CModelBranchTreeEntry* pModelParentBranch = dynamic_cast<CModelBranchTreeEntry*>(pModelParentTreeEntry);
             iRowCount = pModelParentBranch->size();
         }
-        else // if( pModelParentTreeEntry->entryType() == EIdxTreeEntryType::Leave )
+        else // if( pModelParentTreeEntry->entryType() == EIdxTreeEntryTypeLeave )
         {
             iRowCount = 0;
         }
@@ -1986,8 +1986,8 @@ QModelIndex CModelIdxTree::index( int i_iRow, int i_iCol, const QModelIndex& i_m
                 throw CException(__FILE__, __LINE__, EResultInternalProgramError);
             }
 
-            if( pModelParentTreeEntry->entryType() != EIdxTreeEntryType::Root
-             && pModelParentTreeEntry->entryType() != EIdxTreeEntryType::Branch )
+            if( pModelParentTreeEntry->entryType() != EIdxTreeEntryTypeRoot
+             && pModelParentTreeEntry->entryType() != EIdxTreeEntryTypeBranch )
             {
                 throw CException(__FILE__, __LINE__, EResultInternalProgramError);
             }
@@ -2243,15 +2243,15 @@ Qt::ItemFlags CModelIdxTree::flags( const QModelIndex& i_modelIdx ) const
 
     if( pModelTreeEntry != nullptr )
     {
-        if( pModelTreeEntry->entryType() == EIdxTreeEntryType::Root )
+        if( pModelTreeEntry->entryType() == EIdxTreeEntryTypeRoot )
         {
             uFlags = uFlags | Qt::ItemIsDropEnabled;
         }
-        else if( pModelTreeEntry->entryType() == EIdxTreeEntryType::Branch )
+        else if( pModelTreeEntry->entryType() == EIdxTreeEntryTypeBranch )
         {
             uFlags = uFlags | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled;
         }
-        else if( pModelTreeEntry->entryType() == EIdxTreeEntryType::Leave )
+        else if( pModelTreeEntry->entryType() == EIdxTreeEntryTypeLeave )
         {
             uFlags = uFlags | Qt::ItemIsDragEnabled;
         }
@@ -2377,7 +2377,7 @@ QVariant CModelIdxTree::data( const QModelIndex& i_modelIdx, int i_iRole ) const
     {
         CModelBranchTreeEntry* pModelBranch = nullptr;
 
-        if( pModelTreeEntry->entryType() == EIdxTreeEntryType::Root || pModelTreeEntry->entryType() == EIdxTreeEntryType::Branch )
+        if( pModelTreeEntry->entryType() == EIdxTreeEntryTypeRoot || pModelTreeEntry->entryType() == EIdxTreeEntryTypeBranch )
         {
             pModelBranch = dynamic_cast<CModelBranchTreeEntry*>(pModelTreeEntry);
         }
@@ -2689,7 +2689,7 @@ QMimeData* CModelIdxTree::mimeData( const QModelIndexList& i_arModelIdxs ) const
 
     const CModelAbstractTreeEntry* pModelTreeEntry;
 
-    for( const QModelIndex& modelIdx : i_arModelIdxs )
+    foreach( const QModelIndex& modelIdx, i_arModelIdxs )
     {
         if( modelIdx.isValid() )
         {
@@ -2786,7 +2786,7 @@ bool CModelIdxTree::canDropMimeData(
                 bCanDrop = true;
             }
 
-            for( auto strKeyInTree : strlstItems )
+            foreach( const QString& strKeyInTree, strlstItems )
             {
                 pTreeEntryDropped = m_pIdxTree->findEntry(strKeyInTree);
 
@@ -2914,7 +2914,7 @@ bool CModelIdxTree::dropMimeData(
 
         CAbstractIdxTreeEntry* pTreeEntryDropped;
 
-        for( auto strKeyInTree : strlstItems )
+        foreach( const QString& strKeyInTree, strlstItems )
         {
             pTreeEntryDropped = m_pIdxTree->findEntry(strKeyInTree);
 
@@ -3293,7 +3293,7 @@ bool CModelIdxTree::moveRows(
         /* strMethod          */ "moveRows",
         /* strMethodInArgs    */ strMthInArgs );
 
-    bool bOk = QAbstractItemModel::moveRows(i_modelIdxSourceParent, i_iRowSource, i_iRowCount, i_modelIdxDestParent, i_iRowDestChild);
+    bool bOk = false; // QAbstractItemModel::moveRows(i_modelIdxSourceParent, i_iRowSource, i_iRowCount, i_modelIdxDestParent, i_iRowDestChild);
 
     if( m_iTrcDetailLevel >= ETraceDetailLevelVerbose )
     {
@@ -3334,7 +3334,7 @@ bool CModelIdxTree::moveColumns(
         /* strMethod          */ "moveColumns",
         /* strMethodInArgs    */ strMthInArgs );
 
-    bool bOk = QAbstractItemModel::moveColumns(i_modelIdxSourceParent, i_iColSource, i_iColCount, i_modelIdxDestParent, i_iColDestChild);
+    bool bOk = false; //QAbstractItemModel::moveColumns(i_modelIdxSourceParent, i_iColSource, i_iColCount, i_modelIdxDestParent, i_iColDestChild);
 
     if( m_iTrcDetailLevel >= ETraceDetailLevelVerbose )
     {
@@ -3372,7 +3372,7 @@ void CModelIdxTree::emit_dataChanged( const QModelIndex& i_modelIdxTL, const QMo
         /* strMethod          */ "emit_dataChanged",
         /* strMethodInArgs    */ strMthInArgs );
 
-    emit dataChanged(i_modelIdxTL, i_modelIdxBR, i_ariRoles);
+    emit dataChanged(i_modelIdxTL, i_modelIdxBR/*, i_ariRoles*/);
 
 } // emit_dataChanged
 
@@ -3402,58 +3402,6 @@ void CModelIdxTree::emit_headerDataChanged( Qt::Orientation i_orientation, int i
     emit headerDataChanged(i_orientation, i_iFirstSection, i_iLastSection);
 
 } // emit_headerDataChanged
-
-//------------------------------------------------------------------------------
-void CModelIdxTree::emit_layoutChanged( const QList<QPersistentModelIndex>& i_arModelIdxsParents, QAbstractItemModel::LayoutChangeHint i_hint )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-
-    if( m_iTrcDetailLevel >= ETraceDetailLevelVerbose )
-    {
-        strMthInArgs  = "ModelIdxsParents [" + QString::number(i_arModelIdxsParents.size()) + "]";
-        strMthInArgs += ", Hint: " + QString::number(i_hint);
-    }
-
-    CMethodTracer mthTracer(
-        /* pTrcServer         */ CTrcServer::GetInstance(),
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLevel */ ETraceDetailLevelVerbose,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
-        /* strObjName         */ objectName(),
-        /* strMethod          */ "emit_layoutChanged",
-        /* strMethodInArgs    */ strMthInArgs );
-
-    emit layoutChanged(i_arModelIdxsParents, i_hint);
-
-} // emit_layoutChanged
-
-//------------------------------------------------------------------------------
-void CModelIdxTree::emit_layoutAboutToBeChanged( const QList<QPersistentModelIndex>& i_arModelIdxsParents, QAbstractItemModel::LayoutChangeHint i_hint )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-
-    if( m_iTrcDetailLevel >= ETraceDetailLevelVerbose )
-    {
-        strMthInArgs  = "ModelIdxsParents [" + QString::number(i_arModelIdxsParents.size()) + "]";
-        strMthInArgs += ", Hint: " + QString::number(i_hint);
-    }
-
-    CMethodTracer mthTracer(
-        /* pTrcServer         */ CTrcServer::GetInstance(),
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLevel */ ETraceDetailLevelVerbose,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
-        /* strObjName         */ objectName(),
-        /* strMethod          */ "emit_layoutAboutToBeChanged",
-        /* strMethodInArgs    */ strMthInArgs );
-
-    emit layoutAboutToBeChanged(i_arModelIdxsParents, i_hint);
-
-} // emit_layoutAboutToBeChanged
 
 /*==============================================================================
 protected: // reimplemented to trace emitting signals for debugging purposes

@@ -56,9 +56,9 @@ public: // ctors and dtor
     CBlkTypeL( const CBlkTypeL& i_blkTypeOther );
     virtual ~CBlkTypeL();
 public: // must overridables of base class CBlkType
-    virtual CBlkType* clone() const override;
+    virtual CBlkType* clone() const;
 public: // must overridables of base class CBlkType
-    virtual QByteArray* createWatchDogBlock() const override;
+    virtual QByteArray* createWatchDogBlock() const;
 public: // must overridables of base class CBlkType
     virtual QList<QByteArray> receiveDataBlocks(
         ESrvCltType            i_srvCltType,
@@ -67,7 +67,7 @@ public: // must overridables of base class CBlkType
         CIpcSocketWrapper*     i_pSocketWrapper,
         QByteArray*            i_pByteArrWatchDog = nullptr,
         Trace::CMethodTracer*  i_pMethodTracer = nullptr,
-        const QList<QObject*>& i_arpTrcMsgLogObjects = QList<QObject*>() ) const override;
+        const QList<QObject*>& i_arpTrcMsgLogObjects = QList<QObject*>() ) const;
     virtual bool writeDataBlock(
         ESrvCltType            i_srvCltType,
         QObject*               i_pObjGtw,
@@ -76,7 +76,7 @@ public: // must overridables of base class CBlkType
         const QByteArray&      i_byteArr,
         bool                   i_bIsWatchDogBlock = false,
         Trace::CMethodTracer*  i_pMethodTracer = nullptr,
-        const QList<QObject*>& i_arpTrcMsgLogObjects = QList<QObject*>() ) const override;
+        const QList<QObject*>& i_arpTrcMsgLogObjects = QList<QObject*>() ) const;
 public: // instance methods
     EBlkLenDataType blkLenDataType() const { return m_blkLenDataType; }
     int blkLenDataTypeSize() const { return m_iBlkLenDataTypeSize; }

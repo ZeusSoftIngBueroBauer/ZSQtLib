@@ -446,7 +446,7 @@ void CClientGateway::onConnected( QObject* /*i_pSocketWrapper*/ )
                 CMsgReqAddLogItem* pMsgLogItem = new CMsgReqAddLogItem(
                     /* pObjSender   */ this,
                     /* pObjReceiver */ m_arpTrcMsgLogObjects[idxObj],
-                    /* transmitDir  */ ETransmitDir::Undefined,
+                    /* transmitDir  */ ETransmitDirUndefined,
                     /* bBold        */ false,
                     /* strMsg       */ strAddTrcInfo );
                 POST_OR_DELETE_MESSAGE(pMsgLogItem, &mthTracer, ETraceDetailLevelRuntimeInfo);
@@ -609,7 +609,7 @@ void CClientGateway::onTimeoutConnect()
                 CMsgReqAddLogItem* pMsgLogItem = new CMsgReqAddLogItem(
                     /* pObjSender   */ this,
                     /* pObjReceiver */ m_arpTrcMsgLogObjects[idxObj],
-                    /* transmitDir  */ ETransmitDir::Undefined,
+                    /* transmitDir  */ ETransmitDirUndefined,
                     /* bBold        */ false,
                     /* strMsg       */ strAddTrcInfo );
                 POST_OR_DELETE_MESSAGE(pMsgLogItem, &mthTracer, ETraceDetailLevelRuntimeInfo);
@@ -757,7 +757,7 @@ void CClientGateway::onTimeoutWatchDog()
                             CMsgReqAddLogItem* pMsgLogItem = new CMsgReqAddLogItem(
                                 /* pObjSender   */ this,
                                 /* pObjReceiver */ m_arpTrcMsgLogObjects[idxObj],
-                                /* transmitDir  */ ETransmitDir::Undefined,
+                                /* transmitDir  */ ETransmitDirUndefined,
                                 /* bBold        */ false,
                                 /* strMsg       */ strAddTrcInfo );
                             POST_OR_DELETE_MESSAGE(pMsgLogItem, &mthTracer, ETraceDetailLevelRuntimeInfo);
@@ -777,7 +777,7 @@ void CClientGateway::onTimeoutWatchDog()
                             CMsgReqAddLogItem* pMsgLogItem = new CMsgReqAddLogItem(
                                 /* pObjSender   */ this,
                                 /* pObjReceiver */ m_arpTrcMsgLogObjects[idxObj],
-                                /* transmitDir  */ ETransmitDir::Undefined,
+                                /* transmitDir  */ ETransmitDirUndefined,
                                 /* bBold        */ false,
                                 /* strMsg       */ strAddTrcInfo );
                             POST_OR_DELETE_MESSAGE(pMsgLogItem, &mthTracer, ETraceDetailLevelRuntimeInfo);
@@ -850,7 +850,7 @@ void CClientGateway::onDisconnected( QObject* /*i_pSocketWrapper*/ )
             CMsgReqAddLogItem* pMsgLogItem = new CMsgReqAddLogItem(
                 /* pObjSender   */ this,
                 /* pObjReceiver */ m_arpTrcMsgLogObjects[idxObj],
-                /* transmitDir  */ ETransmitDir::Undefined,
+                /* transmitDir  */ ETransmitDirUndefined,
                 /* bBold        */ false,
                 /* strMsg       */ strAddTrcInfo );
             POST_OR_DELETE_MESSAGE(pMsgLogItem, &mthTracer, ETraceDetailLevelRuntimeInfo);
@@ -1223,7 +1223,7 @@ void CClientGateway::onError( QObject* /*i_pSocketWrapper*/, ZS::System::SErrRes
                         CMsgReqAddLogItem* pMsgLogItem = new CMsgReqAddLogItem(
                             /* pObjSender   */ this,
                             /* pObjReceiver */ m_arpTrcMsgLogObjects[idxObj],
-                            /* transmitDir  */ ETransmitDir::Undefined,
+                            /* transmitDir  */ ETransmitDirUndefined,
                             /* bBold        */ false,
                             /* strMsg       */ strAddTrcInfo );
                         POST_OR_DELETE_MESSAGE(pMsgLogItem, &mthTracer, ETraceDetailLevelRuntimeInfo);
@@ -1492,7 +1492,7 @@ bool CClientGateway::event( QEvent* i_pMsg )
                                     CMsgReqAddLogItem* pMsgLogItem = new CMsgReqAddLogItem(
                                         /* pObjSender   */ this,
                                         /* pObjReceiver */ m_arpTrcMsgLogObjects[idxObj],
-                                        /* transmitDir  */ ETransmitDir::Undefined,
+                                        /* transmitDir  */ ETransmitDirUndefined,
                                         /* bBold        */ false,
                                         /* strMsg       */ strAddTrcInfo );
                                     POST_OR_DELETE_MESSAGE(pMsgLogItem, &mthTracer, ETraceDetailLevelRuntimeInfo);
@@ -1511,7 +1511,7 @@ bool CClientGateway::event( QEvent* i_pMsg )
                                     CMsgReqAddLogItem* pMsgLogItem = new CMsgReqAddLogItem(
                                         /* pObjSender   */ this,
                                         /* pObjReceiver */ m_arpTrcMsgLogObjects[idxObj],
-                                        /* transmitDir  */ ETransmitDir::Undefined,
+                                        /* transmitDir  */ ETransmitDirUndefined,
                                         /* bBold        */ false,
                                         /* strMsg       */ strAddTrcInfo );
                                     POST_OR_DELETE_MESSAGE(pMsgLogItem, &mthTracer, ETraceDetailLevelRuntimeInfo);
@@ -1686,7 +1686,7 @@ bool CClientGateway::event( QEvent* i_pMsg )
                                                 CMsgReqAddLogItem* pMsgLogItem = new CMsgReqAddLogItem(
                                                     /* pObjSender   */ this,
                                                     /* pObjReceiver */ m_arpTrcMsgLogObjects[idxObj],
-                                                    /* transmitDir  */ ETransmitDir::Undefined,
+                                                    /* transmitDir  */ ETransmitDirUndefined,
                                                     /* bBold        */ false,
                                                     /* strMsg       */ strAddTrcInfo );
                                                 POST_OR_DELETE_MESSAGE(pMsgLogItem, &mthTracer, ETraceDetailLevelRuntimeInfo);
@@ -1705,7 +1705,7 @@ bool CClientGateway::event( QEvent* i_pMsg )
                                                 CMsgReqAddLogItem* pMsgLogItem = new CMsgReqAddLogItem(
                                                     /* pObjSender   */ this,
                                                     /* pObjReceiver */ m_arpTrcMsgLogObjects[idxObj],
-                                                    /* transmitDir  */ ETransmitDir::Undefined,
+                                                    /* transmitDir  */ ETransmitDirUndefined,
                                                     /* bBold        */ false,
                                                     /* strMsg       */ strAddTrcInfo );
                                                 POST_OR_DELETE_MESSAGE(pMsgLogItem, &mthTracer, ETraceDetailLevelRuntimeInfo);
@@ -1857,7 +1857,7 @@ bool CClientGateway::event( QEvent* i_pMsg )
                                         CMsgReqAddLogItem* pMsgLogItem = new CMsgReqAddLogItem(
                                             /* pObjSender   */ this,
                                             /* pObjReceiver */ m_arpTrcMsgLogObjects[idxObj],
-                                            /* transmitDir  */ ETransmitDir::Undefined,
+                                            /* transmitDir  */ ETransmitDirUndefined,
                                             /* bBold        */ false,
                                             /* strMsg       */ strAddTrcInfo );
                                         POST_OR_DELETE_MESSAGE(pMsgLogItem, &mthTracer, ETraceDetailLevelRuntimeInfo);
@@ -1879,7 +1879,7 @@ bool CClientGateway::event( QEvent* i_pMsg )
                                         CMsgReqAddLogItem* pMsgLogItem = new CMsgReqAddLogItem(
                                             /* pObjSender   */ this,
                                             /* pObjReceiver */ m_arpTrcMsgLogObjects[idxObj],
-                                            /* transmitDir  */ ETransmitDir::Undefined,
+                                            /* transmitDir  */ ETransmitDirUndefined,
                                             /* bBold        */ false,
                                             /* strMsg       */ strAddTrcInfo );
                                         POST_OR_DELETE_MESSAGE(pMsgLogItem, &mthTracer, ETraceDetailLevelRuntimeInfo);
@@ -2046,7 +2046,7 @@ bool CClientGateway::event( QEvent* i_pMsg )
                                     CMsgReqAddLogItem* pMsgLogItem = new CMsgReqAddLogItem(
                                         /* pObjSender   */ this,
                                         /* pObjReceiver */ m_arpTrcMsgLogObjects[idxObj],
-                                        /* transmitDir  */ ETransmitDir::Undefined,
+                                        /* transmitDir  */ ETransmitDirUndefined,
                                         /* bBold        */ false,
                                         /* strMsg       */ strAddTrcInfo );
                                     POST_OR_DELETE_MESSAGE(pMsgLogItem, &mthTracer, ETraceDetailLevelRuntimeInfo);
@@ -2068,7 +2068,7 @@ bool CClientGateway::event( QEvent* i_pMsg )
                                     CMsgReqAddLogItem* pMsgLogItem = new CMsgReqAddLogItem(
                                         /* pObjSender   */ this,
                                         /* pObjReceiver */ m_arpTrcMsgLogObjects[idxObj],
-                                        /* transmitDir  */ ETransmitDir::Undefined,
+                                        /* transmitDir  */ ETransmitDirUndefined,
                                         /* bBold        */ false,
                                         /* strMsg       */ strAddTrcInfo );
                                     POST_OR_DELETE_MESSAGE(pMsgLogItem, &mthTracer, ETraceDetailLevelRuntimeInfo);
@@ -2088,7 +2088,7 @@ bool CClientGateway::event( QEvent* i_pMsg )
                                     CMsgReqAddLogItem* pMsgLogItem = new CMsgReqAddLogItem(
                                         /* pObjSender   */ this,
                                         /* pObjReceiver */ m_arpTrcMsgLogObjects[idxObj],
-                                        /* transmitDir  */ ETransmitDir::Undefined,
+                                        /* transmitDir  */ ETransmitDirUndefined,
                                         /* bBold        */ false,
                                         /* strMsg       */ strAddTrcInfo );
                                     POST_OR_DELETE_MESSAGE(pMsgLogItem, &mthTracer, ETraceDetailLevelRuntimeInfo);
@@ -2107,7 +2107,7 @@ bool CClientGateway::event( QEvent* i_pMsg )
                                     CMsgReqAddLogItem* pMsgLogItem = new CMsgReqAddLogItem(
                                         /* pObjSender   */ this,
                                         /* pObjReceiver */ m_arpTrcMsgLogObjects[idxObj],
-                                        /* transmitDir  */ ETransmitDir::Undefined,
+                                        /* transmitDir  */ ETransmitDirUndefined,
                                         /* bBold        */ false,
                                         /* strMsg       */ strAddTrcInfo );
                                     POST_OR_DELETE_MESSAGE(pMsgLogItem, &mthTracer, ETraceDetailLevelRuntimeInfo);
@@ -2341,7 +2341,7 @@ bool CClientGateway::event( QEvent* i_pMsg )
                                                 CMsgReqAddLogItem* pMsgLogItem = new CMsgReqAddLogItem(
                                                     /* pObjSender   */ this,
                                                     /* pObjReceiver */ m_arpTrcMsgLogObjects[idxObj],
-                                                    /* transmitDir  */ ETransmitDir::Undefined,
+                                                    /* transmitDir  */ ETransmitDirUndefined,
                                                     /* bBold        */ false,
                                                     /* strMsg       */ strAddTrcInfo );
                                                 POST_OR_DELETE_MESSAGE(pMsgLogItem, &mthTracer, ETraceDetailLevelRuntimeInfo);
@@ -2360,7 +2360,7 @@ bool CClientGateway::event( QEvent* i_pMsg )
                                                 CMsgReqAddLogItem* pMsgLogItem = new CMsgReqAddLogItem(
                                                     /* pObjSender   */ this,
                                                     /* pObjReceiver */ m_arpTrcMsgLogObjects[idxObj],
-                                                    /* transmitDir  */ ETransmitDir::Undefined,
+                                                    /* transmitDir  */ ETransmitDirUndefined,
                                                     /* bBold        */ false,
                                                     /* strMsg       */ strAddTrcInfo );
                                                 POST_OR_DELETE_MESSAGE(pMsgLogItem, &mthTracer, ETraceDetailLevelRuntimeInfo);
@@ -2397,7 +2397,7 @@ bool CClientGateway::event( QEvent* i_pMsg )
                                                     CMsgReqAddLogItem* pMsgLogItem = new CMsgReqAddLogItem(
                                                         /* pObjSender   */ this,
                                                         /* pObjReceiver */ m_arpTrcMsgLogObjects[idxObj],
-                                                        /* transmitDir  */ ETransmitDir::Undefined,
+                                                        /* transmitDir  */ ETransmitDirUndefined,
                                                         /* bBold        */ false,
                                                         /* strMsg       */ strAddTrcInfo );
                                                     POST_OR_DELETE_MESSAGE(pMsgLogItem, &mthTracer, ETraceDetailLevelRuntimeInfo);
@@ -2416,7 +2416,7 @@ bool CClientGateway::event( QEvent* i_pMsg )
                                                     CMsgReqAddLogItem* pMsgLogItem = new CMsgReqAddLogItem(
                                                         /* pObjSender   */ this,
                                                         /* pObjReceiver */ m_arpTrcMsgLogObjects[idxObj],
-                                                        /* transmitDir  */ ETransmitDir::Undefined,
+                                                        /* transmitDir  */ ETransmitDirUndefined,
                                                         /* bBold        */ false,
                                                         /* strMsg       */ strAddTrcInfo );
                                                     POST_OR_DELETE_MESSAGE(pMsgLogItem, &mthTracer, ETraceDetailLevelRuntimeInfo);
@@ -2436,7 +2436,7 @@ bool CClientGateway::event( QEvent* i_pMsg )
                                                     CMsgReqAddLogItem* pMsgLogItem = new CMsgReqAddLogItem(
                                                         /* pObjSender   */ this,
                                                         /* pObjReceiver */ m_arpTrcMsgLogObjects[idxObj],
-                                                        /* transmitDir  */ ETransmitDir::Undefined,
+                                                        /* transmitDir  */ ETransmitDirUndefined,
                                                         /* bBold        */ false,
                                                         /* strMsg       */ strAddTrcInfo );
                                                     POST_OR_DELETE_MESSAGE(pMsgLogItem, &mthTracer, ETraceDetailLevelRuntimeInfo);
@@ -2455,7 +2455,7 @@ bool CClientGateway::event( QEvent* i_pMsg )
                                                     CMsgReqAddLogItem* pMsgLogItem = new CMsgReqAddLogItem(
                                                         /* pObjSender   */ this,
                                                         /* pObjReceiver */ m_arpTrcMsgLogObjects[idxObj],
-                                                        /* transmitDir  */ ETransmitDir::Undefined,
+                                                        /* transmitDir  */ ETransmitDirUndefined,
                                                         /* bBold        */ false,
                                                         /* strMsg       */ strAddTrcInfo );
                                                     POST_OR_DELETE_MESSAGE(pMsgLogItem, &mthTracer, ETraceDetailLevelRuntimeInfo);

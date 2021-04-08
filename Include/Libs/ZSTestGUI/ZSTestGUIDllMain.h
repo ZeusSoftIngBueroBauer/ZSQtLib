@@ -27,7 +27,7 @@ may result in using the software modules.
 #ifndef ZSTestGUI_DllMain_h
 #define ZSTestGUI_DllMain_h
 
-#include <QtCore/qstring.h>
+#include "ZSTest/ZSTestDllMain.h"
 
 // generic export defines
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)

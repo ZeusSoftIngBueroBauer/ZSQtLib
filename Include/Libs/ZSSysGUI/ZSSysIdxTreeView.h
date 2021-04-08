@@ -104,11 +104,11 @@ class ZSSYSGUIDLL_API CTreeViewIdxTree : public QTreeView
 {
     Q_OBJECT
 public: // type definitions and constants
-    enum class EPasteMode {
-        Copy = 0,
-        Cut  = 1,
-        Count,
-        Undefined
+    enum EPasteMode {
+        EPasteModeCopy = 0,
+        EPasteModeCut  = 1,
+        EPasteModeCount,
+        EPasteModeUndefined
         };
 public: // class methods
     static QString NameSpace() { return "ZS::System::GUI"; }

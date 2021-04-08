@@ -37,8 +37,6 @@ may result in using the software modules.
 #include "ZSSys/ZSSysRequest.h"
 #include "ZSSys/ZSSysVersion.h"
 
-#include <mutex>
-
 #ifdef _WIN32
 // As "min" will be defined as a macro with two arguments and qdatetime uses "min"
 // as a function with no arguments "windows.h" must be included after qdatetime

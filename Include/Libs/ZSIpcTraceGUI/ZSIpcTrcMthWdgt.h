@@ -24,8 +24,8 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#ifndef ZSTraceGUI_MthWdgt_h
-#define ZSTraceGUI_MthWdgt_h
+#ifndef ZSIpcTraceGUI_MthWdgt_h
+#define ZSIpcTraceGUI_MthWdgt_h
 
 #include <QtCore/qabstractitemmodel.h>
 #include <QtGui/qtextdocument.h>
@@ -153,4 +153,4 @@ private: // instance members
 
 } // namespace ZS
 
-#endif // #ifndef ZSTraceGUI_MthWdgt_h
+#endif // #ifndef ZSIpcTraceGUI_MthWdgt_h

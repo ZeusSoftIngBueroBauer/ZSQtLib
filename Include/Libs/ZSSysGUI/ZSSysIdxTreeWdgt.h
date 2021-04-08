@@ -66,11 +66,11 @@ class ZSSYSGUIDLL_API CWdgtIdxTree : public QWidget
 {
     Q_OBJECT
 public: // type definitions and constants
-    enum class EViewMode {
-        NavPanelOnly             = 0,
-        NavPanelAndBranchContent = 1,
-        Count,
-        Undefined
+    enum EViewMode {
+        EViewModeNavPanelOnly             = 0,
+        EViewModeNavPanelAndBranchContent = 1,
+        EViewModeCount,
+        EViewModeUndefined
     };
     static QString viewMode2Str( EViewMode i_eVal, int i_alias = ZS::System::EEnumEntryAliasStrName );
     static QPixmap viewMode2Pixmap( EViewMode i_eVal, const QSize& i_sz = QSize(24,24));

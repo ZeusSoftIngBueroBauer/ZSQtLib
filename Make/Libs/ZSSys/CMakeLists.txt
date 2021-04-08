@@ -87,17 +87,32 @@ if(QT_VERSION_MAJOR EQUAL 4)
         PUBLIC Qt4::QtCore
         PUBLIC Qt4::QtXml
         PUBLIC Qt4::QtNetwork)
-    add_custom_command(TARGET ${PROJECT_NAME} PRE_BUILD
-        COMMENT "Copy Qt Dlls"
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt4::QtCore> $<TARGET_FILE_DIR:${PROJECT_NAME}>
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt4::QtXml> $<TARGET_FILE_DIR:${PROJECT_NAME}>
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt4::QtNetwork> $<TARGET_FILE_DIR:${PROJECT_NAME}>
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt4::QtGui> $<TARGET_FILE_DIR:${PROJECT_NAME}>)
+    if(CMAKE_BUILD_TYPE MATCHES Debug)
+        message(STATUS "Copying Qt4 Debug Dlls")
+        # Please note: Executed during build but not during configure process.
+        add_custom_command(TARGET ${PROJECT_NAME} PRE_BUILD
+            COMMENT "Copy Qt Dlls"
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${QT_BINARY_DIR}/QtCored4.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG}/QtCored4.dll
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${QT_BINARY_DIR}/QtXmld4.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG}/QtXmld4.dll
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${QT_BINARY_DIR}/QtNetworkd4.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG}/QtNetworkd4.dll
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${QT_BINARY_DIR}/QtGuid4.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG}/QtGuid4.dll)
+    else()
+        message(STATUS "Copying Qt4 Release Dlls")
+        # Please note: Executed during build but not during configure process.
+        add_custom_command(TARGET ${PROJECT_NAME} PRE_BUILD
+            COMMENT "Copy Qt Dlls"
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${QT_BINARY_DIR}/QtCore4.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG}/QtCore4.dll
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${QT_BINARY_DIR}/QtXml4.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG}/QtXml4.dll
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${QT_BINARY_DIR}/QtNetwork4.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG}/QtNetwork4.dll
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${QT_BINARY_DIR}/QtGui4.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG}/QtGui4.dll)
+    endif()
 elseif(QT_VERSION_MAJOR EQUAL 5)
     target_link_libraries(${PROJECT_NAME}
         PUBLIC Qt5::Core
         PUBLIC Qt5::Xml
         PUBLIC Qt5::Network)
+    message(STATUS "Copying Qt5 Dlls")
+    # Please note: Executed during build but not during configure process.
     add_custom_command(TARGET ${PROJECT_NAME} PRE_BUILD
         COMMENT "Copy Qt Dlls"
         COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt5::Core> $<TARGET_FILE_DIR:${PROJECT_NAME}>

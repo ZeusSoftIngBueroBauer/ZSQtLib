@@ -341,12 +341,12 @@ QPixmap ZS::System::GUI::mode2Pixmap( int i_iMode, int i_iSize )
     QPixmap pxm;
     QString strSize = QString::number(i_iSize) + "x" + QString::number(i_iSize);
 
-    if( i_iMode == static_cast<int>(EMode::Edit) )
+    if( i_iMode == static_cast<int>(EModeEdit) )
     {
         pxm = QPixmap( ":/ZS/App/ModeEdit" + strSize + ".bmp" );
         pxm.setMask(pxm.createHeuristicMask());
     }
-    else if( i_iMode == static_cast<int>(EMode::Simulation) )
+    else if( i_iMode == static_cast<int>(EModeSimulation) )
     {
         pxm = QPixmap( ":/ZS/App/ModeSimulation" + strSize + ".bmp" );
         pxm.setMask(pxm.createHeuristicMask());

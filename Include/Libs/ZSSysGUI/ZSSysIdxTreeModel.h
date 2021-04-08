@@ -52,16 +52,16 @@ Type definitions and constants
 *******************************************************************************/
 
 //------------------------------------------------------------------------------
-enum class EIdxTreeSortOrder
+enum EIdxTreeSortOrder
 //------------------------------------------------------------------------------
 {
-    Config              = 0,    // As provided (configured) by the referenced index tree branches.
-    Ascending           = 1,    // Child branches alphabetically sorted in ascending order followed by the leaves.
-    //LogicalDescending = 2,    // Child branches alphabetically sorted in descending order followed by the leaves.
-    //ByNameAscending   = 3,    // Child branches and leaves mixed alphabetically sorted in ascending order.
-    //ByNameDescending  = 4,    // Child branches and leaves mixed alphabetically sorted in descending order.
-    Count,
-    Undefined
+    EIdxTreeSortOrderConfig              = 0,    // As provided (configured) by the referenced index tree branches.
+    EIdxTreeSortOrderAscending           = 1,    // Child branches alphabetically sorted in ascending order followed by the leaves.
+    //EIdxTreeSortOrderLogicalDescending = 2,    // Child branches alphabetically sorted in descending order followed by the leaves.
+    //EIdxTreeSortOrderByNameAscending   = 3,    // Child branches and leaves mixed alphabetically sorted in ascending order.
+    //EIdxTreeSortOrderByNameDescending  = 4,    // Child branches and leaves mixed alphabetically sorted in descending order.
+    EIdxTreeSortOrderCount,
+    EIdxTreeSortOrderUndefined
 };
 
 ZSSYSGUIDLL_API QString idxTreeSortOrder2Str( EIdxTreeSortOrder i_eVal, int i_alias = ZS::System::EEnumEntryAliasStrName );
@@ -85,13 +85,13 @@ public: // type definitions and constants
     friend class CModelIdxTree;
     public:
         enum ETraversalOrder {
-            Index,      // iterate throug the vector (index based)
-            PreOrder,   // traverse through the tree in preorder (top to bottom, first to last child index of branches)
-            Count,
-            Undefined
+            ETraversalOrderIndex,      // iterate throug the vector (index based)
+            ETraversalOrderPreOrder,   // traverse through the tree in preorder (top to bottom, first to last child index of branches)
+            ETraversalOrderCount,
+            ETraversalOrderUndefined
         };
     public:
-        iterator() {}
+        iterator() : m_pModel(nullptr), m_pModelTreeEntryCurr(nullptr), m_traversalOrder(ETraversalOrderIndex) {}
     protected:
         iterator( CModelIdxTree* i_pModel, CModelIdxTree::iterator::ETraversalOrder i_traversalOrder ) :
             m_pModel(i_pModel),
@@ -107,9 +107,9 @@ public: // type definitions and constants
         bool operator != ( iterator& i_other ) const;
         iterator& operator ++ ();
     private:
-        CModelIdxTree*           m_pModel = nullptr;
-        CModelAbstractTreeEntry* m_pModelTreeEntryCurr = nullptr;
-        ETraversalOrder          m_traversalOrder = ETraversalOrderIndex;
+        CModelIdxTree*           m_pModel;
+        CModelAbstractTreeEntry* m_pModelTreeEntryCurr;
+        ETraversalOrder          m_traversalOrder;
     };
 public: // type definitions and constants
     enum EColumn {
@@ -179,39 +179,37 @@ protected: // instance methods
     void clear( CModelBranchTreeEntry* i_pModelBranch, bool i_bDestroyTreeEntries = true );
     void remove( CModelAbstractTreeEntry* i_pModelTreeEntry );
 public: // overridables of base class QAbstractItemModel
-    virtual int rowCount( const QModelIndex& i_modelIdxParent = QModelIndex() ) const override;
-    virtual int columnCount( const QModelIndex& i_modelIdxParent = QModelIndex() ) const override;
-    virtual QModelIndex index( int i_iRow, int i_iCol, const QModelIndex& i_modelIdxParent = QModelIndex() ) const override;
-    virtual QModelIndex parent( const QModelIndex& i_modelIdx ) const override;
+    virtual int rowCount( const QModelIndex& i_modelIdxParent = QModelIndex() ) const;
+    virtual int columnCount( const QModelIndex& i_modelIdxParent = QModelIndex() ) const;
+    virtual QModelIndex index( int i_iRow, int i_iCol, const QModelIndex& i_modelIdxParent = QModelIndex() ) const;
+    virtual QModelIndex parent( const QModelIndex& i_modelIdx ) const;
 public: // overridables of base class QAbstractItemModel
-    virtual QVariant headerData( int i_iSection, Qt::Orientation i_orientation, int i_iRole = Qt::DisplayRole) const override;
-    virtual Qt::ItemFlags flags( const QModelIndex& i_modelIdx ) const override;
-    virtual Qt::DropActions supportedDropActions() const override;
-    virtual QVariant data( const QModelIndex& i_modelIdx, int i_iRole = Qt::DisplayRole ) const override;
-    virtual bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole) override;
+    virtual QVariant headerData( int i_iSection, Qt::Orientation i_orientation, int i_iRole = Qt::DisplayRole) const;
+    virtual Qt::ItemFlags flags( const QModelIndex& i_modelIdx ) const;
+    virtual Qt::DropActions supportedDropActions() const;
+    virtual QVariant data( const QModelIndex& i_modelIdx, int i_iRole = Qt::DisplayRole ) const;
+    virtual bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole);
 public: // overridables of base class QAbstractItemModel
-    virtual QStringList mimeTypes() const override;
-    virtual QMimeData* mimeData( const QModelIndexList& i_arModelIdxs ) const override;
-    virtual bool canDropMimeData( const QMimeData* i_pMimeData, Qt::DropAction i_dropAction, int i_iRow, int i_iClm, const QModelIndex& i_modelIdxParent ) const; // override; virtual method of base class since Qt version ?
-    virtual bool dropMimeData( const QMimeData* i_pMimeData, Qt::DropAction i_dropAction, int i_iRow, int i_iClm, const QModelIndex& i_modelIdxParent ) override;
+    virtual QStringList mimeTypes() const;
+    virtual QMimeData* mimeData( const QModelIndexList& i_arModelIdxs ) const;
+    virtual bool canDropMimeData( const QMimeData* i_pMimeData, Qt::DropAction i_dropAction, int i_iRow, int i_iClm, const QModelIndex& i_modelIdxParent ) const; //; virtual method of base class since Qt version ?
+    virtual bool dropMimeData( const QMimeData* i_pMimeData, Qt::DropAction i_dropAction, int i_iRow, int i_iClm, const QModelIndex& i_modelIdxParent );
 public: // instance methods for editing data
     SErrResultInfo canSetData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole) const;
 public: // overridables of base class QAbstractItemModel (just overwritten to trace the method calls for debugging purposes)
-    virtual QModelIndex sibling( int i_iRow, int i_iCol, const QModelIndex& i_modelIdx ) const override;
-    virtual bool hasChildren( const QModelIndex& i_modelIdxParent = QModelIndex() ) const override;
-    virtual bool insertRows( int i_iRow, int i_iRowCount, const QModelIndex& i_modelIdxParent = QModelIndex() ) override;
-    virtual bool insertColumns( int i_iCol, int i_iColCount, const QModelIndex& i_modelIdxParent = QModelIndex() ) override;
-    virtual bool removeRows( int i_iRow, int i_iRowCount, const QModelIndex& i_modelIdxParent = QModelIndex() ) override;
-    virtual bool removeColumns( int i_iCol, int i_iColCount, const QModelIndex& i_modelIdxParent = QModelIndex() ) override;
-    virtual bool moveRows( const QModelIndex& i_modelIdxSourceParent, int i_iRowSource, int i_iRowCount, const QModelIndex& i_modelIdxDestParent, int i_iRowDestChild ) override;
-    virtual bool moveColumns( const QModelIndex& i_modelIdxSourceParent, int i_iColSource, int i_iColCount, const QModelIndex& i_modelIdxDestParent, int i_iColDestChild ) override;
+    virtual QModelIndex sibling( int i_iRow, int i_iCol, const QModelIndex& i_modelIdx ) const;
+    virtual bool hasChildren( const QModelIndex& i_modelIdxParent = QModelIndex() ) const;
+    virtual bool insertRows( int i_iRow, int i_iRowCount, const QModelIndex& i_modelIdxParent = QModelIndex() );
+    virtual bool insertColumns( int i_iCol, int i_iColCount, const QModelIndex& i_modelIdxParent = QModelIndex() );
+    virtual bool removeRows( int i_iRow, int i_iRowCount, const QModelIndex& i_modelIdxParent = QModelIndex() );
+    virtual bool removeColumns( int i_iCol, int i_iColCount, const QModelIndex& i_modelIdxParent = QModelIndex() );
+    virtual bool moveRows( const QModelIndex& i_modelIdxSourceParent, int i_iRowSource, int i_iRowCount, const QModelIndex& i_modelIdxDestParent, int i_iRowDestChild );
+    virtual bool moveColumns( const QModelIndex& i_modelIdxSourceParent, int i_iColSource, int i_iColCount, const QModelIndex& i_modelIdxDestParent, int i_iColDestChild );
 protected: // to trace emitting signals for debugging purposes
     void emit_dataChanged( const QModelIndex& i_modelIdxTL, const QModelIndex& i_modelIdxBR, const QVector<int>& i_ariRoles = QVector<int>() );
     void emit_headerDataChanged( Qt::Orientation i_orientation, int i_iFirstSection, int i_iLastSection );
-    void emit_layoutChanged( const QList<QPersistentModelIndex>& i_arModelIdxsParents = QList<QPersistentModelIndex>(), QAbstractItemModel::LayoutChangeHint i_hint = QAbstractItemModel::NoLayoutChangeHint );
-    void emit_layoutAboutToBeChanged( const QList<QPersistentModelIndex>& i_arModelIdxsParents = QList<QPersistentModelIndex>(), QAbstractItemModel::LayoutChangeHint i_hint = QAbstractItemModel::NoLayoutChangeHint );
 protected: // reimplemented to trace emitting signals for debugging purposes
-    inline QModelIndex _createIndex( int i_iRow, int i_iCol, void* i_pvData = Q_NULLPTR ) const;
+    inline QModelIndex _createIndex( int i_iRow, int i_iCol, void* i_pvData = nullptr ) const;
     inline QModelIndex _createIndex( int i_iRow, int i_iCol, quintptr i_uId ) const;
     void _beginInsertRows( const QModelIndex& i_modelIdxParent, int i_iFirstRow, int i_iLastRow );
     void _endInsertRows();

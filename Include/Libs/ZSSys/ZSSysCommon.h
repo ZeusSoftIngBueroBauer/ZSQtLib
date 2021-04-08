@@ -32,6 +32,7 @@ may result in using the software modules.
 #include "ZSSys/ZSSysDllMain.h"
 #include "ZSSys/ZSSysEnumTemplate.h"
 
+#pragma warning( disable : 4661 )
 
 /*******************************************************************************
 global type definitions and constants
@@ -117,7 +118,6 @@ enum EMode
 
 template class ZSSYSDLL_API CEnum<EMode>;
 typedef CEnum<EMode> CEnumMode;
-
 
 //==============================================================================
 /*! The run mode enumeration is used to distinguish between two different run
@@ -522,7 +522,7 @@ const int EArrayIndexFirstElement     = -2;
 const int EArrayIndexLastElement      = -3;
 const int EArrayIndexCountAllElements = -4;
 
-ZSSYSDLL_API QString arrayIndex2Str( int i_idx, EEnumEntryAliasStr i_alias = ZS::System::EEnumEntryAliasStrName );
+ZSSYSDLL_API QString arrayIndex2Str( int i_idx, ZS::System::EEnumEntryAliasStr i_alias = ZS::System::EEnumEntryAliasStrName );
 
 ZSSYSDLL_API bool isValidIndex( int i_idx, int i_iArrLen, bool i_bAllowSpecialArrayIndices = false ); // ok if idxVal >= 0 AND idxVal < ArrLen or idxVal = First|Last|All (if AllowSpecial=true)
 ZSSYSDLL_API bool isValidRange( int i_idxStart, int i_iIdxCount, int i_iArrLen, bool i_bAllowSpecialArrayIndices = false );

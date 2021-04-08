@@ -70,8 +70,8 @@ public: // type definitions and constants
 ==============================================================================*/
 
 static const SEnumEntry s_arEnumStrWdgtIdxTreeViewModes[] = {                              // IdxName,                     Symbol
-    /*  0 */ SEnumEntry( static_cast<int>(CWdgtIdxTree::EViewMode::NavPanelOnly),             "NavPanelOnly",              "NP"   ),
-    /*  1 */ SEnumEntry( static_cast<int>(CWdgtIdxTree::EViewMode::NavPanelAndBranchContent), "NavPanelAndBranchContent",  "NPBC" )
+    /*  0 */ SEnumEntry( static_cast<int>(CWdgtIdxTree::EViewModeNavPanelOnly),             "NavPanelOnly",              "NP"   ),
+    /*  1 */ SEnumEntry( static_cast<int>(CWdgtIdxTree::EViewModeNavPanelAndBranchContent), "NavPanelAndBranchContent",  "NPBC" )
 };
 
 //------------------------------------------------------------------------------
@@ -103,7 +103,7 @@ CWdgtIdxTree::CWdgtIdxTree(
     int             i_iTrcDetailLevel ) :
 //------------------------------------------------------------------------------
     QWidget(i_pWdgtParent,i_wflags),
-    m_viewMode(EViewMode::NavPanelOnly),
+    m_viewMode(EViewModeNavPanelOnly),
     m_szBtns(24, 24),
     m_pLytMain(nullptr),
     m_pLytHeadLine(nullptr),
@@ -242,13 +242,13 @@ CWdgtIdxTree::CWdgtIdxTree(
     // <Button> Sort Order
     //----------------------
 
-    QPixmap pxmSortOrder = idxTreeSortOrder2Pixmap(EIdxTreeSortOrder::Config, m_szBtns);
+    QPixmap pxmSortOrder = idxTreeSortOrder2Pixmap(EIdxTreeSortOrderConfig, m_szBtns);
     pxmSortOrder.setMask(pxmSortOrder.createHeuristicMask());
 
     m_pBtnSortOrder = new QPushButton();
     m_pBtnSortOrder->setFixedSize(m_szBtns);
     m_pBtnSortOrder->setIcon(pxmSortOrder);
-    m_pBtnSortOrder->setProperty("SortOrderCurr", QVariant(static_cast<int>(EIdxTreeSortOrder::Config)));
+    m_pBtnSortOrder->setProperty("SortOrderCurr", QVariant(static_cast<int>(EIdxTreeSortOrderConfig)));
     m_pBtnSortOrder->setToolTip("Press to toggle the sort order between \"As Configured\" and \"Alphabetically Sorted\"");
     m_pLytHeadLine->addWidget(m_pBtnSortOrder);
 
@@ -358,7 +358,7 @@ void CWdgtIdxTree::setViewMode( EViewMode i_viewMode )
     {
         m_viewMode = i_viewMode;
 
-        if( m_viewMode == EViewMode::NavPanelOnly )
+        if( m_viewMode == EViewModeNavPanelOnly )
         {
             if( m_pSplitter != nullptr )
             {
@@ -377,11 +377,11 @@ void CWdgtIdxTree::setViewMode( EViewMode i_viewMode )
             m_pSpcHeadLine = new QSpacerItem(0, 24, QSizePolicy::Expanding);
             m_pLytHeadLine->addSpacerItem(m_pSpcHeadLine);
 
-            m_pModel->setFilter(EIdxTreeEntryType::Undefined);
+            m_pModel->setFilter(EIdxTreeEntryTypeUndefined);
 
-        } // if( m_viewMode == EViewMode::NavPanelOnly )
+        } // if( m_viewMode == EViewModeNavPanelOnly )
 
-        else if( m_viewMode == EViewMode::NavPanelAndBranchContent )
+        else if( m_viewMode == EViewModeNavPanelAndBranchContent )
         {
             m_pLytHeadLine->removeItem(m_pSpcHeadLine);
             delete m_pSpcHeadLine;
@@ -404,9 +404,9 @@ void CWdgtIdxTree::setViewMode( EViewMode i_viewMode )
                 m_pSplitter->addWidget(m_pTableViewBranchContent);
             }
 
-            m_pModel->setFilter(EIdxTreeEntryType::Branch);
+            m_pModel->setFilter(EIdxTreeEntryTypeBranch);
 
-        } // if( m_viewMode == EViewMode::NavPanelAndBranchContent )
+        } // if( m_viewMode == EViewModeNavPanelAndBranchContent )
 
         QPixmap pxmViewMode = viewMode2Pixmap(m_viewMode, m_szBtns);
         pxmViewMode.setMask(pxmViewMode.createHeuristicMask());
@@ -444,13 +444,13 @@ void CWdgtIdxTree::onBtnViewModeClicked( bool i_bChecked )
 
     EViewMode viewModeNew = m_viewMode;
 
-    if( m_viewMode == EViewMode::NavPanelOnly )
+    if( m_viewMode == EViewModeNavPanelOnly )
     {
-        viewModeNew = EViewMode::NavPanelAndBranchContent;
+        viewModeNew = EViewModeNavPanelAndBranchContent;
     }
-    else // if( m_viewMode == EViewMode::NavPanelAndBranchContent )
+    else // if( m_viewMode == EViewModeNavPanelAndBranchContent )
     {
-        viewModeNew = EViewMode::NavPanelOnly;
+        viewModeNew = EViewModeNavPanelOnly;
     }
 
     setViewMode(viewModeNew);
@@ -573,13 +573,13 @@ void CWdgtIdxTree::onBtnSortOrderClicked( bool i_bChecked )
     EIdxTreeSortOrder sortOrderCurr = static_cast<EIdxTreeSortOrder>(m_pBtnSortOrder->property("SortOrderCurr").toInt());
     EIdxTreeSortOrder sortOrderNew;
 
-    if( sortOrderCurr == EIdxTreeSortOrder::Config )
+    if( sortOrderCurr == EIdxTreeSortOrderConfig )
     {
-        sortOrderNew = EIdxTreeSortOrder::Ascending;
+        sortOrderNew = EIdxTreeSortOrderAscending;
     }
-    else // if( sortOrderCurr == EIdxTreeSortOrder::Ascending )
+    else // if( sortOrderCurr == EIdxTreeSortOrderAscending )
     {
-        sortOrderNew = EIdxTreeSortOrder::Config;
+        sortOrderNew = EIdxTreeSortOrderConfig;
     }
 
     if( m_pTreeView != nullptr )
@@ -635,7 +635,7 @@ void CWdgtIdxTree::onTreeViewSelectionModelCurrentRowChanged(
         {
             CBranchIdxTreeEntry* pBranch = nullptr;
 
-            if( pModelTreeEntry->entryType() == EIdxTreeEntryType::Root || pModelTreeEntry->entryType() == EIdxTreeEntryType::Branch )
+            if( pModelTreeEntry->entryType() == EIdxTreeEntryTypeRoot || pModelTreeEntry->entryType() == EIdxTreeEntryTypeBranch )
             {
                 pBranch = dynamic_cast<CBranchIdxTreeEntry*>(pModelTreeEntry->treeEntry());
             }

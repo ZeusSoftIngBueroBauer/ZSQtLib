@@ -150,7 +150,7 @@ bool CObjPool::IsDescendant(
     // Node names of the parent:
     if( !i_strParentName.isEmpty() )
     {
-        strListParentNodeNames = i_strParentName.split(i_strNodeSeparator,Qt::SkipEmptyParts);
+        strListParentNodeNames = i_strParentName.split(i_strNodeSeparator,QString::SkipEmptyParts);
     }
     if( strListParentNodeNames.count() > 0 && strListParentNodeNames[0].compare(i_strObjPoolName,Qt::CaseInsensitive) == 0 )
     {
@@ -160,7 +160,7 @@ bool CObjPool::IsDescendant(
     // Node names of the child:
     if( !i_strChildName.isEmpty() )
     {
-        strListChildNodeNames = i_strChildName.split(i_strNodeSeparator,Qt::SkipEmptyParts);
+        strListChildNodeNames = i_strChildName.split(i_strNodeSeparator,QString::SkipEmptyParts);
     }
     if( strListChildNodeNames.count() > 0 && strListChildNodeNames[0].compare(i_strObjPoolName,Qt::CaseInsensitive) == 0 )
     {
@@ -410,7 +410,7 @@ int CObjPool::addObjNode(
     // Create list of node names:
     if( !i_strObjPath.isEmpty() )
     {
-        strListNodeNames = i_strObjPath.split(m_strNodeSeparator,Qt::SkipEmptyParts);
+        strListNodeNames = i_strObjPath.split(m_strNodeSeparator,QString::SkipEmptyParts);
     }
     if( strListNodeNames.count() <= 1 )
     {
@@ -532,7 +532,7 @@ int CObjPool::addObjNode(
     int iObjId = addObjNode(
         /* strNameSpace */ i_strNameSpace,
         /* strObjName   */ i_strObjName,
-        /* objState     */ EObjState::Undefined );
+        /* objState     */ EObjStateUndefined );
 
     CObjPoolListEntry* pListEntry = getListEntry(iObjId);
 
@@ -678,7 +678,7 @@ CObjPoolTreeEntry* CObjPool::addObjNode(
     // Create list of node names:
     if( !i_strObjPath.isEmpty() )
     {
-        strListNodeNames = i_strObjPath.split(m_strNodeSeparator,Qt::SkipEmptyParts);
+        strListNodeNames = i_strObjPath.split(m_strNodeSeparator,QString::SkipEmptyParts);
     }
     if( strListNodeNames.count() <= 1 )
     {
@@ -826,7 +826,7 @@ CObjPoolTreeEntry* CObjPool::addNameSpaceNode( const QString& i_strNameSpace )
         pTreeEntry = addTreeEntry(
             /* strPath   */ i_strNameSpace,
             /* entryType */ EObjPoolEntryTypeNameSpace,
-            /* objState  */ EObjState::Undefined );
+            /* objState  */ EObjStateUndefined );
 
         // Please note that for the name space entries the signals
         // "nodeInserted" and "nameSpaceNodeInserted" have already been
@@ -1111,7 +1111,7 @@ EObjState CObjPool::getObjState( int i_iObjId ) const
     // objects might be called from within different thread contexts.
     QMutexLocker mtxLocker(m_pMtxObjs);
 
-    EObjState          objState = EObjState::Undefined;
+    EObjState          objState = EObjStateUndefined;
     CObjPoolListEntry* pListEntry = getListEntry(i_iObjId);
 
     if( pListEntry != nullptr )
@@ -1374,13 +1374,13 @@ CObjPoolTreeEntry* CObjPool::getTreeEntry(
     // Create list of node names of the root entry:
     if( !m_pTreeObjs->getNodeName(false).isEmpty() )
     {
-        strListRootNodeNames = m_pTreeObjs->getNodeName(true).split(m_strNodeSeparator,Qt::SkipEmptyParts);
+        strListRootNodeNames = m_pTreeObjs->getNodeName(true).split(m_strNodeSeparator,QString::SkipEmptyParts);
     }
 
     // Create list of node names:
     if( !i_strNameSpace.isEmpty() )
     {
-        strListNodeNames = i_strNameSpace.split(m_strNodeSeparator,Qt::SkipEmptyParts);
+        strListNodeNames = i_strNameSpace.split(m_strNodeSeparator,QString::SkipEmptyParts);
     }
 
     // We want to find an entry below the root entry.
@@ -1485,7 +1485,7 @@ CObjPoolTreeEntry* CObjPool::getTreeEntry(
     // Create list of node names:
     if( !i_strPath.isEmpty() )
     {
-        strListNodeNames = i_strPath.split(m_strNodeSeparator,Qt::SkipEmptyParts);
+        strListNodeNames = i_strPath.split(m_strNodeSeparator,QString::SkipEmptyParts);
         strObjName = strListNodeNames[strListNodeNames.count()-1];
 
         if( strListNodeNames.count() > 1 )
@@ -1847,7 +1847,7 @@ CObjPoolTreeEntry* CObjPool::addTreeEntry(
     // Create list of node names:
     if( !i_strNameSpace.isEmpty() )
     {
-        strListNodeNames = i_strNameSpace.split(m_strNodeSeparator,Qt::SkipEmptyParts);
+        strListNodeNames = i_strNameSpace.split(m_strNodeSeparator,QString::SkipEmptyParts);
     }
     if( strListNodeNames.count() <= 1 )
     {
@@ -1901,7 +1901,7 @@ CObjPoolTreeEntry* CObjPool::addTreeEntry(
     // Create list of node names:
     if( !i_strParentNameSpace.isEmpty() )
     {
-        strListNodeNames = i_strParentNameSpace.split(m_strNodeSeparator,Qt::SkipEmptyParts);
+        strListNodeNames = i_strParentNameSpace.split(m_strNodeSeparator,QString::SkipEmptyParts);
     }
     if( strListNodeNames.count() > 0 && strListNodeNames[0] == m_pTreeObjs->getNodeName(false) )
     {
@@ -2228,7 +2228,7 @@ CObjPoolTreeEntry::CObjPoolTreeEntry( CObjPool* i_pObjPool ) :
     m_pObjPool(i_pObjPool),
     m_entryType(EObjPoolEntryTypeUndefined),
     m_strNodeName(),
-    m_objState(EObjState::Undefined),
+    m_objState(EObjStateUndefined),
     m_iObjId(-1),
     m_pvObj(nullptr),
     m_pEntryParent(nullptr),
@@ -2248,7 +2248,7 @@ CObjPoolTreeEntry::CObjPoolTreeEntry(
     m_pObjPool(i_pObjPool),
     m_entryType(i_entryType),
     m_strNodeName(i_strNodeName),
-    m_objState(EObjState::Undefined),
+    m_objState(EObjStateUndefined),
     m_iObjId(-1),
     m_pvObj(nullptr),
     m_pEntryParent(nullptr),
@@ -2379,11 +2379,11 @@ void CObjPoolTreeEntry::setObj( void* i_pvObj )
 
     if( m_pvObj == nullptr )
     {
-        m_objState = EObjState::Destroyed;
+        m_objState = EObjStateDestroyed;
     }
     else
     {
-        m_objState = EObjState::Created;
+        m_objState = EObjStateCreated;
     }
 
 } // setObj
@@ -2629,7 +2629,7 @@ CObjPoolListEntry::CObjPoolListEntry(
     m_pTreeEntry(i_pTreeEntry),
     m_strNameSpace(),
     m_strObjName(),
-    m_objState(EObjState::Undefined),
+    m_objState(EObjStateUndefined),
     m_iObjId(-1),
     m_pvObj(nullptr)
 {
@@ -2646,7 +2646,7 @@ CObjPoolListEntry::CObjPoolListEntry(
     m_pTreeEntry(i_pTreeEntry),
     m_strNameSpace(i_strNameSpace),
     m_strObjName(i_strObjName),
-    m_objState(EObjState::Undefined),
+    m_objState(EObjStateUndefined),
     m_iObjId(-1),
     m_pvObj(nullptr)
 {
@@ -2703,11 +2703,11 @@ void CObjPoolListEntry::setObj( void* i_pvObj )
 
     if( m_pvObj == nullptr )
     {
-        m_objState = EObjState::Destroyed;
+        m_objState = EObjStateDestroyed;
     }
     else
     {
-        m_objState = EObjState::Created;
+        m_objState = EObjStateCreated;
     }
 
 } // setObj

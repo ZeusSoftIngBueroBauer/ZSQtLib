@@ -1161,7 +1161,7 @@ void CIpcTrcServer::addEntry(
         // Please note that only the first registered client will received the cached data.
 
         // If no client is registered for receiving online trace data yet ..
-        if( m_ariSocketIdsRegisteredTrcClients.length() == 0 )
+        if( m_ariSocketIdsRegisteredTrcClients.size() == 0 )
         {
             // .. the trace data will be cached.
             bAdd2Cache = true;
@@ -1229,7 +1229,7 @@ void CIpcTrcServer::addEntry(
 
     } // if( bAdd2Cache )
 
-    else if( m_ariSocketIdsRegisteredTrcClients.length() > 0 )
+    else if( m_ariSocketIdsRegisteredTrcClients.size() > 0 )
     {
         QString strMsg;
 
@@ -1252,7 +1252,7 @@ void CIpcTrcServer::addEntry(
 
         QByteArray byteArrMsg = str2ByteArr(strMsg);
 
-        for( auto& iSocketId : m_ariSocketIdsRegisteredTrcClients )
+        foreach( int iSocketId, m_ariSocketIdsRegisteredTrcClients )
         {
             sendData(iSocketId, byteArrMsg);
         }
@@ -1427,7 +1427,7 @@ bool CIpcTrcServer::isConnected( int /*i_iSocketId*/ ) const
 //------------------------------------------------------------------------------
 {
     bool bConnected = false;
-    if( m_ariSocketIdsConnectedTrcClients.length() > 0 )
+    if( m_ariSocketIdsConnectedTrcClients.size() > 0 )
     {
         bConnected = true;
     }
@@ -1578,7 +1578,7 @@ void CIpcTrcServer::sendBranch(
 
     if( isConnected() && i_pBranch != nullptr )
     {
-        if( i_pBranch->entryType() != EIdxTreeEntryType::Root )
+        if( i_pBranch->entryType() != EIdxTreeEntryTypeRoot )
         {
             QString strMsg;
             QString strBranchName = i_pBranch->name();
@@ -1608,7 +1608,7 @@ void CIpcTrcServer::sendBranch(
 
             sendData( i_iSocketId, str2ByteArr(strMsg) );
 
-        } // if( i_pBranch->entryType() != EIdxTreeEntryType::Root )
+        } // if( i_pBranch->entryType() != EIdxTreeEntryTypeRoot )
 
         CAbstractIdxTreeEntry* pTreeEntry;
         int                    idxEntry;
@@ -1619,8 +1619,8 @@ void CIpcTrcServer::sendBranch(
 
             if( pTreeEntry != nullptr )
             {
-                if( pTreeEntry->entryType() == EIdxTreeEntryType::Root
-                 || pTreeEntry->entryType() == EIdxTreeEntryType::Branch )
+                if( pTreeEntry->entryType() == EIdxTreeEntryTypeRoot
+                 || pTreeEntry->entryType() == EIdxTreeEntryTypeBranch )
                 {
                     sendBranch(
                         /* iSocketId     */ i_iSocketId,
@@ -1628,7 +1628,7 @@ void CIpcTrcServer::sendBranch(
                         /* cmd           */ i_cmd,
                         /* pBranch       */ dynamic_cast<CBranchIdxTreeEntry*>(pTreeEntry) );
                 }
-                else if( pTreeEntry->entryType() == EIdxTreeEntryType::Leave )
+                else if( pTreeEntry->entryType() == EIdxTreeEntryTypeLeave )
                 {
                     sendAdminObj(
                         /* iSocketId     */ i_iSocketId,
@@ -1888,7 +1888,8 @@ void CIpcTrcServer::onIpcServerDisconnected( QObject* i_pServer, const SSocketDs
             QString strAddErrInfo = "Received disconnected signal for socket " + i_socketDscr.getConnectionString() + " whose client did not register to receive trace data";
             SErrResultInfo errResultInfo = ErrResultInfoError("onIpcServerDisconnected", EResultSocketIdOutOfRange, strAddErrInfo);
         }
-        m_ariSocketIdsConnectedTrcClients.removeOne(i_socketDscr.m_iSocketId);
+        int idx = m_ariSocketIdsConnectedTrcClients.indexOf(i_socketDscr.m_iSocketId);
+        m_ariSocketIdsConnectedTrcClients.remove(idx);
     }
     else
     {
@@ -1898,7 +1899,8 @@ void CIpcTrcServer::onIpcServerDisconnected( QObject* i_pServer, const SSocketDs
 
     if( m_ariSocketIdsRegisteredTrcClients.contains(i_socketDscr.m_iSocketId) )
     {
-        m_ariSocketIdsRegisteredTrcClients.removeOne(i_socketDscr.m_iSocketId);
+        int idx = m_ariSocketIdsRegisteredTrcClients.indexOf(i_socketDscr.m_iSocketId);
+        m_ariSocketIdsRegisteredTrcClients.remove(idx);
     }
 
 } // onIpcServerDisconnected
@@ -2373,12 +2375,12 @@ void CIpcTrcServer::onIpcServerReceivedReqUpdate( int i_iSocketId, const QString
                         {
                             xmlStreamReader.raiseError("An Object with Id " + QString::number(iObjId) + " for \"" + strElemName + "\" is not existing");
                         }
-                        else if( pTreeEntry->entryType() != EIdxTreeEntryType::Root
-                              && pTreeEntry->entryType() != EIdxTreeEntryType::Branch )
+                        else if( pTreeEntry->entryType() != EIdxTreeEntryTypeRoot
+                              && pTreeEntry->entryType() != EIdxTreeEntryTypeBranch )
                         {
                             xmlStreamReader.raiseError("The Object with Id " + QString::number(iObjId) + " for \"" + strElemName + "\" is not a name space node");
                         }
-                        else // if( pTreeEntry->entryType() == EIdxTreeEntryType::Root || Branch )
+                        else // if( pTreeEntry->entryType() == EIdxTreeEntryTypeRoot || Branch )
                         {
                             m_pTrcAdminObjIdxTree->setEnabled(iObjId, enabled);
                             m_pTrcAdminObjIdxTree->setTraceDetailLevel(iObjId, iDetailLevel);
@@ -2455,7 +2457,7 @@ void CIpcTrcServer::onTrcAdminObjIdxTreeEntryAdded(
 
     if( i_pTreeEntry != nullptr )
     {
-        if( i_pTreeEntry->entryType() == EIdxTreeEntryType::Branch )
+        if( i_pTreeEntry->entryType() == EIdxTreeEntryTypeBranch )
         {
             sendBranch(
                 /* iSocketId     */ ESocketIdAllSockets,
@@ -2463,7 +2465,7 @@ void CIpcTrcServer::onTrcAdminObjIdxTreeEntryAdded(
                 /* cmd           */ MsgProtocol::ECommandInsert,
                 /* pBranch       */ dynamic_cast<CBranchIdxTreeEntry*>(i_pTreeEntry) );
         }
-        else if( i_pTreeEntry->entryType() == EIdxTreeEntryType::Leave )
+        else if( i_pTreeEntry->entryType() == EIdxTreeEntryTypeLeave )
         {
             sendAdminObj(
                 /* iSocketId     */ ESocketIdAllSockets,
@@ -2513,7 +2515,7 @@ void CIpcTrcServer::onTrcAdminObjIdxTreeEntryChanged(
 
     if( i_pTreeEntry != nullptr )
     {
-        if( i_pTreeEntry->entryType() == EIdxTreeEntryType::Root || i_pTreeEntry->entryType() == EIdxTreeEntryType::Branch )
+        if( i_pTreeEntry->entryType() == EIdxTreeEntryTypeRoot || i_pTreeEntry->entryType() == EIdxTreeEntryTypeBranch )
         {
             sendBranch(
                 /* iSocketId     */ ESocketIdAllSockets,
@@ -2521,7 +2523,7 @@ void CIpcTrcServer::onTrcAdminObjIdxTreeEntryChanged(
                 /* cmd           */ MsgProtocol::ECommandInsert,
                 /* pBranch       */ dynamic_cast<CBranchIdxTreeEntry*>(i_pTreeEntry) );
         }
-        else if( i_pTreeEntry->entryType() == EIdxTreeEntryType::Leave )
+        else if( i_pTreeEntry->entryType() == EIdxTreeEntryTypeLeave )
         {
             sendAdminObj(
                 /* iSocketId     */ ESocketIdAllSockets,

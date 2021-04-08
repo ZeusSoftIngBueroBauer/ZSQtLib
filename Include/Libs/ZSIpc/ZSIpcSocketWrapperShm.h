@@ -211,21 +211,21 @@ public: // overridables of base class CIpcSocketWrapper
     virtual QString nameSpace() const override { return NameSpace(); }
     virtual QString className() const override { return ClassName(); }
 public: // must overridables of base class CIpcSocketWrapper
-    virtual void connectToHost( const QString& i_strRemoteHostName, unsigned int i_uRemotePort, unsigned int i_uBufferSize = 0 ) override;
-    virtual bool waitForConnected( int i_iTimeout_ms = 30000 ) override;
-    virtual void disconnectFromHost() override;
-    virtual bool waitForDisconnected( int i_iTimeout_ms = 30000 ) override;
-    virtual void abort() override;
+    virtual void connectToHost( const QString& i_strRemoteHostName, unsigned int i_uRemotePort, unsigned int i_uBufferSize = 0 );
+    virtual bool waitForConnected( int i_iTimeout_ms = 30000 );
+    virtual void disconnectFromHost();
+    virtual bool waitForDisconnected( int i_iTimeout_ms = 30000 );
+    virtual void abort();
     //virtual qint64 write( const char* i_pcData, qint64 i_iMaxSize );
-    virtual qint64 write( const QByteArray& i_byteArr ) override;
-    virtual bool waitForReadyRead( int i_iTimeout_ms = 30000 ) override;
-    virtual qint64 bytesAvailable() const override;
+    virtual qint64 write( const QByteArray& i_byteArr );
+    virtual bool waitForReadyRead( int i_iTimeout_ms = 30000 );
+    virtual qint64 bytesAvailable() const;
     //virtual qint64 read( char* i_pcData, qint64 i_iMaxSize );
-    virtual QByteArray read( qint64 i_iMaxSize ) override;
-    virtual QByteArray readAll() override;
-    virtual ZS::System::EResult error() const override;
-    virtual QString errorString() const override;
-    virtual ZS::System::SErrResultInfo errResultInfo() const override;
+    virtual QByteArray read( qint64 i_iMaxSize );
+    virtual QByteArray readAll();
+    virtual ZS::System::EResult error() const;
+    virtual QString errorString() const;
+    virtual ZS::System::SErrResultInfo errResultInfo() const;
 protected: // instance methods
     void createTimer();
 protected slots:

@@ -123,11 +123,11 @@ public: // overridables
 public: // instance methods
     int addObjNode(
         const QString& i_strObjPath,
-        EObjState      i_objState = ZS::System::EObjState::Undefined );
+        EObjState      i_objState = ZS::System::EObjStateUndefined );
     int addObjNode(
         const QString& i_strNameSpace,
         const QString& i_strObjName,
-        EObjState      i_objState = ZS::System::EObjState::Undefined );
+        EObjState      i_objState = ZS::System::EObjStateUndefined );
     int addObjNode(
         const QString& i_strNameSpace,
         const QString& i_strObjName,
@@ -139,12 +139,12 @@ public: // instance methods
     CObjPoolTreeEntry* addObjNode(
         const QString& i_strObjPath,
         int            i_iObjId,
-        EObjState      i_objState = ZS::System::EObjState::Undefined );
+        EObjState      i_objState = ZS::System::EObjStateUndefined );
     CObjPoolTreeEntry* addObjNode(
         const QString& i_strNameSpace,
         const QString& i_strObjName,
         int            i_iObjId,
-        EObjState      i_objState = ZS::System::EObjState::Undefined );
+        EObjState      i_objState = ZS::System::EObjStateUndefined );
     CObjPoolTreeEntry* addNameSpaceNode(
         const QString& i_strNameSpace );
     CObjPoolTreeEntry* addNameSpaceNode(
@@ -196,22 +196,22 @@ protected: // instance methods
     CObjPoolTreeEntry* addTreeEntry(
         const QString&    i_strNameSpace,
         EObjPoolEntryType i_entryType,
-        EObjState         i_objState = ZS::System::EObjState::Undefined );
+        EObjState         i_objState = ZS::System::EObjStateUndefined );
     CObjPoolTreeEntry* addTreeEntry(
         const QString&    i_strParentNameSpace,
         const QString&    i_strNodeName,
         EObjPoolEntryType i_entryType,
-        EObjState         i_objState = ZS::System::EObjState::Undefined );
+        EObjState         i_objState = ZS::System::EObjStateUndefined );
     CObjPoolTreeEntry* addTreeEntry(
         CObjPoolTreeEntry* i_pTreeEntryParent,
         EObjPoolEntryType  i_entryType,
         const QString&     i_strNodeName,
-        EObjState          i_objState = ZS::System::EObjState::Undefined );
+        EObjState          i_objState = ZS::System::EObjStateUndefined );
     CObjPoolListEntry* addListEntry(
         CObjPoolTreeEntry* i_pTreeEntry,
         const QString&     i_strNameSpace,
         const QString&     i_strObjName,
-        EObjState          i_objState = ZS::System::EObjState::Undefined );
+        EObjState          i_objState = ZS::System::EObjStateUndefined );
 protected: // overridables
     virtual void clearTreeEntry( CObjPoolTreeEntry* i_pTreeEntry ); // does not destroy but just invalidates the referenced object
 private: // copy ctor not allowed

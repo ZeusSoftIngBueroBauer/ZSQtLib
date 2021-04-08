@@ -363,7 +363,7 @@ CInProcMsgServer::CInProcMsgServer( const QString& i_strObjName, bool i_bTracing
     m_errResultInfo(),
     m_iMaxPendingConnections(30),
     m_arpPendingConnections(),
-    m_copyDepthMsgReadBuff(ECopyDepth::FlatReleaseOwnwership),
+    m_copyDepthMsgReadBuff(ECopyDepthFlatReleaseOwnwership),
     m_bTracingEnabled(i_bTracingEnabled),
     m_pTrcAdminObj(nullptr)
 {

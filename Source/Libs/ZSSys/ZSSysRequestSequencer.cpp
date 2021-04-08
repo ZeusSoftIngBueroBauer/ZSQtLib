@@ -668,7 +668,7 @@ void CRequestSequencer::start( CRequest* i_pReqParent )
             }
             if( pReqSeqEntryPredecessor != nullptr )
             {
-                if( pReqSeqEntryPredecessor->m_reqDscr.m_objState != EObjState::Destroyed && pReqSeqEntryPredecessor->m_reqDscr.m_iProgress_perCent < 100 )
+                if( pReqSeqEntryPredecessor->m_reqDscr.m_objState != EObjStateDestroyed && pReqSeqEntryPredecessor->m_reqDscr.m_iProgress_perCent < 100 )
                 {
                     bCanStartRequest = false;
                 }
@@ -1127,7 +1127,7 @@ CRequest* CRequestSequencer::startRequest(
     int               idxReq;
     bool              bIsAsynchronous = false;
 
-    if( pReqSeqEntry->m_reqDscr.m_objState == EObjState::Detached )
+    if( pReqSeqEntry->m_reqDscr.m_objState == EObjStateDetached )
     {
         pReqSeqEntry->m_reqDscr.m_fTimeStart_s = ZS::System::Time::getProcTimeInSec();
 
@@ -1181,7 +1181,7 @@ CRequest* CRequestSequencer::startRequest(
             pReqSeqEntry->m_reqDscr.m_errResultInfo.setResult(EResultSuccess);
             pReqSeqEntry->m_reqDscr.m_fTimeEnd_s = ZS::System::Time::getProcTimeInSec();
             pReqSeqEntry->m_reqDscr.m_iProgress_perCent = 100;
-            pReqSeqEntry->m_reqDscr.m_objState = EObjState::Destroyed;
+            pReqSeqEntry->m_reqDscr.m_objState = EObjStateDestroyed;
             pReqSeqEntry->m_reqDscr.m_iParentId = i_iReqIdParent;
 
             #ifdef _WINDOWS
@@ -1300,7 +1300,7 @@ CRequest* CRequestSequencer::startRequest(
             // But the parent id will be changed.
             pReqSeqEntry->m_reqDscr.m_iParentId = i_iReqIdParent;
 
-            if( pReqSeqEntry->m_reqDscr.m_objState != EObjState::Created && pReqSeqEntry->m_reqDscr.m_objState != EObjState::Detached )
+            if( pReqSeqEntry->m_reqDscr.m_objState != EObjStateCreated && pReqSeqEntry->m_reqDscr.m_objState != EObjStateDetached )
             {
                 QString strAddErrInfo = "ObjState of a newly created request must be Created but is " + CEnumObjState::toString(pReqSeqEntry->m_reqDscr.m_objState);
                 throw ZS::System::CException( __FILE__, __LINE__, EResultInternalProgramError, strAddErrInfo );
@@ -1310,7 +1310,7 @@ CRequest* CRequestSequencer::startRequest(
             {
                 // Please note that the inactive group request will be deleted
                 // after its children have been processed.
-                pReqSeqEntry->m_reqDscr.m_objState = EObjState::Destroyed;
+                pReqSeqEntry->m_reqDscr.m_objState = EObjStateDestroyed;
                 emit requestChanged( pReqSeqEntry->m_reqDscr.m_iId, pReqSeqEntry->m_reqDscr.m_iId );
 
                 // And the node must be removed from the hash with requests again.
@@ -1345,7 +1345,7 @@ CRequest* CRequestSequencer::startRequest(
 
         emit requestChanged(i_iReqId,iReqIdNew);
 
-    } // if( pReqSeqEntry->m_reqDscr.m_objState == EObjState::Detached )
+    } // if( pReqSeqEntry->m_reqDscr.m_objState == EObjStateDetached )
 
     CRequest* pReqChild;
     qint64    iReqIdChild;
@@ -1391,14 +1391,14 @@ CRequest* CRequestSequencer::startRequest(
         }
         if( pReqSeqEntryPredecessor != nullptr )
         {
-            if( pReqSeqEntryPredecessor->m_reqDscr.m_objState != EObjState::Destroyed && pReqSeqEntryPredecessor->m_reqDscr.m_iProgress_perCent < 100 )
+            if( pReqSeqEntryPredecessor->m_reqDscr.m_objState != EObjStateDestroyed && pReqSeqEntryPredecessor->m_reqDscr.m_iProgress_perCent < 100 )
             {
                 bStartRequest = false;
             }
         }
 
         // If the request has not yet been started ..
-        if( bStartRequest && pReqSeqEntryChild->m_reqDscr.m_objState == EObjState::Detached )
+        if( bStartRequest && pReqSeqEntryChild->m_reqDscr.m_objState == EObjStateDetached )
         {
             pReqChild = startRequest( iTimeout_ms, bIsBlocking, iReqIdNew, iReqIdChild );
 
@@ -1407,10 +1407,10 @@ CRequest* CRequestSequencer::startRequest(
                 //m_bInProgress = true;
                 bIsAsynchronous = true;
             }
-        } // if( pReqSeqEntryChild->m_reqDscr.m_objState == EObjState::Detached )
+        } // if( pReqSeqEntryChild->m_reqDscr.m_objState == EObjStateDetached )
 
         // If the request has already been started but not yet finished ..
-        else if( pReqSeqEntryChild->m_reqDscr.m_objState == EObjState::Created && pReqSeqEntryChild->m_reqDscr.m_iProgress_perCent < 100 )
+        else if( pReqSeqEntryChild->m_reqDscr.m_objState == EObjStateCreated && pReqSeqEntryChild->m_reqDscr.m_iProgress_perCent < 100 )
         {
             bIsAsynchronous = true;
         }
@@ -1435,7 +1435,7 @@ CRequest* CRequestSequencer::startRequest(
 
         // Please note that as the request was not asynchronous the "onRequestChanged" slot was not connected
         // with the changed signal of the request and thus we have to call the slot explicitly.
-        pReqSeqEntry->m_reqDscr.m_objState = EObjState::Destroyed;
+        pReqSeqEntry->m_reqDscr.m_objState = EObjStateDestroyed;
         emit requestChanged( pReqSeqEntry->m_reqDscr.m_iId, pReqSeqEntry->m_reqDscr.m_iId );
 
         m_bInProgress = !isSequenceFinished();
@@ -1630,9 +1630,9 @@ void CRequestSequencer::reset( SRequestSeqEntry* i_pReqSeqEntry, bool i_bRecursi
 
     bool bChanged = false;
 
-    if( i_pReqSeqEntry->m_reqDscr.m_objState != EObjState::Detached )
+    if( i_pReqSeqEntry->m_reqDscr.m_objState != EObjStateDetached )
     {
-        i_pReqSeqEntry->m_reqDscr.m_objState = EObjState::Detached;
+        i_pReqSeqEntry->m_reqDscr.m_objState = EObjStateDetached;
         bChanged = true;
     }
     if( i_pReqSeqEntry->m_reqDscr.m_errResultInfo != SErrResultInfo(EResultUndefined,EResultSeveritySuccess) )
@@ -1734,7 +1734,7 @@ void CRequestSequencer::updateParentRequest( SRequestSeqEntry* i_pReqSeqEntry )
 
             pReqSeqEntryChild = m_hshReqSeqs[iReqIdChild];
 
-            if( pReqSeqEntryChild->m_reqDscr.m_objState == EObjState::Destroyed )
+            if( pReqSeqEntryChild->m_reqDscr.m_objState == EObjStateDestroyed )
             {
                 fChildProgress_perCent = 100;
             }
@@ -1818,7 +1818,7 @@ void CRequestSequencer::updateParentRequest( SRequestSeqEntry* i_pReqSeqEntry )
 
                 pReqSeqEntryChild = m_hshReqSeqs[iReqIdChild];
 
-                if( pReqSeqEntryChild->m_reqDscr.m_objState == EObjState::Destroyed )
+                if( pReqSeqEntryChild->m_reqDscr.m_objState == EObjStateDestroyed )
                 {
                     fChildProgress_perCent = 100;
                 }
@@ -1971,9 +1971,9 @@ void CRequestSequencer::onParentRequestDestroyed( SRequestSeqEntry* i_pReqSeqEnt
 
     bool bChanged = false;
 
-    if( i_pReqSeqEntry->m_reqDscr.m_objState == EObjState::Detached )
+    if( i_pReqSeqEntry->m_reqDscr.m_objState == EObjStateDetached )
     {
-        i_pReqSeqEntry->m_reqDscr.m_objState = EObjState::Destroyed;
+        i_pReqSeqEntry->m_reqDscr.m_objState = EObjStateDestroyed;
         bChanged = true;
     }
     if( i_pReqSeqEntry->m_reqDscr.m_errResultInfo.getSeverity() < EResultSeverityError )
@@ -2035,7 +2035,7 @@ void CRequestSequencer::onRequestChanged( ZS::System::SRequestDscr i_reqDscr )
     {
         CRequest* pReq = m_hshpReqs.value(i_reqDscr.m_iId, nullptr);
 
-        if( pReq != nullptr && (i_reqDscr.m_objState == EObjState::Destroyed || i_reqDscr.m_iProgress_perCent >= 100) )
+        if( pReq != nullptr && (i_reqDscr.m_objState == EObjStateDestroyed || i_reqDscr.m_iProgress_perCent >= 100) )
         {
             m_hshpReqs.remove(i_reqDscr.m_iId);
 
@@ -2088,13 +2088,13 @@ void CRequestSequencer::onRequestChanged( ZS::System::SRequestDscr i_reqDscr )
                 //    pReqSeqEntry = it.value();
 
                 //    // If the request has not yet been started ..
-                //    if( pReqSeqEntry->m_reqDscr.m_objState == EObjState::Detached )
+                //    if( pReqSeqEntry->m_reqDscr.m_objState == EObjStateDetached )
                 //    {
                 //        m_bInProgress = true;
                 //        break;
                 //    }
                 //    // If the request has already been started but has not already been finished ..
-                //    else if( pReqSeqEntry->m_reqDscr.m_objState == EObjState::Created && pReqSeqEntry->m_reqDscr.m_iProgress_perCent < 100 )
+                //    else if( pReqSeqEntry->m_reqDscr.m_objState == EObjStateCreated && pReqSeqEntry->m_reqDscr.m_iProgress_perCent < 100 )
                 //    {
                 //        m_bInProgress = true;
                 //        break;
@@ -2212,7 +2212,7 @@ bool CRequestSequencer::event( QEvent* i_pEv )
                     }
                     if( pReqSeqEntryPredecessor != nullptr )
                     {
-                        if( pReqSeqEntryPredecessor->m_reqDscr.m_objState != EObjState::Destroyed && pReqSeqEntryPredecessor->m_reqDscr.m_iProgress_perCent < 100 )
+                        if( pReqSeqEntryPredecessor->m_reqDscr.m_objState != EObjStateDestroyed && pReqSeqEntryPredecessor->m_reqDscr.m_iProgress_perCent < 100 )
                         {
                             bCanStartRequest = false;
                         }

@@ -59,7 +59,7 @@ public: // instance methods
     virtual QString nameSpace() const override { return NameSpace(); }
     virtual QString className() const override { return ClassName(); }
 protected: // must overridables of base class QThread
-    virtual void run() override;
+    virtual void run();
 protected: // instance members
     CServer* m_pServer;
 
@@ -88,11 +88,11 @@ public: // instance methods
 protected slots: // overridables
     virtual void onNewConnectionPending( QObject* i_pServerWrapper );
 protected slots: // must overridables of base class CSrvCltBaseGateway
-    virtual void onDisconnected( QObject* i_pSocketWrapper ) override;
-    virtual void onReadyRead( QObject* i_pSocketWrapper ) override;
-    virtual void onError( QObject* i_pSocketWrapper, ZS::System::SErrResultInfo& i_errResultInfo ) override;
+    virtual void onDisconnected( QObject* i_pSocketWrapper );
+    virtual void onReadyRead( QObject* i_pSocketWrapper );
+    virtual void onError( QObject* i_pSocketWrapper, ZS::System::SErrResultInfo& i_errResultInfo );
 public: // overridables of inherited class QObject
-    virtual bool event( QEvent* i_pMsg ) override;
+    virtual bool event( QEvent* i_pMsg );
 protected: // instance members
     SServerHostSettings         m_hostSettings;
     CIpcServerWrapper*          m_pIpcServerWrapper;

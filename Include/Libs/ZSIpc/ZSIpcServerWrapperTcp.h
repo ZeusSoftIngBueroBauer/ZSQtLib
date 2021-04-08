@@ -54,16 +54,16 @@ public: // overridables of base class CIpcServerWrapper
     virtual QString nameSpace() const override { return NameSpace(); }
     virtual QString className() const override { return ClassName(); }
 public: // must overridables of base class CIpcServerWrapper
-    virtual void setMaxPendingConnections( int i_iMaxConnections ) override;
-    virtual int maxPendingConnections() const override;
-    virtual bool listen() override;
-    virtual bool isListening() const override;
-    virtual void close() override;
-    virtual bool hasPendingConnections() const override;
-    virtual CIpcSocketWrapper* nextPendingConnection() override;
-    virtual ZS::System::EResult error() const override;
-    virtual QString errorString() const override;
-    virtual ZS::System::SErrResultInfo errResultInfo() const override;
+    virtual void setMaxPendingConnections( int i_iMaxConnections );
+    virtual int maxPendingConnections() const;
+    virtual bool listen();
+    virtual bool isListening() const;
+    virtual void close();
+    virtual bool hasPendingConnections() const;
+    virtual CIpcSocketWrapper* nextPendingConnection();
+    virtual ZS::System::EResult error() const;
+    virtual QString errorString() const;
+    virtual ZS::System::SErrResultInfo errResultInfo() const;
 protected slots: // overridables
     virtual void onNewConnection();
 protected: // instance methods

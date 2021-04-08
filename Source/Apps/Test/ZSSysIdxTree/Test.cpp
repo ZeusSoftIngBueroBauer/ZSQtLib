@@ -249,7 +249,7 @@ public: // ctors and dtor
 //-----------------------------------------------------------------------------
 STreeEntryDscr::STreeEntryDscr() :
 //-----------------------------------------------------------------------------
-    m_entryType(EIdxTreeEntryType::Undefined),
+    m_entryType(EIdxTreeEntryTypeUndefined),
     m_strName(),
     m_strKeyInTree(),
     m_idxInTree(-1),
@@ -262,7 +262,7 @@ STreeEntryDscr::STreeEntryDscr() :
 //-----------------------------------------------------------------------------
 STreeEntryDscr::STreeEntryDscr( const CAbstractIdxTreeEntry* i_pTreeEntry ) :
 //-----------------------------------------------------------------------------
-    m_entryType(EIdxTreeEntryType::Undefined),
+    m_entryType(EIdxTreeEntryTypeUndefined),
     m_strName(),
     m_strKeyInTree(),
     m_idxInTree(-1),
@@ -309,15 +309,17 @@ bool STreeEntryDscr::operator == (const STreeEntryDscr& i_other) const
     {
         bEqual = false;
     }
+    // The index in the tree may be compared as entries will not be moved
+    // within the tree and the index must remain the same.
+    else if( m_idxInTree != i_other.m_idxInTree )
+    {
+        bEqual = false;
+    }
     else if( m_strName != i_other.m_strName )
     {
         bEqual = false;
     }
     else if( m_strKeyInTree != i_other.m_strKeyInTree )
-    {
-        bEqual = false;
-    }
-    else if( m_idxInTree != i_other.m_idxInTree )
     {
         bEqual = false;
     }
@@ -329,10 +331,11 @@ bool STreeEntryDscr::operator == (const STreeEntryDscr& i_other) const
     {
         bEqual = false;
     }
-    else if( m_idxInParentBranch != i_other.m_idxInParentBranch )
-    {
-        bEqual = false;
-    }
+    // The index in the parent branch may not be compared as on removing
+    // entries the index of following siblings will be corrected.
+    //else if( m_idxInParentBranch != i_other.m_idxInParentBranch )
+    //{
+    //}
 
     return bEqual;
 
@@ -2493,7 +2496,7 @@ void CTest::doTestStepMoveEntry( ZS::Test::CTestStep* i_pTestStep )
 
         strOperation = "IdxTree.move";
 
-        QStringList strlstArgs = strArgs.split(",", Qt::SkipEmptyParts);
+        QStringList strlstArgs = strArgs.split(",", QString::SkipEmptyParts);
 
         if( strlstArgs.size() == 2 )
         {
@@ -2600,7 +2603,7 @@ void CTest::doTestStepCopyEntry( ZS::Test::CTestStep* i_pTestStep )
 
         strOperation = "IdxTree.copy";
 
-        QStringList strlstArgs = strArgs.split(",", Qt::SkipEmptyParts);
+        QStringList strlstArgs = strArgs.split(",", QString::SkipEmptyParts);
 
         if( strlstArgs.size() == 2 )
         {
@@ -2710,7 +2713,7 @@ void CTest::doTestStepRenameEntry( ZS::Test::CTestStep* i_pTestStep )
 
         strOperation = "IdxTree.rename";
 
-        QStringList strlstArgs = strArgs.split(",", Qt::SkipEmptyParts);
+        QStringList strlstArgs = strArgs.split(",", QString::SkipEmptyParts);
 
         if( strlstArgs.size() == 2 )
         {
@@ -2804,8 +2807,8 @@ void CTest::doTestStepChangeViews( ZS::Test::CTestStep* i_pTestStep )
     // - "TreeViewIdxTree.select(B:A0::B2::C3)"
     // - "WidgetIdxTree.setViewMode(NavPanelOnly)"
 
-    CWdgtIdxTree::EViewMode  viewMode  = CWdgtIdxTree::EViewMode::Undefined;
-    EIdxTreeSortOrder        sortOrder = EIdxTreeSortOrder::Undefined;
+    CWdgtIdxTree::EViewMode  viewMode  = CWdgtIdxTree::EViewModeUndefined;
+    EIdxTreeSortOrder        sortOrder = EIdxTreeSortOrderUndefined;
     CModelAbstractTreeEntry* pModelTreeEntrySelected = nullptr;
     QString                  strKeyInTreeToBeSelected;
 
@@ -2813,11 +2816,11 @@ void CTest::doTestStepChangeViews( ZS::Test::CTestStep* i_pTestStep )
     {
         if( strOperation.contains("Config",Qt::CaseInsensitive) )
         {
-            sortOrder = EIdxTreeSortOrder::Config;
+            sortOrder = EIdxTreeSortOrderConfig;
         }
         else if( strOperation.contains("Ascending",Qt::CaseInsensitive) )
         {
-            sortOrder = EIdxTreeSortOrder::Ascending;
+            sortOrder = EIdxTreeSortOrderAscending;
         }
         strOperation = "WidgetIdxTree.setSortOrder";
     }
@@ -2825,11 +2828,11 @@ void CTest::doTestStepChangeViews( ZS::Test::CTestStep* i_pTestStep )
     {
         if( strOperation.contains("NavPanelOnly",Qt::CaseInsensitive) )
         {
-            viewMode = CWdgtIdxTree::EViewMode::NavPanelOnly;
+            viewMode = CWdgtIdxTree::EViewModeNavPanelOnly;
         }
         else if( strOperation.contains("NavPanelAndBranchContent",Qt::CaseInsensitive) )
         {
-            viewMode = CWdgtIdxTree::EViewMode::NavPanelAndBranchContent;
+            viewMode = CWdgtIdxTree::EViewModeNavPanelAndBranchContent;
         }
         strOperation = "WidgetIdxTree.setViewMode";
     }
@@ -2896,14 +2899,14 @@ void CTest::doTestStepChangeViews( ZS::Test::CTestStep* i_pTestStep )
     //---------------
 
     // If the view mode don't has to be changed by this test step ..
-    if( viewMode == CWdgtIdxTree::EViewMode::Undefined )
+    if( viewMode == CWdgtIdxTree::EViewModeUndefined )
     {
         // .. take the current setting.
         viewMode = pWdgtIdxTree->viewMode();
     }
 
     // If the sort order don't has to be changed by this test step ..
-    if( sortOrder == EIdxTreeSortOrder::Undefined )
+    if( sortOrder == EIdxTreeSortOrderUndefined )
     {
         // .. take the current setting.
         sortOrder = pTreeViewIdxTree->sortOrder();
@@ -2931,7 +2934,7 @@ void CTest::doTestStepChangeViews( ZS::Test::CTestStep* i_pTestStep )
     int                      idxInParentBranch;
     int                      idxItStep;
 
-    if( viewMode == CWdgtIdxTree::EViewMode::NavPanelOnly )
+    if( viewMode == CWdgtIdxTree::EViewModeNavPanelOnly )
     {
         // Check content of tree view
         //---------------------------
@@ -2985,7 +2988,7 @@ void CTest::doTestStepChangeViews( ZS::Test::CTestStep* i_pTestStep )
         // Check PreOrder iterator
         //------------------------
 
-        if( sortOrder == EIdxTreeSortOrder::Config )
+        if( sortOrder == EIdxTreeSortOrderConfig )
         {
             // If sort order is Config the model iterator and the index tree iterator must point
             // to the same index tree entry.
@@ -3010,10 +3013,10 @@ void CTest::doTestStepChangeViews( ZS::Test::CTestStep* i_pTestStep )
                 ++itModelIdxTree;
                 ++idxItStep;
             } // while( itIdxTree != pIdxTree->end() && itModelIdxTree != pModelIdxTree->end() )
-        } // if( sortOrder == EIdxTreeSortOrder::Config )
-    } // if( viewMode == CWdgtIdxTree::EViewMode::NavPanelOnly )
+        } // if( sortOrder == EIdxTreeSortOrderConfig )
+    } // if( viewMode == CWdgtIdxTree::EViewModeNavPanelOnly )
 
-    else if( viewMode == CWdgtIdxTree::EViewMode::NavPanelAndBranchContent )
+    else if( viewMode == CWdgtIdxTree::EViewModeNavPanelAndBranchContent )
     {
         pTableViewIdxTreeBranchContent = pWdgtIdxTree->tableView();
         pModelIdxTreeBranchContent     = dynamic_cast<CModelIdxTreeBranchContent*>(pTableViewIdxTreeBranchContent->model());
@@ -3026,7 +3029,7 @@ void CTest::doTestStepChangeViews( ZS::Test::CTestStep* i_pTestStep )
         while( itIdxTree != pIdxTree->end() )
         {
             pTreeEntry = *itIdxTree;
-            if( pTreeEntry->entryType() == EIdxTreeEntryType::Root || pTreeEntry->entryType() == EIdxTreeEntryType::Branch )
+            if( pTreeEntry->entryType() == EIdxTreeEntryTypeRoot || pTreeEntry->entryType() == EIdxTreeEntryTypeBranch )
             {
                 pModelTreeEntry = pModelIdxTree->findModelEntry(pTreeEntry);
 
@@ -3047,7 +3050,7 @@ void CTest::doTestStepChangeViews( ZS::Test::CTestStep* i_pTestStep )
         while( itModelIdxTree != pModelIdxTree->end() )
         {
             pModelTreeEntry = *itModelIdxTree;
-            if( pModelTreeEntry->entryType() != EIdxTreeEntryType::Root && pModelTreeEntry->entryType() != EIdxTreeEntryType::Branch )
+            if( pModelTreeEntry->entryType() != EIdxTreeEntryTypeRoot && pModelTreeEntry->entryType() != EIdxTreeEntryTypeBranch )
             {
                 strActualValue  = "ViewMode: " + CWdgtIdxTree::viewMode2Str(viewMode);
                 strActualValue += ", SortOrder: " + idxTreeSortOrder2Str(sortOrder) + ":\n";
@@ -3131,12 +3134,12 @@ void CTest::doTestStepChangeViews( ZS::Test::CTestStep* i_pTestStep )
                 } // if( pModelBranchSelected->keyInTree() == strKeyInTreeToBeSelected )
             } // if( pModelBranchSelected != nullptr )
         } // if( pModelTreeEntrySelected != nullptr )
-    } // if( viewMode == CWdgtIdxTree::EViewMode::NavPanelAndBranchContent )
+    } // if( viewMode == CWdgtIdxTree::EViewModeNavPanelAndBranchContent )
 
     // Sort order Ascending
     //---------------------
 
-    if( sortOrder == EIdxTreeSortOrder::Ascending )
+    if( sortOrder == EIdxTreeSortOrderAscending )
     {
         // If sort order is Ascending the entries in the index tree model must be in aplphabetical order.
         itModelIdxTree = pModelIdxTree->begin(CModelIdxTree::iterator::ETraversalOrderPreOrder);
@@ -3243,7 +3246,7 @@ void CTest::doTestStepChangeViews( ZS::Test::CTestStep* i_pTestStep )
                 } // for( int idxTreeEntry = 0; idxTreeEntry < pModelBranchSelected->count(); ++idxTreeEntry )
             } // if( pModelBranchSelected != nullptr )
         } // if( pModelIdxTreeBranchContent != nullptr )
-    } // if( sortOrder == EIdxTreeSortOrder::Ascending )
+    } // if( sortOrder == EIdxTreeSortOrderAscending )
 
     // Please note that to finish a test step the list of actual values may not be empty.
     if( strlstActualValues.size() == 0 )
@@ -3814,7 +3817,7 @@ void CTest::doTestStepGrpTrcAdmObjTreeStepTreeViewDragAndDrop( ZS::Test::CTestSt
             strGrpArgs.remove(")");
             strGrpOperation = "Move";
 
-            QStringList strlstGrpArgs = strGrpArgs.split("->", Qt::SkipEmptyParts);
+            QStringList strlstGrpArgs = strGrpArgs.split("->", QString::SkipEmptyParts);
 
             if( strlstGrpArgs.size() == 2 )
             {
@@ -4193,7 +4196,7 @@ QVector<STreeEntryDscr> CTest::toTreeEntryDscrs( const QVector<CAbstractIdxTreeE
 {
     QVector<STreeEntryDscr> arDscrs;
 
-    for( auto& pTreeEntry : i_arpTreeEntries )
+    foreach( CAbstractIdxTreeEntry* pTreeEntry, i_arpTreeEntries )
     {
         arDscrs.append( toTreeEntryDscr(pTreeEntry) );
     }
@@ -4278,7 +4281,7 @@ int CTest::addEntry(
 
             // The current number of childs in the target branch must be determined.
             int idxInParentBranch = 0;
-            for( auto& treeEntryDscrTmp : i_arTreeEntries )
+            foreach( const STreeEntryDscr& treeEntryDscrTmp, i_arTreeEntries )
             {
                 // If the tree entry will become a sibling of the tree entry to be moved ...
                 if( treeEntryDscrTmp.m_strParentBranchPath == treeEntryDscr.m_strParentBranchPath )
@@ -4300,7 +4303,7 @@ int CTest::addEntry(
 
                 treeEntryDscr.m_idxInTree = idxInTree;
 
-                if( idxInTree >= 0 && idxInTree < i_arTreeEntries.size() && i_arTreeEntries[idxInTree].m_entryType == EIdxTreeEntryType::Undefined )
+                if( idxInTree >= 0 && idxInTree < i_arTreeEntries.size() && i_arTreeEntries[idxInTree].m_entryType == EIdxTreeEntryTypeUndefined )
                 {
                     i_arTreeEntries[idxInTree] = treeEntryDscr;
                 }
@@ -4328,12 +4331,12 @@ void CTest::removeEntry(
 {
     int idxInTree;
 
-    if( i_treeEntry.m_entryType == EIdxTreeEntryType::Branch )
+    if( i_treeEntry.m_entryType == EIdxTreeEntryTypeBranch )
     {
         QString strParentPath = i_idxTree.buildPathStr(i_treeEntry.m_strParentBranchPath, i_treeEntry.m_strName);
 
         // First remove all child entries.
-        for( auto& treeEntryDscrTmp : i_arTreeEntries )
+        foreach( const STreeEntryDscr& treeEntryDscrTmp, i_arTreeEntries )
         {
             // Child of the tree entry to be removed ...
             if( treeEntryDscrTmp.m_strParentBranchPath == strParentPath )
@@ -4341,7 +4344,7 @@ void CTest::removeEntry(
                 removeEntry(i_idxTree, treeEntryDscrTmp, i_arTreeEntries, i_mapFreeIdxs);
             }
         }
-    } // if( i_treeEntry.m_entryType == EIdxTreeEntryType::Branch )
+    } // if( i_treeEntry.m_entryType == EIdxTreeEntryTypeBranch )
 
     // The "indexOf" function requires the value type to have an implementation of operator==()
     idxInTree = i_arTreeEntries.indexOf(i_treeEntry);
@@ -4360,14 +4363,16 @@ void CTest::removeEntry(
 
         // The index in the parent branch of all following child entries got to
         // be corrected (decremented).
-        for( auto& treeEntryDscrTmp : i_arTreeEntries )
+        for( int idx = 0; idx < i_arTreeEntries.size(); ++idx )
         {
+            STreeEntryDscr* pTreeEntryDscrTmp = &i_arTreeEntries[idx];
+
             // Sibling of the tree entry to be removed ...
-            if( treeEntryDscrTmp.m_strParentBranchPath == i_treeEntry.m_strParentBranchPath )
+            if( pTreeEntryDscrTmp->m_strParentBranchPath == i_treeEntry.m_strParentBranchPath )
             {
-                if( treeEntryDscrTmp.m_idxInParentBranch > i_treeEntry.m_idxInParentBranch )
+                if( pTreeEntryDscrTmp->m_idxInParentBranch > i_treeEntry.m_idxInParentBranch )
                 {
-                    --treeEntryDscrTmp.m_idxInParentBranch;
+                    --pTreeEntryDscrTmp->m_idxInParentBranch;
                 }
             }
         }
@@ -4378,19 +4383,19 @@ void CTest::removeEntry(
             // .. the list will be resized and no entry will be added to the map of free indices.
             // Instead all free indices referencing penumltimate entries will also be removed from
             // the map of free indices (kind of garbage collection).
-            i_arTreeEntries.removeLast();
+            i_arTreeEntries.remove(i_arTreeEntries.size()-1);
 
             if( i_arTreeEntries.size() > 0 )
             {
                 for( idxInTree = i_arTreeEntries.size()-1; idxInTree >= 0; --idxInTree )
                 {
-                    if( i_arTreeEntries[idxInTree].m_entryType == EIdxTreeEntryType::Undefined )
+                    if( i_arTreeEntries[idxInTree].m_entryType == EIdxTreeEntryTypeUndefined )
                     {
                         if( i_mapFreeIdxs.contains(idxInTree) )
                         {
                             i_mapFreeIdxs.remove(idxInTree);
                         }
-                        i_arTreeEntries.removeLast();
+                        i_arTreeEntries.remove(i_arTreeEntries.size()-1);
                     }
                     else
                     {
@@ -4434,7 +4439,7 @@ void CTest::renameEntry(
     {
         QString strParentBranchPathPrev = i_treeEntry.m_strParentBranchPath;
 
-        if( i_treeEntry.m_entryType == EIdxTreeEntryType::Branch )
+        if( i_treeEntry.m_entryType == EIdxTreeEntryTypeBranch )
         {
             strParentBranchPathPrev = i_idxTree.buildPathStr(i_treeEntry.m_strParentBranchPath, i_treeEntry.m_strName);
         }
@@ -4451,16 +4456,18 @@ void CTest::renameEntry(
         i_arTreeEntries[idxInTree] = i_treeEntry;
 
         // The keys and parent paths of all child entries of the renamed branch must be corrected.
-        if( i_treeEntry.m_entryType == EIdxTreeEntryType::Branch )
+        if( i_treeEntry.m_entryType == EIdxTreeEntryTypeBranch )
         {
             QString strParentBranchPathNew = i_idxTree.buildPathStr(i_treeEntry.m_strParentBranchPath, i_treeEntry.m_strName);
 
-            for( auto& treeEntryDscrTmp : i_arTreeEntries )
+            for( int idx = 0; idx < i_arTreeEntries.size(); ++idx)
             {
+                STreeEntryDscr* pTreeEntryDscrTmp = &i_arTreeEntries[idx];
+
                 // If the tree entry was a child of the renamed branch ...
-                if( treeEntryDscrTmp.m_strParentBranchPath == strParentBranchPathPrev )
+                if( pTreeEntryDscrTmp->m_strParentBranchPath == strParentBranchPathPrev )
                 {
-                    onParentBranchRenamed(i_idxTree, strParentBranchPathNew, strParentBranchPathPrev, treeEntryDscrTmp, i_arTreeEntries);
+                    onParentBranchRenamed(i_idxTree, strParentBranchPathNew, strParentBranchPathPrev, *pTreeEntryDscrTmp, i_arTreeEntries);
                 }
             }
         }
@@ -4476,32 +4483,34 @@ void CTest::moveEntry(
     QVector<STreeEntryDscr>& i_arTreeEntries ) const
 //------------------------------------------------------------------------------
 {
-    if( i_treeEntryTrg.m_entryType == EIdxTreeEntryType::Branch )
+    if( i_treeEntryTrg.m_entryType == EIdxTreeEntryTypeBranch )
     {
         QString strParentBranchPathPrev = i_treeEntrySrc.m_strParentBranchPath;
         QString strParentBranchPathNew  = i_idxTree.buildPathStr(i_treeEntryTrg.m_strParentBranchPath, i_treeEntryTrg.m_strName);
 
-        if( i_treeEntrySrc.m_entryType == EIdxTreeEntryType::Branch )
+        if( i_treeEntrySrc.m_entryType == EIdxTreeEntryTypeBranch )
         {
             strParentBranchPathPrev = i_idxTree.buildPathStr(i_treeEntrySrc.m_strParentBranchPath, i_treeEntrySrc.m_strName);
         }
 
         // The index in the previous parent branch of all following child entries got to be corrected (decremented).
-        for( auto& treeEntryDscrTmp : i_arTreeEntries )
+        for( int idx = 0; idx < i_arTreeEntries.size(); ++idx)
         {
+            STreeEntryDscr* pTreeEntryDscrTmp = &i_arTreeEntries[idx];
+
             // Sibling of the tree entry to be moved ...
-            if( treeEntryDscrTmp.m_strParentBranchPath == i_treeEntrySrc.m_strParentBranchPath )
+            if( pTreeEntryDscrTmp->m_strParentBranchPath == i_treeEntrySrc.m_strParentBranchPath )
             {
-                if( treeEntryDscrTmp.m_idxInParentBranch > i_treeEntrySrc.m_idxInParentBranch )
+                if( pTreeEntryDscrTmp->m_idxInParentBranch > i_treeEntrySrc.m_idxInParentBranch )
                 {
-                    --treeEntryDscrTmp.m_idxInParentBranch;
+                    --pTreeEntryDscrTmp->m_idxInParentBranch;
                 }
             }
         }
 
         // The current number of childs in the target branch must be determined.
         int idxInParentBranch = 0;
-        for( auto& treeEntryDscrTmp : i_arTreeEntries )
+        foreach(const STreeEntryDscr& treeEntryDscrTmp, i_arTreeEntries )
         {
             // If the tree entry will become a sibling of the tree entry to be moved ...
             if( treeEntryDscrTmp.m_strParentBranchPath == strParentBranchPathNew )
@@ -4520,20 +4529,22 @@ void CTest::moveEntry(
         i_arTreeEntries[i_treeEntrySrc.m_idxInTree] = i_treeEntrySrc;
 
         // The keys and parent paths of all child entries of the renamed branch must be corrected.
-        if( i_treeEntrySrc.m_entryType == EIdxTreeEntryType::Branch )
+        if( i_treeEntrySrc.m_entryType == EIdxTreeEntryTypeBranch )
         {
             strParentBranchPathNew = i_idxTree.buildPathStr(i_treeEntrySrc.m_strParentBranchPath, i_treeEntrySrc.m_strName);
 
-            for( auto& treeEntryDscrTmp : i_arTreeEntries )
+            for( int idx = 0; idx < i_arTreeEntries.size(); ++idx)
             {
+                STreeEntryDscr* pTreeEntryDscrTmp = &i_arTreeEntries[idx];
+
                 // If the tree entry was a child of the renamed branch ...
-                if( treeEntryDscrTmp.m_strParentBranchPath == strParentBranchPathPrev )
+                if( pTreeEntryDscrTmp->m_strParentBranchPath == strParentBranchPathPrev )
                 {
-                    onParentBranchRenamed(i_idxTree, strParentBranchPathNew, strParentBranchPathPrev, treeEntryDscrTmp, i_arTreeEntries);
+                    onParentBranchRenamed(i_idxTree, strParentBranchPathNew, strParentBranchPathPrev, *pTreeEntryDscrTmp, i_arTreeEntries);
                 }
             }
         }
-    } // if( i_treeEntryTrg.m_entryType == EIdxTreeEntryType::Branch )
+    } // if( i_treeEntryTrg.m_entryType == EIdxTreeEntryTypeBranch )
 
 } // moveEntry
 
@@ -4546,7 +4557,7 @@ void CTest::copyEntry(
     QMap<int, int>&          i_mapFreeIdxs ) const
 //------------------------------------------------------------------------------
 {
-    if( i_treeEntryTrg.m_entryType == EIdxTreeEntryType::Branch )
+    if( i_treeEntryTrg.m_entryType == EIdxTreeEntryTypeBranch )
     {
         QString strBranchPathTrg = i_idxTree.buildPathStr(i_treeEntryTrg.m_strParentBranchPath, i_treeEntryTrg.m_strName);
 
@@ -4580,22 +4591,24 @@ void CTest::copyEntry(
         idxInTreeTrg = addEntry(i_idxTree, strKeyInTreeTrg, strNameSpace, strClassName, strObjNameTrg, i_arTreeEntries, i_mapFreeIdxs);
 
         // All child entries of the source branch must be copied as well.
-        if( i_treeEntrySrc.m_entryType == EIdxTreeEntryType::Branch && idxInTreeTrg >= 0 )
+        if( i_treeEntrySrc.m_entryType == EIdxTreeEntryTypeBranch && idxInTreeTrg >= 0 )
         {
             STreeEntryDscr& treeEntryTrg = i_arTreeEntries[idxInTreeTrg];
 
             QString strBranchPathSrc = i_idxTree.buildPathStr(i_treeEntrySrc.m_strParentBranchPath, i_treeEntrySrc.m_strName);
 
-            for( auto& treeEntryDscrTmp : i_arTreeEntries )
+            for( int idx = 0; idx < i_arTreeEntries.size(); ++idx)
             {
+                STreeEntryDscr* pTreeEntryDscrTmp = &i_arTreeEntries[idx];
+
                 // If the tree entry was a child of the renamed branch ...
-                if( treeEntryDscrTmp.m_strParentBranchPath == strBranchPathSrc )
+                if( pTreeEntryDscrTmp->m_strParentBranchPath == strBranchPathSrc )
                 {
-                    copyEntry(i_idxTree, treeEntryTrg, treeEntryDscrTmp, i_arTreeEntries, i_mapFreeIdxs);
+                    copyEntry(i_idxTree, treeEntryTrg, *pTreeEntryDscrTmp, i_arTreeEntries, i_mapFreeIdxs);
                 }
             }
         } // if( idxInTree >= 0 )
-    } // if( i_treeEntryTrg.m_entryType == EIdxTreeEntryType::Branch )
+    } // if( i_treeEntryTrg.m_entryType == EIdxTreeEntryTypeBranch )
 
 } // copyEntry
 
@@ -4616,20 +4629,22 @@ void CTest::onParentBranchRenamed(
 
     i_arTreeEntries[i_treeEntry.m_idxInTree] = i_treeEntry;
 
-    if( i_treeEntry.m_entryType == EIdxTreeEntryType::Branch )
+    if( i_treeEntry.m_entryType == EIdxTreeEntryTypeBranch )
     {
         QString strParentBranchPathPrev = i_idxTree.buildPathStr(i_strParentBranchPathPrev, i_treeEntry.m_strName);
         QString strParentBranchPathNew  = i_idxTree.buildPathStr(i_strParentBranchPathNew, i_treeEntry.m_strName);
 
-        for( auto& treeEntryDscrTmp : i_arTreeEntries )
+        for( int idx = 0; idx < i_arTreeEntries.size(); ++idx)
         {
+            STreeEntryDscr* pTreeEntryDscrTmp = &i_arTreeEntries[idx];
+
             // If the tree entry was a child of the renamed branch ...
-            if( treeEntryDscrTmp.m_strParentBranchPath == strParentBranchPathPrev )
+            if( pTreeEntryDscrTmp->m_strParentBranchPath == strParentBranchPathPrev )
             {
-                onParentBranchRenamed(i_idxTree, strParentBranchPathNew, strParentBranchPathPrev, treeEntryDscrTmp, i_arTreeEntries);
+                onParentBranchRenamed(i_idxTree, strParentBranchPathNew, strParentBranchPathPrev, *pTreeEntryDscrTmp, i_arTreeEntries);
             }
         }
-    } // if( i_treeEntry.m_entryType == EIdxTreeEntryType::Branch )
+    } // if( i_treeEntry.m_entryType == EIdxTreeEntryTypeBranch )
 
 } // onParentBranchRenamed
 
@@ -4651,7 +4666,7 @@ void CTest::splitKey(
     // Remove Entry Type:
     strKeyPath.remove(0, 2);
 
-    QStringList strlstPathNodes = strKeyPath.split(i_idxTree.nodeSeparator(), Qt::SkipEmptyParts);
+    QStringList strlstPathNodes = strKeyPath.split(i_idxTree.nodeSeparator(), QString::SkipEmptyParts);
 
     // For each of the path nodes separate NameSpace, ClassName and ObjName to create Admin Object Tree Entries.
     //----------------------------------------------------------------------------------------------------------
@@ -4711,7 +4726,7 @@ void CTest::splitKey(
     // Remove Entry Type:
     strKeyPath.remove(0, 2);
 
-    o_strlstPathNodes = strKeyPath.split(i_idxTree.nodeSeparator(), Qt::SkipEmptyParts);
+    o_strlstPathNodes = strKeyPath.split(i_idxTree.nodeSeparator(), QString::SkipEmptyParts);
 
     QString strPathNode;
     QString strPath;
@@ -4939,7 +4954,7 @@ void CTest::compare(
     bool bEqual = true;
 
     // Compare content of lists. If there are differences the content of the maps are added to the test step result.
-    for( auto& idxFreeEntry : i_mapFreeIdxsDesired )
+    foreach( int idxFreeEntry, i_mapFreeIdxsDesired )
     {
         strDesiredValue = QString::number(idxFreeEntry);
 
@@ -4958,7 +4973,7 @@ void CTest::compare(
         }
     } // for( auto& idxFreeEntry : i_mapFreeIdxsDesired )
 
-    for( auto& idxFreeEntry : i_mapFreeIdxsActual )
+    foreach( int idxFreeEntry, i_mapFreeIdxsActual )
     {
         strActualValue = QString::number(idxFreeEntry);
 
@@ -4980,7 +4995,7 @@ void CTest::compare(
     if( !bEqual )
     {
         strDesiredValue = "{";
-        for( auto& idxFreeEntry : i_mapFreeIdxsDesired )
+        foreach( int idxFreeEntry, i_mapFreeIdxsDesired )
         {
             if( strDesiredValue != "{" ) strDesiredValue += ", ";
             strDesiredValue += QString::number(idxFreeEntry);
@@ -4989,7 +5004,7 @@ void CTest::compare(
         io_strlstDesiredValues.append(strDesiredValue);
 
         strActualValue = "{";
-        for( auto& idxFreeEntry : i_mapFreeIdxsActual )
+        foreach( int idxFreeEntry, i_mapFreeIdxsActual )
         {
             if( strActualValue != "{" ) strActualValue += ", ";
             strActualValue += QString::number(idxFreeEntry);

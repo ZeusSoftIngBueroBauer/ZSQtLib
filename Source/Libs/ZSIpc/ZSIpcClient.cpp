@@ -3867,7 +3867,7 @@ void CClient::onRequestChanged( ZS::System::SRequestDscr i_reqDscr )
 
         if( reqDscrPrev != reqDscrCurr )
         {
-            if( reqDscrCurr.m_objState == EObjState::Created )
+            if( reqDscrCurr.m_objState == EObjStateCreated )
             {
                 emit requestInProgressChanged(this, reqDscrCurr);
             }

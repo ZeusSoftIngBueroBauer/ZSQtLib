@@ -59,7 +59,7 @@ public: // ctors and dtor
     CGUIApp( int& i_argc, char* i_argv[] );
     ~CGUIApp();
 public: // overridables of base class QCoreApplication
-    virtual bool notify( QObject* i_pObjRcv, QEvent* i_pEv ) override;
+    virtual bool notify( QObject* i_pObjRcv, QEvent* i_pEv );
 
 }; // class CGUIApp
 

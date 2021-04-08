@@ -185,7 +185,7 @@ QString CMsgReqTest::getAddTrcInfoStr( int /*i_iDetailLevel*/, ZS::System::ECont
     QString szClmBeg;
     QString szClmEnd;
 
-    if( i_format == EContentToStrFormat::HtmlText )
+    if( i_format == EContentToStrFormatHtmlText )
     {
         szTblBeg = "<table>";
         szTblEnd = "</table>";
@@ -292,7 +292,7 @@ QString CMsgConTest::getAddTrcInfoStr( int /*i_iDetailLevel*/, ZS::System::ECont
     QString szClmBeg;
     QString szClmEnd;
 
-    if( i_format == EContentToStrFormat::HtmlText )
+    if( i_format == EContentToStrFormatHtmlText )
     {
         szTblBeg = "<table>";
         szTblEnd = "</table>";

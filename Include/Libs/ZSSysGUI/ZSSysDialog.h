@@ -86,7 +86,7 @@ public: // instance methods
     void show();
     void hide();
 protected: // overridables of base class QWidget
-    virtual void closeEvent( QCloseEvent* i_pEv ) override;
+    virtual void closeEvent( QCloseEvent* i_pEv );
 protected: // class members
     static QHash<QString,CDialog*> s_hshpDlgs; // Key is string concatenated by NameSpace::ClassName::ObjName
 protected: // instance members

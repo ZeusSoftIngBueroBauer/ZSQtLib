@@ -507,7 +507,7 @@ QList<QByteArray> CBlkTypeTLV::receiveDataBlocks(
                         CMsgReqAddLogItem* pMsgLogItem = new CMsgReqAddLogItem(
                             /* pObjSender   */ i_pObjGtw,
                             /* pObjReceiver */ i_arpTrcMsgLogObjects[idxObj],
-                            /* transmitDir  */ ETransmitDir::Receive,
+                            /* transmitDir  */ ETransmitDirReceive,
                             /* bBold        */ false,
                             /* strMsg       */ strMthAddInfo );
                         POST_OR_DELETE_MESSAGE(pMsgLogItem, i_pMthTracer, ETraceDetailLevelRuntimeInfo);
@@ -611,7 +611,7 @@ bool CBlkTypeTLV::writeDataBlock(
             CMsgReqAddLogItem* pMsgLogItem = new CMsgReqAddLogItem(
                 /* pObjSender   */ i_pObjGtw,
                 /* pObjReceiver */ i_arpTrcMsgLogObjects[idxObj],
-                /* transmitDir  */ ETransmitDir::Send,
+                /* transmitDir  */ ETransmitDirSend,
                 /* bBold        */ false,
                 /* strMsg       */ strMthAddInfo );
             POST_OR_DELETE_MESSAGE(pMsgLogItem, i_pMthTracer, ETraceDetailLevelRuntimeInfo);

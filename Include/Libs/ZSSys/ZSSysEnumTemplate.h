@@ -89,9 +89,9 @@ const int EInvalidEnumerator = -1;
        @code
        const QVector<SEnumEntry> CEnum<EProcessorClock>::s_arEnumEntries =
        {   // idxRow,           Enumerator,                                Name,  Symbol, Text,                SCIPShort, SCPILong, Value
-            SEnumEntry( static_cast<int>(EProcessorClock::Low),    "Low",    "L", "Low (5.12 MHz)",     "LOW",    "LOW",    5.12e6  ),
-            SEnumEntry( static_cast<int>(EProcessorClock::Medium), "Medium", "M", "Medium (512.0 MHz)", "MED",    "MEDium", 512.0e6 ),
-            SEnumEntry( static_cast<int>(EProcessorClock::High),   "High",   "H", "High (5.12 GHz)",    "HIGH",   "HIGH",   5.12e9  )
+            SEnumEntry( static_cast<int>(EProcessorClockLow),    "Low",    "L", "Low (5.12 MHz)",     "LOW",    "LOW",    5.12e6  ),
+            SEnumEntry( static_cast<int>(EProcessorClockMedium), "Medium", "M", "Medium (512.0 MHz)", "MED",    "MEDium", 512.0e6 ),
+            SEnumEntry( static_cast<int>(EProcessorClockHigh),   "High",   "H", "High (5.12 GHz)",    "HIGH",   "HIGH",   5.12e9  )
        };
        @endcode
 
@@ -132,7 +132,7 @@ const int EInvalidEnumerator = -1;
     @see ZS::System::SEnumEntry
     @see _GRP_BasicConcepts_Enumerations
 */
-template <typename E>
+template <class E>
 class CEnum
 //******************************************************************************
 {
@@ -245,7 +245,7 @@ public: // class methods
           - with Result = IdxOutOutOfRange if the enumerator is out of range
           - with Result = ArgOutOfRange if the alias is out of range.
 */
-template <typename E>
+template <class E>
 QString CEnum<E>::toString( E i_enumerator, int i_idxAlias )
 //------------------------------------------------------------------------------
 {
@@ -265,7 +265,7 @@ QString CEnum<E>::toString( E i_enumerator, int i_idxAlias )
 
     @return Enumerator corresponding to the given string. Undefined if the conversion failed.
 */
-template <typename E>
+template <class E>
 E CEnum<E>::toEnumerator( const QString& i_strName, bool* o_pbOk )
 //------------------------------------------------------------------------------
 {
@@ -289,7 +289,7 @@ E CEnum<E>::toEnumerator( const QString& i_strName, bool* o_pbOk )
     @note Throws an Exception
           - with Result = ArgOutOfRange if the alias is out of range.
 */
-template <typename E>
+template <class E>
 E CEnum<E>::toEnumerator( const QString& i_strName, int i_idxAlias, bool* o_pbOk )
 //------------------------------------------------------------------------------
 {
@@ -313,7 +313,7 @@ E CEnum<E>::toEnumerator( const QString& i_strName, int i_idxAlias, bool* o_pbOk
     @note Throws an Exception
           - with Result = ArgOutOfRange if the alias is out of range.
 */
-template <typename E>
+template <class E>
 E CEnum<E>::toEnumerator( const QString& i_strName, int i_idxAlias, Qt::CaseSensitivity i_caseSensitivity, bool* o_pbOk )
 //------------------------------------------------------------------------------
 {
@@ -343,7 +343,7 @@ E CEnum<E>::toEnumerator( const QString& i_strName, int i_idxAlias, Qt::CaseSens
 
     @return Enumerator corresponding to the given real value. Undefined if the conversion failed.
 */
-template <typename E>
+template <class E>
 E CEnum<E>::toEnumerator( const QVariant& i_val, bool* o_pbOk )
 //------------------------------------------------------------------------------
 {
@@ -372,7 +372,7 @@ E CEnum<E>::toEnumerator( const QVariant& i_val, bool* o_pbOk )
     @note Throws an Exception
           - with Result = IdxOutOutOfRange if the enumerator is out of range
 */
-template <typename E>
+template <class E>
 QVariant CEnum<E>::toValue( E i_enumerator, bool* o_pbOk )
 //------------------------------------------------------------------------------
 {
@@ -392,7 +392,7 @@ QVariant CEnum<E>::toValue( E i_enumerator, bool* o_pbOk )
     @note Throws an Exception
           - with Result = IdxOutOutOfRange if the enumerator is out of range
 */
-template <typename E>
+template <class E>
 QVariant CEnum<E>::toValue( E i_enumerator, QVariant::Type i_type, bool* o_pbOk )
 //------------------------------------------------------------------------------
 {
@@ -412,7 +412,7 @@ QVariant CEnum<E>::toValue( E i_enumerator, QVariant::Type i_type, bool* o_pbOk 
 
     @return Real value of the given enumerator. Invalid if conversion failed.
 */
-template <typename E>
+template <class E>
 QVariant CEnum<E>::toValue( const QString& i_strName, bool* o_pbOk )
 //------------------------------------------------------------------------------
 {
@@ -432,7 +432,7 @@ QVariant CEnum<E>::toValue( const QString& i_strName, bool* o_pbOk )
 
     @return Real value of the given enumerator. Invalid if conversion failed.
 */
-template <typename E>
+template <class E>
 QVariant CEnum<E>::toValue( const QString& i_strName, QVariant::Type i_type, bool* o_pbOk )
 //------------------------------------------------------------------------------
 {
@@ -456,7 +456,7 @@ QVariant CEnum<E>::toValue( const QString& i_strName, QVariant::Type i_type, boo
     @note Throws an Exception
           - with Result = ArgOutOfRange if the alias is out of range.
 */
-template <typename E>
+template <class E>
 QVariant CEnum<E>::toValue( const QString& i_strName, int i_idxAlias, bool* o_pbOk )
 //------------------------------------------------------------------------------
 {
@@ -475,7 +475,7 @@ QVariant CEnum<E>::toValue( const QString& i_strName, int i_idxAlias, bool* o_pb
 
     @return Real value of the given enumerator. Invalid if conversion failed.
 */
-template <typename E>
+template <class E>
 QVariant CEnum<E>::toValue( const QString& i_strName, Qt::CaseSensitivity i_caseSensitivity, bool* o_pbOk )
 //------------------------------------------------------------------------------
 {
@@ -501,7 +501,7 @@ QVariant CEnum<E>::toValue( const QString& i_strName, Qt::CaseSensitivity i_case
     @note Throws an Exception
           - with Result = ArgOutOfRange if the alias is out of range.
 */
-template <typename E>
+template <class E>
 QVariant CEnum<E>::toValue( const QString& i_strName, QVariant::Type i_type, int i_idxAlias, bool* o_pbOk )
 //------------------------------------------------------------------------------
 {
@@ -520,7 +520,7 @@ QVariant CEnum<E>::toValue( const QString& i_strName, QVariant::Type i_type, int
 
     @return Real value of the given enumerator. Invalid if conversion failed.
 */
-template <typename E>
+template <class E>
 QVariant CEnum<E>::toValue( const QString& i_strName, QVariant::Type i_type, Qt::CaseSensitivity i_caseSensitivity, bool* o_pbOk )
 //------------------------------------------------------------------------------
 {
@@ -546,7 +546,7 @@ QVariant CEnum<E>::toValue( const QString& i_strName, QVariant::Type i_type, Qt:
     @note Throws an Exception
           - with Result = ArgOutOfRange if the alias is out of range.
 */
-template <typename E>
+template <class E>
 QVariant CEnum<E>::toValue( const QString& i_strName, QVariant::Type i_type, int i_idxAlias, Qt::CaseSensitivity i_caseSensitivity, bool* o_pbOk )
 //------------------------------------------------------------------------------
 {
@@ -579,7 +579,7 @@ public: // class methods
 
     @return Enumeration instance with the enumerator set to the given string. Invalid if the conversion failed.
 */
-template <typename E>
+template <class E>
 CEnum<E> CEnum<E>::fromString( const QString& i_strName, bool* o_pbOk )
 //------------------------------------------------------------------------------
 {
@@ -603,7 +603,7 @@ CEnum<E> CEnum<E>::fromString( const QString& i_strName, bool* o_pbOk )
     @note Throws an Exception
           - with Result = ArgOutOfRange if the alias is out of range.
 */
-template <typename E>
+template <class E>
 CEnum<E> CEnum<E>::fromString( const QString& i_strName, int i_idxAlias, bool* o_pbOk )
 //------------------------------------------------------------------------------
 {
@@ -627,7 +627,7 @@ CEnum<E> CEnum<E>::fromString( const QString& i_strName, int i_idxAlias, bool* o
     @note Throws an Exception
           - with Result = ArgOutOfRange if the alias is out of range.
 */
-template <typename E>
+template <class E>
 CEnum<E> CEnum<E>::fromString( const QString& i_strName, int i_idxAlias, Qt::CaseSensitivity i_caseSensitivity, bool* o_pbOk )
 //------------------------------------------------------------------------------
 {
@@ -657,7 +657,7 @@ CEnum<E> CEnum<E>::fromString( const QString& i_strName, int i_idxAlias, Qt::Cas
 
     @return Enumeration instance with the enumerator corresonding to  the given real value. Invalid if the conversion failed.
 */
-template <typename E>
+template <class E>
 CEnum<E> CEnum<E>::fromValue( const QVariant& i_val, bool* o_pbOk )
 //------------------------------------------------------------------------------
 {
@@ -684,7 +684,7 @@ public: // class methods
 
     This corresponds to the number of defined enum entries.
 */
-template <typename E>
+template <class E>
 int CEnum<E>::count()
 //------------------------------------------------------------------------------
 {
@@ -698,7 +698,7 @@ public: // ctors
 //------------------------------------------------------------------------------
 /*! Constructs an invalid CEnum instance.
 */
-template <typename E>
+template <class E>
 CEnum<E>::CEnum() :
 //------------------------------------------------------------------------------
     m_enumerator(static_cast<E>(EInvalidEnumerator))
@@ -713,7 +713,7 @@ CEnum<E>::CEnum() :
     @note Throws an Exception
           - with Result = IdxOutOutOfRange if the enumerator is out of range
 */
-template <typename E>
+template <class E>
 CEnum<E>::CEnum( E i_enumerator ) :
 //------------------------------------------------------------------------------
     m_enumerator(static_cast<E>(EInvalidEnumerator))
@@ -731,7 +731,7 @@ CEnum<E>::CEnum( E i_enumerator ) :
     @note Throws an Exception
           - with Result = IdxOutOutOfRange if the enumerator is out of range
 */
-template <typename E>
+template <class E>
 CEnum<E>::CEnum( int i_iEnumerator ) :
 //------------------------------------------------------------------------------
     m_enumerator(static_cast<E>(EInvalidEnumerator))
@@ -757,7 +757,7 @@ CEnum<E>::CEnum( int i_iEnumerator ) :
     @note Throws an Exception
           - with Result = ArgOutOfRange if the alias is out of range.
 */
-template <typename E>
+template <class E>
 CEnum<E>::CEnum( const char* i_szName, int i_idxAlias, Qt::CaseSensitivity i_caseSensitivity ) :
 //------------------------------------------------------------------------------
     m_enumerator(static_cast<E>(EInvalidEnumerator))
@@ -790,7 +790,7 @@ CEnum<E>::CEnum( const char* i_szName, int i_idxAlias, Qt::CaseSensitivity i_cas
     @note Throws an Exception
           - with Result = ArgOutOfRange if the alias is out of range.
 */
-template <typename E>
+template <class E>
 CEnum<E>::CEnum( const QString& i_strName, int i_idxAlias, Qt::CaseSensitivity i_caseSensitivity ) :
 //------------------------------------------------------------------------------
     m_enumerator(static_cast<E>(EInvalidEnumerator))
@@ -810,7 +810,7 @@ CEnum<E>::CEnum( const QString& i_strName, int i_idxAlias, Qt::CaseSensitivity i
 //------------------------------------------------------------------------------
 /*! Copy constructor.
 */
-template <typename E>
+template <class E>
 CEnum<E>::CEnum( const CEnum& i_other ) :
 //------------------------------------------------------------------------------
     m_enumerator(i_other.m_enumerator)
@@ -829,7 +829,7 @@ public: // assignment operators
     @note Throws an Exception
           - with Result = IdxOutOutOfRange if the enumerator is out of range
 */
-template <typename E>
+template <class E>
 CEnum<E>& CEnum<E>::operator = ( E i_enumerator )
 //------------------------------------------------------------------------------
 {
@@ -847,7 +847,7 @@ CEnum<E>& CEnum<E>::operator = ( E i_enumerator )
     @note Throws an Exception
           - with Result = IdxOutOutOfRange if the enumerator is out of range
 */
-template <typename E>
+template <class E>
 CEnum<E>& CEnum<E>::operator = ( int i_iEnumerator )
 //------------------------------------------------------------------------------
 {
@@ -871,7 +871,7 @@ CEnum<E>& CEnum<E>::operator = ( int i_iEnumerator )
     @note Throws an Exception
           - with Result = IdxOutOutOfRange if the enumerator is out of range
 */
-template <typename E>
+template <class E>
 CEnum<E>& CEnum<E>::operator = ( const char* i_szName )
 //------------------------------------------------------------------------------
 {
@@ -906,7 +906,7 @@ CEnum<E>& CEnum<E>::operator = ( const char* i_szName )
     @note Throws an Exception
           - with Result = IdxOutOutOfRange if the enumerator is out of range
 */
-template <typename E>
+template <class E>
 CEnum<E>& CEnum<E>::operator = ( const QString& i_strName )
 //------------------------------------------------------------------------------
 {
@@ -930,7 +930,7 @@ CEnum<E>& CEnum<E>::operator = ( const QString& i_strName )
 //------------------------------------------------------------------------------
 /*! Assigns other to this enum instance and return a reference to this enum instance.
 */
-template <typename E>
+template <class E>
 CEnum<E>& CEnum<E>::operator = ( const CEnum& i_other )
 //------------------------------------------------------------------------------
 {
@@ -946,7 +946,7 @@ public: // compare operators with E
 /*! Returns true if the enumerator of this instance is equal to the given enumerator,
     otherwise returns false.
 */
-template <typename E>
+template <class E>
 bool CEnum<E>::operator == ( E i_enumerator ) const
 //------------------------------------------------------------------------------
 {
@@ -957,7 +957,7 @@ bool CEnum<E>::operator == ( E i_enumerator ) const
 /*! Returns true if the enumerator of this instance is not equal to the given enumerator,
     otherwise returns false.
 */
-template <typename E>
+template <class E>
 bool CEnum<E>::operator != ( E i_enumerator ) const
 //------------------------------------------------------------------------------
 {
@@ -972,7 +972,7 @@ bool CEnum<E>::operator != ( E i_enumerator ) const
           - with Result = InvalidMethodCall if the enumerator of this enum instance is out of range
           - with Result = IdxOutOutOfRange if the other enumerator is out of range
 */
-template <typename E>
+template <class E>
 bool CEnum<E>::operator < ( E i_enumerator ) const
 //------------------------------------------------------------------------------
 {
@@ -990,7 +990,7 @@ bool CEnum<E>::operator < ( E i_enumerator ) const
           - with Result = InvalidMethodCall if the enumerator of this enum instance is out of range
           - with Result = IdxOutOutOfRange if the other enumerator is out of range
 */
-template <typename E>
+template <class E>
 bool CEnum<E>::operator > ( E i_enumerator ) const
 //------------------------------------------------------------------------------
 {
@@ -1008,7 +1008,7 @@ bool CEnum<E>::operator > ( E i_enumerator ) const
           - with Result = InvalidMethodCall if the enumerator of this enum instance is out of range
           - with Result = IdxOutOutOfRange if the other enumerator is out of range
 */
-template <typename E>
+template <class E>
 bool CEnum<E>::operator <= ( E i_enumerator ) const
 //------------------------------------------------------------------------------
 {
@@ -1026,7 +1026,7 @@ bool CEnum<E>::operator <= ( E i_enumerator ) const
           - with Result = InvalidMethodCall if the enumerator of this enum instance is out of range
           - with Result = IdxOutOutOfRange if the other enumerator is out of range
 */
-template <typename E>
+template <class E>
 bool CEnum<E>::operator >= ( E i_enumerator ) const
 //------------------------------------------------------------------------------
 {
@@ -1046,7 +1046,7 @@ public: // compare operators with int
 */
 /*! 
 */
-template <typename E>
+template <class E>
 bool CEnum<E>::operator == ( int i_iEnumerator ) const
 //------------------------------------------------------------------------------
 {
@@ -1057,7 +1057,7 @@ bool CEnum<E>::operator == ( int i_iEnumerator ) const
 /*! Returns true if the enumerator of this instance is not equal to the given enumerator,
     otherwise returns false.
 */
-template <typename E>
+template <class E>
 bool CEnum<E>::operator != ( int i_iEnumerator ) const
 //------------------------------------------------------------------------------
 {
@@ -1078,7 +1078,7 @@ bool CEnum<E>::operator != ( int i_iEnumerator ) const
           Both this enum instance or the enumerator to be compared with might be Invalid
           and an Invalid enumerator is neither lower nor greater than any int value.
 */
-template <typename E>
+template <class E>
 bool CEnum<E>::operator < ( int i_iEnumerator ) const
 //------------------------------------------------------------------------------
 {
@@ -1099,7 +1099,7 @@ bool CEnum<E>::operator < ( int i_iEnumerator ) const
           Both this enum instance or the enumerator to be compared with might be Invalid
           and an Invalid enumerator is neither lower nor greater than any int value.
 */
-template <typename E>
+template <class E>
 bool CEnum<E>::operator > ( int i_iEnumerator ) const
 //------------------------------------------------------------------------------
 {
@@ -1120,7 +1120,7 @@ bool CEnum<E>::operator > ( int i_iEnumerator ) const
           Both this enum instance or the enumerator to be compared with might be Invalid
           and an Invalid enumerator is neither lower nor greater than any int value.
 */
-template <typename E>
+template <class E>
 bool CEnum<E>::operator <= ( int i_iEnumerator ) const
 //------------------------------------------------------------------------------
 {
@@ -1146,7 +1146,7 @@ bool CEnum<E>::operator <= ( int i_iEnumerator ) const
           Both this enum instance or the enumerator to be compared with might be Invalid
           and an Invalid enumerator is neither lower nor greater than any int value.
 */
-template <typename E>
+template <class E>
 bool CEnum<E>::operator >= ( int i_iEnumerator ) const
 //------------------------------------------------------------------------------
 {
@@ -1169,7 +1169,7 @@ public: // compare operators with const char*
     The search is case sensitive. The given string will be compared with all
     available alias strings.
 */
-template <typename E>
+template <class E>
 bool CEnum<E>::operator == ( const char* i_szName ) const
 //------------------------------------------------------------------------------
 {
@@ -1194,7 +1194,7 @@ bool CEnum<E>::operator == ( const char* i_szName ) const
     The search is case sensitive. The given string will be compared with all
     available alias strings.
 */
-template <typename E>
+template <class E>
 bool CEnum<E>::operator != ( const char* i_szName ) const
 //------------------------------------------------------------------------------
 {
@@ -1213,7 +1213,7 @@ bool CEnum<E>::operator != ( const char* i_szName ) const
           Both this enum instance or the enumerator to be compared with might be Invalid
           and an Invalid enumerator is neither lower nor greater than any other enumerator.
 */
-template <typename E>
+template <class E>
 bool CEnum<E>::operator < ( const char* i_szName ) const
 //------------------------------------------------------------------------------
 {
@@ -1243,7 +1243,7 @@ bool CEnum<E>::operator < ( const char* i_szName ) const
           Both this enum instance or the enumerator to be compared with might be Invalid
           and an Invalid enumerator is neither lower nor greater than any other enumerator.
 */
-template <typename E>
+template <class E>
 bool CEnum<E>::operator > ( const char* i_szName ) const
 //------------------------------------------------------------------------------
 {
@@ -1273,7 +1273,7 @@ bool CEnum<E>::operator > ( const char* i_szName ) const
           Both this enum instance or the enumerator to be compared with might be Invalid
           and an Invalid enumerator is neither lower nor greater than any other enumerator.
 */
-template <typename E>
+template <class E>
 bool CEnum<E>::operator <= ( const char* i_szName ) const
 //------------------------------------------------------------------------------
 {
@@ -1303,7 +1303,7 @@ bool CEnum<E>::operator <= ( const char* i_szName ) const
           Both this enum instance or the enumerator to be compared with might be Invalid
           and an Invalid enumerator is neither lower nor greater than any other enumerator.
 */
-template <typename E>
+template <class E>
 bool CEnum<E>::operator >= ( const char* i_szName ) const
 //------------------------------------------------------------------------------
 {
@@ -1332,7 +1332,7 @@ public: // compare operators with QString
     The search is case sensitive. The given string will be compared with all
     available alias strings.
 */
-template <typename E>
+template <class E>
 bool CEnum<E>::operator == ( const QString& i_strName ) const
 //------------------------------------------------------------------------------
 {
@@ -1357,7 +1357,7 @@ bool CEnum<E>::operator == ( const QString& i_strName ) const
     The search is case sensitive. The given string will be compared with all
     available alias strings.
 */
-template <typename E>
+template <class E>
 bool CEnum<E>::operator != ( const QString& i_strName ) const
 //------------------------------------------------------------------------------
 {
@@ -1376,7 +1376,7 @@ bool CEnum<E>::operator != ( const QString& i_strName ) const
           Both this enum instance or the enumerator to be compared with might be Invalid
           and an Invalid enumerator is neither lower nor greater than any other enumerator.
 */
-template <typename E>
+template <class E>
 bool CEnum<E>::operator < ( const QString& i_strName ) const
 //------------------------------------------------------------------------------
 {
@@ -1406,7 +1406,7 @@ bool CEnum<E>::operator < ( const QString& i_strName ) const
           Both this enum instance or the enumerator to be compared with might be Invalid
           and an Invalid enumerator is neither lower nor greater than any other enumerator.
 */
-template <typename E>
+template <class E>
 bool CEnum<E>::operator > ( const QString& i_strName ) const
 //------------------------------------------------------------------------------
 {
@@ -1436,7 +1436,7 @@ bool CEnum<E>::operator > ( const QString& i_strName ) const
           Both this enum instance or the enumerator to be compared with might be Invalid
           and an Invalid enumerator is neither lower nor greater than any other enumerator.
 */
-template <typename E>
+template <class E>
 bool CEnum<E>::operator <= ( const QString& i_strName ) const
 //------------------------------------------------------------------------------
 {
@@ -1466,7 +1466,7 @@ bool CEnum<E>::operator <= ( const QString& i_strName ) const
           Both this enum instance or the enumerator to be compared with might be Invalid
           and an Invalid enumerator is neither lower nor greater than any other enumerator.
 */
-template <typename E>
+template <class E>
 bool CEnum<E>::operator >= ( const QString& i_strName ) const
 //------------------------------------------------------------------------------
 {
@@ -1492,7 +1492,7 @@ public: // compare operators with other EnumTemplate instance
 /*! Returns true if the enumerator of this instance is equal to the enumerator
     of the other enum instance, otherwise returns false.
 */
-template <typename E>
+template <class E>
 bool CEnum<E>::operator == ( const CEnum& i_other ) const
 //------------------------------------------------------------------------------
 {
@@ -1503,7 +1503,7 @@ bool CEnum<E>::operator == ( const CEnum& i_other ) const
 /*! Returns true if the enumerator of this instance is not equal to the enumerator
     of the other enum instance, otherwise returns false.
 */
-template <typename E>
+template <class E>
 bool CEnum<E>::operator != ( const CEnum& i_other ) const
 //------------------------------------------------------------------------------
 {
@@ -1518,7 +1518,7 @@ bool CEnum<E>::operator != ( const CEnum& i_other ) const
           - with Result = InvalidMethodCall if the enumerator of this enum instance is out of range
           - with Result = IdxOutOutOfRange if the other enumerator is out of range
 */
-template <typename E>
+template <class E>
 bool CEnum<E>::operator < ( const CEnum& i_other ) const
 //------------------------------------------------------------------------------
 {
@@ -1536,7 +1536,7 @@ bool CEnum<E>::operator < ( const CEnum& i_other ) const
           - with Result = InvalidMethodCall if the enumerator of this enum instance is out of range
           - with Result = IdxOutOutOfRange if the other enumerator is out of range
 */
-template <typename E>
+template <class E>
 bool CEnum<E>::operator > ( const CEnum& i_other ) const
 //------------------------------------------------------------------------------
 {
@@ -1554,7 +1554,7 @@ bool CEnum<E>::operator > ( const CEnum& i_other ) const
           - with Result = InvalidMethodCall if the enumerator of this enum instance is out of range
           - with Result = IdxOutOutOfRange if the other enumerator is out of range
 */
-template <typename E>
+template <class E>
 bool CEnum<E>::operator <= ( const CEnum& i_other ) const
 //------------------------------------------------------------------------------
 {
@@ -1572,7 +1572,7 @@ bool CEnum<E>::operator <= ( const CEnum& i_other ) const
           - with Result = InvalidMethodCall if the enumerator of this enum instance is out of range
           - with Result = IdxOutOutOfRange if the other enumerator is out of range
 */
-template <typename E>
+template <class E>
 bool CEnum<E>::operator >= ( const CEnum& i_other ) const
 //------------------------------------------------------------------------------
 {
@@ -1599,7 +1599,7 @@ public: // increment/decrement operators
     @note Throws an Exception
           - with Result = InvalidMethodCall if the enumerator of this enum instance is out of range
 */
-template <typename E>
+template <class E>
 CEnum<E>& CEnum<E>::operator ++ ()
 //------------------------------------------------------------------------------
 {
@@ -1624,7 +1624,7 @@ CEnum<E>& CEnum<E>::operator ++ ()
     @note Throws an Exception
           - with Result = InvalidMethodCall if the enumerator of this enum instance is out of range
 */
-template <typename E>
+template <class E>
 CEnum<E>& CEnum<E>::operator ++ (int)
 //------------------------------------------------------------------------------
 {
@@ -1649,7 +1649,7 @@ CEnum<E>& CEnum<E>::operator ++ (int)
     @note Throws an Exception
           - with Result = InvalidMethodCall if the enumerator of this enum instance is out of range
 */
-template <typename E>
+template <class E>
 CEnum<E>& CEnum<E>::operator -- ()
 //------------------------------------------------------------------------------
 {
@@ -1674,7 +1674,7 @@ CEnum<E>& CEnum<E>::operator -- ()
     @note Throws an Exception
           - with Result = InvalidMethodCall if the enumerator of this enum instance is out of range
 */
-template <typename E>
+template <class E>
 CEnum<E>& CEnum<E>::operator -- (int)
 //------------------------------------------------------------------------------
 {
@@ -1693,7 +1693,7 @@ public: // instance methods
 //------------------------------------------------------------------------------
 /*! Returns the enumerator of this enum instance.
 */
-template <typename E>
+template <class E>
 E CEnum<E>::enumerator() const
 //------------------------------------------------------------------------------
 {
@@ -1706,7 +1706,7 @@ E CEnum<E>::enumerator() const
     A valid enumerator must be greater than 0 and lower than the number of
     enumerators within the enumeration.
 */
-template <typename E>
+template <class E>
 bool CEnum<E>::isValid() const
 //------------------------------------------------------------------------------
 {
@@ -1724,7 +1724,7 @@ bool CEnum<E>::isValid() const
     @note Throws an Exception
           - with Result = InvalidMethodCall if the enumerator of this enum instance is out of range
 */
-template <typename E>
+template <class E>
 QString CEnum<E>::toString( int i_idxAlias ) const
 //------------------------------------------------------------------------------
 {
@@ -1743,7 +1743,7 @@ QString CEnum<E>::toString( int i_idxAlias ) const
     @note Throws an Exception
           - with Result = InvalidMethodCall if the enumerator of this enum instance is out of range
 */
-template <typename E>
+template <class E>
 QVariant CEnum<E>::toValue( QVariant::Type i_type, bool* o_pbOk ) const
 //------------------------------------------------------------------------------
 {
@@ -1767,7 +1767,7 @@ private: // auxiliary instance methods
     @param i_iEnumerator [in] Enumerator to be checked against the valid enumeration range.
     @param i_strMth [in] The method name of the error source will be set to this method name.
 */
-template <typename E>
+template <class E>
 void CEnum<E>::throwExceptionIfEnumeratorIsInvalid( EResult i_result, int i_iEnumerator, const QString& i_strMth )
 //------------------------------------------------------------------------------
 {

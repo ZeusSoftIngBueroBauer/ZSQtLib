@@ -78,8 +78,8 @@ public: // instance methods (methods can only convert the index into the name or
 public: // instance methods (if the enumeration is not known the index value is converted into the string)
     QString toString( int i_alias = ZS::System::EEnumEntryAliasStrName ) const;
 public: // instance methods
-    bool isValid() const { return (m_validity != EValueValidity::Invalid); }
-    bool isNull() const { return (m_validity == EValueValidity::Null); }
+    bool isValid() const { return (m_validity != EValueValidityInvalid); }
+    bool isNull() const { return (m_validity == EValueValidityNull); }
     void setValidity( EValueValidity i_validity );
     EValueValidity getValidity() const { return m_validity; }
 public: // instance methods

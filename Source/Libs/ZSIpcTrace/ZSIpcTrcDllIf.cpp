@@ -287,9 +287,9 @@ bool ZS::Trace::DllIf::loadDll( const char* i_szCompiler, const char* i_szPlatfo
 
     _itoa_s(i_iQtVersionMajor, szQtVersionMajor, 21, 10);
 
-    // Example for dlll file name: "ZSIpcTrace5_msvc2015_x64_d"
+    // Example for dlll file name: "ZSIpcTraceQt5_msvc2015_x64_d"
 
-    const char* szZSDllName = "ZSIpcTrace";
+    const char* szZSDllName = "ZSIpcTraceQt";
 
     delete s_szTrcDllFileName;
     s_szTrcDllFileName = nullptr;
@@ -299,23 +299,23 @@ bool ZS::Trace::DllIf::loadDll( const char* i_szCompiler, const char* i_szPlatfo
     memset(s_szTrcDllFileName, 0x00, iStrLenDllFileName+1);
 
     size_t iStrPos = 0;
-    memcpy(&s_szTrcDllFileName[iStrPos], szZSDllName, strlen(szZSDllName));           // "ZSIpcTrace"
+    memcpy(&s_szTrcDllFileName[iStrPos], szZSDllName, strlen(szZSDllName));           // "ZSIpcTraceQt"
     iStrPos += strlen(szZSDllName);
-    memcpy(&s_szTrcDllFileName[iStrPos], szQtVersionMajor, strlen(szQtVersionMajor)); // "ZSIpcTrace5"
+    memcpy(&s_szTrcDllFileName[iStrPos], szQtVersionMajor, strlen(szQtVersionMajor)); // "ZSIpcTraceQt5"
     iStrPos += strlen(szQtVersionMajor);
-    memcpy(&s_szTrcDllFileName[iStrPos], "_", 1);                                     // "ZSIpcTrace5_"
+    memcpy(&s_szTrcDllFileName[iStrPos], "_", 1);                                     // "ZSIpcTraceQt5_"
     iStrPos += 1;
-    memcpy(&s_szTrcDllFileName[iStrPos], szCompiler, strlen(szCompiler));             // "ZSIpcTrace5_msvc2015"
+    memcpy(&s_szTrcDllFileName[iStrPos], szCompiler, strlen(szCompiler));             // "ZSIpcTraceQt5_msvc2015"
     iStrPos += strlen(szCompiler);
-    memcpy(&s_szTrcDllFileName[iStrPos], "_", 1);                                     // "ZSIpcTrace5_msvc2015_"
+    memcpy(&s_szTrcDllFileName[iStrPos], "_", 1);                                     // "ZSIpcTraceQt5_msvc2015_"
     iStrPos += 1;
-    memcpy(&s_szTrcDllFileName[iStrPos], szPlatform, strlen(szPlatform));             // "ZSIpcTrace5_msvc2015_x64"
+    memcpy(&s_szTrcDllFileName[iStrPos], szPlatform, strlen(szPlatform));             // "ZSIpcTraceQt5_msvc2015_x64"
     iStrPos += strlen(szPlatform);
     if( strlen(szConfig) > 0 )
     {
-        memcpy(&s_szTrcDllFileName[iStrPos], "_", 1);                                 // "ZSIpcTrace5_msvc2015_x64_"
+        memcpy(&s_szTrcDllFileName[iStrPos], "_", 1);                                 // "ZSIpcTraceQt5_msvc2015_x64_"
         iStrPos += 1;
-        memcpy(&s_szTrcDllFileName[iStrPos], szConfig, strlen(szConfig));             // "ZSIpcTrace5_msvc2015_x64_d"
+        memcpy(&s_szTrcDllFileName[iStrPos], szConfig, strlen(szConfig));             // "ZSIpcTraceQt5_msvc2015_x64_d"
         iStrPos += strlen(szConfig);
     }
 

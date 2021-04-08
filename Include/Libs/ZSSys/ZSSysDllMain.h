@@ -27,6 +27,8 @@ may result in using the software modules.
 #ifndef ZSSys_DllMain_h
 #define ZSSys_DllMain_h
 
+#include <QtCore/QString>
+
 // generic export defines
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
     #define __API_EXPORT __declspec(dllexport)

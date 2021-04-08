@@ -613,7 +613,7 @@ void CTreeViewIdxTreeTrcAdminObjs::expandRecursive( const QModelIndex& i_modelId
 
     if( pModelTreeEntry != nullptr )
     {
-        if( pModelTreeEntry->entryType() == EIdxTreeEntryType::Root || pModelTreeEntry->entryType() == EIdxTreeEntryType::Branch )
+        if( pModelTreeEntry->entryType() == EIdxTreeEntryTypeRoot || pModelTreeEntry->entryType() == EIdxTreeEntryTypeBranch )
         {
             CModelBranchTreeEntry*   pModelBranch = dynamic_cast<CModelBranchTreeEntry*>(pModelTreeEntry);
             CModelAbstractTreeEntry* pModelTreeEntryChild;
@@ -623,7 +623,7 @@ void CTreeViewIdxTreeTrcAdminObjs::expandRecursive( const QModelIndex& i_modelId
             {
                 pModelTreeEntryChild = pModelBranch->at(idxEntry);
 
-                if( pModelTreeEntryChild->entryType() == EIdxTreeEntryType::Root || pModelTreeEntryChild->entryType() == EIdxTreeEntryType::Branch )
+                if( pModelTreeEntryChild->entryType() == EIdxTreeEntryTypeRoot || pModelTreeEntryChild->entryType() == EIdxTreeEntryTypeBranch )
                 {
                     modelIdxChild = model()->index(idxEntry, 0, i_modelIdx);
                     expandRecursive(modelIdxChild);
@@ -632,7 +632,7 @@ void CTreeViewIdxTreeTrcAdminObjs::expandRecursive( const QModelIndex& i_modelId
 
             expand(i_modelIdx);
 
-        } // if( pModelTreeEntry->entryType() == EIdxTreeEntryType::Root || pModelTreeEntry->entryType() == EIdxTreeEntryType::Branch )
+        } // if( pModelTreeEntry->entryType() == EIdxTreeEntryTypeRoot || pModelTreeEntry->entryType() == EIdxTreeEntryTypeBranch )
     } // if( pModelTreeEntry != nullptr )
 
 } // expandRecursive
@@ -662,7 +662,7 @@ void CTreeViewIdxTreeTrcAdminObjs::collapseRecursive( const QModelIndex& i_model
 
     if( pModelTreeEntry != nullptr )
     {
-        if( pModelTreeEntry->entryType() == EIdxTreeEntryType::Root || pModelTreeEntry->entryType() == EIdxTreeEntryType::Branch )
+        if( pModelTreeEntry->entryType() == EIdxTreeEntryTypeRoot || pModelTreeEntry->entryType() == EIdxTreeEntryTypeBranch )
         {
             CModelBranchTreeEntry* pModelBranch = dynamic_cast<CModelBranchTreeEntry*>(pModelTreeEntry);
             QModelIndex            modelIdx;
@@ -671,7 +671,7 @@ void CTreeViewIdxTreeTrcAdminObjs::collapseRecursive( const QModelIndex& i_model
             {
                 pModelTreeEntry = pModelBranch->at(idxEntry);
 
-                if( pModelTreeEntry->entryType() == EIdxTreeEntryType::Root || pModelTreeEntry->entryType() == EIdxTreeEntryType::Branch )
+                if( pModelTreeEntry->entryType() == EIdxTreeEntryTypeRoot || pModelTreeEntry->entryType() == EIdxTreeEntryTypeBranch )
                 {
                     modelIdx = model()->index(idxEntry, 0, i_modelIdx);
                     collapseRecursive(modelIdx);
@@ -680,7 +680,7 @@ void CTreeViewIdxTreeTrcAdminObjs::collapseRecursive( const QModelIndex& i_model
 
             collapse(i_modelIdx);
 
-        } // if( pModelTreeEntry->entryType() == EIdxTreeEntryType::Root || pModelTreeEntry->entryType() == EIdxTreeEntryType::Branch )
+        } // if( pModelTreeEntry->entryType() == EIdxTreeEntryTypeRoot || pModelTreeEntry->entryType() == EIdxTreeEntryTypeBranch )
     } // if( pModelTreeEntry != nullptr )
 
 } // collapseRecursive
@@ -790,7 +790,7 @@ void CTreeViewIdxTreeTrcAdminObjs::onCollapsed( const QModelIndex& i_modelIdx )
 
         CModelAbstractTreeEntry* pModelTreeEntry = static_cast<CModelAbstractTreeEntry*>(i_modelIdx.internalPointer());
 
-        if( pModelTreeEntry->entryType() == EIdxTreeEntryType::Root || pModelTreeEntry->entryType() == EIdxTreeEntryType::Branch )
+        if( pModelTreeEntry->entryType() == EIdxTreeEntryTypeRoot || pModelTreeEntry->entryType() == EIdxTreeEntryTypeBranch )
         {
             CModelBranchTreeEntry* pModelBranch = dynamic_cast<CModelBranchTreeEntry*>(pModelTreeEntry);
             pModelIdxTree->setIsExpanded(pModelBranch, false);
@@ -832,7 +832,7 @@ void CTreeViewIdxTreeTrcAdminObjs::onExpanded( const QModelIndex& i_modelIdx )
 
         CModelAbstractTreeEntry* pModelTreeEntry = static_cast<CModelAbstractTreeEntry*>(i_modelIdx.internalPointer());
 
-        if( pModelTreeEntry->entryType() == EIdxTreeEntryType::Root || pModelTreeEntry->entryType() == EIdxTreeEntryType::Branch )
+        if( pModelTreeEntry->entryType() == EIdxTreeEntryTypeRoot || pModelTreeEntry->entryType() == EIdxTreeEntryTypeBranch )
         {
             CModelBranchTreeEntry* pModelBranch = dynamic_cast<CModelBranchTreeEntry*>(pModelTreeEntry);
             pModelIdxTree->setIsExpanded(pModelBranch, true);
@@ -977,7 +977,7 @@ void CTreeViewIdxTreeTrcAdminObjs::mousePressEvent( QMouseEvent* i_pEv )
         {
             if( i_pEv->buttons() & Qt::RightButton )
             {
-                if( pModelTreeEntry->entryType() == EIdxTreeEntryType::Root || pModelTreeEntry->entryType() == EIdxTreeEntryType::Branch )
+                if( pModelTreeEntry->entryType() == EIdxTreeEntryTypeRoot || pModelTreeEntry->entryType() == EIdxTreeEntryTypeBranch )
                 {
                     CModelBranchTreeEntry* pModelBranch = dynamic_cast<CModelBranchTreeEntry*>(pModelTreeEntry);
 

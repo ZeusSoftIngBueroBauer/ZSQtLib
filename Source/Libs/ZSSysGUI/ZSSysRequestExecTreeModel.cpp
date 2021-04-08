@@ -578,7 +578,7 @@ void CModelRequestExecTree::updateNode( SRequestExecTreeModelNode* i_pNode )
 {
     int iRow;
 
-    if( i_pNode->m_reqDscr.m_objState == EObjState::Created )
+    if( i_pNode->m_reqDscr.m_objState == EObjStateCreated )
     {
         if( i_pNode->m_reqDscr.m_iProgress_perCent < 100 )
         {

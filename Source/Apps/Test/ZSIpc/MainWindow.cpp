@@ -238,7 +238,7 @@ CMainWindow::CMainWindow(
 
         QIcon iconModeEdit;
 
-        iconModeEdit.addPixmap( mode2Pixmap(static_cast<int>(EMode::Edit),24) );
+        iconModeEdit.addPixmap( mode2Pixmap(static_cast<int>(EModeEdit),24) );
 
         m_pActInfoSettingsFile = new QAction( iconModeEdit, strActionSettingsFileInfo, this );
 

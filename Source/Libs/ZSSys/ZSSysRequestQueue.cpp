@@ -935,7 +935,7 @@ void CRequestQueue::setSyncRequestToBeDeletedLater( CRequest* i_pReq )
             throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
         }
 
-        m_pReqSyncToBeDeletedLater->setObjState(EObjState::Detached);
+        m_pReqSyncToBeDeletedLater->setObjState(EObjStateDetached);
         m_pReqSyncToBeDeletedLater->update();
     }
 

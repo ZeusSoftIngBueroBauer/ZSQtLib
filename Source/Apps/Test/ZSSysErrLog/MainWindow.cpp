@@ -306,7 +306,7 @@ CMainWindow::CMainWindow(
 
         QIcon iconModeEdit;
 
-        iconModeEdit.addPixmap( mode2Pixmap(static_cast<int>(EMode::Edit),24) );
+        iconModeEdit.addPixmap( mode2Pixmap(static_cast<int>(EModeEdit),24) );
 
         m_pActInfoSettingsFile = new QAction( iconModeEdit, strActionSettingsFileInfo, this );
 
@@ -466,7 +466,7 @@ bool CMainWindow::eventFilter( QObject* i_pObjWatched, QEvent* i_pEv )
 
     QLabel* pLblErrors = nullptr;
 
-    for( auto* pLbl : m_hshpLblsErrors )
+    foreach( QLabel* pLbl, m_hshpLblsErrors )
     {
         if( i_pObjWatched == pLbl )
         {

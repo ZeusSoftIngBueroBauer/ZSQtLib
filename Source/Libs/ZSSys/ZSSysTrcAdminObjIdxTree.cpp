@@ -161,7 +161,7 @@ CTrcAdminObj* CIdxTreeTrcAdminObjs::getTraceAdminObj(
 
         CBranchIdxTreeEntry* pBranch;
 
-        for( auto& strBranchName : strlstBranchNames )
+        foreach( const QString& strBranchName, strlstBranchNames )
         {
             strPath = buildPathStr(strPath, strBranchName);
 
@@ -450,7 +450,7 @@ void CIdxTreeTrcAdminObjs::setEnabled( int i_iObjId, EEnabled i_enabled )
 
     if( pTreeEntry != nullptr )
     {
-        if( pTreeEntry->entryType() == EIdxTreeEntryType::Root || pTreeEntry->entryType() == EIdxTreeEntryType::Branch )
+        if( pTreeEntry->entryType() == EIdxTreeEntryTypeRoot || pTreeEntry->entryType() == EIdxTreeEntryTypeBranch )
         {
             CBranchIdxTreeEntry* pBranch = dynamic_cast<CBranchIdxTreeEntry*>(pTreeEntry);
 
@@ -459,7 +459,7 @@ void CIdxTreeTrcAdminObjs::setEnabled( int i_iObjId, EEnabled i_enabled )
                 setEnabled(pBranch, i_enabled);
             }
         }
-        else if( pTreeEntry->entryType() == EIdxTreeEntryType::Leave )
+        else if( pTreeEntry->entryType() == EIdxTreeEntryTypeLeave )
         {
             CTrcAdminObj* pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(pTreeEntry);
 
@@ -500,7 +500,7 @@ void CIdxTreeTrcAdminObjs::setTraceDetailLevel( int i_iObjId, int i_iDetailLevel
 
     if( pTreeEntry != nullptr )
     {
-        if( pTreeEntry->entryType() == EIdxTreeEntryType::Root || pTreeEntry->entryType() == EIdxTreeEntryType::Branch )
+        if( pTreeEntry->entryType() == EIdxTreeEntryTypeRoot || pTreeEntry->entryType() == EIdxTreeEntryTypeBranch )
         {
             CBranchIdxTreeEntry* pBranch = dynamic_cast<CBranchIdxTreeEntry*>(pTreeEntry);
 
@@ -509,7 +509,7 @@ void CIdxTreeTrcAdminObjs::setTraceDetailLevel( int i_iObjId, int i_iDetailLevel
                 setTraceDetailLevel(pBranch, i_iDetailLevel);
             }
         }
-        else if( pTreeEntry->entryType() == EIdxTreeEntryType::Leave )
+        else if( pTreeEntry->entryType() == EIdxTreeEntryTypeLeave )
         {
             CTrcAdminObj* pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(pTreeEntry);
 
@@ -563,7 +563,7 @@ void CIdxTreeTrcAdminObjs::setEnabled( CBranchIdxTreeEntry* i_pBranch, EEnabled 
 
             if( pTreeEntry != nullptr )
             {
-                if( pTreeEntry->entryType() == EIdxTreeEntryType::Leave )
+                if( pTreeEntry->entryType() == EIdxTreeEntryTypeLeave )
                 {
                     pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(pTreeEntry);
 
@@ -575,7 +575,7 @@ void CIdxTreeTrcAdminObjs::setEnabled( CBranchIdxTreeEntry* i_pBranch, EEnabled 
                         }
                     }
                 }
-                else // if( pTreeEntry->entryType() == EIdxTreeEntryType::Root || Branch )
+                else // if( pTreeEntry->entryType() == EIdxTreeEntryTypeRoot || Branch )
                 {
                     pBranch = dynamic_cast<CBranchIdxTreeEntry*>(pTreeEntry);
 
@@ -627,7 +627,7 @@ void CIdxTreeTrcAdminObjs::setTraceDetailLevel( CBranchIdxTreeEntry* i_pBranch, 
 
             if( pTreeEntry != nullptr )
             {
-                if( pTreeEntry->entryType() == EIdxTreeEntryType::Leave )
+                if( pTreeEntry->entryType() == EIdxTreeEntryTypeLeave )
                 {
                     pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(pTreeEntry);
 
@@ -639,7 +639,7 @@ void CIdxTreeTrcAdminObjs::setTraceDetailLevel( CBranchIdxTreeEntry* i_pBranch, 
                         }
                     }
                 }
-                else // if( pTreeEntry->entryType() == EIdxTreeEntryType::Root || Branch )
+                else // if( pTreeEntry->entryType() == EIdxTreeEntryTypeRoot || Branch )
                 {
                     pBranch = dynamic_cast<CBranchIdxTreeEntry*>(pTreeEntry);
 
@@ -927,7 +927,7 @@ void CIdxTreeTrcAdminObjs::save(
     CTrcAdminObj*          pTrcAdminObj;
     int                    idxEntry;
 
-    if( i_pTreeEntry->entryType() == EIdxTreeEntryType::Leave )
+    if( i_pTreeEntry->entryType() == EIdxTreeEntryTypeLeave )
     {
         pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(i_pTreeEntry);
 
@@ -940,7 +940,7 @@ void CIdxTreeTrcAdminObjs::save(
         i_xmlStreamWriter.writeAttribute( "DetailLevel", traceDetailLevel2Str(pTrcAdminObj->getTraceDetailLevel()) );
         i_xmlStreamWriter.writeEndElement(/*"TrcAdminObj"*/);
     }
-    else // if( pTreeEntry->entryType() == EIdxTreeEntryType::Root || Branch )
+    else // if( pTreeEntry->entryType() == EIdxTreeEntryTypeRoot || Branch )
     {
         CBranchIdxTreeEntry* pBranch = dynamic_cast<CBranchIdxTreeEntry*>(i_pTreeEntry);
 

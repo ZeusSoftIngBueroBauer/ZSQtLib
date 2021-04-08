@@ -62,13 +62,6 @@ CTest::CTest( const QString& i_strTestStepsFileName ) :
 
     new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " ZS::System::ErrLog.addEntries",
-        /* strOperation    */ "ZS::System::ErrLog.addEntry",
-        /* pGrpParent      */ nullptr,
-        /* szDoTestStepFct */ SLOT(doTestStepAddErrLogEntries(ZS::Test::CTestStep*)) );
-
-    new ZS::Test::CTestStep(
-        /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " CErrLog::CreateInstance(ZS::Apps::Test::SysErrLog::ErrLog)",
         /* strOperation    */ "CErrLog::CreateInstance(ZS::Apps::Test::SysErrLog::ErrLog)",
         /* pGrpParent      */ nullptr,
@@ -94,13 +87,6 @@ CTest::CTest( const QString& i_strTestStepsFileName ) :
         /* strOperation    */ "CErrLog::DestroyInstance(ZS::Apps::Test::SysErrLog::ErrLog)",
         /* pGrpParent      */ nullptr,
         /* szDoTestStepFct */ SLOT(doTestStepDestroyErrLogInstance(ZS::Test::CTestStep*)) );
-
-    new ZS::Test::CTestStep(
-        /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " ZS::System::ErrLog.clear",
-        /* strOperation    */ "ZS::System::ErrLog.clear",
-        /* pGrpParent      */ nullptr,
-        /* szDoTestStepFct */ SLOT(doTestStepClearErrLog(ZS::Test::CTestStep*)) );
 
     // Recall test admin object settings
     //----------------------------------

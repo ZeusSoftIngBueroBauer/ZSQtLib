@@ -31,6 +31,10 @@ may result in using the software modules.
 public type definitions and constants
 *******************************************************************************/
 
+#ifndef nullptr
+#define nullptr 0
+#endif
+
 extern "C"
 {
 namespace ZS

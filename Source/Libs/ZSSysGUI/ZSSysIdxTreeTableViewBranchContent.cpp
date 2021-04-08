@@ -68,7 +68,7 @@ CTableViewIdxTreeBranchContent::CTableViewIdxTreeBranchContent(
     QTableView(i_pWdgtParent),
     m_pModel(nullptr),
     m_pBranch(nullptr),
-    m_sortOrder(EIdxTreeSortOrder::Config),
+    m_sortOrder(EIdxTreeSortOrderConfig),
     m_pMenuBranchContext(nullptr),
     m_pActionBranchTitle(nullptr),
     m_pActionBranchCreateNewBranch(nullptr),
@@ -457,7 +457,7 @@ void CTableViewIdxTreeBranchContent::mousePressEvent( QMouseEvent* i_pEv )
         {
             if( i_pEv->buttons() & Qt::RightButton )
             {
-                if( pModelTreeEntry->entryType() == EIdxTreeEntryType::Root || pModelTreeEntry->entryType() == EIdxTreeEntryType::Branch )
+                if( pModelTreeEntry->entryType() == EIdxTreeEntryTypeRoot || pModelTreeEntry->entryType() == EIdxTreeEntryTypeBranch )
                 {
                     if( m_pMenuBranchContext != nullptr )
                     {
@@ -466,9 +466,9 @@ void CTableViewIdxTreeBranchContent::mousePressEvent( QMouseEvent* i_pEv )
                     }
                     bEventHandled = true;
 
-                } // if( pModelTreeEntry->entryType() == EIdxTreeEntryType::Root || pModelTreeEntry->entryType() == EIdxTreeEntryType::Branch )
+                } // if( pModelTreeEntry->entryType() == EIdxTreeEntryTypeRoot || pModelTreeEntry->entryType() == EIdxTreeEntryTypeBranch )
 
-                else if( pModelTreeEntry->entryType() == EIdxTreeEntryType::Leave )
+                else if( pModelTreeEntry->entryType() == EIdxTreeEntryTypeLeave )
                 {
                     if( m_pMenuLeaveContext != nullptr )
                     {
@@ -477,7 +477,7 @@ void CTableViewIdxTreeBranchContent::mousePressEvent( QMouseEvent* i_pEv )
                     }
                     bEventHandled = true;
 
-                } // if( pModelTreeEntry->entryType() == EIdxTreeEntryType::Leave )
+                } // if( pModelTreeEntry->entryType() == EIdxTreeEntryTypeLeave )
             } // if( i_pEv->buttons() & Qt::RightButton )
         } // if( pModelTreeEntry != nullptr )
     } // if( m_modelIdxSelectedOnMousePressEvent.isValid() )

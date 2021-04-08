@@ -191,7 +191,7 @@ public: // instance methods
         polymorphic base type the method returns the name of the derived class. */
     virtual QString className() const override { return ClassName(); }
 public: // must overridables of base class CAbstractIdxTreeEntry
-    virtual CAbstractIdxTreeEntry* clone() const override;
+    virtual CAbstractIdxTreeEntry* clone() const;
 public: // operators
     /*! Returns the pointer to the child object at the given index.
         @param i_idx [in] Index of the child entry.
@@ -254,7 +254,7 @@ public: // instance methods
         polymorphic base type the method returns the name of the derived class. */
     virtual QString className() const override { return ClassName(); }
 public: // must overridables of base class CAbstractIdxTreeEntry
-    virtual CAbstractIdxTreeEntry* clone() const override;
+    virtual CAbstractIdxTreeEntry* clone() const;
 
 }; // class CRootIdxTreeEntry
 
@@ -284,7 +284,7 @@ public: // instance methods
         polymorphic base type the method returns the name of the derived class. */
     virtual QString className() const override { return ClassName(); }
 public: // must overridables of base class CAbstractIdxTreeEntry
-    virtual CAbstractIdxTreeEntry* clone() const override;
+    virtual CAbstractIdxTreeEntry* clone() const;
 
 }; // class CLeaveIdxTreeEntry
 

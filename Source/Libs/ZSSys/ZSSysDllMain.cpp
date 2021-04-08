@@ -126,7 +126,9 @@ Libraries depending on build configuration and used Qt version
 #pragma message("QTXMLLIB = " QTXMLLIB)
 #pragma message("QTSQLLIB = " QTSQLLIB)
 #pragma message("QTGUILIB = " QTGUILIB)
+#if QT_VERSION >= 0x050000
 #pragma message("QTWIDGETSLIB = " QTWIDGETSLIB)
+#endif
 
 #pragma message("ZSSYSLIB = " ZSSYSLIB)
 #pragma message("ZSSYSGUILIB = " ZSSYSGUILIB)

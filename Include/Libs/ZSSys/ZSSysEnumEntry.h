@@ -144,9 +144,9 @@ ZSSYSDLL_API EEnumEntryValidity str2EnumEntryValidity( const QString& i_str, ZS:
     @code
     const SEnumEntry s_arEnumEntriesProcessorClock[] =
     {                        // Enumerator,                             Name,  Symbol, Text,                SCIPShort, SCPILong, Value
-        SEnumEntry( static_cast<int>(EProcessorClock::Low),    "Low",    "L", "Low (5.12 MHz)",     "LOW",    "LOW",    5.12e6  ),
-        SEnumEntry( static_cast<int>(EProcessorClock::Medium), "Medium", "M", "Medium (512.0 MHz)", "MED",    "MEDium", 512.0e6 ),
-        SEnumEntry( static_cast<int>(EProcessorClock::High),   "High",   "H", "High (5.12 GHz)",    "HIGH",   "HIGH",   5.12e9  )
+        SEnumEntry( static_cast<int>(EProcessorClockLow),    "Low",    "L", "Low (5.12 MHz)",     "LOW",    "LOW",    5.12e6  ),
+        SEnumEntry( static_cast<int>(EProcessorClockMedium), "Medium", "M", "Medium (512.0 MHz)", "MED",    "MEDium", 512.0e6 ),
+        SEnumEntry( static_cast<int>(EProcessorClockHigh),   "High",   "H", "High (5.12 GHz)",    "HIGH",   "HIGH",   5.12e9  )
     };
     @endcode
 

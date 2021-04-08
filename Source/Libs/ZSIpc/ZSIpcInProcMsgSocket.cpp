@@ -381,7 +381,7 @@ CInProcMsgSocket::CInProcMsgSocket(
     m_iConnectTimeout_ms(-1),
     m_iDisconnectTimeout_ms(-1),
     m_errResultInfo(),
-    m_copyDepthMsgReadBuff(ECopyDepth::FlatReleaseOwnwership),
+    m_copyDepthMsgReadBuff(ECopyDepthFlatReleaseOwnwership),
     m_arpMsgReadBuff(),
     m_bTracingEnabled(i_bTracingEnabled),
     m_pTrcAdminObj(nullptr)
@@ -449,7 +449,7 @@ CInProcMsgSocket::CInProcMsgSocket(
     m_iConnectTimeout_ms(-1),
     m_iDisconnectTimeout_ms(-1),
     m_errResultInfo(),
-    m_copyDepthMsgReadBuff(ECopyDepth::FlatReleaseOwnwership),
+    m_copyDepthMsgReadBuff(ECopyDepthFlatReleaseOwnwership),
     m_arpMsgReadBuff(),
     m_bTracingEnabled(i_bTracingEnabled),
     m_pTrcAdminObj(nullptr)

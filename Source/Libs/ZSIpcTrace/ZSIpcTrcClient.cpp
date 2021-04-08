@@ -954,7 +954,7 @@ void CIpcTrcClient::onTrcAdminObjIdxTreeEntryChanged(
 
     if( i_pTreeEntry != nullptr )
     {
-        if( i_pTreeEntry->entryType() == EIdxTreeEntryType::Leave )
+        if( i_pTreeEntry->entryType() == EIdxTreeEntryTypeLeave )
         {
             //if( m_pTrcAdminObjIdxTree->getUpdateNameSpaceCallDepth() == 0 )
             {
@@ -964,7 +964,7 @@ void CIpcTrcClient::onTrcAdminObjIdxTreeEntryChanged(
                     /* pTrcAdminObj  */ dynamic_cast<CTrcAdminObj*>(i_pTreeEntry) );
             }
         }
-        else // if( i_pTreeEntry->entryType() == EIdxTreeEntryType::Root || Branch )
+        else // if( i_pTreeEntry->entryType() == EIdxTreeEntryTypeRoot || Branch )
         {
             //sendNameSpace(
             //    /* systemMsgType */ MsgProtocol::ESystemMsgTypeReq,
@@ -994,11 +994,11 @@ void CIpcTrcClient::resetTrcAdminRefCounters( ZS::System::CBranchIdxTreeEntry* i
 
         if( pTreeEntry != nullptr )
         {
-            if( pTreeEntry->entryType() == EIdxTreeEntryType::Branch )
+            if( pTreeEntry->entryType() == EIdxTreeEntryTypeBranch )
             {
                 resetTrcAdminRefCounters(dynamic_cast<CBranchIdxTreeEntry*>(pTreeEntry));
             }
-            else if( pTreeEntry->entryType() == EIdxTreeEntryType::Leave )
+            else if( pTreeEntry->entryType() == EIdxTreeEntryTypeLeave )
             {
                 CTrcAdminObj* pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(pTreeEntry);
 
