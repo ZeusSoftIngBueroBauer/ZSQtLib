@@ -29,7 +29,6 @@ may result in using the software modules.
 
 #include "ZSTest/ZSTest.h"
 #include "ZSTest/ZSTestStepGroup.h"
-#include "ZSData/ZSDataDllMain.h"
 
 namespace ZS
 {
