@@ -1,17 +1,36 @@
-# Call CMake from build directory (e.g. ./ZSQtLib/CMake-Build/msvc2019/x64/Debug) with:
-# - for VS-2008: cmake -G "Visual Studio 9 2008" -A x64 -DCMAKE_BUILD_TYPE=Debug -DCMAKE_PREFIX_PATH=D:/Qt/qt484/bin ../../../../Make
-# - for VS-2010: cmake -G "Visual Studio 10 2010" -A x64 -DCMAKE_BUILD_TYPE=Debug ../../../../Make
-# - for VS-2012: cmake -G "Visual Studio 11 2012" -A x64 -DCMAKE_BUILD_TYPE=Debug ../../../../Make
-# - for VS-2013: cmake -G "Visual Studio 12 2013" -A x64 -DCMAKE_BUILD_TYPE=Debug ../../../../Make
-# - for VS-2015: cmake -G "Visual Studio 14 2015" -A x64 -DCMAKE_BUILD_TYPE=Debug ../../../../Make
-# - for VS-2017: cmake -G "Visual Studio 15 2017" -A x64 -DCMAKE_BUILD_TYPE=Debug ../../../../Make
-# - for VS-2019: cmake -G "Visual Studio 16 2019" -A x64 -DCMAKE_BUILD_TYPE=Debug -DQT_VERSION_MAJOR=5 -DQt5_DIR="/Qt/Bin/5.15.2/msvc2019/x64/lib/cmake/Qt5" ../../../../Make
-
-cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
-
-project(ZSQtLibs)
-
-message(STATUS "CMAKE_PROJECT_NAME: ${CMAKE_PROJECT_NAME}")
+# Build instructions
+# ==================
+#
+# Recommended Build Directories:
+# ------------------------------
+# Please verify that your compiler supports the desired architecture.
+# VS-2008 express edition for example does not support the X64 architecture.
+# - for VS-2008: ./ZSQtLib/CMake-Build/msvc2008/x64/<Debug|Release>
+# - for VS-2010: ./ZSQtLib/CMake-Build/msvc2010/x64/<Debug|Release>
+# - for VS-2012: ./ZSQtLib/CMake-Build/msvc2012/x64/<Debug|Release>
+# - for VS-2013: ./ZSQtLib/CMake-Build/msvc2013/x64/<Debug|Release>
+# - for VS-2015: ./ZSQtLib/CMake-Build/msvc2015/x64/<Debug|Release>
+# - for VS-2017: ./ZSQtLib/CMake-Build/msvc2017/x64/<Debug|Release>
+# - for VS-2019: ./ZSQtLib/CMake-Build/msvc2019/x64/<Debug|Release>
+#
+# Call CMake from build directory:
+# --------------------------------
+# You need to specify the path to the Qt install directory. Depending on the Qt version the install directory is different.
+# For Qt4 you need to specify the directory where "qmake" is located.
+# For Qt5 you need to specify the directory where "QtConfig.cmake" is located.
+# You may have installed a precompiled Qt version or you may have compiled Qt on your own either from the Git repository
+# or from the downloaded zipped source files.
+# Make sure you use the same generator to compile ZSQtLib as it has been used to compile Qt.
+# Change into the build directory to invoke cmake for building ZSQtLib.
+# For your convience some examples are shown below.
+# - for VS-2008:
+#   cmake -G "Visual Studio 9 2008" -A Win32 -DCMAKE_BUILD_TYPE=Debug -DCMAKE_PREFIX_PATH=D:/Qt/Bin/4.8.4/msvc2008/Win32/bin ../../../../Make
+# - for VS-2019:
+#   cmake -G "Visual Studio 16 2019" -A x64 -DCMAKE_BUILD_TYPE=Debug -DQT_VERSION_MAJOR=5 -DQt5_DIR="/Qt/Bin/5.15.2/msvc2019/x64/lib/cmake/Qt5" ../../../../Make
+#
+# Build packages:
+# ---------------
+# cmake --build . --config DEBUG -v
 
 # SOURCE_DIR Variables
 # ====================
@@ -41,15 +60,6 @@ message(STATUS "CMAKE_PROJECT_NAME: ${CMAKE_PROJECT_NAME}")
 # This is the directory that contains the CMakeLists.txt file that contains the project(projectName) definition.
 # Every CMakeLists.txt file need not define a project, but one reason to define a project is to create this
 # variable so you can refer to its source files later, in other CMakeLists.txt files.
-
-message(STATUS "")
-message(STATUS "---------------------------------------------------------------------------------------------")
-message(STATUS "Processing: ${CMAKE_CURRENT_SOURCE_DIR}")
-message(STATUS "---------------------------------------------------------------------------------------------")
-
-message(STATUS "CMAKE_SOURCE_DIR:         ${CMAKE_SOURCE_DIR}")
-message(STATUS "CMAKE_CURRENT_SOURCE_DIR: ${CMAKE_CURRENT_SOURCE_DIR}")
-message(STATUS "PROJECT_SOURCE_DIR:       ${PROJECT_SOURCE_DIR}")
 
 # BINARY_DIR Variables
 # ====================
@@ -82,6 +92,20 @@ message(STATUS "PROJECT_SOURCE_DIR:       ${PROJECT_SOURCE_DIR}")
 # to the CMakeLists.txt file that contains a project(projectName) definition.
 # Every CMakeLists.txt file need not define a project, but one reason to define a project is to create
 # this variable so you can refer to its binary files later, in other CMakeLists.txt files.
+
+cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
+
+project(ZSQtLibs)
+
+message(STATUS "")
+message(STATUS "---------------------------------------------------------------------------------------------")
+message(STATUS "Processing: ${CMAKE_CURRENT_SOURCE_DIR}")
+message(STATUS "---------------------------------------------------------------------------------------------")
+
+message(STATUS "CMAKE_PROJECT_NAME:       ${CMAKE_PROJECT_NAME}")
+message(STATUS "CMAKE_SOURCE_DIR:         ${CMAKE_SOURCE_DIR}")
+message(STATUS "CMAKE_CURRENT_SOURCE_DIR: ${CMAKE_CURRENT_SOURCE_DIR}")
+message(STATUS "PROJECT_SOURCE_DIR:       ${PROJECT_SOURCE_DIR}")
 
 # Perform a Debug build by default
 if(NOT CMAKE_BUILD_TYPE)
@@ -192,10 +216,6 @@ message(STATUS "----------------------------------------------------------------
 message(STATUS "Find Package Qt")
 message(STATUS "---------------------------------------------------------------------------------------------")
 
-#if(NOT DEFINED QT_VERSION_MAJOR)
-#    set(QT_VERSION_MAJOR 5)
-#endif()
-
 message(STATUS "")
 message(STATUS "Trying to find Qt Version 5")
 message(STATUS "---------------------------------------------------------------------------------------------")
@@ -248,9 +268,6 @@ if(QT_FOUND)
     message("QT_NO_CREATE_VERSIONLESS_TARGETS:   ${QT_NO_CREATE_VERSIONLESS_TARGETS}")
     message("QT_VISIBILITY_AVAILABLE:            ${QT_VISIBILITY_AVAILABLE}")
 endif()
-
-#set(QT_VERSION_MAJOR ${QT_DEFAULT_MAJOR_VERSION})
-#message("QT_VERSION_MAJOR: ${QT_VERSION_MAJOR}")
 
 message(STATUS "")
 message(STATUS "---------------------------------------------------------------------------------------------")
