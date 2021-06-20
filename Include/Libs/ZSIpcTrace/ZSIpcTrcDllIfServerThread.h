@@ -54,7 +54,10 @@ public: // class methods
     static QString NameSpace() { return "ZS::Trace::DllIf"; }
     static QString ClassName() { return "CIpcTrcServerThread"; }
 public: // ctors and dtor
-    CIpcTrcServerThread( const QString& i_strServerName, int i_iTrcDetailLevel = ZS::Trace::ETraceDetailLevelNone );
+    CIpcTrcServerThread(
+        const QString& i_strServerName,
+        bool i_bCreateServerOnlyIfNotYetExisting = false,
+        int i_iTrcDetailLevel = ZS::Trace::ETraceDetailLevelNone );
     virtual ~CIpcTrcServerThread();
 public: // instance methods
     bool isServerCreated();
@@ -65,9 +68,9 @@ public: // overridables of base class QThread
 protected: // instance members
     QString           m_strServerName;
     QCoreApplication* m_pQtAppCreatedByDllIf;
+    bool              m_bCreateServerOnlyIfNotYetExisting;
     int               m_iTrcDetailLevel;
     CTrcMthFile*      m_pTrcMthFile;
-    bool              m_bTrcServerCreatedByMe;
 
 }; // class CIpcTrcServerThread
 

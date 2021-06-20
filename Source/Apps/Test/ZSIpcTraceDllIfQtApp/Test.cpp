@@ -179,10 +179,10 @@ CTest::CTest( const QString& i_strTestStepsFileName ) :
 
     new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " Trace Server Destroy Instance",
-        /* strOperation    */ "DllIf::CIpcTrcServer::DestroyInstance",
+        /* strName         */ "Step " + QString::number(++idxStep) + " Trace Server Release Instance",
+        /* strOperation    */ "DllIf::CIpcTrcServer::ReleaseInstance",
         /* pTSGrpParent    */ nullptr,
-        /* szDoTestStepFct */ SLOT(doTestStepTraceServerDestroyInstance(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepTraceServerReleaseInstance(ZS::Test::CTestStep*)) );
 
     new ZS::Test::CTestStep(
         /* pTest           */ this,
@@ -220,7 +220,7 @@ CTest::~CTest()
 
     if( m_pTrcServer != nullptr )
     {
-        ZS::Trace::DllIf::CIpcTrcServer::DestroyInstance(m_pTrcServer);
+        ZS::Trace::DllIf::CIpcTrcServer::ReleaseInstance(m_pTrcServer);
     }
 
     m_pAdminObjPool->save_();
@@ -338,7 +338,8 @@ void CTest::doTestStepTraceServerCreateInstance( ZS::Test::CTestStep* i_pTestSte
     // Test Step
     //----------
 
-    m_pTrcServer = ZS::Trace::DllIf::CIpcTrcServer::CreateInstance("ZSTrcServer", ZS::Trace::DllIf::ETraceDetailLevelMethodArgs);
+    m_pTrcServer = ZS::Trace::DllIf::CIpcTrcServer::CreateInstance(
+        "ZSTrcServer", false, ZS::Trace::DllIf::ETraceDetailLevelMethodArgs);
 
     // Actual Values
     //---------------
@@ -353,7 +354,7 @@ void CTest::doTestStepTraceServerCreateInstance( ZS::Test::CTestStep* i_pTestSte
 } // doTestStepTraceServerCreateInstance
 
 //------------------------------------------------------------------------------
-void CTest::doTestStepTraceServerDestroyInstance( ZS::Test::CTestStep* i_pTestStep )
+void CTest::doTestStepTraceServerReleaseInstance( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
     QString     strDesiredValue;
@@ -373,7 +374,7 @@ void CTest::doTestStepTraceServerDestroyInstance( ZS::Test::CTestStep* i_pTestSt
     // Test Step
     //----------
 
-    ZS::Trace::DllIf::CIpcTrcServer::DestroyInstance(m_pTrcServer);
+    ZS::Trace::DllIf::CIpcTrcServer::ReleaseInstance(m_pTrcServer);
     m_pTrcServer = ZS::Trace::DllIf::CIpcTrcServer::GetInstance("ZSTrcServer");
 
     // Actual Values
@@ -386,7 +387,7 @@ void CTest::doTestStepTraceServerDestroyInstance( ZS::Test::CTestStep* i_pTestSt
 
     i_pTestStep->setActualValues(strlstActualValues);
 
-} // doTestStepTraceServerDestroyInstance
+} // doTestStepTraceServerReleaseInstance
 
 //------------------------------------------------------------------------------
 void CTest::doTestStepTraceServerStartup( ZS::Test::CTestStep* i_pTestStep )

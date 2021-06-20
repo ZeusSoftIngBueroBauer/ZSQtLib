@@ -85,18 +85,48 @@ public: // struct members
 
 
 //******************************************************************************
+/*! @brief Über die Klasse CTrcServer sollten alle Trace Ausgaben erfolgen.
+
+    Die Klasse verwaltet einen Baum von Trace Objekten, über die das Tracing für
+    Module, Klassen und Instanzen aktiviert und deaktiviert als auch die Detail
+    Tiefe der Ausgaben festgelegt werden kann.
+
+    Diese Trace Admin Objekte können befragt werden, ob eine Log Ausgabe erfolgen
+    soll und welche Log-Ausgaben zu erstellen sind.
+
+    Normalerweise gibt es pro Applikation nur eine Trace Server Instanz die beim
+    Start der Applikation durch Aufruf der Klassenmethode "CreateInstance" angelegt
+    wird. Während der Programm-Ausführung kann über "GetInstance" eine Referenz auf
+    die Instanz erhalten und Parameter ändern oder Log-Ausgaben in das Trace Method
+    File vornehmen. Vor Beenden der Applikation ist die Trace Server Instanz mit
+    "ReleaseInstance" wieder zu löschen.
+
+    Für den Fall, dass mehrere Trace Server verwendet werden sollen (verschiedene
+    Log Files), kann bei "CreateInstance" ein vom Default Wert "ZSTrcServer"
+    abweichender Name übergeben werden. Dieser Name ist bei Aufruf von "GetInstance"
+    und "ReleaseInstance" wieder zu verwenden.
+
+    Hat man keinen Einfluss auf den Programmstart, programmiert PlugIn Dlls und
+    weiss nicht, ob nicht auch an anderer Stelle der Trace Server verwendet wird,
+    muss der Zugriff auf die Trace Server über Referenzzähler kontrolliert werden.
+    Deshalb besteht die Möglichkeit bei Aufruf von "CreateInstance" das
+    Flag "CreateOnlyIfNotYetExisting" zu übergeben.
+*/
 class ZSSYSDLL_API CTrcServer : public QObject
 //******************************************************************************
 {
     Q_OBJECT
 public: // class methods
-    static QString NameSpace() { return "ZS::Trace"; }
-    static QString ClassName() { return "CTrcServer"; }
+    static QString NameSpace() { return "ZS::Trace"; }  // Please note that the static class functions name must be different from the non static virtual member function "nameSpace"
+    static QString ClassName() { return "CTrcServer"; } // Please note that the static class functions name must be different from the non static virtual member function "className"
 public: // class methods
     static CTrcServer* GetInstance( const QString& i_strName = "ZSTrcServer" );
-    static CTrcServer* CreateInstance( const QString& i_strName = "ZSTrcServer", int i_iTrcDetailLevel = ETraceDetailLevelNone );
-    static void DestroyInstance( const QString& i_strName = "ZSTrcServer" );
-    static void DestroyInstance( CTrcServer* i_pTrcServer );
+    static CTrcServer* CreateInstance(
+        const QString& i_strName = "ZSTrcServer",
+        bool i_bCreateOnlyIfNotYetExisting = false,
+        int i_iTrcDetailLevel = ETraceDetailLevelNone );
+    static void ReleaseInstance( const QString& i_strName = "ZSTrcServer" );
+    static void ReleaseInstance( CTrcServer* i_pTrcServer );
     static void DestroyAllInstances();
 public: // class methods to register thread names
     static void RegisterThreadName( int i_iThreadId, const QString& i_strThreadName);
@@ -246,6 +276,10 @@ protected: // overridables
         const QString&         i_strMethodOutArgs = "" );
 protected: // auxiliary instance methods
     QString currentThreadName() const;
+protected: // reference counter
+    int getRefCount() const;
+    int incrementRefCount();
+    int decrementRefCount();
 protected: // class members
     static QMutex                      s_mtx;               /*!< Mutex to protect the class and instance methods of the class for multithreaded access. */
     static QHash<QString, CTrcServer*> s_hshpInstances;     /*!< Hash with all created trace servers (key is name of instance). */
@@ -255,6 +289,7 @@ protected: // instance members
     STrcServerSettings                 m_trcSettings;
     CTrcMthFile*                       m_pTrcMthFile;
     int                                m_iTrcDetailLevel;
+    int                                m_iRefCount;
 
 }; // class CTrcServer
 

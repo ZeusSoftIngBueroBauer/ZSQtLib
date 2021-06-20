@@ -214,7 +214,7 @@ CApplication::~CApplication()
     {
     }
 
-    CErrLog::DestroyInstance();
+    CErrLog::ReleaseInstance();
 
     //m_strErrLogFileAbsFilePath;
     //m_strTestStepsFileAbsFilePath;

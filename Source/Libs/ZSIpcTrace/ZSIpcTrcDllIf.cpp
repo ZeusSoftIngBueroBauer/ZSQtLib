@@ -127,8 +127,8 @@ typedef DllIf::STrcServerSettings (*TFctTrcServer_getTraceSettings)( const DllIf
 typedef void (*TFctTrcServer_clearLocalTrcFile)( DllIf::CTrcServer* i_pTrcServer );
 
 typedef DllIf::CIpcTrcServer* (*TFctIpcTrcServer_GetInstance)( const char* i_szName );
-typedef DllIf::CIpcTrcServer* (*TFctIpcTrcServer_CreateInstance)( const char* i_szName, int i_iTrcDetailLevel );
-typedef void (*TFctIpcTrcServer_DestroyInstance)( DllIf::CIpcTrcServer* i_pTrcServer );
+typedef DllIf::CIpcTrcServer* (*TFctIpcTrcServer_CreateInstance)( const char* i_szName, bool i_bCreateOnlyIfNotYetExisting, int i_iTrcDetailLevel );
+typedef void (*TFctIpcTrcServer_ReleaseInstance)( DllIf::CIpcTrcServer* i_pTrcServer );
 typedef bool (*TFctIpcTrcServer_startup)( DllIf::CIpcTrcServer* i_pTrcServer, int i_iTimeout_ms, bool i_bWait );
 typedef bool (*TFctIpcTrcServer_shutdown)( DllIf::CIpcTrcServer* i_pTrcServer, int i_iTimeout_ms, bool i_bWait );
 typedef bool (*TFctIpcTrcServer_isListening)( const DllIf::CIpcTrcServer* i_pTrcServer );
@@ -200,7 +200,7 @@ TFctTrcServer_clearLocalTrcFile                      s_pFctTrcServer_clearLocalT
 
 TFctIpcTrcServer_GetInstance                         s_pFctIpcTrcServer_GetInstance                         = NULL;
 TFctIpcTrcServer_CreateInstance                      s_pFctIpcTrcServer_CreateInstance                      = NULL;
-TFctIpcTrcServer_DestroyInstance                     s_pFctIpcTrcServer_DestroyInstance                     = NULL;
+TFctIpcTrcServer_ReleaseInstance                     s_pFctIpcTrcServer_ReleaseInstance                     = NULL;
 TFctIpcTrcServer_startup                             s_pFctIpcTrcServer_startup                             = NULL;
 TFctIpcTrcServer_shutdown                            s_pFctIpcTrcServer_shutdown                            = NULL;
 TFctIpcTrcServer_isListening                         s_pFctIpcTrcServer_isListening                         = NULL;
@@ -217,47 +217,6 @@ Exported methods
 bool ZS::Trace::DllIf::loadDll( const char* i_szCompiler, const char* i_szPlatform, EBuildConfiguration i_configuration, int i_iQtVersionMajor )
 //------------------------------------------------------------------------------
 {
-    #define _ZSSYS_STRINGIFY(x) #x
-    #define _ZSSYS_TOSTRING(x) _ZSSYS_STRINGIFY(x)
-
-    #if _MSC_VER <= 1200
-    #define COMPILERLIBINFIX "msvc2000"
-    #elif _MSC_VER >= 1300 && _MSC_VER <= 1300
-    #define COMPILERLIBINFIX "msvc2002"
-    #elif _MSC_VER >= 1310 && _MSC_VER <= 1310
-    #define COMPILERLIBINFIX "msvc2003"
-    #elif _MSC_VER >= 1400 && _MSC_VER <= 1400
-    #define COMPILERLIBINFIX "msvc2005"
-    #elif _MSC_VER >= 1500 && _MSC_VER <= 1500
-    #define COMPILERLIBINFIX "msvc2008"
-    #elif _MSC_VER >= 1600 && _MSC_VER <= 1600
-    #define COMPILERLIBINFIX "msvc2010"
-    #elif _MSC_VER >= 1700 && _MSC_VER <= 1700
-    #define COMPILERLIBINFIX "msvc2012"
-    #elif _MSC_VER >= 1800 && _MSC_VER <= 1800
-    #define COMPILERLIBINFIX "msvc2013"
-    #elif _MSC_VER >= 1900 && _MSC_VER <= 1900
-    #define COMPILERLIBINFIX "msvc2015"
-    #elif _MSC_VER >= 1910 && _MSC_VER <= 1916
-    #define COMPILERLIBINFIX "msvc2017"
-    #elif _MSC_VER >= 1920 && _MSC_VER <= 1928
-    #define COMPILERLIBINFIX "msvc2019"
-    #else
-    #error _MSC_VER not yet supported
-    #endif
-
-    #ifdef _WIN64
-    #define PLATFORMLIBINFIX "x64"
-    #else
-    #define PLATFORMLIBINFIX "Win32"
-    #endif
-
-    #ifdef _DEBUG
-    #define CONFIGLIBINFIX "d"
-    #else
-    #define CONFIGLIBINFIX ""
-    #endif
-
     const char* szCompiler = COMPILERLIBINFIX;
 
     if( i_szCompiler != nullptr )
@@ -509,8 +468,8 @@ bool ZS::Trace::DllIf::loadDll( const char* i_szCompiler, const char* i_szPlatfo
         s_pFctIpcTrcServer_CreateInstance = (TFctIpcTrcServer_CreateInstance)GetProcAddress(s_hndIpcTrcDllIf, "IpcTrcServer_CreateInstance");
         if( s_pFctIpcTrcServer_CreateInstance == NULL ) bOk = false;
 
-        s_pFctIpcTrcServer_DestroyInstance = (TFctIpcTrcServer_DestroyInstance)GetProcAddress(s_hndIpcTrcDllIf, "IpcTrcServer_DestroyInstance");
-        if( s_pFctIpcTrcServer_DestroyInstance == NULL ) bOk = false;
+        s_pFctIpcTrcServer_ReleaseInstance = (TFctIpcTrcServer_ReleaseInstance)GetProcAddress(s_hndIpcTrcDllIf, "IpcTrcServer_ReleaseInstance");
+        if( s_pFctIpcTrcServer_ReleaseInstance == NULL ) bOk = false;
 
         s_pFctIpcTrcServer_startup = (TFctIpcTrcServer_startup)GetProcAddress(s_hndIpcTrcDllIf, "IpcTrcServer_startup");
         if( s_pFctIpcTrcServer_startup == NULL ) bOk = false;
@@ -616,7 +575,7 @@ bool ZS::Trace::DllIf::releaseDll()
 
         s_pFctIpcTrcServer_GetInstance                         = NULL;
         s_pFctIpcTrcServer_CreateInstance                      = NULL;
-        s_pFctIpcTrcServer_DestroyInstance                     = NULL;
+        s_pFctIpcTrcServer_ReleaseInstance                     = NULL;
         s_pFctIpcTrcServer_startup                             = NULL;
         s_pFctIpcTrcServer_shutdown                            = NULL;
         s_pFctIpcTrcServer_isListening                         = NULL;
@@ -1708,29 +1667,32 @@ DllIf::CIpcTrcServer* DllIf::CIpcTrcServer::GetInstance( const char* i_szName )
 } // createServerInstance
 
 //------------------------------------------------------------------------------
-DllIf::CIpcTrcServer* DllIf::CIpcTrcServer::CreateInstance( const char* i_szName , int i_iTrcDetailLevel )
+DllIf::CIpcTrcServer* DllIf::CIpcTrcServer::CreateInstance(
+    const char* i_szName,
+    bool i_bCreateOnlyIfNotYetExisting,
+    int i_iTrcDetailLevel )
 //------------------------------------------------------------------------------
 {
     DllIf::CIpcTrcServer* pTrcServer = NULL;
 
     if( s_hndIpcTrcDllIf != NULL && s_pFctIpcTrcServer_CreateInstance != NULL )
     {
-        pTrcServer = s_pFctIpcTrcServer_CreateInstance(i_szName, i_iTrcDetailLevel);
+        pTrcServer = s_pFctIpcTrcServer_CreateInstance(i_szName, i_bCreateOnlyIfNotYetExisting, i_iTrcDetailLevel);
     }
     return pTrcServer;
 
 } // CreateInstance
 
 //------------------------------------------------------------------------------
-void DllIf::CIpcTrcServer::DestroyInstance( DllIf::CIpcTrcServer* i_pTrcServer )
+void DllIf::CIpcTrcServer::ReleaseInstance( DllIf::CIpcTrcServer* i_pTrcServer )
 //------------------------------------------------------------------------------
 {
-    if( s_hndIpcTrcDllIf != NULL && s_pFctIpcTrcServer_DestroyInstance != NULL )
+    if( s_hndIpcTrcDllIf != NULL && s_pFctIpcTrcServer_ReleaseInstance != NULL )
     {
-        s_pFctIpcTrcServer_DestroyInstance(i_pTrcServer);
+        s_pFctIpcTrcServer_ReleaseInstance(i_pTrcServer);
     }
 
-} // DestroyInstance
+} // ReleaseInstance
 
 /*==============================================================================
 public: // instance methods

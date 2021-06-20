@@ -100,7 +100,7 @@ public: // instance members
 
     The errog log file class remedies this by declaring both constructor and destructor
     as protected methods. Instead of using the ctor and dtor the static class methods
-    CErrLog::GetInstance, CErrLog::CreateInstance and CErrLog::DestroyInstance
+    CErrLog::GetInstance, CErrLog::CreateInstance and CErrLog::ReleaseInstance
     must be used to open and close an error log file.
 
     Usually only one error log instance is created when the application is
@@ -171,12 +171,12 @@ public: // instance members
     The ErrLog instance must be released again when the application is closed.
     On the one hand to save all actual error messages in the ErrLog file and, of course,
     because for a clean shutdown all created instances should also be released again so that
-    no memory leaks are left behind. You do this by invoking DestroyInstance. If DestroyInstance
+    no memory leaks are left behind. You do this by invoking ReleaseInstance. If ReleaseInstance
     is called without an object name, the name "ZSErrLog" is used by default.
-    If you have used your own name, this must be passed as an argument to DestroyInstance.
+    If you have used your own name, this must be passed as an argument to ReleaseInstance.
 
     @code
-    CErrLog::DestroyInstance();
+    CErrLog::ReleaseInstance();
     @endcode
 
     From anywhere in the program, you can use the static method GetInstance to access the
@@ -212,8 +212,8 @@ public: // class methods
 public: // class methods
     static CErrLog* GetInstance( const QString& i_strName = "ZSErrLog" );
     static CErrLog* CreateInstance( bool i_bInstallQtMsgHandler = true, const QString& i_strAbsFilePath = "", const QString& i_strName = "ZSErrLog" );
-    static void DestroyInstance( const QString& i_strName = "ZSErrLog" );
-    static void DestroyInstance( CErrLog* i_pErrLog );
+    static void ReleaseInstance( const QString& i_strName = "ZSErrLog" );
+    static void ReleaseInstance( CErrLog* i_pErrLog );
     static void DestroyAllInstances();
 private: // class methods
     static void InstallQtMsgHandler();

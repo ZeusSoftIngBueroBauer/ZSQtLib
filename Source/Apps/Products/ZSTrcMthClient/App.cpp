@@ -302,7 +302,7 @@ CApplication::~CApplication()
 
     CRequestExecTree::DestroyInstance();
 
-    CErrLog::DestroyInstance();
+    CErrLog::ReleaseInstance();
 
     m_pSettingsFile = nullptr;
     //m_strThreadClrFileAbsFilePath;

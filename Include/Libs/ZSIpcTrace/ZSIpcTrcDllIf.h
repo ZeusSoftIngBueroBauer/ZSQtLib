@@ -35,6 +35,58 @@ public type definitions and constants
 #define nullptr 0
 #endif
 
+#ifndef QT_VERSION_MAJOR
+#if QT_VERSION >= 0x050000
+#define QT_VERSION_MAJOR 5
+#elif QT_VERSION >= 0x040804
+#define QT_VERSION_MAJOR 4
+#endif
+#endif
+
+#ifndef COMPILERLIBINFIX
+#if _MSC_VER <= 1200
+#define COMPILERLIBINFIX "msvc2000"
+#elif _MSC_VER >= 1300 && _MSC_VER <= 1300
+#define COMPILERLIBINFIX "msvc2002"
+#elif _MSC_VER >= 1310 && _MSC_VER <= 1310
+#define COMPILERLIBINFIX "msvc2003"
+#elif _MSC_VER >= 1400 && _MSC_VER <= 1400
+#define COMPILERLIBINFIX "msvc2005"
+#elif _MSC_VER >= 1500 && _MSC_VER <= 1500
+#define COMPILERLIBINFIX "msvc2008"
+#elif _MSC_VER >= 1600 && _MSC_VER <= 1600
+#define COMPILERLIBINFIX "msvc2010"
+#elif _MSC_VER >= 1700 && _MSC_VER <= 1700
+#define COMPILERLIBINFIX "msvc2012"
+#elif _MSC_VER >= 1800 && _MSC_VER <= 1800
+#define COMPILERLIBINFIX "msvc2013"
+#elif _MSC_VER >= 1900 && _MSC_VER <= 1900
+#define COMPILERLIBINFIX "msvc2015"
+#elif _MSC_VER >= 1910 && _MSC_VER <= 1916
+#define COMPILERLIBINFIX "msvc2017"
+#elif _MSC_VER >= 1920 && _MSC_VER <= 1928
+#define COMPILERLIBINFIX "msvc2019"
+#else
+#error _MSC_VER not yet supported
+#endif
+#endif
+
+#ifndef PLATFORMLIBINFIX
+#ifdef _WIN64
+#define PLATFORMLIBINFIX "x64"
+#else
+#define PLATFORMLIBINFIX "Win32"
+#endif
+#endif
+
+#ifndef CONFIGLIBINFIX
+#ifdef _DEBUG
+#define CONFIGLIBINFIX "d"
+#else
+#define CONFIGLIBINFIX ""
+#endif
+#endif
+
 extern "C"
 {
 namespace ZS
@@ -263,8 +315,11 @@ class CIpcTrcServer : public CTrcServer
 {
 public: // class methods
     static CIpcTrcServer* GetInstance( const char* i_szName = "ZSTrcServer" );
-    static CIpcTrcServer* CreateInstance( const char* i_szName = "ZSTrcServer", int i_iTrcDetailLevel = ETraceDetailLevelNone );
-    static void DestroyInstance( CIpcTrcServer* i_pTrcServer );
+    static CIpcTrcServer* CreateInstance(
+        const char* i_szName = "ZSTrcServer",
+        bool i_bCreateOnlyIfNotYetExisting = false,
+        int i_iTrcDetailLevel = ETraceDetailLevelNone );
+    static void ReleaseInstance( CIpcTrcServer* i_pTrcServer );
 public: // instance methods
     bool startup( int i_iTimeout_ms = 5000, bool i_bWait = true );
     bool shutdown( int i_iTimeout_ms = 5000, bool i_bWait = true );

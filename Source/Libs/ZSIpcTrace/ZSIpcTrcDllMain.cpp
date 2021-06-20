@@ -2106,7 +2106,10 @@ ZSIPCTRACEDLL_EXTERN_API DllIf::CIpcTrcServer* IpcTrcServer_GetInstance( const c
 } // IpcTrcServer_GetInstance
 
 //------------------------------------------------------------------------------
-ZSIPCTRACEDLL_EXTERN_API DllIf::CIpcTrcServer* IpcTrcServer_CreateInstance( const char* i_szName, int i_iTrcDetailLevel )
+ZSIPCTRACEDLL_EXTERN_API DllIf::CIpcTrcServer* IpcTrcServer_CreateInstance(
+    const char* i_szName,
+    bool i_bCreateOnlyIfNotYetExisting,
+    int i_iTrcDetailLevel )
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&DllIf_s_mtx);
@@ -2181,7 +2184,7 @@ ZSIPCTRACEDLL_EXTERN_API DllIf::CIpcTrcServer* IpcTrcServer_CreateInstance( cons
             // If the application creating and starting the trace server is a Qt application ...
             if( DllIf_s_pQtAppCreatedByDllIf == nullptr )
             {
-                CIpcTrcServer::CreateInstance(strServerName, i_iTrcDetailLevel);
+                CIpcTrcServer::CreateInstance(strServerName, i_bCreateOnlyIfNotYetExisting, i_iTrcDetailLevel);
             }
 
             // If the application creating and starting the trace server is not a Qt application ...
@@ -2236,7 +2239,7 @@ ZSIPCTRACEDLL_EXTERN_API DllIf::CIpcTrcServer* IpcTrcServer_CreateInstance( cons
 } // IpcTrcServer_CreateInstance
 
 //------------------------------------------------------------------------------
-ZSIPCTRACEDLL_EXTERN_API void IpcTrcServer_DestroyInstance( DllIf::CIpcTrcServer* i_pTrcServer )
+ZSIPCTRACEDLL_EXTERN_API void IpcTrcServer_ReleaseInstance( DllIf::CIpcTrcServer* i_pTrcServer )
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&DllIf_s_mtx);
@@ -2258,7 +2261,7 @@ ZSIPCTRACEDLL_EXTERN_API void IpcTrcServer_DestroyInstance( DllIf::CIpcTrcServer
                 /* strNameSpace       */ c_strNameSpace,
                 /* strClassName       */ c_strClassName,
                 /* strObjName         */ strServerName,
-                /* strMethod          */ "IpcTrcServer_DestroyInstance",
+                /* strMethod          */ "IpcTrcServer_ReleaseInstance",
                 /* strMthInArgs       */ strMthInArgs );
 
             // If the application creating and starting the trace server is a Qt application ...
@@ -2266,7 +2269,7 @@ ZSIPCTRACEDLL_EXTERN_API void IpcTrcServer_DestroyInstance( DllIf::CIpcTrcServer
             {
                 if( DllIf_IpcTrcServer_s_hshbTrcServerCreated.value(strServerName, false) )
                 {
-                    CIpcTrcServer::DestroyInstance(strServerName);
+                    CIpcTrcServer::ReleaseInstance(strServerName);
                 }
             }
 
@@ -2323,7 +2326,7 @@ ZSIPCTRACEDLL_EXTERN_API void IpcTrcServer_DestroyInstance( DllIf::CIpcTrcServer
         }
     } // if( i_pTrcServer != nullptr )
 
-} // IpcTrcServer_DestroyInstance
+} // IpcTrcServer_ReleaseInstance
 
 //------------------------------------------------------------------------------
 ZSIPCTRACEDLL_EXTERN_API bool IpcTrcServer_startup( DllIf::CIpcTrcServer* i_pTrcServer, int i_iTimeout_ms, bool i_bWait )

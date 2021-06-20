@@ -294,7 +294,7 @@ CApplication::~CApplication()
 
     try
     {
-        ZS::Trace::CTrcServer::DestroyInstance(m_pTrcServer);
+        ZS::Trace::CTrcServer::ReleaseInstance(m_pTrcServer);
     }
     catch(...)
     {
@@ -310,7 +310,7 @@ CApplication::~CApplication()
 
     CRequestExecTree::DestroyInstance();
 
-    CErrLog::DestroyInstance();
+    CErrLog::ReleaseInstance();
 
     m_pSettingsFile = nullptr;
     //m_strErrLogFileAbsFilePath;
