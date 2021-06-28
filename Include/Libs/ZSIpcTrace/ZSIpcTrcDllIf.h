@@ -98,6 +98,23 @@ namespace DllIf
 class CTrcServer;
 
 //==============================================================================
+/*! Indicates whether an optional value is enabled or disabled.
+
+    @ingroup _GRP_Namespace_ZS_System_Enumerations_Enumerations
+
+    @see ZS::System::SEnumEntry
+    @see ZS::System::CEnum
+    @see _GRP_BasicConcepts_Enumerations
+*/
+enum EEnabled
+//==============================================================================
+{
+    EEnabledNo        = 0, /*! Indicates that the option is disabled (alias for false). */
+    EEnabledYes       = 1, /*! Indicates that the option is enabled (alias for true). */
+    EEnabledUndefined = 2  /*! The variable is not yet initialised and its value is unknown. */
+};
+
+//==============================================================================
 /*! Predefined trace detail levels.
 
     @ingroup _GRP_Libs_ZSSys_MethodTracing
@@ -239,8 +256,8 @@ public: // class methods to add, remove and modify admin objects
         const char* i_szNameSpace,
         const char* i_szClassName,
         const char* i_szObjName,
-        bool        i_bEnabledAsDefault = true,
-        int         i_iDefaultDetailLevel = ETraceDetailLevelNone,
+        EEnabled    i_bEnabledAsDefault = EEnabledUndefined,
+        int         i_iDefaultDetailLevel = ETraceDetailLevelUndefined,
         const char* i_szServerName = "ZSTrcServer" );
     static void ReleaseTraceAdminObj( CTrcAdminObj* i_pTrcAdminObj, const char* i_szServerName = "ZSTrcServer" );
 public: // class method to save/recall admin objects file

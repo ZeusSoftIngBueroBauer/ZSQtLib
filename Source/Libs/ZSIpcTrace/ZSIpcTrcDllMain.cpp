@@ -714,7 +714,7 @@ ZSIPCTRACEDLL_EXTERN_API DllIf::CTrcAdminObj* TrcServer_GetTraceAdminObj(
     const char* i_szNameSpace,
     const char* i_szClassName,
     const char* i_szObjName,
-    bool        i_bEnabledAsDefault,
+    EEnabled    i_bEnabledAsDefault,
     int         i_iDefaultDetailLevel )
 //------------------------------------------------------------------------------
 {
@@ -737,7 +737,7 @@ ZSIPCTRACEDLL_EXTERN_API DllIf::CTrcAdminObj* TrcServer_GetTraceAdminObj(
         strMthInArgs  = "NameSpace: " + QString(i_szNameSpace);
         strMthInArgs += ", ClassName: " + QString(i_szClassName);
         strMthInArgs += ", ObjName: " + QString(i_szObjName);
-        strMthInArgs += ", DefEnabled: " + bool2Str(i_bEnabledAsDefault);
+        strMthInArgs += ", DefEnabled: " + CEnumEnabled::toString(i_bEnabledAsDefault);
         strMthInArgs += ", DefLevel: " + QString::number(i_iDefaultDetailLevel);
     }
 
@@ -759,7 +759,7 @@ ZSIPCTRACEDLL_EXTERN_API DllIf::CTrcAdminObj* TrcServer_GetTraceAdminObj(
             /* strNameSpace        */ strNameSpace,
             /* strClassName        */ strClassName,
             /* strObjName          */ strObjName,
-            /* bEnabledAsDefault   */ i_bEnabledAsDefault ? EEnabledYes : EEnabledNo,
+            /* bEnabledAsDefault   */ i_bEnabledAsDefault,
             /* iDefaultDetailLevel */ i_iDefaultDetailLevel,
             /* strServerName       */ strServerName );
 

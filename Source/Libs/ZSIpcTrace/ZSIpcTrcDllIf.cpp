@@ -85,7 +85,7 @@ typedef void (*TFctTrcAdminObj_traceMethodEnter)( DllIf::CTrcAdminObj* i_pTrcAdm
 typedef void (*TFctTrcAdminObj_traceMethodLeave)( DllIf::CTrcAdminObj* i_pTrcAdminObj, const char* i_szObjName, const char* i_szMethod, const char* i_szMethodReturn, const char* i_szMethodOutArgs );
 typedef void (*TFctTrcAdminObj_traceMethod)( DllIf::CTrcAdminObj* i_pTrcAdminObj, const char* i_szObjName, const char* i_szMethod, const char* i_szMethodAddInfo );
 
-typedef DllIf::CTrcAdminObj* (*TFctTrcServer_GetTraceAdminObj)( const char* i_szServerName, const char* i_szNameSpace, const char* i_szClassName, const char* i_szObjName, bool i_bEnabledAsDefault, int i_iDefaultDetailLevel );
+typedef DllIf::CTrcAdminObj* (*TFctTrcServer_GetTraceAdminObj)( const char* i_szServerName, const char* i_szNameSpace, const char* i_szClassName, const char* i_szObjName, DllIf::EEnabled i_bEnabledAsDefault, int i_iDefaultDetailLevel );
 typedef void (*TFctTrcServer_ReleaseTraceAdminObj)( const char* i_szServerName, DllIf::CTrcAdminObj* i_pTrcAdminObj );
 typedef void (*TFctTrcServer_SetOrganizationName)( const char* i_szName );
 typedef char* (*TFctTrcServer_GetOrganizationName)();
@@ -1104,7 +1104,7 @@ DllIf::CTrcAdminObj* DllIf::CTrcServer::GetTraceAdminObj(
     const char* i_szNameSpace,
     const char* i_szClassName,
     const char* i_szObjName,
-    bool        i_bEnabledAsDefault,
+    EEnabled    i_bEnabledAsDefault,
     int         i_iDefaultDetailLevel,
     const char* i_szServerName )
 //------------------------------------------------------------------------------
@@ -1113,7 +1113,9 @@ DllIf::CTrcAdminObj* DllIf::CTrcServer::GetTraceAdminObj(
 
     if( s_hndIpcTrcDllIf != NULL && s_pFctTrcServer_GetTraceAdminObj != NULL )
     {
-        pTrcAdminObj = s_pFctTrcServer_GetTraceAdminObj(i_szServerName, i_szNameSpace, i_szClassName, i_szObjName, i_bEnabledAsDefault, i_iDefaultDetailLevel);
+        pTrcAdminObj = s_pFctTrcServer_GetTraceAdminObj(
+           i_szServerName, i_szNameSpace, i_szClassName, i_szObjName,
+           i_bEnabledAsDefault, i_iDefaultDetailLevel);
     }
 
     return pTrcAdminObj;
