@@ -635,24 +635,33 @@ CTrcAdminObj* CTrcServer::getTraceAdminObj(
         /* strMethod          */ "getTraceAdminObj",
         /* strMthInArgs       */ strMthInArgs );
 
+    QString strParentBranchPath = buildPathStr(m_pTrcAdminObjIdxTree->nodeSeparator(), i_strNameSpace, i_strClassName);
+
+    CLeaveIdxTreeEntry* pLeave = m_pTrcAdminObjIdxTree->findLeave(strParentBranchPath, i_strObjName);
+
+    bool bInitiallyCreated = pLeave == nullptr;
+
     CTrcAdminObj* pTrcAdminObj = m_pTrcAdminObjIdxTree->getTraceAdminObj(i_strNameSpace, i_strClassName, i_strObjName);
 
     if( pTrcAdminObj != nullptr )
     {
-        EEnabled bEnabled     = m_trcSettings.m_bNewTrcAdminObjsEnabledAsDefault ? EEnabledYes : EEnabledNo;
-        int      iDetailLevel = m_trcSettings.m_iNewTrcAdminObjsDefaultDetailLevel;
-
-        if( i_bEnabledAsDefault != EEnabledUndefined )
+        if( bInitiallyCreated )
         {
-            bEnabled = i_bEnabledAsDefault;
-        }
-        if( i_iDefaultDetailLevel >= 0 )
-        {
-            iDetailLevel = i_iDefaultDetailLevel;
-        }
+            EEnabled bEnabled     = m_trcSettings.m_bNewTrcAdminObjsEnabledAsDefault ? EEnabledYes : EEnabledNo;
+            int      iDetailLevel = m_trcSettings.m_iNewTrcAdminObjsDefaultDetailLevel;
 
-        pTrcAdminObj->setEnabled(bEnabled);
-        pTrcAdminObj->setTraceDetailLevel(iDetailLevel);
+            if( i_bEnabledAsDefault != EEnabledUndefined )
+            {
+                bEnabled = i_bEnabledAsDefault;
+            }
+            if( i_iDefaultDetailLevel >= 0 )
+            {
+                iDetailLevel = i_iDefaultDetailLevel;
+            }
+
+            pTrcAdminObj->setEnabled(bEnabled);
+            pTrcAdminObj->setTraceDetailLevel(iDetailLevel);
+        }
 
         if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
         {
