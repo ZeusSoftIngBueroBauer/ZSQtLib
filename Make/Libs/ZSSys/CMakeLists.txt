@@ -83,10 +83,17 @@ target_include_directories(${PROJECT_NAME}
     PUBLIC ${CMAKE_SOURCE_DIR}/../Include/Libs)
 
 if(QT_VERSION_MAJOR EQUAL 4)
-    target_link_libraries(${PROJECT_NAME}
-        PUBLIC Qt4::QtCore
-        PUBLIC Qt4::QtXml
-        PUBLIC Qt4::QtNetwork)
+    if(QT_LIB)
+        target_include_directories(${PROJECT_NAME}
+            PUBLIC ${Qt4_INCLUDE_DIRS})
+        target_link_libraries(${PROJECT_NAME}
+            PUBLIC ${QT_LIB})
+    else()
+        target_link_libraries(${PROJECT_NAME}
+            PUBLIC Qt4::QtCore
+            PUBLIC Qt4::QtXml
+            PUBLIC Qt4::QtNetwork)
+    endif()
     if(CMAKE_BUILD_TYPE MATCHES Debug)
         message(STATUS "Copying Qt4 Debug Dlls")
         # Please note: Executed during build but not during configure process.
