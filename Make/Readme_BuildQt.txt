@@ -15,7 +15,9 @@ Platform       [Win32, x64]
 
   2.1 Prerequisites
 
-    - Open Visual Studio Command Prompt
+    - Install Perl (e.g. strawberryperl from "https://strawberryperl.com/")
+	
+	- Open Visual Studio Command Prompt
       - If StudioVersion = msvc2015
         - If Platform = Win32: "Visual Studio 2015 - x86 Native Tools Command Prompt"
         - If Platform = x64:   "Visual Studio 2015 - x64 Native Tools Command Prompt"

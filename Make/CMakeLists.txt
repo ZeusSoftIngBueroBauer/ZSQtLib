@@ -3,15 +3,15 @@
 #
 # Recommended Build Directories:
 # ------------------------------
-# Please verify that your compiler supports the desired architecture.
+# Please verify that your compiler supports the desired architecture (platform).
 # VS-2008 express edition for example does not support the X64 architecture.
-# - for VS-2008: ./ZSQtLib/CMake-Build/msvc2008/x64/<Debug|Release>
-# - for VS-2010: ./ZSQtLib/CMake-Build/msvc2010/x64/<Debug|Release>
-# - for VS-2012: ./ZSQtLib/CMake-Build/msvc2012/x64/<Debug|Release>
-# - for VS-2013: ./ZSQtLib/CMake-Build/msvc2013/x64/<Debug|Release>
-# - for VS-2015: ./ZSQtLib/CMake-Build/msvc2015/x64/<Debug|Release>
-# - for VS-2017: ./ZSQtLib/CMake-Build/msvc2017/x64/<Debug|Release>
-# - for VS-2019: ./ZSQtLib/CMake-Build/msvc2019/x64/<Debug|Release>
+# - for VS-2008: ./ZSQtLib/CMake-Build/msvc2008/<Platform>/<Debug|Release>
+# - for VS-2010: ./ZSQtLib/CMake-Build/msvc2010/<Platform>/<Debug|Release>
+# - for VS-2012: ./ZSQtLib/CMake-Build/msvc2012/<Platform>/<Debug|Release>
+# - for VS-2013: ./ZSQtLib/CMake-Build/msvc2013/<Platform>/<Debug|Release>
+# - for VS-2015: ./ZSQtLib/CMake-Build/msvc2015/<Platform>/<Debug|Release>
+# - for VS-2017: ./ZSQtLib/CMake-Build/msvc2017/<Platform>/<Debug|Release>
+# - for VS-2019: ./ZSQtLib/CMake-Build/msvc2019/<Platform>/<Debug|Release>
 #
 # Call CMake from build directory:
 # --------------------------------
