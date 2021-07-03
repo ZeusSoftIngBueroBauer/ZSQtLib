@@ -170,7 +170,9 @@ void CTest::doTestStepClearLogFileDir( ZS::Test::CTestStep* i_pTestStep )
 
     QString strAppLogDir = ZS::System::getAppLogDir("System");
 
-    dir_removeRecursively(strAppLogDir);
+    QDir dirAppLog(strAppLogDir);
+
+    dirAppLog.removeRecursively();
 
     // Desired Values
     //---------------
