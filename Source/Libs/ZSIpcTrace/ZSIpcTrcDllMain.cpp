@@ -37,8 +37,6 @@ may result in using the software modules.
 #include "ZSSys/ZSSysRequest.h"
 #include "ZSSys/ZSSysVersion.h"
 
-#include <mutex>
-
 #ifdef _WIN32
 // As "min" will be defined as a macro with two arguments and qdatetime uses "min"
 // as a function with no arguments "windows.h" must be included after qdatetime
@@ -716,7 +714,7 @@ ZSIPCTRACEDLL_EXTERN_API DllIf::CTrcAdminObj* TrcServer_GetTraceAdminObj(
     const char* i_szNameSpace,
     const char* i_szClassName,
     const char* i_szObjName,
-    bool        i_bEnabledAsDefault,
+    EEnabled    i_bEnabledAsDefault,
     int         i_iDefaultDetailLevel )
 //------------------------------------------------------------------------------
 {
@@ -739,7 +737,7 @@ ZSIPCTRACEDLL_EXTERN_API DllIf::CTrcAdminObj* TrcServer_GetTraceAdminObj(
         strMthInArgs  = "NameSpace: " + QString(i_szNameSpace);
         strMthInArgs += ", ClassName: " + QString(i_szClassName);
         strMthInArgs += ", ObjName: " + QString(i_szObjName);
-        strMthInArgs += ", DefEnabled: " + bool2Str(i_bEnabledAsDefault);
+        strMthInArgs += ", DefEnabled: " + CEnumEnabled::toString(i_bEnabledAsDefault);
         strMthInArgs += ", DefLevel: " + QString::number(i_iDefaultDetailLevel);
     }
 
@@ -761,7 +759,7 @@ ZSIPCTRACEDLL_EXTERN_API DllIf::CTrcAdminObj* TrcServer_GetTraceAdminObj(
             /* strNameSpace        */ strNameSpace,
             /* strClassName        */ strClassName,
             /* strObjName          */ strObjName,
-            /* bEnabledAsDefault   */ i_bEnabledAsDefault ? EEnabled::Yes : EEnabled::No,
+            /* bEnabledAsDefault   */ i_bEnabledAsDefault,
             /* iDefaultDetailLevel */ i_iDefaultDetailLevel,
             /* strServerName       */ strServerName );
 
@@ -2108,7 +2106,10 @@ ZSIPCTRACEDLL_EXTERN_API DllIf::CIpcTrcServer* IpcTrcServer_GetInstance( const c
 } // IpcTrcServer_GetInstance
 
 //------------------------------------------------------------------------------
-ZSIPCTRACEDLL_EXTERN_API DllIf::CIpcTrcServer* IpcTrcServer_CreateInstance( const char* i_szName, int i_iTrcDetailLevel )
+ZSIPCTRACEDLL_EXTERN_API DllIf::CIpcTrcServer* IpcTrcServer_CreateInstance(
+    const char* i_szName,
+    bool i_bCreateOnlyIfNotYetExisting,
+    int i_iTrcDetailLevel )
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&DllIf_s_mtx);
@@ -2183,7 +2184,7 @@ ZSIPCTRACEDLL_EXTERN_API DllIf::CIpcTrcServer* IpcTrcServer_CreateInstance( cons
             // If the application creating and starting the trace server is a Qt application ...
             if( DllIf_s_pQtAppCreatedByDllIf == nullptr )
             {
-                CIpcTrcServer::CreateInstance(strServerName, i_iTrcDetailLevel);
+                CIpcTrcServer::CreateInstance(strServerName, i_bCreateOnlyIfNotYetExisting, i_iTrcDetailLevel);
             }
 
             // If the application creating and starting the trace server is not a Qt application ...
@@ -2238,7 +2239,7 @@ ZSIPCTRACEDLL_EXTERN_API DllIf::CIpcTrcServer* IpcTrcServer_CreateInstance( cons
 } // IpcTrcServer_CreateInstance
 
 //------------------------------------------------------------------------------
-ZSIPCTRACEDLL_EXTERN_API void IpcTrcServer_DestroyInstance( DllIf::CIpcTrcServer* i_pTrcServer )
+ZSIPCTRACEDLL_EXTERN_API void IpcTrcServer_ReleaseInstance( DllIf::CIpcTrcServer* i_pTrcServer )
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&DllIf_s_mtx);
@@ -2260,7 +2261,7 @@ ZSIPCTRACEDLL_EXTERN_API void IpcTrcServer_DestroyInstance( DllIf::CIpcTrcServer
                 /* strNameSpace       */ c_strNameSpace,
                 /* strClassName       */ c_strClassName,
                 /* strObjName         */ strServerName,
-                /* strMethod          */ "IpcTrcServer_DestroyInstance",
+                /* strMethod          */ "IpcTrcServer_ReleaseInstance",
                 /* strMthInArgs       */ strMthInArgs );
 
             // If the application creating and starting the trace server is a Qt application ...
@@ -2268,7 +2269,7 @@ ZSIPCTRACEDLL_EXTERN_API void IpcTrcServer_DestroyInstance( DllIf::CIpcTrcServer
             {
                 if( DllIf_IpcTrcServer_s_hshbTrcServerCreated.value(strServerName, false) )
                 {
-                    CIpcTrcServer::DestroyInstance(strServerName);
+                    CIpcTrcServer::ReleaseInstance(strServerName);
                 }
             }
 
@@ -2325,7 +2326,7 @@ ZSIPCTRACEDLL_EXTERN_API void IpcTrcServer_DestroyInstance( DllIf::CIpcTrcServer
         }
     } // if( i_pTrcServer != nullptr )
 
-} // IpcTrcServer_DestroyInstance
+} // IpcTrcServer_ReleaseInstance
 
 //------------------------------------------------------------------------------
 ZSIPCTRACEDLL_EXTERN_API bool IpcTrcServer_startup( DllIf::CIpcTrcServer* i_pTrcServer, int i_iTimeout_ms, bool i_bWait )

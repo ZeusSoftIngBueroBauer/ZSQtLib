@@ -75,9 +75,14 @@ set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME ${TargetOutputName}
 target_compile_definitions(${PROJECT_NAME} PRIVATE ZSSYSGUIDLL_EXPORTS)
 
 if(QT_VERSION_MAJOR EQUAL 4)
-    target_link_libraries(${PROJECT_NAME}
-        PUBLIC Qt4::QtGui
-        PUBLIC ZSSys)
+    if(QT_LIB)
+        target_link_libraries(${PROJECT_NAME}
+            PUBLIC ZSSys)
+    else()
+        target_link_libraries(${PROJECT_NAME}
+            PUBLIC Qt4::QtGui
+            PUBLIC ZSSys)
+    endif()
 elseif(QT_VERSION_MAJOR EQUAL 5)
     target_link_libraries(${PROJECT_NAME}
         PUBLIC Qt5::Gui Qt5::Widgets

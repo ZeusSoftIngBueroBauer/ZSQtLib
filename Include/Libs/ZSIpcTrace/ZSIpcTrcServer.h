@@ -46,18 +46,51 @@ class CTrcAdminObj;
 struct SMthTrcData;
 
 //******************************************************************************
+/*! @brief Über die Klasse CIpcTrcServer sollten alle Trace Ausgaben erfolgen.
+
+    Die Klasse ist von der Klasse CTrcServer abgeleitet und erweitert die
+    Basisklasse um die Möglichkeit, die Trace Ausgaben nicht nur in ein Log-File
+    zu schreiben sondern auch über TCP/IP an einen Client zu versenden.
+
+    Auf diese Weise ist ein "Online" tracing möglich und die Zustände der
+    Trace Admin Objekte können über einen Treeview im Client über Mausklicks
+    verändert und angezeigt werden. Der über die ZSQtLib bereitgestellte
+    Trace Client ermöglicht es ferner, die Trace-Ausgaben je nach Thread
+    farblich voneinander zu trennen.
+
+    Normalerweise gibt es pro Applikation nur eine Trace Server Instanz die beim
+    Start der Applikation durch Aufruf der Klassenmethode "CreateInstance" angelegt
+    wird. Während der Programm-Ausführung kann über "GetInstance" eine Referenz auf
+    die Instanz erhalten und Parameter ändern oder Log-Ausgaben in das Trace Method
+    File vornehmen und an angeschlossen Trace Clients zu verschicken. Vor Beenden
+    der Applikation ist die Trace Server Instanz mit "ReleaseInstance" wieder zu löschen.
+
+    Für den Fall, dass mehrere Trace Server verwendet werden sollen (verschiedene
+    Log Files, verschiedene Listen-Ports), kann bei "CreateInstance" ein vom Default
+    Wert "ZSTrcServer" abweichender Name übergeben werden. Dieser Name ist bei Aufruf
+    von "GetInstance" und "ReleaseInstance" wieder zu verwenden.
+
+    Hat man keinen Einfluss auf den Programmstart, programmiert PlugIn Dlls und
+    weiss nicht, ob nicht auch an anderer Stelle der Trace Server verwendet wird,
+    muss der Zugriff auf die Trace Server über Referenzzähler kontrolliert werden.
+    Deshalb besteht die Möglichkeit bei Aufruf von "CreateInstance" das
+    Flag "CreateOnlyIfNotYetExisting" zu übergeben.
+*/
 class ZSIPCTRACEDLL_API CIpcTrcServer : public ZS::Trace::CTrcServer
 //******************************************************************************
 {
     Q_OBJECT
 public: // class methods
-    static QString NameSpace() { return "ZS::Trace"; }   // Please note that the static class functions name must be different from the non static virtual member function "nameSpace"
-    static QString ClassName() { return "CIpcTrcServer"; }     // Please note that the static class functions name must be different from the non static virtual member function "className"
+    static QString NameSpace() { return "ZS::Trace"; }      // Please note that the static class functions name must be different from the non static virtual member function "nameSpace"
+    static QString ClassName() { return "CIpcTrcServer"; }  // Please note that the static class functions name must be different from the non static virtual member function "className"
 public: // class methods
     static CIpcTrcServer* GetInstance( const QString& i_strName = "ZSTrcServer" );
-    static CIpcTrcServer* CreateInstance( const QString& i_strName = "ZSTrcServer", int i_iTrcDetailLevel = ETraceDetailLevelNone );
-    static void DestroyInstance( const QString& i_strName = "ZSTrcServer" );
-    static void DestroyInstance( CIpcTrcServer* i_pTrcServer );
+    static CIpcTrcServer* CreateInstance(
+        const QString& i_strName = "ZSTrcServer",
+        bool i_bCreateOnlyIfNotYetExisting = false,
+        int i_iTrcDetailLevel = ETraceDetailLevelNone );
+    static void ReleaseInstance( const QString& i_strName = "ZSTrcServer" );
+    static void ReleaseInstance( CIpcTrcServer* i_pTrcServer );
     static void DestroyAllInstances();
 protected: // ctors and dtor
     CIpcTrcServer( const QString& i_strName, int i_iTrcDetailLevel = ETraceDetailLevelNone );

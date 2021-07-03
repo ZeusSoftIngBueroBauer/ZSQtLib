@@ -62,13 +62,6 @@ CTest::CTest( const QString& i_strTestStepsFileName ) :
 
     new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " ZS::System::ErrLog.addEntries",
-        /* strOperation    */ "ZS::System::ErrLog.addEntry",
-        /* pGrpParent      */ nullptr,
-        /* szDoTestStepFct */ SLOT(doTestStepAddErrLogEntries(ZS::Test::CTestStep*)) );
-
-    new ZS::Test::CTestStep(
-        /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " CErrLog::CreateInstance(ZS::Apps::Test::SysErrLog::ErrLog)",
         /* strOperation    */ "CErrLog::CreateInstance(ZS::Apps::Test::SysErrLog::ErrLog)",
         /* pGrpParent      */ nullptr,
@@ -90,17 +83,10 @@ CTest::CTest( const QString& i_strTestStepsFileName ) :
 
     new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " CErrLog::DestroyInstance(ZS::Apps::Test::SysErrLog::ErrLog)",
-        /* strOperation    */ "CErrLog::DestroyInstance(ZS::Apps::Test::SysErrLog::ErrLog)",
+        /* strName         */ "Step " + QString::number(++idxStep) + " CErrLog::ReleaseInstance(ZS::Apps::Test::SysErrLog::ErrLog)",
+        /* strOperation    */ "CErrLog::ReleaseInstance(ZS::Apps::Test::SysErrLog::ErrLog)",
         /* pGrpParent      */ nullptr,
         /* szDoTestStepFct */ SLOT(doTestStepDestroyErrLogInstance(ZS::Test::CTestStep*)) );
-
-    new ZS::Test::CTestStep(
-        /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " ZS::System::ErrLog.clear",
-        /* strOperation    */ "ZS::System::ErrLog.clear",
-        /* pGrpParent      */ nullptr,
-        /* szDoTestStepFct */ SLOT(doTestStepClearErrLog(ZS::Test::CTestStep*)) );
 
     // Recall test admin object settings
     //----------------------------------
@@ -227,14 +213,14 @@ void CTest::doTestStepDestroyErrLogInstance( ZS::Test::CTestStep* i_pTestStep )
     QString strOperation = i_pTestStep->getOperation();
 
     // Examples for strOperation:
-    // - "CErrLog::DestroyInstance(ZS::Apps::Test::SysErrLog::ErrLog)"
+    // - "CErrLog::ReleaseInstance(ZS::Apps::Test::SysErrLog::ErrLog)"
 
     QString strErrLogName;
 
-    if( strOperation.startsWith("CErrLog::DestroyInstance",Qt::CaseInsensitive) )
+    if( strOperation.startsWith("CErrLog::ReleaseInstance",Qt::CaseInsensitive) )
     {
         strErrLogName = strOperation;
-        strErrLogName.remove("CErrLog::DestroyInstance");
+        strErrLogName.remove("CErrLog::ReleaseInstance");
         strErrLogName.remove("(");
         strErrLogName.remove(")");
     }
@@ -308,7 +294,7 @@ void CTest::doTestStepDestroyErrLogInstance( ZS::Test::CTestStep* i_pTestStep )
             strDesiredValue = strErrLogName + " File Existing";
             strlstDesiredValues.append(strDesiredValue);
 
-            CErrLog::DestroyInstance(strErrLogName);
+            CErrLog::ReleaseInstance(strErrLogName);
 
             if( CErrLog::GetInstance(strErrLogName) == nullptr )
             {

@@ -226,7 +226,7 @@ CApplication::~CApplication()
     // Default ErrLog instance
     //------------------------
 
-    CErrLog::DestroyInstance();
+    CErrLog::ReleaseInstance();
 
     try
     {

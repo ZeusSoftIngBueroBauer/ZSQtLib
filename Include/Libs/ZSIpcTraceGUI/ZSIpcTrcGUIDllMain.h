@@ -24,23 +24,10 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#ifndef ZSTraceGUI_DllMain_h
-#define ZSTraceGUI_DllMain_h
+#ifndef ZSIpcTraceGUI_DllMain_h
+#define ZSIpcTraceGUI_DllMain_h
 
-// generic export defines
-#if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
-    #define __API_EXPORT __declspec(dllexport)
-    #define __API_IMPORT __declspec(dllimport)
-#elif defined(__linux__)
-    #if (__GNUC__ >= 4)
-        #define __API_EXPORT __attribute((visibility("default")))
-    #else
-        #define __API_EXPORT
-    #endif
-    #define  __API_IMPORT
-#else
-    #error Missing export macro
-#endif
+#include "ZSIpcTrace/ZSIpcTrcDllMain.h"
 
 // specific export defines
 #ifdef ZSIPCTRACEGUIDLL_EXPORTS
@@ -63,4 +50,4 @@ namespace GUI
 
 } // namespace ZS
 
-#endif // #ifndef ZSTraceGUI_DllMain_h
+#endif // #ifndef ZSIpcTraceGUI_DllMain_h

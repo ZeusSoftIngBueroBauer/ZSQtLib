@@ -102,13 +102,13 @@ namespace System
 
 inline void* __cdecl operator new( size_t cb, int nBlockUse, const char* szFileName, int nLine, void* )
 {
-    void* res = operator new(cb, nBlockUse, szFileName, nLine );
+    void* res = operator new(cb, nBlockUse, szFileName, nLine);
     if( res == 0 ) throw std::bad_alloc();
     return res;
 }
 inline void* __cdecl operator new[]( size_t cb, int nBlockUse, const char* szFileName, int nLine, void* )
 {
-    void* res = operator new( cb, nBlockUse, szFileName, nLine );
+    void* res = operator new(cb, nBlockUse, szFileName, nLine);
     if( res == 0 ) throw std::bad_alloc();
     return res;
 }

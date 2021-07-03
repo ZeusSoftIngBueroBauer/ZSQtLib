@@ -29,21 +29,6 @@ may result in using the software modules.
 
 #include "ZSSys/ZSSysDllMain.h"
 
-// generic export defines
-#if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
-    #define __API_EXPORT __declspec(dllexport)
-    #define __API_IMPORT __declspec(dllimport)
-#elif defined(__linux__)
-    #if (__GNUC__ >= 4)
-        #define __API_EXPORT __attribute((visibility("default")))
-    #else
-        #define __API_EXPORT
-    #endif
-    #define  __API_IMPORT
-#else
-    #error Missing export macro
-#endif
-
 // specific export defines
 #ifdef ZSIPCDLL_EXPORTS
     #define ZSIPCDLL_API __API_EXPORT

@@ -24,8 +24,8 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#ifndef ZSTraceGUI_ClientDlg_h
-#define ZSTraceGUI_ClientDlg_h
+#ifndef ZSIpcTraceGUI_ClientDlg_h
+#define ZSIpcTraceGUI_ClientDlg_h
 
 #include "ZSIpcTraceGUI/ZSIpcTrcGUIDllMain.h"
 #include "ZSSysGUI/ZSSysDialog.h"
@@ -99,4 +99,4 @@ protected: // instance members
 
 } // namespace ZS
 
-#endif // #ifndef ZSTraceGUI_ClientDlg_h
+#endif // #ifndef ZSIpcTraceGUI_ClientDlg_h

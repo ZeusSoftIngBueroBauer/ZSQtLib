@@ -263,36 +263,88 @@ CIpcTrcServer* CIpcTrcServer::GetInstance( const QString& i_strName )
 } // GetInstance
 
 //------------------------------------------------------------------------------
-CIpcTrcServer* CIpcTrcServer::CreateInstance( const QString& i_strName, int i_iTrcDetailLevel )
+/*! Returns a reference to an instance of the class.
+
+    Checks whether a trace server instance with the desired name already exist.
+    If not the trace server instance is created.
+    Depending on the flag CreateOnlyIfNotYetExisting either an exception is thrown
+    if a server with name is already existing or a reference to the already existing
+    instance is return and a reference counter is incremented.
+
+    \param i_strName [in] Name of the trace server (default "ZSTrcServer")
+    \param i_bCreateOnlyIfNotYetExisting [in] (default: false)
+        If this flag is set to false and a trace server with the given name
+        is already existing an exception will be thrown.
+        If set to true and a trace server with the given name is already existing
+        a reference to the already existing server is returned and the reference
+        count for the server is incremented.
+        If a trace server with the given name is not yet existing the server
+        will be created anyway and the reference count is set to 1.
+    \param i_iTrcDetailLevel [in]
+        If the methods of the trace server itself should be logged a value
+        greater than 0 (ETraceDetailLevelNone) could be passed here.
+
+    \return Pointer to trace server instance.
+*/
+CIpcTrcServer* CIpcTrcServer::CreateInstance(
+    const QString& i_strName,
+    bool           i_bCreateOnlyIfNotYetExisting,
+    int            i_iTrcDetailLevel )
 //------------------------------------------------------------------------------
 {
-    CTrcServer* pTrcServer = CTrcServer::GetInstance(i_strName);
+    // The class may be accessed from within different thread contexts and
+    // therefore accessing the class must be serialized using a mutex ..
+    QMutexLocker mtxLocker(&s_mtx);
 
-    if( pTrcServer != nullptr )
+    CTrcServer* pTrcServer = s_hshpInstances.value(i_strName, nullptr);
+
+    if (pTrcServer != nullptr && !i_bCreateOnlyIfNotYetExisting)
     {
         throw CException(__FILE__, __LINE__, EResultObjAlreadyInList, "CIpcTrcServer::" + i_strName);
     }
 
-    CIpcTrcServer* pIpcTrcServer = new CIpcTrcServer(i_strName, i_iTrcDetailLevel);
+    CIpcTrcServer* pIpcTrcServer = nullptr;
 
-    s_hshpInstances[i_strName] = pIpcTrcServer;
+    if (pTrcServer == NULL)
+    {
+        pIpcTrcServer = new CIpcTrcServer(i_strName, i_iTrcDetailLevel);
+    }
+    else
+    {
+        pIpcTrcServer = dynamic_cast<CIpcTrcServer*>(pTrcServer);
+
+        if (pIpcTrcServer == nullptr)
+        {
+            throw CException(__FILE__, __LINE__, EResultObjAlreadyInList, "CTrcServer::" + i_strName);
+        }
+    }
+
+    pIpcTrcServer->incrementRefCount();
+
+    // The ctor adds the reference to the instance to the hash.
+    // If the ctor itself calls methods of other classes which again recursively
+    // call "GetInstance" this way "GetInstance" does not return null but the
+    // pointer to the server instance currently beeing created.
+    // But of course this requires special caution as within the ctor it must
+    // be assured that recursively accessed instance members are already valid.
+    //s_hshpInstances[i_strName] = pIpcTrcServer;
 
     return pIpcTrcServer;
 
 } // CreateInstance
 
 //------------------------------------------------------------------------------
-void CIpcTrcServer::DestroyInstance( const QString& i_strName )
+void CIpcTrcServer::ReleaseInstance( const QString& i_strName )
 //------------------------------------------------------------------------------
 {
-    CTrcServer::DestroyInstance(i_strName);
+    CTrcServer::ReleaseInstance(i_strName);
 }
 
 //------------------------------------------------------------------------------
-void CIpcTrcServer::DestroyInstance( CIpcTrcServer* i_pTrcServer )
+void CIpcTrcServer::ReleaseInstance( CIpcTrcServer* i_pTrcServer )
 //------------------------------------------------------------------------------
 {
-    CTrcServer::DestroyInstance(i_pTrcServer);
+    CTrcServer::ReleaseInstance(i_pTrcServer);
 }
 
 //------------------------------------------------------------------------------

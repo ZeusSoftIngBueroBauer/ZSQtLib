@@ -31,6 +31,118 @@ may result in using the software modules.
 public type definitions and constants
 *******************************************************************************/
 
+#ifndef QT_VERSION_MAJOR
+#if QT_VERSION >= 0x050000
+#define QT_VERSION_MAJOR 5
+#elif QT_VERSION >= 0x040804
+#define QT_VERSION_MAJOR 4
+#endif
+#endif
+
+/*
+Visual Studio version            | _MSC_VER
+---------------------------------+---------------
+Visual Studio 6.0                | 1200
+Visual Studio .NET 2002 (7.0)    | 1300
+Visual Studio .NET 2003 (7.1)    | 1310
+Visual Studio 2005 (8.0)         | 1400
+Visual Studio 2008 (9.0)         | 1500
+Visual Studio 2010 (10.0)        | 1600
+Visual Studio 2012 (11.0)        | 1700
+Visual Studio 2013 (12.0)        | 1800
+Visual Studio 2015 (14.0)        | 1900
+Visual Studio 2017 RTW (15.0)    | 1910
+Visual Studio 2017 version 15.3  | 1911
+Visual Studio 2017 version 15.5  | 1912
+Visual Studio 2017 version 15.6  | 1913
+Visual Studio 2017 version 15.7  | 1914
+Visual Studio 2017 version 15.8  | 1915
+Visual Studio 2017 version 15.9  | 1916
+Visual Studio 2019 RTW (16.0)    | 1920
+Visual Studio 2019 version 16.1  | 1921
+Visual Studio 2019 version 16.2  | 1922
+Visual Studio 2019 version 16.3  | 1923
+Visual Studio 2019 version 16.4  | 1924
+Visual Studio 2019 version 16.5  | 1925
+Visual Studio 2019 version 16.6  | 1926
+Visual Studio 2019 version 16.7  | 1927
+Visual Studio 2019 version 16.8  | 1928
+Visual Studio 2019 version 16.10 | 1929
+*/
+#ifndef COMPILERLIBINFIX
+#if _MSC_VER <= 1200
+#define __CXX_STANDARD__ 1
+#define COMPILERLIBINFIX "msvc2000"
+#elif _MSC_VER >= 1300 && _MSC_VER <= 1300
+#define __CXX_STANDARD__ 1
+#define COMPILERLIBINFIX "msvc2002"
+#elif _MSC_VER >= 1310 && _MSC_VER <= 1310
+#define __CXX_STANDARD__ 1
+#define COMPILERLIBINFIX "msvc2003"
+#elif _MSC_VER >= 1400 && _MSC_VER <= 1400
+#define __CXX_STANDARD__ 1
+#define COMPILERLIBINFIX "msvc2005"
+#elif _MSC_VER >= 1500 && _MSC_VER <= 1500
+#define __CXX_STANDARD__ 1
+#define COMPILERLIBINFIX "msvc2008"
+#elif _MSC_VER >= 1600 && _MSC_VER <= 1600
+#define __CXX_STANDARD__ 1
+#define COMPILERLIBINFIX "msvc2010"
+#elif _MSC_VER >= 1700 && _MSC_VER <= 1700
+#define __CXX_STANDARD__ 1
+#define COMPILERLIBINFIX "msvc2012"
+#elif _MSC_VER >= 1800 && _MSC_VER <= 1800
+#define __CXX_STANDARD__ 201402
+#define CXX_STANDARD CPP17
+#define COMPILERLIBINFIX "msvc2013"
+#elif _MSC_VER >= 1900 && _MSC_VER <= 1900
+#define __CXX_STANDARD__ 201703
+#define CXX_STANDARD CPP17
+#define COMPILERLIBINFIX "msvc2015"
+#elif _MSC_VER >= 1910 && _MSC_VER <= 1916
+#define __CXX_STANDARD__ 201703
+#define COMPILERLIBINFIX "msvc2017"
+#elif _MSC_VER >= 1920 && _MSC_VER <= 1929
+#define __CXX_STANDARD__ 201703
+#define COMPILERLIBINFIX "msvc2019"
+#else
+#define __CXX_STANDARD__ 1
+#endif
+#endif
+
+#ifndef CXX_STANDARD
+#if (__CXX_STANDARD__ == 201703)
+#define CXX_STANDARD 17
+#elif (__CXX_STANDARD__ == 201402)
+#define CXX_STANDARD 14
+#elif (__CXX_STANDARD__ == 201103)
+#define CXX_STANDARD 11
+#elif (__CXX_STANDARD__ == 19971)
+#define CXX_STANDARD 98
+#elif (__CXX_STANDARD__ == 1)
+#define CXX_STANDARD 1
+#ifndef nullptr
+#define nullptr NULL
+#endif
+#endif
+#endif
+
+#ifndef PLATFORMLIBINFIX
+#ifdef _WIN64
+#define PLATFORMLIBINFIX "x64"
+#else
+#define PLATFORMLIBINFIX "Win32"
+#endif
+#endif
+
+#ifndef CONFIGLIBINFIX
+#ifdef _DEBUG
+#define CONFIGLIBINFIX "d"
+#else
+#define CONFIGLIBINFIX ""
+#endif
+#endif
+
 extern "C"
 {
 namespace ZS
@@ -40,6 +152,23 @@ namespace Trace
 namespace DllIf
 {
 class CTrcServer;
+
+//==============================================================================
+/*! Indicates whether an optional value is enabled or disabled.
+
+    @ingroup _GRP_Namespace_ZS_System_Enumerations_Enumerations
+
+    @see ZS::System::SEnumEntry
+    @see ZS::System::CEnum
+    @see _GRP_BasicConcepts_Enumerations
+*/
+enum EEnabled
+//==============================================================================
+{
+    EEnabledNo        = 0, /*! Indicates that the option is disabled (alias for false). */
+    EEnabledYes       = 1, /*! Indicates that the option is enabled (alias for true). */
+    EEnabledUndefined = 2  /*! The variable is not yet initialised and its value is unknown. */
+};
 
 //==============================================================================
 /*! Predefined trace detail levels.
@@ -183,8 +312,8 @@ public: // class methods to add, remove and modify admin objects
         const char* i_szNameSpace,
         const char* i_szClassName,
         const char* i_szObjName,
-        bool        i_bEnabledAsDefault = true,
-        int         i_iDefaultDetailLevel = ETraceDetailLevelNone,
+        EEnabled    i_bEnabledAsDefault = EEnabledUndefined,
+        int         i_iDefaultDetailLevel = ETraceDetailLevelUndefined,
         const char* i_szServerName = "ZSTrcServer" );
     static void ReleaseTraceAdminObj( CTrcAdminObj* i_pTrcAdminObj, const char* i_szServerName = "ZSTrcServer" );
 public: // class method to save/recall admin objects file
@@ -259,8 +388,11 @@ class CIpcTrcServer : public CTrcServer
 {
 public: // class methods
     static CIpcTrcServer* GetInstance( const char* i_szName = "ZSTrcServer" );
-    static CIpcTrcServer* CreateInstance( const char* i_szName = "ZSTrcServer", int i_iTrcDetailLevel = ETraceDetailLevelNone );
-    static void DestroyInstance( CIpcTrcServer* i_pTrcServer );
+    static CIpcTrcServer* CreateInstance(
+        const char* i_szName = "ZSTrcServer",
+        bool i_bCreateOnlyIfNotYetExisting = false,
+        int i_iTrcDetailLevel = ETraceDetailLevelNone );
+    static void ReleaseInstance( CIpcTrcServer* i_pTrcServer );
 public: // instance methods
     bool startup( int i_iTimeout_ms = 5000, bool i_bWait = true );
     bool shutdown( int i_iTimeout_ms = 5000, bool i_bWait = true );

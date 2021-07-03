@@ -290,7 +290,7 @@ void doTestStepTraceServerCreateInstance( HMENU i_hMenu )
     ZS::Trace::DllIf::CIpcTrcServer::SetOrganizationName("ZeusSoft");
     ZS::Trace::DllIf::CIpcTrcServer::SetApplicationName("ZSAppTestIpcTraceDllIfWinApp");
 
-    s_pTrcServer = ZS::Trace::DllIf::CIpcTrcServer::CreateInstance("ZSTrcServer", ZS::Trace::DllIf::ETraceDetailLevelVerbose);
+    s_pTrcServer = ZS::Trace::DllIf::CIpcTrcServer::CreateInstance("ZSTrcServer", false, ZS::Trace::DllIf::ETraceDetailLevelVerbose);
 
     if( s_pTrcServer != nullptr )
     {
@@ -335,7 +335,7 @@ void doTestStepTraceServerDestroyInstance( HMENU i_hMenu )
 {
     if( s_pTrcServer != nullptr )
     {
-        ZS::Trace::DllIf::CIpcTrcServer::DestroyInstance(s_pTrcServer);
+        ZS::Trace::DllIf::CIpcTrcServer::ReleaseInstance(s_pTrcServer);
         s_pTrcServer = nullptr;
 
         EnableMenuItem(

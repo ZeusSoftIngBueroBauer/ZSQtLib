@@ -299,7 +299,7 @@ CErrLog* CErrLog::CreateInstance(
           - with Result = ObjNotInList if an error log instance with the given
                           name is not existing.
 */
-void CErrLog::DestroyInstance( const QString& i_strName )
+void CErrLog::ReleaseInstance( const QString& i_strName )
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&s_mtx);
@@ -316,7 +316,7 @@ void CErrLog::DestroyInstance( const QString& i_strName )
     delete pErrLog;
     pErrLog = nullptr;
 
-} // DestroyInstance
+} // ReleaseInstance
 
 //------------------------------------------------------------------------------
 /*! Destroys the error log instance.
@@ -334,7 +334,7 @@ void CErrLog::DestroyInstance( const QString& i_strName )
           - with Result = ObjNotInList if the error log instance was not found
                           by its name.
 */
-void CErrLog::DestroyInstance( CErrLog* i_pErrLog )
+void CErrLog::ReleaseInstance( CErrLog* i_pErrLog )
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&s_mtx);
@@ -351,7 +351,7 @@ void CErrLog::DestroyInstance( CErrLog* i_pErrLog )
     delete i_pErrLog;
     i_pErrLog = nullptr;
 
-} // DestroyInstance
+} // ReleaseInstance
 
 //------------------------------------------------------------------------------
 /*! Destroys all error log instances.

@@ -27,7 +27,7 @@ may result in using the software modules.
 #ifndef ZSApps_TestIpcTraceDllIfQtApp_WidgetCentral_h
 #define ZSApps_TestIpcTraceDllIfQtApp_WidgetCentral_h
 
-#include <QtCore/qglobal.h>
+#include "ZSSys/ZSSysDllMain.h"
 
 #if QT_VERSION < 0x050000
 #include <QtGui/qwidget.h>

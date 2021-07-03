@@ -251,7 +251,7 @@ CApplication::~CApplication()
     {
     }
 
-    CErrLog::DestroyInstance();
+    CErrLog::ReleaseInstance();
 
     m_pSettingsFile = nullptr;
     //m_strErrLogFileAbsFilePath;

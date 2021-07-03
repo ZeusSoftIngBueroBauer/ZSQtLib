@@ -27,7 +27,8 @@ may result in using the software modules.
 #ifndef ZSApps_TestIdxTree_MainWindow_h
 #define ZSApps_TestIdxTree_MainWindow_h
 
-#include <QtCore/qglobal.h>
+#include "ZSSys/ZSSysDllMain.h"
+
 #include <QtCore/qhash.h>
 
 #if QT_VERSION < 0x050000

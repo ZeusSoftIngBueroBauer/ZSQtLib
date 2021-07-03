@@ -1,3 +1,6 @@
+#Temporary Merge Files
+*.orig
+
 #Windows Thumbnails
 Thumbs.db
 

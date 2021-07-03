@@ -2641,10 +2641,6 @@ QString ZS::System::qMouseButton2Str( int i_iBtn, bool /*i_bShort*/ )
     {
         str = "RightButton";
     }
-    else if( i_iBtn == Qt::MouseButton::MidButton )
-    {
-        str = "MidButton";
-    }
     else if( i_iBtn == Qt::MouseButton::MiddleButton )
     {
         str = "MiddleButton";
@@ -2813,14 +2809,6 @@ QString ZS::System::qMouseButtons2Str( int i_iBtns, bool /*i_bShort*/ )
             str += "|";
         }
         str += "RightButton";
-    }
-    if( i_iBtns & Qt::MouseButton::MidButton )
-    {
-        if( !str.isEmpty() )
-        {
-            str += "|";
-        }
-        str += "MidButton";
     }
     if( i_iBtns & Qt::MouseButton::MiddleButton )
     {

@@ -56,7 +56,7 @@ public slots: // test step methods
     void doTestStepLoadDll( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepReleaseDll( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepTraceServerCreateInstance( ZS::Test::CTestStep* i_pTestStep );
-    void doTestStepTraceServerDestroyInstance( ZS::Test::CTestStep* i_pTestStep );
+    void doTestStepTraceServerReleaseInstance( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepTraceServerStartup( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepTraceServerShutdown( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepTraceServerRecallAdminObjs( ZS::Test::CTestStep* i_pTestStep );

@@ -493,7 +493,7 @@ QVariant CModelIdxTreeTrcAdminObjs::data( const QModelIndex& i_modelIdx, int i_i
         {
             case EColumnTreeEntryName:
             {
-                if( i_iRole == Qt::DisplayRole || i_iRole == Qt::EditRole || i_iRole == Qt::ToolTipRole || i_iRole == Qt::TextColorRole )
+                if( i_iRole == Qt::DisplayRole || i_iRole == Qt::EditRole || i_iRole == Qt::ToolTipRole || i_iRole == Qt::ForegroundRole)
                 {
                     QString strKeyInTree = pModelTreeEntry->keyInTree();
                     QString strCalculatedKeyInTree  = pModelTreeEntry->getCalculatedKeyInTree();
@@ -530,7 +530,7 @@ QVariant CModelIdxTreeTrcAdminObjs::data( const QModelIndex& i_modelIdx, int i_i
                         }
                         varData = strData;
                     }
-                    else if( i_iRole == Qt::TextColorRole )
+                    else if( i_iRole == Qt::ForegroundRole)
                     {
                         if( pModelTreeEntry != m_pModelRoot )
                         {

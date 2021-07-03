@@ -183,7 +183,7 @@ void CModelErrLog::removeEntries( const QModelIndexList& i_modelIdxList )
         SErrLogEntry*   pEntryView;
         int             idxRow;
 
-        qSort( modelIdxListSorted.begin(), modelIdxListSorted.end() );
+        std::sort( modelIdxListSorted.begin(), modelIdxListSorted.end() );
 
         //beginRemoveRows( QModelIndex(), modelIdxListSorted[0].row(), modelIdxListSorted[modelIdxListSorted.size()-1].row() );
 

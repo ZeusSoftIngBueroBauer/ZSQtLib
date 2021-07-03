@@ -27,20 +27,7 @@ may result in using the software modules.
 #ifndef ZSIpcTrace_DllMain_h
 #define ZSIpcTrace_DllMain_h
 
-// generic export defines
-#if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
-    #define __API_EXPORT __declspec(dllexport)
-    #define __API_IMPORT __declspec(dllimport)
-#elif defined(__linux__)
-    #if (__GNUC__ >= 4)
-        #define __API_EXPORT __attribute((visibility("default")))
-    #else
-        #define __API_EXPORT
-    #endif
-    #define  __API_IMPORT
-#else
-    #error Missing export macro
-#endif
+#include "ZSIpc/ZSIpcDllMain.h"
 
 // specific export defines
 #ifdef ZSIPCTRACEDLL_EXPORTS

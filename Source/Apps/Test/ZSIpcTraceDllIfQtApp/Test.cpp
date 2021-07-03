@@ -41,6 +41,7 @@ may result in using the software modules.
 #include "ZSTest/ZSTestStepAdminObjPool.h"
 #include "ZSTest/ZSTestStep.h"
 #include "ZSSys/ZSSysApp.h"
+#include "ZSSys/ZSSysVersion.h"
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
@@ -178,10 +179,10 @@ CTest::CTest( const QString& i_strTestStepsFileName ) :
 
     new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " Trace Server Destroy Instance",
-        /* strOperation    */ "DllIf::CIpcTrcServer::DestroyInstance",
+        /* strName         */ "Step " + QString::number(++idxStep) + " Trace Server Release Instance",
+        /* strOperation    */ "DllIf::CIpcTrcServer::ReleaseInstance",
         /* pTSGrpParent    */ nullptr,
-        /* szDoTestStepFct */ SLOT(doTestStepTraceServerDestroyInstance(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepTraceServerReleaseInstance(ZS::Test::CTestStep*)) );
 
     new ZS::Test::CTestStep(
         /* pTest           */ this,
@@ -219,7 +220,7 @@ CTest::~CTest()
 
     if( m_pTrcServer != nullptr )
     {
-        ZS::Trace::DllIf::CIpcTrcServer::DestroyInstance(m_pTrcServer);
+        ZS::Trace::DllIf::CIpcTrcServer::ReleaseInstance(m_pTrcServer);
     }
 
     m_pAdminObjPool->save_();
@@ -259,7 +260,17 @@ void CTest::doTestStepLoadDll( ZS::Test::CTestStep* i_pTestStep )
     // Test Step
     //----------
 
-    bool bOk = ZS::Trace::DllIf::loadDll();
+    #ifdef _DEBUG
+    ZS::Trace::DllIf::EBuildConfiguration buildConfiguration = ZS::Trace::DllIf::EBuildConfigurationDebug;
+    #else
+    ZS::Trace::DllIf::EBuildConfiguration buildConfiguration = ZS::Trace::DllIf::EBuildConfigurationRelease;
+    #endif
+
+    const char* szCompiler = COMPILERLIBINFIX;  // from "ZSSysVersion.h"
+    const char* szPlatform = PLATFORMLIBINFIX;  // from "ZSSysVersion.h"
+    int iQtVersionMajor = QT_VERSION_MAJOR;     // from "ZSSysVersion.h"
+
+    bool bOk = ZS::Trace::DllIf::loadDll(szCompiler, szPlatform, buildConfiguration, QT_VERSION_MAJOR);
 
     // Actual Values
     //---------------
@@ -327,7 +338,8 @@ void CTest::doTestStepTraceServerCreateInstance( ZS::Test::CTestStep* i_pTestSte
     // Test Step
     //----------
 
-    m_pTrcServer = ZS::Trace::DllIf::CIpcTrcServer::CreateInstance("ZSTrcServer", ZS::Trace::DllIf::ETraceDetailLevelMethodArgs);
+    m_pTrcServer = ZS::Trace::DllIf::CIpcTrcServer::CreateInstance(
+        "ZSTrcServer", false, ZS::Trace::DllIf::ETraceDetailLevelMethodArgs);
 
     // Actual Values
     //---------------
@@ -342,7 +354,7 @@ void CTest::doTestStepTraceServerCreateInstance( ZS::Test::CTestStep* i_pTestSte
 } // doTestStepTraceServerCreateInstance
 
 //------------------------------------------------------------------------------
-void CTest::doTestStepTraceServerDestroyInstance( ZS::Test::CTestStep* i_pTestStep )
+void CTest::doTestStepTraceServerReleaseInstance( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
     QString     strDesiredValue;
@@ -362,7 +374,7 @@ void CTest::doTestStepTraceServerDestroyInstance( ZS::Test::CTestStep* i_pTestSt
     // Test Step
     //----------
 
-    ZS::Trace::DllIf::CIpcTrcServer::DestroyInstance(m_pTrcServer);
+    ZS::Trace::DllIf::CIpcTrcServer::ReleaseInstance(m_pTrcServer);
     m_pTrcServer = ZS::Trace::DllIf::CIpcTrcServer::GetInstance("ZSTrcServer");
 
     // Actual Values
@@ -375,7 +387,7 @@ void CTest::doTestStepTraceServerDestroyInstance( ZS::Test::CTestStep* i_pTestSt
 
     i_pTestStep->setActualValues(strlstActualValues);
 
-} // doTestStepTraceServerDestroyInstance
+} // doTestStepTraceServerReleaseInstance
 
 //------------------------------------------------------------------------------
 void CTest::doTestStepTraceServerStartup( ZS::Test::CTestStep* i_pTestStep )
@@ -733,7 +745,7 @@ void CTest::doTestStepCreateModule1( ZS::Test::CTestStep* i_pTestStep )
 
     strInfoText  = "Do you see the following lines?";
 
-    for( const auto& strTrc : strlstMthTraces )
+    foreach( const QString& strTrc, strlstMthTraces )
     {
         strInfoText += "\n" + strTrc;
     }
@@ -809,7 +821,7 @@ void CTest::doTestStepDeleteModule1( ZS::Test::CTestStep* i_pTestStep )
 
     strInfoText  = "Do you see the following lines?";
 
-    for( const auto& strTrc : strlstMthTraces )
+    foreach( const QString& strTrc, strlstMthTraces )
     {
         strInfoText += "\n" + strTrc;
     }
@@ -887,7 +899,7 @@ void CTest::doTestStepCreateModule2( ZS::Test::CTestStep* i_pTestStep )
 
     strInfoText  = "Do you see the following lines?";
 
-    for( const auto& strTrc : strlstMthTraces )
+    foreach( const QString& strTrc, strlstMthTraces )
     {
         strInfoText += "\n" + strTrc;
     }
@@ -966,7 +978,7 @@ void CTest::doTestStepDeleteModule2( ZS::Test::CTestStep* i_pTestStep )
 
     strInfoText  = "Do you see the following lines?";
 
-    for( const auto& strTrc : strlstMthTraces )
+    foreach( const QString& strTrc, strlstMthTraces )
     {
         strInfoText += "\n" + strTrc;
     }

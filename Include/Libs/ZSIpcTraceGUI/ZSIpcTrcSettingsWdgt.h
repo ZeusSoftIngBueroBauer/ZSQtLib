@@ -24,8 +24,8 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#ifndef ZSTraceGUI_ServerWdgt_h
-#define ZSTraceGUI_ServerWdgt_h
+#ifndef ZSIpcTraceGUI_ServerWdgt_h
+#define ZSIpcTraceGUI_ServerWdgt_h
 
 #include <QtCore/qglobal.h>
 
@@ -112,4 +112,4 @@ protected: // instance members
 
 } // namespace ZS
 
-#endif // #ifndef ZSTraceGUI_ServerWdgt_h
+#endif // #ifndef ZSIpcTraceGUI_ServerWdgt_h

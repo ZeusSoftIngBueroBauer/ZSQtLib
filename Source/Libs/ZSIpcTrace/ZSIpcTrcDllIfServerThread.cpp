@@ -45,14 +45,15 @@ public: // ctors and dtor
 //------------------------------------------------------------------------------
 DllIf::CIpcTrcServerThread::CIpcTrcServerThread(
     const QString& i_strServerName,
+    bool           i_bCreateServerOnlyIfNotYetExisting,
     int            i_iTrcDetailLevel ) :
 //------------------------------------------------------------------------------
     QThread(),
     m_strServerName(i_strServerName),
     m_pQtAppCreatedByDllIf(NULL),
+    m_bCreateServerOnlyIfNotYetExisting(i_bCreateServerOnlyIfNotYetExisting),
     m_iTrcDetailLevel(i_iTrcDetailLevel),
-    m_pTrcMthFile(nullptr),
-    m_bTrcServerCreatedByMe(false)
+    m_pTrcMthFile(nullptr)
 {
     setObjectName(i_strServerName + "DllIf");
 
@@ -113,15 +114,12 @@ DllIf::CIpcTrcServerThread::~CIpcTrcServerThread()
 
     #endif // #ifdef _TRACE_IPCTRACEPYDLL_METHODs
 
-    if( m_bTrcServerCreatedByMe )
+    try
     {
-        try
-        {
-            CIpcTrcServer::DestroyInstance(m_strServerName);
-        }
-        catch(...)
-        {
-        }
+        CIpcTrcServer::ReleaseInstance(m_strServerName);
+    }
+    catch(...)
+    {
     }
 
     if( m_pQtAppCreatedByDllIf != NULL )
@@ -137,9 +135,9 @@ DllIf::CIpcTrcServerThread::~CIpcTrcServerThread()
 
     //m_strServerName;
     m_pQtAppCreatedByDllIf = nullptr;
+    m_bCreateServerOnlyIfNotYetExisting = false;
     m_iTrcDetailLevel = 0;
     m_pTrcMthFile = nullptr;
-    m_bTrcServerCreatedByMe = false;
 
 } // dtor
 
@@ -211,15 +209,7 @@ void DllIf::CIpcTrcServerThread::run()
     // Create trace server
     //--------------------
 
-    if( CIpcTrcServer::GetInstance(m_strServerName) == nullptr )
-    {
-        CIpcTrcServer::CreateInstance(m_strServerName, m_iTrcDetailLevel);
-
-        if( CIpcTrcServer::GetInstance(m_strServerName) != nullptr )
-        {
-            m_bTrcServerCreatedByMe = true;
-        }
-    }
+    CIpcTrcServer::CreateInstance(m_strServerName, m_bCreateServerOnlyIfNotYetExisting, m_iTrcDetailLevel);
 
     try
     {
@@ -264,16 +254,12 @@ void DllIf::CIpcTrcServerThread::run()
         }
     } // catch(...)
 
-    if( m_bTrcServerCreatedByMe )
+    try
     {
-        try
-        {
-            CIpcTrcServer::DestroyInstance(m_strServerName);
-        }
-        catch(...)
-        {
-        }
-        m_bTrcServerCreatedByMe = false;
+        CIpcTrcServer::ReleaseInstance(m_strServerName);
+    }
+    catch(...)
+    {
     }
 
     if( m_pQtAppCreatedByDllIf != NULL )

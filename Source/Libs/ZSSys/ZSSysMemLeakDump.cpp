@@ -84,7 +84,7 @@ MSVC++ 14.16 _MSC_VER == 1916 (Visual Studio 2017 version 15.9.6)
 #include "ZSSys/ZSSysMemLeakDump.h"
 
 #if _MSC_VER == 1310 || _MSC_VER == 1400 || _MSC_VER == 1500 || _MSC_VER == 1600 || _MSC_VER == 1700 \
- || _MSC_VER == 1800 || _MSC_VER == 1900 || _MSC_VER == 1915 || _MSC_VER == 1916 || _MSC_VER == 1928
+ || _MSC_VER == 1800 || _MSC_VER == 1900 || _MSC_VER == 1915 || _MSC_VER == 1916 || _MSC_VER == 1928 || _MSC_VER == 1929
     #define nNoMansLandSize 4 //lint !e1923
     typedef struct _CrtMemBlockHeader
     {

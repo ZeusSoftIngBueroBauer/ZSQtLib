@@ -27,7 +27,7 @@ may result in using the software modules.
 #ifndef ZSApps_TestIpcTrace_WidgetCentral_h
 #define ZSApps_TestIpcTrace_WidgetCentral_h
 
-#include <QtCore/qglobal.h>
+#include "ZSSys/ZSSysDllMain.h"
 
 #if QT_VERSION < 0x050000
 #include <QtGui/qwidget.h>
@@ -76,7 +76,6 @@ public: // class methods
     static CWidgetCentral* GetInstance(); // singleton class
 public: // ctors and dtor
     CWidgetCentral( CTest* i_pTest, QWidget* i_pWdgtParent = nullptr, Qt::WindowFlags i_wflags = Qt::WindowFlags() );
-
     ~CWidgetCentral();
 public: // instance methods
     ZS::Trace::GUI::CWdgtTrcMthList* getTrcMthListWdgt() { return m_pWdgtMthList; }

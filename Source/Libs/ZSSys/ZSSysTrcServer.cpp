@@ -178,26 +178,59 @@ CTrcServer* CTrcServer::GetInstance( const QString& i_strName )
 }
 
 //------------------------------------------------------------------------------
-CTrcServer* CTrcServer::CreateInstance( const QString& i_strName, int i_iTrcDetailLevel )
+/*! Returns a reference to an instance of the class.
+
+    Checks whether a trace server instance with the desired name already exist.
+    If not the trace server instance is created.
+    Depending on the flag CreateOnlyIfNotYetExisting either an exception is thrown
+    if a server with name is already existing or a reference to the already existing
+    instance is return and a reference counter is incremented.
+
+    \param i_strName [in] Name of the trace server (default "ZSTrcServer")
+    \param i_bCreateOnlyIfNotYetExisting [in] (default: false)
+        If this flag is set to false and a trace server with the given name
+        is already existing an exception will be thrown.
+        If set to true and a trace server with the given name is already existing
+        a reference to the already existing server is returned and the reference
+        count for the server is incremented.
+        If a trace server with the given name is not yet existing the server
+        will be created anyway and the reference count is set to 1.
+    \param i_iTrcDetailLevel [in]
+        If the methods of the trace server itself should be logged a value
+        greater than 0 (ETraceDetailLevelNone) could be passed here.
+
+    \return Pointer to trace server instance.
+*/
+CTrcServer* CTrcServer::CreateInstance(
+    const QString& i_strName,
+    bool i_bCreateOnlyIfNotYetExisting,
+    int i_iTrcDetailLevel )
 //------------------------------------------------------------------------------
 {
     // The class may be accessed from within different thread contexts and
     // therefore accessing the class must be serialized using a mutex ..
     QMutexLocker mtxLocker(&s_mtx);
 
-    if( s_hshpInstances.contains(i_strName) )
+    CTrcServer* pTrcServer = s_hshpInstances.value(i_strName, nullptr);
+
+    if( pTrcServer != nullptr && !i_bCreateOnlyIfNotYetExisting )
     {
         throw CException(__FILE__, __LINE__, EResultObjAlreadyInList, "CTrcServer::" + i_strName);
     }
 
-    CTrcServer* pTrcServer = new CTrcServer(i_strName, i_iTrcDetailLevel);
+    if( pTrcServer == NULL )
+    {
+        pTrcServer = new CTrcServer(i_strName, i_iTrcDetailLevel);
+    }
 
-    // The ctor enters the reference to the instance to the hash.
+    pTrcServer->incrementRefCount();
+
+    // The ctor adds the reference to the instance to the hash.
     // If the ctor itself calls methods of other classes which again recursively
     // call "GetInstance" this way "GetInstance" does not return null but the
     // pointer to the server instance currently beeing created.
     // But of course this requires special caution as within the ctor it must
-    // be assured that recursively accesses instance members are already valid.
+    // be assured that recursively accessed instance members are already valid.
     //s_hshpInstances[i_strName] = pTrcServer;
 
     return pTrcServer;
@@ -205,7 +238,7 @@ CTrcServer* CTrcServer::CreateInstance( const QString& i_strName, int i_iTrcDeta
 } // CreateInstance
 
 //------------------------------------------------------------------------------
-void CTrcServer::DestroyInstance( const QString& i_strName )
+void CTrcServer::ReleaseInstance( const QString& i_strName )
 //------------------------------------------------------------------------------
 {
     // The class may be accessed from within different thread contexts and
@@ -219,15 +252,19 @@ void CTrcServer::DestroyInstance( const QString& i_strName )
         throw CException(__FILE__, __LINE__, EResultObjNotInList, "CTrcServer::" + i_strName);
     }
 
-    s_hshpInstances.remove(i_strName);
+    int iRefCount = pTrcServer->decrementRefCount();
 
-    delete pTrcServer;
-    pTrcServer = nullptr;
+    if( iRefCount == 0 )
+    {
+        s_hshpInstances.remove(i_strName);
 
-} // DestroyInstance
+        delete pTrcServer;
+        pTrcServer = nullptr;
+    }
+} // ReleaseInstance
 
 //------------------------------------------------------------------------------
-void CTrcServer::DestroyInstance( CTrcServer* i_pTrcServer )
+void CTrcServer::ReleaseInstance( CTrcServer* i_pTrcServer )
 //------------------------------------------------------------------------------
 {
     // The class may be accessed from within different thread contexts and
@@ -241,12 +278,16 @@ void CTrcServer::DestroyInstance( CTrcServer* i_pTrcServer )
         throw CException(__FILE__, __LINE__, EResultObjNotInList, "CTrcServer::" + strName);
     }
 
-    s_hshpInstances.remove(strName);
+    int iRefCount = i_pTrcServer->decrementRefCount();
 
-    delete i_pTrcServer;
-    i_pTrcServer = nullptr;
+    if( iRefCount == 0 )
+    {
+        s_hshpInstances.remove(strName);
 
-} // DestroyInstance
+        delete i_pTrcServer;
+        i_pTrcServer = nullptr;
+    }
+} // ReleaseInstance
 
 //------------------------------------------------------------------------------
 void CTrcServer::DestroyAllInstances()
@@ -257,7 +298,7 @@ void CTrcServer::DestroyAllInstances()
     QMutexLocker mtxLocker(&s_mtx);
 
     CTrcServer* pTrcServer;
-    QString         strName;
+    QString     strName;
 
     QHash<QString, CTrcServer*>::iterator itTrcServer;
 
@@ -464,7 +505,8 @@ CTrcServer::CTrcServer( const QString& i_strName, int i_iTrcDetailLevel ) :
     m_pTrcAdminObjIdxTree(nullptr),
     m_trcSettings(),
     m_pTrcMthFile(nullptr),
-    m_iTrcDetailLevel(i_iTrcDetailLevel)
+    m_iTrcDetailLevel(i_iTrcDetailLevel),
+    m_iRefCount(0)
 {
     setObjectName(i_strName);
 
@@ -535,6 +577,7 @@ CTrcServer::~CTrcServer()
     //m_trcSettings;
     m_pTrcMthFile = nullptr;
     m_iTrcDetailLevel = 0;
+    m_iRefCount = 0;
 
 } // dtor
 
@@ -592,24 +635,33 @@ CTrcAdminObj* CTrcServer::getTraceAdminObj(
         /* strMethod          */ "getTraceAdminObj",
         /* strMthInArgs       */ strMthInArgs );
 
+    QString strParentBranchPath = buildPathStr(m_pTrcAdminObjIdxTree->nodeSeparator(), i_strNameSpace, i_strClassName);
+
+    CLeaveIdxTreeEntry* pLeave = m_pTrcAdminObjIdxTree->findLeave(strParentBranchPath, i_strObjName);
+
+    bool bInitiallyCreated = pLeave == nullptr;
+
     CTrcAdminObj* pTrcAdminObj = m_pTrcAdminObjIdxTree->getTraceAdminObj(i_strNameSpace, i_strClassName, i_strObjName);
 
     if( pTrcAdminObj != nullptr )
     {
-        EEnabled bEnabled     = m_trcSettings.m_bNewTrcAdminObjsEnabledAsDefault ? EEnabled::Yes : EEnabled::No;
-        int      iDetailLevel = m_trcSettings.m_iNewTrcAdminObjsDefaultDetailLevel;
-
-        if( i_bEnabledAsDefault != EEnabled::Undefined )
+        if( bInitiallyCreated )
         {
-            bEnabled = i_bEnabledAsDefault;
-        }
-        if( i_iDefaultDetailLevel >= 0 )
-        {
-            iDetailLevel = i_iDefaultDetailLevel;
-        }
+            EEnabled bEnabled     = m_trcSettings.m_bNewTrcAdminObjsEnabledAsDefault ? EEnabled::Yes : EEnabled::No;
+            int      iDetailLevel = m_trcSettings.m_iNewTrcAdminObjsDefaultDetailLevel;
 
-        pTrcAdminObj->setEnabled(bEnabled);
-        pTrcAdminObj->setTraceDetailLevel(iDetailLevel);
+            if( i_bEnabledAsDefault != EEnabled::Undefined )
+            {
+                bEnabled = i_bEnabledAsDefault;
+            }
+            if( i_iDefaultDetailLevel >= 0 )
+            {
+                iDetailLevel = i_iDefaultDetailLevel;
+            }
+
+            pTrcAdminObj->setEnabled(bEnabled);
+            pTrcAdminObj->setTraceDetailLevel(iDetailLevel);
+        }
 
         if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
         {
@@ -1840,3 +1892,42 @@ QString CTrcServer::currentThreadName() const
     return strThreadName;
 
 } // currentThreadName
+
+//------------------------------------------------------------------------------
+/*! Returns the number of actove references to this trace server.
+    If the count reaches 0 the instance has to be deleted.
+
+    /return Number of active references.
+*/
+//------------------------------------------------------------------------------
+int CTrcServer::getRefCount() const
+{
+    return m_iRefCount;
+}
+
+//------------------------------------------------------------------------------
+/*! Increments the number of active reference to this trace server.
+
+    /return Number of active references after increment.
+*/
+//------------------------------------------------------------------------------
+int CTrcServer::incrementRefCount()
+{
+    return ++m_iRefCount;
+}
+
+//------------------------------------------------------------------------------
+/*! Decrements the number of active reference to this trace server.
+    If the count reaches 0 the instance has to be deleted.
+
+    /return Number of active references after decrement.
+*/
+//------------------------------------------------------------------------------
+int CTrcServer::decrementRefCount()
+{
+    if( m_iRefCount <= 0)
+    {
+        throw CException(__FILE__, __LINE__, EResultObjRefCounterIsZero, "CTrcServer::" + objectName());
+    }
+    return --m_iRefCount;
+}
