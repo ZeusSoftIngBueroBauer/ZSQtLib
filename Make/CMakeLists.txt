@@ -23,9 +23,11 @@
 # Make sure you use the same generator to compile ZSQtLib as it has been used to compile Qt.
 # Change into the build directory to invoke cmake for building ZSQtLib.
 # For your convience some examples are shown below.
-# - for VS-2008:
-#   cmake -G "Visual Studio 9 2008" -A Win32 -DCMAKE_BUILD_TYPE=Debug -DCMAKE_PREFIX_PATH=D:/Qt/Bin/4.8.4/msvc2008/Win32/bin ../../../../Make
-# - for VS-2019:
+# - for VS-2008, Qt-Version 4.8.4 (Qt installed on drive D in Bin-Directory):
+#   cmake -G "Visual Studio 9 2008" -A Win32 -DCMAKE_BUILD_TYPE=Debug -DQT_VERSION_MAJOR=4 -DCMAKE_PREFIX_PATH=D:/Qt/Bin/4.8.4/msvc2008/Win32/bin ../../../../Make
+# - for VS-2008, Qt-Version 4.8.8 (Qt installed on drive C in Build-Directory):
+#   cmake -G "Visual Studio 9 2008" -A Win32 -DCMAKE_BUILD_TYPE=Debug -DQT_VERSION_MAJOR=4 -DCMAKE_PREFIX_PATH="C:/Qt/Build/4.8.8/msvc2008/Win32/bin" ../../../../Make
+# - for VS-2019, Qt-Version 5.15.2 (Qt installed on same drive as invoking CMake):
 #   cmake -G "Visual Studio 16 2019" -A x64 -DCMAKE_BUILD_TYPE=Debug -DQT_VERSION_MAJOR=5 -DQt5_DIR="/Qt/Bin/5.15.2/msvc2019/x64/lib/cmake/Qt5" ../../../../Make
 #
 # Build packages:
@@ -128,6 +130,7 @@ message(STATUS "Compiler:                 ${CMAKE_CXX_COMPILER}")
 message(STATUS "Compiler-Id:              ${CMAKE_CXX_COMPILER_ID}")
 message(STATUS "Compiler-Version:         ${CMAKE_CXX_COMPILER_VERSION}")
 message(STATUS "Compiler-Architecture:    ${CMAKE_CXX_COMPILER_ARCHITECTURE_ID}")
+message(STATUS "CXX-Standard:             ${CMAKE_CXX_STANDARD}")
 
 add_compile_options(-DDONT_USE_PRAGMA_COMMENT_LIB_INCLUDE_IN_MAIN_MODULES)
 
@@ -214,22 +217,24 @@ set(CMAKE_AUTOUIC ON)
 
 message(STATUS "")
 message(STATUS "---------------------------------------------------------------------------------------------")
-message(STATUS "Find Package Qt")
+message(STATUS "Find Package Qt ${QT_VERSION_MAJOR}")
 message(STATUS "---------------------------------------------------------------------------------------------")
 
-message(STATUS "")
-message(STATUS "Trying to find Qt Version 5")
-message(STATUS "---------------------------------------------------------------------------------------------")
-message(STATUS "Qt5_DIR: ${Qt5_DIR}")
-find_package(Qt5 COMPONENTS Core Xml Network Gui Widgets)
-message("Qt5Core_FOUND: ${Qt5Core_FOUND}")
-if(Qt5Core_FOUND)
-    set(QT_FOUND 1)
+if(NOT QT_VERSION_MAJOR OR QT_VERSION_MAJOR GREATER_EQUAL 5)
+    message(STATUS "")
+    message(STATUS "Trying to find Qt Version 5")
+    message(STATUS "---------------------------------------------------------------------------------------------")
+    message(STATUS "Qt5_DIR: ${Qt5_DIR}")
+    find_package(Qt5 COMPONENTS Core Xml Network Gui Widgets)
+    message("Qt5Core_FOUND: ${Qt5Core_FOUND}")
+    if(Qt5Core_FOUND)
+        set(QT_FOUND 1)
+    endif()
+    message("QT_FOUND: ${QT_FOUND}")
 endif()
-message("QT_FOUND: ${QT_FOUND}")
 if(NOT QT_FOUND)
     message(STATUS "")
-    message(STATUS "Qt5 not found ... Trying to find Qt Version 4")
+    message(STATUS "Trying to find Qt Version 4")
     message(STATUS "---------------------------------------------------------------------------------------------")
     find_package(Qt4 REQUIRED QtCore QtXml QtNetwork QtGui)
 endif()
@@ -293,10 +298,8 @@ message(STATUS "----------------------------------------------------------------
 message(STATUS "Find Package Python Interpreter")
 message(STATUS "---------------------------------------------------------------------------------------------")
 
-find_package(PythonInterp 3.9)
-
-message("PYTHONINTERP_FOUND: ${PYTHONINTERP_FOUND}")
-if(PYTHONINTERP_FOUND)
+if(CREATE_PYTHON_BINDINGS)
+    find_package(Python3)
     message("PYTHON_EXECUTABLE:     ${PYTHON_EXECUTABLE}")
     message("PYTHON_VERSION_STRING: ${PYTHON_VERSION_STRING}")
     message("PYTHON_VERSION_MAJOR:  ${PYTHON_VERSION_MAJOR}")
@@ -323,7 +326,7 @@ add_subdirectory(Libs/ZSIpc)
 add_subdirectory(Libs/ZSIpcGUI)
 add_subdirectory(Libs/ZSIpcTrace)
 add_subdirectory(Libs/ZSIpcTraceGUI)
-if(PYTHONINTERP_FOUND)
+if(CREATE_PYTHON_BINDINGS)
     add_subdirectory(Libs/ZSIpcTracePy)
 endif()
 add_subdirectory(Apps/Products/ZSTrcMthClient)

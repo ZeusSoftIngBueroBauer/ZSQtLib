@@ -2620,7 +2620,7 @@ Qt::KeyboardModifiers ZS::System::char2QKeyboardModifiers( const QChar& i_ch )
 } // char2QKeyboardModifiers
 
 /*==============================================================================
-Enum QVariant::Type
+Enum MouseButton
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
@@ -2629,148 +2629,148 @@ QString ZS::System::qMouseButton2Str( int i_iBtn, bool /*i_bShort*/ )
 {
     QString str;
 
-    if( i_iBtn == Qt::MouseButton::NoButton )
+    if( i_iBtn == Qt::NoButton )
     {
         str = "NoButton";
     }
-    else if( i_iBtn == Qt::MouseButton::LeftButton )
+    else if( i_iBtn == Qt::LeftButton )
     {
         str = "LeftButton";
     }
-    else if( i_iBtn == Qt::MouseButton::RightButton )
+    else if( i_iBtn == Qt::RightButton )
     {
         str = "RightButton";
     }
-    else if( i_iBtn == Qt::MouseButton::MidButton )
+    else if( i_iBtn == Qt::MidButton )
     {
         str = "MidButton";
     }
-    else if( i_iBtn == Qt::MouseButton::MiddleButton )
+    else if( i_iBtn == Qt::MiddleButton )
     {
         str = "MiddleButton";
     }
     #if QT_VERSION >= 0x050000
-    else if( i_iBtn == Qt::MouseButton::BackButton )
+    else if( i_iBtn == Qt::BackButton )
     {
         str = "BackButton";
     }
     #endif // #if QT_VERSION >= 0x050000
-    else if( i_iBtn == Qt::MouseButton::XButton1 )
+    else if( i_iBtn == Qt::XButton1 )
     {
         str = "XButton1";
     }
     #if QT_VERSION >= 0x050000
-    else if( i_iBtn == Qt::MouseButton::ExtraButton1 )
+    else if( i_iBtn == Qt::ExtraButton1 )
     {
         str = "ExtraButton1";
     }
-    else if( i_iBtn == Qt::MouseButton::ForwardButton )
+    else if( i_iBtn == Qt::ForwardButton )
     {
         str = "ForwardButton";
     }
     #endif // #if QT_VERSION >= 0x050000
-    else if( i_iBtn == Qt::MouseButton::XButton2 )
+    else if( i_iBtn == Qt::XButton2 )
     {
         str = "XButton2";
     }
     #if QT_VERSION >= 0x050000
-    else if( i_iBtn == Qt::MouseButton::ExtraButton2 )
+    else if( i_iBtn == Qt::ExtraButton2 )
     {
         str = "ExtraButton2";
     }
-    else if( i_iBtn == Qt::MouseButton::TaskButton )
+    else if( i_iBtn == Qt::TaskButton )
     {
         str = "TaskButton";
     }
-    else if( i_iBtn == Qt::MouseButton::ExtraButton3 )
+    else if( i_iBtn == Qt::ExtraButton3 )
     {
         str = "ExtraButton3";
     }
-    else if( i_iBtn == Qt::MouseButton::ExtraButton4 )
+    else if( i_iBtn == Qt::ExtraButton4 )
     {
         str = "ExtraButton4";
     }
-    else if( i_iBtn == Qt::MouseButton::ExtraButton5 )
+    else if( i_iBtn == Qt::ExtraButton5 )
     {
         str = "ExtraButton5";
     }
-    else if( i_iBtn == Qt::MouseButton::ExtraButton6 )
+    else if( i_iBtn == Qt::ExtraButton6 )
     {
         str = "ExtraButton6";
     }
-    else if( i_iBtn == Qt::MouseButton::ExtraButton7 )
+    else if( i_iBtn == Qt::ExtraButton7 )
     {
         str = "ExtraButton7";
     }
-    else if( i_iBtn == Qt::MouseButton::ExtraButton8 )
+    else if( i_iBtn == Qt::ExtraButton8 )
     {
         str = "ExtraButton8";
     }
-    else if( i_iBtn == Qt::MouseButton::ExtraButton9 )
+    else if( i_iBtn == Qt::ExtraButton9 )
     {
         str = "ExtraButton9";
     }
-    else if( i_iBtn == Qt::MouseButton::ExtraButton10 )
+    else if( i_iBtn == Qt::ExtraButton10 )
     {
         str = "ExtraButton10";
     }
-    else if( i_iBtn == Qt::MouseButton::ExtraButton11 )
+    else if( i_iBtn == Qt::ExtraButton11 )
     {
         str = "ExtraButton11";
     }
-    else if( i_iBtn == Qt::MouseButton::ExtraButton12 )
+    else if( i_iBtn == Qt::ExtraButton12 )
     {
         str = "ExtraButton12";
     }
-    else if( i_iBtn == Qt::MouseButton::ExtraButton13 )
+    else if( i_iBtn == Qt::ExtraButton13 )
     {
         str = "ExtraButton13";
     }
-    else if( i_iBtn == Qt::MouseButton::ExtraButton14 )
+    else if( i_iBtn == Qt::ExtraButton14 )
     {
         str = "ExtraButton14";
     }
-    else if( i_iBtn == Qt::MouseButton::ExtraButton15 )
+    else if( i_iBtn == Qt::ExtraButton15 )
     {
         str = "ExtraButton15";
     }
-    else if( i_iBtn == Qt::MouseButton::ExtraButton16 )
+    else if( i_iBtn == Qt::ExtraButton16 )
     {
         str = "ExtraButton16";
     }
-    else if( i_iBtn == Qt::MouseButton::ExtraButton17 )
+    else if( i_iBtn == Qt::ExtraButton17 )
     {
         str = "ExtraButton17";
     }
-    else if( i_iBtn == Qt::MouseButton::ExtraButton18 )
+    else if( i_iBtn == Qt::ExtraButton18 )
     {
         str = "ExtraButton18";
     }
-    else if( i_iBtn == Qt::MouseButton::ExtraButton19 )
+    else if( i_iBtn == Qt::ExtraButton19 )
     {
         str = "extrabutton19";
     }
-    else if( i_iBtn == Qt::MouseButton::ExtraButton20 )
+    else if( i_iBtn == Qt::ExtraButton20 )
     {
         str = "ExtraButton20";
     }
-    else if( i_iBtn == Qt::MouseButton::ExtraButton21 )
+    else if( i_iBtn == Qt::ExtraButton21 )
     {
         str = "ExtraButton21";
     }
-    else if( i_iBtn == Qt::MouseButton::ExtraButton22 )
+    else if( i_iBtn == Qt::ExtraButton22 )
     {
         str = "ExtraButton22";
     }
-    else if( i_iBtn == Qt::MouseButton::ExtraButton23 )
+    else if( i_iBtn == Qt::ExtraButton23 )
     {
         str = "ExtraButton23";
     }
-    else if( i_iBtn == Qt::MouseButton::ExtraButton24 )
+    else if( i_iBtn == Qt::ExtraButton24 )
     {
         str = "ExtraButton24";
     }
-    else if( i_iBtn == Qt::MouseButton::AllButtons )
+    else if( i_iBtn == Qt::AllButtons )
     {
         str = "AllButtons";
     }
@@ -2790,7 +2790,7 @@ QString ZS::System::qMouseButtons2Str( int i_iBtns, bool /*i_bShort*/ )
 {
     QString str;
 
-    if( i_iBtns & Qt::MouseButton::NoButton )
+    if( i_iBtns & Qt::NoButton )
     {
         if( !str.isEmpty() )
         {
@@ -2798,7 +2798,7 @@ QString ZS::System::qMouseButtons2Str( int i_iBtns, bool /*i_bShort*/ )
         }
         str += "NoButton";
     }
-    if( i_iBtns & Qt::MouseButton::LeftButton )
+    if( i_iBtns & Qt::LeftButton )
     {
         if( !str.isEmpty() )
         {
@@ -2806,7 +2806,7 @@ QString ZS::System::qMouseButtons2Str( int i_iBtns, bool /*i_bShort*/ )
         }
         str += "LeftButton";
     }
-    if( i_iBtns & Qt::MouseButton::RightButton )
+    if( i_iBtns & Qt::RightButton )
     {
         if( !str.isEmpty() )
         {
@@ -2814,7 +2814,7 @@ QString ZS::System::qMouseButtons2Str( int i_iBtns, bool /*i_bShort*/ )
         }
         str += "RightButton";
     }
-    if( i_iBtns & Qt::MouseButton::MidButton )
+    if( i_iBtns & Qt::MidButton )
     {
         if( !str.isEmpty() )
         {
@@ -2822,7 +2822,7 @@ QString ZS::System::qMouseButtons2Str( int i_iBtns, bool /*i_bShort*/ )
         }
         str += "MidButton";
     }
-    if( i_iBtns & Qt::MouseButton::MiddleButton )
+    if( i_iBtns & Qt::MiddleButton )
     {
         if( !str.isEmpty() )
         {
@@ -2831,7 +2831,7 @@ QString ZS::System::qMouseButtons2Str( int i_iBtns, bool /*i_bShort*/ )
         str += "MiddleButton";
     }
     #if QT_VERSION >= 0x050000
-    if( i_iBtns & Qt::MouseButton::BackButton )
+    if( i_iBtns & Qt::BackButton )
     {
         if( !str.isEmpty() )
         {
@@ -2840,7 +2840,7 @@ QString ZS::System::qMouseButtons2Str( int i_iBtns, bool /*i_bShort*/ )
         str += "BackButton";
     }
     #endif // #if QT_VERSION >= 0x050000
-    if( i_iBtns & Qt::MouseButton::XButton1 )
+    if( i_iBtns & Qt::XButton1 )
     {
         if( !str.isEmpty() )
         {
@@ -2849,7 +2849,7 @@ QString ZS::System::qMouseButtons2Str( int i_iBtns, bool /*i_bShort*/ )
         str += "XButton1";
     }
     #if QT_VERSION >= 0x050000
-    if( i_iBtns & Qt::MouseButton::ExtraButton1 )
+    if( i_iBtns & Qt::ExtraButton1 )
     {
         if( !str.isEmpty() )
         {
@@ -2857,7 +2857,7 @@ QString ZS::System::qMouseButtons2Str( int i_iBtns, bool /*i_bShort*/ )
         }
         str += "ExtraButton1";
     }
-    if( i_iBtns & Qt::MouseButton::ForwardButton )
+    if( i_iBtns & Qt::ForwardButton )
     {
         if( !str.isEmpty() )
         {
@@ -2866,7 +2866,7 @@ QString ZS::System::qMouseButtons2Str( int i_iBtns, bool /*i_bShort*/ )
         str += "ForwardButton";
     }
     #endif // #if QT_VERSION >= 0x050000
-    if( i_iBtns & Qt::MouseButton::XButton2 )
+    if( i_iBtns & Qt::XButton2 )
     {
         if( !str.isEmpty() )
         {
@@ -2875,7 +2875,7 @@ QString ZS::System::qMouseButtons2Str( int i_iBtns, bool /*i_bShort*/ )
         str += "XButton2";
     }
     #if QT_VERSION >= 0x050000
-    if( i_iBtns & Qt::MouseButton::ExtraButton2 )
+    if( i_iBtns & Qt::ExtraButton2 )
     {
         if( !str.isEmpty() )
         {
@@ -2883,7 +2883,7 @@ QString ZS::System::qMouseButtons2Str( int i_iBtns, bool /*i_bShort*/ )
         }
         str += "ExtraButton2";
     }
-    if( i_iBtns & Qt::MouseButton::TaskButton )
+    if( i_iBtns & Qt::TaskButton )
     {
         if( !str.isEmpty() )
         {
@@ -2891,7 +2891,7 @@ QString ZS::System::qMouseButtons2Str( int i_iBtns, bool /*i_bShort*/ )
         }
         str += "TaskButton";
     }
-    if( i_iBtns & Qt::MouseButton::ExtraButton3 )
+    if( i_iBtns & Qt::ExtraButton3 )
     {
         if( !str.isEmpty() )
         {
@@ -2899,7 +2899,7 @@ QString ZS::System::qMouseButtons2Str( int i_iBtns, bool /*i_bShort*/ )
         }
         str += "ExtraButton3";
     }
-    if( i_iBtns & Qt::MouseButton::ExtraButton4 )
+    if( i_iBtns & Qt::ExtraButton4 )
     {
         if( !str.isEmpty() )
         {
@@ -2907,7 +2907,7 @@ QString ZS::System::qMouseButtons2Str( int i_iBtns, bool /*i_bShort*/ )
         }
         str += "ExtraButton4";
     }
-    if( i_iBtns & Qt::MouseButton::ExtraButton5 )
+    if( i_iBtns & Qt::ExtraButton5 )
     {
         if( !str.isEmpty() )
         {
@@ -2915,7 +2915,7 @@ QString ZS::System::qMouseButtons2Str( int i_iBtns, bool /*i_bShort*/ )
         }
         str += "ExtraButton5";
     }
-    if( i_iBtns & Qt::MouseButton::ExtraButton6 )
+    if( i_iBtns & Qt::ExtraButton6 )
     {
         if( !str.isEmpty() )
         {
@@ -2923,7 +2923,7 @@ QString ZS::System::qMouseButtons2Str( int i_iBtns, bool /*i_bShort*/ )
         }
         str += "ExtraButton6";
     }
-    if( i_iBtns & Qt::MouseButton::ExtraButton7 )
+    if( i_iBtns & Qt::ExtraButton7 )
     {
         if( !str.isEmpty() )
         {
@@ -2931,7 +2931,7 @@ QString ZS::System::qMouseButtons2Str( int i_iBtns, bool /*i_bShort*/ )
         }
         str += "ExtraButton7";
     }
-    if( i_iBtns & Qt::MouseButton::ExtraButton8 )
+    if( i_iBtns & Qt::ExtraButton8 )
     {
         if( !str.isEmpty() )
         {
@@ -2939,7 +2939,7 @@ QString ZS::System::qMouseButtons2Str( int i_iBtns, bool /*i_bShort*/ )
         }
         str += "ExtraButton8";
     }
-    if( i_iBtns & Qt::MouseButton::ExtraButton9 )
+    if( i_iBtns & Qt::ExtraButton9 )
     {
         if( !str.isEmpty() )
         {
@@ -2947,7 +2947,7 @@ QString ZS::System::qMouseButtons2Str( int i_iBtns, bool /*i_bShort*/ )
         }
         str += "ExtraButton9";
     }
-    if( i_iBtns & Qt::MouseButton::ExtraButton10 )
+    if( i_iBtns & Qt::ExtraButton10 )
     {
         if( !str.isEmpty() )
         {
@@ -2955,7 +2955,7 @@ QString ZS::System::qMouseButtons2Str( int i_iBtns, bool /*i_bShort*/ )
         }
         str += "ExtraButton10";
     }
-    if( i_iBtns & Qt::MouseButton::ExtraButton11 )
+    if( i_iBtns & Qt::ExtraButton11 )
     {
         if( !str.isEmpty() )
         {
@@ -2963,7 +2963,7 @@ QString ZS::System::qMouseButtons2Str( int i_iBtns, bool /*i_bShort*/ )
         }
         str += "ExtraButton11";
     }
-    if( i_iBtns & Qt::MouseButton::ExtraButton12 )
+    if( i_iBtns & Qt::ExtraButton12 )
     {
         if( !str.isEmpty() )
         {
@@ -2971,7 +2971,7 @@ QString ZS::System::qMouseButtons2Str( int i_iBtns, bool /*i_bShort*/ )
         }
         str += "ExtraButton12";
     }
-    if( i_iBtns & Qt::MouseButton::ExtraButton13 )
+    if( i_iBtns & Qt::ExtraButton13 )
     {
         if( !str.isEmpty() )
         {
@@ -2979,7 +2979,7 @@ QString ZS::System::qMouseButtons2Str( int i_iBtns, bool /*i_bShort*/ )
         }
         str += "ExtraButton13";
     }
-    if( i_iBtns & Qt::MouseButton::ExtraButton14 )
+    if( i_iBtns & Qt::ExtraButton14 )
     {
         if( !str.isEmpty() )
         {
@@ -2987,7 +2987,7 @@ QString ZS::System::qMouseButtons2Str( int i_iBtns, bool /*i_bShort*/ )
         }
         str += "ExtraButton14";
     }
-    if( i_iBtns & Qt::MouseButton::ExtraButton15 )
+    if( i_iBtns & Qt::ExtraButton15 )
     {
         if( !str.isEmpty() )
         {
@@ -2995,7 +2995,7 @@ QString ZS::System::qMouseButtons2Str( int i_iBtns, bool /*i_bShort*/ )
         }
         str += "ExtraButton15";
     }
-    if( i_iBtns & Qt::MouseButton::ExtraButton16 )
+    if( i_iBtns & Qt::ExtraButton16 )
     {
         if( !str.isEmpty() )
         {
@@ -3003,7 +3003,7 @@ QString ZS::System::qMouseButtons2Str( int i_iBtns, bool /*i_bShort*/ )
         }
         str += "ExtraButton16";
     }
-    if( i_iBtns & Qt::MouseButton::ExtraButton17 )
+    if( i_iBtns & Qt::ExtraButton17 )
     {
         if( !str.isEmpty() )
         {
@@ -3011,7 +3011,7 @@ QString ZS::System::qMouseButtons2Str( int i_iBtns, bool /*i_bShort*/ )
         }
         str += "ExtraButton17";
     }
-    if( i_iBtns & Qt::MouseButton::ExtraButton18 )
+    if( i_iBtns & Qt::ExtraButton18 )
     {
         if( !str.isEmpty() )
         {
@@ -3019,7 +3019,7 @@ QString ZS::System::qMouseButtons2Str( int i_iBtns, bool /*i_bShort*/ )
         }
         str += "ExtraButton18";
     }
-    if( i_iBtns & Qt::MouseButton::ExtraButton19 )
+    if( i_iBtns & Qt::ExtraButton19 )
     {
         if( !str.isEmpty() )
         {
@@ -3027,7 +3027,7 @@ QString ZS::System::qMouseButtons2Str( int i_iBtns, bool /*i_bShort*/ )
         }
         str += "extrabutton19";
     }
-    if( i_iBtns & Qt::MouseButton::ExtraButton20 )
+    if( i_iBtns & Qt::ExtraButton20 )
     {
         if( !str.isEmpty() )
         {
@@ -3035,7 +3035,7 @@ QString ZS::System::qMouseButtons2Str( int i_iBtns, bool /*i_bShort*/ )
         }
         str += "ExtraButton20";
     }
-    if( i_iBtns & Qt::MouseButton::ExtraButton21 )
+    if( i_iBtns & Qt::ExtraButton21 )
     {
         if( !str.isEmpty() )
         {
@@ -3043,7 +3043,7 @@ QString ZS::System::qMouseButtons2Str( int i_iBtns, bool /*i_bShort*/ )
         }
         str += "ExtraButton21";
     }
-    if( i_iBtns & Qt::MouseButton::ExtraButton22 )
+    if( i_iBtns & Qt::ExtraButton22 )
     {
         if( !str.isEmpty() )
         {
@@ -3051,7 +3051,7 @@ QString ZS::System::qMouseButtons2Str( int i_iBtns, bool /*i_bShort*/ )
         }
         str += "ExtraButton22";
     }
-    if( i_iBtns & Qt::MouseButton::ExtraButton23 )
+    if( i_iBtns & Qt::ExtraButton23 )
     {
         if( !str.isEmpty() )
         {
@@ -3059,7 +3059,7 @@ QString ZS::System::qMouseButtons2Str( int i_iBtns, bool /*i_bShort*/ )
         }
         str += "ExtraButton23";
     }
-    if( i_iBtns & Qt::MouseButton::ExtraButton24 )
+    if( i_iBtns & Qt::ExtraButton24 )
     {
         if( !str.isEmpty() )
         {
@@ -3067,7 +3067,7 @@ QString ZS::System::qMouseButtons2Str( int i_iBtns, bool /*i_bShort*/ )
         }
         str += "ExtraButton24";
     }
-    if( i_iBtns & Qt::MouseButton::AllButtons )
+    if( i_iBtns & Qt::AllButtons )
     {
         if( !str.isEmpty() )
         {

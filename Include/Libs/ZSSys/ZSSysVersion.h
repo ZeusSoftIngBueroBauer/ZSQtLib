@@ -190,6 +190,8 @@ Version History:
           Method to return detail level of admin object.
 ==============================================================================*/
 
+#include "ZSSys/ZSSysDllMain.h"
+
 #if QT_VERSION >= 0x050000
 #define QT_VERSION_MAJOR 5
 #elif QT_VERSION >= 0x040804
@@ -226,62 +228,6 @@ const QString c_strSysVersionNrDateTime = c_strSysVersionNr + ": " + __DATE__ + 
 #define QTLIBINFIX ""
 //#define QTLIBINFIX "Isar"
 //#define QTLIBINFIX "SWP"
-#endif
-
-/*
-Visual Studio version           | _MSC_VER
---------------------------------+---------------
-Visual Studio 6.0               | 1200
-Visual Studio .NET 2002 (7.0)   | 1300
-Visual Studio .NET 2003 (7.1)   | 1310
-Visual Studio 2005 (8.0)        | 1400
-Visual Studio 2008 (9.0)        | 1500
-Visual Studio 2010 (10.0)       | 1600
-Visual Studio 2012 (11.0)       | 1700
-Visual Studio 2013 (12.0)       | 1800
-Visual Studio 2015 (14.0)       | 1900
-Visual Studio 2017 RTW (15.0)   | 1910
-Visual Studio 2017 version 15.3 | 1911
-Visual Studio 2017 version 15.5 | 1912
-Visual Studio 2017 version 15.6 | 1913
-Visual Studio 2017 version 15.7 | 1914
-Visual Studio 2017 version 15.8 | 1915
-Visual Studio 2017 version 15.9 | 1916
-Visual Studio 2019 RTW (16.0)   | 1920
-Visual Studio 2019 version 16.1 | 1921
-Visual Studio 2019 version 16.2 | 1922
-Visual Studio 2019 version 16.3 | 1923
-Visual Studio 2019 version 16.4 | 1924
-Visual Studio 2019 version 16.5 | 1925
-Visual Studio 2019 version 16.6 | 1926
-Visual Studio 2019 version 16.7 | 1927
-Visual Studio 2019 version 16.8 | 1928
-*/
-
-#if _MSC_VER <= 1200
-#define COMPILERLIBINFIX "msvc2000"
-#elif _MSC_VER >= 1300 && _MSC_VER <= 1300
-#define COMPILERLIBINFIX "msvc2002"
-#elif _MSC_VER >= 1310 && _MSC_VER <= 1310
-#define COMPILERLIBINFIX "msvc2003"
-#elif _MSC_VER >= 1400 && _MSC_VER <= 1400
-#define COMPILERLIBINFIX "msvc2005"
-#elif _MSC_VER >= 1500 && _MSC_VER <= 1500
-#define COMPILERLIBINFIX "msvc2008"
-#elif _MSC_VER >= 1600 && _MSC_VER <= 1600
-#define COMPILERLIBINFIX "msvc2010"
-#elif _MSC_VER >= 1700 && _MSC_VER <= 1700
-#define COMPILERLIBINFIX "msvc2012"
-#elif _MSC_VER >= 1800 && _MSC_VER <= 1800
-#define COMPILERLIBINFIX "msvc2013"
-#elif _MSC_VER >= 1900 && _MSC_VER <= 1900
-#define COMPILERLIBINFIX "msvc2015"
-#elif _MSC_VER >= 1910 && _MSC_VER <= 1916
-#define COMPILERLIBINFIX "msvc2017"
-#elif _MSC_VER >= 1920 && _MSC_VER <= 1928
-#define COMPILERLIBINFIX "msvc2019"
-#else
-#error _MSC_VER not yet supported
 #endif
 
 #ifdef _WIN64
