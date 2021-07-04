@@ -23,11 +23,11 @@
 # Make sure you use the same generator to compile ZSQtLib as it has been used to compile Qt.
 # Change into the build directory to invoke cmake for building ZSQtLib.
 # For your convience some examples are shown below.
-# - for VS-2008, Qt-Version 4.8.4 (Qt installed on drive D in Bin-Directory):
+# - for VS-2008, Qt-Version 4.8.4 (Qt binaries and qmake on drive D in D:/Qt/Bin/4.8.4/msvc2008/Win32/bin):
 #   cmake -G "Visual Studio 9 2008" -A Win32 -DCMAKE_BUILD_TYPE=Debug -DQT_VERSION_MAJOR=4 -DCMAKE_PREFIX_PATH=D:/Qt/Bin/4.8.4/msvc2008/Win32/bin ../../../../Make
-# - for VS-2008, Qt-Version 4.8.8 (Qt installed on drive C in Build-Directory):
+# - for VS-2008, Qt-Version 4.8.8 (Qt binaries and qmake on drive C in C:/Qt/Build/4.8.4/msvc2008/Win32/bin):
 #   cmake -G "Visual Studio 9 2008" -A Win32 -DCMAKE_BUILD_TYPE=Debug -DQT_VERSION_MAJOR=4 -DCMAKE_PREFIX_PATH="C:/Qt/Build/4.8.8/msvc2008/Win32/bin" ../../../../Make
-# - for VS-2019, Qt-Version 5.15.2 (Qt installed on same drive as invoking CMake):
+# - for VS-2019, Qt-Version 5.15.2 (QtConfig.cmake located in /Qt/Bin/5.15.2/msvc2019/x64/lib/cmake/Qt5):
 #   cmake -G "Visual Studio 16 2019" -A x64 -DCMAKE_BUILD_TYPE=Debug -DQT_VERSION_MAJOR=5 -DQt5_DIR="/Qt/Bin/5.15.2/msvc2019/x64/lib/cmake/Qt5" ../../../../Make
 #
 # Build packages:

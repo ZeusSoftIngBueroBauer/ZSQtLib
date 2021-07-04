@@ -129,8 +129,9 @@ public: // class methods
     static void ReleaseInstance( CTrcServer* i_pTrcServer );
     static void DestroyAllInstances();
 public: // class methods to register thread names
-    static void RegisterThreadName( int i_iThreadId, const QString& i_strThreadName);
-    static void UnregisterThreadName( int i_iThreadId );
+    static void RegisterCurrentThread(const QString& i_strThreadName);
+    static void UnregisterCurrentThread();
+    static QString GetCurrentThreadName();
 public: // class methods to add, remove and modify admin objects
     static CIdxTreeTrcAdminObjs* GetTraceAdminObjIdxTree( const QString& i_strServerName = "ZSTrcServer" );
     static CTrcAdminObj* GetTraceAdminObj(
@@ -275,7 +276,7 @@ protected: // overridables
         const QString&         i_strAddInfo = "",
         const QString&         i_strMethodOutArgs = "" );
 protected: // auxiliary instance methods
-    QString currentThreadName() const;
+    static QString currentThreadName();
 protected: // reference counter
     int getRefCount() const;
     int incrementRefCount();
@@ -283,7 +284,8 @@ protected: // reference counter
 protected: // class members
     static QMutex                      s_mtx;               /*!< Mutex to protect the class and instance methods of the class for multithreaded access. */
     static QHash<QString, CTrcServer*> s_hshpInstances;     /*!< Hash with all created trace servers (key is name of instance). */
-    static QHash<int, QString>         s_hshThreadNames;    /*!< Hash with registered threads (key is thread id, value is name of thread). */
+    static QHash<Qt::HANDLE, QString>  s_hshThreadNames;    /*!< Hash with registered threads (key is thread id, value is name of thread). */
+    static QHash<QString, Qt::HANDLE>  s_hshThreadIds;      /*!< Hash with registered threads (key name of thread, value is thread id). */
 protected: // instance members
     CIdxTreeTrcAdminObjs*              m_pTrcAdminObjIdxTree;
     STrcServerSettings                 m_trcSettings;
