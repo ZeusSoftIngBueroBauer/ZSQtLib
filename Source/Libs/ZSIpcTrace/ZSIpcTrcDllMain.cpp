@@ -90,12 +90,10 @@ DllIf::CTrcAdminObj
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-ZSIPCTRACEDLL_EXTERN_API char* TrcAdminObj_getNameSpace( const DllIf::CTrcAdminObj* i_pTrcAdminObj )
+ZSIPCTRACEDLL_EXTERN_API const char* TrcAdminObj_getNameSpace( const DllIf::CTrcAdminObj* i_pTrcAdminObj )
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&DllIf_s_mtx);
-
-    char* szName = nullptr;
 
     if( i_pTrcAdminObj != nullptr )
     {
@@ -115,27 +113,20 @@ ZSIPCTRACEDLL_EXTERN_API char* TrcAdminObj_getNameSpace( const DllIf::CTrcAdminO
 
             if( pTrcAdminObj != nullptr )
             {
-                QString strName = pTrcAdminObj->getNameSpace();
-
-                int iStrLen = strName.length();
-                szName = new char[iStrLen+1];
-                memset(szName, 0x00, iStrLen+1);
-                memcpy(szName, strName.toUtf8().data(), iStrLen);
+                return pTrcAdminObj->getNameSpace().toStdString().c_str();
             }
         } // if( pTrcServer != nullptr )
     } // if( i_pTrcAdminObj != nullptr )
 
-    return szName;
+    return NULL;
 
 } // TrcAdminObj_getNameSpace
 
 //------------------------------------------------------------------------------
-ZSIPCTRACEDLL_EXTERN_API char* TrcAdminObj_getClassName( const DllIf::CTrcAdminObj* i_pTrcAdminObj )
+ZSIPCTRACEDLL_EXTERN_API const char* TrcAdminObj_getClassName( const DllIf::CTrcAdminObj* i_pTrcAdminObj )
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&DllIf_s_mtx);
-
-    char* szName = nullptr;
 
     if( i_pTrcAdminObj != nullptr )
     {
@@ -155,27 +146,20 @@ ZSIPCTRACEDLL_EXTERN_API char* TrcAdminObj_getClassName( const DllIf::CTrcAdminO
 
             if( pTrcAdminObj != nullptr )
             {
-                QString strName = pTrcAdminObj->getClassName();
-
-                int iStrLen = strName.length();
-                szName = new char[iStrLen+1];
-                memset(szName, 0x00, iStrLen+1);
-                memcpy(szName, strName.toUtf8().data(), iStrLen);
+                return pTrcAdminObj->getClassName().toStdString().c_str();
             }
         } // if( pTrcServer != nullptr )
     } // if( i_pTrcAdminObj != nullptr )
 
-    return szName;
+    return NULL;
 
 } // TrcAdminObj_getClassName
 
 //------------------------------------------------------------------------------
-ZSIPCTRACEDLL_EXTERN_API char* TrcAdminObj_getObjectName( const DllIf::CTrcAdminObj* i_pTrcAdminObj )
+ZSIPCTRACEDLL_EXTERN_API const char* TrcAdminObj_getObjectName( const DllIf::CTrcAdminObj* i_pTrcAdminObj )
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&DllIf_s_mtx);
-
-    char* szName = nullptr;
 
     if( i_pTrcAdminObj != nullptr )
     {
@@ -195,17 +179,12 @@ ZSIPCTRACEDLL_EXTERN_API char* TrcAdminObj_getObjectName( const DllIf::CTrcAdmin
 
             if( pTrcAdminObj != nullptr )
             {
-                QString strName = pTrcAdminObj->getObjectName();
-
-                int iStrLen = strName.length();
-                szName = new char[iStrLen+1];
-                memset(szName, 0x00, iStrLen+1);
-                memcpy(szName, strName.toUtf8().data(), iStrLen);
+                return pTrcAdminObj->getObjectName().toStdString().c_str();
             }
         } // if( pTrcServer != nullptr )
     } // if( i_pTrcAdminObj != nullptr )
 
-    return szName;
+    return NULL;
 
 } // TrcAdminObj_getObjectName
 
@@ -263,12 +242,10 @@ ZSIPCTRACEDLL_EXTERN_API void TrcAdminObj_setObjectThreadName(
 } // TrcAdminObj_setObjectThreadName
 
 //------------------------------------------------------------------------------
-ZSIPCTRACEDLL_EXTERN_API char* TrcAdminObj_getObjectThreadName( const DllIf::CTrcAdminObj* i_pTrcAdminObj )
+ZSIPCTRACEDLL_EXTERN_API const char* TrcAdminObj_getObjectThreadName( const DllIf::CTrcAdminObj* i_pTrcAdminObj )
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&DllIf_s_mtx);
-
-    char* szName = nullptr;
 
     if( i_pTrcAdminObj != nullptr )
     {
@@ -288,17 +265,12 @@ ZSIPCTRACEDLL_EXTERN_API char* TrcAdminObj_getObjectThreadName( const DllIf::CTr
 
             if( pTrcAdminObj != nullptr )
             {
-                QString strName = pTrcAdminObj->getObjectThreadName();
-
-                int iStrLen = strName.length();
-                szName = new char[iStrLen+1];
-                memset(szName, 0x00, iStrLen+1);
-                memcpy(szName, strName.toUtf8().data(), iStrLen);
+                return pTrcAdminObj->getObjectThreadName().toStdString().c_str();
             }
         } // if( pTrcServer != nullptr )
     } // if( i_pTrcAdminObj != nullptr )
 
-    return szName;
+    return NULL;
 
 } // TrcAdminObj_getObjectThreadName
 
@@ -870,19 +842,12 @@ ZSIPCTRACEDLL_EXTERN_API void TrcServer_SetOrganizationName( const char* i_szNam
 } // TrcServer_SetOrganizationName
 
 //------------------------------------------------------------------------------
-ZSIPCTRACEDLL_EXTERN_API char* TrcServer_GetOrganizationName()
+ZSIPCTRACEDLL_EXTERN_API const char* TrcServer_GetOrganizationName()
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&DllIf_s_mtx);
 
-    QString strName = QCoreApplication::organizationName();
-
-    int iStrLen = strName.length();
-    char* szName = new char[iStrLen+1];
-    memset(szName, 0x00, iStrLen+1);
-    memcpy(szName, strName.toUtf8().data(), iStrLen+1);
-
-    return szName;
+    return QCoreApplication::organizationName().toStdString().c_str();
 
 } // TrcServer_GetOrganizationName
 
@@ -897,19 +862,12 @@ ZSIPCTRACEDLL_EXTERN_API void TrcServer_SetApplicationName( const char* i_szName
 } // TrcServer_SetApplicationName
 
 //------------------------------------------------------------------------------
-ZSIPCTRACEDLL_EXTERN_API char* TrcServer_GetApplicationName()
+ZSIPCTRACEDLL_EXTERN_API const char* TrcServer_GetApplicationName()
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&DllIf_s_mtx);
 
-    QString strName = QCoreApplication::applicationName();
-
-    int iStrLen = strName.length();
-    char* szName = new char[iStrLen+1];
-    memset(szName, 0x00, iStrLen+1);
-    memcpy(szName, strName.toUtf8().data(), iStrLen+1);
-
-    return szName;
+    return QCoreApplication::applicationName().toStdString().c_str();
 
 } // TrcServer_GetApplicationName
 
@@ -947,6 +905,36 @@ ZSIPCTRACEDLL_EXTERN_API void TrcServer_GetDefaultFilePaths(
     }
 
 } // TrcServer_GetDefaultFilePaths
+
+//------------------------------------------------------------------------------
+ZSIPCTRACEDLL_EXTERN_API void TrcServer_RegisterCurrentThread( const char* i_szThreadName )
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(&DllIf_s_mtx);
+
+    CTrcServer::RegisterCurrentThread(i_szThreadName);
+
+} // TrcServer_RegisterCurrentThread
+
+//------------------------------------------------------------------------------
+ZSIPCTRACEDLL_EXTERN_API void TrcServer_UnregisterCurrentThread()
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(&DllIf_s_mtx);
+
+    CTrcServer::UnregisterCurrentThread();
+
+} // TrcServer_UnregisterCurrentThread
+
+//------------------------------------------------------------------------------
+ZSIPCTRACEDLL_EXTERN_API const char* TrcServer_GetCurrentThreadName()
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(&DllIf_s_mtx);
+
+    return CTrcServer::GetCurrentThreadName().toStdString().c_str();
+
+} // TrcServer_GetCurrentThreadName
 
 //------------------------------------------------------------------------------
 ZSIPCTRACEDLL_EXTERN_API bool TrcServer_isActive( const DllIf::CTrcServer* i_pTrcServer )
@@ -1205,12 +1193,10 @@ ZSIPCTRACEDLL_EXTERN_API void TrcServer_setAdminObjFileAbsoluteFilePath( const D
 } // TrcServer_setAdminObjFileAbsoluteFilePath
 
 //------------------------------------------------------------------------------
-ZSIPCTRACEDLL_EXTERN_API char* TrcServer_getAdminObjFileAbsoluteFilePath( const DllIf::CTrcServer* i_pTrcServer )
+ZSIPCTRACEDLL_EXTERN_API const char* TrcServer_getAdminObjFileAbsoluteFilePath( const DllIf::CTrcServer* i_pTrcServer )
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&DllIf_s_mtx);
-
-    char* szAbsFilePath = nullptr;
 
     if( i_pTrcServer != nullptr )
     {
@@ -1220,15 +1206,11 @@ ZSIPCTRACEDLL_EXTERN_API char* TrcServer_getAdminObjFileAbsoluteFilePath( const 
 
         if( pTrcServer != nullptr )
         {
-            QString strAbsFilePath = pTrcServer->getAdminObjFileAbsoluteFilePath();
-            int iStrLen = strAbsFilePath.length();
-            szAbsFilePath = new char[iStrLen+1];
-            memset(szAbsFilePath, 0x00, iStrLen+1);
-            memcpy(szAbsFilePath, strAbsFilePath.toUtf8().data(), iStrLen+1);
+            return pTrcServer->getAdminObjFileAbsoluteFilePath().toStdString().c_str();
         }
     } // if( i_pTrcServer != nullptr )
 
-    return szAbsFilePath;
+    return NULL;
 
 } // TrcServer_getAdminObjFileAbsoluteFilePath
 
@@ -1429,7 +1411,7 @@ ZSIPCTRACEDLL_EXTERN_API void TrcServer_setLocalTrcFileAbsoluteFilePath( const D
 } // TrcServer_setLocalTrcFileAbsoluteFilePath
 
 //------------------------------------------------------------------------------
-ZSIPCTRACEDLL_EXTERN_API char* TrcServer_getLocalTrcFileAbsoluteFilePath( const DllIf::CTrcServer* i_pTrcServer )
+ZSIPCTRACEDLL_EXTERN_API const char* TrcServer_getLocalTrcFileAbsoluteFilePath( const DllIf::CTrcServer* i_pTrcServer )
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&DllIf_s_mtx);
@@ -1444,25 +1426,19 @@ ZSIPCTRACEDLL_EXTERN_API char* TrcServer_getLocalTrcFileAbsoluteFilePath( const 
 
         if( pTrcServer != nullptr )
         {
-            QString strAbsFilePath = pTrcServer->getLocalTrcFileAbsoluteFilePath();
-            int iStrLen = strAbsFilePath.length();
-            szAbsFilePath = new char[iStrLen+1];
-            memset(szAbsFilePath, 0x00, iStrLen+1);
-            memcpy(szAbsFilePath, strAbsFilePath.toUtf8().data(), iStrLen+1);
+            return pTrcServer->getLocalTrcFileAbsoluteFilePath().toStdString().c_str();
         }
     } // if( i_pTrcServer != nullptr )
 
-    return szAbsFilePath;
+    return NULL;
 
 } // TrcServer_getLocalTrcFileAbsoluteFilePath
 
 //------------------------------------------------------------------------------
-ZSIPCTRACEDLL_EXTERN_API char* TrcServer_getLocalTrcFileCompleteBaseName( const DllIf::CTrcServer* i_pTrcServer )
+ZSIPCTRACEDLL_EXTERN_API const char* TrcServer_getLocalTrcFileCompleteBaseName( const DllIf::CTrcServer* i_pTrcServer )
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&DllIf_s_mtx);
-
-    char* szBaseName = nullptr;
 
     if( i_pTrcServer != nullptr )
     {
@@ -1472,25 +1448,19 @@ ZSIPCTRACEDLL_EXTERN_API char* TrcServer_getLocalTrcFileCompleteBaseName( const 
 
         if( pTrcServer != nullptr )
         {
-            QString strBaseName = pTrcServer->getLocalTrcFileCompleteBaseName();
-            int iStrLen = strBaseName.length();
-            szBaseName = new char[iStrLen+1];
-            memset(szBaseName, 0x00, iStrLen+1);
-            memcpy(szBaseName, strBaseName.toUtf8().data(), iStrLen+1);
+            return pTrcServer->getLocalTrcFileCompleteBaseName().toStdString().c_str();
         }
     } // if( i_pTrcServer != nullptr )
 
-    return szBaseName;
+    return NULL;
 
 } // TrcServer_getLocalTrcFileCompleteBaseName
 
 //------------------------------------------------------------------------------
-ZSIPCTRACEDLL_EXTERN_API char* TrcServer_getLocalTrcFileAbsolutePath( const DllIf::CTrcServer* i_pTrcServer )
+ZSIPCTRACEDLL_EXTERN_API const char* TrcServer_getLocalTrcFileAbsolutePath( const DllIf::CTrcServer* i_pTrcServer )
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&DllIf_s_mtx);
-
-    char* szAbsPath = nullptr;
 
     if( i_pTrcServer != nullptr )
     {
@@ -1500,15 +1470,11 @@ ZSIPCTRACEDLL_EXTERN_API char* TrcServer_getLocalTrcFileAbsolutePath( const DllI
 
         if( pTrcServer != nullptr )
         {
-            QString strAbsPath = pTrcServer->getLocalTrcFileAbsolutePath();
-            int iStrLen = strAbsPath.length();
-            szAbsPath = new char[iStrLen+1];
-            memset(szAbsPath, 0x00, iStrLen+1);
-            memcpy(szAbsPath, strAbsPath.toUtf8().data(), iStrLen+1);
+            return pTrcServer->getLocalTrcFileAbsolutePath().toStdString().c_str();
         }
     } // if( i_pTrcServer != nullptr )
 
-    return szAbsPath;
+    return NULL;
 
 } // TrcServer_getLocalTrcFileAbsolutePath
 

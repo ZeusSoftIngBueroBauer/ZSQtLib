@@ -206,12 +206,12 @@ public: // instance methods
     const char* serverName() const { return m_szServerName; }
     const char* keyInTree() const { return m_szKeyInTree; }
 public: // instance methods
-    char* getNameSpace() const;
-    char* getClassName() const;
-    char* getObjectName() const;
+    const char* getNameSpace() const;
+    const char* getClassName() const;
+    const char* getObjectName() const;
 public: // instance methods
     void setObjectThreadName( const char* i_szThreadName );
-    char* getObjectThreadName() const;
+    const char* getObjectThreadName() const;
 public: // instance methods
     void setEnabled( bool i_bEnabled );
     bool isEnabled() const;
@@ -253,10 +253,10 @@ public: // instance methods
     int getTraceDetailLevel() const;
     int getEnterLeaveFilterDetailLevel() const { return m_iEnterLeaveFilterDetailLevel; }
 public: // instance methods
-    char* getNameSpace() const;
-    char* getClassName() const;
-    char* getObjectName() const;
-    char* getMethod() const { return m_szMethod; }
+    const char* getNameSpace() const;
+    const char* getClassName() const;
+    const char* getObjectName() const;
+    const char* getMethod() const { return m_szMethod; }
 public: // instance methods
     void setMethodReturn( bool i_bResult );
     void setMethodReturn( int i_iResult );
@@ -321,13 +321,17 @@ public: // class method to save/recall admin objects file
     // Only if the organization and application name is set the default file paths for the
     // trace admin objects and the trace log files may be correctly determined.
     static void SetOrganizationName( const char* i_szName );
-    static char* GetOrganizationName();     // returned char pointer must be freed by caller
+    static const char* GetOrganizationName();     // returned char pointer must be freed by caller
     static void SetApplicationName( const char* i_szName );
-    static char* GetApplicationName();     // returned char pointer must be freed by caller
+    static const char* GetApplicationName();     // returned char pointer must be freed by caller
     static void GetDefaultFilePaths(
         char**      o_pszAdminObjFileAbsFilePath,    // must be freed by caller
         char**      o_pszLocalTrcFileAbsFilePath,    // must be freed by caller
         const char* i_szIniFileScope = "System" );
+public: // class methods
+    static void RegisterCurrentThread( const char* i_szThreadName );
+    static void UnregisterCurrentThread();
+    static const char* GetCurrentThreadName();
 public: // instance methods
     const char* name() const { return m_szName; }
 public: // instance methods
@@ -342,7 +346,7 @@ public: // instance methods
     int getNewTrcAdminObjsDefaultDetailLevel() const;
 public: // instance methods
     void setAdminObjFileAbsoluteFilePath( const char* i_szAbsFilePath );
-    char* getAdminObjFileAbsoluteFilePath() const; // return char pointer must be freed by caller
+    const char* getAdminObjFileAbsoluteFilePath() const;
 public: // instance methods
     bool recallAdminObjs();
     bool saveAdminObjs();
@@ -350,9 +354,9 @@ public: // instance methods
     void setUseLocalTrcFile( bool i_bUse );
     bool isLocalTrcFileUsed() const;
     void setLocalTrcFileAbsoluteFilePath( const char* i_szAbsFilePath );
-    char* getLocalTrcFileAbsoluteFilePath() const;   // returned char pointer must be freed by caller
-    char* getLocalTrcFileCompleteBaseName() const;   // returned char pointer must be freed by caller
-    char* getLocalTrcFileAbsolutePath() const;       // returned char pointer must be freed by caller
+    const char* getLocalTrcFileAbsoluteFilePath() const;
+    const char* getLocalTrcFileCompleteBaseName() const;
+    const char* getLocalTrcFileAbsolutePath() const;
     bool isLocalTrcFileActive() const;
     void setLocalTrcFileAutoSaveInterval( int i_iAutoSaveInterval_ms );
     int getLocalTrcFileAutoSaveInterval() const;

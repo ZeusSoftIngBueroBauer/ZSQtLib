@@ -161,7 +161,8 @@ protected: // class members
 
 QMutex CTrcServer::s_mtx(QMutex::Recursive);
 QHash<QString, CTrcServer*> CTrcServer::s_hshpInstances;
-QHash<int, QString> CTrcServer::s_hshThreadNames;
+QHash<Qt::HANDLE, QString> CTrcServer::s_hshThreadNames;
+QHash<QString, Qt::HANDLE> CTrcServer::s_hshThreadIds;
 
 /*==============================================================================
 public: // class methods
@@ -322,33 +323,73 @@ public: // class methods to register thread names
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CTrcServer::RegisterThreadName( int i_iThreadId, const QString& i_strThreadName )
+void CTrcServer::RegisterCurrentThread( const QString& i_strThreadName )
 //------------------------------------------------------------------------------
 {
     // The class may be accessed from within different thread contexts and
     // therefore accessing the class must be serialized using a mutex ..
     QMutexLocker mtxLocker(&s_mtx);
 
-    s_hshThreadNames[i_iThreadId] = i_strThreadName;
+    // Thread Ids may change during runtime for the same thread name.
+    // To avoid that the thread maps are increasing endlessly it will be
+    // checked whether the thread name was already registered. If the
+    // thread name (and its previous id) will be removed from the maps.
 
-} // RegisterThreadName
+    Qt::HANDLE threadId = s_hshThreadIds.value(i_strThreadName, nullptr);
 
-//------------------------------------------------------------------------------
-void CTrcServer::UnregisterThreadName( int i_iThreadId )
-//------------------------------------------------------------------------------
-{
-    // The class may be accessed from within different thread contexts and
-    // therefore accessing the class must be serialized using a mutex ..
-    QMutexLocker mtxLocker(&s_mtx);
-
-    if( !s_hshThreadNames.contains(i_iThreadId) )
+    if( threadId != nullptr )
     {
-        throw CException(__FILE__, __LINE__, EResultObjNotInList, "CTrcServer::ThreadIds::" + QString::number(i_iThreadId));
+        s_hshThreadIds.remove(i_strThreadName);
+
+        if( s_hshThreadNames.contains(threadId) )
+        {
+            s_hshThreadNames.remove(threadId);
+        }
     }
 
-    s_hshThreadNames.remove(i_iThreadId);
+    threadId = QThread::currentThreadId();
 
-} // UnregisterThreadName
+    s_hshThreadNames[threadId] = i_strThreadName;
+    s_hshThreadIds[i_strThreadName] = threadId;
+
+} // RegisterCurrentThread
+
+//------------------------------------------------------------------------------
+void CTrcServer::UnregisterCurrentThread()
+//------------------------------------------------------------------------------
+{
+    // The class may be accessed from within different thread contexts and
+    // therefore accessing the class must be serialized using a mutex ..
+    QMutexLocker mtxLocker(&s_mtx);
+
+    Qt::HANDLE threadId = QThread::currentThreadId();
+
+    QString strThreadName = s_hshThreadNames.value(threadId, "");
+
+    if( strThreadName.isEmpty() )
+    {
+        throw CException(__FILE__, __LINE__, EResultObjNotInList, "CTrcServer::ThreadIds::" + threadId2Str(threadId));
+    }
+    s_hshThreadNames.remove(threadId);
+
+    if( s_hshThreadIds.contains(strThreadName) )
+    {
+        s_hshThreadIds.remove(strThreadName);
+    }
+
+} // UnregisterCurrentThread
+
+//------------------------------------------------------------------------------
+QString CTrcServer::GetCurrentThreadName()
+//------------------------------------------------------------------------------
+{
+    // The class may be accessed from within different thread contexts and
+    // therefore accessing the class must be serialized using a mutex ..
+    QMutexLocker mtxLocker(&s_mtx);
+
+    return currentThreadName();
+
+} // UnregisterCurrentThread
 
 /*==============================================================================
 public: // class methods
@@ -1858,7 +1899,7 @@ void CTrcServer::addEntry(
     /return Name of the current thread.
 */
 //------------------------------------------------------------------------------
-QString CTrcServer::currentThreadName() const
+QString CTrcServer::currentThreadName()
 {
     QString strThreadName = "Undefined";
 
@@ -1872,15 +1913,15 @@ QString CTrcServer::currentThreadName() const
 
             if( strThreadName.length() == 0 )
             {
-                int iThreadId = threadId2Int(QThread::currentThreadId());
+                Qt::HANDLE threadId = QThread::currentThreadId();
 
-                if( s_hshThreadNames.contains(iThreadId) )
+                if( s_hshThreadNames.contains(threadId) )
                 {
-                    strThreadName = s_hshThreadNames[iThreadId];
+                    strThreadName = s_hshThreadNames[threadId];
                 }
                 else
                 {
-                    strThreadName = QString("Thread") + threadId2Str(QThread::currentThreadId());
+                    strThreadName = QString("Thread") + threadId2Str(threadId);
                 }
             }
         }
