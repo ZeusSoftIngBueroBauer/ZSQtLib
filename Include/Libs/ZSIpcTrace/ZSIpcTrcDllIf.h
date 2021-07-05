@@ -265,9 +265,9 @@ public: // class method to save/recall admin objects file
     // Only if the organization and application name is set the default file paths for the
     // trace admin objects and the trace log files may be correctly determined.
     static void SetOrganizationName( const char* i_szName );
-    static const char* GetOrganizationName();     // returned char pointer must be freed by caller
+    static const char* GetOrganizationName();
     static void SetApplicationName( const char* i_szName );
-    static const char* GetApplicationName();     // returned char pointer must be freed by caller
+    static const char* GetApplicationName();
     static void GetDefaultFilePaths(
         char**      o_pszAdminObjFileAbsFilePath,    // must be freed by caller
         char**      o_pszLocalTrcFileAbsFilePath,    // must be freed by caller
@@ -318,7 +318,7 @@ public: // instance methods
     int getCacheTrcDataMaxArrLen() const;
 public: // instance methods
     bool setTraceSettings( const STrcServerSettings& i_settings );
-    STrcServerSettings getTraceSettings() const;  // returned char pointers must be freed by caller
+    STrcServerSettings getTraceSettings() const;  // !! char pointers returned in the struct must be freed by caller !!
 public: // instance methods
     void clearLocalTrcFile();
 public: // ctors and dtor (declared public but for internal use only, implemented in ZSIpcTrace::ZSIpcTrcDllMain)
