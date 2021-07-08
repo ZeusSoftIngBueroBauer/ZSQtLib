@@ -218,7 +218,7 @@ public: // class methods
 private: // class methods
     static void InstallQtMsgHandler();
     static void RemoveQtMsgHandler();
-    #if QT_VERSION < 0x050000
+    #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
     static void QtMsgHandler( QtMsgType i_msgType, const char* i_szMsg );
     #else
     static void QtMsgHandler( QtMsgType i_msgType, const QMessageLogContext& i_context, const QString& i_strMsg );

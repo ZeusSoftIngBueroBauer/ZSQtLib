@@ -26,7 +26,7 @@ may result in using the software modules.
 
 #include <QtCore/qglobal.h>
 
-#if QT_VERSION < 0x050000
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 #include <QtGui/qlayout.h>
 #include <QtGui/qpushbutton.h>
 #else

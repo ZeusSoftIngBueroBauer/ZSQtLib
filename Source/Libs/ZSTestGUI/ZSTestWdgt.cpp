@@ -28,7 +28,7 @@ may result in using the software modules.
 #include <QtGui/qevent.h>
 #include <QtGui/qpainter.h>
 
-#if QT_VERSION < 0x050000
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 #include <QtGui/qcheckbox.h>
 #include <QtGui/qcombobox.h>
 #include <QtGui/qheaderview.h>
@@ -447,7 +447,7 @@ CTreeViewModelTest::CTreeViewModelTest( CTestStepAdminObjPoolModel* i_pAdminObjP
 
     QHeaderView* pHdrView = header();
 
-    #if QT_VERSION >= 0x040000 && QT_VERSION < 0x050000
+    #if QT_VERSION >= 0x040000 && QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
     if( !pHdrView->isClickable() )
     {
         pHdrView->setClickable(true);
@@ -461,7 +461,7 @@ CTreeViewModelTest::CTreeViewModelTest( CTestStepAdminObjPoolModel* i_pAdminObjP
 
     pHdrView->setContextMenuPolicy(Qt::CustomContextMenu);
 
-    #if QT_VERSION >= 0x040000 && QT_VERSION < 0x050000
+    #if QT_VERSION >= 0x040000 && QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
     if( pHdrView->isClickable() )
     #else
     if( pHdrView->sectionsClickable() )
@@ -1486,9 +1486,9 @@ void CWdgtTest::onTreeViewExpanded( const QModelIndex& i_iModelIdx )
 {
     if( i_iModelIdx.isValid() )
     {
-        #if QT_VERSION >= 0x040000 && QT_VERSION < 0x050000
+        #if QT_VERSION >= 0x040000 && QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
         m_pTreeViewTestSteps->resizeColumnToContents(i_iModelIdx.column());
-        #elif QT_VERSION >= 0x050000 && QT_VERSION < 0x060000
+        #elif QT_VERSION >= QT_VERSION_CHECK(5, 0, 0) && QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
         // Cannot invoke resizeColumnToContents as this leads to an exception.
         #endif
     }

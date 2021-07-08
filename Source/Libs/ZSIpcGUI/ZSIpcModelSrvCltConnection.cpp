@@ -106,7 +106,7 @@ void CModelSrvCltConnection::setServer( CServer* i_pServer )
 
         m_pServer = nullptr;
 
-        #if QT_VERSION < 0x050000
+        #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
         reset();
         #else
         beginResetModel();
@@ -179,7 +179,7 @@ void CModelSrvCltConnection::setClient( CClient* i_pClient )
 
         m_pClient = nullptr;
 
-        #if QT_VERSION < 0x050000
+        #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
         reset();
         #else
         beginResetModel();
@@ -484,7 +484,7 @@ void CModelSrvCltConnection::onServerDisconnected( QObject* i_pServer, const SSo
         throw ZS::System::CException(__FILE__,__LINE__,EResultInternalProgramError,strAddInfo);
     }
 
-    #if QT_VERSION < 0x050000
+    #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
     reset();
     #else
     beginResetModel();

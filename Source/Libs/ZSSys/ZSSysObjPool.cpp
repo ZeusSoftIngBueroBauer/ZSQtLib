@@ -150,7 +150,7 @@ bool CObjPool::IsDescendant(
     // Node names of the parent:
     if( !i_strParentName.isEmpty() )
     {
-        strListParentNodeNames = i_strParentName.split(i_strNodeSeparator,QString::SkipEmptyParts);
+        strListParentNodeNames = i_strParentName.split(i_strNodeSeparator,QtSkipEmptyParts);
     }
     if( strListParentNodeNames.count() > 0 && strListParentNodeNames[0].compare(i_strObjPoolName,Qt::CaseInsensitive) == 0 )
     {
@@ -160,7 +160,7 @@ bool CObjPool::IsDescendant(
     // Node names of the child:
     if( !i_strChildName.isEmpty() )
     {
-        strListChildNodeNames = i_strChildName.split(i_strNodeSeparator,QString::SkipEmptyParts);
+        strListChildNodeNames = i_strChildName.split(i_strNodeSeparator,QtSkipEmptyParts);
     }
     if( strListChildNodeNames.count() > 0 && strListChildNodeNames[0].compare(i_strObjPoolName,Qt::CaseInsensitive) == 0 )
     {
@@ -409,7 +409,7 @@ int CObjPool::addObjNode(
     // Create list of node names:
     if( !i_strObjPath.isEmpty() )
     {
-        strListNodeNames = i_strObjPath.split(m_strNodeSeparator,QString::SkipEmptyParts);
+        strListNodeNames = i_strObjPath.split(m_strNodeSeparator,QtSkipEmptyParts);
     }
     if( strListNodeNames.count() <= 1 )
     {
@@ -677,7 +677,7 @@ CObjPoolTreeEntry* CObjPool::addObjNode(
     // Create list of node names:
     if( !i_strObjPath.isEmpty() )
     {
-        strListNodeNames = i_strObjPath.split(m_strNodeSeparator,QString::SkipEmptyParts);
+        strListNodeNames = i_strObjPath.split(m_strNodeSeparator,QtSkipEmptyParts);
     }
     if( strListNodeNames.count() <= 1 )
     {
@@ -1373,13 +1373,13 @@ CObjPoolTreeEntry* CObjPool::getTreeEntry(
     // Create list of node names of the root entry:
     if( !m_pTreeObjs->getNodeName(false).isEmpty() )
     {
-        strListRootNodeNames = m_pTreeObjs->getNodeName(true).split(m_strNodeSeparator,QString::SkipEmptyParts);
+        strListRootNodeNames = m_pTreeObjs->getNodeName(true).split(m_strNodeSeparator,QtSkipEmptyParts);
     }
 
     // Create list of node names:
     if( !i_strNameSpace.isEmpty() )
     {
-        strListNodeNames = i_strNameSpace.split(m_strNodeSeparator,QString::SkipEmptyParts);
+        strListNodeNames = i_strNameSpace.split(m_strNodeSeparator,QtSkipEmptyParts);
     }
 
     // We want to find an entry below the root entry.
@@ -1484,7 +1484,7 @@ CObjPoolTreeEntry* CObjPool::getTreeEntry(
     // Create list of node names:
     if( !i_strPath.isEmpty() )
     {
-        strListNodeNames = i_strPath.split(m_strNodeSeparator,QString::SkipEmptyParts);
+        strListNodeNames = i_strPath.split(m_strNodeSeparator,QtSkipEmptyParts);
         strObjName = strListNodeNames[strListNodeNames.count()-1];
 
         if( strListNodeNames.count() > 1 )
@@ -1846,7 +1846,7 @@ CObjPoolTreeEntry* CObjPool::addTreeEntry(
     // Create list of node names:
     if( !i_strNameSpace.isEmpty() )
     {
-        strListNodeNames = i_strNameSpace.split(m_strNodeSeparator,QString::SkipEmptyParts);
+        strListNodeNames = i_strNameSpace.split(m_strNodeSeparator,QtSkipEmptyParts);
     }
     if( strListNodeNames.count() <= 1 )
     {
@@ -1900,7 +1900,7 @@ CObjPoolTreeEntry* CObjPool::addTreeEntry(
     // Create list of node names:
     if( !i_strParentNameSpace.isEmpty() )
     {
-        strListNodeNames = i_strParentNameSpace.split(m_strNodeSeparator,QString::SkipEmptyParts);
+        strListNodeNames = i_strParentNameSpace.split(m_strNodeSeparator,QtSkipEmptyParts);
     }
     if( strListNodeNames.count() > 0 && strListNodeNames[0] == m_pTreeObjs->getNodeName(false) )
     {

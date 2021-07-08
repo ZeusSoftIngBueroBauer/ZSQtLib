@@ -133,7 +133,7 @@ const int EInvalidEnumerator = -1;
     @see _GRP_BasicConcepts_Enumerations
 */
 template <typename E>
-class ZSSYSDLL_API CEnum
+class /*ZSSYSDLL_API*/ CEnum
 //******************************************************************************
 {
 public: // class methods
@@ -246,7 +246,7 @@ public: // class methods
           - with Result = ArgOutOfRange if the alias is out of range.
 */
 template <typename E>
-QString ZS::System::CEnum<E>::toString( E i_enumerator, int i_idxAlias )
+QString ZS::System::CEnum<E>::toString(E i_enumerator, int i_idxAlias)
 //------------------------------------------------------------------------------
 {
     QString strMth = "toString(E " + QString::number(static_cast<int>(i_enumerator)) + ")";

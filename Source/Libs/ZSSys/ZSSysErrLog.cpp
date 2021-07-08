@@ -37,8 +37,8 @@ may result in using the software modules.
 #include <QtCore/qthread.h>
 #include <QtCore/qtimer.h>
 
-#if QT_VERSION < 0x050000
-#if QT_VERSION >= 0x040501
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+#if QT_VERSION >= QT_VERSION_CHECK(4, 5, 1)
 #include <QtXml/QXmlStreamReader>
 #include <QtXml/QXmlStreamWriter>
 #endif
@@ -166,7 +166,7 @@ QMutex CErrLog::s_mtx(QMutex::Recursive);
 QHash<QString, CErrLog*> CErrLog::s_hshpInstances;
 int CErrLog::s_iMsgHandlerInstallCount = 0;
 
-#if QT_VERSION < 0x050000
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 QtMsgHandler s_qtMsgHandlerSaved = nullptr;     /*<! The currently installed Qt message handler is saved here and will be restored if RemoveQtMsgHandler is called. */
 #else
 QtMessageHandler s_qtMsgHandlerSaved = nullptr; /*<! The currently installed Qt message handler is saved here and will be restored if RemoveQtMsgHandler is called. */
@@ -426,7 +426,7 @@ void CErrLog::RemoveQtMsgHandler()
     {
         if( s_qtMsgHandlerSaved != nullptr )
         {
-            #if QT_VERSION < 0x050000
+            #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
             qInstallMsgHandler(s_qtMsgHandlerSaved);
             #else
             qInstallMessageHandler(s_qtMsgHandlerSaved);
@@ -435,7 +435,7 @@ void CErrLog::RemoveQtMsgHandler()
         }
         else
         {
-            #if QT_VERSION < 0x050000
+            #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
             qInstallMsgHandler(nullptr);
             #else
             qInstallMessageHandler(nullptr);
@@ -464,7 +464,7 @@ void CErrLog::RemoveQtMsgHandler()
 
     @note See qInstallMessageHander for further details.
 */
-#if QT_VERSION < 0x050000
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 void CErrLog::QtMsgHandler( QtMsgType i_msgType, const char* i_strMsg )
 #else
 void CErrLog::QtMsgHandler( QtMsgType i_msgType, const QMessageLogContext& i_context, const QString& i_strMsg )
@@ -534,7 +534,7 @@ void CErrLog::QtMsgHandler( QtMsgType i_msgType, const QMessageLogContext& i_con
 
     if( s_qtMsgHandlerSaved != nullptr )
     {
-        #if QT_VERSION < 0x050000
+        #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
         s_qtMsgHandlerSaved(i_msgType,i_strMsg);
         #else
         s_qtMsgHandlerSaved(i_msgType,i_context,i_strMsg);

@@ -87,7 +87,7 @@ ZSSYSDLL_API QString join(
 ZSSYSDLL_API QByteArray join( const QList<QByteArray>& i_arByteArrs, const QByteArray& i_byteArrSeparator );
 ZSSYSDLL_API QList<QByteArray> split( const QByteArray& i_byteArr, const QByteArray& i_byteArrSeparator );
 
-#if QT_VERSION < 0x050000
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 ZSSYSDLL_API bool dir_removeRecursively( const QString& i_strDirPath );
 #endif
 

@@ -27,7 +27,7 @@ may result in using the software modules.
 #include <QtCore/qcoreapplication.h>
 #include <QtGui/qevent.h>
 
-#if QT_VERSION < 0x050000
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 #include <QtGui/qmenu.h>
 #include <QtGui/qinputdialog.h>
 #else
@@ -822,9 +822,9 @@ void CTreeViewIdxTreeTrcAdminObjs::onExpanded( const QModelIndex& i_modelIdx )
 
     if( i_modelIdx.isValid() )
     {
-        #if QT_VERSION >= 0x040000 && QT_VERSION < 0x050000
+        #if QT_VERSION >= 0x040000 && QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
         //resizeColumnToContents(i_modelIdx.column());
-        #elif QT_VERSION >= 0x050000 && QT_VERSION < 0x060000
+        #elif QT_VERSION >= QT_VERSION_CHECK(5, 0, 0) && QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
         // Cannot invoke resizeColumnToContents as this leads to an exception.
         #endif
 

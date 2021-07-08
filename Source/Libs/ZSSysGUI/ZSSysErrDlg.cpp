@@ -28,7 +28,7 @@ may result in using the software modules.
 #include <QtCore/qdatetime.h>
 #include <QtCore/qsettings.h>
 
-#if QT_VERSION < 0x050000
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 #include <QtGui/qdialogbuttonbox.h>
 #include <QtGui/qlabel.h>
 #include <QtGui/qlayout.h>

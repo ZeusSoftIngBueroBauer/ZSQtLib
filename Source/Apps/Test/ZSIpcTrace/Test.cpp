@@ -28,7 +28,7 @@ may result in using the software modules.
 #include <QtCore/qtimer.h>
 #include <QtNetwork/qhostinfo.h>
 
-#if QT_VERSION < 0x050000
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 #include <QtGui/qtextedit.h>
 #else
 #include <QtWidgets/qtextedit.h>

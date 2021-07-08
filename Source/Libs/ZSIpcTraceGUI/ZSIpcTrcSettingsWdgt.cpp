@@ -28,7 +28,7 @@ may result in using the software modules.
 #include <QtGui/qpainter.h>
 #include <QtGui/qvalidator.h>
 
-#if QT_VERSION < 0x050000
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 #include <QtGui/qapplication.h>
 #include <QtGui/qcheckbox.h>
 #include <QtGui/qformlayout.h>

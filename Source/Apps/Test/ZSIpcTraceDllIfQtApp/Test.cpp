@@ -27,7 +27,7 @@ may result in using the software modules.
 #include <QtCore/qfile.h>
 #include <QtCore/qtimer.h>
 
-#if QT_VERSION < 0x050000
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 #include <QtGui/qmessagebox.h>
 #else
 #include <QtWidgets/qmessagebox.h>

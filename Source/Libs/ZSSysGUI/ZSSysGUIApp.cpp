@@ -26,7 +26,7 @@ may result in using the software modules.
 
 #include <QtCore/qthread.h>
 
-#if QT_VERSION < 0x050000
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 #include <QtGui/qapplication.h>
 #include <QtGui/qmessagebox.h>
 #else
@@ -286,7 +286,7 @@ bool CGUIApp::notify( QObject* i_pObjRcv, QEvent* i_pEv )
             case EResultSeveritySuccess:
             {
                 msgBox.addButton("Ok",QMessageBox::AcceptRole);
-                #if QT_VERSION >= 0x040501
+                #if QT_VERSION >= QT_VERSION_CHECK(4, 5, 1)
                 msgBox.setDefaultButton(QMessageBox::Ok);
                 msgBox.setEscapeButton(QMessageBox::Ok);
                 #endif
@@ -295,7 +295,7 @@ bool CGUIApp::notify( QObject* i_pObjRcv, QEvent* i_pEv )
             case EResultSeverityInfo:
             {
                 msgBox.addButton("Ok",QMessageBox::AcceptRole);
-                #if QT_VERSION >= 0x040501
+                #if QT_VERSION >= QT_VERSION_CHECK(4, 5, 1)
                 msgBox.setDefaultButton(QMessageBox::Ok);
                 msgBox.setEscapeButton(QMessageBox::Ok);
                 #endif
@@ -305,7 +305,7 @@ bool CGUIApp::notify( QObject* i_pObjRcv, QEvent* i_pEv )
             {
                 msgBox.addButton("Ignore",QMessageBox::RejectRole);
                 msgBox.addButton("Abort",QMessageBox::AcceptRole);
-                #if QT_VERSION >= 0x040501
+                #if QT_VERSION >= QT_VERSION_CHECK(4, 5, 1)
                 msgBox.setDefaultButton(QMessageBox::Abort);
                 msgBox.setEscapeButton(QMessageBox::Abort);
                 #endif
@@ -315,7 +315,7 @@ bool CGUIApp::notify( QObject* i_pObjRcv, QEvent* i_pEv )
             {
                 msgBox.addButton("Ignore",QMessageBox::RejectRole);
                 msgBox.addButton("Abort",QMessageBox::AcceptRole);
-                #if QT_VERSION >= 0x040501
+                #if QT_VERSION >= QT_VERSION_CHECK(4, 5, 1)
                 msgBox.setDefaultButton(QMessageBox::Abort);
                 msgBox.setEscapeButton(QMessageBox::Abort);
                 #endif
@@ -325,7 +325,7 @@ bool CGUIApp::notify( QObject* i_pObjRcv, QEvent* i_pEv )
             {
                 msgBox.addButton("Ignore",QMessageBox::RejectRole);
                 msgBox.addButton("Abort",QMessageBox::AcceptRole);
-                #if QT_VERSION >= 0x040501
+                #if QT_VERSION >= QT_VERSION_CHECK(4, 5, 1)
                 msgBox.setDefaultButton(QMessageBox::Abort);
                 msgBox.setEscapeButton(QMessageBox::Abort);
                 #endif

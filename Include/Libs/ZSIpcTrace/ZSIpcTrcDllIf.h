@@ -32,9 +32,9 @@ public type definitions and constants
 *******************************************************************************/
 
 #ifndef QT_VERSION_MAJOR
-#if QT_VERSION >= 0x050000
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 #define QT_VERSION_MAJOR 5
-#elif QT_VERSION >= 0x040804
+#elif QT_VERSION >= QT_VERSION_CHECK(4, 8, 4)
 #define QT_VERSION_MAJOR 4
 #endif
 #endif

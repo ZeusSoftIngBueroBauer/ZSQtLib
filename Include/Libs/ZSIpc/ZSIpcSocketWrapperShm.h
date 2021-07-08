@@ -31,7 +31,7 @@ may result in using the software modules.
 #include "ZSIpc/ZSIpcSocketWrapper.h"
 #include "ZSIpc/ZSIpcSrvCltMsg.h"
 
-#if QT_VERSION >= 0x040501
+#if QT_VERSION >= QT_VERSION_CHECK(4, 5, 1)
 #include <QtCore/qsharedmemory.h>
 #else
 #include "SMIpc/QtSharedMemory/src/qsharedmemory.h"

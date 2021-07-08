@@ -660,7 +660,7 @@ void CShmSocketWrapper::connectToHost(
         return;
     }
 
-    #if QT_VERSION < 0x050000
+    #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
     QByteArray byteArrLocalHost = m_socketDscr.m_strLocalHostName.toAscii();
     #else
     QByteArray byteArrLocalHost = m_socketDscr.m_strLocalHostName.toUtf8();
