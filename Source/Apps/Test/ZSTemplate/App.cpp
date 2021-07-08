@@ -253,8 +253,8 @@ CApplication::~CApplication()
     CErrLog::ReleaseInstance();
 
     m_pSettingsFile = nullptr;
-    m_strErrLogFileAbsFilePath;
-    m_strTestStepsFileAbsFilePath;
+    //m_strErrLogFileAbsFilePath;
+    //m_strTestStepsFileAbsFilePath;
     m_pTest = nullptr;
     m_pMainWindow = nullptr;
 

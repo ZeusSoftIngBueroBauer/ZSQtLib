@@ -56,21 +56,21 @@ CONFIG(release, release|debug) {
     LIBS += -lZSSys
     LIBS += -lZSTest
     LIBS += -lZSIpc
-    LIBS += -lZSTrace
+    LIBS += -lZSIpcTrace
     LIBS += -lZSSysGUI
     LIBS += -lZSTestGUI
     LIBS += -lZSIpcGUI
-    LIBS += -lZSTraceGUI
+    LIBS += -lZSIpcTraceGUI
 }
 CONFIG(debug, release|debug) {
     LIBS += -lZSSysd
     LIBS += -lZSTestd
     LIBS += -lZSIpcd
-    LIBS += -lZSTraced
+    LIBS += -lZSIpcTraced
     LIBS += -lZSSysGUId
     LIBS += -lZSTestGUId
     LIBS += -lZSIpcGUId
-    LIBS += -lZSTraceGUId
+    LIBS += -lZSIpcTraceGUId
 }
 
 SOURCES += \

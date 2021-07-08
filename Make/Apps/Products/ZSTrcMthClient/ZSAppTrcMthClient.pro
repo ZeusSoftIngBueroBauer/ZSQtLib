@@ -55,18 +55,18 @@ linux {
 CONFIG(release, release|debug) {
     LIBS += -lZSSys
     LIBS += -lZSIpc
-    LIBS += -lZSTrace
+    LIBS += -lZSIpcTrace
     LIBS += -lZSSysGUI
     LIBS += -lZSIpcGUI
-    LIBS += -lZSTraceGUI
+    LIBS += -lZSIpcTraceGUI
 }
 CONFIG(debug, release|debug) {
     LIBS += -lZSSysd
     LIBS += -lZSIpcd
-    LIBS += -lZSTraced
+    LIBS += -lZSIpcTraced
     LIBS += -lZSSysGUId
     LIBS += -lZSIpcGUId
-    LIBS += -lZSTraceGUId
+    LIBS += -lZSIpcTraceGUId
 }
 
 SOURCES += \

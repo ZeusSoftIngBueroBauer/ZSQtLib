@@ -4,11 +4,11 @@
 #
 #-------------------------------------------------
 
-QT += core gui xml
+QT += core gui network xml
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-MODULE = ZSAppTestIdxTree
+MODULE = ZSAppTestSysIdxTree
 
 VERSION = 4.6.3
 
@@ -41,7 +41,7 @@ CONFIG(debug, release|debug) {
 }
 DEFINES += _ZSTRACE
 
-INCLUDEPATH += ../../../../Include/Apps/Test/ZSIdxTree
+INCLUDEPATH += ../../../../Include/Apps/Test/ZSSysIdxTree
 INCLUDEPATH += ../../../../Include/Libs
 linux {
     INCLUDEPATH += /usr/local/include
@@ -55,30 +55,36 @@ linux {
 CONFIG(release, release|debug) {
     LIBS += -lZSSys
     LIBS += -lZSTest
+    LIBS += -lZSIpc
+    LIBS += -lZSIpcTrace
     LIBS += -lZSSysGUI
     LIBS += -lZSTestGUI
+    LIBS += -lZSIpcGUI
+    LIBS += -lZSIpcTraceGUI
 }
 CONFIG(debug, release|debug) {
     LIBS += -lZSSysd
     LIBS += -lZSTestd
+    LIBS += -lZSIpcd
+    LIBS += -lZSIpcTraced
     LIBS += -lZSSysGUId
     LIBS += -lZSTestGUId
+    LIBS += -lZSIpcGUId
+    LIBS += -lZSIpcTraceGUId
 }
 
 SOURCES += \
-    ../../../../Source/Apps/Test/ZSIdxTree/App.cpp \
-    ../../../../Source/Apps/Test/ZSIdxTree/Main.cpp \
-    ../../../../Source/Apps/Test/ZSIdxTree/MainWindow.cpp \
-    ../../../../Source/Apps/Test/ZSIdxTree/Test.cpp \
-    ../../../../Source/Apps/Test/ZSIdxTree/WidgetCentral.cpp \
-    ../../../../Source/Apps/Test/ZSIdxTree/TSGrpTrcAdmObjTree.cpp
+    ../../../../Source/Apps/Test/ZSSysIdxTree/App.cpp \
+    ../../../../Source/Apps/Test/ZSSysIdxTree/Main.cpp \
+    ../../../../Source/Apps/Test/ZSSysIdxTree/MainWindow.cpp \
+    ../../../../Source/Apps/Test/ZSSysIdxTree/Test.cpp \
+    ../../../../Source/Apps/Test/ZSSysIdxTree/WidgetCentral.cpp
 
 HEADERS  += \
-    ../../../../Include/Apps/Test/ZSIdxTree/App.h \
-    ../../../../Include/Apps/Test/ZSIdxTree/MainWindow.h \
-    ../../../../Include/Apps/Test/ZSIdxTree/Test.h \
-    ../../../../Include/Apps/Test/ZSIdxTree/WidgetCentral.h \
-    ../../../../Include/Apps/Test/ZSIdxTree/TSGrpTrcAdmObjTree.h
+    ../../../../Include/Apps/Test/ZSSysIdxTree/App.h \
+    ../../../../Include/Apps/Test/ZSSysIdxTree/MainWindow.h \
+    ../../../../Include/Apps/Test/ZSSysIdxTree/Test.h \
+    ../../../../Include/Apps/Test/ZSSysIdxTree/WidgetCentral.h
 
 unix:!symbian {
     maemo5 {

@@ -8,7 +8,7 @@ QT += core gui network xml
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-MODULE = ZSAppTestErrLogModel
+MODULE = ZSAppTestSysErrLog
 
 VERSION = 4.6.3
 
@@ -41,7 +41,7 @@ CONFIG(debug, release|debug) {
 }
 DEFINES += _ZSTRACE
 
-INCLUDEPATH += ../../../../Include/Apps/Test/ZSErrLogModel
+INCLUDEPATH += ../../../../Include/Apps/Test/ZSSysErrLog
 INCLUDEPATH += ../../../../Include/Libs
 linux {
     INCLUDEPATH += /usr/local/include
@@ -56,35 +56,35 @@ CONFIG(release, release|debug) {
     LIBS += -lZSSys
     LIBS += -lZSTest
     LIBS += -lZSIpc
-    LIBS += -lZSTrace
+    LIBS += -lZSIpcTrace
     LIBS += -lZSSysGUI
     LIBS += -lZSTestGUI
     LIBS += -lZSIpcGUI
-    LIBS += -lZSTraceGUI
+    LIBS += -lZSIpcTraceGUI
 }
 CONFIG(debug, release|debug) {
     LIBS += -lZSSysd
     LIBS += -lZSTestd
     LIBS += -lZSIpcd
-    LIBS += -lZSTraced
+    LIBS += -lZSIpcTraced
     LIBS += -lZSSysGUId
     LIBS += -lZSTestGUId
     LIBS += -lZSIpcGUId
-    LIBS += -lZSTraceGUId
+    LIBS += -lZSIpcTraceGUId
 }
 
 SOURCES += \
-    ../../../../Source/Apps/Test/ZSErrLogModel/App.cpp \
-    ../../../../Source/Apps/Test/ZSErrLogModel/Main.cpp \
-    ../../../../Source/Apps/Test/ZSErrLogModel/MainWindow.cpp \
-    ../../../../Source/Apps/Test/ZSErrLogModel/Test.cpp \
-    ../../../../Source/Apps/Test/ZSErrLogModel/WidgetCentral.cpp
+    ../../../../Source/Apps/Test/ZSSysErrLog/App.cpp \
+    ../../../../Source/Apps/Test/ZSSysErrLog/Main.cpp \
+    ../../../../Source/Apps/Test/ZSSysErrLog/MainWindow.cpp \
+    ../../../../Source/Apps/Test/ZSSysErrLog/Test.cpp \
+    ../../../../Source/Apps/Test/ZSSysErrLog/WidgetCentral.cpp
 
 HEADERS += \
-    ../../../../Include/Apps/Test/ZSErrLogModel/App.h \
-    ../../../../Include/Apps/Test/ZSErrLogModel/MainWindow.h \
-    ../../../../Include/Apps/Test/ZSErrLogModel/Test.h \
-    ../../../../Include/Apps/Test/ZSErrLogModel/WidgetCentral.h
+    ../../../../Include/Apps/Test/ZSSysErrLog/App.h \
+    ../../../../Include/Apps/Test/ZSSysErrLog/MainWindow.h \
+    ../../../../Include/Apps/Test/ZSSysErrLog/Test.h \
+    ../../../../Include/Apps/Test/ZSSysErrLog/WidgetCentral.h
 
 unix:!symbian {
     maemo5 {

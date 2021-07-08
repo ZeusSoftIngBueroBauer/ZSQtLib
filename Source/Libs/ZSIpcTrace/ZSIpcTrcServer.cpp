@@ -252,7 +252,7 @@ CIpcTrcServer* CIpcTrcServer::GetInstance( const QString& i_strName )
 {
     CIpcTrcServer* pIpcTrcServer = nullptr;
 
-    CTrcServer* pTrcServer = CTrcServer::GetInstance();
+    CTrcServer* pTrcServer = CTrcServer::GetInstance(i_strName);
 
     if( pTrcServer != nullptr )
     {
@@ -1870,7 +1870,7 @@ protected slots: // connected to the signals of the Ipc Server
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CIpcTrcServer::onIpcServerConnected( QObject* i_pServer, const SSocketDscr& i_socketDscr )
+void CIpcTrcServer::onIpcServerConnected( QObject* /*i_pServer*/, const SSocketDscr& i_socketDscr )
 //------------------------------------------------------------------------------
 {
     // The class (and all instances of the class) may be accessed from within
@@ -1908,7 +1908,7 @@ void CIpcTrcServer::onIpcServerConnected( QObject* i_pServer, const SSocketDscr&
 } // onIpcServerConnected
 
 //------------------------------------------------------------------------------
-void CIpcTrcServer::onIpcServerDisconnected( QObject* i_pServer, const SSocketDscr& i_socketDscr )
+void CIpcTrcServer::onIpcServerDisconnected( QObject* /*i_pServer*/, const SSocketDscr& i_socketDscr )
 //------------------------------------------------------------------------------
 {
     // The class (and all instances of the class) may be accessed from within
@@ -1957,7 +1957,7 @@ void CIpcTrcServer::onIpcServerDisconnected( QObject* i_pServer, const SSocketDs
 
 //------------------------------------------------------------------------------
 void CIpcTrcServer::onIpcServerReceivedData(
-    QObject*          i_pServer,
+    QObject*          /*i_pServer*/,
     int               i_iSocketId,
     const QByteArray& i_byteArr )
 //------------------------------------------------------------------------------
@@ -2470,7 +2470,7 @@ protected slots:
 
 //------------------------------------------------------------------------------
 void CIpcTrcServer::onTrcAdminObjIdxTreeEntryAdded(
-    CIdxTree*              i_pIdxTree,
+    CIdxTree*              /*i_pIdxTree*/,
     CAbstractIdxTreeEntry* i_pTreeEntry )
 //------------------------------------------------------------------------------
 {
@@ -2528,7 +2528,7 @@ void CIpcTrcServer::onTrcAdminObjIdxTreeEntryAdded(
 
 //------------------------------------------------------------------------------
 void CIpcTrcServer::onTrcAdminObjIdxTreeEntryChanged(
-    CIdxTree*              i_pIdxTree,
+    CIdxTree*              /*i_pIdxTree*/,
     CAbstractIdxTreeEntry* i_pTreeEntry )
 //------------------------------------------------------------------------------
 {

@@ -574,7 +574,6 @@ bool SEnumEntry::isValidEnumerator(
     bool bOk = false;
 
     QString strAddErrInfo;
-    bool    bErrLogEntryAdded = false;
 
     const SEnumEntry* pEntry;
 

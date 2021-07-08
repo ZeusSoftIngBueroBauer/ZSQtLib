@@ -69,16 +69,22 @@ SOURCES += \
     ../../../../Source/Apps/Test/ZSIpcTraceDllIfQtApp/App.cpp \
     ../../../../Source/Apps/Test/ZSIpcTraceDllIfQtApp/Main.cpp \
     ../../../../Source/Apps/Test/ZSIpcTraceDllIfQtApp/MainWindow.cpp \
+    ../../../../Source/Apps/Test/ZSIpcTraceDllIfQtApp/MsgTest.cpp \
     ../../../../Source/Apps/Test/ZSIpcTraceDllIfQtApp/Test.cpp \
-    ../../../../Source/Apps/Test/ZSIpcTraceDllIfQtApp/TSGrpIpcTraceDllIfQtApp.cpp \
-    ../../../../Source/Apps/Test/ZSIpcTraceDllIfQtApp/WidgetCentral.cpp
+    ../../../../Source/Apps/Test/ZSIpcTraceDllIfQtApp/TestModule1.cpp \
+    ../../../../Source/Apps/Test/ZSIpcTraceDllIfQtApp/TestModule2.cpp \
+    ../../../../Source/Apps/Test/ZSIpcTraceDllIfQtApp/WidgetCentral.cpp \
+    ../../../../Source/Libs/ZSIpcTrace/ZSIpcTrcDllIf.cpp
 
 HEADERS  += \
     ../../../../Include/Apps/Test/ZSIpcTraceDllIfQtApp/App.h \
     ../../../../Include/Apps/Test/ZSIpcTraceDllIfQtApp/MainWindow.h \
+    ../../../../Include/Apps/Test/ZSIpcTraceDllIfQtApp/MsgTest.h \
     ../../../../Include/Apps/Test/ZSIpcTraceDllIfQtApp/Test.h \
-    ../../../../Include/Apps/Test/ZSIpcTraceDllIfQtApp/TSGrpIpcTraceDllIfQtApp.h \
-    ../../../../Include/Apps/Test/ZSIpcTraceDllIfQtApp/WidgetCentral.h
+    ../../../../Include/Apps/Test/ZSIpcTraceDllIfQtApp/TestModule1.h \
+    ../../../../Include/Apps/Test/ZSIpcTraceDllIfQtApp/TestModule2.h \
+    ../../../../Include/Apps/Test/ZSIpcTraceDllIfQtApp/WidgetCentral.h \
+    ../../../../Include/Libs/ZSIpcTrace/ZSIpcTrcDllIf.h
 
 unix:!symbian {
     maemo5 {

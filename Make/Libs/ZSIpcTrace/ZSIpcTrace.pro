@@ -7,7 +7,7 @@
 QT += network xml
 QT -= gui
 
-MODULE = ZSTrace
+MODULE = ZSIpcTrace
 
 VERSION = 4.6.3
 
@@ -39,11 +39,14 @@ CONFIG(debug, release|debug) {
     DEFINES += _DEBUG
 }
 DEFINES += _ZSTRACE
-DEFINES += ZSTRACEDLL_EXPORTS
+DEFINES += ZSIPCTRACEDLL_EXPORTS
 
 INCLUDEPATH += ../../../Include/Libs
 
 LIBS += -L../../../Lib/$$PLATFORM
+linux {
+    LIBS += -L/usr/local/lib
+}
 
 CONFIG(release, release|debug) {
     LIBS += -lZSSys
@@ -55,16 +58,18 @@ CONFIG(debug, release|debug) {
 }
 
 SOURCES += \
-    ../../../Source/Libs/ZSTrace/ZSTrcServer.cpp \
-    ../../../Source/Libs/ZSTrace/ZSTrcDllMain.cpp \
-    ../../../Source/Libs/ZSTrace/ZSTrcDllIf.cpp \
-    ../../../Source/Libs/ZSTrace/ZSTrcClient.cpp
+    ../../../Source/Libs/ZSIpcTrace/ZSIpcTrcClient.cpp \
+    ../../../Source/Libs/ZSIpcTrace/ZSIpcTrcDllIf.cpp \
+    ../../../Source/Libs/ZSIpcTrace/ZSIpcTrcDllIfServerThread.cpp \
+    ../../../Source/Libs/ZSIpcTrace/ZSIpcTrcDllMain.cpp \
+    ../../../Source/Libs/ZSIpcTrace/ZSIpcTrcServer.cpp
 
 HEADERS += \
-    ../../../Include/Libs/ZSTrace/ZSTrcServer.h \
-    ../../../Include/Libs/ZSTrace/ZSTrcDllMain.h \
-    ../../../Include/Libs/ZSTrace/ZSTrcDllIf.h \
-    ../../../Include/Libs/ZSTrace/ZSTrcClient.h
+    ../../../Include/Libs/ZSIpcTrace/ZSIpcTrcClient.h \
+    ../../../Include/Libs/ZSIpcTrace/ZSIpcTrcDllIf.h \
+    ../../../Include/Libs/ZSIpcTrace/ZSIpcTrcDllIfServerThread.h \
+    ../../../Include/Libs/ZSIpcTrace/ZSIpcTrcDllMain.h \
+    ../../../Include/Libs/ZSIpcTrace/ZSIpcTrcServer.h
 
 unix:!symbian {
     maemo5 {

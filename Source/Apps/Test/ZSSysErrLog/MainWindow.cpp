@@ -464,8 +464,6 @@ bool CMainWindow::eventFilter( QObject* i_pObjWatched, QEvent* i_pEv )
 {
     bool bHandled = false;
 
-    QLabel* pLblErrors = nullptr;
-
     for( auto* pLbl : m_hshpLblsErrors )
     {
         if( i_pObjWatched == pLbl )

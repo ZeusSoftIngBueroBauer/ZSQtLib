@@ -68,6 +68,7 @@ SOURCES += \
     ../../../Source/Libs/ZSIpc/ZSIpcInProcMsgSocket.cpp \
     ../../../Source/Libs/ZSIpc/ZSIpcInProcMsgServer.cpp \
     ../../../Source/Libs/ZSIpc/ZSIpcDllMain.cpp \
+    ../../../Source/Libs/ZSIpc/ZSIpcCommon.cpp \
     ../../../Source/Libs/ZSIpc/ZSIpcClientGateway.cpp \
     ../../../Source/Libs/ZSIpc/ZSIpcClient.cpp \
     ../../../Source/Libs/ZSIpc/ZSIpcBlkTypeUser.cpp \
@@ -93,6 +94,7 @@ HEADERS += \
     ../../../Include/Libs/ZSIpc/ZSIpcServer.h \
     ../../../Include/Libs/ZSIpc/ZSIpcInProcMsgSocket.h \
     ../../../Include/Libs/ZSIpc/ZSIpcInProcMsgServer.h \
+    ../../../Include/Libs/ZSIpc/ZSIpcCommon.h \
     ../../../Include/Libs/ZSIpc/ZSIpcDllMain.h \
     ../../../Include/Libs/ZSIpc/ZSIpcClientGateway.h \
     ../../../Include/Libs/ZSIpc/ZSIpcClient.h \

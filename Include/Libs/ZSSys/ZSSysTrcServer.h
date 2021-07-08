@@ -147,11 +147,9 @@ public: // class methods to add, remove and modify admin objects
         int                  i_iDefaultDetailLevel,
         const QString&       i_strServerName = "ZSTrcServer" );
     static void ReleaseTraceAdminObj( CTrcAdminObj* i_pTrcAdminObj, const QString& i_strServerName = "ZSTrcServer" );
-public: // class methods to save/recall admin objects file
-    static void GetDefaultFilePaths(
-        QString&       io_strAdminObjFileAbsFilePath,
-        QString&       io_strLocalTrcFileAbsFilePath,
-        const QString& i_strIniFileScope = "System" );
+public: // class methods to get default file paths
+    static QString GetDefaultAdminObjFileAbsoluteFilePath( const QString& i_strIniFileScope = "System" );
+    static QString GetDefaultLocalTrcFileAbsoluteFilePath( const QString& i_strIniFileScope = "System" );
 protected: // ctors and dtor
     CTrcServer( const QString& i_strName, int i_iTrcDetailLevel = ETraceDetailLevelNone );
     virtual ~CTrcServer();

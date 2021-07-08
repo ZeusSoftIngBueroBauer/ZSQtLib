@@ -31,6 +31,8 @@ may result in using the software modules.
 
 #include "ZSSys/ZSSysCommon.h"
 
+class QCoreApplication;
+
 namespace ZS
 {
 namespace Trace

@@ -266,9 +266,8 @@ void CTest::doTestStepLoadDll( ZS::Test::CTestStep* i_pTestStep )
     ZS::Trace::DllIf::EBuildConfiguration buildConfiguration = ZS::Trace::DllIf::EBuildConfigurationRelease;
     #endif
 
-    const char* szCompiler = COMPILERLIBINFIX;  // from "ZSSysVersion.h"
-    const char* szPlatform = PLATFORMLIBINFIX;  // from "ZSSysVersion.h"
-    int iQtVersionMajor = QT_VERSION_MAJOR;     // from "ZSSysVersion.h"
+    const char* szCompiler = COMPILERLIBINFIX;  // from "ZSIpcTrcDllIf.h"
+    const char* szPlatform = PLATFORMLIBINFIX;  // from "ZSIpcTrcDllIf.h"
 
     bool bOk = ZS::Trace::DllIf::loadDll(szCompiler, szPlatform, buildConfiguration, QT_VERSION_MAJOR);
 
@@ -463,11 +462,9 @@ void CTest::doTestStepTraceServerShutdown( ZS::Test::CTestStep* i_pTestStep )
     // Test Step
     //----------
 
-    bool bOk = false;
-
     if( m_pTrcServer != nullptr )
     {
-        bOk = m_pTrcServer->shutdown();
+        m_pTrcServer->shutdown();
     }
 
     // Actual Values

@@ -56,21 +56,21 @@ CONFIG(release, release|debug) {
     LIBS += -lZSSys
     LIBS += -lZSTest
     LIBS += -lZSIpc
-    LIBS += -lZSTrace
+    LIBS += -lZSIpcTrace
     LIBS += -lZSSysGUI
     LIBS += -lZSTestGUI
     LIBS += -lZSIpcGUI
-    LIBS += -lZSTraceGUI
+    LIBS += -lZSIpcTraceGUI
 }
 CONFIG(debug, release|debug) {
     LIBS += -lZSSysd
     LIBS += -lZSTestd
     LIBS += -lZSIpcd
-    LIBS += -lZSTraced
+    LIBS += -lZSIpcTraced
     LIBS += -lZSSysGUId
     LIBS += -lZSTestGUId
     LIBS += -lZSIpcGUId
-    LIBS += -lZSTraceGUId
+    LIBS += -lZSIpcTraceGUId
 }
 
 SOURCES += \
@@ -78,18 +78,20 @@ SOURCES += \
     ../../../../Source/Apps/Test/ZSIpcTrace/Main.cpp \
     ../../../../Source/Apps/Test/ZSIpcTrace/MainWindow.cpp \
     ../../../../Source/Apps/Test/ZSIpcTrace/MsgTest.cpp \
+    ../../../../Source/Apps/Test/ZSIpcTrace/Test.cpp \
     ../../../../Source/Apps/Test/ZSIpcTrace/TestModule1.cpp \
     ../../../../Source/Apps/Test/ZSIpcTrace/TestModule2.cpp \
-    ../../../../Source/Apps/Test/ZSIpcTrace/WdgtTest.cpp \
+    ../../../../Source/Apps/Test/ZSIpcTrace/WdgtTestOutput.cpp \
     ../../../../Source/Apps/Test/ZSIpcTrace/WidgetCentral.cpp
 
 HEADERS += \
     ../../../../Include/Apps/Test/ZSIpcTrace/App.h \
     ../../../../Include/Apps/Test/ZSIpcTrace/MainWindow.h \
     ../../../../Include/Apps/Test/ZSIpcTrace/MsgTest.h \
+    ../../../../Include/Apps/Test/ZSIpcTrace/Test.h \
     ../../../../Include/Apps/Test/ZSIpcTrace/TestModule1.h \
     ../../../../Include/Apps/Test/ZSIpcTrace/TestModule2.h \
-    ../../../../Include/Apps/Test/ZSIpcTrace/WdgtTest.h \
+    ../../../../Include/Apps/Test/ZSIpcTrace/WdgtTestOutput.h \
     ../../../../Include/Apps/Test/ZSIpcTrace/WidgetCentral.h
 
 unix:!symbian {

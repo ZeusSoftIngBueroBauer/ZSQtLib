@@ -52,6 +52,10 @@ CONFIG(debug, release|debug) {
 }
 
 SOURCES += \
+    ../../../Source/Libs/ZSSysGUI/ZSSysTrcAdminObjIdxTreeWdgt.cpp \
+    ../../../Source/Libs/ZSSysGUI/ZSSysTrcAdminObjIdxTreeView.cpp \
+    ../../../Source/Libs/ZSSysGUI/ZSSysTrcAdminObjIdxTreeModel.cpp \
+    ../../../Source/Libs/ZSSysGUI/ZSSysTrcAdminObjIdxTreeDlg.cpp \
     ../../../Source/Libs/ZSSysGUI/ZSSysSepLine.cpp \
     ../../../Source/Libs/ZSSysGUI/ZSSysRequestSequencerWdgt.cpp \
     ../../../Source/Libs/ZSSysGUI/ZSSysRequestSequencerModel.cpp \
@@ -69,7 +73,6 @@ SOURCES += \
     ../../../Source/Libs/ZSSysGUI/ZSSysIdxTreeView.cpp \
     ../../../Source/Libs/ZSSysGUI/ZSSysIdxTreeTableViewBranchContent.cpp \
     ../../../Source/Libs/ZSSysGUI/ZSSysIdxTreeWdgt.cpp \
-    ../../../Source/Libs/ZSSysGUI/ZSSysGUIEnum.cpp \
     ../../../Source/Libs/ZSSysGUI/ZSSysGUIDllMain.cpp \
     ../../../Source/Libs/ZSSysGUI/ZSSysGUIAux.cpp \
     ../../../Source/Libs/ZSSysGUI/ZSSysGUIApp.cpp \
@@ -81,6 +84,10 @@ SOURCES += \
     ../../../Source/Libs/ZSSysGUI/ZSSysDialog.cpp
 
 HEADERS += \
+    ../../../Include/Libs/ZSSysGUI/ZSSysTrcAdminObjIdxTreeWdgt.h \
+    ../../../Include/Libs/ZSSysGUI/ZSSysTrcAdminObjIdxTreeView.h \
+    ../../../Include/Libs/ZSSysGUI/ZSSysTrcAdminObjIdxTreeModel.h \
+    ../../../Include/Libs/ZSSysGUI/ZSSysTrcAdminObjIdxTreeDlg.h \
     ../../../Include/Libs/ZSSysGUI/ZSSysSepLine.h \
     ../../../Include/Libs/ZSSysGUI/ZSSysRequestSequencerWdgt.h \
     ../../../Include/Libs/ZSSysGUI/ZSSysRequestSequencerModel.h \
@@ -98,7 +105,6 @@ HEADERS += \
     ../../../Include/Libs/ZSSysGUI/ZSSysIdxTreeView.h \
     ../../../Include/Libs/ZSSysGUI/ZSSysIdxTreeTableViewBranchContent.h \
     ../../../Include/Libs/ZSSysGUI/ZSSysIdxTreeWdgt.h \
-    ../../../Include/Libs/ZSSysGUI/ZSSysGUIEnum.h \
     ../../../Include/Libs/ZSSysGUI/ZSSysGUIDllMain.h \
     ../../../Include/Libs/ZSSysGUI/ZSSysGUIAux.h \
     ../../../Include/Libs/ZSSysGUI/ZSSysGUIApp.h \

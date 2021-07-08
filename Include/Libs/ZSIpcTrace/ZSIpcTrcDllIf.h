@@ -69,6 +69,7 @@ Visual Studio 2019 version 16.7  | 1927
 Visual Studio 2019 version 16.8  | 1928
 Visual Studio 2019 version 16.10 | 1929
 */
+#ifdef _WINDOWS
 #ifndef COMPILERLIBINFIX
 #if _MSC_VER <= 1200
 #define __CXX_STANDARD__ 1
@@ -109,8 +110,13 @@ Visual Studio 2019 version 16.10 | 1929
 #define __CXX_STANDARD__ 1
 #endif
 #endif
+#endif // #ifdef _WINDOWS
 
-#ifndef CXX_STANDARD
+#ifndef COMPILERLIBINFIX
+#define COMPILERLIBINFIX ""
+#endif
+
+#ifdef _WINDOWS
 #if (__CXX_STANDARD__ == 201703)
 #define CXX_STANDARD 17
 #elif (__CXX_STANDARD__ == 201402)
@@ -122,10 +128,15 @@ Visual Studio 2019 version 16.10 | 1929
 #elif (__CXX_STANDARD__ == 1)
 #define CXX_STANDARD 1
 #ifndef nullptr
-#define nullptr NULL
+#define nullptr 0
 #endif
 #endif
-#endif
+#endif // #ifdef _WINDOWS
+
+// Some customers are configuring Qt to rename the Qt libraries to Qt*<infix>.
+#define QTLIBINFIX ""
+//#define QTLIBINFIX "Isar"
+//#define QTLIBINFIX "SWP"
 
 #ifndef PLATFORMLIBINFIX
 #ifdef _WIN64
@@ -133,6 +144,10 @@ Visual Studio 2019 version 16.10 | 1929
 #else
 #define PLATFORMLIBINFIX "Win32"
 #endif
+#endif
+
+#ifndef PLATFORMLIBINFIX
+#define PLATFORMLIBINFIX ""
 #endif
 
 #ifndef CONFIGLIBINFIX
@@ -206,12 +221,12 @@ public: // instance methods
     const char* serverName() const { return m_szServerName; }
     const char* keyInTree() const { return m_szKeyInTree; }
 public: // instance methods
-    const char* getNameSpace() const;
-    const char* getClassName() const;
-    const char* getObjectName() const;
+    //char* getNameSpace() const;
+    //char* getClassName() const;
+    //char* getObjectName() const;
 public: // instance methods
     void setObjectThreadName( const char* i_szThreadName );
-    const char* getObjectThreadName() const;
+    //char* getObjectThreadName() const;
 public: // instance methods
     void setEnabled( bool i_bEnabled );
     bool isEnabled() const;
@@ -253,9 +268,9 @@ public: // instance methods
     int getTraceDetailLevel() const;
     int getEnterLeaveFilterDetailLevel() const { return m_iEnterLeaveFilterDetailLevel; }
 public: // instance methods
-    const char* getNameSpace() const;
-    const char* getClassName() const;
-    const char* getObjectName() const;
+    //char* getNameSpace() const;
+    //char* getClassName() const;
+    //char* getObjectName() const;
     const char* getMethod() const { return m_szMethod; }
 public: // instance methods
     void setMethodReturn( bool i_bResult );
@@ -321,17 +336,15 @@ public: // class method to save/recall admin objects file
     // Only if the organization and application name is set the default file paths for the
     // trace admin objects and the trace log files may be correctly determined.
     static void SetOrganizationName( const char* i_szName );
-    static const char* GetOrganizationName();
+    static char* GetOrganizationName();
     static void SetApplicationName( const char* i_szName );
-    static const char* GetApplicationName();
-    static void GetDefaultFilePaths(
-        char**      o_pszAdminObjFileAbsFilePath,    // must be freed by caller
-        char**      o_pszLocalTrcFileAbsFilePath,    // must be freed by caller
-        const char* i_szIniFileScope = "System" );
+    static char* GetApplicationName();
+    static char* GetDefaultAdminObjFileAbsoluteFilePath( const char* i_szIniFileScope = "System" );
+    static char* GetDefaultLocalTrcFileAbsoluteFilePath( const char* i_szIniFileScope = "System" );
 public: // class methods
     static void RegisterCurrentThread( const char* i_szThreadName );
     static void UnregisterCurrentThread();
-    static const char* GetCurrentThreadName();
+    static char* GetCurrentThreadName();
 public: // instance methods
     const char* name() const { return m_szName; }
 public: // instance methods
@@ -346,7 +359,7 @@ public: // instance methods
     int getNewTrcAdminObjsDefaultDetailLevel() const;
 public: // instance methods
     void setAdminObjFileAbsoluteFilePath( const char* i_szAbsFilePath );
-    const char* getAdminObjFileAbsoluteFilePath() const;
+    char* getAdminObjFileAbsoluteFilePath() const;
 public: // instance methods
     bool recallAdminObjs();
     bool saveAdminObjs();
@@ -354,9 +367,9 @@ public: // instance methods
     void setUseLocalTrcFile( bool i_bUse );
     bool isLocalTrcFileUsed() const;
     void setLocalTrcFileAbsoluteFilePath( const char* i_szAbsFilePath );
-    const char* getLocalTrcFileAbsoluteFilePath() const;
-    const char* getLocalTrcFileCompleteBaseName() const;
-    const char* getLocalTrcFileAbsolutePath() const;
+    char* getLocalTrcFileAbsoluteFilePath() const;
+    char* getLocalTrcFileCompleteBaseName() const;
+    char* getLocalTrcFileAbsolutePath() const;
     bool isLocalTrcFileActive() const;
     void setLocalTrcFileAutoSaveInterval( int i_iAutoSaveInterval_ms );
     int getLocalTrcFileAutoSaveInterval() const;

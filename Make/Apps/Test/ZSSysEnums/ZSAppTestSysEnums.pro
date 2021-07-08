@@ -70,14 +70,12 @@ SOURCES += \
     ../../../../Source/Apps/Test/ZSSysEnums/Main.cpp \
     ../../../../Source/Apps/Test/ZSSysEnums/MainWindow.cpp \
     ../../../../Source/Apps/Test/ZSSysEnums/Test.cpp \
-    ../../../../Source/Apps/Test/ZSSysEnums/TSGrpSysEnums.cpp \
     ../../../../Source/Apps/Test/ZSSysEnums/WidgetCentral.cpp
 
 HEADERS  += \
     ../../../../Include/Apps/Test/ZSSysEnums/App.h \
     ../../../../Include/Apps/Test/ZSSysEnums/MainWindow.h \
     ../../../../Include/Apps/Test/ZSSysEnums/Test.h \
-    ../../../../Include/Apps/Test/ZSSysEnums/TSGrpSysEnums.h \
     ../../../../Include/Apps/Test/ZSSysEnums/WidgetCentral.h
 
 unix:!symbian {

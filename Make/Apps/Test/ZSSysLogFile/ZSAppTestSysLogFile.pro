@@ -8,7 +8,7 @@ QT += core gui xml
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-MODULE = ZSAppTestZSSysLogFile
+MODULE = ZSAppTestSysLogFile
 
 VERSION = 4.6.3
 
@@ -41,7 +41,7 @@ CONFIG(debug, release|debug) {
 }
 DEFINES += _ZSTRACE
 
-INCLUDEPATH += ../../../../Include/Apps/Test/ZSTestZSSysLogFile
+INCLUDEPATH += ../../../../Include/Apps/Test/ZSSysLogFile
 INCLUDEPATH += ../../../../Include/Libs
 linux {
     INCLUDEPATH += /usr/local/include
@@ -66,19 +66,17 @@ CONFIG(debug, release|debug) {
 }
 
 SOURCES += \
-    ../../../../Source/Apps/Test/ZSTestZSSysLogFile/App.cpp \
-    ../../../../Source/Apps/Test/ZSTestZSSysLogFile/Main.cpp \
-    ../../../../Source/Apps/Test/ZSTestZSSysLogFile/MainWindow.cpp \
-    ../../../../Source/Apps/Test/ZSTestZSSysLogFile/Test.cpp \
-    ../../../../Source/Apps/Test/ZSTestZSSysLogFile/TSGrpZSSysLogFile.cpp \
-    ../../../../Source/Apps/Test/ZSTestZSSysLogFile/WidgetCentral.cpp
+    ../../../../Source/Apps/Test/ZSSysLogFile/App.cpp \
+    ../../../../Source/Apps/Test/ZSSysLogFile/Main.cpp \
+    ../../../../Source/Apps/Test/ZSSysLogFile/MainWindow.cpp \
+    ../../../../Source/Apps/Test/ZSSysLogFile/Test.cpp \
+    ../../../../Source/Apps/Test/ZSSysLogFile/WidgetCentral.cpp
 
 HEADERS  += \
-    ../../../../Include/Apps/Test/ZSTestZSSysLogFile/App.h \
-    ../../../../Include/Apps/Test/ZSTestZSSysLogFile/MainWindow.h \
-    ../../../../Include/Apps/Test/ZSTestZSSysLogFile/Test.h \
-    ../../../../Include/Apps/Test/ZSTestZSSysLogFile/TSGrpZSSysLogFile.h \
-    ../../../../Include/Apps/Test/ZSTestZSSysLogFile/WidgetCentral.h
+    ../../../../Include/Apps/Test/ZSSysLogFile/App.h \
+    ../../../../Include/Apps/Test/ZSSysLogFile/MainWindow.h \
+    ../../../../Include/Apps/Test/ZSSysLogFile/Test.h \
+    ../../../../Include/Apps/Test/ZSSysLogFile/WidgetCentral.h
 
 unix:!symbian {
     maemo5 {

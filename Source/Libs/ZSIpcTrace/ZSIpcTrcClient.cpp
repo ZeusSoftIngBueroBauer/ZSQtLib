@@ -943,7 +943,7 @@ protected slots: // connected to the slots of the trace admin object pool model
 
 //------------------------------------------------------------------------------
 void CIpcTrcClient::onTrcAdminObjIdxTreeEntryChanged(
-    CIdxTree*              i_pIdxTree,
+    CIdxTree*              /*i_pIdxTree*/,
     CAbstractIdxTreeEntry* i_pTreeEntry )
 //------------------------------------------------------------------------------
 {

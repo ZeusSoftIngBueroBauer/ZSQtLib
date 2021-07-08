@@ -43,6 +43,9 @@ may result in using the software modules.
 // (which is included by ZSSysTime (which again is included by ZSSysAux)).
 #include <windows.h>
 #endif
+#ifdef __linux__
+#include <unistd.h>
+#endif
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
@@ -79,8 +82,18 @@ static QCoreApplication* DllIf_s_pQtAppCreatedByDllIf = nullptr;
 
 static ZS::Trace::DllIf::CIpcTrcServerThread* DllIf_s_pThreadIpcTrcServer = nullptr;
 
+static char* s_szOrganizationName = nullptr;
+static char* s_szApplicationName = nullptr;
+static char* s_szCurrentThreadName = nullptr;
+static char* s_szDefaultAdminObjFileAbsoluteFilePaths = nullptr;
+static char* s_szDefaultLocalTrcFileAbsoluteFilePaths = nullptr;
+
 static QHash<QString, DllIf::CIpcTrcServer*> DllIf_IpcTrcServer_s_hshpInstances;
-static QHash<QString, bool>                  DllIf_IpcTrcServer_s_hshbTrcServerCreated;
+static QHash<QString, bool> DllIf_IpcTrcServer_s_hshbTrcServersCreated;
+static QHash<QString, char*> DllIf_IpcTrcServer_s_hshszAdminObjFileAbsoluteFilePaths;
+static QHash<QString, char*> DllIf_IpcTrcServer_s_hshszLocalTrcFileAbsoluteFilePaths;
+static QHash<QString, char*> DllIf_IpcTrcServer_s_hshszLocalTrcFileCompleteBaseNames;
+static QHash<QString, char*> DllIf_IpcTrcServer_s_hshszLocalTrcFileAbsolutePaths;
 
 const QString c_strNameSpace = "ZS::Trace::DllIf";
 const QString c_strClassName = "DllMain";
@@ -89,104 +102,107 @@ const QString c_strClassName = "DllMain";
 DllIf::CTrcAdminObj
 ==============================================================================*/
 
-//------------------------------------------------------------------------------
-ZSIPCTRACEDLL_EXTERN_API const char* TrcAdminObj_getNameSpace( const DllIf::CTrcAdminObj* i_pTrcAdminObj )
-//------------------------------------------------------------------------------
-{
-    QMutexLocker mtxLocker(&DllIf_s_mtx);
+////------------------------------------------------------------------------------
+//ZSIPCTRACEDLL_EXTERN_API const char* TrcAdminObj_getNameSpace( const DllIf::CTrcAdminObj* i_pTrcAdminObj )
+////------------------------------------------------------------------------------
+//{
+//    QMutexLocker mtxLocker(&DllIf_s_mtx);
 
-    if( i_pTrcAdminObj != nullptr )
-    {
-        QString strKeyInTree = i_pTrcAdminObj->keyInTree();
+//    if( i_pTrcAdminObj != nullptr )
+//    {
+//        QString strKeyInTree = i_pTrcAdminObj->keyInTree();
 
-        QString strServerName = i_pTrcAdminObj->serverName();
+//        QString strServerName = i_pTrcAdminObj->serverName();
 
-        CTrcServer* pTrcServer = CTrcServer::GetInstance(strServerName);
+//        CTrcServer* pTrcServer = CTrcServer::GetInstance(strServerName);
 
-        if( pTrcServer != nullptr )
-        {
-            CIdxTreeTrcAdminObjs* pIdxTree = pTrcServer->getTraceAdminObjIdxTree();
+//        if( pTrcServer != nullptr )
+//        {
+//            CIdxTreeTrcAdminObjs* pIdxTree = pTrcServer->getTraceAdminObjIdxTree();
 
-            CAbstractIdxTreeEntry* pTreeEntry = pIdxTree->findEntry(strKeyInTree);
+//            CAbstractIdxTreeEntry* pTreeEntry = pIdxTree->findEntry(strKeyInTree);
 
-            CTrcAdminObj* pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(pTreeEntry);
+//            CTrcAdminObj* pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(pTreeEntry);
 
-            if( pTrcAdminObj != nullptr )
-            {
-                return pTrcAdminObj->getNameSpace().toStdString().c_str();
-            }
-        } // if( pTrcServer != nullptr )
-    } // if( i_pTrcAdminObj != nullptr )
+//            if( pTrcAdminObj != nullptr )
+//            {
+//                TODO: returning address of local temporary object
+//                return pTrcAdminObj->getNameSpace().toStdString().c_str();
+//            }
+//        } // if( pTrcServer != nullptr )
+//    } // if( i_pTrcAdminObj != nullptr )
 
-    return NULL;
+//    return NULL;
 
-} // TrcAdminObj_getNameSpace
+//} // TrcAdminObj_getNameSpace
 
-//------------------------------------------------------------------------------
-ZSIPCTRACEDLL_EXTERN_API const char* TrcAdminObj_getClassName( const DllIf::CTrcAdminObj* i_pTrcAdminObj )
-//------------------------------------------------------------------------------
-{
-    QMutexLocker mtxLocker(&DllIf_s_mtx);
+////------------------------------------------------------------------------------
+//ZSIPCTRACEDLL_EXTERN_API const char* TrcAdminObj_getClassName( const DllIf::CTrcAdminObj* i_pTrcAdminObj )
+////------------------------------------------------------------------------------
+//{
+//    QMutexLocker mtxLocker(&DllIf_s_mtx);
 
-    if( i_pTrcAdminObj != nullptr )
-    {
-        QString strKeyInTree = i_pTrcAdminObj->keyInTree();
+//    if( i_pTrcAdminObj != nullptr )
+//    {
+//        QString strKeyInTree = i_pTrcAdminObj->keyInTree();
 
-        QString strServerName = i_pTrcAdminObj->serverName();
+//        QString strServerName = i_pTrcAdminObj->serverName();
 
-        CTrcServer* pTrcServer = CTrcServer::GetInstance(strServerName);
+//        CTrcServer* pTrcServer = CTrcServer::GetInstance(strServerName);
 
-        if( pTrcServer != nullptr )
-        {
-            CIdxTreeTrcAdminObjs* pIdxTree = pTrcServer->getTraceAdminObjIdxTree();
+//        if( pTrcServer != nullptr )
+//        {
+//            CIdxTreeTrcAdminObjs* pIdxTree = pTrcServer->getTraceAdminObjIdxTree();
 
-            CAbstractIdxTreeEntry* pTreeEntry = pIdxTree->findEntry(strKeyInTree);
+//            CAbstractIdxTreeEntry* pTreeEntry = pIdxTree->findEntry(strKeyInTree);
 
-            CTrcAdminObj* pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(pTreeEntry);
+//            CTrcAdminObj* pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(pTreeEntry);
 
-            if( pTrcAdminObj != nullptr )
-            {
-                return pTrcAdminObj->getClassName().toStdString().c_str();
-            }
-        } // if( pTrcServer != nullptr )
-    } // if( i_pTrcAdminObj != nullptr )
+//            if( pTrcAdminObj != nullptr )
+//            {
+//                TODO: returning address of local temporary object
+//                return pTrcAdminObj->getClassName().toStdString().c_str();
+//            }
+//        } // if( pTrcServer != nullptr )
+//    } // if( i_pTrcAdminObj != nullptr )
 
-    return NULL;
+//    return NULL;
 
-} // TrcAdminObj_getClassName
+//} // TrcAdminObj_getClassName
 
-//------------------------------------------------------------------------------
-ZSIPCTRACEDLL_EXTERN_API const char* TrcAdminObj_getObjectName( const DllIf::CTrcAdminObj* i_pTrcAdminObj )
-//------------------------------------------------------------------------------
-{
-    QMutexLocker mtxLocker(&DllIf_s_mtx);
+////------------------------------------------------------------------------------
+//ZSIPCTRACEDLL_EXTERN_API const char* TrcAdminObj_getObjectName( const DllIf::CTrcAdminObj* i_pTrcAdminObj )
+////------------------------------------------------------------------------------
+//{
+//    QMutexLocker mtxLocker(&DllIf_s_mtx);
 
-    if( i_pTrcAdminObj != nullptr )
-    {
-        QString strKeyInTree = i_pTrcAdminObj->keyInTree();
+//    if( i_pTrcAdminObj != nullptr )
+//    {
+//        QString strKeyInTree = i_pTrcAdminObj->keyInTree();
 
-        QString strServerName = i_pTrcAdminObj->serverName();
+//        QString strServerName = i_pTrcAdminObj->serverName();
 
-        CTrcServer* pTrcServer = CTrcServer::GetInstance(strServerName);
+//        CTrcServer* pTrcServer = CTrcServer::GetInstance(strServerName);
 
-        if( pTrcServer != nullptr )
-        {
-            CIdxTreeTrcAdminObjs* pIdxTree = pTrcServer->getTraceAdminObjIdxTree();
+//        if( pTrcServer != nullptr )
+//        {
+//            CIdxTreeTrcAdminObjs* pIdxTree = pTrcServer->getTraceAdminObjIdxTree();
 
-            CAbstractIdxTreeEntry* pTreeEntry = pIdxTree->findEntry(strKeyInTree);
+//            CAbstractIdxTreeEntry* pTreeEntry = pIdxTree->findEntry(strKeyInTree);
 
-            CTrcAdminObj* pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(pTreeEntry);
+//            CTrcAdminObj* pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(pTreeEntry);
 
-            if( pTrcAdminObj != nullptr )
-            {
-                return pTrcAdminObj->getObjectName().toStdString().c_str();
-            }
-        } // if( pTrcServer != nullptr )
-    } // if( i_pTrcAdminObj != nullptr )
+//            if( pTrcAdminObj != nullptr )
+//            {
+//                TODO: returning address of local temporary object
+//                return pTrcAdminObj->getObjectName().toStdString().c_str();
+//            }
+//        } // if( pTrcServer != nullptr )
+//    } // if( i_pTrcAdminObj != nullptr )
 
-    return NULL;
+//    return NULL;
 
-} // TrcAdminObj_getObjectName
+//} // TrcAdminObj_getObjectName
 
 //------------------------------------------------------------------------------
 ZSIPCTRACEDLL_EXTERN_API void TrcAdminObj_setObjectThreadName(
@@ -241,38 +257,39 @@ ZSIPCTRACEDLL_EXTERN_API void TrcAdminObj_setObjectThreadName(
 
 } // TrcAdminObj_setObjectThreadName
 
-//------------------------------------------------------------------------------
-ZSIPCTRACEDLL_EXTERN_API const char* TrcAdminObj_getObjectThreadName( const DllIf::CTrcAdminObj* i_pTrcAdminObj )
-//------------------------------------------------------------------------------
-{
-    QMutexLocker mtxLocker(&DllIf_s_mtx);
+////------------------------------------------------------------------------------
+//ZSIPCTRACEDLL_EXTERN_API const char* TrcAdminObj_getObjectThreadName( const DllIf::CTrcAdminObj* i_pTrcAdminObj )
+////------------------------------------------------------------------------------
+//{
+//    QMutexLocker mtxLocker(&DllIf_s_mtx);
 
-    if( i_pTrcAdminObj != nullptr )
-    {
-        QString strKeyInTree = i_pTrcAdminObj->keyInTree();
+//    if( i_pTrcAdminObj != nullptr )
+//    {
+//        QString strKeyInTree = i_pTrcAdminObj->keyInTree();
 
-        QString strServerName = i_pTrcAdminObj->serverName();
+//        QString strServerName = i_pTrcAdminObj->serverName();
 
-        CTrcServer* pTrcServer = CTrcServer::GetInstance(strServerName);
+//        CTrcServer* pTrcServer = CTrcServer::GetInstance(strServerName);
 
-        if( pTrcServer != nullptr )
-        {
-            CIdxTreeTrcAdminObjs* pIdxTree = pTrcServer->getTraceAdminObjIdxTree();
+//        if( pTrcServer != nullptr )
+//        {
+//            CIdxTreeTrcAdminObjs* pIdxTree = pTrcServer->getTraceAdminObjIdxTree();
 
-            CAbstractIdxTreeEntry* pTreeEntry = pIdxTree->findEntry(strKeyInTree);
+//            CAbstractIdxTreeEntry* pTreeEntry = pIdxTree->findEntry(strKeyInTree);
 
-            CTrcAdminObj* pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(pTreeEntry);
+//            CTrcAdminObj* pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(pTreeEntry);
 
-            if( pTrcAdminObj != nullptr )
-            {
-                return pTrcAdminObj->getObjectThreadName().toStdString().c_str();
-            }
-        } // if( pTrcServer != nullptr )
-    } // if( i_pTrcAdminObj != nullptr )
+//            if( pTrcAdminObj != nullptr )
+//            {
+//                TODO: returning address of local temporary object
+//                return pTrcAdminObj->getObjectThreadName().toStdString().c_str();
+//            }
+//        } // if( pTrcServer != nullptr )
+//    } // if( i_pTrcAdminObj != nullptr )
 
-    return NULL;
+//    return NULL;
 
-} // TrcAdminObj_getObjectThreadName
+//} // TrcAdminObj_getObjectThreadName
 
 //------------------------------------------------------------------------------
 ZSIPCTRACEDLL_EXTERN_API void TrcAdminObj_setEnabled(
@@ -847,7 +864,15 @@ ZSIPCTRACEDLL_EXTERN_API const char* TrcServer_GetOrganizationName()
 {
     QMutexLocker mtxLocker(&DllIf_s_mtx);
 
-    return QCoreApplication::organizationName().toStdString().c_str();
+    QString strOrganizationName = QCoreApplication::organizationName();
+
+    size_t iStrLen = strOrganizationName.length();
+    delete s_szOrganizationName;
+    s_szOrganizationName = new char[iStrLen+1];
+    memset(s_szOrganizationName, 0x00, iStrLen+1);
+    memcpy(s_szOrganizationName, strOrganizationName.toStdString().c_str(), iStrLen);
+
+    return s_szOrganizationName;
 
 } // TrcServer_GetOrganizationName
 
@@ -867,44 +892,57 @@ ZSIPCTRACEDLL_EXTERN_API const char* TrcServer_GetApplicationName()
 {
     QMutexLocker mtxLocker(&DllIf_s_mtx);
 
-    return QCoreApplication::applicationName().toStdString().c_str();
+    QString strApplicationName = QCoreApplication::applicationName();
+
+    size_t iStrLen = strApplicationName.length();
+    delete s_szApplicationName;
+    s_szApplicationName = new char[iStrLen+1];
+    memset(s_szApplicationName, 0x00, iStrLen+1);
+    memcpy(s_szApplicationName, strApplicationName.toStdString().c_str(), iStrLen);
+
+    return s_szApplicationName;
 
 } // TrcServer_GetApplicationName
 
 //------------------------------------------------------------------------------
-ZSIPCTRACEDLL_EXTERN_API void TrcServer_GetDefaultFilePaths(
-    char**      o_pszAdminObjFileAbsFilePath,
-    char**      o_pszLocalTrcFileAbsFilePath,
-    const char* i_szIniFileScope )
+ZSIPCTRACEDLL_EXTERN_API char* TrcServer_GetDefaultAdminObjFileAbsoluteFilePath( const char* i_szIniFileScope )
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&DllIf_s_mtx);
 
-    QString strAdminObjFileAbsFilePath;
-    QString strLocalTrcFileAbsFilePath;
     QString strIniFileScope = i_szIniFileScope;
 
-    CTrcServer::GetDefaultFilePaths(strAdminObjFileAbsFilePath, strLocalTrcFileAbsFilePath, strIniFileScope);
+    QString strDefaultFilePath = CTrcServer::GetDefaultAdminObjFileAbsoluteFilePath(strIniFileScope);
 
-    int iStrLen;
+    size_t iStrLen = strDefaultFilePath.length();
+    delete s_szDefaultAdminObjFileAbsoluteFilePaths;
+    s_szDefaultAdminObjFileAbsoluteFilePaths = new char[iStrLen+1];
+    memset(s_szDefaultAdminObjFileAbsoluteFilePaths, 0x00, iStrLen+1);
+    memcpy(s_szDefaultAdminObjFileAbsoluteFilePaths, strDefaultFilePath.toStdString().c_str(), iStrLen);
 
-    if( o_pszAdminObjFileAbsFilePath != nullptr )
-    {
-        iStrLen = strAdminObjFileAbsFilePath.length();
-        *o_pszAdminObjFileAbsFilePath = new char[iStrLen+1];
-        memset(*o_pszAdminObjFileAbsFilePath, 0x00, iStrLen+1);
-        memcpy(*o_pszAdminObjFileAbsFilePath, strAdminObjFileAbsFilePath.toUtf8().data(), iStrLen+1);
-    }
+    return s_szDefaultAdminObjFileAbsoluteFilePaths;
 
-    if( o_pszLocalTrcFileAbsFilePath != nullptr )
-    {
-        iStrLen = strLocalTrcFileAbsFilePath.length();
-        *o_pszLocalTrcFileAbsFilePath = new char[iStrLen+1];
-        memset(*o_pszLocalTrcFileAbsFilePath, 0x00, iStrLen+1);
-        memcpy(*o_pszLocalTrcFileAbsFilePath, strLocalTrcFileAbsFilePath.toUtf8().data(), iStrLen+1);
-    }
+} // TrcServer_GetDefaultAdminObjFileAbsoluteFilePath
 
-} // TrcServer_GetDefaultFilePaths
+//------------------------------------------------------------------------------
+ZSIPCTRACEDLL_EXTERN_API char* TrcServer_GetDefaultLocalTrcFileAbsoluteFilePath( const char* i_szIniFileScope )
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(&DllIf_s_mtx);
+
+    QString strIniFileScope = i_szIniFileScope;
+
+    QString strDefaultFilePath = CTrcServer::GetDefaultLocalTrcFileAbsoluteFilePath(strIniFileScope);
+
+    size_t iStrLen = strDefaultFilePath.length();
+    delete s_szDefaultLocalTrcFileAbsoluteFilePaths;
+    s_szDefaultLocalTrcFileAbsoluteFilePaths = new char[iStrLen+1];
+    memset(s_szDefaultLocalTrcFileAbsoluteFilePaths, 0x00, iStrLen+1);
+    memcpy(s_szDefaultLocalTrcFileAbsoluteFilePaths, strDefaultFilePath.toStdString().c_str(), iStrLen);
+
+    return s_szDefaultLocalTrcFileAbsoluteFilePaths;
+
+} // TrcServer_GetDefaultLocalTrcFileAbsoluteFilePath
 
 //------------------------------------------------------------------------------
 ZSIPCTRACEDLL_EXTERN_API void TrcServer_RegisterCurrentThread( const char* i_szThreadName )
@@ -932,7 +970,15 @@ ZSIPCTRACEDLL_EXTERN_API const char* TrcServer_GetCurrentThreadName()
 {
     QMutexLocker mtxLocker(&DllIf_s_mtx);
 
-    return CTrcServer::GetCurrentThreadName().toStdString().c_str();
+    QString strThreadName = CTrcServer::GetCurrentThreadName();
+
+    size_t iStrLen = strThreadName.length();
+    delete s_szCurrentThreadName;
+    s_szCurrentThreadName = new char[iStrLen+1];
+    memset(s_szCurrentThreadName, 0x00, iStrLen+1);
+    memcpy(s_szCurrentThreadName, strThreadName.toStdString().c_str(), iStrLen);
+
+    return s_szCurrentThreadName;
 
 } // TrcServer_GetCurrentThreadName
 
@@ -1206,7 +1252,20 @@ ZSIPCTRACEDLL_EXTERN_API const char* TrcServer_getAdminObjFileAbsoluteFilePath( 
 
         if( pTrcServer != nullptr )
         {
-            return pTrcServer->getAdminObjFileAbsoluteFilePath().toStdString().c_str();
+            QString strFilePath = pTrcServer->getAdminObjFileAbsoluteFilePath();
+
+            char* szFilePath = DllIf_IpcTrcServer_s_hshszAdminObjFileAbsoluteFilePaths.value(strServerName, nullptr);
+            delete szFilePath;
+            szFilePath = nullptr;
+
+            size_t iStrLen = strFilePath.length();
+            szFilePath = new char[iStrLen+1];
+            memset(szFilePath, 0x00, iStrLen+1);
+            memcpy(szFilePath, strFilePath.toStdString().c_str(), iStrLen);
+
+            DllIf_IpcTrcServer_s_hshszAdminObjFileAbsoluteFilePaths[strServerName] = szFilePath;
+
+            return szFilePath;
         }
     } // if( i_pTrcServer != nullptr )
 
@@ -1416,8 +1475,6 @@ ZSIPCTRACEDLL_EXTERN_API const char* TrcServer_getLocalTrcFileAbsoluteFilePath( 
 {
     QMutexLocker mtxLocker(&DllIf_s_mtx);
 
-    char* szAbsFilePath = nullptr;
-
     if( i_pTrcServer != nullptr )
     {
         QString strServerName = i_pTrcServer->name();
@@ -1426,7 +1483,20 @@ ZSIPCTRACEDLL_EXTERN_API const char* TrcServer_getLocalTrcFileAbsoluteFilePath( 
 
         if( pTrcServer != nullptr )
         {
-            return pTrcServer->getLocalTrcFileAbsoluteFilePath().toStdString().c_str();
+            QString strFilePath = pTrcServer->getLocalTrcFileAbsoluteFilePath();
+
+            char* szFilePath = DllIf_IpcTrcServer_s_hshszLocalTrcFileAbsoluteFilePaths.value(strServerName, nullptr);
+            delete szFilePath;
+            szFilePath = nullptr;
+
+            size_t iStrLen = strFilePath.length();
+            szFilePath = new char[iStrLen+1];
+            memset(szFilePath, 0x00, iStrLen+1);
+            memcpy(szFilePath, strFilePath.toStdString().c_str(), iStrLen);
+
+            DllIf_IpcTrcServer_s_hshszLocalTrcFileAbsoluteFilePaths[strServerName] = szFilePath;
+
+            return szFilePath;
         }
     } // if( i_pTrcServer != nullptr )
 
@@ -1448,7 +1518,20 @@ ZSIPCTRACEDLL_EXTERN_API const char* TrcServer_getLocalTrcFileCompleteBaseName( 
 
         if( pTrcServer != nullptr )
         {
-            return pTrcServer->getLocalTrcFileCompleteBaseName().toStdString().c_str();
+            QString strFilePath = pTrcServer->getLocalTrcFileCompleteBaseName();
+
+            char* szFilePath = DllIf_IpcTrcServer_s_hshszLocalTrcFileCompleteBaseNames.value(strServerName, nullptr);
+            delete szFilePath;
+            szFilePath = nullptr;
+
+            size_t iStrLen = strFilePath.length();
+            szFilePath = new char[iStrLen+1];
+            memset(szFilePath, 0x00, iStrLen+1);
+            memcpy(szFilePath, strFilePath.toStdString().c_str(), iStrLen);
+
+            DllIf_IpcTrcServer_s_hshszLocalTrcFileCompleteBaseNames[strServerName] = szFilePath;
+
+            return szFilePath;
         }
     } // if( i_pTrcServer != nullptr )
 
@@ -1470,7 +1553,20 @@ ZSIPCTRACEDLL_EXTERN_API const char* TrcServer_getLocalTrcFileAbsolutePath( cons
 
         if( pTrcServer != nullptr )
         {
-            return pTrcServer->getLocalTrcFileAbsolutePath().toStdString().c_str();
+            QString strFilePath = pTrcServer->getLocalTrcFileAbsolutePath();
+
+            char* szFilePath = DllIf_IpcTrcServer_s_hshszLocalTrcFileAbsolutePaths.value(strServerName, nullptr);
+            delete szFilePath;
+            szFilePath = nullptr;
+
+            size_t iStrLen = strFilePath.length();
+            szFilePath = new char[iStrLen+1];
+            memset(szFilePath, 0x00, iStrLen+1);
+            memcpy(szFilePath, strFilePath.toStdString().c_str(), iStrLen);
+
+            DllIf_IpcTrcServer_s_hshszLocalTrcFileAbsolutePaths[strServerName] = szFilePath;
+
+            return szFilePath;
         }
     } // if( i_pTrcServer != nullptr )
 
@@ -2110,7 +2206,8 @@ ZSIPCTRACEDLL_EXTERN_API DllIf::CIpcTrcServer* IpcTrcServer_CreateInstance(
 
     if( !DllIf_IpcTrcServer_s_hshpTrcMthFiles.contains(strServerName) )
     {
-        CTrcServer::GetDefaultFilePaths(strAdminObjFileAbsFilePath, strLocalTrcFileAbsFilePath);
+        strAdminObjFileAbsFilePath = CTrcServer::GetDefaultAdminObjFileAbsoluteFilePath();
+        strLocalTrcFileAbsFilePath = CTrcServer::GetDefaultLocalTrcFileAbsoluteFilePath();
 
         DllIf_IpcTrcServer_s_hshpTrcMthFiles[strServerName] = CTrcMthFile::Alloc(strLocalTrcFileAbsFilePath);
         DllIf_IpcTrcServer_s_hshiTrcMthDetailLevels[strServerName] = i_iTrcDetailLevel;
@@ -2143,7 +2240,7 @@ ZSIPCTRACEDLL_EXTERN_API DllIf::CIpcTrcServer* IpcTrcServer_CreateInstance(
 
         if( pTrcServer != nullptr )
         {
-            DllIf_IpcTrcServer_s_hshbTrcServerCreated[strServerName] = false;
+            DllIf_IpcTrcServer_s_hshbTrcServersCreated[strServerName] = false;
         }
         else // if( pTrcServer == nullptr )
         {
@@ -2195,7 +2292,7 @@ ZSIPCTRACEDLL_EXTERN_API DllIf::CIpcTrcServer* IpcTrcServer_CreateInstance(
             {
                 pDllIfTrcServer = new DllIf::CIpcTrcServer(i_szName, i_iTrcDetailLevel);
                 DllIf_IpcTrcServer_s_hshpInstances[strServerName] = pDllIfTrcServer;
-                DllIf_IpcTrcServer_s_hshbTrcServerCreated[strServerName] = true;
+                DllIf_IpcTrcServer_s_hshbTrcServersCreated[strServerName] = true;
             }
         } // if( pTrcServer == nullptr )
     } // if( !DllIf_IpcTrcServer_s_hshpInstances.contains(strServerName) )
@@ -2233,7 +2330,7 @@ ZSIPCTRACEDLL_EXTERN_API void IpcTrcServer_ReleaseInstance( DllIf::CIpcTrcServer
             // If the application creating and starting the trace server is a Qt application ...
             if( DllIf_s_pThreadIpcTrcServer == nullptr )
             {
-                if( DllIf_IpcTrcServer_s_hshbTrcServerCreated.value(strServerName, false) )
+                if( DllIf_IpcTrcServer_s_hshbTrcServersCreated.value(strServerName, false) )
                 {
                     CIpcTrcServer::ReleaseInstance(strServerName);
                 }
@@ -2274,13 +2371,41 @@ ZSIPCTRACEDLL_EXTERN_API void IpcTrcServer_ReleaseInstance( DllIf::CIpcTrcServer
 
             if( DllIf_IpcTrcServer_s_hshpInstances.contains(strServerName) )
             {
+                char* szFilePath = DllIf_IpcTrcServer_s_hshszAdminObjFileAbsoluteFilePaths.value(strServerName, nullptr);
+                if( szFilePath != nullptr )
+                {
+                    DllIf_IpcTrcServer_s_hshszAdminObjFileAbsoluteFilePaths.remove(strServerName);
+                    delete szFilePath;
+                }
+
+                szFilePath = DllIf_IpcTrcServer_s_hshszLocalTrcFileAbsoluteFilePaths.value(strServerName, nullptr);
+                if( szFilePath != nullptr )
+                {
+                    DllIf_IpcTrcServer_s_hshszLocalTrcFileAbsoluteFilePaths.remove(strServerName);
+                    delete szFilePath;
+                }
+
+                szFilePath = DllIf_IpcTrcServer_s_hshszLocalTrcFileCompleteBaseNames.value(strServerName, nullptr);
+                if( szFilePath != nullptr )
+                {
+                    DllIf_IpcTrcServer_s_hshszLocalTrcFileCompleteBaseNames.remove(strServerName);
+                    delete szFilePath;
+                }
+
+                szFilePath = DllIf_IpcTrcServer_s_hshszLocalTrcFileAbsolutePaths.value(strServerName, nullptr);
+                if( szFilePath != nullptr )
+                {
+                    DllIf_IpcTrcServer_s_hshszLocalTrcFileAbsolutePaths.remove(strServerName);
+                    delete szFilePath;
+                }
+
                 DllIf_IpcTrcServer_s_hshpInstances.remove(strServerName);
 
                 delete i_pTrcServer;
                 i_pTrcServer = nullptr;
             }
 
-            DllIf_IpcTrcServer_s_hshbTrcServerCreated.remove(strServerName);
+            DllIf_IpcTrcServer_s_hshbTrcServersCreated.remove(strServerName);
         }
 
         if( DllIf_IpcTrcServer_s_hshpTrcMthFiles.contains(strServerName) )
@@ -2813,7 +2938,7 @@ protected: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-DllIf::CIpcTrcServer::CIpcTrcServer( const char* i_szName, int i_iTrcDetailLevel ) :
+DllIf::CIpcTrcServer::CIpcTrcServer( const char* i_szName, int /*i_iTrcDetailLevel*/ ) :
 //------------------------------------------------------------------------------
     CTrcServer(i_szName)
 {

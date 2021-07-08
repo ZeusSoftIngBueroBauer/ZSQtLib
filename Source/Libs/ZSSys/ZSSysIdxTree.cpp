@@ -1798,7 +1798,7 @@ int CIdxTree::add( CAbstractIdxTreeEntry* i_pTreeEntry, const QString& i_strTarg
 
         if( pTargetBranch == nullptr )
         {
-            QStringList strlstBranches = i_strTargetPath.split(m_strNodeSeparator, Qt::SkipEmptyParts);
+            QStringList strlstBranches = i_strTargetPath.split(m_strNodeSeparator, QString::SkipEmptyParts);
 
             // Please note that the name of the root entry is not included in the TargetPath of the tree entries.
             CBranchIdxTreeEntry* pTargetBranchPrev = m_pRoot;
@@ -2910,7 +2910,7 @@ int CIdxTree::insert(
 
         if( pTargetBranch == nullptr )
         {
-            QStringList strlstBranches = i_strTargetPath.split(m_strNodeSeparator, Qt::SkipEmptyParts);
+            QStringList strlstBranches = i_strTargetPath.split(m_strNodeSeparator, QString::SkipEmptyParts);
 
             // Please note that the name of the root entry is not included in the TargetPath of the tree entries.
             CBranchIdxTreeEntry* pTargetBranchPrev = m_pRoot;
@@ -3715,7 +3715,7 @@ public: // instance methods
 */
 SErrResultInfo CIdxTree::canMove(
     const QString& i_strSourcePath,
-    const QString& i_strTargetPath, 
+    const QString& i_strTargetPath,
     int            i_idxInTargetBranch ) const
 //------------------------------------------------------------------------------
 {
@@ -5984,7 +5984,7 @@ int CIdxTree::copy(
 
     CAbstractIdxTreeEntry* pTreeEntryTrg = createTreeEntry(i_pTreeEntry->entryType(), strName);
 
-    int idxInTree = idxInTree = insert(pTreeEntryTrg, i_pTargetBranch, i_idxInTargetBranch, i_idxInTree);
+    int idxInTree = insert(pTreeEntryTrg, i_pTargetBranch, i_idxInTargetBranch, i_idxInTree);
 
     if( i_pTreeEntry->entryType() == EIdxTreeEntryType::Branch )
     {
@@ -6499,7 +6499,6 @@ void CIdxTree::updateKeyInTree( CAbstractIdxTreeEntry* i_pTreeEntry )
     }
 
     QString strKeyInTreePrev = i_pTreeEntry->keyInTree();
-    int     idxInTree        = i_pTreeEntry->indexInTree();
 
     m_mappTreeEntries.remove(strKeyInTreePrev);
 

@@ -47,8 +47,7 @@ SOURCES += \
     ../../../Source/Libs/ZSSys/ZSSysTrcServer.cpp \
     ../../../Source/Libs/ZSSys/ZSSysTrcMthFile.cpp \
     ../../../Source/Libs/ZSSys/ZSSysTrcMethod.cpp \
-    ../../../Source/Libs/ZSSys/ZSSysTrcData.cpp \
-    ../../../Source/Libs/ZSSys/ZSSysTrcAdminObjPool.cpp \
+    ../../../Source/Libs/ZSSys/ZSSysTrcAdminObjIdxTree.cpp \
     ../../../Source/Libs/ZSSys/ZSSysTrcAdminObj.cpp \
     ../../../Source/Libs/ZSSys/ZSSysTime.cpp \
     ../../../Source/Libs/ZSSys/ZSSysSleeperThread.cpp \
@@ -70,8 +69,11 @@ SOURCES += \
     ../../../Source/Libs/ZSSys/ZSSysErrCode.cpp \
     ../../../Source/Libs/ZSSys/ZSSysEnumValArr.cpp \
     ../../../Source/Libs/ZSSys/ZSSysEnumVal.cpp \
-    ../../../Source/Libs/ZSSys/ZSSysEnum.cpp \
+    ../../../Source/Libs/ZSSys/ZSSysEnumerationIdxTree.cpp \
+    ../../../Source/Libs/ZSSys/ZSSysEnumeration.cpp \
+    ../../../Source/Libs/ZSSys/ZSSysEnumEntry.cpp \
     ../../../Source/Libs/ZSSys/ZSSysDllMain.cpp \
+    ../../../Source/Libs/ZSSys/ZSSysCommon.cpp \
     ../../../Source/Libs/ZSSys/ZSSysAux.cpp \
     ../../../Source/Libs/ZSSys/ZSSysApp.cpp
 
@@ -80,8 +82,7 @@ HEADERS += \
     ../../../Include/Libs/ZSSys/ZSSysTrcServer.h \
     ../../../Include/Libs/ZSSys/ZSSysTrcMthFile.h \
     ../../../Include/Libs/ZSSys/ZSSysTrcMethod.h \
-    ../../../Include/Libs/ZSSys/ZSSysTrcData.h \
-    ../../../Include/Libs/ZSSys/ZSSysTrcAdminObjPool.h \
+    ../../../Include/Libs/ZSSys/ZSSysTrcAdminObjIdxTree.h \
     ../../../Include/Libs/ZSSys/ZSSysTrcAdminObj.h \
     ../../../Include/Libs/ZSSys/ZSSysTime.h \
     ../../../Include/Libs/ZSSys/ZSSysSleeperThread.h \
@@ -103,8 +104,11 @@ HEADERS += \
     ../../../Include/Libs/ZSSys/ZSSysErrCode.h \
     ../../../Include/Libs/ZSSys/ZSSysEnumValArr.h \
     ../../../Include/Libs/ZSSys/ZSSysEnumVal.h \
-    ../../../Include/Libs/ZSSys/ZSSysEnum.h \
+    ../../../Include/Libs/ZSSys/ZSSysEnumeration.h \
+    ../../../Include/Libs/ZSSys/ZSSysEnumEntry.h \
+    ../../../Include/Libs/ZSSys/ZSSysEnumTemplate.h \
     ../../../Include/Libs/ZSSys/ZSSysDllMain.h \
+    ../../../Include/Libs/ZSSys/ZSSysCommon.h \
     ../../../Include/Libs/ZSSys/ZSSysAux.h \
     ../../../Include/Libs/ZSSys/ZSSysApp.h
 

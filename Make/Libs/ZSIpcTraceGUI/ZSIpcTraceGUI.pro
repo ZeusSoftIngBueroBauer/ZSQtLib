@@ -6,7 +6,7 @@
 
 QT += network xml
 
-MODULE = ZSTraceGUI
+MODULE = ZSIpcTraceGUI
 
 VERSION = 4.6.3
 
@@ -38,7 +38,7 @@ CONFIG(debug, release|debug) {
     DEFINES += _DEBUG
 }
 DEFINES += _ZSTRACE
-DEFINES += ZSTRACEGUIDLL_EXPORTS
+DEFINES += ZSIPCTRACEGUIDLL_EXPORTS
 
 INCLUDEPATH += ../../../Include/Libs
 
@@ -47,51 +47,31 @@ LIBS += -L../../../Lib/$$PLATFORM
 CONFIG(release, release|debug) {
     LIBS += -lZSSys
     LIBS += -lZSIpc
-    LIBS += -lZSTrace
+    LIBS += -lZSIpcTrace
     LIBS += -lZSSysGUI
     LIBS += -lZSIpcGUI
 }
 CONFIG(debug, release|debug) {
     LIBS += -lZSSysd
     LIBS += -lZSIpcd
-    LIBS += -lZSTraced
+    LIBS += -lZSIpcTraced
     LIBS += -lZSSysGUId
     LIBS += -lZSIpcGUId
 }
 
 SOURCES += \
-    ../../../Source/Libs/ZSTraceGUI/ZSTrcSettingsWdgt.cpp \
-    ../../../Source/Libs/ZSTraceGUI/ZSTrcServerDlg.cpp \
-    ../../../Source/Libs/ZSTraceGUI/ZSTrcMthWdgt.cpp \
-    ../../../Source/Libs/ZSTraceGUI/ZSTrcMthModel.cpp \
-    ../../../Source/Libs/ZSTraceGUI/ZSTrcMsgWdgt.cpp \
-    ../../../Source/Libs/ZSTraceGUI/ZSTrcMsgModel.cpp \
-    ../../../Source/Libs/ZSTraceGUI/ZSTrcGUIDllMain.cpp \
-    ../../../Source/Libs/ZSTraceGUI/ZSTrcCtxWdgt.cpp \
-    ../../../Source/Libs/ZSTraceGUI/ZSTrcCtxModel.cpp \
-    ../../../Source/Libs/ZSTraceGUI/ZSTrcClientDlg.cpp \
-    ../../../Source/Libs/ZSTraceGUI/ZSTrcAdminObjPoolWdgtNameSpaces.cpp \
-    ../../../Source/Libs/ZSTraceGUI/ZSTrcAdminObjPoolWdgtNameSpaceContent.cpp \
-    ../../../Source/Libs/ZSTraceGUI/ZSTrcAdminObjPoolWdgt.cpp \
-    ../../../Source/Libs/ZSTraceGUI/ZSTrcAdminObjPoolModel.cpp \
-    ../../../Source/Libs/ZSTraceGUI/ZSTrcAdminObjPoolDlg.cpp
+    ../../../Source/Libs/ZSIpcTraceGUI/ZSIpcTrcClientDlg.cpp \
+    ../../../Source/Libs/ZSIpcTraceGUI/ZSIpcTrcGUIDllMain.cpp \
+    ../../../Source/Libs/ZSIpcTraceGUI/ZSIpcTrcMthWdgt.cpp \
+    ../../../Source/Libs/ZSIpcTraceGUI/ZSIpcTrcServerDlg.cpp \
+    ../../../Source/Libs/ZSIpcTraceGUI/ZSIpcTrcSettingsWdgt.cpp
 
 HEADERS += \
-    ../../../Include/Libs/ZSTraceGUI/ZSTrcSettingsWdgt.h \
-    ../../../Include/Libs/ZSTraceGUI/ZSTrcServerDlg.h \
-    ../../../Include/Libs/ZSTraceGUI/ZSTrcMthWdgt.h \
-    ../../../Include/Libs/ZSTraceGUI/ZSTrcMthModel.h \
-    ../../../Include/Libs/ZSTraceGUI/ZSTrcMsgWdgt.h \
-    ../../../Include/Libs/ZSTraceGUI/ZSTrcMsgModel.h \
-    ../../../Include/Libs/ZSTraceGUI/ZSTrcGUIDllMain.h \
-    ../../../Include/Libs/ZSTraceGUI/ZSTrcCtxWdgt.h \
-    ../../../Include/Libs/ZSTraceGUI/ZSTrcCtxModel.h \
-    ../../../Include/Libs/ZSTraceGUI/ZSTrcClientDlg.h \
-    ../../../Include/Libs/ZSTraceGUI/ZSTrcAdminObjPoolWdgtNameSpaces.h \
-    ../../../Include/Libs/ZSTraceGUI/ZSTrcAdminObjPoolWdgtNameSpaceContent.h \
-    ../../../Include/Libs/ZSTraceGUI/ZSTrcAdminObjPoolWdgt.h \
-    ../../../Include/Libs/ZSTraceGUI/ZSTrcAdminObjPoolModel.h \
-    ../../../Include/Libs/ZSTraceGUI/ZSTrcAdminObjPoolDlg.h
+    ../../../Include/Libs/ZSIpcTraceGUI/ZSIpcTrcClientDlg.h \
+    ../../../Include/Libs/ZSIpcTraceGUI/ZSIpcTrcGUIDllMain.h \
+    ../../../Include/Libs/ZSIpcTraceGUI/ZSIpcTrcMthWdgt.h \
+    ../../../Include/Libs/ZSIpcTraceGUI/ZSIpcTrcServerDlg.h \
+    ../../../Include/Libs/ZSIpcTraceGUI/ZSIpcTrcSettingsWdgt.h
 
 unix:!symbian {
     maemo5 {

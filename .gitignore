@@ -4,7 +4,7 @@
 #Windows Thumbnails
 Thumbs.db
 
-#Visual Studio Dateien
+#Visual Studio Files
 *.obj
 *.exe
 *.dll
@@ -39,7 +39,12 @@ obj/
 [Rr]elease*/
 _ReSharper*/
 
-#Python Dateien
+#QtCreator Files
+.qmake.stash
+build*/*
+qrc_*.cpp
+
+#Python Files
 *.pyc
 __pycache__*/
 [Bb]uild
@@ -51,7 +56,9 @@ __pycache__*/
 #Makefile
 #Makefile.Debug
 #Makefile.Release
-#Make/ZSSys/Makefile#Make/ZSSys/Makefile.Debug#Make/ZSSys/Makefile.Release
+#Make/ZSSys/Makefile
+#Make/ZSSys/Makefile.Debug
+#Make/ZSSys/Makefile.Release
 
 #Output Directories
 /Bin
@@ -64,4 +71,5 @@ __pycache__*/
 
 #Explizit
 #RemoteRepositories.txt
-#Remote Repositories.txt
+#Remote Repositories.txt
+

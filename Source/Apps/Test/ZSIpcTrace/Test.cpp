@@ -890,7 +890,7 @@ void CTest::onRequestChanged( ZS::System::SRequestDscr i_reqDscr )
 } // onRequestChanged
 
 //------------------------------------------------------------------------------
-void CTest::onTraceClientTraceAdminObjInserted( QObject* i_pTrcClient, const QString& i_strKeyInTree )
+void CTest::onTraceClientTraceAdminObjInserted( QObject* /*i_pTrcClient*/, const QString& /*i_strKeyInTree*/ )
 //------------------------------------------------------------------------------
 {
     ZS::Test::CTestStep* pTestStep = getCurrentTestStep();

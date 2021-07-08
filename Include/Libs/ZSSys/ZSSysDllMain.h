@@ -102,6 +102,7 @@ Visual Studio 2019 version 16.7  | 1927
 Visual Studio 2019 version 16.8  | 1928
 Visual Studio 2019 version 16.10 | 1929
 */
+#ifdef _WINDOWS
 #if _MSC_VER <= 1200
 #define __CXX_STANDARD__ 1
 #define COMPILERLIBINFIX "msvc2000"
@@ -140,7 +141,13 @@ Visual Studio 2019 version 16.10 | 1929
 #else
 #define __CXX_STANDARD__ 1
 #endif
+#endif // #ifdef _WINDOWS
 
+#ifndef COMPILERLIBINFIX
+#define COMPILERLIBINFIX ""
+#endif
+
+#ifdef _WINDOWS
 #if (__CXX_STANDARD__ == 201703)
 #define CXX_STANDARD 17
 #elif (__CXX_STANDARD__ == 201402)
@@ -152,9 +159,10 @@ Visual Studio 2019 version 16.10 | 1929
 #elif (__CXX_STANDARD__ == 1)
 #define CXX_STANDARD 1
 #ifndef nullptr
-#define nullptr NULL
+#define nullptr 0
 #endif
 #endif
+#endif // #ifdef _WINDOWS
 
 // Set the following compile switch to use the pragmas within the main modules
 // for linking the different versions of the Qt dlls (Qt 4, Qt 5, Debug, Release).
@@ -165,16 +173,20 @@ Visual Studio 2019 version 16.10 | 1929
 #endif
 
 // Some customers are configuring Qt to rename the Qt libraries to Qt*<infix>.
-#ifdef _WINDOWS
 #define QTLIBINFIX ""
 //#define QTLIBINFIX "Isar"
 //#define QTLIBINFIX "SWP"
-#endif
 
+#ifdef _WINDOWS
 #ifdef _WIN64
 #define PLATFORMLIBINFIX "x64"
 #else
 #define PLATFORMLIBINFIX "Win32"
+#endif
+#endif // #ifdef _WINDOWS
+
+#ifndef PLATFORMLIBINFIX
+#define PLATFORMLIBINFIX ""
 #endif
 
 #ifdef _DEBUG
