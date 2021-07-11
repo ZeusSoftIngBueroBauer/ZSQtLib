@@ -199,15 +199,16 @@ Version History:
 #define ZSLIB_VERSION_MINOR 6
 #define ZSLIB_VERSION_PATCH 3
 
+#define ZSVersionNr "4.6.3"
+
 // Please note !!!
 // The version number definition is read by the build process to update the
 // version number in resource files, setup projects and so on.
 // !! Therefore: don't change the format of the version number definition !!
-#ifdef _WINDOWS
-#define ZSVersionNr _ZSSYS_TOSTRING(ZSLIB_VERSION_MAJOR)"."_ZSSYS_TOSTRING(ZSLIB_VERSION_MINOR)"."_ZSSYS_TOSTRING(ZSLIB_VERSION_PATCH)
-#else
-#define ZSVersionNr "4.6.3"
-#endif
+//#ifdef _WINDOWS
+//#define ZSVersionNr _ZSSYS_TOSTRING(ZSLIB_VERSION_MAJOR) "." _ZSSYS_TOSTRING(ZSLIB_VERSION_MINOR) "." _ZSSYS_TOSTRING(ZSLIB_VERSION_PATCH)
+//#else
+//#endif
 
 const QString c_strSysVersionNr(ZSVersionNr);
 

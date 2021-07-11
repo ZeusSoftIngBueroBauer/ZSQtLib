@@ -62,8 +62,6 @@ Libraries depending on build configuration and used Qt version
 
 #pragma message(__FILE__ ": Linking against = " QTCORELIB)
 #pragma comment(lib, QTCORELIB)
-#pragma message(__FILE__ ": Linking against = " QTNETWORKLIB)
-#pragma comment(lib, QTNETWORKLIB)
 #pragma message(__FILE__ ": Linking against = " QTXMLLIB)
 #pragma comment(lib, QTXMLLIB)
 #pragma message(__FILE__ ": Linking against = " QTGUILIB)

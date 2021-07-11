@@ -45,8 +45,8 @@ Libraries depending on build configuration and used Qt version
 
 #ifdef _WINDOWS
 
-//#pragma comment(lib, "user32.lib")
-//#pragma comment(lib, "advapi32.lib")
+#pragma comment(lib, "user32.lib")
+#pragma comment(lib, "advapi32.lib")
 
 #if _MSC_VER <= 1200
 #pragma message("Visual Studio 6.0")
