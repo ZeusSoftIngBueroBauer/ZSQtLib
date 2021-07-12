@@ -34,7 +34,7 @@ win32-msvc2019 {
 }
 linux {
     DEFINES += __linux__
-    COMPILERLIBINFIX = "linux" # should become gcc whatever
+    COMPILERLIBINFIX = gcc
     PLATFORM = x64
 }
 

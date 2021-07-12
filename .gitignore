@@ -53,7 +53,7 @@ __pycache__*/
 
 #Generated Make Files
 *.db
-#Makefile
+Makefile
 #Makefile.Debug
 #Makefile.Release
 #Make/ZSSys/Makefile

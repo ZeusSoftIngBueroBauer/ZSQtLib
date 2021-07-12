@@ -33,7 +33,7 @@ win32-msvc2019 {
 }
 linux {
     DEFINES += __linux__
-    COMPILERLIBINFIX = "linux" # should become gcc whatever
+    COMPILERLIBINFIX = gcc
     PLATFORM = x64
 }
 
@@ -58,9 +58,6 @@ DEFINES += ZSIPCTRACEDLL_EXPORTS
 INCLUDEPATH += ../../../Include/Libs
 
 LIBS += -L../../../Lib/$$COMPILERLIBINFIX"_"$$PLATFORM
-#linux {
-#    LIBS += -L/usr/local/lib
-#}
 
 CONFIG(release, release|debug) {
     LIBS += -lZSSys"Qt"$$QT_MAJOR_VERSION"_"$$COMPILERLIBINFIX"_"$$PLATFORM
@@ -89,6 +86,11 @@ windows {
     SOURCEDIR = ..\..\..\Lib\\$$COMPILERLIBINFIX"_"$$PLATFORM
     TARGETDIR = ..\..\..\Bin\\$$COMPILERLIBINFIX"_"$$PLATFORM
     QMAKE_POST_LINK=copy /Y $$SOURCEDIR"\\"$$TARGET".dll" $$TARGETDIR"\\*.dll"
+}
+linux {
+    SOURCEDIR = ../../../Lib/$$COMPILERLIBINFIX"_"$$PLATFORM
+    TARGETDIR = ../../../Bin/$$COMPILERLIBINFIX"_"$$PLATFORM
+    QMAKE_POST_LINK=cp $$SOURCEDIR"/lib"$$TARGET"*.so*" $$TARGETDIR
 }
 
 unix:!symbian {

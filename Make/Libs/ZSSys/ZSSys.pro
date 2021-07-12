@@ -33,7 +33,7 @@ win32-msvc2019 {
 }
 linux {
     DEFINES += __linux__
-    COMPILERLIBINFIX = linux # should become gcc whatever
+    COMPILERLIBINFIX = gcc
     PLATFORM = x64
 }
 
@@ -131,6 +131,11 @@ windows {
     SOURCEDIR = ..\..\..\Lib\\$$COMPILERLIBINFIX"_"$$PLATFORM
     TARGETDIR = ..\..\..\Bin\\$$COMPILERLIBINFIX"_"$$PLATFORM
     QMAKE_POST_LINK=copy /Y $$SOURCEDIR"\\"$$TARGET".dll" $$TARGETDIR"\\*.dll"
+}
+linux {
+    SOURCEDIR = ../../../Lib/$$COMPILERLIBINFIX"_"$$PLATFORM
+    TARGETDIR = ../../../Bin/$$COMPILERLIBINFIX"_"$$PLATFORM
+    QMAKE_POST_LINK=cp $$SOURCEDIR"/lib"$$TARGET"*.so*" $$TARGETDIR
 }
 
 unix:!symbian {
