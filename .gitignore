@@ -51,14 +51,21 @@ __pycache__*/
 [Dd]ist
 *.egg-info*/
 
+#Include Setups
+!Dist
+Dist/*
+!Dist/msvc2019_x64/
+Dist/msvc2019_x64/*
+!Dist/msvc2019_x64/Release/
+Dist/msvc2019_x64/Release/*
+!Dist/msvc2019_x64/Release/ZSAppTrcMthClient/
+Dist/msvc2019_x64/Release/ZSAppTrcMthClient/*
+!Dist/msvc2019_x64/Release/ZSAppTrcMthClient/ZSAppTrcMthClient-Setup.exe
+
 #Generated Make Files
 *.db
 Makefile
-#Makefile.Debug
-#Makefile.Release
-#Make/ZSSys/Makefile
-#Make/ZSSys/Makefile.Debug
-#Make/ZSSys/Makefile.Release
+Makefile.*
 
 #Output Directories
 /Bin
@@ -72,4 +79,3 @@ Makefile
 #Explizit
 #RemoteRepositories.txt
 #Remote Repositories.txt
-
