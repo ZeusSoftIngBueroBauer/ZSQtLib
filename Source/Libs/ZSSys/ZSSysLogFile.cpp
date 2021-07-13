@@ -880,7 +880,7 @@ void CLogFile::backup()
                     {
                         strLogBakFilePath += "/";
                     }
-                    strLogBakFilePath += "Log.Bak/" + fileInfo.fileName();
+                    strLogBakFilePath += "Log.bak/" + fileInfo.fileName();
 
                     fileOld.copy(strLogBakFilePath);
                     fileOld.remove();

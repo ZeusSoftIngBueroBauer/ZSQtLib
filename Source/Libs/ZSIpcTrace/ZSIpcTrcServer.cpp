@@ -1048,7 +1048,7 @@ void CIpcTrcServer::traceMethod(
     // calls as "traceMethodEnter" is usually called from within different
     // thread contexts.
 
-    if( i_pTrcAdminObj != nullptr && i_pTrcAdminObj->isActive(ETraceDetailLevelRuntimeInfo) && isEnabled() && isActive() )
+    if( i_pTrcAdminObj != nullptr && i_pTrcAdminObj->isActive(ETraceDetailLevelMethodCalls) && isEnabled() && isActive() )
     {
         addEntry(
             /* strThreadName */ currentThreadName(),
@@ -1081,7 +1081,7 @@ void CIpcTrcServer::traceMethod(
     // calls as "traceMethodEnter" is usually called from within different
     // thread contexts.
 
-    if( i_pTrcAdminObj != nullptr && i_pTrcAdminObj->isActive(ETraceDetailLevelRuntimeInfo) && isEnabled() && isActive() )
+    if( i_pTrcAdminObj != nullptr && i_pTrcAdminObj->isActive(ETraceDetailLevelMethodCalls) && isEnabled() && isActive() )
     {
         addEntry(
             /* strThreadName */ currentThreadName(),
