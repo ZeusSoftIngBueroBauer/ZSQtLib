@@ -276,7 +276,7 @@ CApplication::CApplication(
     // But create trace server before the main window so that the main window can connect
     // to the stateChanged signal of the trace server.
 
-    m_pTrcServer = CIpcTrcServer::CreateInstance("ZSTrcServer", false, m_iTrcDetailLevelTrcServer);
+    m_pTrcServer = CIpcTrcServer::CreateInstance("ZSTrcServer", m_iTrcDetailLevelTrcServer);
 
     m_pTrcServer->setHostSettings(m_trcServerHostSettings);
     m_pTrcServer->setTraceSettings(m_trcServerSettings);

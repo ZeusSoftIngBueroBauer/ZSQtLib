@@ -56,7 +56,6 @@ public: // class methods
 public: // ctors and dtor
     CIpcTrcServerThread(
         const QString& i_strServerName,
-        bool i_bCreateServerOnlyIfNotYetExisting = false,
         int i_iTrcDetailLevel = ZS::Trace::ETraceDetailLevelNone );
     virtual ~CIpcTrcServerThread();
 public: // instance methods
@@ -68,7 +67,6 @@ public: // overridables of base class QThread
 protected: // instance members
     QString           m_strServerName;
     QCoreApplication* m_pQtAppCreatedByDllIf;
-    bool              m_bCreateServerOnlyIfNotYetExisting;
     int               m_iTrcDetailLevel;
     CTrcMthFile*      m_pTrcMthFile;
 

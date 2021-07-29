@@ -339,7 +339,7 @@ void CTest::doTestStepTraceServerCreateInstance( ZS::Test::CTestStep* i_pTestSte
     //----------
 
     m_pTrcServer = ZS::Trace::DllIf::CIpcTrcServer::CreateInstance(
-        "ZSTrcServer", false, ZS::Trace::DllIf::ETraceDetailLevelMethodArgs);
+        "ZSTrcServer", ZS::Trace::DllIf::ETraceDetailLevelMethodArgs);
 
     // Actual Values
     //---------------

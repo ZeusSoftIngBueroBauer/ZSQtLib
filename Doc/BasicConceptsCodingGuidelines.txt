@@ -29,4 +29,14 @@ Methods:
   class methods start with a uppercase letter and the instance methods with a lowercase letter
   (e.g. static QString NameSpace(), virtual QString nameSpace()).
 
+- GetInstance / CreateInstance / ReleaseInstance
+
+  - GetInstance always returns a reference to an existing instance or nullptr but
+    will never create an instance if not yet existing.
+  - CreateInstance always returns a reference to an instance.
+    If the instance did not exist before a reference counter is incremented.
+    ReleaseInstance must always be called after a CreateInstance call if the instance
+    is no longer needed.
+  - ReleaseInstance decrements a reference counter. If the reference counter becomes 0
+    the instance is deleted.
 */

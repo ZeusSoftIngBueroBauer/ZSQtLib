@@ -1798,7 +1798,11 @@ int CIdxTree::add( CAbstractIdxTreeEntry* i_pTreeEntry, const QString& i_strTarg
 
         if( pTargetBranch == nullptr )
         {
+            #if QT_VERSION < 0x050000
             QStringList strlstBranches = i_strTargetPath.split(m_strNodeSeparator, Qt::SkipEmptyParts);
+            #else
+            QStringList strlstBranches = i_strTargetPath.split(m_strNodeSeparator, QString::SkipEmptyParts);
+            #endif
 
             // Please note that the name of the root entry is not included in the TargetPath of the tree entries.
             CBranchIdxTreeEntry* pTargetBranchPrev = m_pRoot;
@@ -2910,7 +2914,11 @@ int CIdxTree::insert(
 
         if( pTargetBranch == nullptr )
         {
+            #if QT_VERSION < 0x050000
             QStringList strlstBranches = i_strTargetPath.split(m_strNodeSeparator, Qt::SkipEmptyParts);
+            #else
+            QStringList strlstBranches = i_strTargetPath.split(m_strNodeSeparator, QString::SkipEmptyParts);
+            #endif
 
             // Please note that the name of the root entry is not included in the TargetPath of the tree entries.
             CBranchIdxTreeEntry* pTargetBranchPrev = m_pRoot;

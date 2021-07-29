@@ -111,6 +111,10 @@ CTrcAdminObj::CTrcAdminObj( const QString& i_strObjName, const QString& i_strObj
 
         if( m_strObjThreadName.isEmpty() )
         {
+            m_strObjThreadName = CTrcServer::GetCurrentThreadName();
+        }
+        if( m_strObjThreadName.isEmpty() )
+        {
             m_strObjThreadName = QString("Thread") + threadId2Str(QThread::currentThreadId());
         }
     } // if( pThread != nullptr )

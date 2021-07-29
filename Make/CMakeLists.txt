@@ -27,6 +27,8 @@
 #   cmake -G "Visual Studio 9 2008" -A Win32 -DCMAKE_BUILD_TYPE=Debug -DQT_VERSION_MAJOR=4 -DCMAKE_PREFIX_PATH=D:/Qt/Bin/4.8.4/msvc2008/Win32/bin ../../../../Make
 # - for VS-2008, Qt-Version 4.8.8 (Qt binaries and qmake on drive C in C:/Qt/Build/4.8.4/msvc2008/Win32/bin):
 #   cmake -G "Visual Studio 9 2008" -A Win32 -DCMAKE_BUILD_TYPE=Debug -DQT_VERSION_MAJOR=4 -DCMAKE_PREFIX_PATH="C:/Qt/Build/4.8.8/msvc2008/Win32/bin" ../../../../Make
+# - for VS-2013, Qt-Version 5.6.3 (QtConfig.cmake located in D:/Qt/5.6/5.6.3/msvc2013_x64_Swp/lib/cmake/Qt5):
+#   cmake -G "Visual Studio 12 2013" -A x64 -DCMAKE_BUILD_TYPE=Debug -DQT_VERSION_MAJOR=5 -DQt5_DIR="D:/Qt/5.6/5.6.3/msvc2013_64_Swp/lib/cmake" ../../../../Make
 # - for VS-2019, Qt-Version 5.15.2 (QtConfig.cmake located in /Qt/Bin/5.15.2/msvc2019/x64/lib/cmake/Qt5):
 #   cmake -G "Visual Studio 16 2019" -A x64 -DCMAKE_BUILD_TYPE=Debug -DQT_VERSION_MAJOR=5 -DQt5_DIR="/Qt/Bin/5.15.2/msvc2019/x64/lib/cmake/Qt5" ../../../../Make
 #

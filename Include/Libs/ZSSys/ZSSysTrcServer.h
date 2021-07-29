@@ -123,7 +123,6 @@ public: // class methods
     static CTrcServer* GetInstance( const QString& i_strName = "ZSTrcServer" );
     static CTrcServer* CreateInstance(
         const QString& i_strName = "ZSTrcServer",
-        bool i_bCreateOnlyIfNotYetExisting = false,
         int i_iTrcDetailLevel = ETraceDetailLevelNone );
     static void ReleaseInstance( const QString& i_strName = "ZSTrcServer" );
     static void ReleaseInstance( CTrcServer* i_pTrcServer );

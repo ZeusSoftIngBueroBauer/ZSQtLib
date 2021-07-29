@@ -70,6 +70,9 @@ class CIpcTrcServerThread;
 public Dll interface methods
 *******************************************************************************/
 
+static int s_iDLL_PROCESS_ATTACH = 0;
+static int s_iDLL_THREAD_ATTACH = 0;
+
 static QMutex DllIf_s_mtx;
 
 static QHash<QString, CTrcMthFile*> DllIf_IpcTrcServer_s_hshpTrcMthFiles;
@@ -77,10 +80,9 @@ static QHash<QString, int>          DllIf_IpcTrcServer_s_hshiTrcMthDetailLevels;
 
 static QCoreApplication* DllIf_s_pQtAppCreatedByDllIf = nullptr;
 
-static ZS::Trace::DllIf::CIpcTrcServerThread* DllIf_s_pThreadIpcTrcServer = nullptr;
-
-static QHash<QString, DllIf::CIpcTrcServer*> DllIf_IpcTrcServer_s_hshpInstances;
-static QHash<QString, bool>                  DllIf_IpcTrcServer_s_hshbTrcServerCreated;
+static QHash<QString, DllIf::CIpcTrcServer*>       DllIf_IpcTrcServer_s_hshpInstances;
+static QHash<QString, int>                         DllIf_IpcTrcServer_s_hshiTrcServerRefCount;
+static QHash<QString, DllIf::CIpcTrcServerThread*> DllIf_s_hsppIpcTrcServerThreads;
 
 const QString c_strNameSpace = "ZS::Trace::DllIf";
 const QString c_strClassName = "DllMain";
@@ -90,10 +92,12 @@ DllIf::CTrcAdminObj
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-ZSIPCTRACEDLL_EXTERN_API const char* TrcAdminObj_getNameSpace( const DllIf::CTrcAdminObj* i_pTrcAdminObj )
+ZSIPCTRACEDLL_EXTERN_API char* TrcAdminObj_getNameSpace( const DllIf::CTrcAdminObj* i_pTrcAdminObj )
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&DllIf_s_mtx);
+
+    char* szName = nullptr;
 
     if( i_pTrcAdminObj != nullptr )
     {
@@ -113,20 +117,25 @@ ZSIPCTRACEDLL_EXTERN_API const char* TrcAdminObj_getNameSpace( const DllIf::CTrc
 
             if( pTrcAdminObj != nullptr )
             {
-                return pTrcAdminObj->getNameSpace().toStdString().c_str();
+                std::string stdstrName = pTrcAdminObj->getNameSpace().toStdString();
+                char* szName = new char[stdstrName.size() + 1];
+                memcpy(szName, stdstrName.c_str(), stdstrName.size());
+                szName[stdstrName.size()] = 0x00;
             }
         } // if( pTrcServer != nullptr )
     } // if( i_pTrcAdminObj != nullptr )
 
-    return NULL;
+    return szName;
 
 } // TrcAdminObj_getNameSpace
 
 //------------------------------------------------------------------------------
-ZSIPCTRACEDLL_EXTERN_API const char* TrcAdminObj_getClassName( const DllIf::CTrcAdminObj* i_pTrcAdminObj )
+ZSIPCTRACEDLL_EXTERN_API char* TrcAdminObj_getClassName( const DllIf::CTrcAdminObj* i_pTrcAdminObj )
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&DllIf_s_mtx);
+
+    char* szName = nullptr;
 
     if( i_pTrcAdminObj != nullptr )
     {
@@ -146,20 +155,25 @@ ZSIPCTRACEDLL_EXTERN_API const char* TrcAdminObj_getClassName( const DllIf::CTrc
 
             if( pTrcAdminObj != nullptr )
             {
-                return pTrcAdminObj->getClassName().toStdString().c_str();
+                std::string stdstrName = pTrcAdminObj->getClassName().toStdString();
+                char* szName = new char[stdstrName.size() + 1];
+                memcpy(szName, stdstrName.c_str(), stdstrName.size());
+                szName[stdstrName.size()] = 0x00;
             }
         } // if( pTrcServer != nullptr )
     } // if( i_pTrcAdminObj != nullptr )
 
-    return NULL;
+    return szName;
 
 } // TrcAdminObj_getClassName
 
 //------------------------------------------------------------------------------
-ZSIPCTRACEDLL_EXTERN_API const char* TrcAdminObj_getObjectName( const DllIf::CTrcAdminObj* i_pTrcAdminObj )
+ZSIPCTRACEDLL_EXTERN_API char* TrcAdminObj_getObjectName( const DllIf::CTrcAdminObj* i_pTrcAdminObj )
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&DllIf_s_mtx);
+
+    char* szName = nullptr;
 
     if( i_pTrcAdminObj != nullptr )
     {
@@ -179,12 +193,15 @@ ZSIPCTRACEDLL_EXTERN_API const char* TrcAdminObj_getObjectName( const DllIf::CTr
 
             if( pTrcAdminObj != nullptr )
             {
-                return pTrcAdminObj->getObjectName().toStdString().c_str();
+                std::string stdstrName = pTrcAdminObj->getObjectName().toStdString();
+                char* szName = new char[stdstrName.size() + 1];
+                memcpy(szName, stdstrName.c_str(), stdstrName.size());
+                szName[stdstrName.size()] = 0x00;
             }
         } // if( pTrcServer != nullptr )
     } // if( i_pTrcAdminObj != nullptr )
 
-    return NULL;
+    return szName;
 
 } // TrcAdminObj_getObjectName
 
@@ -242,10 +259,12 @@ ZSIPCTRACEDLL_EXTERN_API void TrcAdminObj_setObjectThreadName(
 } // TrcAdminObj_setObjectThreadName
 
 //------------------------------------------------------------------------------
-ZSIPCTRACEDLL_EXTERN_API const char* TrcAdminObj_getObjectThreadName( const DllIf::CTrcAdminObj* i_pTrcAdminObj )
+ZSIPCTRACEDLL_EXTERN_API char* TrcAdminObj_getObjectThreadName( const DllIf::CTrcAdminObj* i_pTrcAdminObj )
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&DllIf_s_mtx);
+
+    char* szName = nullptr;
 
     if( i_pTrcAdminObj != nullptr )
     {
@@ -265,12 +284,15 @@ ZSIPCTRACEDLL_EXTERN_API const char* TrcAdminObj_getObjectThreadName( const DllI
 
             if( pTrcAdminObj != nullptr )
             {
-                return pTrcAdminObj->getObjectThreadName().toStdString().c_str();
+                std::string stdstrName = pTrcAdminObj->getObjectThreadName().toStdString();
+                char* szName = new char[stdstrName.size() + 1];
+                memcpy(szName, stdstrName.c_str(), stdstrName.size());
+                szName[stdstrName.size()] = 0x00;
             }
         } // if( pTrcServer != nullptr )
     } // if( i_pTrcAdminObj != nullptr )
 
-    return NULL;
+    return szName;
 
 } // TrcAdminObj_getObjectThreadName
 
@@ -690,6 +712,11 @@ ZSIPCTRACEDLL_EXTERN_API DllIf::CTrcAdminObj* TrcServer_GetTraceAdminObj(
     int         i_iDefaultDetailLevel )
 //------------------------------------------------------------------------------
 {
+    if( s_iDLL_PROCESS_ATTACH <= 0 ) // Dll already unloaded
+    {
+        return NULL;
+    }
+
     QMutexLocker mtxLocker(&DllIf_s_mtx);
 
     DllIf::CTrcAdminObj* pDllIfTrcAdminObj = nullptr;
@@ -765,6 +792,11 @@ ZSIPCTRACEDLL_EXTERN_API void TrcServer_ReleaseTraceAdminObj(
     DllIf::CTrcAdminObj* i_pTrcAdminObj )
 //------------------------------------------------------------------------------
 {
+    if( s_iDLL_PROCESS_ATTACH <= 0 ) // Dll already unloaded
+    {
+        return;
+    }
+
     QMutexLocker mtxLocker(&DllIf_s_mtx);
 
     QString strServerName = i_szServerName;
@@ -836,18 +868,20 @@ ZSIPCTRACEDLL_EXTERN_API void TrcServer_SetOrganizationName( const char* i_szNam
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&DllIf_s_mtx);
-
     QCoreApplication::setOrganizationName(i_szName);
 
 } // TrcServer_SetOrganizationName
 
 //------------------------------------------------------------------------------
-ZSIPCTRACEDLL_EXTERN_API const char* TrcServer_GetOrganizationName()
+ZSIPCTRACEDLL_EXTERN_API char* TrcServer_GetOrganizationName()
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&DllIf_s_mtx);
-
-    return QCoreApplication::organizationName().toStdString().c_str();
+    std::string stdstrName = QCoreApplication::organizationName().toStdString();
+    char* szName = new char[stdstrName.size() + 1];
+    memcpy(szName, stdstrName.c_str(), stdstrName.size());
+    szName[stdstrName.size()] = 0x00;
+    return szName;
 
 } // TrcServer_GetOrganizationName
 
@@ -856,18 +890,20 @@ ZSIPCTRACEDLL_EXTERN_API void TrcServer_SetApplicationName( const char* i_szName
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&DllIf_s_mtx);
-
     QCoreApplication::setApplicationName(i_szName);
 
 } // TrcServer_SetApplicationName
 
 //------------------------------------------------------------------------------
-ZSIPCTRACEDLL_EXTERN_API const char* TrcServer_GetApplicationName()
+ZSIPCTRACEDLL_EXTERN_API char* TrcServer_GetApplicationName()
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&DllIf_s_mtx);
-
-    return QCoreApplication::applicationName().toStdString().c_str();
+    std::string stdstrName = QCoreApplication::applicationName().toStdString();
+    char* szName = new char[stdstrName.size() + 1];
+    memcpy(szName, stdstrName.c_str(), stdstrName.size());
+    szName[stdstrName.size()] = 0x00;
+    return szName;
 
 } // TrcServer_GetApplicationName
 
@@ -927,12 +963,16 @@ ZSIPCTRACEDLL_EXTERN_API void TrcServer_UnregisterCurrentThread()
 } // TrcServer_UnregisterCurrentThread
 
 //------------------------------------------------------------------------------
-ZSIPCTRACEDLL_EXTERN_API const char* TrcServer_GetCurrentThreadName()
+ZSIPCTRACEDLL_EXTERN_API char* TrcServer_GetCurrentThreadName()
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&DllIf_s_mtx);
 
-    return CTrcServer::GetCurrentThreadName().toStdString().c_str();
+    std::string stdstrName = CTrcServer::GetCurrentThreadName().toStdString();
+    char* szName = new char[stdstrName.size() + 1];
+    memcpy(szName, stdstrName.c_str(), stdstrName.size());
+    szName[stdstrName.size()] = 0x00;
+    return szName;
 
 } // TrcServer_GetCurrentThreadName
 
@@ -1193,10 +1233,12 @@ ZSIPCTRACEDLL_EXTERN_API void TrcServer_setAdminObjFileAbsoluteFilePath( const D
 } // TrcServer_setAdminObjFileAbsoluteFilePath
 
 //------------------------------------------------------------------------------
-ZSIPCTRACEDLL_EXTERN_API const char* TrcServer_getAdminObjFileAbsoluteFilePath( const DllIf::CTrcServer* i_pTrcServer )
+ZSIPCTRACEDLL_EXTERN_API char* TrcServer_getAdminObjFileAbsoluteFilePath( const DllIf::CTrcServer* i_pTrcServer )
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&DllIf_s_mtx);
+
+    char* szAbsFilePath = nullptr;
 
     if( i_pTrcServer != nullptr )
     {
@@ -1206,11 +1248,14 @@ ZSIPCTRACEDLL_EXTERN_API const char* TrcServer_getAdminObjFileAbsoluteFilePath( 
 
         if( pTrcServer != nullptr )
         {
-            return pTrcServer->getAdminObjFileAbsoluteFilePath().toStdString().c_str();
+            std::string stdstrAbsFilePath = pTrcServer->getAdminObjFileAbsoluteFilePath().toStdString();
+            szAbsFilePath = new char[stdstrAbsFilePath.size() + 1];
+            memcpy(szAbsFilePath, stdstrAbsFilePath.c_str(), stdstrAbsFilePath.size());
+            szAbsFilePath[stdstrAbsFilePath.size()] = 0x00;
         }
     } // if( i_pTrcServer != nullptr )
 
-    return NULL;
+    return szAbsFilePath;
 
 } // TrcServer_getAdminObjFileAbsoluteFilePath
 
@@ -1411,7 +1456,7 @@ ZSIPCTRACEDLL_EXTERN_API void TrcServer_setLocalTrcFileAbsoluteFilePath( const D
 } // TrcServer_setLocalTrcFileAbsoluteFilePath
 
 //------------------------------------------------------------------------------
-ZSIPCTRACEDLL_EXTERN_API const char* TrcServer_getLocalTrcFileAbsoluteFilePath( const DllIf::CTrcServer* i_pTrcServer )
+ZSIPCTRACEDLL_EXTERN_API char* TrcServer_getLocalTrcFileAbsoluteFilePath( const DllIf::CTrcServer* i_pTrcServer )
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&DllIf_s_mtx);
@@ -1426,19 +1471,24 @@ ZSIPCTRACEDLL_EXTERN_API const char* TrcServer_getLocalTrcFileAbsoluteFilePath( 
 
         if( pTrcServer != nullptr )
         {
-            return pTrcServer->getLocalTrcFileAbsoluteFilePath().toStdString().c_str();
+            std::string stdstrAbsFilePath = pTrcServer->getLocalTrcFileAbsoluteFilePath().toStdString();
+            szAbsFilePath = new char[stdstrAbsFilePath.size() + 1];
+            memcpy(szAbsFilePath, stdstrAbsFilePath.c_str(), stdstrAbsFilePath.size());
+            szAbsFilePath[stdstrAbsFilePath.size()] = 0x00;
         }
     } // if( i_pTrcServer != nullptr )
 
-    return NULL;
+    return szAbsFilePath;
 
 } // TrcServer_getLocalTrcFileAbsoluteFilePath
 
 //------------------------------------------------------------------------------
-ZSIPCTRACEDLL_EXTERN_API const char* TrcServer_getLocalTrcFileCompleteBaseName( const DllIf::CTrcServer* i_pTrcServer )
+ZSIPCTRACEDLL_EXTERN_API char* TrcServer_getLocalTrcFileCompleteBaseName( const DllIf::CTrcServer* i_pTrcServer )
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&DllIf_s_mtx);
+
+    char* szName = nullptr;
 
     if( i_pTrcServer != nullptr )
     {
@@ -1448,19 +1498,24 @@ ZSIPCTRACEDLL_EXTERN_API const char* TrcServer_getLocalTrcFileCompleteBaseName( 
 
         if( pTrcServer != nullptr )
         {
-            return pTrcServer->getLocalTrcFileCompleteBaseName().toStdString().c_str();
+            std::string stdstrName = pTrcServer->getLocalTrcFileCompleteBaseName().toStdString();
+            szName = new char[stdstrName.size() + 1];
+            memcpy(szName, stdstrName.c_str(), stdstrName.size());
+            szName[stdstrName.size()] = 0x00;
         }
     } // if( i_pTrcServer != nullptr )
 
-    return NULL;
+    return szName;
 
 } // TrcServer_getLocalTrcFileCompleteBaseName
 
 //------------------------------------------------------------------------------
-ZSIPCTRACEDLL_EXTERN_API const char* TrcServer_getLocalTrcFileAbsolutePath( const DllIf::CTrcServer* i_pTrcServer )
+ZSIPCTRACEDLL_EXTERN_API char* TrcServer_getLocalTrcFileAbsolutePath( const DllIf::CTrcServer* i_pTrcServer )
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&DllIf_s_mtx);
+
+    char* szAbsFilePath = nullptr;
 
     if( i_pTrcServer != nullptr )
     {
@@ -1470,11 +1525,14 @@ ZSIPCTRACEDLL_EXTERN_API const char* TrcServer_getLocalTrcFileAbsolutePath( cons
 
         if( pTrcServer != nullptr )
         {
-            return pTrcServer->getLocalTrcFileAbsolutePath().toStdString().c_str();
+            std::string stdstrAbsFilePath = pTrcServer->getLocalTrcFileAbsolutePath().toStdString();
+            szAbsFilePath = new char[stdstrAbsFilePath.size() + 1];
+            memcpy(szAbsFilePath, stdstrAbsFilePath.c_str(), stdstrAbsFilePath.size());
+            szAbsFilePath[stdstrAbsFilePath.size()] = 0x00;
         }
     } // if( i_pTrcServer != nullptr )
 
-    return NULL;
+    return szAbsFilePath;
 
 } // TrcServer_getLocalTrcFileAbsolutePath
 
@@ -2074,15 +2132,12 @@ ZSIPCTRACEDLL_EXTERN_API DllIf::CIpcTrcServer* IpcTrcServer_GetInstance( const c
 //------------------------------------------------------------------------------
 ZSIPCTRACEDLL_EXTERN_API DllIf::CIpcTrcServer* IpcTrcServer_CreateInstance(
     const char* i_szName,
-    bool i_bCreateOnlyIfNotYetExisting,
     int i_iTrcDetailLevel )
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&DllIf_s_mtx);
 
     QString strServerName = i_szName;
-
-    DllIf::CIpcTrcServer* pDllIfTrcServer = nullptr;
 
     QCoreApplication* pApp = dynamic_cast<QCoreApplication*>(QCoreApplication::instance());
 
@@ -2137,68 +2192,76 @@ ZSIPCTRACEDLL_EXTERN_API DllIf::CIpcTrcServer* IpcTrcServer_CreateInstance(
         /* strMethod          */ "IpcTrcServer_CreateInstance",
         /* strMthInArgs       */ strMthInArgs );
 
-    if( !DllIf_IpcTrcServer_s_hshpInstances.contains(strServerName) )
+    DllIf::CIpcTrcServer* pDllIfTrcServer = DllIf_IpcTrcServer_s_hshpInstances.value(strServerName, nullptr);
+
+    int iRefCount = DllIf_IpcTrcServer_s_hshiTrcServerRefCount.value(strServerName, 0) + 1;
+
+    if( pDllIfTrcServer != nullptr /* && iRefCount > 0 */ ) // RefCount mus be greater than 0. Otherwise ... crash.
     {
-        CIpcTrcServer* pTrcServer = CIpcTrcServer::GetInstance(strServerName);
+        CIpcTrcServer::GetInstance(strServerName);
 
-        if( pTrcServer != nullptr )
+        DllIf_IpcTrcServer_s_hshiTrcServerRefCount[strServerName] = iRefCount;
+    }
+    else // if( pDllIfTrcServer == nullptr )
+    {
+        // If the application creating and starting the trace server is a Qt application ...
+        if( DllIf_s_pQtAppCreatedByDllIf == nullptr )
         {
-            DllIf_IpcTrcServer_s_hshbTrcServerCreated[strServerName] = false;
+            // ... there might already trace server instances existing.
+            // If not the trace server can be started and in the current thread
+            // (and can therefore be created in the current thread).
+            CIpcTrcServer::CreateInstance(strServerName, i_iTrcDetailLevel);
         }
-        else // if( pTrcServer == nullptr )
+        // If the application creating and starting the trace server is not a Qt application ...
+        else // if( DllIf_s_pQtAppCreatedByDllIf != nullptr )
         {
-            // If the application creating and starting the trace server is a Qt application ...
-            if( DllIf_s_pQtAppCreatedByDllIf == nullptr )
+            // ... trace servers may only be crated via the Dll interface (via this main dll module).
+            // The trace server must be started from within a different thread context
+            // (and must be therefore created in this different thread context).
+            DllIf::CIpcTrcServerThread* pTrcServerThread = DllIf_s_hsppIpcTrcServerThreads.value(strServerName, nullptr);
+            if( pTrcServerThread == nullptr )
             {
-                CIpcTrcServer::CreateInstance(strServerName, i_bCreateOnlyIfNotYetExisting, i_iTrcDetailLevel);
+                DllIf_s_hsppIpcTrcServerThreads[strServerName] = new DllIf::CIpcTrcServerThread(strServerName, i_iTrcDetailLevel);
             }
+            pTrcServerThread = DllIf_s_hsppIpcTrcServerThreads.value(strServerName);
 
-            // If the application creating and starting the trace server is not a Qt application ...
-            else // if( DllIf_s_pQtAppCreatedByDllIf != nullptr )
+            const int c_iMaxWaitCount = 25;
+            int iWaitCount = 0;
+
+            // Start driver thread and wait until the driver has been created.
+            if( !pTrcServerThread->isRunning() )
             {
-                // ... the trace server must be started from within a different thread context.
-                if( DllIf_s_pThreadIpcTrcServer == nullptr )
+                pTrcServerThread->start();
+
+                iWaitCount = 0;
+                while( !pTrcServerThread->isServerCreated() )
                 {
-                    DllIf_s_pThreadIpcTrcServer = new DllIf::CIpcTrcServerThread(strServerName, i_iTrcDetailLevel);
-                }
+                    #ifdef _WINDOWS
+                    Sleep(200);
+                    #endif
+                    #ifdef __linux__
+                    usleep(200000);
+                    #endif
 
-                const int c_iMaxWaitCount = 25;
-                int iWaitCount = 0;
-
-                // Start driver thread and wait until the driver has been created.
-                if( !DllIf_s_pThreadIpcTrcServer->isRunning() )
-                {
-                    DllIf_s_pThreadIpcTrcServer->start();
-
-                    iWaitCount = 0;
-                    while( !DllIf_s_pThreadIpcTrcServer->isServerCreated() )
+                    iWaitCount++;
+                    if( iWaitCount > c_iMaxWaitCount )
                     {
-                        #ifdef _WINDOWS
-                        Sleep(200);
-                        #endif
-                        #ifdef __linux__
-                        usleep(200000);
-                        #endif
-
-                        iWaitCount++;
-                        if( iWaitCount > c_iMaxWaitCount )
-                        {
-                            break;
-                        }
+                        break;
                     }
                 }
-            } // if( s_pAppCreatedByDriver != nullptr )
-
-            pTrcServer = CIpcTrcServer::GetInstance(strServerName);
-
-            if( pTrcServer != nullptr )
-            {
-                pDllIfTrcServer = new DllIf::CIpcTrcServer(i_szName, i_iTrcDetailLevel);
-                DllIf_IpcTrcServer_s_hshpInstances[strServerName] = pDllIfTrcServer;
-                DllIf_IpcTrcServer_s_hshbTrcServerCreated[strServerName] = true;
             }
-        } // if( pTrcServer == nullptr )
-    } // if( !DllIf_IpcTrcServer_s_hshpInstances.contains(strServerName) )
+
+            // Please note that the trace server has been created (or at least the reference
+            // counter for an existing trace server has been incremented) in the thread.
+            // Invoking "GetInstance" again here would increment the reference counter twice.
+
+        } // if( s_pAppCreatedByDriver != nullptr )
+
+        pDllIfTrcServer = new DllIf::CIpcTrcServer(i_szName, i_iTrcDetailLevel);
+        DllIf_IpcTrcServer_s_hshpInstances[strServerName] = pDllIfTrcServer;
+        DllIf_IpcTrcServer_s_hshiTrcServerRefCount[strServerName] = iRefCount;
+
+    } // if( pDllIfTrcServer == nullptr )
 
     return pDllIfTrcServer;
 
@@ -2230,67 +2293,87 @@ ZSIPCTRACEDLL_EXTERN_API void IpcTrcServer_ReleaseInstance( DllIf::CIpcTrcServer
                 /* strMethod          */ "IpcTrcServer_ReleaseInstance",
                 /* strMthInArgs       */ strMthInArgs );
 
-            // If the application creating and starting the trace server is a Qt application ...
-            if( DllIf_s_pThreadIpcTrcServer == nullptr )
+            DllIf::CIpcTrcServer* pDllIfTrcServer = DllIf_IpcTrcServer_s_hshpInstances.value(strServerName, nullptr);
+
+            int iRefCount = DllIf_IpcTrcServer_s_hshiTrcServerRefCount.value(strServerName, 0) - 1;
+
+            if( iRefCount > 0 /* && pDllIfTrcServer != nullptr */ ) // pDllIfTrcServer must not be nullptr. Otherwise ... crash.
             {
-                if( DllIf_IpcTrcServer_s_hshbTrcServerCreated.value(strServerName, false) )
+                CIpcTrcServer::ReleaseInstance(strServerName);
+
+                DllIf_IpcTrcServer_s_hshiTrcServerRefCount[strServerName] = iRefCount;
+            }
+            // Trace server is no longer referenced ...
+            else // if( iRefCount == 0 )
+            {
+                // If the application creating and starting the trace server is a Qt application ...
+                if( DllIf_s_pQtAppCreatedByDllIf == nullptr )
                 {
                     CIpcTrcServer::ReleaseInstance(strServerName);
                 }
-            }
-
-            // If the application creating and starting the trace server is not a Qt application ...
-            else // if( DllIf_s_pThreadIpcTrcServer != nullptr )
-            {
-                // ... the trace server was created and started from within a different thread context.
-                DllIf_s_pThreadIpcTrcServer->quit();
-                DllIf_s_pThreadIpcTrcServer->wait(30000);
-
-                if( !DllIf_s_pThreadIpcTrcServer->isRunning() )
+                // If the application creating and starting the trace server is not a Qt application ...
+                else // if( DllIf_s_pThreadIpcTrcServer != nullptr )
                 {
-                    try
+                    // ... the trace server was created and started from within a different thread context.
+                    DllIf::CIpcTrcServerThread* pTrcServerThread = DllIf_s_hsppIpcTrcServerThreads.value(strServerName, nullptr);
+
+                    if( pTrcServerThread != nullptr )
                     {
-                        delete DllIf_s_pThreadIpcTrcServer;
+                        pTrcServerThread->quit();
+                        pTrcServerThread->wait(30000);
+
+                        if( !pTrcServerThread->isRunning() )
+                        {
+                            try
+                            {
+                                delete pTrcServerThread;
+                            }
+                            catch(...)
+                            {
+                            }
+                        }
+                        pTrcServerThread = nullptr;
+                        DllIf_s_hsppIpcTrcServerThreads.remove(strServerName);
                     }
-                    catch(...)
-                    {
-                    }
-                }
-                DllIf_s_pThreadIpcTrcServer = nullptr;
 
-            } // if( DllIf_s_pThreadIpcTrcServer != nullptr )
+                    // Please note that the trace server has been released in the thread.
+                    // Invoking "ReleaseInstance" again here would deincrement the reference counter twice.
 
-            if( DllIf_s_pQtAppCreatedByDllIf != NULL )
-            {
-                try
-                {
-                    delete DllIf_s_pQtAppCreatedByDllIf;
-                }
-                catch(...)
-                {
-                }
-                DllIf_s_pQtAppCreatedByDllIf = NULL;
-            }
+                } // if( DllIf_s_pThreadIpcTrcServer != nullptr )
 
-            if( DllIf_IpcTrcServer_s_hshpInstances.contains(strServerName) )
-            {
                 DllIf_IpcTrcServer_s_hshpInstances.remove(strServerName);
+                DllIf_IpcTrcServer_s_hshiTrcServerRefCount.remove(strServerName);
 
                 delete i_pTrcServer;
                 i_pTrcServer = nullptr;
             }
 
-            DllIf_IpcTrcServer_s_hshbTrcServerCreated.remove(strServerName);
-        }
+            if( DllIf_IpcTrcServer_s_hshpTrcMthFiles.contains(strServerName) )
+            {
+                CTrcMthFile::Free(DllIf_IpcTrcServer_s_hshpTrcMthFiles[strServerName]);
 
-        if( DllIf_IpcTrcServer_s_hshpTrcMthFiles.contains(strServerName) )
-        {
-            CTrcMthFile::Free(DllIf_IpcTrcServer_s_hshpTrcMthFiles[strServerName]);
-
-            DllIf_IpcTrcServer_s_hshpTrcMthFiles.remove(strServerName);
-            DllIf_IpcTrcServer_s_hshiTrcMthDetailLevels.remove(strServerName);
-        }
+                DllIf_IpcTrcServer_s_hshpTrcMthFiles.remove(strServerName);
+                DllIf_IpcTrcServer_s_hshiTrcMthDetailLevels.remove(strServerName);
+            }
+        } // if( iRefCount == 0 )
     } // if( i_pTrcServer != nullptr )
+
+    // If the application creating and starting the trace server is not a Qt application ...
+    if( DllIf_s_pQtAppCreatedByDllIf != NULL )
+    {
+        // Free Qt Application if all trace servers referenced by the Dll interface have been released.
+        if( DllIf_IpcTrcServer_s_hshpInstances.isEmpty() )
+        {
+            try
+            {
+                delete DllIf_s_pQtAppCreatedByDllIf;
+            }
+            catch(...)
+            {
+            }
+            DllIf_s_pQtAppCreatedByDllIf = NULL;
+        }
+    }
 
 } // IpcTrcServer_ReleaseInstance
 
@@ -2332,7 +2415,7 @@ ZSIPCTRACEDLL_EXTERN_API bool IpcTrcServer_startup( DllIf::CIpcTrcServer* i_pTrc
         if( pTrcServer != nullptr )
         {
             // If the application creating and starting the trace server is a Qt application ...
-            if( DllIf_s_pQtAppCreatedByDllIf == nullptr && QCoreApplication::instance() != nullptr )
+            if( DllIf_s_pQtAppCreatedByDllIf == nullptr )
             {
                 // The thread in which the trace server is created must start its event loop.
                 // To ensure this the thread affinity of the server will be set to Qt's main
@@ -2341,11 +2424,7 @@ ZSIPCTRACEDLL_EXTERN_API bool IpcTrcServer_startup( DllIf::CIpcTrcServer* i_pTrc
                 {
                     pTrcServer->moveToThread( QCoreApplication::instance()->thread() );
                 }
-            }
 
-            // If the application creating and starting the trace server is a Qt application ...
-            if( DllIf_s_pThreadIpcTrcServer == nullptr )
-            {
                 // The trace server is created in the QtAppThread and can be directly started.
                 CRequest* pReq = pTrcServer->startup(i_iTimeout_ms, i_bWait);
 
@@ -2361,10 +2440,10 @@ ZSIPCTRACEDLL_EXTERN_API bool IpcTrcServer_startup( DllIf::CIpcTrcServer* i_pTrc
                 {
                     bOk = true;
                 }
-            } // if( DllIf_s_pThreadIpcTrcServer == nullptr )
+            } // if( DllIf_s_pQtAppCreatedByDllIf == nullptr )
 
             // If the application creating and starting the trace server is not a Qt application ...
-            else // if( DllIf_s_pThreadIpcTrcServer != nullptr )
+            else // if( DllIf_s_pQtAppCreatedByDllIf != nullptr )
             {
                 // ... the trace server is created in a different thread context and the
                 // server must be started in this thread context.
@@ -2382,25 +2461,25 @@ ZSIPCTRACEDLL_EXTERN_API bool IpcTrcServer_startup( DllIf::CIpcTrcServer* i_pTrc
                 const int c_iMaxWaitCount = 25;
                 int iWaitCount = 0;
 
-                if( DllIf_s_pThreadIpcTrcServer != NULL )
-                {
-                    while( !DllIf_s_pThreadIpcTrcServer->isServerStarted() )
-                    {
-                        #ifdef _WINDOWS
-                        Sleep(200);
-                        #endif
-                        #ifdef __linux__
-                        usleep(200000);
-                        #endif
+                DllIf::CIpcTrcServerThread* pTrcServerThread = DllIf_s_hsppIpcTrcServerThreads.value(strServerName, nullptr);
 
-                        iWaitCount++;
-                        if( iWaitCount > c_iMaxWaitCount )
-                        {
-                            break;
-                        }
+                while( !pTrcServerThread->isServerStarted() )
+                {
+                    #ifdef _WINDOWS
+                    Sleep(200);
+                    #endif
+                    #ifdef __linux__
+                    usleep(200000);
+                    #endif
+
+                    iWaitCount++;
+                    if( iWaitCount > c_iMaxWaitCount )
+                    {
+                        break;
                     }
                 }
-                bOk = DllIf_s_pThreadIpcTrcServer->isServerStarted();
+
+                bOk = pTrcServerThread->isServerStarted();
 
             } // if( DllIf_s_pThreadIpcTrcServer != nullptr )
         } // if( pTrcServer != nullptr )
@@ -2448,7 +2527,7 @@ ZSIPCTRACEDLL_EXTERN_API bool IpcTrcServer_shutdown( DllIf::CIpcTrcServer* i_pTr
         if( pTrcServer != nullptr )
         {
             // If the application creating and starting the trace server is a Qt application ...
-            if( DllIf_s_pThreadIpcTrcServer == nullptr )
+            if( DllIf_s_pQtAppCreatedByDllIf == nullptr )
             {
                 // The trace server is created in the QtAppThread and can be directly shutdown.
                 CRequest* pReq = pTrcServer->shutdown(i_iTimeout_ms, i_bWait);
@@ -2465,10 +2544,10 @@ ZSIPCTRACEDLL_EXTERN_API bool IpcTrcServer_shutdown( DllIf::CIpcTrcServer* i_pTr
                 {
                     bOk = true;
                 }
-            } // if( DllIf_s_pThreadIpcTrcServer == nullptr )
+            } // if( DllIf_s_pQtAppCreatedByDllIf == nullptr )
 
             // If the application creating and starting the trace server is not a Qt application ...
-            else // if( DllIf_s_pThreadIpcTrcServer != nullptr )
+            else // if( DllIf_s_pQtAppCreatedByDllIf != nullptr )
             {
                 // ... the trace server is created in a different thread context and the
                 // server must be shutdown in this thread context.
@@ -2484,9 +2563,11 @@ ZSIPCTRACEDLL_EXTERN_API bool IpcTrcServer_shutdown( DllIf::CIpcTrcServer* i_pTr
                 const int c_iMaxWaitCount = 25;
                 int iWaitCount = 0;
 
-                if( DllIf_s_pThreadIpcTrcServer != NULL )
+                DllIf::CIpcTrcServerThread* pTrcServerThread = DllIf_s_hsppIpcTrcServerThreads.value(strServerName, nullptr);
+
+                if( pTrcServerThread != NULL )
                 {
-                    while( !DllIf_s_pThreadIpcTrcServer->isServerShutdown() )
+                    while( !pTrcServerThread->isServerShutdown() )
                     {
                         #ifdef _WINDOWS
                         Sleep(200);
@@ -2502,9 +2583,9 @@ ZSIPCTRACEDLL_EXTERN_API bool IpcTrcServer_shutdown( DllIf::CIpcTrcServer* i_pTr
                         }
                     }
                 }
-                bOk = DllIf_s_pThreadIpcTrcServer->isServerShutdown();
+                bOk = pTrcServerThread->isServerShutdown();
 
-            } // if( DllIf_s_pThreadIpcTrcServer != nullptr )
+            } // if( DllIf_s_pQtAppCreatedByDllIf != nullptr )
         } // if( pTrcServer != nullptr )
     } // if( i_pTrcServer != nullptr )
 
@@ -2613,7 +2694,7 @@ ZSIPCTRACEDLL_EXTERN_API bool IpcTrcServer_setPort(
             //hostSettings.m_uBufferSize;
 
             // If the application creating and starting the trace server is a Qt application ...
-            if( DllIf_s_pThreadIpcTrcServer == nullptr )
+            if( DllIf_s_pQtAppCreatedByDllIf == nullptr )
             {
                 pTrcServer->setHostSettings(hostSettings);
 
@@ -2631,10 +2712,10 @@ ZSIPCTRACEDLL_EXTERN_API bool IpcTrcServer_setPort(
                 {
                     bOk = true;
                 }
-            } // if( DllIf_s_pThreadIpcTrcServer == nullptr )
+            } // if( DllIf_s_pQtAppCreatedByDllIf == nullptr )
 
             // If the application creating and starting the trace server is not a Qt application ...
-            else // if( DllIf_s_pThreadIpcTrcServer != nullptr )
+            else // if( DllIf_s_pQtAppCreatedByDllIf != nullptr )
             {
                 // ... the trace server is created in a different thread context and the
                 // server must be shutdown in this thread context.
@@ -2648,7 +2729,7 @@ ZSIPCTRACEDLL_EXTERN_API bool IpcTrcServer_setPort(
                 QCoreApplication::postEvent(pTrcServer, pMsg);
                 pMsg = NULL;
 
-            } // if( DllIf_s_pThreadIpcTrcServer != nullptr )
+            } // if( DllIf_s_pQtAppCreatedByDllIf != nullptr )
         } // if( pTrcServer != nullptr )
     } // if( i_pTrcServer != nullptr )
 
@@ -2657,7 +2738,7 @@ ZSIPCTRACEDLL_EXTERN_API bool IpcTrcServer_setPort(
 } // IpcTrcServer_setPort
 
 //------------------------------------------------------------------------------
-ZSIPCTRACEDLL_EXTERN_API bool IpcTrcServer_getPort( const DllIf::CIpcTrcServer* i_pTrcServer )
+ZSIPCTRACEDLL_EXTERN_API unsigned short IpcTrcServer_getPort( const DllIf::CIpcTrcServer* i_pTrcServer )
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&DllIf_s_mtx);
@@ -2889,22 +2970,27 @@ BOOL APIENTRY DllMain(
     LPVOID /*i_lpReserved*/ )
 //------------------------------------------------------------------------------
 {
+    // To allow setting breakpoints:
     switch( i_ul_reason_for_call )
     {
         case DLL_PROCESS_ATTACH:
         {
+            ++s_iDLL_PROCESS_ATTACH;
             break;
         }
         case DLL_THREAD_ATTACH:
         {
+            ++s_iDLL_THREAD_ATTACH;
             break;
         }
         case DLL_THREAD_DETACH:
         {
+            --s_iDLL_THREAD_ATTACH;
             break;
         }
         case DLL_PROCESS_DETACH:
         {
+            --s_iDLL_PROCESS_ATTACH;
             break;
         }
         default:

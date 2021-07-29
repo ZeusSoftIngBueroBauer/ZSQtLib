@@ -45,13 +45,11 @@ public: // ctors and dtor
 //------------------------------------------------------------------------------
 DllIf::CIpcTrcServerThread::CIpcTrcServerThread(
     const QString& i_strServerName,
-    bool           i_bCreateServerOnlyIfNotYetExisting,
     int            i_iTrcDetailLevel ) :
 //------------------------------------------------------------------------------
     QThread(),
     m_strServerName(i_strServerName),
     m_pQtAppCreatedByDllIf(NULL),
-    m_bCreateServerOnlyIfNotYetExisting(i_bCreateServerOnlyIfNotYetExisting),
     m_iTrcDetailLevel(i_iTrcDetailLevel),
     m_pTrcMthFile(nullptr)
 {
@@ -135,7 +133,6 @@ DllIf::CIpcTrcServerThread::~CIpcTrcServerThread()
 
     //m_strServerName;
     m_pQtAppCreatedByDllIf = nullptr;
-    m_bCreateServerOnlyIfNotYetExisting = false;
     m_iTrcDetailLevel = 0;
     m_pTrcMthFile = nullptr;
 
@@ -209,7 +206,7 @@ void DllIf::CIpcTrcServerThread::run()
     // Create trace server
     //--------------------
 
-    CIpcTrcServer::CreateInstance(m_strServerName, m_bCreateServerOnlyIfNotYetExisting, m_iTrcDetailLevel);
+    CIpcTrcServer::CreateInstance(m_strServerName, m_iTrcDetailLevel);
 
     try
     {

@@ -179,23 +179,13 @@ CTrcServer* CTrcServer::GetInstance( const QString& i_strName )
 }
 
 //------------------------------------------------------------------------------
-/*! Returns a reference to an instance of the class.
+/*! Creates a trace server with the given name if a trace server with the given
+    name is not already existing.
 
-    Checks whether a trace server instance with the desired name already exist.
-    If not the trace server instance is created.
-    Depending on the flag CreateOnlyIfNotYetExisting either an exception is thrown
-    if a server with name is already existing or a reference to the already existing
-    instance is return and a reference counter is incremented.
+    If a trace server with the given name is already existing the reference to
+    the existing trace server is returned and a reference counter is incremented.
 
     \param i_strName [in] Name of the trace server (default "ZSTrcServer")
-    \param i_bCreateOnlyIfNotYetExisting [in] (default: false)
-        If this flag is set to false and a trace server with the given name
-        is already existing an exception will be thrown.
-        If set to true and a trace server with the given name is already existing
-        a reference to the already existing server is returned and the reference
-        count for the server is incremented.
-        If a trace server with the given name is not yet existing the server
-        will be created anyway and the reference count is set to 1.
     \param i_iTrcDetailLevel [in]
         If the methods of the trace server itself should be logged a value
         greater than 0 (ETraceDetailLevelNone) could be passed here.
@@ -204,7 +194,6 @@ CTrcServer* CTrcServer::GetInstance( const QString& i_strName )
 */
 CTrcServer* CTrcServer::CreateInstance(
     const QString& i_strName,
-    bool i_bCreateOnlyIfNotYetExisting,
     int i_iTrcDetailLevel )
 //------------------------------------------------------------------------------
 {
@@ -213,11 +202,6 @@ CTrcServer* CTrcServer::CreateInstance(
     QMutexLocker mtxLocker(&s_mtx);
 
     CTrcServer* pTrcServer = s_hshpInstances.value(i_strName, nullptr);
-
-    if( pTrcServer != nullptr && !i_bCreateOnlyIfNotYetExisting )
-    {
-        throw CException(__FILE__, __LINE__, EResultObjAlreadyInList, "CTrcServer::" + i_strName);
-    }
 
     if( pTrcServer == NULL )
     {
@@ -259,7 +243,13 @@ void CTrcServer::ReleaseInstance( const QString& i_strName )
     {
         s_hshpInstances.remove(i_strName);
 
-        delete pTrcServer;
+        try
+        {
+            delete pTrcServer;
+        }
+        catch(...)
+        {
+        }
         pTrcServer = nullptr;
     }
 } // ReleaseInstance

@@ -125,11 +125,9 @@ Visual Studio 2019 version 16.10 | 1929
 #define COMPILERLIBINFIX "msvc2012"
 #elif _MSC_VER >= 1800 && _MSC_VER <= 1800
 #define __CXX_STANDARD__ 201402
-#define CXX_STANDARD CPP17
 #define COMPILERLIBINFIX "msvc2013"
 #elif _MSC_VER >= 1900 && _MSC_VER <= 1900
 #define __CXX_STANDARD__ 201703
-#define CXX_STANDARD CPP17
 #define COMPILERLIBINFIX "msvc2015"
 #elif _MSC_VER >= 1910 && _MSC_VER <= 1916
 #define __CXX_STANDARD__ 201703
