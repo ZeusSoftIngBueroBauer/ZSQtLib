@@ -923,8 +923,6 @@ CRequest::~CRequest()
         }
     }
 
-    QHash<QString,CMsgCon*>::const_iterator itMsgCon;
-
     try
     {
         delete m_pMsgReqExec;

@@ -74,7 +74,7 @@ const STcpSocketIntVal2WrapperIntVal s_arTcpSocketError2WrapperError[] =
     /*  8 */ { QAbstractSocket::AddressInUseError,                EResultAddressAlreadyInUse },
     /*  9 */ { QAbstractSocket::SocketAddressNotAvailableError,   EResultSocketAddressNotAvailable },
     /* 10 */ { QAbstractSocket::UnsupportedSocketOperationError,  EResultUnsupportedSocketOperation },
-    #if QT_VERSION >= 0x040501
+    #if QT_VERSION >= QT_VERSION_CHECK(4, 5, 1)
     /* 11 */ { QAbstractSocket::UnfinishedSocketOperationError,   EResultUnfinishedSocketOperation },
     /* 12 */ { QAbstractSocket::ProxyAuthenticationRequiredError, EResultProxyAuthenticationRequired },
     /* 13 */ { QAbstractSocket::SslHandshakeFailedError,          EResultSslHandshakeFailed },
@@ -748,7 +748,7 @@ SErrResultInfo CTcpSocketWrapper::errResultInfo() const
             errResultInfo.setSeverity(EResultSeverityError);
             break;
         }
-        #if QT_VERSION >= 0x040501
+        #if QT_VERSION >= QT_VERSION_CHECK(4, 5, 1)
         case QAbstractSocket::UnfinishedSocketOperationError:
         case QAbstractSocket::ProxyAuthenticationRequiredError:
         case QAbstractSocket::SslHandshakeFailedError:

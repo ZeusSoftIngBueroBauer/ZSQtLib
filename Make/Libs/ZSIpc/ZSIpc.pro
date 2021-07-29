@@ -16,24 +16,38 @@ TEMPLATE = lib
 windows {
     CONFIG += skip_target_version_ext
     DEFINES += _WINDOWS
+    COMPILERLIBINFIX = msvc2019
     PLATFORM = x64
+}
+win32-msvc2013 {
+    message("win32-msvc2013") # not executed !!!
+}
+win32-msvc2015 {
+    message("win32-msvc2015") # not executed !!!
+}
+win32-msvc2017 {
+    message("win32-msvc2017") # not executed !!!
+}
+win32-msvc2019 {
+    message("win32-msvc2019") # not executed !!!
 }
 linux {
     DEFINES += __linux__
-    PLATFORM = Linux
+    COMPILERLIBINFIX = gcc
+    PLATFORM = x64
 }
 
 CONFIG(release, release|debug) {
-    TARGET = $$MODULE
-    MOC_DIR = ../../../Tmp/Moc/Libs/$$MODULE/$$PLATFORM/Release
-    OBJECTS_DIR = ../../../Tmp/Int/Libs/$$MODULE/$$PLATFORM/Release
+    TARGET = $$MODULE"Qt"$$QT_MAJOR_VERSION"_"$$COMPILERLIBINFIX"_"$$PLATFORM
+    MOC_DIR = ../../../Tmp/Moc/Libs/$$MODULE/Release_$$COMPILERLIBINFIX/$$PLATFORM
+    OBJECTS_DIR = ../../../Tmp/Int/Libs/$$MODULE/Release_$$COMPILERLIBINFIX/$$PLATFORM
 }
 CONFIG(debug, release|debug) {
-    TARGET = $$MODULE"d"
-    MOC_DIR = ../../../Tmp/Moc/Libs/$$MODULE/$$PLATFORM/Debug
-    OBJECTS_DIR = ../../../Tmp/Int/Libs/$$MODULE/$$PLATFORM/Debug
+    TARGET = $$MODULE"Qt"$$QT_MAJOR_VERSION"_"$$COMPILERLIBINFIX"_"$$PLATFORM"_d"
+    MOC_DIR = ../../../Tmp/Moc/Libs/$$MODULE/Debug_$$COMPILERLIBINFIX/$$PLATFORM
+    OBJECTS_DIR = ../../../Tmp/Int/Libs/$$MODULE/Debug_$$COMPILERLIBINFIX/$$PLATFORM
 }
-DESTDIR = ../../../Lib/$$PLATFORM
+DESTDIR = ../../../Lib/$$COMPILERLIBINFIX"_"$$PLATFORM
 
 CONFIG(debug, release|debug) {
     DEFINES += _DEBUG
@@ -43,13 +57,13 @@ DEFINES += ZSIPCDLL_EXPORTS
 
 INCLUDEPATH += ../../../Include/Libs
 
-LIBS += -L../../../Lib/$$PLATFORM
+LIBS += -L../../../Lib/$$COMPILERLIBINFIX"_"$$PLATFORM
 
 CONFIG(release, release|debug) {
-    LIBS += -lZSSys
+    LIBS += -lZSSys"Qt"$$QT_MAJOR_VERSION"_"$$COMPILERLIBINFIX"_"$$PLATFORM
 }
 CONFIG(debug, release|debug) {
-    LIBS += -lZSSysd
+    LIBS += -lZSSys"Qt"$$QT_MAJOR_VERSION"_"$$COMPILERLIBINFIX"_"$$PLATFORM"_d"
 }
 
 SOURCES += \
@@ -68,6 +82,7 @@ SOURCES += \
     ../../../Source/Libs/ZSIpc/ZSIpcInProcMsgSocket.cpp \
     ../../../Source/Libs/ZSIpc/ZSIpcInProcMsgServer.cpp \
     ../../../Source/Libs/ZSIpc/ZSIpcDllMain.cpp \
+    ../../../Source/Libs/ZSIpc/ZSIpcCommon.cpp \
     ../../../Source/Libs/ZSIpc/ZSIpcClientGateway.cpp \
     ../../../Source/Libs/ZSIpc/ZSIpcClient.cpp \
     ../../../Source/Libs/ZSIpc/ZSIpcBlkTypeUser.cpp \
@@ -93,6 +108,7 @@ HEADERS += \
     ../../../Include/Libs/ZSIpc/ZSIpcServer.h \
     ../../../Include/Libs/ZSIpc/ZSIpcInProcMsgSocket.h \
     ../../../Include/Libs/ZSIpc/ZSIpcInProcMsgServer.h \
+    ../../../Include/Libs/ZSIpc/ZSIpcCommon.h \
     ../../../Include/Libs/ZSIpc/ZSIpcDllMain.h \
     ../../../Include/Libs/ZSIpc/ZSIpcClientGateway.h \
     ../../../Include/Libs/ZSIpc/ZSIpcClient.h \
@@ -103,6 +119,17 @@ HEADERS += \
     ../../../Include/Libs/ZSIpc/ZSIpcBlkTypeL.h \
     ../../../Include/Libs/ZSIpc/ZSIpcBlkTypeE.h \
     ../../../Include/Libs/ZSIpc/ZSIpcBlkType.h
+
+windows {
+    SOURCEDIR = ..\..\..\Lib\\$$COMPILERLIBINFIX"_"$$PLATFORM
+    TARGETDIR = ..\..\..\Bin\\$$COMPILERLIBINFIX"_"$$PLATFORM
+    QMAKE_POST_LINK=copy /Y $$SOURCEDIR"\\"$$TARGET".dll" $$TARGETDIR"\\*.dll"
+}
+linux {
+    SOURCEDIR = ../../../Lib/$$COMPILERLIBINFIX"_"$$PLATFORM
+    TARGETDIR = ../../../Bin/$$COMPILERLIBINFIX"_"$$PLATFORM
+    QMAKE_POST_LINK=cp $$SOURCEDIR"/lib"$$TARGET"*.so*" $$TARGETDIR
+}
 
 unix:!symbian {
     maemo5 {

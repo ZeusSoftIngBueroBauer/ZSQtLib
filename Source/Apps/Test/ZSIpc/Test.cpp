@@ -255,12 +255,10 @@ CTest::CTest( const QString& i_strTestStepsFileName ) :
     // Sub-Group: Client - Request Queue
     //==================================
 
-    ZS::Test::CTestStepGroup* pGrpClientRequestQueue = new ZS::Test::CTestStepGroup(
+    /*ZS::Test::CTestStepGroup* pGrpClientRequestQueue =*/ new ZS::Test::CTestStepGroup(
         /* pTest           */ this,
         /* strName         */ "Group " + QString::number(++idxSubGroup) + " Request Queue",
         /* pTSGrpParent    */ pGrpClient );
-
-    //m_arfctsDoTestStepGroups << FctDoTestStepGroupClientRequestQueue;
 
     // Sub-Group: Send Data
     //=====================
@@ -281,7 +279,7 @@ CTest::CTest( const QString& i_strTestStepsFileName ) :
     // Sub-Group: Send Data - Tcp - Block Type E
     //==========================================
 
-    ZS::Test::CTestStepGroup* pGrpSendDataTcpBlkTypeE = new ZS::Test::CTestStepGroup(
+    /*ZS::Test::CTestStepGroup* pGrpSendDataTcpBlkTypeE =*/ new ZS::Test::CTestStepGroup(
         /* pTest           */ this,
         /* strName         */ "Group " + QString::number(++idxSubGroup) + " Block Type E",
         /* pTSGrpParent    */ pGrpSendDataTcp );
@@ -291,7 +289,7 @@ CTest::CTest( const QString& i_strTestStepsFileName ) :
     // Sub-Group: Send Data - Tcp - Block Type L
     //==========================================
 
-    ZS::Test::CTestStepGroup* pGrpSendDataTcpBlkTypeL = new ZS::Test::CTestStepGroup(
+    /*ZS::Test::CTestStepGroup* pGrpSendDataTcpBlkTypeL =*/ new ZS::Test::CTestStepGroup(
         /* pTest           */ this,
         /* strName         */ "Group " + QString::number(++idxSubGroup) + " Block Type L",
         /* pTSGrpParent    */ pGrpSendDataTcp );
@@ -301,7 +299,7 @@ CTest::CTest( const QString& i_strTestStepsFileName ) :
     // Sub-Group: Send Data - Tcp - Block Type SL
     //===========================================
 
-    ZS::Test::CTestStepGroup* pGrpSendDataTcpBlkTypeSL = new ZS::Test::CTestStepGroup(
+    /*ZS::Test::CTestStepGroup* pGrpSendDataTcpBlkTypeSL =*/ new ZS::Test::CTestStepGroup(
         /* pTest           */ this,
         /* strName         */ "Group " + QString::number(++idxSubGroup) + " Block Type SL",
         /* pTSGrpParent    */ pGrpSendDataTcp );
@@ -311,7 +309,7 @@ CTest::CTest( const QString& i_strTestStepsFileName ) :
     // Sub-Group: Send Data - Tcp - Block Type TLV
     //============================================
 
-    ZS::Test::CTestStepGroup* pGrpSendDataTcpBlkTypeTLV = new ZS::Test::CTestStepGroup(
+    /*ZS::Test::CTestStepGroup* pGrpSendDataTcpBlkTypeTLV =*/ new ZS::Test::CTestStepGroup(
         /* pTest           */ this,
         /* strName         */ "Group " + QString::number(++idxSubGroup) + " Block Type TLV",
         /* pTSGrpParent    */ pGrpSendDataTcp );

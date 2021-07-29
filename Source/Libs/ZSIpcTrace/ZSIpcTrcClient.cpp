@@ -27,7 +27,7 @@ may result in using the software modules.
 #include <QtCore/qcoreapplication.h>
 #include <QtCore/qmutex.h>
 
-#if QT_VERSION < 0x050000
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 #include <QtXml/qxmlstream.h>
 #else
 #include <QtCore/qxmlstream.h>
@@ -943,7 +943,7 @@ protected slots: // connected to the slots of the trace admin object pool model
 
 //------------------------------------------------------------------------------
 void CIpcTrcClient::onTrcAdminObjIdxTreeEntryChanged(
-    CIdxTree*              i_pIdxTree,
+    CIdxTree*              /*i_pIdxTree*/,
     CAbstractIdxTreeEntry* i_pTreeEntry )
 //------------------------------------------------------------------------------
 {

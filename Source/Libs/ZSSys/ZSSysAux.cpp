@@ -47,7 +47,7 @@ may result in using the software modules.
 #include <QtCore/qurl.h>
 #include <QtCore/qvariant.h>
 
-#if QT_VERSION < 0x050000
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 #include <QtXml/qxmlstream.h>
 #else
 #include <QtCore/qxmlstream.h>
@@ -125,13 +125,13 @@ QList<QByteArray> ZS::System::strlst2ByteArrLst( const QStringList& i_strlst )
 {
     QList<QByteArray> arByteArr;
 
-    #if QT_VERSION >= 0x040700
+    #if QT_VERSION >= QT_VERSION_CHECK(4, 7, 0)
     arByteArr.reserve(i_strlst.size());
     #endif
 
     for( int idx = 0; idx < i_strlst.size(); idx++ )
     {
-        #if QT_VERSION < 0x050000
+        #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
         arByteArr.append(i_strlst[idx].toAscii());
         #else
         arByteArr.append(i_strlst[idx].toUtf8());
@@ -147,7 +147,7 @@ QStringList ZS::System::byteArrLst2StrLst( const QList<QByteArray>& i_arByteArr 
 {
     QStringList strlst;
 
-    #if QT_VERSION >= 0x040700
+    #if QT_VERSION >= QT_VERSION_CHECK(4, 7, 0)
     strlst.reserve(i_arByteArr.size());
     #endif
 
@@ -282,7 +282,7 @@ QList<QByteArray> ZS::System::split( const QByteArray& i_byteArr, const QByteArr
 
 } // split
 
-#if QT_VERSION < 0x050000
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 //------------------------------------------------------------------------------
 bool ZS::System::dir_removeRecursively( const QString& i_strDirPath )
 //------------------------------------------------------------------------------
@@ -1407,7 +1407,7 @@ static const ZS::System::SEnumEntry s_arEnumStrCursorShape[] =
     /* 16 */ SEnumEntry( static_cast<int>(Qt::BusyCursor), "Busy" ),
     /* 17 */ SEnumEntry( static_cast<int>(Qt::OpenHandCursor), "OpenHand" ),
     /* 18 */ SEnumEntry( static_cast<int>(Qt::ClosedHandCursor), "ClosedHand" ),
-    #if QT_VERSION >= 0x040700
+    #if QT_VERSION >= QT_VERSION_CHECK(4, 7, 0)
     /* 19 */ SEnumEntry( static_cast<int>(Qt::DragCopyCursor), "DragCopy" ),
     /* 20 */ SEnumEntry( static_cast<int>(Qt::DragMoveCursor), "DragMove" ),
     /* 21 */ SEnumEntry( static_cast<int>(Qt::DragLinkCursor), "DragLink" ),
@@ -1737,7 +1737,7 @@ static const ZS::System::SEnumEntry s_arEnumStrQEventType[] =
     /*   202 */ SEnumEntry( 202, "GestureOverride", "GestureOverride" ),
     #endif
     /*   203 */ SEnumEntry( QEvent::WinIdChange, "WinIdChange", "WinIdChange" ),
-    #if QT_VERSION < 0x050000
+    #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
     /*   204 */ SEnumEntry( 204, "204 (Unused)", "204 (Unused)" ),
     /*   205 */ SEnumEntry( 205, "205 (Unused)", "205 (Unused)" ),
     /*   206 */ SEnumEntry( 206, "206 (Unused)", "206 (Unused)" ),
@@ -1841,7 +1841,7 @@ static const ZS::System::SEnumEntry s_arEnumStrQItemDataRole[] =
     /* 11 */ SEnumEntry( Qt::AccessibleTextRole,        "AccessibleTextRole" ),
     /* 12 */ SEnumEntry( Qt::AccessibleDescriptionRole, "AccessibleDescriptionRole" ),
     /* 13 */ SEnumEntry( Qt::SizeHintRole,              "SizeHintRole" ),
-    #if QT_VERSION >= 0x040700
+    #if QT_VERSION >= QT_VERSION_CHECK(4, 7, 0)
     /* 14 */ SEnumEntry( Qt::InitialSortOrderRole,      "InitialSortOrderRole" ),
     #else
     /* 14 */ SEnumEntry( 14,                            "? (14)" ),
@@ -2247,7 +2247,7 @@ static const ZS::System::SEnumEntry s_arEnumStrQKeyCode[] =
     /* 272: 0x01000082 (16777346) */ SEnumEntry( Qt::Key_MediaPrevious, "Key_MediaPrevious", "", "" ),
     /* 273: 0x01000083 (16777347) */ SEnumEntry( Qt::Key_MediaNext, "Key_MediaNext", "", "" ),
     /* 274: 0x01000084 (16777348) */ SEnumEntry( Qt::Key_MediaRecord, "Key_MediaRecord", "", "" ),
-    #if QT_VERSION >= 0x040700
+    #if QT_VERSION >= QT_VERSION_CHECK(4, 7, 0)
     /* 275: 0x01000085 (16777349) */ SEnumEntry( Qt::Key_MediaPause, "Key_MediaPause", "", "" ),
     /* 276: 0x01000086 (16777350) */ SEnumEntry( Qt::Key_MediaTogglePlayPause, "Key_MediaTogglePlayPause", "", "" ),
     #endif
@@ -2366,7 +2366,7 @@ static const ZS::System::SEnumEntry s_arEnumStrQKeyCode[] =
     /* 389: 0x0100010b (16777483) */ SEnumEntry( Qt::Key_PowerDown, "Key_PowerDown", "", "" ),
     /* 390: 0x0100010c (16777484) */ SEnumEntry( Qt::Key_Suspend, "Key_Suspend", "", "" ),
     /* 391: 0x0100010d (16777485) */ SEnumEntry( Qt::Key_ContrastAdjust, "Key_ContrastAdjust", "", "" ),
-    #if QT_VERSION >= 0x040700
+    #if QT_VERSION >= QT_VERSION_CHECK(4, 7, 0)
     /* 392: 0x0100010e (16777486) */ SEnumEntry( Qt::Key_LaunchG, "Key_LaunchG", "", "" ),
     /* 393: 0x0100010f (16777487) */ SEnumEntry( Qt::Key_LaunchH, "Key_LaunchH", "", "" ),
     #endif
@@ -2387,7 +2387,7 @@ static const ZS::System::SEnumEntry s_arEnumStrQKeyCode[] =
     /* 409: 0x01100004 (17825796) */ SEnumEntry( Qt::Key_Call, "Key_Call", "", "" ),
     /* 410: 0x01100005 (17825797) */ SEnumEntry( Qt::Key_Hangup, "Key_Hangup", "", "" ),
     /* 411: 0x01100006 (17825798) */ SEnumEntry( Qt::Key_Flip, "Key_Flip", "", "" ),
-    #if QT_VERSION >= 0x040700
+    #if QT_VERSION >= QT_VERSION_CHECK(4, 7, 0)
     /* 412: 0x01100007 (17825799) */ SEnumEntry( Qt::Key_ToggleCallHangup, "Key_ToggleCallHangup", "", "" ),
     /* 413: 0x01100008 (17825800) */ SEnumEntry( Qt::Key_VoiceDial, "Key_VoiceDial", "", "" ),
     /* 414: 0x01100009 (17825801) */ SEnumEntry( Qt::Key_LastNumberRedial, "Key_LastNumberRedial", "", "" ),
@@ -2645,17 +2645,17 @@ QString ZS::System::qMouseButton2Str( int i_iBtn, bool /*i_bShort*/ )
     {
         str = "MiddleButton";
     }
-    #if QT_VERSION >= 0x050000
+    #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
     else if( i_iBtn == Qt::MouseButton::BackButton )
     {
         str = "BackButton";
     }
-    #endif // #if QT_VERSION >= 0x050000
+    #endif // #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
     else if( i_iBtn == Qt::MouseButton::XButton1 )
     {
         str = "XButton1";
     }
-    #if QT_VERSION >= 0x050000
+    #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
     else if( i_iBtn == Qt::MouseButton::ExtraButton1 )
     {
         str = "ExtraButton1";
@@ -2664,12 +2664,12 @@ QString ZS::System::qMouseButton2Str( int i_iBtn, bool /*i_bShort*/ )
     {
         str = "ForwardButton";
     }
-    #endif // #if QT_VERSION >= 0x050000
+    #endif // #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
     else if( i_iBtn == Qt::MouseButton::XButton2 )
     {
         str = "XButton2";
     }
-    #if QT_VERSION >= 0x050000
+    #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
     else if( i_iBtn == Qt::MouseButton::ExtraButton2 )
     {
         str = "ExtraButton2";
@@ -2770,7 +2770,7 @@ QString ZS::System::qMouseButton2Str( int i_iBtn, bool /*i_bShort*/ )
     {
         str = "AllButtons";
     }
-    #endif // #if QT_VERSION >= 0x050000
+    #endif // #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 
     return str;
 
@@ -2818,7 +2818,7 @@ QString ZS::System::qMouseButtons2Str( int i_iBtns, bool /*i_bShort*/ )
         }
         str += "MiddleButton";
     }
-    #if QT_VERSION >= 0x050000
+    #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
     if( i_iBtns & Qt::MouseButton::BackButton )
     {
         if( !str.isEmpty() )
@@ -2827,7 +2827,7 @@ QString ZS::System::qMouseButtons2Str( int i_iBtns, bool /*i_bShort*/ )
         }
         str += "BackButton";
     }
-    #endif // #if QT_VERSION >= 0x050000
+    #endif // #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
     if( i_iBtns & Qt::MouseButton::XButton1 )
     {
         if( !str.isEmpty() )
@@ -2836,7 +2836,7 @@ QString ZS::System::qMouseButtons2Str( int i_iBtns, bool /*i_bShort*/ )
         }
         str += "XButton1";
     }
-    #if QT_VERSION >= 0x050000
+    #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
     if( i_iBtns & Qt::MouseButton::ExtraButton1 )
     {
         if( !str.isEmpty() )
@@ -2853,7 +2853,7 @@ QString ZS::System::qMouseButtons2Str( int i_iBtns, bool /*i_bShort*/ )
         }
         str += "ForwardButton";
     }
-    #endif // #if QT_VERSION >= 0x050000
+    #endif // #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
     if( i_iBtns & Qt::MouseButton::XButton2 )
     {
         if( !str.isEmpty() )
@@ -2862,7 +2862,7 @@ QString ZS::System::qMouseButtons2Str( int i_iBtns, bool /*i_bShort*/ )
         }
         str += "XButton2";
     }
-    #if QT_VERSION >= 0x050000
+    #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
     if( i_iBtns & Qt::MouseButton::ExtraButton2 )
     {
         if( !str.isEmpty() )
@@ -3063,7 +3063,7 @@ QString ZS::System::qMouseButtons2Str( int i_iBtns, bool /*i_bShort*/ )
         }
         str += "AllButtons";
     }
-    #endif // #if QT_VERSION >= 0x050000
+    #endif // #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 
     return str;
 
@@ -3158,7 +3158,7 @@ static const ZS::System::SEnumEntry s_arEnumStrVariantTypes[] =
     /*  26 */ SEnumEntry( static_cast<int>(QVariant::PointF), "PointF" ),
     /*  27 */ SEnumEntry( static_cast<int>(QVariant::RegExp), "RegExp" ),
     /*  28 */ SEnumEntry( static_cast<int>(QVariant::Hash), "Hash" ),
-    #if QT_VERSION >= 0x040700
+    #if QT_VERSION >= QT_VERSION_CHECK(4, 7, 0)
     /*  29 */ SEnumEntry( static_cast<int>(QVariant::EasingCurve), "EasingCurve" ), // LastCoreType
     #else
     /*  30 */ SEnumEntry( 29, "29" ),

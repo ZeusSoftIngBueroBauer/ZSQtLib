@@ -1878,7 +1878,7 @@ QStringList CEnumValArr::enumEntryIndices2Names( int i_idxStart, int i_iValCount
 
     if( idxValMax >= idxValMin )
     {
-        #if QT_VERSION >= 0x040700
+        #if QT_VERSION >= QT_VERSION_CHECK(4, 7, 0)
         strlstNames.reserve(idxValMax-idxValMin+1);
         #endif
 

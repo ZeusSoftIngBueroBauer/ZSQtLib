@@ -6,7 +6,9 @@
 
 QT += network xml
 
-MODULE = ZSTraceGUI
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+
+MODULE = ZSIpcTraceGUI
 
 VERSION = 4.6.3
 
@@ -15,83 +17,88 @@ TEMPLATE = lib
 windows {
     CONFIG += skip_target_version_ext
     DEFINES += _WINDOWS
+    COMPILERLIBINFIX = msvc2019
     PLATFORM = x64
+}
+win32-msvc2013 {
+    message("win32-msvc2013") # not executed !!!
+}
+win32-msvc2015 {
+    message("win32-msvc2015") # not executed !!!
+}
+win32-msvc2017 {
+    message("win32-msvc2017") # not executed !!!
+}
+win32-msvc2019 {
+    message("win32-msvc2019") # not executed !!!
 }
 linux {
     DEFINES += __linux__
-    PLATFORM = Linux
+    COMPILERLIBINFIX = gcc
+    PLATFORM = x64
 }
 
 CONFIG(release, release|debug) {
-    TARGET = $$MODULE
-    MOC_DIR = ../../../Tmp/Moc/Libs/$$MODULE/$$PLATFORM/Release
-    OBJECTS_DIR = ../../../Tmp/Int/Libs/$$MODULE/$$PLATFORM/Release
+    TARGET = $$MODULE"Qt"$$QT_MAJOR_VERSION"_"$$COMPILERLIBINFIX"_"$$PLATFORM
+    MOC_DIR = ../../../Tmp/Moc/Libs/$$MODULE/Release_$$COMPILERLIBINFIX/$$PLATFORM
+    OBJECTS_DIR = ../../../Tmp/Int/Libs/$$MODULE/Release_$$COMPILERLIBINFIX/$$PLATFORM
 }
 CONFIG(debug, release|debug) {
-    TARGET = $$MODULE"d"
-    MOC_DIR = ../../../Tmp/Moc/Libs/$$MODULE/$$PLATFORM/Debug
-    OBJECTS_DIR = ../../../Tmp/Int/Libs/$$MODULE/$$PLATFORM/Debug
+    TARGET = $$MODULE"Qt"$$QT_MAJOR_VERSION"_"$$COMPILERLIBINFIX"_"$$PLATFORM"_d"
+    MOC_DIR = ../../../Tmp/Moc/Libs/$$MODULE/Debug_$$COMPILERLIBINFIX/$$PLATFORM
+    OBJECTS_DIR = ../../../Tmp/Int/Libs/$$MODULE/Debug_$$COMPILERLIBINFIX/$$PLATFORM
 }
-DESTDIR = ../../../Lib/$$PLATFORM
+DESTDIR = ../../../Lib/$$COMPILERLIBINFIX"_"$$PLATFORM
 
 CONFIG(debug, release|debug) {
     DEFINES += _DEBUG
 }
 DEFINES += _ZSTRACE
-DEFINES += ZSTRACEGUIDLL_EXPORTS
+DEFINES += ZSIPCTRACEGUIDLL_EXPORTS
 
 INCLUDEPATH += ../../../Include/Libs
 
-LIBS += -L../../../Lib/$$PLATFORM
+LIBS += -L../../../Lib/$$COMPILERLIBINFIX"_"$$PLATFORM
 
 CONFIG(release, release|debug) {
-    LIBS += -lZSSys
-    LIBS += -lZSIpc
-    LIBS += -lZSTrace
-    LIBS += -lZSSysGUI
-    LIBS += -lZSIpcGUI
+    LIBS += -lZSSys"Qt"$$QT_MAJOR_VERSION"_"$$COMPILERLIBINFIX"_"$$PLATFORM
+    LIBS += -lZSIpc"Qt"$$QT_MAJOR_VERSION"_"$$COMPILERLIBINFIX"_"$$PLATFORM
+    LIBS += -lZSIpcTrace"Qt"$$QT_MAJOR_VERSION"_"$$COMPILERLIBINFIX"_"$$PLATFORM
+    LIBS += -lZSSysGUI"Qt"$$QT_MAJOR_VERSION"_"$$COMPILERLIBINFIX"_"$$PLATFORM
+    LIBS += -lZSIpcGUI"Qt"$$QT_MAJOR_VERSION"_"$$COMPILERLIBINFIX"_"$$PLATFORM
 }
 CONFIG(debug, release|debug) {
-    LIBS += -lZSSysd
-    LIBS += -lZSIpcd
-    LIBS += -lZSTraced
-    LIBS += -lZSSysGUId
-    LIBS += -lZSIpcGUId
+    LIBS += -lZSSys"Qt"$$QT_MAJOR_VERSION"_"$$COMPILERLIBINFIX"_"$$PLATFORM"_d"
+    LIBS += -lZSIpc"Qt"$$QT_MAJOR_VERSION"_"$$COMPILERLIBINFIX"_"$$PLATFORM"_d"
+    LIBS += -lZSIpcTrace"Qt"$$QT_MAJOR_VERSION"_"$$COMPILERLIBINFIX"_"$$PLATFORM"_d"
+    LIBS += -lZSSysGUI"Qt"$$QT_MAJOR_VERSION"_"$$COMPILERLIBINFIX"_"$$PLATFORM"_d"
+    LIBS += -lZSIpcGUI"Qt"$$QT_MAJOR_VERSION"_"$$COMPILERLIBINFIX"_"$$PLATFORM"_d"
 }
 
 SOURCES += \
-    ../../../Source/Libs/ZSTraceGUI/ZSTrcSettingsWdgt.cpp \
-    ../../../Source/Libs/ZSTraceGUI/ZSTrcServerDlg.cpp \
-    ../../../Source/Libs/ZSTraceGUI/ZSTrcMthWdgt.cpp \
-    ../../../Source/Libs/ZSTraceGUI/ZSTrcMthModel.cpp \
-    ../../../Source/Libs/ZSTraceGUI/ZSTrcMsgWdgt.cpp \
-    ../../../Source/Libs/ZSTraceGUI/ZSTrcMsgModel.cpp \
-    ../../../Source/Libs/ZSTraceGUI/ZSTrcGUIDllMain.cpp \
-    ../../../Source/Libs/ZSTraceGUI/ZSTrcCtxWdgt.cpp \
-    ../../../Source/Libs/ZSTraceGUI/ZSTrcCtxModel.cpp \
-    ../../../Source/Libs/ZSTraceGUI/ZSTrcClientDlg.cpp \
-    ../../../Source/Libs/ZSTraceGUI/ZSTrcAdminObjPoolWdgtNameSpaces.cpp \
-    ../../../Source/Libs/ZSTraceGUI/ZSTrcAdminObjPoolWdgtNameSpaceContent.cpp \
-    ../../../Source/Libs/ZSTraceGUI/ZSTrcAdminObjPoolWdgt.cpp \
-    ../../../Source/Libs/ZSTraceGUI/ZSTrcAdminObjPoolModel.cpp \
-    ../../../Source/Libs/ZSTraceGUI/ZSTrcAdminObjPoolDlg.cpp
+    ../../../Source/Libs/ZSIpcTraceGUI/ZSIpcTrcClientDlg.cpp \
+    ../../../Source/Libs/ZSIpcTraceGUI/ZSIpcTrcGUIDllMain.cpp \
+    ../../../Source/Libs/ZSIpcTraceGUI/ZSIpcTrcMthWdgt.cpp \
+    ../../../Source/Libs/ZSIpcTraceGUI/ZSIpcTrcServerDlg.cpp \
+    ../../../Source/Libs/ZSIpcTraceGUI/ZSIpcTrcSettingsWdgt.cpp
 
 HEADERS += \
-    ../../../Include/Libs/ZSTraceGUI/ZSTrcSettingsWdgt.h \
-    ../../../Include/Libs/ZSTraceGUI/ZSTrcServerDlg.h \
-    ../../../Include/Libs/ZSTraceGUI/ZSTrcMthWdgt.h \
-    ../../../Include/Libs/ZSTraceGUI/ZSTrcMthModel.h \
-    ../../../Include/Libs/ZSTraceGUI/ZSTrcMsgWdgt.h \
-    ../../../Include/Libs/ZSTraceGUI/ZSTrcMsgModel.h \
-    ../../../Include/Libs/ZSTraceGUI/ZSTrcGUIDllMain.h \
-    ../../../Include/Libs/ZSTraceGUI/ZSTrcCtxWdgt.h \
-    ../../../Include/Libs/ZSTraceGUI/ZSTrcCtxModel.h \
-    ../../../Include/Libs/ZSTraceGUI/ZSTrcClientDlg.h \
-    ../../../Include/Libs/ZSTraceGUI/ZSTrcAdminObjPoolWdgtNameSpaces.h \
-    ../../../Include/Libs/ZSTraceGUI/ZSTrcAdminObjPoolWdgtNameSpaceContent.h \
-    ../../../Include/Libs/ZSTraceGUI/ZSTrcAdminObjPoolWdgt.h \
-    ../../../Include/Libs/ZSTraceGUI/ZSTrcAdminObjPoolModel.h \
-    ../../../Include/Libs/ZSTraceGUI/ZSTrcAdminObjPoolDlg.h
+    ../../../Include/Libs/ZSIpcTraceGUI/ZSIpcTrcClientDlg.h \
+    ../../../Include/Libs/ZSIpcTraceGUI/ZSIpcTrcGUIDllMain.h \
+    ../../../Include/Libs/ZSIpcTraceGUI/ZSIpcTrcMthWdgt.h \
+    ../../../Include/Libs/ZSIpcTraceGUI/ZSIpcTrcServerDlg.h \
+    ../../../Include/Libs/ZSIpcTraceGUI/ZSIpcTrcSettingsWdgt.h
+
+windows {
+    SOURCEDIR = ..\..\..\Lib\\$$COMPILERLIBINFIX"_"$$PLATFORM
+    TARGETDIR = ..\..\..\Bin\\$$COMPILERLIBINFIX"_"$$PLATFORM
+    QMAKE_POST_LINK=copy /Y $$SOURCEDIR"\\"$$TARGET".dll" $$TARGETDIR"\\*.dll"
+}
+linux {
+    SOURCEDIR = ../../../Lib/$$COMPILERLIBINFIX"_"$$PLATFORM
+    TARGETDIR = ../../../Bin/$$COMPILERLIBINFIX"_"$$PLATFORM
+    QMAKE_POST_LINK=cp $$SOURCEDIR"/lib"$$TARGET"*.so*" $$TARGETDIR
+}
 
 unix:!symbian {
     maemo5 {

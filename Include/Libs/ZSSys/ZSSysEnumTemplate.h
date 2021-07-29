@@ -133,7 +133,7 @@ const int EInvalidEnumerator = -1;
     @see _GRP_BasicConcepts_Enumerations
 */
 template <typename E>
-class CEnum
+class /*ZSSYSDLL_API*/ CEnum
 //******************************************************************************
 {
 public: // class methods
@@ -246,7 +246,7 @@ public: // class methods
           - with Result = ArgOutOfRange if the alias is out of range.
 */
 template <typename E>
-QString CEnum<E>::toString( E i_enumerator, int i_idxAlias )
+QString ZS::System::CEnum<E>::toString(E i_enumerator, int i_idxAlias)
 //------------------------------------------------------------------------------
 {
     QString strMth = "toString(E " + QString::number(static_cast<int>(i_enumerator)) + ")";
@@ -266,7 +266,7 @@ QString CEnum<E>::toString( E i_enumerator, int i_idxAlias )
     @return Enumerator corresponding to the given string. Undefined if the conversion failed.
 */
 template <typename E>
-E CEnum<E>::toEnumerator( const QString& i_strName, bool* o_pbOk )
+E ZS::System::CEnum<E>::toEnumerator( const QString& i_strName, bool* o_pbOk )
 //------------------------------------------------------------------------------
 {
     return toEnumerator(i_strName, EEnumEntryAliasStrUndefined, Qt::CaseSensitive, o_pbOk);
@@ -554,7 +554,6 @@ QVariant CEnum<E>::toValue( const QString& i_strName, QVariant::Type i_type, int
     {
         SEnumEntry::initStr2EnumeratorMaps(s_arEnumEntries.data(), s_arEnumEntries.count(), s_armapsStr2Enumerators, &s_mtxArMapsStr2Enumerators);
     }
-    int iEnumerator = -1;
     bool bOk = false;
     QVariant val = SEnumEntry::str2Val(s_armapsStr2Enumerators, s_arEnumEntries.data(), s_arEnumEntries.count(), i_strName, i_type, i_idxAlias, i_caseSensitivity, &bOk);
     if( o_pbOk != nullptr )
@@ -580,7 +579,7 @@ public: // class methods
     @return Enumeration instance with the enumerator set to the given string. Invalid if the conversion failed.
 */
 template <typename E>
-CEnum<E> CEnum<E>::fromString( const QString& i_strName, bool* o_pbOk )
+CEnum<E> ZS::System::CEnum<E>::fromString( const QString& i_strName, bool* o_pbOk )
 //------------------------------------------------------------------------------
 {
     return fromString(i_strName, EEnumEntryAliasStrUndefined, Qt::CaseSensitive, o_pbOk);
@@ -604,7 +603,7 @@ CEnum<E> CEnum<E>::fromString( const QString& i_strName, bool* o_pbOk )
           - with Result = ArgOutOfRange if the alias is out of range.
 */
 template <typename E>
-CEnum<E> CEnum<E>::fromString( const QString& i_strName, int i_idxAlias, bool* o_pbOk )
+CEnum<E> ZS::System::CEnum<E>::fromString( const QString& i_strName, int i_idxAlias, bool* o_pbOk )
 //------------------------------------------------------------------------------
 {
     return fromString(i_strName, i_idxAlias, Qt::CaseSensitive, o_pbOk);
@@ -628,7 +627,7 @@ CEnum<E> CEnum<E>::fromString( const QString& i_strName, int i_idxAlias, bool* o
           - with Result = ArgOutOfRange if the alias is out of range.
 */
 template <typename E>
-CEnum<E> CEnum<E>::fromString( const QString& i_strName, int i_idxAlias, Qt::CaseSensitivity i_caseSensitivity, bool* o_pbOk )
+CEnum<E> ZS::System::CEnum<E>::fromString( const QString& i_strName, int i_idxAlias, Qt::CaseSensitivity i_caseSensitivity, bool* o_pbOk )
 //------------------------------------------------------------------------------
 {
     if( s_armapsStr2Enumerators.size() == 0 ) // Use mutex only if maps are not yet initialized.
@@ -658,7 +657,7 @@ CEnum<E> CEnum<E>::fromString( const QString& i_strName, int i_idxAlias, Qt::Cas
     @return Enumeration instance with the enumerator corresonding to  the given real value. Invalid if the conversion failed.
 */
 template <typename E>
-CEnum<E> CEnum<E>::fromValue( const QVariant& i_val, bool* o_pbOk )
+CEnum<E> ZS::System::CEnum<E>::fromValue( const QVariant& i_val, bool* o_pbOk )
 //------------------------------------------------------------------------------
 {
     CEnum enumVal;
@@ -685,7 +684,7 @@ public: // class methods
     This corresponds to the number of defined enum entries.
 */
 template <typename E>
-int CEnum<E>::count()
+int ZS::System::CEnum<E>::count()
 //------------------------------------------------------------------------------
 {
     return s_arEnumEntries.count();
@@ -830,7 +829,7 @@ public: // assignment operators
           - with Result = IdxOutOutOfRange if the enumerator is out of range
 */
 template <typename E>
-CEnum<E>& CEnum<E>::operator = ( E i_enumerator )
+CEnum<E>& ZS::System::CEnum<E>::operator = ( E i_enumerator )
 //------------------------------------------------------------------------------
 {
     QString strMth = QString::number(static_cast<int>(m_enumerator)) + " = E " + QString::number(static_cast<int>(i_enumerator));
@@ -848,7 +847,7 @@ CEnum<E>& CEnum<E>::operator = ( E i_enumerator )
           - with Result = IdxOutOutOfRange if the enumerator is out of range
 */
 template <typename E>
-CEnum<E>& CEnum<E>::operator = ( int i_iEnumerator )
+CEnum<E>& ZS::System::CEnum<E>::operator = ( int i_iEnumerator )
 //------------------------------------------------------------------------------
 {
     QString strMth = QString::number(static_cast<int>(m_enumerator)) + " = E " + QString::number(i_iEnumerator);
@@ -872,7 +871,7 @@ CEnum<E>& CEnum<E>::operator = ( int i_iEnumerator )
           - with Result = IdxOutOutOfRange if the enumerator is out of range
 */
 template <typename E>
-CEnum<E>& CEnum<E>::operator = ( const char* i_szName )
+CEnum<E>& ZS::System::CEnum<E>::operator = ( const char* i_szName )
 //------------------------------------------------------------------------------
 {
     if( s_armapsStr2Enumerators.size() == 0 ) // Use mutex only if maps are not yet initialized.
@@ -907,7 +906,7 @@ CEnum<E>& CEnum<E>::operator = ( const char* i_szName )
           - with Result = IdxOutOutOfRange if the enumerator is out of range
 */
 template <typename E>
-CEnum<E>& CEnum<E>::operator = ( const QString& i_strName )
+CEnum<E>& ZS::System::CEnum<E>::operator = ( const QString& i_strName )
 //------------------------------------------------------------------------------
 {
     if( s_armapsStr2Enumerators.size() == 0 ) // Use mutex only if maps are not yet initialized.
@@ -931,7 +930,7 @@ CEnum<E>& CEnum<E>::operator = ( const QString& i_strName )
 /*! Assigns other to this enum instance and return a reference to this enum instance.
 */
 template <typename E>
-CEnum<E>& CEnum<E>::operator = ( const CEnum& i_other )
+CEnum<E>& ZS::System::CEnum<E>::operator = ( const CEnum& i_other )
 //------------------------------------------------------------------------------
 {
     m_enumerator = i_other.m_enumerator;
@@ -1044,7 +1043,7 @@ public: // compare operators with int
 /*! Returns true if the enumerator of this instance is equal to the given enumerator,
     otherwise returns false.
 */
-/*! 
+/*!
 */
 template <typename E>
 bool CEnum<E>::operator == ( int i_iEnumerator ) const
@@ -1600,7 +1599,7 @@ public: // increment/decrement operators
           - with Result = InvalidMethodCall if the enumerator of this enum instance is out of range
 */
 template <typename E>
-CEnum<E>& CEnum<E>::operator ++ ()
+CEnum<E>& ZS::System::CEnum<E>::operator ++ ()
 //------------------------------------------------------------------------------
 {
     QString strMth = QString::number(static_cast<int>(m_enumerator)) + "++";
@@ -1625,7 +1624,7 @@ CEnum<E>& CEnum<E>::operator ++ ()
           - with Result = InvalidMethodCall if the enumerator of this enum instance is out of range
 */
 template <typename E>
-CEnum<E>& CEnum<E>::operator ++ (int)
+CEnum<E>& ZS::System::CEnum<E>::operator ++ (int)
 //------------------------------------------------------------------------------
 {
     QString strMth = QString::number(static_cast<int>(m_enumerator)) + "++";
@@ -1650,7 +1649,7 @@ CEnum<E>& CEnum<E>::operator ++ (int)
           - with Result = InvalidMethodCall if the enumerator of this enum instance is out of range
 */
 template <typename E>
-CEnum<E>& CEnum<E>::operator -- ()
+CEnum<E>& ZS::System::CEnum<E>::operator -- ()
 //------------------------------------------------------------------------------
 {
     QString strMth = QString::number(static_cast<int>(m_enumerator)) + "--";
@@ -1675,7 +1674,7 @@ CEnum<E>& CEnum<E>::operator -- ()
           - with Result = InvalidMethodCall if the enumerator of this enum instance is out of range
 */
 template <typename E>
-CEnum<E>& CEnum<E>::operator -- (int)
+CEnum<E>& ZS::System::CEnum<E>::operator -- (int)
 //------------------------------------------------------------------------------
 {
     QString strMth = QString::number(static_cast<int>(m_enumerator)) + "--";

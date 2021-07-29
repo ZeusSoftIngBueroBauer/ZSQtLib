@@ -30,7 +30,7 @@ may result in using the software modules.
 #include <QtCore/qabstractitemmodel.h>
 #include <QtGui/qtextdocument.h>
 
-#if QT_VERSION < 0x050000
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 #include <QtGui/qitemdelegate.h>
 #include <QtGui/qtableview.h>
 #include <QtGui/qtreeview.h>
@@ -103,7 +103,7 @@ signals:
     void progressBarConnectDblClicked();
     void textItemAdded( const QString& i_strText );
 public: // instance methods
-    #if QT_VERSION >= 0x040501
+    #if QT_VERSION >= QT_VERSION_CHECK(4, 5, 1)
     void loadThreadColors( const QString& i_strAbsFilePath = "" );
     void saveThreadColors( const QString& i_strAbsFilePath = "" );
     #endif

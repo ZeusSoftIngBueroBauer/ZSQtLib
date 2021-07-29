@@ -43,6 +43,9 @@ may result in using the software modules.
 // (which is included by ZSSysTime (which again is included by ZSSysAux)).
 #include <windows.h>
 #endif
+#ifdef __linux__
+#include <unistd.h>
+#endif
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
@@ -908,39 +911,34 @@ ZSIPCTRACEDLL_EXTERN_API char* TrcServer_GetApplicationName()
 } // TrcServer_GetApplicationName
 
 //------------------------------------------------------------------------------
-ZSIPCTRACEDLL_EXTERN_API void TrcServer_GetDefaultFilePaths(
-    char**      o_pszAdminObjFileAbsFilePath,
-    char**      o_pszLocalTrcFileAbsFilePath,
-    const char* i_szIniFileScope )
+ZSIPCTRACEDLL_EXTERN_API char* TrcServer_GetDefaultAdminObjFileAbsoluteFilePath( const char* i_szIniFileScope )
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&DllIf_s_mtx);
 
-    QString strAdminObjFileAbsFilePath;
-    QString strLocalTrcFileAbsFilePath;
     QString strIniFileScope = i_szIniFileScope;
+    std::string stdstrAbsFilePath = CTrcServer::GetDefaultAdminObjFileAbsoluteFilePath(strIniFileScope).toStdString();
+    char* szAbsFilePath = new char[stdstrAbsFilePath.size() + 1];
+    memcpy(szAbsFilePath, stdstrAbsFilePath.c_str(), stdstrAbsFilePath.size());
+    szAbsFilePath[stdstrAbsFilePath.size()] = 0x00;
+    return szAbsFilePath;
 
-    CTrcServer::GetDefaultFilePaths(strAdminObjFileAbsFilePath, strLocalTrcFileAbsFilePath, strIniFileScope);
+} // TrcServer_GetDefaultAdminObjFileAbsoluteFilePath
 
-    int iStrLen;
+//------------------------------------------------------------------------------
+ZSIPCTRACEDLL_EXTERN_API char* TrcServer_GetDefaultLocalTrcFileAbsoluteFilePath( const char* i_szIniFileScope )
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(&DllIf_s_mtx);
 
-    if( o_pszAdminObjFileAbsFilePath != nullptr )
-    {
-        iStrLen = strAdminObjFileAbsFilePath.length();
-        *o_pszAdminObjFileAbsFilePath = new char[iStrLen+1];
-        memset(*o_pszAdminObjFileAbsFilePath, 0x00, iStrLen+1);
-        memcpy(*o_pszAdminObjFileAbsFilePath, strAdminObjFileAbsFilePath.toUtf8().data(), iStrLen+1);
-    }
+    QString strIniFileScope = i_szIniFileScope;
+    std::string stdstrAbsFilePath = CTrcServer::GetDefaultLocalTrcFileAbsoluteFilePath(strIniFileScope).toStdString();
+    char* szAbsFilePath = new char[stdstrAbsFilePath.size() + 1];
+    memcpy(szAbsFilePath, stdstrAbsFilePath.c_str(), stdstrAbsFilePath.size());
+    szAbsFilePath[stdstrAbsFilePath.size()] = 0x00;
+    return szAbsFilePath;
 
-    if( o_pszLocalTrcFileAbsFilePath != nullptr )
-    {
-        iStrLen = strLocalTrcFileAbsFilePath.length();
-        *o_pszLocalTrcFileAbsFilePath = new char[iStrLen+1];
-        memset(*o_pszLocalTrcFileAbsFilePath, 0x00, iStrLen+1);
-        memcpy(*o_pszLocalTrcFileAbsFilePath, strLocalTrcFileAbsFilePath.toUtf8().data(), iStrLen+1);
-    }
-
-} // TrcServer_GetDefaultFilePaths
+} // TrcServer_GetDefaultLocalTrcFileAbsoluteFilePath
 
 //------------------------------------------------------------------------------
 ZSIPCTRACEDLL_EXTERN_API void TrcServer_RegisterCurrentThread( const char* i_szThreadName )
@@ -2165,7 +2163,8 @@ ZSIPCTRACEDLL_EXTERN_API DllIf::CIpcTrcServer* IpcTrcServer_CreateInstance(
 
     if( !DllIf_IpcTrcServer_s_hshpTrcMthFiles.contains(strServerName) )
     {
-        CTrcServer::GetDefaultFilePaths(strAdminObjFileAbsFilePath, strLocalTrcFileAbsFilePath);
+        strAdminObjFileAbsFilePath = CTrcServer::GetDefaultAdminObjFileAbsoluteFilePath();
+        strLocalTrcFileAbsFilePath = CTrcServer::GetDefaultLocalTrcFileAbsoluteFilePath();
 
         DllIf_IpcTrcServer_s_hshpTrcMthFiles[strServerName] = CTrcMthFile::Alloc(strLocalTrcFileAbsFilePath);
         DllIf_IpcTrcServer_s_hshiTrcMthDetailLevels[strServerName] = i_iTrcDetailLevel;
@@ -2894,7 +2893,7 @@ protected: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-DllIf::CIpcTrcServer::CIpcTrcServer( const char* i_szName, int i_iTrcDetailLevel ) :
+DllIf::CIpcTrcServer::CIpcTrcServer( const char* i_szName, int /*i_iTrcDetailLevel*/ ) :
 //------------------------------------------------------------------------------
     CTrcServer(i_szName)
 {

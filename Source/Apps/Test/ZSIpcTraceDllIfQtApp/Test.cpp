@@ -27,7 +27,7 @@ may result in using the software modules.
 #include <QtCore/qfile.h>
 #include <QtCore/qtimer.h>
 
-#if QT_VERSION < 0x050000
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 #include <QtGui/qmessagebox.h>
 #else
 #include <QtWidgets/qmessagebox.h>
@@ -266,9 +266,8 @@ void CTest::doTestStepLoadDll( ZS::Test::CTestStep* i_pTestStep )
     ZS::Trace::DllIf::EBuildConfiguration buildConfiguration = ZS::Trace::DllIf::EBuildConfigurationRelease;
     #endif
 
-    const char* szCompiler = COMPILERLIBINFIX;  // from "ZSSysVersion.h"
-    const char* szPlatform = PLATFORMLIBINFIX;  // from "ZSSysVersion.h"
-    int iQtVersionMajor = QT_VERSION_MAJOR;     // from "ZSSysVersion.h"
+    const char* szCompiler = COMPILERLIBINFIX;  // from "ZSIpcTrcDllIf.h"
+    const char* szPlatform = PLATFORMLIBINFIX;  // from "ZSIpcTrcDllIf.h"
 
     bool bOk = ZS::Trace::DllIf::loadDll(szCompiler, szPlatform, buildConfiguration, QT_VERSION_MAJOR);
 
@@ -463,11 +462,9 @@ void CTest::doTestStepTraceServerShutdown( ZS::Test::CTestStep* i_pTestStep )
     // Test Step
     //----------
 
-    bool bOk = false;
-
     if( m_pTrcServer != nullptr )
     {
-        bOk = m_pTrcServer->shutdown();
+        m_pTrcServer->shutdown();
     }
 
     // Actual Values

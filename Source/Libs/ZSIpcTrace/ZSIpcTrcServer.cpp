@@ -27,7 +27,7 @@ may result in using the software modules.
 #include <QtCore/qcoreapplication.h>
 #include <QtCore/qmutex.h>
 
-#if QT_VERSION < 0x050000
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 #include <QtXml/qxmlstream.h>
 #else
 #include <QtCore/qxmlstream.h>
@@ -252,7 +252,7 @@ CIpcTrcServer* CIpcTrcServer::GetInstance( const QString& i_strName )
 {
     CIpcTrcServer* pIpcTrcServer = nullptr;
 
-    CTrcServer* pTrcServer = CTrcServer::GetInstance();
+    CTrcServer* pTrcServer = CTrcServer::GetInstance(i_strName);
 
     if( pTrcServer != nullptr )
     {
@@ -476,7 +476,13 @@ CIpcTrcServer::~CIpcTrcServer()
     // therefore all living trace admin objects. For this we have to reparent
     // the Ipc server so it will not be automatically deleted as a child of this
     // trace server by Qt.
-    m_pIpcServer->setParent(nullptr);
+    try
+    {
+        //m_pIpcServer->setParent(nullptr);
+    }
+    catch(...)
+    {
+    }
 
     try
     {
@@ -1035,7 +1041,7 @@ void CIpcTrcServer::traceMethod(
     // calls as "traceMethodEnter" is usually called from within different
     // thread contexts.
 
-    if( i_pTrcAdminObj != nullptr && i_pTrcAdminObj->isActive(ETraceDetailLevelRuntimeInfo) && isEnabled() && isActive() )
+    if( i_pTrcAdminObj != nullptr && i_pTrcAdminObj->isActive(ETraceDetailLevelMethodCalls) && isEnabled() && isActive() )
     {
         addEntry(
             /* strThreadName */ currentThreadName(),
@@ -1068,7 +1074,7 @@ void CIpcTrcServer::traceMethod(
     // calls as "traceMethodEnter" is usually called from within different
     // thread contexts.
 
-    if( i_pTrcAdminObj != nullptr && i_pTrcAdminObj->isActive(ETraceDetailLevelRuntimeInfo) && isEnabled() && isActive() )
+    if( i_pTrcAdminObj != nullptr && i_pTrcAdminObj->isActive(ETraceDetailLevelMethodCalls) && isEnabled() && isActive() )
     {
         addEntry(
             /* strThreadName */ currentThreadName(),
@@ -1857,7 +1863,7 @@ protected slots: // connected to the signals of the Ipc Server
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CIpcTrcServer::onIpcServerConnected( QObject* i_pServer, const SSocketDscr& i_socketDscr )
+void CIpcTrcServer::onIpcServerConnected( QObject* /*i_pServer*/, const SSocketDscr& i_socketDscr )
 //------------------------------------------------------------------------------
 {
     // The class (and all instances of the class) may be accessed from within
@@ -1895,7 +1901,7 @@ void CIpcTrcServer::onIpcServerConnected( QObject* i_pServer, const SSocketDscr&
 } // onIpcServerConnected
 
 //------------------------------------------------------------------------------
-void CIpcTrcServer::onIpcServerDisconnected( QObject* i_pServer, const SSocketDscr& i_socketDscr )
+void CIpcTrcServer::onIpcServerDisconnected( QObject* /*i_pServer*/, const SSocketDscr& i_socketDscr )
 //------------------------------------------------------------------------------
 {
     // The class (and all instances of the class) may be accessed from within
@@ -1944,7 +1950,7 @@ void CIpcTrcServer::onIpcServerDisconnected( QObject* i_pServer, const SSocketDs
 
 //------------------------------------------------------------------------------
 void CIpcTrcServer::onIpcServerReceivedData(
-    QObject*          i_pServer,
+    QObject*          /*i_pServer*/,
     int               i_iSocketId,
     const QByteArray& i_byteArr )
 //------------------------------------------------------------------------------
@@ -2457,7 +2463,7 @@ protected slots:
 
 //------------------------------------------------------------------------------
 void CIpcTrcServer::onTrcAdminObjIdxTreeEntryAdded(
-    CIdxTree*              i_pIdxTree,
+    CIdxTree*              /*i_pIdxTree*/,
     CAbstractIdxTreeEntry* i_pTreeEntry )
 //------------------------------------------------------------------------------
 {
@@ -2515,7 +2521,7 @@ void CIpcTrcServer::onTrcAdminObjIdxTreeEntryAdded(
 
 //------------------------------------------------------------------------------
 void CIpcTrcServer::onTrcAdminObjIdxTreeEntryChanged(
-    CIdxTree*              i_pIdxTree,
+    CIdxTree*              /*i_pIdxTree*/,
     CAbstractIdxTreeEntry* i_pTreeEntry )
 //------------------------------------------------------------------------------
 {

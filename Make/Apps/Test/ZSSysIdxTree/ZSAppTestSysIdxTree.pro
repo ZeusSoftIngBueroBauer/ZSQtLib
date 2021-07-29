@@ -4,11 +4,11 @@
 #
 #-------------------------------------------------
 
-QT += core gui xml
+QT += core gui network xml
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-MODULE = ZSAppTestIdxTree
+MODULE = ZSAppTestSysIdxTree
 
 VERSION = 4.6.3
 
@@ -17,11 +17,25 @@ TEMPLATE = app
 windows {
     CONFIG += skip_target_version_ext
     DEFINES += _WINDOWS
+    COMPILERLIBINFIX = msvc2019
     PLATFORM = x64
+}
+win32-msvc2013 {
+    message("win32-msvc2013") # not executed !!!
+}
+win32-msvc2015 {
+    message("win32-msvc2015") # not executed !!!
+}
+win32-msvc2017 {
+    message("win32-msvc2017") # not executed !!!
+}
+win32-msvc2019 {
+    message("win32-msvc2019") # not executed !!!
 }
 linux {
     DEFINES += __linux__
-    PLATFORM = Linux
+    COMPILERLIBINFIX = gcc
+    PLATFORM = x64
 }
 
 CONFIG(release, release|debug) {
@@ -34,51 +48,57 @@ CONFIG(debug, release|debug) {
     MOC_DIR = ../../../../Tmp/Moc/Apps/Test/$$MODULE/$$PLATFORM/Debug
     OBJECTS_DIR = ../../../../Tmp/Int/Apps/Test/$$MODULE/$$PLATFORM/Debug
 }
-DESTDIR = ../../../../Bin/$$PLATFORM
+DESTDIR = ../../../../Bin//$$COMPILERLIBINFIX"_"$$PLATFORM
 
 CONFIG(debug, release|debug) {
     DEFINES += _DEBUG
 }
 DEFINES += _ZSTRACE
 
-INCLUDEPATH += ../../../../Include/Apps/Test/ZSIdxTree
+INCLUDEPATH += ../../../../Include/Apps/Test/ZSSysIdxTree
 INCLUDEPATH += ../../../../Include/Libs
 linux {
     INCLUDEPATH += /usr/local/include
 }
 
-LIBS += -L../../../../Lib/$$PLATFORM
+LIBS += -L../../../../Lib/$$COMPILERLIBINFIX"_"$$PLATFORM
 linux {
     LIBS += -L/usr/local/lib
 }
 
 CONFIG(release, release|debug) {
-    LIBS += -lZSSys
-    LIBS += -lZSTest
-    LIBS += -lZSSysGUI
-    LIBS += -lZSTestGUI
+    LIBS += -lZSSys"Qt"$$QT_MAJOR_VERSION"_"$$COMPILERLIBINFIX"_"$$PLATFORM
+    LIBS += -lZSTest"Qt"$$QT_MAJOR_VERSION"_"$$COMPILERLIBINFIX"_"$$PLATFORM
+    LIBS += -lZSIpc"Qt"$$QT_MAJOR_VERSION"_"$$COMPILERLIBINFIX"_"$$PLATFORM
+    LIBS += -lZSIpcTrace"Qt"$$QT_MAJOR_VERSION"_"$$COMPILERLIBINFIX"_"$$PLATFORM
+    LIBS += -lZSSysGUI"Qt"$$QT_MAJOR_VERSION"_"$$COMPILERLIBINFIX"_"$$PLATFORM
+    LIBS += -lZSTestGUI"Qt"$$QT_MAJOR_VERSION"_"$$COMPILERLIBINFIX"_"$$PLATFORM
+    LIBS += -lZSIpcGUI"Qt"$$QT_MAJOR_VERSION"_"$$COMPILERLIBINFIX"_"$$PLATFORM
+    LIBS += -lZSIpcTraceGUI"Qt"$$QT_MAJOR_VERSION"_"$$COMPILERLIBINFIX"_"$$PLATFORM
 }
 CONFIG(debug, release|debug) {
-    LIBS += -lZSSysd
-    LIBS += -lZSTestd
-    LIBS += -lZSSysGUId
-    LIBS += -lZSTestGUId
+    LIBS += -lZSSys"Qt"$$QT_MAJOR_VERSION"_"$$COMPILERLIBINFIX"_"$$PLATFORM"_d"
+    LIBS += -lZSTest"Qt"$$QT_MAJOR_VERSION"_"$$COMPILERLIBINFIX"_"$$PLATFORM"_d"
+    LIBS += -lZSIpc"Qt"$$QT_MAJOR_VERSION"_"$$COMPILERLIBINFIX"_"$$PLATFORM"_d"
+    LIBS += -lZSIpcTrace"Qt"$$QT_MAJOR_VERSION"_"$$COMPILERLIBINFIX"_"$$PLATFORM"_d"
+    LIBS += -lZSSysGUI"Qt"$$QT_MAJOR_VERSION"_"$$COMPILERLIBINFIX"_"$$PLATFORM"_d"
+    LIBS += -lZSTestGUI"Qt"$$QT_MAJOR_VERSION"_"$$COMPILERLIBINFIX"_"$$PLATFORM"_d"
+    LIBS += -lZSIpcGUI"Qt"$$QT_MAJOR_VERSION"_"$$COMPILERLIBINFIX"_"$$PLATFORM"_d"
+    LIBS += -lZSIpcTraceGUI"Qt"$$QT_MAJOR_VERSION"_"$$COMPILERLIBINFIX"_"$$PLATFORM"_d"
 }
 
 SOURCES += \
-    ../../../../Source/Apps/Test/ZSIdxTree/App.cpp \
-    ../../../../Source/Apps/Test/ZSIdxTree/Main.cpp \
-    ../../../../Source/Apps/Test/ZSIdxTree/MainWindow.cpp \
-    ../../../../Source/Apps/Test/ZSIdxTree/Test.cpp \
-    ../../../../Source/Apps/Test/ZSIdxTree/WidgetCentral.cpp \
-    ../../../../Source/Apps/Test/ZSIdxTree/TSGrpTrcAdmObjTree.cpp
+    ../../../../Source/Apps/Test/ZSSysIdxTree/App.cpp \
+    ../../../../Source/Apps/Test/ZSSysIdxTree/Main.cpp \
+    ../../../../Source/Apps/Test/ZSSysIdxTree/MainWindow.cpp \
+    ../../../../Source/Apps/Test/ZSSysIdxTree/Test.cpp \
+    ../../../../Source/Apps/Test/ZSSysIdxTree/WidgetCentral.cpp
 
 HEADERS  += \
-    ../../../../Include/Apps/Test/ZSIdxTree/App.h \
-    ../../../../Include/Apps/Test/ZSIdxTree/MainWindow.h \
-    ../../../../Include/Apps/Test/ZSIdxTree/Test.h \
-    ../../../../Include/Apps/Test/ZSIdxTree/WidgetCentral.h \
-    ../../../../Include/Apps/Test/ZSIdxTree/TSGrpTrcAdmObjTree.h
+    ../../../../Include/Apps/Test/ZSSysIdxTree/App.h \
+    ../../../../Include/Apps/Test/ZSSysIdxTree/MainWindow.h \
+    ../../../../Include/Apps/Test/ZSSysIdxTree/Test.h \
+    ../../../../Include/Apps/Test/ZSSysIdxTree/WidgetCentral.h
 
 unix:!symbian {
     maemo5 {

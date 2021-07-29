@@ -199,6 +199,7 @@ enum class EEnabled
     Undefined = 2  /*! The variable is not yet initialised and its value is unknown. */
 };
 
+
 template class ZSSYSDLL_API CEnum<EEnabled>;
 typedef CEnum<EEnabled> CEnumEnabled;
 
@@ -255,7 +256,6 @@ enum class ECopyDepth
 
 template class ZSSYSDLL_API CEnum<ECopyDepth>;
 typedef CEnum<ECopyDepth> CEnumCopyDepth;
-
 
 //==============================================================================
 /*! Defines the different life cycle states of an object.
@@ -570,7 +570,9 @@ enum ETraceDetailLevel
 ZSSYSDLL_API QString traceDetailLevel2Str( int i_iDetailLevel, ZS::System::EEnumEntryAliasStr i_alias = ZS::System::EEnumEntryAliasStrName );
 ZSSYSDLL_API int str2TraceDetailLevel( const QString& i_str, ZS::System::EEnumEntryAliasStr i_alias = ZS::System::EEnumEntryAliasStrName );
 
+#ifdef _WINDOWS
 #pragma warning( pop )
+#endif
 
 } // namespace Trace
 

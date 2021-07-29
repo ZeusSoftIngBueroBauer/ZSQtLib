@@ -45,8 +45,8 @@ Libraries depending on build configuration and used Qt version
 
 #ifdef _WINDOWS
 
-//#pragma comment(lib, "user32.lib")
-//#pragma comment(lib, "advapi32.lib")
+#pragma comment(lib, "user32.lib")
+#pragma comment(lib, "advapi32.lib")
 
 #if _MSC_VER <= 1200
 #pragma message("Visual Studio 6.0")
@@ -130,7 +130,7 @@ Libraries depending on build configuration and used Qt version
 #pragma message("QTXMLLIB = " QTXMLLIB)
 #pragma message("QTSQLLIB = " QTSQLLIB)
 #pragma message("QTGUILIB = " QTGUILIB)
-#if QT_VERSION >= 0x050000
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 #pragma message("QTWIDGETSLIB = " QTWIDGETSLIB)
 #endif
 

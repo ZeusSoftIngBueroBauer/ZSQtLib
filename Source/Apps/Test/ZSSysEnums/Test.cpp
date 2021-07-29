@@ -62,10 +62,10 @@ enum class EProcessorClock
 
 typedef CEnum<EProcessorClock> CEnumProcessorClock;
 
-QMutex CEnum<EProcessorClock>::s_mtxArMapsStr2Enumerators;
-QVector<QHash<QString, int>> CEnum<EProcessorClock>::s_armapsStr2Enumerators;
+template<> QMutex CEnum<EProcessorClock>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
+template<> QVector<QHash<QString, int>> CEnum<EProcessorClock>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
 
-const QVector<SEnumEntry> CEnum<EProcessorClock>::s_arEnumEntries =
+template<> const QVector<SEnumEntry> CEnum<EProcessorClock>::s_arEnumEntries =
 {   // idxRow,           Enumerator,                                Name,  Symbol, Text,                SCIPShort, SCPILong, Value
     /*  0 */ SEnumEntry( static_cast<int>(EProcessorClock::Low),    "Low",    "L", "Low (5.12 MHz)",     "LOW",    "LOW",    5.12e6  ),
     /*  1 */ SEnumEntry( static_cast<int>(EProcessorClock::Medium), "Medium", "M", "Medium (512.0 MHz)", "MED",    "MEDium", 512.0e6 ),
@@ -1350,10 +1350,9 @@ void CTest::doTestStepEnumEntryClassMethodsVal2Str( ZS::Test::CTestStep* i_pTest
     QString strDesiredValue;
     QString strActualValue;
 
-    EProcessorClock enumerator;
-    QString         strEnumerator;
-    QString         strValResult;
-    QVariant        val;
+    QString  strEnumerator;
+    QString  strValResult;
+    QVariant val;
 
     int  iEnumerator;
     int  idxAlias;
@@ -1367,7 +1366,6 @@ void CTest::doTestStepEnumEntryClassMethodsVal2Str( ZS::Test::CTestStep* i_pTest
     for( iEnumerator = 0; iEnumerator < iEnumArrLen; ++iEnumerator )
     {
         val = QVariant();
-        enumerator = static_cast<EProcessorClock>(EInvalidEnumerator);
         strValResult = "";
 
         if( iEnumerator == 0 ) { val = 5.12e6; strValResult = "Low"; }
@@ -1391,7 +1389,6 @@ void CTest::doTestStepEnumEntryClassMethodsVal2Str( ZS::Test::CTestStep* i_pTest
         for( iEnumerator = 0; iEnumerator < iEnumArrLen; ++iEnumerator )
         {
             val = QVariant();
-            enumerator = static_cast<EProcessorClock>(EInvalidEnumerator);
             strValResult = "";
             bOk = false;
 
@@ -1442,7 +1439,6 @@ void CTest::doTestStepEnumEntryClassMethodsVal2Str( ZS::Test::CTestStep* i_pTest
     for( iEnumerator = 0; iEnumerator < iEnumArrLen; ++iEnumerator )
     {
         val = QVariant();
-        enumerator = static_cast<EProcessorClock>(EInvalidEnumerator);
         strValResult = "";
         bOk = false;
 
@@ -2553,8 +2549,7 @@ void CTest::doTestStepEnumClassTemplateZSSysModeClassMethodFromString( ZS::Test:
     QString strDesiredValue;
     QString strActualValue;
 
-    CEnumMode enumInst;
-    EMode     enumerator;
+    CEnumMode           enumInst;
     QString             strEnumeratorSource;
     QString             strEnumeratorResult;
     QString             strAlias;
@@ -2600,7 +2595,6 @@ void CTest::doTestStepEnumClassTemplateZSSysModeClassMethodFromString( ZS::Test:
         {
             if( iEnumerator == 0 )
             {
-                enumerator = EMode::Edit;
                 strEnumeratorResult = "Edit";
 
                 if( idxAlias == EEnumEntryAliasStrName ) strEnumeratorSource = "Edit";
@@ -2610,7 +2604,6 @@ void CTest::doTestStepEnumClassTemplateZSSysModeClassMethodFromString( ZS::Test:
             }
             else if( iEnumerator == 1 )
             {
-                enumerator = EMode::Simulation;
                 strEnumeratorResult = "Simulation";
 
                 if( idxAlias == EEnumEntryAliasStrName ) strEnumeratorSource = "Simulation";
@@ -2620,7 +2613,6 @@ void CTest::doTestStepEnumClassTemplateZSSysModeClassMethodFromString( ZS::Test:
             }
             else if( iEnumerator == 2 )
             {
-                enumerator = EMode::Undefined;
                 strEnumeratorResult = "Undefined";
 
                 if( idxAlias == EEnumEntryAliasStrName ) strEnumeratorSource = "Undefined";
@@ -2630,7 +2622,6 @@ void CTest::doTestStepEnumClassTemplateZSSysModeClassMethodFromString( ZS::Test:
             }
             else
             {
-                enumerator = static_cast<EMode>(iEnumerator);
                 strEnumeratorResult = QString::number(iEnumerator);
                 strEnumeratorSource = QString::number(iEnumerator);
             }
@@ -4797,12 +4788,10 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithCharPtr( ZS::
 
     CEnumMode enumInst;
 
-    char* szEnumerator;
-
     // -------------------------------------------------------------------------
 
     enumInst = EMode::Simulation;
-    szEnumerator = "Simulation";
+    const char* szEnumerator = "Simulation";
 
     try
     {
@@ -6934,7 +6923,6 @@ void CTest::doTestStepEnumClassTemplateZSSysModeInstMethodToString( ZS::Test::CT
 
     int  iEnumerator;
     int  idxAlias;
-    bool bOk;
 
     CEnumMode enumInst;
 
@@ -6955,26 +6943,25 @@ void CTest::doTestStepEnumClassTemplateZSSysModeInstMethodToString( ZS::Test::CT
                     if( idxAlias == EEnumEntryAliasStrName ) { strEnumeratorSource = "Edit"; }
                     else if( idxAlias == EEnumEntryAliasStrSymbol ) { strEnumeratorSource = "E"; }
                     else if( idxAlias == EEnumEntryAliasStrText ) { strEnumeratorSource = "Edit"; }
-                    else { strEnumeratorSource = ""; bOk = false; }
+                    else { strEnumeratorSource = ""; }
                 }
                 else if( iEnumerator == static_cast<int>(EMode::Simulation) )
                 {
                     if( idxAlias == EEnumEntryAliasStrName ) { strEnumeratorSource = "Simulation"; }
                     else if( idxAlias == EEnumEntryAliasStrSymbol ) { strEnumeratorSource = "S"; }
                     else if( idxAlias == EEnumEntryAliasStrText ) { strEnumeratorSource = "Simulation"; }
-                    else { strEnumeratorSource = ""; bOk = false; }
+                    else { strEnumeratorSource = ""; }
                 }
                 else if( iEnumerator == static_cast<int>(EMode::Undefined) )
                 {
                     if( idxAlias == EEnumEntryAliasStrName ) { strEnumeratorSource = "Undefined"; }
                     else if( idxAlias == EEnumEntryAliasStrSymbol ) { strEnumeratorSource = "?"; }
                     else if( idxAlias == EEnumEntryAliasStrText ) { strEnumeratorSource = "Undefined"; }
-                    else { strEnumeratorSource = ""; bOk = false; }
+                    else { strEnumeratorSource = ""; }
                 }
                 else
                 {
                     strEnumeratorSource = "Invalid";
-                    bOk = false;
                 }
 
                 strDesiredValue = strEnumeratorSource + ".toString(" + strAlias + "): " + strEnumeratorSource;
@@ -7994,7 +7981,6 @@ void CTest::doTestStepEnumClassTemplateUserDefinedClassMethodFromString( ZS::Tes
     QString strActualValue;
 
     CEnumProcessorClock enumInst;
-    EProcessorClock     enumerator;
     QString             strEnumeratorSource;
     QString             strEnumeratorResult;
     QString             strAlias;
@@ -8040,7 +8026,6 @@ void CTest::doTestStepEnumClassTemplateUserDefinedClassMethodFromString( ZS::Tes
         {
             if( iEnumerator == 0 )
             {
-                enumerator = EProcessorClock::Low;
                 strEnumeratorResult = "Low";
 
                 if( idxAlias == EEnumEntryAliasStrName ) strEnumeratorSource = "Low";
@@ -8052,7 +8037,6 @@ void CTest::doTestStepEnumClassTemplateUserDefinedClassMethodFromString( ZS::Tes
             }
             else if( iEnumerator == 1 )
             {
-                enumerator = EProcessorClock::Medium;
                 strEnumeratorResult = "Medium";
 
                 if( idxAlias == EEnumEntryAliasStrName ) strEnumeratorSource = "Medium";
@@ -8064,7 +8048,6 @@ void CTest::doTestStepEnumClassTemplateUserDefinedClassMethodFromString( ZS::Tes
             }
             else if( iEnumerator == 2 )
             {
-                enumerator = EProcessorClock::High;
                 strEnumeratorResult = "High";
 
                 if( idxAlias == EEnumEntryAliasStrName ) strEnumeratorSource = "High";
@@ -8076,7 +8059,6 @@ void CTest::doTestStepEnumClassTemplateUserDefinedClassMethodFromString( ZS::Tes
             }
             else
             {
-                enumerator = static_cast<EProcessorClock>(iEnumerator);
                 strEnumeratorResult = QString::number(iEnumerator);
                 strEnumeratorSource = QString::number(iEnumerator);
             }
@@ -8277,9 +8259,8 @@ void CTest::doTestStepEnumClassTemplateUserDefinedClassMethodFromValue( ZS::Test
 
     CEnumProcessorClock enumInst;
 
-    EProcessorClock enumerator;
-    QString         strEnumerator;
-    QVariant        val;
+    QString  strEnumerator;
+    QVariant val;
 
     int  iEnumerator;
     bool bOk;
@@ -8289,7 +8270,6 @@ void CTest::doTestStepEnumClassTemplateUserDefinedClassMethodFromValue( ZS::Test
     for( iEnumerator = 0; iEnumerator < CEnumProcessorClock::count(); ++iEnumerator )
     {
         val = QVariant();
-        enumerator = static_cast<EProcessorClock>(EInvalidEnumerator);
         strEnumerator = "-1";
 
         if( iEnumerator == 0 ) { val = 5.12e6; strEnumerator = "Low"; }
@@ -10376,12 +10356,10 @@ void CTest::doTestStepEnumClassTemplateUserDefinedOperatorCompareWithCharPtr( ZS
 
     CEnumProcessorClock enumInst;
 
-    char* szEnumerator;
-
     // -------------------------------------------------------------------------
 
     enumInst = EProcessorClock::Medium;
-    szEnumerator = "Medium";
+    const char* szEnumerator = "Medium";
 
     try
     {
@@ -12513,7 +12491,6 @@ void CTest::doTestStepEnumClassTemplateUserDefinedInstMethodToString( ZS::Test::
 
     int  iEnumerator;
     int  idxAlias;
-    bool bOk;
 
     CEnumProcessorClock enumInst;
 
@@ -12536,7 +12513,7 @@ void CTest::doTestStepEnumClassTemplateUserDefinedInstMethodToString( ZS::Test::
                     else if( idxAlias == EEnumEntryAliasStrText ) { strEnumeratorSource = "Low (5.12 MHz)"; }
                     else if( idxAlias == EEnumEntryAliasStrSCPIShort ) { strEnumeratorSource = "LOW"; }
                     else if( idxAlias == EEnumEntryAliasStrSCPILong ) { strEnumeratorSource = "LOW"; }
-                    else { strEnumeratorSource = ""; bOk = false; }
+                    else { strEnumeratorSource = ""; }
                 }
                 else if( iEnumerator == static_cast<int>(EProcessorClock::Medium) )
                 {
@@ -12545,7 +12522,7 @@ void CTest::doTestStepEnumClassTemplateUserDefinedInstMethodToString( ZS::Test::
                     else if( idxAlias == EEnumEntryAliasStrText ) { strEnumeratorSource = "Medium (512.0 MHz)"; }
                     else if( idxAlias == EEnumEntryAliasStrSCPIShort ) { strEnumeratorSource = "MED"; }
                     else if( idxAlias == EEnumEntryAliasStrSCPILong ) { strEnumeratorSource = "MEDium"; }
-                    else { strEnumeratorSource = ""; bOk = false; }
+                    else { strEnumeratorSource = ""; }
                 }
                 else if( iEnumerator == static_cast<int>(EProcessorClock::High) )
                 {
@@ -12554,12 +12531,11 @@ void CTest::doTestStepEnumClassTemplateUserDefinedInstMethodToString( ZS::Test::
                     else if( idxAlias == EEnumEntryAliasStrText ) { strEnumeratorSource = "High (5.12 GHz)"; }
                     else if( idxAlias == EEnumEntryAliasStrSCPIShort ) { strEnumeratorSource = "HIGH"; }
                     else if( idxAlias == EEnumEntryAliasStrSCPILong ) { strEnumeratorSource = "HIGH"; }
-                    else { strEnumeratorSource = ""; bOk = false; }
+                    else { strEnumeratorSource = ""; }
                 }
                 else
                 {
                     strEnumeratorSource = "Invalid";
-                    bOk = false;
                 }
 
                 strDesiredValue = strEnumeratorSource + ".toString(" + strAlias + "): " + strEnumeratorSource;

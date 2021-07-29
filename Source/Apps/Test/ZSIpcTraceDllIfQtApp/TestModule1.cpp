@@ -33,6 +33,10 @@ may result in using the software modules.
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
+#ifdef __linux__
+#include <unistd.h>
+#endif
+
 using namespace ZS::System;
 using namespace ZS::Trace::DllIf;
 using namespace ZS::Apps::Test::IpcTraceDllIfQtApp;

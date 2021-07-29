@@ -33,6 +33,12 @@ may result in using the software modules.
 #include <windows.h>
 #endif
 
+#ifdef __linux__
+#include <string.h>
+#include <dlfcn.h>
+#define GetProcAddress dlsym
+#endif
+
 using namespace std;
 using namespace ZS::Trace;
 
@@ -45,19 +51,21 @@ namespace ZS
 {
 namespace System
 {
+#ifdef _WINDOWS
 //------------------------------------------------------------------------------
 wstring s2ws( const string& s )
 //------------------------------------------------------------------------------
 {
     int len;
     int slength = (int)s.length() + 1;
-    len = MultiByteToWideChar(CP_ACP, 0, s.c_str(), slength, 0, 0); 
+    len = MultiByteToWideChar(CP_ACP, 0, s.c_str(), slength, 0, 0);
     wchar_t* buf = new wchar_t[len];
     MultiByteToWideChar(CP_ACP, 0, s.c_str(), slength, buf, len);
     std::wstring r(buf);
     delete[] buf;
     return r;
 }
+#endif
 
 } // namespace System
 
@@ -91,7 +99,8 @@ typedef void (*TFctTrcServer_SetOrganizationName)( const char* i_szName );
 typedef char* (*TFctTrcServer_GetOrganizationName)();
 typedef void (*TFctTrcServer_SetApplicationName)( const char* i_szName );
 typedef char* (*TFctTrcServer_GetApplicationName)();
-typedef void (*TFctTrcServer_GetDefaultFilePaths)( char** o_pszAdminObjFileAbsFilePath, char** o_pszLocalTrcFileAbsFilePath, const char* i_szIniFileScope );
+typedef char* (*TFctTrcServer_GetDefaultAdminObjFileAbsoluteFilePath)( const char* i_szIniFileScope );
+typedef char* (*TFctTrcServer_GetDefaultLocalTrcFileAbsoluteFilePath)( const char* i_szIniFileScope );
 typedef void (*TFctTrcServer_RegisterCurrentThread)( const char* i_szThreadName );
 typedef void (*TFctTrcServer_UnregisterCurrentThread)();
 typedef char* (*TFctTrcServer_GetCurrentThreadName)();
@@ -145,7 +154,11 @@ static instances
 
 static char* s_szTrcDllFileName = nullptr;
 
+#ifdef _WINDOWS
 static HMODULE s_hndIpcTrcDllIf = NULL;
+#else
+static void* s_hndIpcTrcDllIf = NULL;
+#endif
 
 TFctTrcAdminObj_getNameSpace                         s_pFctTrcAdminObj_getNameSpace                         = NULL;
 TFctTrcAdminObj_getClassName                         s_pFctTrcAdminObj_getClassName                         = NULL;
@@ -167,7 +180,8 @@ TFctTrcServer_SetOrganizationName                    s_pFctTrcServer_SetOrganiza
 TFctTrcServer_GetOrganizationName                    s_pFctTrcServer_GetOrganizationName                    = NULL;
 TFctTrcServer_SetApplicationName                     s_pFctTrcServer_SetApplicationName                     = NULL;
 TFctTrcServer_GetApplicationName                     s_pFctTrcServer_GetApplicationName                     = NULL;
-TFctTrcServer_GetDefaultFilePaths                    s_pFctTrcServer_GetDefaultFilePaths                    = NULL;
+TFctTrcServer_GetDefaultAdminObjFileAbsoluteFilePath s_pFctTrcServer_GetDefaultAdminObjFileAbsoluteFilePath = NULL;
+TFctTrcServer_GetDefaultLocalTrcFileAbsoluteFilePath s_pFctTrcServer_GetDefaultLocalTrcFileAbsoluteFilePath = NULL;
 TFctTrcServer_RegisterCurrentThread                  s_pFctTrcServer_RegisterCurrentThread                  = NULL;
 TFctTrcServer_UnregisterCurrentThread                s_pFctTrcServer_UnregisterCurrentThread                = NULL;
 TFctTrcServer_GetCurrentThreadName                   s_pFctTrcServer_GetCurrentThreadName                   = NULL;
@@ -310,7 +324,11 @@ bool ZS::Trace::DllIf::loadDll(
 
     char* szQtVersionMajor = new char[21]; memset(szQtVersionMajor, 0x00, 21);
 
+    #ifdef _WINDOWS
     _itoa_s(i_iQtVersionMajor, szQtVersionMajor, 21, 10);
+    #else
+    sprintf(szQtVersionMajor, "%d", i_iQtVersionMajor);
+    #endif
 
     // Example for dlll file name: "ZSIpcTraceQt5_msvc2015_x64_d"
 
@@ -423,8 +441,11 @@ bool ZS::Trace::DllIf::loadDll(
         s_pFctTrcServer_GetApplicationName = (TFctTrcServer_GetApplicationName)GetProcAddress(s_hndIpcTrcDllIf, "TrcServer_GetApplicationName");
         if( s_pFctTrcServer_GetApplicationName == NULL ) bOk = false;
 
-        s_pFctTrcServer_GetDefaultFilePaths = (TFctTrcServer_GetDefaultFilePaths)GetProcAddress(s_hndIpcTrcDllIf, "TrcServer_GetDefaultFilePaths");
-        if( s_pFctTrcServer_GetDefaultFilePaths == NULL ) bOk = false;
+        s_pFctTrcServer_GetDefaultAdminObjFileAbsoluteFilePath = (TFctTrcServer_GetDefaultAdminObjFileAbsoluteFilePath)GetProcAddress(s_hndIpcTrcDllIf, "TrcServer_GetDefaultAdminObjFileAbsoluteFilePath");
+        if( s_pFctTrcServer_GetDefaultAdminObjFileAbsoluteFilePath == NULL ) bOk = false;
+
+        s_pFctTrcServer_GetDefaultLocalTrcFileAbsoluteFilePath = (TFctTrcServer_GetDefaultLocalTrcFileAbsoluteFilePath)GetProcAddress(s_hndIpcTrcDllIf, "TrcServer_GetDefaultLocalTrcFileAbsoluteFilePath");
+        if( s_pFctTrcServer_GetDefaultLocalTrcFileAbsoluteFilePath == NULL ) bOk = false;
 
         s_pFctTrcServer_RegisterCurrentThread = (TFctTrcServer_RegisterCurrentThread)GetProcAddress(s_hndIpcTrcDllIf, "TrcServer_RegisterCurrentThread");
         if( s_pFctTrcServer_RegisterCurrentThread == NULL ) bOk = false;
@@ -620,7 +641,8 @@ bool ZS::Trace::DllIf::releaseDll()
         s_pFctTrcServer_GetOrganizationName                    = NULL;
         s_pFctTrcServer_SetApplicationName                     = NULL;
         s_pFctTrcServer_GetApplicationName                     = NULL;
-        s_pFctTrcServer_GetDefaultFilePaths                    = NULL;
+        s_pFctTrcServer_GetDefaultAdminObjFileAbsoluteFilePath = NULL;
+        s_pFctTrcServer_GetDefaultLocalTrcFileAbsoluteFilePath = NULL;
         s_pFctTrcServer_RegisterCurrentThread                  = NULL;
         s_pFctTrcServer_UnregisterCurrentThread                = NULL;
         s_pFctTrcServer_GetCurrentThreadName                   = NULL;
@@ -1001,7 +1023,11 @@ void DllIf::CMethodTracer::setMethodReturn( int i_iResult )
     m_szMethodReturn = new char[c_iStrLenMax+1];
     memset(m_szMethodReturn, 0x00, c_iStrLenMax+1);
 
+    #ifdef _WINDOWS
     _itoa_s(i_iResult, m_szMethodReturn, c_iStrLenMax+1, 10);
+    #else
+    sprintf(m_szMethodReturn, "%d", i_iResult);
+    #endif
 
 } // setMethodReturn
 
@@ -1238,41 +1264,45 @@ char* DllIf::CTrcServer::GetApplicationName()
 } // GetApplicationName
 
 //------------------------------------------------------------------------------
-/*! Returns the path information for the trace admin objects xml and the trace
-    method log file for the defined scope.
+/*! Returns the path information for the trace admin objects xml file
+    for the defined scope.
 
-    The character pointers must be freed after calling the method. Example:
+    The returned character pointer must be freed after calling the method.
 
-    @code
-    char* szAdminObjFileAbsFilePath = nullptr;
-    char* szLocalTrcFileAbsFilePath = nullptr;
-    GetDefaultFilePaths(&szAdminObjFileAbsFilePath, &szLocalTrcFileAbsFilePath);
-    ...
-    delete szAdminObjFileAbsFilePath;
-    szAdminObjFileAbsFilePath = nullptr;
-    delete szLocalTrcFileAbsFilePath;
-    szLocalTrcFileAbsFilePath = nullptr;
-    @endcode
-
-    @param o_pszAdminObjFileAbsFilePath [out]
-           Pointer to character buffer to which the name of the trace admin objects
-           xml file will be copied. This buffer must be freed by the caller of the method.
-
-    @param o_pszLocalTrcFileAbsFilePath [out]
-           Pointer to character buffer to which the name of the method trace
-           log file will be copied. This buffer must be freed after the method call.
+    @return Character buffer containing the files absolute path. The caller
+            must free this buffer.
 */
-void DllIf::CTrcServer::GetDefaultFilePaths(
-    char**      o_pszAdminObjFileAbsFilePath,    // must be freed by caller
-    char**      o_pszLocalTrcFileAbsFilePath,    // must be freed by caller
-    const char* i_szIniFileScope )
+char* DllIf::CTrcServer::GetDefaultAdminObjFileAbsoluteFilePath( const char* i_szIniFileScope )
 //------------------------------------------------------------------------------
 {
-    if( s_hndIpcTrcDllIf != NULL && s_pFctTrcServer_GetDefaultFilePaths != NULL )
+    if( s_hndIpcTrcDllIf != NULL && s_pFctTrcServer_GetDefaultAdminObjFileAbsoluteFilePath != NULL )
     {
-        s_pFctTrcServer_GetDefaultFilePaths(o_pszAdminObjFileAbsFilePath, o_pszLocalTrcFileAbsFilePath, i_szIniFileScope);
+        return s_pFctTrcServer_GetDefaultAdminObjFileAbsoluteFilePath(i_szIniFileScope);
     }
-} // GetDefaultFilePaths
+    return NULL;
+
+} // GetDefaultAdminObjFileAbsoluteFilePath
+
+//------------------------------------------------------------------------------
+/*! Returns the path information for the trace method log file for the defined scope.
+
+    The returned character pointer must be freed after calling the method.
+
+    @param i_szIniFileScope [In]
+
+    @return Character buffer containing the files absolute path. The caller
+            must free this buffer.
+*/
+char* DllIf::CTrcServer::GetDefaultLocalTrcFileAbsoluteFilePath( const char* i_szIniFileScope )
+//------------------------------------------------------------------------------
+{
+    if( s_hndIpcTrcDllIf != NULL && s_pFctTrcServer_GetDefaultLocalTrcFileAbsoluteFilePath != NULL )
+    {
+        return s_pFctTrcServer_GetDefaultLocalTrcFileAbsoluteFilePath(i_szIniFileScope);
+    }
+    return NULL;
+
+} // GetDefaultLocalTrcFileAbsoluteFilePath
 
 //------------------------------------------------------------------------------
 void DllIf::CTrcServer::RegisterCurrentThread( const char* i_szThreadName )

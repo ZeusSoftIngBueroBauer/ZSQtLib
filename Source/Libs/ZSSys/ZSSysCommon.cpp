@@ -39,10 +39,10 @@ global type definitions and constants
 Enum EMode
 ==============================================================================*/
 
-QMutex CEnum<EMode>::s_mtxArMapsStr2Enumerators;
-QVector<QHash<QString, int>> CEnum<EMode>::s_armapsStr2Enumerators;
+template<> QMutex ZS::System::CEnum<EMode>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
+template<> QVector<QHash<QString, int>> ZS::System::CEnum<EMode>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
 
-#if QT_VERSION < 0x050000
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 //------------------------------------------------------------------------------
 const QVector<SEnumEntry> CEnum<EMode>::s_arEnumEntries;
 //------------------------------------------------------------------------------
@@ -58,26 +58,26 @@ public: // ctor
     }
 };
 static CInitEnumMode s_initEnumMode;
-#else // #if QT_VERSION >= 0x050000
+#else // #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 //------------------------------------------------------------------------------
-const QVector<SEnumEntry> CEnum<EMode>::s_arEnumEntries =
+template<> const QVector<SEnumEntry> ZS::System::CEnum<EMode>::s_arEnumEntries =
 //------------------------------------------------------------------------------
 {                       // Enumerator,                       Name,      Symbol, Text,  SCIPShort, SCPILong, Alias6, Alias7
     /* 0 */ SEnumEntry( static_cast<int>(EMode::Edit),       "Edit",       "E", "Edit",       "", "", "Design",     "Edit"      ),
     /* 1 */ SEnumEntry( static_cast<int>(EMode::Simulation), "Simulation", "S", "Simulation", "", "", "Simulation", "View"      ),
     /* 3 */ SEnumEntry( static_cast<int>(EMode::Undefined),  "Undefined",  "?", "Undefined",  "", "", "Undefined",  "Undefined" )
 };
-#endif // #if QT_VERSION < 0x050000
+#endif // #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 
 
 /*==============================================================================
 Enum ERunMode
 ==============================================================================*/
 
-QMutex CEnum<ERunMode>::s_mtxArMapsStr2Enumerators;
-QVector<QHash<QString, int>> CEnum<ERunMode>::s_armapsStr2Enumerators;
+template<> QMutex ZS::System::CEnum<ERunMode>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
+template<> QVector<QHash<QString, int>> ZS::System::CEnum<ERunMode>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
 
-#if QT_VERSION < 0x050000
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 //------------------------------------------------------------------------------
 const QVector<SEnumEntry> CEnum<ERunMode>::s_arEnumEntries;
 //------------------------------------------------------------------------------
@@ -92,26 +92,26 @@ public: // ctor
     }
 };
 static CInitEnumRunMode s_initEnumRunMode;
-#else // #if QT_VERSION >= 0x050000
+#else // #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 //------------------------------------------------------------------------------
-const QVector<SEnumEntry> CEnum<ERunMode>::s_arEnumEntries =
+template<> const QVector<SEnumEntry> CEnum<ERunMode>::s_arEnumEntries =
 //------------------------------------------------------------------------------
 {                        // Enumerator,                          Name,         Symbol, Text,      SCPIShort, SCPILong
     /*  0 */ SEnumEntry( static_cast<int>(ERunMode::Continuous), "Continuous", "Cont", "Continuous", "CONT", "CONTinuous" ),
     /*  1 */ SEnumEntry( static_cast<int>(ERunMode::SingleStep), "SingleStep", "Sing", "SingleStep", "SST",  "SSTep"      ),
     /*  2 */ SEnumEntry( static_cast<int>(ERunMode::Undefined),  "Undefined",  "?",    "Undefined",  "UND",  "UNDefined"  )
 };
-#endif // #if QT_VERSION < 0x050000
+#endif // #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 
 
 /*==============================================================================
 Enum EYesNo
 ==============================================================================*/
 
-QMutex CEnum<EYesNo>::s_mtxArMapsStr2Enumerators;
-QVector<QHash<QString, int>> CEnum<EYesNo>::s_armapsStr2Enumerators;
+template<> QMutex ZS::System::CEnum<EYesNo>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
+template<> QVector<QHash<QString, int>> ZS::System::CEnum<EYesNo>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
 
-#if QT_VERSION < 0x050000
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 //------------------------------------------------------------------------------
 const QVector<SEnumEntry> CEnum<EYesNo>::s_arEnumEntries;
 //------------------------------------------------------------------------------
@@ -126,26 +126,26 @@ public: // ctor
     }
 };
 static CInitEnumYesNo s_initEnumYesNo;
-#else // #if QT_VERSION >= 0x050000
+#else // #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 //------------------------------------------------------------------------------
-const QVector<SEnumEntry> CEnum<EYesNo>::s_arEnumEntries =
+template<> const QVector<SEnumEntry> CEnum<EYesNo>::s_arEnumEntries =
 //------------------------------------------------------------------------------
 {                        // Enumerator,                       Name,      Symbol,  Text,   SCPIShort, SCPILong,     Alias6,      Alias7
     /*  0 */ SEnumEntry( static_cast<int>(EYesNo::No),        "No",        "No",  "No",        "NO",  "NO",       "false",      "False"     ),
     /*  1 */ SEnumEntry( static_cast<int>(EYesNo::Yes),       "Yes",       "Yes", "Yes",       "YES", "YES",       "true",      "True"      ),
     /*  2 */ SEnumEntry( static_cast<int>(EYesNo::Undefined), "Undefined", "?",   "Undefined", "UND", "UNDefined", "Undefined", "Undefined" )
 };
-#endif // #if QT_VERSION < 0x050000
+#endif // #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 
 
 /*==============================================================================
 Enum EStateOnOff
 ==============================================================================*/
 
-QMutex CEnum<EStateOnOff>::s_mtxArMapsStr2Enumerators;
-QVector<QHash<QString, int>> CEnum<EStateOnOff>::s_armapsStr2Enumerators;
+template<> QMutex ZS::System::CEnum<EStateOnOff>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
+template<> QVector<QHash<QString, int>> ZS::System::CEnum<EStateOnOff>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
 
-#if QT_VERSION < 0x050000
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 //------------------------------------------------------------------------------
 const QVector<SEnumEntry> CEnum<EStateOnOff>::s_arEnumEntries;
 //------------------------------------------------------------------------------
@@ -160,26 +160,26 @@ public: // ctor
     }
 };
 static CInitEnumStateOnOff s_initEnumStateOnOff;
-#else // #if QT_VERSION >= 0x050000
+#else // #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 //------------------------------------------------------------------------------
-const QVector<SEnumEntry> CEnum<EStateOnOff>::s_arEnumEntries =
+template<> const QVector<SEnumEntry> CEnum<EStateOnOff>::s_arEnumEntries =
 //------------------------------------------------------------------------------
 {                        // Enumerator,                             Name
     /*  0 */ SEnumEntry( static_cast<int>(EStateOnOff::Off),        "Off"       ),
     /*  1 */ SEnumEntry( static_cast<int>(EStateOnOff::On),         "On"        ),
     /*  2 */ SEnumEntry( static_cast<int>(EStateOnOff::Undefined),  "Undefined" )
 };
-#endif // #if QT_VERSION < 0x050000
+#endif // #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 
 
 /*==============================================================================
 Enum EEnabled
 ==============================================================================*/
 
-QMutex CEnum<EEnabled>::s_mtxArMapsStr2Enumerators;
-QVector<QHash<QString, int>> CEnum<EEnabled>::s_armapsStr2Enumerators;
+template<> QMutex ZS::System::CEnum<EEnabled>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
+template<> QVector<QHash<QString, int>> ZS::System::CEnum<EEnabled>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
 
-#if QT_VERSION < 0x050000
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 //------------------------------------------------------------------------------
 const QVector<SEnumEntry> CEnum<EEnabled>::s_arEnumEntries;
 //------------------------------------------------------------------------------
@@ -194,26 +194,25 @@ public: // ctor
     }
 };
 static CInitEnumEnabled s_initEnumEnabled;
-#else // #if QT_VERSION >= 0x050000
+#else // #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 //------------------------------------------------------------------------------
-const QVector<SEnumEntry> CEnum<EEnabled>::s_arEnumEntries =
+template<> const QVector<SEnumEntry> ZS::System::CEnum<EEnabled>::s_arEnumEntries =
 //------------------------------------------------------------------------------
 {                        // Enumerator,                         Name
     /*  0 */ SEnumEntry( static_cast<int>(EEnabled::No),        "No"  ),
     /*  1 */ SEnumEntry( static_cast<int>(EEnabled::Yes),       "Yes" ),
     /*  2 */ SEnumEntry( static_cast<int>(EEnabled::Undefined), "Undefined" )
 };
-#endif // #if QT_VERSION < 0x050000
-
+#endif // #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 
 /*==============================================================================
 Enum ECopyDepth
 ==============================================================================*/
 
-QMutex CEnum<ECopyDepth>::s_mtxArMapsStr2Enumerators;
-QVector<QHash<QString, int>> CEnum<ECopyDepth>::s_armapsStr2Enumerators;
+template<> QMutex ZS::System::CEnum<ECopyDepth>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
+template<> QVector<QHash<QString, int>> ZS::System::CEnum<ECopyDepth>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
 
-#if QT_VERSION < 0x050000
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 //------------------------------------------------------------------------------
 const QVector<SEnumEntry> CEnum<ECopyDepth>::s_arEnumEntries;
 //------------------------------------------------------------------------------
@@ -228,26 +227,26 @@ public: // ctor
     }
 };
 static CInitEnumCopyDepth s_initEnumCopyDepth;
-#else // #if QT_VERSION >= 0x050000
+#else // #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 //------------------------------------------------------------------------------
-const QVector<SEnumEntry> CEnum<ECopyDepth>::s_arEnumEntries =
+template<> const QVector<SEnumEntry> CEnum<ECopyDepth>::s_arEnumEntries =
 //------------------------------------------------------------------------------
 {                        // Enumerator,                                       Name,                    Symbol
     /*  0 */ SEnumEntry( static_cast<int>(ECopyDepth::FlatKeepOwnership),     "FlatKeepOwnership",     "FKO" ),
     /*  1 */ SEnumEntry( static_cast<int>(ECopyDepth::FlatReleaseOwnwership), "FlatReleaseOwnwership", "FRO" ),
     /*  2 */ SEnumEntry( static_cast<int>(ECopyDepth::Deep),                  "Deep",                  "DEE" )
 };
-#endif // #if QT_VERSION < 0x050000
+#endif // #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 
 
 /*==============================================================================
 Enum EObjState
 ==============================================================================*/
 
-QMutex CEnum<EObjState>::s_mtxArMapsStr2Enumerators;
-QVector<QHash<QString, int>> CEnum<EObjState>::s_armapsStr2Enumerators;
+template<> QMutex ZS::System::CEnum<EObjState>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
+template<> QVector<QHash<QString, int>> ZS::System::CEnum<EObjState>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
 
-#if QT_VERSION < 0x050000
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 //------------------------------------------------------------------------------
 const QVector<SEnumEntry> CEnum<EObjState>::s_arEnumEntries;
 //------------------------------------------------------------------------------
@@ -265,9 +264,9 @@ public: // ctor
     }
 };
 static CInitEnumObjState s_initEnumObjState;
-#else // #if QT_VERSION >= 0x050000
+#else // #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 //------------------------------------------------------------------------------
-const QVector<SEnumEntry> CEnum<EObjState>::s_arEnumEntries =
+template<> const QVector<SEnumEntry> CEnum<EObjState>::s_arEnumEntries =
 //------------------------------------------------------------------------------
 {                        // Enumerator,                           Name
     /*  0 */ SEnumEntry( static_cast<int>(EObjState::Detached),   "Detached"   ),
@@ -277,17 +276,17 @@ const QVector<SEnumEntry> CEnum<EObjState>::s_arEnumEntries =
     /*  4 */ SEnumEntry( static_cast<int>(EObjState::Destroyed),  "Destroyed"  ),
     /*  5 */ SEnumEntry( static_cast<int>(EObjState::Undefined),  "Undefined"  )
 };
-#endif // #if QT_VERSION < 0x050000
+#endif // #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 
 
 /*==============================================================================
 enum ERowVersion
 ==============================================================================*/
 
-QMutex CEnum<ERowVersion>::s_mtxArMapsStr2Enumerators;
-QVector<QHash<QString, int>> CEnum<ERowVersion>::s_armapsStr2Enumerators;
+template<> QMutex ZS::System::CEnum<ERowVersion>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
+template<> QVector<QHash<QString, int>> ZS::System::CEnum<ERowVersion>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
 
-#if QT_VERSION < 0x050000
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 //------------------------------------------------------------------------------
 const QVector<SEnumEntry> CEnum<ERowVersion>::s_arEnumEntries;
 //------------------------------------------------------------------------------
@@ -304,9 +303,9 @@ public: // ctor
     }
 };
 static CInitEnumRowVersion s_initEnumRowVersion;
-#else // #if QT_VERSION >= 0x050000
+#else // #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 //------------------------------------------------------------------------------
-const QVector<SEnumEntry> CEnum<ERowVersion>::s_arEnumEntries =
+template<> const QVector<SEnumEntry> CEnum<ERowVersion>::s_arEnumEntries =
 //------------------------------------------------------------------------------
 {                       // Enumerator,                            Name,        Symbol, Text,        SCPIShort, SCPILong,    Alias6
     /* 0 */ SEnumEntry( static_cast<int>(ERowVersion::Original),  "Original",  "O",    "Original",  "ORIG",    "ORIGinal",  "Ori" ),
@@ -315,17 +314,17 @@ const QVector<SEnumEntry> CEnum<ERowVersion>::s_arEnumEntries =
     /* 3 */ SEnumEntry( static_cast<int>(ERowVersion::Default),   "Default",   "D",    "Default",   "DEF",     "DEFault",   "Def" ),
     /* 4 */ SEnumEntry( static_cast<int>(ERowVersion::Undefined), "Undefined", "?",    "Undefined", "UND",     "UNDefined", "Und" )
 };
-#endif // #if QT_VERSION < 0x050000
+#endif // #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 
 
 /*==============================================================================
 enum ERowState
 ==============================================================================*/
 
-QMutex CEnum<ERowState>::s_mtxArMapsStr2Enumerators;
-QVector<QHash<QString, int>> CEnum<ERowState>::s_armapsStr2Enumerators;
+template<> QMutex ZS::System::CEnum<ERowState>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
+template<> QVector<QHash<QString, int>> ZS::System::CEnum<ERowState>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
 
-#if QT_VERSION < 0x050000
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 //------------------------------------------------------------------------------
 const QVector<SEnumEntry> CEnum<ERowState>::s_arEnumEntries;
 //------------------------------------------------------------------------------
@@ -343,9 +342,9 @@ public: // ctor
     }
 };
 static CInitEnumRowState s_initEnumRowState;
-#else // #if QT_VERSION >= 0x050000
+#else // #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 //------------------------------------------------------------------------------
-const QVector<SEnumEntry> CEnum<ERowState>::s_arEnumEntries =
+template<> const QVector<SEnumEntry> CEnum<ERowState>::s_arEnumEntries =
 //------------------------------------------------------------------------------
 {                       // Enumerator,                          Name,       Symbol, Text,       SCPIShort, SCPILong,    Alias6
     /* 0 */ SEnumEntry( static_cast<int>(ERowState::Unchanged), "Unchanged", "",    "Unchanged", "UNCH",    "UNCHanged", "Unc" ),
@@ -355,17 +354,17 @@ const QVector<SEnumEntry> CEnum<ERowState>::s_arEnumEntries =
     /* 4 */ SEnumEntry( static_cast<int>(ERowState::Modified),  "Modified",  "*",   "Modified",  "MOD",     "MODified",  "Mod" ),
     /* 5 */ SEnumEntry( static_cast<int>(ERowState::Undefined), "Undefined", "?",   "Undefined", "UND",     "UNDefined", "Und" )
 };
-#endif // #if QT_VERSION < 0x050000
+#endif // #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 
 
 /*==============================================================================
 Enum EContentToStrFormat
 ==============================================================================*/
 
-QMutex CEnum<EContentToStrFormat>::s_mtxArMapsStr2Enumerators;
-QVector<QHash<QString, int>> CEnum<EContentToStrFormat>::s_armapsStr2Enumerators;
+template<> QMutex ZS::System::CEnum<EContentToStrFormat>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
+template<> QVector<QHash<QString, int>> ZS::System::CEnum<EContentToStrFormat>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
 
-#if QT_VERSION < 0x050000
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 //------------------------------------------------------------------------------
 const QVector<SEnumEntry> CEnum<EContentToStrFormat>::s_arEnumEntries;
 //------------------------------------------------------------------------------
@@ -380,26 +379,26 @@ public: // ctor
     }
 };
 static CInitEnumContentToStrFormat s_initEnumContentToStrFormat;
-#else // #if QT_VERSION >= 0x050000
+#else // #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 //------------------------------------------------------------------------------
-const QVector<SEnumEntry> CEnum<EContentToStrFormat>::s_arEnumEntries =
+template<> const QVector<SEnumEntry> CEnum<EContentToStrFormat>::s_arEnumEntries =
 //------------------------------------------------------------------------------
 {                       // Enumerator,                                    Name
     /* 0 */ SEnumEntry( static_cast<int>(EContentToStrFormat::PlainText), "PlainText" ),
     /* 1 */ SEnumEntry( static_cast<int>(EContentToStrFormat::HtmlText),  "HtmlText"  ),
     /* 2 */ SEnumEntry( static_cast<int>(EContentToStrFormat::Undefined), "Undefined" )
 };
-#endif // #if QT_VERSION < 0x050000
+#endif // #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 
 
 /*==============================================================================
 Enum EMethodDir
 ==============================================================================*/
 
-QMutex CEnum<EMethodDir>::s_mtxArMapsStr2Enumerators;
-QVector<QHash<QString, int>> CEnum<EMethodDir>::s_armapsStr2Enumerators;
+template<> QMutex ZS::System::CEnum<EMethodDir>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
+template<> QVector<QHash<QString, int>> ZS::System::CEnum<EMethodDir>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
 
-#if QT_VERSION < 0x050000
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 //------------------------------------------------------------------------------
 const QVector<SEnumEntry> CEnum<EMethodDir>::s_arEnumEntries;
 //------------------------------------------------------------------------------
@@ -415,9 +414,9 @@ public: // ctor
     }
 };
 static CInitEnumMethodDir s_initEnumMethodDir;
-#else // #if QT_VERSION >= 0x050000
+#else // #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 //------------------------------------------------------------------------------
-const QVector<SEnumEntry> CEnum<EMethodDir>::s_arEnumEntries =
+template<> const QVector<SEnumEntry> CEnum<EMethodDir>::s_arEnumEntries =
 //------------------------------------------------------------------------------
 {                       // Enumerator,                           Name,       Symbol
     /* 0 */ SEnumEntry( static_cast<int>(EMethodDir::Enter),     "Enter",     "E" ),
@@ -425,17 +424,17 @@ const QVector<SEnumEntry> CEnum<EMethodDir>::s_arEnumEntries =
     /* 2 */ SEnumEntry( static_cast<int>(EMethodDir::None),      "None",      "N" ),
     /* 3 */ SEnumEntry( static_cast<int>(EMethodDir::Undefined), "Undefined", "?" )
 };
-#endif // #if QT_VERSION < 0x050000
+#endif // #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 
 
 /*==============================================================================
 Enum ETransmitDir
 ==============================================================================*/
 
-QMutex CEnum<ETransmitDir>::s_mtxArMapsStr2Enumerators;
-QVector<QHash<QString, int>> CEnum<ETransmitDir>::s_armapsStr2Enumerators;
+template<> QMutex ZS::System::CEnum<ETransmitDir>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
+template<> QVector<QHash<QString, int>> ZS::System::CEnum<ETransmitDir>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
 
-#if QT_VERSION < 0x050000
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 //------------------------------------------------------------------------------
 const QVector<SEnumEntry> CEnum<ETransmitDir>::s_arEnumEntries;
 //------------------------------------------------------------------------------
@@ -450,26 +449,26 @@ public: // ctor
     }
 };
 static CInitEnumTransmitDir s_initEnumTransmitDir;
-#else // #if QT_VERSION >= 0x050000
+#else // #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 //------------------------------------------------------------------------------
-const QVector<SEnumEntry> CEnum<ETransmitDir>::s_arEnumEntries =
+template<> const QVector<SEnumEntry> CEnum<ETransmitDir>::s_arEnumEntries =
 //------------------------------------------------------------------------------
 {                       // Enumerator,                             Name,        Symbol
     /* 0 */ SEnumEntry( static_cast<int>(ETransmitDir::Receive),   "Receive",   "RCV",  "In",  "I", "Read",  "R" ),
     /* 1 */ SEnumEntry( static_cast<int>(ETransmitDir::Send),      "Send",      "SND",  "Out", "O", "Write", "W" ),
     /* 2 */ SEnumEntry( static_cast<int>(ETransmitDir::Undefined), "Undefined", "?",    "",    "",  "",      ""  )
 };
-#endif // #if QT_VERSION < 0x050000
+#endif // #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 
 
 /*==============================================================================
 Enum EIODir
 ==============================================================================*/
 
-QMutex CEnum<EIODir>::s_mtxArMapsStr2Enumerators;
-QVector<QHash<QString, int>> CEnum<EIODir>::s_armapsStr2Enumerators;
+template<> QMutex ZS::System::CEnum<EIODir>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
+template<> QVector<QHash<QString, int>> ZS::System::CEnum<EIODir>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
 
-#if QT_VERSION < 0x050000
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 //------------------------------------------------------------------------------
 const QVector<SEnumEntry> CEnum<EIODir>::s_arEnumEntries;
 //------------------------------------------------------------------------------
@@ -484,26 +483,26 @@ public: // ctor
     }
 };
 static CInitEnumIODir s_initEnumIODir;
-#else // #if QT_VERSION >= 0x050000
+#else // #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 //------------------------------------------------------------------------------
-const QVector<SEnumEntry> CEnum<EIODir>::s_arEnumEntries =
+template<> const QVector<SEnumEntry> CEnum<EIODir>::s_arEnumEntries =
 //------------------------------------------------------------------------------
 {                       // Enumerator,                       Name,     Symbol,    Text,        SCPIShort, SCPILong
     /* 0 */ SEnumEntry( static_cast<int>(EIODir::Out),       "In",        "I",    "In",        "IN",      "IN"        ),
     /* 1 */ SEnumEntry( static_cast<int>(EIODir::In),        "Out",       "O",    "Out",       "OUT",     "OUT"       ),
     /* 2 */ SEnumEntry( static_cast<int>(EIODir::Undefined), "Undefined", "?",    "Undefined", "UND",     "UNDefined" )
 };
-#endif // #if QT_VERSION < 0x050000
+#endif // #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 
 
 /*==============================================================================
 Enum EDirection
 ==============================================================================*/
 
-QMutex CEnum<EDirection>::s_mtxArMapsStr2Enumerators;
-QVector<QHash<QString, int>> CEnum<EDirection>::s_armapsStr2Enumerators;
+template<> QMutex ZS::System::CEnum<EDirection>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
+template<> QVector<QHash<QString, int>> ZS::System::CEnum<EDirection>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
 
-#if QT_VERSION < 0x050000
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 //------------------------------------------------------------------------------
 const QVector<SEnumEntry> CEnum<EDirection>::s_arEnumEntries;
 //------------------------------------------------------------------------------
@@ -518,26 +517,26 @@ public: // ctor
     }
 };
 static CInitEnumDirection s_initEnumDirection;
-#else // #if QT_VERSION >= 0x050000
+#else // #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 //------------------------------------------------------------------------------
-const QVector<SEnumEntry> CEnum<EDirection>::s_arEnumEntries =
+template<> const QVector<SEnumEntry> CEnum<EDirection>::s_arEnumEntries =
 //------------------------------------------------------------------------------
 {                       // Enumerator,                            Name,         Symbol
     /* 0 */ SEnumEntry( static_cast<int>(EDirection::Vertical),   "Vertical",   "Ver"  ),
     /* 1 */ SEnumEntry( static_cast<int>(EDirection::Horizontal), "Horizontal", "Hor"  ),
     /* 3 */ SEnumEntry( static_cast<int>(EDirection::Undefined),  "Undefined",  "?"    )
 };
-#endif // #if QT_VERSION < 0x050000
+#endif // #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 
 
 /*==============================================================================
 Enum EComparisonOperator
 ==============================================================================*/
 
-QMutex CEnum<EComparisonOperator>::s_mtxArMapsStr2Enumerators;
-QVector<QHash<QString, int>> CEnum<EComparisonOperator>::s_armapsStr2Enumerators;
+template<> QMutex ZS::System::CEnum<EComparisonOperator>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
+template<> QVector<QHash<QString, int>> ZS::System::CEnum<EComparisonOperator>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
 
-#if QT_VERSION < 0x050000
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 //------------------------------------------------------------------------------
 const QVector<SEnumEntry> CEnum<EComparisonOperator>::s_arEnumEntries;
 //------------------------------------------------------------------------------
@@ -552,26 +551,26 @@ public: // ctor
     }
 };
 static CInitEnumComparisonOperator s_initEnumComparisonOperator;
-#else // #if QT_VERSION >= 0x050000
+#else // #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 //------------------------------------------------------------------------------
-const QVector<SEnumEntry> CEnum<EComparisonOperator>::s_arEnumEntries =
+template<> const QVector<SEnumEntry> CEnum<EComparisonOperator>::s_arEnumEntries =
 //------------------------------------------------------------------------------
 {                       // Enumerator,                                    Name,      Symbol
     /* 0 */ SEnumEntry( static_cast<int>(EComparisonOperator::Equal),     "Equal",     "==" ),
     /* 1 */ SEnumEntry( static_cast<int>(EComparisonOperator::Unequal),   "Unequal",   "!=" ),
     /* 2 */ SEnumEntry( static_cast<int>(EComparisonOperator::Undefined), "Undefined", "?"  )
 };
-#endif // #if QT_VERSION < 0x050000
+#endif // #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 
 
 /*==============================================================================
 Enum EValueValidity
 ==============================================================================*/
 
-QMutex CEnum<EValueValidity>::s_mtxArMapsStr2Enumerators;
-QVector<QHash<QString, int>> CEnum<EValueValidity>::s_armapsStr2Enumerators;
+template<> QMutex ZS::System::CEnum<EValueValidity>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
+template<> QVector<QHash<QString, int>> ZS::System::CEnum<EValueValidity>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
 
-#if QT_VERSION < 0x050000
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 //------------------------------------------------------------------------------
 const QVector<SEnumEntry> CEnum<EValueValidity>::s_arEnumEntries;
 //------------------------------------------------------------------------------
@@ -587,9 +586,9 @@ public: // ctor
     }
 };
 static CInitEnumValueValidity s_initEnumValueValidity;
-#else // #if QT_VERSION >= 0x050000
+#else // #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 //------------------------------------------------------------------------------
-const QVector<SEnumEntry> CEnum<EValueValidity>::s_arEnumEntries =
+template<> const QVector<SEnumEntry> CEnum<EValueValidity>::s_arEnumEntries =
 //------------------------------------------------------------------------------
 {                       // Enumerator,                               Name,        Symbol,   Text,        SCPIShort, SCPILong,    Alias6,    Alias7
     /* 0 */ SEnumEntry( static_cast<int>(EValueValidity::Invalid),   "Invalid",   "---",    "Invalid",   "INV",     "INValid",   "Inv",      "-" ),
@@ -597,17 +596,17 @@ const QVector<SEnumEntry> CEnum<EValueValidity>::s_arEnumEntries =
     /* 2 */ SEnumEntry( static_cast<int>(EValueValidity::Valid),     "Valid",     "",       "Valid",     "VAL",     "VALid",     "Val",       "" ),
     /* 3 */ SEnumEntry( static_cast<int>(EValueValidity::Undefined), "Undefined", "?",      "Undefined", "UND",     "UNDefined", "Undefined", "" )
 };
-#endif // #if QT_VERSION < 0x050000
+#endif // #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 
 
 /*==============================================================================
 enum EDimensionType
 ==============================================================================*/
 
-QMutex CEnum<EDimensionType>::s_mtxArMapsStr2Enumerators;
-QVector<QHash<QString, int>> CEnum<EDimensionType>::s_armapsStr2Enumerators;
+template<> QMutex ZS::System::CEnum<EDimensionType>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
+template<> QVector<QHash<QString, int>> ZS::System::CEnum<EDimensionType>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
 
-#if QT_VERSION < 0x050000
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 //------------------------------------------------------------------------------
 const QVector<SEnumEntry> CEnum<EDimensionType>::s_arEnumEntries;
 //------------------------------------------------------------------------------
@@ -623,9 +622,9 @@ public: // ctor
     }
 };
 static CInitEnumDimensionType s_initEnumDimensionType;
-#else // #if QT_VERSION >= 0x050000
+#else // #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 //------------------------------------------------------------------------------
-const QVector<SEnumEntry> CEnum<EDimensionType>::s_arEnumEntries =
+template<> const QVector<SEnumEntry> CEnum<EDimensionType>::s_arEnumEntries =
 //------------------------------------------------------------------------------
 {                       // Enumerator,                                     Name,           Symbol, Text,            SCPIShort, SCPILong
     /* 0 */ SEnumEntry( static_cast<int>(EDimensionType::SingleValue),     "SingleValue",     "S", "Single Value",     "SING", "SINGle"       ),
@@ -633,7 +632,7 @@ const QVector<SEnumEntry> CEnum<EDimensionType>::s_arEnumEntries =
     /* 2 */ SEnumEntry( static_cast<int>(EDimensionType::MoreDimensional), "MoreDimensional", "M", "More Dimensional", "MDIM", "MDIMensional" ),
     /* 3 */ SEnumEntry( static_cast<int>(EDimensionType::Undefined),       "Undefined",       "?", "Undefined",        "UND",  "UNDefined"    )
 };
-#endif // #if QT_VERSION < 0x050000
+#endif // #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 
 
 /*==============================================================================

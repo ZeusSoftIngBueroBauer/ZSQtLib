@@ -1798,11 +1798,7 @@ int CIdxTree::add( CAbstractIdxTreeEntry* i_pTreeEntry, const QString& i_strTarg
 
         if( pTargetBranch == nullptr )
         {
-            #if QT_VERSION < 0x050000
-            QStringList strlstBranches = i_strTargetPath.split(m_strNodeSeparator, Qt::SkipEmptyParts);
-            #else
-            QStringList strlstBranches = i_strTargetPath.split(m_strNodeSeparator, QString::SkipEmptyParts);
-            #endif
+            QStringList strlstBranches = i_strTargetPath.split(m_strNodeSeparator, QtSkipEmptyParts);
 
             // Please note that the name of the root entry is not included in the TargetPath of the tree entries.
             CBranchIdxTreeEntry* pTargetBranchPrev = m_pRoot;
@@ -1925,7 +1921,7 @@ int CIdxTree::add( CAbstractIdxTreeEntry* i_pTreeEntry, CBranchIdxTreeEntry* i_p
 
         if( m_mapFreeIdxs.size() > 0 )
         {
-            #if QT_VERSION >= 0x050200
+            #if QT_VERSION >= QT_VERSION_CHECK(5, 2, 0)
             idxInTree = m_mapFreeIdxs.firstKey();
             #else
             idxInTree = m_mapFreeIdxs.begin().key();
@@ -2914,11 +2910,7 @@ int CIdxTree::insert(
 
         if( pTargetBranch == nullptr )
         {
-            #if QT_VERSION < 0x050000
-            QStringList strlstBranches = i_strTargetPath.split(m_strNodeSeparator, Qt::SkipEmptyParts);
-            #else
-            QStringList strlstBranches = i_strTargetPath.split(m_strNodeSeparator, QString::SkipEmptyParts);
-            #endif
+            QStringList strlstBranches = i_strTargetPath.split(m_strNodeSeparator, QtSkipEmptyParts);
 
             // Please note that the name of the root entry is not included in the TargetPath of the tree entries.
             CBranchIdxTreeEntry* pTargetBranchPrev = m_pRoot;
@@ -3102,7 +3094,7 @@ int CIdxTree::insert(
 
             if( m_mapFreeIdxs.size() > 0 )
             {
-                #if QT_VERSION >= 0x050200
+                #if QT_VERSION >= QT_VERSION_CHECK(5, 2, 0)
                 idxInTree = m_mapFreeIdxs.firstKey();
                 #else
                 idxInTree = m_mapFreeIdxs.begin().key();
@@ -3723,7 +3715,7 @@ public: // instance methods
 */
 SErrResultInfo CIdxTree::canMove(
     const QString& i_strSourcePath,
-    const QString& i_strTargetPath, 
+    const QString& i_strTargetPath,
     int            i_idxInTargetBranch ) const
 //------------------------------------------------------------------------------
 {
@@ -5992,7 +5984,7 @@ int CIdxTree::copy(
 
     CAbstractIdxTreeEntry* pTreeEntryTrg = createTreeEntry(i_pTreeEntry->entryType(), strName);
 
-    int idxInTree = idxInTree = insert(pTreeEntryTrg, i_pTargetBranch, i_idxInTargetBranch, i_idxInTree);
+    int idxInTree = insert(pTreeEntryTrg, i_pTargetBranch, i_idxInTargetBranch, i_idxInTree);
 
     if( i_pTreeEntry->entryType() == EIdxTreeEntryType::Branch )
     {
@@ -6507,7 +6499,6 @@ void CIdxTree::updateKeyInTree( CAbstractIdxTreeEntry* i_pTreeEntry )
     }
 
     QString strKeyInTreePrev = i_pTreeEntry->keyInTree();
-    int     idxInTree        = i_pTreeEntry->indexInTree();
 
     m_mappTreeEntries.remove(strKeyInTreePrev);
 

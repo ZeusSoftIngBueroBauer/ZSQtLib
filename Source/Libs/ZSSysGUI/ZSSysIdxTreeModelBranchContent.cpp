@@ -206,7 +206,7 @@ void CModelIdxTreeBranchContent::setBranch( CBranchIdxTreeEntry* i_pBranch )
             endRemoveRows();
         }
 
-        #if QT_VERSION < 0x050000
+        #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
         //reset();
         #else
         //beginResetModel();
@@ -480,7 +480,7 @@ void CModelIdxTreeBranchContent::onIdxTreeAboutToBeDestroyed( QObject* i_pIdxTre
 
     //endRemoveRows();
 
-    #if QT_VERSION < 0x050000
+    #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
     reset();
     #else
     beginResetModel();

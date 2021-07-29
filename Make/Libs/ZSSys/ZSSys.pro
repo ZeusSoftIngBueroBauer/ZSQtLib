@@ -16,24 +16,38 @@ TEMPLATE = lib
 windows {
     CONFIG += skip_target_version_ext
     DEFINES += _WINDOWS
+    COMPILERLIBINFIX = msvc2019
     PLATFORM = x64
+}
+win32-msvc2013 {
+    message("win32-msvc2013") # not executed !!!
+}
+win32-msvc2015 {
+    message("win32-msvc2015") # not executed !!!
+}
+win32-msvc2017 {
+    message("win32-msvc2017") # not executed !!!
+}
+win32-msvc2019 {
+    message("win32-msvc2019") # not executed !!!
 }
 linux {
     DEFINES += __linux__
-    PLATFORM = Linux
+    COMPILERLIBINFIX = gcc
+    PLATFORM = x64
 }
 
 CONFIG(release, release|debug) {
-    TARGET = $$MODULE
-    MOC_DIR = ../../../Tmp/Moc/Libs/$$MODULE/$$PLATFORM/Release
-    OBJECTS_DIR = ../../../Tmp/Int/Libs/$$MODULE/$$PLATFORM/Release
+    TARGET = $$MODULE"Qt"$$QT_MAJOR_VERSION"_"$$COMPILERLIBINFIX"_"$$PLATFORM
+    MOC_DIR = ../../../Tmp/Moc/Libs/$$MODULE/Release_$$COMPILERLIBINFIX/$$PLATFORM
+    OBJECTS_DIR = ../../../Tmp/Int/Libs/$$MODULE/Release_$$COMPILERLIBINFIX/$$PLATFORM
 }
 CONFIG(debug, release|debug) {
-    TARGET = $$MODULE"d"
-    MOC_DIR = ../../../Tmp/Moc/Libs/$$MODULE/$$PLATFORM/Debug
-    OBJECTS_DIR = ../../../Tmp/Int/Libs/$$MODULE/$$PLATFORM/Debug
+    TARGET = $$MODULE"Qt"$$QT_MAJOR_VERSION"_"$$COMPILERLIBINFIX"_"$$PLATFORM"_d"
+    MOC_DIR = ../../../Tmp/Moc/Libs/$$MODULE/Debug_$$COMPILERLIBINFIX/$$PLATFORM
+    OBJECTS_DIR = ../../../Tmp/Int/Libs/$$MODULE/Debug_$$COMPILERLIBINFIX/$$PLATFORM
 }
-DESTDIR = ../../../Lib/$$PLATFORM
+DESTDIR = ../../../Lib/$$COMPILERLIBINFIX"_"$$PLATFORM
 
 CONFIG(debug, release|debug) {
     DEFINES += _DEBUG
@@ -44,11 +58,11 @@ DEFINES += ZSSYSDLL_EXPORTS
 INCLUDEPATH += ../../../Include/Libs
 
 SOURCES += \
+    ../../../Source/Libs/ZSSys/ZSSysEnumTemplate.cpp \
     ../../../Source/Libs/ZSSys/ZSSysTrcServer.cpp \
     ../../../Source/Libs/ZSSys/ZSSysTrcMthFile.cpp \
     ../../../Source/Libs/ZSSys/ZSSysTrcMethod.cpp \
-    ../../../Source/Libs/ZSSys/ZSSysTrcData.cpp \
-    ../../../Source/Libs/ZSSys/ZSSysTrcAdminObjPool.cpp \
+    ../../../Source/Libs/ZSSys/ZSSysTrcAdminObjIdxTree.cpp \
     ../../../Source/Libs/ZSSys/ZSSysTrcAdminObj.cpp \
     ../../../Source/Libs/ZSSys/ZSSysTime.cpp \
     ../../../Source/Libs/ZSSys/ZSSysSleeperThread.cpp \
@@ -70,8 +84,11 @@ SOURCES += \
     ../../../Source/Libs/ZSSys/ZSSysErrCode.cpp \
     ../../../Source/Libs/ZSSys/ZSSysEnumValArr.cpp \
     ../../../Source/Libs/ZSSys/ZSSysEnumVal.cpp \
-    ../../../Source/Libs/ZSSys/ZSSysEnum.cpp \
+    ../../../Source/Libs/ZSSys/ZSSysEnumerationIdxTree.cpp \
+    ../../../Source/Libs/ZSSys/ZSSysEnumeration.cpp \
+    ../../../Source/Libs/ZSSys/ZSSysEnumEntry.cpp \
     ../../../Source/Libs/ZSSys/ZSSysDllMain.cpp \
+    ../../../Source/Libs/ZSSys/ZSSysCommon.cpp \
     ../../../Source/Libs/ZSSys/ZSSysAux.cpp \
     ../../../Source/Libs/ZSSys/ZSSysApp.cpp
 
@@ -80,8 +97,7 @@ HEADERS += \
     ../../../Include/Libs/ZSSys/ZSSysTrcServer.h \
     ../../../Include/Libs/ZSSys/ZSSysTrcMthFile.h \
     ../../../Include/Libs/ZSSys/ZSSysTrcMethod.h \
-    ../../../Include/Libs/ZSSys/ZSSysTrcData.h \
-    ../../../Include/Libs/ZSSys/ZSSysTrcAdminObjPool.h \
+    ../../../Include/Libs/ZSSys/ZSSysTrcAdminObjIdxTree.h \
     ../../../Include/Libs/ZSSys/ZSSysTrcAdminObj.h \
     ../../../Include/Libs/ZSSys/ZSSysTime.h \
     ../../../Include/Libs/ZSSys/ZSSysSleeperThread.h \
@@ -103,10 +119,24 @@ HEADERS += \
     ../../../Include/Libs/ZSSys/ZSSysErrCode.h \
     ../../../Include/Libs/ZSSys/ZSSysEnumValArr.h \
     ../../../Include/Libs/ZSSys/ZSSysEnumVal.h \
-    ../../../Include/Libs/ZSSys/ZSSysEnum.h \
+    ../../../Include/Libs/ZSSys/ZSSysEnumeration.h \
+    ../../../Include/Libs/ZSSys/ZSSysEnumEntry.h \
+    ../../../Include/Libs/ZSSys/ZSSysEnumTemplate.h \
     ../../../Include/Libs/ZSSys/ZSSysDllMain.h \
+    ../../../Include/Libs/ZSSys/ZSSysCommon.h \
     ../../../Include/Libs/ZSSys/ZSSysAux.h \
     ../../../Include/Libs/ZSSys/ZSSysApp.h
+
+windows {
+    SOURCEDIR = ..\..\..\Lib\\$$COMPILERLIBINFIX"_"$$PLATFORM
+    TARGETDIR = ..\..\..\Bin\\$$COMPILERLIBINFIX"_"$$PLATFORM
+    QMAKE_POST_LINK=copy /Y $$SOURCEDIR"\\"$$TARGET".dll" $$TARGETDIR"\\*.dll"
+}
+linux {
+    SOURCEDIR = ../../../Lib/$$COMPILERLIBINFIX"_"$$PLATFORM
+    TARGETDIR = ../../../Bin/$$COMPILERLIBINFIX"_"$$PLATFORM
+    QMAKE_POST_LINK=cp $$SOURCEDIR"/lib"$$TARGET"*.so*" $$TARGETDIR
+}
 
 unix:!symbian {
     maemo5 {

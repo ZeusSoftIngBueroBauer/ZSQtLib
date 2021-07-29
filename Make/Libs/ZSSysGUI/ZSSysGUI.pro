@@ -6,6 +6,8 @@
 
 QT += xml
 
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+
 MODULE = ZSSysGUI
 
 VERSION = 4.6.3
@@ -15,24 +17,38 @@ TEMPLATE = lib
 windows {
     CONFIG += skip_target_version_ext
     DEFINES += _WINDOWS
+    COMPILERLIBINFIX = msvc2019
     PLATFORM = x64
+}
+win32-msvc2013 {
+    message("win32-msvc2013") # not executed !!!
+}
+win32-msvc2015 {
+    message("win32-msvc2015") # not executed !!!
+}
+win32-msvc2017 {
+    message("win32-msvc2017") # not executed !!!
+}
+win32-msvc2019 {
+    message("win32-msvc2019") # not executed !!!
 }
 linux {
     DEFINES += __linux__
-    PLATFORM = Linux
+    COMPILERLIBINFIX = gcc
+    PLATFORM = x64
 }
 
 CONFIG(release, release|debug) {
-    TARGET = $$MODULE
-    MOC_DIR = ../../../Tmp/Moc/Libs/$$MODULE/$$PLATFORM/Release
-    OBJECTS_DIR = ../../../Tmp/Int/Libs/$$MODULE/$$PLATFORM/Release
+    TARGET = $$MODULE"Qt"$$QT_MAJOR_VERSION"_"$$COMPILERLIBINFIX"_"$$PLATFORM
+    MOC_DIR = ../../../Tmp/Moc/Libs/$$MODULE/Release_$$COMPILERLIBINFIX/$$PLATFORM
+    OBJECTS_DIR = ../../../Tmp/Int/Libs/$$MODULE/Release_$$COMPILERLIBINFIX/$$PLATFORM
 }
 CONFIG(debug, release|debug) {
-    TARGET = $$MODULE"d"
-    MOC_DIR = ../../../Tmp/Moc/Libs/$$MODULE/$$PLATFORM/Debug
-    OBJECTS_DIR = ../../../Tmp/Int/Libs/$$MODULE/$$PLATFORM/Debug
+    TARGET = $$MODULE"Qt"$$QT_MAJOR_VERSION"_"$$COMPILERLIBINFIX"_"$$PLATFORM"_d"
+    MOC_DIR = ../../../Tmp/Moc/Libs/$$MODULE/Debug_$$COMPILERLIBINFIX/$$PLATFORM
+    OBJECTS_DIR = ../../../Tmp/Int/Libs/$$MODULE/Debug_$$COMPILERLIBINFIX/$$PLATFORM
 }
-DESTDIR = ../../../Lib/$$PLATFORM
+DESTDIR = ../../../Lib/$$COMPILERLIBINFIX"_"$$PLATFORM
 
 CONFIG(debug, release|debug) {
     DEFINES += _DEBUG
@@ -42,16 +58,20 @@ DEFINES += ZSSYSGUIDLL_EXPORTS
 
 INCLUDEPATH += ../../../Include/Libs
 
-LIBS += -L../../../Lib/$$PLATFORM
+LIBS += -L../../../Lib/$$COMPILERLIBINFIX"_"$$PLATFORM
 
 CONFIG(release, release|debug) {
-    LIBS += -lZSSys
+    LIBS += -lZSSys"Qt"$$QT_MAJOR_VERSION"_"$$COMPILERLIBINFIX"_"$$PLATFORM
 }
 CONFIG(debug, release|debug) {
-    LIBS += -lZSSysd
+    LIBS += -lZSSys"Qt"$$QT_MAJOR_VERSION"_"$$COMPILERLIBINFIX"_"$$PLATFORM"_d"
 }
 
 SOURCES += \
+    ../../../Source/Libs/ZSSysGUI/ZSSysTrcAdminObjIdxTreeWdgt.cpp \
+    ../../../Source/Libs/ZSSysGUI/ZSSysTrcAdminObjIdxTreeView.cpp \
+    ../../../Source/Libs/ZSSysGUI/ZSSysTrcAdminObjIdxTreeModel.cpp \
+    ../../../Source/Libs/ZSSysGUI/ZSSysTrcAdminObjIdxTreeDlg.cpp \
     ../../../Source/Libs/ZSSysGUI/ZSSysSepLine.cpp \
     ../../../Source/Libs/ZSSysGUI/ZSSysRequestSequencerWdgt.cpp \
     ../../../Source/Libs/ZSSysGUI/ZSSysRequestSequencerModel.cpp \
@@ -69,7 +89,6 @@ SOURCES += \
     ../../../Source/Libs/ZSSysGUI/ZSSysIdxTreeView.cpp \
     ../../../Source/Libs/ZSSysGUI/ZSSysIdxTreeTableViewBranchContent.cpp \
     ../../../Source/Libs/ZSSysGUI/ZSSysIdxTreeWdgt.cpp \
-    ../../../Source/Libs/ZSSysGUI/ZSSysGUIEnum.cpp \
     ../../../Source/Libs/ZSSysGUI/ZSSysGUIDllMain.cpp \
     ../../../Source/Libs/ZSSysGUI/ZSSysGUIAux.cpp \
     ../../../Source/Libs/ZSSysGUI/ZSSysGUIApp.cpp \
@@ -81,6 +100,10 @@ SOURCES += \
     ../../../Source/Libs/ZSSysGUI/ZSSysDialog.cpp
 
 HEADERS += \
+    ../../../Include/Libs/ZSSysGUI/ZSSysTrcAdminObjIdxTreeWdgt.h \
+    ../../../Include/Libs/ZSSysGUI/ZSSysTrcAdminObjIdxTreeView.h \
+    ../../../Include/Libs/ZSSysGUI/ZSSysTrcAdminObjIdxTreeModel.h \
+    ../../../Include/Libs/ZSSysGUI/ZSSysTrcAdminObjIdxTreeDlg.h \
     ../../../Include/Libs/ZSSysGUI/ZSSysSepLine.h \
     ../../../Include/Libs/ZSSysGUI/ZSSysRequestSequencerWdgt.h \
     ../../../Include/Libs/ZSSysGUI/ZSSysRequestSequencerModel.h \
@@ -98,7 +121,6 @@ HEADERS += \
     ../../../Include/Libs/ZSSysGUI/ZSSysIdxTreeView.h \
     ../../../Include/Libs/ZSSysGUI/ZSSysIdxTreeTableViewBranchContent.h \
     ../../../Include/Libs/ZSSysGUI/ZSSysIdxTreeWdgt.h \
-    ../../../Include/Libs/ZSSysGUI/ZSSysGUIEnum.h \
     ../../../Include/Libs/ZSSysGUI/ZSSysGUIDllMain.h \
     ../../../Include/Libs/ZSSysGUI/ZSSysGUIAux.h \
     ../../../Include/Libs/ZSSysGUI/ZSSysGUIApp.h \
@@ -110,6 +132,17 @@ HEADERS += \
     ../../../Include/Libs/ZSSysGUI/ZSSysDialog.h
 
 RESOURCES = ../../../Images/Libs/ZSSys/ZSSys.qrc
+
+windows {
+    SOURCEDIR = ..\..\..\Lib\\$$COMPILERLIBINFIX"_"$$PLATFORM
+    TARGETDIR = ..\..\..\Bin\\$$COMPILERLIBINFIX"_"$$PLATFORM
+    QMAKE_POST_LINK=copy /Y $$SOURCEDIR"\\"$$TARGET".dll" $$TARGETDIR"\\*.dll"
+}
+linux {
+    SOURCEDIR = ../../../Lib/$$COMPILERLIBINFIX"_"$$PLATFORM
+    TARGETDIR = ../../../Bin/$$COMPILERLIBINFIX"_"$$PLATFORM
+    QMAKE_POST_LINK=cp $$SOURCEDIR"/lib"$$TARGET"*.so*" $$TARGETDIR
+}
 
 unix:!symbian {
     maemo5 {

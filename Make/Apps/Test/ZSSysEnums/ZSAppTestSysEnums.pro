@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT += core gui xml
+QT += core gui network xml
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -17,11 +17,25 @@ TEMPLATE = app
 windows {
     CONFIG += skip_target_version_ext
     DEFINES += _WINDOWS
+    COMPILERLIBINFIX = msvc2019
     PLATFORM = x64
+}
+win32-msvc2013 {
+    message("win32-msvc2013") # not executed !!!
+}
+win32-msvc2015 {
+    message("win32-msvc2015") # not executed !!!
+}
+win32-msvc2017 {
+    message("win32-msvc2017") # not executed !!!
+}
+win32-msvc2019 {
+    message("win32-msvc2019") # not executed !!!
 }
 linux {
     DEFINES += __linux__
-    PLATFORM = Linux
+    COMPILERLIBINFIX = gcc
+    PLATFORM = x64
 }
 
 CONFIG(release, release|debug) {
@@ -34,7 +48,7 @@ CONFIG(debug, release|debug) {
     MOC_DIR = ../../../../Tmp/Moc/Apps/Test/$$MODULE/$$PLATFORM/Debug
     OBJECTS_DIR = ../../../../Tmp/Int/Apps/Test/$$MODULE/$$PLATFORM/Debug
 }
-DESTDIR = ../../../../Bin/$$PLATFORM
+DESTDIR = ../../../../Bin//$$COMPILERLIBINFIX"_"$$PLATFORM
 
 CONFIG(debug, release|debug) {
     DEFINES += _DEBUG
@@ -47,22 +61,22 @@ linux {
     INCLUDEPATH += /usr/local/include
 }
 
-LIBS += -L../../../../Lib/$$PLATFORM
+LIBS += -L../../../../Lib/$$COMPILERLIBINFIX"_"$$PLATFORM
 linux {
     LIBS += -L/usr/local/lib
 }
 
 CONFIG(release, release|debug) {
-    LIBS += -lZSSys
-    LIBS += -lZSTest
-    LIBS += -lZSSysGUI
-    LIBS += -lZSTestGUI
+    LIBS += -lZSSys"Qt"$$QT_MAJOR_VERSION"_"$$COMPILERLIBINFIX"_"$$PLATFORM
+    LIBS += -lZSTest"Qt"$$QT_MAJOR_VERSION"_"$$COMPILERLIBINFIX"_"$$PLATFORM
+    LIBS += -lZSSysGUI"Qt"$$QT_MAJOR_VERSION"_"$$COMPILERLIBINFIX"_"$$PLATFORM
+    LIBS += -lZSTestGUI"Qt"$$QT_MAJOR_VERSION"_"$$COMPILERLIBINFIX"_"$$PLATFORM
 }
 CONFIG(debug, release|debug) {
-    LIBS += -lZSSysd
-    LIBS += -lZSTestd
-    LIBS += -lZSSysGUId
-    LIBS += -lZSTestGUId
+    LIBS += -lZSSys"Qt"$$QT_MAJOR_VERSION"_"$$COMPILERLIBINFIX"_"$$PLATFORM"_d"
+    LIBS += -lZSTest"Qt"$$QT_MAJOR_VERSION"_"$$COMPILERLIBINFIX"_"$$PLATFORM"_d"
+    LIBS += -lZSSysGUI"Qt"$$QT_MAJOR_VERSION"_"$$COMPILERLIBINFIX"_"$$PLATFORM"_d"
+    LIBS += -lZSTestGUI"Qt"$$QT_MAJOR_VERSION"_"$$COMPILERLIBINFIX"_"$$PLATFORM"_d"
 }
 
 SOURCES += \
@@ -70,14 +84,12 @@ SOURCES += \
     ../../../../Source/Apps/Test/ZSSysEnums/Main.cpp \
     ../../../../Source/Apps/Test/ZSSysEnums/MainWindow.cpp \
     ../../../../Source/Apps/Test/ZSSysEnums/Test.cpp \
-    ../../../../Source/Apps/Test/ZSSysEnums/TSGrpSysEnums.cpp \
     ../../../../Source/Apps/Test/ZSSysEnums/WidgetCentral.cpp
 
 HEADERS  += \
     ../../../../Include/Apps/Test/ZSSysEnums/App.h \
     ../../../../Include/Apps/Test/ZSSysEnums/MainWindow.h \
     ../../../../Include/Apps/Test/ZSSysEnums/Test.h \
-    ../../../../Include/Apps/Test/ZSSysEnums/TSGrpSysEnums.h \
     ../../../../Include/Apps/Test/ZSSysEnums/WidgetCentral.h
 
 unix:!symbian {

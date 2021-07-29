@@ -31,7 +31,7 @@ may result in using the software modules.
 #include <QtCore/qtimer.h>
 //#include <QtGui/qbitmap.h>
 
-//#if QT_VERSION < 0x050000
+//#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 //#include <QtGui/qmessagebox.h>
 //#else
 //#include <QtWidgets/qmessagebox.h>
@@ -134,7 +134,7 @@ CApplication::CApplication(
 
     parseAppArgs( i_argc, i_argv, strListArgsPar, strListArgsVal );
 
-    #if QT_VERSION >= 0x040501
+    #if QT_VERSION >= QT_VERSION_CHECK(4, 5, 1)
     for( idxArg = 0; idxArg < strListArgsPar.length() && idxArg < strListArgsVal.length(); idxArg++ )
     #else
     for( idxArg = 0; idxArg < strListArgsPar.size() && idxArg < strListArgsVal.size(); idxArg++ )
@@ -189,7 +189,7 @@ CApplication::CApplication(
     // Parse command arguments (second part, overwriting IniFile settings)
     //--------------------------------------------------------------------
 
-    #if QT_VERSION >= 0x040501
+    #if QT_VERSION >= QT_VERSION_CHECK(4, 5, 1)
     for( idxArg = 0; idxArg < strListArgsPar.length() && idxArg < strListArgsVal.length(); idxArg++ )
     #else
     for( idxArg = 0; idxArg < strListArgsPar.size() && idxArg < strListArgsVal.size(); idxArg++ )
@@ -253,8 +253,8 @@ CApplication::~CApplication()
     CErrLog::ReleaseInstance();
 
     m_pSettingsFile = nullptr;
-    m_strErrLogFileAbsFilePath;
-    m_strTestStepsFileAbsFilePath;
+    //m_strErrLogFileAbsFilePath;
+    //m_strTestStepsFileAbsFilePath;
     m_pTest = nullptr;
     m_pMainWindow = nullptr;
 

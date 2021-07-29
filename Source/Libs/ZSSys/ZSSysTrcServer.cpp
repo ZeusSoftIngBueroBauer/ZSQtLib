@@ -488,21 +488,14 @@ void CTrcServer::ReleaseTraceAdminObj(
 } // ReleaseTraceAdminObj
 
 /*==============================================================================
-public: // class methods to save/recall admin objects file
+public: // class methods to get default file paths
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CTrcServer::GetDefaultFilePaths(
-    QString&       io_strAdminObjFileAbsFilePath,
-    QString&       io_strLocalTrcFileAbsFilePath,
-    const QString& i_strIniFileScope )
+QString CTrcServer::GetDefaultAdminObjFileAbsoluteFilePath( const QString& i_strIniFileScope )
 //------------------------------------------------------------------------------
 {
-    // Get default value for admin object and local trace file name and path
-    //----------------------------------------------------------------------
-
     QString strAppConfigDir = ZS::System::getAppConfigDir(i_strIniFileScope);
-    QString strAppLogDir = ZS::System::getAppLogDir(i_strIniFileScope);
 
     QString strAppNameNormalized = QCoreApplication::applicationName();
 
@@ -517,13 +510,32 @@ void CTrcServer::GetDefaultFilePaths(
     QString strTrcAdminObjFileSuffix = "xml";
     QString strTrcAdminObjFileBaseName = strAppNameNormalized + "-TrcMthAdmObj";
 
+    return strAppConfigDir + "/" + strTrcAdminObjFileBaseName + "." + strTrcAdminObjFileSuffix;
+
+} // GetDefaultAdminObjFileAbsoluteFilePath
+
+//------------------------------------------------------------------------------
+QString CTrcServer::GetDefaultLocalTrcFileAbsoluteFilePath( const QString& i_strIniFileScope )
+//------------------------------------------------------------------------------
+{
+    QString strAppLogDir = ZS::System::getAppLogDir(i_strIniFileScope);
+
+    QString strAppNameNormalized = QCoreApplication::applicationName();
+
+    // The application name may contain characters which are invalid in file names:
+    strAppNameNormalized.remove(":");
+    strAppNameNormalized.remove(" ");
+    strAppNameNormalized.remove("\\");
+    strAppNameNormalized.remove("/");
+    strAppNameNormalized.remove("<");
+    strAppNameNormalized.remove(">");
+
     QString strTrcLogFileSuffix = "log";
     QString strTrcLogFileBaseName = strAppNameNormalized + "-TrcMth";
 
-    io_strAdminObjFileAbsFilePath = strAppConfigDir + "/" + strTrcAdminObjFileBaseName + "." + strTrcAdminObjFileSuffix;
-    io_strLocalTrcFileAbsFilePath = strAppLogDir + "/" + strTrcLogFileBaseName + "." + strTrcLogFileSuffix;
+    return strAppLogDir + "/" + strTrcLogFileBaseName + "." + strTrcLogFileSuffix;
 
-} // GetDefaultFilePaths
+} // GetDefaultLocalTrcFileAbsoluteFilePath
 
 /*==============================================================================
 protected: // ctors and dtor
@@ -541,7 +553,8 @@ CTrcServer::CTrcServer( const QString& i_strName, int i_iTrcDetailLevel ) :
 {
     setObjectName(i_strName);
 
-    GetDefaultFilePaths(m_trcSettings.m_strAdminObjFileAbsFilePath, m_trcSettings.m_strLocalTrcFileAbsFilePath);
+    m_trcSettings.m_strAdminObjFileAbsFilePath = GetDefaultAdminObjFileAbsoluteFilePath();
+    m_trcSettings.m_strLocalTrcFileAbsFilePath = GetDefaultLocalTrcFileAbsoluteFilePath();
 
     m_pTrcMthFile = CTrcMthFile::Alloc(m_trcSettings.m_strLocalTrcFileAbsFilePath);
 

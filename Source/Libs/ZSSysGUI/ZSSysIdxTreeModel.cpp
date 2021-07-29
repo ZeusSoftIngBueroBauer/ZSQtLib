@@ -573,7 +573,7 @@ void CModelIdxTree::setIdxTree( CIdxTree* i_pIdxTree )
 
         m_pIdxTree = nullptr;
 
-        #if QT_VERSION < 0x050000
+        #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
         reset();
         #else
         _beginResetModel();
@@ -1347,7 +1347,7 @@ void CModelIdxTree::onIdxTreeAboutToBeDestroyed( QObject* i_pIdxTree )
 
     //_endRemoveRows();
 
-    #if QT_VERSION < 0x050000
+    #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
     reset();
     #else
     _beginResetModel();

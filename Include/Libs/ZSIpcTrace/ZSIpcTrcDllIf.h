@@ -271,14 +271,6 @@ may result in using the software modules.
 public type definitions and constants
 *******************************************************************************/
 
-#ifndef QT_VERSION_MAJOR
-#if QT_VERSION >= 0x050000
-#define QT_VERSION_MAJOR 5
-#elif QT_VERSION >= 0x040804
-#define QT_VERSION_MAJOR 4
-#endif
-#endif
-
 /*
 Visual Studio version            | _MSC_VER
 ---------------------------------+---------------
@@ -309,6 +301,7 @@ Visual Studio 2019 version 16.7  | 1927
 Visual Studio 2019 version 16.8  | 1928
 Visual Studio 2019 version 16.10 | 1929
 */
+#ifdef _WINDOWS
 #ifndef COMPILERLIBINFIX
 #if _MSC_VER <= 1200
 #define __CXX_STANDARD__ 1
@@ -347,8 +340,13 @@ Visual Studio 2019 version 16.10 | 1929
 #define __CXX_STANDARD__ 1
 #endif
 #endif
+#endif // #ifdef _WINDOWS
 
-#ifndef CXX_STANDARD
+#ifndef COMPILERLIBINFIX
+#define COMPILERLIBINFIX ""
+#endif
+
+#ifdef _WINDOWS
 #if (__CXX_STANDARD__ == 201703)
 #define CXX_STANDARD 17
 #elif (__CXX_STANDARD__ == 201402)
@@ -360,10 +358,15 @@ Visual Studio 2019 version 16.10 | 1929
 #elif (__CXX_STANDARD__ == 1)
 #define CXX_STANDARD 1
 #ifndef nullptr
-#define nullptr NULL
+#define nullptr 0
 #endif
 #endif
-#endif
+#endif // #ifdef _WINDOWS
+
+// Some customers are configuring Qt to rename the Qt libraries to Qt*<infix>.
+#define QTLIBINFIX ""
+//#define QTLIBINFIX "Isar"
+//#define QTLIBINFIX "SWP"
 
 #ifndef PLATFORMLIBINFIX
 #ifdef _WIN64
@@ -371,6 +374,10 @@ Visual Studio 2019 version 16.10 | 1929
 #else
 #define PLATFORMLIBINFIX "Win32"
 #endif
+#endif
+
+#ifndef PLATFORMLIBINFIX
+#define PLATFORMLIBINFIX ""
 #endif
 
 #ifndef CONFIGLIBINFIX
@@ -560,10 +567,8 @@ public: // class method to save/recall admin objects file
     static char* GetOrganizationName(); // returned string must be freed by caller
     static void SetApplicationName( const char* i_szName );
     static char* GetApplicationName();  // returned string must be freed by caller
-    static void GetDefaultFilePaths(
-        char**      o_pszAdminObjFileAbsFilePath,    // must be freed by caller
-        char**      o_pszLocalTrcFileAbsFilePath,    // must be freed by caller
-        const char* i_szIniFileScope = "System" );
+    static char* GetDefaultAdminObjFileAbsoluteFilePath( const char* i_szIniFileScope = "System" );
+    static char* GetDefaultLocalTrcFileAbsoluteFilePath( const char* i_szIniFileScope = "System" );
 public: // class methods
     static void RegisterCurrentThread( const char* i_szThreadName );
     static void UnregisterCurrentThread();

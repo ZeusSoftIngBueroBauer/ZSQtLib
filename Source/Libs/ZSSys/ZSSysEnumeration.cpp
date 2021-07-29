@@ -42,7 +42,7 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CEnumeration::CEnumeration( const QString& i_strNameSpace, const QString& i_strEnumName ) :
+CEnumeration::CEnumeration( const QString& /*i_strNameSpace*/, const QString& i_strEnumName ) :
 //------------------------------------------------------------------------------
     CLeaveIdxTreeEntry(i_strEnumName),
     m_arpEntries(),
@@ -55,7 +55,7 @@ CEnumeration::CEnumeration( const QString& i_strNameSpace, const QString& i_strE
 
 //------------------------------------------------------------------------------
 CEnumeration::CEnumeration(
-    const QString&    i_strNameSpace,
+    const QString&    /*i_strNameSpace*/,
     const QString&    i_strEnumName,
     const SEnumEntry* i_pEnumArr,
     int               i_iArrLen ) :

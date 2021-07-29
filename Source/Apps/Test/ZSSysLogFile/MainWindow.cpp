@@ -27,7 +27,7 @@ may result in using the software modules.
 #include <QtCore/qsettings.h>
 #include <QtGui/qevent.h>
 
-#if QT_VERSION < 0x050000
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 #include <QtGui/qfiledialog.h>
 #include <QtGui/qlabel.h>
 #include <QtGui/qmenubar.h>
@@ -512,7 +512,7 @@ void CMainWindow::onActFileOpenTriggered()
         m_pDlgFile->setWindowTitle( windowTitle() + ": Open Test Step Config File" );
         m_pDlgFile->setAcceptMode(QFileDialog::AcceptOpen);
         m_pDlgFile->setOption(QFileDialog::DontConfirmOverwrite, false);
-        #if QT_VERSION < 0x050000
+        #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
         m_pDlgFile->setFilter("*.xml");
         #else
         m_pDlgFile->setNameFilter("*.xml");
@@ -595,7 +595,7 @@ void CMainWindow::onActFileSaveTriggered()
         m_pDlgFile->setWindowTitle( windowTitle() + ": Save Test Step Config File" );
         m_pDlgFile->setAcceptMode(QFileDialog::AcceptSave);
         m_pDlgFile->setOption(QFileDialog::DontConfirmOverwrite, false);
-        #if QT_VERSION < 0x050000
+        #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
         m_pDlgFile->setFilter("*.xml");
         #else
         m_pDlgFile->setNameFilter("*.xml");

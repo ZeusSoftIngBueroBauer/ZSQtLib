@@ -28,7 +28,7 @@ may result in using the software modules.
 #include <QtCore/qmimedata.h>
 #include <QtGui/qevent.h>
 
-#if QT_VERSION < 0x050000
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 #include <QtGui/qlineedit.h>
 #else
 #include <QtWidgets/qlineedit.h>
@@ -150,9 +150,7 @@ public: // ctors and dtor
 //=============================================================================
 
 //-----------------------------------------------------------------------------
-CTrcAdmObjIdxTree(
-    ZS::Trace::CTrcMthFile*      i_pTrcMthFile = nullptr,
-    ZS::Trace::ETraceDetailLevel i_mthTrcDetailLevel = ZS::Trace::ETraceDetailLevelNone ) :
+CTrcAdmObjIdxTree() :
 //-----------------------------------------------------------------------------
     CIdxTree(
       /* strObjName       */ CTest::c_strTrcAdmObjIdxTreeName,
@@ -2496,11 +2494,7 @@ void CTest::doTestStepMoveEntry( ZS::Test::CTestStep* i_pTestStep )
 
         strOperation = "IdxTree.move";
 
-        #if QT_VERSION < 0x050000
-        QStringList strlstArgs = strArgs.split(",", Qt::SkipEmptyParts);
-        #else
-        QStringList strlstArgs = strArgs.split(",", QString::SkipEmptyParts);
-        #endif
+        QStringList strlstArgs = strArgs.split(",", QtSkipEmptyParts);
 
         if( strlstArgs.size() == 2 )
         {
@@ -2512,8 +2506,8 @@ void CTest::doTestStepMoveEntry( ZS::Test::CTestStep* i_pTestStep )
             QString strBranchPathTrg;
             QString strObjNameTrg;
 
-            EIdxTreeEntryType entryTypeSrc = m_pIdxTree->splitPathStr(strKeyInTreeSrc, &strBranchPathSrc, &strObjNameSrc);
-            EIdxTreeEntryType entryTypeTrg = m_pIdxTree->splitPathStr(strKeyInTreeTrg, &strBranchPathTrg, &strObjNameTrg);
+            m_pIdxTree->splitPathStr(strKeyInTreeSrc, &strBranchPathSrc, &strObjNameSrc);
+            m_pIdxTree->splitPathStr(strKeyInTreeTrg, &strBranchPathTrg, &strObjNameTrg);
 
             strBranchPathTrg = m_pIdxTree->buildPathStr(strBranchPathTrg, strObjNameTrg);
 
@@ -2607,11 +2601,7 @@ void CTest::doTestStepCopyEntry( ZS::Test::CTestStep* i_pTestStep )
 
         strOperation = "IdxTree.copy";
 
-        #if QT_VERSION < 0x050000
-        QStringList strlstArgs = strArgs.split(",", Qt::SkipEmptyParts);
-        #else
-        QStringList strlstArgs = strArgs.split(",", QString::SkipEmptyParts);
-        #endif
+        QStringList strlstArgs = strArgs.split(",", QtSkipEmptyParts);
 
         if( strlstArgs.size() == 2 )
         {
@@ -2623,8 +2613,8 @@ void CTest::doTestStepCopyEntry( ZS::Test::CTestStep* i_pTestStep )
             QString strBranchPathTrg;
             QString strObjNameTrg;
 
-            EIdxTreeEntryType entryTypeSrc = m_pIdxTree->splitPathStr(strKeyInTreeSrc, &strBranchPathSrc, &strObjNameSrc);
-            EIdxTreeEntryType entryTypeTrg = m_pIdxTree->splitPathStr(strKeyInTreeTrg, &strBranchPathTrg, &strObjNameTrg);
+            m_pIdxTree->splitPathStr(strKeyInTreeSrc, &strBranchPathSrc, &strObjNameSrc);
+            m_pIdxTree->splitPathStr(strKeyInTreeTrg, &strBranchPathTrg, &strObjNameTrg);
 
             strBranchPathTrg = m_pIdxTree->buildPathStr(strBranchPathTrg, strObjNameTrg);
 
@@ -2721,11 +2711,7 @@ void CTest::doTestStepRenameEntry( ZS::Test::CTestStep* i_pTestStep )
 
         strOperation = "IdxTree.rename";
 
-        #if QT_VERSION < 0x050000
-        QStringList strlstArgs = strArgs.split(",", Qt::SkipEmptyParts);
-        #else
-        QStringList strlstArgs = strArgs.split(",", QString::SkipEmptyParts);
-        #endif
+        QStringList strlstArgs = strArgs.split(",", QtSkipEmptyParts);
 
         if( strlstArgs.size() == 2 )
         {
@@ -3829,11 +3815,7 @@ void CTest::doTestStepGrpTrcAdmObjTreeStepTreeViewDragAndDrop( ZS::Test::CTestSt
             strGrpArgs.remove(")");
             strGrpOperation = "Move";
 
-            #if QT_VERSION < 0x050000
-            QStringList strlstGrpArgs = strGrpArgs.split("->", Qt::SkipEmptyParts);
-            #else
-            QStringList strlstGrpArgs = strGrpArgs.split("->", QString::SkipEmptyParts);
-            #endif
+            QStringList strlstGrpArgs = strGrpArgs.split("->", QtSkipEmptyParts);
 
             if( strlstGrpArgs.size() == 2 )
             {
@@ -3883,7 +3865,6 @@ void CTest::doTestStepGrpTrcAdmObjTreeStepTreeViewDragAndDrop( ZS::Test::CTestSt
             // "select" must be performed before any mouse operation.
 
             QModelIndex modelIdxSrc = pModelIdxTree->index(strKeyInTreeSrc, 0);
-            CModelAbstractTreeEntry* pModelTreeEntrySrc = static_cast<CModelAbstractTreeEntry*>(modelIdxSrc.internalPointer());
             QRect rctSrc = pTreeViewIdxTree->visualRect(modelIdxSrc);
 
             s_ptLocalPosMouseMoveStart.setX(rctSrc.center().x());
@@ -3893,7 +3874,6 @@ void CTest::doTestStepGrpTrcAdmObjTreeStepTreeViewDragAndDrop( ZS::Test::CTestSt
             s_ptLocalPosMouseMoveCurr.setY(rctSrc.center().y());
 
             QModelIndex modelIdxTrg = pModelIdxTree->index(strKeyInTreeTrg, 0);
-            CModelAbstractTreeEntry* pModelTreeEntryTrg = static_cast<CModelAbstractTreeEntry*>(modelIdxTrg.internalPointer());
             QRect rctTrg = pTreeViewIdxTree->visualRect(modelIdxTrg);
 
             s_ptLocalPosMouseMoveEnd.setX(rctTrg.center().x());
@@ -4082,7 +4062,7 @@ void CTest::doTestStepGrpTrcAdmObjTreeStepTreeViewDragAndDrop( ZS::Test::CTestSt
             QString strObjNameTrg;
 
             EIdxTreeEntryType entryTypeSrc = pIdxTree->splitPathStr(strKeyInTreeSrc, &strBranchPathSrc, &strObjNameSrc);
-            EIdxTreeEntryType entryTypeTrg = pIdxTree->splitPathStr(strKeyInTreeTrg, &strBranchPathTrg, &strObjNameTrg);
+            pIdxTree->splitPathStr(strKeyInTreeTrg, &strBranchPathTrg, &strObjNameTrg);
 
             strKeyInTreeTrg = pIdxTree->buildKeyInTreeStr(entryTypeSrc, strBranchPathTrg, strObjNameTrg, strObjNameSrc);
 
@@ -4310,7 +4290,7 @@ int CTest::addEntry(
             // Expected behaviour is to use free entries or to append the new entry at the end.
             if( i_mapFreeIdxs.size() > 0 )
             {
-                #if QT_VERSION >= 0x050200
+                #if QT_VERSION >= QT_VERSION_CHECK(5, 2, 0)
                 idxInTree = i_mapFreeIdxs.firstKey();
                 #else
                 idxInTree = i_mapFreeIdxs.begin().key();
@@ -4670,11 +4650,7 @@ void CTest::splitKey(
     // Remove Entry Type:
     strKeyPath.remove(0, 2);
 
-    #if QT_VERSION < 0x050000
-    QStringList strlstPathNodes = strKeyPath.split(i_idxTree.nodeSeparator(), Qt::SkipEmptyParts);
-    #else
-    QStringList strlstPathNodes = strKeyPath.split(i_idxTree.nodeSeparator(), QString::SkipEmptyParts);
-    #endif
+    QStringList strlstPathNodes = strKeyPath.split(i_idxTree.nodeSeparator(), QtSkipEmptyParts);
 
     // For each of the path nodes separate NameSpace, ClassName and ObjName to create Admin Object Tree Entries.
     //----------------------------------------------------------------------------------------------------------
@@ -4684,9 +4660,9 @@ void CTest::splitKey(
     //
     //   Key                 | NameSpace   | ClassName | ObjName
     //   --------------------+-------------+-----------+--------
-    //   B:A0:B0             |             | A0        | B0      
-    //   B:A1:B1:C1:D1       | A1:B1       | C1        | D1      
-    //   L:A2:B2:C2:D2:E2:o2 | A2:B2:C2:E2 | E2        | o2      
+    //   B:A0:B0             |             | A0        | B0
+    //   B:A1:B1:C1:D1       | A1:B1       | C1        | D1
+    //   L:A2:B2:C2:D2:E2:o2 | A2:B2:C2:E2 | E2        | o2
 
     if( strlstPathNodes.size() == 0 )
     {
@@ -4734,11 +4710,7 @@ void CTest::splitKey(
     // Remove Entry Type:
     strKeyPath.remove(0, 2);
 
-    #if QT_VERSION < 0x050000
-    o_strlstPathNodes = strKeyPath.split(i_idxTree.nodeSeparator(), Qt::SkipEmptyParts);
-    #else
-    o_strlstPathNodes = strKeyPath.split(i_idxTree.nodeSeparator(), QString::SkipEmptyParts);
-    #endif
+    o_strlstPathNodes = strKeyPath.split(i_idxTree.nodeSeparator(), QtSkipEmptyParts);
 
     QString strPathNode;
     QString strPath;
@@ -4755,30 +4727,30 @@ void CTest::splitKey(
     //
     //   PathNodes[Idx]  | Keys    | NameSpaces | ClassNames | ObjNames
     //   ----------------+---------+------------+------------+---------
-    //   A0 [0 = size-2] | B:A0    |            |            | A0      
-    //   B0 [1 = size-1] | B:A0:B0 |            | A0         | B0      
+    //   A0 [0 = size-2] | B:A0    |            |            | A0
+    //   B0 [1 = size-1] | B:A0:B0 |            | A0         | B0
     //
     // E.g. "B:A1:B1:C1:D1":
     // ---------------------
     //
     //  PathNodes[Idx]  | Keys          | NameSpaces | ClassNames | ObjNames
     //  ----------------+---------------+------------+------------+---------
-    //  A1 [0 = size-4] | B:A1          |            |            | A1      
-    //  B1 [1 = size-3] | B:A1:B1       |            | A1         | B1      
-    //  C1 [2 = size-2] | B:A1:B1:C1    | A1         | B1         | C1      
-    //  D1 [3 = size-1] | B:A1:B1:C1:D1 | A1:B1      | C1         | D1      
+    //  A1 [0 = size-4] | B:A1          |            |            | A1
+    //  B1 [1 = size-3] | B:A1:B1       |            | A1         | B1
+    //  C1 [2 = size-2] | B:A1:B1:C1    | A1         | B1         | C1
+    //  D1 [3 = size-1] | B:A1:B1:C1:D1 | A1:B1      | C1         | D1
     //
     // E.g. "L:A2:B2:C2:D2:E2:o2":
     // ---------------------------
     //
     //   PathNodes[Idx]  | Keys                | NameSpaces  | ClassNames | ObjNames
     //   ----------------+---------------------+-------------+------------+---------
-    //   A2 [0 = size-6] | B:A2                |             |            | A2      
-    //   B2 [1 = size-5] | B:A2:B2             |             | A2         | B2      
-    //   C2 [2 = size-4] | B:A2:B2:C2          | A2          | B2         | C2      
-    //   D2 [3 = size-3] | B:A2:B2:C2:D2       | A2:B2       | C2         | D2      
-    //   E2 [4 = size-2] | B:A2:B2:C2:D2:E2    | A2:B2:C2    | D2         | E2      
-    //   o2 [5 = size-1] | L:A2:B2:C2:D2:E2:o2 | A2:B2:C2:D2 | E2         | o2      
+    //   A2 [0 = size-6] | B:A2                |             |            | A2
+    //   B2 [1 = size-5] | B:A2:B2             |             | A2         | B2
+    //   C2 [2 = size-4] | B:A2:B2:C2          | A2          | B2         | C2
+    //   D2 [3 = size-3] | B:A2:B2:C2:D2       | A2:B2       | C2         | D2
+    //   E2 [4 = size-2] | B:A2:B2:C2:D2:E2    | A2:B2:C2    | D2         | E2
+    //   o2 [5 = size-1] | L:A2:B2:C2:D2:E2:o2 | A2:B2:C2:D2 | E2         | o2
 
     for( int idxPathNode = 0; idxPathNode < o_strlstPathNodes.size(); ++idxPathNode )
     {

@@ -31,7 +31,7 @@ may result in using the software modules.
 #include <QtCore/qglobal.h>
 #include <QtCore/qmetatype.h>
 
-#if QT_VERSION < 0x050000
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 #include <QtGui/qapplication.h>
 #include <QtGui/qmainwindow.h>
 #else
@@ -62,13 +62,11 @@ Libraries depending on build configuration and used Qt version
 
 #pragma message(__FILE__ ": Linking against = " QTCORELIB)
 #pragma comment(lib, QTCORELIB)
-#pragma message(__FILE__ ": Linking against = " QTNETWORKLIB)
-#pragma comment(lib, QTNETWORKLIB)
 #pragma message(__FILE__ ": Linking against = " QTXMLLIB)
 #pragma comment(lib, QTXMLLIB)
 #pragma message(__FILE__ ": Linking against = " QTGUILIB)
 #pragma comment( lib, QTGUILIB )
-#if QT_VERSION >= 0x050000 && QT_VERSION < 0x060000
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0) && QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 #pragma message(__FILE__ ": Linking against = " QTWIDGETSLIB)
 #pragma comment( lib, QTWIDGETSLIB )
 #endif

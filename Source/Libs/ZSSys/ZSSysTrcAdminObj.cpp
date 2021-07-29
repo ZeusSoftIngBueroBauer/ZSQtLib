@@ -91,7 +91,7 @@ protected: // ctors and dtor (trace admin objects may only be created by the mod
     \param i_pTrcAdmObjIdxTree [in] Reference to the trace admin object index tree
                                     the instance will be added to.
 */
-CTrcAdminObj::CTrcAdminObj( const QString& i_strObjName, const QString& i_strObjThreadName ) :
+CTrcAdminObj::CTrcAdminObj( const QString& i_strObjName, const QString& /*i_strObjThreadName*/ ) :
 //------------------------------------------------------------------------------
     QObject(),
     CLeaveIdxTreeEntry(i_strObjName),

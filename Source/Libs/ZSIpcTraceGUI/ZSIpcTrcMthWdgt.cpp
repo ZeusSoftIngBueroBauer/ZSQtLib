@@ -28,8 +28,8 @@ may result in using the software modules.
 #include <QtCore/qfileinfo.h>
 #include <QtCore/qsettings.h>
 
-#if QT_VERSION < 0x050000
-#if QT_VERSION >= 0x040501
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+#if QT_VERSION >= QT_VERSION_CHECK(4, 5, 1)
 #include <QtXml/QXmlStreamReader>
 #include <QtXml/QXmlStreamWriter>
 #endif
@@ -42,7 +42,7 @@ may result in using the software modules.
 #include <QtGui/qevent.h>
 #include <QtGui/qpainter.h>
 
-#if QT_VERSION < 0x050000
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 #include <QtGui/qapplication.h>
 #include <QtGui/qboxlayout.h>
 #include <QtGui/qcheckbox.h>
@@ -305,7 +305,7 @@ CWdgtTrcMthList::~CWdgtTrcMthList()
 public: // instance methods
 ==============================================================================*/
 
-#if QT_VERSION >= 0x040501
+#if QT_VERSION >= QT_VERSION_CHECK(4, 5, 1)
 //------------------------------------------------------------------------------
 void CWdgtTrcMthList::loadThreadColors( const QString& i_strAbsFilePath )
 //------------------------------------------------------------------------------
@@ -405,9 +405,9 @@ void CWdgtTrcMthList::loadThreadColors( const QString& i_strAbsFilePath )
     } // if( fileXML.open(QIODevice::ReadOnly) )
 
 } // loadThreadColors
-#endif // #if QT_VERSION >= 0x040501
+#endif // #if QT_VERSION >= QT_VERSION_CHECK(4, 5, 1)
 
-#if QT_VERSION >= 0x040501
+#if QT_VERSION >= QT_VERSION_CHECK(4, 5, 1)
 //------------------------------------------------------------------------------
 void CWdgtTrcMthList::saveThreadColors( const QString& i_strAbsFilePath )
 //------------------------------------------------------------------------------
@@ -532,7 +532,7 @@ void CWdgtTrcMthList::saveThreadColors( const QString& i_strAbsFilePath )
     } // if( fileXML.open(QIODevice::WriteOnly) )
 
 } // saveThreadColors
-#endif // #if QT_VERSION >= 0x040501
+#endif // #if QT_VERSION >= QT_VERSION_CHECK(4, 5, 1)
 
 /*==============================================================================
 public: // instance methods
@@ -775,7 +775,7 @@ void CWdgtTrcMthList::onIpcClientConnected( QObject* /*i_pClient*/ )
 
     m_hashThreads.clear();
 
-    #if QT_VERSION >= 0x040501
+    #if QT_VERSION >= QT_VERSION_CHECK(4, 5, 1)
     loadThreadColors();
     #endif
 
@@ -801,7 +801,7 @@ void CWdgtTrcMthList::onIpcClientDisconnected( QObject* /*i_pClient*/ )
     m_pChkServerTracingEnabled->setEnabled(false);
     m_pChkServerTracingEnabled->setChecked(false);
 
-    #if QT_VERSION >= 0x040501
+    #if QT_VERSION >= QT_VERSION_CHECK(4, 5, 1)
     saveThreadColors();
     #endif
 
