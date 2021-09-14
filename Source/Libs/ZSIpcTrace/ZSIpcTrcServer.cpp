@@ -180,50 +180,38 @@ QString toXmlString() const
     if( m_mthDir == EMethodDirEnter )
     {
         QString strMthInArgs = m_strMthInArgs;
-        if( strMthInArgs.contains('<') )
-        {
-            strMthInArgs.replace("<","&lt;");
-        }
-        if( strMthInArgs.contains('>') )
-        {
-            strMthInArgs.replace(">","&gt;");
-        }
+        if( strMthInArgs.contains("<") ) strMthInArgs.replace("<", "&lt;");
+        if( strMthInArgs.contains(">") ) strMthInArgs.replace(">", "&gt;");
+        if( strMthInArgs.contains("&") ) strMthInArgs.replace("&", "&amp;");
+        if( strMthInArgs.contains("\"") ) strMthInArgs.replace("\"", "&quot;");
+        if( strMthInArgs.contains("'") ) strMthInArgs.replace("'", "&apos;");
     /*    10 */ str += "InArgs=\"" + strMthInArgs + "\" ";
     }
     else if( m_mthDir == EMethodDirLeave )
     {
         QString strMthRet = m_strMthRet;
-        if( strMthRet.contains('<') )
-        {
-            strMthRet.replace("<","&lt;");
-        }
-        if( strMthRet.contains('>') )
-        {
-            strMthRet.replace(">","&gt;");
-        }
+        if( strMthRet.contains("<") ) strMthRet.replace("<", "&lt;");
+        if( strMthRet.contains(">") ) strMthRet.replace(">", "&gt;");
+        if( strMthRet.contains("&") ) strMthRet.replace("&", "&amp;");
+        if( strMthRet.contains("\"") ) strMthRet.replace("\"", "&quot;");
+        if( strMthRet.contains("'") ) strMthRet.replace("'", "&apos;");
         QString strMthOutArgs = m_strMthOutArgs;
-        if( strMthOutArgs.contains('<') )
-        {
-            strMthOutArgs.replace("<","&lt;");
-        }
-        if( strMthOutArgs.contains('>') )
-        {
-            strMthOutArgs.replace(">","&gt;");
-        }
+        if( strMthOutArgs.contains("<") ) strMthOutArgs.replace("<", "&lt;");
+        if( strMthOutArgs.contains(">") ) strMthOutArgs.replace(">", "&gt;");
+        if( strMthOutArgs.contains("&") ) strMthOutArgs.replace("&", "&amp;");
+        if( strMthOutArgs.contains("\"") ) strMthOutArgs.replace("\"", "&quot;");
+        if( strMthOutArgs.contains("'") ) strMthOutArgs.replace("'", "&apos;");
     /*    10 */ str += "Return=\"" + strMthRet + "\" ";
     /*    10 */ str += "OutArgs=\"" + strMthOutArgs + "\" ";
     }
     else // if( i_dir == EMethodDirNone )
     {
         QString strMthAddInfo = m_strMthAddInfo;
-        if( strMthAddInfo.contains('<') )
-        {
-            strMthAddInfo.replace("<","&lt;");
-        }
-        if( strMthAddInfo.contains('>') )
-        {
-            strMthAddInfo.replace(">","&gt;");
-        }
+        if( strMthAddInfo.contains("<") ) strMthAddInfo.replace("<", "&lt;");
+        if( strMthAddInfo.contains(">") ) strMthAddInfo.replace(">", "&gt;");
+        if( strMthAddInfo.contains("&") ) strMthAddInfo.replace("&", "&amp;");
+        if( strMthAddInfo.contains("\"") ) strMthAddInfo.replace("\"", "&quot;");
+        if( strMthAddInfo.contains("'") ) strMthAddInfo.replace("'", "&apos;");
     /*    10 */ str += "AddInfo=\"" + strMthAddInfo + "\" ";
     }
     /*     3 */ str += "/>";
@@ -1048,7 +1036,7 @@ void CIpcTrcServer::traceMethod(
     // calls as "traceMethodEnter" is usually called from within different
     // thread contexts.
 
-    if( i_pTrcAdminObj != nullptr && i_pTrcAdminObj->isActive(ETraceDetailLevelRuntimeInfo) && isEnabled() && isActive() )
+    if( i_pTrcAdminObj != nullptr && i_pTrcAdminObj->isActive(ETraceDetailLevelMethodCalls) && isEnabled() && isActive() )
     {
         addEntry(
             /* strThreadName */ currentThreadName(),
@@ -1081,7 +1069,7 @@ void CIpcTrcServer::traceMethod(
     // calls as "traceMethodEnter" is usually called from within different
     // thread contexts.
 
-    if( i_pTrcAdminObj != nullptr && i_pTrcAdminObj->isActive(ETraceDetailLevelRuntimeInfo) && isEnabled() && isActive() )
+    if( i_pTrcAdminObj != nullptr && i_pTrcAdminObj->isActive(ETraceDetailLevelMethodCalls) && isEnabled() && isActive() )
     {
         addEntry(
             /* strThreadName */ currentThreadName(),

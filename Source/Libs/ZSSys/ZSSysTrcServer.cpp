@@ -335,22 +335,21 @@ void CTrcServer::RegisterCurrentThread( const QString& i_strThreadName )
     // checked whether the thread name was already registered. If the
     // thread name (and its previous id) will be removed from the maps.
 
-    Qt::HANDLE threadId = s_hshThreadIds.value(i_strThreadName, nullptr);
+    Qt::HANDLE threadIdCurr = QThread::currentThreadId();
 
-    if( threadId != nullptr )
+    // If the thread name is already registered for another thread id ..
+    Qt::HANDLE threadIdPrev = s_hshThreadIds.value(i_strThreadName, nullptr);
+    if( threadIdPrev != nullptr && threadIdPrev != threadIdCurr )
     {
         s_hshThreadIds.remove(i_strThreadName);
-
-        if( s_hshThreadNames.contains(threadId) )
+        if( s_hshThreadNames.contains(threadIdPrev) )
         {
-            s_hshThreadNames.remove(threadId);
+            s_hshThreadNames.remove(threadIdPrev);
         }
     }
 
-    threadId = QThread::currentThreadId();
-
-    s_hshThreadNames[threadId] = i_strThreadName;
-    s_hshThreadIds[i_strThreadName] = threadId;
+    s_hshThreadNames[threadIdCurr] = i_strThreadName;
+    s_hshThreadIds[i_strThreadName] = threadIdCurr;
 
 } // RegisterCurrentThread
 
