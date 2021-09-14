@@ -67,10 +67,9 @@ public: // instance methods
 public: // overridables of base class QThread
     virtual void run() override;
 protected: // instance members
-    QString           m_strServerName;
-    QCoreApplication* m_pQtAppCreatedByDllIf;
-    int               m_iTrcDetailLevel;
-    CTrcMthFile*      m_pTrcMthFile;
+    QString      m_strServerName;
+    int          m_iTrcDetailLevel;
+    CTrcMthFile* m_pTrcMthFile;
 
 }; // class CIpcTrcServerThread
 

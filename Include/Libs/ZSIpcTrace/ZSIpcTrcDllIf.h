@@ -161,7 +161,7 @@ may result in using the software modules.
           - Wurden die Qt Dlls ggf. mit einem LibInfix compiliert?
           - Kann das Betriebssystem die Qt-Dlls finden?
 
-    2. Instanziieren des Trace Servers
+    2. Instanziieren des Trace Servers, einlesen des Trace Admin Object XML Files und setzen einiger Attribute.
 
         Falls das Laden der ZSQtLib Dlls erfolgreich war, kann der Trace Server instanziiert werden.
         Dies erfolgt ueber einen CreateInstance Aufruf. Wird CreateInstance mit den Default-Parametern
@@ -206,10 +206,8 @@ may result in using the software modules.
         @code
         if( bZSQtLibDllsLoaded )
         {
-            char* szAdminObjFileAbsFilePath = nullptr;
-            char* szLocalTrcFileAbsFilePath = nullptr;
-
-            CIpcTrcServer::GetDefaultFilePaths(&szAdminObjFileAbsFilePath, &szLocalTrcFileAbsFilePath);
+            char* szAdminObjFileAbsFilePath = CIpcTrcServer::GetDefaultAdminObjFileAbsoluteFilePath();
+            char* szLocalTrcFileAbsFilePath = CIpcTrcServer::GetDefaultLocalTrcFileAbsoluteFilePath();
 
             std::string stdstrAdminObjFileAbsFilePath(szAdminObjFileAbsFilePath);
             std::string stdstrLocalTrcFileAbsFilePath(szLocalTrcFileAbsFilePath);
@@ -228,7 +226,25 @@ may result in using the software modules.
         }
         @endcode
 
-    3. Trace Server freigeben
+        Wurde der Trace Server erfolgreich erzeugt ist der zuletzt gesicherte Stand der TraceAdmin Objekt
+        Instancen in den Index Tree des Trace Servers einzulesen (trace detail level, enabled).
+
+        Des weiteren koennen einige Eigenschaften der Trace Server gesetzt werden. Im Folgenden Code
+        Beispiel wird das Caching des Methoden Trace aktiviert, damit auch die Methoden im Client
+        erscheinen, die getraced wurden, waehrend der Client sich noch nicht verbunden hatte
+        (Methoden Trace beim Startup der Applikation).
+
+        @code
+        if( m_pTrcServer != nullptr )
+        {
+            m_pTrcServer->setCacheTrcDataIfNotConnected(true);
+            m_pTrcServer->setCacheTrcDataMaxArrLen(1000);
+
+            m_pTrcServer::recallAdminObjs();
+        }
+        @endcode
+
+    3. Admin Object XML File sichern und Trace Server freigeben
 
         Eigentlich der letzte Schritt der Sequenz. Aber in jedem Fall notwendig und sollte deshalb
         gleich nach Schritt 2 implementiert werden.
@@ -240,9 +256,15 @@ may result in using the software modules.
         den Gateway Thread und zerstoert damit auch den Ipc server. Alle aktiven Verbindungen
         werden dabei geschlossen.
 
+        Bevor der Trace Server freigegeben wird sollte der aktuelle Zustand der Trace Admin Objekte
+        im XML File gesichert werden, damit die Zustaende (trace detail level, enabled) beim Neustart
+        der Applikation wieder hergestellt werden koennen.
+
         @code
         if( m_pTrcServer != nullptr )
         {
+            m_pTrcServer->saveAdminObjs();
+
             CIpcTrcServer::ReleaseInstance(m_pTrcServer);
         }
         @endcode

@@ -593,6 +593,7 @@ bool ZS::Trace::DllIf::loadDll(
 
 //------------------------------------------------------------------------------
 /*! Returns the file name of the loaded ZSIpcTrace Dll.
+
     @return name of the dll.
 */
 const char* ZS::Trace::DllIf::getDllFileName()
@@ -603,6 +604,7 @@ const char* ZS::Trace::DllIf::getDllFileName()
 
 //------------------------------------------------------------------------------
 /*! Returns Releases the Remote Method Trace Dlls.
+
     @return true if dll was release.
             false in case of an error (if the dll was not loaded).
 */
@@ -1683,6 +1685,15 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! Definiert, ob das Caching des Methoden Traces aktivert werden soll.
+
+    Ist kein Trace Client verbunden, werden die Methoden Traces nicht an den
+    Client geschickt. Das Caching ermoeglicht es z.B. auch die Methoden Traces
+    zum Client zu schicken, nachdem sich dieser verbunden hat. Damit kann z.B.
+    auch der Startup der Applikation fuer den Client sichtbar gemacht werden.
+
+    @param i_bCacheData [In] true um das caching zu aktivieren.
+*/
 void DllIf::CTrcServer::setCacheTrcDataIfNotConnected( bool i_bCacheData )
 //------------------------------------------------------------------------------
 {
@@ -1707,6 +1718,12 @@ bool DllIf::CTrcServer::getCacheTrcDataIfNotConnected() const
 } // getCacheTrcDataIfNotConnected
 
 //------------------------------------------------------------------------------
+/*! Ist das Caching aktiviert wird hier die Anzahl der Zeilen definiert, die im
+    Cache abgelegt werden.
+
+    @param i_iMaxArrLen [In] Anzahl der Methoden Aufrufe, die im Cache gespeichert
+           werden, bis sich ein Client verbindet.
+*/
 void DllIf::CTrcServer::setCacheTrcDataMaxArrLen( int i_iMaxArrLen )
 //------------------------------------------------------------------------------
 {

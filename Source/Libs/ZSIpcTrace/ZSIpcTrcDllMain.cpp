@@ -2203,58 +2203,48 @@ ZSIPCTRACEDLL_EXTERN_API DllIf::CIpcTrcServer* IpcTrcServer_CreateInstance(
     }
     else // if( pDllIfTrcServer == nullptr )
     {
-        // If the application creating and starting the trace server is a Qt application ...
-        if( DllIf_s_pQtAppCreatedByDllIf == nullptr )
+        // No matter whether the application creating the trace server is a Qt application
+        // or not the trace servers created via the Dll interface (via this main dll module)
+        // will be created and later on started from a separate thread.
+        // If the application uses Qt this ensures that the server is hosted in a QThread
+        // with an event loop. If the application does not use Qt it is anyway necessar
+        // to create the tracer server in a thread with an event loop.
+        DllIf::CIpcTrcServerThread* pTrcServerThread = DllIf_s_hsppIpcTrcServerThreads.value(strServerName, nullptr);
+        if( pTrcServerThread == nullptr )
         {
-            // ... there might already trace server instances existing.
-            // If not the trace server can be started and in the current thread
-            // (and can therefore be created in the current thread).
-            CIpcTrcServer::CreateInstance(strServerName, i_iTrcDetailLevel);
+            DllIf_s_hsppIpcTrcServerThreads[strServerName] = new DllIf::CIpcTrcServerThread(strServerName, i_iTrcDetailLevel);
         }
-        // If the application creating and starting the trace server is not a Qt application ...
-        else // if( DllIf_s_pQtAppCreatedByDllIf != nullptr )
+        pTrcServerThread = DllIf_s_hsppIpcTrcServerThreads.value(strServerName);
+
+        const int c_iMaxWaitCount = 25;
+        int iWaitCount = 0;
+
+        // Start driver thread and wait until the driver has been created.
+        if( !pTrcServerThread->isRunning() )
         {
-            // ... trace servers may only be crated via the Dll interface (via this main dll module).
-            // The trace server must be started from within a different thread context
-            // (and must be therefore created in this different thread context).
-            DllIf::CIpcTrcServerThread* pTrcServerThread = DllIf_s_hsppIpcTrcServerThreads.value(strServerName, nullptr);
-            if( pTrcServerThread == nullptr )
+            pTrcServerThread->start();
+
+            iWaitCount = 0;
+            while( !pTrcServerThread->isServerCreated() )
             {
-                DllIf_s_hsppIpcTrcServerThreads[strServerName] = new DllIf::CIpcTrcServerThread(strServerName, i_iTrcDetailLevel);
-            }
-            pTrcServerThread = DllIf_s_hsppIpcTrcServerThreads.value(strServerName);
+                #ifdef _WINDOWS
+                Sleep(200);
+                #endif
+                #ifdef __linux__
+                usleep(200000);
+                #endif
 
-            const int c_iMaxWaitCount = 25;
-            int iWaitCount = 0;
-
-            // Start driver thread and wait until the driver has been created.
-            if( !pTrcServerThread->isRunning() )
-            {
-                pTrcServerThread->start();
-
-                iWaitCount = 0;
-                while( !pTrcServerThread->isServerCreated() )
+                iWaitCount++;
+                if( iWaitCount > c_iMaxWaitCount )
                 {
-                    #ifdef _WINDOWS
-                    Sleep(200);
-                    #endif
-                    #ifdef __linux__
-                    usleep(200000);
-                    #endif
-
-                    iWaitCount++;
-                    if( iWaitCount > c_iMaxWaitCount )
-                    {
-                        break;
-                    }
+                    break;
                 }
             }
+        }
 
-            // Please note that the trace server has been created (or at least the reference
-            // counter for an existing trace server has been incremented) in the thread.
-            // Invoking "GetInstance" again here would increment the reference counter twice.
-
-        } // if( s_pAppCreatedByDriver != nullptr )
+        // Please note that the trace server has been created (or at least the reference
+        // counter for an existing trace server has been incremented) in the thread.
+        // Invoking "GetInstance" again here would increment the reference counter twice.
 
         pDllIfTrcServer = new DllIf::CIpcTrcServer(i_szName, i_iTrcDetailLevel);
         DllIf_IpcTrcServer_s_hshpInstances[strServerName] = pDllIfTrcServer;
@@ -2276,6 +2266,8 @@ ZSIPCTRACEDLL_EXTERN_API void IpcTrcServer_ReleaseInstance( DllIf::CIpcTrcServer
     {
         QString strServerName = i_pTrcServer->name();
 
+        int iRefCount = 0;
+
         {
             CTrcMthFile* pTrcMthFile = DllIf_IpcTrcServer_s_hshpTrcMthFiles.value(strServerName, nullptr);
             int          iTrcDetailLevel = DllIf_IpcTrcServer_s_hshiTrcMthDetailLevels.value(strServerName, ETraceDetailLevelNone);
@@ -2294,7 +2286,7 @@ ZSIPCTRACEDLL_EXTERN_API void IpcTrcServer_ReleaseInstance( DllIf::CIpcTrcServer
 
             DllIf::CIpcTrcServer* pDllIfTrcServer = DllIf_IpcTrcServer_s_hshpInstances.value(strServerName, nullptr);
 
-            int iRefCount = DllIf_IpcTrcServer_s_hshiTrcServerRefCount.value(strServerName, 0) - 1;
+            iRefCount = DllIf_IpcTrcServer_s_hshiTrcServerRefCount.value(strServerName, 0) - 1;
 
             if( iRefCount > 0 /* && pDllIfTrcServer != nullptr */ ) // pDllIfTrcServer must not be nullptr. Otherwise ... crash.
             {
@@ -2305,48 +2297,42 @@ ZSIPCTRACEDLL_EXTERN_API void IpcTrcServer_ReleaseInstance( DllIf::CIpcTrcServer
             // Trace server is no longer referenced ...
             else // if( iRefCount == 0 )
             {
-                // If the application creating and starting the trace server is a Qt application ...
-                if( DllIf_s_pQtAppCreatedByDllIf == nullptr )
-                {
-                    CIpcTrcServer::ReleaseInstance(strServerName);
-                }
-                // If the application creating and starting the trace server is not a Qt application ...
-                else // if( DllIf_s_pThreadIpcTrcServer != nullptr )
-                {
-                    // ... the trace server was created and started from within a different thread context.
-                    DllIf::CIpcTrcServerThread* pTrcServerThread = DllIf_s_hsppIpcTrcServerThreads.value(strServerName, nullptr);
+                // The trace server was created and started from within a different thread context.
+                DllIf::CIpcTrcServerThread* pTrcServerThread = DllIf_s_hsppIpcTrcServerThreads.value(strServerName, nullptr);
 
-                    if( pTrcServerThread != nullptr )
+                pTrcServerThread->quit();
+                pTrcServerThread->wait(30000);
+
+                if( !pTrcServerThread->isRunning() )
+                {
+                    try
                     {
-                        pTrcServerThread->quit();
-                        pTrcServerThread->wait(30000);
-
-                        if( !pTrcServerThread->isRunning() )
-                        {
-                            try
-                            {
-                                delete pTrcServerThread;
-                            }
-                            catch(...)
-                            {
-                            }
-                        }
-                        pTrcServerThread = nullptr;
-                        DllIf_s_hsppIpcTrcServerThreads.remove(strServerName);
+                        delete pTrcServerThread;
                     }
+                    catch(...)
+                    {
+                    }
+                }
+                pTrcServerThread = nullptr;
+                DllIf_s_hsppIpcTrcServerThreads.remove(strServerName);
 
-                    // Please note that the trace server has been released in the thread.
-                    // Invoking "ReleaseInstance" again here would deincrement the reference counter twice.
-
-                } // if( DllIf_s_pThreadIpcTrcServer != nullptr )
+                // Please note that the trace server has been released in the thread.
+                // Invoking "ReleaseInstance" again here would deincrement the reference counter twice.
 
                 DllIf_IpcTrcServer_s_hshpInstances.remove(strServerName);
                 DllIf_IpcTrcServer_s_hshiTrcServerRefCount.remove(strServerName);
 
                 delete i_pTrcServer;
                 i_pTrcServer = nullptr;
-            }
 
+            } // if( iRefCount == 0 )
+
+            // dtor of mthTracer here which access the trace method file.
+            // The trace method file got to be removed after this block.
+        }
+
+        if( iRefCount == 0 )
+        {
             if( DllIf_IpcTrcServer_s_hshpTrcMthFiles.contains(strServerName) )
             {
                 CTrcMthFile::Free(DllIf_IpcTrcServer_s_hshpTrcMthFiles[strServerName]);
@@ -2354,7 +2340,7 @@ ZSIPCTRACEDLL_EXTERN_API void IpcTrcServer_ReleaseInstance( DllIf::CIpcTrcServer
                 DllIf_IpcTrcServer_s_hshpTrcMthFiles.remove(strServerName);
                 DllIf_IpcTrcServer_s_hshiTrcMthDetailLevels.remove(strServerName);
             }
-        } // if( iRefCount == 0 )
+        }
     } // if( i_pTrcServer != nullptr )
 
     // If the application creating and starting the trace server is not a Qt application ...
@@ -2413,74 +2399,45 @@ ZSIPCTRACEDLL_EXTERN_API bool IpcTrcServer_startup( DllIf::CIpcTrcServer* i_pTrc
 
         if( pTrcServer != nullptr )
         {
-            // If the application creating and starting the trace server is a Qt application ...
-            if( DllIf_s_pQtAppCreatedByDllIf == nullptr )
+            // No matter whether the application creating the trace server is a Qt application
+            // or not the trace servers created via the Dll interface (via this main dll module)
+            // will be created and started from a separate thread.
+            // The thread hosting the trace server must start an event loop.
+
+            CMsgReqStartup* pMsg = new CMsgReqStartup(
+                /* pObjSender       */ nullptr,
+                /* pObjReceiver     */ pTrcServer,
+                /* hostSettings     */ pTrcServer->getHostSettings(),
+                /* pBlkType         */ pTrcServer->getBlkType(),  // The block will be cloned.
+                /* bMustBeConfirmed */ false,
+                /* iReqId           */ -1,
+                /* iMsgId           */ -1 );
+            QCoreApplication::postEvent(pTrcServer, pMsg);
+            pMsg = NULL;
+
+            const int c_iMaxWaitCount = 25;
+            int iWaitCount = 0;
+
+            DllIf::CIpcTrcServerThread* pTrcServerThread = DllIf_s_hsppIpcTrcServerThreads.value(strServerName, nullptr);
+
+            while( !pTrcServerThread->isServerStarted() )
             {
-                // The thread in which the trace server is created must start its event loop.
-                // To ensure this the thread affinity of the server will be set to Qt's main
-                // thread as the main thread always has an event loop.
-                if( pTrcServer->thread() != QCoreApplication::instance()->thread() )
+                #ifdef _WINDOWS
+                Sleep(200);
+                #endif
+                #ifdef __linux__
+                usleep(200000);
+                #endif
+
+                iWaitCount++;
+                if( iWaitCount > c_iMaxWaitCount )
                 {
-                    pTrcServer->moveToThread( QCoreApplication::instance()->thread() );
+                    break;
                 }
+            }
 
-                // The trace server is created in the QtAppThread and can be directly started.
-                CRequest* pReq = pTrcServer->startup(i_iTimeout_ms, i_bWait);
+            bOk = pTrcServerThread->isServerStarted();
 
-                if( isErrorResult(pReq) )
-                {
-                    bOk = false;
-                }
-                else if( isAsynchronousRequest(pReq) )
-                {
-                    bOk = false;
-                }
-                else
-                {
-                    bOk = true;
-                }
-            } // if( DllIf_s_pQtAppCreatedByDllIf == nullptr )
-
-            // If the application creating and starting the trace server is not a Qt application ...
-            else // if( DllIf_s_pQtAppCreatedByDllIf != nullptr )
-            {
-                // ... the trace server is created in a different thread context and the
-                // server must be started in this thread context.
-                CMsgReqStartup* pMsg = new CMsgReqStartup(
-                    /* pObjSender       */ nullptr,
-                    /* pObjReceiver     */ pTrcServer,
-                    /* hostSettings     */ pTrcServer->getHostSettings(),
-                    /* pBlkType         */ pTrcServer->getBlkType(),  // The block will be cloned.
-                    /* bMustBeConfirmed */ false,
-                    /* iReqId           */ -1,
-                    /* iMsgId           */ -1 );
-                QCoreApplication::postEvent(pTrcServer, pMsg);
-                pMsg = NULL;
-
-                const int c_iMaxWaitCount = 25;
-                int iWaitCount = 0;
-
-                DllIf::CIpcTrcServerThread* pTrcServerThread = DllIf_s_hsppIpcTrcServerThreads.value(strServerName, nullptr);
-
-                while( !pTrcServerThread->isServerStarted() )
-                {
-                    #ifdef _WINDOWS
-                    Sleep(200);
-                    #endif
-                    #ifdef __linux__
-                    usleep(200000);
-                    #endif
-
-                    iWaitCount++;
-                    if( iWaitCount > c_iMaxWaitCount )
-                    {
-                        break;
-                    }
-                }
-
-                bOk = pTrcServerThread->isServerStarted();
-
-            } // if( DllIf_s_pThreadIpcTrcServer != nullptr )
         } // if( pTrcServer != nullptr )
     } // if( i_pTrcServer != nullptr )
 
@@ -2525,66 +2482,43 @@ ZSIPCTRACEDLL_EXTERN_API bool IpcTrcServer_shutdown( DllIf::CIpcTrcServer* i_pTr
 
         if( pTrcServer != nullptr )
         {
-            // If the application creating and starting the trace server is a Qt application ...
-            if( DllIf_s_pQtAppCreatedByDllIf == nullptr )
+            // No matter whether the application creating the trace server is a Qt application
+            // the trace server is hosted in a different thread context and the server must be
+            // shutdown in this thread context.
+            CMsgReqShutdown* pMsg = new CMsgReqShutdown(
+                /* pObjSender       */ nullptr,
+                /* pObjReceiver     */ pTrcServer,
+                /* bMustBeConfirmed */ false,
+                /* iReqId           */ -1,
+                /* iMsgId           */ -1 );
+            QCoreApplication::postEvent(pTrcServer, pMsg);
+            pMsg = NULL;
+
+            const int c_iMaxWaitCount = 25;
+            int iWaitCount = 0;
+
+            DllIf::CIpcTrcServerThread* pTrcServerThread = DllIf_s_hsppIpcTrcServerThreads.value(strServerName, nullptr);
+
+            if( pTrcServerThread != NULL )
             {
-                // The trace server is created in the QtAppThread and can be directly shutdown.
-                CRequest* pReq = pTrcServer->shutdown(i_iTimeout_ms, i_bWait);
-
-                if( isErrorResult(pReq) )
+                while( !pTrcServerThread->isServerShutdown() )
                 {
-                    bOk = false;
-                }
-                else if( isAsynchronousRequest(pReq) )
-                {
-                    bOk = false;
-                }
-                else
-                {
-                    bOk = true;
-                }
-            } // if( DllIf_s_pQtAppCreatedByDllIf == nullptr )
+                    #ifdef _WINDOWS
+                    Sleep(200);
+                    #endif
+                    #ifdef __linux__
+                    usleep(200000);
+                    #endif
 
-            // If the application creating and starting the trace server is not a Qt application ...
-            else // if( DllIf_s_pQtAppCreatedByDllIf != nullptr )
-            {
-                // ... the trace server is created in a different thread context and the
-                // server must be shutdown in this thread context.
-                CMsgReqShutdown* pMsg = new CMsgReqShutdown(
-                    /* pObjSender       */ nullptr,
-                    /* pObjReceiver     */ pTrcServer,
-                    /* bMustBeConfirmed */ false,
-                    /* iReqId           */ -1,
-                    /* iMsgId           */ -1 );
-                QCoreApplication::postEvent(pTrcServer, pMsg);
-                pMsg = NULL;
-
-                const int c_iMaxWaitCount = 25;
-                int iWaitCount = 0;
-
-                DllIf::CIpcTrcServerThread* pTrcServerThread = DllIf_s_hsppIpcTrcServerThreads.value(strServerName, nullptr);
-
-                if( pTrcServerThread != NULL )
-                {
-                    while( !pTrcServerThread->isServerShutdown() )
+                    iWaitCount++;
+                    if( iWaitCount > c_iMaxWaitCount )
                     {
-                        #ifdef _WINDOWS
-                        Sleep(200);
-                        #endif
-                        #ifdef __linux__
-                        usleep(200000);
-                        #endif
-
-                        iWaitCount++;
-                        if( iWaitCount > c_iMaxWaitCount )
-                        {
-                            break;
-                        }
+                        break;
                     }
                 }
-                bOk = pTrcServerThread->isServerShutdown();
+            }
+            bOk = pTrcServerThread->isServerShutdown();
 
-            } // if( DllIf_s_pQtAppCreatedByDllIf != nullptr )
         } // if( pTrcServer != nullptr )
     } // if( i_pTrcServer != nullptr )
 

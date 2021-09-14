@@ -1225,6 +1225,7 @@ void CWdgtTrcMthList::onTraceDataReceived( QObject* /*i_pObjSender*/, const QStr
         if( xmlStreamReader.hasError() )
         {
             strAddErrInfo  = xmlStreamReader.errorString();
+            strAddErrInfo += " on receiving: " + i_str;
 
             errResultInfo.setSeverity(EResultSeverityError);
             errResultInfo.setResult(EResultFileReadContent);

@@ -180,50 +180,38 @@ QString toXmlString() const
     if( m_mthDir == EMethodDir::Enter )
     {
         QString strMthInArgs = m_strMthInArgs;
-        if( strMthInArgs.contains('<') )
-        {
-            strMthInArgs.replace("<","&lt;");
-        }
-        if( strMthInArgs.contains('>') )
-        {
-            strMthInArgs.replace(">","&gt;");
-        }
+        if( strMthInArgs.contains("<") ) strMthInArgs.replace("<", "&lt;");
+        if( strMthInArgs.contains(">") ) strMthInArgs.replace(">", "&gt;");
+        if( strMthInArgs.contains("&") ) strMthInArgs.replace("&", "&amp;");
+        if( strMthInArgs.contains("\"") ) strMthInArgs.replace("\"", "&quot;");
+        if( strMthInArgs.contains("'") ) strMthInArgs.replace("'", "&apos;");
     /*    10 */ str += "InArgs=\"" + strMthInArgs + "\" ";
     }
     else if( m_mthDir == EMethodDir::Leave )
     {
         QString strMthRet = m_strMthRet;
-        if( strMthRet.contains('<') )
-        {
-            strMthRet.replace("<","&lt;");
-        }
-        if( strMthRet.contains('>') )
-        {
-            strMthRet.replace(">","&gt;");
-        }
+        if( strMthRet.contains("<") ) strMthRet.replace("<", "&lt;");
+        if( strMthRet.contains(">") ) strMthRet.replace(">", "&gt;");
+        if( strMthRet.contains("&") ) strMthRet.replace("&", "&amp;");
+        if( strMthRet.contains("\"") ) strMthRet.replace("\"", "&quot;");
+        if( strMthRet.contains("'") ) strMthRet.replace("'", "&apos;");
         QString strMthOutArgs = m_strMthOutArgs;
-        if( strMthOutArgs.contains('<') )
-        {
-            strMthOutArgs.replace("<","&lt;");
-        }
-        if( strMthOutArgs.contains('>') )
-        {
-            strMthOutArgs.replace(">","&gt;");
-        }
+        if( strMthOutArgs.contains("<") ) strMthOutArgs.replace("<", "&lt;");
+        if( strMthOutArgs.contains(">") ) strMthOutArgs.replace(">", "&gt;");
+        if( strMthOutArgs.contains("&") ) strMthOutArgs.replace("&", "&amp;");
+        if( strMthOutArgs.contains("\"") ) strMthOutArgs.replace("\"", "&quot;");
+        if( strMthOutArgs.contains("'") ) strMthOutArgs.replace("'", "&apos;");
     /*    10 */ str += "Return=\"" + strMthRet + "\" ";
     /*    10 */ str += "OutArgs=\"" + strMthOutArgs + "\" ";
     }
     else // if( i_dir == EMethodDir::None )
     {
         QString strMthAddInfo = m_strMthAddInfo;
-        if( strMthAddInfo.contains('<') )
-        {
-            strMthAddInfo.replace("<","&lt;");
-        }
-        if( strMthAddInfo.contains('>') )
-        {
-            strMthAddInfo.replace(">","&gt;");
-        }
+        if( strMthAddInfo.contains("<") ) strMthAddInfo.replace("<", "&lt;");
+        if( strMthAddInfo.contains(">") ) strMthAddInfo.replace(">", "&gt;");
+        if( strMthAddInfo.contains("&") ) strMthAddInfo.replace("&", "&amp;");
+        if( strMthAddInfo.contains("\"") ) strMthAddInfo.replace("\"", "&quot;");
+        if( strMthAddInfo.contains("'") ) strMthAddInfo.replace("'", "&apos;");
     /*    10 */ str += "AddInfo=\"" + strMthAddInfo + "\" ";
     }
     /*     3 */ str += "/>";
@@ -368,13 +356,6 @@ CIpcTrcServer::CIpcTrcServer( const QString& i_strName, int i_iTrcDetailLevel ) 
         /* strMethod          */ "ctor",
         /* strMthInArgs       */ "" );
 
-    // If used via the dll interface the trace server might be created in another thread than
-    // the main thread. As it cannot be ensured in all cases that the thread has an own
-    // event loop the trace server will be moved to the main thread. But this implies that also
-    // the index tree is moved together with the trace server (otherwise the Ipc server will not
-    // be able to receive queued signal/slots). "moveToThread" moves the object together with its children.
-    m_pTrcAdminObjIdxTree->setParent(this);
-
     // Please note that all Ipc objects used by the trace server may only trace into the local trace file.
     // On the one hand when creating e.g. the gateway instance and the gateway would try to add or modify
     // a trace admin object in the index tree this change shold be sent to all connected trace clients.
@@ -385,13 +366,6 @@ CIpcTrcServer::CIpcTrcServer( const QString& i_strName, int i_iTrcDetailLevel ) 
 
     // The trace server must aggregate the IpcServer to avoid multiple inheritance of QObject.
     m_pIpcServer = new CServer(i_strName, true, m_pTrcMthFile, m_iTrcDetailLevel),
-
-    // If used via the dll interface the trace server might be created in another thread than
-    // the main thread. As it cannot be ensured in all cases that the thread has an own
-    // event loop the trace server will be moved to the main thread. But this implies that also
-    // the Ipc server is moved together with the trace server (otherwise the Ipc server will not
-    // be able to receive events). "moveToThread" moves the object together with its children.
-    m_pIpcServer->setParent(this);
 
     m_pMtxListTrcDataCached = new QMutex(QMutex::Recursive);
 
@@ -469,19 +443,6 @@ CIpcTrcServer::~CIpcTrcServer()
         {
         }
         m_arpTrcDataCached[idx] = nullptr;
-    }
-
-    // Please see comment in ctor concerning the "setParent" for the Ipc server.
-    // The Ipc server got to be deleted before the trace admin object pool and
-    // therefore all living trace admin objects. For this we have to reparent
-    // the Ipc server so it will not be automatically deleted as a child of this
-    // trace server by Qt.
-    try
-    {
-        //m_pIpcServer->setParent(nullptr);
-    }
-    catch(...)
-    {
     }
 
     try

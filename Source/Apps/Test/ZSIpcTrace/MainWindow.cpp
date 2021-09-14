@@ -706,7 +706,7 @@ void CMainWindow::onActDebugErrLogTriggered()
 {
     QString strDlgTitle = getMainWindowTitle() + ": Error Log";
 
-    CDlgErrLog* pDlg = dynamic_cast<CDlgErrLog*>(CDlgErrLog::GetInstance(strDlgTitle));
+    CDlgErrLog* pDlg = dynamic_cast<CDlgErrLog*>(CDlgErrLog::GetInstance("ErrLog"));
 
     if( pDlg == nullptr )
     {

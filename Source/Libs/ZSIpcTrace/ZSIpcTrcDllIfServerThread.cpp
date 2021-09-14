@@ -49,7 +49,6 @@ DllIf::CIpcTrcServerThread::CIpcTrcServerThread(
 //------------------------------------------------------------------------------
     QThread(),
     m_strServerName(i_strServerName),
-    m_pQtAppCreatedByDllIf(NULL),
     m_iTrcDetailLevel(i_iTrcDetailLevel),
     m_pTrcMthFile(nullptr)
 {
@@ -112,19 +111,13 @@ DllIf::CIpcTrcServerThread::~CIpcTrcServerThread()
 
     #endif // #ifdef _TRACE_IPCTRACEPYDLL_METHODs
 
-    try
-    {
-        CIpcTrcServer::ReleaseInstance(m_strServerName);
-    }
-    catch(...)
-    {
-    }
-
-    if( m_pQtAppCreatedByDllIf != NULL )
+    // The trace server should have been released at the end of the run method.
+    // If not (for whatever unexpected reason) the server will be released here.
+    if( CIpcTrcServer::GetInstance(m_strServerName) != nullptr )
     {
         try
         {
-            delete m_pQtAppCreatedByDllIf;
+            CIpcTrcServer::ReleaseInstance(m_strServerName);
         }
         catch(...)
         {
@@ -132,7 +125,6 @@ DllIf::CIpcTrcServerThread::~CIpcTrcServerThread()
     }
 
     //m_strServerName;
-    m_pQtAppCreatedByDllIf = nullptr;
     m_iTrcDetailLevel = 0;
     m_pTrcMthFile = nullptr;
 
@@ -258,17 +250,4 @@ void DllIf::CIpcTrcServerThread::run()
     catch(...)
     {
     }
-
-    if( m_pQtAppCreatedByDllIf != NULL )
-    {
-        try
-        {
-            delete m_pQtAppCreatedByDllIf;
-        }
-        catch(...)
-        {
-        }
-        m_pQtAppCreatedByDllIf = NULL;
-    }
-
 } // run
