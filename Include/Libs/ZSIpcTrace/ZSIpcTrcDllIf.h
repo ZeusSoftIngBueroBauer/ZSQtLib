@@ -43,6 +43,41 @@ public type definitions and constants
 #endif
 #endif
 
+#ifndef QT_VERSION_MAJOR
+#define QT_VERSION_MAJOR 4
+#endif
+
+/*
+Visual Studio version            | _MSC_VER
+---------------------------------+---------------
+Visual Studio 6.0                | 1200
+Visual Studio .NET 2002 (7.0)    | 1300
+Visual Studio .NET 2003 (7.1)    | 1310
+Visual Studio 2005 (8.0)         | 1400
+Visual Studio 2008 (9.0)         | 1500
+Visual Studio 2010 (10.0)        | 1600
+Visual Studio 2012 (11.0)        | 1700
+Visual Studio 2013 (12.0)        | 1800
+Visual Studio 2015 (14.0)        | 1900
+Visual Studio 2017 RTW (15.0)    | 1910
+Visual Studio 2017 version 15.3  | 1911
+Visual Studio 2017 version 15.5  | 1912
+Visual Studio 2017 version 15.6  | 1913
+Visual Studio 2017 version 15.7  | 1914
+Visual Studio 2017 version 15.8  | 1915
+Visual Studio 2017 version 15.9  | 1916
+Visual Studio 2019 RTW (16.0)    | 1920
+Visual Studio 2019 version 16.1  | 1921
+Visual Studio 2019 version 16.2  | 1922
+Visual Studio 2019 version 16.3  | 1923
+Visual Studio 2019 version 16.4  | 1924
+Visual Studio 2019 version 16.5  | 1925
+Visual Studio 2019 version 16.6  | 1926
+Visual Studio 2019 version 16.7  | 1927
+Visual Studio 2019 version 16.8  | 1928
+Visual Studio 2019 version 16.10 | 1929
+*/
+#ifdef _WINDOWS
 #ifndef COMPILERLIBINFIX
 #if _MSC_VER <= 1200
 #define COMPILERLIBINFIX "msvc2000"
@@ -69,6 +104,11 @@ public type definitions and constants
 #else
 #error _MSC_VER not yet supported
 #endif
+#endif
+#endif // #ifdef _WINDOWS
+
+#ifndef COMPILERLIBINFIX
+#define COMPILERLIBINFIX ""
 #endif
 
 #ifndef PLATFORMLIBINFIX
@@ -365,7 +405,7 @@ enum EBuildConfiguration
     EBuildConfigurationAutoDetect =  2
 };
 
-bool loadDll( const char* i_szCompiler = nullptr, const char* i_szPlatform = nullptr, EBuildConfiguration i_configuration = EBuildConfigurationAutoDetect, int i_iQtVersionMajor = 5 );
+bool loadDll( const char* i_szCompiler = nullptr, const char* i_szPlatform = nullptr, EBuildConfiguration i_configuration = EBuildConfigurationAutoDetect, int i_iQtVersionMajor = QT_VERSION_MAJOR );
 const char* getDllFileName();
 bool releaseDll();
 
