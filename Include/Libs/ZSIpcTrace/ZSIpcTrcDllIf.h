@@ -127,6 +127,22 @@ may result in using the software modules.
     angepasst werden. Moeglicherweise muessen Sie "StdAfx.h" vor "ZSIpcTrcDllIf.h"
     includieren und den Include Pfad fuer "ZSIpcTrcDllIf.h" korrigieren.
 
+    Falls sie eine Qt Anwendung verwenden, sollte vor der Include Anweisung fuer "ZSIpcTrcDllIf.h"
+    eine Qt-Header Datei includiert werden, um die verwendete QT_VERSION bekannt zu machen:
+
+        @code
+        #include <QtCore/qglobal.h>.
+        #include "ZSIpcTrcDllIf.h"
+        @endcode
+
+    Falls sie keine Qt Anwendung verwenden, und nicht die QT_VERSION 5 verwenden, muss QT_VERSION
+    vor includieren von "ZSIpcTrcDllIf.h" entsprechend gesetzt werden:
+
+        @code
+        #include <QtCore/qglobal.h>.
+        #include "ZSIpcTrcDllIf.h"
+        @endcode
+
     Stellen Sie sicher, dass das Source File "ZSIpcTrcDllIf.cpp" compiliert werden
     kann.
 
@@ -292,6 +308,18 @@ may result in using the software modules.
 /*******************************************************************************
 public type definitions and constants
 *******************************************************************************/
+
+#ifndef QT_VERSION_MAJOR
+#if QT_VERSION >= 0x050000
+#define QT_VERSION_MAJOR 5
+#elif QT_VERSION >= 0x040804
+#define QT_VERSION_MAJOR 4
+#endif
+#endif
+
+#ifndef QT_VERSION_MAJOR
+#define QT_VERSION_MAJOR 5
+#endif
 
 /*
 Visual Studio version            | _MSC_VER
@@ -717,7 +745,7 @@ bool loadDll(
     const char* i_szCompiler = nullptr,
     const char* i_szPlatform = nullptr,
     EBuildConfiguration i_configuration = EBuildConfigurationAutoDetect,
-    int i_iQtVersionMajor = 5 );
+    int i_iQtVersionMajor = QT_VERSION_MAJOR );
 const char* getDllFileName();
 bool releaseDll();
 
