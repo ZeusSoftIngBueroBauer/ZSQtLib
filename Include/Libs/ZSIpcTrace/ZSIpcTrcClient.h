@@ -86,7 +86,7 @@ protected: // instance methods to send admin objects to the connected server
     void sendNameSpace(
         ZS::System::MsgProtocol::TSystemMsgType i_systemMsgType,
         ZS::System::MsgProtocol::TCommand       i_cmd,
-        ZS::System::CBranchIdxTreeEntry*        i_pBranch,
+        ZS::System::CIdxTreeEntry*              i_pBranch,
         ZS::System::EEnabled                    i_enabled,
         int                                     i_iDetailLevel );
 protected: // overridables of base class CClient
@@ -95,9 +95,9 @@ protected slots: // connected to the signals of the IPC client
     void onIpcClientConnected( QObject* i_pClient );
     void onIpcClientDisconnected( QObject* i_pClient );
 protected slots: // connected to the slots of the trace admin object pool model
-    void onTrcAdminObjIdxTreeEntryChanged( ZS::System::CIdxTree* i_pIdxTree, ZS::System::CAbstractIdxTreeEntry* i_pTreeEntry );
+    void onTrcAdminObjIdxTreeEntryChanged( ZS::System::CIdxTree* i_pIdxTree, ZS::System::CIdxTreeEntry* i_pTreeEntry );
 protected: // instance methods
-    void resetTrcAdminRefCounters( ZS::System::CBranchIdxTreeEntry* i_pBranch );
+    void resetTrcAdminRefCounters( ZS::System::CIdxTreeEntry* i_pBranch );
 protected: // instance members
     STrcServerSettings    m_trcServerSettings;
     CIdxTreeTrcAdminObjs* m_pTrcAdminObjIdxTree;

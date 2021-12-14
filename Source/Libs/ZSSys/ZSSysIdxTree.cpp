@@ -52,7 +52,7 @@ public: // type definitions and constants
 
     @return Pointer to tree entry.
 */
-CAbstractIdxTreeEntry* CIdxTree::iterator::operator * () const
+CIdxTreeEntry* CIdxTree::iterator::operator * () const
 //------------------------------------------------------------------------------
 {
     return m_pTreeEntryCurr;
@@ -159,7 +159,7 @@ CIdxTree::iterator& CIdxTree::iterator::operator ++ ()
         throw CException(__FILE__, __LINE__, EResultInternalProgramError, "m_pTreeEntryCurr == nullptr");
     }
 
-    CAbstractIdxTreeEntry* pTreeEntryNew = nullptr;
+    CIdxTreeEntry* pTreeEntryNew = nullptr;
 
     if( m_traversalOrder == ETraversalOrder::Index )
     {
@@ -178,7 +178,7 @@ CIdxTree::iterator& CIdxTree::iterator::operator ++ ()
     {
         if( m_pTreeEntryCurr == m_pIdxTree->root() )
         {
-            CBranchIdxTreeEntry* pBranchCurr = m_pIdxTree->root();
+            CIdxTreeEntry* pBranchCurr = m_pIdxTree->root();
 
             if( pBranchCurr->count() > 0 )
             {
@@ -190,7 +190,7 @@ CIdxTree::iterator& CIdxTree::iterator::operator ++ ()
             if( m_pTreeEntryCurr->entryType() == EIdxTreeEntryType::Leave )
             {
                 int idxInParentBranch = m_pTreeEntryCurr->indexInParentBranch();
-                CBranchIdxTreeEntry* pBranchParent = m_pTreeEntryCurr->parentBranch();
+                CIdxTreeEntry* pBranchParent = m_pTreeEntryCurr->parentBranch();
 
                 if( idxInParentBranch >= (pBranchParent->count()-1) )
                 {
@@ -211,7 +211,7 @@ CIdxTree::iterator& CIdxTree::iterator::operator ++ ()
             }
             else // if( m_pTreeEntryCurr->entryType() == EIdxTreeEntryType::Branch )
             {
-                CBranchIdxTreeEntry* pBranchCurr = dynamic_cast<CBranchIdxTreeEntry*>(m_pTreeEntryCurr);
+                CIdxTreeEntry* pBranchCurr = m_pTreeEntryCurr;
 
                 if( pBranchCurr->count() > 0 )
                 {
@@ -220,7 +220,7 @@ CIdxTree::iterator& CIdxTree::iterator::operator ++ ()
                 else
                 {
                     int idxInParentBranch = pBranchCurr->indexInParentBranch();
-                    CBranchIdxTreeEntry* pBranchParent = pBranchCurr->parentBranch();
+                    CIdxTreeEntry* pBranchParent = pBranchCurr->parentBranch();
 
                     while( pBranchParent != nullptr && idxInParentBranch >= (pBranchParent->count()-1) )
                     {
@@ -272,12 +272,12 @@ public: // ctors and dtor
            trace admin objects cannot be used for controlling the trace detail level of the index tree.
 */
 CIdxTree::CIdxTree(
-    const QString&     i_strObjName,
-    CRootIdxTreeEntry* i_pRootTreeEntry,
-    const QString&     i_strNodeSeparator,
-    bool               i_bCreateMutex,
-    QObject*           i_pObjParent,
-    int                i_iTrcDetailLevel ) :
+    const QString& i_strObjName,
+    CIdxTreeEntry* i_pRootTreeEntry,
+    const QString& i_strNodeSeparator,
+    bool           i_bCreateMutex,
+    QObject*       i_pObjParent,
+    int            i_iTrcDetailLevel ) :
 //------------------------------------------------------------------------------
     QObject(i_pObjParent),
     m_strNodeSeparator(i_strNodeSeparator),
@@ -316,7 +316,7 @@ CIdxTree::CIdxTree(
 
     if( m_pRoot == nullptr )
     {
-        m_pRoot = new CRootIdxTreeEntry(i_strObjName);
+        m_pRoot = new CIdxTreeEntry(EIdxTreeEntryType::Root, i_strObjName);
     }
 
     // The root entry will neither be added to the list nor to the map of tree entries.
@@ -747,7 +747,7 @@ public: // overridables (createBranch and createLeave must be overridden to crea
 
     @return Newly created branch node.
 */
-CBranchIdxTreeEntry* CIdxTree::createBranch( const QString& i_strName ) const
+CIdxTreeEntry* CIdxTree::createBranch( const QString& i_strName ) const
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(m_pMtx);
@@ -769,7 +769,7 @@ CBranchIdxTreeEntry* CIdxTree::createBranch( const QString& i_strName ) const
         /* strMethod          */ "createBranch",
         /* strMethodInArgs    */ strMthInArgs );
 
-    CBranchIdxTreeEntry* pBranch = new CBranchIdxTreeEntry(i_strName);
+    CIdxTreeEntry* pBranch = new CIdxTreeEntry(EIdxTreeEntryType::Branch, i_strName);
 
     if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
     {
@@ -790,7 +790,7 @@ CBranchIdxTreeEntry* CIdxTree::createBranch( const QString& i_strName ) const
 
     @return Newly created leave node.
 */
-CLeaveIdxTreeEntry* CIdxTree::createLeave( const QString& i_strName ) const
+CIdxTreeEntry* CIdxTree::createLeave( const QString& i_strName ) const
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(m_pMtx);
@@ -812,7 +812,7 @@ CLeaveIdxTreeEntry* CIdxTree::createLeave( const QString& i_strName ) const
         /* strMethod          */ "createLeave",
         /* strMethodInArgs    */ strMthInArgs );
 
-    CLeaveIdxTreeEntry* pLeave = new CLeaveIdxTreeEntry(i_strName);
+    CIdxTreeEntry* pLeave = new CIdxTreeEntry(EIdxTreeEntryType::Leave, i_strName);
 
     if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
     {
@@ -836,7 +836,7 @@ CLeaveIdxTreeEntry* CIdxTree::createLeave( const QString& i_strName ) const
 
     @return Newly created node.
 */
-CAbstractIdxTreeEntry* CIdxTree::createTreeEntry( EIdxTreeEntryType i_entryType, const QString& i_strName ) const
+CIdxTreeEntry* CIdxTree::createTreeEntry( EIdxTreeEntryType i_entryType, const QString& i_strName ) const
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(m_pMtx);
@@ -859,10 +859,18 @@ CAbstractIdxTreeEntry* CIdxTree::createTreeEntry( EIdxTreeEntryType i_entryType,
         /* strMethod          */ "createTreeEntry",
         /* strMethodInArgs    */ strMthInArgs );
 
-    CAbstractIdxTreeEntry* pTreeEntry = nullptr;
+    CIdxTreeEntry* pTreeEntry = nullptr;
 
     if( i_entryType == EIdxTreeEntryType::Root )
     {
+        QString strMth = "createTreeEntry";
+
+        SErrResultInfo errResultInfo(nameSpace(), className(), objectName(), strMth);
+
+        errResultInfo.setSeverity(EResultSeverityError);
+        errResultInfo.setResult(EResultArgOutOfRange);
+        errResultInfo.setAddErrInfoDscr("Root entries cannot be created by this method");
+        throw CException(__FILE__, __LINE__, errResultInfo);
     }
     else if( i_entryType == EIdxTreeEntryType::Branch )
     {
@@ -912,10 +920,10 @@ int CIdxTree::treeEntriesVectorSize() const
 
     @return Pointer to node entry (may be nullptr).
 */
-CAbstractIdxTreeEntry* CIdxTree::getEntry( int i_idxObj ) const
+CIdxTreeEntry* CIdxTree::getEntry( int i_idxObj ) const
 //------------------------------------------------------------------------------
 {
-    CAbstractIdxTreeEntry* pTreeEntry = nullptr;
+    CIdxTreeEntry* pTreeEntry = nullptr;
 
     QMutexLocker mtxLocker(m_pMtx);
 
@@ -941,7 +949,7 @@ public: // instance methods
 
     @return Pointer to branch entry (nullptr if not found).
 */
-CBranchIdxTreeEntry* CIdxTree::findBranch( const QString& i_strPath ) const
+CIdxTreeEntry* CIdxTree::findBranch( const QString& i_strPath ) const
 //------------------------------------------------------------------------------
 {
     QString strEntryType = idxTreeEntryType2Str(EIdxTreeEntryType::Branch, EEnumEntryAliasStrSymbol);
@@ -954,7 +962,7 @@ CBranchIdxTreeEntry* CIdxTree::findBranch( const QString& i_strPath ) const
 
     QMutexLocker mtxLocker(m_pMtx);
 
-    return dynamic_cast<CBranchIdxTreeEntry*>(m_mappTreeEntries.value(strKeyInTree,nullptr));
+    return m_mappTreeEntries.value(strKeyInTree, nullptr);
 
 } // findBranch
 
@@ -967,7 +975,7 @@ CBranchIdxTreeEntry* CIdxTree::findBranch( const QString& i_strPath ) const
 
     @return Pointer to branch entry (nullptr if not found).
 */
-CBranchIdxTreeEntry* CIdxTree::findBranch( const QString& i_strParentPath, const QString& i_strBranchName ) const
+CIdxTreeEntry* CIdxTree::findBranch( const QString& i_strParentPath, const QString& i_strBranchName ) const
 //------------------------------------------------------------------------------
 {
     QString strEntryType = idxTreeEntryType2Str(EIdxTreeEntryType::Branch, EEnumEntryAliasStrSymbol);
@@ -988,7 +996,7 @@ CBranchIdxTreeEntry* CIdxTree::findBranch( const QString& i_strParentPath, const
 
     QMutexLocker mtxLocker(m_pMtx);
 
-    return dynamic_cast<CBranchIdxTreeEntry*>(m_mappTreeEntries.value(strKeyInTree,nullptr));
+    return m_mappTreeEntries.value(strKeyInTree, nullptr);
 
 } // findBranch
 
@@ -1000,7 +1008,7 @@ CBranchIdxTreeEntry* CIdxTree::findBranch( const QString& i_strParentPath, const
 
     @return Pointer to leave entry (nullptr if not found).
 */
-CLeaveIdxTreeEntry* CIdxTree::findLeave( const QString& i_strPath ) const
+CIdxTreeEntry* CIdxTree::findLeave( const QString& i_strPath ) const
 //------------------------------------------------------------------------------
 {
     QString strEntryType = idxTreeEntryType2Str(EIdxTreeEntryType::Leave, EEnumEntryAliasStrSymbol);
@@ -1013,7 +1021,7 @@ CLeaveIdxTreeEntry* CIdxTree::findLeave( const QString& i_strPath ) const
 
     QMutexLocker mtxLocker(m_pMtx);
 
-    return dynamic_cast<CLeaveIdxTreeEntry*>(m_mappTreeEntries.value(strKeyInTree,nullptr));
+    return m_mappTreeEntries.value(strKeyInTree, nullptr);
 
 } // findLeave
 
@@ -1026,7 +1034,7 @@ CLeaveIdxTreeEntry* CIdxTree::findLeave( const QString& i_strPath ) const
 
     @return Pointer to branch entry (nullptr if not found).
 */
-CLeaveIdxTreeEntry* CIdxTree::findLeave( const QString& i_strParentPath, const QString& i_strLeaveName ) const
+CIdxTreeEntry* CIdxTree::findLeave( const QString& i_strParentPath, const QString& i_strLeaveName ) const
 //------------------------------------------------------------------------------
 {
     QString strEntryType = idxTreeEntryType2Str(EIdxTreeEntryType::Leave, EEnumEntryAliasStrSymbol);
@@ -1047,7 +1055,7 @@ CLeaveIdxTreeEntry* CIdxTree::findLeave( const QString& i_strParentPath, const Q
 
     QMutexLocker mtxLocker(m_pMtx);
 
-    return dynamic_cast<CLeaveIdxTreeEntry*>(m_mappTreeEntries.value(strKeyInTree,nullptr));
+    return m_mappTreeEntries.value(strKeyInTree, nullptr);
 
 } // findLeave
 
@@ -1059,7 +1067,7 @@ CLeaveIdxTreeEntry* CIdxTree::findLeave( const QString& i_strParentPath, const Q
 
     @return Pointer to tree entry (nullptr if not found).
 */
-CAbstractIdxTreeEntry* CIdxTree::findEntry( const QString& i_strKeyInTree ) const
+CIdxTreeEntry* CIdxTree::findEntry( const QString& i_strKeyInTree ) const
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(m_pMtx);
@@ -1069,258 +1077,6 @@ CAbstractIdxTreeEntry* CIdxTree::findEntry( const QString& i_strKeyInTree ) cons
 /*==============================================================================
 public: // instance methods
 ==============================================================================*/
-
-//------------------------------------------------------------------------------
-/*! Checks whether the given branch can be added as a child to the given target branch.
-
-    The branch entry may only be added as a child to the target path if not
-    already another branch with the same name exists below the target path.
-
-    @param i_pBranch [in] Pointer to branch entry.
-    @param i_strTargetPath [in] Path to the parent branch to which the branch should be added.
-           The path may already start with the branch node type ("B:").
-
-    @return Error result struct with additional information.
-            - EResultSuccess .. The entry may be added.
-            - EResultObjNotInList (Severity: Error) .. Target path not found.
-            - EResultObjAlreadyInList (Severtiy: Error) .. There already exists
-              a branch child with the same name below the target path.
-
-    @see CBranchIdxTreeEntry::add
-*/
-SErrResultInfo CIdxTree::canAdd( CBranchIdxTreeEntry* i_pBranch, const QString& i_strTargetPath ) const
-//------------------------------------------------------------------------------
-{
-    QMutexLocker mtxLocker(m_pMtx);
-
-    QString strMthInArgs;
-
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
-    {
-        strMthInArgs  = "Branch: " + QString(i_pBranch == nullptr ? "nullptr" : i_pBranch->name());
-        strMthInArgs += ", TargetPath: " + i_strTargetPath;
-    }
-
-    CMethodTracer mthTracer(
-        /* pTrcServer         */ CTrcServer::GetInstance(),
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
-        /* strObjName         */ objectName(),
-        /* strMethod          */ "canAdd",
-        /* strMethodInArgs    */ strMthInArgs );
-
-    QString strMth = "add";
-
-    SErrResultInfo errResultInfo(nameSpace(), className(), objectName(), strMth);
-
-    if( i_pBranch == nullptr )
-    {
-        errResultInfo.setSeverity(EResultSeverityError);
-        errResultInfo.setResult(EResultArgOutOfRange);
-        errResultInfo.setAddErrInfoDscr("i_pLeave == nullptr");
-        throw CException(__FILE__, __LINE__, errResultInfo);
-    }
-
-    CAbstractIdxTreeEntry* pTreeEntry = i_pBranch;
-
-    CBranchIdxTreeEntry* pTargetBranch = findBranch(i_strTargetPath);
-
-    if( pTargetBranch == nullptr )
-    {
-        errResultInfo.setSeverity(EResultSeverityError);
-        errResultInfo.setResult(EResultObjNotInList);
-        errResultInfo.setAddErrInfoDscr(i_strTargetPath);
-    }
-    else // if( pTargetBranch != nullptr )
-    {
-        int idxInTargetBranch = pTargetBranch->indexOf(pTreeEntry->keyInParentBranch());
-
-        if( idxInTargetBranch >= 0 )
-        {
-            QString strAddErrInfo;
-            strAddErrInfo  = pTreeEntry->keyInParentBranch();
-            strAddErrInfo += " already belongs to branch " + pTargetBranch->keyInTree();
-            errResultInfo.setSeverity(EResultSeverityError);
-            errResultInfo.setResult(EResultObjAlreadyInList);
-            errResultInfo.setAddErrInfoDscr(strAddErrInfo);
-        }
-    } // if( pTargetBranch != nullptr )
-
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
-    {
-        int iErrResultInfoDetailLevel = 0;
-        if( m_iTrcDetailLevel >= ETraceDetailLevelVerbose ) iErrResultInfoDetailLevel = 2;
-        else if( m_iTrcDetailLevel >= ETraceDetailLevelRuntimeInfo ) iErrResultInfoDetailLevel = 1;
-        mthTracer.setMethodReturn(errResultInfo.toString(iErrResultInfoDetailLevel));
-    }
-
-    return errResultInfo;
-
-} // canAdd
-
-//------------------------------------------------------------------------------
-/*! Checks whether the given branch entry can be added as a child to the given target branch.
-
-    The branch entry may only be added as a child to the target path if not
-    already another branch with the same name exists below the target path.
-
-    @param i_pBranch [in] Pointer to branch entry.
-    @param i_pTargetBranch [in] Pointer to parent branch to which the branch should be added.
-
-    @return Error result struct with additional information.
-            - EResultSuccess .. The entry may be added.
-            - EResultObjNotInList (Severity: Error) .. Target path not found.
-            - EResultObjAlreadyInList (Severtiy: Error) .. There already exists
-              a branch child with the same name below the target path.
-
-    @see CBranchIdxTreeEntry::add
-*/
-SErrResultInfo CIdxTree::canAdd( CBranchIdxTreeEntry* i_pBranch, CBranchIdxTreeEntry* i_pTargetBranch ) const
-//------------------------------------------------------------------------------
-{
-    QMutexLocker mtxLocker(m_pMtx);
-
-    QString strMthInArgs;
-
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
-    {
-        strMthInArgs  = "Branch: " + QString(i_pBranch == nullptr ? "nullptr" : i_pBranch->name());
-        strMthInArgs += ", TargetBranch: " + QString(i_pTargetBranch == nullptr ? "nullptr" : i_pTargetBranch->keyInTree());
-    }
-
-    CMethodTracer mthTracer(
-        /* pTrcServer         */ CTrcServer::GetInstance(),
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
-        /* strObjName         */ objectName(),
-        /* strMethod          */ "canAdd",
-        /* strMethodInArgs    */ strMthInArgs );
-
-    SErrResultInfo errResultInfo = canAdd(dynamic_cast<CAbstractIdxTreeEntry*>(i_pBranch), i_pTargetBranch);
-
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
-    {
-        int iErrResultInfoDetailLevel = 0;
-        if( m_iTrcDetailLevel >= ETraceDetailLevelVerbose ) iErrResultInfoDetailLevel = 2;
-        else if( m_iTrcDetailLevel >= ETraceDetailLevelRuntimeInfo ) iErrResultInfoDetailLevel = 1;
-        mthTracer.setMethodReturn(errResultInfo.toString(iErrResultInfoDetailLevel));
-    }
-
-    return errResultInfo;
-
-} // canAdd
-
-//------------------------------------------------------------------------------
-/*! Checks whether the given leave can be added as a child to the given target branch.
-
-    The branch entry may only be added as a child to the target path if not
-    already another leave with the same name exists below the target path.
-
-    @param i_pLeave [in] Pointer to leave entry.
-    @param i_strTargetPath [in] Path to the parent branch to which the leave should be added.
-           The path may already start with the branch node type ("L:").
-
-    @return Error result struct with additional information.
-            - EResultObjNotInList (Severity: Error) .. Target path not found.
-            - EResultObjAlreadyInList (Severtiy: Error) .. There already exists
-              a leave child with the same name below the target path.
-
-    @see CBranchIdxTreeEntry::add
-*/
-SErrResultInfo CIdxTree::canAdd( CLeaveIdxTreeEntry* i_pLeave, const QString& i_strTargetPath ) const
-//------------------------------------------------------------------------------
-{
-    QMutexLocker mtxLocker(m_pMtx);
-
-    QString strMthInArgs;
-
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
-    {
-        strMthInArgs  = "Leave: " + QString(i_pLeave == nullptr ? "nullptr" : i_pLeave->name());
-        strMthInArgs += ", TargetPath: " + i_strTargetPath;
-    }
-
-    CMethodTracer mthTracer(
-        /* pTrcServer         */ CTrcServer::GetInstance(),
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
-        /* strObjName         */ objectName(),
-        /* strMethod          */ "canAdd",
-        /* strMethodInArgs    */ strMthInArgs );
-
-    SErrResultInfo errResultInfo = canAdd(dynamic_cast<CAbstractIdxTreeEntry*>(i_pLeave), i_strTargetPath);
-
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
-    {
-        int iErrResultInfoDetailLevel = 0;
-        if( m_iTrcDetailLevel >= ETraceDetailLevelVerbose ) iErrResultInfoDetailLevel = 2;
-        else if( m_iTrcDetailLevel >= ETraceDetailLevelRuntimeInfo ) iErrResultInfoDetailLevel = 1;
-        mthTracer.setMethodReturn(errResultInfo.toString(iErrResultInfoDetailLevel));
-    }
-
-    return errResultInfo;
-
-} // canAdd
-
-//------------------------------------------------------------------------------
-/*! Checks whether the given leave can be added as a child to the given target branch.
-
-    The branch entry may only be added as a child to the target path if not
-    already another leave with the same name exists below the target path.
-
-    @param i_pLeave [in] Pointer to leave entry.
-    @param i_pTargetBranch [in] Pointer to parent branch to which the leave should be added.
-
-    @return Error result struct with additional information.
-            - EResultSuccess .. The entry may be added.
-            - EResultObjNotInList (Severity: Error) .. Target path not found.
-            - EResultObjAlreadyInList (Severtiy: Error) .. There already exists
-              a leave child with the same name below the target path.
-
-    @see CBranchIdxTreeEntry::add
-*/
-SErrResultInfo CIdxTree::canAdd( CLeaveIdxTreeEntry* i_pLeave, CBranchIdxTreeEntry* i_pTargetBranch ) const
-//------------------------------------------------------------------------------
-{
-    QMutexLocker mtxLocker(m_pMtx);
-
-    QString strMthInArgs;
-
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
-    {
-        strMthInArgs  = "Leave: " + QString(i_pLeave == nullptr ? "nullptr" : i_pLeave->name());
-        strMthInArgs += ", TargetBranch: " + QString(i_pTargetBranch == nullptr ? "nullptr" : i_pTargetBranch->keyInTree());
-    }
-
-    CMethodTracer mthTracer(
-        /* pTrcServer         */ CTrcServer::GetInstance(),
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
-        /* strObjName         */ objectName(),
-        /* strMethod          */ "canAdd",
-        /* strMethodInArgs    */ strMthInArgs );
-
-    SErrResultInfo errResultInfo = canAdd(dynamic_cast<CAbstractIdxTreeEntry*>(i_pLeave), i_pTargetBranch);
-
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
-    {
-        int iErrResultInfoDetailLevel = 0;
-        if( m_iTrcDetailLevel >= ETraceDetailLevelVerbose ) iErrResultInfoDetailLevel = 2;
-        else if( m_iTrcDetailLevel >= ETraceDetailLevelRuntimeInfo ) iErrResultInfoDetailLevel = 1;
-        mthTracer.setMethodReturn(errResultInfo.toString(iErrResultInfoDetailLevel));
-    }
-
-    return errResultInfo;
-
-} // canAdd
 
 //------------------------------------------------------------------------------
 /*! Checks whether the given tree entry can be added as a child to the given target branch.
@@ -1338,9 +1094,9 @@ SErrResultInfo CIdxTree::canAdd( CLeaveIdxTreeEntry* i_pLeave, CBranchIdxTreeEnt
             - EResultObjAlreadyInList (Severtiy: Error) .. There already exists
               a child with the same type and name below the target path.
 
-    @see CBranchIdxTreeEntry::add
+    @see CIdxTreeEntry::add
 */
-SErrResultInfo CIdxTree::canAdd( CAbstractIdxTreeEntry* i_pTreeEntry, const QString& i_strTargetPath ) const
+SErrResultInfo CIdxTree::canAdd( CIdxTreeEntry* i_pTreeEntry, const QString& i_strTargetPath ) const
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -1367,7 +1123,7 @@ SErrResultInfo CIdxTree::canAdd( CAbstractIdxTreeEntry* i_pTreeEntry, const QStr
 
     QMutexLocker mtxLocker(m_pMtx);
 
-    CBranchIdxTreeEntry* pTargetBranch = m_pRoot;
+    CIdxTreeEntry* pTargetBranch = m_pRoot;
 
     if( !i_strTargetPath.isEmpty() )
     {
@@ -1406,6 +1162,7 @@ SErrResultInfo CIdxTree::canAdd( CAbstractIdxTreeEntry* i_pTreeEntry, const QStr
 
     @param i_pTreeEntry [in] Pointer to tree entry.
     @param i_pTargetBranch [in] Pointer to parent branch to which the entry should be added.
+                                If nullptr is passed the entry will be added to the root.
 
     @return Error result struct with additional information.
             - EResultSuccess .. The entry may be added.
@@ -1413,9 +1170,9 @@ SErrResultInfo CIdxTree::canAdd( CAbstractIdxTreeEntry* i_pTreeEntry, const QStr
             - EResultObjAlreadyInList (Severtiy: Error) .. There already exists
               a child with the same type and name below the target path.
 
-    @see CBranchIdxTreeEntry::add
+    @see CIdxTreeEntry::add
 */
-SErrResultInfo CIdxTree::canAdd( CAbstractIdxTreeEntry* i_pTreeEntry, CBranchIdxTreeEntry* i_pTargetBranch ) const
+SErrResultInfo CIdxTree::canAdd( CIdxTreeEntry* i_pTreeEntry, CIdxTreeEntry* i_pTargetBranch ) const
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -1450,15 +1207,14 @@ SErrResultInfo CIdxTree::canAdd( CAbstractIdxTreeEntry* i_pTreeEntry, CBranchIdx
         throw CException(__FILE__, __LINE__, errResultInfo);
     }
 
-    if( i_pTargetBranch == nullptr )
+    CIdxTreeEntry* pTargetBranch = i_pTargetBranch;
+
+    if( pTargetBranch == nullptr )
     {
-        errResultInfo.setSeverity(EResultSeverityError);
-        errResultInfo.setResult(EResultArgOutOfRange);
-        errResultInfo.setAddErrInfoDscr("i_pTargetBranch == nullptr");
-        throw CException(__FILE__, __LINE__, errResultInfo);
+        pTargetBranch = m_pRoot;
     }
 
-    int idxInTargetBranch = i_pTargetBranch->indexOf(i_pTreeEntry);
+    int idxInTargetBranch = pTargetBranch->indexOf(i_pTreeEntry);
 
     if( idxInTargetBranch >= 0 )
     {
@@ -1474,9 +1230,9 @@ SErrResultInfo CIdxTree::canAdd( CAbstractIdxTreeEntry* i_pTreeEntry, CBranchIdx
 
         strKeyInTree = strEntryType + ":";
 
-        if( i_pTargetBranch != m_pRoot )
+        if( pTargetBranch != m_pRoot )
         {
-            strTargetPath = i_pTargetBranch->path();
+            strTargetPath = pTargetBranch->path();
         }
         if( !strTargetPath.isEmpty() )
         {
@@ -1514,236 +1270,6 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-/*! Adds the given branch entry as a child of the given target branch to the index tree.
-
-    If there is a free index in the tree's list of tree entries this index will be used.
-    If no free index is found the entry will be appended at the end of the list.
-
-    The following members of the given child entry will be modified:
-
-    - The reference to the tree will be set at the tree entry.
-    - The unique key of the entry within the tree will be set at the entry.
-    - The index of the entry in the trees list of entry will be set at the entry.
-
-    @param i_pBranch [in] Pointer to tree entry to be added as a child.
-    @param i_strTargetPath [in] Path of the target branch the entry should be added as a child.
-           The path may already start with the branch node type ("B:").
-
-    @return Index of the tree entry.
-
-    @note Throws a critical exception
-          - with Result = ObjAlreadyInList if a child with the same name and
-                          type already belongs to the branch.
-
-    @see CBranchIdxTreeEntry::add
-*/
-int CIdxTree::add( CBranchIdxTreeEntry* i_pBranch, const QString& i_strTargetPath )
-//------------------------------------------------------------------------------
-{
-    QMutexLocker mtxLocker(m_pMtx);
-
-    QString strMthInArgs;
-
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
-    {
-        strMthInArgs  = "Branch: " + QString(i_pBranch == nullptr ? "nullptr" : i_pBranch->name());
-        strMthInArgs += ", TargetPath: " + i_strTargetPath;
-    }
-
-    CMethodTracer mthTracer(
-        /* pTrcServer         */ CTrcServer::GetInstance(),
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
-        /* strObjName         */ objectName(),
-        /* strMethod          */ "add",
-        /* strMethodInArgs    */ strMthInArgs );
-
-    int idxInTree = add(dynamic_cast<CAbstractIdxTreeEntry*>(i_pBranch), i_strTargetPath);
-
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
-    {
-        mthTracer.setMethodReturn(QString::number(idxInTree));
-    }
-
-    return idxInTree;
-
-} // add
-
-//------------------------------------------------------------------------------
-/*! Adds the given branch entry as a child of the given target branch to the index tree.
-
-    If there is a free index in the tree's list of tree entries this index will be used.
-    If no free index is found the entry will be appended at the end of the list.
-
-    The following members of the given child entry will be modified:
-
-    - The reference to the tree will be set at the tree entry.
-    - The unique key of the entry within the tree will be set at the entry.
-    - The index of the entry in the trees list of entry will be set at the entry.
-
-    @param i_pBranch [in] Pointer to tree entry to be added as a child.
-    @param i_pTargetBranch [in] Pointer to target branch the entry should be added as a child.
-
-    @return Index of the tree entry.
-
-    @note Throws a critical exception
-          - with Result = ObjAlreadyInList if a child with the same name and
-                          type already belongs to the branch.
-
-    @see CBranchIdxTreeEntry::add
-*/
-int CIdxTree::add( CBranchIdxTreeEntry* i_pBranch, CBranchIdxTreeEntry* i_pTargetBranch )
-//------------------------------------------------------------------------------
-{
-    QMutexLocker mtxLocker(m_pMtx);
-
-    QString strMthInArgs;
-
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
-    {
-        strMthInArgs  = "Branch: " + QString(i_pBranch == nullptr ? "nullptr" : i_pBranch->name());
-        strMthInArgs += ", TargetBranch: " + QString(i_pTargetBranch == nullptr ? "nullptr" : i_pTargetBranch->keyInTree());
-    }
-
-    CMethodTracer mthTracer(
-        /* pTrcServer         */ CTrcServer::GetInstance(),
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
-        /* strObjName         */ objectName(),
-        /* strMethod          */ "add",
-        /* strMethodInArgs    */ strMthInArgs );
-
-    int idxInTree = add(dynamic_cast<CAbstractIdxTreeEntry*>(i_pBranch), i_pTargetBranch);
-
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
-    {
-        mthTracer.setMethodReturn(QString::number(idxInTree));
-    }
-
-    return idxInTree;
-
-} // add
-
-//------------------------------------------------------------------------------
-/*! Adds the given leave entry as a child of the given target branch to the index tree.
-
-    If there is a free index in the list of tree entries this index will be used.
-    If no free index is found the entry will be appended at the end of the list.
-
-    The following members of the given child entry will be modified:
-
-    - The reference to the tree will be set at the tree entry.
-    - The unique key of the entry within the tree will be set at the entry.
-    - The index of the entry in the trees list of entry will be set at the entry.
-
-    @param i_pLeave [in] Pointer to tree entry to be added as a child.
-    @param i_strTargetPath [in] Path of the target branch the entry should be added as a child.
-           The path may already start with the branch node type ("B:").
-
-    @return Index of the tree entry.
-
-    @note Throws a critical exception
-          - with Result = ObjAlreadyInList if a child with the same name and
-                          type already belongs to the branch.
-
-    @see CBranchIdxTreeEntry::add
-*/
-int CIdxTree::add( CLeaveIdxTreeEntry* i_pLeave, const QString& i_strTargetPath )
-//------------------------------------------------------------------------------
-{
-    QMutexLocker mtxLocker(m_pMtx);
-
-    QString strMthInArgs;
-
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
-    {
-        strMthInArgs  = "Leave: " + QString(i_pLeave == nullptr ? "nullptr" : i_pLeave->name());
-        strMthInArgs += ", TargetPath: " + i_strTargetPath;
-    }
-
-    CMethodTracer mthTracer(
-        /* pTrcServer         */ CTrcServer::GetInstance(),
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
-        /* strObjName         */ objectName(),
-        /* strMethod          */ "add",
-        /* strMethodInArgs    */ strMthInArgs );
-
-    int idxInTree = add(dynamic_cast<CAbstractIdxTreeEntry*>(i_pLeave), i_strTargetPath);
-
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
-    {
-        mthTracer.setMethodReturn(QString::number(idxInTree));
-    }
-
-    return idxInTree;
-
-} // add
-
-//------------------------------------------------------------------------------
-/*! Adds the given leave entry as a child of the given target branch to the index tree.
-
-    If there is a free index in the list of tree entries this index will be used.
-    If no free index is found the entry will be appended at the end of the list.
-
-    The following members of the given child entry will be modified:
-
-    - The reference to the tree will be set at the tree entry.
-    - The unique key of the entry within the tree will be set at the entry.
-    - The index of the entry in the trees list of entry will be set at the entry.
-
-    @param i_pLeave [in] Pointer to tree entry to be added as a child.
-    @param i_pTargetBranch [in] Pointer to target branch the entry should be added as a child.
-
-    @return Index of the tree entry.
-
-    @note Throws a critical exception
-          - with Result = ObjAlreadyInList if a child with the same name and
-                          type already belongs to the branch.
-
-    @see CBranchIdxTreeEntry::add
-*/
-int CIdxTree::add( CLeaveIdxTreeEntry* i_pLeave, CBranchIdxTreeEntry* i_pTargetBranch )
-//------------------------------------------------------------------------------
-{
-    QMutexLocker mtxLocker(m_pMtx);
-
-    QString strMthInArgs;
-
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
-    {
-        strMthInArgs  = "Leave: " + QString(i_pLeave == nullptr ? "nullptr" : i_pLeave->name());
-        strMthInArgs += ", TargetBranch: " + QString(i_pTargetBranch == nullptr ? "nullptr" : i_pTargetBranch->keyInTree());
-    }
-
-    CMethodTracer mthTracer(
-        /* pTrcServer         */ CTrcServer::GetInstance(),
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
-        /* strObjName         */ objectName(),
-        /* strMethod          */ "add",
-        /* strMethodInArgs    */ strMthInArgs );
-
-    int idxInTree = add(dynamic_cast<CAbstractIdxTreeEntry*>(i_pLeave), i_pTargetBranch);
-
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
-    {
-        mthTracer.setMethodReturn(QString::number(idxInTree));
-    }
-
-    return idxInTree;
-
-} // add
-
-//------------------------------------------------------------------------------
 /*! Adds the given tree entry as a child of the given target branch to the index tree.
 
     If there is a free index in the list of tree entries this index will be used.
@@ -1765,9 +1291,9 @@ int CIdxTree::add( CLeaveIdxTreeEntry* i_pLeave, CBranchIdxTreeEntry* i_pTargetB
           - with Result = ObjAlreadyInList if a child with the same name and
                           type already belongs to the branch.
 
-    @see CBranchIdxTreeEntry::add
+    @see CIdxTreeEntry::add
 */
-int CIdxTree::add( CAbstractIdxTreeEntry* i_pTreeEntry, const QString& i_strTargetPath )
+int CIdxTree::add( CIdxTreeEntry* i_pTreeEntry, const QString& i_strTargetPath )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -1790,7 +1316,7 @@ int CIdxTree::add( CAbstractIdxTreeEntry* i_pTreeEntry, const QString& i_strTarg
 
     QMutexLocker mtxLocker(m_pMtx);
 
-    CBranchIdxTreeEntry* pTargetBranch = m_pRoot;
+    CIdxTreeEntry* pTargetBranch = m_pRoot;
 
     if( !i_strTargetPath.isEmpty() )
     {
@@ -1801,8 +1327,9 @@ int CIdxTree::add( CAbstractIdxTreeEntry* i_pTreeEntry, const QString& i_strTarg
             QStringList strlstBranches = i_strTargetPath.split(m_strNodeSeparator, QtSkipEmptyParts);
 
             // Please note that the name of the root entry is not included in the TargetPath of the tree entries.
-            CBranchIdxTreeEntry* pTargetBranchPrev = m_pRoot;
-            QString              strTargetPathPrev;
+            CIdxTreeEntry* pTargetBranchPrev = m_pRoot;
+
+            QString strTargetPathPrev;
 
             for( QString strBranchName : strlstBranches )
             {
@@ -1844,6 +1371,7 @@ int CIdxTree::add( CAbstractIdxTreeEntry* i_pTreeEntry, const QString& i_strTarg
 
     @param i_pTreeEntry [in] Pointer to tree entry to be added as a child.
     @param i_pTargetBranch [in] Pointer to target branch the entry should be added as a child.
+                                If nullptr is passed the entry will be added to the root.
 
     @return Index of the tree entry.
 
@@ -1851,9 +1379,9 @@ int CIdxTree::add( CAbstractIdxTreeEntry* i_pTreeEntry, const QString& i_strTarg
           - with Result = ObjAlreadyInList if a child with the same name and
                           type already belongs to the branch.
 
-    @see CBranchIdxTreeEntry::add
+    @see CIdxTreeEntry::add
 */
-int CIdxTree::add( CAbstractIdxTreeEntry* i_pTreeEntry, CBranchIdxTreeEntry* i_pTargetBranch )
+int CIdxTree::add( CIdxTreeEntry* i_pTreeEntry, CIdxTreeEntry* i_pTargetBranch )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -1880,14 +1408,17 @@ int CIdxTree::add( CAbstractIdxTreeEntry* i_pTreeEntry, CBranchIdxTreeEntry* i_p
     {
         throw CException(__FILE__, __LINE__, EResultInternalProgramError);
     }
-    if( i_pTargetBranch == nullptr )
+
+    CIdxTreeEntry* pTargetBranch = i_pTargetBranch;
+
+    if( pTargetBranch == nullptr )
     {
-        throw CException(__FILE__, __LINE__, EResultInternalProgramError);
+        pTargetBranch = m_pRoot;
     }
 
     int idxInTree = -1;
 
-    int idxInTargetBranch = i_pTargetBranch->add(i_pTreeEntry);
+    int idxInTargetBranch = pTargetBranch->add(i_pTreeEntry);
 
     if( idxInTargetBranch >= 0 )
     {
@@ -1897,9 +1428,9 @@ int CIdxTree::add( CAbstractIdxTreeEntry* i_pTreeEntry, CBranchIdxTreeEntry* i_p
 
         strKeyInTree = strEntryType + ":";
 
-        if( i_pTargetBranch != m_pRoot )
+        if( pTargetBranch != m_pRoot )
         {
-            strTargetPath = i_pTargetBranch->path();
+            strTargetPath = pTargetBranch->path();
         }
         if( !strTargetPath.isEmpty() )
         {
@@ -1957,350 +1488,6 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-/*! Checks whether the given branch can be inserted as a child to the given
-    target branch at the given index.
-
-    The branch entry may only be added as a child to the target path if not
-    already another branch with the same name exists below the target path.
-
-    If the optional parameter i_idxInTree is greator or equal to zero it will
-    also be checked whether this index is free.
-
-    @param i_pBranch [in] Pointer to branch entry.
-    @param i_strTargetPath [in] Path of the parent branch to which the branch should be added.
-           The path may already start with the branch node type ("B:").
-    @param i_idxInTargetBranch [in] Index in the list of the target branch's
-           child entries where the child should be inserted.
-    @param i_idxInTree [in] If greater or equal to zero this argument defines
-           the index in the list of tree entries where the entry should be inserted.
-
-    @return Error result struct with additional information.
-            - EResultSuccess .. The entry may be inserted.
-            - EResultObjNotInList (Severity: Error) .. Target path not found.
-            - EResultObjAlreadyInList (Severtiy: Error) .. There already exists
-              a branch child with the same name below the target path.
-            - EResultIdxOutOfRange (Severtiy: Error) .. There already exists
-              an entry at the given index in the branch's child list or at
-              the given tree index.
-
-    @see CBranchIdxTreeEntry::insert
-*/
-SErrResultInfo CIdxTree::canInsert(
-    CBranchIdxTreeEntry* i_pBranch,
-    const QString&       i_strTargetPath,
-    int                  i_idxInTargetBranch,
-    int                  i_idxInTree ) const
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
-    {
-        strMthInArgs  = "Branch: " + QString(i_pBranch == nullptr ? "nullptr" : i_pBranch->name());
-        strMthInArgs += ", TargetPath: " + i_strTargetPath;
-        strMthInArgs += ", IdxInTargetBranch: " + QString::number(i_idxInTargetBranch);
-        strMthInArgs += ", IdxInTree: " + QString::number(i_idxInTree);
-    }
-
-    CMethodTracer mthTracer(
-        /* pTrcServer         */ CTrcServer::GetInstance(),
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
-        /* strObjName         */ objectName(),
-        /* strMethod          */ "canInsert",
-        /* strMethodInArgs    */ strMthInArgs );
-
-    QString strMth = "insert";
-
-    SErrResultInfo errResultInfo(nameSpace(), className(), objectName(), strMth);
-
-    if( i_pBranch == nullptr )
-    {
-        errResultInfo.setSeverity(EResultSeverityError);
-        errResultInfo.setResult(EResultArgOutOfRange);
-        errResultInfo.setAddErrInfoDscr("i_pLeave == nullptr");
-        throw CException(__FILE__, __LINE__, errResultInfo);
-    }
-
-    QMutexLocker mtxLocker(m_pMtx);
-
-    CAbstractIdxTreeEntry* pTreeEntry = i_pBranch;
-
-    CBranchIdxTreeEntry* pTargetBranch = findBranch(i_strTargetPath);
-
-    if( pTargetBranch == nullptr )
-    {
-        errResultInfo.setSeverity(EResultSeverityError);
-        errResultInfo.setResult(EResultObjNotInList);
-        errResultInfo.setAddErrInfoDscr(i_strTargetPath);
-    }
-    else // if( pTargetBranch != nullptr )
-    {
-        if( i_idxInTargetBranch >= 0 && i_idxInTargetBranch > pTargetBranch->count() )
-        {
-            QString strAddErrInfo;
-            strAddErrInfo  = "IdxInTargetBranch (=" + QString::number(i_idxInTargetBranch) + ") ";
-            strAddErrInfo += "is out of range [0.." + QString::number(pTargetBranch->count()) + "]";
-            errResultInfo.setSeverity(EResultSeverityError);
-            errResultInfo.setResult(EResultIdxOutOfRange);
-            errResultInfo.setAddErrInfoDscr(strAddErrInfo);
-        }
-        else // if( i_idxInTargetBranch < 0 || i_idxInTargetBranch <= pTargetBranch->count() )
-        {
-            int idxInTargetBranch = pTargetBranch->indexOf(pTreeEntry->keyInParentBranch());
-
-            if( idxInTargetBranch >= 0 )
-            {
-                QString strAddErrInfo;
-                strAddErrInfo  = pTreeEntry->keyInParentBranch();
-                strAddErrInfo += " already belongs to branch " + pTargetBranch->keyInTree();
-                errResultInfo.setSeverity(EResultSeverityError);
-                errResultInfo.setResult(EResultObjAlreadyInList);
-                errResultInfo.setAddErrInfoDscr(strAddErrInfo);
-            }
-        } // if( i_idxInTargetBranch < 0 || i_idxInTargetBranch <= pTargetBranch->count() )
-
-        if( !errResultInfo.isErrorResult() && i_idxInTree >= 0 )
-        {
-            if( getEntry(i_idxInTree) != nullptr )
-            {
-                QString strAddErrInfo = "IdxInTree (=" + QString::number(i_idxInTree) + ") is already used";
-                errResultInfo.setSeverity(EResultSeverityError);
-                errResultInfo.setResult(EResultIdxOutOfRange);
-                errResultInfo.setAddErrInfoDscr(strAddErrInfo);
-            }
-        } // if( !errResultInfo.isErrorResult() && i_idxInTree >= 0 )
-    } // if( pTargetBranch != nullptr )
-
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
-    {
-        int iErrResultInfoDetailLevel = 0;
-        if( m_iTrcDetailLevel >= ETraceDetailLevelVerbose ) iErrResultInfoDetailLevel = 2;
-        else if( m_iTrcDetailLevel >= ETraceDetailLevelRuntimeInfo ) iErrResultInfoDetailLevel = 1;
-        mthTracer.setMethodReturn(errResultInfo.toString(iErrResultInfoDetailLevel));
-    }
-
-    return errResultInfo;
-
-} // canInsert
-
-//------------------------------------------------------------------------------
-/*! Checks whether the given branch can be inserted as a child to the given
-    target branch at the given index.
-
-    The branch entry may only be added as a child to the target path if not
-    already another branch with the same name exists below the target path.
-
-    If the optional parameter i_idxInTree is greator or equal to zero it will
-    also be checked whether this index is free.
-
-    @param i_pBranch [in] Pointer to branch entry.
-    @param i_pTargetBranch [in] Pointer to the parent branch to which the branch should be added.
-    @param i_idxInTargetBranch [in] Index in the list of the target branch's
-           child entries where the child should be inserted.
-    @param i_idxInTree [in] If greater or equal to zero this argument defines
-           the index in the list of tree entries where the entry should be inserted.
-
-    @return Error result struct with additional information.
-            - EResultSuccess .. The entry may be inserted.
-            - EResultObjNotInList (Severity: Error) .. Target path not found.
-            - EResultObjAlreadyInList (Severtiy: Error) .. There already exists
-              a branch child with the same name below the target path.
-            - EResultIdxOutOfRange (Severtiy: Error) .. There already exists
-              an entry at the given index in the branch's child list or at
-              the given tree index.
-
-    @see CBranchIdxTreeEntry::insert
-*/
-SErrResultInfo CIdxTree::canInsert(
-    CBranchIdxTreeEntry* i_pBranch,
-    CBranchIdxTreeEntry* i_pTargetBranch,
-    int                  i_idxInTargetBranch,
-    int                  i_idxInTree ) const
-//------------------------------------------------------------------------------
-{
-    QMutexLocker mtxLocker(m_pMtx);
-
-    QString strMthInArgs;
-
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
-    {
-        strMthInArgs += ", Branch: " + QString(i_pBranch == nullptr ? "nullptr" : i_pBranch->name());
-        strMthInArgs += ", TargetBranch: " + QString(i_pTargetBranch == nullptr ? "nullptr" : i_pTargetBranch->keyInTree());
-        strMthInArgs += ", IdxInTargetBranch: " + QString::number(i_idxInTargetBranch);
-        strMthInArgs += ", IdxInTree: " + QString::number(i_idxInTree);
-    }
-
-    CMethodTracer mthTracer(
-        /* pTrcServer         */ CTrcServer::GetInstance(),
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
-        /* strObjName         */ objectName(),
-        /* strMethod          */ "canInsert",
-        /* strMethodInArgs    */ strMthInArgs );
-
-    SErrResultInfo errResultInfo = canInsert(dynamic_cast<CAbstractIdxTreeEntry*>(i_pBranch), i_pTargetBranch, i_idxInTargetBranch, i_idxInTree);
-
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
-    {
-        int iErrResultInfoDetailLevel = 0;
-        if( m_iTrcDetailLevel >= ETraceDetailLevelVerbose ) iErrResultInfoDetailLevel = 2;
-        else if( m_iTrcDetailLevel >= ETraceDetailLevelRuntimeInfo ) iErrResultInfoDetailLevel = 1;
-        mthTracer.setMethodReturn(errResultInfo.toString(iErrResultInfoDetailLevel));
-    }
-
-    return errResultInfo;
-
-} // canInsert
-
-//------------------------------------------------------------------------------
-/*! Checks whether the given leave can be inserted as a child to the given
-    target branch at the given index.
-
-    The branch entry may only be added as a child to the target path if not
-    already another branch with the same name exists below the target path.
-
-    If the optional parameter i_idxInTree is greator or equal to zero it will
-    also be checked whether this index is free.
-
-    @param i_pLeave [in] Pointer to leave entry.
-    @param i_strTargetPath [in] Path of the parent branch to which the branch should be added.
-           The path may already start with the branch node type ("B:").
-    @param i_idxInTargetBranch [in] Index in the list of the target branch's
-           child entries where the child should be inserted.
-    @param i_idxInTree [in] If greater or equal to zero this argument defines
-           the index in the list of tree entries where the entry should be inserted.
-
-    @return Error result struct with additional information.
-            - EResultSuccess .. The entry may be inserted.
-            - EResultObjNotInList (Severity: Error) .. Target path not found.
-            - EResultObjAlreadyInList (Severtiy: Error) .. There already exists
-              a branch child with the same name below the target path.
-            - EResultIdxOutOfRange (Severtiy: Error) .. There already exists
-              an entry at the given index in the branch's child list or at
-              the given tree index.
-
-    @see CBranchIdxTreeEntry::insert
-*/
-SErrResultInfo CIdxTree::canInsert(
-    CLeaveIdxTreeEntry* i_pLeave,
-    const QString&      i_strTargetPath,
-    int                 i_idxInTargetBranch,
-    int                 i_idxInTree ) const
-//------------------------------------------------------------------------------
-{
-    QMutexLocker mtxLocker(m_pMtx);
-
-    QString strMthInArgs;
-
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
-    {
-        strMthInArgs  = "Leave: " + QString(i_pLeave == nullptr ? "nullptr" : i_pLeave->name());
-        strMthInArgs += ", TargetPath: " + i_strTargetPath;
-        strMthInArgs += ", IdxInTargetBranch: " + QString::number(i_idxInTargetBranch);
-        strMthInArgs += ", IdxInTree: " + QString::number(i_idxInTree);
-    }
-
-    CMethodTracer mthTracer(
-        /* pTrcServer         */ CTrcServer::GetInstance(),
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
-        /* strObjName         */ objectName(),
-        /* strMethod          */ "canInsert",
-        /* strMethodInArgs    */ strMthInArgs );
-
-    SErrResultInfo errResultInfo = canInsert(dynamic_cast<CAbstractIdxTreeEntry*>(i_pLeave), i_strTargetPath, i_idxInTargetBranch, i_idxInTree);
-
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
-    {
-        int iErrResultInfoDetailLevel = 0;
-        if( m_iTrcDetailLevel >= ETraceDetailLevelVerbose ) iErrResultInfoDetailLevel = 2;
-        else if( m_iTrcDetailLevel >= ETraceDetailLevelRuntimeInfo ) iErrResultInfoDetailLevel = 1;
-        mthTracer.setMethodReturn(errResultInfo.toString(iErrResultInfoDetailLevel));
-    }
-
-    return errResultInfo;
-
-} // canInsert
-
-//------------------------------------------------------------------------------
-/*! Checks whether the given leave can be inserted as a child to the given
-    target branch at the given index.
-
-    The branch entry may only be added as a child to the target path if not
-    already another branch with the same name exists below the target path.
-
-    If the optional parameter i_idxInTree is greator or equal to zero it will
-    also be checked whether this index is free.
-
-    @param i_pLeave [in] Pointer to leave entry.
-    @param i_pTargetBranch [in] Pointer to parent branch to which the branch should be added.
-    @param i_idxInTargetBranch [in] Index in the list of the target branch's
-           child entries where the child should be inserted.
-    @param i_idxInTree [in] If greater or equal to zero this argument defines
-           the index in the list of tree entries where the entry should be inserted.
-
-    @return Error result struct with additional information.
-            - EResultSuccess .. The entry may be inserted.
-            - EResultObjNotInList (Severity: Error) .. Target path not found.
-            - EResultObjAlreadyInList (Severtiy: Error) .. There already exists
-              a branch child with the same name below the target path.
-            - EResultIdxOutOfRange (Severtiy: Error) .. There already exists
-              an entry at the given index in the branch's child list or at
-              the given tree index.
-
-    @see CBranchIdxTreeEntry::insert
-*/
-SErrResultInfo CIdxTree::canInsert(
-    CLeaveIdxTreeEntry*  i_pLeave,
-    CBranchIdxTreeEntry* i_pTargetBranch,
-    int                  i_idxInTargetBranch,
-    int                  i_idxInTree ) const
-//------------------------------------------------------------------------------
-{
-    QMutexLocker mtxLocker(m_pMtx);
-
-    QString strMthInArgs;
-
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
-    {
-        strMthInArgs  = "Leave: " + QString(i_pLeave == nullptr ? "nullptr" : i_pLeave->name());
-        strMthInArgs += ", TargetBranch: " + QString(i_pTargetBranch == nullptr ? "nullptr" : i_pTargetBranch->keyInTree());
-        strMthInArgs += ", IdxInTargetBranch: " + QString::number(i_idxInTargetBranch);
-        strMthInArgs += ", IdxInTree: " + QString::number(i_idxInTree);
-    }
-
-    CMethodTracer mthTracer(
-        /* pTrcServer         */ CTrcServer::GetInstance(),
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
-        /* strObjName         */ objectName(),
-        /* strMethod          */ "canInsert",
-        /* strMethodInArgs    */ strMthInArgs );
-
-    SErrResultInfo errResultInfo = canInsert(dynamic_cast<CAbstractIdxTreeEntry*>(i_pLeave), i_pTargetBranch, i_idxInTargetBranch, i_idxInTree);
-
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
-    {
-        int iErrResultInfoDetailLevel = 0;
-        if( m_iTrcDetailLevel >= ETraceDetailLevelVerbose ) iErrResultInfoDetailLevel = 2;
-        else if( m_iTrcDetailLevel >= ETraceDetailLevelRuntimeInfo ) iErrResultInfoDetailLevel = 1;
-        mthTracer.setMethodReturn(errResultInfo.toString(iErrResultInfoDetailLevel));
-    }
-
-    return errResultInfo;
-
-} // canInsert
-
-//------------------------------------------------------------------------------
 /*! Checks whether the given entry can be inserted as a child to the given
     target branch at the given index.
 
@@ -2327,13 +1514,13 @@ SErrResultInfo CIdxTree::canInsert(
               an entry at the given index in the branch's child list or at
               the given tree index.
 
-    @see CBranchIdxTreeEntry::insert
+    @see CIdxTreeEntry::insert
 */
 SErrResultInfo CIdxTree::canInsert(
-    CAbstractIdxTreeEntry* i_pTreeEntry,
-    const QString&         i_strTargetPath,
-    int                    i_idxInTargetBranch,
-    int                    i_idxInTree ) const
+    CIdxTreeEntry* i_pTreeEntry,
+    const QString& i_strTargetPath,
+    int            i_idxInTargetBranch,
+    int            i_idxInTree ) const
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -2370,7 +1557,7 @@ SErrResultInfo CIdxTree::canInsert(
         throw CException(__FILE__, __LINE__, errResultInfo);
     }
 
-    CBranchIdxTreeEntry* pTargetBranch = m_pRoot;
+    CIdxTreeEntry* pTargetBranch = m_pRoot;
 
     if( !i_strTargetPath.isEmpty() )
     {
@@ -2413,6 +1600,7 @@ SErrResultInfo CIdxTree::canInsert(
 
     @param i_pTreeEntry [in] Pointer to tree entry.
     @param i_pTargetBranch [in] Pointer to parent branch to which the branch should be added.
+                                If nullptr is passed the entry will be added to the root.
     @param i_idxInTargetBranch [in] Index in the list of the target branch's
            child entries where the child should be inserted.
     @param i_idxInTree [in] If greater or equal to zero this argument defines
@@ -2427,13 +1615,13 @@ SErrResultInfo CIdxTree::canInsert(
               an entry at the given index in the branch's child list or at
               the given tree index.
 
-    @see CBranchIdxTreeEntry::insert
+    @see CIdxTreeEntry::insert
 */
 SErrResultInfo CIdxTree::canInsert(
-    CAbstractIdxTreeEntry* i_pTreeEntry,
-    CBranchIdxTreeEntry*   i_pTargetBranch,
-    int                    i_idxInTargetBranch,
-    int                    i_idxInTree ) const
+    CIdxTreeEntry* i_pTreeEntry,
+    CIdxTreeEntry* i_pTargetBranch,
+    int            i_idxInTargetBranch,
+    int            i_idxInTree ) const
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -2468,28 +1656,27 @@ SErrResultInfo CIdxTree::canInsert(
         throw CException(__FILE__, __LINE__, errResultInfo);
     }
 
-    if( i_pTargetBranch == nullptr )
+    CIdxTreeEntry* pTargetBranch = i_pTargetBranch;
+
+    if( pTargetBranch == nullptr )
     {
-        errResultInfo.setSeverity(EResultSeverityError);
-        errResultInfo.setResult(EResultArgOutOfRange);
-        errResultInfo.setAddErrInfoDscr("i_pTargetBranch == nullptr");
-        throw CException(__FILE__, __LINE__, errResultInfo);
+        pTargetBranch = m_pRoot;
     }
 
     QMutexLocker mtxLocker(m_pMtx);
 
-    if( i_idxInTargetBranch >= 0 && i_idxInTargetBranch > i_pTargetBranch->count() )
+    if( i_idxInTargetBranch >= 0 && i_idxInTargetBranch > pTargetBranch->count() )
     {
         QString strAddErrInfo;
         strAddErrInfo  = "IdxInTargetBranch (=" + QString::number(i_idxInTargetBranch) + ") ";
-        strAddErrInfo += "is out of range [0.." + QString::number(i_pTargetBranch->count()) + "]";
+        strAddErrInfo += "is out of range [0.." + QString::number(pTargetBranch->count()) + "]";
         errResultInfo.setSeverity(EResultSeverityError);
         errResultInfo.setResult(EResultIdxOutOfRange);
         errResultInfo.setAddErrInfoDscr(strAddErrInfo);
     }
     else // if( i_idxInTargetBranch < 0 || i_idxInTargetBranch <= pTargetBranch->count() )
     {
-        int idxInTargetBranch = i_pTargetBranch->indexOf(i_pTreeEntry);
+        int idxInTargetBranch = pTargetBranch->indexOf(i_pTreeEntry);
 
         if( idxInTargetBranch >= 0 )
         {
@@ -2505,9 +1692,9 @@ SErrResultInfo CIdxTree::canInsert(
 
             strKeyInTree = strEntryType + ":";
 
-            if( i_pTargetBranch != m_pRoot )
+            if( pTargetBranch != m_pRoot )
             {
-                strTargetPath = i_pTargetBranch->path();
+                strTargetPath = pTargetBranch->path();
             }
             if( !strTargetPath.isEmpty() )
             {
@@ -2558,291 +1745,6 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-/*! Inserts the given branch entry to the index tree by inserting the entry as a
-    child of the target branch at the given index.
-
-    If the optional parameter i_idxInTree is greator or equal to zero this index will be used.
-
-    Otherwise (default) if there is a free index in the tree's list of tree entries this index
-    will be used. If no free index is found the entry will be appended at the end of the list.
-
-    If inserting in the list of childs of a branch the index of all childs after
-    the insertion index will be incremented by one.
-
-    The following members of the given child entry will be modified:
-
-    - The reference to the tree will be set at the tree entry.
-    - The unique key of the entry within the tree will be set at the entry.
-    - The index of the entry in the trees list of entry will be set at the entry.
-
-    @param i_pBranch [in] Pointer to tree entry to be added as a child.
-    @param i_strTargetPath [in] Path of the target branch the entry should be added as a child.
-           The path may already start with the branch node type ("B:").
-    @param i_idxInTargetBranch [in] Index in the list of the target branch's
-           child entries where the child should be inserted.
-    @param i_idxInTree [in] If greater or equal to zero this argument defines
-           the index in the list of tree entries where the entry should be inserted.
-
-    @return Index of the tree entry.
-
-    @note Throws a critical exception
-          - with Result = ObjAlreadyInList if a child with the same name and
-                          type already belongs to the branch.
-
-    @see CBranchIdxTreeEntry::insert
-*/
-int CIdxTree::insert(
-    CBranchIdxTreeEntry* i_pBranch,
-    const QString&       i_strTargetPath,
-    int                  i_idxInTargetBranch,
-    int                  i_idxInTree )
-//------------------------------------------------------------------------------
-{
-    QMutexLocker mtxLocker(m_pMtx);
-
-    QString strMthInArgs;
-
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
-    {
-        strMthInArgs  = "Branch: " + QString(i_pBranch == nullptr ? "nullptr" : i_pBranch->name());
-        strMthInArgs += ", TargetPath: " + i_strTargetPath;
-        strMthInArgs += ", IdxInTargetBranch: " + QString::number(i_idxInTargetBranch);
-        strMthInArgs += ", IdxInTree: " + QString::number(i_idxInTree);
-    }
-
-    CMethodTracer mthTracer(
-        /* pTrcServer         */ CTrcServer::GetInstance(),
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
-        /* strObjName         */ objectName(),
-        /* strMethod          */ "insert",
-        /* strMethodInArgs    */ strMthInArgs );
-
-    int idxInTree = insert(dynamic_cast<CAbstractIdxTreeEntry*>(i_pBranch), i_strTargetPath, i_idxInTargetBranch, i_idxInTree);
-
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
-    {
-        mthTracer.setMethodReturn(QString::number(idxInTree));
-    }
-
-    return idxInTree;
-
-} // insert
-
-//------------------------------------------------------------------------------
-/*! Inserts the given branch entry to the index tree by inserting the entry as a
-    child of the target branch at the given index.
-
-    If the optional parameter i_idxInTree is greator or equal to zero this index will be used.
-
-    Otherwise (default) if there is a free index in the tree's list of tree entries this index
-    will be used. If no free index is found the entry will be appended at the end of the list.
-
-    The following members of the given child entry will be modified:
-
-    - The reference to the tree will be set at the tree entry.
-    - The unique key of the entry within the tree will be set at the entry.
-    - The index of the entry in the trees list of entry will be set at the entry.
-
-    @param i_pBranch [in] Pointer to tree entry to be added as a child.
-    @param i_pTargetBranch [in] Pointer to the target branch the entry should be added as a child.
-    @param i_idxInTargetBranch [in] Index in the list of the target branch's
-           child entries where the child should be inserted.
-    @param i_idxInTree [in] If greater or equal to zero this argument defines
-           the index in the list of tree entries where the entry should be inserted.
-
-    @return Index of the tree entry.
-
-    @note Throws a critical exception
-          - with Result = ObjAlreadyInList if a child with the same name and
-                          type already belongs to the branch.
-
-    @see CBranchIdxTreeEntry::insert
-*/
-int CIdxTree::insert(
-    CBranchIdxTreeEntry* i_pBranch,
-    CBranchIdxTreeEntry* i_pTargetBranch,
-    int                  i_idxInTargetBranch,
-    int                  i_idxInTree )
-//------------------------------------------------------------------------------
-{
-    QMutexLocker mtxLocker(m_pMtx);
-
-    QString strMthInArgs;
-
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
-    {
-        strMthInArgs  = "Branch: " + QString(i_pBranch == nullptr ? "nullptr" : i_pBranch->name());
-        strMthInArgs += ", TargetBranch: " + QString(i_pTargetBranch == nullptr ? "nullptr" : i_pTargetBranch->keyInTree());
-        strMthInArgs += ", IdxInTargetBranch: " + QString::number(i_idxInTargetBranch);
-        strMthInArgs += ", IdxInTree: " + QString::number(i_idxInTree);
-    }
-
-    CMethodTracer mthTracer(
-        /* pTrcServer         */ CTrcServer::GetInstance(),
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
-        /* strObjName         */ objectName(),
-        /* strMethod          */ "insert",
-        /* strMethodInArgs    */ strMthInArgs );
-
-    int idxInTree = insert(dynamic_cast<CAbstractIdxTreeEntry*>(i_pBranch), i_pTargetBranch, i_idxInTargetBranch, i_idxInTree);
-
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
-    {
-        mthTracer.setMethodReturn(QString::number(idxInTree));
-    }
-
-    return idxInTree;
-
-} // insert
-
-//------------------------------------------------------------------------------
-/*! Inserts the given leave entry to the index tree by inserting the entry as a
-    child of the target branch at the given index.
-
-    If the optional parameter i_idxInTree is greator or equal to zero this index will be used.
-
-    Otherwise (default) if there is a free index in the tree's list of tree entries this index
-    will be used. If no free index is found the entry will be appended at the end of the list.
-
-    The following members of the given child entry will be modified:
-
-    - The reference to the tree will be set at the tree entry.
-    - The unique key of the entry within the tree will be set at the entry.
-    - The index of the entry in the trees list of entry will be set at the entry.
-
-    @param i_pLeave [in] Pointer to tree entry to be added as a child.
-    @param i_strTargetPath [in] Path of the target branch the entry should be added as a child.
-           The path may already start with the branch node type ("B:").
-    @param i_idxInTargetBranch [in] Index in the list of the target branch's
-           child entries where the child should be inserted.
-    @param i_idxInTree [in] If greater or equal to zero this argument defines
-           the index in the list of tree entries where the entry should be inserted.
-
-    @return Index of the tree entry.
-
-    @note Throws a critical exception
-          - with Result = ObjAlreadyInList if a child with the same name and
-                          type already belongs to the branch.
-
-    @see CBranchIdxTreeEntry::insert
-*/
-int CIdxTree::insert(
-    CLeaveIdxTreeEntry* i_pLeave,
-    const QString&      i_strTargetPath,
-    int                 i_idxInTargetBranch,
-    int                 i_idxInTree )
-//------------------------------------------------------------------------------
-{
-    QMutexLocker mtxLocker(m_pMtx);
-
-    QString strMthInArgs;
-
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
-    {
-        strMthInArgs  = "Leave: " + QString(i_pLeave == nullptr ? "nullptr" : i_pLeave->name());
-        strMthInArgs += ", TargetPath: " + i_strTargetPath;
-        strMthInArgs += ", IdxInTargetBranch: " + QString::number(i_idxInTargetBranch);
-        strMthInArgs += ", IdxInTree: " + QString::number(i_idxInTree);
-    }
-
-    CMethodTracer mthTracer(
-        /* pTrcServer         */ CTrcServer::GetInstance(),
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
-        /* strObjName         */ objectName(),
-        /* strMethod          */ "insert",
-        /* strMethodInArgs    */ strMthInArgs );
-
-    int idxInTree = insert(dynamic_cast<CAbstractIdxTreeEntry*>(i_pLeave), i_strTargetPath, i_idxInTargetBranch, i_idxInTree);
-
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
-    {
-        mthTracer.setMethodReturn(QString::number(idxInTree));
-    }
-
-    return idxInTree;
-
-} // insert
-
-//------------------------------------------------------------------------------
-/*! Inserts the given leave entry to the index tree by inserting the entry as a
-    child of the target branch at the given index.
-
-    If the optional parameter i_idxInTree is greator or equal to zero this index will be used.
-
-    Otherwise (default) if there is a free index in the tree's list of tree entries this index
-    will be used. If no free index is found the entry will be appended at the end of the list.
-
-    The following members of the given child entry will be modified:
-
-    - The reference to the tree will be set at the tree entry.
-    - The unique key of the entry within the tree will be set at the entry.
-    - The index of the entry in the trees list of entry will be set at the entry.
-
-    @param i_pLeave [in] Pointer to tree entry to be added as a child.
-    @param i_pTargetBranch [in] Pointer to the target branch the entry should be added as a child.
-    @param i_idxInTargetBranch [in] Index in the list of the target branch's
-           child entries where the child should be inserted.
-    @param i_idxInTree [in] If greater or equal to zero this argument defines
-           the index in the list of tree entries where the entry should be inserted.
-
-    @return Index of the tree entry.
-
-    @note Throws a critical exception
-          - with Result = ObjAlreadyInList if a child with the same name and
-                          type already belongs to the branch.
-
-    @see CBranchIdxTreeEntry::insert
-*/
-int CIdxTree::insert(
-    CLeaveIdxTreeEntry*  i_pLeave,
-    CBranchIdxTreeEntry* i_pTargetBranch,
-    int                  i_idxInTargetBranch,
-    int                  i_idxInTree )
-//------------------------------------------------------------------------------
-{
-    QMutexLocker mtxLocker(m_pMtx);
-
-    QString strMthInArgs;
-
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
-    {
-        strMthInArgs  = "Leave: " + QString(i_pLeave == nullptr ? "nullptr" : i_pLeave->name());
-        strMthInArgs += ", TargetBranch: " + QString(i_pTargetBranch == nullptr ? "nullptr" : i_pTargetBranch->keyInTree());
-        strMthInArgs += ", IdxInTargetBranch: " + QString::number(i_idxInTargetBranch);
-        strMthInArgs += ", IdxInTree: " + QString::number(i_idxInTree);
-    }
-
-    CMethodTracer mthTracer(
-        /* pTrcServer         */ CTrcServer::GetInstance(),
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
-        /* strObjName         */ objectName(),
-        /* strMethod          */ "insert",
-        /* strMethodInArgs    */ strMthInArgs );
-
-    int idxInTree = insert(dynamic_cast<CAbstractIdxTreeEntry*>(i_pLeave), i_pTargetBranch, i_idxInTargetBranch, i_idxInTree);
-
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
-    {
-        mthTracer.setMethodReturn(QString::number(idxInTree));
-    }
-
-    return idxInTree;
-
-} // insert
-
-//------------------------------------------------------------------------------
 /*! Inserts the given entry to the index tree by inserting the entry as a
     child of the target branch at the given index.
 
@@ -2871,13 +1773,13 @@ int CIdxTree::insert(
           - with Result = ObjAlreadyInList if a child with the same name and
                           type already belongs to the branch.
 
-    @see CBranchIdxTreeEntry::insert
+    @see CIdxTreeEntry::insert
 */
 int CIdxTree::insert(
-    CAbstractIdxTreeEntry* i_pTreeEntry,
-    const QString&         i_strTargetPath,
-    int                    i_idxInTargetBranch,
-    int                    i_idxInTree )
+    CIdxTreeEntry* i_pTreeEntry,
+    const QString& i_strTargetPath,
+    int            i_idxInTargetBranch,
+    int            i_idxInTree )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -2902,7 +1804,7 @@ int CIdxTree::insert(
 
     QMutexLocker mtxLocker(m_pMtx);
 
-    CBranchIdxTreeEntry* pTargetBranch = m_pRoot;
+    CIdxTreeEntry* pTargetBranch = m_pRoot;
 
     if( !i_strTargetPath.isEmpty() )
     {
@@ -2913,7 +1815,7 @@ int CIdxTree::insert(
             QStringList strlstBranches = i_strTargetPath.split(m_strNodeSeparator, QtSkipEmptyParts);
 
             // Please note that the name of the root entry is not included in the TargetPath of the tree entries.
-            CBranchIdxTreeEntry* pTargetBranchPrev = m_pRoot;
+            CIdxTreeEntry* pTargetBranchPrev = m_pRoot;
             QString              strTargetPathPrev;
 
             for( QString strBranchName : strlstBranches )
@@ -2959,6 +1861,7 @@ int CIdxTree::insert(
 
     @param i_pTreeEntry [in] Pointer to tree entry to be added as a child.
     @param i_pTargetBranch [in] Pointer to the target branch the entry should be added as a child.
+                                If nullptr is passed the entry will be added to the root.
     @param i_idxInTargetBranch [in] Index in the list of the target branch's
            child entries where the child should be inserted.
     @param i_idxInTree [in] If greater or equal to zero this argument defines
@@ -2971,13 +1874,13 @@ int CIdxTree::insert(
                           type already belongs to the branch.
           - with Result = EResultIdxOutOfRange if an entry already exists at the given tree index.
 
-    @see CBranchIdxTreeEntry::insert
+    @see CIdxTreeEntry::insert
 */
 int CIdxTree::insert(
-    CAbstractIdxTreeEntry* i_pTreeEntry,
-    CBranchIdxTreeEntry*   i_pTargetBranch,
-    int                    i_idxInTargetBranch,
-    int                    i_idxInTree )
+    CIdxTreeEntry* i_pTreeEntry,
+    CIdxTreeEntry* i_pTargetBranch,
+    int            i_idxInTargetBranch,
+    int            i_idxInTree )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -3006,9 +1909,12 @@ int CIdxTree::insert(
     {
         throw CException(__FILE__, __LINE__, EResultInternalProgramError);
     }
-    if( i_pTargetBranch == nullptr )
+
+    CIdxTreeEntry* pTargetBranch = i_pTargetBranch;
+
+    if( pTargetBranch == nullptr )
     {
-        throw CException(__FILE__, __LINE__, EResultInternalProgramError);
+        pTargetBranch = m_pRoot;
     }
 
     int idxInTree = -1;
@@ -3017,11 +1923,11 @@ int CIdxTree::insert(
 
     if( i_idxInTargetBranch >= 0 )
     {
-        idxInTargetBranch = i_pTargetBranch->insert(i_idxInTargetBranch, i_pTreeEntry);
+        idxInTargetBranch = pTargetBranch->insert(i_idxInTargetBranch, i_pTreeEntry);
     }
     else
     {
-        idxInTargetBranch = i_pTargetBranch->add(i_pTreeEntry);
+        idxInTargetBranch = pTargetBranch->add(i_pTreeEntry);
     }
 
     if( idxInTargetBranch >= 0 )
@@ -3032,9 +1938,9 @@ int CIdxTree::insert(
 
         strKeyInTree = strEntryType + ":";
 
-        if( i_pTargetBranch != m_pRoot )
+        if( pTargetBranch != m_pRoot )
         {
-            strTargetPath = i_pTargetBranch->path();
+            strTargetPath = pTargetBranch->path();
         }
         if( !strTargetPath.isEmpty() )
         {
@@ -3075,7 +1981,7 @@ int CIdxTree::insert(
                 int iSizeNew  = i_idxInTree + 1;
 
                 m_arpTreeEntries.resize(iSizeNew);
-                memset(&m_arpTreeEntries.data()[iSizePrev], 0x00, (iSizeNew-iSizePrev) * sizeof(CAbstractIdxTreeEntry*));
+                memset(&m_arpTreeEntries.data()[iSizePrev], 0x00, (iSizeNew-iSizePrev) * sizeof(CIdxTreeEntry*));
 
                 for( int idxTmp = iSizePrev; idxTmp < idxInTree; ++idxTmp )
                 {
@@ -3131,102 +2037,6 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-/*! Checks whether the given branch can be removed from the tree.
-
-    The entry may only be removed if it belongs to the tree and if it is not
-    the root entry.
-
-    @param i_pBranch [in] Pointer to branch entry.
-
-    @return Error result struct with additional information.
-            - EResultSuccess .. The entry may be removed.
-            - EResultInvalidMethodCall (Severity: Error) .. The root entry cannot be removed.
-            - EResultObjNotInList (Severtiy: Error) .. The entry does not belong to the tree.
-*/
-SErrResultInfo CIdxTree::canRemove( CBranchIdxTreeEntry* i_pBranch ) const
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
-    {
-        strMthInArgs = "Branch: " + QString(i_pBranch == nullptr ? "nullptr" : i_pBranch->keyInTree());
-    }
-
-    CMethodTracer mthTracer(
-        /* pTrcServer         */ CTrcServer::GetInstance(),
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
-        /* strObjName         */ objectName(),
-        /* strMethod          */ "canRemove",
-        /* strMethodInArgs    */ strMthInArgs );
-
-    QMutexLocker mtxLocker(m_pMtx);
-
-    SErrResultInfo errResultInfo = canRemove(dynamic_cast<CAbstractIdxTreeEntry*>(i_pBranch));
-
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
-    {
-        int iErrResultInfoDetailLevel = 0;
-        if( m_iTrcDetailLevel >= ETraceDetailLevelVerbose ) iErrResultInfoDetailLevel = 2;
-        else if( m_iTrcDetailLevel >= ETraceDetailLevelRuntimeInfo ) iErrResultInfoDetailLevel = 1;
-        mthTracer.setMethodReturn(errResultInfo.toString(iErrResultInfoDetailLevel));
-    }
-
-    return errResultInfo;
-
-} // canRemove
-
-//------------------------------------------------------------------------------
-/*! Checks whether the given leave can be removed from the tree.
-
-    The entry may only be removed if it belongs to the tree.
-
-    @param i_pLeave [in] Pointer to leave entry.
-
-    @return Error result struct with additional information.
-            - EResultSuccess .. The entry may be removed.
-            - EResultObjNotInList (Severtiy: Error) .. The entry does not belong to the tree.
-*/
-SErrResultInfo CIdxTree::canRemove( CLeaveIdxTreeEntry* i_pLeave ) const
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
-    {
-        strMthInArgs = "Leave: " + QString(i_pLeave == nullptr ? "nullptr" : i_pLeave->keyInTree());
-    }
-
-    CMethodTracer mthTracer(
-        /* pTrcServer         */ CTrcServer::GetInstance(),
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
-        /* strObjName         */ objectName(),
-        /* strMethod          */ "canRemove",
-        /* strMethodInArgs    */ strMthInArgs );
-
-    QMutexLocker mtxLocker(m_pMtx);
-
-    SErrResultInfo errResultInfo = canRemove(dynamic_cast<CAbstractIdxTreeEntry*>(i_pLeave));
-
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
-    {
-        int iErrResultInfoDetailLevel = 0;
-        if( m_iTrcDetailLevel >= ETraceDetailLevelVerbose ) iErrResultInfoDetailLevel = 2;
-        else if( m_iTrcDetailLevel >= ETraceDetailLevelRuntimeInfo ) iErrResultInfoDetailLevel = 1;
-        mthTracer.setMethodReturn(errResultInfo.toString(iErrResultInfoDetailLevel));
-    }
-
-    return errResultInfo;
-
-} // canRemove
-
-//------------------------------------------------------------------------------
 /*! Checks whether the given entry can be removed from the tree.
 
     The entry may only be removed if it belongs to the tree and if it is not
@@ -3239,7 +2049,7 @@ SErrResultInfo CIdxTree::canRemove( CLeaveIdxTreeEntry* i_pLeave ) const
             - EResultInvalidMethodCall (Severity: Error) .. The root entry cannot be removed.
             - EResultObjNotInList (Severtiy: Error) .. The entry does not belong to the tree.
 */
-SErrResultInfo CIdxTree::canRemove( CAbstractIdxTreeEntry* i_pTreeEntry ) const
+SErrResultInfo CIdxTree::canRemove( CIdxTreeEntry* i_pTreeEntry ) const
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -3336,7 +2146,7 @@ SErrResultInfo CIdxTree::canRemove( const QString& i_strKeyInTree ) const
 
     QMutexLocker mtxLocker(m_pMtx);
 
-    CAbstractIdxTreeEntry* pTreeEntry = findEntry(i_strKeyInTree);
+    CIdxTreeEntry* pTreeEntry = findEntry(i_strKeyInTree);
 
     if( pTreeEntry == nullptr )
     {
@@ -3365,121 +2175,6 @@ SErrResultInfo CIdxTree::canRemove( const QString& i_strKeyInTree ) const
 /*==============================================================================
 public: // instance methods
 ==============================================================================*/
-
-//------------------------------------------------------------------------------
-/*! Removes the given branch from the tree.
-
-    This method is either called when an entry is going about to be destroyed
-    or if an entry is moved within the tree.
-
-    The entry will be removed from the map of tree entries by removing the
-    unique key of the entry from the map.
-
-    The entry will also be removed from the vector of tree entries by setting the element
-    of the vector to nullptr. If there are no more valid entries in the vector
-    after the removed entry the vector will be downsized so that the last element
-    in the vector becomes a valid entry again. After removing an entry there might
-    be empty entries in the vector. Those empty entries may be reused later wenn
-    adding or inserting new entries.
-
-    The following members of the given child entry will be modified:
-
-    - The reference to the tree will be invalidated (set to nullptr).
-    - The unique key of the entry will be invalidated (set to an empty string).
-    - The tree index of the entry will be invalidated (set to -1).
-
-    @param i_pBranch [in] Pointer to branch to be removed.
-
-    @note The entry will not be destroyed.
-
-    @note Throws a critical exception with Result
-          - EResultObjNotInList if the entry does not belong to the tree.
-          - EResultInvalidMethodCall (Severity: Error) .. The root entry cannot be removed.
-
-    @see CBranchIdxTreeEntry::remove( CAbstractIdxTreeEntry* i_pTreeEntry )
-*/
-void CIdxTree::remove( CBranchIdxTreeEntry* i_pBranch )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
-    {
-        strMthInArgs = "Branch: " + QString(i_pBranch == nullptr ? "nullptr" : i_pBranch->keyInTree());
-    }
-
-    CMethodTracer mthTracer(
-        /* pTrcServer         */ CTrcServer::GetInstance(),
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
-        /* strObjName         */ objectName(),
-        /* strMethod          */ "remove",
-        /* strMethodInArgs    */ strMthInArgs );
-
-    QMutexLocker mtxLocker(m_pMtx);
-
-    return remove(dynamic_cast<CAbstractIdxTreeEntry*>(i_pBranch));
-
-} // remove
-
-//------------------------------------------------------------------------------
-/*! Removes the given leave from the tree.
-
-    This method is either called when an entry is going about to be destroyed
-    or if an entry is moved within the tree.
-
-    The entry will be removed from the map of tree entries by removing the
-    unique key of the entry from the map.
-
-    The entry will also be removed from the vector of tree entries by setting the element
-    of the vector to nullptr. If there are no more valid entries in the vector
-    after the removed entry the vector will be downsized so that the last element
-    in the vector becomes a valid entry again. After removing an entry there might
-    be empty entries in the vector. Those empty entries may be reused later wenn
-    adding or inserting new entries.
-
-    The following members of the given child entry will be modified:
-
-    - The reference to the tree will be invalidated (set to nullptr).
-    - The unique key of the entry will be invalidated (set to an empty string).
-    - The tree index of the entry will be invalidated (set to -1).
-
-    @param i_pLeave [in] Pointer to leave to be removed.
-
-    @note The entry will not be destroyed.
-
-    @note Throws a critical exception with Result
-          - EResultObjNotInList if the entry does not belong to the tree.
-
-    @see CBranchIdxTreeEntry::remove( CAbstractIdxTreeEntry* i_pTreeEntry )
-*/
-void CIdxTree::remove( CLeaveIdxTreeEntry* i_pLeave )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
-    {
-        strMthInArgs = "Leave: " + QString(i_pLeave == nullptr ? "nullptr" : i_pLeave->keyInTree());
-    }
-
-    CMethodTracer mthTracer(
-        /* pTrcServer         */ CTrcServer::GetInstance(),
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
-        /* strObjName         */ objectName(),
-        /* strMethod          */ "remove",
-        /* strMethodInArgs    */ strMthInArgs );
-
-    QMutexLocker mtxLocker(m_pMtx);
-
-    return remove(dynamic_cast<CAbstractIdxTreeEntry*>(i_pLeave));
-
-} // remove
 
 //------------------------------------------------------------------------------
 /*! Removes the given entry from the tree.
@@ -3511,9 +2206,9 @@ void CIdxTree::remove( CLeaveIdxTreeEntry* i_pLeave )
           - EResultObjNotInList if the entry does not belong to the tree.
           - EResultInvalidMethodCall (Severity: Error) .. The root entry cannot be removed.
 
-    @see CBranchIdxTreeEntry::remove( CAbstractIdxTreeEntry* i_pTreeEntry )
+    @see CIdxTreeEntry::remove( CIdxTreeEntry* i_pTreeEntry )
 */
-void CIdxTree::remove( CAbstractIdxTreeEntry* i_pTreeEntry )
+void CIdxTree::remove( CIdxTreeEntry* i_pTreeEntry )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -3551,12 +2246,12 @@ void CIdxTree::remove( CAbstractIdxTreeEntry* i_pTreeEntry )
         // the dtor of the branch entry. But if the dynamic_cast returns nullptr
         // we can be sure that all children of the branch have already been
         // destroyed and removed from the tree.
-        CBranchIdxTreeEntry* pBranch = dynamic_cast<CBranchIdxTreeEntry*>(i_pTreeEntry);
+        CIdxTreeEntry* pBranch = i_pTreeEntry;
 
         if( pBranch != nullptr && pBranch->count() > 0 )
         {
-            CAbstractIdxTreeEntry* pTreeEntry;
-            int                    idxEntry;
+            CIdxTreeEntry* pTreeEntry;
+            int            idxEntry;
 
             for( idxEntry = pBranch->count()-1; idxEntry >= 0; --idxEntry )
             {
@@ -3610,7 +2305,7 @@ void CIdxTree::remove( CAbstractIdxTreeEntry* i_pTreeEntry )
         i_pTreeEntry->setKeyInTree("");
         i_pTreeEntry->setIndexInTree(-1);
 
-        CBranchIdxTreeEntry* pTargetBranch = i_pTreeEntry->parentBranch();
+        CIdxTreeEntry* pTargetBranch = i_pTreeEntry->parentBranch();
 
         pTargetBranch->remove(i_pTreeEntry);
 
@@ -3650,7 +2345,7 @@ void CIdxTree::remove( CAbstractIdxTreeEntry* i_pTreeEntry )
           - EResultObjNotInList if the entry does not belong to the tree.
           - EResultInvalidMethodCall (Severity: Error) .. The root entry cannot be removed.
 
-    @see CBranchIdxTreeEntry::remove( CAbstractIdxTreeEntry* i_pTreeEntry )
+    @see CIdxTreeEntry::remove( CIdxTreeEntry* i_pTreeEntry )
 */
 void CIdxTree::remove( const QString& i_strKeyInTree )
 //------------------------------------------------------------------------------
@@ -3674,7 +2369,7 @@ void CIdxTree::remove( const QString& i_strKeyInTree )
 
     QMutexLocker mtxLocker(m_pMtx);
 
-    CAbstractIdxTreeEntry* pTreeEntry = findEntry(i_strKeyInTree);
+    CIdxTreeEntry* pTreeEntry = findEntry(i_strKeyInTree);
 
     if( pTreeEntry == nullptr )
     {
@@ -3711,7 +2406,7 @@ public: // instance methods
             - EResultIdxOutOfRange (Severtiy: Error) .. There already exists
               an entry at the given index in the branch's child list.
 
-    @see CBranchIdxTreeEntry::insert
+    @see CIdxTreeEntry::insert
 */
 SErrResultInfo CIdxTree::canMove(
     const QString& i_strSourcePath,
@@ -3744,7 +2439,7 @@ SErrResultInfo CIdxTree::canMove(
 
     SErrResultInfo errResultInfo(nameSpace(), className(), objectName(), strMth);
 
-    CAbstractIdxTreeEntry* pTreeEntry = findEntry(i_strSourcePath);
+    CIdxTreeEntry* pTreeEntry = findEntry(i_strSourcePath);
 
     if( pTreeEntry == nullptr )
     {
@@ -3754,7 +2449,7 @@ SErrResultInfo CIdxTree::canMove(
     }
     else // if( pTreeEntry != nullptr )
     {
-        CBranchIdxTreeEntry* pTargetBranch = findBranch(i_strTargetPath);
+        CIdxTreeEntry* pTargetBranch = findBranch(i_strTargetPath);
 
         if( pTargetBranch == nullptr )
         {
@@ -3803,227 +2498,6 @@ SErrResultInfo CIdxTree::canMove(
 } // canMove
 
 //------------------------------------------------------------------------------
-/*! Checks whether the given leave can be moved as a child to the given
-    target branch with the given index.
-
-    The entry may only be moved as a child to the target path if not already
-    another entry with the same name and type exists below the target path.
-
-    @param i_pLeave [in] Pointer to leave entry to be moved.
-    @param i_strTargetPath [in] Path of the parent branch to which the entry should be moved.
-           The path may already start with the branch node type ("B:").
-    @param i_idxInTargetBranch [in] Index in the list of the target branch's
-           child entries where the child should be inserted.
-
-    @return Error result struct with additional information.
-            - EResultSuccess .. The entry may be moved.
-            - EResultObjNotInList (Severity: Error) .. Target path not found.
-            - EResultIdxOutOfRange (Severity: Error) .. The given target index is out of range.
-            - EResultObjAlreadyInList (Severtiy: Error) .. There already exists
-              a child with the same and type name below the target path.
-            - EResultIdxOutOfRange (Severtiy: Error) .. There already exists
-              an entry at the given index in the branch's child list.
-
-    @see CBranchIdxTreeEntry::insert
-*/
-SErrResultInfo CIdxTree::canMove(
-    CLeaveIdxTreeEntry* i_pLeave,
-    const QString&      i_strTargetPath,
-    int                 i_idxInTargetBranch ) const
-//------------------------------------------------------------------------------
-{
-    QMutexLocker mtxLocker(m_pMtx);
-
-    QString strMthInArgs;
-
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
-    {
-        strMthInArgs  = "Leave: " + QString(i_pLeave == nullptr ? "nullptr" : i_pLeave->keyInTree());
-        strMthInArgs += ", TargetPath: " + i_strTargetPath;
-        strMthInArgs += ", IdxInTargetBranch: " + QString::number(i_idxInTargetBranch);
-    }
-
-    CMethodTracer mthTracer(
-        /* pTrcServer         */ CTrcServer::GetInstance(),
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
-        /* strObjName         */ objectName(),
-        /* strMethod          */ "canMove",
-        /* strMethodInArgs    */ strMthInArgs );
-
-    QString strMth = "move";
-
-    SErrResultInfo errResultInfo(nameSpace(), className(), objectName(), strMth);
-
-    if( i_pLeave == nullptr )
-    {
-        errResultInfo.setSeverity(EResultSeverityError);
-        errResultInfo.setResult(EResultArgOutOfRange);
-        errResultInfo.setAddErrInfoDscr("i_pLeave == nullptr");
-        throw CException(__FILE__, __LINE__, errResultInfo);
-    }
-
-    CAbstractIdxTreeEntry* pTreeEntry = i_pLeave;
-
-    CBranchIdxTreeEntry* pTargetBranch = findBranch(i_strTargetPath);
-
-    if( pTargetBranch == nullptr )
-    {
-        errResultInfo.setSeverity(EResultSeverityError);
-        errResultInfo.setResult(EResultObjNotInList);
-        errResultInfo.setAddErrInfoDscr(i_strTargetPath);
-    }
-    else // if( pTargetBranch != nullptr )
-    {
-        if( i_idxInTargetBranch >= 0 && i_idxInTargetBranch > pTargetBranch->count() )
-        {
-            QString strAddErrInfo;
-            strAddErrInfo  = "IdxInTargetBranch (=" + QString::number(i_idxInTargetBranch) + ") ";
-            strAddErrInfo += "is out of range [0.." + QString::number(pTargetBranch->count()) + "]";
-            errResultInfo.setSeverity(EResultSeverityError);
-            errResultInfo.setResult(EResultIdxOutOfRange);
-            errResultInfo.setAddErrInfoDscr(strAddErrInfo);
-        }
-        else // if( i_idxInTargetBranch < 0 || i_idxInTargetBranch <= pTargetBranch->count() )
-        {
-            int idxInTargetBranch = pTargetBranch->indexOf(pTreeEntry->keyInParentBranch());
-
-            if( idxInTargetBranch >= 0 )
-            {
-                QString strAddErrInfo;
-                strAddErrInfo  = pTreeEntry->keyInParentBranch();
-                strAddErrInfo += " already belongs to branch " + pTargetBranch->keyInTree();
-                errResultInfo.setSeverity(EResultSeverityError);
-                errResultInfo.setResult(EResultObjAlreadyInList);
-                errResultInfo.setAddErrInfoDscr(strAddErrInfo);
-            }
-        } // if( i_idxInTargetBranch < 0 || i_idxInTargetBranch <= pTargetBranch->count() )
-    } // if( pTargetBranch != nullptr )
-
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
-    {
-        int iErrResultInfoDetailLevel = 0;
-        if( m_iTrcDetailLevel >= ETraceDetailLevelVerbose ) iErrResultInfoDetailLevel = 2;
-        else if( m_iTrcDetailLevel >= ETraceDetailLevelRuntimeInfo ) iErrResultInfoDetailLevel = 1;
-        mthTracer.setMethodReturn(errResultInfo.toString(iErrResultInfoDetailLevel));
-    }
-
-    return errResultInfo;
-
-} // canMove
-
-//------------------------------------------------------------------------------
-/*! Checks whether the given leave can be moved as a child to the given
-    target branch with the given index.
-
-    The entry may only be moved as a child to the target path if not already
-    another entry with the same name and type exists below the target path.
-
-    @param i_pLeave [in] Pointer to leave entry to be moved.
-    @param i_pTargetBranch [in] Pointer to parent branch entry to which the entry should be moved.
-    @param i_idxInTargetBranch [in] Index in the list of the target branch's
-           child entries where the child should be inserted.
-
-    @return Error result struct with additional information.
-            - EResultSuccess .. The entry may be moved.
-            - EResultIdxOutOfRange (Severity: Error) .. The given target index is out of range.
-            - EResultObjAlreadyInList (Severtiy: Error) .. There already exists
-              a child with the same and type name below the target path.
-            - EResultIdxOutOfRange (Severtiy: Error) .. There already exists
-              an entry at the given index in the branch's child list.
-
-    @see CBranchIdxTreeEntry::insert
-*/
-SErrResultInfo CIdxTree::canMove(
-    CLeaveIdxTreeEntry*  i_pLeave,
-    CBranchIdxTreeEntry* i_pTargetBranch,
-    int                  i_idxInTargetBranch ) const
-//------------------------------------------------------------------------------
-{
-    QMutexLocker mtxLocker(m_pMtx);
-
-    QString strMthInArgs;
-
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
-    {
-        strMthInArgs  = "Leave: " + QString(i_pLeave == nullptr ? "nullptr" : i_pLeave->keyInTree());
-        strMthInArgs += ", TargetBranch: " + QString(i_pTargetBranch == nullptr ? "nullptr" : i_pTargetBranch->keyInTree());
-        strMthInArgs += ", IdxInTargetBranch: " + QString::number(i_idxInTargetBranch);
-    }
-
-    CMethodTracer mthTracer(
-        /* pTrcServer         */ CTrcServer::GetInstance(),
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
-        /* strObjName         */ objectName(),
-        /* strMethod          */ "canMove",
-        /* strMethodInArgs    */ strMthInArgs );
-
-    QString strMth = "move";
-
-    SErrResultInfo errResultInfo(nameSpace(), className(), objectName(), strMth);
-
-    if( i_pLeave == nullptr )
-    {
-        errResultInfo.setSeverity(EResultSeverityError);
-        errResultInfo.setResult(EResultArgOutOfRange);
-        errResultInfo.setAddErrInfoDscr("i_pLeave == nullptr");
-        throw CException(__FILE__, __LINE__, errResultInfo);
-    }
-
-    if( i_pTargetBranch == nullptr )
-    {
-        errResultInfo.setSeverity(EResultSeverityError);
-        errResultInfo.setResult(EResultArgOutOfRange);
-        errResultInfo.setAddErrInfoDscr("i_pTargetBranch == nullptr");
-        throw CException(__FILE__, __LINE__, errResultInfo);
-    }
-
-    CAbstractIdxTreeEntry* pTreeEntry = i_pLeave;
-
-    CBranchIdxTreeEntry* pTargetBranch = i_pTargetBranch;
-
-    if( i_idxInTargetBranch >= 0 && i_idxInTargetBranch > pTargetBranch->count() )
-    {
-        QString strAddErrInfo;
-        strAddErrInfo  = "IdxInTargetBranch (=" + QString::number(i_idxInTargetBranch) + ") ";
-        strAddErrInfo += "is out of range [0.." + QString::number(pTargetBranch->count()) + "]";
-        errResultInfo.setSeverity(EResultSeverityError);
-        errResultInfo.setResult(EResultIdxOutOfRange);
-        errResultInfo.setAddErrInfoDscr(strAddErrInfo);
-    }
-    else // if( i_idxInTargetBranch < 0 || i_idxInTargetBranch <= pTargetBranch->count() )
-    {
-        int idxInTargetBranch = pTargetBranch->indexOf(pTreeEntry->keyInParentBranch());
-
-        if( idxInTargetBranch >= 0 )
-        {
-            QString strAddErrInfo;
-            strAddErrInfo  = pTreeEntry->keyInParentBranch();
-            strAddErrInfo += " already belongs to branch " + pTargetBranch->keyInTree();
-            errResultInfo.setSeverity(EResultSeverityError);
-            errResultInfo.setResult(EResultObjAlreadyInList);
-            errResultInfo.setAddErrInfoDscr(strAddErrInfo);
-        }
-    } // if( i_idxInTargetBranch < 0 || i_idxInTargetBranch <= pTargetBranch->count() )
-
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
-    {
-        int iErrResultInfoDetailLevel = 0;
-        if( m_iTrcDetailLevel >= ETraceDetailLevelVerbose ) iErrResultInfoDetailLevel = 2;
-        else if( m_iTrcDetailLevel >= ETraceDetailLevelRuntimeInfo ) iErrResultInfoDetailLevel = 1;
-        mthTracer.setMethodReturn(errResultInfo.toString(iErrResultInfoDetailLevel));
-    }
-
-    return errResultInfo;
-
-} // canMove
-
-//------------------------------------------------------------------------------
 /*! Checks whether the given branch can be moved as a child to the given
     target branch with the given index.
 
@@ -4045,12 +2519,12 @@ SErrResultInfo CIdxTree::canMove(
             - EResultIdxOutOfRange (Severtiy: Error) .. There already exists
               an entry at the given index in the branch's child list.
 
-    @see CBranchIdxTreeEntry::insert
+    @see CIdxTreeEntry::insert
 */
 SErrResultInfo CIdxTree::canMove(
-    CBranchIdxTreeEntry* i_pBranch,
-    const QString&       i_strTargetPath,
-    int                  i_idxInTargetBranch ) const
+    CIdxTreeEntry* i_pTreeEntry,
+    const QString& i_strTargetPath,
+    int            i_idxInTargetBranch ) const
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(m_pMtx);
@@ -4059,7 +2533,7 @@ SErrResultInfo CIdxTree::canMove(
 
     if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
     {
-        strMthInArgs  = "Branch: " + QString(i_pBranch == nullptr ? "nullptr" : i_pBranch->keyInTree());
+        strMthInArgs  = "TreeEntry: " + QString(i_pTreeEntry == nullptr ? "nullptr" : i_pTreeEntry->keyInTree());
         strMthInArgs += ", TargetPath: " + i_strTargetPath;
         strMthInArgs += ", IdxInTargetBranch: " + QString::number(i_idxInTargetBranch);
     }
@@ -4078,17 +2552,15 @@ SErrResultInfo CIdxTree::canMove(
 
     SErrResultInfo errResultInfo(nameSpace(), className(), objectName(), strMth);
 
-    if( i_pBranch == nullptr )
+    if( i_pTreeEntry == nullptr )
     {
         errResultInfo.setSeverity(EResultSeverityError);
         errResultInfo.setResult(EResultArgOutOfRange);
-        errResultInfo.setAddErrInfoDscr("i_pBranch == nullptr");
+        errResultInfo.setAddErrInfoDscr("i_pTreeEntry == nullptr");
         throw CException(__FILE__, __LINE__, errResultInfo);
     }
 
-    CAbstractIdxTreeEntry* pTreeEntry = i_pBranch;
-
-    CBranchIdxTreeEntry* pTargetBranch = findBranch(i_strTargetPath);
+    CIdxTreeEntry* pTargetBranch = findBranch(i_strTargetPath);
 
     if( pTargetBranch == nullptr )
     {
@@ -4109,12 +2581,12 @@ SErrResultInfo CIdxTree::canMove(
         }
         else // if( i_idxInTargetBranch < 0 || i_idxInTargetBranch <= pTargetBranch->count() )
         {
-            int idxInTargetBranch = pTargetBranch->indexOf(pTreeEntry->keyInParentBranch());
+            int idxInTargetBranch = pTargetBranch->indexOf(i_pTreeEntry->keyInParentBranch());
 
             if( idxInTargetBranch >= 0 )
             {
                 QString strAddErrInfo;
-                strAddErrInfo  = pTreeEntry->keyInParentBranch();
+                strAddErrInfo  = i_pTreeEntry->keyInParentBranch();
                 strAddErrInfo += " already belongs to branch " + pTargetBranch->keyInTree();
                 errResultInfo.setSeverity(EResultSeverityError);
                 errResultInfo.setResult(EResultObjAlreadyInList);
@@ -4122,115 +2594,6 @@ SErrResultInfo CIdxTree::canMove(
             }
         } // if( i_idxInTargetBranch < 0 || i_idxInTargetBranch <= pTargetBranch->count() )
     } // if( pTargetBranch != nullptr )
-
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
-    {
-        int iErrResultInfoDetailLevel = 0;
-        if( m_iTrcDetailLevel >= ETraceDetailLevelVerbose ) iErrResultInfoDetailLevel = 2;
-        else if( m_iTrcDetailLevel >= ETraceDetailLevelRuntimeInfo ) iErrResultInfoDetailLevel = 1;
-        mthTracer.setMethodReturn(errResultInfo.toString(iErrResultInfoDetailLevel));
-    }
-
-    return errResultInfo;
-
-} // canMove
-
-//------------------------------------------------------------------------------
-/*! Checks whether the given branch can be moved as a child to the given
-    target branch with the given index.
-
-    The entry may only be moved as a child to the target path if not already
-    another entry with the same name and type exists below the target path.
-
-    @param i_pBranch [in] Pointer to branch entry to be moved.
-    @param i_pTargetBranch [in] Pointer to parent branch to which the entry should be moved.
-    @param i_idxInTargetBranch [in] Index in the list of the target branch's
-           child entries where the child should be inserted.
-
-    @return Error result struct with additional information.
-            - EResultSuccess .. The entry may be moved.
-            - EResultIdxOutOfRange (Severity: Error) .. The given target index is out of range.
-            - EResultObjAlreadyInList (Severtiy: Error) .. There already exists
-              a child with the same and type name below the target path.
-            - EResultIdxOutOfRange (Severtiy: Error) .. There already exists
-              an entry at the given index in the branch's child list.
-
-    @see CBranchIdxTreeEntry::insert
-*/
-SErrResultInfo CIdxTree::canMove(
-    CBranchIdxTreeEntry* i_pBranch,
-    CBranchIdxTreeEntry* i_pTargetBranch,
-    int                  i_idxInTargetBranch ) const
-//------------------------------------------------------------------------------
-{
-    QMutexLocker mtxLocker(m_pMtx);
-
-    QString strMthInArgs;
-
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
-    {
-        strMthInArgs  = "Branch: " + QString(i_pBranch == nullptr ? "nullptr" : i_pBranch->keyInTree());
-        strMthInArgs += ", TargetBranch: " + QString(i_pTargetBranch == nullptr ? "nullptr" : i_pTargetBranch->keyInTree());
-        strMthInArgs += ", IdxInTargetBranch: " + QString::number(i_idxInTargetBranch);
-    }
-
-    CMethodTracer mthTracer(
-        /* pTrcServer         */ CTrcServer::GetInstance(),
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
-        /* strObjName         */ objectName(),
-        /* strMethod          */ "canMove",
-        /* strMethodInArgs    */ strMthInArgs );
-
-    QString strMth = "move";
-
-    SErrResultInfo errResultInfo(nameSpace(), className(), objectName(), strMth);
-
-    if( i_pBranch == nullptr )
-    {
-        errResultInfo.setSeverity(EResultSeverityError);
-        errResultInfo.setResult(EResultArgOutOfRange);
-        errResultInfo.setAddErrInfoDscr("i_pBranch == nullptr");
-        throw CException(__FILE__, __LINE__, errResultInfo);
-    }
-
-    if( i_pTargetBranch == nullptr )
-    {
-        errResultInfo.setSeverity(EResultSeverityError);
-        errResultInfo.setResult(EResultArgOutOfRange);
-        errResultInfo.setAddErrInfoDscr("i_pTargetBranch == nullptr");
-        throw CException(__FILE__, __LINE__, errResultInfo);
-    }
-
-    CAbstractIdxTreeEntry* pTreeEntry = i_pBranch;
-
-    CBranchIdxTreeEntry* pTargetBranch = i_pTargetBranch;
-
-    if( i_idxInTargetBranch >= 0 && i_idxInTargetBranch > pTargetBranch->count() )
-    {
-        QString strAddErrInfo;
-        strAddErrInfo  = "IdxInTargetBranch (=" + QString::number(i_idxInTargetBranch) + ") ";
-        strAddErrInfo += "is out of range [0.." + QString::number(pTargetBranch->count()) + "]";
-        errResultInfo.setSeverity(EResultSeverityError);
-        errResultInfo.setResult(EResultIdxOutOfRange);
-        errResultInfo.setAddErrInfoDscr(strAddErrInfo);
-    }
-    else // if( i_idxInTargetBranch < 0 || i_idxInTargetBranch <= pTargetBranch->count() )
-    {
-        int idxInTargetBranch = pTargetBranch->indexOf(pTreeEntry->keyInParentBranch());
-
-        if( idxInTargetBranch >= 0 )
-        {
-            QString strAddErrInfo;
-            strAddErrInfo  = pTreeEntry->keyInParentBranch();
-            strAddErrInfo += " already belongs to branch " + pTargetBranch->keyInTree();
-            errResultInfo.setSeverity(EResultSeverityError);
-            errResultInfo.setResult(EResultObjAlreadyInList);
-            errResultInfo.setAddErrInfoDscr(strAddErrInfo);
-        }
-    } // if( i_idxInTargetBranch < 0 || i_idxInTargetBranch <= pTargetBranch->count() )
 
     if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
     {
@@ -4253,6 +2616,7 @@ SErrResultInfo CIdxTree::canMove(
 
     @param i_pTreeEntry [in] Pointer to entry to be moved.
     @param i_pTargetBranch [in] Pointer to parent branch to which the entry should be moved.
+                                If nullptr is passed the entry will be added to the root.
     @param i_idxInTargetBranch [in] Index in the list of the target branch's
            child entries where the child should be inserted.
 
@@ -4264,12 +2628,12 @@ SErrResultInfo CIdxTree::canMove(
             - EResultIdxOutOfRange (Severtiy: Error) .. There already exists
               an entry at the given index in the branch's child list.
 
-    @see CBranchIdxTreeEntry::insert
+    @see CIdxTreeEntry::insert
 */
 SErrResultInfo CIdxTree::canMove(
-    CAbstractIdxTreeEntry* i_pTreeEntry,
-    CBranchIdxTreeEntry*   i_pTargetBranch,
-    int                    i_idxInTargetBranch ) const
+    CIdxTreeEntry* i_pTreeEntry,
+    CIdxTreeEntry* i_pTargetBranch,
+    int            i_idxInTargetBranch ) const
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -4303,19 +2667,16 @@ SErrResultInfo CIdxTree::canMove(
         throw CException(__FILE__, __LINE__, errResultInfo);
     }
 
-    if( i_pTargetBranch == nullptr )
+    CIdxTreeEntry* pTargetBranch = i_pTargetBranch;
+
+    if( pTargetBranch == nullptr )
     {
-        errResultInfo.setSeverity(EResultSeverityError);
-        errResultInfo.setResult(EResultArgOutOfRange);
-        errResultInfo.setAddErrInfoDscr("i_pTargetBranch == nullptr");
-        throw CException(__FILE__, __LINE__, errResultInfo);
+        pTargetBranch = m_pRoot;
     }
 
     QMutexLocker mtxLocker(m_pMtx);
 
-    CAbstractIdxTreeEntry* pTreeEntry = i_pTreeEntry;
-
-    CBranchIdxTreeEntry* pTargetBranch = i_pTargetBranch;
+    CIdxTreeEntry* pTreeEntry = i_pTreeEntry;
 
     if( i_idxInTargetBranch >= 0 && i_idxInTargetBranch > pTargetBranch->count() )
     {
@@ -4379,9 +2740,9 @@ public: // instance methods
           - with Result = ObjAlreadyInList if a child with the same name and
                           type already belongs to the branch.
 
-    @see CBranchIdxTreeEntry::remove
-    @see CBranchIdxTreeEntry::insert
-    @see CBranchIdxTreeEntry::add
+    @see CIdxTreeEntry::remove
+    @see CIdxTreeEntry::insert
+    @see CIdxTreeEntry::add
 */
 void CIdxTree::move(
     const QString& i_strSourcePath,
@@ -4410,14 +2771,14 @@ void CIdxTree::move(
         /* strMethod          */ "move",
         /* strMethodInArgs    */ strMthInArgs );
 
-    CAbstractIdxTreeEntry* pTreeEntry = findEntry(i_strSourcePath);
+    CIdxTreeEntry* pTreeEntry = findEntry(i_strSourcePath);
 
     if( pTreeEntry == nullptr )
     {
         throw CException(__FILE__, __LINE__, EResultObjNotInList, i_strSourcePath);
     }
 
-    CBranchIdxTreeEntry* pTargetBranch = findBranch(i_strTargetPath);
+    CIdxTreeEntry* pTargetBranch = findBranch(i_strTargetPath);
 
     if( pTargetBranch == nullptr )
     {
@@ -4429,14 +2790,16 @@ void CIdxTree::move(
 } // move
 
 //------------------------------------------------------------------------------
-/*! Moves the given leave to the given target branch by inserting the entry as a
+/*! Moves the given branch to the given target branch by inserting the entry as a
     child of the target branch at the given index.
+
+    All childs of the branch will be moved to the target branch.
 
     The following members of the given child entry will be modified:
 
     - The unique key of the entry and all its childs will be updated.
 
-    @param i_pLeave [in] Pointer to tree entry to be moved.
+    @param i_pTreeEntry [in] Pointer to tree entry to be moved.
     @param i_strTargetPath [in] Path of the target branch the entry should be moved to.
            The path may already start with the branch node type ("B:").
     @param i_idxInTargetBranch [in] Index in the list of the target branch's
@@ -4448,14 +2811,14 @@ void CIdxTree::move(
           - with Result = ObjAlreadyInList if a child with the same name and
                           type already belongs to the branch.
 
-    @see CBranchIdxTreeEntry::remove
-    @see CBranchIdxTreeEntry::insert
-    @see CBranchIdxTreeEntry::add
+    @see CIdxTreeEntry::remove
+    @see CIdxTreeEntry::insert
+    @see CIdxTreeEntry::add
 */
 void CIdxTree::move(
-    CLeaveIdxTreeEntry* i_pLeave,
-    const QString&      i_strTargetPath,
-    int                 i_idxInTargetBranch )
+    CIdxTreeEntry* i_pTreeEntry,
+    const QString& i_strTargetPath,
+    int            i_idxInTargetBranch )
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(m_pMtx);
@@ -4464,7 +2827,7 @@ void CIdxTree::move(
 
     if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
     {
-        strMthInArgs  = "Leave: " + QString(i_pLeave == nullptr ? "nullptr" : i_pLeave->keyInTree());
+        strMthInArgs  = "Branch: " + QString(i_pTreeEntry == nullptr ? "nullptr" : i_pTreeEntry->keyInTree());
         strMthInArgs += ", TargetPath: " + i_strTargetPath;
         strMthInArgs += ", IdxInTargetBranch: " + QString::number(i_idxInTargetBranch);
     }
@@ -4479,191 +2842,14 @@ void CIdxTree::move(
         /* strMethod          */ "move",
         /* strMethodInArgs    */ strMthInArgs );
 
-    CAbstractIdxTreeEntry* pTreeEntry = dynamic_cast<CAbstractIdxTreeEntry*>(i_pLeave);
-
-    CBranchIdxTreeEntry* pTargetBranch = findBranch(i_strTargetPath);
+    CIdxTreeEntry* pTargetBranch = findBranch(i_strTargetPath);
 
     if( pTargetBranch == nullptr )
     {
         throw CException(__FILE__, __LINE__, EResultObjNotInList, i_strTargetPath);
     }
 
-    return move(pTreeEntry, pTargetBranch, i_idxInTargetBranch);
-
-} // move
-
-//------------------------------------------------------------------------------
-/*! Moves the given leave to the given target branch by inserting the entry as a
-    child of the target branch at the given index.
-
-    The following members of the given child entry will be modified:
-
-    - The unique key of the entry and all its childs will be updated.
-
-    @param i_pLeave [in] Pointer to tree entry to be moved.
-    @param i_pTargetBranch [in] Pointer to target branch the entry should be moved to.
-    @param i_idxInTargetBranch [in] Index in the list of the target branch's
-           child entries where the child should be inserted.
-
-    @note The index of the entry in the trees vector of entries will not be changed.
-
-    @note Throws a critical exception
-          - with Result = ObjAlreadyInList if a child with the same name and
-                          type already belongs to the branch.
-
-    @see CBranchIdxTreeEntry::remove
-    @see CBranchIdxTreeEntry::insert
-    @see CBranchIdxTreeEntry::add
-*/
-void CIdxTree::move(
-    CLeaveIdxTreeEntry*  i_pLeave,
-    CBranchIdxTreeEntry* i_pTargetBranch,
-    int                  i_idxInTargetBranch )
-//------------------------------------------------------------------------------
-{
-    QMutexLocker mtxLocker(m_pMtx);
-
-    QString strMthInArgs;
-
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
-    {
-        strMthInArgs  = "Leave: " + QString(i_pLeave == nullptr ? "nullptr" : i_pLeave->keyInTree());
-        strMthInArgs += ", TargetBranch: " + QString(i_pTargetBranch == nullptr ? "nullptr" : i_pTargetBranch->keyInTree());
-        strMthInArgs += ", IdxInTargetBranch: " + QString::number(i_idxInTargetBranch);
-    }
-
-    CMethodTracer mthTracer(
-        /* pTrcServer         */ CTrcServer::GetInstance(),
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
-        /* strObjName         */ objectName(),
-        /* strMethod          */ "move",
-        /* strMethodInArgs    */ strMthInArgs );
-
-    return move(dynamic_cast<CAbstractIdxTreeEntry*>(i_pLeave), i_pTargetBranch, i_idxInTargetBranch);
-
-} // move
-
-//------------------------------------------------------------------------------
-/*! Moves the given branch to the given target branch by inserting the entry as a
-    child of the target branch at the given index.
-
-    All childs of the branch will be moved to the target branch.
-
-    The following members of the given child entry will be modified:
-
-    - The unique key of the entry and all its childs will be updated.
-
-    @param i_pBranch [in] Pointer to tree entry to be moved.
-    @param i_strTargetPath [in] Path of the target branch the entry should be moved to.
-           The path may already start with the branch node type ("B:").
-    @param i_idxInTargetBranch [in] Index in the list of the target branch's
-           child entries where the child should be inserted.
-
-    @note The index of the entry in the trees vector of entries will not be changed.
-
-    @note Throws a critical exception
-          - with Result = ObjAlreadyInList if a child with the same name and
-                          type already belongs to the branch.
-
-    @see CBranchIdxTreeEntry::remove
-    @see CBranchIdxTreeEntry::insert
-    @see CBranchIdxTreeEntry::add
-*/
-void CIdxTree::move(
-    CBranchIdxTreeEntry* i_pBranch,
-    const QString&       i_strTargetPath,
-    int                  i_idxInTargetBranch )
-//------------------------------------------------------------------------------
-{
-    QMutexLocker mtxLocker(m_pMtx);
-
-    QString strMthInArgs;
-
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
-    {
-        strMthInArgs  = "Branch: " + QString(i_pBranch == nullptr ? "nullptr" : i_pBranch->keyInTree());
-        strMthInArgs += ", TargetPath: " + i_strTargetPath;
-        strMthInArgs += ", IdxInTargetBranch: " + QString::number(i_idxInTargetBranch);
-    }
-
-    CMethodTracer mthTracer(
-        /* pTrcServer         */ CTrcServer::GetInstance(),
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
-        /* strObjName         */ objectName(),
-        /* strMethod          */ "move",
-        /* strMethodInArgs    */ strMthInArgs );
-
-    CBranchIdxTreeEntry* pTargetBranch = findBranch(i_strTargetPath);
-
-    if( pTargetBranch == nullptr )
-    {
-        throw CException(__FILE__, __LINE__, EResultObjNotInList, i_strTargetPath);
-    }
-
-    return move(dynamic_cast<CAbstractIdxTreeEntry*>(i_pBranch), pTargetBranch, i_idxInTargetBranch);
-
-} // move
-
-//------------------------------------------------------------------------------
-/*! Moves the given branch to the given target branch by inserting the entry as a
-    child of the target branch at the given index.
-
-    All childs of the branch will be moved to the target branch.
-
-    The following members of the given child entry will be modified:
-
-    - The unique key of the entry and all its childs will be updated.
-
-    @param i_pBranch [in] Pointer to tree entry to be moved.
-    @param i_pTargetBranch [in] Pointer to target branch the entry should be moved to.
-           The path may already start with the branch node type ("B:").
-    @param i_idxInTargetBranch [in] Index in the list of the target branch's
-           child entries where the child should be inserted.
-
-    @note The index of the entry in the trees vector of entries will not be changed.
-
-    @note Throws a critical exception
-          - with Result = ObjAlreadyInList if a child with the same name and
-                          type already belongs to the branch.
-
-    @see CBranchIdxTreeEntry::remove
-    @see CBranchIdxTreeEntry::insert
-    @see CBranchIdxTreeEntry::add
-*/
-void CIdxTree::move(
-    CBranchIdxTreeEntry* i_pBranch,
-    CBranchIdxTreeEntry* i_pTargetBranch,
-    int                  i_idxInTargetBranch )
-//------------------------------------------------------------------------------
-{
-    QMutexLocker mtxLocker(m_pMtx);
-
-    QString strMthInArgs;
-
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
-    {
-        strMthInArgs  = "Branch: " + QString(i_pBranch == nullptr ? "nullptr" : i_pBranch->keyInTree());
-        strMthInArgs += ", TargetBranch: " + QString(i_pTargetBranch == nullptr ? "nullptr" : i_pTargetBranch->keyInTree());
-        strMthInArgs += ", IdxInTargetBranch: " + QString::number(i_idxInTargetBranch);
-    }
-
-    CMethodTracer mthTracer(
-        /* pTrcServer         */ CTrcServer::GetInstance(),
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
-        /* strObjName         */ objectName(),
-        /* strMethod          */ "move",
-        /* strMethodInArgs    */ strMthInArgs );
-
-    return move(dynamic_cast<CAbstractIdxTreeEntry*>(i_pBranch), i_pTargetBranch, i_idxInTargetBranch);
+    return move(i_pTreeEntry, pTargetBranch, i_idxInTargetBranch);
 
 } // move
 
@@ -4679,6 +2865,7 @@ void CIdxTree::move(
 
     @param i_pTreeEntry [in] Pointer to tree entry to be moved.
     @param i_pTargetBranch [in] Pointer to target branch the entry should be moved to.
+                                If nullptr is passed the entry will be added to the root.
     @param i_idxInTargetBranch [in] Index in the list of the target branch's
            child entries where the child should be inserted.
 
@@ -4688,14 +2875,14 @@ void CIdxTree::move(
           - with Result = ObjAlreadyInList if a child with the same name and
                           type already belongs to the branch.
 
-    @see CBranchIdxTreeEntry::remove
-    @see CBranchIdxTreeEntry::insert
-    @see CBranchIdxTreeEntry::add
+    @see CIdxTreeEntry::remove
+    @see CIdxTreeEntry::insert
+    @see CIdxTreeEntry::add
 */
 void CIdxTree::move(
-    CAbstractIdxTreeEntry* i_pTreeEntry,
-    CBranchIdxTreeEntry*   i_pTargetBranch,
-    int                    i_idxInTargetBranch )
+    CIdxTreeEntry* i_pTreeEntry,
+    CIdxTreeEntry* i_pTargetBranch,
+    int            i_idxInTargetBranch )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -4721,18 +2908,21 @@ void CIdxTree::move(
     {
         throw CException(__FILE__, __LINE__, EResultInternalProgramError);
     }
-    if( i_pTargetBranch == nullptr )
+
+    CIdxTreeEntry* pTargetBranch = i_pTargetBranch;
+
+    if( pTargetBranch == nullptr )
     {
-        throw CException(__FILE__, __LINE__, EResultInternalProgramError);
+        pTargetBranch = m_pRoot;
     }
 
     QMutexLocker mtxLocker(m_pMtx);
 
     QString strKeyInTreePrev = i_pTreeEntry->keyInTree();
 
-    emit_treeEntryAboutToBeMoved(this, i_pTreeEntry, i_pTargetBranch);
+    emit_treeEntryAboutToBeMoved(this, i_pTreeEntry, pTargetBranch);
 
-    CBranchIdxTreeEntry* pParentBranch = i_pTreeEntry->parentBranch();
+    CIdxTreeEntry* pParentBranch = i_pTreeEntry->parentBranch();
 
     pParentBranch->remove(i_pTreeEntry);
 
@@ -4740,11 +2930,11 @@ void CIdxTree::move(
 
     if( i_idxInTargetBranch >= 0 )
     {
-        idxInParentBranch = i_pTargetBranch->insert(i_idxInTargetBranch, i_pTreeEntry);
+        idxInParentBranch = pTargetBranch->insert(i_idxInTargetBranch, i_pTreeEntry);
     }
     else
     {
-        idxInParentBranch = i_pTargetBranch->add(i_pTreeEntry);
+        idxInParentBranch = pTargetBranch->add(i_pTreeEntry);
     }
 
     if( idxInParentBranch >= 0 )
@@ -4752,7 +2942,7 @@ void CIdxTree::move(
         updateKeyInTree(i_pTreeEntry);
     }
 
-    emit_treeEntryMoved(this, i_pTreeEntry, strKeyInTreePrev, i_pTargetBranch);
+    emit_treeEntryMoved(this, i_pTreeEntry, strKeyInTreePrev, pTargetBranch);
 
 } // move
 
@@ -4788,7 +2978,7 @@ public: // instance methods
               an entry at the given index in the branch's child list or at
               the given tree index.
 
-    @see CBranchIdxTreeEntry::insert
+    @see CIdxTreeEntry::insert
 */
 SErrResultInfo CIdxTree::canCopy(
     const QString& i_strSourcePath,
@@ -4823,7 +3013,7 @@ SErrResultInfo CIdxTree::canCopy(
 
     SErrResultInfo errResultInfo(nameSpace(), className(), objectName(), strMth);
 
-    CAbstractIdxTreeEntry* pTreeEntry = findEntry(i_strSourcePath);
+    CIdxTreeEntry* pTreeEntry = findEntry(i_strSourcePath);
 
     if( pTreeEntry == nullptr )
     {
@@ -4833,7 +3023,7 @@ SErrResultInfo CIdxTree::canCopy(
     }
     else // if( pTreeEntry != nullptr )
     {
-        CBranchIdxTreeEntry* pTargetBranch = findBranch(i_strTargetPath);
+        CIdxTreeEntry* pTargetBranch = findBranch(i_strTargetPath);
 
         if( pTargetBranch == nullptr )
         {
@@ -4894,268 +3084,6 @@ SErrResultInfo CIdxTree::canCopy(
 } // canCopy
 
 //------------------------------------------------------------------------------
-/*! Checks whether the given leave can be copied as a child to the given
-    target branch with the given index.
-
-    The entry may only be copied as a child to the target path if not already
-    another entry with the same name and type exists below the target path.
-
-    If the optional parameter i_idxInTree is greator or equal to zero it will
-    also be checked whether this index is free.
-
-    @param i_pLeave [in] Pointer to the source entry to be copied.
-    @param i_strTargetPath [in] Path of the parent branch to which the entry should be copied.
-           The path may already start with the branch node type ("B:").
-    @param i_idxInTargetBranch [in] Index in the list of the target branch's
-           child entries where the child should be inserted.
-    @param i_idxInTree [in] If greater or equal to zero this argument defines
-           the index in the list of tree entries where the entry should be inserted.
-
-    @return Error result struct with additional information.
-            - EResultSuccess .. The entry may be inserted.
-            - EResultObjNotInList (Severity: Error) .. Target path not found.
-            - EResultIdxOutOfRange (Severity: Error) .. The given target index is out of range.
-            - EResultObjAlreadyInList (Severtiy: Error) .. There already exists
-              a child with the same and type name below the target path.
-            - EResultIdxOutOfRange (Severtiy: Error) .. There already exists
-              an entry at the given index in the branch's child list or at
-              the given tree index.
-
-    @see CBranchIdxTreeEntry::insert
-*/
-SErrResultInfo CIdxTree::canCopy(
-    CLeaveIdxTreeEntry* i_pLeave,
-    const QString&      i_strTargetPath,
-    int                 i_idxInTargetBranch,
-    int                 i_idxInTree ) const
-//------------------------------------------------------------------------------
-{
-    QMutexLocker mtxLocker(m_pMtx);
-
-    QString strMthInArgs;
-
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
-    {
-        strMthInArgs  = "Leave: " + QString(i_pLeave == nullptr ? "nullptr" : i_pLeave->keyInTree());
-        strMthInArgs += ", TargetPath: " + i_strTargetPath;
-        strMthInArgs += ", IdxInTargetBranch: " + QString::number(i_idxInTargetBranch);
-        strMthInArgs += ", IdxInTree: " + QString::number(i_idxInTree);
-    }
-
-    CMethodTracer mthTracer(
-        /* pTrcServer         */ CTrcServer::GetInstance(),
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
-        /* strObjName         */ objectName(),
-        /* strMethod          */ "canCopy",
-        /* strMethodInArgs    */ strMthInArgs );
-
-    QString strMth = "copy";
-
-    SErrResultInfo errResultInfo(nameSpace(), className(), objectName(), strMth);
-
-    if( i_pLeave == nullptr )
-    {
-        errResultInfo.setSeverity(EResultSeverityError);
-        errResultInfo.setResult(EResultArgOutOfRange);
-        errResultInfo.setAddErrInfoDscr("i_pLeave == nullptr");
-        throw CException(__FILE__, __LINE__, errResultInfo);
-    }
-
-    CAbstractIdxTreeEntry* pTreeEntry = i_pLeave;
-
-    CBranchIdxTreeEntry* pTargetBranch = findBranch(i_strTargetPath);
-
-    if( pTargetBranch == nullptr )
-    {
-        errResultInfo.setSeverity(EResultSeverityError);
-        errResultInfo.setResult(EResultObjNotInList);
-        errResultInfo.setAddErrInfoDscr(i_strTargetPath);
-    }
-    else // if( pTargetBranch != nullptr )
-    {
-        if( i_idxInTargetBranch >= 0 && i_idxInTargetBranch > pTargetBranch->count() )
-        {
-            QString strAddErrInfo;
-            strAddErrInfo  = "IdxInTargetBranch (=" + QString::number(i_idxInTargetBranch) + ") ";
-            strAddErrInfo += "is out of range [0.." + QString::number(pTargetBranch->count()) + "]";
-            errResultInfo.setSeverity(EResultSeverityError);
-            errResultInfo.setResult(EResultIdxOutOfRange);
-            errResultInfo.setAddErrInfoDscr(strAddErrInfo);
-        }
-        else // if( i_idxInTargetBranch < 0 || i_idxInTargetBranch <= pTargetBranch->count() )
-        {
-            int idxInTargetBranch = pTargetBranch->indexOf(pTreeEntry->keyInParentBranch());
-
-            if( idxInTargetBranch >= 0 )
-            {
-                QString strAddErrInfo;
-                strAddErrInfo  = pTreeEntry->keyInParentBranch();
-                strAddErrInfo += " already belongs to branch " + pTargetBranch->keyInTree();
-                errResultInfo.setSeverity(EResultSeverityError);
-                errResultInfo.setResult(EResultObjAlreadyInList);
-                errResultInfo.setAddErrInfoDscr(strAddErrInfo);
-            }
-        } // if( i_idxInTargetBranch < 0 || i_idxInTargetBranch <= pTargetBranch->count() )
-
-        if( !errResultInfo.isErrorResult() && i_idxInTree >= 0 )
-        {
-            if( getEntry(i_idxInTree) != nullptr )
-            {
-                QString strAddErrInfo;
-                strAddErrInfo  = "IdxInTree (=" + QString::number(i_idxInTree) + ") is already used";
-                errResultInfo.setSeverity(EResultSeverityError);
-                errResultInfo.setResult(EResultIdxOutOfRange);
-                errResultInfo.setAddErrInfoDscr(strAddErrInfo);
-            }
-        } // if( !errResultInfo.isErrorResult() && i_idxInTree >= 0 )
-    } // if( pTargetBranch != nullptr )
-
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
-    {
-        int iErrResultInfoDetailLevel = 0;
-        if( m_iTrcDetailLevel >= ETraceDetailLevelVerbose ) iErrResultInfoDetailLevel = 2;
-        else if( m_iTrcDetailLevel >= ETraceDetailLevelRuntimeInfo ) iErrResultInfoDetailLevel = 1;
-        mthTracer.setMethodReturn(errResultInfo.toString(iErrResultInfoDetailLevel));
-    }
-
-    return errResultInfo;
-
-} // canCopy
-
-//------------------------------------------------------------------------------
-/*! Checks whether the given leave can be copied as a child to the given
-    target branch with the given index.
-
-    The entry may only be copied as a child to the target path if not already
-    another entry with the same name and type exists below the target path.
-
-    If the optional parameter i_idxInTree is greator or equal to zero it will
-    also be checked whether this index is free.
-
-    @param i_pLeave [in] Pointer to the source entry to be copied.
-    @param i_pTargetBranch [in] Pointer to parent branch to which the entry should be copied.
-    @param i_idxInTargetBranch [in] Index in the list of the target branch's
-           child entries where the child should be inserted.
-    @param i_idxInTree [in] If greater or equal to zero this argument defines
-           the index in the list of tree entries where the entry should be inserted.
-
-    @return Error result struct with additional information.
-            - EResultSuccess .. The entry may be inserted.
-            - EResultObjNotInList (Severity: Error) .. Target path not found.
-            - EResultIdxOutOfRange (Severity: Error) .. The given target index is out of range.
-            - EResultObjAlreadyInList (Severtiy: Error) .. There already exists
-              a child with the same and type name below the target path.
-            - EResultIdxOutOfRange (Severtiy: Error) .. There already exists
-              an entry at the given index in the branch's child list or at
-              the given tree index.
-
-    @see CBranchIdxTreeEntry::insert
-*/
-SErrResultInfo CIdxTree::canCopy(
-    CLeaveIdxTreeEntry*  i_pLeave,
-    CBranchIdxTreeEntry* i_pTargetBranch,
-    int                  i_idxInTargetBranch,
-    int                  i_idxInTree ) const
-//------------------------------------------------------------------------------
-{
-    QMutexLocker mtxLocker(m_pMtx);
-
-    QString strMthInArgs;
-
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
-    {
-        strMthInArgs  = "Leave: " + QString(i_pLeave == nullptr ? "nullptr" : i_pLeave->keyInTree());
-        strMthInArgs += ", TargetBranch: " + QString(i_pTargetBranch == nullptr ? "nullptr" : i_pTargetBranch->keyInTree());
-        strMthInArgs += ", IdxInTargetBranch: " + QString::number(i_idxInTargetBranch);
-        strMthInArgs += ", IdxInTree: " + QString::number(i_idxInTree);
-    }
-
-    CMethodTracer mthTracer(
-        /* pTrcServer         */ CTrcServer::GetInstance(),
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
-        /* strObjName         */ objectName(),
-        /* strMethod          */ "canCopy",
-        /* strMethodInArgs    */ strMthInArgs );
-
-    QString strMth = "copy";
-
-    SErrResultInfo errResultInfo(nameSpace(), className(), objectName(), strMth);
-
-    if( i_pLeave == nullptr )
-    {
-        errResultInfo.setSeverity(EResultSeverityError);
-        errResultInfo.setResult(EResultArgOutOfRange);
-        errResultInfo.setAddErrInfoDscr("i_pLeave == nullptr");
-        throw CException(__FILE__, __LINE__, errResultInfo);
-    }
-
-    if( i_pTargetBranch == nullptr )
-    {
-        errResultInfo.setSeverity(EResultSeverityError);
-        errResultInfo.setResult(EResultArgOutOfRange);
-        errResultInfo.setAddErrInfoDscr("i_pTargetBranch == nullptr");
-        throw CException(__FILE__, __LINE__, errResultInfo);
-    }
-
-    CAbstractIdxTreeEntry* pTreeEntry = i_pLeave;
-
-    CBranchIdxTreeEntry* pTargetBranch = i_pTargetBranch;
-
-    if( i_idxInTargetBranch >= 0 && i_idxInTargetBranch > pTargetBranch->count() )
-    {
-        QString strAddErrInfo;
-        strAddErrInfo  = "IdxInTargetBranch (=" + QString::number(i_idxInTargetBranch) + ") ";
-        strAddErrInfo += "is out of range [0.." + QString::number(pTargetBranch->count()) + "]";
-        errResultInfo.setSeverity(EResultSeverityError);
-        errResultInfo.setResult(EResultIdxOutOfRange);
-        errResultInfo.setAddErrInfoDscr(strAddErrInfo);
-    }
-    else // if( i_idxInTargetBranch < 0 || i_idxInTargetBranch <= pTargetBranch->count() )
-    {
-        int idxInTargetBranch = pTargetBranch->indexOf(pTreeEntry->keyInParentBranch());
-
-        if( idxInTargetBranch >= 0 )
-        {
-            QString strAddErrInfo;
-            strAddErrInfo  = pTreeEntry->keyInParentBranch();
-            strAddErrInfo += " already belongs to branch " + pTargetBranch->keyInTree();
-            errResultInfo.setSeverity(EResultSeverityError);
-            errResultInfo.setResult(EResultObjAlreadyInList);
-            errResultInfo.setAddErrInfoDscr(strAddErrInfo);
-        }
-    } // if( i_idxInTargetBranch < 0 || i_idxInTargetBranch <= pTargetBranch->count() )
-
-    if( !errResultInfo.isErrorResult() && i_idxInTree >= 0 )
-    {
-        if( getEntry(i_idxInTree) != nullptr )
-        {
-            QString strAddErrInfo;
-            strAddErrInfo  = "IdxInTree (=" + QString::number(i_idxInTree) + ") is already used";
-            errResultInfo.setSeverity(EResultSeverityError);
-            errResultInfo.setResult(EResultIdxOutOfRange);
-            errResultInfo.setAddErrInfoDscr(strAddErrInfo);
-        }
-    } // if( !errResultInfo.isErrorResult() && i_idxInTree >= 0 )
-
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
-    {
-        int iErrResultInfoDetailLevel = 0;
-        if( m_iTrcDetailLevel >= ETraceDetailLevelVerbose ) iErrResultInfoDetailLevel = 2;
-        else if( m_iTrcDetailLevel >= ETraceDetailLevelRuntimeInfo ) iErrResultInfoDetailLevel = 1;
-        mthTracer.setMethodReturn(errResultInfo.toString(iErrResultInfoDetailLevel));
-    }
-
-    return errResultInfo;
-
-} // canCopy
-
-//------------------------------------------------------------------------------
 /*! Checks whether the given branch can be copied as a child to the given
     target branch with the given index.
 
@@ -5183,13 +3111,13 @@ SErrResultInfo CIdxTree::canCopy(
               an entry at the given index in the branch's child list or at
               the given tree index.
 
-    @see CBranchIdxTreeEntry::insert
+    @see CIdxTreeEntry::insert
 */
 SErrResultInfo CIdxTree::canCopy(
-    CBranchIdxTreeEntry* i_pBranch,
-    const QString&       i_strTargetPath,
-    int                  i_idxInTargetBranch,
-    int                  i_idxInTree ) const
+    CIdxTreeEntry* i_pTreeEntry,
+    const QString& i_strTargetPath,
+    int            i_idxInTargetBranch,
+    int            i_idxInTree ) const
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(m_pMtx);
@@ -5198,7 +3126,7 @@ SErrResultInfo CIdxTree::canCopy(
 
     if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
     {
-        strMthInArgs  = "Branch: " + QString(i_pBranch == nullptr ? "nullptr" : i_pBranch->keyInTree());
+        strMthInArgs  = "TreeEntry: " + QString(i_pTreeEntry == nullptr ? "nullptr" : i_pTreeEntry->keyInTree());
         strMthInArgs += ", TargetPath: " + i_strTargetPath;
         strMthInArgs += ", IdxInTargetBranch: " + QString::number(i_idxInTargetBranch);
         strMthInArgs += ", IdxInTree: " + QString::number(i_idxInTree);
@@ -5218,17 +3146,15 @@ SErrResultInfo CIdxTree::canCopy(
 
     SErrResultInfo errResultInfo(nameSpace(), className(), objectName(), strMth);
 
-    if( i_pBranch == nullptr )
+    if( i_pTreeEntry == nullptr )
     {
         errResultInfo.setSeverity(EResultSeverityError);
         errResultInfo.setResult(EResultArgOutOfRange);
-        errResultInfo.setAddErrInfoDscr("i_pBranch == nullptr");
+        errResultInfo.setAddErrInfoDscr("i_pTreeEntry == nullptr");
         throw CException(__FILE__, __LINE__, errResultInfo);
     }
 
-    CAbstractIdxTreeEntry* pTreeEntry = i_pBranch;
-
-    CBranchIdxTreeEntry* pTargetBranch = findBranch(i_strTargetPath);
+    CIdxTreeEntry* pTargetBranch = findBranch(i_strTargetPath);
 
     if( pTargetBranch == nullptr )
     {
@@ -5249,12 +3175,12 @@ SErrResultInfo CIdxTree::canCopy(
         }
         else // if( i_idxInTargetBranch < 0 || i_idxInTargetBranch <= pTargetBranch->count() )
         {
-            int idxInTargetBranch = pTargetBranch->indexOf(pTreeEntry->keyInParentBranch());
+            int idxInTargetBranch = pTargetBranch->indexOf(i_pTreeEntry->keyInParentBranch());
 
             if( idxInTargetBranch >= 0 )
             {
                 QString strAddErrInfo;
-                strAddErrInfo  = pTreeEntry->keyInParentBranch();
+                strAddErrInfo  = i_pTreeEntry->keyInParentBranch();
                 strAddErrInfo += " already belongs to branch " + pTargetBranch->keyInTree();
                 errResultInfo.setSeverity(EResultSeverityError);
                 errResultInfo.setResult(EResultObjAlreadyInList);
@@ -5274,136 +3200,6 @@ SErrResultInfo CIdxTree::canCopy(
             }
         } // if( !errResultInfo.isErrorResult() && i_idxInTree >= 0 )
     } // if( pTargetBranch != nullptr )
-
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
-    {
-        int iErrResultInfoDetailLevel = 0;
-        if( m_iTrcDetailLevel >= ETraceDetailLevelVerbose ) iErrResultInfoDetailLevel = 2;
-        else if( m_iTrcDetailLevel >= ETraceDetailLevelRuntimeInfo ) iErrResultInfoDetailLevel = 1;
-        mthTracer.setMethodReturn(errResultInfo.toString(iErrResultInfoDetailLevel));
-    }
-
-    return errResultInfo;
-
-} // canCopy
-
-//------------------------------------------------------------------------------
-/*! Checks whether the given branch can be copied as a child to the given
-    target branch with the given index.
-
-    The entry may only be copied as a child to the target path if not already
-    another entry with the same name and type exists below the target path.
-
-    If the optional parameter i_idxInTree is greator or equal to zero it will
-    also be checked whether this index is free.
-
-    @param i_pBranch [in] Pointer to the source entry to be copied.
-    @param i_pTargetBranch [in] Pointer to parent branch to which the entry should be copied.
-    @param i_idxInTargetBranch [in] Index in the list of the target branch's
-           child entries where the child should be inserted.
-    @param i_idxInTree [in] If greater or equal to zero this argument defines
-           the index in the list of tree entries where the entry should be inserted.
-
-    @return Error result struct with additional information.
-            - EResultSuccess .. The entry may be inserted.
-            - EResultObjNotInList (Severity: Error) .. Target path not found.
-            - EResultIdxOutOfRange (Severity: Error) .. The given target index is out of range.
-            - EResultObjAlreadyInList (Severtiy: Error) .. There already exists
-              a child with the same and type name below the target path.
-            - EResultIdxOutOfRange (Severtiy: Error) .. There already exists
-              an entry at the given index in the branch's child list or at
-              the given tree index.
-
-    @see CBranchIdxTreeEntry::insert
-*/
-SErrResultInfo CIdxTree::canCopy(
-    CBranchIdxTreeEntry* i_pBranch,
-    CBranchIdxTreeEntry* i_pTargetBranch,
-    int                  i_idxInTargetBranch,
-    int                  i_idxInTree ) const
-//------------------------------------------------------------------------------
-{
-    QMutexLocker mtxLocker(m_pMtx);
-
-    QString strMthInArgs;
-
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
-    {
-        strMthInArgs  = "Branch: " + QString(i_pBranch == nullptr ? "nullptr" : i_pBranch->keyInTree());
-        strMthInArgs += ", TargetBranch: " + QString(i_pTargetBranch == nullptr ? "nullptr" : i_pTargetBranch->keyInTree());
-        strMthInArgs += ", IdxInTargetBranch: " + QString::number(i_idxInTargetBranch);
-        strMthInArgs += ", IdxInTree: " + QString::number(i_idxInTree);
-    }
-
-    CMethodTracer mthTracer(
-        /* pTrcServer         */ CTrcServer::GetInstance(),
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
-        /* strObjName         */ objectName(),
-        /* strMethod          */ "canCopy",
-        /* strMethodInArgs    */ strMthInArgs );
-
-    QString strMth = "copy";
-
-    SErrResultInfo errResultInfo(nameSpace(), className(), objectName(), strMth);
-
-    if( i_pBranch == nullptr )
-    {
-        errResultInfo.setSeverity(EResultSeverityError);
-        errResultInfo.setResult(EResultArgOutOfRange);
-        errResultInfo.setAddErrInfoDscr("i_pBranch == nullptr");
-        throw CException(__FILE__, __LINE__, errResultInfo);
-    }
-
-    if( i_pTargetBranch == nullptr )
-    {
-        errResultInfo.setSeverity(EResultSeverityError);
-        errResultInfo.setResult(EResultArgOutOfRange);
-        errResultInfo.setAddErrInfoDscr("i_pTargetBranch == nullptr");
-        throw CException(__FILE__, __LINE__, errResultInfo);
-    }
-
-    CAbstractIdxTreeEntry* pTreeEntry = i_pBranch;
-
-    CBranchIdxTreeEntry* pTargetBranch = i_pTargetBranch;
-
-    if( i_idxInTargetBranch >= 0 && i_idxInTargetBranch > pTargetBranch->count() )
-    {
-        QString strAddErrInfo;
-        strAddErrInfo  = "IdxInTargetBranch (=" + QString::number(i_idxInTargetBranch) + ") ";
-        strAddErrInfo += "is out of range [0.." + QString::number(pTargetBranch->count()) + "]";
-        errResultInfo.setSeverity(EResultSeverityError);
-        errResultInfo.setResult(EResultIdxOutOfRange);
-        errResultInfo.setAddErrInfoDscr(strAddErrInfo);
-    }
-    else // if( i_idxInTargetBranch < 0 || i_idxInTargetBranch <= pTargetBranch->count() )
-    {
-        int idxInTargetBranch = pTargetBranch->indexOf(pTreeEntry->keyInParentBranch());
-
-        if( idxInTargetBranch >= 0 )
-        {
-            QString strAddErrInfo;
-            strAddErrInfo  = pTreeEntry->keyInParentBranch();
-            strAddErrInfo += " already belongs to branch " + pTargetBranch->keyInTree();
-            errResultInfo.setSeverity(EResultSeverityError);
-            errResultInfo.setResult(EResultObjAlreadyInList);
-            errResultInfo.setAddErrInfoDscr(strAddErrInfo);
-        }
-    } // if( i_idxInTargetBranch < 0 || i_idxInTargetBranch <= pTargetBranch->count() )
-
-    if( !errResultInfo.isErrorResult() && i_idxInTree >= 0 )
-    {
-        if( getEntry(i_idxInTree) != nullptr )
-        {
-            QString strAddErrInfo;
-            strAddErrInfo  = "IdxInTree (=" + QString::number(i_idxInTree) + ") is already used";
-            errResultInfo.setSeverity(EResultSeverityError);
-            errResultInfo.setResult(EResultIdxOutOfRange);
-            errResultInfo.setAddErrInfoDscr(strAddErrInfo);
-        }
-    } // if( !errResultInfo.isErrorResult() && i_idxInTree >= 0 )
 
     if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
     {
@@ -5429,6 +3225,7 @@ SErrResultInfo CIdxTree::canCopy(
 
     @param i_pTreeEntry [in] Pointer to the source entry to be copied.
     @param i_pTargetBranch [in] Pointer to parent branch to which the entry should be copied.
+                                If nullptr is passed the entry will be added to the root.
     @param i_idxInTargetBranch [in] Index in the list of the target branch's
            child entries where the child should be inserted.
     @param i_idxInTree [in] If greater or equal to zero this argument defines
@@ -5444,13 +3241,13 @@ SErrResultInfo CIdxTree::canCopy(
               an entry at the given index in the branch's child list or at
               the given tree index.
 
-    @see CBranchIdxTreeEntry::insert
+    @see CIdxTreeEntry::insert
 */
 SErrResultInfo CIdxTree::canCopy(
-    CAbstractIdxTreeEntry* i_pTreeEntry,
-    CBranchIdxTreeEntry*   i_pTargetBranch,
-    int                    i_idxInTargetBranch,
-    int                    i_idxInTree ) const
+    CIdxTreeEntry* i_pTreeEntry,
+    CIdxTreeEntry* i_pTargetBranch,
+    int            i_idxInTargetBranch,
+    int            i_idxInTree ) const
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -5485,19 +3282,16 @@ SErrResultInfo CIdxTree::canCopy(
         throw CException(__FILE__, __LINE__, errResultInfo);
     }
 
-    if( i_pTargetBranch == nullptr )
+    CIdxTreeEntry* pTargetBranch = i_pTargetBranch;
+
+    if( pTargetBranch == nullptr )
     {
-        errResultInfo.setSeverity(EResultSeverityError);
-        errResultInfo.setResult(EResultArgOutOfRange);
-        errResultInfo.setAddErrInfoDscr("i_pTargetBranch == nullptr");
-        throw CException(__FILE__, __LINE__, errResultInfo);
+        pTargetBranch = m_pRoot;
     }
 
     QMutexLocker mtxLocker(m_pMtx);
 
-    CAbstractIdxTreeEntry* pTreeEntry = i_pTreeEntry;
-
-    CBranchIdxTreeEntry* pTargetBranch = i_pTargetBranch;
+    CIdxTreeEntry* pTreeEntry = i_pTreeEntry;
 
     if( i_idxInTargetBranch >= 0 && i_idxInTargetBranch > pTargetBranch->count() )
     {
@@ -5572,8 +3366,8 @@ public: // instance methods
 
     @return Index of the tree entries copy in the trees vector of entries.
 
-    @see CBranchIdxTreeEntry::insert
-    @see CBranchIdxTreeEntry::add
+    @see CIdxTreeEntry::insert
+    @see CIdxTreeEntry::add
 */
 int CIdxTree::copy(
     const QString& i_strSourcePath,
@@ -5604,14 +3398,14 @@ int CIdxTree::copy(
         /* strMethod          */ "copy",
         /* strMethodInArgs    */ strMthInArgs );
 
-    CAbstractIdxTreeEntry* pTreeEntry = findEntry(i_strSourcePath);
+    CIdxTreeEntry* pTreeEntry = findEntry(i_strSourcePath);
 
     if( pTreeEntry == nullptr )
     {
         throw CException(__FILE__, __LINE__, EResultObjNotInList, i_strSourcePath);
     }
 
-    CBranchIdxTreeEntry* pTargetBranch = findBranch(i_strTargetPath);
+    CIdxTreeEntry* pTargetBranch = findBranch(i_strTargetPath);
 
     if( pTargetBranch == nullptr )
     {
@@ -5648,14 +3442,14 @@ int CIdxTree::copy(
 
     @return Index of the tree entries copy in the trees vector of entries.
 
-    @see CBranchIdxTreeEntry::insert
-    @see CBranchIdxTreeEntry::add
+    @see CIdxTreeEntry::insert
+    @see CIdxTreeEntry::add
 */
 int CIdxTree::copy(
-    CLeaveIdxTreeEntry* i_pLeave,
-    const QString&      i_strTargetPath,
-    int                 i_idxInTargetBranch,
-    int                 i_idxInTree )
+    CIdxTreeEntry* i_pTreeEntry,
+    const QString& i_strTargetPath,
+    int            i_idxInTargetBranch,
+    int            i_idxInTree )
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(m_pMtx);
@@ -5664,7 +3458,7 @@ int CIdxTree::copy(
 
     if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
     {
-        strMthInArgs  = "Leave: " + QString(i_pLeave == nullptr ? "nullptr" : i_pLeave->keyInTree());
+        strMthInArgs  = "TreeEntry: " + QString(i_pTreeEntry == nullptr ? "nullptr" : i_pTreeEntry->keyInTree());
         strMthInArgs += ", TargetPath: " + i_strTargetPath;
         strMthInArgs += ", IdxInTargetBranch: " + QString::number(i_idxInTargetBranch);
         strMthInArgs += ", IdxInTree: " + QString::number(i_idxInTree);
@@ -5680,211 +3474,14 @@ int CIdxTree::copy(
         /* strMethod          */ "copy",
         /* strMethodInArgs    */ strMthInArgs );
 
-    CAbstractIdxTreeEntry* pTreeEntry = dynamic_cast<CAbstractIdxTreeEntry*>(i_pLeave);
-
-    CBranchIdxTreeEntry* pTargetBranch = findBranch(i_strTargetPath);
+    CIdxTreeEntry* pTargetBranch = findBranch(i_strTargetPath);
 
     if( pTargetBranch == nullptr )
     {
         throw CException(__FILE__, __LINE__, EResultObjNotInList, i_strTargetPath);
     }
 
-    int idxInTree = copy(pTreeEntry, pTargetBranch, i_idxInTargetBranch, i_idxInTree);
-
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
-    {
-        mthTracer.setMethodReturn(QString::number(idxInTree));
-    }
-
-    return idxInTree;
-
-} // copy
-
-//------------------------------------------------------------------------------
-/*! Copies the given leave to the given target branch by inserting a copy
-    of the entry as a child of the target branch at the given index.
-
-    If the optional parameter i_idxInTree is greator or equal to zero this index will be used.
-
-    Otherwise (default) if there is a free index in the tree's list of tree entries this index
-    will be used. If no free index is found the entry will be appended at the end of the list.
-
-    @param i_pLeave [in] Pointer to tree entry to be copied.
-    @param i_pTargetBranch [in] Pointer to target branch the entry should be copied to.
-    @param i_idxInTargetBranch [in] Index in the list of the target branch's
-           child entries where the copy of the entry should be inserted.
-    @param i_idxInTree [in] If greater or equal to zero this argument defines
-           the index in the list of tree entries where the entry should be inserted.
-
-    @return Index of the tree entries copy in the trees vector of entries.
-
-    @see CBranchIdxTreeEntry::insert
-    @see CBranchIdxTreeEntry::add
-*/
-int CIdxTree::copy(
-    CLeaveIdxTreeEntry*  i_pLeave,
-    CBranchIdxTreeEntry* i_pTargetBranch,
-    int                  i_idxInTargetBranch,
-    int                  i_idxInTree )
-//------------------------------------------------------------------------------
-{
-    QMutexLocker mtxLocker(m_pMtx);
-
-    QString strMthInArgs;
-
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
-    {
-        strMthInArgs  = "Leave: " + QString(i_pLeave == nullptr ? "nullptr" : i_pLeave->keyInTree());
-        strMthInArgs += ", TargetBranch: " + QString(i_pTargetBranch == nullptr ? "nullptr" : i_pTargetBranch->keyInTree());
-        strMthInArgs += ", IdxInTargetBranch: " + QString::number(i_idxInTargetBranch);
-        strMthInArgs += ", IdxInTree: " + QString::number(i_idxInTree);
-    }
-
-    CMethodTracer mthTracer(
-        /* pTrcServer         */ CTrcServer::GetInstance(),
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
-        /* strObjName         */ objectName(),
-        /* strMethod          */ "copy",
-        /* strMethodInArgs    */ strMthInArgs );
-
-    int idxInTree = copy(dynamic_cast<CAbstractIdxTreeEntry*>(i_pLeave), i_pTargetBranch, i_idxInTargetBranch, i_idxInTree);
-
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
-    {
-        mthTracer.setMethodReturn(QString::number(idxInTree));
-    }
-
-    return idxInTree;
-
-} // copy
-
-//------------------------------------------------------------------------------
-/*! Copies the given branch to the given target branch by inserting a copy
-    of the entry as a child of the target branch at the given index.
-
-    Also all childs of the branch will be copied to the target branch.
-
-    If the optional parameter i_idxInTree is greator or equal to zero this index will be used.
-
-    Otherwise (default) if there is a free index in the tree's list of tree entries this index
-    will be used. If no free index is found the entry will be appended at the end of the list.
-
-    @param i_pBranch [in] Pointer to tree entry to be copied.
-    @param i_strTargetPath [in] Path of the target branch the entry should be copied to.
-           The path may already start with the branch node type ("B:").
-    @param i_idxInTargetBranch [in] Index in the list of the target branch's
-           child entries where the copy of the entry should be inserted.
-    @param i_idxInTree [in] If greater or equal to zero this argument defines
-           the index in the list of tree entries where the entry should be inserted.
-
-    @return Index of the tree entries copy in the trees vector of entries.
-
-    @see CBranchIdxTreeEntry::insert
-    @see CBranchIdxTreeEntry::add
-*/
-int CIdxTree::copy(
-    CBranchIdxTreeEntry* i_pBranch,
-    const QString&       i_strTargetPath,
-    int                  i_idxInTargetBranch,
-    int                  i_idxInTree )
-//------------------------------------------------------------------------------
-{
-    QMutexLocker mtxLocker(m_pMtx);
-
-    QString strMthInArgs;
-
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
-    {
-        strMthInArgs  = "Branch: " + QString(i_pBranch == nullptr ? "nullptr" : i_pBranch->keyInTree());
-        strMthInArgs += ", TargetPath: " + i_strTargetPath;
-        strMthInArgs += ", IdxInTargetBranch: " + QString::number(i_idxInTargetBranch);
-        strMthInArgs += ", IdxInTree: " + QString::number(i_idxInTree);
-    }
-
-    CMethodTracer mthTracer(
-        /* pTrcServer         */ CTrcServer::GetInstance(),
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
-        /* strObjName         */ objectName(),
-        /* strMethod          */ "copy",
-        /* strMethodInArgs    */ strMthInArgs );
-
-    CBranchIdxTreeEntry* pTargetBranch = findBranch(i_strTargetPath);
-
-    if( pTargetBranch == nullptr )
-    {
-        throw CException(__FILE__, __LINE__, EResultObjNotInList, i_strTargetPath);
-    }
-
-    int idxInTree = copy(dynamic_cast<CAbstractIdxTreeEntry*>(i_pBranch), pTargetBranch, i_idxInTargetBranch, i_idxInTree);
-
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
-    {
-        mthTracer.setMethodReturn(QString::number(idxInTree));
-    }
-
-    return idxInTree;
-
-} // copy
-
-//------------------------------------------------------------------------------
-/*! Copies the given branch to the given target branch by inserting a copy
-    of the entry as a child of the target branch at the given index.
-
-    Also all childs of the branch will be copied to the target branch.
-
-    If the optional parameter i_idxInTree is greator or equal to zero this index will be used.
-
-    Otherwise (default) if there is a free index in the tree's list of tree entries this index
-    will be used. If no free index is found the entry will be appended at the end of the list.
-
-    @param i_pBranch [in] Pointer to tree entry to be copied.
-    @param i_pTargetBranch [in] Pointer to target branch the entry should be copied to.
-    @param i_idxInTargetBranch [in] Index in the list of the target branch's
-           child entries where the copy of the entry should be inserted.
-    @param i_idxInTree [in] If greater or equal to zero this argument defines
-           the index in the list of tree entries where the entry should be inserted.
-
-    @return Index of the tree entries copy in the trees vector of entries.
-
-    @see CBranchIdxTreeEntry::insert
-    @see CBranchIdxTreeEntry::add
-*/
-int CIdxTree::copy(
-    CBranchIdxTreeEntry* i_pBranch,
-    CBranchIdxTreeEntry* i_pTargetBranch,
-    int                  i_idxInTargetBranch,
-    int                  i_idxInTree )
-//------------------------------------------------------------------------------
-{
-    QMutexLocker mtxLocker(m_pMtx);
-
-    QString strMthInArgs;
-
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
-    {
-        strMthInArgs  = "Branch: " + QString(i_pBranch == nullptr ? "nullptr" : i_pBranch->keyInTree());
-        strMthInArgs += ", TargetBranch: " + QString(i_pTargetBranch == nullptr ? "nullptr" : i_pTargetBranch->keyInTree());
-        strMthInArgs += ", IdxInTargetBranch: " + QString::number(i_idxInTargetBranch);
-        strMthInArgs += ", IdxInTree: " + QString::number(i_idxInTree);
-    }
-
-    CMethodTracer mthTracer(
-        /* pTrcServer         */ CTrcServer::GetInstance(),
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
-        /* strObjName         */ objectName(),
-        /* strMethod          */ "copy",
-        /* strMethodInArgs    */ strMthInArgs );
-
-    int idxInTree = copy(dynamic_cast<CAbstractIdxTreeEntry*>(i_pBranch), i_pTargetBranch, i_idxInTargetBranch, i_idxInTree);
+    int idxInTree = copy(i_pTreeEntry, pTargetBranch, i_idxInTargetBranch, i_idxInTree);
 
     if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
     {
@@ -5912,6 +3509,7 @@ int CIdxTree::copy(
 
     @param i_pTreeEntry [in] Pointer to tree entry to be copied.
     @param i_pTargetBranch [in] Pointer to target branch the entry should be copied to.
+                                If nullptr is passed the entry will be added to the root.
     @param i_idxInTargetBranch [in] Index in the list of the target branch's
            child entries where the copy of the entry should be inserted.
     @param i_idxInTree [in] If greater or equal to zero this argument defines
@@ -5919,14 +3517,14 @@ int CIdxTree::copy(
 
     @return Index of the tree entries copy in the trees vector of entries.
 
-    @see CBranchIdxTreeEntry::insert
-    @see CBranchIdxTreeEntry::add
+    @see CIdxTreeEntry::insert
+    @see CIdxTreeEntry::add
 */
 int CIdxTree::copy(
-    CAbstractIdxTreeEntry* i_pTreeEntry,
-    CBranchIdxTreeEntry*   i_pTargetBranch,
-    int                    i_idxInTargetBranch,
-    int                    i_idxInTree )
+    CIdxTreeEntry* i_pTreeEntry,
+    CIdxTreeEntry* i_pTargetBranch,
+    int            i_idxInTargetBranch,
+    int            i_idxInTree )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -5953,23 +3551,26 @@ int CIdxTree::copy(
     {
         throw CException(__FILE__, __LINE__, EResultInternalProgramError);
     }
-    if( i_pTargetBranch == nullptr )
+
+    CIdxTreeEntry* pTargetBranch = i_pTargetBranch;
+
+    if( pTargetBranch == nullptr )
     {
-        throw CException(__FILE__, __LINE__, EResultInternalProgramError);
+        pTargetBranch = m_pRoot;
     }
 
     QMutexLocker mtxLocker(m_pMtx);
 
     QString strName = i_pTreeEntry->name();
 
-    if( i_pTargetBranch->indexOf(i_pTreeEntry->entryType(), strName) >= 0 )
+    if( pTargetBranch->indexOf(i_pTreeEntry->entryType(), strName) >= 0 )
     {
         QString strUniqueName = strName + " Copy";
         int     iCopies = 1;
 
         while( true )
         {
-            if( i_pTargetBranch->indexOf(i_pTreeEntry->entryType(), strUniqueName) >= 0 )
+            if( pTargetBranch->indexOf(i_pTreeEntry->entryType(), strUniqueName) >= 0 )
             {
                 strUniqueName = strName + " Copy " + QString::number(++iCopies);
             }
@@ -5980,18 +3581,18 @@ int CIdxTree::copy(
         }
         strName = strUniqueName;
 
-    } // if( i_pTargetBranch->indexOf(i_pTreeEntry->entryType(), strName) >= 0 )
+    } // if( pTargetBranch->indexOf(i_pTreeEntry->entryType(), strName) >= 0 )
 
-    CAbstractIdxTreeEntry* pTreeEntryTrg = createTreeEntry(i_pTreeEntry->entryType(), strName);
+    CIdxTreeEntry* pTreeEntryTrg = createTreeEntry(i_pTreeEntry->entryType(), strName);
 
-    int idxInTree = insert(pTreeEntryTrg, i_pTargetBranch, i_idxInTargetBranch, i_idxInTree);
+    int idxInTree = insert(pTreeEntryTrg, pTargetBranch, i_idxInTargetBranch, i_idxInTree);
 
     if( i_pTreeEntry->entryType() == EIdxTreeEntryType::Branch )
     {
-        CBranchIdxTreeEntry*   pBranch = dynamic_cast<CBranchIdxTreeEntry*>(i_pTreeEntry);
-        CBranchIdxTreeEntry*   pTargetBranch = dynamic_cast<CBranchIdxTreeEntry*>(pTreeEntryTrg);
-        CAbstractIdxTreeEntry* pTreeEntry;
-        int                    idxEntry;
+        CIdxTreeEntry* pBranch = i_pTreeEntry;
+        CIdxTreeEntry* pTargetBranch = pTreeEntryTrg;
+        CIdxTreeEntry* pTreeEntry;
+        int            idxEntry;
 
         for( idxEntry = 0; idxEntry < pBranch->count(); ++idxEntry )
         {
@@ -6030,8 +3631,8 @@ public: // instance methods
             - EResultObjAlreadyInList (Severtiy: Error) .. There already exists
               a child with the same and type name below the target path.
 
-    @see CLeaveIdxTreeEntry::rename
-    @see CBranchIdxTreeEntry::rename
+    @see CIdxTreeEntry::rename
+    @see CIdxTreeEntry::rename
 */
 SErrResultInfo CIdxTree::canRename( const QString& i_strSourcePath, const QString& i_strNameNew ) const
 //------------------------------------------------------------------------------
@@ -6060,7 +3661,7 @@ SErrResultInfo CIdxTree::canRename( const QString& i_strSourcePath, const QStrin
 
     SErrResultInfo errResultInfo(nameSpace(), className(), objectName(), strMth);
 
-    CAbstractIdxTreeEntry* pTreeEntry = findEntry(i_strSourcePath);
+    CIdxTreeEntry* pTreeEntry = findEntry(i_strSourcePath);
 
     if( pTreeEntry == nullptr )
     {
@@ -6085,92 +3686,6 @@ SErrResultInfo CIdxTree::canRename( const QString& i_strSourcePath, const QStrin
 } // canRename
 
 //------------------------------------------------------------------------------
-/*! Checks whether the given leave can be renamed to the given new name.
-
-    The entry may only be renamed to the desired name if not already
-    another entry with the same name and type exists below the target path.
-
-    @param i_pLeave [in] Pointer to leave to be renamed.
-    @param i_strNameNew [in] Desired new name of the entry.
-
-    @return Error result struct with additional information.
-            - EResultSuccess .. The entry may be renamed.
-            - EResultObjAlreadyInList (Severtiy: Error) .. There already exists
-              a child with the same and type name below the target path.
-
-    @see CLeaveIdxTreeEntry::rename
-*/
-SErrResultInfo CIdxTree::canRename( CLeaveIdxTreeEntry* i_pLeave, const QString& i_strNameNew ) const
-//------------------------------------------------------------------------------
-{
-    QMutexLocker mtxLocker(m_pMtx);
-
-    QString strMthInArgs;
-
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
-    {
-        strMthInArgs  = "Leave: " + QString(i_pLeave == nullptr ? "nullptr" : i_pLeave->keyInTree());
-        strMthInArgs += ", NameNew: " + i_strNameNew;
-    }
-
-    CMethodTracer mthTracer(
-        /* pTrcServer         */ CTrcServer::GetInstance(),
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
-        /* strObjName         */ objectName(),
-        /* strMethod          */ "canRename",
-        /* strMethodInArgs    */ strMthInArgs );
-
-    return canRename(dynamic_cast<CAbstractIdxTreeEntry*>(i_pLeave), i_strNameNew);
-
-} // canRename
-
-//------------------------------------------------------------------------------
-/*! Checks whether the given branch can be renamed to the given new name.
-
-    The entry may only be renamed to the desired name if not already
-    another entry with the same name and type exists below the target path.
-
-    @param i_pBranch [in] Pointer to branch to be renamed.
-    @param i_strNameNew [in] Desired new name of the entry.
-
-    @return Error result struct with additional information.
-            - EResultSuccess .. The entry may be renamed.
-            - EResultObjAlreadyInList (Severtiy: Error) .. There already exists
-              a child with the same and type name below the target path.
-
-    @see CBranchIdxTreeEntry::rename
-*/
-SErrResultInfo CIdxTree::canRename( CBranchIdxTreeEntry* i_pBranch, const QString& i_strNameNew ) const
-//------------------------------------------------------------------------------
-{
-    QMutexLocker mtxLocker(m_pMtx);
-
-    QString strMthInArgs;
-
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
-    {
-        strMthInArgs  = "Branch: " + QString(i_pBranch == nullptr ? "nullptr" : i_pBranch->keyInTree());
-        strMthInArgs += ", NameNew: " + i_strNameNew;
-    }
-
-    CMethodTracer mthTracer(
-        /* pTrcServer         */ CTrcServer::GetInstance(),
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
-        /* strObjName         */ objectName(),
-        /* strMethod          */ "canRename",
-        /* strMethodInArgs    */ strMthInArgs );
-
-    return canRename(dynamic_cast<CAbstractIdxTreeEntry*>(i_pBranch), i_strNameNew);
-
-} // canRename
-
-//------------------------------------------------------------------------------
 /*! Checks whether the given entry can be renamed to the given new name.
 
     The entry may only be renamed to the desired name if not already
@@ -6184,10 +3699,10 @@ SErrResultInfo CIdxTree::canRename( CBranchIdxTreeEntry* i_pBranch, const QStrin
             - EResultObjAlreadyInList (Severtiy: Error) .. There already exists
               a child with the same and type name below the target path.
 
-    @see CLeaveIdxTreeEntry::rename
-    @see CBranchIdxTreeEntry::rename
+    @see CIdxTreeEntry::rename
+    @see CIdxTreeEntry::rename
 */
-SErrResultInfo CIdxTree::canRename( CAbstractIdxTreeEntry* i_pTreeEntry, const QString& i_strNameNew ) const
+SErrResultInfo CIdxTree::canRename( CIdxTreeEntry* i_pTreeEntry, const QString& i_strNameNew ) const
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -6219,7 +3734,7 @@ SErrResultInfo CIdxTree::canRename( CAbstractIdxTreeEntry* i_pTreeEntry, const Q
 
     SErrResultInfo errResultInfo(nameSpace(), className(), objectName(), strMth);
 
-    CBranchIdxTreeEntry* pParentBranch = i_pTreeEntry->parentBranch();
+    CIdxTreeEntry* pParentBranch = i_pTreeEntry->parentBranch();
 
     if( pParentBranch != nullptr )
     {
@@ -6264,8 +3779,8 @@ public: // instance methods
           - with Result = ObjAlreadyInList if a child with the same name and
                           type already belongs to the branch.
 
-    @see CLeaveIdxTreeEntry::rename
-    @see CBranchIdxTreeEntry::rename
+    @see CIdxTreeEntry::rename
+    @see CIdxTreeEntry::rename
 */
 void CIdxTree::rename( const QString& i_strSourcePath, const QString& i_strNameNew )
 //------------------------------------------------------------------------------
@@ -6290,7 +3805,7 @@ void CIdxTree::rename( const QString& i_strSourcePath, const QString& i_strNameN
         /* strMethod          */ "rename",
         /* strMethodInArgs    */ strMthInArgs );
 
-    CAbstractIdxTreeEntry* pTreeEntry = findEntry(i_strSourcePath);
+    CIdxTreeEntry* pTreeEntry = findEntry(i_strSourcePath);
 
     if( pTreeEntry == nullptr )
     {
@@ -6298,102 +3813,6 @@ void CIdxTree::rename( const QString& i_strSourcePath, const QString& i_strNameN
     }
 
     return rename(pTreeEntry, i_strNameNew);
-
-} // rename
-
-//------------------------------------------------------------------------------
-/*! Renames the given leave to the given new name.
-
-    The entry may only be renamed to the desired name if not already
-    another entry with the same name and type exists below the target path.
-
-    The following members of the given entry will be modified:
-
-    - The unique key of the entry will be updated.
-
-    @param i_pLeave [in] Pointer to leave to be renamed.
-    @param i_strNameNew [in] New name of entry.
-
-    @note The index of the entry in the trees vector of entries will not be changed.
-
-    @note Throws a critical exception
-          - with Result = ObjAlreadyInList if a child with the same name and
-                          type already belongs to the branch.
-
-    @see CLeaveIdxTreeEntry::rename
-*/
-void CIdxTree::rename( CLeaveIdxTreeEntry* i_pLeave, const QString& i_strNameNew )
-//------------------------------------------------------------------------------
-{
-    QMutexLocker mtxLocker(m_pMtx);
-
-    QString strMthInArgs;
-
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
-    {
-        strMthInArgs  = "Leave: " + QString(i_pLeave == nullptr ? "nullptr" : i_pLeave->keyInTree());
-        strMthInArgs += ", NameNew: " + i_strNameNew;
-    }
-
-    CMethodTracer mthTracer(
-        /* pTrcServer         */ CTrcServer::GetInstance(),
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
-        /* strObjName         */ objectName(),
-        /* strMethod          */ "rename",
-        /* strMethodInArgs    */ strMthInArgs );
-
-    return rename(dynamic_cast<CAbstractIdxTreeEntry*>(i_pLeave), i_strNameNew);
-
-} // rename
-
-//------------------------------------------------------------------------------
-/*! Renames the given branch to the given new name.
-
-    The entry may only be renamed to the desired name if not already
-    another entry with the same name and type exists below the target path.
-
-    The following members of the given entry together with all its childs will be modified:
-
-    - The unique key of the entry and all its childs will be updated.
-
-    @param i_pBranch [in] Poiner to tree entry to be renamed.
-    @param i_strNameNew [in] New name of entry.
-
-    @note The index of the entry in the trees vector of entries will not be changed.
-
-    @note Throws a critical exception
-          - with Result = ObjAlreadyInList if a child with the same name and
-                          type already belongs to the branch.
-
-    @see CBranchIdxTreeEntry::rename
-*/
-void CIdxTree::rename( CBranchIdxTreeEntry* i_pBranch, const QString& i_strNameNew )
-//------------------------------------------------------------------------------
-{
-    QMutexLocker mtxLocker(m_pMtx);
-
-    QString strMthInArgs;
-
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
-    {
-        strMthInArgs  = "Branch: " + QString(i_pBranch == nullptr ? "nullptr" : i_pBranch->keyInTree());
-        strMthInArgs += ", NameNew: " + i_strNameNew;
-    }
-
-    CMethodTracer mthTracer(
-        /* pTrcServer         */ CTrcServer::GetInstance(),
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
-        /* strObjName         */ objectName(),
-        /* strMethod          */ "rename",
-        /* strMethodInArgs    */ strMthInArgs );
-
-    return rename(dynamic_cast<CAbstractIdxTreeEntry*>(i_pBranch), i_strNameNew);
 
 } // rename
 
@@ -6416,10 +3835,10 @@ void CIdxTree::rename( CBranchIdxTreeEntry* i_pBranch, const QString& i_strNameN
           - with Result = ObjAlreadyInList if a child with the same name and
                           type already belongs to the branch.
 
-    @see CLeaveIdxTreeEntry::rename
-    @see CBranchIdxTreeEntry::rename
+    @see CIdxTreeEntry::rename
+    @see CIdxTreeEntry::rename
 */
-void CIdxTree::rename( CAbstractIdxTreeEntry* i_pTreeEntry, const QString& i_strNameNew )
+void CIdxTree::rename( CIdxTreeEntry* i_pTreeEntry, const QString& i_strNameNew )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -6452,7 +3871,7 @@ void CIdxTree::rename( CAbstractIdxTreeEntry* i_pTreeEntry, const QString& i_str
 
     emit_treeEntryAboutToBeRenamed(this, i_pTreeEntry, i_strNameNew);
 
-    CBranchIdxTreeEntry* pParentBranch = i_pTreeEntry->parentBranch();
+    CIdxTreeEntry* pParentBranch = i_pTreeEntry->parentBranch();
 
     pParentBranch->rename(i_pTreeEntry, i_strNameNew);
 
@@ -6473,7 +3892,7 @@ protected: // instance methods
 
     @param i_pTreeEntry [in] Pointer to entry whose key has to be updated.
 */
-void CIdxTree::updateKeyInTree( CAbstractIdxTreeEntry* i_pTreeEntry )
+void CIdxTree::updateKeyInTree( CIdxTreeEntry* i_pTreeEntry )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -6507,7 +3926,7 @@ void CIdxTree::updateKeyInTree( CAbstractIdxTreeEntry* i_pTreeEntry )
 
     QString strKeyInTree = strEntryType + ":";
 
-    CBranchIdxTreeEntry* pParentBranch = i_pTreeEntry->parentBranch();
+    CIdxTreeEntry* pParentBranch = i_pTreeEntry->parentBranch();
 
     if( pParentBranch != m_pRoot )
     {
@@ -6537,8 +3956,8 @@ void CIdxTree::updateKeyInTree( CAbstractIdxTreeEntry* i_pTreeEntry )
 
     if( i_pTreeEntry->entryType() == EIdxTreeEntryType::Branch )
     {
-        CBranchIdxTreeEntry*   pBranch = dynamic_cast<CBranchIdxTreeEntry*>(i_pTreeEntry);
-        CAbstractIdxTreeEntry* pTreeEntry;
+        CIdxTreeEntry*   pBranch = i_pTreeEntry;
+        CIdxTreeEntry* pTreeEntry;
         int                    idxEntry;
 
         for( idxEntry = 0; idxEntry < pBranch->count(); ++idxEntry )
@@ -6562,7 +3981,7 @@ protected: // instance methods
 
     @param i_pBranch [in] Pointer to branch to be removed and (optionally) deleted.
 */
-void CIdxTree::clear( CBranchIdxTreeEntry* i_pBranch )
+void CIdxTree::clear( CIdxTreeEntry* i_pBranch )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -6587,7 +4006,7 @@ void CIdxTree::clear( CBranchIdxTreeEntry* i_pBranch )
         throw CException(__FILE__, __LINE__, EResultInternalProgramError);
     }
 
-    CAbstractIdxTreeEntry* pTreeEntry;
+    CIdxTreeEntry* pTreeEntry;
     int                    idxEntry;
 
     for( idxEntry = i_pBranch->count()-1; idxEntry >= 0; --idxEntry )
@@ -6596,7 +4015,7 @@ void CIdxTree::clear( CBranchIdxTreeEntry* i_pBranch )
 
         if( pTreeEntry->entryType() == EIdxTreeEntryType::Branch )
         {
-            clear(dynamic_cast<CBranchIdxTreeEntry*>(pTreeEntry));
+            clear(pTreeEntry);
         }
 
         // The dtor of the tree entry will remove the entry
@@ -6660,7 +4079,7 @@ CIdxTree::iterator CIdxTree::end()
 } // iterator::end()
 
 /*==============================================================================
-public: // overridable instance methods (used by friend class CAbstractIdxTreeEntry and its derivates to avoid that the tree entry base classes must inherit QObject to emit signals)
+public: // overridable instance methods (used by friend class CIdxTreeEntry and its derivates to avoid that the tree entry base classes must inherit QObject to emit signals)
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
@@ -6673,7 +4092,7 @@ public: // overridable instance methods (used by friend class CAbstractIdxTreeEn
     tree entries reduces the number of signal/slot connections and avoids that
     the tree entry base class must be derived from QObject.
     */
-void CIdxTree::onTreeEntryChanged( CAbstractIdxTreeEntry* i_pTreeEntry )
+void CIdxTree::onTreeEntryChanged( CIdxTreeEntry* i_pTreeEntry )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -6708,7 +4127,7 @@ protected: // instance methods (tracing of signals)
     @param i_pIdxTree [in] Pointer to index tree.
     @param i_pTreeEntry [in] Pointer to tree entry which has been added.
 */
-void CIdxTree::emit_treeEntryAdded( CIdxTree* i_pIdxTree, CAbstractIdxTreeEntry* i_pTreeEntry )
+void CIdxTree::emit_treeEntryAdded( CIdxTree* i_pIdxTree, CIdxTreeEntry* i_pTreeEntry )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -6740,7 +4159,7 @@ void CIdxTree::emit_treeEntryAdded( CIdxTree* i_pIdxTree, CAbstractIdxTreeEntry*
     @param i_pIdxTree [in] Pointer to index tree.
     @param i_pTreeEntry [in] Pointer to tree entry which has been changed.
 */
-void CIdxTree::emit_treeEntryChanged( CIdxTree* i_pIdxTree, CAbstractIdxTreeEntry* i_pTreeEntry )
+void CIdxTree::emit_treeEntryChanged( CIdxTree* i_pIdxTree, CIdxTreeEntry* i_pTreeEntry )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -6772,7 +4191,7 @@ void CIdxTree::emit_treeEntryChanged( CIdxTree* i_pIdxTree, CAbstractIdxTreeEntr
     @param i_pIdxTree [in] Pointer to index tree.
     @param i_pTreeEntry [in] Pointer to tree entry which is goint to be removed.
 */
-void CIdxTree::emit_treeEntryAboutToBeRemoved( CIdxTree* i_pIdxTree, CAbstractIdxTreeEntry* i_pTreeEntry )
+void CIdxTree::emit_treeEntryAboutToBeRemoved( CIdxTree* i_pIdxTree, CIdxTreeEntry* i_pTreeEntry )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -6808,7 +4227,7 @@ void CIdxTree::emit_treeEntryAboutToBeRemoved( CIdxTree* i_pIdxTree, CAbstractId
 */
 void CIdxTree::emit_treeEntryRemoved(
     CIdxTree*              i_pIdxTree,
-    CAbstractIdxTreeEntry* i_pTreeEntry,
+    CIdxTreeEntry* i_pTreeEntry,
     const QString&         i_strKeyInTree,
     int                    i_idxInTree )
 //------------------------------------------------------------------------------
@@ -6846,9 +4265,9 @@ void CIdxTree::emit_treeEntryRemoved(
     @param i_pTargetBranch [in] Pointer to target branch to which the entry will be moved.
 */
 void CIdxTree::emit_treeEntryAboutToBeMoved(
-    CIdxTree*              i_pIdxTree,
-    CAbstractIdxTreeEntry* i_pTreeEntry,
-    CBranchIdxTreeEntry*   i_pTargetBranch )
+    CIdxTree*      i_pIdxTree,
+    CIdxTreeEntry* i_pTreeEntry,
+    CIdxTreeEntry* i_pTargetBranch )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -6885,10 +4304,10 @@ void CIdxTree::emit_treeEntryAboutToBeMoved(
     @note The index of the entry in the index tree remains the same.
 */
 void CIdxTree::emit_treeEntryMoved(
-    CIdxTree*              i_pIdxTree,
-    CAbstractIdxTreeEntry* i_pTreeEntry,
-    const QString&         i_strKeyInTreePrev,
-    CBranchIdxTreeEntry*   i_pTargetBranch )
+    CIdxTree*      i_pIdxTree,
+    CIdxTreeEntry* i_pTreeEntry,
+    const QString& i_strKeyInTreePrev,
+    CIdxTreeEntry* i_pTargetBranch )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -6925,7 +4344,7 @@ void CIdxTree::emit_treeEntryMoved(
 */
 void CIdxTree::emit_treeEntryAboutToBeRenamed(
     CIdxTree*              i_pIdxTree,
-    CAbstractIdxTreeEntry* i_pTreeEntry,
+    CIdxTreeEntry* i_pTreeEntry,
     const QString&         i_strNameNew )
 //------------------------------------------------------------------------------
 {
@@ -6963,7 +4382,7 @@ void CIdxTree::emit_treeEntryAboutToBeRenamed(
 */
 void CIdxTree::emit_treeEntryRenamed(
     CIdxTree*              i_pIdxTree,
-    CAbstractIdxTreeEntry* i_pTreeEntry,
+    CIdxTreeEntry* i_pTreeEntry,
     const QString&         i_strKeyInTreePrev,
     const QString&         i_strNamePrev )
 //------------------------------------------------------------------------------
@@ -7003,7 +4422,7 @@ void CIdxTree::emit_treeEntryRenamed(
 */
 void CIdxTree::emit_treeEntryKeyInTreeChanged(
     CIdxTree*              i_pIdxTree,
-    CAbstractIdxTreeEntry* i_pTreeEntry,
+    CIdxTreeEntry* i_pTreeEntry,
     const QString&         i_strKeyInTreePrev )
 //------------------------------------------------------------------------------
 {

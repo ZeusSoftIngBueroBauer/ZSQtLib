@@ -36,7 +36,7 @@ may result in using the software modules.
 #include "App.h"
 #include "Test.h"
 
-#include "ZSTestGUI/ZSTestWdgt.h"
+#include "ZSTestGUI/ZSTestStepIdxTreeWdgt.h"
 #include "ZSSys/ZSSysErrCode.h"
 #include "ZSSys/ZSSysException.h"
 
@@ -89,7 +89,7 @@ CWidgetCentral::CWidgetCentral(
     m_pLyt = new QVBoxLayout();
     setLayout(m_pLyt);
 
-    m_pWdgtTest = new CWdgtTest( CApplication::GetInstance()->getTest() );
+    m_pWdgtTest = new CWdgtIdxTreeTestSteps( CApplication::GetInstance()->getTest() );
     m_pLyt->addWidget(m_pWdgtTest);
 
 } // ctor

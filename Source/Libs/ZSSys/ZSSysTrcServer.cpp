@@ -680,7 +680,7 @@ CTrcAdminObj* CTrcServer::getTraceAdminObj(
 
     QString strParentBranchPath = buildPathStr(m_pTrcAdminObjIdxTree->nodeSeparator(), i_strNameSpace, i_strClassName);
 
-    CLeaveIdxTreeEntry* pLeave = m_pTrcAdminObjIdxTree->findLeave(strParentBranchPath, i_strObjName);
+    CIdxTreeEntry* pLeave = m_pTrcAdminObjIdxTree->findLeave(strParentBranchPath, i_strObjName);
 
     bool bInitiallyCreated = pLeave == nullptr;
 

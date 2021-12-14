@@ -29,7 +29,7 @@ may result in using the software modules.
 
 #include "ZSSys/ZSSysDllMain.h"
 #include "ZSSys/ZSSysCommon.h"
-#include "ZSSys/ZSSysIdxTreeEntries.h"
+#include "ZSSys/ZSSysIdxTreeEntry.h"
 
 #include <QtCore/qobject.h>
 
@@ -80,7 +80,7 @@ class CTrcServer;
     Fuer weitere Details zur Verwendung der Trace Admin Klasse siehe Klassen
     CTrcServer und CIdxTreeTrcAdminObjs.
 */
-class ZSSYSDLL_API CTrcAdminObj : public QObject, public ZS::System::CLeaveIdxTreeEntry
+class ZSSYSDLL_API CTrcAdminObj : public QObject, public ZS::System::CIdxTreeEntry
 //******************************************************************************
 {
 friend class CIdxTreeTrcAdminObjs;

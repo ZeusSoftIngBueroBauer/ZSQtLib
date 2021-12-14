@@ -225,7 +225,7 @@ CMainWindow::CMainWindow(
         throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
     }
 
-    // <MenuItem> Settings::TraceAdminObjPool
+    // <MenuItem> Settings::TraceAdminIdxTree
     //---------------------------------------
 
     m_pActSettingsTrcAdminObjIdxTree = new QAction("&Trace Admin Objects",this);
@@ -591,7 +591,7 @@ void CMainWindow::onActSettingsTrcAdminObjIdxTreeTriggered()
     if( pDlg == nullptr )
     {
         pDlg = CDlgIdxTreeTrcAdminObjs::CreateInstance(
-            /* pTrcAdmObjPool */ m_pTrcClient->getTraceAdminObjIdxTree(),
+            /* pTrcAdmIdxTree */ m_pTrcClient->getTraceAdminObjIdxTree(),
             /* strDlgTitle    */ strDlgTitle );
         pDlg->setAttribute(Qt::WA_DeleteOnClose, true);
         pDlg->adjustSize();

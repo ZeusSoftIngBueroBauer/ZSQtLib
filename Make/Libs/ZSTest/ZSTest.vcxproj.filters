@@ -87,10 +87,10 @@
     <ClCompile Include="..\..\..\Source\Libs\ZSTest\ZSTestDllMain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Libs\ZSTest\ZSTestStepAdminObj.cpp">
+    <ClCompile Include="..\..\..\Source\Libs\ZSTest\ZSTestStepIdxTreeEntry.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Libs\ZSTest\ZSTestStepAdminObjPool.cpp">
+    <ClCompile Include="..\..\..\Source\Libs\ZSTest\ZSTestStepIdxTree.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Libs\ZSTest\ZSTestStep.cpp">
@@ -105,12 +105,6 @@
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTest\Debug_msvc2015\Win32\moc_ZSTestStep.cpp">
       <Filter>Generated Files\msvc2015\Win32\Debug</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTest\Debug_msvc2015\Win32\moc_ZSTestStepAdminObj.cpp">
-      <Filter>Generated Files\msvc2015\Win32\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTest\Debug_msvc2015\Win32\moc_ZSTestStepAdminObjPool.cpp">
-      <Filter>Generated Files\msvc2015\Win32\Debug</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTest\Debug_msvc2015\Win32\moc_ZSTestStepGroup.cpp">
       <Filter>Generated Files\msvc2015\Win32\Debug</Filter>
     </ClCompile>
@@ -118,12 +112,6 @@
       <Filter>Generated Files\msvc2015\Win32\Release</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTest\Release_msvc2015\Win32\moc_ZSTestStep.cpp">
-      <Filter>Generated Files\msvc2015\Win32\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTest\Release_msvc2015\Win32\moc_ZSTestStepAdminObj.cpp">
-      <Filter>Generated Files\msvc2015\Win32\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTest\Release_msvc2015\Win32\moc_ZSTestStepAdminObjPool.cpp">
       <Filter>Generated Files\msvc2015\Win32\Release</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTest\Release_msvc2015\Win32\moc_ZSTestStepGroup.cpp">
@@ -135,12 +123,6 @@
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTest\Debug_msvc2015\x64\moc_ZSTestStep.cpp">
       <Filter>Generated Files\msvc2015\x64\Debug</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTest\Debug_msvc2015\x64\moc_ZSTestStepAdminObj.cpp">
-      <Filter>Generated Files\msvc2015\x64\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTest\Debug_msvc2015\x64\moc_ZSTestStepAdminObjPool.cpp">
-      <Filter>Generated Files\msvc2015\x64\Debug</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTest\Debug_msvc2015\x64\moc_ZSTestStepGroup.cpp">
       <Filter>Generated Files\msvc2015\x64\Debug</Filter>
     </ClCompile>
@@ -148,12 +130,6 @@
       <Filter>Generated Files\msvc2015\x64\Release</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTest\Release_msvc2015\x64\moc_ZSTestStep.cpp">
-      <Filter>Generated Files\msvc2015\x64\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTest\Release_msvc2015\x64\moc_ZSTestStepAdminObj.cpp">
-      <Filter>Generated Files\msvc2015\x64\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTest\Release_msvc2015\x64\moc_ZSTestStepAdminObjPool.cpp">
       <Filter>Generated Files\msvc2015\x64\Release</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTest\Release_msvc2015\x64\moc_ZSTestStepGroup.cpp">
@@ -165,12 +141,6 @@
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTest\Debug_msvc2017\x64\moc_ZSTestStep.cpp">
       <Filter>Generated Files\msvc2017\x64\Debug</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTest\Debug_msvc2017\x64\moc_ZSTestStepAdminObj.cpp">
-      <Filter>Generated Files\msvc2017\x64\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTest\Debug_msvc2017\x64\moc_ZSTestStepAdminObjPool.cpp">
-      <Filter>Generated Files\msvc2017\x64\Debug</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTest\Debug_msvc2017\x64\moc_ZSTestStepGroup.cpp">
       <Filter>Generated Files\msvc2017\x64\Debug</Filter>
     </ClCompile>
@@ -178,12 +148,6 @@
       <Filter>Generated Files\msvc2017\Win32\Release</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTest\Release_msvc2017\Win32\moc_ZSTestStep.cpp">
-      <Filter>Generated Files\msvc2017\Win32\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTest\Release_msvc2017\Win32\moc_ZSTestStepAdminObj.cpp">
-      <Filter>Generated Files\msvc2017\Win32\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTest\Release_msvc2017\Win32\moc_ZSTestStepAdminObjPool.cpp">
       <Filter>Generated Files\msvc2017\Win32\Release</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTest\Release_msvc2017\Win32\moc_ZSTestStepGroup.cpp">
@@ -195,12 +159,6 @@
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTest\Debug_msvc2017\Win32\moc_ZSTestStep.cpp">
       <Filter>Generated Files\msvc2017\Win32\Debug</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTest\Debug_msvc2017\Win32\moc_ZSTestStepAdminObj.cpp">
-      <Filter>Generated Files\msvc2017\Win32\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTest\Debug_msvc2017\Win32\moc_ZSTestStepAdminObjPool.cpp">
-      <Filter>Generated Files\msvc2017\Win32\Debug</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTest\Debug_msvc2017\Win32\moc_ZSTestStepGroup.cpp">
       <Filter>Generated Files\msvc2017\Win32\Debug</Filter>
     </ClCompile>
@@ -208,12 +166,6 @@
       <Filter>Generated Files\msvc2017\x64\Release</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTest\Release_msvc2017\x64\moc_ZSTestStep.cpp">
-      <Filter>Generated Files\msvc2017\x64\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTest\Release_msvc2017\x64\moc_ZSTestStepAdminObj.cpp">
-      <Filter>Generated Files\msvc2017\x64\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTest\Release_msvc2017\x64\moc_ZSTestStepAdminObjPool.cpp">
       <Filter>Generated Files\msvc2017\x64\Release</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTest\Release_msvc2017\x64\moc_ZSTestStepGroup.cpp">
@@ -225,12 +177,6 @@
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTest\Debug_msvc2019\x64\moc_ZSTestStep.cpp">
       <Filter>Generated Files\msvc2019\x64\Debug</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTest\Debug_msvc2019\x64\moc_ZSTestStepAdminObj.cpp">
-      <Filter>Generated Files\msvc2019\x64\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTest\Debug_msvc2019\x64\moc_ZSTestStepAdminObjPool.cpp">
-      <Filter>Generated Files\msvc2019\x64\Debug</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTest\Debug_msvc2019\x64\moc_ZSTestStepGroup.cpp">
       <Filter>Generated Files\msvc2019\x64\Debug</Filter>
     </ClCompile>
@@ -238,12 +184,6 @@
       <Filter>Generated Files\msvc2019\x64\Release</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTest\Release_msvc2019\x64\moc_ZSTestStep.cpp">
-      <Filter>Generated Files\msvc2019\x64\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTest\Release_msvc2019\x64\moc_ZSTestStepAdminObj.cpp">
-      <Filter>Generated Files\msvc2019\x64\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTest\Release_msvc2019\x64\moc_ZSTestStepAdminObjPool.cpp">
       <Filter>Generated Files\msvc2019\x64\Release</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTest\Release_msvc2019\x64\moc_ZSTestStepGroup.cpp">
@@ -255,12 +195,6 @@
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTest\Release_msvc2019\Win32\moc_ZSTestStep.cpp">
       <Filter>Generated Files\msvc2019\Win32\Release</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTest\Release_msvc2019\Win32\moc_ZSTestStepAdminObj.cpp">
-      <Filter>Generated Files\msvc2019\Win32\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTest\Release_msvc2019\Win32\moc_ZSTestStepAdminObjPool.cpp">
-      <Filter>Generated Files\msvc2019\Win32\Release</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTest\Release_msvc2019\Win32\moc_ZSTestStepGroup.cpp">
       <Filter>Generated Files\msvc2019\Win32\Release</Filter>
     </ClCompile>
@@ -270,24 +204,90 @@
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTest\Debug_msvc2019\Win32\moc_ZSTestStep.cpp">
       <Filter>Generated Files\msvc2019\Win32\Debug</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTest\Debug_msvc2019\Win32\moc_ZSTestStepAdminObj.cpp">
-      <Filter>Generated Files\msvc2019\Win32\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTest\Debug_msvc2019\Win32\moc_ZSTestStepAdminObjPool.cpp">
-      <Filter>Generated Files\msvc2019\Win32\Debug</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTest\Debug_msvc2019\Win32\moc_ZSTestStepGroup.cpp">
       <Filter>Generated Files\msvc2019\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTest\Debug_msvc2019\x64\moc_ZSTestStepIdxTree.cpp">
+      <Filter>Generated Files\msvc2019\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTest\Debug_msvc2019\x64\moc_ZSTestStepIdxTreeEntry.cpp">
+      <Filter>Generated Files\msvc2019\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTest\Release_msvc2019\x64\moc_ZSTestStepIdxTree.cpp">
+      <Filter>Generated Files\msvc2019\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTest\Release_msvc2019\x64\moc_ZSTestStepIdxTreeEntry.cpp">
+      <Filter>Generated Files\msvc2019\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTest\Debug_msvc2019\Win32\moc_ZSTestStepIdxTree.cpp">
+      <Filter>Generated Files\msvc2019\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTest\Debug_msvc2019\Win32\moc_ZSTestStepIdxTreeEntry.cpp">
+      <Filter>Generated Files\msvc2019\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTest\Release_msvc2019\Win32\moc_ZSTestStepIdxTree.cpp">
+      <Filter>Generated Files\msvc2019\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTest\Release_msvc2019\Win32\moc_ZSTestStepIdxTreeEntry.cpp">
+      <Filter>Generated Files\msvc2019\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTest\Debug_msvc2015\Win32\moc_ZSTestStepIdxTree.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTest\Debug_msvc2015\Win32\moc_ZSTestStepIdxTreeEntry.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTest\Release_msvc2015\Win32\moc_ZSTestStepIdxTree.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTest\Release_msvc2015\Win32\moc_ZSTestStepIdxTreeEntry.cpp">
+      <Filter>Generated Files\msvc2015\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTest\Debug_msvc2015\x64\moc_ZSTestStepIdxTree.cpp">
+      <Filter>Generated Files\msvc2015\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTest\Debug_msvc2015\x64\moc_ZSTestStepIdxTreeEntry.cpp">
+      <Filter>Generated Files\msvc2015\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTest\Release_msvc2015\x64\moc_ZSTestStepIdxTree.cpp">
+      <Filter>Generated Files\msvc2015\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTest\Release_msvc2015\x64\moc_ZSTestStepIdxTreeEntry.cpp">
+      <Filter>Generated Files\msvc2015\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTest\Debug_msvc2017\Win32\moc_ZSTestStepIdxTree.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTest\Debug_msvc2017\Win32\moc_ZSTestStepIdxTreeEntry.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTest\Release_msvc2017\Win32\moc_ZSTestStepIdxTree.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTest\Release_msvc2017\Win32\moc_ZSTestStepIdxTreeEntry.cpp">
+      <Filter>Generated Files\msvc2017\Win32\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTest\Debug_msvc2017\x64\moc_ZSTestStepIdxTree.cpp">
+      <Filter>Generated Files\msvc2017\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTest\Debug_msvc2017\x64\moc_ZSTestStepIdxTreeEntry.cpp">
+      <Filter>Generated Files\msvc2017\x64\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTest\Release_msvc2017\x64\moc_ZSTestStepIdxTree.cpp">
+      <Filter>Generated Files\msvc2017\x64\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTest\Release_msvc2017\x64\moc_ZSTestStepIdxTreeEntry.cpp">
+      <Filter>Generated Files\msvc2017\x64\Release</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\..\..\Include\Libs\ZSTest\ZSTest.h">
       <Filter>Include Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="..\..\..\Include\Libs\ZSTest\ZSTestStepAdminObj.h">
+    <CustomBuild Include="..\..\..\Include\Libs\ZSTest\ZSTestStepIdxTreeEntry.h">
       <Filter>Include Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="..\..\..\Include\Libs\ZSTest\ZSTestStepAdminObjPool.h">
+    <CustomBuild Include="..\..\..\Include\Libs\ZSTest\ZSTestStepIdxTree.h">
       <Filter>Include Files</Filter>
     </CustomBuild>
     <CustomBuild Include="..\..\..\Include\Libs\ZSTest\ZSTestStep.h">

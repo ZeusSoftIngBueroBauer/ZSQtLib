@@ -38,7 +38,7 @@ may result in using the software modules.
 #include "TestModule2.h"
 #include "MainWindow.h"
 
-#include "ZSTest/ZSTestStepAdminObjPool.h"
+#include "ZSTest/ZSTestStepIdxTree.h"
 #include "ZSTest/ZSTestStep.h"
 #include "ZSSys/ZSSysApp.h"
 #include "ZSSys/ZSSysVersion.h"
@@ -194,7 +194,7 @@ CTest::CTest( const QString& i_strTestStepsFileName ) :
     // Recall test admin object settings
     //----------------------------------
 
-    m_pAdminObjPool->read_(i_strTestStepsFileName);
+    m_pAdminIdxTree->read_(i_strTestStepsFileName);
 
 } // default ctor
 
@@ -223,7 +223,7 @@ CTest::~CTest()
         ZS::Trace::DllIf::CIpcTrcServer::ReleaseInstance(m_pTrcServer);
     }
 
-    m_pAdminObjPool->save_();
+    m_pAdminIdxTree->save_();
 
     m_pTmrTestStepTimeout = nullptr;
     ZS::Trace::DllIf::STrcServerSettings_release(m_trcSettings);

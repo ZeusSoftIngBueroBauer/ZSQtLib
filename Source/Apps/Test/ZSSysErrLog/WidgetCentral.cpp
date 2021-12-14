@@ -108,7 +108,7 @@ CWidgetCentral::CWidgetCentral( QWidget* i_pWdgtParent, Qt::WindowFlags i_wflags
     m_pLytGrpTest = new QVBoxLayout();
     m_pGrpTest->setLayout(m_pLytGrpTest);
 
-    m_pWdgtTest = new CWdgtTest( CApplication::GetInstance()->getTest() );
+    m_pWdgtTest = new CWdgtIdxTreeTestSteps( CApplication::GetInstance()->getTest() );
     m_pLytGrpTest->addWidget(m_pWdgtTest);
 
     // <GroupBox> Error Log

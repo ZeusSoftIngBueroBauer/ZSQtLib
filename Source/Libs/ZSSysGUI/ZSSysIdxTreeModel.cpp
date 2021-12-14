@@ -27,7 +27,7 @@ may result in using the software modules.
 #include <QtCore/qmimedata.h>
 
 #include "ZSSysGUI/ZSSysIdxTreeModel.h"
-#include "ZSSysGUI/ZSSysIdxTreeModelEntries.h"
+#include "ZSSysGUI/ZSSysIdxTreeModelEntry.h"
 #include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysEnumEntry.h"
 #include "ZSSys/ZSSysException.h"
@@ -116,7 +116,7 @@ public: // type definitions and constants
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CModelAbstractTreeEntry* CModelIdxTree::iterator::operator * () const
+CModelIdxTreeEntry* CModelIdxTree::iterator::operator * () const
 //------------------------------------------------------------------------------
 {
     return m_pModelTreeEntryCurr;
@@ -193,12 +193,12 @@ CModelIdxTree::iterator& CModelIdxTree::iterator::operator ++ ()
         throw CException(__FILE__, __LINE__, EResultInternalProgramError, "m_pModelTreeEntryCurr == nullptr");
     }
 
-    CModelAbstractTreeEntry* pModelTreeEntryNew = nullptr;
+    CModelIdxTreeEntry* pModelTreeEntryNew = nullptr;
 
     if( m_traversalOrder == ETraversalOrder::Index )
     {
-        CAbstractIdxTreeEntry* pTreeEntry = m_pModelTreeEntryCurr->treeEntry();
-        int                 idxInTree  = pTreeEntry->indexInTree();
+        CIdxTreeEntry* pTreeEntry = m_pModelTreeEntryCurr->treeEntry();
+        int            idxInTree  = pTreeEntry->indexInTree();
 
         for( ++idxInTree; idxInTree < m_pModel->idxTree()->treeEntriesVec().size(); ++idxInTree )
         {
@@ -214,7 +214,7 @@ CModelIdxTree::iterator& CModelIdxTree::iterator::operator ++ ()
     {
         if( m_pModelTreeEntryCurr == m_pModel->m_pModelRoot )
         {
-            CModelBranchTreeEntry* pModelBranchCurr = m_pModel->m_pModelRoot;
+            CModelIdxTreeEntry* pModelBranchCurr = m_pModel->m_pModelRoot;
 
             if( pModelBranchCurr->count() > 0 )
             {
@@ -226,7 +226,7 @@ CModelIdxTree::iterator& CModelIdxTree::iterator::operator ++ ()
             if( m_pModelTreeEntryCurr->entryType() == EIdxTreeEntryType::Leave )
             {
                 int idxInParentBranch = m_pModelTreeEntryCurr->modelIndexInParentBranch();
-                CModelBranchTreeEntry* pModelBranchParent = m_pModelTreeEntryCurr->modelParentBranch();
+                CModelIdxTreeEntry* pModelBranchParent = m_pModelTreeEntryCurr->modelParentBranch();
 
                 if( idxInParentBranch >= (pModelBranchParent->count()-1) )
                 {
@@ -247,7 +247,7 @@ CModelIdxTree::iterator& CModelIdxTree::iterator::operator ++ ()
             }
             else // if( m_pModelTreeEntryCurr->entryType() == EIdxTreeEntryType::Branch )
             {
-                CModelBranchTreeEntry* pModelBranchCurr = dynamic_cast<CModelBranchTreeEntry*>(m_pModelTreeEntryCurr);
+                CModelIdxTreeEntry* pModelBranchCurr = m_pModelTreeEntryCurr;
 
                 if( pModelBranchCurr->count() > 0 )
                 {
@@ -256,7 +256,7 @@ CModelIdxTree::iterator& CModelIdxTree::iterator::operator ++ ()
                 else
                 {
                     int idxInParentBranch = pModelBranchCurr->modelIndexInParentBranch();
-                    CModelBranchTreeEntry* pModelBranchParent = pModelBranchCurr->modelParentBranch();
+                    CModelIdxTreeEntry* pModelBranchParent = pModelBranchCurr->modelParentBranch();
 
                     while( pModelBranchParent != nullptr && idxInParentBranch >= (pModelBranchParent->count()-1) )
                     {
@@ -368,7 +368,7 @@ QString CModelIdxTree::ModelIdx2Str( const QModelIndex& i_modelIdx )
 //------------------------------------------------------------------------------
 {
     QString str;
-    CModelAbstractTreeEntry* pModelTreeEntry = static_cast<CModelAbstractTreeEntry*>(i_modelIdx.internalPointer());
+    CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(i_modelIdx.internalPointer());
     str  = "Row: " + QString::number(i_modelIdx.row());
     str += ", Clm: " + QString::number(i_modelIdx.column());
     str += ", Id: " + QString::number(i_modelIdx.internalId()) + " (" + pointer2Str(i_modelIdx.internalPointer()) + ")";
@@ -536,29 +536,29 @@ void CModelIdxTree::setIdxTree( CIdxTree* i_pIdxTree )
             /* szSlot       */ SLOT(onIdxTreeAboutToBeDestroyed(QObject*)) );
         QObject::disconnect(
             /* pObjSender   */ m_pIdxTree,
-            /* szSignal     */ SIGNAL(treeEntryAdded(ZS::System::CIdxTree*, ZS::System::CAbstractIdxTreeEntry*)),
+            /* szSignal     */ SIGNAL(treeEntryAdded(ZS::System::CIdxTree*, ZS::System::CIdxTreeEntry*)),
             /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onIdxTreeEntryAdded(ZS::System::CIdxTree*, ZS::System::CAbstractIdxTreeEntry*)) );
+            /* szSlot       */ SLOT(onIdxTreeEntryAdded(ZS::System::CIdxTree*, ZS::System::CIdxTreeEntry*)) );
         QObject::disconnect(
             /* pObjSender   */ m_pIdxTree,
-            /* szSignal     */ SIGNAL(treeEntryChanged(ZS::System::CIdxTree*, ZS::System::CAbstractIdxTreeEntry*)),
+            /* szSignal     */ SIGNAL(treeEntryChanged(ZS::System::CIdxTree*, ZS::System::CIdxTreeEntry*)),
             /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onIdxTreeEntryChanged(ZS::System::CIdxTree*, ZS::System::CAbstractIdxTreeEntry*)) );
+            /* szSlot       */ SLOT(onIdxTreeEntryChanged(ZS::System::CIdxTree*, ZS::System::CIdxTreeEntry*)) );
         QObject::disconnect(
             /* pObjSender   */ m_pIdxTree,
-            /* szSignal     */ SIGNAL(treeEntryAboutToBeRemoved(ZS::System::CIdxTree*, ZS::System::CAbstractIdxTreeEntry*)),
+            /* szSignal     */ SIGNAL(treeEntryAboutToBeRemoved(ZS::System::CIdxTree*, ZS::System::CIdxTreeEntry*)),
             /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onIdxTreeEntryAboutToBeRemoved(ZS::System::CIdxTree*, ZS::System::CAbstractIdxTreeEntry*)) );
+            /* szSlot       */ SLOT(onIdxTreeEntryAboutToBeRemoved(ZS::System::CIdxTree*, ZS::System::CIdxTreeEntry*)) );
         QObject::disconnect(
             /* pObjSender   */ m_pIdxTree,
-            /* szSignal     */ SIGNAL(treeEntryMoved(ZS::System::CIdxTree*, ZS::System::CAbstractIdxTreeEntry*, const QString&, ZS::System::CBranchIdxTreeEntry*)),
+            /* szSignal     */ SIGNAL(treeEntryMoved(ZS::System::CIdxTree*, ZS::System::CIdxTreeEntry*, const QString&, ZS::System::CIdxTreeEntry*)),
             /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onIdxTreeEntryMoved(ZS::System::CIdxTree*, ZS::System::CAbstractIdxTreeEntry*, const QString&, ZS::System::CBranchIdxTreeEntry*)) );
+            /* szSlot       */ SLOT(onIdxTreeEntryMoved(ZS::System::CIdxTree*, ZS::System::CIdxTreeEntry*, const QString&, ZS::System::CIdxTreeEntry*)) );
         QObject::disconnect(
             /* pObjSender   */ m_pIdxTree,
-            /* szSignal     */ SIGNAL(treeEntryKeyInTreeChanged(ZS::System::CIdxTree*, ZS::System::CAbstractIdxTreeEntry*, const QString&)),
+            /* szSignal     */ SIGNAL(treeEntryKeyInTreeChanged(ZS::System::CIdxTree*, ZS::System::CIdxTreeEntry*, const QString&)),
             /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onIdxTreeEntryKeyInTreeChanged(ZS::System::CIdxTree*, ZS::System::CAbstractIdxTreeEntry*, const QString&)) );
+            /* szSlot       */ SLOT(onIdxTreeEntryKeyInTreeChanged(ZS::System::CIdxTree*, ZS::System::CIdxTreeEntry*, const QString&)) );
 
         _beginRemoveRows(QModelIndex(), 0, 0);
 
@@ -602,41 +602,41 @@ void CModelIdxTree::setIdxTree( CIdxTree* i_pIdxTree )
         }
         if( !QObject::connect(
             /* pObjSender   */ m_pIdxTree,
-            /* szSignal     */ SIGNAL(treeEntryAdded(ZS::System::CIdxTree*,ZS::System::CAbstractIdxTreeEntry*)),
+            /* szSignal     */ SIGNAL(treeEntryAdded(ZS::System::CIdxTree*,ZS::System::CIdxTreeEntry*)),
             /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onIdxTreeEntryAdded(ZS::System::CIdxTree*,ZS::System::CAbstractIdxTreeEntry*)) ) )
+            /* szSlot       */ SLOT(onIdxTreeEntryAdded(ZS::System::CIdxTree*,ZS::System::CIdxTreeEntry*)) ) )
         {
             throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
         }
         if( !QObject::connect(
             /* pObjSender   */ m_pIdxTree,
-            /* szSignal     */ SIGNAL(treeEntryChanged(ZS::System::CIdxTree*,ZS::System::CAbstractIdxTreeEntry*)),
+            /* szSignal     */ SIGNAL(treeEntryChanged(ZS::System::CIdxTree*,ZS::System::CIdxTreeEntry*)),
             /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onIdxTreeEntryChanged(ZS::System::CIdxTree*,ZS::System::CAbstractIdxTreeEntry*)) ) )
+            /* szSlot       */ SLOT(onIdxTreeEntryChanged(ZS::System::CIdxTree*,ZS::System::CIdxTreeEntry*)) ) )
         {
             throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
         }
         if( !QObject::connect(
             /* pObjSender   */ m_pIdxTree,
-            /* szSignal     */ SIGNAL(treeEntryAboutToBeRemoved(ZS::System::CIdxTree*,ZS::System::CAbstractIdxTreeEntry*)),
+            /* szSignal     */ SIGNAL(treeEntryAboutToBeRemoved(ZS::System::CIdxTree*,ZS::System::CIdxTreeEntry*)),
             /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onIdxTreeEntryAboutToBeRemoved(ZS::System::CIdxTree*,ZS::System::CAbstractIdxTreeEntry*)) ) )
+            /* szSlot       */ SLOT(onIdxTreeEntryAboutToBeRemoved(ZS::System::CIdxTree*,ZS::System::CIdxTreeEntry*)) ) )
         {
             throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
         }
         if( !QObject::connect(
             /* pObjSender   */ m_pIdxTree,
-            /* szSignal     */ SIGNAL(treeEntryMoved(ZS::System::CIdxTree*, ZS::System::CAbstractIdxTreeEntry*, const QString&, ZS::System::CBranchIdxTreeEntry*)),
+            /* szSignal     */ SIGNAL(treeEntryMoved(ZS::System::CIdxTree*, ZS::System::CIdxTreeEntry*, const QString&, ZS::System::CIdxTreeEntry*)),
             /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onIdxTreeEntryMoved(ZS::System::CIdxTree*, ZS::System::CAbstractIdxTreeEntry*, const QString&, ZS::System::CBranchIdxTreeEntry*)) ) )
+            /* szSlot       */ SLOT(onIdxTreeEntryMoved(ZS::System::CIdxTree*, ZS::System::CIdxTreeEntry*, const QString&, ZS::System::CIdxTreeEntry*)) ) )
         {
             throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
         }
         if( !QObject::connect(
             /* pObjSender   */ m_pIdxTree,
-            /* szSignal     */ SIGNAL(treeEntryKeyInTreeChanged(ZS::System::CIdxTree*, ZS::System::CAbstractIdxTreeEntry*, const QString&)),
+            /* szSignal     */ SIGNAL(treeEntryKeyInTreeChanged(ZS::System::CIdxTree*, ZS::System::CIdxTreeEntry*, const QString&)),
             /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onIdxTreeEntryKeyInTreeChanged(ZS::System::CIdxTree*, ZS::System::CAbstractIdxTreeEntry*, const QString&)) ) )
+            /* szSlot       */ SLOT(onIdxTreeEntryKeyInTreeChanged(ZS::System::CIdxTree*, ZS::System::CIdxTreeEntry*, const QString&)) ) )
         {
             throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
         }
@@ -647,7 +647,7 @@ void CModelIdxTree::setIdxTree( CIdxTree* i_pIdxTree )
 
             _beginInsertRows(QModelIndex(), 0, 0);
 
-            m_pModelRoot = new CModelRootTreeEntry(m_pIdxTree->root());
+            m_pModelRoot = new CModelIdxTreeEntry(m_pIdxTree->root());
 
             // The root entry will neither be added to the list nor to the map of tree entries.
             m_pModelRoot->setModel(this);
@@ -656,7 +656,7 @@ void CModelIdxTree::setIdxTree( CIdxTree* i_pIdxTree )
 
             _endInsertRows();
 
-            CAbstractIdxTreeEntry* pTreeEntry;
+            CIdxTreeEntry* pTreeEntry;
             int idxEntry;
 
             for( idxEntry = 0; idxEntry < m_pIdxTree->root()->size(); ++idxEntry )
@@ -756,9 +756,9 @@ protected: // instance methods
 
 //------------------------------------------------------------------------------
 void CModelIdxTree::setFilter(
-    CModelBranchTreeEntry* i_pModelBranch,
-    EIdxTreeEntryType      i_entryType,
-    bool                   i_bRecursive )
+    CModelIdxTreeEntry* i_pModelBranch,
+    EIdxTreeEntryType   i_entryType,
+    bool                i_bRecursive )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -780,15 +780,15 @@ void CModelIdxTree::setFilter(
         /* strMethod          */ "setFilter",
         /* strMethodInArgs    */ strMthInArgs );
 
-    CBranchIdxTreeEntry* pBranch = dynamic_cast<CBranchIdxTreeEntry*>(i_pModelBranch->treeEntry());
+    CIdxTreeEntry* pBranch = i_pModelBranch->treeEntry();
 
-    CModelAbstractTreeEntry* pModelTreeEntryChild;
-    CAbstractIdxTreeEntry*      pTreeEntryChild;
-    int                      idxTreeEntryChild;
+    CModelIdxTreeEntry* pModelTreeEntryChild;
+    CIdxTreeEntry*      pTreeEntryChild;
+    int                 idxTreeEntryChild;
 
     if( i_bRecursive && i_pModelBranch->count() > 0 )
     {
-        CModelBranchTreeEntry* pModelBranchChild;
+        CModelIdxTreeEntry* pModelBranchChild;
 
         for( idxTreeEntryChild = i_pModelBranch->count()-1; idxTreeEntryChild >= 0; --idxTreeEntryChild )
         {
@@ -796,7 +796,7 @@ void CModelIdxTree::setFilter(
 
             if( pModelTreeEntryChild->entryType() == EIdxTreeEntryType::Branch )
             {
-                pModelBranchChild = dynamic_cast<CModelBranchTreeEntry*>(pModelTreeEntryChild);
+                pModelBranchChild = pModelTreeEntryChild;
 
                 setFilter(pModelBranchChild, i_entryType, i_bRecursive);
             }
@@ -811,7 +811,7 @@ void CModelIdxTree::setFilter(
     // Map containing current model entries of the model branch.
     //----------------------------------------------------------
 
-    QMap<QString, CModelAbstractTreeEntry*> mappModelTreeEntriesCurr;
+    QMap<QString, CModelIdxTreeEntry*> mappModelTreeEntriesCurr;
 
     for( idxTreeEntryChild = 0; idxTreeEntryChild < i_pModelBranch->count(); ++idxTreeEntryChild )
     {
@@ -823,8 +823,8 @@ void CModelIdxTree::setFilter(
     // Resulting list of branch childs as it should be after applying the filter.
     //---------------------------------------------------------------------------
 
-    QMap<QString, CAbstractIdxTreeEntry*> mappTreeEntriesNew;
-    QVector<CAbstractIdxTreeEntry*>       arpTreeEntriesNew;
+    QMap<QString, CIdxTreeEntry*> mappTreeEntriesNew;
+    QVector<CIdxTreeEntry*>       arpTreeEntriesNew;
 
     if( i_pModelBranch->sortOrder() == EIdxTreeSortOrder::Config )
     {
@@ -927,14 +927,14 @@ void CModelIdxTree::setFilter(
 
             if( pTreeEntryChild->entryType() == EIdxTreeEntryType::Branch )
             {
-                CModelBranchTreeEntry* pModelBranch = new CModelBranchTreeEntry(dynamic_cast<CBranchIdxTreeEntry*>(pTreeEntryChild));
+                CModelIdxTreeEntry* pModelBranch = new CModelIdxTreeEntry(pTreeEntryChild);
                 pModelBranch->setSortOrder(i_pModelBranch->sortOrder());
                 pModelBranch->setFilter(i_entryType);
                 pModelTreeEntryChild = pModelBranch;
             }
             else if( pTreeEntryChild->entryType() == EIdxTreeEntryType::Leave )
             {
-                pModelTreeEntryChild = new CModelLeaveTreeEntry(dynamic_cast<CLeaveIdxTreeEntry*>(pTreeEntryChild));
+                pModelTreeEntryChild = new CModelIdxTreeEntry(pTreeEntryChild);
             }
 
             if( pModelTreeEntryChild != nullptr )
@@ -960,9 +960,9 @@ protected: // instance methods
 
 //------------------------------------------------------------------------------
 void CModelIdxTree::setSortOrder(
-    CModelBranchTreeEntry* i_pModelBranch,
-    EIdxTreeSortOrder      i_sortOrder,
-    bool                   i_bRecursive )
+    CModelIdxTreeEntry* i_pModelBranch,
+    EIdxTreeSortOrder   i_sortOrder,
+    bool                i_bRecursive )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -984,12 +984,12 @@ void CModelIdxTree::setSortOrder(
         /* strMethod          */ "setSortOrder",
         /* strMethodInArgs    */ strMthInArgs );
 
-    CModelAbstractTreeEntry* pModelTreeEntry;
-    int                      idxModelTreeEntry;
+    CModelIdxTreeEntry* pModelTreeEntry;
+    int                 idxModelTreeEntry;
 
     if( i_pModelBranch->count() > 0 )
     {
-        CModelBranchTreeEntry* pModelBranch;
+        CModelIdxTreeEntry* pModelBranch;
 
         if( i_bRecursive )
         {
@@ -999,7 +999,7 @@ void CModelIdxTree::setSortOrder(
 
                 if( pModelTreeEntry->entryType() == EIdxTreeEntryType::Branch )
                 {
-                    pModelBranch = dynamic_cast<CModelBranchTreeEntry*>(pModelTreeEntry);
+                    pModelBranch = pModelTreeEntry;
 
                     setSortOrder(pModelBranch, i_sortOrder, i_bRecursive);
                 }
@@ -1008,10 +1008,10 @@ void CModelIdxTree::setSortOrder(
 
         if( i_pModelBranch->count() > 1 )
         {
-            QMap<QString, CModelAbstractTreeEntry*> mappTreeEntries;
+            QMap<QString, CModelIdxTreeEntry*> mappTreeEntries;
 
-            CModelAbstractTreeEntry* pModelTreeEntryChild;
-            int                      idxEntryChild;
+            CModelIdxTreeEntry* pModelTreeEntryChild;
+            int                 idxEntryChild;
 
             QModelIndex modelIdxParent = _createIndex(i_pModelBranch->modelIndexInParentBranch(), 0, i_pModelBranch);
 
@@ -1040,8 +1040,8 @@ void CModelIdxTree::setSortOrder(
             }
             else // if( i_sortOrder == EIdxTreeSortOrder::None )
             {
-                CBranchIdxTreeEntry*   pBranch = dynamic_cast<CBranchIdxTreeEntry*>(i_pModelBranch->treeEntry());
-                CAbstractIdxTreeEntry* pTreeEntryChild;
+                CIdxTreeEntry* pBranch = i_pModelBranch->treeEntry();
+                CIdxTreeEntry* pTreeEntryChild;
 
                 for( idxEntryChild = 0; idxEntryChild < pBranch->count(); ++idxEntryChild )
                 {
@@ -1069,8 +1069,8 @@ public: // instance methods
 
 //------------------------------------------------------------------------------
 void CModelIdxTree::setIsExpanded(
-    CModelBranchTreeEntry* i_pModelBranch,
-    bool                   i_bIsExpanded )
+    CModelIdxTreeEntry* i_pModelBranch,
+    bool                i_bIsExpanded )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -1109,10 +1109,10 @@ void CModelIdxTree::setIsExpanded(
 } // setIsExpanded
 
 //------------------------------------------------------------------------------
-bool CModelIdxTree::areAllParentBranchesExpanded( CModelBranchTreeEntry* i_pModelBranch ) const
+bool CModelIdxTree::areAllParentBranchesExpanded( CModelIdxTreeEntry* i_pModelBranch ) const
 //------------------------------------------------------------------------------
 {
-    CModelBranchTreeEntry* pModelBranchParent = i_pModelBranch->modelParentBranch();
+    CModelIdxTreeEntry* pModelBranchParent = i_pModelBranch->modelParentBranch();
 
     bool bAre = pModelBranchParent == nullptr ? true : pModelBranchParent->isExpanded();
 
@@ -1132,9 +1132,9 @@ public: // instance methods
 
 //------------------------------------------------------------------------------
 void CModelIdxTree::setIsSelected(
-    CModelAbstractTreeEntry* i_pModelTreeEntry,
-    bool                     i_bIsSelected,
-    bool                     i_bRecursive )
+    CModelIdxTreeEntry* i_pModelTreeEntry,
+    bool                i_bIsSelected,
+    bool                i_bRecursive )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -1161,14 +1161,14 @@ void CModelIdxTree::setIsSelected(
         throw CException(__FILE__, __LINE__, EResultArgOutOfRange, "i_pModelTreeEntry == nullptr");
     }
 
-    CModelAbstractTreeEntry* pModelTreeEntry;
-    int                      idxModelTreeEntry;
+    CModelIdxTreeEntry* pModelTreeEntry;
+    int                 idxModelTreeEntry;
 
     if( i_bRecursive )
     {
         if( i_pModelTreeEntry->entryType() == EIdxTreeEntryType::Root || i_pModelTreeEntry->entryType() == EIdxTreeEntryType::Branch )
         {
-            CModelBranchTreeEntry* pModelBranch = dynamic_cast<CModelBranchTreeEntry*>(i_pModelTreeEntry);
+            CModelIdxTreeEntry* pModelBranch = i_pModelTreeEntry;
 
             for( idxModelTreeEntry = 0; idxModelTreeEntry < pModelBranch->count(); ++idxModelTreeEntry )
             {
@@ -1196,25 +1196,7 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CModelBranchTreeEntry* CModelIdxTree::findModelBranch( CBranchIdxTreeEntry* i_pBranch )
-//------------------------------------------------------------------------------
-{
-    QMutexLocker mtxLocker(m_pIdxTree == nullptr ? nullptr : m_pIdxTree->mutex());
-    QString strKeyInTree = i_pBranch->keyInTree();
-    return dynamic_cast<CModelBranchTreeEntry*>(m_mappModelTreeEntries.value(strKeyInTree, nullptr));
-}
-
-//------------------------------------------------------------------------------
-CModelLeaveTreeEntry* CModelIdxTree::findModelLeave( CLeaveIdxTreeEntry* i_pLeave )
-//------------------------------------------------------------------------------
-{
-    QMutexLocker mtxLocker(m_pIdxTree == nullptr ? nullptr : m_pIdxTree->mutex());
-    QString strKeyInTree = i_pLeave->keyInTree();
-    return dynamic_cast<CModelLeaveTreeEntry*>(m_mappModelTreeEntries.value(strKeyInTree, nullptr));
-}
-
-//------------------------------------------------------------------------------
-CModelAbstractTreeEntry* CModelIdxTree::findModelEntry( CAbstractIdxTreeEntry* i_pTreeEntry )
+CModelIdxTreeEntry* CModelIdxTree::findModelEntry( CIdxTreeEntry* i_pTreeEntry )
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(m_pIdxTree == nullptr ? nullptr : m_pIdxTree->mutex());
@@ -1247,7 +1229,7 @@ QModelIndex CModelIdxTree::index( const QString& i_strKeyInTree, int i_iClm ) co
         /* strMethod          */ "index",
         /* strMethodInArgs    */ strMthInArgs );
 
-    CModelAbstractTreeEntry* pModelTreeEntry = m_mappModelTreeEntries.value(i_strKeyInTree, nullptr);
+    CModelIdxTreeEntry* pModelTreeEntry = m_mappModelTreeEntries.value(i_strKeyInTree, nullptr);
 
     int iRow = -1;
     int iClm = i_iClm >= 0 ? i_iClm : 0;
@@ -1275,8 +1257,8 @@ public: // iterator methods
 
     if( i_traversalOrder == iterator::ETraversalOrder::Index )
     {
-        CAbstractIdxTreeEntry* pTreeEntry;
-        int                 idxInTree;
+        CIdxTreeEntry* pTreeEntry;
+        int            idxInTree;
 
         for( idxInTree = 0; idxInTree < m_pIdxTree->treeEntriesVec().size(); ++idxInTree )
         {
@@ -1362,8 +1344,8 @@ protected slots:
 
 //------------------------------------------------------------------------------
 void CModelIdxTree::onIdxTreeEntryAdded(
-    CIdxTree*              i_pIdxTree,
-    CAbstractIdxTreeEntry* i_pTreeEntry )
+    CIdxTree*      i_pIdxTree,
+    CIdxTreeEntry* i_pTreeEntry )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -1388,13 +1370,13 @@ void CModelIdxTree::onIdxTreeEntryAdded(
     // objects might be called from within different thread contexts.
     QMutexLocker mtxLocker(m_pIdxTree == nullptr ? nullptr : m_pIdxTree->mutex());
 
-    CModelAbstractTreeEntry* pModelTreeEntry = findModelEntry(i_pTreeEntry);
+    CModelIdxTreeEntry* pModelTreeEntry = findModelEntry(i_pTreeEntry);
 
     if( pModelTreeEntry == nullptr )
     {
-        CBranchIdxTreeEntry* pParentBranch = i_pTreeEntry->parentBranch();
+        CIdxTreeEntry* pParentBranch = i_pTreeEntry->parentBranch();
 
-        CModelBranchTreeEntry* pModelParentBranch = m_pModelRoot;
+        CModelIdxTreeEntry* pModelParentBranch = m_pModelRoot;
 
         QString     strKeyInTree;
         QModelIndex modelIdxParent;
@@ -1402,7 +1384,7 @@ void CModelIdxTree::onIdxTreeEntryAdded(
 
         if( pParentBranch != m_pIdxTree->root() )
         {
-            pModelParentBranch = findModelBranch(pParentBranch);
+            pModelParentBranch = findModelEntry(pParentBranch);
 
             // Must not happen as on adding a node to the index tree all parent
             // branches are created and for each parent branch the treeEntryAdded
@@ -1414,8 +1396,8 @@ void CModelIdxTree::onIdxTreeEntryAdded(
             }
         } // if( pParentBranch != i_pIdxTree->root() )
 
-        CBranchIdxTreeEntry* pBranch = nullptr;
-        CLeaveIdxTreeEntry*  pLeave  = nullptr;
+        CIdxTreeEntry* pBranch = nullptr;
+        CIdxTreeEntry* pLeave  = nullptr;
 
         pModelTreeEntry = nullptr;
 
@@ -1423,8 +1405,8 @@ void CModelIdxTree::onIdxTreeEntryAdded(
         {
             if( m_entryTypeFilter == EIdxTreeEntryType::Undefined || m_entryTypeFilter == EIdxTreeEntryType::Branch )
             {
-                pBranch = dynamic_cast<CBranchIdxTreeEntry*>(i_pTreeEntry);
-                CModelBranchTreeEntry* pModelBranch = new CModelBranchTreeEntry(pBranch);
+                pBranch = i_pTreeEntry;
+                CModelIdxTreeEntry* pModelBranch = new CModelIdxTreeEntry(pBranch);
                 pModelBranch->setSortOrder(m_sortOrder);
                 pModelBranch->setFilter(m_entryTypeFilter);
                 pModelTreeEntry = pModelBranch;
@@ -1434,8 +1416,8 @@ void CModelIdxTree::onIdxTreeEntryAdded(
         {
             if( m_entryTypeFilter == EIdxTreeEntryType::Undefined || m_entryTypeFilter == EIdxTreeEntryType::Leave )
             {
-                pLeave = dynamic_cast<CLeaveIdxTreeEntry*>(i_pTreeEntry);
-                pModelTreeEntry = new CModelLeaveTreeEntry(pLeave);
+                pLeave = i_pTreeEntry;
+                pModelTreeEntry = new CModelIdxTreeEntry(pLeave);
             }
         }
 
@@ -1454,8 +1436,8 @@ void CModelIdxTree::onIdxTreeEntryAdded(
 
             if( i_pTreeEntry->entryType() == EIdxTreeEntryType::Branch && pBranch != nullptr )
             {
-                CAbstractIdxTreeEntry* pTreeEntry;
-                int                    idxEntry;
+                CIdxTreeEntry* pTreeEntry;
+                int            idxEntry;
 
                 for( idxEntry = 0; idxEntry < pBranch->size(); ++idxEntry )
                 {
@@ -1470,8 +1452,8 @@ void CModelIdxTree::onIdxTreeEntryAdded(
 
 //------------------------------------------------------------------------------
 void CModelIdxTree::onIdxTreeEntryChanged(
-    CIdxTree*              i_pIdxTree,
-    CAbstractIdxTreeEntry* i_pTreeEntry )
+    CIdxTree*      i_pIdxTree,
+    CIdxTreeEntry* i_pTreeEntry )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -1514,8 +1496,8 @@ void CModelIdxTree::onIdxTreeEntryChanged(
 
 //------------------------------------------------------------------------------
 void CModelIdxTree::onIdxTreeEntryAboutToBeRemoved(
-    CIdxTree*              i_pIdxTree,
-    CAbstractIdxTreeEntry* i_pTreeEntry )
+    CIdxTree*      i_pIdxTree,
+    CIdxTreeEntry* i_pTreeEntry )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -1540,7 +1522,7 @@ void CModelIdxTree::onIdxTreeEntryAboutToBeRemoved(
     // objects might be called from within different thread contexts.
     QMutexLocker mtxLocker(m_pIdxTree == nullptr ? nullptr : m_pIdxTree->mutex());
 
-    CModelAbstractTreeEntry* pModelTreeEntry = findModelEntry(i_pTreeEntry);
+    CModelIdxTreeEntry* pModelTreeEntry = findModelEntry(i_pTreeEntry);
 
     // Please note that the model may not contain each index tree entry as a filter
     // may have been applied.
@@ -1548,7 +1530,7 @@ void CModelIdxTree::onIdxTreeEntryAboutToBeRemoved(
     {
         if( pModelTreeEntry->entryType() == EIdxTreeEntryType::Branch )
         {
-            clear(dynamic_cast<CModelBranchTreeEntry*>(pModelTreeEntry));
+            clear(pModelTreeEntry);
         }
 
         remove(pModelTreeEntry);
@@ -1561,10 +1543,10 @@ void CModelIdxTree::onIdxTreeEntryAboutToBeRemoved(
 
 //------------------------------------------------------------------------------
 void CModelIdxTree::onIdxTreeEntryMoved(
-    CIdxTree*              i_pIdxTree,
-    CAbstractIdxTreeEntry* i_pTreeEntry,
-    const QString&         i_strKeyInTreePrev,
-    CBranchIdxTreeEntry*   i_pTargetBranch )
+    CIdxTree*      i_pIdxTree,
+    CIdxTreeEntry* i_pTreeEntry,
+    const QString& i_strKeyInTreePrev,
+    CIdxTreeEntry* i_pTargetBranch )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -1600,14 +1582,14 @@ void CModelIdxTree::onIdxTreeEntryMoved(
     // the new key in tree.
     //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-    CModelAbstractTreeEntry* pModelTreeEntry = findModelEntry(i_pTreeEntry);
-    CModelBranchTreeEntry*   pModelTargetBranch = findModelBranch(i_pTargetBranch);
+    CModelIdxTreeEntry* pModelTreeEntry = findModelEntry(i_pTreeEntry);
+    CModelIdxTreeEntry* pModelTargetBranch = findModelEntry(i_pTargetBranch);
 
     // Please note that the model may not contain each index tree entry as a filter
     // may have been applied.
     if( pModelTreeEntry != nullptr && pModelTargetBranch != nullptr )
     {
-        CModelBranchTreeEntry* pModelParentBranchPrev = pModelTreeEntry->modelParentBranch();
+        CModelIdxTreeEntry* pModelParentBranchPrev = pModelTreeEntry->modelParentBranch();
 
         QModelIndex modelIdxParentPrev = _createIndex(pModelParentBranchPrev->modelIndexInParentBranch(), 0, pModelParentBranchPrev);
 
@@ -1632,9 +1614,9 @@ void CModelIdxTree::onIdxTreeEntryMoved(
 
 //------------------------------------------------------------------------------
 void CModelIdxTree::onIdxTreeEntryKeyInTreeChanged(
-    CIdxTree*              i_pIdxTree,
-    CAbstractIdxTreeEntry* i_pTreeEntry,
-    const QString&         i_strKeyInTreePrev )
+    CIdxTree*      i_pIdxTree,
+    CIdxTreeEntry* i_pTreeEntry,
+    const QString& i_strKeyInTreePrev )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -1673,13 +1655,13 @@ void CModelIdxTree::onIdxTreeEntryKeyInTreeChanged(
     // objects might be called from within different thread contexts.
     QMutexLocker mtxLocker(m_pIdxTree == nullptr ? nullptr : m_pIdxTree->mutex());
 
-    CModelAbstractTreeEntry* pModelTreeEntry = m_mappModelTreeEntries.value(i_strKeyInTreePrev, nullptr);
+    CModelIdxTreeEntry* pModelTreeEntry = m_mappModelTreeEntries.value(i_strKeyInTreePrev, nullptr);
 
     // Please note that the model may not contain each index tree entry as a filter
     // may have been applied.
     if( pModelTreeEntry != nullptr )
     {
-        CModelBranchTreeEntry* pModelParentBranch = pModelTreeEntry->modelParentBranch();
+        CModelIdxTreeEntry* pModelParentBranch = pModelTreeEntry->modelParentBranch();
 
         if( pModelParentBranch != nullptr )
         {
@@ -1744,7 +1726,7 @@ protected: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CModelIdxTree::clear( CModelBranchTreeEntry* i_pModelBranch, bool i_bDestroyTreeEntries )
+void CModelIdxTree::clear( CModelIdxTreeEntry* i_pModelBranch, bool i_bDestroyTreeEntries )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -1770,8 +1752,8 @@ void CModelIdxTree::clear( CModelBranchTreeEntry* i_pModelBranch, bool i_bDestro
         throw CException(__FILE__, __LINE__, EResultArgOutOfRange, "i_pModelBranch == nullptr");
     }
 
-    CModelAbstractTreeEntry* pModelTreeEntry;
-    int                      idxEntry;
+    CModelIdxTreeEntry* pModelTreeEntry;
+    int                 idxEntry;
 
     for( idxEntry = i_pModelBranch->count()-1; idxEntry >= 0; --idxEntry )
     {
@@ -1779,7 +1761,7 @@ void CModelIdxTree::clear( CModelBranchTreeEntry* i_pModelBranch, bool i_bDestro
 
         if( pModelTreeEntry->entryType() == EIdxTreeEntryType::Branch )
         {
-            clear(dynamic_cast<CModelBranchTreeEntry*>(pModelTreeEntry), i_bDestroyTreeEntries);
+            clear(pModelTreeEntry, i_bDestroyTreeEntries);
         }
 
         remove(pModelTreeEntry);
@@ -1793,7 +1775,7 @@ void CModelIdxTree::clear( CModelBranchTreeEntry* i_pModelBranch, bool i_bDestro
 } // clear
 
 //------------------------------------------------------------------------------
-void CModelIdxTree::remove( CModelAbstractTreeEntry* i_pModelTreeEntry )
+void CModelIdxTree::remove( CModelIdxTreeEntry* i_pModelTreeEntry )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -1820,7 +1802,7 @@ void CModelIdxTree::remove( CModelAbstractTreeEntry* i_pModelTreeEntry )
 
     if( i_pModelTreeEntry != m_pModelRoot )
     {
-        CModelBranchTreeEntry* pModelParentBranch = i_pModelTreeEntry->modelParentBranch();
+        CModelIdxTreeEntry* pModelParentBranch = i_pModelTreeEntry->modelParentBranch();
 
         int idxInParentBranch = i_pModelTreeEntry->modelIndexInParentBranch();
 
@@ -1882,7 +1864,7 @@ int CModelIdxTree::rowCount( const QModelIndex& i_modelIdxParent ) const
         // objects might be called from within different thread contexts.
         QMutexLocker mtxLocker(m_pIdxTree == nullptr ? nullptr : m_pIdxTree->mutex());
 
-        CModelAbstractTreeEntry* pModelParentTreeEntry = static_cast<CModelAbstractTreeEntry*>(i_modelIdxParent.internalPointer());
+        CModelIdxTreeEntry* pModelParentTreeEntry = static_cast<CModelIdxTreeEntry*>(i_modelIdxParent.internalPointer());
 
         if( pModelParentTreeEntry == nullptr )
         {
@@ -1892,7 +1874,7 @@ int CModelIdxTree::rowCount( const QModelIndex& i_modelIdxParent ) const
         if( pModelParentTreeEntry->entryType() == EIdxTreeEntryType::Root
          || pModelParentTreeEntry->entryType() == EIdxTreeEntryType::Branch )
         {
-            CModelBranchTreeEntry* pModelParentBranch = dynamic_cast<CModelBranchTreeEntry*>(pModelParentTreeEntry);
+            CModelIdxTreeEntry* pModelParentBranch = pModelParentTreeEntry;
             iRowCount = pModelParentBranch->size();
         }
         else // if( pModelParentTreeEntry->entryType() == EIdxTreeEntryType::Leave )
@@ -1971,7 +1953,7 @@ QModelIndex CModelIdxTree::index( int i_iRow, int i_iCol, const QModelIndex& i_m
 
     if( hasIndex(i_iRow,i_iCol,i_modelIdxParent) )
     {
-        CModelAbstractTreeEntry* pModelTreeEntry = nullptr;
+        CModelIdxTreeEntry* pModelTreeEntry = nullptr;
 
         if( !i_modelIdxParent.isValid() )
         {
@@ -1979,7 +1961,7 @@ QModelIndex CModelIdxTree::index( int i_iRow, int i_iCol, const QModelIndex& i_m
         }
         else // if( i_modelIdxParent.isValid() )
         {
-            CModelAbstractTreeEntry* pModelParentTreeEntry = static_cast<CModelAbstractTreeEntry*>(i_modelIdxParent.internalPointer());
+            CModelIdxTreeEntry* pModelParentTreeEntry = static_cast<CModelIdxTreeEntry*>(i_modelIdxParent.internalPointer());
 
             if( pModelParentTreeEntry == nullptr )
             {
@@ -1992,7 +1974,7 @@ QModelIndex CModelIdxTree::index( int i_iRow, int i_iCol, const QModelIndex& i_m
                 throw CException(__FILE__, __LINE__, EResultInternalProgramError);
             }
 
-            CModelBranchTreeEntry* pModelParentBranch = dynamic_cast<CModelBranchTreeEntry*>(pModelParentTreeEntry);
+            CModelIdxTreeEntry* pModelParentBranch = pModelParentTreeEntry;
 
             if( i_iRow >= 0 && i_iRow < pModelParentBranch->size() )
             {
@@ -2044,14 +2026,14 @@ QModelIndex CModelIdxTree::parent( const QModelIndex& i_modelIdx ) const
 
     if( i_modelIdx.isValid() )
     {
-        CModelAbstractTreeEntry* pModelTreeEntry = static_cast<CModelAbstractTreeEntry*>(i_modelIdx.internalPointer());
+        CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(i_modelIdx.internalPointer());
 
         if( pModelTreeEntry == nullptr )
         {
             throw CException(__FILE__, __LINE__, EResultInternalProgramError);
         }
 
-        CModelBranchTreeEntry* pModelParentBranch = pModelTreeEntry->modelParentBranch();
+        CModelIdxTreeEntry* pModelParentBranch = pModelTreeEntry->modelParentBranch();
 
         if( pModelParentBranch != nullptr )
         {
@@ -2234,11 +2216,11 @@ Qt::ItemFlags CModelIdxTree::flags( const QModelIndex& i_modelIdx ) const
 
     Qt::ItemFlags uFlags = QAbstractItemModel::flags(i_modelIdx);
 
-    CModelAbstractTreeEntry* pModelTreeEntry = nullptr;
+    CModelIdxTreeEntry* pModelTreeEntry = nullptr;
 
     if( i_modelIdx.isValid() )
     {
-        pModelTreeEntry = static_cast<CModelAbstractTreeEntry*>(i_modelIdx.internalPointer());
+        pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(i_modelIdx.internalPointer());
     }
 
     if( pModelTreeEntry != nullptr )
@@ -2362,7 +2344,7 @@ QVariant CModelIdxTree::data( const QModelIndex& i_modelIdx, int i_iRole ) const
 
     QVariant varData;
 
-    CModelAbstractTreeEntry* pModelTreeEntry = nullptr;
+    CModelIdxTreeEntry* pModelTreeEntry = nullptr;
 
     // The list of objects must be protected as adding and removing
     // objects might be called from within different thread contexts.
@@ -2370,16 +2352,16 @@ QVariant CModelIdxTree::data( const QModelIndex& i_modelIdx, int i_iRole ) const
 
     if( i_modelIdx.isValid() )
     {
-        pModelTreeEntry = static_cast<CModelAbstractTreeEntry*>(i_modelIdx.internalPointer());
+        pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(i_modelIdx.internalPointer());
     }
 
     if( pModelTreeEntry != nullptr )
     {
-        CModelBranchTreeEntry* pModelBranch = nullptr;
+        CModelIdxTreeEntry* pModelBranch = nullptr;
 
         if( pModelTreeEntry->entryType() == EIdxTreeEntryType::Root || pModelTreeEntry->entryType() == EIdxTreeEntryType::Branch )
         {
-            pModelBranch = dynamic_cast<CModelBranchTreeEntry*>(pModelTreeEntry);
+            pModelBranch = pModelTreeEntry;
         }
 
         switch( i_modelIdx.column() )
@@ -2532,7 +2514,7 @@ bool CModelIdxTree::setData(
 
     bool bOk = false;
 
-    CModelAbstractTreeEntry* pModelTreeEntry = nullptr;
+    CModelIdxTreeEntry* pModelTreeEntry = nullptr;
 
     // The list of objects must be protected as adding and removing
     // objects might be called from within different thread contexts.
@@ -2540,7 +2522,7 @@ bool CModelIdxTree::setData(
 
     if( i_modelIdx.isValid() )
     {
-        pModelTreeEntry = static_cast<CModelAbstractTreeEntry*>(i_modelIdx.internalPointer());
+        pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(i_modelIdx.internalPointer());
     }
 
     if( pModelTreeEntry != nullptr )
@@ -2687,13 +2669,13 @@ QMimeData* CModelIdxTree::mimeData( const QModelIndexList& i_arModelIdxs ) const
     QByteArray  byteArr;
     QDataStream stream(&byteArr, QIODevice::WriteOnly);
 
-    const CModelAbstractTreeEntry* pModelTreeEntry;
+    const CModelIdxTreeEntry* pModelTreeEntry;
 
     for( const QModelIndex& modelIdx : i_arModelIdxs )
     {
         if( modelIdx.isValid() )
         {
-            pModelTreeEntry = static_cast<const CModelAbstractTreeEntry*>(modelIdx.internalPointer());
+            pModelTreeEntry = static_cast<const CModelIdxTreeEntry*>(modelIdx.internalPointer());
             QString strItem = pModelTreeEntry->keyInTree();
             stream << strItem;
         }
@@ -2763,23 +2745,23 @@ bool CModelIdxTree::canDropMimeData(
         // If row and column are greater than or equal zero, it means that the drop occurred
         // just before the specified row and column in the specified parent.
 
-        CBranchIdxTreeEntry* pBranchParent = nullptr;
+        CIdxTreeEntry* pBranchParent = nullptr;
 
         // The list of objects must be protected as adding and removing
         // objects might be called from within different thread contexts.
         QMutexLocker mtxLocker(m_pIdxTree == nullptr ? nullptr : m_pIdxTree->mutex());
 
-        CModelBranchTreeEntry* pModelBranchParent = static_cast<CModelBranchTreeEntry*>(i_modelIdxParent.internalPointer());
+        CModelIdxTreeEntry* pModelBranchParent = static_cast<CModelIdxTreeEntry*>(i_modelIdxParent.internalPointer());
 
         if( pModelBranchParent != nullptr )
         {
-            pBranchParent = dynamic_cast<CBranchIdxTreeEntry*>(pModelBranchParent->treeEntry());
+            pBranchParent = pModelBranchParent->treeEntry();
         }
 
         if( pBranchParent != nullptr )
         {
             SErrResultInfo errResultInfo;
-            CAbstractIdxTreeEntry* pTreeEntryDropped;
+            CIdxTreeEntry* pTreeEntryDropped;
 
             if( strlstItems.size() > 0 )
             {
@@ -2892,12 +2874,12 @@ bool CModelIdxTree::dropMimeData(
         // objects might be called from within different thread contexts.
         QMutexLocker mtxLocker(m_pIdxTree == nullptr ? nullptr : m_pIdxTree->mutex());
 
-        CModelBranchTreeEntry* pModelBranchParent = static_cast<CModelBranchTreeEntry*>(i_modelIdxParent.internalPointer());
+        CModelIdxTreeEntry* pModelBranchParent = static_cast<CModelIdxTreeEntry*>(i_modelIdxParent.internalPointer());
 
-        CBranchIdxTreeEntry* pBranchParent = dynamic_cast<CBranchIdxTreeEntry*>(pModelBranchParent->treeEntry());
+        CIdxTreeEntry* pBranchParent = pModelBranchParent->treeEntry();
 
-        //CModelAbstractTreeEntry* pModelTreeEntrySuccessor = nullptr;
-        //CAbstractIdxTreeEntry*      pTreeEntrySuccessor = nullptr;
+        //CModelIdxTreeEntry* pModelTreeEntrySuccessor = nullptr;
+        //CIdxTreeEntry*      pTreeEntrySuccessor = nullptr;
 
         //if( pModelBranchParent != nullptr )
         //{
@@ -2912,7 +2894,7 @@ bool CModelIdxTree::dropMimeData(
         //    }
         //}
 
-        CAbstractIdxTreeEntry* pTreeEntryDropped;
+        CIdxTreeEntry* pTreeEntryDropped;
 
         for( auto strKeyInTree : strlstItems )
         {
@@ -2978,7 +2960,7 @@ SErrResultInfo CModelIdxTree::canSetData(
 
     SErrResultInfo errResultInfo = ErrResultInfoError(strMth, EResultInvalidMethodCall, "Value cannot be changed");
 
-    CModelAbstractTreeEntry* pModelTreeEntry = nullptr;
+    CModelIdxTreeEntry* pModelTreeEntry = nullptr;
 
     // The list of objects must be protected as adding and removing
     // objects might be called from within different thread contexts.
@@ -2986,7 +2968,7 @@ SErrResultInfo CModelIdxTree::canSetData(
 
     if( i_modelIdx.isValid() )
     {
-        pModelTreeEntry = static_cast<CModelAbstractTreeEntry*>(i_modelIdx.internalPointer());
+        pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(i_modelIdx.internalPointer());
     }
 
     if( pModelTreeEntry != nullptr )

@@ -28,7 +28,7 @@ may result in using the software modules.
 #define ZSApps_TestZSSysLogFile_Test_h
 
 #include "ZSTest/ZSTest.h"
-#include "ZSTest/ZSTestStepAdminObj.h"
+#include "ZSTest/ZSTestStepIdxTreeEntry.h"
 
 class QTimer;
 

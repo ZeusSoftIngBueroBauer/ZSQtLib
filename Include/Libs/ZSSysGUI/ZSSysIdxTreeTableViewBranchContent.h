@@ -67,8 +67,8 @@ public: // overridables
     virtual QString nameSpace() const { return CTableViewIdxTreeBranchContent::NameSpace(); }
     virtual QString className() const { return CTableViewIdxTreeBranchContent::ClassName(); }
 public: // overridables
-    virtual void setBranch( CBranchIdxTreeEntry* i_pBranch );
-    CBranchIdxTreeEntry* branch() const { return m_pBranch; }
+    virtual void setBranch( CIdxTreeEntry* i_pBranch );
+    CIdxTreeEntry* branch() const { return m_pBranch; }
 public: // instance methods
     void setSortOrder( EIdxTreeSortOrder i_sortOrder );
     EIdxTreeSortOrder sortOrder() const { return m_sortOrder; }
@@ -90,7 +90,7 @@ protected slots:
     void onActionLeavePasteTriggered( bool i_bChecked );
 protected: // instance members
     CModelIdxTreeBranchContent* m_pModel;
-    CBranchIdxTreeEntry*        m_pBranch;
+    CIdxTreeEntry*              m_pBranch;
     EIdxTreeSortOrder           m_sortOrder;
     QMenu*                      m_pMenuBranchContext;
     QAction*                    m_pActionBranchTitle;

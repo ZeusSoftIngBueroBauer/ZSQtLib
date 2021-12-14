@@ -41,7 +41,7 @@ using namespace ZS::Trace;
 
 
 /*******************************************************************************
-class CTrcAdminObj : public QObject, public CLeaveIdxTreeEntry
+class CTrcAdminObj : public QObject, public #error CLeaveIdxTreeEntry
 *******************************************************************************/
 
 /*==============================================================================
@@ -94,7 +94,7 @@ protected: // ctors and dtor (trace admin objects may only be created by the mod
 CTrcAdminObj::CTrcAdminObj( const QString& i_strObjName, const QString& /*i_strObjThreadName*/ ) :
 //------------------------------------------------------------------------------
     QObject(),
-    CLeaveIdxTreeEntry(i_strObjName),
+    CIdxTreeEntry(EIdxTreeEntryType::Leave, i_strObjName),
     m_iBlockTreeEntryChangedSignalCounter(0),
     m_strObjThreadName(),
     m_iRefCount(0),

@@ -39,7 +39,7 @@ may result in using the software modules.
 #endif
 
 #include "ZSSysGUI/ZSSysIdxTreeView.h"
-#include "ZSSysGUI/ZSSysIdxTreeModelEntries.h"
+#include "ZSSysGUI/ZSSysIdxTreeModelEntry.h"
 #include "ZSSysGUI/ZSSysGUIAux.h"
 #include "ZSSysGUI/ZSSysErrDlg.h"
 #include "ZSSys/ZSSysAux.h"
@@ -700,18 +700,18 @@ void CTreeViewIdxTree::setSortOrder( EIdxTreeSortOrder i_sortOrder )
     // expanded states of the nodes the exanded state of the model nodes
     // is saved. After the model has been sorted the expanded states are recalled.
 
-    QMap<QString, CModelAbstractTreeEntry*> mappTreeEntries = pModel->treeEntriesMap();
+    QMap<QString, CModelIdxTreeEntry*> mappTreeEntries = pModel->treeEntriesMap();
 
     QStringList strlstKeysOfExpandedModelEntries;
 
-    CModelBranchTreeEntry* pModelBranch;
+    CModelIdxTreeEntry* pModelBranch;
 
     for( auto pModelTreeEntry : mappTreeEntries )
     {
         if( pModelTreeEntry->entryType() == EIdxTreeEntryType::Root
          || pModelTreeEntry->entryType() == EIdxTreeEntryType::Branch )
         {
-            pModelBranch = dynamic_cast<CModelBranchTreeEntry*>(pModelTreeEntry);
+            pModelBranch = pModelTreeEntry;
 
             if( pModelBranch->isExpanded() && pModel->areAllParentBranchesExpanded(pModelBranch) )
             {
@@ -873,7 +873,7 @@ void CTreeViewIdxTree::expandRecursive( const QModelIndex& i_modelIdx )
         /* strMethod          */ "expandRecursive",
         /* strMethodInArgs    */ strMthInArgs );
 
-    CModelAbstractTreeEntry* pModelTreeEntry = static_cast<CModelAbstractTreeEntry*>(i_modelIdx.internalPointer());
+    CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(i_modelIdx.internalPointer());
 
     if( pModelTreeEntry != nullptr )
     {
@@ -881,8 +881,8 @@ void CTreeViewIdxTree::expandRecursive( const QModelIndex& i_modelIdx )
         {
             expand(i_modelIdx);
 
-            CModelBranchTreeEntry*   pModelBranch = dynamic_cast<CModelBranchTreeEntry*>(pModelTreeEntry);
-            CModelAbstractTreeEntry* pModelTreeEntryChild;
+            CModelIdxTreeEntry* pModelBranch = pModelTreeEntry;
+            CModelIdxTreeEntry* pModelTreeEntryChild;
 
             QModelIndex modelIdxChild;
 
@@ -922,13 +922,13 @@ void CTreeViewIdxTree::collapseRecursive( const QModelIndex& i_modelIdx )
         /* strMethod          */ "collapseRecursive",
         /* strMethodInArgs    */ strMthInArgs );
 
-    CModelAbstractTreeEntry* pModelTreeEntry = static_cast<CModelAbstractTreeEntry*>(i_modelIdx.internalPointer());
+    CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(i_modelIdx.internalPointer());
 
     if( pModelTreeEntry != nullptr )
     {
         if( pModelTreeEntry->entryType() == EIdxTreeEntryType::Root || pModelTreeEntry->entryType() == EIdxTreeEntryType::Branch )
         {
-            CModelBranchTreeEntry* pModelBranch = dynamic_cast<CModelBranchTreeEntry*>(pModelTreeEntry);
+            CModelIdxTreeEntry* pModelBranch = pModelTreeEntry;
             QModelIndex modelIdx;
 
             for( int idxEntry = 0; idxEntry < pModelBranch->count(); ++idxEntry )
@@ -1052,11 +1052,11 @@ void CTreeViewIdxTree::onCollapsed( const QModelIndex& i_modelIdx )
     {
         CModelIdxTree* pModelIdxTree = dynamic_cast<CModelIdxTree*>(model());
 
-        CModelAbstractTreeEntry* pModelTreeEntry = static_cast<CModelAbstractTreeEntry*>(i_modelIdx.internalPointer());
+        CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(i_modelIdx.internalPointer());
 
         if( pModelTreeEntry->entryType() == EIdxTreeEntryType::Root || pModelTreeEntry->entryType() == EIdxTreeEntryType::Branch )
         {
-            CModelBranchTreeEntry* pModelBranch = dynamic_cast<CModelBranchTreeEntry*>(pModelTreeEntry);
+            CModelIdxTreeEntry* pModelBranch = pModelTreeEntry;
             pModelIdxTree->setIsExpanded(pModelBranch, false);
         }
     } // if( i_modelIdx.isValid() )
@@ -1094,11 +1094,11 @@ void CTreeViewIdxTree::onExpanded( const QModelIndex& i_modelIdx )
 
         CModelIdxTree* pModelIdxTree = dynamic_cast<CModelIdxTree*>(model());
 
-        CModelAbstractTreeEntry* pModelTreeEntry = static_cast<CModelAbstractTreeEntry*>(i_modelIdx.internalPointer());
+        CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(i_modelIdx.internalPointer());
 
         if( pModelTreeEntry->entryType() == EIdxTreeEntryType::Root || pModelTreeEntry->entryType() == EIdxTreeEntryType::Branch )
         {
-            CModelBranchTreeEntry* pModelBranch = dynamic_cast<CModelBranchTreeEntry*>(pModelTreeEntry);
+            CModelIdxTreeEntry* pModelBranch = pModelTreeEntry;
             pModelIdxTree->setIsExpanded(pModelBranch, true);
         }
     } // if( i_modelIdx.isValid() )
@@ -1172,7 +1172,7 @@ void CTreeViewIdxTree::keyPressEvent( QKeyEvent* i_pEv )
         CModelIdxTree* pModelIdxTree = dynamic_cast<CModelIdxTree*>(model());
         CIdxTree*      pIdxTree = pModelIdxTree->idxTree();
 
-        CModelAbstractTreeEntry* pModelTreeEntry = static_cast<CModelAbstractTreeEntry*>(modelIdxSelected.internalPointer());
+        CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(modelIdxSelected.internalPointer());
 
         if( m_iTrcDetailLevel >= ETraceDetailLevelInternalStates )
         {
@@ -1210,7 +1210,7 @@ void CTreeViewIdxTree::keyPressEvent( QKeyEvent* i_pEv )
                     }
                     if( iRet == QMessageBox::Yes )
                     {
-                        CAbstractIdxTreeEntry* pTreeEntry = pModelTreeEntry->treeEntry();
+                        CIdxTreeEntry* pTreeEntry = pModelTreeEntry->treeEntry();
                         delete pTreeEntry;
                         pTreeEntry = nullptr;
                         pModelTreeEntry = nullptr;
@@ -1245,7 +1245,7 @@ void CTreeViewIdxTree::keyPressEvent( QKeyEvent* i_pEv )
                     {
                         if( m_modelIdxSelectedForPaste.isValid() )
                         {
-                            CModelBranchTreeEntry* pModelBranchTrg = nullptr;
+                            CModelIdxTreeEntry* pModelBranchTrg = nullptr;
 
                             if( pModelTreeEntry->entryType() != EIdxTreeEntryType::Root && pModelTreeEntry->entryType() != EIdxTreeEntryType::Branch )
                             {
@@ -1253,13 +1253,13 @@ void CTreeViewIdxTree::keyPressEvent( QKeyEvent* i_pEv )
                             }
                             else
                             {
-                                pModelBranchTrg = dynamic_cast<CModelBranchTreeEntry*>(pModelTreeEntry);
+                                pModelBranchTrg = pModelTreeEntry;
                             }
                             if( pModelBranchTrg != nullptr )
                             {
-                                CModelAbstractTreeEntry* pModelTreeEntrySrc = static_cast<CModelAbstractTreeEntry*>(m_modelIdxSelectedForPaste.internalPointer());
-                                CAbstractIdxTreeEntry*      pTreeEntrySrc = pModelTreeEntrySrc->treeEntry();
-                                CBranchIdxTreeEntry*        pBranchTrg    = dynamic_cast<CBranchIdxTreeEntry*>(pModelBranchTrg->treeEntry());
+                                CModelIdxTreeEntry* pModelTreeEntrySrc = static_cast<CModelIdxTreeEntry*>(m_modelIdxSelectedForPaste.internalPointer());
+                                CIdxTreeEntry*      pTreeEntrySrc = pModelTreeEntrySrc->treeEntry();
+                                CIdxTreeEntry*      pBranchTrg    = pModelBranchTrg->treeEntry();
 
                                 int idxInTargetBranch = -1;
 
@@ -1368,7 +1368,7 @@ void CTreeViewIdxTree::mousePressEvent( QMouseEvent* i_pEv )
 
     if( m_modelIdxSelectedOnMousePressEvent.isValid() )
     {
-        CModelAbstractTreeEntry* pModelTreeEntry = static_cast<CModelAbstractTreeEntry*>(m_modelIdxSelectedOnMousePressEvent.internalPointer());
+        CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(m_modelIdxSelectedOnMousePressEvent.internalPointer());
 
         if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
         {
@@ -1458,7 +1458,7 @@ void CTreeViewIdxTree::mouseReleaseEvent( QMouseEvent* i_pEv )
 
     if( m_modelIdxSelectedOnMouseReleaseEvent.isValid() )
     {
-        CModelAbstractTreeEntry* pModelTreeEntry = static_cast<CModelAbstractTreeEntry*>(m_modelIdxSelectedOnMouseReleaseEvent.internalPointer());
+        CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(m_modelIdxSelectedOnMouseReleaseEvent.internalPointer());
 
         if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
         {
@@ -1839,7 +1839,7 @@ void CTreeViewIdxTree::onActionBranchCreateNewBranchTriggered( bool i_bChecked )
         CModelIdxTree* pModelIdxTree = dynamic_cast<CModelIdxTree*>(model());
         CIdxTree*      pIdxTree = pModelIdxTree->idxTree();
 
-        CModelAbstractTreeEntry* pModelTreeEntry = static_cast<CModelAbstractTreeEntry*>(m_modelIdxSelectedOnMousePressEvent.internalPointer());
+        CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(m_modelIdxSelectedOnMousePressEvent.internalPointer());
 
         if( m_iTrcDetailLevel >= ETraceDetailLevelInternalStates )
         {
@@ -1847,11 +1847,11 @@ void CTreeViewIdxTree::onActionBranchCreateNewBranchTriggered( bool i_bChecked )
             mthTracer.trace(strMthInArgs);
         }
 
-        CModelBranchTreeEntry* pModelBranch = dynamic_cast<CModelBranchTreeEntry*>(pModelTreeEntry);
+        CModelIdxTreeEntry* pModelBranch = pModelTreeEntry;
 
         if( pIdxTree != nullptr && pModelBranch != nullptr )
         {
-            CBranchIdxTreeEntry* pBranch = dynamic_cast<CBranchIdxTreeEntry*>(pModelBranch->treeEntry());
+            CIdxTreeEntry* pBranch = pModelBranch->treeEntry();
 
             QString strName = "New Branch";
             QString strUniqueName = strName;
@@ -1863,7 +1863,7 @@ void CTreeViewIdxTree::onActionBranchCreateNewBranchTriggered( bool i_bChecked )
             }
             strName = strUniqueName;
 
-            CBranchIdxTreeEntry* pBranchNew = pIdxTree->createBranch(strName);
+            CIdxTreeEntry* pBranchNew = pIdxTree->createBranch(strName);
 
             pIdxTree->add(pBranchNew, pBranch);
 
@@ -1898,7 +1898,7 @@ void CTreeViewIdxTree::onActionBranchCreateNewLeaveTriggered( bool i_bChecked )
         CModelIdxTree* pModelIdxTree = dynamic_cast<CModelIdxTree*>(model());
         CIdxTree*      pIdxTree = pModelIdxTree->idxTree();
 
-        CModelAbstractTreeEntry* pModelTreeEntry = static_cast<CModelAbstractTreeEntry*>(m_modelIdxSelectedOnMousePressEvent.internalPointer());
+        CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(m_modelIdxSelectedOnMousePressEvent.internalPointer());
 
         if( m_iTrcDetailLevel >= ETraceDetailLevelInternalStates )
         {
@@ -1906,11 +1906,11 @@ void CTreeViewIdxTree::onActionBranchCreateNewLeaveTriggered( bool i_bChecked )
             mthTracer.trace(strMthInArgs);
         }
 
-        CModelBranchTreeEntry* pModelBranch = dynamic_cast<CModelBranchTreeEntry*>(pModelTreeEntry);
+        CModelIdxTreeEntry* pModelBranch = pModelTreeEntry;
 
         if( pIdxTree != nullptr && pModelBranch != nullptr )
         {
-            CBranchIdxTreeEntry* pBranch = dynamic_cast<CBranchIdxTreeEntry*>(pModelBranch->treeEntry());
+            CIdxTreeEntry* pBranch = pModelBranch->treeEntry();
 
             QString strName = "New Leave";
             QString strUniqueName = strName;
@@ -1922,7 +1922,7 @@ void CTreeViewIdxTree::onActionBranchCreateNewLeaveTriggered( bool i_bChecked )
             }
             strName = strUniqueName;
 
-            CLeaveIdxTreeEntry* pLeaveNew = pIdxTree->createLeave(strName);
+            CIdxTreeEntry* pLeaveNew = pIdxTree->createLeave(strName);
 
             pIdxTree->add(pLeaveNew, pBranch);
 
@@ -1957,7 +1957,7 @@ void CTreeViewIdxTree::onActionBranchDeleteTriggered( bool i_bChecked )
         CModelIdxTree* pModelIdxTree = dynamic_cast<CModelIdxTree*>(model());
         CIdxTree*      pIdxTree = pModelIdxTree->idxTree();
 
-        CModelAbstractTreeEntry* pModelTreeEntry = static_cast<CModelAbstractTreeEntry*>(m_modelIdxSelectedOnMousePressEvent.internalPointer());
+        CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(m_modelIdxSelectedOnMousePressEvent.internalPointer());
 
         if( m_iTrcDetailLevel >= ETraceDetailLevelInternalStates )
         {
@@ -1965,11 +1965,11 @@ void CTreeViewIdxTree::onActionBranchDeleteTriggered( bool i_bChecked )
             mthTracer.trace(strMthInArgs);
         }
 
-        CModelBranchTreeEntry* pModelBranch = dynamic_cast<CModelBranchTreeEntry*>(pModelTreeEntry);
+        CModelIdxTreeEntry* pModelBranch = pModelTreeEntry;
 
         if( pIdxTree != nullptr && pModelBranch != nullptr )
         {
-            CBranchIdxTreeEntry* pBranch = dynamic_cast<CBranchIdxTreeEntry*>(pModelBranch->treeEntry());
+            CIdxTreeEntry* pBranch = pModelBranch->treeEntry();
 
             delete pBranch;
             pBranch = nullptr;
@@ -2082,9 +2082,9 @@ void CTreeViewIdxTree::onActionBranchPasteTriggered( bool i_bChecked )
         CModelIdxTree* pModelIdxTree = dynamic_cast<CModelIdxTree*>(model());
         CIdxTree*      pIdxTree = pModelIdxTree->idxTree();
 
-        CModelAbstractTreeEntry* pModelTreeEntrySrc = static_cast<CModelAbstractTreeEntry*>(m_modelIdxSelectedForPaste.internalPointer());
-        CModelAbstractTreeEntry* pModelTreeEntryTrg = static_cast<CModelAbstractTreeEntry*>(m_modelIdxSelectedOnMousePressEvent.internalPointer());
-        CModelBranchTreeEntry*   pModelBranchTrg    = nullptr;
+        CModelIdxTreeEntry* pModelTreeEntrySrc = static_cast<CModelIdxTreeEntry*>(m_modelIdxSelectedForPaste.internalPointer());
+        CModelIdxTreeEntry* pModelTreeEntryTrg = static_cast<CModelIdxTreeEntry*>(m_modelIdxSelectedOnMousePressEvent.internalPointer());
+        CModelIdxTreeEntry* pModelBranchTrg    = nullptr;
 
         if( pModelTreeEntryTrg->entryType() != EIdxTreeEntryType::Root && pModelTreeEntryTrg->entryType() != EIdxTreeEntryType::Branch )
         {
@@ -2092,13 +2092,13 @@ void CTreeViewIdxTree::onActionBranchPasteTriggered( bool i_bChecked )
         }
         else
         {
-            pModelBranchTrg = dynamic_cast<CModelBranchTreeEntry*>(pModelTreeEntryTrg);
+            pModelBranchTrg = pModelTreeEntryTrg;
         }
 
         if( pModelBranchTrg != nullptr )
         {
-            CAbstractIdxTreeEntry* pTreeEntrySrc = pModelTreeEntrySrc->treeEntry();
-            CBranchIdxTreeEntry*   pBranchTrg    = dynamic_cast<CBranchIdxTreeEntry*>(pModelBranchTrg->treeEntry());
+            CIdxTreeEntry* pTreeEntrySrc = pModelTreeEntrySrc->treeEntry();
+            CIdxTreeEntry* pBranchTrg    = pModelBranchTrg->treeEntry();
 
             if( m_pasteMode == EPasteMode::Copy )
             {
@@ -2145,7 +2145,7 @@ void CTreeViewIdxTree::onActionLeaveDeleteTriggered( bool i_bChecked )
         CModelIdxTree* pModelIdxTree = dynamic_cast<CModelIdxTree*>(model());
         CIdxTree*      pIdxTree = pModelIdxTree->idxTree();
 
-        CModelAbstractTreeEntry* pModelTreeEntry = static_cast<CModelAbstractTreeEntry*>(m_modelIdxSelectedOnMousePressEvent.internalPointer());
+        CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(m_modelIdxSelectedOnMousePressEvent.internalPointer());
 
         if( m_iTrcDetailLevel >= ETraceDetailLevelInternalStates )
         {
@@ -2153,11 +2153,11 @@ void CTreeViewIdxTree::onActionLeaveDeleteTriggered( bool i_bChecked )
             mthTracer.trace(strMthInArgs);
         }
 
-        CModelLeaveTreeEntry* pModelLeave = dynamic_cast<CModelLeaveTreeEntry*>(pModelTreeEntry);
+        CModelIdxTreeEntry* pModelLeave = pModelTreeEntry;
 
         if( pIdxTree != nullptr && pModelLeave != nullptr )
         {
-            CLeaveIdxTreeEntry* pLeave = dynamic_cast<CLeaveIdxTreeEntry*>(pModelLeave->treeEntry());
+            CIdxTreeEntry* pLeave = pModelLeave->treeEntry();
 
             delete pLeave;
             pLeave = nullptr;
@@ -2270,9 +2270,9 @@ void CTreeViewIdxTree::onActionLeavePasteTriggered( bool i_bChecked )
         CModelIdxTree* pModelIdxTree = dynamic_cast<CModelIdxTree*>(model());
         CIdxTree*      pIdxTree = pModelIdxTree->idxTree();
 
-        CModelAbstractTreeEntry* pModelTreeEntrySrc = static_cast<CModelAbstractTreeEntry*>(m_modelIdxSelectedForPaste.internalPointer());
-        CModelAbstractTreeEntry* pModelTreeEntryTrg = static_cast<CModelAbstractTreeEntry*>(m_modelIdxSelectedOnMousePressEvent.internalPointer());
-        CModelBranchTreeEntry*   pModelBranchTrg    = nullptr;
+        CModelIdxTreeEntry* pModelTreeEntrySrc = static_cast<CModelIdxTreeEntry*>(m_modelIdxSelectedForPaste.internalPointer());
+        CModelIdxTreeEntry* pModelTreeEntryTrg = static_cast<CModelIdxTreeEntry*>(m_modelIdxSelectedOnMousePressEvent.internalPointer());
+        CModelIdxTreeEntry* pModelBranchTrg    = nullptr;
 
         if( pModelTreeEntryTrg->entryType() != EIdxTreeEntryType::Root && pModelTreeEntryTrg->entryType() != EIdxTreeEntryType::Branch )
         {
@@ -2280,13 +2280,13 @@ void CTreeViewIdxTree::onActionLeavePasteTriggered( bool i_bChecked )
         }
         else
         {
-            pModelBranchTrg = dynamic_cast<CModelBranchTreeEntry*>(pModelTreeEntryTrg);
+            pModelBranchTrg = pModelTreeEntryTrg;
         }
 
         if( pModelBranchTrg != nullptr )
         {
-            CAbstractIdxTreeEntry* pTreeEntrySrc = pModelTreeEntrySrc->treeEntry();
-            CBranchIdxTreeEntry*   pBranchTrg    = dynamic_cast<CBranchIdxTreeEntry*>(pModelBranchTrg->treeEntry());
+            CIdxTreeEntry* pTreeEntrySrc = pModelTreeEntrySrc->treeEntry();
+            CIdxTreeEntry* pBranchTrg    = pModelBranchTrg->treeEntry();
 
             if( m_pasteMode == EPasteMode::Copy )
             {

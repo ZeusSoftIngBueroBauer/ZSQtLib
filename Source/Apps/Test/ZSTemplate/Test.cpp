@@ -24,13 +24,10 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#include <QtCore/qtimer.h>
-
 #include "Test.h"
-#include "TSGrpTemplate.h"
 
-#include "ZSTest/ZSTestStepAdminObj.h"
-#include "ZSTest/ZSTestStepAdminObjPool.h"
+#include "ZSTest/ZSTestStep.h"
+#include "ZSTest/ZSTestStepGroup.h"
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
@@ -51,20 +48,72 @@ public: // ctors and dtor
 CTest::CTest( const QString& i_strTestStepsFileName ) :
 //------------------------------------------------------------------------------
     ZS::Test::CTest(
-        /* strName              */ "ZS::System::Template",
+        /* strName              */ "ZS::Apps::Test::Template",
         /* strTestStepsFileName */ i_strTestStepsFileName,
-        /* strNodeSeparator     */ "\\",
         /* iTestStepInterval_ms */ 0 )
 {
-    // Create test groups
-    //-------------------
+    int idxGroup = 0;
 
-    new CTSGrpTemplate(this);
+    ZS::Test::CTestStepGroup* pGrp1 = new ZS::Test::CTestStepGroup(
+        /* pTest      */ this,
+        /* strName    */ "Group " + QString::number(++idxGroup),
+        /* pGrpParent */ nullptr );
 
-    // Recall test admin object settings
-    //----------------------------------
+    int idxStep = 0;
 
-    m_pAdminObjPool->read_(i_strTestStepsFileName);
+    new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " Test Something",
+        /* strOperation    */ "Test Something",
+        /* pGrpParent      */ pGrp1,
+        /* szDoTestStepFct */ SLOT(doTestStepGrp1Step1(ZS::Test::CTestStep*)) );
+
+    new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " Test Something",
+        /* strOperation    */ "Test Something",
+        /* pGrpParent      */ pGrp1,
+        /* szDoTestStepFct */ SLOT(doTestStepGrp1Step2(ZS::Test::CTestStep*)) );
+
+    new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " Test Something",
+        /* strOperation    */ "Test Something",
+        /* pGrpParent      */ pGrp1,
+        /* szDoTestStepFct */ SLOT(doTestStepGrp1Step2(ZS::Test::CTestStep*)) );
+
+    ZS::Test::CTestStepGroup* pGrp2 = new ZS::Test::CTestStepGroup(
+        /* pTest      */ this,
+        /* strName    */ "Group " + QString::number(++idxGroup),
+        /* pGrpParent */ nullptr );
+
+    idxStep = 0;
+
+    new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " Test Something",
+        /* strOperation    */ "Test Something",
+        /* pGrpParent      */ pGrp2,
+        /* szDoTestStepFct */ SLOT(doTestStepGrp1Step1(ZS::Test::CTestStep*)) );
+
+    new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " Test Something",
+        /* strOperation    */ "Test Something",
+        /* pGrpParent      */ pGrp2,
+        /* szDoTestStepFct */ SLOT(doTestStepGrp1Step2(ZS::Test::CTestStep*)) );
+
+    new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " Test Something",
+        /* strOperation    */ "Test Something",
+        /* pGrpParent      */ pGrp2,
+        /* szDoTestStepFct */ SLOT(doTestStepGrp1Step2(ZS::Test::CTestStep*)) );
+
+    // Recall test step settings
+    //--------------------------
+
+    recall(i_strTestStepsFileName);
 
 } // default ctor
 
@@ -72,6 +121,168 @@ CTest::CTest( const QString& i_strTestStepsFileName ) :
 CTest::~CTest()
 //------------------------------------------------------------------------------
 {
-    m_pAdminObjPool->save_();
+    save();
 
 } // dtor
+
+//------------------------------------------------------------------------------
+void CTest::doTestStepGrp1Step1( ZS::Test::CTestStep* i_pTestStep )
+//------------------------------------------------------------------------------
+{
+    QString     strDesiredValue;
+    QStringList strlstDesiredValues;
+    QString     strActualValue;
+    QStringList strlstActualValues;
+
+    // Desired Values
+    //---------------
+
+    strDesiredValue  = "TestOutput";
+    strlstDesiredValues.append(strDesiredValue);
+
+    i_pTestStep->setDesiredValues(strlstDesiredValues);
+
+    // Actual Values
+    //---------------
+
+    strActualValue  = "TestOutput";
+    strlstActualValues.append(strActualValue);
+
+    i_pTestStep->setActualValues(strlstActualValues);
+
+} // doTestStepGrp1Step1
+
+//------------------------------------------------------------------------------
+void CTest::doTestStepGrp1Step2( ZS::Test::CTestStep* i_pTestStep )
+//------------------------------------------------------------------------------
+{
+    QString     strDesiredValue;
+    QStringList strlstDesiredValues;
+    QString     strActualValue;
+    QStringList strlstActualValues;
+
+    // Desired Values
+    //---------------
+
+    strDesiredValue  = "TestOutput";
+    strlstDesiredValues.append(strDesiredValue);
+
+    i_pTestStep->setDesiredValues(strlstDesiredValues);
+
+    // Actual Values
+    //---------------
+
+    strActualValue  = "TestOutput";
+    strlstActualValues.append(strActualValue);
+
+    i_pTestStep->setActualValues(strlstActualValues);
+
+} // doTestStepGrp1Step2
+
+//------------------------------------------------------------------------------
+void CTest::doTestStepGrp1Step3( ZS::Test::CTestStep* i_pTestStep )
+//------------------------------------------------------------------------------
+{
+    QString     strDesiredValue;
+    QStringList strlstDesiredValues;
+    QString     strActualValue;
+    QStringList strlstActualValues;
+
+    // Desired Values
+    //---------------
+
+    strDesiredValue  = "TestOutput";
+    strlstDesiredValues.append(strDesiredValue);
+
+    i_pTestStep->setDesiredValues(strlstDesiredValues);
+
+    // Actual Values
+    //---------------
+
+    strActualValue  = "TestOutput";
+    strlstActualValues.append(strActualValue);
+
+    i_pTestStep->setActualValues(strlstActualValues);
+
+} // doTestStepGrp1Step3
+
+//------------------------------------------------------------------------------
+void CTest::doTestStepGrp2Step1( ZS::Test::CTestStep* i_pTestStep )
+//------------------------------------------------------------------------------
+{
+    QString     strDesiredValue;
+    QStringList strlstDesiredValues;
+    QString     strActualValue;
+    QStringList strlstActualValues;
+
+    // Desired Values
+    //---------------
+
+    strDesiredValue  = "TestOutput";
+    strlstDesiredValues.append(strDesiredValue);
+
+    i_pTestStep->setDesiredValues(strlstDesiredValues);
+
+    // Actual Values
+    //---------------
+
+    strActualValue  = "TestOutput";
+    strlstActualValues.append(strActualValue);
+
+    i_pTestStep->setActualValues(strlstActualValues);
+
+} // doTestStepGrp2Step1
+
+//------------------------------------------------------------------------------
+void CTest::doTestStepGrp2Step2( ZS::Test::CTestStep* i_pTestStep )
+//------------------------------------------------------------------------------
+{
+    QString     strDesiredValue;
+    QStringList strlstDesiredValues;
+    QString     strActualValue;
+    QStringList strlstActualValues;
+
+    // Desired Values
+    //---------------
+
+    strDesiredValue  = "TestOutput";
+    strlstDesiredValues.append(strDesiredValue);
+
+    i_pTestStep->setDesiredValues(strlstDesiredValues);
+
+    // Actual Values
+    //---------------
+
+    strActualValue  = "TestOutput";
+    strlstActualValues.append(strActualValue);
+
+    i_pTestStep->setActualValues(strlstActualValues);
+
+} // doTestStepGrp2Step2
+
+//------------------------------------------------------------------------------
+void CTest::doTestStepGrp2Step3( ZS::Test::CTestStep* i_pTestStep )
+//------------------------------------------------------------------------------
+{
+    QString     strDesiredValue;
+    QStringList strlstDesiredValues;
+    QString     strActualValue;
+    QStringList strlstActualValues;
+
+    // Desired Values
+    //---------------
+
+    strDesiredValue  = "TestOutput";
+    strlstDesiredValues.append(strDesiredValue);
+
+    i_pTestStep->setDesiredValues(strlstDesiredValues);
+
+    // Actual Values
+    //---------------
+
+    strActualValue  = "TestOutput";
+    strlstActualValues.append(strActualValue);
+
+    i_pTestStep->setActualValues(strlstActualValues);
+
+} // doTestStepGrp2Step3

@@ -30,8 +30,8 @@ may result in using the software modules.
 
 #include "ZSTest/ZSTestStep.h"
 #include "ZSTest/ZSTestStepGroup.h"
-#include "ZSTest/ZSTestStepAdminObj.h"
-#include "ZSTest/ZSTestStepAdminObjPool.h"
+#include "ZSTest/ZSTestStepIdxTreeEntry.h"
+#include "ZSTest/ZSTestStepIdxTree.h"
 #include "ZSSys/ZSSysErrLog.h"
 #include "ZSSys/ZSSysErrResult.h"
 #include "ZSSys/ZSSysException.h"
@@ -91,7 +91,7 @@ CTest::CTest( const QString& i_strTestStepsFileName ) :
     // Recall test admin object settings
     //----------------------------------
 
-    m_pAdminObjPool->read_(i_strTestStepsFileName);
+    m_pAdminIdxTree->read_(i_strTestStepsFileName);
 
 } // default ctor
 
@@ -99,7 +99,7 @@ CTest::CTest( const QString& i_strTestStepsFileName ) :
 CTest::~CTest()
 //------------------------------------------------------------------------------
 {
-    m_pAdminObjPool->save_();
+    m_pAdminIdxTree->save_();
 
 } // dtor
 

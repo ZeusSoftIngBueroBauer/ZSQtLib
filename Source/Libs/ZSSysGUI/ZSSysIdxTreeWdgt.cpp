@@ -41,7 +41,7 @@ may result in using the software modules.
 #include "ZSSysGUI/ZSSysIdxTreeWdgt.h"
 #include "ZSSysGUI/ZSSysIdxTreeView.h"
 #include "ZSSysGUI/ZSSysIdxTreeTableViewBranchContent.h"
-#include "ZSSysGUI/ZSSysIdxTreeModelEntries.h"
+#include "ZSSysGUI/ZSSysIdxTreeModelEntry.h"
 #include "ZSSysGUI/ZSSysIdxTreeModel.h"
 #include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysEnumEntry.h"
@@ -629,15 +629,15 @@ void CWdgtIdxTree::onTreeViewSelectionModelCurrentRowChanged(
 
     if( i_modelIdxCurr.isValid() )
     {
-        CModelAbstractTreeEntry* pModelTreeEntry = static_cast<CModelAbstractTreeEntry*>(i_modelIdxCurr.internalPointer());
+        CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(i_modelIdxCurr.internalPointer());
 
         if( pModelTreeEntry != nullptr )
         {
-            CBranchIdxTreeEntry* pBranch = nullptr;
+            CIdxTreeEntry* pBranch = nullptr;
 
             if( pModelTreeEntry->entryType() == EIdxTreeEntryType::Root || pModelTreeEntry->entryType() == EIdxTreeEntryType::Branch )
             {
-                pBranch = dynamic_cast<CBranchIdxTreeEntry*>(pModelTreeEntry->treeEntry());
+                pBranch = pModelTreeEntry->treeEntry();
             }
 
             if( m_pEdtBranch != nullptr )

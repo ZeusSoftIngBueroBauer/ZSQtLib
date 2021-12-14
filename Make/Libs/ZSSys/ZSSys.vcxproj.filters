@@ -111,9 +111,6 @@
     <ClCompile Include="..\..\..\Source\Libs\ZSSys\ZSSysMsg.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Libs\ZSSys\ZSSysObjPool.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Source\Libs\ZSSys\ZSSysTime.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -171,7 +168,7 @@
     <ClCompile Include="..\..\..\Source\Libs\ZSSys\ZSSysIdxTree.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Libs\ZSSys\ZSSysIdxTreeEntries.cpp">
+    <ClCompile Include="..\..\..\Source\Libs\ZSSys\ZSSysIdxTreeEntry.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Libs\ZSSys\ZSSysTrcAdminObjIdxTree.cpp">
@@ -187,9 +184,6 @@
       <Filter>Generated Files\msvc2017\Win32\Debug</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSSys\Debug_msvc2017\Win32\moc_ZSSysMsg.cpp">
-      <Filter>Generated Files\msvc2017\Win32\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSSys\Debug_msvc2017\Win32\moc_ZSSysObjPool.cpp">
       <Filter>Generated Files\msvc2017\Win32\Debug</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSSys\Debug_msvc2017\Win32\moc_ZSSysRequest.cpp">
@@ -228,9 +222,6 @@
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSSys\Release_msvc2017\Win32\moc_ZSSysMsg.cpp">
       <Filter>Generated Files\msvc2017\Win32\Release</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSSys\Release_msvc2017\Win32\moc_ZSSysObjPool.cpp">
-      <Filter>Generated Files\msvc2017\Win32\Release</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSSys\Release_msvc2017\Win32\moc_ZSSysRequest.cpp">
       <Filter>Generated Files\msvc2017\Win32\Release</Filter>
     </ClCompile>
@@ -265,9 +256,6 @@
       <Filter>Generated Files\msvc2017\x64\Debug</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSSys\Debug_msvc2017\x64\moc_ZSSysMsg.cpp">
-      <Filter>Generated Files\msvc2017\x64\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSSys\Debug_msvc2017\x64\moc_ZSSysObjPool.cpp">
       <Filter>Generated Files\msvc2017\x64\Debug</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSSys\Debug_msvc2017\x64\moc_ZSSysRequest.cpp">
@@ -306,9 +294,6 @@
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSSys\Debug_msvc2015\x64\moc_ZSSysMsg.cpp">
       <Filter>Generated Files\msvc2015\x64\Debug</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSSys\Debug_msvc2015\x64\moc_ZSSysObjPool.cpp">
-      <Filter>Generated Files\msvc2015\x64\Debug</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSSys\Debug_msvc2015\x64\moc_ZSSysRequest.cpp">
       <Filter>Generated Files\msvc2015\x64\Debug</Filter>
     </ClCompile>
@@ -343,9 +328,6 @@
       <Filter>Generated Files\msvc2015\x64\Release</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSSys\Release_msvc2015\x64\moc_ZSSysMsg.cpp">
-      <Filter>Generated Files\msvc2015\x64\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSSys\Release_msvc2015\x64\moc_ZSSysObjPool.cpp">
       <Filter>Generated Files\msvc2015\x64\Release</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSSys\Release_msvc2015\x64\moc_ZSSysRequest.cpp">
@@ -384,9 +366,6 @@
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSSys\Debug_msvc2015\Win32\moc_ZSSysMsg.cpp">
       <Filter>Generated Files\msvc2015\Win32\Debug</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSSys\Debug_msvc2015\Win32\moc_ZSSysObjPool.cpp">
-      <Filter>Generated Files\msvc2015\Win32\Debug</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSSys\Debug_msvc2015\Win32\moc_ZSSysRequest.cpp">
       <Filter>Generated Files\msvc2015\Win32\Debug</Filter>
     </ClCompile>
@@ -423,9 +402,6 @@
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSSys\Release_msvc2015\Win32\moc_ZSSysMsg.cpp">
       <Filter>Generated Files\msvc2015\Win32\Release</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSSys\Release_msvc2015\Win32\moc_ZSSysObjPool.cpp">
-      <Filter>Generated Files\msvc2015\Win32\Release</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSSys\Release_msvc2015\Win32\moc_ZSSysRequest.cpp">
       <Filter>Generated Files\msvc2015\Win32\Release</Filter>
     </ClCompile>
@@ -460,9 +436,6 @@
       <Filter>Generated Files\msvc2017\x64\Release</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSSys\Release_msvc2017\x64\moc_ZSSysMsg.cpp">
-      <Filter>Generated Files\msvc2017\x64\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSSys\Release_msvc2017\x64\moc_ZSSysObjPool.cpp">
       <Filter>Generated Files\msvc2017\x64\Release</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSSys\Release_msvc2017\x64\moc_ZSSysRequest.cpp">
@@ -549,9 +522,6 @@
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSSys\Debug_msvc2019\Win32\moc_ZSSysMsg.cpp">
       <Filter>Generated Files\msvc2019\Win32\Debug</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSSys\Debug_msvc2019\Win32\moc_ZSSysObjPool.cpp">
-      <Filter>Generated Files\msvc2019\Win32\Debug</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSSys\Debug_msvc2019\Win32\moc_ZSSysRequest.cpp">
       <Filter>Generated Files\msvc2019\Win32\Debug</Filter>
     </ClCompile>
@@ -574,9 +544,6 @@
       <Filter>Generated Files\msvc2019\Win32\Release</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSSys\Release_msvc2019\Win32\moc_ZSSysMsg.cpp">
-      <Filter>Generated Files\msvc2019\Win32\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSSys\Release_msvc2019\Win32\moc_ZSSysObjPool.cpp">
       <Filter>Generated Files\msvc2019\Win32\Release</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSSys\Release_msvc2019\Win32\moc_ZSSysRequest.cpp">
@@ -618,9 +585,6 @@
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSSys\Release_msvc2019\x64\moc_ZSSysIdxTree.cpp">
       <Filter>Generated Files\msvc2019\x64\Release</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSSys\Release_msvc2019\x64\moc_ZSSysObjPool.cpp">
-      <Filter>Generated Files\msvc2019\x64\Release</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSSys\Release_msvc2019\x64\moc_ZSSysRequestQueue.cpp">
       <Filter>Generated Files\msvc2019\x64\Release</Filter>
     </ClCompile>
@@ -631,9 +595,6 @@
       <Filter>Generated Files\msvc2019\x64\Release</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSSys\Debug_msvc2019\x64\moc_ZSSysIdxTree.cpp">
-      <Filter>Generated Files\msvc2019\x64\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSSys\Debug_msvc2019\x64\moc_ZSSysObjPool.cpp">
       <Filter>Generated Files\msvc2019\x64\Debug</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSSys\Debug_msvc2019\x64\moc_ZSSysRequestQueue.cpp">
@@ -710,7 +671,7 @@
     <ClInclude Include="..\..\..\Include\Libs\ZSSys\ZSSysEnumTemplate.h">
       <Filter>Include Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Libs\ZSSys\ZSSysIdxTreeEntries.h">
+    <ClInclude Include="..\..\..\Include\Libs\ZSSys\ZSSysIdxTreeEntry.h">
       <Filter>Include Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -724,9 +685,6 @@
       <Filter>Include Files</Filter>
     </CustomBuild>
     <CustomBuild Include="..\..\..\Include\Libs\ZSSys\ZSSysLogFile.h">
-      <Filter>Include Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\..\Include\Libs\ZSSys\ZSSysObjPool.h">
       <Filter>Include Files</Filter>
     </CustomBuild>
     <CustomBuild Include="..\..\..\Include\Libs\ZSSys\ZSSysRequest.h">

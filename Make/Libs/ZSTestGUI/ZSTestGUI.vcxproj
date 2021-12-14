@@ -699,8 +699,9 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Libs\ZSTestGUI\ZSTestDlg.cpp" />
     <ClCompile Include="..\..\..\Source\Libs\ZSTestGUI\ZSTestGUIDllMain.cpp" />
-    <ClCompile Include="..\..\..\Source\Libs\ZSTestGUI\ZSTestStepAdminObjPoolModel.cpp" />
-    <ClCompile Include="..\..\..\Source\Libs\ZSTestGUI\ZSTestWdgt.cpp" />
+    <ClCompile Include="..\..\..\Source\Libs\ZSTestGUI\ZSTestStepIdxTreeModel.cpp" />
+    <ClCompile Include="..\..\..\Source\Libs\ZSTestGUI\ZSTestStepIdxTreeView.cpp" />
+    <ClCompile Include="..\..\..\Source\Libs\ZSTestGUI\ZSTestStepIdxTreeWdgt.cpp" />
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTestGUI\Debug_msvc2015\Win32\moc_ZSTestDlg.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">true</ExcludedFromBuild>
@@ -715,7 +716,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTestGUI\Debug_msvc2015\Win32\moc_ZSTestStepAdminObjPoolModel.cpp">
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTestGUI\Debug_msvc2015\Win32\moc_ZSTestStepIdxTreeModel.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|Win32'">true</ExcludedFromBuild>
@@ -729,7 +730,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTestGUI\Debug_msvc2015\Win32\moc_ZSTestWdgt.cpp">
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTestGUI\Debug_msvc2015\Win32\moc_ZSTestStepIdxTreeView.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|Win32'">true</ExcludedFromBuild>
@@ -737,6 +738,62 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTestGUI\Debug_msvc2015\Win32\moc_ZSTestStepIdxTreeWdgt.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTestGUI\Debug_msvc2015\x64\moc_ZSTestStepIdxTreeModel.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTestGUI\Debug_msvc2015\x64\moc_ZSTestStepIdxTreeView.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTestGUI\Debug_msvc2015\x64\moc_ZSTestStepIdxTreeWdgt.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|x64'">true</ExcludedFromBuild>
@@ -757,7 +814,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTestGUI\Debug_msvc2017\Win32\moc_ZSTestStepAdminObjPoolModel.cpp">
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTestGUI\Debug_msvc2017\Win32\moc_ZSTestStepIdxTreeModel.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|Win32'">true</ExcludedFromBuild>
@@ -771,7 +828,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTestGUI\Debug_msvc2017\Win32\moc_ZSTestWdgt.cpp">
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTestGUI\Debug_msvc2017\Win32\moc_ZSTestStepIdxTreeView.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|Win32'">true</ExcludedFromBuild>
@@ -780,6 +837,62 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTestGUI\Debug_msvc2017\Win32\moc_ZSTestStepIdxTreeWdgt.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTestGUI\Debug_msvc2017\x64\moc_ZSTestStepIdxTreeModel.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTestGUI\Debug_msvc2017\x64\moc_ZSTestStepIdxTreeView.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTestGUI\Debug_msvc2017\x64\moc_ZSTestStepIdxTreeWdgt.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|x64'">true</ExcludedFromBuild>
@@ -799,7 +912,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTestGUI\Debug_msvc2019\Win32\moc_ZSTestStepAdminObjPoolModel.cpp">
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTestGUI\Debug_msvc2019\Win32\moc_ZSTestStepIdxTreeModel.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|Win32'">false</ExcludedFromBuild>
@@ -813,7 +926,21 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTestGUI\Debug_msvc2019\Win32\moc_ZSTestWdgt.cpp">
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTestGUI\Debug_msvc2019\Win32\moc_ZSTestStepIdxTreeView.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTestGUI\Debug_msvc2019\Win32\moc_ZSTestStepIdxTreeWdgt.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|Win32'">false</ExcludedFromBuild>
@@ -841,7 +968,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTestGUI\Debug_msvc2019\x64\moc_ZSTestStepAdminObjPoolModel.cpp">
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTestGUI\Debug_msvc2019\x64\moc_ZSTestStepIdxTreeModel.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|Win32'">true</ExcludedFromBuild>
@@ -855,7 +982,21 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTestGUI\Debug_msvc2019\x64\moc_ZSTestWdgt.cpp">
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTestGUI\Debug_msvc2019\x64\moc_ZSTestStepIdxTreeView.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTestGUI\Debug_msvc2019\x64\moc_ZSTestStepIdxTreeWdgt.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|Win32'">true</ExcludedFromBuild>
@@ -883,7 +1024,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTestGUI\Release_msvc2015\Win32\moc_ZSTestStepAdminObjPoolModel.cpp">
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTestGUI\Release_msvc2015\Win32\moc_ZSTestStepIdxTreeModel.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|Win32'">true</ExcludedFromBuild>
@@ -897,7 +1038,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTestGUI\Release_msvc2015\Win32\moc_ZSTestWdgt.cpp">
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTestGUI\Release_msvc2015\Win32\moc_ZSTestStepIdxTreeView.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|Win32'">true</ExcludedFromBuild>
@@ -908,38 +1049,66 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTestGUI\Release_msvc2015\Win32\moc_ZSTestStepIdxTreeWdgt.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTestGUI\Release_msvc2015\x64\moc_ZSTestStepIdxTreeModel.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTestGUI\Release_msvc2015\x64\moc_ZSTestStepIdxTreeView.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTestGUI\Release_msvc2015\x64\moc_ZSTestStepIdxTreeWdgt.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTestGUI\Release_msvc2017\Win32\moc_ZSTestDlg.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|Win32'">false</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|x64'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTestGUI\Release_msvc2017\Win32\moc_ZSTestStepAdminObjPoolModel.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|Win32'">false</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|x64'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTestGUI\Release_msvc2017\Win32\moc_ZSTestWdgt.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|Win32'">true</ExcludedFromBuild>
@@ -967,63 +1136,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTestGUI\Debug_msvc2015\x64\moc_ZSTestStepAdminObjPoolModel.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|x64'">false</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|x64'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTestGUI\Debug_msvc2015\x64\moc_ZSTestWdgt.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|x64'">false</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|x64'">true</ExcludedFromBuild>
-    </ClCompile>
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTestGUI\Debug_msvc2017\x64\moc_ZSTestDlg.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|x64'">false</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|x64'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTestGUI\Debug_msvc2017\x64\moc_ZSTestStepAdminObjPoolModel.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|x64'">false</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|x64'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTestGUI\Debug_msvc2017\x64\moc_ZSTestWdgt.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|Win32'">true</ExcludedFromBuild>
@@ -1051,31 +1164,45 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTestGUI\Release_msvc2015\x64\moc_ZSTestStepAdminObjPoolModel.cpp">
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTestGUI\Release_msvc2017\Win32\moc_ZSTestStepIdxTreeModel.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|Win32'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTestGUI\Release_msvc2015\x64\moc_ZSTestWdgt.cpp">
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTestGUI\Release_msvc2017\Win32\moc_ZSTestStepIdxTreeView.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|Win32'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTestGUI\Release_msvc2017\Win32\moc_ZSTestStepIdxTreeWdgt.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|x64'">true</ExcludedFromBuild>
     </ClCompile>
@@ -1093,7 +1220,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTestGUI\Release_msvc2017\x64\moc_ZSTestStepAdminObjPoolModel.cpp">
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTestGUI\Release_msvc2017\x64\moc_ZSTestStepIdxTreeModel.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|Win32'">true</ExcludedFromBuild>
@@ -1107,7 +1234,21 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTestGUI\Release_msvc2017\x64\moc_ZSTestWdgt.cpp">
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTestGUI\Release_msvc2017\x64\moc_ZSTestStepIdxTreeView.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTestGUI\Release_msvc2017\x64\moc_ZSTestStepIdxTreeWdgt.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|Win32'">true</ExcludedFromBuild>
@@ -1135,7 +1276,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTestGUI\Release_msvc2019\Win32\moc_ZSTestStepAdminObjPoolModel.cpp">
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTestGUI\Release_msvc2019\Win32\moc_ZSTestStepIdxTreeModel.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|Win32'">true</ExcludedFromBuild>
@@ -1149,7 +1290,21 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTestGUI\Release_msvc2019\Win32\moc_ZSTestWdgt.cpp">
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTestGUI\Release_msvc2019\Win32\moc_ZSTestStepIdxTreeView.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTestGUI\Release_msvc2019\Win32\moc_ZSTestStepIdxTreeWdgt.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|Win32'">true</ExcludedFromBuild>
@@ -1177,7 +1332,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|x64'">false</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTestGUI\Release_msvc2019\x64\moc_ZSTestStepAdminObjPoolModel.cpp">
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTestGUI\Release_msvc2019\x64\moc_ZSTestStepIdxTreeModel.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|Win32'">true</ExcludedFromBuild>
@@ -1191,7 +1346,21 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|x64'">false</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTestGUI\Release_msvc2019\x64\moc_ZSTestWdgt.cpp">
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTestGUI\Release_msvc2019\x64\moc_ZSTestStepIdxTreeView.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|x64'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTestGUI\Release_msvc2019\x64\moc_ZSTestStepIdxTreeWdgt.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|Win32'">true</ExcludedFromBuild>
@@ -1207,6 +1376,44 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <CustomBuild Include="..\..\..\Include\Libs\ZSTestGUI\ZSTestStepIdxTreeView.h">
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">$(QTDIR_MSVC2015_Win32)\bin\moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">$(QTDIR_MSVC2015_Win32)\bin\moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">$(QTDIR_MSVC2017_Win32)\bin\moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">$(QTDIR_MSVC2017_Win32)\bin\moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|Win32'">$(QTDIR_MSVC2019_Win32)\bin\moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|Win32'">$(QTDIR_MSVC2019_Win32)\bin\moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|Win32'">$(QTDIR_MSVC2015_Win32)\bin\moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|Win32'">$(QTDIR_MSVC2015_Win32)\bin\moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|Win32'">$(QTDIR_MSVC2017_Win32)\bin\moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|Win32'">$(QTDIR_MSVC2017_Win32)\bin\moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|Win32'">$(QTDIR_MSVC2019_Win32)\bin\moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|Win32'">$(QTDIR_MSVC2019_Win32)\bin\moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|x64'">$(QTDIR_MSVC2015_x64)\bin\moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|x64'">$(QTDIR_MSVC2015_x64)\bin\moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|x64'">$(QTDIR_MSVC2017_x64)\bin\moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|x64'">$(QTDIR_MSVC2017_x64)\bin\moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|x64'">$(QTDIR_MSVC2019_x64)\bin\moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|x64'">$(QTDIR_MSVC2019_x64)\bin\moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|x64'">$(QTDIR_MSVC2015_x64)\bin\moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|x64'">$(QTDIR_MSVC2015_x64)\bin\moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|x64'">$(QTDIR_MSVC2017_x64)\bin\moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|x64'">$(QTDIR_MSVC2017_x64)\bin\moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|x64'">$(QTDIR_MSVC2019_x64)\bin\moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|x64'">$(QTDIR_MSVC2019_x64)\bin\moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|Win32'">..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|Win32'">..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|Win32'">..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|Win32'">..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|x64'">..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|x64'">..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|x64'">..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|x64'">..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|x64'">..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|x64'">..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Outputs>
+    </CustomBuild>
     <CustomBuild Include="..\..\..\Include\Libs\ZSTestGUI\ZSTestDlg.h">
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">$(QTDIR_MSVC2017_Win32)\bin\moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Message>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|Win32'">$(QTDIR_MSVC2019_Win32)\bin\moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Message>
@@ -1246,7 +1453,7 @@
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|x64'">..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Outputs>
     </CustomBuild>
     <ClInclude Include="..\..\..\Include\Libs\ZSTestGUI\ZSTestGUIDllMain.h" />
-    <CustomBuild Include="..\..\..\Include\Libs\ZSTestGUI\ZSTestStepAdminObjPoolModel.h">
+    <CustomBuild Include="..\..\..\Include\Libs\ZSTestGUI\ZSTestStepIdxTreeModel.h">
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">$(QTDIR_MSVC2017_Win32)\bin\moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Message>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|Win32'">$(QTDIR_MSVC2019_Win32)\bin\moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Message>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">$(QTDIR_MSVC2015_Win32)\bin\moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Message>
@@ -1284,7 +1491,7 @@
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|x64'">..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|x64'">..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Outputs>
     </CustomBuild>
-    <CustomBuild Include="..\..\..\Include\Libs\ZSTestGUI\ZSTestWdgt.h">
+    <CustomBuild Include="..\..\..\Include\Libs\ZSTestGUI\ZSTestStepIdxTreeWdgt.h">
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">$(QTDIR_MSVC2017_Win32)\bin\moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Message>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|Win32'">$(QTDIR_MSVC2019_Win32)\bin\moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Message>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">$(QTDIR_MSVC2015_Win32)\bin\moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Message>

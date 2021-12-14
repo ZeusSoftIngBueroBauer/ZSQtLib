@@ -267,7 +267,7 @@ static CTrcAdminObj* getTraceAdminObj( int i_idxInTree, const QString& i_strServ
     if( pTrcServer != nullptr )
     {
         CIdxTreeTrcAdminObjs*  pIdxTree = pTrcServer->getTraceAdminObjIdxTree();
-        CAbstractIdxTreeEntry* pTreeEntry = pIdxTree->getEntry(i_idxInTree);
+        #error CAbstractIdxTreeEntry* pTreeEntry = pIdxTree->getEntry(i_idxInTree);
 
         pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(pTreeEntry);
     }
@@ -289,7 +289,7 @@ static CTrcAdminObj* getTraceAdminObj( const QString& i_strKeyInTree, const QStr
     if( pTrcServer != nullptr )
     {
         CIdxTreeTrcAdminObjs*  pIdxTree = pTrcServer->getTraceAdminObjIdxTree();
-        CAbstractIdxTreeEntry* pTreeEntry = pIdxTree->findEntry(i_strKeyInTree);
+        #error CAbstractIdxTreeEntry* pTreeEntry = pIdxTree->findEntry(i_strKeyInTree);
 
         pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(pTreeEntry);
     }

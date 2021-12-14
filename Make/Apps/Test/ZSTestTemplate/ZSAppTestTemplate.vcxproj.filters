@@ -93,9 +93,6 @@
     <ClCompile Include="..\..\..\..\Source\Apps\Test\ZSTemplate\Test.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\Source\Apps\Test\ZSTemplate\TSGrpTemplate.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\..\Source\Apps\Test\ZSTemplate\WidgetCentral.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -220,9 +217,6 @@
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\..\Include\Apps\Test\ZSTemplate\TSGrpTemplate.h">
-      <Filter>Include Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\Include\Apps\Test\ZSTemplate\WidgetCentral.h">
       <Filter>Include Files</Filter>
     </ClInclude>

@@ -117,9 +117,6 @@
     <ClCompile Include="..\..\..\Source\Libs\ZSSysGUI\ZSSysGUIDllMain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Libs\ZSSysGUI\ZSSysObjPoolModel.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Source\Libs\ZSSysGUI\ZSSysProgressBar.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -168,7 +165,7 @@
     <ClCompile Include="..\..\..\Source\Libs\ZSSysGUI\ZSSysIdxTreeModelBranchContent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Libs\ZSSysGUI\ZSSysIdxTreeModelEntries.cpp">
+    <ClCompile Include="..\..\..\Source\Libs\ZSSysGUI\ZSSysIdxTreeModelEntry.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Libs\ZSSysGUI\ZSSysIdxTreeTableViewBranchContent.cpp">
@@ -220,9 +217,6 @@
       <Filter>Generated Files\msvc2015\Win32\Debug</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSSysGUI\Debug_msvc2015\Win32\moc_ZSSysIdxTreeWdgt.cpp">
-      <Filter>Generated Files\msvc2015\Win32\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSSysGUI\Debug_msvc2015\Win32\moc_ZSSysObjPoolModel.cpp">
       <Filter>Generated Files\msvc2015\Win32\Debug</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSSysGUI\Debug_msvc2015\Win32\moc_ZSSysProgressBar.cpp">
@@ -282,9 +276,6 @@
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSSysGUI\Release_msvc2015\Win32\moc_ZSSysIdxTreeWdgt.cpp">
       <Filter>Generated Files\msvc2015\Win32\Release</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSSysGUI\Release_msvc2015\Win32\moc_ZSSysObjPoolModel.cpp">
-      <Filter>Generated Files\msvc2015\Win32\Release</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSSysGUI\Release_msvc2015\Win32\moc_ZSSysProgressBar.cpp">
       <Filter>Generated Files\msvc2015\Win32\Release</Filter>
     </ClCompile>
@@ -340,9 +331,6 @@
       <Filter>Generated Files\msvc2015\x64\Debug</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSSysGUI\Debug_msvc2015\x64\moc_ZSSysIdxTreeWdgt.cpp">
-      <Filter>Generated Files\msvc2015\x64\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSSysGUI\Debug_msvc2015\x64\moc_ZSSysObjPoolModel.cpp">
       <Filter>Generated Files\msvc2015\x64\Debug</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSSysGUI\Debug_msvc2015\x64\moc_ZSSysProgressBar.cpp">
@@ -402,9 +390,6 @@
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSSysGUI\Release_msvc2015\x64\moc_ZSSysIdxTreeWdgt.cpp">
       <Filter>Generated Files\msvc2015\x64\Release</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSSysGUI\Release_msvc2015\x64\moc_ZSSysObjPoolModel.cpp">
-      <Filter>Generated Files\msvc2015\x64\Release</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSSysGUI\Release_msvc2015\x64\moc_ZSSysProgressBar.cpp">
       <Filter>Generated Files\msvc2015\x64\Release</Filter>
     </ClCompile>
@@ -460,9 +445,6 @@
       <Filter>Generated Files\msvc2017\Win32\Debug</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSSysGUI\Debug_msvc2017\Win32\moc_ZSSysIdxTreeWdgt.cpp">
-      <Filter>Generated Files\msvc2017\Win32\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSSysGUI\Debug_msvc2017\Win32\moc_ZSSysObjPoolModel.cpp">
       <Filter>Generated Files\msvc2017\Win32\Debug</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSSysGUI\Debug_msvc2017\Win32\moc_ZSSysProgressBar.cpp">
@@ -522,9 +504,6 @@
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSSysGUI\Release_msvc2017\Win32\moc_ZSSysIdxTreeWdgt.cpp">
       <Filter>Generated Files\msvc2017\Win32\Release</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSSysGUI\Release_msvc2017\Win32\moc_ZSSysObjPoolModel.cpp">
-      <Filter>Generated Files\msvc2017\Win32\Release</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSSysGUI\Release_msvc2017\Win32\moc_ZSSysProgressBar.cpp">
       <Filter>Generated Files\msvc2017\Win32\Release</Filter>
     </ClCompile>
@@ -580,9 +559,6 @@
       <Filter>Generated Files\msvc2017\x64\Debug</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSSysGUI\Debug_msvc2017\x64\moc_ZSSysIdxTreeWdgt.cpp">
-      <Filter>Generated Files\msvc2017\x64\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSSysGUI\Debug_msvc2017\x64\moc_ZSSysObjPoolModel.cpp">
       <Filter>Generated Files\msvc2017\x64\Debug</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSSysGUI\Debug_msvc2017\x64\moc_ZSSysProgressBar.cpp">
@@ -642,9 +618,6 @@
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSSysGUI\Debug_msvc2019\x64\moc_ZSSysIdxTreeWdgt.cpp">
       <Filter>Generated Files\msvc2019\x64\Debug</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSSysGUI\Debug_msvc2019\x64\moc_ZSSysObjPoolModel.cpp">
-      <Filter>Generated Files\msvc2019\x64\Debug</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSSysGUI\Debug_msvc2019\x64\moc_ZSSysProgressBar.cpp">
       <Filter>Generated Files\msvc2019\x64\Debug</Filter>
     </ClCompile>
@@ -700,9 +673,6 @@
       <Filter>Generated Files\msvc2019\x64\Release</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSSysGUI\Release_msvc2019\x64\moc_ZSSysIdxTreeWdgt.cpp">
-      <Filter>Generated Files\msvc2019\x64\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSSysGUI\Release_msvc2019\x64\moc_ZSSysObjPoolModel.cpp">
       <Filter>Generated Files\msvc2019\x64\Release</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSSysGUI\Release_msvc2019\x64\moc_ZSSysProgressBar.cpp">
@@ -762,9 +732,6 @@
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSSysGUI\Release_msvc2019\Win32\moc_ZSSysIdxTreeWdgt.cpp">
       <Filter>Generated Files\msvc2019\Win32\Release</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSSysGUI\Release_msvc2019\Win32\moc_ZSSysObjPoolModel.cpp">
-      <Filter>Generated Files\msvc2019\Win32\Release</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSSysGUI\Release_msvc2019\Win32\moc_ZSSysProgressBar.cpp">
       <Filter>Generated Files\msvc2019\Win32\Release</Filter>
     </ClCompile>
@@ -822,9 +789,6 @@
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSSysGUI\Debug_msvc2019\Win32\moc_ZSSysIdxTreeWdgt.cpp">
       <Filter>Generated Files\msvc2019\Win32\Debug</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSSysGUI\Debug_msvc2019\Win32\moc_ZSSysObjPoolModel.cpp">
-      <Filter>Generated Files\msvc2019\Win32\Debug</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSSysGUI\Debug_msvc2019\Win32\moc_ZSSysProgressBar.cpp">
       <Filter>Generated Files\msvc2019\Win32\Debug</Filter>
     </ClCompile>
@@ -880,9 +844,6 @@
       <Filter>Generated Files\msvc2017\x64\Release</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSSysGUI\Release_msvc2017\x64\moc_ZSSysIdxTreeWdgt.cpp">
-      <Filter>Generated Files\msvc2017\x64\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSSysGUI\Release_msvc2017\x64\moc_ZSSysObjPoolModel.cpp">
       <Filter>Generated Files\msvc2017\x64\Release</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSSysGUI\Release_msvc2017\x64\moc_ZSSysProgressBar.cpp">
@@ -947,7 +908,7 @@
     <ClInclude Include="..\..\..\Include\Libs\ZSSysGUI\ZSSysGUIAux.h">
       <Filter>Include Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Libs\ZSSysGUI\ZSSysIdxTreeModelEntries.h">
+    <ClInclude Include="..\..\..\Include\Libs\ZSSysGUI\ZSSysIdxTreeModelEntry.h">
       <Filter>Include Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Libs\ZSSysGUI\ZSSysTrcAdminObjIdxTreeDlg.h">
@@ -1143,9 +1104,6 @@
       <Filter>Include Files</Filter>
     </CustomBuild>
     <CustomBuild Include="..\..\..\Include\Libs\ZSSysGUI\ZSSysErrLogWdgt.h">
-      <Filter>Include Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\..\Include\Libs\ZSSysGUI\ZSSysObjPoolModel.h">
       <Filter>Include Files</Filter>
     </CustomBuild>
     <CustomBuild Include="..\..\..\Include\Libs\ZSSysGUI\ZSSysProgressBar.h">

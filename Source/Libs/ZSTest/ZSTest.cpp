@@ -27,7 +27,7 @@ may result in using the software modules.
 #include <QtCore/qtimer.h>
 
 #include "ZSTest/ZSTest.h"
-#include "ZSTest/ZSTestStepAdminObjPool.h"
+#include "ZSTest/ZSTestStepIdxTree.h"
 #include "ZSTest/ZSTestStep.h"
 #include "ZSTest/ZSTestStepGroup.h"
 
@@ -58,17 +58,17 @@ public: // type definitions and constants
 const ZS::System::SEnumEntry s_arEnumStrStates[CTest::EStateCount] =
 //------------------------------------------------------------------------------
 {
-    /* 0 */ SEnumEntry( CTest::EStateIdle,    "Idle"    ),
-    /* 1 */ SEnumEntry( CTest::EStateInit,    "Init"    ),
+    /* 0 */ SEnumEntry( CTest::EStateIdle,    "Idle" ),
+    /* 1 */ SEnumEntry( CTest::EStateInit,    "Init" ),
     /* 2 */ SEnumEntry( CTest::EStateRunning, "Running" ),
-    /* 3 */ SEnumEntry( CTest::EStatePaused,  "Paused"  )
+    /* 3 */ SEnumEntry( CTest::EStatePaused,  "Paused" )
 };
 
 //------------------------------------------------------------------------------
 QString CTest::State2Str( int i_iState )
 //------------------------------------------------------------------------------
 {
-    return ZS::System::SEnumEntry::enumerator2Str(s_arEnumStrStates,EStateCount,i_iState);
+    return ZS::System::SEnumEntry::enumerator2Str( s_arEnumStrStates, EStateCount, i_iState );
 }
 
 /*==============================================================================
@@ -78,38 +78,44 @@ public: // ctors and dtor
 //------------------------------------------------------------------------------
 CTest::CTest(
     const QString& i_strName,
-    const QString& i_strObjPoolFileName,
-    const QString& i_strNodeSeparator,
+    const QString& m_strTestStepsAbsFilePath,
     int            i_iTestStepInterval_ms ) :
 //------------------------------------------------------------------------------
     QObject(),
-    m_pAdminObjPool(nullptr),
+    m_pTestStepIdxTree(nullptr),
+    m_strTestStepsAbsFilePath(m_strTestStepsAbsFilePath),
     m_pTestStepCurr(nullptr),
-    m_iTestStepGroup(0),
-    m_arfctsDoTestStepGroups(),
+    //m_iTestStepGroup(0),
+    //m_arfctsDoTestStepGroups(),
     m_iTestStepInterval_ms(i_iTestStepInterval_ms),
     m_state(EStateIdle),
     m_runMode(ERunMode::Continuous),
-    m_bDoTestStepPending(false),
+    //m_bDoTestStepPending(false),
     m_pTrcAdminObj(nullptr)
 {
     setObjectName(i_strName);
 
     m_pTrcAdminObj = CTrcServer::GetTraceAdminObj("ZS::Test", "CTest", objectName());
 
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    {
+        strMthInArgs = "Name: " + i_strName;
+        strMthInArgs += ", FileName: " + m_strTestStepsAbsFilePath;
+        strMthInArgs += ", Interval: " + QString::number(i_iTestStepInterval_ms) + " ms";
+    }
+
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iFilterLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "ctor",
-        /* strAddInfo   */ "" );
+        /* strAddInfo   */ strMthInArgs );
 
-    m_pAdminObjPool = new CTestStepAdminObjPool(
-        /* pTest              */ this,
-        /* strObjPoolFileName */ i_strObjPoolFileName,
-        /* strNodeSeparator   */ i_strNodeSeparator );
+    m_pTestStepIdxTree = new CTestStepIdxTree(this);
 
     // Should be called by derived class if desired.
-    //m_pAdminObjPool->recall();
+    //m_pTestStepIdxTree->recall();
 
 } // default ctor
 
@@ -124,11 +130,11 @@ CTest::~CTest()
         /* strAddInfo   */ "" );
 
     // Should be called by derived class if desired.
-    //m_pAdminObjPool->save();
+    //m_pTestStepIdxTree->save();
 
     try
     {
-        delete m_pAdminObjPool;
+        delete m_pTestStepIdxTree;
     }
     catch(...)
     {
@@ -136,14 +142,15 @@ CTest::~CTest()
 
     CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
 
-    m_pAdminObjPool = nullptr;
+    m_pTestStepIdxTree = nullptr;
+    //m_strTestStepsAbsFilePath;
     m_pTestStepCurr = nullptr;
-    m_iTestStepGroup = 0;
-    m_arfctsDoTestStepGroups.clear();
+    //m_iTestStepGroup = 0;
+    //m_arfctsDoTestStepGroups.clear();
     m_iTestStepInterval_ms = 0;
     m_state = static_cast<EState>(0);
     m_runMode = static_cast<ERunMode>(0);
-    m_bDoTestStepPending = false;
+    //m_bDoTestStepPending = false;
     m_pTrcAdminObj = nullptr;
 
 } // dtor
@@ -153,10 +160,82 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+SErrResultInfo CTest::recall( const QString& i_strAbsFilePath )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    {
+        strMthInArgs = "AbsFilePath: " + i_strAbsFilePath;
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iFilterLevel */ ETraceDetailLevelMethodCalls,
+        /* strMethod    */ "recall",
+        /* strMthInArgs */ strMthInArgs );
+
+    if( !i_strAbsFilePath.isEmpty() && m_strTestStepsAbsFilePath != i_strAbsFilePath )
+    {
+        m_strTestStepsAbsFilePath = i_strAbsFilePath;
+    }
+
+    SErrResultInfo errResultInfo = m_pTestStepIdxTree->recall(m_strTestStepsAbsFilePath);
+
+    if( mthTracer.isActive(ETraceDetailLevelMethodArgs) )
+    {
+        mthTracer.setMethodReturn(errResultInfo);
+    }
+
+    return errResultInfo;
+
+} // recall
+
+//------------------------------------------------------------------------------
+SErrResultInfo CTest::save( const QString& i_strAbsFilePath )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    {
+        strMthInArgs = "AbsFilePath: " + i_strAbsFilePath;
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iFilterLevel */ ETraceDetailLevelMethodCalls,
+        /* strMethod    */ "recall",
+        /* strMthInArgs */ strMthInArgs );
+
+    if( !i_strAbsFilePath.isEmpty() && m_strTestStepsAbsFilePath != i_strAbsFilePath )
+    {
+        m_strTestStepsAbsFilePath = i_strAbsFilePath;
+    }
+
+    SErrResultInfo errResultInfo = m_pTestStepIdxTree->save(m_strTestStepsAbsFilePath);
+
+    if( mthTracer.isActive(ETraceDetailLevelMethodArgs) )
+    {
+        mthTracer.setMethodReturn(errResultInfo);
+    }
+
+    return errResultInfo;
+
+} // save
+
+#if 0
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
 CTestStepGroup* CTest::getTestStepGroupRoot()
 //------------------------------------------------------------------------------
 {
-    return m_pAdminObjPool->getTestStepGroupRoot();
+    return m_pTestStepIdxTree->getTestStepGroupRoot();
 }
 
 //------------------------------------------------------------------------------
@@ -168,7 +247,7 @@ CTestStepGroup* CTest::getTestStepGroup( const QString& i_strGroupName, const QS
         throw CException(__FILE__,__LINE__,EResultArgOutOfRange,"GroupName is empty");
     }
 
-    return m_pAdminObjPool->getTestStepGroup(
+    return m_pTestStepIdxTree->getTestStepGroup(
         /* strGroupName       */ i_strGroupName,
         /* strGroupPathParent */ i_strGroupNameParent,
         /* enabled            */ EEnabled::Undefined );
@@ -183,7 +262,7 @@ CTestStepGroup* CTest::getTestStepGroup( const QString& i_strGroupName, CTestSte
         throw CException(__FILE__,__LINE__,EResultArgOutOfRange,"GroupName is empty");
     }
 
-    return m_pAdminObjPool->getTestStepGroup(
+    return m_pTestStepIdxTree->getTestStepGroup(
         /* strGroupName     */ i_strGroupName,
         /* pTestGroupParent */ i_pTestGroupParent,
         /* enabled          */ EEnabled::Undefined );
@@ -198,7 +277,7 @@ CTestStep* CTest::getTestStep( const QString& i_strName, const QString& i_strGro
         throw CException(__FILE__,__LINE__,EResultArgOutOfRange,"Name is empty");
     }
 
-    return m_pAdminObjPool->getTestStep(
+    return m_pTestStepIdxTree->getTestStep(
         /* strName            */ i_strName,
         /* strGroupPathParent */ i_strGroupNameParent,
         /* enabled            */ EEnabled::Undefined );
@@ -213,7 +292,7 @@ CTestStep* CTest::getTestStep( const QString& i_strName, CTestStepGroup* i_pTest
         throw CException(__FILE__,__LINE__,EResultArgOutOfRange,"Name is empty");
     }
 
-    return m_pAdminObjPool->getTestStep(
+    return m_pTestStepIdxTree->getTestStep(
         /* strName          */ i_strName,
         /* pTestGroupParent */ i_pTestGroupParent,
         /* enabled          */ EEnabled::Undefined );
@@ -276,8 +355,8 @@ void CTest::init()
 
     if( m_state == EStateIdle )
     {
-        //m_pAdminObjPool->reset();
-        //m_pAdminObjPool->testStarted();
+        //m_pTestStepIdxTree->reset();
+        //m_pTestStepIdxTree->testStarted();
 
         setState(EStateInit);
 
@@ -285,11 +364,11 @@ void CTest::init()
 
         m_iTestStepInterval_ms = 0;
 
-        m_pAdminObjPool->beginInitTest();
+        m_pTestStepIdxTree->beginInitTest();
 
         doTestStep();
 
-        m_pAdminObjPool->endInitTest();
+        m_pTestStepIdxTree->endInitTest();
 
         m_iTestStepInterval_ms = iTestStepInterval_ms;
 
@@ -320,8 +399,8 @@ void CTest::start()
 
     if( m_state == EStateIdle )
     {
-        m_pAdminObjPool->reset();
-        m_pAdminObjPool->testStarted();
+        m_pTestStepIdxTree->reset();
+        m_pTestStepIdxTree->testStarted();
 
         setCurrentTestStep(nullptr);
     }
@@ -358,8 +437,8 @@ void CTest::step()
 
     if( m_state == EStateIdle )
     {
-        m_pAdminObjPool->reset();
-        m_pAdminObjPool->testStarted();
+        m_pTestStepIdxTree->reset();
+        m_pTestStepIdxTree->testStarted();
 
         setCurrentTestStep(nullptr);
     }
@@ -398,7 +477,7 @@ void CTest::stop()
     {
         setState(EStateIdle);
 
-        m_pAdminObjPool->testEnded();
+        m_pTestStepIdxTree->testEnded();
     }
 
 } // stop
@@ -426,7 +505,7 @@ void CTest::abort()
     {
         setState(EStateIdle);
 
-        m_pAdminObjPool->testAborted();
+        m_pTestStepIdxTree->testAborted();
     }
 
 } // abort
@@ -598,9 +677,9 @@ void CTest::onTestStepGroupChanged( CTestStepGroup* i_pTSGrp )
         /* strMethod    */ "onTestStepGroupChanged",
         /* strAddInfo   */ strAddTrcInfo );
 
-    if( m_pAdminObjPool != nullptr )
+    if( m_pTestStepIdxTree != nullptr )
     {
-        m_pAdminObjPool->onTestStepGroupChanged(i_pTSGrp);
+        m_pTestStepIdxTree->onTestStepGroupChanged(i_pTSGrp);
     }
 
 } // onTestStepGroupChanged
@@ -622,9 +701,9 @@ void CTest::onTestStepChanged( CTestStep* i_pTestStep )
         /* strMethod    */ "onTestStepChanged",
         /* strAddInfo   */ strAddTrcInfo );
 
-    if( m_pAdminObjPool != nullptr )
+    if( m_pTestStepIdxTree != nullptr )
     {
-        m_pAdminObjPool->onTestStepChanged(i_pTestStep);
+        m_pTestStepIdxTree->onTestStepChanged(i_pTestStep);
     }
 
 } // onTestStepChanged
@@ -696,7 +775,7 @@ void CTest::doTestStep()
     {
         if( m_iTestStepGroup >= 0 && m_iTestStepGroup < m_arfctsDoTestStepGroups.size() )
         {
-            CTestStepGroup* pTSGrpRoot = m_pAdminObjPool->getTestStepGroupRoot();
+            CTestStepGroup* pTSGrpRoot = m_pTestStepIdxTree->getTestStepGroupRoot();
 
             if( m_state == EStateInit || m_state == EStateRunning ) // not Paused or Stopped
             {
@@ -878,8 +957,8 @@ CTestStep* CTest::getNextTestStep( CTestStep* i_pTestStepCurr )
         mthTracer.trace(strAddTrcInfo);
     }
 
-    CObjPoolTreeEntry* pTreeEntryParent   = nullptr;
-    CObjPoolTreeEntry* pTreeEntryFinished = nullptr;
+    #error CAbstractIdxTreeEntry* pTreeEntryParent   = nullptr;
+    #error CAbstractIdxTreeEntry* pTreeEntryFinished = nullptr;
 
     if( i_pTestStepCurr == nullptr )
     {
@@ -898,8 +977,8 @@ CTestStep* CTest::getNextTestStep( CTestStep* i_pTestStepCurr )
 
 //------------------------------------------------------------------------------
 CTestStep* CTest::getNextTestStep(
-    CObjPoolTreeEntry* i_pTreeEntryParent,
-    CObjPoolTreeEntry* i_pTreeEntryFinished )
+    #error CAbstractIdxTreeEntry* i_pTreeEntryParent,
+    #error CAbstractIdxTreeEntry* i_pTreeEntryFinished )
 //------------------------------------------------------------------------------
 {
     QString strAddTrcInfo;
@@ -937,14 +1016,14 @@ CTestStep* CTest::getNextTestStep(
 
         if( (iTreeEntryFinishedRowIdx+1) < i_pTreeEntryParent->getChildCount() )
         {
-            CObjPoolTreeEntry* pTreeEntryChild;
+            #error CAbstractIdxTreeEntry* pTreeEntryChild;
             int                idxChild;
 
             for( idxChild = (iTreeEntryFinishedRowIdx+1); idxChild < i_pTreeEntryParent->getChildCount(); idxChild++ )
             {
                 pTreeEntryChild = i_pTreeEntryParent->getChildEntry(idxChild);
 
-                if( pTreeEntryChild->getEntryType() == EObjPoolEntryTypeObject )
+                if( pTreeEntryChild->getEntryType() == EIdxTreeEntryTypeObject )
                 {
                     pTestStep = reinterpret_cast<CTestStep*>(pTreeEntryChild->getObj());
 
@@ -1055,3 +1134,5 @@ bool CTest::event( QEvent* i_pMsg )
     return bEventHandled;
 
 } // event
+
+#endif

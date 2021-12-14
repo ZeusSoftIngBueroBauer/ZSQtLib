@@ -35,11 +35,6 @@ may result in using the software modules.
 
 namespace ZS
 {
-namespace System
-{
-class CObjPoolListEntry;
-class CObjPoolTreeEntry;
-}
 namespace Trace
 {
 class CTrcAdminObj;
@@ -47,9 +42,9 @@ class CTrcAdminObj;
 
 namespace Test
 {
-class CTestStepAdminObjPool;
 class CTestStep;
 class CTestStepGroup;
+class CTestStepIdxTree;
 
 //******************************************************************************
 class ZSTESTDLL_API CTest : public QObject
@@ -60,7 +55,7 @@ public: // class methods
     static QString NameSpace() { return "ZS::Test"; }
     static QString ClassName() { return "CTest"; }
 public: // type definitions and constants
-    typedef void (*TFctDoTestStepGroup)( CTest* i_pThis, ZS::Test::CTestStepGroup* i_pTestStepGrpParent );
+    //typedef void (*TFctDoTestStepGroup)( CTest* i_pThis, ZS::Test::CTestStepGroup* i_pTestStepGrpParent );
 public: // type definitions and constants
     enum EState {
         EStateIdle    = 0,
@@ -74,69 +69,73 @@ public: // type definitions and constants
 public: // ctors and dtor
     CTest(
         const QString& i_strName,
-        const QString& i_strTestStepsFileName,
-        const QString& i_strNodeSeparator = "\\",
+        const QString& m_strTestStepsAbsFilePath,
         int            i_iTestStepInterval_ms = 0 );
     ~CTest();
 signals:
     void stateChanged( int i_iStateNew, int i_iStatePrev );
-    void runModeChanged( int i_iRunModeNew, int i_iRunModePrev );
+    //void runModeChanged( int i_iRunModeNew, int i_iRunModePrev );
     void currentTestStepChanged( ZS::Test::CTestStep* i_pTestStep );
 public: // overridables
     virtual QString nameSpace() const { return CTest::NameSpace(); }
     virtual QString className() const { return CTest::ClassName(); }
 public: // instance methods
-    ZS::Trace::CTrcAdminObj* getTraceAdminObj() { return m_pTrcAdminObj; }
+    QString getTestStepsAbsFilePath() const { return m_strTestStepsAbsFilePath; }
+    virtual ZS::System::SErrResultInfo recall( const QString& i_strAbsFilePath = QString() );
+    virtual ZS::System::SErrResultInfo save( const QString& i_strAbsFilePath = QString() );
 public: // instance methods
-    CTestStepGroup* getTestStepGroupRoot();
-    CTestStepGroup* getTestStepGroup( const QString& i_strGroupName, const QString& i_strGroupNameParent );
-    CTestStepGroup* getTestStepGroup( const QString& i_strGroupName, CTestStepGroup* i_pTestGroupParent );
-    CTestStep* getTestStep( const QString& i_strName, const QString& i_strGroupNameParent );
-    CTestStep* getTestStep( const QString& i_strName, CTestStepGroup* i_pTestGroupParent );
+    //ZS::Trace::CTrcAdminObj* getTraceAdminObj() { return m_pTrcAdminObj; }
 public: // instance methods
-    void setTestStepInterval( int i_iTestStepInterval_ms );
-    int getTestStepIntervalInMs() const;
-public: // overridables
-    EState getState() const { return m_state; }
-    bool isRunning() const { return (m_state == EStateRunning); }
-public: // overridables
-    virtual void init();
-    virtual void start();
-    virtual void step();
-    virtual void stop();
-    virtual void abort();
-    virtual void pause();
-    virtual void resume();
-public: // overridables
-    virtual void triggerDoTestStep( int i_iInterval_ms = -1 );
-    virtual void triggerNextTestStep( int i_iInterval_ms = -1 );
+    //CTestStepGroup* getTestStepGroupRoot();
+    //CTestStepGroup* getTestStepGroup( const QString& i_strGroupName, const QString& i_strGroupNameParent );
+    //CTestStepGroup* getTestStepGroup( const QString& i_strGroupName, CTestStepGroup* i_pTestGroupParent );
+    //CTestStep* getTestStep( const QString& i_strName, const QString& i_strGroupNameParent );
+    //CTestStep* getTestStep( const QString& i_strName, CTestStepGroup* i_pTestGroupParent );
 public: // instance methods
-    CTestStepAdminObjPool* getAdminObjIdxTree() { return m_pAdminObjPool; }
-    CTestStep* getCurrentTestStep() { return m_pTestStepCurr; }
+    //void setTestStepInterval( int i_iTestStepInterval_ms );
+    //int getTestStepIntervalInMs() const;
 public: // overridables
-    void onTestStepGroupChanged( CTestStepGroup* i_pTSGrp );
-    void onTestStepChanged( CTestStep* i_pTestStep );
+    //EState getState() const { return m_state; }
+    //bool isRunning() const { return (m_state == EStateRunning); }
+public: // overridables
+    //virtual void init();
+    //virtual void start();
+    //virtual void step();
+    //virtual void stop();
+    //virtual void abort();
+    //virtual void pause();
+    //virtual void resume();
+public: // overridables
+    //virtual void triggerDoTestStep( int i_iInterval_ms = -1 );
+    //virtual void triggerNextTestStep( int i_iInterval_ms = -1 );
+public: // instance methods
+    CTestStepIdxTree* getTestStepIdxTree() { return m_pTestStepIdxTree; }
+    //CTestStep* getCurrentTestStep() { return m_pTestStepCurr; }
+public: // overridables
+    //void onTestStepGroupChanged( CTestStepGroup* i_pTSGrp );
+    //void onTestStepChanged( CTestStep* i_pTestStep );
 protected slots: // overridables
-    virtual void doTestStep();
-    virtual void onCurrentTestStepFinished( ZS::Test::CTestStep* i_pTestStep );
+    //virtual void doTestStep();
+    //virtual void onCurrentTestStepFinished( ZS::Test::CTestStep* i_pTestStep );
 protected: // instance methods
-    void setState( EState i_state );
-    void setRunMode( ZS::System::ERunMode i_runMode );
+    //void setState( EState i_state );
+    //void setRunMode( ZS::System::ERunMode i_runMode );
 protected: // instance methods
-    CTestStep* getNextTestStep( CTestStep* i_pTestStepCurr );
-    CTestStep* getNextTestStep( ZS::System::CObjPoolTreeEntry* i_pTreeEntryParent, ZS::System::CObjPoolTreeEntry* i_pTreeEntryFinished );
-    void setCurrentTestStep( CTestStep* i_pTestStep );
+    //CTestStep* getNextTestStep( CTestStep* i_pTestStepCurr );
+    //CTestStep* getNextTestStep( ZS::System::#error CAbstractIdxTreeEntry* i_pTreeEntryParent, ZS::System::#error CAbstractIdxTreeEntry* i_pTreeEntryFinished );
+    //void setCurrentTestStep( CTestStep* i_pTestStep );
 protected: // overridables of inherited class QObject (state machine)
-    virtual bool event( QEvent* i_pMsg );
+    //virtual bool event( QEvent* i_pMsg );
 protected: // instance members
-    CTestStepAdminObjPool*       m_pAdminObjPool;
+    CTestStepIdxTree*            m_pTestStepIdxTree;
+    QString                      m_strTestStepsAbsFilePath;
     CTestStep*                   m_pTestStepCurr;
-    int                          m_iTestStepGroup;
-    QVector<TFctDoTestStepGroup> m_arfctsDoTestStepGroups;
+    //int                          m_iTestStepGroup;
+    //QVector<TFctDoTestStepGroup> m_arfctsDoTestStepGroups;
     int                          m_iTestStepInterval_ms;
     EState                       m_state;
     ZS::System::ERunMode         m_runMode;
-    bool                         m_bDoTestStepPending;
+    //bool                         m_bDoTestStepPending;
     ZS::Trace::CTrcAdminObj*     m_pTrcAdminObj;
 
 }; // class CTest

@@ -57,7 +57,7 @@ using namespace ZS::Apps::Test::IpcTrace;
 
 
 /*******************************************************************************
-class CWdgtTestOutput : public QWidget
+class CWdgtIdxTreeTestStepsOutput : public QWidget
 *******************************************************************************/
 
 /*==============================================================================
@@ -76,7 +76,7 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CWdgtTestOutput::CWdgtTestOutput( CTest* i_pTest, QWidget* i_pWdgtParent, Qt::WindowFlags  i_wflags ) :
+CWdgtIdxTreeTestStepsOutput::CWdgtIdxTreeTestStepsOutput( CTest* i_pTest, QWidget* i_pWdgtParent, Qt::WindowFlags  i_wflags ) :
 //------------------------------------------------------------------------------
     QWidget(i_pWdgtParent,i_wflags),
     m_pTest(i_pTest),
@@ -193,7 +193,7 @@ CWdgtTestOutput::CWdgtTestOutput( CTest* i_pTest, QWidget* i_pWdgtParent, Qt::Wi
 } // ctor
 
 //------------------------------------------------------------------------------
-CWdgtTestOutput::~CWdgtTestOutput()
+CWdgtIdxTreeTestStepsOutput::~CWdgtIdxTreeTestStepsOutput()
 //------------------------------------------------------------------------------
 {
     m_pTest = nullptr;
@@ -206,7 +206,7 @@ protected: // overridables of inherited class QObject
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-bool CWdgtTestOutput::event( QEvent* i_pEv )
+bool CWdgtIdxTreeTestStepsOutput::event( QEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
     bool bEventHandled = false;
@@ -224,7 +224,7 @@ protected: // overridables of base class QWidget
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CWdgtTestOutput::paintEvent( QPaintEvent* /*i_pEv*/ )
+void CWdgtIdxTreeTestStepsOutput::paintEvent( QPaintEvent* /*i_pEv*/ )
 //------------------------------------------------------------------------------
 {
     QPainter painter(this);
@@ -323,7 +323,7 @@ protected slots:
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CWdgtTestOutput::onTimerWdgtUpdateTimeout()
+void CWdgtIdxTreeTestStepsOutput::onTimerWdgtUpdateTimeout()
 //------------------------------------------------------------------------------
 {
     update();

@@ -27,7 +27,7 @@ may result in using the software modules.
 #ifndef ZSTest_TestStepGroup_h
 #define ZSTest_TestStepGroup_h
 
-#include "ZSTest/ZSTestStepAdminObj.h"
+#include "ZSTest/ZSTestStepIdxTreeEntry.h"
 
 namespace ZS
 {
@@ -36,18 +36,13 @@ namespace Test
 class CTestStep;
 
 //******************************************************************************
-class ZSTESTDLL_API CTestStepGroup : public CTestStepAdminObj
+class ZSTESTDLL_API CTestStepGroup : public CAbstractTestStepIdxTreeEntry
 //******************************************************************************
 {
     Q_OBJECT
 public: // class methods
     static QString NameSpace() { return "ZS::Test"; }
     static QString ClassName() { return "CTestStepGroup"; }
-public: // ctor (obsolete)
-    CTestStepGroup(
-        CTestStepAdminObjPool*         i_pObjPool,
-        const QString&                 i_strName,
-        ZS::System::CObjPoolTreeEntry* i_pTreeEntry );
 public: // ctors and dtor
     CTestStepGroup(
         CTest*          i_pTest,
@@ -57,28 +52,31 @@ public: // ctors and dtor
 public: // overridables
     virtual QString nameSpace() const { return CTestStepGroup::NameSpace(); }
     virtual QString className() const { return CTestStepGroup::ClassName(); }
-public: // must overridables of base class CTestStepAdminObj
-    virtual bool isGroup() const { return true; }
-public: // must overridables of base class CTestStepAdminObj
-    virtual void setTestResult( ETestResult i_testResult );
-public: // must overridables of base class CTestStepAdminObj
-    virtual void testStarted();
-    virtual void testEnded( bool i_bIgnoreTestResult = false ); // Implicitly updates test end time if not already updated.
-public: // instance methods
-    int getTestStepGroupCount();
-    CTestStepGroup* getTestStepGroup( int i_iTestStepGroupIdx );
-public: // instance methods
-    int getTestStepCount( bool i_bIncludeChildGroups = false);
-    CTestStep* getTestStep( int i_iTestStepIdx/*, bool i_bIncludeChildGroups = false*/);
-    //CTestStep* getTestStep( int& io_iTestStepCount, int i_iTestStepIdx, bool i_bIncludeChildGroups = false );
-public: // instance methods
-    bool isParentOf( CTestStep* i_pTestStep ) const;
-    bool isFirstTestStep( CTestStep* i_pTestStep ) const;
-    bool isLastTestStep( CTestStep* i_pTestStep ) const;
-    bool isFirstTestGroup( CTestStepGroup* i_pTSGrp ) const;
-    bool isLastTestGroup( CTestStepGroup* i_pTSGrp ) const;
-public: // must overridables of base class CTestStepAdminObj
-    virtual void update(); // triggers the "nodeChanged" and "dataChanged" signals of the model
+public: // must overridables of base class CAbstractTestStepIdxTreeEntry
+    virtual double getTestDurationInSec() const override;
+    virtual double getTestDurationInMilliSec() const override;
+    virtual double getTestDurationInMicroSec() const override;
+    virtual double getTestDurationInNanoSec() const override;
+//public: // must overridables of base class CAbstractTestStepIdxTreeEntry
+//    virtual void setTestResult( ETestResult i_testResult );
+//public: // must overridables of base class CAbstractTestStepIdxTreeEntry
+//    virtual void testStarted();
+//    virtual void testEnded( bool i_bIgnoreTestResult = false ); // Implicitly updates test end time if not already updated.
+//public: // instance methods
+//    int getTestStepGroupCount();
+//    CTestStepGroup* getTestStepGroup( int i_iTestStepGroupIdx );
+//public: // instance methods
+//    int getTestStepCount( bool i_bIncludeChildGroups = false);
+//    CTestStep* getTestStep( int i_iTestStepIdx/*, bool i_bIncludeChildGroups = false*/);
+//    //CTestStep* getTestStep( int& io_iTestStepCount, int i_iTestStepIdx, bool i_bIncludeChildGroups = false );
+//public: // instance methods
+//    bool isParentOf( CTestStep* i_pTestStep ) const;
+//    bool isFirstTestStep( CTestStep* i_pTestStep ) const;
+//    bool isLastTestStep( CTestStep* i_pTestStep ) const;
+//    bool isFirstTestGroup( CTestStepGroup* i_pTSGrp ) const;
+//    bool isLastTestGroup( CTestStepGroup* i_pTSGrp ) const;
+//public: // must overridables of base class CAbstractTestStepIdxTreeEntry
+//    virtual void update(); // triggers the "nodeChanged" and "dataChanged" signals of the model
 private: // default ctor not allowed
     CTestStepGroup();
 private: // copy ctor not allowed
@@ -90,4 +88,4 @@ private: // copy ctor not allowed
 
 } // namespace ZS
 
-#endif // #ifndef ZSTest_TestStepAdminObj_h
+#endif // #ifndef ZSTest_TestStepGroup_h

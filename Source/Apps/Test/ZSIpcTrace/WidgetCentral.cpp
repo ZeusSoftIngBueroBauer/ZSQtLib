@@ -122,7 +122,7 @@ CWidgetCentral::CWidgetCentral(
     // <TestSteps>
     //----------------
 
-    m_pWdgtTest = new CWdgtTest( CApplication::GetInstance()->getTest() );
+    m_pWdgtTest = new CWdgtIdxTreeTestSteps( CApplication::GetInstance()->getTest() );
     m_pSplitter->addWidget(m_pWdgtTest);
 
     // <GroupBox> Test
@@ -133,7 +133,7 @@ CWidgetCentral::CWidgetCentral(
     m_pGrpTestOutput->setLayout(m_pLytGrpTestOutput);
     m_pSplitter->addWidget(m_pGrpTestOutput);
 
-    m_pWdgtTestOutput = new CWdgtTestOutput(m_pTest);
+    m_pWdgtTestOutput = new CWdgtIdxTreeTestStepsOutput(m_pTest);
     m_pLytGrpTestOutput->addWidget(m_pWdgtTestOutput);
 
     // <MethodTrace>

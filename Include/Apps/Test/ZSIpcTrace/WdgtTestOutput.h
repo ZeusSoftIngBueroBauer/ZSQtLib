@@ -52,13 +52,13 @@ namespace IpcTrace
 class CTest;
 
 //******************************************************************************
-class CWdgtTestOutput : public QWidget
+class CWdgtIdxTreeTestStepsOutput : public QWidget
 //******************************************************************************
 {
     Q_OBJECT
 public: // ctors and dtor
-    CWdgtTestOutput( CTest* i_pTest, QWidget* i_pWdgtParent = nullptr, Qt::WindowFlags i_wflags = Qt::WindowFlags() );
-    ~CWdgtTestOutput();
+    CWdgtIdxTreeTestStepsOutput( CTest* i_pTest, QWidget* i_pWdgtParent = nullptr, Qt::WindowFlags i_wflags = Qt::WindowFlags() );
+    ~CWdgtIdxTreeTestStepsOutput();
 protected: // overridables of inherited class QObject
     virtual bool event( QEvent* i_pEv ) override;
 protected: // overridables of base class QWidget

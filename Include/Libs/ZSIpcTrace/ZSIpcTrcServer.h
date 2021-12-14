@@ -191,7 +191,7 @@ protected: // instance methods to recursively send index tree entries to the con
         int                                     i_iSocketId,
         ZS::System::MsgProtocol::TSystemMsgType i_systemMsgType,
         ZS::System::MsgProtocol::TCommand       i_cmd,
-        ZS::System::CBranchIdxTreeEntry*        i_pBranch );
+        ZS::System::CIdxTreeEntry*              i_pBranch );
 protected: // instance methods to explicitely send the attributes of a trace admin object to the connected clients
     void sendAdminObj(
         int                                     i_iSocketId,
@@ -203,7 +203,7 @@ protected: // instance methods to explicitely send the changed attributes of a n
         int                                     i_iSocketId,
         ZS::System::MsgProtocol::TSystemMsgType i_systemMsgType,
         ZS::System::MsgProtocol::TCommand       i_cmd,
-        ZS::System::CBranchIdxTreeEntry*        i_pBranch,
+        ZS::System::CIdxTreeEntry*              i_pBranch,
         ZS::System::EEnabled                    i_enabled,
         int                                     i_iDetailLevel );
 protected: // instance methods of the remote connection
@@ -216,8 +216,8 @@ protected: // overridables to parse and execute the incoming data stream
     void onIpcServerReceivedReqSelect( int i_iSocketId, const QString& i_strData );
     void onIpcServerReceivedReqUpdate( int i_iSocketId, const QString& i_strData );
 protected slots: // connected to the signals of the trace admin object pool
-    void onTrcAdminObjIdxTreeEntryAdded( ZS::System::CIdxTree* i_pIdxTree, ZS::System::CAbstractIdxTreeEntry* i_pTreeEntry );
-    void onTrcAdminObjIdxTreeEntryChanged( ZS::System::CIdxTree* i_pIdxTree, ZS::System::CAbstractIdxTreeEntry* i_pTreeEntry );
+    void onTrcAdminObjIdxTreeEntryAdded( ZS::System::CIdxTree* i_pIdxTree, ZS::System::CIdxTreeEntry* i_pTreeEntry );
+    void onTrcAdminObjIdxTreeEntryChanged( ZS::System::CIdxTree* i_pIdxTree, ZS::System::CIdxTreeEntry* i_pTreeEntry );
 protected: // overridables of inherited class QObject
     virtual bool event( QEvent* i_pEv ) override;
 protected: // instance members

@@ -47,7 +47,7 @@ namespace Test
 {
 namespace GUI
 {
-class CWdgtTest;
+class CWdgtIdxTreeTestSteps;
 }
 }
 namespace Trace
@@ -65,7 +65,7 @@ namespace Test
 namespace IpcTrace
 {
 class CTest;
-class CWdgtTestOutput;
+class CWdgtIdxTreeTestStepsOutput;
 
 //******************************************************************************
 class CWidgetCentral : public QWidget
@@ -85,10 +85,10 @@ protected: // instance members
     CTest*                           m_pTest;
     QVBoxLayout*                     m_pLyt;
     QSplitter*                       m_pSplitter;
-    ZS::Test::GUI::CWdgtTest*        m_pWdgtTest;
+    ZS::Test::GUI::CWdgtIdxTreeTestSteps*        m_pWdgtTest;
     QGroupBox*                       m_pGrpTestOutput;
     QVBoxLayout*                     m_pLytGrpTestOutput;
-    CWdgtTestOutput*                 m_pWdgtTestOutput;
+    CWdgtIdxTreeTestStepsOutput*                 m_pWdgtTestOutput;
     ZS::Trace::GUI::CWdgtTrcMthList* m_pWdgtMthList;
 
 }; // class CWidgetCentral

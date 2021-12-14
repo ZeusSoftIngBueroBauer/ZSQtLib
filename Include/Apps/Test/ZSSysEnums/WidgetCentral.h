@@ -44,7 +44,7 @@ namespace Test
 {
 namespace GUI
 {
-class CWdgtTest;
+class CWdgtIdxTreeTestSteps;
 }
 }
 
@@ -69,7 +69,7 @@ protected: // class members
     static CWidgetCentral* s_pThis; // singleton class
 protected: // instance members
     QVBoxLayout*              m_pLyt;
-    ZS::Test::GUI::CWdgtTest* m_pWdgtTest;
+    ZS::Test::GUI::CWdgtIdxTreeTestSteps* m_pWdgtTest;
 
 }; // class CWidgetCentral
 

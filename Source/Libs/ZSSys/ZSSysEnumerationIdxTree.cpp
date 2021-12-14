@@ -63,12 +63,12 @@ CEnumerationIdxTree* CEnumerationIdxTree::GetInstance( const QString& i_strName 
 
 //------------------------------------------------------------------------------
 CEnumerationIdxTree* CEnumerationIdxTree::CreateInstance(
-    const QString&     i_strName,
-    CRootIdxTreeEntry* i_pRootTreeEntry,
-    const QString&     i_strNodeSeparator,
-    bool               i_bCreateMutex,
-    QObject*           i_pObjParent,
-    int                i_iTrcDetailLevel )
+    const QString& i_strName,
+    CIdxTreeEntry* i_pRootTreeEntry,
+    const QString& i_strNodeSeparator,
+    bool           i_bCreateMutex,
+    QObject*       i_pObjParent,
+    int            i_iTrcDetailLevel )
 //------------------------------------------------------------------------------
 {
     // The class may be accessed from within different thread contexts and
@@ -172,12 +172,12 @@ protected: // ctors and dtor
 
 //------------------------------------------------------------------------------
 CEnumerationIdxTree::CEnumerationIdxTree(
-    const QString&     i_strName,
-    CRootIdxTreeEntry* i_pRootTreeEntry,
-    const QString&     i_strNodeSeparator,
-    bool               i_bCreateMutex,
-    QObject*           i_pObjParent,
-    int                i_iTrcDetailLevel ) :
+    const QString& i_strName,
+    CIdxTreeEntry* i_pRootTreeEntry,
+    const QString& i_strNodeSeparator,
+    bool           i_bCreateMutex,
+    QObject*       i_pObjParent,
+    int            i_iTrcDetailLevel ) :
 //------------------------------------------------------------------------------
     CIdxTree(
         /* strIdxTreeName    */ i_strName,

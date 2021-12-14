@@ -35,7 +35,7 @@ may result in using the software modules.
 
 #include "ZSSysGUI/ZSSysIdxTreeTableViewBranchContent.h"
 #include "ZSSysGUI/ZSSysIdxTreeModelBranchContent.h"
-#include "ZSSysGUI/ZSSysIdxTreeModelEntries.h"
+#include "ZSSysGUI/ZSSysIdxTreeModelEntry.h"
 #include "ZSSysGUI/ZSSysGUIAux.h"
 #include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysException.h"
@@ -317,7 +317,7 @@ public: // overridables
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CTableViewIdxTreeBranchContent::setBranch( CBranchIdxTreeEntry* i_pBranch )
+void CTableViewIdxTreeBranchContent::setBranch( CIdxTreeEntry* i_pBranch )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -445,7 +445,7 @@ void CTableViewIdxTreeBranchContent::mousePressEvent( QMouseEvent* i_pEv )
 
     if( m_modelIdxSelectedOnMousePressEvent.isValid() )
     {
-        CModelAbstractTreeEntry* pModelTreeEntry = static_cast<CModelAbstractTreeEntry*>(m_modelIdxSelectedOnMousePressEvent.internalPointer());
+        CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(m_modelIdxSelectedOnMousePressEvent.internalPointer());
 
         if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
         {
@@ -517,7 +517,7 @@ void CTableViewIdxTreeBranchContent::mouseReleaseEvent( QMouseEvent* i_pEv )
 
     if( m_modelIdxSelectedOnMouseReleaseEvent.isValid() )
     {
-        CModelAbstractTreeEntry* pModelTreeEntry = static_cast<CModelAbstractTreeEntry*>(m_modelIdxSelectedOnMouseReleaseEvent.internalPointer());
+        CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(m_modelIdxSelectedOnMouseReleaseEvent.internalPointer());
 
         if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
         {

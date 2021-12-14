@@ -43,7 +43,7 @@ may result in using the software modules.
 
 #include "ZSIpcTrace/ZSIpcTrcServer.h"
 #include "ZSIpcTrace/ZSIpcTrcClient.h"
-#include "ZSTest/ZSTestStepAdminObjPool.h"
+#include "ZSTest/ZSTestStepIdxTree.h"
 #include "ZSSys/ZSSysApp.h"
 #include "ZSSys/ZSSysEnumEntry.h"
 #include "ZSSys/ZSSysErrLog.h"

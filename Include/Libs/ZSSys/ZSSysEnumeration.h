@@ -29,7 +29,7 @@ may result in using the software modules.
 
 #include "ZSSys/ZSSysDllMain.h"
 #include "ZSSys/ZSSysEnumEntry.h"
-#include "ZSSys/ZSSysIdxTreeEntries.h"
+#include "ZSSys/ZSSysIdxTreeEntry.h"
 
 namespace ZS
 {
@@ -67,7 +67,7 @@ namespace System
     und auch wieder entfernt werden koennen. Allerdings koennen solche dynamisch
     erzeugten enum Werte nicht in C Konstrukten wie switch cases verwendet werden.
 */
-class ZSSYSDLL_API CEnumeration : public CLeaveIdxTreeEntry
+class ZSSYSDLL_API CEnumeration : public CIdxTreeEntry
 //******************************************************************************
 {
 public: // class methods

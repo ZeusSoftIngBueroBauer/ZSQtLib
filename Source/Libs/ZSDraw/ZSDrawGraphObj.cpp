@@ -1,0 +1,3072 @@
+/*******************************************************************************
+
+Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer
+                         Gewerbepark 28
+                         D-83670 Bad Heilbrunn
+                         Tel: 0049 8046 9488
+                         www.zeussoft.de
+                         E-Mail: mailbox@zeussoft.de
+
+--------------------------------------------------------------------------------
+
+Content: This file is part of the ZSQtLib.
+
+This file may be used with no license restrictions for your needs. But it is not
+allowed to resell any modules of the ZSQtLib veiling the original developer of
+the modules. Therefore the copyright link to ZeusSoft, Ing. Buero Bauer must not
+be removed from the header of the source code modules.
+
+ZeusSoft, Ing. Buero Bauer provides the source code as is without any guarantee
+that the code is written without faults.
+
+ZeusSoft, Ing. Buero Bauer does not assume any liability for any damages which
+may result in using the software modules.
+
+*******************************************************************************/
+
+#include <QtGui/QBitmap>
+#include <QtGui/qevent.h>
+#include <QtGui/QPainter>
+
+#if QT_VERSION < 0x050000
+#include <QtGui/QGraphicsSceneEvent>
+#include <QtGui/QStyleOption>
+#else
+#include <QtWidgets/QGraphicsSceneEvent>
+#include <QtWidgets/QStyleOption>
+#endif
+
+#include "ZSDraw/ZSDrawGraphObj.h"
+#include "ZSDraw/ZSDrawGraphObjLabel.h"
+#include "ZSDraw/ZSDrawGraphObjSelectionPoint.h"
+#include "ZSDraw/ZSDrawingScene.h"
+#include "ZSDraw/ZSDrawDlgFormatGraphObjs.h"
+#include "ZSPhysSizes/Geometry/ZSPhysSizes.h"
+#include "ZSSys/ZSSysErrCode.h"
+#include "ZSSys/ZSSysException.h"
+#include "ZSSys/ZSSysMath.h"
+#include "ZSSys/ZSSysTrcAdminObj.h"
+#include "ZSSys/ZSSysTrcMethod.h"
+//#include "ZSSys/ZSSysTrcServer.h"
+
+#include "ZSSys/ZSSysMemLeakDump.h"
+
+
+using namespace ZS::System;
+using namespace ZS::Draw;
+using namespace ZS::PhysVal;
+using namespace ZS::Trace;
+
+
+/*******************************************************************************
+class CGraphObj
+*******************************************************************************/
+
+/*==============================================================================
+public: // type definitions and constants
+==============================================================================*/
+
+const QString CGraphObj::c_strKeyLabelObjName = "ObjName";
+const QString CGraphObj::c_strKeyLabelObjId   = "ObjId";
+
+/*==============================================================================
+public: // ctors and dtor
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+CGraphObj::CGraphObj(
+    CDrawingScene*       i_pDrawingScene,
+    const QString&       i_strNameSpace,
+    const QString&       i_strClassName,
+    EGraphObjType        i_type,
+    const QString&       i_strType,
+    const QString&       i_strObjName,
+    const QString&       i_strObjId,
+    const CDrawSettings& i_settings ) :
+//------------------------------------------------------------------------------
+    m_pDrawingScene(i_pDrawingScene),
+    m_strNameSpace(i_strNameSpace),
+    m_strClassName(i_strClassName),
+    m_type(i_type),
+    m_strType(i_strType),
+    m_strObjName(i_strObjName),
+    m_strObjId(i_strObjId),
+    m_drawSettings(i_type),
+    m_sizMinimum(),
+    m_sizMaximum(),
+    m_sizFixed(),
+    m_arAlignments(),
+    m_bIsHit(false),
+    m_editMode(EEditModeUndefined),
+    m_editResizeMode(EEditResizeModeUndefined),
+    m_fZValue(0.0),
+    m_bDtorInProgress(false),
+    m_idxSelPtSelectedPolygon(-1),
+    m_arpSelPtsPolygon(),
+    m_selPtSelectedBoundingRect(ESelectionPointUndefined),
+    //m_arpSelPtsBoundingRect[ESelectionPointCount]
+    m_arpLabels(),
+    m_strToolTip(),
+    m_strEditInfo(),
+    // Current item coordinates and transform values:
+    m_rctCurr(),
+    m_fRotAngleCurr_deg(0.0),
+    m_ptRotOriginCurr(),
+    // Original coordinates and transform values:
+    m_bHasValidOrigCoors(false),
+    m_ptPosOrig(),
+    m_sizOrig(),
+    m_fRotAngleOrig_deg(0.0),
+    m_ptRotOriginOrig(),
+    // Coordinates stored on mouse press events:
+    m_ptScenePosOnMousePressEvent(),
+    m_ptMouseEvScenePosOnMousePressEvent(),
+    m_rctOnMousePressEvent(),
+    m_ptRotOriginOnMousePressEvent(),
+    // Simulation Functions:
+    m_arMousePressEventFunctions(),
+    m_arMouseReleaseEventFunctions(),
+    m_arMouseDoubleClickEventFunctions(),
+    m_arMouseMoveEventFunctions(),
+    m_arKeyPressEventFunctions(),
+    m_arKeyReleaseEventFunctions()
+{
+    memset( m_arpSelPtsBoundingRect, 0x00, sizeof(m_arpSelPtsBoundingRect) );
+
+    for( int idxAttr = 0; idxAttr < EDrawAttributeCount; idxAttr++ )
+    {
+        if( m_drawSettings.isAttributeUsed(idxAttr) )
+        {
+            m_drawSettings.setAttribute( idxAttr, i_settings.getAttribute(idxAttr) );
+        }
+    }
+
+} // ctor
+
+//------------------------------------------------------------------------------
+CGraphObj::~CGraphObj()
+//------------------------------------------------------------------------------
+{
+    m_bDtorInProgress = true;
+
+    CGraphObjSelectionPoint* pGraphObjSelPt;
+    int                      idxSelPt;
+
+    for( idxSelPt = ESelectionPointCount-1; idxSelPt >= 0; idxSelPt-- )
+    {
+        pGraphObjSelPt = m_arpSelPtsBoundingRect[idxSelPt];
+
+        if( pGraphObjSelPt != nullptr )
+        {
+            m_arpSelPtsBoundingRect[idxSelPt] = nullptr;
+
+            try
+            {
+                delete pGraphObjSelPt;
+            }
+            catch(...)
+            {
+            }
+            pGraphObjSelPt = nullptr;
+        }
+    }
+
+    if( m_arpSelPtsPolygon.size() > 0 )
+    {
+        for( idxSelPt = m_arpSelPtsPolygon.size()-1; idxSelPt >= 0; idxSelPt-- )
+        {
+            pGraphObjSelPt = m_arpSelPtsPolygon[idxSelPt];
+
+            if( pGraphObjSelPt != nullptr )
+            {
+                m_arpSelPtsPolygon[idxSelPt] = nullptr;
+
+                try
+                {
+                    delete pGraphObjSelPt;
+                }
+                catch(...)
+                {
+                }
+                pGraphObjSelPt = nullptr;
+            }
+        }
+    }
+
+    QHashIterator<QString,SGraphObjLabel*> itLabels(m_arpLabels);
+    SGraphObjLabel* pGraphObjLabel;
+
+    while( itLabels.hasNext() )
+    {
+        itLabels.next();
+        pGraphObjLabel = itLabels.value();
+
+        try
+        {
+            delete pGraphObjLabel->m_pGraphObjLabel;
+        }
+        catch(...)
+        {
+        }
+        pGraphObjLabel->m_pGraphObjLabel = nullptr;
+
+        try
+        {
+            delete pGraphObjLabel;
+        }
+        catch(...)
+        {
+        }
+        pGraphObjLabel = nullptr;
+    }
+
+    if( m_pDrawingScene != nullptr )
+    {
+        // Please note that "onGraphObjDestroyed" is used to remove the graphical object from
+        // the dictionary, the index list, and the sorted object pools of the drawing scene.
+        // But selection points have just been added to the drawing scene's item list and
+        // therefore don't have valid object ids.
+        if( !m_strObjId.isEmpty() )
+        {
+            try
+            {
+                m_pDrawingScene->onGraphObjDestroyed(m_strObjId);
+            }
+            catch(...)
+            {
+            }
+        }
+        else
+        {
+            // Please note that the dynamic cast to QGraphicsItem returns nullptr if the
+            // dtor of QGraphicsItem has already been executed. The order the dtors
+            // of QGraphicsItem has already been executed. The order the dtors
+            // of inherited classes are called depend on the order the classes
+            // appear in the list of the inherited classes on defining the
+            // class implementation. So we can't call "removeItem" here but must
+            // remove the graphics item from the drawing scene's item list before
+            // the dtor of class QGraphicsItem is called. And this is only always
+            // the case in the dtor of the class derived from QGraphicsItem.
+            //QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
+            //m_pDrawingScene->removeItem(pGraphicsItem);
+        }
+    } // if( m_pDrawingScene != nullptr )
+
+    m_pDrawingScene = nullptr;
+
+} // dtor
+
+/*==============================================================================
+public: // overridables
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CGraphObj::setObjId( const QString& i_strObjId )
+//------------------------------------------------------------------------------
+{
+    if( m_strObjId != i_strObjId )
+    {
+        QString strObjIdOld = m_strObjId;
+        QString strObjIdNew = i_strObjId;
+
+        m_strObjId = i_strObjId;
+
+        // Please note that on calling "onGraphObjIdChanged" the drawing scene
+        // may correct my object id on calling "setObjId" as a reentry. If we would
+        // pass a reference to "m_strObjId" the argument will be changed on executing
+        // the "onGraphObjIdChanged" method and after calling "setObjId" the new but
+        // not the old object id would be passed around by the drawing scene on emitting
+        // the "graphObjIdChanged" signal. Thats why we first assign the object id to
+        // a QString variable on the stack.
+
+        m_pDrawingScene->onGraphObjIdChanged( strObjIdOld, strObjIdNew );
+
+        if( m_arpLabels.contains(c_strKeyLabelObjId) )
+        {
+            SGraphObjLabel* pGraphObjLabel = m_arpLabels[c_strKeyLabelObjId];
+
+            if( pGraphObjLabel->m_pGraphObjLabel != nullptr )
+            {
+                pGraphObjLabel->m_pGraphObjLabel->setText(m_strObjId);
+            }
+        }
+
+        updateEditInfo();
+        updateToolTip();
+
+    } // if( m_strObjId != i_strObjId )
+
+} // setObjId
+
+//------------------------------------------------------------------------------
+void CGraphObj::setObjName( const QString& i_strObjName )
+//------------------------------------------------------------------------------
+{
+    if( m_strObjName != i_strObjName )
+    {
+        QString strObjNameOld = m_strObjName;
+        QString strObjNameNew = i_strObjName;
+
+        m_strObjName = i_strObjName;
+
+        m_pDrawingScene->onGraphObjNameChanged( m_strObjId, strObjNameOld, strObjNameNew );
+
+        if( m_arpLabels.contains(c_strKeyLabelObjName) )
+        {
+            SGraphObjLabel* pGraphObjLabel = m_arpLabels[c_strKeyLabelObjName];
+
+            if( pGraphObjLabel->m_pGraphObjLabel != nullptr )
+            {
+                pGraphObjLabel->m_pGraphObjLabel->setText(m_strObjName);
+            }
+        }
+
+        updateEditInfo();
+        updateToolTip();
+
+    } // if( m_strObjName != i_strName )
+
+} // setObjName
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+QString CGraphObj::getObjName( bool i_bIncludeParents, const QString& i_strNodeSeparator )
+//------------------------------------------------------------------------------
+{
+    QString strObjName = m_strObjName;
+
+    if( i_bIncludeParents )
+    {
+        QString strObjNameParent = getParentObjName(i_bIncludeParents,i_strNodeSeparator);
+
+        if( !strObjNameParent.isEmpty() )
+        {
+            strObjName.insert( 0, strObjNameParent + i_strNodeSeparator );
+        }
+    }
+
+    return strObjName;
+
+} // getObjName
+
+//------------------------------------------------------------------------------
+CGraphObj* CGraphObj::getParent()
+//------------------------------------------------------------------------------
+{
+    QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
+    QGraphicsItem* pGraphicsItemParent = pGraphicsItemThis->parentItem();
+    CGraphObj*     pGraphObjParent = dynamic_cast<CGraphObj*>(pGraphicsItemParent);
+
+    return pGraphObjParent;
+
+} // getParent
+
+//------------------------------------------------------------------------------
+QString CGraphObj::getParentObjName( bool i_bIncludeParents, const QString& i_strNodeSeparator )
+//------------------------------------------------------------------------------
+{
+    QString strObjNameParent;
+
+    QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
+    QGraphicsItem* pGraphicsItemParent = pGraphicsItemThis->parentItem();
+
+    if( pGraphicsItemParent != nullptr )
+    {
+        CGraphObj* pGraphObjParent = dynamic_cast<CGraphObj*>(pGraphicsItemParent);
+
+        if( pGraphObjParent != nullptr )
+        {
+            strObjNameParent = pGraphObjParent->getObjName();
+
+            if( i_bIncludeParents )
+            {
+                pGraphicsItemParent = pGraphicsItemParent->parentItem();
+
+                pGraphObjParent = dynamic_cast<CGraphObj*>(pGraphicsItemParent);
+
+                while( pGraphObjParent != nullptr )
+                {
+                    strObjNameParent.insert( 0, pGraphObjParent->getObjName() + i_strNodeSeparator );
+
+                    pGraphicsItemParent = pGraphicsItemParent->parentItem();
+
+                    pGraphObjParent = dynamic_cast<CGraphObj*>(pGraphicsItemParent);
+                }
+
+            } // if( i_bIncludeParents )
+        } // if( pGraphObjParent != nullptr )
+    } // if( pGraphicsItemParent != nullptr )
+
+    return strObjNameParent;
+
+} // getParentObjName
+
+/*==============================================================================
+public: // overridables
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CGraphObj::onCreateAndExecDlgFormatGraphObjs()
+//------------------------------------------------------------------------------
+{
+    CDlgFormatGraphObjs* pDlgFormatGraphObjs = new CDlgFormatGraphObjs(m_pDrawingScene,this);
+
+    pDlgFormatGraphObjs->setCurrentWidget(CDlgFormatGraphObjs::c_strWdgtObjName);
+
+    pDlgFormatGraphObjs->exec();
+
+    delete pDlgFormatGraphObjs;
+    pDlgFormatGraphObjs = nullptr;
+
+} // onCreateAndExecDlgFormatGraphObjs
+
+/*==============================================================================
+public: // overridables
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CGraphObj::setDrawSettings( const CDrawSettings& i_drawSettings )
+//------------------------------------------------------------------------------
+{
+    m_drawSettings = i_drawSettings;
+
+    onDrawSettingsChanged();
+
+} // setDrawSettings
+
+//------------------------------------------------------------------------------
+void CGraphObj::onDrawSettingsChanged()
+//------------------------------------------------------------------------------
+{
+    /* Template for copy and paste in inherited classes:
+
+    const QGraphicsItem* pGraphicsItem = dynamic_cast<const QGraphicsItem*>(this);
+
+    if( pGraphicsItem != nullptr )
+    {
+        if( m_drawSettings.isLineUsed() )
+        {
+            if( m_drawSettings.getLineStyle() != ELineStyleNoLine )
+            {
+                QPen pen;
+
+                pen.setColor( m_drawSettings.getPenColor() );
+                pen.setWidth( m_drawSettings.getPenWidth() );
+                pen.setStyle( lineStyle2QtPenStyle(m_drawSettings.getLineStyle()) );
+
+                setPen(pen);
+            }
+            else
+            {
+                setPen(Qt::NoPen);
+            }
+        }
+        else
+        {
+            setPen(Qt::NoPen);
+        }
+
+        if( m_drawSettings.isFillUsed() )
+        {
+            if( m_drawSettings.getFillStyle() != EFillStyleNoFill )
+            {
+                QBrush brsh;
+
+                brsh.setColor( m_drawSettings.getFillColor() );
+                brsh.setStyle( fillStyle2QtBrushStyle(m_drawSettings.getFillStyle()) );
+
+                pGraphicsItem->setBrush(brsh);
+            }
+            else
+            {
+                setBrush(Qt::NoBrush);
+            }
+        }
+        else
+        {
+            setBrush(Qt::NoBrush);
+        }
+
+    } // if( pGraphicsItem != nullptr )
+    */
+
+} // onDrawSettingsChanged
+
+/*==============================================================================
+public: // overridables (you must call those methods (instead of e.g. "QGrahicsLineItem::setPen") ..
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CGraphObj::setPenColor( const QColor& i_clr, bool i_bImmediatelyApplySetting )
+//------------------------------------------------------------------------------
+{
+    m_drawSettings.setPenColor(i_clr);
+
+    if( i_bImmediatelyApplySetting )
+    {
+        onDrawSettingsChanged();
+    }
+
+} // setPenColor
+
+//------------------------------------------------------------------------------
+void CGraphObj::setPenWidth( int i_iLineWidth, bool i_bImmediatelyApplySetting )
+//------------------------------------------------------------------------------
+{
+    m_drawSettings.setPenWidth(i_iLineWidth);
+
+    if( i_bImmediatelyApplySetting )
+    {
+        onDrawSettingsChanged();
+    }
+
+} // setPenWidth
+
+/*==============================================================================
+public: // overridables (you must call those methods (instead of e.g. "QGrahicsLineItem::setPen") ..
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CGraphObj::setLineStyle( ELineStyle i_lineStyle, bool i_bImmediatelyApplySetting )
+//------------------------------------------------------------------------------
+{
+    m_drawSettings.setLineStyle(i_lineStyle);
+
+    if( i_bImmediatelyApplySetting )
+    {
+        onDrawSettingsChanged();
+    }
+
+} // setLineStyle
+
+/*==============================================================================
+public: // overridables (you must call those methods (instead of e.g. "QGrahicsLineItem::setPen") ..
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CGraphObj::setFillColor( const QColor& i_clr, bool i_bImmediatelyApplySetting )
+//------------------------------------------------------------------------------
+{
+    m_drawSettings.setFillColor(i_clr);
+
+    if( i_bImmediatelyApplySetting )
+    {
+        onDrawSettingsChanged();
+    }
+
+} // setFillColor
+
+//------------------------------------------------------------------------------
+void CGraphObj::setFillStyle( EFillStyle i_fillStyle, bool i_bImmediatelyApplySetting )
+//------------------------------------------------------------------------------
+{
+    m_drawSettings.setFillStyle(i_fillStyle);
+
+    if( i_bImmediatelyApplySetting )
+    {
+        onDrawSettingsChanged();
+    }
+
+} // setFillStyle
+
+/*==============================================================================
+public: // overridables (you must call those methods (instead of e.g. "QGrahicsLineItem::setPen") ..
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CGraphObj::setLineRecordType( ELineRecordType i_lineRecordType, bool i_bImmediatelyApplySetting )
+//------------------------------------------------------------------------------
+{
+    m_drawSettings.setLineRecordType(i_lineRecordType);
+
+    if( i_bImmediatelyApplySetting )
+    {
+        onDrawSettingsChanged();
+    }
+
+} // setLineRecordType
+
+//------------------------------------------------------------------------------
+void CGraphObj::setLineExtent( int i_iLineExtent, bool i_bImmediatelyApplySetting )
+//------------------------------------------------------------------------------
+{
+    m_drawSettings.setLineExtent(i_iLineExtent);
+
+    if( i_bImmediatelyApplySetting )
+    {
+        onDrawSettingsChanged();
+    }
+
+} // setLineExtent
+
+/*==============================================================================
+public: // overridables (you must call those methods (instead of e.g. "QGrahicsLineItem::setPen") ..
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CGraphObj::setLineEndStyle( ELinePoint i_linePoint, ELineEndStyle i_endStyle, bool i_bImmediatelyApplySetting )
+//------------------------------------------------------------------------------
+{
+    m_drawSettings.setLineEndStyle(i_linePoint,i_endStyle);
+
+    if( i_bImmediatelyApplySetting )
+    {
+        onDrawSettingsChanged();
+    }
+
+} // setLineEndStyle
+
+//------------------------------------------------------------------------------
+void CGraphObj::setLineEndBaseLineType( ELinePoint i_linePoint, ELineEndBaseLineType i_baseLineType, bool i_bImmediatelyApplySetting )
+//------------------------------------------------------------------------------
+{
+    m_drawSettings.setLineEndBaseLineType(i_linePoint,i_baseLineType);
+
+    if( i_bImmediatelyApplySetting )
+    {
+        onDrawSettingsChanged();
+    }
+
+} // setLineEndBaseLineType
+
+//------------------------------------------------------------------------------
+void CGraphObj::setLineEndFillStyle( ELinePoint i_linePoint, ELineEndFillStyle i_fillStyle, bool i_bImmediatelyApplySetting )
+//------------------------------------------------------------------------------
+{
+    m_drawSettings.setLineEndFillStyle(i_linePoint,i_fillStyle);
+
+    if( i_bImmediatelyApplySetting )
+    {
+        onDrawSettingsChanged();
+    }
+
+} // setLineEndFillStyle
+
+//------------------------------------------------------------------------------
+void CGraphObj::setLineEndWidth( ELinePoint i_linePoint, ELineEndWidth i_width, bool i_bImmediatelyApplySetting )
+//------------------------------------------------------------------------------
+{
+    m_drawSettings.setLineEndWidth(i_linePoint,i_width);
+
+    if( i_bImmediatelyApplySetting )
+    {
+        onDrawSettingsChanged();
+    }
+
+} // setLineEndWidth
+
+//------------------------------------------------------------------------------
+void CGraphObj::setLineEndLength( ELinePoint i_linePoint, ELineEndLength i_length, bool i_bImmediatelyApplySetting )
+//------------------------------------------------------------------------------
+{
+    m_drawSettings.setLineEndLength(i_linePoint,i_length);
+
+    if( i_bImmediatelyApplySetting )
+    {
+        onDrawSettingsChanged();
+    }
+
+} // setLineEndLength
+
+/*==============================================================================
+public: // overridables (you must call those methods (instead of e.g. "QGrahicsLineItem::setPen") ..
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CGraphObj::setTextColor( const QColor& i_clr, bool i_bImmediatelyApplySetting )
+//------------------------------------------------------------------------------
+{
+    m_drawSettings.setTextColor(i_clr);
+
+    if( i_bImmediatelyApplySetting )
+    {
+        onDrawSettingsChanged();
+    }
+
+} // setTextColor
+
+//------------------------------------------------------------------------------
+void CGraphObj::setTextFont( const QFont& i_fnt, bool i_bImmediatelyApplySetting )
+//------------------------------------------------------------------------------
+{
+    m_drawSettings.setTextFont(i_fnt);
+
+    if( i_bImmediatelyApplySetting )
+    {
+        onDrawSettingsChanged();
+    }
+
+} // setTextFont
+
+//------------------------------------------------------------------------------
+void CGraphObj::setTextSize( ETextSize i_size, bool i_bImmediatelyApplySetting )
+//------------------------------------------------------------------------------
+{
+    m_drawSettings.setTextSize(i_size);
+
+    if( i_bImmediatelyApplySetting )
+    {
+        onDrawSettingsChanged();
+    }
+
+} // setTextSize
+
+//------------------------------------------------------------------------------
+void CGraphObj::setTextStyle( ETextStyle i_style, bool i_bImmediatelyApplySetting )
+//------------------------------------------------------------------------------
+{
+    m_drawSettings.setTextStyle(i_style);
+
+    if( i_bImmediatelyApplySetting )
+    {
+        onDrawSettingsChanged();
+    }
+
+} // setTextStyle
+
+//------------------------------------------------------------------------------
+void CGraphObj::setTextEffect( ETextEffect i_effect, bool i_bImmediatelyApplySetting )
+//------------------------------------------------------------------------------
+{
+    m_drawSettings.setTextEffect(i_effect);
+
+    if( i_bImmediatelyApplySetting )
+    {
+        onDrawSettingsChanged();
+    }
+
+} // setTextEffect
+
+/*==============================================================================
+public: // overridables
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CGraphObj::setMinimumWidth( double i_fWidth )
+//------------------------------------------------------------------------------
+{
+    m_sizMinimum.setWidth(i_fWidth);
+
+    if( m_sizMinimum.width() > 0.0 )
+    {
+        QSizeF sizCurr = getSize();
+
+        if( sizCurr.width() < m_sizMinimum.width() )
+        {
+            sizCurr.setWidth( m_sizMinimum.width() );
+
+            setSize(sizCurr);
+        }
+    }
+
+} // setMinimumWidth
+
+//------------------------------------------------------------------------------
+bool CGraphObj::hasMinimumWidth() const
+//------------------------------------------------------------------------------
+{
+    bool bHas = false;
+
+    if( m_sizFixed.width() > 0.0 )
+    {
+        bHas = true;
+    }
+    else if( m_sizMinimum.width() > 0.0 )
+    {
+        bHas = true;
+    }
+    return bHas;
+
+} // hasMinimumWidth
+
+//------------------------------------------------------------------------------
+double CGraphObj::getMinimumWidth() const
+//------------------------------------------------------------------------------
+{
+    double fWidth = 0.0;
+
+    if( m_sizFixed.width() > 0.0 )
+    {
+        fWidth = m_sizFixed.width();
+    }
+    else if( m_sizMinimum.width() > 0.0 )
+    {
+        fWidth = m_sizMinimum.width();
+    }
+    return fWidth;
+
+} // getMinimumWidth
+
+//------------------------------------------------------------------------------
+void CGraphObj::setMinimumHeight( double i_fHeight )
+//------------------------------------------------------------------------------
+{
+    m_sizMinimum.setHeight(i_fHeight);
+
+    if( m_sizMinimum.height() > 0.0 )
+    {
+        QSizeF sizCurr = getSize();
+
+        if( sizCurr.height() < m_sizMinimum.height() )
+        {
+            sizCurr.setHeight( m_sizMinimum.height() );
+
+            setSize(sizCurr);
+        }
+    }
+
+} // setMinimumHeight
+
+//------------------------------------------------------------------------------
+bool CGraphObj::hasMinimumHeight() const
+//------------------------------------------------------------------------------
+{
+    bool bHas = false;
+
+    if( m_sizFixed.height() > 0.0 )
+    {
+        bHas = true;
+    }
+    else if( m_sizMinimum.height() > 0.0 )
+    {
+        bHas = true;
+    }
+    return bHas;
+
+} // hasMinimumHeight
+
+//------------------------------------------------------------------------------
+double CGraphObj::getMinimumHeight() const
+//------------------------------------------------------------------------------
+{
+    double fHeight = 0.0;
+
+    if( m_sizFixed.height() > 0.0 )
+    {
+        fHeight = m_sizFixed.height();
+    }
+    else if( m_sizMinimum.height() > 0.0 )
+    {
+        fHeight = m_sizMinimum.height();
+    }
+    return fHeight;
+
+} // getMinimumHeight
+
+//------------------------------------------------------------------------------
+void CGraphObj::setMinimumSize( const QSize& i_siz )
+//------------------------------------------------------------------------------
+{
+    m_sizMinimum = i_siz;
+
+    if( m_sizMinimum.isValid() )
+    {
+        QSizeF sizCurr = getSize();
+
+        if( sizCurr.width() < m_sizMinimum.width() || sizCurr.height() < m_sizMinimum.height() )
+        {
+            if( sizCurr.width() < m_sizMinimum.width() )
+            {
+                sizCurr.setWidth( m_sizMinimum.width() );
+            }
+            if( sizCurr.height() < m_sizMinimum.height() )
+            {
+                sizCurr.setHeight( m_sizMinimum.height() );
+            }
+            setSize(sizCurr);
+        }
+    }
+
+} // setMinimumSize
+
+//------------------------------------------------------------------------------
+bool CGraphObj::hasMinimumSize() const
+//------------------------------------------------------------------------------
+{
+    bool bHas = false;
+
+    if( m_sizFixed.isValid() )
+    {
+        bHas = true;
+    }
+    else if( m_sizMinimum.isValid() )
+    {
+        bHas = true;
+    }
+    return bHas;
+
+} // hasMinimumSize
+
+//------------------------------------------------------------------------------
+QSize CGraphObj::getMinimumSize() const
+//------------------------------------------------------------------------------
+{
+    QSize siz;
+
+    if( m_sizFixed.isValid() )
+    {
+        siz = m_sizFixed;
+    }
+    else if( m_sizMinimum.isValid() )
+    {
+        siz = m_sizMinimum;
+    }
+    return siz;
+
+} // getMinimumSize
+
+//------------------------------------------------------------------------------
+void CGraphObj::setMaximumWidth( double i_fWidth )
+//------------------------------------------------------------------------------
+{
+    m_sizMaximum.setWidth(i_fWidth);
+
+    if( m_sizMaximum.width() > 0.0 )
+    {
+        QSizeF sizCurr = getSize();
+
+        if( sizCurr.width() > m_sizMaximum.width() )
+        {
+            sizCurr.setWidth( m_sizMaximum.width() );
+
+            setSize(sizCurr);
+        }
+    }
+
+} // setMaximumWidth
+
+//------------------------------------------------------------------------------
+bool CGraphObj::hasMaximumWidth() const
+//------------------------------------------------------------------------------
+{
+    bool bHas = false;
+
+    if( m_sizFixed.width() > 0.0 )
+    {
+        bHas = true;
+    }
+    else if( m_sizMaximum.width() > 0.0 )
+    {
+        bHas = true;
+    }
+    return bHas;
+
+} // hasMaximumWidth
+
+//------------------------------------------------------------------------------
+double CGraphObj::getMaximumWidth() const
+//------------------------------------------------------------------------------
+{
+    double fWidth = 0.0;
+
+    if( m_sizFixed.width() > 0.0 )
+    {
+        fWidth = m_sizFixed.width();
+    }
+    else if( m_sizMaximum.width() > 0.0 )
+    {
+        fWidth = m_sizMaximum.width();
+    }
+    return fWidth;
+
+} // getMaximumWidth
+
+//------------------------------------------------------------------------------
+void CGraphObj::setMaximumHeight( double i_fHeight )
+//------------------------------------------------------------------------------
+{
+    m_sizMaximum.setHeight(i_fHeight);
+
+    if( m_sizMaximum.height() > 0.0 )
+    {
+        QSizeF sizCurr = getSize();
+
+        if( sizCurr.height() > m_sizMaximum.height() )
+        {
+            sizCurr.setHeight( m_sizMaximum.height() );
+
+            setSize(sizCurr);
+        }
+    }
+
+} // setMaximumHeight
+
+//------------------------------------------------------------------------------
+bool CGraphObj::hasMaximumHeight() const
+//------------------------------------------------------------------------------
+{
+    bool bHas = false;
+
+    if( m_sizFixed.height() > 0.0 )
+    {
+        bHas = true;
+    }
+    else if( m_sizMaximum.height() > 0.0 )
+    {
+        bHas = true;
+    }
+    return bHas;
+
+} // hasMaximumHeight
+
+//------------------------------------------------------------------------------
+double CGraphObj::getMaximumHeight() const
+//------------------------------------------------------------------------------
+{
+    double fHeight = 0.0;
+
+    if( m_sizFixed.height() > 0.0 )
+    {
+        fHeight = m_sizFixed.height();
+    }
+    else if( m_sizMaximum.height() > 0.0 )
+    {
+        fHeight = m_sizMaximum.height();
+    }
+    return fHeight;
+
+} // getMaximumHeight
+
+//------------------------------------------------------------------------------
+void CGraphObj::setMaximumSize( const QSize& i_siz )
+//------------------------------------------------------------------------------
+{
+    m_sizMaximum = i_siz;
+
+    if( m_sizMaximum.isValid() )
+    {
+        QSizeF sizCurr = getSize();
+
+        if( sizCurr.width() > m_sizMaximum.width() || sizCurr.height() > m_sizMaximum.height() )
+        {
+            if( sizCurr.width() > m_sizMaximum.width() )
+            {
+                sizCurr.setWidth( m_sizMaximum.width() );
+            }
+            if( sizCurr.height() > m_sizMaximum.height() )
+            {
+                sizCurr.setHeight( m_sizMaximum.height() );
+            }
+            setSize(sizCurr);
+        }
+    }
+
+} // setMaximumSize
+
+//------------------------------------------------------------------------------
+bool CGraphObj::hasMaximumSize() const
+//------------------------------------------------------------------------------
+{
+    bool bHas = false;
+
+    if( m_sizFixed.isValid() )
+    {
+        bHas = true;
+    }
+    else if( m_sizMaximum.isValid() )
+    {
+        bHas = true;
+    }
+    return bHas;
+
+} // hasMaximumSize
+
+//------------------------------------------------------------------------------
+QSize CGraphObj::getMaximumSize() const
+//------------------------------------------------------------------------------
+{
+    QSize siz;
+
+    if( m_sizFixed.isValid() )
+    {
+        siz = m_sizFixed;
+    }
+    else if( m_sizMaximum.isValid() )
+    {
+        siz = m_sizMaximum;
+    }
+    return siz;
+
+} // getMaximumSize
+
+//------------------------------------------------------------------------------
+void CGraphObj::setFixedWidth( double i_fWidth )
+//------------------------------------------------------------------------------
+{
+    m_sizFixed.setWidth(i_fWidth);
+
+    if( m_sizFixed.width() > 0.0 )
+    {
+        QSizeF sizCurr = getSize();
+
+        if( sizCurr.width() != m_sizFixed.width() )
+        {
+            sizCurr.setWidth( m_sizFixed.width() );
+
+            setSize(sizCurr);
+        }
+    }
+
+} // setFixedWidth
+
+//------------------------------------------------------------------------------
+bool CGraphObj::hasFixedWidth() const
+//------------------------------------------------------------------------------
+{
+    bool bHas = false;
+
+    if( m_sizFixed.width() > 0.0 )
+    {
+        bHas = true;
+    }
+    else if( (m_sizMinimum.width() > 0.0) && (m_sizMinimum.width() == m_sizMaximum.width()) )
+    {
+        bHas = true;
+    }
+    return bHas;
+
+} // hasFixedWidth
+
+//------------------------------------------------------------------------------
+double CGraphObj::getFixedWidth() const
+//------------------------------------------------------------------------------
+{
+    double fWidth = 0.0;
+
+    if( m_sizFixed.width() > 0.0 )
+    {
+        fWidth = m_sizFixed.width();
+    }
+    else if( (m_sizMinimum.width() > 0.0) && (m_sizMinimum.width() == m_sizMaximum.width()) )
+    {
+        fWidth = m_sizMinimum.width();
+    }
+    return fWidth;
+
+} // getFixedWidth
+
+//------------------------------------------------------------------------------
+void CGraphObj::setFixedHeight( double i_fHeight )
+//------------------------------------------------------------------------------
+{
+    m_sizFixed.setHeight(i_fHeight);
+
+    if( m_sizFixed.height() > 0.0 )
+    {
+        QSizeF sizCurr = getSize();
+
+        if( sizCurr.height() != m_sizFixed.height() )
+        {
+            sizCurr.setHeight( m_sizFixed.height() );
+
+            setSize(sizCurr);
+        }
+    }
+
+} // setFixedHeight
+
+//------------------------------------------------------------------------------
+bool CGraphObj::hasFixedHeight() const
+//------------------------------------------------------------------------------
+{
+    bool bHas = false;
+
+    if( m_sizFixed.height() > 0.0 )
+    {
+        bHas = true;
+    }
+    else if( (m_sizMinimum.height() > 0.0) && (m_sizMinimum.height() == m_sizMaximum.height()) )
+    {
+        bHas = true;
+    }
+    return bHas;
+
+} // hasFixedHeight
+
+//------------------------------------------------------------------------------
+double CGraphObj::getFixedHeight() const
+//------------------------------------------------------------------------------
+{
+    double fHeight = 0.0;
+
+    if( m_sizFixed.height() > 0.0 )
+    {
+        fHeight = m_sizFixed.height();
+    }
+    else if( (m_sizMinimum.height() > 0.0) && (m_sizMinimum.height() == m_sizMaximum.height()) )
+    {
+        fHeight = m_sizMinimum.height();
+    }
+    return fHeight;
+
+} // getFixedHeight
+
+//------------------------------------------------------------------------------
+void CGraphObj::setFixedSize( const QSize& i_siz )
+//------------------------------------------------------------------------------
+{
+    m_sizFixed = i_siz;
+
+    if( m_sizFixed.isValid() )
+    {
+        QSizeF sizCurr = getSize();
+
+        if( sizCurr.width() != m_sizFixed.width() || sizCurr.height() != m_sizFixed.height() )
+        {
+            if( sizCurr.width() != m_sizFixed.width() )
+            {
+                sizCurr.setWidth( m_sizFixed.width() );
+            }
+            if( sizCurr.height() != m_sizFixed.height() )
+            {
+                sizCurr.setHeight( m_sizFixed.height() );
+            }
+            setSize(sizCurr);
+        }
+    }
+
+} // setFixedSize
+
+//------------------------------------------------------------------------------
+bool CGraphObj::hasFixedSize() const
+//------------------------------------------------------------------------------
+{
+    bool bHas;
+
+    if( m_sizFixed.isValid() )
+    {
+        bHas = true;
+    }
+    else if( m_sizMinimum.isValid() && m_sizMaximum.isValid() )
+    {
+        if( (m_sizMinimum.width() == m_sizMaximum.width()) && (m_sizMinimum.height() == m_sizMaximum.height()) )
+        {
+            bHas = true;
+        }
+    }
+    return bHas;
+
+} // hasFixedSize
+
+//------------------------------------------------------------------------------
+QSize CGraphObj::getFixedSize() const
+//------------------------------------------------------------------------------
+{
+    QSize siz;
+
+    if( m_sizFixed.isValid() )
+    {
+        siz = m_sizFixed;
+    }
+    else if( m_sizMinimum.isValid() && m_sizMaximum.isValid() )
+    {
+        if( (m_sizMinimum.width() == m_sizMaximum.width()) && (m_sizMinimum.height() == m_sizMaximum.height()) )
+        {
+            siz = m_sizMinimum;
+        }
+    }
+    return siz;
+
+} // getFixedSize
+
+/*==============================================================================
+public: // overridables
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+int CGraphObj::addAlignment( const SGraphObjAlignment& i_alignment )
+//------------------------------------------------------------------------------
+{
+    int idx = m_arAlignments.size();
+    m_arAlignments.append(i_alignment);
+    return idx;
+}
+
+//------------------------------------------------------------------------------
+int CGraphObj::getAlignmentCount() const
+//------------------------------------------------------------------------------
+{
+    return m_arAlignments.size();
+}
+
+//------------------------------------------------------------------------------
+SGraphObjAlignment CGraphObj::getAlignment( int i_idx ) const
+//------------------------------------------------------------------------------
+{
+    if( i_idx < 0 || i_idx >= m_arAlignments.size() )
+    {
+        throw ZS::System::CException( __FILE__, __LINE__, EResultArgOutOfRange, "Idx:" + QString::number(i_idx) );
+    }
+    return m_arAlignments[i_idx];
+
+} // getAlignment
+
+//------------------------------------------------------------------------------
+void CGraphObj::setAlignment( int i_idx, const SGraphObjAlignment& i_alignment )
+//------------------------------------------------------------------------------
+{
+    if( i_idx < 0 || i_idx >= m_arAlignments.size() )
+    {
+        throw ZS::System::CException( __FILE__, __LINE__, EResultArgOutOfRange, "Idx:" + QString::number(i_idx) );
+    }
+    m_arAlignments[i_idx] = i_alignment;
+
+} // setAlignment
+
+//------------------------------------------------------------------------------
+void CGraphObj::removeAlignment( int i_idx )
+//------------------------------------------------------------------------------
+{
+    if( i_idx < 0 || i_idx >= m_arAlignments.size() )
+    {
+        throw ZS::System::CException( __FILE__, __LINE__, EResultArgOutOfRange, "Idx:" + QString::number(i_idx) );
+    }
+    m_arAlignments.removeAt(i_idx);
+
+} // removeAlignment
+
+//------------------------------------------------------------------------------
+void CGraphObj::clearAlignments()
+//------------------------------------------------------------------------------
+{
+    m_arAlignments.clear();
+}
+
+/*==============================================================================
+public: // overridables
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CGraphObj::acceptCurrentAsOriginalCoors()
+//------------------------------------------------------------------------------
+{
+    const QGraphicsItem* pGraphicsItem = dynamic_cast<const QGraphicsItem*>(this);
+
+    if( pGraphicsItem != nullptr )
+    {
+        m_ptPosOrig = pGraphicsItem->pos();
+    }
+
+    m_sizOrig = m_rctCurr.size();
+    m_fRotAngleOrig_deg = m_fRotAngleCurr_deg;
+    m_ptRotOriginOrig = m_ptRotOriginCurr;
+    //m_fScaleFacXOrig = m_fScaleFacXCurr;
+    //m_fScaleFacYOrig = m_fScaleFacYCurr;
+
+    m_bHasValidOrigCoors = true;
+
+} // acceptCurrentAsOriginalCoors
+
+/*==============================================================================
+public: // overridables
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+QPointF CGraphObj::getPos( ECoordinatesVersion i_version ) const
+//------------------------------------------------------------------------------
+{
+    QPointF ptPos;
+
+    if( i_version == ECoordinatesVersionOriginal )
+    {
+        ptPos = m_ptPosOrig;
+    }
+    else
+    {
+        const QGraphicsItem* pGraphicsItem = dynamic_cast<const QGraphicsItem*>(this);
+
+        if( pGraphicsItem != nullptr )
+        {
+            ptPos = pGraphicsItem->pos();
+        }
+    }
+    return ptPos;
+
+} // getPos
+
+//------------------------------------------------------------------------------
+double CGraphObj::getWidth( ECoordinatesVersion i_version ) const
+//------------------------------------------------------------------------------
+{
+    double fWidth = 0.0;
+
+    if( i_version == ECoordinatesVersionOriginal )
+    {
+        fWidth = m_sizOrig.width();
+    }
+    else
+    {
+        fWidth = m_rctCurr.width();
+    }
+    return fWidth;
+
+} // getWidth
+
+//------------------------------------------------------------------------------
+double CGraphObj::getHeight( ECoordinatesVersion i_version ) const
+//------------------------------------------------------------------------------
+{
+    double fHeight = 0.0;
+
+    if( i_version == ECoordinatesVersionOriginal )
+    {
+        fHeight = m_sizOrig.height();
+    }
+    else
+    {
+        fHeight = m_rctCurr.height();
+    }
+    return fHeight;
+
+} // getHeight
+
+//------------------------------------------------------------------------------
+QSizeF CGraphObj::getSize( ECoordinatesVersion i_version ) const
+//------------------------------------------------------------------------------
+{
+    QSizeF siz;
+
+    if( i_version == ECoordinatesVersionOriginal )
+    {
+        siz = m_sizOrig;
+    }
+    else
+    {
+        siz = m_rctCurr.size();
+    }
+    return siz;
+
+} // getSize
+
+/*==============================================================================
+public: // overridables
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CGraphObj::setRotationAngleInDegree( double i_fRotAngle_deg )
+//------------------------------------------------------------------------------
+{
+    m_fRotAngleCurr_deg = i_fRotAngle_deg;
+
+    updateTransform();
+
+} // setRotationAngleInDegree
+
+//------------------------------------------------------------------------------
+double CGraphObj::getRotationAngleInDegree( ECoordinatesVersion i_version )
+//------------------------------------------------------------------------------
+{
+    double fRotAngle_deg = 0.0;
+
+    if( i_version == ECoordinatesVersionOriginal )
+    {
+        fRotAngle_deg = m_fRotAngleOrig_deg;
+    }
+    else
+    {
+        fRotAngle_deg = m_fRotAngleCurr_deg;
+    }
+    return fRotAngle_deg;
+
+} // getRotationAngleInDegree
+
+/*==============================================================================
+public: // overridables
+==============================================================================*/
+
+////------------------------------------------------------------------------------
+//void CGraphObj::setScaleFacX( double i_fScaleFacX )
+////------------------------------------------------------------------------------
+//{
+//    m_fScaleFacXCurr = i_fScaleFacX;
+//
+//    updateTransform();
+//
+//} // setScaleFacX
+//
+////------------------------------------------------------------------------------
+//void CGraphObj::setScaleFacY( double i_fScaleFacY )
+////------------------------------------------------------------------------------
+//{
+//    m_fScaleFacYCurr = i_fScaleFacY;
+//
+//    updateTransform();
+//
+//} // setScaleFacY
+//
+////------------------------------------------------------------------------------
+//void CGraphObj::setScaleFactors( double i_fScaleFacX, double i_fScaleFacY )
+////------------------------------------------------------------------------------
+//{
+//    m_fScaleFacXCurr = i_fScaleFacX;
+//    m_fScaleFacYCurr = i_fScaleFacY;
+//
+//    updateTransform();
+//
+//} // setScaleFactors
+//
+////------------------------------------------------------------------------------
+//double CGraphObj::getScaleFacX( ECoordinatesVersion i_version )
+////------------------------------------------------------------------------------
+//{
+//    double fScaleFacX = 0.0;
+//
+//    if( i_version == ECoordinatesVersionOriginal )
+//    {
+//        fScaleFacX = m_fScaleFacXOrig;
+//    }
+//    else
+//    {
+//        fScaleFacX = m_fScaleFacXCurr;
+//    }
+//    return fScaleFacX;
+//
+//} // getScaleFacX
+//
+////------------------------------------------------------------------------------
+//double CGraphObj::getScaleFacY( ECoordinatesVersion i_version )
+////------------------------------------------------------------------------------
+//{
+//    double fScaleFacY = 0.0;
+//
+//    if( i_version == ECoordinatesVersionOriginal )
+//    {
+//        fScaleFacY = m_fScaleFacYOrig;
+//    }
+//    else
+//    {
+//        fScaleFacY = m_fScaleFacYCurr;
+//    }
+//    return fScaleFacY;
+//
+//} // getScaleFacY
+
+/*==============================================================================
+public: // overridables
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CGraphObj::setEditMode( EEditMode i_editMode )
+//------------------------------------------------------------------------------
+{
+    m_editMode = i_editMode;
+}
+
+//------------------------------------------------------------------------------
+void CGraphObj::setEditResizeMode( EEditResizeMode i_editResizeMode )
+//------------------------------------------------------------------------------
+{
+    m_editResizeMode = i_editResizeMode;
+}
+
+/*==============================================================================
+public: // overridables
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+bool CGraphObj::isHit( const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo ) const
+//------------------------------------------------------------------------------
+{
+    bool bIsHit = false;
+
+    const QGraphicsItem* pGraphicsItem = dynamic_cast<const QGraphicsItem*>(this);
+
+    if( pGraphicsItem != nullptr )
+    {
+        if( pGraphicsItem->isSelected() )
+        {
+            bIsHit = isPolygonSelectionPointHit(i_pt,o_pHitInfo);
+
+            if( !bIsHit )
+            {
+                bIsHit = isBoundingRectSelectionPointHit(
+                    /* pt               */ i_pt,
+                    /* iSelPtsCount     */ -1,
+                    /* pSelPts          */ nullptr,
+                    /* pGraphObjHitInfo */ o_pHitInfo );
+
+            } // if( !bIsHit )
+
+        } // if( isSelected() )
+
+        if( !bIsHit )
+        {
+            if( pGraphicsItem->isSelected() || m_drawSettings.getFillStyle() == EFillStyleSolidPattern )
+            {
+                bIsHit = pGraphicsItem->contains(i_pt);
+
+                if( o_pHitInfo != nullptr )
+                {
+                    o_pHitInfo->m_editMode = EEditModeMove;
+                    o_pHitInfo->m_editResizeMode = EEditResizeModeUndefined;
+                    o_pHitInfo->m_selPtBoundingRect = ESelectionPointUndefined;
+                    o_pHitInfo->m_idxPolygonShapePoint = -1;
+                    o_pHitInfo->m_idxLineSegment = -1;
+                    o_pHitInfo->m_ptSelected = i_pt;
+                }
+            }
+        }
+
+        if( bIsHit && o_pHitInfo != nullptr )
+        {
+            o_pHitInfo->setCursor( Math::deg2Rad(m_fRotAngleCurr_deg) );
+        }
+
+    } // if( pGraphicsItem != nullptr )
+
+    return bIsHit;
+
+} // isHit
+
+/*==============================================================================
+public: // overridables
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+double CGraphObj::bringToFront()
+//------------------------------------------------------------------------------
+{
+    QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
+
+    double fZValue = m_fZValue;
+
+    if( pGraphicsItem != nullptr )
+    {
+        QRectF rctBounding = pGraphicsItem->boundingRect();
+
+        rctBounding = pGraphicsItem->mapRectToScene(rctBounding);
+
+        QList<QGraphicsItem*> arpGraphicsItemsIntersected = m_pDrawingScene->items(rctBounding);
+
+        m_pDrawingScene->bringToFront( pGraphicsItem, arpGraphicsItemsIntersected );
+
+        fZValue = pGraphicsItem->zValue();
+
+    } // if( pGraphicsItem != nullptr )
+
+    return fZValue;
+
+} // bringToFront
+
+//------------------------------------------------------------------------------
+void CGraphObj::setStackingOrderValue( double i_fZValue )
+//------------------------------------------------------------------------------
+{
+    QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
+
+    if( pGraphicsItem != nullptr )
+    {
+        m_fZValue = i_fZValue;
+
+        pGraphicsItem->setZValue(m_fZValue);
+    }
+
+} // setStackingOrderValue
+
+/*==============================================================================
+public: // overridables
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+bool CGraphObj::isBoundingRectSelectionPointHit(
+    const QPointF&         i_pt,
+    int                    i_iSelPtsCount,
+    const ESelectionPoint* i_pSelPts,
+    SGraphObjHitInfo*      o_pHitInfo ) const
+//------------------------------------------------------------------------------
+{
+    bool bIsHit = false;
+
+    const QGraphicsItem* pGraphicsItem = dynamic_cast<const QGraphicsItem*>(this);
+
+    if( pGraphicsItem != nullptr )
+    {
+        static const ESelectionPoint s_arSelPts[] = {
+            ESelectionPointBottomRight,
+            ESelectionPointTopRight,
+            ESelectionPointBottomLeft,
+            ESelectionPointTopLeft,
+            ESelectionPointBottomCenter,
+            ESelectionPointRightCenter,
+            ESelectionPointTopCenter,
+            ESelectionPointLeftCenter,
+            ESelectionPointRotateTop,
+            ESelectionPointRotateBottom,
+            ESelectionPointCenter
+        };
+
+        const ESelectionPoint* pSelPts = i_pSelPts;
+        int                    iSelPtsCount = i_iSelPtsCount;
+
+        if( pSelPts == nullptr )
+        {
+            iSelPtsCount = _ZSArrLen(s_arSelPts);
+            pSelPts = s_arSelPts;
+        }
+
+        CGraphObjSelectionPoint* pGraphObjSelPt;
+        int                      idxSelPt;
+        ESelectionPoint          selPt;
+        QPointF                  ptTmp;
+
+        for( idxSelPt = 0; idxSelPt < iSelPtsCount; idxSelPt++ )
+        {
+            selPt = pSelPts[idxSelPt];
+
+            pGraphObjSelPt = m_arpSelPtsBoundingRect[selPt];
+
+            if( pGraphObjSelPt != nullptr )
+            {
+                ptTmp = pGraphicsItem->mapToItem(pGraphObjSelPt,i_pt);
+
+                if( pGraphObjSelPt->contains(ptTmp) )
+                {
+                    bIsHit = true;
+
+                    if( o_pHitInfo != nullptr )
+                    {
+                        ptTmp = pGraphObjSelPt->pos();
+                        ptTmp = pGraphObjSelPt->mapToItem(pGraphicsItem,ptTmp);
+
+                        o_pHitInfo->m_editMode = selectionPoint2EditMode(selPt);
+                        o_pHitInfo->m_editResizeMode = selectionPoint2EditResizeMode(selPt);
+                        o_pHitInfo->m_selPtBoundingRect = selPt;
+                        o_pHitInfo->m_idxPolygonShapePoint = -1;
+                        o_pHitInfo->m_idxLineSegment = -1;
+                        o_pHitInfo->m_ptSelected = ptTmp;
+                    }
+                    break;
+                }
+            }
+        }
+
+    } // if( pGraphicsItem != nullptr )
+
+    return bIsHit;
+
+} // isBoundingRectSelectionPointHit
+
+//------------------------------------------------------------------------------
+bool CGraphObj::isPolygonSelectionPointHit( const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo ) const
+//------------------------------------------------------------------------------
+{
+    bool bIsHit = false;
+
+    const QGraphicsItem* pGraphicsItem = dynamic_cast<const QGraphicsItem*>(this);
+
+    if( pGraphicsItem != nullptr )
+    {
+        CGraphObjSelectionPoint* pGraphObjSelPt;
+        int                      idxSelPt;
+        QPointF                  ptTmp;
+
+        for( idxSelPt = 0; idxSelPt < m_arpSelPtsPolygon.size(); idxSelPt++ )
+        {
+            pGraphObjSelPt = m_arpSelPtsPolygon[idxSelPt];
+
+            if( pGraphObjSelPt != nullptr )
+            {
+                ptTmp = pGraphicsItem->mapToItem(pGraphObjSelPt,i_pt);
+
+                if( pGraphObjSelPt->contains(ptTmp) )
+                {
+                    bIsHit = true;
+
+                    if( o_pHitInfo != nullptr )
+                    {
+                        ptTmp = pGraphObjSelPt->pos();
+                        ptTmp = pGraphObjSelPt->mapToItem(pGraphicsItem,ptTmp);
+
+                        o_pHitInfo->m_editMode = EEditModeMoveShapePoint;
+                        o_pHitInfo->m_editResizeMode = EEditResizeModeUndefined;
+                        o_pHitInfo->m_selPtBoundingRect = ESelectionPointUndefined;
+                        o_pHitInfo->m_idxPolygonShapePoint = idxSelPt;
+                        o_pHitInfo->m_idxLineSegment = -1;
+                        o_pHitInfo->m_ptSelected = ptTmp;
+                    }
+                    break;
+                }
+            }
+        }
+
+    } // if( pGraphicsItem != nullptr )
+
+    return bIsHit;
+
+} // isPolygonSelectionPointHit
+
+/*==============================================================================
+public: // overridables
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+QPointF CGraphObj::getSelectionPoint( ESelectionPoint i_selPt ) const
+//------------------------------------------------------------------------------
+{
+    QRectF rct( QPointF(0.0,0.0), getSize() );
+
+    QPointF ptSel = ZS::Draw::getSelectionPoint(rct,i_selPt);
+
+    return ptSel;
+
+} // getSelectionPoint
+
+/*==============================================================================
+public: // overridables
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CGraphObj::hideSelectionPoints( ESelectionPoints i_selPts )
+//------------------------------------------------------------------------------
+{
+    QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
+
+    if( pGraphicsItem != nullptr )
+    {
+        CGraphObjSelectionPoint* pGraphObjSelPt;
+        ESelectionPoint          selPt;
+        int                      idxSelPt;
+        bool                     bHideSelPt;
+
+        for( idxSelPt = 0; idxSelPt < ESelectionPointCount; idxSelPt++ )
+        {
+            selPt = static_cast<ESelectionPoint>(idxSelPt);
+
+            bHideSelPt = false;
+
+            if( selPt >= ESelectionPointCornerMin && selPt <= ESelectionPointCornerMax )
+            {
+                if( i_selPts & ESelectionPointsBoundingRectCorner )
+                {
+                    bHideSelPt = true;
+                }
+            }
+            else if( selPt >= ESelectionPointLineCenterMin && selPt <= ESelectionPointLineCenterMax )
+            {
+                if( i_selPts & ESelectionPointsBoundingRectLineCenter )
+                {
+                    bHideSelPt = true;
+                }
+            }
+            else if( selPt == ESelectionPointCenter )
+            {
+                if( i_selPts & ESelectionPointsBoundingRectCenter )
+                {
+                    bHideSelPt = true;
+                }
+            }
+            else if( selPt >= ESelectionPointRotateMin && selPt <= ESelectionPointRotateMax )
+            {
+                if( i_selPts & ESelectionPointsBoundingRectRotate )
+                {
+                    bHideSelPt = true;
+                }
+            }
+
+            if( bHideSelPt )
+            {
+                // Deleting child objects leads to itemChange and an updateToolTip call
+                // accessing the array of selection points.
+                pGraphObjSelPt = m_arpSelPtsBoundingRect[idxSelPt];
+                m_arpSelPtsBoundingRect[idxSelPt] = nullptr;
+
+                //m_pDrawingScene->removeItem(pGraphObjSelPt); // the dtor of the selection point removes itself from the drawing scene
+
+                delete pGraphObjSelPt;
+                pGraphObjSelPt = nullptr;
+            }
+        }
+
+        if( i_selPts & ESelectionPointsPolygonShapePoints )
+        {
+            if( m_arpSelPtsPolygon.size() > 0 )
+            {
+                for( idxSelPt = m_arpSelPtsPolygon.size()-1; idxSelPt >= 0; idxSelPt-- )
+                {
+                    // Deleting child objects leads to itemChange and an updateToolTip call
+                    // accessing the array of selection points.
+                    pGraphObjSelPt = m_arpSelPtsPolygon[idxSelPt];
+                    m_arpSelPtsPolygon[idxSelPt] = nullptr;
+
+                    //m_pDrawingScene->removeItem(pGraphObjSelPt); // the dtor of the selection point (dtor of CGraphObj) removes itself from the drawing scene
+
+                    delete pGraphObjSelPt;
+                    pGraphObjSelPt = nullptr;
+                }
+                m_arpSelPtsPolygon.clear();
+            }
+        }
+
+    } // if( pGraphicsItem != nullptr )
+
+} // hideSelectionPoints
+
+//------------------------------------------------------------------------------
+void CGraphObj::bringSelectionPointsToFront( ESelectionPoints i_selPts )
+//------------------------------------------------------------------------------
+{
+    QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
+
+    if( pGraphicsItem != nullptr )
+    {
+        QList<QGraphicsItem*>    arpGraphicsItemsIntersected;
+        CGraphObjSelectionPoint* pGraphObjSelPt;
+        QRectF                   rct;
+        ESelectionPoint          selPt;
+        int                      idxSelPt;
+        bool                     bBringToFront;
+
+        for( idxSelPt = 0; idxSelPt < ESelectionPointCount; idxSelPt++ )
+        {
+            selPt = static_cast<ESelectionPoint>(idxSelPt);
+
+            bBringToFront = false;
+
+            if( selPt >= ESelectionPointCornerMin && selPt <= ESelectionPointCornerMax )
+            {
+                if( i_selPts & ESelectionPointsBoundingRectCorner )
+                {
+                    bBringToFront = true;
+                }
+            }
+            else if( selPt >= ESelectionPointLineCenterMin && selPt <= ESelectionPointLineCenterMax )
+            {
+                if( i_selPts & ESelectionPointsBoundingRectLineCenter )
+                {
+                    bBringToFront = true;
+                }
+            }
+            else if( selPt == ESelectionPointCenter )
+            {
+                if( i_selPts & ESelectionPointsBoundingRectCenter )
+                {
+                    bBringToFront = true;
+                }
+            }
+            else if( selPt >= ESelectionPointRotateMin && selPt <= ESelectionPointRotateMax )
+            {
+                if( i_selPts & ESelectionPointsBoundingRectRotate )
+                {
+                    bBringToFront = true;
+                }
+            }
+
+            if( bBringToFront )
+            {
+                pGraphObjSelPt = m_arpSelPtsBoundingRect[idxSelPt];
+
+                if( pGraphObjSelPt != nullptr )
+                {
+                    rct = pGraphObjSelPt->rect();
+                    rct = pGraphObjSelPt->mapRectToScene(rct);
+                    arpGraphicsItemsIntersected = m_pDrawingScene->items(rct);
+                    m_pDrawingScene->bringToFront( pGraphObjSelPt, arpGraphicsItemsIntersected );
+                }
+            }
+        }
+
+        if( i_selPts & ESelectionPointsPolygonShapePoints )
+        {
+            for( idxSelPt = 0; idxSelPt < m_arpSelPtsPolygon.size(); idxSelPt++ )
+            {
+                pGraphObjSelPt = m_arpSelPtsPolygon[idxSelPt];
+
+                if( pGraphObjSelPt != nullptr )
+                {
+                    rct = pGraphObjSelPt->rect();
+                    rct = pGraphObjSelPt->mapRectToScene(rct);
+                    arpGraphicsItemsIntersected = m_pDrawingScene->items(rct);
+                    m_pDrawingScene->bringToFront( pGraphObjSelPt, arpGraphicsItemsIntersected );
+                }
+            }
+        }
+
+    } // if( pGraphicsItem != nullptr )
+
+} // bringSelectionPointsToFront
+
+/*==============================================================================
+protected: // overridables
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CGraphObj::showSelectionPointsOfBoundingRect( const QRectF& i_rct, unsigned char i_selPts )
+//------------------------------------------------------------------------------
+{
+    QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
+
+    if( pGraphicsItem != nullptr )
+    {
+        CGraphObjSelectionPoint* pGraphObjSelPt;
+        QPointF                  ptSel;
+        ESelectionPoint          selPt;
+        int                      idxSelPt;
+        bool                     bShowSelPt;
+
+        for( idxSelPt = 0; idxSelPt < ESelectionPointCount; idxSelPt++ )
+        {
+            selPt = static_cast<ESelectionPoint>(idxSelPt);
+
+            bShowSelPt = false;
+
+            if( selPt >= ESelectionPointCornerMin && selPt <= ESelectionPointCornerMax )
+            {
+                if( i_selPts & ESelectionPointsBoundingRectCorner )
+                {
+                    bShowSelPt = true;
+                }
+            }
+            else if( selPt >= ESelectionPointLineCenterMin && selPt <= ESelectionPointLineCenterMax )
+            {
+                if( i_selPts & ESelectionPointsBoundingRectLineCenter )
+                {
+                    bShowSelPt = true;
+                }
+            }
+            else if( selPt == ESelectionPointCenter )
+            {
+                if( i_selPts & ESelectionPointsBoundingRectCenter )
+                {
+                    bShowSelPt = true;
+                }
+            }
+            else if( selPt >= ESelectionPointRotateMin && selPt <= ESelectionPointRotateMax )
+            {
+                if( i_selPts & ESelectionPointsBoundingRectRotate )
+                {
+                    bShowSelPt = true;
+                }
+            }
+
+            if( bShowSelPt )
+            {
+                pGraphObjSelPt = m_arpSelPtsBoundingRect[idxSelPt];
+
+                if( pGraphObjSelPt == nullptr )
+                {
+                    m_arpSelPtsBoundingRect[idxSelPt] = pGraphObjSelPt = new CGraphObjSelectionPoint(
+                        /* pDrawingScene     */ m_pDrawingScene,
+                        /* pGraphObjSelected */ this,
+                        /* selectionPoint    */ selPt );
+
+                    m_pDrawingScene->addItem(pGraphObjSelPt);
+
+                    //pGraphObjSelPt->setParentItem(this); see comment in header file of class CGraphObjSelectionPoint
+                    pGraphObjSelPt->installSceneEventFilter(pGraphicsItem); // event filters can only be installed on items in a scene
+                }
+
+                if( pGraphObjSelPt != nullptr )
+                {
+                    if( selPt == ESelectionPointRotateTop /*&& m_fScaleFacYCurr != 0.0*/ )
+                    {
+                        ptSel = ZS::Draw::getSelectionPoint(i_rct,ESelectionPointTopCenter);
+                        ptSel.setY( ptSel.y() - getSelectionPointRotateDistance()/*/m_fScaleFacYCurr*/ );
+                        ptSel = pGraphicsItem->mapToScene(ptSel);
+                    }
+                    else if( selPt == ESelectionPointRotateBottom /*&& m_fScaleFacYCurr != 0.0*/ )
+                    {
+                        ptSel = ZS::Draw::getSelectionPoint(i_rct,ESelectionPointBottomCenter);
+                        ptSel.setY( ptSel.y() + getSelectionPointRotateDistance()/*/m_fScaleFacYCurr*/ );
+                        ptSel = pGraphicsItem->mapToScene(ptSel);
+                    }
+                    else
+                    {
+                        ptSel = ZS::Draw::getSelectionPoint(i_rct,selPt);
+                        ptSel = pGraphicsItem->mapToScene(ptSel);
+                    }
+
+                    pGraphObjSelPt->setPos(ptSel);
+                    pGraphObjSelPt->setZValue( pGraphicsItem->zValue()+0.05 );
+                }
+
+            } // if( bShowSelPt )
+
+        } // for( idxSelPt = 0; idxSelPt < ESelectionPointCount; idxSelPt++ )
+
+    } // if( pGraphicsItem != nullptr )
+
+} // showSelectionPointsOfBoundingRect
+
+//------------------------------------------------------------------------------
+void CGraphObj::updateSelectionPointsOfBoundingRect( const QRectF& i_rct, unsigned char i_selPts )
+//------------------------------------------------------------------------------
+{
+    QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
+
+    if( pGraphicsItem != nullptr )
+    {
+        CGraphObjSelectionPoint* pGraphObjSelPt;
+        QPointF                  ptSel;
+        ESelectionPoint          selPt;
+        int                      idxSelPt;
+        bool                     bShowSelPt;
+
+        for( idxSelPt = 0; idxSelPt < ESelectionPointCount; idxSelPt++ )
+        {
+            selPt = static_cast<ESelectionPoint>(idxSelPt);
+
+            bShowSelPt = false;
+
+            if( selPt >= ESelectionPointCornerMin && selPt <= ESelectionPointCornerMax )
+            {
+                if( i_selPts & ESelectionPointsBoundingRectCorner )
+                {
+                    bShowSelPt = true;
+                }
+            }
+            else if( selPt >= ESelectionPointLineCenterMin && selPt <= ESelectionPointLineCenterMax )
+            {
+                if( i_selPts & ESelectionPointsBoundingRectLineCenter )
+                {
+                    bShowSelPt = true;
+                }
+            }
+            else if( selPt == ESelectionPointCenter )
+            {
+                if( i_selPts & ESelectionPointsBoundingRectCenter )
+                {
+                    bShowSelPt = true;
+                }
+            }
+            else if( selPt >= ESelectionPointRotateMin && selPt <= ESelectionPointRotateMax )
+            {
+                if( i_selPts & ESelectionPointsBoundingRectRotate )
+                {
+                    bShowSelPt = true;
+                }
+            }
+
+            if( bShowSelPt )
+            {
+                pGraphObjSelPt = m_arpSelPtsBoundingRect[idxSelPt];
+
+                if( pGraphObjSelPt != nullptr )
+                {
+                    if( selPt == ESelectionPointRotateTop /*&& m_fScaleFacYCurr != 0.0*/ )
+                    {
+                        ptSel = ZS::Draw::getSelectionPoint(i_rct,ESelectionPointTopCenter);
+                        ptSel.setY( ptSel.y() - getSelectionPointRotateDistance()/*/m_fScaleFacYCurr*/ );
+                        ptSel = pGraphicsItem->mapToScene(ptSel);
+                    }
+                    else if( selPt == ESelectionPointRotateBottom /*&& m_fScaleFacYCurr != 0.0*/ )
+                    {
+                        ptSel = ZS::Draw::getSelectionPoint(i_rct,ESelectionPointBottomCenter);
+                        ptSel.setY( ptSel.y() + getSelectionPointRotateDistance()/*/m_fScaleFacYCurr*/ );
+                        ptSel = pGraphicsItem->mapToScene(ptSel);
+                    }
+                    else
+                    {
+                        ptSel = ZS::Draw::getSelectionPoint(i_rct,selPt);
+                        ptSel = pGraphicsItem->mapToScene(ptSel);
+                    }
+
+                    pGraphObjSelPt->setPos(ptSel);
+                    pGraphObjSelPt->setZValue( pGraphicsItem->zValue()+0.05 );
+                }
+
+            } // if( bShowSelPt )
+
+        } // for( idxSelPt = 0; idxSelPt < ESelectionPointCount; idxSelPt++ )
+
+    } // if( pGraphicsItem != nullptr )
+
+} // updateSelectionPointsOfBoundingRect
+
+//------------------------------------------------------------------------------
+void CGraphObj::showSelectionPointsOfPolygon( const QPolygonF& i_plg )
+//------------------------------------------------------------------------------
+{
+    QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
+
+    if( pGraphicsItem != nullptr )
+    {
+        CGraphObjSelectionPoint* pGraphObjSelPt;
+        QPointF                  ptSel;
+        int                      idxSelPt;
+
+        if( m_arpSelPtsPolygon.size() != i_plg.size() )
+        {
+            if( m_arpSelPtsPolygon.size() > 0 )
+            {
+                for( idxSelPt = m_arpSelPtsPolygon.size()-1; idxSelPt >= 0; idxSelPt-- )
+                {
+                    // Deleting child objects leads to itemChange and an updateToolTip call
+                    // accessing the array of selection points.
+                    pGraphObjSelPt = m_arpSelPtsPolygon[idxSelPt];
+                    m_arpSelPtsPolygon[idxSelPt] = nullptr;
+
+                    //m_pDrawingScene->removeItem(pGraphObjSelPt); // the dtor of the selection point (dtor of CGraphObj) removes itself from the drawing scene
+
+                    delete pGraphObjSelPt;
+                    pGraphObjSelPt = nullptr;
+                }
+                m_arpSelPtsPolygon.clear();
+            }
+            for( idxSelPt = 0; idxSelPt < i_plg.size(); idxSelPt++ )
+            {
+                m_arpSelPtsPolygon.append(nullptr);
+            }
+        }
+
+        for( idxSelPt = 0; idxSelPt < i_plg.size(); idxSelPt++ )
+        {
+            pGraphObjSelPt = m_arpSelPtsPolygon[idxSelPt];
+
+            if( pGraphObjSelPt == nullptr )
+            {
+                m_arpSelPtsPolygon[idxSelPt] = pGraphObjSelPt = new CGraphObjSelectionPoint(
+                    /* pDrawingScene     */ m_pDrawingScene,
+                    /* pGraphObjSelected */ this,
+                    /* idxPt             */ idxSelPt );
+
+                pGraphObjSelPt = m_arpSelPtsPolygon[idxSelPt];
+
+                m_pDrawingScene->addItem(pGraphObjSelPt);
+
+                //pGraphObjSelPt->setParentItem(this); see comment in header file of class CGraphObjSelectionPoint
+                pGraphObjSelPt->installSceneEventFilter(pGraphicsItem); // event filters can only be installed on items in a scene
+            }
+
+            if( pGraphObjSelPt != nullptr )
+            {
+                ptSel = i_plg[idxSelPt];
+                ptSel = pGraphicsItem->mapToScene(ptSel);
+                pGraphObjSelPt->setPos(ptSel);
+                pGraphObjSelPt->setZValue( pGraphicsItem->zValue()+0.05 );
+            }
+        }
+
+    } // if( pGraphicsItem != nullptr )
+
+} // showSelectionPointsOfPolygon
+
+//------------------------------------------------------------------------------
+void CGraphObj::updateSelectionPointsOfPolygon( const QPolygonF& i_plg )
+//------------------------------------------------------------------------------
+{
+    QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
+
+    if( pGraphicsItem != nullptr )
+    {
+        if( i_plg.size() == m_arpSelPtsPolygon.size() )
+        {
+            CGraphObjSelectionPoint* pGraphObjSelPt;
+            QPointF                  ptSel;
+            int                      idxSelPt;
+
+            for( idxSelPt = 0; idxSelPt < i_plg.size(); idxSelPt++ )
+            {
+                pGraphObjSelPt = m_arpSelPtsPolygon[idxSelPt];
+
+                if( pGraphObjSelPt != nullptr )
+                {
+                    ptSel = i_plg[idxSelPt];
+                    ptSel = pGraphicsItem->mapToScene(ptSel);
+                    pGraphObjSelPt->setPos(ptSel);
+                    pGraphObjSelPt->setZValue( pGraphicsItem->zValue()+0.05 );
+                }
+            }
+        }
+
+    } // if( pGraphicsItem != nullptr )
+
+} // updateSelectionPointsOfPolygon
+
+/*==============================================================================
+public: // overridables
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CGraphObj::showObjName( ESelectionPoint i_selPtPos )
+//------------------------------------------------------------------------------
+{
+    if( !m_arpLabels.contains(c_strKeyLabelObjName) )
+    {
+        addLabel(c_strKeyLabelObjName,m_strObjName,i_selPtPos);
+    }
+    showLabel(c_strKeyLabelObjName);
+
+} // showObjName
+
+//------------------------------------------------------------------------------
+void CGraphObj::hideObjName()
+//------------------------------------------------------------------------------
+{
+    hideLabel(c_strKeyLabelObjName);
+}
+
+//------------------------------------------------------------------------------
+bool CGraphObj::isObjNameVisible() const
+//------------------------------------------------------------------------------
+{
+    return isLabelVisible(c_strKeyLabelObjName);
+}
+
+//------------------------------------------------------------------------------
+void CGraphObj::showObjId( ESelectionPoint i_selPtPos )
+//------------------------------------------------------------------------------
+{
+    if( !m_arpLabels.contains(c_strKeyLabelObjId) )
+    {
+        addLabel(c_strKeyLabelObjId,m_strObjId,i_selPtPos);
+    }
+    showLabel(c_strKeyLabelObjId);
+
+} // showObjId
+
+//------------------------------------------------------------------------------
+void CGraphObj::hideObjId()
+//------------------------------------------------------------------------------
+{
+    hideLabel(c_strKeyLabelObjId);
+}
+
+//------------------------------------------------------------------------------
+bool CGraphObj::isObjIdVisible() const
+//------------------------------------------------------------------------------
+{
+    return isLabelVisible(c_strKeyLabelObjId);
+}
+
+/*==============================================================================
+public: // overridables
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CGraphObj::addLabel(
+    const QString&  i_strKey,
+    const QString&  i_strText,
+    ESelectionPoint i_selPtPos )
+//------------------------------------------------------------------------------
+{
+    SGraphObjLabel* pGraphObjLabel = nullptr;
+
+    if( m_arpLabels.contains(i_strKey) )
+    {
+        pGraphObjLabel = m_arpLabels[i_strKey];
+        pGraphObjLabel->m_strText = i_strText;
+    }
+    else
+    {
+        pGraphObjLabel = new SGraphObjLabel(i_strKey,i_strText,i_selPtPos);
+        m_arpLabels.insert(i_strKey,pGraphObjLabel);
+    }
+
+    //pGraphObjLabel->m_sizDist = QSizeF();
+    //pGraphObjLabel->m_bDistValid = false;
+    //pGraphObjLabel->m_bVisible = false;
+    //pGraphObjLabel->m_pGraphObjLabel = nullptr;
+
+} // addLabel
+
+//------------------------------------------------------------------------------
+void CGraphObj::removeLabel( const QString& i_strKey )
+//------------------------------------------------------------------------------
+{
+    if( m_arpLabels.contains(i_strKey) )
+    {
+        hideLabel(i_strKey);
+
+        m_arpLabels.remove(i_strKey);
+    }
+
+} // removeLabel
+
+//------------------------------------------------------------------------------
+void CGraphObj::showLabel( const QString& i_strKey )
+//------------------------------------------------------------------------------
+{
+    QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
+
+    if( pGraphicsItem != nullptr )
+    {
+        if( m_arpLabels.contains(i_strKey) )
+        {
+            SGraphObjLabel* pGraphObjLabel = m_arpLabels[i_strKey];
+
+            QPointF ptSelPt = getSelectionPoint(pGraphObjLabel->m_selPt);
+            QPointF ptLabel;
+
+            ptSelPt = pGraphicsItem->mapToScene(ptSelPt);
+
+            if( pGraphObjLabel->m_pGraphObjLabel == nullptr )
+            {
+                pGraphObjLabel->m_pGraphObjLabel = new CGraphObjLabel(
+                    /* pDrawingScene     */ m_pDrawingScene,
+                    /* pGraphObjSelected */ this,
+                    /* strKey            */ pGraphObjLabel->m_strKey,
+                    /* strText           */ pGraphObjLabel->m_strText,
+                    /* selPt             */ pGraphObjLabel->m_selPt );
+                m_pDrawingScene->addItem(pGraphObjLabel->m_pGraphObjLabel);
+                //pGraphObjLabel->m_pGraphObjLabel->setParentItem(this); see comment in header file of class CGraphObjLabel
+            }
+
+            if( !pGraphObjLabel->m_bDistValid )
+            {
+                QPointF ptLabelTmp = ptSelPt;
+
+                if( pGraphObjLabel->m_selPt != ESelectionPointBottomRight
+                 && pGraphObjLabel->m_selPt != ESelectionPointBottomLeft
+                 && pGraphObjLabel->m_selPt != ESelectionPointBottomCenter )
+                {
+                    ptLabelTmp.setY( ptLabelTmp.y() - pGraphObjLabel->m_pGraphObjLabel->getHeight() );
+                }
+
+                bool bUniquePos = false;
+
+                while( !bUniquePos )
+                {
+                    bUniquePos = true;
+
+                    QHashIterator<QString,SGraphObjLabel*> itLabels(m_arpLabels);
+                    SGraphObjLabel*                        pGraphObjLabelTmp;
+
+                    while( itLabels.hasNext() )
+                    {
+                        itLabels.next();
+                        pGraphObjLabelTmp = itLabels.value();
+
+                        if( pGraphObjLabelTmp->m_strKey != i_strKey )
+                        {
+                            if( pGraphObjLabelTmp->m_pGraphObjLabel != nullptr && pGraphObjLabelTmp->m_pGraphObjLabel->scenePos() == ptLabelTmp )
+                            {
+                                bUniquePos = false;
+                                ptLabelTmp.setX( pGraphObjLabelTmp->m_pGraphObjLabel->scenePos().x() + pGraphObjLabelTmp->m_pGraphObjLabel->getWidth() + 4 );
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                pGraphObjLabel->m_sizDist.setWidth( ptLabelTmp.x() - ptSelPt.x() );
+                pGraphObjLabel->m_sizDist.setHeight( ptLabelTmp.y() - ptSelPt.y() );
+
+                pGraphObjLabel->m_bDistValid = true;
+
+            } // if( !pGraphObjLabel->m_bDistValid )
+
+            ptLabel.setX( ptSelPt.x() + pGraphObjLabel->m_sizDist.width() );
+            ptLabel.setY( ptSelPt.y() + pGraphObjLabel->m_sizDist.height() );
+
+            pGraphObjLabel->m_bVisible = true;
+
+            pGraphObjLabel->m_pGraphObjLabel->setPos(ptLabel);
+            pGraphObjLabel->m_pGraphObjLabel->setZValue(pGraphicsItem->zValue()+0.02);
+
+        } // if( m_arpLabels.contains(i_strKey) )
+
+    } // if( pGraphicsItem != nullptr )
+
+} // showLabel
+
+//------------------------------------------------------------------------------
+void CGraphObj::hideLabel( const QString& i_strKey )
+//------------------------------------------------------------------------------
+{
+    if( m_arpLabels.contains(i_strKey) )
+    {
+        SGraphObjLabel* pGraphObjLabel = m_arpLabels[i_strKey];
+
+        //m_pDrawingScene->removeItem(pGraphObjLabel); // the dtor of the label removes itself from the drawing scene
+
+        delete pGraphObjLabel->m_pGraphObjLabel;
+        pGraphObjLabel->m_pGraphObjLabel = nullptr;
+
+        pGraphObjLabel->m_bVisible = false;
+
+    } // if( m_arpLabels.contains(i_strKey) )
+
+} // hideLabel
+
+//------------------------------------------------------------------------------
+void CGraphObj::setLabelText( const QString& i_strKey, const QString& i_strText )
+//------------------------------------------------------------------------------
+{
+    if( m_arpLabels.contains(i_strKey) )
+    {
+        SGraphObjLabel* pGraphObjLabel = m_arpLabels[i_strKey];
+
+        pGraphObjLabel->m_strText = i_strText;
+
+        if( pGraphObjLabel->m_pGraphObjLabel != nullptr )
+        {
+            pGraphObjLabel->m_pGraphObjLabel->setText(pGraphObjLabel->m_strText);
+        }
+
+    } // if( m_arpLabels.contains(i_strKey) )
+
+} // setLabelText
+
+//------------------------------------------------------------------------------
+bool CGraphObj::isLabelVisible( const QString& i_strKey ) const
+//------------------------------------------------------------------------------
+{
+    bool bIsVisible = false;
+
+    if( m_arpLabels.contains(i_strKey) )
+    {
+        SGraphObjLabel* pGraphObjLabel = m_arpLabels[i_strKey];
+
+        bIsVisible = pGraphObjLabel->m_bVisible;
+
+    } // if( m_arpLabels.contains(i_strKey) )
+
+    return bIsVisible;
+
+} // isLabelVisible
+
+//------------------------------------------------------------------------------
+void CGraphObj::updateLabelDistance( const QString& i_strKey )
+//------------------------------------------------------------------------------
+{
+    QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
+
+    if( pGraphicsItem != nullptr )
+    {
+        if( m_arpLabels.contains(i_strKey) )
+        {
+            SGraphObjLabel* pGraphObjLabel = m_arpLabels[i_strKey];
+
+            if( pGraphObjLabel->m_pGraphObjLabel != nullptr )
+            {
+                QPointF ptSelPt = getSelectionPoint(pGraphObjLabel->m_selPt);
+                QPointF ptLabel = pGraphObjLabel->m_pGraphObjLabel->scenePos();
+
+                ptSelPt = pGraphicsItem->mapToScene(ptSelPt);
+
+                pGraphObjLabel->m_sizDist.setWidth( ptLabel.x() - ptSelPt.x() );
+                pGraphObjLabel->m_sizDist.setHeight( ptLabel.y() - ptSelPt.y() );
+
+                pGraphObjLabel->m_bDistValid = true;
+
+            } // if( pGraphObjLabel->m_pGraphObjLabel != nullptr )
+
+        } // if( m_arpLabels.contains(i_strKey) )
+
+    } // if( pGraphicsItem != nullptr )
+
+} // updateLabelDistance
+
+//------------------------------------------------------------------------------
+void CGraphObj::updateLabelPositions()
+//------------------------------------------------------------------------------
+{
+    QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
+
+    if( pGraphicsItem != nullptr )
+    {
+        QHashIterator<QString,SGraphObjLabel*> itLabels(m_arpLabels);
+
+        SGraphObjLabel* pGraphObjLabel;
+        QPointF         ptSelPt;
+        QPointF         ptLabel;
+
+        while( itLabels.hasNext() )
+        {
+            itLabels.next();
+
+            pGraphObjLabel = itLabels.value();
+
+            if( pGraphObjLabel->m_pGraphObjLabel != nullptr )
+            {
+                ptSelPt = getSelectionPoint(pGraphObjLabel->m_selPt);
+                ptSelPt = pGraphicsItem->mapToScene(ptSelPt);
+
+                ptLabel.setX( ptSelPt.x() + pGraphObjLabel->m_sizDist.width() );
+                ptLabel.setY( ptSelPt.y() + pGraphObjLabel->m_sizDist.height() );
+
+                pGraphObjLabel->m_pGraphObjLabel->setPos(ptLabel);
+            }
+        }
+
+    } // if( pGraphicsItem != nullptr )
+
+} // updateLabelPositions
+
+/*==============================================================================
+public: // overridables
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CGraphObj::showLabels()
+//------------------------------------------------------------------------------
+{
+    QHashIterator<QString,SGraphObjLabel*> itLabels(m_arpLabels);
+    SGraphObjLabel*                        pGraphObjLabel;
+
+    while( itLabels.hasNext() )
+    {
+        itLabels.next();
+
+        pGraphObjLabel = itLabels.value();
+
+        if( pGraphObjLabel->m_pGraphObjLabel == nullptr )
+        {
+            showLabel(pGraphObjLabel->m_strKey);
+        }
+    }
+
+} // showLabels
+
+//------------------------------------------------------------------------------
+void CGraphObj::hideLabels()
+//------------------------------------------------------------------------------
+{
+    QHashIterator<QString,SGraphObjLabel*> itLabels(m_arpLabels);
+    SGraphObjLabel*                        pGraphObjLabel;
+
+    while( itLabels.hasNext() )
+    {
+        itLabels.next();
+
+        pGraphObjLabel = itLabels.value();
+
+        if( pGraphObjLabel->m_pGraphObjLabel == nullptr )
+        {
+            hideLabel(pGraphObjLabel->m_strKey);
+        }
+    }
+
+} // hideLabels
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+QStringList CGraphObj::getLabelsKeys() const
+//------------------------------------------------------------------------------
+{
+    return m_arpLabels.keys();
+}
+
+//------------------------------------------------------------------------------
+SGraphObjLabel* CGraphObj::getLabel( const QString& i_strKey ) const
+//------------------------------------------------------------------------------
+{
+    SGraphObjLabel* pGraphObjLabel = nullptr;
+
+    if( m_arpLabels.contains(i_strKey) )
+    {
+        pGraphObjLabel = m_arpLabels[i_strKey];
+    }
+    return pGraphObjLabel;
+
+} // getLabel
+
+//------------------------------------------------------------------------------
+void CGraphObj::addLabels( QHash<QString,SGraphObjLabel*> i_arpLabels )
+//------------------------------------------------------------------------------
+{
+    QHashIterator<QString,SGraphObjLabel*> itLabels(i_arpLabels);
+
+    SGraphObjLabel* pGraphObjLabel;
+    QString         strKey;
+    QString         strText;
+    ESelectionPoint selPt;
+    QSizeF          sizDist;
+    bool            bDistValid;
+    bool            bVisible;
+
+    while( itLabels.hasNext() )
+    {
+        itLabels.next();
+
+        pGraphObjLabel = itLabels.value();
+
+        strKey     = pGraphObjLabel->m_strKey;
+        strText    = pGraphObjLabel->m_strText;
+        selPt      = pGraphObjLabel->m_selPt;
+        sizDist    = pGraphObjLabel->m_sizDist;
+        bDistValid = pGraphObjLabel->m_bDistValid;
+        bVisible   = pGraphObjLabel->m_bVisible;
+
+        if( !m_arpLabels.contains(strKey) )
+        {
+            addLabel(strKey,strText,selPt);
+        }
+
+        pGraphObjLabel = m_arpLabels[strKey];
+
+        pGraphObjLabel->m_sizDist    = sizDist;
+        pGraphObjLabel->m_bDistValid = bDistValid;
+        pGraphObjLabel->m_bVisible   = bVisible;
+
+        if( bVisible )
+        {
+            showLabel(strKey);
+        }
+    }
+
+} // addLabels
+
+/*==============================================================================
+public: // instance methods (simulation methods)
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CGraphObj::addMousePressEventFunction( TFctMouseEvent i_pFct, void* i_pvThis, void* i_pvData )
+//------------------------------------------------------------------------------
+{
+    SGraphObjMouseEventFct fctEntry;
+    int                    idxFct;
+
+    for( idxFct = 0; idxFct < m_arMousePressEventFunctions.size(); idxFct++ )
+    {
+        fctEntry = m_arMousePressEventFunctions[idxFct];
+
+        if( fctEntry.m_pFct == i_pFct && fctEntry.m_pvThis == i_pvThis && fctEntry.m_pvData == i_pvData )
+        {
+            throw ZS::System::CException(__FILE__,__LINE__,EResultObjAlreadyInList,"Event function already added");
+        }
+    }
+
+    m_arMousePressEventFunctions.append( SGraphObjMouseEventFct(i_pFct,i_pvThis,i_pvData) );
+
+} // addMousePressEventFunction
+
+//------------------------------------------------------------------------------
+void CGraphObj::removeMousePressEventFunction( TFctMouseEvent i_pFct, void* i_pvThis, void* i_pvData )
+//------------------------------------------------------------------------------
+{
+    SGraphObjMouseEventFct fctEntry;
+    int                    idxFct;
+
+    for( idxFct = 0; idxFct < m_arMousePressEventFunctions.size(); idxFct++ )
+    {
+        fctEntry = m_arMousePressEventFunctions[idxFct];
+
+        if( fctEntry.m_pFct == i_pFct && fctEntry.m_pvThis == i_pvThis && fctEntry.m_pvData == i_pvData )
+        {
+            break;
+        }
+    }
+    if( idxFct >= m_arMousePressEventFunctions.size() )
+    {
+        throw ZS::System::CException(__FILE__,__LINE__,EResultObjAlreadyInList,"Event function not added");
+    }
+
+    m_arMousePressEventFunctions.removeAt(idxFct);
+
+} // removeMousePressEventFunction
+
+//------------------------------------------------------------------------------
+void CGraphObj::addMouseReleaseEventFunction( TFctMouseEvent i_pFct, void* i_pvThis, void* i_pvData )
+//------------------------------------------------------------------------------
+{
+    SGraphObjMouseEventFct fctEntry;
+    int                    idxFct;
+
+    for( idxFct = 0; idxFct < m_arMouseReleaseEventFunctions.size(); idxFct++ )
+    {
+        fctEntry = m_arMouseReleaseEventFunctions[idxFct];
+
+        if( fctEntry.m_pFct == i_pFct && fctEntry.m_pvThis == i_pvThis && fctEntry.m_pvData == i_pvData )
+        {
+            throw ZS::System::CException(__FILE__,__LINE__,EResultObjAlreadyInList,"Event function already added");
+        }
+    }
+
+    m_arMouseReleaseEventFunctions.append( SGraphObjMouseEventFct(i_pFct,i_pvThis,i_pvData) );
+
+} // addMouseReleaseEventFunction
+
+//------------------------------------------------------------------------------
+void CGraphObj::removeMouseReleaseEventFunction( TFctMouseEvent i_pFct, void* i_pvThis, void* i_pvData )
+//------------------------------------------------------------------------------
+{
+    SGraphObjMouseEventFct fctEntry;
+    int                    idxFct;
+
+    for( idxFct = 0; idxFct < m_arMouseReleaseEventFunctions.size(); idxFct++ )
+    {
+        fctEntry = m_arMouseReleaseEventFunctions[idxFct];
+
+        if( fctEntry.m_pFct == i_pFct && fctEntry.m_pvThis == i_pvThis && fctEntry.m_pvData == i_pvData )
+        {
+            break;
+        }
+    }
+    if( idxFct >= m_arMouseReleaseEventFunctions.size() )
+    {
+        throw ZS::System::CException(__FILE__,__LINE__,EResultObjAlreadyInList,"Event function not added");
+    }
+
+    m_arMouseReleaseEventFunctions.removeAt(idxFct);
+
+} // removeMouseReleaseEventFunction
+
+//------------------------------------------------------------------------------
+void CGraphObj::addMouseDoubleClickEventFunction( TFctMouseEvent i_pFct, void* i_pvThis, void* i_pvData )
+//------------------------------------------------------------------------------
+{
+    SGraphObjMouseEventFct fctEntry;
+    int                    idxFct;
+
+    for( idxFct = 0; idxFct < m_arMouseDoubleClickEventFunctions.size(); idxFct++ )
+    {
+        fctEntry = m_arMouseDoubleClickEventFunctions[idxFct];
+
+        if( fctEntry.m_pFct == i_pFct && fctEntry.m_pvThis == i_pvThis && fctEntry.m_pvData == i_pvData )
+        {
+            throw ZS::System::CException(__FILE__,__LINE__,EResultObjAlreadyInList,"Event function already added");
+        }
+    }
+
+    m_arMouseDoubleClickEventFunctions.append( SGraphObjMouseEventFct(i_pFct,i_pvThis,i_pvData) );
+
+} // addMouseDoubleClickEventFunction
+
+//------------------------------------------------------------------------------
+void CGraphObj::removeMouseDoubleClickEventFunction( TFctMouseEvent i_pFct, void* i_pvThis, void* i_pvData )
+//------------------------------------------------------------------------------
+{
+    SGraphObjMouseEventFct fctEntry;
+    int                    idxFct;
+
+    for( idxFct = 0; idxFct < m_arMouseDoubleClickEventFunctions.size(); idxFct++ )
+    {
+        fctEntry = m_arMouseDoubleClickEventFunctions[idxFct];
+
+        if( fctEntry.m_pFct == i_pFct && fctEntry.m_pvThis == i_pvThis && fctEntry.m_pvData == i_pvData )
+        {
+            break;
+        }
+    }
+    if( idxFct >= m_arMouseDoubleClickEventFunctions.size() )
+    {
+        throw ZS::System::CException(__FILE__,__LINE__,EResultObjAlreadyInList,"Event function not added");
+    }
+
+    m_arMouseDoubleClickEventFunctions.removeAt(idxFct);
+
+} // removeMouseDoubleClickEventFunction
+
+//------------------------------------------------------------------------------
+void CGraphObj::addMouseMoveEventFunction( TFctMouseEvent i_pFct, void* i_pvThis, void* i_pvData )
+//------------------------------------------------------------------------------
+{
+    SGraphObjMouseEventFct fctEntry;
+    int                    idxFct;
+
+    for( idxFct = 0; idxFct < m_arMouseMoveEventFunctions.size(); idxFct++ )
+    {
+        fctEntry = m_arMouseMoveEventFunctions[idxFct];
+
+        if( fctEntry.m_pFct == i_pFct && fctEntry.m_pvThis == i_pvThis && fctEntry.m_pvData == i_pvData )
+        {
+            throw ZS::System::CException(__FILE__,__LINE__,EResultObjAlreadyInList,"Event function already added");
+        }
+    }
+
+    m_arMouseMoveEventFunctions.append( SGraphObjMouseEventFct(i_pFct,i_pvThis,i_pvData) );
+
+} // addMouseMoveEventFunction
+
+//------------------------------------------------------------------------------
+void CGraphObj::removeMouseMoveEventFunction( TFctMouseEvent i_pFct, void* i_pvThis, void* i_pvData )
+//------------------------------------------------------------------------------
+{
+    SGraphObjMouseEventFct fctEntry;
+    int                    idxFct;
+
+    for( idxFct = 0; idxFct < m_arMouseMoveEventFunctions.size(); idxFct++ )
+    {
+        fctEntry = m_arMouseMoveEventFunctions[idxFct];
+
+        if( fctEntry.m_pFct == i_pFct && fctEntry.m_pvThis == i_pvThis && fctEntry.m_pvData == i_pvData )
+        {
+            break;
+        }
+    }
+    if( idxFct >= m_arMouseMoveEventFunctions.size() )
+    {
+        throw ZS::System::CException(__FILE__,__LINE__,EResultObjAlreadyInList,"Event function not added");
+    }
+
+    m_arMouseMoveEventFunctions.removeAt(idxFct);
+
+} // removeMouseMoveEventFunction
+
+//------------------------------------------------------------------------------
+void CGraphObj::addKeyPressEventFunction( TFctKeyEvent i_pFct, void* i_pvThis, void* i_pvData )
+//------------------------------------------------------------------------------
+{
+    SGraphObjKeyEventFct fctEntry;
+    int                  idxFct;
+
+    for( idxFct = 0; idxFct < m_arKeyPressEventFunctions.size(); idxFct++ )
+    {
+        fctEntry = m_arKeyPressEventFunctions[idxFct];
+
+        if( fctEntry.m_pFct == i_pFct && fctEntry.m_pvThis == i_pvThis && fctEntry.m_pvData == i_pvData )
+        {
+            throw ZS::System::CException(__FILE__,__LINE__,EResultObjAlreadyInList,"Event function already added");
+        }
+    }
+
+    m_arKeyPressEventFunctions.append( SGraphObjKeyEventFct(i_pFct,i_pvThis,i_pvData) );
+
+} // addKeyPressEventFunction
+
+//------------------------------------------------------------------------------
+void CGraphObj::removeKeyPressEventFunction( TFctKeyEvent i_pFct, void* i_pvThis, void* i_pvData )
+//------------------------------------------------------------------------------
+{
+    SGraphObjKeyEventFct fctEntry;
+    int                  idxFct;
+
+    for( idxFct = 0; idxFct < m_arKeyPressEventFunctions.size(); idxFct++ )
+    {
+        fctEntry = m_arKeyPressEventFunctions[idxFct];
+
+        if( fctEntry.m_pFct == i_pFct && fctEntry.m_pvThis == i_pvThis && fctEntry.m_pvData == i_pvData )
+        {
+            break;
+        }
+    }
+    if( idxFct >= m_arKeyPressEventFunctions.size() )
+    {
+        throw ZS::System::CException(__FILE__,__LINE__,EResultObjAlreadyInList,"Event function not added");
+    }
+
+    m_arKeyPressEventFunctions.removeAt(idxFct);
+
+} // removeKeyPressEventFunction
+
+//------------------------------------------------------------------------------
+void CGraphObj::addKeyReleaseEventFunction( TFctKeyEvent i_pFct, void* i_pvThis, void* i_pvData )
+//------------------------------------------------------------------------------
+{
+    SGraphObjKeyEventFct fctEntry;
+    int                  idxFct;
+
+    for( idxFct = 0; idxFct < m_arKeyReleaseEventFunctions.size(); idxFct++ )
+    {
+        fctEntry = m_arKeyReleaseEventFunctions[idxFct];
+
+        if( fctEntry.m_pFct == i_pFct && fctEntry.m_pvThis == i_pvThis && fctEntry.m_pvData == i_pvData )
+        {
+            throw ZS::System::CException(__FILE__,__LINE__,EResultObjAlreadyInList,"Event function already added");
+        }
+    }
+
+    m_arKeyReleaseEventFunctions.append( SGraphObjKeyEventFct(i_pFct,i_pvThis,i_pvData) );
+
+} // addKeyReleaseEventFunction
+
+//------------------------------------------------------------------------------
+void CGraphObj::removeKeyReleaseEventFunction( TFctKeyEvent i_pFct, void* i_pvThis, void* i_pvData )
+//------------------------------------------------------------------------------
+{
+    SGraphObjKeyEventFct fctEntry;
+    int                  idxFct;
+
+    for( idxFct = 0; idxFct < m_arKeyReleaseEventFunctions.size(); idxFct++ )
+    {
+        fctEntry = m_arKeyReleaseEventFunctions[idxFct];
+
+        if( fctEntry.m_pFct == i_pFct && fctEntry.m_pvThis == i_pvThis && fctEntry.m_pvData == i_pvData )
+        {
+            break;
+        }
+    }
+    if( idxFct >= m_arKeyReleaseEventFunctions.size() )
+    {
+        throw ZS::System::CException(__FILE__,__LINE__,EResultObjAlreadyInList,"Event function not added");
+    }
+
+    m_arKeyReleaseEventFunctions.removeAt(idxFct);
+
+} // removeKeyReleaseEventFunction
+
+/*==============================================================================
+protected: // overridables
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CGraphObj::updateTransform()
+//------------------------------------------------------------------------------
+{
+    QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
+
+    if( pGraphicsItem != nullptr )
+    {
+        QTransform trs;
+
+        trs.translate( m_ptRotOriginCurr.x(), m_ptRotOriginCurr.y() );
+        trs.rotate(-m_fRotAngleCurr_deg);
+        trs.translate( -m_ptRotOriginCurr.x(), -m_ptRotOriginCurr.y() );
+        //trsNew.scale( m_fScaleFacXCurr, m_fScaleFacYCurr );
+
+        pGraphicsItem->resetTransform();
+
+        pGraphicsItem->setTransform(trs);
+
+    } // if( pGraphicsItem != nullptr )
+
+} // updateTransform
+
+//------------------------------------------------------------------------------
+void CGraphObj::updateToolTip()
+//------------------------------------------------------------------------------
+{
+    QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
+
+    if( pGraphicsItem != nullptr )
+    {
+        QString strNodeSeparator = m_pDrawingScene->getGraphObjNameNodeSeparator();
+        QPointF ptPos;
+
+        m_strToolTip  = "ObjName:\t" + getObjName(true,strNodeSeparator);
+        m_strToolTip += "\nObjId:\t\t" + getObjId();
+
+        // "scenePos" returns mapToScene(0,0). This is NOT equivalent to the
+        // position of the item's top left corner before applying the rotation
+        // transformation matrix but includes the transformation. What we want
+        // (or what I want) is the position of the item before rotating the item
+        // around the rotation origin point. In contrary it looks like "pos"
+        // always returns the top left corner before rotating the object.
+
+        if( pGraphicsItem->parentItem() != nullptr )
+        {
+            ptPos = pGraphicsItem->pos();
+            m_strToolTip += "\nPos:\t\t" + point2Str(ptPos);
+        }
+        else
+        {
+            ptPos = pGraphicsItem->pos(); // don't use "scenePos" here (see comment above)
+            m_strToolTip += "\nPos:\t\t" + point2Str(ptPos);
+        }
+
+        m_strToolTip += "\nSize:\t\t" + size2Str(getSize());
+        m_strToolTip += "\nRotation:\t" + QString::number(m_fRotAngleCurr_deg,'f',1) + "°";
+        m_strToolTip += "\nZValue:\t\t" + QString::number(pGraphicsItem->zValue());
+
+        pGraphicsItem->setToolTip(m_strToolTip);
+
+    } // if( pGraphicsItem != nullptr )
+
+} // updateToolTip
+
+//------------------------------------------------------------------------------
+void CGraphObj::updateEditInfo()
+//------------------------------------------------------------------------------
+{
+    QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
+
+    if( pGraphicsItem != nullptr )
+    {
+        QString strAngleSymbol = QString(QChar(8738));
+
+        m_strEditInfo  = "C:" + point2Str( pGraphicsItem->mapToScene(m_rctCurr.center()) );
+        m_strEditInfo += ", W:" + QString::number(m_rctCurr.width(),'f',1);
+        m_strEditInfo += ", H:" + QString::number(m_rctCurr.height(),'f',1);
+        m_strEditInfo += ", " + strAngleSymbol + ":" + QString::number(m_fRotAngleCurr_deg,'f',1) + "°";
+
+    } // if( pGraphicsItem != nullptr )
+
+} // updateEditInfo

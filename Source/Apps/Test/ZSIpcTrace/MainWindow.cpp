@@ -205,7 +205,7 @@ CMainWindow::CMainWindow(
         throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
     }
 
-    // <MenuItem> Debug::TraceServerAdminObjPool
+    // <MenuItem> Debug::TraceServerAdminIdxTree
     //------------------------------------------
 
     m_pActDebugTrcServerAdminObjIdxTree = new QAction("Trace Server Admin Objects",this);
@@ -235,7 +235,7 @@ CMainWindow::CMainWindow(
         throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
     }
 
-    // <MenuItem> Debug::TraceClientAdminObjPool
+    // <MenuItem> Debug::TraceClientAdminIdxTree
     //------------------------------------------
 
     m_pActDebugTrcClientAdminObjIdxTree = new QAction("Trace Client Admin Objects",this);
@@ -616,7 +616,7 @@ void CMainWindow::onActDebugTrcServerAdminObjIdxTreeTriggered()
     if( pDlg == nullptr )
     {
         pDlg = CDlgIdxTreeTrcAdminObjs::CreateInstance(
-            /* pTrcAdmObjPool  */ CTrcServer::GetTraceAdminObjIdxTree(),
+            /* pTrcAdmIdxTree  */ CTrcServer::GetTraceAdminObjIdxTree(),
             /* strDlgTitle     */ strDlgTitle,
             /* pWdgtParent     */ nullptr,
             /* wFlags          */ Qt::WindowFlags(),
@@ -678,7 +678,7 @@ void CMainWindow::onActDebugTrcClientAdminObjIdxTreeTriggered()
     if( pDlg == nullptr )
     {
         pDlg = CDlgIdxTreeTrcAdminObjs::CreateInstance(
-            /* pTrcAdmObjPool  */ CApplication::GetInstance()->getTrcClient()->getTraceAdminObjIdxTree(),
+            /* pTrcAdmIdxTree  */ CApplication::GetInstance()->getTrcClient()->getTraceAdminObjIdxTree(),
             /* strDlgTitle     */ strDlgTitle,
             /* pWdgtParent     */ nullptr,
             /* wflags          */ Qt::WindowFlags(),

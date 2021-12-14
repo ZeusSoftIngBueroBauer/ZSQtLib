@@ -72,33 +72,31 @@ public: // overridables
 public: // instance methods
     CIdxTree* getIdxTree() { return m_pIdxTree; }
 public: // instance methods
-    void setBranch( CBranchIdxTreeEntry* i_pBranch );
-    CBranchIdxTreeEntry* branch() { return m_pBranch; }
+    void setBranch( CIdxTreeEntry* i_pBranch );
+    CIdxTreeEntry* branch() { return m_pBranch; }
 public: // instance methods
     // Please note that the model branch entry as the root of the branch content model is a clone
     // of the model branch of idx tree model. The branch node of the index tree model may not contain
     // leaves whereas the root branch (the clone) of the content model may.
-    CModelBranchTreeEntry* modelBranch() const { return m_pModelBranch; }
+    CModelIdxTreeEntry* modelBranch() const { return m_pModelBranch; }
 public: // instance methods
     EIdxTreeSortOrder sortOrder() const { return m_sortOrder; }
     void setSortOrder( EIdxTreeSortOrder i_sortOrder );
 public: // instance methods
-    CModelBranchTreeEntry* findModelBranch( CBranchIdxTreeEntry* i_pBranch );
-    CModelLeaveTreeEntry* findModelLeave( CLeaveIdxTreeEntry* i_pLeave );
-    CModelAbstractTreeEntry* findModelEntry( CAbstractIdxTreeEntry* i_pTreeEntry );
+    CModelIdxTreeEntry* findModelEntry( CIdxTreeEntry* i_pTreeEntry );
 public: // instance methods
     //QModelIndex index( const QString& i_strKeyInParentBranch ) const;
 protected slots:
     void onIdxTreeAboutToBeDestroyed( QObject* i_pIdxTree );
 protected slots:
-    void onIdxTreeEntryAdded( ZS::System::CIdxTree* i_pIdxTree, ZS::System::CAbstractIdxTreeEntry* i_pTreeEntry );
-    void onIdxTreeEntryChanged( ZS::System::CIdxTree* i_pIdxTree, ZS::System::CAbstractIdxTreeEntry* i_pTreeEntry );
-    void onIdxTreeEntryAboutToBeRemoved( ZS::System::CIdxTree* i_pIdxTree, ZS::System::CAbstractIdxTreeEntry* i_pTreeEntry );
-    void onIdxTreeEntryMoved( ZS::System::CIdxTree* i_pIdxTree, ZS::System::CAbstractIdxTreeEntry* i_pTreeEntry, const QString& i_strKeyInTreePrev, ZS::System::CBranchIdxTreeEntry* i_pTargetBranch );
-    void onIdxTreeEntryKeyInTreeChanged( ZS::System::CIdxTree* i_pIdxTree, ZS::System::CAbstractIdxTreeEntry* i_pTreeEntry, const QString& i_strKeyInTreePrev );
+    void onIdxTreeEntryAdded( ZS::System::CIdxTree* i_pIdxTree, ZS::System::CIdxTreeEntry* i_pTreeEntry );
+    void onIdxTreeEntryChanged( ZS::System::CIdxTree* i_pIdxTree, ZS::System::CIdxTreeEntry* i_pTreeEntry );
+    void onIdxTreeEntryAboutToBeRemoved( ZS::System::CIdxTree* i_pIdxTree, ZS::System::CIdxTreeEntry* i_pTreeEntry );
+    void onIdxTreeEntryMoved( ZS::System::CIdxTree* i_pIdxTree, ZS::System::CIdxTreeEntry* i_pTreeEntry, const QString& i_strKeyInTreePrev, ZS::System::CIdxTreeEntry* i_pTargetBranch );
+    void onIdxTreeEntryKeyInTreeChanged( ZS::System::CIdxTree* i_pIdxTree, ZS::System::CIdxTreeEntry* i_pTreeEntry, const QString& i_strKeyInTreePrev );
 protected: // instance methods
     void clear( bool i_bDestroyTreeEntries = true );
-    void remove( CModelAbstractTreeEntry* i_pModelTreeEntry );
+    void remove( CModelIdxTreeEntry* i_pModelTreeEntry );
 public: // overridables of base class QAbstractItemModel
     virtual int rowCount( const QModelIndex& i_modelIdxParent = QModelIndex() ) const override;
     virtual int columnCount( const QModelIndex& i_modelIdxParent = QModelIndex() ) const override;
@@ -111,14 +109,14 @@ public: // overridables of base class QAbstractItemModel
 public: // instance methods for editing data
     SErrResultInfo canSetData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole) const;
 protected: // instance members
-    CIdxTree*              m_pIdxTree;
-    EIdxTreeSortOrder      m_sortOrder;
-    CBranchIdxTreeEntry*   m_pBranch;
+    CIdxTree*           m_pIdxTree;
+    EIdxTreeSortOrder   m_sortOrder;
+    CIdxTreeEntry*      m_pBranch;
     // Please note that the model branch entry as the root of the branch content model is a clone
     // of the model branch of idx tree model. The branch node of the index tree model may not contain
     // leaves whereas the root branch (the clone) of the content model may.
-    CModelBranchTreeEntry* m_pModelBranch;
-    int                    m_iTrcDetailLevel;
+    CModelIdxTreeEntry* m_pModelBranch;
+    int                 m_iTrcDetailLevel;
 
 }; // class CModelIdxTreeBranchContent
 

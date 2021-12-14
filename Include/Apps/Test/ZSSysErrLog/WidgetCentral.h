@@ -54,7 +54,7 @@ namespace Test
 {
 namespace GUI
 {
-class CWdgtTest;
+class CWdgtIdxTreeTestSteps;
 }
 }
 
@@ -82,7 +82,7 @@ protected: // instance members
     QSplitter*                    m_pSplitter;
     QVBoxLayout*                  m_pLytGrpTest;
     QGroupBox*                    m_pGrpTest;
-    ZS::Test::GUI::CWdgtTest*     m_pWdgtTest;
+    ZS::Test::GUI::CWdgtIdxTreeTestSteps*     m_pWdgtTest;
     QVBoxLayout*                  m_pLytGrpErrLog;
     QGroupBox*                    m_pGrpErrLog;
     ZS::System::GUI::CWdgtErrLog* m_pWdgtErrLog;

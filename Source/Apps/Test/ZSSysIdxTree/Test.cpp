@@ -38,8 +38,8 @@ may result in using the software modules.
 #include "App.h"
 #include "MainWindow.h"
 
-#include "ZSTest/ZSTestStepAdminObj.h"
-#include "ZSTest/ZSTestStepAdminObjPool.h"
+#include "ZSTest/ZSTestStepIdxTreeEntry.h"
+#include "ZSTest/ZSTestStepIdxTree.h"
 #include "ZSTest/ZSTestStep.h"
 #include "ZSTest/ZSTestStepGroup.h"
 #include "ZSSysGUI/ZSSysGUIAux.h"
@@ -70,7 +70,7 @@ namespace Test
 namespace IdxTree
 {
 //******************************************************************************
-class CTrcAdmObjRoot : public ZS::System::CRootIdxTreeEntry
+class CTrcAdmObjRoot : public ZS::System::#error CRootIdxTreeEntry
 //******************************************************************************
 {
 //=============================================================================
@@ -80,7 +80,7 @@ public: // ctors and dtor
 //-----------------------------------------------------------------------------
 CTrcAdmObjRoot() :
 //-----------------------------------------------------------------------------
-    CRootIdxTreeEntry(CTest::c_strTrcAdmObjIdxTreeName)
+    #error CRootIdxTreeEntry(CTest::c_strTrcAdmObjIdxTreeName)
 {
 } // ctor
 
@@ -94,7 +94,7 @@ virtual ~CTrcAdmObjRoot()
 
 
 //******************************************************************************
-class CTrcAdmObjBranch : public ZS::System::CBranchIdxTreeEntry
+class CTrcAdmObjBranch : public ZS::System::#error CBranchIdxTreeEntry
 //******************************************************************************
 {
 //=============================================================================
@@ -104,7 +104,7 @@ public: // ctors and dtor
 //-----------------------------------------------------------------------------
 CTrcAdmObjBranch( const QString& i_strName ) :
 //-----------------------------------------------------------------------------
-    CBranchIdxTreeEntry(i_strName)
+    #error CBranchIdxTreeEntry(i_strName)
 {
 } // ctor
 
@@ -118,7 +118,7 @@ virtual ~CTrcAdmObjBranch()
 
 
 //******************************************************************************
-class CTrcAdmObj : public ZS::System::CLeaveIdxTreeEntry
+class CTrcAdmObj : public ZS::System::#error CLeaveIdxTreeEntry
 //******************************************************************************
 {
 //=============================================================================
@@ -128,7 +128,7 @@ public: // ctors and dtor
 //-----------------------------------------------------------------------------
 CTrcAdmObj( const QString& i_strName ) :
 //-----------------------------------------------------------------------------
-    CLeaveIdxTreeEntry(i_strName)
+    #error CLeaveIdxTreeEntry(i_strName)
 {
 } // ctor
 
@@ -170,7 +170,7 @@ protected: // overridables of base class CIdxTree
 //=============================================================================
 
 //-----------------------------------------------------------------------------
-virtual ZS::System::CBranchIdxTreeEntry* createBranch( const QString& i_strName ) const override
+virtual ZS::System::#error CBranchIdxTreeEntry* createBranch( const QString& i_strName ) const override
 //-----------------------------------------------------------------------------
 {
     QString strAddTrcInfo;
@@ -190,7 +190,7 @@ virtual ZS::System::CBranchIdxTreeEntry* createBranch( const QString& i_strName 
         /* strMethod    */ "createBranch",
         /* strMthInArgs */ strAddTrcInfo );
 
-    CBranchIdxTreeEntry* pBranch = new CTrcAdmObjBranch(i_strName);
+    #error CBranchIdxTreeEntry* pBranch = new CTrcAdmObjBranch(i_strName);
 
     if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
     {
@@ -202,7 +202,7 @@ virtual ZS::System::CBranchIdxTreeEntry* createBranch( const QString& i_strName 
 } // createBranch
 
 //-----------------------------------------------------------------------------
-virtual ZS::System::CLeaveIdxTreeEntry* createLeave( const QString& i_strName ) const override
+virtual ZS::System::#error CLeaveIdxTreeEntry* createLeave( const QString& i_strName ) const override
 //-----------------------------------------------------------------------------
 {
     QString strAddTrcInfo;
@@ -222,7 +222,7 @@ virtual ZS::System::CLeaveIdxTreeEntry* createLeave( const QString& i_strName ) 
         /* strMethod    */ "createLeave",
         /* strMthInArgs */ strAddTrcInfo );
 
-    CLeaveIdxTreeEntry* pLeave = new ZS::Apps::Test::IdxTree::CTrcAdmObj(i_strName);
+    #error CLeaveIdxTreeEntry* pLeave = new ZS::Apps::Test::IdxTree::CTrcAdmObj(i_strName);
 
     if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
     {
@@ -258,7 +258,7 @@ STreeEntryDscr::STreeEntryDscr() :
 } // ctor
 
 //-----------------------------------------------------------------------------
-STreeEntryDscr::STreeEntryDscr( const CAbstractIdxTreeEntry* i_pTreeEntry ) :
+STreeEntryDscr::STreeEntryDscr( const #error CAbstractIdxTreeEntry* i_pTreeEntry ) :
 //-----------------------------------------------------------------------------
     m_entryType(EIdxTreeEntryType::Undefined),
     m_strName(),
@@ -2133,7 +2133,7 @@ CTest::CTest( const QString& i_strTestStepsFileName ) :
     // Recall test admin object settings
     //----------------------------------
 
-    m_pAdminObjPool->read_(i_strTestStepsFileName);
+    m_pAdminIdxTree->read_(i_strTestStepsFileName);
 
 } // default ctor
 
@@ -2141,7 +2141,7 @@ CTest::CTest( const QString& i_strTestStepsFileName ) :
 CTest::~CTest()
 //------------------------------------------------------------------------------
 {
-    m_pAdminObjPool->save_();
+    m_pAdminIdxTree->save_();
 
     try
     {
@@ -2214,7 +2214,7 @@ void CTest::doTestStepCreateTree( ZS::Test::CTestStep* i_pTestStep )
     // Actual Values
     //---------------
 
-    CBranchIdxTreeEntry* pBranch = m_pIdxTree->root();
+    #error CBranchIdxTreeEntry* pBranch = m_pIdxTree->root();
 
     // Please note that to finish a test step the list of actual values may not be empty.
     if( pBranch == nullptr )
@@ -2272,7 +2272,7 @@ void CTest::doTestStepAddEntry( ZS::Test::CTestStep* i_pTestStep )
         // Get current list of tree entries and map of free indices
         //---------------------------------------------------------
 
-        QVector<CAbstractIdxTreeEntry*> arpTreeEntriesDesired = m_pIdxTree->treeEntriesVec();
+        QVector<#error CAbstractIdxTreeEntry*> arpTreeEntriesDesired = m_pIdxTree->treeEntriesVec();
 
         QVector<STreeEntryDscr> arTreeEntryDscrsDesired = toTreeEntryDscrs(arpTreeEntriesDesired);
 
@@ -2303,7 +2303,7 @@ void CTest::doTestStepAddEntry( ZS::Test::CTestStep* i_pTestStep )
         // Add entries (if not yet added)
         //-------------------------------
 
-        CAbstractIdxTreeEntry* pTreeEntry;
+        #error CAbstractIdxTreeEntry* pTreeEntry;
 
         QString strPath;
 
@@ -2339,7 +2339,7 @@ void CTest::doTestStepAddEntry( ZS::Test::CTestStep* i_pTestStep )
         // Get new list of tree entries and map of free indices and compare with desired list and map
         //--------------------------------------------------------------------------------------------
 
-        QVector<CAbstractIdxTreeEntry*> arpTreeEntriesActual = m_pIdxTree->treeEntriesVec();
+        QVector<#error CAbstractIdxTreeEntry*> arpTreeEntriesActual = m_pIdxTree->treeEntriesVec();
 
         QVector<STreeEntryDscr> arTreeEntryDscrsActual = toTreeEntryDscrs(arpTreeEntriesActual);
 
@@ -2395,7 +2395,7 @@ void CTest::doTestStepRemoveEntry( ZS::Test::CTestStep* i_pTestStep )
         // Get current list of tree entries and map of free indices
         //---------------------------------------------------------
 
-        QVector<CAbstractIdxTreeEntry*> arpTreeEntriesDesired = m_pIdxTree->treeEntriesVec();
+        QVector<#error CAbstractIdxTreeEntry*> arpTreeEntriesDesired = m_pIdxTree->treeEntriesVec();
 
         QVector<STreeEntryDscr> arTreeEntryDscrsDesired = toTreeEntryDscrs(arpTreeEntriesDesired);
 
@@ -2404,7 +2404,7 @@ void CTest::doTestStepRemoveEntry( ZS::Test::CTestStep* i_pTestStep )
         // Expected (desired) behaviour
         //-----------------------------
 
-        CAbstractIdxTreeEntry* pTreeEntry = m_pIdxTree->findEntry(strKeyInTreeToBeRemoved);
+        #error CAbstractIdxTreeEntry* pTreeEntry = m_pIdxTree->findEntry(strKeyInTreeToBeRemoved);
 
         STreeEntryDscr treeEntryDscr(pTreeEntry);
 
@@ -2415,7 +2415,7 @@ void CTest::doTestStepRemoveEntry( ZS::Test::CTestStep* i_pTestStep )
 
         if( strKeyInTreeToBeRemoved.startsWith("B:") )
         {
-            CBranchIdxTreeEntry* pBranch = m_pIdxTree->findBranch(strKeyInTreeToBeRemoved);
+            #error CBranchIdxTreeEntry* pBranch = m_pIdxTree->findBranch(strKeyInTreeToBeRemoved);
 
             CTrcAdmObjBranch* pTrcAdminObjBranch = dynamic_cast<CTrcAdmObjBranch*>(pBranch);
 
@@ -2427,7 +2427,7 @@ void CTest::doTestStepRemoveEntry( ZS::Test::CTestStep* i_pTestStep )
 
         else if( strKeyInTreeToBeRemoved.startsWith("L:") )
         {
-            CLeaveIdxTreeEntry* pLeave = m_pIdxTree->findLeave(strKeyInTreeToBeRemoved);
+            #error CLeaveIdxTreeEntry* pLeave = m_pIdxTree->findLeave(strKeyInTreeToBeRemoved);
 
             CTrcAdmObj* pTrcAdminObj = dynamic_cast<CTrcAdmObj*>(pLeave);
 
@@ -2439,7 +2439,7 @@ void CTest::doTestStepRemoveEntry( ZS::Test::CTestStep* i_pTestStep )
         // Get new list of tree entries and map of free indices and compare with desired list and map
         //--------------------------------------------------------------------------------------------
 
-        QVector<CAbstractIdxTreeEntry*> arpTreeEntriesActual = m_pIdxTree->treeEntriesVec();
+        QVector<#error CAbstractIdxTreeEntry*> arpTreeEntriesActual = m_pIdxTree->treeEntriesVec();
 
         QVector<STreeEntryDscr> arTreeEntryDscrsActual = toTreeEntryDscrs(arpTreeEntriesActual);
 
@@ -2514,7 +2514,7 @@ void CTest::doTestStepMoveEntry( ZS::Test::CTestStep* i_pTestStep )
             // Get current list of tree entries and map of free indices
             //---------------------------------------------------------
 
-            QVector<CAbstractIdxTreeEntry*> arpTreeEntriesDesired = m_pIdxTree->treeEntriesVec();
+            QVector<#error CAbstractIdxTreeEntry*> arpTreeEntriesDesired = m_pIdxTree->treeEntriesVec();
 
             QVector<STreeEntryDscr> arTreeEntryDscrsDesired = toTreeEntryDscrs(arpTreeEntriesDesired);
 
@@ -2523,8 +2523,8 @@ void CTest::doTestStepMoveEntry( ZS::Test::CTestStep* i_pTestStep )
             // Expected (desired) behaviour
             //-----------------------------
 
-            CAbstractIdxTreeEntry* pTreeEntrySrc = m_pIdxTree->findEntry(strKeyInTreeSrc);
-            CAbstractIdxTreeEntry* pTreeEntryTrg = m_pIdxTree->findEntry(strKeyInTreeTrg);
+            #error CAbstractIdxTreeEntry* pTreeEntrySrc = m_pIdxTree->findEntry(strKeyInTreeSrc);
+            #error CAbstractIdxTreeEntry* pTreeEntryTrg = m_pIdxTree->findEntry(strKeyInTreeTrg);
 
             STreeEntryDscr treeEntryDscrSrc(pTreeEntrySrc);
             STreeEntryDscr treeEntryDscrTrg(pTreeEntryTrg);
@@ -2539,7 +2539,7 @@ void CTest::doTestStepMoveEntry( ZS::Test::CTestStep* i_pTestStep )
             // Get new list of tree entries and map of free indices and compare with desired list and map
             //--------------------------------------------------------------------------------------------
 
-            QVector<CAbstractIdxTreeEntry*> arpTreeEntriesActual = m_pIdxTree->treeEntriesVec();
+            QVector<#error CAbstractIdxTreeEntry*> arpTreeEntriesActual = m_pIdxTree->treeEntriesVec();
 
             QVector<STreeEntryDscr> arTreeEntryDscrsActual = toTreeEntryDscrs(arpTreeEntriesActual);
 
@@ -2621,7 +2621,7 @@ void CTest::doTestStepCopyEntry( ZS::Test::CTestStep* i_pTestStep )
             // Get current list of tree entries and map of free indices
             //---------------------------------------------------------
 
-            QVector<CAbstractIdxTreeEntry*> arpTreeEntriesDesired = m_pIdxTree->treeEntriesVec();
+            QVector<#error CAbstractIdxTreeEntry*> arpTreeEntriesDesired = m_pIdxTree->treeEntriesVec();
 
             QVector<STreeEntryDscr> arTreeEntryDscrsDesired = toTreeEntryDscrs(arpTreeEntriesDesired);
 
@@ -2649,7 +2649,7 @@ void CTest::doTestStepCopyEntry( ZS::Test::CTestStep* i_pTestStep )
             // Get new list of tree entries and map of free indices and compare with desired list and map
             //--------------------------------------------------------------------------------------------
 
-            QVector<CAbstractIdxTreeEntry*> arpTreeEntriesActual = m_pIdxTree->treeEntriesVec();
+            QVector<#error CAbstractIdxTreeEntry*> arpTreeEntriesActual = m_pIdxTree->treeEntriesVec();
 
             QVector<STreeEntryDscr> arTreeEntryDscrsActual = toTreeEntryDscrs(arpTreeEntriesActual);
 
@@ -2718,7 +2718,7 @@ void CTest::doTestStepRenameEntry( ZS::Test::CTestStep* i_pTestStep )
             // Get current list of tree entries and map of free indices
             //---------------------------------------------------------
 
-            QVector<CAbstractIdxTreeEntry*> arpTreeEntriesDesired = m_pIdxTree->treeEntriesVec();
+            QVector<#error CAbstractIdxTreeEntry*> arpTreeEntriesDesired = m_pIdxTree->treeEntriesVec();
 
             QVector<STreeEntryDscr> arTreeEntryDscrsDesired = toTreeEntryDscrs(arpTreeEntriesDesired);
 
@@ -2730,7 +2730,7 @@ void CTest::doTestStepRenameEntry( ZS::Test::CTestStep* i_pTestStep )
             QString strKeyInTreeSrc = strlstArgs[0].trimmed();
             QString strObjNameTrg   = strlstArgs[1].trimmed();
 
-            CAbstractIdxTreeEntry* pTreeEntry = m_pIdxTree->findEntry(strKeyInTreeSrc);
+            #error CAbstractIdxTreeEntry* pTreeEntry = m_pIdxTree->findEntry(strKeyInTreeSrc);
 
             // If the tree entry exists ...
             if( pTreeEntry != nullptr )
@@ -2748,7 +2748,7 @@ void CTest::doTestStepRenameEntry( ZS::Test::CTestStep* i_pTestStep )
             // Get new list of tree entries and map of free indices and compare with desired list and map
             //--------------------------------------------------------------------------------------------
 
-            QVector<CAbstractIdxTreeEntry*> arpTreeEntriesActual = m_pIdxTree->treeEntriesVec();
+            QVector<#error CAbstractIdxTreeEntry*> arpTreeEntriesActual = m_pIdxTree->treeEntriesVec();
 
             QVector<STreeEntryDscr> arTreeEntryDscrsActual = toTreeEntryDscrs(arpTreeEntriesActual);
 
@@ -2924,7 +2924,7 @@ void CTest::doTestStepChangeViews( ZS::Test::CTestStep* i_pTestStep )
     // actual and desired values are not the same and the test step failed.
     CIdxTree::iterator       itIdxTree;
     CModelIdxTree::iterator  itModelIdxTree;
-    CAbstractIdxTreeEntry*      pTreeEntry;
+    #error CAbstractIdxTreeEntry*      pTreeEntry;
     CModelAbstractTreeEntry* pModelTreeEntry;
     CModelBranchTreeEntry*   pModelBranchParent;
     CModelAbstractTreeEntry* pModelTreeEntryPrev;
@@ -3101,7 +3101,7 @@ void CTest::doTestStepChangeViews( ZS::Test::CTestStep* i_pTestStep )
                 }
                 else // if( pModelBranchSelected->keyInTree() == strKeyInTreeToBeSelected )
                 {
-                    CBranchIdxTreeEntry* pBranchSelected = dynamic_cast<CBranchIdxTreeEntry*>(pModelBranchSelected->treeEntry());
+                    #error CBranchIdxTreeEntry* pBranchSelected = dynamic_cast<#error CBranchIdxTreeEntry*>(pModelBranchSelected->treeEntry());
 
                     if( pBranchSelected->count() != pModelBranchSelected->count() )
                     {
@@ -3385,8 +3385,8 @@ void CTest::doTestStepKeyboardInputs( ZS::Test::CTestStep* i_pTestStep )
     // Actual Values
     //---------------
 
-    CAbstractIdxTreeEntry* pTreeEntrySrc = nullptr;
-    CAbstractIdxTreeEntry* pTreeEntryTrg = nullptr;
+    #error CAbstractIdxTreeEntry* pTreeEntrySrc = nullptr;
+    #error CAbstractIdxTreeEntry* pTreeEntryTrg = nullptr;
 
     ZS::Test::CTestStepGroup* pTSGrpParent = i_pTestStep->getParentGroup();
 
@@ -3592,8 +3592,8 @@ void CTest::doTestStepTreeViewContextMenus( ZS::Test::CTestStep* i_pTestStep )
     CTreeViewIdxTree*        pTreeViewIdxTree = pWdgtIdxTree->treeView();
     CModelIdxTree*           pModelIdxTree    = dynamic_cast<CModelIdxTree*>(pTreeViewIdxTree->model());
     CModelAbstractTreeEntry* pModelTreeEntry  = nullptr;
-    CBranchIdxTreeEntry*        pBranch          = nullptr;
-    CLeaveIdxTreeEntry*         pLeave           = nullptr;
+    #error CBranchIdxTreeEntry*        pBranch          = nullptr;
+    #error CLeaveIdxTreeEntry*         pLeave           = nullptr;
 
     if( strOperation == "TreeViewIdxTree.select" )
     {
@@ -4069,7 +4069,7 @@ void CTest::doTestStepGrpTrcAdmObjTreeStepTreeViewDragAndDrop( ZS::Test::CTestSt
             strDesiredValue = strKeyInTreeTrg;
             strlstDesiredValues << strDesiredValue;
 
-            CAbstractIdxTreeEntry* pTreeEntry = pIdxTree->findLeave(strKeyInTreeTrg);
+            #error CAbstractIdxTreeEntry* pTreeEntry = pIdxTree->findLeave(strKeyInTreeTrg);
 
             if( pTreeEntry != nullptr )
             {
@@ -4096,7 +4096,7 @@ void CTest::doTestStepGrpTrcAdmObjTreeStepTreeViewDragAndDrop( ZS::Test::CTestSt
 
             strKeyInTreeTrg = pIdxTree->buildKeyInTreeStr(entryTypeSrc, strKeyInTreeTrg, strObjName);
 
-            CAbstractIdxTreeEntry* pTreeEntry = pIdxTree->findLeave(strKeyInTreeTrg);
+            #error CAbstractIdxTreeEntry* pTreeEntry = pIdxTree->findLeave(strKeyInTreeTrg);
 
             if( pTreeEntry != nullptr )
             {
@@ -4180,14 +4180,14 @@ public: // auxiliary methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-STreeEntryDscr CTest::toTreeEntryDscr( const CAbstractIdxTreeEntry* i_pTreeEntry ) const
+STreeEntryDscr CTest::toTreeEntryDscr( const #error CAbstractIdxTreeEntry* i_pTreeEntry ) const
 //------------------------------------------------------------------------------
 {
     return STreeEntryDscr(i_pTreeEntry);
 }
 
 //------------------------------------------------------------------------------
-QVector<STreeEntryDscr> CTest::toTreeEntryDscrs( const QVector<CAbstractIdxTreeEntry*>& i_arpTreeEntries ) const
+QVector<STreeEntryDscr> CTest::toTreeEntryDscrs( const QVector<#error CAbstractIdxTreeEntry*>& i_arpTreeEntries ) const
 //------------------------------------------------------------------------------
 {
     QVector<STreeEntryDscr> arDscrs;

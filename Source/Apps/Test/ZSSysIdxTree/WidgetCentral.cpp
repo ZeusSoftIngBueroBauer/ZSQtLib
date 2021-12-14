@@ -89,8 +89,8 @@ CWidgetCentral::CWidgetCentral(
     m_pLyt = new QVBoxLayout();
     setLayout(m_pLyt);
 
-    m_pWdgtTest = new CWdgtTest( CApplication::GetInstance()->getTest() );
-    //m_pWdgtTest->treeView()->setColumnHidden(CTestStepAdminObjPoolModel::EColumnOperation, false);
+    m_pWdgtTest = new CWdgtIdxTreeTestSteps( CApplication::GetInstance()->getTest() );
+    //m_pWdgtTest->treeView()->setColumnHidden(CModeldxTreeTestSteps::EColumnOperation, false);
     m_pLyt->addWidget(m_pWdgtTest);
 
 } // ctor

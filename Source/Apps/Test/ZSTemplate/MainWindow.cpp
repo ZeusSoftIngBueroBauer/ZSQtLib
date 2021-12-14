@@ -47,7 +47,7 @@ may result in using the software modules.
 #include "App.h"
 #include "WidgetCentral.h"
 
-#include "ZSTest/ZSTestStepAdminObjPool.h"
+#include "ZSTest/ZSTestStepIdxTree.h"
 #include "ZSSysGUI/ZSSysErrLogDlg.h"
 #include "ZSSys/ZSSysErrLog.h"
 #include "ZSSys/ZSSysException.h"
@@ -466,11 +466,11 @@ void CMainWindow::onActFileNewTriggered()
 {
     if( CApplication::GetInstance()->getTest() != nullptr )
     {
-        CTestStepAdminObjPool* pObjPool = CApplication::GetInstance()->getTest()->getAdminObjIdxTree();
+        CTestStepIdxTree* pIdxTree = CApplication::GetInstance()->getTest()->getTestStepIdxTree();
 
-        if( pObjPool != nullptr )
+        if( pIdxTree != nullptr )
         {
-            pObjPool->clear();
+            pIdxTree->clear();
         }
     }
 
@@ -489,16 +489,11 @@ void CMainWindow::onActFileOpenTriggered()
             /* strFilter    */ "*.*" );
     }
 
-    CTestStepAdminObjPool* pObjPool = nullptr;
+    CTest* pTest = CApplication::GetInstance()->getTest();
 
-    if( CApplication::GetInstance()->getTest() != nullptr )
+    if( pTest != nullptr )
     {
-        pObjPool = CApplication::GetInstance()->getTest()->getAdminObjIdxTree();
-    }
-
-    if( pObjPool != nullptr )
-    {
-        QString strFile = pObjPool->getFileName();
+        QString strFile = pTest->getTestStepsAbsFilePath();
         QString strDir;
 
         if( !strFile.isEmpty() )
@@ -535,7 +530,7 @@ void CMainWindow::onActFileOpenTriggered()
 
                 if( !strFile.isEmpty() )
                 {
-                    SErrResultInfo errResultInfo = pObjPool->recall(strFile);
+                    SErrResultInfo errResultInfo = pTest->recall(strFile);
 
                     if( errResultInfo.isErrorResult() )
                     {
@@ -556,7 +551,7 @@ void CMainWindow::onActFileOpenTriggered()
                 } // if( strFile.isEmpty() )
             } // if( strlstFiles.size() > 0 )
         } // if( m_pDlgFile->exec() )
-    } // if( pObjPool != nullptr )
+    } // if( pTest != nullptr )
 
 } // onActFileOpenTriggered
 
@@ -573,16 +568,11 @@ void CMainWindow::onActFileSaveTriggered()
             /* strFilter    */ "*.*" );
     }
 
-    CTestStepAdminObjPool* pObjPool = nullptr;
+    CTest* pTest = CApplication::GetInstance()->getTest();
 
-    if( CApplication::GetInstance()->getTest() != nullptr )
+    if( pTest != nullptr )
     {
-        pObjPool = CApplication::GetInstance()->getTest()->getAdminObjIdxTree();
-    }
-
-    if( pObjPool != nullptr )
-    {
-        QString strFile = pObjPool->getFileName();
+        QString strFile = pTest->getTestStepsAbsFilePath();
         QString strDir;
 
         if( !strFile.isEmpty() )
@@ -620,7 +610,7 @@ void CMainWindow::onActFileSaveTriggered()
 
                 if( !strFile.isEmpty() )
                 {
-                    SErrResultInfo errResultInfo = pObjPool->save(strFile);
+                    SErrResultInfo errResultInfo = pTest->save(strFile);
 
                     if( errResultInfo.isErrorResult() )
                     {
@@ -641,7 +631,7 @@ void CMainWindow::onActFileSaveTriggered()
                 } // if( strFile.isEmpty() )
             } // if( strlstFiles.size() > 0 )
         } // if( m_pDlgFile->exec() )
-    } // if( pObjPool != nullptr )
+    } // if( pIdxTree != nullptr )
 
 } // onActFileSaveTriggered
 

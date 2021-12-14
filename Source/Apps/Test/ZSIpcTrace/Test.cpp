@@ -41,7 +41,7 @@ may result in using the software modules.
 #include "TestModule2.h"
 
 #include "ZSTest/ZSTestStep.h"
-#include "ZSTest/ZSTestStepAdminObjPool.h"
+#include "ZSTest/ZSTestStepIdxTree.h"
 #include "ZSTest/ZSTestStepGroup.h"
 #include "ZSIpcTraceGUI/ZSIpcTrcMthWdgt.h"
 #include "ZSSys/ZSSysApp.h"
@@ -168,7 +168,7 @@ CTest::CTest( const QString& i_strTestStepsFileName ) :
     // Recall test admin object settings
     //----------------------------------
 
-    m_pAdminObjPool->read_(i_strTestStepsFileName);
+    m_pAdminIdxTree->read_(i_strTestStepsFileName);
 
 } // default ctor
 
@@ -192,7 +192,7 @@ CTest::~CTest()
     {
     }
 
-    m_pAdminObjPool->save_();
+    m_pAdminIdxTree->save_();
 
     m_pTmrTestStepTimeout = nullptr;
     m_hshReqsInProgress.clear();
@@ -445,7 +445,7 @@ void CTest::doTestStepTraceClientConnect( ZS::Test::CTestStep* i_pTestStep )
 
     CIdxTreeTrcAdminObjs* pIdxTreeServer = pTrcServer->getTraceAdminObjIdxTree();
 
-    QVector<CAbstractIdxTreeEntry*> arpTreeEntriesServer = pIdxTreeServer->treeEntriesVec();
+    QVector<#error CAbstractIdxTreeEntry*> arpTreeEntriesServer = pIdxTreeServer->treeEntriesVec();
 
     for( auto& pTreeEntry : arpTreeEntriesServer )
     {
@@ -908,13 +908,13 @@ void CTest::onTraceClientTraceAdminObjInserted( QObject* /*i_pTrcClient*/, const
 
             CIdxTreeTrcAdminObjs* pIdxTreeServer = pTrcServer->getTraceAdminObjIdxTree();
 
-            QVector<CAbstractIdxTreeEntry*> arpTreeEntriesServer = pIdxTreeServer->treeEntriesVec();
+            QVector<#error CAbstractIdxTreeEntry*> arpTreeEntriesServer = pIdxTreeServer->treeEntriesVec();
 
             CIpcTrcClient* pTrcClient = CApplication::GetInstance()->getTrcClient();
 
             CIdxTreeTrcAdminObjs* pIdxTreeClient = pTrcClient->getTraceAdminObjIdxTree();
 
-            QVector<CAbstractIdxTreeEntry*> arpTreeEntriesClient = pIdxTreeClient->treeEntriesVec();
+            QVector<#error CAbstractIdxTreeEntry*> arpTreeEntriesClient = pIdxTreeClient->treeEntriesVec();
 
             bool bTestStepFinished = false;
 
@@ -922,8 +922,8 @@ void CTest::onTraceClientTraceAdminObjInserted( QObject* /*i_pTrcClient*/, const
             {
                 bTestStepFinished = true;
 
-                CAbstractIdxTreeEntry* pTreeEntryServer;
-                CAbstractIdxTreeEntry* pTreeEntryClient;
+                #error CAbstractIdxTreeEntry* pTreeEntryServer;
+                #error CAbstractIdxTreeEntry* pTreeEntryClient;
 
                 for( int idxEntry = 0; idxEntry < arpTreeEntriesServer.size(); idxEntry++ )
                 {

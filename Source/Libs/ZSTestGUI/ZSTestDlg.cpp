@@ -35,7 +35,7 @@ may result in using the software modules.
 #endif
 
 #include "ZSTestGUI/ZSTestDlg.h"
-#include "ZSTestGUI/ZSTestWdgt.h"
+#include "ZSTestGUI/ZSTestStepIdxTreeWdgt.h"
 #include "ZSSys/ZSSysException.h"
 
 #include "ZSSys/ZSSysMemLeakDump.h"
@@ -74,7 +74,7 @@ CDlgTest::CDlgTest(
     m_pLytMain = new QVBoxLayout;
     setLayout(m_pLytMain);
 
-    m_pWdgtTest = new CWdgtTest(i_pTest);
+    m_pWdgtTest = new CWdgtIdxTreeTestSteps(i_pTest);
     m_pLytMain->addWidget(m_pWdgtTest);
 
 } // ctor

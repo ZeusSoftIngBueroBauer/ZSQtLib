@@ -27,9 +27,8 @@ may result in using the software modules.
 #include "ZSTest/ZSTestStepGroup.h"
 #include "ZSTest/ZSTest.h"
 #include "ZSTest/ZSTestStep.h"
-#include "ZSTest/ZSTestStepAdminObjPool.h"
+#include "ZSTest/ZSTestStepIdxTree.h"
 
-//#include "ZSSys/ZSSysEnumEntry.h"
 #include "ZSSys/ZSSysErrResult.h"
 #include "ZSSys/ZSSysException.h"
 #include "ZSSys/ZSSysMath.h"
@@ -42,37 +41,29 @@ using namespace ZS::Test;
 
 
 /*******************************************************************************
-class CTestStepGroup : public CTestStepAdminObj
+class CTestStepGroup : public CAbstractTestStepIdxTreeEntry
 *******************************************************************************/
-
-/*==============================================================================
-public: // ctor (obsolete)
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-CTestStepGroup::CTestStepGroup(
-    CTestStepAdminObjPool* i_pObjPool,
-    const QString&         i_strName,
-    CObjPoolTreeEntry*     i_pTreeEntry ) :
-//------------------------------------------------------------------------------
-    CTestStepAdminObj(i_pObjPool, i_strName, i_pTreeEntry)
-{
-} // ctor
 
 /*==============================================================================
 public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! Constructs a test step group.
+
+    The entry will be added to the index tree of the passed test instance.
+
+    @param i_pTest [in] Reference to test the entry belongs to (must not be nullptr).
+    @param i_strName [in] Name of the entry.
+    @param i_pTSGrpParent [in] Parent test group or nullptr, if the entry does not have a parent.
+*/
 CTestStepGroup::CTestStepGroup(
     CTest*          i_pTest,
     const QString&  i_strName,
     CTestStepGroup* i_pTSGrpParent ) :
 //------------------------------------------------------------------------------
-    CTestStepAdminObj(i_pTest, i_strName)
+    CAbstractTestStepIdxTreeEntry(i_pTest, EIdxTreeEntryType::Branch, i_strName, i_pTSGrpParent)
 {
-    m_pObjPool->addTestStepGroup(this, i_pTSGrpParent);
-
 } // ctor
 
 //------------------------------------------------------------------------------
@@ -82,7 +73,89 @@ CTestStepGroup::~CTestStepGroup()
 } // dtor
 
 /*==============================================================================
-public: // must overridables of base class CTestStepAdminObj
+public: // must overridables of base class CAbstractTestStepIdxTreeEntry
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+double CTestStepGroup::getTestDurationInSec() const
+//------------------------------------------------------------------------------
+{
+    double fDuration_s = 0.0;
+
+    const CAbstractTestStepIdxTreeEntry* pTestStepEntry;
+
+    for( const auto& pIdxTreeEntry: m_arpTreeEntries )
+    {
+        pTestStepEntry = dynamic_cast<CAbstractTestStepIdxTreeEntry*>(pIdxTreeEntry);
+
+        fDuration_s += pTestStepEntry->getTestDurationInSec();
+    }
+
+    return fDuration_s;
+
+} // getTestDurationInSec
+
+//------------------------------------------------------------------------------
+double CTestStepGroup::getTestDurationInMilliSec() const
+//------------------------------------------------------------------------------
+{
+    double fDuration_ms = 0.0;
+
+    const CAbstractTestStepIdxTreeEntry* pTestStepEntry;
+
+    for( const auto& pIdxTreeEntry: m_arpTreeEntries )
+    {
+        pTestStepEntry = dynamic_cast<CAbstractTestStepIdxTreeEntry*>(pIdxTreeEntry);
+
+        fDuration_ms += pTestStepEntry->getTestDurationInMilliSec();
+    }
+
+    return fDuration_ms;
+
+} // getTestDurationInMilliSec
+
+//------------------------------------------------------------------------------
+double CTestStepGroup::getTestDurationInMicroSec() const
+//------------------------------------------------------------------------------
+{
+    double fDuration_us = 0.0;
+
+    const CAbstractTestStepIdxTreeEntry* pTestStepEntry;
+
+    for( const auto& pIdxTreeEntry: m_arpTreeEntries )
+    {
+        pTestStepEntry = dynamic_cast<CAbstractTestStepIdxTreeEntry*>(pIdxTreeEntry);
+
+        fDuration_us += pTestStepEntry->getTestDurationInMicroSec();
+    }
+
+    return fDuration_us;
+
+} // getTestDurationInMicroSec
+
+//------------------------------------------------------------------------------
+double CTestStepGroup::getTestDurationInNanoSec() const
+//------------------------------------------------------------------------------
+{
+    double fDuration_ns = 0.0;
+
+    const CAbstractTestStepIdxTreeEntry* pTestStepEntry;
+
+    for( const auto& pIdxTreeEntry: m_arpTreeEntries )
+    {
+        pTestStepEntry = dynamic_cast<CAbstractTestStepIdxTreeEntry*>(pIdxTreeEntry);
+
+        fDuration_ns += pTestStepEntry->getTestDurationInNanoSec();
+    }
+
+    return fDuration_ns;
+
+} // getTestDurationInNanoSec
+
+#if 0
+
+/*==============================================================================
+public: // must overridables of base class CAbstractTestStepIdxTreeEntry
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
@@ -122,7 +195,7 @@ void CTestStepGroup::setTestResult( ETestResult i_testResult )
         {
             if( m_pTreeEntry != nullptr && m_pTreeEntry->getParentEntry() != nullptr )
             {
-                CTestStepAdminObj* pTSAdmObjParent = reinterpret_cast<CTestStepAdminObj*>(m_pTreeEntry->getParentEntry()->getObj());
+                CAbstractTestStepIdxTreeEntry* pTSAdmObjParent = reinterpret_cast<CAbstractTestStepIdxTreeEntry*>(m_pTreeEntry->getParentEntry()->getObj());
 
                 if( pTSAdmObjParent != nullptr && pTSAdmObjParent->isGroup() )
                 {
@@ -144,7 +217,7 @@ void CTestStepGroup::setTestResult( ETestResult i_testResult )
 } // setTestResult
 
 /*==============================================================================
-public: // must overridables of base class CTestStepAdminObj
+public: // must overridables of base class CAbstractTestStepIdxTreeEntry
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
@@ -154,7 +227,7 @@ void CTestStepGroup::testStarted()
     m_bTestRunning = true;
     m_fTimeTestStart_s = ZS::System::Time::getProcTimeInSec();
     m_fTimeTestEnd_s = -1.0;
-    m_pObjPool->testGroupStarted(this);
+    m_pIdxTree->testGroupStarted(this);
     // update(); update is used to update the model but the model is implicitly updated by the testStepStarted method
 
 } // testStarted
@@ -170,7 +243,7 @@ void CTestStepGroup::testEnded( bool /*i_bIgnoreTestResult*/ )
 
     m_bTestRunning = false;
 
-    m_pObjPool->testGroupEnded(this);
+    m_pIdxTree->testGroupEnded(this);
 
     // update(); update is used to update the model but the model is implicitly updated by the testStepEnded method
 
@@ -188,8 +261,8 @@ int CTestStepGroup::getTestStepGroupCount()
 
     if( m_pTreeEntry != nullptr )
     {
-        CTestStepAdminObj* pTSAdmObj;
-        CObjPoolTreeEntry* pTreeEntryTmp;
+        CAbstractTestStepIdxTreeEntry* pTSAdmObj;
+        #error CAbstractIdxTreeEntry* pTreeEntryTmp;
         int                idxRow;
 
         for( idxRow = 0; idxRow < static_cast<int>(m_pTreeEntry->getChildCount()); idxRow++ )
@@ -198,7 +271,7 @@ int CTestStepGroup::getTestStepGroupCount()
 
             if( pTreeEntryTmp != nullptr )
             {
-                pTSAdmObj = reinterpret_cast<CTestStepAdminObj*>(pTreeEntryTmp->getObj());
+                pTSAdmObj = reinterpret_cast<CAbstractTestStepIdxTreeEntry*>(pTreeEntryTmp->getObj());
 
                 if( pTSAdmObj != nullptr )
                 {
@@ -223,9 +296,9 @@ CTestStepGroup* CTestStepGroup::getTestStepGroup( int i_iTestStepGroupIdx )
 
     if( m_pTreeEntry != nullptr )
     {
-        CTestStepAdminObj* pTSAdmObj;
+        CAbstractTestStepIdxTreeEntry* pTSAdmObj;
         CTestStepGroup*    pTSGrpTmp;
-        CObjPoolTreeEntry* pTreeEntryTmp;
+        #error CAbstractIdxTreeEntry* pTreeEntryTmp;
         int                iTestStepGroupCount = 0;
         int                idxRow;
 
@@ -237,7 +310,7 @@ CTestStepGroup* CTestStepGroup::getTestStepGroup( int i_iTestStepGroupIdx )
 
             if( pTreeEntryTmp != nullptr )
             {
-                pTSAdmObj = reinterpret_cast<CTestStepAdminObj*>(pTreeEntryTmp->getObj());
+                pTSAdmObj = reinterpret_cast<CAbstractTestStepIdxTreeEntry*>(pTreeEntryTmp->getObj());
 
                 if( pTSAdmObj != nullptr )
                 {
@@ -277,10 +350,10 @@ int CTestStepGroup::getTestStepCount( bool i_bIncludeChildGroups )
 
     if( m_pTreeEntry != nullptr )
     {
-        CTestStepAdminObj* pTSAdmObj;
+        CAbstractTestStepIdxTreeEntry* pTSAdmObj;
         CTestStepGroup*    pTSGrp;
         CTestStep*         pTestStep;
-        CObjPoolTreeEntry* pTreeEntryTmp;
+        #error CAbstractIdxTreeEntry* pTreeEntryTmp;
         int                idxRow;
 
         for( idxRow = 0; idxRow < static_cast<int>(m_pTreeEntry->getChildCount()); idxRow++ )
@@ -289,7 +362,7 @@ int CTestStepGroup::getTestStepCount( bool i_bIncludeChildGroups )
 
             if( pTreeEntryTmp != nullptr )
             {
-                pTSAdmObj = reinterpret_cast<CTestStepAdminObj*>(pTreeEntryTmp->getObj());
+                pTSAdmObj = reinterpret_cast<CAbstractTestStepIdxTreeEntry*>(pTreeEntryTmp->getObj());
 
                 if( pTSAdmObj != nullptr )
                 {
@@ -330,9 +403,9 @@ CTestStep* CTestStepGroup::getTestStep( int i_iTestStepIdx/*, bool i_bIncludeChi
 
     if( m_pTreeEntry != nullptr )
     {
-        CTestStepAdminObj* pTSAdmObj;
+        CAbstractTestStepIdxTreeEntry* pTSAdmObj;
         CTestStep*         pTestStepTmp;
-        CObjPoolTreeEntry* pTreeEntryTmp;
+        #error CAbstractIdxTreeEntry* pTreeEntryTmp;
         int                iTestStepCount = 0;
         int                idxRow;
 
@@ -344,7 +417,7 @@ CTestStep* CTestStepGroup::getTestStep( int i_iTestStepIdx/*, bool i_bIncludeChi
 
             if( pTreeEntryTmp != nullptr )
             {
-                pTSAdmObj = reinterpret_cast<CTestStepAdminObj*>(pTreeEntryTmp->getObj());
+                pTSAdmObj = reinterpret_cast<CAbstractTestStepIdxTreeEntry*>(pTreeEntryTmp->getObj());
 
                 if( pTSAdmObj != nullptr )
                 {
@@ -383,10 +456,10 @@ CTestStep* CTestStepGroup::getTestStep( int i_iTestStepIdx/*, bool i_bIncludeChi
 //
 //    if( m_pTreeEntry != nullptr )
 //    {
-//        CTestStepAdminObj* pTSAdmObj;
+//        CAbstractTestStepIdxTreeEntry* pTSAdmObj;
 //        CTestStepGroup*    pTSGrp;
 //        CTestStep*         pTestStepTmp;
-//        CObjPoolTreeEntry* pTreeEntryTmp;
+//        #error CAbstractIdxTreeEntry* pTreeEntryTmp;
 //        int                idxRow;
 //
 //        if( i_bIncludeChildGroups )
@@ -397,7 +470,7 @@ CTestStep* CTestStepGroup::getTestStep( int i_iTestStepIdx/*, bool i_bIncludeChi
 //
 //                if( pTreeEntryTmp != nullptr )
 //                {
-//                    pTSAdmObj = reinterpret_cast<CTestStepAdminObj*>(pTreeEntryTmp->getObj());
+//                    pTSAdmObj = reinterpret_cast<CAbstractTestStepIdxTreeEntry*>(pTreeEntryTmp->getObj());
 //
 //                    if( pTSAdmObj != nullptr )
 //                    {
@@ -430,7 +503,7 @@ CTestStep* CTestStepGroup::getTestStep( int i_iTestStepIdx/*, bool i_bIncludeChi
 //
 //                if( pTreeEntryTmp != nullptr )
 //                {
-//                    pTSAdmObj = reinterpret_cast<CTestStepAdminObj*>(pTreeEntryTmp->getObj());
+//                    pTSAdmObj = reinterpret_cast<CAbstractTestStepIdxTreeEntry*>(pTreeEntryTmp->getObj());
 //
 //                    if( pTSAdmObj != nullptr )
 //                    {
@@ -506,14 +579,14 @@ bool CTestStepGroup::isFirstTestStep( CTestStep* i_pTestStep ) const
 {
     bool bIs = false;
 
-    CObjPoolTreeEntry* pTreeEntry;
+    #error CAbstractIdxTreeEntry* pTreeEntry;
     int                idxChild;
 
     for( idxChild = 0; idxChild < m_pTreeEntry->getChildCount(); idxChild++ )
     {
         pTreeEntry = m_pTreeEntry->getChildEntry(idxChild);
 
-        if( pTreeEntry->getEntryType() == EObjPoolEntryTypeObject )
+        if( pTreeEntry->getEntryType() == EIdxTreeEntryTypeObject )
         {
             if( pTreeEntry->getObj() == i_pTestStep )
             {
@@ -535,14 +608,14 @@ bool CTestStepGroup::isLastTestStep( CTestStep* i_pTestStep ) const
 
     if( m_pTreeEntry->getChildCount() > 0 )
     {
-        CObjPoolTreeEntry* pTreeEntry;
+        #error CAbstractIdxTreeEntry* pTreeEntry;
         int                idxChild;
 
         for( idxChild = m_pTreeEntry->getChildCount()-1; idxChild >= 0; idxChild-- )
         {
             pTreeEntry = m_pTreeEntry->getChildEntry(idxChild);
 
-            if( pTreeEntry->getEntryType() == EObjPoolEntryTypeObject )
+            if( pTreeEntry->getEntryType() == EIdxTreeEntryTypeObject )
             {
                 if( pTreeEntry->getObj() == i_pTestStep )
                 {
@@ -563,14 +636,14 @@ bool CTestStepGroup::isFirstTestGroup( CTestStepGroup* i_pTSGrp ) const
 {
     bool bIs = false;
 
-    CObjPoolTreeEntry* pTreeEntry;
+    #error CAbstractIdxTreeEntry* pTreeEntry;
     int                idxChild;
 
     for( idxChild = 0; idxChild < m_pTreeEntry->getChildCount(); idxChild++ )
     {
         pTreeEntry = m_pTreeEntry->getChildEntry(idxChild);
 
-        if( pTreeEntry->getEntryType() != EObjPoolEntryTypeObject )
+        if( pTreeEntry->getEntryType() != EIdxTreeEntryTypeObject )
         {
             if( pTreeEntry->getObj() == i_pTSGrp )
             {
@@ -592,14 +665,14 @@ bool CTestStepGroup::isLastTestGroup( CTestStepGroup* i_pTSGrp ) const
 
     if( m_pTreeEntry->getChildCount() > 0 )
     {
-        CObjPoolTreeEntry* pTreeEntry;
+        #error CAbstractIdxTreeEntry* pTreeEntry;
         int                idxChild;
 
         for( idxChild = m_pTreeEntry->getChildCount()-1; idxChild >= 0; idxChild-- )
         {
             pTreeEntry = m_pTreeEntry->getChildEntry(idxChild);
 
-            if( pTreeEntry->getEntryType() != EObjPoolEntryTypeObject )
+            if( pTreeEntry->getEntryType() != EIdxTreeEntryTypeObject )
             {
                 if( pTreeEntry->getObj() == i_pTSGrp )
                 {
@@ -615,7 +688,7 @@ bool CTestStepGroup::isLastTestGroup( CTestStepGroup* i_pTSGrp ) const
 } // isLastTestGroup
 
 /*==============================================================================
-public: // must overridables of base class CTestStepAdminObj
+public: // must overridables of base class CAbstractTestStepIdxTreeEntry
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
@@ -629,3 +702,4 @@ void CTestStepGroup::update()
 
 } // update
 
+#endif

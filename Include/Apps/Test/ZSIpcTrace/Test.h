@@ -28,7 +28,7 @@ may result in using the software modules.
 #define ZSApps_TestIpcTrace_Test_h
 
 #include "ZSTest/ZSTest.h"
-#include "ZSTest/ZSTestStepAdminObj.h"
+#include "ZSTest/ZSTestStepIdxTreeEntry.h"
 #include "ZSIpc/ZSIpcDllMain.h"
 #include "ZSIpc/ZSIpcSrvCltMsg.h"
 #include "ZSSys/ZSSysRequest.h"

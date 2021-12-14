@@ -114,7 +114,7 @@ ZSIPCTRACEDLL_EXTERN_API char* TrcAdminObj_getNameSpace( const DllIf::CTrcAdminO
         {
             CIdxTreeTrcAdminObjs* pIdxTree = pTrcServer->getTraceAdminObjIdxTree();
 
-            CAbstractIdxTreeEntry* pTreeEntry = pIdxTree->findEntry(strKeyInTree);
+            CIdxTreeEntry* pTreeEntry = pIdxTree->findEntry(strKeyInTree);
 
             CTrcAdminObj* pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(pTreeEntry);
 
@@ -152,7 +152,7 @@ ZSIPCTRACEDLL_EXTERN_API char* TrcAdminObj_getClassName( const DllIf::CTrcAdminO
         {
             CIdxTreeTrcAdminObjs* pIdxTree = pTrcServer->getTraceAdminObjIdxTree();
 
-            CAbstractIdxTreeEntry* pTreeEntry = pIdxTree->findEntry(strKeyInTree);
+            CIdxTreeEntry* pTreeEntry = pIdxTree->findEntry(strKeyInTree);
 
             CTrcAdminObj* pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(pTreeEntry);
 
@@ -190,7 +190,7 @@ ZSIPCTRACEDLL_EXTERN_API char* TrcAdminObj_getObjectName( const DllIf::CTrcAdmin
         {
             CIdxTreeTrcAdminObjs* pIdxTree = pTrcServer->getTraceAdminObjIdxTree();
 
-            CAbstractIdxTreeEntry* pTreeEntry = pIdxTree->findEntry(strKeyInTree);
+            CIdxTreeEntry* pTreeEntry = pIdxTree->findEntry(strKeyInTree);
 
             CTrcAdminObj* pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(pTreeEntry);
 
@@ -248,7 +248,7 @@ ZSIPCTRACEDLL_EXTERN_API void TrcAdminObj_setObjectThreadName(
         {
             CIdxTreeTrcAdminObjs* pIdxTree = pTrcServer->getTraceAdminObjIdxTree();
 
-            CAbstractIdxTreeEntry* pTreeEntry = pIdxTree->findEntry(strKeyInTree);
+            CIdxTreeEntry* pTreeEntry = pIdxTree->findEntry(strKeyInTree);
 
             CTrcAdminObj* pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(pTreeEntry);
 
@@ -281,7 +281,7 @@ ZSIPCTRACEDLL_EXTERN_API char* TrcAdminObj_getObjectThreadName( const DllIf::CTr
         {
             CIdxTreeTrcAdminObjs* pIdxTree = pTrcServer->getTraceAdminObjIdxTree();
 
-            CAbstractIdxTreeEntry* pTreeEntry = pIdxTree->findEntry(strKeyInTree);
+            CIdxTreeEntry* pTreeEntry = pIdxTree->findEntry(strKeyInTree);
 
             CTrcAdminObj* pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(pTreeEntry);
 
@@ -339,7 +339,7 @@ ZSIPCTRACEDLL_EXTERN_API void TrcAdminObj_setEnabled(
         {
             CIdxTreeTrcAdminObjs* pIdxTree = pTrcServer->getTraceAdminObjIdxTree();
 
-            CAbstractIdxTreeEntry* pTreeEntry = pIdxTree->findEntry(strKeyInTree);
+            CIdxTreeEntry* pTreeEntry = pIdxTree->findEntry(strKeyInTree);
 
             CTrcAdminObj* pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(pTreeEntry);
 
@@ -372,7 +372,7 @@ ZSIPCTRACEDLL_EXTERN_API bool TrcAdminObj_isEnabled( const DllIf::CTrcAdminObj* 
         {
             CIdxTreeTrcAdminObjs* pIdxTree = pTrcServer->getTraceAdminObjIdxTree();
 
-            CAbstractIdxTreeEntry* pTreeEntry = pIdxTree->findEntry(strKeyInTree);
+            CIdxTreeEntry* pTreeEntry = pIdxTree->findEntry(strKeyInTree);
 
             CTrcAdminObj* pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(pTreeEntry);
 
@@ -427,7 +427,7 @@ ZSIPCTRACEDLL_EXTERN_API void TrcAdminObj_setTraceDetailLevel(
         {
             CIdxTreeTrcAdminObjs* pIdxTree = pTrcServer->getTraceAdminObjIdxTree();
 
-            CAbstractIdxTreeEntry* pTreeEntry = pIdxTree->findEntry(strKeyInTree);
+            CIdxTreeEntry* pTreeEntry = pIdxTree->findEntry(strKeyInTree);
 
             CTrcAdminObj* pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(pTreeEntry);
 
@@ -460,7 +460,7 @@ ZSIPCTRACEDLL_EXTERN_API int TrcAdminObj_getTraceDetailLevel( const DllIf::CTrcA
         {
             CIdxTreeTrcAdminObjs* pIdxTree = pTrcServer->getTraceAdminObjIdxTree();
 
-            CAbstractIdxTreeEntry* pTreeEntry = pIdxTree->findEntry(strKeyInTree);
+            CIdxTreeEntry* pTreeEntry = pIdxTree->findEntry(strKeyInTree);
 
             CTrcAdminObj* pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(pTreeEntry);
 
@@ -497,7 +497,7 @@ ZSIPCTRACEDLL_EXTERN_API bool TrcAdminObj_isActive(
         {
             CIdxTreeTrcAdminObjs* pIdxTree = pTrcServer->getTraceAdminObjIdxTree();
 
-            CAbstractIdxTreeEntry* pTreeEntry = pIdxTree->findEntry(strKeyInTree);
+            CIdxTreeEntry* pTreeEntry = pIdxTree->findEntry(strKeyInTree);
 
             CTrcAdminObj* pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(pTreeEntry);
 
@@ -556,7 +556,7 @@ ZSIPCTRACEDLL_EXTERN_API void TrcAdminObj_traceMethodEnter(
         {
             CIdxTreeTrcAdminObjs* pIdxTree = pTrcServer->getTraceAdminObjIdxTree();
 
-            CAbstractIdxTreeEntry* pTreeEntry = pIdxTree->findEntry(strKeyInTree);
+            CIdxTreeEntry* pTreeEntry = pIdxTree->findEntry(strKeyInTree);
 
             CTrcAdminObj* pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(pTreeEntry);
 
@@ -619,7 +619,7 @@ ZSIPCTRACEDLL_EXTERN_API void TrcAdminObj_traceMethodLeave(
         {
             CIdxTreeTrcAdminObjs* pIdxTree = pTrcServer->getTraceAdminObjIdxTree();
 
-            CAbstractIdxTreeEntry* pTreeEntry = pIdxTree->findEntry(strKeyInTree);
+            CIdxTreeEntry* pTreeEntry = pIdxTree->findEntry(strKeyInTree);
 
             CTrcAdminObj* pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(pTreeEntry);
 
@@ -681,7 +681,7 @@ ZSIPCTRACEDLL_EXTERN_API void TrcAdminObj_traceMethod(
         {
             CIdxTreeTrcAdminObjs* pIdxTree = pTrcServer->getTraceAdminObjIdxTree();
 
-            CAbstractIdxTreeEntry* pTreeEntry = pIdxTree->findEntry(strKeyInTree);
+            CIdxTreeEntry* pTreeEntry = pIdxTree->findEntry(strKeyInTree);
 
             CTrcAdminObj* pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(pTreeEntry);
 
@@ -834,7 +834,7 @@ ZSIPCTRACEDLL_EXTERN_API void TrcServer_ReleaseTraceAdminObj(
         {
             CIdxTreeTrcAdminObjs* pIdxTree = pTrcServer->getTraceAdminObjIdxTree();
 
-            CAbstractIdxTreeEntry* pTreeEntry = pIdxTree->findEntry(strKeyInTree);
+            CIdxTreeEntry* pTreeEntry = pIdxTree->findEntry(strKeyInTree);
 
             CTrcAdminObj* pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(pTreeEntry);
 
