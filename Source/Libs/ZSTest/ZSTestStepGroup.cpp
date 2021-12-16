@@ -73,10 +73,84 @@ CTestStepGroup::~CTestStepGroup()
 } // dtor
 
 /*==============================================================================
+protected: // ctor for class CTestGroupRoot
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! Constructs a test step group.
+
+    The entry will be added to the index tree of the passed test instance.
+
+    @param i_pTest [in] Reference to test the entry belongs to (must not be nullptr).
+    @param i_strName [in] Name of the entry.
+    @param i_pTSGrpParent [in] Parent test group or nullptr, if the entry does not have a parent.
+*/
+CTestStepGroup::CTestStepGroup(
+    CTest*            i_pTest,
+    EIdxTreeEntryType i_entryType,
+    const QString&    i_strName ) :
+//------------------------------------------------------------------------------
+    CAbstractTestStepIdxTreeEntry(i_pTest, i_entryType, i_strName, nullptr)
+{
+} // ctor
+
+/*==============================================================================
 public: // must overridables of base class CAbstractTestStepIdxTreeEntry
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! Returns the test result of the group.
+
+    For a group the resulting test result is
+
+    Undefined .. if ANY of the childrens test result is Undefined
+    Failed ..... if NONE of the childrens test result is Undefined but at least
+                 on childrens test result is Failed
+    Passed ..... if NONE of the childrens test result is either Undefined or Failed.
+
+    @return Test result of the group.
+*/
+CEnumTestResult CTestStepGroup::getTestResult() const
+//------------------------------------------------------------------------------
+{
+    CEnumTestResult testResult = ETestResult::Undefined;
+
+    const CAbstractTestStepIdxTreeEntry* pTestStepEntry;
+
+    for( const auto& pIdxTreeEntry: m_arpTreeEntries )
+    {
+        pTestStepEntry = dynamic_cast<CAbstractTestStepIdxTreeEntry*>(pIdxTreeEntry);
+
+        CEnumTestResult testResultTmp = pTestStepEntry->getTestResult();
+
+        if( testResultTmp == ETestResult::Undefined )
+        {
+            testResult = ETestResult::Undefined;
+            break;
+        }
+        else if( testResultTmp == ETestResult::TestFailed )
+        {
+            testResult = ETestResult::TestFailed;
+        }
+        else if( testResultTmp == ETestResult::TestPassed )
+        {
+            if( testResult != ETestResult::TestFailed )
+            {
+                testResult = ETestResult::TestPassed;
+            }
+        }
+    }
+
+    return testResult;
+
+} // getTestResult
+
+//------------------------------------------------------------------------------
+/*! Returns the overall sum of the test duration in seconds for this group by
+    recursively summing up the test duration of all children.
+
+    @return Test duration of the group in seconds.
+*/
 double CTestStepGroup::getTestDurationInSec() const
 //------------------------------------------------------------------------------
 {
@@ -95,62 +169,96 @@ double CTestStepGroup::getTestDurationInSec() const
 
 } // getTestDurationInSec
 
-//------------------------------------------------------------------------------
-double CTestStepGroup::getTestDurationInMilliSec() const
-//------------------------------------------------------------------------------
-{
-    double fDuration_ms = 0.0;
-
-    const CAbstractTestStepIdxTreeEntry* pTestStepEntry;
-
-    for( const auto& pIdxTreeEntry: m_arpTreeEntries )
-    {
-        pTestStepEntry = dynamic_cast<CAbstractTestStepIdxTreeEntry*>(pIdxTreeEntry);
-
-        fDuration_ms += pTestStepEntry->getTestDurationInMilliSec();
-    }
-
-    return fDuration_ms;
-
-} // getTestDurationInMilliSec
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
 
 //------------------------------------------------------------------------------
-double CTestStepGroup::getTestDurationInMicroSec() const
-//------------------------------------------------------------------------------
-{
-    double fDuration_us = 0.0;
+/*! This method is called if the test result of a child entry has been changed.
 
-    const CAbstractTestStepIdxTreeEntry* pTestStepEntry;
+    If this entry again has a parent group and the test result has been changed
+    the method will be forwarded to the parent group.
 
-    for( const auto& pIdxTreeEntry: m_arpTreeEntries )
-    {
-        pTestStepEntry = dynamic_cast<CAbstractTestStepIdxTreeEntry*>(pIdxTreeEntry);
+    For a group the resulting test result is
 
-        fDuration_us += pTestStepEntry->getTestDurationInMicroSec();
-    }
+    Undefined .. if ANY of the childrens test result is Undefined
+    Failed ..... if NONE of the childrens test result is Undefined but at least
+                 on childrens test result is Failed
+    Passed ..... if NONE of the childrens test result is either Undefined or Failed.
 
-    return fDuration_us;
-
-} // getTestDurationInMicroSec
-
-//------------------------------------------------------------------------------
-double CTestStepGroup::getTestDurationInNanoSec() const
+    @param i_pTreeEntry [in] Entry whose test result has been changed.
+                             On evaluating the resulting test result of the group
+                             this child entry will be ignored as the resulting test
+                             result of the child entry is already passed as second argument.
+    @param i_testResult [in] Resulting test result of the passed tree entry.
+                             Only Failed or Passed is allowed for i_testResult.
+*/
+void CTestStepGroup::onTestStepResultChanged(
+    CAbstractTestStepIdxTreeEntry* i_pTreeEntry,
+    const CEnumTestResult&         i_testResult )
 //------------------------------------------------------------------------------
 {
-    double fDuration_ns = 0.0;
+    // Don't invoke "i_pTreeEntry->getTestResult" here as that would recursively
+    // go through all child of the tree entry to calculate the resulting test result
+    // if "i_pTreeEntry" is a group.
 
-    const CAbstractTestStepIdxTreeEntry* pTestStepEntry;
-
-    for( const auto& pIdxTreeEntry: m_arpTreeEntries )
+    // If the saved test result is different from the test result of the child ..
+    if( m_testResult != i_testResult )
     {
-        pTestStepEntry = dynamic_cast<CAbstractTestStepIdxTreeEntry*>(pIdxTreeEntry);
+        CEnumTestResult testResult = ETestResult::TestPassed;
 
-        fDuration_ns += pTestStepEntry->getTestDurationInNanoSec();
-    }
+        // If the test result of the child is Failed ..
+        if( i_testResult == ETestResult::TestFailed )
+        {
+            // .. the resulting test result of the group is also Failed.
+            testResult = ETestResult::TestFailed;
+        }
+        // If the test result of the child is Passed  ..
+        else if( i_testResult == ETestResult::TestPassed )
+        {
+            // .. the resulting test result is:
 
-    return fDuration_ns;
+            // Undefined .. if ANY of the childrens test result is Undefined
+            // Failed ..... if NONE of the childrens test result is Undefined but at least
+            //              on childrens test result is Failed
+            // Passed ..... if NONE of the childrens test result is either Undefined or Failed.
 
-} // getTestDurationInNanoSec
+            // The test result of all children must be queried to get the
+            // groups resulting test result.
+            for( const auto& pIdxTreeEntry: m_arpTreeEntries )
+            {
+                if( pIdxTreeEntry != nullptr )
+                {
+                    CAbstractTestStepIdxTreeEntry* pTestStepEntry = dynamic_cast<CAbstractTestStepIdxTreeEntry*>(pIdxTreeEntry);
+
+                    // The passed child entry will be ignored as for this child entry
+                    // the resulting test result is already passed as argument.
+                    if( pTestStepEntry != i_pTreeEntry )
+                    {
+                        CEnumTestResult testResultTmp = pTestStepEntry->getTestResult();
+
+                        // Set to Failed also for Undefined and Ignore because those test
+                        // result should not have been passed to this method.
+                        if( testResultTmp == ETestResult::Undefined )
+                        {
+                            // The groups 
+                            testResult = ETestResult::Undefined;
+                            break;
+                        }
+                        else if( testResultTmp == ETestResult::TestFailed )
+                        {
+                            testResult = ETestResult::TestFailed;
+                        }
+                    }
+                }
+            }
+
+            setTestResult(testResult);
+
+        } // if( i_testResult == ETestResult::TestPassed )
+    } // if( m_testResult != testResult )
+
+} // onTestStepResultChanged
 
 #if 0
 

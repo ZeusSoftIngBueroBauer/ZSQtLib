@@ -26,8 +26,9 @@ may result in using the software modules.
 
 #include "ZSTest/ZSTestStepIdxTreeEntry.h"
 #include "ZSTest/ZSTest.h"
-#include "ZSTest/ZSTestStepGroup.h"
 #include "ZSTest/ZSTestStepIdxTree.h"
+#include "ZSTest/ZSTestStepGroup.h"
+#include "ZSTest/ZSTestStepRoot.h"
 
 #include "ZSSys/ZSSysErrResult.h"
 #include "ZSSys/ZSSysException.h"
@@ -41,7 +42,7 @@ using namespace ZS::Test;
 
 
 /*******************************************************************************
-class CAbstractTestStepIdxTreeEntry : public QObject
+class CAbstractTestStepIdxTreeEntry : public QObject, public ZS::System::CIdxTreeEntry
 *******************************************************************************/
 
 /*==============================================================================
@@ -60,7 +61,7 @@ public: // ctors and dtor
 */
 CAbstractTestStepIdxTreeEntry::CAbstractTestStepIdxTreeEntry(
     CTest*            i_pTest,
-    EIdxTreeEntryType i_entryType, 
+    EIdxTreeEntryType i_entryType,
     const QString&    i_strName,
     CTestStepGroup*   i_pTSGrpParent ) :
 //------------------------------------------------------------------------------
@@ -68,12 +69,16 @@ CAbstractTestStepIdxTreeEntry::CAbstractTestStepIdxTreeEntry(
     CIdxTreeEntry(i_entryType, i_strName),
     m_pTest(i_pTest),
     m_enabled(EEnabled::Yes),
-    m_bTestRunning(false),
-    m_strToolTip()
+    m_strToolTip(),
+    m_testResult(ETestResult::Undefined)
 {
     m_pTree = i_pTest->getTestStepIdxTree();
 
-    m_pTree->add(this, i_pTSGrpParent);
+    // The root entry will neither be added to the list nor to the map of tree entries.
+    if( m_entryType != EIdxTreeEntryType::Root )
+    {
+        m_pTree->add(this, i_pTSGrpParent);
+    }
 
 } // ctor
 
@@ -81,12 +86,16 @@ CAbstractTestStepIdxTreeEntry::CAbstractTestStepIdxTreeEntry(
 CAbstractTestStepIdxTreeEntry::~CAbstractTestStepIdxTreeEntry()
 //------------------------------------------------------------------------------
 {
-    m_pTree->remove(this);
+    // The root entry will neither be added to the list nor to the map of tree entries.
+    if( m_entryType != EIdxTreeEntryType::Root )
+    {
+        m_pTree->remove(this);
+    }
 
     m_pTest = nullptr;
     m_enabled = static_cast<EEnabled>(0);
-    m_bTestRunning = false;
     //m_strToolTip;
+    m_testResult = static_cast<ETestResult>(0);
 
 } // dtor
 
@@ -108,8 +117,13 @@ CTestStepGroup* CAbstractTestStepIdxTreeEntry::getParentGroup()
     return dynamic_cast<CTestStepGroup*>(parentBranch());
 }
 
+/*==============================================================================
+public: // overridables
+==============================================================================*/
+
 //------------------------------------------------------------------------------
-/*! Enables or disables the entry.
+/*! Enables or disables the entry and informs the tree that the content of the
+    entry has been changed and got to be updated.
 
     /param i_enabled [in] Flag to enable or disable the test step.
 */
@@ -129,11 +143,12 @@ void CAbstractTestStepIdxTreeEntry::setEnabled( EEnabled i_enabled )
 } // setEnabled
 
 /*==============================================================================
-public: // must overridables of base class CAbstractTestStepIdxTreeEntry
+public: // overridables
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-/*! Sets the tool tip of the entry.
+/*! Sets the tool tip of the entry and informs the tree that the content of the
+    entry has been changed and got to be updated.
 
     /param i_strToolTip [in]
 */
@@ -152,6 +167,57 @@ void CAbstractTestStepIdxTreeEntry::setToolTip( const QString& i_strToolTip )
 
 } // setToolTip
 
+/*==============================================================================
+public: // overridables
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! Sets the test result of the entry and informs the tree that the content of the
+    entry has been changed and got to be updated.
+
+    If the test result has been changed and the entry has a parent group the parent
+    group will also be informed that the test result has been changed.
+
+    @param i_testResult [in]
+*/
+void CAbstractTestStepIdxTreeEntry::setTestResult( const CEnumTestResult& i_testResult )
+//------------------------------------------------------------------------------
+{
+    if( m_testResult != i_testResult )
+    {
+        m_testResult = i_testResult;
+
+        if( m_pTree != nullptr )
+        {
+            m_pTree->onTreeEntryChanged(this);
+        }
+
+        CTestStepGroup* pParentGroup = getParentGroup();
+
+        if( pParentGroup != nullptr )
+        {
+            if( pParentGroup != nullptr )
+            {
+                pParentGroup->onTestStepResultChanged(this, m_testResult);
+            }
+        }
+        else
+        {
+            CTestStepRoot* pRootEntry = dynamic_cast<CTestStepRoot*>(m_pTest->getTestStepIdxTree()->root());
+
+            if( pRootEntry != nullptr )
+            {
+                pRootEntry->onTestStepResultChanged(this, m_testResult);
+            }
+        }
+    } // if( m_testResult != i_testResult )
+
+} // setTestResult
+
+/*==============================================================================
+public: // overridables
+==============================================================================*/
+
 //------------------------------------------------------------------------------
 QString CAbstractTestStepIdxTreeEntry::testDuration2StrInBestUnit() const
 //------------------------------------------------------------------------------
@@ -161,25 +227,26 @@ QString CAbstractTestStepIdxTreeEntry::testDuration2StrInBestUnit() const
 
     if( fabs(fDuration_s) <= 1.0e-6 )
     {
-        strDuration = QString::number(getTestDurationInNanoSec(),'f',3) + " ns";
+        strDuration = QString::number(1.0e9 * fDuration_s, 'f', 3) + " ns";
     }
     else if( fabs(fDuration_s) <= 1.0e-3 )
     {
-        strDuration = QString::number(getTestDurationInMicroSec(),'f',3) + " " + QString::fromLatin1("u") + "s";
+        strDuration = QString::number(1.0e6 * fDuration_s, 'f', 3) + " " + QString::fromLatin1("u") + "s";
     }
     else if( fabs(fDuration_s) <= 1.0 )
     {
-        strDuration = QString::number(getTestDurationInMilliSec(),'f',3) + " ms";
+        strDuration = QString::number(1.0e3 * fDuration_s, 'f', 3) + " ms";
     }
     else if( fabs(fDuration_s) <= 1.0e3 )
     {
-        strDuration = QString::number(fDuration_s,'f',3) + " s";
+        strDuration = QString::number(fDuration_s, 'f', 3) + " s";
     }
     else
     {
-        strDuration = QString::number(fDuration_s,'f',3) + " s";
+        // I don't think that it is necessary to convert it to a time format with
+        // hours and minutes (or even using days and years).
+        strDuration = QString::number(fDuration_s, 'f', 3) + " s";
     }
     return strDuration;
 
 } // testDuration2StrInBestUnit
-

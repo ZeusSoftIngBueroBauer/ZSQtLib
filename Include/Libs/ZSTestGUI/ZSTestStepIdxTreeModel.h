@@ -41,6 +41,8 @@ class CTrcAdminObj;
 
 namespace Test
 {
+class CTest;
+class CTestStep;
 class CTestStepIdxTree;
 
 namespace GUI
@@ -55,48 +57,46 @@ public: // class methods
     static QString ClassName() { return "CModeldxTreeTestSteps"; }
 public: // type definitions and constants
     enum EColumn {
-        EColumnName          = 0,
-        EColumnBreakpoint    = 1,
-        EColumnEnabled       = 2,
-        EColumnResult        = 3,
-        EColumnDuration      = 4,
-        EColumnOperation     = 5,
-        EColumnDescription   = 6,
-        EColumnDesiredValues = 7,
-        EColumnActualValues  = 8,
+        EColumnName           = 0,
+        EColumnBreakpoint     = 1,
+        EColumnEnabled        = 2,
+        EColumnResult         = 3,
+        EColumnDuration       = 4,
+        EColumnOperation      = 5,
+        EColumnDescription    = 6,
+        EColumnExpectedValues = 7,
+        EColumnResultValues   = 8,
         EColumnCount
     };
     static QString column2Str( int i_iClm, ZS::System::EEnumEntryAliasStr i_alias = ZS::System::EEnumEntryAliasStrName );
 public: // ctors and dtor
-    CModeldxTreeTestSteps( CTestStepIdxTree* i_pAdminIdxTree, QObject* i_pObjParent = nullptr );
+    CModeldxTreeTestSteps( CTestStepIdxTree* i_pIdxTree, QObject* i_pObjParent = nullptr );
     virtual ~CModeldxTreeTestSteps();
 public: // instance methods
     CTestStepIdxTree* idxTree();
 public: // overridables
-    virtual QString nameSpace() const { return NameSpace(); }
-    virtual QString className() const { return ClassName(); }
+    virtual QString nameSpace() const override { return NameSpace(); }
+    virtual QString className() const override { return ClassName(); }
 public: // instance methods
-    bool isSetShowDesiredAndActualValuesOnlyIfTestStepFailed() const { return m_bShowDesiredAndActualValuesOnlyIfTestStepFailed; }
-    void setShowDesiredAndActualValuesOnlyIfTestStepFailed( bool i_bSet );
-//protected slots:
-//    void onTestStepGroupInserted( QObject* i_pAdminIdxTree, QObject* i_pTSGrp );
-//    void onTestStepGroupChanged( QObject* i_pAdminIdxTree, QObject* i_pTSGrp );
-//    void onTestStepInserted( QObject* i_pAdminIdxTree, QObject* i_pTestStep );
-//    void onTestStepChanged( QObject* i_pAdminIdxTree, QObject* i_pTestStep );
-//    void onNameSpaceNodeChanged( QObject* i_pAdminIdxTree, ZS::System::#error CAbstractIdxTreeEntry* i_pTreeEntry, int i_enabled );
+    bool isSetShowExpectedAndResultValuesOnlyIfTestStepFailed() const { return m_bShowExpectedAndResultValuesOnlyIfTestStepFailed; }
+    void setShowExpectedAndResultValuesOnlyIfTestStepFailed( bool i_bSet );
 //public: // instance methods
 //    void reset(); // to call protected reset method
+protected slots: // overridables
+    virtual void onTestCurrentTestStepChanged( ZS::Test::CTestStep* i_pTestStep );
 public: // overridables of base class QAbstractItemModel
-    virtual int columnCount( const QModelIndex& i_modelIdxParent = QModelIndex() ) const;
-    virtual QVariant headerData( int i_iSection, Qt::Orientation i_orientation, int i_iRole = Qt::DisplayRole) const;
-    virtual Qt::ItemFlags flags( const QModelIndex& i_modelIdx ) const;
-    virtual QVariant data( const QModelIndex& i_modelIdx, int i_iRole = Qt::DisplayRole ) const;
+    virtual int columnCount( const QModelIndex& i_modelIdxParent = QModelIndex() ) const override;
+    virtual QVariant headerData( int i_iSection, Qt::Orientation i_orientation, int i_iRole = Qt::DisplayRole) const override;
+    virtual Qt::ItemFlags flags( const QModelIndex& i_modelIdx ) const override;
+    virtual QVariant data( const QModelIndex& i_modelIdx, int i_iRole = Qt::DisplayRole ) const override;
 private: // copy ctor not allowed
     CModeldxTreeTestSteps( const CModeldxTreeTestSteps& );
 private: // assignment operator not allowed
     CModeldxTreeTestSteps& operator = ( const CModeldxTreeTestSteps& );
 protected: // instance members
-    bool                     m_bShowDesiredAndActualValuesOnlyIfTestStepFailed;
+    CTest*                   m_pTest;
+    CTestStep*               m_pTestStepCurr;
+    bool                     m_bShowExpectedAndResultValuesOnlyIfTestStepFailed;
     ZS::Trace::CTrcAdminObj* m_pTrcAdminObj;
 
 }; // class CModeldxTreeTestSteps

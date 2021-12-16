@@ -31,7 +31,6 @@ may result in using the software modules.
 #include <QtCore/qglobal.h>
 
 #include "ZSTest/ZSTestDllMain.h"
-#include "ZSSys/ZSSysEnumEntry.h"
 #include "ZSSys/ZSSysVersion.h"
 
 #include "ZSSys/ZSSysMemLeakDump.h"
@@ -62,6 +61,82 @@ Libraries depending on build configuration and used Qt version
 #endif // #ifdef USE_PRAGMA_COMMENT_LIB_INCLUDE_IN_MAIN_MODULES
 
 #endif // #ifdef _WINDOWS
+
+
+/*******************************************************************************
+exported methods
+*******************************************************************************/
+
+/*==============================================================================
+Enum ETestResult
+==============================================================================*/
+
+template<> QMutex ZS::System::CEnum<ETestResult>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
+template<> QVector<QHash<QString, int>> ZS::System::CEnum<ETestResult>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
+
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+//------------------------------------------------------------------------------
+const QVector<SEnumEntry> CEnum<ETestResult>::s_arEnumEntries;
+//------------------------------------------------------------------------------
+class CInitEnumTestResult
+{
+public: // ctor
+    CInitEnumTestResult() {
+        QVector<SEnumEntry>* pVEnumEntries = const_cast<QVector<SEnumEntry>*>(&CEnum<ETestResult>::s_arEnumEntries);
+                                                   // Enumerator,                             Name,        Symbol,  Text,        SCIPShort, SCPILong
+        pVEnumEntries->append( /* 0 */ SEnumEntry( static_cast<int>(ETestResult::Undefined),  "Undefined", "?",     "Undefined", "UND",     "UNDefined" ),
+        pVEnumEntries->append( /* 1 */ SEnumEntry( static_cast<int>(ETestResult::TestFailed), "Failed",    "ERR",   "Failed",    "FAIL",    "FAILed"    ),
+        pVEnumEntries->append( /* 2 */ SEnumEntry( static_cast<int>(ETestResult::TestPassed), "Passed",    "OK",    "Passed",    "PASS",    "PASSed"    ),
+        pVEnumEntries->append( /* 3 */ SEnumEntry( static_cast<int>(ETestResult::Ignore),     "Ignore",    "-",     "Ignore",    "IGN",     "IGNore"    )
+    }
+};
+static CInitEnumTestResult s_initEnumTestResult;
+#else // #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+//------------------------------------------------------------------------------
+template<> const QVector<SEnumEntry> ZS::System::CEnum<ETestResult>::s_arEnumEntries =
+//------------------------------------------------------------------------------
+{                       // Enumerator,                             Name,        Symbol,  Text,        SCIPShort, SCPILong
+    /* 0 */ SEnumEntry( static_cast<int>(ETestResult::Undefined),  "Undefined", "?",     "Undefined", "UND",     "UNDefined" ),
+    /* 1 */ SEnumEntry( static_cast<int>(ETestResult::TestFailed), "Failed",    "ERR",   "Failed",    "FAIL",    "FAILed"    ),
+    /* 2 */ SEnumEntry( static_cast<int>(ETestResult::TestPassed), "Passed",    "OK",    "Passed",    "PASS",    "PASSed"    ),
+    /* 3 */ SEnumEntry( static_cast<int>(ETestResult::Ignore),     "Ignore",    "-",     "Ignore",    "IGN",     "IGNore"    )
+};
+#endif // #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+
+
+/*==============================================================================
+Enum ETestState
+==============================================================================*/
+
+template<> QMutex ZS::System::CEnum<ETestState>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
+template<> QVector<QHash<QString, int>> ZS::System::CEnum<ETestState>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
+
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+//------------------------------------------------------------------------------
+const QVector<SEnumEntry> CEnum<ETestState>::s_arEnumEntries;
+//------------------------------------------------------------------------------
+class CInitEnumTestState
+{
+public: // ctor
+    CInitEnumTestState() {
+        QVector<SEnumEntry>* pVEnumEntries = const_cast<QVector<SEnumEntry>*>(&CEnum<ETestState>::s_arEnumEntries);
+                                                     // Enumerator,                       Name,      Symbol,    Text,      SCIPShort, SCPILong
+        pVEnumEntries->append( /* 0 */ SEnumEntry( static_cast<int>(ETestState::Idle),    "Idle",    "Idle",    "Idle",    "IDLE",    "IDLE"    );
+        pVEnumEntries->append( /* 1 */ SEnumEntry( static_cast<int>(ETestState::Running), "Running", "Running", "Running", "RUNN",    "RUNNing" );
+        pVEnumEntries->append( /* 2 */ SEnumEntry( static_cast<int>(ETestState::Paused),  "Paused",  "Paused",  "Paused",  "PAUS",    "PAUSed"  );
+    }
+};
+static CInitEnumTestState s_initEnumTestState;
+#else // #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+//------------------------------------------------------------------------------
+template<> const QVector<SEnumEntry> ZS::System::CEnum<ETestState>::s_arEnumEntries =
+//------------------------------------------------------------------------------
+{                       // Enumerator,                         Name,      Symbol,    Text,      SCIPShort, SCPILong
+    /* 0 */ SEnumEntry( static_cast<int>(ETestState::Idle),    "Idle",    "Idle",    "Idle",    "IDLE",    "IDLE"    ),
+    /* 1 */ SEnumEntry( static_cast<int>(ETestState::Running), "Running", "Running", "Running", "RUNN",    "RUNNing" ),
+    /* 2 */ SEnumEntry( static_cast<int>(ETestState::Paused),  "Paused",  "Paused",  "Paused",  "PAUS",    "PAUSed"  )
+};
+#endif // #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 
 
 /*******************************************************************************
@@ -103,29 +178,3 @@ BOOL APIENTRY DllMain(
 
 } // DllMain
 #endif
-
-
-/*******************************************************************************
-exported methods
-*******************************************************************************/
-
-/*==============================================================================
-TestResult
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-static const SEnumEntry s_arEnumStrTestResult[ETestResultCount] =
-//------------------------------------------------------------------------------
-{
-    SEnumEntry( ETestResultUndefined,  "Undefined" ),
-    SEnumEntry( ETestResultTestFailed, "Failed"    ),
-    SEnumEntry( ETestResultTestPassed, "Passed"    ),
-    SEnumEntry( ETestResultIgnore,     "Ignore"    )
-};
-
-//------------------------------------------------------------------------------
-QString ZS::Test::testResult2Str( int i_testResult )
-//------------------------------------------------------------------------------
-{
-    return SEnumEntry::enumerator2Str(s_arEnumStrTestResult,ETestResultCount,i_testResult);
-}

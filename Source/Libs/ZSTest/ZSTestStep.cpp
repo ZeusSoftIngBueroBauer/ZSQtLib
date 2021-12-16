@@ -32,6 +32,7 @@ may result in using the software modules.
 #include "ZSSys/ZSSysErrResult.h"
 #include "ZSSys/ZSSysException.h"
 #include "ZSSys/ZSSysMath.h"
+#include "ZSSys/ZSSysTime.h"
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
@@ -48,52 +49,33 @@ class CTestStep : public CAbstractTestStepIdxTreeEntry, public ZS::System::#erro
 public: // ctors and dtor
 ==============================================================================*/
 
-////------------------------------------------------------------------------------
-///*! Constructs a test step.
-//
-//    The entry will be added to the index tree of the passed test instance.
-//
-//    @param i_pTest [in] Reference to test the entry belongs to (must not be nullptr).
-//    @param i_strName [in] Name of the entry.
-//    @param i_pTSGrpParent [in] Parent test group or nullptr, if the entry does not have a parent.
-//*/
-//CTestStep::CTestStep(
-//    CTest*          i_pTest,
-//    const QString&  i_strName,
-//    const QString&  i_strOperation,
-//    CTestStepGroup* i_pTSGrpParent,
-//    TFctDoTestStep  i_fctDoTestStep ) :
-////------------------------------------------------------------------------------
-//    CAbstractTestStepIdxTreeEntry(i_pTest, EIdxTreeEntryType::Leave, i_strName, i_pTSGrpParent),
-//    m_fctDoTestStep(i_fctDoTestStep),
-//    m_strOperation(i_strOperation),
-//    m_strDescription(),
-//    m_strlstDesiredValues(),
-//    m_strlstActualValues(),
-//    m_testResult(ETestResultUndefined),
-//    m_fTimeTestStart_s(0.0),
-//    m_fTimeTestEnd_s(0.0),
-//    m_bBreakpoint(false),
-//    m_bBreakpointEnabled(true)
-//{
-//} // ctor
-
 //------------------------------------------------------------------------------
 /*! Constructs a test step.
 
     The entry will be added to the index tree of the passed test instance.
+
+    When the "doTestStep" method of the test step is called by the test the
+    test method of the test step must be called. For this the "doTestStep" method
+    emits the "doTestStep" signal wherupon the passed slot function is called.
+    The slot function must belong to the test instance.
+    The signature of the slot function must be:
+
+    @code
+    void doTestStep<xyz>(ZS::Test::CTestStep*)
+    @endcode
+
+    The slot function may be passed as follows:
+
+    @code
+    SLOT(doTestStep<xyz>(ZS::Test::CTestStep*))
+    @endcode
 
     @param i_pTest [in] Reference to test instance the entry belongs to (must not be nullptr).
     @param i_strName [in] Name of the entry.
     @param i_strOperation [in] Should describe the operation which will be tested (e.g. "x + y").
     @param i_pTSGrpParent [in] Parent test group or nullptr. If nullptr is passed the tests root
                                entry will be used as the parent.
-    @param i_szDoTestStepSlotFct [in] Slot function which wil be called if the test instance calls "doTestStep".
-                                      "doTestStep" again emits the "doTestStep" signal wherupon this passed
-                                      slot function is called.
-                                      The signature of the slot function must be:
-                                      void doTestStep<xyz>(ZS::Test::CTestStep*) and may be passed as follows:
-                                      SLOT(doTestStep<xyz>(ZS::Test::CTestStep*))
+    @param i_szDoTestStepSlotFct [in] Slot function which will be called if the test instance calls "doTestStep".
 
 */
 CTestStep::CTestStep(
@@ -106,9 +88,8 @@ CTestStep::CTestStep(
     CAbstractTestStepIdxTreeEntry(i_pTest, EIdxTreeEntryType::Leave, i_strName, i_pTSGrpParent),
     m_strOperation(i_strOperation),
     m_strDescription(),
-    m_strlstDesiredValues(),
-    m_strlstActualValues(),
-    m_testResult(ETestResultUndefined),
+    m_strlstExpectedValues(),
+    m_strlstResultValues(),
     m_fTimeTestStart_s(0.0),
     m_fTimeTestEnd_s(0.0),
     m_bBreakpoint(false),
@@ -131,9 +112,8 @@ CTestStep::~CTestStep()
 {
     //m_strOperation;
     //m_strDescription;
-    //m_strlstDesiredValues.clear();
-    //m_strlstActualValues.clear();
-    m_testResult = static_cast<ETestResult>(0);
+    //m_strlstExpectedValues.clear();
+    //m_strlstResultValues.clear();
     m_fTimeTestStart_s = 0.0;
     m_fTimeTestEnd_s = 0.0;
     m_bBreakpoint = false;
@@ -178,10 +158,16 @@ void CTestStep::setDescription( const QString& i_strDescription )
 } // setDescription
 
 //------------------------------------------------------------------------------
-void CTestStep::setDesiredValues( const QStringList& i_strlstDesiredValues )
+/*! Sets the expected result values of the test step.
+
+    @param i_strlstExpectedValues [in] List with strings defining the expected result
+                                     values of the test step. The list will be compared
+                                     with the result values.
+*/
+void CTestStep::setExpectedValues( const QStringList& i_strlstExpectedValues )
 //------------------------------------------------------------------------------
 {
-    m_strlstDesiredValues = i_strlstDesiredValues;
+    m_strlstExpectedValues = i_strlstExpectedValues;
 
     if( m_pTree != nullptr )
     {
@@ -190,52 +176,80 @@ void CTestStep::setDesiredValues( const QStringList& i_strlstDesiredValues )
 }
 
 //------------------------------------------------------------------------------
-void CTestStep::setDesiredValue( const QString& i_strDesiredValue )
+/*! Sets the expected result value of the test step.
+
+    @param i_strlstExpectedValue [in] String defining the expected result value
+                                      of the test step. The string will be compared
+                                      with the result value.
+*/
+void CTestStep::setExpectedValue( const QString& i_strExpectedValue )
 //------------------------------------------------------------------------------
 {
-    QStringList strlstDesiredValues;
+    QStringList strlstExpectedValues;
 
-    if( !i_strDesiredValue.isEmpty() )
+    if( !i_strExpectedValue.isEmpty() )
     {
-        strlstDesiredValues << i_strDesiredValue;
+        strlstExpectedValues << i_strExpectedValue;
     }
-    setDesiredValues(strlstDesiredValues);
+    setExpectedValues(strlstExpectedValues);
 }
 
 //------------------------------------------------------------------------------
-void CTestStep::setActualValues( const QStringList& i_strlstActualValues )
+/*! Sets the actual result values of the test step which finishes test step.
+    The signal "testStepFinished" is emitted.
+
+    @param i_strlstResultValues [in] List with strings defining the actual result
+                                     values of the test step. The list will be compared
+                                     with the expected values. If equal the test result is
+                                     Passed, otherwise Failed.
+*/
+void CTestStep::setResultValues( const QStringList& i_strlstResultValues )
 //------------------------------------------------------------------------------
 {
-    m_strlstActualValues = i_strlstActualValues;
+    m_strlstResultValues = i_strlstResultValues;
 
-    if( m_strlstActualValues.size() > 0 )
-    {
-        //testEnded();
-    }
+    // Not necessary here to inform the index tree that the content of the entry
+    // has been changed. Thats been done by "onTestStepFinished".
 
-    if( m_pTree != nullptr )
-    {
-        m_pTree->onTreeEntryChanged(this);
-    }
+    onTestStepFinished();
 
-    if( m_strlstActualValues.size() > 0 )
-    {
-        //emit finished(this);
-    }
+    emit testStepFinished(this);
 
-} // setActualValues
+} // setResultValues
 
 //------------------------------------------------------------------------------
-void CTestStep::setActualValue( const QString& i_strActualValue )
+/*! Sets the actual result value of the test step which finishes test step.
+    The signal "testStepFinished" is emitted.
+
+    @param i_strResultValue [in] String defining the actual result value of the test step.
+                                     The value will be compared with the expected value.
+                                     If equal the test result is Passed, otherwise Failed.
+*/
+void CTestStep::setResultValue( const QString& i_strResultValue )
 //------------------------------------------------------------------------------
 {
-    QStringList strlstActualValues;
+    QStringList strlstResultValues;
 
-    if( !i_strActualValue.isEmpty() )
+    if( !i_strResultValue.isEmpty() )
     {
-        strlstActualValues << i_strActualValue;
+        strlstResultValues << i_strResultValue;
     }
-    setActualValues(strlstActualValues);
+    setResultValues(strlstResultValues);
+}
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! Returns true if the test step is finished and the result values has been set.
+
+    @return true if the test step has been finished, false otherwise.
+*/
+bool CTestStep::isFinished() const
+//------------------------------------------------------------------------------
+{
+    return (m_strlstResultValues.size() > 0);
 }
 
 /*==============================================================================
@@ -307,6 +321,27 @@ void CTestStep::disableBreakpoint()
 } // disableBreakpoint
 
 /*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CTestStep::reset()
+//------------------------------------------------------------------------------
+{
+    m_strlstExpectedValues.clear();
+    m_strlstResultValues.clear();
+    m_testResult = static_cast<ETestResult>(0);
+    m_fTimeTestStart_s = 0.0;
+    m_fTimeTestEnd_s = 0.0;
+
+    if( m_pTree != nullptr )
+    {
+        m_pTree->onTreeEntryChanged(this);
+    }
+
+} // reset
+
+/*==============================================================================
 public: // must overridables of base class CAbstractTestStepIdxTreeEntry
 ==============================================================================*/
 
@@ -317,69 +352,39 @@ double CTestStep::getTestDurationInSec() const
     return m_fTimeTestEnd_s - m_fTimeTestStart_s;
 }
 
-//------------------------------------------------------------------------------
-double CTestStep::getTestDurationInMilliSec() const
-//------------------------------------------------------------------------------
-{
-    return (m_fTimeTestEnd_s - m_fTimeTestStart_s) * 1.0e3;
-}
-
-//------------------------------------------------------------------------------
-double CTestStep::getTestDurationInMicroSec() const
-//------------------------------------------------------------------------------
-{
-    return (m_fTimeTestEnd_s - m_fTimeTestStart_s) * 1.0e6;
-}
-
-//------------------------------------------------------------------------------
-double CTestStep::getTestDurationInNanoSec() const
-//------------------------------------------------------------------------------
-{
-    return (m_fTimeTestEnd_s - m_fTimeTestStart_s) * 1.0e9;
-}
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
 
 #if 0
 
+//------------------------------------------------------------------------------
+void CTestStep::updateTestEndTime()
+//------------------------------------------------------------------------------
+{
+    m_fTimeTestEnd_s = ZS::System::Time::getProcTimeInSec();
+    update();
+
+} // updateTestEndTime
+
+#endif
+
 /*==============================================================================
-public: // overridables of base class CAbstractTestStepIdxTreeEntry
+public: // overridables
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CTestStep::setTestResult( ETestResult i_testResult )
+/*! Executes the test step by emitting the doTestStep signal.
+
+    The slot function passed to the ctor of the test step is connected to this signal.
+*/
+void CTestStep::doTestStep()
 //------------------------------------------------------------------------------
 {
-    if( m_testResult != i_testResult )
-    {
-        m_testResult = i_testResult;
+    emit doTestStep(this);
+}
 
-        if( m_testResult != ETestResultIgnore )
-        {
-            if( m_pListEntry != nullptr && m_pListEntry->getTreeEntry() != nullptr )
-            {
-                #error CAbstractIdxTreeEntry* pTreeEntryParent = m_pListEntry->getTreeEntry()->getParentEntry();
-
-                if( pTreeEntryParent != nullptr )
-                {
-                    CAbstractTestStepIdxTreeEntry* pTSAdmObjParent = reinterpret_cast<CAbstractTestStepIdxTreeEntry*>(pTreeEntryParent->getObj());
-
-                    if( pTSAdmObjParent != nullptr && pTSAdmObjParent->isGroup() )
-                    {
-                        CTestStepGroup* pTSGrpParent = dynamic_cast<CTestStepGroup*>(pTSAdmObjParent);
-
-                        if( pTSGrpParent != nullptr )
-                        {
-                            pTSGrpParent->setTestResult(i_testResult);
-                        }
-                    }
-                }
-            }
-        } // if( m_testResult != ETestResultIgnore )
-
-        update();
-
-    } // if( m_testResult != i_testResult )
-
-} // setTestResult
+#if 0
 
 /*==============================================================================
 public: // must overridables of base class CAbstractTestStepIdxTreeEntry
@@ -416,15 +421,15 @@ void CTestStep::testEnded( bool i_bIgnoreTestResult )
     {
         ETestResult result = ETestResultTestPassed;
 
-        if( m_strlstDesiredValues.size() != m_strlstActualValues.size() )
+        if( m_strlstExpectedValues.size() != m_strlstResultValues.size() )
         {
             result = ETestResultTestFailed;
         }
         else
         {
-            for( int idxVal = 0; idxVal < m_strlstDesiredValues.size(); idxVal++ )
+            for( int idxVal = 0; idxVal < m_strlstExpectedValues.size(); idxVal++ )
             {
-                if( m_strlstDesiredValues[idxVal] != m_strlstActualValues[idxVal] )
+                if( m_strlstExpectedValues[idxVal] != m_strlstResultValues[idxVal] )
                 {
                     result = ETestResultTestFailed;
                     break;
@@ -434,92 +439,45 @@ void CTestStep::testEnded( bool i_bIgnoreTestResult )
         setTestResult(result);
     }
 
-    //update(); // called by "setTestResult"
-
     m_pIdxTree->testStepEnded(this);
 
     // update(); update is used to update the model but the model is implicitly updated by the testStepEnded method
 
 } // testEnded
 
-//------------------------------------------------------------------------------
-void CTestStep::reset()
-//------------------------------------------------------------------------------
-{
-    CAbstractTestStepIdxTreeEntry::reset();
-
-    m_strlstDesiredValues.clear();
-    m_strlstActualValues.clear();
-
-} // reset
+#endif
 
 /*==============================================================================
-public: // must overridables of base class CAbstractTestStepIdxTreeEntry
+protected: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-bool CTestStep::isFinished() const
-//------------------------------------------------------------------------------
-{
-    return (m_strlstActualValues.size() > 0);
-}
-
-/*==============================================================================
-public: // instance methods
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-void CTestStep::updateTestEndTime()
+void CTestStep::onTestStepFinished()
 //------------------------------------------------------------------------------
 {
     m_fTimeTestEnd_s = ZS::System::Time::getProcTimeInSec();
-    update();
 
-} // updateTestEndTime
+    CEnumTestResult result = ETestResult::TestPassed;
 
-#endif
-
-/*==============================================================================
-public: // overridables
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-/*! Executes the test step by emitting the doTestStep signal.
-
-    The slot function passed to the ctor of the test step is connected to this signal.
-*/
-void CTestStep::doTestStep()
-//------------------------------------------------------------------------------
-{
-    emit doTestStep(this);
-}
-
-/*==============================================================================
-public: // must overridables of base class CAbstractTestStepIdxTreeEntry
-==============================================================================*/
-
-#if 0
-
-//------------------------------------------------------------------------------
-void CTestStep::update()
-//------------------------------------------------------------------------------
-{
-    if( m_pTest != nullptr )
+    if( m_strlstExpectedValues.size() != m_strlstResultValues.size() )
     {
-        m_pTest->onTestStepChanged( dynamic_cast<CTestStep*>(this) );
+        result = ETestResult::TestFailed;
+    }
+    else
+    {
+        for( int idxVal = 0; idxVal < m_strlstExpectedValues.size(); idxVal++ )
+        {
+            if( m_strlstExpectedValues[idxVal] != m_strlstResultValues[idxVal] )
+            {
+                result = ETestResult::TestFailed;
+                break;
+            }
+        }
     }
 
-} // update
+    // Not necessary here to inform the index tree that the content of the entry
+    // has been changed. Thats been done by "setTestResult".
 
-/*==============================================================================
-public: // instance methods (experts use only)
-==============================================================================*/
+    setTestResult(result);
 
-//------------------------------------------------------------------------------
-void CTestStep::setListEntry( CIdxTreeListEntry* i_pListEntry )
-//------------------------------------------------------------------------------
-{
-    m_pListEntry = i_pListEntry;
-}
-
-#endif
+} // onTestStepFinished

@@ -33,8 +33,6 @@ namespace ZS
 {
 namespace Test
 {
-class CTestStepGroup;
-
 //******************************************************************************
 class ZSTESTDLL_API CTestStep : public CAbstractTestStepIdxTreeEntry
 //******************************************************************************
@@ -43,8 +41,6 @@ class ZSTESTDLL_API CTestStep : public CAbstractTestStepIdxTreeEntry
 public: // class methods
     static QString NameSpace() { return "ZS::Test"; }
     static QString ClassName() { return "CTestStep"; }
-public: // type definitions and constants
-    //typedef ETestResult (*TFctDoTestStep)( CTest* i_pTest, CTestStep* i_pTestStep );
 public: // ctors and dtor
     //CTestStep(
     //    CTest*          i_pTest,
@@ -61,7 +57,7 @@ public: // ctors and dtor
     virtual ~CTestStep();
 signals:
     void doTestStep( ZS::Test::CTestStep* i_pTestStep );
-    //void finished( ZS::Test::CTestStep* i_pTestStep ); // emitted if actual values are set
+    void testStepFinished( ZS::Test::CTestStep* i_pTestStep ); // emitted if result values are set
 public: // overridables
     virtual QString nameSpace() const { return CTestStep::NameSpace(); }
     virtual QString className() const { return CTestStep::ClassName(); }
@@ -72,13 +68,15 @@ public: // instance methods
     QString getDescription() const { return m_strDescription; }
     void setDescription( const QString& i_strDescription );
 public: // instance methods
-    QStringList getDesiredValues() const { return m_strlstDesiredValues; }
-    void setDesiredValues( const QStringList& i_strlstDesiredValues = QStringList() );
-    void setDesiredValue( const QString& i_strDesiredValue = QString() ); // Provided for convenience. Converted to String List.
+    QStringList getExpectedValues() const { return m_strlstExpectedValues; }
+    void setExpectedValues( const QStringList& i_strlstExpectedValues = QStringList() );
+    void setExpectedValue( const QString& i_strExpectedValue = QString() ); // Provided for convenience. Converted to String List.
 public: // instance methods
-    QStringList getActualValues() const { return m_strlstActualValues; }
-    void setActualValues( const QStringList& i_strlstActualValues = QStringList() ); // finishes the test step
-    void setActualValue( const QString& i_strDesiredValue = QString() ); // Provided for convenience. Converted to String List.
+    QStringList getResultValues() const { return m_strlstResultValues; }
+    void setResultValues( const QStringList& i_strlstResultValues = QStringList() ); // finishes the test step
+    void setResultValue( const QString& i_strResultValue = QString() ); // Provided for convenience. Converted to String List.
+public: // instance methods
+    bool isFinished() const;
 public: // instance methods
     void setBreakpoint();
     void removeBreakpoint();
@@ -87,35 +85,30 @@ public: // instance methods
     void disableBreakpoint();
     bool isBreakpointEnabled() const { return m_bBreakpointEnabled; }
 public: // instance methods
-    void setTestResult( ETestResult i_testResult );
-//public: // must overridables of base class CAbstractTestStepIdxTreeEntry
-//    virtual void testStarted();
-//    virtual void testEnded( bool i_bIgnoreTestResult = false ); // Implicitly updates test end time if not already updated.
-//    virtual void reset();
-//public: // must overridables of base class CAbstractTestStepIdxTreeEntry
-//    virtual bool isFinished() const;
+    void reset();
 public: // must overridables of base class CAbstractTestStepIdxTreeEntry
+    virtual CEnumTestResult getTestResult() const override { return m_testResult; }
     virtual double getTestDurationInSec() const override;
-    virtual double getTestDurationInMilliSec() const override;
-    virtual double getTestDurationInMicroSec() const override;
-    virtual double getTestDurationInNanoSec() const override;
 public: // instance methods
     virtual void doTestStep();
+protected: // instance methods
+    //virtual void testStarted();
+    //virtual void testEnded( bool i_bIgnoreTestResult = false ); // Implicitly updates test end time if not already updated.
+    void onTestStepFinished();
 private: // default ctor not allowed
     CTestStep();
 private: // copy ctor not allowed
     CTestStep( const CTestStep& );
 protected: // instance members
     //TFctDoTestStep m_fctDoTestStep;
-    QString        m_strOperation;
-    QString        m_strDescription;
-    QStringList    m_strlstDesiredValues;
-    QStringList    m_strlstActualValues;
-    ETestResult    m_testResult;
-    double         m_fTimeTestStart_s;
-    double         m_fTimeTestEnd_s;
-    bool           m_bBreakpoint;
-    bool           m_bBreakpointEnabled;
+    QString         m_strOperation;
+    QString         m_strDescription;
+    QStringList     m_strlstExpectedValues;
+    QStringList     m_strlstResultValues;
+    double          m_fTimeTestStart_s;
+    double          m_fTimeTestEnd_s;
+    bool            m_bBreakpoint;
+    bool            m_bBreakpointEnabled;
 
 }; // class CTestStep
 

@@ -86,7 +86,6 @@ CMainWindow::CMainWindow(
     m_pSettingsFile(nullptr),
     m_pMnuFile(nullptr),
     m_pToolBarFile(nullptr),
-    m_pActFileNew(nullptr),
     m_pActFileOpen(nullptr),
     m_pActFileSave(nullptr),
     m_pActFileQuit(nullptr),
@@ -97,8 +96,7 @@ CMainWindow::CMainWindow(
     m_pActInfoSettingsFile(nullptr),
     m_pStatusBar(nullptr),
     m_pLblErrors(nullptr),
-    m_pWdgtCentral(nullptr),
-    m_pDlgFile(nullptr)
+    m_pWdgtCentral(nullptr)
 {
     if( s_pThis != nullptr )
     {
@@ -118,34 +116,6 @@ CMainWindow::CMainWindow(
     m_pToolBarFile = addToolBar("File Operations");
     m_pToolBarFile->setObjectName("File Operations");
     m_pToolBarFile->setIconSize( QSize(16,16) );
-
-    // <MenuItem> File::New
-    //----------------------
-
-    QIcon iconFileNew;
-
-    QPixmap pxmFileNew16x16(":/ZS/Menu/MenuFileNew16x16.bmp");
-
-    pxmFileNew16x16.setMask(pxmFileNew16x16.createHeuristicMask());
-
-    iconFileNew.addPixmap(pxmFileNew16x16);
-
-    m_pActFileNew = new QAction(iconFileNew,"&New ...", this);
-    m_pActFileNew->setShortcuts(QKeySequence::New);
-    m_pActFileNew->setStatusTip(tr("Create a new test step settings file"));
-
-    m_pMnuFile->addAction(m_pActFileNew);
-
-    m_pToolBarFile->addAction(m_pActFileNew);
-
-    if( !QObject::connect(
-        /* pObjSender   */ m_pActFileNew,
-        /* szSignal     */ SIGNAL(triggered()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onActFileNewTriggered()) ) )
-    {
-        throw CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-    }
 
     // <MenuItem> File::Open
     //----------------------
@@ -371,20 +341,11 @@ CMainWindow::~CMainWindow()
     // <Clear>
     //======================
 
-    try
-    {
-        delete m_pDlgFile;
-    }
-    catch(...)
-    {
-    }
-
     CDialog::DestroyAllInstances();
 
     m_pSettingsFile = nullptr;
     m_pMnuFile = nullptr;
     m_pToolBarFile = nullptr;
-    m_pActFileNew = nullptr;
     m_pActFileOpen = nullptr;
     m_pActFileSave = nullptr;
     m_pActFileQuit = nullptr;
@@ -396,7 +357,6 @@ CMainWindow::~CMainWindow()
     m_pStatusBar = nullptr;
     m_pLblErrors = nullptr;
     m_pWdgtCentral = nullptr;
-    m_pDlgFile = nullptr;
 
     s_pThis = nullptr;
 
@@ -412,18 +372,8 @@ void CMainWindow::closeEvent( QCloseEvent* i_pEv )
 {
     if( i_pEv->isAccepted() )
     {
-        try
-        {
-            delete m_pDlgFile;
-        }
-        catch(...)
-        {
-        }
-        m_pDlgFile = nullptr;
-
         CDialog::HideAllInstances();
-
-    } // if( i_pEv->isAccepted() )
+    }
 
     QMainWindow::closeEvent(i_pEv);
 
@@ -461,72 +411,52 @@ protected slots:
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CMainWindow::onActFileNewTriggered()
-//------------------------------------------------------------------------------
-{
-    if( CApplication::GetInstance()->getTest() != nullptr )
-    {
-        CTestStepIdxTree* pIdxTree = CApplication::GetInstance()->getTest()->getTestStepIdxTree();
-
-        if( pIdxTree != nullptr )
-        {
-            pIdxTree->clear();
-        }
-    }
-
-} // onActFileNewTriggered
-
-//------------------------------------------------------------------------------
 void CMainWindow::onActFileOpenTriggered()
 //------------------------------------------------------------------------------
 {
-    if( m_pDlgFile == nullptr )
-    {
-        m_pDlgFile = new QFileDialog(
-            /* pWdgtParent  */ nullptr,
-            /* strCaption   */ windowTitle() + ": File Dialog",
-            /* strDirectory */ "",
-            /* strFilter    */ "*.*" );
-    }
-
     CTest* pTest = CApplication::GetInstance()->getTest();
 
     if( pTest != nullptr )
     {
         QString strFile = pTest->getTestStepsAbsFilePath();
-        QString strDir;
 
         if( !strFile.isEmpty() )
         {
             QFileInfo fileInfo(strFile);
-            QDir dir = fileInfo.absoluteDir();
-            strDir = dir.absoluteFilePath(strFile);
+            strFile = fileInfo.absoluteFilePath();
         }
 
-        m_pDlgFile->setWindowTitle( windowTitle() + ": Open Test Step Config File" );
-        m_pDlgFile->setAcceptMode(QFileDialog::AcceptOpen);
+        strFile = QFileDialog::getOpenFileName(
+            /* parent             */ this,
+            /* strCaption         */ windowTitle() + ": Recall test step settings",
+            /* strDir             */ strFile,
+            /* filter             */ "Test step setting files (*.xml)",
+            /* pstrSelectedFilter */ nullptr,
+            /* options            */ QFileDialog::Options() );
+
+        //m_pDlgFile->setAcceptMode(QFileDialog::AcceptOpen);
         //m_pDlgFile->setOption(QFileDialog::DontConfirmOverwrite, false);
         //m_pDlgFile->setConfirmOverwrite(true);
-        #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-        m_pDlgFile->setFilter("*.xml");
-        #else
-        m_pDlgFile->setNameFilter("*.xml");
-        #endif
-        m_pDlgFile->setDefaultSuffix("*.xml");
-        m_pDlgFile->setDirectory(strDir);
+        //#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+        //m_pDlgFile->setFilter("*.xml");
+        //#else
+        //m_pDlgFile->setNameFilter("*.xml");
+        //#endif
+        //m_pDlgFile->setDefaultSuffix("*.xml");
+        //m_pDlgFile->setDirectory(strDir);
 
-        if( !strFile.isEmpty() )
-        {
-            m_pDlgFile->selectFile(strFile);
-        }
+        //if( !strFile.isEmpty() )
+        //{
+        //    m_pDlgFile->selectFile(strFile);
+        //}
 
-        if( m_pDlgFile->exec() )
-        {
-            QStringList strlstFiles = m_pDlgFile->selectedFiles();
+        //if( m_pDlgFile->exec() )
+        //{
+        //    QStringList strlstFiles = m_pDlgFile->selectedFiles();
 
-            if( strlstFiles.size() > 0 )
-            {
-                strFile = strlstFiles[0];
+        //    if( strlstFiles.size() > 0 )
+        //    {
+        //        strFile = strlstFiles[0];
 
                 if( !strFile.isEmpty() )
                 {
@@ -549,8 +479,8 @@ void CMainWindow::onActFileOpenTriggered()
                             /* buttons     */ QMessageBox::Ok );
                     }
                 } // if( strFile.isEmpty() )
-            } // if( strlstFiles.size() > 0 )
-        } // if( m_pDlgFile->exec() )
+        //    } // if( strlstFiles.size() > 0 )
+        //} // if( m_pDlgFile->exec() )
     } // if( pTest != nullptr )
 
 } // onActFileOpenTriggered
@@ -559,15 +489,6 @@ void CMainWindow::onActFileOpenTriggered()
 void CMainWindow::onActFileSaveTriggered()
 //------------------------------------------------------------------------------
 {
-    if( m_pDlgFile == nullptr )
-    {
-        m_pDlgFile = new QFileDialog(
-            /* pWdgtParent  */ nullptr,
-            /* strCaption   */ windowTitle() + ": File Dialog",
-            /* strDirectory */ "",
-            /* strFilter    */ "*.*" );
-    }
-
     CTest* pTest = CApplication::GetInstance()->getTest();
 
     if( pTest != nullptr )
@@ -578,35 +499,42 @@ void CMainWindow::onActFileSaveTriggered()
         if( !strFile.isEmpty() )
         {
             QFileInfo fileInfo(strFile);
-            QDir dir = fileInfo.absoluteDir();
-            strDir = dir.absoluteFilePath(strFile);
+            strFile = fileInfo.absoluteFilePath();
         }
 
-        m_pDlgFile->setWindowTitle( windowTitle() + ": Save Test Step Config File" );
-        m_pDlgFile->setAcceptMode(QFileDialog::AcceptSave);
+        strFile = QFileDialog::getSaveFileName(
+            /* parent             */ this,
+            /* strCaption         */ windowTitle() + ": Save test step settings",
+            /* strDir             */ strFile,
+            /* filter             */ "Test step setting files (*.xml)",
+            /* pstrSelectedFilter */ nullptr,
+            /* options            */ QFileDialog::Options() );
+
+        //m_pDlgFile->setWindowTitle( windowTitle() + ": Save Test Step Config File" );
+        //m_pDlgFile->setAcceptMode(QFileDialog::AcceptSave);
         //m_pDlgFile->setOption(QFileDialog::DontConfirmOverwrite, false);
         //m_pDlgFile->setConfirmOverwrite(true);
-        #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-        m_pDlgFile->setFilter("*.xml");
-        #else
-        m_pDlgFile->setNameFilter("*.xml");
-        #endif
-        m_pDlgFile->setDefaultSuffix("*.xml");
-        m_pDlgFile->setDirectory(strDir);
+        //#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+        //m_pDlgFile->setFilter("*.xml");
+        //#else
+        //m_pDlgFile->setNameFilter("*.xml");
+        //#endif
+        //m_pDlgFile->setDefaultSuffix("*.xml");
+        //m_pDlgFile->setDirectory(strDir);
 
-        if( !strFile.isEmpty() )
-        {
-            m_pDlgFile->selectFile(strFile);
-        }
+        //if( !strFile.isEmpty() )
+        //{
+        //    m_pDlgFile->selectFile(strFile);
+        //}
 
-        if( m_pDlgFile->exec() )
-        {
-            QStringList strlstFiles = m_pDlgFile->selectedFiles();
-            QString     strFile;
+        //if( m_pDlgFile->exec() )
+        //{
+        //    QStringList strlstFiles = m_pDlgFile->selectedFiles();
+        //    QString     strFile;
 
-            if( strlstFiles.size() > 0 )
-            {
-                strFile = strlstFiles[0];
+        //    if( strlstFiles.size() > 0 )
+        //    {
+        //        strFile = strlstFiles[0];
 
                 if( !strFile.isEmpty() )
                 {
@@ -629,8 +557,8 @@ void CMainWindow::onActFileSaveTriggered()
                             /* buttons     */ QMessageBox::Ok );
                     }
                 } // if( strFile.isEmpty() )
-            } // if( strlstFiles.size() > 0 )
-        } // if( m_pDlgFile->exec() )
+        //    } // if( strlstFiles.size() > 0 )
+        //} // if( m_pDlgFile->exec() )
     } // if( pIdxTree != nullptr )
 
 } // onActFileSaveTriggered

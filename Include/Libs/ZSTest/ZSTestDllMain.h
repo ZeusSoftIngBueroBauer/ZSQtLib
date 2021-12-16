@@ -30,6 +30,7 @@ may result in using the software modules.
 #include <QtCore/qstring.h>
 
 #include "ZSSys/ZSSysDllMain.h"
+#include "ZSSys/ZSSysCommon.h"
 
 // specific export defines
 #ifdef ZSTESTDLL_EXPORTS
@@ -47,15 +48,36 @@ namespace ZS
 {
 namespace Test
 {
-enum ETestResult {
-    ETestResultUndefined  = 0,
-    ETestResultTestFailed = 1,
-    ETestResultTestPassed = 2,
-    ETestResultIgnore     = 3,
-    ETestResultCount
+//==============================================================================
+/*! Possible results of test steps and the overall test.
+*/
+enum class ETestResult {
+//==============================================================================
+    Undefined  = 0,
+    TestFailed = 1,
+    TestPassed = 2,
+    Ignore     = 3,
+    Count
 };
 
-ZSTESTDLL_API QString testResult2Str( int i_iResult );
+template class ZSTESTDLL_API ZS::System::CEnum<ETestResult>;
+typedef ZS::System::CEnum<ETestResult> CEnumTestResult;
+
+
+//==============================================================================
+/*! Possible states of a test.
+*/
+enum class ETestState
+//==============================================================================
+{
+    Idle    = 0,  /*! Test has not been started. */
+    Running = 1,  /*! Test is running. */
+    Paused  = 2   /*! Test has been paused. */
+};
+
+template class ZSTESTDLL_API ZS::System::CEnum<ETestState>;
+typedef ZS::System::CEnum<ETestState> CEnumTestState;
+
 
 } // namespace Test
 

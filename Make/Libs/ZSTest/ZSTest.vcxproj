@@ -703,6 +703,7 @@
     <ClCompile Include="..\..\..\Source\Libs\ZSTest\ZSTestStepIdxTreeEntry.cpp" />
     <ClCompile Include="..\..\..\Source\Libs\ZSTest\ZSTestStepIdxTree.cpp" />
     <ClCompile Include="..\..\..\Source\Libs\ZSTest\ZSTestStepGroup.cpp" />
+    <ClCompile Include="..\..\..\Source\Libs\ZSTest\ZSTestStepRoot.cpp" />
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTest\Debug_msvc2015\Win32\moc_ZSTest.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">true</ExcludedFromBuild>
@@ -1545,6 +1546,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\Include\Libs\ZSTest\ZSTestStepRoot.h" />
     <CustomBuild Include="..\..\..\Include\Libs\ZSTest\ZSTestStep.h">
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">$(QTDIR_MSVC2017_Win32)\bin\moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Command>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|Win32'">$(QTDIR_MSVC2019_Win32)\bin\moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Command>

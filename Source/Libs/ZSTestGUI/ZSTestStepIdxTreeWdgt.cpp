@@ -24,45 +24,29 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#include <QtCore/qsettings.h>
-#include <QtGui/qevent.h>
-#include <QtGui/qpainter.h>
+#include <QtCore/qglobal.h>
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-#include <QtGui/qcheckbox.h>
-#include <QtGui/qcombobox.h>
-#include <QtGui/qheaderview.h>
 #include <QtGui/qlabel.h>
 #include <QtGui/qlayout.h>
 #include <QtGui/qlineedit.h>
-#include <QtGui/qmenu.h>
 #include <QtGui/qpushbutton.h>
-#include <QtGui/qsplitter.h>
-#include <QtGui/qtableview.h>
 #else
-#include <QtWidgets/qcheckbox.h>
-#include <QtWidgets/qcombobox.h>
-#include <QtWidgets/qheaderview.h>
 #include <QtWidgets/qlabel.h>
 #include <QtWidgets/qlayout.h>
 #include <QtWidgets/qlineedit.h>
-#include <QtWidgets/qmenu.h>
 #include <QtWidgets/qpushbutton.h>
-#include <QtWidgets/qsplitter.h>
-#include <QtWidgets/qtableview.h>
 #endif
 
 #include "ZSTestGUI/ZSTestStepIdxTreeWdgt.h"
 #include "ZSTestGUI/ZSTestStepIdxTreeModel.h"
 #include "ZSTestGUI/ZSTestStepIdxTreeView.h"
-#include "ZSTest/ZSTest.h"
 #include "ZSTest/ZSTestStep.h"
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
 
 using namespace ZS::System;
-using namespace ZS::System::GUI;
 using namespace ZS::Test;
 using namespace ZS::Test::GUI;
 
@@ -84,7 +68,6 @@ CWdgtIdxTreeTestSteps::CWdgtIdxTreeTestSteps(
 //------------------------------------------------------------------------------
     QWidget(i_pWdgtParent,i_wflags),
     m_pTest(i_pTest),
-    m_pReqInProgress(nullptr),
     m_pLytMain(nullptr),
     m_pLytHeadLine(nullptr),
     m_pBtnStart(nullptr),
@@ -391,9 +374,18 @@ CWdgtIdxTreeTestSteps::CWdgtIdxTreeTestSteps(
 
     if( !QObject::connect(
         /* pObjSender   */ m_pTest,
-        /* szSignal     */ SIGNAL( stateChanged(int,int) ),
+        /* szSignal     */ SIGNAL( stateChanged(const ZS::Test::CEnumTestState&) ),
         /* pObjReceiver */ this,
-        /* szSlot       */ SLOT( onTestStateChanged(int,int) ) ) )
+        /* szSlot       */ SLOT( onTestStateChanged(const ZS::Test::CEnumTestState&) ) ) )
+    {
+        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
+    }
+
+    if( !QObject::connect(
+        /* pObjSender   */ m_pTest,
+        /* szSignal     */ SIGNAL( runModeChanged(const ZS::System::CEnumRunMode&) ),
+        /* pObjReceiver */ this,
+        /* szSlot       */ SLOT( onTestRunModeChanged(const ZS::System::CEnumRunMode&) ) ) )
     {
         throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
     }
@@ -437,9 +429,6 @@ CWdgtIdxTreeTestSteps::CWdgtIdxTreeTestSteps(
         }
     }
 
-    // <Geometry> Restore splitter position
-    //=====================================
-
     // <TreeView> Resize
     //------------------
 
@@ -454,8 +443,6 @@ CWdgtIdxTreeTestSteps::CWdgtIdxTreeTestSteps(
 CWdgtIdxTreeTestSteps::~CWdgtIdxTreeTestSteps()
 //------------------------------------------------------------------------------
 {
-    QSettings settings;
-
     try
     {
         delete m_pTestStepsModel;
@@ -465,7 +452,6 @@ CWdgtIdxTreeTestSteps::~CWdgtIdxTreeTestSteps()
     }
 
     m_pTest = nullptr;
-    m_pReqInProgress = nullptr;
     m_pLytMain = nullptr;
     m_pLytHeadLine = nullptr;
     m_pBtnStart = nullptr;
@@ -491,14 +477,14 @@ protected slots:
 void CWdgtIdxTreeTestSteps::onBtnStartClicked( bool /*i_bChecked*/ )
 //------------------------------------------------------------------------------
 {
-    //m_pTest->start();
+    m_pTest->start();
 }
 
 //------------------------------------------------------------------------------
 void CWdgtIdxTreeTestSteps::onBtnStepClicked( bool /*i_bChecked*/ )
 //------------------------------------------------------------------------------
 {
-    //m_pTest->step();
+    m_pTest->step();
 }
 
 //------------------------------------------------------------------------------
@@ -567,7 +553,7 @@ protected slots:
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CWdgtIdxTreeTestSteps::onTestStateChanged( int /*i_iStateNew*/, int /*i_iStatePrev*/ )
+void CWdgtIdxTreeTestSteps::onTestStateChanged( const ZS::Test::CEnumTestState& /*i_state*/ )
 //------------------------------------------------------------------------------
 {
     //if( m_pTest->getState() == CTest::EStateIdle )
@@ -602,6 +588,41 @@ void CWdgtIdxTreeTestSteps::onTestStateChanged( int /*i_iStateNew*/, int /*i_iSt
 } // onTestStateChanged
 
 //------------------------------------------------------------------------------
+void CWdgtIdxTreeTestSteps::onTestRunModeChanged( const ZS::System::CEnumRunMode& /*i_runMode*/ )
+//------------------------------------------------------------------------------
+{
+    //if( m_pTest->getState() == CTest::EStateIdle )
+    //{
+    //    m_pBtnStart->setEnabled(true);
+    //    m_pBtnStep->setEnabled(true);
+    //    m_pBtnPause->setEnabled(false);
+    //    m_pBtnStop->setEnabled(false);
+    //}
+    //else if( m_pTest->getState() == CTest::EStateInit )
+    //{
+    //    m_pBtnStart->setEnabled(false);
+    //    m_pBtnStep->setEnabled(false);
+    //    m_pBtnPause->setEnabled(false);
+    //    m_pBtnStop->setEnabled(false);
+    //}
+    //else if( m_pTest->getState() == CTest::EStateRunning )
+    //{
+    //    m_pBtnStart->setEnabled(false);
+    //    m_pBtnStep->setEnabled(false);
+    //    m_pBtnPause->setEnabled(true);
+    //    m_pBtnStop->setEnabled(true);
+    //}
+    //else if( m_pTest->getState() == CTest::EStatePaused )
+    //{
+    //    m_pBtnStart->setEnabled(true);
+    //    m_pBtnStep->setEnabled(true);
+    //    m_pBtnPause->setEnabled(false);
+    //    m_pBtnStop->setEnabled(true);
+    //}
+
+} // onTestRunModeChanged
+
+//------------------------------------------------------------------------------
 void CWdgtIdxTreeTestSteps::onCurrentTestStepChanged( CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
@@ -611,7 +632,7 @@ void CWdgtIdxTreeTestSteps::onCurrentTestStepChanged( CTestStep* i_pTestStep )
     }
     else // if( i_pTestStep != nullptr )
     {
-        m_pEdtTestStepCurr->setText( i_pTestStep->name() );
+        m_pEdtTestStepCurr->setText( i_pTestStep->path() );
     }
 } // onCurrentTestStepChanged
 

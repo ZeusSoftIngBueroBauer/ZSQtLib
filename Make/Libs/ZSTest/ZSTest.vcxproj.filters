@@ -279,6 +279,9 @@
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSTest\Release_msvc2017\x64\moc_ZSTestStepIdxTreeEntry.cpp">
       <Filter>Generated Files\msvc2017\x64\Release</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSTest\ZSTestStepRoot.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\..\..\Include\Libs\ZSTest\ZSTest.h">
@@ -299,6 +302,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Include\Libs\ZSTest\ZSTestDllMain.h">
+      <Filter>Include Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Libs\ZSTest\ZSTestStepRoot.h">
       <Filter>Include Files</Filter>
     </ClInclude>
   </ItemGroup>

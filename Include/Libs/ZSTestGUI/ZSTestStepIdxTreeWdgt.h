@@ -30,26 +30,18 @@ may result in using the software modules.
 #include <QtCore/qglobal.h>
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-#include <QtGui/qitemdelegate.h>
-#include <QtGui/qtreeview.h>
 #include <QtGui/qwidget.h>
 #else
-#include <QtWidgets/qitemdelegate.h>
-#include <QtWidgets/qtreeview.h>
 #include <QtWidgets/qwidget.h>
 #endif
 
 #include "ZSTestGUI/ZSTestGUIDllMain.h"
-#include "ZSTestGUI/ZSTestStepIdxTreeModel.h"
-#include "ZSSys/ZSSysRequest.h"
+#include "ZSTest/ZSTest.h"
 
-class QCheckBox;
-class QComboBox;
 class QLabel;
 class QLineEdit;
 class QPushButton;
-class QSplitter;
-class QTableView;
+class QTreeView;
 class QHBoxLayout;
 class QVBoxLayout;
 
@@ -61,7 +53,6 @@ class CIdxTreeEntry;
 }
 namespace Test
 {
-class CTest;
 class CTestStep;
 
 namespace GUI
@@ -91,8 +82,8 @@ protected slots:
     void onBtnTreeViewExpandAllClicked( bool i_bChecked );
     void onBtnTreeViewCollapseAllClicked( bool i_bChecked );
 protected slots:
-    void onTestStateChanged( int i_iStateNew, int i_iStatePrev );
-    //void onTestRunModeChanged( int i_iRunModeNew, int i_iRunModePrev );
+    void onTestStateChanged( const ZS::Test::CEnumTestState& i_state );
+    void onTestRunModeChanged( const ZS::System::CEnumRunMode& i_runMode );
     void onCurrentTestStepChanged( ZS::Test::CTestStep* i_pTestStep );
 protected slots:
     void onModelClearing( QObject* i_pAdminIdxTreeModel );
@@ -100,7 +91,6 @@ protected slots:
     void onTreeViewSelectedNodeChanged( const QModelIndex& i_modelIdxCurr, const QModelIndex& i_modelIdxPrev );
 protected: // instance members
     CTest*                     m_pTest;
-    ZS::System::CRequest*      m_pReqInProgress;
     QVBoxLayout*               m_pLytMain;
     QHBoxLayout*               m_pLytHeadLine;
     QPushButton*               m_pBtnStart;

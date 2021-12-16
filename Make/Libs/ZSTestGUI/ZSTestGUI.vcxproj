@@ -699,6 +699,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Libs\ZSTestGUI\ZSTestDlg.cpp" />
     <ClCompile Include="..\..\..\Source\Libs\ZSTestGUI\ZSTestGUIDllMain.cpp" />
+    <ClCompile Include="..\..\..\Source\Libs\ZSTestGUI\ZSTestStepIdxTreeDelegate.cpp" />
     <ClCompile Include="..\..\..\Source\Libs\ZSTestGUI\ZSTestStepIdxTreeModel.cpp" />
     <ClCompile Include="..\..\..\Source\Libs\ZSTestGUI\ZSTestStepIdxTreeView.cpp" />
     <ClCompile Include="..\..\..\Source\Libs\ZSTestGUI\ZSTestStepIdxTreeWdgt.cpp" />
@@ -1376,6 +1377,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\Include\Libs\ZSTestGUI\ZSTestStepIdxTreeDelegate.h" />
     <CustomBuild Include="..\..\..\Include\Libs\ZSTestGUI\ZSTestStepIdxTreeView.h">
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">$(QTDIR_MSVC2015_Win32)\bin\moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Command>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">$(QTDIR_MSVC2015_Win32)\bin\moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Message>

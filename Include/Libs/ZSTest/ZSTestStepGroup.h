@@ -33,8 +33,6 @@ namespace ZS
 {
 namespace Test
 {
-class CTestStep;
-
 //******************************************************************************
 class ZSTESTDLL_API CTestStepGroup : public CAbstractTestStepIdxTreeEntry
 //******************************************************************************
@@ -49,16 +47,19 @@ public: // ctors and dtor
         const QString&  i_strName,
         CTestStepGroup* i_pTSGrpParent = nullptr );
     virtual ~CTestStepGroup();
+protected: // ctor for class CTestGroupRoot
+    CTestStepGroup(
+        CTest*                        i_pTest,
+        ZS::System::EIdxTreeEntryType i_entryType,
+        const QString&                i_strName );
 public: // overridables
     virtual QString nameSpace() const { return CTestStepGroup::NameSpace(); }
     virtual QString className() const { return CTestStepGroup::ClassName(); }
 public: // must overridables of base class CAbstractTestStepIdxTreeEntry
+    virtual CEnumTestResult getTestResult() const override;
     virtual double getTestDurationInSec() const override;
-    virtual double getTestDurationInMilliSec() const override;
-    virtual double getTestDurationInMicroSec() const override;
-    virtual double getTestDurationInNanoSec() const override;
-//public: // must overridables of base class CAbstractTestStepIdxTreeEntry
-//    virtual void setTestResult( ETestResult i_testResult );
+public: // instance methods
+    void onTestStepResultChanged( CAbstractTestStepIdxTreeEntry* i_pTreeEntry, const CEnumTestResult& i_testResult );
 //public: // must overridables of base class CAbstractTestStepIdxTreeEntry
 //    virtual void testStarted();
 //    virtual void testEnded( bool i_bIgnoreTestResult = false ); // Implicitly updates test end time if not already updated.

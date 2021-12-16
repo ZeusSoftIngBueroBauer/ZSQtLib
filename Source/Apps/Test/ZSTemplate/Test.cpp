@@ -24,10 +24,14 @@ may result in using the software modules.
 
 *******************************************************************************/
 
+#include <QtCore/qrandom.h>
+#include <QtCore/qthread.h>
+
 #include "Test.h"
 
 #include "ZSTest/ZSTestStep.h"
 #include "ZSTest/ZSTestStepGroup.h"
+#include "ZSSys/ZSSysErrLog.h"
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
@@ -80,7 +84,7 @@ CTest::CTest( const QString& i_strTestStepsFileName ) :
         /* strName         */ "Step " + QString::number(++idxStep) + " Test Something",
         /* strOperation    */ "Test Something",
         /* pGrpParent      */ pGrp1,
-        /* szDoTestStepFct */ SLOT(doTestStepGrp1Step2(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepGrp1Step3(ZS::Test::CTestStep*)) );
 
     ZS::Test::CTestStepGroup* pGrp2 = new ZS::Test::CTestStepGroup(
         /* pTest      */ this,
@@ -94,26 +98,34 @@ CTest::CTest( const QString& i_strTestStepsFileName ) :
         /* strName         */ "Step " + QString::number(++idxStep) + " Test Something",
         /* strOperation    */ "Test Something",
         /* pGrpParent      */ pGrp2,
-        /* szDoTestStepFct */ SLOT(doTestStepGrp1Step1(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepGrp2Step1(ZS::Test::CTestStep*)) );
 
     new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " Test Something",
         /* strOperation    */ "Test Something",
         /* pGrpParent      */ pGrp2,
-        /* szDoTestStepFct */ SLOT(doTestStepGrp1Step2(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepGrp2Step2(ZS::Test::CTestStep*)) );
 
     new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " Test Something",
         /* strOperation    */ "Test Something",
         /* pGrpParent      */ pGrp2,
-        /* szDoTestStepFct */ SLOT(doTestStepGrp1Step2(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepGrp2Step3(ZS::Test::CTestStep*)) );
 
     // Recall test step settings
     //--------------------------
 
-    recall(i_strTestStepsFileName);
+    SErrResultInfo errResultInfo = recall(i_strTestStepsFileName);
+
+    if(errResultInfo.isErrorResult())
+    {
+        if(CErrLog::GetInstance() != nullptr)
+        {
+            CErrLog::GetInstance()->addEntry(errResultInfo);
+        }
+    }
 
 } // default ctor
 
@@ -121,7 +133,15 @@ CTest::CTest( const QString& i_strTestStepsFileName ) :
 CTest::~CTest()
 //------------------------------------------------------------------------------
 {
-    save();
+    SErrResultInfo errResultInfo = save();
+
+    if(errResultInfo.isErrorResult())
+    {
+        if(CErrLog::GetInstance() != nullptr)
+        {
+            CErrLog::GetInstance()->addEntry(errResultInfo);
+        }
+    }
 
 } // dtor
 
@@ -129,26 +149,33 @@ CTest::~CTest()
 void CTest::doTestStepGrp1Step1( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
-    QString     strDesiredValue;
-    QStringList strlstDesiredValues;
-    QString     strActualValue;
-    QStringList strlstActualValues;
+    QString     strExpectedValue;
+    QStringList strlstExpectedValues;
+    QString     strResultValue;
+    QStringList strlstResultValues;
 
-    // Desired Values
+    // Expected Values
     //---------------
 
-    strDesiredValue  = "TestOutput";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue  = "TestOutput";
+    strlstExpectedValues.append(strExpectedValue);
 
-    i_pTestStep->setDesiredValues(strlstDesiredValues);
+    i_pTestStep->setExpectedValues(strlstExpectedValues);
 
-    // Actual Values
+    // Do Test Step
+    //-------------
+
+    QRandomGenerator randGen;
+    unsigned long uTestStepDuration_ms = 100 + randGen.generate() % 900;
+    QThread::msleep(uTestStepDuration_ms);
+
+    // Result Values
     //---------------
 
-    strActualValue  = "TestOutput";
-    strlstActualValues.append(strActualValue);
+    strResultValue  = "TestOutput";
+    strlstResultValues.append(strResultValue);
 
-    i_pTestStep->setActualValues(strlstActualValues);
+    i_pTestStep->setResultValues(strlstResultValues);
 
 } // doTestStepGrp1Step1
 
@@ -156,26 +183,33 @@ void CTest::doTestStepGrp1Step1( ZS::Test::CTestStep* i_pTestStep )
 void CTest::doTestStepGrp1Step2( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
-    QString     strDesiredValue;
-    QStringList strlstDesiredValues;
-    QString     strActualValue;
-    QStringList strlstActualValues;
+    QString     strExpectedValue;
+    QStringList strlstExpectedValues;
+    QString     strResultValue;
+    QStringList strlstResultValues;
 
-    // Desired Values
+    // Expected Values
     //---------------
 
-    strDesiredValue  = "TestOutput";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue  = "TestOutput";
+    strlstExpectedValues.append(strExpectedValue);
 
-    i_pTestStep->setDesiredValues(strlstDesiredValues);
+    i_pTestStep->setExpectedValues(strlstExpectedValues);
 
-    // Actual Values
+    // Do Test Step
+    //-------------
+
+    QRandomGenerator randGen;
+    unsigned long uTestStepDuration_ms = 100 + randGen.generate() % 900;
+    QThread::msleep(uTestStepDuration_ms);
+
+    // Result Values
     //---------------
 
-    strActualValue  = "TestOutput";
-    strlstActualValues.append(strActualValue);
+    strResultValue  = "TestOutput";
+    strlstResultValues.append(strResultValue);
 
-    i_pTestStep->setActualValues(strlstActualValues);
+    i_pTestStep->setResultValues(strlstResultValues);
 
 } // doTestStepGrp1Step2
 
@@ -183,26 +217,33 @@ void CTest::doTestStepGrp1Step2( ZS::Test::CTestStep* i_pTestStep )
 void CTest::doTestStepGrp1Step3( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
-    QString     strDesiredValue;
-    QStringList strlstDesiredValues;
-    QString     strActualValue;
-    QStringList strlstActualValues;
+    QString     strExpectedValue;
+    QStringList strlstExpectedValues;
+    QString     strResultValue;
+    QStringList strlstResultValues;
 
-    // Desired Values
+    // Expected Values
     //---------------
 
-    strDesiredValue  = "TestOutput";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue  = "TestOutput";
+    strlstExpectedValues.append(strExpectedValue);
 
-    i_pTestStep->setDesiredValues(strlstDesiredValues);
+    i_pTestStep->setExpectedValues(strlstExpectedValues);
 
-    // Actual Values
+    // Do Test Step
+    //-------------
+
+    QRandomGenerator randGen;
+    unsigned long uTestStepDuration_ms = 100 + randGen.generate() % 900;
+    QThread::msleep(uTestStepDuration_ms);
+
+    // Result Values
     //---------------
 
-    strActualValue  = "TestOutput";
-    strlstActualValues.append(strActualValue);
+    strResultValue  = "TestOutput";
+    strlstResultValues.append(strResultValue);
 
-    i_pTestStep->setActualValues(strlstActualValues);
+    i_pTestStep->setResultValues(strlstResultValues);
 
 } // doTestStepGrp1Step3
 
@@ -210,26 +251,33 @@ void CTest::doTestStepGrp1Step3( ZS::Test::CTestStep* i_pTestStep )
 void CTest::doTestStepGrp2Step1( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
-    QString     strDesiredValue;
-    QStringList strlstDesiredValues;
-    QString     strActualValue;
-    QStringList strlstActualValues;
+    QString     strExpectedValue;
+    QStringList strlstExpectedValues;
+    QString     strResultValue;
+    QStringList strlstResultValues;
 
-    // Desired Values
+    // Expected Values
     //---------------
 
-    strDesiredValue  = "TestOutput";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue  = "TestOutput";
+    strlstExpectedValues.append(strExpectedValue);
 
-    i_pTestStep->setDesiredValues(strlstDesiredValues);
+    i_pTestStep->setExpectedValues(strlstExpectedValues);
 
-    // Actual Values
+    // Do Test Step
+    //-------------
+
+    QRandomGenerator randGen;
+    unsigned long uTestStepDuration_ms = 100 + randGen.generate() % 900;
+    QThread::msleep(uTestStepDuration_ms);
+
+    // Result Values
     //---------------
 
-    strActualValue  = "TestOutput";
-    strlstActualValues.append(strActualValue);
+    strResultValue  = "TestOutput";
+    strlstResultValues.append(strResultValue);
 
-    i_pTestStep->setActualValues(strlstActualValues);
+    i_pTestStep->setResultValues(strlstResultValues);
 
 } // doTestStepGrp2Step1
 
@@ -237,26 +285,33 @@ void CTest::doTestStepGrp2Step1( ZS::Test::CTestStep* i_pTestStep )
 void CTest::doTestStepGrp2Step2( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
-    QString     strDesiredValue;
-    QStringList strlstDesiredValues;
-    QString     strActualValue;
-    QStringList strlstActualValues;
+    QString     strExpectedValue;
+    QStringList strlstExpectedValues;
+    QString     strResultValue;
+    QStringList strlstResultValues;
 
-    // Desired Values
+    // Expected Values
     //---------------
 
-    strDesiredValue  = "TestOutput";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue  = "TestOutput";
+    strlstExpectedValues.append(strExpectedValue);
 
-    i_pTestStep->setDesiredValues(strlstDesiredValues);
+    i_pTestStep->setExpectedValues(strlstExpectedValues);
 
-    // Actual Values
+    // Do Test Step
+    //-------------
+
+    QRandomGenerator randGen;
+    unsigned long uTestStepDuration_ms = 100 + randGen.generate() % 900;
+    QThread::msleep(uTestStepDuration_ms);
+
+    // Result Values
     //---------------
 
-    strActualValue  = "TestOutput";
-    strlstActualValues.append(strActualValue);
+    strResultValue  = "TestOutputtt";
+    strlstResultValues.append(strResultValue);
 
-    i_pTestStep->setActualValues(strlstActualValues);
+    i_pTestStep->setResultValues(strlstResultValues);
 
 } // doTestStepGrp2Step2
 
@@ -264,25 +319,32 @@ void CTest::doTestStepGrp2Step2( ZS::Test::CTestStep* i_pTestStep )
 void CTest::doTestStepGrp2Step3( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
-    QString     strDesiredValue;
-    QStringList strlstDesiredValues;
-    QString     strActualValue;
-    QStringList strlstActualValues;
+    QString     strExpectedValue;
+    QStringList strlstExpectedValues;
+    QString     strResultValue;
+    QStringList strlstResultValues;
 
-    // Desired Values
+    // Expected Values
     //---------------
 
-    strDesiredValue  = "TestOutput";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue  = "TestOutput";
+    strlstExpectedValues.append(strExpectedValue);
 
-    i_pTestStep->setDesiredValues(strlstDesiredValues);
+    i_pTestStep->setExpectedValues(strlstExpectedValues);
 
-    // Actual Values
+    // Do Test Step
+    //-------------
+
+    QRandomGenerator randGen;
+    unsigned long uTestStepDuration_ms = 100 + randGen.generate() % 900;
+    QThread::msleep(uTestStepDuration_ms);
+
+    // Result Values
     //---------------
 
-    strActualValue  = "TestOutput";
-    strlstActualValues.append(strActualValue);
+    strResultValue  = "TestOutput";
+    strlstResultValues.append(strResultValue);
 
-    i_pTestStep->setActualValues(strlstActualValues);
+    i_pTestStep->setResultValues(strlstResultValues);
 
 } // doTestStepGrp2Step3

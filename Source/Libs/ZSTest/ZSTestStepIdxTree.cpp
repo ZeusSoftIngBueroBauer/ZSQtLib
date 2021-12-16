@@ -40,6 +40,7 @@ may result in using the software modules.
 #include "ZSTest/ZSTestStepIdxTree.h"
 #include "ZSTest/ZSTestStep.h"
 #include "ZSTest/ZSTestStepGroup.h"
+#include "ZSTest/ZSTestStepRoot.h"
 #include "ZSTest/ZSTest.h"
 #include "ZSSys/ZSSysTrcMethod.h"
 #include "ZSSys/ZSSysTrcServer.h"
@@ -69,17 +70,17 @@ CTestStepIdxTree::CTestStepIdxTree( CTest* i_pTest ) :
 //------------------------------------------------------------------------------
     CIdxTree(
         /* strIdxTreeName   */ i_pTest->objectName(),
-        /* pRootTreeEntry   */ nullptr,
+        /* pRootTreeEntry   */ new CTestStepRoot(i_pTest, i_pTest->objectName()),
         /* strNodeSeparator */ "\\",
         /* bCreateMutex     */ true,
         /* pObjParent       */ nullptr),
     m_pTest(i_pTest),
-    m_bInitializingTest(false),
-    m_iTestStepsExecutedCount(0),
-    m_iTestStepsPassedCount(0),
-    m_iTestStepsFailedCount(0),
-    m_iTestStepsIgnoredCount(0),
-    m_iUpdateGroupCallDepth(0),
+    //m_bInitializingTest(false),
+    //m_iTestStepsExecutedCount(0),
+    //m_iTestStepsPassedCount(0),
+    //m_iTestStepsFailedCount(0),
+    //m_iTestStepsIgnoredCount(0),
+    //m_iUpdateGroupCallDepth(0),
     m_pTrcAdminObj(nullptr)
 {
     setObjectName(i_pTest->objectName());
@@ -108,12 +109,15 @@ CTestStepIdxTree::~CTestStepIdxTree()
         /* strMethod    */ "dtor",
         /* strMthArgs   */ strAddTrcInfo);
 
+    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
+
     m_pTest = nullptr;
-    m_bInitializingTest = false;
-    m_iTestStepsExecutedCount = 0;
-    m_iTestStepsPassedCount = 0;
-    m_iTestStepsFailedCount = 0;
-    m_iTestStepsIgnoredCount = 0;
+    //m_bInitializingTest = false;
+    //m_iTestStepsExecutedCount = 0;
+    //m_iTestStepsPassedCount = 0;
+    //m_iTestStepsFailedCount = 0;
+    //m_iTestStepsIgnoredCount = 0;
+    m_pTrcAdminObj = nullptr;
 
 } // dtor
 
@@ -1122,47 +1126,32 @@ void CTestStepIdxTree::clear()
 
 } // clear
 
+#endif
+
 /*==============================================================================
 public: // overridables of base class CModelIdxTree
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! Recursively resets the test results of all test step groups and test steps.
+*/
 void CTestStepIdxTree::reset()
 //------------------------------------------------------------------------------
 {
-    // The list of objects must be protected as adding and removing
-    // objects might be called from within different thread contexts.
-    QMutexLocker mtxLocker(m_pMtxObjs);
-
-    #error CAbstractIdxTreeEntry* pTreeEntryChild;
-    CAbstractTestStepIdxTreeEntry* pTSAdmObj;
-    int                iRow;
-
-    for( iRow = 0; iRow < static_cast<int>(m_pTreeObjs->getChildCount()); iRow++ )
-    {
-        pTreeEntryChild = m_pTreeObjs->getChildEntry(iRow);
-
-        pTSAdmObj = reinterpret_cast<CAbstractTestStepIdxTreeEntry*>(pTreeEntryChild->getObj());
-
-        if( pTSAdmObj != nullptr )
-        {
-            pTSAdmObj->reset();
-        }
-
-        if( pTreeEntryChild->getEntryType() != EIdxTreeEntryTypeObject )
-        {
-            reset(pTreeEntryChild);
-        }
-    } // for( iRow = 0; iRow < m_pTreeObjs->getChildCount(); iRow++ )
-
-} // reset
+    reset(m_pRoot);
+}
 
 /*==============================================================================
 protected: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CTestStepIdxTree::reset( #error CAbstractIdxTreeEntry* i_pTreeEntry )
+/*! Helper method to recursively reset the test results of all test step groups
+    and test steps below the specified node.
+
+    @param i_pTreeEntry Tree entry to be reset together with all its children.
+*/
+void CTestStepIdxTree::reset( CIdxTreeEntry* i_pTreeEntry )
 //------------------------------------------------------------------------------
 {
     // The list of objects must be protected as adding and removing
@@ -1170,33 +1159,34 @@ void CTestStepIdxTree::reset( #error CAbstractIdxTreeEntry* i_pTreeEntry )
     // But this is a protected method called by the public reset method
     // and the mutex has already been locked.
 
-    #error CAbstractIdxTreeEntry* pTreeEntryChild;
-    CAbstractTestStepIdxTreeEntry* pTSAdmObj;
-    int                iRow;
+    CIdxTreeEntry* pTreeEntry;
+    int            idxEntry;
 
-    for( iRow = 0; iRow < static_cast<int>(i_pTreeEntry->getChildCount()); iRow++ )
+    for( idxEntry = 0; idxEntry < i_pTreeEntry->count(); ++idxEntry )
     {
-        pTreeEntryChild = i_pTreeEntry->getChildEntry(iRow);
+        pTreeEntry = i_pTreeEntry->at(idxEntry);
 
-        pTSAdmObj = reinterpret_cast<CAbstractTestStepIdxTreeEntry*>(pTreeEntryChild->getObj());
-
-        if( pTSAdmObj != nullptr )
+        if( pTreeEntry != nullptr )
         {
-            pTSAdmObj->reset();
-        }
-
-        if( pTreeEntryChild->getEntryType() != EIdxTreeEntryTypeObject )
-        {
-            reset(pTreeEntryChild);
-        }
-
-    } // for( iRow = 0; iRow < m_pTreeObjs->getChildCount(); iRow++ )
+            if( pTreeEntry->isLeave() )
+            {
+                CTestStep* pTestStep = dynamic_cast<CTestStep*>(pTreeEntry);
+                pTestStep->reset();
+            }
+            else // if( !pTreeEntry->isLeave() )
+            {
+                reset(pTreeEntry);
+            }
+        } // if(pTreeEntry != nullptr)
+    } // for( idxEntry = 0; idxEntry < i_pTreeEntry->count(); ++idxEntry )
 
 } // reset
 
 /*==============================================================================
 public: // instance methods
 ==============================================================================*/
+
+#if 0
 
 //------------------------------------------------------------------------------
 void CTestStepIdxTree::beginInitTest()
@@ -1628,6 +1618,16 @@ public: // overridables
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! Saves the settings of the test steps and test step groups in an XML file.
+
+    The attributes (enabled, breakpoints) will be save so that they can be
+    recalled on restarting the test.
+
+    Please note that only the settings for those index tree entries may be recalled
+    which again will be found on recalling the test tree.
+
+    @param i_strAbsFilePath [in] Absolute path name of the test steps file.
+*/
 SErrResultInfo CTestStepIdxTree::save( const QString& i_strAbsFilePath ) const
 //------------------------------------------------------------------------------
 {
@@ -1686,7 +1686,8 @@ SErrResultInfo CTestStepIdxTree::save( const QString& i_strAbsFilePath ) const
         xmlStreamWriter.setAutoFormatting(true);
 
         xmlStreamWriter.writeStartDocument();
-        xmlStreamWriter.writeStartElement("TestSteps");
+        xmlStreamWriter.writeStartElement("Test");
+        xmlStreamWriter.writeAttribute( "Name", m_pRoot->name() );
 
         save(xmlStreamWriter, m_pRoot);
 
@@ -1709,6 +1710,17 @@ SErrResultInfo CTestStepIdxTree::save( const QString& i_strAbsFilePath ) const
 } // save
 
 //------------------------------------------------------------------------------
+/*! Recalls the settings of the test steps and test step groups from an XML file.
+
+    The attributes (enabled, breakpoints) will be recalled so that they can be
+    reused on restarting the test.
+
+    Please note that only the settings for those index tree entries may be recalled
+    which will still be found in the test tree. Test steps and groups which will
+    not be found will be ignored.
+
+    @param i_strAbsFilePath [in] Absolute path name of the test steps file.
+*/
 SErrResultInfo CTestStepIdxTree::recall( const QString& i_strAbsFilePath )
 //------------------------------------------------------------------------------
 {
@@ -1779,9 +1791,9 @@ SErrResultInfo CTestStepIdxTree::recall( const QString& i_strAbsFilePath )
         xmlStreamTokenType = xmlStreamReader.readNext();
         strElemName = xmlStreamReader.name().toString();
 
-        if( xmlStreamTokenType != QXmlStreamReader::StartElement || strElemName != "TestSteps" )
+        if( xmlStreamTokenType != QXmlStreamReader::StartElement || strElemName != "Test" )
         {
-            xmlStreamReader.raiseError("Invalid XML method trace admin objects file (missing root node \"TestSteps\")");
+            xmlStreamReader.raiseError("Invalid XML document (missing root node \"Test\")");
         }
 
         if( !xmlStreamReader.hasError() )
@@ -1813,12 +1825,7 @@ SErrResultInfo CTestStepIdxTree::recall( const QString& i_strAbsFilePath )
                             {
                                 CTestStepGroup* pTSGrpTmp = findTestStepGroup(pTSGrp, strName);
 
-                                if( pTSGrpTmp == nullptr )
-                                {
-                                    strAddErrInfo = strElemName + " \"" + strName + "\" is not a child of \"" + QString(pTSGrp == nullptr ? "Root" : pTSGrp->path()) + "\".";
-                                    xmlStreamReader.raiseError(strAddErrInfo);
-                                }
-                                else // if( pTSGrpTmp != nullptr )
+                                if( pTSGrpTmp != nullptr )
                                 {
                                     pTSGrp = pTSGrpTmp;
 
@@ -1872,12 +1879,7 @@ SErrResultInfo CTestStepIdxTree::recall( const QString& i_strAbsFilePath )
                             {
                                 pTestStep = findTestStep(pTSGrp, strName);
 
-                                if( pTestStep == nullptr )
-                                {
-                                    strAddErrInfo = strElemName + " \"" + strName + "\" is not a child of \"" + QString(pTSGrp == nullptr ? "Root" : pTSGrp->path()) + "\".";
-                                    xmlStreamReader.raiseError(strAddErrInfo);
-                                }
-                                else // if( pTestStep != nullptr )
+                                if( pTestStep != nullptr )
                                 {
                                     if( xmlStreamReader.attributes().hasAttribute("Enabled") )
                                     {
@@ -1960,6 +1962,16 @@ SErrResultInfo CTestStepIdxTree::recall( const QString& i_strAbsFilePath )
                     } // if( strElemName == "TestStep" )
 
                     //---------------------------------------
+                    else if( strElemName == "Test" )
+                    //---------------------------------------
+                    {
+                        if( xmlStreamTokenType != QXmlStreamReader::EndElement )
+                        {
+                            xmlStreamReader.raiseError("Invalid element name \"" + strElemName + "\"");
+                        }
+                    }
+
+                    //---------------------------------------
                     else
                     //---------------------------------------
                     {
@@ -2004,12 +2016,11 @@ void CTestStepIdxTree::save(
     // methods. The mutex to protect the list and tree has already been locked.
 
     CIdxTreeEntry* pTreeEntry;
-    CTestStep*     pTestStep;
     int            idxEntry;
 
     if( i_pTreeEntry->entryType() == EIdxTreeEntryType::Leave )
     {
-        pTestStep = dynamic_cast<CTestStep*>(i_pTreeEntry);
+        CTestStep* pTestStep = dynamic_cast<CTestStep*>(i_pTreeEntry);
 
         i_xmlStreamWriter.writeStartElement("TestStep");
         i_xmlStreamWriter.writeAttribute( "Name", pTestStep->name() );
@@ -2021,7 +2032,26 @@ void CTestStepIdxTree::save(
         }
         i_xmlStreamWriter.writeEndElement(/*"TestStep"*/);
     }
-    else // if( pTreeEntry->entryType() == EIdxTreeEntryType::Root || Branch )
+    else if( i_pTreeEntry->entryType() == EIdxTreeEntryType::Branch )
+    {
+        CTestStepGroup* pTestStepGroup = dynamic_cast<CTestStepGroup*>(i_pTreeEntry);
+
+        i_xmlStreamWriter.writeStartElement("TestStepGroup");
+        i_xmlStreamWriter.writeAttribute( "Name", pTestStepGroup->name() );
+        i_xmlStreamWriter.writeAttribute( "Enabled", CEnumEnabled::toString(pTestStepGroup->getEnabled()) );
+
+        for( idxEntry = 0; idxEntry < i_pTreeEntry->count(); ++idxEntry )
+        {
+            pTreeEntry = i_pTreeEntry->at(idxEntry);
+
+            if( pTreeEntry != nullptr )
+            {
+                save(i_xmlStreamWriter, pTreeEntry);
+            }
+        }
+        i_xmlStreamWriter.writeEndElement(/*"TestStepGroup"*/);
+    }
+    else // if( i_pTreeEntry->entryType() == EIdxTreeEntryType::Root )
     {
         for( idxEntry = 0; idxEntry < i_pTreeEntry->count(); ++idxEntry )
         {

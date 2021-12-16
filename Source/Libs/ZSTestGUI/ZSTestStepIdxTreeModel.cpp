@@ -45,6 +45,7 @@ may result in using the software modules.
 #include "ZSTest/ZSTest.h"
 #include "ZSTest/ZSTestStep.h"
 #include "ZSTest/ZSTestStepGroup.h"
+#include "ZSTest/ZSTestStepRoot.h"
 #include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysEnumEntry.h"
 #include "ZSSys/ZSSysErrResult.h"
@@ -73,16 +74,16 @@ public: // type definitions and constants
 ==============================================================================*/
 
 static const SEnumEntry s_arEnumStrTestStepColumns[] =
-{                                                                  // IdxName,         Symbol, Text
-    /*  0 */ SEnumEntry( CModeldxTreeTestSteps::EColumnName,          "Name",          "Name", "Name"         ),
-    /*  1 */ SEnumEntry( CModeldxTreeTestSteps::EColumnBreakpoint,    "Breakpoint",    "Bp",   "Breakpoint"   ),
-    /*  2 */ SEnumEntry( CModeldxTreeTestSteps::EColumnEnabled,       "Enabled",       "En",   "Enabled"      ),
-    /*  3 */ SEnumEntry( CModeldxTreeTestSteps::EColumnResult,        "Result",        "Res",  "Result"       ),
-    /*  4 */ SEnumEntry( CModeldxTreeTestSteps::EColumnDuration,      "Duration",      "Dur",  "Duration"     ),
-    /*  5 */ SEnumEntry( CModeldxTreeTestSteps::EColumnOperation,     "Operation",     "Op",   "Operation"    ),
-    /*  6 */ SEnumEntry( CModeldxTreeTestSteps::EColumnDescription,   "Description",   "Dscr", "Description"  ),
-    /*  7 */ SEnumEntry( CModeldxTreeTestSteps::EColumnDesiredValues, "DesiredValues", "Des",  "DesiredValues"),
-    /*  8 */ SEnumEntry( CModeldxTreeTestSteps::EColumnActualValues,  "ActualValues",  "Act",  "ActualValues" )
+{                                                                   // IdxName,          Symbol, Text
+    /*  0 */ SEnumEntry( CModeldxTreeTestSteps::EColumnName,           "Name",           "Name", "Name"         ),
+    /*  1 */ SEnumEntry( CModeldxTreeTestSteps::EColumnBreakpoint,     "Breakpoint",     "Bp",   "Breakpoint"   ),
+    /*  2 */ SEnumEntry( CModeldxTreeTestSteps::EColumnEnabled,        "Enabled",        "En",   "Enabled"      ),
+    /*  3 */ SEnumEntry( CModeldxTreeTestSteps::EColumnResult,         "Result",         "Res",  "Result"       ),
+    /*  4 */ SEnumEntry( CModeldxTreeTestSteps::EColumnDuration,       "Duration",       "Dur",  "Duration"     ),
+    /*  5 */ SEnumEntry( CModeldxTreeTestSteps::EColumnOperation,      "Operation",      "Op",   "Operation"    ),
+    /*  6 */ SEnumEntry( CModeldxTreeTestSteps::EColumnDescription,    "Description",    "Dscr", "Description"  ),
+    /*  7 */ SEnumEntry( CModeldxTreeTestSteps::EColumnExpectedValues, "ExpectedValues", "Exp",  "ExpectedValues"),
+    /*  8 */ SEnumEntry( CModeldxTreeTestSteps::EColumnResultValues,   "ResultValues",   "Act",  "ResultValues" )
 };
 
 //------------------------------------------------------------------------------
@@ -102,7 +103,9 @@ CModeldxTreeTestSteps::CModeldxTreeTestSteps(
     QObject*          i_pObjParent ) :
 //------------------------------------------------------------------------------
     CModelIdxTree(i_pTestStepIdxTree, i_pObjParent),
-    m_bShowDesiredAndActualValuesOnlyIfTestStepFailed(true),
+    m_pTest(i_pTestStepIdxTree->getTest()),
+    m_pTestStepCurr(nullptr),
+    m_bShowExpectedAndResultValuesOnlyIfTestStepFailed(true),
     m_pTrcAdminObj(nullptr)
 {
     m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName());
@@ -120,52 +123,14 @@ CModeldxTreeTestSteps::CModeldxTreeTestSteps(
         /* strMethod    */ "ctor",
         /* strAddInfo   */ strMthInArgs );
 
-    //s_iInstCount++;
-
-    //if( !QObject::connect(
-    //    /* pObjSender   */ i_pTestStepIdxTree,
-    //    /* szSignal     */ SIGNAL( testStepGroupInserted(QObject*,QObject*) ),
-    //    /* pObjReceiver */ this,
-    //    /* szSlot       */ SLOT( onTestStepGroupInserted(QObject*,QObject*) ) ) )
-    //{
-    //    throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    //}
-
-    //if( !QObject::connect(
-    //    /* pObjSender   */ i_pTestStepIdxTree,
-    //    /* szSignal     */ SIGNAL( testStepGroupChanged(QObject*,QObject*) ),
-    //    /* pObjReceiver */ this,
-    //    /* szSlot       */ SLOT( onTestStepGroupChanged(QObject*,QObject*) ) ) )
-    //{
-    //    throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    //}
-
-    //if( !QObject::connect(
-    //    /* pObjSender   */ i_pTestStepIdxTree,
-    //    /* szSignal     */ SIGNAL( testStepInserted(QObject*,QObject*) ),
-    //    /* pObjReceiver */ this,
-    //    /* szSlot       */ SLOT( onTestStepInserted(QObject*,QObject*) ) ) )
-    //{
-    //    throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    //}
-
-    //if( !QObject::connect(
-    //    /* pObjSender   */ i_pTestStepIdxTree,
-    //    /* szSignal     */ SIGNAL( testStepChanged(QObject*,QObject*) ),
-    //    /* pObjReceiver */ this,
-    //    /* szSlot       */ SLOT( onTestStepChanged(QObject*,QObject*) ) ) )
-    //{
-    //    throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    //}
-
-    //if( !QObject::connect(
-    //    /* pObjSender   */ i_pTestStepIdxTree,
-    //    /* szSignal     */ SIGNAL( nameSpaceNodeChanged(QObject*,ZS::System::#error CAbstractIdxTreeEntry*,int) ),
-    //    /* pObjReceiver */ this,
-    //    /* szSlot       */ SLOT( onNameSpaceNodeChanged(QObject*,ZS::System::#error CAbstractIdxTreeEntry*,int) ) ) )
-    //{
-    //    throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    //}
+    if( !QObject::connect(
+        /* pObjSender   */ m_pTest,
+        /* szSignal     */ SIGNAL(currentTestStepChanged(ZS::Test::CTestStep*)),
+        /* pObjReceiver */ this,
+        /* szSlot       */ SLOT(onTestCurrentTestStepChanged(ZS::Test::CTestStep*)) ) )
+    {
+        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
+    }
 
 } // ctor
 
@@ -182,7 +147,9 @@ CModeldxTreeTestSteps::~CModeldxTreeTestSteps()
     CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
     m_pTrcAdminObj = nullptr;
 
-    m_bShowDesiredAndActualValuesOnlyIfTestStepFailed = false;
+    m_pTest = nullptr;
+    m_pTestStepCurr = nullptr;
+    m_bShowExpectedAndResultValuesOnlyIfTestStepFailed = false;
     m_pTrcAdminObj = nullptr;
 
 } // dtor
@@ -198,8 +165,12 @@ CTestStepIdxTree* CModeldxTreeTestSteps::idxTree()
     return dynamic_cast<CTestStepIdxTree*>(m_pIdxTree);
 }
 
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
 //------------------------------------------------------------------------------
-void CModeldxTreeTestSteps::setShowDesiredAndActualValuesOnlyIfTestStepFailed( bool i_bSet )
+void CModeldxTreeTestSteps::setShowExpectedAndResultValuesOnlyIfTestStepFailed( bool i_bSet )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -212,240 +183,17 @@ void CModeldxTreeTestSteps::setShowDesiredAndActualValuesOnlyIfTestStepFailed( b
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iFilterLevel */ ETraceDetailLevelMethodCalls,
-        /* strMethod    */ "setShowDesiredAndActualValuesOnlyIfTestStepFailed",
+        /* strMethod    */ "setShowExpectedAndResultValuesOnlyIfTestStepFailed",
         /* strAddInfo   */ strMthInArgs );
 
-    if( m_bShowDesiredAndActualValuesOnlyIfTestStepFailed != i_bSet )
+    if( m_bShowExpectedAndResultValuesOnlyIfTestStepFailed != i_bSet )
     {
-        m_bShowDesiredAndActualValuesOnlyIfTestStepFailed = i_bSet;
+        m_bShowExpectedAndResultValuesOnlyIfTestStepFailed = i_bSet;
 
         //reset();
     }
 
-} // setShowDesiredAndActualValuesOnlyIfTestStepFailed
-
-/*==============================================================================
-protected slots:
-==============================================================================*/
-
-////------------------------------------------------------------------------------
-//void CModeldxTreeTestSteps::onTestStepGroupInserted( QObject* i_pTestStepIdxTree, QObject* i_pTSGrp )
-////------------------------------------------------------------------------------
-//{
-//    if( i_pTestStepIdxTree == nullptr )
-//    {
-//        throw CException(__FILE__,__LINE__,EResultArgOutOfRange,"i_pTestStepIdxTree == nullptr");
-//    }
-//
-//    CTestStepGroup* pTSGrp = dynamic_cast<CTestStepGroup*>(i_pTSGrp);
-//
-//    if( pTSGrp == nullptr )
-//    {
-//        throw CException(__FILE__,__LINE__,EResultArgOutOfRange,"i_pTSGrp == nullptr");
-//    }
-//
-//    #error CAbstractIdxTreeEntry* pTreeEntry = pTSGrp->getTreeEntry();
-//
-//    if( pTreeEntry == nullptr )
-//    {
-//        throw CException(__FILE__,__LINE__,EResultArgOutOfRange,"i_pTSGrp->m_pTreeEntry == nullptr");
-//    }
-//
-//    #error CAbstractIdxTreeEntry* pTreeEntryParent = pTreeEntry->getParentEntry();
-//
-//    QModelIndex modelIdxParent;
-//
-//    if( pTreeEntryParent != nullptr )
-//    {
-//         modelIdxParent = createIndex( pTreeEntryParent->getRowId(), 0, pTreeEntryParent );
-//    }
-//
-//    beginInsertRows( modelIdxParent, pTreeEntry->getRowId(), pTreeEntry->getRowId() );
-//    endInsertRows();
-//
-//} // onTestStepGroupInserted
-//
-////------------------------------------------------------------------------------
-//void CModeldxTreeTestSteps::onTestStepGroupChanged( QObject* i_pTestStepIdxTree, QObject* i_pTSGrp )
-////------------------------------------------------------------------------------
-//{
-//    if( i_pTestStepIdxTree == nullptr )
-//    {
-//        throw CException(__FILE__,__LINE__,EResultArgOutOfRange,"i_pTestStepIdxTree == nullptr");
-//    }
-//
-//    CTestStepGroup* pTSGrp = dynamic_cast<CTestStepGroup*>(i_pTSGrp);
-//
-//    if( pTSGrp == nullptr )
-//    {
-//        throw CException(__FILE__,__LINE__,EResultArgOutOfRange,"i_pTSGrp == nullptr");
-//    }
-//
-//    #error CAbstractIdxTreeEntry* pTreeEntry = pTSGrp->getTreeEntry();
-//
-//    if( pTreeEntry == nullptr )
-//    {
-//        throw CException(__FILE__,__LINE__,EResultArgOutOfRange,"i_pTSGrp->m_pTreeEntry == nullptr");
-//    }
-//
-//    QModelIndex modelIdxTopLeft     = createIndex( pTreeEntry->getRowId(), 0, pTreeEntry );
-//    QModelIndex modelIdxBottomRight = createIndex( pTreeEntry->getRowId(), CModeldxTreeTestSteps::EColumnCount-1, pTreeEntry );
-//
-//    emit dataChanged( modelIdxTopLeft, modelIdxBottomRight );
-//
-//} // onTestStepGroupChanged
-//
-////------------------------------------------------------------------------------
-//void CModeldxTreeTestSteps::onTestStepInserted( QObject* i_pTestStepIdxTree, QObject* i_pTestStep )
-////------------------------------------------------------------------------------
-//{
-//    if( i_pTestStepIdxTree == nullptr )
-//    {
-//        throw CException(__FILE__,__LINE__,EResultArgOutOfRange,"i_pTestStepIdxTree == nullptr");
-//    }
-//
-//    CTestStep* pTestStep = dynamic_cast<CTestStep*>(i_pTestStep);
-//
-//    if( pTestStep == nullptr )
-//    {
-//        throw CException(__FILE__,__LINE__,EResultArgOutOfRange,"i_pTestStep == nullptr");
-//    }
-//
-//    CIdxTreeListEntry* pListEntry = pTestStep->getListEntry();
-//
-//    if( pListEntry == nullptr )
-//    {
-//        throw CException(__FILE__,__LINE__,EResultArgOutOfRange,"i_pTestStep->m_pListEntry == nullptr");
-//    }
-//
-//    #error CAbstractIdxTreeEntry* pTreeEntry = pListEntry->getTreeEntry();
-//
-//    if( pTreeEntry == nullptr )
-//    {
-//        throw CException(__FILE__,__LINE__,EResultArgOutOfRange,"i_pTestStep->m_pListEntry->m_pTreeEntry == nullptr");
-//    }
-//
-//    #error CAbstractIdxTreeEntry* pTreeEntryParent = pTreeEntry->getParentEntry();
-//
-//    if( pTreeEntryParent == nullptr )
-//    {
-//        throw CException(__FILE__,__LINE__,EResultArgOutOfRange,"i_pTestStep->m_pListEntry->m_pTreeEntry->pTreeEntryParent == nullptr");
-//    }
-//
-//    int                iTestStepCount = -1;
-//    int                idxRow;
-//    #error CAbstractIdxTreeEntry* pTreeEntryChild;
-//
-//    for( idxRow = 0; idxRow < static_cast<int>(pTreeEntryParent->getChildCount()); idxRow++ )
-//    {
-//        pTreeEntryChild = pTreeEntryParent->getChildEntry(idxRow);
-//
-//        if( pTreeEntryChild != nullptr && pTreeEntryChild->getEntryType() == EIdxTreeEntryTypeObject )
-//        {
-//            iTestStepCount++;
-//        }
-//        if( pTreeEntryChild == pTreeEntry )
-//        {
-//            break;
-//        }
-//    }
-//
-//    if( iTestStepCount >= 0 && pTreeEntryChild == pTreeEntry )
-//    {
-//        QModelIndex modelIdxParent = createIndex( pTreeEntryParent->getRowId(), 0, pTreeEntryParent );
-//
-//        beginInsertRows( modelIdxParent, iTestStepCount, iTestStepCount );
-//        endInsertRows();
-//    }
-//
-//} // onTestStepInserted
-//
-////------------------------------------------------------------------------------
-//void CModeldxTreeTestSteps::onTestStepChanged( QObject* i_pTestStepIdxTree, QObject* i_pTestStep )
-////------------------------------------------------------------------------------
-//{
-//    if( i_pTestStepIdxTree == nullptr )
-//    {
-//        throw CException(__FILE__,__LINE__,EResultArgOutOfRange,"i_pIdxTree == nullptr");
-//    }
-//
-//    CTestStep* pTestStep = dynamic_cast<CTestStep*>(i_pTestStep);
-//
-//    if( pTestStep == nullptr )
-//    {
-//        throw CException(__FILE__,__LINE__,EResultArgOutOfRange,"i_pTestStep == nullptr");
-//    }
-//
-//    CIdxTreeListEntry* pListEntry = pTestStep->getListEntry();
-//
-//    if( pListEntry == nullptr )
-//    {
-//        throw CException(__FILE__,__LINE__,EResultArgOutOfRange,"i_pTestStep->m_pListEntry == nullptr");
-//    }
-//
-//    #error CAbstractIdxTreeEntry* pTreeEntry = pListEntry->getTreeEntry();
-//
-//    if( pTreeEntry == nullptr )
-//    {
-//        throw CException(__FILE__,__LINE__,EResultArgOutOfRange,"i_pTestStep->m_pListEntry->m_pTreeEntry == nullptr");
-//    }
-//
-//    #error CAbstractIdxTreeEntry* pTreeEntryParent = pTreeEntry->getParentEntry();
-//
-//    if( pTreeEntryParent == nullptr )
-//    {
-//        throw CException(__FILE__,__LINE__,EResultArgOutOfRange,"i_pTestStep->m_pListEntry->m_pTreeEntry->pTreeEntryParent == nullptr");
-//    }
-//
-//    int                iTestStepCount = -1;
-//    int                idxRow;
-//    #error CAbstractIdxTreeEntry* pTreeEntryChild;
-//
-//    for( idxRow = 0; idxRow < static_cast<int>(pTreeEntryParent->getChildCount()); idxRow++ )
-//    {
-//        pTreeEntryChild = pTreeEntryParent->getChildEntry(idxRow);
-//
-//        if( pTreeEntryChild != nullptr && pTreeEntryChild->getEntryType() == EIdxTreeEntryTypeObject )
-//        {
-//            iTestStepCount++;
-//        }
-//        if( pTreeEntryChild == pTreeEntry )
-//        {
-//            break;
-//        }
-//    }
-//
-//    if( iTestStepCount >= 0 && pTreeEntryChild == pTreeEntry )
-//    {
-//        QModelIndex modelIdxTopLeft     = createIndex( iTestStepCount, 0, pTreeEntry );
-//        QModelIndex modelIdxBottomRight = createIndex( iTestStepCount, CModeldxTreeTestSteps::EColumnCount-1, pTreeEntry );
-//        emit dataChanged( modelIdxTopLeft, modelIdxBottomRight );
-//    }
-//
-//} // onTestStepChanged
-//
-////------------------------------------------------------------------------------
-//void CModeldxTreeTestSteps::onNameSpaceNodeChanged(
-//    QObject*           i_pTestStepIdxTree,
-//    #error CAbstractIdxTreeEntry* i_pTreeEntry,
-//    int                /*i_enabled*/ )
-////------------------------------------------------------------------------------
-//{
-//    if( i_pTestStepIdxTree == nullptr )
-//    {
-//        throw CException(__FILE__,__LINE__,EResultArgOutOfRange,"i_pIdxTree == nullptr");
-//    }
-//
-//    if( i_pTreeEntry == nullptr )
-//    {
-//        throw CException(__FILE__,__LINE__,EResultArgOutOfRange,"i_pTreeEntry == nullptr");
-//    }
-//
-//    QModelIndex modelIdxTopLeft     = createIndex( i_pTreeEntry->getRowId(), 0, i_pTreeEntry );
-//    QModelIndex modelIdxBottomRight = createIndex( i_pTreeEntry->getRowId(), CModeldxTreeTestSteps::EColumnCount-1, i_pTreeEntry );
-//    emit dataChanged( modelIdxTopLeft, modelIdxBottomRight );
-//
-//} // onNameSpaceNodeChanged
+} // setShowExpectedAndResultValuesOnlyIfTestStepFailed
 
 /*==============================================================================
 public: // instance methods
@@ -458,6 +206,51 @@ public: // instance methods
 //    beginResetModel();
 //    endResetModel();
 //}
+
+/*==============================================================================
+protected slots: // overridables
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CModeldxTreeTestSteps::onTestCurrentTestStepChanged( ZS::Test::CTestStep* i_pTestStep )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+
+    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
+    {
+        strMthInArgs = "TestStep: " + QString(i_pTestStep == nullptr ? "nullptr" : i_pTestStep->path());
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iFilterLevel */ ETraceDetailLevelMethodCalls,
+        /* strMethod    */ "onTestCurrentTestStepChanged",
+        /* strMthInArgs */ strMthInArgs );
+
+    // The list of objects must be protected as adding and removing
+    // objects might be called from within different thread contexts.
+    QMutexLocker mtxLocker(m_pIdxTree == nullptr ? nullptr : m_pIdxTree->mutex());
+
+    if( m_pTestStepCurr != nullptr )
+    {
+        QModelIndex modelIdxTL = index(m_pTestStepCurr->keyInTree(), 0);
+        QModelIndex modelIdxBR = index(m_pTestStepCurr->keyInTree(), columnCount()-1);
+
+        emit_dataChanged(modelIdxTL, modelIdxBR);
+    }
+
+    m_pTestStepCurr = i_pTestStep;
+
+    if( m_pTestStepCurr != nullptr )
+    {
+        QModelIndex modelIdxTL = index(m_pTestStepCurr->keyInTree(), 0);
+        QModelIndex modelIdxBR = index(m_pTestStepCurr->keyInTree(), columnCount()-1);
+
+        emit_dataChanged(modelIdxTL, modelIdxBR);
+    }
+
+} // onTestCurrentTestStepChanged
 
 /*==============================================================================
 public: // must overridables of base class QAbstractItemModel
@@ -577,7 +370,7 @@ Qt::ItemFlags CModeldxTreeTestSteps::flags( const QModelIndex& i_modelIdx ) cons
         //    }
         //}
 
-        //if( i_modelIdx.column() == EColumnActualValues )
+        //if( i_modelIdx.column() == EColumnResultValues )
         //{
         //    if( pTSGrp != nullptr )
         //    {
@@ -635,25 +428,28 @@ QVariant CModeldxTreeTestSteps::data( const QModelIndex& i_modelIdx, int i_iRole
 
     if( pIdxTreeEntry != nullptr )
     {
-        CAbstractTestStepIdxTreeEntry* pTestStepEntry = nullptr;
-        CTestStepGroup*                pTestStepGroup = nullptr;
-        CTestStep*                     pTestStep = nullptr;
+        CAbstractTestStepIdxTreeEntry* pTestStepEntry = dynamic_cast<CAbstractTestStepIdxTreeEntry*>(pIdxTreeEntry);
 
-        if( !pIdxTreeEntry->isRoot() )
+        CTestStepRoot*  pTestStepRoot = nullptr;
+        CTestStepGroup* pTestStepGroup = nullptr;
+        CTestStep*      pTestStep = nullptr;
+
+        if( pTestStepEntry->isRoot() )
         {
-            pTestStepEntry = dynamic_cast<CAbstractTestStepIdxTreeEntry*>(pIdxTreeEntry);
-
-            if( pTestStepEntry->isGroup() )
-            {
-                pTestStepGroup = dynamic_cast<CTestStepGroup*>(pTestStepEntry);
-            }
-            else
-            {
-                pTestStep = dynamic_cast<CTestStep*>(pTestStepEntry);
-            }
+            pTestStepRoot = dynamic_cast<CTestStepRoot*>(pTestStepEntry);
+        }
+        else if( pTestStepEntry->isGroup() )
+        {
+            pTestStepGroup = dynamic_cast<CTestStepGroup*>(pTestStepEntry);
+        }
+        else
+        {
+            pTestStep = dynamic_cast<CTestStep*>(pTestStepEntry);
         }
 
-        switch(i_modelIdx.column())
+        CEnumTestResult testResult = pTestStepEntry->getTestResult();
+
+        switch( i_modelIdx.column() )
         {
             case EColumnName:
             {
@@ -667,39 +463,36 @@ QVariant CModeldxTreeTestSteps::data( const QModelIndex& i_modelIdx, int i_iRole
                 }
                 else if(i_iRole == Qt::FontRole)
                 {
-                    //QFont fnt;
+                    QFont fnt;
 
-                    //if(pTestStep != nullptr && pTestStepCurr != nullptr)
-                    //{
-                    //    if(pTestStep == pTestStepCurr)
-                    //    {
-                    //        fnt.setBold(true);
-                    //    }
-                    //}
-                    //else if(pTSGrp != nullptr && pTestStepCurr != nullptr)
-                    //{
-                    //    if(pTSGrp->isParentOf(pTestStepCurr))
-                    //    {
-                    //        fnt.setBold(true);
-                    //    }
-                    //}
-                    //varData = fnt;
+                    if( pTestStep != nullptr && pTestStep == m_pTestStepCurr )
+                    {
+                        fnt.setBold(true);
+                    }
+                    else if( pTestStepGroup != nullptr && m_pTestStepCurr != nullptr )
+                    {
+                        if( m_pTestStepCurr->isChildOf(pTestStepGroup) )
+                        {
+                            fnt.setBold(true);
+                        }
+                    }
+                    varData = fnt;
                 }
                 break;
             }
             case EColumnBreakpoint:
             {
-                if(pTestStep != nullptr)
+                if( pTestStep != nullptr )
                 {
-                    if(i_iRole == Qt::DisplayRole || i_iRole == Qt::EditRole)
+                    if( i_iRole == Qt::DisplayRole || i_iRole == Qt::EditRole )
                     {
                         varData = pTestStep->isBreakpointSet();
                     }
-                    else if(i_iRole == Qt::ForegroundRole)
+                    else if( i_iRole == Qt::ForegroundRole )
                     {
-                        if(pTestStep->isBreakpointSet())
+                        if( pTestStep->isBreakpointSet() )
                         {
-                            if(pTestStep->isBreakpointEnabled())
+                            if( pTestStep->isBreakpointEnabled() )
                             {
                                 varData = QColor(Qt::red);
                             }
@@ -714,9 +507,9 @@ QVariant CModeldxTreeTestSteps::data( const QModelIndex& i_modelIdx, int i_iRole
             }
             case EColumnEnabled:
             {
-                if(pTestStepEntry != nullptr)
+                if( pTestStepEntry != nullptr )
                 {
-                    if(i_iRole == Qt::DisplayRole || i_iRole == Qt::EditRole)
+                    if( i_iRole == Qt::DisplayRole || i_iRole == Qt::EditRole )
                     {
                         varData = static_cast<int>(pTestStepEntry->getEnabled());
                     }
@@ -725,61 +518,58 @@ QVariant CModeldxTreeTestSteps::data( const QModelIndex& i_modelIdx, int i_iRole
             }
             case EColumnResult:
             {
-                //if(pTreeEntry != nullptr)
-                //{
-                //    if(i_iRole == Qt::DisplayRole || i_iRole == Qt::EditRole)
-                //    {
-                //        varData = testResult2Str(testResult);
-                //    }
-                //    else if(i_iRole == Qt::ForegroundRole)
-                //    {
-                //        if(testResult == ETestResultTestFailed)
-                //        {
-                //            varData = QColor(Qt::red);
-                //        }
-                //        else if(testResult == ETestResultTestPassed)
-                //        {
-                //            varData = QColor(Qt::darkGreen);
-                //        }
-                //        else if(testResult == ETestResultIgnore)
-                //        {
-                //            varData = QColor(Qt::darkGray);
-                //        }
-                //        else
-                //        {
-                //            varData = QColor(Qt::blue);
-                //        }
-                //    }
-                //}
+                if( i_iRole == Qt::DisplayRole || i_iRole == Qt::EditRole )
+                {
+                    varData = testResult.toString();
+                }
+                else if( i_iRole == Qt::ForegroundRole )
+                {
+                    if( testResult == ETestResult::TestFailed )
+                    {
+                        varData = QColor(Qt::red);
+                    }
+                    else if( testResult == ETestResult::TestPassed )
+                    {
+                        varData = QColor(Qt::darkGreen);
+                    }
+                    else if( testResult == ETestResult::Ignore )
+                    {
+                        varData = QColor(Qt::darkGray);
+                    }
+                    else
+                    {
+                        varData = QColor(Qt::blue);
+                    }
+                }
                 break;
             }
             case EColumnDuration:
             {
-                //if(i_iRole == Qt::DisplayRole || i_iRole == Qt::EditRole)
-                //{
-                //    if(pTSAdmObj != nullptr && testResult != ETestResultUndefined)
-                //    {
-                //        if(pTSAdmObj->isTestRunning())
-                //        {
-                //            varData = "...";
-                //        }
-                //        else
-                //        {
-                //            varData = pTSAdmObj->testDuration2StrInBestUnit();
-                //        }
-                //    }
-                //}
+                if( pTestStepEntry != nullptr )
+                {
+                    if( i_iRole == Qt::DisplayRole || i_iRole == Qt::EditRole )
+                    {
+                        if( testResult == ETestResult::Undefined )
+                        {
+                            varData = "...";
+                        }
+                        else
+                        {
+                            varData = pTestStepEntry->testDuration2StrInBestUnit();
+                        }
+                    }
+                }
                 break;
             }
             case EColumnOperation:
             {
-                if(pTestStep != nullptr)
+                if( pTestStep != nullptr )
                 {
-                    if(i_iRole == Qt::DisplayRole || i_iRole == Qt::EditRole)
+                    if( i_iRole == Qt::DisplayRole || i_iRole == Qt::EditRole )
                     {
                         varData = pTestStep->getOperation();
                     }
-                    else if(i_iRole == Qt::ToolTipRole)
+                    else if( i_iRole == Qt::ToolTipRole )
                     {
                         varData = pTestStep->getToolTip();
                     }
@@ -788,11 +578,38 @@ QVariant CModeldxTreeTestSteps::data( const QModelIndex& i_modelIdx, int i_iRole
             }
             case EColumnDescription:
             {
-                if(pTestStep != nullptr)
+                if( pTestStep != nullptr )
+                {
+                    if( i_iRole == Qt::DisplayRole || i_iRole == Qt::EditRole )
+                    {
+                        varData = pTestStep->getDescription();
+                    }
+                    else if( i_iRole == Qt::ToolTipRole )
+                    {
+                        varData = pTestStep->getToolTip();
+                    }
+                }
+                break;
+            }
+            case EColumnExpectedValues:
+            {
+                if( pTestStep != nullptr )
                 {
                     if(i_iRole == Qt::DisplayRole || i_iRole == Qt::EditRole)
                     {
-                        varData = pTestStep->getDescription();
+                        bool bShow = true;
+
+                        if(m_bShowExpectedAndResultValuesOnlyIfTestStepFailed)
+                        {
+                            if(testResult != ETestResult::TestFailed)
+                            {
+                                bShow = false;
+                            }
+                        }
+                        if(bShow)
+                        {
+                            varData = pTestStep->getExpectedValues().join("\n");
+                        }
                     }
                     else if(i_iRole == Qt::ToolTipRole)
                     {
@@ -801,77 +618,50 @@ QVariant CModeldxTreeTestSteps::data( const QModelIndex& i_modelIdx, int i_iRole
                 }
                 break;
             }
-            case EColumnDesiredValues:
+            case EColumnResultValues:
             {
-                if(pTestStep != nullptr)
-                {
-                    //if(i_iRole == Qt::DisplayRole || i_iRole == Qt::EditRole)
-                    //{
-                    //    bool bShow = true;
-
-                    //    if(m_bShowDesiredAndActualValuesOnlyIfTestStepFailed)
-                    //    {
-                    //        if(testResult != ETestResultTestFailed)
-                    //        {
-                    //            bShow = false;
-                    //        }
-                    //    }
-                    //    if(bShow)
-                    //    {
-                    //        varData = pTestStep->getDesiredValues().join("\n");
-                    //    }
-                    //}
-                    //else if(i_iRole == Qt::ToolTipRole)
-                    //{
-                    //    varData = pTestStep->getToolTip();
-                    //}
-                }
-                break;
-            }
-            case EColumnActualValues:
-            {
-                if(pTestStep != nullptr)
+                if( pTestStep != nullptr )
                 {
                     if(i_iRole == Qt::DisplayRole || i_iRole == Qt::EditRole)
                     {
-                        //QStringList strlstDesiredValues;
-                        //QStringList strlstActualValues;
-                        //QString     strDesiredVal;
-                        //QString     strActualVal;
-                        //int         idxVal;
-                        //bool        bShow = true;
+                        QStringList strlstExpectedValues;
+                        QStringList strlstResultValues;
+                        QString     strExpectedVal;
+                        QString     strResultVal;
+                        int         idxVal;
+                        bool        bShow = true;
 
-                        //if(m_bShowDesiredAndActualValuesOnlyIfTestStepFailed)
-                        //{
-                        //    if(testResult != ETestResultTestFailed)
-                        //    {
-                        //        bShow = false;
-                        //    }
-                        //}
-                        //if(bShow)
-                        //{
-                        //    strlstDesiredValues = pTestStep->getDesiredValues();
-                        //    strlstActualValues = pTestStep->getActualValues();
+                        if(m_bShowExpectedAndResultValuesOnlyIfTestStepFailed)
+                        {
+                            if(testResult != ETestResult::TestFailed)
+                            {
+                                bShow = false;
+                            }
+                        }
+                        if(bShow)
+                        {
+                            strlstExpectedValues = pTestStep->getExpectedValues();
+                            strlstResultValues = pTestStep->getResultValues();
 
-                        //    for(idxVal = 0; idxVal < strlstActualValues.size(); idxVal++)
-                        //    {
-                        //        strActualVal = strlstActualValues[idxVal];
+                            for(idxVal = 0; idxVal < strlstResultValues.size(); idxVal++)
+                            {
+                                strResultVal = strlstResultValues[idxVal];
 
-                        //        if(idxVal < strlstDesiredValues.size())
-                        //        {
-                        //            strDesiredVal = strlstDesiredValues[idxVal];
-                        //        }
-                        //        else
-                        //        {
-                        //            strDesiredVal = "";
-                        //        }
-                        //        if(strActualVal.compare(strDesiredVal, Qt::CaseSensitive) != 0)
-                        //        {
-                        //            strlstActualValues[idxVal] = "!! " + strActualVal + " !!";
-                        //        }
-                        //    }
-                        //    varData = strlstActualValues.join("\n");
-                        //}
+                                if(idxVal < strlstExpectedValues.size())
+                                {
+                                    strExpectedVal = strlstExpectedValues[idxVal];
+                                }
+                                else
+                                {
+                                    strExpectedVal = "";
+                                }
+                                if(strResultVal.compare(strExpectedVal, Qt::CaseSensitive) != 0)
+                                {
+                                    strlstResultValues[idxVal] = "!! " + strResultVal + " !!";
+                                }
+                            }
+                            varData = strlstResultValues.join("\n");
+                        }
                     }
                     else if(i_iRole == Qt::ToolTipRole)
                     {

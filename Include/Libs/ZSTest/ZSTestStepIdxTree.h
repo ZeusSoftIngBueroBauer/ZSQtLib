@@ -57,15 +57,11 @@ public: // class methods
 public: // ctors and dtor
     CTestStepIdxTree( CTest* i_pTest );
     virtual ~CTestStepIdxTree();
-signals:
-    //void testStepGroupInserted( QObject* i_pAdminIdxTree, QObject* i_pTSGrp );
-    //void testStepGroupChanged( QObject* i_pAdminIdxTree, QObject* i_pTSGrp );
-    //void testStepInserted( QObject* i_pAdminIdxTree, QObject* i_pTestStep );
-    //void testStepChanged( QObject* i_pAdminIdxTree, QObject* i_pTestStep );
-    //void nameSpaceNodeChanged( QObject* i_pAdminIdxTree, ZS::System::#error CAbstractIdxTreeEntry* i_pTreeEntry, int i_enabled );
 public: // overridables
     virtual QString nameSpace() const { return CTestStepIdxTree::NameSpace(); }
     virtual QString className() const { return CTestStepIdxTree::ClassName(); }
+public: // instance methods
+    CTest* getTest() { return m_pTest; }
 public: // instance methods
     //int getTestStepsCount() const;
     //int getTestStepsExecutedCount() const { return m_iTestStepsExecutedCount; }
@@ -76,74 +72,13 @@ public: // instance methods find test step groups
     CTestStepGroup* findTestStepGroup( const QString& i_strParentPath, const QString& i_strGroupName);
     CTestStepGroup* findTestStepGroup( CTestStepGroup* i_pTestGroupParent, const QString& i_strGroupName );
 public: // instance methods to add, remove and modify test step groups
-    //CTestStepGroup* addTestStepGroup(
-    //    const QString&       i_strGroupName,
-    //    const QString&       i_strParentPath,
-    //    ZS::System::EEnabled i_enabled = ZS::System::EEnabled::Undefined );
-    //CTestStepGroup* addTestStepGroup(
-    //    const QString&       i_strGroupName,
-    //    CTestStepGroup*      i_pTestGroupParent,
-    //    ZS::System::EEnabled i_enabled = ZS::System::EEnabled::Undefined );
-    //void addTestStepGroup( CTestStepGroup* i_pTSGrp, CTestStepGroup* i_pTSGrpParent );
-    //CTestStepGroup* getTestStepGroup( // implicitely creates and adds the object if not yet existing
-    //    const QString&       i_strGroupName,
-    //    const QString&       i_strParentPath,
-    //    ZS::System::EEnabled i_enabled = ZS::System::EEnabled::Undefined );
-    //CTestStepGroup* getTestStepGroup( // implicitely creates and adds the object if not yet existing
-    //    const QString&       i_strGroupName,
-    //    CTestStepGroup*      i_pTestGroupParent,
-    //    ZS::System::EEnabled i_enabled = ZS::System::EEnabled::Undefined );
-    //void onTestStepGroupChanged( CTestStepGroup* i_pTSGrp ); // triggers the "nodeChanged" and "dataChanged" signals
 public: // instance methods to find test steps
-    //CTestStep* getTestStep( int i_idxObj);
     CTestStep* findTestStep( const QString& i_strParentPath, const QString& i_strName );
     CTestStep* findTestStep( CTestStepGroup* i_pTestGroupParent, const QString& i_strName );
-public: // instance methods to add, remove and modify test steps
-    //CTestStep* addTestStep(
-    //    const QString&       i_strName,
-    //    const QString&       i_strParentPath,
-    //    ZS::System::EEnabled i_enabled = ZS::System::EEnabled::Undefined );
-    //CTestStep* addTestStep(
-    //    CTestStepGroup*      i_pTestGroupParent,
-    //    const QString&       i_strName,
-    //    ZS::System::EEnabled i_enabled = ZS::System::EEnabled::Undefined );
-    //void addTestStep(CTestStepGroup* i_pTSGrpParent, CTestStep* i_pTestStep );
-public: // instance methods to add, remove and modify test steps
-    //CTestStep* getTestStep( // implicitely creates and adds the object if not yet existing
-    //    const QString&       i_strParentPath,
-    //    const QString&       i_strName,
-    //    ZS::System::EEnabled i_enabled = ZS::System::EEnabled::Undefined,
-    //    int                  i_idxObj = -1 );
-    //CTestStep* getTestStep( // implicitely creates and adds the object if not yet existing
-    //    CTestStepGroup*      i_pTestGroupParent,
-    //    const QString&       i_strName,
-    //    ZS::System::EEnabled i_enabled = ZS::System::EEnabled::Undefined,
-    //    int                  i_idxObj = -1 );
-public: // instance methods
-    //void onTestStepChanged( CTestStep* i_pTestStep ); // triggers the "nodeChanged" and "dataChanged" signals of the model
-    //void testStepStarted( CTestStep* i_pTestStep );
-    //void testStepEnded( CTestStep* i_pTestStep );
-public: // instance methods
-    //void onTestGroupChanged( CTestStepGroup* i_pTSGrp ); // triggers the "nodeChanged" and "dataChanged" signals of the model
-    //void testGroupStarted( CTestStepGroup* i_pTSGrp );
-    //void testGroupEnded( CTestStepGroup* i_pTSGrp );
-public: // instance methods to recursively modify test step objects via namespace node entries
-    //void updateGroup(
-    //    const QString&       i_strGroupNameParent,
-    //    const QString&       i_strNodeName,
-    //    ZS::System::EEnabled i_enabled );
-    //void updateGroup(
-    //    ZS::System::#error CAbstractIdxTreeEntry* i_pTreeEntry,
-    //    ZS::System::EEnabled           i_enabled );
-    //int getUpdateGroupCallDepth() const;
 public: // overridables
-    //virtual void reset(); // to reset the test result of all test steps
+    virtual void reset(); // to reset the test result of all test steps
 protected: // instance methods
-    //void reset( ZS::System::#error CAbstractIdxTreeEntry* i_pTreeEntry ); // to reset the test result of all test steps below the specified node
-public: // instance methods
-    //void beginInitTest();
-    //void endInitTest();
-    //bool isInitializingTest() const { return m_bInitializingTest; }
+    void reset( ZS::System::CIdxTreeEntry* i_pTreeEntry );
 public: // instance methods
     //void testStarted();
     //void testEnded();
@@ -159,12 +94,12 @@ private: // assignment operator not allowed
     CTestStepIdxTree& operator = ( const CTestStepIdxTree& );
 protected: // instance members
     CTest*                   m_pTest;
-    bool                     m_bInitializingTest;
-    int                      m_iTestStepsExecutedCount;
-    int                      m_iTestStepsPassedCount;
-    int                      m_iTestStepsFailedCount;
-    int                      m_iTestStepsIgnoredCount;
-    int                      m_iUpdateGroupCallDepth;
+    //bool                     m_bInitializingTest;
+    //int                      m_iTestStepsExecutedCount;
+    //int                      m_iTestStepsPassedCount;
+    //int                      m_iTestStepsFailedCount;
+    //int                      m_iTestStepsIgnoredCount;
+    //int                      m_iUpdateGroupCallDepth;
     ZS::Trace::CTrcAdminObj* m_pTrcAdminObj;
 
 }; // class CTestStepIdxTree

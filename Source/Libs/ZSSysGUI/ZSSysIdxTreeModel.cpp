@@ -1101,7 +1101,7 @@ void CModelIdxTree::setIsExpanded(
         i_pModelBranch->setIsExpanded(i_bIsExpanded);
 
         QModelIndex modelIdxTL = _createIndex(i_pModelBranch->indexInParentBranch(), 0, i_pModelBranch);
-        QModelIndex modelIdxBR = _createIndex(i_pModelBranch->indexInParentBranch(), EColumnCount-1, i_pModelBranch);
+        QModelIndex modelIdxBR = _createIndex(i_pModelBranch->indexInParentBranch(), columnCount()-1, i_pModelBranch);
 
         emit_dataChanged(modelIdxTL, modelIdxBR);
     }
@@ -1184,7 +1184,7 @@ void CModelIdxTree::setIsSelected(
         i_pModelTreeEntry->setIsSelected(i_bIsSelected);
 
         QModelIndex modelIdxTL = _createIndex(i_pModelTreeEntry->indexInParentBranch(), 0, i_pModelTreeEntry);
-        QModelIndex modelIdxBR = _createIndex(i_pModelTreeEntry->indexInParentBranch(), EColumnCount-1, i_pModelTreeEntry);
+        QModelIndex modelIdxBR = _createIndex(i_pModelTreeEntry->indexInParentBranch(), columnCount()-1, i_pModelTreeEntry);
 
         emit_dataChanged(modelIdxTL, modelIdxBR);
     }
@@ -1488,7 +1488,7 @@ void CModelIdxTree::onIdxTreeEntryChanged(
     QMutexLocker mtxLocker(m_pIdxTree == nullptr ? nullptr : m_pIdxTree->mutex());
 
     QModelIndex modelIdxTL = index(i_pTreeEntry->keyInTree(), 0);
-    QModelIndex modelIdxBR = index(i_pTreeEntry->keyInTree(), EColumnCount-1);
+    QModelIndex modelIdxBR = index(i_pTreeEntry->keyInTree(), columnCount()-1);
 
     emit_dataChanged(modelIdxTL, modelIdxBR);
 

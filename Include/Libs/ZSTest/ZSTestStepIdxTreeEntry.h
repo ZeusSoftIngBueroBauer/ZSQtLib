@@ -75,15 +75,15 @@ public: // overridables
 public: // overridables
     virtual void setToolTip( const QString& i_strToolTip );
     virtual QString getToolTip() const { return m_strToolTip; }
+public: // overridables
+    virtual void setTestResult( const CEnumTestResult& i_result );
 public: // instance methods
-    bool isTestRunning() const { return m_bTestRunning; }
+    //bool isTestRunning() const { return m_bTestRunning; }
+public: // must overridables
+    virtual CEnumTestResult getTestResult() const = 0;
+    virtual double getTestDurationInSec() const = 0;
 public: // overridables
     virtual QString testDuration2StrInBestUnit() const;
-public: // must overridables
-    virtual double getTestDurationInSec() const = 0;
-    virtual double getTestDurationInMilliSec() const = 0;
-    virtual double getTestDurationInMicroSec() const = 0;
-    virtual double getTestDurationInNanoSec() const = 0;
 private: // default ctor not allowed
     CAbstractTestStepIdxTreeEntry();
 private: // copy ctor not allowed
@@ -91,8 +91,8 @@ private: // copy ctor not allowed
 protected: // instance members
     CTest*               m_pTest;
     ZS::System::EEnabled m_enabled;
-    bool                 m_bTestRunning;
     QString              m_strToolTip;
+    CEnumTestResult      m_testResult;
 
 }; // class CAbstractTestStepIdxTreeEntry
 
