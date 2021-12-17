@@ -235,79 +235,6 @@ SErrResultInfo CTest::recall( const QString& i_strAbsFilePath )
 
 } // recall
 
-#if 0
-
-/*==============================================================================
-public: // instance methods
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-CTestStepGroup* CTest::getTestStepGroupRoot()
-//------------------------------------------------------------------------------
-{
-    return m_pIdxTree->getTestStepGroupRoot();
-}
-
-//------------------------------------------------------------------------------
-CTestStepGroup* CTest::getTestStepGroup( const QString& i_strGroupName, const QString& i_strGroupNameParent )
-//------------------------------------------------------------------------------
-{
-    if( i_strGroupName.isEmpty() )
-    {
-        throw CException(__FILE__,__LINE__,EResultArgOutOfRange,"GroupName is empty");
-    }
-
-    return m_pIdxTree->getTestStepGroup(
-        /* strGroupName       */ i_strGroupName,
-        /* strGroupPathParent */ i_strGroupNameParent,
-        /* enabled            */ EEnabled::Undefined );
-}
-
-//------------------------------------------------------------------------------
-CTestStepGroup* CTest::getTestStepGroup( const QString& i_strGroupName, CTestStepGroup* i_pTestGroupParent )
-//------------------------------------------------------------------------------
-{
-    if( i_strGroupName.isEmpty() )
-    {
-        throw CException(__FILE__,__LINE__,EResultArgOutOfRange,"GroupName is empty");
-    }
-
-    return m_pIdxTree->getTestStepGroup(
-        /* strGroupName     */ i_strGroupName,
-        /* pTestGroupParent */ i_pTestGroupParent,
-        /* enabled          */ EEnabled::Undefined );
-}
-
-//------------------------------------------------------------------------------
-CTestStep* CTest::getTestStep( const QString& i_strName, const QString& i_strGroupNameParent )
-//------------------------------------------------------------------------------
-{
-    if( i_strName.isEmpty() )
-    {
-        throw CException(__FILE__,__LINE__,EResultArgOutOfRange,"Name is empty");
-    }
-
-    return m_pIdxTree->getTestStep(
-        /* strName            */ i_strName,
-        /* strGroupPathParent */ i_strGroupNameParent,
-        /* enabled            */ EEnabled::Undefined );
-}
-
-//------------------------------------------------------------------------------
-CTestStep* CTest::getTestStep( const QString& i_strName, CTestStepGroup* i_pTestGroupParent )
-//------------------------------------------------------------------------------
-{
-    if( i_strName.isEmpty() )
-    {
-        throw CException(__FILE__,__LINE__,EResultArgOutOfRange,"Name is empty");
-    }
-
-    return m_pIdxTree->getTestStep(
-        /* strName          */ i_strName,
-        /* pTestGroupParent */ i_pTestGroupParent,
-        /* enabled          */ EEnabled::Undefined );
-}
-
 /*==============================================================================
 public: // instance methods
 ==============================================================================*/
@@ -329,66 +256,18 @@ void CTest::setTestStepInterval( int i_iTestStepInterval_ms )
         /* strMethod    */ "setTestStepInterval",
         /* strAddInfo   */ strAddTrcInfo );
 
-    m_iTestStepInterval_ms = i_iTestStepInterval_ms;
+    if( m_iTestStepInterval_ms != i_iTestStepInterval_ms )
+    {
+        m_iTestStepInterval_ms = i_iTestStepInterval_ms;
+
+        emit testStepIntervalChanged(m_iTestStepInterval_ms);
+    }
 
 } // setTestStepInterval
-
-//------------------------------------------------------------------------------
-int CTest::getTestStepIntervalInMs() const
-//------------------------------------------------------------------------------
-{
-    return m_iTestStepInterval_ms;
-}
 
 /*==============================================================================
 public: // overridables
 ==============================================================================*/
-
-//------------------------------------------------------------------------------
-void CTest::init()
-//------------------------------------------------------------------------------
-{
-    QString strAddTrcInfo;
-
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iFilterLevel */ ETraceDetailLevelMethodCalls,
-        /* strMethod    */ "init",
-        /* strAddInfo   */ strAddTrcInfo );
-
-    if( mthTracer.isActive(ETraceDetailLevelInternalStates) )
-    {
-        strAddTrcInfo  = "State: " + m_state.toString();
-        strAddTrcInfo += ", TestStepCurr: " + QString(m_pTestStepCurr == nullptr ? "nullptr" : m_pTestStepCurr->path());
-        mthTracer.trace(strAddTrcInfo);
-    }
-
-    if( m_state == ETestState::Idle )
-    {
-        //m_pIdxTree->reset();
-        //m_pIdxTree->testStarted();
-
-        setState(EStateInit);
-
-        int iTestStepInterval_ms = m_iTestStepInterval_ms;
-
-        m_iTestStepInterval_ms = 0;
-
-        m_pIdxTree->beginInitTest();
-
-        doTestStep();
-
-        m_pIdxTree->endInitTest();
-
-        m_iTestStepInterval_ms = iTestStepInterval_ms;
-
-        setState(ETestState::Idle);
-
-    } // if( m_state == ETestState::Idle )
-
-} // init
-
-#endif
 
 //------------------------------------------------------------------------------
 /*! Starts the test or continues a paused test.
@@ -415,19 +294,17 @@ void CTest::start()
     if( m_state == ETestState::Idle )
     {
         m_pIdxTree->reset();
-        //m_pIdxTree->testStarted();
 
         setCurrentTestStep(nullptr);
     }
 
     if( m_state == ETestState::Idle || m_state == ETestState::Paused )
     {
-        //setState(ETestState::Running);
-        //setRunMode(ERunMode::Continuous);
+        setState(ETestState::Running);
+        setRunMode(ERunMode::Continuous);
 
-        //triggerNextTestStep();
-
-    } // if( m_state == ETestState::Idle )
+        triggerNextTestStep();
+    }
 
 } // start
 
@@ -453,7 +330,6 @@ void CTest::step()
     if( m_state == ETestState::Idle )
     {
         m_pIdxTree->reset();
-        //m_pIdxTree->testStarted();
 
         setCurrentTestStep(nullptr);
     }
@@ -464,8 +340,7 @@ void CTest::step()
         setRunMode(ERunMode::SingleStep);
 
         triggerNextTestStep();
-
-    } // if( m_state == ETestState::Idle || m_state == ETestState::Paused )
+    }
 
 } // step
 
@@ -491,13 +366,9 @@ void CTest::stop()
     if( m_state == ETestState::Running || m_state == ETestState::Paused )
     {
         setState(ETestState::Idle);
-
-        //m_pIdxTree->testEnded();
     }
 
 } // stop
-
-#if 0
 
 //------------------------------------------------------------------------------
 void CTest::abort()
@@ -521,13 +392,9 @@ void CTest::abort()
     if( m_state == ETestState::Running || m_state == ETestState::Paused )
     {
         setState(ETestState::Idle);
-
-        m_pIdxTree->testAborted();
     }
 
 } // abort
-
-#endif
 
 //------------------------------------------------------------------------------
 void CTest::pause()
@@ -555,8 +422,6 @@ void CTest::pause()
 
 } // pause
 
-#if 0
-
 //------------------------------------------------------------------------------
 void CTest::resume()
 //------------------------------------------------------------------------------
@@ -578,60 +443,6 @@ void CTest::resume()
     }
 
 } // resume
-
-/*==============================================================================
-public: // overridables
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-void CTest::onTestStepGroupChanged( CTestStepGroup* i_pTSGrp )
-//------------------------------------------------------------------------------
-{
-    QString strAddTrcInfo;
-
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelRuntimeInfo) )
-    {
-        strAddTrcInfo = "Group: " + QString(i_pTSGrp == nullptr ? "nullptr" : i_pTSGrp->path());
-    }
-
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iFilterLevel */ 3,
-        /* strMethod    */ "onTestStepGroupChanged",
-        /* strAddInfo   */ strAddTrcInfo );
-
-    if( m_pIdxTree != nullptr )
-    {
-        m_pIdxTree->onTestStepGroupChanged(i_pTSGrp);
-    }
-
-} // onTestStepGroupChanged
-
-//------------------------------------------------------------------------------
-void CTest::onTestStepChanged( CTestStep* i_pTestStep )
-//------------------------------------------------------------------------------
-{
-    QString strAddTrcInfo;
-
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelRuntimeInfo) )
-    {
-        strAddTrcInfo = "Step: " + QString(i_pTestStep == nullptr ? "nullptr" : i_pTestStep->path());
-    }
-
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iFilterLevel */ 3,
-        /* strMethod    */ "onTestStepChanged",
-        /* strAddInfo   */ strAddTrcInfo );
-
-    if( m_pIdxTree != nullptr )
-    {
-        m_pIdxTree->onTestStepChanged(i_pTestStep);
-    }
-
-} // onTestStepChanged
-
-#endif
 
 /*==============================================================================
 protected slots:
@@ -752,7 +563,7 @@ void CTest::onCurrentTestStepFinished( CTestStep* i_pTestStep )
         /* pObjReceiver */ this,
         /* szSlot       */ SLOT(onCurrentTestStepFinished(ZS::Test::CTestStep*)) );
 
-    if(m_state == ETestState::Running ) // not Paused or Stopped
+    if( m_state == ETestState::Running ) // not Paused or Stopped
     {
         if( m_runMode == ERunMode::Continuous )
         {
@@ -1038,7 +849,7 @@ protected: // overridables
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-/*! Triggers execution of the next step by either starting a time or immediately
+/*! Triggers execution of the next step by either starting a timer or immediately
     sending a continue request message to the tests event method.
 
     @param i_iInterval_ms [in]

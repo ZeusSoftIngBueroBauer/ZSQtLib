@@ -32,11 +32,14 @@ may result in using the software modules.
 #include "ZSTest/ZSTestStep.h"
 #include "ZSTest/ZSTestStepGroup.h"
 #include "ZSSys/ZSSysErrLog.h"
+#include "ZSSys/ZSSysTrcAdminObj.h"
+#include "ZSSys/ZSSysTrcMethod.h"
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
 
 using namespace ZS::System;
+using namespace ZS::Trace;
 using namespace ZS::Apps::Test::Template;
 
 
@@ -149,6 +152,19 @@ CTest::~CTest()
 void CTest::doTestStepGrp1Step1( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
+    QString strAddTrcInfo;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    {
+        strAddTrcInfo = "TestStep: " + QString(i_pTestStep == nullptr ? "nullptr" : i_pTestStep->path());
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iFilterLevel */ ETraceDetailLevelMethodCalls,
+        /* strMethod    */ "doTestStepGrp1Step1",
+        /* strAddInfo   */ strAddTrcInfo );
+
     QString     strExpectedValue;
     QStringList strlstExpectedValues;
     QString     strResultValue;
@@ -183,6 +199,19 @@ void CTest::doTestStepGrp1Step1( ZS::Test::CTestStep* i_pTestStep )
 void CTest::doTestStepGrp1Step2( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
+    QString strAddTrcInfo;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    {
+        strAddTrcInfo = "TestStep: " + QString(i_pTestStep == nullptr ? "nullptr" : i_pTestStep->path());
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iFilterLevel */ ETraceDetailLevelMethodCalls,
+        /* strMethod    */ "doTestStepGrp1Step2",
+        /* strAddInfo   */ strAddTrcInfo );
+
     QString     strExpectedValue;
     QStringList strlstExpectedValues;
     QString     strResultValue;
@@ -217,6 +246,19 @@ void CTest::doTestStepGrp1Step2( ZS::Test::CTestStep* i_pTestStep )
 void CTest::doTestStepGrp1Step3( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
+    QString strAddTrcInfo;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    {
+        strAddTrcInfo = "TestStep: " + QString(i_pTestStep == nullptr ? "nullptr" : i_pTestStep->path());
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iFilterLevel */ ETraceDetailLevelMethodCalls,
+        /* strMethod    */ "doTestStepGrp1Step3",
+        /* strAddInfo   */ strAddTrcInfo );
+
     QString     strExpectedValue;
     QStringList strlstExpectedValues;
     QString     strResultValue;
@@ -251,6 +293,19 @@ void CTest::doTestStepGrp1Step3( ZS::Test::CTestStep* i_pTestStep )
 void CTest::doTestStepGrp2Step1( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
+    QString strAddTrcInfo;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    {
+        strAddTrcInfo = "TestStep: " + QString(i_pTestStep == nullptr ? "nullptr" : i_pTestStep->path());
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iFilterLevel */ ETraceDetailLevelMethodCalls,
+        /* strMethod    */ "doTestStepGrp2Step1",
+        /* strAddInfo   */ strAddTrcInfo );
+
     QString     strExpectedValue;
     QStringList strlstExpectedValues;
     QString     strResultValue;
@@ -285,6 +340,19 @@ void CTest::doTestStepGrp2Step1( ZS::Test::CTestStep* i_pTestStep )
 void CTest::doTestStepGrp2Step2( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
+    QString strAddTrcInfo;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    {
+        strAddTrcInfo = "TestStep: " + QString(i_pTestStep == nullptr ? "nullptr" : i_pTestStep->path());
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iFilterLevel */ ETraceDetailLevelMethodCalls,
+        /* strMethod    */ "doTestStepGrp2Step2",
+        /* strAddInfo   */ strAddTrcInfo );
+
     QString     strExpectedValue;
     QStringList strlstExpectedValues;
     QString     strResultValue;
@@ -319,6 +387,19 @@ void CTest::doTestStepGrp2Step2( ZS::Test::CTestStep* i_pTestStep )
 void CTest::doTestStepGrp2Step3( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
+    QString strAddTrcInfo;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    {
+        strAddTrcInfo = "TestStep: " + QString(i_pTestStep == nullptr ? "nullptr" : i_pTestStep->path());
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iFilterLevel */ ETraceDetailLevelMethodCalls,
+        /* strMethod    */ "doTestStepGrp2Step3",
+        /* strAddInfo   */ strAddTrcInfo );
+
     QString     strExpectedValue;
     QStringList strlstExpectedValues;
     QString     strResultValue;

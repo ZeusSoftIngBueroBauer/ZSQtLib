@@ -95,9 +95,9 @@ protected slots:
     void onActFileOpenTriggered();
     void onActFileSaveTriggered();
 protected slots:
+    void onActDebugErrLogTriggered();
     void onActDebugTrcServerTriggered();
     void onActDebugTrcAdminObjIdxTreeTriggered();
-    void onActDebugErrLogTriggered();
 protected slots:
     void onTestIdxTreeAdded( ZS::System::CIdxTree* i_pIdxTree );
     void onTestIdxTreeDestroyed( QObject* i_pIdxTree );
@@ -120,13 +120,12 @@ protected: // instance members
     QMenu*                          m_pMnuView;
     QAction*                        m_pActViewDockWdgtTrcAdmObjTree;
     QMenu*                          m_pMnuDebug;
+    QAction*                        m_pActDebugErrLog;
     QAction*                        m_pActDebugTrcServer;
     QAction*                        m_pActDebugTrcAdminObjIdxTree;
-    QAction*                        m_pActDebugErrLog;
     QMenu*                          m_pMnuInfo;
     QAction*                        m_pActInfoVersion;
     QAction*                        m_pActInfoSettingsFile;
-    QAction*                        m_pActInfoTrcMthFile;
     QStatusBar*                     m_pStatusBar;
     QLabel*                         m_pLblErrors;
     CWidgetCentral*                 m_pWdgtCentral;

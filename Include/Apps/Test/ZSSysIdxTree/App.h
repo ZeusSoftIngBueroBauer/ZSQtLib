@@ -42,10 +42,7 @@ namespace System
 {
 class CErrLog;
 }
-namespace Trace
-{
-class CIpcTrcServer;
-}
+
 namespace Apps
 {
 namespace Test

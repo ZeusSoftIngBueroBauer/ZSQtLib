@@ -108,13 +108,12 @@ CMainWindow::CMainWindow(
     m_pMnuView(nullptr),
     m_pActViewDockWdgtTrcAdmObjTree(nullptr),
     m_pMnuDebug(nullptr),
+    m_pActDebugErrLog(nullptr),
     m_pActDebugTrcServer(nullptr),
     m_pActDebugTrcAdminObjIdxTree(nullptr),
-    m_pActDebugErrLog(nullptr),
     m_pMnuInfo(nullptr),
     m_pActInfoVersion(nullptr),
     m_pActInfoSettingsFile(nullptr),
-    m_pActInfoTrcMthFile(nullptr),
     m_pStatusBar(nullptr),
     m_pLblErrors(nullptr),
     m_pWdgtCentral(nullptr),
@@ -290,6 +289,32 @@ CMainWindow::CMainWindow(
 
     m_pMnuDebug = menuBar()->addMenu(tr("&Debug"));
 
+    // <MenuItem> Debug::Error Log
+    //----------------------------
+
+    QIcon iconDebugErrorLog;
+
+    QPixmap pxmDebugErrorLog16x16(":/ZS/App/Zeus16x16.bmp");
+
+    pxmDebugErrorLog16x16.setMask(pxmDebugErrorLog16x16.createHeuristicMask());
+
+    iconDebugErrorLog.addPixmap(pxmDebugErrorLog16x16);
+
+    m_pActDebugErrLog = new QAction(iconDebugErrorLog, "Error Log", this);
+    m_pActDebugErrLog->setToolTip("Open error log dialog");
+    m_pActDebugErrLog->setEnabled(true);
+
+    m_pMnuDebug->addAction(m_pActDebugErrLog);
+
+    if( !QObject::connect(
+        /* pObjSender   */ m_pActDebugErrLog,
+        /* szSignal     */ SIGNAL(triggered()),
+        /* pObjReceiver */ this,
+        /* szSlot       */ SLOT(onActDebugErrLogTriggered()) ) )
+    {
+        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
+    }
+
     // <MenuItem> Debug::TraceServer
     //------------------------------
 
@@ -318,32 +343,6 @@ CMainWindow::CMainWindow(
         /* szSlot       */ SLOT(onActDebugTrcAdminObjIdxTreeTriggered()) ) )
     {
         throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-    }
-
-    // <MenuItem> Debug::Error Log
-    //----------------------------
-
-    QIcon iconDebugErrorLog;
-
-    QPixmap pxmDebugErrorLog16x16(":/ZS/App/Zeus16x16.bmp");
-
-    pxmDebugErrorLog16x16.setMask(pxmDebugErrorLog16x16.createHeuristicMask());
-
-    iconDebugErrorLog.addPixmap(pxmDebugErrorLog16x16);
-
-    m_pActDebugErrLog = new QAction(iconDebugErrorLog, "Error Log", this);
-    m_pActDebugErrLog->setToolTip("Open error log dialog");
-    m_pActDebugErrLog->setEnabled(true);
-
-    m_pMnuDebug->addAction(m_pActDebugErrLog);
-
-    if( !QObject::connect(
-        /* pObjSender   */ m_pActDebugErrLog,
-        /* szSignal     */ SIGNAL(triggered()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onActDebugErrLogTriggered()) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
     }
 
     // <Menu> Info
@@ -483,13 +482,12 @@ CMainWindow::~CMainWindow()
     m_pMnuView = nullptr;
     m_pActViewDockWdgtTrcAdmObjTree = nullptr;
     m_pMnuDebug = nullptr;
+    m_pActDebugErrLog = nullptr;
     m_pActDebugTrcServer = nullptr;
     m_pActDebugTrcAdminObjIdxTree = nullptr;
-    m_pActDebugErrLog = nullptr;
     m_pMnuInfo = nullptr;
     m_pActInfoVersion = nullptr;
     m_pActInfoSettingsFile = nullptr;
-    m_pActInfoTrcMthFile = nullptr;
     m_pStatusBar = nullptr;
     m_pLblErrors = nullptr;
     m_pWdgtCentral = nullptr;
@@ -748,6 +746,34 @@ protected slots:
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+void CMainWindow::onActDebugErrLogTriggered()
+//------------------------------------------------------------------------------
+{
+    QString strDlgTitle = getMainWindowTitle() + ": Error Log";
+
+    CDlgErrLog* pDlg = dynamic_cast<CDlgErrLog*>(CDlgErrLog::GetInstance("ErrLog"));
+
+    if( pDlg == nullptr )
+    {
+        pDlg = CDlgErrLog::CreateInstance("ErrLog", strDlgTitle);
+        pDlg->setAttribute(Qt::WA_DeleteOnClose, true);
+        pDlg->adjustSize();
+        pDlg->show();
+    }
+    else // if( pReqSeq != nullptr )
+    {
+        if( pDlg->isHidden() )
+        {
+            pDlg->show();
+        }
+        pDlg->raise();
+        pDlg->activateWindow();
+
+    } // if( pDlg != nullptr )
+
+} // onActDebugErrLogTriggered
+
+//------------------------------------------------------------------------------
 void CMainWindow::onActDebugTrcServerTriggered()
 //------------------------------------------------------------------------------
 {
@@ -806,34 +832,6 @@ void CMainWindow::onActDebugTrcAdminObjIdxTreeTriggered()
     } // if( pDlg != nullptr )
 
 } // onActDebugTrcAdminObjIdxTreeTriggered
-
-//------------------------------------------------------------------------------
-void CMainWindow::onActDebugErrLogTriggered()
-//------------------------------------------------------------------------------
-{
-    QString strDlgTitle = getMainWindowTitle() + ": Error Log";
-
-    CDlgErrLog* pDlg = dynamic_cast<CDlgErrLog*>(CDlgErrLog::GetInstance("ErrLog"));
-
-    if( pDlg == nullptr )
-    {
-        pDlg = CDlgErrLog::CreateInstance("ErrLog", strDlgTitle);
-        pDlg->setAttribute(Qt::WA_DeleteOnClose, true);
-        pDlg->adjustSize();
-        pDlg->show();
-    }
-    else // if( pReqSeq != nullptr )
-    {
-        if( pDlg->isHidden() )
-        {
-            pDlg->show();
-        }
-        pDlg->raise();
-        pDlg->activateWindow();
-
-    } // if( pDlg != nullptr )
-
-} // onActDebugErrLogTriggered
 
 /*==============================================================================
 protected slots:

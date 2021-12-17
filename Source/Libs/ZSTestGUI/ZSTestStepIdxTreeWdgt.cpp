@@ -79,9 +79,10 @@ CWdgtIdxTreeTestSteps::CWdgtIdxTreeTestSteps(
     m_pBtnTreeViewCollapseAll(nullptr),
     m_pLblTestStepCurr(nullptr),
     m_pEdtTestStepCurr(nullptr),
+    m_pLblTestStepIntervalInMs(nullptr),
+    m_pEdtTestStepIntervalInMs(nullptr),
     m_pTestStepsModel(nullptr),
-    m_pTreeViewTestSteps(nullptr),
-    m_pTreeEntrySelected(nullptr)
+    m_pTreeViewTestSteps(nullptr)
 {
     setObjectName( "WdgtTest" + m_pTest->objectName() );
 
@@ -252,13 +253,33 @@ CWdgtIdxTreeTestSteps::CWdgtIdxTreeTestSteps(
 
     m_pLytHeadLine->addSpacing(10);
 
+    // <Label> Test step interval
+    //---------------------------
+
+    m_pLblTestStepIntervalInMs = new QLabel("Test Step Interval/ms:");
+    m_pEdtTestStepIntervalInMs = new QLineEdit( QString::number(m_pTest->getTestStepIntervalInMs()) );
+    m_pEdtTestStepIntervalInMs->setValidator( new QIntValidator(0, 60 * 1000, m_pEdtTestStepIntervalInMs) );
+    m_pEdtTestStepIntervalInMs->setMaximumWidth(60);
+    m_pLytHeadLine->addWidget(m_pLblTestStepIntervalInMs);
+    m_pLytHeadLine->addWidget(m_pEdtTestStepIntervalInMs);
+
+    m_pLytHeadLine->addSpacing(10);
+
+    if( !QObject::connect(
+        /* pObjSender   */ m_pEdtTestStepIntervalInMs,
+        /* szSignal     */ SIGNAL( editingFinished() ),
+        /* pObjReceiver */ this,
+        /* szSlot       */ SLOT( onEdtTestStepIntervalEditingFinished() ) ) )
+    {
+        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
+    }
+
     // <EditField> Current Test Step
     //------------------------------------
 
     m_pLblTestStepCurr = new QLabel("Current Test Step:");
     m_pEdtTestStepCurr = new QLineEdit("---",this);
     m_pEdtTestStepCurr->setEnabled(false);
-    //m_pEdtTestStepCurr->setMaximumWidth(60);
     m_pLytHeadLine->addWidget(m_pLblTestStepCurr);
     m_pLytHeadLine->addWidget(m_pEdtTestStepCurr);
 
@@ -272,28 +293,6 @@ CWdgtIdxTreeTestSteps::CWdgtIdxTreeTestSteps(
 
     //m_pLytLineTestStepsSummary = new QHBoxLayout();
     //m_pLytMain->addLayout(m_pLytLineTestStepsSummary);
-
-    //// Test step interval
-    ////-------------------
-
-    //m_pLblTestStepIntervalInMs = new QLabel("Test Step Interval / ms:");
-    //m_pEdtTestStepIntervalInMs = new QLineEdit( QString::number(m_pTest->getTestStepIntervalInMs()) );
-    //m_pEdtTestStepIntervalInMs->setValidator( new QDoubleValidator(0.0,60000.0,3,m_pEdtTestStepIntervalInMs) );
-    //m_pEdtTestStepIntervalInMs->setEnabled(false);
-    //m_pEdtTestStepIntervalInMs->setMaximumWidth(60);
-    //m_pLytLineTestStepsSummary->addWidget(m_pLblTestStepIntervalInMs);
-    //m_pLytLineTestStepsSummary->addWidget(m_pEdtTestStepIntervalInMs);
-
-    //m_pLytLineTestStepsSummary->addSpacing(10);
-
-    //if( !QObject::connect(
-    //    /* pObjSender   */ m_pEdtTestStepIntervalInMs,
-    //    /* szSignal     */ SIGNAL( textChanged(const QString&) ),
-    //    /* pObjReceiver */ this,
-    //    /* szSlot       */ SLOT( onEdtTestStepIntervalTextChanged(const QString&) ) ) )
-    //{
-    //    throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    //}
 
     //// Number of tests
     ////-----------------------
@@ -380,7 +379,6 @@ CWdgtIdxTreeTestSteps::CWdgtIdxTreeTestSteps(
     {
         throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
     }
-
     if( !QObject::connect(
         /* pObjSender   */ m_pTest,
         /* szSignal     */ SIGNAL( runModeChanged(const ZS::System::CEnumRunMode&) ),
@@ -389,7 +387,6 @@ CWdgtIdxTreeTestSteps::CWdgtIdxTreeTestSteps(
     {
         throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
     }
-
     if( !QObject::connect(
         /* pObjSender   */ m_pTest,
         /* szSignal     */ SIGNAL( currentTestStepChanged(ZS::Test::CTestStep*) ),
@@ -398,12 +395,13 @@ CWdgtIdxTreeTestSteps::CWdgtIdxTreeTestSteps(
     {
         throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
     }
-
-    // Connect to signals of the test steps object pool model
-    //-------------------------------------------------------
-
-    if( m_pTestStepsModel != nullptr )
+    if( !QObject::connect(
+        /* pObjSender   */ m_pTest,
+        /* szSignal     */ SIGNAL( testStepIntervalChanged(int) ),
+        /* pObjReceiver */ this,
+        /* szSlot       */ SLOT( onTestStepIntervalChanged(int) ) ) )
     {
+        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
     }
 
     // Connect to the signals of the tree view
@@ -416,14 +414,6 @@ CWdgtIdxTreeTestSteps::CWdgtIdxTreeTestSteps(
             /* szSignal     */ SIGNAL( expanded(const QModelIndex&) ),
             /* pObjReceiver */ this,
             /* szSlot       */ SLOT( onTreeViewExpanded(const QModelIndex&) ) ) )
-        {
-            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-        }
-        if( !QObject::connect(
-            /* pObjSender   */ m_pTreeViewTestSteps->selectionModel(),
-            /* szSignal     */ SIGNAL( currentChanged(const QModelIndex&, const QModelIndex&) ),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT( onTreeViewSelectedNodeChanged(const QModelIndex&, const QModelIndex&) ) ) )
         {
             throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
         }
@@ -463,9 +453,10 @@ CWdgtIdxTreeTestSteps::~CWdgtIdxTreeTestSteps()
     m_pBtnTreeViewCollapseAll = nullptr;
     m_pLblTestStepCurr = nullptr;
     m_pEdtTestStepCurr = nullptr;
+    m_pLblTestStepIntervalInMs = nullptr;
+    m_pEdtTestStepIntervalInMs = nullptr;
     m_pTestStepsModel = nullptr;
     m_pTreeViewTestSteps = nullptr;
-    m_pTreeEntrySelected = nullptr;
 
 } // dtor
 
@@ -491,18 +482,18 @@ void CWdgtIdxTreeTestSteps::onBtnStepClicked( bool /*i_bChecked*/ )
 void CWdgtIdxTreeTestSteps::onBtnPauseClicked( bool /*i_bChecked*/ )
 //------------------------------------------------------------------------------
 {
-    //m_pTest->pause();
+    m_pTest->pause();
 }
 
 //------------------------------------------------------------------------------
 void CWdgtIdxTreeTestSteps::onBtnStopClicked( bool /*i_bChecked*/ )
 //------------------------------------------------------------------------------
 {
-    //m_pTest->stop();
+    m_pTest->stop();
 }
 
 /*==============================================================================
-public slots:
+protected slots:
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
@@ -553,37 +544,41 @@ protected slots:
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CWdgtIdxTreeTestSteps::onTestStateChanged( const ZS::Test::CEnumTestState& /*i_state*/ )
+void CWdgtIdxTreeTestSteps::onEdtTestStepIntervalEditingFinished()
 //------------------------------------------------------------------------------
 {
-    //if( m_pTest->getState() == CTest::EStateIdle )
-    //{
-    //    m_pBtnStart->setEnabled(true);
-    //    m_pBtnStep->setEnabled(true);
-    //    m_pBtnPause->setEnabled(false);
-    //    m_pBtnStop->setEnabled(false);
-    //}
-    //else if( m_pTest->getState() == CTest::EStateInit )
-    //{
-    //    m_pBtnStart->setEnabled(false);
-    //    m_pBtnStep->setEnabled(false);
-    //    m_pBtnPause->setEnabled(false);
-    //    m_pBtnStop->setEnabled(false);
-    //}
-    //else if( m_pTest->getState() == CTest::EStateRunning )
-    //{
-    //    m_pBtnStart->setEnabled(false);
-    //    m_pBtnStep->setEnabled(false);
-    //    m_pBtnPause->setEnabled(true);
-    //    m_pBtnStop->setEnabled(true);
-    //}
-    //else if( m_pTest->getState() == CTest::EStatePaused )
-    //{
-    //    m_pBtnStart->setEnabled(true);
-    //    m_pBtnStep->setEnabled(true);
-    //    m_pBtnPause->setEnabled(false);
-    //    m_pBtnStop->setEnabled(true);
-    //}
+    m_pTest->setTestStepInterval( m_pEdtTestStepIntervalInMs->text().toInt() );
+}
+
+/*==============================================================================
+protected slots:
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CWdgtIdxTreeTestSteps::onTestStateChanged( const ZS::Test::CEnumTestState& i_state )
+//------------------------------------------------------------------------------
+{
+    if( i_state == ETestState::Idle )
+    {
+        m_pBtnStart->setEnabled(true);
+        m_pBtnStep->setEnabled(true);
+        m_pBtnPause->setEnabled(false);
+        m_pBtnStop->setEnabled(false);
+    }
+    else if( i_state == ETestState::Running )
+    {
+        m_pBtnStart->setEnabled(false);
+        m_pBtnStep->setEnabled(false);
+        m_pBtnPause->setEnabled(true);
+        m_pBtnStop->setEnabled(true);
+    }
+    else if( i_state == ETestState::Paused )
+    {
+        m_pBtnStart->setEnabled(true);
+        m_pBtnStep->setEnabled(true);
+        m_pBtnPause->setEnabled(false);
+        m_pBtnStop->setEnabled(true);
+    }
 
 } // onTestStateChanged
 
@@ -591,35 +586,6 @@ void CWdgtIdxTreeTestSteps::onTestStateChanged( const ZS::Test::CEnumTestState& 
 void CWdgtIdxTreeTestSteps::onTestRunModeChanged( const ZS::System::CEnumRunMode& /*i_runMode*/ )
 //------------------------------------------------------------------------------
 {
-    //if( m_pTest->getState() == CTest::EStateIdle )
-    //{
-    //    m_pBtnStart->setEnabled(true);
-    //    m_pBtnStep->setEnabled(true);
-    //    m_pBtnPause->setEnabled(false);
-    //    m_pBtnStop->setEnabled(false);
-    //}
-    //else if( m_pTest->getState() == CTest::EStateInit )
-    //{
-    //    m_pBtnStart->setEnabled(false);
-    //    m_pBtnStep->setEnabled(false);
-    //    m_pBtnPause->setEnabled(false);
-    //    m_pBtnStop->setEnabled(false);
-    //}
-    //else if( m_pTest->getState() == CTest::EStateRunning )
-    //{
-    //    m_pBtnStart->setEnabled(false);
-    //    m_pBtnStep->setEnabled(false);
-    //    m_pBtnPause->setEnabled(true);
-    //    m_pBtnStop->setEnabled(true);
-    //}
-    //else if( m_pTest->getState() == CTest::EStatePaused )
-    //{
-    //    m_pBtnStart->setEnabled(true);
-    //    m_pBtnStep->setEnabled(true);
-    //    m_pBtnPause->setEnabled(false);
-    //    m_pBtnStop->setEnabled(true);
-    //}
-
 } // onTestRunModeChanged
 
 //------------------------------------------------------------------------------
@@ -634,18 +600,22 @@ void CWdgtIdxTreeTestSteps::onCurrentTestStepChanged( CTestStep* i_pTestStep )
     {
         m_pEdtTestStepCurr->setText( i_pTestStep->path() );
     }
+
 } // onCurrentTestStepChanged
+
+//------------------------------------------------------------------------------
+void CWdgtIdxTreeTestSteps::onTestStepIntervalChanged( int i_iInterval_ms )
+//------------------------------------------------------------------------------
+{
+    if( m_pEdtTestStepIntervalInMs->text() != QString::number(i_iInterval_ms) )
+    {
+        m_pEdtTestStepIntervalInMs->setText(QString::number(i_iInterval_ms));
+    }
+}
 
 /*==============================================================================
 public slots:
 ==============================================================================*/
-
-////------------------------------------------------------------------------------
-//void CWdgtIdxTreeTestSteps::onTestStepInserted( QObject* /*i_pAdminIdxTreeModel*/, QObject* /*i_pTestStep*/ )
-////------------------------------------------------------------------------------
-//{
-//    m_pEdtTestStepsCount->setText( QString::number(m_pTest->getAdminObjIdxTree()->getTestStepsCount()) );
-//}
 
 ////------------------------------------------------------------------------------
 //void CWdgtIdxTreeTestSteps::onTestStepChanged( QObject* /*i_pAdminIdxTreeModel*/, QObject* /*i_pTestStep*/ )
@@ -663,17 +633,6 @@ protected slots:
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CWdgtIdxTreeTestSteps::onModelClearing( QObject* i_pAdminIdxTreeModel )
-//------------------------------------------------------------------------------
-{
-    if( i_pAdminIdxTreeModel == m_pTestStepsModel )
-    {
-        m_pTreeEntrySelected = nullptr;
-    }
-
-} // onModelClearing
-
-//------------------------------------------------------------------------------
 void CWdgtIdxTreeTestSteps::onTreeViewExpanded( const QModelIndex& i_iModelIdx )
 //------------------------------------------------------------------------------
 {
@@ -687,39 +646,3 @@ void CWdgtIdxTreeTestSteps::onTreeViewExpanded( const QModelIndex& i_iModelIdx )
     }
 
 } // onTreeViewExpanded
-
-//------------------------------------------------------------------------------
-void CWdgtIdxTreeTestSteps::onTreeViewSelectedNodeChanged(
-    const QModelIndex& /*i_modelIdxCurr*/,
-    const QModelIndex& /*i_modelIdxPrev*/ )
-//------------------------------------------------------------------------------
-{
-    //CWdgtGroupContent* pWdgtGroupContent = dynamic_cast<CWdgtGroupContent*>(m_pTblViewTestSteps);
-
-    //if( pWdgtGroupContent != nullptr )
-    //{
-    //    #error CAbstractIdxTreeEntry* pTreeEntryCurr = nullptr;
-    //    #error CAbstractIdxTreeEntry* pTreeEntryPrev = nullptr;
-
-    //    if( i_modelIdxCurr.isValid() )
-    //    {
-    //        pTreeEntryCurr = static_cast<#error CAbstractIdxTreeEntry*>(i_modelIdxCurr.internalPointer());
-    //    }
-    //    if( i_modelIdxPrev.isValid() )
-    //    {
-    //        pTreeEntryPrev = static_cast<#error CAbstractIdxTreeEntry*>(i_modelIdxPrev.internalPointer());
-    //    }
-
-    //    if( pTreeEntryCurr != pTreeEntryPrev )
-    //    {
-    //        m_pTreeEntrySelected = nullptr;
-
-    //        if( pTreeEntryCurr != nullptr && pTreeEntryCurr->getStyleState() & QStyle::State_Selected )
-    //        {
-    //            m_pTreeEntrySelected = pTreeEntryCurr;
-    //        }
-    //        pWdgtGroupContent->setSelectedTreeEntry(m_pTreeEntrySelected);
-    //    }
-    //}
-
-} // onTreeViewSelectedNodeChanged

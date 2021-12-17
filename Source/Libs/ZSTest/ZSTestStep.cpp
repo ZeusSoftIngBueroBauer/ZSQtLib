@@ -353,23 +353,6 @@ double CTestStep::getTestDurationInSec() const
 }
 
 /*==============================================================================
-public: // instance methods
-==============================================================================*/
-
-#if 0
-
-//------------------------------------------------------------------------------
-void CTestStep::updateTestEndTime()
-//------------------------------------------------------------------------------
-{
-    m_fTimeTestEnd_s = ZS::System::Time::getProcTimeInSec();
-    update();
-
-} // updateTestEndTime
-
-#endif
-
-/*==============================================================================
 public: // overridables
 ==============================================================================*/
 
@@ -381,75 +364,28 @@ public: // overridables
 void CTestStep::doTestStep()
 //------------------------------------------------------------------------------
 {
+    onTestStepStarted();
+
     emit doTestStep(this);
 }
-
-#if 0
-
-/*==============================================================================
-public: // must overridables of base class CAbstractTestStepIdxTreeEntry
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-void CTestStep::testStarted()
-//------------------------------------------------------------------------------
-{
-    m_bTestRunning = true;
-    m_fTimeTestStart_s = ZS::System::Time::getProcTimeInSec();
-    m_fTimeTestEnd_s = -1.0;
-    m_pIdxTree->testStepStarted(this);
-    // update(); update is used to update the model but the model is implicitly updated by the testStepStarted method
-
-} // testStarted
-
-//------------------------------------------------------------------------------
-void CTestStep::testEnded( bool i_bIgnoreTestResult )
-//------------------------------------------------------------------------------
-{
-    if( m_fTimeTestEnd_s < 0.0 )
-    {
-        m_fTimeTestEnd_s = ZS::System::Time::getProcTimeInSec();
-    }
-
-    m_bTestRunning = false;
-
-    if( i_bIgnoreTestResult )
-    {
-        setTestResult(ETestResultIgnore);
-    }
-    else
-    {
-        ETestResult result = ETestResultTestPassed;
-
-        if( m_strlstExpectedValues.size() != m_strlstResultValues.size() )
-        {
-            result = ETestResultTestFailed;
-        }
-        else
-        {
-            for( int idxVal = 0; idxVal < m_strlstExpectedValues.size(); idxVal++ )
-            {
-                if( m_strlstExpectedValues[idxVal] != m_strlstResultValues[idxVal] )
-                {
-                    result = ETestResultTestFailed;
-                    break;
-                }
-            }
-        }
-        setTestResult(result);
-    }
-
-    m_pIdxTree->testStepEnded(this);
-
-    // update(); update is used to update the model but the model is implicitly updated by the testStepEnded method
-
-} // testEnded
-
-#endif
 
 /*==============================================================================
 protected: // instance methods
 ==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CTestStep::onTestStepStarted()
+//------------------------------------------------------------------------------
+{
+    m_fTimeTestStart_s = ZS::System::Time::getProcTimeInSec();
+    m_fTimeTestEnd_s = -1.0;
+
+    if( m_pTree != nullptr )
+    {
+        m_pTree->onTreeEntryChanged(this);
+    }
+
+} // onTestStepStarted
 
 //------------------------------------------------------------------------------
 void CTestStep::onTestStepFinished()

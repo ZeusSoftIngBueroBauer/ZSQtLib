@@ -32,6 +32,7 @@ may result in using the software modules.
 #include "Test.h"
 
 #include "ZSSysGUI/ZSSysGUIApp.h"
+#include "ZSIpcTrace/ZSIpcTrcServer.h"
 
 class QSettings;
 
@@ -75,11 +76,14 @@ public: // instance methods
 protected slots:
     void onLastWindowClosed();
 private: // instance members
-    QSettings*   m_pSettingsFile;
-    QString      m_strErrLogFileAbsFilePath;
-    QString      m_strTestStepsFileAbsFilePath;
-    CTest*       m_pTest;
-    CMainWindow* m_pMainWindow;
+    QSettings*                    m_pSettingsFile;
+    QString                       m_strErrLogFileAbsFilePath;
+    ZS::Ipc::SServerHostSettings  m_trcServerHostSettings;
+    ZS::Trace::STrcServerSettings m_trcServerSettings;
+    ZS::Trace::CIpcTrcServer*     m_pTrcServer;
+    QString                       m_strTestStepsFileAbsFilePath;
+    CTest*                        m_pTest;
+    CMainWindow*                  m_pMainWindow;
 
 }; // class CApplication
 

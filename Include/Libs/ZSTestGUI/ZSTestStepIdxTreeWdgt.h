@@ -82,29 +82,31 @@ protected slots:
     void onBtnTreeViewExpandAllClicked( bool i_bChecked );
     void onBtnTreeViewCollapseAllClicked( bool i_bChecked );
 protected slots:
+    void onEdtTestStepIntervalEditingFinished();
+protected slots:
     void onTestStateChanged( const ZS::Test::CEnumTestState& i_state );
     void onTestRunModeChanged( const ZS::System::CEnumRunMode& i_runMode );
     void onCurrentTestStepChanged( ZS::Test::CTestStep* i_pTestStep );
+    void onTestStepIntervalChanged( int i_iInterval_ms );
 protected slots:
-    void onModelClearing( QObject* i_pAdminIdxTreeModel );
     void onTreeViewExpanded( const QModelIndex& i_iModelIdx );
-    void onTreeViewSelectedNodeChanged( const QModelIndex& i_modelIdxCurr, const QModelIndex& i_modelIdxPrev );
 protected: // instance members
-    CTest*                     m_pTest;
-    QVBoxLayout*               m_pLytMain;
-    QHBoxLayout*               m_pLytHeadLine;
-    QPushButton*               m_pBtnStart;
-    QPushButton*               m_pBtnStep;
-    QPushButton*               m_pBtnPause;
-    QPushButton*               m_pBtnStop;
-    QPushButton*               m_pBtnTreeViewResizeRowsAndColumnsToContents;
-    QPushButton*               m_pBtnTreeViewExpandAll;
-    QPushButton*               m_pBtnTreeViewCollapseAll;
-    QLabel*                    m_pLblTestStepCurr;
-    QLineEdit*                 m_pEdtTestStepCurr;
-    CModeldxTreeTestSteps*     m_pTestStepsModel;
-    QTreeView*                 m_pTreeViewTestSteps;
-    ZS::System::CIdxTreeEntry* m_pTreeEntrySelected;
+    CTest*                 m_pTest;
+    QVBoxLayout*           m_pLytMain;
+    QHBoxLayout*           m_pLytHeadLine;
+    QPushButton*           m_pBtnStart;
+    QPushButton*           m_pBtnStep;
+    QPushButton*           m_pBtnPause;
+    QPushButton*           m_pBtnStop;
+    QPushButton*           m_pBtnTreeViewResizeRowsAndColumnsToContents;
+    QPushButton*           m_pBtnTreeViewExpandAll;
+    QPushButton*           m_pBtnTreeViewCollapseAll;
+    QLabel*                m_pLblTestStepIntervalInMs;
+    QLineEdit*             m_pEdtTestStepIntervalInMs;
+    QLabel*                m_pLblTestStepCurr;
+    QLineEdit*             m_pEdtTestStepCurr;
+    CModeldxTreeTestSteps* m_pTestStepsModel;
+    QTreeView*             m_pTreeViewTestSteps;
 
 }; // class CWgdtTest
 

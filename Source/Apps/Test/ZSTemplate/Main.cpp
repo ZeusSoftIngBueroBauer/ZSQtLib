@@ -69,6 +69,14 @@ Libraries depending on build configuration and used Qt version
 #pragma comment(lib, ZSTESTLIB)
 #pragma message(__FILE__ ": Linking against = " ZSTESTGUILIB)
 #pragma comment(lib, ZSTESTGUILIB)
+#pragma message(__FILE__ ": Linking against = " ZSIPCLIB)
+#pragma comment(lib, ZSIPCLIB)
+#pragma message(__FILE__ ": Linking against = " ZSIPCGUILIB)
+#pragma comment(lib, ZSIPCGUILIB)
+#pragma message(__FILE__ ": Linking against = " ZSIPCTRACELIB)
+#pragma comment(lib, ZSIPCTRACELIB)
+#pragma message(__FILE__ ": Linking against = " ZSIPCTRACEGUILIB)
+#pragma comment(lib, ZSIPCTRACEGUILIB)
 
 #endif // #ifdef USE_PRAGMA_COMMENT_LIB_INCLUDE_IN_MAIN_MODULES
 

@@ -42,12 +42,6 @@ public: // class methods
     static QString NameSpace() { return "ZS::Test"; }
     static QString ClassName() { return "CTestStep"; }
 public: // ctors and dtor
-    //CTestStep(
-    //    CTest*          i_pTest,
-    //    const QString&  i_strName,
-    //    const QString&  i_strOperation,
-    //    CTestStepGroup* i_pTSGrpParent,
-    //    TFctDoTestStep  i_fctDoTestStep );
     CTestStep(
         CTest*          i_pTest,
         const QString&  i_strName,
@@ -92,8 +86,7 @@ public: // must overridables of base class CAbstractTestStepIdxTreeEntry
 public: // instance methods
     virtual void doTestStep();
 protected: // instance methods
-    //virtual void testStarted();
-    //virtual void testEnded( bool i_bIgnoreTestResult = false ); // Implicitly updates test end time if not already updated.
+    void onTestStepStarted();
     void onTestStepFinished();
 private: // default ctor not allowed
     CTestStep();

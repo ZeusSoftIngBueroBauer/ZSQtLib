@@ -29,13 +29,6 @@ may result in using the software modules.
 #include <QtCore/qsettings.h>
 #include <QtCore/qthread.h>
 #include <QtCore/qtimer.h>
-//#include <QtGui/qbitmap.h>
-
-//#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-//#include <QtGui/qmessagebox.h>
-//#else
-//#include <QtWidgets/qmessagebox.h>
-//#endif
 
 #include "App.h"
 #include "MainWindow.h"
@@ -52,6 +45,8 @@ may result in using the software modules.
 
 using namespace ZS::System;
 using namespace ZS::System::GUI;
+using namespace ZS::Ipc;
+using namespace ZS::Trace;
 using namespace ZS::Apps::Test::Template;
 
 
@@ -86,6 +81,12 @@ CApplication::CApplication(
     CGUIApp(i_argc,i_argv),
     m_pSettingsFile(nullptr),
     m_strErrLogFileAbsFilePath(),
+    m_trcServerHostSettings(
+        /* strLocalHostName       */ "127.0.0.1",
+        /* uLocalPort             */ 24763,
+        /* uMaxPendingConnections */ 30 ),
+    m_trcServerSettings(),
+    m_pTrcServer(nullptr),
     m_strTestStepsFileAbsFilePath(),
     m_pTest(nullptr),
     m_pMainWindow(nullptr)
@@ -113,6 +114,9 @@ CApplication::CApplication(
     iconApp.addPixmap(pxmApp32x32);
 
     QApplication::setWindowIcon(iconApp);
+
+    ZS::Ipc::SServerHostSettings  trcServerHostSettingsDefault = m_trcServerHostSettings;
+    ZS::Trace::STrcServerSettings trcServerSettingsDefault = m_trcServerSettings;
 
     // Parse command arguments (first part, IniFile)
     //----------------------------------------------
@@ -179,6 +183,18 @@ CApplication::CApplication(
 
     m_strErrLogFileAbsFilePath = strAppLogDir + "/" + strErrLogFileBaseName + "." + strErrLogFileSuffix;
 
+    QString strTrcAdminObjFileBaseName = strAppNameNormalized + "-TrcMthAdmObj";
+    QString strTrcAdminObjFileSuffix = "xml";
+
+    QString strTrcLogFileBaseName = strAppNameNormalized;
+    QString strTrcLogFileSuffix = "log";
+
+    m_trcServerSettings.m_strAdminObjFileAbsFilePath = strAppConfigDir + "/" + strTrcAdminObjFileBaseName + "." + strTrcAdminObjFileSuffix;
+    m_trcServerSettings.m_strLocalTrcFileAbsFilePath = strAppLogDir + "/" + strTrcLogFileBaseName + "." + strTrcLogFileSuffix;
+
+    trcServerSettingsDefault.m_strAdminObjFileAbsFilePath = m_trcServerSettings.m_strAdminObjFileAbsFilePath;
+    trcServerSettingsDefault.m_strLocalTrcFileAbsFilePath = m_trcServerSettings.m_strLocalTrcFileAbsFilePath;
+
     QString strTestStepsFileBaseName = strAppNameNormalized + "-TestSteps";
     QString strTestStepsFileSuffix = "xml";
 
@@ -204,6 +220,16 @@ CApplication::CApplication(
 
     CErrLog::CreateInstance(true, m_strErrLogFileAbsFilePath);
 
+    // Create trace server
+    //------------------------
+
+    m_pTrcServer = ZS::Trace::CIpcTrcServer::CreateInstance();
+
+    m_pTrcServer->setHostSettings(m_trcServerHostSettings);
+    m_pTrcServer->setTraceSettings(m_trcServerSettings);
+    m_pTrcServer->recallAdminObjs();
+    m_pTrcServer->startup();
+
     // Test
     //----------------------------
 
@@ -224,7 +250,12 @@ CApplication::~CApplication()
     // Save settings of the application
     //--------------------------------------
 
-    //saveSettings();
+    saveSettings();
+
+    if( m_pTrcServer != nullptr )
+    {
+        m_pTrcServer->saveAdminObjs();
+    }
 
     try
     {
@@ -237,6 +268,14 @@ CApplication::~CApplication()
     try
     {
         delete m_pTest;
+    }
+    catch(...)
+    {
+    }
+
+    try
+    {
+        ZS::Trace::CTrcServer::ReleaseInstance(m_pTrcServer);
     }
     catch(...)
     {
@@ -288,6 +327,185 @@ void CApplication::readSettings()
             bSyncSettings = true;
         }
 
+        // Trace Server
+        //-------------
+
+        strSettingsKey = "TrcServer";
+        bSyncSettings  = false;
+
+        // Host Settings
+        if( m_pSettingsFile->contains(strSettingsKey+"/SocketType") )
+        {
+            m_trcServerHostSettings.m_socketType = str2SocketType( m_pSettingsFile->value(strSettingsKey+"/SocketType",socketType2Str(m_trcServerHostSettings.m_socketType)).toString() );
+        }
+        else
+        {
+            m_pSettingsFile->setValue( strSettingsKey+"/SocketType", socketType2Str(m_trcServerHostSettings.m_socketType) );
+            bSyncSettings = true;
+        }
+        if( m_pSettingsFile->contains(strSettingsKey+"/LocalHostName") )
+        {
+            m_trcServerHostSettings.m_strLocalHostName = m_pSettingsFile->value(strSettingsKey+"/LocalHostName",m_trcServerHostSettings.m_strLocalHostName).toString();
+        }
+        else
+        {
+            m_pSettingsFile->setValue( strSettingsKey+"/LocalHostName", m_trcServerHostSettings.m_strLocalHostName );
+            bSyncSettings = true;
+        }
+        if( m_pSettingsFile->contains(strSettingsKey+"/LocalPort") )
+        {
+            m_trcServerHostSettings.m_uLocalPort = m_pSettingsFile->value(strSettingsKey+"/LocalPort",m_trcServerHostSettings.m_uLocalPort).toUInt();
+        }
+        else
+        {
+            m_pSettingsFile->setValue( strSettingsKey+"/LocalPort", m_trcServerHostSettings.m_uLocalPort );
+            bSyncSettings = true;
+        }
+        if( m_pSettingsFile->contains(strSettingsKey+"/MaxPendingConnections") )
+        {
+            m_trcServerHostSettings.m_uMaxPendingConnections = m_pSettingsFile->value(strSettingsKey+"/MaxPendingConnections",m_trcServerHostSettings.m_uMaxPendingConnections).toUInt();
+        }
+        else
+        {
+            m_pSettingsFile->setValue( strSettingsKey+"/MaxPendingConnections", m_trcServerHostSettings.m_uMaxPendingConnections );
+            bSyncSettings = true;
+        }
+        if( m_pSettingsFile->contains(strSettingsKey+"/BufferSize") )
+        {
+            m_trcServerHostSettings.m_uBufferSize = m_pSettingsFile->value(strSettingsKey+"/BufferSize",m_trcServerHostSettings.m_uBufferSize).toUInt();
+        }
+        else
+        {
+            m_pSettingsFile->setValue( strSettingsKey+"/BufferSize", m_trcServerHostSettings.m_uBufferSize );
+            bSyncSettings = true;
+        }
+
+        // Trace Settings
+        if( m_pSettingsFile->contains(strSettingsKey+"/Enabled") )
+        {
+            m_trcServerSettings.m_bEnabled = str2Bool( m_pSettingsFile->value(strSettingsKey+"/Enabled",bool2Str(m_trcServerSettings.m_bEnabled)).toString() );
+        }
+        else
+        {
+            m_pSettingsFile->setValue(strSettingsKey+"/Enabled",bool2Str(m_trcServerSettings.m_bEnabled));
+            bSyncSettings = true;
+        }
+        if( m_pSettingsFile->contains(strSettingsKey+"/NewTrcAdminObjsEnabledAsDefault") )
+        {
+            m_trcServerSettings.m_bNewTrcAdminObjsEnabledAsDefault = str2Bool( m_pSettingsFile->value(strSettingsKey+"/NewTrcAdminObjsEnabledAsDefault",bool2Str(m_trcServerSettings.m_bNewTrcAdminObjsEnabledAsDefault)).toString() );
+        }
+        else
+        {
+            m_pSettingsFile->setValue(strSettingsKey+"/NewTrcAdminObjsEnabledAsDefault",bool2Str(m_trcServerSettings.m_bNewTrcAdminObjsEnabledAsDefault));
+            bSyncSettings = true;
+        }
+        if( m_pSettingsFile->contains(strSettingsKey+"/NewTrcAdminObjsDefaultDetailLevel") )
+        {
+            m_trcServerSettings.m_iNewTrcAdminObjsDefaultDetailLevel = m_pSettingsFile->value(strSettingsKey+"/NewTrcAdminObjsDefaultDetailLevel",m_trcServerSettings.m_iNewTrcAdminObjsDefaultDetailLevel).toInt();
+        }
+        else
+        {
+            m_pSettingsFile->setValue(strSettingsKey+"/NewTrcAdminObjsDefaultDetailLevel",m_trcServerSettings.m_iNewTrcAdminObjsDefaultDetailLevel);
+            bSyncSettings = true;
+        }
+        if( m_pSettingsFile->contains(strSettingsKey+"/CacheDataIfNotConnected") )
+        {
+            m_trcServerSettings.m_bCacheDataIfNotConnected = str2Bool( m_pSettingsFile->value(strSettingsKey+"/CacheDataIfNotConnected",bool2Str(m_trcServerSettings.m_bCacheDataIfNotConnected)).toString() );
+        }
+        else
+        {
+            m_pSettingsFile->setValue(strSettingsKey+"/CacheDataIfNotConnected",bool2Str(m_trcServerSettings.m_bCacheDataIfNotConnected));
+            bSyncSettings = true;
+        }
+        if( m_pSettingsFile->contains(strSettingsKey+"/CacheDataMaxArrLen") )
+        {
+            m_trcServerSettings.m_iCacheDataMaxArrLen = m_pSettingsFile->value(strSettingsKey+"/CacheDataMaxArrLen",m_trcServerSettings.m_iCacheDataMaxArrLen).toInt();
+        }
+        else
+        {
+            m_pSettingsFile->setValue(strSettingsKey+"/CacheDataMaxArrLen",m_trcServerSettings.m_iCacheDataMaxArrLen);
+            bSyncSettings = true;
+        }
+        if( m_pSettingsFile->contains(strSettingsKey+"/AdminObjFileAbsFilePath") )
+        {
+            m_trcServerSettings.m_strAdminObjFileAbsFilePath = m_pSettingsFile->value(strSettingsKey+"/AdminObjFileAbsFilePath",m_trcServerSettings.m_strAdminObjFileAbsFilePath).toString();
+        }
+        else
+        {
+            m_pSettingsFile->setValue(strSettingsKey+"/AdminObjFileAbsFilePath",m_trcServerSettings.m_strAdminObjFileAbsFilePath);
+            bSyncSettings = true;
+        }
+        if( m_pSettingsFile->contains(strSettingsKey+"/UseLocalTrcFile") )
+        {
+            m_trcServerSettings.m_bUseLocalTrcFile = str2Bool( m_pSettingsFile->value(strSettingsKey+"/UseLocalTrcFile",bool2Str(m_trcServerSettings.m_bUseLocalTrcFile)).toString() );
+        }
+        else
+        {
+            m_pSettingsFile->setValue(strSettingsKey+"/UseLocalTrcFile",bool2Str(m_trcServerSettings.m_bUseLocalTrcFile));
+            bSyncSettings = true;
+        }
+        if( m_pSettingsFile->contains(strSettingsKey+"/LocalTrcFileAbsFilePath") )
+        {
+            m_trcServerSettings.m_strLocalTrcFileAbsFilePath = m_pSettingsFile->value(strSettingsKey+"/LocalTrcFileAbsFilePath",m_trcServerSettings.m_strLocalTrcFileAbsFilePath).toString();
+        }
+        else
+        {
+            m_pSettingsFile->setValue(strSettingsKey+"/LocalTrcFileAbsFilePath",m_trcServerSettings.m_strLocalTrcFileAbsFilePath);
+            bSyncSettings = true;
+        }
+        if( m_pSettingsFile->contains(strSettingsKey+"/LocalTrcFileAutoSaveIntervalInMs") )
+        {
+            m_trcServerSettings.m_iLocalTrcFileAutoSaveInterval_ms = m_pSettingsFile->value(strSettingsKey+"/LocalTrcFileAutoSaveIntervalInMs",m_trcServerSettings.m_iLocalTrcFileAutoSaveInterval_ms).toInt();
+        }
+        else
+        {
+            m_pSettingsFile->setValue(strSettingsKey+"/LocalTrcFileAutoSaveIntervalInMs",m_trcServerSettings.m_iLocalTrcFileAutoSaveInterval_ms);
+            bSyncSettings = true;
+        }
+        if( m_pSettingsFile->contains(strSettingsKey+"/LocalTrcFileSubFileCountMax") )
+        {
+            m_trcServerSettings.m_iLocalTrcFileSubFileCountMax = m_pSettingsFile->value(strSettingsKey+"/LocalTrcFileSubFileCountMax",m_trcServerSettings.m_iLocalTrcFileSubFileCountMax).toInt();
+        }
+        else
+        {
+            m_pSettingsFile->setValue(strSettingsKey+"/LocalTrcFileSubFileCountMax",m_trcServerSettings.m_iLocalTrcFileSubFileCountMax);
+            bSyncSettings = true;
+        }
+        if( m_pSettingsFile->contains(strSettingsKey+"/LocalTrcFileSubFileLineCountMax") )
+        {
+            m_trcServerSettings.m_iLocalTrcFileSubFileLineCountMax = m_pSettingsFile->value(strSettingsKey+"/LocalTrcFileSubFileLineCountMax",m_trcServerSettings.m_iLocalTrcFileSubFileLineCountMax).toInt();
+        }
+        else
+        {
+            m_pSettingsFile->setValue(strSettingsKey+"/LocalTrcFileSubFileLineCountMax",m_trcServerSettings.m_iLocalTrcFileSubFileLineCountMax);
+            bSyncSettings = true;
+        }
+
+        if( m_pSettingsFile->contains(strSettingsKey+"/LocalTrcFileCloseFileAfterEachWrite") )
+        {
+            m_trcServerSettings.m_bLocalTrcFileCloseFileAfterEachWrite = str2Bool( m_pSettingsFile->value( strSettingsKey + "/LocalTrcFileCloseFileAfterEachWrite", bool2Str(m_trcServerSettings.m_bLocalTrcFileCloseFileAfterEachWrite) ).toString() );
+        }
+        else
+        {
+            m_pSettingsFile->setValue(strSettingsKey+"/LocalTrcFileCloseFileAfterEachWrite",bool2Str(m_trcServerSettings.m_bLocalTrcFileCloseFileAfterEachWrite));
+            bSyncSettings = true;
+        }
+
+        if( m_pSettingsFile->contains(strSettingsKey+"/Enabled") )
+        {
+            m_trcServerSettings.m_bEnabled = str2Bool( m_pSettingsFile->value(strSettingsKey+"/Enabled",bool2Str(m_trcServerSettings.m_bEnabled)).toString() );
+        }
+        else
+        {
+            m_pSettingsFile->setValue(strSettingsKey+"/Enabled",bool2Str(m_trcServerSettings.m_bEnabled));
+            bSyncSettings = true;
+        }
+
+        if( bSyncSettings )
+        {
+            m_pSettingsFile->sync();
+        }
+
         // Test Steps
         //-------------
 
@@ -321,8 +539,36 @@ void CApplication::saveSettings()
     {
         QString strSettingsKey;
 
-        // Test Steps
-        //-------------
+        if( m_pTrcServer != nullptr )
+        {
+            strSettingsKey = "TrcServer";
+
+            SServerHostSettings hostSettings = m_pTrcServer->getHostSettings();
+            STrcServerSettings  trcSettings  = m_pTrcServer->getTraceSettings();
+
+            //m_pSettingsFile->setValue( strSettingsKey+"/AutoStartTcpServer", bool2Str(m_bTrcServerStartTcpServer) );
+            m_pSettingsFile->setValue( strSettingsKey+"/SocketType", socketType2Str(hostSettings.m_socketType) );
+            m_pSettingsFile->setValue( strSettingsKey+"/LocalHostName", hostSettings.m_strLocalHostName );
+            m_pSettingsFile->setValue( strSettingsKey+"/LocalPort", hostSettings.m_uLocalPort );
+            m_pSettingsFile->setValue( strSettingsKey+"/MaxPendingConnections", hostSettings.m_uMaxPendingConnections );
+            m_pSettingsFile->setValue( strSettingsKey+"/BufferSize", hostSettings.m_uBufferSize );
+
+            m_pSettingsFile->setValue( strSettingsKey+"/Enabled", bool2Str(trcSettings.m_bEnabled) );
+            m_pSettingsFile->setValue( strSettingsKey+"/NewTrcAdminObjsEnabledAsDefault", bool2Str(trcSettings.m_bNewTrcAdminObjsEnabledAsDefault) );
+            m_pSettingsFile->setValue( strSettingsKey+"/NewTrcAdminObjsDefaultDetailLevel", QString::number(trcSettings.m_iNewTrcAdminObjsDefaultDetailLevel) );
+            m_pSettingsFile->setValue( strSettingsKey+"/CacheDataIfNotConnected", bool2Str(trcSettings.m_bCacheDataIfNotConnected) );
+            m_pSettingsFile->setValue( strSettingsKey+"/CacheDataMaxArrLen", QString::number(trcSettings.m_iCacheDataMaxArrLen) );
+            m_pSettingsFile->setValue( strSettingsKey+"/AdminObjFileAbsFilePath", trcSettings.m_strAdminObjFileAbsFilePath );
+            m_pSettingsFile->setValue( strSettingsKey+"/UseLocalTrcFile", bool2Str(trcSettings.m_bUseLocalTrcFile) );
+            m_pSettingsFile->setValue( strSettingsKey+"/LocalTrcFileAbsFilePath", trcSettings.m_strLocalTrcFileAbsFilePath );
+            m_pSettingsFile->setValue( strSettingsKey+"/LocalTrcFileAutoSaveIntervalInMs", trcSettings.m_iLocalTrcFileAutoSaveInterval_ms );
+            m_pSettingsFile->setValue( strSettingsKey+"/LocalTrcFileSubFileCountMax", trcSettings.m_iLocalTrcFileSubFileCountMax );
+            m_pSettingsFile->setValue( strSettingsKey+"/LocalTrcFileSubFileLineCountMax", trcSettings.m_iLocalTrcFileSubFileLineCountMax );
+            m_pSettingsFile->setValue( strSettingsKey+"/LocalTrcFileCloseFileAfterEachWrite", bool2Str(trcSettings.m_bLocalTrcFileCloseFileAfterEachWrite) );
+
+            m_pSettingsFile->sync();
+
+        } // if( m_pTrcServer != nullptr )
 
         if( m_pTest != nullptr )
         {

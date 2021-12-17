@@ -79,6 +79,8 @@ protected slots:
     void onActFileSaveTriggered();
 protected slots:
     void onActDebugErrLogTriggered();
+    void onActDebugTrcServerTriggered();
+    void onActDebugTrcAdminObjIdxTreeTriggered();
 protected slots:
     void onErrLogEntryAdded( const ZS::System::SErrResultInfo& i_errResultInfo );
     void onErrLogEntryChanged( const ZS::System::SErrResultInfo& i_errResultInfo );
@@ -96,6 +98,8 @@ protected: // instance members
     QAction*        m_pActFileQuit;
     QMenu*          m_pMnuDebug;
     QAction*        m_pActDebugErrLog;
+    QAction*        m_pActDebugTrcServer;
+    QAction*        m_pActDebugTrcAdminObjIdxTree;
     QMenu*          m_pMnuInfo;
     QAction*        m_pActInfoVersion;
     QAction*        m_pActInfoSettingsFile;
