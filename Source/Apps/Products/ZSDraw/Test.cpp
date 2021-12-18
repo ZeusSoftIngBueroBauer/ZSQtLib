@@ -24,6 +24,7 @@ may result in using the software modules.
 
 *******************************************************************************/
 
+#include <QtCore/qfileinfo.h>
 #include <QtCore/qtimer.h>
 
 #include <QtGui/qevent.h>
@@ -64,6 +65,7 @@ may result in using the software modules.
 #include "ZSPhysSizes/Geometry/ZSPhysSizes.h"
 #include "ZSTest/ZSTestStepGroup.h"
 #include "ZSTest/ZSTestStep.h"
+#include "ZSSys/ZSSysErrLog.h"
 #include "ZSSys/ZSSysException.h"
 #include "ZSSys/ZSSysMath.h"
 #include "ZSSys/ZSSysTrcAdminObj.h"
@@ -170,6 +172,24 @@ CTest::CTest( const QString& i_strTestStepsFileName ) :
         /* pTSGrpParent    */ pGrpInterferenceChecks,
         /* szDoTestStepFct */ SLOT(doTestStepInterferenceChecksI1L1(ZS::Test::CTestStep*)) );
 
+    // Recall test step settings
+    //--------------------------
+
+    QFileInfo fileInfo(i_strTestStepsFileName);
+
+    if( fileInfo.exists() )
+    {
+        SErrResultInfo errResultInfo = recall(i_strTestStepsFileName);
+
+        if(errResultInfo.isErrorResult())
+        {
+            if(CErrLog::GetInstance() != nullptr)
+            {
+                CErrLog::GetInstance()->addEntry(errResultInfo);
+            }
+        }
+    }
+
 } // ctor
 
 //------------------------------------------------------------------------------
@@ -182,7 +202,15 @@ CTest::~CTest()
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
 
-    m_pAdminObjPool->save_();
+    SErrResultInfo errResultInfo = save();
+
+    if(errResultInfo.isErrorResult())
+    {
+        if(CErrLog::GetInstance() != nullptr)
+        {
+            CErrLog::GetInstance()->addEntry(errResultInfo);
+        }
+    }
 
     CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
 

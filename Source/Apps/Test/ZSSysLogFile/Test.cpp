@@ -26,6 +26,7 @@ may result in using the software modules.
 
 #include <QtCore/qcoreapplication.h>
 #include <QtCore/qdir.h>
+#include <QtCore/qfileinfo.h>
 #include <QtCore/qtimer.h>
 #include <QtCore/qtextstream.h>
 
@@ -35,6 +36,7 @@ may result in using the software modules.
 #include "ZSTest/ZSTestStepIdxTreeEntry.h"
 #include "ZSTest/ZSTestStepIdxTree.h"
 #include "ZSSys/ZSSysApp.h"
+#include "ZSSys/ZSSysErrLog.h"
 #include "ZSSys/ZSSysLogFile.h"
 
 #include "ZSSys/ZSSysMemLeakDump.h"
@@ -58,7 +60,6 @@ CTest::CTest( const QString& i_strTestStepsFileName ) :
     ZS::Test::CTest(
         /* strName              */ "ZS::System::LogFile",
         /* strTestStepsFileName */ i_strTestStepsFileName,
-        /* strNodeSeparator     */ "\\",
         /* iTestStepInterval_ms */ 0 )
 {
     ZS::Test::CTestStep* pTestStep;
@@ -130,10 +131,23 @@ CTest::CTest( const QString& i_strTestStepsFileName ) :
         /* szDoTestStepFct */ SLOT(doTestStepFree(ZS::Test::CTestStep*)) );
     pTestStep->setDescription(strDescription);
 
-    // Recall test admin object settings
-    //----------------------------------
+    // Recall test step settings
+    //--------------------------
 
-    m_pAdminIdxTree->read_(i_strTestStepsFileName);
+    QFileInfo fileInfo(i_strTestStepsFileName);
+
+    if( fileInfo.exists() )
+    {
+        SErrResultInfo errResultInfo = recall(i_strTestStepsFileName);
+
+        if(errResultInfo.isErrorResult())
+        {
+            if(CErrLog::GetInstance() != nullptr)
+            {
+                CErrLog::GetInstance()->addEntry(errResultInfo);
+            }
+        }
+    }
 
 } // default ctor
 
@@ -141,7 +155,15 @@ CTest::CTest( const QString& i_strTestStepsFileName ) :
 CTest::~CTest()
 //------------------------------------------------------------------------------
 {
-    m_pAdminIdxTree->save_();
+    SErrResultInfo errResultInfo = save();
+
+    if(errResultInfo.isErrorResult())
+    {
+        if(CErrLog::GetInstance() != nullptr)
+        {
+            CErrLog::GetInstance()->addEntry(errResultInfo);
+        }
+    }
 
 } // dtor
 
@@ -153,10 +175,10 @@ public slots: // test step methods (GrpZSSysLogFile)
 void CTest::doTestStepClearLogFileDir( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
-    QString     strDesiredValue;
-    QStringList strlstDesiredValues;
-    QString     strActualValue;
-    QStringList strlstActualValues;
+    QString     strExpectedValue;
+    QStringList strlstExpectedValues;
+    QString     strResultValue;
+    QStringList strlstResultValues;
 
     QString strAppNameNormalized = QCoreApplication::applicationName();
 
@@ -174,17 +196,17 @@ void CTest::doTestStepClearLogFileDir( ZS::Test::CTestStep* i_pTestStep )
 
     dirAppLog.removeRecursively();
 
-    // Desired Values
+    // Expected Values
     //---------------
 
-    strlstDesiredValues << strDesiredValue;
-    i_pTestStep->setDesiredValues(strlstDesiredValues);
+    strlstExpectedValues << strExpectedValue;
+    i_pTestStep->setExpectedValues(strlstExpectedValues);
 
-    // Actual Values
+    // Result Values
     //---------------
 
-    strlstActualValues << strActualValue;
-    i_pTestStep->setActualValues(strlstActualValues);
+    strlstResultValues << strResultValue;
+    i_pTestStep->setResultValues(strlstResultValues);
 
 } // doTestStepClearLogFileDir
 
@@ -192,10 +214,10 @@ void CTest::doTestStepClearLogFileDir( ZS::Test::CTestStep* i_pTestStep )
 void CTest::doTestStepAlloc( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
-    QString     strDesiredValue;
-    QStringList strlstDesiredValues;
-    QString     strActualValue;
-    QStringList strlstActualValues;
+    QString     strExpectedValue;
+    QStringList strlstExpectedValues;
+    QString     strResultValue;
+    QStringList strlstResultValues;
 
     QString strAppNameNormalized = QCoreApplication::applicationName();
 
@@ -234,77 +256,77 @@ void CTest::doTestStepAlloc( ZS::Test::CTestStep* i_pTestStep )
     pLogFileTest->setSubFileCountMax(iLogFileTestFileCountMax);
     pLogFileTest->setSubFileLineCountMax(iLogFileTestLineCountMax);
 
-    // Desired Values
+    // Expected Values
     //---------------
 
-    strDesiredValue = "pLogFileAppDefault1 == pLogFileAppDefault2";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "pLogFileAppDefault1 == pLogFileAppDefault2";
+    strlstExpectedValues.append(strExpectedValue);
 
-    strDesiredValue = "pLogFileAppDefault1 != pLogFileTest";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "pLogFileAppDefault1 != pLogFileTest";
+    strlstExpectedValues.append(strExpectedValue);
 
-    strDesiredValue = "CLogFile::FindFile(AppDefault) == pLogFileAppDefault1";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "CLogFile::FindFile(AppDefault) == pLogFileAppDefault1";
+    strlstExpectedValues.append(strExpectedValue);
 
-    strDesiredValue = "CLogFile::FindFile(Test) == pLogFileTest";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "CLogFile::FindFile(Test) == pLogFileTest";
+    strlstExpectedValues.append(strExpectedValue);
 
-    i_pTestStep->setDesiredValues(strlstDesiredValues);
+    i_pTestStep->setExpectedValues(strlstExpectedValues);
 
-    // Actual Values
+    // Result Values
     //---------------
 
     if( pLogFileAppDefault1 == pLogFileAppDefault2 )
     {
-        strActualValue = "pLogFileAppDefault1 == pLogFileAppDefault2";
-        strlstActualValues.append(strActualValue);
+        strResultValue = "pLogFileAppDefault1 == pLogFileAppDefault2";
+        strlstResultValues.append(strResultValue);
     }
     else
     {
-        strActualValue = "pLogFileAppDefault1 != pLogFileAppDefault2";
-        strlstActualValues.append(strActualValue);
+        strResultValue = "pLogFileAppDefault1 != pLogFileAppDefault2";
+        strlstResultValues.append(strResultValue);
     }
 
     if( pLogFileAppDefault1 == pLogFileTest )
     {
-        strActualValue = "pLogFileAppDefault1 == pLogFileTest";
-        strlstActualValues.append(strActualValue);
+        strResultValue = "pLogFileAppDefault1 == pLogFileTest";
+        strlstResultValues.append(strResultValue);
     }
     else
     {
-        strActualValue = "pLogFileAppDefault1 != pLogFileTest";
-        strlstActualValues.append(strActualValue);
+        strResultValue = "pLogFileAppDefault1 != pLogFileTest";
+        strlstResultValues.append(strResultValue);
     }
 
     if( CLogFile::FindFile(strLogFilePathAppDefault) == pLogFileAppDefault1 )
     {
-        strActualValue = "CLogFile::FindFile(AppDefault) == pLogFileAppDefault1";
-        strlstActualValues.append(strActualValue);
+        strResultValue = "CLogFile::FindFile(AppDefault) == pLogFileAppDefault1";
+        strlstResultValues.append(strResultValue);
     }
     else
     {
-        strActualValue = "CLogFile::FindFile(AppDefault) != pLogFileAppDefault1";
-        strlstActualValues.append(strActualValue);
+        strResultValue = "CLogFile::FindFile(AppDefault) != pLogFileAppDefault1";
+        strlstResultValues.append(strResultValue);
     }
 
     if( CLogFile::FindFile(strLogFilePathTest) == pLogFileTest )
     {
-        strActualValue = "CLogFile::FindFile(Test) == pLogFileTest";
-        strlstActualValues.append(strActualValue);
+        strResultValue = "CLogFile::FindFile(Test) == pLogFileTest";
+        strlstResultValues.append(strResultValue);
     }
     else
     {
-        strActualValue = "CLogFile::FindFile(Test) != pLogFileTest";
-        strlstActualValues.append(strActualValue);
+        strResultValue = "CLogFile::FindFile(Test) != pLogFileTest";
+        strlstResultValues.append(strResultValue);
     }
 
     // Please note that to finish a test step the list of actual values may not be empty.
-    if( strlstActualValues.size() == 0 )
+    if( strlstResultValues.size() == 0 )
     {
-        strlstActualValues << "";
+        strlstResultValues << "";
     }
 
-    i_pTestStep->setActualValues(strlstActualValues);
+    i_pTestStep->setResultValues(strlstResultValues);
 
 } // doTestStepAlloc
 
@@ -312,10 +334,10 @@ void CTest::doTestStepAlloc( ZS::Test::CTestStep* i_pTestStep )
 void CTest::doTestStepRealloc( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
-    QString     strDesiredValue;
-    QStringList strlstDesiredValues;
-    QString     strActualValue;
-    QStringList strlstActualValues;
+    QString     strExpectedValue;
+    QStringList strlstExpectedValues;
+    QString     strResultValue;
+    QStringList strlstResultValues;
 
     QString strAppNameNormalized = QCoreApplication::applicationName();
 
@@ -354,32 +376,32 @@ void CTest::doTestStepRealloc( ZS::Test::CTestStep* i_pTestStep )
     pLogFileTest->setSubFileCountMax(iLogFileTestFileCountMax);
     pLogFileTest->setSubFileLineCountMax(iLogFileTestLineCountMax);
 
-    // Desired Values
+    // Expected Values
     //---------------
 
     int idxFile;
 
-    strDesiredValue = "pLogFileAppDefault1 == pLogFileAppDefault2";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "pLogFileAppDefault1 == pLogFileAppDefault2";
+    strlstExpectedValues.append(strExpectedValue);
 
-    strDesiredValue = "pLogFileAppDefault1 != pLogFileTest";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "pLogFileAppDefault1 != pLogFileTest";
+    strlstExpectedValues.append(strExpectedValue);
 
-    strDesiredValue = "CLogFile::FindFile(AppDefault) == pLogFileAppDefault1";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "CLogFile::FindFile(AppDefault) == pLogFileAppDefault1";
+    strlstExpectedValues.append(strExpectedValue);
 
-    strDesiredValue = "CLogFile::FindFile(Test) == pLogFileTest";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "CLogFile::FindFile(Test) == pLogFileTest";
+    strlstExpectedValues.append(strExpectedValue);
 
-    strDesiredValue = strAppLogDir + "/Log.bak.exist(): true";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = strAppLogDir + "/Log.bak.exist(): true";
+    strlstExpectedValues.append(strExpectedValue);
 
     for( idxFile = 0; idxFile < iLogFileAppDefaultFileCountMax; ++idxFile )
     {
         QString strLogFileNr = QString("%1").arg(idxFile, 2, 10, QChar('0'));
         QString strLogFileTmp = strAppLogDir + "/Log.bak/" + strAppNameNormalized + strLogFileNr + "." + strLogFileSuffix;
 
-        strlstDesiredValues << strLogFileTmp + ".exist(): true";
+        strlstExpectedValues << strLogFileTmp + ".exist(): true";
     }
 
     for( idxFile = 0; idxFile < iLogFileTestFileCountMax; ++idxFile )
@@ -387,56 +409,56 @@ void CTest::doTestStepRealloc( ZS::Test::CTestStep* i_pTestStep )
         QString strLogFileNr = QString("%1").arg(idxFile, 2, 10, QChar('0'));
         QString strLogFileTmp = strAppLogDir + "/Log.bak/Test" + strLogFileNr + "." + strLogFileSuffix;
 
-        strlstDesiredValues << strLogFileTmp + ".exist(): true";
+        strlstExpectedValues << strLogFileTmp + ".exist(): true";
     }
 
-    i_pTestStep->setDesiredValues(strlstDesiredValues);
+    i_pTestStep->setExpectedValues(strlstExpectedValues);
 
-    // Actual Values
+    // Result Values
     //---------------
 
     if( pLogFileAppDefault1 == pLogFileAppDefault2 )
     {
-        strActualValue = "pLogFileAppDefault1 == pLogFileAppDefault2";
-        strlstActualValues.append(strActualValue);
+        strResultValue = "pLogFileAppDefault1 == pLogFileAppDefault2";
+        strlstResultValues.append(strResultValue);
     }
     else
     {
-        strActualValue = "pLogFileAppDefault1 != pLogFileAppDefault2";
-        strlstActualValues.append(strActualValue);
+        strResultValue = "pLogFileAppDefault1 != pLogFileAppDefault2";
+        strlstResultValues.append(strResultValue);
     }
 
     if( pLogFileAppDefault1 == pLogFileTest )
     {
-        strActualValue = "pLogFileAppDefault1 == pLogFileTest";
-        strlstActualValues.append(strActualValue);
+        strResultValue = "pLogFileAppDefault1 == pLogFileTest";
+        strlstResultValues.append(strResultValue);
     }
     else
     {
-        strActualValue = "pLogFileAppDefault1 != pLogFileTest";
-        strlstActualValues.append(strActualValue);
+        strResultValue = "pLogFileAppDefault1 != pLogFileTest";
+        strlstResultValues.append(strResultValue);
     }
 
     if( CLogFile::FindFile(strLogFilePathAppDefault) == pLogFileAppDefault1 )
     {
-        strActualValue = "CLogFile::FindFile(AppDefault) == pLogFileAppDefault1";
-        strlstActualValues.append(strActualValue);
+        strResultValue = "CLogFile::FindFile(AppDefault) == pLogFileAppDefault1";
+        strlstResultValues.append(strResultValue);
     }
     else
     {
-        strActualValue = "CLogFile::FindFile(AppDefault) != pLogFileAppDefault1";
-        strlstActualValues.append(strActualValue);
+        strResultValue = "CLogFile::FindFile(AppDefault) != pLogFileAppDefault1";
+        strlstResultValues.append(strResultValue);
     }
 
     if( CLogFile::FindFile(strLogFilePathTest) == pLogFileTest )
     {
-        strActualValue = "CLogFile::FindFile(Test) == pLogFileTest";
-        strlstActualValues.append(strActualValue);
+        strResultValue = "CLogFile::FindFile(Test) == pLogFileTest";
+        strlstResultValues.append(strResultValue);
     }
     else
     {
-        strActualValue = "CLogFile::FindFile(Test) != pLogFileTest";
-        strlstActualValues.append(strActualValue);
+        strResultValue = "CLogFile::FindFile(Test) != pLogFileTest";
+        strlstResultValues.append(strResultValue);
     }
 
     QString strAppLogDirBak = ZS::System::getAppLogDir("System") + "/Log.bak";
@@ -445,11 +467,11 @@ void CTest::doTestStepRealloc( ZS::Test::CTestStep* i_pTestStep )
 
     if( dirAppLogBak.exists() )
     {
-        strlstActualValues << strAppLogDirBak + ".exist(): true";
+        strlstResultValues << strAppLogDirBak + ".exist(): true";
     }
     else
     {
-        strlstActualValues << strAppLogDirBak + ".exist(): false";
+        strlstResultValues << strAppLogDirBak + ".exist(): false";
     }
 
     for( idxFile = 0; idxFile < iLogFileAppDefaultFileCountMax; ++idxFile )
@@ -461,11 +483,11 @@ void CTest::doTestStepRealloc( ZS::Test::CTestStep* i_pTestStep )
 
         if( fileLogFileAppDefault.exists() )
         {
-            strlstActualValues << strLogFileTmp + ".exist(): true";
+            strlstResultValues << strLogFileTmp + ".exist(): true";
         }
         else
         {
-            strlstActualValues << strLogFileTmp + ".exist(): false";
+            strlstResultValues << strLogFileTmp + ".exist(): false";
         }
     }
 
@@ -478,21 +500,21 @@ void CTest::doTestStepRealloc( ZS::Test::CTestStep* i_pTestStep )
 
         if( fileLogFileAppDefault.exists() )
         {
-            strlstActualValues << strLogFileTmp + ".exist(): true";
+            strlstResultValues << strLogFileTmp + ".exist(): true";
         }
         else
         {
-            strlstActualValues << strLogFileTmp + ".exist(): false";
+            strlstResultValues << strLogFileTmp + ".exist(): false";
         }
     }
 
     // Please note that to finish a test step the list of actual values may not be empty.
-    if( strlstActualValues.size() == 0 )
+    if( strlstResultValues.size() == 0 )
     {
-        strlstActualValues << "";
+        strlstResultValues << "";
     }
 
-    i_pTestStep->setActualValues(strlstActualValues);
+    i_pTestStep->setResultValues(strlstResultValues);
 
 } // doTestStepRealloc
 
@@ -500,10 +522,10 @@ void CTest::doTestStepRealloc( ZS::Test::CTestStep* i_pTestStep )
 void CTest::doTestStepAddEntries( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
-    QString     strDesiredValue;
-    QStringList strlstDesiredValues;
-    QString     strActualValue;
-    QStringList strlstActualValues;
+    QString     strExpectedValue;
+    QStringList strlstExpectedValues;
+    QString     strResultValue;
+    QStringList strlstResultValues;
 
     QString strAppNameNormalized = QCoreApplication::applicationName();
 
@@ -565,7 +587,7 @@ void CTest::doTestStepAddEntries( ZS::Test::CTestStep* i_pTestStep )
 
     pLogFileTest->close();
 
-    // Desired Values
+    // Expected Values
     //---------------
 
     // Number of entries which could be stored in all sub log files instead of latest (current) sub log file:
@@ -596,7 +618,7 @@ void CTest::doTestStepAddEntries( ZS::Test::CTestStep* i_pTestStep )
     for( iLineNr = (iLines - iLinesLogFile + 1); iLineNr <= iLines; ++iLineNr )
     {
         strLogEntry = strAppNameNormalized + ".Line" + QString::number(iLineNr);
-        strlstDesiredValues << strLogEntry;
+        strlstExpectedValues << strLogEntry;
     }
 
     // (iLogFileTestFileCountMax+1) * iLogFileTestLineCountMax + 1 = (2+1) * 2 + 1 = 7
@@ -620,12 +642,12 @@ void CTest::doTestStepAddEntries( ZS::Test::CTestStep* i_pTestStep )
     for( iLineNr = (iLines - iLinesLogFile + 1); iLineNr <= iLines; ++iLineNr )
     {
         strLogEntry = "Test.Line" + QString::number(iLineNr);
-        strlstDesiredValues << strLogEntry;
+        strlstExpectedValues << strLogEntry;
     }
 
-    i_pTestStep->setDesiredValues(strlstDesiredValues);
+    i_pTestStep->setExpectedValues(strlstExpectedValues);
 
-    // Actual Values
+    // Result Values
     //---------------
 
     for( idxFile = iLogFileAppDefaultFileCountMax-1; idxFile >= 0; --idxFile )
@@ -637,7 +659,7 @@ void CTest::doTestStepAddEntries( ZS::Test::CTestStep* i_pTestStep )
 
         if( !fileLogFileAppDefault.open(QIODevice::ReadOnly|QIODevice::Text) )
         {
-            strlstActualValues << "Could not open file " + strLogFileTmp;
+            strlstResultValues << "Could not open file " + strLogFileTmp;
         }
         else
         {
@@ -645,7 +667,7 @@ void CTest::doTestStepAddEntries( ZS::Test::CTestStep* i_pTestStep )
 
             while( !txtstrmLogFileAppDefault.atEnd() )
             {
-                strlstActualValues << txtstrmLogFileAppDefault.readLine();
+                strlstResultValues << txtstrmLogFileAppDefault.readLine();
             }
         }
     }
@@ -659,7 +681,7 @@ void CTest::doTestStepAddEntries( ZS::Test::CTestStep* i_pTestStep )
 
         if( !fileLogFileTest.open(QIODevice::ReadOnly|QIODevice::Text) )
         {
-            strlstActualValues << "Could not open file " + strLogFileTmp;
+            strlstResultValues << "Could not open file " + strLogFileTmp;
         }
         else
         {
@@ -667,18 +689,18 @@ void CTest::doTestStepAddEntries( ZS::Test::CTestStep* i_pTestStep )
 
             while( !txtstrmLogFileTest.atEnd() )
             {
-                strlstActualValues << txtstrmLogFileTest.readLine();
+                strlstResultValues << txtstrmLogFileTest.readLine();
             }
         }
     }
 
     // Please note that to finish a test step the list of actual values may not be empty.
-    if( strlstActualValues.size() == 0 )
+    if( strlstResultValues.size() == 0 )
     {
-        strlstActualValues << "";
+        strlstResultValues << "";
     }
 
-    i_pTestStep->setActualValues(strlstActualValues);
+    i_pTestStep->setResultValues(strlstResultValues);
 
 } // doTestStepAddEntries
 
@@ -686,10 +708,10 @@ void CTest::doTestStepAddEntries( ZS::Test::CTestStep* i_pTestStep )
 void CTest::doTestStepFree( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
-    QString     strDesiredValue;
-    QStringList strlstDesiredValues;
-    QString     strActualValue;
-    QStringList strlstActualValues;
+    QString     strExpectedValue;
+    QStringList strlstExpectedValues;
+    QString     strResultValue;
+    QStringList strlstResultValues;
 
     QString strAppNameNormalized = QCoreApplication::applicationName();
 
@@ -716,36 +738,36 @@ void CTest::doTestStepFree( ZS::Test::CTestStep* i_pTestStep )
 
     CLogFile::Free(pLogFileTest);
 
-    // Desired Values
+    // Expected Values
     //---------------
 
-    strDesiredValue = "LogFilesCount == 0";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "LogFilesCount == 0";
+    strlstExpectedValues.append(strExpectedValue);
 
-    i_pTestStep->setDesiredValues(strlstDesiredValues);
+    i_pTestStep->setExpectedValues(strlstExpectedValues);
 
-    // Actual Values
+    // Result Values
     //---------------
 
     int iLogFilesCount = CLogFile::GetFilesCount();
 
     if( iLogFilesCount == 0 )
     {
-        strActualValue = "LogFilesCount == 0";
-        strlstActualValues.append(strActualValue);
+        strResultValue = "LogFilesCount == 0";
+        strlstResultValues.append(strResultValue);
     }
     else
     {
-        strActualValue = "LogFilesCount != 0 (=" + QString::number(iLogFilesCount) + ")";
-        strlstActualValues.append(strActualValue);
+        strResultValue = "LogFilesCount != 0 (=" + QString::number(iLogFilesCount) + ")";
+        strlstResultValues.append(strResultValue);
     }
 
     // Please note that to finish a test step the list of actual values may not be empty.
-    if( strlstActualValues.size() == 0 )
+    if( strlstResultValues.size() == 0 )
     {
-        strlstActualValues << "";
+        strlstResultValues << "";
     }
 
-    i_pTestStep->setActualValues(strlstActualValues);
+    i_pTestStep->setResultValues(strlstResultValues);
 
 } // doTestStepFree

@@ -164,6 +164,6 @@ void CTest::doTestStepInterferenceChecksI1L1( ZS::Test::CTestStep* i_pTestStep )
     {
         strlstActualValues.append("Test Step not implemented");
     }
-    i_pTestStep->setActualValues(strlstActualValues);
+    i_pTestStep->setResultValues(strlstActualValues);
 
 } // doTestStepInterferenceChecksI1L1

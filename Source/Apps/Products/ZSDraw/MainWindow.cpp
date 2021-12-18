@@ -5194,7 +5194,7 @@ void CMainWindow::onTreeViewObjFactoriesCurrentChanged(
 
     if( i_modelIdxCurr.isValid() && i_modelIdxCurr.internalPointer() != nullptr )
     {
-        #error CAbstractIdxTreeEntry* pTreeEntry = static_cast<#error CAbstractIdxTreeEntry*>(i_modelIdxCurr.internalPointer());
+        CIdxTreeEntry* pTreeEntry = static_cast<CIdxTreeEntry*>(i_modelIdxCurr.internalPointer());
 
         if( pTreeEntry != nullptr )
         {
@@ -5275,7 +5275,7 @@ void CMainWindow::selectTreeViewObjFactoryNode( ZS::Draw::CObjFactory* i_pObjFac
             }
             else
             {
-                #error CLeaveIdxTreeEntry* pTreeEntry = m_pModelObjFactories->idxTree()->findLeave(
+                CIdxTreeEntry* pTreeEntry = m_pModelObjFactories->idxTree()->findLeave(
                     /* strNameSpace */ i_pObjFactory->getGroupName(),               // see CObjFactory::registerObjFactory
                     /* strObjName   */ i_pObjFactory->getGraphObjTypeAsString() );  // see CObjFactory::registerObjFactory
 

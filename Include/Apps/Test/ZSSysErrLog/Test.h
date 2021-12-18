@@ -45,11 +45,7 @@ class CTest : public ZS::Test::CTest
 public: // ctors and dtor
     CTest( const QString& i_strTestStepsFileName );
     ~CTest();
-signals:
-    void errLogCreated( const QString& i_strErrLogName );
 public slots: // test step methods
-    void doTestStepCreateErrLogInstance( ZS::Test::CTestStep* i_pTestStep );
-    void doTestStepDestroyErrLogInstance( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepAddErrLogEntries( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepClearErrLog( ZS::Test::CTestStep* i_pTestStep );
 

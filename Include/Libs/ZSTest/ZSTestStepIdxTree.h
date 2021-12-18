@@ -62,16 +62,9 @@ public: // overridables
     virtual QString className() const { return CTestStepIdxTree::ClassName(); }
 public: // instance methods
     CTest* getTest() { return m_pTest; }
-public: // instance methods
-    //int getTestStepsCount() const;
-    //int getTestStepsExecutedCount() const { return m_iTestStepsExecutedCount; }
-    //int getTestStepsPassedCount() const { return m_iTestStepsPassedCount; }
-    //int getTestStepsFailedCount() const { return m_iTestStepsFailedCount; }
-    //int getTestStepsIgnoredCount() const { return m_iTestStepsIgnoredCount; }
 public: // instance methods find test step groups
     CTestStepGroup* findTestStepGroup( const QString& i_strParentPath, const QString& i_strGroupName);
     CTestStepGroup* findTestStepGroup( CTestStepGroup* i_pTestGroupParent, const QString& i_strGroupName );
-public: // instance methods to add, remove and modify test step groups
 public: // instance methods to find test steps
     CTestStep* findTestStep( const QString& i_strParentPath, const QString& i_strName );
     CTestStep* findTestStep( CTestStepGroup* i_pTestGroupParent, const QString& i_strName );
@@ -79,10 +72,6 @@ public: // overridables
     virtual void reset(); // to reset the test result of all test steps
 protected: // instance methods
     void reset( ZS::System::CIdxTreeEntry* i_pTreeEntry );
-public: // instance methods
-    //void testStarted();
-    //void testEnded();
-    //void testAborted();
 public: // overridables
     virtual ZS::System::SErrResultInfo save( const QString& i_strAbsFilePath ) const;
     virtual ZS::System::SErrResultInfo recall( const QString& i_strAbsFilePath );
@@ -94,12 +83,6 @@ private: // assignment operator not allowed
     CTestStepIdxTree& operator = ( const CTestStepIdxTree& );
 protected: // instance members
     CTest*                   m_pTest;
-    //bool                     m_bInitializingTest;
-    //int                      m_iTestStepsExecutedCount;
-    //int                      m_iTestStepsPassedCount;
-    //int                      m_iTestStepsFailedCount;
-    //int                      m_iTestStepsIgnoredCount;
-    //int                      m_iUpdateGroupCallDepth;
     ZS::Trace::CTrcAdminObj* m_pTrcAdminObj;
 
 }; // class CTestStepIdxTree

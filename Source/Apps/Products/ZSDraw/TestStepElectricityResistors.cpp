@@ -185,7 +185,7 @@ void CTest::doTestStepElectricityResistors( ZS::Test::CTestStepGroup* i_pTestSte
             strlstDesiredValues.append( "DrawingTool: " );
 
             pTestStep->setOperation( "drawing.setCurrentDrawingTool( Select )" );
-            pTestStep->setDesiredValues(strlstDesiredValues);
+            pTestStep->setExpectedValues(strlstDesiredValues);
             pTestStep->testStarted();
 
             if( m_pDrawingScene->getEditTool() != EEditToolSelect )
@@ -205,7 +205,7 @@ void CTest::doTestStepElectricityResistors( ZS::Test::CTestStepGroup* i_pTestSte
             strlstActualValues.append( "EditTool: " + editTool2Str(m_pDrawingScene->getEditTool()) );
             strlstActualValues.append( "DrawingTool: " + strCurrentDrawingTool );
 
-            pTestStep->setActualValues(strlstActualValues);
+            pTestStep->setResultValues(strlstActualValues);
             pTestStep->setToolTip(strToolTip);
             pTestStep->testEnded();
 
@@ -222,7 +222,7 @@ void CTest::doTestStepElectricityResistors( ZS::Test::CTestStepGroup* i_pTestSte
             strlstDesiredValues.append( "DrawingTool: " );
 
             pTestStep->setOperation( "ToolBoxTreeView.selectObjFactoryNode( Electricity/Resistor )" );
-            pTestStep->setDesiredValues(strlstDesiredValues);
+            pTestStep->setExpectedValues(strlstDesiredValues);
             pTestStep->testStarted();
 
             pObjFactory = CObjFactory::FindObjFactory(
@@ -235,7 +235,7 @@ void CTest::doTestStepElectricityResistors( ZS::Test::CTestStepGroup* i_pTestSte
             strlstActualValues.append( "EditTool: " + editTool2Str(m_pDrawingScene->getEditTool()) );
             strlstActualValues.append( "DrawingTool: " + strCurrentDrawingTool );
 
-            pTestStep->setActualValues(strlstActualValues);
+            pTestStep->setResultValues(strlstActualValues);
             pTestStep->setToolTip(strToolTip);
             pTestStep->testEnded();
 
@@ -270,7 +270,7 @@ void CTest::doTestStepElectricityResistors( ZS::Test::CTestStepGroup* i_pTestSte
 
             pTestStep->setOperation( "view.dropEvent( ViewPos:" + point2Str(m_ptDrawingViewMousePos) + " )" );
             pTestStep->setDescription( "scene." + strCurrentDrawingTool + ".drop( ScenePos:" + point2Str(m_ptDrawingSceneMousePos) + " )" );
-            pTestStep->setDesiredValues(strlstDesiredValues);
+            pTestStep->setExpectedValues(strlstDesiredValues);
             pTestStep->testStarted();
 
             pObjFactory = CObjFactory::FindObjFactory(
@@ -309,7 +309,7 @@ void CTest::doTestStepElectricityResistors( ZS::Test::CTestStepGroup* i_pTestSte
                 strToolTip = pGraphObj->getToolTip();
             }
 
-            pTestStep->setActualValues(strlstActualValues);
+            pTestStep->setResultValues(strlstActualValues);
             pTestStep->setToolTip(strToolTip);
             pTestStep->testEnded();
 
@@ -336,7 +336,7 @@ void CTest::doTestStepElectricityResistors( ZS::Test::CTestStepGroup* i_pTestSte
 
             pTestStep->setOperation( "view.mouseClickEvent( ViewPos:" + point2Str(m_ptDrawingViewMousePos) + " )" );
             pTestStep->setDescription( "scene." + strCurrentDrawingTool + ".creatingObjectFinished( ScenePos:" + point2Str(m_ptDrawingSceneMousePos) + " )" );
-            pTestStep->setDesiredValues(strlstDesiredValues);
+            pTestStep->setExpectedValues(strlstDesiredValues);
             pTestStep->testStarted();
 
             // Same events as in reality (mouse double click is preceeded by mouse press and mouse release event)
@@ -370,7 +370,7 @@ void CTest::doTestStepElectricityResistors( ZS::Test::CTestStepGroup* i_pTestSte
                 strToolTip = m_pGraphObjCreating->getToolTip();
             }
 
-            pTestStep->setActualValues(strlstActualValues);
+            pTestStep->setResultValues(strlstActualValues);
             pTestStep->setToolTip(strToolTip);
             pTestStep->testEnded();
 
@@ -398,7 +398,7 @@ void CTest::doTestStepElectricityResistors( ZS::Test::CTestStepGroup* i_pTestSte
                 strlstDesiredValues.append( "DrawingTool: " );
 
                 pTestStep->setOperation( "drawing.setCurrentDrawingTool( Select )" );
-                pTestStep->setDesiredValues(strlstDesiredValues);
+                pTestStep->setExpectedValues(strlstDesiredValues);
                 pTestStep->testStarted();
 
                 if( m_pDrawingScene->getEditTool() != EEditToolSelect )
@@ -418,7 +418,7 @@ void CTest::doTestStepElectricityResistors( ZS::Test::CTestStepGroup* i_pTestSte
                 strlstActualValues.append( "EditTool: " + editTool2Str(m_pDrawingScene->getEditTool()) );
                 strlstActualValues.append( "DrawingTool: " + strCurrentDrawingTool );
 
-                pTestStep->setActualValues(strlstActualValues);
+                pTestStep->setResultValues(strlstActualValues);
                 pTestStep->setToolTip(strToolTip);
                 pTestStep->testEnded();
 
@@ -450,7 +450,7 @@ void CTest::doTestStepElectricityResistors( ZS::Test::CTestStepGroup* i_pTestSte
 
             pTestStep->setOperation( "view.mouseClickEvent( ViewPos:" + point2Str(m_ptDrawingViewMousePos) + " )" );
             pTestStep->setDescription( "scene." + strCurrentGraphObj + ".select( ScenePos:" + point2Str(m_ptDrawingSceneMousePos) + " )" );
-            pTestStep->setDesiredValues(strlstDesiredValues);
+            pTestStep->setExpectedValues(strlstDesiredValues);
             pTestStep->testStarted();
 
             m_pDrawingScene->clearSelection();
@@ -490,7 +490,7 @@ void CTest::doTestStepElectricityResistors( ZS::Test::CTestStepGroup* i_pTestSte
                 strToolTip = m_pGraphObjSelected->getToolTip();
             }
 
-            pTestStep->setActualValues(strlstActualValues);
+            pTestStep->setResultValues(strlstActualValues);
             pTestStep->setToolTip(strToolTip);
             pTestStep->testEnded();
 
@@ -520,7 +520,7 @@ void CTest::doTestStepElectricityResistors( ZS::Test::CTestStepGroup* i_pTestSte
 
             pTestStep->setOperation( "view.mousePressEvent( ViewPos:" + point2Str(m_ptDrawingViewMousePos) + " )" );
             pTestStep->setDescription( "scene." + strCurrentGraphObj + ".select( ScenePos:" + point2Str(m_ptDrawingSceneMousePos) + " )" );
-            pTestStep->setDesiredValues(strlstDesiredValues);
+            pTestStep->setExpectedValues(strlstDesiredValues);
             pTestStep->testStarted();
 
             pMouseEv = new QMouseEvent(
@@ -547,7 +547,7 @@ void CTest::doTestStepElectricityResistors( ZS::Test::CTestStepGroup* i_pTestSte
                 strToolTip = m_pGraphObjSelected->getToolTip();
             }
 
-            pTestStep->setActualValues(strlstActualValues);
+            pTestStep->setResultValues(strlstActualValues);
             pTestStep->setToolTip(strToolTip);
             pTestStep->testEnded();
 
@@ -605,7 +605,7 @@ void CTest::doTestStepElectricityResistors( ZS::Test::CTestStepGroup* i_pTestSte
 
             pTestStep->setOperation( "view.mouseMoveEvent( ViewPos:" + point2Str(m_ptDrawingViewMousePos) + " )" );
             pTestStep->setDescription( "scene." + strCurrentGraphObj + ".resize( scenePos:" + point2Str(m_ptDrawingSceneMousePos) + " )" );
-            pTestStep->setDesiredValues(strlstDesiredValues);
+            pTestStep->setExpectedValues(strlstDesiredValues);
             pTestStep->testStarted();
 
             pMouseEv = new QMouseEvent(
@@ -631,7 +631,7 @@ void CTest::doTestStepElectricityResistors( ZS::Test::CTestStepGroup* i_pTestSte
                 strToolTip = m_pGraphObjSelected->getToolTip();
             }
 
-            pTestStep->setActualValues(strlstActualValues);
+            pTestStep->setResultValues(strlstActualValues);
             pTestStep->setToolTip(strToolTip);
             pTestStep->testEnded();
 
@@ -673,7 +673,7 @@ void CTest::doTestStepElectricityResistors( ZS::Test::CTestStepGroup* i_pTestSte
 
             pTestStep->setOperation( "view.mouseReleaseEvent( ViewPos:" + point2Str(m_ptDrawingViewMousePos) + " )" );
             pTestStep->setDescription( "scene." + strCurrentGraphObj + ".release( ScenePos:" + point2Str(m_ptDrawingSceneMousePos) + " )" );
-            pTestStep->setDesiredValues(strlstDesiredValues);
+            pTestStep->setExpectedValues(strlstDesiredValues);
             pTestStep->testStarted();
 
             pMouseEv = new QMouseEvent(
@@ -699,7 +699,7 @@ void CTest::doTestStepElectricityResistors( ZS::Test::CTestStepGroup* i_pTestSte
                 strToolTip = m_pGraphObjSelected->getToolTip();
             }
 
-            pTestStep->setActualValues(strlstActualValues);
+            pTestStep->setResultValues(strlstActualValues);
             pTestStep->setToolTip(strToolTip);
             pTestStep->testEnded();
 

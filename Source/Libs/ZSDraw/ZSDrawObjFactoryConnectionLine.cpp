@@ -280,30 +280,22 @@ CGraphObj* CObjFactoryConnectionLine::loadGraphObj(
                 if( strElemName == "ObjIdCnctPtStart" )
                 {
                     QString strObjId = i_xmlStreamReader.readElementText();
-
                     CGraphObj* pGraphObjTmp = i_pDrawingScene->findGraphObj(strObjId);
-
                     pCnctPtStart = dynamic_cast<CGraphObjConnectionPoint*>(pGraphObjTmp);
                 }
-
                 else if( strElemName == "ObjIdCnctPtEnd" )
                 {
                     QString strObjId = i_xmlStreamReader.readElementText();
-
                     CGraphObj* pGraphObjTmp = i_pDrawingScene->findGraphObj(strObjId);
-
                     pCnctPtEnd = dynamic_cast<CGraphObjConnectionPoint*>(pGraphObjTmp);
                 }
-
                 else if( strElemName == "DrawSettings" )
                 {
                     drawSettings.load(i_xmlStreamReader);
                 }
-
                 else if( strElemName == "Geometry" )
                 {
                 }
-
                 else if( strElemName.contains("Pt",Qt::CaseInsensitive) )
                 {
                     QString strIdxPtTmp = strElemName.right(strElemName.size()-2);
@@ -325,7 +317,6 @@ CGraphObj* CObjFactoryConnectionLine::loadGraphObj(
                             plg[idxPtTmp] = ptTmp;
                         }
                     }
-
                 } // if( strElemName == "Pt" )
 
                 else if( strElemName == "ZValue" )
@@ -338,16 +329,13 @@ CGraphObj* CObjFactoryConnectionLine::loadGraphObj(
                     {
                         fZValue = fTmp;
                     }
-
                 } // if( strElemName == "ZValue" )
 
                 else if( strElemName == "Labels" )
                 {
                     SErrResultInfo errResultInfo;
                     arpLabels = loadGraphObjLabels(i_xmlStreamReader,errResultInfo);
-
-                } // if( strElemName == "Labels" )
-
+                }
             } // if( xmlStreamReader.isStartElement() )
 
             else if( i_xmlStreamReader.isEndElement() )
@@ -356,9 +344,7 @@ CGraphObj* CObjFactoryConnectionLine::loadGraphObj(
                 {
                     break;
                 }
-
             } // if( i_xmlStreamReader.isEndElement() )
-
         } // while( !i_xmlStreamReader.hasError() && !i_xmlStreamReader.atEnd() )
 
         if( pCnctPtStart != nullptr && pCnctPtEnd != nullptr && plg.size() > 1 )
@@ -390,7 +376,6 @@ CGraphObj* CObjFactoryConnectionLine::loadGraphObj(
             {
                 pGraphObj->addLabels(arpLabels);
             }
-
         } // if( pCnctPtStart != nullptr && pCnctPtEnd != nullptr && plg.size() > 1 )
 
         if( arpLabels.size() > 0 )

@@ -76,14 +76,10 @@ protected: // overridables of base class QWidget
 protected: // overridables of base class QObject
     virtual bool eventFilter( QObject* i_pObjWatched, QEvent* i_pEv );
 protected slots:
-    void onActFileNewTriggered();
     void onActFileOpenTriggered();
     void onActFileSaveTriggered();
 protected slots:
     void onActDebugErrLogTriggered();
-protected slots:
-    void onErrLogCreated( const QString& i_strErrLogName );
-    void onErrLogDestroyed( QObject* i_pObjErrLog );
 protected slots:
     void onErrLogEntryAdded( const ZS::System::SErrResultInfo& i_errResultInfo );
     void onErrLogEntryChanged( const ZS::System::SErrResultInfo& i_errResultInfo );
@@ -95,7 +91,6 @@ private: // class members
 private: // instance members
     QMenu*                   m_pMnuFile;
     QToolBar*                m_pToolBarFile;
-    QAction*                 m_pActFileNew;
     QAction*                 m_pActFileOpen;
     QAction*                 m_pActFileSave;
     QAction*                 m_pActFileQuit;

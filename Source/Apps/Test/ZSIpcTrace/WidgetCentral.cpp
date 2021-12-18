@@ -46,7 +46,7 @@ may result in using the software modules.
 #include "WdgtTestOutput.h"
 
 #include "ZSIpcTrace/ZSIpcTrcServer.h"
-#include "ZSTestGUI/ZSTestWdgt.h"
+#include "ZSTestGUI/ZSTestStepIdxTreeWdgt.h"
 #include "ZSIpcTraceGUI/ZSIpcTrcMthWdgt.h"
 #include "ZSSys/ZSSysException.h"
 

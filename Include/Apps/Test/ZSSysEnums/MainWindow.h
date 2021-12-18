@@ -75,7 +75,6 @@ protected: // overridables of base class QWidget
 protected: // overridables of base class QObject
     virtual bool eventFilter( QObject* i_pObjWatched, QEvent* i_pEv );
 protected slots:
-    void onActFileNewTriggered();
     void onActFileOpenTriggered();
     void onActFileSaveTriggered();
 protected slots:

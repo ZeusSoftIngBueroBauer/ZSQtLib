@@ -25,6 +25,7 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include <QtCore/qtimer.h>
+#include <QtCore/qfileinfo.h>
 #include <QtCore/qmimedata.h>
 #include <QtGui/qevent.h>
 
@@ -44,12 +45,13 @@ may result in using the software modules.
 #include "ZSTest/ZSTestStepGroup.h"
 #include "ZSSysGUI/ZSSysGUIAux.h"
 #include "ZSSysGUI/ZSSysIdxTreeModel.h"
-#include "ZSSysGUI/ZSSysIdxTreeModelEntries.h"
+#include "ZSSysGUI/ZSSysIdxTreeModelEntry.h"
 #include "ZSSysGUI/ZSSysIdxTreeView.h"
 #include "ZSSysGUI/ZSSysIdxTreeWdgt.h"
 #include "ZSSysGUI/ZSSysIdxTreeModelBranchContent.h"
 #include "ZSSysGUI/ZSSysIdxTreeTableViewBranchContent.h"
 #include "ZSSys/ZSSysTrcServer.h"
+#include "ZSSys/ZSSysErrLog.h"
 #include "ZSSys/ZSSysException.h"
 
 #include "ZSSys/ZSSysMemLeakDump.h"
@@ -70,7 +72,7 @@ namespace Test
 namespace IdxTree
 {
 //******************************************************************************
-class CTrcAdmObjRoot : public ZS::System::#error CRootIdxTreeEntry
+class CTrcAdmObjRoot : public ZS::System::CIdxTreeEntry
 //******************************************************************************
 {
 //=============================================================================
@@ -80,7 +82,7 @@ public: // ctors and dtor
 //-----------------------------------------------------------------------------
 CTrcAdmObjRoot() :
 //-----------------------------------------------------------------------------
-    #error CRootIdxTreeEntry(CTest::c_strTrcAdmObjIdxTreeName)
+    CIdxTreeEntry(EIdxTreeEntryType::Root, CTest::c_strTrcAdmObjIdxTreeName)
 {
 } // ctor
 
@@ -94,7 +96,7 @@ virtual ~CTrcAdmObjRoot()
 
 
 //******************************************************************************
-class CTrcAdmObjBranch : public ZS::System::#error CBranchIdxTreeEntry
+class CTrcAdmObjBranch : public ZS::System::CIdxTreeEntry
 //******************************************************************************
 {
 //=============================================================================
@@ -104,7 +106,7 @@ public: // ctors and dtor
 //-----------------------------------------------------------------------------
 CTrcAdmObjBranch( const QString& i_strName ) :
 //-----------------------------------------------------------------------------
-    #error CBranchIdxTreeEntry(i_strName)
+    CIdxTreeEntry(EIdxTreeEntryType::Branch, i_strName)
 {
 } // ctor
 
@@ -118,7 +120,7 @@ virtual ~CTrcAdmObjBranch()
 
 
 //******************************************************************************
-class CTrcAdmObj : public ZS::System::#error CLeaveIdxTreeEntry
+class CTrcAdmObj : public ZS::System::CIdxTreeEntry
 //******************************************************************************
 {
 //=============================================================================
@@ -128,7 +130,7 @@ public: // ctors and dtor
 //-----------------------------------------------------------------------------
 CTrcAdmObj( const QString& i_strName ) :
 //-----------------------------------------------------------------------------
-    #error CLeaveIdxTreeEntry(i_strName)
+    CIdxTreeEntry(EIdxTreeEntryType::Leave, i_strName)
 {
 } // ctor
 
@@ -170,7 +172,7 @@ protected: // overridables of base class CIdxTree
 //=============================================================================
 
 //-----------------------------------------------------------------------------
-virtual ZS::System::#error CBranchIdxTreeEntry* createBranch( const QString& i_strName ) const override
+virtual ZS::System::CIdxTreeEntry* createBranch( const QString& i_strName ) const override
 //-----------------------------------------------------------------------------
 {
     QString strAddTrcInfo;
@@ -190,7 +192,7 @@ virtual ZS::System::#error CBranchIdxTreeEntry* createBranch( const QString& i_s
         /* strMethod    */ "createBranch",
         /* strMthInArgs */ strAddTrcInfo );
 
-    #error CBranchIdxTreeEntry* pBranch = new CTrcAdmObjBranch(i_strName);
+    CIdxTreeEntry* pBranch = new CTrcAdmObjBranch(i_strName);
 
     if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
     {
@@ -202,7 +204,7 @@ virtual ZS::System::#error CBranchIdxTreeEntry* createBranch( const QString& i_s
 } // createBranch
 
 //-----------------------------------------------------------------------------
-virtual ZS::System::#error CLeaveIdxTreeEntry* createLeave( const QString& i_strName ) const override
+virtual ZS::System::CIdxTreeEntry* createLeave( const QString& i_strName ) const override
 //-----------------------------------------------------------------------------
 {
     QString strAddTrcInfo;
@@ -222,7 +224,7 @@ virtual ZS::System::#error CLeaveIdxTreeEntry* createLeave( const QString& i_str
         /* strMethod    */ "createLeave",
         /* strMthInArgs */ strAddTrcInfo );
 
-    #error CLeaveIdxTreeEntry* pLeave = new ZS::Apps::Test::IdxTree::CTrcAdmObj(i_strName);
+    CIdxTreeEntry* pLeave = new ZS::Apps::Test::IdxTree::CTrcAdmObj(i_strName);
 
     if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
     {
@@ -258,7 +260,7 @@ STreeEntryDscr::STreeEntryDscr() :
 } // ctor
 
 //-----------------------------------------------------------------------------
-STreeEntryDscr::STreeEntryDscr( const #error CAbstractIdxTreeEntry* i_pTreeEntry ) :
+STreeEntryDscr::STreeEntryDscr( const CIdxTreeEntry* i_pTreeEntry ) :
 //-----------------------------------------------------------------------------
     m_entryType(EIdxTreeEntryType::Undefined),
     m_strName(),
@@ -390,7 +392,6 @@ CTest::CTest( const QString& i_strTestStepsFileName ) :
     ZS::Test::CTest(
         /* strName              */ "ZS::System::IdxTree",
         /* strTestStepsFileName */ i_strTestStepsFileName,
-        /* strNodeSeparator     */ "\\",
         /* iTestStepInterval_ms */ 0 ),
     m_pIdxTree(nullptr)
 {
@@ -2130,10 +2131,23 @@ CTest::CTest( const QString& i_strTestStepsFileName ) :
         /* szDoTestStepFct */ SLOT(doTestStepDeleteTree(ZS::Test::CTestStep*)) );
 
 
-    // Recall test admin object settings
-    //----------------------------------
+    // Recall test step settings
+    //--------------------------
 
-    m_pAdminIdxTree->read_(i_strTestStepsFileName);
+    QFileInfo fileInfo(i_strTestStepsFileName);
+
+    if( fileInfo.exists() )
+    {
+        SErrResultInfo errResultInfo = recall(i_strTestStepsFileName);
+
+        if(errResultInfo.isErrorResult())
+        {
+            if(CErrLog::GetInstance() != nullptr)
+            {
+                CErrLog::GetInstance()->addEntry(errResultInfo);
+            }
+        }
+    }
 
 } // default ctor
 
@@ -2141,7 +2155,15 @@ CTest::CTest( const QString& i_strTestStepsFileName ) :
 CTest::~CTest()
 //------------------------------------------------------------------------------
 {
-    m_pAdminIdxTree->save_();
+    SErrResultInfo errResultInfo = save();
+
+    if(errResultInfo.isErrorResult())
+    {
+        if(CErrLog::GetInstance() != nullptr)
+        {
+            CErrLog::GetInstance()->addEntry(errResultInfo);
+        }
+    }
 
     try
     {
@@ -2174,16 +2196,16 @@ void CTest::onIdxTreeDestroyed( QObject* i_pIdxTree )
 void CTest::doTestStepCreateTree( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
-    QString     strDesiredValue;
-    QStringList strlstDesiredValues;
-    QString     strActualValue;
-    QStringList strlstActualValues;
+    QString     strExpectedValue;
+    QStringList strlstExpectedValues;
+    QString     strResultValue;
+    QStringList strlstResultValues;
 
-    // Desired Values
+    // Expected Values
     //---------------
 
-    strDesiredValue = "IdxTree.root() != nullptr";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "IdxTree.root() != nullptr";
+    strlstExpectedValues.append(strExpectedValue);
 
     // Test Step
     //----------
@@ -2211,25 +2233,25 @@ void CTest::doTestStepCreateTree( ZS::Test::CTestStep* i_pTestStep )
 
     emit idxTreeAdded(m_pIdxTree);
 
-    // Actual Values
+    // Result Values
     //---------------
 
-    #error CBranchIdxTreeEntry* pBranch = m_pIdxTree->root();
+    CIdxTreeEntry* pRoot = m_pIdxTree->root();
 
     // Please note that to finish a test step the list of actual values may not be empty.
-    if( pBranch == nullptr )
+    if( pRoot == nullptr )
     {
-        strActualValue = "IdxTree.root() == nullptr";
-        strlstActualValues.append(strActualValue);
+        strResultValue = "IdxTree.root() == nullptr";
+        strlstResultValues.append(strResultValue);
     }
     else
     {
-        strActualValue = "IdxTree.root() != nullptr";
-        strlstActualValues.append(strActualValue);
+        strResultValue = "IdxTree.root() != nullptr";
+        strlstResultValues.append(strResultValue);
     }
 
-    i_pTestStep->setDesiredValues(strlstDesiredValues);
-    i_pTestStep->setActualValues(strlstActualValues);
+    i_pTestStep->setExpectedValues(strlstExpectedValues);
+    i_pTestStep->setResultValues(strlstResultValues);
 
 } // doTestStepCreateTree
 
@@ -2237,10 +2259,10 @@ void CTest::doTestStepCreateTree( ZS::Test::CTestStep* i_pTestStep )
 void CTest::doTestStepAddEntry( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
-    QString     strDesiredValue;
-    QStringList strlstDesiredValues;
-    QString     strActualValue;
-    QStringList strlstActualValues;
+    QString     strExpectedValue;
+    QStringList strlstExpectedValues;
+    QString     strResultValue;
+    QStringList strlstResultValues;
 
     QString strOperation = i_pTestStep->getOperation();
 
@@ -2272,11 +2294,11 @@ void CTest::doTestStepAddEntry( ZS::Test::CTestStep* i_pTestStep )
         // Get current list of tree entries and map of free indices
         //---------------------------------------------------------
 
-        QVector<#error CAbstractIdxTreeEntry*> arpTreeEntriesDesired = m_pIdxTree->treeEntriesVec();
+        QVector<CIdxTreeEntry*> arpTreeEntriesExpected = m_pIdxTree->treeEntriesVec();
 
-        QVector<STreeEntryDscr> arTreeEntryDscrsDesired = toTreeEntryDscrs(arpTreeEntriesDesired);
+        QVector<STreeEntryDscr> arTreeEntryDscrsExpected = toTreeEntryDscrs(arpTreeEntriesExpected);
 
-        QMap<int, int> mapFreeIdxsDesired = m_pIdxTree->freeIdxsMap();
+        QMap<int, int> mapFreeIdxsExpected = m_pIdxTree->freeIdxsMap();
 
         // Expected (desired) behaviour
         //-----------------------------
@@ -2295,15 +2317,15 @@ void CTest::doTestStepAddEntry( ZS::Test::CTestStep* i_pTestStep )
             strClassName = strlstClassNamesDefined[idxPathNode];
             strObjName   = strlstObjNamesDefined[idxPathNode];
 
-            // Adds the node only if the key in tree is not yet contained in the "arTreeEntryDscrsDesired".
-            addEntry(*m_pIdxTree, strKeyInTree, strNameSpace, strClassName, strObjName, arTreeEntryDscrsDesired, mapFreeIdxsDesired);
+            // Adds the node only if the key in tree is not yet contained in the "arTreeEntryDscrsExpected".
+            addEntry(*m_pIdxTree, strKeyInTree, strNameSpace, strClassName, strObjName, arTreeEntryDscrsExpected, mapFreeIdxsExpected);
 
         } // for( int idxPathNode = 0; idxPathNode < strlstKeysDefined.size(); ++idxPathNode )
 
         // Add entries (if not yet added)
         //-------------------------------
 
-        #error CAbstractIdxTreeEntry* pTreeEntry;
+        CIdxTreeEntry* pTreeEntry;
 
         QString strPath;
 
@@ -2339,32 +2361,32 @@ void CTest::doTestStepAddEntry( ZS::Test::CTestStep* i_pTestStep )
         // Get new list of tree entries and map of free indices and compare with desired list and map
         //--------------------------------------------------------------------------------------------
 
-        QVector<#error CAbstractIdxTreeEntry*> arpTreeEntriesActual = m_pIdxTree->treeEntriesVec();
+        QVector<CIdxTreeEntry*> arpTreeEntriesResult = m_pIdxTree->treeEntriesVec();
 
-        QVector<STreeEntryDscr> arTreeEntryDscrsActual = toTreeEntryDscrs(arpTreeEntriesActual);
+        QVector<STreeEntryDscr> arTreeEntryDscrsResult = toTreeEntryDscrs(arpTreeEntriesResult);
 
-        QMap<int, int> mapFreeIdxsActual = m_pIdxTree->freeIdxsMap();
+        QMap<int, int> mapFreeIdxsResult = m_pIdxTree->freeIdxsMap();
 
-        compare(arTreeEntryDscrsDesired, arTreeEntryDscrsActual, strlstDesiredValues, strlstActualValues);
+        compare(arTreeEntryDscrsExpected, arTreeEntryDscrsResult, strlstExpectedValues, strlstResultValues);
 
-        compare(mapFreeIdxsDesired, mapFreeIdxsActual, strlstDesiredValues, strlstActualValues);
+        compare(mapFreeIdxsExpected, mapFreeIdxsResult, strlstExpectedValues, strlstResultValues);
 
     } // if( strOperation.startsWith("IdxTree.add",Qt::CaseInsensitive) )
 
     else // if( strOperation.startsWith("?") )
     {
-        strActualValue = "Unsupported Operation " + strOperation;
-        strlstActualValues.append(strActualValue);
+        strResultValue = "Unsupported Operation " + strOperation;
+        strlstResultValues.append(strResultValue);
     }
 
     // Please note that to finish a test step the list of actual values may not be empty.
-    if( strlstActualValues.size() == 0 )
+    if( strlstResultValues.size() == 0 )
     {
-        strlstActualValues << "";
+        strlstResultValues << "";
     }
 
-    i_pTestStep->setDesiredValues(strlstDesiredValues);
-    i_pTestStep->setActualValues(strlstActualValues);
+    i_pTestStep->setExpectedValues(strlstExpectedValues);
+    i_pTestStep->setResultValues(strlstResultValues);
 
 } // doTestStepAddEntry
 
@@ -2372,10 +2394,10 @@ void CTest::doTestStepAddEntry( ZS::Test::CTestStep* i_pTestStep )
 void CTest::doTestStepRemoveEntry( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
-    QString     strDesiredValue;
-    QStringList strlstDesiredValues;
-    QString     strActualValue;
-    QStringList strlstActualValues;
+    QString     strExpectedValue;
+    QStringList strlstExpectedValues;
+    QString     strResultValue;
+    QStringList strlstResultValues;
 
     QString strOperation = i_pTestStep->getOperation();
 
@@ -2395,27 +2417,27 @@ void CTest::doTestStepRemoveEntry( ZS::Test::CTestStep* i_pTestStep )
         // Get current list of tree entries and map of free indices
         //---------------------------------------------------------
 
-        QVector<#error CAbstractIdxTreeEntry*> arpTreeEntriesDesired = m_pIdxTree->treeEntriesVec();
+        QVector<CIdxTreeEntry*> arpTreeEntriesExpected = m_pIdxTree->treeEntriesVec();
 
-        QVector<STreeEntryDscr> arTreeEntryDscrsDesired = toTreeEntryDscrs(arpTreeEntriesDesired);
+        QVector<STreeEntryDscr> arTreeEntryDscrsExpected = toTreeEntryDscrs(arpTreeEntriesExpected);
 
-        QMap<int, int> mapFreeIdxsDesired = m_pIdxTree->freeIdxsMap();
+        QMap<int, int> mapFreeIdxsExpected = m_pIdxTree->freeIdxsMap();
 
         // Expected (desired) behaviour
         //-----------------------------
 
-        #error CAbstractIdxTreeEntry* pTreeEntry = m_pIdxTree->findEntry(strKeyInTreeToBeRemoved);
+        CIdxTreeEntry* pTreeEntry = m_pIdxTree->findEntry(strKeyInTreeToBeRemoved);
 
         STreeEntryDscr treeEntryDscr(pTreeEntry);
 
-        removeEntry(*m_pIdxTree, treeEntryDscr, arTreeEntryDscrsDesired, mapFreeIdxsDesired);
+        removeEntry(*m_pIdxTree, treeEntryDscr, arTreeEntryDscrsExpected, mapFreeIdxsExpected);
 
         // Remove the tree entry from the index tree using two different kind of methods
         //------------------------------------------------------------------------------
 
         if( strKeyInTreeToBeRemoved.startsWith("B:") )
         {
-            #error CBranchIdxTreeEntry* pBranch = m_pIdxTree->findBranch(strKeyInTreeToBeRemoved);
+            CIdxTreeEntry* pBranch = m_pIdxTree->findBranch(strKeyInTreeToBeRemoved);
 
             CTrcAdmObjBranch* pTrcAdminObjBranch = dynamic_cast<CTrcAdmObjBranch*>(pBranch);
 
@@ -2427,7 +2449,7 @@ void CTest::doTestStepRemoveEntry( ZS::Test::CTestStep* i_pTestStep )
 
         else if( strKeyInTreeToBeRemoved.startsWith("L:") )
         {
-            #error CLeaveIdxTreeEntry* pLeave = m_pIdxTree->findLeave(strKeyInTreeToBeRemoved);
+            CIdxTreeEntry* pLeave = m_pIdxTree->findLeave(strKeyInTreeToBeRemoved);
 
             CTrcAdmObj* pTrcAdminObj = dynamic_cast<CTrcAdmObj*>(pLeave);
 
@@ -2439,32 +2461,32 @@ void CTest::doTestStepRemoveEntry( ZS::Test::CTestStep* i_pTestStep )
         // Get new list of tree entries and map of free indices and compare with desired list and map
         //--------------------------------------------------------------------------------------------
 
-        QVector<#error CAbstractIdxTreeEntry*> arpTreeEntriesActual = m_pIdxTree->treeEntriesVec();
+        QVector<CIdxTreeEntry*> arpTreeEntriesResult = m_pIdxTree->treeEntriesVec();
 
-        QVector<STreeEntryDscr> arTreeEntryDscrsActual = toTreeEntryDscrs(arpTreeEntriesActual);
+        QVector<STreeEntryDscr> arTreeEntryDscrsResult = toTreeEntryDscrs(arpTreeEntriesResult);
 
-        QMap<int, int> mapFreeIdxsActual = m_pIdxTree->freeIdxsMap();
+        QMap<int, int> mapFreeIdxsResult = m_pIdxTree->freeIdxsMap();
 
-        compare(arTreeEntryDscrsDesired, arTreeEntryDscrsActual, strlstDesiredValues, strlstActualValues);
+        compare(arTreeEntryDscrsExpected, arTreeEntryDscrsResult, strlstExpectedValues, strlstResultValues);
 
-        compare(mapFreeIdxsDesired, mapFreeIdxsActual, strlstDesiredValues, strlstActualValues);
+        compare(mapFreeIdxsExpected, mapFreeIdxsResult, strlstExpectedValues, strlstResultValues);
 
     } // if( strOperation.startsWith("delete",Qt::CaseInsensitive) )
 
     else // if( strOperation.startsWith("?") )
     {
-        strActualValue = "Unsupported Operation " + strOperation;
-        strlstActualValues.append(strActualValue);
+        strResultValue = "Unsupported Operation " + strOperation;
+        strlstResultValues.append(strResultValue);
     }
 
     // Please note that to finish a test step the list of actual values may not be empty.
-    if( strlstActualValues.size() == 0 )
+    if( strlstResultValues.size() == 0 )
     {
-        strlstActualValues << "";
+        strlstResultValues << "";
     }
 
-    i_pTestStep->setDesiredValues(strlstDesiredValues);
-    i_pTestStep->setActualValues(strlstActualValues);
+    i_pTestStep->setExpectedValues(strlstExpectedValues);
+    i_pTestStep->setResultValues(strlstResultValues);
 
 } // doTestStepRemoveEntry
 
@@ -2472,10 +2494,10 @@ void CTest::doTestStepRemoveEntry( ZS::Test::CTestStep* i_pTestStep )
 void CTest::doTestStepMoveEntry( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
-    QString     strDesiredValue;
-    QStringList strlstDesiredValues;
-    QString     strActualValue;
-    QStringList strlstActualValues;
+    QString     strExpectedValue;
+    QStringList strlstExpectedValues;
+    QString     strResultValue;
+    QStringList strlstResultValues;
 
     QString strOperation = i_pTestStep->getOperation();
 
@@ -2514,22 +2536,22 @@ void CTest::doTestStepMoveEntry( ZS::Test::CTestStep* i_pTestStep )
             // Get current list of tree entries and map of free indices
             //---------------------------------------------------------
 
-            QVector<#error CAbstractIdxTreeEntry*> arpTreeEntriesDesired = m_pIdxTree->treeEntriesVec();
+            QVector<CIdxTreeEntry*> arpTreeEntriesExpected = m_pIdxTree->treeEntriesVec();
 
-            QVector<STreeEntryDscr> arTreeEntryDscrsDesired = toTreeEntryDscrs(arpTreeEntriesDesired);
+            QVector<STreeEntryDscr> arTreeEntryDscrsExpected = toTreeEntryDscrs(arpTreeEntriesExpected);
 
-            QMap<int, int> mapFreeIdxsDesired = m_pIdxTree->freeIdxsMap();
+            QMap<int, int> mapFreeIdxsExpected = m_pIdxTree->freeIdxsMap();
 
             // Expected (desired) behaviour
             //-----------------------------
 
-            #error CAbstractIdxTreeEntry* pTreeEntrySrc = m_pIdxTree->findEntry(strKeyInTreeSrc);
-            #error CAbstractIdxTreeEntry* pTreeEntryTrg = m_pIdxTree->findEntry(strKeyInTreeTrg);
+            CIdxTreeEntry* pTreeEntrySrc = m_pIdxTree->findEntry(strKeyInTreeSrc);
+            CIdxTreeEntry* pTreeEntryTrg = m_pIdxTree->findEntry(strKeyInTreeTrg);
 
             STreeEntryDscr treeEntryDscrSrc(pTreeEntrySrc);
             STreeEntryDscr treeEntryDscrTrg(pTreeEntryTrg);
 
-            moveEntry(*m_pIdxTree, treeEntryDscrTrg, treeEntryDscrSrc, arTreeEntryDscrsDesired);
+            moveEntry(*m_pIdxTree, treeEntryDscrTrg, treeEntryDscrSrc, arTreeEntryDscrsExpected);
 
             // Move Entry
             //-----------
@@ -2539,39 +2561,39 @@ void CTest::doTestStepMoveEntry( ZS::Test::CTestStep* i_pTestStep )
             // Get new list of tree entries and map of free indices and compare with desired list and map
             //--------------------------------------------------------------------------------------------
 
-            QVector<#error CAbstractIdxTreeEntry*> arpTreeEntriesActual = m_pIdxTree->treeEntriesVec();
+            QVector<CIdxTreeEntry*> arpTreeEntriesResult = m_pIdxTree->treeEntriesVec();
 
-            QVector<STreeEntryDscr> arTreeEntryDscrsActual = toTreeEntryDscrs(arpTreeEntriesActual);
+            QVector<STreeEntryDscr> arTreeEntryDscrsResult = toTreeEntryDscrs(arpTreeEntriesResult);
 
-            QMap<int, int> mapFreeIdxsActual = m_pIdxTree->freeIdxsMap();
+            QMap<int, int> mapFreeIdxsResult = m_pIdxTree->freeIdxsMap();
 
-            compare(arTreeEntryDscrsDesired, arTreeEntryDscrsActual, strlstDesiredValues, strlstActualValues);
+            compare(arTreeEntryDscrsExpected, arTreeEntryDscrsResult, strlstExpectedValues, strlstResultValues);
 
-            compare(mapFreeIdxsDesired, mapFreeIdxsActual, strlstDesiredValues, strlstActualValues);
+            compare(mapFreeIdxsExpected, mapFreeIdxsResult, strlstExpectedValues, strlstResultValues);
 
         } // if( strlstArgs.size() == 2 )
 
         else // if( strlstArgs.size() != 2 )
         {
-            strActualValue = "Number of arguments out of range for " + strOperation;
-            strlstActualValues.append(strActualValue);
+            strResultValue = "Number of arguments out of range for " + strOperation;
+            strlstResultValues.append(strResultValue);
         }
     } // if( strOperation.startsWith("IdxTree.move",Qt::CaseInsensitive) )
 
     else // if( strOperation.startsWith("?") )
     {
-        strActualValue = "Unsupported Operation " + strOperation;
-        strlstActualValues.append(strActualValue);
+        strResultValue = "Unsupported Operation " + strOperation;
+        strlstResultValues.append(strResultValue);
     }
 
     // Please note that to finish a test step the list of actual values may not be empty.
-    if( strlstActualValues.size() == 0 )
+    if( strlstResultValues.size() == 0 )
     {
-        strlstActualValues << "";
+        strlstResultValues << "";
     }
 
-    i_pTestStep->setDesiredValues(strlstDesiredValues);
-    i_pTestStep->setActualValues(strlstActualValues);
+    i_pTestStep->setExpectedValues(strlstExpectedValues);
+    i_pTestStep->setResultValues(strlstResultValues);
 
 } // doTestStepMoveEntry
 
@@ -2579,10 +2601,10 @@ void CTest::doTestStepMoveEntry( ZS::Test::CTestStep* i_pTestStep )
 void CTest::doTestStepCopyEntry( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
-    QString     strDesiredValue;
-    QStringList strlstDesiredValues;
-    QString     strActualValue;
-    QStringList strlstActualValues;
+    QString     strExpectedValue;
+    QStringList strlstExpectedValues;
+    QString     strResultValue;
+    QStringList strlstResultValues;
 
     QString strOperation = i_pTestStep->getOperation();
 
@@ -2621,24 +2643,24 @@ void CTest::doTestStepCopyEntry( ZS::Test::CTestStep* i_pTestStep )
             // Get current list of tree entries and map of free indices
             //---------------------------------------------------------
 
-            QVector<#error CAbstractIdxTreeEntry*> arpTreeEntriesDesired = m_pIdxTree->treeEntriesVec();
+            QVector<CIdxTreeEntry*> arpTreeEntriesExpected = m_pIdxTree->treeEntriesVec();
 
-            QVector<STreeEntryDscr> arTreeEntryDscrsDesired = toTreeEntryDscrs(arpTreeEntriesDesired);
+            QVector<STreeEntryDscr> arTreeEntryDscrsExpected = toTreeEntryDscrs(arpTreeEntriesExpected);
 
-            QMap<int, int> mapFreeIdxsDesired = m_pIdxTree->freeIdxsMap();
+            QMap<int, int> mapFreeIdxsExpected = m_pIdxTree->freeIdxsMap();
 
             // Expected (desired) behaviour
             //-----------------------------
 
-            int idxInTreeSrc = indexOf(strKeyInTreeSrc, arTreeEntryDscrsDesired);
-            int idxInTreeTrg = indexOf(strKeyInTreeTrg, arTreeEntryDscrsDesired);
+            int idxInTreeSrc = indexOf(strKeyInTreeSrc, arTreeEntryDscrsExpected);
+            int idxInTreeTrg = indexOf(strKeyInTreeTrg, arTreeEntryDscrsExpected);
 
             if( idxInTreeSrc >= 0 && idxInTreeTrg >= 0 )
             {
-                STreeEntryDscr& treeEntryDscrSrc = arTreeEntryDscrsDesired[idxInTreeSrc];
-                STreeEntryDscr& treeEntryDscrTrg = arTreeEntryDscrsDesired[idxInTreeTrg];
+                STreeEntryDscr& treeEntryDscrSrc = arTreeEntryDscrsExpected[idxInTreeSrc];
+                STreeEntryDscr& treeEntryDscrTrg = arTreeEntryDscrsExpected[idxInTreeTrg];
 
-                copyEntry(*m_pIdxTree, treeEntryDscrTrg, treeEntryDscrSrc, arTreeEntryDscrsDesired, mapFreeIdxsDesired);
+                copyEntry(*m_pIdxTree, treeEntryDscrTrg, treeEntryDscrSrc, arTreeEntryDscrsExpected, mapFreeIdxsExpected);
             }
 
             // Copy Entry
@@ -2649,39 +2671,39 @@ void CTest::doTestStepCopyEntry( ZS::Test::CTestStep* i_pTestStep )
             // Get new list of tree entries and map of free indices and compare with desired list and map
             //--------------------------------------------------------------------------------------------
 
-            QVector<#error CAbstractIdxTreeEntry*> arpTreeEntriesActual = m_pIdxTree->treeEntriesVec();
+            QVector<CIdxTreeEntry*> arpTreeEntriesResult = m_pIdxTree->treeEntriesVec();
 
-            QVector<STreeEntryDscr> arTreeEntryDscrsActual = toTreeEntryDscrs(arpTreeEntriesActual);
+            QVector<STreeEntryDscr> arTreeEntryDscrsResult = toTreeEntryDscrs(arpTreeEntriesResult);
 
-            QMap<int, int> mapFreeIdxsActual = m_pIdxTree->freeIdxsMap();
+            QMap<int, int> mapFreeIdxsResult = m_pIdxTree->freeIdxsMap();
 
-            compare(arTreeEntryDscrsDesired, arTreeEntryDscrsActual, strlstDesiredValues, strlstActualValues);
+            compare(arTreeEntryDscrsExpected, arTreeEntryDscrsResult, strlstExpectedValues, strlstResultValues);
 
-            compare(mapFreeIdxsDesired, mapFreeIdxsActual, strlstDesiredValues, strlstActualValues);
+            compare(mapFreeIdxsExpected, mapFreeIdxsResult, strlstExpectedValues, strlstResultValues);
 
         } // if( strlstArgs.size() == 2 )
 
         else // if( strlstArgs.size() != 2 )
         {
-            strActualValue = "Number of arguments out of range for " + strOperation;
-            strlstActualValues.append(strActualValue);
+            strResultValue = "Number of arguments out of range for " + strOperation;
+            strlstResultValues.append(strResultValue);
         }
     } // if( strOperation.startsWith("IdxTree.copy",Qt::CaseInsensitive) )
 
     else // if( strOperation.startsWith("?") )
     {
-        strActualValue = "Unsupported Operation " + strOperation;
-        strlstActualValues.append(strActualValue);
+        strResultValue = "Unsupported Operation " + strOperation;
+        strlstResultValues.append(strResultValue);
     }
 
     // Please note that to finish a test step the list of actual values may not be empty.
-    if( strlstActualValues.size() == 0 )
+    if( strlstResultValues.size() == 0 )
     {
-        strlstActualValues << "";
+        strlstResultValues << "";
     }
 
-    i_pTestStep->setDesiredValues(strlstDesiredValues);
-    i_pTestStep->setActualValues(strlstActualValues);
+    i_pTestStep->setExpectedValues(strlstExpectedValues);
+    i_pTestStep->setResultValues(strlstResultValues);
 
 } // doTestStepCopyEntry
 
@@ -2689,10 +2711,10 @@ void CTest::doTestStepCopyEntry( ZS::Test::CTestStep* i_pTestStep )
 void CTest::doTestStepRenameEntry( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
-    QString     strDesiredValue;
-    QStringList strlstDesiredValues;
-    QString     strActualValue;
-    QStringList strlstActualValues;
+    QString     strExpectedValue;
+    QStringList strlstExpectedValues;
+    QString     strResultValue;
+    QStringList strlstResultValues;
 
     QString strOperation = i_pTestStep->getOperation();
 
@@ -2718,11 +2740,11 @@ void CTest::doTestStepRenameEntry( ZS::Test::CTestStep* i_pTestStep )
             // Get current list of tree entries and map of free indices
             //---------------------------------------------------------
 
-            QVector<#error CAbstractIdxTreeEntry*> arpTreeEntriesDesired = m_pIdxTree->treeEntriesVec();
+            QVector<CIdxTreeEntry*> arpTreeEntriesExpected = m_pIdxTree->treeEntriesVec();
 
-            QVector<STreeEntryDscr> arTreeEntryDscrsDesired = toTreeEntryDscrs(arpTreeEntriesDesired);
+            QVector<STreeEntryDscr> arTreeEntryDscrsExpected = toTreeEntryDscrs(arpTreeEntriesExpected);
 
-            QMap<int, int> mapFreeIdxsDesired = m_pIdxTree->freeIdxsMap();
+            QMap<int, int> mapFreeIdxsExpected = m_pIdxTree->freeIdxsMap();
 
             // Expected (desired) behaviour
             //-----------------------------
@@ -2730,14 +2752,14 @@ void CTest::doTestStepRenameEntry( ZS::Test::CTestStep* i_pTestStep )
             QString strKeyInTreeSrc = strlstArgs[0].trimmed();
             QString strObjNameTrg   = strlstArgs[1].trimmed();
 
-            #error CAbstractIdxTreeEntry* pTreeEntry = m_pIdxTree->findEntry(strKeyInTreeSrc);
+            CIdxTreeEntry* pTreeEntry = m_pIdxTree->findEntry(strKeyInTreeSrc);
 
             // If the tree entry exists ...
             if( pTreeEntry != nullptr )
             {
                 STreeEntryDscr treeEntryDscr(pTreeEntry);
 
-                renameEntry(*m_pIdxTree, strObjNameTrg, treeEntryDscr, arTreeEntryDscrsDesired);
+                renameEntry(*m_pIdxTree, strObjNameTrg, treeEntryDscr, arTreeEntryDscrsExpected);
             }
 
             // Rename entry
@@ -2748,39 +2770,39 @@ void CTest::doTestStepRenameEntry( ZS::Test::CTestStep* i_pTestStep )
             // Get new list of tree entries and map of free indices and compare with desired list and map
             //--------------------------------------------------------------------------------------------
 
-            QVector<#error CAbstractIdxTreeEntry*> arpTreeEntriesActual = m_pIdxTree->treeEntriesVec();
+            QVector<CIdxTreeEntry*> arpTreeEntriesResult = m_pIdxTree->treeEntriesVec();
 
-            QVector<STreeEntryDscr> arTreeEntryDscrsActual = toTreeEntryDscrs(arpTreeEntriesActual);
+            QVector<STreeEntryDscr> arTreeEntryDscrsResult = toTreeEntryDscrs(arpTreeEntriesResult);
 
-            QMap<int, int> mapFreeIdxsActual = m_pIdxTree->freeIdxsMap();
+            QMap<int, int> mapFreeIdxsResult = m_pIdxTree->freeIdxsMap();
 
-            compare(arTreeEntryDscrsDesired, arTreeEntryDscrsActual, strlstDesiredValues, strlstActualValues);
+            compare(arTreeEntryDscrsExpected, arTreeEntryDscrsResult, strlstExpectedValues, strlstResultValues);
 
-            compare(mapFreeIdxsDesired, mapFreeIdxsActual, strlstDesiredValues, strlstActualValues);
+            compare(mapFreeIdxsExpected, mapFreeIdxsResult, strlstExpectedValues, strlstResultValues);
 
         } // if( strlstArgs.size() == 2 )
 
         else // if( strlstArgs.size() != 2 )
         {
-            strActualValue = "Number of arguments out of range for " + strOperation;
-            strlstActualValues.append(strActualValue);
+            strResultValue = "Number of arguments out of range for " + strOperation;
+            strlstResultValues.append(strResultValue);
         }
     } // if( strOperation.startsWith("IdxTree.rename",Qt::CaseInsensitive) )
 
     else // if( strOperation.startsWith("?") )
     {
-        strActualValue = "Unsupported Operation " + strOperation;
-        strlstActualValues.append(strActualValue);
+        strResultValue = "Unsupported Operation " + strOperation;
+        strlstResultValues.append(strResultValue);
     }
 
     // Please note that to finish a test step the list of actual values may not be empty.
-    if( strlstActualValues.size() == 0 )
+    if( strlstResultValues.size() == 0 )
     {
-        strlstActualValues << "";
+        strlstResultValues << "";
     }
 
-    i_pTestStep->setDesiredValues(strlstDesiredValues);
-    i_pTestStep->setActualValues(strlstActualValues);
+    i_pTestStep->setExpectedValues(strlstExpectedValues);
+    i_pTestStep->setResultValues(strlstResultValues);
 
 } // doTestStepRenameEntry
 
@@ -2788,12 +2810,12 @@ void CTest::doTestStepRenameEntry( ZS::Test::CTestStep* i_pTestStep )
 void CTest::doTestStepChangeViews( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
-    QString     strDesiredValue;
-    QStringList strlstDesiredValues;
-    QString     strActualValue;
-    QStringList strlstActualValues;
+    QString     strExpectedValue;
+    QStringList strlstExpectedValues;
+    QString     strResultValue;
+    QStringList strlstResultValues;
 
-    // Desired Values
+    // Expected Values
     //---------------
 
     QString strOperation = i_pTestStep->getOperation();
@@ -2805,10 +2827,10 @@ void CTest::doTestStepChangeViews( ZS::Test::CTestStep* i_pTestStep )
     // - "TreeViewIdxTree.select(B:A0::B2::C3)"
     // - "WidgetIdxTree.setViewMode(NavPanelOnly)"
 
-    CWdgtIdxTree::EViewMode  viewMode  = CWdgtIdxTree::EViewMode::Undefined;
-    EIdxTreeSortOrder        sortOrder = EIdxTreeSortOrder::Undefined;
-    CModelAbstractTreeEntry* pModelTreeEntrySelected = nullptr;
-    QString                  strKeyInTreeToBeSelected;
+    CWdgtIdxTree::EViewMode viewMode  = CWdgtIdxTree::EViewMode::Undefined;
+    EIdxTreeSortOrder       sortOrder = EIdxTreeSortOrder::Undefined;
+    CModelIdxTreeEntry*     pModelTreeEntrySelected = nullptr;
+    QString                 strKeyInTreeToBeSelected;
 
     if( strOperation.contains("WidgetIdxTree.setSortOrder") )
     {
@@ -2845,7 +2867,7 @@ void CTest::doTestStepChangeViews( ZS::Test::CTestStep* i_pTestStep )
 
     } // if( strOperation.contains("TreeViewIdxTree.select") )
 
-    strlstDesiredValues << strDesiredValue;
+    strlstExpectedValues << strExpectedValue;
 
     // Test Step
     //----------
@@ -2890,10 +2912,10 @@ void CTest::doTestStepChangeViews( ZS::Test::CTestStep* i_pTestStep )
     {
         QModelIndex modelIdx = pModelIdxTree->index(strKeyInTreeToBeSelected, 0);
         pTreeViewIdxTree->setCurrentIndex(modelIdx);
-        pModelTreeEntrySelected = static_cast<CModelAbstractTreeEntry*>(modelIdx.internalPointer());
+        pModelTreeEntrySelected = static_cast<CModelIdxTreeEntry*>(modelIdx.internalPointer());
     }
 
-    // Actual Values
+    // Result Values
     //---------------
 
     // If the view mode don't has to be changed by this test step ..
@@ -2915,7 +2937,7 @@ void CTest::doTestStepChangeViews( ZS::Test::CTestStep* i_pTestStep )
     {
         // .. take the current setting.
         QModelIndex modelIdx = pTreeViewIdxTree->currentIndex();
-        pModelTreeEntrySelected = static_cast<CModelAbstractTreeEntry*>(modelIdx.internalPointer());
+        pModelTreeEntrySelected = static_cast<CModelIdxTreeEntry*>(modelIdx.internalPointer());
     }
 
     // Please note: At the following test conditions:
@@ -2924,11 +2946,11 @@ void CTest::doTestStepChangeViews( ZS::Test::CTestStep* i_pTestStep )
     // actual and desired values are not the same and the test step failed.
     CIdxTree::iterator       itIdxTree;
     CModelIdxTree::iterator  itModelIdxTree;
-    #error CAbstractIdxTreeEntry*      pTreeEntry;
-    CModelAbstractTreeEntry* pModelTreeEntry;
-    CModelBranchTreeEntry*   pModelBranchParent;
-    CModelAbstractTreeEntry* pModelTreeEntryPrev;
-    CModelAbstractTreeEntry* pModelTreeEntryNext;
+    CIdxTreeEntry*           pTreeEntry;
+    CModelIdxTreeEntry*      pModelTreeEntry;
+    CModelIdxTreeEntry*      pModelBranchParent;
+    CModelIdxTreeEntry*      pModelTreeEntryPrev;
+    CModelIdxTreeEntry*      pModelTreeEntryNext;
     int                      idxInParentBranch;
     int                      idxItStep;
 
@@ -2945,11 +2967,11 @@ void CTest::doTestStepChangeViews( ZS::Test::CTestStep* i_pTestStep )
             pModelTreeEntry = pModelIdxTree->findModelEntry(pTreeEntry);
             if( pModelTreeEntry == nullptr )
             {
-                strActualValue  = "ViewMode: " + CWdgtIdxTree::viewMode2Str(viewMode);
-                strActualValue += ", SortOrder: " + idxTreeSortOrder2Str(sortOrder);
-                strActualValue += ", Iterator.TraversalOrder: Index";
-                strActualValue += "  pModelIdxTree->findModelEntry(" + pTreeEntry->keyInTree() + ") == nullptr";
-                strlstActualValues << strActualValue;
+                strResultValue  = "ViewMode: " + CWdgtIdxTree::viewMode2Str(viewMode);
+                strResultValue += ", SortOrder: " + idxTreeSortOrder2Str(sortOrder);
+                strResultValue += ", Iterator.TraversalOrder: Index";
+                strResultValue += "  pModelIdxTree->findModelEntry(" + pTreeEntry->keyInTree() + ") == nullptr";
+                strlstResultValues << strResultValue;
                 break;
             }
             ++itIdxTree;
@@ -2970,12 +2992,12 @@ void CTest::doTestStepChangeViews( ZS::Test::CTestStep* i_pTestStep )
             pModelTreeEntry = *itModelIdxTree;
             if( pTreeEntry->keyInTree() != pModelTreeEntry->keyInTree() )
             {
-                strActualValue  = "ViewMode: " + CWdgtIdxTree::viewMode2Str(viewMode);
-                strActualValue += ", SortOrder: " + idxTreeSortOrder2Str(sortOrder);
-                strActualValue += ", Iterator.TraversalOrder: Index";
-                strActualValue += ", IteratorStep: " + QString::number(idxItStep) + ":\n";
-                strActualValue += "  ItIdxTree (" + pTreeEntry->keyInTree() + ") != ItModelIdxTree (" + pModelTreeEntry->keyInTree() + ")";
-                strlstActualValues << strActualValue;
+                strResultValue  = "ViewMode: " + CWdgtIdxTree::viewMode2Str(viewMode);
+                strResultValue += ", SortOrder: " + idxTreeSortOrder2Str(sortOrder);
+                strResultValue += ", Iterator.TraversalOrder: Index";
+                strResultValue += ", IteratorStep: " + QString::number(idxItStep) + ":\n";
+                strResultValue += "  ItIdxTree (" + pTreeEntry->keyInTree() + ") != ItModelIdxTree (" + pModelTreeEntry->keyInTree() + ")";
+                strlstResultValues << strResultValue;
                 break;
             }
             ++itIdxTree;
@@ -2999,12 +3021,12 @@ void CTest::doTestStepChangeViews( ZS::Test::CTestStep* i_pTestStep )
                 pModelTreeEntry = *itModelIdxTree;
                 if( pTreeEntry->keyInTree() != pModelTreeEntry->keyInTree() )
                 {
-                    strActualValue  = "ViewMode: " + CWdgtIdxTree::viewMode2Str(viewMode);
-                    strActualValue += ", SortOrder: " + idxTreeSortOrder2Str(sortOrder);
-                    strActualValue += ", Iterator.TraversalOrder: PreOrder";
-                    strActualValue += ", IteratorStep: " + QString::number(idxItStep) + ":\n";
-                    strActualValue += "  ItIdxTree (" + pTreeEntry->keyInTree() + ") != ItModelIdxTree (" + pModelTreeEntry->keyInTree() + ")";
-                    strlstActualValues << strActualValue;
+                    strResultValue  = "ViewMode: " + CWdgtIdxTree::viewMode2Str(viewMode);
+                    strResultValue += ", SortOrder: " + idxTreeSortOrder2Str(sortOrder);
+                    strResultValue += ", Iterator.TraversalOrder: PreOrder";
+                    strResultValue += ", IteratorStep: " + QString::number(idxItStep) + ":\n";
+                    strResultValue += "  ItIdxTree (" + pTreeEntry->keyInTree() + ") != ItModelIdxTree (" + pModelTreeEntry->keyInTree() + ")";
+                    strlstResultValues << strResultValue;
                     break;
                 }
                 ++itIdxTree;
@@ -3033,10 +3055,10 @@ void CTest::doTestStepChangeViews( ZS::Test::CTestStep* i_pTestStep )
 
                 if( pModelTreeEntry == nullptr )
                 {
-                    strActualValue  = "ViewMode: " + CWdgtIdxTree::viewMode2Str(viewMode);
-                    strActualValue += ", SortOrder: " + idxTreeSortOrder2Str(sortOrder) + ":\n";
-                    strActualValue += "  pModelIdxTree->findModelEntry(" + pTreeEntry->keyInTree() + ") == nullptr";
-                    strlstActualValues << strActualValue;
+                    strResultValue  = "ViewMode: " + CWdgtIdxTree::viewMode2Str(viewMode);
+                    strResultValue += ", SortOrder: " + idxTreeSortOrder2Str(sortOrder) + ":\n";
+                    strResultValue += "  pModelIdxTree->findModelEntry(" + pTreeEntry->keyInTree() + ") == nullptr";
+                    strlstResultValues << strResultValue;
                     break;
                 }
             }
@@ -3050,10 +3072,10 @@ void CTest::doTestStepChangeViews( ZS::Test::CTestStep* i_pTestStep )
             pModelTreeEntry = *itModelIdxTree;
             if( pModelTreeEntry->entryType() != EIdxTreeEntryType::Root && pModelTreeEntry->entryType() != EIdxTreeEntryType::Branch )
             {
-                strActualValue  = "ViewMode: " + CWdgtIdxTree::viewMode2Str(viewMode);
-                strActualValue += ", SortOrder: " + idxTreeSortOrder2Str(sortOrder) + ":\n";
-                strActualValue += "  ItIdxTree (" + pModelTreeEntry->keyInTree() + ") != Branch";
-                strlstActualValues << strActualValue;
+                strResultValue  = "ViewMode: " + CWdgtIdxTree::viewMode2Str(viewMode);
+                strResultValue += ", SortOrder: " + idxTreeSortOrder2Str(sortOrder) + ":\n";
+                strResultValue += "  ItIdxTree (" + pModelTreeEntry->keyInTree() + ") != Branch";
+                strlstResultValues << strResultValue;
                 break;
             }
             ++itModelIdxTree;
@@ -3062,55 +3084,55 @@ void CTest::doTestStepChangeViews( ZS::Test::CTestStep* i_pTestStep )
         // On selecting a branch the branch content table view must contain all childs of the selected branch.
         if( !strKeyInTreeToBeSelected.isEmpty() && pModelTreeEntrySelected == nullptr )
         {
-            strActualValue  = "ViewMode: " + CWdgtIdxTree::viewMode2Str(viewMode);
-            strActualValue += ", SortOrder: " + idxTreeSortOrder2Str(sortOrder) + ":\n";
-            strActualValue += "  pModelIdxTree->currentIndex() != " + strKeyInTreeToBeSelected;
-            strlstActualValues << strActualValue;
+            strResultValue  = "ViewMode: " + CWdgtIdxTree::viewMode2Str(viewMode);
+            strResultValue += ", SortOrder: " + idxTreeSortOrder2Str(sortOrder) + ":\n";
+            strResultValue += "  pModelIdxTree->currentIndex() != " + strKeyInTreeToBeSelected;
+            strlstResultValues << strResultValue;
         }
         else if( pModelTreeEntrySelected != nullptr )
         {
             // Please note that the model branch entry as the root of the branch content model is a clone
             // of the model branch of idx tree model. The branch node of the index tree model may not contain
             // leaves whereas the root branch (the clone) of the content model may.
-            CModelBranchTreeEntry* pModelBranchSelected = pModelIdxTreeBranchContent->modelBranch();
+            CModelIdxTreeEntry* pModelBranchSelected = pModelIdxTreeBranchContent->modelBranch();
 
             if( pModelBranchSelected == nullptr )
             {
-                strActualValue  = "ViewMode: " + CWdgtIdxTree::viewMode2Str(viewMode);
-                strActualValue += ", SortOrder: " + idxTreeSortOrder2Str(sortOrder);
-                strActualValue += ", BranchSelected: nullptr:\n";
-                strActualValue += "  pModelIdxTree->currentIndex() != " + strKeyInTreeToBeSelected;
-                strlstActualValues << strActualValue;
+                strResultValue  = "ViewMode: " + CWdgtIdxTree::viewMode2Str(viewMode);
+                strResultValue += ", SortOrder: " + idxTreeSortOrder2Str(sortOrder);
+                strResultValue += ", BranchSelected: nullptr:\n";
+                strResultValue += "  pModelIdxTree->currentIndex() != " + strKeyInTreeToBeSelected;
+                strlstResultValues << strResultValue;
             }
             else if( pModelBranchSelected->treeEntry() != pModelIdxTreeBranchContent->branch() )
             {
-                strActualValue  = "ViewMode: " + CWdgtIdxTree::viewMode2Str(viewMode);
-                strActualValue += ", SortOrder: " + idxTreeSortOrder2Str(sortOrder) + ":\n";
-                strActualValue += ", BranchSelected: " + strKeyInTreeToBeSelected + ":\n";
-                strlstActualValues << strActualValue;
+                strResultValue  = "ViewMode: " + CWdgtIdxTree::viewMode2Str(viewMode);
+                strResultValue += ", SortOrder: " + idxTreeSortOrder2Str(sortOrder) + ":\n";
+                strResultValue += ", BranchSelected: " + strKeyInTreeToBeSelected + ":\n";
+                strlstResultValues << strResultValue;
             }
             else // if( pModelBranchSelected != nullptr )
             {
                 if( pModelBranchSelected->keyInTree() != strKeyInTreeToBeSelected )
                 {
-                    strActualValue  = "ViewMode: " + CWdgtIdxTree::viewMode2Str(viewMode);
-                    strActualValue += ", SortOrder: " + idxTreeSortOrder2Str(sortOrder) + ":\n";
-                    strActualValue += ", BranchSelected: " + strKeyInTreeToBeSelected + ":\n";
-                    strActualValue += "  pModelIdxTree->currentIndex() != " + strKeyInTreeToBeSelected;
-                    strlstActualValues << strActualValue;
+                    strResultValue  = "ViewMode: " + CWdgtIdxTree::viewMode2Str(viewMode);
+                    strResultValue += ", SortOrder: " + idxTreeSortOrder2Str(sortOrder) + ":\n";
+                    strResultValue += ", BranchSelected: " + strKeyInTreeToBeSelected + ":\n";
+                    strResultValue += "  pModelIdxTree->currentIndex() != " + strKeyInTreeToBeSelected;
+                    strlstResultValues << strResultValue;
                 }
                 else // if( pModelBranchSelected->keyInTree() == strKeyInTreeToBeSelected )
                 {
-                    #error CBranchIdxTreeEntry* pBranchSelected = dynamic_cast<#error CBranchIdxTreeEntry*>(pModelBranchSelected->treeEntry());
+                    CIdxTreeEntry* pBranchSelected = dynamic_cast<CIdxTreeEntry*>(pModelBranchSelected->treeEntry());
 
                     if( pBranchSelected->count() != pModelBranchSelected->count() )
                     {
-                        strActualValue  = "ViewMode: " + CWdgtIdxTree::viewMode2Str(viewMode);
-                        strActualValue += ", SortOrder: " + idxTreeSortOrder2Str(sortOrder);
-                        strActualValue += ", BranchSelected: " + strKeyInTreeToBeSelected + ":\n";
-                        strActualValue += "  BranchSelected->count(" + QString::number(pBranchSelected->count()) + ")";
-                        strActualValue += "!= ModelBranchSelected->count(" + QString::number(pModelBranchSelected->count()) + ")";
-                        strlstActualValues << strActualValue;
+                        strResultValue  = "ViewMode: " + CWdgtIdxTree::viewMode2Str(viewMode);
+                        strResultValue += ", SortOrder: " + idxTreeSortOrder2Str(sortOrder);
+                        strResultValue += ", BranchSelected: " + strKeyInTreeToBeSelected + ":\n";
+                        strResultValue += "  BranchSelected->count(" + QString::number(pBranchSelected->count()) + ")";
+                        strResultValue += "!= ModelBranchSelected->count(" + QString::number(pModelBranchSelected->count()) + ")";
+                        strlstResultValues << strResultValue;
                     }
                     else // if( pBranchSelected->count() == pModelBranchSelected->count() )
                     {
@@ -3120,11 +3142,11 @@ void CTest::doTestStepChangeViews( ZS::Test::CTestStep* i_pTestStep )
                             pModelTreeEntry = pModelIdxTreeBranchContent->findModelEntry(pTreeEntry);
                             if( pModelTreeEntry == nullptr )
                             {
-                                strActualValue  = "ViewMode: " + CWdgtIdxTree::viewMode2Str(viewMode);
-                                strActualValue += ", SortOrder: " + idxTreeSortOrder2Str(sortOrder);
-                                strActualValue += ", BranchSelected: " + strKeyInTreeToBeSelected + ":\n";
-                                strActualValue += "  pModelIdxTreeBranchContent->findModelEntry(" + pTreeEntry->keyInTree() + ") == nullptr";
-                                strlstActualValues << strActualValue;
+                                strResultValue  = "ViewMode: " + CWdgtIdxTree::viewMode2Str(viewMode);
+                                strResultValue += ", SortOrder: " + idxTreeSortOrder2Str(sortOrder);
+                                strResultValue += ", BranchSelected: " + strKeyInTreeToBeSelected + ":\n";
+                                strResultValue += "  pModelIdxTreeBranchContent->findModelEntry(" + pTreeEntry->keyInTree() + ") == nullptr";
+                                strlstResultValues << strResultValue;
                                 break;
                             }
                         }
@@ -3163,23 +3185,23 @@ void CTest::doTestStepChangeViews( ZS::Test::CTestStep* i_pTestStep )
                 {
                     if( pModelTreeEntry->keyInParentBranch() < pModelTreeEntryPrev->keyInParentBranch() )
                     {
-                        strActualValue  = "ViewMode: " + CWdgtIdxTree::viewMode2Str(viewMode);
-                        strActualValue += ", SortOrder: " + idxTreeSortOrder2Str(sortOrder);
-                        strActualValue += ", Iterator.TraversalOrder: PreOrder";
-                        strActualValue += ", IteratorStep: " + QString::number(idxItStep) + ":\n";
-                        strActualValue += "  ItIdxTree (" + pTreeEntry->keyInParentBranch() + ") < ItIdxTreePrev (" + pModelTreeEntryPrev->keyInParentBranch() + ")";
-                        strlstActualValues << strActualValue;
+                        strResultValue  = "ViewMode: " + CWdgtIdxTree::viewMode2Str(viewMode);
+                        strResultValue += ", SortOrder: " + idxTreeSortOrder2Str(sortOrder);
+                        strResultValue += ", Iterator.TraversalOrder: PreOrder";
+                        strResultValue += ", IteratorStep: " + QString::number(idxItStep) + ":\n";
+                        strResultValue += "  ItIdxTree (" + pTreeEntry->keyInParentBranch() + ") < ItIdxTreePrev (" + pModelTreeEntryPrev->keyInParentBranch() + ")";
+                        strlstResultValues << strResultValue;
                     }
                     if( pModelTreeEntry->keyInParentBranch() > pModelTreeEntryNext->keyInParentBranch() )
                     {
-                        strActualValue  = "ViewMode: " + CWdgtIdxTree::viewMode2Str(viewMode);
-                        strActualValue += ", SortOrder: " + idxTreeSortOrder2Str(sortOrder);
-                        strActualValue += ", Iterator.TraversalOrder: PreOrder";
-                        strActualValue += ", IteratorStep: " + QString::number(idxItStep) + ":\n";
-                        strActualValue += "  ItIdxTree (" + pTreeEntry->keyInParentBranch() + ") > ItIdxTreeNext (" + pModelTreeEntryPrev->keyInParentBranch() + ")";
-                        strlstActualValues << strActualValue;
+                        strResultValue  = "ViewMode: " + CWdgtIdxTree::viewMode2Str(viewMode);
+                        strResultValue += ", SortOrder: " + idxTreeSortOrder2Str(sortOrder);
+                        strResultValue += ", Iterator.TraversalOrder: PreOrder";
+                        strResultValue += ", IteratorStep: " + QString::number(idxItStep) + ":\n";
+                        strResultValue += "  ItIdxTree (" + pTreeEntry->keyInParentBranch() + ") > ItIdxTreeNext (" + pModelTreeEntryPrev->keyInParentBranch() + ")";
+                        strlstResultValues << strResultValue;
                     }
-                    if( strlstActualValues.size() > 0 )
+                    if( strlstResultValues.size() > 0 )
                     {
                         break;
                     }
@@ -3195,7 +3217,7 @@ void CTest::doTestStepChangeViews( ZS::Test::CTestStep* i_pTestStep )
             // Please note that the model branch entry as the root of the branch content model is a clone
             // of the model branch of idx tree model. The branch node of the index tree model may not contain
             // leaves whereas the root branch (the clone) of the content model may.
-            CModelBranchTreeEntry* pModelBranchSelected = pModelIdxTreeBranchContent->modelBranch();
+            CModelIdxTreeEntry* pModelBranchSelected = pModelIdxTreeBranchContent->modelBranch();
 
             // If a branch has been assigned to the table view ...
             if( pModelBranchSelected != nullptr )
@@ -3219,24 +3241,24 @@ void CTest::doTestStepChangeViews( ZS::Test::CTestStep* i_pTestStep )
                     {
                         if( pModelTreeEntry->keyInParentBranch() < pModelTreeEntryPrev->keyInParentBranch() )
                         {
-                            strActualValue  = "ViewMode: " + CWdgtIdxTree::viewMode2Str(viewMode);
-                            strActualValue += ", SortOrder: " + idxTreeSortOrder2Str(sortOrder);
-                            strActualValue += ", Iterator.TraversalOrder: PreOrder";
-                            strActualValue += "  ItModelBranch (" + pModelTreeEntry->keyInParentBranch() + ") < ItModelBranchPrev (" + pModelTreeEntryPrev->keyInParentBranch() + ")";
-                            strlstActualValues << strActualValue;
+                            strResultValue  = "ViewMode: " + CWdgtIdxTree::viewMode2Str(viewMode);
+                            strResultValue += ", SortOrder: " + idxTreeSortOrder2Str(sortOrder);
+                            strResultValue += ", Iterator.TraversalOrder: PreOrder";
+                            strResultValue += "  ItModelBranch (" + pModelTreeEntry->keyInParentBranch() + ") < ItModelBranchPrev (" + pModelTreeEntryPrev->keyInParentBranch() + ")";
+                            strlstResultValues << strResultValue;
                         }
                     }
                     if( pModelTreeEntryNext != nullptr )
                     {
                         if( pModelTreeEntry->keyInParentBranch() > pModelTreeEntryNext->keyInParentBranch() )
                         {
-                            strActualValue  = "ViewMode: " + CWdgtIdxTree::viewMode2Str(viewMode);
-                            strActualValue += ", SortOrder: " + idxTreeSortOrder2Str(sortOrder);
-                            strActualValue += ", IteratorStep: " + QString::number(idxTreeEntry) + ":\n";
-                            strActualValue += "  ItModelBranch (" + pModelTreeEntry->keyInParentBranch() + ") > ItModelBranchNext (" + pModelTreeEntryNext->keyInParentBranch() + ")";
-                            strlstActualValues << strActualValue;
+                            strResultValue  = "ViewMode: " + CWdgtIdxTree::viewMode2Str(viewMode);
+                            strResultValue += ", SortOrder: " + idxTreeSortOrder2Str(sortOrder);
+                            strResultValue += ", IteratorStep: " + QString::number(idxTreeEntry) + ":\n";
+                            strResultValue += "  ItModelBranch (" + pModelTreeEntry->keyInParentBranch() + ") > ItModelBranchNext (" + pModelTreeEntryNext->keyInParentBranch() + ")";
+                            strlstResultValues << strResultValue;
                         }
-                        if( strlstActualValues.size() > 0 )
+                        if( strlstResultValues.size() > 0 )
                         {
                             break;
                         }
@@ -3247,13 +3269,13 @@ void CTest::doTestStepChangeViews( ZS::Test::CTestStep* i_pTestStep )
     } // if( sortOrder == EIdxTreeSortOrder::Ascending )
 
     // Please note that to finish a test step the list of actual values may not be empty.
-    if( strlstActualValues.size() == 0 )
+    if( strlstResultValues.size() == 0 )
     {
-        strlstActualValues << "";
+        strlstResultValues << "";
     }
 
-    i_pTestStep->setDesiredValues(strlstDesiredValues);
-    i_pTestStep->setActualValues(strlstActualValues);
+    i_pTestStep->setExpectedValues(strlstExpectedValues);
+    i_pTestStep->setResultValues(strlstResultValues);
 
 } // doTestStepChangeViews
 
@@ -3261,12 +3283,12 @@ void CTest::doTestStepChangeViews( ZS::Test::CTestStep* i_pTestStep )
 void CTest::doTestStepKeyboardInputs( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
-    QString     strDesiredValue;
-    QStringList strlstDesiredValues;
-    QString     strActualValue;
-    QStringList strlstActualValues;
+    QString     strExpectedValue;
+    QStringList strlstExpectedValues;
+    QString     strResultValue;
+    QStringList strlstResultValues;
 
-    // Desired Values
+    // Expected Values
     //---------------
 
     QString strOperation = i_pTestStep->getOperation();
@@ -3330,7 +3352,7 @@ void CTest::doTestStepKeyboardInputs( ZS::Test::CTestStep* i_pTestStep )
 
     } // if( strOperation.contains("TreeViewIdxTree.keyEvent") )
 
-    strlstDesiredValues << strDesiredValue;
+    strlstExpectedValues << strExpectedValue;
 
     // Test Step
     //----------
@@ -3382,15 +3404,15 @@ void CTest::doTestStepKeyboardInputs( ZS::Test::CTestStep* i_pTestStep )
         }
     } // if( strOperation == "TreeViewIdxTree.keyEvent" )
 
-    // Actual Values
+    // Result Values
     //---------------
 
-    #error CAbstractIdxTreeEntry* pTreeEntrySrc = nullptr;
-    #error CAbstractIdxTreeEntry* pTreeEntryTrg = nullptr;
+    CIdxTreeEntry* pTreeEntrySrc = nullptr;
+    CIdxTreeEntry* pTreeEntryTrg = nullptr;
 
     ZS::Test::CTestStepGroup* pTSGrpParent = i_pTestStep->getParentGroup();
 
-    QString strParentGroupName = pTSGrpParent->getName();
+    QString strParentGroupName = pTSGrpParent->name();
 
     if( strParentGroupName.contains("Rename L:A0::B2::o2 -> o4",Qt::CaseInsensitive) )
     {
@@ -3401,8 +3423,8 @@ void CTest::doTestStepKeyboardInputs( ZS::Test::CTestStep* i_pTestStep )
 
             if( pTreeEntrySrc != nullptr || pTreeEntryTrg == nullptr )
             {
-                strActualValue = "L:A0::B2::o2 not renamed into L:A0::B2::o4";
-                strlstActualValues.append(strActualValue);
+                strResultValue = "L:A0::B2::o2 not renamed into L:A0::B2::o4";
+                strlstResultValues.append(strResultValue);
             }
         }
     }
@@ -3414,8 +3436,8 @@ void CTest::doTestStepKeyboardInputs( ZS::Test::CTestStep* i_pTestStep )
 
             if( pTreeEntryTrg == nullptr )
             {
-                strActualValue = "L:A0::B2::o4 not copied to L:A0::B2::C3";
-                strlstActualValues.append(strActualValue);
+                strResultValue = "L:A0::B2::o4 not copied to L:A0::B2::C3";
+                strlstResultValues.append(strResultValue);
             }
         }
     }
@@ -3428,8 +3450,8 @@ void CTest::doTestStepKeyboardInputs( ZS::Test::CTestStep* i_pTestStep )
 
             if( pTreeEntrySrc != nullptr || pTreeEntryTrg == nullptr )
             {
-                strActualValue = "L:A0::B2::o3 not moved to L:A0::B2::C3";
-                strlstActualValues.append(strActualValue);
+                strResultValue = "L:A0::B2::o3 not moved to L:A0::B2::C3";
+                strlstResultValues.append(strResultValue);
             }
         }
     }
@@ -3441,25 +3463,25 @@ void CTest::doTestStepKeyboardInputs( ZS::Test::CTestStep* i_pTestStep )
 
             if( pTreeEntrySrc != nullptr )
             {
-                strActualValue = "L:A0::B2::C3::o3 not deleted";
-                strlstActualValues.append(strActualValue);
+                strResultValue = "L:A0::B2::C3::o3 not deleted";
+                strlstResultValues.append(strResultValue);
             }
         }
     }
     else
     {
-        strActualValue = "Unexpected parent group name \"" + strParentGroupName + "\"";
-        strlstActualValues.append(strActualValue);
+        strResultValue = "Unexpected parent group name \"" + strParentGroupName + "\"";
+        strlstResultValues.append(strResultValue);
     }
 
     // Please note that to finish a test step the list of actual values may not be empty.
-    if( strlstActualValues.size() == 0 )
+    if( strlstResultValues.size() == 0 )
     {
-        strlstActualValues << "";
+        strlstResultValues << "";
     }
 
-    i_pTestStep->setDesiredValues(strlstDesiredValues);
-    i_pTestStep->setActualValues(strlstActualValues);
+    i_pTestStep->setExpectedValues(strlstExpectedValues);
+    i_pTestStep->setResultValues(strlstResultValues);
 
 } // doTestStepKeyboardInputs
 
@@ -3467,12 +3489,12 @@ void CTest::doTestStepKeyboardInputs( ZS::Test::CTestStep* i_pTestStep )
 void CTest::doTestStepTreeViewContextMenus( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
-    QString     strDesiredValue;
-    QStringList strlstDesiredValues;
-    QString     strActualValue;
-    QStringList strlstActualValues;
+    QString     strExpectedValue;
+    QStringList strlstExpectedValues;
+    QString     strResultValue;
+    QStringList strlstResultValues;
 
-    // Desired Values
+    // Expected Values
     //---------------
 
     QString strOperation = i_pTestStep->getOperation();
@@ -3581,24 +3603,24 @@ void CTest::doTestStepTreeViewContextMenus( ZS::Test::CTestStep* i_pTestStep )
 
     } // if( strOperation.contains("TreeViewIdxTree.keyEvent") )
 
-    strlstDesiredValues << strDesiredValue;
+    strlstExpectedValues << strExpectedValue;
 
     // Test Step
     //----------
 
-    CIdxTree*                pIdxTree         = m_pIdxTree;
-    CMainWindow*             pMainWindow      = CMainWindow::GetInstance();
-    CWdgtIdxTree*            pWdgtIdxTree     = pMainWindow->idxTreeWidget();
-    CTreeViewIdxTree*        pTreeViewIdxTree = pWdgtIdxTree->treeView();
-    CModelIdxTree*           pModelIdxTree    = dynamic_cast<CModelIdxTree*>(pTreeViewIdxTree->model());
-    CModelAbstractTreeEntry* pModelTreeEntry  = nullptr;
-    #error CBranchIdxTreeEntry*        pBranch          = nullptr;
-    #error CLeaveIdxTreeEntry*         pLeave           = nullptr;
+    CIdxTree*           pIdxTree         = m_pIdxTree;
+    CMainWindow*        pMainWindow      = CMainWindow::GetInstance();
+    CWdgtIdxTree*       pWdgtIdxTree     = pMainWindow->idxTreeWidget();
+    CTreeViewIdxTree*   pTreeViewIdxTree = pWdgtIdxTree->treeView();
+    CModelIdxTree*      pModelIdxTree    = dynamic_cast<CModelIdxTree*>(pTreeViewIdxTree->model());
+    CModelIdxTreeEntry* pModelTreeEntry  = nullptr;
+    CIdxTreeEntry*      pBranch          = nullptr;
+    CIdxTreeEntry*      pLeave           = nullptr;
 
     if( strOperation == "TreeViewIdxTree.select" )
     {
         QModelIndex modelIdx = pModelIdxTree->index(strKeyInTreeToBeSelected, 0);
-        pModelTreeEntry = static_cast<CModelAbstractTreeEntry*>(modelIdx.internalPointer());
+        pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(modelIdx.internalPointer());
         pTreeViewIdxTree->setCurrentIndex(modelIdx);
     }
     else if( strOperation == "TreeViewIdxTree.mouseEvent" )
@@ -3655,12 +3677,12 @@ void CTest::doTestStepTreeViewContextMenus( ZS::Test::CTestStep* i_pTestStep )
         }
     }
 
-    // Actual Values
+    // Result Values
     //---------------
 
     ZS::Test::CTestStepGroup* pTSGrpParent = i_pTestStep->getParentGroup();
 
-    QString strParentGroupName = pTSGrpParent->getName();
+    QString strParentGroupName = pTSGrpParent->name();
 
     if( strParentGroupName.contains("Copy L:A0::B2::C3::o1 -> o1 copy",Qt::CaseInsensitive)
      || strParentGroupName.contains("Move L:A0::B2::C3::o1 Copy -> B:A0::B2",Qt::CaseInsensitive)
@@ -3679,13 +3701,13 @@ void CTest::doTestStepTreeViewContextMenus( ZS::Test::CTestStep* i_pTestStep )
 
             if( modelIdx.isValid() )
             {
-                pModelTreeEntry = static_cast<CModelAbstractTreeEntry*>(modelIdx.internalPointer());
+                pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(modelIdx.internalPointer());
                 strKeyInTree = pModelTreeEntry->keyInTree();
             }
             if( strKeyInTree != strKeyInTreeToBeSelected )
             {
-                strActualValue = strKeyInTreeToBeSelected + " not selected";
-                strlstActualValues.append(strActualValue);
+                strResultValue = strKeyInTreeToBeSelected + " not selected";
+                strlstResultValues.append(strResultValue);
             }
         } // if( strOperation == "TreeViewIdxTree.select" )
 
@@ -3705,16 +3727,16 @@ void CTest::doTestStepTreeViewContextMenus( ZS::Test::CTestStep* i_pTestStep )
             {
                 if( pLeave != nullptr )
                 {
-                    strActualValue = strKeyInTreeToBeSelected + " still exist";
-                    strlstActualValues.append(strActualValue);
+                    strResultValue = strKeyInTreeToBeSelected + " still exist";
+                    strlstResultValues.append(strResultValue);
                 }
             }
             else
             {
                 if( pLeave == nullptr )
                 {
-                    strActualValue = strKeyInTreeToBeSelected + " not found";
-                    strlstActualValues.append(strActualValue);
+                    strResultValue = strKeyInTreeToBeSelected + " not found";
+                    strlstResultValues.append(strResultValue);
                 }
             }
         } // if( strOperation == "TreeViewIdxTree.findLeave" )
@@ -3727,16 +3749,16 @@ void CTest::doTestStepTreeViewContextMenus( ZS::Test::CTestStep* i_pTestStep )
             {
                 if( pBranch != nullptr )
                 {
-                    strActualValue = strKeyInTreeToBeSelected + " still exist";
-                    strlstActualValues.append(strActualValue);
+                    strResultValue = strKeyInTreeToBeSelected + " still exist";
+                    strlstResultValues.append(strResultValue);
                 }
             }
             else
             {
                 if( pBranch == nullptr )
                 {
-                    strActualValue = strKeyInTreeToBeSelected + " not found";
-                    strlstActualValues.append(strActualValue);
+                    strResultValue = strKeyInTreeToBeSelected + " not found";
+                    strlstResultValues.append(strResultValue);
                 }
             }
         } // if( strOperation == "TreeViewIdxTree.findBranch" )
@@ -3744,18 +3766,18 @@ void CTest::doTestStepTreeViewContextMenus( ZS::Test::CTestStep* i_pTestStep )
 
     else
     {
-        strActualValue = "Unexpected parent group name \"" + strParentGroupName + "\"";
-        strlstActualValues.append(strActualValue);
+        strResultValue = "Unexpected parent group name \"" + strParentGroupName + "\"";
+        strlstResultValues.append(strResultValue);
     }
 
     // Please note that to finish a test step the list of actual values may not be empty.
-    if( strlstActualValues.size() == 0 )
+    if( strlstResultValues.size() == 0 )
     {
-        strlstActualValues << "";
+        strlstResultValues << "";
     }
 
-    i_pTestStep->setDesiredValues(strlstDesiredValues);
-    i_pTestStep->setActualValues(strlstActualValues);
+    i_pTestStep->setExpectedValues(strlstExpectedValues);
+    i_pTestStep->setResultValues(strlstResultValues);
 
 } // doTestStepTreeViewContextMenus
 
@@ -3763,14 +3785,14 @@ void CTest::doTestStepTreeViewContextMenus( ZS::Test::CTestStep* i_pTestStep )
 void CTest::doTestStepGrpTrcAdmObjTreeStepTreeViewDragAndDrop( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
-    QString     strDesiredValue;
-    QStringList strlstDesiredValues;
-    QString     strActualValue;
-    QStringList strlstActualValues;
+    QString     strExpectedValue;
+    QStringList strlstExpectedValues;
+    QString     strResultValue;
+    QStringList strlstResultValues;
 
     ZS::Test::CTestStepGroup* pTSGrpParent = i_pTestStep->getParentGroup();
 
-    QString strParentGroupName = pTSGrpParent->getName();
+    QString strParentGroupName = pTSGrpParent->name();
 
     // Please note !
     // -------------
@@ -3839,14 +3861,14 @@ void CTest::doTestStepGrpTrcAdmObjTreeStepTreeViewDragAndDrop( ZS::Test::CTestSt
         if( strStepOperation.startsWith("WidgetIdxTree.expandAll") )
         {
             pTreeViewIdxTree->expandAll();
-            strlstDesiredValues << strDesiredValue;
-            strlstActualValues << strActualValue;
+            strlstExpectedValues << strExpectedValue;
+            strlstResultValues << strResultValue;
         }
         else if( strStepOperation.startsWith("WidgetIdxTree.collapseAll") )
         {
             pTreeViewIdxTree->collapseAll();
-            strlstDesiredValues << strDesiredValue;
-            strlstActualValues << strActualValue;
+            strlstExpectedValues << strExpectedValue;
+            strlstResultValues << strResultValue;
         }
         else if( strStepOperation.startsWith("WidgetIdxTree.resizeColumnsToContents") )
         {
@@ -3854,8 +3876,8 @@ void CTest::doTestStepGrpTrcAdmObjTreeStepTreeViewDragAndDrop( ZS::Test::CTestSt
             {
                 pTreeViewIdxTree->resizeColumnToContents(idxClm);
             }
-            strlstDesiredValues << strDesiredValue;
-            strlstActualValues << strActualValue;
+            strlstExpectedValues << strExpectedValue;
+            strlstResultValues << strResultValue;
         }
         else if( strStepOperation.startsWith("TreeViewIdxTree.select") )
         {
@@ -3883,17 +3905,17 @@ void CTest::doTestStepGrpTrcAdmObjTreeStepTreeViewDragAndDrop( ZS::Test::CTestSt
 
             QCursor::setPos(pTreeViewIdxTree->viewport()->mapToGlobal(s_ptLocalPosMouseMoveCurr));
 
-            strDesiredValue = strKeyInTreeSrc;
-            strlstDesiredValues << strDesiredValue;
+            strExpectedValue = strKeyInTreeSrc;
+            strlstExpectedValues << strExpectedValue;
 
             modelIdxSrc = pTreeViewIdxTree->currentIndex();
 
-            CModelAbstractTreeEntry* pModelTreeEntry = static_cast<CModelAbstractTreeEntry*>(modelIdxSrc.internalPointer());
+            CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(modelIdxSrc.internalPointer());
 
             if( pModelTreeEntry != nullptr )
             {
-                strActualValue = pModelTreeEntry->keyInTree();
-                strlstActualValues << strActualValue;
+                strResultValue = pModelTreeEntry->keyInTree();
+                strlstResultValues << strResultValue;
             }
 
         } // if( strStepOperation.startsWith("TreeViewIdxTree.select") )
@@ -3922,11 +3944,11 @@ void CTest::doTestStepGrpTrcAdmObjTreeStepTreeViewDragAndDrop( ZS::Test::CTestSt
             // delete pDragEvent; Deleted by Qt
             pDragEvent = nullptr;
 
-            strDesiredValue = "Formats [1](application/vnd.text.list {" + strKeyInTreeSrc + "})";
-            strlstDesiredValues << strDesiredValue;
+            strExpectedValue = "Formats [1](application/vnd.text.list {" + strKeyInTreeSrc + "})";
+            strlstExpectedValues << strExpectedValue;
 
-            strActualValue = qMimeData2Str(s_pMimeData, 1);
-            strlstActualValues << strActualValue;
+            strResultValue = qMimeData2Str(s_pMimeData, 1);
+            strlstResultValues << strResultValue;
 
         } // if( strStepOperation.startsWith("TreeViewIdxTree.dragEnterEvent") )
 
@@ -3988,8 +4010,8 @@ void CTest::doTestStepGrpTrcAdmObjTreeStepTreeViewDragAndDrop( ZS::Test::CTestSt
             // delete pDragEvent; Deleted by Qt
             pDragEvent = nullptr;
 
-            strlstDesiredValues << strDesiredValue;
-            strlstActualValues << strActualValue;
+            strlstExpectedValues << strExpectedValue;
+            strlstResultValues << strResultValue;
 
         } // if( strStepOperation.startsWith("TreeViewIdxTree.dragMoveEvent") )
 
@@ -4022,8 +4044,8 @@ void CTest::doTestStepGrpTrcAdmObjTreeStepTreeViewDragAndDrop( ZS::Test::CTestSt
             // cannot use "findLeave" here as the event will be passed to the IdxTreeView and will be
             // executed later by the IdxTreeView. We need a separate test step "findLeave" for this.
 
-            strlstDesiredValues << strDesiredValue;
-            strlstActualValues << strActualValue;
+            strlstExpectedValues << strExpectedValue;
+            strlstResultValues << strResultValue;
 
         } // if( strStepOperation.startsWith("TreeViewIdxTree.dropEvent") )
 
@@ -4045,8 +4067,8 @@ void CTest::doTestStepGrpTrcAdmObjTreeStepTreeViewDragAndDrop( ZS::Test::CTestSt
             delete s_pMimeData;
             s_pMimeData = nullptr;
 
-            strDesiredValue = "";
-            strlstDesiredValues << strDesiredValue;
+            strExpectedValue = "";
+            strlstExpectedValues << strExpectedValue;
 
         } // if( strStepOperation.startsWith("TreeViewIdxTree.dragLeaveEvent") )
 
@@ -4066,20 +4088,20 @@ void CTest::doTestStepGrpTrcAdmObjTreeStepTreeViewDragAndDrop( ZS::Test::CTestSt
 
             strKeyInTreeTrg = pIdxTree->buildKeyInTreeStr(entryTypeSrc, strBranchPathTrg, strObjNameTrg, strObjNameSrc);
 
-            strDesiredValue = strKeyInTreeTrg;
-            strlstDesiredValues << strDesiredValue;
+            strExpectedValue = strKeyInTreeTrg;
+            strlstExpectedValues << strExpectedValue;
 
-            #error CAbstractIdxTreeEntry* pTreeEntry = pIdxTree->findLeave(strKeyInTreeTrg);
+            CIdxTreeEntry* pTreeEntry = pIdxTree->findLeave(strKeyInTreeTrg);
 
             if( pTreeEntry != nullptr )
             {
-                strActualValue = pTreeEntry->keyInTree();
-                strlstActualValues << strActualValue;
+                strResultValue = pTreeEntry->keyInTree();
+                strlstResultValues << strResultValue;
             }
             else
             {
-                strActualValue = strKeyInTreeTrg + " not found";
-                strlstActualValues << strActualValue;
+                strResultValue = strKeyInTreeTrg + " not found";
+                strlstResultValues << strResultValue;
             }
         } // if( strStepOperation.startsWith("TreeViewIdxTree.findLeave") )
 
@@ -4096,41 +4118,41 @@ void CTest::doTestStepGrpTrcAdmObjTreeStepTreeViewDragAndDrop( ZS::Test::CTestSt
 
             strKeyInTreeTrg = pIdxTree->buildKeyInTreeStr(entryTypeSrc, strKeyInTreeTrg, strObjName);
 
-            #error CAbstractIdxTreeEntry* pTreeEntry = pIdxTree->findLeave(strKeyInTreeTrg);
+            CIdxTreeEntry* pTreeEntry = pIdxTree->findLeave(strKeyInTreeTrg);
 
             if( pTreeEntry != nullptr )
             {
-                strActualValue = pTreeEntry->keyInTree();
-                strlstActualValues << strActualValue;
+                strResultValue = pTreeEntry->keyInTree();
+                strlstResultValues << strResultValue;
             }
             else
             {
-                strActualValue = strKeyInTreeTrg + " not found";
-                strlstActualValues << strActualValue;
+                strResultValue = strKeyInTreeTrg + " not found";
+                strlstResultValues << strResultValue;
             }
         } // if( strStepOperation.startsWith("TreeViewIdxTree.findBranch") )
 
         else // if( strStepOperation.startsWith("?") )
         {
-            strActualValue = "Unsupported Operation " + strStepOperation;
-            strlstActualValues.append(strActualValue);
+            strResultValue = "Unsupported Operation " + strStepOperation;
+            strlstResultValues.append(strResultValue);
         }
     } // if( strParentGroupName.contains("TreeViewDragAndDrop") )
 
     else
     {
-        strActualValue = "Unexpected parent group name \"" + strParentGroupName + "\"";
-        strlstActualValues.append(strActualValue);
+        strResultValue = "Unexpected parent group name \"" + strParentGroupName + "\"";
+        strlstResultValues.append(strResultValue);
     }
 
     // Please note that to finish a test step the list of actual values may not be empty.
-    if( strlstActualValues.size() == 0 )
+    if( strlstResultValues.size() == 0 )
     {
-        strlstActualValues << "";
+        strlstResultValues << "";
     }
 
-    i_pTestStep->setDesiredValues(strlstDesiredValues);
-    i_pTestStep->setActualValues(strlstActualValues);
+    i_pTestStep->setExpectedValues(strlstExpectedValues);
+    i_pTestStep->setResultValues(strlstResultValues);
 
 } // doTestStepGrpTrcAdmObjTreeStepTreeViewDragAndDrop
 
@@ -4138,15 +4160,15 @@ void CTest::doTestStepGrpTrcAdmObjTreeStepTreeViewDragAndDrop( ZS::Test::CTestSt
 void CTest::doTestStepDeleteTree( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
-    QString     strDesiredValue;
-    QStringList strlstDesiredValues;
-    QString     strActualValue;
-    QStringList strlstActualValues;
+    QString     strExpectedValue;
+    QStringList strlstExpectedValues;
+    QString     strResultValue;
+    QStringList strlstResultValues;
 
-    // Desired Values
+    // Expected Values
     //---------------
 
-    strlstDesiredValues.append(strDesiredValue);
+    strlstExpectedValues.append(strExpectedValue);
 
     i_pTestStep->setOperation("delete IdxTree");
 
@@ -4159,19 +4181,19 @@ void CTest::doTestStepDeleteTree( ZS::Test::CTestStep* i_pTestStep )
     }
     catch(...)
     {
-        strActualValue = "Exception thrown";
+        strResultValue = "Exception thrown";
     }
 
     m_pIdxTree = nullptr;
 
     // Please note that to finish a test step the list of actual values may not be empty.
-    if( strlstActualValues.size() == 0 )
+    if( strlstResultValues.size() == 0 )
     {
-        strlstActualValues << "";
+        strlstResultValues << "";
     }
 
-    i_pTestStep->setDesiredValues(strlstDesiredValues);
-    i_pTestStep->setActualValues(strlstActualValues);
+    i_pTestStep->setExpectedValues(strlstExpectedValues);
+    i_pTestStep->setResultValues(strlstResultValues);
 
 } // doTestStepDeleteTree
 
@@ -4180,14 +4202,14 @@ public: // auxiliary methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-STreeEntryDscr CTest::toTreeEntryDscr( const #error CAbstractIdxTreeEntry* i_pTreeEntry ) const
+STreeEntryDscr CTest::toTreeEntryDscr( const CIdxTreeEntry* i_pTreeEntry ) const
 //------------------------------------------------------------------------------
 {
     return STreeEntryDscr(i_pTreeEntry);
 }
 
 //------------------------------------------------------------------------------
-QVector<STreeEntryDscr> CTest::toTreeEntryDscrs( const QVector<#error CAbstractIdxTreeEntry*>& i_arpTreeEntries ) const
+QVector<STreeEntryDscr> CTest::toTreeEntryDscrs( const QVector<CIdxTreeEntry*>& i_arpTreeEntries ) const
 //------------------------------------------------------------------------------
 {
     QVector<STreeEntryDscr> arDscrs;
@@ -4349,7 +4371,7 @@ void CTest::removeEntry(
     {
         throw CException(__FILE__, __LINE__, EResultInternalProgramError, "Tree entry dscr " + i_treeEntry.toString() + " not in list");
     }
-    else // if( idxInTree >= 0 && idxInTree < arTreeEntryDscrsDesired.size() )
+    else // if( idxInTree >= 0 && idxInTree < arTreeEntryDscrsExpected.size() )
     {
         // Expected behaviour is that the entry is removed from the index tree
         // and its parent branch. The index in the tree got to be added to the
@@ -4410,7 +4432,7 @@ void CTest::removeEntry(
             i_arTreeEntries[idxInTree] = STreeEntryDscr();
             i_mapFreeIdxs.insert(idxInTree, idxInTree);
         }
-    } // if( idxInTree >= 0 && idxInTree < arTreeEntryDscrsDesired.size() )
+    } // if( idxInTree >= 0 && idxInTree < arTreeEntryDscrsExpected.size() )
 
 } // removeEntry
 
@@ -4429,7 +4451,7 @@ void CTest::renameEntry(
     {
         throw CException(__FILE__, __LINE__, EResultInternalProgramError, "Tree entry dscr " + i_treeEntry.toString() + " not in list");
     }
-    else // if( idxInTree >= 0 && idxInTree < arTreeEntryDscrsDesired.size() )
+    else // if( idxInTree >= 0 && idxInTree < arTreeEntryDscrsExpected.size() )
     {
         QString strParentBranchPathPrev = i_treeEntry.m_strParentBranchPath;
 
@@ -4463,7 +4485,7 @@ void CTest::renameEntry(
                 }
             }
         }
-    } // if( idxInTree >= 0 && idxInTree < arTreeEntryDscrsDesired.size() )
+    } // if( idxInTree >= 0 && idxInTree < arTreeEntryDscrsExpected.size() )
 
 } // renameEntry
 
@@ -4814,24 +4836,24 @@ void CTest::splitKey(
 
 //------------------------------------------------------------------------------
 void CTest::compare(
-    QVector<STreeEntryDscr>&       i_arTreeEntriesDesired,
-    const QVector<STreeEntryDscr>& i_arTreeEntriesActual,
-    QStringList&                   io_strlstDesiredValues,
-    QStringList&                   io_strlstActualValues ) const
+    QVector<STreeEntryDscr>&       i_arTreeEntriesExpected,
+    const QVector<STreeEntryDscr>& i_arTreeEntriesResult,
+    QStringList&                   io_strlstExpectedValues,
+    QStringList&                   io_strlstResultValues ) const
 //------------------------------------------------------------------------------
 {
-    QString strDesiredValue;
-    QString strActualValue;
+    QString strExpectedValue;
+    QString strResultValue;
 
     QString strKeyInTree;
     int     idxInTree;
 
     // Compare size of lists and add result to test step
-    strDesiredValue = "TreeEntries [" + QString::number(i_arTreeEntriesDesired.size()) + "]";
-    io_strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "TreeEntries [" + QString::number(i_arTreeEntriesExpected.size()) + "]";
+    io_strlstExpectedValues.append(strExpectedValue);
 
-    strActualValue = "TreeEntries [" + QString::number(i_arTreeEntriesActual.size()) + "]";
-    io_strlstActualValues.append(strActualValue);
+    strResultValue = "TreeEntries [" + QString::number(i_arTreeEntriesResult.size()) + "]";
+    io_strlstResultValues.append(strResultValue);
 
     // The order in which the entries are added to the index tree may be different from the
     // order the entries are added to the list of test descriptors.
@@ -4848,25 +4870,25 @@ void CTest::compare(
     {
         bEntryCorrected = false;
 
-        for( idxInTree = 0; idxInTree < i_arTreeEntriesDesired.size(); ++idxInTree )
+        for( idxInTree = 0; idxInTree < i_arTreeEntriesExpected.size(); ++idxInTree )
         {
-            strKeyInTree = i_arTreeEntriesDesired[idxInTree].m_strKeyInTree;
+            strKeyInTree = i_arTreeEntriesExpected[idxInTree].m_strKeyInTree;
 
             if( !strKeyInTree.isEmpty() )
             {
-                int idxInTreeActual = indexOf(strKeyInTree, i_arTreeEntriesActual);
+                int idxInTreeResult = indexOf(strKeyInTree, i_arTreeEntriesResult);
 
-                if( idxInTreeActual != idxInTree )
+                if( idxInTreeResult != idxInTree )
                 {
-                    swap(idxInTree, idxInTreeActual, i_arTreeEntriesDesired);
+                    swap(idxInTree, idxInTreeResult, i_arTreeEntriesExpected);
 
                     bEntryCorrected = true;
                 }
-                else // if( idxInTreeActual == idxInTree )
+                else // if( idxInTreeResult == idxInTree )
                 {
-                    if( i_arTreeEntriesDesired[idxInTree].m_idxInParentBranch != i_arTreeEntriesActual[idxInTree].m_idxInParentBranch )
+                    if( i_arTreeEntriesExpected[idxInTree].m_idxInParentBranch != i_arTreeEntriesResult[idxInTree].m_idxInParentBranch )
                     {
-                        i_arTreeEntriesDesired[idxInTree].m_idxInParentBranch = i_arTreeEntriesActual[idxInTree].m_idxInParentBranch;
+                        i_arTreeEntriesExpected[idxInTree].m_idxInParentBranch = i_arTreeEntriesResult[idxInTree].m_idxInParentBranch;
                         bEntryCorrected = true;
                     }
                 }
@@ -4879,122 +4901,122 @@ void CTest::compare(
     }
 
     // Compare content of lists. Only the differences will be added to the test step result.
-    for( idxInTree = 0; idxInTree < i_arTreeEntriesDesired.size(); ++idxInTree )
+    for( idxInTree = 0; idxInTree < i_arTreeEntriesExpected.size(); ++idxInTree )
     {
-        strDesiredValue = QString::number(idxInTree) + ": {";
-        strDesiredValue += i_arTreeEntriesDesired[idxInTree].toString(true, true, true);
-        strDesiredValue += "}";
+        strExpectedValue = QString::number(idxInTree) + ": {";
+        strExpectedValue += i_arTreeEntriesExpected[idxInTree].toString(true, true, true);
+        strExpectedValue += "}";
 
-        if( idxInTree >= i_arTreeEntriesActual.size() )
+        if( idxInTree >= i_arTreeEntriesResult.size() )
         {
-            strActualValue = QString::number(idxInTree) + ": {-}";
+            strResultValue = QString::number(idxInTree) + ": {-}";
         }
         else
         {
-            strActualValue = QString::number(idxInTree) + ": {";
-            strActualValue += i_arTreeEntriesActual[idxInTree].toString(true, true, true);
-            strActualValue += "}";
+            strResultValue = QString::number(idxInTree) + ": {";
+            strResultValue += i_arTreeEntriesResult[idxInTree].toString(true, true, true);
+            strResultValue += "}";
         }
 
-        if( strDesiredValue != strActualValue )
+        if( strExpectedValue != strResultValue )
         {
-            io_strlstDesiredValues.append(strDesiredValue);
-            io_strlstActualValues.append(strActualValue);
+            io_strlstExpectedValues.append(strExpectedValue);
+            io_strlstResultValues.append(strResultValue);
         }
-    } // for( idxInTree = 0; idxInTree < i_arTreeEntriesDesired.size(); ++idxInTree )
+    } // for( idxInTree = 0; idxInTree < i_arTreeEntriesExpected.size(); ++idxInTree )
 
-    for( ; idxInTree < i_arTreeEntriesActual.size(); ++idxInTree )
+    for( ; idxInTree < i_arTreeEntriesResult.size(); ++idxInTree )
     {
-        strDesiredValue = QString::number(idxInTree) + ": {-}";
+        strExpectedValue = QString::number(idxInTree) + ": {-}";
 
-        strActualValue = QString::number(i_arTreeEntriesActual[idxInTree].m_idxInTree) + ": {";
-        strActualValue += i_arTreeEntriesActual[idxInTree].toString(true, true, true);
-        strActualValue += "}";
+        strResultValue = QString::number(i_arTreeEntriesResult[idxInTree].m_idxInTree) + ": {";
+        strResultValue += i_arTreeEntriesResult[idxInTree].toString(true, true, true);
+        strResultValue += "}";
 
-        io_strlstDesiredValues.append(strDesiredValue);
-        io_strlstActualValues.append(strActualValue);
+        io_strlstExpectedValues.append(strExpectedValue);
+        io_strlstResultValues.append(strResultValue);
 
-    } // for( idxInTree = 0; idxInTree < i_arTreeEntriesActual.size(); ++idxInTree )
+    } // for( idxInTree = 0; idxInTree < i_arTreeEntriesResult.size(); ++idxInTree )
 
 } // compare
 
 //------------------------------------------------------------------------------
 void CTest::compare(
-    const QMap<int, int>& i_mapFreeIdxsDesired,
-    const QMap<int, int>& i_mapFreeIdxsActual,
-    QStringList&          io_strlstDesiredValues,
-    QStringList&          io_strlstActualValues ) const
+    const QMap<int, int>& i_mapFreeIdxsExpected,
+    const QMap<int, int>& i_mapFreeIdxsResult,
+    QStringList&          io_strlstExpectedValues,
+    QStringList&          io_strlstResultValues ) const
 //------------------------------------------------------------------------------
 {
-    QString strDesiredValue;
-    QString strActualValue;
+    QString strExpectedValue;
+    QString strResultValue;
 
     // Compare size of maps and add result to test step
-    strDesiredValue = "FreeIdxs [" + QString::number(i_mapFreeIdxsDesired.size()) + "]";
-    io_strlstDesiredValues.append(strDesiredValue);
-    strActualValue = "FreeIdxs [" + QString::number(i_mapFreeIdxsActual.size()) + "]";
-    io_strlstActualValues.append(strActualValue);
+    strExpectedValue = "FreeIdxs [" + QString::number(i_mapFreeIdxsExpected.size()) + "]";
+    io_strlstExpectedValues.append(strExpectedValue);
+    strResultValue = "FreeIdxs [" + QString::number(i_mapFreeIdxsResult.size()) + "]";
+    io_strlstResultValues.append(strResultValue);
 
     bool bEqual = true;
 
     // Compare content of lists. If there are differences the content of the maps are added to the test step result.
-    for( auto& idxFreeEntry : i_mapFreeIdxsDesired )
+    for( auto& idxFreeEntry : i_mapFreeIdxsExpected )
     {
-        strDesiredValue = QString::number(idxFreeEntry);
+        strExpectedValue = QString::number(idxFreeEntry);
 
-        if( i_mapFreeIdxsActual.contains(idxFreeEntry) )
+        if( i_mapFreeIdxsResult.contains(idxFreeEntry) )
         {
-            strActualValue = QString::number(idxFreeEntry);
+            strResultValue = QString::number(idxFreeEntry);
         }
         else
         {
-            strActualValue = "";
+            strResultValue = "";
         }
-        if( strDesiredValue != strActualValue )
+        if( strExpectedValue != strResultValue )
         {
             bEqual = false;
             break;
         }
-    } // for( auto& idxFreeEntry : i_mapFreeIdxsDesired )
+    } // for( auto& idxFreeEntry : i_mapFreeIdxsExpected )
 
-    for( auto& idxFreeEntry : i_mapFreeIdxsActual )
+    for( auto& idxFreeEntry : i_mapFreeIdxsResult )
     {
-        strActualValue = QString::number(idxFreeEntry);
+        strResultValue = QString::number(idxFreeEntry);
 
-        if( i_mapFreeIdxsDesired.contains(idxFreeEntry) )
+        if( i_mapFreeIdxsExpected.contains(idxFreeEntry) )
         {
-            strDesiredValue = QString::number(idxFreeEntry);
+            strExpectedValue = QString::number(idxFreeEntry);
         }
         else
         {
-            strDesiredValue = "";
+            strExpectedValue = "";
         }
-        if( strDesiredValue != strActualValue )
+        if( strExpectedValue != strResultValue )
         {
             bEqual = false;
             break;
         }
-    } // for( auto& idxFreeEntry : i_mapFreeIdxsActual )
+    } // for( auto& idxFreeEntry : i_mapFreeIdxsResult )
 
     if( !bEqual )
     {
-        strDesiredValue = "{";
-        for( auto& idxFreeEntry : i_mapFreeIdxsDesired )
+        strExpectedValue = "{";
+        for( auto& idxFreeEntry : i_mapFreeIdxsExpected )
         {
-            if( strDesiredValue != "{" ) strDesiredValue += ", ";
-            strDesiredValue += QString::number(idxFreeEntry);
+            if( strExpectedValue != "{" ) strExpectedValue += ", ";
+            strExpectedValue += QString::number(idxFreeEntry);
         }
-        strDesiredValue += "}";
-        io_strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue += "}";
+        io_strlstExpectedValues.append(strExpectedValue);
 
-        strActualValue = "{";
-        for( auto& idxFreeEntry : i_mapFreeIdxsActual )
+        strResultValue = "{";
+        for( auto& idxFreeEntry : i_mapFreeIdxsResult )
         {
-            if( strActualValue != "{" ) strActualValue += ", ";
-            strActualValue += QString::number(idxFreeEntry);
+            if( strResultValue != "{" ) strResultValue += ", ";
+            strResultValue += QString::number(idxFreeEntry);
         }
-        strActualValue += "}";
-        io_strlstActualValues.append(strActualValue);
+        strResultValue += "}";
+        io_strlstResultValues.append(strResultValue);
 
     } // if( !bEqual )
 

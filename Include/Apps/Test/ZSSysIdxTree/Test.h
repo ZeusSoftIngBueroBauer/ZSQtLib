@@ -39,7 +39,7 @@ namespace ZS
 namespace System
 {
 class CIdxTree;
-class #error CAbstractIdxTreeEntry;
+class CIdxTreeEntry;
 }
 namespace Apps
 {
@@ -53,7 +53,7 @@ struct STreeEntryDscr
 {
 public: // ctors and dtor
     STreeEntryDscr();
-    STreeEntryDscr( const ZS::System::#error CAbstractIdxTreeEntry* i_pTreeEntry );
+    STreeEntryDscr( const ZS::System::CIdxTreeEntry* i_pTreeEntry );
     STreeEntryDscr( const STreeEntryDscr& i_other );
 public: // operators
     bool operator == (const STreeEntryDscr& i_other) const;
@@ -100,8 +100,8 @@ public slots: // test step methods
     //void doTestStepTableViewBranchContentDragDrop( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepDeleteTree( ZS::Test::CTestStep* i_pTestStep );
 public: // auxiliary methods
-    STreeEntryDscr toTreeEntryDscr( const ZS::System::#error CAbstractIdxTreeEntry* i_pTreeEntry ) const;
-    QVector<STreeEntryDscr> toTreeEntryDscrs( const QVector<ZS::System::#error CAbstractIdxTreeEntry*>& i_arpTreeEntries ) const;
+    STreeEntryDscr toTreeEntryDscr( const ZS::System::CIdxTreeEntry* i_pTreeEntry ) const;
+    QVector<STreeEntryDscr> toTreeEntryDscrs( const QVector<ZS::System::CIdxTreeEntry*>& i_arpTreeEntries ) const;
 public: // auxiliary methods
     int indexOf(
         const QString&                 i_strKeyInTree,

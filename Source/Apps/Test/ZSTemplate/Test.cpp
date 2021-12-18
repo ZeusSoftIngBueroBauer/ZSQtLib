@@ -24,6 +24,7 @@ may result in using the software modules.
 
 *******************************************************************************/
 
+#include <QtCore/qfileinfo.h>
 #include <QtCore/qrandom.h>
 #include <QtCore/qthread.h>
 
@@ -120,13 +121,18 @@ CTest::CTest( const QString& i_strTestStepsFileName ) :
     // Recall test step settings
     //--------------------------
 
-    SErrResultInfo errResultInfo = recall(i_strTestStepsFileName);
+    QFileInfo fileInfo(i_strTestStepsFileName);
 
-    if(errResultInfo.isErrorResult())
+    if( fileInfo.exists() )
     {
-        if(CErrLog::GetInstance() != nullptr)
+        SErrResultInfo errResultInfo = recall(i_strTestStepsFileName);
+
+        if(errResultInfo.isErrorResult())
         {
-            CErrLog::GetInstance()->addEntry(errResultInfo);
+            if(CErrLog::GetInstance() != nullptr)
+            {
+                CErrLog::GetInstance()->addEntry(errResultInfo);
+            }
         }
     }
 

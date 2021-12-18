@@ -25,6 +25,7 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include <QtCore/qfile.h>
+#include <QtCore/qfileinfo.h>
 #include <QtCore/qtimer.h>
 #include <QtNetwork/qhostinfo.h>
 
@@ -165,10 +166,23 @@ CTest::CTest( const QString& i_strTestStepsFileName ) :
         /* pTSGrpParent    */ nullptr,
         /* szDoTestStepFct */ SLOT(doTestStepTraceServerShutdown(ZS::Test::CTestStep*)) );
 
-    // Recall test admin object settings
-    //----------------------------------
+    // Recall test step settings
+    //--------------------------
 
-    m_pAdminIdxTree->read_(i_strTestStepsFileName);
+    QFileInfo fileInfo(i_strTestStepsFileName);
+
+    if( fileInfo.exists() )
+    {
+        SErrResultInfo errResultInfo = recall(i_strTestStepsFileName);
+
+        if(errResultInfo.isErrorResult())
+        {
+            if(CErrLog::GetInstance() != nullptr)
+            {
+                CErrLog::GetInstance()->addEntry(errResultInfo);
+            }
+        }
+    }
 
 } // default ctor
 
@@ -176,6 +190,16 @@ CTest::CTest( const QString& i_strTestStepsFileName ) :
 CTest::~CTest()
 //------------------------------------------------------------------------------
 {
+    SErrResultInfo errResultInfo = save();
+
+    if(errResultInfo.isErrorResult())
+    {
+        if(CErrLog::GetInstance() != nullptr)
+        {
+            CErrLog::GetInstance()->addEntry(errResultInfo);
+        }
+    }
+
     try
     {
         delete m_pTestModule1;
@@ -191,8 +215,6 @@ CTest::~CTest()
     catch(...)
     {
     }
-
-    m_pAdminIdxTree->save_();
 
     m_pTmrTestStepTimeout = nullptr;
     m_hshReqsInProgress.clear();
@@ -230,7 +252,7 @@ void CTest::doTestStepTraceServerStartup( ZS::Test::CTestStep* i_pTestStep )
     strDesiredValue += ")";
     strlstDesiredValues.append(strDesiredValue);
 
-    i_pTestStep->setDesiredValues(strlstDesiredValues);
+    i_pTestStep->setExpectedValues(strlstDesiredValues);
 
     // Test Step
     //----------
@@ -254,7 +276,7 @@ void CTest::doTestStepTraceServerStartup( ZS::Test::CTestStep* i_pTestStep )
 
     strlstActualValues.append(strActualValue);
 
-    i_pTestStep->setActualValues(strlstActualValues);
+    i_pTestStep->setResultValues(strlstActualValues);
 
 } // doTestStepTraceServerStartup
 
@@ -281,7 +303,7 @@ void CTest::doTestStepTraceServerShutdown( ZS::Test::CTestStep* i_pTestStep )
     strDesiredValue += ")";
     strlstDesiredValues.append(strDesiredValue);
 
-    i_pTestStep->setDesiredValues(strlstDesiredValues);
+    i_pTestStep->setExpectedValues(strlstDesiredValues);
 
     // Test Step
     //----------
@@ -305,7 +327,7 @@ void CTest::doTestStepTraceServerShutdown( ZS::Test::CTestStep* i_pTestStep )
 
     strlstActualValues.append(strActualValue);
 
-    i_pTestStep->setActualValues(strlstActualValues);
+    i_pTestStep->setResultValues(strlstActualValues);
 
 } // doTestStepTraceServerShutdown
 
@@ -365,7 +387,7 @@ void CTest::doTestStepTraceServerRecallAdminObjs( ZS::Test::CTestStep* i_pTestSt
     strDesiredValue = errResultInfo.toString();
     strlstDesiredValues.append(strDesiredValue);
 
-    i_pTestStep->setDesiredValues(strlstDesiredValues);
+    i_pTestStep->setExpectedValues(strlstDesiredValues);
 
     // Test Step
     //----------
@@ -378,7 +400,7 @@ void CTest::doTestStepTraceServerRecallAdminObjs( ZS::Test::CTestStep* i_pTestSt
     strActualValue = errResultInfo.toString();
     strlstActualValues.append(strActualValue);
 
-    i_pTestStep->setActualValues(strlstActualValues);
+    i_pTestStep->setResultValues(strlstActualValues);
 
 } // doTestStepTraceServerRecallAdminObjs
 
@@ -399,7 +421,7 @@ void CTest::doTestStepTraceServerSaveAdminObjs( ZS::Test::CTestStep* i_pTestStep
     strDesiredValue = errResultInfo.toString();
     strlstDesiredValues.append(strDesiredValue);
 
-    i_pTestStep->setDesiredValues(strlstDesiredValues);
+    i_pTestStep->setExpectedValues(strlstDesiredValues);
 
     // Test Step
     //----------
@@ -414,7 +436,7 @@ void CTest::doTestStepTraceServerSaveAdminObjs( ZS::Test::CTestStep* i_pTestStep
     strActualValue = errResultInfo.toString();
     strlstActualValues.append(strActualValue);
 
-    i_pTestStep->setActualValues(strlstActualValues);
+    i_pTestStep->setResultValues(strlstActualValues);
 
 } // doTestStepTraceServerSaveAdminObjs
 
@@ -445,7 +467,7 @@ void CTest::doTestStepTraceClientConnect( ZS::Test::CTestStep* i_pTestStep )
 
     CIdxTreeTrcAdminObjs* pIdxTreeServer = pTrcServer->getTraceAdminObjIdxTree();
 
-    QVector<#error CAbstractIdxTreeEntry*> arpTreeEntriesServer = pIdxTreeServer->treeEntriesVec();
+    QVector<CIdxTreeEntry*> arpTreeEntriesServer = pIdxTreeServer->treeEntriesVec();
 
     for( auto& pTreeEntry : arpTreeEntriesServer )
     {
@@ -468,7 +490,7 @@ void CTest::doTestStepTraceClientConnect( ZS::Test::CTestStep* i_pTestStep )
         }
     }
 
-    i_pTestStep->setDesiredValues(strlstDesiredValues);
+    i_pTestStep->setExpectedValues(strlstDesiredValues);
 
     // Test Step
     //----------
@@ -509,7 +531,7 @@ void CTest::doTestStepTraceClientConnect( ZS::Test::CTestStep* i_pTestStep )
         {
             strActualValue = "connectTrcClient expected to be asynchronous";
             strlstActualValues.append(strActualValue);
-            i_pTestStep->setActualValues(strlstActualValues);
+            i_pTestStep->setResultValues(strlstActualValues);
         }
     } // if( arpTreeEntriesServer.size() == 0 )
 
@@ -546,7 +568,7 @@ void CTest::doTestStepTraceClientDisconnect( ZS::Test::CTestStep* i_pTestStep )
     //strDesiredValue = "TrcAdminObjIdxTree.isEmpty";
     //strlstDesiredValues.append(strDesiredValue);
 
-    i_pTestStep->setDesiredValues(strlstDesiredValues);
+    i_pTestStep->setExpectedValues(strlstDesiredValues);
 
     // Test Step
     //----------
@@ -572,7 +594,7 @@ void CTest::doTestStepTraceClientDisconnect( ZS::Test::CTestStep* i_pTestStep )
     {
         strActualValue = "disconnectTrcClient expected to be asynchronous";
         strlstActualValues.append(strActualValue);
-        i_pTestStep->setActualValues(strlstActualValues);
+        i_pTestStep->setResultValues(strlstActualValues);
     }
 
 } // doTestStepTraceClientDisconnect
@@ -602,7 +624,7 @@ void CTest::doTestStepCreateModule1( ZS::Test::CTestStep* i_pTestStep )
     strlstDesiredValues.append(strTrcMethodEnter);
     strlstDesiredValues.append(strTrcMethodLeave);
 
-    i_pTestStep->setDesiredValues(strlstDesiredValues);
+    i_pTestStep->setExpectedValues(strlstDesiredValues);
 
     // Test Step
     //----------
@@ -651,7 +673,7 @@ void CTest::doTestStepDeleteModule1( ZS::Test::CTestStep* i_pTestStep )
     strlstDesiredValues.append(strTrcMethodEnter);
     strlstDesiredValues.append(strTrcMethodLeave);
 
-    i_pTestStep->setDesiredValues(strlstDesiredValues);
+    i_pTestStep->setExpectedValues(strlstDesiredValues);
 
     // Test Step
     //----------
@@ -716,7 +738,7 @@ void CTest::doTestStepCreateModule2( ZS::Test::CTestStep* i_pTestStep )
     strMthTrace = "   -> <" + strNameSpace + "::" + strClassName + "> TestModule2.event(Msg: ZS::Apps::Test::IpcTrace::ReqTest)";
     strlstDesiredValues.append(strMthTrace);
 
-    i_pTestStep->setDesiredValues(strlstDesiredValues);
+    i_pTestStep->setExpectedValues(strlstDesiredValues);
 
     // Test Step
     //----------
@@ -766,7 +788,7 @@ void CTest::doTestStepDeleteModule2( ZS::Test::CTestStep* i_pTestStep )
 
     strlstDesiredValues.append(strTrcMethodLeave);
 
-    i_pTestStep->setDesiredValues(strlstDesiredValues);
+    i_pTestStep->setExpectedValues(strlstDesiredValues);
 
     // Test Step
     //----------
@@ -855,7 +877,7 @@ void CTest::onRequestChanged( ZS::System::SRequestDscr i_reqDscr )
                     strActualValue += ")";
                     strlstActualValues.append(strActualValue);
 
-                    pTestStep->setActualValues(strlstActualValues);
+                    pTestStep->setResultValues(strlstActualValues);
 
                 } // if( pTestStep->getOperation() == "CIpcTrcClient::connect" )
 
@@ -880,7 +902,7 @@ void CTest::onRequestChanged( ZS::System::SRequestDscr i_reqDscr )
                     // IpcClient disconnected signal is unpredictable. The test may receive this signal before
                     // the trace client and the trace admin object index tree may not be cleared at this time.
 
-                    pTestStep->setActualValues(strlstActualValues);
+                    pTestStep->setResultValues(strlstActualValues);
 
                 } // if( pTestStep->getOperation() == "CIpcTrcClient::disconnect" )
             } // if( pTestStep != nullptr )
@@ -908,13 +930,13 @@ void CTest::onTraceClientTraceAdminObjInserted( QObject* /*i_pTrcClient*/, const
 
             CIdxTreeTrcAdminObjs* pIdxTreeServer = pTrcServer->getTraceAdminObjIdxTree();
 
-            QVector<#error CAbstractIdxTreeEntry*> arpTreeEntriesServer = pIdxTreeServer->treeEntriesVec();
+            QVector<CIdxTreeEntry*> arpTreeEntriesServer = pIdxTreeServer->treeEntriesVec();
 
             CIpcTrcClient* pTrcClient = CApplication::GetInstance()->getTrcClient();
 
             CIdxTreeTrcAdminObjs* pIdxTreeClient = pTrcClient->getTraceAdminObjIdxTree();
 
-            QVector<#error CAbstractIdxTreeEntry*> arpTreeEntriesClient = pIdxTreeClient->treeEntriesVec();
+            QVector<CIdxTreeEntry*> arpTreeEntriesClient = pIdxTreeClient->treeEntriesVec();
 
             bool bTestStepFinished = false;
 
@@ -922,8 +944,8 @@ void CTest::onTraceClientTraceAdminObjInserted( QObject* /*i_pTrcClient*/, const
             {
                 bTestStepFinished = true;
 
-                #error CAbstractIdxTreeEntry* pTreeEntryServer;
-                #error CAbstractIdxTreeEntry* pTreeEntryClient;
+                CIdxTreeEntry* pTreeEntryServer;
+                CIdxTreeEntry* pTreeEntryClient;
 
                 for( int idxEntry = 0; idxEntry < arpTreeEntriesServer.size(); idxEntry++ )
                 {
@@ -989,7 +1011,7 @@ void CTest::onTraceClientTraceAdminObjInserted( QObject* /*i_pTrcClient*/, const
                     }
                 }
 
-                pTestStep->setActualValues(strlstActualValues);
+                pTestStep->setResultValues(strlstActualValues);
 
             } // if( bTestStepFinished )
         } // if( pTestStep->getOperation() == "CIpcTrcClient::connect" )
@@ -1117,7 +1139,7 @@ void CTest::onTraceClientTrcMthListWdgtTextItemAdded( const QString& i_strText )
                         if( !bTrcMethodLeaveFound ) strlstActualValues.append(strTrcMethodLeave + ": not found in trace method file");
                     }
 
-                    pTestStep->setActualValues(strlstActualValues);
+                    pTestStep->setResultValues(strlstActualValues);
 
                 } // if( strText.contains(strNameSpace) && strText.contains(strClassName) && strText.contains(strObjName) && strText.contains(strMthName) )
             } // if( strText.contains("<-") )
@@ -1300,7 +1322,7 @@ void CTest::onTraceClientTrcMthListWdgtTextItemAdded( const QString& i_strText )
                         }
                     }
 
-                    pTestStep->setActualValues(strlstActualValues);
+                    pTestStep->setResultValues(strlstActualValues);
 
                 } // if( strText.contains(strNameSpace) && strText.contains(strClassName) && strText.contains(strObjName) && strText.contains(strMthName) )
             } // if( strText.contains("<-") )
@@ -1323,7 +1345,7 @@ void CTest::onTimerTestStepTimeout()
         strActualValue = "Test step not finished in time";
         strlstActualValues.append(strActualValue);
 
-        pTestStep->setActualValues(strlstActualValues);
+        pTestStep->setResultValues(strlstActualValues);
 
         if( pTestStep->getOperation() == "CIpcTrcClient::connect" )
         {

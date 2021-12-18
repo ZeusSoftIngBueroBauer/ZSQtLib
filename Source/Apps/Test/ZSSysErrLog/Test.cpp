@@ -62,36 +62,35 @@ CTest::CTest( const QString& i_strTestStepsFileName ) :
 
     new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " CErrLog::CreateInstance(ZS::Apps::Test::SysErrLog::ErrLog)",
-        /* strOperation    */ "CErrLog::CreateInstance(ZS::Apps::Test::SysErrLog::ErrLog)",
-        /* pGrpParent      */ nullptr,
-        /* szDoTestStepFct */ SLOT(doTestStepCreateErrLogInstance(ZS::Test::CTestStep*)) );
-
-    new ZS::Test::CTestStep(
-        /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " ZS::Apps::Test::SysErrLog::ErrLog.addEntries",
-        /* strOperation    */ "ZS::Apps::Test::SysErrLog::ErrLog.addEntry",
+        /* strName         */ "Step " + QString::number(++idxStep) + " addEntries",
+        /* strOperation    */ "ErrLog.addEntry",
         /* pGrpParent      */ nullptr,
         /* szDoTestStepFct */ SLOT(doTestStepAddErrLogEntries(ZS::Test::CTestStep*)) );
 
     new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " ZS::Apps::Test::SysErrLog::ErrLog.clear",
-        /* strOperation    */ "ZS::Apps::Test::SysErrLog::ErrLog.clear",
+        /* strName         */ "Step " + QString::number(++idxStep) + " ErrLog.clear",
+        /* strOperation    */ "ErrLog.clear",
         /* pGrpParent      */ nullptr,
         /* szDoTestStepFct */ SLOT(doTestStepClearErrLog(ZS::Test::CTestStep*)) );
 
-    new ZS::Test::CTestStep(
-        /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " CErrLog::ReleaseInstance(ZS::Apps::Test::SysErrLog::ErrLog)",
-        /* strOperation    */ "CErrLog::ReleaseInstance(ZS::Apps::Test::SysErrLog::ErrLog)",
-        /* pGrpParent      */ nullptr,
-        /* szDoTestStepFct */ SLOT(doTestStepDestroyErrLogInstance(ZS::Test::CTestStep*)) );
+    // Recall test step settings
+    //--------------------------
 
-    // Recall test admin object settings
-    //----------------------------------
+    QFileInfo fileInfo(i_strTestStepsFileName);
 
-    m_pAdminIdxTree->read_(i_strTestStepsFileName);
+    if( fileInfo.exists() )
+    {
+        SErrResultInfo errResultInfo = recall(i_strTestStepsFileName);
+
+        if(errResultInfo.isErrorResult())
+        {
+            if(CErrLog::GetInstance() != nullptr)
+            {
+                CErrLog::GetInstance()->addEntry(errResultInfo);
+            }
+        }
+    }
 
 } // default ctor
 
@@ -99,7 +98,15 @@ CTest::CTest( const QString& i_strTestStepsFileName ) :
 CTest::~CTest()
 //------------------------------------------------------------------------------
 {
-    m_pAdminIdxTree->save_();
+    SErrResultInfo errResultInfo = save();
+
+    if(errResultInfo.isErrorResult())
+    {
+        if(CErrLog::GetInstance() != nullptr)
+        {
+            CErrLog::GetInstance()->addEntry(errResultInfo);
+        }
+    }
 
 } // dtor
 
@@ -108,242 +115,14 @@ public: // test step methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CTest::doTestStepCreateErrLogInstance( ZS::Test::CTestStep* i_pTestStep )
-//------------------------------------------------------------------------------
-{
-    QStringList strlstDesiredValues;
-    QStringList strlstActualValues;
-
-    QString strDesiredValue;
-    QString strActualValue;
-
-    QString strOperation = i_pTestStep->getOperation();
-
-    // Examples for strOperation:
-    // - "CErrLog::CreateInstance(ZS::Apps::Test::SysErrLog::ErrLog)"
-
-    QString strErrLogName;
-
-    if( strOperation.startsWith("CErrLog::CreateInstance",Qt::CaseInsensitive) )
-    {
-        strErrLogName = strOperation;
-        strErrLogName.remove("CErrLog::CreateInstance");
-        strErrLogName.remove("(");
-        strErrLogName.remove(")");
-
-        strDesiredValue = strErrLogName + " Existing";
-        strlstDesiredValues.append(strDesiredValue);
-    }
-
-    // -------------------------------------------------------------------------
-
-    QString strAppNameNormalized = QCoreApplication::applicationName();
-
-    // Range of IniFileScope: ["AppDir", "User", "System"]
-    #ifdef __linux__
-    // Using "System" on linux Mint ends up in directory "etc/xdg/<CompanyName>"
-    // where the application has not write access rights. Stupid ...
-    QString strIniFileScope = "User";
-    #else
-    QString strIniFileScope = "System"; // Default
-    #endif
-
-    // The application name may contain characters which are invalid in file names:
-    strAppNameNormalized.remove(":");
-    strAppNameNormalized.remove(" ");
-    strAppNameNormalized.remove("\\");
-    strAppNameNormalized.remove("/");
-    strAppNameNormalized.remove("<");
-    strAppNameNormalized.remove(">");
-
-    QString strAppConfigDir = ZS::System::getAppConfigDir(strIniFileScope);
-    QString strAppLogDir = ZS::System::getAppLogDir(strIniFileScope);
-
-    QString strErrLogNameTmp = strErrLogName;
-
-    strErrLogNameTmp.remove("::");
-    if( strErrLogNameTmp.endsWith("ErrLogErrLog") )
-    {
-        strErrLogNameTmp.remove(strErrLogNameTmp.size()-7, 6);
-    }
-
-    QString strErrLogFileBaseName = strAppNameNormalized + "-" + strErrLogNameTmp;
-    QString strErrLogFileSuffix = "xml";
-
-    QString strErrLogFileAbsFilePath = strAppLogDir + "/" + strErrLogFileBaseName + "." + strErrLogFileSuffix;
-
-    try
-    {
-        CErrLog::CreateInstance(true, strErrLogFileAbsFilePath, strErrLogName);
-
-        if( CErrLog::GetInstance(strErrLogName) != nullptr )
-        {
-            strActualValue = strErrLogName + " Existing";
-
-            emit errLogCreated(strErrLogName);
-        }
-    }
-    catch( CException& exc )
-    {
-        strActualValue = exc.getAddErrInfo();
-    }
-    catch(...)
-    {
-        strActualValue = "Unknown exception thrown";
-    }
-    strlstActualValues.append(strActualValue);
-
-    // -------------------------------------------------------------------------
-
-    i_pTestStep->setDesiredValues(strlstDesiredValues);
-    i_pTestStep->setActualValues(strlstActualValues);
-
-} // doTestStepCreateErrLogInstance
-
-//------------------------------------------------------------------------------
-void CTest::doTestStepDestroyErrLogInstance( ZS::Test::CTestStep* i_pTestStep )
-//------------------------------------------------------------------------------
-{
-    QStringList strlstDesiredValues;
-    QStringList strlstActualValues;
-
-    QString strDesiredValue;
-    QString strActualValue;
-
-    QString strOperation = i_pTestStep->getOperation();
-
-    // Examples for strOperation:
-    // - "CErrLog::ReleaseInstance(ZS::Apps::Test::SysErrLog::ErrLog)"
-
-    QString strErrLogName;
-
-    if( strOperation.startsWith("CErrLog::ReleaseInstance",Qt::CaseInsensitive) )
-    {
-        strErrLogName = strOperation;
-        strErrLogName.remove("CErrLog::ReleaseInstance");
-        strErrLogName.remove("(");
-        strErrLogName.remove(")");
-    }
-
-    // -------------------------------------------------------------------------
-
-    CErrLog* pErrLog = nullptr;
-
-    try
-    {
-        strDesiredValue = strErrLogName + " Existing";
-        strlstDesiredValues.append(strDesiredValue);
-
-        pErrLog = CErrLog::GetInstance(strErrLogName);
-
-        if( pErrLog == nullptr )
-        {
-            strActualValue = strErrLogName + " Not Existing";
-        }
-        else
-        {
-            strActualValue = strErrLogName + " Existing";
-        }
-    }
-    catch( CException& exc )
-    {
-        strActualValue = exc.getAddErrInfo();
-    }
-    catch(...)
-    {
-        strActualValue = "Unknown exception thrown";
-    }
-    strlstActualValues.append(strActualValue);
-
-    // -------------------------------------------------------------------------
-
-    if( pErrLog != nullptr )
-    {
-        QString strErrLogAbsFilePath = pErrLog->getAbsFilePath();
-
-        try
-        {
-            strDesiredValue = strErrLogAbsFilePath + " Existing";
-            strlstDesiredValues.append(strDesiredValue);
-
-            QFileInfo fileInfoErrLog(strErrLogAbsFilePath);
-
-            if( fileInfoErrLog.exists() )
-            {
-                strActualValue = strErrLogAbsFilePath + " Existing";
-            }
-            else
-            {
-                strActualValue = strErrLogAbsFilePath + " Not Existing";
-            }
-        }
-        catch( CException& exc )
-        {
-            strActualValue = exc.getAddErrInfo();
-        }
-        catch(...)
-        {
-            strActualValue = "Unknown exception thrown";
-        }
-        strlstActualValues.append(strActualValue);
-
-        // -------------------------------------------------------------------------
-
-        try
-        {
-            strDesiredValue = strErrLogName + " File Existing";
-            strlstDesiredValues.append(strDesiredValue);
-
-            CErrLog::ReleaseInstance(strErrLogName);
-
-            if( CErrLog::GetInstance(strErrLogName) == nullptr )
-            {
-                strActualValue = strErrLogName + " File Existing";
-            }
-        }
-        catch( CException& exc )
-        {
-            strActualValue = exc.getAddErrInfo();
-        }
-        catch(...)
-        {
-            strActualValue = "Unknown exception thrown";
-        }
-        strlstActualValues.append(strActualValue);
-
-    } // if( pErrLog != nullptr )
-
-    // -------------------------------------------------------------------------
-
-    i_pTestStep->setDesiredValues(strlstDesiredValues);
-    i_pTestStep->setActualValues(strlstActualValues);
-
-} // doTestStepDestroyErrLogInstance
-
-//------------------------------------------------------------------------------
 void CTest::doTestStepAddErrLogEntries( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
-    QStringList strlstDesiredValues;
-    QStringList strlstActualValues;
+    QStringList strlstExpectedValues;
+    QStringList strlstResultValues;
 
-    QString strDesiredValue;
-    QString strActualValue;
-
-    QString strOperation = i_pTestStep->getOperation();
-
-    // Examples for strOperation:
-    // - "ZS::System::ErrLog.addEntry"
-
-    QString strErrLogName;
-
-    if( strOperation.endsWith(".addEntry",Qt::CaseInsensitive) )
-    {
-        strErrLogName = strOperation;
-        strErrLogName.remove(".addEntry");
-        strErrLogName.remove("(");
-        strErrLogName.remove(")");
-    }
+    QString strExpectedValue;
+    QString strResultValue;
 
     CErrLog* pErrLog = nullptr;
 
@@ -355,29 +134,29 @@ void CTest::doTestStepAddErrLogEntries( ZS::Test::CTestStep* i_pTestStep )
 
     try
     {
-        strDesiredValue = strErrLogName + " Existing";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "ZSErrLog Existing";
+        strlstExpectedValues.append(strExpectedValue);
 
-        pErrLog = CErrLog::GetInstance(strErrLogName);
+        pErrLog = CErrLog::GetInstance();
 
         if( pErrLog == nullptr )
         {
-            strActualValue = strErrLogName + " Not Existing";
+            strResultValue = "ZSErrLog Not Existing";
         }
         else // if( pErrLogInst2 != nullptr )
         {
-            strActualValue = strErrLogName + " Existing";
+            strResultValue = "ZSErrLog Existing";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
     catch(...)
     {
-        strActualValue = "Unknown exception thrown";
+        strResultValue = "Unknown exception thrown";
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
@@ -389,8 +168,8 @@ void CTest::doTestStepAddErrLogEntries( ZS::Test::CTestStep* i_pTestStep )
             errResultInfo.setResult(EResultSuccess);
             errResultInfo.setAddErrInfoDscr("Just a test");
 
-            strDesiredValue = errResultInfo.toString() + " not added to " + pErrLog->objectName();
-            strlstDesiredValues.append(strDesiredValue);
+            strExpectedValue = errResultInfo.toString() + " not added to " + pErrLog->objectName();
+            strlstExpectedValues.append(strExpectedValue);
 
             pErrLog->addEntry(errResultInfo);
 
@@ -398,22 +177,22 @@ void CTest::doTestStepAddErrLogEntries( ZS::Test::CTestStep* i_pTestStep )
 
             if( pErrLogEntry != nullptr )
             {
-                strActualValue = errResultInfo.toString() + " added to " + pErrLog->objectName();
+                strResultValue = errResultInfo.toString() + " added to " + pErrLog->objectName();
             }
             else
             {
-                strActualValue = errResultInfo.toString() + " not added to " + pErrLog->objectName();
+                strResultValue = errResultInfo.toString() + " not added to " + pErrLog->objectName();
             }
         }
         catch( CException& exc )
         {
-            strActualValue = exc.getAddErrInfo();
+            strResultValue = exc.getAddErrInfo();
         }
         catch(...)
         {
-            strActualValue = "Unknown exception thrown";
+            strResultValue = "Unknown exception thrown";
         }
-        strlstActualValues.append(strActualValue);
+        strlstResultValues.append(strResultValue);
 
         try
         {
@@ -423,29 +202,29 @@ void CTest::doTestStepAddErrLogEntries( ZS::Test::CTestStep* i_pTestStep )
                 /* severity   */ EResultSeverityError,
                 /* strAddInfo */ "Maximum number of error log entries for severity " + resultSeverity2Str(errResultInfo.getSeverity()) + " reached." );
 
-            strDesiredValue = errResultInfoTmp.toString() + " added to " + pErrLog->objectName();
-            strlstDesiredValues.append(strDesiredValue);
+            strExpectedValue = errResultInfoTmp.toString() + " added to " + pErrLog->objectName();
+            strlstExpectedValues.append(strExpectedValue);
 
             pErrLogEntry = pErrLog->findEntry(errResultInfoTmp);
 
             if( pErrLogEntry != nullptr )
             {
-                strActualValue = errResultInfoTmp.toString() + " added to " + pErrLog->objectName();
+                strResultValue = errResultInfoTmp.toString() + " added to " + pErrLog->objectName();
             }
             else
             {
-                strActualValue = errResultInfoTmp.toString() + " not added to " + pErrLog->objectName();
+                strResultValue = errResultInfoTmp.toString() + " not added to " + pErrLog->objectName();
             }
         }
         catch( CException& exc )
         {
-            strActualValue = exc.getAddErrInfo();
+            strResultValue = exc.getAddErrInfo();
         }
         catch(...)
         {
-            strActualValue = "Unknown exception thrown";
+            strResultValue = "Unknown exception thrown";
         }
-        strlstActualValues.append(strActualValue);
+        strlstResultValues.append(strResultValue);
 
         // ---------------------------------------------------------------------
 
@@ -455,8 +234,8 @@ void CTest::doTestStepAddErrLogEntries( ZS::Test::CTestStep* i_pTestStep )
             errResultInfo.setResult(EResultRequestAborted);
             errResultInfo.setAddErrInfoDscr("Just a test");
 
-            strDesiredValue = errResultInfo.toString() + " added to " + pErrLog->objectName();
-            strlstDesiredValues.append(strDesiredValue);
+            strExpectedValue = errResultInfo.toString() + " added to " + pErrLog->objectName();
+            strlstExpectedValues.append(strExpectedValue);
 
             pErrLog->addEntry(errResultInfo);
 
@@ -464,22 +243,22 @@ void CTest::doTestStepAddErrLogEntries( ZS::Test::CTestStep* i_pTestStep )
 
             if( pErrLogEntry != nullptr )
             {
-                strActualValue = errResultInfo.toString() + " added to " + pErrLog->objectName();
+                strResultValue = errResultInfo.toString() + " added to " + pErrLog->objectName();
             }
             else
             {
-                strActualValue = errResultInfo.toString() + " not added to " + pErrLog->objectName();
+                strResultValue = errResultInfo.toString() + " not added to " + pErrLog->objectName();
             }
         }
         catch( CException& exc )
         {
-            strActualValue = exc.getAddErrInfo();
+            strResultValue = exc.getAddErrInfo();
         }
         catch(...)
         {
-            strActualValue = "Unknown exception thrown";
+            strResultValue = "Unknown exception thrown";
         }
-        strlstActualValues.append(strActualValue);
+        strlstResultValues.append(strResultValue);
 
         // ---------------------------------------------------------------------
 
@@ -489,8 +268,8 @@ void CTest::doTestStepAddErrLogEntries( ZS::Test::CTestStep* i_pTestStep )
             errResultInfo.setResult(EResultRequestAborted);
             errResultInfo.setAddErrInfoDscr("Just a test");
 
-            strDesiredValue = errResultInfo.toString() + " added to " + pErrLog->objectName();
-            strlstDesiredValues.append(strDesiredValue);
+            strExpectedValue = errResultInfo.toString() + " added to " + pErrLog->objectName();
+            strlstExpectedValues.append(strExpectedValue);
 
             pErrLog->addEntry(errResultInfo);
 
@@ -498,22 +277,22 @@ void CTest::doTestStepAddErrLogEntries( ZS::Test::CTestStep* i_pTestStep )
 
             if( pErrLogEntry != nullptr )
             {
-                strActualValue = errResultInfo.toString() + " added to " + pErrLog->objectName();
+                strResultValue = errResultInfo.toString() + " added to " + pErrLog->objectName();
             }
             else
             {
-                strActualValue = errResultInfo.toString() + " not added to " + pErrLog->objectName();
+                strResultValue = errResultInfo.toString() + " not added to " + pErrLog->objectName();
             }
         }
         catch( CException& exc )
         {
-            strActualValue = exc.getAddErrInfo();
+            strResultValue = exc.getAddErrInfo();
         }
         catch(...)
         {
-            strActualValue = "Unknown exception thrown";
+            strResultValue = "Unknown exception thrown";
         }
-        strlstActualValues.append(strActualValue);
+        strlstResultValues.append(strResultValue);
 
         // ---------------------------------------------------------------------
 
@@ -523,8 +302,8 @@ void CTest::doTestStepAddErrLogEntries( ZS::Test::CTestStep* i_pTestStep )
             errResultInfo.setResult(EResultRequestAborted);
             errResultInfo.setAddErrInfoDscr("Just a test");
 
-            strDesiredValue = errResultInfo.toString() + " added to " + pErrLog->objectName();
-            strlstDesiredValues.append(strDesiredValue);
+            strExpectedValue = errResultInfo.toString() + " added to " + pErrLog->objectName();
+            strlstExpectedValues.append(strExpectedValue);
 
             pErrLog->addEntry(errResultInfo);
 
@@ -532,22 +311,22 @@ void CTest::doTestStepAddErrLogEntries( ZS::Test::CTestStep* i_pTestStep )
 
             if( pErrLogEntry != nullptr )
             {
-                strActualValue = errResultInfo.toString() + " added to " + pErrLog->objectName();
+                strResultValue = errResultInfo.toString() + " added to " + pErrLog->objectName();
             }
             else
             {
-                strActualValue = errResultInfo.toString() + " not added to " + pErrLog->objectName();
+                strResultValue = errResultInfo.toString() + " not added to " + pErrLog->objectName();
             }
         }
         catch( CException& exc )
         {
-            strActualValue = exc.getAddErrInfo();
+            strResultValue = exc.getAddErrInfo();
         }
         catch(...)
         {
-            strActualValue = "Unknown exception thrown";
+            strResultValue = "Unknown exception thrown";
         }
-        strlstActualValues.append(strActualValue);
+        strlstResultValues.append(strResultValue);
 
         // ---------------------------------------------------------------------
 
@@ -557,8 +336,8 @@ void CTest::doTestStepAddErrLogEntries( ZS::Test::CTestStep* i_pTestStep )
             errResultInfo.setResult(EResultRequestAborted);
             errResultInfo.setAddErrInfoDscr("Just a test");
 
-            strDesiredValue = errResultInfo.toString() + " added to " + pErrLog->objectName();
-            strlstDesiredValues.append(strDesiredValue);
+            strExpectedValue = errResultInfo.toString() + " added to " + pErrLog->objectName();
+            strlstExpectedValues.append(strExpectedValue);
 
             pErrLog->addEntry(errResultInfo);
 
@@ -566,29 +345,29 @@ void CTest::doTestStepAddErrLogEntries( ZS::Test::CTestStep* i_pTestStep )
 
             if( pErrLogEntry != nullptr )
             {
-                strActualValue = errResultInfo.toString() + " added to " + pErrLog->objectName();
+                strResultValue = errResultInfo.toString() + " added to " + pErrLog->objectName();
             }
             else
             {
-                strActualValue = errResultInfo.toString() + " not added to " + pErrLog->objectName();
+                strResultValue = errResultInfo.toString() + " not added to " + pErrLog->objectName();
             }
         }
         catch( CException& exc )
         {
-            strActualValue = exc.getAddErrInfo();
+            strResultValue = exc.getAddErrInfo();
         }
         catch(...)
         {
-            strActualValue = "Unknown exception thrown";
+            strResultValue = "Unknown exception thrown";
         }
-        strlstActualValues.append(strActualValue);
+        strlstResultValues.append(strResultValue);
 
     } // if( pErrLog != nullptr )
 
     // -------------------------------------------------------------------------
 
-    i_pTestStep->setDesiredValues(strlstDesiredValues);
-    i_pTestStep->setActualValues(strlstActualValues);
+    i_pTestStep->setExpectedValues(strlstExpectedValues);
+    i_pTestStep->setResultValues(strlstResultValues);
 
 } // doTestStepAddErrLogEntries
 
@@ -596,26 +375,11 @@ void CTest::doTestStepAddErrLogEntries( ZS::Test::CTestStep* i_pTestStep )
 void CTest::doTestStepClearErrLog( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
-    QStringList strlstDesiredValues;
-    QStringList strlstActualValues;
+    QStringList strlstExpectedValues;
+    QStringList strlstResultValues;
 
-    QString strDesiredValue;
-    QString strActualValue;
-
-    QString strOperation = i_pTestStep->getOperation();
-
-    // Examples for strOperation:
-    // - "ZS::Apps::Test::SysErrLog::ErrLog.clear"
-
-    QString strErrLogName;
-
-    if( strOperation.endsWith(".clear",Qt::CaseInsensitive) )
-    {
-        strErrLogName = strOperation;
-        strErrLogName.remove(".clear");
-        strErrLogName.remove("(");
-        strErrLogName.remove(")");
-    }
+    QString strExpectedValue;
+    QString strResultValue;
 
     CErrLog* pErrLog = nullptr;
 
@@ -623,29 +387,29 @@ void CTest::doTestStepClearErrLog( ZS::Test::CTestStep* i_pTestStep )
 
     try
     {
-        strDesiredValue = strErrLogName + " Existing";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "ZSErrLog Existing";
+        strlstExpectedValues.append(strExpectedValue);
 
-        pErrLog = CErrLog::GetInstance(strErrLogName);
+        pErrLog = CErrLog::GetInstance();
 
         if( pErrLog == nullptr )
         {
-            strActualValue = strErrLogName + " Not Existing";
+            strResultValue = "ZSErrLog Not Existing";
         }
         else // if( pErrLogInst2 != nullptr )
         {
-            strActualValue = strErrLogName + " Existing";
+            strResultValue = "ZSErrLog Existing";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
     catch(...)
     {
-        strActualValue = "Unknown exception thrown";
+        strResultValue = "Unknown exception thrown";
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
@@ -653,35 +417,35 @@ void CTest::doTestStepClearErrLog( ZS::Test::CTestStep* i_pTestStep )
     {
         try
         {
-            strDesiredValue = strErrLogName + " Empty";
-            strlstDesiredValues.append(strDesiredValue);
+            strExpectedValue = "ZSErrLog Empty";
+            strlstExpectedValues.append(strExpectedValue);
 
             pErrLog->clear();
 
             if( pErrLog->getEntryCount() > 0 )
             {
-                strActualValue = strErrLogName + " Not Empty";
+                strResultValue = "ZSErrLog Not Empty";
             }
             else // if( pErrLogInst2 != nullptr )
             {
-                strActualValue = strErrLogName + " Empty";
+                strResultValue = "ZSErrLog Empty";
             }
         }
         catch( CException& exc )
         {
-            strActualValue = exc.getAddErrInfo();
+            strResultValue = exc.getAddErrInfo();
         }
         catch(...)
         {
-            strActualValue = "Unknown exception thrown";
+            strResultValue = "Unknown exception thrown";
         }
-        strlstActualValues.append(strActualValue);
+        strlstResultValues.append(strResultValue);
 
     } // if( pErrLog != nullptr )
 
     // -------------------------------------------------------------------------
 
-    i_pTestStep->setDesiredValues(strlstDesiredValues);
-    i_pTestStep->setActualValues(strlstActualValues);
+    i_pTestStep->setExpectedValues(strlstExpectedValues);
+    i_pTestStep->setResultValues(strlstResultValues);
 
 } // doTestStepClearErrLog

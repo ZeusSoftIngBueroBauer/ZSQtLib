@@ -348,7 +348,7 @@ Qt::ItemFlags CModeldxTreeTestSteps::flags( const QModelIndex& i_modelIdx ) cons
 
     if(i_modelIdx.isValid())
     {
-        //#error CAbstractIdxTreeEntry* pTreeEntry = static_cast<#error CAbstractIdxTreeEntry*>(i_modelIdx.internalPointer());
+        //CIdxTreeEntry* pTreeEntry = static_cast<CIdxTreeEntry*>(i_modelIdx.internalPointer());
         //CAbstractTestStepIdxTreeEntry* pTSAdmObj = nullptr;
         //CTestStepGroup*    pTSGrp = nullptr;
         //CTestStep*         pTestStep = nullptr;

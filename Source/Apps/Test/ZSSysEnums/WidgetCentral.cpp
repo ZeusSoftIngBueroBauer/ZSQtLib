@@ -36,7 +36,7 @@ may result in using the software modules.
 #include "App.h"
 #include "Test.h"
 
-#include "ZSTestGUI/ZSTestWdgt.h"
+#include "ZSTestGUI/ZSTestStepIdxTreeWdgt.h"
 #include "ZSSys/ZSSysErrCode.h"
 #include "ZSSys/ZSSysException.h"
 

@@ -268,7 +268,7 @@ void CTest::doTestStepStandardShapesTexts( ZS::Test::CTestStepGroup* i_pTestStep
                 strlstDesiredValues.append( "DrawingTool: Text" );
 
                 pTestStep->setOperation( "drawing.setCurrentDrawingTool( Text )" );
-                pTestStep->setDesiredValues(strlstDesiredValues);
+                pTestStep->setExpectedValues(strlstDesiredValues);
                 pTestStep->testStarted();
 
                 if( (m_pDrawingScene->getEditTool() != EEditToolCreateObjects) || (m_pDrawingScene->getCurrentDrawingToolGraphObjType() != EGraphObjTypeText) )
@@ -288,7 +288,7 @@ void CTest::doTestStepStandardShapesTexts( ZS::Test::CTestStepGroup* i_pTestStep
                 strlstActualValues.append( "EditTool: " + editTool2Str(m_pDrawingScene->getEditTool()) );
                 strlstActualValues.append( "DrawingTool: " + strCurrentDrawingTool );
 
-                pTestStep->setActualValues(strlstActualValues);
+                pTestStep->setResultValues(strlstActualValues);
                 pTestStep->setToolTip(strToolTip);
                 pTestStep->testEnded();
 
@@ -323,7 +323,7 @@ void CTest::doTestStepStandardShapesTexts( ZS::Test::CTestStepGroup* i_pTestStep
 
             pTestStep->setOperation( "view.mouseClickEvent( ViewPos:" + point2Str(m_ptDrawingViewMousePos) + " )" );
             pTestStep->setDescription( "scene." + strCurrentGraphObj + ".create( ScenePos:" + point2Str(m_ptDrawingSceneMousePos) + " )" );
-            pTestStep->setDesiredValues(strlstDesiredValues);
+            pTestStep->setExpectedValues(strlstDesiredValues);
             pTestStep->testStarted();
 
             pMouseEv = new QMouseEvent(
@@ -358,7 +358,7 @@ void CTest::doTestStepStandardShapesTexts( ZS::Test::CTestStepGroup* i_pTestStep
                 strToolTip = pGraphObj->getToolTip();
             }
 
-            pTestStep->setActualValues(strlstActualValues);
+            pTestStep->setResultValues(strlstActualValues);
             pTestStep->setToolTip(strToolTip);
             pTestStep->testEnded();
 
@@ -389,7 +389,7 @@ void CTest::doTestStepStandardShapesTexts( ZS::Test::CTestStepGroup* i_pTestStep
 
             pTestStep->setOperation( "view.keyPressEvent( " + QString(ch) + " )" );
             pTestStep->setDescription( "scene." + strCurrentGraphObj + ".keyPressEvent( " + QString(ch) + " )" );
-            pTestStep->setDesiredValues(strlstDesiredValues);
+            pTestStep->setExpectedValues(strlstDesiredValues);
             pTestStep->testStarted();
 
             pKeyEv = new QKeyEvent(
@@ -426,7 +426,7 @@ void CTest::doTestStepStandardShapesTexts( ZS::Test::CTestStepGroup* i_pTestStep
                 s_rctText1 = pGraphObjText->rect();
             }
 
-            pTestStep->setActualValues(strlstActualValues);
+            pTestStep->setResultValues(strlstActualValues);
             pTestStep->setToolTip(strToolTip);
             pTestStep->testEnded();
 
@@ -463,7 +463,7 @@ void CTest::doTestStepStandardShapesTexts( ZS::Test::CTestStepGroup* i_pTestStep
                 strlstDesiredValues.append( "DrawingTool: " );
 
                 pTestStep->setOperation( "drawing.setCurrentDrawingTool( Select )" );
-                pTestStep->setDesiredValues(strlstDesiredValues);
+                pTestStep->setExpectedValues(strlstDesiredValues);
                 pTestStep->testStarted();
 
                 if( m_pDrawingScene->getEditTool() != EEditToolSelect )
@@ -485,7 +485,7 @@ void CTest::doTestStepStandardShapesTexts( ZS::Test::CTestStepGroup* i_pTestStep
                 strlstActualValues.append( "EditTool: " + editTool2Str(m_pDrawingScene->getEditTool()) );
                 strlstActualValues.append( "DrawingTool: " + strCurrentDrawingTool );
 
-                pTestStep->setActualValues(strlstActualValues);
+                pTestStep->setResultValues(strlstActualValues);
                 pTestStep->setToolTip(strToolTip);
                 pTestStep->testEnded();
 
@@ -518,7 +518,7 @@ void CTest::doTestStepStandardShapesTexts( ZS::Test::CTestStepGroup* i_pTestStep
 
             pTestStep->setOperation( "view.mouseMoveEvent( ViewPos:" + point2Str(m_ptDrawingViewMousePos) + " )" );
             pTestStep->setDescription( "scene." + strCurrentGraphObj + ".move( ScenePos:" + point2Str(m_ptDrawingSceneMousePos) + " )" );
-            pTestStep->setDesiredValues(strlstDesiredValues);
+            pTestStep->setExpectedValues(strlstDesiredValues);
             pTestStep->testStarted();
 
             pMouseEv = new QMouseEvent(
@@ -532,7 +532,7 @@ void CTest::doTestStepStandardShapesTexts( ZS::Test::CTestStepGroup* i_pTestStep
             delete pMouseEv;
             pMouseEv = nullptr;
 
-            pTestStep->setActualValues(strlstActualValues);
+            pTestStep->setResultValues(strlstActualValues);
             pTestStep->setToolTip(strToolTip);
             pTestStep->testEnded(true);
 
@@ -567,7 +567,7 @@ void CTest::doTestStepStandardShapesTexts( ZS::Test::CTestStepGroup* i_pTestStep
                 strlstDesiredValues.append( "DrawingTool: " );
 
                 pTestStep->setOperation( "drawing.setCurrentDrawingTool( Select )" );
-                pTestStep->setDesiredValues(strlstDesiredValues);
+                pTestStep->setExpectedValues(strlstDesiredValues);
                 pTestStep->testStarted();
 
                 if( m_pDrawingScene->getEditTool() != EEditToolSelect )
@@ -587,7 +587,7 @@ void CTest::doTestStepStandardShapesTexts( ZS::Test::CTestStepGroup* i_pTestStep
                 strlstActualValues.append( "EditTool: " + editTool2Str(m_pDrawingScene->getEditTool()) );
                 strlstActualValues.append( "DrawingTool: " + strCurrentDrawingTool );
 
-                pTestStep->setActualValues(strlstActualValues);
+                pTestStep->setResultValues(strlstActualValues);
                 pTestStep->setToolTip(strToolTip);
                 pTestStep->testEnded();
 
@@ -618,7 +618,7 @@ void CTest::doTestStepStandardShapesTexts( ZS::Test::CTestStepGroup* i_pTestStep
 
             pTestStep->setOperation( "view.mousePressEvent( ViewPos:" + point2Str(m_ptDrawingViewMousePos) + " )" );
             pTestStep->setDescription( "scene." + strCurrentGraphObj + ".select( ScenePos:" + point2Str(m_ptDrawingSceneMousePos) + " )" );
-            pTestStep->setDesiredValues(strlstDesiredValues);
+            pTestStep->setExpectedValues(strlstDesiredValues);
             pTestStep->testStarted();
 
             pMouseEv = new QMouseEvent(
@@ -652,7 +652,7 @@ void CTest::doTestStepStandardShapesTexts( ZS::Test::CTestStepGroup* i_pTestStep
                 }
             }
 
-            pTestStep->setActualValues(strlstActualValues);
+            pTestStep->setResultValues(strlstActualValues);
             pTestStep->setToolTip(strToolTip);
             pTestStep->testEnded();
 
@@ -688,7 +688,7 @@ void CTest::doTestStepStandardShapesTexts( ZS::Test::CTestStepGroup* i_pTestStep
 
             pTestStep->setOperation( "view.mouseMoveEvent( ViewPos:" + point2Str(m_ptDrawingViewMousePos) + " )" );
             pTestStep->setDescription( "scene." + strCurrentGraphObj + ".move( ScenePos:" + point2Str(m_ptDrawingSceneMousePos) + " )" );
-            pTestStep->setDesiredValues(strlstDesiredValues);
+            pTestStep->setExpectedValues(strlstDesiredValues);
             pTestStep->testStarted();
 
             pMouseEv = new QMouseEvent(
@@ -714,7 +714,7 @@ void CTest::doTestStepStandardShapesTexts( ZS::Test::CTestStepGroup* i_pTestStep
                 strToolTip = m_pGraphObjSelected->getToolTip();
             }
 
-            pTestStep->setActualValues(strlstActualValues);
+            pTestStep->setResultValues(strlstActualValues);
             pTestStep->setToolTip(strToolTip);
             pTestStep->testEnded();
 
@@ -739,7 +739,7 @@ void CTest::doTestStepStandardShapesTexts( ZS::Test::CTestStepGroup* i_pTestStep
 
             pTestStep->setOperation( "view.mouseReleaseEvent( ViewPos:" + point2Str(m_ptDrawingViewMousePos) + " )" );
             pTestStep->setDescription( "scene." + strCurrentGraphObj + ".release( ScenePos:" + point2Str(m_ptDrawingSceneMousePos) + " )" );
-            pTestStep->setDesiredValues(strlstDesiredValues);
+            pTestStep->setExpectedValues(strlstDesiredValues);
             pTestStep->testStarted();
 
             pMouseEv = new QMouseEvent(
@@ -765,7 +765,7 @@ void CTest::doTestStepStandardShapesTexts( ZS::Test::CTestStepGroup* i_pTestStep
                 strToolTip = m_pGraphObjSelected->getToolTip();
             }
 
-            pTestStep->setActualValues(strlstActualValues);
+            pTestStep->setResultValues(strlstActualValues);
             pTestStep->setToolTip(strToolTip);
             pTestStep->testEnded();
 
@@ -800,7 +800,7 @@ void CTest::doTestStepStandardShapesTexts( ZS::Test::CTestStepGroup* i_pTestStep
                 strlstDesiredValues.append( "DrawingTool: " );
 
                 pTestStep->setOperation( "drawing.setCurrentDrawingTool( Select )" );
-                pTestStep->setDesiredValues(strlstDesiredValues);
+                pTestStep->setExpectedValues(strlstDesiredValues);
                 pTestStep->testStarted();
 
                 if( m_pDrawingScene->getEditTool() != EEditToolSelect )
@@ -820,7 +820,7 @@ void CTest::doTestStepStandardShapesTexts( ZS::Test::CTestStepGroup* i_pTestStep
                 strlstActualValues.append( "EditTool: " + editTool2Str(m_pDrawingScene->getEditTool()) );
                 strlstActualValues.append( "DrawingTool: " + strCurrentDrawingTool );
 
-                pTestStep->setActualValues(strlstActualValues);
+                pTestStep->setResultValues(strlstActualValues);
                 pTestStep->setToolTip(strToolTip);
                 pTestStep->testEnded();
 
@@ -852,7 +852,7 @@ void CTest::doTestStepStandardShapesTexts( ZS::Test::CTestStepGroup* i_pTestStep
 
             pTestStep->setOperation( "view.mouseClickEvent( ViewPos:" + point2Str(m_ptDrawingViewMousePos) + " )" );
             pTestStep->setDescription( "scene." + strCurrentGraphObj + ".select( ScenePos:" + point2Str(m_ptDrawingSceneMousePos) + " )" );
-            pTestStep->setDesiredValues(strlstDesiredValues);
+            pTestStep->setExpectedValues(strlstDesiredValues);
             pTestStep->testStarted();
 
             pMouseEv = new QMouseEvent(
@@ -897,7 +897,7 @@ void CTest::doTestStepStandardShapesTexts( ZS::Test::CTestStepGroup* i_pTestStep
                 }
             }
 
-            pTestStep->setActualValues(strlstActualValues);
+            pTestStep->setResultValues(strlstActualValues);
             pTestStep->setToolTip(strToolTip);
             pTestStep->testEnded();
 
@@ -928,7 +928,7 @@ void CTest::doTestStepStandardShapesTexts( ZS::Test::CTestStepGroup* i_pTestStep
 
             pTestStep->setOperation( "view.mousePressEvent( ViewPos:" + point2Str(m_ptDrawingViewMousePos) + " )" );
             pTestStep->setDescription( "scene." + strCurrentGraphObj + ".select( ScenePos:" + point2Str(m_ptDrawingSceneMousePos) + " )" );
-            pTestStep->setDesiredValues(strlstDesiredValues);
+            pTestStep->setExpectedValues(strlstDesiredValues);
             pTestStep->testStarted();
 
             pMouseEv = new QMouseEvent(
@@ -955,7 +955,7 @@ void CTest::doTestStepStandardShapesTexts( ZS::Test::CTestStepGroup* i_pTestStep
                 strToolTip = m_pGraphObjSelected->getToolTip();
             }
 
-            pTestStep->setActualValues(strlstActualValues);
+            pTestStep->setResultValues(strlstActualValues);
             pTestStep->setToolTip(strToolTip);
             pTestStep->testEnded();
 
@@ -1001,7 +1001,7 @@ void CTest::doTestStepStandardShapesTexts( ZS::Test::CTestStepGroup* i_pTestStep
 
             pTestStep->setOperation( "view.mouseMoveEvent( ViewPos:" + point2Str(m_ptDrawingViewMousePos) + " )" );
             pTestStep->setDescription( "scene." + strCurrentGraphObj + ".rotateTo( " + QString::number(m_fAngle_degree) + "° )" );
-            pTestStep->setDesiredValues(strlstDesiredValues);
+            pTestStep->setExpectedValues(strlstDesiredValues);
             pTestStep->testStarted();
 
             pMouseEv = new QMouseEvent(
@@ -1027,7 +1027,7 @@ void CTest::doTestStepStandardShapesTexts( ZS::Test::CTestStepGroup* i_pTestStep
                 strToolTip = m_pGraphObjSelected->getToolTip();
             }
 
-            pTestStep->setActualValues(strlstActualValues);
+            pTestStep->setResultValues(strlstActualValues);
             pTestStep->setToolTip(strToolTip);
 
             bool bIgnoreTestResult = false;
@@ -1057,7 +1057,7 @@ void CTest::doTestStepStandardShapesTexts( ZS::Test::CTestStepGroup* i_pTestStep
 
             pTestStep->setOperation( "view.mouseReleaseEvent( ViewPos:" + point2Str(m_ptDrawingViewMousePos) + " )" );
             pTestStep->setDescription( "scene." + strCurrentGraphObj + ".release( ScenePos:" + point2Str(m_ptDrawingSceneMousePos) + " )" );
-            pTestStep->setDesiredValues(strlstDesiredValues);
+            pTestStep->setExpectedValues(strlstDesiredValues);
             pTestStep->testStarted();
 
             pMouseEv = new QMouseEvent(
@@ -1090,7 +1090,7 @@ void CTest::doTestStepStandardShapesTexts( ZS::Test::CTestStepGroup* i_pTestStep
                 strToolTip = m_pGraphObjSelected->getToolTip();
             }
 
-            pTestStep->setActualValues(strlstActualValues);
+            pTestStep->setResultValues(strlstActualValues);
             pTestStep->setToolTip(strToolTip);
             pTestStep->testEnded();
 

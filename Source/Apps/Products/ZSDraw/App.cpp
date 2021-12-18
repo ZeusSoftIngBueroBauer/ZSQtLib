@@ -49,7 +49,6 @@ may result in using the software modules.
 #include "Test.h"
 
 #include "ZSIpcTrace/ZSIpcTrcServer.h"
-//#include "ZSTest/ZSTestStep.h"
 #include "ZSSysGUI/ZSSysErrLogModel.h"
 #include "ZSSys/ZSSysApp.h"
 #include "ZSSys/ZSSysAux.h"
@@ -383,7 +382,22 @@ CApplication::~CApplication()
     // objects referenced by the message dtor would have already been destroyed before the dtor
     // of the event (message) is called.
 
+    try
+    {
+        ZS::Trace::CTrcServer::ReleaseInstance(m_pTrcServer);
+    }
+    catch(...)
+    {
+    }
     m_pTrcServer = nullptr;
+
+    try
+    {
+        delete m_pSettingsFile;
+    }
+    catch(...)
+    {
+    }
 
     CRequestExecTree::DestroyInstance();
 

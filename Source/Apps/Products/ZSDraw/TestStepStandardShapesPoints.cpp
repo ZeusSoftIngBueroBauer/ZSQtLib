@@ -167,7 +167,7 @@ void CTest::doTestStepStandardShapesPoints( ZS::Test::CTestStepGroup* i_pTestSte
                 strlstDesiredValues.append( "DrawingTool: Point" );
 
                 pTestStep->setOperation( "drawing.setCurrentDrawingTool( Point )" );
-                pTestStep->setDesiredValues(strlstDesiredValues);
+                pTestStep->setExpectedValues(strlstDesiredValues);
                 pTestStep->testStarted();
 
                 m_pMainWindow->setCheckedActionDrawStandardShapePoint(true);
@@ -184,7 +184,7 @@ void CTest::doTestStepStandardShapesPoints( ZS::Test::CTestStepGroup* i_pTestSte
                 strlstActualValues.append( "EditTool: " + editTool2Str(m_pDrawingScene->getEditTool()) );
                 strlstActualValues.append( "DrawingTool: " + strCurrentDrawingTool );
 
-                pTestStep->setActualValues(strlstActualValues);
+                pTestStep->setResultValues(strlstActualValues);
                 pTestStep->setToolTip(strToolTip);
                 pTestStep->testEnded();
 
@@ -218,7 +218,7 @@ void CTest::doTestStepStandardShapesPoints( ZS::Test::CTestStepGroup* i_pTestSte
 
             pTestStep->setOperation( "view.mousePressEvent( ViewPos:" + point2Str(m_ptDrawingViewMousePos) + " )" );
             pTestStep->setDescription( "scene." + strCurrentDrawingTool + ".create( ScenePos:" + point2Str(m_ptDrawingSceneMousePos) + " )" );
-            pTestStep->setDesiredValues(strlstDesiredValues);
+            pTestStep->setExpectedValues(strlstDesiredValues);
             pTestStep->testStarted();
 
             pMouseEv = new QMouseEvent(
@@ -253,7 +253,7 @@ void CTest::doTestStepStandardShapesPoints( ZS::Test::CTestStepGroup* i_pTestSte
                 }
             }
 
-            pTestStep->setActualValues(strlstActualValues);
+            pTestStep->setResultValues(strlstActualValues);
             pTestStep->setToolTip(strToolTip);
             pTestStep->testEnded();
 
@@ -290,7 +290,7 @@ void CTest::doTestStepStandardShapesPoints( ZS::Test::CTestStepGroup* i_pTestSte
 
             pTestStep->setOperation( "view.mouseMoveEvent( ViewPos:" + point2Str(m_ptDrawingViewMousePos) + " )" );
             pTestStep->setDescription( "scene." + strCurrentDrawingTool + ".create( ScenePos:" + point2Str(m_ptDrawingSceneMousePos) + " )" );
-            pTestStep->setDesiredValues(strlstDesiredValues);
+            pTestStep->setExpectedValues(strlstDesiredValues);
             pTestStep->testStarted();
 
             pMouseEv = new QMouseEvent(
@@ -325,7 +325,7 @@ void CTest::doTestStepStandardShapesPoints( ZS::Test::CTestStepGroup* i_pTestSte
                 }
             }
 
-            pTestStep->setActualValues(strlstActualValues);
+            pTestStep->setResultValues(strlstActualValues);
             pTestStep->setToolTip(strToolTip);
             pTestStep->testEnded();
 
@@ -344,7 +344,7 @@ void CTest::doTestStepStandardShapesPoints( ZS::Test::CTestStepGroup* i_pTestSte
 
             pTestStep->setOperation( "view.mouseReleaseEvent( ViewPos:" + point2Str(m_ptDrawingViewMousePos) + " )" );
             pTestStep->setDescription( "scene.mouseReleaseEvent( ScenePos:" + point2Str(m_ptDrawingSceneMousePos) + " )" );
-            pTestStep->setDesiredValues(strlstDesiredValues);
+            pTestStep->setExpectedValues(strlstDesiredValues);
             pTestStep->testStarted();
 
             pMouseEv = new QMouseEvent(
@@ -358,7 +358,7 @@ void CTest::doTestStepStandardShapesPoints( ZS::Test::CTestStepGroup* i_pTestSte
             delete pMouseEv;
             pMouseEv = nullptr;
 
-            pTestStep->setActualValues(strlstActualValues);
+            pTestStep->setResultValues(strlstActualValues);
             pTestStep->setToolTip(strToolTip);
             pTestStep->testEnded();
 

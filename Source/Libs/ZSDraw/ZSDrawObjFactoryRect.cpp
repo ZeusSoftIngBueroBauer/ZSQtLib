@@ -226,105 +226,99 @@ CGraphObj* CObjFactoryRect::loadGraphObj(
 
     if( i_pDrawingScene->findGraphObj(i_strObjId) == nullptr )
     {
-        QString                        strElemName;
-        QString                        strElemText;
-        bool                           bConverted;
-        CDrawSettings                  drawSettings(EGraphObjTypeRect);
-        QPointF                        ptPos;
-        QSizeF                         siz;
-        bool                           bPosValid = false;
-        bool                           bSizeValid = false;
-        double                         fRotAngle_deg = 0.0;
-        double                         fZValue = 0.0;
+        QXmlStreamReader::TokenType xmlStreamTokenType;
+
+        QString       strElemName;
+        QString       strElemText;
+        bool          bConverted;
+        CDrawSettings drawSettings(EGraphObjTypeRect);
+        QPointF       ptPos;
+        QSizeF        siz;
+        bool          bPosValid = false;
+        bool          bSizeValid = false;
+        double        fRotAngle_deg = 0.0;
+        double        fZValue = 0.0;
+
         QHash<QString,SGraphObjLabel*> arpLabels;
 
         while( !i_xmlStreamReader.hasError() && !i_xmlStreamReader.atEnd() )
         {
-            strElemName = i_xmlStreamReader.name().toString();
+            xmlStreamTokenType = i_xmlStreamReader.readNext();
 
-            if( i_xmlStreamReader.isStartElement() )
+            if( i_xmlStreamReader.isStartElement() || i_xmlStreamReader.isEndElement() )
             {
-                if( strElemName == "DrawSettings" )
+                strElemName = i_xmlStreamReader.name().toString();
+
+                if( i_xmlStreamReader.isStartElement() )
                 {
-                    drawSettings.load(i_xmlStreamReader);
-                }
-
-                else if( strElemName == "Geometry" )
-                {
-                }
-
-                else if( strElemName == "Pos" )
-                {
-                    strElemText = i_xmlStreamReader.readElementText();
-
-                    QPointF ptTmp = str2PointF(strElemText,&bConverted);
-
-                    if( bConverted )
+                    if( strElemName == "DrawSettings" )
                     {
-                        ptPos = ptTmp;
-                        bPosValid = true;
+                        drawSettings.load(i_xmlStreamReader);
                     }
-
-                } // if( strElemName == "Pos" )
-
-                else if( strElemName == "Size" )
-                {
-                    strElemText = i_xmlStreamReader.readElementText();
-
-                    QSizeF sizTmp = str2SizeF(strElemText,&bConverted);
-
-                    if( bConverted )
+                    else if( strElemName == "Geometry" )
                     {
-                        siz = sizTmp;
-                        bSizeValid = true;
                     }
-
-                } // if( strElemName == "Size" )
-
-                else if( strElemName == "RotAngleDeg" )
-                {
-                    strElemText = i_xmlStreamReader.readElementText();
-
-                    double fValTmp = strElemText.toDouble(&bConverted);
-
-                    if( bConverted )
+                    else if( strElemName == "Pos" )
                     {
-                        fRotAngle_deg = fValTmp;
+                        strElemText = i_xmlStreamReader.readElementText();
+
+                        QPointF ptTmp = str2PointF(strElemText,&bConverted);
+
+                        if( bConverted )
+                        {
+                            ptPos = ptTmp;
+                            bPosValid = true;
+                        }
                     }
-
-                } // if( strElemName == "RotAngleDeg" )
-
-                else if( strElemName == "ZValue" )
-                {
-                    strElemText = i_xmlStreamReader.readElementText();
-
-                    double fTmp = strElemText.toDouble(&bConverted);
-
-                    if( bConverted )
+                    else if( strElemName == "Size" )
                     {
-                        fZValue = fTmp;
+                        strElemText = i_xmlStreamReader.readElementText();
+
+                        QSizeF sizTmp = str2SizeF(strElemText,&bConverted);
+
+                        if( bConverted )
+                        {
+                            siz = sizTmp;
+                            bSizeValid = true;
+                        }
                     }
+                    else if( strElemName == "RotAngleDeg" )
+                    {
+                        strElemText = i_xmlStreamReader.readElementText();
 
-                } // if( strElemName == "ZValue" )
+                        double fValTmp = strElemText.toDouble(&bConverted);
 
-                else if( strElemName == "Labels" )
+                        if( bConverted )
+                        {
+                            fRotAngle_deg = fValTmp;
+                        }
+                    }
+                    else if( strElemName == "ZValue" )
+                    {
+                        strElemText = i_xmlStreamReader.readElementText();
+
+                        double fTmp = strElemText.toDouble(&bConverted);
+
+                        if( bConverted )
+                        {
+                            fZValue = fTmp;
+                        }
+                    }
+                    else if( strElemName == "Labels" )
+                    {
+                        SErrResultInfo errResultInfo;
+                        arpLabels = loadGraphObjLabels(i_xmlStreamReader,errResultInfo);
+                    }
+                } // if( xmlStreamReader.isStartElement() )
+
+                else if( i_xmlStreamReader.isEndElement() )
                 {
-                    SErrResultInfo errResultInfo;
-                    arpLabels = loadGraphObjLabels(i_xmlStreamReader,errResultInfo);
-
-                } // if( strElemName == "Labels" )
-
-            } // if( xmlStreamReader.isStartElement() )
-
-            else if( i_xmlStreamReader.isEndElement() )
-            {
-                if( strElemName == "GraphObj" )
-                {
-                    break;
-                }
-
-            } // if( i_xmlStreamReader.isEndElement() )
-
+                    if( strElemName == "GraphObj" )
+                    {
+                        break;
+                    }
+                } // if( i_xmlStreamReader.isEndElement() )
+            } // if( i_xmlStreamReader.isStartElement() || i_xmlStreamReader.isEndElement() )
         } // while( !i_xmlStreamReader.hasError() && !i_xmlStreamReader.atEnd() )
 
         if( bPosValid && bSizeValid )

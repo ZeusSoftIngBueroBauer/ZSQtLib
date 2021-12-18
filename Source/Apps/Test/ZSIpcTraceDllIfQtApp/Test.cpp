@@ -25,6 +25,7 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include <QtCore/qfile.h>
+#include <QtCore/qfileinfo.h>
 #include <QtCore/qtimer.h>
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
@@ -41,6 +42,7 @@ may result in using the software modules.
 #include "ZSTest/ZSTestStepIdxTree.h"
 #include "ZSTest/ZSTestStep.h"
 #include "ZSSys/ZSSysApp.h"
+#include "ZSSys/ZSSysErrLog.h"
 #include "ZSSys/ZSSysVersion.h"
 
 #include "ZSSys/ZSSysMemLeakDump.h"
@@ -64,7 +66,6 @@ CTest::CTest( const QString& i_strTestStepsFileName ) :
     ZS::Test::CTest(
         /* strName              */ "ZS::IpcTrace::DllIfQtApp",
         /* strTestStepsFileName */ i_strTestStepsFileName,
-        /* strNodeSeparator     */ "\\",
         /* iTestStepInterval_ms */ 0 ),
     m_pTmrTestStepTimeout(nullptr),
     m_trcSettings(),
@@ -191,10 +192,23 @@ CTest::CTest( const QString& i_strTestStepsFileName ) :
         /* pTSGrpParent    */ nullptr,
         /* szDoTestStepFct */ SLOT(doTestStepReleaseDll(ZS::Test::CTestStep*)) );
 
-    // Recall test admin object settings
-    //----------------------------------
+    // Recall test step settings
+    //--------------------------
 
-    m_pAdminIdxTree->read_(i_strTestStepsFileName);
+    QFileInfo fileInfo(i_strTestStepsFileName);
+
+    if( fileInfo.exists() )
+    {
+        SErrResultInfo errResultInfo = recall(i_strTestStepsFileName);
+
+        if(errResultInfo.isErrorResult())
+        {
+            if(CErrLog::GetInstance() != nullptr)
+            {
+                CErrLog::GetInstance()->addEntry(errResultInfo);
+            }
+        }
+    }
 
 } // default ctor
 
@@ -202,6 +216,16 @@ CTest::CTest( const QString& i_strTestStepsFileName ) :
 CTest::~CTest()
 //------------------------------------------------------------------------------
 {
+    SErrResultInfo errResultInfo = save();
+
+    if(errResultInfo.isErrorResult())
+    {
+        if(CErrLog::GetInstance() != nullptr)
+        {
+            CErrLog::GetInstance()->addEntry(errResultInfo);
+        }
+    }
+
     try
     {
         delete m_pTestModule1;
@@ -222,8 +246,6 @@ CTest::~CTest()
     {
         ZS::Trace::DllIf::CIpcTrcServer::ReleaseInstance(m_pTrcServer);
     }
-
-    m_pAdminIdxTree->save_();
 
     m_pTmrTestStepTimeout = nullptr;
     ZS::Trace::DllIf::STrcServerSettings_release(m_trcSettings);
@@ -255,7 +277,7 @@ void CTest::doTestStepLoadDll( ZS::Test::CTestStep* i_pTestStep )
 
     strlstDesiredValues.append(strDesiredValue);
 
-    i_pTestStep->setDesiredValues(strlstDesiredValues);
+    i_pTestStep->setExpectedValues(strlstDesiredValues);
 
     // Test Step
     //----------
@@ -278,7 +300,7 @@ void CTest::doTestStepLoadDll( ZS::Test::CTestStep* i_pTestStep )
 
     strlstActualValues.append(strActualValue);
 
-    i_pTestStep->setActualValues(strlstActualValues);
+    i_pTestStep->setResultValues(strlstActualValues);
 
 } // doTestStepLoadDll
 
@@ -298,7 +320,7 @@ void CTest::doTestStepReleaseDll( ZS::Test::CTestStep* i_pTestStep )
 
     strlstDesiredValues.append(strDesiredValue);
 
-    i_pTestStep->setDesiredValues(strlstDesiredValues);
+    i_pTestStep->setExpectedValues(strlstDesiredValues);
 
     // Test Step
     //----------
@@ -312,7 +334,7 @@ void CTest::doTestStepReleaseDll( ZS::Test::CTestStep* i_pTestStep )
 
     strlstActualValues.append(strActualValue);
 
-    i_pTestStep->setActualValues(strlstActualValues);
+    i_pTestStep->setResultValues(strlstActualValues);
 
 } // doTestStepReleaseDll
 
@@ -332,7 +354,7 @@ void CTest::doTestStepTraceServerCreateInstance( ZS::Test::CTestStep* i_pTestSte
 
     strlstDesiredValues.append(strDesiredValue);
 
-    i_pTestStep->setDesiredValues(strlstDesiredValues);
+    i_pTestStep->setExpectedValues(strlstDesiredValues);
 
     // Test Step
     //----------
@@ -348,7 +370,7 @@ void CTest::doTestStepTraceServerCreateInstance( ZS::Test::CTestStep* i_pTestSte
 
     strlstActualValues.append(strActualValue);
 
-    i_pTestStep->setActualValues(strlstActualValues);
+    i_pTestStep->setResultValues(strlstActualValues);
 
 } // doTestStepTraceServerCreateInstance
 
@@ -368,7 +390,7 @@ void CTest::doTestStepTraceServerReleaseInstance( ZS::Test::CTestStep* i_pTestSt
 
     strlstDesiredValues.append(strDesiredValue);
 
-    i_pTestStep->setDesiredValues(strlstDesiredValues);
+    i_pTestStep->setExpectedValues(strlstDesiredValues);
 
     // Test Step
     //----------
@@ -384,7 +406,7 @@ void CTest::doTestStepTraceServerReleaseInstance( ZS::Test::CTestStep* i_pTestSt
 
     strlstActualValues.append(strActualValue);
 
-    i_pTestStep->setActualValues(strlstActualValues);
+    i_pTestStep->setResultValues(strlstActualValues);
 
 } // doTestStepTraceServerReleaseInstance
 
@@ -404,7 +426,7 @@ void CTest::doTestStepTraceServerStartup( ZS::Test::CTestStep* i_pTestStep )
 
     strlstDesiredValues.append(strDesiredValue);
 
-    i_pTestStep->setDesiredValues(strlstDesiredValues);
+    i_pTestStep->setExpectedValues(strlstDesiredValues);
 
     // Test Step
     //----------
@@ -437,7 +459,7 @@ void CTest::doTestStepTraceServerStartup( ZS::Test::CTestStep* i_pTestStep )
 
     strlstActualValues.append(strActualValue);
 
-    i_pTestStep->setActualValues(strlstActualValues);
+    i_pTestStep->setResultValues(strlstActualValues);
 
 } // doTestStepTraceServerStartup
 
@@ -457,7 +479,7 @@ void CTest::doTestStepTraceServerShutdown( ZS::Test::CTestStep* i_pTestStep )
 
     strlstDesiredValues.append(strDesiredValue);
 
-    i_pTestStep->setDesiredValues(strlstDesiredValues);
+    i_pTestStep->setExpectedValues(strlstDesiredValues);
 
     // Test Step
     //----------
@@ -479,7 +501,7 @@ void CTest::doTestStepTraceServerShutdown( ZS::Test::CTestStep* i_pTestStep )
 
     strlstActualValues.append(strActualValue);
 
-    i_pTestStep->setActualValues(strlstActualValues);
+    i_pTestStep->setResultValues(strlstActualValues);
 
 } // doTestStepTraceServerShutdown
 
@@ -533,7 +555,7 @@ void CTest::doTestStepTraceServerRecallAdminObjs( ZS::Test::CTestStep* i_pTestSt
     strDesiredValue = bool2Str(bOk);
     strlstDesiredValues.append(strDesiredValue);
 
-    i_pTestStep->setDesiredValues(strlstDesiredValues);
+    i_pTestStep->setExpectedValues(strlstDesiredValues);
 
     // Test Step
     //----------
@@ -551,7 +573,7 @@ void CTest::doTestStepTraceServerRecallAdminObjs( ZS::Test::CTestStep* i_pTestSt
     strActualValue = bool2Str(bOk);
     strlstActualValues.append(strActualValue);
 
-    i_pTestStep->setActualValues(strlstActualValues);
+    i_pTestStep->setResultValues(strlstActualValues);
 
 } // doTestStepTraceServerRecallAdminObjs
 
@@ -574,7 +596,7 @@ void CTest::doTestStepTraceServerSaveAdminObjs( ZS::Test::CTestStep* i_pTestStep
     strDesiredValue = bool2Str(bOk);
     strlstDesiredValues.append(strDesiredValue);
 
-    i_pTestStep->setDesiredValues(strlstDesiredValues);
+    i_pTestStep->setExpectedValues(strlstDesiredValues);
 
     // Test Step
     //----------
@@ -592,7 +614,7 @@ void CTest::doTestStepTraceServerSaveAdminObjs( ZS::Test::CTestStep* i_pTestStep
     strActualValue = bool2Str(bOk);
     strlstActualValues.append(strActualValue);
 
-    i_pTestStep->setActualValues(strlstActualValues);
+    i_pTestStep->setResultValues(strlstActualValues);
 
 } // doTestStepTraceServerSaveAdminObjs
 
@@ -612,7 +634,7 @@ void CTest::doTestStepTraceClientConnect( ZS::Test::CTestStep* i_pTestStep )
 
     strlstDesiredValues.append(strDesiredValue);
 
-    i_pTestStep->setDesiredValues(strlstDesiredValues);
+    i_pTestStep->setExpectedValues(strlstDesiredValues);
 
     // Test Step
     //----------
@@ -643,7 +665,7 @@ void CTest::doTestStepTraceClientConnect( ZS::Test::CTestStep* i_pTestStep )
 
     strlstActualValues.append(strActualValue);
 
-    i_pTestStep->setActualValues(strlstActualValues);
+    i_pTestStep->setResultValues(strlstActualValues);
 
 } // doTestStepTraceClientConnect
 
@@ -663,7 +685,7 @@ void CTest::doTestStepTraceClientDisconnect( ZS::Test::CTestStep* i_pTestStep )
 
     strlstDesiredValues.append(strDesiredValue);
 
-    i_pTestStep->setDesiredValues(strlstDesiredValues);
+    i_pTestStep->setExpectedValues(strlstDesiredValues);
 
     // Test Step
     //----------
@@ -694,7 +716,7 @@ void CTest::doTestStepTraceClientDisconnect( ZS::Test::CTestStep* i_pTestStep )
 
     strlstActualValues.append(strActualValue);
 
-    i_pTestStep->setActualValues(strlstActualValues);
+    i_pTestStep->setResultValues(strlstActualValues);
 
 } // doTestStepTraceClientDisconnect
 
@@ -727,7 +749,7 @@ void CTest::doTestStepCreateModule1( ZS::Test::CTestStep* i_pTestStep )
 
     strlstDesiredValues.append(strDesiredValue);
 
-    i_pTestStep->setDesiredValues(strlstDesiredValues);
+    i_pTestStep->setExpectedValues(strlstDesiredValues);
 
     // Test Step
     //----------
@@ -769,7 +791,7 @@ void CTest::doTestStepCreateModule1( ZS::Test::CTestStep* i_pTestStep )
 
     strlstActualValues.append(strActualValue);
 
-    i_pTestStep->setActualValues(strlstActualValues);
+    i_pTestStep->setResultValues(strlstActualValues);
 
 } // doTestStepCreateModule1
 
@@ -802,7 +824,7 @@ void CTest::doTestStepDeleteModule1( ZS::Test::CTestStep* i_pTestStep )
 
     strlstDesiredValues.append(strDesiredValue);
 
-    i_pTestStep->setDesiredValues(strlstDesiredValues);
+    i_pTestStep->setExpectedValues(strlstDesiredValues);
 
     // Test Step
     //----------
@@ -845,7 +867,7 @@ void CTest::doTestStepDeleteModule1( ZS::Test::CTestStep* i_pTestStep )
 
     strlstActualValues.append(strActualValue);
 
-    i_pTestStep->setActualValues(strlstActualValues);
+    i_pTestStep->setResultValues(strlstActualValues);
 
 } // doTestStepDeleteModule1
 
@@ -878,7 +900,7 @@ void CTest::doTestStepCreateModule2( ZS::Test::CTestStep* i_pTestStep )
 
     strlstDesiredValues.append(strDesiredValue);
 
-    i_pTestStep->setDesiredValues(strlstDesiredValues);
+    i_pTestStep->setExpectedValues(strlstDesiredValues);
 
     // Test Step
     //----------
@@ -923,7 +945,7 @@ void CTest::doTestStepCreateModule2( ZS::Test::CTestStep* i_pTestStep )
 
     strlstActualValues.append(strActualValue);
 
-    i_pTestStep->setActualValues(strlstActualValues);
+    i_pTestStep->setResultValues(strlstActualValues);
 
 } // doTestStepCreateModule2
 
@@ -956,7 +978,7 @@ void CTest::doTestStepDeleteModule2( ZS::Test::CTestStep* i_pTestStep )
 
     strlstDesiredValues.append(strDesiredValue);
 
-    i_pTestStep->setDesiredValues(strlstDesiredValues);
+    i_pTestStep->setExpectedValues(strlstDesiredValues);
 
     // Test Step
     //----------
@@ -1002,7 +1024,7 @@ void CTest::doTestStepDeleteModule2( ZS::Test::CTestStep* i_pTestStep )
 
     strlstActualValues.append(strActualValue);
 
-    i_pTestStep->setActualValues(strlstActualValues);
+    i_pTestStep->setResultValues(strlstActualValues);
 
 } // doTestStepDeleteModule2
 
@@ -1024,7 +1046,7 @@ void CTest::onTimerTestStepTimeout()
         strActualValue = "Test step not finished in time";
         strlstActualValues.append(strActualValue);
 
-        pTestStep->setActualValues(strlstActualValues);
+        pTestStep->setResultValues(strlstActualValues);
 
     } // if( pTestStep != nullptr )
 

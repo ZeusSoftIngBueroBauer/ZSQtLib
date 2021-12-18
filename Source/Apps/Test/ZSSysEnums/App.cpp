@@ -328,7 +328,7 @@ void CApplication::saveSettings()
         {
             strSettingsKey = "TestSteps";
 
-            m_pSettingsFile->setValue( strSettingsKey+"/FileName", m_pTest->getAdminObjIdxTree()->getFileName() );
+            m_pSettingsFile->setValue( strSettingsKey+"/FileName", m_pTest->getTestStepsAbsFilePath() );
 
             m_pSettingsFile->sync();
 
