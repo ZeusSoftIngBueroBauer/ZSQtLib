@@ -134,10 +134,7 @@ CTest::CTest( const QString& i_strTestStepsFileName ) :
     //m_iWdgtLabelsCount(0),
     //m_iWdgtLineEditsCount(0),
     //m_iWdgtPushButtonsCount(0)
-    m_fInterferenceChecksDrawingFreqMin_Hz(899.5e6),
-    m_fInterferenceChecksDrawingFreqMax_Hz(900.5e6),
-    m_fInterferenceChecksDrawingLevelMin_dBm(0.0),
-    m_fInterferenceChecksDrawingLevelMax_dBm(50.0)
+    m_pTrcAdminObj(nullptr)
 {
     // Get trace admin object
     //-----------------------
@@ -150,27 +147,12 @@ CTest::CTest( const QString& i_strTestStepsFileName ) :
         /* strMethod    */ "ctor",
         /* strAddInfo   */ "" );
 
-    int idxSubGroup;
-    int idxStep;
+    int idxGroup = 0;
 
-    // Sub-Group: Server
-    //==================
+    // Grid Lines
+    //-----------
 
-    idxSubGroup = 0;
-
-    ZS::Test::CTestStepGroup* pGrpInterferenceChecks = new ZS::Test::CTestStepGroup(
-        /* pTest           */ this,
-        /* strName         */ "Group " + QString::number(++idxSubGroup) + " Interference Checks",
-        /* pTSGrpParent    */ nullptr );
-
-    idxStep = 0;
-
-    new ZS::Test::CTestStep(
-        /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + ": [TE1] LOCK? BOX1, 100, OFF, 899900000.000000, 210.0e3, 33.0, 24.028359, 1",
-        /* strOperation    */ "Rect {899.9e6, 0.21e6, 33.0, 24.028359}",
-        /* pTSGrpParent    */ pGrpInterferenceChecks,
-        /* szDoTestStepFct */ SLOT(doTestStepInterferenceChecksI1L1(ZS::Test::CTestStep*)) );
+    createTestGroupAndroidWallpaperTemplate(idxGroup);
 
     // Recall test step settings
     //--------------------------
@@ -250,10 +232,6 @@ CTest::~CTest()
     //m_iWdgtLabelsCount = 0;
     //m_iWdgtLineEditsCount = 0;
     //m_iWdgtPushButtonsCount = 0;
-    m_fInterferenceChecksDrawingFreqMin_Hz = 0.0;
-    m_fInterferenceChecksDrawingFreqMax_Hz = 0.0;
-    m_fInterferenceChecksDrawingLevelMin_dBm = 0.0;
-    m_fInterferenceChecksDrawingLevelMax_dBm = 0.0;
     m_pTrcAdminObj = nullptr;
 
 } // dtor

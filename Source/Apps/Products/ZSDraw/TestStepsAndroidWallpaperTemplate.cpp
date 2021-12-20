@@ -1,0 +1,529 @@
+/*******************************************************************************
+
+Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer
+                         Gewerbepark 28
+                         D-83670 Bad Heilbrunn
+                         Tel: 0049 8046 9488
+                         www.zeussoft.de
+                         E-Mail: mailbox@zeussoft.de
+
+--------------------------------------------------------------------------------
+
+Content: This file is part of the ZSQtLib.
+
+This file may be used with no license restrictions for your needs. But it is not
+allowed to resell any modules of the ZSQtLib veiling the original developer of
+the modules. Therefore the copyright link to ZeusSoft, Ing. Buero Bauer must not
+be removed from the header of the source code modules.
+
+ZeusSoft, Ing. Buero Bauer provides the source code as is without any guarantee
+that the code is written without faults.
+
+ZeusSoft, Ing. Buero Bauer does not assume any liability for any damages which
+may result in using the software modules.
+
+*******************************************************************************/
+
+#include <QtCore/qfileinfo.h>
+#include <QtGui/qevent.h>
+
+#include "Test.h"
+#include "MainWindow.h"
+
+#include "ZSDraw/ZSDrawingScene.h"
+#include "ZSDraw/ZSDrawingView.h"
+#include "ZSDraw/ZSDrawGraphObjLine.h"
+#include "ZSDraw/ZSDrawGraphObjRect.h"
+#include "ZSPhysSizes/Geometry/ZSPhysSizes.h"
+#include "ZSPhysVal/ZSPhysValExceptions.h"
+#include "ZSTest/ZSTestStep.h"
+#include "ZSTest/ZSTestStepGroup.h"
+#include "ZSSys/ZSSysApp.h"
+#include "ZSSys/ZSSysException.h"
+#include "ZSSys/ZSSysMath.h"
+#include "ZSSys/ZSSysTrcAdminObj.h"
+#include "ZSSys/ZSSysTrcMethod.h"
+
+#include "ZSSys/ZSSysMemLeakDump.h"
+
+using namespace ZS::System;
+using namespace ZS::Draw;
+using namespace ZS::PhysVal;
+using namespace ZS::Apps::Products::Draw;
+using namespace ZS::Trace;
+
+
+/*==============================================================================
+protected slots: // test step methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CTest::createTestGroupAndroidWallpaperTemplate( int& io_idxGroup )
+//------------------------------------------------------------------------------
+{
+    ZS::Test::CTestStepGroup* pGrpGridLines = new ZS::Test::CTestStepGroup(
+        /* pTest           */ this,
+        /* strName         */ "Group " + QString::number(++io_idxGroup) + " Grid Lines",
+        /* pTSGrpParent    */ nullptr );
+
+    int idxStep = 0;
+
+    new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + ": Page Setup",
+        /* strOperation    */ "Width: 1920 px, Height: 1408 px", // should be: 1920, 1408
+        /* pTSGrpParent    */ pGrpGridLines,
+        /* szDoTestStepFct */ SLOT(doTestStepAndroidWallpaperTemplatePageSetup(ZS::Test::CTestStep*)) );
+
+    new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + ": Draw Grid Lines",
+        /* strOperation    */ "xOffs: 10 px, yOffs: 10 px",
+        /* pTSGrpParent    */ pGrpGridLines,
+        /* szDoTestStepFct */ SLOT(doTestStepAndroidWallpaperTemplateDrawGridLines(ZS::Test::CTestStep*)) );
+
+    new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + ": Save as wallpaper_template.png",
+        /* strOperation    */ "saveAs(wallpaper_temmplate.png)",
+        /* pTSGrpParent    */ pGrpGridLines,
+        /* szDoTestStepFct */ SLOT(doTestStepAndroidWallpaperTemplateSaveAsWallpaperPng(ZS::Test::CTestStep*)) );
+
+} // createTestGroupAndroidWallpaperTemplate
+
+//------------------------------------------------------------------------------
+void CTest::doTestStepAndroidWallpaperTemplatePageSetup( ZS::Test::CTestStep* i_pTestStep )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    {
+        strMthInArgs = i_pTestStep->path();
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* strMethod    */ "doTestStepAndroidWallpaperTemplatePageSetup",
+        /* strAddInfo   */ strMthInArgs );
+
+    // Expected Values
+    //---------------
+
+    QStringList strlstExpectedValues = { "Width: ? px", "Height: ? px" };
+
+    /* strOperation might be:
+
+       "Width: 1234.5 px, Height: 12345.6 px",
+    */
+
+    QString strOperation = i_pTestStep->getOperation();
+
+    CPageSetup pageSetup;
+
+    if( strOperation.contains("Width:") && strOperation.contains("Height:") )
+    {
+        CPhysVal physValWidth(Geometry::GraphDevice());
+        CPhysVal physValHeight(Geometry::GraphDevice());
+
+        QString strCoors = strOperation;
+
+        QStringList strlstCoors = strCoors.split(",");
+
+        if( strlstCoors.size() == 2 )
+        {
+            for( auto& strCoor : strlstCoors )
+            {
+                strCoor = strCoor.trimmed();
+
+                if( strCoor.startsWith("Width:") )
+                {
+                    strCoor = strCoor.remove("Width:");
+                    physValWidth = strCoor;
+                }
+                else if( strCoor.startsWith("Height:") )
+                {
+                    strCoor = strCoor.remove("Height:");
+                    physValHeight = strCoor;
+                }
+            }
+
+            try
+            {
+                int cxWidth = physValWidth.getVal(Geometry::GraphDevice()->Pixel());
+                int cyHeight = physValHeight.getVal(Geometry::GraphDevice()->Pixel());
+
+                strlstExpectedValues[0] = "Width: " + QString::number(cxWidth) + " px";
+                strlstExpectedValues[1] = "Height: " + QString::number(cyHeight) + " px";
+
+                pageSetup.setDrawingWidthInPixels(cxWidth);
+                pageSetup.setDrawingHeightInPixels(cyHeight);
+            }
+            catch( CPhysValException& )
+            {
+            }
+        }
+    }
+
+    i_pTestStep->setExpectedValues(strlstExpectedValues);
+
+    // Test Step
+    //----------
+
+    m_pDrawingScene->clear();
+
+    m_pDrawingView->setPageSetup(pageSetup);
+
+    // Result Values
+    //--------------
+
+    QStringList strlstResultValues;
+
+    pageSetup = m_pDrawingView->getPageSetup();
+
+    strlstResultValues.append(QString("Width: " + QString::number(pageSetup.getDrawingWidthInPixels()) + " px"));
+    strlstResultValues.append(QString("Height: " + QString::number(pageSetup.getDrawingHeightInPixels()) + " px"));
+
+    i_pTestStep->setResultValues(strlstResultValues);
+
+} // doTestStepAndroidWallpaperTemplatePageSetup
+
+//------------------------------------------------------------------------------
+void CTest::doTestStepAndroidWallpaperTemplateDrawGridLines( ZS::Test::CTestStep* i_pTestStep )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    {
+        strMthInArgs = i_pTestStep->path();
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* strMethod    */ "doTestStepAndroidWallpaperTemplateDrawGridLines",
+        /* strAddInfo   */ strMthInArgs );
+
+    // Expected Values
+    //---------------
+
+    QStringList strlstExpectedValues;
+    QString     strExpectedValues;
+
+    /* strOperation might be:
+
+        "xOffs: 10 px, yOffs: 10 px",
+    */
+
+    QString strOperation = i_pTestStep->getOperation();
+
+    int xOffs_px = 0;
+    int yOffs_px = 0;
+
+    if( strOperation.contains("xOffs:") && strOperation.contains("yOffs:") )
+    {
+        CPhysVal physValXOffs(Geometry::GraphDevice());
+        CPhysVal physValYOffs(Geometry::GraphDevice());
+
+        QString strCoors = strOperation;
+
+        QStringList strlstCoors = strCoors.split(",");
+
+        if( strlstCoors.size() == 2 )
+        {
+            for( auto& strCoor : strlstCoors )
+            {
+                strCoor = strCoor.trimmed();
+
+                if( strCoor.startsWith("xOffs:") )
+                {
+                    strCoor = strCoor.remove("xOffs:");
+                    physValXOffs = strCoor;
+                }
+                else if( strCoor.startsWith("yOffs:") )
+                {
+                    strCoor = strCoor.remove("yOffs:");
+                    physValYOffs = strCoor;
+                }
+            }
+
+            try
+            {
+                xOffs_px = physValXOffs.getVal(Geometry::GraphDevice()->Pixel());
+                yOffs_px = physValYOffs.getVal(Geometry::GraphDevice()->Pixel());
+            }
+            catch( CPhysValException& )
+            {
+            }
+        }
+    }
+
+    CPageSetup pageSetup = m_pDrawingView->getPageSetup();
+
+    int x1_px = 0;
+    int y1_px = 0;
+    int x2_px = pageSetup.getDrawingWidthInPixels();
+    int y2_px = 0;
+
+    if( yOffs_px > 0 )
+    {
+        while( y1_px <= pageSetup.getDrawingHeightInPixels() )
+        {
+            if( !strExpectedValues.isEmpty() ) strExpectedValues += ", ";
+            QLine line(x1_px, y1_px, x2_px, y2_px);
+            strExpectedValues += QString::number(y1_px);
+            y1_px += yOffs_px;
+            y2_px = y1_px;
+        }
+    }
+
+    strlstExpectedValues += strExpectedValues;
+    strExpectedValues.clear();
+
+    x1_px = 0;
+    y1_px = 0;
+    x2_px = 0;
+    y2_px = pageSetup.getDrawingHeightInPixels();
+
+    if( xOffs_px > 0 )
+    {
+        while( x1_px <= pageSetup.getDrawingWidthInPixels() )
+        {
+            if( !strExpectedValues.isEmpty() ) strExpectedValues += ", ";
+            QLine line(x1_px, y1_px, x2_px, y2_px);
+            strExpectedValues += QString::number(x1_px);
+            x1_px += xOffs_px;
+            x2_px = x1_px;
+        }
+    }
+
+    strlstExpectedValues += strExpectedValues;
+    strExpectedValues.clear();
+
+    i_pTestStep->setExpectedValues(strlstExpectedValues);
+
+    // Test Step
+    //----------
+
+    QVector<CGraphObj*> arpGraphObjs;
+
+    CDrawSettings drawSettingsLine(EGraphObjTypeLine);
+    //CDrawSettings drawSettingsRect(EGraphObjTypeRect);
+
+    //QColor colRect(Qt::gray);
+    //colRect.setAlpha(127);
+    //drawSettingsRect.setFillColor(colRect);
+    //drawSettingsRect.setFillStyle(EFillStyleSolidPattern);
+
+    int idxLine = 0;
+
+    x1_px = 0;
+    y1_px = 0;
+    x2_px = pageSetup.getDrawingWidthInPixels();
+    y2_px = 0;
+
+    if( yOffs_px > 0 )
+    {
+        while( y1_px <= pageSetup.getDrawingHeightInPixels() )
+        {
+            if( idxLine % 10 == 0 )
+            {
+                drawSettingsLine.setPenColor(Qt::black);
+            }
+            else if( idxLine % 5 == 0 )
+            {
+                drawSettingsLine.setPenColor(Qt::darkGray);
+            }
+            else
+            {
+                drawSettingsLine.setPenColor(Qt::gray);
+            }
+
+            CGraphObjLine* pGraphObjLine = new CGraphObjLine(
+                /* pDrawingScene */ m_pDrawingScene,
+                /* drawSettings  */ drawSettingsLine,
+                /* strObjName    */ "HL" + QString::number(y1_px),
+                /* strObjId      */ "HL" + QString::number(idxLine));
+            arpGraphObjs.append(pGraphObjLine);
+
+            pGraphObjLine->setLine( QLine(x1_px, y1_px, x2_px, y2_px) );
+            m_pDrawingScene->addItem(pGraphObjLine);
+            m_pDrawingScene->onGraphObjCreated(pGraphObjLine);
+            pGraphObjLine->acceptCurrentAsOriginalCoors();
+
+            //if( idxLine % 5 == 0 )
+            //{
+            //    CGraphObjRect* pGraphObjRect = new CGraphObjRect(
+            //        /* pDrawingScene */ m_pDrawingScene,
+            //        /* drawSettings  */ drawSettingsRect,
+            //        /* strObjName    */ "HR" + QString::number(y1_px),
+            //        /* strObjId      */ "HR" + QString::number(idxLine));
+
+            //    pGraphObjRect->setRect( QRect(x1_px, y1_px, x2_px-x1_px, yOffs_px) );
+            //    m_pDrawingScene->addItem(pGraphObjRect);
+            //    m_pDrawingScene->onGraphObjCreated(pGraphObjRect);
+            //    pGraphObjRect->acceptCurrentAsOriginalCoors();
+            //}
+
+            y1_px += yOffs_px;
+            y2_px = y1_px;
+
+            ++idxLine;
+        }
+    }
+
+    idxLine = 0;
+
+    x1_px = 0;
+    y1_px = 0;
+    x2_px = 0;
+    y2_px = pageSetup.getDrawingHeightInPixels();
+
+    if( xOffs_px > 0 )
+    {
+        while( x1_px <= pageSetup.getDrawingWidthInPixels() )
+        {
+            if( idxLine % 10 == 0 )
+            {
+                drawSettingsLine.setPenColor(Qt::black);
+            }
+            else if( idxLine % 5 == 0 )
+            {
+                drawSettingsLine.setPenColor(Qt::darkGray);
+            }
+            else
+            {
+                drawSettingsLine.setPenColor(Qt::gray);
+            }
+
+            CGraphObjLine* pGraphObjLine = new CGraphObjLine(
+                /* pDrawingScene */ m_pDrawingScene,
+                /* drawSettings  */ drawSettingsLine,
+                /* strObjName    */ "VL" + QString::number(x1_px),
+                /* strObjId      */ "VL" + QString::number(idxLine));
+            arpGraphObjs.append(pGraphObjLine);
+
+            pGraphObjLine->setLine( QLine(x1_px, y1_px, x2_px, y2_px) );
+
+            m_pDrawingScene->addItem(pGraphObjLine);
+            m_pDrawingScene->onGraphObjCreated(pGraphObjLine);
+            pGraphObjLine->acceptCurrentAsOriginalCoors();
+
+            //if( idxLine % 5 == 0 )
+            //{
+            //    CGraphObjRect* pGraphObjRect = new CGraphObjRect(
+            //        /* pDrawingScene */ m_pDrawingScene,
+            //        /* drawSettings  */ drawSettingsRect,
+            //        /* strObjName    */ "VR" + QString::number(x1_px),
+            //        /* strObjId      */ "VR" + QString::number(idxLine));
+
+            //    pGraphObjRect->setRect( QRect(x1_px, y1_px, xOffs_px, y2_px-y1_px) );
+            //    m_pDrawingScene->addItem(pGraphObjRect);
+            //    m_pDrawingScene->onGraphObjCreated(pGraphObjRect);
+            //    pGraphObjRect->acceptCurrentAsOriginalCoors();
+            //}
+
+            x1_px += xOffs_px;
+            x2_px = x1_px;
+
+            ++idxLine;
+        }
+    }
+
+    // Result Values
+    //--------------
+
+    QStringList strlstResultValues;
+    QString     strResultValues;
+
+    for( const auto& pGraphObj : arpGraphObjs )
+    {
+        CGraphObjLine* pGraphObjLine = dynamic_cast<CGraphObjLine*>(pGraphObj);
+
+        if( pGraphObjLine != nullptr && pGraphObjLine->getObjName().startsWith("HL") )
+        {
+            if( !strResultValues.isEmpty() ) strResultValues += ", ";
+            QLineF line = pGraphObjLine->getLine();
+            strResultValues += QString::number(line.y1());
+        }
+    }
+
+    strlstResultValues += strResultValues;
+    strResultValues.clear();
+
+    for( const auto& pGraphObj : arpGraphObjs )
+    {
+        CGraphObjLine* pGraphObjLine = dynamic_cast<CGraphObjLine*>(pGraphObj);
+
+        if( pGraphObjLine != nullptr && pGraphObjLine->getObjName().startsWith("VL") )
+        {
+            if( !strResultValues.isEmpty() ) strResultValues += ", ";
+            QLineF line = pGraphObjLine->getLine();
+            strResultValues += QString::number(line.x1());
+        }
+    }
+
+    strlstResultValues += strResultValues;
+    strResultValues.clear();
+
+    i_pTestStep->setResultValues(strlstResultValues);
+
+} // doTestStepAndroidWallpaperTemplateDrawGridLines
+
+//------------------------------------------------------------------------------
+void CTest::doTestStepAndroidWallpaperTemplateSaveAsWallpaperPng( ZS::Test::CTestStep* i_pTestStep )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    {
+        strMthInArgs = i_pTestStep->path();
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* strMethod    */ "doTestStepAndroidWallpaperTemplateSaveAsWallpaperPng",
+        /* strAddInfo   */ strMthInArgs );
+
+    // Expected Values
+    //---------------
+
+    QStringList strlstExpectedValues;
+
+    i_pTestStep->setExpectedValues(strlstExpectedValues);
+
+    // Test Step
+    //----------
+
+    // Range of IniFileScope: ["AppDir", "User", "System"]
+    #ifdef __linux__
+    // Using "System" on linux Mint ends up in directory "etc/xdg/<CompanyName>"
+    // where the application has not write access rights. Stupid ...
+    QString strIniFileScope = "User";
+    #else
+    QString strIniFileScope = "System"; // Default
+    #endif
+
+    QString strAppLogDir = ZS::System::getAppLogDir(strIniFileScope);
+    QString strFileName = strAppLogDir + "/" + "wallpaper_template.png";
+
+    QImage img(m_pDrawingView->getDrawingWidthInPixels(), m_pDrawingView->getDrawingHeightInPixels(), QImage::Format_ARGB32_Premultiplied);
+    QPainter painter(&img);
+    m_pDrawingScene->render(&painter);
+    painter.end();
+    img.save(strFileName);
+
+    // Result Values
+    //--------------
+
+    QStringList strlstResultValues;
+    QFileInfo fileInfo(strFileName);
+    strlstResultValues += "FileSize: " + QString::number(fileInfo.size());
+
+    i_pTestStep->setResultValues(strlstResultValues);
+
+} // doTestStepAndroidWallpaperTemplateSaveAsWallpaperPng

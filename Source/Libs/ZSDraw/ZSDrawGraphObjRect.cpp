@@ -845,19 +845,28 @@ void CGraphObjRect::paint(
     if( m_pDrawingScene->getMode() == EMode::Edit && isSelected() )
     {
         pn.setColor(Qt::blue);
+        pn.setStyle(Qt::DotLine);
+        pn.setWidth(m_drawSettings.getPenWidth()+2);
+    }
+    else
+    {
+        pn.setColor(m_drawSettings.getPenColor());
+        pn.setWidth(m_drawSettings.getPenWidth());
     }
 
     i_pPainter->setPen(pn);
-    i_pPainter->setBrush( brush() );
+
+    QBrush brsh = brush();
+
+    brsh.setColor(m_drawSettings.getFillColor());
+    brsh.setStyle(fillStyle2QtBrushStyle(m_drawSettings.getFillStyle()));
+
+    i_pPainter->setBrush(brsh);
 
     i_pPainter->drawRect( rect() );
 
     if( m_pDrawingScene->getMode() == EMode::Edit && (m_bIsHit || isSelected()) )
     {
-        pn.setStyle(Qt::DotLine);
-        pn.setColor(Qt::blue);
-        pn.setWidth(1);
-
         i_pPainter->setPen(pn);
         i_pPainter->setBrush(Qt::NoBrush);
 

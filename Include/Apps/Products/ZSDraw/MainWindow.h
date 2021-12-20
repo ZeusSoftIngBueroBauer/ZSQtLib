@@ -292,6 +292,8 @@ public slots: // Menu - Draw - Graphics
 public slots: // Menu - Draw - Connections
     void onActionDrawConnectionPointToggled( bool );
     void onActionDrawConnectionLineToggled( bool );
+public slots: // Menu - View - Zoom
+    void onActionViewZoomToggled( bool );
 public slots: // Menu - Trace
     void onActionTraceErrLogTriggered( bool );
     void onActionTraceServerTriggered( bool );

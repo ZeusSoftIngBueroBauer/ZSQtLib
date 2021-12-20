@@ -190,7 +190,8 @@ void CModeldxTreeTestSteps::setShowExpectedAndResultValuesOnlyIfTestStepFailed( 
     {
         m_bShowExpectedAndResultValuesOnlyIfTestStepFailed = i_bSet;
 
-        //reset();
+        beginResetModel();
+        endResetModel();
     }
 
 } // setShowExpectedAndResultValuesOnlyIfTestStepFailed

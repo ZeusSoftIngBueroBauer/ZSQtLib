@@ -24,6 +24,8 @@ may result in using the software modules.
 
 *******************************************************************************/
 
+#if 0
+
 #include <QtCore/qtimer.h>
 #include <QtGui/qevent.h>
 
@@ -58,8 +60,6 @@ using namespace ZS::Trace;
 /*******************************************************************************
 class CTest : public Test::CTest
 *******************************************************************************/
-
-#if 0
 
 static QRectF    s_rctCnctPt1;
 static QRectF    s_rctCnctPt2;
@@ -366,8 +366,8 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
     QString                   strCurrentGraphObj;
     QString                   strToolTip;
     ZS::Test::CTestStep*      pTestStep;
-    QStringList               strlstDesiredValues;
-    QStringList               strlstActualValues;
+    QStringList               strlstExpectedValues;
+    QStringList               strlstResultValues;
     CGraphObj*                pGraphObj;
     QList<QGraphicsItem*>     arpGraphicsItems;
     CGraphObjConnectionLine*  pGraphObjCnctLine;
@@ -403,11 +403,11 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
         {
             pTestStep = getTestStep( "Connection1.ConnectionPoint1.ActivateDrawingToolConnectionPoint", pTSGrpConnectionsCreate );
 
-            strlstDesiredValues.append( "EditTool: CreateObjects" );
-            strlstDesiredValues.append( "DrawingTool: ConnectionPoint" );
+            strlstExpectedValues.append( "EditTool: CreateObjects" );
+            strlstExpectedValues.append( "DrawingTool: ConnectionPoint" );
 
             pTestStep->setOperation( "drawing.setCurrentDrawingTool( ConnectionPoint )" );
-            pTestStep->setExpectedValues(strlstDesiredValues);
+            pTestStep->setExpectedValues(strlstExpectedValues);
             pTestStep->testStarted();
 
             if( (m_pDrawingScene->getEditTool() != EEditToolCreateObjects) || (m_pDrawingScene->getCurrentDrawingToolGraphObjType() != EGraphObjTypeConnectionPoint) )
@@ -424,10 +424,10 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
                 strCurrentDrawingTool = "";
             }
 
-            strlstActualValues.append( "EditTool: " + editTool2Str(m_pDrawingScene->getEditTool()) );
-            strlstActualValues.append( "DrawingTool: " + strCurrentDrawingTool );
+            strlstResultValues.append( "EditTool: " + editTool2Str(m_pDrawingScene->getEditTool()) );
+            strlstResultValues.append( "DrawingTool: " + strCurrentDrawingTool );
 
-            pTestStep->setResultValues(strlstActualValues);
+            pTestStep->setResultValues(strlstResultValues);
             pTestStep->setToolTip(strToolTip);
             pTestStep->testEnded();
 
@@ -460,11 +460,11 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
                 /* width  */ 2.0*CGraphObjConnectionPoint::GetDefaultOuterCircleRadiusInPx(),
                 /* height */ 2.0*CGraphObjConnectionPoint::GetDefaultOuterCircleRadiusInPx() );
 
-            strlstDesiredValues.append( strCurrentGraphObj + ": " + polygon2Str(s_rctCnctPt1) );
+            strlstExpectedValues.append( strCurrentGraphObj + ": " + polygon2Str(s_rctCnctPt1) );
 
             pTestStep->setOperation( "view.mouseClickEvent( ViewPos:" + point2Str(m_ptDrawingViewMousePos) + " )" );
             pTestStep->setDescription( "scene." + strCurrentDrawingTool + ".create( ScenePos:" + point2Str(m_ptDrawingSceneMousePos) + " )" );
-            pTestStep->setExpectedValues(strlstDesiredValues);
+            pTestStep->setExpectedValues(strlstExpectedValues);
             pTestStep->testStarted();
 
             pMouseEv = new QMouseEvent(
@@ -497,11 +497,11 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
             {
                 pGraphObjCreated = dynamic_cast<CGraphObj*>(arpGraphicsItems[0]);
                 strCurrentGraphObj = pGraphObjCreated->getObjName();
-                strlstActualValues.append( strCurrentGraphObj + ": " + pGraphObjCreated->getScenePolygonShapePointsString() );
+                strlstResultValues.append( strCurrentGraphObj + ": " + pGraphObjCreated->getScenePolygonShapePointsString() );
                 strToolTip = pGraphObjCreated->getToolTip();
             }
 
-            pTestStep->setResultValues(strlstActualValues);
+            pTestStep->setResultValues(strlstResultValues);
             pTestStep->setToolTip(strToolTip);
             pTestStep->testEnded();
 
@@ -534,11 +534,11 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
                 /* width  */ 2.0*CGraphObjConnectionPoint::GetDefaultOuterCircleRadiusInPx(),
                 /* height */ 2.0*CGraphObjConnectionPoint::GetDefaultOuterCircleRadiusInPx() );
 
-            strlstDesiredValues.append( strCurrentGraphObj + ": " + polygon2Str(s_rctCnctPt2) );
+            strlstExpectedValues.append( strCurrentGraphObj + ": " + polygon2Str(s_rctCnctPt2) );
 
             pTestStep->setOperation( "view.mouseClickEvent( ViewPos:" + point2Str(m_ptDrawingViewMousePos) + " )" );
             pTestStep->setDescription( "scene." + strCurrentDrawingTool + ".create( ScenePos:" + point2Str(m_ptDrawingSceneMousePos) + " )" );
-            pTestStep->setExpectedValues(strlstDesiredValues);
+            pTestStep->setExpectedValues(strlstExpectedValues);
             pTestStep->testStarted();
 
             pMouseEv = new QMouseEvent(
@@ -571,11 +571,11 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
             {
                 pGraphObjCreated = dynamic_cast<CGraphObj*>(arpGraphicsItems[0]);
                 strCurrentGraphObj = pGraphObjCreated->getObjName();
-                strlstActualValues.append( strCurrentGraphObj + ": " + pGraphObjCreated->getScenePolygonShapePointsString() );
+                strlstResultValues.append( strCurrentGraphObj + ": " + pGraphObjCreated->getScenePolygonShapePointsString() );
                 strToolTip = pGraphObjCreated->getToolTip();
             }
 
-            pTestStep->setResultValues(strlstActualValues);
+            pTestStep->setResultValues(strlstResultValues);
             pTestStep->setToolTip(strToolTip);
             pTestStep->testEnded();
 
@@ -608,11 +608,11 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
                 /* width  */ 2.0*CGraphObjConnectionPoint::GetDefaultOuterCircleRadiusInPx(),
                 /* height */ 2.0*CGraphObjConnectionPoint::GetDefaultOuterCircleRadiusInPx() );
 
-            strlstDesiredValues.append( strCurrentGraphObj + ": " + polygon2Str(s_rctCnctPt3) );
+            strlstExpectedValues.append( strCurrentGraphObj + ": " + polygon2Str(s_rctCnctPt3) );
 
             pTestStep->setOperation( "view.mouseClickEvent( ViewPos:" + point2Str(m_ptDrawingViewMousePos) + " )" );
             pTestStep->setDescription( "scene." + strCurrentDrawingTool + ".create( ScenePos:" + point2Str(m_ptDrawingSceneMousePos) + " )" );
-            pTestStep->setExpectedValues(strlstDesiredValues);
+            pTestStep->setExpectedValues(strlstExpectedValues);
             pTestStep->testStarted();
 
             pMouseEv = new QMouseEvent(
@@ -645,11 +645,11 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
             {
                 pGraphObjCreated = dynamic_cast<CGraphObj*>(arpGraphicsItems[0]);
                 strCurrentGraphObj = pGraphObjCreated->getObjName();
-                strlstActualValues.append( strCurrentGraphObj + ": " + pGraphObjCreated->getScenePolygonShapePointsString() );
+                strlstResultValues.append( strCurrentGraphObj + ": " + pGraphObjCreated->getScenePolygonShapePointsString() );
                 strToolTip = pGraphObjCreated->getToolTip();
             }
 
-            pTestStep->setResultValues(strlstActualValues);
+            pTestStep->setResultValues(strlstResultValues);
             pTestStep->setToolTip(strToolTip);
             pTestStep->testEnded();
 
@@ -662,11 +662,11 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
         {
             pTestStep = getTestStep( "Connection1.ConnectionLine1.ActivateDrawingToolConnectionLine", pTSGrpConnectionsCreate );
 
-            strlstDesiredValues.append( "EditTool: CreateObjects" );
-            strlstDesiredValues.append( "DrawingTool: ConnectionLine" );
+            strlstExpectedValues.append( "EditTool: CreateObjects" );
+            strlstExpectedValues.append( "DrawingTool: ConnectionLine" );
 
             pTestStep->setOperation( "drawing.setCurrentDrawingTool( ConnectionLine )" );
-            pTestStep->setExpectedValues(strlstDesiredValues);
+            pTestStep->setExpectedValues(strlstExpectedValues);
             pTestStep->testStarted();
 
             if( (m_pDrawingScene->getEditTool() != EEditToolCreateObjects) || (m_pDrawingScene->getCurrentDrawingToolGraphObjType() != EGraphObjTypeConnectionLine) )
@@ -683,10 +683,10 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
                 strCurrentDrawingTool = "";
             }
 
-            strlstActualValues.append( "EditTool: " + editTool2Str(m_pDrawingScene->getEditTool()) );
-            strlstActualValues.append( "DrawingTool: " + strCurrentDrawingTool );
+            strlstResultValues.append( "EditTool: " + editTool2Str(m_pDrawingScene->getEditTool()) );
+            strlstResultValues.append( "DrawingTool: " + strCurrentDrawingTool );
 
-            pTestStep->setResultValues(strlstActualValues);
+            pTestStep->setResultValues(strlstResultValues);
             pTestStep->setToolTip(strToolTip);
             pTestStep->testEnded();
 
@@ -719,11 +719,11 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
             s_plgCnctLine1Curr.append(m_ptDrawingSceneMousePos);
             s_plgCnctLine1Curr.append(m_ptDrawingSceneMousePos);
 
-            strlstDesiredValues.append( strCurrentGraphObj + ": " + polygon2Str(s_plgCnctLine1Curr) );
+            strlstExpectedValues.append( strCurrentGraphObj + ": " + polygon2Str(s_plgCnctLine1Curr) );
 
             pTestStep->setOperation( "view.mouseClickEvent( ViewPos:" + point2Str(m_ptDrawingViewMousePos) + " )" );
             pTestStep->setDescription( "scene." + strCurrentDrawingTool + ".create( ScenePos:" + point2Str(m_ptDrawingSceneMousePos) + " )" );
-            pTestStep->setExpectedValues(strlstDesiredValues);
+            pTestStep->setExpectedValues(strlstExpectedValues);
             pTestStep->testStarted();
 
             pMouseEv = new QMouseEvent(
@@ -758,12 +758,12 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
 
                 if( pGraphObj->getObjName() == strCurrentGraphObj )
                 {
-                    strlstActualValues.append( strCurrentGraphObj + ": " + pGraphObj->getScenePolygonShapePointsString() );
+                    strlstResultValues.append( strCurrentGraphObj + ": " + pGraphObj->getScenePolygonShapePointsString() );
                     strToolTip = pGraphObj->getToolTip();
                 }
             }
 
-            pTestStep->setResultValues(strlstActualValues);
+            pTestStep->setResultValues(strlstResultValues);
             pTestStep->setToolTip(strToolTip);
             pTestStep->testEnded();
 
@@ -794,11 +794,11 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
 
             s_plgCnctLine1Curr[1] = m_ptDrawingSceneMousePos;
 
-            strlstDesiredValues.append( strCurrentGraphObj + ": " + polygon2Str(s_plgCnctLine1Curr) );
+            strlstExpectedValues.append( strCurrentGraphObj + ": " + polygon2Str(s_plgCnctLine1Curr) );
 
             pTestStep->setOperation( "view.mouseMoveEvent( ViewPos:" + point2Str(m_ptDrawingViewMousePos) + " )" );
             pTestStep->setDescription( "scene." + strCurrentGraphObj + ".moveTo( ScenePos:" + point2Str(m_ptDrawingSceneMousePos) + " )" );
-            pTestStep->setExpectedValues(strlstDesiredValues);
+            pTestStep->setExpectedValues(strlstExpectedValues);
             pTestStep->testStarted();
 
             pMouseEv = new QMouseEvent(
@@ -816,11 +816,11 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
             if( m_pGraphObjCreating != nullptr )
             {
                 strCurrentGraphObj = m_pGraphObjCreating->getObjName();
-                strlstActualValues.append( strCurrentGraphObj + ": " + m_pGraphObjCreating->getScenePolygonShapePointsString() );
+                strlstResultValues.append( strCurrentGraphObj + ": " + m_pGraphObjCreating->getScenePolygonShapePointsString() );
                 strToolTip = m_pGraphObjCreating->getToolTip();
             }
 
-            pTestStep->setResultValues(strlstActualValues);
+            pTestStep->setResultValues(strlstResultValues);
             pTestStep->setToolTip(strToolTip);
             pTestStep->testEnded();
 
@@ -843,11 +843,11 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
 
             s_plgCnctLine1Curr.append(m_ptDrawingSceneMousePos);
 
-            strlstDesiredValues.append( strCurrentGraphObj + ": " + polygon2Str(s_plgCnctLine1Curr) );
+            strlstExpectedValues.append( strCurrentGraphObj + ": " + polygon2Str(s_plgCnctLine1Curr) );
 
             pTestStep->setOperation( "view.mouseClickEvent( " + point2Str(m_ptDrawingViewMousePos) + " )" );
             pTestStep->setDescription( "scene." + strCurrentDrawingTool + ".creatingLineSegmentFinished( " + point2Str(m_ptDrawingSceneMousePos) + " )" );
-            pTestStep->setExpectedValues(strlstDesiredValues);
+            pTestStep->setExpectedValues(strlstExpectedValues);
             pTestStep->testStarted();
 
             pMouseEv = new QMouseEvent(
@@ -876,11 +876,11 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
             if( m_pGraphObjCreating != nullptr )
             {
                 strCurrentGraphObj = m_pGraphObjCreating->getObjName();
-                strlstActualValues.append( strCurrentGraphObj + ": " + m_pGraphObjCreating->getScenePolygonShapePointsString() );
+                strlstResultValues.append( strCurrentGraphObj + ": " + m_pGraphObjCreating->getScenePolygonShapePointsString() );
                 strToolTip = m_pGraphObjCreating->getToolTip();
             }
 
-            pTestStep->setResultValues(strlstActualValues);
+            pTestStep->setResultValues(strlstResultValues);
             pTestStep->setToolTip(strToolTip);
             pTestStep->testEnded();
 
@@ -911,11 +911,11 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
 
             s_plgCnctLine1Curr[2] = m_ptDrawingSceneMousePos;
 
-            strlstDesiredValues.append( strCurrentGraphObj + ": " + polygon2Str(s_plgCnctLine1Curr) );
+            strlstExpectedValues.append( strCurrentGraphObj + ": " + polygon2Str(s_plgCnctLine1Curr) );
 
             pTestStep->setOperation( "view.mouseMoveEvent( ViewPos:" + point2Str(m_ptDrawingViewMousePos) + " )" );
             pTestStep->setDescription( "scene." + strCurrentGraphObj + ".moveTo( ScenePos:" + point2Str(m_ptDrawingSceneMousePos) + " )" );
-            pTestStep->setExpectedValues(strlstDesiredValues);
+            pTestStep->setExpectedValues(strlstExpectedValues);
             pTestStep->testStarted();
 
             pMouseEv = new QMouseEvent(
@@ -933,11 +933,11 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
             if( m_pGraphObjCreating != nullptr )
             {
                 strCurrentGraphObj = m_pGraphObjCreating->getObjName();
-                strlstActualValues.append( strCurrentGraphObj + ": " + m_pGraphObjCreating->getScenePolygonShapePointsString() );
+                strlstResultValues.append( strCurrentGraphObj + ": " + m_pGraphObjCreating->getScenePolygonShapePointsString() );
                 strToolTip = m_pGraphObjCreating->getToolTip();
             }
 
-            pTestStep->setResultValues(strlstActualValues);
+            pTestStep->setResultValues(strlstResultValues);
             pTestStep->setToolTip(strToolTip);
             pTestStep->testEnded();
 
@@ -962,13 +962,13 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
 
             s_plgCnctLine1Curr[2] = m_ptDrawingSceneMousePos;
 
-            strlstDesiredValues.append( strCurrentGraphObj + ": " + polygon2Str(s_plgCnctLine1Curr) );
-            strlstDesiredValues.append( "ConnectionPoint1: " + polygon2Str(s_rctCnctPt1) );
-            strlstDesiredValues.append( "ConnectionPoint2: " + polygon2Str(s_rctCnctPt2) );
+            strlstExpectedValues.append( strCurrentGraphObj + ": " + polygon2Str(s_plgCnctLine1Curr) );
+            strlstExpectedValues.append( "ConnectionPoint1: " + polygon2Str(s_rctCnctPt1) );
+            strlstExpectedValues.append( "ConnectionPoint2: " + polygon2Str(s_rctCnctPt2) );
 
             pTestStep->setOperation( "view.mouseDoubleClickEvent( " + point2Str(m_ptDrawingViewMousePos) + " )" );
             pTestStep->setDescription( "scene." + strCurrentDrawingTool + ".creatingObjectFinished( " + point2Str(m_ptDrawingSceneMousePos) + " )" );
-            pTestStep->setExpectedValues(strlstDesiredValues);
+            pTestStep->setExpectedValues(strlstExpectedValues);
             pTestStep->testStarted();
 
             // Same events as in reality (mouse double click is preceeded by mouse press and mouse release event)
@@ -1011,24 +1011,24 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
 
             if( pGraphObjCnctLine != nullptr )
             {
-                strlstActualValues.append( strCurrentGraphObj + ": " + pGraphObjCnctLine->getScenePolygonShapePointsString() );
+                strlstResultValues.append( strCurrentGraphObj + ": " + pGraphObjCnctLine->getScenePolygonShapePointsString() );
 
                 pGraphObjCnctPt = pGraphObjCnctLine->getConnectionPoint(ELinePointStart);
                 if( pGraphObjCnctPt != nullptr )
                 {
-                    strlstActualValues.append( pGraphObjCnctPt->getObjName() + ": " + pGraphObjCnctPt->getScenePolygonShapePointsString() );
+                    strlstResultValues.append( pGraphObjCnctPt->getObjName() + ": " + pGraphObjCnctPt->getScenePolygonShapePointsString() );
                 }
 
                 pGraphObjCnctPt = pGraphObjCnctLine->getConnectionPoint(ELinePointEnd);
                 if( pGraphObjCnctPt != nullptr )
                 {
-                    strlstActualValues.append( pGraphObjCnctPt->getObjName() + ": " + pGraphObjCnctPt->getScenePolygonShapePointsString() );
+                    strlstResultValues.append( pGraphObjCnctPt->getObjName() + ": " + pGraphObjCnctPt->getScenePolygonShapePointsString() );
                 }
 
                 strToolTip = pGraphObjCnctLine->getToolTip();
             }
 
-            pTestStep->setResultValues(strlstActualValues);
+            pTestStep->setResultValues(strlstResultValues);
             pTestStep->setToolTip(strToolTip);
             pTestStep->testEnded();
 
@@ -1061,11 +1061,11 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
             s_plgCnctLine2Curr.append(m_ptDrawingSceneMousePos);
             s_plgCnctLine2Curr.append(m_ptDrawingSceneMousePos);
 
-            strlstDesiredValues.append( strCurrentGraphObj + ": " + polygon2Str(s_plgCnctLine2Curr) );
+            strlstExpectedValues.append( strCurrentGraphObj + ": " + polygon2Str(s_plgCnctLine2Curr) );
 
             pTestStep->setOperation( "view.mouseClickEvent( ViewPos:" + point2Str(m_ptDrawingViewMousePos) + " )" );
             pTestStep->setDescription( "scene." + strCurrentDrawingTool + ".create( ScenePos:" + point2Str(m_ptDrawingSceneMousePos) + " )" );
-            pTestStep->setExpectedValues(strlstDesiredValues);
+            pTestStep->setExpectedValues(strlstExpectedValues);
             pTestStep->testStarted();
 
             pMouseEv = new QMouseEvent(
@@ -1100,12 +1100,12 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
 
                 if( pGraphObj->getObjName() == strCurrentGraphObj )
                 {
-                    strlstActualValues.append( strCurrentGraphObj + ": " + pGraphObj->getScenePolygonShapePointsString() );
+                    strlstResultValues.append( strCurrentGraphObj + ": " + pGraphObj->getScenePolygonShapePointsString() );
                     strToolTip = pGraphObj->getToolTip();
                 }
             }
 
-            pTestStep->setResultValues(strlstActualValues);
+            pTestStep->setResultValues(strlstResultValues);
             pTestStep->setToolTip(strToolTip);
             pTestStep->testEnded();
 
@@ -1136,11 +1136,11 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
 
             s_plgCnctLine2Curr[1] = m_ptDrawingSceneMousePos;
 
-            strlstDesiredValues.append( strCurrentGraphObj + ": " + polygon2Str(s_plgCnctLine2Curr) );
+            strlstExpectedValues.append( strCurrentGraphObj + ": " + polygon2Str(s_plgCnctLine2Curr) );
 
             pTestStep->setOperation( "view.mouseMoveEvent( ViewPos:" + point2Str(m_ptDrawingViewMousePos) + " )" );
             pTestStep->setDescription( "scene." + strCurrentGraphObj + ".moveTo( ScenePos:" + point2Str(m_ptDrawingSceneMousePos) + " )" );
-            pTestStep->setExpectedValues(strlstDesiredValues);
+            pTestStep->setExpectedValues(strlstExpectedValues);
             pTestStep->testStarted();
 
             pMouseEv = new QMouseEvent(
@@ -1158,11 +1158,11 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
             if( m_pGraphObjCreating != nullptr )
             {
                 strCurrentGraphObj = m_pGraphObjCreating->getObjName();
-                strlstActualValues.append( strCurrentGraphObj + ": " + m_pGraphObjCreating->getScenePolygonShapePointsString() );
+                strlstResultValues.append( strCurrentGraphObj + ": " + m_pGraphObjCreating->getScenePolygonShapePointsString() );
                 strToolTip = m_pGraphObjCreating->getToolTip();
             }
 
-            pTestStep->setResultValues(strlstActualValues);
+            pTestStep->setResultValues(strlstResultValues);
             pTestStep->setToolTip(strToolTip);
             pTestStep->testEnded();
 
@@ -1185,11 +1185,11 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
 
             s_plgCnctLine2Curr.append(m_ptDrawingSceneMousePos);
 
-            strlstDesiredValues.append( strCurrentGraphObj + ": " + polygon2Str(s_plgCnctLine2Curr) );
+            strlstExpectedValues.append( strCurrentGraphObj + ": " + polygon2Str(s_plgCnctLine2Curr) );
 
             pTestStep->setOperation( "view.mouseClickEvent( " + point2Str(m_ptDrawingViewMousePos) + " )" );
             pTestStep->setDescription( "scene." + strCurrentDrawingTool + ".creatingLineSegmentFinished( " + point2Str(m_ptDrawingSceneMousePos) + " )" );
-            pTestStep->setExpectedValues(strlstDesiredValues);
+            pTestStep->setExpectedValues(strlstExpectedValues);
             pTestStep->testStarted();
 
             pMouseEv = new QMouseEvent(
@@ -1218,11 +1218,11 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
             if( m_pGraphObjCreating != nullptr )
             {
                 strCurrentGraphObj = m_pGraphObjCreating->getObjName();
-                strlstActualValues.append( strCurrentGraphObj + ": " + m_pGraphObjCreating->getScenePolygonShapePointsString() );
+                strlstResultValues.append( strCurrentGraphObj + ": " + m_pGraphObjCreating->getScenePolygonShapePointsString() );
                 strToolTip = m_pGraphObjCreating->getToolTip();
             }
 
-            pTestStep->setResultValues(strlstActualValues);
+            pTestStep->setResultValues(strlstResultValues);
             pTestStep->setToolTip(strToolTip);
             pTestStep->testEnded();
 
@@ -1253,11 +1253,11 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
 
             s_plgCnctLine2Curr[2] = m_ptDrawingSceneMousePos;
 
-            strlstDesiredValues.append( strCurrentGraphObj + ": " + polygon2Str(s_plgCnctLine2Curr) );
+            strlstExpectedValues.append( strCurrentGraphObj + ": " + polygon2Str(s_plgCnctLine2Curr) );
 
             pTestStep->setOperation( "view.mouseMoveEvent( ViewPos:" + point2Str(m_ptDrawingViewMousePos) + " )" );
             pTestStep->setDescription( "scene." + strCurrentGraphObj + ".moveTo( ScenePos:" + point2Str(m_ptDrawingSceneMousePos) + " )" );
-            pTestStep->setExpectedValues(strlstDesiredValues);
+            pTestStep->setExpectedValues(strlstExpectedValues);
             pTestStep->testStarted();
 
             pMouseEv = new QMouseEvent(
@@ -1275,11 +1275,11 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
             if( m_pGraphObjCreating != nullptr )
             {
                 strCurrentGraphObj = m_pGraphObjCreating->getObjName();
-                strlstActualValues.append( strCurrentGraphObj + ": " + m_pGraphObjCreating->getScenePolygonShapePointsString() );
+                strlstResultValues.append( strCurrentGraphObj + ": " + m_pGraphObjCreating->getScenePolygonShapePointsString() );
                 strToolTip = m_pGraphObjCreating->getToolTip();
             }
 
-            pTestStep->setResultValues(strlstActualValues);
+            pTestStep->setResultValues(strlstResultValues);
             pTestStep->setToolTip(strToolTip);
             pTestStep->testEnded();
 
@@ -1304,13 +1304,13 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
 
             s_plgCnctLine2Curr[2] = m_ptDrawingSceneMousePos;
 
-            strlstDesiredValues.append( strCurrentGraphObj + ": " + polygon2Str(s_plgCnctLine2Curr) );
-            strlstDesiredValues.append( "ConnectionPoint2: " + polygon2Str(s_rctCnctPt2) );
-            strlstDesiredValues.append( "ConnectionPoint1: " + polygon2Str(s_rctCnctPt1) );
+            strlstExpectedValues.append( strCurrentGraphObj + ": " + polygon2Str(s_plgCnctLine2Curr) );
+            strlstExpectedValues.append( "ConnectionPoint2: " + polygon2Str(s_rctCnctPt2) );
+            strlstExpectedValues.append( "ConnectionPoint1: " + polygon2Str(s_rctCnctPt1) );
 
             pTestStep->setOperation( "view.mouseDoubleClickEvent( " + point2Str(m_ptDrawingViewMousePos) + " )" );
             pTestStep->setDescription( "scene." + strCurrentDrawingTool + ".creatingObjectFinished( " + point2Str(m_ptDrawingSceneMousePos) + " )" );
-            pTestStep->setExpectedValues(strlstDesiredValues);
+            pTestStep->setExpectedValues(strlstExpectedValues);
             pTestStep->testStarted();
 
             // Same events as in reality (mouse double click is preceeded by mouse press and mouse release event)
@@ -1353,24 +1353,24 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
 
             if( pGraphObjCnctLine != nullptr )
             {
-                strlstActualValues.append( strCurrentGraphObj + ": " + pGraphObjCnctLine->getScenePolygonShapePointsString() );
+                strlstResultValues.append( strCurrentGraphObj + ": " + pGraphObjCnctLine->getScenePolygonShapePointsString() );
 
                 pGraphObjCnctPt = pGraphObjCnctLine->getConnectionPoint(ELinePointStart);
                 if( pGraphObjCnctPt != nullptr )
                 {
-                    strlstActualValues.append( pGraphObjCnctPt->getObjName() + ": " + pGraphObjCnctPt->getScenePolygonShapePointsString() );
+                    strlstResultValues.append( pGraphObjCnctPt->getObjName() + ": " + pGraphObjCnctPt->getScenePolygonShapePointsString() );
                 }
 
                 pGraphObjCnctPt = pGraphObjCnctLine->getConnectionPoint(ELinePointEnd);
                 if( pGraphObjCnctPt != nullptr )
                 {
-                    strlstActualValues.append( pGraphObjCnctPt->getObjName() + ": " + pGraphObjCnctPt->getScenePolygonShapePointsString() );
+                    strlstResultValues.append( pGraphObjCnctPt->getObjName() + ": " + pGraphObjCnctPt->getScenePolygonShapePointsString() );
                 }
 
                 strToolTip = pGraphObjCnctLine->getToolTip();
             }
 
-            pTestStep->setResultValues(strlstActualValues);
+            pTestStep->setResultValues(strlstResultValues);
             pTestStep->setToolTip(strToolTip);
             pTestStep->testEnded();
 
@@ -1383,11 +1383,11 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
         {
             pTestStep = getTestStep( "Connection1.ConnectionLine2.ActivateEditModeSelect", pTSGrpConnectionsCreate );
 
-            strlstDesiredValues.append( "EditTool: Select" );
-            strlstDesiredValues.append( "DrawingTool: " );
+            strlstExpectedValues.append( "EditTool: Select" );
+            strlstExpectedValues.append( "DrawingTool: " );
 
             pTestStep->setOperation( "drawing.setCurrentDrawingTool( Select )" );
-            pTestStep->setExpectedValues(strlstDesiredValues);
+            pTestStep->setExpectedValues(strlstExpectedValues);
             pTestStep->testStarted();
 
             if( m_pDrawingScene->getEditTool() != EEditToolSelect )
@@ -1404,10 +1404,10 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
                 strCurrentDrawingTool = "";
             }
 
-            strlstActualValues.append( "EditTool: " + editTool2Str(m_pDrawingScene->getEditTool()) );
-            strlstActualValues.append( "DrawingTool: " + strCurrentDrawingTool );
+            strlstResultValues.append( "EditTool: " + editTool2Str(m_pDrawingScene->getEditTool()) );
+            strlstResultValues.append( "DrawingTool: " + strCurrentDrawingTool );
 
-            pTestStep->setResultValues(strlstActualValues);
+            pTestStep->setResultValues(strlstResultValues);
             pTestStep->setToolTip(strToolTip);
             pTestStep->testEnded();
 
@@ -1436,12 +1436,12 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
 
             s_plgCnctLine2Curr.insert( 2, m_ptDrawingSceneMousePos );
 
-            strlstDesiredValues.append( strCurrentGraphObj + ": SelPt:" + QString::number(2) );
-            strlstDesiredValues.append( strCurrentGraphObj + ": " + polygon2Str(s_plgCnctLine2Curr) );
+            strlstExpectedValues.append( strCurrentGraphObj + ": SelPt:" + QString::number(2) );
+            strlstExpectedValues.append( strCurrentGraphObj + ": " + polygon2Str(s_plgCnctLine2Curr) );
 
             pTestStep->setOperation( "view.mousePressEvent( ViewPos:" + point2Str(m_ptDrawingViewMousePos) + " )" );
             pTestStep->setDescription( "scene." + strCurrentGraphObj + ".select( ScenePos:" + point2Str(m_ptDrawingSceneMousePos) + " )" );
-            pTestStep->setExpectedValues(strlstDesiredValues);
+            pTestStep->setExpectedValues(strlstExpectedValues);
             pTestStep->testStarted();
 
             pMouseEv = new QMouseEvent(
@@ -1463,12 +1463,12 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
             {
                 m_pGraphObjSelected = dynamic_cast<CGraphObj*>(arpGraphicsItems[0]);
                 strCurrentGraphObj = m_pGraphObjSelected->getObjName();
-                strlstActualValues.append( strCurrentGraphObj + ": SelPt:" + QString::number(m_pGraphObjSelected->getSelectedPolygonShapePointIndex()) );
-                strlstActualValues.append( strCurrentGraphObj + ": " + m_pGraphObjSelected->getScenePolygonShapePointsString() );
+                strlstResultValues.append( strCurrentGraphObj + ": SelPt:" + QString::number(m_pGraphObjSelected->getSelectedPolygonShapePointIndex()) );
+                strlstResultValues.append( strCurrentGraphObj + ": " + m_pGraphObjSelected->getScenePolygonShapePointsString() );
                 strToolTip = m_pGraphObjSelected->getToolTip();
             }
 
-            pTestStep->setResultValues(strlstActualValues);
+            pTestStep->setResultValues(strlstResultValues);
             pTestStep->setToolTip(strToolTip);
             pTestStep->testEnded();
 
@@ -1499,11 +1499,11 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
 
             s_plgCnctLine2Curr[2] = m_ptDrawingSceneMousePos;
 
-            strlstDesiredValues.append( strCurrentGraphObj + ": " + polygon2Str(s_plgCnctLine2Curr) );
+            strlstExpectedValues.append( strCurrentGraphObj + ": " + polygon2Str(s_plgCnctLine2Curr) );
 
             pTestStep->setOperation( "drawing.mouseMoveEvent( " + point2Str(m_ptDrawingViewMousePos) + " )" );
             pTestStep->setDescription( "scene." + strCurrentGraphObj + ".moveTo( " + point2Str(m_ptDrawingSceneMousePos) + " )" );
-            pTestStep->setExpectedValues(strlstDesiredValues);
+            pTestStep->setExpectedValues(strlstExpectedValues);
             pTestStep->testStarted();
 
             pMouseEv = new QMouseEvent(
@@ -1525,11 +1525,11 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
             {
                 m_pGraphObjSelected = dynamic_cast<CGraphObj*>(arpGraphicsItems[0]);
                 strCurrentGraphObj = m_pGraphObjSelected->getObjName();
-                strlstActualValues.append( strCurrentGraphObj + ": " + m_pGraphObjSelected->getScenePolygonShapePointsString() );
+                strlstResultValues.append( strCurrentGraphObj + ": " + m_pGraphObjSelected->getScenePolygonShapePointsString() );
                 strToolTip = m_pGraphObjSelected->getToolTip();
             }
 
-            pTestStep->setResultValues(strlstActualValues);
+            pTestStep->setResultValues(strlstResultValues);
             pTestStep->setToolTip(strToolTip);
             pTestStep->testEnded();
 
@@ -1548,11 +1548,11 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
             ptMousePosGlobal.setX(ptMousePosGlobal.x()+1); // Maybe graphics view or graphics scene bug on calculating the screen position.
             ptMousePosGlobal.setY(ptMousePosGlobal.y()+1); // Without adding 1 pixel the newly created object will not be selected by the scene.
 
-            strlstDesiredValues.append( strCurrentGraphObj + ": " + polygon2Str(s_plgCnctLine2Curr) );
+            strlstExpectedValues.append( strCurrentGraphObj + ": " + polygon2Str(s_plgCnctLine2Curr) );
 
             pTestStep->setOperation( "view.mouseReleaseEvent( ViewPos:" + point2Str(m_ptDrawingViewMousePos) + " )" );
             pTestStep->setDescription( "scene." + strCurrentGraphObj + ".release( ScenePos:" + point2Str(m_ptDrawingSceneMousePos) + " )" );
-            pTestStep->setExpectedValues(strlstDesiredValues);
+            pTestStep->setExpectedValues(strlstExpectedValues);
             pTestStep->testStarted();
 
             pMouseEv = new QMouseEvent(
@@ -1574,11 +1574,11 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
             {
                 m_pGraphObjSelected = dynamic_cast<CGraphObj*>(arpGraphicsItems[0]);
                 strCurrentGraphObj = m_pGraphObjSelected->getObjName();
-                strlstActualValues.append( strCurrentGraphObj + ": " + m_pGraphObjSelected->getScenePolygonShapePointsString() );
+                strlstResultValues.append( strCurrentGraphObj + ": " + m_pGraphObjSelected->getScenePolygonShapePointsString() );
                 strToolTip = m_pGraphObjSelected->getToolTip();
             }
 
-            pTestStep->setResultValues(strlstActualValues);
+            pTestStep->setResultValues(strlstResultValues);
             pTestStep->setToolTip(strToolTip);
             pTestStep->testEnded();
 
@@ -1614,12 +1614,12 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
 
             s_plgCnctLine2Curr.insert( 1, m_ptDrawingSceneMousePos );
 
-            strlstDesiredValues.append( strCurrentGraphObj + ": SelPt:" + QString::number(1) );
-            strlstDesiredValues.append( strCurrentGraphObj + ": " + polygon2Str(s_plgCnctLine2Curr) );
+            strlstExpectedValues.append( strCurrentGraphObj + ": SelPt:" + QString::number(1) );
+            strlstExpectedValues.append( strCurrentGraphObj + ": " + polygon2Str(s_plgCnctLine2Curr) );
 
             pTestStep->setOperation( "view.mousePressEvent( ViewPos:" + point2Str(m_ptDrawingViewMousePos) + " )" );
             pTestStep->setDescription( "scene." + strCurrentGraphObj + ".select( ScenePos:" + point2Str(m_ptDrawingSceneMousePos) + " )" );
-            pTestStep->setExpectedValues(strlstDesiredValues);
+            pTestStep->setExpectedValues(strlstExpectedValues);
             pTestStep->testStarted();
 
             pMouseEv = new QMouseEvent(
@@ -1641,12 +1641,12 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
             {
                 m_pGraphObjSelected = dynamic_cast<CGraphObj*>(arpGraphicsItems[0]);
                 strCurrentGraphObj = m_pGraphObjSelected->getObjName();
-                strlstActualValues.append( strCurrentGraphObj + ": SelPt:" + QString::number(m_pGraphObjSelected->getSelectedPolygonShapePointIndex()) );
-                strlstActualValues.append( strCurrentGraphObj + ": " + m_pGraphObjSelected->getScenePolygonShapePointsString() );
+                strlstResultValues.append( strCurrentGraphObj + ": SelPt:" + QString::number(m_pGraphObjSelected->getSelectedPolygonShapePointIndex()) );
+                strlstResultValues.append( strCurrentGraphObj + ": " + m_pGraphObjSelected->getScenePolygonShapePointsString() );
                 strToolTip = m_pGraphObjSelected->getToolTip();
             }
 
-            pTestStep->setResultValues(strlstActualValues);
+            pTestStep->setResultValues(strlstResultValues);
             pTestStep->setToolTip(strToolTip);
             pTestStep->testEnded();
 
@@ -1677,11 +1677,11 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
 
             s_plgCnctLine2Curr[1] = m_ptDrawingSceneMousePos;
 
-            strlstDesiredValues.append( strCurrentGraphObj + ": " + polygon2Str(s_plgCnctLine2Curr) );
+            strlstExpectedValues.append( strCurrentGraphObj + ": " + polygon2Str(s_plgCnctLine2Curr) );
 
             pTestStep->setOperation( "drawing.mouseMoveEvent( " + point2Str(m_ptDrawingViewMousePos) + " )" );
             pTestStep->setDescription( "scene." + strCurrentGraphObj + ".moveTo( " + point2Str(m_ptDrawingSceneMousePos) + " )" );
-            pTestStep->setExpectedValues(strlstDesiredValues);
+            pTestStep->setExpectedValues(strlstExpectedValues);
             pTestStep->testStarted();
 
             pMouseEv = new QMouseEvent(
@@ -1703,11 +1703,11 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
             {
                 m_pGraphObjSelected = dynamic_cast<CGraphObj*>(arpGraphicsItems[0]);
                 strCurrentGraphObj = m_pGraphObjSelected->getObjName();
-                strlstActualValues.append( strCurrentGraphObj + ": " + m_pGraphObjSelected->getScenePolygonShapePointsString() );
+                strlstResultValues.append( strCurrentGraphObj + ": " + m_pGraphObjSelected->getScenePolygonShapePointsString() );
                 strToolTip = m_pGraphObjSelected->getToolTip();
             }
 
-            pTestStep->setResultValues(strlstActualValues);
+            pTestStep->setResultValues(strlstResultValues);
             pTestStep->setToolTip(strToolTip);
             pTestStep->testEnded();
 
@@ -1730,11 +1730,11 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
 
             s_plgCnctLine2Curr.remove(2);
 
-            strlstDesiredValues.append( strCurrentGraphObj + ": " + polygon2Str(s_plgCnctLine2Curr) );
+            strlstExpectedValues.append( strCurrentGraphObj + ": " + polygon2Str(s_plgCnctLine2Curr) );
 
             pTestStep->setOperation( "view.mouseReleaseEvent( ViewPos:" + point2Str(m_ptDrawingViewMousePos) + " )" );
             pTestStep->setDescription( "scene." + strCurrentGraphObj + ".release( ScenePos:" + point2Str(m_ptDrawingSceneMousePos) + " )" );
-            pTestStep->setExpectedValues(strlstDesiredValues);
+            pTestStep->setExpectedValues(strlstExpectedValues);
             pTestStep->testStarted();
 
             pMouseEv = new QMouseEvent(
@@ -1756,11 +1756,11 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
             {
                 m_pGraphObjSelected = dynamic_cast<CGraphObj*>(arpGraphicsItems[0]);
                 strCurrentGraphObj = m_pGraphObjSelected->getObjName();
-                strlstActualValues.append( strCurrentGraphObj + ": " + m_pGraphObjSelected->getScenePolygonShapePointsString() );
+                strlstResultValues.append( strCurrentGraphObj + ": " + m_pGraphObjSelected->getScenePolygonShapePointsString() );
                 strToolTip = m_pGraphObjSelected->getToolTip();
             }
 
-            pTestStep->setResultValues(strlstActualValues);
+            pTestStep->setResultValues(strlstResultValues);
             pTestStep->setToolTip(strToolTip);
             pTestStep->testEnded();
 
@@ -1787,11 +1787,11 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
             {
                 pTestStep = getTestStep( "Connection1.ActivateEditModeSelect", pTSGrpConnectionsMove );
 
-                strlstDesiredValues.append( "EditTool: Select" );
-                strlstDesiredValues.append( "DrawingTool: " );
+                strlstExpectedValues.append( "EditTool: Select" );
+                strlstExpectedValues.append( "DrawingTool: " );
 
                 pTestStep->setOperation( "drawing.setCurrentDrawingTool( Select )" );
-                pTestStep->setExpectedValues(strlstDesiredValues);
+                pTestStep->setExpectedValues(strlstExpectedValues);
                 pTestStep->testStarted();
 
                 if( m_pDrawingScene->getEditTool() != EEditToolSelect )
@@ -1808,10 +1808,10 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
                     strCurrentDrawingTool = "";
                 }
 
-                strlstActualValues.append( "EditTool: " + editTool2Str(m_pDrawingScene->getEditTool()) );
-                strlstActualValues.append( "DrawingTool: " + strCurrentDrawingTool );
+                strlstResultValues.append( "EditTool: " + editTool2Str(m_pDrawingScene->getEditTool()) );
+                strlstResultValues.append( "DrawingTool: " + strCurrentDrawingTool );
 
-                pTestStep->setResultValues(strlstActualValues);
+                pTestStep->setResultValues(strlstResultValues);
                 pTestStep->setToolTip(strToolTip);
                 pTestStep->testEnded();
 
@@ -1869,12 +1869,12 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
             ptMousePosGlobal.setX(ptMousePosGlobal.x()+1); // Maybe graphics view or graphics scene bug on calculating the screen position.
             ptMousePosGlobal.setY(ptMousePosGlobal.y()+1); // Without adding 1 pixel the newly created object will not be selected by the scene.
 
-            strlstDesiredValues.append( strCurrentGraphObj + ": SelPt:" + selectionPoint2Str(ESelectionPointUndefined) );
-            strlstDesiredValues.append( strCurrentGraphObj + ": " + polygon2Str(s_rctCnctPt1) );
+            strlstExpectedValues.append( strCurrentGraphObj + ": SelPt:" + selectionPoint2Str(ESelectionPointUndefined) );
+            strlstExpectedValues.append( strCurrentGraphObj + ": " + polygon2Str(s_rctCnctPt1) );
 
             pTestStep->setOperation( "view.mousePressEvent( ViewPos:" + point2Str(m_ptDrawingViewMousePos) + " )" );
             pTestStep->setDescription( "scene." + strCurrentGraphObj + ".select( ScenePos:" + point2Str(m_ptDrawingSceneMousePos) + " )" );
-            pTestStep->setExpectedValues(strlstDesiredValues);
+            pTestStep->setExpectedValues(strlstExpectedValues);
             pTestStep->testStarted();
 
             pMouseEv = new QMouseEvent(
@@ -1896,12 +1896,12 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
             {
                 m_pGraphObjSelected = dynamic_cast<CGraphObj*>(arpGraphicsItems[0]);
                 strCurrentGraphObj = m_pGraphObjSelected->getObjName();
-                strlstActualValues.append( strCurrentGraphObj + ": SelPt:" + selectionPoint2Str(m_pGraphObjSelected->getSelectedBoundingRectPoint()) );
-                strlstActualValues.append( strCurrentGraphObj + ": " + m_pGraphObjSelected->getScenePolygonShapePointsString() );
+                strlstResultValues.append( strCurrentGraphObj + ": SelPt:" + selectionPoint2Str(m_pGraphObjSelected->getSelectedBoundingRectPoint()) );
+                strlstResultValues.append( strCurrentGraphObj + ": " + m_pGraphObjSelected->getScenePolygonShapePointsString() );
                 strToolTip = m_pGraphObjSelected->getToolTip();
             }
 
-            pTestStep->setResultValues(strlstActualValues);
+            pTestStep->setResultValues(strlstResultValues);
             pTestStep->setToolTip(strToolTip);
             pTestStep->testEnded();
 
@@ -1943,13 +1943,13 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
                 s_plgCnctLine2Curr[3] = s_rctCnctPt1.center();
             }
 
-            strlstDesiredValues.append( strCurrentGraphObj + ": " + polygon2Str(s_rctCnctPt1) );
-            strlstDesiredValues.append( "ConnectionLine1: " + polygon2Str(s_plgCnctLine1Curr) );
-            strlstDesiredValues.append( "ConnectionLine2: " + polygon2Str(s_plgCnctLine2Curr) );
+            strlstExpectedValues.append( strCurrentGraphObj + ": " + polygon2Str(s_rctCnctPt1) );
+            strlstExpectedValues.append( "ConnectionLine1: " + polygon2Str(s_plgCnctLine1Curr) );
+            strlstExpectedValues.append( "ConnectionLine2: " + polygon2Str(s_plgCnctLine2Curr) );
 
             pTestStep->setOperation( "drawing.mouseMoveEvent( " + point2Str(m_ptDrawingViewMousePos) + " )" );
             pTestStep->setDescription( "scene." + strCurrentGraphObj + ".moveTo( " + point2Str(m_ptDrawingSceneMousePos) + " )" );
-            pTestStep->setExpectedValues(strlstDesiredValues);
+            pTestStep->setExpectedValues(strlstExpectedValues);
             pTestStep->testStarted();
 
             pMouseEv = new QMouseEvent(
@@ -1971,7 +1971,7 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
             {
                 m_pGraphObjSelected = dynamic_cast<CGraphObj*>(arpGraphicsItems[0]);
                 strCurrentGraphObj = m_pGraphObjSelected->getObjName();
-                strlstActualValues.append( strCurrentGraphObj + ": " + m_pGraphObjSelected->getScenePolygonShapePointsString() );
+                strlstResultValues.append( strCurrentGraphObj + ": " + m_pGraphObjSelected->getScenePolygonShapePointsString() );
                 strToolTip = m_pGraphObjSelected->getToolTip();
             }
 
@@ -1985,18 +1985,18 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
 
                 if( pGraphObjCnctLine != nullptr )
                 {
-                    strlstActualValues.append( pGraphObjCnctLine->getObjName() + ": " + pGraphObjCnctLine->getScenePolygonShapePointsString() );
+                    strlstResultValues.append( pGraphObjCnctLine->getObjName() + ": " + pGraphObjCnctLine->getScenePolygonShapePointsString() );
                 }
 
                 pGraphObjCnctLine = pGraphObjCnctPt->getConnectionLine(1);
 
                 if( pGraphObjCnctLine != nullptr )
                 {
-                    strlstActualValues.append( pGraphObjCnctLine->getObjName() + ": " + pGraphObjCnctLine->getScenePolygonShapePointsString() );
+                    strlstResultValues.append( pGraphObjCnctLine->getObjName() + ": " + pGraphObjCnctLine->getScenePolygonShapePointsString() );
                 }
             }
 
-            pTestStep->setResultValues(strlstActualValues);
+            pTestStep->setResultValues(strlstResultValues);
             pTestStep->setToolTip(strToolTip);
             pTestStep->testEnded();
 
@@ -2015,13 +2015,13 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
             ptMousePosGlobal.setX(ptMousePosGlobal.x()+1); // Maybe graphics view or graphics scene bug on calculating the screen position.
             ptMousePosGlobal.setY(ptMousePosGlobal.y()+1); // Without adding 1 pixel the newly created object will not be selected by the scene.
 
-            strlstDesiredValues.append( strCurrentGraphObj + ": " + polygon2Str(s_rctCnctPt1) );
-            strlstDesiredValues.append( "ConnectionLine1: " + polygon2Str(s_plgCnctLine1Curr) );
-            strlstDesiredValues.append( "ConnectionLine2: " + polygon2Str(s_plgCnctLine2Curr) );
+            strlstExpectedValues.append( strCurrentGraphObj + ": " + polygon2Str(s_rctCnctPt1) );
+            strlstExpectedValues.append( "ConnectionLine1: " + polygon2Str(s_plgCnctLine1Curr) );
+            strlstExpectedValues.append( "ConnectionLine2: " + polygon2Str(s_plgCnctLine2Curr) );
 
             pTestStep->setOperation( "view.mouseReleaseEvent( ViewPos:" + point2Str(m_ptDrawingViewMousePos) + " )" );
             pTestStep->setDescription( "scene." + strCurrentGraphObj + ".release( ScenePos:" + point2Str(m_ptDrawingSceneMousePos) + " )" );
-            pTestStep->setExpectedValues(strlstDesiredValues);
+            pTestStep->setExpectedValues(strlstExpectedValues);
             pTestStep->testStarted();
 
             pMouseEv = new QMouseEvent(
@@ -2043,7 +2043,7 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
             {
                 m_pGraphObjSelected = dynamic_cast<CGraphObj*>(arpGraphicsItems[0]);
                 strCurrentGraphObj = m_pGraphObjSelected->getObjName();
-                strlstActualValues.append( strCurrentGraphObj + ": " + m_pGraphObjSelected->getScenePolygonShapePointsString() );
+                strlstResultValues.append( strCurrentGraphObj + ": " + m_pGraphObjSelected->getScenePolygonShapePointsString() );
                 strToolTip = m_pGraphObjSelected->getToolTip();
             }
 
@@ -2057,18 +2057,18 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
 
                 if( pGraphObjCnctLine != nullptr )
                 {
-                    strlstActualValues.append( pGraphObjCnctLine->getObjName() + ": " + pGraphObjCnctLine->getScenePolygonShapePointsString() );
+                    strlstResultValues.append( pGraphObjCnctLine->getObjName() + ": " + pGraphObjCnctLine->getScenePolygonShapePointsString() );
                 }
 
                 pGraphObjCnctLine = pGraphObjCnctPt->getConnectionLine(1);
 
                 if( pGraphObjCnctLine != nullptr )
                 {
-                    strlstActualValues.append( pGraphObjCnctLine->getObjName() + ": " + pGraphObjCnctLine->getScenePolygonShapePointsString() );
+                    strlstResultValues.append( pGraphObjCnctLine->getObjName() + ": " + pGraphObjCnctLine->getScenePolygonShapePointsString() );
                 }
             }
 
-            pTestStep->setResultValues(strlstActualValues);
+            pTestStep->setResultValues(strlstResultValues);
             pTestStep->setToolTip(strToolTip);
             pTestStep->testEnded();
 
@@ -2093,12 +2093,12 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
             ptMousePosGlobal.setX(ptMousePosGlobal.x()+1); // Maybe graphics view or graphics scene bug on calculating the screen position.
             ptMousePosGlobal.setY(ptMousePosGlobal.y()+1); // Without adding 1 pixel the newly created object will not be selected by the scene.
 
-            strlstDesiredValues.append( strCurrentGraphObj + ": SelPt:" + selectionPoint2Str(ESelectionPointUndefined) );
-            strlstDesiredValues.append( strCurrentGraphObj + ": " + polygon2Str(s_rctCnctPt2) );
+            strlstExpectedValues.append( strCurrentGraphObj + ": SelPt:" + selectionPoint2Str(ESelectionPointUndefined) );
+            strlstExpectedValues.append( strCurrentGraphObj + ": " + polygon2Str(s_rctCnctPt2) );
 
             pTestStep->setOperation( "view.mousePressEvent( ViewPos:" + point2Str(m_ptDrawingViewMousePos) + " )" );
             pTestStep->setDescription( "scene." + strCurrentGraphObj + ".select( ScenePos:" + point2Str(m_ptDrawingSceneMousePos) + " )" );
-            pTestStep->setExpectedValues(strlstDesiredValues);
+            pTestStep->setExpectedValues(strlstExpectedValues);
             pTestStep->testStarted();
 
             pMouseEv = new QMouseEvent(
@@ -2120,12 +2120,12 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
             {
                 m_pGraphObjSelected = dynamic_cast<CGraphObj*>(arpGraphicsItems[0]);
                 strCurrentGraphObj = m_pGraphObjSelected->getObjName();
-                strlstActualValues.append( strCurrentGraphObj + ": SelPt:" + selectionPoint2Str(m_pGraphObjSelected->getSelectedBoundingRectPoint()) );
-                strlstActualValues.append( strCurrentGraphObj + ": " + m_pGraphObjSelected->getScenePolygonShapePointsString() );
+                strlstResultValues.append( strCurrentGraphObj + ": SelPt:" + selectionPoint2Str(m_pGraphObjSelected->getSelectedBoundingRectPoint()) );
+                strlstResultValues.append( strCurrentGraphObj + ": " + m_pGraphObjSelected->getScenePolygonShapePointsString() );
                 strToolTip = m_pGraphObjSelected->getToolTip();
             }
 
-            pTestStep->setResultValues(strlstActualValues);
+            pTestStep->setResultValues(strlstResultValues);
             pTestStep->setToolTip(strToolTip);
             pTestStep->testEnded();
 
@@ -2166,13 +2166,13 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
             }
             s_plgCnctLine2Curr[0] = s_rctCnctPt2.center();
 
-            strlstDesiredValues.append( strCurrentGraphObj + ": " + polygon2Str(s_rctCnctPt2) );
-            strlstDesiredValues.append( "ConnectionLine1: " + polygon2Str(s_plgCnctLine1Curr) );
-            strlstDesiredValues.append( "ConnectionLine2: " + polygon2Str(s_plgCnctLine2Curr) );
+            strlstExpectedValues.append( strCurrentGraphObj + ": " + polygon2Str(s_rctCnctPt2) );
+            strlstExpectedValues.append( "ConnectionLine1: " + polygon2Str(s_plgCnctLine1Curr) );
+            strlstExpectedValues.append( "ConnectionLine2: " + polygon2Str(s_plgCnctLine2Curr) );
 
             pTestStep->setOperation( "drawing.mouseMoveEvent( " + point2Str(m_ptDrawingViewMousePos) + " )" );
             pTestStep->setDescription( "scene." + strCurrentGraphObj + ".moveTo( " + point2Str(m_ptDrawingSceneMousePos) + " )" );
-            pTestStep->setExpectedValues(strlstDesiredValues);
+            pTestStep->setExpectedValues(strlstExpectedValues);
             pTestStep->testStarted();
 
             pMouseEv = new QMouseEvent(
@@ -2194,7 +2194,7 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
             {
                 m_pGraphObjSelected = dynamic_cast<CGraphObj*>(arpGraphicsItems[0]);
                 strCurrentGraphObj = m_pGraphObjSelected->getObjName();
-                strlstActualValues.append( strCurrentGraphObj + ": " + m_pGraphObjSelected->getScenePolygonShapePointsString() );
+                strlstResultValues.append( strCurrentGraphObj + ": " + m_pGraphObjSelected->getScenePolygonShapePointsString() );
                 strToolTip = m_pGraphObjSelected->getToolTip();
             }
 
@@ -2208,18 +2208,18 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
 
                 if( pGraphObjCnctLine != nullptr )
                 {
-                    strlstActualValues.append( pGraphObjCnctLine->getObjName() + ": " + pGraphObjCnctLine->getScenePolygonShapePointsString() );
+                    strlstResultValues.append( pGraphObjCnctLine->getObjName() + ": " + pGraphObjCnctLine->getScenePolygonShapePointsString() );
                 }
 
                 pGraphObjCnctLine = pGraphObjCnctPt->getConnectionLine(1);
 
                 if( pGraphObjCnctLine != nullptr )
                 {
-                    strlstActualValues.append( pGraphObjCnctLine->getObjName() + ": " + pGraphObjCnctLine->getScenePolygonShapePointsString() );
+                    strlstResultValues.append( pGraphObjCnctLine->getObjName() + ": " + pGraphObjCnctLine->getScenePolygonShapePointsString() );
                 }
             }
 
-            pTestStep->setResultValues(strlstActualValues);
+            pTestStep->setResultValues(strlstResultValues);
             pTestStep->setToolTip(strToolTip);
             pTestStep->testEnded();
 
@@ -2238,13 +2238,13 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
             ptMousePosGlobal.setX(ptMousePosGlobal.x()+1); // Maybe graphics view or graphics scene bug on calculating the screen position.
             ptMousePosGlobal.setY(ptMousePosGlobal.y()+1); // Without adding 1 pixel the newly created object will not be selected by the scene.
 
-            strlstDesiredValues.append( strCurrentGraphObj + ": " + polygon2Str(s_rctCnctPt2) );
-            strlstDesiredValues.append( "ConnectionLine1: " + polygon2Str(s_plgCnctLine1Curr) );
-            strlstDesiredValues.append( "ConnectionLine2: " + polygon2Str(s_plgCnctLine2Curr) );
+            strlstExpectedValues.append( strCurrentGraphObj + ": " + polygon2Str(s_rctCnctPt2) );
+            strlstExpectedValues.append( "ConnectionLine1: " + polygon2Str(s_plgCnctLine1Curr) );
+            strlstExpectedValues.append( "ConnectionLine2: " + polygon2Str(s_plgCnctLine2Curr) );
 
             pTestStep->setOperation( "view.mouseReleaseEvent( ViewPos:" + point2Str(m_ptDrawingViewMousePos) + " )" );
             pTestStep->setDescription( "scene." + strCurrentGraphObj + ".release( ScenePos:" + point2Str(m_ptDrawingSceneMousePos) + " )" );
-            pTestStep->setExpectedValues(strlstDesiredValues);
+            pTestStep->setExpectedValues(strlstExpectedValues);
             pTestStep->testStarted();
 
             pMouseEv = new QMouseEvent(
@@ -2266,7 +2266,7 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
             {
                 m_pGraphObjSelected = dynamic_cast<CGraphObj*>(arpGraphicsItems[0]);
                 strCurrentGraphObj = m_pGraphObjSelected->getObjName();
-                strlstActualValues.append( strCurrentGraphObj + ": " + m_pGraphObjSelected->getScenePolygonShapePointsString() );
+                strlstResultValues.append( strCurrentGraphObj + ": " + m_pGraphObjSelected->getScenePolygonShapePointsString() );
                 strToolTip = m_pGraphObjSelected->getToolTip();
             }
 
@@ -2280,18 +2280,18 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
 
                 if( pGraphObjCnctLine != nullptr )
                 {
-                    strlstActualValues.append( pGraphObjCnctLine->getObjName() + ": " + pGraphObjCnctLine->getScenePolygonShapePointsString() );
+                    strlstResultValues.append( pGraphObjCnctLine->getObjName() + ": " + pGraphObjCnctLine->getScenePolygonShapePointsString() );
                 }
 
                 pGraphObjCnctLine = pGraphObjCnctPt->getConnectionLine(1);
 
                 if( pGraphObjCnctLine != nullptr )
                 {
-                    strlstActualValues.append( pGraphObjCnctLine->getObjName() + ": " + pGraphObjCnctLine->getScenePolygonShapePointsString() );
+                    strlstResultValues.append( pGraphObjCnctLine->getObjName() + ": " + pGraphObjCnctLine->getScenePolygonShapePointsString() );
                 }
             }
 
-            pTestStep->setResultValues(strlstActualValues);
+            pTestStep->setResultValues(strlstResultValues);
             pTestStep->setToolTip(strToolTip);
             pTestStep->testEnded();
 
@@ -2320,11 +2320,11 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
             {
                 pTestStep = getTestStep( "Connection1.ConnectionLine1.ActivateEditModeSelect", pTSGrpConnectionsResize );
 
-                strlstDesiredValues.append( "EditTool: Select" );
-                strlstDesiredValues.append( "DrawingTool: " );
+                strlstExpectedValues.append( "EditTool: Select" );
+                strlstExpectedValues.append( "DrawingTool: " );
 
                 pTestStep->setOperation( "drawing.setCurrentDrawingTool( Select )" );
-                pTestStep->setExpectedValues(strlstDesiredValues);
+                pTestStep->setExpectedValues(strlstExpectedValues);
                 pTestStep->testStarted();
 
                 if( m_pDrawingScene->getEditTool() != EEditToolSelect )
@@ -2341,10 +2341,10 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
                     strCurrentDrawingTool = "";
                 }
 
-                strlstActualValues.append( "EditTool: " + editTool2Str(m_pDrawingScene->getEditTool()) );
-                strlstActualValues.append( "DrawingTool: " + strCurrentDrawingTool );
+                strlstResultValues.append( "EditTool: " + editTool2Str(m_pDrawingScene->getEditTool()) );
+                strlstResultValues.append( "DrawingTool: " + strCurrentDrawingTool );
 
-                pTestStep->setResultValues(strlstActualValues);
+                pTestStep->setResultValues(strlstResultValues);
                 pTestStep->setToolTip(strToolTip);
                 pTestStep->testEnded();
 
@@ -2371,11 +2371,11 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
             ptMousePosGlobal.setX(ptMousePosGlobal.x()+1); // Maybe graphics view or graphics scene bug on calculating the screen position.
             ptMousePosGlobal.setY(ptMousePosGlobal.y()+1); // Without adding 1 pixel the newly created object will not be selected by the scene.
 
-            strlstDesiredValues.append(strCurrentGraphObj);
+            strlstExpectedValues.append(strCurrentGraphObj);
 
             pTestStep->setOperation( "view.mousePressEvent( ViewPos:" + point2Str(m_ptDrawingViewMousePos) + " )" );
             pTestStep->setDescription( "scene." + strCurrentGraphObj + ".select( ScenePos:" + point2Str(m_ptDrawingSceneMousePos) + " )" );
-            pTestStep->setExpectedValues(strlstDesiredValues);
+            pTestStep->setExpectedValues(strlstExpectedValues);
             pTestStep->testStarted();
 
             pMouseEv = new QMouseEvent(
@@ -2408,11 +2408,11 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
             {
                 m_pGraphObjSelected = dynamic_cast<CGraphObj*>(arpGraphicsItems[0]);
                 strCurrentGraphObj = m_pGraphObjSelected->getObjName();
-                strlstActualValues.append(strCurrentGraphObj);
+                strlstResultValues.append(strCurrentGraphObj);
                 strToolTip = m_pGraphObjSelected->getToolTip();
             }
 
-            pTestStep->setResultValues(strlstActualValues);
+            pTestStep->setResultValues(strlstResultValues);
             pTestStep->setToolTip(strToolTip);
             pTestStep->testEnded();
 
@@ -2437,11 +2437,11 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
             ptMousePosGlobal.setX(ptMousePosGlobal.x()+1); // Maybe graphics view or graphics scene bug on calculating the screen position.
             ptMousePosGlobal.setY(ptMousePosGlobal.y()+1); // Without adding 1 pixel the newly created object will not be selected by the scene.
 
-            strlstDesiredValues.append( strCurrentGraphObj + ": SelPt:" + QString::number(0) );
+            strlstExpectedValues.append( strCurrentGraphObj + ": SelPt:" + QString::number(0) );
 
             pTestStep->setOperation( "view.mousePressEvent( ViewPos:" + point2Str(m_ptDrawingViewMousePos) + " )" );
             pTestStep->setDescription( "scene." + strCurrentGraphObj + ".select( ScenePos:" + point2Str(m_ptDrawingSceneMousePos) + " )" );
-            pTestStep->setExpectedValues(strlstDesiredValues);
+            pTestStep->setExpectedValues(strlstExpectedValues);
             pTestStep->testStarted();
 
             pMouseEv = new QMouseEvent(
@@ -2463,11 +2463,11 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
             {
                 m_pGraphObjSelected = dynamic_cast<CGraphObj*>(arpGraphicsItems[0]);
                 strCurrentGraphObj = m_pGraphObjSelected->getObjName();
-                strlstActualValues.append( strCurrentGraphObj + ": SelPt:" + QString::number(m_pGraphObjSelected->getSelectedPolygonShapePointIndex()) );
+                strlstResultValues.append( strCurrentGraphObj + ": SelPt:" + QString::number(m_pGraphObjSelected->getSelectedPolygonShapePointIndex()) );
                 strToolTip = m_pGraphObjSelected->getToolTip();
             }
 
-            pTestStep->setResultValues(strlstActualValues);
+            pTestStep->setResultValues(strlstResultValues);
             pTestStep->setToolTip(strToolTip);
             pTestStep->testEnded();
 
@@ -2498,11 +2498,11 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
 
             s_plgCnctLine2Curr[0] = m_ptDrawingSceneMousePos;
 
-            strlstDesiredValues.append( strCurrentGraphObj + ": " + polygon2Str(s_plgCnctLine2Curr) );
+            strlstExpectedValues.append( strCurrentGraphObj + ": " + polygon2Str(s_plgCnctLine2Curr) );
 
             pTestStep->setOperation( "drawing.mouseMoveEvent( " + point2Str(m_ptDrawingViewMousePos) + " )" );
             pTestStep->setDescription( "scene." + strCurrentGraphObj + ".moveTo( " + point2Str(m_ptDrawingSceneMousePos) + " )" );
-            pTestStep->setExpectedValues(strlstDesiredValues);
+            pTestStep->setExpectedValues(strlstExpectedValues);
             pTestStep->testStarted();
 
             pMouseEv = new QMouseEvent(
@@ -2524,11 +2524,11 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
             {
                 m_pGraphObjSelected = dynamic_cast<CGraphObj*>(arpGraphicsItems[0]);
                 strCurrentGraphObj = m_pGraphObjSelected->getObjName();
-                strlstActualValues.append( strCurrentGraphObj + ": " + m_pGraphObjSelected->getScenePolygonShapePointsString() );
+                strlstResultValues.append( strCurrentGraphObj + ": " + m_pGraphObjSelected->getScenePolygonShapePointsString() );
                 strToolTip = m_pGraphObjSelected->getToolTip();
             }
 
-            pTestStep->setResultValues(strlstActualValues);
+            pTestStep->setResultValues(strlstResultValues);
             pTestStep->setToolTip(strToolTip);
             pTestStep->testEnded();
 
@@ -2551,11 +2551,11 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
 
             s_plgCnctLine2Curr.insert( 0, m_ptDrawingSceneMousePos );
 
-            strlstDesiredValues.append( strCurrentGraphObj + ": " + polygon2Str(s_plgCnctLine2Curr) );
+            strlstExpectedValues.append( strCurrentGraphObj + ": " + polygon2Str(s_plgCnctLine2Curr) );
 
             pTestStep->setOperation( "view.mouseReleaseEvent( ViewPos:" + point2Str(m_ptDrawingViewMousePos) + " )" );
             pTestStep->setDescription( "scene." + strCurrentGraphObj + ".release( ScenePos:" + point2Str(m_ptDrawingSceneMousePos) + " )" );
-            pTestStep->setExpectedValues(strlstDesiredValues);
+            pTestStep->setExpectedValues(strlstExpectedValues);
             pTestStep->testStarted();
 
             pMouseEv = new QMouseEvent(
@@ -2577,11 +2577,11 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
             {
                 m_pGraphObjSelected = dynamic_cast<CGraphObj*>(arpGraphicsItems[0]);
                 strCurrentGraphObj = m_pGraphObjSelected->getObjName();
-                strlstActualValues.append( strCurrentGraphObj + ": " + m_pGraphObjSelected->getScenePolygonShapePointsString() );
+                strlstResultValues.append( strCurrentGraphObj + ": " + m_pGraphObjSelected->getScenePolygonShapePointsString() );
                 strToolTip = m_pGraphObjSelected->getToolTip();
             }
 
-            pTestStep->setResultValues(strlstActualValues);
+            pTestStep->setResultValues(strlstResultValues);
             pTestStep->setToolTip(strToolTip);
             pTestStep->testEnded();
 
@@ -2612,11 +2612,11 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
 
             s_plgCnctLine2Curr[0] = m_ptDrawingSceneMousePos;
 
-            strlstDesiredValues.append( strCurrentGraphObj + ": " + polygon2Str(s_plgCnctLine2Curr) );
+            strlstExpectedValues.append( strCurrentGraphObj + ": " + polygon2Str(s_plgCnctLine2Curr) );
 
             pTestStep->setOperation( "drawing.mouseMoveEvent( " + point2Str(m_ptDrawingViewMousePos) + " )" );
             pTestStep->setDescription( "scene." + strCurrentGraphObj + ".moveTo( " + point2Str(m_ptDrawingSceneMousePos) + " )" );
-            pTestStep->setExpectedValues(strlstDesiredValues);
+            pTestStep->setExpectedValues(strlstExpectedValues);
             pTestStep->testStarted();
 
             pMouseEv = new QMouseEvent(
@@ -2638,11 +2638,11 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
             {
                 m_pGraphObjSelected = dynamic_cast<CGraphObj*>(arpGraphicsItems[0]);
                 strCurrentGraphObj = m_pGraphObjSelected->getObjName();
-                strlstActualValues.append( strCurrentGraphObj + ": " + m_pGraphObjSelected->getScenePolygonShapePointsString() );
+                strlstResultValues.append( strCurrentGraphObj + ": " + m_pGraphObjSelected->getScenePolygonShapePointsString() );
                 strToolTip = m_pGraphObjSelected->getToolTip();
             }
 
-            pTestStep->setResultValues(strlstActualValues);
+            pTestStep->setResultValues(strlstResultValues);
             pTestStep->setToolTip(strToolTip);
             pTestStep->testEnded();
 
@@ -2669,13 +2669,13 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
 
             s_plgCnctLine2Curr = normalizePolygon( s_plgCnctLine2Curr, m_pDrawingScene->getHitToleranceInPx() );
 
-            strlstDesiredValues.append( strCurrentGraphObj + ": " + polygon2Str(s_plgCnctLine2Curr) );
-            strlstDesiredValues.append( "ConnectionPoint3: " + polygon2Str(s_rctCnctPt3) );
-            strlstDesiredValues.append( "ConnectionPoint1: " + polygon2Str(s_rctCnctPt1) );
+            strlstExpectedValues.append( strCurrentGraphObj + ": " + polygon2Str(s_plgCnctLine2Curr) );
+            strlstExpectedValues.append( "ConnectionPoint3: " + polygon2Str(s_rctCnctPt3) );
+            strlstExpectedValues.append( "ConnectionPoint1: " + polygon2Str(s_rctCnctPt1) );
 
             pTestStep->setOperation( "view.mouseDoubleClickEvent( " + point2Str(m_ptDrawingViewMousePos) + " )" );
             pTestStep->setDescription( "scene." + strCurrentGraphObj + ".movingShapePointFinished( " + point2Str(m_ptDrawingSceneMousePos) + " )" );
-            pTestStep->setExpectedValues(strlstDesiredValues);
+            pTestStep->setExpectedValues(strlstExpectedValues);
             pTestStep->testStarted();
 
             // Same events as in reality (mouse double click is preceeded by mouse press and mouse release event)
@@ -2723,24 +2723,24 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
 
             if( pGraphObjCnctLine != nullptr )
             {
-                strlstActualValues.append( strCurrentGraphObj + ": " + pGraphObjCnctLine->getScenePolygonShapePointsString() );
+                strlstResultValues.append( strCurrentGraphObj + ": " + pGraphObjCnctLine->getScenePolygonShapePointsString() );
 
                 pGraphObjCnctPt = pGraphObjCnctLine->getConnectionPoint(ELinePointStart);
                 if( pGraphObjCnctPt != nullptr )
                 {
-                    strlstActualValues.append( pGraphObjCnctPt->getObjName() + ": " + pGraphObjCnctPt->getScenePolygonShapePointsString() );
+                    strlstResultValues.append( pGraphObjCnctPt->getObjName() + ": " + pGraphObjCnctPt->getScenePolygonShapePointsString() );
                 }
 
                 pGraphObjCnctPt = pGraphObjCnctLine->getConnectionPoint(ELinePointEnd);
                 if( pGraphObjCnctPt != nullptr )
                 {
-                    strlstActualValues.append( pGraphObjCnctPt->getObjName() + ": " + pGraphObjCnctPt->getScenePolygonShapePointsString() );
+                    strlstResultValues.append( pGraphObjCnctPt->getObjName() + ": " + pGraphObjCnctPt->getScenePolygonShapePointsString() );
                 }
 
                 strToolTip = pGraphObjCnctLine->getToolTip();
             }
 
-            pTestStep->setResultValues(strlstActualValues);
+            pTestStep->setResultValues(strlstResultValues);
             pTestStep->setToolTip(strToolTip);
             pTestStep->testEnded();
 
@@ -2765,11 +2765,11 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
             ptMousePosGlobal.setX(ptMousePosGlobal.x()+1); // Maybe graphics view or graphics scene bug on calculating the screen position.
             ptMousePosGlobal.setY(ptMousePosGlobal.y()+1); // Without adding 1 pixel the newly created object will not be selected by the scene.
 
-            strlstDesiredValues.append(strCurrentGraphObj);
+            strlstExpectedValues.append(strCurrentGraphObj);
 
             pTestStep->setOperation( "view.mousePressEvent( ViewPos:" + point2Str(m_ptDrawingViewMousePos) + " )" );
             pTestStep->setDescription( "scene." + strCurrentGraphObj + ".select( ScenePos:" + point2Str(m_ptDrawingSceneMousePos) + " )" );
-            pTestStep->setExpectedValues(strlstDesiredValues);
+            pTestStep->setExpectedValues(strlstExpectedValues);
             pTestStep->testStarted();
 
             pMouseEv = new QMouseEvent(
@@ -2802,11 +2802,11 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
             {
                 m_pGraphObjSelected = dynamic_cast<CGraphObj*>(arpGraphicsItems[0]);
                 strCurrentGraphObj = m_pGraphObjSelected->getObjName();
-                strlstActualValues.append(strCurrentGraphObj);
+                strlstResultValues.append(strCurrentGraphObj);
                 strToolTip = m_pGraphObjSelected->getToolTip();
             }
 
-            pTestStep->setResultValues(strlstActualValues);
+            pTestStep->setResultValues(strlstResultValues);
             pTestStep->setToolTip(strToolTip);
             pTestStep->testEnded();
 
@@ -2833,11 +2833,11 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
 
             s_plgCnctLine2Prev = s_plgCnctLine2Curr;
 
-            strlstDesiredValues.append( strCurrentGraphObj + ": SelPt:" + QString::number(s_plgCnctLine2Curr.size()-1) );
+            strlstExpectedValues.append( strCurrentGraphObj + ": SelPt:" + QString::number(s_plgCnctLine2Curr.size()-1) );
 
             pTestStep->setOperation( "view.mousePressEvent( ViewPos:" + point2Str(m_ptDrawingViewMousePos) + " )" );
             pTestStep->setDescription( "scene." + strCurrentGraphObj + ".select( ScenePos:" + point2Str(m_ptDrawingSceneMousePos) + " )" );
-            pTestStep->setExpectedValues(strlstDesiredValues);
+            pTestStep->setExpectedValues(strlstExpectedValues);
             pTestStep->testStarted();
 
             pMouseEv = new QMouseEvent(
@@ -2859,11 +2859,11 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
             {
                 m_pGraphObjSelected = dynamic_cast<CGraphObj*>(arpGraphicsItems[0]);
                 strCurrentGraphObj = m_pGraphObjSelected->getObjName();
-                strlstActualValues.append( strCurrentGraphObj + ": SelPt:" + QString::number(m_pGraphObjSelected->getSelectedPolygonShapePointIndex()) );
+                strlstResultValues.append( strCurrentGraphObj + ": SelPt:" + QString::number(m_pGraphObjSelected->getSelectedPolygonShapePointIndex()) );
                 strToolTip = m_pGraphObjSelected->getToolTip();
             }
 
-            pTestStep->setResultValues(strlstActualValues);
+            pTestStep->setResultValues(strlstResultValues);
             pTestStep->setToolTip(strToolTip);
             pTestStep->testEnded();
 
@@ -2897,11 +2897,11 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
                 s_plgCnctLine2Curr[3] = m_ptDrawingSceneMousePos;
             }
 
-            strlstDesiredValues.append( strCurrentGraphObj + ": " + polygon2Str(s_plgCnctLine2Curr) );
+            strlstExpectedValues.append( strCurrentGraphObj + ": " + polygon2Str(s_plgCnctLine2Curr) );
 
             pTestStep->setOperation( "drawing.mouseMoveEvent( " + point2Str(m_ptDrawingViewMousePos) + " )" );
             pTestStep->setDescription( "scene." + strCurrentGraphObj + ".moveTo( " + point2Str(m_ptDrawingSceneMousePos) + " )" );
-            pTestStep->setExpectedValues(strlstDesiredValues);
+            pTestStep->setExpectedValues(strlstExpectedValues);
             pTestStep->testStarted();
 
             pMouseEv = new QMouseEvent(
@@ -2923,11 +2923,11 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
             {
                 m_pGraphObjSelected = dynamic_cast<CGraphObj*>(arpGraphicsItems[0]);
                 strCurrentGraphObj = m_pGraphObjSelected->getObjName();
-                strlstActualValues.append( strCurrentGraphObj + ": " + m_pGraphObjSelected->getScenePolygonShapePointsString() );
+                strlstResultValues.append( strCurrentGraphObj + ": " + m_pGraphObjSelected->getScenePolygonShapePointsString() );
                 strToolTip = m_pGraphObjSelected->getToolTip();
             }
 
-            pTestStep->setResultValues(strlstActualValues);
+            pTestStep->setResultValues(strlstResultValues);
             pTestStep->setToolTip(strToolTip);
             pTestStep->testEnded();
 
@@ -2954,13 +2954,13 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
                 s_plgCnctLine2Curr[3] = s_rctCnctPt1.center();
             }
 
-            strlstDesiredValues.append( strCurrentGraphObj + ": " + polygon2Str(s_plgCnctLine2Curr) );
-            strlstDesiredValues.append( "ConnectionPoint3: " + polygon2Str(s_rctCnctPt3) );
-            strlstDesiredValues.append( "ConnectionPoint1: " + polygon2Str(s_rctCnctPt1) );
+            strlstExpectedValues.append( strCurrentGraphObj + ": " + polygon2Str(s_plgCnctLine2Curr) );
+            strlstExpectedValues.append( "ConnectionPoint3: " + polygon2Str(s_rctCnctPt3) );
+            strlstExpectedValues.append( "ConnectionPoint1: " + polygon2Str(s_rctCnctPt1) );
 
             pTestStep->setOperation( "view.mouseReleaseEvent( ViewPos:" + point2Str(m_ptDrawingViewMousePos) + " )" );
             pTestStep->setDescription( "scene." + strCurrentGraphObj + ".release( ScenePos:" + point2Str(m_ptDrawingSceneMousePos) + " )" );
-            pTestStep->setExpectedValues(strlstDesiredValues);
+            pTestStep->setExpectedValues(strlstExpectedValues);
             pTestStep->testStarted();
 
             pMouseEv = new QMouseEvent(
@@ -3014,24 +3014,24 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
 
             if( pGraphObjCnctLine != nullptr )
             {
-                strlstActualValues.append( strCurrentGraphObj + ": " + pGraphObjCnctLine->getScenePolygonShapePointsString() );
+                strlstResultValues.append( strCurrentGraphObj + ": " + pGraphObjCnctLine->getScenePolygonShapePointsString() );
 
                 pGraphObjCnctPt = pGraphObjCnctLine->getConnectionPoint(ELinePointStart);
                 if( pGraphObjCnctPt != nullptr )
                 {
-                    strlstActualValues.append( pGraphObjCnctPt->getObjName() + ": " + pGraphObjCnctPt->getScenePolygonShapePointsString() );
+                    strlstResultValues.append( pGraphObjCnctPt->getObjName() + ": " + pGraphObjCnctPt->getScenePolygonShapePointsString() );
                 }
 
                 pGraphObjCnctPt = pGraphObjCnctLine->getConnectionPoint(ELinePointEnd);
                 if( pGraphObjCnctPt != nullptr )
                 {
-                    strlstActualValues.append( pGraphObjCnctPt->getObjName() + ": " + pGraphObjCnctPt->getScenePolygonShapePointsString() );
+                    strlstResultValues.append( pGraphObjCnctPt->getObjName() + ": " + pGraphObjCnctPt->getScenePolygonShapePointsString() );
                 }
 
                 strToolTip = pGraphObjCnctLine->getToolTip();
             }
 
-            pTestStep->setResultValues(strlstActualValues);
+            pTestStep->setResultValues(strlstResultValues);
             pTestStep->setToolTip(strToolTip);
             pTestStep->testEnded();
 
@@ -3056,11 +3056,11 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
             ptMousePosGlobal.setX(ptMousePosGlobal.x()+1); // Maybe graphics view or graphics scene bug on calculating the screen position.
             ptMousePosGlobal.setY(ptMousePosGlobal.y()+1); // Without adding 1 pixel the newly created object will not be selected by the scene.
 
-            strlstDesiredValues.append(strCurrentGraphObj);
+            strlstExpectedValues.append(strCurrentGraphObj);
 
             pTestStep->setOperation( "view.mousePressEvent( ViewPos:" + point2Str(m_ptDrawingViewMousePos) + " )" );
             pTestStep->setDescription( "scene." + strCurrentGraphObj + ".select( ScenePos:" + point2Str(m_ptDrawingSceneMousePos) + " )" );
-            pTestStep->setExpectedValues(strlstDesiredValues);
+            pTestStep->setExpectedValues(strlstExpectedValues);
             pTestStep->testStarted();
 
             pMouseEv = new QMouseEvent(
@@ -3093,11 +3093,11 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
             {
                 m_pGraphObjSelected = dynamic_cast<CGraphObj*>(arpGraphicsItems[0]);
                 strCurrentGraphObj = m_pGraphObjSelected->getObjName();
-                strlstActualValues.append(strCurrentGraphObj);
+                strlstResultValues.append(strCurrentGraphObj);
                 strToolTip = m_pGraphObjSelected->getToolTip();
             }
 
-            pTestStep->setResultValues(strlstActualValues);
+            pTestStep->setResultValues(strlstResultValues);
             pTestStep->setToolTip(strToolTip);
             pTestStep->testEnded();
 
@@ -3124,11 +3124,11 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
 
             s_plgCnctLine2Prev = s_plgCnctLine2Curr;
 
-            strlstDesiredValues.append( strCurrentGraphObj + ": SelPt:" + QString::number(0) );
+            strlstExpectedValues.append( strCurrentGraphObj + ": SelPt:" + QString::number(0) );
 
             pTestStep->setOperation( "view.mousePressEvent( ViewPos:" + point2Str(m_ptDrawingViewMousePos) + " )" );
             pTestStep->setDescription( "scene." + strCurrentGraphObj + ".select( ScenePos:" + point2Str(m_ptDrawingSceneMousePos) + " )" );
-            pTestStep->setExpectedValues(strlstDesiredValues);
+            pTestStep->setExpectedValues(strlstExpectedValues);
             pTestStep->testStarted();
 
             pMouseEv = new QMouseEvent(
@@ -3150,11 +3150,11 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
             {
                 m_pGraphObjSelected = dynamic_cast<CGraphObj*>(arpGraphicsItems[0]);
                 strCurrentGraphObj = m_pGraphObjSelected->getObjName();
-                strlstActualValues.append( strCurrentGraphObj + ": SelPt:" + QString::number(m_pGraphObjSelected->getSelectedPolygonShapePointIndex()) );
+                strlstResultValues.append( strCurrentGraphObj + ": SelPt:" + QString::number(m_pGraphObjSelected->getSelectedPolygonShapePointIndex()) );
                 strToolTip = m_pGraphObjSelected->getToolTip();
             }
 
-            pTestStep->setResultValues(strlstActualValues);
+            pTestStep->setResultValues(strlstResultValues);
             pTestStep->setToolTip(strToolTip);
             pTestStep->testEnded();
 
@@ -3185,11 +3185,11 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
 
             s_plgCnctLine2Curr[0] = m_ptDrawingSceneMousePos;
 
-            strlstDesiredValues.append( strCurrentGraphObj + ": " + polygon2Str(s_plgCnctLine2Curr) );
+            strlstExpectedValues.append( strCurrentGraphObj + ": " + polygon2Str(s_plgCnctLine2Curr) );
 
             pTestStep->setOperation( "drawing.mouseMoveEvent( " + point2Str(m_ptDrawingViewMousePos) + " )" );
             pTestStep->setDescription( "scene." + strCurrentGraphObj + ".moveTo( " + point2Str(m_ptDrawingSceneMousePos) + " )" );
-            pTestStep->setExpectedValues(strlstDesiredValues);
+            pTestStep->setExpectedValues(strlstExpectedValues);
             pTestStep->testStarted();
 
             pMouseEv = new QMouseEvent(
@@ -3211,11 +3211,11 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
             {
                 m_pGraphObjSelected = dynamic_cast<CGraphObj*>(arpGraphicsItems[0]);
                 strCurrentGraphObj = m_pGraphObjSelected->getObjName();
-                strlstActualValues.append( strCurrentGraphObj + ": " + m_pGraphObjSelected->getScenePolygonShapePointsString() );
+                strlstResultValues.append( strCurrentGraphObj + ": " + m_pGraphObjSelected->getScenePolygonShapePointsString() );
                 strToolTip = m_pGraphObjSelected->getToolTip();
             }
 
-            pTestStep->setResultValues(strlstActualValues);
+            pTestStep->setResultValues(strlstResultValues);
             pTestStep->setToolTip(strToolTip);
             pTestStep->testEnded();
 
@@ -3239,13 +3239,13 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
             s_plgCnctLine2Curr[0] = s_rctCnctPt3.center();
             s_plgCnctLine2Curr[1] = m_ptDrawingSceneMousePos;
 
-            strlstDesiredValues.append( strCurrentGraphObj + ": " + polygon2Str(s_plgCnctLine2Curr) );
-            strlstDesiredValues.append( "ConnectionPoint3: " + polygon2Str(s_rctCnctPt3) );
-            strlstDesiredValues.append( "ConnectionPoint1: " + polygon2Str(s_rctCnctPt1) );
+            strlstExpectedValues.append( strCurrentGraphObj + ": " + polygon2Str(s_plgCnctLine2Curr) );
+            strlstExpectedValues.append( "ConnectionPoint3: " + polygon2Str(s_rctCnctPt3) );
+            strlstExpectedValues.append( "ConnectionPoint1: " + polygon2Str(s_rctCnctPt1) );
 
             pTestStep->setOperation( "view.mouseReleaseEvent( ViewPos:" + point2Str(m_ptDrawingViewMousePos) + " )" );
             pTestStep->setDescription( "scene." + strCurrentGraphObj + ".release( ScenePos:" + point2Str(m_ptDrawingSceneMousePos) + " )" );
-            pTestStep->setExpectedValues(strlstDesiredValues);
+            pTestStep->setExpectedValues(strlstExpectedValues);
             pTestStep->testStarted();
 
             pMouseEv = new QMouseEvent(
@@ -3299,24 +3299,24 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
 
             if( pGraphObjCnctLine != nullptr )
             {
-                strlstActualValues.append( strCurrentGraphObj + ": " + pGraphObjCnctLine->getScenePolygonShapePointsString() );
+                strlstResultValues.append( strCurrentGraphObj + ": " + pGraphObjCnctLine->getScenePolygonShapePointsString() );
 
                 pGraphObjCnctPt = pGraphObjCnctLine->getConnectionPoint(ELinePointStart);
                 if( pGraphObjCnctPt != nullptr )
                 {
-                    strlstActualValues.append( pGraphObjCnctPt->getObjName() + ": " + pGraphObjCnctPt->getScenePolygonShapePointsString() );
+                    strlstResultValues.append( pGraphObjCnctPt->getObjName() + ": " + pGraphObjCnctPt->getScenePolygonShapePointsString() );
                 }
 
                 pGraphObjCnctPt = pGraphObjCnctLine->getConnectionPoint(ELinePointEnd);
                 if( pGraphObjCnctPt != nullptr )
                 {
-                    strlstActualValues.append( pGraphObjCnctPt->getObjName() + ": " + pGraphObjCnctPt->getScenePolygonShapePointsString() );
+                    strlstResultValues.append( pGraphObjCnctPt->getObjName() + ": " + pGraphObjCnctPt->getScenePolygonShapePointsString() );
                 }
 
                 strToolTip = pGraphObjCnctLine->getToolTip();
             }
 
-            pTestStep->setResultValues(strlstActualValues);
+            pTestStep->setResultValues(strlstResultValues);
             pTestStep->setToolTip(strToolTip);
             pTestStep->testEnded();
 

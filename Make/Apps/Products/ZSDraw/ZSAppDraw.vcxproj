@@ -907,7 +907,7 @@
     <ClCompile Include="..\..\..\..\Source\Apps\Products\ZSDraw\Main.cpp" />
     <ClCompile Include="..\..\..\..\Source\Apps\Products\ZSDraw\MainWindow.cpp" />
     <ClCompile Include="..\..\..\..\Source\Apps\Products\ZSDraw\Test.cpp" />
-    <ClCompile Include="..\..\..\..\Source\Apps\Products\ZSDraw\TestGroupInterferenceChecks.cpp" />
+    <ClCompile Include="..\..\..\..\Source\Apps\Products\ZSDraw\TestStepsAndroidWallpaperTemplate.cpp" />
     <ClCompile Include="..\..\..\..\Source\Apps\Products\ZSDraw\TestStepElectricity.cpp" />
     <ClCompile Include="..\..\..\..\Source\Apps\Products\ZSDraw\TestStepElectricityCapacitors.cpp" />
     <ClCompile Include="..\..\..\..\Source\Apps\Products\ZSDraw\TestStepElectricityInductors.cpp" />

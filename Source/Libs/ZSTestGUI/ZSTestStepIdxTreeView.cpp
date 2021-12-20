@@ -79,6 +79,7 @@ CTreeViewIdxTreeTestSteps::CTreeViewIdxTreeTestSteps(
 
     setSelectionBehavior(QAbstractItemView::SelectItems);
     setSelectionMode(QAbstractItemView::SingleSelection);
+    setAlternatingRowColors(true);
     setAllColumnsShowFocus(true);
 
     setColumnHidden(CModeldxTreeTestSteps::EColumnName, false);

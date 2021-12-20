@@ -24,6 +24,8 @@ may result in using the software modules.
 
 *******************************************************************************/
 
+#if 0
+
 #include <QtCore/qtimer.h>
 #include <QtGui/qevent.h>
 
@@ -58,8 +60,6 @@ using namespace ZS::Trace;
 /*******************************************************************************
 class CTest : public Test::CTest
 *******************************************************************************/
-
-#if 0
 
 static QRectF    s_rctText1;
 static QPolygonF s_plgText1;
@@ -216,11 +216,11 @@ void CTest::doTestStepStandardShapesTexts( ZS::Test::CTestStepGroup* i_pTestStep
     QPoint               ptMousePosGlobal;
     QString              strCurrentDrawingTool;
     QString              strCurrentGraphObj;
-    QString              strDesiredPainterPath;
+    QString              strExpectedPainterPath;
     QString              strToolTip;
     ZS::Test::CTestStep* pTestStep;
-    QStringList          strlstDesiredValues;
-    QStringList          strlstActualValues;
+    QStringList          strlstExpectedValues;
+    QStringList          strlstResultValues;
     QList<CGraphObj*>    arpGraphObjs;
     CGraphObj*           pGraphObj;
     CGraphObjText*       pGraphObjText;
@@ -264,11 +264,11 @@ void CTest::doTestStepStandardShapesTexts( ZS::Test::CTestStepGroup* i_pTestStep
 
                 pTestStep = getTestStep( "Create." + strCurrentGraphObj + ".ActivateDrawingTool", pTSGrpTextsCreate );
 
-                strlstDesiredValues.append( "EditTool: CreateObjects" );
-                strlstDesiredValues.append( "DrawingTool: Text" );
+                strlstExpectedValues.append( "EditTool: CreateObjects" );
+                strlstExpectedValues.append( "DrawingTool: Text" );
 
                 pTestStep->setOperation( "drawing.setCurrentDrawingTool( Text )" );
-                pTestStep->setExpectedValues(strlstDesiredValues);
+                pTestStep->setExpectedValues(strlstExpectedValues);
                 pTestStep->testStarted();
 
                 if( (m_pDrawingScene->getEditTool() != EEditToolCreateObjects) || (m_pDrawingScene->getCurrentDrawingToolGraphObjType() != EGraphObjTypeText) )
@@ -285,10 +285,10 @@ void CTest::doTestStepStandardShapesTexts( ZS::Test::CTestStepGroup* i_pTestStep
                     strCurrentDrawingTool = "";
                 }
 
-                strlstActualValues.append( "EditTool: " + editTool2Str(m_pDrawingScene->getEditTool()) );
-                strlstActualValues.append( "DrawingTool: " + strCurrentDrawingTool );
+                strlstResultValues.append( "EditTool: " + editTool2Str(m_pDrawingScene->getEditTool()) );
+                strlstResultValues.append( "DrawingTool: " + strCurrentDrawingTool );
 
-                pTestStep->setResultValues(strlstActualValues);
+                pTestStep->setResultValues(strlstResultValues);
                 pTestStep->setToolTip(strToolTip);
                 pTestStep->testEnded();
 
@@ -319,11 +319,11 @@ void CTest::doTestStepStandardShapesTexts( ZS::Test::CTestStepGroup* i_pTestStep
 
             s_rctText1 = QRectF( s_ptDrawingSceneMousePosCreateText1Start.x(), s_ptDrawingSceneMousePosCreateText1Start.y(), 8, 22 );
 
-            strlstDesiredValues.append( "Text: " );
+            strlstExpectedValues.append( "Text: " );
 
             pTestStep->setOperation( "view.mouseClickEvent( ViewPos:" + point2Str(m_ptDrawingViewMousePos) + " )" );
             pTestStep->setDescription( "scene." + strCurrentGraphObj + ".create( ScenePos:" + point2Str(m_ptDrawingSceneMousePos) + " )" );
-            pTestStep->setExpectedValues(strlstDesiredValues);
+            pTestStep->setExpectedValues(strlstExpectedValues);
             pTestStep->testStarted();
 
             pMouseEv = new QMouseEvent(
@@ -354,11 +354,11 @@ void CTest::doTestStepStandardShapesTexts( ZS::Test::CTestStepGroup* i_pTestStep
 
             if( pGraphObjText != nullptr )
             {
-                strlstActualValues.append( "Text: " + pGraphObjText->toPlainText() );
+                strlstResultValues.append( "Text: " + pGraphObjText->toPlainText() );
                 strToolTip = pGraphObj->getToolTip();
             }
 
-            pTestStep->setResultValues(strlstActualValues);
+            pTestStep->setResultValues(strlstResultValues);
             pTestStep->setToolTip(strToolTip);
             pTestStep->testEnded();
 
@@ -385,11 +385,11 @@ void CTest::doTestStepStandardShapesTexts( ZS::Test::CTestStepGroup* i_pTestStep
                 strText += s_arKeyInputCreateText1TestSteps[idx].m_ch;
             }
 
-            strlstDesiredValues.append( "Text: " + strText );
+            strlstExpectedValues.append( "Text: " + strText );
 
             pTestStep->setOperation( "view.keyPressEvent( " + QString(ch) + " )" );
             pTestStep->setDescription( "scene." + strCurrentGraphObj + ".keyPressEvent( " + QString(ch) + " )" );
-            pTestStep->setExpectedValues(strlstDesiredValues);
+            pTestStep->setExpectedValues(strlstExpectedValues);
             pTestStep->testStarted();
 
             pKeyEv = new QKeyEvent(
@@ -420,13 +420,13 @@ void CTest::doTestStepStandardShapesTexts( ZS::Test::CTestStepGroup* i_pTestStep
 
             if( pGraphObjText != nullptr )
             {
-                strlstActualValues.append( "Text: " + pGraphObjText->toPlainText() );
+                strlstResultValues.append( "Text: " + pGraphObjText->toPlainText() );
                 strToolTip = pGraphObj->getToolTip();
 
                 s_rctText1 = pGraphObjText->rect();
             }
 
-            pTestStep->setResultValues(strlstActualValues);
+            pTestStep->setResultValues(strlstResultValues);
             pTestStep->setToolTip(strToolTip);
             pTestStep->testEnded();
 
@@ -459,11 +459,11 @@ void CTest::doTestStepStandardShapesTexts( ZS::Test::CTestStepGroup* i_pTestStep
 
                 pTestStep = getTestStep( "Hover." + strCurrentGraphObj + ".ActivateEditModeSelect", pTSGrpTextsHover );
 
-                strlstDesiredValues.append( "EditTool: Select" );
-                strlstDesiredValues.append( "DrawingTool: " );
+                strlstExpectedValues.append( "EditTool: Select" );
+                strlstExpectedValues.append( "DrawingTool: " );
 
                 pTestStep->setOperation( "drawing.setCurrentDrawingTool( Select )" );
-                pTestStep->setExpectedValues(strlstDesiredValues);
+                pTestStep->setExpectedValues(strlstExpectedValues);
                 pTestStep->testStarted();
 
                 if( m_pDrawingScene->getEditTool() != EEditToolSelect )
@@ -482,10 +482,10 @@ void CTest::doTestStepStandardShapesTexts( ZS::Test::CTestStepGroup* i_pTestStep
 
                 m_ptDrawingSceneMousePos = s_ptDrawingSceneMousePosHoverText1Start;
 
-                strlstActualValues.append( "EditTool: " + editTool2Str(m_pDrawingScene->getEditTool()) );
-                strlstActualValues.append( "DrawingTool: " + strCurrentDrawingTool );
+                strlstResultValues.append( "EditTool: " + editTool2Str(m_pDrawingScene->getEditTool()) );
+                strlstResultValues.append( "DrawingTool: " + strCurrentDrawingTool );
 
-                pTestStep->setResultValues(strlstActualValues);
+                pTestStep->setResultValues(strlstResultValues);
                 pTestStep->setToolTip(strToolTip);
                 pTestStep->testEnded();
 
@@ -518,7 +518,7 @@ void CTest::doTestStepStandardShapesTexts( ZS::Test::CTestStepGroup* i_pTestStep
 
             pTestStep->setOperation( "view.mouseMoveEvent( ViewPos:" + point2Str(m_ptDrawingViewMousePos) + " )" );
             pTestStep->setDescription( "scene." + strCurrentGraphObj + ".move( ScenePos:" + point2Str(m_ptDrawingSceneMousePos) + " )" );
-            pTestStep->setExpectedValues(strlstDesiredValues);
+            pTestStep->setExpectedValues(strlstExpectedValues);
             pTestStep->testStarted();
 
             pMouseEv = new QMouseEvent(
@@ -532,7 +532,7 @@ void CTest::doTestStepStandardShapesTexts( ZS::Test::CTestStepGroup* i_pTestStep
             delete pMouseEv;
             pMouseEv = nullptr;
 
-            pTestStep->setResultValues(strlstActualValues);
+            pTestStep->setResultValues(strlstResultValues);
             pTestStep->setToolTip(strToolTip);
             pTestStep->testEnded(true);
 
@@ -563,11 +563,11 @@ void CTest::doTestStepStandardShapesTexts( ZS::Test::CTestStepGroup* i_pTestStep
 
                 pTestStep = getTestStep( "Move." + strCurrentGraphObj + ".ActivateEditModeSelect", pTSGrpTextsMove );
 
-                strlstDesiredValues.append( "EditTool: Select" );
-                strlstDesiredValues.append( "DrawingTool: " );
+                strlstExpectedValues.append( "EditTool: Select" );
+                strlstExpectedValues.append( "DrawingTool: " );
 
                 pTestStep->setOperation( "drawing.setCurrentDrawingTool( Select )" );
-                pTestStep->setExpectedValues(strlstDesiredValues);
+                pTestStep->setExpectedValues(strlstExpectedValues);
                 pTestStep->testStarted();
 
                 if( m_pDrawingScene->getEditTool() != EEditToolSelect )
@@ -584,10 +584,10 @@ void CTest::doTestStepStandardShapesTexts( ZS::Test::CTestStepGroup* i_pTestStep
                     strCurrentDrawingTool = "";
                 }
 
-                strlstActualValues.append( "EditTool: " + editTool2Str(m_pDrawingScene->getEditTool()) );
-                strlstActualValues.append( "DrawingTool: " + strCurrentDrawingTool );
+                strlstResultValues.append( "EditTool: " + editTool2Str(m_pDrawingScene->getEditTool()) );
+                strlstResultValues.append( "DrawingTool: " + strCurrentDrawingTool );
 
-                pTestStep->setResultValues(strlstActualValues);
+                pTestStep->setResultValues(strlstResultValues);
                 pTestStep->setToolTip(strToolTip);
                 pTestStep->testEnded();
 
@@ -614,11 +614,11 @@ void CTest::doTestStepStandardShapesTexts( ZS::Test::CTestStepGroup* i_pTestStep
             ptMousePosGlobal.setX(ptMousePosGlobal.x()+1); // Maybe graphics view or graphics scene bug on calculating the screen position.
             ptMousePosGlobal.setY(ptMousePosGlobal.y()+1); // Without adding 1 pixel the newly created object will not be selected by the scene.
 
-            strlstDesiredValues.append( strCurrentGraphObj + ": SelPt:" + selectionPoint2Str(ESelectionPointUndefined) );
+            strlstExpectedValues.append( strCurrentGraphObj + ": SelPt:" + selectionPoint2Str(ESelectionPointUndefined) );
 
             pTestStep->setOperation( "view.mousePressEvent( ViewPos:" + point2Str(m_ptDrawingViewMousePos) + " )" );
             pTestStep->setDescription( "scene." + strCurrentGraphObj + ".select( ScenePos:" + point2Str(m_ptDrawingSceneMousePos) + " )" );
-            pTestStep->setExpectedValues(strlstDesiredValues);
+            pTestStep->setExpectedValues(strlstExpectedValues);
             pTestStep->testStarted();
 
             pMouseEv = new QMouseEvent(
@@ -641,7 +641,7 @@ void CTest::doTestStepStandardShapesTexts( ZS::Test::CTestStepGroup* i_pTestStep
             {
                 m_pGraphObjSelected = dynamic_cast<CGraphObj*>(arpGraphObjsSelected[0]);
                 strCurrentGraphObj = m_pGraphObjSelected->getObjName();
-                strlstActualValues.append( strCurrentGraphObj + ": SelPt:" + selectionPoint2Str(m_pGraphObjSelected->getSelectedBoundingRectPoint()) );
+                strlstResultValues.append( strCurrentGraphObj + ": SelPt:" + selectionPoint2Str(m_pGraphObjSelected->getSelectedBoundingRectPoint()) );
                 strToolTip = m_pGraphObjSelected->getToolTip();
 
                 pGraphObjText = dynamic_cast<CGraphObjText*>(m_pGraphObjSelected);
@@ -652,7 +652,7 @@ void CTest::doTestStepStandardShapesTexts( ZS::Test::CTestStepGroup* i_pTestStep
                 }
             }
 
-            pTestStep->setResultValues(strlstActualValues);
+            pTestStep->setResultValues(strlstResultValues);
             pTestStep->setToolTip(strToolTip);
             pTestStep->testEnded();
 
@@ -684,11 +684,11 @@ void CTest::doTestStepStandardShapesTexts( ZS::Test::CTestStepGroup* i_pTestStep
             s_rctText1.moveLeft( s_rctText1.left() + m_fxOffsHor );
             s_rctText1.moveTop( s_rctText1.top() + m_fyOffsHor );
 
-            strlstDesiredValues.append( strCurrentGraphObj + ": " + polygon2Str(s_rctText1) );
+            strlstExpectedValues.append( strCurrentGraphObj + ": " + polygon2Str(s_rctText1) );
 
             pTestStep->setOperation( "view.mouseMoveEvent( ViewPos:" + point2Str(m_ptDrawingViewMousePos) + " )" );
             pTestStep->setDescription( "scene." + strCurrentGraphObj + ".move( ScenePos:" + point2Str(m_ptDrawingSceneMousePos) + " )" );
-            pTestStep->setExpectedValues(strlstDesiredValues);
+            pTestStep->setExpectedValues(strlstExpectedValues);
             pTestStep->testStarted();
 
             pMouseEv = new QMouseEvent(
@@ -710,11 +710,11 @@ void CTest::doTestStepStandardShapesTexts( ZS::Test::CTestStepGroup* i_pTestStep
             {
                 m_pGraphObjSelected = dynamic_cast<CGraphObj*>(arpGraphObjsSelected[0]);
                 strCurrentGraphObj = m_pGraphObjSelected->getObjName();
-                strlstActualValues.append( strCurrentGraphObj + ": " + m_pGraphObjSelected->getScenePolygonShapePointsString() );
+                strlstResultValues.append( strCurrentGraphObj + ": " + m_pGraphObjSelected->getScenePolygonShapePointsString() );
                 strToolTip = m_pGraphObjSelected->getToolTip();
             }
 
-            pTestStep->setResultValues(strlstActualValues);
+            pTestStep->setResultValues(strlstResultValues);
             pTestStep->setToolTip(strToolTip);
             pTestStep->testEnded();
 
@@ -735,11 +735,11 @@ void CTest::doTestStepStandardShapesTexts( ZS::Test::CTestStepGroup* i_pTestStep
             ptMousePosGlobal.setX(ptMousePosGlobal.x()+1); // Maybe graphics view or graphics scene bug on calculating the screen position.
             ptMousePosGlobal.setY(ptMousePosGlobal.y()+1); // Without adding 1 pixel the newly created object will not be selected by the scene.
 
-            strlstDesiredValues.append( strCurrentGraphObj + ": " + polygon2Str(s_rctText1) );
+            strlstExpectedValues.append( strCurrentGraphObj + ": " + polygon2Str(s_rctText1) );
 
             pTestStep->setOperation( "view.mouseReleaseEvent( ViewPos:" + point2Str(m_ptDrawingViewMousePos) + " )" );
             pTestStep->setDescription( "scene." + strCurrentGraphObj + ".release( ScenePos:" + point2Str(m_ptDrawingSceneMousePos) + " )" );
-            pTestStep->setExpectedValues(strlstDesiredValues);
+            pTestStep->setExpectedValues(strlstExpectedValues);
             pTestStep->testStarted();
 
             pMouseEv = new QMouseEvent(
@@ -761,11 +761,11 @@ void CTest::doTestStepStandardShapesTexts( ZS::Test::CTestStepGroup* i_pTestStep
             {
                 m_pGraphObjSelected = dynamic_cast<CGraphObj*>(arpGraphObjsSelected[0]);
                 strCurrentGraphObj = m_pGraphObjSelected->getObjName();
-                strlstActualValues.append( strCurrentGraphObj + ": " + m_pGraphObjSelected->getScenePolygonShapePointsString() );
+                strlstResultValues.append( strCurrentGraphObj + ": " + m_pGraphObjSelected->getScenePolygonShapePointsString() );
                 strToolTip = m_pGraphObjSelected->getToolTip();
             }
 
-            pTestStep->setResultValues(strlstActualValues);
+            pTestStep->setResultValues(strlstResultValues);
             pTestStep->setToolTip(strToolTip);
             pTestStep->testEnded();
 
@@ -796,11 +796,11 @@ void CTest::doTestStepStandardShapesTexts( ZS::Test::CTestStepGroup* i_pTestStep
 
                 pTestStep = getTestStep( "RotateTo." + strCurrentGraphObj + ".ActivateEditModeSelect", pTSGrpTextsRotateTo );
 
-                strlstDesiredValues.append( "EditTool: Select" );
-                strlstDesiredValues.append( "DrawingTool: " );
+                strlstExpectedValues.append( "EditTool: Select" );
+                strlstExpectedValues.append( "DrawingTool: " );
 
                 pTestStep->setOperation( "drawing.setCurrentDrawingTool( Select )" );
-                pTestStep->setExpectedValues(strlstDesiredValues);
+                pTestStep->setExpectedValues(strlstExpectedValues);
                 pTestStep->testStarted();
 
                 if( m_pDrawingScene->getEditTool() != EEditToolSelect )
@@ -817,10 +817,10 @@ void CTest::doTestStepStandardShapesTexts( ZS::Test::CTestStepGroup* i_pTestStep
                     strCurrentDrawingTool = "";
                 }
 
-                strlstActualValues.append( "EditTool: " + editTool2Str(m_pDrawingScene->getEditTool()) );
-                strlstActualValues.append( "DrawingTool: " + strCurrentDrawingTool );
+                strlstResultValues.append( "EditTool: " + editTool2Str(m_pDrawingScene->getEditTool()) );
+                strlstResultValues.append( "DrawingTool: " + strCurrentDrawingTool );
 
-                pTestStep->setResultValues(strlstActualValues);
+                pTestStep->setResultValues(strlstResultValues);
                 pTestStep->setToolTip(strToolTip);
                 pTestStep->testEnded();
 
@@ -848,11 +848,11 @@ void CTest::doTestStepStandardShapesTexts( ZS::Test::CTestStepGroup* i_pTestStep
             ptMousePosGlobal.setX(ptMousePosGlobal.x()+1); // Maybe graphics view or graphics scene bug on calculating the screen position.
             ptMousePosGlobal.setY(ptMousePosGlobal.y()+1); // Without adding 1 pixel the newly created object will not be selected by the scene.
 
-            strlstDesiredValues.append( strCurrentGraphObj + ": SelPt:" + selectionPoint2Str(ESelectionPointUndefined) );
+            strlstExpectedValues.append( strCurrentGraphObj + ": SelPt:" + selectionPoint2Str(ESelectionPointUndefined) );
 
             pTestStep->setOperation( "view.mouseClickEvent( ViewPos:" + point2Str(m_ptDrawingViewMousePos) + " )" );
             pTestStep->setDescription( "scene." + strCurrentGraphObj + ".select( ScenePos:" + point2Str(m_ptDrawingSceneMousePos) + " )" );
-            pTestStep->setExpectedValues(strlstDesiredValues);
+            pTestStep->setExpectedValues(strlstExpectedValues);
             pTestStep->testStarted();
 
             pMouseEv = new QMouseEvent(
@@ -886,7 +886,7 @@ void CTest::doTestStepStandardShapesTexts( ZS::Test::CTestStepGroup* i_pTestStep
             {
                 m_pGraphObjSelected = dynamic_cast<CGraphObj*>(arpGraphObjsSelected[0]);
                 strCurrentGraphObj = m_pGraphObjSelected->getObjName();
-                strlstActualValues.append( strCurrentGraphObj + ": SelPt:" + selectionPoint2Str(m_pGraphObjSelected->getSelectedBoundingRectPoint()) );
+                strlstResultValues.append( strCurrentGraphObj + ": SelPt:" + selectionPoint2Str(m_pGraphObjSelected->getSelectedBoundingRectPoint()) );
                 strToolTip = m_pGraphObjSelected->getToolTip();
 
                 pGraphObjText = dynamic_cast<CGraphObjText*>(m_pGraphObjSelected);
@@ -897,7 +897,7 @@ void CTest::doTestStepStandardShapesTexts( ZS::Test::CTestStepGroup* i_pTestStep
                 }
             }
 
-            pTestStep->setResultValues(strlstActualValues);
+            pTestStep->setResultValues(strlstResultValues);
             pTestStep->setToolTip(strToolTip);
             pTestStep->testEnded();
 
@@ -923,12 +923,12 @@ void CTest::doTestStepStandardShapesTexts( ZS::Test::CTestStepGroup* i_pTestStep
             ptMousePosGlobal.setX(ptMousePosGlobal.x()+1); // Maybe graphics view or graphics scene bug on calculating the screen position.
             ptMousePosGlobal.setY(ptMousePosGlobal.y()+1); // Without adding 1 pixel the newly created object will not be selected by the scene.
 
-            strlstDesiredValues.append( strCurrentGraphObj + ": SelPt:" + selectionPoint2Str(ESelectionPointRotateTop) );
-            strlstDesiredValues.append( strCurrentGraphObj + ": " + polygon2Str(s_rctText1) );
+            strlstExpectedValues.append( strCurrentGraphObj + ": SelPt:" + selectionPoint2Str(ESelectionPointRotateTop) );
+            strlstExpectedValues.append( strCurrentGraphObj + ": " + polygon2Str(s_rctText1) );
 
             pTestStep->setOperation( "view.mousePressEvent( ViewPos:" + point2Str(m_ptDrawingViewMousePos) + " )" );
             pTestStep->setDescription( "scene." + strCurrentGraphObj + ".select( ScenePos:" + point2Str(m_ptDrawingSceneMousePos) + " )" );
-            pTestStep->setExpectedValues(strlstDesiredValues);
+            pTestStep->setExpectedValues(strlstExpectedValues);
             pTestStep->testStarted();
 
             pMouseEv = new QMouseEvent(
@@ -950,12 +950,12 @@ void CTest::doTestStepStandardShapesTexts( ZS::Test::CTestStepGroup* i_pTestStep
             {
                 m_pGraphObjSelected = dynamic_cast<CGraphObj*>(arpGraphObjsSelected[0]);
                 strCurrentGraphObj = m_pGraphObjSelected->getObjName();
-                strlstActualValues.append( strCurrentGraphObj + ": SelPt:" + selectionPoint2Str(m_pGraphObjSelected->getSelectedBoundingRectPoint()) );
-                strlstActualValues.append( strCurrentGraphObj + ": " + m_pGraphObjSelected->getScenePolygonShapePointsString() );
+                strlstResultValues.append( strCurrentGraphObj + ": SelPt:" + selectionPoint2Str(m_pGraphObjSelected->getSelectedBoundingRectPoint()) );
+                strlstResultValues.append( strCurrentGraphObj + ": " + m_pGraphObjSelected->getScenePolygonShapePointsString() );
                 strToolTip = m_pGraphObjSelected->getToolTip();
             }
 
-            pTestStep->setResultValues(strlstActualValues);
+            pTestStep->setResultValues(strlstResultValues);
             pTestStep->setToolTip(strToolTip);
             pTestStep->testEnded();
 
@@ -997,11 +997,11 @@ void CTest::doTestStepStandardShapesTexts( ZS::Test::CTestStepGroup* i_pTestStep
             s_plgText1 = rotateRect( s_rctText1.center(), s_rctText1, fAngle_rad );
             s_plgText1.append(s_plgText1[0]);
 
-            strlstDesiredValues.append( strCurrentGraphObj + ": " + polygon2Str(s_plgText1) );
+            strlstExpectedValues.append( strCurrentGraphObj + ": " + polygon2Str(s_plgText1) );
 
             pTestStep->setOperation( "view.mouseMoveEvent( ViewPos:" + point2Str(m_ptDrawingViewMousePos) + " )" );
             pTestStep->setDescription( "scene." + strCurrentGraphObj + ".rotateTo( " + QString::number(m_fAngle_degree) + "° )" );
-            pTestStep->setExpectedValues(strlstDesiredValues);
+            pTestStep->setExpectedValues(strlstExpectedValues);
             pTestStep->testStarted();
 
             pMouseEv = new QMouseEvent(
@@ -1023,11 +1023,11 @@ void CTest::doTestStepStandardShapesTexts( ZS::Test::CTestStepGroup* i_pTestStep
             {
                 m_pGraphObjSelected = dynamic_cast<CGraphObj*>(arpGraphObjsSelected[0]);
                 strCurrentGraphObj = m_pGraphObjSelected->getObjName();
-                strlstActualValues.append( strCurrentGraphObj + ": " + m_pGraphObjSelected->getScenePolygonShapePointsString() );
+                strlstResultValues.append( strCurrentGraphObj + ": " + m_pGraphObjSelected->getScenePolygonShapePointsString() );
                 strToolTip = m_pGraphObjSelected->getToolTip();
             }
 
-            pTestStep->setResultValues(strlstActualValues);
+            pTestStep->setResultValues(strlstResultValues);
             pTestStep->setToolTip(strToolTip);
 
             bool bIgnoreTestResult = false;
@@ -1053,11 +1053,11 @@ void CTest::doTestStepStandardShapesTexts( ZS::Test::CTestStepGroup* i_pTestStep
             ptMousePosGlobal.setX(ptMousePosGlobal.x()+1); // Maybe graphics view or graphics scene bug on calculating the screen position.
             ptMousePosGlobal.setY(ptMousePosGlobal.y()+1); // Without adding 1 pixel the newly created object will not be selected by the scene.
 
-            strlstDesiredValues.append( strCurrentGraphObj + ": " + polygon2Str(s_rctText1) );
+            strlstExpectedValues.append( strCurrentGraphObj + ": " + polygon2Str(s_rctText1) );
 
             pTestStep->setOperation( "view.mouseReleaseEvent( ViewPos:" + point2Str(m_ptDrawingViewMousePos) + " )" );
             pTestStep->setDescription( "scene." + strCurrentGraphObj + ".release( ScenePos:" + point2Str(m_ptDrawingSceneMousePos) + " )" );
-            pTestStep->setExpectedValues(strlstDesiredValues);
+            pTestStep->setExpectedValues(strlstExpectedValues);
             pTestStep->testStarted();
 
             pMouseEv = new QMouseEvent(
@@ -1086,11 +1086,11 @@ void CTest::doTestStepStandardShapesTexts( ZS::Test::CTestStepGroup* i_pTestStep
                     pGraphObjText->setRotationAngleInDegree(0.0);
                 }
 
-                strlstActualValues.append( strCurrentGraphObj + ": " + m_pGraphObjSelected->getScenePolygonShapePointsString() );
+                strlstResultValues.append( strCurrentGraphObj + ": " + m_pGraphObjSelected->getScenePolygonShapePointsString() );
                 strToolTip = m_pGraphObjSelected->getToolTip();
             }
 
-            pTestStep->setResultValues(strlstActualValues);
+            pTestStep->setResultValues(strlstResultValues);
             pTestStep->setToolTip(strToolTip);
             pTestStep->testEnded();
 

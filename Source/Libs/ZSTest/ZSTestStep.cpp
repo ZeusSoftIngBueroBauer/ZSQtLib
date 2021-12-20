@@ -249,7 +249,7 @@ public: // instance methods
 bool CTestStep::isFinished() const
 //------------------------------------------------------------------------------
 {
-    return (m_strlstResultValues.size() > 0);
+    return (m_testResult != ETestResult::Undefined);
 }
 
 /*==============================================================================

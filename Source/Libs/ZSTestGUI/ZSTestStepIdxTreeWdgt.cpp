@@ -365,7 +365,6 @@ CWdgtIdxTreeTestSteps::CWdgtIdxTreeTestSteps(
     m_pTestStepsModel = new CModeldxTreeTestSteps( m_pTest->getTestStepIdxTree() );
 
     m_pTreeViewTestSteps = new CTreeViewIdxTreeTestSteps(m_pTestStepsModel,this);
-    m_pTreeViewTestSteps->setAlternatingRowColors(true);
     m_pLytMain->addWidget(m_pTreeViewTestSteps);
 
     // Connect to state changed signal of test

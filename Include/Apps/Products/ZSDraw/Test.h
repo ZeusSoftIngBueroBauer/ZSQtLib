@@ -34,7 +34,6 @@ may result in using the software modules.
 #include <QtGui/qpolygon.h>
 
 #include "ZSTest/ZSTest.h"
-//#include "ZSTest/ZSTestStep.h"
 
 class QGraphicsItem;
 class QPainterPath;
@@ -105,27 +104,31 @@ public: // overridables of base class Test::CTest
     //virtual void start();
 protected slots: // overridables of base class Test::CTest
     //virtual void doTestStep();
+protected: // instance methods
+    void createTestGroupAndroidWallpaperTemplate( int& io_idxGroup );
 protected slots: // test step methods
-    void doTestStepInterferenceChecksI1L1( ZS::Test::CTestStep* i_pTestStepGrpParent );
+    void doTestStepAndroidWallpaperTemplatePageSetup( ZS::Test::CTestStep* i_pTestStep );
+    void doTestStepAndroidWallpaperTemplateDrawGridLines( ZS::Test::CTestStep* i_pTestStep );
+    void doTestStepAndroidWallpaperTemplateSaveAsWallpaperPng( ZS::Test::CTestStep* i_pTestStep );
 protected: // instance methods
     //virtual void doTestStepStandardShapes();
-    //virtual void doTestStepStandardShapesPoints( ZS::Test::CTestStepGroup* i_pTestStepGrpParent );
-    //virtual void doTestStepStandardShapesLines( ZS::Test::CTestStepGroup* i_pTestStepGrpParent );
-    //virtual void doTestStepStandardShapesRectangles( ZS::Test::CTestStepGroup* i_pTestStepGrpParent );
-    //virtual void doTestStepStandardShapesEllipses( ZS::Test::CTestStepGroup* i_pTestStepGrpParent );
-    //virtual void doTestStepStandardShapesPolylines( ZS::Test::CTestStepGroup* i_pTestStepGrpParent );
-    //virtual void doTestStepStandardShapesPolygons( ZS::Test::CTestStepGroup* i_pTestStepGrpParent );
-    //virtual void doTestStepStandardShapesTexts( ZS::Test::CTestStepGroup* i_pTestStepGrpParent );
-    //virtual void doTestStepStandardShapesImages( ZS::Test::CTestStepGroup* i_pTestStepGrpParent );
-    //virtual void doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTestStepGrpParent );
-    //virtual void doTestStepStandardShapesGroups( ZS::Test::CTestStepGroup* i_pTestStepGrpParent );
+    //virtual void doTestStepStandardShapesPoints( ZS::Test::CTestStepGroup* i_pTestStep );
+    //virtual void doTestStepStandardShapesLines( ZS::Test::CTestStepGroup* i_pTestStep );
+    //virtual void doTestStepStandardShapesRectangles( ZS::Test::CTestStepGroup* i_pTestStep );
+    //virtual void doTestStepStandardShapesEllipses( ZS::Test::CTestStepGroup* i_pTestStep );
+    //virtual void doTestStepStandardShapesPolylines( ZS::Test::CTestStepGroup* i_pTestStep );
+    //virtual void doTestStepStandardShapesPolygons( ZS::Test::CTestStepGroup* i_pTestStep );
+    //virtual void doTestStepStandardShapesTexts( ZS::Test::CTestStepGroup* i_pTestStep );
+    //virtual void doTestStepStandardShapesImages( ZS::Test::CTestStepGroup* i_pTestStep );
+    //virtual void doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTestStep );
+    //virtual void doTestStepStandardShapesGroups( ZS::Test::CTestStepGroup* i_pTestStep );
 protected: // instance methods
     //virtual void doTestStepElectricity();
-    //virtual void doTestStepElectricityResistors( ZS::Test::CTestStepGroup* i_pTestStepGrpParent );
-    //virtual void doTestStepElectricityCapacitors( ZS::Test::CTestStepGroup* i_pTestStepGrpParent );
-    //virtual void doTestStepElectricityInductors( ZS::Test::CTestStepGroup* i_pTestStepGrpParent );
-    //virtual void doTestStepElectricityTransistors( ZS::Test::CTestStepGroup* i_pTestStepGrpParent );
-    //virtual void doTestStepElectricitySwitches( ZS::Test::CTestStepGroup* i_pTestStepGrpParent );
+    //virtual void doTestStepElectricityResistors( ZS::Test::CTestStepGroup* i_pTestStep );
+    //virtual void doTestStepElectricityCapacitors( ZS::Test::CTestStepGroup* i_pTestStep );
+    //virtual void doTestStepElectricityInductors( ZS::Test::CTestStepGroup* i_pTestStep );
+    //virtual void doTestStepElectricityTransistors( ZS::Test::CTestStepGroup* i_pTestStep );
+    //virtual void doTestStepElectricitySwitches( ZS::Test::CTestStepGroup* i_pTestStep );
 public: // instance members
     CMainWindow*             m_pMainWindow;
     ZS::Draw::CDrawingView*  m_pDrawingView;
@@ -163,10 +166,6 @@ public: // instance members
     //int                      m_iWdgtLabelsCount;
     //int                      m_iWdgtLineEditsCount;
     //int                      m_iWdgtPushButtonsCount;
-    double                     m_fInterferenceChecksDrawingFreqMin_Hz     = 899.5e6; // =   0 px
-    double                     m_fInterferenceChecksDrawingFreqMax_Hz     = 900.5e6; // = 800 px
-    double                     m_fInterferenceChecksDrawingLevelMin_dBm   =  0.0;    // = 600 px
-    double                     m_fInterferenceChecksDrawingLevelMax_dBm   = 50.0;
     ZS::Trace::CTrcAdminObj*   m_pTrcAdminObj;
 
 }; // class CTest

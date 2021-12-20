@@ -320,7 +320,7 @@ void CTest::doTestStepAlloc( ZS::Test::CTestStep* i_pTestStep )
         strlstResultValues.append(strResultValue);
     }
 
-    // Please note that to finish a test step the list of actual values may not be empty.
+    // Please note that to finish a test step the list of result values may not be empty.
     if( strlstResultValues.size() == 0 )
     {
         strlstResultValues << "";
@@ -508,7 +508,7 @@ void CTest::doTestStepRealloc( ZS::Test::CTestStep* i_pTestStep )
         }
     }
 
-    // Please note that to finish a test step the list of actual values may not be empty.
+    // Please note that to finish a test step the list of result values may not be empty.
     if( strlstResultValues.size() == 0 )
     {
         strlstResultValues << "";
@@ -694,7 +694,7 @@ void CTest::doTestStepAddEntries( ZS::Test::CTestStep* i_pTestStep )
         }
     }
 
-    // Please note that to finish a test step the list of actual values may not be empty.
+    // Please note that to finish a test step the list of result values may not be empty.
     if( strlstResultValues.size() == 0 )
     {
         strlstResultValues << "";
@@ -762,7 +762,7 @@ void CTest::doTestStepFree( ZS::Test::CTestStep* i_pTestStep )
         strlstResultValues.append(strResultValue);
     }
 
-    // Please note that to finish a test step the list of actual values may not be empty.
+    // Please note that to finish a test step the list of result values may not be empty.
     if( strlstResultValues.size() == 0 )
     {
         strlstResultValues << "";

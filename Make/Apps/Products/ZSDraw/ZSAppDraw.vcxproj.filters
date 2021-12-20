@@ -91,9 +91,6 @@
     <Filter Include="Generated Files">
       <UniqueIdentifier>{c2c522a9-12bb-4b5a-8465-5a545f02046a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Test\InterferenceChecks">
-      <UniqueIdentifier>{0a67a358-cf98-43e2-b12a-50e77fa87b89}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Generated Files\msvc2017">
       <UniqueIdentifier>{41652333-f1fa-49ec-8bcd-3d1e395e7c66}</UniqueIdentifier>
     </Filter>
@@ -156,6 +153,9 @@
     </Filter>
     <Filter Include="Generated Files\msvc2019\Win32\Release">
       <UniqueIdentifier>{5cfbc040-da65-4dbf-8346-7f541b0232c0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Test\AndroidWallpaperTemplate">
+      <UniqueIdentifier>{0a67a358-cf98-43e2-b12a-50e77fa87b89}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -327,8 +327,8 @@
     <ClCompile Include="..\..\..\..\Source\Apps\Products\ZSDraw\ZSDrawWdgtFormatGraphObjsElectricityVoltageSource.cpp">
       <Filter>Source Files\Dialogs\Electricity</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\Source\Apps\Products\ZSDraw\TestGroupInterferenceChecks.cpp">
-      <Filter>Source Files\Test\InterferenceChecks</Filter>
+    <ClCompile Include="..\..\..\..\Source\Apps\Products\ZSDraw\TestStepsAndroidWallpaperTemplate.cpp">
+      <Filter>Source Files\Test\AndroidWallpaperTemplate</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\Tmp\Moc\Apps\Products\ZSAppDraw\Debug_msvc2017\x64\emb_ZSAppDraw.cpp">
       <Filter>Generated Files\msvc2017\x64\Debug</Filter>

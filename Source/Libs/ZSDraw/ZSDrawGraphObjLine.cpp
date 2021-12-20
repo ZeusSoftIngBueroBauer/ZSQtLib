@@ -359,6 +359,13 @@ void CGraphObjLine::setLine( qreal i_x1, qreal i_y1, qreal i_x2, qreal i_y2 )
     setLine( QLineF( QPointF(i_x1,i_y1), QPointF(i_x2,i_y2) ) );
 }
 
+//------------------------------------------------------------------------------
+QLineF CGraphObjLine::getLine() const
+//------------------------------------------------------------------------------
+{
+    return QGraphicsLineItem::line();
+}
+
 /*==============================================================================
 public: // overridables of base class CGraphObj
 ==============================================================================*/

@@ -24,6 +24,8 @@ may result in using the software modules.
 
 *******************************************************************************/
 
+#if 0
+
 #include <QtCore/qtimer.h>
 #include <QtGui/qevent.h>
 #if QT_VERSION >= 0x040000 && QT_VERSION < 0x050000
@@ -63,8 +65,6 @@ using namespace ZS::Trace;
 /*******************************************************************************
 class CTest : public Test::CTest
 *******************************************************************************/
-
-#if 0
 
 const int     c_iGraphObjType        = EGraphObjTypeUserDefined;
 const QString c_strGraphObjNameSpace = "ZS::Draw::Electricity";
@@ -140,8 +140,8 @@ void CTest::doTestStepElectricityTransistors( ZS::Test::CTestStepGroup* i_pTestS
     QString               strCurrentGraphObj;
     QString               strToolTip;
     ZS::Test::CTestStep*  pTestStep;
-    QStringList           strlstDesiredValues;
-    QStringList           strlstActualValues;
+    QStringList           strlstExpectedValues;
+    QStringList           strlstResultValues;
     CObjFactory*          pObjFactory;
     QList<QGraphicsItem*> arpGraphicsItems;
     CGraphObj*            pGraphObj;
@@ -181,11 +181,11 @@ void CTest::doTestStepElectricityTransistors( ZS::Test::CTestStepGroup* i_pTestS
         {
             pTestStep = getTestStep( "Create.T1.ActivateEditModeSelect", pTSGrpTransistorsCreate );
 
-            strlstDesiredValues.append( "EditTool: Select" );
-            strlstDesiredValues.append( "DrawingTool: " );
+            strlstExpectedValues.append( "EditTool: Select" );
+            strlstExpectedValues.append( "DrawingTool: " );
 
             pTestStep->setOperation( "drawing.setCurrentDrawingTool( Select )" );
-            pTestStep->setExpectedValues(strlstDesiredValues);
+            pTestStep->setExpectedValues(strlstExpectedValues);
             pTestStep->testStarted();
 
             if( m_pDrawingScene->getEditTool() != EEditToolSelect )
@@ -202,10 +202,10 @@ void CTest::doTestStepElectricityTransistors( ZS::Test::CTestStepGroup* i_pTestS
                 strCurrentDrawingTool = "";
             }
 
-            strlstActualValues.append( "EditTool: " + editTool2Str(m_pDrawingScene->getEditTool()) );
-            strlstActualValues.append( "DrawingTool: " + strCurrentDrawingTool );
+            strlstResultValues.append( "EditTool: " + editTool2Str(m_pDrawingScene->getEditTool()) );
+            strlstResultValues.append( "DrawingTool: " + strCurrentDrawingTool );
 
-            pTestStep->setResultValues(strlstActualValues);
+            pTestStep->setResultValues(strlstResultValues);
             pTestStep->setToolTip(strToolTip);
             pTestStep->testEnded();
 
@@ -218,11 +218,11 @@ void CTest::doTestStepElectricityTransistors( ZS::Test::CTestStepGroup* i_pTestS
         {
             pTestStep = getTestStep( "Create.T1.ActivateDrawingTool", pTSGrpTransistorsCreate );
 
-            strlstDesiredValues.append( "EditTool: Select" );
-            strlstDesiredValues.append( "DrawingTool: " );
+            strlstExpectedValues.append( "EditTool: Select" );
+            strlstExpectedValues.append( "DrawingTool: " );
 
             pTestStep->setOperation( "ToolBoxTreeView.selectObjFactoryNode( Electricity/Transistor )" );
-            pTestStep->setExpectedValues(strlstDesiredValues);
+            pTestStep->setExpectedValues(strlstExpectedValues);
             pTestStep->testStarted();
 
             pObjFactory = CObjFactory::FindObjFactory(
@@ -232,10 +232,10 @@ void CTest::doTestStepElectricityTransistors( ZS::Test::CTestStepGroup* i_pTestS
 
             m_pMainWindow->selectTreeViewObjFactoryNode(pObjFactory);
 
-            strlstActualValues.append( "EditTool: " + editTool2Str(m_pDrawingScene->getEditTool()) );
-            strlstActualValues.append( "DrawingTool: " + strCurrentDrawingTool );
+            strlstResultValues.append( "EditTool: " + editTool2Str(m_pDrawingScene->getEditTool()) );
+            strlstResultValues.append( "DrawingTool: " + strCurrentDrawingTool );
 
-            pTestStep->setResultValues(strlstActualValues);
+            pTestStep->setResultValues(strlstResultValues);
             pTestStep->setToolTip(strToolTip);
             pTestStep->testEnded();
 
@@ -266,11 +266,11 @@ void CTest::doTestStepElectricityTransistors( ZS::Test::CTestStepGroup* i_pTestS
 
             s_rctTransistor1 = QRectF( m_ptDrawingSceneMousePos, CGraphObjTransistor::c_sizInitial );
 
-            strlstDesiredValues.append( strCurrentGraphObj + ": " + polygon2Str(s_rctTransistor1) );
+            strlstExpectedValues.append( strCurrentGraphObj + ": " + polygon2Str(s_rctTransistor1) );
 
             pTestStep->setOperation( "view.dropEvent( ViewPos:" + point2Str(m_ptDrawingViewMousePos) + " )" );
             pTestStep->setDescription( "scene." + strCurrentDrawingTool + ".drop( ScenePos:" + point2Str(m_ptDrawingSceneMousePos) + " )" );
-            pTestStep->setExpectedValues(strlstDesiredValues);
+            pTestStep->setExpectedValues(strlstExpectedValues);
             pTestStep->testStarted();
 
             pObjFactory = CObjFactory::FindObjFactory(
@@ -305,11 +305,11 @@ void CTest::doTestStepElectricityTransistors( ZS::Test::CTestStepGroup* i_pTestS
 
             if( pGraphObj != nullptr )
             {
-                strlstActualValues.append( strCurrentGraphObj + ": " + pGraphObj->getScenePolygonShapePointsString() );
+                strlstResultValues.append( strCurrentGraphObj + ": " + pGraphObj->getScenePolygonShapePointsString() );
                 strToolTip = pGraphObj->getToolTip();
             }
 
-            pTestStep->setResultValues(strlstActualValues);
+            pTestStep->setResultValues(strlstResultValues);
             pTestStep->setToolTip(strToolTip);
             pTestStep->testEnded();
 
@@ -336,7 +336,7 @@ void CTest::doTestStepElectricityTransistors( ZS::Test::CTestStepGroup* i_pTestS
 
             pTestStep->setOperation( "view.mouseClickEvent( ViewPos:" + point2Str(m_ptDrawingViewMousePos) + " )" );
             pTestStep->setDescription( "scene." + strCurrentDrawingTool + ".creatingObjectFinished( ScenePos:" + point2Str(m_ptDrawingSceneMousePos) + " )" );
-            pTestStep->setExpectedValues(strlstDesiredValues);
+            pTestStep->setExpectedValues(strlstExpectedValues);
             pTestStep->testStarted();
 
             // Same events as in reality (mouse double click is preceeded by mouse press and mouse release event)
@@ -366,11 +366,11 @@ void CTest::doTestStepElectricityTransistors( ZS::Test::CTestStepGroup* i_pTestS
             if( m_pGraphObjCreating != nullptr )
             {
                 strCurrentGraphObj = m_pGraphObjCreating->getObjName();
-                strlstActualValues.append( strCurrentGraphObj + ": " + m_pGraphObjCreating->getScenePolygonShapePointsString() );
+                strlstResultValues.append( strCurrentGraphObj + ": " + m_pGraphObjCreating->getScenePolygonShapePointsString() );
                 strToolTip = m_pGraphObjCreating->getToolTip();
             }
 
-            pTestStep->setResultValues(strlstActualValues);
+            pTestStep->setResultValues(strlstResultValues);
             pTestStep->setToolTip(strToolTip);
             pTestStep->testEnded();
 
@@ -394,11 +394,11 @@ void CTest::doTestStepElectricityTransistors( ZS::Test::CTestStepGroup* i_pTestS
 
                 pTestStep = getTestStep( "Resize." + strCurrentGraphObj + ".ActivateEditModeSelect", pTSGrpTransistorsResize );
 
-                strlstDesiredValues.append( "EditTool: Select" );
-                strlstDesiredValues.append( "DrawingTool: " );
+                strlstExpectedValues.append( "EditTool: Select" );
+                strlstExpectedValues.append( "DrawingTool: " );
 
                 pTestStep->setOperation( "drawing.setCurrentDrawingTool( Select )" );
-                pTestStep->setExpectedValues(strlstDesiredValues);
+                pTestStep->setExpectedValues(strlstExpectedValues);
                 pTestStep->testStarted();
 
                 if( m_pDrawingScene->getEditTool() != EEditToolSelect )
@@ -415,10 +415,10 @@ void CTest::doTestStepElectricityTransistors( ZS::Test::CTestStepGroup* i_pTestS
                     strCurrentDrawingTool = "";
                 }
 
-                strlstActualValues.append( "EditTool: " + editTool2Str(m_pDrawingScene->getEditTool()) );
-                strlstActualValues.append( "DrawingTool: " + strCurrentDrawingTool );
+                strlstResultValues.append( "EditTool: " + editTool2Str(m_pDrawingScene->getEditTool()) );
+                strlstResultValues.append( "DrawingTool: " + strCurrentDrawingTool );
 
-                pTestStep->setResultValues(strlstActualValues);
+                pTestStep->setResultValues(strlstResultValues);
                 pTestStep->setToolTip(strToolTip);
                 pTestStep->testEnded();
 
@@ -445,12 +445,12 @@ void CTest::doTestStepElectricityTransistors( ZS::Test::CTestStepGroup* i_pTestS
             ptMousePosGlobal.setX(ptMousePosGlobal.x()+1); // Maybe graphics view or graphics scene bug on calculating the screen position.
             ptMousePosGlobal.setY(ptMousePosGlobal.y()+1); // Without adding 1 pixel the newly created object will not be selected by the scene.
 
-            strlstDesiredValues.append( strCurrentGraphObj + ": SelPt:" + selectionPoint2Str(ESelectionPointUndefined) );
-            strlstDesiredValues.append( strCurrentGraphObj + ": " + polygon2Str(s_rctTransistor1) );
+            strlstExpectedValues.append( strCurrentGraphObj + ": SelPt:" + selectionPoint2Str(ESelectionPointUndefined) );
+            strlstExpectedValues.append( strCurrentGraphObj + ": " + polygon2Str(s_rctTransistor1) );
 
             pTestStep->setOperation( "view.mouseClickEvent( ViewPos:" + point2Str(m_ptDrawingViewMousePos) + " )" );
             pTestStep->setDescription( "scene." + strCurrentGraphObj + ".select( ScenePos:" + point2Str(m_ptDrawingSceneMousePos) + " )" );
-            pTestStep->setExpectedValues(strlstDesiredValues);
+            pTestStep->setExpectedValues(strlstExpectedValues);
             pTestStep->testStarted();
 
             m_pDrawingScene->clearSelection();
@@ -485,12 +485,12 @@ void CTest::doTestStepElectricityTransistors( ZS::Test::CTestStepGroup* i_pTestS
             {
                 m_pGraphObjSelected = dynamic_cast<CGraphObj*>(arpGraphObjsSelected[0]);
                 strCurrentGraphObj = m_pGraphObjSelected->getObjName();
-                strlstActualValues.append( strCurrentGraphObj + ": SelPt:" + selectionPoint2Str(m_pGraphObjSelected->getSelectedBoundingRectPoint()) );
-                strlstActualValues.append( strCurrentGraphObj + ": " + m_pGraphObjSelected->getScenePolygonShapePointsString() );
+                strlstResultValues.append( strCurrentGraphObj + ": SelPt:" + selectionPoint2Str(m_pGraphObjSelected->getSelectedBoundingRectPoint()) );
+                strlstResultValues.append( strCurrentGraphObj + ": " + m_pGraphObjSelected->getScenePolygonShapePointsString() );
                 strToolTip = m_pGraphObjSelected->getToolTip();
             }
 
-            pTestStep->setResultValues(strlstActualValues);
+            pTestStep->setResultValues(strlstResultValues);
             pTestStep->setToolTip(strToolTip);
             pTestStep->testEnded();
 
@@ -515,12 +515,12 @@ void CTest::doTestStepElectricityTransistors( ZS::Test::CTestStepGroup* i_pTestS
             ptMousePosGlobal.setX(ptMousePosGlobal.x()+1); // Maybe graphics view or graphics scene bug on calculating the screen position.
             ptMousePosGlobal.setY(ptMousePosGlobal.y()+1); // Without adding 1 pixel the newly created object will not be selected by the scene.
 
-            strlstDesiredValues.append( strCurrentGraphObj + ": SelPt:" + selectionPoint2Str(ESelectionPointBottomRight) );
-            strlstDesiredValues.append( strCurrentGraphObj + ": " + polygon2Str(s_rctTransistor1) );
+            strlstExpectedValues.append( strCurrentGraphObj + ": SelPt:" + selectionPoint2Str(ESelectionPointBottomRight) );
+            strlstExpectedValues.append( strCurrentGraphObj + ": " + polygon2Str(s_rctTransistor1) );
 
             pTestStep->setOperation( "view.mousePressEvent( ViewPos:" + point2Str(m_ptDrawingViewMousePos) + " )" );
             pTestStep->setDescription( "scene." + strCurrentGraphObj + ".select( ScenePos:" + point2Str(m_ptDrawingSceneMousePos) + " )" );
-            pTestStep->setExpectedValues(strlstDesiredValues);
+            pTestStep->setExpectedValues(strlstExpectedValues);
             pTestStep->testStarted();
 
             pMouseEv = new QMouseEvent(
@@ -542,12 +542,12 @@ void CTest::doTestStepElectricityTransistors( ZS::Test::CTestStepGroup* i_pTestS
             {
                 m_pGraphObjSelected = dynamic_cast<CGraphObj*>(arpGraphObjsSelected[0]);
                 strCurrentGraphObj = m_pGraphObjSelected->getObjName();
-                strlstActualValues.append( strCurrentGraphObj + ": SelPt:" + selectionPoint2Str(m_pGraphObjSelected->getSelectedBoundingRectPoint()) );
-                strlstActualValues.append( strCurrentGraphObj + ": " + m_pGraphObjSelected->getScenePolygonShapePointsString() );
+                strlstResultValues.append( strCurrentGraphObj + ": SelPt:" + selectionPoint2Str(m_pGraphObjSelected->getSelectedBoundingRectPoint()) );
+                strlstResultValues.append( strCurrentGraphObj + ": " + m_pGraphObjSelected->getScenePolygonShapePointsString() );
                 strToolTip = m_pGraphObjSelected->getToolTip();
             }
 
-            pTestStep->setResultValues(strlstActualValues);
+            pTestStep->setResultValues(strlstResultValues);
             pTestStep->setToolTip(strToolTip);
             pTestStep->testEnded();
 
@@ -601,11 +601,11 @@ void CTest::doTestStepElectricityTransistors( ZS::Test::CTestStepGroup* i_pTestS
                 }
             }
 
-            strlstDesiredValues.append( strCurrentGraphObj + ": " + polygon2Str(rct) );
+            strlstExpectedValues.append( strCurrentGraphObj + ": " + polygon2Str(rct) );
 
             pTestStep->setOperation( "view.mouseMoveEvent( ViewPos:" + point2Str(m_ptDrawingViewMousePos) + " )" );
             pTestStep->setDescription( "scene." + strCurrentGraphObj + ".resize( scenePos:" + point2Str(m_ptDrawingSceneMousePos) + " )" );
-            pTestStep->setExpectedValues(strlstDesiredValues);
+            pTestStep->setExpectedValues(strlstExpectedValues);
             pTestStep->testStarted();
 
             pMouseEv = new QMouseEvent(
@@ -627,11 +627,11 @@ void CTest::doTestStepElectricityTransistors( ZS::Test::CTestStepGroup* i_pTestS
             {
                 m_pGraphObjSelected = dynamic_cast<CGraphObj*>(arpGraphObjsSelected[0]);
                 strCurrentGraphObj = m_pGraphObjSelected->getObjName();
-                strlstActualValues.append( strCurrentGraphObj + ": " + m_pGraphObjSelected->getScenePolygonShapePointsString() );
+                strlstResultValues.append( strCurrentGraphObj + ": " + m_pGraphObjSelected->getScenePolygonShapePointsString() );
                 strToolTip = m_pGraphObjSelected->getToolTip();
             }
 
-            pTestStep->setResultValues(strlstActualValues);
+            pTestStep->setResultValues(strlstResultValues);
             pTestStep->setToolTip(strToolTip);
             pTestStep->testEnded();
 
@@ -669,11 +669,11 @@ void CTest::doTestStepElectricityTransistors( ZS::Test::CTestStepGroup* i_pTestS
                 s_rctTransistor1.setBottom(fTop);
             }
 
-            strlstDesiredValues.append( strCurrentGraphObj + ": " + polygon2Str(s_rctTransistor1) );
+            strlstExpectedValues.append( strCurrentGraphObj + ": " + polygon2Str(s_rctTransistor1) );
 
             pTestStep->setOperation( "view.mouseReleaseEvent( ViewPos:" + point2Str(m_ptDrawingViewMousePos) + " )" );
             pTestStep->setDescription( "scene." + strCurrentGraphObj + ".release( ScenePos:" + point2Str(m_ptDrawingSceneMousePos) + " )" );
-            pTestStep->setExpectedValues(strlstDesiredValues);
+            pTestStep->setExpectedValues(strlstExpectedValues);
             pTestStep->testStarted();
 
             pMouseEv = new QMouseEvent(
@@ -695,11 +695,11 @@ void CTest::doTestStepElectricityTransistors( ZS::Test::CTestStepGroup* i_pTestS
             {
                 m_pGraphObjSelected = dynamic_cast<CGraphObj*>(arpGraphObjsSelected[0]);
                 strCurrentGraphObj = m_pGraphObjSelected->getObjName();
-                strlstActualValues.append( strCurrentGraphObj + ": " + m_pGraphObjSelected->getScenePolygonShapePointsString() );
+                strlstResultValues.append( strCurrentGraphObj + ": " + m_pGraphObjSelected->getScenePolygonShapePointsString() );
                 strToolTip = m_pGraphObjSelected->getToolTip();
             }
 
-            pTestStep->setResultValues(strlstActualValues);
+            pTestStep->setResultValues(strlstResultValues);
             pTestStep->setToolTip(strToolTip);
             pTestStep->testEnded();
 

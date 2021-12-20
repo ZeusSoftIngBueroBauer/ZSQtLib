@@ -700,35 +700,47 @@ void CDrawSettings::save( QXmlStreamWriter& i_xmlStreamWriter )
 void CDrawSettings::load( QXmlStreamReader& i_xmlStreamReader )
 //------------------------------------------------------------------------------
 {
+    QXmlStreamReader::TokenType xmlStreamTokenType;
+
     QString strElemName;
     QString strElemText;
+    QString strName;
+    QString strVal;
     int     iAttribute;
 
     while( !i_xmlStreamReader.hasError() && !i_xmlStreamReader.atEnd() )
     {
-        strElemName = i_xmlStreamReader.name().toString();
-
-        if( i_xmlStreamReader.isStartElement() )
+        if( i_xmlStreamReader.isStartElement() || i_xmlStreamReader.isEndElement() )
         {
-            iAttribute = findAttribute(strElemName);
+            strElemName = i_xmlStreamReader.name().toString();
 
-            if( iAttribute >= 0 && iAttribute < EDrawAttributeCount )
+            if( i_xmlStreamReader.isStartElement() )
             {
-                strElemText = i_xmlStreamReader.readElementText();
+                if( strElemName == "DrawSettings" )
+                {
+                    for( iAttribute = 0; iAttribute < EDrawAttributeCount; ++iAttribute)
+                    {
+                        strName = drawAttribute2Str(iAttribute);
 
-                setAttribute(iAttribute,strElemText);
-            }
+                        if( i_xmlStreamReader.attributes().hasAttribute(strName) )
+                        {
+                            strVal = i_xmlStreamReader.attributes().value(strName).toString();
+                            setAttribute(iAttribute, strVal);
+                        }
+                    }
+                }
+            } // if( i_xmlStreamReader.isStartElement() )
 
-        } // if( i_xmlStreamReader.isStartElement() )
-
-        else if( i_xmlStreamReader.isEndElement() )
-        {
-            if( strElemName == "DrawSettings" )
+            else if( i_xmlStreamReader.isEndElement() )
             {
-                break;
-            }
+                if( strElemName == "DrawSettings" )
+                {
+                    break;
+                }
+            } // if( i_xmlStreamReader.isEndElement() )
+        } // if( i_xmlStreamReader.isStartElement() || i_xmlStreamReader.isEndElement() )
 
-        } // if( i_xmlStreamReader.isEndElement() )
+        xmlStreamTokenType = i_xmlStreamReader.readNext();
 
     } // while( !i_xmlStreamReader.hasError() && !i_xmlStreamReader.atEnd() )
 

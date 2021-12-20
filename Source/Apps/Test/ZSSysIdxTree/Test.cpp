@@ -2238,7 +2238,7 @@ void CTest::doTestStepCreateTree( ZS::Test::CTestStep* i_pTestStep )
 
     CIdxTreeEntry* pRoot = m_pIdxTree->root();
 
-    // Please note that to finish a test step the list of actual values may not be empty.
+    // Please note that to finish a test step the list of result values may not be empty.
     if( pRoot == nullptr )
     {
         strResultValue = "IdxTree.root() == nullptr";
@@ -2379,7 +2379,7 @@ void CTest::doTestStepAddEntry( ZS::Test::CTestStep* i_pTestStep )
         strlstResultValues.append(strResultValue);
     }
 
-    // Please note that to finish a test step the list of actual values may not be empty.
+    // Please note that to finish a test step the list of result values may not be empty.
     if( strlstResultValues.size() == 0 )
     {
         strlstResultValues << "";
@@ -2479,7 +2479,7 @@ void CTest::doTestStepRemoveEntry( ZS::Test::CTestStep* i_pTestStep )
         strlstResultValues.append(strResultValue);
     }
 
-    // Please note that to finish a test step the list of actual values may not be empty.
+    // Please note that to finish a test step the list of result values may not be empty.
     if( strlstResultValues.size() == 0 )
     {
         strlstResultValues << "";
@@ -2586,7 +2586,7 @@ void CTest::doTestStepMoveEntry( ZS::Test::CTestStep* i_pTestStep )
         strlstResultValues.append(strResultValue);
     }
 
-    // Please note that to finish a test step the list of actual values may not be empty.
+    // Please note that to finish a test step the list of result values may not be empty.
     if( strlstResultValues.size() == 0 )
     {
         strlstResultValues << "";
@@ -2696,7 +2696,7 @@ void CTest::doTestStepCopyEntry( ZS::Test::CTestStep* i_pTestStep )
         strlstResultValues.append(strResultValue);
     }
 
-    // Please note that to finish a test step the list of actual values may not be empty.
+    // Please note that to finish a test step the list of result values may not be empty.
     if( strlstResultValues.size() == 0 )
     {
         strlstResultValues << "";
@@ -2795,7 +2795,7 @@ void CTest::doTestStepRenameEntry( ZS::Test::CTestStep* i_pTestStep )
         strlstResultValues.append(strResultValue);
     }
 
-    // Please note that to finish a test step the list of actual values may not be empty.
+    // Please note that to finish a test step the list of result values may not be empty.
     if( strlstResultValues.size() == 0 )
     {
         strlstResultValues << "";
@@ -3268,7 +3268,7 @@ void CTest::doTestStepChangeViews( ZS::Test::CTestStep* i_pTestStep )
         } // if( pModelIdxTreeBranchContent != nullptr )
     } // if( sortOrder == EIdxTreeSortOrder::Ascending )
 
-    // Please note that to finish a test step the list of actual values may not be empty.
+    // Please note that to finish a test step the list of result values may not be empty.
     if( strlstResultValues.size() == 0 )
     {
         strlstResultValues << "";
@@ -3474,7 +3474,7 @@ void CTest::doTestStepKeyboardInputs( ZS::Test::CTestStep* i_pTestStep )
         strlstResultValues.append(strResultValue);
     }
 
-    // Please note that to finish a test step the list of actual values may not be empty.
+    // Please note that to finish a test step the list of result values may not be empty.
     if( strlstResultValues.size() == 0 )
     {
         strlstResultValues << "";
@@ -3770,7 +3770,7 @@ void CTest::doTestStepTreeViewContextMenus( ZS::Test::CTestStep* i_pTestStep )
         strlstResultValues.append(strResultValue);
     }
 
-    // Please note that to finish a test step the list of actual values may not be empty.
+    // Please note that to finish a test step the list of result values may not be empty.
     if( strlstResultValues.size() == 0 )
     {
         strlstResultValues << "";
@@ -4145,7 +4145,7 @@ void CTest::doTestStepGrpTrcAdmObjTreeStepTreeViewDragAndDrop( ZS::Test::CTestSt
         strlstResultValues.append(strResultValue);
     }
 
-    // Please note that to finish a test step the list of actual values may not be empty.
+    // Please note that to finish a test step the list of result values may not be empty.
     if( strlstResultValues.size() == 0 )
     {
         strlstResultValues << "";
@@ -4186,7 +4186,7 @@ void CTest::doTestStepDeleteTree( ZS::Test::CTestStep* i_pTestStep )
 
     m_pIdxTree = nullptr;
 
-    // Please note that to finish a test step the list of actual values may not be empty.
+    // Please note that to finish a test step the list of result values may not be empty.
     if( strlstResultValues.size() == 0 )
     {
         strlstResultValues << "";

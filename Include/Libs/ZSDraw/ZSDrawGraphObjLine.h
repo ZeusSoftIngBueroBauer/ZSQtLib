@@ -72,6 +72,7 @@ public: // must overridables of base class CGraphObj
 public: // replacing methods of QGraphicsLineItem
     void setLine( const QLineF& i_lin );
     void setLine( qreal i_x1, qreal i_y1, qreal i_x2, qreal i_y2 );
+    QLineF getLine() const;
 public: // overridables of base class CGraphObj
     virtual QString getScenePolygonShapePointsString() const; // for subsystem test
 public: // overridables of base class CGraphObj
