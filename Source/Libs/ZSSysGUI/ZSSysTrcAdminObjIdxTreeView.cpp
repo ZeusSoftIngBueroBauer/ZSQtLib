@@ -394,10 +394,9 @@ CTreeViewIdxTreeTrcAdminObjs::CTreeViewIdxTreeTrcAdminObjs(
 
     m_pDelegate = new CDelegateIdxTreeTrcAdminObjs(this);
 
-    setAlternatingRowColors(true);
-
     setSelectionBehavior(QAbstractItemView::SelectItems);
     setSelectionMode(QAbstractItemView::SingleSelection);
+    setAlternatingRowColors(true);
     setAllColumnsShowFocus(true);
 
     //hideColumn(CModelIdxTree::EColumnTreeEntryName);
@@ -409,9 +408,9 @@ CTreeViewIdxTreeTrcAdminObjs::CTreeViewIdxTreeTrcAdminObjs(
     hideColumn(CModelIdxTree::EColumnKeyInParentBranch);
     hideColumn(CModelIdxTreeTrcAdminObjs::EColumnObjAddress);
     //hideColumn(CModelIdxTreeTrcAdminObjs::EColumnRefCount);
-    //hideColumn(CModelIdxTreeTrcAdminObjs::EColumnNameSpace);
-    //hideColumn(CModelIdxTreeTrcAdminObjs::EColumnClassName);
-    //hideColumn(CModelIdxTreeTrcAdminObjs::EColumnObjName);
+    hideColumn(CModelIdxTreeTrcAdminObjs::EColumnNameSpace);
+    hideColumn(CModelIdxTreeTrcAdminObjs::EColumnClassName);
+    hideColumn(CModelIdxTreeTrcAdminObjs::EColumnObjName);
     //hideColumn(CModelIdxTreeTrcAdminObjs::EColumnObjThreadName);
     //hideColumn(CModelIdxTreeTrcAdminObjs::EColumnEnabled);
     //hideColumn(CModelIdxTreeTrcAdminObjs::EColumnDetailLevel);

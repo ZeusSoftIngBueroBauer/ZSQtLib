@@ -141,14 +141,14 @@ CGraphObjGroup::CGraphObjGroup(
 
     if( s_pTrcAdminObjCtorsAndDtor == nullptr )
     {
-        s_pTrcAdminObjCtorsAndDtor = CTrcServer::GetTraceAdminObj("ZS::Draw", "CGraphObjGroup::CtorsAndDtor", "");
-        s_pTrcAdminObjBoundingRect = CTrcServer::GetTraceAdminObj("ZS::Draw", "CGraphObjGroup::BoundingRect", "");
-        s_pTrcAdminObjPaint = CTrcServer::GetTraceAdminObj("ZS::Draw", "CGraphObjGroup::Paint", "");
-        s_pTrcAdminObjSceneEventFilter = CTrcServer::GetTraceAdminObj("ZS::Draw", "CGraphObjGroup::SceneEventFilter", "");
-        s_pTrcAdminObjHoverEvents = CTrcServer::GetTraceAdminObj("ZS::Draw", "CGraphObjGroup::HoverEvents", "");
-        s_pTrcAdminObjMouseEvents = CTrcServer::GetTraceAdminObj("ZS::Draw", "CGraphObjGroup::MouseEvents", "");
-        s_pTrcAdminObjKeyEvents = CTrcServer::GetTraceAdminObj("ZS::Draw", "CGraphObjGroup::KeyEvents", "");
-        s_pTrcAdminObjItemChange = CTrcServer::GetTraceAdminObj("ZS::Draw", "CGraphObjGroup::ItemChange", "");
+        s_pTrcAdminObjCtorsAndDtor = CTrcServer::GetTraceAdminObj("ZS::Draw", "CGraphObjGroup", "CtorsAndDtor");
+        s_pTrcAdminObjBoundingRect = CTrcServer::GetTraceAdminObj("ZS::Draw", "CGraphObjGroup", "BoundingRect");
+        s_pTrcAdminObjPaint = CTrcServer::GetTraceAdminObj("ZS::Draw", "CGraphObjGroup", "Paint");
+        s_pTrcAdminObjSceneEventFilter = CTrcServer::GetTraceAdminObj("ZS::Draw", "CGraphObjGroup", "SceneEventFilter");
+        s_pTrcAdminObjHoverEvents = CTrcServer::GetTraceAdminObj("ZS::Draw", "CGraphObjGroup", "HoverEvents");
+        s_pTrcAdminObjMouseEvents = CTrcServer::GetTraceAdminObj("ZS::Draw", "CGraphObjGroup", "MouseEvents");
+        s_pTrcAdminObjKeyEvents = CTrcServer::GetTraceAdminObj("ZS::Draw", "CGraphObjGroup", "KeyEvents");
+        s_pTrcAdminObjItemChange = CTrcServer::GetTraceAdminObj("ZS::Draw", "CGraphObjGroup", "ItemChange");
 
     } // if( s_pTrcAdminObjCtorsAndDtor == nullptr )
 
@@ -211,14 +211,14 @@ CGraphObjGroup::CGraphObjGroup(
 
     if( s_iCtorsCount == 1 )
     {
-        s_pTrcAdminObjCtorsAndDtor = CTrcServer::GetTraceAdminObj("ZS::Draw", "CGraphObjGroup::CtorsAndDtor", "");
-        s_pTrcAdminObjBoundingRect = CTrcServer::GetTraceAdminObj("ZS::Draw", i_strClassName + "::BoundingRect", "");
-        s_pTrcAdminObjPaint = CTrcServer::GetTraceAdminObj("ZS::Draw", i_strClassName + "::Paint", "");
-        s_pTrcAdminObjSceneEventFilter = CTrcServer::GetTraceAdminObj("ZS::Draw", i_strClassName + "::SceneEventFilter", "");
-        s_pTrcAdminObjHoverEvents = CTrcServer::GetTraceAdminObj("ZS::Draw", i_strClassName + "::HoverEvents", "");
-        s_pTrcAdminObjMouseEvents = CTrcServer::GetTraceAdminObj("ZS::Draw", i_strClassName + "::MouseEvents", "");
-        s_pTrcAdminObjKeyEvents = CTrcServer::GetTraceAdminObj("ZS::Draw", i_strClassName + "::KeyEvents", "");
-        s_pTrcAdminObjItemChange = CTrcServer::GetTraceAdminObj("ZS::Draw", i_strClassName + "::ItemChange", "");
+        s_pTrcAdminObjCtorsAndDtor = CTrcServer::GetTraceAdminObj("ZS::Draw", "CGraphObjGroup", "CtorsAndDtor");
+        s_pTrcAdminObjBoundingRect = CTrcServer::GetTraceAdminObj("ZS::Draw", i_strClassName, "BoundingRect");
+        s_pTrcAdminObjPaint = CTrcServer::GetTraceAdminObj("ZS::Draw", i_strClassName, "Paint");
+        s_pTrcAdminObjSceneEventFilter = CTrcServer::GetTraceAdminObj("ZS::Draw", i_strClassName, "SceneEventFilter");
+        s_pTrcAdminObjHoverEvents = CTrcServer::GetTraceAdminObj("ZS::Draw", i_strClassName, "HoverEvents");
+        s_pTrcAdminObjMouseEvents = CTrcServer::GetTraceAdminObj("ZS::Draw", i_strClassName, "MouseEvents");
+        s_pTrcAdminObjKeyEvents = CTrcServer::GetTraceAdminObj("ZS::Draw", i_strClassName, "KeyEvents");
+        s_pTrcAdminObjItemChange = CTrcServer::GetTraceAdminObj("ZS::Draw", i_strClassName, "ItemChange");
     }
 
 } // ctor

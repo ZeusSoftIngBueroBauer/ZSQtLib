@@ -604,7 +604,11 @@ QString ZS::Draw::editTool2Str( int i_iTool )
 {
     QString str;
 
-    if( i_iTool == EEditToolIgnore )
+    if( i_iTool == EEditToolUndefined )
+    {
+        str = "Undefined";
+    }
+    else if( i_iTool == EEditToolIgnore )
     {
         str = "Ignore";
     }
@@ -655,7 +659,11 @@ QString ZS::Draw::editMode2Str( int i_iMode )
 {
     QString str;
 
-    if( i_iMode == EEditModeIgnore )
+    if( i_iMode == EEditModeUndefined )
+    {
+        str = "Undefined";
+    }
+    else if( i_iMode == EEditModeIgnore )
     {
         str = "Ignore";
     }
@@ -689,7 +697,11 @@ QString ZS::Draw::editResizeMode2Str( int i_iMode )
 {
     QString str;
 
-    if( i_iMode == EEditResizeModeIgnore )
+    if( i_iMode == EEditResizeModeUndefined )
+    {
+        str = "Undefined";
+    }
+    else if( i_iMode == EEditResizeModeIgnore )
     {
         str = "Ignore";
     }

@@ -181,7 +181,6 @@ CWdgtIdxTreeTrcAdminObjs::CWdgtIdxTreeTrcAdminObjs(
     m_pModel = new CModelIdxTreeTrcAdminObjs(m_pIdxTree, nullptr, i_iTrcDetailLevel);
 
     m_pTreeView = new CTreeViewIdxTreeTrcAdminObjs(dynamic_cast<CModelIdxTreeTrcAdminObjs*>(m_pModel), nullptr, i_iTrcDetailLevel);
-    m_pTreeView->setAlternatingRowColors(true);
 
     m_pLytMain->addWidget(m_pTreeView, 1);
 

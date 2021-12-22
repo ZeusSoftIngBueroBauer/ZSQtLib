@@ -108,6 +108,7 @@ may result in using the software modules.
 #include "ZSIpcTraceGUI/ZSIpcTrcServerDlg.h"
 #include "ZSTestGUI/ZSTestDlg.h"
 #include "ZSSysGUI/ZSSysErrLogDlg.h"
+#include "ZSSysGUI/ZSSysTrcAdminObjIdxTreeDlg.h"
 #include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysErrCode.h"
 #include "ZSSys/ZSSysErrLog.h"
@@ -115,6 +116,7 @@ may result in using the software modules.
 #include "ZSSys/ZSSysException.h"
 #include "ZSSys/ZSSysMath.h"
 #include "ZSSys/ZSSysTrcAdminObj.h"
+#include "ZSSys/ZSSysTrcAdminObjIdxTree.h"
 #include "ZSSys/ZSSysTrcMethod.h"
 #include "ZSSys/ZSSysTrcServer.h"
 #include "ZSSys/ZSSysVersion.h"
@@ -197,9 +199,12 @@ const QString CMainWindow::c_strActionNameDrawElectricityCapacitor   = c_strMenu
 const QString CMainWindow::c_strActionNameDrawElectricityInductor    = c_strMenuNameDrawElectricity + ":&Inductor";
 const QString CMainWindow::c_strActionNameDrawElectricitySwitch      = c_strMenuNameDrawElectricity + ":&Switch";
 const QString CMainWindow::c_strActionNameDrawElectricityTransistor  = c_strMenuNameDrawElectricity + ":&Transistor";
+const QString CMainWindow::c_strActionNameViewZoomIn                 = c_strMenuNameView + ":&Zoom In";
+const QString CMainWindow::c_strActionNameViewZoomOut                = c_strMenuNameView + ":&Zoom Out";
 const QString CMainWindow::c_strActionNameViewZoom                   = c_strMenuNameView + ":&Zoom";
 const QString CMainWindow::c_strActionNameTraceErrLog                = c_strMenuNameDebugTrace + ":&Error Log";
 const QString CMainWindow::c_strActionNameTraceServer                = c_strMenuNameDebugTrace + ":&Trace Server";
+const QString CMainWindow::c_strActionNameTraceAdminObjIdxTree       = c_strMenuNameDebugTrace + ":&Trace Admin Objects";
 const QString CMainWindow::c_strActionNameInfoVersion                = c_strMenuNameInfo + ":&Version";
 
 /*==============================================================================
@@ -331,12 +336,15 @@ CMainWindow::CMainWindow(
     // Menu - View
     m_pMenuView(nullptr),
     m_pToolBarView(nullptr),
-    m_pActViewZoom(nullptr),
-    m_pCmbViewZoom(nullptr),
+    m_pActViewZoomIn(nullptr),
+    m_pActViewZoomOut(nullptr),
+    m_pEdtViewZoomFactor_perCent(nullptr),
+    m_iViewZoomFactor_perCent(100),
     // Menu - Trace
     m_pMenuDebugTrace(nullptr),
     m_pActTraceErrLog(nullptr),
     m_pActTraceServer(nullptr),
+    m_pActTraceAdminObjIdxTree(nullptr),
     m_pActionDebugTest(nullptr),
     // Menu - Info
     m_pMenuInfo(nullptr),
@@ -371,7 +379,8 @@ CMainWindow::CMainWindow(
     m_pDrawingView(nullptr),
     m_pWdgtCentral(nullptr),
     // Trace
-    m_pTrcAdminObj(nullptr)
+    m_pTrcAdminObj(nullptr),
+    m_pTrcAdminObjMouseEvents(nullptr)
 {
     if( s_pThis != nullptr )
     {
@@ -388,6 +397,8 @@ CMainWindow::CMainWindow(
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "ctor",
         /* strAddInfo   */ "" );
+
+    m_pTrcAdminObjMouseEvents = CTrcServer::GetTraceAdminObj("ZS::Apps::Products::Draw", "CMainWindow", objectName() + "-MouseEvents");
 
     // Graph Object Factories
     //-----------------------
@@ -861,6 +872,9 @@ CMainWindow::~CMainWindow()
     CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
     m_pTrcAdminObj = nullptr;
 
+    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjMouseEvents);
+    m_pTrcAdminObjMouseEvents = nullptr;
+
     // Object Factories
     m_pObjFactoryPoint = nullptr;
     m_pObjFactoryLine = nullptr;
@@ -955,12 +969,15 @@ CMainWindow::~CMainWindow()
     // Menu - View
     m_pMenuView = nullptr;
     m_pToolBarView = nullptr;
-    m_pActViewZoom = nullptr;
-    m_pCmbViewZoom = nullptr;
+    m_pActViewZoomIn = nullptr;
+    m_pActViewZoomOut = nullptr;
+    m_pEdtViewZoomFactor_perCent = nullptr;
+    m_iViewZoomFactor_perCent = 0;
     // Menu - Trace
     m_pMenuDebugTrace = nullptr;
     m_pActTraceErrLog = nullptr;
     m_pActTraceServer = nullptr;
+    m_pActTraceAdminObjIdxTree = nullptr;
     m_pActionDebugTest = nullptr;
     // Menu - Info
     m_pMenuInfo = nullptr;
@@ -996,6 +1013,7 @@ CMainWindow::~CMainWindow()
     m_pWdgtCentral = nullptr;
     // Trace
     m_pTrcAdminObj = nullptr;
+    m_pTrcAdminObjMouseEvents = nullptr;
 
     s_pThis = nullptr;
 
@@ -1047,6 +1065,8 @@ protected: // instance methods (for ctor)
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! Creates the graphical object factories used in the application.
+*/
 void CMainWindow::createObjFactories()
 //------------------------------------------------------------------------------
 {
@@ -1376,6 +1396,8 @@ void CMainWindow::createObjFactories()
 } // createObjFactories
 
 //------------------------------------------------------------------------------
+/*! Creates all the actions used in the menu and in the toolbars.
+*/
 void CMainWindow::createActions()
 //------------------------------------------------------------------------------
 {
@@ -2012,17 +2034,42 @@ void CMainWindow::createActions()
     // <Menu> View
     //============
 
-    // <MenuItem> View::Zoom
-    //----------------------
+    // <MenuItem> View::ZoomIn
+    //------------------------
 
-    m_pActViewZoom = new QAction(c_strActionNameViewZoom.section(":",-1,-1), this);
-    m_pActViewZoom->setStatusTip( tr("Zoom to disired size") );
+    QIcon iconViewZoomIn;
+    QPixmap pxmViewZoomIn16x16(":/ZS/Button/ButtonZoomIn16x16.bmp");
+    pxmViewZoomIn16x16.setMask(pxmViewZoomIn16x16.createHeuristicMask());
+    iconViewZoomIn.addPixmap(pxmViewZoomIn16x16);
+
+    m_pActViewZoomIn = new QAction(iconViewZoomIn, c_strActionNameViewZoomIn.section(":",-1,-1), this);
+    m_pActViewZoomIn->setStatusTip( tr("Zoom In") );
 
     if( !connect(
-        /* pObjSender   */ m_pActViewZoom,
-        /* szSignal     */ SIGNAL(toggled(bool)),
+        /* pObjSender   */ m_pActViewZoomIn,
+        /* szSignal     */ SIGNAL(triggered(bool)),
         /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onActionViewZoomToggled(bool)) ) )
+        /* szSlot       */ SLOT(onActionViewZoomInTriggered(bool)) ) )
+    {
+        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
+    }
+
+    // <MenuItem> View::ZoomOut
+    //-------------------------
+
+    QIcon iconViewZoomOut;
+    QPixmap pxmViewZoomOut16x16(":/ZS/Button/ButtonZoomOut16x16.bmp");
+    pxmViewZoomOut16x16.setMask(pxmViewZoomOut16x16.createHeuristicMask());
+    iconViewZoomOut.addPixmap(pxmViewZoomOut16x16);
+
+    m_pActViewZoomOut = new QAction(iconViewZoomOut, c_strActionNameViewZoomOut.section(":",-1,-1), this);
+    m_pActViewZoomOut->setStatusTip( tr("Zoom Out") );
+
+    if( !connect(
+        /* pObjSender   */ m_pActViewZoomOut,
+        /* szSignal     */ SIGNAL(triggered(bool)),
+        /* pObjReceiver */ this,
+        /* szSlot       */ SLOT(onActionViewZoomOutTriggered(bool)) ) )
     {
         throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
     }
@@ -2064,6 +2111,23 @@ void CMainWindow::createActions()
         }
     }
 
+    // <MenuItem> DebugTrace::Trace Admin Objects
+    //-------------------------------------------
+
+    if( CTrcServer::GetInstance() != nullptr )
+    {
+        m_pActTraceAdminObjIdxTree = new QAction(c_strActionNameTraceAdminObjIdxTree.section(":",-1,-1),this);
+
+        if( !QObject::connect(
+            /* pObjSender   */ m_pActTraceAdminObjIdxTree,
+            /* szSignal     */ SIGNAL(triggered(bool)),
+            /* pObjReceiver */ this,
+            /* szSlot       */ SLOT(onActionTraceAdminObjIdxTreeTriggered(bool)) ) )
+        {
+            throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
+        }
+    }
+
     // <MenuItem> DebugTrace::Test
     //-----------------------------------------------------------------------
 
@@ -2099,6 +2163,11 @@ void CMainWindow::createActions()
 } // createActions
 
 //------------------------------------------------------------------------------
+/*! Creates the menu items of the application.
+
+    The actions used by the menu items must have been created before.
+    @see createActions
+*/
 void CMainWindow::createMenus()
 //------------------------------------------------------------------------------
 {
@@ -2411,15 +2480,26 @@ void CMainWindow::createMenus()
     // <MenuItem> View::Zoom
     //----------------------
 
-    if( m_pActViewZoom != nullptr )
+    // <MenuItem> View::ZoomIn
+    //------------------------
+
+    if( m_pActViewZoomIn != nullptr )
     {
-        m_pMenuView->addAction(m_pActViewZoom);
+        m_pMenuView->addAction(m_pActViewZoomIn);
+    }
+
+    // <MenuItem> View::ZoomOut
+    //-------------------------
+
+    if( m_pActViewZoomOut != nullptr )
+    {
+        m_pMenuView->addAction(m_pActViewZoomOut);
     }
 
     // <Menu> Debug & Trace
     //=====================
 
-    if( m_pActTraceErrLog != nullptr || m_pActTraceServer != nullptr || m_pActionDebugTest != nullptr )
+    if( m_pActTraceErrLog != nullptr || m_pActTraceServer != nullptr || m_pActTraceAdminObjIdxTree != nullptr || m_pActionDebugTest != nullptr )
     {
         m_pMenuDebugTrace = m_pMenuBar->addMenu(c_strMenuNameDebugTrace);
 
@@ -2439,15 +2519,27 @@ void CMainWindow::createMenus()
             m_pMenuDebugTrace->addAction(m_pActTraceServer);
         }
 
+        // <MenuItem> DebugTrace::Trace Admin Objects
+        //-------------------------------------------
+
+        if( m_pActTraceAdminObjIdxTree != nullptr )
+        {
+            m_pMenuDebugTrace->addAction(m_pActTraceAdminObjIdxTree);
+        }
+
         // <MenuItem> DebugTrace::Test
         //-----------------------------------------------------------------------
 
         if( m_pActionDebugTest != nullptr )
         {
+            if( !m_pMenuDebugTrace->isEmpty() )
+            {
+                m_pMenuDebugTrace->addSeparator();
+            }
             m_pMenuDebugTrace->addAction(m_pActionDebugTest);
         }
 
-    } // if( m_pActTraceErrLog != nullptr || m_pActTraceServer != nullptr || m_pActionDebugTest != nullptr )
+    } // if( m_pActTraceErrLog != nullptr || m_pActTraceServer != nullptr || m_pActTraceAdminObjIdxTree != nullptr || m_pActionDebugTest != nullptr )
 
     // <Menu> Info
     //============
@@ -2465,6 +2557,11 @@ void CMainWindow::createMenus()
 } // createMenus
 
 //------------------------------------------------------------------------------
+/*! Creates the tool bars of the application.
+
+    The actions used by the toolbars must have been created before.
+    @see createActions
+*/
 void CMainWindow::createToolBars()
 //------------------------------------------------------------------------------
 {
@@ -2775,6 +2872,53 @@ void CMainWindow::createToolBars()
         m_pToolBarDrawConnections->addAction(m_pActDrawConnectionLine);
     }
 
+    // <Menu> View
+    //============
+
+    m_pToolBarView = addToolBar("View");
+    m_pToolBarView->setObjectName("View");
+    //m_pToolBarView->setMaximumHeight(24);
+    m_pToolBarView->setIconSize( QSize(16,16) );
+
+    // <MenuItem> View::ZoomIn
+    //------------------------
+
+    if( m_pActViewZoomIn != nullptr )
+    {
+        m_pToolBarView->addAction(m_pActViewZoomIn);
+    }
+
+    // <MenuItem> View::ZoomOut
+    //-------------------------
+
+    if( m_pActViewZoomOut != nullptr )
+    {
+        m_pToolBarView->addAction(m_pActViewZoomOut);
+    }
+
+    // <MenuItem> View::Zoom
+    //----------------------
+
+    if( m_pActViewZoomIn != nullptr || m_pActViewZoomOut != nullptr )
+    {
+        m_pEdtViewZoomFactor_perCent = new QSpinBox();
+        m_pEdtViewZoomFactor_perCent->setMinimumWidth(80);
+        m_pEdtViewZoomFactor_perCent->setMinimum(1);
+        m_pEdtViewZoomFactor_perCent->setMaximum(10000);
+        m_pEdtViewZoomFactor_perCent->setSuffix(" %");
+        m_pEdtViewZoomFactor_perCent->setValue(m_iViewZoomFactor_perCent);
+        m_pToolBarView->addWidget(m_pEdtViewZoomFactor_perCent);
+
+        if( !QObject::connect(
+            /* pObjSender   */ m_pEdtViewZoomFactor_perCent,
+            /* szSignal     */ SIGNAL( editingFinished() ),
+            /* pObjReceiver */ this,
+            /* szSlot       */ SLOT( onEdtViewZoomFactorEditingFinished() ) ) )
+        {
+            throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
+        }
+    }
+
 } // createToolBars
 
 //------------------------------------------------------------------------------
@@ -2834,6 +2978,10 @@ void CMainWindow::createDockWidgets()
 
         if( m_pMenuView != nullptr )
         {
+            if( !m_pMenuView->isEmpty() )
+            {
+                m_pMenuView->addSeparator();
+            }
             m_pMenuView->addAction(m_pDockWdgtObjFactories->toggleViewAction());
         }
 
@@ -2856,6 +3004,10 @@ void CMainWindow::createDockWidgets()
 
     if( m_pMenuView != nullptr )
     {
+        if( !m_pMenuView->isEmpty() )
+        {
+            m_pMenuView->addSeparator();
+        }
         m_pMenuView->addAction(m_pDockWdgtGraphObjs->toggleViewAction());
     }
 
@@ -4564,7 +4716,7 @@ public slots: // Menu - View - Zoom
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CMainWindow::onActionViewZoomToggled( bool i_bChecked )
+void CMainWindow::onActionViewZoomInTriggered( bool i_bChecked )
 //------------------------------------------------------------------------------
 {
     QString strAddTrcInfo;
@@ -4577,11 +4729,175 @@ void CMainWindow::onActionViewZoomToggled( bool i_bChecked )
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strMethod    */ "onActionViewZoomToggled",
+        /* strMethod    */ "onActionViewZoomInTriggered",
         /* strAddInfo   */ strAddTrcInfo );
 
+    int iZoomFactor_perCent = m_iViewZoomFactor_perCent;
 
-} // onActionViewZoomToggled
+    if( iZoomFactor_perCent == 1 )
+    {
+        iZoomFactor_perCent = 2;
+    }
+    else if( iZoomFactor_perCent == 2 )
+    {
+        iZoomFactor_perCent = 5;
+    }
+    else if( iZoomFactor_perCent == 5 )
+    {
+        iZoomFactor_perCent = 10;
+    }
+    else if( iZoomFactor_perCent == 10 )
+    {
+        iZoomFactor_perCent = 25;
+    }
+    else if( iZoomFactor_perCent == 25 )
+    {
+        iZoomFactor_perCent = 50;
+    }
+    else if( iZoomFactor_perCent == 50 )
+    {
+        iZoomFactor_perCent = 100;
+    }
+    else if( iZoomFactor_perCent == 100 )
+    {
+        iZoomFactor_perCent = 250;
+    }
+    else if( iZoomFactor_perCent == 250 )
+    {
+        iZoomFactor_perCent = 500;
+    }
+    else if( iZoomFactor_perCent == 500 )
+    {
+        iZoomFactor_perCent = 1000;
+    }
+    else if( iZoomFactor_perCent == 1000 )
+    {
+        iZoomFactor_perCent = 2500;
+    }
+    else if( iZoomFactor_perCent == 2500 )
+    {
+        iZoomFactor_perCent = 5000;
+    }
+    else if( 2*iZoomFactor_perCent <= 5000 )
+    {
+        iZoomFactor_perCent *= 2;
+    }
+    else
+    {
+        iZoomFactor_perCent = 10000;
+    }
+
+    m_pEdtViewZoomFactor_perCent->setValue(iZoomFactor_perCent);
+
+    onEdtViewZoomFactorEditingFinished();
+
+} // onActionViewZoomInTriggered
+
+//------------------------------------------------------------------------------
+void CMainWindow::onActionViewZoomOutTriggered( bool i_bChecked )
+//------------------------------------------------------------------------------
+{
+    QString strAddTrcInfo;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    {
+        strAddTrcInfo = "Checked: " + bool2Str(i_bChecked);
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* strMethod    */ "onActionViewZoomOutTriggered",
+        /* strAddInfo   */ strAddTrcInfo );
+
+    int iZoomFactor_perCent = m_iViewZoomFactor_perCent;
+
+    if( iZoomFactor_perCent == 10000 )
+    {
+        iZoomFactor_perCent = 5000;
+    }
+    else if( iZoomFactor_perCent == 5000 )
+    {
+        iZoomFactor_perCent = 2500;
+    }
+    else if( iZoomFactor_perCent == 2500 )
+    {
+        iZoomFactor_perCent = 1000;
+    }
+    else if( iZoomFactor_perCent == 1000 )
+    {
+        iZoomFactor_perCent = 500;
+    }
+    else if( iZoomFactor_perCent == 500 )
+    {
+        iZoomFactor_perCent = 250;
+    }
+    else if( iZoomFactor_perCent == 250 )
+    {
+        iZoomFactor_perCent = 100;
+    }
+    else if( iZoomFactor_perCent == 100 )
+    {
+        iZoomFactor_perCent = 50;
+    }
+    else if( iZoomFactor_perCent == 50 )
+    {
+        iZoomFactor_perCent = 25;
+    }
+    else if( iZoomFactor_perCent == 25 )
+    {
+        iZoomFactor_perCent = 10;
+    }
+    else if( iZoomFactor_perCent == 10 )
+    {
+        iZoomFactor_perCent = 5;
+    }
+    else if( iZoomFactor_perCent == 5 )
+    {
+        iZoomFactor_perCent = 2;
+    }
+    else if( iZoomFactor_perCent >= 2 )
+    {
+        iZoomFactor_perCent /= 2;
+    }
+    else
+    {
+        iZoomFactor_perCent = 1;
+    }
+
+    m_pEdtViewZoomFactor_perCent->setValue(iZoomFactor_perCent);
+
+    onEdtViewZoomFactorEditingFinished();
+
+} // onActionViewZoomOutTriggered
+
+//------------------------------------------------------------------------------
+void CMainWindow::onEdtViewZoomFactorEditingFinished()
+//------------------------------------------------------------------------------
+{
+    QString strAddTrcInfo;
+
+    int iZoomFactor_perCent = m_pEdtViewZoomFactor_perCent->value();
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    {
+        strAddTrcInfo = "ZoomFactor: " + QString::number(iZoomFactor_perCent) + " %";
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* strMethod    */ "onEdtViewZoomFactorEditingFinished",
+        /* strAddInfo   */ strAddTrcInfo );
+
+    if( m_iViewZoomFactor_perCent != iZoomFactor_perCent )
+    {
+        double fScale = static_cast<double>(iZoomFactor_perCent) / static_cast<double>(m_iViewZoomFactor_perCent);
+        m_iViewZoomFactor_perCent = iZoomFactor_perCent;
+        m_pDrawingView->scale(fScale, fScale);
+    }
+
+} // onEdtViewZoomFactorEditingFinished
 
 /*==============================================================================
 public slots: // Menu - Trace
@@ -4654,6 +4970,45 @@ void CMainWindow::onActionTraceServerTriggered( bool /*i_bChecked*/ )
     } // if( pDlg != nullptr )
 
 } // onActionTraceServerTriggered
+
+//------------------------------------------------------------------------------
+void CMainWindow::onActionTraceAdminObjIdxTreeTriggered( bool /*i_bChecked*/ )
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* strMethod    */ "onActionTraceAdminObjIdxTreeTriggered",
+        /* strAddInfo   */ "" );
+
+    if( CTrcServer::GetTraceAdminObjIdxTree() != nullptr )
+    {
+        QString strDlgTitle = getMainWindowTitle() + ": Trace Admin Objects";
+
+        CDlgIdxTreeTrcAdminObjs* pDlg = CDlgIdxTreeTrcAdminObjs::GetInstance(CTrcServer::GetTraceAdminObjIdxTree()->objectName());
+
+        if( pDlg == nullptr )
+        {
+            pDlg = CDlgIdxTreeTrcAdminObjs::CreateInstance(
+                /* pTrcAdmIdxTree */ CTrcServer::GetTraceAdminObjIdxTree(),
+                /* strDlgTitle    */ strDlgTitle );
+            pDlg->setAttribute(Qt::WA_DeleteOnClose, true);
+            pDlg->adjustSize();
+            pDlg->show();
+        }
+        else // if( pReqSeq != nullptr )
+        {
+            if( pDlg->isHidden() )
+            {
+                pDlg->show();
+            }
+            pDlg->raise();
+            pDlg->activateWindow();
+
+        } // if( pDlg != nullptr )
+    } // if( CTrcServer::GetTraceAdminObjIdxTree() != nullptr )
+
+} // onActionTraceAdminObjIdxTreeTriggered
 
 //------------------------------------------------------------------------------
 void CMainWindow::onActionDebugTestTriggered( bool /*i_bChecked*/ )
@@ -4806,13 +5161,13 @@ void CMainWindow::onDrawingSceneMousePosChanged( const QPointF& i_ptMousePos )
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObjMouseEvents != nullptr && m_pTrcAdminObjMouseEvents->isActive(ETraceDetailLevelMethodArgs) )
     {
         strAddTrcInfo = "Pos:" + point2Str(i_ptMousePos);
     }
 
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
+        /* pAdminObj    */ m_pTrcAdminObjMouseEvents,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "onDrawingSceneMousePosChanged",
         /* strAddInfo   */ strAddTrcInfo );
@@ -5069,13 +5424,13 @@ void CMainWindow::onDrawingViewMousePosChanged( const QPointF& i_ptMousePos )
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObjMouseEvents != nullptr && m_pTrcAdminObjMouseEvents->isActive(ETraceDetailLevelMethodArgs) )
     {
         strAddTrcInfo = "Pos:" + point2Str(i_ptMousePos);
     }
 
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
+        /* pAdminObj    */ m_pTrcAdminObjMouseEvents,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "onDrawingViewMousePosChanged",
         /* strAddInfo   */ strAddTrcInfo );
@@ -6115,6 +6470,10 @@ void CMainWindow::updateActions()
     //if( m_pActTraceServer != nullptr )
     //{
     //    m_pActTraceServer;
+    //}
+    //if( m_pActTraceAdminObjIdxTree != nullptr )
+    //{
+    //    m_pActTraceAdminObjIdxTree;
     //}
     //if( m_pActionDebugTest != nullptr )
     //{

@@ -4695,6 +4695,10 @@
     <Image Include="..\..\..\Images\Libs\ZSSys\ButtonTableView16x16.bmp" />
     <Image Include="..\..\..\Images\Libs\ZSSys\ButtonUndo16x16.bmp" />
     <Image Include="..\..\..\Images\Libs\ZSSys\ButtonUndo24x24.bmp" />
+    <Image Include="..\..\..\Images\Libs\ZSSys\ButtonZoomIn16x16.bmp" />
+    <Image Include="..\..\..\Images\Libs\ZSSys\ButtonZoomIn24x24.bmp" />
+    <Image Include="..\..\..\Images\Libs\ZSSys\ButtonZoomOut16x16.bmp" />
+    <Image Include="..\..\..\Images\Libs\ZSSys\ButtonZoomOut24x24.bmp" />
     <Image Include="..\..\..\Images\Libs\ZSSys\FileExplorerDirEntry16x16.bmp" />
     <Image Include="..\..\..\Images\Libs\ZSSys\MenuFileAdd16x16.bmp" />
     <Image Include="..\..\..\Images\Libs\ZSSys\MenuFileEdit16x16.bmp" />

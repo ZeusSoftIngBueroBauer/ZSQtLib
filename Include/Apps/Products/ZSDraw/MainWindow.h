@@ -36,20 +36,13 @@ may result in using the software modules.
 #include <QtWidgets/qmainwindow.h>
 #endif
 
-class QAbstractButton;
 class QAction;
-class QActionGroup;
-class QButtonGroup;
-class QComboBox;
 class QDockWidget;
 class QDoubleSpinBox;
-class QGraphicsItem;
 class QLabel;
 class QModelIndex;
-class QPixmap;
-class QPopupMenu;
 class QPushButton;
-class QTimer;
+class QSpinBox;
 class QTreeView;
 class QHBoxLayout;
 class QVBoxLayout;
@@ -205,9 +198,12 @@ public: // class members
     static const QString c_strActionNameDrawElectricityInductor;
     static const QString c_strActionNameDrawElectricitySwitch;
     static const QString c_strActionNameDrawElectricityTransistor;
+    static const QString c_strActionNameViewZoomIn;
+    static const QString c_strActionNameViewZoomOut;
     static const QString c_strActionNameViewZoom;
     static const QString c_strActionNameTraceErrLog;
     static const QString c_strActionNameTraceServer;
+    static const QString c_strActionNameTraceAdminObjIdxTree;
     static const QString c_strActionNameInfoVersion;
 public: // ctors and dtor
     CMainWindow(
@@ -293,10 +289,13 @@ public slots: // Menu - Draw - Connections
     void onActionDrawConnectionPointToggled( bool );
     void onActionDrawConnectionLineToggled( bool );
 public slots: // Menu - View - Zoom
-    void onActionViewZoomToggled( bool );
+    void onActionViewZoomInTriggered( bool );
+    void onActionViewZoomOutTriggered( bool );
+    void onEdtViewZoomFactorEditingFinished();
 public slots: // Menu - Trace
     void onActionTraceErrLogTriggered( bool );
     void onActionTraceServerTriggered( bool );
+    void onActionTraceAdminObjIdxTreeTriggered( bool );
     void onActionDebugTestTriggered( bool );
 public slots: // Drawing Scene
     void onDrawingSceneChanged( const QList<QRectF>& i_region );
@@ -428,12 +427,15 @@ protected: // instance members
     // Menu - View
     QMenu*                                              m_pMenuView;
     QToolBar*                                           m_pToolBarView;
-    QAction*                                            m_pActViewZoom;
-    QComboBox*                                          m_pCmbViewZoom;
+    QAction*                                            m_pActViewZoomIn;
+    QAction*                                            m_pActViewZoomOut;
+    QSpinBox*                                           m_pEdtViewZoomFactor_perCent;
+    int                                                 m_iViewZoomFactor_perCent;
     // Menu - Trace
     QMenu*                                              m_pMenuDebugTrace;
     QAction*                                            m_pActTraceErrLog;
     QAction*                                            m_pActTraceServer;
+    QAction*                                            m_pActTraceAdminObjIdxTree;
     QAction*                                            m_pActionDebugTest;
     // Menu - Info
     QMenu*                                              m_pMenuInfo;
@@ -469,6 +471,7 @@ protected: // instance members
     QWidget*                                            m_pWdgtCentral;
     // Trace
     ZS::Trace::CTrcAdminObj*                            m_pTrcAdminObj;
+    ZS::Trace::CTrcAdminObj*                            m_pTrcAdminObjMouseEvents;
 
 }; // class CMainWindow
 

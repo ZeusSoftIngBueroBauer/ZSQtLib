@@ -1095,6 +1095,18 @@
     <Image Include="..\..\..\Images\Libs\ZSSys\RequestEntryTypeActiveNodeSelectedOff.bmp">
       <Filter>Resource Files\RequestTreeExplorer</Filter>
     </Image>
+    <Image Include="..\..\..\Images\Libs\ZSSys\ButtonZoomIn16x16.bmp">
+      <Filter>Resource Files\Button</Filter>
+    </Image>
+    <Image Include="..\..\..\Images\Libs\ZSSys\ButtonZoomIn24x24.bmp">
+      <Filter>Resource Files\Button</Filter>
+    </Image>
+    <Image Include="..\..\..\Images\Libs\ZSSys\ButtonZoomOut16x16.bmp">
+      <Filter>Resource Files\Button</Filter>
+    </Image>
+    <Image Include="..\..\..\Images\Libs\ZSSys\ButtonZoomOut24x24.bmp">
+      <Filter>Resource Files\Button</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\..\..\Images\Libs\ZSSys\ZSSys.qrc">

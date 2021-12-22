@@ -143,13 +143,13 @@ CGraphObjLine::CGraphObjLine(
 
     if( s_pTrcAdminObjCtorsAndDtor == nullptr )
     {
-        s_pTrcAdminObjCtorsAndDtor = CTrcServer::GetTraceAdminObj("ZS::Draw", "CGraphObjLine::CtorsAndDtor", "");
-        s_pTrcAdminObjBoundingRect = CTrcServer::GetTraceAdminObj("ZS::Draw", "CGraphObjLine::BoundingRect", "");
-        s_pTrcAdminObjPaint = CTrcServer::GetTraceAdminObj("ZS::Draw", "CGraphObjLine::Paint", "");
-        s_pTrcAdminObjSceneEventFilter = CTrcServer::GetTraceAdminObj("ZS::Draw", "CGraphObjLine::SceneEventFilter", "");
-        s_pTrcAdminObjHoverEvents = CTrcServer::GetTraceAdminObj("ZS::Draw", "CGraphObjLine::HoverEvents", "");
-        s_pTrcAdminObjMouseEvents = CTrcServer::GetTraceAdminObj("ZS::Draw", "CGraphObjLine::MouseEvents", "");
-        s_pTrcAdminObjItemChange = CTrcServer::GetTraceAdminObj("ZS::Draw", "CGraphObjLine::ItemChange", "");
+        s_pTrcAdminObjCtorsAndDtor = CTrcServer::GetTraceAdminObj("ZS::Draw", "CGraphObjLine", "CtorsAndDtor");
+        s_pTrcAdminObjBoundingRect = CTrcServer::GetTraceAdminObj("ZS::Draw", "CGraphObjLine", "BoundingRect");
+        s_pTrcAdminObjPaint = CTrcServer::GetTraceAdminObj("ZS::Draw", "CGraphObjLine", "Paint");
+        s_pTrcAdminObjSceneEventFilter = CTrcServer::GetTraceAdminObj("ZS::Draw", "CGraphObjLine", "SceneEventFilter");
+        s_pTrcAdminObjHoverEvents = CTrcServer::GetTraceAdminObj("ZS::Draw", "CGraphObjLine", "HoverEvents");
+        s_pTrcAdminObjMouseEvents = CTrcServer::GetTraceAdminObj("ZS::Draw", "CGraphObjLine", "MouseEvents");
+        s_pTrcAdminObjItemChange = CTrcServer::GetTraceAdminObj("ZS::Draw", "CGraphObjLine", "ItemChange");
 
     } // if( s_pTrcAdminObjCtorsAndDtor == nullptr )
 
@@ -919,29 +919,11 @@ void CGraphObjLine::paint(
         updateLineEndPolygonCoors();
     }
 
-    if( m_drawSettings.isPenUsed() )
-    {
-        if( m_drawSettings.getLineStyle() != ELineStyleNoLine )
-        {
-            QPen pn;
-
-            pn.setColor( m_drawSettings.getPenColor() );
-            pn.setWidth( m_drawSettings.getPenWidth() );
-            pn.setStyle( lineStyle2QtPenStyle(m_drawSettings.getLineStyle()) );
-
-            setPen(pn);
-        }
-        else
-        {
-            setPen(Qt::NoPen);
-        }
-    }
-    else
-    {
-        setPen(Qt::NoPen);
-    }
-
     QPen pn = pen();
+
+    pn.setColor( m_drawSettings.getPenColor() );
+    pn.setWidth( m_drawSettings.getPenWidth() );
+    pn.setStyle( lineStyle2QtPenStyle(m_drawSettings.getLineStyle()) );
 
     if( m_pDrawingScene->getMode() == EMode::Edit && isSelected() )
     {

@@ -33,6 +33,7 @@ may result in using the software modules.
 #include "ZSDraw/ZSDrawingScene.h"
 #include "ZSDraw/ZSDrawingView.h"
 #include "ZSDraw/ZSDrawGraphObjLine.h"
+#include "ZSDraw/ZSDrawGraphObjText.h"
 #include "ZSDraw/ZSDrawGraphObjRect.h"
 #include "ZSPhysSizes/Geometry/ZSPhysSizes.h"
 #include "ZSPhysVal/ZSPhysValExceptions.h"
@@ -71,7 +72,7 @@ void CTest::createTestGroupAndroidWallpaperTemplate( int& io_idxGroup )
     new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + ": Page Setup",
-        /* strOperation    */ "Width: 1920 px, Height: 1408 px", // should be: 1920, 1408
+        /* strOperation    */ "Width: 1536 px, Height: 1200 px", // For gx10: 2048 px, 1280 px
         /* pTSGrpParent    */ pGrpGridLines,
         /* szDoTestStepFct */ SLOT(doTestStepAndroidWallpaperTemplatePageSetup(ZS::Test::CTestStep*)) );
 
@@ -262,6 +263,9 @@ void CTest::doTestStepAndroidWallpaperTemplateDrawGridLines( ZS::Test::CTestStep
 
     CPageSetup pageSetup = m_pDrawingView->getPageSetup();
 
+    // Horizontal Grid Lines
+    //----------------------
+
     int x1_px = 0;
     int y1_px = 0;
     int x2_px = pageSetup.getDrawingWidthInPixels();
@@ -281,6 +285,9 @@ void CTest::doTestStepAndroidWallpaperTemplateDrawGridLines( ZS::Test::CTestStep
 
     strlstExpectedValues += strExpectedValues;
     strExpectedValues.clear();
+
+    // Vertical Grid Lines
+    //----------------------
 
     x1_px = 0;
     y1_px = 0;
@@ -310,12 +317,9 @@ void CTest::doTestStepAndroidWallpaperTemplateDrawGridLines( ZS::Test::CTestStep
     QVector<CGraphObj*> arpGraphObjs;
 
     CDrawSettings drawSettingsLine(EGraphObjTypeLine);
-    //CDrawSettings drawSettingsRect(EGraphObjTypeRect);
 
-    //QColor colRect(Qt::gray);
-    //colRect.setAlpha(127);
-    //drawSettingsRect.setFillColor(colRect);
-    //drawSettingsRect.setFillStyle(EFillStyleSolidPattern);
+    // Horizontal Grid Lines
+    //----------------------
 
     int idxLine = 0;
 
@@ -353,26 +357,17 @@ void CTest::doTestStepAndroidWallpaperTemplateDrawGridLines( ZS::Test::CTestStep
             m_pDrawingScene->onGraphObjCreated(pGraphObjLine);
             pGraphObjLine->acceptCurrentAsOriginalCoors();
 
-            //if( idxLine % 5 == 0 )
-            //{
-            //    CGraphObjRect* pGraphObjRect = new CGraphObjRect(
-            //        /* pDrawingScene */ m_pDrawingScene,
-            //        /* drawSettings  */ drawSettingsRect,
-            //        /* strObjName    */ "HR" + QString::number(y1_px),
-            //        /* strObjId      */ "HR" + QString::number(idxLine));
-
-            //    pGraphObjRect->setRect( QRect(x1_px, y1_px, x2_px-x1_px, yOffs_px) );
-            //    m_pDrawingScene->addItem(pGraphObjRect);
-            //    m_pDrawingScene->onGraphObjCreated(pGraphObjRect);
-            //    pGraphObjRect->acceptCurrentAsOriginalCoors();
-            //}
-
             y1_px += yOffs_px;
             y2_px = y1_px;
 
             ++idxLine;
+
+            //if( idxLine > 70) break;
         }
     }
+
+    // Vertical Grid Lines
+    //--------------------
 
     idxLine = 0;
 
@@ -411,19 +406,156 @@ void CTest::doTestStepAndroidWallpaperTemplateDrawGridLines( ZS::Test::CTestStep
             m_pDrawingScene->onGraphObjCreated(pGraphObjLine);
             pGraphObjLine->acceptCurrentAsOriginalCoors();
 
-            //if( idxLine % 5 == 0 )
-            //{
-            //    CGraphObjRect* pGraphObjRect = new CGraphObjRect(
-            //        /* pDrawingScene */ m_pDrawingScene,
-            //        /* drawSettings  */ drawSettingsRect,
-            //        /* strObjName    */ "VR" + QString::number(x1_px),
-            //        /* strObjId      */ "VR" + QString::number(idxLine));
+            x1_px += xOffs_px;
+            x2_px = x1_px;
 
-            //    pGraphObjRect->setRect( QRect(x1_px, y1_px, xOffs_px, y2_px-y1_px) );
-            //    m_pDrawingScene->addItem(pGraphObjRect);
-            //    m_pDrawingScene->onGraphObjCreated(pGraphObjRect);
-            //    pGraphObjRect->acceptCurrentAsOriginalCoors();
-            //}
+            ++idxLine;
+
+            //if( idxLine > 50) break;
+        }
+    }
+
+    // Label Horizontal Grid Lines
+    //----------------------------
+
+    CDrawSettings drawSettingsText(EGraphObjTypeText);
+
+    drawSettingsText.setLineStyle(ELineStyleNoLine);
+    drawSettingsText.setTextSize(ETextSize20);
+
+    idxLine = 0;
+
+    x1_px = 0;
+    y1_px = 0;
+    x2_px = pageSetup.getDrawingWidthInPixels();
+    y2_px = 0;
+
+    if( yOffs_px > 0 )
+    {
+        while( y1_px <= pageSetup.getDrawingHeightInPixels() )
+        {
+            if( idxLine % 5 == 0 )
+            {
+                CGraphObjText* pGraphObjText = new CGraphObjText(
+                    /* pDrawingScene */ m_pDrawingScene,
+                    /* drawSettings  */ drawSettingsText,
+                    /* strObjName    */ "HLblL" + QString::number(y1_px),
+                    /* strObjId      */ "HLblL" + QString::number(idxLine));
+
+                pGraphObjText->setPos( QPoint(x1_px, y1_px) );
+                pGraphObjText->setPlainText(QString::number(y1_px));
+                m_pDrawingScene->addItem(pGraphObjText);
+                m_pDrawingScene->onGraphObjCreated(pGraphObjText);
+                pGraphObjText->acceptCurrentAsOriginalCoors();
+
+                QRectF boundingRect = pGraphObjText->boundingRect();
+                QPointF ptCenter = boundingRect.center();
+                pGraphObjText->moveBy(0.0, -ptCenter.y());
+
+                pGraphObjText = new CGraphObjText(
+                    /* pDrawingScene */ m_pDrawingScene,
+                    /* drawSettings  */ drawSettingsText,
+                    /* strObjName    */ "HLblC" + QString::number(y1_px),
+                    /* strObjId      */ "HLblC" + QString::number(idxLine));
+
+                pGraphObjText->setPos( QPoint(pageSetup.getDrawingWidthInPixels()/2, y1_px) );
+                pGraphObjText->setPlainText(QString::number(y1_px));
+                m_pDrawingScene->addItem(pGraphObjText);
+                m_pDrawingScene->onGraphObjCreated(pGraphObjText);
+                pGraphObjText->acceptCurrentAsOriginalCoors();
+
+                boundingRect = pGraphObjText->boundingRect();
+                ptCenter = boundingRect.center();
+                pGraphObjText->moveBy(0.0, -ptCenter.y());
+
+                pGraphObjText = new CGraphObjText(
+                    /* pDrawingScene */ m_pDrawingScene,
+                    /* drawSettings  */ drawSettingsText,
+                    /* strObjName    */ "HLblR" + QString::number(y1_px),
+                    /* strObjId      */ "HLblR" + QString::number(idxLine));
+
+                pGraphObjText->setPos( QPoint(x2_px, y1_px) );
+                pGraphObjText->setPlainText(QString::number(y1_px));
+                m_pDrawingScene->addItem(pGraphObjText);
+                m_pDrawingScene->onGraphObjCreated(pGraphObjText);
+                pGraphObjText->acceptCurrentAsOriginalCoors();
+
+                boundingRect = pGraphObjText->boundingRect();
+                ptCenter = boundingRect.center();
+                pGraphObjText->moveBy(-boundingRect.width(), -ptCenter.y());
+            }
+
+            y1_px += yOffs_px;
+            y2_px = y1_px;
+
+            ++idxLine;
+        }
+    }
+
+    // Label Vertical Grid Lines
+    //----------------------------
+
+    idxLine = 0;
+
+    x1_px = 0;
+    y1_px = 0;
+    x2_px = 0;
+    y2_px = pageSetup.getDrawingHeightInPixels();
+
+    if( xOffs_px > 0 )
+    {
+        while( x1_px <= pageSetup.getDrawingWidthInPixels() )
+        {
+            if( idxLine % 5 == 0 )
+            {
+                CGraphObjText* pGraphObjText = new CGraphObjText(
+                    /* pDrawingScene */ m_pDrawingScene,
+                    /* drawSettings  */ drawSettingsText,
+                    /* strObjName    */ "VLblT" + QString::number(x1_px),
+                    /* strObjId      */ "VLblT" + QString::number(idxLine));
+
+                pGraphObjText->setPos( QPoint(x1_px, y1_px) );
+                pGraphObjText->setPlainText(QString::number(x1_px));
+                m_pDrawingScene->addItem(pGraphObjText);
+                m_pDrawingScene->onGraphObjCreated(pGraphObjText);
+                pGraphObjText->acceptCurrentAsOriginalCoors();
+
+                QRectF boundingRect = pGraphObjText->boundingRect();
+                QPointF ptCenter = boundingRect.center();
+                pGraphObjText->moveBy(-ptCenter.x(), 0.0);
+
+                pGraphObjText = new CGraphObjText(
+                    /* pDrawingScene */ m_pDrawingScene,
+                    /* drawSettings  */ drawSettingsText,
+                    /* strObjName    */ "VLblC" + QString::number(x1_px),
+                    /* strObjId      */ "VLblC" + QString::number(idxLine));
+
+                pGraphObjText->setPos( QPoint(x1_px, pageSetup.getDrawingHeightInPixels()/2) );
+                pGraphObjText->setPlainText(QString::number(x1_px));
+                m_pDrawingScene->addItem(pGraphObjText);
+                m_pDrawingScene->onGraphObjCreated(pGraphObjText);
+                pGraphObjText->acceptCurrentAsOriginalCoors();
+
+                boundingRect = pGraphObjText->boundingRect();
+                ptCenter = boundingRect.center();
+                pGraphObjText->moveBy(-ptCenter.x(), 0.0);
+
+                pGraphObjText = new CGraphObjText(
+                    /* pDrawingScene */ m_pDrawingScene,
+                    /* drawSettings  */ drawSettingsText,
+                    /* strObjName    */ "VLblB" + QString::number(x1_px),
+                    /* strObjId      */ "BLblB" + QString::number(idxLine));
+
+                pGraphObjText->setPos( QPoint(x1_px, y2_px) );
+                pGraphObjText->setPlainText(QString::number(x1_px));
+                m_pDrawingScene->addItem(pGraphObjText);
+                m_pDrawingScene->onGraphObjCreated(pGraphObjText);
+                pGraphObjText->acceptCurrentAsOriginalCoors();
+
+                boundingRect = pGraphObjText->boundingRect();
+                ptCenter = boundingRect.center();
+                pGraphObjText->moveBy(-ptCenter.x(), -boundingRect.height());
+            }
 
             x1_px += xOffs_px;
             x2_px = x1_px;
@@ -432,11 +564,50 @@ void CTest::doTestStepAndroidWallpaperTemplateDrawGridLines( ZS::Test::CTestStep
         }
     }
 
+    // Rectangle for putting the wallpaper
+    //------------------------------------
+
+    //CDrawSettings drawSettingsRect(EGraphObjTypeRect);
+
+    //QColor colWallpaperBackground(Qt::yellow);
+    //colWallpaperBackground.setAlpha(64);
+
+    //drawSettingsRect.setFillStyle(EFillStyleSolidPattern);
+    //drawSettingsRect.setFillColor(colWallpaperBackground);
+
+    //// Factor ScreenResolutionWidth / ScreenResolutionHeight;
+    //double fFacScreenRes = 1280.0 / 800.0;
+
+    //// Visible height of wallpaper
+    //double fWallpaperVisibleHeight = pageSetup.getDrawingHeightInPixels() / fFacScreenRes;
+
+    //// Visible width of wallpaper
+    //double fWallpaperVisibleWidth = fFacScreenRes * fWallpaperVisibleHeight;
+
+    //// The visible part of the wallpaper is vertically centered.
+    //double fy1_px = (pageSetup.getDrawingHeightInPixels() - fWallpaperVisibleHeight) / 2.0;
+
+    //// The visible part of the wallpaper is adjusted to the left side.
+    //double fx1_px = 0.0;
+
+    //CGraphObjRect* pGraphObjWallpaperRect = new CGraphObjRect(
+    //    /* pDrawingScene */ m_pDrawingScene,
+    //    /* drawSettings  */ drawSettingsRect,
+    //    /* strObjName    */ "WallpaperRect" );
+
+    //pGraphObjWallpaperRect->setRect( QRectF(fx1_px, fy1_px, fWallpaperVisibleWidth, fWallpaperVisibleHeight) );
+    //m_pDrawingScene->addItem(pGraphObjWallpaperRect);
+    //m_pDrawingScene->onGraphObjCreated(pGraphObjWallpaperRect);
+    //pGraphObjWallpaperRect->acceptCurrentAsOriginalCoors();
+
     // Result Values
     //--------------
 
     QStringList strlstResultValues;
     QString     strResultValues;
+
+    // Horizontal Grid Lines
+    //----------------------
 
     for( const auto& pGraphObj : arpGraphObjs )
     {
@@ -452,6 +623,9 @@ void CTest::doTestStepAndroidWallpaperTemplateDrawGridLines( ZS::Test::CTestStep
 
     strlstResultValues += strResultValues;
     strResultValues.clear();
+
+    // Vertical Grid Lines
+    //----------------------
 
     for( const auto& pGraphObj : arpGraphObjs )
     {
@@ -493,6 +667,7 @@ void CTest::doTestStepAndroidWallpaperTemplateSaveAsWallpaperPng( ZS::Test::CTes
     //---------------
 
     QStringList strlstExpectedValues;
+    strlstExpectedValues += "FileSize: 121926";
 
     i_pTestStep->setExpectedValues(strlstExpectedValues);
 
@@ -508,8 +683,11 @@ void CTest::doTestStepAndroidWallpaperTemplateSaveAsWallpaperPng( ZS::Test::CTes
     QString strIniFileScope = "System"; // Default
     #endif
 
+    CPageSetup pageSetup = m_pDrawingView->getPageSetup();
+    QString strDim = QString::number(pageSetup.getDrawingWidthInPixels()) + "x" + QString::number(pageSetup.getDrawingHeightInPixels());
+
     QString strAppLogDir = ZS::System::getAppLogDir(strIniFileScope);
-    QString strFileName = strAppLogDir + "/" + "wallpaper_template.png";
+    QString strFileName = strAppLogDir + "/" + "test_wallpaper_template_" + strDim + ".png";
 
     QImage img(m_pDrawingView->getDrawingWidthInPixels(), m_pDrawingView->getDrawingHeightInPixels(), QImage::Format_ARGB32_Premultiplied);
     QPainter painter(&img);

@@ -43,6 +43,10 @@
         <file>ButtonTableView16x16.bmp</file>
         <file>ButtonUndo16x16.bmp</file>
         <file>ButtonUndo24x24.bmp</file>
+        <file>ButtonZoomIn16x16.bmp</file>
+        <file>ButtonZoomIn24x24.bmp</file>
+        <file>ButtonZoomOut16x16.bmp</file>
+        <file>ButtonZoomOut24x24.bmp</file>
     </qresource>
     <qresource prefix="/ZS/CnctState">
         <file>LedCircleBlue.png</file>
