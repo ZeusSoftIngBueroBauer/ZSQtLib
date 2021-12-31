@@ -3122,6 +3122,32 @@ QString ZS::System::qRect2Str( const QRect& i_rct, bool i_bShort )
 
 
 /*==============================================================================
+class QMargins
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+QString ZS::System::qMargins2Str( const QMargins& i_margins, bool i_bShort )
+//------------------------------------------------------------------------------
+{
+    QString str;
+
+    if( i_bShort )
+    {
+        str  = QString::number(i_margins.left()) + ", " + QString::number(i_margins.top());
+        str += ", " + QString::number(i_margins.right()) + ", " + QString::number(i_margins.bottom());
+    }
+    else
+    {
+        str  = "Left: " + QString::number(i_margins.left());
+        str += ", Top: " + QString::number(i_margins.top());
+        str += ", Right: " + QString::number(i_margins.right());
+        str += ", Bottom: " + QString::number(i_margins.bottom());
+    }
+    return str;
+
+} // qMargins2Str
+
+/*==============================================================================
 Enum QVariant::Type
 ==============================================================================*/
 
@@ -3272,6 +3298,36 @@ QString ZS::System::qVariantType2Str( int i_type )
 //------------------------------------------------------------------------------
 {
     return SEnumEntry::enumerator2Str( s_arEnumStrVariantTypes, _ZSArrLen(s_arEnumStrVariantTypes), i_type );
+}
+
+/*==============================================================================
+Enum Qt::FocusReasong
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+static const ZS::System::SEnumEntry s_arEnumStrFocusReasons[] =
+//------------------------------------------------------------------------------
+{
+    /* 0 */ SEnumEntry( static_cast<int>(Qt::MouseFocusReason), "MouseFocusReason" ),
+    /* 1 */ SEnumEntry( static_cast<int>(Qt::TabFocusReason), "TabFocusReason" ),
+    /* 2 */ SEnumEntry( static_cast<int>(Qt::BacktabFocusReason), "BacktabFocusReason" ),
+    /* 3 */ SEnumEntry( static_cast<int>(Qt::ActiveWindowFocusReason), "ActiveWindowFocusReason" ),
+    /* 4 */ SEnumEntry( static_cast<int>(Qt::PopupFocusReason), "PopupFocusReason" ),
+    /* 5 */ SEnumEntry( static_cast<int>(Qt::ShortcutFocusReason), "ShortcutFocusReason" ),
+    /* 6 */ SEnumEntry( static_cast<int>(Qt::MenuBarFocusReason), "MenuBarFocusReason" ),
+    /* 7 */ SEnumEntry( static_cast<int>(Qt::OtherFocusReason), "OtherFocusReason" ),
+    /* 8 */ SEnumEntry( static_cast<int>(Qt::NoFocusReason), "NoFocusReason" )
+};
+
+//------------------------------------------------------------------------------
+QString ZS::System::qFocusReason2Str( int i_iVal )
+//------------------------------------------------------------------------------
+{
+    if( i_iVal >= 0 && i_iVal < _ZSArrLen(s_arEnumStrFocusReasons) )
+    {
+        return SEnumEntry::enumerator2Str( s_arEnumStrFocusReasons, _ZSArrLen(s_arEnumStrFocusReasons), i_iVal );
+    }
+    return "? (" + QString::number(i_iVal) + ")";
 }
 
 /*==============================================================================

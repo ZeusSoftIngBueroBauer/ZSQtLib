@@ -1,7 +1,4 @@
-/*!
-@defgroup _GRP_BasicConcepts_MemLeakDetection Detecting memory leaks
-@ingroup _GRP_BasicConcepts
-@brief How to find memory leaks.
+@page _PAGE_BasicConcepts_MemLeakDetection Detecting memory leaks
 
 To detect memory leaks the header file "ZSSysMemLeakDump.h" must be included.
 The include statement for "ZSSysMemLeakDump" should be after all necessary
@@ -52,4 +49,3 @@ code lines below exclude the memory block from the memory leak dump:
 
     #pragma warning( default : 4005 )
     #pragma pop_macro("_SMSYSDBGNEW_CLIENT_BLOCK_SUBTYPE")
-*/

@@ -33,13 +33,14 @@ may result in using the software modules.
 #endif
 
 #include "ZSDraw/ZSDrawObjFactoryConnectionPoint.h"
+#include "ZSDraw/ZSDrawAux.h"
 #include "ZSDraw/ZSDrawGraphObjConnectionPoint.h"
 #include "ZSDraw/ZSDrawGraphObjGroup.h"
+#include "ZSDraw/ZSDrawGraphObjLabel.h"
 #include "ZSDraw/ZSDrawingScene.h"
 #include "ZSSys/ZSSysException.h"
 #include "ZSSys/ZSSysTrcAdminObj.h"
 #include "ZSSys/ZSSysTrcMethod.h"
-//#include "ZSSys/ZSSysTrcServer.h"
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
@@ -63,8 +64,8 @@ CObjFactoryConnectionPoint::CObjFactoryConnectionPoint(
 //------------------------------------------------------------------------------
     CObjFactory(
         /* strGroupName         */ "Draw::Connections",
-        /* strGraphObjNameSpace */ "ZS::Draw",
-        /* strGraphObjClassName */ "CGraphObjConnectionPoint",
+        /* strGraphObjNameSpace */ CGraphObjConnectionPoint::NameSpace(),
+        /* strGraphObjClassName */ CGraphObjConnectionPoint::ClassName(),
         /* iGraphObjType        */ EGraphObjTypeConnectionPoint,
         /* strGraphObjType      */ ZS::Draw::graphObjType2Str(EGraphObjTypeConnectionPoint),
         /* bAddToToolBoxIdxTree */ i_bAddToToolBoxIdxTree,
@@ -107,9 +108,9 @@ CGraphObj* CObjFactoryConnectionPoint::createGraphObj(
     drawSettings.setPenColor(Qt::black);
     drawSettings.setPenWidth(1);
 
-    drawSettings.setLineStyle(ELineStyleSolidLine);
+    drawSettings.setLineStyle(ELineStyle::SolidLine);
 
-    drawSettings.setFillStyle(EFillStyleSolidPattern);
+    drawSettings.setFillStyle(EFillStyle::SolidPattern);
     drawSettings.setFillColor(Qt::black);
 
     CGraphObjConnectionPoint* pGraphObj = new CGraphObjConnectionPoint(i_pDrawingScene,drawSettings);

@@ -24,9 +24,10 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#include <QtCore/qglobal.h>
+#error Module not used anymore
 
 #include "ZSDraw/ZSDrawWdgtPageSetup.h"
+#include "ZSDraw/ZSDrawingView.h"
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
@@ -47,9 +48,9 @@ CWdgtPageSetup::CWdgtPageSetup( CDrawingView* i_pDrawingView, QWidget* i_pWdgtPa
 //------------------------------------------------------------------------------
     QWidget(i_pWdgtParent),
     m_pDrawingView(i_pDrawingView),
-    m_pageSetup(),
+    m_pageSetup(i_pDrawingView->getPageSetup())
     // List of popup widgets which have to be closed on activating other widgets
-    m_arpWdgtsPopup()
+    //m_arpWdgtsPopup()
 {
 } // ctor
 
@@ -62,35 +63,36 @@ CWdgtPageSetup::~CWdgtPageSetup()
 } // dtor
 
 /*==============================================================================
-public: // instance methods
-==============================================================================*/
-
-/*==============================================================================
-public: // overridables of base class CWdgtPageSetup
+public: // overridables
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CWdgtPageSetup::setSettings( const CPageSetup& i_pageSetup )
+void CWdgtPageSetup::setPageSetup( const CPageSetup& i_pageSetup )
 //------------------------------------------------------------------------------
 {
-    m_pageSetup = i_pageSetup;
+    if( m_pageSetup != i_pageSetup )
+    {
+        m_pageSetup = i_pageSetup;
+
+        emit pageSetupChanged(m_pageSetup);
+    }
 }
 
-//------------------------------------------------------------------------------
-void CWdgtPageSetup::hidePopups( QWidget* i_pWdgtKeepVisible )
-//------------------------------------------------------------------------------
-{
-    QWidget* pWdgt;
-    int      idxWdgt;
-
-    for( idxWdgt = 0; idxWdgt < m_arpWdgtsPopup.size(); idxWdgt++ )
-    {
-        pWdgt = m_arpWdgtsPopup[idxWdgt];
-
-        if( pWdgt != i_pWdgtKeepVisible )
-        {
-            pWdgt->hide();
-        }
-    }
-
-} // hidePopups
+////------------------------------------------------------------------------------
+//void CWdgtPageSetup::hidePopups( QWidget* i_pWdgtKeepVisible )
+////------------------------------------------------------------------------------
+//{
+//    QWidget* pWdgt;
+//    int      idxWdgt;
+//
+//    for( idxWdgt = 0; idxWdgt < m_arpWdgtsPopup.size(); idxWdgt++ )
+//    {
+//        pWdgt = m_arpWdgtsPopup[idxWdgt];
+//
+//        if( pWdgt != i_pWdgtKeepVisible )
+//        {
+//            pWdgt->hide();
+//        }
+//    }
+//
+//} // hidePopups

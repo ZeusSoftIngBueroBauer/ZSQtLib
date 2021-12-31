@@ -24,6 +24,8 @@ may result in using the software modules.
 
 *******************************************************************************/
 
+#error Module not used anymore
+
 #ifndef ZSDraw_WdgtPageSetup_h
 #define ZSDraw_WdgtPageSetup_h
 
@@ -53,15 +55,16 @@ public: // ctors and dtor
     CWdgtPageSetup( CDrawingView* i_pDrawingView, QWidget* i_pWdgtParent = nullptr );
     virtual ~CWdgtPageSetup();
 signals:
-    void pageSetupAttributeChanged( int i_iAttr, const QVariant& i_val );
+    void pageSetupChanged( const CPageSetup& i_pageSetup );
 public: // overridables
-    virtual void setSettings( const CPageSetup& i_pageSetup );
-    virtual void hidePopups( QWidget* i_pWdgtKeepVisible = nullptr );
+    virtual void setPageSetup( const CPageSetup& i_pageSetup );
+    CPageSetup pageSetup() const { return m_pageSetup; }
+    //virtual void hidePopups( QWidget* i_pWdgtKeepVisible = nullptr );
 protected: // instance members
-    CDrawingView*   m_pDrawingView;
-    CPageSetup      m_pageSetup;
+    CDrawingView* m_pDrawingView;
+    CPageSetup    m_pageSetup;
     // List of popup widgets which have to be closed on activating other widgets
-    QList<QWidget*> m_arpWdgtsPopup;
+    //QList<QWidget*> m_arpWdgtsPopup;
 
 }; // class CWdgtPageSetup
 

@@ -27,10 +27,11 @@ may result in using the software modules.
 #ifndef ZSDraw_GraphObj_h
 #define ZSDraw_GraphObj_h
 
-#include <QtCore/qglobal.h>
+#include <QtGui/qcursor.h>
 
 #include "ZSDraw/ZSDrawDllMain.h"
 #include "ZSDraw/ZSDrawSettings.h"
+#include "ZSDraw/ZSDrawGraphObjEventFct.h"
 
 namespace ZS
 {
@@ -45,12 +46,79 @@ class CDrawingScene;
 class CGraphObj;
 class CGraphObjLabel;
 class CGraphObjSelectionPoint;
+struct SGraphObjLabel;
+
+
+//==============================================================================
+/*!
+*/
+struct ZSDRAWDLL_API SGraphObjHitInfo
+//==============================================================================
+{
+public: // ctor
+    SGraphObjHitInfo();
+public: // struct methods
+    bool isBoundingRectSelectionPointHit() const;
+    bool isSelectionPointHit() const;
+    bool isPolygonShapePointHit() const;
+    bool isLineSegmentHit() const;
+public: // struct methods
+    void setCursor( double i_fGraphObjRotAngle_rad ); // calculated depending on editMode, editResizeMode and selected point (which must have been set before)
+public: // struct members
+    CEnumEditMode       m_editMode;
+    CEnumEditResizeMode m_editResizeMode;
+    CEnumSelectionPoint m_selPtBoundingRect;
+    int                 m_idxPolygonShapePoint;
+    int                 m_idxLineSegment;
+    QPointF             m_ptSelected;
+    QCursor             m_cursor;
+
+}; // struct SGraphObjHitInfo
+
+
+//==============================================================================
+struct ZSDRAWDLL_API SGraphObjAlignment
+//==============================================================================
+{
+public: // ctor
+    SGraphObjAlignment() :
+        m_alignmentRefChild(EAlignmentRef::Undefined),
+        m_alignmentRefParent(EAlignmentRef::Undefined),
+        m_bAlignAbsolute(true),
+        m_fVal(0.0)
+    {
+    }
+    SGraphObjAlignment(
+        EAlignmentRef i_refChild,
+        EAlignmentRef i_refParent,
+        bool          i_bAbsolute,
+        double        i_fVal = 0.0 ) :
+        m_alignmentRefChild(i_refChild),
+        m_alignmentRefParent(i_refParent),
+        m_bAlignAbsolute(i_bAbsolute),
+        m_fVal(i_fVal)
+    {
+    }
+public: // struct methods
+    QString toString() const;
+public: // struct members
+    CEnumAlignmentRef m_alignmentRefChild;
+    CEnumAlignmentRef m_alignmentRefParent;
+    bool              m_bAlignAbsolute;
+    double            m_fVal; // if aligned absolute value in pixels, if aligned relative scale factor to width or height of parent (usually ranging from 0..1)
+
+}; // struct SGraphObjAlignment
 
 
 //******************************************************************************
 class ZSDRAWDLL_API CGraphObj
 //******************************************************************************
 {
+public: // class methods
+    /*! Returns the namespace the class belongs to. */
+    static QString NameSpace() { return "ZS::Draw"; } // Please note that the static class functions name must be different from the non static virtual member function "nameSpace"
+    /*! Returns the class name. */
+    static QString ClassName() { return "CGraphObj"; } // Please note that the static class functions name must be different from the non static virtual member function "className"
 public: // type definitions and constants
     static const QString c_strKeyLabelObjName;
     static const QString c_strKeyLabelObjId;
@@ -75,13 +143,13 @@ public: // instance methods
     EGraphObjType getType() const { return m_type; }
     QString getTypeAsString() const { return m_strType; }
     QString getObjName() const { return m_strObjName; }
-    EEditMode getEditMode() const { return m_editMode; }
-    EEditResizeMode getEditResizeMode() const { return m_editResizeMode; }
+    CEnumEditMode getEditMode() const { return m_editMode; }
+    CEnumEditResizeMode getEditResizeMode() const { return m_editResizeMode; }
 public: // overridables
     virtual QString getScenePolygonShapePointsString() const { return ""; } // for subsystem test
 public: // instance methods
     int getSelectedPolygonShapePointIndex() const { return m_idxSelPtSelectedPolygon; }
-    ESelectionPoint getSelectedBoundingRectPoint() const { return m_selPtSelectedBoundingRect; }
+    CEnumSelectionPoint getSelectedBoundingRectPoint() const { return m_selPtSelectedBoundingRect; }
     QString getToolTip() const { return m_strToolTip; }
     QString getEditInfo() const { return m_strEditInfo; }
 public: // overridables
@@ -184,13 +252,13 @@ public: // must overridables
     virtual void setSize( double i_fWidth, double i_fHeight ) = 0;
     virtual void setSize( const QSizeF& i_size ) = 0;
 public: // overridables
-    virtual QPointF getPos( ECoordinatesVersion i_version = ECoordinatesVersionCurrent ) const;
-    virtual double getWidth( ECoordinatesVersion i_version = ECoordinatesVersionCurrent ) const;
-    virtual double getHeight( ECoordinatesVersion i_version = ECoordinatesVersionCurrent ) const;
-    virtual QSizeF getSize( ECoordinatesVersion i_version = ECoordinatesVersionCurrent ) const;
+    virtual QPointF getPos( ECoordinatesVersion i_version = ECoordinatesVersion::Current ) const;
+    virtual double getWidth( ECoordinatesVersion i_version = ECoordinatesVersion::Current ) const;
+    virtual double getHeight( ECoordinatesVersion i_version = ECoordinatesVersion::Current ) const;
+    virtual QSizeF getSize( ECoordinatesVersion i_version = ECoordinatesVersion::Current ) const;
 public: // overridables
     virtual void setRotationAngleInDegree( double i_fRotAngle_deg );
-    virtual double getRotationAngleInDegree( ECoordinatesVersion i_version = ECoordinatesVersionCurrent );
+    virtual double getRotationAngleInDegree( ECoordinatesVersion i_version = ECoordinatesVersion::Current );
 public: // overridables
     virtual void setEditMode( EEditMode i_editMode );
     virtual void setEditResizeMode( EEditResizeMode i_editResizeMode );
@@ -221,14 +289,14 @@ protected: // overridables
     virtual void showSelectionPointsOfPolygon( const QPolygonF& i_plg );                                                                // creates the selection points if not yet created
     virtual void updateSelectionPointsOfPolygon( const QPolygonF& i_plg );
 public: // overridables
-    virtual void showObjName( ESelectionPoint i_selPtPos = ESelectionPointTopCenter );     // strKeyLabel = "ObjName"
+    virtual void showObjName( ESelectionPoint i_selPtPos = ESelectionPoint::TopCenter );     // strKeyLabel = "ObjName"
     virtual void hideObjName();     // strKeyLabel = "ObjName"
     virtual bool isObjNameVisible() const;
-    virtual void showObjId( ESelectionPoint i_selPtPos = ESelectionPointTopCenter );       // strKeyLabel = "ObjId"
+    virtual void showObjId( ESelectionPoint i_selPtPos = ESelectionPoint::TopCenter );       // strKeyLabel = "ObjId"
     virtual void hideObjId();       // strKeyLabel = "ObjId"
     virtual bool isObjIdVisible() const;
 public: // overridables
-    virtual void addLabel( const QString& i_strKey, const QString& i_strText, ESelectionPoint i_selPtPos = ESelectionPointTopCenter );  // does not create the graph object label item
+    virtual void addLabel( const QString& i_strKey, const QString& i_strText, ESelectionPoint i_selPtPos = ESelectionPoint::TopCenter );  // does not create the graph object label item
     virtual void removeLabel( const QString& i_strKey );    // also destroys the graph object label item
     virtual void showLabel( const QString& i_strKey );      // creates the graph object label item
     virtual void hideLabel( const QString& i_strKey );      // destroys the graph object label item
@@ -264,56 +332,56 @@ protected: // overridables
     virtual void updateToolTip();
     virtual void updateEditInfo();
 protected: // instance members
-    CDrawingScene*                  m_pDrawingScene;
-    QString                         m_strNameSpace;
-    QString                         m_strClassName;
-    EGraphObjType                   m_type;
-    QString                         m_strType;
-    QString                         m_strObjName;       // Must be unique below the parent object.
-    QString                         m_strObjId;         // Primary key of the object (must be unique within the drawing scene).
-    CDrawSettings                   m_drawSettings;     // Set by ctor or setSettings. Changed also by graphics items methods "setPen", "setBrush", etc.. Call "updateSettings" before accessing settings to keep this struct up to date with graphics item settings.
-    QSize                           m_sizMinimum;
-    QSize                           m_sizMaximum;
-    QSize                           m_sizFixed;
-    QList<SGraphObjAlignment>       m_arAlignments;
-    bool                            m_bIsHit;
-    EEditMode                       m_editMode;
-    EEditResizeMode                 m_editResizeMode;
-    double                          m_fZValue;
-    bool                            m_bDtorInProgress;
-    int                             m_idxSelPtSelectedPolygon;
-    QList<CGraphObjSelectionPoint*> m_arpSelPtsPolygon;
-    ESelectionPoint                 m_selPtSelectedBoundingRect;
-    CGraphObjSelectionPoint*        m_arpSelPtsBoundingRect[ESelectionPointCount];
-    QHash<QString,SGraphObjLabel*>  m_arpLabels;        // Keys e.g. c_strKeyLabelObjName", "Resistance", etc.
-    QString                         m_strToolTip;
-    QString                         m_strEditInfo;
+    CDrawingScene*                    m_pDrawingScene;
+    QString                           m_strNameSpace;
+    QString                           m_strClassName;
+    EGraphObjType                     m_type;
+    QString                           m_strType;
+    QString                           m_strObjName;       // Must be unique below the parent object.
+    QString                           m_strObjId;         // Primary key of the object (must be unique within the drawing scene).
+    CDrawSettings                     m_drawSettings;     // Set by ctor or setSettings. Changed also by graphics items methods "setPen", "setBrush", etc.. Call "updateSettings" before accessing settings to keep this struct up to date with graphics item settings.
+    QSize                             m_sizMinimum;
+    QSize                             m_sizMaximum;
+    QSize                             m_sizFixed;
+    QList<SGraphObjAlignment>         m_arAlignments;
+    bool                              m_bIsHit;
+    CEnumEditMode                     m_editMode;
+    CEnumEditResizeMode               m_editResizeMode;
+    double                            m_fZValue;
+    bool                              m_bDtorInProgress;
+    int                               m_idxSelPtSelectedPolygon;
+    QList<CGraphObjSelectionPoint*>   m_arpSelPtsPolygon;
+    CEnumSelectionPoint               m_selPtSelectedBoundingRect;
+    QVector<CGraphObjSelectionPoint*> m_arpSelPtsBoundingRect;
+    QHash<QString,SGraphObjLabel*>    m_arpLabels;        // Keys e.g. c_strKeyLabelObjName", "Resistance", etc.
+    QString                           m_strToolTip;
+    QString                           m_strEditInfo;
     // Current item coordinates and transform values:
-    QRectF                          m_rctCurr;              // in item's coordinate system (during mouse resize events topLeft may not be at 0.0/0.0)
-    double                          m_fRotAngleCurr_deg;    // concerning range see "Draw::getAngleRad" (Q1: 0..90°, Q2: 90..180°, Q3: -90°..-180°, Q4: 0..-90°)
-    QPointF                         m_ptRotOriginCurr;      // in item's coordinate system
+    QRectF                            m_rctCurr;              // in item's coordinate system (during mouse resize events topLeft may not be at 0.0/0.0)
+    double                            m_fRotAngleCurr_deg;    // concerning range see "Draw::getAngleRad" (Q1: 0..90°, Q2: 90..180°, Q3: -90°..-180°, Q4: 0..-90°)
+    QPointF                           m_ptRotOriginCurr;      // in item's coordinate system
     // Original item coordinates and transform values:
     // - after initially creating the item
     // - changing position, size and rotation angle of objects with no parents
     // - on adding items to groups
     // - explicitly calling method "acceptCurrentAsOriginalCoors"
-    bool                            m_bHasValidOrigCoors;
-    QPointF                         m_ptPosOrig;            // in parent's coordinate system
-    QSizeF                          m_sizOrig;
-    double                          m_fRotAngleOrig_deg;    // concerning range see "Draw::getAngleRad" (Q1: 0..90°, Q2: 90..180°, Q3: -90°..-180°, Q4: 0..-90°)
-    QPointF                         m_ptRotOriginOrig;      // in item's coordinate system
+    bool                              m_bHasValidOrigCoors;
+    QPointF                           m_ptPosOrig;            // in parent's coordinate system
+    QSizeF                            m_sizOrig;
+    double                            m_fRotAngleOrig_deg;    // concerning range see "Draw::getAngleRad" (Q1: 0..90°, Q2: 90..180°, Q3: -90°..-180°, Q4: 0..-90°)
+    QPointF                           m_ptRotOriginOrig;      // in item's coordinate system
     // Coordinates stored on mouse press events:
-    QPointF                         m_ptScenePosOnMousePressEvent;          // in scene's coordinate system (for moving by my mouse move events)
-    QPointF                         m_ptMouseEvScenePosOnMousePressEvent;   // in scene's coordinate system (for moving by my mouse move events)
-    QRectF                          m_rctOnMousePressEvent;                 // in item's coordinate system (for resizing by mouse move events)
-    QPointF                         m_ptRotOriginOnMousePressEvent;         // in scene's coordinate system (for rotation by mouse move events)
+    QPointF                           m_ptScenePosOnMousePressEvent;          // in scene's coordinate system (for moving by my mouse move events)
+    QPointF                           m_ptMouseEvScenePosOnMousePressEvent;   // in scene's coordinate system (for moving by my mouse move events)
+    QRectF                            m_rctOnMousePressEvent;                 // in item's coordinate system (for resizing by mouse move events)
+    QPointF                           m_ptRotOriginOnMousePressEvent;         // in scene's coordinate system (for rotation by mouse move events)
     // Simulation Functions:
-    QList<SGraphObjMouseEventFct>   m_arMousePressEventFunctions;
-    QList<SGraphObjMouseEventFct>   m_arMouseReleaseEventFunctions;
-    QList<SGraphObjMouseEventFct>   m_arMouseDoubleClickEventFunctions;
-    QList<SGraphObjMouseEventFct>   m_arMouseMoveEventFunctions;
-    QList<SGraphObjKeyEventFct>     m_arKeyPressEventFunctions;
-    QList<SGraphObjKeyEventFct>     m_arKeyReleaseEventFunctions;
+    QList<SGraphObjMouseEventFct>     m_arMousePressEventFunctions;
+    QList<SGraphObjMouseEventFct>     m_arMouseReleaseEventFunctions;
+    QList<SGraphObjMouseEventFct>     m_arMouseDoubleClickEventFunctions;
+    QList<SGraphObjMouseEventFct>     m_arMouseMoveEventFunctions;
+    QList<SGraphObjKeyEventFct>       m_arKeyPressEventFunctions;
+    QList<SGraphObjKeyEventFct>       m_arKeyReleaseEventFunctions;
 
 }; // class CGraphObj
 

@@ -123,7 +123,7 @@ CWdgtFormatGraphObjsTextStyle::CWdgtFormatGraphObjsTextStyle(
 {
     setObjectName("WdgtFormatGraphObjsTextStyle");
 
-    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj("ZS::Draw", "CWdgtFormatGraphObjsTextStyle", objectName());
+    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName());
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -206,7 +206,7 @@ CWdgtFormatGraphObjsTextStyle::CWdgtFormatGraphObjsTextStyle(
 
     for( idx = 0; idx < ETextSizeCount; idx++ )
     {
-        m_pCmbSize->addItem( textSize2Str(idx), textSize2SizeInPixels(idx) );
+        m_pCmbSize->addItem( textSize2Str(static_cast<ETextSize>(idx)), textSize2SizeInPixels(static_cast<ETextSize>(idx)) );
     }
 
     if( !connect(
@@ -362,16 +362,16 @@ CWdgtFormatGraphObjsTextStyle::CWdgtFormatGraphObjsTextStyle(
 
     m_pCmbFont->setCurrentFont(fnt);
 
-    int iTextSize = m_drawSettings.getTextSize();
+    ETextSize textSize = m_drawSettings.getTextSize();
 
-    m_pCmbSize->setCurrentIndex(iTextSize);
+    m_pCmbSize->setCurrentIndex(textSize);
 
-    fnt.setPixelSize( textSize2SizeInPixels(iTextSize) );
+    fnt.setPixelSize( textSize2SizeInPixels(textSize) );
 
     ETextStyle textStyle = m_drawSettings.getTextStyle();
 
-    bool bItalic = textStyle & ETextStyleItalic;
-    bool bBold   = textStyle & ETextStyleBold;
+    bool bItalic = (textStyle == ETextStyle::Italic || textStyle == ETextStyle::BoldItalic);
+    bool bBold   = (textStyle == ETextStyle::Bold || textStyle == ETextStyle::BoldItalic);
 
     m_pChkFontStyleItalic->setChecked(bItalic);
     m_pChkFontStyleBold->setChecked(bBold);
@@ -381,8 +381,8 @@ CWdgtFormatGraphObjsTextStyle::CWdgtFormatGraphObjsTextStyle(
 
     ETextEffect textEffect = m_drawSettings.getTextEffect();
 
-    bool bStrikeout = textEffect & ETextEffectStrikeout;
-    bool bUnderline = textEffect & ETextEffectUnderline;
+    bool bStrikeout = (textEffect == ETextEffect::Strikeout || textEffect == ETextEffect::StrikeoutUnderline);
+    bool bUnderline = (textEffect == ETextEffect::Underline || textEffect == ETextEffect::StrikeoutUnderline);
 
     m_pChkTextEffectStrikeout->setChecked(bStrikeout);
     m_pChkTextEffectUnderline->setChecked(bUnderline);
@@ -563,16 +563,16 @@ void CWdgtFormatGraphObjsTextStyle::resetChanges()
 
     m_pCmbFont->setCurrentFont(fnt);
 
-    int iTextSize = m_drawSettings.getTextSize();
+    ETextSize textSize = m_drawSettings.getTextSize();
 
-    m_pCmbSize->setCurrentIndex(iTextSize);
+    m_pCmbSize->setCurrentIndex(textSize);
 
-    fnt.setPixelSize( textSize2SizeInPixels(iTextSize) );
+    fnt.setPixelSize( textSize2SizeInPixels(textSize) );
 
     ETextStyle textStyle = m_drawSettings.getTextStyle();
 
-    bool bItalic = textStyle & ETextStyleItalic;
-    bool bBold   = textStyle & ETextStyleBold;
+    bool bItalic = (textStyle == ETextStyle::Italic || textStyle == ETextStyle::BoldItalic);
+    bool bBold   = (textStyle == ETextStyle::Bold || textStyle == ETextStyle::BoldItalic);
 
     m_pChkFontStyleItalic->setChecked(bItalic);
     m_pChkFontStyleBold->setChecked(bBold);
@@ -582,8 +582,8 @@ void CWdgtFormatGraphObjsTextStyle::resetChanges()
 
     ETextEffect textEffect = m_drawSettings.getTextEffect();
 
-    bool bStrikeout = textEffect & ETextEffectStrikeout;
-    bool bUnderline = textEffect & ETextEffectUnderline;
+    bool bStrikeout = (textEffect == ETextEffect::Strikeout || textEffect == ETextEffect::StrikeoutUnderline);
+    bool bUnderline = (textEffect == ETextEffect::Underline || textEffect == ETextEffect::StrikeoutUnderline);
 
     m_pChkTextEffectStrikeout->setChecked(bStrikeout);
     m_pChkTextEffectUnderline->setChecked(bUnderline);
@@ -746,18 +746,22 @@ void CWdgtFormatGraphObjsTextStyle::onChkFontStyleItalicStateChanged( int )
         /* strMethod    */ "onChkFontStyleItalicStateChanged",
         /* strAddInfo   */ strAddTrcInfo );
 
-    int iTextStyle = ETextStyleNormal;
+    CEnumTextStyle textStyle = ETextStyle::Normal;
 
-    if( m_pChkFontStyleItalic->isChecked() )
+    if( m_pChkFontStyleItalic->isChecked() && m_pChkFontStyleBold->isChecked() )
     {
-        iTextStyle |= ETextStyleItalic;
+        textStyle = ETextStyle::BoldItalic;
     }
-    if( m_pChkFontStyleBold->isChecked() )
+    else if( m_pChkFontStyleItalic->isChecked() )
     {
-        iTextStyle |= ETextStyleBold;
+        textStyle = ETextStyle::Italic;
+    }
+    else if( m_pChkFontStyleBold->isChecked() )
+    {
+        textStyle = ETextStyle::Bold;
     }
 
-    m_drawSettings.setTextStyle( static_cast<ETextStyle>(iTextStyle) );
+    m_drawSettings.setTextStyle(textStyle.enumerator());
 
     setFont(m_drawSettings);
 
@@ -779,18 +783,22 @@ void CWdgtFormatGraphObjsTextStyle::onChkFontStyleBoldStateChanged( int )
         /* strMethod    */ "onChkFontStyleBoldStateChanged",
         /* strAddInfo   */ strAddTrcInfo );
 
-    int iTextStyle = ETextStyleNormal;
+    CEnumTextStyle textStyle = ETextStyle::Normal;
 
-    if( m_pChkFontStyleItalic->isChecked() )
+    if( m_pChkFontStyleItalic->isChecked() && m_pChkFontStyleBold->isChecked() )
     {
-        iTextStyle |= ETextStyleItalic;
+        textStyle = ETextStyle::BoldItalic;
     }
-    if( m_pChkFontStyleBold->isChecked() )
+    else if( m_pChkFontStyleItalic->isChecked() )
     {
-        iTextStyle |= ETextStyleBold;
+        textStyle = ETextStyle::Italic;
+    }
+    else if( m_pChkFontStyleBold->isChecked() )
+    {
+        textStyle = ETextStyle::Bold;
     }
 
-    m_drawSettings.setTextStyle( static_cast<ETextStyle>(iTextStyle) );
+    m_drawSettings.setTextStyle(textStyle.enumerator());
 
     setFont(m_drawSettings);
 
@@ -812,18 +820,22 @@ void CWdgtFormatGraphObjsTextStyle::onChkTextEffectStrikeoutStateChanged( int )
         /* strMethod    */ "onChkTextEffectStrikeoutStateChanged",
         /* strAddInfo   */ strAddTrcInfo );
 
-    int iTextEffect = ETextEffectNone;
+    CEnumTextEffect textEffect = ETextEffect::None;
 
-    if( m_pChkTextEffectStrikeout->isChecked() )
+    if( m_pChkTextEffectStrikeout->isChecked() && m_pChkTextEffectUnderline->isChecked() )
     {
-        iTextEffect |= ETextEffectStrikeout;
+        textEffect = ETextEffect::StrikeoutUnderline;
     }
-    if( m_pChkTextEffectUnderline->isChecked() )
+    else if( m_pChkTextEffectStrikeout->isChecked() )
     {
-        iTextEffect |= ETextEffectUnderline;
+        textEffect = ETextEffect::Strikeout;
+    }
+    else if( m_pChkTextEffectUnderline->isChecked() )
+    {
+        textEffect = ETextEffect::Underline;
     }
 
-    m_drawSettings.setTextEffect( static_cast<ETextEffect>(iTextEffect) );
+    m_drawSettings.setTextEffect(textEffect.enumerator());
 
     setFont(m_drawSettings);
 
@@ -845,18 +857,22 @@ void CWdgtFormatGraphObjsTextStyle::onChkTextEffectUnderlineStateChanged( int )
         /* strMethod    */ "onChkTextEffectUnderlineStateChanged",
         /* strAddInfo   */ strAddTrcInfo );
 
-    int iTextEffect = ETextEffectNone;
+    CEnumTextEffect textEffect = ETextEffect::None;
 
-    if( m_pChkTextEffectStrikeout->isChecked() )
+    if( m_pChkTextEffectStrikeout->isChecked() && m_pChkTextEffectUnderline->isChecked() )
     {
-        iTextEffect |= ETextEffectStrikeout;
+        textEffect = ETextEffect::StrikeoutUnderline;
     }
-    if( m_pChkTextEffectUnderline->isChecked() )
+    else if( m_pChkTextEffectStrikeout->isChecked() )
     {
-        iTextEffect |= ETextEffectUnderline;
+        textEffect = ETextEffect::Strikeout;
+    }
+    else if( m_pChkTextEffectUnderline->isChecked() )
+    {
+        textEffect = ETextEffect::Underline;
     }
 
-    m_drawSettings.setTextEffect( static_cast<ETextEffect>(iTextEffect) );
+    m_drawSettings.setTextEffect(textEffect.enumerator());
 
     setFont(m_drawSettings);
 
@@ -918,17 +934,17 @@ void CWdgtFormatGraphObjsTextStyle::setFont( const CDrawSettings& i_drawSettings
     // <ComboBox> Size
     //---------------------
 
-    int iTextSize = i_drawSettings.getTextSize();
+    ETextSize textSize = i_drawSettings.getTextSize();
 
-    fnt.setPixelSize( textSize2SizeInPixels(iTextSize) );
+    fnt.setPixelSize( textSize2SizeInPixels(textSize) );
 
     // <CheckBoxes> Font Styles
     //-------------------------
 
     ETextStyle textStyle = i_drawSettings.getTextStyle();
 
-    bool bItalic = textStyle & ETextStyleItalic;
-    bool bBold   = textStyle & ETextStyleBold;
+    bool bItalic = (textStyle == ETextStyle::Italic || textStyle == ETextStyle::BoldItalic);
+    bool bBold   = (textStyle == ETextStyle::Bold || textStyle == ETextStyle::BoldItalic);
 
     fnt.setItalic(bItalic);
     fnt.setBold(bBold);
@@ -938,8 +954,8 @@ void CWdgtFormatGraphObjsTextStyle::setFont( const CDrawSettings& i_drawSettings
 
     ETextEffect textEffect = i_drawSettings.getTextEffect();
 
-    bool bStrikeout = textEffect & ETextEffectStrikeout;
-    bool bUnderline = textEffect & ETextEffectUnderline;
+    bool bStrikeout = (textEffect == ETextEffect::Strikeout || textEffect == ETextEffect::StrikeoutUnderline);
+    bool bUnderline = (textEffect == ETextEffect::Underline || textEffect == ETextEffect::StrikeoutUnderline);
 
     fnt.setStrikeOut(bStrikeout);
     fnt.setUnderline(bUnderline);

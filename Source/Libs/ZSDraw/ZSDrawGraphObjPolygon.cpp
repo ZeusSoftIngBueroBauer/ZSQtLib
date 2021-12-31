@@ -37,10 +37,12 @@ may result in using the software modules.
 #endif
 
 #include "ZSDraw/ZSDrawGraphObjPolygon.h"
+#include "ZSDraw/ZSDrawAux.h"
 #include "ZSDraw/ZSDrawGraphObjLabel.h"
 #include "ZSDraw/ZSDrawGraphObjSelectionPoint.h"
 #include "ZSDraw/ZSDrawingScene.h"
 #include "ZSPhysSizes/Geometry/ZSPhysSizes.h"
+#include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysErrCode.h"
 #include "ZSSys/ZSSysException.h"
 #include "ZSSys/ZSSysMath.h"
@@ -114,7 +116,7 @@ CGraphObjPolygon::CGraphObjPolygon(
 //------------------------------------------------------------------------------
     CGraphObjPolyline(
         /* pDrawingScene */ i_pDrawingScene,
-        /* strNameSpace  */ "ZS::Draw",
+        /* strNameSpace  */ NameSpace(),
         /* strClassName  */ "CGraphObjPolygon",
         /* type          */ EGraphObjTypePolygon,
         /* strType       */ ZS::Draw::graphObjType2Str(EGraphObjTypePolygon),
@@ -142,6 +144,9 @@ CGraphObjPolygon::CGraphObjPolygon(
 
     m_ptRotOriginCurr = rctBounding.center();
 
+    setData(static_cast<int>(EGraphItemDataKey::ObjId), m_strObjId);
+    setData(static_cast<int>(EGraphItemDataKey::ObjType), m_type);
+
     setFlags( QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemSendsGeometryChanges );
 
     onDrawSettingsChanged();
@@ -151,9 +156,9 @@ CGraphObjPolygon::CGraphObjPolygon(
     if( mthTracer.isActive(ETraceDetailLevelInternalStates) )
     {
         strAddTrcInfo  = "Selected:" + bool2Str(isSelected());
-        strAddTrcInfo += ", EditMode:" + editMode2Str(m_editMode);
-        strAddTrcInfo += ", ResizeMode:" + editResizeMode2Str(m_editResizeMode);
-        strAddTrcInfo += ", SelectedPoint:" + selectionPoint2Str(m_selPtSelectedBoundingRect);
+        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
+        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
+        strAddTrcInfo += ", SelectedPoint:" + m_selPtSelectedBoundingRect.toString();
         mthTracer.trace(strAddTrcInfo);
     }
 
@@ -213,7 +218,7 @@ void CGraphObjPolygon::onDrawSettingsChanged()
 {
     if( m_drawSettings.isPenUsed() )
     {
-        if( m_drawSettings.getLineStyle() != ELineStyleNoLine )
+        if( m_drawSettings.getLineStyle() != ELineStyle::NoLine )
         {
             QPen pen;
 
@@ -235,7 +240,7 @@ void CGraphObjPolygon::onDrawSettingsChanged()
 
     if( m_drawSettings.isFillUsed() )
     {
-        if( m_drawSettings.getFillStyle() != EFillStyleNoFill )
+        if( m_drawSettings.getFillStyle() != EFillStyle::NoFill )
         {
             QBrush brsh;
 
@@ -302,21 +307,21 @@ bool CGraphObjPolygon::isHit( const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo 
         if( !bIsHit )
         {
             QPolygonF plg = polygon();
-            bIsHit = isPolygonHit( plg, EFillStyleNoFill, i_pt, m_pDrawingScene->getHitToleranceInPx(), o_pHitInfo );
+            bIsHit = isPolygonHit( plg, EFillStyle::NoFill, i_pt, m_pDrawingScene->getHitToleranceInPx(), o_pHitInfo );
         }
 
         if( !bIsHit )
         {
             // In contrary to polylines for polygons we also have to check "contains" for solid fill styles.
-            if( pGraphicsItem->isSelected() || m_drawSettings.getFillStyle() == EFillStyleSolidPattern )
+            if( pGraphicsItem->isSelected() || m_drawSettings.getFillStyle() == EFillStyle::SolidPattern )
             {
                 bIsHit = pGraphicsItem->contains(i_pt);
 
                 if( o_pHitInfo != nullptr )
                 {
-                    o_pHitInfo->m_editMode = EEditModeMove;
-                    o_pHitInfo->m_editResizeMode = EEditResizeModeUndefined;
-                    o_pHitInfo->m_selPtBoundingRect = ESelectionPointUndefined;
+                    o_pHitInfo->m_editMode = EEditMode::Move;
+                    o_pHitInfo->m_editResizeMode = EEditResizeMode::Undefined;
+                    o_pHitInfo->m_selPtBoundingRect = ESelectionPoint::Undefined;
                     o_pHitInfo->m_idxPolygonShapePoint = -1;
                     o_pHitInfo->m_idxLineSegment = -1;
                     o_pHitInfo->m_ptSelected = i_pt;
@@ -337,9 +342,9 @@ bool CGraphObjPolygon::isHit( const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo 
 
         if( o_pHitInfo != nullptr )
         {
-            strAddTrcInfo += ", EditMode:" + editMode2Str(o_pHitInfo->m_editMode);
-            strAddTrcInfo += ", ResizeMode:" + editResizeMode2Str(o_pHitInfo->m_editResizeMode);
-            strAddTrcInfo += ", SelPtBoundingRect:" + selectionPoint2Str(o_pHitInfo->m_selPtBoundingRect);
+            strAddTrcInfo += ", EditMode:" + o_pHitInfo->m_editMode.toString();
+            strAddTrcInfo += ", ResizeMode:" + o_pHitInfo->m_editResizeMode.toString();
+            strAddTrcInfo += ", SelPtBoundingRect:" + o_pHitInfo->m_selPtBoundingRect.toString();
             strAddTrcInfo += ", PolygonShapePoint:" + QString::number(o_pHitInfo->m_idxPolygonShapePoint);
             strAddTrcInfo += ", LineSegment:" + QString::number(o_pHitInfo->m_idxLineSegment);
             strAddTrcInfo += ", PointSelected:" + point2Str(o_pHitInfo->m_ptSelected);
@@ -394,11 +399,11 @@ QRectF CGraphObjPolygon::boundingRect() const
         }
     }
 
-    for( idxSelPt = 0; idxSelPt < ESelectionPointCount; idxSelPt++ )
+    for( idxSelPt = 0; idxSelPt < CEnumSelectionPoint::count(); idxSelPt++ )
     {
         selPt = static_cast<ESelectionPoint>(idxSelPt);
 
-        pGraphObjSelPt = m_arpSelPtsBoundingRect[selPt];
+        pGraphObjSelPt = m_arpSelPtsBoundingRect[idxSelPt];
 
         if( pGraphObjSelPt != nullptr )
         {
@@ -470,9 +475,9 @@ void CGraphObjPolygon::paint(
     if( s_pTrcAdminObjPaint != nullptr && s_pTrcAdminObjPaint->isActive(ETraceDetailLevelMethodCalls) )
     {
         strAddTrcInfo  = "Selected:" + bool2Str(isSelected());
-        strAddTrcInfo += ", EditMode:" + editMode2Str(m_editMode);
-        strAddTrcInfo += ", ResizeMode:" + editResizeMode2Str(m_editResizeMode);
-        strAddTrcInfo += ", SelectedPoint:" + selectionPoint2Str(m_selPtSelectedBoundingRect);
+        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
+        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
+        strAddTrcInfo += ", SelectedPoint:" + m_selPtSelectedBoundingRect.toString();
         strAddTrcInfo += ", Polygon:" + polygon2Str(polygon());
     }
 
@@ -512,10 +517,10 @@ void CGraphObjPolygon::paint(
 
             if( isSelected() )
             {
-                if( m_arpSelPtsBoundingRect[ESelectionPointTopCenter] != nullptr && m_arpSelPtsBoundingRect[ESelectionPointRotateTop] != nullptr )
+                if( m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::TopCenter)] != nullptr && m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::RotateTop)] != nullptr )
                 {
-                    CGraphObjSelectionPoint* pGraphObjSelPtRct = m_arpSelPtsBoundingRect[ESelectionPointTopCenter];
-                    CGraphObjSelectionPoint* pGraphObjSelPtRot = m_arpSelPtsBoundingRect[ESelectionPointRotateTop];
+                    CGraphObjSelectionPoint* pGraphObjSelPtRct = m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::TopCenter)];
+                    CGraphObjSelectionPoint* pGraphObjSelPtRot = m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::RotateTop)];
 
                     QPointF ptRct = QPointF( pGraphObjSelPtRct->scenePos().x(), pGraphObjSelPtRct->scenePos().y() );
                     QPointF ptRot = QPointF( pGraphObjSelPtRot->scenePos().x(), pGraphObjSelPtRot->scenePos().y() );
@@ -526,10 +531,10 @@ void CGraphObjPolygon::paint(
                     i_pPainter->drawLine( ptRctM, ptRotM );
                 }
 
-                if( m_arpSelPtsBoundingRect[ESelectionPointBottomCenter] != nullptr && m_arpSelPtsBoundingRect[ESelectionPointRotateBottom] != nullptr )
+                if( m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::BottomCenter)] != nullptr && m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::RotateBottom)] != nullptr )
                 {
-                    CGraphObjSelectionPoint* pGraphObjSelPtRct = m_arpSelPtsBoundingRect[ESelectionPointBottomCenter];
-                    CGraphObjSelectionPoint* pGraphObjSelPtRot = m_arpSelPtsBoundingRect[ESelectionPointRotateBottom];
+                    CGraphObjSelectionPoint* pGraphObjSelPtRct = m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::BottomCenter)];
+                    CGraphObjSelectionPoint* pGraphObjSelPtRot = m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::RotateBottom)];
 
                     QPointF ptRct = QPointF( pGraphObjSelPtRct->scenePos().x(), pGraphObjSelPtRct->scenePos().y() );
                     QPointF ptRot = QPointF( pGraphObjSelPtRot->scenePos().x(), pGraphObjSelPtRot->scenePos().y() );
@@ -554,9 +559,9 @@ void CGraphObjPolygon::paint(
 
                 if( pGraphObjLabel->m_pGraphObjLabel != nullptr )
                 {
-                    ptSelPt = getSelectionPoint(pGraphObjLabel->m_selPt);
+                    ptSelPt = getSelectionPoint(pGraphObjLabel->m_selPt.enumerator());
 
-                    ptLabelSelPt = pGraphObjLabel->m_pGraphObjLabel->getSelectionPoint(ESelectionPointCenter);
+                    ptLabelSelPt = pGraphObjLabel->m_pGraphObjLabel->getSelectionPoint(ESelectionPoint::Center);
                     ptLabelSelPt = mapFromItem( pGraphObjLabel->m_pGraphObjLabel, ptLabelSelPt );
 
                     i_pPainter->drawLine( ptSelPt, ptLabelSelPt );

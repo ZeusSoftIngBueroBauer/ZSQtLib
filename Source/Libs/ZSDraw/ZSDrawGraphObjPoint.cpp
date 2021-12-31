@@ -36,11 +36,13 @@ may result in using the software modules.
 #endif
 
 #include "ZSDraw/ZSDrawGraphObjPoint.h"
+#include "ZSDraw/ZSDrawAux.h"
 #include "ZSDraw/ZSDrawGraphObjGroup.h"
 #include "ZSDraw/ZSDrawGraphObjLabel.h"
 #include "ZSDraw/ZSDrawGraphObjSelectionPoint.h"
 #include "ZSDraw/ZSDrawingScene.h"
 #include "ZSPhysSizes/Geometry/ZSPhysSizes.h"
+#include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysErrCode.h"
 #include "ZSSys/ZSSysException.h"
 #include "ZSSys/ZSSysMath.h"
@@ -122,8 +124,8 @@ CGraphObjPoint::CGraphObjPoint(
 //------------------------------------------------------------------------------
     CGraphObj(
         /* pDrawingScene */ i_pDrawingScene,
-        /* strNameSpace  */ "ZS::Draw",
-        /* strClassName  */ "CGraphObjPoint",
+        /* strNameSpace  */ NameSpace(),
+        /* strClassName  */ ClassName(),
         /* type          */ EGraphObjTypePoint,
         /* strType       */ ZS::Draw::graphObjType2Str(EGraphObjTypePoint),
         /* strObjName    */ i_strObjName.isEmpty() ? "Point" + QString::number(s_iCtorsCount) : i_strObjName,
@@ -139,13 +141,13 @@ CGraphObjPoint::CGraphObjPoint(
 
     if( s_pTrcAdminObjCtorsAndDtor == nullptr )
     {
-        s_pTrcAdminObjCtorsAndDtor = CTrcServer::GetTraceAdminObj("ZS::Draw", "CGraphObjPoint", "CtorsAndDtor");
-        s_pTrcAdminObjBoundingRect = CTrcServer::GetTraceAdminObj("ZS::Draw", "CGraphObjPoint", "BoundingRect");
-        s_pTrcAdminObjPaint = CTrcServer::GetTraceAdminObj("ZS::Draw", "CGraphObjPoint", "Paint");
-        s_pTrcAdminObjSceneEventFilter = CTrcServer::GetTraceAdminObj("ZS::Draw", "CGraphObjPoint", "SceneEventFilter");
-        s_pTrcAdminObjHoverEvents = CTrcServer::GetTraceAdminObj("ZS::Draw", "CGraphObjPoint", "HoverEvents");
-        s_pTrcAdminObjMouseEvents = CTrcServer::GetTraceAdminObj("ZS::Draw", "CGraphObjPoint", "MouseEvents");
-        s_pTrcAdminObjItemChange = CTrcServer::GetTraceAdminObj("ZS::Draw", "CGraphObjPoint", "ItemChange");
+        s_pTrcAdminObjCtorsAndDtor = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), "CtorsAndDtor");
+        s_pTrcAdminObjBoundingRect = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), "BoundingRect");
+        s_pTrcAdminObjPaint = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), "Paint");
+        s_pTrcAdminObjSceneEventFilter = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), "SceneEventFilter");
+        s_pTrcAdminObjHoverEvents = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), "HoverEvents");
+        s_pTrcAdminObjMouseEvents = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), "MouseEvents");
+        s_pTrcAdminObjItemChange = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), "ItemChange");
 
     } // if( s_pTrcAdminObjCtorsAndDtor == nullptr )
 
@@ -163,6 +165,9 @@ CGraphObjPoint::CGraphObjPoint(
     m_sizOrig = QSize(1.0,1.0);
     m_rctCurr = QRectF( QPoint(0.0,0.0), QSize(1.0,1.0) );
 
+    setData(static_cast<int>(EGraphItemDataKey::ObjId), m_strObjId);
+    setData(static_cast<int>(EGraphItemDataKey::ObjType), m_type);
+
     setFlags( QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemSendsGeometryChanges );
 
     onDrawSettingsChanged();
@@ -172,8 +177,8 @@ CGraphObjPoint::CGraphObjPoint(
     if( mthTracer.isActive(ETraceDetailLevelInternalStates) )
     {
         strAddTrcInfo  = "Selected:" + bool2Str(isSelected());
-        strAddTrcInfo += ", EditMode:" + editMode2Str(m_editMode);
-        strAddTrcInfo += ", ResizeMode:" + editResizeMode2Str(m_editResizeMode);
+        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
+        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
         strAddTrcInfo += ", Pos:(" + QString::number(pos().x()) + "," + QString::number(pos().y()) + ")";
         mthTracer.trace(strAddTrcInfo);
     }
@@ -321,7 +326,7 @@ void CGraphObjPoint::onDrawSettingsChanged()
 {
     if( m_drawSettings.isPenUsed() )
     {
-        if( m_drawSettings.getLineStyle() != ELineStyleNoLine )
+        if( m_drawSettings.getLineStyle() != ELineStyle::NoLine )
         {
             QPen pen;
 
@@ -535,9 +540,9 @@ bool CGraphObjPoint::isHit( const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo ) 
 
         if( bIsHit && o_pHitInfo != nullptr )
         {
-            o_pHitInfo->m_editMode = EEditModeMove;
-            o_pHitInfo->m_editResizeMode = EEditResizeModeUndefined;
-            o_pHitInfo->m_selPtBoundingRect = ESelectionPointCenter;
+            o_pHitInfo->m_editMode = EEditMode::Move;
+            o_pHitInfo->m_editResizeMode = EEditResizeMode::Undefined;
+            o_pHitInfo->m_selPtBoundingRect = ESelectionPoint::Center;
             o_pHitInfo->m_idxPolygonShapePoint = 0;
             o_pHitInfo->m_idxLineSegment = -1;
             o_pHitInfo->m_ptSelected = QPointF(0.0,0.0);
@@ -552,9 +557,9 @@ bool CGraphObjPoint::isHit( const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo ) 
 
         if( o_pHitInfo != nullptr )
         {
-            strAddTrcInfo += ", EditMode:" + editMode2Str(o_pHitInfo->m_editMode);
-            strAddTrcInfo += ", ResizeMode:" + editResizeMode2Str(o_pHitInfo->m_editResizeMode);
-            strAddTrcInfo += ", SelPtBoundingRect:" + selectionPoint2Str(o_pHitInfo->m_selPtBoundingRect);
+            strAddTrcInfo += ", EditMode:" + o_pHitInfo->m_editMode.toString();
+            strAddTrcInfo += ", ResizeMode:" + o_pHitInfo->m_editResizeMode.toString();
+            strAddTrcInfo += ", SelPtBoundingRect:" + o_pHitInfo->m_selPtBoundingRect.toString();
             strAddTrcInfo += ", PolygonShapePoint:" + QString::number(o_pHitInfo->m_idxPolygonShapePoint);
             strAddTrcInfo += ", LineSegment:" + QString::number(o_pHitInfo->m_idxLineSegment);
             strAddTrcInfo += ", PointSelected:" + point2Str(o_pHitInfo->m_ptSelected);
@@ -667,11 +672,11 @@ QRectF CGraphObjPoint::boundingRect() const
     ESelectionPoint          selPt;
     int                      idxSelPt;
 
-    for( idxSelPt = 0; idxSelPt < ESelectionPointCount; idxSelPt++ )
+    for( idxSelPt = 0; idxSelPt < CEnumSelectionPoint::count(); idxSelPt++ )
     {
         selPt = static_cast<ESelectionPoint>(idxSelPt);
 
-        pGraphObjSelPt = m_arpSelPtsBoundingRect[selPt];
+        pGraphObjSelPt = m_arpSelPtsBoundingRect[idxSelPt];
 
         if( pGraphObjSelPt != nullptr )
         {
@@ -733,8 +738,8 @@ void CGraphObjPoint::paint(
     if( s_pTrcAdminObjPaint != nullptr && s_pTrcAdminObjPaint->isActive(ETraceDetailLevelMethodCalls) )
     {
         strAddTrcInfo  = "Selected:" + bool2Str(isSelected());
-        strAddTrcInfo += ", EditMode:" + editMode2Str(m_editMode);
-        strAddTrcInfo += ", ResizeMode:" + editResizeMode2Str(m_editResizeMode);
+        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
+        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
         strAddTrcInfo += ", Pos:(" + QString::number(pos().x()) + "," + QString::number(pos().y()) + ")";
     }
 
@@ -777,7 +782,7 @@ void CGraphObjPoint::paint(
 
             if( pGraphObjLabel->m_pGraphObjLabel != nullptr )
             {
-                ptLabelSelPt = pGraphObjLabel->m_pGraphObjLabel->getSelectionPoint(ESelectionPointCenter);
+                ptLabelSelPt = pGraphObjLabel->m_pGraphObjLabel->getSelectionPoint(ESelectionPoint::Center);
                 ptLabelSelPt = mapFromItem( pGraphObjLabel->m_pGraphObjLabel, ptLabelSelPt );
 
                 i_pPainter->drawLine( ptSelPt, ptLabelSelPt );
@@ -817,8 +822,8 @@ bool CGraphObjPoint::sceneEventFilter( QGraphicsItem* i_pGraphicsItemWatched, QE
         strAddTrcInfo  = "ItemWatched:" + pGraphObjSelPtWatched->getObjName();
         strAddTrcInfo += ", Event:" + qEventType2Str(i_pEv->type());
         strAddTrcInfo += ", Selected:" + bool2Str(isSelected());
-        strAddTrcInfo += ", EditMode:" + editMode2Str(m_editMode);
-        strAddTrcInfo += ", ResizeMode:" + editResizeMode2Str(m_editResizeMode);
+        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
+        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
         strAddTrcInfo += ", Pos:(" + QString::number(pos().x()) + "," + QString::number(pos().y()) + ")";
     }
 
@@ -937,8 +942,8 @@ bool CGraphObjPoint::sceneEventFilter( QGraphicsItem* i_pGraphicsItemWatched, QE
     if( mthTracer.isActive(ETraceDetailLevelInternalStates) )
     {
         strAddTrcInfo  = "Selected:" + bool2Str(isSelected());
-        strAddTrcInfo += ", EditMode:" + editMode2Str(m_editMode);
-        strAddTrcInfo += ", ResizeMode:" + editResizeMode2Str(m_editResizeMode);
+        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
+        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
         strAddTrcInfo += ", Pos:(" + QString::number(pos().x()) + "," + QString::number(pos().y()) + ")";
         mthTracer.trace(strAddTrcInfo);
     }
@@ -963,8 +968,8 @@ void CGraphObjPoint::hoverEnterEvent( QGraphicsSceneHoverEvent* i_pEv )
         strAddTrcInfo += ", Ev.ScenePos:(" + QString::number(i_pEv->scenePos().x()) + "," + QString::number(i_pEv->scenePos().y()) + ")";
         strAddTrcInfo += ", Ev.ScreenPos:(" + QString::number(i_pEv->screenPos().x()) + "," + QString::number(i_pEv->screenPos().y()) + ")";
         strAddTrcInfo += ", Selected:" + bool2Str(isSelected());
-        strAddTrcInfo += ", EditMode:" + editMode2Str(m_editMode);
-        strAddTrcInfo += ", ResizeMode:" + editResizeMode2Str(m_editResizeMode);
+        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
+        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
         strAddTrcInfo += ", Pos:(" + QString::number(pos().x()) + "," + QString::number(pos().y()) + ")";
     }
 
@@ -977,10 +982,10 @@ void CGraphObjPoint::hoverEnterEvent( QGraphicsSceneHoverEvent* i_pEv )
 
     QPointF ptItemPos = mapFromScene(i_pEv->scenePos());
 
-    EMode     modeDrawing     = m_pDrawingScene->getMode();
-    EEditTool editToolDrawing = m_pDrawingScene->getEditTool();
+    CEnumMode     modeDrawing     = m_pDrawingScene->getMode();
+    CEnumEditTool editToolDrawing = m_pDrawingScene->getEditTool();
 
-    if( modeDrawing == EMode::Edit && editToolDrawing == EEditToolSelect )
+    if( modeDrawing == EMode::Edit && editToolDrawing == EEditTool::Select )
     {
         SGraphObjHitInfo hitInfo;
 
@@ -993,7 +998,7 @@ void CGraphObjPoint::hoverEnterEvent( QGraphicsSceneHoverEvent* i_pEv )
                 setCursor(hitInfo.m_cursor);
             }
         }
-    } // if( modeDrawing == EMode::Edit && editToolDrawing == EEditToolSelect )
+    } // if( modeDrawing == EMode::Edit && editToolDrawing == EEditTool::Select )
 
 } // hoverEnterEvent
 
@@ -1009,8 +1014,8 @@ void CGraphObjPoint::hoverMoveEvent( QGraphicsSceneHoverEvent* i_pEv )
         strAddTrcInfo += ", Ev.ScenePos:(" + QString::number(i_pEv->scenePos().x()) + "," + QString::number(i_pEv->scenePos().y()) + ")";
         strAddTrcInfo += ", Ev.ScreenPos:(" + QString::number(i_pEv->screenPos().x()) + "," + QString::number(i_pEv->screenPos().y()) + ")";
         strAddTrcInfo += ", Selected:" + bool2Str(isSelected());
-        strAddTrcInfo += ", EditMode:" + editMode2Str(m_editMode);
-        strAddTrcInfo += ", ResizeMode:" + editResizeMode2Str(m_editResizeMode);
+        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
+        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
         strAddTrcInfo += ", Pos:(" + QString::number(pos().x()) + "," + QString::number(pos().y()) + ")";
     }
 
@@ -1023,10 +1028,10 @@ void CGraphObjPoint::hoverMoveEvent( QGraphicsSceneHoverEvent* i_pEv )
 
     QPointF ptItemPos = mapFromScene(i_pEv->scenePos());
 
-    EMode     modeDrawing     = m_pDrawingScene->getMode();
-    EEditTool editToolDrawing = m_pDrawingScene->getEditTool();
+    CEnumMode     modeDrawing     = m_pDrawingScene->getMode();
+    CEnumEditTool editToolDrawing = m_pDrawingScene->getEditTool();
 
-    if( modeDrawing == EMode::Edit && editToolDrawing == EEditToolSelect )
+    if( modeDrawing == EMode::Edit && editToolDrawing == EEditTool::Select )
     {
         SGraphObjHitInfo hitInfo;
 
@@ -1039,7 +1044,7 @@ void CGraphObjPoint::hoverMoveEvent( QGraphicsSceneHoverEvent* i_pEv )
                 setCursor(hitInfo.m_cursor);
             }
         }
-    } // if( modeDrawing == EMode::Edit && editToolDrawing == EEditToolSelect )
+    } // if( modeDrawing == EMode::Edit && editToolDrawing == EEditTool::Select )
 
 } // hoverMoveEvent
 
@@ -1055,8 +1060,8 @@ void CGraphObjPoint::hoverLeaveEvent( QGraphicsSceneHoverEvent* i_pEv )
         strAddTrcInfo += ", Ev.ScenePos:(" + QString::number(i_pEv->scenePos().x()) + "," + QString::number(i_pEv->scenePos().y()) + ")";
         strAddTrcInfo += ", Ev.ScreenPos:(" + QString::number(i_pEv->screenPos().x()) + "," + QString::number(i_pEv->screenPos().y()) + ")";
         strAddTrcInfo += ", Selected:" + bool2Str(isSelected());
-        strAddTrcInfo += ", EditMode:" + editMode2Str(m_editMode);
-        strAddTrcInfo += ", ResizeMode:" + editResizeMode2Str(m_editResizeMode);
+        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
+        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
         strAddTrcInfo += ", Pos:(" + QString::number(pos().x()) + "," + QString::number(pos().y()) + ")";
     }
 
@@ -1072,8 +1077,8 @@ void CGraphObjPoint::hoverLeaveEvent( QGraphicsSceneHoverEvent* i_pEv )
     if( mthTracer.isActive(ETraceDetailLevelInternalStates) )
     {
         strAddTrcInfo  = "Selected:" + bool2Str(isSelected());
-        strAddTrcInfo += ", EditMode:" + editMode2Str(m_editMode);
-        strAddTrcInfo += ", ResizeMode:" + editResizeMode2Str(m_editResizeMode);
+        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
+        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
         strAddTrcInfo += ", Pos:(" + QString::number(pos().x()) + "," + QString::number(pos().y()) + ")";
         mthTracer.trace(strAddTrcInfo);
     }
@@ -1096,8 +1101,8 @@ void CGraphObjPoint::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
         strAddTrcInfo += ", Ev.ScenePos:(" + QString::number(i_pEv->scenePos().x()) + "," + QString::number(i_pEv->scenePos().y()) + ")";
         strAddTrcInfo += ", Ev.ScreenPos:(" + QString::number(i_pEv->screenPos().x()) + "," + QString::number(i_pEv->screenPos().y()) + ")";
         strAddTrcInfo += ", Selected:" + bool2Str(isSelected());
-        strAddTrcInfo += ", EditMode:" + editMode2Str(m_editMode);
-        strAddTrcInfo += ", ResizeMode:" + editResizeMode2Str(m_editResizeMode);
+        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
+        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
         strAddTrcInfo += ", Pos:(" + QString::number(pos().x()) + "," + QString::number(pos().y()) + ")";
     }
 
@@ -1108,18 +1113,18 @@ void CGraphObjPoint::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
         /* strMethod    */ "mousePressEvent",
         /* strAddInfo   */ strAddTrcInfo );
 
-    EMode     modeDrawing     = m_pDrawingScene->getMode();
-    EEditTool editToolDrawing = m_pDrawingScene->getEditTool();
+    CEnumMode     modeDrawing     = m_pDrawingScene->getMode();
+    CEnumEditTool editToolDrawing = m_pDrawingScene->getEditTool();
 
     if( modeDrawing == EMode::Edit )
     {
-        if( editToolDrawing == EEditToolCreateObjects && m_editMode == EEditModeCreating )
+        if( editToolDrawing == EEditTool::CreateObjects && m_editMode == EEditMode::Creating )
         {
             // The object has been initially created.
-            m_editMode = EEditModeUndefined;
-            m_editResizeMode = EEditResizeModeUndefined;
+            m_editMode = EEditMode::Undefined;
+            m_editResizeMode = EEditResizeMode::Undefined;
             m_idxSelPtSelectedPolygon = -1;
-            m_selPtSelectedBoundingRect = ESelectionPointUndefined;
+            m_selPtSelectedBoundingRect = ESelectionPoint::Undefined;
 
             acceptCurrentAsOriginalCoors();
 
@@ -1128,17 +1133,17 @@ void CGraphObjPoint::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
             updateEditInfo();
             updateToolTip();
 
-        } // if( editToolDrawing == EEditToolCreateObjects && m_editMode == EEditModeCreating )
+        } // if( editToolDrawing == EEditTool::CreateObjects && m_editMode == EEditMode::Creating )
 
-        else if( editToolDrawing == EEditToolSelect && m_editMode == EEditModeUndefined )
+        else if( editToolDrawing == EEditTool::Select && m_editMode == EEditMode::Undefined )
         {
             QAbstractGraphicsShapeItem::mousePressEvent(i_pEv); // this will select the item (creating selection points)
 
-            m_editMode       = EEditModeMove;
-            m_editResizeMode = EEditResizeModeUndefined;
+            m_editMode       = EEditMode::Move;
+            m_editResizeMode = EEditResizeMode::Undefined;
             m_idxSelPtSelectedPolygon = 0;
 
-            m_pDrawingScene->setMode( EMode::Ignore, EEditToolIgnore, m_editMode, m_editResizeMode, false );
+            m_pDrawingScene->setMode( EMode::Ignore, EEditTool::Ignore, m_editMode, m_editResizeMode, false );
 
             updateEditInfo();
             updateToolTip();
@@ -1157,15 +1162,15 @@ void CGraphObjPoint::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
 
             } // if( m_pDrawingScene->isMouseDoubleClickEventInProcess() )
 
-        } // if( editToolDrawing == EEditToolSelect && m_editMode == EEditModeUndefined )
+        } // if( editToolDrawing == EEditTool::Select && m_editMode == EEditMode::Undefined )
 
     } // if( modeDrawing == EMode::Edit )
 
     if( mthTracer.isActive(ETraceDetailLevelInternalStates) )
     {
         strAddTrcInfo = "Selected:" + bool2Str(isSelected());
-        strAddTrcInfo += ", EditMode:" + editMode2Str(m_editMode);
-        strAddTrcInfo += ", ResizeMode:" + editResizeMode2Str(m_editResizeMode);
+        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
+        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
         strAddTrcInfo += ", Pos:(" + QString::number(pos().x()) + "," + QString::number(pos().y()) + ")";
         mthTracer.trace(strAddTrcInfo);
     }
@@ -1184,8 +1189,8 @@ void CGraphObjPoint::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
         strAddTrcInfo += ", Ev.ScenePos:(" + QString::number(i_pEv->scenePos().x()) + "," + QString::number(i_pEv->scenePos().y()) + ")";
         strAddTrcInfo += ", Ev.ScreenPos:(" + QString::number(i_pEv->screenPos().x()) + "," + QString::number(i_pEv->screenPos().y()) + ")";
         strAddTrcInfo += ", Selected:" + bool2Str(isSelected());
-        strAddTrcInfo += ", EditMode:" + editMode2Str(m_editMode);
-        strAddTrcInfo += ", ResizeMode:" + editResizeMode2Str(m_editResizeMode);
+        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
+        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
         strAddTrcInfo += ", Pos:(" + QString::number(pos().x()) + "," + QString::number(pos().y()) + ")";
     }
 
@@ -1196,26 +1201,26 @@ void CGraphObjPoint::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
         /* strMethod    */ "mouseMoveEvent",
         /* strAddInfo   */ strAddTrcInfo );
 
-    EMode modeDrawing = m_pDrawingScene->getMode();
+    CEnumMode modeDrawing = m_pDrawingScene->getMode();
 
     if( modeDrawing == EMode::Edit )
     {
-        if( m_editMode == EEditModeMove )
+        if( m_editMode == EEditMode::Move )
         {
             QAbstractGraphicsShapeItem::mouseMoveEvent(i_pEv);
 
             updateEditInfo();
             updateToolTip();
 
-        } // if( m_editMode == EEditModeMove )
+        } // if( m_editMode == EEditMode::Move )
 
     } // if( modeDrawing == EMode::Edit )
 
     if( mthTracer.isActive(ETraceDetailLevelInternalStates) )
     {
         strAddTrcInfo = "Selected:" + bool2Str(isSelected());
-        strAddTrcInfo += ", EditMode:" + editMode2Str(m_editMode);
-        strAddTrcInfo += ", ResizeMode:" + editResizeMode2Str(m_editResizeMode);
+        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
+        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
         strAddTrcInfo += ", Pos:(" + QString::number(pos().x()) + "," + QString::number(pos().y()) + ")";
         mthTracer.trace(strAddTrcInfo);
     }
@@ -1234,8 +1239,8 @@ void CGraphObjPoint::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
         strAddTrcInfo += ", Ev.ScenePos:(" + QString::number(i_pEv->scenePos().x()) + "," + QString::number(i_pEv->scenePos().y()) + ")";
         strAddTrcInfo += ", Ev.ScreenPos:(" + QString::number(i_pEv->screenPos().x()) + "," + QString::number(i_pEv->screenPos().y()) + ")";
         strAddTrcInfo += ", Selected:" + bool2Str(isSelected());
-        strAddTrcInfo += ", EditMode:" + editMode2Str(m_editMode);
-        strAddTrcInfo += ", ResizeMode:" + editResizeMode2Str(m_editResizeMode);
+        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
+        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
         strAddTrcInfo += ", Pos:(" + QString::number(pos().x()) + "," + QString::number(pos().y()) + ")";
     }
 
@@ -1246,23 +1251,23 @@ void CGraphObjPoint::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
         /* strMethod    */ "mouseReleaseEvent",
         /* strAddInfo   */ strAddTrcInfo );
 
-    EMode modeDrawing = m_pDrawingScene->getMode();
+    CEnumMode modeDrawing = m_pDrawingScene->getMode();
 
     if( modeDrawing == EMode::Edit )
     {
-        if( m_editMode == EEditModeMove )
+        if( m_editMode == EEditMode::Move )
         {
             acceptCurrentAsOriginalCoors();
 
             updateEditInfo();
             updateToolTip();
 
-        } // if( m_editMode == EEditModeMove )
+        } // if( m_editMode == EEditMode::Move )
 
-        m_editMode = EEditModeUndefined;
-        m_editResizeMode = EEditResizeModeUndefined;
+        m_editMode = EEditMode::Undefined;
+        m_editResizeMode = EEditResizeMode::Undefined;
         m_idxSelPtSelectedPolygon = -1;
-        m_selPtSelectedBoundingRect = ESelectionPointUndefined;
+        m_selPtSelectedBoundingRect = ESelectionPoint::Undefined;
 
     } // if( modeDrawing == EMode::Edit )
 
@@ -1271,7 +1276,7 @@ void CGraphObjPoint::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
     bool bIsSelectable = flags() & QGraphicsItem::ItemIsSelectable;
     bool bIsSelectableReset = false;
 
-    if( bIsSelectable && m_pDrawingScene->getEditTool() != EEditToolSelect )
+    if( bIsSelectable && m_pDrawingScene->getEditTool() != EEditTool::Select )
     {
         setFlag(QGraphicsItem::ItemIsSelectable,false);
         bIsSelectableReset = true;
@@ -1287,8 +1292,8 @@ void CGraphObjPoint::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
     if( mthTracer.isActive(ETraceDetailLevelInternalStates) )
     {
         strAddTrcInfo = "Selected:" + bool2Str(isSelected());
-        strAddTrcInfo += ", EditMode:" + editMode2Str(m_editMode);
-        strAddTrcInfo += ", ResizeMode:" + editResizeMode2Str(m_editResizeMode);
+        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
+        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
         strAddTrcInfo += ", Pos:(" + QString::number(pos().x()) + "," + QString::number(pos().y()) + ")";
         mthTracer.trace(strAddTrcInfo);
     }
@@ -1307,8 +1312,8 @@ void CGraphObjPoint::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv )
         strAddTrcInfo += ", Ev.ScenePos:(" + QString::number(i_pEv->scenePos().x()) + "," + QString::number(i_pEv->scenePos().y()) + ")";
         strAddTrcInfo += ", Ev.ScreenPos:(" + QString::number(i_pEv->screenPos().x()) + "," + QString::number(i_pEv->screenPos().y()) + ")";
         strAddTrcInfo += ", Selected:" + bool2Str(isSelected());
-        strAddTrcInfo += ", EditMode:" + editMode2Str(m_editMode);
-        strAddTrcInfo += ", ResizeMode:" + editResizeMode2Str(m_editResizeMode);
+        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
+        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
         strAddTrcInfo += ", Pos:(" + QString::number(pos().x()) + "," + QString::number(pos().y()) + ")";
     }
 
@@ -1325,7 +1330,7 @@ void CGraphObjPoint::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv )
     // The default implementation of "mouseDoubleClickEvent" calls "mousePressEvent".
     //QAbstractGraphicsShapeItem::mouseDoubleClickEvent(i_pEv);
 
-    EMode modeDrawing = m_pDrawingScene->getMode();
+    CEnumMode modeDrawing = m_pDrawingScene->getMode();
 
     if( modeDrawing == EMode::Edit )
     {
@@ -1339,8 +1344,8 @@ void CGraphObjPoint::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv )
     if( mthTracer.isActive(ETraceDetailLevelInternalStates) )
     {
         strAddTrcInfo  = "Selected:" + bool2Str(isSelected());
-        strAddTrcInfo += ", EditMode:" + editMode2Str(m_editMode);
-        strAddTrcInfo += ", ResizeMode:" + editResizeMode2Str(m_editResizeMode);
+        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
+        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
         strAddTrcInfo += ", Pos:(" + QString::number(pos().x()) + "," + QString::number(pos().y()) + ")";
         mthTracer.trace(strAddTrcInfo);
     }
@@ -1364,7 +1369,7 @@ QVariant CGraphObjPoint::itemChange( GraphicsItemChange i_change, const QVariant
 
     if( s_pTrcAdminObjItemChange != nullptr && s_pTrcAdminObjItemChange->isActive(ETraceDetailLevelMethodCalls) )
     {
-        strAddTrcInfo = "Changed:" + graphicsItemChange2Str(i_change);
+        strAddTrcInfo = "Changed:" + qGraphicsItemChange2Str(i_change);
 
         if( i_value.type() == QVariant::PointF )
         {
@@ -1375,8 +1380,8 @@ QVariant CGraphObjPoint::itemChange( GraphicsItemChange i_change, const QVariant
             strAddTrcInfo += ", Value(" + qVariantType2Str(i_value.type()) + "):" + i_value.toString();
         }
         strAddTrcInfo += ", Selected:" + bool2Str(isSelected());
-        strAddTrcInfo += ", EditMode:" + editMode2Str(m_editMode);
-        strAddTrcInfo += ", ResizeMode:" + editResizeMode2Str(m_editResizeMode);
+        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
+        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
         strAddTrcInfo += ", Pos:(" + QString::number(pos().x()) + "," + QString::number(pos().y()) + ")";
     }
 
@@ -1413,9 +1418,9 @@ QVariant CGraphObjPoint::itemChange( GraphicsItemChange i_change, const QVariant
 
             setZValue(m_fZValue); // restore ZValue as before selecting the object
 
-            m_editMode = EEditModeUndefined;
-            m_editResizeMode = EEditResizeModeUndefined;
-            m_selPtSelectedBoundingRect = ESelectionPointUndefined;
+            m_editMode = EEditMode::Undefined;
+            m_editResizeMode = EEditResizeMode::Undefined;
+            m_selPtSelectedBoundingRect = ESelectionPoint::Undefined;
             m_idxSelPtSelectedPolygon = -1;
         }
 
@@ -1481,11 +1486,11 @@ QVariant CGraphObjPoint::itemChange( GraphicsItemChange i_change, const QVariant
         ESelectionPoint          selPt;
         int                      idxSelPt;
 
-        for( idxSelPt = 0; idxSelPt < ESelectionPointCount; idxSelPt++ )
+        for( idxSelPt = 0; idxSelPt < CEnumSelectionPoint::count(); idxSelPt++ )
         {
             selPt = static_cast<ESelectionPoint>(idxSelPt);
 
-            pGraphObjSelPt = m_arpSelPtsBoundingRect[selPt];
+            pGraphObjSelPt = m_arpSelPtsBoundingRect[idxSelPt];
 
             if( pGraphObjSelPt != nullptr )
             {
@@ -1533,8 +1538,8 @@ QVariant CGraphObjPoint::itemChange( GraphicsItemChange i_change, const QVariant
             strAddTrcInfo = "ValChanged(" + qVariantType2Str(valChanged.type()) + "):" + valChanged.toString();
         }
         strAddTrcInfo += ", Selected:" + bool2Str(isSelected());
-        strAddTrcInfo += ", EditMode:" + editMode2Str(m_editMode);
-        strAddTrcInfo += ", ResizeMode:" + editResizeMode2Str(m_editResizeMode);
+        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
+        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
         strAddTrcInfo += ", Pos:(" + QString::number(pos().x()) + "," + QString::number(pos().y()) + ")";
         mthTracer.setMethodReturn(strAddTrcInfo);
     }

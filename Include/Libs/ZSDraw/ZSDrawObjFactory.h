@@ -56,11 +56,17 @@ class CDrawingScene;
 class CDrawSettings;
 class CGraphObj;
 class CGraphObjGroup;
+struct SGraphObjLabel;
 
 //******************************************************************************
 class ZSDRAWDLL_API CObjFactory : public ZS::System::CIdxTreeEntry
 //******************************************************************************
 {
+public: // class methods
+    /*! Returns the namespace the class belongs to. */
+    static QString NameSpace() { return "ZS::Draw"; } // Please note that the static class functions name must be different from the non static virtual member function "nameSpace"
+    /*! Returns the class name. */
+    static QString ClassName() { return "CObjFactory"; }  // Please note that the static class functions name must be different from the non static virtual member function "className"
 public: // class members
     static const QString c_strGroupSeparater;
 public: // class methods
@@ -94,6 +100,15 @@ protected: // ctor
         const QIcon&   i_toolIcon = QIcon() );
 public: // dtor
     virtual ~CObjFactory();
+public: // overridables
+    /*! This virtual method returns the name space of the object's class.
+        This method can be reimplemented in derived classes so when invoked for the
+        polymorphic base type the method returns the name space of the derived class. */
+    virtual QString nameSpace() const { return NameSpace(); }
+    /*! This virtual method returns the class name of the object's class.
+        This method can be reimplemented in derived classes so when invoked for the
+        polymorphic base type the method returns the name of the derived class. */
+    virtual QString className() const { return ClassName(); }
 public: // interface methods
     virtual CGraphObj* createGraphObj(
         CDrawingScene*       i_pDrawingScene,

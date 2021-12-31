@@ -25,37 +25,264 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include <QtGui/QBitmap>
-#include <QtGui/qevent.h>
-#include <QtGui/QPainter>
-
-#if QT_VERSION < 0x050000
-#include <QtGui/QGraphicsSceneEvent>
-#include <QtGui/QStyleOption>
-#else
-#include <QtWidgets/QGraphicsSceneEvent>
-#include <QtWidgets/QStyleOption>
-#endif
 
 #include "ZSDraw/ZSDrawGraphObj.h"
+#include "ZSDraw/ZSDrawAux.h"
 #include "ZSDraw/ZSDrawGraphObjLabel.h"
 #include "ZSDraw/ZSDrawGraphObjSelectionPoint.h"
 #include "ZSDraw/ZSDrawingScene.h"
 #include "ZSDraw/ZSDrawDlgFormatGraphObjs.h"
-#include "ZSPhysSizes/Geometry/ZSPhysSizes.h"
-#include "ZSSys/ZSSysErrCode.h"
-#include "ZSSys/ZSSysException.h"
+#include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysMath.h"
-#include "ZSSys/ZSSysTrcAdminObj.h"
-#include "ZSSys/ZSSysTrcMethod.h"
-//#include "ZSSys/ZSSysTrcServer.h"
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
 
 using namespace ZS::System;
 using namespace ZS::Draw;
-using namespace ZS::PhysVal;
 using namespace ZS::Trace;
+
+
+/*==============================================================================
+struct SGraphObjHitInfo
+==============================================================================*/
+
+/* public: // ctor
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+SGraphObjHitInfo::SGraphObjHitInfo() :
+//------------------------------------------------------------------------------
+    m_editMode(EEditMode::Undefined),
+    m_editResizeMode(EEditResizeMode::Undefined),
+    m_selPtBoundingRect(ESelectionPoint::Undefined),
+    m_idxPolygonShapePoint(-1),
+    m_idxLineSegment(-1),
+    m_ptSelected(),
+    m_cursor()
+{
+} // ctor
+
+/* public: // struct methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+bool SGraphObjHitInfo::isBoundingRectSelectionPointHit() const
+//------------------------------------------------------------------------------
+{
+    bool bIsHit = false;
+
+    if( m_editMode == EEditMode::Resize && m_editResizeMode != EEditResizeMode::Undefined )
+    {
+        bIsHit = (m_selPtBoundingRect >= ESelectionPoint::RectMin) && (m_selPtBoundingRect <= ESelectionPoint::RectMax);
+    }
+    return bIsHit;
+
+} // isBoundingRectSelectionPointHit
+
+//------------------------------------------------------------------------------
+bool SGraphObjHitInfo::isSelectionPointHit() const
+//------------------------------------------------------------------------------
+{
+    bool bIsHit = false;
+
+    if( m_editMode != EEditMode::Undefined )
+    {
+        bIsHit = (m_selPtBoundingRect != ESelectionPoint::Undefined);
+    }
+    return bIsHit;
+
+} // isSelectionPointHit
+
+//------------------------------------------------------------------------------
+bool SGraphObjHitInfo::isPolygonShapePointHit() const
+//------------------------------------------------------------------------------
+{
+    bool bIsHit = false;
+
+    if( m_editMode == EEditMode::MoveShapePoint )
+    {
+        bIsHit = (m_idxPolygonShapePoint >= 0);
+    }
+    return bIsHit;
+
+} // isPolygonShapePointHit
+
+//------------------------------------------------------------------------------
+bool SGraphObjHitInfo::isLineSegmentHit() const
+//------------------------------------------------------------------------------
+{
+    bool bIsHit = false;
+
+    if( m_editMode != EEditMode::Undefined )
+    {
+        bIsHit = (m_idxLineSegment >= 0);
+    }
+    return bIsHit;
+
+} // isLineSegmentHit
+
+/* public: // struct methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void SGraphObjHitInfo::setCursor( double i_fGraphObjRotAngle_rad )
+//------------------------------------------------------------------------------
+{
+    double fCursorAngle_rad = 0.0;
+    bool   bSetResizeCursor = false;
+
+    switch( m_editMode.enumerator() )
+    {
+        case EEditMode::Move:
+        {
+            m_cursor = Qt::SizeAllCursor;
+            break;
+        }
+        case EEditMode::Resize:
+        {
+            switch( m_editResizeMode.enumerator() )
+            {
+                case EEditResizeMode::ResizeAll:
+                {
+                    switch( m_selPtBoundingRect.enumerator() )
+                    {
+                        case ESelectionPoint::TopLeft:
+                        case ESelectionPoint::BottomRight:
+                        {
+                            fCursorAngle_rad = i_fGraphObjRotAngle_rad + Math::c_f135Degrees_rad; // 2nd quadrant: arrow from right/bottom -> top/left
+                            m_cursor = Qt::SizeFDiagCursor; /*  \  */
+                            bSetResizeCursor = true;
+                            break;
+                        }
+                        case ESelectionPoint::TopRight:
+                        case ESelectionPoint::BottomLeft:
+                        {
+                            fCursorAngle_rad = i_fGraphObjRotAngle_rad + Math::c_f45Degrees_rad; // 1st quadrant: arrow from bottom/left -> top/right
+                            m_cursor = Qt::SizeBDiagCursor; /*  /  */
+                            bSetResizeCursor = true;
+                            break;
+                        }
+                        case ESelectionPoint::RotateTop:
+                        case ESelectionPoint::RotateBottom:
+                        {
+                            QBitmap bmpCursor(":/ZS/Draw/CursorRotateFree16x16.bmp");
+                            QBitmap bmpCursorMask = bmpCursor.createHeuristicMask();
+                            m_cursor = QCursor(bmpCursor,bmpCursorMask);
+                            break;
+                        }
+                        case ESelectionPoint::LeftCenter:
+                        case ESelectionPoint::RightCenter:
+                        case ESelectionPoint::TopCenter:
+                        case ESelectionPoint::BottomCenter:
+                        case ESelectionPoint::Center:
+                        default:
+                        {
+                            break;
+                        }
+                    }
+                    break;
+                }
+                case EEditResizeMode::ResizeHor:
+                {
+                    fCursorAngle_rad = i_fGraphObjRotAngle_rad;
+                    m_cursor = Qt::SizeHorCursor;
+                    bSetResizeCursor = true;
+                    break;
+                }
+                case EEditResizeMode::ResizeVer:
+                {
+                    fCursorAngle_rad = i_fGraphObjRotAngle_rad + Math::c_f90Degrees_rad;
+                    m_cursor = Qt::SizeVerCursor;
+                    bSetResizeCursor = true;
+                    break;
+                }
+                default:
+                {
+                    break;
+                }
+            }
+            break;
+        }
+        case EEditMode::Rotate:
+        {
+            QBitmap bmpCursor(":/ZS/Draw/CursorRotateFree16x16.bmp");
+            QBitmap bmpCursorMask = bmpCursor.createHeuristicMask();
+            m_cursor = QCursor(bmpCursor,bmpCursorMask);
+            break;
+        }
+        case EEditMode::MoveShapePoint:
+        {
+            m_cursor = Qt::CrossCursor;
+            break;
+        }
+        case EEditMode::EditText:
+        {
+            m_cursor = Qt::IBeamCursor;
+            break;
+        }
+        default:
+        {
+            break;
+        }
+    } // switch( editMode )
+
+    if( bSetResizeCursor )
+    {
+        // Force resulting cursor rotation angle to 1st or 2nd quadrant (0..180°)
+        while( fCursorAngle_rad >= Math::c_f180Degrees_rad )
+        {
+            fCursorAngle_rad -= Math::c_f180Degrees_rad;
+        }
+        while( fCursorAngle_rad < 0.0 )
+        {
+            fCursorAngle_rad += Math::c_f180Degrees_rad;
+        }
+        if( fCursorAngle_rad >= 0.0 && fCursorAngle_rad < Math::c_f45Degrees_rad/2.0 ) // 0.0 .. 22.5°
+        {
+            m_cursor = Qt::SizeHorCursor;
+        }
+        else if( fCursorAngle_rad >= Math::c_f45Degrees_rad/2.0 && fCursorAngle_rad < 3.0*Math::c_f45Degrees_rad/2.0 ) // 22.5° .. 67.5°
+        {
+            m_cursor = Qt::SizeBDiagCursor; // 1st quadrant: arrow from bottom/left -> top/right
+        }
+        else if( fCursorAngle_rad >= 3.0*Math::c_f45Degrees_rad/2.0 && fCursorAngle_rad < 5.0*Math::c_f45Degrees_rad/2.0 ) // 67.5° .. 112.5°
+        {
+            m_cursor = Qt::SizeVerCursor;
+        }
+        else if( fCursorAngle_rad >= 5.0*Math::c_f45Degrees_rad/2.0 && fCursorAngle_rad < 7.0*Math::c_f45Degrees_rad/2.0 ) // 112.5° .. 157.5°
+        {
+            m_cursor = Qt::SizeFDiagCursor; // 2nd quadrant: arrow from top/left -> bottom/right
+        }
+        else if( fCursorAngle_rad >= 7.0*Math::c_f45Degrees_rad/2.0 && fCursorAngle_rad < Math::c_f180Degrees_rad ) // 157.5° .. 180.0°
+        {
+            m_cursor = Qt::SizeHorCursor;
+        }
+
+    } // if( bSetResizeCursor )
+
+} // setCursor
+
+
+/*==============================================================================
+struct SGraphObjAlignment
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+QString SGraphObjAlignment::toString() const
+//------------------------------------------------------------------------------
+{
+    QString str;
+
+    str  = "RefChild:" + m_alignmentRefChild.toString();
+    str += ", RefParent:" + m_alignmentRefParent.toString();
+    str += ", Absolute:" + bool2Str(m_bAlignAbsolute);
+    str += ", Val:" + QString::number(m_fVal);
+
+    return str;
+
+} // graphObjAlignment2Str
+
 
 
 /*******************************************************************************
@@ -97,14 +324,14 @@ CGraphObj::CGraphObj(
     m_sizFixed(),
     m_arAlignments(),
     m_bIsHit(false),
-    m_editMode(EEditModeUndefined),
-    m_editResizeMode(EEditResizeModeUndefined),
+    m_editMode(EEditMode::Undefined),
+    m_editResizeMode(EEditResizeMode::Undefined),
     m_fZValue(0.0),
     m_bDtorInProgress(false),
     m_idxSelPtSelectedPolygon(-1),
     m_arpSelPtsPolygon(),
-    m_selPtSelectedBoundingRect(ESelectionPointUndefined),
-    //m_arpSelPtsBoundingRect[ESelectionPointCount]
+    m_selPtSelectedBoundingRect(ESelectionPoint::Undefined),
+    m_arpSelPtsBoundingRect(CEnumSelectionPoint::count()),
     m_arpLabels(),
     m_strToolTip(),
     m_strEditInfo(),
@@ -131,8 +358,6 @@ CGraphObj::CGraphObj(
     m_arKeyPressEventFunctions(),
     m_arKeyReleaseEventFunctions()
 {
-    memset( m_arpSelPtsBoundingRect, 0x00, sizeof(m_arpSelPtsBoundingRect) );
-
     for( int idxAttr = 0; idxAttr < EDrawAttributeCount; idxAttr++ )
     {
         if( m_drawSettings.isAttributeUsed(idxAttr) )
@@ -152,22 +377,25 @@ CGraphObj::~CGraphObj()
     CGraphObjSelectionPoint* pGraphObjSelPt;
     int                      idxSelPt;
 
-    for( idxSelPt = ESelectionPointCount-1; idxSelPt >= 0; idxSelPt-- )
+    if( m_arpSelPtsBoundingRect.size() > 0 )
     {
-        pGraphObjSelPt = m_arpSelPtsBoundingRect[idxSelPt];
-
-        if( pGraphObjSelPt != nullptr )
+        for( idxSelPt = m_arpSelPtsBoundingRect.size()-1; idxSelPt >= 0; idxSelPt-- )
         {
-            m_arpSelPtsBoundingRect[idxSelPt] = nullptr;
+            pGraphObjSelPt = m_arpSelPtsBoundingRect[idxSelPt];
 
-            try
+            if( pGraphObjSelPt != nullptr )
             {
-                delete pGraphObjSelPt;
+                m_arpSelPtsBoundingRect[idxSelPt] = nullptr;
+
+                try
+                {
+                    delete pGraphObjSelPt;
+                }
+                catch(...)
+                {
+                }
+                pGraphObjSelPt = nullptr;
             }
-            catch(...)
-            {
-            }
-            pGraphObjSelPt = nullptr;
         }
     }
 
@@ -449,7 +677,7 @@ void CGraphObj::onDrawSettingsChanged()
     {
         if( m_drawSettings.isLineUsed() )
         {
-            if( m_drawSettings.getLineStyle() != ELineStyleNoLine )
+            if( m_drawSettings.getLineStyle() != ELineStyle::NoLine )
             {
                 QPen pen;
 
@@ -471,7 +699,7 @@ void CGraphObj::onDrawSettingsChanged()
 
         if( m_drawSettings.isFillUsed() )
         {
-            if( m_drawSettings.getFillStyle() != EFillStyleNoFill )
+            if( m_drawSettings.getFillStyle() != EFillStyle::NoFill )
             {
                 QBrush brsh;
 
@@ -1370,7 +1598,7 @@ QPointF CGraphObj::getPos( ECoordinatesVersion i_version ) const
 {
     QPointF ptPos;
 
-    if( i_version == ECoordinatesVersionOriginal )
+    if( i_version == ECoordinatesVersion::Original )
     {
         ptPos = m_ptPosOrig;
     }
@@ -1393,7 +1621,7 @@ double CGraphObj::getWidth( ECoordinatesVersion i_version ) const
 {
     double fWidth = 0.0;
 
-    if( i_version == ECoordinatesVersionOriginal )
+    if( i_version == ECoordinatesVersion::Original )
     {
         fWidth = m_sizOrig.width();
     }
@@ -1411,7 +1639,7 @@ double CGraphObj::getHeight( ECoordinatesVersion i_version ) const
 {
     double fHeight = 0.0;
 
-    if( i_version == ECoordinatesVersionOriginal )
+    if( i_version == ECoordinatesVersion::Original )
     {
         fHeight = m_sizOrig.height();
     }
@@ -1429,7 +1657,7 @@ QSizeF CGraphObj::getSize( ECoordinatesVersion i_version ) const
 {
     QSizeF siz;
 
-    if( i_version == ECoordinatesVersionOriginal )
+    if( i_version == ECoordinatesVersion::Original )
     {
         siz = m_sizOrig;
     }
@@ -1461,7 +1689,7 @@ double CGraphObj::getRotationAngleInDegree( ECoordinatesVersion i_version )
 {
     double fRotAngle_deg = 0.0;
 
-    if( i_version == ECoordinatesVersionOriginal )
+    if( i_version == ECoordinatesVersion::Original )
     {
         fRotAngle_deg = m_fRotAngleOrig_deg;
     }
@@ -1514,7 +1742,7 @@ public: // overridables
 //{
 //    double fScaleFacX = 0.0;
 //
-//    if( i_version == ECoordinatesVersionOriginal )
+//    if( i_version == ECoordinatesVersion::Original )
 //    {
 //        fScaleFacX = m_fScaleFacXOrig;
 //    }
@@ -1532,7 +1760,7 @@ public: // overridables
 //{
 //    double fScaleFacY = 0.0;
 //
-//    if( i_version == ECoordinatesVersionOriginal )
+//    if( i_version == ECoordinatesVersion::Original )
 //    {
 //        fScaleFacY = m_fScaleFacYOrig;
 //    }
@@ -1594,15 +1822,15 @@ bool CGraphObj::isHit( const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo ) const
 
         if( !bIsHit )
         {
-            if( pGraphicsItem->isSelected() || m_drawSettings.getFillStyle() == EFillStyleSolidPattern )
+            if( pGraphicsItem->isSelected() || m_drawSettings.getFillStyle() == EFillStyle::SolidPattern )
             {
                 bIsHit = pGraphicsItem->contains(i_pt);
 
                 if( o_pHitInfo != nullptr )
                 {
-                    o_pHitInfo->m_editMode = EEditModeMove;
-                    o_pHitInfo->m_editResizeMode = EEditResizeModeUndefined;
-                    o_pHitInfo->m_selPtBoundingRect = ESelectionPointUndefined;
+                    o_pHitInfo->m_editMode = EEditMode::Move;
+                    o_pHitInfo->m_editResizeMode = EEditResizeMode::Undefined;
+                    o_pHitInfo->m_selPtBoundingRect = ESelectionPoint::Undefined;
                     o_pHitInfo->m_idxPolygonShapePoint = -1;
                     o_pHitInfo->m_idxLineSegment = -1;
                     o_pHitInfo->m_ptSelected = i_pt;
@@ -1685,17 +1913,17 @@ bool CGraphObj::isBoundingRectSelectionPointHit(
     if( pGraphicsItem != nullptr )
     {
         static const ESelectionPoint s_arSelPts[] = {
-            ESelectionPointBottomRight,
-            ESelectionPointTopRight,
-            ESelectionPointBottomLeft,
-            ESelectionPointTopLeft,
-            ESelectionPointBottomCenter,
-            ESelectionPointRightCenter,
-            ESelectionPointTopCenter,
-            ESelectionPointLeftCenter,
-            ESelectionPointRotateTop,
-            ESelectionPointRotateBottom,
-            ESelectionPointCenter
+            ESelectionPoint::BottomRight,
+            ESelectionPoint::TopRight,
+            ESelectionPoint::BottomLeft,
+            ESelectionPoint::TopLeft,
+            ESelectionPoint::BottomCenter,
+            ESelectionPoint::RightCenter,
+            ESelectionPoint::TopCenter,
+            ESelectionPoint::LeftCenter,
+            ESelectionPoint::RotateTop,
+            ESelectionPoint::RotateBottom,
+            ESelectionPoint::Center
         };
 
         const ESelectionPoint* pSelPts = i_pSelPts;
@@ -1716,7 +1944,7 @@ bool CGraphObj::isBoundingRectSelectionPointHit(
         {
             selPt = pSelPts[idxSelPt];
 
-            pGraphObjSelPt = m_arpSelPtsBoundingRect[selPt];
+            pGraphObjSelPt = m_arpSelPtsBoundingRect[static_cast<int>(selPt)];
 
             if( pGraphObjSelPt != nullptr )
             {
@@ -1780,9 +2008,9 @@ bool CGraphObj::isPolygonSelectionPointHit( const QPointF& i_pt, SGraphObjHitInf
                         ptTmp = pGraphObjSelPt->pos();
                         ptTmp = pGraphObjSelPt->mapToItem(pGraphicsItem,ptTmp);
 
-                        o_pHitInfo->m_editMode = EEditModeMoveShapePoint;
-                        o_pHitInfo->m_editResizeMode = EEditResizeModeUndefined;
-                        o_pHitInfo->m_selPtBoundingRect = ESelectionPointUndefined;
+                        o_pHitInfo->m_editMode = EEditMode::MoveShapePoint;
+                        o_pHitInfo->m_editResizeMode = EEditResizeMode::Undefined;
+                        o_pHitInfo->m_selPtBoundingRect = ESelectionPoint::Undefined;
                         o_pHitInfo->m_idxPolygonShapePoint = idxSelPt;
                         o_pHitInfo->m_idxLineSegment = -1;
                         o_pHitInfo->m_ptSelected = ptTmp;
@@ -1791,7 +2019,6 @@ bool CGraphObj::isPolygonSelectionPointHit( const QPointF& i_pt, SGraphObjHitInf
                 }
             }
         }
-
     } // if( pGraphicsItem != nullptr )
 
     return bIsHit;
@@ -1831,34 +2058,34 @@ void CGraphObj::hideSelectionPoints( ESelectionPoints i_selPts )
         int                      idxSelPt;
         bool                     bHideSelPt;
 
-        for( idxSelPt = 0; idxSelPt < ESelectionPointCount; idxSelPt++ )
+        for( idxSelPt = 0; idxSelPt < CEnumSelectionPoint::count(); idxSelPt++ )
         {
             selPt = static_cast<ESelectionPoint>(idxSelPt);
 
             bHideSelPt = false;
 
-            if( selPt >= ESelectionPointCornerMin && selPt <= ESelectionPointCornerMax )
+            if( selPt >= ESelectionPoint::CornerMin && selPt <= ESelectionPoint::CornerMax )
             {
                 if( i_selPts & ESelectionPointsBoundingRectCorner )
                 {
                     bHideSelPt = true;
                 }
             }
-            else if( selPt >= ESelectionPointLineCenterMin && selPt <= ESelectionPointLineCenterMax )
+            else if( selPt >= ESelectionPoint::LineCenterMin && selPt <= ESelectionPoint::LineCenterMax )
             {
                 if( i_selPts & ESelectionPointsBoundingRectLineCenter )
                 {
                     bHideSelPt = true;
                 }
             }
-            else if( selPt == ESelectionPointCenter )
+            else if( selPt == ESelectionPoint::Center )
             {
                 if( i_selPts & ESelectionPointsBoundingRectCenter )
                 {
                     bHideSelPt = true;
                 }
             }
-            else if( selPt >= ESelectionPointRotateMin && selPt <= ESelectionPointRotateMax )
+            else if( selPt >= ESelectionPoint::RotateMin && selPt <= ESelectionPoint::RotateMax )
             {
                 if( i_selPts & ESelectionPointsBoundingRectRotate )
                 {
@@ -1919,34 +2146,34 @@ void CGraphObj::bringSelectionPointsToFront( ESelectionPoints i_selPts )
         int                      idxSelPt;
         bool                     bBringToFront;
 
-        for( idxSelPt = 0; idxSelPt < ESelectionPointCount; idxSelPt++ )
+        for( idxSelPt = 0; idxSelPt < CEnumSelectionPoint::count(); idxSelPt++ )
         {
             selPt = static_cast<ESelectionPoint>(idxSelPt);
 
             bBringToFront = false;
 
-            if( selPt >= ESelectionPointCornerMin && selPt <= ESelectionPointCornerMax )
+            if( selPt >= ESelectionPoint::CornerMin && selPt <= ESelectionPoint::CornerMax )
             {
                 if( i_selPts & ESelectionPointsBoundingRectCorner )
                 {
                     bBringToFront = true;
                 }
             }
-            else if( selPt >= ESelectionPointLineCenterMin && selPt <= ESelectionPointLineCenterMax )
+            else if( selPt >= ESelectionPoint::LineCenterMin && selPt <= ESelectionPoint::LineCenterMax )
             {
                 if( i_selPts & ESelectionPointsBoundingRectLineCenter )
                 {
                     bBringToFront = true;
                 }
             }
-            else if( selPt == ESelectionPointCenter )
+            else if( selPt == ESelectionPoint::Center )
             {
                 if( i_selPts & ESelectionPointsBoundingRectCenter )
                 {
                     bBringToFront = true;
                 }
             }
-            else if( selPt >= ESelectionPointRotateMin && selPt <= ESelectionPointRotateMax )
+            else if( selPt >= ESelectionPoint::RotateMin && selPt <= ESelectionPoint::RotateMax )
             {
                 if( i_selPts & ESelectionPointsBoundingRectRotate )
                 {
@@ -2006,34 +2233,34 @@ void CGraphObj::showSelectionPointsOfBoundingRect( const QRectF& i_rct, unsigned
         int                      idxSelPt;
         bool                     bShowSelPt;
 
-        for( idxSelPt = 0; idxSelPt < ESelectionPointCount; idxSelPt++ )
+        for( idxSelPt = 0; idxSelPt < CEnumSelectionPoint::count(); idxSelPt++ )
         {
             selPt = static_cast<ESelectionPoint>(idxSelPt);
 
             bShowSelPt = false;
 
-            if( selPt >= ESelectionPointCornerMin && selPt <= ESelectionPointCornerMax )
+            if( selPt >= ESelectionPoint::CornerMin && selPt <= ESelectionPoint::CornerMax )
             {
                 if( i_selPts & ESelectionPointsBoundingRectCorner )
                 {
                     bShowSelPt = true;
                 }
             }
-            else if( selPt >= ESelectionPointLineCenterMin && selPt <= ESelectionPointLineCenterMax )
+            else if( selPt >= ESelectionPoint::LineCenterMin && selPt <= ESelectionPoint::LineCenterMax )
             {
                 if( i_selPts & ESelectionPointsBoundingRectLineCenter )
                 {
                     bShowSelPt = true;
                 }
             }
-            else if( selPt == ESelectionPointCenter )
+            else if( selPt == ESelectionPoint::Center )
             {
                 if( i_selPts & ESelectionPointsBoundingRectCenter )
                 {
                     bShowSelPt = true;
                 }
             }
-            else if( selPt >= ESelectionPointRotateMin && selPt <= ESelectionPointRotateMax )
+            else if( selPt >= ESelectionPoint::RotateMin && selPt <= ESelectionPoint::RotateMax )
             {
                 if( i_selPts & ESelectionPointsBoundingRectRotate )
                 {
@@ -2060,15 +2287,15 @@ void CGraphObj::showSelectionPointsOfBoundingRect( const QRectF& i_rct, unsigned
 
                 if( pGraphObjSelPt != nullptr )
                 {
-                    if( selPt == ESelectionPointRotateTop /*&& m_fScaleFacYCurr != 0.0*/ )
+                    if( selPt == ESelectionPoint::RotateTop /*&& m_fScaleFacYCurr != 0.0*/ )
                     {
-                        ptSel = ZS::Draw::getSelectionPoint(i_rct,ESelectionPointTopCenter);
+                        ptSel = ZS::Draw::getSelectionPoint(i_rct,ESelectionPoint::TopCenter);
                         ptSel.setY( ptSel.y() - getSelectionPointRotateDistance()/*/m_fScaleFacYCurr*/ );
                         ptSel = pGraphicsItem->mapToScene(ptSel);
                     }
-                    else if( selPt == ESelectionPointRotateBottom /*&& m_fScaleFacYCurr != 0.0*/ )
+                    else if( selPt == ESelectionPoint::RotateBottom /*&& m_fScaleFacYCurr != 0.0*/ )
                     {
-                        ptSel = ZS::Draw::getSelectionPoint(i_rct,ESelectionPointBottomCenter);
+                        ptSel = ZS::Draw::getSelectionPoint(i_rct,ESelectionPoint::BottomCenter);
                         ptSel.setY( ptSel.y() + getSelectionPointRotateDistance()/*/m_fScaleFacYCurr*/ );
                         ptSel = pGraphicsItem->mapToScene(ptSel);
                     }
@@ -2084,7 +2311,7 @@ void CGraphObj::showSelectionPointsOfBoundingRect( const QRectF& i_rct, unsigned
 
             } // if( bShowSelPt )
 
-        } // for( idxSelPt = 0; idxSelPt < ESelectionPointCount; idxSelPt++ )
+        } // for( idxSelPt = 0; idxSelPt < CEnumSelectionPoint::count(); idxSelPt++ )
 
     } // if( pGraphicsItem != nullptr )
 
@@ -2104,34 +2331,34 @@ void CGraphObj::updateSelectionPointsOfBoundingRect( const QRectF& i_rct, unsign
         int                      idxSelPt;
         bool                     bShowSelPt;
 
-        for( idxSelPt = 0; idxSelPt < ESelectionPointCount; idxSelPt++ )
+        for( idxSelPt = 0; idxSelPt < CEnumSelectionPoint::count(); idxSelPt++ )
         {
             selPt = static_cast<ESelectionPoint>(idxSelPt);
 
             bShowSelPt = false;
 
-            if( selPt >= ESelectionPointCornerMin && selPt <= ESelectionPointCornerMax )
+            if( selPt >= ESelectionPoint::CornerMin && selPt <= ESelectionPoint::CornerMax )
             {
                 if( i_selPts & ESelectionPointsBoundingRectCorner )
                 {
                     bShowSelPt = true;
                 }
             }
-            else if( selPt >= ESelectionPointLineCenterMin && selPt <= ESelectionPointLineCenterMax )
+            else if( selPt >= ESelectionPoint::LineCenterMin && selPt <= ESelectionPoint::LineCenterMax )
             {
                 if( i_selPts & ESelectionPointsBoundingRectLineCenter )
                 {
                     bShowSelPt = true;
                 }
             }
-            else if( selPt == ESelectionPointCenter )
+            else if( selPt == ESelectionPoint::Center )
             {
                 if( i_selPts & ESelectionPointsBoundingRectCenter )
                 {
                     bShowSelPt = true;
                 }
             }
-            else if( selPt >= ESelectionPointRotateMin && selPt <= ESelectionPointRotateMax )
+            else if( selPt >= ESelectionPoint::RotateMin && selPt <= ESelectionPoint::RotateMax )
             {
                 if( i_selPts & ESelectionPointsBoundingRectRotate )
                 {
@@ -2145,15 +2372,15 @@ void CGraphObj::updateSelectionPointsOfBoundingRect( const QRectF& i_rct, unsign
 
                 if( pGraphObjSelPt != nullptr )
                 {
-                    if( selPt == ESelectionPointRotateTop /*&& m_fScaleFacYCurr != 0.0*/ )
+                    if( selPt == ESelectionPoint::RotateTop /*&& m_fScaleFacYCurr != 0.0*/ )
                     {
-                        ptSel = ZS::Draw::getSelectionPoint(i_rct,ESelectionPointTopCenter);
+                        ptSel = ZS::Draw::getSelectionPoint(i_rct,ESelectionPoint::TopCenter);
                         ptSel.setY( ptSel.y() - getSelectionPointRotateDistance()/*/m_fScaleFacYCurr*/ );
                         ptSel = pGraphicsItem->mapToScene(ptSel);
                     }
-                    else if( selPt == ESelectionPointRotateBottom /*&& m_fScaleFacYCurr != 0.0*/ )
+                    else if( selPt == ESelectionPoint::RotateBottom /*&& m_fScaleFacYCurr != 0.0*/ )
                     {
-                        ptSel = ZS::Draw::getSelectionPoint(i_rct,ESelectionPointBottomCenter);
+                        ptSel = ZS::Draw::getSelectionPoint(i_rct,ESelectionPoint::BottomCenter);
                         ptSel.setY( ptSel.y() + getSelectionPointRotateDistance()/*/m_fScaleFacYCurr*/ );
                         ptSel = pGraphicsItem->mapToScene(ptSel);
                     }
@@ -2169,7 +2396,7 @@ void CGraphObj::updateSelectionPointsOfBoundingRect( const QRectF& i_rct, unsign
 
             } // if( bShowSelPt )
 
-        } // for( idxSelPt = 0; idxSelPt < ESelectionPointCount; idxSelPt++ )
+        } // for( idxSelPt = 0; idxSelPt < CEnumSelectionPoint::count(); idxSelPt++ )
 
     } // if( pGraphicsItem != nullptr )
 
@@ -2387,7 +2614,7 @@ void CGraphObj::showLabel( const QString& i_strKey )
         {
             SGraphObjLabel* pGraphObjLabel = m_arpLabels[i_strKey];
 
-            QPointF ptSelPt = getSelectionPoint(pGraphObjLabel->m_selPt);
+            QPointF ptSelPt = getSelectionPoint(pGraphObjLabel->m_selPt.enumerator());
             QPointF ptLabel;
 
             ptSelPt = pGraphicsItem->mapToScene(ptSelPt);
@@ -2399,7 +2626,7 @@ void CGraphObj::showLabel( const QString& i_strKey )
                     /* pGraphObjSelected */ this,
                     /* strKey            */ pGraphObjLabel->m_strKey,
                     /* strText           */ pGraphObjLabel->m_strText,
-                    /* selPt             */ pGraphObjLabel->m_selPt );
+                    /* selPt             */ pGraphObjLabel->m_selPt.enumerator() );
                 m_pDrawingScene->addItem(pGraphObjLabel->m_pGraphObjLabel);
                 //pGraphObjLabel->m_pGraphObjLabel->setParentItem(this); see comment in header file of class CGraphObjLabel
             }
@@ -2408,9 +2635,9 @@ void CGraphObj::showLabel( const QString& i_strKey )
             {
                 QPointF ptLabelTmp = ptSelPt;
 
-                if( pGraphObjLabel->m_selPt != ESelectionPointBottomRight
-                 && pGraphObjLabel->m_selPt != ESelectionPointBottomLeft
-                 && pGraphObjLabel->m_selPt != ESelectionPointBottomCenter )
+                if( pGraphObjLabel->m_selPt != ESelectionPoint::BottomRight
+                 && pGraphObjLabel->m_selPt != ESelectionPoint::BottomLeft
+                 && pGraphObjLabel->m_selPt != ESelectionPoint::BottomCenter )
                 {
                     ptLabelTmp.setY( ptLabelTmp.y() - pGraphObjLabel->m_pGraphObjLabel->getHeight() );
                 }
@@ -2532,7 +2759,7 @@ void CGraphObj::updateLabelDistance( const QString& i_strKey )
 
             if( pGraphObjLabel->m_pGraphObjLabel != nullptr )
             {
-                QPointF ptSelPt = getSelectionPoint(pGraphObjLabel->m_selPt);
+                QPointF ptSelPt = getSelectionPoint(pGraphObjLabel->m_selPt.enumerator());
                 QPointF ptLabel = pGraphObjLabel->m_pGraphObjLabel->scenePos();
 
                 ptSelPt = pGraphicsItem->mapToScene(ptSelPt);
@@ -2572,7 +2799,7 @@ void CGraphObj::updateLabelPositions()
 
             if( pGraphObjLabel->m_pGraphObjLabel != nullptr )
             {
-                ptSelPt = getSelectionPoint(pGraphObjLabel->m_selPt);
+                ptSelPt = getSelectionPoint(pGraphObjLabel->m_selPt.enumerator());
                 ptSelPt = pGraphicsItem->mapToScene(ptSelPt);
 
                 ptLabel.setX( ptSelPt.x() + pGraphObjLabel->m_sizDist.width() );
@@ -2679,7 +2906,7 @@ void CGraphObj::addLabels( QHash<QString,SGraphObjLabel*> i_arpLabels )
 
         strKey     = pGraphObjLabel->m_strKey;
         strText    = pGraphObjLabel->m_strText;
-        selPt      = pGraphObjLabel->m_selPt;
+        selPt      = pGraphObjLabel->m_selPt.enumerator();
         sizDist    = pGraphObjLabel->m_sizDist;
         bDistValid = pGraphObjLabel->m_bDistValid;
         bVisible   = pGraphObjLabel->m_bVisible;

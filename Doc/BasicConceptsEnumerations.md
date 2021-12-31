@@ -1,7 +1,4 @@
-﻿/*!
-@defgroup _GRP_BasicConcepts_Enumerations Enumerations
-@ingroup _GRP_BasicConcepts
-@brief
+﻿@page _PAGE_BasicConcepts_Enumerations Enumerations
 
 Here, a generally applicable approach to the definition of enumerations within an application is described.
 
@@ -28,7 +25,7 @@ enum-key enum-name(optional) enum-base(optional) {
   Comma-separated list of enumerator definitions, each of which is either simply an identifier, which becomes the name
   of the enumerator, or an identifier with an initializer: identifier = constexpr.
 
-Enumeratoren and Enum Entries
+Enumerations and Enum Entries
 =============================
 
 Often it is desired to indicate the names of the enumerators or at least a meaningful abbreviation of the enumerators
@@ -232,5 +229,3 @@ is neither lower nor greater than any int value).
 
 @see ZS::System::SEnumEntry
 @see ZS::System::CEnum
-
-*/

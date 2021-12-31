@@ -35,7 +35,9 @@ may result in using the software modules.
 #endif
 
 #include "ZSDraw/ZSDrawObjFactory.h"
-#include "ZSDraw/ZSDrawGraphObj.h"
+#include "ZSDraw/ZSDrawGraphObjLabel.h"
+#include "ZSDraw/ZSDrawAux.h"
+#include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysErrResult.h"
 #include "ZSSys/ZSSysException.h"
 #include "ZSSys/ZSSysIdxTree.h"
@@ -341,7 +343,7 @@ void CObjFactory::RegisterObjFactory( CObjFactory& i_objFactory, bool i_bAddToTo
 {
     if( s_pTrcAdminObj == nullptr )
     {
-        s_pTrcAdminObj = CTrcServer::GetTraceAdminObj(i_objFactory.getGraphObjNameSpace(), "CObjFactory", i_objFactory.getGraphObjTypeAsString());
+        s_pTrcAdminObj = CTrcServer::GetTraceAdminObj(i_objFactory.getGraphObjNameSpace(), ClassName(), i_objFactory.getGraphObjTypeAsString());
     }
 
     CMethodTracer mthTracer(
@@ -456,7 +458,7 @@ CObjFactory::CObjFactory(
             /* strNodeSeparator */ "::" );
     }
 
-    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(m_strGraphObjNameSpace, "CObjFactory", m_strGraphObjType);
+    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(m_strGraphObjNameSpace, ClassName(), m_strGraphObjType);
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -677,7 +679,7 @@ SErrResultInfo CObjFactory::saveGraphObjLabels(
         // the labels are stored as attributes and not as text elements.
         i_xmlStreamWriter.writeAttribute( "Key", pGraphObjLabel->m_strKey );
         i_xmlStreamWriter.writeAttribute( "Text", pGraphObjLabel->m_strText );
-        i_xmlStreamWriter.writeAttribute( "SelectionPoint", selectionPoint2Str(pGraphObjLabel->m_selPt) );
+        i_xmlStreamWriter.writeAttribute( "SelectionPoint", pGraphObjLabel->m_selPt.toString() );
         i_xmlStreamWriter.writeAttribute( "Distance", size2Str(pGraphObjLabel->m_sizDist) );
         i_xmlStreamWriter.writeAttribute( "Visible", bool2Str(pGraphObjLabel->m_bVisible) );
 
@@ -727,7 +729,7 @@ QHash<QString,SGraphObjLabel*> CObjFactory::loadGraphObjLabels(
             {
                 QString         strKey;
                 QString         strText;
-                ESelectionPoint selPt = ESelectionPointUndefined;
+                ESelectionPoint selPt = ESelectionPoint::Undefined;
                 QSizeF          sizDist;
                 bool            bDistValid = false;
                 bool            bVisible = false;
@@ -750,7 +752,8 @@ QHash<QString,SGraphObjLabel*> CObjFactory::loadGraphObjLabels(
                 if( xmlStreamAttrs.hasAttribute("SelectionPoint") )
                 {
                     strAttr = xmlStreamAttrs.value("SelectionPoint").toString();
-                    selPt = str2SelectionPoint(strAttr);
+                    CEnumSelectionPoint selPtTmp = CEnumSelectionPoint::fromString(strAttr, &bConverted);
+                    if( bConverted ) selPt = selPtTmp.enumerator();
                 }
 
                 if( xmlStreamAttrs.hasAttribute("Distance") )
@@ -770,7 +773,7 @@ QHash<QString,SGraphObjLabel*> CObjFactory::loadGraphObjLabels(
                     bVisible = str2Bool(strAttr);
                 }
 
-                if( !strKey.isEmpty() && !strText.isEmpty() && !arpLabels.contains(strKey) && selPt != ESelectionPointUndefined && bDistValid )
+                if( !strKey.isEmpty() && !strText.isEmpty() && !arpLabels.contains(strKey) && selPt != ESelectionPoint::Undefined && bDistValid )
                 {
                     if( pGraphObjLabel != nullptr )
                     {

@@ -33,13 +33,14 @@ may result in using the software modules.
 #endif
 
 #include "ZSDraw/ZSDrawObjFactoryPoint.h"
+#include "ZSDraw/ZSDrawAux.h"
 #include "ZSDraw/ZSDrawGraphObjPoint.h"
 #include "ZSDraw/ZSDrawGraphObjGroup.h"
+#include "ZSDraw/ZSDrawGraphObjLabel.h"
 #include "ZSDraw/ZSDrawingScene.h"
 #include "ZSSys/ZSSysException.h"
 #include "ZSSys/ZSSysTrcAdminObj.h"
 #include "ZSSys/ZSSysTrcMethod.h"
-//#include "ZSSys/ZSSysTrcServer.h"
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
@@ -63,8 +64,8 @@ CObjFactoryPoint::CObjFactoryPoint(
 //------------------------------------------------------------------------------
     CObjFactory(
         /* strGroupName         */ "Draw::Standard Shapes",
-        /* strGraphObjNameSpace */ "ZS::Draw",
-        /* strGraphObjClassName */ "CGraphObjPoint",
+        /* strGraphObjNameSpace */ CGraphObjPoint::NameSpace(),
+        /* strGraphObjClassName */ CGraphObjPoint::NameSpace(),
         /* iGraphObjType        */ EGraphObjTypePoint,
         /* strGraphObjType      */ ZS::Draw::graphObjType2Str(EGraphObjTypePoint),
         /* bAddToToolBoxIdxTree */ i_bAddToToolBoxIdxTree,

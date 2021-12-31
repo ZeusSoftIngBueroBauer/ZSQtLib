@@ -53,7 +53,7 @@ CGraphicsItemsModel::CGraphicsItemsModel( CDrawingScene* i_pDrawingScene, QObjec
 {
     setObjectName( m_pDrawingScene->objectName() + "GraphicsItemsModel" );
 
-    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj("ZS::Draw", "CGraphicsItemsModel", objectName());
+    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName());
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,

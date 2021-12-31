@@ -56,6 +56,11 @@ class ZSDRAWDLL_API CGraphObjConnectionLine : public CGraphObj, public QGraphics
 //******************************************************************************
 {
 public: // class methods
+    /*! Returns the namespace the class belongs to. */
+    static QString NameSpace() { return "ZS::Draw"; } // Please note that the static class functions name must be different from the non static virtual member function "nameSpace"
+    /*! Returns the class name. */
+    static QString ClassName() { return NameSpace(); } // Please note that the static class functions name must be different from the non static virtual member function "className"
+public: // class methods
     static void ResetCtorsDtorsCounters();
 public: // ctors and dtor
     CGraphObjConnectionLine(
@@ -65,7 +70,7 @@ public: // ctors and dtor
         const QString&       i_strObjId = "" );
     virtual ~CGraphObjConnectionLine();
 public: // overridables of base class QGraphicsItem
-    virtual int type() const { return EGraphObjTypeConnectionLine; }
+    virtual int type() const { return static_cast<int>(EGraphObjTypeConnectionLine); }
 public: // must overridables of base class CGraphObj
     virtual CGraphObj* clone();
 public: // overridables
@@ -125,12 +130,12 @@ protected: // class members
     static ZS::Trace::CTrcAdminObj* s_pTrcAdminObjMouseEvents;
     static ZS::Trace::CTrcAdminObj* s_pTrcAdminObjItemChange;
 protected: // instance members
-    bool                      m_bCoorsDirty;
-    QPolygonF                 m_plgCurr;        // First and lasst point may differ from polygon() depending on line end base line types
-    QPolygonF                 m_plgOrig;        // First and lasst point may differ from polygon() depending on line end base line types
-    QPolygonF                 m_plgLineStart;
-    QPolygonF                 m_plgLineEnd;
-    CGraphObjConnectionPoint* m_arpCnctPts[ELinePointCount];
+    bool                               m_bCoorsDirty;
+    QPolygonF                          m_plgCurr;        // First and lasst point may differ from polygon() depending on line end base line types
+    QPolygonF                          m_plgOrig;        // First and lasst point may differ from polygon() depending on line end base line types
+    QPolygonF                          m_plgLineStart;
+    QPolygonF                          m_plgLineEnd;
+    QVector<CGraphObjConnectionPoint*> m_arpCnctPts;
 
 }; // class CGraphObjConnectionLine
 

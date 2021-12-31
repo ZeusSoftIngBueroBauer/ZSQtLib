@@ -72,7 +72,7 @@ void CTest::createTestGroupAndroidWallpaperTemplate( int& io_idxGroup )
     new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + ": Page Setup",
-        /* strOperation    */ "Width: 1536 px, Height: 1200 px", // For gx10: 2048 px, 1280 px
+        /* strOperation    */ "Width: 640 px, Height: 480 px", // For gx10: 2048 px, 1280 px
         /* pTSGrpParent    */ pGrpGridLines,
         /* szDoTestStepFct */ SLOT(doTestStepAndroidWallpaperTemplatePageSetup(ZS::Test::CTestStep*)) );
 
@@ -121,7 +121,7 @@ void CTest::doTestStepAndroidWallpaperTemplatePageSetup( ZS::Test::CTestStep* i_
 
     QString strOperation = i_pTestStep->getOperation();
 
-    CPageSetup pageSetup;
+    QSize sizeDrawing;
 
     if( strOperation.contains("Width:") && strOperation.contains("Height:") )
     {
@@ -158,8 +158,8 @@ void CTest::doTestStepAndroidWallpaperTemplatePageSetup( ZS::Test::CTestStep* i_
                 strlstExpectedValues[0] = "Width: " + QString::number(cxWidth) + " px";
                 strlstExpectedValues[1] = "Height: " + QString::number(cyHeight) + " px";
 
-                pageSetup.setDrawingWidthInPixels(cxWidth);
-                pageSetup.setDrawingHeightInPixels(cyHeight);
+                sizeDrawing.setWidth(cxWidth);
+                sizeDrawing.setHeight(cyHeight);
             }
             catch( CPhysValException& )
             {
@@ -174,17 +174,17 @@ void CTest::doTestStepAndroidWallpaperTemplatePageSetup( ZS::Test::CTestStep* i_
 
     m_pDrawingScene->clear();
 
-    m_pDrawingView->setPageSetup(pageSetup);
+    m_pDrawingView->setDrawingSize(sizeDrawing);
 
     // Result Values
     //--------------
 
     QStringList strlstResultValues;
 
-    pageSetup = m_pDrawingView->getPageSetup();
+    sizeDrawing = m_pDrawingView->getDrawingSizeInPixels();
 
-    strlstResultValues.append(QString("Width: " + QString::number(pageSetup.getDrawingWidthInPixels()) + " px"));
-    strlstResultValues.append(QString("Height: " + QString::number(pageSetup.getDrawingHeightInPixels()) + " px"));
+    strlstResultValues.append(QString("Width: " + QString::number(sizeDrawing.width()) + " px"));
+    strlstResultValues.append(QString("Height: " + QString::number(sizeDrawing.height()) + " px"));
 
     i_pTestStep->setResultValues(strlstResultValues);
 
@@ -261,19 +261,19 @@ void CTest::doTestStepAndroidWallpaperTemplateDrawGridLines( ZS::Test::CTestStep
         }
     }
 
-    CPageSetup pageSetup = m_pDrawingView->getPageSetup();
+    QSize sizeDrawing = m_pDrawingView->getDrawingSizeInPixels();
 
     // Horizontal Grid Lines
     //----------------------
 
     int x1_px = 0;
     int y1_px = 0;
-    int x2_px = pageSetup.getDrawingWidthInPixels();
+    int x2_px = sizeDrawing.width();
     int y2_px = 0;
 
     if( yOffs_px > 0 )
     {
-        while( y1_px <= pageSetup.getDrawingHeightInPixels() )
+        while( y1_px <= sizeDrawing.height() )
         {
             if( !strExpectedValues.isEmpty() ) strExpectedValues += ", ";
             QLine line(x1_px, y1_px, x2_px, y2_px);
@@ -292,11 +292,11 @@ void CTest::doTestStepAndroidWallpaperTemplateDrawGridLines( ZS::Test::CTestStep
     x1_px = 0;
     y1_px = 0;
     x2_px = 0;
-    y2_px = pageSetup.getDrawingHeightInPixels();
+    y2_px = sizeDrawing.height();
 
     if( xOffs_px > 0 )
     {
-        while( x1_px <= pageSetup.getDrawingWidthInPixels() )
+        while( x1_px <= sizeDrawing.width() )
         {
             if( !strExpectedValues.isEmpty() ) strExpectedValues += ", ";
             QLine line(x1_px, y1_px, x2_px, y2_px);
@@ -325,12 +325,12 @@ void CTest::doTestStepAndroidWallpaperTemplateDrawGridLines( ZS::Test::CTestStep
 
     x1_px = 0;
     y1_px = 0;
-    x2_px = pageSetup.getDrawingWidthInPixels();
+    x2_px = sizeDrawing.width();
     y2_px = 0;
 
     if( yOffs_px > 0 )
     {
-        while( y1_px <= pageSetup.getDrawingHeightInPixels() )
+        while( y1_px <= sizeDrawing.height() )
         {
             if( idxLine % 10 == 0 )
             {
@@ -374,11 +374,11 @@ void CTest::doTestStepAndroidWallpaperTemplateDrawGridLines( ZS::Test::CTestStep
     x1_px = 0;
     y1_px = 0;
     x2_px = 0;
-    y2_px = pageSetup.getDrawingHeightInPixels();
+    y2_px = sizeDrawing.height();
 
     if( xOffs_px > 0 )
     {
-        while( x1_px <= pageSetup.getDrawingWidthInPixels() )
+        while( x1_px <= sizeDrawing.width() )
         {
             if( idxLine % 10 == 0 )
             {
@@ -427,12 +427,12 @@ void CTest::doTestStepAndroidWallpaperTemplateDrawGridLines( ZS::Test::CTestStep
 
     x1_px = 0;
     y1_px = 0;
-    x2_px = pageSetup.getDrawingWidthInPixels();
+    x2_px = sizeDrawing.width();
     y2_px = 0;
 
     if( yOffs_px > 0 )
     {
-        while( y1_px <= pageSetup.getDrawingHeightInPixels() )
+        while( y1_px <= sizeDrawing.height() )
         {
             if( idxLine % 5 == 0 )
             {
@@ -458,7 +458,7 @@ void CTest::doTestStepAndroidWallpaperTemplateDrawGridLines( ZS::Test::CTestStep
                     /* strObjName    */ "HLblC" + QString::number(y1_px),
                     /* strObjId      */ "HLblC" + QString::number(idxLine));
 
-                pGraphObjText->setPos( QPoint(pageSetup.getDrawingWidthInPixels()/2, y1_px) );
+                pGraphObjText->setPos( QPoint(sizeDrawing.width()/2, y1_px) );
                 pGraphObjText->setPlainText(QString::number(y1_px));
                 m_pDrawingScene->addItem(pGraphObjText);
                 m_pDrawingScene->onGraphObjCreated(pGraphObjText);
@@ -500,11 +500,11 @@ void CTest::doTestStepAndroidWallpaperTemplateDrawGridLines( ZS::Test::CTestStep
     x1_px = 0;
     y1_px = 0;
     x2_px = 0;
-    y2_px = pageSetup.getDrawingHeightInPixels();
+    y2_px = sizeDrawing.height();
 
     if( xOffs_px > 0 )
     {
-        while( x1_px <= pageSetup.getDrawingWidthInPixels() )
+        while( x1_px <= sizeDrawing.width() )
         {
             if( idxLine % 5 == 0 )
             {
@@ -530,7 +530,7 @@ void CTest::doTestStepAndroidWallpaperTemplateDrawGridLines( ZS::Test::CTestStep
                     /* strObjName    */ "VLblC" + QString::number(x1_px),
                     /* strObjId      */ "VLblC" + QString::number(idxLine));
 
-                pGraphObjText->setPos( QPoint(x1_px, pageSetup.getDrawingHeightInPixels()/2) );
+                pGraphObjText->setPos( QPoint(x1_px, sizeDrawing.height()/2) );
                 pGraphObjText->setPlainText(QString::number(x1_px));
                 m_pDrawingScene->addItem(pGraphObjText);
                 m_pDrawingScene->onGraphObjCreated(pGraphObjText);
@@ -683,8 +683,8 @@ void CTest::doTestStepAndroidWallpaperTemplateSaveAsWallpaperPng( ZS::Test::CTes
     QString strIniFileScope = "System"; // Default
     #endif
 
-    CPageSetup pageSetup = m_pDrawingView->getPageSetup();
-    QString strDim = QString::number(pageSetup.getDrawingWidthInPixels()) + "x" + QString::number(pageSetup.getDrawingHeightInPixels());
+    QSize sizeDrawing = m_pDrawingView->getDrawingSizeInPixels();
+    QString strDim = QString::number(sizeDrawing.width()) + "x" + QString::number(sizeDrawing.height());
 
     QString strAppLogDir = ZS::System::getAppLogDir(strIniFileScope);
     QString strFileName = strAppLogDir + "/" + "test_wallpaper_template_" + strDim + ".png";

@@ -33,13 +33,14 @@ may result in using the software modules.
 #endif
 
 #include "ZSDraw/ZSDrawObjFactoryEllipse.h"
+#include "ZSDraw/ZSDrawAux.h"
 #include "ZSDraw/ZSDrawGraphObjEllipse.h"
 #include "ZSDraw/ZSDrawGraphObjGroup.h"
+#include "ZSDraw/ZSDrawGraphObjLabel.h"
 #include "ZSDraw/ZSDrawingScene.h"
 #include "ZSSys/ZSSysException.h"
 #include "ZSSys/ZSSysTrcAdminObj.h"
 #include "ZSSys/ZSSysTrcMethod.h"
-//#include "ZSSys/ZSSysTrcServer.h"
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
@@ -63,8 +64,8 @@ CObjFactoryEllipse::CObjFactoryEllipse(
 //------------------------------------------------------------------------------
     CObjFactory(
         /* strGroupName         */ "Draw::Standard Shapes",
-        /* strGraphObjNameSpace */ "ZS::Draw",
-        /* strGraphObjClassName */ "CGraphObjEllipse",
+        /* strGraphObjNameSpace */ CGraphObjEllipse::NameSpace(),
+        /* strGraphObjClassName */ CGraphObjEllipse::ClassName(),
         /* iGraphObjType        */ EGraphObjTypeEllipse,
         /* strGraphObjType      */ ZS::Draw::graphObjType2Str(EGraphObjTypeEllipse),
         /* bAddToToolBoxIdxTree */ i_bAddToToolBoxIdxTree,

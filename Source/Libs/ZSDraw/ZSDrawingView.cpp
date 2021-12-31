@@ -27,10 +27,12 @@ may result in using the software modules.
 #include <QtGui/qevent.h>
 
 #include "ZSDraw/ZSDrawingView.h"
+#include "ZSDraw/ZSDrawAux.h"
 #include "ZSDraw/ZSDrawingScene.h"
 #include "ZSDraw/ZSDrawObjFactory.h"
 #include "ZSDraw/ZSDrawGraphObj.h"
 #include "ZSPhysSizes/Geometry/ZSPhysSizes.h"
+#include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysException.h"
 #include "ZSSys/ZSSysTrcAdminObj.h"
 #include "ZSSys/ZSSysTrcMethod.h"
@@ -59,18 +61,13 @@ CDrawingView::CDrawingView(
 //------------------------------------------------------------------------------
     QGraphicsView(i_pDrawingScene,i_pWdgtParent),
     m_pDrawingScene(i_pDrawingScene),
-    m_pageSetup(),
-    m_pTrcAdminObj(nullptr)
+    m_pTrcAdminObj(nullptr),
+    m_pTrcAdminObjMouseMoveEvent(nullptr),
+    m_pTrcAdminObjPaintEvent(nullptr)
 {
-    double fXResolution_dpmm = logicalDpiX() / 25.4; // dots per milli meter
-    double fYResolution_dpmm = logicalDpiY() / 25.4; // dots per milli meter
-
-    m_pDrawingScene->setXResolutionInDpmm(fXResolution_dpmm);
-    m_pDrawingScene->setYResolutionInDpmm(fYResolution_dpmm);
-
     setObjectName("DrawingView");
 
-    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj("ZS::Draw", "CDrawingView", objectName());
+    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName());
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -78,10 +75,30 @@ CDrawingView::CDrawingView(
         /* strMethod    */ "ctor",
         /* strAddInfo   */ "" );
 
-    setPageSetup(m_pageSetup);
+    m_pTrcAdminObjMouseMoveEvent = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName() + "-MouseMoveEvent");;
+    m_pTrcAdminObjPaintEvent = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName() + "-PaintEvent");;
+
+    double fXResolution_dpmm = logicalDpiX() / 25.4; // dots per milli meter
+    double fYResolution_dpmm = logicalDpiY() / 25.4; // dots per milli meter
+
+    m_pDrawingScene->setXResolutionInDpmm(fXResolution_dpmm);
+    m_pDrawingScene->setYResolutionInDpmm(fYResolution_dpmm);
+
+    m_pDrawingScene->setSceneRect(0.0, 0.0, 640.0, 480.0);
+
+    setViewportMargins(10.0, 10.0, 10.0, 10.0);
 
     setMouseTracking(true);
     setAcceptDrops(true);
+
+    if( !connect(
+        /* pObjSender   */ m_pDrawingScene,
+        /* szSignal     */ SIGNAL(sceneRectChanged(const QRectF&)),
+        /* pObjReceiver */ this,
+        /* szSlot       */ SLOT(onSceneRectChanged(const QRectF&)) ) )
+    {
+        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
+    }
 
 } // ctor
 
@@ -98,10 +115,13 @@ CDrawingView::~CDrawingView()
     //saveSettings();
 
     CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
-    m_pTrcAdminObj = nullptr;
+    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjMouseMoveEvent);
+    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjPaintEvent);
 
     m_pDrawingScene = nullptr;
     m_pTrcAdminObj = nullptr;
+    m_pTrcAdminObjMouseMoveEvent = nullptr;
+    m_pTrcAdminObjPaintEvent = nullptr;
 
 } // dtor
 
@@ -124,29 +144,216 @@ double CDrawingView::getYResolutionInDpmm()
 }
 
 /*==============================================================================
-public: // instance methods
+public: // instance methods (drawing area)
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CDrawingView::setPageSetup( const CPageSetup& i_pageSetup )
+void CDrawingView::setDrawingSize( const QSize& i_size )
 //------------------------------------------------------------------------------
 {
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    {
+        strMthInArgs = size2Str(i_size);
+    }
+
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strMethod    */ "setPageSetup",
-        /* strAddInfo   */ "" );
+        /* strMethod    */ "setDrawingSize",
+        /* strAddInfo   */ strMthInArgs );
 
-    m_pageSetup = i_pageSetup;
+    QRectF sceneRect = m_pDrawingScene->sceneRect();
 
-    int cxDrawingWidth_px  = m_pageSetup.getDrawingWidthInPixels();
-    int cxDrawingHeight_px = m_pageSetup.getDrawingHeightInPixels();
+    if( sceneRect.size() != i_size )
+    {
+        sceneRect.setSize(i_size);
 
-    m_pDrawingScene->setSceneRect( QRectF(0,0,cxDrawingWidth_px,cxDrawingHeight_px) );
+        // QGraphicsScene emits "sceneRectChanged" -> slot "CDrawingView::onSceneRectChanged" is called.
+        // The DrawingViews slot emits DrawingViews signal "sceneRectChanged".
+        m_pDrawingScene->setSceneRect(sceneRect);
+    }
+} // setDrawingSize
 
-    emit pageSetupChanged(m_pageSetup);
+//------------------------------------------------------------------------------
+void CDrawingView::setDrawingSizeInPixels( int i_iWidth_px, int i_iHeight_px )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
 
-} // setPageSetup
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    {
+        strMthInArgs  = "Width: " + QString::number(i_iWidth_px);
+        strMthInArgs += ", Height: " + QString::number(i_iHeight_px);
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* strMethod    */ "setDrawingSizeInPixels",
+        /* strAddInfo   */ strMthInArgs );
+
+    QRectF sceneRect = m_pDrawingScene->sceneRect();
+
+    if( sceneRect.width() != i_iWidth_px || sceneRect.height() != i_iHeight_px )
+    {
+        sceneRect.setWidth(i_iWidth_px);
+        sceneRect.setHeight(i_iHeight_px);
+
+        // QGraphicsScene emits "sceneRectChanged" -> slot "CDrawingView::onSceneRectChanged" is called.
+        // The DrawingViews slot emits DrawingViews signal "sceneRectChanged".
+        m_pDrawingScene->setSceneRect(sceneRect);
+    }
+} // setDrawingSizeInPixels
+
+//------------------------------------------------------------------------------
+void CDrawingView::setDrawingWidthInPixels( int i_iWidth_px )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    {
+        strMthInArgs = QString::number(i_iWidth_px);
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* strMethod    */ "setDrawingWidthInPixels",
+        /* strAddInfo   */ strMthInArgs );
+
+    QRectF sceneRect = m_pDrawingScene->sceneRect();
+
+    if( sceneRect.width() != i_iWidth_px )
+    {
+        sceneRect.setWidth(i_iWidth_px);
+
+        // QGraphicsScene emits "sceneRectChanged" -> slot "CDrawingView::onSceneRectChanged" is called.
+        // The DrawingViews slot emits DrawingViews signal "sceneRectChanged".
+        m_pDrawingScene->setSceneRect(sceneRect);
+    }
+} // setDrawingWidthInPixels
+
+//------------------------------------------------------------------------------
+void CDrawingView::setDrawingHeightInPixels( int i_iHeight_px )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    {
+        strMthInArgs = QString::number(i_iHeight_px);
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* strMethod    */ "setDrawingWidthInPixels",
+        /* strAddInfo   */ strMthInArgs );
+
+    QRectF sceneRect = m_pDrawingScene->sceneRect();
+
+    if( sceneRect.height() != i_iHeight_px )
+    {
+        sceneRect.setHeight(i_iHeight_px);
+
+        // QGraphicsScene emits "sceneRectChanged" -> slot "CDrawingView::onSceneRectChanged" is called.
+        // The DrawingViews slot emits DrawingViews signal "sceneRectChanged".
+        m_pDrawingScene->setSceneRect(sceneRect);
+    }
+} // setDrawingHeightInPixels
+
+//------------------------------------------------------------------------------
+QSize CDrawingView::getDrawingSizeInPixels() const
+//------------------------------------------------------------------------------
+{
+    QSizeF size = m_pDrawingScene->sceneRect().size();
+    return QSize(size.width(), size.height());
+}
+
+//------------------------------------------------------------------------------
+int CDrawingView::getDrawingWidthInPixels() const
+//------------------------------------------------------------------------------
+{
+    return m_pDrawingScene->sceneRect().width();
+}
+
+//------------------------------------------------------------------------------
+int CDrawingView::getDrawingHeightInPixels() const
+//------------------------------------------------------------------------------
+{
+    return m_pDrawingScene->sceneRect().height();
+}
+
+/*==============================================================================
+public: // instance methods (drawing area)
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CDrawingView::setViewportMargins(int i_iLeft, int i_iTop, int i_iRight, int i_iBottom)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    {
+        strMthInArgs  = "Left: "+ QString::number(i_iLeft);
+        strMthInArgs += ", Top: "+ QString::number(i_iTop);
+        strMthInArgs += ", Right: "+ QString::number(i_iRight);
+        strMthInArgs += ", Bottom: "+ QString::number(i_iBottom);
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* strMethod    */ "setViewportMargins",
+        /* strAddInfo   */ strMthInArgs );
+
+    QMargins margins(i_iLeft, i_iTop, i_iRight, i_iBottom);
+
+    if( margins != viewportMargins() )
+    {
+        QGraphicsView::setViewportMargins(margins);
+
+        // QGraphicsView has no signal "viewportMarginsChanged".
+        emit viewportMarginsChanged(viewportMargins());
+    }
+} // setViewportMargins
+
+//------------------------------------------------------------------------------
+void CDrawingView::setViewportMargins(const QMargins& i_margins)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    {
+        strMthInArgs = qMargins2Str(i_margins);
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* strMethod    */ "setViewportMargins",
+        /* strAddInfo   */ strMthInArgs );
+
+    if( i_margins != viewportMargins() )
+    {
+        QGraphicsView::setViewportMargins(i_margins);
+
+        // QGraphicsView has no signal "viewportMarginsChanged".
+        emit viewportMarginsChanged(viewportMargins());
+    }
+} // setViewportMargins
+
+//------------------------------------------------------------------------------
+QMargins CDrawingView::getViewportMargins() const
+//------------------------------------------------------------------------------
+{
+    return viewportMargins();
+}
 
 /*==============================================================================
 protected slots:
@@ -156,14 +363,14 @@ protected slots:
 void CDrawingView::mousePressEvent( QMouseEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
         #if QT_VERSION < 0x050000
-        strAddTrcInfo = "Pos:(" + QString::number(i_pEv->posF().x()) + "," + QString::number(i_pEv->posF().y()) + ")";
+        strMthInArgs = "Pos:(" + QString::number(i_pEv->posF().x()) + "," + QString::number(i_pEv->posF().y()) + ")";
         #else
-        strAddTrcInfo = "Pos:(" + QString::number(i_pEv->windowPos().x()) + "," + QString::number(i_pEv->windowPos().y()) + ")";
+        strMthInArgs = "Pos:(" + QString::number(i_pEv->windowPos().x()) + "," + QString::number(i_pEv->windowPos().y()) + ")";
         #endif
     }
 
@@ -171,7 +378,7 @@ void CDrawingView::mousePressEvent( QMouseEvent* i_pEv )
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "mousePressEvent",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     QPointF ptPos = i_pEv->pos();
 
@@ -227,22 +434,22 @@ void CDrawingView::mousePressEvent( QMouseEvent* i_pEv )
 void CDrawingView::mouseMoveEvent( QMouseEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelInternalStates) )
+    if( m_pTrcAdminObjMouseMoveEvent != nullptr && m_pTrcAdminObjMouseMoveEvent->isActive(ETraceDetailLevelMethodArgs) )
     {
         #if QT_VERSION < 0x050000
-        strAddTrcInfo = "Pos:(" + QString::number(i_pEv->posF().x()) + "," + QString::number(i_pEv->posF().y()) + ")";
+        strMthInArgs = "Pos:(" + QString::number(i_pEv->posF().x()) + "," + QString::number(i_pEv->posF().y()) + ")";
         #else
-        strAddTrcInfo = "Pos:(" + QString::number(i_pEv->windowPos().x()) + "," + QString::number(i_pEv->windowPos().y()) + ")";
+        strMthInArgs = "Pos:(" + QString::number(i_pEv->windowPos().x()) + "," + QString::number(i_pEv->windowPos().y()) + ")";
         #endif
     }
 
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ 2,
+        /* pAdminObj    */ m_pTrcAdminObjMouseMoveEvent,
+        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "mouseMoveEvent",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     QPointF ptPos = i_pEv->pos();
 
@@ -298,14 +505,14 @@ void CDrawingView::mouseMoveEvent( QMouseEvent* i_pEv )
 void CDrawingView::mouseReleaseEvent( QMouseEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
         #if QT_VERSION < 0x050000
-        strAddTrcInfo = "Pos:(" + QString::number(i_pEv->posF().x()) + "," + QString::number(i_pEv->posF().y()) + ")";
+        strMthInArgs = "Pos:(" + QString::number(i_pEv->posF().x()) + "," + QString::number(i_pEv->posF().y()) + ")";
         #else
-        strAddTrcInfo = "Pos:(" + QString::number(i_pEv->windowPos().x()) + "," + QString::number(i_pEv->windowPos().y()) + ")";
+        strMthInArgs = "Pos:(" + QString::number(i_pEv->windowPos().x()) + "," + QString::number(i_pEv->windowPos().y()) + ")";
         #endif
     }
 
@@ -313,7 +520,7 @@ void CDrawingView::mouseReleaseEvent( QMouseEvent* i_pEv )
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "mouseReleaseEvent",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     QPointF ptPos = i_pEv->pos();
 
@@ -369,14 +576,14 @@ void CDrawingView::mouseReleaseEvent( QMouseEvent* i_pEv )
 void CDrawingView::mouseDoubleClickEvent( QMouseEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
         #if QT_VERSION < 0x050000
-        strAddTrcInfo = "Pos:(" + QString::number(i_pEv->posF().x()) + "," + QString::number(i_pEv->posF().y()) + ")";
+        strMthInArgs = "Pos:(" + QString::number(i_pEv->posF().x()) + "," + QString::number(i_pEv->posF().y()) + ")";
         #else
-        strAddTrcInfo = "Pos:(" + QString::number(i_pEv->windowPos().x()) + "," + QString::number(i_pEv->windowPos().y()) + ")";
+        strMthInArgs = "Pos:(" + QString::number(i_pEv->windowPos().x()) + "," + QString::number(i_pEv->windowPos().y()) + ")";
         #endif
     }
 
@@ -384,7 +591,7 @@ void CDrawingView::mouseDoubleClickEvent( QMouseEvent* i_pEv )
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "mouseDoubleClickEvent",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     QPointF ptPos = i_pEv->pos();
 
@@ -444,21 +651,21 @@ public: // overridables of base class QWidget
 void CDrawingView::keyPressEvent( QKeyEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
-        strAddTrcInfo  = "Key:" + qKeyCode2Str(i_pEv->key()) + " (" + i_pEv->text() + ")";
-        strAddTrcInfo += ", Count:" + QString::number(i_pEv->count());
-        strAddTrcInfo += ", IsAutoRepeat:" + QString::number(i_pEv->count());
-        strAddTrcInfo += ", Modifiers:" + qKeyboardModifiers2Str(i_pEv->modifiers());
+        strMthInArgs  = "Key:" + qKeyCode2Str(i_pEv->key()) + " (" + i_pEv->text() + ")";
+        strMthInArgs += ", Count:" + QString::number(i_pEv->count());
+        strMthInArgs += ", IsAutoRepeat:" + QString::number(i_pEv->count());
+        strMthInArgs += ", Modifiers:" + qKeyboardModifiers2Str(i_pEv->modifiers());
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "keyPressEvent",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     QGraphicsView::keyPressEvent(i_pEv);
 
@@ -468,21 +675,21 @@ void CDrawingView::keyPressEvent( QKeyEvent* i_pEv )
 void CDrawingView::keyReleaseEvent( QKeyEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
-        strAddTrcInfo  = "Key:" + qKeyCode2Str(i_pEv->key()) + " (" + i_pEv->text() + ")";
-        strAddTrcInfo += ", Count:" + QString::number(i_pEv->count());
-        strAddTrcInfo += ", IsAutoRepeat:" + QString::number(i_pEv->count());
-        strAddTrcInfo += ", Modifiers:" + qKeyboardModifiers2Str(i_pEv->modifiers());
+        strMthInArgs  = "Key:" + qKeyCode2Str(i_pEv->key()) + " (" + i_pEv->text() + ")";
+        strMthInArgs += ", Count:" + QString::number(i_pEv->count());
+        strMthInArgs += ", IsAutoRepeat:" + QString::number(i_pEv->count());
+        strMthInArgs += ", Modifiers:" + qKeyboardModifiers2Str(i_pEv->modifiers());
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "keyReleaseEvent",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     QGraphicsView::keyReleaseEvent(i_pEv);
 
@@ -496,5 +703,56 @@ protected: // overridables of base class QAbstractScrollArea
 void CDrawingView::paintEvent( QPaintEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObjPaintEvent != nullptr && m_pTrcAdminObjPaintEvent->isActive(ETraceDetailLevelMethodArgs) )
+    {
+        strMthInArgs  = "Rect: " + rect2Str(i_pEv->rect());
+        //strMthInArgs += ", Region: " + region2Str(i_pEv->region());
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjPaintEvent,
+        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* strMethod    */ "paintEvent",
+        /* strAddInfo   */ strMthInArgs );
+
+    QRect rect = viewport()->rect();
+
+    QColor colBackground = viewport()->palette().color(QPalette::Window);
+
+    QPainter painter;
+    painter.begin(viewport());
+    painter.setBrush(colBackground);
+    painter.setPen(Qt::NoPen);
+    painter.drawRect(rect);
+    painter.end();
+
     QGraphicsView::paintEvent(i_pEv);
-}
+
+} // paintEvent
+
+/*==============================================================================
+protected slots:
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CDrawingView::onSceneRectChanged( const QRectF& i_rect )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObjPaintEvent != nullptr && m_pTrcAdminObjPaintEvent->isActive(ETraceDetailLevelMethodArgs) )
+    {
+        strMthInArgs = rect2Str(i_rect);
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* strMethod    */ "onSceneRectChanged",
+        /* strAddInfo   */ strMthInArgs );
+
+    emit sceneRectChanged(i_rect);
+
+} // onSceneRectChanged

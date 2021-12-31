@@ -37,10 +37,12 @@ may result in using the software modules.
 #endif
 
 #include "ZSDraw/ZSDrawGraphObjGroup.h"
+#include "ZSDraw/ZSDrawAux.h"
 #include "ZSDraw/ZSDrawGraphObjLabel.h"
 #include "ZSDraw/ZSDrawGraphObjSelectionPoint.h"
 #include "ZSDraw/ZSDrawingScene.h"
 #include "ZSPhysSizes/Geometry/ZSPhysSizes.h"
+#include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysErrCode.h"
 #include "ZSSys/ZSSysException.h"
 #include "ZSSys/ZSSysMath.h"
@@ -123,8 +125,8 @@ CGraphObjGroup::CGraphObjGroup(
 //------------------------------------------------------------------------------
     CGraphObj(
         /* pDrawingScene */ i_pDrawingScene,
-        /* strNameSpace  */ "ZS::Draw",
-        /* strClassName  */ "CGraphObjGroup",
+        /* strNameSpace  */ NameSpace(),
+        /* strClassName  */ ClassName(),
         /* type          */ EGraphObjTypeGroup,
         /* strType       */ ZS::Draw::graphObjType2Str(EGraphObjTypeGroup),
         /* strObjName    */ i_strObjName.isEmpty() ? "Group" + QString::number(s_iCtorsCount) : i_strObjName,
@@ -141,14 +143,14 @@ CGraphObjGroup::CGraphObjGroup(
 
     if( s_pTrcAdminObjCtorsAndDtor == nullptr )
     {
-        s_pTrcAdminObjCtorsAndDtor = CTrcServer::GetTraceAdminObj("ZS::Draw", "CGraphObjGroup", "CtorsAndDtor");
-        s_pTrcAdminObjBoundingRect = CTrcServer::GetTraceAdminObj("ZS::Draw", "CGraphObjGroup", "BoundingRect");
-        s_pTrcAdminObjPaint = CTrcServer::GetTraceAdminObj("ZS::Draw", "CGraphObjGroup", "Paint");
-        s_pTrcAdminObjSceneEventFilter = CTrcServer::GetTraceAdminObj("ZS::Draw", "CGraphObjGroup", "SceneEventFilter");
-        s_pTrcAdminObjHoverEvents = CTrcServer::GetTraceAdminObj("ZS::Draw", "CGraphObjGroup", "HoverEvents");
-        s_pTrcAdminObjMouseEvents = CTrcServer::GetTraceAdminObj("ZS::Draw", "CGraphObjGroup", "MouseEvents");
-        s_pTrcAdminObjKeyEvents = CTrcServer::GetTraceAdminObj("ZS::Draw", "CGraphObjGroup", "KeyEvents");
-        s_pTrcAdminObjItemChange = CTrcServer::GetTraceAdminObj("ZS::Draw", "CGraphObjGroup", "ItemChange");
+        s_pTrcAdminObjCtorsAndDtor = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), "CtorsAndDtor");
+        s_pTrcAdminObjBoundingRect = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), "BoundingRect");
+        s_pTrcAdminObjPaint = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), "Paint");
+        s_pTrcAdminObjSceneEventFilter = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), "SceneEventFilter");
+        s_pTrcAdminObjHoverEvents = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), "HoverEvents");
+        s_pTrcAdminObjMouseEvents = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), "MouseEvents");
+        s_pTrcAdminObjKeyEvents = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), "KeyEvents");
+        s_pTrcAdminObjItemChange = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), "ItemChange");
 
     } // if( s_pTrcAdminObjCtorsAndDtor == nullptr )
 
@@ -163,6 +165,9 @@ CGraphObjGroup::CGraphObjGroup(
         /* strMethod    */ "ctor",
         /* strAddInfo   */ strAddTrcInfo );
 
+    setData(static_cast<int>(EGraphItemDataKey::ObjId), m_strObjId);
+    setData(static_cast<int>(EGraphItemDataKey::ObjType), m_type);
+
     setFlags( QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemSendsGeometryChanges );
 
     updateToolTip();
@@ -170,9 +175,9 @@ CGraphObjGroup::CGraphObjGroup(
     if( mthTracer.isActive(ETraceDetailLevelInternalStates) )
     {
         strAddTrcInfo  = "Selected:" + bool2Str(isSelected());
-        strAddTrcInfo += ", EditMode:" + editMode2Str(m_editMode);
-        strAddTrcInfo += ", ResizeMode:" + editResizeMode2Str(m_editResizeMode);
-        strAddTrcInfo += ", SelectedPoint:" + selectionPoint2Str(m_selPtSelectedBoundingRect);
+        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
+        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
+        strAddTrcInfo += ", SelectedPoint:" + m_selPtSelectedBoundingRect.toString();
         mthTracer.trace(strAddTrcInfo);
     }
 
@@ -211,15 +216,18 @@ CGraphObjGroup::CGraphObjGroup(
 
     if( s_iCtorsCount == 1 )
     {
-        s_pTrcAdminObjCtorsAndDtor = CTrcServer::GetTraceAdminObj("ZS::Draw", "CGraphObjGroup", "CtorsAndDtor");
-        s_pTrcAdminObjBoundingRect = CTrcServer::GetTraceAdminObj("ZS::Draw", i_strClassName, "BoundingRect");
-        s_pTrcAdminObjPaint = CTrcServer::GetTraceAdminObj("ZS::Draw", i_strClassName, "Paint");
-        s_pTrcAdminObjSceneEventFilter = CTrcServer::GetTraceAdminObj("ZS::Draw", i_strClassName, "SceneEventFilter");
-        s_pTrcAdminObjHoverEvents = CTrcServer::GetTraceAdminObj("ZS::Draw", i_strClassName, "HoverEvents");
-        s_pTrcAdminObjMouseEvents = CTrcServer::GetTraceAdminObj("ZS::Draw", i_strClassName, "MouseEvents");
-        s_pTrcAdminObjKeyEvents = CTrcServer::GetTraceAdminObj("ZS::Draw", i_strClassName, "KeyEvents");
-        s_pTrcAdminObjItemChange = CTrcServer::GetTraceAdminObj("ZS::Draw", i_strClassName, "ItemChange");
+        s_pTrcAdminObjCtorsAndDtor = CTrcServer::GetTraceAdminObj(NameSpace(), i_strClassName, "CtorsAndDtor");
+        s_pTrcAdminObjBoundingRect = CTrcServer::GetTraceAdminObj(NameSpace(), i_strClassName, "BoundingRect");
+        s_pTrcAdminObjPaint = CTrcServer::GetTraceAdminObj(NameSpace(), i_strClassName, "Paint");
+        s_pTrcAdminObjSceneEventFilter = CTrcServer::GetTraceAdminObj(NameSpace(), i_strClassName, "SceneEventFilter");
+        s_pTrcAdminObjHoverEvents = CTrcServer::GetTraceAdminObj(NameSpace(), i_strClassName, "HoverEvents");
+        s_pTrcAdminObjMouseEvents = CTrcServer::GetTraceAdminObj(NameSpace(), i_strClassName, "MouseEvents");
+        s_pTrcAdminObjKeyEvents = CTrcServer::GetTraceAdminObj(NameSpace(), i_strClassName, "KeyEvents");
+        s_pTrcAdminObjItemChange = CTrcServer::GetTraceAdminObj(NameSpace(), i_strClassName, "ItemChange");
     }
+
+    setData(static_cast<int>(EGraphItemDataKey::ObjId), m_strObjId);
+    setData(static_cast<int>(EGraphItemDataKey::ObjType), m_type);
 
 } // ctor
 
@@ -380,9 +388,9 @@ void CGraphObjGroup::addGraphObj( CGraphObj* i_pGraphObj )
     {
         strAddTrcInfo  = "GraphObj:" + i_pGraphObj->getObjName();
         strAddTrcInfo += ", Selected:" + bool2Str(isSelected());
-        strAddTrcInfo += ", EditMode:" + editMode2Str(m_editMode);
-        strAddTrcInfo += ", ResizeMode:" + editResizeMode2Str(m_editResizeMode);
-        strAddTrcInfo += ", SelectedPoint:" + selectionPoint2Str(m_selPtSelectedBoundingRect);
+        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
+        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
+        strAddTrcInfo += ", SelectedPoint:" + m_selPtSelectedBoundingRect.toString();
     }
 
     CMethodTracer mthTracer(
@@ -423,9 +431,9 @@ void CGraphObjGroup::removeGraphObj( CGraphObj* i_pGraphObj )
     {
         strAddTrcInfo  = "GraphObj:" + i_pGraphObj->getObjName();
         strAddTrcInfo += ", Selected:" + bool2Str(isSelected());
-        strAddTrcInfo += ", EditMode:" + editMode2Str(m_editMode);
-        strAddTrcInfo += ", ResizeMode:" + editResizeMode2Str(m_editResizeMode);
-        strAddTrcInfo += ", SelectedPoint:" + selectionPoint2Str(m_selPtSelectedBoundingRect);
+        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
+        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
+        strAddTrcInfo += ", SelectedPoint:" + m_selPtSelectedBoundingRect.toString();
     }
 
     CMethodTracer mthTracer(
@@ -706,12 +714,12 @@ void CGraphObjGroup::applyGeometryChangeToChildrens()
 
         if( pGraphObjChild != nullptr )
         {
-            ptPosChildOrig = pGraphObjChild->getPos(ECoordinatesVersionOriginal);
+            ptPosChildOrig = pGraphObjChild->getPos(ECoordinatesVersion::Original);
             fxPosChildOrig = ptPosChildOrig.x();
             fyPosChildOrig = ptPosChildOrig.y();
 
-            fWidthChildOrig  = pGraphObjChild->getWidth(ECoordinatesVersionOriginal);
-            fHeightChildOrig = pGraphObjChild->getHeight(ECoordinatesVersionOriginal);
+            fWidthChildOrig  = pGraphObjChild->getWidth(ECoordinatesVersion::Original);
+            fHeightChildOrig = pGraphObjChild->getHeight(ECoordinatesVersion::Original);
 
             if( pGraphObjChild->getAlignmentCount() == 0 )
             {
@@ -784,35 +792,35 @@ void CGraphObjGroup::applyGeometryChangeToChildrens()
                 {
                     alignment = pGraphObjChild->getAlignment(idxAlignment);
 
-                    if( alignment.m_alignmentRefChild == EAlignmentRefLeft )
+                    if( alignment.m_alignmentRefChild == EAlignmentRef::Left )
                     {
                         bAlignLeft = true;
                     }
-                    else if( alignment.m_alignmentRefChild == EAlignmentRefHCenter )
+                    else if( alignment.m_alignmentRefChild == EAlignmentRef::HCenter )
                     {
                         bAlignHCenter = true;
                     }
-                    else if( alignment.m_alignmentRefChild == EAlignmentRefRight )
+                    else if( alignment.m_alignmentRefChild == EAlignmentRef::Right )
                     {
                         bAlignRight = true;
                     }
-                    else if( alignment.m_alignmentRefChild == EAlignmentRefWidth )
+                    else if( alignment.m_alignmentRefChild == EAlignmentRef::Width )
                     {
                         bAlignWidth = true;
                     }
-                    else if( alignment.m_alignmentRefChild == EAlignmentRefTop )
+                    else if( alignment.m_alignmentRefChild == EAlignmentRef::Top )
                     {
                         bAlignTop = true;
                     }
-                    else if( alignment.m_alignmentRefChild == EAlignmentRefVCenter )
+                    else if( alignment.m_alignmentRefChild == EAlignmentRef::VCenter )
                     {
                         bAlignVCenter = true;
                     }
-                    else if( alignment.m_alignmentRefChild == EAlignmentRefBottom )
+                    else if( alignment.m_alignmentRefChild == EAlignmentRef::Bottom )
                     {
                         bAlignBottom = true;
                     }
-                    else if( alignment.m_alignmentRefChild == EAlignmentRefHeight )
+                    else if( alignment.m_alignmentRefChild == EAlignmentRef::Height )
                     {
                         bAlignHeight = true;
                     }
@@ -834,13 +842,13 @@ void CGraphObjGroup::applyGeometryChangeToChildrens()
                 {
                     alignment = pGraphObjChild->getAlignment(idxAlignment);
 
-                    switch( alignment.m_alignmentRefChild )
+                    switch( alignment.m_alignmentRefChild.enumerator() )
                     {
-                        case EAlignmentRefLeft:
+                        case EAlignmentRef::Left:
                         {
-                            switch( alignment.m_alignmentRefParent )
+                            switch( alignment.m_alignmentRefParent.enumerator() )
                             {
-                                case EAlignmentRefLeft:
+                                case EAlignmentRef::Left:
                                 {
                                     if( alignment.m_bAlignAbsolute )
                                     {
@@ -894,7 +902,7 @@ void CGraphObjGroup::applyGeometryChangeToChildrens()
                                     }
                                     break;
                                 }
-                                case EAlignmentRefHCenter:
+                                case EAlignmentRef::HCenter:
                                 {
                                     if( alignment.m_bAlignAbsolute )
                                     {
@@ -948,7 +956,7 @@ void CGraphObjGroup::applyGeometryChangeToChildrens()
                                     }
                                     break;
                                 }
-                                case EAlignmentRefRight:
+                                case EAlignmentRef::Right:
                                 {
                                     if( alignment.m_bAlignAbsolute )
                                     {
@@ -1002,7 +1010,7 @@ void CGraphObjGroup::applyGeometryChangeToChildrens()
                                     }
                                     break;
                                 }
-                                case EAlignmentRefWidth:   // aligning left border of child to width of parent will very likely never been used ..
+                                case EAlignmentRef::Width:   // aligning left border of child to width of parent will very likely never been used ..
                                 {
                                     if( alignment.m_bAlignAbsolute )
                                     {
@@ -1056,7 +1064,7 @@ void CGraphObjGroup::applyGeometryChangeToChildrens()
                                     }
                                     break;
                                 }
-                                case EAlignmentRefHeight:   // aligning left border of child to height of parent will very likely never been used ..
+                                case EAlignmentRef::Height:   // aligning left border of child to height of parent will very likely never been used ..
                                 {
                                     if( alignment.m_bAlignAbsolute )
                                     {
@@ -1110,22 +1118,22 @@ void CGraphObjGroup::applyGeometryChangeToChildrens()
                                     }
                                     break;
                                 }
-                                case EAlignmentRefTop:      // aligning left border of child to top border of parent will very likely never been used ..
-                                case EAlignmentRefVCenter:  // aligning left border of child to vertical center of parent will very likely never been used ..
-                                case EAlignmentRefBottom:   // aligning left border of child to bottom border of parent will very likely never been used ..
+                                case EAlignmentRef::Top:      // aligning left border of child to top border of parent will very likely never been used ..
+                                case EAlignmentRef::VCenter:  // aligning left border of child to vertical center of parent will very likely never been used ..
+                                case EAlignmentRef::Bottom:   // aligning left border of child to bottom border of parent will very likely never been used ..
                                 default:
                                 {
                                     break;
                                 }
-                            } // switch( alignment.m_alignmentRefParent )
+                            } // switch( alignment.m_alignmentRefParent.enumerator() )
                             break;
-                        } // case m_alignmentRefChild == EAlignmentRefLeft
+                        } // case m_alignmentRefChild == EAlignmentRef::Left
 
-                        case EAlignmentRefHCenter:
+                        case EAlignmentRef::HCenter:
                         {
-                            switch( alignment.m_alignmentRefParent )
+                            switch( alignment.m_alignmentRefParent.enumerator() )
                             {
-                                case EAlignmentRefLeft:
+                                case EAlignmentRef::Left:
                                 {
                                     if( alignment.m_bAlignAbsolute )
                                     {
@@ -1179,7 +1187,7 @@ void CGraphObjGroup::applyGeometryChangeToChildrens()
                                     }
                                     break;
                                 }
-                                case EAlignmentRefHCenter:
+                                case EAlignmentRef::HCenter:
                                 {
                                     if( alignment.m_bAlignAbsolute )
                                     {
@@ -1233,7 +1241,7 @@ void CGraphObjGroup::applyGeometryChangeToChildrens()
                                     }
                                     break;
                                 }
-                                case EAlignmentRefRight:
+                                case EAlignmentRef::Right:
                                 {
                                     if( alignment.m_bAlignAbsolute )
                                     {
@@ -1287,7 +1295,7 @@ void CGraphObjGroup::applyGeometryChangeToChildrens()
                                     }
                                     break;
                                 }
-                                case EAlignmentRefWidth: // aligning horizontal center of child to width of parent will very likely never been used ..
+                                case EAlignmentRef::Width: // aligning horizontal center of child to width of parent will very likely never been used ..
                                 {
                                     if( alignment.m_bAlignAbsolute )
                                     {
@@ -1341,7 +1349,7 @@ void CGraphObjGroup::applyGeometryChangeToChildrens()
                                     }
                                     break;
                                 }
-                                case EAlignmentRefHeight: // aligning horizontal center of child to height of parent will very likely never been used ..
+                                case EAlignmentRef::Height: // aligning horizontal center of child to height of parent will very likely never been used ..
                                 {
                                     if( alignment.m_bAlignAbsolute )
                                     {
@@ -1395,22 +1403,22 @@ void CGraphObjGroup::applyGeometryChangeToChildrens()
                                     }
                                     break;
                                 }
-                                case EAlignmentRefTop:      // aligning horizontal center of child to top border of parent will very likely never been used ..
-                                case EAlignmentRefVCenter:  // aligning horizontal center of child to vertical center of parent will very likely never been used ..
-                                case EAlignmentRefBottom:   // aligning horizontal center of child to bottom border of parent will very likely never been used ..
+                                case EAlignmentRef::Top:      // aligning horizontal center of child to top border of parent will very likely never been used ..
+                                case EAlignmentRef::VCenter:  // aligning horizontal center of child to vertical center of parent will very likely never been used ..
+                                case EAlignmentRef::Bottom:   // aligning horizontal center of child to bottom border of parent will very likely never been used ..
                                 default:
                                 {
                                     break;
                                 }
-                            } // switch( alignment.m_alignmentRefParent )
+                            } // switch( alignment.m_alignmentRefParent.enumerator() )
                             break;
-                        } // case m_alignmentRefChild == EAlignmentRefHCenter
+                        } // case m_alignmentRefChild == EAlignmentRef::HCenter
 
-                        case EAlignmentRefRight:
+                        case EAlignmentRef::Right:
                         {
-                            switch( alignment.m_alignmentRefParent )
+                            switch( alignment.m_alignmentRefParent.enumerator() )
                             {
-                                case EAlignmentRefLeft:
+                                case EAlignmentRef::Left:
                                 {
                                     if( alignment.m_bAlignAbsolute )
                                     {
@@ -1464,7 +1472,7 @@ void CGraphObjGroup::applyGeometryChangeToChildrens()
                                     }
                                     break;
                                 }
-                                case EAlignmentRefHCenter:
+                                case EAlignmentRef::HCenter:
                                 {
                                     if( alignment.m_bAlignAbsolute )
                                     {
@@ -1518,7 +1526,7 @@ void CGraphObjGroup::applyGeometryChangeToChildrens()
                                     }
                                     break;
                                 }
-                                case EAlignmentRefRight:
+                                case EAlignmentRef::Right:
                                 {
                                     if( alignment.m_bAlignAbsolute )
                                     {
@@ -1572,7 +1580,7 @@ void CGraphObjGroup::applyGeometryChangeToChildrens()
                                     }
                                     break;
                                 }
-                                case EAlignmentRefWidth:   // aligning right border of child to width of parent will very likely never been used ..
+                                case EAlignmentRef::Width:   // aligning right border of child to width of parent will very likely never been used ..
                                 {
                                     if( !alignment.m_bAlignAbsolute )
                                     {
@@ -1626,7 +1634,7 @@ void CGraphObjGroup::applyGeometryChangeToChildrens()
                                     }
                                     break;
                                 }
-                                case EAlignmentRefHeight:   // aligning right border of child to height of parent will very likely never been used ..
+                                case EAlignmentRef::Height:   // aligning right border of child to height of parent will very likely never been used ..
                                 {
                                     if( alignment.m_bAlignAbsolute )
                                     {
@@ -1680,22 +1688,22 @@ void CGraphObjGroup::applyGeometryChangeToChildrens()
                                     }
                                     break;
                                 }
-                                case EAlignmentRefTop:      // aligning right border of child to top border of parent will very likely never been used ..
-                                case EAlignmentRefVCenter:  // aligning right border of child to vertical center of parent will very likely never been used ..
-                                case EAlignmentRefBottom:   // aligning right border of child to bottom border of parent will very likely never been used ..
+                                case EAlignmentRef::Top:      // aligning right border of child to top border of parent will very likely never been used ..
+                                case EAlignmentRef::VCenter:  // aligning right border of child to vertical center of parent will very likely never been used ..
+                                case EAlignmentRef::Bottom:   // aligning right border of child to bottom border of parent will very likely never been used ..
                                 default:
                                 {
                                     break;
                                 }
-                            } // switch( alignment.m_alignmentRefParent )
+                            } // switch( alignment.m_alignmentRefParent.enumerator() )
                             break;
-                        } // case m_alignmentRefChild == EAlignmentRefRight
+                        } // case m_alignmentRefChild == EAlignmentRef::Right
 
-                        case EAlignmentRefTop:
+                        case EAlignmentRef::Top:
                         {
-                            switch( alignment.m_alignmentRefParent )
+                            switch( alignment.m_alignmentRefParent.enumerator() )
                             {
-                                case EAlignmentRefTop:
+                                case EAlignmentRef::Top:
                                 {
                                     if( alignment.m_bAlignAbsolute )
                                     {
@@ -1749,7 +1757,7 @@ void CGraphObjGroup::applyGeometryChangeToChildrens()
                                     }
                                     break;
                                 }
-                                case EAlignmentRefVCenter:
+                                case EAlignmentRef::VCenter:
                                 {
                                     if( alignment.m_bAlignAbsolute )
                                     {
@@ -1803,7 +1811,7 @@ void CGraphObjGroup::applyGeometryChangeToChildrens()
                                     }
                                     break;
                                 }
-                                case EAlignmentRefBottom:
+                                case EAlignmentRef::Bottom:
                                 {
                                     if( alignment.m_bAlignAbsolute )
                                     {
@@ -1857,7 +1865,7 @@ void CGraphObjGroup::applyGeometryChangeToChildrens()
                                     }
                                     break;
                                 }
-                                case EAlignmentRefWidth: // aligning top border of child to width of parent will very likely never been used ..
+                                case EAlignmentRef::Width: // aligning top border of child to width of parent will very likely never been used ..
                                 {
                                     if( alignment.m_bAlignAbsolute )
                                     {
@@ -1911,7 +1919,7 @@ void CGraphObjGroup::applyGeometryChangeToChildrens()
                                     }
                                     break;
                                 }
-                                case EAlignmentRefHeight: // aligning top border of child to height of parent will very likely never been used ..
+                                case EAlignmentRef::Height: // aligning top border of child to height of parent will very likely never been used ..
                                 {
                                     if( alignment.m_bAlignAbsolute )
                                     {
@@ -1965,22 +1973,22 @@ void CGraphObjGroup::applyGeometryChangeToChildrens()
                                     }
                                     break;
                                 }
-                                case EAlignmentRefLeft:     // aligning top border of child to left border of parent will very likely never been used ..
-                                case EAlignmentRefHCenter:  // aligning top border of child to horizontal center of parent will very likely never been used ..
-                                case EAlignmentRefRight:    // aligning top border of child to right border of parent will very likely never been used ..
+                                case EAlignmentRef::Left:     // aligning top border of child to left border of parent will very likely never been used ..
+                                case EAlignmentRef::HCenter:  // aligning top border of child to horizontal center of parent will very likely never been used ..
+                                case EAlignmentRef::Right:    // aligning top border of child to right border of parent will very likely never been used ..
                                 default:
                                 {
                                     break;
                                 }
-                            } // switch( alignment.m_alignmentRefParent )
+                            } // switch( alignment.m_alignmentRefParent.enumerator() )
                             break;
-                        } // case m_alignmentRefChild == EAlignmentRefTop
+                        } // case m_alignmentRefChild == EAlignmentRef::Top
 
-                        case EAlignmentRefVCenter:
+                        case EAlignmentRef::VCenter:
                         {
-                            switch( alignment.m_alignmentRefParent )
+                            switch( alignment.m_alignmentRefParent.enumerator() )
                             {
-                                case EAlignmentRefTop:
+                                case EAlignmentRef::Top:
                                 {
                                     if( alignment.m_bAlignAbsolute )
                                     {
@@ -2034,7 +2042,7 @@ void CGraphObjGroup::applyGeometryChangeToChildrens()
                                     }
                                     break;
                                 }
-                                case EAlignmentRefVCenter:
+                                case EAlignmentRef::VCenter:
                                 {
                                     if( alignment.m_bAlignAbsolute )
                                     {
@@ -2088,7 +2096,7 @@ void CGraphObjGroup::applyGeometryChangeToChildrens()
                                     }
                                     break;
                                 }
-                                case EAlignmentRefBottom:
+                                case EAlignmentRef::Bottom:
                                 {
                                     if( alignment.m_bAlignAbsolute )
                                     {
@@ -2142,7 +2150,7 @@ void CGraphObjGroup::applyGeometryChangeToChildrens()
                                     }
                                     break;
                                 }
-                                case EAlignmentRefWidth: // aligning vertical center of child to width of parent will very likely never been used ..
+                                case EAlignmentRef::Width: // aligning vertical center of child to width of parent will very likely never been used ..
                                 {
                                     if( alignment.m_bAlignAbsolute )
                                     {
@@ -2196,7 +2204,7 @@ void CGraphObjGroup::applyGeometryChangeToChildrens()
                                     }
                                     break;
                                 }
-                                case EAlignmentRefHeight: // aligning vertical center of child to height of parent will very likely never been used ..
+                                case EAlignmentRef::Height: // aligning vertical center of child to height of parent will very likely never been used ..
                                 {
                                     if( alignment.m_bAlignAbsolute )
                                     {
@@ -2250,22 +2258,22 @@ void CGraphObjGroup::applyGeometryChangeToChildrens()
                                     }
                                     break;
                                 }
-                                case EAlignmentRefLeft:     // aligning vertical center of child to left border of parent will very likely never been used ..
-                                case EAlignmentRefHCenter:  // aligning vertical center of child to horizontal center of parent will very likely never been used ..
-                                case EAlignmentRefRight:    // aligning vertical center of child to right border of parent will very likely never been used ..
+                                case EAlignmentRef::Left:     // aligning vertical center of child to left border of parent will very likely never been used ..
+                                case EAlignmentRef::HCenter:  // aligning vertical center of child to horizontal center of parent will very likely never been used ..
+                                case EAlignmentRef::Right:    // aligning vertical center of child to right border of parent will very likely never been used ..
                                 default:
                                 {
                                     break;
                                 }
-                            } // switch( alignment.m_alignmentRefParent )
+                            } // switch( alignment.m_alignmentRefParent.enumerator() )
                             break;
-                        } // case m_alignmentRefChild == EAlignmentRefVCenter
+                        } // case m_alignmentRefChild == EAlignmentRef::VCenter
 
-                        case EAlignmentRefBottom:
+                        case EAlignmentRef::Bottom:
                         {
-                            switch( alignment.m_alignmentRefParent )
+                            switch( alignment.m_alignmentRefParent.enumerator() )
                             {
-                                case EAlignmentRefTop:
+                                case EAlignmentRef::Top:
                                 {
                                     if( alignment.m_bAlignAbsolute )
                                     {
@@ -2319,7 +2327,7 @@ void CGraphObjGroup::applyGeometryChangeToChildrens()
                                     }
                                     break;
                                 }
-                                case EAlignmentRefVCenter:
+                                case EAlignmentRef::VCenter:
                                 {
                                     if( alignment.m_bAlignAbsolute )
                                     {
@@ -2373,7 +2381,7 @@ void CGraphObjGroup::applyGeometryChangeToChildrens()
                                     }
                                     break;
                                 }
-                                case EAlignmentRefBottom:
+                                case EAlignmentRef::Bottom:
                                 {
                                     if( alignment.m_bAlignAbsolute )
                                     {
@@ -2427,7 +2435,7 @@ void CGraphObjGroup::applyGeometryChangeToChildrens()
                                     }
                                     break;
                                 }
-                                case EAlignmentRefWidth: // aligning bottom border of child to width of parent will very likely never been used ..
+                                case EAlignmentRef::Width: // aligning bottom border of child to width of parent will very likely never been used ..
                                 {
                                     if( alignment.m_bAlignAbsolute )
                                     {
@@ -2481,7 +2489,7 @@ void CGraphObjGroup::applyGeometryChangeToChildrens()
                                     }
                                     break;
                                 }
-                                case EAlignmentRefHeight: // aligning bottom border of child to height of parent will very likely never been used ..
+                                case EAlignmentRef::Height: // aligning bottom border of child to height of parent will very likely never been used ..
                                 {
                                     if( alignment.m_bAlignAbsolute )
                                     {
@@ -2535,22 +2543,22 @@ void CGraphObjGroup::applyGeometryChangeToChildrens()
                                     }
                                     break;
                                 }
-                                case EAlignmentRefLeft:     // aligning bottom border of child to left border of parent will very likely never been used ..
-                                case EAlignmentRefHCenter:  // aligning bottom border of child to horizontal center of parent will very likely never been used ..
-                                case EAlignmentRefRight:    // aligning bottom border of child to right border of parent will very likely never been used ..
+                                case EAlignmentRef::Left:     // aligning bottom border of child to left border of parent will very likely never been used ..
+                                case EAlignmentRef::HCenter:  // aligning bottom border of child to horizontal center of parent will very likely never been used ..
+                                case EAlignmentRef::Right:    // aligning bottom border of child to right border of parent will very likely never been used ..
                                 default:
                                 {
                                     break;
                                 }
-                            } // switch( alignment.m_alignmentRefParent )
+                            } // switch( alignment.m_alignmentRefParent.enumerator() )
                             break;
-                        } // case m_alignmentRefChild == EAlignmentRefBottom
+                        } // case m_alignmentRefChild == EAlignmentRef::Bottom
 
-                        case EAlignmentRefWidth:
+                        case EAlignmentRef::Width:
                         {
-                            switch( alignment.m_alignmentRefParent )
+                            switch( alignment.m_alignmentRefParent.enumerator() )
                             {
-                                case EAlignmentRefWidth:
+                                case EAlignmentRef::Width:
                                 {
                                     if( alignment.m_bAlignAbsolute )
                                     {
@@ -2562,7 +2570,7 @@ void CGraphObjGroup::applyGeometryChangeToChildrens()
                                     }
                                     break;
                                 }
-                                case EAlignmentRefHeight: // aligning width of child to height of parent will very likely never been used ..
+                                case EAlignmentRef::Height: // aligning width of child to height of parent will very likely never been used ..
                                 {
                                     if( alignment.m_bAlignAbsolute )
                                     {
@@ -2574,25 +2582,25 @@ void CGraphObjGroup::applyGeometryChangeToChildrens()
                                     }
                                     break;
                                 }
-                                case EAlignmentRefLeft:     // aligning width of child to left border of parent will very likely never been used ..
-                                case EAlignmentRefHCenter:  // aligning width of child to horizontal center of parent will very likely never been used ..
-                                case EAlignmentRefRight:    // aligning width of child to right border of parent will very likely never been used ..
-                                case EAlignmentRefTop:      // aligning width of child to top border of parent will very likely never been used ..
-                                case EAlignmentRefVCenter:  // aligning width of child to vertical center of parent will very likely never been used ..
-                                case EAlignmentRefBottom:   // aligning width of child to bottom border of parent will very likely never been used ..
+                                case EAlignmentRef::Left:     // aligning width of child to left border of parent will very likely never been used ..
+                                case EAlignmentRef::HCenter:  // aligning width of child to horizontal center of parent will very likely never been used ..
+                                case EAlignmentRef::Right:    // aligning width of child to right border of parent will very likely never been used ..
+                                case EAlignmentRef::Top:      // aligning width of child to top border of parent will very likely never been used ..
+                                case EAlignmentRef::VCenter:  // aligning width of child to vertical center of parent will very likely never been used ..
+                                case EAlignmentRef::Bottom:   // aligning width of child to bottom border of parent will very likely never been used ..
                                 default:
                                 {
                                     break;
                                 }
-                            } // switch( alignment.m_alignmentRefParent )
+                            } // switch( alignment.m_alignmentRefParent.enumerator() )
                             break;
-                        } // case m_alignmentRefChild == EAlignmentRefWidth
+                        } // case m_alignmentRefChild == EAlignmentRef::Width
 
-                        case EAlignmentRefHeight:
+                        case EAlignmentRef::Height:
                         {
-                            switch( alignment.m_alignmentRefParent )
+                            switch( alignment.m_alignmentRefParent.enumerator() )
                             {
-                                case EAlignmentRefWidth: // aligning height of child to width of parent will very likely never been used ..
+                                case EAlignmentRef::Width: // aligning height of child to width of parent will very likely never been used ..
                                 {
                                     if( alignment.m_bAlignAbsolute )
                                     {
@@ -2604,7 +2612,7 @@ void CGraphObjGroup::applyGeometryChangeToChildrens()
                                     }
                                     break;
                                 }
-                                case EAlignmentRefHeight:
+                                case EAlignmentRef::Height:
                                 {
                                     if( alignment.m_bAlignAbsolute )
                                     {
@@ -2616,26 +2624,26 @@ void CGraphObjGroup::applyGeometryChangeToChildrens()
                                     }
                                     break;
                                 }
-                                case EAlignmentRefLeft:     // aligning height of child to left border of parent will very likely never been used ..
-                                case EAlignmentRefHCenter:  // aligning height of child to horizontal center of parent will very likely never been used ..
-                                case EAlignmentRefRight:    // aligning height of child to right border of parent will very likely never been used ..
-                                case EAlignmentRefTop:      // aligning height of child to top border of parent will very likely never been used ..
-                                case EAlignmentRefVCenter:  // aligning height of child to vertical center of parent will very likely never been used ..
-                                case EAlignmentRefBottom:   // aligning height of child to bottom border of parent will very likely never been used ..
+                                case EAlignmentRef::Left:     // aligning height of child to left border of parent will very likely never been used ..
+                                case EAlignmentRef::HCenter:  // aligning height of child to horizontal center of parent will very likely never been used ..
+                                case EAlignmentRef::Right:    // aligning height of child to right border of parent will very likely never been used ..
+                                case EAlignmentRef::Top:      // aligning height of child to top border of parent will very likely never been used ..
+                                case EAlignmentRef::VCenter:  // aligning height of child to vertical center of parent will very likely never been used ..
+                                case EAlignmentRef::Bottom:   // aligning height of child to bottom border of parent will very likely never been used ..
                                 default:
                                 {
                                     break;
                                 }
-                            } // switch( alignment.m_alignmentRefParent )
+                            } // switch( alignment.m_alignmentRefParent.enumerator() )
                             break;
-                        } // case m_alignmentRefChild == EAlignmentRefHeight
+                        } // case m_alignmentRefChild == EAlignmentRef::Height
 
                         default:
                         {
                             break;
                         }
 
-                    } // switch( alignment.m_alignmentRefChild )
+                    } // switch( alignment.m_alignmentRefChild.enumerator() )
 
                     // If the object has a fixed width or height they also have a
                     // the minimum and maximum width or height. In addition the
@@ -2779,20 +2787,20 @@ bool CGraphObjGroup::isHit( const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo ) 
 
         if( !bIsHit )
         {
-            bIsHit = isRectHit( m_rctCurr, EFillStyleSolidPattern, i_pt, m_pDrawingScene->getHitToleranceInPx(), o_pHitInfo );
+            bIsHit = isRectHit( m_rctCurr, EFillStyle::SolidPattern, i_pt, m_pDrawingScene->getHitToleranceInPx(), o_pHitInfo );
         }
 
         if( !bIsHit )
         {
-            if( pGraphicsItem->isSelected() || m_drawSettings.getFillStyle() == EFillStyleSolidPattern )
+            if( pGraphicsItem->isSelected() || m_drawSettings.getFillStyle() == EFillStyle::SolidPattern )
             {
                 bIsHit = pGraphicsItem->contains(i_pt);
 
                 if( o_pHitInfo != nullptr )
                 {
-                    o_pHitInfo->m_editMode = EEditModeMove;
-                    o_pHitInfo->m_editResizeMode = EEditResizeModeUndefined;
-                    o_pHitInfo->m_selPtBoundingRect = ESelectionPointUndefined;
+                    o_pHitInfo->m_editMode = EEditMode::Move;
+                    o_pHitInfo->m_editResizeMode = EEditResizeMode::Undefined;
+                    o_pHitInfo->m_selPtBoundingRect = ESelectionPoint::Undefined;
                     o_pHitInfo->m_idxPolygonShapePoint = -1;
                     o_pHitInfo->m_idxLineSegment = -1;
                     o_pHitInfo->m_ptSelected = i_pt;
@@ -2813,9 +2821,9 @@ bool CGraphObjGroup::isHit( const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo ) 
 
         if( o_pHitInfo != nullptr )
         {
-            strAddTrcInfo += ", EditMode:" + editMode2Str(o_pHitInfo->m_editMode);
-            strAddTrcInfo += ", ResizeMode:" + editResizeMode2Str(o_pHitInfo->m_editResizeMode);
-            strAddTrcInfo += ", SelPtBoundingRect:" + selectionPoint2Str(o_pHitInfo->m_selPtBoundingRect);
+            strAddTrcInfo += ", EditMode:" + o_pHitInfo->m_editMode.toString();
+            strAddTrcInfo += ", ResizeMode:" + o_pHitInfo->m_editResizeMode.toString();
+            strAddTrcInfo += ", SelPtBoundingRect:" + o_pHitInfo->m_selPtBoundingRect.toString();
             strAddTrcInfo += ", PolygonShapePoint:" + QString::number(o_pHitInfo->m_idxPolygonShapePoint);
             strAddTrcInfo += ", LineSegment:" + QString::number(o_pHitInfo->m_idxLineSegment);
             strAddTrcInfo += ", PointSelected:" + point2Str(o_pHitInfo->m_ptSelected);
@@ -2889,9 +2897,9 @@ void CGraphObjGroup::onParentItemCoorsHasChanged( CGraphObj* /*i_pGraphObjParent
     if( s_pTrcAdminObjItemChange != nullptr && s_pTrcAdminObjItemChange->isActive(ETraceDetailLevelMethodCalls) )
     {
         strAddTrcInfo  = "Selected:" + bool2Str(isSelected());
-        strAddTrcInfo += ", EditMode:" + editMode2Str(m_editMode);
-        strAddTrcInfo += ", ResizeMode:" + editResizeMode2Str(m_editResizeMode);
-        strAddTrcInfo += ", SelectedPoint:" + selectionPoint2Str(m_selPtSelectedBoundingRect);
+        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
+        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
+        strAddTrcInfo += ", SelectedPoint:" + m_selPtSelectedBoundingRect.toString();
     }
 
     CMethodTracer mthTracer(
@@ -2957,7 +2965,7 @@ QRectF CGraphObjGroup::boundingRect() const
     QPolygonF                plgSelPt;
     int                      idxSelPt;
 
-    for( idxSelPt = 0; idxSelPt < ESelectionPointCount; idxSelPt++ )
+    for( idxSelPt = 0; idxSelPt < CEnumSelectionPoint::count(); idxSelPt++ )
     {
         pGraphObjSelPt = m_arpSelPtsBoundingRect[idxSelPt];
 
@@ -3028,9 +3036,9 @@ void CGraphObjGroup::paint(
     if( s_pTrcAdminObjPaint != nullptr && s_pTrcAdminObjPaint->isActive(ETraceDetailLevelMethodCalls) )
     {
         strAddTrcInfo  = "Selected:" + bool2Str(isSelected());
-        strAddTrcInfo += ", EditMode:" + editMode2Str(m_editMode);
-        strAddTrcInfo += ", ResizeMode:" + editResizeMode2Str(m_editResizeMode);
-        strAddTrcInfo += ", SelectedPoint:" + selectionPoint2Str(m_selPtSelectedBoundingRect);
+        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
+        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
+        strAddTrcInfo += ", SelectedPoint:" + m_selPtSelectedBoundingRect.toString();
     }
 
     CMethodTracer mthTracer(
@@ -3054,10 +3062,10 @@ void CGraphObjGroup::paint(
 
         if( isSelected() )
         {
-            if( m_arpSelPtsBoundingRect[ESelectionPointTopCenter] != nullptr && m_arpSelPtsBoundingRect[ESelectionPointRotateTop] != nullptr )
+            if( m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::TopCenter)] != nullptr && m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::RotateTop)] != nullptr )
             {
-                CGraphObjSelectionPoint* pGraphObjSelPtRct = m_arpSelPtsBoundingRect[ESelectionPointTopCenter];
-                CGraphObjSelectionPoint* pGraphObjSelPtRot = m_arpSelPtsBoundingRect[ESelectionPointRotateTop];
+                CGraphObjSelectionPoint* pGraphObjSelPtRct = m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::TopCenter)];
+                CGraphObjSelectionPoint* pGraphObjSelPtRot = m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::RotateTop)];
 
                 QPointF ptRct = QPointF( pGraphObjSelPtRct->scenePos().x(), pGraphObjSelPtRct->scenePos().y() );
                 QPointF ptRot = QPointF( pGraphObjSelPtRot->scenePos().x(), pGraphObjSelPtRot->scenePos().y() );
@@ -3068,10 +3076,10 @@ void CGraphObjGroup::paint(
                 i_pPainter->drawLine( ptRctM, ptRotM );
             }
 
-            if( m_arpSelPtsBoundingRect[ESelectionPointBottomCenter] != nullptr && m_arpSelPtsBoundingRect[ESelectionPointRotateBottom] != nullptr )
+            if( m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::BottomCenter)] != nullptr && m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::RotateBottom)] != nullptr )
             {
-                CGraphObjSelectionPoint* pGraphObjSelPtRct = m_arpSelPtsBoundingRect[ESelectionPointBottomCenter];
-                CGraphObjSelectionPoint* pGraphObjSelPtRot = m_arpSelPtsBoundingRect[ESelectionPointRotateBottom];
+                CGraphObjSelectionPoint* pGraphObjSelPtRct = m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::BottomCenter)];
+                CGraphObjSelectionPoint* pGraphObjSelPtRot = m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::RotateBottom)];
 
                 QPointF ptRct = QPointF( pGraphObjSelPtRct->scenePos().x(), pGraphObjSelPtRct->scenePos().y() );
                 QPointF ptRot = QPointF( pGraphObjSelPtRot->scenePos().x(), pGraphObjSelPtRot->scenePos().y() );
@@ -3096,9 +3104,9 @@ void CGraphObjGroup::paint(
 
             if( pGraphObjLabel->m_pGraphObjLabel != nullptr )
             {
-                ptSelPt = getSelectionPoint(pGraphObjLabel->m_selPt);
+                ptSelPt = getSelectionPoint(pGraphObjLabel->m_selPt.enumerator());
 
-                ptLabelSelPt = pGraphObjLabel->m_pGraphObjLabel->getSelectionPoint(ESelectionPointCenter);
+                ptLabelSelPt = pGraphObjLabel->m_pGraphObjLabel->getSelectionPoint(ESelectionPoint::Center);
                 ptLabelSelPt = mapFromItem( pGraphObjLabel->m_pGraphObjLabel, ptLabelSelPt );
 
                 i_pPainter->drawLine( ptSelPt, ptLabelSelPt );
@@ -3138,9 +3146,9 @@ bool CGraphObjGroup::sceneEventFilter( QGraphicsItem* i_pGraphicsItemWatched, QE
         strAddTrcInfo  = "ItemWatched:" + pGraphObjSelPtWatched->getObjName();
         strAddTrcInfo += ", Event:" + qEventType2Str(i_pEv->type());
         strAddTrcInfo += ", Selected:" + bool2Str(isSelected());
-        strAddTrcInfo += ", EditMode:" + editMode2Str(m_editMode);
-        strAddTrcInfo += ", ResizeMode:" + editResizeMode2Str(m_editResizeMode);
-        strAddTrcInfo += ", SelectedPoint:" + selectionPoint2Str(m_selPtSelectedBoundingRect);
+        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
+        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
+        strAddTrcInfo += ", SelectedPoint:" + m_selPtSelectedBoundingRect.toString();
     }
 
     CMethodTracer mthTracer(
@@ -3258,9 +3266,9 @@ bool CGraphObjGroup::sceneEventFilter( QGraphicsItem* i_pGraphicsItemWatched, QE
     if( mthTracer.isActive(ETraceDetailLevelInternalStates) )
     {
         strAddTrcInfo  = "Selected:" + bool2Str(isSelected());
-        strAddTrcInfo += ", EditMode:" + editMode2Str(m_editMode);
-        strAddTrcInfo += ", ResizeMode:" + editResizeMode2Str(m_editResizeMode);
-        strAddTrcInfo += ", SelectedPoint:" + selectionPoint2Str(m_selPtSelectedBoundingRect);
+        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
+        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
+        strAddTrcInfo += ", SelectedPoint:" + m_selPtSelectedBoundingRect.toString();
         mthTracer.trace(strAddTrcInfo);
     }
 
@@ -3284,9 +3292,9 @@ void CGraphObjGroup::hoverEnterEvent( QGraphicsSceneHoverEvent* i_pEv )
         strAddTrcInfo += ", Ev.ScenePos:(" + QString::number(i_pEv->scenePos().x()) + "," + QString::number(i_pEv->scenePos().y()) + ")";
         strAddTrcInfo += ", Ev.ScreenPos:(" + QString::number(i_pEv->screenPos().x()) + "," + QString::number(i_pEv->screenPos().y()) + ")";
         strAddTrcInfo += ", Selected:" + bool2Str(isSelected());
-        strAddTrcInfo += ", EditMode:" + editMode2Str(m_editMode);
-        strAddTrcInfo += ", ResizeMode:" + editResizeMode2Str(m_editResizeMode);
-        strAddTrcInfo += ", SelectedPoint:" + selectionPoint2Str(m_selPtSelectedBoundingRect);
+        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
+        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
+        strAddTrcInfo += ", SelectedPoint:" + m_selPtSelectedBoundingRect.toString();
     }
 
     CMethodTracer mthTracer(
@@ -3298,10 +3306,10 @@ void CGraphObjGroup::hoverEnterEvent( QGraphicsSceneHoverEvent* i_pEv )
 
     QPointF ptItemPos = mapFromScene(i_pEv->scenePos());
 
-    EMode     modeDrawing     = m_pDrawingScene->getMode();
-    EEditTool editToolDrawing = m_pDrawingScene->getEditTool();
+    CEnumMode     modeDrawing     = m_pDrawingScene->getMode();
+    CEnumEditTool editToolDrawing = m_pDrawingScene->getEditTool();
 
-    if( modeDrawing == EMode::Edit && editToolDrawing == EEditToolSelect )
+    if( modeDrawing == EMode::Edit && editToolDrawing == EEditTool::Select )
     {
         SGraphObjHitInfo hitInfo;
 
@@ -3315,7 +3323,7 @@ void CGraphObjGroup::hoverEnterEvent( QGraphicsSceneHoverEvent* i_pEv )
             }
         }
 
-    } // if( modeDrawing == EMode::Edit && editToolDrawing == EEditToolSelect )
+    } // if( modeDrawing == EMode::Edit && editToolDrawing == EEditTool::Select )
 
 } // hoverEnterEvent
 
@@ -3331,9 +3339,9 @@ void CGraphObjGroup::hoverMoveEvent( QGraphicsSceneHoverEvent* i_pEv )
         strAddTrcInfo += ", Ev.ScenePos:(" + QString::number(i_pEv->scenePos().x()) + "," + QString::number(i_pEv->scenePos().y()) + ")";
         strAddTrcInfo += ", Ev.ScreenPos:(" + QString::number(i_pEv->screenPos().x()) + "," + QString::number(i_pEv->screenPos().y()) + ")";
         strAddTrcInfo += ", Selected:" + bool2Str(isSelected());
-        strAddTrcInfo += ", EditMode:" + editMode2Str(m_editMode);
-        strAddTrcInfo += ", ResizeMode:" + editResizeMode2Str(m_editResizeMode);
-        strAddTrcInfo += ", SelectedPoint:" + selectionPoint2Str(m_selPtSelectedBoundingRect);
+        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
+        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
+        strAddTrcInfo += ", SelectedPoint:" + m_selPtSelectedBoundingRect.toString();
     }
 
     CMethodTracer mthTracer(
@@ -3345,10 +3353,10 @@ void CGraphObjGroup::hoverMoveEvent( QGraphicsSceneHoverEvent* i_pEv )
 
     QPointF ptItemPos = mapFromScene(i_pEv->scenePos());
 
-    EMode     modeDrawing     = m_pDrawingScene->getMode();
-    EEditTool editToolDrawing = m_pDrawingScene->getEditTool();
+    CEnumMode     modeDrawing     = m_pDrawingScene->getMode();
+    CEnumEditTool editToolDrawing = m_pDrawingScene->getEditTool();
 
-    if( modeDrawing == EMode::Edit && editToolDrawing == EEditToolSelect )
+    if( modeDrawing == EMode::Edit && editToolDrawing == EEditTool::Select )
     {
         SGraphObjHitInfo hitInfo;
 
@@ -3362,7 +3370,7 @@ void CGraphObjGroup::hoverMoveEvent( QGraphicsSceneHoverEvent* i_pEv )
             }
         }
 
-    } // if( modeDrawing == EMode::Edit && editToolDrawing == EEditToolSelect )
+    } // if( modeDrawing == EMode::Edit && editToolDrawing == EEditTool::Select )
 
 } // hoverMoveEvent
 
@@ -3378,9 +3386,9 @@ void CGraphObjGroup::hoverLeaveEvent( QGraphicsSceneHoverEvent* i_pEv )
         strAddTrcInfo += ", Ev.ScenePos:(" + QString::number(i_pEv->scenePos().x()) + "," + QString::number(i_pEv->scenePos().y()) + ")";
         strAddTrcInfo += ", Ev.ScreenPos:(" + QString::number(i_pEv->screenPos().x()) + "," + QString::number(i_pEv->screenPos().y()) + ")";
         strAddTrcInfo += ", Selected:" + bool2Str(isSelected());
-        strAddTrcInfo += ", EditMode:" + editMode2Str(m_editMode);
-        strAddTrcInfo += ", ResizeMode:" + editResizeMode2Str(m_editResizeMode);
-        strAddTrcInfo += ", SelectedPoint:" + selectionPoint2Str(m_selPtSelectedBoundingRect);
+        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
+        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
+        strAddTrcInfo += ", SelectedPoint:" + m_selPtSelectedBoundingRect.toString();
     }
 
     CMethodTracer mthTracer(
@@ -3410,9 +3418,9 @@ void CGraphObjGroup::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
         strAddTrcInfo += ", Ev.ScenePos:(" + QString::number(i_pEv->scenePos().x()) + "," + QString::number(i_pEv->scenePos().y()) + ")";
         strAddTrcInfo += ", Ev.ScreenPos:(" + QString::number(i_pEv->screenPos().x()) + "," + QString::number(i_pEv->screenPos().y()) + ")";
         strAddTrcInfo += ", Selected:" + bool2Str(isSelected());
-        strAddTrcInfo += ", EditMode:" + editMode2Str(m_editMode);
-        strAddTrcInfo += ", ResizeMode:" + editResizeMode2Str(m_editResizeMode);
-        strAddTrcInfo += ", SelectedPoint:" + selectionPoint2Str(m_selPtSelectedBoundingRect);
+        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
+        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
+        strAddTrcInfo += ", SelectedPoint:" + m_selPtSelectedBoundingRect.toString();
     }
 
     CMethodTracer mthTracer(
@@ -3422,12 +3430,12 @@ void CGraphObjGroup::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
         /* strMethod    */ "mousePressEvent",
         /* strAddInfo   */ strAddTrcInfo );
 
-    EMode     modeDrawing = m_pDrawingScene->getMode();
-    EEditTool editToolDrawing = m_pDrawingScene->getEditTool();
+    CEnumMode     modeDrawing = m_pDrawingScene->getMode();
+    CEnumEditTool editToolDrawing = m_pDrawingScene->getEditTool();
 
     if( modeDrawing == EMode::Edit )
     {
-        if( editToolDrawing == EEditToolSelect && m_editMode == EEditModeUndefined )
+        if( editToolDrawing == EEditTool::Select && m_editMode == EEditMode::Undefined )
         {
             QGraphicsItemGroup::mousePressEvent(i_pEv); // this will select the item (creating selection points)
 
@@ -3443,11 +3451,11 @@ void CGraphObjGroup::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
             m_editResizeMode            = hitInfo.m_editResizeMode;
             m_selPtSelectedBoundingRect = hitInfo.m_selPtBoundingRect;
 
-            for( idxSelPt = 0; idxSelPt < ESelectionPointCount; idxSelPt++ )
+            for( idxSelPt = 0; idxSelPt < CEnumSelectionPoint::count(); idxSelPt++ )
             {
                 selPt = static_cast<ESelectionPoint>(idxSelPt);
 
-                pGraphObjSelPt = m_arpSelPtsBoundingRect[selPt];
+                pGraphObjSelPt = m_arpSelPtsBoundingRect[idxSelPt];
 
                 if( pGraphObjSelPt != nullptr )
                 {
@@ -3466,12 +3474,12 @@ void CGraphObjGroup::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
 
             m_ptRotOriginOnMousePressEvent = mapToScene(m_ptRotOriginCurr);
 
-            m_pDrawingScene->setMode( EMode::Ignore, EEditToolIgnore, m_editMode, m_editResizeMode, false );
+            m_pDrawingScene->setMode( EMode::Ignore, EEditTool::Ignore, m_editMode, m_editResizeMode, false );
 
             updateEditInfo();
             updateToolTip();
 
-        } // if( editToolDrawing == EEditToolSelect && m_editMode == EEditModeUndefined )
+        } // if( editToolDrawing == EEditTool::Select && m_editMode == EEditMode::Undefined )
 
     } // if( modeDrawing == EMode::Edit )
 
@@ -3495,9 +3503,9 @@ void CGraphObjGroup::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
     if( mthTracer.isActive(ETraceDetailLevelInternalStates) )
     {
         strAddTrcInfo  = "Selected:" + bool2Str(isSelected());
-        strAddTrcInfo += ", EditMode:" + editMode2Str(m_editMode);
-        strAddTrcInfo += ", ResizeMode:" + editResizeMode2Str(m_editResizeMode);
-        strAddTrcInfo += ", SelectedPoint:" + selectionPoint2Str(m_selPtSelectedBoundingRect);
+        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
+        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
+        strAddTrcInfo += ", SelectedPoint:" + m_selPtSelectedBoundingRect.toString();
         mthTracer.setMethodReturn(strAddTrcInfo);
     }
 
@@ -3515,9 +3523,9 @@ void CGraphObjGroup::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
         strAddTrcInfo += ", Ev.ScenePos:(" + QString::number(i_pEv->scenePos().x()) + "," + QString::number(i_pEv->scenePos().y()) + ")";
         strAddTrcInfo += ", Ev.ScreenPos:(" + QString::number(i_pEv->screenPos().x()) + "," + QString::number(i_pEv->screenPos().y()) + ")";
         strAddTrcInfo += ", Selected:" + bool2Str(isSelected());
-        strAddTrcInfo += ", EditMode:" + editMode2Str(m_editMode);
-        strAddTrcInfo += ", ResizeMode:" + editResizeMode2Str(m_editResizeMode);
-        strAddTrcInfo += ", SelectedPoint:" + selectionPoint2Str(m_selPtSelectedBoundingRect);
+        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
+        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
+        strAddTrcInfo += ", SelectedPoint:" + m_selPtSelectedBoundingRect.toString();
     }
 
     CMethodTracer mthTracer(
@@ -3527,7 +3535,7 @@ void CGraphObjGroup::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
         /* strMethod    */ "mouseMoveEvent",
         /* strAddInfo   */ strAddTrcInfo );
 
-    EMode modeDrawing = m_pDrawingScene->getMode();
+    CEnumMode modeDrawing = m_pDrawingScene->getMode();
 
     if( modeDrawing == EMode::Edit )
     {
@@ -3537,21 +3545,21 @@ void CGraphObjGroup::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
         // by "i_pEv->pos()" is not correct here and we need to map the mouse scene event
         // pos to the group's mouse item pos.
 
-        if( m_editMode == EEditModeCreating )
+        if( m_editMode == EEditMode::Creating )
         {
-        } // if( m_editMode == EEditModeCreating )
+        } // if( m_editMode == EEditMode::Creating )
 
-        else if( m_editMode == EEditModeMove )
+        else if( m_editMode == EEditMode::Move )
         {
             QGraphicsItemGroup::mouseMoveEvent(i_pEv);
 
-        } // if( m_editMode == EEditModeMove )
+        } // if( m_editMode == EEditMode::Move )
 
-        else if( m_editMode == EEditModeResize )
+        else if( m_editMode == EEditMode::Resize )
         {
             QPointF ptMouseItemPos = i_pEv->pos();
 
-            m_rctCurr = resizeRect( m_rctOnMousePressEvent, m_selPtSelectedBoundingRect, ptMouseItemPos, nullptr );
+            m_rctCurr = resizeRect( m_rctOnMousePressEvent, m_selPtSelectedBoundingRect.enumerator(), ptMouseItemPos, nullptr );
 
             // Don't change the position of the object as the position of further
             // mouse events should be received relative to the object's position
@@ -3569,9 +3577,9 @@ void CGraphObjGroup::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
 
             update();
 
-        } // if( m_editMode == EEditModeResize )
+        } // if( m_editMode == EEditMode::Resize )
 
-        else if( m_editMode == EEditModeRotate )
+        else if( m_editMode == EEditMode::Rotate )
         {
             QPointF ptMouseScenePos = i_pEv->scenePos(); // see comment above
 
@@ -3579,14 +3587,14 @@ void CGraphObjGroup::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
 
             m_fRotAngleCurr_deg = Math::rad2Deg(fRotAngle_rad);
 
-            switch( m_selPtSelectedBoundingRect )
+            switch( m_selPtSelectedBoundingRect.enumerator() )
             {
-                case ESelectionPointRotateTop:
+                case ESelectionPoint::RotateTop:
                 {
                     m_fRotAngleCurr_deg -= 90.0;
                     break;
                 }
-                case ESelectionPointRotateBottom:
+                case ESelectionPoint::RotateBottom:
                 {
                     m_fRotAngleCurr_deg -= 270.0;
                     break;
@@ -3614,15 +3622,15 @@ void CGraphObjGroup::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
 
             update();
 
-        } // if( m_editMode == EEditModeRotate )
+        } // if( m_editMode == EEditMode::Rotate )
 
-        else if( m_editMode == EEditModeMoveShapePoint )
+        else if( m_editMode == EEditMode::MoveShapePoint )
         {
-        } // if( m_editMode == EEditModeMoveShapePoint )
+        } // if( m_editMode == EEditMode::MoveShapePoint )
 
-        else if( m_editMode == EEditModeEditText )
+        else if( m_editMode == EEditMode::EditText )
         {
-        } // if( m_editMode == EEditModeEditText )
+        } // if( m_editMode == EEditMode::EditText )
 
     } // if( modeDrawing == EMode::Edit )
 
@@ -3646,9 +3654,9 @@ void CGraphObjGroup::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
     if( mthTracer.isActive(ETraceDetailLevelInternalStates) )
     {
         strAddTrcInfo  = "Selected:" + bool2Str(isSelected());
-        strAddTrcInfo += ", EditMode:" + editMode2Str(m_editMode);
-        strAddTrcInfo += ", ResizeMode:" + editResizeMode2Str(m_editResizeMode);
-        strAddTrcInfo += ", SelectedPoint:" + selectionPoint2Str(m_selPtSelectedBoundingRect);
+        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
+        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
+        strAddTrcInfo += ", SelectedPoint:" + m_selPtSelectedBoundingRect.toString();
         mthTracer.trace(strAddTrcInfo);
     }
 
@@ -3666,9 +3674,9 @@ void CGraphObjGroup::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
         strAddTrcInfo += ", Ev.ScenePos:(" + QString::number(i_pEv->scenePos().x()) + "," + QString::number(i_pEv->scenePos().y()) + ")";
         strAddTrcInfo += ", Ev.ScreenPos:(" + QString::number(i_pEv->screenPos().x()) + "," + QString::number(i_pEv->screenPos().y()) + ")";
         strAddTrcInfo += ", Selected:" + bool2Str(isSelected());
-        strAddTrcInfo += ", EditMode:" + editMode2Str(m_editMode);
-        strAddTrcInfo += ", ResizeMode:" + editResizeMode2Str(m_editResizeMode);
-        strAddTrcInfo += ", SelectedPoint:" + selectionPoint2Str(m_selPtSelectedBoundingRect);
+        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
+        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
+        strAddTrcInfo += ", SelectedPoint:" + m_selPtSelectedBoundingRect.toString();
     }
 
     CMethodTracer mthTracer(
@@ -3678,21 +3686,21 @@ void CGraphObjGroup::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
         /* strMethod    */ "mouseReleaseEvent",
         /* strAddInfo   */ strAddTrcInfo );
 
-    EMode modeDrawing = m_pDrawingScene->getMode();
+    CEnumMode modeDrawing = m_pDrawingScene->getMode();
 
     if( modeDrawing == EMode::Edit )
     {
-        if( m_editMode == EEditModeCreating )
+        if( m_editMode == EEditMode::Creating )
         {
             // Groups are not created by mouse events.
 
-        } // if( m_editMode == EEditModeCreating )
+        } // if( m_editMode == EEditMode::Creating )
 
-        else if( m_editMode == EEditModeMove )
+        else if( m_editMode == EEditMode::Move )
         {
-        } // if( m_editMode == EEditModeMove )
+        } // if( m_editMode == EEditMode::Move )
 
-        else if( m_editMode == EEditModeResize )
+        else if( m_editMode == EEditMode::Resize )
         {
             // The item will not be resized to the position of the mouse release event.
             // A selection point might have been clicked and released immediately (without
@@ -3734,22 +3742,22 @@ void CGraphObjGroup::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
             updateEditInfo();
             updateToolTip();
 
-        } // if( m_editMode == EEditModeResize )
+        } // if( m_editMode == EEditMode::Resize )
 
-        else if( m_editMode == EEditModeRotate )
+        else if( m_editMode == EEditMode::Rotate )
         {
-        } // if( m_editMode == EEditModeRotate )
+        } // if( m_editMode == EEditMode::Rotate )
 
-        else if( m_editMode == EEditModeMoveShapePoint )
+        else if( m_editMode == EEditMode::MoveShapePoint )
         {
             // Groups don't have movable shape points.
 
-        } // if( m_editMode == EEditModeMoveShapePoint )
+        } // if( m_editMode == EEditMode::MoveShapePoint )
 
-        m_editMode = EEditModeUndefined;
-        m_editResizeMode = EEditResizeModeUndefined;
+        m_editMode = EEditMode::Undefined;
+        m_editResizeMode = EEditResizeMode::Undefined;
         m_idxSelPtSelectedPolygon = -1;
-        m_selPtSelectedBoundingRect = ESelectionPointUndefined;
+        m_selPtSelectedBoundingRect = ESelectionPoint::Undefined;
 
     } // if( modeDrawing == EMode::Edit )
 
@@ -3775,7 +3783,7 @@ void CGraphObjGroup::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
     bool bIsSelectable = flags() & QGraphicsItem::ItemIsSelectable;
     bool bIsSelectableReset = false;
 
-    if( bIsSelectable && m_pDrawingScene->getEditTool() != EEditToolSelect )
+    if( bIsSelectable && m_pDrawingScene->getEditTool() != EEditTool::Select )
     {
         setFlag(QGraphicsItem::ItemIsSelectable,false);
         bIsSelectableReset = true;
@@ -3791,9 +3799,9 @@ void CGraphObjGroup::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
     if( mthTracer.isActive(ETraceDetailLevelInternalStates) )
     {
         strAddTrcInfo  = "Selected:" + bool2Str(isSelected());
-        strAddTrcInfo += ", EditMode:" + editMode2Str(m_editMode);
-        strAddTrcInfo += ", ResizeMode:" + editResizeMode2Str(m_editResizeMode);
-        strAddTrcInfo += ", SelectedPoint:" + selectionPoint2Str(m_selPtSelectedBoundingRect);
+        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
+        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
+        strAddTrcInfo += ", SelectedPoint:" + m_selPtSelectedBoundingRect.toString();
         mthTracer.trace(strAddTrcInfo);
     }
 
@@ -3811,9 +3819,9 @@ void CGraphObjGroup::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv )
         strAddTrcInfo += ", Ev.ScenePos:(" + QString::number(i_pEv->scenePos().x()) + "," + QString::number(i_pEv->scenePos().y()) + ")";
         strAddTrcInfo += ", Ev.ScreenPos:(" + QString::number(i_pEv->screenPos().x()) + "," + QString::number(i_pEv->screenPos().y()) + ")";
         strAddTrcInfo += ", Selected:" + bool2Str(isSelected());
-        strAddTrcInfo += ", EditMode:" + editMode2Str(m_editMode);
-        strAddTrcInfo += ", ResizeMode:" + editResizeMode2Str(m_editResizeMode);
-        strAddTrcInfo += ", SelectedPoint:" + selectionPoint2Str(m_selPtSelectedBoundingRect);
+        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
+        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
+        strAddTrcInfo += ", SelectedPoint:" + m_selPtSelectedBoundingRect.toString();
     }
 
     CMethodTracer mthTracer(
@@ -3828,7 +3836,7 @@ void CGraphObjGroup::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv )
     // double click event, and finally a release event.
     // The default implementation of "mouseDoubleClickEvent" calls "mousePressEvent".
 
-    EMode modeDrawing = m_pDrawingScene->getMode();
+    CEnumMode modeDrawing = m_pDrawingScene->getMode();
 
     if( modeDrawing == EMode::Edit )
     {
@@ -3859,9 +3867,9 @@ void CGraphObjGroup::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv )
     if( mthTracer.isActive(ETraceDetailLevelInternalStates) )
     {
         strAddTrcInfo  = "Selected:" + bool2Str(isSelected());
-        strAddTrcInfo += ", EditMode:" + editMode2Str(m_editMode);
-        strAddTrcInfo += ", ResizeMode:" + editResizeMode2Str(m_editResizeMode);
-        strAddTrcInfo += ", SelectedPoint:" + selectionPoint2Str(m_selPtSelectedBoundingRect);
+        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
+        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
+        strAddTrcInfo += ", SelectedPoint:" + m_selPtSelectedBoundingRect.toString();
         mthTracer.trace(strAddTrcInfo);
     }
 
@@ -3882,9 +3890,9 @@ void CGraphObjGroup::keyPressEvent( QKeyEvent* i_pEv )
         strAddTrcInfo  = "Ev.Key:" + qKeyCode2Str(i_pEv->key());
         strAddTrcInfo += ", Ev.Modifiers:" + qKeyboardModifiers2Str(i_pEv->modifiers());
         strAddTrcInfo += ", Selected:" + bool2Str(isSelected());
-        strAddTrcInfo += ", EditMode:" + editMode2Str(m_editMode);
-        strAddTrcInfo += ", ResizeMode:" + editResizeMode2Str(m_editResizeMode);
-        strAddTrcInfo += ", SelectedPoint:" + selectionPoint2Str(m_selPtSelectedBoundingRect);
+        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
+        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
+        strAddTrcInfo += ", SelectedPoint:" + m_selPtSelectedBoundingRect.toString();
     }
 
     CMethodTracer mthTracer(
@@ -3894,7 +3902,7 @@ void CGraphObjGroup::keyPressEvent( QKeyEvent* i_pEv )
         /* strMethod    */ "keyPressEvent",
         /* strAddInfo   */ strAddTrcInfo );
 
-    EMode modeDrawing = m_pDrawingScene->getMode();
+    CEnumMode modeDrawing = m_pDrawingScene->getMode();
 
     if( modeDrawing == EMode::Edit )
     {
@@ -3922,9 +3930,9 @@ void CGraphObjGroup::keyPressEvent( QKeyEvent* i_pEv )
     if( mthTracer.isActive(ETraceDetailLevelInternalStates) )
     {
         strAddTrcInfo  = "Selected:" + bool2Str(isSelected());
-        strAddTrcInfo += ", EditMode:" + editMode2Str(m_editMode);
-        strAddTrcInfo += ", ResizeMode:" + editResizeMode2Str(m_editResizeMode);
-        strAddTrcInfo += ", SelectedPoint:" + selectionPoint2Str(m_selPtSelectedBoundingRect);
+        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
+        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
+        strAddTrcInfo += ", SelectedPoint:" + m_selPtSelectedBoundingRect.toString();
         mthTracer.trace(strAddTrcInfo);
     }
 
@@ -3941,9 +3949,9 @@ void CGraphObjGroup::keyReleaseEvent( QKeyEvent* i_pEv )
         strAddTrcInfo  = "Ev.Key:" + qKeyCode2Str(i_pEv->key());
         strAddTrcInfo += ", Ev.Modifiers:" + qKeyboardModifiers2Str(i_pEv->modifiers());
         strAddTrcInfo += ", Selected:" + bool2Str(isSelected());
-        strAddTrcInfo += ", EditMode:" + editMode2Str(m_editMode);
-        strAddTrcInfo += ", ResizeMode:" + editResizeMode2Str(m_editResizeMode);
-        strAddTrcInfo += ", SelectedPoint:" + selectionPoint2Str(m_selPtSelectedBoundingRect);
+        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
+        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
+        strAddTrcInfo += ", SelectedPoint:" + m_selPtSelectedBoundingRect.toString();
     }
 
     CMethodTracer mthTracer(
@@ -3953,7 +3961,7 @@ void CGraphObjGroup::keyReleaseEvent( QKeyEvent* i_pEv )
         /* strMethod    */ "keyReleaseEvent",
         /* strAddInfo   */ strAddTrcInfo );
 
-    EMode modeDrawing = m_pDrawingScene->getMode();
+    CEnumMode modeDrawing = m_pDrawingScene->getMode();
 
     if( modeDrawing == EMode::Edit )
     {
@@ -3981,9 +3989,9 @@ void CGraphObjGroup::keyReleaseEvent( QKeyEvent* i_pEv )
     if( mthTracer.isActive(ETraceDetailLevelInternalStates) )
     {
         strAddTrcInfo  = "Selected:" + bool2Str(isSelected());
-        strAddTrcInfo += ", EditMode:" + editMode2Str(m_editMode);
-        strAddTrcInfo += ", ResizeMode:" + editResizeMode2Str(m_editResizeMode);
-        strAddTrcInfo += ", SelectedPoint:" + selectionPoint2Str(m_selPtSelectedBoundingRect);
+        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
+        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
+        strAddTrcInfo += ", SelectedPoint:" + m_selPtSelectedBoundingRect.toString();
         mthTracer.trace(strAddTrcInfo);
     }
 
@@ -4006,7 +4014,7 @@ QVariant CGraphObjGroup::itemChange( GraphicsItemChange i_change, const QVariant
 
     if( s_pTrcAdminObjItemChange != nullptr && s_pTrcAdminObjItemChange->isActive(ETraceDetailLevelMethodCalls) )
     {
-        strAddTrcInfo = "Changed:" + graphicsItemChange2Str(i_change);
+        strAddTrcInfo = "Changed:" + qGraphicsItemChange2Str(i_change);
 
         if( i_value.type() == QVariant::PointF )
         {
@@ -4017,9 +4025,9 @@ QVariant CGraphObjGroup::itemChange( GraphicsItemChange i_change, const QVariant
             strAddTrcInfo += ", Value(" + qVariantType2Str(i_value.type()) + "):" + i_value.toString();
         }
         strAddTrcInfo += ", Selected:" + bool2Str(isSelected());
-        strAddTrcInfo += ", EditMode:" + editMode2Str(m_editMode);
-        strAddTrcInfo += ", ResizeMode:" + editResizeMode2Str(m_editResizeMode);
-        strAddTrcInfo += ", SelectedPoint:" + selectionPoint2Str(m_selPtSelectedBoundingRect);
+        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
+        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
+        strAddTrcInfo += ", SelectedPoint:" + m_selPtSelectedBoundingRect.toString();
     }
 
     CMethodTracer mthTracer(
@@ -4039,7 +4047,7 @@ QVariant CGraphObjGroup::itemChange( GraphicsItemChange i_change, const QVariant
         {
             bringToFront(); // does not set "m_fZValue" as it is used to restore the stacking order on deselecting the object
 
-            if( m_editMode == EEditModeCreating )
+            if( m_editMode == EEditMode::Creating )
             {
                 showSelectionPoints(ESelectionPointsBoundingRectCorner|ESelectionPointsBoundingRectLineCenter|ESelectionPointsPolygonShapePoints);
             }
@@ -4062,9 +4070,9 @@ QVariant CGraphObjGroup::itemChange( GraphicsItemChange i_change, const QVariant
 
             setZValue(m_fZValue); // restore ZValue as before selecting the object
 
-            m_editMode = EEditModeUndefined;
-            m_editResizeMode = EEditResizeModeUndefined;
-            m_selPtSelectedBoundingRect = ESelectionPointUndefined;
+            m_editMode = EEditMode::Undefined;
+            m_editResizeMode = EEditResizeMode::Undefined;
+            m_selPtSelectedBoundingRect = ESelectionPoint::Undefined;
             m_idxSelPtSelectedPolygon = -1;
 
         } // if( !isSelected() )
@@ -4113,7 +4121,7 @@ QVariant CGraphObjGroup::itemChange( GraphicsItemChange i_change, const QVariant
         //ESelectionPoint          selPt;
         //int                      idxSelPt;
 
-        //for( idxSelPt = 0; idxSelPt < ESelectionPointCount; idxSelPt++ )
+        //for( idxSelPt = 0; idxSelPt < CEnumSelectionPoint::count(); idxSelPt++ )
         //{
         //    selPt = static_cast<ESelectionPoint>(idxSelPt);
 
@@ -4121,15 +4129,15 @@ QVariant CGraphObjGroup::itemChange( GraphicsItemChange i_change, const QVariant
 
         //    if( pGraphObjSelPt != nullptr )
         //    {
-        //        if( idxSelPt == ESelectionPointRotateTop && m_fScaleFacYCurr != 0.0 )
+        //        if( idxSelPt == ESelectionPoint::RotateTop && m_fScaleFacYCurr != 0.0 )
         //        {
-        //            ptSel = getSelectionPoint(m_rctCurr,ESelectionPointTopCenter);
+        //            ptSel = getSelectionPoint(m_rctCurr,ESelectionPoint::TopCenter);
         //            ptSel.setY( ptSel.y() - getSelectionPointRotateDistance()/m_fScaleFacYCurr );
         //            ptSel = mapToScene(ptSel);
         //        }
-        //        else if( idxSelPt == ESelectionPointRotateBottom && m_fScaleFacYCurr != 0.0 )
+        //        else if( idxSelPt == ESelectionPoint::RotateBottom && m_fScaleFacYCurr != 0.0 )
         //        {
-        //            ptSel = getSelectionPoint(m_rctCurr,ESelectionPointBottomCenter);
+        //            ptSel = getSelectionPoint(m_rctCurr,ESelectionPoint::BottomCenter);
         //            ptSel.setY( ptSel.y() + getSelectionPointRotateDistance()/m_fScaleFacYCurr );
         //            ptSel = mapToScene(ptSel);
         //        }
@@ -4199,11 +4207,11 @@ QVariant CGraphObjGroup::itemChange( GraphicsItemChange i_change, const QVariant
         ESelectionPoint          selPt;
         int                      idxSelPt;
 
-        for( idxSelPt = 0; idxSelPt < ESelectionPointCount; idxSelPt++ )
+        for( idxSelPt = 0; idxSelPt < CEnumSelectionPoint::count(); idxSelPt++ )
         {
             selPt = static_cast<ESelectionPoint>(idxSelPt);
 
-            pGraphObjSelPt = m_arpSelPtsBoundingRect[selPt];
+            pGraphObjSelPt = m_arpSelPtsBoundingRect[idxSelPt];
 
             if( pGraphObjSelPt != nullptr )
             {
@@ -4252,9 +4260,9 @@ QVariant CGraphObjGroup::itemChange( GraphicsItemChange i_change, const QVariant
             strAddTrcInfo = "ValChanged(" + qVariantType2Str(valChanged.type()) + "):" + valChanged.toString();
         }
         strAddTrcInfo += ", Selected:" + bool2Str(isSelected());
-        strAddTrcInfo += ", EditMode:" + editMode2Str(m_editMode);
-        strAddTrcInfo += ", ResizeMode:" + editResizeMode2Str(m_editResizeMode);
-        strAddTrcInfo += ", SelectedPoint:" + selectionPoint2Str(m_selPtSelectedBoundingRect);
+        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
+        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
+        strAddTrcInfo += ", SelectedPoint:" + m_selPtSelectedBoundingRect.toString();
         mthTracer.setMethodReturn(strAddTrcInfo);
     }
 

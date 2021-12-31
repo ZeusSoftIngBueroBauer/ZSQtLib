@@ -56,6 +56,11 @@ class ZSDRAWDLL_API CGraphObjConnectionPoint : public CGraphObj, public QGraphic
 //******************************************************************************
 {
 public: // class methods
+    /*! Returns the namespace the class belongs to. */
+    static QString NameSpace() { return "ZS::Draw"; } // Please note that the static class functions name must be different from the non static virtual member function "nameSpace"
+    /*! Returns the class name. */
+    static QString ClassName() { return "CGraphObjConnectionPoint"; } // Please note that the static class functions name must be different from the non static virtual member function "className"
+public: // class methods
     static double GetDefaultOuterCircleRadiusInPx() { return s_fOuterCircleRadius_px; }
     static double GetDefaultInnerCircleRadiusInPx() { return s_fInnerCircleRadius_px; }
 public: // class methods
@@ -70,7 +75,7 @@ public: // ctors and dtor
         const QString&       i_strObjId = "" );
     virtual ~CGraphObjConnectionPoint();
 public: // overridables of base class QGraphicsItem
-    virtual int type() const { return EGraphObjTypeConnectionPoint; }
+    virtual int type() const { return static_cast<int>(EGraphObjTypeConnectionPoint); }
 public: // must overridables of base class CGraphObj
     virtual CGraphObj* clone();
 public: // overridables

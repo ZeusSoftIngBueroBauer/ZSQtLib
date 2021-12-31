@@ -15,8 +15,9 @@ packages two Dlls are provided. One Dll summarizes all classes building up the l
 without any GUI components (without any viewer functionality). Another Dll provides the viewer classes which may be
 used to control the application layer classes or indicate the content of the data model classes.
 
-![Packages_Overview](packages_overview.png)
+![Packages_Overview](packages_overview.bmp)
 
 The ZSQtLib is devided into the following areas:
+- @subpage _PAGE_BasicConcepts
 - @subpage _PAGE_Libs
 - @subpage _PAGE_Apps

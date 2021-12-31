@@ -33,13 +33,14 @@ may result in using the software modules.
 #endif
 
 #include "ZSDraw/ZSDrawObjFactoryPolygon.h"
+#include "ZSDraw/ZSDrawAux.h"
 #include "ZSDraw/ZSDrawGraphObjPolygon.h"
 #include "ZSDraw/ZSDrawGraphObjGroup.h"
+#include "ZSDraw/ZSDrawGraphObjLabel.h"
 #include "ZSDraw/ZSDrawingScene.h"
 #include "ZSSys/ZSSysException.h"
 #include "ZSSys/ZSSysTrcAdminObj.h"
 #include "ZSSys/ZSSysTrcMethod.h"
-//#include "ZSSys/ZSSysTrcServer.h"
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
@@ -63,8 +64,8 @@ CObjFactoryPolygon::CObjFactoryPolygon(
 //------------------------------------------------------------------------------
     CObjFactory(
         /* strGroupName         */ "Draw::Standard Shapes",
-        /* strGraphObjNameSpace */ "ZS::Draw",
-        /* strGraphObjClassName */ "CGraphObjPolygon",
+        /* strGraphObjNameSpace */ CGraphObjPolygon::NameSpace(),
+        /* strGraphObjClassName */ CGraphObjPolygon::ClassName(),
         /* iGraphObjType        */ EGraphObjTypePolygon,
         /* strGraphObjType      */ ZS::Draw::graphObjType2Str(EGraphObjTypePolygon),
         /* bAddToToolBoxIdxTree */ i_bAddToToolBoxIdxTree,

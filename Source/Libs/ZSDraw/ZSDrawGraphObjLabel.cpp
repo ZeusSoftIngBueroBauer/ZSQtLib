@@ -37,8 +37,10 @@ may result in using the software modules.
 #endif
 
 #include "ZSDraw/ZSDrawGraphObjLabel.h"
+#include "ZSDraw/ZSDrawAux.h"
 #include "ZSDraw/ZSDrawingScene.h"
 #include "ZSPhysSizes/Geometry/ZSPhysSizes.h"
+#include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysErrCode.h"
 #include "ZSSys/ZSSysException.h"
 #include "ZSSys/ZSSysMath.h"
@@ -88,8 +90,8 @@ CGraphObjLabel::CGraphObjLabel(
 //------------------------------------------------------------------------------
     CGraphObj(
         /* pDrawingScene */ i_pDrawingScene,
-        /* strNameSpace  */ "ZS::Draw",
-        /* strClassName  */ "CGraphObjLabel",
+        /* strNameSpace  */ NameSpace(),
+        /* strClassName  */ ClassName(),
         /* type          */ EGraphObjTypeLabel,
         /* strType       */ ZS::Draw::graphObjType2Str(EGraphObjTypeLabel),
         /* strObjName    */ i_pGraphObj->getObjName() + ".Label." + i_strKey,
@@ -108,13 +110,13 @@ CGraphObjLabel::CGraphObjLabel(
 
     if( s_pTrcAdminObjCtorsAndDtor == nullptr )
     {
-        s_pTrcAdminObjCtorsAndDtor = CTrcServer::GetTraceAdminObj("ZS::Draw", "CGraphObjLabel", "CtorsAndDtor");
-        s_pTrcAdminObjBoundingRect = CTrcServer::GetTraceAdminObj("ZS::Draw", "CGraphObjLabel", "BoundingRect");
-        s_pTrcAdminObjPaint = CTrcServer::GetTraceAdminObj("ZS::Draw", "CGraphObjLabel", "Paint");
-        s_pTrcAdminObjSceneEventFilter = CTrcServer::GetTraceAdminObj("ZS::Draw", "CGraphObjLabel", "SceneEventFilter");
-        s_pTrcAdminObjHoverEvents = CTrcServer::GetTraceAdminObj("ZS::Draw", "CGraphObjLabel", "HoverEvents");
-        s_pTrcAdminObjMouseEvents = CTrcServer::GetTraceAdminObj("ZS::Draw", "CGraphObjLabel", "MouseEvents");
-        s_pTrcAdminObjItemChange = CTrcServer::GetTraceAdminObj("ZS::Draw", "CGraphObjLabel", "ItemChange");
+        s_pTrcAdminObjCtorsAndDtor = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), "CtorsAndDtor");
+        s_pTrcAdminObjBoundingRect = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), "BoundingRect");
+        s_pTrcAdminObjPaint = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), "Paint");
+        s_pTrcAdminObjSceneEventFilter = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), "SceneEventFilter");
+        s_pTrcAdminObjHoverEvents = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), "HoverEvents");
+        s_pTrcAdminObjMouseEvents = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), "MouseEvents");
+        s_pTrcAdminObjItemChange = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), "ItemChange");
 
     } // if( s_pTrcAdminObjCtorsAndDtor == nullptr )
 
@@ -135,6 +137,9 @@ CGraphObjLabel::CGraphObjLabel(
     {
         throw ZS::System::CException( __FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphicsItem == nullptr" );
     }
+
+    setData(static_cast<int>(EGraphItemDataKey::ObjId), m_strObjId);
+    setData(static_cast<int>(EGraphItemDataKey::ObjType), m_type);
 
     setFlags( QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemSendsGeometryChanges );
 
@@ -318,7 +323,7 @@ void CGraphObjLabel::onDrawSettingsChanged()
 {
     if( m_drawSettings.isPenUsed() )
     {
-        if( m_drawSettings.getLineStyle() != ELineStyleNoLine )
+        if( m_drawSettings.getLineStyle() != ELineStyle::NoLine )
         {
             QPen pen;
 
@@ -340,7 +345,7 @@ void CGraphObjLabel::onDrawSettingsChanged()
 
     if( m_drawSettings.isFillUsed() )
     {
-        if( m_drawSettings.getFillStyle() != EFillStyleNoFill )
+        if( m_drawSettings.getFillStyle() != EFillStyle::NoFill )
         {
             QBrush brsh;
 
@@ -365,20 +370,20 @@ void CGraphObjLabel::onDrawSettingsChanged()
 
         ETextEffect textEffect = m_drawSettings.getTextEffect();
 
-        int iTextSize = m_drawSettings.getTextSize();
+        ETextSize textSize = m_drawSettings.getTextSize();
 
-        fnt.setPixelSize( textSize2SizeInPixels(iTextSize) );
+        fnt.setPixelSize( textSize2SizeInPixels(textSize) );
 
         ETextStyle textStyle = m_drawSettings.getTextStyle();
 
-        bool bItalic = textStyle & ETextStyleItalic;
-        bool bBold   = textStyle & ETextStyleBold;
+        bool bItalic = (textStyle == ETextStyle::Italic || textStyle == ETextStyle::BoldItalic);
+        bool bBold   = (textStyle == ETextStyle::Bold || textStyle == ETextStyle::BoldItalic);
 
         fnt.setItalic(bItalic);
         fnt.setBold(bBold);
 
-        bool bStrikeout = textEffect & ETextEffectStrikeout;
-        bool bUnderline = textEffect & ETextEffectUnderline;
+        bool bStrikeout = (textEffect == ETextEffect::Strikeout || textEffect == ETextEffect::StrikeoutUnderline);
+        bool bUnderline = (textEffect == ETextEffect::Underline || textEffect == ETextEffect::StrikeoutUnderline);
 
         fnt.setStrikeOut(bStrikeout);
         fnt.setUnderline(bUnderline);
@@ -472,13 +477,13 @@ bool CGraphObjLabel::isHit( const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo ) 
 
     QRectF rctBounding = boundingRect();
 
-    bIsHit = isRectHit( rctBounding, EFillStyleSolidPattern, i_pt, m_pDrawingScene->getHitToleranceInPx(), o_pHitInfo );
+    bIsHit = isRectHit( rctBounding, EFillStyle::SolidPattern, i_pt, m_pDrawingScene->getHitToleranceInPx(), o_pHitInfo );
 
     if( bIsHit && o_pHitInfo != nullptr )
     {
-        o_pHitInfo->m_editMode = EEditModeMove;
-        o_pHitInfo->m_editResizeMode = EEditResizeModeUndefined;
-        o_pHitInfo->m_selPtBoundingRect = ESelectionPointUndefined;
+        o_pHitInfo->m_editMode = EEditMode::Move;
+        o_pHitInfo->m_editResizeMode = EEditResizeMode::Undefined;
+        o_pHitInfo->m_selPtBoundingRect = ESelectionPoint::Undefined;
         o_pHitInfo->m_idxPolygonShapePoint = -1;
         o_pHitInfo->m_idxLineSegment = -1;
         o_pHitInfo->m_ptSelected = rctBounding.center();
@@ -501,9 +506,9 @@ bool CGraphObjLabel::isHit( const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo ) 
 
         if( o_pHitInfo != nullptr )
         {
-            strAddTrcInfo += ", EditMode:" + editMode2Str(o_pHitInfo->m_editMode);
-            strAddTrcInfo += ", ResizeMode:" + editResizeMode2Str(o_pHitInfo->m_editResizeMode);
-            strAddTrcInfo += ", SelPtBoundingRect:" + selectionPoint2Str(o_pHitInfo->m_selPtBoundingRect);
+            strAddTrcInfo += ", EditMode:" + o_pHitInfo->m_editMode.toString();
+            strAddTrcInfo += ", ResizeMode:" + o_pHitInfo->m_editResizeMode.toString();
+            strAddTrcInfo += ", SelPtBoundingRect:" + o_pHitInfo->m_selPtBoundingRect.toString();
             strAddTrcInfo += ", PolygonShapePoint:" + QString::number(o_pHitInfo->m_idxPolygonShapePoint);
             strAddTrcInfo += ", LineSegment:" + QString::number(o_pHitInfo->m_idxLineSegment);
             strAddTrcInfo += ", PointSelected:" + point2Str(o_pHitInfo->m_ptSelected);
@@ -661,7 +666,7 @@ void CGraphObjLabel::paint(
 
     QRectF rct = QGraphicsSimpleTextItem::boundingRect();
 
-    if( m_drawSettings.getFillStyle() != EFillStyleNone )
+    if( m_drawSettings.getFillStyle() != EFillStyle::None )
     {
         //QBrush brsh;
 
@@ -688,14 +693,14 @@ void CGraphObjLabel::paint(
                 ptGraphObjParentSelPt = m_pGraphicsItemParent->mapToScene(ptGraphObjParentSelPt);
                 ptGraphObjParentSelPt = mapFromScene(ptGraphObjParentSelPt);
 
-                QPointF ptLabelSelPt = getSelectionPoint(ESelectionPointCenter);
+                QPointF ptLabelSelPt = getSelectionPoint(ESelectionPoint::Center);
 
                 i_pPainter->drawLine( ptLabelSelPt, ptGraphObjParentSelPt );
             }
 
         } // if( m_bIsHit || isSelected() )
 
-        //else if( m_drawSettings.getLineStyle() != ELineStyleNoLine )
+        //else if( m_drawSettings.getLineStyle() != ELineStyle::NoLine )
         //{
         //    pn.setColor( m_drawSettings.getPenColor() );
         //    pn.setWidth( m_drawSettings.getPenWidth() );
@@ -718,7 +723,7 @@ void CGraphObjLabel::paint(
 
     else // if( m_pDrawingScene->getMode() == EMode::Simulation )
     {
-        if( m_drawSettings.getLineStyle() != ELineStyleNoLine )
+        if( m_drawSettings.getLineStyle() != ELineStyle::NoLine )
         {
             pn.setColor( m_drawSettings.getPenColor() );
             pn.setWidth( m_drawSettings.getPenWidth() );
@@ -773,16 +778,16 @@ void CGraphObjLabel::hoverEnterEvent( QGraphicsSceneHoverEvent* i_pEv )
         /* strMethod    */ "hoverEnterEvent",
         /* strAddInfo   */ strAddTrcInfo );
 
-    EEditTool editToolDrawing = m_pDrawingScene->getEditTool();
+    CEnumEditTool editToolDrawing = m_pDrawingScene->getEditTool();
 
-    if( editToolDrawing == EEditToolSelect )
+    if( editToolDrawing == EEditTool::Select )
     {
         if( cursor().shape() != Qt::SizeAllCursor )
         {
             setCursor(Qt::SizeAllCursor);
         }
     }
-    else if( editToolDrawing == EEditToolCreateObjects )
+    else if( editToolDrawing == EEditTool::CreateObjects )
     {
     }
 
@@ -813,16 +818,16 @@ void CGraphObjLabel::hoverMoveEvent( QGraphicsSceneHoverEvent* i_pEv )
         /* strMethod    */ "hoverMoveEvent",
         /* strAddInfo   */ strAddTrcInfo );
 
-    EEditTool editToolDrawing = m_pDrawingScene->getEditTool();
+    CEnumEditTool editToolDrawing = m_pDrawingScene->getEditTool();
 
-    if( editToolDrawing == EEditToolSelect )
+    if( editToolDrawing == EEditTool::Select )
     {
         if( cursor().shape() != Qt::SizeAllCursor )
         {
             setCursor(Qt::SizeAllCursor);
         }
     }
-    else if( editToolDrawing == EEditToolCreateObjects )
+    else if( editToolDrawing == EEditTool::CreateObjects )
     {
     }
 
@@ -1049,7 +1054,7 @@ QVariant CGraphObjLabel::itemChange( GraphicsItemChange i_change, const QVariant
     {
         QRectF rctBounding = boundingRect();
 
-        strAddTrcInfo = "Changed:" + graphicsItemChange2Str(i_change);
+        strAddTrcInfo = "Changed:" + qGraphicsItemChange2Str(i_change);
 
         if( i_value.type() == QVariant::PointF )
         {
@@ -1065,8 +1070,8 @@ QVariant CGraphObjLabel::itemChange( GraphicsItemChange i_change, const QVariant
             strAddTrcInfo += ", Value(" + qVariantType2Str(i_value.type()) + "):" + i_value.toString();
         }
         strAddTrcInfo += ", Selected:" + bool2Str(isSelected());
-        strAddTrcInfo += ", EditMode:" + editMode2Str(m_editMode);
-        strAddTrcInfo += ", ResizeMode:" + editResizeMode2Str(m_editResizeMode);
+        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
+        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
         strAddTrcInfo += ", Pos:(" + QString::number(pos().x()) + "," + QString::number(pos().y()) + ")";
         strAddTrcInfo += ", CenterPos:(" + QString::number(rctBounding.center().x()) + "," + QString::number(rctBounding.center().y()) + ")";
         strAddTrcInfo += ", Rect(x,y,w,h):(" + QString::number(rctBounding.x()) + "," + QString::number(rctBounding.y());
@@ -1134,7 +1139,7 @@ QVariant CGraphObjLabel::itemChange( GraphicsItemChange i_change, const QVariant
     {
     }
 
-    else if( i_change == ItemMatrixChange
+    else if( i_change == ItemTransformChange
           || i_change == ItemPositionHasChanged
           || i_change == ItemTransformHasChanged
           || i_change == ItemParentHasChanged
@@ -1174,8 +1179,8 @@ QVariant CGraphObjLabel::itemChange( GraphicsItemChange i_change, const QVariant
             strAddTrcInfo = "ValChanged(" + qVariantType2Str(valChanged.type()) + "):" + valChanged.toString();
         }
         strAddTrcInfo += ", Selected:" + bool2Str(isSelected());
-        strAddTrcInfo += ", EditMode:" + editMode2Str(m_editMode);
-        strAddTrcInfo += ", ResizeMode:" + editResizeMode2Str(m_editResizeMode);
+        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
+        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
         strAddTrcInfo += ", Pos:(" + QString::number(pos().x()) + "," + QString::number(pos().y()) + ")";
         mthTracer.setMethodReturn(strAddTrcInfo);
     }

@@ -36,22 +36,12 @@ may result in using the software modules.
 #endif
 
 #include "ZSDraw/ZSDrawDllMain.h"
-#include "ZSDraw/ZSDrawPageSetup.h"
 #include "ZSPhysVal/ZSPhysVal.h"
 
-class QButtonGroup;
-class QFrame;
-class QComboBox;
-class QGroupBox;
-class QHBoxLayout;
-class QLabel;
 class QListWidget;
 class QListWidgetItem;
 class QPushButton;
 class QStackedWidget;
-class QTimer;
-
-class QLayout;
 class QHBoxLayout;
 class QVBoxLayout;
 
@@ -65,23 +55,38 @@ class CTrcAdminObj;
 namespace Draw
 {
 class CDrawingView;
-class CWdgtPageSetup;
+class CWdgtDrawingPaperPageSetup;
+class CWdgtDrawingViewPageSetup;
 
 //******************************************************************************
 class ZSDRAWDLL_API CDlgPageSetup : public QDialog
 //******************************************************************************
 {
     Q_OBJECT
+public: // class methods
+    /*! Returns the namespace the class belongs to. */
+    static QString NameSpace() { return "ZS::Draw"; } // Please note that the static class functions name must be different from the non static virtual member function "nameSpace"
+    /*! Returns the class name. */
+    static QString ClassName() { return "CDlgPageSetup"; } // Please note that the static class functions name must be different from the non static virtual member function "className"
 public: // type definitions and constants
     enum EWidget
     {
         EWidgetDrawingPaper = 0,
-        EWidgetDrawingScene = 1,
+        EWidgetDrawingView  = 1,
         EWidgetCount
     };
 public: // instance methods
     CDlgPageSetup( CDrawingView* i_pDrawingView, QWidget* i_pWdgtParent = nullptr );
     ~CDlgPageSetup();
+public: // overridables
+    /*! This virtual method returns the name space of the object's class.
+        This method can be reimplemented in derived classes so when invoked for the
+        polymorphic base type the method returns the name space of the derived class. */
+    virtual QString nameSpace() const { return NameSpace(); }
+    /*! This virtual method returns the class name of the object's class.
+        This method can be reimplemented in derived classes so when invoked for the
+        polymorphic base type the method returns the name of the derived class. */
+    virtual QString className() const { return ClassName(); }
 public: // instance methods
     void setCurrentWidget( EWidget i_wdgt );
 protected: // overridables of base class QDialog
@@ -92,39 +97,31 @@ protected slots: // overridables of base class QDialog
     virtual void reject();
 protected slots: // instance methods
     void onBtnAcceptClicked();
-    void onBtnResetClicked();
-protected slots:
-    void onTmrBtnsStateRefreshTimeout();
 protected slots: // List Widget
     void onListWdgtCurrentRowChanged( int i_iRow );
-protected slots: // Format Widgets
-    void onPageSetupAttributeChanged( int i_iAttr, const QVariant& i_val );
-protected: // instance methods
-    void hidePopups();
+protected slots:
+    void onWdgtDrawingPaperSettingsChanged();
+    void onWdgtDrawingViewSettingsChanged();
 private: // instance methods
     ZS::PhysVal::CPhysSize* getDrawingScenePhysSize();
     ZS::PhysVal::CPhysUnit* getDrawingScenePhysUnit();
     void updateDrawingSize();
 private: // instance members
-    CDrawingView*            m_pDrawingView;
-    CPageSetup               m_pageSetupOld;
-    CPageSetup               m_pageSetupNew;
-    QVBoxLayout*             m_pLyt;
-    QHBoxLayout*             m_pLytSettings;
-    QListWidget*             m_pListWdgt;
-    QStackedWidget*          m_pStackedWdgt;
+    CDrawingView*               m_pDrawingView;
+    QVBoxLayout*                m_pLyt;
+    QHBoxLayout*                m_pLytSettings;
+    QListWidget*                m_pListWdgt;
+    QStackedWidget*             m_pStackedWdgt;
     // Format Widgets
-    QListWidgetItem*         m_arpListWdgtItems[EWidgetCount];
-    CWdgtPageSetup*          m_arpWdgtsPageSetup[EWidgetCount];
+    CWdgtDrawingPaperPageSetup* m_pWdgtDrawingPaperPageSetup;
+    CWdgtDrawingViewPageSetup*  m_pWdgtDrawingViewPageSetup;
     // Buttons
-    QHBoxLayout*             m_pLytBtns;
-    QPushButton*             m_pBtnOk;
-    QPushButton*             m_pBtnAccept;
-    QPushButton*             m_pBtnReset;
-    QPushButton*             m_pBtnCancel;
-    QTimer*                  m_pTmrBtnsStateRefresh;
+    QHBoxLayout*                m_pLytBtns;
+    QPushButton*                m_pBtnOk;
+    QPushButton*                m_pBtnAccept;
+    QPushButton*                m_pBtnCancel;
     // Trace
-    ZS::Trace::CTrcAdminObj* m_pTrcAdminObj;
+    ZS::Trace::CTrcAdminObj*    m_pTrcAdminObj;
 
 }; // CDlgPageSetup
 

@@ -1,7 +1,5 @@
-/*!
-@defgroup _GRP_BasicConcepts_ErrorHandling Error Handling
-@ingroup _GRP_BasicConcepts
-@brief Introduction to the error handling concept within the ZSQtLib.
+@page _PAGE_BasicConcepts_ErrorHandling Introduction to the error handling concept within the ZSQtLib.
+
 
 Description of an error
 =======================
@@ -131,6 +129,3 @@ In addition, the MainWindow can also connect with the entryAdded signal of the C
 the ErrLog instance and output an icon in the status line, as shown in the following figure.
 
 ![ErrLogTableView](Libs\ZSSys\ErrLogWdgt.bmp)
-
-
-*/

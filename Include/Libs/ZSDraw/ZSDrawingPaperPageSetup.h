@@ -24,50 +24,48 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#ifndef ZSDraw_WdgtPageSetupDrawingPaper_h
-#define ZSDraw_WdgtPageSetupDrawingPaper_h
+#error Module not used anymore
 
-#include <QtCore/qglobal.h>
+#ifndef ZSDraw_DrawingPaperPageSetup_h
+#define ZSDraw_DrawingPaperPageSetup_h
 
 #include "ZSDraw/ZSDrawDllMain.h"
-#include "ZSDraw/ZSDrawWdgtPageSetup.h"
-#include "ZSPhysVal/ZSPhysVal.h"
 
-class QLabel;
-
-class QLayout;
-class QHBoxLayout;
-class QVBoxLayout;
+class QSettings;
+class QXmlStreamReader;
+class QXmlStreamWriter;
 
 namespace ZS
 {
-namespace Trace
-{
-class CTrcAdminObj;
-}
-
 namespace Draw
 {
 //******************************************************************************
-class ZSDRAWDLL_API CWdgtPageSetupDrawingPaper : public CWdgtPageSetup
+class ZSDRAWDLL_API CDrawingPaperPageSetup
 //******************************************************************************
 {
-    Q_OBJECT
+public: // class methods
+    //static double GetFormatWidthInMilliMeter( EPaperFormat i_format, EPaperOrientation i_orientation );
+    //static double GetFormatHeightInMilliMeter( EPaperFormat i_format, EPaperOrientation i_orientation );
+public: // ctors and dtor
+    CDrawingPaperPageSetup();
+    ~CDrawingPaperPageSetup();
+public: // operators
+    bool operator == ( const CDrawingPaperPageSetup& i_other ) const;
+    bool operator != ( const CDrawingPaperPageSetup& i_other ) const;
 public: // instance methods
-    CWdgtPageSetupDrawingPaper( CDrawingView* i_pDrawingView, QWidget* i_pWdgtParent = nullptr );
-    ~CWdgtPageSetupDrawingPaper();
-public: // overridables of base class CWdgtFormatGraphObjs
-    void setSettings( const CPageSetup& i_pageSetup );
+    void save( QSettings& i_settings, const QString& i_strSettingsKey );
+    void load( QSettings& i_settings, const QString& i_strSettingsKey );
+public: // instance methods
+    void save( QXmlStreamWriter& i_xmlStreamWriter );
+    void load( QXmlStreamReader& i_xmlStreamReader );
+public: // instance methods
+    QString toString() const;
 protected: // instance members
-    QVBoxLayout*             m_pLyt;
-    QLabel*                  m_pLblHeadLine;
-    // Trace
-    ZS::Trace::CTrcAdminObj* m_pTrcAdminObj;
 
-}; // CWdgtPageSetupDrawingPaper
+}; // class CDrawingPaperPageSetup
 
 } // namespace Draw
 
 } // namespace ZS
 
-#endif // #ifndef ZSDraw_WdgtPageSetupDrawingPaper_h
+#endif // #ifndef ZSDraw_DrawingPaperPageSetup_h

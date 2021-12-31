@@ -33,14 +33,15 @@ may result in using the software modules.
 #endif
 
 #include "ZSDraw/ZSDrawObjFactoryConnectionLine.h"
+#include "ZSDraw/ZSDrawAux.h"
 #include "ZSDraw/ZSDrawGraphObjConnectionLine.h"
 #include "ZSDraw/ZSDrawGraphObjConnectionPoint.h"
 #include "ZSDraw/ZSDrawGraphObjGroup.h"
+#include "ZSDraw/ZSDrawGraphObjLabel.h"
 #include "ZSDraw/ZSDrawingScene.h"
 #include "ZSSys/ZSSysException.h"
 #include "ZSSys/ZSSysTrcAdminObj.h"
 #include "ZSSys/ZSSysTrcMethod.h"
-//#include "ZSSys/ZSSysTrcServer.h"
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
@@ -64,8 +65,8 @@ CObjFactoryConnectionLine::CObjFactoryConnectionLine(
 //------------------------------------------------------------------------------
     CObjFactory(
         /* strGroupName         */ "Draw::Connections",
-        /* strGraphObjNameSpace */ "ZS::Draw",
-        /* strGraphObjClassName */ "CGraphObjConnectionLine",
+        /* strGraphObjNameSpace */ CGraphObjConnectionLine::NameSpace(),
+        /* strGraphObjClassName */ CGraphObjConnectionLine::ClassName(),
         /* iGraphObjType        */ EGraphObjTypeConnectionLine,
         /* strGraphObjType      */ ZS::Draw::graphObjType2Str(EGraphObjTypeConnectionLine),
         /* bAddToToolBoxIdxTree */ i_bAddToToolBoxIdxTree,
@@ -151,14 +152,14 @@ SErrResultInfo CObjFactoryConnectionLine::saveGraphObj(
         throw ZS::System::CException( __FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphObjCnctLine == nullptr" );
     }
 
-    CGraphObjConnectionPoint* pCnctPtStart = pGraphObj->getConnectionPoint(ELinePointStart);
+    CGraphObjConnectionPoint* pCnctPtStart = pGraphObj->getConnectionPoint(ELinePoint::Start);
 
     if( pCnctPtStart == nullptr )
     {
         throw ZS::System::CException( __FILE__, __LINE__, EResultConnectionError, "pCnctPtStart == nullptr" );
     }
 
-    CGraphObjConnectionPoint* pCnctPtEnd = pGraphObj->getConnectionPoint(ELinePointEnd);
+    CGraphObjConnectionPoint* pCnctPtEnd = pGraphObj->getConnectionPoint(ELinePoint::End);
 
     if( pCnctPtEnd == nullptr )
     {
@@ -359,8 +360,8 @@ CGraphObj* CObjFactoryConnectionLine::loadGraphObj(
 
             i_pDrawingScene->addItem(pGraphicsItem);
 
-            pGraphObj->setConnectionPoint( ELinePointStart, pCnctPtStart );
-            pGraphObj->setConnectionPoint( ELinePointEnd, pCnctPtEnd );
+            pGraphObj->setConnectionPoint( ELinePoint::Start, pCnctPtStart );
+            pGraphObj->setConnectionPoint( ELinePoint::End, pCnctPtEnd );
 
             plg = pGraphObj->mapFromScene(plg);
 

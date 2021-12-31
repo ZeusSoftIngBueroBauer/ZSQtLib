@@ -27,19 +27,15 @@ may result in using the software modules.
 #include <QtCore/qglobal.h>
 
 #if QT_VERSION < 0x050000
-#include <QtGui/qcombobox.h>
 #include <QtGui/qlabel.h>
 #include <QtGui/qlayout.h>
-#include <QtGui/qlineedit.h>
 #else
-#include <QtWidgets/qcombobox.h>
 #include <QtWidgets/qlabel.h>
 #include <QtWidgets/qlayout.h>
-#include <QtWidgets/qlineedit.h>
 #endif
 
-#include "ZSDraw/ZSDrawWdgtPageSetupDrawingPaper.h"
-#include "ZSPhysSizes/Geometry/ZSPhysSizes.h"
+#include "ZSDraw/ZSDrawWdgtDrawingPaperPageSetup.h"
+#include "ZSDraw/ZSDrawingView.h"
 #include "ZSSys/ZSSysException.h"
 #include "ZSSys/ZSSysTrcAdminObj.h"
 #include "ZSSys/ZSSysTrcMethod.h"
@@ -49,12 +45,11 @@ may result in using the software modules.
 
 
 using namespace ZS::Draw;
-using namespace ZS::PhysVal;
 using namespace ZS::Trace;
 
 
 /*******************************************************************************
-class CWdgtPageSetupDrawingPaper : public CWdgtPageSetup
+class CWdgtDrawingPaperPageSetup : public QWidget
 *******************************************************************************/
 
 /*==============================================================================
@@ -62,11 +57,12 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CWdgtPageSetupDrawingPaper::CWdgtPageSetupDrawingPaper(
+CWdgtDrawingPaperPageSetup::CWdgtDrawingPaperPageSetup(
     CDrawingView* i_pDrawingView,
     QWidget*      i_pWdgtParent ) :
 //------------------------------------------------------------------------------
-    CWdgtPageSetup(i_pDrawingView,i_pWdgtParent),
+    QWidget(i_pWdgtParent),
+    m_pDrawingView(i_pDrawingView),
     m_pLyt(nullptr),
     m_pLblHeadLine(nullptr),
     // Trace
@@ -74,7 +70,7 @@ CWdgtPageSetupDrawingPaper::CWdgtPageSetupDrawingPaper(
 {
     setObjectName("WdgtPageSetupDrawingPaper");
 
-    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj("ZS::Draw", "CWdgtPageSetupDrawingPaper", objectName());
+    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName());
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -105,12 +101,12 @@ CWdgtPageSetupDrawingPaper::CWdgtPageSetupDrawingPaper(
     // Set settings at GUI controls
     //-----------------------------
 
-    setSettings(m_pageSetup);
+    //setPageSetup(i_pDrawingView->getPageSetup());
 
 } // ctor
 
 //------------------------------------------------------------------------------
-CWdgtPageSetupDrawingPaper::~CWdgtPageSetupDrawingPaper()
+CWdgtDrawingPaperPageSetup::~CWdgtDrawingPaperPageSetup()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -122,36 +118,35 @@ CWdgtPageSetupDrawingPaper::~CWdgtPageSetupDrawingPaper()
     CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
     m_pTrcAdminObj = nullptr;
 
+    m_pDrawingView = nullptr;
     m_pLyt = nullptr;
     m_pLblHeadLine = nullptr;
-
-    // Trace
     m_pTrcAdminObj = nullptr;
 
 } // dtor
 
 /*==============================================================================
-public: // overridables of base class CWdgtFormatGraphObjs
+public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CWdgtPageSetupDrawingPaper::setSettings( const CPageSetup& i_pageSetup )
+bool CWdgtDrawingPaperPageSetup::hasChanges() const
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    bool bHasChanges = false;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
-    {
-    }
+    return bHasChanges;
 
+} // hasChanges
+
+//------------------------------------------------------------------------------
+void CWdgtDrawingPaperPageSetup::acceptChanges() const
+//------------------------------------------------------------------------------
+{
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strMethod    */ "setSettings",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strMethod    */ "acceptChanges",
+        /* strAddInfo   */ "" );
 
-    m_pageSetup = i_pageSetup;
-
-    //emit pageSetupAttributeChanged( EPageSetupAttribute.., m_pageSetup.get..() );
-
-} // setSettings
+} // acceptChanges

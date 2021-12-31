@@ -33,12 +33,13 @@ may result in using the software modules.
 #endif
 
 #include "ZSDraw/ZSDrawObjFactoryGroup.h"
+#include "ZSDraw/ZSDrawAux.h"
 #include "ZSDraw/ZSDrawGraphObjGroup.h"
+#include "ZSDraw/ZSDrawGraphObjLabel.h"
 #include "ZSDraw/ZSDrawingScene.h"
 #include "ZSSys/ZSSysException.h"
 #include "ZSSys/ZSSysTrcAdminObj.h"
 #include "ZSSys/ZSSysTrcMethod.h"
-//#include "ZSSys/ZSSysTrcServer.h"
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
@@ -62,8 +63,8 @@ CObjFactoryGroup::CObjFactoryGroup(
 //------------------------------------------------------------------------------
     CObjFactory(
         /* strGroupName         */ "Draw::Standard Shapes",
-        /* strGraphObjNameSpace */ "ZS::Draw",
-        /* strGraphObjClassName */ "CGraphObjGroup",
+        /* strGraphObjNameSpace */ CGraphObjGroup::NameSpace(),
+        /* strGraphObjClassName */ CGraphObjGroup::ClassName(),
         /* iGraphObjType        */ EGraphObjTypeGroup,
         /* strGraphObjType      */ ZS::Draw::graphObjType2Str(EGraphObjTypeGroup),
         /* bAddToToolBoxIdxTree */ i_bAddToToolBoxIdxTree,
@@ -333,7 +334,7 @@ CGraphObj* CObjFactoryGroup::loadGraphObj(
             /* strObjId      */ i_strObjId );
 
         // Start creation of group.
-        pGraphObjGroup->setEditMode(EEditModeCreating);
+        pGraphObjGroup->setEditMode(EEditMode::Creating);
 
         while( !i_xmlStreamReader.hasError() && !i_xmlStreamReader.atEnd() )
         {
@@ -564,8 +565,8 @@ CGraphObj* CObjFactoryGroup::loadGraphObj(
             i_pDrawingScene->onGraphObjCreated(pGraphObjGroup);
 
             pGraphObjGroup->acceptCurrentAsOriginalCoors();
-            pGraphObjGroup->setEditMode(EEditModeUndefined);
-            pGraphObjGroup->setEditResizeMode(EEditResizeModeUndefined);
+            pGraphObjGroup->setEditMode(EEditMode::Undefined);
+            pGraphObjGroup->setEditResizeMode(EEditResizeMode::Undefined);
 
             if( arpLabels.size() > 0 )
             {

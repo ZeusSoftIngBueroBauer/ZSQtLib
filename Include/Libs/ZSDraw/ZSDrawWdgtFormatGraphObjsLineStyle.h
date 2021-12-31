@@ -67,6 +67,11 @@ class ZSDRAWDLL_API CWdgtFormatGraphObjsLineStyle : public CWdgtFormatGraphObjs
 //******************************************************************************
 {
     Q_OBJECT
+public: // class methods
+    /*! Returns the namespace the class belongs to. */
+    static QString NameSpace() { return "ZS::Draw"; } // Please note that the static class functions name must be different from the non static virtual member function "nameSpace"
+    /*! Returns the class name. */
+    static QString ClassName() { return "CWdgtFormatGraphObjsLineStyle"; } // Please note that the static class functions name must be different from the non static virtual member function "className"
 protected: // type definitions and constants
     enum EItemDataRole
     {
@@ -85,6 +90,15 @@ public: // ctors and dtor
         CGraphObj*     i_pGraphObj = nullptr,  // if nullptr the draw settings of the drawing scene are edited, if != nullptr the attributes of the grapic item are edited
         QWidget*       i_pWdgtParent = nullptr );
     virtual ~CWdgtFormatGraphObjsLineStyle();
+public: // overridables
+    /*! This virtual method returns the name space of the object's class.
+        This method can be reimplemented in derived classes so when invoked for the
+        polymorphic base type the method returns the name space of the derived class. */
+    virtual QString nameSpace() const { return NameSpace(); }
+    /*! This virtual method returns the class name of the object's class.
+        This method can be reimplemented in derived classes so when invoked for the
+        polymorphic base type the method returns the name of the derived class. */
+    virtual QString className() const { return ClassName(); }
 public: // must overridables of base class CWdgtFormatGraphObjs
     virtual void applyChanges();
     virtual void resetChanges();
@@ -99,17 +113,17 @@ protected slots: // Line Style
     void onBtnPenColorClicked();
     void onEdtPenWidthTextChanged( const QString& i_strText );
     void onBtnLineStyleClicked();
-    void onViewLineStylesClicked( QModelIndex i_modelIdx );
+    void onViewLineStylesClicked( const QModelIndex& i_modelIdx );
 protected slots: // Line End Styles
     void onBtnLineEndStylesLineStartClicked();
-    void onViewLineEndStylesLineStartClicked( QModelIndex i_modelIdx );
+    void onViewLineEndStylesLineStartClicked( const QModelIndex& i_modelIdx );
     void onBtnLineEndStylesLineEndClicked();
-    void onViewLineEndStylesLineEndClicked( QModelIndex i_modelIdx );
+    void onViewLineEndStylesLineEndClicked( const QModelIndex& i_modelIdx );
 protected slots: // Line End Sizes
     void onBtnLineEndSizesLineStartClicked();
-    void onViewLineEndSizesLineStartClicked( QModelIndex i_modelIdx );
+    void onViewLineEndSizesLineStartClicked( const QModelIndex& i_modelIdx );
     void onBtnLineEndSizesLineEndClicked();
-    void onViewLineEndSizesLineEndClicked( QModelIndex i_modelIdx );
+    void onViewLineEndSizesLineEndClicked( const QModelIndex& i_modelIdx );
 protected: // instance methods
     void setPenColor( const CDrawSettings& i_drawSettings );
     void setLineStyle( const CDrawSettings& i_drawSettings );

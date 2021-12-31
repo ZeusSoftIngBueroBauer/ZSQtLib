@@ -39,6 +39,7 @@ may result in using the software modules.
 class QAction;
 class QDockWidget;
 class QDoubleSpinBox;
+class QGraphicsItem;
 class QLabel;
 class QModelIndex;
 class QPushButton;
@@ -229,9 +230,6 @@ protected: // instance methods (for ctor)
 protected: // overridables of base class QWidget
     virtual void closeEvent( QCloseEvent* i_pEv );
 public: // instance methods
-    void setCheckedActionModeEdit( bool i_bChecked );
-    void setCheckedActionModeSimulation( bool i_bChecked );
-public: // instance methods
     void setCheckedActionEditSelect( bool i_bChecked );
     void triggerActionEditRotateLeft();
     void triggerActionEditRotateRight();
@@ -257,9 +255,6 @@ public slots: // Menu - File
     void onActionFileSaveAsTriggered( bool );
     void onActionFilePageSetupTriggered( bool );
     void onActionFileRecentTriggered( bool );
-public slots: // Menu - Mode
-    void onActionModeEditToggled( bool );
-    void onActionModeSimulationToggled( bool );
 public slots: // Menu - Edit - Select/RotateFree
     void onActionEditSelectToggled( bool );
 public slots: // Menu - Edit - Rotate
@@ -299,6 +294,8 @@ public slots: // Menu - Trace
     void onActionDebugTestTriggered( bool );
 public slots: // Drawing Scene
     void onDrawingSceneChanged( const QList<QRectF>& i_region );
+    void onDrawingSceneFocusItemChanged( QGraphicsItem* i_pNewFocusItem, QGraphicsItem* i_pOldFocusItem, Qt::FocusReason reason );
+    void onDrawingSceneRectChanged( const QRectF& i_rect );
     void onDrawingSceneSelectionChanged();
     void onDrawingSceneMousePosChanged( const QPointF& i_ptMousePos );
     void onDrawingSceneModeChanged();
@@ -318,6 +315,9 @@ protected slots: // Tree View Graphics Items
     void onTreeViewGraphicsItemsExpanded( const QModelIndex& i_modelIdx );
     void onTreeViewGraphicsItemsCurrentChanged( const QModelIndex& i_modelIdxCurr, const QModelIndex& i_modelIdxPrev );
     void onTreeViewGraphicsItemsDoubleClicked( const QModelIndex& i_modelIdx );
+protected: // overridables of base class QWidget
+    virtual void resizeEvent( QResizeEvent* i_pEv ) override;
+    virtual void showEvent( QShowEvent* i_pEv ) override;
 protected: // instance methods
     void setCurrentFile( const QString& i_strFileName );
     void updateStatusBar();
@@ -371,11 +371,6 @@ protected: // instance members
     bool                                                m_bDrawingChangedSinceLastSave;
     QString                                             m_strCurrentFile;
     QAction*                                            m_pActFileQuit;
-    // Menu - Mode
-    QMenu*                                              m_pMenuMode;
-    QToolBar*                                           m_pToolBarMode;
-    QAction*                                            m_pActModeEdit;
-    QAction*                                            m_pActModeSimulation;
     // Menu - Edit
     QMenu*                                              m_pMenuEdit;
     // Menu - Edit - Select
@@ -462,6 +457,7 @@ protected: // instance members
     QLabel*                                             m_pLblStatusBarDrawingSceneEditTool;
     QLabel*                                             m_pLblStatusBarDrawingSceneEditMode;
     QLabel*                                             m_pLblStatusBarDrawingSceneGraphObjEditInfo;
+    QLabel*                                             m_pLblStatusBarDrawingSceneRect;
     QLabel*                                             m_pLblStatusBarDrawingSceneMouseCursorPos;
     QLabel*                                             m_pLblStatusBarDrawingViewMouseCursorPos;
     // Central Widget with Drawing

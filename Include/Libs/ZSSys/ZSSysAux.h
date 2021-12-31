@@ -28,6 +28,7 @@ may result in using the software modules.
 #define ZSSys_Aux_h
 
 #include <QtCore/qbytearray.h>
+#include <QtCore/qmargins.h>
 #include <QtCore/qmutex.h>
 #include <QtCore/qprocess.h>
 #include <QtCore/qstring.h>
@@ -169,8 +170,11 @@ ZSSYSDLL_API QString qMouseButton2Str( int i_iBtn, bool i_bShort = true );
 ZSSYSDLL_API QString qMouseButtons2Str( int i_iBtns, bool i_bShort = true );
 ZSSYSDLL_API QString qPoint2Str( const QPoint& i_pt, bool i_bShort = true );
 ZSSYSDLL_API QString qRect2Str( const QRect& i_rct, bool i_bShort = true );
+ZSSYSDLL_API QString qMargins2Str( const QMargins& i_margins, bool i_bShort = true );
 ZSSYSDLL_API QString qMimeData2Str( const QMimeData* i_pMimeData, int i_iDetailLevel = 0 );
 ZSSYSDLL_API QString qVariantType2Str( int i_iVal );
+
+ZSSYSDLL_API QString qFocusReason2Str( int i_iVal );
 
 
 /*******************************************************************************

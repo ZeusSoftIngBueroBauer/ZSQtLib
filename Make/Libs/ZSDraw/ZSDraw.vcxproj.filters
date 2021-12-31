@@ -230,22 +230,16 @@
     <ClCompile Include="..\..\..\Source\Libs\ZSDraw\ZSDrawWdgtFormatGraphObjsTextStyle.cpp">
       <Filter>Source Files\Dialogs</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Libs\ZSDraw\ZSDrawWdgtPageSetup.cpp">
+    <ClCompile Include="..\..\..\Source\Libs\ZSDraw\ZSDrawWdgtDrawingPaperPageSetup.cpp">
       <Filter>Source Files\Dialogs</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Libs\ZSDraw\ZSDrawWdgtPageSetupDrawingPaper.cpp">
-      <Filter>Source Files\Dialogs</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Libs\ZSDraw\ZSDrawWdgtPageSetupDrawingScene.cpp">
+    <ClCompile Include="..\..\..\Source\Libs\ZSDraw\ZSDrawWdgtDrawingViewPageSetup.cpp">
       <Filter>Source Files\Dialogs</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Libs\ZSDraw\ZSDrawingScene.cpp">
       <Filter>Source Files\Drawing</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Libs\ZSDraw\ZSDrawingView.cpp">
-      <Filter>Source Files\Drawing</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Libs\ZSDraw\ZSDrawPageSetup.cpp">
       <Filter>Source Files\Drawing</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Libs\ZSDraw\ZSDrawSettings.cpp">
@@ -296,13 +290,10 @@
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2017\x64\moc_ZSDrawWdgtFormatGraphObjsTextStyle.cpp">
       <Filter>Generated Files\msvc2017\x64\Debug</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2017\x64\moc_ZSDrawWdgtPageSetup.cpp">
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2017\x64\moc_ZSDrawWdgtDrawingPaperPageSetup.cpp">
       <Filter>Generated Files\msvc2017\x64\Debug</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2017\x64\moc_ZSDrawWdgtPageSetupDrawingPaper.cpp">
-      <Filter>Generated Files\msvc2017\x64\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2017\x64\moc_ZSDrawWdgtPageSetupDrawingScene.cpp">
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2017\x64\moc_ZSDrawWdgtDrawingViewPageSetup.cpp">
       <Filter>Generated Files\msvc2017\x64\Debug</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2015\x64\emb_ZSDraw.cpp">
@@ -341,13 +332,10 @@
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2015\x64\moc_ZSDrawWdgtFormatGraphObjsTextStyle.cpp">
       <Filter>Generated Files\msvc2015\x64\Release</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2015\x64\moc_ZSDrawWdgtPageSetup.cpp">
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2015\x64\moc_ZSDrawWdgtDrawingPaperPageSetup.cpp">
       <Filter>Generated Files\msvc2015\x64\Release</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2015\x64\moc_ZSDrawWdgtPageSetupDrawingPaper.cpp">
-      <Filter>Generated Files\msvc2015\x64\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2015\x64\moc_ZSDrawWdgtPageSetupDrawingScene.cpp">
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2015\x64\moc_ZSDrawWdgtDrawingViewPageSetup.cpp">
       <Filter>Generated Files\msvc2015\x64\Release</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2015\x64\emb_ZSDraw.cpp">
@@ -386,13 +374,10 @@
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2015\x64\moc_ZSDrawWdgtFormatGraphObjsTextStyle.cpp">
       <Filter>Generated Files\msvc2015\x64\Debug</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2015\x64\moc_ZSDrawWdgtPageSetup.cpp">
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2015\x64\moc_ZSDrawWdgtDrawingPaperPageSetup.cpp">
       <Filter>Generated Files\msvc2015\x64\Debug</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2015\x64\moc_ZSDrawWdgtPageSetupDrawingPaper.cpp">
-      <Filter>Generated Files\msvc2015\x64\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2015\x64\moc_ZSDrawWdgtPageSetupDrawingScene.cpp">
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2015\x64\moc_ZSDrawWdgtDrawingViewPageSetup.cpp">
       <Filter>Generated Files\msvc2015\x64\Debug</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2017\Win32\emb_ZSDraw.cpp">
@@ -431,13 +416,10 @@
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2017\Win32\moc_ZSDrawWdgtFormatGraphObjsTextStyle.cpp">
       <Filter>Generated Files\msvc2017\Win32\Release</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2017\Win32\moc_ZSDrawWdgtPageSetup.cpp">
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2017\Win32\moc_ZSDrawWdgtDrawingPaperPageSetup.cpp">
       <Filter>Generated Files\msvc2017\Win32\Release</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2017\Win32\moc_ZSDrawWdgtPageSetupDrawingPaper.cpp">
-      <Filter>Generated Files\msvc2017\Win32\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2017\Win32\moc_ZSDrawWdgtPageSetupDrawingScene.cpp">
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2017\Win32\moc_ZSDrawWdgtDrawingViewPageSetup.cpp">
       <Filter>Generated Files\msvc2017\Win32\Release</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2017\Win32\emb_ZSDraw.cpp">
@@ -476,13 +458,10 @@
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2017\Win32\moc_ZSDrawWdgtFormatGraphObjsTextStyle.cpp">
       <Filter>Generated Files\msvc2017\Win32\Debug</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2017\Win32\moc_ZSDrawWdgtPageSetup.cpp">
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2017\Win32\moc_ZSDrawWdgtDrawingPaperPageSetup.cpp">
       <Filter>Generated Files\msvc2017\Win32\Debug</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2017\Win32\moc_ZSDrawWdgtPageSetupDrawingPaper.cpp">
-      <Filter>Generated Files\msvc2017\Win32\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2017\Win32\moc_ZSDrawWdgtPageSetupDrawingScene.cpp">
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2017\Win32\moc_ZSDrawWdgtDrawingViewPageSetup.cpp">
       <Filter>Generated Files\msvc2017\Win32\Debug</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2015\Win32\emb_ZSDraw.cpp">
@@ -521,13 +500,10 @@
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2015\Win32\moc_ZSDrawWdgtFormatGraphObjsTextStyle.cpp">
       <Filter>Generated Files\msvc2015\Win32\Release</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2015\Win32\moc_ZSDrawWdgtPageSetup.cpp">
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2015\Win32\moc_ZSDrawWdgtDrawingPaperPageSetup.cpp">
       <Filter>Generated Files\msvc2015\Win32\Release</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2015\Win32\moc_ZSDrawWdgtPageSetupDrawingPaper.cpp">
-      <Filter>Generated Files\msvc2015\Win32\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2015\Win32\moc_ZSDrawWdgtPageSetupDrawingScene.cpp">
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2015\Win32\moc_ZSDrawWdgtDrawingViewPageSetup.cpp">
       <Filter>Generated Files\msvc2015\Win32\Release</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2015\Win32\emb_ZSDraw.cpp">
@@ -566,13 +542,10 @@
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2015\Win32\moc_ZSDrawWdgtFormatGraphObjsTextStyle.cpp">
       <Filter>Generated Files\msvc2015\Win32\Debug</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2015\Win32\moc_ZSDrawWdgtPageSetup.cpp">
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2015\Win32\moc_ZSDrawWdgtDrawingPaperPageSetup.cpp">
       <Filter>Generated Files\msvc2015\Win32\Debug</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2015\Win32\moc_ZSDrawWdgtPageSetupDrawingPaper.cpp">
-      <Filter>Generated Files\msvc2015\Win32\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2015\Win32\moc_ZSDrawWdgtPageSetupDrawingScene.cpp">
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2015\Win32\moc_ZSDrawWdgtDrawingViewPageSetup.cpp">
       <Filter>Generated Files\msvc2015\Win32\Debug</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2017\x64\emb_ZSDraw.cpp">
@@ -611,13 +584,10 @@
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2017\x64\moc_ZSDrawWdgtFormatGraphObjsTextStyle.cpp">
       <Filter>Generated Files\msvc2017\x64\Release</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2017\x64\moc_ZSDrawWdgtPageSetup.cpp">
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2017\x64\moc_ZSDrawWdgtDrawingPaperPageSetup.cpp">
       <Filter>Generated Files\msvc2017\x64\Release</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2017\x64\moc_ZSDrawWdgtPageSetupDrawingPaper.cpp">
-      <Filter>Generated Files\msvc2017\x64\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2017\x64\moc_ZSDrawWdgtPageSetupDrawingScene.cpp">
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2017\x64\moc_ZSDrawWdgtDrawingViewPageSetup.cpp">
       <Filter>Generated Files\msvc2017\x64\Release</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2019\x64\moc_ZSDrawDlgFormatGraphObjs.cpp">
@@ -650,13 +620,10 @@
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2019\x64\moc_ZSDrawWdgtFormatGraphObjsTextStyle.cpp">
       <Filter>Generated Files\msvc2019\x64\Debug</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2019\x64\moc_ZSDrawWdgtPageSetup.cpp">
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2019\x64\moc_ZSDrawWdgtDrawingPaperPageSetup.cpp">
       <Filter>Generated Files\msvc2019\x64\Debug</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2019\x64\moc_ZSDrawWdgtPageSetupDrawingPaper.cpp">
-      <Filter>Generated Files\msvc2019\x64\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2019\x64\moc_ZSDrawWdgtPageSetupDrawingScene.cpp">
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2019\x64\moc_ZSDrawWdgtDrawingViewPageSetup.cpp">
       <Filter>Generated Files\msvc2019\x64\Debug</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2019\x64\emb_ZSDraw.cpp">
@@ -701,13 +668,10 @@
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2019\x64\moc_ZSDrawWdgtFormatGraphObjsTextStyle.cpp">
       <Filter>Generated Files\msvc2019\x64\Release</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2019\x64\moc_ZSDrawWdgtPageSetup.cpp">
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2019\x64\moc_ZSDrawWdgtDrawingPaperPageSetup.cpp">
       <Filter>Generated Files\msvc2019\x64\Release</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2019\x64\moc_ZSDrawWdgtPageSetupDrawingPaper.cpp">
-      <Filter>Generated Files\msvc2019\x64\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2019\x64\moc_ZSDrawWdgtPageSetupDrawingScene.cpp">
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2019\x64\moc_ZSDrawWdgtDrawingViewPageSetup.cpp">
       <Filter>Generated Files\msvc2019\x64\Release</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2019\Win32\emb_ZSDraw.cpp">
@@ -746,13 +710,10 @@
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2019\Win32\moc_ZSDrawWdgtFormatGraphObjsTextStyle.cpp">
       <Filter>Generated Files\msvc2019\Win32\Release</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2019\Win32\moc_ZSDrawWdgtPageSetup.cpp">
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2019\Win32\moc_ZSDrawWdgtDrawingPaperPageSetup.cpp">
       <Filter>Generated Files\msvc2019\Win32\Release</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2019\Win32\moc_ZSDrawWdgtPageSetupDrawingPaper.cpp">
-      <Filter>Generated Files\msvc2019\Win32\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2019\Win32\moc_ZSDrawWdgtPageSetupDrawingScene.cpp">
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2019\Win32\moc_ZSDrawWdgtDrawingViewPageSetup.cpp">
       <Filter>Generated Files\msvc2019\Win32\Release</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2019\Win32\emb_ZSDraw.cpp">
@@ -791,14 +752,20 @@
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2019\Win32\moc_ZSDrawWdgtFormatGraphObjsTextStyle.cpp">
       <Filter>Generated Files\msvc2019\Win32\Debug</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2019\Win32\moc_ZSDrawWdgtPageSetup.cpp">
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2019\Win32\moc_ZSDrawWdgtDrawingPaperPageSetup.cpp">
       <Filter>Generated Files\msvc2019\Win32\Debug</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2019\Win32\moc_ZSDrawWdgtPageSetupDrawingPaper.cpp">
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2019\Win32\moc_ZSDrawWdgtDrawingViewPageSetup.cpp">
       <Filter>Generated Files\msvc2019\Win32\Debug</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2019\Win32\moc_ZSDrawWdgtPageSetupDrawingScene.cpp">
-      <Filter>Generated Files\msvc2019\Win32\Debug</Filter>
+    <ClCompile Include="..\..\..\Source\Libs\ZSDraw\ZSDrawAux.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSDraw\ZSDrawCommon.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSDraw\ZSDrawGraphObjEventFct.cpp">
+      <Filter>Source Files\GraphObjs</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -880,9 +847,6 @@
     <ClInclude Include="..\..\..\Include\Libs\ZSDraw\ZSDrawGraphObjText.h">
       <Filter>Header Files\GraphObjs</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Libs\ZSDraw\ZSDrawPageSetup.h">
-      <Filter>Header Files\Drawing</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Libs\ZSDraw\ZSDrawSettings.h">
       <Filter>Header Files\Drawing</Filter>
     </ClInclude>
@@ -897,6 +861,15 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Libs\ZSDraw\ZSDrawObjFactory.h">
       <Filter>Header Files\GraphObjFactories</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Libs\ZSDraw\ZSDrawAux.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Libs\ZSDraw\ZSDrawCommon.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Libs\ZSDraw\ZSDrawGraphObjEventFct.h">
+      <Filter>Header Files\GraphObjs</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1015,13 +988,10 @@
     <CustomBuild Include="..\..\..\Include\Libs\ZSDraw\ZSDrawWdgtFormatGraphObjsTextStyle.h">
       <Filter>Header Files\Dialogs</Filter>
     </CustomBuild>
-    <CustomBuild Include="..\..\..\Include\Libs\ZSDraw\ZSDrawWdgtPageSetup.h">
+    <CustomBuild Include="..\..\..\Include\Libs\ZSDraw\ZSDrawWdgtDrawingPaperPageSetup.h">
       <Filter>Header Files\Dialogs</Filter>
     </CustomBuild>
-    <CustomBuild Include="..\..\..\Include\Libs\ZSDraw\ZSDrawWdgtPageSetupDrawingPaper.h">
-      <Filter>Header Files\Dialogs</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\..\Include\Libs\ZSDraw\ZSDrawWdgtPageSetupDrawingScene.h">
+    <CustomBuild Include="..\..\..\Include\Libs\ZSDraw\ZSDrawWdgtDrawingViewPageSetup.h">
       <Filter>Header Files\Dialogs</Filter>
     </CustomBuild>
     <CustomBuild Include="..\..\..\Include\Libs\ZSDraw\ZSDrawingScene.h">

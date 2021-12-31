@@ -1,7 +1,4 @@
-/*!
-@defgroup _GRP_BasicConcepts_IndexTree Index Tree
-@ingroup _GRP_BasicConcepts
-@brief Introduction to the Index Tree.
+@page _PAGE_BasicConcepts_IndexTree Introduction to the Index Tree.
 
 Entries in the index tree are structured both in a tree structure and in an
 index-based vector.
@@ -48,5 +45,3 @@ also created). Of course, it must then be ensured that the lock is then removed 
 If the tree is accessed from multiple threads, but it is a tree that is only set up once
 at runtime, after which it is no longer changed but only accessed for reading, access
 don't have to be protected via a mutex and there is no need to create the mutex.
-
-*/

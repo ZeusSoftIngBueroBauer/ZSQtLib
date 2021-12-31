@@ -1,9 +1,6 @@
-/*!
-@defgroup _GRP_BasicConcepts_CodingGuidelines Naming Conventions and Coding Guidelines
-@ingroup _GRP_BasicConcepts
-@brief
+@page _PAGE_BasicConcepts_CodingGuidelines Naming Conventions and Coding Guidelines
 
-For better readability naming conventions and coding guidelines are follewed.
+For better readability naming conventions and coding guidelines are followed.
 
 User defined data types:
 
@@ -39,4 +36,4 @@ Methods:
     is no longer needed.
   - ReleaseInstance decrements a reference counter. If the reference counter becomes 0
     the instance is deleted.
-*/
+

@@ -77,6 +77,11 @@ class ZSDRAWDLL_API CDlgFormatGraphObjs : public QDialog
 //******************************************************************************
 {
     Q_OBJECT
+public: // class methods
+    /*! Returns the namespace the class belongs to. */
+    static QString NameSpace() { return "ZS::Draw"; } // Please note that the static class functions name must be different from the non static virtual member function "nameSpace"
+    /*! Returns the class name. */
+    static QString ClassName() { return "CDlgFormatGraphObjs"; }  // Please note that the static class functions name must be different from the non static virtual member function "className"
 public: // type definitions and constants
     static const QString c_strWdgtObjName;
     static const QString c_strWdgtLineStyle;
@@ -90,6 +95,15 @@ public: // ctors and dtor
         CGraphObj*     i_pGraphObj = nullptr,  // if nullptr the draw settings of the drawing scene are edited, if != nullptr the attributes of the grapic item are edited
         QWidget*       i_pWdgtParent = nullptr );
     virtual ~CDlgFormatGraphObjs();
+public: // overridables
+    /*! This virtual method returns the name space of the object's class.
+        This method can be reimplemented in derived classes so when invoked for the
+        polymorphic base type the method returns the name space of the derived class. */
+    virtual QString nameSpace() const { return NameSpace(); }
+    /*! This virtual method returns the class name of the object's class.
+        This method can be reimplemented in derived classes so when invoked for the
+        polymorphic base type the method returns the name of the derived class. */
+    virtual QString className() const { return ClassName(); }
 public: // instance methods
     void addWidget( const QIcon& i_icon, const QString& i_strWdgtName, CWdgtFormatGraphObjs* i_pWdgt );
     void setCurrentWidget( const QString& i_strWdgtName );

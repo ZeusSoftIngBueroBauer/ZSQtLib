@@ -110,328 +110,328 @@ class CDrawSettings
 *******************************************************************************/
 
 //------------------------------------------------------------------------------
-static const SAttribute s_arDrawAttributesDefaultValsGraphObjTypeUndefined[EDrawAttributeCount] =
+static const SDrawAttribute s_arDrawAttributesDefaultValsGraphObjTypeUndefined[EDrawAttributeCount] =
 //------------------------------------------------------------------------------
 {   // For Undefined GraphObjTypes (used by the drawing scene) each of the attributes is used as default:
-    /*  0 PenColor                     */ SAttribute( "PenColor", QColor(Qt::black), true ),
-    /*  1 PenWidth                     */ SAttribute( "PenWidth", 1, true),
-    /*  2 LineStyle                    */ SAttribute( "LineStyle", ELineStyleSolidLine, true ),
-    /*  3 FillColor                    */ SAttribute( "FillColor", QColor(Qt::white), true ),
-    /*  4 FillStyle                    */ SAttribute( "FillStyle", EFillStyleNoFill, true ),
-    /*  5 LineRecordType               */ SAttribute( "LineRecordType", ELineRecordTypeNormal, true ),
-    /*  6 LineExtent                   */ SAttribute( "LineExtent", 1, true ),
-    /*  7 LineStartLineEndStyle        */ SAttribute( "LineStartLineEndStyle", ELineEndStyleNormal, true ),
-    /*  8 LineStartLineEndBaseLineType */ SAttribute( "LineStartLineEndBaseLineType", ELineEndBaseLineTypeNoLine, true ),
-    /*  9 LineStartLineEndFillStyle    */ SAttribute( "LineStartLineEndFillStyle", ELineEndFillStyleNoFill, true ),
-    /* 10 LineStartLineEndWidth        */ SAttribute( "LineStartLineEndWidth", ELineEndWidthMedium, true ),
-    /* 11 LineStartLineEndLength       */ SAttribute( "LineStartLineEndLength", ELineEndLengthMedium, true ),
-    /* 12 LineEndLineEndStyle          */ SAttribute( "LineEndLineEndStyle", ELineEndStyleNormal, true ),
-    /* 13 LineEndLineEndBaseLineType   */ SAttribute( "LineEndLineEndBaseLineType", ELineEndBaseLineTypeNoLine, true ),
-    /* 14 LineEndLineEndFillStyle      */ SAttribute( "LineEndLineEndFillStyle", ELineEndFillStyleNoFill, true ),
-    /* 15 LineEndLineEndWidth          */ SAttribute( "LineEndLineEndWidth", ELineEndWidthMedium, true ),
-    /* 16 LineEndLineEndLength         */ SAttribute( "LineEndLineEndLength", ELineEndLengthMedium, true ),
-    /* 17 TextColor                    */ SAttribute( "TextColor", QColor(Qt::black), true ),
-    /* 18 TextFont                     */ SAttribute( "TextFont", QFont("Arial"), true ),
-    /* 19 TextStyle                    */ SAttribute( "TextStyle", ETextStyleNormal, true ),
-    /* 20 TextSize                     */ SAttribute( "TextSize", ETextSize11, true ),
-    /* 21 TextEffect                   */ SAttribute( "TextEffect", ETextEffectNone, true )
+    /*  0 PenColor                     */ SDrawAttribute( "PenColor", QColor(Qt::black), true ),
+    /*  1 PenWidth                     */ SDrawAttribute( "PenWidth", 1, true),
+    /*  2 LineStyle                    */ SDrawAttribute( "LineStyle", static_cast<int>(ELineStyle::SolidLine), true ),
+    /*  3 FillColor                    */ SDrawAttribute( "FillColor", QColor(Qt::white), true ),
+    /*  4 FillStyle                    */ SDrawAttribute( "FillStyle", static_cast<int>(EFillStyle::NoFill), true ),
+    /*  5 LineRecordType               */ SDrawAttribute( "LineRecordType", static_cast<int>(ELineRecordType::Normal), true ),
+    /*  6 LineExtent                   */ SDrawAttribute( "LineExtent", 1, true ),
+    /*  7 LineStartLineEndStyle        */ SDrawAttribute( "LineStartLineEndStyle", static_cast<int>(ELineEndStyle::Normal), true ),
+    /*  8 LineStartLineEndBaseLineType */ SDrawAttribute( "LineStartLineEndBaseLineType", static_cast<int>(ELineEndBaseLineType::NoLine), true ),
+    /*  9 LineStartLineEndFillStyle    */ SDrawAttribute( "LineStartLineEndFillStyle", static_cast<int>(ELineEndFillStyle::NoFill), true ),
+    /* 10 LineStartLineEndWidth        */ SDrawAttribute( "LineStartLineEndWidth", static_cast<int>(ELineEndWidth::Medium), true ),
+    /* 11 LineStartLineEndLength       */ SDrawAttribute( "LineStartLineEndLength", static_cast<int>(ELineEndLength::Medium), true ),
+    /* 12 LineEndLineEndStyle          */ SDrawAttribute( "LineEndLineEndStyle", static_cast<int>(ELineEndStyle::Normal), true ),
+    /* 13 LineEndLineEndBaseLineType   */ SDrawAttribute( "LineEndLineEndBaseLineType", static_cast<int>(ELineEndBaseLineType::NoLine), true ),
+    /* 14 LineEndLineEndFillStyle      */ SDrawAttribute( "LineEndLineEndFillStyle", static_cast<int>(ELineEndFillStyle::NoFill), true ),
+    /* 15 LineEndLineEndWidth          */ SDrawAttribute( "LineEndLineEndWidth", static_cast<int>(ELineEndWidth::Medium), true ),
+    /* 16 LineEndLineEndLength         */ SDrawAttribute( "LineEndLineEndLength", static_cast<int>(ELineEndLength::Medium), true ),
+    /* 17 TextColor                    */ SDrawAttribute( "TextColor", QColor(Qt::black), true ),
+    /* 18 TextFont                     */ SDrawAttribute( "TextFont", QFont("Arial"), true ),
+    /* 19 TextStyle                    */ SDrawAttribute( "TextStyle", static_cast<int>(ETextStyle::Normal), true ),
+    /* 20 TextSize                     */ SDrawAttribute( "TextSize", ETextSize11, true ),
+    /* 21 TextEffect                   */ SDrawAttribute( "TextEffect", static_cast<int>(ETextEffect::None), true )
 };
 
 //------------------------------------------------------------------------------
-static const SAttribute s_arDrawAttributesDefaultValsGraphObjTypeUserDefined[EDrawAttributeCount] =
+static const SDrawAttribute s_arDrawAttributesDefaultValsGraphObjTypeUserDefined[EDrawAttributeCount] =
 //------------------------------------------------------------------------------
 {   // For UserDefined GraphObjTypes none of the attributes is used as default:
-    /*  0 PenColor                     */ SAttribute( "PenColor", QColor(Qt::black), false ),
-    /*  1 PenWidth                     */ SAttribute( "PenWidth", 1, false),
-    /*  2 LineStyle                    */ SAttribute( "LineStyle", ELineStyleSolidLine, false ),
-    /*  3 FillColor                    */ SAttribute( "FillColor", QColor(Qt::white), false ),
-    /*  4 FillStyle                    */ SAttribute( "FillStyle", EFillStyleNoFill, false ),
-    /*  5 LineRecordType               */ SAttribute( "LineRecordType", ELineRecordTypeNormal, false ),
-    /*  6 LineExtent                   */ SAttribute( "LineExtent", 1, false ),
-    /*  7 LineStartLineEndStyle        */ SAttribute( "LineStartLineEndStyle", ELineEndStyleNormal, false ),
-    /*  8 LineStartLineEndBaseLineType */ SAttribute( "LineStartLineEndBaseLineType", ELineEndBaseLineTypeNoLine, false ),
-    /*  9 LineStartLineEndFillStyle    */ SAttribute( "LineStartLineEndFillStyle", ELineEndFillStyleNoFill, false ),
-    /* 10 LineStartLineEndWidth        */ SAttribute( "LineStartLineEndWidth", ELineEndWidthMedium, false ),
-    /* 11 LineStartLineEndLength       */ SAttribute( "LineStartLineEndLength", ELineEndLengthMedium, false ),
-    /* 12 LineEndLineEndStyle          */ SAttribute( "LineEndLineEndStyle", ELineEndStyleNormal, false ),
-    /* 13 LineEndLineEndBaseLineType   */ SAttribute( "LineEndLineEndBaseLineType", ELineEndBaseLineTypeNoLine, false ),
-    /* 14 LineEndLineEndFillStyle      */ SAttribute( "LineEndLineEndFillStyle", ELineEndFillStyleNoFill, false ),
-    /* 15 LineEndLineEndWidth          */ SAttribute( "LineEndLineEndWidth", ELineEndWidthMedium, false ),
-    /* 16 LineEndLineEndLength         */ SAttribute( "LineEndLineEndLength", ELineEndLengthMedium, false ),
-    /* 17 TextColor                    */ SAttribute( "TextColor", QColor(Qt::black), false ),
-    /* 18 TextFont                     */ SAttribute( "TextFont", QFont("Arial"), false ),
-    /* 19 TextStyle                    */ SAttribute( "TextStyle", ETextStyleNormal, false ),
-    /* 20 TextSize                     */ SAttribute( "TextSize", ETextSize11, false ),
-    /* 21 TextEffect                   */ SAttribute( "TextEffect", ETextEffectNone, false )
+    /*  0 PenColor                     */ SDrawAttribute( "PenColor", QColor(Qt::black), false ),
+    /*  1 PenWidth                     */ SDrawAttribute( "PenWidth", 1, false),
+    /*  2 LineStyle                    */ SDrawAttribute( "LineStyle", static_cast<int>(ELineStyle::SolidLine), false ),
+    /*  3 FillColor                    */ SDrawAttribute( "FillColor", QColor(Qt::white), false ),
+    /*  4 FillStyle                    */ SDrawAttribute( "FillStyle", static_cast<int>(EFillStyle::NoFill), false ),
+    /*  5 LineRecordType               */ SDrawAttribute( "LineRecordType", static_cast<int>(ELineRecordType::Normal), false ),
+    /*  6 LineExtent                   */ SDrawAttribute( "LineExtent", 1, false ),
+    /*  7 LineStartLineEndStyle        */ SDrawAttribute( "LineStartLineEndStyle", static_cast<int>(ELineEndStyle::Normal), false ),
+    /*  8 LineStartLineEndBaseLineType */ SDrawAttribute( "LineStartLineEndBaseLineType", static_cast<int>(ELineEndBaseLineType::NoLine), false ),
+    /*  9 LineStartLineEndFillStyle    */ SDrawAttribute( "LineStartLineEndFillStyle", static_cast<int>(ELineEndFillStyle::NoFill), false ),
+    /* 10 LineStartLineEndWidth        */ SDrawAttribute( "LineStartLineEndWidth", static_cast<int>(ELineEndWidth::Medium), false ),
+    /* 11 LineStartLineEndLength       */ SDrawAttribute( "LineStartLineEndLength", static_cast<int>(ELineEndLength::Medium), false ),
+    /* 12 LineEndLineEndStyle          */ SDrawAttribute( "LineEndLineEndStyle", static_cast<int>(ELineEndStyle::Normal), false ),
+    /* 13 LineEndLineEndBaseLineType   */ SDrawAttribute( "LineEndLineEndBaseLineType", static_cast<int>(ELineEndBaseLineType::NoLine), false ),
+    /* 14 LineEndLineEndFillStyle      */ SDrawAttribute( "LineEndLineEndFillStyle", static_cast<int>(ELineEndFillStyle::NoFill), false ),
+    /* 15 LineEndLineEndWidth          */ SDrawAttribute( "LineEndLineEndWidth", static_cast<int>(ELineEndWidth::Medium), false ),
+    /* 16 LineEndLineEndLength         */ SDrawAttribute( "LineEndLineEndLength", static_cast<int>(ELineEndLength::Medium), false ),
+    /* 17 TextColor                    */ SDrawAttribute( "TextColor", QColor(Qt::black), false ),
+    /* 18 TextFont                     */ SDrawAttribute( "TextFont", QFont("Arial"), false ),
+    /* 19 TextStyle                    */ SDrawAttribute( "TextStyle", static_cast<int>(ETextStyle::Normal), false ),
+    /* 20 TextSize                     */ SDrawAttribute( "TextSize", ETextSize11, false ),
+    /* 21 TextEffect                   */ SDrawAttribute( "TextEffect", static_cast<int>(ETextEffect::None), false )
 };
 
 //------------------------------------------------------------------------------
-static const SAttribute s_ararDrawAttributesDefaultVals[EGraphObjTypeCount][EDrawAttributeCount] =
+static const SDrawAttribute s_ararDrawAttributesDefaultVals[EGraphObjTypeCount][EDrawAttributeCount] =
 //------------------------------------------------------------------------------
 {
     /*  0 EGraphObjTypePoint           */ {
-        /*  0 PenColor                     */ SAttribute( "PenColor", QColor(Qt::black), true ),
-        /*  1 PenWidth                     */ SAttribute( "PenWidth", 1, true),
-        /*  2 LineStyle                    */ SAttribute( "LineStyle", ELineStyleSolidLine, false ),
-        /*  3 FillColor                    */ SAttribute( "FillColor", QColor(Qt::white), false ),
-        /*  4 FillStyle                    */ SAttribute( "FillStyle", EFillStyleNoFill, false ),
-        /*  5 LineRecordType               */ SAttribute( "LineRecordType", ELineRecordTypeNormal, false ),
-        /*  6 LineExtent                   */ SAttribute( "LineExtent", 1, false ),
-        /*  7 LineStartLineEndStyle        */ SAttribute( "LineStartLineEndStyle", ELineEndStyleNormal, false ),
-        /*  8 LineStartLineEndBaseLineType */ SAttribute( "LineStartLineEndBaseLineType", ELineEndBaseLineTypeNoLine, false ),
-        /*  9 LineStartLineEndFillStyle    */ SAttribute( "LineStartLineEndFillStyle", ELineEndFillStyleNoFill, false ),
-        /* 10 LineStartLineEndWidth        */ SAttribute( "LineStartLineEndWidth", ELineEndWidthMedium, false ),
-        /* 11 LineStartLineEndLength       */ SAttribute( "LineStartLineEndLength", ELineEndLengthMedium, false ),
-        /* 12 LineEndLineEndStyle          */ SAttribute( "LineEndLineEndStyle", ELineEndStyleNormal, false ),
-        /* 13 LineEndLineEndBaseLineType   */ SAttribute( "LineEndLineEndBaseLineType", ELineEndBaseLineTypeNoLine, false ),
-        /* 14 LineEndLineEndFillStyle      */ SAttribute( "LineEndLineEndFillStyle", ELineEndFillStyleNoFill, false ),
-        /* 15 LineEndLineEndWidth          */ SAttribute( "LineEndLineEndWidth", ELineEndWidthMedium, false ),
-        /* 16 LineEndLineEndLength         */ SAttribute( "LineEndLineEndLength", ELineEndLengthMedium, false ),
-        /* 17 TextColor                    */ SAttribute( "TextColor", QColor(Qt::black), false ),
-        /* 18 TextFont                     */ SAttribute( "TextFont", QFont("Arial"), false ),
-        /* 19 TextStyle                    */ SAttribute( "TextStyle", ETextStyleNormal, false ),
-        /* 20 TextSize                     */ SAttribute( "TextSize", ETextSize11, false ),
-        /* 21 TextEffect                   */ SAttribute( "TextEffect", ETextEffectNone, false )
+        /*  0 PenColor                     */ SDrawAttribute( "PenColor", QColor(Qt::black), true ),
+        /*  1 PenWidth                     */ SDrawAttribute( "PenWidth", 1, true),
+        /*  2 LineStyle                    */ SDrawAttribute( "LineStyle", static_cast<int>(ELineStyle::SolidLine), false ),
+        /*  3 FillColor                    */ SDrawAttribute( "FillColor", QColor(Qt::white), false ),
+        /*  4 FillStyle                    */ SDrawAttribute( "FillStyle", static_cast<int>(EFillStyle::NoFill), false ),
+        /*  5 LineRecordType               */ SDrawAttribute( "LineRecordType", static_cast<int>(ELineRecordType::Normal), false ),
+        /*  6 LineExtent                   */ SDrawAttribute( "LineExtent", 1, false ),
+        /*  7 LineStartLineEndStyle        */ SDrawAttribute( "LineStartLineEndStyle", static_cast<int>(ELineEndStyle::Normal), false ),
+        /*  8 LineStartLineEndBaseLineType */ SDrawAttribute( "LineStartLineEndBaseLineType", static_cast<int>(ELineEndBaseLineType::NoLine), false ),
+        /*  9 LineStartLineEndFillStyle    */ SDrawAttribute( "LineStartLineEndFillStyle", static_cast<int>(ELineEndFillStyle::NoFill), false ),
+        /* 10 LineStartLineEndWidth        */ SDrawAttribute( "LineStartLineEndWidth", static_cast<int>(ELineEndWidth::Medium), false ),
+        /* 11 LineStartLineEndLength       */ SDrawAttribute( "LineStartLineEndLength", static_cast<int>(ELineEndLength::Medium), false ),
+        /* 12 LineEndLineEndStyle          */ SDrawAttribute( "LineEndLineEndStyle", static_cast<int>(ELineEndStyle::Normal), false ),
+        /* 13 LineEndLineEndBaseLineType   */ SDrawAttribute( "LineEndLineEndBaseLineType", static_cast<int>(ELineEndBaseLineType::NoLine), false ),
+        /* 14 LineEndLineEndFillStyle      */ SDrawAttribute( "LineEndLineEndFillStyle", static_cast<int>(ELineEndFillStyle::NoFill), false ),
+        /* 15 LineEndLineEndWidth          */ SDrawAttribute( "LineEndLineEndWidth", static_cast<int>(ELineEndWidth::Medium), false ),
+        /* 16 LineEndLineEndLength         */ SDrawAttribute( "LineEndLineEndLength", static_cast<int>(ELineEndLength::Medium), false ),
+        /* 17 TextColor                    */ SDrawAttribute( "TextColor", QColor(Qt::black), false ),
+        /* 18 TextFont                     */ SDrawAttribute( "TextFont", QFont("Arial"), false ),
+        /* 19 TextStyle                    */ SDrawAttribute( "TextStyle", static_cast<int>(ETextStyle::Normal), false ),
+        /* 20 TextSize                     */ SDrawAttribute( "TextSize", ETextSize11, false ),
+        /* 21 TextEffect                   */ SDrawAttribute( "TextEffect", static_cast<int>(ETextEffect::None), false )
     /*                                 */ },
     /*  1 EGraphObjTypeLine            */ {
-        /*  0 PenColor                     */ SAttribute( "PenColor", QColor(Qt::black), true ),
-        /*  1 PenWidth                     */ SAttribute( "PenWidth", 1, true),
-        /*  2 LineStyle                    */ SAttribute( "LineStyle", ELineStyleSolidLine, true ),
-        /*  3 FillColor                    */ SAttribute( "FillColor", QColor(Qt::white), false ),
-        /*  4 FillStyle                    */ SAttribute( "FillStyle", EFillStyleNoFill, false ),
-        /*  5 LineRecordType               */ SAttribute( "LineRecordType", ELineRecordTypeNormal, true ),
-        /*  6 LineExtent                   */ SAttribute( "LineExtent", 1, true ),
-        /*  7 LineStartLineEndStyle        */ SAttribute( "LineStartLineEndStyle", ELineEndStyleNormal, true ),
-        /*  8 LineStartLineEndBaseLineType */ SAttribute( "LineStartLineEndBaseLineType", ELineEndBaseLineTypeNoLine, true ),
-        /*  9 LineStartLineEndFillStyle    */ SAttribute( "LineStartLineEndFillStyle", ELineEndFillStyleNoFill, true ),
-        /* 10 LineStartLineEndWidth        */ SAttribute( "LineStartLineEndWidth", ELineEndWidthMedium, true ),
-        /* 11 LineStartLineEndLength       */ SAttribute( "LineStartLineEndLength", ELineEndLengthMedium, true ),
-        /* 12 LineEndLineEndStyle          */ SAttribute( "LineEndLineEndStyle", ELineEndStyleNormal, true ),
-        /* 13 LineEndLineEndBaseLineType   */ SAttribute( "LineEndLineEndBaseLineType", ELineEndBaseLineTypeNoLine, true ),
-        /* 14 LineEndLineEndFillStyle      */ SAttribute( "LineEndLineEndFillStyle", ELineEndFillStyleNoFill, true ),
-        /* 15 LineEndLineEndWidth          */ SAttribute( "LineEndLineEndWidth", ELineEndWidthMedium, true ),
-        /* 16 LineEndLineEndLength         */ SAttribute( "LineEndLineEndLength", ELineEndLengthMedium, true ),
-        /* 17 TextColor                    */ SAttribute( "TextColor", QColor(Qt::black), false ),
-        /* 18 TextFont                     */ SAttribute( "TextFont", QFont("Arial"), false ),
-        /* 19 TextStyle                    */ SAttribute( "TextStyle", ETextStyleNormal, false ),
-        /* 20 TextSize                     */ SAttribute( "TextSize", ETextSize11, false ),
-        /* 21 TextEffect                   */ SAttribute( "TextEffect", ETextEffectNone, false )
+        /*  0 PenColor                     */ SDrawAttribute( "PenColor", QColor(Qt::black), true ),
+        /*  1 PenWidth                     */ SDrawAttribute( "PenWidth", 1, true),
+        /*  2 LineStyle                    */ SDrawAttribute( "LineStyle", static_cast<int>(ELineStyle::SolidLine), true ),
+        /*  3 FillColor                    */ SDrawAttribute( "FillColor", QColor(Qt::white), false ),
+        /*  4 FillStyle                    */ SDrawAttribute( "FillStyle", static_cast<int>(EFillStyle::NoFill), false ),
+        /*  5 LineRecordType               */ SDrawAttribute( "LineRecordType", static_cast<int>(ELineRecordType::Normal), true ),
+        /*  6 LineExtent                   */ SDrawAttribute( "LineExtent", 1, true ),
+        /*  7 LineStartLineEndStyle        */ SDrawAttribute( "LineStartLineEndStyle", static_cast<int>(ELineEndStyle::Normal), true ),
+        /*  8 LineStartLineEndBaseLineType */ SDrawAttribute( "LineStartLineEndBaseLineType", static_cast<int>(ELineEndBaseLineType::NoLine), true ),
+        /*  9 LineStartLineEndFillStyle    */ SDrawAttribute( "LineStartLineEndFillStyle", static_cast<int>(ELineEndFillStyle::NoFill), true ),
+        /* 10 LineStartLineEndWidth        */ SDrawAttribute( "LineStartLineEndWidth", static_cast<int>(ELineEndWidth::Medium), true ),
+        /* 11 LineStartLineEndLength       */ SDrawAttribute( "LineStartLineEndLength", static_cast<int>(ELineEndLength::Medium), true ),
+        /* 12 LineEndLineEndStyle          */ SDrawAttribute( "LineEndLineEndStyle", static_cast<int>(ELineEndStyle::Normal), true ),
+        /* 13 LineEndLineEndBaseLineType   */ SDrawAttribute( "LineEndLineEndBaseLineType", static_cast<int>(ELineEndBaseLineType::NoLine), true ),
+        /* 14 LineEndLineEndFillStyle      */ SDrawAttribute( "LineEndLineEndFillStyle", static_cast<int>(ELineEndFillStyle::NoFill), true ),
+        /* 15 LineEndLineEndWidth          */ SDrawAttribute( "LineEndLineEndWidth", static_cast<int>(ELineEndWidth::Medium), true ),
+        /* 16 LineEndLineEndLength         */ SDrawAttribute( "LineEndLineEndLength", static_cast<int>(ELineEndLength::Medium), true ),
+        /* 17 TextColor                    */ SDrawAttribute( "TextColor", QColor(Qt::black), false ),
+        /* 18 TextFont                     */ SDrawAttribute( "TextFont", QFont("Arial"), false ),
+        /* 19 TextStyle                    */ SDrawAttribute( "TextStyle", static_cast<int>(ETextStyle::Normal), false ),
+        /* 20 TextSize                     */ SDrawAttribute( "TextSize", ETextSize11, false ),
+        /* 21 TextEffect                   */ SDrawAttribute( "TextEffect", static_cast<int>(ETextEffect::None), false )
     /*                                 */ },
     /*  2 EGraphObjTypeRect            */ {
-        /*  0 PenColor                     */ SAttribute( "PenColor", QColor(Qt::black), true ),
-        /*  1 PenWidth                     */ SAttribute( "PenWidth", 1, true),
-        /*  2 LineStyle                    */ SAttribute( "LineStyle", ELineStyleSolidLine, true ),
-        /*  3 FillColor                    */ SAttribute( "FillColor", QColor(Qt::white), true ),
-        /*  4 FillStyle                    */ SAttribute( "FillStyle", EFillStyleNoFill, true ),
-        /*  5 LineRecordType               */ SAttribute( "LineRecordType", ELineRecordTypeNormal, false ),
-        /*  6 LineExtent                   */ SAttribute( "LineExtent", 1, false ),
-        /*  7 LineStartLineEndStyle        */ SAttribute( "LineStartLineEndStyle", ELineEndStyleNormal, false ),
-        /*  8 LineStartLineEndBaseLineType */ SAttribute( "LineStartLineEndBaseLineType", ELineEndBaseLineTypeNoLine, false ),
-        /*  9 LineStartLineEndFillStyle    */ SAttribute( "LineStartLineEndFillStyle", ELineEndFillStyleNoFill, false ),
-        /* 10 LineStartLineEndWidth        */ SAttribute( "LineStartLineEndWidth", ELineEndWidthMedium, false ),
-        /* 11 LineStartLineEndLength       */ SAttribute( "LineStartLineEndLength", ELineEndLengthMedium, false ),
-        /* 12 LineEndLineEndStyle          */ SAttribute( "LineEndLineEndStyle", ELineEndStyleNormal, false ),
-        /* 13 LineEndLineEndBaseLineType   */ SAttribute( "LineEndLineEndBaseLineType", ELineEndBaseLineTypeNoLine, false ),
-        /* 14 LineEndLineEndFillStyle      */ SAttribute( "LineEndLineEndFillStyle", ELineEndFillStyleNoFill, false ),
-        /* 15 LineEndLineEndWidth          */ SAttribute( "LineEndLineEndWidth", ELineEndWidthMedium, false ),
-        /* 16 LineEndLineEndLength         */ SAttribute( "LineEndLineEndLength", ELineEndLengthMedium, false ),
-        /* 17 TextColor                    */ SAttribute( "TextColor", QColor(Qt::black), false ),
-        /* 18 TextFont                     */ SAttribute( "TextFont", QFont("Arial"), false ),
-        /* 19 TextStyle                    */ SAttribute( "TextStyle", ETextStyleNormal, false ),
-        /* 20 TextSize                     */ SAttribute( "TextSize", ETextSize11, false ),
-        /* 21 TextEffect                   */ SAttribute( "TextEffect", ETextEffectNone, false )
+        /*  0 PenColor                     */ SDrawAttribute( "PenColor", QColor(Qt::black), true ),
+        /*  1 PenWidth                     */ SDrawAttribute( "PenWidth", 1, true),
+        /*  2 LineStyle                    */ SDrawAttribute( "LineStyle", static_cast<int>(ELineStyle::SolidLine), true ),
+        /*  3 FillColor                    */ SDrawAttribute( "FillColor", QColor(Qt::white), true ),
+        /*  4 FillStyle                    */ SDrawAttribute( "FillStyle", static_cast<int>(EFillStyle::NoFill), true ),
+        /*  5 LineRecordType               */ SDrawAttribute( "LineRecordType", static_cast<int>(ELineRecordType::Normal), false ),
+        /*  6 LineExtent                   */ SDrawAttribute( "LineExtent", 1, false ),
+        /*  7 LineStartLineEndStyle        */ SDrawAttribute( "LineStartLineEndStyle", static_cast<int>(ELineEndStyle::Normal), false ),
+        /*  8 LineStartLineEndBaseLineType */ SDrawAttribute( "LineStartLineEndBaseLineType", static_cast<int>(ELineEndBaseLineType::NoLine), false ),
+        /*  9 LineStartLineEndFillStyle    */ SDrawAttribute( "LineStartLineEndFillStyle", static_cast<int>(ELineEndFillStyle::NoFill), false ),
+        /* 10 LineStartLineEndWidth        */ SDrawAttribute( "LineStartLineEndWidth", static_cast<int>(ELineEndWidth::Medium), false ),
+        /* 11 LineStartLineEndLength       */ SDrawAttribute( "LineStartLineEndLength", static_cast<int>(ELineEndLength::Medium), false ),
+        /* 12 LineEndLineEndStyle          */ SDrawAttribute( "LineEndLineEndStyle", static_cast<int>(ELineEndStyle::Normal), false ),
+        /* 13 LineEndLineEndBaseLineType   */ SDrawAttribute( "LineEndLineEndBaseLineType", static_cast<int>(ELineEndBaseLineType::NoLine), false ),
+        /* 14 LineEndLineEndFillStyle      */ SDrawAttribute( "LineEndLineEndFillStyle", static_cast<int>(ELineEndFillStyle::NoFill), false ),
+        /* 15 LineEndLineEndWidth          */ SDrawAttribute( "LineEndLineEndWidth", static_cast<int>(ELineEndWidth::Medium), false ),
+        /* 16 LineEndLineEndLength         */ SDrawAttribute( "LineEndLineEndLength", static_cast<int>(ELineEndLength::Medium), false ),
+        /* 17 TextColor                    */ SDrawAttribute( "TextColor", QColor(Qt::black), false ),
+        /* 18 TextFont                     */ SDrawAttribute( "TextFont", QFont("Arial"), false ),
+        /* 19 TextStyle                    */ SDrawAttribute( "TextStyle", static_cast<int>(ETextStyle::Normal), false ),
+        /* 20 TextSize                     */ SDrawAttribute( "TextSize", ETextSize11, false ),
+        /* 21 TextEffect                   */ SDrawAttribute( "TextEffect", static_cast<int>(ETextEffect::None), false )
     /*                                 */ },
     /*  3 EGraphObjTypeEllipse         */ {
-        /*  0 PenColor                     */ SAttribute( "PenColor", QColor(Qt::black), true ),
-        /*  1 PenWidth                     */ SAttribute( "PenWidth", 1, true),
-        /*  2 LineStyle                    */ SAttribute( "LineStyle", ELineStyleSolidLine, true ),
-        /*  3 FillColor                    */ SAttribute( "FillColor", QColor(Qt::white), true ),
-        /*  4 FillStyle                    */ SAttribute( "FillStyle", EFillStyleNoFill, true ),
-        /*  5 LineRecordType               */ SAttribute( "LineRecordType", ELineRecordTypeNormal, false ),
-        /*  6 LineExtent                   */ SAttribute( "LineExtent", 1, false ),
-        /*  7 LineStartLineEndStyle        */ SAttribute( "LineStartLineEndStyle", ELineEndStyleNormal, false ),
-        /*  8 LineStartLineEndBaseLineType */ SAttribute( "LineStartLineEndBaseLineType", ELineEndBaseLineTypeNoLine, false ),
-        /*  9 LineStartLineEndFillStyle    */ SAttribute( "LineStartLineEndFillStyle", ELineEndFillStyleNoFill, false ),
-        /* 10 LineStartLineEndWidth        */ SAttribute( "LineStartLineEndWidth", ELineEndWidthMedium, false ),
-        /* 11 LineStartLineEndLength       */ SAttribute( "LineStartLineEndLength", ELineEndLengthMedium, false ),
-        /* 12 LineEndLineEndStyle          */ SAttribute( "LineEndLineEndStyle", ELineEndStyleNormal, false ),
-        /* 13 LineEndLineEndBaseLineType   */ SAttribute( "LineEndLineEndBaseLineType", ELineEndBaseLineTypeNoLine, false ),
-        /* 14 LineEndLineEndFillStyle      */ SAttribute( "LineEndLineEndFillStyle", ELineEndFillStyleNoFill, false ),
-        /* 15 LineEndLineEndWidth          */ SAttribute( "LineEndLineEndWidth", ELineEndWidthMedium, false ),
-        /* 16 LineEndLineEndLength         */ SAttribute( "LineEndLineEndLength", ELineEndLengthMedium, false ),
-        /* 17 TextColor                    */ SAttribute( "TextColor", QColor(Qt::black), false ),
-        /* 18 TextFont                     */ SAttribute( "TextFont", QFont("Arial"), false ),
-        /* 19 TextStyle                    */ SAttribute( "TextStyle", ETextStyleNormal, false ),
-        /* 20 TextSize                     */ SAttribute( "TextSize", ETextSize11, false ),
-        /* 21 TextEffect                   */ SAttribute( "TextEffect", ETextEffectNone, false )
+        /*  0 PenColor                     */ SDrawAttribute( "PenColor", QColor(Qt::black), true ),
+        /*  1 PenWidth                     */ SDrawAttribute( "PenWidth", 1, true),
+        /*  2 LineStyle                    */ SDrawAttribute( "LineStyle", static_cast<int>(ELineStyle::SolidLine), true ),
+        /*  3 FillColor                    */ SDrawAttribute( "FillColor", QColor(Qt::white), true ),
+        /*  4 FillStyle                    */ SDrawAttribute( "FillStyle", static_cast<int>(EFillStyle::NoFill), true ),
+        /*  5 LineRecordType               */ SDrawAttribute( "LineRecordType", static_cast<int>(ELineRecordType::Normal), false ),
+        /*  6 LineExtent                   */ SDrawAttribute( "LineExtent", 1, false ),
+        /*  7 LineStartLineEndStyle        */ SDrawAttribute( "LineStartLineEndStyle", static_cast<int>(ELineEndStyle::Normal), false ),
+        /*  8 LineStartLineEndBaseLineType */ SDrawAttribute( "LineStartLineEndBaseLineType", static_cast<int>(ELineEndBaseLineType::NoLine), false ),
+        /*  9 LineStartLineEndFillStyle    */ SDrawAttribute( "LineStartLineEndFillStyle", static_cast<int>(ELineEndFillStyle::NoFill), false ),
+        /* 10 LineStartLineEndWidth        */ SDrawAttribute( "LineStartLineEndWidth", static_cast<int>(ELineEndWidth::Medium), false ),
+        /* 11 LineStartLineEndLength       */ SDrawAttribute( "LineStartLineEndLength", static_cast<int>(ELineEndLength::Medium), false ),
+        /* 12 LineEndLineEndStyle          */ SDrawAttribute( "LineEndLineEndStyle", static_cast<int>(ELineEndStyle::Normal), false ),
+        /* 13 LineEndLineEndBaseLineType   */ SDrawAttribute( "LineEndLineEndBaseLineType", static_cast<int>(ELineEndBaseLineType::NoLine), false ),
+        /* 14 LineEndLineEndFillStyle      */ SDrawAttribute( "LineEndLineEndFillStyle", static_cast<int>(ELineEndFillStyle::NoFill), false ),
+        /* 15 LineEndLineEndWidth          */ SDrawAttribute( "LineEndLineEndWidth", static_cast<int>(ELineEndWidth::Medium), false ),
+        /* 16 LineEndLineEndLength         */ SDrawAttribute( "LineEndLineEndLength", static_cast<int>(ELineEndLength::Medium), false ),
+        /* 17 TextColor                    */ SDrawAttribute( "TextColor", QColor(Qt::black), false ),
+        /* 18 TextFont                     */ SDrawAttribute( "TextFont", QFont("Arial"), false ),
+        /* 19 TextStyle                    */ SDrawAttribute( "TextStyle", static_cast<int>(ETextStyle::Normal), false ),
+        /* 20 TextSize                     */ SDrawAttribute( "TextSize", ETextSize11, false ),
+        /* 21 TextEffect                   */ SDrawAttribute( "TextEffect", static_cast<int>(ETextEffect::None), false )
     /*                                 */ },
     /*  4 EGraphObjTypePolygon         */ {
-        /*  0 PenColor                     */ SAttribute( "PenColor", QColor(Qt::black), true ),
-        /*  1 PenWidth                     */ SAttribute( "PenWidth", 1, true),
-        /*  2 LineStyle                    */ SAttribute( "LineStyle", ELineStyleSolidLine, true ),
-        /*  3 FillColor                    */ SAttribute( "FillColor", QColor(Qt::white), true ),
-        /*  4 FillStyle                    */ SAttribute( "FillStyle", EFillStyleNoFill, true ),
-        /*  5 LineRecordType               */ SAttribute( "LineRecordType", ELineRecordTypeNormal, false ),
-        /*  6 LineExtent                   */ SAttribute( "LineExtent", 1, false ),
-        /*  7 LineStartLineEndStyle        */ SAttribute( "LineStartLineEndStyle", ELineEndStyleNormal, false ),
-        /*  8 LineStartLineEndBaseLineType */ SAttribute( "LineStartLineEndBaseLineType", ELineEndBaseLineTypeNoLine, false ),
-        /*  9 LineStartLineEndFillStyle    */ SAttribute( "LineStartLineEndFillStyle", ELineEndFillStyleNoFill, false ),
-        /* 10 LineStartLineEndWidth        */ SAttribute( "LineStartLineEndWidth", ELineEndWidthMedium, false ),
-        /* 11 LineStartLineEndLength       */ SAttribute( "LineStartLineEndLength", ELineEndLengthMedium, false ),
-        /* 12 LineEndLineEndStyle          */ SAttribute( "LineEndLineEndStyle", ELineEndStyleNormal, false ),
-        /* 13 LineEndLineEndBaseLineType   */ SAttribute( "LineEndLineEndBaseLineType", ELineEndBaseLineTypeNoLine, false ),
-        /* 14 LineEndLineEndFillStyle      */ SAttribute( "LineEndLineEndFillStyle", ELineEndFillStyleNoFill, false ),
-        /* 15 LineEndLineEndWidth          */ SAttribute( "LineEndLineEndWidth", ELineEndWidthMedium, false ),
-        /* 16 LineEndLineEndLength         */ SAttribute( "LineEndLineEndLength", ELineEndLengthMedium, false ),
-        /* 17 TextColor                    */ SAttribute( "TextColor", QColor(Qt::black), false ),
-        /* 18 TextFont                     */ SAttribute( "TextFont", QFont("Arial"), false ),
-        /* 19 TextStyle                    */ SAttribute( "TextStyle", ETextStyleNormal, false ),
-        /* 20 TextSize                     */ SAttribute( "TextSize", ETextSize11, false ),
-        /* 21 TextEffect                   */ SAttribute( "TextEffect", ETextEffectNone, false )
+        /*  0 PenColor                     */ SDrawAttribute( "PenColor", QColor(Qt::black), true ),
+        /*  1 PenWidth                     */ SDrawAttribute( "PenWidth", 1, true),
+        /*  2 LineStyle                    */ SDrawAttribute( "LineStyle", static_cast<int>(ELineStyle::SolidLine), true ),
+        /*  3 FillColor                    */ SDrawAttribute( "FillColor", QColor(Qt::white), true ),
+        /*  4 FillStyle                    */ SDrawAttribute( "FillStyle", static_cast<int>(EFillStyle::NoFill), true ),
+        /*  5 LineRecordType               */ SDrawAttribute( "LineRecordType", static_cast<int>(ELineRecordType::Normal), false ),
+        /*  6 LineExtent                   */ SDrawAttribute( "LineExtent", 1, false ),
+        /*  7 LineStartLineEndStyle        */ SDrawAttribute( "LineStartLineEndStyle", static_cast<int>(ELineEndStyle::Normal), false ),
+        /*  8 LineStartLineEndBaseLineType */ SDrawAttribute( "LineStartLineEndBaseLineType", static_cast<int>(ELineEndBaseLineType::NoLine), false ),
+        /*  9 LineStartLineEndFillStyle    */ SDrawAttribute( "LineStartLineEndFillStyle", static_cast<int>(ELineEndFillStyle::NoFill), false ),
+        /* 10 LineStartLineEndWidth        */ SDrawAttribute( "LineStartLineEndWidth", static_cast<int>(ELineEndWidth::Medium), false ),
+        /* 11 LineStartLineEndLength       */ SDrawAttribute( "LineStartLineEndLength", static_cast<int>(ELineEndLength::Medium), false ),
+        /* 12 LineEndLineEndStyle          */ SDrawAttribute( "LineEndLineEndStyle", static_cast<int>(ELineEndStyle::Normal), false ),
+        /* 13 LineEndLineEndBaseLineType   */ SDrawAttribute( "LineEndLineEndBaseLineType", static_cast<int>(ELineEndBaseLineType::NoLine), false ),
+        /* 14 LineEndLineEndFillStyle      */ SDrawAttribute( "LineEndLineEndFillStyle", static_cast<int>(ELineEndFillStyle::NoFill), false ),
+        /* 15 LineEndLineEndWidth          */ SDrawAttribute( "LineEndLineEndWidth", static_cast<int>(ELineEndWidth::Medium), false ),
+        /* 16 LineEndLineEndLength         */ SDrawAttribute( "LineEndLineEndLength", static_cast<int>(ELineEndLength::Medium), false ),
+        /* 17 TextColor                    */ SDrawAttribute( "TextColor", QColor(Qt::black), false ),
+        /* 18 TextFont                     */ SDrawAttribute( "TextFont", QFont("Arial"), false ),
+        /* 19 TextStyle                    */ SDrawAttribute( "TextStyle", static_cast<int>(ETextStyle::Normal), false ),
+        /* 20 TextSize                     */ SDrawAttribute( "TextSize", ETextSize11, false ),
+        /* 21 TextEffect                   */ SDrawAttribute( "TextEffect", static_cast<int>(ETextEffect::None), false )
     /*                                 */ },
     /*  5 EGraphObjTypePolyline        */ {
-        /*  0 PenColor                     */ SAttribute( "PenColor", QColor(Qt::black), true ),
-        /*  1 PenWidth                     */ SAttribute( "PenWidth", 1, true),
-        /*  2 LineStyle                    */ SAttribute( "LineStyle", ELineStyleSolidLine, true ),
-        /*  3 FillColor                    */ SAttribute( "FillColor", QColor(Qt::white), false ),
-        /*  4 FillStyle                    */ SAttribute( "FillStyle", EFillStyleNoFill, false ),
-        /*  5 LineRecordType               */ SAttribute( "LineRecordType", ELineRecordTypeNormal, true ),
-        /*  6 LineExtent                   */ SAttribute( "LineExtent", 1, true ),
-        /*  7 LineStartLineEndStyle        */ SAttribute( "LineStartLineEndStyle", ELineEndStyleNormal, true ),
-        /*  8 LineStartLineEndBaseLineType */ SAttribute( "LineStartLineEndBaseLineType", ELineEndBaseLineTypeNoLine, true ),
-        /*  9 LineStartLineEndFillStyle    */ SAttribute( "LineStartLineEndFillStyle", ELineEndFillStyleNoFill, true ),
-        /* 10 LineStartLineEndWidth        */ SAttribute( "LineStartLineEndWidth", ELineEndWidthMedium, true ),
-        /* 11 LineStartLineEndLength       */ SAttribute( "LineStartLineEndLength", ELineEndLengthMedium, true ),
-        /* 12 LineEndLineEndStyle          */ SAttribute( "LineEndLineEndStyle", ELineEndStyleNormal, true ),
-        /* 13 LineEndLineEndBaseLineType   */ SAttribute( "LineEndLineEndBaseLineType", ELineEndBaseLineTypeNoLine, true ),
-        /* 14 LineEndLineEndFillStyle      */ SAttribute( "LineEndLineEndFillStyle", ELineEndFillStyleNoFill, true ),
-        /* 15 LineEndLineEndWidth          */ SAttribute( "LineEndLineEndWidth", ELineEndWidthMedium, true ),
-        /* 16 LineEndLineEndLength         */ SAttribute( "LineEndLineEndLength", ELineEndLengthMedium, true ),
-        /* 17 TextColor                    */ SAttribute( "TextColor", QColor(Qt::black), false ),
-        /* 18 TextFont                     */ SAttribute( "TextFont", QFont("Arial"), false ),
-        /* 19 TextStyle                    */ SAttribute( "TextStyle", ETextStyleNormal, false ),
-        /* 20 TextSize                     */ SAttribute( "TextSize", ETextSize11, false ),
-        /* 21 TextEffect                   */ SAttribute( "TextEffect", ETextEffectNone, false )
+        /*  0 PenColor                     */ SDrawAttribute( "PenColor", QColor(Qt::black), true ),
+        /*  1 PenWidth                     */ SDrawAttribute( "PenWidth", 1, true),
+        /*  2 LineStyle                    */ SDrawAttribute( "LineStyle", static_cast<int>(ELineStyle::SolidLine), true ),
+        /*  3 FillColor                    */ SDrawAttribute( "FillColor", QColor(Qt::white), false ),
+        /*  4 FillStyle                    */ SDrawAttribute( "FillStyle", static_cast<int>(EFillStyle::NoFill), false ),
+        /*  5 LineRecordType               */ SDrawAttribute( "LineRecordType", static_cast<int>(ELineRecordType::Normal), true ),
+        /*  6 LineExtent                   */ SDrawAttribute( "LineExtent", 1, true ),
+        /*  7 LineStartLineEndStyle        */ SDrawAttribute( "LineStartLineEndStyle", static_cast<int>(ELineEndStyle::Normal), true ),
+        /*  8 LineStartLineEndBaseLineType */ SDrawAttribute( "LineStartLineEndBaseLineType", static_cast<int>(ELineEndBaseLineType::NoLine), true ),
+        /*  9 LineStartLineEndFillStyle    */ SDrawAttribute( "LineStartLineEndFillStyle", static_cast<int>(ELineEndFillStyle::NoFill), true ),
+        /* 10 LineStartLineEndWidth        */ SDrawAttribute( "LineStartLineEndWidth", static_cast<int>(ELineEndWidth::Medium), true ),
+        /* 11 LineStartLineEndLength       */ SDrawAttribute( "LineStartLineEndLength", static_cast<int>(ELineEndLength::Medium), true ),
+        /* 12 LineEndLineEndStyle          */ SDrawAttribute( "LineEndLineEndStyle", static_cast<int>(ELineEndStyle::Normal), true ),
+        /* 13 LineEndLineEndBaseLineType   */ SDrawAttribute( "LineEndLineEndBaseLineType", static_cast<int>(ELineEndBaseLineType::NoLine), true ),
+        /* 14 LineEndLineEndFillStyle      */ SDrawAttribute( "LineEndLineEndFillStyle", static_cast<int>(ELineEndFillStyle::NoFill), true ),
+        /* 15 LineEndLineEndWidth          */ SDrawAttribute( "LineEndLineEndWidth", static_cast<int>(ELineEndWidth::Medium), true ),
+        /* 16 LineEndLineEndLength         */ SDrawAttribute( "LineEndLineEndLength", static_cast<int>(ELineEndLength::Medium), true ),
+        /* 17 TextColor                    */ SDrawAttribute( "TextColor", QColor(Qt::black), false ),
+        /* 18 TextFont                     */ SDrawAttribute( "TextFont", QFont("Arial"), false ),
+        /* 19 TextStyle                    */ SDrawAttribute( "TextStyle", static_cast<int>(ETextStyle::Normal), false ),
+        /* 20 TextSize                     */ SDrawAttribute( "TextSize", ETextSize11, false ),
+        /* 21 TextEffect                   */ SDrawAttribute( "TextEffect", static_cast<int>(ETextEffect::None), false )
     /*                                 */ },
     /*  6 EGraphObjTypeText            */ {
-        /*  0 PenColor                     */ SAttribute( "PenColor", QColor(Qt::black), true ),
-        /*  1 PenWidth                     */ SAttribute( "PenWidth", 1, true),
-        /*  2 LineStyle                    */ SAttribute( "LineStyle", ELineStyleSolidLine, true ),
-        /*  3 FillColor                    */ SAttribute( "FillColor", QColor(Qt::white), false ),
-        /*  4 FillStyle                    */ SAttribute( "FillStyle", EFillStyleNoFill, false ),
-        /*  5 LineRecordType               */ SAttribute( "LineRecordType", ELineRecordTypeNormal, false ),
-        /*  6 LineExtent                   */ SAttribute( "LineExtent", 1, false ),
-        /*  7 LineStartLineEndStyle        */ SAttribute( "LineStartLineEndStyle", ELineEndStyleNormal, false ),
-        /*  8 LineStartLineEndBaseLineType */ SAttribute( "LineStartLineEndBaseLineType", ELineEndBaseLineTypeNoLine, false ),
-        /*  9 LineStartLineEndFillStyle    */ SAttribute( "LineStartLineEndFillStyle", ELineEndFillStyleNoFill, false ),
-        /* 10 LineStartLineEndWidth        */ SAttribute( "LineStartLineEndWidth", ELineEndWidthMedium, false ),
-        /* 11 LineStartLineEndLength       */ SAttribute( "LineStartLineEndLength", ELineEndLengthMedium, false ),
-        /* 12 LineEndLineEndStyle          */ SAttribute( "LineEndLineEndStyle", ELineEndStyleNormal, false ),
-        /* 13 LineEndLineEndBaseLineType   */ SAttribute( "LineEndLineEndBaseLineType", ELineEndBaseLineTypeNoLine, false ),
-        /* 14 LineEndLineEndFillStyle      */ SAttribute( "LineEndLineEndFillStyle", ELineEndFillStyleNoFill, false ),
-        /* 15 LineEndLineEndWidth          */ SAttribute( "LineEndLineEndWidth", ELineEndWidthMedium, false ),
-        /* 16 LineEndLineEndLength         */ SAttribute( "LineEndLineEndLength", ELineEndLengthMedium, false ),
-        /* 17 TextColor                    */ SAttribute( "TextColor", QColor(Qt::black), true ),
-        /* 18 TextFont                     */ SAttribute( "TextFont", QFont("Arial"), true ),
-        /* 19 TextStyle                    */ SAttribute( "TextStyle", ETextStyleNormal, true ),
-        /* 20 TextSize                     */ SAttribute( "TextSize", ETextSize11, true ),
-        /* 21 TextEffect                   */ SAttribute( "TextEffect", ETextEffectNone, true )
+        /*  0 PenColor                     */ SDrawAttribute( "PenColor", QColor(Qt::black), true ),
+        /*  1 PenWidth                     */ SDrawAttribute( "PenWidth", 1, true),
+        /*  2 LineStyle                    */ SDrawAttribute( "LineStyle", static_cast<int>(ELineStyle::SolidLine), true ),
+        /*  3 FillColor                    */ SDrawAttribute( "FillColor", QColor(Qt::white), false ),
+        /*  4 FillStyle                    */ SDrawAttribute( "FillStyle", static_cast<int>(EFillStyle::NoFill), false ),
+        /*  5 LineRecordType               */ SDrawAttribute( "LineRecordType", static_cast<int>(ELineRecordType::Normal), false ),
+        /*  6 LineExtent                   */ SDrawAttribute( "LineExtent", 1, false ),
+        /*  7 LineStartLineEndStyle        */ SDrawAttribute( "LineStartLineEndStyle", static_cast<int>(ELineEndStyle::Normal), false ),
+        /*  8 LineStartLineEndBaseLineType */ SDrawAttribute( "LineStartLineEndBaseLineType", static_cast<int>(ELineEndBaseLineType::NoLine), false ),
+        /*  9 LineStartLineEndFillStyle    */ SDrawAttribute( "LineStartLineEndFillStyle", static_cast<int>(ELineEndFillStyle::NoFill), false ),
+        /* 10 LineStartLineEndWidth        */ SDrawAttribute( "LineStartLineEndWidth", static_cast<int>(ELineEndWidth::Medium), false ),
+        /* 11 LineStartLineEndLength       */ SDrawAttribute( "LineStartLineEndLength", static_cast<int>(ELineEndLength::Medium), false ),
+        /* 12 LineEndLineEndStyle          */ SDrawAttribute( "LineEndLineEndStyle", static_cast<int>(ELineEndStyle::Normal), false ),
+        /* 13 LineEndLineEndBaseLineType   */ SDrawAttribute( "LineEndLineEndBaseLineType", static_cast<int>(ELineEndBaseLineType::NoLine), false ),
+        /* 14 LineEndLineEndFillStyle      */ SDrawAttribute( "LineEndLineEndFillStyle", static_cast<int>(ELineEndFillStyle::NoFill), false ),
+        /* 15 LineEndLineEndWidth          */ SDrawAttribute( "LineEndLineEndWidth", static_cast<int>(ELineEndWidth::Medium), false ),
+        /* 16 LineEndLineEndLength         */ SDrawAttribute( "LineEndLineEndLength", static_cast<int>(ELineEndLength::Medium), false ),
+        /* 17 TextColor                    */ SDrawAttribute( "TextColor", QColor(Qt::black), true ),
+        /* 18 TextFont                     */ SDrawAttribute( "TextFont", QFont("Arial"), true ),
+        /* 19 TextStyle                    */ SDrawAttribute( "TextStyle", static_cast<int>(ETextStyle::Normal), true ),
+        /* 20 TextSize                     */ SDrawAttribute( "TextSize", ETextSize11, true ),
+        /* 21 TextEffect                   */ SDrawAttribute( "TextEffect", static_cast<int>(ETextEffect::None), true )
     /*                                 */ },
     /*  7 EGraphObjTypeImage           */ {
-        /*  0 PenColor                     */ SAttribute( "PenColor", QColor(Qt::black), true ),
-        /*  1 PenWidth                     */ SAttribute( "PenWidth", 1, true),
-        /*  2 LineStyle                    */ SAttribute( "LineStyle", ELineStyleSolidLine, true ),
-        /*  3 FillColor                    */ SAttribute( "FillColor", QColor(Qt::white), false ),
-        /*  4 FillStyle                    */ SAttribute( "FillStyle", EFillStyleNoFill, false ),
-        /*  5 LineRecordType               */ SAttribute( "LineRecordType", ELineRecordTypeNormal, false ),
-        /*  6 LineExtent                   */ SAttribute( "LineExtent", 1, false ),
-        /*  7 LineStartLineEndStyle        */ SAttribute( "LineStartLineEndStyle", ELineEndStyleNormal, false ),
-        /*  8 LineStartLineEndBaseLineType */ SAttribute( "LineStartLineEndBaseLineType", ELineEndBaseLineTypeNoLine, false ),
-        /*  9 LineStartLineEndFillStyle    */ SAttribute( "LineStartLineEndFillStyle", ELineEndFillStyleNoFill, false ),
-        /* 10 LineStartLineEndWidth        */ SAttribute( "LineStartLineEndWidth", ELineEndWidthMedium, false ),
-        /* 11 LineStartLineEndLength       */ SAttribute( "LineStartLineEndLength", ELineEndLengthMedium, false ),
-        /* 12 LineEndLineEndStyle          */ SAttribute( "LineEndLineEndStyle", ELineEndStyleNormal, false ),
-        /* 13 LineEndLineEndBaseLineType   */ SAttribute( "LineEndLineEndBaseLineType", ELineEndBaseLineTypeNoLine, false ),
-        /* 14 LineEndLineEndFillStyle      */ SAttribute( "LineEndLineEndFillStyle", ELineEndFillStyleNoFill, false ),
-        /* 15 LineEndLineEndWidth          */ SAttribute( "LineEndLineEndWidth", ELineEndWidthMedium, false ),
-        /* 16 LineEndLineEndLength         */ SAttribute( "LineEndLineEndLength", ELineEndLengthMedium, false ),
-        /* 17 TextColor                    */ SAttribute( "TextColor", QColor(Qt::black), false ),
-        /* 18 TextFont                     */ SAttribute( "TextFont", QFont("Arial"), false ),
-        /* 19 TextStyle                    */ SAttribute( "TextStyle", ETextStyleNormal, false ),
-        /* 20 TextSize                     */ SAttribute( "TextSize", ETextSize11, false ),
-        /* 21 TextEffect                   */ SAttribute( "TextEffect", ETextEffectNone, false )
+        /*  0 PenColor                     */ SDrawAttribute( "PenColor", QColor(Qt::black), true ),
+        /*  1 PenWidth                     */ SDrawAttribute( "PenWidth", 1, true),
+        /*  2 LineStyle                    */ SDrawAttribute( "LineStyle", static_cast<int>(ELineStyle::SolidLine), true ),
+        /*  3 FillColor                    */ SDrawAttribute( "FillColor", QColor(Qt::white), false ),
+        /*  4 FillStyle                    */ SDrawAttribute( "FillStyle", static_cast<int>(EFillStyle::NoFill), false ),
+        /*  5 LineRecordType               */ SDrawAttribute( "LineRecordType", static_cast<int>(ELineRecordType::Normal), false ),
+        /*  6 LineExtent                   */ SDrawAttribute( "LineExtent", 1, false ),
+        /*  7 LineStartLineEndStyle        */ SDrawAttribute( "LineStartLineEndStyle", static_cast<int>(ELineEndStyle::Normal), false ),
+        /*  8 LineStartLineEndBaseLineType */ SDrawAttribute( "LineStartLineEndBaseLineType", static_cast<int>(ELineEndBaseLineType::NoLine), false ),
+        /*  9 LineStartLineEndFillStyle    */ SDrawAttribute( "LineStartLineEndFillStyle", static_cast<int>(ELineEndFillStyle::NoFill), false ),
+        /* 10 LineStartLineEndWidth        */ SDrawAttribute( "LineStartLineEndWidth", static_cast<int>(ELineEndWidth::Medium), false ),
+        /* 11 LineStartLineEndLength       */ SDrawAttribute( "LineStartLineEndLength", static_cast<int>(ELineEndLength::Medium), false ),
+        /* 12 LineEndLineEndStyle          */ SDrawAttribute( "LineEndLineEndStyle", static_cast<int>(ELineEndStyle::Normal), false ),
+        /* 13 LineEndLineEndBaseLineType   */ SDrawAttribute( "LineEndLineEndBaseLineType", static_cast<int>(ELineEndBaseLineType::NoLine), false ),
+        /* 14 LineEndLineEndFillStyle      */ SDrawAttribute( "LineEndLineEndFillStyle", static_cast<int>(ELineEndFillStyle::NoFill), false ),
+        /* 15 LineEndLineEndWidth          */ SDrawAttribute( "LineEndLineEndWidth", static_cast<int>(ELineEndWidth::Medium), false ),
+        /* 16 LineEndLineEndLength         */ SDrawAttribute( "LineEndLineEndLength", static_cast<int>(ELineEndLength::Medium), false ),
+        /* 17 TextColor                    */ SDrawAttribute( "TextColor", QColor(Qt::black), false ),
+        /* 18 TextFont                     */ SDrawAttribute( "TextFont", QFont("Arial"), false ),
+        /* 19 TextStyle                    */ SDrawAttribute( "TextStyle", static_cast<int>(ETextStyle::Normal), false ),
+        /* 20 TextSize                     */ SDrawAttribute( "TextSize", ETextSize11, false ),
+        /* 21 TextEffect                   */ SDrawAttribute( "TextEffect", static_cast<int>(ETextEffect::None), false )
     /*                                 */ },
     /*  8 EGraphObjTypeConnectionPoint */ {
-        /*  0 PenColor                     */ SAttribute( "PenColor", QColor(Qt::black), true ),
-        /*  1 PenWidth                     */ SAttribute( "PenWidth", 1, true),
-        /*  2 LineStyle                    */ SAttribute( "LineStyle", ELineStyleSolidLine, true ),
-        /*  3 FillColor                    */ SAttribute( "FillColor", QColor(Qt::black), true ),
-        /*  4 FillStyle                    */ SAttribute( "FillStyle", EFillStyleSolidPattern, true ),
-        /*  5 LineRecordType               */ SAttribute( "LineRecordType", ELineRecordTypeNormal, false ),
-        /*  6 LineExtent                   */ SAttribute( "LineExtent", 1, false ),
-        /*  7 LineStartLineEndStyle        */ SAttribute( "LineStartLineEndStyle", ELineEndStyleNormal, false ),
-        /*  8 LineStartLineEndBaseLineType */ SAttribute( "LineStartLineEndBaseLineType", ELineEndBaseLineTypeNoLine, false ),
-        /*  9 LineStartLineEndFillStyle    */ SAttribute( "LineStartLineEndFillStyle", ELineEndFillStyleNoFill, false ),
-        /* 10 LineStartLineEndWidth        */ SAttribute( "LineStartLineEndWidth", ELineEndWidthMedium, false ),
-        /* 11 LineStartLineEndLength       */ SAttribute( "LineStartLineEndLength", ELineEndLengthMedium, false ),
-        /* 12 LineEndLineEndStyle          */ SAttribute( "LineEndLineEndStyle", ELineEndStyleNormal, false ),
-        /* 13 LineEndLineEndBaseLineType   */ SAttribute( "LineEndLineEndBaseLineType", ELineEndBaseLineTypeNoLine, false ),
-        /* 14 LineEndLineEndFillStyle      */ SAttribute( "LineEndLineEndFillStyle", ELineEndFillStyleNoFill, false ),
-        /* 15 LineEndLineEndWidth          */ SAttribute( "LineEndLineEndWidth", ELineEndWidthMedium, false ),
-        /* 16 LineEndLineEndLength         */ SAttribute( "LineEndLineEndLength", ELineEndLengthMedium, false ),
-        /* 17 TextColor                    */ SAttribute( "TextColor", QColor(Qt::black), false ),
-        /* 18 TextFont                     */ SAttribute( "TextFont", QFont("Arial"), false ),
-        /* 19 TextStyle                    */ SAttribute( "TextStyle", ETextStyleNormal, false ),
-        /* 20 TextSize                     */ SAttribute( "TextSize", ETextSize11, false ),
-        /* 21 TextEffect                   */ SAttribute( "TextEffect", ETextEffectNone, false )
+        /*  0 PenColor                     */ SDrawAttribute( "PenColor", QColor(Qt::black), true ),
+        /*  1 PenWidth                     */ SDrawAttribute( "PenWidth", 1, true),
+        /*  2 LineStyle                    */ SDrawAttribute( "LineStyle", static_cast<int>(ELineStyle::SolidLine), true ),
+        /*  3 FillColor                    */ SDrawAttribute( "FillColor", QColor(Qt::black), true ),
+        /*  4 FillStyle                    */ SDrawAttribute( "FillStyle", static_cast<int>(EFillStyle::SolidPattern), true ),
+        /*  5 LineRecordType               */ SDrawAttribute( "LineRecordType", static_cast<int>(ELineRecordType::Normal), false ),
+        /*  6 LineExtent                   */ SDrawAttribute( "LineExtent", 1, false ),
+        /*  7 LineStartLineEndStyle        */ SDrawAttribute( "LineStartLineEndStyle", static_cast<int>(ELineEndStyle::Normal), false ),
+        /*  8 LineStartLineEndBaseLineType */ SDrawAttribute( "LineStartLineEndBaseLineType", static_cast<int>(ELineEndBaseLineType::NoLine), false ),
+        /*  9 LineStartLineEndFillStyle    */ SDrawAttribute( "LineStartLineEndFillStyle", static_cast<int>(ELineEndFillStyle::NoFill), false ),
+        /* 10 LineStartLineEndWidth        */ SDrawAttribute( "LineStartLineEndWidth", static_cast<int>(ELineEndWidth::Medium), false ),
+        /* 11 LineStartLineEndLength       */ SDrawAttribute( "LineStartLineEndLength", static_cast<int>(ELineEndLength::Medium), false ),
+        /* 12 LineEndLineEndStyle          */ SDrawAttribute( "LineEndLineEndStyle", static_cast<int>(ELineEndStyle::Normal), false ),
+        /* 13 LineEndLineEndBaseLineType   */ SDrawAttribute( "LineEndLineEndBaseLineType", static_cast<int>(ELineEndBaseLineType::NoLine), false ),
+        /* 14 LineEndLineEndFillStyle      */ SDrawAttribute( "LineEndLineEndFillStyle", static_cast<int>(ELineEndFillStyle::NoFill), false ),
+        /* 15 LineEndLineEndWidth          */ SDrawAttribute( "LineEndLineEndWidth", static_cast<int>(ELineEndWidth::Medium), false ),
+        /* 16 LineEndLineEndLength         */ SDrawAttribute( "LineEndLineEndLength", static_cast<int>(ELineEndLength::Medium), false ),
+        /* 17 TextColor                    */ SDrawAttribute( "TextColor", QColor(Qt::black), false ),
+        /* 18 TextFont                     */ SDrawAttribute( "TextFont", QFont("Arial"), false ),
+        /* 19 TextStyle                    */ SDrawAttribute( "TextStyle", static_cast<int>(ETextStyle::Normal), false ),
+        /* 20 TextSize                     */ SDrawAttribute( "TextSize", ETextSize11, false ),
+        /* 21 TextEffect                   */ SDrawAttribute( "TextEffect", static_cast<int>(ETextEffect::None), false )
     /*                                 */ },
     /*  9 EGraphObjTypeConnectionLine  */ {
-        /*  0 PenColor                     */ SAttribute( "PenColor", QColor(Qt::black), true ),
-        /*  1 PenWidth                     */ SAttribute( "PenWidth", 1, true),
-        /*  2 LineStyle                    */ SAttribute( "LineStyle", ELineStyleSolidLine, true ),
-        /*  3 FillColor                    */ SAttribute( "FillColor", QColor(Qt::white), false ),
-        /*  4 FillStyle                    */ SAttribute( "FillStyle", EFillStyleNoFill, false ),
-        /*  5 LineRecordType               */ SAttribute( "LineRecordType", ELineRecordTypeNormal, true ),
-        /*  6 LineExtent                   */ SAttribute( "LineExtent", 1, true ),
-        /*  7 LineStartLineEndStyle        */ SAttribute( "LineStartLineEndStyle", ELineEndStyleNormal, true ),
-        /*  8 LineStartLineEndBaseLineType */ SAttribute( "LineStartLineEndBaseLineType", ELineEndBaseLineTypeNoLine, true ),
-        /*  9 LineStartLineEndFillStyle    */ SAttribute( "LineStartLineEndFillStyle", ELineEndFillStyleNoFill, true ),
-        /* 10 LineStartLineEndWidth        */ SAttribute( "LineStartLineEndWidth", ELineEndWidthMedium, true ),
-        /* 11 LineStartLineEndLength       */ SAttribute( "LineStartLineEndLength", ELineEndLengthMedium, true ),
-        /* 12 LineEndLineEndStyle          */ SAttribute( "LineEndLineEndStyle", ELineEndStyleNormal, true ),
-        /* 13 LineEndLineEndBaseLineType   */ SAttribute( "LineEndLineEndBaseLineType", ELineEndBaseLineTypeNoLine, true ),
-        /* 14 LineEndLineEndFillStyle      */ SAttribute( "LineEndLineEndFillStyle", ELineEndFillStyleNoFill, true ),
-        /* 15 LineEndLineEndWidth          */ SAttribute( "LineEndLineEndWidth", ELineEndWidthMedium, true ),
-        /* 16 LineEndLineEndLength         */ SAttribute( "LineEndLineEndLength", ELineEndLengthMedium, true ),
-        /* 17 TextColor                    */ SAttribute( "TextColor", QColor(Qt::black), false ),
-        /* 18 TextFont                     */ SAttribute( "TextFont", QFont("Arial"), false ),
-        /* 19 TextStyle                    */ SAttribute( "TextStyle", ETextStyleNormal, false ),
-        /* 20 TextSize                     */ SAttribute( "TextSize", ETextSize11, false ),
-        /* 21 TextEffect                   */ SAttribute( "TextEffect", ETextEffectNone, false )
+        /*  0 PenColor                     */ SDrawAttribute( "PenColor", QColor(Qt::black), true ),
+        /*  1 PenWidth                     */ SDrawAttribute( "PenWidth", 1, true),
+        /*  2 LineStyle                    */ SDrawAttribute( "LineStyle", static_cast<int>(ELineStyle::SolidLine), true ),
+        /*  3 FillColor                    */ SDrawAttribute( "FillColor", QColor(Qt::white), false ),
+        /*  4 FillStyle                    */ SDrawAttribute( "FillStyle", static_cast<int>(EFillStyle::NoFill), false ),
+        /*  5 LineRecordType               */ SDrawAttribute( "LineRecordType", static_cast<int>(ELineRecordType::Normal), true ),
+        /*  6 LineExtent                   */ SDrawAttribute( "LineExtent", 1, true ),
+        /*  7 LineStartLineEndStyle        */ SDrawAttribute( "LineStartLineEndStyle", static_cast<int>(ELineEndStyle::Normal), true ),
+        /*  8 LineStartLineEndBaseLineType */ SDrawAttribute( "LineStartLineEndBaseLineType", static_cast<int>(ELineEndBaseLineType::NoLine), true ),
+        /*  9 LineStartLineEndFillStyle    */ SDrawAttribute( "LineStartLineEndFillStyle", static_cast<int>(ELineEndFillStyle::NoFill), true ),
+        /* 10 LineStartLineEndWidth        */ SDrawAttribute( "LineStartLineEndWidth", static_cast<int>(ELineEndWidth::Medium), true ),
+        /* 11 LineStartLineEndLength       */ SDrawAttribute( "LineStartLineEndLength", static_cast<int>(ELineEndLength::Medium), true ),
+        /* 12 LineEndLineEndStyle          */ SDrawAttribute( "LineEndLineEndStyle", static_cast<int>(ELineEndStyle::Normal), true ),
+        /* 13 LineEndLineEndBaseLineType   */ SDrawAttribute( "LineEndLineEndBaseLineType", static_cast<int>(ELineEndBaseLineType::NoLine), true ),
+        /* 14 LineEndLineEndFillStyle      */ SDrawAttribute( "LineEndLineEndFillStyle", static_cast<int>(ELineEndFillStyle::NoFill), true ),
+        /* 15 LineEndLineEndWidth          */ SDrawAttribute( "LineEndLineEndWidth", static_cast<int>(ELineEndWidth::Medium), true ),
+        /* 16 LineEndLineEndLength         */ SDrawAttribute( "LineEndLineEndLength", static_cast<int>(ELineEndLength::Medium), true ),
+        /* 17 TextColor                    */ SDrawAttribute( "TextColor", QColor(Qt::black), false ),
+        /* 18 TextFont                     */ SDrawAttribute( "TextFont", QFont("Arial"), false ),
+        /* 19 TextStyle                    */ SDrawAttribute( "TextStyle", static_cast<int>(ETextStyle::Normal), false ),
+        /* 20 TextSize                     */ SDrawAttribute( "TextSize", ETextSize11, false ),
+        /* 21 TextEffect                   */ SDrawAttribute( "TextEffect", static_cast<int>(ETextEffect::None), false )
     /*                                 */ },
     /* 10 EGraphObjTypeGroup           */ {
-        /*  0 PenColor                     */ SAttribute( "PenColor", QColor(Qt::black), false ),
-        /*  1 PenWidth                     */ SAttribute( "PenWidth", 1, false),
-        /*  2 LineStyle                    */ SAttribute( "LineStyle", ELineStyleSolidLine, false ),
-        /*  3 FillColor                    */ SAttribute( "FillColor", QColor(Qt::white), false ),
-        /*  4 FillStyle                    */ SAttribute( "FillStyle", EFillStyleNoFill, false ),
-        /*  5 LineRecordType               */ SAttribute( "LineRecordType", ELineRecordTypeNormal, false ),
-        /*  6 LineExtent                   */ SAttribute( "LineExtent", 1, false ),
-        /*  7 LineStartLineEndStyle        */ SAttribute( "LineStartLineEndStyle", ELineEndStyleNormal, false ),
-        /*  8 LineStartLineEndBaseLineType */ SAttribute( "LineStartLineEndBaseLineType", ELineEndBaseLineTypeNoLine, false ),
-        /*  9 LineStartLineEndFillStyle    */ SAttribute( "LineStartLineEndFillStyle", ELineEndFillStyleNoFill, false ),
-        /* 10 LineStartLineEndWidth        */ SAttribute( "LineStartLineEndWidth", ELineEndWidthMedium, false ),
-        /* 11 LineStartLineEndLength       */ SAttribute( "LineStartLineEndLength", ELineEndLengthMedium, false ),
-        /* 12 LineEndLineEndStyle          */ SAttribute( "LineEndLineEndStyle", ELineEndStyleNormal, false ),
-        /* 13 LineEndLineEndBaseLineType   */ SAttribute( "LineEndLineEndBaseLineType", ELineEndBaseLineTypeNoLine, false ),
-        /* 14 LineEndLineEndFillStyle      */ SAttribute( "LineEndLineEndFillStyle", ELineEndFillStyleNoFill, false ),
-        /* 15 LineEndLineEndWidth          */ SAttribute( "LineEndLineEndWidth", ELineEndWidthMedium, false ),
-        /* 16 LineEndLineEndLength         */ SAttribute( "LineEndLineEndLength", ELineEndLengthMedium, false ),
-        /* 17 TextColor                    */ SAttribute( "TextColor", QColor(Qt::black), false ),
-        /* 18 TextFont                     */ SAttribute( "TextFont", QFont("Arial"), false ),
-        /* 19 TextStyle                    */ SAttribute( "TextStyle", ETextStyleNormal, false ),
-        /* 20 TextSize                     */ SAttribute( "TextSize", ETextSize11, false ),
-        /* 21 TextEffect                   */ SAttribute( "TextEffect", ETextEffectNone, false )
+        /*  0 PenColor                     */ SDrawAttribute( "PenColor", QColor(Qt::black), false ),
+        /*  1 PenWidth                     */ SDrawAttribute( "PenWidth", 1, false),
+        /*  2 LineStyle                    */ SDrawAttribute( "LineStyle", static_cast<int>(ELineStyle::SolidLine), false ),
+        /*  3 FillColor                    */ SDrawAttribute( "FillColor", QColor(Qt::white), false ),
+        /*  4 FillStyle                    */ SDrawAttribute( "FillStyle", static_cast<int>(EFillStyle::NoFill), false ),
+        /*  5 LineRecordType               */ SDrawAttribute( "LineRecordType", static_cast<int>(ELineRecordType::Normal), false ),
+        /*  6 LineExtent                   */ SDrawAttribute( "LineExtent", 1, false ),
+        /*  7 LineStartLineEndStyle        */ SDrawAttribute( "LineStartLineEndStyle", static_cast<int>(ELineEndStyle::Normal), false ),
+        /*  8 LineStartLineEndBaseLineType */ SDrawAttribute( "LineStartLineEndBaseLineType", static_cast<int>(ELineEndBaseLineType::NoLine), false ),
+        /*  9 LineStartLineEndFillStyle    */ SDrawAttribute( "LineStartLineEndFillStyle", static_cast<int>(ELineEndFillStyle::NoFill), false ),
+        /* 10 LineStartLineEndWidth        */ SDrawAttribute( "LineStartLineEndWidth", static_cast<int>(ELineEndWidth::Medium), false ),
+        /* 11 LineStartLineEndLength       */ SDrawAttribute( "LineStartLineEndLength", static_cast<int>(ELineEndLength::Medium), false ),
+        /* 12 LineEndLineEndStyle          */ SDrawAttribute( "LineEndLineEndStyle", static_cast<int>(ELineEndStyle::Normal), false ),
+        /* 13 LineEndLineEndBaseLineType   */ SDrawAttribute( "LineEndLineEndBaseLineType", static_cast<int>(ELineEndBaseLineType::NoLine), false ),
+        /* 14 LineEndLineEndFillStyle      */ SDrawAttribute( "LineEndLineEndFillStyle", static_cast<int>(ELineEndFillStyle::NoFill), false ),
+        /* 15 LineEndLineEndWidth          */ SDrawAttribute( "LineEndLineEndWidth", static_cast<int>(ELineEndWidth::Medium), false ),
+        /* 16 LineEndLineEndLength         */ SDrawAttribute( "LineEndLineEndLength", static_cast<int>(ELineEndLength::Medium), false ),
+        /* 17 TextColor                    */ SDrawAttribute( "TextColor", QColor(Qt::black), false ),
+        /* 18 TextFont                     */ SDrawAttribute( "TextFont", QFont("Arial"), false ),
+        /* 19 TextStyle                    */ SDrawAttribute( "TextStyle", static_cast<int>(ETextStyle::Normal), false ),
+        /* 20 TextSize                     */ SDrawAttribute( "TextSize", ETextSize11, false ),
+        /* 21 TextEffect                   */ SDrawAttribute( "TextEffect", static_cast<int>(ETextEffect::None), false )
     /*                                 */ }
 };
 
@@ -648,7 +648,7 @@ void CDrawSettings::save( QXmlStreamWriter& i_xmlStreamWriter )
                 }
                 case EDrawAttributeLineExtent:
                 {
-                    if( !isPenUsed() || getLineRecordType() == ELineRecordTypeNormal )
+                    if( !isPenUsed() || getLineRecordType() == ELineRecordType::Normal )
                     {
                         bSave = false;
                     }
@@ -660,7 +660,7 @@ void CDrawSettings::save( QXmlStreamWriter& i_xmlStreamWriter )
                 case EDrawAttributeLineStartLineEndWidth:
                 case EDrawAttributeLineStartLineEndLength:
                 {
-                    if( !isPenUsed() || getLineEndStyle(ELinePointStart) == ELineEndStyleNormal )
+                    if( !isPenUsed() || getLineEndStyle(ELinePoint::Start) == ELineEndStyle::Normal )
                     {
                         bSave = false;
                     }
@@ -672,7 +672,7 @@ void CDrawSettings::save( QXmlStreamWriter& i_xmlStreamWriter )
                 case EDrawAttributeLineEndLineEndWidth:
                 case EDrawAttributeLineEndLineEndLength:
                 {
-                    if( !isPenUsed() || getLineEndStyle(ELinePointEnd) == ELineEndStyleNormal )
+                    if( !isPenUsed() || getLineEndStyle(ELinePoint::End) == ELineEndStyle::Normal )
                     {
                         bSave = false;
                     }
@@ -926,7 +926,7 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CDrawSettings::setAttribute( int i_iAttribute, const SAttribute& i_drawAttribute )
+void CDrawSettings::setAttribute( int i_iAttribute, const SDrawAttribute& i_drawAttribute )
 //------------------------------------------------------------------------------
 {
     if( i_iAttribute >= 0 && i_iAttribute < EDrawAttributeCount )
@@ -974,10 +974,11 @@ void CDrawSettings::setAttribute( int i_iAttribute, const QString& i_strVal )
             }
             case EDrawAttributeLineStyle:
             {
-                ELineStyle lineStyle = str2LineStyle(i_strVal);
-                if( lineStyle >= 0 && lineStyle < ELineStyleCount )
+                bool bConverted = false;
+                CEnumLineStyle lineStyle = CEnumLineStyle::fromString(i_strVal, &bConverted);
+                if( bConverted )
                 {
-                    m_arAttributes[i_iAttribute].m_val = lineStyle;
+                    m_arAttributes[i_iAttribute].m_val = static_cast<int>(lineStyle.enumerator());
                 }
                 break;
             }
@@ -988,19 +989,21 @@ void CDrawSettings::setAttribute( int i_iAttribute, const QString& i_strVal )
             }
             case EDrawAttributeFillStyle:
             {
-                EFillStyle fillStyle = str2FillStyle(i_strVal);
-                if( fillStyle >= 0 && fillStyle < EFillStyleCount )
+                bool bConverted = false;
+                CEnumFillStyle fillStyle = CEnumFillStyle::fromString(i_strVal, &bConverted);
+                if( bConverted )
                 {
-                    m_arAttributes[i_iAttribute].m_val = fillStyle;
+                    m_arAttributes[i_iAttribute].m_val = static_cast<int>(fillStyle.enumerator());
                 }
                 break;
             }
             case EDrawAttributeLineRecordType:
             {
-                ELineRecordType lineRecordType = str2LineRecordType(i_strVal);
-                if( lineRecordType >= 0 && lineRecordType < ELineRecordTypeCount )
+                bool bConverted = false;
+                CEnumLineRecordType lineRecordType = CEnumLineRecordType::fromString(i_strVal, &bConverted);
+                if( bConverted )
                 {
-                    m_arAttributes[i_iAttribute].m_val = lineRecordType;
+                    m_arAttributes[i_iAttribute].m_val = static_cast<int>(lineRecordType.enumerator());
                 }
                 break;
             }
@@ -1012,50 +1015,55 @@ void CDrawSettings::setAttribute( int i_iAttribute, const QString& i_strVal )
             case EDrawAttributeLineStartLineEndStyle:
             case EDrawAttributeLineEndLineEndStyle:
             {
-                ELineEndStyle lineEndStyle = str2LineEndStyle(i_strVal);
-                if( lineEndStyle >= 0 && lineEndStyle < ELineEndStyleCount )
+                bool bConverted = false;
+                CEnumLineEndStyle lineEndStyle = CEnumLineEndStyle::fromString(i_strVal, &bConverted);
+                if( bConverted )
                 {
-                    m_arAttributes[i_iAttribute].m_val = lineEndStyle;
+                    m_arAttributes[i_iAttribute].m_val = static_cast<int>(lineEndStyle.enumerator());
                 }
                 break;
             }
             case EDrawAttributeLineStartLineEndBaseLineType:
             case EDrawAttributeLineEndLineEndBaseLineType:
             {
-                ELineEndBaseLineType lineEndBaseLineType = str2LineEndBaseLineType(i_strVal);
-                if( lineEndBaseLineType >= 0 && lineEndBaseLineType < ELineEndBaseLineTypeCount )
+                bool bConverted = false;
+                CEnumLineEndBaseLineType lineEndBaseLineType = CEnumLineEndBaseLineType::fromString(i_strVal, &bConverted);
+                if( bConverted )
                 {
-                    m_arAttributes[i_iAttribute].m_val = lineEndBaseLineType;
+                    m_arAttributes[i_iAttribute].m_val = static_cast<int>(lineEndBaseLineType.enumerator());
                 }
                 break;
             }
             case EDrawAttributeLineStartLineEndFillStyle:
             case EDrawAttributeLineEndLineEndFillStyle:
             {
-                ELineEndFillStyle lineEndFillStyle = str2LineEndFillStyle(i_strVal);
-                if( lineEndFillStyle >= 0 && lineEndFillStyle < ELineEndFillStyleCount )
+                bool bConverted = false;
+                CEnumLineEndFillStyle lineEndFillStyle = CEnumLineEndFillStyle::fromString(i_strVal, &bConverted);
+                if( bConverted )
                 {
-                    m_arAttributes[i_iAttribute].m_val = lineEndFillStyle;
+                    m_arAttributes[i_iAttribute].m_val = static_cast<int>(lineEndFillStyle.enumerator());
                 }
                 break;
             }
             case EDrawAttributeLineStartLineEndWidth:
             case EDrawAttributeLineEndLineEndWidth:
             {
-                ELineEndWidth lineEndWidth = str2LineEndWidth(i_strVal);
-                if( lineEndWidth >= 0 && lineEndWidth < ELineEndWidthCount )
+                bool bConverted = false;
+                CEnumLineEndWidth lineEndWidth = CEnumLineEndWidth::fromString(i_strVal, &bConverted);
+                if( bConverted )
                 {
-                    m_arAttributes[i_iAttribute].m_val = lineEndWidth;
+                    m_arAttributes[i_iAttribute].m_val = static_cast<int>(lineEndWidth.enumerator());
                 }
                 break;
             }
             case EDrawAttributeLineStartLineEndLength:
             case EDrawAttributeLineEndLineEndLength:
             {
-                ELineEndLength lineEndLength = str2LineEndLength(i_strVal);
-                if( lineEndLength >= 0 && lineEndLength < ELineEndLengthCount )
+                bool bConverted = false;
+                CEnumLineEndLength lineEndLength = CEnumLineEndLength::fromString(i_strVal, &bConverted);
+                if( bConverted )
                 {
-                    m_arAttributes[i_iAttribute].m_val = lineEndLength;
+                    m_arAttributes[i_iAttribute].m_val = static_cast<int>(lineEndLength.enumerator());
                 }
                 break;
             }
@@ -1073,10 +1081,11 @@ void CDrawSettings::setAttribute( int i_iAttribute, const QString& i_strVal )
             }
             case EDrawAttributeTextStyle:
             {
-                ETextStyle textStyle = str2TextStyle(i_strVal);
-                if( textStyle >= 0 && textStyle < ETextStyleCount )
+                bool bConverted = false;
+                CEnumTextStyle textStyle = CEnumTextStyle::fromString(i_strVal, &bConverted);
+                if( bConverted )
                 {
-                    m_arAttributes[i_iAttribute].m_val = textStyle;
+                    m_arAttributes[i_iAttribute].m_val = static_cast<int>(textStyle.enumerator());
                 }
                 break;
             }
@@ -1091,10 +1100,11 @@ void CDrawSettings::setAttribute( int i_iAttribute, const QString& i_strVal )
             }
             case EDrawAttributeTextEffect:
             {
-                ETextEffect textEffect = str2TextEffect(i_strVal);
-                if( textEffect >= 0 && textEffect < ETextEffectCount )
+                bool bConverted = false;
+                CEnumTextEffect textEffect = CEnumTextEffect::fromString(i_strVal, &bConverted);
+                if( bConverted )
                 {
-                    m_arAttributes[i_iAttribute].m_val = textEffect;
+                    m_arAttributes[i_iAttribute].m_val = static_cast<int>(textEffect.enumerator());
                 }
                 break;
             }
@@ -1139,10 +1149,10 @@ void CDrawSettings::setAttribute( const QString& i_strName, const QString& i_str
 } // setAttribute
 
 //------------------------------------------------------------------------------
-SAttribute CDrawSettings::getAttribute( int i_iAttribute ) const
+SDrawAttribute CDrawSettings::getAttribute( int i_iAttribute ) const
 //------------------------------------------------------------------------------
 {
-    SAttribute drawAttribute;
+    SDrawAttribute drawAttribute;
 
     if( i_iAttribute >= 0 && i_iAttribute < EDrawAttributeCount )
     {
@@ -1153,10 +1163,10 @@ SAttribute CDrawSettings::getAttribute( int i_iAttribute ) const
 } // getAttribute
 
 //------------------------------------------------------------------------------
-SAttribute CDrawSettings::getAttribute( const QString& i_strName ) const
+SDrawAttribute CDrawSettings::getAttribute( const QString& i_strName ) const
 //------------------------------------------------------------------------------
 {
-    SAttribute drawAttribute;
+    SDrawAttribute drawAttribute;
     int        iAttribute = findAttribute(i_strName);
 
     if( iAttribute >= 0 && iAttribute < EDrawAttributeCount )
@@ -1189,7 +1199,7 @@ QString CDrawSettings::attributeValue2Str( int i_iAttribute ) const
             }
             case EDrawAttributeLineStyle:
             {
-                strVal = lineStyle2Str(m_arAttributes[i_iAttribute].m_val.toInt());
+                strVal = CEnumLineStyle(m_arAttributes[i_iAttribute].m_val.toInt()).toString();
                 break;
             }
             case EDrawAttributeFillColor:
@@ -1199,12 +1209,12 @@ QString CDrawSettings::attributeValue2Str( int i_iAttribute ) const
             }
             case EDrawAttributeFillStyle:
             {
-                strVal = fillStyle2Str(m_arAttributes[i_iAttribute].m_val.toInt());
+                strVal = CEnumFillStyle(m_arAttributes[i_iAttribute].m_val.toInt()).toString();
                 break;
             }
             case EDrawAttributeLineRecordType:
             {
-                strVal = lineRecordType2Str(m_arAttributes[i_iAttribute].m_val.toInt());
+                strVal = CEnumLineRecordType(m_arAttributes[i_iAttribute].m_val.toInt()).toString();
                 break;
             }
             case EDrawAttributeLineExtent:
@@ -1214,52 +1224,52 @@ QString CDrawSettings::attributeValue2Str( int i_iAttribute ) const
             }
             case EDrawAttributeLineStartLineEndStyle:
             {
-                strVal = lineEndStyle2Str(m_arAttributes[i_iAttribute].m_val.toInt());
+                strVal = CEnumLineEndStyle(m_arAttributes[i_iAttribute].m_val.toInt()).toString();
                 break;
             }
             case EDrawAttributeLineStartLineEndBaseLineType:
             {
-                strVal = lineEndBaseLineType2Str(m_arAttributes[i_iAttribute].m_val.toInt());
+                strVal = CEnumLineEndBaseLineType(m_arAttributes[i_iAttribute].m_val.toInt()).toString();
                 break;
             }
             case EDrawAttributeLineStartLineEndFillStyle:
             {
-                strVal = lineEndFillStyle2Str(m_arAttributes[i_iAttribute].m_val.toInt());
+                strVal = CEnumLineEndFillStyle(m_arAttributes[i_iAttribute].m_val.toInt()).toString();
                 break;
             }
             case EDrawAttributeLineStartLineEndWidth:
             {
-                strVal = lineEndWidth2Str(m_arAttributes[i_iAttribute].m_val.toInt());
+                strVal = CEnumLineEndWidth(m_arAttributes[i_iAttribute].m_val.toInt()).toString();
                 break;
             }
             case EDrawAttributeLineStartLineEndLength:
             {
-                strVal = lineEndLength2Str(m_arAttributes[i_iAttribute].m_val.toInt());
+                strVal = CEnumLineEndLength(m_arAttributes[i_iAttribute].m_val.toInt()).toString();
                 break;
             }
             case EDrawAttributeLineEndLineEndStyle:
             {
-                strVal = lineEndStyle2Str(m_arAttributes[i_iAttribute].m_val.toInt());
+                strVal = CEnumLineEndStyle(m_arAttributes[i_iAttribute].m_val.toInt()).toString();
                 break;
             }
             case EDrawAttributeLineEndLineEndBaseLineType:
             {
-                strVal = lineEndBaseLineType2Str(m_arAttributes[i_iAttribute].m_val.toInt());
+                strVal = CEnumLineEndBaseLineType(m_arAttributes[i_iAttribute].m_val.toInt()).toString();
                 break;
             }
             case EDrawAttributeLineEndLineEndFillStyle:
             {
-                strVal = lineEndFillStyle2Str(m_arAttributes[i_iAttribute].m_val.toInt());
+                strVal = CEnumLineEndFillStyle(m_arAttributes[i_iAttribute].m_val.toInt()).toString();
                 break;
             }
             case EDrawAttributeLineEndLineEndWidth:
             {
-                strVal = lineEndWidth2Str(m_arAttributes[i_iAttribute].m_val.toInt());
+                strVal = CEnumLineEndWidth(m_arAttributes[i_iAttribute].m_val.toInt()).toString();
                 break;
             }
             case EDrawAttributeLineEndLineEndLength:
             {
-                strVal = lineEndLength2Str(m_arAttributes[i_iAttribute].m_val.toInt());
+                strVal = CEnumLineEndLength(m_arAttributes[i_iAttribute].m_val.toInt()).toString();
                 break;
             }
             case EDrawAttributeTextColor:
@@ -1274,17 +1284,17 @@ QString CDrawSettings::attributeValue2Str( int i_iAttribute ) const
             }
             case EDrawAttributeTextStyle:
             {
-                strVal = textStyle2Str(m_arAttributes[i_iAttribute].m_val.toInt());
+                strVal = CEnumTextStyle(m_arAttributes[i_iAttribute].m_val.toInt()).toString();
                 break;
             }
             case EDrawAttributeTextSize:
             {
-                strVal = textSize2Str(m_arAttributes[i_iAttribute].m_val.toInt());
+                strVal = textSize2Str(static_cast<ETextSize>(m_arAttributes[i_iAttribute].m_val.toInt()));
                 break;
             }
             case EDrawAttributeTextEffect:
             {
-                strVal = textEffect2Str(m_arAttributes[i_iAttribute].m_val.toInt());
+                strVal = CEnumTextEffect(m_arAttributes[i_iAttribute].m_val.toInt()).toString();
                 break;
             }
             default:
@@ -1619,7 +1629,7 @@ public: // instance methods
 void CDrawSettings::setLineStyle( ELineStyle i_val )
 //------------------------------------------------------------------------------
 {
-    m_arAttributes[EDrawAttributeLineStyle] = i_val;
+    m_arAttributes[EDrawAttributeLineStyle] = static_cast<int>(i_val);
 }
 
 //------------------------------------------------------------------------------
@@ -1651,7 +1661,7 @@ QColor CDrawSettings::getFillColor() const
 void CDrawSettings::setFillStyle( EFillStyle i_val )
 //------------------------------------------------------------------------------
 {
-    m_arAttributes[EDrawAttributeFillStyle] = i_val;
+    m_arAttributes[EDrawAttributeFillStyle] = static_cast<int>(i_val);
 }
 
 //------------------------------------------------------------------------------
@@ -1669,7 +1679,7 @@ public: // instance methods
 void CDrawSettings::setLineRecordType( ELineRecordType i_val )
 //------------------------------------------------------------------------------
 {
-    m_arAttributes[EDrawAttributeLineRecordType] = i_val;
+    m_arAttributes[EDrawAttributeLineRecordType] = static_cast<int>(i_val);
 }
 
 //------------------------------------------------------------------------------
@@ -1703,11 +1713,11 @@ void CDrawSettings::setLineEndStyle( ELinePoint i_linePoint, ELineEndStyle i_val
 {
     EDrawAttribute attr = EDrawAttributeLineStartLineEndStyle;
 
-    if( i_linePoint != ELinePointStart )
+    if( i_linePoint != ELinePoint::Start )
     {
         attr = EDrawAttributeLineEndLineEndStyle;
     }
-    m_arAttributes[attr] = i_val;
+    m_arAttributes[attr] = static_cast<int>(i_val);
 
 } // setLineEndStyle
 
@@ -1717,7 +1727,7 @@ ELineEndStyle CDrawSettings::getLineEndStyle( ELinePoint i_linePoint ) const
 {
     EDrawAttribute attr = EDrawAttributeLineStartLineEndStyle;
 
-    if( i_linePoint != ELinePointStart )
+    if( i_linePoint != ELinePoint::Start )
     {
         attr = EDrawAttributeLineEndLineEndStyle;
     }
@@ -1731,11 +1741,11 @@ void CDrawSettings::setLineEndBaseLineType( ELinePoint i_linePoint, ELineEndBase
 {
     EDrawAttribute attr = EDrawAttributeLineStartLineEndBaseLineType;
 
-    if( i_linePoint != ELinePointStart )
+    if( i_linePoint != ELinePoint::Start )
     {
         attr = EDrawAttributeLineEndLineEndBaseLineType;
     }
-    m_arAttributes[attr] = i_val;
+    m_arAttributes[attr] = static_cast<int>(i_val);
 
 } // setLineEndBaseLineType
 
@@ -1745,7 +1755,7 @@ ELineEndBaseLineType CDrawSettings::getLineEndBaseLineType( ELinePoint i_linePoi
 {
     EDrawAttribute attr = EDrawAttributeLineStartLineEndBaseLineType;
 
-    if( i_linePoint != ELinePointStart )
+    if( i_linePoint != ELinePoint::Start )
     {
         attr = EDrawAttributeLineEndLineEndBaseLineType;
     }
@@ -1759,11 +1769,11 @@ void CDrawSettings::setLineEndFillStyle( ELinePoint i_linePoint, ELineEndFillSty
 {
     EDrawAttribute attr = EDrawAttributeLineStartLineEndFillStyle;
 
-    if( i_linePoint != ELinePointStart )
+    if( i_linePoint != ELinePoint::Start )
     {
         attr = EDrawAttributeLineEndLineEndFillStyle;
     }
-    m_arAttributes[attr] = i_val;
+    m_arAttributes[attr] = static_cast<int>(i_val);
 
 } // setLineEndFillStyle
 
@@ -1773,7 +1783,7 @@ ELineEndFillStyle CDrawSettings::getLineEndFillStyle( ELinePoint i_linePoint ) c
 {
     EDrawAttribute attr = EDrawAttributeLineStartLineEndFillStyle;
 
-    if( i_linePoint != ELinePointStart )
+    if( i_linePoint != ELinePoint::Start )
     {
         attr = EDrawAttributeLineEndLineEndFillStyle;
     }
@@ -1787,11 +1797,11 @@ void CDrawSettings::setLineEndWidth( ELinePoint i_linePoint, ELineEndWidth i_val
 {
     EDrawAttribute attr = EDrawAttributeLineStartLineEndWidth;
 
-    if( i_linePoint != ELinePointStart )
+    if( i_linePoint != ELinePoint::Start )
     {
         attr = EDrawAttributeLineEndLineEndWidth;
     }
-    m_arAttributes[attr] = i_val;
+    m_arAttributes[attr] = static_cast<int>(i_val);
 
 } // setLineEndWidth
 
@@ -1801,7 +1811,7 @@ ELineEndWidth CDrawSettings::getLineEndWidth( ELinePoint i_linePoint ) const
 {
     EDrawAttribute attr = EDrawAttributeLineStartLineEndWidth;
 
-    if( i_linePoint != ELinePointStart )
+    if( i_linePoint != ELinePoint::Start )
     {
         attr = EDrawAttributeLineEndLineEndWidth;
     }
@@ -1815,11 +1825,11 @@ void CDrawSettings::setLineEndLength( ELinePoint i_linePoint, ELineEndLength i_v
 {
     EDrawAttribute attr = EDrawAttributeLineStartLineEndLength;
 
-    if( i_linePoint != ELinePointStart )
+    if( i_linePoint != ELinePoint::Start )
     {
         attr = EDrawAttributeLineEndLineEndLength;
     }
-    m_arAttributes[attr] = i_val;
+    m_arAttributes[attr] = static_cast<int>(i_val);
 
 } // setLineEndLength
 
@@ -1829,7 +1839,7 @@ ELineEndLength CDrawSettings::getLineEndLength( ELinePoint i_linePoint ) const
 {
     EDrawAttribute attr = EDrawAttributeLineStartLineEndLength;
 
-    if( i_linePoint != ELinePointStart )
+    if( i_linePoint != ELinePoint::Start )
     {
         attr = EDrawAttributeLineEndLineEndLength;
     }
@@ -1873,7 +1883,7 @@ QFont CDrawSettings::getTextFont() const
 void CDrawSettings::setTextStyle( ETextStyle i_val )
 //------------------------------------------------------------------------------
 {
-    m_arAttributes[EDrawAttributeTextStyle] = i_val;
+    m_arAttributes[EDrawAttributeTextStyle] = static_cast<int>(i_val);
 }
 
 //------------------------------------------------------------------------------
@@ -1901,7 +1911,7 @@ ETextSize CDrawSettings::getTextSize() const
 void CDrawSettings::setTextEffect( ETextEffect i_val )
 //------------------------------------------------------------------------------
 {
-    m_arAttributes[EDrawAttributeTextEffect] = i_val;
+    m_arAttributes[EDrawAttributeTextEffect] = static_cast<int>(i_val);
 }
 
 //------------------------------------------------------------------------------

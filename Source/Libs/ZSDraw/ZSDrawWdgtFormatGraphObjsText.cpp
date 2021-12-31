@@ -85,7 +85,7 @@ CWdgtFormatGraphObjsText::CWdgtFormatGraphObjsText(
 {
     setObjectName("WdgtFormatGraphObjsText");
 
-    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj("ZS::Draw", "CWdgtFormatGraphObjsText", objectName());
+    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName());
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,

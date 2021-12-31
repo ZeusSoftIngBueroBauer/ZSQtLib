@@ -65,6 +65,11 @@ class ZSDRAWDLL_API CWdgtFormatGraphObjsFillStyle : public CWdgtFormatGraphObjs
 //******************************************************************************
 {
     Q_OBJECT
+public: // class methods
+    /*! Returns the namespace the class belongs to. */
+    static QString NameSpace() { return "ZS::Draw"; } // Please note that the static class functions name must be different from the non static virtual member function "nameSpace"
+    /*! Returns the class name. */
+    static QString ClassName() { return "CWdgtFormatGraphObjsFillStyle"; } // Please note that the static class functions name must be different from the non static virtual member function "className"
 protected: // type definitions and constants
     enum EItemDataRole
     {
@@ -78,6 +83,15 @@ public: // ctors and dtor
         CGraphObj*     i_pGraphObj = nullptr,  // if nullptr the draw settings of the drawing scene are edited, if != nullptr the attributes of the grapic item are edited
         QWidget*       i_pWdgtParent = nullptr );
     virtual ~CWdgtFormatGraphObjsFillStyle();
+public: // overridables
+    /*! This virtual method returns the name space of the object's class.
+        This method can be reimplemented in derived classes so when invoked for the
+        polymorphic base type the method returns the name space of the derived class. */
+    virtual QString nameSpace() const { return NameSpace(); }
+    /*! This virtual method returns the class name of the object's class.
+        This method can be reimplemented in derived classes so when invoked for the
+        polymorphic base type the method returns the name of the derived class. */
+    virtual QString className() const { return ClassName(); }
 public: // must overridables of base class CWdgtFormatGraphObjs
     virtual void applyChanges();
     virtual void resetChanges();
@@ -89,7 +103,7 @@ protected: // overridables of base class QDialog
 protected slots: // Fill Style
     void onBtnFillColorClicked();
     void onBtnFillStyleClicked();
-    void onViewFillStylesClicked( QModelIndex i_modelIdx );
+    void onViewFillStylesClicked( const QModelIndex& i_modelIdx );
 protected: // instance methods
     void setFillColor();
     void setFillStyle();

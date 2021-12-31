@@ -38,11 +38,25 @@ namespace Draw
 class ZSDRAWDLL_API CObjFactoryConnectionLine : public CObjFactory
 //******************************************************************************
 {
+public: // class methods
+    /*! Returns the namespace the class belongs to. */
+    static QString NameSpace() { return "ZS::Draw"; } // Please note that the static class functions name must be different from the non static virtual member function "nameSpace"
+    /*! Returns the class name. */
+    static QString ClassName() { return "CObjFactoryConnectionLine"; }  // Please note that the static class functions name must be different from the non static virtual member function "className"
 public: // ctors and dtor
     CObjFactoryConnectionLine(
         bool         i_bAddToToolBoxIdxTree = false,
         const QIcon& i_toolIcon = QIcon() );
     virtual ~CObjFactoryConnectionLine();
+public: // overridables
+    /*! This virtual method returns the name space of the object's class.
+        This method can be reimplemented in derived classes so when invoked for the
+        polymorphic base type the method returns the name space of the derived class. */
+    virtual QString nameSpace() const { return NameSpace(); }
+    /*! This virtual method returns the class name of the object's class.
+        This method can be reimplemented in derived classes so when invoked for the
+        polymorphic base type the method returns the name of the derived class. */
+    virtual QString className() const { return ClassName(); }
 public: // interface methods of base class CObjFactory
     virtual CGraphObj* createGraphObj(
         CDrawingScene*       i_pDrawingScene,

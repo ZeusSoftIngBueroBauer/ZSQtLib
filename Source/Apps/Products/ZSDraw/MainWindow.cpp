@@ -280,11 +280,6 @@ CMainWindow::CMainWindow(
     m_bDrawingChangedSinceLastSave(false),
     m_strCurrentFile(),
     m_pActFileQuit(nullptr),
-    // Menu - Mode
-    m_pMenuMode(nullptr),
-    m_pToolBarMode(nullptr),
-    m_pActModeEdit(nullptr),
-    m_pActModeSimulation(nullptr),
     // Menu - Edit
     m_pMenuEdit(nullptr),
     // Menu - Edit - Select
@@ -371,6 +366,7 @@ CMainWindow::CMainWindow(
     m_pLblStatusBarDrawingSceneEditTool(nullptr),
     m_pLblStatusBarDrawingSceneEditMode(nullptr),
     m_pLblStatusBarDrawingSceneGraphObjEditInfo(nullptr),
+    m_pLblStatusBarDrawingSceneRect(nullptr),
     m_pLblStatusBarDrawingSceneMouseCursorPos(nullptr),
     m_pLblStatusBarDrawingViewMouseCursorPos(nullptr),
     // Central Widget with Drawing
@@ -427,7 +423,7 @@ CMainWindow::CMainWindow(
     m_pLblStatusBarDrawingSceneEditTool->setMinimumWidth(80);
     statusBar()->addPermanentWidget(m_pLblStatusBarDrawingSceneEditTool);
 
-    m_pLblStatusBarDrawingSceneEditMode = new QLabel("");
+    m_pLblStatusBarDrawingSceneEditMode = new QLabel("Mode: ");
     m_pLblStatusBarDrawingSceneEditMode->setMinimumWidth(100);
     statusBar()->addPermanentWidget(m_pLblStatusBarDrawingSceneEditMode);
 
@@ -435,12 +431,16 @@ CMainWindow::CMainWindow(
     m_pLblStatusBarDrawingSceneGraphObjEditInfo->setMinimumWidth(120);
     statusBar()->addPermanentWidget(m_pLblStatusBarDrawingSceneGraphObjEditInfo);
 
-    m_pLblStatusBarDrawingSceneMouseCursorPos = new QLabel( "ScenePos: (x/y)[" + Geometry::GraphDevice()->Pixel()->getSymbol() + "]" );
-    m_pLblStatusBarDrawingSceneMouseCursorPos->setMinimumWidth(160);
+    m_pLblStatusBarDrawingSceneRect = new QLabel("SceneRect: -/-, -/- [" + Geometry::GraphDevice()->Pixel()->getSymbol() + "]");
+    m_pLblStatusBarDrawingSceneRect->setMinimumWidth(160);
+    statusBar()->addPermanentWidget(m_pLblStatusBarDrawingSceneRect);
+
+    m_pLblStatusBarDrawingSceneMouseCursorPos = new QLabel( "ScenePos: -/- [" + Geometry::GraphDevice()->Pixel()->getSymbol() + "]" );
+    m_pLblStatusBarDrawingSceneMouseCursorPos->setMinimumWidth(140);
     statusBar()->addPermanentWidget(m_pLblStatusBarDrawingSceneMouseCursorPos);
 
-    m_pLblStatusBarDrawingViewMouseCursorPos = new QLabel( "ViewPos: (x/y)[" + Geometry::GraphDevice()->Pixel()->getSymbol() + "]" );
-    m_pLblStatusBarDrawingViewMouseCursorPos->setMinimumWidth(160);
+    m_pLblStatusBarDrawingViewMouseCursorPos = new QLabel( "ViewPos: -/- [" + Geometry::GraphDevice()->Pixel()->getSymbol() + "]" );
+    m_pLblStatusBarDrawingViewMouseCursorPos->setMinimumWidth(140);
     statusBar()->addPermanentWidget(m_pLblStatusBarDrawingViewMouseCursorPos);
 
     // Drawing Scene
@@ -449,6 +449,7 @@ CMainWindow::CMainWindow(
     // Belongs to central widget but must be created before the tool bars.
 
     m_pDrawingScene = new CDrawingScene(this);
+    //m_pDrawingScene->setBackgroundBrush(Qt::blue);
 
     if( !QObject::connect(
         /* pObjSender   */ m_pDrawingScene,
@@ -458,7 +459,22 @@ CMainWindow::CMainWindow(
     {
         throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
     }
-
+    if( !QObject::connect(
+        /* pObjSender   */ m_pDrawingScene,
+        /* szSignal     */ SIGNAL(focusItemChanged(QGraphicsItem*, QGraphicsItem*, Qt::FocusReason)),
+        /* pObjReceiver */ this,
+        /* szSlot       */ SLOT(onDrawingSceneFocusItemChanged(QGraphicsItem*, QGraphicsItem*, Qt::FocusReason)) ) )
+    {
+        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
+    }
+    if( !QObject::connect(
+        /* pObjSender   */ m_pDrawingScene,
+        /* szSignal     */ SIGNAL(sceneRectChanged(const QRectF&)),
+        /* pObjReceiver */ this,
+        /* szSlot       */ SLOT(onDrawingSceneRectChanged(const QRectF&)) ) )
+    {
+        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
+    }
     if( !QObject::connect(
         /* pObjSender   */ m_pDrawingScene,
         /* szSignal     */ SIGNAL(selectionChanged()),
@@ -467,7 +483,6 @@ CMainWindow::CMainWindow(
     {
         throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
     }
-
     if( !QObject::connect(
         /* pObjSender   */ m_pDrawingScene,
         /* szSignal     */ SIGNAL(mousePosChanged(const QPointF&)),
@@ -476,7 +491,6 @@ CMainWindow::CMainWindow(
     {
         throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
     }
-
     if( !QObject::connect(
         /* pObjSender   */ m_pDrawingScene,
         /* szSignal     */ SIGNAL(modeChanged()),
@@ -485,7 +499,6 @@ CMainWindow::CMainWindow(
     {
         throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
     }
-
     if( !QObject::connect(
         /* pObjSender   */ m_pDrawingScene,
         /* szSignal     */ SIGNAL(drawSettingsChanged(const ZS::Draw::CDrawSettings&)),
@@ -503,7 +516,6 @@ CMainWindow::CMainWindow(
     {
         throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
     }
-
     if( !QObject::connect(
         /* pObjSender   */ m_pDrawingScene,
         /* szSignal     */ SIGNAL(graphObjDestroyed(const QString&)),
@@ -512,7 +524,6 @@ CMainWindow::CMainWindow(
     {
         throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
     }
-
     if( !QObject::connect(
         /* pObjSender   */ m_pDrawingScene,
         /* szSignal     */ SIGNAL(graphObjIdChanged(const QString&,const QString&)),
@@ -538,18 +549,14 @@ CMainWindow::CMainWindow(
     // Tool bars must have been created before.
 
     m_pLyt = new QHBoxLayout();
-
-    m_pDrawingView = new CDrawingView(
-        /* pDrawingScene */ m_pDrawingScene,
-        /* pWdgtParent   */ nullptr );
-    m_pDrawingView->setMouseTracking(true);
-    m_pLyt->addWidget(m_pDrawingView);
-
     m_pWdgtCentral = new QWidget();
     m_pWdgtCentral->setLayout(m_pLyt);
-
     setCentralWidget(m_pWdgtCentral);
-    setWindowTitle();
+
+    m_pDrawingView = new CDrawingView(m_pDrawingScene);
+    m_pDrawingView->setMouseTracking(true);
+    m_pLyt->addWidget(m_pDrawingView/*, 0, Qt::AlignCenter*/);
+
     setUnifiedTitleAndToolBarOnMac(true);
 
     if( !QObject::connect(
@@ -574,6 +581,8 @@ CMainWindow::CMainWindow(
     onDrawingSceneModeChanged();
 
     onDrawingSceneDrawSettingsChanged( m_pDrawingScene->getDrawSettings() );
+
+    onDrawingSceneRectChanged(m_pDrawingScene->sceneRect());
 
 } // ctor
 
@@ -856,6 +865,12 @@ CMainWindow::~CMainWindow()
         delete m_pLblStatusBarDrawingSceneGraphObjEditInfo;
         m_pLblStatusBarDrawingSceneGraphObjEditInfo = nullptr;
     }
+    if( m_pLblStatusBarDrawingSceneRect != nullptr )
+    {
+        statusBar()->removeWidget(m_pLblStatusBarDrawingSceneRect);
+        delete m_pLblStatusBarDrawingSceneRect;
+        m_pLblStatusBarDrawingSceneRect = nullptr;
+    }
     if( m_pLblStatusBarDrawingSceneMouseCursorPos != nullptr )
     {
         statusBar()->removeWidget(m_pLblStatusBarDrawingSceneMouseCursorPos);
@@ -913,11 +928,6 @@ CMainWindow::~CMainWindow()
     m_pActFilesRecentSeparator = nullptr;
     memset( m_arpActFilesRecent, 0x00, _ZSArrLen(m_arpActFilesRecent) );
     m_pActFileQuit = nullptr;
-    // Menu - Mode
-    m_pMenuMode = nullptr;
-    m_pToolBarMode = nullptr;
-    m_pActModeEdit = nullptr;
-    m_pActModeSimulation = nullptr;
     // Menu - Edit
     m_pMenuEdit = nullptr;
     // Menu - Edit - Select
@@ -1003,6 +1013,7 @@ CMainWindow::~CMainWindow()
     // Status Bar
     m_pLblStatusBarDrawingSceneEditTool = nullptr;
     m_pLblStatusBarDrawingSceneEditMode = nullptr;
+    m_pLblStatusBarDrawingSceneRect = nullptr;
     m_pLblStatusBarDrawingSceneGraphObjEditInfo = nullptr;
     m_pLblStatusBarDrawingSceneMouseCursorPos = nullptr;
     m_pLblStatusBarDrawingViewMouseCursorPos = nullptr;
@@ -1579,50 +1590,6 @@ void CMainWindow::createActions()
         /* szSignal     */ SIGNAL(triggered(bool)),
         /* pObjReceiver */ QApplication::instance(),
         /* szSlot       */ SLOT(onLastWindowClosed()) ) )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-    }
-
-    // <Menu> Mode
-    //============
-
-    // <MenuItem> Mode::Edit
-    //----------------------
-
-    QIcon iconModeEdit;
-
-    iconModeEdit.addPixmap( mode2Pixmap(static_cast<int>(EMode::Edit),24) );
-
-    m_pActModeEdit = new QAction( iconModeEdit, c_strActionNameModeEdit.section(":",-1,-1), this );
-    m_pActModeEdit->setStatusTip( tr("Activate Edit Mode") );
-    m_pActModeEdit->setCheckable(true);
-    m_pActModeEdit->setChecked(true);
-
-    if( !connect(
-        /* pObjSender   */ m_pActModeEdit,
-        /* szSignal     */ SIGNAL(toggled(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onActionModeEditToggled(bool)) ) )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-    }
-
-    // <MenuItem> Mode::Simulation
-    //-------------------------------
-
-    QIcon iconModeSimulation;
-
-    iconModeSimulation.addPixmap( mode2Pixmap(static_cast<int>(EMode::Simulation),24) );
-
-    m_pActModeSimulation = new QAction( iconModeSimulation, c_strActionNameModeSimulation.section(":",-1,-1), this );
-    m_pActModeSimulation->setStatusTip( tr("Activate Simulation Mode") );
-    m_pActModeSimulation->setCheckable(true);
-
-    if( !connect(
-        /* pObjSender   */ m_pActModeSimulation,
-        /* szSignal     */ SIGNAL(toggled(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onActionModeSimulationToggled(bool)) ) )
     {
         throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
     }
@@ -2251,27 +2218,6 @@ void CMainWindow::createMenus()
         m_pMenuFile->addAction(m_pActFileQuit);
     }
 
-    // <Menu> Mode
-    //============
-
-    m_pMenuMode = m_pMenuBar->addMenu(c_strMenuNameMode);
-
-    // <MenuItem> Mode::Edit
-    //----------------------------
-
-    if( m_pActModeEdit != nullptr )
-    {
-        m_pMenuMode->addAction(m_pActModeEdit);
-    }
-
-    // <MenuItem> Mode::Simulation
-    //----------------------------
-
-    if( m_pActModeSimulation != nullptr )
-    {
-        m_pMenuMode->addAction(m_pActModeSimulation);
-    }
-
     // <Menu> Edit
     //============
 
@@ -2617,30 +2563,6 @@ void CMainWindow::createToolBars()
     if( m_pActFilePageSetup != nullptr )
     {
         m_pToolBarFile->addAction(m_pActFilePageSetup);
-    }
-
-    // <Menu> Mode
-    //============
-
-    m_pToolBarMode = addToolBar("Switching Between Simulation and Edit Mode");
-    m_pToolBarMode->setObjectName("Mode");
-    //m_pToolBarMode->setMaximumHeight(24);
-    m_pToolBarMode->setIconSize( QSize(16,16) );
-
-    // <MenuItem> Mode::Edit
-    //----------------------
-
-    if( m_pActModeEdit != nullptr )
-    {
-        m_pToolBarMode->addAction(m_pActModeEdit);
-    }
-
-    // <MenuItem> Mode::Simulation
-    //----------------------------
-
-    if( m_pActModeSimulation != nullptr )
-    {
-        m_pToolBarMode->addAction(m_pActModeSimulation);
     }
 
     // <Menu> Edit
@@ -3160,73 +3082,21 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CMainWindow::setCheckedActionModeEdit( bool i_bChecked )
-//------------------------------------------------------------------------------
-{
-    QString strAddTrcInfo;
-
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
-    {
-        strAddTrcInfo = "Checked:" + bool2Str(i_bChecked);
-    }
-
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strMethod    */ "setCheckedActionModeEdit",
-        /* strAddInfo   */ strAddTrcInfo );
-
-    if( m_pActModeEdit != nullptr )
-    {
-        m_pActModeEdit->setChecked(i_bChecked);
-    }
-
-} // setCheckedActionModeEdit
-
-//------------------------------------------------------------------------------
-void CMainWindow::setCheckedActionModeSimulation( bool i_bChecked )
-//------------------------------------------------------------------------------
-{
-    QString strAddTrcInfo;
-
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
-    {
-        strAddTrcInfo = "Checked:" + bool2Str(i_bChecked);
-    }
-
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strMethod    */ "setCheckedActionModeSimulation",
-        /* strAddInfo   */ strAddTrcInfo );
-
-    if( m_pActModeSimulation != nullptr )
-    {
-        m_pActModeSimulation->setChecked(i_bChecked);
-    }
-
-} // setCheckedActionModeSimulation
-
-/*==============================================================================
-public: // instance methods
-==============================================================================*/
-
-//------------------------------------------------------------------------------
 void CMainWindow::setCheckedActionEditSelect( bool i_bChecked )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
-        strAddTrcInfo = "Checked:" + bool2Str(i_bChecked);
+        strMthInArgs = "Checked:" + bool2Str(i_bChecked);
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "setCheckedActionEditSelect",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     if( m_pActEditSelect != nullptr )
     {
@@ -3345,18 +3215,18 @@ public: // instance methods
 void CMainWindow::setCheckedActionDrawStandardShapePoint( bool i_bChecked )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
-        strAddTrcInfo = "Checked:" + bool2Str(i_bChecked);
+        strMthInArgs = "Checked:" + bool2Str(i_bChecked);
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "setCheckedActionDrawStandardShapePoint",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     if( m_pActDrawStandardShapePoint != nullptr )
     {
@@ -3369,18 +3239,18 @@ void CMainWindow::setCheckedActionDrawStandardShapePoint( bool i_bChecked )
 void CMainWindow::setCheckedActionDrawStandardShapeLine( bool i_bChecked )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
-        strAddTrcInfo = "Checked:" + bool2Str(i_bChecked);
+        strMthInArgs = "Checked:" + bool2Str(i_bChecked);
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "setCheckedActionDrawStandardShapeLine",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     if( m_pActDrawStandardShapeLine != nullptr )
     {
@@ -3393,18 +3263,18 @@ void CMainWindow::setCheckedActionDrawStandardShapeLine( bool i_bChecked )
 void CMainWindow::setCheckedActionDrawStandardShapeRect( bool i_bChecked )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
-        strAddTrcInfo = "Checked:" + bool2Str(i_bChecked);
+        strMthInArgs = "Checked:" + bool2Str(i_bChecked);
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "setCheckedActionDrawStandardShapeRect",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     if( m_pActDrawStandardShapeRect != nullptr )
     {
@@ -3417,18 +3287,18 @@ void CMainWindow::setCheckedActionDrawStandardShapeRect( bool i_bChecked )
 void CMainWindow::setCheckedActionDrawStandardShapeEllipse( bool i_bChecked )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
-        strAddTrcInfo = "Checked:" + bool2Str(i_bChecked);
+        strMthInArgs = "Checked:" + bool2Str(i_bChecked);
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "setCheckedActionDrawStandardShapeEllipse",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     if( m_pActDrawStandardShapeEllipse != nullptr )
     {
@@ -3441,18 +3311,18 @@ void CMainWindow::setCheckedActionDrawStandardShapeEllipse( bool i_bChecked )
 void CMainWindow::setCheckedActionDrawStandardShapePolyline( bool i_bChecked )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
-        strAddTrcInfo = "Checked:" + bool2Str(i_bChecked);
+        strMthInArgs = "Checked:" + bool2Str(i_bChecked);
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "setCheckedActionDrawStandardShapePolyline",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     if( m_pActDrawStandardShapePolyline != nullptr )
     {
@@ -3465,18 +3335,18 @@ void CMainWindow::setCheckedActionDrawStandardShapePolyline( bool i_bChecked )
 void CMainWindow::setCheckedActionDrawStandardShapePolygon( bool i_bChecked )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
-        strAddTrcInfo = "Checked:" + bool2Str(i_bChecked);
+        strMthInArgs = "Checked:" + bool2Str(i_bChecked);
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "setCheckedActionDrawStandardShapePolygon",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     if( m_pActDrawStandardShapePolygon != nullptr )
     {
@@ -3489,18 +3359,18 @@ void CMainWindow::setCheckedActionDrawStandardShapePolygon( bool i_bChecked )
 void CMainWindow::setCheckedActionDrawStandardShapeText( bool i_bChecked )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
-        strAddTrcInfo = "Checked:" + bool2Str(i_bChecked);
+        strMthInArgs = "Checked:" + bool2Str(i_bChecked);
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "setCheckedActionDrawStandardShapeText",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     if( m_pActDrawStandardShapeText != nullptr )
     {
@@ -3530,18 +3400,18 @@ void CMainWindow::triggerActionDrawGraphicsImage()
 void CMainWindow::setCheckedActionDrawConnectionPoint( bool i_bChecked )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
-        strAddTrcInfo = "Checked:" + bool2Str(i_bChecked);
+        strMthInArgs = "Checked:" + bool2Str(i_bChecked);
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "setCheckedActionDrawConnectionPoint",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     if( m_pActDrawConnectionPoint != nullptr )
     {
@@ -3554,18 +3424,18 @@ void CMainWindow::setCheckedActionDrawConnectionPoint( bool i_bChecked )
 void CMainWindow::setCheckedActionDrawConnectionLine( bool i_bChecked )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
-        strAddTrcInfo = "Checked:" + bool2Str(i_bChecked);
+        strMthInArgs = "Checked:" + bool2Str(i_bChecked);
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "setCheckedActionDrawConnectionLine",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     if( m_pActDrawConnectionLine != nullptr )
     {
@@ -3582,7 +3452,7 @@ public slots: // Menu - File
 void CMainWindow::onActionFileNewTriggered( bool )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
@@ -3592,7 +3462,7 @@ void CMainWindow::onActionFileNewTriggered( bool )
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "onActionFileNewTriggered",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     m_pDrawingScene->clear();
 
@@ -3604,7 +3474,7 @@ void CMainWindow::onActionFileNewTriggered( bool )
 void CMainWindow::onActionFileOpenTriggered( bool )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
@@ -3614,7 +3484,7 @@ void CMainWindow::onActionFileOpenTriggered( bool )
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "onActionFileOpenTriggered",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     QString strFileName = QFileDialog::getOpenFileName(
         /* pWdgtParent */ this,
@@ -3669,18 +3539,18 @@ void CMainWindow::onActionFileOpenTriggered( bool )
 void CMainWindow::onActionFileSaveTriggered( bool )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
-        strAddTrcInfo = "FileName:" + m_strCurrentFile;
+        strMthInArgs = "FileName:" + m_strCurrentFile;
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "onActionFileSaveTriggered",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     if( m_strCurrentFile.isEmpty() )
     {
@@ -3697,7 +3567,7 @@ void CMainWindow::onActionFileSaveTriggered( bool )
 void CMainWindow::onActionFileSaveAsTriggered( bool )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
@@ -3707,7 +3577,7 @@ void CMainWindow::onActionFileSaveAsTriggered( bool )
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "onActionFileSaveAsTriggered",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     QString strFileName = QFileDialog::getSaveFileName(
         /* pWdgtParent */ this,
@@ -3741,7 +3611,7 @@ void CMainWindow::onActionFileSaveAsTriggered( bool )
 void CMainWindow::onActionFilePageSetupTriggered( bool )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
@@ -3751,11 +3621,11 @@ void CMainWindow::onActionFilePageSetupTriggered( bool )
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "onActionFilePageSetupTriggered",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     CDlgPageSetup* pDlgPageSetup = new CDlgPageSetup(m_pDrawingView);
 
-    pDlgPageSetup->setCurrentWidget(CDlgPageSetup::EWidgetDrawingScene);
+    pDlgPageSetup->setCurrentWidget(CDlgPageSetup::EWidgetDrawingView);
 
     pDlgPageSetup->exec();
 
@@ -3765,7 +3635,7 @@ void CMainWindow::onActionFilePageSetupTriggered( bool )
 void CMainWindow::onActionFileRecentTriggered( bool /*i_bChecked*/ )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
@@ -3775,7 +3645,7 @@ void CMainWindow::onActionFileRecentTriggered( bool /*i_bChecked*/ )
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "onActionFileRecentTriggered",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     //QAction* pAct = dynamic_cast<QAction*>(sender());
 
@@ -3789,70 +3659,6 @@ void CMainWindow::onActionFileRecentTriggered( bool /*i_bChecked*/ )
 } // onActionFileRecentTriggered
 
 /*==============================================================================
-public slots: // Menu - Mode
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-void CMainWindow::onActionModeEditToggled( bool i_bChecked )
-//------------------------------------------------------------------------------
-{
-    QString strAddTrcInfo;
-
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
-    {
-        strAddTrcInfo = "Checked: " + bool2Str(i_bChecked);
-    }
-
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strMethod    */ "onActionModeEditToggled",
-        /* strAddInfo   */ strAddTrcInfo );
-
-    if( i_bChecked && m_pDrawingScene->getMode() != EMode::Edit )
-    {
-        m_pDrawingScene->setCurrentDrawingTool(nullptr);
-        m_pDrawingScene->setMode(EMode::Edit);
-    }
-    else if( !i_bChecked && m_pDrawingScene->getMode() != EMode::Simulation )
-    {
-        m_pDrawingScene->setCurrentDrawingTool(nullptr);
-        m_pDrawingScene->setMode(EMode::Simulation);
-    }
-
-} // onActionModeEditToggled
-
-//------------------------------------------------------------------------------
-void CMainWindow::onActionModeSimulationToggled( bool i_bChecked )
-//------------------------------------------------------------------------------
-{
-    QString strAddTrcInfo;
-
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
-    {
-        strAddTrcInfo = "Checked: " + bool2Str(i_bChecked);
-    }
-
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strMethod    */ "onActionModeSimulationToggled",
-        /* strAddInfo   */ strAddTrcInfo );
-
-    if( i_bChecked && m_pDrawingScene->getMode() != EMode::Simulation )
-    {
-        m_pDrawingScene->setCurrentDrawingTool(nullptr);
-        m_pDrawingScene->setMode(EMode::Simulation);
-    }
-    else if( !i_bChecked && m_pDrawingScene->getMode() != EMode::Edit )
-    {
-        m_pDrawingScene->setCurrentDrawingTool(nullptr);
-        m_pDrawingScene->setMode(EMode::Edit);
-    }
-
-} // onActionModeSimulationToggled
-
-/*==============================================================================
 public slots: // Menu - Edit - Select/RotateFree
 ==============================================================================*/
 
@@ -3860,18 +3666,18 @@ public slots: // Menu - Edit - Select/RotateFree
 void CMainWindow::onActionEditSelectToggled( bool i_bChecked )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
-        strAddTrcInfo = "Checked: " + bool2Str(i_bChecked);
+        strMthInArgs = "Checked: " + bool2Str(i_bChecked);
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "onActionEditSelectToggled",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     if( i_bChecked )
     {
@@ -3908,7 +3714,7 @@ public slots: // Menu - Edit - Rotate
 void CMainWindow::onActionEditRotateLeftTriggered( bool )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
@@ -3918,7 +3724,7 @@ void CMainWindow::onActionEditRotateLeftTriggered( bool )
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "onActionEditRotateLeftTriggered",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     double fAngle_deg = 90.0;
 
@@ -3959,7 +3765,7 @@ void CMainWindow::onActionEditRotateLeftTriggered( bool )
 void CMainWindow::onActionEditRotateRightTriggered( bool )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
@@ -3969,7 +3775,7 @@ void CMainWindow::onActionEditRotateRightTriggered( bool )
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "onActionEditRotateRightTriggered",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     double fAngle_deg = -90.0;
 
@@ -4014,7 +3820,7 @@ public slots: // Menu - Edit - Mirror
 void CMainWindow::onActionEditMirrorVerticalTriggered( bool )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
@@ -4024,7 +3830,7 @@ void CMainWindow::onActionEditMirrorVerticalTriggered( bool )
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "onActionEditMirrorVerticalTriggered",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     //graphicsItem->scale(1,-1);
 
@@ -4039,7 +3845,7 @@ void CMainWindow::onActionEditMirrorVerticalTriggered( bool )
 void CMainWindow::onActionEditMirrorHorizontalTriggered( bool )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
@@ -4049,7 +3855,7 @@ void CMainWindow::onActionEditMirrorHorizontalTriggered( bool )
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "onActionEditMirrorHorizontalTriggered",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     //graphicsItem->scale(-1,1);
 
@@ -4068,7 +3874,7 @@ public slots: // Menu - Edit - Group
 void CMainWindow::onActionEditGroupTriggered( bool )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
@@ -4078,7 +3884,7 @@ void CMainWindow::onActionEditGroupTriggered( bool )
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "onActionEditGroupTriggered",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     m_pDrawingScene->groupGraphObjsSelected();
 
@@ -4088,7 +3894,7 @@ void CMainWindow::onActionEditGroupTriggered( bool )
 void CMainWindow::onActionEditUngroupTriggered( bool )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
@@ -4098,7 +3904,7 @@ void CMainWindow::onActionEditUngroupTriggered( bool )
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "onActionEditUngroupTriggered",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     m_pDrawingScene->ungroupGraphObjsSelected();
 
@@ -4112,7 +3918,7 @@ public slots: // Menu - Draw - Settings
 void CMainWindow::onActionDrawSettingsLineTriggered( bool )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
@@ -4122,7 +3928,7 @@ void CMainWindow::onActionDrawSettingsLineTriggered( bool )
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "onActionDrawSettingsLineTriggered",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     CDlgFormatGraphObjs* pDlgFormatGraphObjs = nullptr;
 
@@ -4167,7 +3973,7 @@ void CMainWindow::onActionDrawSettingsLineTriggered( bool )
 void CMainWindow::onActionDrawSettingsFillTriggered( bool )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
@@ -4177,7 +3983,7 @@ void CMainWindow::onActionDrawSettingsFillTriggered( bool )
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "onActionDrawSettingsFillTriggered",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     CDlgFormatGraphObjs* pDlgFormatGraphObjs = nullptr;
 
@@ -4222,7 +4028,7 @@ void CMainWindow::onActionDrawSettingsFillTriggered( bool )
 void CMainWindow::onActionDrawSettingsTextTriggered( bool )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
@@ -4232,7 +4038,7 @@ void CMainWindow::onActionDrawSettingsTextTriggered( bool )
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "onActionDrawSettingsTextTriggered",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     CDlgFormatGraphObjs* pDlgFormatGraphObjs = nullptr;
 
@@ -4281,18 +4087,18 @@ public slots: // Menu - Draw - Standard Shapes
 void CMainWindow::onActionDrawStandardShapePointToggled( bool i_bChecked )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
-        strAddTrcInfo = "Checked: " + bool2Str(i_bChecked);
+        strMthInArgs = "Checked: " + bool2Str(i_bChecked);
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "onActionDrawStandardShapePointToggled",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     if( i_bChecked )
     {
@@ -4324,18 +4130,18 @@ void CMainWindow::onActionDrawStandardShapePointToggled( bool i_bChecked )
 void CMainWindow::onActionDrawStandardShapeLineToggled( bool i_bChecked )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
-        strAddTrcInfo = "Checked: " + bool2Str(i_bChecked);
+        strMthInArgs = "Checked: " + bool2Str(i_bChecked);
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "onActionDrawStandardShapeLineToggled",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     if( i_bChecked )
     {
@@ -4367,18 +4173,18 @@ void CMainWindow::onActionDrawStandardShapeLineToggled( bool i_bChecked )
 void CMainWindow::onActionDrawStandardShapeRectToggled( bool i_bChecked )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
-        strAddTrcInfo = "Checked: " + bool2Str(i_bChecked);
+        strMthInArgs = "Checked: " + bool2Str(i_bChecked);
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "onActionDrawStandardShapeRectToggled",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     if( i_bChecked )
     {
@@ -4410,18 +4216,18 @@ void CMainWindow::onActionDrawStandardShapeRectToggled( bool i_bChecked )
 void CMainWindow::onActionDrawStandardShapeEllipseToggled( bool i_bChecked )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
-        strAddTrcInfo = "Checked: " + bool2Str(i_bChecked);
+        strMthInArgs = "Checked: " + bool2Str(i_bChecked);
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "onActionDrawStandardShapeEllipseToggled",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     if( i_bChecked )
     {
@@ -4453,18 +4259,18 @@ void CMainWindow::onActionDrawStandardShapeEllipseToggled( bool i_bChecked )
 void CMainWindow::onActionDrawStandardShapePolylineToggled( bool i_bChecked )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
-        strAddTrcInfo = "Checked: " + bool2Str(i_bChecked);
+        strMthInArgs = "Checked: " + bool2Str(i_bChecked);
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "onActionDrawStandardShapePolylineToggled",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     if( i_bChecked )
     {
@@ -4496,18 +4302,18 @@ void CMainWindow::onActionDrawStandardShapePolylineToggled( bool i_bChecked )
 void CMainWindow::onActionDrawStandardShapePolygonToggled( bool i_bChecked )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
-        strAddTrcInfo = "Checked: " + bool2Str(i_bChecked);
+        strMthInArgs = "Checked: " + bool2Str(i_bChecked);
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "onActionDrawStandardShapePolygonToggled",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     if( i_bChecked )
     {
@@ -4539,18 +4345,18 @@ void CMainWindow::onActionDrawStandardShapePolygonToggled( bool i_bChecked )
 void CMainWindow::onActionDrawStandardShapeTextToggled( bool i_bChecked )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
-        strAddTrcInfo = "Checked: " + bool2Str(i_bChecked);
+        strMthInArgs = "Checked: " + bool2Str(i_bChecked);
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "onActionDrawStandardShapeTextToggled",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     if( i_bChecked )
     {
@@ -4586,18 +4392,18 @@ public slots: // Menu - Draw - Graphics
 void CMainWindow::onActionDrawGraphicsImageTriggered( bool i_bChecked )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
-        strAddTrcInfo = "Checked: " + bool2Str(i_bChecked);
+        strMthInArgs = "Checked: " + bool2Str(i_bChecked);
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "onActionDrawGraphicsImageTriggered",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     // Please note that the graphics image button is not a checkable button
     // and i_bChecked is always false.
@@ -4629,18 +4435,18 @@ public slots: // Menu - Draw - Connections
 void CMainWindow::onActionDrawConnectionPointToggled( bool i_bChecked )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
-        strAddTrcInfo = "Checked: " + bool2Str(i_bChecked);
+        strMthInArgs = "Checked: " + bool2Str(i_bChecked);
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "onActionDrawConnectionPointToggled",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     if( i_bChecked )
     {
@@ -4672,18 +4478,18 @@ void CMainWindow::onActionDrawConnectionPointToggled( bool i_bChecked )
 void CMainWindow::onActionDrawConnectionLineToggled( bool i_bChecked )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
-        strAddTrcInfo = "Checked: " + bool2Str(i_bChecked);
+        strMthInArgs = "Checked: " + bool2Str(i_bChecked);
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "onActionDrawConnectionLineToggled",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     if( i_bChecked )
     {
@@ -4719,18 +4525,18 @@ public slots: // Menu - View - Zoom
 void CMainWindow::onActionViewZoomInTriggered( bool i_bChecked )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
-        strAddTrcInfo = "Checked: " + bool2Str(i_bChecked);
+        strMthInArgs = "Checked: " + bool2Str(i_bChecked);
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "onActionViewZoomInTriggered",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     int iZoomFactor_perCent = m_iViewZoomFactor_perCent;
 
@@ -4797,18 +4603,18 @@ void CMainWindow::onActionViewZoomInTriggered( bool i_bChecked )
 void CMainWindow::onActionViewZoomOutTriggered( bool i_bChecked )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
-        strAddTrcInfo = "Checked: " + bool2Str(i_bChecked);
+        strMthInArgs = "Checked: " + bool2Str(i_bChecked);
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "onActionViewZoomOutTriggered",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     int iZoomFactor_perCent = m_iViewZoomFactor_perCent;
 
@@ -4875,20 +4681,20 @@ void CMainWindow::onActionViewZoomOutTriggered( bool i_bChecked )
 void CMainWindow::onEdtViewZoomFactorEditingFinished()
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     int iZoomFactor_perCent = m_pEdtViewZoomFactor_perCent->value();
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
-        strAddTrcInfo = "ZoomFactor: " + QString::number(iZoomFactor_perCent) + " %";
+        strMthInArgs = "ZoomFactor: " + QString::number(iZoomFactor_perCent) + " %";
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "onEdtViewZoomFactorEditingFinished",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     if( m_iViewZoomFactor_perCent != iZoomFactor_perCent )
     {
@@ -5043,14 +4849,14 @@ public slots: // Drawing Scene
 void CMainWindow::onDrawingSceneChanged( const QList<QRectF>& i_region )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
         QRectF rct;
         int    idx;
 
-        strAddTrcInfo = "RectsCount:" + QString::number(i_region.size());
+        strMthInArgs = "RectsCount:" + QString::number(i_region.size());
 
         for( idx = 0; idx < i_region.size(); idx++ )
         {
@@ -5058,17 +4864,17 @@ void CMainWindow::onDrawingSceneChanged( const QList<QRectF>& i_region )
 
             if( idx == 0 )
             {
-                strAddTrcInfo += " " + QString::number(idx);
+                strMthInArgs += " " + QString::number(idx);
             }
             else
             {
-                strAddTrcInfo += ", " + QString::number(idx);
+                strMthInArgs += ", " + QString::number(idx);
             }
 
-            strAddTrcInfo += ":(" + QString::number(rct.left(),'f',1);
-            strAddTrcInfo += "," + QString::number(rct.top(),'f',1);
-            strAddTrcInfo += "," + QString::number(rct.width(),'f',1);
-            strAddTrcInfo += "," + QString::number(rct.height(),'f',1) + ")";
+            strMthInArgs += ":(" + QString::number(rct.left(),'f',1);
+            strMthInArgs += "," + QString::number(rct.top(),'f',1);
+            strMthInArgs += "," + QString::number(rct.width(),'f',1);
+            strMthInArgs += "," + QString::number(rct.height(),'f',1) + ")";
         }
     }
 
@@ -5076,7 +4882,7 @@ void CMainWindow::onDrawingSceneChanged( const QList<QRectF>& i_region )
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "onDrawingSceneChanged",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     if( !m_bDrawingChangedSinceLastSave )
     {
@@ -5103,6 +4909,61 @@ void CMainWindow::onDrawingSceneChanged( const QList<QRectF>& i_region )
     }
 
     updateActions();
+
+} // onDrawingSceneChanged
+
+//------------------------------------------------------------------------------
+void CMainWindow::onDrawingSceneFocusItemChanged(
+    QGraphicsItem* i_pNewFocusItem,
+    QGraphicsItem* i_pOldFocusItem,
+    Qt::FocusReason reason )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    {
+        strMthInArgs  = "NewItem:" + QString(i_pNewFocusItem == nullptr ? "nullptr" : i_pNewFocusItem->data(static_cast<int>(EGraphItemDataKey::ObjId)).toString());
+        strMthInArgs += ", OldItem:" + QString(i_pOldFocusItem == nullptr ? "nullptr" : i_pOldFocusItem->data(static_cast<int>(EGraphItemDataKey::ObjId)).toString());
+        strMthInArgs += ", Reason: " + qFocusReason2Str(reason);
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* strMethod    */ "onDrawingSceneFocusItemChanged",
+        /* strAddInfo   */ strMthInArgs );
+
+} // onDrawingSceneFocusItemChanged
+
+//------------------------------------------------------------------------------
+void CMainWindow::onDrawingSceneRectChanged( const QRectF& i_rect )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    {
+        strMthInArgs += rect2Str(i_rect);
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* strMethod    */ "onDrawingSceneRectChanged",
+        /* strAddInfo   */ strMthInArgs );
+
+    if( m_pLblStatusBarDrawingSceneRect != nullptr )
+    {
+        if( m_pDrawingView != nullptr )
+        {
+            QRectF rect = m_pDrawingScene->sceneRect();
+            QPointF ptTL = m_pDrawingView->mapFromScene(rect.topLeft());
+            rect.moveTopLeft(ptTL);
+            QString strRect = point2Str(ptTL) + ", " + size2Str(rect.size());
+            m_pLblStatusBarDrawingSceneRect->setText("SceneRect: " + strRect + " [" + Geometry::GraphDevice()->Pixel()->getSymbol() + "]");
+        }
+    }
 
 } // onDrawingSceneChanged
 
@@ -5159,24 +5020,24 @@ void CMainWindow::onDrawingSceneSelectionChanged()
 void CMainWindow::onDrawingSceneMousePosChanged( const QPointF& i_ptMousePos )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( m_pTrcAdminObjMouseEvents != nullptr && m_pTrcAdminObjMouseEvents->isActive(ETraceDetailLevelMethodArgs) )
     {
-        strAddTrcInfo = "Pos:" + point2Str(i_ptMousePos);
+        strMthInArgs = "Pos:" + point2Str(i_ptMousePos);
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjMouseEvents,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "onDrawingSceneMousePosChanged",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     if( m_pLblStatusBarDrawingSceneMouseCursorPos != nullptr )
     {
         QString strMouseCursorPos;
 
-        strMouseCursorPos += QString("ScenePos:");
+        strMouseCursorPos += QString("ScenePos: ");
         strMouseCursorPos += QString::number(i_ptMousePos.x());
         strMouseCursorPos += QString("/");
         strMouseCursorPos += QString::number(i_ptMousePos.y());
@@ -5255,7 +5116,7 @@ void CMainWindow::onDrawingSceneModeChanged()
 void CMainWindow::onDrawingSceneDrawSettingsChanged( const CDrawSettings& i_drawSettings )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
@@ -5265,7 +5126,7 @@ void CMainWindow::onDrawingSceneDrawSettingsChanged( const CDrawSettings& i_draw
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "onDrawingSceneDrawSettingsChanged",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     if( m_pActDrawSettingsLine != nullptr )
     {
@@ -5351,17 +5212,17 @@ void CMainWindow::onDrawingSceneDrawSettingsChanged( const CDrawSettings& i_draw
 void CMainWindow::onDrawingSceneGraphObjCreated( ZS::Draw::CGraphObj* i_pGraphObj )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
         if( i_pGraphObj == nullptr )
         {
-            strAddTrcInfo = "GraphObj:nullptr";
+            strMthInArgs = "GraphObj:nullptr";
         }
         else
         {
-            strAddTrcInfo = "GraphObj:" + i_pGraphObj->getObjName(true);
+            strMthInArgs = "GraphObj:" + i_pGraphObj->getObjName(true);
         }
     }
 
@@ -5369,7 +5230,7 @@ void CMainWindow::onDrawingSceneGraphObjCreated( ZS::Draw::CGraphObj* i_pGraphOb
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "onDrawingSceneGraphObjCreated",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
 } // onDrawingSceneGraphObjCreated
 
@@ -5377,18 +5238,18 @@ void CMainWindow::onDrawingSceneGraphObjCreated( ZS::Draw::CGraphObj* i_pGraphOb
 void CMainWindow::onDrawingSceneGraphObjDestroyed( const QString& i_strObjId )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
-        strAddTrcInfo = "GraphObjId:" + i_strObjId;
+        strMthInArgs = "GraphObjId:" + i_strObjId;
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "onDrawingSceneGraphObjDestroyed",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
 } // onDrawingSceneGraphObjDestroyed
 
@@ -5398,19 +5259,19 @@ void CMainWindow::onDrawingSceneGraphObjIdChanged(
     const QString& i_strObjIdNew )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
-        strAddTrcInfo  = "GraphObjIdOld:" + i_strObjIdOld;
-        strAddTrcInfo += ", GraphObjIdNew:" + i_strObjIdNew;
+        strMthInArgs  = "GraphObjIdOld:" + i_strObjIdOld;
+        strMthInArgs += ", GraphObjIdNew:" + i_strObjIdNew;
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "onDrawingSceneGraphObjIdChanged",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
 } // onDrawingSceneGraphObjIdChanged
 
@@ -5422,18 +5283,18 @@ protected slots: // Drawing View
 void CMainWindow::onDrawingViewMousePosChanged( const QPointF& i_ptMousePos )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( m_pTrcAdminObjMouseEvents != nullptr && m_pTrcAdminObjMouseEvents->isActive(ETraceDetailLevelMethodArgs) )
     {
-        strAddTrcInfo = "Pos:" + point2Str(i_ptMousePos);
+        strMthInArgs = "Pos:" + point2Str(i_ptMousePos);
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjMouseEvents,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "onDrawingViewMousePosChanged",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     if( m_pLblStatusBarDrawingViewMouseCursorPos != nullptr )
     {
@@ -5461,7 +5322,7 @@ protected slots: // Tree View Object Factories (ToolBox)
 void CMainWindow::onTreeViewObjFactoriesExpanded( const QModelIndex& i_modelIdx )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
@@ -5471,7 +5332,7 @@ void CMainWindow::onTreeViewObjFactoriesExpanded( const QModelIndex& i_modelIdx 
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "onTreeViewObjFactoriesExpanded",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     if( i_modelIdx.isValid() )
     {
@@ -5498,17 +5359,17 @@ void CMainWindow::onTreeViewObjFactoriesCurrentChanged(
         }
     }
 
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
         if( pObjFactorySelected == nullptr )
         {
-            strAddTrcInfo = "ObjFactory:nullptr";
+            strMthInArgs = "ObjFactory:nullptr";
         }
         else
         {
-            strAddTrcInfo = "ObjFactory:" + pObjFactorySelected->getGraphObjTypeAsString();
+            strMthInArgs = "ObjFactory:" + pObjFactorySelected->getGraphObjTypeAsString();
         }
     }
 
@@ -5516,7 +5377,7 @@ void CMainWindow::onTreeViewObjFactoriesCurrentChanged(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "onTreeViewObjFactoriesCurrentChanged",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     // If a valid tree node in the object factories model is selected ..
     if( pObjFactorySelected != nullptr )
@@ -5535,17 +5396,17 @@ protected: // instance methods
 void CMainWindow::selectTreeViewObjFactoryNode( ZS::Draw::CObjFactory* i_pObjFactory )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
         if( i_pObjFactory == nullptr )
         {
-            strAddTrcInfo = "ObjFactory:nullptr";
+            strMthInArgs = "ObjFactory:nullptr";
         }
         else
         {
-            strAddTrcInfo = "ObjFactory:" + i_pObjFactory->getGraphObjTypeAsString();
+            strMthInArgs = "ObjFactory:" + i_pObjFactory->getGraphObjTypeAsString();
         }
     }
 
@@ -5553,7 +5414,7 @@ void CMainWindow::selectTreeViewObjFactoryNode( ZS::Draw::CObjFactory* i_pObjFac
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "selectTreeViewObjFactoryNode",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     if( m_pTreeViewObjFactories != nullptr )
     {
@@ -5620,7 +5481,7 @@ protected slots: // Tree View Graphics Items
 void CMainWindow::onTreeViewGraphicsItemsBtnRefreshClicked( bool )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
@@ -5630,7 +5491,7 @@ void CMainWindow::onTreeViewGraphicsItemsBtnRefreshClicked( bool )
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "onTreeViewGraphicsItemsExpanded",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     if( m_pModelGraphicsItems != nullptr )
     {
@@ -5643,7 +5504,7 @@ void CMainWindow::onTreeViewGraphicsItemsBtnRefreshClicked( bool )
 void CMainWindow::onTreeViewGraphicsItemsExpanded( const QModelIndex& i_modelIdx )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
@@ -5653,7 +5514,7 @@ void CMainWindow::onTreeViewGraphicsItemsExpanded( const QModelIndex& i_modelIdx
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "onTreeViewGraphicsItemsExpanded",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     if( i_modelIdx.isValid() )
     {
@@ -5680,17 +5541,17 @@ void CMainWindow::onTreeViewGraphicsItemsCurrentChanged(
         }
     }
 
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
         if( pGraphObj == nullptr )
         {
-            strAddTrcInfo = "GraphObj:nullptr";
+            strMthInArgs = "GraphObj:nullptr";
         }
         else
         {
-            strAddTrcInfo = "GraphObj:" + pGraphObj->getObjName(true);
+            strMthInArgs = "GraphObj:" + pGraphObj->getObjName(true);
         }
     }
 
@@ -5698,7 +5559,7 @@ void CMainWindow::onTreeViewGraphicsItemsCurrentChanged(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "onTreeViewGraphicsItemsCurrentChanged",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(pGraphObj);
 
@@ -5742,17 +5603,17 @@ void CMainWindow::onTreeViewGraphicsItemsDoubleClicked( const QModelIndex& i_mod
         }
     }
 
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
         if( pGraphObj == nullptr )
         {
-            strAddTrcInfo = "GraphObj:nullptr";
+            strMthInArgs = "GraphObj:nullptr";
         }
         else
         {
-            strAddTrcInfo = "GraphObj:" + pGraphObj->getObjName(true);
+            strMthInArgs = "GraphObj:" + pGraphObj->getObjName(true);
         }
     }
 
@@ -5760,7 +5621,7 @@ void CMainWindow::onTreeViewGraphicsItemsDoubleClicked( const QModelIndex& i_mod
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "onTreeViewGraphicsItemsDoubleClicked",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(pGraphObj);
 
@@ -5783,6 +5644,76 @@ void CMainWindow::onTreeViewGraphicsItemsDoubleClicked( const QModelIndex& i_mod
 } // onTreeViewGraphicsItemsDoubleClicked
 
 /*==============================================================================
+protected: // overridables of base class QWidget
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CMainWindow::resizeEvent( QResizeEvent* i_pEv )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    {
+        strMthInArgs  = "Size: " + size2Str(i_pEv->size());
+        strMthInArgs += ", OldSize: " + size2Str(i_pEv->oldSize());
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* strMethod    */ "resizeEvent",
+        /* strAddInfo   */ strMthInArgs );
+
+    QMainWindow::resizeEvent(i_pEv);
+
+    if( m_pLblStatusBarDrawingSceneRect != nullptr )
+    {
+        if( m_pDrawingView != nullptr )
+        {
+            QRectF rect = m_pDrawingScene->sceneRect();
+            QPointF ptTL = m_pDrawingView->mapFromScene(rect.topLeft());
+            rect.moveTopLeft(ptTL);
+            QString strRect = point2Str(ptTL) + ", " + size2Str(rect.size());
+            m_pLblStatusBarDrawingSceneRect->setText("SceneRect: " + strRect + " [" + Geometry::GraphDevice()->Pixel()->getSymbol() + "]");
+        }
+    }
+
+} // resizeEvent
+
+//------------------------------------------------------------------------------
+void CMainWindow::showEvent( QShowEvent* i_pEv )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    {
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* strMethod    */ "showEvent",
+        /* strAddInfo   */ strMthInArgs );
+
+    QMainWindow::showEvent(i_pEv);
+
+    if( m_pLblStatusBarDrawingSceneRect != nullptr )
+    {
+        if( m_pDrawingView != nullptr )
+        {
+            QRectF rect = m_pDrawingScene->sceneRect();
+            QPointF ptTL = m_pDrawingView->mapFromScene(rect.topLeft());
+            rect.moveTopLeft(ptTL);
+            QString strRect = point2Str(ptTL) + ", " + size2Str(rect.size());
+            m_pLblStatusBarDrawingSceneRect->setText("SceneRect: " + strRect + " [" + Geometry::GraphDevice()->Pixel()->getSymbol() + "]");
+        }
+    }
+
+} // showEvent
+
+/*==============================================================================
 protected: // instance methods
 ==============================================================================*/
 
@@ -5790,18 +5721,18 @@ protected: // instance methods
 void CMainWindow::setCurrentFile( const QString& i_strFileName )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
-        strAddTrcInfo = "FileName:" + i_strFileName;
+        strMthInArgs = "FileName:" + i_strFileName;
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "setCurrentFile",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     m_bDrawingChangedSinceLastSave = false;
 
@@ -5838,7 +5769,7 @@ void CMainWindow::setCurrentFile( const QString& i_strFileName )
 void CMainWindow::updateStatusBar()
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
@@ -5848,11 +5779,11 @@ void CMainWindow::updateStatusBar()
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "updateStatusBar",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     if( m_pLblStatusBarDrawingSceneEditTool != nullptr )
     {
-        QString strEditInfo;
+        QString strEditInfo = "Tool: ";
 
         EEditTool editTool = m_pDrawingScene->getEditTool();
 
@@ -5861,11 +5792,11 @@ void CMainWindow::updateStatusBar()
             int     iGraphObjType = m_pDrawingScene->getCurrentDrawingToolGraphObjType();
             QString strObjFactory = graphObjType2Str(iGraphObjType);
 
-            strEditInfo = "Create " + strObjFactory;
+            strEditInfo += "Create " + strObjFactory;
         }
         else if( editTool != EEditToolUndefined )
         {
-            strEditInfo = editTool2Str(editTool);
+            strEditInfo += editTool2Str(editTool);
         }
 
         m_pLblStatusBarDrawingSceneEditTool->setText(strEditInfo);
@@ -5874,8 +5805,8 @@ void CMainWindow::updateStatusBar()
 
     if( m_pLblStatusBarDrawingSceneEditMode != nullptr || m_pLblStatusBarDrawingSceneGraphObjEditInfo != nullptr )
     {
-        QString strEditModeInfo;
-        QString strGraphObjEditInfo;
+        QString strEditModeInfo = "Mode: ";
+        QString strGraphObjEditInfo = "Info: ";
 
         EEditMode       editMode       = m_pDrawingScene->getEditMode();
         EEditResizeMode editResizeMode = m_pDrawingScene->getEditResizeMode();
@@ -5904,8 +5835,8 @@ void CMainWindow::updateStatusBar()
                 {
                     throw ZS::System::CException( __FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphObj == nullptr" );
                 }
-                strEditModeInfo = pGraphObj->getObjName();
-                strGraphObjEditInfo = pGraphObj->getObjName() + ": " + pGraphObj->getEditInfo();
+                strEditModeInfo += pGraphObj->getObjName();
+                strGraphObjEditInfo += pGraphObj->getObjName() + ": " + pGraphObj->getEditInfo();
             }
 
             if( editMode == EEditModeResize )
@@ -5957,7 +5888,7 @@ void CMainWindow::updateStatusBar()
 void CMainWindow::updateActions()
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
@@ -5967,7 +5898,7 @@ void CMainWindow::updateActions()
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "updateActions",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     EMode mode = EMode::Edit;
 
@@ -6003,18 +5934,6 @@ void CMainWindow::updateActions()
     //{
     //    m_pActFileQuit;
     //}
-
-    // Menu - Mode
-    //------------
-
-    if( m_pActModeEdit != nullptr )
-    {
-        m_pActModeEdit->setChecked( mode == EMode::Edit );
-    }
-    if( m_pActModeSimulation != nullptr )
-    {
-        m_pActModeSimulation->setChecked( mode == EMode::Simulation );
-    }
 
     // Menu - Edit - Select
     //---------------------
@@ -6516,7 +6435,7 @@ void CMainWindow::updateActions()
 void CMainWindow::updateActionsFilesRecent()
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
@@ -6526,7 +6445,7 @@ void CMainWindow::updateActionsFilesRecent()
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "updateActionsFilesRecent",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     QSettings settings;
 

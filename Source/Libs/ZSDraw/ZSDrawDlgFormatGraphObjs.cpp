@@ -120,7 +120,7 @@ CDlgFormatGraphObjs::CDlgFormatGraphObjs(
 
     setObjectName("DlgFormatGraphObjs");
 
-    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj("ZS::Draw", "CDlgFormatGraphObjs", objectName());
+    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName());
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,

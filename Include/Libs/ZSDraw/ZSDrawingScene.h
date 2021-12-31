@@ -36,12 +36,10 @@ may result in using the software modules.
 #endif
 
 #include "ZSDraw/ZSDrawDllMain.h"
+#include "ZSDraw/ZSDrawCommon.h"
+#include "ZSSys/ZSSysCommon.h"
 #include "ZSDraw/ZSDrawSettings.h"
-#include "ZSSys/ZSSysErrResult.h"
-#include "ZSSys/ZSSysIdxTree.h"
 
-class QGraphicsItem;
-class QGraphicsRectItem;
 class QXmlStreamWriter;
 
 namespace ZS
@@ -63,8 +61,11 @@ class ZSDRAWDLL_API CDrawingScene : public QGraphicsScene
 {
     Q_OBJECT
 public: // class methods
-    static QString NameSpace() { return "ZS::Draw"; }
-    static QString ClassName() { return "CDrawingScene"; }
+public: // class methods
+    /*! Returns the namespace the class belongs to. */
+    static QString NameSpace() { return "ZS::Draw"; } // Please note that the static class functions name must be different from the non static virtual member function "nameSpace"
+    /*! Returns the class name. */
+    static QString ClassName() { return "CDrawingScene"; } // Please note that the static class functions name must be different from the non static virtual member function "className"
 public: // class methods
     static QString FindUniqueGraphObjId(
         const QMap<QString,CGraphObj*>& i_dctpGraphObjs,
@@ -106,15 +107,15 @@ public: // instance methods
     double getYResolutionInDpmm() const { return m_fYResolution_dpmm; }
 public: // instance methods
     void setMode(
-        ZS::System::EMode i_mode = ZS::System::EMode::Ignore,
-        EEditTool         i_editTool = EEditToolIgnore,
-        EEditMode         i_editMode = EEditModeIgnore,
-        EEditResizeMode   i_editResizeMode = EEditResizeModeIgnore,
-        bool              i_bObjFactoryTypeChanged = false );
-    ZS::System::EMode getMode() const { return m_mode; }
-    EEditTool getEditTool() const { return m_editTool; }
-    EEditMode getEditMode() const { return m_editMode; }
-    EEditResizeMode getEditResizeMode() const { return m_editResizeMode; }
+        const ZS::System::CEnumMode& i_mode,
+        const CEnumEditTool&         i_editTool = EEditTool::Ignore,
+        const CEnumEditMode&         i_editMode = EEditMode::Ignore,
+        const CEnumEditResizeMode&   i_editResizeMode = EEditResizeMode::Ignore,
+        bool                         i_bObjFactoryTypeChanged = false );
+    ZS::System::CEnumMode getMode() const { return m_mode; }
+    CEnumEditTool getEditTool() const { return m_editTool; }
+    CEnumEditMode getEditMode() const { return m_editMode; }
+    CEnumEditResizeMode getEditResizeMode() const { return m_editResizeMode; }
 public: // instance methods
     void setCurrentDrawingTool( CObjFactory* i_pObjFactory );
     void setCurrentDrawingTool(
@@ -221,30 +222,32 @@ protected: // overridables of base class QGraphicsScene
     virtual void drawBackground( QPainter* i_pPainter, const QRectF& i_rect );
     virtual void drawForeground( QPainter* i_pPainter, const QRectF& i_rect );
 protected: // instance members
-    CDrawSettings                 m_drawSettings;
-    double                        m_fXResolution_dpmm;
-    double                        m_fYResolution_dpmm;
-    ZS::System::EMode             m_mode;
-    EEditTool                     m_editTool;
-    EEditMode                     m_editMode;
-    EEditResizeMode               m_editResizeMode;
-    QGraphicsRectItem*            m_pGraphicsItemSelectionArea;
-    CObjFactory*                  m_pObjFactory;                    // corresponds to the selected drawing tool
-    QGraphicsItem*                m_pGraphicsItemCreating;          // Same object as GraphObjCreating (just a different name for the same thing)
-    CGraphObj*                    m_pGraphObjCreating;              // Same object as GraphicsItemCreating (just a different name for the same thing)
-    QGraphicsItem*                m_pGraphicsItemAddingShapePoints; // Same object as GraphObjAddingShapePoints (just a different name for the same thing)
-    CGraphObj*                    m_pGraphObjAddingShapePoints;     // Same object as GraphicsItemAddingShapePoints (just a different name for the same thing)
-    QString                       m_strGraphObjNameSeparator;
-    bool                          m_bGraphObjIdChangedByMyself;
-    QMap<QString,CGraphObj*>      m_dctpGraphObjs;                  // sorted by id (ids are initially set to type names extended with object number)
-    QMap<QString,CGraphObj*>      m_dctpGraphObjsClipboard;         // the object id is extended with " Copy <Nr>"
-    QList<QGraphicsItem*>         m_arpGraphicsItemsAcceptingHoverEvents;
-    double                        m_fRotAngleRes_degree;
-    double                        m_fHitTolerance_px;
-    bool                          m_bMouseDoubleClickEventInProcess;
-    QPointF                       m_ptMouseEvScenePosOnMousePressEvent;
-    int                           m_iEvKeyModifiers;
-    ZS::Trace::CTrcAdminObj*      m_pTrcAdminObj;
+    CDrawSettings            m_drawSettings;
+    double                   m_fXResolution_dpmm;
+    double                   m_fYResolution_dpmm;
+    ZS::System::CEnumMode    m_mode;
+    CEnumEditTool            m_editTool;
+    CEnumEditMode            m_editMode;
+    CEnumEditResizeMode      m_editResizeMode;
+    QGraphicsRectItem*       m_pGraphicsItemSelectionArea;
+    CObjFactory*             m_pObjFactory;                    // corresponds to the selected drawing tool
+    QGraphicsItem*           m_pGraphicsItemCreating;          // Same object as GraphObjCreating (just a different name for the same thing)
+    CGraphObj*               m_pGraphObjCreating;              // Same object as GraphicsItemCreating (just a different name for the same thing)
+    QGraphicsItem*           m_pGraphicsItemAddingShapePoints; // Same object as GraphObjAddingShapePoints (just a different name for the same thing)
+    CGraphObj*               m_pGraphObjAddingShapePoints;     // Same object as GraphicsItemAddingShapePoints (just a different name for the same thing)
+    QString                  m_strGraphObjNameSeparator;
+    bool                     m_bGraphObjIdChangedByMyself;
+    QMap<QString,CGraphObj*> m_dctpGraphObjs;                  // sorted by id (ids are initially set to type names extended with object number)
+    QMap<QString,CGraphObj*> m_dctpGraphObjsClipboard;         // the object id is extended with " Copy <Nr>"
+    QList<QGraphicsItem*>    m_arpGraphicsItemsAcceptingHoverEvents;
+    double                   m_fRotAngleRes_degree;
+    double                   m_fHitTolerance_px;
+    bool                     m_bMouseDoubleClickEventInProcess;
+    QPointF                  m_ptMouseEvScenePosOnMousePressEvent;
+    int                      m_iEvKeyModifiers;
+    ZS::Trace::CTrcAdminObj* m_pTrcAdminObj;
+    ZS::Trace::CTrcAdminObj* m_pTrcAdminObjMouseMoveEvent;
+    ZS::Trace::CTrcAdminObj* m_pTrcAdminObjPaintEvent;
 
 }; // class CDrawingScene
 

@@ -56,8 +56,7 @@ enum class ETestResult {
     Undefined  = 0,
     TestFailed = 1,
     TestPassed = 2,
-    Ignore     = 3,
-    Count
+    Ignore     = 3
 };
 
 template class ZSTESTDLL_API ZS::System::CEnum<ETestResult>;

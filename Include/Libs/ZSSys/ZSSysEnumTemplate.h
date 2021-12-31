@@ -213,6 +213,7 @@ public: // increment/decrement operators
     CEnum& operator -- (int); // Postfix decrement operator.
 public: // instance methods
     E enumerator() const;
+    int enumeratorAsInt() const;
     bool isValid() const;
     QString toString( int i_idxAlias = EEnumEntryAliasStrName ) const;
     QVariant toValue( QVariant::Type i_type = QVariant::Invalid, bool* o_pbOk = nullptr ) const;
@@ -1697,6 +1698,18 @@ E CEnum<E>::enumerator() const
 //------------------------------------------------------------------------------
 {
     return m_enumerator;
+}
+
+//------------------------------------------------------------------------------
+/*! Returns the enumerator of this enum instance as an integer value to avoid
+    to use "static_cast<int>(enumerator())" if the enumerator is e.g. needed to
+    address array elements.
+*/
+template <typename E>
+int CEnum<E>::enumeratorAsInt() const
+//------------------------------------------------------------------------------
+{
+    return static_cast<int>(m_enumerator);
 }
 
 //------------------------------------------------------------------------------

@@ -33,6 +33,7 @@ may result in using the software modules.
 #include <QtGui/qfont.h>
 
 #include "ZSDraw/ZSDrawDllMain.h"
+#include "ZSDraw/ZSDrawCommon.h"
 
 class QSettings;
 class QXmlStreamReader;
@@ -100,15 +101,79 @@ EDrawAttribute ZSDRAWDLL_API str2DrawAttribute( const QString& i_str );
 
 
 //******************************************************************************
+struct ZSDRAWDLL_API SDrawAttribute
+//******************************************************************************
+{
+public: // ctors
+    SDrawAttribute() :
+        m_strName(),
+        m_val(),
+        m_bIsUsed(true)
+    {
+    }
+    SDrawAttribute( const QString& i_strName, QVariant::Type i_type ) :
+        m_strName(i_strName),
+        m_val(i_type),
+        m_bIsUsed(true)
+    {
+    }
+    SDrawAttribute( const QString& i_strName, const QVariant& i_val, bool i_bIsUsed ) :
+        m_strName(i_strName),
+        m_val(i_val),
+        m_bIsUsed(i_bIsUsed)
+    {
+    }
+public: // operators
+    SDrawAttribute& operator = ( const QVariant& i_val )
+    {
+        m_val = i_val;
+        return *this;
+    }
+    bool operator == ( const SDrawAttribute& i_attrOther ) const
+    {
+        bool bEqual = true;
+        if( m_strName != i_attrOther.m_strName || m_val != i_attrOther.m_val )
+        {
+            bEqual = false;
+        }
+        return bEqual;
+    }
+    bool operator != ( const SDrawAttribute& i_attrOther ) const
+    {
+        return !(*this == i_attrOther);
+    }
+public: // struct members
+    QString  m_strName;
+    QVariant m_val;
+    bool     m_bIsUsed;
+
+}; // struct SDrawAttribute
+
+
+//******************************************************************************
 class ZSDRAWDLL_API CDrawSettings
 //******************************************************************************
 {
+public: // class methods
+    /*! Returns the namespace the class belongs to. */
+    static QString NameSpace() { return "ZS::Draw"; } // Please note that the static class functions name must be different from the non static virtual member function "nameSpace"
+    /*! Returns the class name. */
+    static QString ClassName() { return "CDrawSettings"; } // Please note that the static class functions name must be different from the non static virtual member function "className"
 public: // class methods
     static bool IsAttributeUsed( EGraphObjType i_graphObjType, int i_iAttribute );
     static bool IsAttributeUsed( EGraphObjType i_graphObjType, const QString& i_strName );
 public: // ctors and dtor
     CDrawSettings( EGraphObjType i_graphObjType = EGraphObjTypeUndefined );
     ~CDrawSettings();
+public: // overridables
+    /*! This virtual method returns the name space of the object's class.
+        This method can be reimplemented in derived classes so when invoked for the
+        polymorphic base type the method returns the name space of the derived class. */
+    virtual QString nameSpace() const { return NameSpace(); }
+    /*! This virtual method returns the class name of the object's class.
+        This method can be reimplemented in derived classes so when invoked for the
+        polymorphic base type the method returns the name of the derived class. */
+    virtual QString className() const { return ClassName(); }
 public: // operators
     bool operator == ( const CDrawSettings& i_other ) const;
     bool operator != ( const CDrawSettings& i_other ) const;
@@ -128,13 +193,13 @@ public: // instance methods
     bool isDefault( int i_iAttribute ) const;
     bool isDefault( const QString& i_strName ) const;
 public: // instance methods
-    void setAttribute( int i_iAttribute, const SAttribute& i_drawAttribute );
+    void setAttribute( int i_iAttribute, const SDrawAttribute& i_drawAttribute );
     void setAttribute( int i_iAttribute, const QVariant& i_val );
     void setAttribute( int i_iAttribute, const QString& i_strVal );
     void setAttribute( const QString& i_strName, const QVariant& i_val );
     void setAttribute( const QString& i_strName, const QString& i_strVal );
-    SAttribute getAttribute( int i_iAttribute ) const;
-    SAttribute getAttribute( const QString& i_strName ) const;
+    SDrawAttribute getAttribute( int i_iAttribute ) const;
+    SDrawAttribute getAttribute( const QString& i_strName ) const;
     QString attributeValue2Str( int i_iAttribute ) const;
     QString attributeValue2Str( const QString& i_strName ) const;
     int findAttribute( const QString& i_strName ) const;
@@ -196,9 +261,9 @@ public: // instance methods
     void setTextEffect( const ETextEffect );
     ETextEffect getTextEffect() const;
 protected: // instance members
-    EGraphObjType m_graphObjType;
-    int           m_idxGraphObjType;
-    SAttribute    m_arAttributes[EDrawAttributeCount];
+    EGraphObjType  m_graphObjType;
+    int            m_idxGraphObjType;
+    SDrawAttribute m_arAttributes[EDrawAttributeCount];
 
 }; // class CDrawSettings
 

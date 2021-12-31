@@ -887,7 +887,7 @@ QVariant CGraphObjWdgt::itemChange( GraphicsItemChange i_change, const QVariant&
             // sets zValue of selection points above item.
             //bringSelectionPointsToFront();
 
-            setAcceptedMouseButtons(Qt::LeftButton|Qt::RightButton|Qt::MidButton|Qt::XButton1|Qt::XButton2);
+            setAcceptedMouseButtons(Qt::LeftButton|Qt::RightButton|Qt::MiddleButton|Qt::XButton1|Qt::XButton2);
         }
         else
         {

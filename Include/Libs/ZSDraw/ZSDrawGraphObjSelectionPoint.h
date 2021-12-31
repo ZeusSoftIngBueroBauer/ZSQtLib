@@ -58,6 +58,11 @@ class ZSDRAWDLL_API CGraphObjSelectionPoint : public CGraphObj, public QGraphics
 // of groups (which implicitly calls childrenBoundingRect) does not work as the
 // selection points of the bounding rectangle would be included.
 public: // class methods
+    /*! Returns the namespace the class belongs to. */
+    static QString NameSpace() { return "ZS::Draw"; } // Please note that the static class functions name must be different from the non static virtual member function "nameSpace"
+    /*! Returns the class name. */
+    static QString ClassName() { return "CGraphObjSelectionPoint"; } // Please note that the static class functions name must be different from the non static virtual member function "className"
+public: // class methods
     static double GetDefaultRadiusInPx() { return s_fRadius_px; }
 public: // ctors and dtor
     CGraphObjSelectionPoint( // for (bounding) rectangles
@@ -70,14 +75,14 @@ public: // ctors and dtor
         int            i_idxPt );
     virtual ~CGraphObjSelectionPoint();
 public: // overridables of base class QGraphicsItem
-    int type() const { return EGraphObjTypeSelectionPoint; }
+    int type() const { return static_cast<int>(EGraphObjTypeSelectionPoint); }
 public: // must overridables of base class CGraphObj
     virtual CGraphObj* clone();
 public: // instance methods
-    ESelectionPointType getSelectionPointType() const { return m_selPtType; }
+    ESelectionPointType getSelectionPointType() const { return m_selPtType.enumerator(); }
 public: // instance methods
     void setSelectionPoint( ESelectionPoint i_selPt );
-    ESelectionPoint getSelectionPoint() const { return m_selPt; }
+    ESelectionPoint getSelectionPoint() const { return m_selPt.enumerator(); }
     void setShapePointIndex( int i_idxPt );
     int getShapePointIndex() const { return m_idxPt; }
 public: // instance methods
@@ -128,12 +133,12 @@ protected: // class members
     static ZS::Trace::CTrcAdminObj* s_pTrcAdminObjItemChange;
     static double                   s_fRadius_px;
 protected: // instance members
-    CGraphObj*          m_pGraphObjSelected;
-    ESelectionPointType m_selPtType;
-    ESelectionPoint     m_selPt;
-    int                 m_idxPt;
-    double              m_fRadius_px;
-    bool                m_bSelected;
+    CGraphObj*              m_pGraphObjSelected;
+    CEnumSelectionPointType m_selPtType;
+    CEnumSelectionPoint     m_selPt;
+    int                     m_idxPt;
+    double                  m_fRadius_px;
+    bool                    m_bSelected;
 
 }; // class CGraphObjSelectionPoint
 

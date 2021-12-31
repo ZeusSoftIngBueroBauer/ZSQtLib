@@ -49,6 +49,43 @@ namespace Draw
 {
 class CDrawSettings;
 
+//==============================================================================
+struct ZSDRAWDLL_API SGraphObjLabel
+//==============================================================================
+{
+public: // ctors
+    SGraphObjLabel() :
+        m_strKey(),
+        m_strText(),
+        m_selPt(ESelectionPoint::Undefined),
+        m_sizDist(),
+        m_bDistValid(false),
+        m_bVisible(false),
+        m_pGraphObjLabel(nullptr)
+    {
+    }
+    SGraphObjLabel( const QString& i_strKey, const QString& i_strText, ESelectionPoint i_selPt = ESelectionPoint::TopCenter ) :
+        m_strKey(i_strKey),
+        m_strText(i_strText),
+        m_selPt(i_selPt),
+        m_sizDist(),
+        m_bDistValid(false),
+        m_bVisible(false),
+        m_pGraphObjLabel(nullptr)
+    {
+    }
+public: // struct members
+    QString             m_strKey;
+    QString             m_strText;
+    CEnumSelectionPoint m_selPt;        // Selection point of the parent item the label is aligned to.
+    QSizeF              m_sizDist;      // Distance between the scene position of the label and selection point of parent item.
+    bool                m_bDistValid;   // If the graphic item is created for the first time the distance will be calculated and stored for following show events.
+    bool                m_bVisible;
+    CGraphObjLabel*     m_pGraphObjLabel;
+
+}; // struct SGraphObjLabel
+
+
 //******************************************************************************
 class ZSDRAWDLL_API CGraphObjLabel : public CGraphObj, public QGraphicsSimpleTextItem
 //******************************************************************************
@@ -57,6 +94,11 @@ class ZSDRAWDLL_API CGraphObjLabel : public CGraphObj, public QGraphicsSimpleTex
 // for which the selection points are created. Otherwise the "boundingRect" call
 // of groups (which implicitly calls childrenBoundingRect) does not work as the
 // label of the bounding rectangle would be included.
+public: // class methods
+    /*! Returns the namespace the class belongs to. */
+    static QString NameSpace() { return "ZS::Draw"; } // Please note that the static class functions name must be different from the non static virtual member function "nameSpace"
+    /*! Returns the class name. */
+    static QString ClassName() { return "CGraphObjLabel"; } // Please note that the static class functions name must be different from the non static virtual member function "className"
 public: // ctors and dtor
     CGraphObjLabel( // for (bounding) rectangles
         CDrawingScene*  i_pDrawingScene,
@@ -66,7 +108,7 @@ public: // ctors and dtor
         ESelectionPoint i_selPt );
     virtual ~CGraphObjLabel();
 public: // overridables of base class QGraphicsItem
-    int type() const { return EGraphObjTypeLabel; }
+    int type() const { return static_cast<int>(EGraphObjTypeLabel); }
 public: // must overridables of base class CGraphObj
     virtual CGraphObj* clone();
 public: // replacing methods of QGraphicsSimpleTextItem

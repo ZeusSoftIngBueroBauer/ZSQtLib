@@ -105,7 +105,7 @@ CWdgtFormatGraphObjsFillStyle::CWdgtFormatGraphObjsFillStyle(
 {
     setObjectName("WdgtFormatGraphObjsFillStyle");
 
-    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj("ZS::Draw", "CWdgtFormatGraphObjsFillStyle", objectName());
+    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName());
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -391,53 +391,30 @@ void CWdgtFormatGraphObjsFillStyle::fillFillStylesModel( QStandardItemModel* i_p
 
     QPixmap        pxmFillStyle(64,16);
     QStandardItem* pFillStyleItem;
+    CEnumFillStyle fillStyle;
 
     QPainter painter;
     QPen     pen;
     QBrush   brsh;
-    int      idxRow;
 
     pen.setColor(Qt::black);
     pen.setWidth(1);
 
-    for( idxRow = 0; idxRow < EFillStyleCount; idxRow++ )
+    for( fillStyle = 0; fillStyle < CEnumFillStyle::count(); fillStyle++ )
     {
-        /*
-        EFillStyleNoFill                 =  0,
-        EFillStyleSolidPattern           =  1,
-        EFillStyleDense1Pattern          =  2,
-        EFillStyleDense2Pattern          =  3,
-        EFillStyleDense3Pattern          =  4,
-        EFillStyleDense4Pattern          =  5,
-        EFillStyleDense5Pattern          =  6,
-        EFillStyleDense6Pattern          =  7,
-        EFillStyleDense7Pattern          =  8,
-        EFillStyleHorPattern             =  9,
-        EFillStyleVerPattern             = 10,
-        EFillStyleCrossPattern           = 11,
-        EFillStyleBDiagPattern           = 12,
-        EFillStyleFDiagPattern           = 13,
-        EFillStyleDiagCrossPattern       = 14,
-        EFillStyleLinearGradientPattern  = 15,
-        EFillStyleRadialGradientPattern  = 16,
-        EFillStyleConicalGradientPattern = 17,
-        EFillStyleTexturePattern         = 18,
-        EFillStyleCount
-        */
-
-        if( !isFillStyleGradientPattern(idxRow) )
+        if( !isFillStyleGradientPattern(fillStyle.enumerator()) )
         {
-            if( idxRow != EFillStyleNoFill )
+            if( fillStyle != EFillStyle::NoFill )
             {
                 pxmFillStyle.fill(Qt::white);
 
                 painter.begin(&pxmFillStyle);
 
-                if( idxRow == EFillStyleTexturePattern )
+                if( fillStyle == EFillStyle::TexturePattern )
                 {
                     brsh.setTexture(pxmFillStyle);
                 }
-                brsh.setStyle( fillStyle2QtBrushStyle(idxRow) );
+                brsh.setStyle( fillStyle2QtBrushStyle(fillStyle.enumerator()) );
                 painter.setBrush(brsh);
                 painter.drawRect( 2, 2, pxmFillStyle.width()-4, pxmFillStyle.height()-4 );
                 painter.end();
@@ -450,9 +427,9 @@ void CWdgtFormatGraphObjsFillStyle::fillFillStylesModel( QStandardItemModel* i_p
                 pFillStyleItem = new QStandardItem(" No Fill");
             }
 
-            pFillStyleItem->setData( idxRow, EItemDataRoleFillStyle );
+            pFillStyleItem->setData( fillStyle.enumeratorAsInt(), EItemDataRoleFillStyle );
 
-            i_pModel->setItem( idxRow, 0, pFillStyleItem );
+            i_pModel->setItem( fillStyle.enumeratorAsInt(), 0, pFillStyleItem );
             pFillStyleItem = nullptr;
         }
     }
@@ -554,9 +531,9 @@ void CWdgtFormatGraphObjsFillStyle::onBtnFillStyleClicked()
 
         if( !connect(
             /* pObjSender   */ m_pViewFillStyles,
-            /* szSignal     */ SIGNAL(clicked(QModelIndex)),
+            /* szSignal     */ SIGNAL(clicked(const QModelIndex&)),
             /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onViewFillStylesClicked(QModelIndex)) ) )
+            /* szSlot       */ SLOT(onViewFillStylesClicked(const QModelIndex&)) ) )
         {
             throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
         }
@@ -595,7 +572,7 @@ void CWdgtFormatGraphObjsFillStyle::onBtnFillStyleClicked()
 } // onBtnFillStyleClicked
 
 //------------------------------------------------------------------------------
-void CWdgtFormatGraphObjsFillStyle::onViewFillStylesClicked( QModelIndex i_modelIdx )
+void CWdgtFormatGraphObjsFillStyle::onViewFillStylesClicked( const QModelIndex& i_modelIdx )
 //------------------------------------------------------------------------------
 {
     QString strAddTrcInfo;
@@ -614,12 +591,12 @@ void CWdgtFormatGraphObjsFillStyle::onViewFillStylesClicked( QModelIndex i_model
 
     if( pFillStyleItem != nullptr )
     {
-        QVariant   varData = pFillStyleItem->data(EItemDataRoleFillStyle);
-        EFillStyle fillStyle = static_cast<EFillStyle>(varData.toInt());
+        QVariant       varData = pFillStyleItem->data(EItemDataRoleFillStyle);
+        CEnumFillStyle fillStyle = varData.toInt();
 
-        if( fillStyle >= 0 && fillStyle < EFillStyleCount )
+        if( fillStyle >= 0 && fillStyle < CEnumFillStyle::count() )
         {
-            m_drawSettings.setFillStyle(fillStyle);
+            m_drawSettings.setFillStyle(fillStyle.enumerator());
 
             setFillStyle();
         }

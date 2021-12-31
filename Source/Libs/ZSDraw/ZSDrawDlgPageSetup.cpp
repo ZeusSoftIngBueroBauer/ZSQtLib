@@ -25,7 +25,7 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include <QtCore/qglobal.h>
-#include <QtCore/qtimer.h>
+#include <QtCore/qsettings.h>
 #include <QtGui/qbitmap.h>
 #include <QtGui/qicon.h>
 
@@ -44,8 +44,8 @@ may result in using the software modules.
 #endif
 
 #include "ZSDraw/ZSDrawDlgPageSetup.h"
-#include "ZSDraw/ZSDrawWdgtPageSetupDrawingPaper.h"
-#include "ZSDraw/ZSDrawWdgtPageSetupDrawingScene.h"
+#include "ZSDraw/ZSDrawWdgtDrawingPaperPageSetup.h"
+#include "ZSDraw/ZSDrawWdgtDrawingViewPageSetup.h"
 #include "ZSDraw/ZSDrawingScene.h"
 #include "ZSDraw/ZSDrawingView.h"
 #include "ZSPhysSizes/Geometry/ZSPhysSizes.h"
@@ -78,32 +78,25 @@ CDlgPageSetup::CDlgPageSetup( CDrawingView* i_pDrawingView, QWidget* /*i_pWdgtPa
 //------------------------------------------------------------------------------
     QDialog(i_pDrawingView),
     m_pDrawingView(i_pDrawingView),
-    m_pageSetupOld(),
-    m_pageSetupNew(),
     m_pLyt(nullptr),
     m_pListWdgt(nullptr),
     m_pStackedWdgt(nullptr),
     // Format Widgets
-    //m_arpListWdgtItems[EWidgetCount]
-    //m_arpWdgtsPageSetup[EWidgetCount]
+    m_pWdgtDrawingPaperPageSetup(nullptr),
+    m_pWdgtDrawingViewPageSetup(nullptr),
     // Buttons
     m_pLytBtns(nullptr),
     m_pBtnOk(nullptr),
     m_pBtnAccept(nullptr),
-    m_pBtnReset(nullptr),
     m_pBtnCancel(nullptr),
-    m_pTmrBtnsStateRefresh(nullptr),
     // Trace
     m_pTrcAdminObj(nullptr)
 {
-    memset( m_arpListWdgtItems, 0x00, EWidgetCount*sizeof(m_arpListWdgtItems[0]) );
-    memset( m_arpWdgtsPageSetup, 0x00, EWidgetCount*sizeof(m_arpWdgtsPageSetup[0]) );
-
     setWindowTitle( QApplication::applicationName() + ": Page Setup");
 
     setObjectName("DlgPageSetup");
 
-    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj("ZS::Draw", "CDlgPageSetup", objectName());
+    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName());
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -139,11 +132,9 @@ CDlgPageSetup::CDlgPageSetup( CDrawingView* i_pDrawingView, QWidget* /*i_pWdgtPa
     m_pListWdgt->setMaximumWidth(120);
     m_pLytSettings->addWidget(m_pListWdgt);
 
-    QListWidgetItem* pListWdgtItemPaper = new QListWidgetItem( iconPaper, tr("Paper"), m_pListWdgt );
-    m_arpListWdgtItems[EWidgetDrawingPaper] = pListWdgtItemPaper;
+    new QListWidgetItem(iconPaper, tr("Paper"), m_pListWdgt);
 
-    QListWidgetItem* pListWdgtItemScene = new QListWidgetItem( iconScene, tr("Scene"), m_pListWdgt );
-    m_arpListWdgtItems[EWidgetDrawingScene] = pListWdgtItemScene;
+    new QListWidgetItem(iconScene, tr("View"), m_pListWdgt);
 
     if( !connect(
         /* pObjSender   */ m_pListWdgt,
@@ -166,17 +157,14 @@ CDlgPageSetup::CDlgPageSetup( CDrawingView* i_pDrawingView, QWidget* /*i_pWdgtPa
     // <Widget> Drawing Paper
     //-----------------------
 
-    CWdgtPageSetupDrawingPaper* pWdgtDrawingPaper = new CWdgtPageSetupDrawingPaper(m_pDrawingView);
-
-    m_arpWdgtsPageSetup[EWidgetDrawingPaper] = pWdgtDrawingPaper;
-    pWdgtDrawingPaper->setSettings(m_pageSetupNew);
-    m_pStackedWdgt->addWidget(pWdgtDrawingPaper);
+    m_pWdgtDrawingPaperPageSetup = new CWdgtDrawingPaperPageSetup(m_pDrawingView);
+    m_pStackedWdgt->addWidget(m_pWdgtDrawingPaperPageSetup);
 
     if( !connect(
-        /* pObjSender   */ pWdgtDrawingPaper,
-        /* szSignal     */ SIGNAL(pageSetupAttributeChanged(int,const QVariant&)),
+        /* pObjSender   */ m_pWdgtDrawingPaperPageSetup,
+        /* szSignal     */ SIGNAL(settingsChanged()),
         /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onPageSetupAttributeChanged(int,const QVariant&)) ) )
+        /* szSlot       */ SLOT(onWdgtDrawingPaperSettingsChanged()) ) )
     {
         throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
     }
@@ -184,17 +172,14 @@ CDlgPageSetup::CDlgPageSetup( CDrawingView* i_pDrawingView, QWidget* /*i_pWdgtPa
     // <Widget> Drawing Scene
     //-----------------------
 
-    CWdgtPageSetupDrawingScene* pWdgtDrawingScene = new CWdgtPageSetupDrawingScene(m_pDrawingView);
-
-    m_arpWdgtsPageSetup[EWidgetDrawingScene] = pWdgtDrawingScene;
-    pWdgtDrawingScene->setSettings(m_pageSetupNew);
-    m_pStackedWdgt->addWidget(pWdgtDrawingScene);
+    m_pWdgtDrawingViewPageSetup = new CWdgtDrawingViewPageSetup(m_pDrawingView);
+    m_pStackedWdgt->addWidget(m_pWdgtDrawingViewPageSetup);
 
     if( !connect(
-        /* pObjSender   */ pWdgtDrawingScene,
-        /* szSignal     */ SIGNAL(pageSetupAttributeChanged(int,const QVariant&)),
+        /* pObjSender   */ m_pWdgtDrawingViewPageSetup,
+        /* szSignal     */ SIGNAL(settingsChanged()),
         /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onPageSetupAttributeChanged(int,const QVariant&)) ) )
+        /* szSlot       */ SLOT(onWdgtDrawingViewSettingsChanged()) ) )
     {
         throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
     }
@@ -222,6 +207,7 @@ CDlgPageSetup::CDlgPageSetup( CDrawingView* i_pDrawingView, QWidget* /*i_pWdgtPa
     }
 
     m_pBtnAccept = new QPushButton("Accept");
+    m_pBtnAccept->setEnabled(false);
     m_pLytBtns->addWidget(m_pBtnAccept);
 
     if( !connect(
@@ -229,18 +215,6 @@ CDlgPageSetup::CDlgPageSetup( CDrawingView* i_pDrawingView, QWidget* /*i_pWdgtPa
         /* szSignal     */ SIGNAL(clicked()),
         /* pObjReceiver */ this,
         /* szSlot       */ SLOT(onBtnAcceptClicked()) ) )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-    }
-
-    m_pBtnReset = new QPushButton("Reset");
-    m_pLytBtns->addWidget(m_pBtnReset);
-
-    if( !connect(
-        /* pObjSender   */ m_pBtnReset,
-        /* szSignal     */ SIGNAL(clicked()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onBtnResetClicked()) ) )
     {
         throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
     }
@@ -257,22 +231,18 @@ CDlgPageSetup::CDlgPageSetup( CDrawingView* i_pDrawingView, QWidget* /*i_pWdgtPa
         throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
     }
 
-    m_pTmrBtnsStateRefresh = new QTimer(this);
-
-    if( !connect(
-        /* pObjSender   */ m_pTmrBtnsStateRefresh,
-        /* szSignal     */ SIGNAL(timeout()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onTmrBtnsStateRefreshTimeout()) ) )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-    }
-
     // Geometry of dialog
-    //-------------------
+    //===================
 
     setMinimumHeight(360);
     setMinimumWidth(460);
+
+    // Restore Geometry
+    //-----------------
+
+    QSettings settings;
+
+    restoreGeometry( settings.value(objectName()+"/Geometry").toByteArray() );
 
 } // ctor
 
@@ -286,6 +256,10 @@ CDlgPageSetup::~CDlgPageSetup()
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
 
+    QSettings settings;
+
+    settings.setValue( objectName()+"/Geometry", saveGeometry() );
+
     CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
     m_pTrcAdminObj = nullptr;
 
@@ -295,13 +269,12 @@ CDlgPageSetup::~CDlgPageSetup()
     m_pListWdgt = nullptr;
     m_pStackedWdgt = nullptr;
     // Format Widgets
-    memset( m_arpListWdgtItems, 0x00, EWidgetCount*sizeof(m_arpListWdgtItems[0]) );
-    memset( m_arpWdgtsPageSetup, 0x00, EWidgetCount*sizeof(m_arpWdgtsPageSetup[0]) );
+    m_pWdgtDrawingPaperPageSetup = nullptr;
+    m_pWdgtDrawingViewPageSetup = nullptr;
     // Buttons
     m_pLytBtns = nullptr;
     m_pBtnOk = nullptr;
     m_pBtnAccept = nullptr;
-    m_pBtnReset = nullptr;
     m_pBtnCancel = nullptr;
 
     // Trace
@@ -331,21 +304,7 @@ void CDlgPageSetup::setCurrentWidget( EWidget i_wdgt )
 
     if( i_wdgt >= 0 && i_wdgt < EWidgetCount )
     {
-        int idxWdgt = -1;
-
-        for( int idxTmp = 0; idxTmp < m_pListWdgt->count(); idxTmp++ )
-        {
-            if( m_pListWdgt->item(idxTmp) == m_arpListWdgtItems[i_wdgt] )
-            {
-                idxWdgt = idxTmp;
-                break;
-            }
-        }
-
-        if( idxWdgt >= 0 && idxWdgt < m_pListWdgt->count() )
-        {
-            m_pListWdgt->setCurrentRow(idxWdgt);
-        }
+        m_pListWdgt->setCurrentRow(i_wdgt);
     }
 
 } // setCurrentWidget
@@ -370,13 +329,6 @@ void CDlgPageSetup::closeEvent( QCloseEvent* i_pEv )
         /* strMethod    */ "closeEvent",
         /* strAddInfo   */ strAddTrcInfo );
 
-    hidePopups();
-
-    if( m_pTmrBtnsStateRefresh != nullptr && m_pTmrBtnsStateRefresh->isActive() )
-    {
-        m_pTmrBtnsStateRefresh->stop();
-    }
-
     QDialog::closeEvent(i_pEv);
 
 } // closeEvent
@@ -396,11 +348,6 @@ void CDlgPageSetup::showEvent( QShowEvent* i_pEv )
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "showEvent",
         /* strAddInfo   */ strAddTrcInfo );
-
-    if( m_pTmrBtnsStateRefresh != nullptr && !m_pTmrBtnsStateRefresh->isActive() )
-    {
-        m_pTmrBtnsStateRefresh->start(250);
-    }
 
     QDialog::showEvent(i_pEv);
 
@@ -448,8 +395,6 @@ void CDlgPageSetup::reject()
         /* strMethod    */ "reject",
         /* strAddInfo   */ strAddTrcInfo );
 
-    hidePopups();
-
     QDialog::reject();
 
 } // reject
@@ -474,71 +419,19 @@ void CDlgPageSetup::onBtnAcceptClicked()
         /* strMethod    */ "onBtnAcceptClicked",
         /* strAddInfo   */ strAddTrcInfo );
 
-    hidePopups();
+    m_pWdgtDrawingPaperPageSetup->acceptChanges();
+    m_pWdgtDrawingViewPageSetup->acceptChanges();
 
-    if( m_pDrawingView != nullptr )
+    if( m_pWdgtDrawingPaperPageSetup->hasChanges() || m_pWdgtDrawingViewPageSetup->hasChanges() )
     {
-        m_pDrawingView->setPageSetup(m_pageSetupNew);
-    }
-    m_pageSetupOld = m_pageSetupNew;
-
-} // onBtnAcceptClicked
-
-//------------------------------------------------------------------------------
-void CDlgPageSetup::onBtnResetClicked()
-//------------------------------------------------------------------------------
-{
-    QString strAddTrcInfo;
-
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
-    {
-    }
-
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strMethod    */ "onBtnResetClicked",
-        /* strAddInfo   */ strAddTrcInfo );
-
-    hidePopups();
-
-    m_pageSetupNew = m_pageSetupOld;
-
-    CWdgtPageSetup* pWdgtPageSetup;
-    int             idxWdgt;
-
-    for( idxWdgt = 0; idxWdgt < EWidgetCount; idxWdgt++ )
-    {
-        pWdgtPageSetup = m_arpWdgtsPageSetup[idxWdgt];
-
-        if( pWdgtPageSetup != nullptr )
-        {
-            pWdgtPageSetup->setSettings(m_pageSetupNew);
-        }
-    }
-
-} // onBtnResetClicked
-
-/*==============================================================================
-protected slots:
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-void CDlgPageSetup::onTmrBtnsStateRefreshTimeout()
-//------------------------------------------------------------------------------
-{
-    if( m_pageSetupNew == m_pageSetupOld )
-    {
-        m_pBtnAccept->setEnabled(false);
-        m_pBtnReset->setEnabled(false);
+        m_pBtnAccept->setEnabled(true);
     }
     else
     {
-        m_pBtnAccept->setEnabled(true);
-        m_pBtnReset->setEnabled(true);
+        m_pBtnAccept->setEnabled(false);
     }
 
-} // onTmrBtnsStateRefreshTimeout
+} // onBtnAcceptClicked
 
 /*==============================================================================
 protected slots: // instance methods (List Widget)
@@ -560,8 +453,6 @@ void CDlgPageSetup::onListWdgtCurrentRowChanged( int i_iRow )
         /* strMethod    */ "onListWdgtCurrentRowChanged",
         /* strAddInfo   */ strAddTrcInfo );
 
-    hidePopups();
-
     m_pStackedWdgt->setCurrentIndex(i_iRow);
 
 } // onListWdgtCurrentRowChanged
@@ -571,7 +462,7 @@ protected slots: // Format Widgets
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CDlgPageSetup::onPageSetupAttributeChanged( int i_iAttr, const QVariant& i_val )
+void CDlgPageSetup::onWdgtDrawingPaperSettingsChanged()
 //------------------------------------------------------------------------------
 {
     QString strAddTrcInfo;
@@ -583,19 +474,22 @@ void CDlgPageSetup::onPageSetupAttributeChanged( int i_iAttr, const QVariant& i_
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strMethod    */ "onPageSetupAttributeChanged",
+        /* strMethod    */ "onWdgtDrawingPaperSettingsChanged",
         /* strAddInfo   */ strAddTrcInfo );
 
-    m_pageSetupNew.setAttribute( i_iAttr, i_val );
+    if( m_pWdgtDrawingPaperPageSetup->hasChanges() || m_pWdgtDrawingViewPageSetup->hasChanges() )
+    {
+        m_pBtnAccept->setEnabled(true);
+    }
+    else
+    {
+        m_pBtnAccept->setEnabled(false);
+    }
 
-} // onPageSetupAttributeChanged
-
-/*==============================================================================
-protected: // instance methods
-==============================================================================*/
+} // onWdgtDrawingPaperSettingsChanged
 
 //------------------------------------------------------------------------------
-void CDlgPageSetup::hidePopups()
+void CDlgPageSetup::onWdgtDrawingViewSettingsChanged()
 //------------------------------------------------------------------------------
 {
     QString strAddTrcInfo;
@@ -607,23 +501,19 @@ void CDlgPageSetup::hidePopups()
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strMethod    */ "hidePopups",
+        /* strMethod    */ "onWdgtDrawingViewSettingsChanged",
         /* strAddInfo   */ strAddTrcInfo );
 
-    CWdgtPageSetup* pWdgtPageSetup;
-    int             idxWdgt;
-
-    for( idxWdgt = 0; idxWdgt < EWidgetCount; idxWdgt++ )
+    if( m_pWdgtDrawingPaperPageSetup->hasChanges() || m_pWdgtDrawingViewPageSetup->hasChanges() )
     {
-        pWdgtPageSetup = m_arpWdgtsPageSetup[idxWdgt];
-
-        if( pWdgtPageSetup != nullptr )
-        {
-            pWdgtPageSetup->hidePopups();
-        }
+        m_pBtnAccept->setEnabled(true);
+    }
+    else
+    {
+        m_pBtnAccept->setEnabled(false);
     }
 
-} // hidePopups
+} // onWdgtDrawingViewSettingsChanged
 
 /*==============================================================================
 private: // instance methods
