@@ -55,6 +55,7 @@ may result in using the software modules.
 #include "ZSDraw/ZSDrawGraphObjGroup.h"
 #include "ZSDraw/ZSDrawGraphObjImage.h"
 #include "ZSSys/ZSSysAux.h"
+#include "ZSSys/ZSSysIdxTree.h"
 #include "ZSSys/ZSSysTrcMethod.h"
 #include "ZSSys/ZSSysTrcServer.h"
 
@@ -142,8 +143,8 @@ CDrawingScene::CDrawingScene( QObject* i_pObjParent ) :
     m_pGraphObjAddingShapePoints(nullptr),
     m_strGraphObjNameSeparator("/"),
     m_bGraphObjIdChangedByMyself(false),
-    m_dctpGraphObjs(),
-    m_dctpGraphObjsClipboard(),
+    m_pGraphObjsIdxTree(nullptr),
+    m_pGraphObjsIdxTreeClipboard(nullptr),
     m_arpGraphicsItemsAcceptingHoverEvents(),
     m_fRotAngleRes_degree(1.0),
     m_fHitTolerance_px(2.0),
@@ -168,6 +169,21 @@ CDrawingScene::CDrawingScene( QObject* i_pObjParent ) :
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "ctor",
         /* strAddInfo   */ "" );
+
+    m_pGraphObjsIdxTree = new CIdxTree(
+        /* strObjName       */ objectName(),
+        /* pRootTreeEntry   */ nullptr,
+        /* strNodeSeparator */ "::",
+        /* bCreateMutex     */ false,
+        /* pObjParent       */ nullptr,
+        /* iTrcDetailLevel  */ ETraceDetailLevelNone );
+    m_pGraphObjsIdxTreeClipboard = new CIdxTree(
+        /* strObjName       */ objectName() + "-Clipboard",
+        /* pRootTreeEntry   */ nullptr,
+        /* strNodeSeparator */ "::",
+        /* bCreateMutex     */ false,
+        /* pObjParent       */ nullptr,
+        /* iTrcDetailLevel  */ ETraceDetailLevelNone );
 
     //setItemIndexMethod(NoIndex);
 
@@ -197,29 +213,25 @@ CDrawingScene::~CDrawingScene()
 
     m_drawSettings.save( settings, objectName() + "/DrawSettings" );
 
-    CGraphObj* pGraphObj;
-
-    // Clear internal clipboard.
-    if( m_dctpGraphObjsClipboard.size() > 0 )
-    {
-        QMap<QString,CGraphObj*>::iterator itGraphObjsClipboard = m_dctpGraphObjsClipboard.begin();
-
-        while( itGraphObjsClipboard != m_dctpGraphObjsClipboard.end() )
-        {
-            pGraphObj = itGraphObjsClipboard.value();
-
-            if( pGraphObj != nullptr )
-            {
-                deleteItem(pGraphObj);
-            }
-            ++itGraphObjsClipboard;
-        }
-    }
-    m_dctpGraphObjsClipboard.clear();
-
     // Clear (and destroy graphical object items) here as dtor of CGraphObj
     // accesses the drawing scene to remove the object name from the hash.
     clear();
+
+    try
+    {
+        delete m_pGraphObjsIdxTreeClipboard;
+    }
+    catch(...)
+    {
+    }
+
+    try
+    {
+        delete m_pGraphObjsIdxTree;
+    }
+    catch(...)
+    {
+    }
 
     CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
     CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjMouseMoveEvent);
@@ -240,8 +252,8 @@ CDrawingScene::~CDrawingScene()
     m_pGraphObjAddingShapePoints = nullptr;
     //m_strGraphObjNameSeparator;
     m_bGraphObjIdChangedByMyself = false;
-    //m_dctpGraphObjs;
-    //m_dctpGraphObjsClipboard;
+    m_pGraphObjsIdxTree = nullptr;
+    m_pGraphObjsIdxTreeClipboard = nullptr;
     //m_arpGraphicsItemsAcceptingHoverEvents;
     m_fRotAngleRes_degree = 0.0;
     m_fHitTolerance_px = 0.0;
@@ -274,11 +286,21 @@ void CDrawingScene::clear()
     m_pGraphicsItemAddingShapePoints = nullptr;
     m_pGraphObjAddingShapePoints = nullptr;
 
+    // Clear internal clipboard.
+    //CGraphObj* pGraphObj;
+    //CIdxTree::iterator itIdxTree = m_pGraphObjsIdxTreeClipboard->begin(CIdxTree::iterator::ETraversalOrder::PreOrder);
+    //while( itIdxTree != m_pGraphObjsIdxTreeClipboard->end() )
+    //{
+    //    pGraphObj = dynamic_cast<CGraphObj*>(*itIdxTree);
+    //    deleteItem(pGraphObj);
+    //    ++itIdxTree;
+    //}
+    m_pGraphObjsIdxTreeClipboard->clear();
+    m_pGraphObjsIdxTree->clear();
+
     QGraphicsScene::clear();
 
     m_arpGraphicsItemsAcceptingHoverEvents.clear();
-
-    CObjFactory::ResetAllCtorsDtorsCounters();
 
 } // clear
 
@@ -298,7 +320,7 @@ void CDrawingScene::removeItem( QGraphicsItem* i_pGraphicsItem )
         }
         else
         {
-            strMthInArgs = "GraphObj:" + pGraphObj->getObjName(true);
+            strMthInArgs = "GraphObj:" + pGraphObj->name();
         }
     }
 
@@ -326,7 +348,7 @@ void CDrawingScene::removeItem( CGraphObj* i_pGraphObj )
         }
         else
         {
-            strMthInArgs = "GraphObj:" + i_pGraphObj->getObjName(true);
+            strMthInArgs = "GraphObj:" + i_pGraphObj->name();
         }
     }
 
@@ -365,7 +387,7 @@ void CDrawingScene::deleteItem( QGraphicsItem* i_pGraphicsItem )
         }
         else
         {
-            strMthInArgs = "GraphObj:" + pGraphObj->getObjName(true);
+            strMthInArgs = "GraphObj:" + pGraphObj->name();
         }
     }
 
@@ -398,7 +420,7 @@ void CDrawingScene::deleteItem( CGraphObj* i_pGraphObj )
         }
         else
         {
-            strMthInArgs = "GraphObj:" + i_pGraphObj->getObjName(true);
+            strMthInArgs = "GraphObj:" + i_pGraphObj->name();
         }
     }
 
@@ -435,7 +457,7 @@ void CDrawingScene::deleteItem( CGraphObj* i_pGraphObj )
 
                 if( pGraphObjChild != nullptr )
                 {
-                    strGraphObjIdChild = pGraphObjChild->getObjId();
+                    strGraphObjIdChild = pGraphObjChild->keyInTree();
                     strlstGraphObjIdsChilds.append(strGraphObjIdChild);
                 }
             }
@@ -456,7 +478,6 @@ void CDrawingScene::deleteItem( CGraphObj* i_pGraphObj )
             delete i_pGraphObj;
             i_pGraphObj = nullptr;
         }
-
     } // if( i_pGraphObj != nullptr )
 
 } // deleteItem
@@ -481,7 +502,7 @@ void CDrawingScene::addChildItems( QGraphicsItem* i_pGraphicsItem )
         }
         else
         {
-            strMthInArgs = "GraphObj:" + pGraphObj->getObjName(true);
+            strMthInArgs = "GraphObj:" + pGraphObj->name();
         }
     }
 
@@ -608,6 +629,7 @@ SErrResultInfo CDrawingScene::load( const QString& i_strFileName )
                     else if( strElemName == "GraphObj" )
                     //--------------------------------
                     {
+                        QString strFactoryGrpName;
                         QString strNameSpace;
                         QString strClassName;
                         QString strGraphObjType;
@@ -616,6 +638,10 @@ SErrResultInfo CDrawingScene::load( const QString& i_strFileName )
 
                         xmlStreamAttrs = xmlStreamReader.attributes();
 
+                        if( xmlStreamAttrs.hasAttribute("FactoryGroupName") )
+                        {
+                            strFactoryGrpName = xmlStreamAttrs.value("FactoryGroupName").toString();;
+                        }
                         if( xmlStreamAttrs.hasAttribute("NameSpace") )
                         {
                             strNameSpace = xmlStreamAttrs.value("NameSpace").toString();;
@@ -637,7 +663,7 @@ SErrResultInfo CDrawingScene::load( const QString& i_strFileName )
                             strObjId = xmlStreamAttrs.value("ObjectId").toString();;
                         }
 
-                        CObjFactory* pObjFactory = CObjFactory::FindObjFactory( strNameSpace, strClassName, strGraphObjType );
+                        CObjFactory* pObjFactory = CObjFactory::FindObjFactory(strFactoryGrpName, strGraphObjType);
 
                         if( pObjFactory != nullptr )
                         {
@@ -809,9 +835,9 @@ SErrResultInfo CDrawingScene::save( CGraphObj* i_pGraphObj, QXmlStreamWriter& i_
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
-        strMthInArgs  = "GraphObj:" + i_pGraphObj->getNameSpace();
-        strMthInArgs += "::" + i_pGraphObj->getClassName();
-        strMthInArgs += "::" + i_pGraphObj->getObjName();
+        strMthInArgs  = "GraphObj:" + i_pGraphObj->nameSpace();
+        strMthInArgs += "::" + i_pGraphObj->className();
+        strMthInArgs += "::" + i_pGraphObj->name();
     }
 
     CMethodTracer mthTracer(
@@ -822,13 +848,13 @@ SErrResultInfo CDrawingScene::save( CGraphObj* i_pGraphObj, QXmlStreamWriter& i_
 
     SErrResultInfo errResultInfo;
 
-    QString strNameSpace    = i_pGraphObj->getNameSpace();
-    QString strClassName    = i_pGraphObj->getClassName();
+    QString strNameSpace    = i_pGraphObj->nameSpace();
+    QString strClassName    = i_pGraphObj->className();
     QString strGraphObjType = i_pGraphObj->getTypeAsString();
-    QString strObjName      = i_pGraphObj->getObjName();
-    QString strObjId        = i_pGraphObj->getObjId();
+    QString strObjName      = i_pGraphObj->name();
+    QString strObjId        = i_pGraphObj->keyInTree();
 
-    CObjFactory* pObjFactory = CObjFactory::FindObjFactory( strNameSpace, strClassName, strGraphObjType );
+    CObjFactory* pObjFactory = CObjFactory::FindObjFactory(i_pGraphObj->getFactoryGroupName(), strGraphObjType);
 
     if( pObjFactory == nullptr )
     {
@@ -985,8 +1011,7 @@ void CDrawingScene::setCurrentDrawingTool( CObjFactory* i_pObjFactory )
         }
         else
         {
-            strMthInArgs  = "ObjNameSpace:" + i_pObjFactory->getGraphObjNameSpace();
-            strMthInArgs += ", ObjClassName:" + i_pObjFactory->getGraphObjClassName();
+            strMthInArgs  = "Group:" + i_pObjFactory->getGroupName();
             strMthInArgs += ", ObjType:" + i_pObjFactory->getGraphObjTypeAsString();
         }
     }
@@ -1055,8 +1080,7 @@ void CDrawingScene::setCurrentDrawingTool( CObjFactory* i_pObjFactory )
         }
         else
         {
-            strAddTrcInfo  = "ObjNameSpace:" + m_pObjFactory->getGraphObjNameSpace();
-            strAddTrcInfo += ", ObjClassName:" + m_pObjFactory->getGraphObjClassName();
+            strAddTrcInfo  = "GroupName:" + m_pObjFactory->getGroupName();
             strAddTrcInfo += ", ObjType:" + m_pObjFactory->getGraphObjTypeAsString();
         }
         mthTracer.trace(strAddTrcInfo);
@@ -1066,8 +1090,7 @@ void CDrawingScene::setCurrentDrawingTool( CObjFactory* i_pObjFactory )
 
 //------------------------------------------------------------------------------
 void CDrawingScene::setCurrentDrawingTool(
-    const QString& i_strGraphObjNameSpace,
-    const QString& i_strGraphObjClassName,
+    const QString& i_strFactoryGrpName,
     const QString& i_strGraphObjType )
 //------------------------------------------------------------------------------
 {
@@ -1076,8 +1099,7 @@ void CDrawingScene::setCurrentDrawingTool(
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
-        strMthInArgs  = "ObjNameSpace:" + i_strGraphObjNameSpace;
-        strMthInArgs += ", ObjClassName:" + i_strGraphObjClassName;
+        strMthInArgs  = "FactoryGroupName:" + i_strFactoryGrpName;
         strMthInArgs += ", ObjType:" + i_strGraphObjType;
     }
 
@@ -1111,10 +1133,7 @@ void CDrawingScene::setCurrentDrawingTool(
     }
     else if( m_mode == EMode::Edit )
     {
-        CObjFactory* pObjFactory = CObjFactory::FindObjFactory(
-            /* strNameSpace */ i_strGraphObjNameSpace,
-            /* strClassName */ i_strGraphObjClassName,
-            /* objType      */ i_strGraphObjType );
+        CObjFactory* pObjFactory = CObjFactory::FindObjFactory(i_strFactoryGrpName, i_strGraphObjType );
 
         if( pObjFactory == nullptr )
         {
@@ -1150,8 +1169,7 @@ void CDrawingScene::setCurrentDrawingTool(
         }
         else
         {
-            strAddTrcInfo  = "ObjNameSpace:" + m_pObjFactory->getGraphObjNameSpace();
-            strAddTrcInfo += ", ObjClassName:" + m_pObjFactory->getGraphObjClassName();
+            strAddTrcInfo  = "GroupName:" + m_pObjFactory->getGroupName();
             strAddTrcInfo += ", ObjType:" + m_pObjFactory->getGraphObjTypeAsString();
         }
         mthTracer.trace(strAddTrcInfo);
@@ -1253,8 +1271,8 @@ QCursor CDrawingScene::getProposedCursor( const QPointF& i_ptPos ) const
         strAddTrcInfo += ", EditMode:" + m_editMode.toString();
         strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
         strAddTrcInfo += ", ObjFactory:" + QString(m_pObjFactory == nullptr ? "nullptr" : m_pObjFactory->path());
-        strAddTrcInfo += ", GraphObjCreating:" + QString(m_pGraphObjCreating == nullptr ? "nullptr" : m_pGraphObjCreating->getObjName());
-        strAddTrcInfo += ", GraphObjAddingShapePoints:" + QString(m_pGraphObjAddingShapePoints == nullptr ? "nullptr" : m_pGraphObjAddingShapePoints->getObjName());
+        strAddTrcInfo += ", GraphObjCreating:" + QString(m_pGraphObjCreating == nullptr ? "nullptr" : m_pGraphObjCreating->name());
+        strAddTrcInfo += ", GraphObjAddingShapePoints:" + QString(m_pGraphObjAddingShapePoints == nullptr ? "nullptr" : m_pGraphObjAddingShapePoints->name());
         mthTracer.trace(strAddTrcInfo);
     }
 
@@ -1460,7 +1478,7 @@ double CDrawingScene::bringToFront( QGraphicsItem* i_pGraphicsItem, const QPoint
         }
         else
         {
-            strMthInArgs = "GraphObjName:" + pGraphObj->getObjName();
+            strMthInArgs = "GraphObjName:" + pGraphObj->name();
         }
         strMthInArgs += ", ScenePos:" + point2Str(i_ptScenePos);
     }
@@ -1493,7 +1511,7 @@ double CDrawingScene::sendToBack( QGraphicsItem* i_pGraphicsItem, const QPointF&
         }
         else
         {
-            strMthInArgs = "GraphObjName:" + pGraphObj->getObjName();
+            strMthInArgs = "GraphObjName:" + pGraphObj->name();
         }
         strMthInArgs += ", ScenePos:" + point2Str(i_ptScenePos);
     }
@@ -1538,7 +1556,7 @@ double CDrawingScene::bringToFront( QGraphicsItem* i_pGraphicsItem, const QList<
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
         CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(i_pGraphicsItem);
-        strMthInArgs = "GraphObjName: " + QString(pGraphObj == nullptr ? "nullptr" : pGraphObj->getObjName());
+        strMthInArgs = "GraphObjName: " + QString(pGraphObj == nullptr ? "nullptr" : pGraphObj->name());
     }
 
     CMethodTracer mthTracer(
@@ -1606,7 +1624,7 @@ double CDrawingScene::sendToBack( QGraphicsItem* i_pGraphicsItem, const QList<QG
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
         CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(i_pGraphicsItem);
-        strMthInArgs = "GraphObjName: " + QString(pGraphObj == nullptr ? "nullptr" : pGraphObj->getObjName());
+        strMthInArgs = "GraphObjName: " + QString(pGraphObj == nullptr ? "nullptr" : pGraphObj->name());
     }
 
     CMethodTracer mthTracer(
@@ -1672,7 +1690,7 @@ void CDrawingScene::onGraphObjAddingShapePointsStarted( CGraphObj* i_pGraphObj )
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
-        strMthInArgs = "GraphObjName: " + QString(i_pGraphObj == nullptr ? "nullptr" : i_pGraphObj->getObjName(true, m_strGraphObjNameSeparator));
+        strMthInArgs = "GraphObjName: " + QString(i_pGraphObj == nullptr ? "nullptr" : i_pGraphObj->name());
     }
 
     CMethodTracer mthTracer(
@@ -1688,8 +1706,8 @@ void CDrawingScene::onGraphObjAddingShapePointsStarted( CGraphObj* i_pGraphObj )
         strAddTrcInfo += ", EditMode:" + m_editMode.toString();
         strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
         strAddTrcInfo += ", ObjFactory:" + QString(m_pObjFactory == nullptr ? "nullptr" : m_pObjFactory->path());
-        strAddTrcInfo += ", GraphObjCreating:" + QString(m_pGraphObjCreating == nullptr ? "nullptr" : m_pGraphObjCreating->getObjName());
-        strAddTrcInfo += ", GraphObjAddingShapePoints:" + QString(m_pGraphObjAddingShapePoints == nullptr ? "nullptr" : m_pGraphObjAddingShapePoints->getObjName());
+        strAddTrcInfo += ", GraphObjCreating:" + QString(m_pGraphObjCreating == nullptr ? "nullptr" : m_pGraphObjCreating->name());
+        strAddTrcInfo += ", GraphObjAddingShapePoints:" + QString(m_pGraphObjAddingShapePoints == nullptr ? "nullptr" : m_pGraphObjAddingShapePoints->name());
         mthTracer.trace(strAddTrcInfo);
     }
 
@@ -1731,7 +1749,7 @@ void CDrawingScene::onGraphObjAddingShapePointsFinished( CGraphObj* i_pGraphObj 
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
-        strMthInArgs = "GraphObjName: " + QString(i_pGraphObj == nullptr ? "nullptr" : i_pGraphObj->getObjName(true, m_strGraphObjNameSeparator));
+        strMthInArgs = "GraphObjName: " + QString(i_pGraphObj == nullptr ? "nullptr" : i_pGraphObj->name());
     }
 
     CMethodTracer mthTracer(
@@ -1747,8 +1765,8 @@ void CDrawingScene::onGraphObjAddingShapePointsFinished( CGraphObj* i_pGraphObj 
         strAddTrcInfo += ", EditMode:" + m_editMode.toString();
         strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
         strAddTrcInfo += ", ObjFactory:" + QString(m_pObjFactory == nullptr ? "nullptr" : m_pObjFactory->path());
-        strAddTrcInfo += ", GraphObjCreating:" + QString(m_pGraphObjCreating == nullptr ? "nullptr" : m_pGraphObjCreating->getObjName());
-        strAddTrcInfo += ", GraphObjAddingShapePoints:" + QString(m_pGraphObjAddingShapePoints == nullptr ? "nullptr" : m_pGraphObjAddingShapePoints->getObjName());
+        strAddTrcInfo += ", GraphObjCreating:" + QString(m_pGraphObjCreating == nullptr ? "nullptr" : m_pGraphObjCreating->name());
+        strAddTrcInfo += ", GraphObjAddingShapePoints:" + QString(m_pGraphObjAddingShapePoints == nullptr ? "nullptr" : m_pGraphObjAddingShapePoints->name());
         mthTracer.trace(strAddTrcInfo);
     }
 
@@ -1774,7 +1792,7 @@ public: // to be called by graphical objects (as graphical objects are not deriv
 //------------------------------------------------------------------------------
 /*! This method has to be called by graphical objects AFTER they have been
     initially created (after they have been completely created e.g. after
-    a rectangle has been resized and the mouse button has been releases).
+    a rectangle has been resized and the mouse button has been released).
     After creating the object via mouse events the edit mode of the drawing
     has to be reset. In addition the name of the object has to be inserted
     in the hash of item names.
@@ -1789,8 +1807,8 @@ void CDrawingScene::onGraphObjCreated( CGraphObj* i_pGraphObj )
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
-        strMthInArgs = "GraphObjName: " + QString(i_pGraphObj == nullptr ? "nullptr" : i_pGraphObj->getObjName(true, m_strGraphObjNameSeparator));
-        strMthInArgs += ", GraphObjId:" + QString(i_pGraphObj == nullptr ? "-" : i_pGraphObj->getObjId());
+        strMthInArgs = "GraphObjName: " + QString(i_pGraphObj == nullptr ? "nullptr" : i_pGraphObj->name());
+        strMthInArgs += ", GraphObjId:" + QString(i_pGraphObj == nullptr ? "-" : i_pGraphObj->keyInTree());
     }
 
     CMethodTracer mthTracer(
@@ -1806,8 +1824,8 @@ void CDrawingScene::onGraphObjCreated( CGraphObj* i_pGraphObj )
         strAddTrcInfo += ", EditMode:" + m_editMode.toString();
         strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
         strAddTrcInfo += ", ObjFactory:" + QString(m_pObjFactory == nullptr ? "nullptr" : m_pObjFactory->path());
-        strAddTrcInfo += ", GraphObjCreating:" + QString(m_pGraphObjCreating == nullptr ? "nullptr" : m_pGraphObjCreating->getObjName());
-        strAddTrcInfo += ", GraphObjAddingShapePoints:" + QString(m_pGraphObjAddingShapePoints == nullptr ? "nullptr" : m_pGraphObjAddingShapePoints->getObjName());
+        strAddTrcInfo += ", GraphObjCreating:" + QString(m_pGraphObjCreating == nullptr ? "nullptr" : m_pGraphObjCreating->name());
+        strAddTrcInfo += ", GraphObjAddingShapePoints:" + QString(m_pGraphObjAddingShapePoints == nullptr ? "nullptr" : m_pGraphObjAddingShapePoints->name());
         mthTracer.trace(strAddTrcInfo);
     }
 
@@ -1816,10 +1834,10 @@ void CDrawingScene::onGraphObjCreated( CGraphObj* i_pGraphObj )
         throw ZS::System::CException( __FILE__, __LINE__, EResultArgOutOfRange, "i_pGraphObj == nullptr" );
     }
 
-    QString strGraphObjNameSpace = i_pGraphObj->getNameSpace();
-    QString strGraphObjClassName = i_pGraphObj->getClassName();
-    //QString strGraphObjName      = i_pGraphObj->getObjName(true,m_strGraphObjNameSeparator);
-    QString strGraphObjId        = i_pGraphObj->getObjId();
+    QString strGraphObjNameSpace = i_pGraphObj->nameSpace();
+    QString strGraphObjClassName = i_pGraphObj->className();
+    //QString strGraphObjName      = i_pGraphObj->name(true,m_strGraphObjNameSeparator);
+    QString strGraphObjId        = i_pGraphObj->keyInTree();
 
     QString strGraphObjTypeName;
 
@@ -1836,26 +1854,28 @@ void CDrawingScene::onGraphObjCreated( CGraphObj* i_pGraphObj )
     //--------------------------------------------------------
 
     //strGraphObjName = findUniqueGraphObjName(i_pGraphObj);
-    //i_pGraphObj->setObjName(strGraphObjName);
+    //i_pGraphObj->setName(strGraphObjName);
 
     // Ensure that the object id is unique and insert into map with objects sorted by id:
     //-----------------------------------------------------------------------------------
 
-    if( m_dctpGraphObjs.contains(strGraphObjId) )
-    {
-        strGraphObjId = FindUniqueGraphObjId( m_dctpGraphObjs, strGraphObjId );
+    //if( m_dctpGraphObjs.contains(strGraphObjId) )
+    //{
+    //    strGraphObjId = FindUniqueGraphObjId( m_dctpGraphObjs, strGraphObjId );
 
-        // The old object id is inserted in the dictionary. On changing the
-        // object id the graph object calls "onGraphObjIdChanged" as a reentry.
-        // This method would search for the object with the old id - which is not
-        // the object which has just been created but is the object with the already
-        // existing id. So we need to block the "onGraphObjIdChanged" method:
-        m_bGraphObjIdChangedByMyself = true;
-        i_pGraphObj->setObjId(strGraphObjId);
-        m_bGraphObjIdChangedByMyself = false;
-    }
+    //    // The old object id is inserted in the dictionary. On changing the
+    //    // object id the graph object calls "onGraphObjIdChanged" as a reentry.
+    //    // This method would search for the object with the old id - which is not
+    //    // the object which has just been created but is the object with the already
+    //    // existing id. So we need to block the "onGraphObjIdChanged" method:
+    //    m_bGraphObjIdChangedByMyself = true;
+    //    i_pGraphObj->setKeyInTree(strGraphObjId);
+    //    m_bGraphObjIdChangedByMyself = false;
+    //}
 
-    m_dctpGraphObjs.insert( strGraphObjId, i_pGraphObj );
+    m_bGraphObjIdChangedByMyself = true;
+    m_pGraphObjsIdxTree->add(i_pGraphObj);
+    m_bGraphObjIdChangedByMyself = false;
 
     // Reset drawings scenes edit modes:
     //----------------------------------
@@ -1884,7 +1904,7 @@ void CDrawingScene::onGraphObjCreated( CGraphObj* i_pGraphObj )
 
     if( mthTracer.isActive(ETraceDetailLevelInternalStates) )
     {
-        QString strAddTrcInfo = "GraphObjId:" + i_pGraphObj->getObjId();
+        QString strAddTrcInfo = "GraphObjId:" + i_pGraphObj->keyInTree();
         mthTracer.trace(strAddTrcInfo);
     }
 
@@ -1930,25 +1950,25 @@ void CDrawingScene::onGraphObjDestroying( const QString& i_strObjId )
     //QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
     //removeItem(pGraphicsItem);
 
-    if( m_dctpGraphObjs.contains(i_strObjId) )
-    {
+    //if( m_dctpGraphObjs.contains(i_strObjId) )
+    //{
         emit graphObjDestroying(i_strObjId);
 
-        m_dctpGraphObjs.remove(i_strObjId);
+    //    m_dctpGraphObjs.remove(i_strObjId);
 
-        if( m_dctpGraphObjsClipboard.contains(i_strObjId) )
-        {
-            m_dctpGraphObjs.remove(i_strObjId);
-        }
-    }
+    //    if( m_dctpGraphObjsClipboard.contains(i_strObjId) )
+    //    {
+    //        m_dctpGraphObjs.remove(i_strObjId);
+    //    }
+    //}
 
-    if( m_pGraphObjCreating != nullptr && m_pGraphObjCreating->getObjId() == i_strObjId )
+    if( m_pGraphObjCreating != nullptr && m_pGraphObjCreating->keyInTree() == i_strObjId )
     {
         m_pGraphicsItemCreating = nullptr;
         m_pGraphObjCreating = nullptr;
     }
 
-    if( m_pGraphObjAddingShapePoints != nullptr && m_pGraphObjAddingShapePoints->getObjId() == i_strObjId )
+    if( m_pGraphObjAddingShapePoints != nullptr && m_pGraphObjAddingShapePoints->keyInTree() == i_strObjId )
     {
         m_pGraphicsItemAddingShapePoints = nullptr;
         m_pGraphObjAddingShapePoints = nullptr;
@@ -1965,7 +1985,7 @@ void CDrawingScene::onGraphObjDestroying( const QString& i_strObjId )
             pGraphicsItem = m_arpGraphicsItemsAcceptingHoverEvents[idxGraphObj];
             pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
 
-            if( pGraphObj != nullptr && pGraphObj->getObjId() == i_strObjId )
+            if( pGraphObj != nullptr && pGraphObj->keyInTree() == i_strObjId )
             {
                 m_arpGraphicsItemsAcceptingHoverEvents.removeAt(idxGraphObj);
             }
@@ -2049,51 +2069,50 @@ void CDrawingScene::onGraphObjIdChanged( const QString& i_strObjIdOld, const QSt
         mthTracer.trace(strAddTrcInfo);
     }
 
-    if( !m_bGraphObjIdChangedByMyself )
-    {
-        CGraphObj* pGraphObj = nullptr;
+    //if( !m_bGraphObjIdChangedByMyself )
+    //{
+    //    CGraphObj* pGraphObj = nullptr;
 
-        if( m_dctpGraphObjs.contains(i_strObjIdOld) )
-        {
-            pGraphObj = m_dctpGraphObjs.value(i_strObjIdOld);
-        }
+    //    if( m_dctpGraphObjs.contains(i_strObjIdOld) )
+    //    {
+    //        pGraphObj = m_dctpGraphObjs.value(i_strObjIdOld);
+    //    }
 
-        // Please note that this method may also be called as a reentry on creating a new
-        // object with an ambiguous name whereupon the drawing scene corrects the name
-        // of the object.
+    //    // Please note that this method may also be called as a reentry on creating a new
+    //    // object with an ambiguous name whereupon the drawing scene corrects the name
+    //    // of the object.
 
-        // If the graphical object has a valid object id ..
-        if( pGraphObj != nullptr )
-        {
-            // Before this slot is called the object must have gotten its new object id.
-            if( pGraphObj->getObjId() != i_strObjIdNew )
-            {
-                throw ZS::System::CException( __FILE__, __LINE__, EResultInvalidObjId, pGraphObj->getObjId() + " != " + i_strObjIdNew );
-            }
+    //    // If the graphical object has a valid object id ..
+    //    if( pGraphObj != nullptr )
+    //    {
+    //        // Before this slot is called the object must have gotten its new object id.
+    //        if( pGraphObj->keyInTree() != i_strObjIdNew )
+    //        {
+    //            throw ZS::System::CException( __FILE__, __LINE__, EResultInvalidObjId, pGraphObj->keyInTree() + " != " + i_strObjIdNew );
+    //        }
 
-            QString strObjIdNew = i_strObjIdNew;
+    //        QString strObjIdNew = i_strObjIdNew;
 
-            if( m_dctpGraphObjs.contains(strObjIdNew) )
-            {
-                strObjIdNew = FindUniqueGraphObjId( m_dctpGraphObjs, strObjIdNew );
+    //        if( m_dctpGraphObjs.contains(strObjIdNew) )
+    //        {
+    //            strObjIdNew = FindUniqueGraphObjId( m_dctpGraphObjs, strObjIdNew );
 
-                // As the new object id is not yet inserted in the dictionary
-                // the "onGraphObjIdChanged" method (called as a reentry)
-                // returns without doing anything.
-                pGraphObj->setObjId(strObjIdNew);
-            }
+    //            // As the new object id is not yet inserted in the dictionary
+    //            // the "onGraphObjIdChanged" method (called as a reentry)
+    //            // returns without doing anything.
+    //            pGraphObj->setKeyInTree(strObjIdNew);
+    //        }
 
-            // Update sorted map:
-            //-------------------
+    //        // Update sorted map:
+    //        //-------------------
 
-            m_dctpGraphObjs.remove(i_strObjIdOld);
-            m_dctpGraphObjs.insert(strObjIdNew,pGraphObj);
+    //        m_dctpGraphObjs.remove(i_strObjIdOld);
+    //        m_dctpGraphObjs.insert(strObjIdNew,pGraphObj);
 
-            emit graphObjIdChanged(i_strObjIdOld,strObjIdNew);
+    //        emit graphObjIdChanged(i_strObjIdOld,strObjIdNew);
 
-        } // if( pGraphObj != nullptr )
-
-    } // if( !m_bGraphObjIdChangedByMyself )
+    //    } // if( pGraphObj != nullptr )
+    //} // if( !m_bGraphObjIdChangedByMyself )
 
 } // onGraphObjIdChanged
 
@@ -2143,29 +2162,26 @@ QGraphicsItem* CDrawingScene::findGraphicsItem( const QString& i_strObjId )
 //------------------------------------------------------------------------------
 {
     QGraphicsItem* pGraphicsItem = nullptr;
-
-    if( m_dctpGraphObjs.contains(i_strObjId) )
+    CIdxTreeEntry* pTreeEntry = m_pGraphObjsIdxTree->findEntry(i_strObjId);
+    if( pTreeEntry != nullptr )
     {
-        CGraphObj* pGraphObj = m_dctpGraphObjs.value(i_strObjId);
-        pGraphicsItem = dynamic_cast<QGraphicsItem*>(pGraphObj);
+        pGraphicsItem = dynamic_cast<QGraphicsItem*>(pTreeEntry);
     }
     return pGraphicsItem;
-
-} // findGraphicsItem
+}
 
 //------------------------------------------------------------------------------
 CGraphObj* CDrawingScene::findGraphObj( const QString& i_strObjId )
 //------------------------------------------------------------------------------
 {
     CGraphObj* pGraphObj = nullptr;
-
-    if( m_dctpGraphObjs.contains(i_strObjId) )
+    CIdxTreeEntry* pTreeEntry = m_pGraphObjsIdxTree->findEntry(i_strObjId);
+    if( pTreeEntry != nullptr )
     {
-        pGraphObj = m_dctpGraphObjs.value(i_strObjId);
+        pGraphObj = dynamic_cast<CGraphObj*>(pTreeEntry);
     }
     return pGraphObj;
-
-} // findGraphObj
+}
 
 /*==============================================================================
 public: // instance methods
@@ -2180,7 +2196,7 @@ QString CDrawingScene::findUniqueGraphObjName( CGraphObj* i_pGraphObj )
         throw ZS::System::CException( __FILE__, __LINE__, EResultArgOutOfRange, "pGraphObj == nullptr" );
     }
 
-    QString strObjName = i_pGraphObj->getObjName();
+    QString strObjName = i_pGraphObj->name();
     int     iObjNr = 1;
     QString strObjNr;
 
@@ -2201,9 +2217,9 @@ QString CDrawingScene::findUniqueGraphObjName( CGraphObj* i_pGraphObj )
 
     QString strObjNameParent;
 
-    if( i_pGraphObj->getParent() != nullptr )
+    if( i_pGraphObj->parentGraphObj() != nullptr )
     {
-        strObjNameParent = i_pGraphObj->getParent()->getObjName( true, m_strGraphObjNameSeparator );
+        strObjNameParent = i_pGraphObj->parentGraphObj()->name();
     }
 
     QString strObjBaseName = strObjName;
@@ -2234,7 +2250,7 @@ QString CDrawingScene::findUniqueGraphObjName( CGraphObj* i_pGraphObj )
 
             if( pGraphObj != nullptr && pGraphObj != i_pGraphObj )
             {
-                if( strObjName.compare(pGraphObj->getObjName(true,m_strGraphObjNameSeparator),Qt::CaseInsensitive) == 0 )
+                if( strObjName.compare(pGraphObj->name(),Qt::CaseInsensitive) == 0 )
                 {
                     bUniqueName = false;
                     break;
@@ -2292,7 +2308,7 @@ int CDrawingScene::groupGraphObjsSelected()
         strAddTrcInfo += ", EditMode:" + m_editMode.toString();
         strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
         strAddTrcInfo += ", ObjFactory:" + QString(m_pObjFactory == nullptr ? "nullptr" : m_pObjFactory->path());
-        strAddTrcInfo += ", GraphObjCreating:" + QString(m_pGraphObjCreating == nullptr ? "nullptr" : m_pGraphObjCreating->getObjName());
+        strAddTrcInfo += ", GraphObjCreating:" + QString(m_pGraphObjCreating == nullptr ? "nullptr" : m_pGraphObjCreating->name());
         mthTracer.trace(strAddTrcInfo);
     }
 
@@ -2302,10 +2318,7 @@ int CDrawingScene::groupGraphObjsSelected()
 
     if( arpGraphicsItemsSelected.size() > 1 )
     {
-        CObjFactory* pObjFactoryTmp = CObjFactory::FindObjFactory(
-            /* strNameSpace */ NameSpace(),
-            /* strClassName */ ClassName(),
-            /* strObjType   */ graphObjType2Str(EGraphObjTypeGroup) );
+        CObjFactory* pObjFactoryTmp = CObjFactory::FindObjFactory(CObjFactory::c_strGroupNameStandardShapes, graphObjType2Str(EGraphObjTypeGroup));
 
         CObjFactoryGroup* pObjFactoryGroup = dynamic_cast<CObjFactoryGroup*>(pObjFactoryTmp);
         CGraphObjGroup*   pGraphObjGroup = nullptr;
@@ -2562,7 +2575,7 @@ int CDrawingScene::ungroupGraphObjsSelected()
         strAddTrcInfo += ", EditMode:" + m_editMode.toString();
         strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
         strAddTrcInfo += ", ObjFactory:" + QString(m_pObjFactory == nullptr ? "nullptr" : m_pObjFactory->path());
-        strAddTrcInfo += ", GraphObjCreating:" + QString(m_pGraphObjCreating == nullptr ? "nullptr" : m_pGraphObjCreating->getObjName());
+        strAddTrcInfo += ", GraphObjCreating:" + QString(m_pGraphObjCreating == nullptr ? "nullptr" : m_pGraphObjCreating->name());
         mthTracer.trace(strAddTrcInfo);
     }
 
@@ -2608,12 +2621,13 @@ int CDrawingScene::ungroupGraphObjsSelected()
 
                             if( pGraphObjChild != nullptr )
                             {
-                                strObjIdOld = pGraphObjChild->getObjId();
-                                strObjIdNew = pGraphObjChild->getObjName(true);
+                                strObjIdOld = pGraphObjChild->keyInTree();
+                                //strObjIdNew = pGraphObjChild->name(true);
 
-                                m_dctpGraphObjs.remove(strObjIdOld);
-                                m_dctpGraphObjs.insert(strObjIdNew,pGraphObjChild);
-                                pGraphObjChild->setObjId(strObjIdNew);
+                                m_pGraphObjsIdxTree->remove(strObjIdOld);
+                                m_pGraphObjsIdxTree->add(pGraphObjChild);
+                                //pGraphObjChild->setKeyInTree(strObjIdNew);
+                                strObjIdNew = pGraphObjChild->keyInTree();
 
                                 emit graphObjIdChanged(strObjIdOld,strObjIdNew);
                             }
@@ -2626,11 +2640,8 @@ int CDrawingScene::ungroupGraphObjsSelected()
                     iObjsUngroupedCount++;
 
                 } // if( pGraphObjGroup != nullptr )
-
             } // if( pGraphicsItem->type() == EGraphObjTypeGroup )
-
         } // for( idxGraphObj = arpGraphicsItemsSelected.size()-1; idxGraphObj >= 0; idxGraphObj-- )
-
     } // if( arpGraphicsItemsSelected.size() > 1 )
 
     return iObjsUngroupedCount;
@@ -3175,8 +3186,8 @@ void CDrawingScene::dragEnterEvent( QGraphicsSceneDragDropEvent* i_pEv )
         strAddTrcInfo += ", EditMode:" + m_editMode.toString();
         strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
         strAddTrcInfo += ", ObjFactory:" + QString(m_pObjFactory == nullptr ? "nullptr" : m_pObjFactory->path());
-        strAddTrcInfo += ", GraphObjCreating:" + QString(m_pGraphObjCreating == nullptr ? "nullptr" : m_pGraphObjCreating->getObjName());
-        strAddTrcInfo += ", GraphObjAddingShapePoints:" + QString(m_pGraphObjAddingShapePoints == nullptr ? "nullptr" : m_pGraphObjAddingShapePoints->getObjName());
+        strAddTrcInfo += ", GraphObjCreating:" + QString(m_pGraphObjCreating == nullptr ? "nullptr" : m_pGraphObjCreating->name());
+        strAddTrcInfo += ", GraphObjAddingShapePoints:" + QString(m_pGraphObjAddingShapePoints == nullptr ? "nullptr" : m_pGraphObjAddingShapePoints->name());
         strAddTrcInfo += ", SceneRect(x,y,w,h):(" + QString::number(sceneRect().x()) + "," + QString::number(sceneRect().y());
         strAddTrcInfo += "," + QString::number(sceneRect().width()) + "," + QString::number(sceneRect().height()) + ")";
         mthTracer.trace(strAddTrcInfo);
@@ -3242,9 +3253,9 @@ void CDrawingScene::dragMoveEvent( QGraphicsSceneDragDropEvent* i_pEv )
         }
         else
         {
-            strMthInArgs += ", GraphObjCreating:" + m_pGraphObjCreating->getNameSpace();
-            strMthInArgs += "::" + m_pGraphObjCreating->getClassName();
-            strMthInArgs += "::" + m_pGraphObjCreating->getObjName();
+            strMthInArgs += ", GraphObjCreating:" + m_pGraphObjCreating->nameSpace();
+            strMthInArgs += "::" + m_pGraphObjCreating->className();
+            strMthInArgs += "::" + m_pGraphObjCreating->name();
         }
 
         strMthInArgs += ", SceneRect(x,y,w,h):(" + QString::number(sceneRect().x()) + "," + QString::number(sceneRect().y());
@@ -3317,9 +3328,9 @@ void CDrawingScene::dragLeaveEvent( QGraphicsSceneDragDropEvent* i_pEv )
         }
         else
         {
-            strMthInArgs += ", GraphObjCreating:" + m_pGraphObjCreating->getNameSpace();
-            strMthInArgs += "::" + m_pGraphObjCreating->getClassName();
-            strMthInArgs += "::" + m_pGraphObjCreating->getObjName();
+            strMthInArgs += ", GraphObjCreating:" + m_pGraphObjCreating->nameSpace();
+            strMthInArgs += "::" + m_pGraphObjCreating->className();
+            strMthInArgs += "::" + m_pGraphObjCreating->name();
         }
 
         strMthInArgs += ", SceneRect(x,y,w,h):(" + QString::number(sceneRect().x()) + "," + QString::number(sceneRect().y());
@@ -3405,9 +3416,9 @@ void CDrawingScene::dropEvent( QGraphicsSceneDragDropEvent* i_pEv )
         }
         else
         {
-            strMthInArgs += ", GraphObjCreating:" + m_pGraphObjCreating->getNameSpace();
-            strMthInArgs += "::" + m_pGraphObjCreating->getClassName();
-            strMthInArgs += "::" + m_pGraphObjCreating->getObjName();
+            strMthInArgs += ", GraphObjCreating:" + m_pGraphObjCreating->nameSpace();
+            strMthInArgs += "::" + m_pGraphObjCreating->className();
+            strMthInArgs += "::" + m_pGraphObjCreating->name();
         }
 
         strMthInArgs += ", SceneRect(x,y,w,h):(" + QString::number(sceneRect().x()) + "," + QString::number(sceneRect().y());
@@ -3569,7 +3580,7 @@ void CDrawingScene::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
         strAddTrcInfo += ", EditMode:" + m_editMode.toString();
         strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
         strAddTrcInfo += ", ObjFactory:" + QString(m_pObjFactory == nullptr ? "nullptr" : m_pObjFactory->path());
-        strAddTrcInfo += ", GraphObjCreating:" + QString(m_pGraphObjCreating == nullptr ? "nullptr" : m_pGraphObjCreating->getObjName());
+        strAddTrcInfo += ", GraphObjCreating:" + QString(m_pGraphObjCreating == nullptr ? "nullptr" : m_pGraphObjCreating->name());
         strAddTrcInfo += ", SceneRect(x,y,w,h):(" + QString::number(sceneRect().x()) + "," + QString::number(sceneRect().y());
         strAddTrcInfo += "," + QString::number(sceneRect().width()) + "," + QString::number(sceneRect().height()) + ")";
         mthTracer.trace(strAddTrcInfo);
@@ -4059,7 +4070,7 @@ void CDrawingScene::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
         strAddTrcInfo += ", EditMode:" + m_editMode.toString();
         strAddTrcInfo += ", EditResizeMode:" + m_editResizeMode.toString();
         strAddTrcInfo += ", ObjFactory:" + QString(m_pObjFactory == nullptr ? "nullptr" : m_pObjFactory->path());
-        strAddTrcInfo += ", GraphObjCreating:" + QString(m_pGraphObjCreating == nullptr ? "nullptr" : m_pGraphObjCreating->getObjName());
+        strAddTrcInfo += ", GraphObjCreating:" + QString(m_pGraphObjCreating == nullptr ? "nullptr" : m_pGraphObjCreating->name());
         strAddTrcInfo += ", SceneRect(x,y,w,h):(" + QString::number(sceneRect().x()) + "," + QString::number(sceneRect().y());
         strAddTrcInfo += "," + QString::number(sceneRect().width()) + "," + QString::number(sceneRect().height()) + ")";
         mthTracer.trace(strAddTrcInfo);
@@ -4094,7 +4105,7 @@ void CDrawingScene::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
         strAddTrcInfo += ", EditMode:" + m_editMode.toString();
         strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
         strAddTrcInfo += ", ObjFactory:" + QString(m_pObjFactory == nullptr ? "nullptr" : m_pObjFactory->path());
-        strAddTrcInfo += ", GraphObjCreating:" + QString(m_pGraphObjCreating == nullptr ? "nullptr" : m_pGraphObjCreating->getObjName());
+        strAddTrcInfo += ", GraphObjCreating:" + QString(m_pGraphObjCreating == nullptr ? "nullptr" : m_pGraphObjCreating->name());
         mthTracer.trace(strAddTrcInfo);
     }
 
@@ -4465,7 +4476,7 @@ void CDrawingScene::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
         strAddTrcInfo += ", EditMode:" + m_editMode.toString();
         strAddTrcInfo += ", EditResizeMode:" + m_editResizeMode.toString();
         strAddTrcInfo += ", ObjFactory:" + QString(m_pObjFactory == nullptr ? "nullptr" : m_pObjFactory->path());
-        strAddTrcInfo += ", GraphObjCreating:" + QString(m_pGraphObjCreating == nullptr ? "nullptr" : m_pGraphObjCreating->getObjName());
+        strAddTrcInfo += ", GraphObjCreating:" + QString(m_pGraphObjCreating == nullptr ? "nullptr" : m_pGraphObjCreating->name());
         strAddTrcInfo += ", SceneRect(x,y,w,h):(" + QString::number(sceneRect().x()) + "," + QString::number(sceneRect().y());
         strAddTrcInfo += "," + QString::number(sceneRect().width()) + "," + QString::number(sceneRect().height()) + ")";
         mthTracer.trace(strAddTrcInfo);
@@ -4500,7 +4511,7 @@ void CDrawingScene::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
         strAddTrcInfo += ", EditMode:" + m_editMode.toString();
         strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
         strAddTrcInfo += ", ObjFactory:" + QString(m_pObjFactory == nullptr ? "nullptr" : m_pObjFactory->path());
-        strAddTrcInfo += ", GraphObjCreating:" + QString(m_pGraphObjCreating == nullptr ? "nullptr" : m_pGraphObjCreating->getObjName());
+        strAddTrcInfo += ", GraphObjCreating:" + QString(m_pGraphObjCreating == nullptr ? "nullptr" : m_pGraphObjCreating->name());
         strAddTrcInfo += ", SceneRect(x,y,w,h):(" + QString::number(sceneRect().x()) + "," + QString::number(sceneRect().y());
         strAddTrcInfo += "," + QString::number(sceneRect().width()) + "," + QString::number(sceneRect().height()) + ")";
         mthTracer.trace(strAddTrcInfo);
@@ -4618,7 +4629,7 @@ void CDrawingScene::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
         strAddTrcInfo += ", EditMode:" + m_editMode.toString();
         strAddTrcInfo += ", EditResizeMode:" + m_editResizeMode.toString();
         strAddTrcInfo += ", ObjFactory:" + QString(m_pObjFactory == nullptr ? "nullptr" : m_pObjFactory->path());
-        strAddTrcInfo += ", GraphObjCreating:" + QString(m_pGraphObjCreating == nullptr ? "nullptr" : m_pGraphObjCreating->getObjName());
+        strAddTrcInfo += ", GraphObjCreating:" + QString(m_pGraphObjCreating == nullptr ? "nullptr" : m_pGraphObjCreating->name());
         strAddTrcInfo += ", SceneRect(x,y,w,h):(" + QString::number(sceneRect().x()) + "," + QString::number(sceneRect().y());
         strAddTrcInfo += "," + QString::number(sceneRect().width()) + "," + QString::number(sceneRect().height()) + ")";
         mthTracer.trace(strAddTrcInfo);
@@ -4653,7 +4664,7 @@ void CDrawingScene::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv )
         strAddTrcInfo += ", EditMode:" + m_editMode.toString();
         strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
         strAddTrcInfo += ", ObjFactory:" + QString(m_pObjFactory == nullptr ? "nullptr" : m_pObjFactory->path());
-        strAddTrcInfo += ", GraphObjCreating:" + QString(m_pGraphObjCreating == nullptr ? "nullptr" : m_pGraphObjCreating->getObjName());
+        strAddTrcInfo += ", GraphObjCreating:" + QString(m_pGraphObjCreating == nullptr ? "nullptr" : m_pGraphObjCreating->name());
         strAddTrcInfo += ", SceneRect(x,y,w,h):(" + QString::number(sceneRect().x()) + "," + QString::number(sceneRect().y());
         strAddTrcInfo += "," + QString::number(sceneRect().width()) + "," + QString::number(sceneRect().height()) + ")";
         mthTracer.trace(strAddTrcInfo);
@@ -4791,7 +4802,7 @@ void CDrawingScene::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv )
         strAddTrcInfo += ", EditMode:" + m_editMode.toString();
         strAddTrcInfo += ", EditResizeMode:" + m_editResizeMode.toString();
         strAddTrcInfo += ", ObjFactory:" + QString(m_pObjFactory == nullptr ? "nullptr" : m_pObjFactory->path());
-        strAddTrcInfo += ", GraphObjCreating:" + QString(m_pGraphObjCreating == nullptr ? "nullptr" : m_pGraphObjCreating->getObjName());
+        strAddTrcInfo += ", GraphObjCreating:" + QString(m_pGraphObjCreating == nullptr ? "nullptr" : m_pGraphObjCreating->name());
         strAddTrcInfo += ", SceneRect(x,y,w,h):(" + QString::number(sceneRect().x()) + "," + QString::number(sceneRect().y());
         strAddTrcInfo += "," + QString::number(sceneRect().width()) + "," + QString::number(sceneRect().height()) + ")";
         mthTracer.trace(strAddTrcInfo);
@@ -4830,7 +4841,7 @@ void CDrawingScene::keyPressEvent( QKeyEvent* i_pEv )
         strAddTrcInfo += ", EditMode:" + m_editMode.toString();
         strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
         strAddTrcInfo += ", ObjFactory:" + QString(m_pObjFactory == nullptr ? "nullptr" : m_pObjFactory->path());
-        strAddTrcInfo += ", GraphObjCreating:" + QString(m_pGraphObjCreating == nullptr ? "nullptr" : m_pGraphObjCreating->getObjName());
+        strAddTrcInfo += ", GraphObjCreating:" + QString(m_pGraphObjCreating == nullptr ? "nullptr" : m_pGraphObjCreating->name());
         strAddTrcInfo += ", SceneRect(x,y,w,h):(" + QString::number(sceneRect().x()) + "," + QString::number(sceneRect().y());
         strAddTrcInfo += "," + QString::number(sceneRect().width()) + "," + QString::number(sceneRect().height()) + ")";
         mthTracer.trace(strAddTrcInfo);
@@ -4971,7 +4982,7 @@ void CDrawingScene::keyPressEvent( QKeyEvent* i_pEv )
 
                     if( pGraphObj != nullptr )
                     {
-                        strlstGraphObjIdsSelected.append( pGraphObj->getObjId() );
+                        strlstGraphObjIdsSelected.append( pGraphObj->keyInTree() );
                     }
                 }
             }
@@ -4995,160 +5006,159 @@ void CDrawingScene::keyPressEvent( QKeyEvent* i_pEv )
         {
             if( m_iEvKeyModifiers == Qt::ControlModifier )
             {
-                // Clear internal clipboard.
-                if( m_dctpGraphObjsClipboard.size() > 0 )
-                {
-                    QMap<QString,CGraphObj*>::iterator itGraphObjsClipboard = m_dctpGraphObjsClipboard.begin();
+                //// Clear internal clipboard.
+                //if( m_dctpGraphObjsClipboard.size() > 0 )
+                //{
+                //    QMap<QString,CGraphObj*>::iterator itGraphObjsClipboard = m_dctpGraphObjsClipboard.begin();
 
-                    while( itGraphObjsClipboard != m_dctpGraphObjsClipboard.end() )
-                    {
-                        pGraphObj = itGraphObjsClipboard.value();
+                //    while( itGraphObjsClipboard != m_dctpGraphObjsClipboard.end() )
+                //    {
+                //        pGraphObj = itGraphObjsClipboard.value();
 
-                        if( pGraphObj != nullptr )
-                        {
-                            deleteItem(pGraphObj);
-                        }
-                        ++itGraphObjsClipboard;
-                    }
-                }
-                m_dctpGraphObjsClipboard.clear();
+                //        if( pGraphObj != nullptr )
+                //        {
+                //            deleteItem(pGraphObj);
+                //        }
+                //        ++itGraphObjsClipboard;
+                //    }
+                //}
+                //m_dctpGraphObjsClipboard.clear();
 
-                // Add selected objects to the internal clipboard. Not only the references
-                // are copied but the objects will be newly created (cloned). By simply storing
-                // the references changing attributes on currently selected objects would take
-                // effect on objects in the clipboard.
-                // Only those objects will be added to the clipboard which don't belong to a
-                // group (which don't have parent objects) as the parent object must clone its
-                // children.
-                // Cloning connection points and connection lines is not that simply as cloning
-                // a group with children. Connection lines can only be cloned if both of its
-                // connection points will be cloned and the cloned connection line must be
-                // connected with the clones of its original connection points.
+                //// Add selected objects to the internal clipboard. Not only the references
+                //// are copied but the objects will be newly created (cloned). By simply storing
+                //// the references changing attributes on currently selected objects would take
+                //// effect on objects in the clipboard.
+                //// Only those objects will be added to the clipboard which don't belong to a
+                //// group (which don't have parent objects) as the parent object must clone its
+                //// children.
+                //// Cloning connection points and connection lines is not that simply as cloning
+                //// a group with children. Connection lines can only be cloned if both of its
+                //// connection points will be cloned and the cloned connection line must be
+                //// connected with the clones of its original connection points.
 
-                QList<QGraphicsItem*>     arpGraphicsItemsSelected = selectedItems();
-                CGraphObj*                pGraphObjClone;
-                CGraphObjConnectionLine*  pGraphObjCnctLine;
-                CGraphObjConnectionLine*  pGraphObjCnctLineClone;
-                CGraphObjConnectionPoint* pGraphObjCnctPt1;
-                CGraphObjConnectionPoint* pGraphObjCnctPt2;
-                CGraphObjConnectionPoint* pGraphObjCnctPt1Clone;
-                CGraphObjConnectionPoint* pGraphObjCnctPt2Clone;
-                QString                   strGraphObjName;
-                QString                   strGraphObjId;
-                QList<CGraphObj*>         arpGraphObjsOrigin;
-                QList<CGraphObj*>         arpGraphObjsClones;
-                int                       idxGraphObjTmp;
+                //QList<QGraphicsItem*>     arpGraphicsItemsSelected = selectedItems();
+                //CGraphObj*                pGraphObjClone;
+                //CGraphObjConnectionLine*  pGraphObjCnctLine;
+                //CGraphObjConnectionLine*  pGraphObjCnctLineClone;
+                //CGraphObjConnectionPoint* pGraphObjCnctPt1;
+                //CGraphObjConnectionPoint* pGraphObjCnctPt2;
+                //CGraphObjConnectionPoint* pGraphObjCnctPt1Clone;
+                //CGraphObjConnectionPoint* pGraphObjCnctPt2Clone;
+                //QString                   strGraphObjName;
+                //QString                   strGraphObjId;
+                //QList<CGraphObj*>         arpGraphObjsOrigin;
+                //QList<CGraphObj*>         arpGraphObjsClones;
+                //int                       idxGraphObjTmp;
 
-                // During the first loop connection lines will not be cloned. Instead we are going to keep
-                // a list with original connection points and their clones. This way we are able in the
-                // second loop on cloning connection lines to detect the clones of the connection points.
-                for( idxGraphObj = 0; idxGraphObj < arpGraphicsItemsSelected.size(); idxGraphObj++ )
-                {
-                    pGraphicsItem = arpGraphicsItemsSelected[idxGraphObj];
+                //// During the first loop connection lines will not be cloned. Instead we are going to keep
+                //// a list with original connection points and their clones. This way we are able in the
+                //// second loop on cloning connection lines to detect the clones of the connection points.
+                //for( idxGraphObj = 0; idxGraphObj < arpGraphicsItemsSelected.size(); idxGraphObj++ )
+                //{
+                //    pGraphicsItem = arpGraphicsItemsSelected[idxGraphObj];
 
-                    // Only copy top level parent objects ..
-                    if( pGraphicsItem != nullptr && pGraphicsItem->parentItem() == nullptr )
-                    {
-                        pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
+                //    // Only copy top level parent objects ..
+                //    if( pGraphicsItem != nullptr && pGraphicsItem->parentItem() == nullptr )
+                //    {
+                //        pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
 
-                        if( pGraphObj != nullptr && pGraphObj->getType() != EGraphObjTypeConnectionLine )
-                        {
-                            pGraphObjClone = pGraphObj->clone();
+                //        if( pGraphObj != nullptr && pGraphObj->getType() != EGraphObjTypeConnectionLine )
+                //        {
+                //            pGraphObjClone = pGraphObj->clone();
 
-                            if( pGraphObjClone != nullptr )
-                            {
-                                // The name of the clone should end with " Copy <Nr>". If not ..
-                                strGraphObjName = pGraphObjClone->getObjName();
-                                if( !strGraphObjName.endsWith(" Copy 1",Qt::CaseInsensitive) )
-                                {
-                                    strGraphObjName += " Copy 1";
-                                    pGraphObjClone->setObjName(strGraphObjName);
-                                }
-                                strGraphObjName = findUniqueGraphObjName(pGraphObjClone);
-                                pGraphObjClone->setObjName(strGraphObjName);
+                //            if( pGraphObjClone != nullptr )
+                //            {
+                //                // The name of the clone should end with " Copy <Nr>". If not ..
+                //                strGraphObjName = pGraphObjClone->name();
+                //                if( !strGraphObjName.endsWith(" Copy 1",Qt::CaseInsensitive) )
+                //                {
+                //                    strGraphObjName += " Copy 1";
+                //                    pGraphObjClone->setName(strGraphObjName);
+                //                }
+                //                strGraphObjName = findUniqueGraphObjName(pGraphObjClone);
+                //                pGraphObjClone->setName(strGraphObjName);
 
-                                strGraphObjId = pGraphObjClone->getObjId();
-                                strGraphObjId = FindUniqueGraphObjId( m_dctpGraphObjsClipboard, strGraphObjId );
-                                pGraphObjClone->setObjId(strGraphObjId);
-                                m_dctpGraphObjsClipboard[strGraphObjId] = pGraphObjClone;
+                //                strGraphObjId = pGraphObjClone->keyInTree();
+                //                strGraphObjId = FindUniqueGraphObjId( m_dctpGraphObjsClipboard, strGraphObjId );
+                //                pGraphObjClone->setKeyInTree(strGraphObjId);
+                //                m_dctpGraphObjsClipboard[strGraphObjId] = pGraphObjClone;
 
-                                if( pGraphObjClone->getType() == EGraphObjTypeConnectionPoint )
-                                {
-                                    arpGraphObjsOrigin.append(pGraphObj);
-                                    arpGraphObjsClones.append(pGraphObjClone);
-                                }
+                //                if( pGraphObjClone->getType() == EGraphObjTypeConnectionPoint )
+                //                {
+                //                    arpGraphObjsOrigin.append(pGraphObj);
+                //                    arpGraphObjsClones.append(pGraphObjClone);
+                //                }
 
-                            } // if( pGraphObjClone != nullptr )
-                        } // if( pGraphObj != nullptr && pGraphObj->getType() != EGraphObjTypeConnectionLine )
-                    } // if( pGraphicsItem != nullptr && pGraphicsItem->parentItem() == nullptr )
-                } // for( idxGraphObj = 0; idxGraphObj < arpGraphicsItemsSelected.size(); idxGraphObj++ )
+                //            } // if( pGraphObjClone != nullptr )
+                //        } // if( pGraphObj != nullptr && pGraphObj->getType() != EGraphObjTypeConnectionLine )
+                //    } // if( pGraphicsItem != nullptr && pGraphicsItem->parentItem() == nullptr )
+                //} // for( idxGraphObj = 0; idxGraphObj < arpGraphicsItemsSelected.size(); idxGraphObj++ )
 
-                for( idxGraphObj = 0; idxGraphObj < arpGraphicsItemsSelected.size(); idxGraphObj++ )
-                {
-                    pGraphicsItem = arpGraphicsItemsSelected[idxGraphObj];
-                    pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
+                //for( idxGraphObj = 0; idxGraphObj < arpGraphicsItemsSelected.size(); idxGraphObj++ )
+                //{
+                //    pGraphicsItem = arpGraphicsItemsSelected[idxGraphObj];
+                //    pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
 
-                    if( pGraphObj != nullptr && pGraphObj->getType() == EGraphObjTypeConnectionLine )
-                    {
-                        pGraphObjCnctLine = dynamic_cast<CGraphObjConnectionLine*>(pGraphObj);
+                //    if( pGraphObj != nullptr && pGraphObj->getType() == EGraphObjTypeConnectionLine )
+                //    {
+                //        pGraphObjCnctLine = dynamic_cast<CGraphObjConnectionLine*>(pGraphObj);
 
-                        if( pGraphObjCnctLine != nullptr )
-                        {
-                            pGraphObjCnctPt1 = pGraphObjCnctLine->getConnectionPoint(ELinePoint::Start);
-                            pGraphObjCnctPt2 = pGraphObjCnctLine->getConnectionPoint(ELinePoint::End);
-                            pGraphObjCnctPt1Clone = nullptr;
-                            pGraphObjCnctPt2Clone = nullptr;
+                //        if( pGraphObjCnctLine != nullptr )
+                //        {
+                //            pGraphObjCnctPt1 = pGraphObjCnctLine->getConnectionPoint(ELinePoint::Start);
+                //            pGraphObjCnctPt2 = pGraphObjCnctLine->getConnectionPoint(ELinePoint::End);
+                //            pGraphObjCnctPt1Clone = nullptr;
+                //            pGraphObjCnctPt2Clone = nullptr;
 
-                            // Look for the original connection points.
-                            for( idxGraphObjTmp = 0; idxGraphObjTmp < arpGraphObjsOrigin.size(); idxGraphObjTmp++ )
-                            {
-                                if( arpGraphObjsOrigin[idxGraphObjTmp] == pGraphObjCnctPt1 )
-                                {
-                                    pGraphObjCnctPt1Clone = dynamic_cast<CGraphObjConnectionPoint*>(arpGraphObjsClones[idxGraphObjTmp]);
-                                }
-                                if( arpGraphObjsOrigin[idxGraphObjTmp] == pGraphObjCnctPt2 )
-                                {
-                                    pGraphObjCnctPt2Clone = dynamic_cast<CGraphObjConnectionPoint*>(arpGraphObjsClones[idxGraphObjTmp]);
-                                }
-                                if( pGraphObjCnctPt1Clone != nullptr && pGraphObjCnctPt2Clone != nullptr )
-                                {
-                                    break;
-                                }
-                            }
+                //            // Look for the original connection points.
+                //            for( idxGraphObjTmp = 0; idxGraphObjTmp < arpGraphObjsOrigin.size(); idxGraphObjTmp++ )
+                //            {
+                //                if( arpGraphObjsOrigin[idxGraphObjTmp] == pGraphObjCnctPt1 )
+                //                {
+                //                    pGraphObjCnctPt1Clone = dynamic_cast<CGraphObjConnectionPoint*>(arpGraphObjsClones[idxGraphObjTmp]);
+                //                }
+                //                if( arpGraphObjsOrigin[idxGraphObjTmp] == pGraphObjCnctPt2 )
+                //                {
+                //                    pGraphObjCnctPt2Clone = dynamic_cast<CGraphObjConnectionPoint*>(arpGraphObjsClones[idxGraphObjTmp]);
+                //                }
+                //                if( pGraphObjCnctPt1Clone != nullptr && pGraphObjCnctPt2Clone != nullptr )
+                //                {
+                //                    break;
+                //                }
+                //            }
 
-                            // The references to the connection points cannot be copied with the
-                            // connection lines as the connection points have also been cloned.
-                            // Instead the cloned connection line got to be connected to the clones
-                            // of the connection points 
-                            if( pGraphObjCnctPt1Clone != nullptr && pGraphObjCnctPt2Clone != nullptr )
-                            {
-                                pGraphObjCnctLineClone = dynamic_cast<CGraphObjConnectionLine*>(pGraphObj->clone());
+                //            // The references to the connection points cannot be copied with the
+                //            // connection lines as the connection points have also been cloned.
+                //            // Instead the cloned connection line got to be connected to the clones
+                //            // of the connection points 
+                //            if( pGraphObjCnctPt1Clone != nullptr && pGraphObjCnctPt2Clone != nullptr )
+                //            {
+                //                pGraphObjCnctLineClone = dynamic_cast<CGraphObjConnectionLine*>(pGraphObj->clone());
 
-                                if( pGraphObjCnctLineClone != nullptr )
-                                {
-                                    pGraphObjCnctLineClone->setConnectionPoint(ELinePoint::Start,pGraphObjCnctPt1Clone);
-                                    pGraphObjCnctLineClone->setConnectionPoint(ELinePoint::End,pGraphObjCnctPt2Clone);
+                //                if( pGraphObjCnctLineClone != nullptr )
+                //                {
+                //                    pGraphObjCnctLineClone->setConnectionPoint(ELinePoint::Start,pGraphObjCnctPt1Clone);
+                //                    pGraphObjCnctLineClone->setConnectionPoint(ELinePoint::End,pGraphObjCnctPt2Clone);
 
-                                    // The name of the clone should end with " Copy <Nr>". If not ..
-                                    strGraphObjName = pGraphObjCnctLineClone->getObjName();
-                                    if( !strGraphObjName.endsWith(" Copy 1",Qt::CaseInsensitive) )
-                                    {
-                                        strGraphObjName += " Copy 1";
-                                        pGraphObjCnctLineClone->setObjName(strGraphObjName);
-                                    }
-                                    strGraphObjName = findUniqueGraphObjName(pGraphObjCnctLineClone);
-                                    pGraphObjCnctLineClone->setObjName(strGraphObjName);
+                //                    // The name of the clone should end with " Copy <Nr>". If not ..
+                //                    strGraphObjName = pGraphObjCnctLineClone->name();
+                //                    if( !strGraphObjName.endsWith(" Copy 1",Qt::CaseInsensitive) )
+                //                    {
+                //                        strGraphObjName += " Copy 1";
+                //                        pGraphObjCnctLineClone->setName(strGraphObjName);
+                //                    }
+                //                    strGraphObjName = findUniqueGraphObjName(pGraphObjCnctLineClone);
+                //                    pGraphObjCnctLineClone->setName(strGraphObjName);
 
-                                    strGraphObjId = pGraphObjCnctLineClone->getObjId();
-                                    strGraphObjId = FindUniqueGraphObjId( m_dctpGraphObjsClipboard, strGraphObjId );
-                                    pGraphObjCnctLineClone->setObjId(strGraphObjId);
-                                    m_dctpGraphObjsClipboard[strGraphObjId] = pGraphObjCnctLineClone;
-                                }
-                            } // if( pGraphObjCnctPt1Clone != nullptr && pGraphObjCnctPt2Clone != nullptr )
-                        } // if( pGraphObjCnctLine != nullptr )
-                    } // if( pGraphObj != nullptr && pGraphObj->getType() == EGraphObjTypeConnectionLine )
-                } // for( idxGraphObj = 0; idxGraphObj < arpGraphicsItemsSelected.size(); idxGraphObj++ )
-
+                //                    strGraphObjId = pGraphObjCnctLineClone->keyInTree();
+                //                    strGraphObjId = FindUniqueGraphObjId( m_dctpGraphObjsClipboard, strGraphObjId );
+                //                    pGraphObjCnctLineClone->setKeyInTree(strGraphObjId);
+                //                    m_dctpGraphObjsClipboard[strGraphObjId] = pGraphObjCnctLineClone;
+                //                }
+                //            } // if( pGraphObjCnctPt1Clone != nullptr && pGraphObjCnctPt2Clone != nullptr )
+                //        } // if( pGraphObjCnctLine != nullptr )
+                //    } // if( pGraphObj != nullptr && pGraphObj->getType() == EGraphObjTypeConnectionLine )
+                //} // for( idxGraphObj = 0; idxGraphObj < arpGraphicsItemsSelected.size(); idxGraphObj++ )
             } // if( m_iEvKeyModifiers == Qt::ControlModifier )
         } // if( i_pEv->key() == Qt::Key_C )
 
@@ -5157,20 +5167,20 @@ void CDrawingScene::keyPressEvent( QKeyEvent* i_pEv )
         {
             if( m_iEvKeyModifiers == Qt::ControlModifier )
             {
-                CGraphObj*                pGraphObjClone;
-                QGraphicsItem*            pGraphicsItemClone;
-                CGraphObjConnectionLine*  pGraphObjCnctLine;
-                CGraphObjConnectionLine*  pGraphObjCnctLineClone;
-                CGraphObjConnectionPoint* pGraphObjCnctPt1;
-                CGraphObjConnectionPoint* pGraphObjCnctPt2;
-                CGraphObjConnectionPoint* pGraphObjCnctPt1Clone;
-                CGraphObjConnectionPoint* pGraphObjCnctPt2Clone;
-                QString                   strGraphObjName;
-                QString                   strGraphObjId;
-                QList<CGraphObj*>         arpGraphObjsOrigin;
-                QList<CGraphObj*>         arpGraphObjsClones;
-                int                       idxGraphObjTmp;
-                QPointF                   ptPos;
+                //CGraphObj*                pGraphObjClone;
+                //QGraphicsItem*            pGraphicsItemClone;
+                //CGraphObjConnectionLine*  pGraphObjCnctLine;
+                //CGraphObjConnectionLine*  pGraphObjCnctLineClone;
+                //CGraphObjConnectionPoint* pGraphObjCnctPt1;
+                //CGraphObjConnectionPoint* pGraphObjCnctPt2;
+                //CGraphObjConnectionPoint* pGraphObjCnctPt1Clone;
+                //CGraphObjConnectionPoint* pGraphObjCnctPt2Clone;
+                //QString                   strGraphObjName;
+                //QString                   strGraphObjId;
+                //QList<CGraphObj*>         arpGraphObjsOrigin;
+                //QList<CGraphObj*>         arpGraphObjsClones;
+                //int                       idxGraphObjTmp;
+                //QPointF                   ptPos;
 
                 // Add objects from the internal clipboard to the drawing scene. Not only the references
                 // have been copied but the objects have already been newly created (cloned).
@@ -5179,152 +5189,152 @@ void CDrawingScene::keyPressEvent( QKeyEvent* i_pEv )
                 // Concerning cloning group objects, connection points and their connection lines the
                 // same applies as on cloning the objects to the clipboard (see "Key_C" above).
 
-                if( m_dctpGraphObjsClipboard.size() > 0 )
-                {
-                    clearSelection();
+                //if( m_dctpGraphObjsClipboard.size() > 0 )
+                //{
+                //    clearSelection();
 
-                    QMap<QString,CGraphObj*>::iterator itGraphObjsClipboard = m_dctpGraphObjsClipboard.begin();
+                //    QMap<QString,CGraphObj*>::iterator itGraphObjsClipboard = m_dctpGraphObjsClipboard.begin();
 
-                    while( itGraphObjsClipboard != m_dctpGraphObjsClipboard.end() )
-                    {
-                        pGraphObj = itGraphObjsClipboard.value();
+                //    while( itGraphObjsClipboard != m_dctpGraphObjsClipboard.end() )
+                //    {
+                //        pGraphObj = itGraphObjsClipboard.value();
 
-                        if( pGraphObj != nullptr && pGraphObj->getType() != EGraphObjTypeConnectionLine )
-                        {
-                            // We leave the clones in the clipboard as the objects may be copied several times.
-                            // But for this we have to clone the clone.
-                            pGraphObjClone = pGraphObj->clone();
+                //        if( pGraphObj != nullptr && pGraphObj->getType() != EGraphObjTypeConnectionLine )
+                //        {
+                //            // We leave the clones in the clipboard as the objects may be copied several times.
+                //            // But for this we have to clone the clone.
+                //            pGraphObjClone = pGraphObj->clone();
 
-                            if( pGraphObjClone != nullptr )
-                            {
-                                strGraphObjName = pGraphObjClone->getObjName();
-                                strGraphObjName = findUniqueGraphObjName(pGraphObjClone);
-                                pGraphObjClone->setObjName(strGraphObjName);
+                //            if( pGraphObjClone != nullptr )
+                //            {
+                //                strGraphObjName = pGraphObjClone->name();
+                //                strGraphObjName = findUniqueGraphObjName(pGraphObjClone);
+                //                pGraphObjClone->setName(strGraphObjName);
 
-                                strGraphObjId = pGraphObjClone->getObjId();
-                                strGraphObjId = FindUniqueGraphObjId( m_dctpGraphObjs, strGraphObjId );
-                                pGraphObjClone->setObjId(strGraphObjId);
+                //                strGraphObjId = pGraphObjClone->keyInTree();
+                //                strGraphObjId = FindUniqueGraphObjId( m_dctpGraphObjs, strGraphObjId );
+                //                pGraphObjClone->setKeyInTree(strGraphObjId);
 
-                                pGraphicsItemClone = dynamic_cast<QGraphicsItem*>(pGraphObjClone);
+                //                pGraphicsItemClone = dynamic_cast<QGraphicsItem*>(pGraphObjClone);
 
-                                if( pGraphicsItemClone == nullptr )
-                                {
-                                    throw ZS::System::CException( __FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphicsItem == nullptr" );
-                                }
+                //                if( pGraphicsItemClone == nullptr )
+                //                {
+                //                    throw ZS::System::CException( __FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphicsItem == nullptr" );
+                //                }
 
-                                addItem(pGraphicsItemClone);
+                //                addItem(pGraphicsItemClone);
 
-                                onGraphObjCreated(pGraphObjClone);
+                //                onGraphObjCreated(pGraphObjClone);
 
-                                ptPos = pGraphicsItemClone->pos();
+                //                ptPos = pGraphicsItemClone->pos();
 
-                                ptPos.setX( ptPos.x() + 10 );
-                                ptPos.setY( ptPos.y() + 10 );
+                //                ptPos.setX( ptPos.x() + 10 );
+                //                ptPos.setY( ptPos.y() + 10 );
 
-                                pGraphicsItemClone->setPos(ptPos);
-                                pGraphicsItemClone->setSelected(true);
+                //                pGraphicsItemClone->setPos(ptPos);
+                //                pGraphicsItemClone->setSelected(true);
 
-                                if( pGraphicsItemClone->childItems().size() > 0 )
-                                {
-                                    // Rekursively add child items to the drawings scene's list of graphics items.
-                                    addChildItems(pGraphicsItemClone);
-                                }
+                //                if( pGraphicsItemClone->childItems().size() > 0 )
+                //                {
+                //                    // Rekursively add child items to the drawings scene's list of graphics items.
+                //                    addChildItems(pGraphicsItemClone);
+                //                }
 
-                                if( pGraphObjClone->getType() == EGraphObjTypeConnectionPoint )
-                                {
-                                    arpGraphObjsOrigin.append(pGraphObj);
-                                    arpGraphObjsClones.append(pGraphObjClone);
-                                }
+                //                if( pGraphObjClone->getType() == EGraphObjTypeConnectionPoint )
+                //                {
+                //                    arpGraphObjsOrigin.append(pGraphObj);
+                //                    arpGraphObjsClones.append(pGraphObjClone);
+                //                }
 
-                            } // if( pGraphObjClone != nullptr )
-                        } // if( pGraphObj != nullptr && pGraphObj->getType() != EGraphObjTypeConnectionLine )
+                //            } // if( pGraphObjClone != nullptr )
+                //        } // if( pGraphObj != nullptr && pGraphObj->getType() != EGraphObjTypeConnectionLine )
 
-                        ++itGraphObjsClipboard;
+                //        ++itGraphObjsClipboard;
 
-                    } // while( itGraphObjsClipboard != m_dctpGraphObjsClipboard.end() )
+                //    } // while( itGraphObjsClipboard != m_dctpGraphObjsClipboard.end() )
 
-                    itGraphObjsClipboard = m_dctpGraphObjsClipboard.begin();
+                //    itGraphObjsClipboard = m_dctpGraphObjsClipboard.begin();
 
-                    while( itGraphObjsClipboard != m_dctpGraphObjsClipboard.end() )
-                    {
-                        pGraphObj = itGraphObjsClipboard.value();
+                //    while( itGraphObjsClipboard != m_dctpGraphObjsClipboard.end() )
+                //    {
+                //        pGraphObj = itGraphObjsClipboard.value();
 
-                        if( pGraphObj != nullptr && pGraphObj->getType() == EGraphObjTypeConnectionLine )
-                        {
-                            pGraphObjCnctLine = dynamic_cast<CGraphObjConnectionLine*>(pGraphObj);
+                //        if( pGraphObj != nullptr && pGraphObj->getType() == EGraphObjTypeConnectionLine )
+                //        {
+                //            pGraphObjCnctLine = dynamic_cast<CGraphObjConnectionLine*>(pGraphObj);
 
-                            if( pGraphObjCnctLine != nullptr )
-                            {
-                                pGraphObjCnctPt1 = pGraphObjCnctLine->getConnectionPoint(ELinePoint::Start);
-                                pGraphObjCnctPt2 = pGraphObjCnctLine->getConnectionPoint(ELinePoint::End);
-                                pGraphObjCnctPt1Clone = nullptr;
-                                pGraphObjCnctPt2Clone = nullptr;
+                //            if( pGraphObjCnctLine != nullptr )
+                //            {
+                //                pGraphObjCnctPt1 = pGraphObjCnctLine->getConnectionPoint(ELinePoint::Start);
+                //                pGraphObjCnctPt2 = pGraphObjCnctLine->getConnectionPoint(ELinePoint::End);
+                //                pGraphObjCnctPt1Clone = nullptr;
+                //                pGraphObjCnctPt2Clone = nullptr;
 
-                                // Look for the "original" connection points in the clipboard.
-                                for( idxGraphObjTmp = 0; idxGraphObjTmp < arpGraphObjsOrigin.size(); idxGraphObjTmp++ )
-                                {
-                                    if( arpGraphObjsOrigin[idxGraphObjTmp] == pGraphObjCnctPt1 )
-                                    {
-                                        pGraphObjCnctPt1Clone = dynamic_cast<CGraphObjConnectionPoint*>(arpGraphObjsClones[idxGraphObjTmp]);
-                                    }
-                                    if( arpGraphObjsOrigin[idxGraphObjTmp] == pGraphObjCnctPt2 )
-                                    {
-                                        pGraphObjCnctPt2Clone = dynamic_cast<CGraphObjConnectionPoint*>(arpGraphObjsClones[idxGraphObjTmp]);
-                                    }
-                                    if( pGraphObjCnctPt1Clone != nullptr && pGraphObjCnctPt2Clone != nullptr )
-                                    {
-                                        break;
-                                    }
-                                }
+                //                // Look for the "original" connection points in the clipboard.
+                //                for( idxGraphObjTmp = 0; idxGraphObjTmp < arpGraphObjsOrigin.size(); idxGraphObjTmp++ )
+                //                {
+                //                    if( arpGraphObjsOrigin[idxGraphObjTmp] == pGraphObjCnctPt1 )
+                //                    {
+                //                        pGraphObjCnctPt1Clone = dynamic_cast<CGraphObjConnectionPoint*>(arpGraphObjsClones[idxGraphObjTmp]);
+                //                    }
+                //                    if( arpGraphObjsOrigin[idxGraphObjTmp] == pGraphObjCnctPt2 )
+                //                    {
+                //                        pGraphObjCnctPt2Clone = dynamic_cast<CGraphObjConnectionPoint*>(arpGraphObjsClones[idxGraphObjTmp]);
+                //                    }
+                //                    if( pGraphObjCnctPt1Clone != nullptr && pGraphObjCnctPt2Clone != nullptr )
+                //                    {
+                //                        break;
+                //                    }
+                //                }
 
-                                // The references to the connection points cannot be copied with the
-                                // connection lines as the connection points have also been cloned.
-                                // Instead the cloned connection line got to be connected to the clones
-                                // of the connection points 
-                                if( pGraphObjCnctPt1Clone != nullptr && pGraphObjCnctPt2Clone != nullptr )
-                                {
-                                    // We leave the clones in the clipboard as the objects may be copied several times.
-                                    // But for this we have to clone the clone.
-                                    pGraphObjClone = pGraphObj->clone();
-                                    pGraphObjCnctLineClone = dynamic_cast<CGraphObjConnectionLine*>(pGraphObjClone);
+                //                // The references to the connection points cannot be copied with the
+                //                // connection lines as the connection points have also been cloned.
+                //                // Instead the cloned connection line got to be connected to the clones
+                //                // of the connection points 
+                //                if( pGraphObjCnctPt1Clone != nullptr && pGraphObjCnctPt2Clone != nullptr )
+                //                {
+                //                    // We leave the clones in the clipboard as the objects may be copied several times.
+                //                    // But for this we have to clone the clone.
+                //                    pGraphObjClone = pGraphObj->clone();
+                //                    pGraphObjCnctLineClone = dynamic_cast<CGraphObjConnectionLine*>(pGraphObjClone);
 
-                                    if( pGraphObjCnctLineClone != nullptr )
-                                    {
-                                        pGraphObjCnctLineClone->setConnectionPoint(ELinePoint::Start,pGraphObjCnctPt1Clone);
-                                        pGraphObjCnctLineClone->setConnectionPoint(ELinePoint::End,pGraphObjCnctPt2Clone);
+                //                    if( pGraphObjCnctLineClone != nullptr )
+                //                    {
+                //                        pGraphObjCnctLineClone->setConnectionPoint(ELinePoint::Start,pGraphObjCnctPt1Clone);
+                //                        pGraphObjCnctLineClone->setConnectionPoint(ELinePoint::End,pGraphObjCnctPt2Clone);
 
-                                        strGraphObjName = pGraphObjCnctLineClone->getObjName();
-                                        strGraphObjName = findUniqueGraphObjName(pGraphObjCnctLineClone);
-                                        pGraphObjCnctLineClone->setObjName(strGraphObjName);
+                //                        strGraphObjName = pGraphObjCnctLineClone->name();
+                //                        strGraphObjName = findUniqueGraphObjName(pGraphObjCnctLineClone);
+                //                        pGraphObjCnctLineClone->setName(strGraphObjName);
 
-                                        strGraphObjId = pGraphObjCnctLineClone->getObjId();
-                                        strGraphObjId = FindUniqueGraphObjId( m_dctpGraphObjsClipboard, strGraphObjId );
-                                        pGraphObjCnctLineClone->setObjId(strGraphObjId);
+                //                        strGraphObjId = pGraphObjCnctLineClone->keyInTree();
+                //                        strGraphObjId = FindUniqueGraphObjId( m_dctpGraphObjsClipboard, strGraphObjId );
+                //                        pGraphObjCnctLineClone->setKeyInTree(strGraphObjId);
 
-                                        pGraphicsItemClone = dynamic_cast<QGraphicsItem*>(pGraphObjCnctLineClone);
+                //                        pGraphicsItemClone = dynamic_cast<QGraphicsItem*>(pGraphObjCnctLineClone);
 
-                                        if( pGraphicsItemClone == nullptr )
-                                        {
-                                            throw ZS::System::CException( __FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphicsItem == nullptr" );
-                                        }
+                //                        if( pGraphicsItemClone == nullptr )
+                //                        {
+                //                            throw ZS::System::CException( __FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphicsItem == nullptr" );
+                //                        }
 
-                                        addItem(pGraphicsItemClone);
+                //                        addItem(pGraphicsItemClone);
 
-                                        onGraphObjCreated(pGraphObjCnctLineClone);
+                //                        onGraphObjCreated(pGraphObjCnctLineClone);
 
-                                        // Please note that the position for connection lines is defined by the connection points
-                                        // and that connection lins never have children (calling "addChildItems" is not necessary).
-                                        pGraphicsItemClone->setSelected(true);
+                //                        // Please note that the position for connection lines is defined by the connection points
+                //                        // and that connection lins never have children (calling "addChildItems" is not necessary).
+                //                        pGraphicsItemClone->setSelected(true);
 
-                                    } // if( pGraphObjCnctLineClone != nullptr )
-                                } // if( pGraphObjCnctPt1Clone != nullptr && pGraphObjCnctPt2Clone != nullptr )
-                            } // if( pGraphObjClone != nullptr )
-                        } // if( pGraphObj != nullptr && pGraphObj->getType() != EGraphObjTypeConnectionLine )
+                //                    } // if( pGraphObjCnctLineClone != nullptr )
+                //                } // if( pGraphObjCnctPt1Clone != nullptr && pGraphObjCnctPt2Clone != nullptr )
+                //            } // if( pGraphObjClone != nullptr )
+                //        } // if( pGraphObj != nullptr && pGraphObj->getType() != EGraphObjTypeConnectionLine )
 
-                        ++itGraphObjsClipboard;
+                //        ++itGraphObjsClipboard;
 
-                    } // while( itGraphObjsClipboard != m_dctpGraphObjsClipboard.end() )
-                } // if( m_dctpGraphObjsClipboard.size() > 0 )
+                //    } // while( itGraphObjsClipboard != m_dctpGraphObjsClipboard.end() )
+                //} // if( m_dctpGraphObjsClipboard.size() > 0 )
             } // if( m_iEvKeyModifiers == Qt::ControlModifier )
         } // if( i_pEv->key() == Qt::Key_V )
     } // if( !i_pEv->isAccepted() )
@@ -5359,7 +5369,7 @@ void CDrawingScene::keyReleaseEvent( QKeyEvent* i_pEv )
         strAddTrcInfo += ", EditMode:" + m_editMode.toString();
         strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
         strAddTrcInfo += ", ObjFactory:" + QString(m_pObjFactory == nullptr ? "nullptr" : m_pObjFactory->path());
-        strAddTrcInfo += ", GraphObjCreating:" + QString(m_pGraphObjCreating == nullptr ? "nullptr" : m_pGraphObjCreating->getObjName());
+        strAddTrcInfo += ", GraphObjCreating:" + QString(m_pGraphObjCreating == nullptr ? "nullptr" : m_pGraphObjCreating->name());
         strAddTrcInfo += ", SceneRect(x,y,w,h):(" + QString::number(sceneRect().x()) + "," + QString::number(sceneRect().y());
         strAddTrcInfo += "," + QString::number(sceneRect().width()) + "," + QString::number(sceneRect().height()) + ")";
         mthTracer.trace(strAddTrcInfo);

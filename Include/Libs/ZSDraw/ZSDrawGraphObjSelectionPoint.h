@@ -78,6 +78,9 @@ public: // overridables of base class QGraphicsItem
     int type() const { return static_cast<int>(EGraphObjTypeSelectionPoint); }
 public: // must overridables of base class CGraphObj
     virtual CGraphObj* clone();
+public: // overridables
+    virtual QString nameSpace() { return NameSpace(); }
+    virtual QString className() { return ClassName(); }
 public: // instance methods
     ESelectionPointType getSelectionPointType() const { return m_selPtType.enumerator(); }
 public: // instance methods
@@ -122,16 +125,9 @@ protected: // overridables of base class QGraphicsItem
 protected: // overridables of base class QGraphicsItem
     virtual QVariant itemChange( GraphicsItemChange i_change, const QVariant& i_value );
 protected: // class members
-    static qint64                   s_iCtorsCount;
-    static qint64                   s_iDtorsCount;
-    static ZS::Trace::CTrcAdminObj* s_pTrcAdminObjCtorsAndDtor;
-    static ZS::Trace::CTrcAdminObj* s_pTrcAdminObjBoundingRect;
-    static ZS::Trace::CTrcAdminObj* s_pTrcAdminObjPaint;
-    static ZS::Trace::CTrcAdminObj* s_pTrcAdminObjSceneEventFilter;
-    static ZS::Trace::CTrcAdminObj* s_pTrcAdminObjHoverEvents;
-    static ZS::Trace::CTrcAdminObj* s_pTrcAdminObjMouseEvents;
-    static ZS::Trace::CTrcAdminObj* s_pTrcAdminObjItemChange;
-    static double                   s_fRadius_px;
+    static qint64 s_iInstCount;
+protected: // class members
+    static double s_fRadius_px;
 protected: // instance members
     CGraphObj*              m_pGraphObjSelected;
     CEnumSelectionPointType m_selPtType;

@@ -62,7 +62,7 @@ class ZSSYSGUIDLL_API CWdgtErrLog : public QWidget
 {
     Q_OBJECT
 public: // ctors and dtor
-    CWdgtErrLog( const QString& i_strHeadline = "", QWidget* i_pWdgtParent = nullptr );
+    CWdgtErrLog( const QString& i_strErrLogName = "ZSErrLog", const QString& i_strHeadline = "", QWidget* i_pWdgtParent = nullptr );
     virtual ~CWdgtErrLog();
 public: // instance methods
     void showColumn( CModelErrLog::EColumn i_clm );

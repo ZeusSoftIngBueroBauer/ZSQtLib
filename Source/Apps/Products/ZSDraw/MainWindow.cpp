@@ -84,12 +84,12 @@ may result in using the software modules.
 #include "ZSDrawObjFactoryElectricityTransistor.h"
 #include "ZSDrawObjFactoryElectricityVoltageSource.h"
 
+#include "ZSDraw/ZSDrawAux.h"
 #include "ZSDraw/ZSDrawDlgFormatGraphObjs.h"
 #include "ZSDraw/ZSDrawDlgPageSetup.h"
 #include "ZSDraw/ZSDrawingScene.h"
 #include "ZSDraw/ZSDrawingView.h"
 #include "ZSDraw/ZSDrawGraphicsItemsModel.h"
-#include "ZSDraw/ZSDrawGraphObjModelEntry.h"
 #include "ZSDraw/ZSDrawGraphObj.h"
 #include "ZSDraw/ZSDrawObjFactoriesModel.h"
 #include "ZSDraw/ZSDrawObjFactoryConnectionLine.h"
@@ -108,6 +108,7 @@ may result in using the software modules.
 #include "ZSIpcTraceGUI/ZSIpcTrcServerDlg.h"
 #include "ZSTestGUI/ZSTestDlg.h"
 #include "ZSSysGUI/ZSSysErrLogDlg.h"
+#include "ZSSysGUI/ZSSysIdxTreeModelEntry.h"
 #include "ZSSysGUI/ZSSysTrcAdminObjIdxTreeDlg.h"
 #include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysErrCode.h"
@@ -359,7 +360,7 @@ CMainWindow::CMainWindow(
     m_pLblGraphicsItemsRefresh(nullptr),
     m_pBtnGraphicsItemsRefresh(nullptr),
     m_pTreeViewGraphicsItems(nullptr),
-    m_pModelGraphicsItems(nullptr),
+    m_pModelIdxTreeGraphicsItems(nullptr),
     // Dialogs
     m_pDlgTest(nullptr),
     // Status Bar
@@ -613,12 +614,12 @@ CMainWindow::~CMainWindow()
 
     try
     {
-        delete m_pModelGraphicsItems;
+        delete m_pModelIdxTreeGraphicsItems;
     }
     catch(...)
     {
     }
-    m_pModelGraphicsItems = nullptr;
+    m_pModelIdxTreeGraphicsItems = nullptr;
 
     try
     {
@@ -1007,7 +1008,7 @@ CMainWindow::~CMainWindow()
     m_pLblGraphicsItemsRefresh = nullptr;
     m_pBtnGraphicsItemsRefresh = nullptr;
     m_pTreeViewGraphicsItems = nullptr;
-    m_pModelGraphicsItems = nullptr;
+    m_pModelIdxTreeGraphicsItems = nullptr;
     // Dialogs
     m_pDlgTest = nullptr;
     // Status Bar
@@ -1061,9 +1062,9 @@ void CMainWindow::setWindowTitle()
         strFileName = fileInfo.fileName();
     }
 
-    EMode mode = m_pDrawingScene->getMode();
+    CEnumMode mode = m_pDrawingScene->getMode();
 
-    strWindowTitle += " - " + CEnumMode::toString(mode);
+    strWindowTitle += " - " + mode.toString();
 
     strWindowTitle += " - " + strFileName;
 
@@ -1100,7 +1101,7 @@ void CMainWindow::createObjFactories()
 
     iconEditGroup.addPixmap(pxmEditGroup16x16);
 
-    m_pObjFactoryGroup = new CObjFactoryGroup(false,iconEditGroup);
+    m_pObjFactoryGroup = new CObjFactoryGroup(iconEditGroup);
 
     // <Menu> Draw
     //============
@@ -1118,7 +1119,7 @@ void CMainWindow::createObjFactories()
 
     iconDrawStandardShapesPoint.addPixmap(pxmDrawStandardShapesPoint16x16);
 
-    m_pObjFactoryPoint = new CObjFactoryPoint(false,iconDrawStandardShapesPoint);
+    m_pObjFactoryPoint = new CObjFactoryPoint(iconDrawStandardShapesPoint);
 
     // <MenuItem> Draw::Standard Shapes::Draw Line
     //--------------------------------------------
@@ -1130,7 +1131,7 @@ void CMainWindow::createObjFactories()
 
     iconDrawStandardShapesLine.addPixmap(pxmDrawStandardShapesLine16x16);
 
-    m_pObjFactoryLine = new CObjFactoryLine(false,iconDrawStandardShapesLine);
+    m_pObjFactoryLine = new CObjFactoryLine(iconDrawStandardShapesLine);
 
     // <MenuItem> Draw::Standard Shapes::Draw Rect
     //--------------------------------------------
@@ -1142,7 +1143,7 @@ void CMainWindow::createObjFactories()
 
     iconDrawStandardShapesRect.addPixmap(pxmDrawStandardShapesRect16x16);
 
-    m_pObjFactoryRect = new CObjFactoryRect(false,iconDrawStandardShapesRect);
+    m_pObjFactoryRect = new CObjFactoryRect(iconDrawStandardShapesRect);
 
     // <MenuItem> Draw::Standard Shapes::Draw Ellipse
     //-----------------------------------------------
@@ -1154,7 +1155,7 @@ void CMainWindow::createObjFactories()
 
     iconDrawStandardShapesEllipse.addPixmap(pxmDrawStandardShapesEllipse16x16);
 
-    m_pObjFactoryEllipse = new CObjFactoryEllipse(false,iconDrawStandardShapesEllipse);
+    m_pObjFactoryEllipse = new CObjFactoryEllipse(iconDrawStandardShapesEllipse);
 
     // <MenuItem> Draw::Standard Shapes::Draw Polyline
     //------------------------------------------------
@@ -1166,7 +1167,7 @@ void CMainWindow::createObjFactories()
 
     iconDrawStandardShapesPolyline.addPixmap(pxmDrawStandardShapesPolyline16x16);
 
-    m_pObjFactoryPolyline = new CObjFactoryPolyline(false,iconDrawStandardShapesPolyline);
+    m_pObjFactoryPolyline = new CObjFactoryPolyline(iconDrawStandardShapesPolyline);
 
     // <MenuItem> Draw::Standard Shapes::Draw Polygon
     //------------------------------------------------
@@ -1178,7 +1179,7 @@ void CMainWindow::createObjFactories()
 
     iconDrawStandardShapesPolygon.addPixmap(pxmDrawStandardShapesPolygon16x16);
 
-    m_pObjFactoryPolygon = new CObjFactoryPolygon(false,iconDrawStandardShapesPolygon);
+    m_pObjFactoryPolygon = new CObjFactoryPolygon(iconDrawStandardShapesPolygon);
 
     // <MenuItem> Draw::Standard Shapes::Draw Text
     //------------------------------------------------
@@ -1190,7 +1191,7 @@ void CMainWindow::createObjFactories()
 
     iconDrawStandardShapesText.addPixmap(pxmDrawStandardShapesText16x16);
 
-    m_pObjFactoryText = new CObjFactoryText(false,iconDrawStandardShapesText);
+    m_pObjFactoryText = new CObjFactoryText(iconDrawStandardShapesText);
 
     // <Menu> Draw::Graphics
     //----------------------
@@ -1205,7 +1206,7 @@ void CMainWindow::createObjFactories()
 
     iconDrawGraphicsImage.addPixmap(pxmDrawGraphicsImage16x16);
 
-    m_pObjFactoryImage = new CObjFactoryImage(false,iconDrawGraphicsImage);
+    m_pObjFactoryImage = new CObjFactoryImage(iconDrawGraphicsImage);
 
     // <Menu> Draw::Connections
     //-------------------------
@@ -1220,7 +1221,7 @@ void CMainWindow::createObjFactories()
 
     iconDrawConnectionPoint.addPixmap(pxmDrawConnectionPoint16x16);
 
-    m_pObjFactoryConnectionPoint = new CObjFactoryConnectionPoint(false,iconDrawConnectionPoint);
+    m_pObjFactoryConnectionPoint = new CObjFactoryConnectionPoint(iconDrawConnectionPoint);
 
     // <MenuItem> Draw::Connections::Draw Connection Line
     //----------------------------------------------------
@@ -1232,7 +1233,7 @@ void CMainWindow::createObjFactories()
 
     iconDrawConnectionLine.addPixmap(pxmDrawConnectionLine16x16);
 
-    m_pObjFactoryConnectionLine = new CObjFactoryConnectionLine(false,iconDrawConnectionLine);
+    m_pObjFactoryConnectionLine = new CObjFactoryConnectionLine(iconDrawConnectionLine);
 
     // <Menu> Draw::Widgets
     //----------------------
@@ -1249,7 +1250,7 @@ void CMainWindow::createObjFactories()
 
         iconDrawWdgtCheckBox.addPixmap(pxmDrawWdgtCheckBox16x16);
 
-        m_pObjFactoryWdgtCheckBox = new CObjFactoryWdgtCheckBox(true,iconDrawWdgtCheckBox);
+        m_pObjFactoryWdgtCheckBox = new CObjFactoryWdgtCheckBox(iconDrawWdgtCheckBox);
 
         // <MenuItem> Draw::Widgets::ComboBox
         //-----------------------------------
@@ -1261,7 +1262,7 @@ void CMainWindow::createObjFactories()
 
         iconDrawWdgtComboBox.addPixmap(pxmDrawWdgtComboBox16x16);
 
-        m_pObjFactoryWdgtComboBox = new CObjFactoryWdgtComboBox(true,iconDrawWdgtComboBox);
+        m_pObjFactoryWdgtComboBox = new CObjFactoryWdgtComboBox(iconDrawWdgtComboBox);
 
         // <MenuItem> Draw::Widgets::GroupBox
         //-----------------------------------
@@ -1273,7 +1274,7 @@ void CMainWindow::createObjFactories()
 
         iconDrawWdgtGroupBox.addPixmap(pxmDrawWdgtGroupBox16x16);
 
-        m_pObjFactoryWdgtGroupBox = new CObjFactoryWdgtGroupBox(true,iconDrawWdgtGroupBox);
+        m_pObjFactoryWdgtGroupBox = new CObjFactoryWdgtGroupBox(iconDrawWdgtGroupBox);
 
         // <MenuItem> Draw::Widgets::Label
         //-----------------------------------
@@ -1285,7 +1286,7 @@ void CMainWindow::createObjFactories()
 
         iconDrawWdgtLabel.addPixmap(pxmDrawWdgtLabel16x16);
 
-        m_pObjFactoryWdgtLabel = new CObjFactoryWdgtLabel(true,iconDrawWdgtLabel);
+        m_pObjFactoryWdgtLabel = new CObjFactoryWdgtLabel(iconDrawWdgtLabel);
 
         // <MenuItem> Draw::Widgets::LineEdit
         //-----------------------------------
@@ -1297,7 +1298,7 @@ void CMainWindow::createObjFactories()
 
         iconDrawWdgtLineEdit.addPixmap(pxmDrawWdgtLineEdit16x16);
 
-        m_pObjFactoryWdgtLineEdit = new CObjFactoryWdgtLineEdit(true,iconDrawWdgtLineEdit);
+        m_pObjFactoryWdgtLineEdit = new CObjFactoryWdgtLineEdit(iconDrawWdgtLineEdit);
 
         // <MenuItem> Draw::Widgets::PushButton
         //-------------------------------------
@@ -1309,7 +1310,7 @@ void CMainWindow::createObjFactories()
 
         iconDrawWdgtPushButton.addPixmap(pxmDrawWdgtPushButton16x16);
 
-        m_pObjFactoryWdgtPushButton = new CObjFactoryWdgtPushButton(true,iconDrawWdgtPushButton);
+        m_pObjFactoryWdgtPushButton = new CObjFactoryWdgtPushButton(iconDrawWdgtPushButton);
 
     } // if( m_uAddObjFactories & EAddObjFactoriesQtWidgets )
 
@@ -1328,7 +1329,7 @@ void CMainWindow::createObjFactories()
 
         iconDrawVoltageSource.addPixmap(pxmDrawVoltageSource);
 
-        m_pObjFactoryElectricityVoltageSource = new CObjFactoryVoltageSource(true,iconDrawVoltageSource);
+        m_pObjFactoryElectricityVoltageSource = new CObjFactoryVoltageSource(iconDrawVoltageSource);
 
         // <MenuItem> Draw::Electricity::Resistor
         //---------------------------------------
@@ -1340,7 +1341,7 @@ void CMainWindow::createObjFactories()
 
         iconDrawResistor.addPixmap(pxmDrawResistor);
 
-        m_pObjFactoryElectricityResistor = new CObjFactoryResistor(true,iconDrawResistor);
+        m_pObjFactoryElectricityResistor = new CObjFactoryResistor(iconDrawResistor);
 
         // <MenuItem> Draw::Electricity::Inductor
         //---------------------------------------
@@ -1352,7 +1353,7 @@ void CMainWindow::createObjFactories()
 
         iconDrawInductor.addPixmap(pxmDrawInductor);
 
-        m_pObjFactoryElectricityInductor = new CObjFactoryInductor(true,iconDrawInductor);
+        m_pObjFactoryElectricityInductor = new CObjFactoryInductor(iconDrawInductor);
 
         // <MenuItem> Draw::Electricity::Capacitor
         //---------------------------------------
@@ -1364,7 +1365,7 @@ void CMainWindow::createObjFactories()
 
         iconDrawCapacitor.addPixmap(pxmDrawCapacitor);
 
-        m_pObjFactoryElectricityCapacitor = new CObjFactoryCapacitor(true,iconDrawCapacitor);
+        m_pObjFactoryElectricityCapacitor = new CObjFactoryCapacitor(iconDrawCapacitor);
 
         // <MenuItem> Draw::Electricity::Switch
         //---------------------------------------
@@ -1376,7 +1377,7 @@ void CMainWindow::createObjFactories()
 
         iconDrawSwitch.addPixmap(pxmDrawSwitch);
 
-        m_pObjFactoryElectricitySwitch = new CObjFactorySwitch(true,iconDrawSwitch);
+        m_pObjFactoryElectricitySwitch = new CObjFactorySwitch(iconDrawSwitch);
 
         // <MenuItem> Draw::Electricity::Diode
         //-----------------------------------------
@@ -1388,7 +1389,7 @@ void CMainWindow::createObjFactories()
 
         iconDrawDiode.addPixmap(pxmDrawDiode);
 
-        m_pObjFactoryElectricityDiode = new CObjFactoryDiode(true,iconDrawDiode);
+        m_pObjFactoryElectricityDiode = new CObjFactoryDiode(iconDrawDiode);
 
         // <MenuItem> Draw::Electricity::Transistor
         //-----------------------------------------
@@ -1400,7 +1401,7 @@ void CMainWindow::createObjFactories()
 
         iconDrawTransistor.addPixmap(pxmDrawTransistor);
 
-        m_pObjFactoryElectricityTransistor = new CObjFactoryTransistor(true,iconDrawTransistor);
+        m_pObjFactoryElectricityTransistor = new CObjFactoryTransistor(iconDrawTransistor);
 
     } // if( m_uAddObjFactories & EAddObjFactoriesElectricity )
 
@@ -2862,7 +2863,7 @@ void CMainWindow::createDockWidgets()
         m_pDockWdgtObjFactories->setObjectName("Object Factories");
         m_pDockWdgtObjFactories->setAllowedAreas(Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea);
 
-        m_pModelObjFactories = new CObjFactoriesModel( CObjFactory::IdxTreeAllFactories() );
+        m_pModelObjFactories = new CObjFactoriesModel( CObjFactory::IdxTree() );
 
         m_pTreeViewObjFactories = new QTreeView(this);
 
@@ -2906,7 +2907,6 @@ void CMainWindow::createDockWidgets()
             }
             m_pMenuView->addAction(m_pDockWdgtObjFactories->toggleViewAction());
         }
-
     } // if( m_uAddObjFactories != EAddObjFactoriesNone )
 
     // Dock Widget - GraphObjs
@@ -2979,12 +2979,12 @@ void CMainWindow::createDockWidgets()
     // <TreeView> Graphics Items
     //--------------------------
 
-    m_pModelGraphicsItems = new CGraphicsItemsModel(m_pDrawingScene);
+    m_pModelIdxTreeGraphicsItems = new CModelIdxTreeGraphicsItems(m_pDrawingScene->getGraphObjsIdxTree());
 
     m_pTreeViewGraphicsItems = new QTreeView(this);
     m_pLytGraphicsItems->addWidget(m_pTreeViewGraphicsItems);
 
-    m_pTreeViewGraphicsItems->setModel(m_pModelGraphicsItems);
+    m_pTreeViewGraphicsItems->setModel(m_pModelIdxTreeGraphicsItems);
     m_pTreeViewGraphicsItems->setSelectionBehavior(QAbstractItemView::SelectItems);
     m_pTreeViewGraphicsItems->setSelectionMode(QAbstractItemView::SingleSelection);
     //m_pTreeViewGraphicsItems->setAllColumnsShowFocus(true);
@@ -3688,7 +3688,7 @@ void CMainWindow::onActionEditSelectToggled( bool i_bChecked )
         m_pActDrawChecked = m_pActEditSelect;
 
         m_pDrawingScene->setCurrentDrawingTool(nullptr);
-        m_pDrawingScene->setMode( EMode::Ignore, EEditToolSelect, EEditModeUndefined, EEditResizeModeUndefined );
+        m_pDrawingScene->setMode( EMode::Ignore, EEditTool::Select, EEditMode::Undefined, EEditResizeMode::Undefined );
 
     } // if( i_bChecked )
 
@@ -3698,9 +3698,9 @@ void CMainWindow::onActionEditSelectToggled( bool i_bChecked )
         {
             m_pActDrawChecked = nullptr;
         }
-        if( m_pDrawingScene->getEditTool() == EEditToolSelect )
+        if( m_pDrawingScene->getEditTool() == EEditTool::Select )
         {
-            m_pDrawingScene->setMode( EMode::Ignore, EEditToolUndefined, EEditModeUndefined, EEditResizeModeUndefined );
+            m_pDrawingScene->setMode( EMode::Ignore, EEditTool::Undefined, EEditMode::Undefined, EEditResizeMode::Undefined );
         }
     } // if( !i_bChecked )
 
@@ -4719,13 +4719,13 @@ void CMainWindow::onActionTraceErrLogTriggered( bool /*i_bChecked*/ )
         /* strMethod    */ "onActionTraceErrLogTriggered",
         /* strAddInfo   */ "" );
 
-    QString strDlgTitle = getMainWindowTitle() + ": Error Log";
+    QString strDlgTitle = QCoreApplication::applicationName() + ": Error Log";
 
     CDlgErrLog* pDlg = dynamic_cast<CDlgErrLog*>(CDlgErrLog::GetInstance(strDlgTitle));
 
     if( pDlg == nullptr )
     {
-        pDlg = CDlgErrLog::CreateInstance("ErrLog", strDlgTitle);
+        pDlg = CDlgErrLog::CreateInstance(strDlgTitle);
         pDlg->setAttribute(Qt::WA_DeleteOnClose, true);
         pDlg->adjustSize();
         pDlg->show();
@@ -4753,13 +4753,13 @@ void CMainWindow::onActionTraceServerTriggered( bool /*i_bChecked*/ )
         /* strMethod    */ "onActionTraceServerTriggered",
         /* strAddInfo   */ "" );
 
-    QString strDlgTitle = getMainWindowTitle() + ": Method Trace Server";
+    QString strDlgTitle = QCoreApplication::applicationName() + ": Method Trace Server";
 
     CDlgTrcServer* pDlg = dynamic_cast<CDlgTrcServer*>(CDlgTrcServer::GetInstance(strDlgTitle));
 
     if( pDlg == nullptr )
     {
-        pDlg = CDlgTrcServer::CreateInstance("MthTrcServer", strDlgTitle);
+        pDlg = CDlgTrcServer::CreateInstance(strDlgTitle);
         pDlg->setAttribute(Qt::WA_DeleteOnClose, true);
         pDlg->adjustSize();
         pDlg->show();
@@ -4789,7 +4789,7 @@ void CMainWindow::onActionTraceAdminObjIdxTreeTriggered( bool /*i_bChecked*/ )
 
     if( CTrcServer::GetTraceAdminObjIdxTree() != nullptr )
     {
-        QString strDlgTitle = getMainWindowTitle() + ": Trace Admin Objects";
+        QString strDlgTitle = QCoreApplication::applicationName() + ": Trace Admin Objects";
 
         CDlgIdxTreeTrcAdminObjs* pDlg = CDlgIdxTreeTrcAdminObjs::GetInstance(CTrcServer::GetTraceAdminObjIdxTree()->objectName());
 
@@ -4996,7 +4996,7 @@ void CMainWindow::onDrawingSceneSelectionChanged()
     //{
     //    pGraphicsItem = arpGraphicItems[idxGraphObj];
 
-    //    modelIdx = m_pModelGraphicsItems->getModelIndex(pGraphicsItem);
+    //    modelIdx = m_pModelIdxTreeGraphicsItems->getModelIndex(pGraphicsItem);
 
     //    if( modelIdx.isValid() )
     //    {
@@ -5075,27 +5075,15 @@ void CMainWindow::onDrawingSceneModeChanged()
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
-        EMode           mode              = m_pDrawingScene->getMode();
-        EEditTool       editTool          = m_pDrawingScene->getEditTool();
-        EEditMode       editMode          = m_pDrawingScene->getEditMode();
-        EEditResizeMode editResizeMode    = m_pDrawingScene->getEditResizeMode();
-        int             iObjFactoryType   = m_pDrawingScene->getCurrentDrawingToolGraphObjType();
-        CGraphObj*      pGraphObjCreating = m_pDrawingScene->getGraphObjCreating();
+        int        iObjFactoryType   = m_pDrawingScene->getCurrentDrawingToolGraphObjType();
+        CGraphObj* pGraphObjCreating = m_pDrawingScene->getGraphObjCreating();
 
-        strAddTrcInfo  = "Mode:" + CEnumMode::toString(mode);
-        strAddTrcInfo += ", EditTool:" + editTool2Str(editTool);
-        strAddTrcInfo += ", EditMode:" + editMode2Str(editMode);
-        strAddTrcInfo += ", ResizeMode:" + editResizeMode2Str(editResizeMode);
+        strAddTrcInfo  = "Mode:" + m_pDrawingScene->getMode().toString();
+        strAddTrcInfo += ", EditTool:" + m_pDrawingScene->getEditTool().toString();
+        strAddTrcInfo += ", EditMode:" + m_pDrawingScene->getEditMode().toString();
+        strAddTrcInfo += ", ResizeMode:" + m_pDrawingScene->getEditResizeMode().toString();
         strAddTrcInfo += ", ObjFactory:" + graphObjType2Str(iObjFactoryType);
-
-        if( pGraphObjCreating == nullptr )
-        {
-            strAddTrcInfo += ", GraphObjCreating:nullptr";
-        }
-        else
-        {
-            strAddTrcInfo += ", GraphObjCreating:" + pGraphObjCreating->getObjName();
-        }
+        strAddTrcInfo += ", GraphObjCreating: " + QString(pGraphObjCreating == nullptr ? "nullptr" : pGraphObjCreating->name());
     }
 
     CMethodTracer mthTracer(
@@ -5222,7 +5210,7 @@ void CMainWindow::onDrawingSceneGraphObjCreated( ZS::Draw::CGraphObj* i_pGraphOb
         }
         else
         {
-            strMthInArgs = "GraphObj:" + i_pGraphObj->getObjName(true);
+            strMthInArgs = "GraphObj:" + i_pGraphObj->name();
         }
     }
 
@@ -5493,10 +5481,10 @@ void CMainWindow::onTreeViewGraphicsItemsBtnRefreshClicked( bool )
         /* strMethod    */ "onTreeViewGraphicsItemsExpanded",
         /* strAddInfo   */ strMthInArgs );
 
-    if( m_pModelGraphicsItems != nullptr )
-    {
-        m_pModelGraphicsItems->update();
-    }
+    //if( m_pModelIdxTreeGraphicsItems != nullptr )
+    //{
+    //    m_pModelIdxTreeGraphicsItems->update();
+    //}
 
 } // onTreeViewGraphicsItemsBtnRefreshClicked
 
@@ -5533,11 +5521,11 @@ void CMainWindow::onTreeViewGraphicsItemsCurrentChanged(
 
     if( i_modelIdxCurr.isValid() )
     {
-        CGraphObjModelEntry* pModelEntry = static_cast<CGraphObjModelEntry*>(i_modelIdxCurr.internalPointer());
+        CModelIdxTreeEntry* pModelEntry = static_cast<CModelIdxTreeEntry*>(i_modelIdxCurr.internalPointer());
 
         if( pModelEntry != nullptr )
         {
-            pGraphObj = pModelEntry->getGraphObj();
+            pGraphObj = dynamic_cast<CGraphObj*>(pModelEntry->treeEntry());
         }
     }
 
@@ -5551,7 +5539,7 @@ void CMainWindow::onTreeViewGraphicsItemsCurrentChanged(
         }
         else
         {
-            strMthInArgs = "GraphObj:" + pGraphObj->getObjName(true);
+            strMthInArgs = "GraphObj:" + pGraphObj->name();
         }
     }
 
@@ -5595,11 +5583,11 @@ void CMainWindow::onTreeViewGraphicsItemsDoubleClicked( const QModelIndex& i_mod
 
     if( i_modelIdx.isValid() )
     {
-        CGraphObjModelEntry* pModelEntry = static_cast<CGraphObjModelEntry*>(i_modelIdx.internalPointer());
+        CModelIdxTreeEntry* pModelEntry = static_cast<CModelIdxTreeEntry*>(i_modelIdx.internalPointer());
 
         if( pModelEntry != nullptr )
         {
-            pGraphObj = pModelEntry->getGraphObj();
+            pGraphObj = dynamic_cast<CGraphObj*>(pModelEntry->treeEntry());
         }
     }
 
@@ -5613,7 +5601,7 @@ void CMainWindow::onTreeViewGraphicsItemsDoubleClicked( const QModelIndex& i_mod
         }
         else
         {
-            strMthInArgs = "GraphObj:" + pGraphObj->getObjName(true);
+            strMthInArgs = "GraphObj:" + pGraphObj->name();
         }
     }
 
@@ -5785,18 +5773,18 @@ void CMainWindow::updateStatusBar()
     {
         QString strEditInfo = "Tool: ";
 
-        EEditTool editTool = m_pDrawingScene->getEditTool();
+        CEnumEditTool editTool = m_pDrawingScene->getEditTool();
 
-        if( editTool == EEditToolCreateObjects )
+        if( editTool == EEditTool::CreateObjects )
         {
             int     iGraphObjType = m_pDrawingScene->getCurrentDrawingToolGraphObjType();
             QString strObjFactory = graphObjType2Str(iGraphObjType);
 
             strEditInfo += "Create " + strObjFactory;
         }
-        else if( editTool != EEditToolUndefined )
+        else if( editTool != EEditTool::Undefined )
         {
-            strEditInfo += editTool2Str(editTool);
+            strEditInfo += editTool.toString();
         }
 
         m_pLblStatusBarDrawingSceneEditTool->setText(strEditInfo);
@@ -5808,15 +5796,15 @@ void CMainWindow::updateStatusBar()
         QString strEditModeInfo = "Mode: ";
         QString strGraphObjEditInfo = "Info: ";
 
-        EEditMode       editMode       = m_pDrawingScene->getEditMode();
-        EEditResizeMode editResizeMode = m_pDrawingScene->getEditResizeMode();
+        CEnumEditMode       editMode       = m_pDrawingScene->getEditMode();
+        CEnumEditResizeMode editResizeMode = m_pDrawingScene->getEditResizeMode();
 
         QList<QGraphicsItem*> arGraphicsItemSelected = m_pDrawingScene->selectedItems();
         QGraphicsItem*        pGraphicsItemCreating  = m_pDrawingScene->getGraphicsItemCreating();
         QGraphicsItem*        pGraphicsItem = nullptr;
         CGraphObj*            pGraphObj = nullptr;
 
-        if( editMode != EEditModeUndefined )
+        if( editMode != EEditMode::Undefined )
         {
             if( arGraphicsItemSelected.size() == 1 )
             {
@@ -5835,27 +5823,27 @@ void CMainWindow::updateStatusBar()
                 {
                     throw ZS::System::CException( __FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphObj == nullptr" );
                 }
-                strEditModeInfo += pGraphObj->getObjName();
-                strGraphObjEditInfo += pGraphObj->getObjName() + ": " + pGraphObj->getEditInfo();
+                strEditModeInfo += pGraphObj->name();
+                strGraphObjEditInfo += pGraphObj->name() + ": " + pGraphObj->getEditInfo();
             }
 
-            if( editMode == EEditModeResize )
+            if( editMode == EEditMode::Resize )
             {
-                if( editResizeMode >= 0 && editResizeMode < EEditResizeModeCount )
+                if( editResizeMode >= 0 && editResizeMode < CEnumEditResizeMode::count() )
                 {
                     if( !strEditModeInfo.isEmpty() )
                     {
                         strEditModeInfo += ".";
                     }
-                    strEditModeInfo += editResizeMode2Str(editResizeMode);
+                    strEditModeInfo += editResizeMode.toString();
                 }
-                else if( editMode != EEditModeUndefined )
+                else if( editMode != EEditMode::Undefined )
                 {
                     if( !strEditModeInfo.isEmpty() )
                     {
                         strEditModeInfo += ".";
                     }
-                    strEditModeInfo += editMode2Str(editMode);
+                    strEditModeInfo += editMode.toString();
                 }
             }
             else
@@ -5864,10 +5852,10 @@ void CMainWindow::updateStatusBar()
                 {
                     strEditModeInfo += ".";
                 }
-                strEditModeInfo += editMode2Str(editMode);
+                strEditModeInfo += editMode.toString();
             }
 
-        } // if( m_editMode != EEditModeUndefined )
+        } // if( m_editMode != EEditMode::Undefined )
 
         if( m_pLblStatusBarDrawingSceneEditMode != nullptr )
         {
@@ -5900,9 +5888,7 @@ void CMainWindow::updateActions()
         /* strMethod    */ "updateActions",
         /* strAddInfo   */ strMthInArgs );
 
-    EMode mode = EMode::Edit;
-
-    mode = m_pDrawingScene->getMode();
+    CEnumMode mode = m_pDrawingScene->getMode();
 
     QList<QGraphicsItem*> arpGraphicItemsSelected = m_pDrawingScene->selectedItems();
     QGraphicsItem*        pGraphicsItem;
@@ -5954,11 +5940,11 @@ void CMainWindow::updateActions()
             {
                 m_pActEditSelect->setEnabled(true);
             }
-            if( m_pDrawingScene->getEditTool() != EEditToolSelect )
+            if( m_pDrawingScene->getEditTool() != EEditTool::Select )
             {
                 m_pActEditSelect->setChecked(false);
             }
-            else // if( m_pDrawingScene->getEditTool() == EEditToolSelect )
+            else // if( m_pDrawingScene->getEditTool() == EEditTool::Select )
             {
                 m_pActEditSelect->setChecked(true);
             }

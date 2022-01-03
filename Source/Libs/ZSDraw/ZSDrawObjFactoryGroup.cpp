@@ -57,18 +57,13 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CObjFactoryGroup::CObjFactoryGroup(
-    bool         i_bAddToToolBoxIdxTree,
-    const QIcon& i_toolIcon ) :
+CObjFactoryGroup::CObjFactoryGroup( const QIcon& i_toolIcon ) :
 //------------------------------------------------------------------------------
     CObjFactory(
-        /* strGroupName         */ "Draw::Standard Shapes",
-        /* strGraphObjNameSpace */ CGraphObjGroup::NameSpace(),
-        /* strGraphObjClassName */ CGraphObjGroup::ClassName(),
-        /* iGraphObjType        */ EGraphObjTypeGroup,
-        /* strGraphObjType      */ ZS::Draw::graphObjType2Str(EGraphObjTypeGroup),
-        /* bAddToToolBoxIdxTree */ i_bAddToToolBoxIdxTree,
-        /* toolIcon             */ i_toolIcon )
+        /* strGroupName    */ c_strGroupNameStandardShapes,
+        /* iGraphObjType   */ EGraphObjTypeGroup,
+        /* strGraphObjType */ ZS::Draw::graphObjType2Str(EGraphObjTypeGroup),
+        /* toolIcon        */ i_toolIcon )
 {
 } // default ctor
 
@@ -122,9 +117,9 @@ SErrResultInfo CObjFactoryGroup::saveGraphObj(
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
-        strAddTrcInfo  = "GraphObj:" + i_pGraphObj->getNameSpace();
-        strAddTrcInfo += "::" + i_pGraphObj->getClassName();
-        strAddTrcInfo += "::" + i_pGraphObj->getObjName();
+        strAddTrcInfo  = "GraphObj:" + i_pGraphObj->nameSpace();
+        strAddTrcInfo += "::" + i_pGraphObj->className();
+        strAddTrcInfo += "::" + i_pGraphObj->name();
     }
 
     CMethodTracer mthTracer(
@@ -204,16 +199,13 @@ SErrResultInfo CObjFactoryGroup::saveGraphObj(
         {
             pGraphObjChild = dynamic_cast<CGraphObj*>(pGraphicsItemChild);
 
-            strNameSpaceChild = pGraphObjChild->getNameSpace();
-            strClassNameChild = pGraphObjChild->getClassName();
+            strNameSpaceChild = pGraphObjChild->nameSpace();
+            strClassNameChild = pGraphObjChild->className();
             strObjTypeChild   = pGraphObjChild->getTypeAsString();
-            strObjNameChild   = pGraphObjChild->getObjName();
-            strObjIdChild     = pGraphObjChild->getObjId();
+            strObjNameChild   = pGraphObjChild->name();
+            strObjIdChild     = pGraphObjChild->keyInTree();
 
-            pObjFactoryChild = CObjFactory::FindObjFactory(
-                /* strNameSpace */ strNameSpaceChild,
-                /* strClassName */ strClassNameChild,
-                /* strObjName   */ strObjTypeChild );
+            pObjFactoryChild = CObjFactory::FindObjFactory(pGraphObjChild->getFactoryGroupName(), strObjTypeChild);
 
             if( pObjFactoryChild != nullptr )
             {
@@ -249,13 +241,13 @@ SErrResultInfo CObjFactoryGroup::saveGraphObj(
             {
                 pGraphObjChild = dynamic_cast<CGraphObj*>(pGraphicsItemChild);
 
-                strNameSpaceChild = pGraphObjChild->getNameSpace();
-                strClassNameChild = pGraphObjChild->getClassName();
+                strNameSpaceChild = pGraphObjChild->nameSpace();
+                strClassNameChild = pGraphObjChild->className();
                 strObjTypeChild   = pGraphObjChild->getTypeAsString();
-                strObjNameChild   = pGraphObjChild->getObjName();
-                strObjIdChild     = pGraphObjChild->getObjId();
+                strObjNameChild   = pGraphObjChild->name();
+                strObjIdChild     = pGraphObjChild->keyInTree();
 
-                pObjFactoryChild = CObjFactory::FindObjFactory( strNameSpaceChild, strClassNameChild, strObjTypeChild );
+                pObjFactoryChild = CObjFactory::FindObjFactory(pGraphObjChild->getFactoryGroupName(), strObjTypeChild);
 
                 if( pObjFactoryChild != nullptr )
                 {
@@ -330,8 +322,7 @@ CGraphObj* CObjFactoryGroup::loadGraphObj(
         pGraphObjGroup = new CGraphObjGroup(
             /* pDrawingScene */ i_pDrawingScene,
             /* drawSettings  */ drawSettings,
-            /* strObjName    */ i_strObjName,
-            /* strObjId      */ i_strObjId );
+            /* strObjName    */ i_strObjName );
 
         // Start creation of group.
         pGraphObjGroup->setEditMode(EEditMode::Creating);
@@ -403,6 +394,7 @@ CGraphObj* CObjFactoryGroup::loadGraphObj(
                 else if( strElemName == "GraphObj" )
                 //--------------------------------
                 {
+                    QString strFactoryGroupNameChild;
                     QString strNameSpaceChild;
                     QString strClassNameChild;
                     QString strObjTypeChild;
@@ -411,6 +403,10 @@ CGraphObj* CObjFactoryGroup::loadGraphObj(
 
                     xmlStreamAttrs = i_xmlStreamReader.attributes();
 
+                    if( xmlStreamAttrs.hasAttribute("FactoryGroupName") )
+                    {
+                        strFactoryGroupNameChild = xmlStreamAttrs.value("FactoryGroupName").toString();;
+                    }
                     if( xmlStreamAttrs.hasAttribute("NameSpace") )
                     {
                         strNameSpaceChild = xmlStreamAttrs.value("NameSpace").toString();;
@@ -432,7 +428,7 @@ CGraphObj* CObjFactoryGroup::loadGraphObj(
                         strObjIdChild = xmlStreamAttrs.value("ObjectId").toString();;
                     }
 
-                    CObjFactory* pObjFactoryChild = CObjFactory::FindObjFactory( strNameSpaceChild, strClassNameChild, strObjTypeChild );
+                    CObjFactory* pObjFactoryChild = CObjFactory::FindObjFactory(strFactoryGroupNameChild, strObjTypeChild);
 
                     if( pObjFactoryChild != nullptr )
                     {
@@ -609,10 +605,3 @@ CGraphObj* CObjFactoryGroup::loadGraphObj(
     return pGraphObjGroup;
 
 } // loadGraphObj
-
-//------------------------------------------------------------------------------
-void CObjFactoryGroup::ResetCtorsDtorsCounters()
-//------------------------------------------------------------------------------
-{
-    CGraphObjGroup::ResetCtorsDtorsCounters();
-}

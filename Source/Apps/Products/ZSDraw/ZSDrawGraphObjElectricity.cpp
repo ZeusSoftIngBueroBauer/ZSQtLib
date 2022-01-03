@@ -41,28 +41,29 @@ class CGraphObjElectricity : public CGraphObjGroup
 *******************************************************************************/
 
 /*==============================================================================
+public: // class members
+==============================================================================*/
+
+const QString CGraphObjElectricity::c_strFactoryGroupName = "Electricity";
+
+/*==============================================================================
 protected: // ctor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
 CGraphObjElectricity::CGraphObjElectricity(
     CDrawingScene*       i_pDrawingScene,
-    const QString&       i_strNameSpace,
-    const QString&       i_strClassName,
     const QString&       i_strType,
     const QString&       i_strObjName,
-    const QString&       i_strObjId,
     const CDrawSettings& i_drawSettings ) :
 //------------------------------------------------------------------------------
     CGraphObjGroup(
-        /* pDrawingScene */ i_pDrawingScene,
-        /* strNameSpace  */ i_strNameSpace,
-        /* strClassName  */ i_strClassName,
-        /* type          */ EGraphObjTypeUserDefined,
-        /* strType       */ i_strType,
-        /* strObjName    */ i_strObjName,
-        /* strObjId      */ i_strObjId,
-        /* drawSettings  */ i_drawSettings )
+        /* pDrawingScene       */ i_pDrawingScene,
+        /* strFactoryGroupName */ c_strFactoryGroupName,
+        /* type                */ EGraphObjTypeUserDefined,
+        /* strType             */ i_strType,
+        /* strObjName          */ i_strObjName,
+        /* drawSettings        */ i_drawSettings )
 {
 } // ctor
 
@@ -82,31 +83,30 @@ CGraphObjElectricity::~CGraphObjElectricity()
 public: // overridables of base class CGraphObj
 ==============================================================================*/
 
-//------------------------------------------------------------------------------
-void CGraphObjElectricity::setObjId( const QString& i_strObjId )
-//------------------------------------------------------------------------------
-{
-    if( m_strObjId != i_strObjId )
-    {
-        CGraphObj::setObjId(i_strObjId);
-
-        QList<QGraphicsItem*> arpGraphicsItemsChilds = childItems();
-        QGraphicsItem*        pGraphicsItemChild;
-        CGraphObj*            pGraphObjChild;
-        int                   idxGraphObjChild;
-
-        for( idxGraphObjChild = 0; idxGraphObjChild < arpGraphicsItemsChilds.size(); idxGraphObjChild++ )
-        {
-            pGraphicsItemChild = arpGraphicsItemsChilds[idxGraphObjChild];
-            pGraphObjChild = dynamic_cast<CGraphObj*>(pGraphicsItemChild);
-
-            if( pGraphicsItemChild != nullptr && pGraphObjChild != nullptr )
-            {
-                pGraphObjChild->setObjId( m_strObjId + m_pDrawingScene->getGraphObjNameNodeSeparator() + pGraphObjChild->getObjName() );
-            }
-        }
-
-    } // if( m_strObjId != i_strObjId )
-
-} // setObjId
+////------------------------------------------------------------------------------
+//void CGraphObjElectricity::setObjId( const QString& i_strObjId )
+////------------------------------------------------------------------------------
+//{
+//    if( m_strKeyInTree != i_strObjId )
+//    {
+//        CGraphObj::setKeyInTree(i_strObjId);
+//
+//        QList<QGraphicsItem*> arpGraphicsItemsChilds = childItems();
+//        QGraphicsItem*        pGraphicsItemChild;
+//        CGraphObj*            pGraphObjChild;
+//        int                   idxGraphObjChild;
+//
+//        for( idxGraphObjChild = 0; idxGraphObjChild < arpGraphicsItemsChilds.size(); idxGraphObjChild++ )
+//        {
+//            pGraphicsItemChild = arpGraphicsItemsChilds[idxGraphObjChild];
+//            pGraphObjChild = dynamic_cast<CGraphObj*>(pGraphicsItemChild);
+//
+//            if( pGraphicsItemChild != nullptr && pGraphObjChild != nullptr )
+//            {
+//                pGraphObjChild->setKeyInTree( m_strKeyInTree + m_pDrawingScene->getGraphObjNameNodeSeparator() + pGraphObjChild->getObjName() );
+//            }
+//        }
+//    }
+//
+//} // setObjId
 

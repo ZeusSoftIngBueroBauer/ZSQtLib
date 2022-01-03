@@ -58,18 +58,13 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CObjFactoryText::CObjFactoryText(
-    bool         i_bAddToToolBoxIdxTree,
-    const QIcon& i_toolIcon ) :
+CObjFactoryText::CObjFactoryText( const QIcon& i_toolIcon ) :
 //------------------------------------------------------------------------------
     CObjFactory(
-        /* strGroupName         */ "Draw::Standard Shapes",
-        /* strGraphObjNameSpace */ CGraphObjText::NameSpace(),
-        /* strGraphObjClassName */ CGraphObjText::ClassName(),
-        /* iGraphObjType        */ EGraphObjTypeText,
-        /* strGraphObjType      */ ZS::Draw::graphObjType2Str(EGraphObjTypeText),
-        /* bAddToToolBoxIdxTree */ i_bAddToToolBoxIdxTree,
-        /* toolIcon             */ i_toolIcon )
+        /* strGroupName    */ c_strGroupNameStandardShapes,
+        /* iGraphObjType   */ EGraphObjTypeText,
+        /* strGraphObjType */ ZS::Draw::graphObjType2Str(EGraphObjTypeText),
+        /* toolIcon        */ i_toolIcon )
 {
 } // default ctor
 
@@ -124,9 +119,9 @@ SErrResultInfo CObjFactoryText::saveGraphObj(
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
-        strAddTrcInfo  = "GraphObj:" + i_pGraphObj->getNameSpace();
-        strAddTrcInfo += "::" + i_pGraphObj->getClassName();
-        strAddTrcInfo += "::" + i_pGraphObj->getObjName();
+        strAddTrcInfo  = "GraphObj:" + i_pGraphObj->nameSpace();
+        strAddTrcInfo += "::" + i_pGraphObj->className();
+        strAddTrcInfo += "::" + i_pGraphObj->name();
     }
 
     CMethodTracer mthTracer(
@@ -317,8 +312,7 @@ CGraphObj* CObjFactoryText::loadGraphObj(
             pGraphObj = new CGraphObjText(
                 /* pDrawingScene */ i_pDrawingScene,
                 /* drawSettings  */ drawSettings,
-                /* strObjName    */ i_strObjName,
-                /* strObjId      */ i_strObjId );
+                /* strObjName    */ i_strObjName );
 
             pGraphObj->setPlainText(strText);
 
@@ -377,10 +371,3 @@ CGraphObj* CObjFactoryText::loadGraphObj(
     return pGraphObj;
 
 } // loadGraphObj
-
-//------------------------------------------------------------------------------
-void CObjFactoryText::ResetCtorsDtorsCounters()
-//------------------------------------------------------------------------------
-{
-    CGraphObjText::ResetCtorsDtorsCounters();
-}

@@ -846,7 +846,6 @@
     <ClCompile Include="..\..\..\Source\Libs\ZSDraw\ZSDrawGraphObjImage.cpp" />
     <ClCompile Include="..\..\..\Source\Libs\ZSDraw\ZSDrawGraphObjLabel.cpp" />
     <ClCompile Include="..\..\..\Source\Libs\ZSDraw\ZSDrawGraphObjLine.cpp" />
-    <ClCompile Include="..\..\..\Source\Libs\ZSDraw\ZSDrawGraphObjModelEntry.cpp" />
     <ClCompile Include="..\..\..\Source\Libs\ZSDraw\ZSDrawGraphObjPoint.cpp" />
     <ClCompile Include="..\..\..\Source\Libs\ZSDraw\ZSDrawGraphObjPolygon.cpp" />
     <ClCompile Include="..\..\..\Source\Libs\ZSDraw\ZSDrawGraphObjPolyline.cpp" />
@@ -3358,7 +3357,6 @@
     <ClInclude Include="..\..\..\Include\Libs\ZSDraw\ZSDrawGraphObjImage.h" />
     <ClInclude Include="..\..\..\Include\Libs\ZSDraw\ZSDrawGraphObjLabel.h" />
     <ClInclude Include="..\..\..\Include\Libs\ZSDraw\ZSDrawGraphObjLine.h" />
-    <ClInclude Include="..\..\..\Include\Libs\ZSDraw\ZSDrawGraphObjModelEntry.h" />
     <ClInclude Include="..\..\..\Include\Libs\ZSDraw\ZSDrawGraphObjPoint.h" />
     <ClInclude Include="..\..\..\Include\Libs\ZSDraw\ZSDrawGraphObjPolygon.h" />
     <ClInclude Include="..\..\..\Include\Libs\ZSDraw\ZSDrawGraphObjPolyline.h" />

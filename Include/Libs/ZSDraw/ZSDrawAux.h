@@ -118,10 +118,10 @@ ZSDRAWDLL_API void getMaxRectArea(
     ZS::PhysVal::CPhysVal&       o_physValRightMax, ZS::PhysVal::CPhysVal&       o_physValBottomMax );
 
 ZSDRAWDLL_API QRectF resizeRect(
-    const QRectF&    i_rect,
-    ESelectionPoint  i_selPt,
-    const QPointF&   i_ptSel,
-    ESelectionPoint* o_pSelPt = nullptr );
+    const QRectF&              i_rect,
+    const CEnumSelectionPoint& i_selPt,
+    const QPointF&             i_ptSel,
+    CEnumSelectionPoint*       o_pSelPt = nullptr );
 
 ZSDRAWDLL_API QPolygonF resizePolygon(
     const QPolygonF& i_plg,                         // Resize from old bounding rect of this polygon

@@ -248,9 +248,6 @@
     <ClCompile Include="..\..\..\Source\Libs\ZSDraw\ZSDrawGraphicsItemsModel.cpp">
       <Filter>Source Files\GraphObjsModel</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Libs\ZSDraw\ZSDrawGraphObjModelEntry.cpp">
-      <Filter>Source Files\GraphObjsModel</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Source\Libs\ZSDraw\ZSDrawObjFactoriesModel.cpp">
       <Filter>Source Files\GraphObjFactoriesModel</Filter>
     </ClCompile>
@@ -849,9 +846,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Libs\ZSDraw\ZSDrawSettings.h">
       <Filter>Header Files\Drawing</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Libs\ZSDraw\ZSDrawGraphObjModelEntry.h">
-      <Filter>Header Files\GraphObjsModel</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Libs\ZSDraw\ZSDrawObjFactoriesModel.h">
       <Filter>Header Files\GraphObjFactoriesModel</Filter>

@@ -44,9 +44,7 @@ public: // class methods
     /*! Returns the class name. */
     static QString ClassName() { return "CObjFactoryRect"; } // Please note that the static class functions name must be different from the non static virtual member function "className"
 public: // ctors and dtor
-    CObjFactoryRect(
-        bool         i_bAddToToolBoxIdxTree = false,
-        const QIcon& i_toolIcon = QIcon() );
+    CObjFactoryRect( const QIcon& i_toolIcon = QIcon() );
     virtual ~CObjFactoryRect();
 public: // overridables
     /*! This virtual method returns the name space of the object's class.
@@ -72,7 +70,6 @@ public: // interface methods of base class CObjFactory
         const QString&    i_strObjId,
         QXmlStreamReader& i_xmlStreamReader,
         ZS::System::SErrResultInfo&   io_errResultInfo );
-    virtual void ResetCtorsDtorsCounters();
 
 }; // class CObjFactoryRect
 

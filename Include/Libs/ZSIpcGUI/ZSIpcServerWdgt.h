@@ -90,7 +90,7 @@ public: // class methods
     static QString NameSpace() { return "ZS::Ipc::GUI"; }
     static QString ClassName() { return "CWdgtIpcServer"; }
 public: // ctors and dtor
-    CWdgtIpcServer( const QString& i_strObjName, QWidget* i_pWdgtParent = nullptr );
+    CWdgtIpcServer( const QString& i_strServerName = "IpcServer", QWidget* i_pWdgtParent = nullptr );
     virtual ~CWdgtIpcServer();
 signals:
     void accepted();

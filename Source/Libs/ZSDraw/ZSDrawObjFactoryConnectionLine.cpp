@@ -59,18 +59,13 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CObjFactoryConnectionLine::CObjFactoryConnectionLine(
-    bool         i_bAddToToolBoxIdxTree,
-    const QIcon& i_toolIcon ) :
+CObjFactoryConnectionLine::CObjFactoryConnectionLine( const QIcon& i_toolIcon ) :
 //------------------------------------------------------------------------------
     CObjFactory(
-        /* strGroupName         */ "Draw::Connections",
-        /* strGraphObjNameSpace */ CGraphObjConnectionLine::NameSpace(),
-        /* strGraphObjClassName */ CGraphObjConnectionLine::ClassName(),
-        /* iGraphObjType        */ EGraphObjTypeConnectionLine,
-        /* strGraphObjType      */ ZS::Draw::graphObjType2Str(EGraphObjTypeConnectionLine),
-        /* bAddToToolBoxIdxTree */ i_bAddToToolBoxIdxTree,
-        /* toolIcon             */ i_toolIcon )
+        /* strGroupName    */ c_strGroupNameConnections,
+        /* iGraphObjType   */ EGraphObjTypeConnectionLine,
+        /* strGraphObjType */ ZS::Draw::graphObjType2Str(EGraphObjTypeConnectionLine),
+        /* toolIcon        */ i_toolIcon )
 {
 } // default ctor
 
@@ -132,9 +127,9 @@ SErrResultInfo CObjFactoryConnectionLine::saveGraphObj(
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
-        strAddTrcInfo  = "GraphObj:" + i_pGraphObj->getNameSpace();
-        strAddTrcInfo += "::" + i_pGraphObj->getClassName();
-        strAddTrcInfo += "::" + i_pGraphObj->getObjName();
+        strAddTrcInfo  = "GraphObj:" + i_pGraphObj->nameSpace();
+        strAddTrcInfo += "::" + i_pGraphObj->className();
+        strAddTrcInfo += "::" + i_pGraphObj->name();
     }
 
     CMethodTracer mthTracer(
@@ -172,8 +167,8 @@ SErrResultInfo CObjFactoryConnectionLine::saveGraphObj(
     // Connection lines don't belong to groups. But their connection points may.
     // To find the connection point it's not sufficient just to store the name in
     // the XML file but it's necessary to store the id of the connection point.
-    i_xmlStreamWriter.writeTextElement( "ObjIdCnctPtStart", pCnctPtStart->getObjId() );
-    i_xmlStreamWriter.writeTextElement( "ObjIdCnctPtEnd", pCnctPtEnd->getObjId() );
+    i_xmlStreamWriter.writeTextElement( "ObjIdCnctPtStart", pCnctPtStart->keyInTree() );
+    i_xmlStreamWriter.writeTextElement( "ObjIdCnctPtEnd", pCnctPtEnd->keyInTree() );
 
     // Draw Attributes
     //----------------
@@ -353,8 +348,7 @@ CGraphObj* CObjFactoryConnectionLine::loadGraphObj(
             pGraphObj = new CGraphObjConnectionLine(
                 /* pDrawingScene */ i_pDrawingScene,
                 /* drawSettings  */ drawSettings,
-                /* strObjName    */ i_strObjName,
-                /* strObjId      */ i_strObjId );
+                /* strObjName    */ i_strObjName );
 
             QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(pGraphObj);
 
@@ -407,10 +401,3 @@ CGraphObj* CObjFactoryConnectionLine::loadGraphObj(
     return pGraphObj;
 
 } // loadGraphObj
-
-//------------------------------------------------------------------------------
-void CObjFactoryConnectionLine::ResetCtorsDtorsCounters()
-//------------------------------------------------------------------------------
-{
-    CGraphObjConnectionLine::ResetCtorsDtorsCounters();
-}

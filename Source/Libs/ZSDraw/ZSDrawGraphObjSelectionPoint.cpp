@@ -39,6 +39,7 @@ may result in using the software modules.
 #include "ZSDraw/ZSDrawGraphObjSelectionPoint.h"
 #include "ZSDraw/ZSDrawAux.h"
 #include "ZSDraw/ZSDrawingScene.h"
+#include "ZSDraw/ZSDrawObjFactory.h"
 #include "ZSPhysSizes/Geometry/ZSPhysSizes.h"
 #include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysErrCode.h"
@@ -65,16 +66,7 @@ class CGraphObjSelectionPoint : public CGraphObj, public QGraphicsEllipseItem
 protected: // class members
 ==============================================================================*/
 
-qint64 CGraphObjSelectionPoint::s_iCtorsCount = 1;
-qint64 CGraphObjSelectionPoint::s_iDtorsCount = 1;
-
-CTrcAdminObj* CGraphObjSelectionPoint::s_pTrcAdminObjCtorsAndDtor = nullptr;
-CTrcAdminObj* CGraphObjSelectionPoint::s_pTrcAdminObjBoundingRect = nullptr;
-CTrcAdminObj* CGraphObjSelectionPoint::s_pTrcAdminObjPaint = nullptr;
-CTrcAdminObj* CGraphObjSelectionPoint::s_pTrcAdminObjSceneEventFilter = nullptr;
-CTrcAdminObj* CGraphObjSelectionPoint::s_pTrcAdminObjHoverEvents = nullptr;
-CTrcAdminObj* CGraphObjSelectionPoint::s_pTrcAdminObjMouseEvents = nullptr;
-CTrcAdminObj* CGraphObjSelectionPoint::s_pTrcAdminObjItemChange = nullptr;
+qint64 CGraphObjSelectionPoint::s_iInstCount = 0;
 
 double CGraphObjSelectionPoint::s_fRadius_px = 3.0;
 
@@ -89,14 +81,12 @@ CGraphObjSelectionPoint::CGraphObjSelectionPoint(
     ESelectionPoint i_selectionPoint ) :
 //------------------------------------------------------------------------------
     CGraphObj(
-        /* pDrawingScene */ i_pDrawingScene,
-        /* strNameSpace  */ NameSpace(),
-        /* strClassName  */ ClassName(),
-        /* type          */ EGraphObjTypeSelectionPoint,
-        /* strType       */ ZS::Draw::graphObjType2Str(EGraphObjTypeSelectionPoint),
-        /* strObjName    */ i_pGraphObjSelected->getObjName() + ".SelPt." + CEnumSelectionPoint(i_selectionPoint).toString(),
-        /* strObjId      */ i_pGraphObjSelected->getObjName() + ".SelPt." + CEnumSelectionPoint(i_selectionPoint).toString(),
-        /* drawSettings  */ CDrawSettings() ),
+        /* pDrawingScene       */ i_pDrawingScene,
+        /* strFactoryGroupName */ CObjFactory::c_strGroupNameStandardShapes,
+        /* type                */ EGraphObjTypeSelectionPoint,
+        /* strType             */ ZS::Draw::graphObjType2Str(EGraphObjTypeSelectionPoint),
+        /* strObjName          */ i_pGraphObjSelected->name() + ".SelPt." + CEnumSelectionPoint(i_selectionPoint).toString(),
+        /* drawSettings        */ CDrawSettings() ),
     QGraphicsEllipseItem( QRectF( -s_fRadius_px, -s_fRadius_px, 2.0*s_fRadius_px, 2.0*s_fRadius_px ) ),
     m_pGraphObjSelected(i_pGraphObjSelected),
     m_selPtType(ESelectionPointType::BoundingRectangle),
@@ -105,36 +95,35 @@ CGraphObjSelectionPoint::CGraphObjSelectionPoint(
     m_fRadius_px(s_fRadius_px),
     m_bSelected(false)
 {
-    s_iCtorsCount++;
+    s_iInstCount++;
 
     QString strAddTrcInfo;
 
-    if( s_pTrcAdminObjCtorsAndDtor == nullptr )
-    {
-        s_pTrcAdminObjCtorsAndDtor = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), "CtorsAndDtor");
-        s_pTrcAdminObjBoundingRect = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), "BoundingRect");
-        s_pTrcAdminObjPaint = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), "Paint");
-        s_pTrcAdminObjSceneEventFilter = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), "SceneEventFilter");
-        s_pTrcAdminObjHoverEvents = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), "HoverEvents");
-        s_pTrcAdminObjMouseEvents = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), "MouseEvents");
-        s_pTrcAdminObjItemChange = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), "ItemChange");
+    QString strNameSpace = NameSpace() + CObjFactory::c_strGroupSeparater + CObjFactory::c_strGroupNameSelectionPoints;
+    m_pTrcAdminObjCtorsAndDtor = CTrcServer::GetTraceAdminObj(strNameSpace, ClassName(), "CtorsAndDtor");
+    m_pTrcAdminObjItemChange = CTrcServer::GetTraceAdminObj(strNameSpace, ClassName(), "ItemChange");
+    m_pTrcAdminObjBoundingRect = CTrcServer::GetTraceAdminObj(strNameSpace, ClassName(), "BoundingRect");
+    m_pTrcAdminObjPaint = CTrcServer::GetTraceAdminObj(strNameSpace, ClassName(), "Paint");
+    m_pTrcAdminObjSceneEvent = CTrcServer::GetTraceAdminObj(strNameSpace, ClassName(), "SceneEvent");
+    m_pTrcAdminObjSceneEventFilter = CTrcServer::GetTraceAdminObj(strNameSpace, ClassName(), "SceneEventFilter");
+    m_pTrcAdminObjHoverEvents = CTrcServer::GetTraceAdminObj(strNameSpace, ClassName(), "HoverEvents");
+    m_pTrcAdminObjMouseEvents = CTrcServer::GetTraceAdminObj(strNameSpace, ClassName(), "MouseEvents");
+    m_pTrcAdminObjKeyEvents = CTrcServer::GetTraceAdminObj(strNameSpace, ClassName(), "KeyEvents");
 
-    } // if( s_pTrcAdminObjCtorsAndDtor == nullptr )
-
-    if( s_pTrcAdminObjCtorsAndDtor != nullptr && s_pTrcAdminObjCtorsAndDtor->isActive(ETraceDetailLevelMethodCalls) )
+    if( m_pTrcAdminObjCtorsAndDtor != nullptr && m_pTrcAdminObjCtorsAndDtor->isActive(ETraceDetailLevelMethodCalls) )
     {
     }
 
     CMethodTracer mthTracer(
-        /* pAdminObj    */ s_pTrcAdminObjCtorsAndDtor,
+        /* pAdminObj    */ m_pTrcAdminObjCtorsAndDtor,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strObjName   */ m_strObjName,
+        /* strObjName   */ m_strName,
         /* strMethod    */ "ctor",
         /* strAddInfo   */ strAddTrcInfo );
 
     m_selPtSelectedBoundingRect = i_selectionPoint;
 
-    setData(static_cast<int>(EGraphItemDataKey::ObjId), m_strObjId);
+    setData(static_cast<int>(EGraphItemDataKey::ObjId), m_strKeyInTree);
     setData(static_cast<int>(EGraphItemDataKey::ObjType), m_type);
 
     //setFlags( QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemSendsGeometryChanges );
@@ -157,14 +146,12 @@ CGraphObjSelectionPoint::CGraphObjSelectionPoint(
     int            i_idxPt ) :
 //------------------------------------------------------------------------------
     CGraphObj(
-        /* pDrawingScene */ i_pDrawingScene,
-        /* strNameSpace  */ NameSpace(),
-        /* strClassName  */ ClassName(),
-        /* type          */ EGraphObjTypeSelectionPoint,
-        /* strType       */ ZS::Draw::graphObjType2Str(EGraphObjTypeSelectionPoint),
-        /* strObjName    */ i_pGraphObjSelected->getObjName() + ".SelPt." + QString::number(i_idxPt),
-        /* strObjId      */ i_pGraphObjSelected->getObjName() + ".SelPt." + QString::number(i_idxPt),
-        /* drawSettings  */ CDrawSettings() ),
+        /* pDrawingScene       */ i_pDrawingScene,
+        /* strFactoryGroupName */ CObjFactory::c_strGroupNameStandardShapes,
+        /* type                */ EGraphObjTypeSelectionPoint,
+        /* strType             */ ZS::Draw::graphObjType2Str(EGraphObjTypeSelectionPoint),
+        /* strObjName          */ i_pGraphObjSelected->name() + ".SelPt." + QString::number(i_idxPt),
+        /* drawSettings        */ CDrawSettings() ),
     QGraphicsEllipseItem( QRectF( -s_fRadius_px, -s_fRadius_px, 2.0*s_fRadius_px, 2.0*s_fRadius_px ) ),
     m_pGraphObjSelected(i_pGraphObjSelected),
     m_selPtType(ESelectionPointType::PolygonShapePoint),
@@ -173,35 +160,35 @@ CGraphObjSelectionPoint::CGraphObjSelectionPoint(
     m_fRadius_px(s_fRadius_px),
     m_bSelected(false)
 {
-    s_iCtorsCount++;
+    s_iInstCount++;
 
     QString strAddTrcInfo;
 
-    if( s_pTrcAdminObjCtorsAndDtor == nullptr )
-    {
-        s_pTrcAdminObjCtorsAndDtor = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), "CtorsAndDtor");
-        s_pTrcAdminObjBoundingRect = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), "BoundingRect");
-        s_pTrcAdminObjPaint = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), "Paint");
-        s_pTrcAdminObjSceneEventFilter = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), "SceneEventFilter");
-        s_pTrcAdminObjHoverEvents = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), "HoverEvents");
-        s_pTrcAdminObjMouseEvents = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), "MouseEvents");
-        s_pTrcAdminObjItemChange = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), "ItemChange");
-    }
+    QString strNameSpace = NameSpace() + CObjFactory::c_strGroupSeparater + CObjFactory::c_strGroupNameSelectionPoints;
+    m_pTrcAdminObjCtorsAndDtor = CTrcServer::GetTraceAdminObj(strNameSpace, ClassName(), "CtorsAndDtor");
+    m_pTrcAdminObjItemChange = CTrcServer::GetTraceAdminObj(strNameSpace, ClassName(), "ItemChange");
+    m_pTrcAdminObjBoundingRect = CTrcServer::GetTraceAdminObj(strNameSpace, ClassName(), "BoundingRect");
+    m_pTrcAdminObjPaint = CTrcServer::GetTraceAdminObj(strNameSpace, ClassName(), "Paint");
+    m_pTrcAdminObjSceneEvent = CTrcServer::GetTraceAdminObj(strNameSpace, ClassName(), "SceneEvent");
+    m_pTrcAdminObjSceneEventFilter = CTrcServer::GetTraceAdminObj(strNameSpace, ClassName(), "SceneEventFilter");
+    m_pTrcAdminObjHoverEvents = CTrcServer::GetTraceAdminObj(strNameSpace, ClassName(), "HoverEvents");
+    m_pTrcAdminObjMouseEvents = CTrcServer::GetTraceAdminObj(strNameSpace, ClassName(), "MouseEvents");
+    m_pTrcAdminObjKeyEvents = CTrcServer::GetTraceAdminObj(strNameSpace, ClassName(), "KeyEvents");
 
-    if( s_pTrcAdminObjCtorsAndDtor != nullptr && s_pTrcAdminObjCtorsAndDtor->isActive(ETraceDetailLevelMethodCalls) )
+    if( m_pTrcAdminObjCtorsAndDtor != nullptr && m_pTrcAdminObjCtorsAndDtor->isActive(ETraceDetailLevelMethodCalls) )
     {
     }
 
     CMethodTracer mthTracer(
-        /* pAdminObj    */ s_pTrcAdminObjCtorsAndDtor,
+        /* pAdminObj    */ m_pTrcAdminObjCtorsAndDtor,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strObjName   */ m_strObjName,
+        /* strObjName   */ m_strName,
         /* strMethod    */ "ctor",
         /* strAddInfo   */ strAddTrcInfo );
 
     m_idxSelPtSelectedPolygon = i_idxPt;
 
-    setData(static_cast<int>(EGraphItemDataKey::ObjId), m_strObjId);
+    setData(static_cast<int>(EGraphItemDataKey::ObjId), m_strKeyInTree);
     setData(static_cast<int>(EGraphItemDataKey::ObjType), m_type);
 
     //setFlags( /*QGraphicsItem::ItemIsMovable |*/ QGraphicsItem::ItemIsSelectable /*| QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemSendsGeometryChanges*/ );
@@ -223,12 +210,10 @@ CGraphObjSelectionPoint::~CGraphObjSelectionPoint()
 {
     m_bDtorInProgress = true;
 
-    s_iDtorsCount++;
-
     CMethodTracer mthTracer(
-        /* pAdminObj    */ s_pTrcAdminObjCtorsAndDtor,
+        /* pAdminObj    */ m_pTrcAdminObjCtorsAndDtor,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strObjName   */ m_strObjName,
+        /* strObjName   */ m_strName,
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
 
@@ -250,7 +235,7 @@ CGraphObjSelectionPoint::~CGraphObjSelectionPoint()
     {
         if( m_pDrawingScene != nullptr )
         {
-            if( !m_strObjId.isEmpty() )
+            if( !m_strKeyInTree.isEmpty() )
             {
                 try
                 {
@@ -258,7 +243,7 @@ CGraphObjSelectionPoint::~CGraphObjSelectionPoint()
                     // of class "QGraphicsItem" may have already been processed and
                     // models and Views may still try to access the graphical object
                     // if the drawing scene emits the signal "graphObjDestroying".
-                    m_pDrawingScene->onGraphObjDestroying(m_strObjId);
+                    m_pDrawingScene->onGraphObjDestroying(m_strKeyInTree);
                 }
                 catch(...)
                 {
@@ -275,28 +260,8 @@ CGraphObjSelectionPoint::~CGraphObjSelectionPoint()
             {
                 m_pDrawingScene->removeItem(pGraphicsItem);
             }
-
         } // if( m_pDrawingScene != nullptr )
-
     } // if( pGraphicsItem != nullptr )
-
-    if( s_iCtorsCount == s_iDtorsCount )
-    {
-        CTrcServer::ReleaseTraceAdminObj(s_pTrcAdminObjCtorsAndDtor);
-        s_pTrcAdminObjCtorsAndDtor = nullptr;
-        CTrcServer::ReleaseTraceAdminObj(s_pTrcAdminObjBoundingRect);
-        s_pTrcAdminObjBoundingRect = nullptr;
-        CTrcServer::ReleaseTraceAdminObj(s_pTrcAdminObjPaint);
-        s_pTrcAdminObjPaint = nullptr;
-        CTrcServer::ReleaseTraceAdminObj(s_pTrcAdminObjSceneEventFilter);
-        s_pTrcAdminObjSceneEventFilter = nullptr;
-        CTrcServer::ReleaseTraceAdminObj(s_pTrcAdminObjHoverEvents);
-        s_pTrcAdminObjHoverEvents = nullptr;
-        CTrcServer::ReleaseTraceAdminObj(s_pTrcAdminObjMouseEvents);
-        s_pTrcAdminObjMouseEvents = nullptr;
-        CTrcServer::ReleaseTraceAdminObj(s_pTrcAdminObjItemChange);
-        s_pTrcAdminObjItemChange = nullptr;
-    }
 
 } // dtor
 
@@ -310,14 +275,14 @@ CGraphObj* CGraphObjSelectionPoint::clone()
 {
     QString strAddTrcInfo;
 
-    if( s_pTrcAdminObjCtorsAndDtor != nullptr && s_pTrcAdminObjCtorsAndDtor->isActive(ETraceDetailLevelMethodCalls) )
+    if( m_pTrcAdminObjCtorsAndDtor != nullptr && m_pTrcAdminObjCtorsAndDtor->isActive(ETraceDetailLevelMethodCalls) )
     {
     }
 
     CMethodTracer mthTracer(
-        /* pAdminObj    */ s_pTrcAdminObjCtorsAndDtor,
+        /* pAdminObj    */ m_pTrcAdminObjCtorsAndDtor,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strObjName   */ m_strObjName,
+        /* strObjName   */ m_strName,
         /* strMethod    */ "clone",
         /* strAddInfo   */ strAddTrcInfo );
 
@@ -337,15 +302,15 @@ void CGraphObjSelectionPoint::setSelectionPoint( ESelectionPoint i_selPt )
 {
     QString strAddTrcInfo;
 
-    if( s_pTrcAdminObjBoundingRect != nullptr && s_pTrcAdminObjBoundingRect->isActive(ETraceDetailLevelMethodCalls) )
+    if( m_pTrcAdminObjBoundingRect != nullptr && m_pTrcAdminObjBoundingRect->isActive(ETraceDetailLevelMethodCalls) )
     {
         strAddTrcInfo = "SelPt:" + CEnumSelectionPoint(i_selPt).toString();
     }
 
     CMethodTracer mthTracer(
-        /* pAdminObj    */ s_pTrcAdminObjItemChange,
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strObjName   */ m_strObjName,
+        /* strObjName   */ m_strName,
         /* strMethod    */ "setSelectionPoint",
         /* strAddInfo   */ strAddTrcInfo );
 
@@ -359,15 +324,15 @@ void CGraphObjSelectionPoint::setShapePointIndex( int i_idxPt )
 {
     QString strAddTrcInfo;
 
-    if( s_pTrcAdminObjBoundingRect != nullptr && s_pTrcAdminObjBoundingRect->isActive(ETraceDetailLevelMethodCalls) )
+    if( m_pTrcAdminObjBoundingRect != nullptr && m_pTrcAdminObjBoundingRect->isActive(ETraceDetailLevelMethodCalls) )
     {
         strAddTrcInfo = "Idx:" + QString::number(i_idxPt);
     }
 
     CMethodTracer mthTracer(
-        /* pAdminObj    */ s_pTrcAdminObjItemChange,
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strObjName   */ m_strObjName,
+        /* strObjName   */ m_strName,
         /* strMethod    */ "setShapePointIndex",
         /* strAddInfo   */ strAddTrcInfo );
 
@@ -385,7 +350,7 @@ void CGraphObjSelectionPoint::setRadiusInPx( double i_fRadius_px )
 {
     QString strAddTrcInfo;
 
-    if( s_pTrcAdminObjBoundingRect != nullptr && s_pTrcAdminObjBoundingRect->isActive(ETraceDetailLevelMethodCalls) )
+    if( m_pTrcAdminObjBoundingRect != nullptr && m_pTrcAdminObjBoundingRect->isActive(ETraceDetailLevelMethodCalls) )
     {
         strAddTrcInfo  = "Radius:" + QString::number(i_fRadius_px);
         strAddTrcInfo += ", Selected:" + bool2Str(m_bSelected);
@@ -395,9 +360,9 @@ void CGraphObjSelectionPoint::setRadiusInPx( double i_fRadius_px )
     }
 
     CMethodTracer mthTracer(
-        /* pAdminObj    */ s_pTrcAdminObjItemChange,
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strObjName   */ m_strObjName,
+        /* strObjName   */ m_strName,
         /* strMethod    */ "setRadiusInPx",
         /* strAddInfo   */ strAddTrcInfo );
 
@@ -438,7 +403,7 @@ void CGraphObjSelectionPoint::setSelected( bool i_bSelected )
 {
     QString strAddTrcInfo;
 
-    if( s_pTrcAdminObjBoundingRect != nullptr && s_pTrcAdminObjBoundingRect->isActive(ETraceDetailLevelMethodCalls) )
+    if( m_pTrcAdminObjBoundingRect != nullptr && m_pTrcAdminObjBoundingRect->isActive(ETraceDetailLevelMethodCalls) )
     {
         strAddTrcInfo  = "Selected:" + bool2Str(i_bSelected);
         strAddTrcInfo += ", CenterPos:(" + QString::number(rect().center().x()) + "," + QString::number(rect().center().y()) + ")";
@@ -447,9 +412,9 @@ void CGraphObjSelectionPoint::setSelected( bool i_bSelected )
     }
 
     CMethodTracer mthTracer(
-        /* pAdminObj    */ s_pTrcAdminObjItemChange,
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strObjName   */ m_strObjName,
+        /* strObjName   */ m_strName,
         /* strMethod    */ "setSelected",
         /* strAddInfo   */ strAddTrcInfo );
 
@@ -552,15 +517,15 @@ void CGraphObjSelectionPoint::setWidth( double i_fWidth )
 {
     QString strAddTrcInfo;
 
-    if( s_pTrcAdminObjItemChange != nullptr && s_pTrcAdminObjItemChange->isActive(ETraceDetailLevelMethodCalls) )
+    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->isActive(ETraceDetailLevelMethodCalls) )
     {
         strAddTrcInfo = "Width:" + QString::number(i_fWidth);
     }
 
     CMethodTracer mthTracer(
-        /* pAdminObj    */ s_pTrcAdminObjItemChange,
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strObjName   */ m_strObjName,
+        /* strObjName   */ m_strName,
         /* strMethod    */ "setWidth",
         /* strAddInfo   */ strAddTrcInfo );
 
@@ -574,15 +539,15 @@ void CGraphObjSelectionPoint::setHeight( double i_fHeight )
 {
     QString strAddTrcInfo;
 
-    if( s_pTrcAdminObjItemChange != nullptr && s_pTrcAdminObjItemChange->isActive(ETraceDetailLevelMethodCalls) )
+    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->isActive(ETraceDetailLevelMethodCalls) )
     {
         strAddTrcInfo = "Height:" + QString::number(i_fHeight);
     }
 
     CMethodTracer mthTracer(
-        /* pAdminObj    */ s_pTrcAdminObjItemChange,
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strObjName   */ m_strObjName,
+        /* strObjName   */ m_strName,
         /* strMethod    */ "setHeight",
         /* strAddInfo   */ strAddTrcInfo );
 
@@ -596,16 +561,16 @@ void CGraphObjSelectionPoint::setSize( double i_fWidth, double i_fHeight )
 {
     QString strAddTrcInfo;
 
-    if( s_pTrcAdminObjItemChange != nullptr && s_pTrcAdminObjItemChange->isActive(ETraceDetailLevelMethodCalls) )
+    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->isActive(ETraceDetailLevelMethodCalls) )
     {
         strAddTrcInfo  = "Width:" + QString::number(i_fWidth);
         strAddTrcInfo += ", Height:" + QString::number(i_fHeight);
     }
 
     CMethodTracer mthTracer(
-        /* pAdminObj    */ s_pTrcAdminObjItemChange,
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strObjName   */ m_strObjName,
+        /* strObjName   */ m_strName,
         /* strMethod    */ "setSize",
         /* strAddInfo   */ strAddTrcInfo );
 
@@ -666,16 +631,16 @@ void CGraphObjSelectionPoint::setSize( const QSizeF& i_size )
 {
     QString strAddTrcInfo;
 
-    if( s_pTrcAdminObjItemChange != nullptr && s_pTrcAdminObjItemChange->isActive(ETraceDetailLevelMethodCalls) )
+    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->isActive(ETraceDetailLevelMethodCalls) )
     {
         strAddTrcInfo  = "Width:" + QString::number(i_size.width());
         strAddTrcInfo += ", Height:" + QString::number(i_size.height());
     }
 
     CMethodTracer mthTracer(
-        /* pAdminObj    */ s_pTrcAdminObjItemChange,
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strObjName   */ m_strObjName,
+        /* strObjName   */ m_strName,
         /* strMethod    */ "setSize",
         /* strAddInfo   */ strAddTrcInfo );
 
@@ -693,16 +658,16 @@ bool CGraphObjSelectionPoint::isHit( const QPointF& i_pt, SGraphObjHitInfo* o_pH
 {
     QString strAddTrcInfo;
 
-    if( s_pTrcAdminObjBoundingRect != nullptr && s_pTrcAdminObjBoundingRect->isActive(ETraceDetailLevelMethodCalls) )
+    if( m_pTrcAdminObjBoundingRect != nullptr && m_pTrcAdminObjBoundingRect->isActive(ETraceDetailLevelMethodCalls) )
     {
         strAddTrcInfo  = "Point:" + point2Str(i_pt);
         strAddTrcInfo += ", Rect(x,y,w,h):" + rect2Str(rect());
     }
 
     CMethodTracer mthTracer(
-        /* pAdminObj    */ s_pTrcAdminObjBoundingRect,
+        /* pAdminObj    */ m_pTrcAdminObjBoundingRect,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strObjName   */ m_strObjName,
+        /* strObjName   */ m_strName,
         /* strMethod    */ "isHit",
         /* strAddInfo   */ strAddTrcInfo );
 
@@ -785,7 +750,7 @@ QRectF CGraphObjSelectionPoint::boundingRect() const
 {
     QString strAddTrcInfo;
 
-    if( s_pTrcAdminObjBoundingRect != nullptr && s_pTrcAdminObjBoundingRect->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObjBoundingRect != nullptr && m_pTrcAdminObjBoundingRect->isActive(ETraceDetailLevelMethodArgs) )
     {
         strAddTrcInfo  = "Selected:" + bool2Str(isSelected());
         strAddTrcInfo += ", CenterPos:(" + QString::number(rect().center().x()) + "," + QString::number(rect().center().y()) + ")";
@@ -794,9 +759,9 @@ QRectF CGraphObjSelectionPoint::boundingRect() const
     }
 
     CMethodTracer mthTracer(
-        /* pAdminObj    */ s_pTrcAdminObjBoundingRect,
-        /* iDetailLevel */ 1,
-        /* strObjName   */ m_strObjName,
+        /* pAdminObj    */ m_pTrcAdminObjBoundingRect,
+        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* strObjName   */ m_strName,
         /* strMethod    */ "boundingRect",
         /* strAddInfo   */ strAddTrcInfo );
 
@@ -825,7 +790,7 @@ void CGraphObjSelectionPoint::paint(
 {
     QString strAddTrcInfo;
 
-    if( s_pTrcAdminObjPaint != nullptr && s_pTrcAdminObjPaint->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObjPaint != nullptr && m_pTrcAdminObjPaint->isActive(ETraceDetailLevelMethodArgs) )
     {
         strAddTrcInfo  = "Selected:" + bool2Str(isSelected());
         strAddTrcInfo += ", CenterPos:(" + QString::number(rect().center().x()) + "," + QString::number(rect().center().y()) + ")";
@@ -834,9 +799,9 @@ void CGraphObjSelectionPoint::paint(
     }
 
     CMethodTracer mthTracer(
-        /* pAdminObj    */ s_pTrcAdminObjPaint,
-        /* iDetailLevel */ 1,
-        /* strObjName   */ m_strObjName,
+        /* pAdminObj    */ m_pTrcAdminObjPaint,
+        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* strObjName   */ m_strName,
         /* strMethod    */ "paint",
         /* strAddInfo   */ strAddTrcInfo );
 
@@ -895,7 +860,7 @@ void CGraphObjSelectionPoint::hoverEnterEvent( QGraphicsSceneHoverEvent* i_pEv )
 {
     QString strAddTrcInfo;
 
-    if( s_pTrcAdminObjHoverEvents != nullptr && s_pTrcAdminObjHoverEvents->isActive(ETraceDetailLevelMethodCalls) )
+    if( m_pTrcAdminObjHoverEvents != nullptr && m_pTrcAdminObjHoverEvents->isActive(ETraceDetailLevelMethodCalls) )
     {
         strAddTrcInfo  = "Ev.Pos:(" + QString::number(i_pEv->pos().x()) + "," + QString::number(i_pEv->pos().y()) + ")";
         strAddTrcInfo += ", Ev.ScenePos:(" + QString::number(i_pEv->scenePos().x()) + "," + QString::number(i_pEv->scenePos().y()) + ")";
@@ -907,9 +872,9 @@ void CGraphObjSelectionPoint::hoverEnterEvent( QGraphicsSceneHoverEvent* i_pEv )
     }
 
     CMethodTracer mthTracer(
-        /* pAdminObj    */ s_pTrcAdminObjHoverEvents,
+        /* pAdminObj    */ m_pTrcAdminObjHoverEvents,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strObjName   */ m_strObjName,
+        /* strObjName   */ m_strName,
         /* strMethod    */ "hoverEnterEvent",
         /* strAddInfo   */ strAddTrcInfo );
 
@@ -1043,7 +1008,7 @@ void CGraphObjSelectionPoint::hoverMoveEvent( QGraphicsSceneHoverEvent* i_pEv )
 {
     QString strAddTrcInfo;
 
-    if( s_pTrcAdminObjHoverEvents != nullptr && s_pTrcAdminObjHoverEvents->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObjHoverEvents != nullptr && m_pTrcAdminObjHoverEvents->isActive(ETraceDetailLevelMethodArgs) )
     {
         strAddTrcInfo  = "Ev.Pos:(" + QString::number(i_pEv->pos().x()) + "," + QString::number(i_pEv->pos().y()) + ")";
         strAddTrcInfo += ", Ev.ScenePos:(" + QString::number(i_pEv->scenePos().x()) + "," + QString::number(i_pEv->scenePos().y()) + ")";
@@ -1055,9 +1020,9 @@ void CGraphObjSelectionPoint::hoverMoveEvent( QGraphicsSceneHoverEvent* i_pEv )
     }
 
     CMethodTracer mthTracer(
-        /* pAdminObj    */ s_pTrcAdminObjHoverEvents,
-        /* iDetailLevel */ 1,
-        /* strObjName   */ m_strObjName,
+        /* pAdminObj    */ m_pTrcAdminObjHoverEvents,
+        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* strObjName   */ m_strName,
         /* strMethod    */ "hoverMoveEvent",
         /* strAddInfo   */ strAddTrcInfo );
 
@@ -1191,7 +1156,7 @@ void CGraphObjSelectionPoint::hoverLeaveEvent( QGraphicsSceneHoverEvent* i_pEv )
 {
     QString strAddTrcInfo;
 
-    if( s_pTrcAdminObjHoverEvents != nullptr && s_pTrcAdminObjHoverEvents->isActive(ETraceDetailLevelMethodCalls) )
+    if( m_pTrcAdminObjHoverEvents != nullptr && m_pTrcAdminObjHoverEvents->isActive(ETraceDetailLevelMethodCalls) )
     {
         strAddTrcInfo  = "Ev.Pos:(" + QString::number(i_pEv->pos().x()) + "," + QString::number(i_pEv->pos().y()) + ")";
         strAddTrcInfo += ", Ev.ScenePos:(" + QString::number(i_pEv->scenePos().x()) + "," + QString::number(i_pEv->scenePos().y()) + ")";
@@ -1203,9 +1168,9 @@ void CGraphObjSelectionPoint::hoverLeaveEvent( QGraphicsSceneHoverEvent* i_pEv )
     }
 
     CMethodTracer mthTracer(
-        /* pAdminObj    */ s_pTrcAdminObjHoverEvents,
+        /* pAdminObj    */ m_pTrcAdminObjHoverEvents,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strObjName   */ m_strObjName,
+        /* strObjName   */ m_strName,
         /* strMethod    */ "hoverLeaveEvent",
         /* strAddInfo   */ strAddTrcInfo );
 
@@ -1223,7 +1188,7 @@ void CGraphObjSelectionPoint::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
 {
     QString strAddTrcInfo;
 
-    if( s_pTrcAdminObjMouseEvents != nullptr && s_pTrcAdminObjMouseEvents->isActive(ETraceDetailLevelMethodCalls) )
+    if( m_pTrcAdminObjMouseEvents != nullptr && m_pTrcAdminObjMouseEvents->isActive(ETraceDetailLevelMethodCalls) )
     {
         strAddTrcInfo  = "Ev.Pos:(" + QString::number(i_pEv->pos().x()) + "," + QString::number(i_pEv->pos().y()) + ")";
         strAddTrcInfo += ", Ev.ScenePos:(" + QString::number(i_pEv->scenePos().x()) + "," + QString::number(i_pEv->scenePos().y()) + ")";
@@ -1235,9 +1200,9 @@ void CGraphObjSelectionPoint::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
     }
 
     CMethodTracer mthTracer(
-        /* pAdminObj    */ s_pTrcAdminObjMouseEvents,
+        /* pAdminObj    */ m_pTrcAdminObjMouseEvents,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strObjName   */ m_strObjName,
+        /* strObjName   */ m_strName,
         /* strMethod    */ "mousePressEvent",
         /* strAddInfo   */ strAddTrcInfo );
 
@@ -1262,7 +1227,7 @@ void CGraphObjSelectionPoint::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
 {
     QString strAddTrcInfo;
 
-    if( s_pTrcAdminObjMouseEvents != nullptr && s_pTrcAdminObjMouseEvents->isActive(ETraceDetailLevelInternalStates) )
+    if( m_pTrcAdminObjMouseEvents != nullptr && m_pTrcAdminObjMouseEvents->isActive(ETraceDetailLevelInternalStates) )
     {
         strAddTrcInfo  = "Ev.Pos:(" + QString::number(i_pEv->pos().x()) + "," + QString::number(i_pEv->pos().y()) + ")";
         strAddTrcInfo += ", Ev.ScenePos:(" + QString::number(i_pEv->scenePos().x()) + "," + QString::number(i_pEv->scenePos().y()) + ")";
@@ -1274,9 +1239,9 @@ void CGraphObjSelectionPoint::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
     }
 
     CMethodTracer mthTracer(
-        /* pAdminObj    */ s_pTrcAdminObjMouseEvents,
-        /* iDetailLevel */ 2,
-        /* strObjName   */ m_strObjName,
+        /* pAdminObj    */ m_pTrcAdminObjMouseEvents,
+        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* strObjName   */ m_strName,
         /* strMethod    */ "mouseMoveEvent",
         /* strAddInfo   */ strAddTrcInfo );
 
@@ -1301,7 +1266,7 @@ void CGraphObjSelectionPoint::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv
 {
     QString strAddTrcInfo;
 
-    if( s_pTrcAdminObjMouseEvents != nullptr && s_pTrcAdminObjMouseEvents->isActive(ETraceDetailLevelMethodCalls) )
+    if( m_pTrcAdminObjMouseEvents != nullptr && m_pTrcAdminObjMouseEvents->isActive(ETraceDetailLevelMethodCalls) )
     {
         strAddTrcInfo  = "Ev.Pos:(" + QString::number(i_pEv->pos().x()) + "," + QString::number(i_pEv->pos().y()) + ")";
         strAddTrcInfo += ", Ev.ScenePos:(" + QString::number(i_pEv->scenePos().x()) + "," + QString::number(i_pEv->scenePos().y()) + ")";
@@ -1313,9 +1278,9 @@ void CGraphObjSelectionPoint::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv
     }
 
     CMethodTracer mthTracer(
-        /* pAdminObj    */ s_pTrcAdminObjMouseEvents,
+        /* pAdminObj    */ m_pTrcAdminObjMouseEvents,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strObjName   */ m_strObjName,
+        /* strObjName   */ m_strName,
         /* strMethod    */ "mouseReleaseEvent",
         /* strAddInfo   */ strAddTrcInfo );
 
@@ -1340,7 +1305,7 @@ void CGraphObjSelectionPoint::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i
 {
     QString strAddTrcInfo;
 
-    if( s_pTrcAdminObjMouseEvents != nullptr && s_pTrcAdminObjMouseEvents->isActive(ETraceDetailLevelMethodCalls) )
+    if( m_pTrcAdminObjMouseEvents != nullptr && m_pTrcAdminObjMouseEvents->isActive(ETraceDetailLevelMethodCalls) )
     {
         strAddTrcInfo  = "Ev.Pos:(" + QString::number(i_pEv->pos().x()) + "," + QString::number(i_pEv->pos().y()) + ")";
         strAddTrcInfo += ", Ev.ScenePos:(" + QString::number(i_pEv->scenePos().x()) + "," + QString::number(i_pEv->scenePos().y()) + ")";
@@ -1352,9 +1317,9 @@ void CGraphObjSelectionPoint::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i
     }
 
     CMethodTracer mthTracer(
-        /* pAdminObj    */ s_pTrcAdminObjMouseEvents,
+        /* pAdminObj    */ m_pTrcAdminObjMouseEvents,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strObjName   */ m_strObjName,
+        /* strObjName   */ m_strName,
         /* strMethod    */ "mouseDoubleClickEvent",
         /* strAddInfo   */ strAddTrcInfo );
 
@@ -1393,7 +1358,7 @@ QVariant CGraphObjSelectionPoint::itemChange( GraphicsItemChange i_change, const
 
     QString strAddTrcInfo;
 
-    if( s_pTrcAdminObjItemChange != nullptr && s_pTrcAdminObjItemChange->isActive(ETraceDetailLevelMethodCalls) )
+    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->isActive(ETraceDetailLevelMethodCalls) )
     {
         strAddTrcInfo = "Changed:" + qGraphicsItemChange2Str(i_change);
 
@@ -1412,9 +1377,9 @@ QVariant CGraphObjSelectionPoint::itemChange( GraphicsItemChange i_change, const
     }
 
     CMethodTracer mthTracer(
-        /* pAdminObj    */ s_pTrcAdminObjItemChange,
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strObjName   */ m_strObjName,
+        /* strObjName   */ m_strName,
         /* strMethod    */ "itemChange",
         /* strAddInfo   */ strAddTrcInfo );
 

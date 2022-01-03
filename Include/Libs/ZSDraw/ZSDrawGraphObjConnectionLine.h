@@ -40,11 +40,6 @@ may result in using the software modules.
 
 namespace ZS
 {
-namespace Trace
-{
-class CTrcAdminObj;
-}
-
 namespace Draw
 {
 class CDrawSettings;
@@ -60,19 +55,19 @@ public: // class methods
     static QString NameSpace() { return "ZS::Draw"; } // Please note that the static class functions name must be different from the non static virtual member function "nameSpace"
     /*! Returns the class name. */
     static QString ClassName() { return NameSpace(); } // Please note that the static class functions name must be different from the non static virtual member function "className"
-public: // class methods
-    static void ResetCtorsDtorsCounters();
 public: // ctors and dtor
     CGraphObjConnectionLine(
         CDrawingScene*       i_pDrawingScene,
         const CDrawSettings& i_drawSettings,
-        const QString&       i_strObjName = "",
-        const QString&       i_strObjId = "" );
+        const QString&       i_strObjName = "");
     virtual ~CGraphObjConnectionLine();
 public: // overridables of base class QGraphicsItem
     virtual int type() const { return static_cast<int>(EGraphObjTypeConnectionLine); }
 public: // must overridables of base class CGraphObj
     virtual CGraphObj* clone();
+public: // overridables
+    virtual QString nameSpace() { return NameSpace(); }
+    virtual QString className() { return ClassName(); }
 public: // overridables
     virtual bool setConnectionPoint( ELinePoint i_linePoint, CGraphObjConnectionPoint* i_pCnctPt ); // Connects the specified line point with the specified connection point by appending the line to the connection point. Returns false if the line is already connected with the specified connection point.
     virtual ELinePoint getConnectionLinePoint( CGraphObjConnectionPoint* i_pCnctPt );               // Returns the line point (start or end) which is connected to the specified connection point.
@@ -120,15 +115,7 @@ protected: // instance methods
     virtual void normalize(); // removes "unnecessary" points
     virtual void updateLineEndPolygonCoors();
 protected: // class members
-    static qint64                   s_iCtorsCount;
-    static qint64                   s_iDtorsCount;
-    static ZS::Trace::CTrcAdminObj* s_pTrcAdminObjCtorsAndDtor;
-    static ZS::Trace::CTrcAdminObj* s_pTrcAdminObjBoundingRect;
-    static ZS::Trace::CTrcAdminObj* s_pTrcAdminObjPaint;
-    static ZS::Trace::CTrcAdminObj* s_pTrcAdminObjSceneEventFilter;
-    static ZS::Trace::CTrcAdminObj* s_pTrcAdminObjHoverEvents;
-    static ZS::Trace::CTrcAdminObj* s_pTrcAdminObjMouseEvents;
-    static ZS::Trace::CTrcAdminObj* s_pTrcAdminObjItemChange;
+    static qint64 s_iInstCount;
 protected: // instance members
     bool                               m_bCoorsDirty;
     QPolygonF                          m_plgCurr;        // First and lasst point may differ from polygon() depending on line end base line types

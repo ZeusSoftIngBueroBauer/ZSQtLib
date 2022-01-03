@@ -2200,7 +2200,11 @@ public: // instance methods
 
     @param i_pTreeEntry [in] Pointer to tree entry to be removed.
 
-    @note The entry will not be destroyed.
+    @note The entry will not be destroyed. If the entry has childrens those
+          childrens will also not be destroyed by this method.
+          Destroying the childrens is the task of the dtor of the tree entry.
+          The tree entries dtor will first destroy all children before removing
+          itself from the tree.
 
     @note Throws a critical exception with Result
           - EResultObjNotInList if the entry does not belong to the tree.
@@ -3956,9 +3960,9 @@ void CIdxTree::updateKeyInTree( CIdxTreeEntry* i_pTreeEntry )
 
     if( i_pTreeEntry->entryType() == EIdxTreeEntryType::Branch )
     {
-        CIdxTreeEntry*   pBranch = i_pTreeEntry;
+        CIdxTreeEntry* pBranch = i_pTreeEntry;
         CIdxTreeEntry* pTreeEntry;
-        int                    idxEntry;
+        int            idxEntry;
 
         for( idxEntry = 0; idxEntry < pBranch->count(); ++idxEntry )
         {
@@ -4007,7 +4011,7 @@ void CIdxTree::clear( CIdxTreeEntry* i_pBranch )
     }
 
     CIdxTreeEntry* pTreeEntry;
-    int                    idxEntry;
+    int            idxEntry;
 
     for( idxEntry = i_pBranch->count()-1; idxEntry >= 0; --idxEntry )
     {

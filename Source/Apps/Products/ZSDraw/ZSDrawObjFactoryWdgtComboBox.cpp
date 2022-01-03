@@ -65,18 +65,13 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CObjFactoryWdgtComboBox::CObjFactoryWdgtComboBox(
-    bool         i_bAddToToolBoxObjPool,
-    const QIcon& i_toolIcon ) :
+CObjFactoryWdgtComboBox::CObjFactoryWdgtComboBox( const QIcon& i_toolIcon ) :
 //------------------------------------------------------------------------------
     CObjFactory(
-        /* strGroupName         */ "Draw::Widgets",
-        /* strGraphObjNameSpace */ "ZS::Draw::QtWidgets",
-        /* strGraphObjClassName */ "CGraphObjWdgtComboBox",
-        /* iGraphObjType        */ EGraphObjTypeUserDefined,
-        /* strGraphObjType      */ "ComboBox",
-        /* bAddToToolBoxObjPool */ i_bAddToToolBoxObjPool,
-        /* toolIcon             */ i_toolIcon )
+        /* strGroupName    */ CGraphObjWdgt::c_strFactoryGroupName,
+        /* iGraphObjType   */ EGraphObjTypeUserDefined,
+        /* strGraphObjType */ "ComboBox",
+        /* toolIcon        */ i_toolIcon )
 {
 } // default ctor
 
@@ -133,9 +128,9 @@ SErrResultInfo CObjFactoryWdgtComboBox::saveGraphObj(
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
-        strAddTrcInfo  = "GraphObj:" + i_pGraphObj->getNameSpace();
-        strAddTrcInfo += "::" + i_pGraphObj->getClassName();
-        strAddTrcInfo += "::" + i_pGraphObj->getObjName();
+        strAddTrcInfo  = "GraphObj:" + i_pGraphObj->nameSpace();
+        strAddTrcInfo += "::" + i_pGraphObj->className();
+        strAddTrcInfo += "::" + i_pGraphObj->name();
     }
 
     CMethodTracer mthTracer(
@@ -196,10 +191,3 @@ CGraphObj* CObjFactoryWdgtComboBox::loadGraphObj(
     return pGraphObj;
 
 } // loadGraphObj
-
-//------------------------------------------------------------------------------
-void CObjFactoryWdgtComboBox::ResetCtorsDtorsCounters()
-//------------------------------------------------------------------------------
-{
-    CGraphObjWdgtComboBox::ResetCtorsDtorsCounters();
-}

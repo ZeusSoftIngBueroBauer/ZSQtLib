@@ -106,7 +106,10 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CWdgtErrLog::CWdgtErrLog( const QString& i_strHeadline, QWidget* i_pWdgtParent ) :
+CWdgtErrLog::CWdgtErrLog(
+    const QString& i_strErrLogName,
+    const QString& i_strHeadline,
+    QWidget*       i_pWdgtParent ) :
 //------------------------------------------------------------------------------
     QWidget(i_pWdgtParent),
     m_pModelErrLog(nullptr),
@@ -133,9 +136,9 @@ CWdgtErrLog::CWdgtErrLog( const QString& i_strHeadline, QWidget* i_pWdgtParent )
         m_pLyt->addWidget(m_pLblHeadline);
     }
 
-    if( CErrLog::GetInstance() != nullptr )
+    if( CErrLog::GetInstance(i_strErrLogName) != nullptr )
     {
-        m_pModelErrLog = new CModelErrLog( CErrLog::GetInstance() );
+        m_pModelErrLog = new CModelErrLog( CErrLog::GetInstance(i_strErrLogName) );
 
         // <TableView> Indicating the error model entries
         //===============================================
@@ -241,7 +244,7 @@ CWdgtErrLog::CWdgtErrLog( const QString& i_strHeadline, QWidget* i_pWdgtParent )
 
         m_pLytLineBtns->addStretch();
 
-    } // if( CErrLog::GetInstance() != nullptr )
+    } // if( CErrLog::GetInstance(i_strErrLogName) != nullptr )
 
 } // ctor
 

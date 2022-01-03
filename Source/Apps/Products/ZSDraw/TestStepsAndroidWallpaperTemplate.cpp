@@ -37,6 +37,7 @@ may result in using the software modules.
 #include "ZSDraw/ZSDrawGraphObjRect.h"
 #include "ZSPhysSizes/Geometry/ZSPhysSizes.h"
 #include "ZSPhysVal/ZSPhysValExceptions.h"
+#include "ZSPhysVal/ZSPhysVal.h"
 #include "ZSTest/ZSTestStep.h"
 #include "ZSTest/ZSTestStepGroup.h"
 #include "ZSSys/ZSSysApp.h"
@@ -348,8 +349,7 @@ void CTest::doTestStepAndroidWallpaperTemplateDrawGridLines( ZS::Test::CTestStep
             CGraphObjLine* pGraphObjLine = new CGraphObjLine(
                 /* pDrawingScene */ m_pDrawingScene,
                 /* drawSettings  */ drawSettingsLine,
-                /* strObjName    */ "HL" + QString::number(y1_px),
-                /* strObjId      */ "HL" + QString::number(idxLine));
+                /* strObjName    */ "HL" + QString::number(y1_px));
             arpGraphObjs.append(pGraphObjLine);
 
             pGraphObjLine->setLine( QLine(x1_px, y1_px, x2_px, y2_px) );
@@ -396,8 +396,7 @@ void CTest::doTestStepAndroidWallpaperTemplateDrawGridLines( ZS::Test::CTestStep
             CGraphObjLine* pGraphObjLine = new CGraphObjLine(
                 /* pDrawingScene */ m_pDrawingScene,
                 /* drawSettings  */ drawSettingsLine,
-                /* strObjName    */ "VL" + QString::number(x1_px),
-                /* strObjId      */ "VL" + QString::number(idxLine));
+                /* strObjName    */ "VL" + QString::number(x1_px));
             arpGraphObjs.append(pGraphObjLine);
 
             pGraphObjLine->setLine( QLine(x1_px, y1_px, x2_px, y2_px) );
@@ -420,7 +419,7 @@ void CTest::doTestStepAndroidWallpaperTemplateDrawGridLines( ZS::Test::CTestStep
 
     CDrawSettings drawSettingsText(EGraphObjTypeText);
 
-    drawSettingsText.setLineStyle(ELineStyleNoLine);
+    drawSettingsText.setLineStyle(ELineStyle::NoLine);
     drawSettingsText.setTextSize(ETextSize20);
 
     idxLine = 0;
@@ -439,8 +438,7 @@ void CTest::doTestStepAndroidWallpaperTemplateDrawGridLines( ZS::Test::CTestStep
                 CGraphObjText* pGraphObjText = new CGraphObjText(
                     /* pDrawingScene */ m_pDrawingScene,
                     /* drawSettings  */ drawSettingsText,
-                    /* strObjName    */ "HLblL" + QString::number(y1_px),
-                    /* strObjId      */ "HLblL" + QString::number(idxLine));
+                    /* strObjName    */ "HLblL" + QString::number(y1_px));
 
                 pGraphObjText->setPos( QPoint(x1_px, y1_px) );
                 pGraphObjText->setPlainText(QString::number(y1_px));
@@ -455,8 +453,7 @@ void CTest::doTestStepAndroidWallpaperTemplateDrawGridLines( ZS::Test::CTestStep
                 pGraphObjText = new CGraphObjText(
                     /* pDrawingScene */ m_pDrawingScene,
                     /* drawSettings  */ drawSettingsText,
-                    /* strObjName    */ "HLblC" + QString::number(y1_px),
-                    /* strObjId      */ "HLblC" + QString::number(idxLine));
+                    /* strObjName    */ "HLblC" + QString::number(y1_px));
 
                 pGraphObjText->setPos( QPoint(sizeDrawing.width()/2, y1_px) );
                 pGraphObjText->setPlainText(QString::number(y1_px));
@@ -471,8 +468,7 @@ void CTest::doTestStepAndroidWallpaperTemplateDrawGridLines( ZS::Test::CTestStep
                 pGraphObjText = new CGraphObjText(
                     /* pDrawingScene */ m_pDrawingScene,
                     /* drawSettings  */ drawSettingsText,
-                    /* strObjName    */ "HLblR" + QString::number(y1_px),
-                    /* strObjId      */ "HLblR" + QString::number(idxLine));
+                    /* strObjName    */ "HLblR" + QString::number(y1_px));
 
                 pGraphObjText->setPos( QPoint(x2_px, y1_px) );
                 pGraphObjText->setPlainText(QString::number(y1_px));
@@ -511,8 +507,7 @@ void CTest::doTestStepAndroidWallpaperTemplateDrawGridLines( ZS::Test::CTestStep
                 CGraphObjText* pGraphObjText = new CGraphObjText(
                     /* pDrawingScene */ m_pDrawingScene,
                     /* drawSettings  */ drawSettingsText,
-                    /* strObjName    */ "VLblT" + QString::number(x1_px),
-                    /* strObjId      */ "VLblT" + QString::number(idxLine));
+                    /* strObjName    */ "VLblT" + QString::number(x1_px));
 
                 pGraphObjText->setPos( QPoint(x1_px, y1_px) );
                 pGraphObjText->setPlainText(QString::number(x1_px));
@@ -527,8 +522,7 @@ void CTest::doTestStepAndroidWallpaperTemplateDrawGridLines( ZS::Test::CTestStep
                 pGraphObjText = new CGraphObjText(
                     /* pDrawingScene */ m_pDrawingScene,
                     /* drawSettings  */ drawSettingsText,
-                    /* strObjName    */ "VLblC" + QString::number(x1_px),
-                    /* strObjId      */ "VLblC" + QString::number(idxLine));
+                    /* strObjName    */ "VLblC" + QString::number(x1_px));
 
                 pGraphObjText->setPos( QPoint(x1_px, sizeDrawing.height()/2) );
                 pGraphObjText->setPlainText(QString::number(x1_px));
@@ -543,8 +537,7 @@ void CTest::doTestStepAndroidWallpaperTemplateDrawGridLines( ZS::Test::CTestStep
                 pGraphObjText = new CGraphObjText(
                     /* pDrawingScene */ m_pDrawingScene,
                     /* drawSettings  */ drawSettingsText,
-                    /* strObjName    */ "VLblB" + QString::number(x1_px),
-                    /* strObjId      */ "BLblB" + QString::number(idxLine));
+                    /* strObjName    */ "VLblB" + QString::number(x1_px));
 
                 pGraphObjText->setPos( QPoint(x1_px, y2_px) );
                 pGraphObjText->setPlainText(QString::number(x1_px));
@@ -572,7 +565,7 @@ void CTest::doTestStepAndroidWallpaperTemplateDrawGridLines( ZS::Test::CTestStep
     //QColor colWallpaperBackground(Qt::yellow);
     //colWallpaperBackground.setAlpha(64);
 
-    //drawSettingsRect.setFillStyle(EFillStyleSolidPattern);
+    //drawSettingsRect.setFillStyle(EFillStyle::SolidPattern);
     //drawSettingsRect.setFillColor(colWallpaperBackground);
 
     //// Factor ScreenResolutionWidth / ScreenResolutionHeight;
@@ -613,7 +606,7 @@ void CTest::doTestStepAndroidWallpaperTemplateDrawGridLines( ZS::Test::CTestStep
     {
         CGraphObjLine* pGraphObjLine = dynamic_cast<CGraphObjLine*>(pGraphObj);
 
-        if( pGraphObjLine != nullptr && pGraphObjLine->getObjName().startsWith("HL") )
+        if( pGraphObjLine != nullptr && pGraphObjLine->name().startsWith("HL") )
         {
             if( !strResultValues.isEmpty() ) strResultValues += ", ";
             QLineF line = pGraphObjLine->getLine();
@@ -631,7 +624,7 @@ void CTest::doTestStepAndroidWallpaperTemplateDrawGridLines( ZS::Test::CTestStep
     {
         CGraphObjLine* pGraphObjLine = dynamic_cast<CGraphObjLine*>(pGraphObj);
 
-        if( pGraphObjLine != nullptr && pGraphObjLine->getObjName().startsWith("VL") )
+        if( pGraphObjLine != nullptr && pGraphObjLine->name().startsWith("VL") )
         {
             if( !strResultValues.isEmpty() ) strResultValues += ", ";
             QLineF line = pGraphObjLine->getLine();

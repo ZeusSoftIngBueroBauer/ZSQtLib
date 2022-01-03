@@ -41,11 +41,11 @@ using namespace ZS::Trace;
 
 
 /*******************************************************************************
-class CTrcAdminObj : public QObject, public #error CLeaveIdxTreeEntry
+class CTrcAdminObj : public QObject, public CIdxTreeEntry
 *******************************************************************************/
 
 /*==============================================================================
-protected: // ctors and dtor (trace admin objects may only be created by the model)
+protected: // ctors and dtor (trace admin objects may only be created by the trace server)
 ==============================================================================*/
 
 //------------------------------------------------------------------------------

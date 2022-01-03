@@ -39,6 +39,7 @@ may result in using the software modules.
 #include "ZSDrawGraphObjElectricitySwitch.h"
 #include "ZSDrawWdgtFormatGraphObjsElectricitySwitch.h"
 
+#include "ZSDraw/ZSDrawAux.h"
 #include "ZSDraw/ZSDrawGraphObjConnectionPoint.h"
 #include "ZSDraw/ZSDrawGraphObjLine.h"
 #include "ZSDraw/ZSDrawGraphObjRect.h"
@@ -46,7 +47,9 @@ may result in using the software modules.
 #include "ZSDraw/ZSDrawGraphObjSelectionPoint.h"
 #include "ZSDraw/ZSDrawDlgFormatGraphObjs.h"
 #include "ZSDraw/ZSDrawingScene.h"
+#include "ZSDraw/ZSDrawObjFactory.h"
 #include "ZSPhysSizes/Geometry/ZSPhysSizes.h"
+#include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysEnumEntry.h"
 #include "ZSSys/ZSSysErrCode.h"
 #include "ZSSys/ZSSysException.h"
@@ -109,49 +112,10 @@ CGraphObjSwitch::EState CGraphObjSwitch::Str2State( const QString& i_str )
 } // Str2State
 
 /*==============================================================================
-public: // class methods
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-void CGraphObjSwitch::ResetCtorsDtorsCounters()
-//------------------------------------------------------------------------------
-{
-    QString strAddTrcInfo;
-
-    if( s_pTrcAdminObjCtorsAndDtor != nullptr && s_pTrcAdminObjCtorsAndDtor->isActive(ETraceDetailLevelMethodCalls) )
-    {
-        strAddTrcInfo  = "CtorsCount: " + QString::number(s_iCtorsCount);
-        strAddTrcInfo += ", DtorsCount: " + QString::number(s_iDtorsCount);
-    }
-
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ s_pTrcAdminObjCtorsAndDtor,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strObjName   */ "",
-        /* strMethod    */ "ResetCtorsDtorsCounters",
-        /* strAddInfo   */ strAddTrcInfo );
-
-    if( s_iCtorsCount != s_iDtorsCount )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultInvalidMethodCall, "CtorsCount(=" + QString::number(s_iCtorsCount) + ") != DtorsCount(=" + QString::number(s_iDtorsCount) + ")" );
-    }
-
-    s_iCtorsCount = 1;
-    s_iDtorsCount = 1;
-
-} // ResetCtorsDtorsCounters
-
-/*==============================================================================
 protected: // class members
 ==============================================================================*/
 
-qint64 CGraphObjSwitch::s_iCtorsCount = 1;
-qint64 CGraphObjSwitch::s_iDtorsCount = 1;
-
-CTrcAdminObj* CGraphObjSwitch::s_pTrcAdminObjCtorsAndDtor = nullptr;
-CTrcAdminObj* CGraphObjSwitch::s_pTrcAdminObjItemChange = nullptr;
-CTrcAdminObj* CGraphObjSwitch::s_pTrcAdminObjMouseEvents = nullptr;
-CTrcAdminObj* CGraphObjSwitch::s_pTrcAdminObjKeyEvents = nullptr;
+qint64 CGraphObjSwitch::s_iInstCount = 0;
 
 /*==============================================================================
 public: // ctors and dtor
@@ -162,16 +126,12 @@ CGraphObjSwitch::CGraphObjSwitch(
     CDrawingScene*       i_pDrawingScene,
     const CDrawSettings& i_drawSettings,
     EState               i_state,
-    const QString&       i_strObjName,
-    const QString&       i_strObjId ) :
+    const QString&       i_strObjName ) :
 //------------------------------------------------------------------------------
     CGraphObjElectricity(
         /* pDrawingScene */ i_pDrawingScene,
-        /* strNameSpace  */ "ZS::Draw::Electricity",
-        /* strClassName  */ "CGraphObjSwitch",
         /* strType       */ "Switch",
-        /* strObjName    */ i_strObjName.isEmpty() ? "S" + QString::number(s_iCtorsCount) : i_strObjName,
-        /* strObjId      */ i_strObjId.isEmpty() ? "S" + QString::number(s_iCtorsCount) : i_strObjId,
+        /* strObjName    */ i_strObjName.isEmpty() ? "S" + QString::number(s_iInstCount) : i_strObjName,
         /* drawSettings  */ i_drawSettings ),
     m_pCnctPt1(nullptr),
     m_pCnctPt2(nullptr),
@@ -179,26 +139,29 @@ CGraphObjSwitch::CGraphObjSwitch(
     m_idxLinSwitchAlignmentTop(-1),
     m_state(i_state)
 {
-    s_iCtorsCount++;
+    s_iInstCount++;
 
     QString strAddTrcInfo;
 
-    if( s_pTrcAdminObjCtorsAndDtor == nullptr )
-    {
-        s_pTrcAdminObjCtorsAndDtor = CTrcServer::GetTraceAdminObj("ZS::Draw::Electricity", "CGraphObjSwitch::CtorsAndDtor", "");
-        s_pTrcAdminObjItemChange = CTrcServer::GetTraceAdminObj("ZS::Draw", "CGraphObjSwitch::ItemChange", "");
-        s_pTrcAdminObjMouseEvents = CTrcServer::GetTraceAdminObj("ZS::Draw", "CGraphObjSwitch::MouseEvents", "");
-        s_pTrcAdminObjKeyEvents = CTrcServer::GetTraceAdminObj("ZS::Draw", "CGraphObjSwitch::KeyEvents", "");
-    }
+    QString strNameSpace = NameSpace() + CObjFactory::c_strGroupSeparater + c_strFactoryGroupName;
+    m_pTrcAdminObjCtorsAndDtor = CTrcServer::GetTraceAdminObj(strNameSpace, ClassName(), "CtorsAndDtor");
+    m_pTrcAdminObjItemChange = CTrcServer::GetTraceAdminObj(strNameSpace, ClassName(), "ItemChange");
+    m_pTrcAdminObjBoundingRect = CTrcServer::GetTraceAdminObj(strNameSpace, ClassName(), "BoundingRect");
+    m_pTrcAdminObjPaint = CTrcServer::GetTraceAdminObj(strNameSpace, ClassName(), "Paint");
+    m_pTrcAdminObjSceneEvent = CTrcServer::GetTraceAdminObj(strNameSpace, ClassName(), "SceneEvent");
+    m_pTrcAdminObjSceneEventFilter = CTrcServer::GetTraceAdminObj(strNameSpace, ClassName(), "SceneEventFilter");
+    m_pTrcAdminObjHoverEvents = CTrcServer::GetTraceAdminObj(strNameSpace, ClassName(), "HoverEvents");
+    m_pTrcAdminObjMouseEvents = CTrcServer::GetTraceAdminObj(strNameSpace, ClassName(), "MouseEvents");
+    m_pTrcAdminObjKeyEvents = CTrcServer::GetTraceAdminObj(strNameSpace, ClassName(), "KeyEvents");
 
-    if( s_pTrcAdminObjCtorsAndDtor != nullptr && s_pTrcAdminObjCtorsAndDtor->isActive(ETraceDetailLevelMethodCalls) )
+    if( m_pTrcAdminObjCtorsAndDtor != nullptr && m_pTrcAdminObjCtorsAndDtor->isActive(ETraceDetailLevelMethodCalls) )
     {
     }
 
     CMethodTracer mthTracer(
-        /* pAdminObj    */ s_pTrcAdminObjCtorsAndDtor,
+        /* pAdminObj    */ m_pTrcAdminObjCtorsAndDtor,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strObjName   */ m_strObjName,
+        /* strObjName   */ m_strName,
         /* strMethod    */ "ctor",
         /* strAddInfo   */ strAddTrcInfo );
 
@@ -240,7 +203,7 @@ CGraphObjSwitch::CGraphObjSwitch(
 
     m_drawSettings.setPenColor(Qt::black);
     m_drawSettings.setPenWidth(1);
-    m_drawSettings.setLineStyle(ELineStyleSolidLine);
+    m_drawSettings.setLineStyle(ELineStyle::SolidLine);
 
     // Draw settings for elements
     //---------------------------
@@ -258,8 +221,7 @@ CGraphObjSwitch::CGraphObjSwitch(
     m_pCnctPt1 = new CGraphObjConnectionPoint(
         /* pDrawingScene */ m_pDrawingScene,
         /* drawSettings  */ drawSettingsCnctPt,
-        /* strObjName    */ "CnctPt1",
-        /* strObjId      */ m_strObjId + m_pDrawingScene->getGraphObjNameNodeSeparator() + "CnctPt1" );
+        /* strObjName    */ "CnctPt1" );
 
     m_pCnctPt1->setWidth(fCnctPtWidth);
     m_pCnctPt1->setInnerCircleWidthInPx(fCnctPtWidth);
@@ -270,9 +232,9 @@ CGraphObjSwitch::CGraphObjSwitch(
     m_pCnctPt1->setPos( rctCnctPt1.topLeft() );
     addGraphObj(m_pCnctPt1);
 
-    alignment = SGraphObjAlignment( EAlignmentRefLeft, EAlignmentRefLeft, true, 0.0 );
+    alignment = SGraphObjAlignment( EAlignmentRef::Left, EAlignmentRef::Left, true, 0.0 );
     m_pCnctPt1->addAlignment(alignment);
-    alignment = SGraphObjAlignment( EAlignmentRefBottom, EAlignmentRefBottom, true, 0.0 );
+    alignment = SGraphObjAlignment( EAlignmentRef::Bottom, EAlignmentRef::Bottom, true, 0.0 );
     m_pCnctPt1->addAlignment(alignment);
 
     // Connection Point 2
@@ -281,8 +243,7 @@ CGraphObjSwitch::CGraphObjSwitch(
     m_pCnctPt2 = new CGraphObjConnectionPoint(
         /* pDrawingScene */ m_pDrawingScene,
         /* drawSettings  */ drawSettingsCnctPt,
-        /* strObjName    */ "CnctPt2",
-        /* strObjId      */ m_strObjId + m_pDrawingScene->getGraphObjNameNodeSeparator() + "CnctPt2" );
+        /* strObjName    */ "CnctPt2" );
 
     m_pCnctPt2->setWidth(fCnctPtWidth);
     m_pCnctPt2->setInnerCircleWidthInPx(fCnctPtWidth);
@@ -293,9 +254,9 @@ CGraphObjSwitch::CGraphObjSwitch(
     m_pCnctPt2->setPos( rctCnctPt2.topLeft() );
     addGraphObj(m_pCnctPt2);
 
-    alignment = SGraphObjAlignment( EAlignmentRefRight, EAlignmentRefRight, true, 0.0 );
+    alignment = SGraphObjAlignment( EAlignmentRef::Right, EAlignmentRef::Right, true, 0.0 );
     m_pCnctPt2->addAlignment(alignment);
-    alignment = SGraphObjAlignment( EAlignmentRefBottom, EAlignmentRefBottom, true, 0.0 );
+    alignment = SGraphObjAlignment( EAlignmentRef::Bottom, EAlignmentRef::Bottom, true, 0.0 );
     m_pCnctPt2->addAlignment(alignment);
 
     // Switch Line
@@ -314,8 +275,7 @@ CGraphObjSwitch::CGraphObjSwitch(
     m_pLinSwitch = new CGraphObjLine(
         /* pDrawingScene */ m_pDrawingScene,
         /* drawSettings  */ drawSettingsLine,
-        /* strObjName    */ "SwitchLine",
-        /* strObjId      */ m_strObjId + m_pDrawingScene->getGraphObjNameNodeSeparator() + "SwitchLine" );
+        /* strObjName    */ "SwitchLine" );
 
     m_pLinSwitch->setLine(lnSwitch);
     m_pDrawingScene->addItem(m_pLinSwitch);
@@ -323,21 +283,21 @@ CGraphObjSwitch::CGraphObjSwitch(
     m_pLinSwitch->setPos(ptSwitchLineStart);
     addGraphObj(m_pLinSwitch);
 
-    alignment = SGraphObjAlignment( EAlignmentRefLeft, EAlignmentRefLeft, true, ptSwitchLineStart.x() );
+    alignment = SGraphObjAlignment( EAlignmentRef::Left, EAlignmentRef::Left, true, ptSwitchLineStart.x() );
     m_pLinSwitch->addAlignment(alignment);
-    alignment = SGraphObjAlignment( EAlignmentRefRight, EAlignmentRefRight, true, ptSwitchLineEnd.x()-rctBounding.width() );
+    alignment = SGraphObjAlignment( EAlignmentRef::Right, EAlignmentRef::Right, true, ptSwitchLineEnd.x()-rctBounding.width() );
     m_pLinSwitch->addAlignment(alignment);
-    alignment = SGraphObjAlignment( EAlignmentRefBottom, EAlignmentRefBottom, true, -fCnctPtWidth/2.0 );
+    alignment = SGraphObjAlignment( EAlignmentRef::Bottom, EAlignmentRef::Bottom, true, -fCnctPtWidth/2.0 );
     m_pLinSwitch->addAlignment(alignment);
 
     if( m_state == EStateOpened )
     {
-        alignment = SGraphObjAlignment( EAlignmentRefTop, EAlignmentRefTop, true, 0.0 );
+        alignment = SGraphObjAlignment( EAlignmentRef::Top, EAlignmentRef::Top, true, 0.0 );
         m_idxLinSwitchAlignmentTop = m_pLinSwitch->addAlignment(alignment);
     }
     else // if( m_state == EStateClosed )
     {
-        alignment = SGraphObjAlignment( EAlignmentRefTop, EAlignmentRefBottom, true, -fCnctPtWidth/2.0 );
+        alignment = SGraphObjAlignment( EAlignmentRef::Top, EAlignmentRef::Bottom, true, -fCnctPtWidth/2.0 );
         m_idxLinSwitchAlignmentTop = m_pLinSwitch->addAlignment(alignment);
     }
 
@@ -355,9 +315,9 @@ CGraphObjSwitch::CGraphObjSwitch(
     if( mthTracer.isActive(ETraceDetailLevelInternalStates) )
     {
         strAddTrcInfo  = "Selected:" + bool2Str(isSelected());
-        strAddTrcInfo += ", EditMode:" + editMode2Str(m_editMode);
-        strAddTrcInfo += ", ResizeMode:" + editResizeMode2Str(m_editResizeMode);
-        strAddTrcInfo += ", SelectedPoint:" + selectionPoint2Str(m_selPtSelectedBoundingRect);
+        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
+        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
+        strAddTrcInfo += ", SelectedPoint:" + m_selPtSelectedBoundingRect.toString();
         mthTracer.trace(strAddTrcInfo);
     }
 
@@ -369,12 +329,10 @@ CGraphObjSwitch::~CGraphObjSwitch()
 {
     m_bDtorInProgress = true;
 
-    s_iDtorsCount++;
-
     CMethodTracer mthTracer(
-        /* pAdminObj    */ s_pTrcAdminObjCtorsAndDtor,
+        /* pAdminObj    */ m_pTrcAdminObjCtorsAndDtor,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strObjName   */ m_strObjName,
+        /* strObjName   */ m_strName,
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
 
@@ -403,18 +361,6 @@ CGraphObjSwitch::~CGraphObjSwitch()
         }
     }
 
-    if( s_iCtorsCount == s_iDtorsCount )
-    {
-        CTrcServer::ReleaseTraceAdminObj(s_pTrcAdminObjCtorsAndDtor);
-        s_pTrcAdminObjCtorsAndDtor = nullptr;
-        CTrcServer::ReleaseTraceAdminObj(s_pTrcAdminObjItemChange);
-        s_pTrcAdminObjItemChange = nullptr;
-        CTrcServer::ReleaseTraceAdminObj(s_pTrcAdminObjMouseEvents);
-        s_pTrcAdminObjItemChange = nullptr;
-        CTrcServer::ReleaseTraceAdminObj(s_pTrcAdminObjKeyEvents);
-        s_pTrcAdminObjItemChange = nullptr;
-    }
-
     m_pCnctPt1 = nullptr;
     m_pCnctPt2 = nullptr;
     m_pLinSwitch = nullptr;
@@ -431,15 +377,15 @@ void CGraphObjSwitch::setState( EState i_state )
 {
     QString strAddTrcInfo;
 
-    if( s_pTrcAdminObjItemChange != nullptr && s_pTrcAdminObjItemChange->isActive(ETraceDetailLevelMethodCalls) )
+    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->isActive(ETraceDetailLevelMethodCalls) )
     {
         strAddTrcInfo = "State:" + State2Str(i_state);
     }
 
     CMethodTracer mthTracer(
-        /* pAdminObj    */ s_pTrcAdminObjItemChange,
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strObjName   */ m_strObjName,
+        /* strObjName   */ m_strName,
         /* strMethod    */ "setState",
         /* strAddInfo   */ strAddTrcInfo );
 
@@ -466,12 +412,12 @@ void CGraphObjSwitch::setState( EState i_state )
 
         if( m_state == EStateOpened )
         {
-            alignment = SGraphObjAlignment( EAlignmentRefTop, EAlignmentRefTop, true, 0.0 );
+            alignment = SGraphObjAlignment( EAlignmentRef::Top, EAlignmentRef::Top, true, 0.0 );
             m_pLinSwitch->setAlignment(m_idxLinSwitchAlignmentTop,alignment);
         }
         else // if( m_state == EStateClosed )
         {
-            alignment = SGraphObjAlignment( EAlignmentRefTop, EAlignmentRefBottom, true, -m_pCnctPt2->getHeight()/2.0 );
+            alignment = SGraphObjAlignment( EAlignmentRef::Top, EAlignmentRef::Bottom, true, -m_pCnctPt2->getHeight()/2.0 );
             m_pLinSwitch->setAlignment(m_idxLinSwitchAlignmentTop,alignment);
         }
 
@@ -496,15 +442,15 @@ void CGraphObjSwitch::toggleState()
 {
     QString strAddTrcInfo;
 
-    if( s_pTrcAdminObjItemChange != nullptr && s_pTrcAdminObjItemChange->isActive(ETraceDetailLevelMethodCalls) )
+    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->isActive(ETraceDetailLevelMethodCalls) )
     {
         strAddTrcInfo = "StateCurr:" + State2Str(m_state);
     }
 
     CMethodTracer mthTracer(
-        /* pAdminObj    */ s_pTrcAdminObjItemChange,
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strObjName   */ m_strObjName,
+        /* strObjName   */ m_strName,
         /* strMethod    */ "toggleState",
         /* strAddInfo   */ strAddTrcInfo );
 
@@ -566,14 +512,14 @@ CGraphObj* CGraphObjSwitch::clone()
 {
     QString strAddTrcInfo;
 
-    if( s_pTrcAdminObjCtorsAndDtor != nullptr && s_pTrcAdminObjCtorsAndDtor->isActive(ETraceDetailLevelMethodCalls) )
+    if( m_pTrcAdminObjCtorsAndDtor != nullptr && m_pTrcAdminObjCtorsAndDtor->isActive(ETraceDetailLevelMethodCalls) )
     {
     }
 
     CMethodTracer mthTracer(
-        /* pAdminObj    */ s_pTrcAdminObjCtorsAndDtor,
+        /* pAdminObj    */ m_pTrcAdminObjCtorsAndDtor,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strObjName   */ m_strObjName,
+        /* strObjName   */ m_strName,
         /* strMethod    */ "clone",
         /* strAddInfo   */ strAddTrcInfo );
 
@@ -622,14 +568,14 @@ void CGraphObjSwitch::onDrawSettingsChanged()
 {
     QString strAddTrcInfo;
 
-    if( s_pTrcAdminObjItemChange != nullptr && s_pTrcAdminObjItemChange->isActive(ETraceDetailLevelMethodCalls) )
+    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->isActive(ETraceDetailLevelMethodCalls) )
     {
     }
 
     CMethodTracer mthTracer(
-        /* pAdminObj    */ s_pTrcAdminObjItemChange,
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strObjName   */ m_strObjName,
+        /* strObjName   */ m_strName,
         /* strMethod    */ "onDrawSettingsChanged",
         /* strAddInfo   */ strAddTrcInfo );
 
@@ -653,27 +599,27 @@ void CGraphObjSwitch::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
 {
     QString strAddTrcInfo;
 
-    if( s_pTrcAdminObjMouseEvents != nullptr && s_pTrcAdminObjMouseEvents->isActive(ETraceDetailLevelMethodCalls) )
+    if( m_pTrcAdminObjMouseEvents != nullptr && m_pTrcAdminObjMouseEvents->isActive(ETraceDetailLevelMethodCalls) )
     {
         strAddTrcInfo  = "Ev.Pos:(" + QString::number(i_pEv->pos().x()) + "," + QString::number(i_pEv->pos().y()) + ")";
         strAddTrcInfo += ", Ev.ScenePos:(" + QString::number(i_pEv->scenePos().x()) + "," + QString::number(i_pEv->scenePos().y()) + ")";
         strAddTrcInfo += ", Ev.ScreenPos:(" + QString::number(i_pEv->screenPos().x()) + "," + QString::number(i_pEv->screenPos().y()) + ")";
         strAddTrcInfo += ", Selected:" + bool2Str(isSelected());
-        strAddTrcInfo += ", EditMode:" + editMode2Str(m_editMode);
-        strAddTrcInfo += ", ResizeMode:" + editResizeMode2Str(m_editResizeMode);
-        strAddTrcInfo += ", SelectedPoint:" + selectionPoint2Str(m_selPtSelectedBoundingRect);
+        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
+        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
+        strAddTrcInfo += ", SelectedPoint:" + m_selPtSelectedBoundingRect.toString();
     }
 
     CMethodTracer mthTracer(
-        /* pAdminObj    */ s_pTrcAdminObjMouseEvents,
+        /* pAdminObj    */ m_pTrcAdminObjMouseEvents,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strObjName   */ m_strObjName,
+        /* strObjName   */ m_strName,
         /* strMethod    */ "mousePressEvent",
         /* strAddInfo   */ strAddTrcInfo );
 
     CGraphObjGroup::mousePressEvent(i_pEv);
 
-    EMode modeDrawing = m_pDrawingScene->getMode();
+    CEnumMode modeDrawing = m_pDrawingScene->getMode();
 
     if( modeDrawing == EMode::Simulation )
     {
@@ -682,9 +628,9 @@ void CGraphObjSwitch::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
     if( mthTracer.isActive(ETraceDetailLevelInternalStates) )
     {
         strAddTrcInfo  = "Selected:" + bool2Str(isSelected());
-        strAddTrcInfo += ", EditMode:" + editMode2Str(m_editMode);
-        strAddTrcInfo += ", ResizeMode:" + editResizeMode2Str(m_editResizeMode);
-        strAddTrcInfo += ", SelectedPoint:" + selectionPoint2Str(m_selPtSelectedBoundingRect);
+        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
+        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
+        strAddTrcInfo += ", SelectedPoint:" + m_selPtSelectedBoundingRect.toString();
         mthTracer.trace(strAddTrcInfo);
     }
 
@@ -696,27 +642,27 @@ void CGraphObjSwitch::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
 {
     QString strAddTrcInfo;
 
-    if( s_pTrcAdminObjMouseEvents != nullptr && s_pTrcAdminObjMouseEvents->isActive(ETraceDetailLevelMethodCalls) )
+    if( m_pTrcAdminObjMouseEvents != nullptr && m_pTrcAdminObjMouseEvents->isActive(ETraceDetailLevelMethodCalls) )
     {
         strAddTrcInfo  = "Ev.Pos:(" + QString::number(i_pEv->pos().x()) + "," + QString::number(i_pEv->pos().y()) + ")";
         strAddTrcInfo += ", Ev.ScenePos:(" + QString::number(i_pEv->scenePos().x()) + "," + QString::number(i_pEv->scenePos().y()) + ")";
         strAddTrcInfo += ", Ev.ScreenPos:(" + QString::number(i_pEv->screenPos().x()) + "," + QString::number(i_pEv->screenPos().y()) + ")";
         strAddTrcInfo += ", Selected:" + bool2Str(isSelected());
-        strAddTrcInfo += ", EditMode:" + editMode2Str(m_editMode);
-        strAddTrcInfo += ", ResizeMode:" + editResizeMode2Str(m_editResizeMode);
-        strAddTrcInfo += ", SelectedPoint:" + selectionPoint2Str(m_selPtSelectedBoundingRect);
+        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
+        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
+        strAddTrcInfo += ", SelectedPoint:" + m_selPtSelectedBoundingRect.toString();
     }
 
     CMethodTracer mthTracer(
-        /* pAdminObj    */ s_pTrcAdminObjMouseEvents,
+        /* pAdminObj    */ m_pTrcAdminObjMouseEvents,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strObjName   */ m_strObjName,
+        /* strObjName   */ m_strName,
         /* strMethod    */ "mouseReleaseEvent",
         /* strAddInfo   */ strAddTrcInfo );
 
     CGraphObjGroup::mouseReleaseEvent(i_pEv);
 
-    EMode modeDrawing = m_pDrawingScene->getMode();
+    CEnumMode modeDrawing = m_pDrawingScene->getMode();
 
     if( modeDrawing == EMode::Simulation )
     {
@@ -726,9 +672,9 @@ void CGraphObjSwitch::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
     if( mthTracer.isActive(ETraceDetailLevelInternalStates) )
     {
         strAddTrcInfo  = "Selected:" + bool2Str(isSelected());
-        strAddTrcInfo += ", EditMode:" + editMode2Str(m_editMode);
-        strAddTrcInfo += ", ResizeMode:" + editResizeMode2Str(m_editResizeMode);
-        strAddTrcInfo += ", SelectedPoint:" + selectionPoint2Str(m_selPtSelectedBoundingRect);
+        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
+        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
+        strAddTrcInfo += ", SelectedPoint:" + m_selPtSelectedBoundingRect.toString();
         mthTracer.trace(strAddTrcInfo);
     }
 
@@ -740,21 +686,21 @@ void CGraphObjSwitch::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv )
 {
     QString strAddTrcInfo;
 
-    if( s_pTrcAdminObjMouseEvents != nullptr && s_pTrcAdminObjMouseEvents->isActive(ETraceDetailLevelMethodCalls) )
+    if( m_pTrcAdminObjMouseEvents != nullptr && m_pTrcAdminObjMouseEvents->isActive(ETraceDetailLevelMethodCalls) )
     {
         strAddTrcInfo  = "Ev.Pos:(" + QString::number(i_pEv->pos().x()) + "," + QString::number(i_pEv->pos().y()) + ")";
         strAddTrcInfo += ", Ev.ScenePos:(" + QString::number(i_pEv->scenePos().x()) + "," + QString::number(i_pEv->scenePos().y()) + ")";
         strAddTrcInfo += ", Ev.ScreenPos:(" + QString::number(i_pEv->screenPos().x()) + "," + QString::number(i_pEv->screenPos().y()) + ")";
         strAddTrcInfo += ", Selected:" + bool2Str(isSelected());
-        strAddTrcInfo += ", EditMode:" + editMode2Str(m_editMode);
-        strAddTrcInfo += ", ResizeMode:" + editResizeMode2Str(m_editResizeMode);
-        strAddTrcInfo += ", SelectedPoint:" + selectionPoint2Str(m_selPtSelectedBoundingRect);
+        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
+        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
+        strAddTrcInfo += ", SelectedPoint:" + m_selPtSelectedBoundingRect.toString();
     }
 
     CMethodTracer mthTracer(
-        /* pAdminObj    */ s_pTrcAdminObjMouseEvents,
+        /* pAdminObj    */ m_pTrcAdminObjMouseEvents,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strObjName   */ m_strObjName,
+        /* strObjName   */ m_strName,
         /* strMethod    */ "mouseDoubleClickEvent",
         /* strAddInfo   */ strAddTrcInfo );
 
@@ -768,9 +714,9 @@ void CGraphObjSwitch::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv )
     if( mthTracer.isActive(ETraceDetailLevelInternalStates) )
     {
         strAddTrcInfo  = "Selected:" + bool2Str(isSelected());
-        strAddTrcInfo += ", EditMode:" + editMode2Str(m_editMode);
-        strAddTrcInfo += ", ResizeMode:" + editResizeMode2Str(m_editResizeMode);
-        strAddTrcInfo += ", SelectedPoint:" + selectionPoint2Str(m_selPtSelectedBoundingRect);
+        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
+        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
+        strAddTrcInfo += ", SelectedPoint:" + m_selPtSelectedBoundingRect.toString();
         mthTracer.trace(strAddTrcInfo);
     }
 
@@ -786,26 +732,26 @@ void CGraphObjSwitch::keyPressEvent( QKeyEvent* i_pEv )
 {
     QString strAddTrcInfo;
 
-    if( s_pTrcAdminObjKeyEvents != nullptr && s_pTrcAdminObjKeyEvents->isActive(ETraceDetailLevelMethodCalls) )
+    if( m_pTrcAdminObjKeyEvents != nullptr && m_pTrcAdminObjKeyEvents->isActive(ETraceDetailLevelMethodCalls) )
     {
         strAddTrcInfo  = "Ev.Key:" + qKeyCode2Str(i_pEv->key());
         strAddTrcInfo += ", Ev.Modifiers:" + qKeyboardModifiers2Str(i_pEv->modifiers());
         strAddTrcInfo += ", Selected:" + bool2Str(isSelected());
-        strAddTrcInfo += ", EditMode:" + editMode2Str(m_editMode);
-        strAddTrcInfo += ", ResizeMode:" + editResizeMode2Str(m_editResizeMode);
-        strAddTrcInfo += ", SelectedPoint:" + selectionPoint2Str(m_selPtSelectedBoundingRect);
+        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
+        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
+        strAddTrcInfo += ", SelectedPoint:" + m_selPtSelectedBoundingRect.toString();
     }
 
     CMethodTracer mthTracer(
-        /* pAdminObj    */ s_pTrcAdminObjKeyEvents,
+        /* pAdminObj    */ m_pTrcAdminObjKeyEvents,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strObjName   */ m_strObjName,
+        /* strObjName   */ m_strName,
         /* strMethod    */ "keyPressEvent",
         /* strAddInfo   */ strAddTrcInfo );
 
     CGraphObjGroup::keyPressEvent(i_pEv);
 
-    EMode modeDrawing = m_pDrawingScene->getMode();
+    CEnumMode modeDrawing = m_pDrawingScene->getMode();
 
     if( modeDrawing == EMode::Simulation )
     {
@@ -814,9 +760,9 @@ void CGraphObjSwitch::keyPressEvent( QKeyEvent* i_pEv )
     if( mthTracer.isActive(ETraceDetailLevelInternalStates) )
     {
         strAddTrcInfo  = "Selected:" + bool2Str(isSelected());
-        strAddTrcInfo += ", EditMode:" + editMode2Str(m_editMode);
-        strAddTrcInfo += ", ResizeMode:" + editResizeMode2Str(m_editResizeMode);
-        strAddTrcInfo += ", SelectedPoint:" + selectionPoint2Str(m_selPtSelectedBoundingRect);
+        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
+        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
+        strAddTrcInfo += ", SelectedPoint:" + m_selPtSelectedBoundingRect.toString();
         mthTracer.trace(strAddTrcInfo);
     }
 
@@ -828,26 +774,26 @@ void CGraphObjSwitch::keyReleaseEvent( QKeyEvent* i_pEv )
 {
     QString strAddTrcInfo;
 
-    if( s_pTrcAdminObjKeyEvents != nullptr && s_pTrcAdminObjKeyEvents->isActive(ETraceDetailLevelMethodCalls) )
+    if( m_pTrcAdminObjKeyEvents != nullptr && m_pTrcAdminObjKeyEvents->isActive(ETraceDetailLevelMethodCalls) )
     {
         strAddTrcInfo  = "Ev.Key:" + qKeyCode2Str(i_pEv->key());
         strAddTrcInfo += ", Ev.Modifiers:" + qKeyboardModifiers2Str(i_pEv->modifiers());
         strAddTrcInfo += ", Selected:" + bool2Str(isSelected());
-        strAddTrcInfo += ", EditMode:" + editMode2Str(m_editMode);
-        strAddTrcInfo += ", ResizeMode:" + editResizeMode2Str(m_editResizeMode);
-        strAddTrcInfo += ", SelectedPoint:" + selectionPoint2Str(m_selPtSelectedBoundingRect);
+        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
+        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
+        strAddTrcInfo += ", SelectedPoint:" + m_selPtSelectedBoundingRect.toString();
     }
 
     CMethodTracer mthTracer(
-        /* pAdminObj    */ s_pTrcAdminObjKeyEvents,
+        /* pAdminObj    */ m_pTrcAdminObjKeyEvents,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strObjName   */ m_strObjName,
+        /* strObjName   */ m_strName,
         /* strMethod    */ "keyReleaseEvent",
         /* strAddInfo   */ strAddTrcInfo );
 
     CGraphObjGroup::keyReleaseEvent(i_pEv);
 
-    EMode modeDrawing = m_pDrawingScene->getMode();
+    CEnumMode modeDrawing = m_pDrawingScene->getMode();
 
     if( modeDrawing == EMode::Simulation )
     {
@@ -856,9 +802,9 @@ void CGraphObjSwitch::keyReleaseEvent( QKeyEvent* i_pEv )
     if( mthTracer.isActive(ETraceDetailLevelInternalStates) )
     {
         strAddTrcInfo  = "Selected:" + bool2Str(isSelected());
-        strAddTrcInfo += ", EditMode:" + editMode2Str(m_editMode);
-        strAddTrcInfo += ", ResizeMode:" + editResizeMode2Str(m_editResizeMode);
-        strAddTrcInfo += ", SelectedPoint:" + selectionPoint2Str(m_selPtSelectedBoundingRect);
+        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
+        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
+        strAddTrcInfo += ", SelectedPoint:" + m_selPtSelectedBoundingRect.toString();
         mthTracer.trace(strAddTrcInfo);
     }
 
@@ -879,8 +825,8 @@ void CGraphObjSwitch::updateToolTip()
         QString strNodeSeparator = m_pDrawingScene->getGraphObjNameNodeSeparator();
         QPointF ptPos;
 
-        m_strToolTip  = "ObjName:\t" + getObjName(true,strNodeSeparator);
-        m_strToolTip += "\nObjId:\t\t" + getObjId();
+        m_strToolTip  = "ObjName:\t" + name();
+        m_strToolTip += "\nObjId:\t\t" + keyInTree();
 
         m_strToolTip += "State:\t" + State2Str(m_state);
 

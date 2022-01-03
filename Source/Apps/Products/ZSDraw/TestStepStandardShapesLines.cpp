@@ -427,7 +427,7 @@ void CTest::doTestStepStandardShapesLines( ZS::Test::CTestStepGroup* i_pTestStep
                 pTestStep->setExpectedValues(strlstExpectedValues);
                 pTestStep->testStarted();
 
-                if( m_pDrawingScene->getEditTool() != EEditToolSelect )
+                if( m_pDrawingScene->getEditTool() != EEditTool::Select )
                 {
                     m_pMainWindow->setCheckedActionEditSelect(true);
                 }
@@ -471,7 +471,7 @@ void CTest::doTestStepStandardShapesLines( ZS::Test::CTestStepGroup* i_pTestStep
             ptMousePosGlobal.setX(ptMousePosGlobal.x()+1); // Maybe graphics view or graphics scene bug on calculating the screen position.
             ptMousePosGlobal.setY(ptMousePosGlobal.y()+1); // Without adding 1 pixel the newly created object will not be selected by the scene.
 
-            strlstExpectedValues.append( strCurrentGraphObj + ": SelPt:" + selectionPoint2Str(ESelectionPointUndefined) );
+            strlstExpectedValues.append( strCurrentGraphObj + ": SelPt:" + selectionPoint2Str(ESelectionPoint::Undefined) );
             strlstExpectedValues.append( strCurrentGraphObj + ": " + line2Str(s_line1) );
 
             pTestStep->setOperation( "view.mousePressEvent( ViewPos:" + point2Str(m_ptDrawingViewMousePos) + " )" );
@@ -657,7 +657,7 @@ void CTest::doTestStepStandardShapesLines( ZS::Test::CTestStepGroup* i_pTestStep
                 pTestStep->setExpectedValues(strlstExpectedValues);
                 pTestStep->testStarted();
 
-                if( m_pDrawingScene->getEditTool() != EEditToolSelect )
+                if( m_pDrawingScene->getEditTool() != EEditTool::Select )
                 {
                     m_pMainWindow->setCheckedActionEditSelect(true);
                 }

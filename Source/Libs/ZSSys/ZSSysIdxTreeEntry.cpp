@@ -713,6 +713,38 @@ int CIdxTreeEntry::indexOf( EIdxTreeEntryType i_entryType, const QString& i_strN
 
 } // indexOf
 
+//-----------------------------------------------------------------------------
+/*! Returns the tree entry for the given key in parent branch.
+
+    @param i_strKeyInParentBranch [in] Unique key of the child entry in the branch (e.g. "L:Customers").
+
+    @return Pointer to child entry if an entry with the given key exists.
+            nullptr otherwise.
+*/
+CIdxTreeEntry* CIdxTreeEntry::find( const QString& i_strKeyInParentBranch ) const
+//-----------------------------------------------------------------------------
+{
+    return m_mappTreeEntries.value(i_strKeyInParentBranch, nullptr);
+}
+
+//-----------------------------------------------------------------------------
+/*! Returns the tree entry for the given entry type and entry name.
+
+    @param i_entryType [in] Type of the child entry.
+    @param i_strName [in] Name of the child entry in the branch (e.g. "Customers").
+
+    @return Pointer to child entry if an entry with the given type and name exists.
+            nullptr otherwise.
+*/
+CIdxTreeEntry* CIdxTreeEntry::find( EIdxTreeEntryType i_entryType, const QString& i_strName ) const
+//-----------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(m_pMtx);
+    QString strEntryType = idxTreeEntryType2Str(i_entryType, EEnumEntryAliasStrSymbol);
+    QString strKeyInParentBranch = strEntryType + ":" + i_strName;
+    return m_mappTreeEntries.value(strKeyInParentBranch, nullptr);
+}
+
 /*=============================================================================
 public: // instance methods
 =============================================================================*/
@@ -944,7 +976,7 @@ void CIdxTreeEntry::remove( CIdxTreeEntry* i_pTreeEntry )
     i_pTreeEntry->setIndexInParentBranch(-1);
 
     CIdxTreeEntry* pTreeEntry;
-    int                    idxEntry;
+    int            idxEntry;
 
     for( idxEntry = idxInParentBranch; idxEntry < m_arpTreeEntries.size(); ++idxEntry )
     {

@@ -741,7 +741,7 @@ void CDlgFormatGraphObjs::setWindowTitle()
     // If one specific graphical object is selected ...
     if( m_pGraphObj != nullptr )
     {
-        QDialog::setWindowTitle( QApplication::applicationName() + ": Formatting Graphical Object " + m_pGraphObj->getObjName() );
+        QDialog::setWindowTitle( QApplication::applicationName() + ": Formatting Graphical Object " + m_pGraphObj->name() );
     }
     else
     {
@@ -758,7 +758,7 @@ void CDlgFormatGraphObjs::setWindowTitle()
             CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(m_pDrawingScene->selectedItems()[0]);
             if( pGraphObj != nullptr )
             {
-                QDialog::setWindowTitle( QApplication::applicationName() + ": Formatting Graphical Object " + pGraphObj->getObjName() );
+                QDialog::setWindowTitle( QApplication::applicationName() + ": Formatting Graphical Object " + pGraphObj->name() );
             }
             else
             {

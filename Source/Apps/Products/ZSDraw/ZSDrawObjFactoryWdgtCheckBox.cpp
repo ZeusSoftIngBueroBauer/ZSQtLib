@@ -65,18 +65,13 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CObjFactoryWdgtCheckBox::CObjFactoryWdgtCheckBox(
-    bool         i_bAddToToolBoxObjPool,
-    const QIcon& i_toolIcon ) :
+CObjFactoryWdgtCheckBox::CObjFactoryWdgtCheckBox( const QIcon& i_toolIcon ) :
 //------------------------------------------------------------------------------
     CObjFactory(
-        /* strGroupName         */ "Draw::Widgets",
-        /* strGraphObjNameSpace */ "ZS::Draw::QtWidgets",
-        /* strGraphObjClassName */ "CGraphObjWdgtCheckBox",
-        /* iGraphObjType        */ EGraphObjTypeUserDefined,
-        /* strGraphObjType      */ "CheckBox",
-        /* bAddToToolBoxObjPool */ i_bAddToToolBoxObjPool,
-        /* toolIcon             */ i_toolIcon )
+        /* strGroupName    */ CGraphObjWdgt::c_strFactoryGroupName,
+        /* iGraphObjType   */ EGraphObjTypeUserDefined,
+        /* strGraphObjType */ "CheckBox",
+        /* toolIcon        */ i_toolIcon )
 {
 } // default ctor
 
@@ -133,9 +128,9 @@ SErrResultInfo CObjFactoryWdgtCheckBox::saveGraphObj(
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
-        strAddTrcInfo  = "GraphObj:" + i_pGraphObj->getNameSpace();
-        strAddTrcInfo += "::" + i_pGraphObj->getClassName();
-        strAddTrcInfo += "::" + i_pGraphObj->getObjName();
+        strAddTrcInfo  = "GraphObj:" + i_pGraphObj->nameSpace();
+        strAddTrcInfo += "::" + i_pGraphObj->className();
+        strAddTrcInfo += "::" + i_pGraphObj->name();
     }
 
     CMethodTracer mthTracer(
@@ -196,10 +191,3 @@ CGraphObj* CObjFactoryWdgtCheckBox::loadGraphObj(
     return pGraphObj;
 
 } // loadGraphObj
-
-//------------------------------------------------------------------------------
-void CObjFactoryWdgtCheckBox::ResetCtorsDtorsCounters()
-//------------------------------------------------------------------------------
-{
-    CGraphObjWdgtCheckBox::ResetCtorsDtorsCounters();
-}

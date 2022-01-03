@@ -96,7 +96,7 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CWdgtIpcServer::CWdgtIpcServer( const QString& i_strObjName, QWidget* i_pWdgtParent ) :
+CWdgtIpcServer::CWdgtIpcServer( const QString& i_strServerName, QWidget* i_pWdgtParent ) :
 //------------------------------------------------------------------------------
     QWidget(i_pWdgtParent),
     m_pServer(nullptr),
@@ -170,14 +170,7 @@ CWdgtIpcServer::CWdgtIpcServer( const QString& i_strObjName, QWidget* i_pWdgtPar
     m_pWdgtTrcMsgLog(nullptr),
     m_pTrcAdminObj(nullptr)
 {
-    if( i_strObjName.isEmpty() )
-    {
-        setObjectName("IpcServer");
-    }
-    else
-    {
-        setObjectName(i_strObjName);
-    }
+    setObjectName(i_strServerName);
 
     // The trace server may not trace itself. This will lead to endless recursions.
     m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName());
@@ -642,7 +635,7 @@ void CWdgtIpcServer::setServer( CServer* i_pServer )
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strMethod    */ "setClient",
+        /* strMethod    */ "setServer",
         /* strAddInfo   */ strAddTrcInfo );
 
     //bool bIsTrcServer = false;

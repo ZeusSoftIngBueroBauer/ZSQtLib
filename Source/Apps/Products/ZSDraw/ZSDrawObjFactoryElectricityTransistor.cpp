@@ -41,12 +41,13 @@ may result in using the software modules.
 #include "ZSDrawObjFactoryElectricityTransistor.h"
 #include "ZSDrawGraphObjElectricityTransistor.h"
 
+#include "ZSDraw/ZSDrawAux.h"
 #include "ZSDraw/ZSDrawGraphObjGroup.h"
+#include "ZSDraw/ZSDrawGraphObjLabel.h"
 #include "ZSDraw/ZSDrawingScene.h"
 #include "ZSSys/ZSSysException.h"
 #include "ZSSys/ZSSysTrcAdminObj.h"
 #include "ZSSys/ZSSysTrcMethod.h"
-//#include "ZSSys/ZSSysTrcServer.h"
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
@@ -65,18 +66,13 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CObjFactoryTransistor::CObjFactoryTransistor(
-    bool         i_bAddToToolBoxObjPool,
-    const QIcon& i_toolIcon ) :
+CObjFactoryTransistor::CObjFactoryTransistor( const QIcon& i_toolIcon ) :
 //------------------------------------------------------------------------------
     CObjFactory(
-        /* strGroupName         */ "Draw::Electricity",
-        /* strGraphObjNameSpace */ "ZS::Draw::Electricity",
-        /* strGraphObjClassName */ "CGraphObjTransistor",
-        /* iGraphObjType        */ EGraphObjTypeUserDefined,
-        /* strGraphObjType      */ "Transistor",
-        /* bAddToToolBoxObjPool */ i_bAddToToolBoxObjPool,
-        /* toolIcon             */ i_toolIcon )
+        /* strGroupName    */ CGraphObjElectricity::c_strFactoryGroupName,
+        /* iGraphObjType   */ EGraphObjTypeUserDefined,
+        /* strGraphObjType */ "Transistor",
+        /* toolIcon        */ i_toolIcon )
 {
 } // default ctor
 
@@ -133,9 +129,9 @@ SErrResultInfo CObjFactoryTransistor::saveGraphObj(
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
-        strAddTrcInfo  = "GraphObj:" + i_pGraphObj->getNameSpace();
-        strAddTrcInfo += "::" + i_pGraphObj->getClassName();
-        strAddTrcInfo += "::" + i_pGraphObj->getObjName();
+        strAddTrcInfo  = "GraphObj:" + i_pGraphObj->nameSpace();
+        strAddTrcInfo += "::" + i_pGraphObj->className();
+        strAddTrcInfo += "::" + i_pGraphObj->name();
     }
 
     CMethodTracer mthTracer(
@@ -358,8 +354,7 @@ CGraphObj* CObjFactoryTransistor::loadGraphObj(
                 /* pDrawingScene */ i_pDrawingScene,
                 /* drawSettings  */ drawSettings,
                 /* dopingType    */ dopingType,
-                /* strObjName    */ i_strObjName,
-                /* strObjId      */ i_strObjId );
+                /* strObjName    */ i_strObjName );
 
             QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(pGraphObj);
 
@@ -418,10 +413,3 @@ CGraphObj* CObjFactoryTransistor::loadGraphObj(
     return pGraphObj;
 
 } // loadGraphObj
-
-//------------------------------------------------------------------------------
-void CObjFactoryTransistor::ResetCtorsDtorsCounters()
-//------------------------------------------------------------------------------
-{
-    CGraphObjTransistor::ResetCtorsDtorsCounters();
-}

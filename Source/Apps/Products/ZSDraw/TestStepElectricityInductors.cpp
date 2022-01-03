@@ -188,7 +188,7 @@ void CTest::doTestStepElectricityInductors( ZS::Test::CTestStepGroup* i_pTestSte
             pTestStep->setExpectedValues(strlstExpectedValues);
             pTestStep->testStarted();
 
-            if( m_pDrawingScene->getEditTool() != EEditToolSelect )
+            if( m_pDrawingScene->getEditTool() != EEditTool::Select )
             {
                 m_pMainWindow->setCheckedActionEditSelect(true);
             }
@@ -296,7 +296,7 @@ void CTest::doTestStepElectricityInductors( ZS::Test::CTestStepGroup* i_pTestSte
 
                 m_pDrawingScene->onGraphObjCreated(pGraphObj);
 
-                m_pDrawingScene->setMode( EMode::Ignore, EEditToolSelect, EEditModeMove, EEditResizeModeUndefined, false );
+                m_pDrawingScene->setMode( EMode::Ignore, EEditTool::Select, EEditMode::Move, EEditResizeMode::Undefined, false );
 
                 pGraphicsItem->setSelected(true);
             }
@@ -401,7 +401,7 @@ void CTest::doTestStepElectricityInductors( ZS::Test::CTestStepGroup* i_pTestSte
                 pTestStep->setExpectedValues(strlstExpectedValues);
                 pTestStep->testStarted();
 
-                if( m_pDrawingScene->getEditTool() != EEditToolSelect )
+                if( m_pDrawingScene->getEditTool() != EEditTool::Select )
                 {
                     m_pMainWindow->setCheckedActionEditSelect(true);
                 }
@@ -445,7 +445,7 @@ void CTest::doTestStepElectricityInductors( ZS::Test::CTestStepGroup* i_pTestSte
             ptMousePosGlobal.setX(ptMousePosGlobal.x()+1); // Maybe graphics view or graphics scene bug on calculating the screen position.
             ptMousePosGlobal.setY(ptMousePosGlobal.y()+1); // Without adding 1 pixel the newly created object will not be selected by the scene.
 
-            strlstExpectedValues.append( strCurrentGraphObj + ": SelPt:" + selectionPoint2Str(ESelectionPointUndefined) );
+            strlstExpectedValues.append( strCurrentGraphObj + ": SelPt:" + selectionPoint2Str(ESelectionPoint::Undefined) );
             strlstExpectedValues.append( strCurrentGraphObj + ": " + polygon2Str(s_rctInductor1) );
 
             pTestStep->setOperation( "view.mouseClickEvent( ViewPos:" + point2Str(m_ptDrawingViewMousePos) + " )" );

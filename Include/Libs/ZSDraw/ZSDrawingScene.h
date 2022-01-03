@@ -44,6 +44,10 @@ class QXmlStreamWriter;
 
 namespace ZS
 {
+namespace System
+{
+class CIdxTree;
+}
 namespace Trace
 {
 class CTrcAdminObj;
@@ -87,6 +91,8 @@ signals:
     void graphObjIdChanged( const QString& i_strObjIdOld, const QString& i_strObjIdNew );
     void graphObjNameChanged( const QString& i_strObjId, const QString& i_strObjNameOld, const QString& i_strObjNameNew );
 public: // instance methods
+    ZS::System::CIdxTree* getGraphObjsIdxTree() { return m_pGraphObjsIdxTree; }
+public: // instance methods
     void clear();
     void removeItem( QGraphicsItem* i_pGraphicsItem );
     void removeItem( CGraphObj* i_pGraphObj );
@@ -118,10 +124,7 @@ public: // instance methods
     CEnumEditResizeMode getEditResizeMode() const { return m_editResizeMode; }
 public: // instance methods
     void setCurrentDrawingTool( CObjFactory* i_pObjFactory );
-    void setCurrentDrawingTool(
-        const QString& i_strGraphObjNameSpace,
-        const QString& i_strGraphObjClassName,
-        const QString& i_strGraphObjType );
+    void setCurrentDrawingTool( const QString& i_strFactoryGrpName, const QString& i_strGraphObjType );
     CObjFactory* getCurrentDrawingTool() const { return m_pObjFactory; }
     int getCurrentDrawingToolGraphObjType() const;
     QGraphicsItem* getGraphicsItemCreating() const { return m_pGraphicsItemCreating; }  // same object as GraphObjCreating (just a different name for the same thing)
@@ -237,8 +240,8 @@ protected: // instance members
     CGraphObj*               m_pGraphObjAddingShapePoints;     // Same object as GraphicsItemAddingShapePoints (just a different name for the same thing)
     QString                  m_strGraphObjNameSeparator;
     bool                     m_bGraphObjIdChangedByMyself;
-    QMap<QString,CGraphObj*> m_dctpGraphObjs;                  // sorted by id (ids are initially set to type names extended with object number)
-    QMap<QString,CGraphObj*> m_dctpGraphObjsClipboard;         // the object id is extended with " Copy <Nr>"
+    ZS::System::CIdxTree*    m_pGraphObjsIdxTree;
+    ZS::System::CIdxTree*    m_pGraphObjsIdxTreeClipboard;
     QList<QGraphicsItem*>    m_arpGraphicsItemsAcceptingHoverEvents;
     double                   m_fRotAngleRes_degree;
     double                   m_fHitTolerance_px;

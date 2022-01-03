@@ -284,7 +284,10 @@ int CModeldxTreeTestSteps::columnCount( const QModelIndex& i_modelIdxParent ) co
 } // columnCount
 
 //------------------------------------------------------------------------------
-QVariant CModeldxTreeTestSteps::headerData( int i_iSection, Qt::Orientation i_orientation, int i_iRole ) const
+QVariant CModeldxTreeTestSteps::headerData(
+    int             i_iSection,
+    Qt::Orientation i_orientation,
+    int             i_iRole ) const
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;

@@ -31,13 +31,11 @@ may result in using the software modules.
 
 namespace ZS
 {
-namespace Trace
-{
-class CTrcAdminObj;
-}
-
 namespace Draw
 {
+class CGraphObjPolyline;
+class CGraphObjConnectionPoint;
+
 namespace Electricity
 {
 //******************************************************************************
@@ -51,26 +49,28 @@ CnctPt1        Body       CnctPt2
           |       |
 *******************************************************************************/
 {
-public: // type definitions and constants
+public: // class methods
+    /*! Returns the namespace the class belongs to. */
+    static QString NameSpace() { return "ZS::Draw::Electricity"; } // Please note that the static class functions name must be different from the non static virtual member function "nameSpace"
+    /*! Returns the class name. */
+    static QString ClassName() { return "CGraphObjInductor"; } // Please note that the static class functions name must be different from the non static virtual member function "className"
 public: // type definitions and constants
     static const QSize   c_sizInitial;
     static const QString c_strKeyLabelInductance;
-public: // class methods
-    // For sub system test used. Method call only allowed if currently no
-    // graphical objects of this class are created.
-    static void ResetCtorsDtorsCounters();
 public: // ctors and dtor
     CGraphObjInductor(
         CDrawingScene*       i_pDrawingScene,
         const CDrawSettings& i_drawSettings,
-        const QString&       i_strObjName = "",
-        const QString&       i_strObjId = "" );
+        const QString&       i_strObjName = "" );
     virtual ~CGraphObjInductor();
+public: // overridables
+    virtual QString nameSpace() { return NameSpace(); }
+    virtual QString className() { return ClassName(); }
 public: // instance methods
     double getInductance() const { return m_fInductance_H; }
     void setInductance( double i_fInductance_H );
 public: // instance methods
-    void showInductance( ESelectionPoint i_selPtPos = ESelectionPointBottomCenter );
+    void showInductance( ESelectionPoint i_selPtPos = ESelectionPoint::BottomCenter );
     void hideInductance();
     bool isInductanceVisible() const;
 public: // must overridables of base class CGraphObj
@@ -82,10 +82,7 @@ public: // overridables of base class CGraphObj
 protected: // overridables of base class CGraphObj
     virtual void updateToolTip();
 protected: // class members
-    static qint64                   s_iCtorsCount;
-    static qint64                   s_iDtorsCount;
-    static ZS::Trace::CTrcAdminObj* s_pTrcAdminObjCtorsAndDtor;
-    static ZS::Trace::CTrcAdminObj* s_pTrcAdminObjItemChange;
+    static qint64 s_iInstCount;
 protected: // instance members
     CGraphObjPolyline*        m_pLinBody;
     CGraphObjConnectionPoint* m_pCnctPt1;

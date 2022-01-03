@@ -195,8 +195,8 @@ CWdgtFormatGraphObjsObjName::CWdgtFormatGraphObjsObjName(
     }
     else // if( m_pGraphObj != nullptr )
     {
-        m_strObjName = m_pGraphObj->getObjName();
-        m_strObjId   = m_pGraphObj->getObjId();
+        m_strObjName = m_pGraphObj->name();
+        m_strObjId   = m_pGraphObj->keyInTree();
 
         m_pEdtObjName->setEnabled(true);
         m_pEdtObjId->setEnabled(true);
@@ -274,8 +274,10 @@ void CWdgtFormatGraphObjsObjName::applyChanges()
 
     if( m_pGraphObj != nullptr )
     {
-        m_pGraphObj->setObjName(m_strObjName);
-        m_pGraphObj->setObjId(m_strObjId);
+        throw ZS::System::CException(__FILE__, __LINE__, EResultMethodNotYetImplemented);
+
+        //m_pGraphObj->setName(m_strObjName);
+        //m_pGraphObj->setKeyInTree(m_strObjId);
 
         if( m_pChkObjNameVisible != nullptr )
         {
@@ -340,8 +342,8 @@ void CWdgtFormatGraphObjsObjName::resetChanges()
     }
     else // if( m_pGraphObj != nullptr )
     {
-        m_strObjName = m_pGraphObj->getObjName();
-        m_strObjId   = m_pGraphObj->getObjId();
+        m_strObjName = m_pGraphObj->name();
+        m_strObjId   = m_pGraphObj->keyInTree();
 
         if( m_pChkObjNameVisible != nullptr )
         {
@@ -366,11 +368,11 @@ bool CWdgtFormatGraphObjsObjName::hasChanges() const
 
     if( m_pGraphObj != nullptr )
     {
-        if( m_pGraphObj->getObjName() != m_strObjName )
+        if( m_pGraphObj->name() != m_strObjName )
         {
             bHasChanges = true;
         }
-        else if( m_pGraphObj->getObjId() != m_strObjId )
+        else if( m_pGraphObj->keyInTree() != m_strObjId )
         {
             bHasChanges = true;
         }

@@ -410,7 +410,7 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
             pTestStep->setExpectedValues(strlstExpectedValues);
             pTestStep->testStarted();
 
-            if( (m_pDrawingScene->getEditTool() != EEditToolCreateObjects) || (m_pDrawingScene->getCurrentDrawingToolGraphObjType() != EGraphObjTypeConnectionPoint) )
+            if( (m_pDrawingScene->getEditTool() != EEditTool::CreateObjects) || (m_pDrawingScene->getCurrentDrawingToolGraphObjType() != EGraphObjTypeConnectionPoint) )
             {
                 m_pMainWindow->setCheckedActionDrawConnectionPoint(true);
             }
@@ -669,7 +669,7 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
             pTestStep->setExpectedValues(strlstExpectedValues);
             pTestStep->testStarted();
 
-            if( (m_pDrawingScene->getEditTool() != EEditToolCreateObjects) || (m_pDrawingScene->getCurrentDrawingToolGraphObjType() != EGraphObjTypeConnectionLine) )
+            if( (m_pDrawingScene->getEditTool() != EEditTool::CreateObjects) || (m_pDrawingScene->getCurrentDrawingToolGraphObjType() != EGraphObjTypeConnectionLine) )
             {
                 m_pMainWindow->setCheckedActionDrawConnectionLine(true);
             }
@@ -1019,7 +1019,7 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
                     strlstResultValues.append( pGraphObjCnctPt->getObjName() + ": " + pGraphObjCnctPt->getScenePolygonShapePointsString() );
                 }
 
-                pGraphObjCnctPt = pGraphObjCnctLine->getConnectionPoint(ELinePointEnd);
+                pGraphObjCnctPt = pGraphObjCnctLine->getConnectionPoint(ELinePoint::End);
                 if( pGraphObjCnctPt != nullptr )
                 {
                     strlstResultValues.append( pGraphObjCnctPt->getObjName() + ": " + pGraphObjCnctPt->getScenePolygonShapePointsString() );
@@ -1361,7 +1361,7 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
                     strlstResultValues.append( pGraphObjCnctPt->getObjName() + ": " + pGraphObjCnctPt->getScenePolygonShapePointsString() );
                 }
 
-                pGraphObjCnctPt = pGraphObjCnctLine->getConnectionPoint(ELinePointEnd);
+                pGraphObjCnctPt = pGraphObjCnctLine->getConnectionPoint(ELinePoint::End);
                 if( pGraphObjCnctPt != nullptr )
                 {
                     strlstResultValues.append( pGraphObjCnctPt->getObjName() + ": " + pGraphObjCnctPt->getScenePolygonShapePointsString() );
@@ -1390,7 +1390,7 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
             pTestStep->setExpectedValues(strlstExpectedValues);
             pTestStep->testStarted();
 
-            if( m_pDrawingScene->getEditTool() != EEditToolSelect )
+            if( m_pDrawingScene->getEditTool() != EEditTool::Select )
             {
                 m_pMainWindow->setCheckedActionEditSelect(true);
             }
@@ -1794,7 +1794,7 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
                 pTestStep->setExpectedValues(strlstExpectedValues);
                 pTestStep->testStarted();
 
-                if( m_pDrawingScene->getEditTool() != EEditToolSelect )
+                if( m_pDrawingScene->getEditTool() != EEditTool::Select )
                 {
                     m_pMainWindow->setCheckedActionEditSelect(true);
                 }
@@ -1869,7 +1869,7 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
             ptMousePosGlobal.setX(ptMousePosGlobal.x()+1); // Maybe graphics view or graphics scene bug on calculating the screen position.
             ptMousePosGlobal.setY(ptMousePosGlobal.y()+1); // Without adding 1 pixel the newly created object will not be selected by the scene.
 
-            strlstExpectedValues.append( strCurrentGraphObj + ": SelPt:" + selectionPoint2Str(ESelectionPointUndefined) );
+            strlstExpectedValues.append( strCurrentGraphObj + ": SelPt:" + selectionPoint2Str(ESelectionPoint::Undefined) );
             strlstExpectedValues.append( strCurrentGraphObj + ": " + polygon2Str(s_rctCnctPt1) );
 
             pTestStep->setOperation( "view.mousePressEvent( ViewPos:" + point2Str(m_ptDrawingViewMousePos) + " )" );
@@ -2093,7 +2093,7 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
             ptMousePosGlobal.setX(ptMousePosGlobal.x()+1); // Maybe graphics view or graphics scene bug on calculating the screen position.
             ptMousePosGlobal.setY(ptMousePosGlobal.y()+1); // Without adding 1 pixel the newly created object will not be selected by the scene.
 
-            strlstExpectedValues.append( strCurrentGraphObj + ": SelPt:" + selectionPoint2Str(ESelectionPointUndefined) );
+            strlstExpectedValues.append( strCurrentGraphObj + ": SelPt:" + selectionPoint2Str(ESelectionPoint::Undefined) );
             strlstExpectedValues.append( strCurrentGraphObj + ": " + polygon2Str(s_rctCnctPt2) );
 
             pTestStep->setOperation( "view.mousePressEvent( ViewPos:" + point2Str(m_ptDrawingViewMousePos) + " )" );
@@ -2327,7 +2327,7 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
                 pTestStep->setExpectedValues(strlstExpectedValues);
                 pTestStep->testStarted();
 
-                if( m_pDrawingScene->getEditTool() != EEditToolSelect )
+                if( m_pDrawingScene->getEditTool() != EEditTool::Select )
                 {
                     m_pMainWindow->setCheckedActionEditSelect(true);
                 }
@@ -2731,7 +2731,7 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
                     strlstResultValues.append( pGraphObjCnctPt->getObjName() + ": " + pGraphObjCnctPt->getScenePolygonShapePointsString() );
                 }
 
-                pGraphObjCnctPt = pGraphObjCnctLine->getConnectionPoint(ELinePointEnd);
+                pGraphObjCnctPt = pGraphObjCnctLine->getConnectionPoint(ELinePoint::End);
                 if( pGraphObjCnctPt != nullptr )
                 {
                     strlstResultValues.append( pGraphObjCnctPt->getObjName() + ": " + pGraphObjCnctPt->getScenePolygonShapePointsString() );
@@ -3022,7 +3022,7 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
                     strlstResultValues.append( pGraphObjCnctPt->getObjName() + ": " + pGraphObjCnctPt->getScenePolygonShapePointsString() );
                 }
 
-                pGraphObjCnctPt = pGraphObjCnctLine->getConnectionPoint(ELinePointEnd);
+                pGraphObjCnctPt = pGraphObjCnctLine->getConnectionPoint(ELinePoint::End);
                 if( pGraphObjCnctPt != nullptr )
                 {
                     strlstResultValues.append( pGraphObjCnctPt->getObjName() + ": " + pGraphObjCnctPt->getScenePolygonShapePointsString() );
@@ -3307,7 +3307,7 @@ void CTest::doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTe
                     strlstResultValues.append( pGraphObjCnctPt->getObjName() + ": " + pGraphObjCnctPt->getScenePolygonShapePointsString() );
                 }
 
-                pGraphObjCnctPt = pGraphObjCnctLine->getConnectionPoint(ELinePointEnd);
+                pGraphObjCnctPt = pGraphObjCnctLine->getConnectionPoint(ELinePoint::End);
                 if( pGraphObjCnctPt != nullptr )
                 {
                     strlstResultValues.append( pGraphObjCnctPt->getObjName() + ": " + pGraphObjCnctPt->getScenePolygonShapePointsString() );

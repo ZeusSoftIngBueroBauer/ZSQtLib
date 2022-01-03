@@ -44,7 +44,9 @@ may result in using the software modules.
 #include "ZSDraw/ZSDrawGraphObjSelectionPoint.h"
 #include "ZSDraw/ZSDrawDlgFormatGraphObjs.h"
 #include "ZSDraw/ZSDrawingScene.h"
+#include "ZSDraw/ZSDrawObjFactory.h"
 #include "ZSPhysSizes/Geometry/ZSPhysSizes.h"
+#include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysErrCode.h"
 #include "ZSSys/ZSSysException.h"
 #include "ZSSys/ZSSysMath.h"
@@ -67,46 +69,10 @@ class CGraphObjWdgtLineEdit : public CGraphObjWdgt
 *******************************************************************************/
 
 /*==============================================================================
-public: // class methods
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-void CGraphObjWdgtLineEdit::ResetCtorsDtorsCounters()
-//------------------------------------------------------------------------------
-{
-    QString strAddTrcInfo;
-
-    if( s_pTrcAdminObjCtorsAndDtor != nullptr && s_pTrcAdminObjCtorsAndDtor->isActive(ETraceDetailLevelMethodCalls) )
-    {
-        strAddTrcInfo  = "CtorsCount: " + QString::number(s_iCtorsCount);
-        strAddTrcInfo += ", DtorsCount: " + QString::number(s_iDtorsCount);
-    }
-
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ s_pTrcAdminObjCtorsAndDtor,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strObjName   */ "",
-        /* strMethod    */ "ResetCtorsDtorsCounters",
-        /* strAddInfo   */ strAddTrcInfo );
-
-    if( s_iCtorsCount != s_iDtorsCount )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultInvalidMethodCall, "CtorsCount(=" + QString::number(s_iCtorsCount) + ") != DtorsCount(=" + QString::number(s_iDtorsCount) + ")" );
-    }
-
-    s_iCtorsCount = 1;
-    s_iDtorsCount = 1;
-
-} // ResetCtorsDtorsCounters
-
-/*==============================================================================
 protected: // class members
 ==============================================================================*/
 
-qint64 CGraphObjWdgtLineEdit::s_iCtorsCount = 1;
-qint64 CGraphObjWdgtLineEdit::s_iDtorsCount = 1;
-
-CTrcAdminObj* CGraphObjWdgtLineEdit::s_pTrcAdminObjCtorsAndDtor = nullptr;
+qint64 CGraphObjWdgtLineEdit::s_iInstCount = 0;
 
 /*==============================================================================
 public: // ctors and dtor
@@ -116,36 +82,38 @@ public: // ctors and dtor
 CGraphObjWdgtLineEdit::CGraphObjWdgtLineEdit(
     CDrawingScene*       i_pDrawingScene,
     const CDrawSettings& i_drawSettings,
-    const QString&       i_strObjName,
-    const QString&       i_strObjId ) :
+    const QString&       i_strObjName ) :
 //------------------------------------------------------------------------------
     CGraphObjWdgt(
         /* pDrawingScene */ i_pDrawingScene,
-        /* strNameSpace  */ "ZS::Draw::QtWidgets",
-        /* strClassName  */ "CGraphObjWdgtLineEdit",
         /* strType       */ "LineEdit",
-        /* strObjName    */ i_strObjName.isEmpty() ? "LineEdit" + QString::number(s_iCtorsCount) : i_strObjName,
-        /* strObjId      */ i_strObjId.isEmpty() ? "LineEdit" + QString::number(s_iCtorsCount) : i_strObjId,
+        /* strObjName    */ i_strObjName.isEmpty() ? "LineEdit" + QString::number(s_iInstCount) : i_strObjName,
         /* drawSettings  */ i_drawSettings ),
     m_pLineEdit(nullptr)
 {
-    s_iCtorsCount++;
+    s_iInstCount++;
 
     QString strAddTrcInfo;
 
-    if( s_pTrcAdminObjCtorsAndDtor == nullptr )
-    {
-        s_pTrcAdminObjCtorsAndDtor = CTrcServer::GetTraceAdminObj("ZS::Draw::QtWidgets", "CGraphObjWdgtLineEdit::CtorsAndDtor", "");
-    }
+    QString strNameSpace = NameSpace() + CObjFactory::c_strGroupSeparater + c_strFactoryGroupName;
+    m_pTrcAdminObjCtorsAndDtor = CTrcServer::GetTraceAdminObj(strNameSpace, ClassName(), "CtorsAndDtor");
+    m_pTrcAdminObjItemChange = CTrcServer::GetTraceAdminObj(strNameSpace, ClassName(), "ItemChange");
+    m_pTrcAdminObjBoundingRect = CTrcServer::GetTraceAdminObj(strNameSpace, ClassName(), "BoundingRect");
+    m_pTrcAdminObjPaint = CTrcServer::GetTraceAdminObj(strNameSpace, ClassName(), "Paint");
+    m_pTrcAdminObjSceneEvent = CTrcServer::GetTraceAdminObj(strNameSpace, ClassName(), "SceneEvent");
+    m_pTrcAdminObjSceneEventFilter = CTrcServer::GetTraceAdminObj(strNameSpace, ClassName(), "SceneEventFilter");
+    m_pTrcAdminObjHoverEvents = CTrcServer::GetTraceAdminObj(strNameSpace, ClassName(), "HoverEvents");
+    m_pTrcAdminObjMouseEvents = CTrcServer::GetTraceAdminObj(strNameSpace, ClassName(), "MouseEvents");
+    m_pTrcAdminObjKeyEvents = CTrcServer::GetTraceAdminObj(strNameSpace, ClassName(), "KeyEvents");
 
-    if( s_pTrcAdminObjCtorsAndDtor != nullptr && s_pTrcAdminObjCtorsAndDtor->isActive(ETraceDetailLevelMethodCalls) )
+    if( m_pTrcAdminObjCtorsAndDtor != nullptr && m_pTrcAdminObjCtorsAndDtor->isActive(ETraceDetailLevelMethodCalls) )
     {
     }
 
     CMethodTracer mthTracer(
-        /* pAdminObj    */ s_pTrcAdminObjCtorsAndDtor,
+        /* pAdminObj    */ m_pTrcAdminObjCtorsAndDtor,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strObjName   */ m_strObjName,
+        /* strObjName   */ m_strName,
         /* strMethod    */ "ctor",
         /* strAddInfo   */ strAddTrcInfo );
 
@@ -191,9 +159,9 @@ CGraphObjWdgtLineEdit::CGraphObjWdgtLineEdit(
     if( mthTracer.isActive(ETraceDetailLevelInternalStates) )
     {
         strAddTrcInfo  = "Selected:" + bool2Str(isSelected());
-        strAddTrcInfo += ", EditMode:" + editMode2Str(m_editMode);
-        strAddTrcInfo += ", ResizeMode:" + editResizeMode2Str(m_editResizeMode);
-        strAddTrcInfo += ", SelectedPoint:" + selectionPoint2Str(m_selPtSelectedBoundingRect);
+        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
+        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
+        strAddTrcInfo += ", SelectedPoint:" + m_selPtSelectedBoundingRect.toString();
         strAddTrcInfo += ", BoundingRect(x,y,w,h):(" + QString::number(rctBounding.x()) + "," + QString::number(rctBounding.y());
         strAddTrcInfo += "," + QString::number(rctBounding.width()) + "," + QString::number(rctBounding.height()) + ")";
         mthTracer.trace(strAddTrcInfo);
@@ -207,22 +175,14 @@ CGraphObjWdgtLineEdit::~CGraphObjWdgtLineEdit()
 {
     m_bDtorInProgress = true;
 
-    s_iDtorsCount++;
-
     CMethodTracer mthTracer(
-        /* pAdminObj    */ s_pTrcAdminObjCtorsAndDtor,
+        /* pAdminObj    */ m_pTrcAdminObjCtorsAndDtor,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strObjName   */ m_strObjName,
+        /* strObjName   */ m_strName,
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
 
     m_pLineEdit = nullptr;
-
-    if( s_iCtorsCount == s_iDtorsCount )
-    {
-        CTrcServer::ReleaseTraceAdminObj(s_pTrcAdminObjCtorsAndDtor);
-        s_pTrcAdminObjCtorsAndDtor = nullptr;
-    }
 
 } // dtor
 
@@ -236,14 +196,14 @@ CGraphObj* CGraphObjWdgtLineEdit::clone()
 {
     QString strAddTrcInfo;
 
-    if( s_pTrcAdminObjCtorsAndDtor != nullptr && s_pTrcAdminObjCtorsAndDtor->isActive(ETraceDetailLevelMethodCalls) )
+    if( m_pTrcAdminObjCtorsAndDtor != nullptr && m_pTrcAdminObjCtorsAndDtor->isActive(ETraceDetailLevelMethodCalls) )
     {
     }
 
     CMethodTracer mthTracer(
-        /* pAdminObj    */ s_pTrcAdminObjCtorsAndDtor,
+        /* pAdminObj    */ m_pTrcAdminObjCtorsAndDtor,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strObjName   */ m_strObjName,
+        /* strObjName   */ m_strName,
         /* strMethod    */ "clone",
         /* strAddInfo   */ strAddTrcInfo );
 

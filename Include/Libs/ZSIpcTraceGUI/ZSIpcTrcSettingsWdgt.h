@@ -63,7 +63,7 @@ class ZSIPCTRACEGUIDLL_API CWdgtTrcSettings : public QWidget
 {
     Q_OBJECT
 public: // ctors and dtor
-    CWdgtTrcSettings( QWidget* i_pWdgtParent = nullptr );
+    CWdgtTrcSettings( const QString& i_strObjName = "TrcSettings", QWidget* i_pWdgtParent = nullptr );
     virtual ~CWdgtTrcSettings();
 public: // instance methods
     void setServer( CIpcTrcServer* i_pTrcServer );

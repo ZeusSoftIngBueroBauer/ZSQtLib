@@ -39,6 +39,7 @@ may result in using the software modules.
 #include "ZSDrawGraphObjElectricityCapacitor.h"
 #include "ZSDrawWdgtFormatGraphObjsElectricityCapacitor.h"
 
+#include "ZSDraw/ZSDrawAux.h"
 #include "ZSDraw/ZSDrawGraphObjConnectionPoint.h"
 #include "ZSDraw/ZSDrawGraphObjLine.h"
 #include "ZSDraw/ZSDrawGraphObjRect.h"
@@ -46,7 +47,9 @@ may result in using the software modules.
 #include "ZSDraw/ZSDrawGraphObjSelectionPoint.h"
 #include "ZSDraw/ZSDrawDlgFormatGraphObjs.h"
 #include "ZSDraw/ZSDrawingScene.h"
+#include "ZSDraw/ZSDrawObjFactory.h"
 #include "ZSPhysSizes/Geometry/ZSPhysSizes.h"
+#include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysErrCode.h"
 #include "ZSSys/ZSSysException.h"
 #include "ZSSys/ZSSysMath.h"
@@ -76,47 +79,10 @@ const QSize   CGraphObjCapacitor::c_sizInitial(24.0,24.0);
 const QString CGraphObjCapacitor::c_strKeyLabelCapacitance = "Capacitance";
 
 /*==============================================================================
-public: // class methods
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-void CGraphObjCapacitor::ResetCtorsDtorsCounters()
-//------------------------------------------------------------------------------
-{
-    QString strAddTrcInfo;
-
-    if( s_pTrcAdminObjCtorsAndDtor != nullptr && s_pTrcAdminObjCtorsAndDtor->isActive(ETraceDetailLevelMethodCalls) )
-    {
-        strAddTrcInfo  = "CtorsCount: " + QString::number(s_iCtorsCount);
-        strAddTrcInfo += ", DtorsCount: " + QString::number(s_iDtorsCount);
-    }
-
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ s_pTrcAdminObjCtorsAndDtor,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strObjName   */ "",
-        /* strMethod    */ "ResetCtorsDtorsCounters",
-        /* strAddInfo   */ strAddTrcInfo );
-
-    if( s_iCtorsCount != s_iDtorsCount )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultInvalidMethodCall, "CtorsCount(=" + QString::number(s_iCtorsCount) + ") != DtorsCount(=" + QString::number(s_iDtorsCount) + ")" );
-    }
-
-    s_iCtorsCount = 1;
-    s_iDtorsCount = 1;
-
-} // ResetCtorsDtorsCounters
-
-/*==============================================================================
 protected: // class members
 ==============================================================================*/
 
-qint64 CGraphObjCapacitor::s_iCtorsCount = 1;
-qint64 CGraphObjCapacitor::s_iDtorsCount = 1;
-
-CTrcAdminObj* CGraphObjCapacitor::s_pTrcAdminObjCtorsAndDtor = nullptr;
-CTrcAdminObj* CGraphObjCapacitor::s_pTrcAdminObjItemChange = nullptr;
+qint64 CGraphObjCapacitor::s_iInstCount = 0;
 
 /*==============================================================================
 public: // ctors and dtor
@@ -126,16 +92,12 @@ public: // ctors and dtor
 CGraphObjCapacitor::CGraphObjCapacitor(
     CDrawingScene*       i_pDrawingScene,
     const CDrawSettings& i_drawSettings,
-    const QString&       i_strObjName,
-    const QString&       i_strObjId ) :
+    const QString&       i_strObjName ) :
 //------------------------------------------------------------------------------
     CGraphObjElectricity(
         /* pDrawingScene */ i_pDrawingScene,
-        /* strNameSpace  */ "ZS::Draw::Electricity",
-        /* strClassName  */ "CGraphObjCapacitor",
         /* strType       */ "Capacitor",
-        /* strObjName    */ i_strObjName.isEmpty() ? "C" + QString::number(s_iCtorsCount) : i_strObjName,
-        /* strObjId      */ i_strObjId.isEmpty() ? "C" + QString::number(s_iCtorsCount) : i_strObjId,
+        /* strObjName    */ i_strObjName.isEmpty() ? "C" + QString::number(s_iInstCount) : i_strObjName,
         /* drawSettings  */ i_drawSettings ),
     m_pLinCnct(nullptr),
     m_pRctDielectric(nullptr),
@@ -145,24 +107,29 @@ CGraphObjCapacitor::CGraphObjCapacitor(
     m_pCnctPt2(nullptr),
     m_fCapacitance_F(1.0)
 {
-    s_iCtorsCount++;
+    s_iInstCount++;
 
     QString strAddTrcInfo;
 
-    if( s_pTrcAdminObjCtorsAndDtor == nullptr )
-    {
-        s_pTrcAdminObjCtorsAndDtor = CTrcServer::GetTraceAdminObj("ZS::Draw::Electricity", "CGraphObjCapacitor::CtorsAndDtor", "");
-        s_pTrcAdminObjItemChange = CTrcServer::GetTraceAdminObj("ZS::Draw", "CGraphObjCapacitor::ItemChange", "");
-    }
+    QString strNameSpace = NameSpace() + CObjFactory::c_strGroupSeparater + c_strFactoryGroupName;
+    m_pTrcAdminObjCtorsAndDtor = CTrcServer::GetTraceAdminObj(strNameSpace, ClassName(), "CtorsAndDtor");
+    m_pTrcAdminObjItemChange = CTrcServer::GetTraceAdminObj(strNameSpace, ClassName(), "ItemChange");
+    m_pTrcAdminObjBoundingRect = CTrcServer::GetTraceAdminObj(strNameSpace, ClassName(), "BoundingRect");
+    m_pTrcAdminObjPaint = CTrcServer::GetTraceAdminObj(strNameSpace, ClassName(), "Paint");
+    m_pTrcAdminObjSceneEvent = CTrcServer::GetTraceAdminObj(strNameSpace, ClassName(), "SceneEvent");
+    m_pTrcAdminObjSceneEventFilter = CTrcServer::GetTraceAdminObj(strNameSpace, ClassName(), "SceneEventFilter");
+    m_pTrcAdminObjHoverEvents = CTrcServer::GetTraceAdminObj(strNameSpace, ClassName(), "HoverEvents");
+    m_pTrcAdminObjMouseEvents = CTrcServer::GetTraceAdminObj(strNameSpace, ClassName(), "MouseEvents");
+    m_pTrcAdminObjKeyEvents = CTrcServer::GetTraceAdminObj(strNameSpace, ClassName(), "KeyEvents");
 
-    if( s_pTrcAdminObjCtorsAndDtor != nullptr && s_pTrcAdminObjCtorsAndDtor->isActive(ETraceDetailLevelMethodCalls) )
+    if( m_pTrcAdminObjCtorsAndDtor != nullptr && m_pTrcAdminObjCtorsAndDtor->isActive(ETraceDetailLevelMethodCalls) )
     {
     }
 
     CMethodTracer mthTracer(
-        /* pAdminObj    */ s_pTrcAdminObjCtorsAndDtor,
+        /* pAdminObj    */ m_pTrcAdminObjCtorsAndDtor,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strObjName   */ m_strObjName,
+        /* strObjName   */ m_strName,
         /* strMethod    */ "ctor",
         /* strAddInfo   */ strAddTrcInfo );
 
@@ -209,9 +176,9 @@ CGraphObjCapacitor::CGraphObjCapacitor(
 
     m_drawSettings.setPenColor(Qt::black);
     m_drawSettings.setPenWidth(1);
-    m_drawSettings.setLineStyle(ELineStyleSolidLine);
+    m_drawSettings.setLineStyle(ELineStyle::SolidLine);
     m_drawSettings.setFillColor(Qt::white);
-    m_drawSettings.setFillStyle(EFillStyleSolidPattern);
+    m_drawSettings.setFillStyle(EFillStyle::SolidPattern);
 
     // Draw settings for elements
     //---------------------------
@@ -223,8 +190,8 @@ CGraphObjCapacitor::CGraphObjCapacitor(
 
     CDrawSettings drawSettingsDielectric(EGraphObjTypeRect);
 
-    drawSettingsDielectric.setFillStyle(EFillStyleSolidPattern);
-    drawSettingsDielectric.setLineStyle(ELineStyleNoLine);
+    drawSettingsDielectric.setFillStyle(EFillStyle::SolidPattern);
+    drawSettingsDielectric.setLineStyle(ELineStyle::NoLine);
 
     CDrawSettings drawSettingsCnctPt(EGraphObjTypeConnectionPoint);
 
@@ -234,8 +201,7 @@ CGraphObjCapacitor::CGraphObjCapacitor(
     m_pLinCnct = new CGraphObjLine(
         /* pDrawingScene */ m_pDrawingScene,
         /* drawSettings  */ drawSettingsLine,
-        /* strObjName    */ "CnctLine",
-        /* strObjId      */ m_strObjId + m_pDrawingScene->getGraphObjNameNodeSeparator() + "CnctLine" );
+        /* strObjName    */ "CnctLine" );
 
     m_pLinCnct->setLine( QLineF( QPointF(0.0,0.0), QPointF(rctBounding.right(),0.0) ) );
     m_pDrawingScene->addItem(m_pLinCnct);
@@ -245,9 +211,9 @@ CGraphObjCapacitor::CGraphObjCapacitor(
 
     //alignment = SGraphObjAlignment( EAlignmentRefWidth, EAlignmentRefWidth, false, 1.0 );
     //m_pLinCnct->addAlignment(alignment);
-    //alignment = SGraphObjAlignment( EAlignmentRefLeft, EAlignmentRefLeft, true, 0.0 );
+    //alignment = SGraphObjAlignment( EAlignmentRef::Left, EAlignmentRef::Left, true, 0.0 );
     //m_pLinCnct->addAlignment(alignment);
-    //alignment = SGraphObjAlignment( EAlignmentRefVCenter, EAlignmentRefVCenter, true, 0.0 );
+    //alignment = SGraphObjAlignment( EAlignmentRef::VCenter, EAlignmentRef::VCenter, true, 0.0 );
     //m_pLinCnct->addAlignment(alignment);
 
     // Dielectric Medium
@@ -256,8 +222,7 @@ CGraphObjCapacitor::CGraphObjCapacitor(
     m_pRctDielectric = new CGraphObjRect(
         /* pDrawingScene */ m_pDrawingScene,
         /* drawSettings  */ drawSettingsDielectric,
-        /* strObjName    */ "Dielectric",
-        /* strObjId      */ m_strObjId + m_pDrawingScene->getGraphObjNameNodeSeparator() + "Dielectric" );
+        /* strObjName    */ "Dielectric" );
 
     m_pRctDielectric->setRect( 0.0, 0.0, rctBody.width(), rctBody.height() );
     m_pDrawingScene->addItem(m_pRctDielectric);
@@ -267,11 +232,11 @@ CGraphObjCapacitor::CGraphObjCapacitor(
 
     //alignment = SGraphObjAlignment( EAlignmentRefHeight, EAlignmentRefHeight, false, rctBody.height()/rctBounding.height() );
     //m_pRctDielectric->addAlignment(alignment);
-    //alignment = SGraphObjAlignment( EAlignmentRefLeft, EAlignmentRefHCenter, true, -2.0 );
+    //alignment = SGraphObjAlignment( EAlignmentRef::Left, EAlignmentRef::HCenter, true, -2.0 );
     //m_pRctDielectric->addAlignment(alignment);
-    //alignment = SGraphObjAlignment( EAlignmentRefRight, EAlignmentRefHCenter, true, 2.0 );
+    //alignment = SGraphObjAlignment( EAlignmentRef::Right, EAlignmentRef::HCenter, true, 2.0 );
     //m_pRctDielectric->addAlignment(alignment);
-    //alignment = SGraphObjAlignment( EAlignmentRefVCenter, EAlignmentRefVCenter, true, 0.0 );
+    //alignment = SGraphObjAlignment( EAlignmentRef::VCenter, EAlignmentRef::VCenter, true, 0.0 );
     //m_pRctDielectric->addAlignment(alignment);
 
     // Plate 1
@@ -280,8 +245,7 @@ CGraphObjCapacitor::CGraphObjCapacitor(
     m_pLinPlate1 = new CGraphObjLine(
         /* pDrawingScene */ m_pDrawingScene,
         /* drawSettings  */ drawSettingsLine,
-        /* strObjName    */ "Plate1",
-        /* strObjId      */ m_strObjId + m_pDrawingScene->getGraphObjNameNodeSeparator() + "Plate1" );
+        /* strObjName    */ "Plate1" );
 
     m_pLinPlate1->setLine( QLineF( QPointF(0.0, 0.0), QPointF(0.0,rctBody.height()) ) );
     m_pDrawingScene->addItem(m_pLinPlate1);
@@ -291,9 +255,9 @@ CGraphObjCapacitor::CGraphObjCapacitor(
 
     //alignment = SGraphObjAlignment( EAlignmentRefHeight, EAlignmentRefHeight, false, 1.0 );
     //m_pLinPlate1->addAlignment(alignment);
-    //alignment = SGraphObjAlignment( EAlignmentRefHCenter, EAlignmentRefHCenter, true, -2.0 );
+    //alignment = SGraphObjAlignment( EAlignmentRef::HCenter, EAlignmentRef::HCenter, true, -2.0 );
     //m_pLinPlate1->addAlignment(alignment);
-    //alignment = SGraphObjAlignment( EAlignmentRefVCenter, EAlignmentRefVCenter, true, 0.0 );
+    //alignment = SGraphObjAlignment( EAlignmentRef::VCenter, EAlignmentRef::VCenter, true, 0.0 );
     //m_pLinPlate1->addAlignment(alignment);
 
     // Plate 2
@@ -302,8 +266,7 @@ CGraphObjCapacitor::CGraphObjCapacitor(
     m_pLinPlate2 = new CGraphObjLine(
         /* pDrawingScene */ m_pDrawingScene,
         /* drawSettings  */ drawSettingsLine,
-        /* strObjName    */ "Plate2",
-        /* strObjId      */ m_strObjId + m_pDrawingScene->getGraphObjNameNodeSeparator() + "Plate2" );
+        /* strObjName    */ "Plate2" );
 
     m_pLinPlate2->setLine( QLineF( QPointF(0.0, 0.0), QPointF(0.0,rctBody.height()) ) );
     m_pDrawingScene->addItem(m_pLinPlate2);
@@ -313,9 +276,9 @@ CGraphObjCapacitor::CGraphObjCapacitor(
 
     //alignment = SGraphObjAlignment( EAlignmentRefHeight, EAlignmentRefHeight, false, 1.0 );
     //m_pLinPlate2->addAlignment(alignment);
-    //alignment = SGraphObjAlignment( EAlignmentRefHCenter, EAlignmentRefHCenter, true, 2.0 );
+    //alignment = SGraphObjAlignment( EAlignmentRef::HCenter, EAlignmentRef::HCenter, true, 2.0 );
     //m_pLinPlate2->addAlignment(alignment);
-    //alignment = SGraphObjAlignment( EAlignmentRefVCenter, EAlignmentRefVCenter, true, 0.0 );
+    //alignment = SGraphObjAlignment( EAlignmentRef::VCenter, EAlignmentRef::VCenter, true, 0.0 );
     //m_pLinPlate2->addAlignment(alignment);
 
     // Connection Point 1
@@ -324,8 +287,7 @@ CGraphObjCapacitor::CGraphObjCapacitor(
     m_pCnctPt1 = new CGraphObjConnectionPoint(
         /* pDrawingScene */ m_pDrawingScene,
         /* drawSettings  */ drawSettingsCnctPt,
-        /* strObjName    */ "CnctPt1",
-        /* strObjId      */ m_strObjId + m_pDrawingScene->getGraphObjNameNodeSeparator() + "CnctPt1" );
+        /* strObjName    */ "CnctPt1" );
 
     m_pCnctPt1->setWidth(fCnctPtWidth);
     m_pCnctPt1->setInnerCircleWidthInPx(fCnctPtWidth);
@@ -336,9 +298,9 @@ CGraphObjCapacitor::CGraphObjCapacitor(
     m_pCnctPt1->setPos( rctCnctPt1.topLeft() );
     addGraphObj(m_pCnctPt1);
 
-    alignment = SGraphObjAlignment( EAlignmentRefLeft, EAlignmentRefLeft, true, 0.0 );
+    alignment = SGraphObjAlignment( EAlignmentRef::Left, EAlignmentRef::Left, true, 0.0 );
     m_pCnctPt1->addAlignment(alignment);
-    alignment = SGraphObjAlignment( EAlignmentRefVCenter, EAlignmentRefVCenter, true, 0.0 );
+    alignment = SGraphObjAlignment( EAlignmentRef::VCenter, EAlignmentRef::VCenter, true, 0.0 );
     m_pCnctPt1->addAlignment(alignment);
 
     // Connection Point 2
@@ -347,8 +309,7 @@ CGraphObjCapacitor::CGraphObjCapacitor(
     m_pCnctPt2 = new CGraphObjConnectionPoint(
         /* pDrawingScene */ m_pDrawingScene,
         /* drawSettings  */ drawSettingsCnctPt,
-        /* strObjName    */ "CnctPt2",
-        /* strObjId      */ m_strObjId + m_pDrawingScene->getGraphObjNameNodeSeparator() + "CnctPt2" );
+        /* strObjName    */ "CnctPt2" );
 
     m_pCnctPt2->setWidth(fCnctPtWidth);
     m_pCnctPt2->setInnerCircleWidthInPx(fCnctPtWidth);
@@ -359,9 +320,9 @@ CGraphObjCapacitor::CGraphObjCapacitor(
     m_pCnctPt2->setPos( rctCnctPt2.topLeft() );
     addGraphObj(m_pCnctPt2);
 
-    alignment = SGraphObjAlignment( EAlignmentRefRight, EAlignmentRefRight, true, 0.0 );
+    alignment = SGraphObjAlignment( EAlignmentRef::Right, EAlignmentRef::Right, true, 0.0 );
     m_pCnctPt2->addAlignment(alignment);
-    alignment = SGraphObjAlignment( EAlignmentRefVCenter, EAlignmentRefVCenter, true, 0.0 );
+    alignment = SGraphObjAlignment( EAlignmentRef::VCenter, EAlignmentRef::VCenter, true, 0.0 );
     m_pCnctPt2->addAlignment(alignment);
 
     // Update group coordinates
@@ -378,9 +339,9 @@ CGraphObjCapacitor::CGraphObjCapacitor(
     if( mthTracer.isActive(ETraceDetailLevelInternalStates) )
     {
         strAddTrcInfo  = "Selected:" + bool2Str(isSelected());
-        strAddTrcInfo += ", EditMode:" + editMode2Str(m_editMode);
-        strAddTrcInfo += ", ResizeMode:" + editResizeMode2Str(m_editResizeMode);
-        strAddTrcInfo += ", SelectedPoint:" + selectionPoint2Str(m_selPtSelectedBoundingRect);
+        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
+        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
+        strAddTrcInfo += ", SelectedPoint:" + m_selPtSelectedBoundingRect.toString();
         mthTracer.trace(strAddTrcInfo);
     }
 
@@ -392,12 +353,10 @@ CGraphObjCapacitor::~CGraphObjCapacitor()
 {
     m_bDtorInProgress = true;
 
-    s_iDtorsCount++;
-
     CMethodTracer mthTracer(
-        /* pAdminObj    */ s_pTrcAdminObjCtorsAndDtor,
+        /* pAdminObj    */ m_pTrcAdminObjCtorsAndDtor,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strObjName   */ m_strObjName,
+        /* strObjName   */ m_strName,
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
 
@@ -426,14 +385,6 @@ CGraphObjCapacitor::~CGraphObjCapacitor()
         }
     }
 
-    if( s_iCtorsCount == s_iDtorsCount )
-    {
-        CTrcServer::ReleaseTraceAdminObj(s_pTrcAdminObjCtorsAndDtor);
-        s_pTrcAdminObjCtorsAndDtor = nullptr;
-        CTrcServer::ReleaseTraceAdminObj(s_pTrcAdminObjItemChange);
-        s_pTrcAdminObjItemChange = nullptr;
-    }
-
     m_pLinCnct = nullptr;
     m_pRctDielectric = nullptr;
     m_pLinPlate1 = nullptr;
@@ -453,15 +404,15 @@ void CGraphObjCapacitor::setCapacitance( double i_fCapacitance_F )
 {
     QString strAddTrcInfo;
 
-    if( s_pTrcAdminObjItemChange != nullptr && s_pTrcAdminObjItemChange->isActive(ETraceDetailLevelMethodCalls) )
+    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->isActive(ETraceDetailLevelMethodCalls) )
     {
         strAddTrcInfo = "Capacitance:" + QString::number(i_fCapacitance_F) + " F";
     }
 
     CMethodTracer mthTracer(
-        /* pAdminObj    */ s_pTrcAdminObjCtorsAndDtor,
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strObjName   */ m_strObjName,
+        /* strObjName   */ m_strName,
         /* strMethod    */ "setCapacitance",
         /* strAddInfo   */ strAddTrcInfo );
 
@@ -531,14 +482,14 @@ CGraphObj* CGraphObjCapacitor::clone()
 {
     QString strAddTrcInfo;
 
-    if( s_pTrcAdminObjCtorsAndDtor != nullptr && s_pTrcAdminObjCtorsAndDtor->isActive(ETraceDetailLevelMethodCalls) )
+    if( m_pTrcAdminObjCtorsAndDtor != nullptr && m_pTrcAdminObjCtorsAndDtor->isActive(ETraceDetailLevelMethodCalls) )
     {
     }
 
     CMethodTracer mthTracer(
-        /* pAdminObj    */ s_pTrcAdminObjCtorsAndDtor,
+        /* pAdminObj    */ m_pTrcAdminObjCtorsAndDtor,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strObjName   */ m_strObjName,
+        /* strObjName   */ m_strName,
         /* strMethod    */ "clone",
         /* strAddInfo   */ strAddTrcInfo );
 
@@ -587,14 +538,14 @@ void CGraphObjCapacitor::onDrawSettingsChanged()
 {
     QString strAddTrcInfo;
 
-    if( s_pTrcAdminObjItemChange != nullptr && s_pTrcAdminObjItemChange->isActive(ETraceDetailLevelMethodCalls) )
+    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->isActive(ETraceDetailLevelMethodCalls) )
     {
     }
 
     CMethodTracer mthTracer(
-        /* pAdminObj    */ s_pTrcAdminObjItemChange,
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strObjName   */ m_strObjName,
+        /* strObjName   */ m_strName,
         /* strMethod    */ "onDrawSettingsChanged",
         /* strAddInfo   */ strAddTrcInfo );
 
@@ -647,8 +598,8 @@ void CGraphObjCapacitor::updateToolTip()
         QString strNodeSeparator = m_pDrawingScene->getGraphObjNameNodeSeparator();
         QPointF ptPos;
 
-        m_strToolTip  = "ObjName:\t" + getObjName(true,strNodeSeparator);
-        m_strToolTip += "\nObjId:\t\t" + getObjId();
+        m_strToolTip  = "ObjName:\t" + name();
+        m_strToolTip += "\nObjId:\t\t" + keyInTree();
 
         m_strToolTip += "Capacitance:\t" + QString::number(m_fCapacitance_F) + " F";
 

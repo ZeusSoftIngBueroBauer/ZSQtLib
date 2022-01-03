@@ -58,18 +58,13 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CObjFactoryRect::CObjFactoryRect(
-    bool         i_bAddToToolBoxIdxTree,
-    const QIcon& i_toolIcon ) :
+CObjFactoryRect::CObjFactoryRect( const QIcon& i_toolIcon ) :
 //------------------------------------------------------------------------------
     CObjFactory(
-        /* strGroupName         */ "Draw::Standard Shapes",
-        /* strGraphObjNameSpace */ CGraphObjRect::NameSpace(),
-        /* strGraphObjClassName */ CGraphObjRect::ClassName(),
-        /* iGraphObjType        */ EGraphObjTypeRect,
-        /* strGraphObjType      */ ZS::Draw::graphObjType2Str(EGraphObjTypeRect),
-        /* bAddToToolBoxIdxTree */ i_bAddToToolBoxIdxTree,
-        /* toolIcon             */ i_toolIcon )
+        /* strGroupName    */ c_strGroupNameStandardShapes,
+        /* iGraphObjType   */ EGraphObjTypeRect,
+        /* strGraphObjType */ ZS::Draw::graphObjType2Str(EGraphObjTypeRect),
+        /* toolIcon        */ i_toolIcon )
 {
 } // default ctor
 
@@ -133,9 +128,9 @@ SErrResultInfo CObjFactoryRect::saveGraphObj(
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
-        strAddTrcInfo  = "GraphObj:" + i_pGraphObj->getNameSpace();
-        strAddTrcInfo += "::" + i_pGraphObj->getClassName();
-        strAddTrcInfo += "::" + i_pGraphObj->getObjName();
+        strAddTrcInfo  = "GraphObj:" + i_pGraphObj->nameSpace();
+        strAddTrcInfo += "::" + i_pGraphObj->className();
+        strAddTrcInfo += "::" + i_pGraphObj->name();
     }
 
     CMethodTracer mthTracer(
@@ -327,8 +322,7 @@ CGraphObj* CObjFactoryRect::loadGraphObj(
             pGraphObj = new CGraphObjRect(
                 /* pDrawingScene */ i_pDrawingScene,
                 /* drawSettings  */ drawSettings,
-                /* strObjName    */ i_strObjName,
-                /* strObjId      */ i_strObjId );
+                /* strObjName    */ i_strObjName );
 
             pGraphObj->setRect( QRectF( QPointF(0.0,0.0), siz ) );
 
@@ -387,10 +381,3 @@ CGraphObj* CObjFactoryRect::loadGraphObj(
     return pGraphObj;
 
 } // loadGraphObj
-
-//------------------------------------------------------------------------------
-void CObjFactoryRect::ResetCtorsDtorsCounters()
-//------------------------------------------------------------------------------
-{
-    CGraphObjRect::ResetCtorsDtorsCounters();
-}

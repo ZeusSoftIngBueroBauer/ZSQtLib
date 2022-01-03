@@ -161,7 +161,7 @@ void CTest::doTestStepStandardShapesPolygons( ZS::Test::CTestStepGroup* i_pTestS
             pTestStep->setExpectedValues(strlstExpectedValues);
             pTestStep->testStarted();
 
-            if( (m_pDrawingScene->getEditTool() != EEditToolCreateObjects) || (m_pDrawingScene->getCurrentDrawingToolGraphObjType() != EGraphObjTypePolygon) )
+            if( (m_pDrawingScene->getEditTool() != EEditTool::CreateObjects) || (m_pDrawingScene->getCurrentDrawingToolGraphObjType() != EGraphObjTypePolygon) )
             {
                 m_pMainWindow->setCheckedActionDrawStandardShapePolygon(true);
             }

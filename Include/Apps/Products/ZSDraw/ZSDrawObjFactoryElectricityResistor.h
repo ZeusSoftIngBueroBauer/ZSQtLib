@@ -41,9 +41,7 @@ class CObjFactoryResistor : public CObjFactory
 //******************************************************************************
 {
 public: // ctors and dtor
-    CObjFactoryResistor(
-        bool         i_bAddToToolBoxObjPool = true,
-        const QIcon& i_toolIcon = QIcon() );
+    CObjFactoryResistor( const QIcon& i_toolIcon = QIcon() );
     virtual ~CObjFactoryResistor();
 public: // interface methods of base class CObjFactory
     virtual CGraphObj* createGraphObj(
@@ -60,7 +58,6 @@ public: // interface methods of base class CObjFactory
         const QString&              i_strObjId,
         QXmlStreamReader&           i_xmlStreamReader,
         ZS::System::SErrResultInfo& io_errResultInfo );
-    virtual void ResetCtorsDtorsCounters();
 
 }; // class CObjFactoryResistor
 

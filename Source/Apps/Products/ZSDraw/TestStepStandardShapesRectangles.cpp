@@ -299,50 +299,50 @@ static const SRotateMoveResizeOperation s_arRotateMoveResizeRectangle1TestSteps[
     /*  3 */ { QPoint( 80,150), QPoint(150.0,150.0), QEvent::MouseMove,          EEditModeRotate, QPointF(100.0,100.0), QPointF(100.0,200.0), QPointF(100.0,100.0), QPointF(200.0,100.0), QPointF(200.0,200.0), false  }, // Rotate by +90° to 90°
     /*  4 */ { QPoint( -1, -1), QPoint(150.0,150.0), QEvent::MouseButtonRelease, EEditModeSelect, QPointF(100.0,100.0), QPointF(100.0,200.0), QPointF(100.0,100.0), QPointF(200.0,100.0), QPointF(200.0,200.0), false  },
     /*  5 */ { QPoint(105,105), QPoint(150.0,150.0), QEvent::MouseButtonPress,   EEditModeSelect, QPointF(100.0,100.0), QPointF(100.0,200.0), QPointF(100.0,100.0), QPointF(200.0,100.0), QPointF(200.0,200.0), false  }, // Select
-    /*  6 */ { QPoint(205,205), QPoint(250.0,250.0), QEvent::MouseMove,          EEditModeMove,   QPointF(200.0,200.0), QPointF(200.0,300.0), QPointF(200.0,200.0), QPointF(300.0,200.0), QPointF(300.0,300.0), false  }, // Move by 100/100
+    /*  6 */ { QPoint(205,205), QPoint(250.0,250.0), QEvent::MouseMove,          EEditMode::Move,   QPointF(200.0,200.0), QPointF(200.0,300.0), QPointF(200.0,200.0), QPointF(300.0,200.0), QPointF(300.0,300.0), false  }, // Move by 100/100
     /*  7 */ { QPoint( -1, -1), QPoint(250.0,250.0), QEvent::MouseButtonRelease, EEditModeSelect, QPointF(200.0,200.0), QPointF(200.0,300.0), QPointF(200.0,200.0), QPointF(300.0,200.0), QPointF(300.0,300.0), false  },
     /*  8 */ { QPoint(200,250), QPoint(250.0,250.0), QEvent::MouseButtonPress,   EEditModeSelect, QPointF(200.0,200.0), QPointF(200.0,300.0), QPointF(200.0,200.0), QPointF(300.0,200.0), QPointF(300.0,300.0), false  }, // Select SelPt TopCenter
-    /*  9 */ { QPoint(210,250), QPoint(255.0,250.0), QEvent::MouseMove,          EEditModeResize, QPointF(200.0,200.0), QPointF(210.0,300.0), QPointF(210.0,200.0), QPointF(300.0,200.0), QPointF(300.0,300.0), false  }, // ResizeBy 10/0 (decrease height by 10)
+    /*  9 */ { QPoint(210,250), QPoint(255.0,250.0), QEvent::MouseMove,          EEditMode::Resize, QPointF(200.0,200.0), QPointF(210.0,300.0), QPointF(210.0,200.0), QPointF(300.0,200.0), QPointF(300.0,300.0), false  }, // ResizeBy 10/0 (decrease height by 10)
     /* 10 */ { QPoint( -1, -1), QPoint(255.0,250.0), QEvent::MouseButtonRelease, EEditModeSelect, QPointF(205.0,205.0), QPointF(210.0,300.0), QPointF(210.0,200.0), QPointF(300.0,200.0), QPointF(300.0,300.0), false  },
     /* 11 */ { QPoint(190,250), QPoint(255.0,250.0), QEvent::MouseButtonPress,   EEditModeSelect, QPointF(205.0,205.0), QPointF(210.0,300.0), QPointF(210.0,200.0), QPointF(300.0,200.0), QPointF(300.0,300.0), false  }, // Select SelPt RotateTop
     /* 12 */ { QPoint(255,180), QPoint(250.0,255.0), QEvent::MouseMove,          EEditModeRotate, QPointF(205.0,205.0), QPointF(205.0,205.0), QPointF(305.0,205.0), QPointF(305.0,295.0), QPointF(205.0,295.0), false  }, // Rotate by -90° to 0°
     /* 13 */ { QPoint( -1, -1), QPoint(250.0,255.0), QEvent::MouseButtonRelease, EEditModeSelect, QPointF(205.0,205.0), QPointF(205.0,205.0), QPointF(305.0,205.0), QPointF(305.0,295.0), QPointF(205.0,295.0), false  },
     /* 14 */ { QPoint(255,205), QPoint(255.0,250.0), QEvent::MouseButtonPress,   EEditModeSelect, QPointF(205.0,205.0), QPointF(205.0,205.0), QPointF(305.0,205.0), QPointF(305.0,295.0), QPointF(205.0,295.0), false  }, // Select SelPt TopCenter
-    /* 15 */ { QPoint(255,200), QPoint(255.0,247.5), QEvent::MouseMove,          EEditModeResize, QPointF(205.0,205.0), QPointF(205.0,200.0), QPointF(305.0,200.0), QPointF(305.0,295.0), QPointF(205.0,295.0), false  }, // ResizeBy 0/5 (increase height by 5)
+    /* 15 */ { QPoint(255,200), QPoint(255.0,247.5), QEvent::MouseMove,          EEditMode::Resize, QPointF(205.0,205.0), QPointF(205.0,200.0), QPointF(305.0,200.0), QPointF(305.0,295.0), QPointF(205.0,295.0), false  }, // ResizeBy 0/5 (increase height by 5)
     /* 16 */ { QPoint( -1, -1), QPoint(255.0,247.5), QEvent::MouseButtonRelease, EEditModeSelect, QPointF(205.0,200.0), QPointF(205.0,200.0), QPointF(305.0,200.0), QPointF(305.0,295.0), QPointF(205.0,295.0), false  },
     /* 17 */ { QPoint(255,295), QPoint(255.0,247.5), QEvent::MouseButtonPress,   EEditModeSelect, QPointF(205.0,200.0), QPointF(205.0,200.0), QPointF(305.0,200.0), QPointF(305.0,295.0), QPointF(205.0,295.0), false  }, // Select SelPt BottomCenter
-    /* 18 */ { QPoint(255,300), QPoint(255.0,250.0), QEvent::MouseMove,          EEditModeResize, QPointF(205.0,200.0), QPointF(205.0,200.0), QPointF(305.0,200.0), QPointF(305.0,300.0), QPointF(205.0,300.0), false  }, // ResizeBy 0/5 (increase height by 5)
+    /* 18 */ { QPoint(255,300), QPoint(255.0,250.0), QEvent::MouseMove,          EEditMode::Resize, QPointF(205.0,200.0), QPointF(205.0,200.0), QPointF(305.0,200.0), QPointF(305.0,300.0), QPointF(205.0,300.0), false  }, // ResizeBy 0/5 (increase height by 5)
     /* 19 */ { QPoint( -1, -1), QPoint(255.0,250.0), QEvent::MouseButtonRelease, EEditModeSelect, QPointF(205.0,200.0), QPointF(205.0,200.0), QPointF(305.0,200.0), QPointF(305.0,300.0), QPointF(205.0,300.0), false  },
     /* 20 */ { QPoint(210,205), QPoint(255.0,247.5), QEvent::MouseButtonPress,   EEditModeSelect, QPointF(205.0,200.0), QPointF(205.0,200.0), QPointF(305.0,200.0), QPointF(305.0,300.0), QPointF(205.0,300.0), false  }, // Select
-    /* 21 */ { QPoint(205,205), QPoint(250.0,250.0), QEvent::MouseMove,          EEditModeMove,   QPointF(200.0,200.0), QPointF(200.0,200.0), QPointF(300.0,200.0), QPointF(300.0,300.0), QPointF(200.0,300.0), false  }, // Move by -5/0
+    /* 21 */ { QPoint(205,205), QPoint(250.0,250.0), QEvent::MouseMove,          EEditMode::Move,   QPointF(200.0,200.0), QPointF(200.0,200.0), QPointF(300.0,200.0), QPointF(300.0,300.0), QPointF(200.0,300.0), false  }, // Move by -5/0
     /* 22 */ { QPoint( -1, -1), QPoint(250.0,250.0), QEvent::MouseButtonRelease, EEditModeSelect, QPointF(200.0,200.0), QPointF(200.0,200.0), QPointF(300.0,200.0), QPointF(300.0,300.0), QPointF(200.0,300.0), false  },
     /* 23 */ { QPoint(250,180), QPoint(250.0,250.0), QEvent::MouseButtonPress,   EEditModeSelect, QPointF(200.0,200.0), QPointF(200.0,200.0), QPointF(300.0,200.0), QPointF(300.0,300.0), QPointF(200.0,300.0), false  }, // Select SelPt TopCenter
     /* 24 */ { QPoint(180,180), QPoint(250.0,250.0), QEvent::MouseMove,          EEditModeRotate, QPointF(200.0,200.0), QPointF(179.3,250.0), QPointF(250.0,179.3), QPointF(320.7,250.0), QPointF(250.0,320.7), false  }, // Rotate by 45° to 45°
     /* 25 */ { QPoint( -1, -1), QPoint(250.0,250.0), QEvent::MouseButtonRelease, EEditModeSelect, QPointF(200.0,200.0), QPointF(179.3,250.0), QPointF(250.0,179.3), QPointF(320.7,250.0), QPointF(250.0,320.7), false  },
     /* 26 */ { QPoint(320,250), QPoint(250.0,250.0), QEvent::MouseButtonPress,   EEditModeSelect, QPointF(200.0,200.0), QPointF(179.3,250.0), QPointF(250.0,179.3), QPointF(320.7,250.0), QPointF(250.0,320.7), false  }, // Select SelPt BottomRight
-    /* 27 */ { QPoint(310,260), QPoint(244.6,255.0), QEvent::MouseMove,          EEditModeResize, QPointF(200.0,200.0), QPointF(179.3,250.0), QPointF(239.6,189.6), QPointF(310.0,260.0), QPointF(249.6,320.4), false  }, // ResizeBy / (decrease width by  to )
-    /* 28 */ { QPoint(300,270), QPoint(239.6,260.0), QEvent::MouseMove,          EEditModeResize, QPointF(200.0,200.0), QPointF(179.3,250.0), QPointF(229.6,199.6), QPointF(300.0,270.0), QPointF(249.6,320.4), false  }, // ResizeBy / (decrease width by  to )
-    /* 29 */ { QPoint(290,280), QPoint(234.6,265.0), QEvent::MouseMove,          EEditModeResize, QPointF(200.0,200.0), QPointF(179.3,250.0), QPointF(219.6,209.6), QPointF(290.0,280.0), QPointF(249.6,320.4), false  }, // ResizeBy / (decrease width by  to )
-    /* 30 */ { QPoint(280,290), QPoint(229.6,270.0), QEvent::MouseMove,          EEditModeResize, QPointF(200.0,200.0), QPointF(179.3,250.0), QPointF(209.6,219.6), QPointF(280.0,290.0), QPointF(249.6,320.4), false  }, // ResizeBy / (decrease width by  to )
-    /* 31 */ { QPoint(270,300), QPoint(224.6,275.0), QEvent::MouseMove,          EEditModeResize, QPointF(200.0,200.0), QPointF(179.3,250.0), QPointF(199.6,229.6), QPointF(270.0,300.0), QPointF(249.6,320.4), false  }, // ResizeBy / (decrease width by  to )
-    /* 32 */ { QPoint(260,310), QPoint(219.6,280.0), QEvent::MouseMove,          EEditModeResize, QPointF(200.0,200.0), QPointF(179.3,250.0), QPointF(189.6,239.6), QPointF(260.0,310.0), QPointF(249.6,320.4), false  }, // ResizeBy / (decrease width by  to )
-    /* 33 */ { QPoint(250,320), QPoint(214.6,285.0), QEvent::MouseMove,          EEditModeResize, QPointF(200.0,200.0), QPointF(179.3,250.0), QPointF(179.6,249.6), QPointF(250.0,320.0), QPointF(249.6,320.4), false  }, // ResizeBy / (decrease width by  to 0)
-    /* 34 */ { QPoint(240,330), QPoint(209.6,290.0), QEvent::MouseMove,          EEditModeResize, QPointF(200.0,200.0), QPointF(169.6,259.6), QPointF(179.3,250.0), QPointF(249.6,320.4), QPointF(240.0,330.0), false  }, // ResizeBy / (increase width by  to )
-    /* 35 */ { QPoint(230,340), QPoint(204.6,295.0), QEvent::MouseMove,          EEditModeResize, QPointF(200.0,200.0), QPointF(159.6,269.6), QPointF(179.3,250.0), QPointF(249.6,320.4), QPointF(230.0,340.0), false  }, // ResizeBy / (increase width by  to )
-    /* 36 */ { QPoint(220,350), QPoint(199.6,300.0), QEvent::MouseMove,          EEditModeResize, QPointF(200.0,200.0), QPointF(149.6,279.6), QPointF(179.3,250.0), QPointF(249.6,320.4), QPointF(220.0,350.0), false  }, // ResizeBy / (increase width by  to )
-    /* 37 */ { QPoint(210,360), QPoint(194.6,305.0), QEvent::MouseMove,          EEditModeResize, QPointF(200.0,200.0), QPointF(139.6,289.6), QPointF(179.3,250.0), QPointF(249.6,320.4), QPointF(210.0,360.0), false  }, // ResizeBy / (increase width by  to )
-    /* 38 */ { QPoint(200,370), QPoint(189.6,310.0), QEvent::MouseMove,          EEditModeResize, QPointF(200.0,200.0), QPointF(129.6,299.6), QPointF(179.3,250.0), QPointF(249.6,320.4), QPointF(200.0,370.0), false  }, // ResizeBy / (increase width by  to )
-    /* 39 */ { QPoint(190,380), QPoint(184.6,315.0), QEvent::MouseMove,          EEditModeResize, QPointF(200.0,200.0), QPointF(119.6,309.6), QPointF(179.3,250.0), QPointF(249.6,320.4), QPointF(190.0,380.0), false  }, // ResizeBy / (increase width by  to )
-    /* 40 */ { QPoint(180,390), QPoint(179.6,320.0), QEvent::MouseMove,          EEditModeResize, QPointF(200.0,200.0), QPointF(109.6,319.6), QPointF(179.3,250.0), QPointF(249.6,320.4), QPointF(180.0,390.0), false  }, // ResizeBy / (increase width by  to 100)
+    /* 27 */ { QPoint(310,260), QPoint(244.6,255.0), QEvent::MouseMove,          EEditMode::Resize, QPointF(200.0,200.0), QPointF(179.3,250.0), QPointF(239.6,189.6), QPointF(310.0,260.0), QPointF(249.6,320.4), false  }, // ResizeBy / (decrease width by  to )
+    /* 28 */ { QPoint(300,270), QPoint(239.6,260.0), QEvent::MouseMove,          EEditMode::Resize, QPointF(200.0,200.0), QPointF(179.3,250.0), QPointF(229.6,199.6), QPointF(300.0,270.0), QPointF(249.6,320.4), false  }, // ResizeBy / (decrease width by  to )
+    /* 29 */ { QPoint(290,280), QPoint(234.6,265.0), QEvent::MouseMove,          EEditMode::Resize, QPointF(200.0,200.0), QPointF(179.3,250.0), QPointF(219.6,209.6), QPointF(290.0,280.0), QPointF(249.6,320.4), false  }, // ResizeBy / (decrease width by  to )
+    /* 30 */ { QPoint(280,290), QPoint(229.6,270.0), QEvent::MouseMove,          EEditMode::Resize, QPointF(200.0,200.0), QPointF(179.3,250.0), QPointF(209.6,219.6), QPointF(280.0,290.0), QPointF(249.6,320.4), false  }, // ResizeBy / (decrease width by  to )
+    /* 31 */ { QPoint(270,300), QPoint(224.6,275.0), QEvent::MouseMove,          EEditMode::Resize, QPointF(200.0,200.0), QPointF(179.3,250.0), QPointF(199.6,229.6), QPointF(270.0,300.0), QPointF(249.6,320.4), false  }, // ResizeBy / (decrease width by  to )
+    /* 32 */ { QPoint(260,310), QPoint(219.6,280.0), QEvent::MouseMove,          EEditMode::Resize, QPointF(200.0,200.0), QPointF(179.3,250.0), QPointF(189.6,239.6), QPointF(260.0,310.0), QPointF(249.6,320.4), false  }, // ResizeBy / (decrease width by  to )
+    /* 33 */ { QPoint(250,320), QPoint(214.6,285.0), QEvent::MouseMove,          EEditMode::Resize, QPointF(200.0,200.0), QPointF(179.3,250.0), QPointF(179.6,249.6), QPointF(250.0,320.0), QPointF(249.6,320.4), false  }, // ResizeBy / (decrease width by  to 0)
+    /* 34 */ { QPoint(240,330), QPoint(209.6,290.0), QEvent::MouseMove,          EEditMode::Resize, QPointF(200.0,200.0), QPointF(169.6,259.6), QPointF(179.3,250.0), QPointF(249.6,320.4), QPointF(240.0,330.0), false  }, // ResizeBy / (increase width by  to )
+    /* 35 */ { QPoint(230,340), QPoint(204.6,295.0), QEvent::MouseMove,          EEditMode::Resize, QPointF(200.0,200.0), QPointF(159.6,269.6), QPointF(179.3,250.0), QPointF(249.6,320.4), QPointF(230.0,340.0), false  }, // ResizeBy / (increase width by  to )
+    /* 36 */ { QPoint(220,350), QPoint(199.6,300.0), QEvent::MouseMove,          EEditMode::Resize, QPointF(200.0,200.0), QPointF(149.6,279.6), QPointF(179.3,250.0), QPointF(249.6,320.4), QPointF(220.0,350.0), false  }, // ResizeBy / (increase width by  to )
+    /* 37 */ { QPoint(210,360), QPoint(194.6,305.0), QEvent::MouseMove,          EEditMode::Resize, QPointF(200.0,200.0), QPointF(139.6,289.6), QPointF(179.3,250.0), QPointF(249.6,320.4), QPointF(210.0,360.0), false  }, // ResizeBy / (increase width by  to )
+    /* 38 */ { QPoint(200,370), QPoint(189.6,310.0), QEvent::MouseMove,          EEditMode::Resize, QPointF(200.0,200.0), QPointF(129.6,299.6), QPointF(179.3,250.0), QPointF(249.6,320.4), QPointF(200.0,370.0), false  }, // ResizeBy / (increase width by  to )
+    /* 39 */ { QPoint(190,380), QPoint(184.6,315.0), QEvent::MouseMove,          EEditMode::Resize, QPointF(200.0,200.0), QPointF(119.6,309.6), QPointF(179.3,250.0), QPointF(249.6,320.4), QPointF(190.0,380.0), false  }, // ResizeBy / (increase width by  to )
+    /* 40 */ { QPoint(180,390), QPoint(179.6,320.0), QEvent::MouseMove,          EEditMode::Resize, QPointF(200.0,200.0), QPointF(109.6,319.6), QPointF(179.3,250.0), QPointF(249.6,320.4), QPointF(180.0,390.0), false  }, // ResizeBy / (increase width by  to 100)
     /* 41 */ { QPoint( -1, -1), QPoint(179.6,320.0), QEvent::MouseButtonRelease, EEditModeSelect, QPointF(130.4,270.3), QPointF(109.6,319.6), QPointF(179.3,250.0), QPointF(249.6,320.4), QPointF(180.0,390.0), false  },
     /* 42 */ { QPoint(180,320), QPoint(179.6,320.0), QEvent::MouseButtonPress,   EEditModeSelect, QPointF(130.4,270.3), QPointF(109.6,319.6), QPointF(179.3,250.0), QPointF(249.6,320.4), QPointF(180.0,390.0), false  }, // Select
-    /* 43 */ { QPoint(250,250), QPoint(249.6,250.0), QEvent::MouseMove,          EEditModeMove,   QPointF(200.4,200.3), QPointF(179.6,249.6), QPointF(249.3,180.0), QPointF(319.6,250.4), QPointF(250.0,320.0), false  }, // Move by 70/70
+    /* 43 */ { QPoint(250,250), QPoint(249.6,250.0), QEvent::MouseMove,          EEditMode::Move,   QPointF(200.4,200.3), QPointF(179.6,249.6), QPointF(249.3,180.0), QPointF(319.6,250.4), QPointF(250.0,320.0), false  }, // Move by 70/70
     /* 44 */ { QPoint( -1, -1), QPoint(249.6,250.0), QEvent::MouseButtonRelease, EEditModeSelect, QPointF(200.4,200.3), QPointF(179.6,249.6), QPointF(249.3,180.0), QPointF(319.6,250.4), QPointF(250.0,320.0), false  },
     /* 45 */ { QPoint(201,201), QPoint(179.6,320.0), QEvent::MouseButtonPress,   EEditModeSelect, QPointF(200.4,200.3), QPointF(179.6,249.6), QPointF(249.3,180.0), QPointF(319.6,250.4), QPointF(250.0,320.0), false  }, // Select SelPt TopCenter
     /* 46 */ { QPoint(250,180), QPoint(249.6,250.0), QEvent::MouseMove,          EEditModeRotate, QPointF(200.4,200.3), QPointF(200.4,200.3), QPointF(298.9,200.3), QPointF(298.9,299.7), QPointF(200.4,299.7), false  }, // Rotate by -45° to 0°
     /* 47 */ { QPoint( -1, -1), QPoint(249.6,250.0), QEvent::MouseButtonRelease, EEditModeSelect, QPointF(200.4,200.3), QPointF(200.4,200.3), QPointF(298.9,200.3), QPointF(298.9,299.7), QPointF(200.4,299.7), false  },
     /* 48 */ { QPoint(250,225), QPoint(249.6,250.0), QEvent::MouseButtonPress,   EEditModeSelect, QPointF(200.4,200.3), QPointF(200.4,200.3), QPointF(298.9,200.3), QPointF(298.9,299.7), QPointF(200.4,299.7), false  }, // Select
-    /* 49 */ { QPoint(150,125), QPoint(149.6,150.0), QEvent::MouseMove,          EEditModeMove,   QPointF(100.4,100.3), QPointF(100.4,100.3), QPointF(198.9,100.3), QPointF(198.9,199.7), QPointF(100.4,199.7), false  }, // Move by -100,-100
+    /* 49 */ { QPoint(150,125), QPoint(149.6,150.0), QEvent::MouseMove,          EEditMode::Move,   QPointF(100.4,100.3), QPointF(100.4,100.3), QPointF(198.9,100.3), QPointF(198.9,199.7), QPointF(100.4,199.7), false  }, // Move by -100,-100
     /* 50 */ { QPoint( -1, -1), QPoint(149.6,150.0), QEvent::MouseButtonRelease, EEditModeSelect, QPointF(100.4,100.3), QPointF(100.4,100.3), QPointF(198.9,100.3), QPointF(198.9,199.7), QPointF(100.4,199.7), false  }
 };
 
@@ -479,7 +479,7 @@ void CTest::doTestStepStandardShapesRectangles( ZS::Test::CTestStepGroup* i_pTes
                 pTestStep->setExpectedValues(strlstExpectedValues);
                 pTestStep->testStarted();
 
-                if( (m_pDrawingScene->getEditTool() != EEditToolCreateObjects) || (m_pDrawingScene->getCurrentDrawingToolGraphObjType() != EGraphObjTypeRect) )
+                if( (m_pDrawingScene->getEditTool() != EEditTool::CreateObjects) || (m_pDrawingScene->getCurrentDrawingToolGraphObjType() != EGraphObjTypeRect) )
                 {
                     m_pMainWindow->setCheckedActionDrawStandardShapeRect(true);
                 }
@@ -699,7 +699,7 @@ void CTest::doTestStepStandardShapesRectangles( ZS::Test::CTestStepGroup* i_pTes
                 pTestStep->setExpectedValues(strlstExpectedValues);
                 pTestStep->testStarted();
 
-                if( m_pDrawingScene->getEditTool() != EEditToolSelect )
+                if( m_pDrawingScene->getEditTool() != EEditTool::Select )
                 {
                     m_pMainWindow->setCheckedActionEditSelect(true);
                 }
@@ -745,7 +745,7 @@ void CTest::doTestStepStandardShapesRectangles( ZS::Test::CTestStepGroup* i_pTes
             ptMousePosGlobal.setX(ptMousePosGlobal.x()+1); // Maybe graphics view or graphics scene bug on calculating the screen position.
             ptMousePosGlobal.setY(ptMousePosGlobal.y()+1); // Without adding 1 pixel the newly created object will not be selected by the scene.
 
-            strlstExpectedValues.append( strCurrentGraphObj + ": SelPt:" + selectionPoint2Str(ESelectionPointUndefined) );
+            strlstExpectedValues.append( strCurrentGraphObj + ": SelPt:" + selectionPoint2Str(ESelectionPoint::Undefined) );
             strlstExpectedValues.append( strCurrentGraphObj + ": " + point2Str(s_rect1OnMousePressEvent.topLeft()) );
             strlstExpectedValues.append( strCurrentGraphObj + ": " + polygon2Str(s_rect1) );
 
@@ -932,7 +932,7 @@ void CTest::doTestStepStandardShapesRectangles( ZS::Test::CTestStepGroup* i_pTes
                 pTestStep->setExpectedValues(strlstExpectedValues);
                 pTestStep->testStarted();
 
-                if( m_pDrawingScene->getEditTool() != EEditToolSelect )
+                if( m_pDrawingScene->getEditTool() != EEditTool::Select )
                 {
                     m_pMainWindow->setCheckedActionEditSelect(true);
                 }
@@ -978,7 +978,7 @@ void CTest::doTestStepStandardShapesRectangles( ZS::Test::CTestStepGroup* i_pTes
             ptMousePosGlobal.setX(ptMousePosGlobal.x()+1); // Maybe graphics view or graphics scene bug on calculating the screen position.
             ptMousePosGlobal.setY(ptMousePosGlobal.y()+1); // Without adding 1 pixel the newly created object will not be selected by the scene.
 
-            strlstExpectedValues.append( strCurrentGraphObj + ": SelPt:" + selectionPoint2Str(ESelectionPointUndefined) );
+            strlstExpectedValues.append( strCurrentGraphObj + ": SelPt:" + selectionPoint2Str(ESelectionPoint::Undefined) );
             strlstExpectedValues.append( strCurrentGraphObj + ": " + point2Str(s_rect1OnMousePressEvent.topLeft()) );
             strlstExpectedValues.append( strCurrentGraphObj + ": " + polygon2Str(s_rect1) );
 
@@ -1906,7 +1906,7 @@ void CTest::doTestStepStandardShapesRectangles( ZS::Test::CTestStepGroup* i_pTes
             ptMousePosGlobal.setX(ptMousePosGlobal.x()+1); // Maybe graphics view or graphics scene bug on calculating the screen position.
             ptMousePosGlobal.setY(ptMousePosGlobal.y()+1); // Without adding 1 pixel the newly created object will not be selected by the scene.
 
-            strlstExpectedValues.append( strCurrentGraphObj + ": SelPt:" + selectionPoint2Str(ESelectionPointBottomCenter) );
+            strlstExpectedValues.append( strCurrentGraphObj + ": SelPt:" + selectionPoint2Str(ESelectionPoint::BottomCenter) );
             strlstExpectedValues.append( strCurrentGraphObj + ": " + point2Str(s_rect1OnMousePressEvent.topLeft()) );
             strlstExpectedValues.append( strCurrentGraphObj + ": " + polygon2Str(s_rect1) );
 
@@ -2119,7 +2119,7 @@ void CTest::doTestStepStandardShapesRectangles( ZS::Test::CTestStepGroup* i_pTes
             ptMousePosGlobal.setX(ptMousePosGlobal.x()+1); // Maybe graphics view or graphics scene bug on calculating the screen position.
             ptMousePosGlobal.setY(ptMousePosGlobal.y()+1); // Without adding 1 pixel the newly created object will not be selected by the scene.
 
-            strlstExpectedValues.append( strCurrentGraphObj + ": SelPt:" + selectionPoint2Str(ESelectionPointTopCenter) );
+            strlstExpectedValues.append( strCurrentGraphObj + ": SelPt:" + selectionPoint2Str(ESelectionPoint::TopCenter) );
             strlstExpectedValues.append( strCurrentGraphObj + ": " + point2Str(s_rect1OnMousePressEvent.topLeft()) );
             strlstExpectedValues.append( strCurrentGraphObj + ": " + polygon2Str(s_rect1) );
 
@@ -2758,7 +2758,7 @@ void CTest::doTestStepStandardShapesRectangles( ZS::Test::CTestStepGroup* i_pTes
                 pTestStep->setExpectedValues(strlstExpectedValues);
                 pTestStep->testStarted();
 
-                if( m_pDrawingScene->getEditTool() != EEditToolSelect )
+                if( m_pDrawingScene->getEditTool() != EEditTool::Select )
                 {
                     m_pMainWindow->setCheckedActionEditSelect(true);
                 }
@@ -2805,7 +2805,7 @@ void CTest::doTestStepStandardShapesRectangles( ZS::Test::CTestStepGroup* i_pTes
             ptMousePosGlobal.setX(ptMousePosGlobal.x()+1); // Maybe graphics view or graphics scene bug on calculating the screen position.
             ptMousePosGlobal.setY(ptMousePosGlobal.y()+1); // Without adding 1 pixel the newly created object will not be selected by the scene.
 
-            strlstExpectedValues.append( strCurrentGraphObj + ": SelPt:" + selectionPoint2Str(ESelectionPointUndefined) );
+            strlstExpectedValues.append( strCurrentGraphObj + ": SelPt:" + selectionPoint2Str(ESelectionPoint::Undefined) );
             strlstExpectedValues.append( strCurrentGraphObj + ": " + point2Str(s_rect1OnMousePressEvent.topLeft()) );
             strlstExpectedValues.append( strCurrentGraphObj + ": " + polygon2Str(s_rect1) );
 
@@ -2878,7 +2878,7 @@ void CTest::doTestStepStandardShapesRectangles( ZS::Test::CTestStepGroup* i_pTes
             ptMousePosGlobal.setX(ptMousePosGlobal.x()+1); // Maybe graphics view or graphics scene bug on calculating the screen position.
             ptMousePosGlobal.setY(ptMousePosGlobal.y()+1); // Without adding 1 pixel the newly created object will not be selected by the scene.
 
-            strlstExpectedValues.append( strCurrentGraphObj + ": SelPt:" + selectionPoint2Str(ESelectionPointRotateTop) );
+            strlstExpectedValues.append( strCurrentGraphObj + ": SelPt:" + selectionPoint2Str(ESelectionPoint::RotateTop) );
             strlstExpectedValues.append( strCurrentGraphObj + ": " + point2Str(s_rect1OnMousePressEvent.topLeft()) );
             strlstExpectedValues.append( strCurrentGraphObj + ": " + polygon2Str(s_rect1) );
 
@@ -3081,7 +3081,7 @@ void CTest::doTestStepStandardShapesRectangles( ZS::Test::CTestStepGroup* i_pTes
                 pTestStep->setExpectedValues(strlstExpectedValues);
                 pTestStep->testStarted();
 
-                if( m_pDrawingScene->getEditTool() != EEditToolSelect )
+                if( m_pDrawingScene->getEditTool() != EEditTool::Select )
                 {
                     m_pMainWindow->setCheckedActionEditSelect(true);
                 }
@@ -3164,12 +3164,12 @@ void CTest::doTestStepStandardShapesRectangles( ZS::Test::CTestStepGroup* i_pTes
 
             switch( op.m_operation )
             {
-                case EEditModeMove:
+                case EEditMode::Move:
                 {
                     pTestStep->setDescription( "scene." + strCurrentGraphObj + ".move( ScenePos:" + point2Str(m_ptDrawingSceneMousePos) + " )" );
                     break;
                 }
-                case EEditModeResize:
+                case EEditMode::Resize:
                 {
                     pTestStep->setDescription( "scene." + strCurrentGraphObj + ".resize( ScenePos:" + point2Str(m_ptDrawingSceneMousePos) + " )" );
                     break;

@@ -42,7 +42,7 @@ using namespace ZS::Test;
 
 
 /*******************************************************************************
-class CTestStep : public CAbstractTestStepIdxTreeEntry, public ZS::System::#error CLeaveIdxTreeEntry
+class CTestStep : public CAbstractTestStepIdxTreeEntry
 *******************************************************************************/
 
 /*==============================================================================

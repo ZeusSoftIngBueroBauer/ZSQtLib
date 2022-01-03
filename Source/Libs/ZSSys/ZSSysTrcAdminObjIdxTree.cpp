@@ -111,8 +111,12 @@ public: // instance methods to get and release admin objects
 /*! Returns the trace admin object with the given name space, class name and
     object name.
 
-    If no admin object is yet existing with the given name space, class name and
-    object name a new object is created and added to the index tree.
+    If an admin object with the given name space, class name and object name
+    is not yet existing in the index tree a new object is created and added to
+    the index tree.
+    If an admin object with the given name space, class name and object name
+    is already existing a reference counter will be incremented and the already
+    existing admin object is returned.
 */
 CTrcAdminObj* CIdxTreeTrcAdminObjs::getTraceAdminObj(
     const QString& i_strNameSpace,

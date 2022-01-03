@@ -87,13 +87,15 @@ public: // struct members
 
 
 //******************************************************************************
+/*!
+    @note Labels should not belong as child to the graphics items for which the
+          selection points are created. Otherwise the "boundingRect" call of groups
+          (which implicitly calls childrenBoundingRect) does not work as the
+          label of the bounding rectangle would be included.
+*/
 class ZSDRAWDLL_API CGraphObjLabel : public CGraphObj, public QGraphicsSimpleTextItem
 //******************************************************************************
 {
-// Please note that labels should not belong as child to the graphics items
-// for which the selection points are created. Otherwise the "boundingRect" call
-// of groups (which implicitly calls childrenBoundingRect) does not work as the
-// label of the bounding rectangle would be included.
 public: // class methods
     /*! Returns the namespace the class belongs to. */
     static QString NameSpace() { return "ZS::Draw"; } // Please note that the static class functions name must be different from the non static virtual member function "nameSpace"
@@ -111,6 +113,9 @@ public: // overridables of base class QGraphicsItem
     int type() const { return static_cast<int>(EGraphObjTypeLabel); }
 public: // must overridables of base class CGraphObj
     virtual CGraphObj* clone();
+public: // overridables
+    virtual QString nameSpace() { return NameSpace(); }
+    virtual QString className() { return ClassName(); }
 public: // replacing methods of QGraphicsSimpleTextItem
     void setText( const QString& i_strText );
 public: // overridables
@@ -154,21 +159,13 @@ protected: // overridables of base class QGraphicsItem
 protected: // overridables of base class QGraphicsItem
     virtual QVariant itemChange( GraphicsItemChange i_change, const QVariant& i_value );
 protected: // class members
-    static qint64                   s_iCtorsCount;
-    static qint64                   s_iDtorsCount;
-    static ZS::Trace::CTrcAdminObj* s_pTrcAdminObjCtorsAndDtor;
-    static ZS::Trace::CTrcAdminObj* s_pTrcAdminObjBoundingRect;
-    static ZS::Trace::CTrcAdminObj* s_pTrcAdminObjPaint;
-    static ZS::Trace::CTrcAdminObj* s_pTrcAdminObjSceneEventFilter;
-    static ZS::Trace::CTrcAdminObj* s_pTrcAdminObjHoverEvents;
-    static ZS::Trace::CTrcAdminObj* s_pTrcAdminObjMouseEvents;
-    static ZS::Trace::CTrcAdminObj* s_pTrcAdminObjItemChange;
+    static qint64 s_iInstCount;
 protected: // instance members
     QString         m_strKey;
     CGraphObj*      m_pGraphObjParent;
     QGraphicsItem*  m_pGraphicsItemParent;
     ESelectionPoint m_selPtGraphObjParent;      // Selection point of parent item the label is aligned to.
-    //QSizeF          m_sizGraphObjParentDist;  // With this distance to the scene position of the label.
+    //QSizeF        m_sizGraphObjParentDist;    // With this distance to the scene position of the label.
 
 }; // class CGraphObjLabel
 

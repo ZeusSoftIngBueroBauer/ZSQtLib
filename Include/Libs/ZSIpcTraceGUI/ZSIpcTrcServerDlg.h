@@ -61,15 +61,15 @@ public: // class methods
     static QString ClassName() { return "CDlgIpcServer"; }
 public: // class methods
     static CDlgTrcServer* CreateInstance(
-        const QString&  i_strObjName,
         const QString&  i_strDlgTitle,
+        const QString&  i_strTrcServerName = "ZSTrcServer",
         QWidget*        i_pWdgtParent = nullptr,
         Qt::WindowFlags i_wFlags = Qt::WindowFlags() );
     static CDlgTrcServer* GetInstance( const QString& i_strObjName );
 protected: // ctor
     CDlgTrcServer(
-        const QString&  i_strObjName,
         const QString&  i_strDlgTitle,
+        const QString&  i_strTrcServerName = "ZSTrcServer",
         QWidget*        i_pWdgtParent = nullptr,
         Qt::WindowFlags i_wFlags = Qt::WindowFlags());
 public: // dtor

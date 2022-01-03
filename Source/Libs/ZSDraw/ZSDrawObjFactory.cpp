@@ -62,15 +62,17 @@ public: // class members
 ==============================================================================*/
 
 const QString CObjFactory::c_strGroupSeparater = "::";
+const QString CObjFactory::c_strGroupNameStandardShapes = "Standard Shapes";
+const QString CObjFactory::c_strGroupNameConnections = "Connections";
+const QString CObjFactory::c_strGroupNameSelectionPoints = "Selection Points";
+
 
 /*==============================================================================
 protected: // class members
 ==============================================================================*/
 
-int           CObjFactory::s_iInstCount = 0;
-CIdxTree*     CObjFactory::s_pIdxTreeAllFactories = nullptr;
-CIdxTree*     CObjFactory::s_pIdxTreeToolBoxFactories = nullptr;
-CTrcAdminObj* CObjFactory::s_pTrcAdminObj = nullptr;
+int       CObjFactory::s_iInstCount = 0;
+CIdxTree* CObjFactory::s_pIdxTree = nullptr;
 
 /*==============================================================================
 public: // class methods
@@ -89,9 +91,9 @@ CObjFactory* CObjFactory::GetObjFactory( int i_idx )
 {
     CObjFactory* pObjFactory = nullptr;
 
-    if( s_pIdxTreeAllFactories != nullptr && i_idx >= 0 && i_idx < s_pIdxTreeAllFactories->treeEntriesVectorSize() )
+    if( s_pIdxTree != nullptr && i_idx >= 0 && i_idx < s_pIdxTree->treeEntriesVectorSize() )
     {
-        pObjFactory = dynamic_cast<CObjFactory*>(s_pIdxTreeAllFactories->getEntry(i_idx));
+        pObjFactory = dynamic_cast<CObjFactory*>(s_pIdxTree->getEntry(i_idx));
     }
     return pObjFactory;
 
@@ -101,372 +103,117 @@ CObjFactory* CObjFactory::GetObjFactory( int i_idx )
 CObjFactory* CObjFactory::FindObjFactory( const QString& i_strGraphObjPath )
 //------------------------------------------------------------------------------
 {
-    return dynamic_cast<CObjFactory*>(s_pIdxTreeAllFactories->findLeave(i_strGraphObjPath));
+    return dynamic_cast<CObjFactory*>(s_pIdxTree->findLeave(i_strGraphObjPath));
 }
 
-//------------------------------------------------------------------------------
-CObjFactory* CObjFactory::FindObjFactory(
-    const QString& i_strGraphObjNameSpace,
-    const QString& i_strGraphObjClassName,
-    int            i_iGraphObjType )
-//------------------------------------------------------------------------------
-{
-    CObjFactory* pObjFactory = nullptr;
-    CObjFactory* pObjFactoryTmp;
-    int          idx;
-
-    if( s_pIdxTreeAllFactories != nullptr )
-    {
-        for( idx = 0; idx < s_pIdxTreeAllFactories->treeEntriesVectorSize(); idx++ )
-        {
-            CIdxTreeEntry* pTreeEntry = s_pIdxTreeAllFactories->getEntry(idx);
-
-            if( pTreeEntry != nullptr )
-            {
-                pObjFactoryTmp = dynamic_cast<CObjFactory*>(pTreeEntry);
-
-                if( pObjFactoryTmp != nullptr )
-                {
-                    if( i_iGraphObjType != EGraphObjTypeUndefined )
-                    {
-                        if( pObjFactoryTmp->getGraphObjType() == i_iGraphObjType )
-                        {
-                            if( !i_strGraphObjNameSpace.isEmpty() && !i_strGraphObjClassName.isEmpty() )
-                            {
-                                if( pObjFactoryTmp->getGraphObjNameSpace() == i_strGraphObjNameSpace
-                                 && pObjFactoryTmp->getGraphObjClassName() == i_strGraphObjClassName )
-                                {
-                                    pObjFactory = pObjFactoryTmp;
-                                    break;
-                                }
-                            }
-                            else if( !i_strGraphObjNameSpace.isEmpty() )
-                            {
-                                if( pObjFactoryTmp->getGraphObjNameSpace() == i_strGraphObjNameSpace )
-                                {
-                                    pObjFactory = pObjFactoryTmp;
-                                    break;
-                                }
-                            }
-                            else if( !i_strGraphObjClassName.isEmpty() )
-                            {
-                                if( pObjFactoryTmp->getGraphObjClassName() == i_strGraphObjClassName )
-                                {
-                                    pObjFactory = pObjFactoryTmp;
-                                    break;
-                                }
-                            }
-                            else // if( i_strGraphObjNameSpace.isEmpty() && i_strGraphObjClassName.isEmpty() )
-                            {
-                                pObjFactory = pObjFactoryTmp;
-                                break;
-                            }
-                        }
-                    } // if( i_iGraphObjType != EGraphObjTypeUndefined )
-
-                    else // if( i_iGraphObjType == EGraphObjTypeUndefined )
-                    {
-                        if( !i_strGraphObjNameSpace.isEmpty() && !i_strGraphObjClassName.isEmpty() )
-                        {
-                            if( pObjFactoryTmp->getGraphObjNameSpace() == i_strGraphObjNameSpace
-                             && pObjFactoryTmp->getGraphObjClassName() == i_strGraphObjClassName )
-                            {
-                                pObjFactory = pObjFactoryTmp;
-                                break;
-                            }
-                        }
-                        else if( !i_strGraphObjNameSpace.isEmpty() )
-                        {
-                            if( pObjFactoryTmp->getGraphObjNameSpace() == i_strGraphObjNameSpace )
-                            {
-                                pObjFactory = pObjFactoryTmp;
-                                break;
-                            }
-                        }
-                        else if( !i_strGraphObjClassName.isEmpty() )
-                        {
-                            if( pObjFactoryTmp->getGraphObjClassName() == i_strGraphObjClassName )
-                            {
-                                pObjFactory = pObjFactoryTmp;
-                                break;
-                            }
-                        }
-                        else // if( i_strGraphObjNameSpace.isEmpty() && i_strGraphObjClassName.isEmpty() )
-                        {
-                            // No filter set. Returning the first registered object factory.
-                            pObjFactory = pObjFactoryTmp;
-                            break;
-                        }
-                    } // if( i_iGraphObjType == EGraphObjTypeUndefined )
-                } // if( pObjFactoryTmp != nullptr )
-            } // if( pTreeEntry != nullptr )
-        } // for( idx = 0; idx < s_pIdxTreeAllFactories->treeEntriesVectorSize(); idx++ )
-    } // if( s_pIdxTreeAllFactories != nullptr )
-
-    return pObjFactory;
-
-} // FindObjFactory
+////------------------------------------------------------------------------------
+//CObjFactory* CObjFactory::FindObjFactory(
+//    const QString& i_strFactoryGroupName,
+//    int            i_iGraphObjType )
+////------------------------------------------------------------------------------
+//{
+//    CObjFactory* pObjFactory = nullptr;
+//
+//    if( s_pIdxTree != nullptr )
+//    {
+//        QString strPath = s_pIdxTree->buildPathStr(i_strFactoryGroupName, graphObjType2Str(i_iGraphObjType));
+//        CIdxTreeEntry* pTreeEntry = s_pIdxTree->findLeave(strPath);
+//        pObjFactory = dynamic_cast<CObjFactory*>(pTreeEntry);
+//    }
+//    return pObjFactory;
+//
+//} // FindObjFactory
 
 //------------------------------------------------------------------------------
 CObjFactory* CObjFactory::FindObjFactory(
-    const QString& i_strGraphObjNameSpace,
-    const QString& i_strGraphObjClassName,
+    const QString& i_strFactoryGroupName,
     const QString& i_strGraphObjType )
 //------------------------------------------------------------------------------
 {
     CObjFactory* pObjFactory = nullptr;
-    CObjFactory* pObjFactoryTmp;
-    int          idx;
 
-    if( s_pIdxTreeAllFactories != nullptr )
+    if( s_pIdxTree != nullptr )
     {
-        for( idx = 0; idx < s_pIdxTreeAllFactories->treeEntriesVectorSize(); idx++ )
-        {
-            CIdxTreeEntry* pTreeEntry = s_pIdxTreeAllFactories->getEntry(idx);
-
-            if( pTreeEntry != nullptr )
-            {
-                pObjFactoryTmp = dynamic_cast<CObjFactory*>(pTreeEntry);
-
-                if( pObjFactoryTmp != nullptr )
-                {
-                    if( !i_strGraphObjType.isEmpty() )
-                    {
-                        if( pObjFactoryTmp->getGraphObjTypeAsString() == i_strGraphObjType )
-                        {
-                            if( !i_strGraphObjNameSpace.isEmpty() && !i_strGraphObjClassName.isEmpty() )
-                            {
-                                if( pObjFactoryTmp->getGraphObjNameSpace() == i_strGraphObjNameSpace
-                                 && pObjFactoryTmp->getGraphObjClassName() == i_strGraphObjClassName )
-                                {
-                                    pObjFactory = pObjFactoryTmp;
-                                    break;
-                                }
-                            }
-                            else if( !i_strGraphObjNameSpace.isEmpty() )
-                            {
-                                if( pObjFactoryTmp->getGraphObjNameSpace() == i_strGraphObjNameSpace )
-                                {
-                                    pObjFactory = pObjFactoryTmp;
-                                    break;
-                                }
-                            }
-                            else if( !i_strGraphObjClassName.isEmpty() )
-                            {
-                                if( pObjFactoryTmp->getGraphObjClassName() == i_strGraphObjClassName )
-                                {
-                                    pObjFactory = pObjFactoryTmp;
-                                    break;
-                                }
-                            }
-                            else // if( i_strGraphObjNameSpace.isEmpty() && i_strGraphObjClassName.isEmpty() )
-                            {
-                                pObjFactory = pObjFactoryTmp;
-                                break;
-                            }
-                        }
-                    } // if( !i_strGraphObjType.isEmpty() )
-
-                    else // if( i_strGraphObjType.isEmpty() )
-                    {
-                        if( !i_strGraphObjNameSpace.isEmpty() && !i_strGraphObjClassName.isEmpty() )
-                        {
-                            if( pObjFactoryTmp->getGraphObjNameSpace() == i_strGraphObjNameSpace
-                             && pObjFactoryTmp->getGraphObjClassName() == i_strGraphObjClassName )
-                            {
-                                pObjFactory = pObjFactoryTmp;
-                                break;
-                            }
-                        }
-                        else if( !i_strGraphObjNameSpace.isEmpty() )
-                        {
-                            if( pObjFactoryTmp->getGraphObjNameSpace() == i_strGraphObjNameSpace )
-                            {
-                                pObjFactory = pObjFactoryTmp;
-                                break;
-                            }
-                        }
-                        else if( !i_strGraphObjClassName.isEmpty() )
-                        {
-                            if( pObjFactoryTmp->getGraphObjClassName() == i_strGraphObjClassName )
-                            {
-                                pObjFactory = pObjFactoryTmp;
-                                break;
-                            }
-                        }
-                        else // if( i_strGraphObjNameSpace.isEmpty() && i_strGraphObjClassName.isEmpty() )
-                        {
-                            // No filter set. Returning the first registered object factory.
-                            pObjFactory = pObjFactoryTmp;
-                            break;
-                        }
-                    } // if( i_strGraphObjType.isEmpty() )
-                } // if( pObjFactoryTmp != nullptr )
-            } // if( pTreeEntry != nullptr )
-        } // for( idx = 0; idx < s_pIdxTreeAllFactories->treeEntriesVectorSize(); idx++ )
-    } // if( s_pIdxTreeAllFactories != nullptr )
-
+        QString strPath = s_pIdxTree->buildPathStr(i_strFactoryGroupName, i_strGraphObjType);
+        CIdxTreeEntry* pTreeEntry = s_pIdxTree->findLeave(strPath);
+        pObjFactory = dynamic_cast<CObjFactory*>(pTreeEntry);
+    }
     return pObjFactory;
 
 } // FindObjFactory
-
-/*==============================================================================
-public: // class methods
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-void CObjFactory::ResetAllCtorsDtorsCounters()
-//------------------------------------------------------------------------------
-{
-    CObjFactory* pObjFactory;
-    int          idx;
-
-    for( idx = 0; idx < GetObjFactoriesCount(); idx++ )
-    {
-        pObjFactory = GetObjFactory(idx);
-
-        if( pObjFactory != nullptr )
-        {
-            pObjFactory->ResetCtorsDtorsCounters();
-        }
-    }
-
-} // ResetAllCtorsDtorsCounters
-
-/*==============================================================================
-protected: // class methods
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-void CObjFactory::RegisterObjFactory( CObjFactory& i_objFactory, bool i_bAddToToolBoxIdxTree )
-//------------------------------------------------------------------------------
-{
-    if( s_pTrcAdminObj == nullptr )
-    {
-        s_pTrcAdminObj = CTrcServer::GetTraceAdminObj(i_objFactory.getGraphObjNameSpace(), ClassName(), i_objFactory.getGraphObjTypeAsString());
-    }
-
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ s_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strObjName   */ i_objFactory.getGraphObjClassName(),
-        /* strMethod    */ "RegisterObjFactory",
-        /* strAddInfo   */ "" );
-
-    CObjFactory* pObjFactory = FindObjFactory(
-        /* strNameSpace */ i_objFactory.getGraphObjNameSpace(),
-        /* strClassName */ i_objFactory.getGraphObjClassName(),
-        /* strObjType   */ i_objFactory.getGraphObjTypeAsString() );
-
-    if( pObjFactory != nullptr )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultObjAlreadyRegistered);
-    }
-
-    QString strNameSpace  = i_objFactory.getGroupName();
-    QString strName       = i_objFactory.getGraphObjTypeAsString();
-    QString strTargetPath = s_pIdxTreeAllFactories->buildPathStr(strNameSpace, strName);
-
-    int iId = s_pIdxTreeAllFactories->add(&i_objFactory, strTargetPath);
-    i_objFactory.setIdxTreeIdAllFactories(iId);
-
-    if( i_bAddToToolBoxIdxTree )
-    {
-        iId = s_pIdxTreeToolBoxFactories->add(&i_objFactory, strTargetPath);
-        i_objFactory.setIdxTreeIdToolBoxFactories(iId);
-    }
-
-    // The name got to be unique:
-    if( strName != i_objFactory.getGraphObjTypeAsString() )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultObjAlreadyInList);
-    }
-
-} // RegisterObjFactory
-
-//------------------------------------------------------------------------------
-void CObjFactory::UnregisterObjFactory( CObjFactory& i_objFactory )
-//------------------------------------------------------------------------------
-{
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ s_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strObjName   */ i_objFactory.getGraphObjClassName(),
-        /* strMethod    */ "UnregisterObjFactory",
-        /* strAddInfo   */ "" );
-
-    CObjFactory* pObjFactory = FindObjFactory(
-        /* strNameSpace */ i_objFactory.getGraphObjNameSpace(),
-        /* strClassName */ i_objFactory.getGraphObjClassName(),
-        /* strObjType   */ i_objFactory.getGraphObjTypeAsString() );
-
-    if( pObjFactory == nullptr )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultObjNotRegistered);
-    }
-
-    s_pIdxTreeAllFactories->remove(i_objFactory.keyInTree());
-
-    if( i_objFactory.getIdxTreeIdToolBoxFactories() >= 0 )
-    {
-        s_pIdxTreeToolBoxFactories->remove(i_objFactory.keyInTree());
-    }
-
-} // UnregisterObjFactory
 
 /*==============================================================================
 protected: // ctor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! Creates an instance of the object factory.
+
+    @param i_strGroupName [in]
+        To group the factory in index tree
+        (e.g. "Draw::Standard Shapes", "Draw::Widgets", "Draw::Electricity").
+        Use "c_strGroupSeparator" ("::") to separate groups.
+    @param i_strGraphObjNameSpace [in]
+        C++ name space of the class
+        (e.g. "ZS::Draw", "ZS::Draw::Widgets", "ZS::Draw::Electricity").
+        Used for tracing.
+    @param i_strGraphObjClassName [in]
+        C++ class name (e.g. "CGraphObjRect", "CGraphObjWdgtCheckBox", "CGraphObjCapacitor").
+        Used for tracing.
+    @param i_iGraphObjType [in]
+        Type as int of the graphic items created by this factory.
+    @param i_strGraphObjType [in]
+        Type as string of the graphic items created by this factory
+        (e.g. "Line", "Rect", "CheckBox", "Resistor").
+        The type as string becomes the name of the index tree leave entry.
+    @param i_toolIcon [in]
+        Icon to indicate the graphic items created by this factory in the index tree.
+*/
 CObjFactory::CObjFactory(
     const QString& i_strGroupName,
-    const QString& i_strGraphObjNameSpace,
-    const QString& i_strGraphObjClassName,
     int            i_iGraphObjType,
     const QString& i_strGraphObjType,
-    bool           i_bAddToToolBoxIdxTree,
     const QIcon&   i_toolIcon ) :
 //------------------------------------------------------------------------------
-    CIdxTreeEntry(EIdxTreeEntryType::Leave, i_strGroupName),
+    CIdxTreeEntry(EIdxTreeEntryType::Leave, i_strGraphObjType),
     m_strGroupName(i_strGroupName),
-    m_strGraphObjNameSpace(i_strGraphObjNameSpace),
-    m_strGraphObjClassName(i_strGraphObjClassName),
     m_iGraphObjType(i_iGraphObjType),
-    m_strGraphObjType(i_strGraphObjType),
     m_toolIcon(i_toolIcon),
-    m_iIdxTreeIdAllFactories(-1),
-    m_iIdxTreeIdToolBoxFactories(-1),
     m_strFileName(),
     m_pTrcAdminObj(nullptr)
 {
     s_iInstCount++;
 
-    if( s_pIdxTreeAllFactories == nullptr )
+    if( s_pIdxTree == nullptr )
     {
-        s_pIdxTreeAllFactories = new CIdxTree(
-            /* strObjName       */ "All Object Factories",
+        s_pIdxTree = new CIdxTree(
+            /* strObjName       */ "Graphical Object Factories",
             /* pRootTreeEntry   */ nullptr,
             /* strNodeSeparator */ "::" );
     }
 
-    if( s_pIdxTreeToolBoxFactories == nullptr )
-    {
-        s_pIdxTreeToolBoxFactories = new CIdxTree(
-            /* strObjName       */ "Tool Box",
-            /* pRootTreeEntry   */ nullptr,
-            /* strNodeSeparator */ "::" );
-    }
+    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace() + c_strGroupSeparater + i_strGroupName, ClassName(), m_strName);
 
-    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(m_strGraphObjNameSpace, ClassName(), m_strGraphObjType);
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    {
+        strMthInArgs = "Group: " + i_strGroupName;
+        strMthInArgs += "ObjType: " + i_strGraphObjType + "(" + QString::number(i_iGraphObjType) + ")";
+    }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "ctor",
-        /* strAddInfo   */ "" );
+        /* strAddInfo   */ strMthInArgs );
 
-    RegisterObjFactory(*this,i_bAddToToolBoxIdxTree);
+    if( FindObjFactory(m_strGroupName, m_strName) != nullptr )
+    {
+        throw ZS::System::CException(__FILE__, __LINE__, EResultObjAlreadyRegistered);
+    }
+
+    s_pIdxTree->add(this, m_strGroupName);
 
 } // default ctor
 
@@ -484,7 +231,7 @@ CObjFactory::~CObjFactory()
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
 
-    UnregisterObjFactory(*this);
+    s_pIdxTree->remove(keyInTree());
 
     s_iInstCount--;
 
@@ -492,24 +239,21 @@ CObjFactory::~CObjFactory()
     {
         try
         {
-            delete s_pIdxTreeToolBoxFactories;
+            delete s_pIdxTree;
         }
         catch(...)
         {
         }
-        s_pIdxTreeToolBoxFactories = nullptr;
-
-        try
-        {
-            delete s_pIdxTreeAllFactories;
-        }
-        catch(...)
-        {
-        }
-        s_pIdxTreeAllFactories = nullptr;
+        s_pIdxTree = nullptr;
     }
 
     CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
+
+    //m_strGroupName;
+    m_iGraphObjType = 0;
+    //m_toolIcon;
+    //m_strFileDir;
+    //m_strFileName;
     m_pTrcAdminObj = nullptr;
 
 } // dtor

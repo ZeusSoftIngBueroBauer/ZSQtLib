@@ -50,15 +50,15 @@ public: // class methods
     static QString ClassName() { return "CDlgErrLog"; }
 public: // class methods
     static CDlgErrLog* CreateInstance(
-        const QString&  i_strObjName,
         const QString&  i_strDlgTitle,
+        const QString&  i_strErrLogName = "ZSErrLog",
         QWidget*        i_pWdgtParent = nullptr,
         Qt::WindowFlags i_wFlags = Qt::WindowFlags() );
-    static CDlgErrLog* GetInstance( const QString& i_strObjName );
+    static CDlgErrLog* GetInstance( const QString& i_strDlgTitle );
 protected: // ctor
     CDlgErrLog(
-        const QString&  i_strObjName,
         const QString&  i_strDlgTitle,
+        const QString&  i_strErrLogName = "ZSErrLog",
         QWidget*        i_pWdgtParent = nullptr,
         Qt::WindowFlags i_wFlags = Qt::WindowFlags());
 public: // dtor

@@ -158,29 +158,32 @@ public: // instance methods
     int indexOf( const CIdxTreeEntry* i_pTreeEntry ) const;
     int indexOf( const QString& i_strKeyInParentBranch ) const;
     int indexOf( EIdxTreeEntryType i_entryType, const QString& i_strName ) const;
+    CIdxTreeEntry* find( const QString& i_strKeyInParentBranch ) const;
+    CIdxTreeEntry* find( EIdxTreeEntryType i_entryType, const QString& i_strName ) const;
 public: // instance methods (applying filter)
     int indexOfChildInListWithSameEntryTypes( const CIdxTreeEntry* i_pTreeEntry ) const;
-public: // instance methods
-    int add( CIdxTreeEntry* i_pTreeEntry );
-    int insert( int i_iIdx, CIdxTreeEntry* i_pTreeEntry );
-    void remove( CIdxTreeEntry* i_pTreeEntry );
-    void rename( CIdxTreeEntry* i_pTreeEntry, const QString& i_strNameNew );
-protected: // instance methods
+public: // overridables
+    virtual int add( CIdxTreeEntry* i_pTreeEntry );
+    virtual int insert( int i_iIdx, CIdxTreeEntry* i_pTreeEntry );
+    virtual void remove( CIdxTreeEntry* i_pTreeEntry );
+    virtual void rename( CIdxTreeEntry* i_pTreeEntry, const QString& i_strNameNew );
+protected: // overridables
     /*! Sets the current name of the tree entry. As changing the name also changes its key also setKeyInTree and setKeyInParentBranch must be invoked. */
-    void setName( const QString& i_strName ) { m_strName = i_strName; }
+    virtual void setName( const QString& i_strName ) { m_strName = i_strName; }
+    /*! Sets the key of the entry in the index tree. */
+    virtual void setKeyInTree( const QString& i_strKey ) { m_strKeyInTree = i_strKey; }
+    /*! Sets the index of the entry in the index trees vector of entries. */
+    virtual void setIndexInTree( int i_idx ) { m_idxInTree = i_idx; }
+protected: // overridables
+    /*! Sets the parent branch of the entry. */
+    virtual void setParentBranch( CIdxTreeEntry* i_pParent ) { m_pParentBranch = i_pParent; }
+    /*! Sets the unique key of the entry within it's parent branch. */
+    virtual void setKeyInParentBranch( const QString& i_strKey ) { m_strKeyInParentBranch = i_strKey; }
+    /*! Sets the index of the entry within it's parent branches vector of entries. */
+    virtual void setIndexInParentBranch( int i_idx ) { m_idxInParentBranch = i_idx; }
+protected: // instance methods
     /*! Sets the index tree the entry belongs to. */
     void setTree( CIdxTree* i_pTree ) { m_pTree = i_pTree; }
-    /*! Sets the key of the entry in the index tree. */
-    void setKeyInTree( const QString& i_strKey ) { m_strKeyInTree = i_strKey; }
-    /*! Sets the index of the entry in the index trees vector of entries. */
-    void setIndexInTree( int i_idx ) { m_idxInTree = i_idx; }
-protected: // instance methods
-    /*! Sets the parent branch of the entry. */
-    void setParentBranch( CIdxTreeEntry* i_pParent ) { m_pParentBranch = i_pParent; }
-    /*! Sets the unique key of the entry within it's parent branch. */
-    void setKeyInParentBranch( const QString& i_strKey ) { m_strKeyInParentBranch = i_strKey; }
-    /*! Sets the index of the entry within it's parent branches vector of entries. */
-    void setIndexInParentBranch( int i_idx ) { m_idxInParentBranch = i_idx; }
 protected: // instance members
     EIdxTreeEntryType m_entryType;               /*!< The type may be either Root, Branch or Leave.
                                                       Leave entries may not have children.

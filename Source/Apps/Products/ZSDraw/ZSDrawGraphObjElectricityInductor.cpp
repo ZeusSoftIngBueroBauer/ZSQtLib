@@ -39,13 +39,16 @@ may result in using the software modules.
 #include "ZSDrawGraphObjElectricityInductor.h"
 #include "ZSDrawWdgtFormatGraphObjsElectricityInductor.h"
 
+#include "ZSDraw/ZSDrawAux.h"
 #include "ZSDraw/ZSDrawGraphObjConnectionPoint.h"
-#include "ZSDraw/ZSDrawGraphObjPolyline.h"
 #include "ZSDraw/ZSDrawGraphObjLabel.h"
+#include "ZSDraw/ZSDrawGraphObjPolyline.h"
 #include "ZSDraw/ZSDrawGraphObjSelectionPoint.h"
 #include "ZSDraw/ZSDrawDlgFormatGraphObjs.h"
 #include "ZSDraw/ZSDrawingScene.h"
+#include "ZSDraw/ZSDrawObjFactory.h"
 #include "ZSPhysSizes/Geometry/ZSPhysSizes.h"
+#include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysErrCode.h"
 #include "ZSSys/ZSSysException.h"
 #include "ZSSys/ZSSysMath.h"
@@ -75,47 +78,10 @@ const QSize   CGraphObjInductor::c_sizInitial(42.0,10.0);
 const QString CGraphObjInductor::c_strKeyLabelInductance = "Inductance";
 
 /*==============================================================================
-public: // class methods
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-void CGraphObjInductor::ResetCtorsDtorsCounters()
-//------------------------------------------------------------------------------
-{
-    QString strAddTrcInfo;
-
-    if( s_pTrcAdminObjCtorsAndDtor != nullptr && s_pTrcAdminObjCtorsAndDtor->isActive(ETraceDetailLevelMethodCalls) )
-    {
-        strAddTrcInfo  = "CtorsCount: " + QString::number(s_iCtorsCount);
-        strAddTrcInfo += ", DtorsCount: " + QString::number(s_iDtorsCount);
-    }
-
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ s_pTrcAdminObjCtorsAndDtor,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strObjName   */ "",
-        /* strMethod    */ "ResetCtorsDtorsCounters",
-        /* strAddInfo   */ strAddTrcInfo );
-
-    if( s_iCtorsCount != s_iDtorsCount )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultInvalidMethodCall, "CtorsCount(=" + QString::number(s_iCtorsCount) + ") != DtorsCount(=" + QString::number(s_iDtorsCount) + ")" );
-    }
-
-    s_iCtorsCount = 1;
-    s_iDtorsCount = 1;
-
-} // ResetCtorsDtorsCounters
-
-/*==============================================================================
 protected: // class members
 ==============================================================================*/
 
-qint64 CGraphObjInductor::s_iCtorsCount = 1;
-qint64 CGraphObjInductor::s_iDtorsCount = 1;
-
-CTrcAdminObj* CGraphObjInductor::s_pTrcAdminObjCtorsAndDtor = nullptr;
-CTrcAdminObj* CGraphObjInductor::s_pTrcAdminObjItemChange = nullptr;
+qint64 CGraphObjInductor::s_iInstCount = 0;
 
 /*==============================================================================
 public: // ctors and dtor
@@ -125,40 +91,41 @@ public: // ctors and dtor
 CGraphObjInductor::CGraphObjInductor(
     CDrawingScene*       i_pDrawingScene,
     const CDrawSettings& i_drawSettings,
-    const QString&       i_strObjName,
-    const QString&       i_strObjId ) :
+    const QString&       i_strObjName ) :
 //------------------------------------------------------------------------------
     CGraphObjElectricity(
         /* pDrawingScene */ i_pDrawingScene,
-        /* strNameSpace  */ "ZS::Draw::Electricity",
-        /* strClassName  */ "CGraphObjInductor",
         /* strType       */ "Inductor",
-        /* strObjName    */ i_strObjName.isEmpty() ? "L" + QString::number(s_iCtorsCount) : i_strObjName,
-        /* strObjId      */ i_strObjId.isEmpty() ? "L" + QString::number(s_iCtorsCount) : i_strObjId,
+        /* strObjName    */ i_strObjName.isEmpty() ? "L" + QString::number(s_iInstCount) : i_strObjName,
         /* drawSettings  */ i_drawSettings ),
     m_pLinBody(nullptr),
     m_pCnctPt1(nullptr),
     m_pCnctPt2(nullptr),
     m_fInductance_H(1.0)
 {
-    s_iCtorsCount++;
+    s_iInstCount++;
 
     QString strAddTrcInfo;
 
-    if( s_pTrcAdminObjCtorsAndDtor == nullptr )
-    {
-        s_pTrcAdminObjCtorsAndDtor = CTrcServer::GetTraceAdminObj("ZS::Draw::Electricity", "CGraphObjInductor::CtorsAndDtor", "");
-        s_pTrcAdminObjItemChange = CTrcServer::GetTraceAdminObj("ZS::Draw", "CGraphObjInductor::ItemChange", "");
-    }
+    QString strNameSpace = NameSpace() + CObjFactory::c_strGroupSeparater + c_strFactoryGroupName;
+    m_pTrcAdminObjCtorsAndDtor = CTrcServer::GetTraceAdminObj(strNameSpace, ClassName(), "CtorsAndDtor");
+    m_pTrcAdminObjItemChange = CTrcServer::GetTraceAdminObj(strNameSpace, ClassName(), "ItemChange");
+    m_pTrcAdminObjBoundingRect = CTrcServer::GetTraceAdminObj(strNameSpace, ClassName(), "BoundingRect");
+    m_pTrcAdminObjPaint = CTrcServer::GetTraceAdminObj(strNameSpace, ClassName(), "Paint");
+    m_pTrcAdminObjSceneEvent = CTrcServer::GetTraceAdminObj(strNameSpace, ClassName(), "SceneEvent");
+    m_pTrcAdminObjSceneEventFilter = CTrcServer::GetTraceAdminObj(strNameSpace, ClassName(), "SceneEventFilter");
+    m_pTrcAdminObjHoverEvents = CTrcServer::GetTraceAdminObj(strNameSpace, ClassName(), "HoverEvents");
+    m_pTrcAdminObjMouseEvents = CTrcServer::GetTraceAdminObj(strNameSpace, ClassName(), "MouseEvents");
+    m_pTrcAdminObjKeyEvents = CTrcServer::GetTraceAdminObj(strNameSpace, ClassName(), "KeyEvents");
 
-    if( s_pTrcAdminObjCtorsAndDtor != nullptr && s_pTrcAdminObjCtorsAndDtor->isActive(ETraceDetailLevelMethodCalls) )
+    if( m_pTrcAdminObjCtorsAndDtor != nullptr && m_pTrcAdminObjCtorsAndDtor->isActive(ETraceDetailLevelMethodCalls) )
     {
     }
 
     CMethodTracer mthTracer(
-        /* pAdminObj    */ s_pTrcAdminObjCtorsAndDtor,
+        /* pAdminObj    */ m_pTrcAdminObjCtorsAndDtor,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strObjName   */ m_strObjName,
+        /* strObjName   */ m_strName,
         /* strMethod    */ "ctor",
         /* strAddInfo   */ strAddTrcInfo );
 
@@ -205,7 +172,7 @@ CGraphObjInductor::CGraphObjInductor(
 
     m_drawSettings.setPenColor(Qt::black);
     m_drawSettings.setPenWidth(1);
-    m_drawSettings.setLineStyle(ELineStyleSolidLine);
+    m_drawSettings.setLineStyle(ELineStyle::SolidLine);
 
     // Draw settings for elements
     //---------------------------
@@ -234,8 +201,7 @@ CGraphObjInductor::CGraphObjInductor(
     m_pLinBody = new CGraphObjPolyline(
         /* pDrawingScene */ m_pDrawingScene,
         /* drawSettings  */ drawSettingsLine,
-        /* strObjName    */ "CnctLine",
-        /* strObjId      */ m_strObjId + m_pDrawingScene->getGraphObjNameNodeSeparator() + "CnctLine" );
+        /* strObjName    */ "CnctLine" );
 
     m_pLinBody->setPolygon(plgBody);
     m_pDrawingScene->addItem(m_pLinBody);
@@ -249,8 +215,7 @@ CGraphObjInductor::CGraphObjInductor(
     m_pCnctPt1 = new CGraphObjConnectionPoint(
         /* pDrawingScene */ m_pDrawingScene,
         /* drawSettings  */ drawSettingsCnctPt,
-        /* strObjName    */ "CnctPt1",
-        /* strObjId      */ m_strObjId + m_pDrawingScene->getGraphObjNameNodeSeparator() + "CnctPt1" );
+        /* strObjName    */ "CnctPt1" );
 
     m_pCnctPt1->setWidth(fCnctPtWidth);
     m_pCnctPt1->setInnerCircleWidthInPx(fCnctPtWidth);
@@ -261,9 +226,9 @@ CGraphObjInductor::CGraphObjInductor(
     m_pCnctPt1->setPos( rctCnctPt1.topLeft() );
     addGraphObj(m_pCnctPt1);
 
-    alignment = SGraphObjAlignment( EAlignmentRefLeft, EAlignmentRefLeft, true, 0.0 );
+    alignment = SGraphObjAlignment( EAlignmentRef::Left, EAlignmentRef::Left, true, 0.0 );
     m_pCnctPt1->addAlignment(alignment);
-    alignment = SGraphObjAlignment( EAlignmentRefVCenter, EAlignmentRefVCenter, true, 0.0 );
+    alignment = SGraphObjAlignment( EAlignmentRef::VCenter, EAlignmentRef::VCenter, true, 0.0 );
     m_pCnctPt1->addAlignment(alignment);
 
     // Connection Point 2
@@ -272,8 +237,7 @@ CGraphObjInductor::CGraphObjInductor(
     m_pCnctPt2 = new CGraphObjConnectionPoint(
         /* pDrawingScene */ m_pDrawingScene,
         /* drawSettings  */ drawSettingsCnctPt,
-        /* strObjName    */ "CnctPt2",
-        /* strObjId      */ m_strObjId + m_pDrawingScene->getGraphObjNameNodeSeparator() + "CnctPt2" );
+        /* strObjName    */ "CnctPt2" );
 
     m_pCnctPt2->setWidth(fCnctPtWidth);
     m_pCnctPt2->setInnerCircleWidthInPx(fCnctPtWidth);
@@ -284,9 +248,9 @@ CGraphObjInductor::CGraphObjInductor(
     m_pCnctPt2->setPos( rctCnctPt2.topLeft() );
     addGraphObj(m_pCnctPt2);
 
-    alignment = SGraphObjAlignment( EAlignmentRefRight, EAlignmentRefRight, true, 0.0 );
+    alignment = SGraphObjAlignment( EAlignmentRef::Right, EAlignmentRef::Right, true, 0.0 );
     m_pCnctPt2->addAlignment(alignment);
-    alignment = SGraphObjAlignment( EAlignmentRefVCenter, EAlignmentRefVCenter, true, 0.0 );
+    alignment = SGraphObjAlignment( EAlignmentRef::VCenter, EAlignmentRef::VCenter, true, 0.0 );
     m_pCnctPt2->addAlignment(alignment);
 
     // Update group coordinates
@@ -303,9 +267,9 @@ CGraphObjInductor::CGraphObjInductor(
     if( mthTracer.isActive(ETraceDetailLevelInternalStates) )
     {
         strAddTrcInfo  = "Selected:" + bool2Str(isSelected());
-        strAddTrcInfo += ", EditMode:" + editMode2Str(m_editMode);
-        strAddTrcInfo += ", ResizeMode:" + editResizeMode2Str(m_editResizeMode);
-        strAddTrcInfo += ", SelectedPoint:" + selectionPoint2Str(m_selPtSelectedBoundingRect);
+        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
+        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
+        strAddTrcInfo += ", SelectedPoint:" + m_selPtSelectedBoundingRect.toString();
         mthTracer.trace(strAddTrcInfo);
     }
 
@@ -317,12 +281,10 @@ CGraphObjInductor::~CGraphObjInductor()
 {
     m_bDtorInProgress = true;
 
-    s_iDtorsCount++;
-
     CMethodTracer mthTracer(
-        /* pAdminObj    */ s_pTrcAdminObjCtorsAndDtor,
+        /* pAdminObj    */ m_pTrcAdminObjCtorsAndDtor,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strObjName   */ m_strObjName,
+        /* strObjName   */ m_strName,
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
 
@@ -351,14 +313,6 @@ CGraphObjInductor::~CGraphObjInductor()
         }
     }
 
-    if( s_iCtorsCount == s_iDtorsCount )
-    {
-        CTrcServer::ReleaseTraceAdminObj(s_pTrcAdminObjCtorsAndDtor);
-        s_pTrcAdminObjCtorsAndDtor = nullptr;
-        CTrcServer::ReleaseTraceAdminObj(s_pTrcAdminObjItemChange);
-        s_pTrcAdminObjItemChange = nullptr;
-    }
-
     m_pLinBody = nullptr;
     m_pCnctPt1 = nullptr;
     m_pCnctPt2 = nullptr;
@@ -375,15 +329,15 @@ void CGraphObjInductor::setInductance( double i_fInductance_H )
 {
     QString strAddTrcInfo;
 
-    if( s_pTrcAdminObjItemChange != nullptr && s_pTrcAdminObjItemChange->isActive(ETraceDetailLevelMethodCalls) )
+    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->isActive(ETraceDetailLevelMethodCalls) )
     {
         strAddTrcInfo = "Inductance:" + QString::number(i_fInductance_H) + " H";
     }
 
     CMethodTracer mthTracer(
-        /* pAdminObj    */ s_pTrcAdminObjCtorsAndDtor,
+        /* pAdminObj    */ m_pTrcAdminObjCtorsAndDtor,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strObjName   */ m_strObjName,
+        /* strObjName   */ m_strName,
         /* strMethod    */ "setInductance",
         /* strAddInfo   */ strAddTrcInfo );
 
@@ -453,14 +407,14 @@ CGraphObj* CGraphObjInductor::clone()
 {
     QString strAddTrcInfo;
 
-    if( s_pTrcAdminObjCtorsAndDtor != nullptr && s_pTrcAdminObjCtorsAndDtor->isActive(ETraceDetailLevelMethodCalls) )
+    if( m_pTrcAdminObjCtorsAndDtor != nullptr && m_pTrcAdminObjCtorsAndDtor->isActive(ETraceDetailLevelMethodCalls) )
     {
     }
 
     CMethodTracer mthTracer(
-        /* pAdminObj    */ s_pTrcAdminObjCtorsAndDtor,
+        /* pAdminObj    */ m_pTrcAdminObjCtorsAndDtor,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strObjName   */ m_strObjName,
+        /* strObjName   */ m_strName,
         /* strMethod    */ "clone",
         /* strAddInfo   */ strAddTrcInfo );
 
@@ -509,14 +463,14 @@ void CGraphObjInductor::onDrawSettingsChanged()
 {
     QString strAddTrcInfo;
 
-    if( s_pTrcAdminObjItemChange != nullptr && s_pTrcAdminObjItemChange->isActive(ETraceDetailLevelMethodCalls) )
+    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->isActive(ETraceDetailLevelMethodCalls) )
     {
     }
 
     CMethodTracer mthTracer(
-        /* pAdminObj    */ s_pTrcAdminObjItemChange,
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strObjName   */ m_strObjName,
+        /* strObjName   */ m_strName,
         /* strMethod    */ "onDrawSettingsChanged",
         /* strAddInfo   */ strAddTrcInfo );
 
@@ -556,8 +510,8 @@ void CGraphObjInductor::updateToolTip()
         QString strNodeSeparator = m_pDrawingScene->getGraphObjNameNodeSeparator();
         QPointF ptPos;
 
-        m_strToolTip  = "ObjName:\t" + getObjName(true,strNodeSeparator);
-        m_strToolTip += "\nObjId:\t\t" + getObjId();
+        m_strToolTip  = "ObjName:\t" + name();
+        m_strToolTip += "\nObjId:\t\t" + keyInTree();
 
         m_strToolTip += "Inductance:\t" + QString::number(m_fInductance_H) + " H";
 

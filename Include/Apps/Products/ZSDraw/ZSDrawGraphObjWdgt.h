@@ -41,11 +41,6 @@ class QCheckBox;
 
 namespace ZS
 {
-namespace Trace
-{
-class CTrcAdminObj;
-}
-
 namespace Draw
 {
 class CDrawSettings;
@@ -57,17 +52,28 @@ namespace QtWidgets
 class CGraphObjWdgt : public CGraphObj, public QGraphicsProxyWidget
 //******************************************************************************
 {
+public: // class methods
+    /*! Returns the namespace the class belongs to. */
+    static QString NameSpace() { return "ZS::Draw::QtWidgets"; } // Please note that the static class functions name must be different from the non static virtual member function "nameSpace"
+    /*! Returns the class name. */
+    static QString ClassName() { return "CGraphObjWdgt"; } // Please note that the static class functions name must be different from the non static virtual member function "className"
+public: // class members
+    /*! Group name of the factories to create the standard shapes (Line, Point, Rect, etc).
+        The group name together with the type as string of the graphical objects must be unique
+        and is used to add the object factory to the index tree of all registered factories.
+        Defined here as there is no base class for the widget factories. */
+    static const QString c_strFactoryGroupName; // = "Widgets"
 protected: // ctor
     CGraphObjWdgt(
         CDrawingScene*       i_pDrawingScene,
-        const QString&       i_strNameSpace,
-        const QString&       i_strClassName,
         const QString&       i_strType,
         const QString&       i_strObjName,
-        const QString&       i_strObjId,
         const CDrawSettings& i_drawSettings );
 public: // dtor
     virtual ~CGraphObjWdgt();
+public: // overridables
+    virtual QString nameSpace() { return NameSpace(); }
+    virtual QString className() { return ClassName(); }
 public: // overridables of base class QGraphicsItem
     virtual int type() const { return EGraphObjTypeUserDefined; }
 public: // must overridables of base class CGraphObj

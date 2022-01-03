@@ -39,6 +39,7 @@ may result in using the software modules.
 #include "ZSDrawGraphObjElectricityTransistor.h"
 #include "ZSDrawWdgtFormatGraphObjsElectricityTransistor.h"
 
+#include "ZSDraw/ZSDrawAux.h"
 #include "ZSDraw/ZSDrawGraphObjConnectionPoint.h"
 #include "ZSDraw/ZSDrawGraphObjEllipse.h"
 #include "ZSDraw/ZSDrawGraphObjLine.h"
@@ -46,7 +47,9 @@ may result in using the software modules.
 #include "ZSDraw/ZSDrawGraphObjSelectionPoint.h"
 #include "ZSDraw/ZSDrawDlgFormatGraphObjs.h"
 #include "ZSDraw/ZSDrawingScene.h"
+#include "ZSDraw/ZSDrawObjFactory.h"
 #include "ZSPhysSizes/Geometry/ZSPhysSizes.h"
+#include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysEnumEntry.h"
 #include "ZSSys/ZSSysErrCode.h"
 #include "ZSSys/ZSSysException.h"
@@ -109,47 +112,10 @@ CGraphObjTransistor::EDopingType CGraphObjTransistor::Str2DopingType( const QStr
 } // str2type
 
 /*==============================================================================
-public: // class methods
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-void CGraphObjTransistor::ResetCtorsDtorsCounters()
-//------------------------------------------------------------------------------
-{
-    QString strAddTrcInfo;
-
-    if( s_pTrcAdminObjCtorsAndDtor != nullptr && s_pTrcAdminObjCtorsAndDtor->isActive(ETraceDetailLevelMethodCalls) )
-    {
-        strAddTrcInfo  = "CtorsCount: " + QString::number(s_iCtorsCount);
-        strAddTrcInfo += ", DtorsCount: " + QString::number(s_iDtorsCount);
-    }
-
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ s_pTrcAdminObjCtorsAndDtor,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strObjName   */ "",
-        /* strMethod    */ "ResetCtorsDtorsCounters",
-        /* strAddInfo   */ strAddTrcInfo );
-
-    if( s_iCtorsCount != s_iDtorsCount )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultInvalidMethodCall, "CtorsCount(=" + QString::number(s_iCtorsCount) + ") != DtorsCount(=" + QString::number(s_iDtorsCount) + ")" );
-    }
-
-    s_iCtorsCount = 1;
-    s_iDtorsCount = 1;
-
-} // ResetCtorsDtorsCounters
-
-/*==============================================================================
 protected: // class members
 ==============================================================================*/
 
-qint64 CGraphObjTransistor::s_iCtorsCount = 1;
-qint64 CGraphObjTransistor::s_iDtorsCount = 1;
-
-CTrcAdminObj* CGraphObjTransistor::s_pTrcAdminObjCtorsAndDtor = nullptr;
-CTrcAdminObj* CGraphObjTransistor::s_pTrcAdminObjItemChange = nullptr;
+qint64 CGraphObjTransistor::s_iInstCount = 0;
 
 /*==============================================================================
 public: // ctors and dtor
@@ -160,16 +126,12 @@ CGraphObjTransistor::CGraphObjTransistor(
     CDrawingScene*       i_pDrawingScene,
     const CDrawSettings& i_drawSettings,
     EDopingType          i_dopingType,
-    const QString&       i_strObjName,
-    const QString&       i_strObjId ) :
+    const QString&       i_strObjName ) :
 //------------------------------------------------------------------------------
     CGraphObjElectricity(
         /* pDrawingScene */ i_pDrawingScene,
-        /* strNameSpace  */ "ZS::Draw::Electricity",
-        /* strClassName  */ "CGraphObjTransistor",
         /* strType       */ "Transistor",
-        /* strObjName    */ i_strObjName.isEmpty() ? "T" + QString::number(s_iCtorsCount) : i_strObjName,
-        /* strObjId      */ i_strObjId.isEmpty() ? "T" + QString::number(s_iCtorsCount) : i_strObjId,
+        /* strObjName    */ i_strObjName.isEmpty() ? "T" + QString::number(s_iInstCount) : i_strObjName,
         /* drawSettings  */ i_drawSettings ),
     m_pEllBody(nullptr),
     m_pLinBase(nullptr),
@@ -183,24 +145,29 @@ CGraphObjTransistor::CGraphObjTransistor(
     m_pCnctPt3(nullptr),
     m_dopingType(i_dopingType)
 {
-    s_iCtorsCount++;
+    s_iInstCount++;
 
     QString strAddTrcInfo;
 
-    if( s_pTrcAdminObjCtorsAndDtor == nullptr )
-    {
-        s_pTrcAdminObjCtorsAndDtor = CTrcServer::GetTraceAdminObj("ZS::Draw::Electricity", "CGraphObjTransistor::CtorsAndDtor", "");
-        s_pTrcAdminObjItemChange = CTrcServer::GetTraceAdminObj("ZS::Draw", "CGraphObjTransistor::ItemChange", "");
-    }
+    QString strNameSpace = NameSpace() + CObjFactory::c_strGroupSeparater + c_strFactoryGroupName;
+    m_pTrcAdminObjCtorsAndDtor = CTrcServer::GetTraceAdminObj(strNameSpace, ClassName(), "CtorsAndDtor");
+    m_pTrcAdminObjItemChange = CTrcServer::GetTraceAdminObj(strNameSpace, ClassName(), "ItemChange");
+    m_pTrcAdminObjBoundingRect = CTrcServer::GetTraceAdminObj(strNameSpace, ClassName(), "BoundingRect");
+    m_pTrcAdminObjPaint = CTrcServer::GetTraceAdminObj(strNameSpace, ClassName(), "Paint");
+    m_pTrcAdminObjSceneEvent = CTrcServer::GetTraceAdminObj(strNameSpace, ClassName(), "SceneEvent");
+    m_pTrcAdminObjSceneEventFilter = CTrcServer::GetTraceAdminObj(strNameSpace, ClassName(), "SceneEventFilter");
+    m_pTrcAdminObjHoverEvents = CTrcServer::GetTraceAdminObj(strNameSpace, ClassName(), "HoverEvents");
+    m_pTrcAdminObjMouseEvents = CTrcServer::GetTraceAdminObj(strNameSpace, ClassName(), "MouseEvents");
+    m_pTrcAdminObjKeyEvents = CTrcServer::GetTraceAdminObj(strNameSpace, ClassName(), "KeyEvents");
 
-    if( s_pTrcAdminObjCtorsAndDtor != nullptr && s_pTrcAdminObjCtorsAndDtor->isActive(ETraceDetailLevelMethodCalls) )
+    if( m_pTrcAdminObjCtorsAndDtor != nullptr && m_pTrcAdminObjCtorsAndDtor->isActive(ETraceDetailLevelMethodCalls) )
     {
     }
 
     CMethodTracer mthTracer(
-        /* pAdminObj    */ s_pTrcAdminObjCtorsAndDtor,
+        /* pAdminObj    */ m_pTrcAdminObjCtorsAndDtor,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strObjName   */ m_strObjName,
+        /* strObjName   */ m_strName,
         /* strMethod    */ "ctor",
         /* strAddInfo   */ strAddTrcInfo );
 
@@ -258,16 +225,16 @@ CGraphObjTransistor::CGraphObjTransistor(
 
     m_drawSettings.setPenColor(Qt::black);
     m_drawSettings.setPenWidth(1);
-    m_drawSettings.setLineStyle(ELineStyleSolidLine);
+    m_drawSettings.setLineStyle(ELineStyle::SolidLine);
     m_drawSettings.setFillColor(Qt::white);
-    m_drawSettings.setFillStyle(EFillStyleSolidPattern);
+    m_drawSettings.setFillStyle(EFillStyle::SolidPattern);
 
     // Draw settings for elements
     //---------------------------
 
     CDrawSettings drawSettingsBody(EGraphObjTypeRect);
 
-    drawSettingsBody.setFillStyle(EFillStyleSolidPattern);
+    drawSettingsBody.setFillStyle(EFillStyle::SolidPattern);
 
     CDrawSettings drawSettingsLine(EGraphObjTypeLine);
 
@@ -283,11 +250,11 @@ CGraphObjTransistor::CGraphObjTransistor(
 
     if( m_dopingType == EDopingTypePNP )
     {
-        drawSettingsLineBaseUp.setLineEndStyle(ELinePointEnd,ELineEndStyleArrowHead);
-        drawSettingsLineBaseUp.setLineEndBaseLineType(ELinePointEnd,ELineEndBaseLineTypeNormal);
-        drawSettingsLineBaseUp.setLineEndFillStyle(ELinePointEnd,ELineEndFillStyleSolidPattern);
-        drawSettingsLineBaseUp.setLineEndWidth(ELinePointEnd,ELineEndWidthThin);
-        drawSettingsLineBaseUp.setLineEndLength(ELinePointEnd,ELineEndLengthShort);
+        drawSettingsLineBaseUp.setLineEndStyle(ELinePoint::End,ELineEndStyle::ArrowHead);
+        drawSettingsLineBaseUp.setLineEndBaseLineType(ELinePoint::End,ELineEndBaseLineType::Normal);
+        drawSettingsLineBaseUp.setLineEndFillStyle(ELinePoint::End,ELineEndFillStyle::SolidPattern);
+        drawSettingsLineBaseUp.setLineEndWidth(ELinePoint::End,ELineEndWidth::Thin);
+        drawSettingsLineBaseUp.setLineEndLength(ELinePoint::End,ELineEndLength::Short);
     }
 
     CDrawSettings drawSettingsLineBaseDn = drawSettingsLine;
@@ -299,11 +266,11 @@ CGraphObjTransistor::CGraphObjTransistor(
 
     if( m_dopingType == EDopingTypeNPN )
     {
-        drawSettingsLineBaseDn.setLineEndStyle(ELinePointEnd,ELineEndStyleArrowHead);
-        drawSettingsLineBaseDn.setLineEndBaseLineType(ELinePointEnd,ELineEndBaseLineTypeNormal);
-        drawSettingsLineBaseDn.setLineEndFillStyle(ELinePointEnd,ELineEndFillStyleSolidPattern);
-        drawSettingsLineBaseDn.setLineEndWidth(ELinePointEnd,ELineEndWidthThin);
-        drawSettingsLineBaseDn.setLineEndLength(ELinePointEnd,ELineEndLengthShort);
+        drawSettingsLineBaseDn.setLineEndStyle(ELinePoint::End,ELineEndStyle::ArrowHead);
+        drawSettingsLineBaseDn.setLineEndBaseLineType(ELinePoint::End,ELineEndBaseLineType::Normal);
+        drawSettingsLineBaseDn.setLineEndFillStyle(ELinePoint::End,ELineEndFillStyle::SolidPattern);
+        drawSettingsLineBaseDn.setLineEndWidth(ELinePoint::End,ELineEndWidth::Thin);
+        drawSettingsLineBaseDn.setLineEndLength(ELinePoint::End,ELineEndLength::Short);
     }
 
     CDrawSettings drawSettingsCnctPt(EGraphObjTypeConnectionPoint);
@@ -314,8 +281,7 @@ CGraphObjTransistor::CGraphObjTransistor(
     m_pEllBody = new CGraphObjEllipse(
         /* pDrawingScene */ m_pDrawingScene,
         /* drawSettings  */ drawSettingsBody,
-        /* strObjName    */ "Body",
-        /* strObjId      */ m_strObjId + m_pDrawingScene->getGraphObjNameNodeSeparator() + "Body" );
+        /* strObjName    */ "Body" );
 
     m_pEllBody->setRect( 0.0, 0.0, rctBody.width(), rctBody.height() );
     m_pDrawingScene->addItem(m_pEllBody);
@@ -332,8 +298,7 @@ CGraphObjTransistor::CGraphObjTransistor(
     m_pLinBase = new CGraphObjLine(
         /* pDrawingScene */ m_pDrawingScene,
         /* drawSettings  */ drawSettingsLine,
-        /* strObjName    */ "BaseLine",
-        /* strObjId      */ m_strObjId + m_pDrawingScene->getGraphObjNameNodeSeparator() + "BaseLine" );
+        /* strObjName    */ "BaseLine" );
 
     m_pLinBase->setLine(linBaseCenter);
     m_pDrawingScene->addItem(m_pLinBase);
@@ -351,8 +316,7 @@ CGraphObjTransistor::CGraphObjTransistor(
     m_pLinBaseUp = new CGraphObjLine(
         /* pDrawingScene */ m_pDrawingScene,
         /* drawSettings  */ drawSettingsLineBaseUp,
-        /* strObjName    */ "BaseLineUp",
-        /* strObjId      */ m_strObjId + m_pDrawingScene->getGraphObjNameNodeSeparator() + "BaseLineUp" );
+        /* strObjName    */ "BaseLineUp" );
 
     m_pLinBaseUp->setLine(linBaseUp);
     m_pDrawingScene->addItem(m_pLinBaseUp);
@@ -360,13 +324,13 @@ CGraphObjTransistor::CGraphObjTransistor(
     m_pLinBaseUp->setPos(ptLinBaseUpStart);
     addGraphObj(m_pLinBaseUp);
 
-    alignment = SGraphObjAlignment( EAlignmentRefLeft, EAlignmentRefLeft, false, ptLinBaseUpStart.x()/rctBounding.width() );
+    alignment = SGraphObjAlignment( EAlignmentRef::Left, EAlignmentRef::Left, false, ptLinBaseUpStart.x()/rctBounding.width() );
     m_pLinBaseUp->addAlignment(alignment);
-    alignment = SGraphObjAlignment( EAlignmentRefRight, EAlignmentRefLeft, false, ptLinBaseUpEnd.x()/rctBounding.width() );
+    alignment = SGraphObjAlignment( EAlignmentRef::Right, EAlignmentRef::Left, false, ptLinBaseUpEnd.x()/rctBounding.width() );
     m_pLinBaseUp->addAlignment(alignment);
-    alignment = SGraphObjAlignment( EAlignmentRefBottom, EAlignmentRefVCenter, false, (ptLinBaseUpStart.y()-rctBounding.center().y())/rctBounding.height() );
+    alignment = SGraphObjAlignment( EAlignmentRef::Bottom, EAlignmentRef::VCenter, false, (ptLinBaseUpStart.y()-rctBounding.center().y())/rctBounding.height() );
     m_pLinBaseUp->addAlignment(alignment);
-    alignment = SGraphObjAlignment( EAlignmentRefTop, EAlignmentRefTop, false, ptLinBaseUpEnd.y()/rctBounding.height() );
+    alignment = SGraphObjAlignment( EAlignmentRef::Top, EAlignmentRef::Top, false, ptLinBaseUpEnd.y()/rctBounding.height() );
     m_pLinBaseUp->addAlignment(alignment);
 
     // Line from center of base line downwards
@@ -379,23 +343,21 @@ CGraphObjTransistor::CGraphObjTransistor(
     m_pLinBaseDn = new CGraphObjLine(
         /* pDrawingScene */ m_pDrawingScene,
         /* drawSettings  */ drawSettingsLineBaseDn,
-        /* strObjName    */ "BaseLineDn",
-        /* strObjId      */ m_strObjId + m_pDrawingScene->getGraphObjNameNodeSeparator() + "BaseLineDn" );
+        /* strObjName    */ "BaseLineDn" );
 
-    m_pLinBaseDn->setObjName("BaseLineDn");
     m_pLinBaseDn->setLine(linBaseDn);
     m_pDrawingScene->addItem(m_pLinBaseDn);
     m_pDrawingScene->onGraphObjCreated(m_pLinBaseDn);
     m_pLinBaseDn->setPos(ptLinBaseDnStart);
     addGraphObj(m_pLinBaseDn);
 
-    alignment = SGraphObjAlignment( EAlignmentRefLeft, EAlignmentRefLeft, false, ptLinBaseDnStart.x()/rctBounding.width() );
+    alignment = SGraphObjAlignment( EAlignmentRef::Left, EAlignmentRef::Left, false, ptLinBaseDnStart.x()/rctBounding.width() );
     m_pLinBaseDn->addAlignment(alignment);
-    alignment = SGraphObjAlignment( EAlignmentRefRight, EAlignmentRefLeft, false, ptLinBaseDnEnd.x()/rctBounding.width() );
+    alignment = SGraphObjAlignment( EAlignmentRef::Right, EAlignmentRef::Left, false, ptLinBaseDnEnd.x()/rctBounding.width() );
     m_pLinBaseDn->addAlignment(alignment);
-    alignment = SGraphObjAlignment( EAlignmentRefTop, EAlignmentRefVCenter, false, (ptLinBaseDnStart.y()-rctBounding.center().y())/rctBounding.height() );
+    alignment = SGraphObjAlignment( EAlignmentRef::Top, EAlignmentRef::VCenter, false, (ptLinBaseDnStart.y()-rctBounding.center().y())/rctBounding.height() );
     m_pLinBaseDn->addAlignment(alignment);
-    alignment = SGraphObjAlignment( EAlignmentRefBottom, EAlignmentRefBottom, false, (ptLinBaseDnEnd.y()-rctBounding.height())/rctBounding.height() );
+    alignment = SGraphObjAlignment( EAlignmentRef::Bottom, EAlignmentRef::Bottom, false, (ptLinBaseDnEnd.y()-rctBounding.height())/rctBounding.height() );
     m_pLinBaseDn->addAlignment(alignment);
 
     // Line from CnctPt1 to base line
@@ -404,8 +366,7 @@ CGraphObjTransistor::CGraphObjTransistor(
     m_pLinCnctPt1 = new CGraphObjLine(
         /* pDrawingScene */ m_pDrawingScene,
         /* drawSettings  */ drawSettingsLine,
-        /* strObjName    */ "CnctLine1",
-        /* strObjId      */ m_strObjId + m_pDrawingScene->getGraphObjNameNodeSeparator() + "CnctLine1" );
+        /* strObjName    */ "CnctLine1" );
 
     m_pLinCnctPt1->setLine( QLineF( QPointF(0.0,0.0), QPointF(ptLinBaseCenter.x()-rctCnctPt1.left(),ptLinBaseCenter.y()-rctCnctPt1.center().y()) ) );
     m_pDrawingScene->addItem(m_pLinCnctPt1);
@@ -419,8 +380,7 @@ CGraphObjTransistor::CGraphObjTransistor(
     m_pLinCnctPt2 = new CGraphObjLine(
         /* pDrawingScene */ m_pDrawingScene,
         /* drawSettings  */ drawSettingsLine,
-        /* strObjName    */ "CnctLine2",
-        /* strObjId      */ m_strObjId + m_pDrawingScene->getGraphObjNameNodeSeparator() + "CnctLine2" );
+        /* strObjName    */ "CnctLine2" );
 
     m_pLinCnctPt2->setLine( QLineF( QPointF(0.0,0.0), QPointF(rctCnctPt2.center().x()-ptLinBaseUpEnd.x(),rctCnctPt2.bottom()-ptLinBaseUpEnd.y()) ) );
     m_pDrawingScene->addItem(m_pLinCnctPt2);
@@ -428,11 +388,11 @@ CGraphObjTransistor::CGraphObjTransistor(
     m_pLinCnctPt2->setPos(ptLinBaseUpEnd);
     addGraphObj(m_pLinCnctPt2);
 
-    alignment = SGraphObjAlignment( EAlignmentRefLeft, EAlignmentRefLeft, false, rctCnctPt2.center().x()/rctBounding.width() );
+    alignment = SGraphObjAlignment( EAlignmentRef::Left, EAlignmentRef::Left, false, rctCnctPt2.center().x()/rctBounding.width() );
     m_pLinCnctPt2->addAlignment(alignment);
-    alignment = SGraphObjAlignment( EAlignmentRefTop, EAlignmentRefTop, true, 0.0 );
+    alignment = SGraphObjAlignment( EAlignmentRef::Top, EAlignmentRef::Top, true, 0.0 );
     m_pLinCnctPt2->addAlignment(alignment);
-    alignment = SGraphObjAlignment( EAlignmentRefBottom, EAlignmentRefTop, false, ptLinBaseUpEnd.y()/rctBounding.height() );
+    alignment = SGraphObjAlignment( EAlignmentRef::Bottom, EAlignmentRef::Top, false, ptLinBaseUpEnd.y()/rctBounding.height() );
     m_pLinCnctPt2->addAlignment(alignment);
 
     // Line from end of line Down to CnctPt3
@@ -441,8 +401,7 @@ CGraphObjTransistor::CGraphObjTransistor(
     m_pLinCnctPt3 = new CGraphObjLine(
         /* pDrawingScene */ m_pDrawingScene,
         /* drawSettings  */ drawSettingsLine,
-        /* strObjName    */ "CnctLine3",
-        /* strObjId      */ m_strObjId + m_pDrawingScene->getGraphObjNameNodeSeparator() + "CnctLine3" );
+        /* strObjName    */ "CnctLine3" );
 
     m_pLinCnctPt3->setLine( QLineF( QPointF(0.0,0.0), QPointF(rctCnctPt3.center().x()-ptLinBaseDnEnd.x(),rctCnctPt3.top()-ptLinBaseDnEnd.y()) ) );
     m_pDrawingScene->addItem(m_pLinCnctPt3);
@@ -450,11 +409,11 @@ CGraphObjTransistor::CGraphObjTransistor(
     m_pLinCnctPt3->setPos(ptLinBaseDnEnd);
     addGraphObj(m_pLinCnctPt3);
 
-    alignment = SGraphObjAlignment( EAlignmentRefLeft, EAlignmentRefLeft, false, rctCnctPt3.center().x()/rctBounding.width() );
+    alignment = SGraphObjAlignment( EAlignmentRef::Left, EAlignmentRef::Left, false, rctCnctPt3.center().x()/rctBounding.width() );
     m_pLinCnctPt3->addAlignment(alignment);
-    alignment = SGraphObjAlignment( EAlignmentRefTop, EAlignmentRefBottom, false, (ptLinBaseDnEnd.y()-rctBounding.height())/rctBounding.height() );
+    alignment = SGraphObjAlignment( EAlignmentRef::Top, EAlignmentRef::Bottom, false, (ptLinBaseDnEnd.y()-rctBounding.height())/rctBounding.height() );
     m_pLinCnctPt3->addAlignment(alignment);
-    alignment = SGraphObjAlignment( EAlignmentRefBottom, EAlignmentRefBottom, true, 0.0 );
+    alignment = SGraphObjAlignment( EAlignmentRef::Bottom, EAlignmentRef::Bottom, true, 0.0 );
     m_pLinCnctPt3->addAlignment(alignment);
 
     // Connection Point 1
@@ -463,8 +422,7 @@ CGraphObjTransistor::CGraphObjTransistor(
     m_pCnctPt1 = new CGraphObjConnectionPoint(
         /* pDrawingScene */ m_pDrawingScene,
         /* drawSettings  */ drawSettingsCnctPt,
-        /* strObjName    */ "CnctPt1",
-        /* strObjId      */ m_strObjId + m_pDrawingScene->getGraphObjNameNodeSeparator() + "CnctPt1" );
+        /* strObjName    */ "CnctPt1" );
 
     m_pCnctPt1->setWidth(fCnctPtWidth);
     m_pCnctPt1->setInnerCircleWidthInPx(fCnctPtWidth);
@@ -475,9 +433,9 @@ CGraphObjTransistor::CGraphObjTransistor(
     m_pCnctPt1->setPos( rctCnctPt1.topLeft() );
     addGraphObj(m_pCnctPt1);
 
-    alignment = SGraphObjAlignment( EAlignmentRefLeft, EAlignmentRefLeft, true, 0.0 );
+    alignment = SGraphObjAlignment( EAlignmentRef::Left, EAlignmentRef::Left, true, 0.0 );
     m_pCnctPt1->addAlignment(alignment);
-    alignment = SGraphObjAlignment( EAlignmentRefVCenter, EAlignmentRefVCenter, true, 0.0 );
+    alignment = SGraphObjAlignment( EAlignmentRef::VCenter, EAlignmentRef::VCenter, true, 0.0 );
     m_pCnctPt1->addAlignment(alignment);
 
     // Connection Point 2
@@ -486,8 +444,7 @@ CGraphObjTransistor::CGraphObjTransistor(
     m_pCnctPt2 = new CGraphObjConnectionPoint(
         /* pDrawingScene */ m_pDrawingScene,
         /* drawSettings  */ drawSettingsCnctPt,
-        /* strObjName    */ "CnctPt2",
-        /* strObjId      */ m_strObjId + m_pDrawingScene->getGraphObjNameNodeSeparator() + "CnctPt2" );
+        /* strObjName    */ "CnctPt2" );
 
     m_pCnctPt2->setWidth(fCnctPtWidth);
     m_pCnctPt2->setInnerCircleWidthInPx(fCnctPtWidth);
@@ -498,9 +455,9 @@ CGraphObjTransistor::CGraphObjTransistor(
     addGraphObj(m_pCnctPt2);
 
     m_pCnctPt2->setPos( rctCnctPt2.topLeft() );
-    alignment = SGraphObjAlignment( EAlignmentRefHCenter, EAlignmentRefLeft, false, rctCnctPt2.center().x()/rctBounding.width() );
+    alignment = SGraphObjAlignment( EAlignmentRef::HCenter, EAlignmentRef::Left, false, rctCnctPt2.center().x()/rctBounding.width() );
     m_pCnctPt2->addAlignment(alignment);
-    alignment = SGraphObjAlignment( EAlignmentRefTop, EAlignmentRefTop, true, 0.0 );
+    alignment = SGraphObjAlignment( EAlignmentRef::Top, EAlignmentRef::Top, true, 0.0 );
     m_pCnctPt2->addAlignment(alignment);
 
     // Connection Point 3
@@ -509,8 +466,7 @@ CGraphObjTransistor::CGraphObjTransistor(
     m_pCnctPt3 = new CGraphObjConnectionPoint(
         /* pDrawingScene */ m_pDrawingScene,
         /* drawSettings  */ drawSettingsCnctPt,
-        /* strObjName    */ "CnctPt3",
-        /* strObjId      */ m_strObjId + m_pDrawingScene->getGraphObjNameNodeSeparator() + "CnctPt3" );
+        /* strObjName    */ "CnctPt3" );
 
     m_pCnctPt3->setWidth(fCnctPtWidth);
     m_pCnctPt3->setInnerCircleWidthInPx(fCnctPtWidth);
@@ -521,9 +477,9 @@ CGraphObjTransistor::CGraphObjTransistor(
     m_pCnctPt3->setPos( rctCnctPt3.topLeft() );
     addGraphObj(m_pCnctPt3);
 
-    alignment = SGraphObjAlignment( EAlignmentRefHCenter, EAlignmentRefLeft, false, rctCnctPt3.center().x()/rctBounding.width() );
+    alignment = SGraphObjAlignment( EAlignmentRef::HCenter, EAlignmentRef::Left, false, rctCnctPt3.center().x()/rctBounding.width() );
     m_pCnctPt3->addAlignment(alignment);
-    alignment = SGraphObjAlignment( EAlignmentRefBottom, EAlignmentRefBottom, true, 0.0 );
+    alignment = SGraphObjAlignment( EAlignmentRef::Bottom, EAlignmentRef::Bottom, true, 0.0 );
     m_pCnctPt3->addAlignment(alignment);
 
     // Update group coordinates
@@ -540,9 +496,9 @@ CGraphObjTransistor::CGraphObjTransistor(
     if( mthTracer.isActive(ETraceDetailLevelInternalStates) )
     {
         strAddTrcInfo  = "Selected:" + bool2Str(isSelected());
-        strAddTrcInfo += ", EditMode:" + editMode2Str(m_editMode);
-        strAddTrcInfo += ", ResizeMode:" + editResizeMode2Str(m_editResizeMode);
-        strAddTrcInfo += ", SelectedPoint:" + selectionPoint2Str(m_selPtSelectedBoundingRect);
+        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
+        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
+        strAddTrcInfo += ", SelectedPoint:" + m_selPtSelectedBoundingRect.toString();
         mthTracer.trace(strAddTrcInfo);
     }
 
@@ -554,12 +510,10 @@ CGraphObjTransistor::~CGraphObjTransistor()
 {
     m_bDtorInProgress = true;
 
-    s_iDtorsCount++;
-
     CMethodTracer mthTracer(
-        /* pAdminObj    */ s_pTrcAdminObjCtorsAndDtor,
+        /* pAdminObj    */ m_pTrcAdminObjCtorsAndDtor,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strObjName   */ m_strObjName,
+        /* strObjName   */ m_strName,
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
 
@@ -588,14 +542,6 @@ CGraphObjTransistor::~CGraphObjTransistor()
         }
     }
 
-    if( s_iCtorsCount == s_iDtorsCount )
-    {
-        CTrcServer::ReleaseTraceAdminObj(s_pTrcAdminObjCtorsAndDtor);
-        s_pTrcAdminObjCtorsAndDtor = nullptr;
-        CTrcServer::ReleaseTraceAdminObj(s_pTrcAdminObjItemChange);
-        s_pTrcAdminObjItemChange = nullptr;
-    }
-
     m_pEllBody = nullptr;
     m_pLinBase = nullptr;
     m_pLinBaseUp = nullptr;
@@ -619,15 +565,15 @@ void CGraphObjTransistor::setDopingType( EDopingType i_type )
 {
     QString strAddTrcInfo;
 
-    if( s_pTrcAdminObjItemChange != nullptr && s_pTrcAdminObjItemChange->isActive(ETraceDetailLevelMethodCalls) )
+    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->isActive(ETraceDetailLevelMethodCalls) )
     {
         strAddTrcInfo = "Type:" + DopingType2Str(i_type);
     }
 
     CMethodTracer mthTracer(
-        /* pAdminObj    */ s_pTrcAdminObjItemChange,
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strObjName   */ m_strObjName,
+        /* strObjName   */ m_strName,
         /* strMethod    */ "setDopingType",
         /* strAddInfo   */ strAddTrcInfo );
 
@@ -640,24 +586,24 @@ void CGraphObjTransistor::setDopingType( EDopingType i_type )
 
         if( m_dopingType == EDopingTypeNPN )
         {
-            drawSettingsLineBaseUp.setLineEndStyle(ELinePointEnd,ELineEndStyleNormal);
+            drawSettingsLineBaseUp.setLineEndStyle(ELinePoint::End,ELineEndStyle::Normal);
 
-            drawSettingsLineBaseDn.setLineEndStyle(ELinePointEnd,ELineEndStyleArrowHead);
-            drawSettingsLineBaseDn.setLineEndBaseLineType(ELinePointEnd,ELineEndBaseLineTypeNormal);
-            drawSettingsLineBaseDn.setLineEndFillStyle(ELinePointEnd,ELineEndFillStyleSolidPattern);
-            drawSettingsLineBaseDn.setLineEndWidth(ELinePointEnd,ELineEndWidthThin);
-            drawSettingsLineBaseDn.setLineEndLength(ELinePointEnd,ELineEndLengthShort);
+            drawSettingsLineBaseDn.setLineEndStyle(ELinePoint::End,ELineEndStyle::ArrowHead);
+            drawSettingsLineBaseDn.setLineEndBaseLineType(ELinePoint::End,ELineEndBaseLineType::Normal);
+            drawSettingsLineBaseDn.setLineEndFillStyle(ELinePoint::End,ELineEndFillStyle::SolidPattern);
+            drawSettingsLineBaseDn.setLineEndWidth(ELinePoint::End,ELineEndWidth::Thin);
+            drawSettingsLineBaseDn.setLineEndLength(ELinePoint::End,ELineEndLength::Short);
         }
 
         else // if( m_dopingType == ETypePNP )
         {
-            drawSettingsLineBaseUp.setLineEndStyle(ELinePointEnd,ELineEndStyleArrowHead);
-            drawSettingsLineBaseUp.setLineEndBaseLineType(ELinePointEnd,ELineEndBaseLineTypeNormal);
-            drawSettingsLineBaseUp.setLineEndFillStyle(ELinePointEnd,ELineEndFillStyleSolidPattern);
-            drawSettingsLineBaseUp.setLineEndWidth(ELinePointEnd,ELineEndWidthThin);
-            drawSettingsLineBaseUp.setLineEndLength(ELinePointEnd,ELineEndLengthShort);
+            drawSettingsLineBaseUp.setLineEndStyle(ELinePoint::End,ELineEndStyle::ArrowHead);
+            drawSettingsLineBaseUp.setLineEndBaseLineType(ELinePoint::End,ELineEndBaseLineType::Normal);
+            drawSettingsLineBaseUp.setLineEndFillStyle(ELinePoint::End,ELineEndFillStyle::SolidPattern);
+            drawSettingsLineBaseUp.setLineEndWidth(ELinePoint::End,ELineEndWidth::Thin);
+            drawSettingsLineBaseUp.setLineEndLength(ELinePoint::End,ELineEndLength::Short);
 
-            drawSettingsLineBaseDn.setLineEndStyle(ELinePointEnd,ELineEndStyleNormal);
+            drawSettingsLineBaseDn.setLineEndStyle(ELinePoint::End,ELineEndStyle::Normal);
         }
 
         m_pLinBaseUp->setDrawSettings(drawSettingsLineBaseUp);
@@ -725,14 +671,14 @@ CGraphObj* CGraphObjTransistor::clone()
 {
     QString strAddTrcInfo;
 
-    if( s_pTrcAdminObjCtorsAndDtor != nullptr && s_pTrcAdminObjCtorsAndDtor->isActive(ETraceDetailLevelMethodCalls) )
+    if( m_pTrcAdminObjCtorsAndDtor != nullptr && m_pTrcAdminObjCtorsAndDtor->isActive(ETraceDetailLevelMethodCalls) )
     {
     }
 
     CMethodTracer mthTracer(
-        /* pAdminObj    */ s_pTrcAdminObjCtorsAndDtor,
+        /* pAdminObj    */ m_pTrcAdminObjCtorsAndDtor,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strObjName   */ m_strObjName,
+        /* strObjName   */ m_strName,
         /* strMethod    */ "clone",
         /* strAddInfo   */ strAddTrcInfo );
 
@@ -781,14 +727,14 @@ void CGraphObjTransistor::onDrawSettingsChanged()
 {
     QString strAddTrcInfo;
 
-    if( s_pTrcAdminObjItemChange != nullptr && s_pTrcAdminObjItemChange->isActive(ETraceDetailLevelMethodCalls) )
+    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->isActive(ETraceDetailLevelMethodCalls) )
     {
     }
 
     CMethodTracer mthTracer(
-        /* pAdminObj    */ s_pTrcAdminObjItemChange,
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strObjName   */ m_strObjName,
+        /* strObjName   */ m_strName,
         /* strMethod    */ "onDrawSettingsChanged",
         /* strAddInfo   */ strAddTrcInfo );
 
@@ -858,8 +804,8 @@ void CGraphObjTransistor::updateToolTip()
         QString strNodeSeparator = m_pDrawingScene->getGraphObjNameNodeSeparator();
         QPointF ptPos;
 
-        m_strToolTip  = "ObjName:\t" + getObjName(true,strNodeSeparator);
-        m_strToolTip += "\nObjId:\t\t" + getObjId();
+        m_strToolTip  = "ObjName:\t" + name();
+        m_strToolTip += "\nObjId:\t\t" + keyInTree();
 
         m_strToolTip += "DopingType:\t" + DopingType2Str(m_dopingType);
 

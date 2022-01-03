@@ -284,11 +284,11 @@ protected: // class members
     static QHash<Qt::HANDLE, QString>  s_hshThreadNames;    /*!< Hash with registered threads (key is thread id, value is name of thread). */
     static QHash<QString, Qt::HANDLE>  s_hshThreadIds;      /*!< Hash with registered threads (key name of thread, value is thread id). */
 protected: // instance members
-    CIdxTreeTrcAdminObjs*              m_pTrcAdminObjIdxTree;
-    STrcServerSettings                 m_trcSettings;
-    CTrcMthFile*                       m_pTrcMthFile;
-    int                                m_iTrcDetailLevel;
-    int                                m_iRefCount;
+    CIdxTreeTrcAdminObjs* m_pTrcAdminObjIdxTree;
+    STrcServerSettings    m_trcSettings;
+    CTrcMthFile*          m_pTrcMthFile;
+    int                   m_iTrcDetailLevel;
+    int                   m_iRefCount;
 
 }; // class CTrcServer
 

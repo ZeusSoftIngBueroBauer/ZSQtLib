@@ -59,21 +59,19 @@ public: // class methods
     static QString NameSpace() { return "ZS::Draw"; } // Please note that the static class functions name must be different from the non static virtual member function "nameSpace"
     /*! Returns the class name. */
     static QString ClassName() { return "CGraphObjText"; } // Please note that the static class functions name must be different from the non static virtual member function "className"
-public: // class methods
-    // For sub system test used. Method call only allowed if currently no
-    // graphical objects of this class are created.
-    static void ResetCtorsDtorsCounters();
 public: // ctors and dtor
     CGraphObjText(
         CDrawingScene*       i_pDrawingScene,
         const CDrawSettings& i_drawSettings,
-        const QString&       i_strObjName = "",
-        const QString&       i_strObjId = "" );
+        const QString&       i_strObjName = "" );
     virtual ~CGraphObjText();
 public: // overridables of base class QGraphicsItem
     virtual int type() const { return EGraphObjTypeText; }
 public: // must overridables of base class CGraphObj
     virtual CGraphObj* clone();
+public: // overridables
+    virtual QString nameSpace() { return NameSpace(); }
+    virtual QString className() { return ClassName(); }
 public: // replacing methods of QGraphicsTextItem
     void setHtml( const QString& i_strText );
     void setPlainText( const QString& i_strText );
@@ -116,18 +114,7 @@ protected: // overridables of base class QGraphicsItem
 protected: // overridables of base class QGraphicsItem
     virtual QVariant itemChange( GraphicsItemChange i_change, const QVariant& i_value );
 protected: // class members
-    static qint64                   s_iCtorsCount;
-    static qint64                   s_iDtorsCount;
-    static ZS::Trace::CTrcAdminObj* s_pTrcAdminObjCtorsAndDtor;
-    static ZS::Trace::CTrcAdminObj* s_pTrcAdminObjBoundingRect;
-    static ZS::Trace::CTrcAdminObj* s_pTrcAdminObjPaint;
-    static ZS::Trace::CTrcAdminObj* s_pTrcAdminObjSceneEvent;
-    static ZS::Trace::CTrcAdminObj* s_pTrcAdminObjSceneEventFilter;
-    static ZS::Trace::CTrcAdminObj* s_pTrcAdminObjHoverEvents;
-    static ZS::Trace::CTrcAdminObj* s_pTrcAdminObjMouseEvents;
-    static ZS::Trace::CTrcAdminObj* s_pTrcAdminObjKeyEvents;
-    static ZS::Trace::CTrcAdminObj* s_pTrcAdminObjItemChange;
-protected: // instance members
+    static qint64 s_iInstCount;
 
 }; // class CGraphObjText
 

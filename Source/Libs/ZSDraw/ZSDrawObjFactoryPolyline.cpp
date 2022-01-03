@@ -58,18 +58,13 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CObjFactoryPolyline::CObjFactoryPolyline(
-    bool         i_bAddToToolBoxIdxTree,
-    const QIcon& i_toolIcon ) :
+CObjFactoryPolyline::CObjFactoryPolyline( const QIcon& i_toolIcon ) :
 //------------------------------------------------------------------------------
     CObjFactory(
-        /* strGroupName         */ "Draw::Standard Shapes",
-        /* strGraphObjNameSpace */ CGraphObjPolyline::NameSpace(),
-        /* strGraphObjClassName */ CGraphObjPolyline::ClassName(),
-        /* iGraphObjType        */ EGraphObjTypePolyline,
-        /* strGraphObjType      */ ZS::Draw::graphObjType2Str(EGraphObjTypePolyline),
-        /* bAddToToolBoxIdxTree */ i_bAddToToolBoxIdxTree,
-        /* toolIcon             */ i_toolIcon )
+        /* strGroupName    */ c_strGroupNameStandardShapes,
+        /* iGraphObjType   */ EGraphObjTypePolyline,
+        /* strGraphObjType */ ZS::Draw::graphObjType2Str(EGraphObjTypePolyline),
+        /* toolIcon        */ i_toolIcon )
 {
 } // default ctor
 
@@ -131,9 +126,9 @@ SErrResultInfo CObjFactoryPolyline::saveGraphObj(
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
-        strAddTrcInfo  = "GraphObj:" + i_pGraphObj->getNameSpace();
-        strAddTrcInfo += "::" + i_pGraphObj->getClassName();
-        strAddTrcInfo += "::" + i_pGraphObj->getObjName();
+        strAddTrcInfo  = "GraphObj:" + i_pGraphObj->nameSpace();
+        strAddTrcInfo += "::" + i_pGraphObj->className();
+        strAddTrcInfo += "::" + i_pGraphObj->name();
     }
 
     CMethodTracer mthTracer(
@@ -347,8 +342,7 @@ CGraphObj* CObjFactoryPolyline::loadGraphObj(
             pGraphObj = new CGraphObjPolyline(
                 /* pDrawingScene */ i_pDrawingScene,
                 /* drawSettings  */ drawSettings,
-                /* strObjName    */ i_strObjName,
-                /* strObjId      */ i_strObjId );
+                /* strObjName    */ i_strObjName );
 
             pGraphObj->setPolygon(plg);
 
@@ -407,10 +401,3 @@ CGraphObj* CObjFactoryPolyline::loadGraphObj(
     return pGraphObj;
 
 } // loadGraphObj
-
-//------------------------------------------------------------------------------
-void CObjFactoryPolyline::ResetCtorsDtorsCounters()
-//------------------------------------------------------------------------------
-{
-    CGraphObjPolyline::ResetCtorsDtorsCounters();
-}

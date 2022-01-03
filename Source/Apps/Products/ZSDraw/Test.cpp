@@ -264,7 +264,7 @@ public: // overridables of base class Test::CTest
 //        //m_pMainWindow->setGeometry(50,50,1400,800);
 //
 //        m_pDrawingScene->clear();
-//        m_pDrawingScene->setMode( EMode::Edit, EEditToolIgnore, EEditModeIgnore, EEditResizeModeIgnore, false );
+//        m_pDrawingScene->setMode( EMode::Edit, EEditTool::Ignore, EEditModeIgnore, EEditResizeModeIgnore, false );
 //
 //        CGraphObjPoint::ResetCtorsDtorsCounters();            m_iPointsCount = 0;
 //        CGraphObjLine::ResetCtorsDtorsCounters();             m_iLinesCount = 0;

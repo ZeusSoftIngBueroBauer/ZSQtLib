@@ -294,19 +294,19 @@ static const SRotateMoveResizeOperation s_arRotateMoveResizeEllipse1TestSteps[] 
     /*  3 */ { QPoint(380,125), QPoint(450.0,125.0), QEvent::MouseMove,          EEditModeRotate, QPointF(400.0,100.0), QPointF(425.0,175.0), QPointF(425.0, 75.0), QPointF(475.0, 75.0), QPointF(475.0,175.0), false  },
     /*  4 */ { QPoint( -1, -1), QPoint(450.0,125.0), QEvent::MouseButtonRelease, EEditModeSelect, QPointF(400.0,100.0), QPointF(425.0,175.0), QPointF(425.0, 75.0), QPointF(475.0, 75.0), QPointF(475.0,175.0), false  },
     /*  5 */ { QPoint(450,125), QPoint(450.0,125.0), QEvent::MouseButtonPress,   EEditModeSelect, QPointF(400.0,100.0), QPointF(425.0,175.0), QPointF(425.0, 75.0), QPointF(475.0, 75.0), QPointF(475.0,175.0), false  },
-    /*  6 */ { QPoint(500,225), QPoint(500.0,225.0), QEvent::MouseMove,          EEditModeMove,   QPointF(450.0,200.0), QPointF(475.0,275.0), QPointF(475.0,175.0), QPointF(525.0,175.0), QPointF(525.0,275.0), false  },
+    /*  6 */ { QPoint(500,225), QPoint(500.0,225.0), QEvent::MouseMove,          EEditMode::Move,   QPointF(450.0,200.0), QPointF(475.0,275.0), QPointF(475.0,175.0), QPointF(525.0,175.0), QPointF(525.0,275.0), false  },
     /*  7 */ { QPoint( -1, -1), QPoint(500.0,225.0), QEvent::MouseButtonRelease, EEditModeSelect, QPointF(450.0,200.0), QPointF(475.0,275.0), QPointF(475.0,175.0), QPointF(525.0,175.0), QPointF(525.0,275.0), false  },
     /*  8 */ { QPoint(475,225), QPoint(500.0,225.0), QEvent::MouseButtonPress,   EEditModeSelect, QPointF(450.0,200.0), QPointF(475.0,275.0), QPointF(475.0,175.0), QPointF(525.0,175.0), QPointF(525.0,275.0), false  },
-    /*  9 */ { QPoint(485,225), QPoint(505.0,225.0), QEvent::MouseMove,          EEditModeResize, QPointF(450.0,200.0), QPointF(485.0,275.0), QPointF(485.0,175.0), QPointF(525.0,175.0), QPointF(525.0,275.0), false  },
+    /*  9 */ { QPoint(485,225), QPoint(505.0,225.0), QEvent::MouseMove,          EEditMode::Resize, QPointF(450.0,200.0), QPointF(485.0,275.0), QPointF(485.0,175.0), QPointF(525.0,175.0), QPointF(525.0,275.0), false  },
     /* 10 */ { QPoint( -1, -1), QPoint(505.0,225.0), QEvent::MouseButtonRelease, EEditModeSelect, QPointF(455.0,205.0), QPointF(485.0,275.0), QPointF(485.0,175.0), QPointF(525.0,175.0), QPointF(525.0,275.0), false  },
     /* 11 */ { QPoint(465,225), QPoint(505.0,225.0), QEvent::MouseButtonPress,   EEditModeSelect, QPointF(455.0,205.0), QPointF(485.0,275.0), QPointF(485.0,175.0), QPointF(525.0,175.0), QPointF(525.0,275.0), false  },
     /* 12 */ { QPoint(505,185), QPoint(505.0,225.0), QEvent::MouseMove,          EEditModeRotate, QPointF(455.0,205.0), QPointF(455.0,205.0), QPointF(555.0,205.0), QPointF(555.0,245.0), QPointF(455.0,245.0), false  },
     /* 13 */ { QPoint( -1, -1), QPoint(505.0,225.0), QEvent::MouseButtonRelease, EEditModeSelect, QPointF(455.0,205.0), QPointF(455.0,205.0), QPointF(555.0,205.0), QPointF(555.0,245.0), QPointF(455.0,245.0), false  },
     /* 14 */ { QPoint(505,205), QPoint(505.0,225.0), QEvent::MouseButtonPress,   EEditModeSelect, QPointF(455.0,205.0), QPointF(455.0,205.0), QPointF(555.0,205.0), QPointF(555.0,245.0), QPointF(455.0,245.0), false  },
-    /* 15 */ { QPoint(505,195), QPoint(505.0,220.0), QEvent::MouseMove,          EEditModeResize, QPointF(455.0,205.0), QPointF(455.0,195.0), QPointF(555.0,195.0), QPointF(555.0,245.0), QPointF(455.0,245.0), false  },
+    /* 15 */ { QPoint(505,195), QPoint(505.0,220.0), QEvent::MouseMove,          EEditMode::Resize, QPointF(455.0,205.0), QPointF(455.0,195.0), QPointF(555.0,195.0), QPointF(555.0,245.0), QPointF(455.0,245.0), false  },
     /* 16 */ { QPoint( -1, -1), QPoint(505.0,220.0), QEvent::MouseButtonRelease, EEditModeSelect, QPointF(455.0,195.0), QPointF(455.0,195.0), QPointF(555.0,195.0), QPointF(555.0,245.0), QPointF(455.0,245.0), false  },
     /* 17 */ { QPoint(505,220), QPoint(505.0,220.0), QEvent::MouseButtonPress,   EEditModeSelect, QPointF(455.0,195.0), QPointF(455.0,195.0), QPointF(555.0,195.0), QPointF(555.0,245.0), QPointF(455.0,245.0), false  },
-    /* 18 */ { QPoint(450, 75), QPoint(450.0,100.0), QEvent::MouseMove,          EEditModeMove,   QPointF(400.0, 50.0), QPointF(400.0, 50.0), QPointF(500.0, 50.0), QPointF(500.0,100.0), QPointF(400.0,100.0), false  },
+    /* 18 */ { QPoint(450, 75), QPoint(450.0,100.0), QEvent::MouseMove,          EEditMode::Move,   QPointF(400.0, 50.0), QPointF(400.0, 50.0), QPointF(500.0, 50.0), QPointF(500.0,100.0), QPointF(400.0,100.0), false  },
     /* 19 */ { QPoint( -1, -1), QPoint(450.0,100.0), QEvent::MouseButtonRelease, EEditModeSelect, QPointF(400.0, 50.0), QPointF(400.0, 50.0), QPointF(500.0, 50.0), QPointF(500.0,100.0), QPointF(400.0,100.0), false  }
 };
 
@@ -443,7 +443,7 @@ void CTest::doTestStepStandardShapesEllipses( ZS::Test::CTestStepGroup* i_pTestS
                 pTestStep->setExpectedValues(strlstExpectedValues);
                 pTestStep->testStarted();
 
-                if( (m_pDrawingScene->getEditTool() != EEditToolCreateObjects) || (m_pDrawingScene->getCurrentDrawingToolGraphObjType() != EGraphObjTypeEllipse) )
+                if( (m_pDrawingScene->getEditTool() != EEditTool::CreateObjects) || (m_pDrawingScene->getCurrentDrawingToolGraphObjType() != EGraphObjTypeEllipse) )
                 {
                     m_pMainWindow->setCheckedActionDrawStandardShapeEllipse(true);
                 }
@@ -663,7 +663,7 @@ void CTest::doTestStepStandardShapesEllipses( ZS::Test::CTestStepGroup* i_pTestS
                 pTestStep->setExpectedValues(strlstExpectedValues);
                 pTestStep->testStarted();
 
-                if( m_pDrawingScene->getEditTool() != EEditToolSelect )
+                if( m_pDrawingScene->getEditTool() != EEditTool::Select )
                 {
                     m_pMainWindow->setCheckedActionEditSelect(true);
                 }
@@ -709,7 +709,7 @@ void CTest::doTestStepStandardShapesEllipses( ZS::Test::CTestStepGroup* i_pTestS
             ptMousePosGlobal.setX(ptMousePosGlobal.x()+1); // Maybe graphics view or graphics scene bug on calculating the screen position.
             ptMousePosGlobal.setY(ptMousePosGlobal.y()+1); // Without adding 1 pixel the newly created object will not be selected by the scene.
 
-            strlstExpectedValues.append( strCurrentGraphObj + ": SelPt:" + selectionPoint2Str(ESelectionPointUndefined) );
+            strlstExpectedValues.append( strCurrentGraphObj + ": SelPt:" + selectionPoint2Str(ESelectionPoint::Undefined) );
             strlstExpectedValues.append( strCurrentGraphObj + ": " + point2Str(s_rctEllipse1OnMousePressEvent.topLeft()) );
             strlstExpectedValues.append( strCurrentGraphObj + ": " + polygon2Str(s_rctEllipse1) );
 
@@ -896,7 +896,7 @@ void CTest::doTestStepStandardShapesEllipses( ZS::Test::CTestStepGroup* i_pTestS
                 pTestStep->setExpectedValues(strlstExpectedValues);
                 pTestStep->testStarted();
 
-                if( m_pDrawingScene->getEditTool() != EEditToolSelect )
+                if( m_pDrawingScene->getEditTool() != EEditTool::Select )
                 {
                     m_pMainWindow->setCheckedActionEditSelect(true);
                 }
@@ -942,7 +942,7 @@ void CTest::doTestStepStandardShapesEllipses( ZS::Test::CTestStepGroup* i_pTestS
             ptMousePosGlobal.setX(ptMousePosGlobal.x()+1); // Maybe graphics view or graphics scene bug on calculating the screen position.
             ptMousePosGlobal.setY(ptMousePosGlobal.y()+1); // Without adding 1 pixel the newly created object will not be selected by the scene.
 
-            strlstExpectedValues.append( strCurrentGraphObj + ": SelPt:" + selectionPoint2Str(ESelectionPointUndefined) );
+            strlstExpectedValues.append( strCurrentGraphObj + ": SelPt:" + selectionPoint2Str(ESelectionPoint::Undefined) );
             strlstExpectedValues.append( strCurrentGraphObj + ": " + point2Str(s_rctEllipse1OnMousePressEvent.topLeft()) );
             strlstExpectedValues.append( strCurrentGraphObj + ": " + polygon2Str(s_rctEllipse1) );
 
@@ -1870,7 +1870,7 @@ void CTest::doTestStepStandardShapesEllipses( ZS::Test::CTestStepGroup* i_pTestS
             ptMousePosGlobal.setX(ptMousePosGlobal.x()+1); // Maybe graphics view or graphics scene bug on calculating the screen position.
             ptMousePosGlobal.setY(ptMousePosGlobal.y()+1); // Without adding 1 pixel the newly created object will not be selected by the scene.
 
-            strlstExpectedValues.append( strCurrentGraphObj + ": SelPt:" + selectionPoint2Str(ESelectionPointBottomCenter) );
+            strlstExpectedValues.append( strCurrentGraphObj + ": SelPt:" + selectionPoint2Str(ESelectionPoint::BottomCenter) );
             strlstExpectedValues.append( strCurrentGraphObj + ": " + point2Str(s_rctEllipse1OnMousePressEvent.topLeft()) );
             strlstExpectedValues.append( strCurrentGraphObj + ": " + polygon2Str(s_rctEllipse1) );
 
@@ -2083,7 +2083,7 @@ void CTest::doTestStepStandardShapesEllipses( ZS::Test::CTestStepGroup* i_pTestS
             ptMousePosGlobal.setX(ptMousePosGlobal.x()+1); // Maybe graphics view or graphics scene bug on calculating the screen position.
             ptMousePosGlobal.setY(ptMousePosGlobal.y()+1); // Without adding 1 pixel the newly created object will not be selected by the scene.
 
-            strlstExpectedValues.append( strCurrentGraphObj + ": SelPt:" + selectionPoint2Str(ESelectionPointTopCenter) );
+            strlstExpectedValues.append( strCurrentGraphObj + ": SelPt:" + selectionPoint2Str(ESelectionPoint::TopCenter) );
             strlstExpectedValues.append( strCurrentGraphObj + ": " + point2Str(s_rctEllipse1OnMousePressEvent.topLeft()) );
             strlstExpectedValues.append( strCurrentGraphObj + ": " + polygon2Str(s_rctEllipse1) );
 
@@ -2722,7 +2722,7 @@ void CTest::doTestStepStandardShapesEllipses( ZS::Test::CTestStepGroup* i_pTestS
                 pTestStep->setExpectedValues(strlstExpectedValues);
                 pTestStep->testStarted();
 
-                if( m_pDrawingScene->getEditTool() != EEditToolSelect )
+                if( m_pDrawingScene->getEditTool() != EEditTool::Select )
                 {
                     m_pMainWindow->setCheckedActionEditSelect(true);
                 }
@@ -2769,7 +2769,7 @@ void CTest::doTestStepStandardShapesEllipses( ZS::Test::CTestStepGroup* i_pTestS
             ptMousePosGlobal.setX(ptMousePosGlobal.x()+1); // Maybe graphics view or graphics scene bug on calculating the screen position.
             ptMousePosGlobal.setY(ptMousePosGlobal.y()+1); // Without adding 1 pixel the newly created object will not be selected by the scene.
 
-            strlstExpectedValues.append( strCurrentGraphObj + ": SelPt:" + selectionPoint2Str(ESelectionPointUndefined) );
+            strlstExpectedValues.append( strCurrentGraphObj + ": SelPt:" + selectionPoint2Str(ESelectionPoint::Undefined) );
             strlstExpectedValues.append( strCurrentGraphObj + ": " + point2Str(s_rctEllipse1OnMousePressEvent.topLeft()) );
             strlstExpectedValues.append( strCurrentGraphObj + ": " + polygon2Str(s_rctEllipse1) );
 
@@ -2842,7 +2842,7 @@ void CTest::doTestStepStandardShapesEllipses( ZS::Test::CTestStepGroup* i_pTestS
             ptMousePosGlobal.setX(ptMousePosGlobal.x()+1); // Maybe graphics view or graphics scene bug on calculating the screen position.
             ptMousePosGlobal.setY(ptMousePosGlobal.y()+1); // Without adding 1 pixel the newly created object will not be selected by the scene.
 
-            strlstExpectedValues.append( strCurrentGraphObj + ": SelPt:" + selectionPoint2Str(ESelectionPointRotateTop) );
+            strlstExpectedValues.append( strCurrentGraphObj + ": SelPt:" + selectionPoint2Str(ESelectionPoint::RotateTop) );
             strlstExpectedValues.append( strCurrentGraphObj + ": " + point2Str(s_rctEllipse1OnMousePressEvent.topLeft()) );
             strlstExpectedValues.append( strCurrentGraphObj + ": " + polygon2Str(s_rctEllipse1) );
 
@@ -3044,7 +3044,7 @@ void CTest::doTestStepStandardShapesEllipses( ZS::Test::CTestStepGroup* i_pTestS
                 pTestStep->setExpectedValues(strlstExpectedValues);
                 pTestStep->testStarted();
 
-                if( m_pDrawingScene->getEditTool() != EEditToolSelect )
+                if( m_pDrawingScene->getEditTool() != EEditTool::Select )
                 {
                     m_pMainWindow->setCheckedActionEditSelect(true);
                 }
@@ -3136,12 +3136,12 @@ void CTest::doTestStepStandardShapesEllipses( ZS::Test::CTestStepGroup* i_pTestS
 
             switch( op.m_operation )
             {
-                case EEditModeMove:
+                case EEditMode::Move:
                 {
                     pTestStep->setDescription( "scene." + strCurrentGraphObj + ".move( ScenePos:" + point2Str(m_ptDrawingSceneMousePos) + " )" );
                     break;
                 }
-                case EEditModeResize:
+                case EEditMode::Resize:
                 {
                     pTestStep->setDescription( "scene." + strCurrentGraphObj + ".resize( ScenePos:" + point2Str(m_ptDrawingSceneMousePos) + " )" );
                     break;

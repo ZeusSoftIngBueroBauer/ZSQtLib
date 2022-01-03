@@ -83,7 +83,7 @@ namespace Draw
 class CDrawingScene;
 class CDrawingView;
 class CDrawSettings;
-class CGraphicsItemsModel;
+class CModelIdxTreeGraphicsItems;
 class CGraphObj;
 class CObjFactoriesModel;
 class CObjFactory;
@@ -450,7 +450,7 @@ protected: // instance members
     QLabel*                                             m_pLblGraphicsItemsRefresh;
     QPushButton*                                        m_pBtnGraphicsItemsRefresh;
     QTreeView*                                          m_pTreeViewGraphicsItems;
-    ZS::Draw::CGraphicsItemsModel*                      m_pModelGraphicsItems;
+    ZS::Draw::CModelIdxTreeGraphicsItems*               m_pModelIdxTreeGraphicsItems;
     // Dialogs
     ZS::Test::GUI::CDlgTest*                            m_pDlgTest;
     // Status Bar

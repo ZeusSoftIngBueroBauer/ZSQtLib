@@ -29,6 +29,7 @@ may result in using the software modules.
 
 #include <QtGui/qcursor.h>
 
+#include "ZSSys/ZSSysIdxTreeEntry.h"
 #include "ZSDraw/ZSDrawDllMain.h"
 #include "ZSDraw/ZSDrawSettings.h"
 #include "ZSDraw/ZSDrawGraphObjEventFct.h"
@@ -111,7 +112,7 @@ public: // struct members
 
 
 //******************************************************************************
-class ZSDRAWDLL_API CGraphObj
+class ZSDRAWDLL_API CGraphObj : public ZS::System::CIdxTreeEntry
 //******************************************************************************
 {
 public: // class methods
@@ -122,27 +123,30 @@ public: // class methods
 public: // type definitions and constants
     static const QString c_strKeyLabelObjName;
     static const QString c_strKeyLabelObjId;
-public: // ctors and dtor
+protected: // ctor
     CGraphObj(
         CDrawingScene*       i_pDrawingScene,
-        const QString&       i_strNameSpace,
-        const QString&       i_strClassName,
+        const QString&       i_strFactoryGroupName,
         EGraphObjType        i_type,
         const QString&       i_strType,
         const QString&       i_strObjName,
-        const QString&       i_strObjId,
         const CDrawSettings& i_drawSettings );
+public: // dtor
     virtual ~CGraphObj();
 public: // must overridables
     virtual CGraphObj* clone() = 0;
+public: // overridables
+    virtual QString nameSpace() { return NameSpace(); }
+    virtual QString className() { return ClassName(); }
 public: // instance methods
     CDrawingScene* getDrawingScene() { return m_pDrawingScene; }
+protected: // overridables of base class CIdxTreeEntry
+    virtual void setName( const QString& i_strName ) override;
+    virtual void setKeyInTree( const QString& i_strKey ) override;
 public: // instance methods
-    QString getNameSpace() const { return m_strNameSpace; }
-    QString getClassName() const { return m_strClassName; }
+    QString getFactoryGroupName() const { return m_strFactoryGroupName; }
     EGraphObjType getType() const { return m_type; }
     QString getTypeAsString() const { return m_strType; }
-    QString getObjName() const { return m_strObjName; }
     CEnumEditMode getEditMode() const { return m_editMode; }
     CEnumEditResizeMode getEditResizeMode() const { return m_editResizeMode; }
 public: // overridables
@@ -152,14 +156,8 @@ public: // instance methods
     CEnumSelectionPoint getSelectedBoundingRectPoint() const { return m_selPtSelectedBoundingRect; }
     QString getToolTip() const { return m_strToolTip; }
     QString getEditInfo() const { return m_strEditInfo; }
-public: // overridables
-    virtual void setObjId( const QString& i_strObjId );
-    virtual void setObjName( const QString& i_strObjName );
 public: // instance methods
-    QString getObjId() const { return m_strObjId; }
-    QString getObjName( bool i_bIncludeParents = false, const QString& i_strNodeSeparator = "/" );
-    CGraphObj* getParent();
-    QString getParentObjName( bool i_bIncludeParents = false, const QString& i_strNodeSeparator = "/" );
+    CGraphObj* parentGraphObj();
 public: // overridables
     virtual void onCreateAndExecDlgFormatGraphObjs(); // must be overridden to create a user defined dialog
 public: // overridables
@@ -333,12 +331,9 @@ protected: // overridables
     virtual void updateEditInfo();
 protected: // instance members
     CDrawingScene*                    m_pDrawingScene;
-    QString                           m_strNameSpace;
-    QString                           m_strClassName;
+    QString                           m_strFactoryGroupName;
     EGraphObjType                     m_type;
     QString                           m_strType;
-    QString                           m_strObjName;       // Must be unique below the parent object.
-    QString                           m_strObjId;         // Primary key of the object (must be unique within the drawing scene).
     CDrawSettings                     m_drawSettings;     // Set by ctor or setSettings. Changed also by graphics items methods "setPen", "setBrush", etc.. Call "updateSettings" before accessing settings to keep this struct up to date with graphics item settings.
     QSize                             m_sizMinimum;
     QSize                             m_sizMaximum;
@@ -382,6 +377,16 @@ protected: // instance members
     QList<SGraphObjMouseEventFct>     m_arMouseMoveEventFunctions;
     QList<SGraphObjKeyEventFct>       m_arKeyPressEventFunctions;
     QList<SGraphObjKeyEventFct>       m_arKeyReleaseEventFunctions;
+    // Method Tracing (has to be created in ctor of "final" class)
+    ZS::Trace::CTrcAdminObj*          m_pTrcAdminObjCtorsAndDtor;
+    ZS::Trace::CTrcAdminObj*          m_pTrcAdminObjItemChange;
+    ZS::Trace::CTrcAdminObj*          m_pTrcAdminObjBoundingRect;
+    ZS::Trace::CTrcAdminObj*          m_pTrcAdminObjPaint;
+    ZS::Trace::CTrcAdminObj*          m_pTrcAdminObjSceneEvent;
+    ZS::Trace::CTrcAdminObj*          m_pTrcAdminObjSceneEventFilter;
+    ZS::Trace::CTrcAdminObj*          m_pTrcAdminObjHoverEvents;
+    ZS::Trace::CTrcAdminObj*          m_pTrcAdminObjMouseEvents;
+    ZS::Trace::CTrcAdminObj*          m_pTrcAdminObjKeyEvents;
 
 }; // class CGraphObj
 

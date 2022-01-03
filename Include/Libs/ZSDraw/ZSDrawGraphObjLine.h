@@ -59,21 +59,19 @@ public: // class methods
     static QString NameSpace() { return "ZS::Draw"; } // Please note that the static class functions name must be different from the non static virtual member function "nameSpace"
     /*! Returns the class name. */
     static QString ClassName() { return "CGraphObjLine"; } // Please note that the static class functions name must be different from the non static virtual member function "className"
-public: // class methods
-    // For sub system test used. Method call only allowed if currently no
-    // graphical objects of this class are created.
-    static void ResetCtorsDtorsCounters();
 public: // ctors and dtor
     CGraphObjLine(
         CDrawingScene*       i_pDrawingScene,
         const CDrawSettings& i_drawSettings,
-        const QString&       i_strObjName = "",
-        const QString&       i_strObjId = "" );
+        const QString&       i_strObjName = "" );
     virtual ~CGraphObjLine();
 public: // overridables of base class QGraphicsItem
     virtual int type() const { return EGraphObjTypeLine; }
 public: // must overridables of base class CGraphObj
     virtual CGraphObj* clone();
+public: // overridables
+    virtual QString nameSpace() { return NameSpace(); }
+    virtual QString className() { return ClassName(); }
 public: // replacing methods of QGraphicsLineItem
     void setLine( const QLineF& i_lin );
     void setLine( qreal i_x1, qreal i_y1, qreal i_x2, qreal i_y2 );
@@ -118,15 +116,7 @@ protected: // instance methods
 protected: // overridables of base class CGraphObj
     virtual void updateToolTip();
 protected: // class members
-    static qint64                   s_iCtorsCount;
-    static qint64                   s_iDtorsCount;
-    static ZS::Trace::CTrcAdminObj* s_pTrcAdminObjCtorsAndDtor;
-    static ZS::Trace::CTrcAdminObj* s_pTrcAdminObjBoundingRect;
-    static ZS::Trace::CTrcAdminObj* s_pTrcAdminObjPaint;
-    static ZS::Trace::CTrcAdminObj* s_pTrcAdminObjSceneEventFilter;
-    static ZS::Trace::CTrcAdminObj* s_pTrcAdminObjHoverEvents;
-    static ZS::Trace::CTrcAdminObj* s_pTrcAdminObjMouseEvents;
-    static ZS::Trace::CTrcAdminObj* s_pTrcAdminObjItemChange;
+    static qint64 s_iInstCount;
 protected: // instance members
     bool      m_bCoorsDirty; // Start and end point and polygons for arrow heads
     QPolygonF m_plgLineStart;

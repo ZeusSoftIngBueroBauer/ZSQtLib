@@ -594,20 +594,20 @@ void ZS::Draw::getMaxRectArea(
 
 //------------------------------------------------------------------------------
 QRectF ZS::Draw::resizeRect(
-    const QRectF&    i_rect,
-    ESelectionPoint  i_selPt,
-    const QPointF&   i_ptSel,
-    ESelectionPoint* o_pSelPt )
+    const QRectF&              i_rect,
+    const CEnumSelectionPoint& i_selPt,
+    const QPointF&             i_ptSel,
+    CEnumSelectionPoint*       o_pSelPt )
 //------------------------------------------------------------------------------
 {
-    ESelectionPoint selPt = i_selPt;
+    CEnumSelectionPoint selPt = i_selPt;
 
     QRectF rctResult = i_rect;
 
     double fXPos = i_ptSel.x();
     double fYPos = i_ptSel.y();
 
-    switch( i_selPt )
+    switch( i_selPt.enumerator() )
     {
         case ESelectionPoint::TopLeft:
         {

@@ -46,7 +46,7 @@ public: // class methods
     static CEnumerationIdxTree* GetInstance( const QString& i_strName = "ZS::System::EnumerationIdxTree" );
     static CEnumerationIdxTree* CreateInstance(
         const QString& i_strName = "ZS::System::EnumerationIdxTree",
-        CIdxTreeEntry* i_pRootTreeEntry = nullptr,      // if null an instance of #error CRootIdxTreeEntry is created
+        CIdxTreeEntry* i_pRootTreeEntry = nullptr,      // if null a root entry is implicitely created
         const QString& i_strNodeSeparator = "::",
         bool           i_bCreateMutex = true,           // if true each access to member variables will be protected by a mutex
         QObject*       i_pObjParent = nullptr,

@@ -31,13 +31,11 @@ may result in using the software modules.
 
 namespace ZS
 {
-namespace Trace
-{
-class CTrcAdminObj;
-}
-
 namespace Draw
 {
+class CGraphObjConnectionPoint;
+class CGraphObjLine;
+
 namespace Electricity
 {
 //******************************************************************************
@@ -49,6 +47,11 @@ CnctPt1 SwitchLine CnctPt2
    +--+            +--+
 *******************************************************************************/
 {
+public: // class methods
+    /*! Returns the namespace the class belongs to. */
+    static QString NameSpace() { return "ZS::Draw::Electricity"; } // Please note that the static class functions name must be different from the non static virtual member function "nameSpace"
+    /*! Returns the class name. */
+    static QString ClassName() { return "CGraphObjSwitch"; } // Please note that the static class functions name must be different from the non static virtual member function "className"
 public: // type definitions and constants
     static const QSize   c_sizInitial;
     static const QString c_strKeyLabelState;
@@ -60,25 +63,23 @@ public: // type definitions and constants
     }   EState;
     static QString State2Str( int i_state );
     static EState Str2State( const QString& i_str );
-public: // class methods
-    // For sub system test used. Method call only allowed if currently no
-    // graphical objects of this class are created.
-    static void ResetCtorsDtorsCounters();
 public: // ctors and dtor
     CGraphObjSwitch(
         CDrawingScene*       i_pDrawingScene,
         const CDrawSettings& i_drawSettings,
         EState               i_state = EStateOpened,
-        const QString&       i_strObjName = "",
-        const QString&       i_strObjId = "" );
+        const QString&       i_strObjName = "" );
     virtual ~CGraphObjSwitch();
+public: // overridables
+    virtual QString nameSpace() { return NameSpace(); }
+    virtual QString className() { return ClassName(); }
 public: // instance methods
     EState getState() const { return m_state; }
     QString getStateAsString() const { return State2Str(m_state); }
     void setState( EState i_state );
     void toggleState();
 public: // instance methods
-    void showState( ESelectionPoint i_selPtPos = ESelectionPointBottomCenter );
+    void showState( ESelectionPoint i_selPtPos = ESelectionPoint::BottomCenter );
     void hideState();
     bool isStateVisible() const;
 public: // must overridables of base class CGraphObj
@@ -97,12 +98,7 @@ protected: // overridables of base class CGraphObjGroup
 protected: // overridables of base class CGraphObj
     virtual void updateToolTip();
 protected: // class members
-    static qint64                   s_iCtorsCount;
-    static qint64                   s_iDtorsCount;
-    static ZS::Trace::CTrcAdminObj* s_pTrcAdminObjCtorsAndDtor;
-    static ZS::Trace::CTrcAdminObj* s_pTrcAdminObjItemChange;
-    static ZS::Trace::CTrcAdminObj* s_pTrcAdminObjMouseEvents;
-    static ZS::Trace::CTrcAdminObj* s_pTrcAdminObjKeyEvents;
+    static qint64 s_iInstCount;
 protected: // instance members
     CGraphObjConnectionPoint* m_pCnctPt1;
     CGraphObjConnectionPoint* m_pCnctPt2;

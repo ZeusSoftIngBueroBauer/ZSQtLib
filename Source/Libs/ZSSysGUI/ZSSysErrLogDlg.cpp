@@ -56,20 +56,20 @@ public: // class methods
 
 //------------------------------------------------------------------------------
 CDlgErrLog* CDlgErrLog::CreateInstance(
-    const QString&  i_strObjName,
+    const QString&  i_strErrLogName,
     const QString&  i_strDlgTitle,
     QWidget*        i_pWdgtParent,
     Qt::WindowFlags i_wFlags )
 //------------------------------------------------------------------------------
 {
-    if( CDialog::GetInstance(NameSpace(), ClassName(), i_strObjName) != nullptr )
+    if( CDialog::GetInstance(NameSpace(), ClassName(), i_strErrLogName) != nullptr )
     {
-        QString strKey = buildPathStr("::", NameSpace(), ClassName(), i_strObjName);
+        QString strKey = buildPathStr("::", NameSpace(), ClassName(), i_strErrLogName);
         throw CException(__FILE__, __LINE__, EResultObjAlreadyInList, strKey);
     }
 
     return new CDlgErrLog(
-        /* strObjName   */ i_strObjName,
+        /* strObjName   */ i_strErrLogName,
         /* strDlgTitle  */ i_strDlgTitle,
         /* pWdgtParent  */ i_pWdgtParent,
         /* wFlags       */ i_wFlags );
@@ -77,10 +77,10 @@ CDlgErrLog* CDlgErrLog::CreateInstance(
 } // CreateInstance
 
 //------------------------------------------------------------------------------
-CDlgErrLog* CDlgErrLog::GetInstance( const QString& i_strObjName )
+CDlgErrLog* CDlgErrLog::GetInstance( const QString& i_strDlgTitle )
 //------------------------------------------------------------------------------
 {
-    return dynamic_cast<CDlgErrLog*>(CDialog::GetInstance(NameSpace(), ClassName(), i_strObjName));
+    return dynamic_cast<CDlgErrLog*>(CDialog::GetInstance(NameSpace(), ClassName(), i_strDlgTitle));
 }
 
 /*==============================================================================
@@ -89,15 +89,15 @@ protected: // ctor
 
 //------------------------------------------------------------------------------
 CDlgErrLog::CDlgErrLog(
-    const QString&  i_strObjName,
     const QString&  i_strDlgTitle,
+    const QString&  i_strErrLogName,
     QWidget*        i_pWdgtParent,
     Qt::WindowFlags i_wFlags ) :
 //------------------------------------------------------------------------------
     CDialog(
         /* strNameSpace */ NameSpace(),
         /* strClassName */ ClassName(),
-        /* strObjName   */ i_strObjName,
+        /* strObjName   */ i_strErrLogName,
         /* strDlgTitle  */ i_strDlgTitle,
         /* pWdgtParent  */ i_pWdgtParent,
         /* wFlags       */ i_wFlags ),
@@ -107,7 +107,7 @@ CDlgErrLog::CDlgErrLog(
     m_pLyt = new QVBoxLayout();
     setLayout(m_pLyt);
 
-    m_pWdgtErrLog = new CWdgtErrLog();
+    m_pWdgtErrLog = new CWdgtErrLog(i_strErrLogName);
     m_pLyt->addWidget(m_pWdgtErrLog);
 
 } // ctor

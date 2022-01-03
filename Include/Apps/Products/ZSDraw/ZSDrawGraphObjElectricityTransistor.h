@@ -31,13 +31,12 @@ may result in using the software modules.
 
 namespace ZS
 {
-namespace Trace
-{
-class CTrcAdminObj;
-}
-
 namespace Draw
 {
+class CGraphObjEllipse;
+class CGraphObjLine;
+class CGraphObjConnectionPoint;
+
 namespace Electricity
 {
 //******************************************************************************
@@ -59,6 +58,11 @@ CnctPt1       |         CnctPt1       |
              +-+                     +-+
 *******************************************************************************/
 {
+public: // class methods
+    /*! Returns the namespace the class belongs to. */
+    static QString NameSpace() { return "ZS::Draw::Electricity"; } // Please note that the static class functions name must be different from the non static virtual member function "nameSpace"
+    /*! Returns the class name. */
+    static QString ClassName() { return "CGraphObjTransistor"; } // Please note that the static class functions name must be different from the non static virtual member function "className"
 public: // type definitions and constants
     static const QSize   c_sizInitial;
     static const QString c_strKeyLabelDopingType;
@@ -70,24 +74,22 @@ public: // type definitions and constants
     }   EDopingType;
     static QString DopingType2Str( int i_type );
     static EDopingType Str2DopingType( const QString& i_str );
-public: // class methods
-    // For sub system test used. Method call only allowed if currently no
-    // graphical objects of this class are created.
-    static void ResetCtorsDtorsCounters();
 public: // ctors and dtor
     CGraphObjTransistor(
         CDrawingScene*       i_pDrawingScene,
         const CDrawSettings& i_drawSettings,
         EDopingType          i_dopingType = EDopingTypeNPN,
-        const QString&       i_strObjName = "",
-        const QString&       i_strObjId = "" );
+        const QString&       i_strObjName = "" );
     virtual ~CGraphObjTransistor();
+public: // overridables
+    virtual QString nameSpace() { return NameSpace(); }
+    virtual QString className() { return ClassName(); }
 public: // instance methods
     EDopingType getDopingType() const { return m_dopingType; }
     QString getDopingTypeAsString() const { return DopingType2Str(m_dopingType); }
     void setDopingType( EDopingType i_type );
 public: // instance methods
-    void showDopingType( ESelectionPoint i_selPtPos = ESelectionPointBottomCenter );
+    void showDopingType( ESelectionPoint i_selPtPos = ESelectionPoint::BottomCenter );
     void hideDopingType();
     bool isDopingTypeVisible() const;
 public: // must overridables of base class CGraphObj
@@ -99,10 +101,7 @@ public: // overridables of base class CGraphObj
 protected: // overridables of base class CGraphObj
     virtual void updateToolTip();
 protected: // class members
-    static qint64                   s_iCtorsCount;
-    static qint64                   s_iDtorsCount;
-    static ZS::Trace::CTrcAdminObj* s_pTrcAdminObjCtorsAndDtor;
-    static ZS::Trace::CTrcAdminObj* s_pTrcAdminObjItemChange;
+    static qint64 s_iInstCount;
 protected: // instance members
     CGraphObjEllipse*         m_pEllBody;
     CGraphObjLine*            m_pLinBase;

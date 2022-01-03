@@ -266,7 +266,7 @@ public: // instance methods
     SErrResultInfo canAdd( CIdxTreeEntry* i_pTreeEntry, CIdxTreeEntry* i_pTargetBranch ) const;
 public: // instance methods
     int add( CIdxTreeEntry* i_pTreeEntry, const QString& i_strTargetPath );
-    int add( CIdxTreeEntry* i_pTreeEntry, CIdxTreeEntry* i_pTargetBranch );
+    int add( CIdxTreeEntry* i_pTreeEntry, CIdxTreeEntry* i_pTargetBranch = nullptr );
 public: // instance methods
     SErrResultInfo canInsert( CIdxTreeEntry* i_pTreeEntry, const QString& i_strTargetPath, int i_idxInTargetBranch, int i_idxInTree = -1 ) const;
     SErrResultInfo canInsert( CIdxTreeEntry* i_pTreeEntry, CIdxTreeEntry* i_pTargetBranch, int i_idxInTargetBranch, int i_idxInTree = -1 ) const;

@@ -41,9 +41,7 @@ class CObjFactorySwitch : public CObjFactory
 //******************************************************************************
 {
 public: // ctors and dtor
-    CObjFactorySwitch(
-        bool         i_bAddToToolBoxObjPool = true,
-        const QIcon& i_toolIcon = QIcon() );
+    CObjFactorySwitch( const QIcon& i_toolIcon = QIcon() );
     virtual ~CObjFactorySwitch();
 public: // interface methods of base class CObjFactory
     virtual CGraphObj* createGraphObj(
@@ -60,7 +58,6 @@ public: // interface methods of base class CObjFactory
         const QString&              i_strObjId,
         QXmlStreamReader&           i_xmlStreamReader,
         ZS::System::SErrResultInfo& io_errResultInfo );
-    virtual void ResetCtorsDtorsCounters();
 
 }; // class CObjFactorySwitch
 

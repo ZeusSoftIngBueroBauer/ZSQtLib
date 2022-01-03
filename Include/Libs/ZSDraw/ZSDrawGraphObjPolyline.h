@@ -59,25 +59,18 @@ public: // class methods
     static QString NameSpace() { return "ZS::Draw"; } // Please note that the static class functions name must be different from the non static virtual member function "nameSpace"
     /*! Returns the class name. */
     static QString ClassName() { return "CGraphObjPolyline"; } // Please note that the static class functions name must be different from the non static virtual member function "className"
-public: // class methods
-    // For sub system test used. Method call only allowed if currently no
-    // graphical objects of this class are created.
-    static void ResetCtorsDtorsCounters();
 public: // ctors
     CGraphObjPolyline(
         CDrawingScene*       i_pDrawingScene,
         const CDrawSettings& i_drawSettings,
-        const QString&       i_strObjName = "",
-        const QString&       i_strObjId = "" );
+        const QString&       i_strObjName = "" );
 protected: // ctor (used by derived classes, e.g. CGraphObjPolygon)
     CGraphObjPolyline(
         CDrawingScene*       i_pDrawingScene,
-        const QString&       i_strNameSpace,
-        const QString&       i_strClassName,
+        const QString&       i_strFactoryGroupName,
         EGraphObjType        i_type,
         const QString&       i_strType,
         const QString&       i_strObjName,
-        const QString&       i_strObjId,
         const CDrawSettings& i_drawSettings );
 public: // dtor
     virtual ~CGraphObjPolyline();
@@ -85,6 +78,9 @@ public: // overridables of base class QGraphicsItem
     virtual int type() const { return EGraphObjTypePolyline; }
 public: // must overridables of base class CGraphObj
     virtual CGraphObj* clone();
+public: // overridables
+    virtual QString nameSpace() { return NameSpace(); }
+    virtual QString className() { return ClassName(); }
 public: // replacing methods of QGraphicsPolygonItem
     void setPolygon( const QPolygonF& i_plg );
 public: // overridables of base class CGraphObj
@@ -126,15 +122,7 @@ protected: // instance methods
     virtual void normalize(); // removes "unnecessary" points
     virtual void updateLineEndPolygonCoors();
 protected: // class members
-    static qint64                   s_iCtorsCount;
-    static qint64                   s_iDtorsCount;
-    static ZS::Trace::CTrcAdminObj* s_pTrcAdminObjCtorsAndDtor;
-    static ZS::Trace::CTrcAdminObj* s_pTrcAdminObjBoundingRect;
-    static ZS::Trace::CTrcAdminObj* s_pTrcAdminObjPaint;
-    static ZS::Trace::CTrcAdminObj* s_pTrcAdminObjSceneEventFilter;
-    static ZS::Trace::CTrcAdminObj* s_pTrcAdminObjHoverEvents;
-    static ZS::Trace::CTrcAdminObj* s_pTrcAdminObjMouseEvents;
-    static ZS::Trace::CTrcAdminObj* s_pTrcAdminObjItemChange;
+    static qint64 s_iInstCount;
 protected: // instance members
     bool      m_bCoorsDirty;
     QPolygonF m_plgCurr;        // First and lasst point may differ from polygon() depending on line end base line types

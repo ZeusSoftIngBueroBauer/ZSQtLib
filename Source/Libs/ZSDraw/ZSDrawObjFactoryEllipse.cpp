@@ -58,18 +58,13 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CObjFactoryEllipse::CObjFactoryEllipse(
-    bool         i_bAddToToolBoxIdxTree,
-    const QIcon& i_toolIcon ) :
+CObjFactoryEllipse::CObjFactoryEllipse( const QIcon& i_toolIcon ) :
 //------------------------------------------------------------------------------
     CObjFactory(
-        /* strGroupName         */ "Draw::Standard Shapes",
-        /* strGraphObjNameSpace */ CGraphObjEllipse::NameSpace(),
-        /* strGraphObjClassName */ CGraphObjEllipse::ClassName(),
-        /* iGraphObjType        */ EGraphObjTypeEllipse,
-        /* strGraphObjType      */ ZS::Draw::graphObjType2Str(EGraphObjTypeEllipse),
-        /* bAddToToolBoxIdxTree */ i_bAddToToolBoxIdxTree,
-        /* toolIcon             */ i_toolIcon )
+        /* strGroupName    */ c_strGroupNameStandardShapes,
+        /* iGraphObjType   */ EGraphObjTypeEllipse,
+        /* strGraphObjType */ ZS::Draw::graphObjType2Str(EGraphObjTypeEllipse),
+        /* toolIcon        */ i_toolIcon )
 {
 } // default ctor
 
@@ -129,9 +124,9 @@ SErrResultInfo CObjFactoryEllipse::saveGraphObj(
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
-        strAddTrcInfo  = "GraphObj:" + i_pGraphObj->getNameSpace();
-        strAddTrcInfo += "::" + i_pGraphObj->getClassName();
-        strAddTrcInfo += "::" + i_pGraphObj->getObjName();
+        strAddTrcInfo  = "GraphObj:" + i_pGraphObj->nameSpace();
+        strAddTrcInfo += "::" + i_pGraphObj->className();
+        strAddTrcInfo += "::" + i_pGraphObj->name();
     }
 
     CMethodTracer mthTracer(
@@ -330,8 +325,7 @@ CGraphObj* CObjFactoryEllipse::loadGraphObj(
             pGraphObj = new CGraphObjEllipse(
                 /* pDrawingScene */ i_pDrawingScene,
                 /* drawSettings  */ drawSettings,
-                /* strObjName    */ i_strObjName,
-                /* strObjId      */ i_strObjId );
+                /* strObjName    */ i_strObjName );
 
             pGraphObj->setRect( QRectF( QPointF(0.0,0.0), siz ) );
 
@@ -390,10 +384,3 @@ CGraphObj* CObjFactoryEllipse::loadGraphObj(
     return pGraphObj;
 
 } // loadGraphObj
-
-//------------------------------------------------------------------------------
-void CObjFactoryEllipse::ResetCtorsDtorsCounters()
-//------------------------------------------------------------------------------
-{
-    CGraphObjEllipse::ResetCtorsDtorsCounters();
-}
