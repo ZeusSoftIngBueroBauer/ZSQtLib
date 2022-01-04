@@ -281,6 +281,11 @@ CMainWindow::CMainWindow(
     m_bDrawingChangedSinceLastSave(false),
     m_strCurrentFile(),
     m_pActFileQuit(nullptr),
+    // Menu - Mode
+    m_pMenuMode(nullptr),
+    m_pToolBarMode(nullptr),
+    m_pActModeEdit(nullptr),
+    m_pActModeSimulation(nullptr),
     // Menu - Edit
     m_pMenuEdit(nullptr),
     // Menu - Edit - Select
@@ -449,7 +454,7 @@ CMainWindow::CMainWindow(
 
     // Belongs to central widget but must be created before the tool bars.
 
-    m_pDrawingScene = new CDrawingScene(this);
+    m_pDrawingScene = new CDrawingScene(/*this*/);
     //m_pDrawingScene->setBackgroundBrush(Qt::blue);
 
     if( !QObject::connect(
@@ -629,6 +634,15 @@ CMainWindow::~CMainWindow()
     {
     }
     m_pModelObjFactories = nullptr;
+
+    try
+    {
+        delete m_pDrawingScene;
+    }
+    catch(...)
+    {
+    }
+    m_pDrawingScene = nullptr;
 
     try
     {
@@ -929,6 +943,11 @@ CMainWindow::~CMainWindow()
     m_pActFilesRecentSeparator = nullptr;
     memset( m_arpActFilesRecent, 0x00, _ZSArrLen(m_arpActFilesRecent) );
     m_pActFileQuit = nullptr;
+    // Menu - Mode
+    m_pMenuMode = nullptr;
+    m_pToolBarMode = nullptr;
+    m_pActModeEdit = nullptr;
+    m_pActModeSimulation = nullptr;
     // Menu - Edit
     m_pMenuEdit = nullptr;
     // Menu - Edit - Select
@@ -1595,6 +1614,50 @@ void CMainWindow::createActions()
         throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
     }
 
+    // <Menu> Mode
+    //============
+
+    // <MenuItem> Mode::Edit
+    //----------------------
+
+    QIcon iconModeEdit;
+
+    iconModeEdit.addPixmap( mode2Pixmap(static_cast<int>(EMode::Edit),24) );
+
+    m_pActModeEdit = new QAction( iconModeEdit, c_strActionNameModeEdit.section(":",-1,-1), this );
+    m_pActModeEdit->setStatusTip( tr("Activate Edit Mode") );
+    m_pActModeEdit->setCheckable(true);
+    m_pActModeEdit->setChecked(true);
+
+    if( !connect(
+        /* pObjSender   */ m_pActModeEdit,
+        /* szSignal     */ SIGNAL(toggled(bool)),
+        /* pObjReceiver */ this,
+        /* szSlot       */ SLOT(onActionModeEditToggled(bool)) ) )
+    {
+        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
+    }
+
+    // <MenuItem> Mode::Simulation
+    //-------------------------------
+
+    QIcon iconModeSimulation;
+
+    iconModeSimulation.addPixmap( mode2Pixmap(static_cast<int>(EMode::Simulation),24) );
+
+    m_pActModeSimulation = new QAction( iconModeSimulation, c_strActionNameModeSimulation.section(":",-1,-1), this );
+    m_pActModeSimulation->setStatusTip( tr("Activate Simulation Mode") );
+    m_pActModeSimulation->setCheckable(true);
+
+    if( !connect(
+        /* pObjSender   */ m_pActModeSimulation,
+        /* szSignal     */ SIGNAL(toggled(bool)),
+        /* pObjReceiver */ this,
+        /* szSlot       */ SLOT(onActionModeSimulationToggled(bool)) ) )
+    {
+        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
+    }
+
     // <Menu> Edit
     //============
 
@@ -2219,6 +2282,27 @@ void CMainWindow::createMenus()
         m_pMenuFile->addAction(m_pActFileQuit);
     }
 
+    // <Menu> Mode
+    //============
+
+    m_pMenuMode = m_pMenuBar->addMenu(c_strMenuNameMode);
+
+    // <MenuItem> Mode::Edit
+    //----------------------------
+
+    if( m_pActModeEdit != nullptr )
+    {
+        m_pMenuMode->addAction(m_pActModeEdit);
+    }
+
+    // <MenuItem> Mode::Simulation
+    //----------------------------
+
+    if( m_pActModeSimulation != nullptr )
+    {
+        m_pMenuMode->addAction(m_pActModeSimulation);
+    }
+
     // <Menu> Edit
     //============
 
@@ -2564,6 +2648,30 @@ void CMainWindow::createToolBars()
     if( m_pActFilePageSetup != nullptr )
     {
         m_pToolBarFile->addAction(m_pActFilePageSetup);
+    }
+
+    // <Menu> Mode
+    //============
+
+    m_pToolBarMode = addToolBar("Switching Between Simulation and Edit Mode");
+    m_pToolBarMode->setObjectName("Mode");
+    //m_pToolBarMode->setMaximumHeight(24);
+    m_pToolBarMode->setIconSize( QSize(16,16) );
+
+    // <MenuItem> Mode::Edit
+    //----------------------
+
+    if( m_pActModeEdit != nullptr )
+    {
+        m_pToolBarMode->addAction(m_pActModeEdit);
+    }
+
+    // <MenuItem> Mode::Simulation
+    //----------------------------
+
+    if( m_pActModeSimulation != nullptr )
+    {
+        m_pToolBarMode->addAction(m_pActModeSimulation);
     }
 
     // <Menu> Edit
@@ -3076,6 +3184,58 @@ void CMainWindow::closeEvent( QCloseEvent* i_pEv )
     }
 
 } // closeEvent
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CMainWindow::setCheckedActionModeEdit( bool i_bChecked )
+//------------------------------------------------------------------------------
+{
+    QString strAddTrcInfo;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    {
+        strAddTrcInfo = "Checked:" + bool2Str(i_bChecked);
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* strMethod    */ "setCheckedActionModeEdit",
+        /* strAddInfo   */ strAddTrcInfo );
+
+    if( m_pActModeEdit != nullptr )
+    {
+        m_pActModeEdit->setChecked(i_bChecked);
+    }
+
+} // setCheckedActionModeEdit
+
+//------------------------------------------------------------------------------
+void CMainWindow::setCheckedActionModeSimulation( bool i_bChecked )
+//------------------------------------------------------------------------------
+{
+    QString strAddTrcInfo;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    {
+        strAddTrcInfo = "Checked:" + bool2Str(i_bChecked);
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* strMethod    */ "setCheckedActionModeSimulation",
+        /* strAddInfo   */ strAddTrcInfo );
+
+    if( m_pActModeSimulation != nullptr )
+    {
+        m_pActModeSimulation->setChecked(i_bChecked);
+    }
+
+} // setCheckedActionModeSimulation
 
 /*==============================================================================
 public: // instance methods
@@ -3657,6 +3817,78 @@ void CMainWindow::onActionFileRecentTriggered( bool /*i_bChecked*/ )
     //}
 
 } // onActionFileRecentTriggered
+
+/*==============================================================================
+public slots: // Menu - Mode
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CMainWindow::onActionModeEditToggled( bool i_bChecked )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    {
+        strMthInArgs = "Checked: " + bool2Str(i_bChecked);
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* strMethod    */ "onActionModeEditToggled",
+        /* strAddInfo   */ strMthInArgs );
+
+    if( m_pDrawingScene != nullptr )
+    {
+        if( i_bChecked && m_pDrawingScene->getMode() != EMode::Edit )
+        {
+            m_pDrawingScene->setCurrentDrawingTool(nullptr);
+            m_pDrawingScene->setMode(EMode::Edit);
+        }
+        else if( !i_bChecked && m_pDrawingScene->getMode() != EMode::Simulation )
+        {
+            m_pDrawingScene->setCurrentDrawingTool(nullptr);
+            m_pDrawingScene->setMode(EMode::Simulation);
+        }
+
+    } // if( m_pDrawingScene != nullptr )
+
+} // onActionModeEditToggled
+
+//------------------------------------------------------------------------------
+void CMainWindow::onActionModeSimulationToggled( bool i_bChecked )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    {
+        strMthInArgs = "Checked: " + bool2Str(i_bChecked);
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* strMethod    */ "onActionModeSimulationToggled",
+        /* strAddInfo   */ strMthInArgs );
+
+    if( m_pDrawingScene != nullptr )
+    {
+        if( i_bChecked && m_pDrawingScene->getMode() != EMode::Simulation )
+        {
+            m_pDrawingScene->setCurrentDrawingTool(nullptr);
+            m_pDrawingScene->setMode(EMode::Simulation);
+        }
+        else if( !i_bChecked && m_pDrawingScene->getMode() != EMode::Edit )
+        {
+            m_pDrawingScene->setCurrentDrawingTool(nullptr);
+            m_pDrawingScene->setMode(EMode::Edit);
+        }
+
+    } // if( m_pDrawingScene != nullptr )
+
+} // onActionModeSimulationToggled
 
 /*==============================================================================
 public slots: // Menu - Edit - Select/RotateFree
@@ -5071,9 +5303,20 @@ void CMainWindow::onDrawingSceneMousePosChanged( const QPointF& i_ptMousePos )
 void CMainWindow::onDrawingSceneModeChanged()
 //------------------------------------------------------------------------------
 {
+    QString strMthInArgs;
     QString strAddTrcInfo;
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    {
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* strMethod    */ "onDrawingSceneModeChanged",
+        /* strAddInfo   */ strMthInArgs );
+
+    if( mthTracer.isActive(ETraceDetailLevelInternalStates) )
     {
         int        iObjFactoryType   = m_pDrawingScene->getCurrentDrawingToolGraphObjType();
         CGraphObj* pGraphObjCreating = m_pDrawingScene->getGraphObjCreating();
@@ -5085,12 +5328,6 @@ void CMainWindow::onDrawingSceneModeChanged()
         strAddTrcInfo += ", ObjFactory:" + graphObjType2Str(iObjFactoryType);
         strAddTrcInfo += ", GraphObjCreating: " + QString(pGraphObjCreating == nullptr ? "nullptr" : pGraphObjCreating->name());
     }
-
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strMethod    */ "onDrawingSceneModeChanged",
-        /* strAddInfo   */ strAddTrcInfo );
 
     setWindowTitle();
 
@@ -5335,30 +5572,12 @@ void CMainWindow::onTreeViewObjFactoriesCurrentChanged(
     const QModelIndex& /*i_modelIdxPrev*/ )
 //------------------------------------------------------------------------------
 {
-    CObjFactory* pObjFactorySelected = nullptr;
-
-    if( i_modelIdxCurr.isValid() && i_modelIdxCurr.internalPointer() != nullptr )
-    {
-        CIdxTreeEntry* pTreeEntry = static_cast<CIdxTreeEntry*>(i_modelIdxCurr.internalPointer());
-
-        if( pTreeEntry != nullptr )
-        {
-            pObjFactorySelected = dynamic_cast<CObjFactory*>(pTreeEntry);
-        }
-    }
-
     QString strMthInArgs;
+    QString strAddTrcInfo;
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
-        if( pObjFactorySelected == nullptr )
-        {
-            strMthInArgs = "ObjFactory:nullptr";
-        }
-        else
-        {
-            strMthInArgs = "ObjFactory:" + pObjFactorySelected->getGraphObjTypeAsString();
-        }
+        strMthInArgs = qModelIndex2Str(i_modelIdxCurr);
     }
 
     CMethodTracer mthTracer(
@@ -5367,8 +5586,25 @@ void CMainWindow::onTreeViewObjFactoriesCurrentChanged(
         /* strMethod    */ "onTreeViewObjFactoriesCurrentChanged",
         /* strAddInfo   */ strMthInArgs );
 
+    CObjFactory* pObjFactory = nullptr;
+
+    if( i_modelIdxCurr.isValid() && i_modelIdxCurr.internalPointer() != nullptr )
+    {
+        CIdxTreeEntry* pTreeEntry = static_cast<CIdxTreeEntry*>(i_modelIdxCurr.internalPointer());
+
+        if( pTreeEntry != nullptr )
+        {
+            pObjFactory = dynamic_cast<CObjFactory*>(pTreeEntry);
+        }
+    }
+
+    if( mthTracer.isActive(ETraceDetailLevelInternalStates) )
+    {
+        strAddTrcInfo = "ObjFactory: " + QString(pObjFactory == nullptr ? "nullptr" : pObjFactory->path());
+    }
+
     // If a valid tree node in the object factories model is selected ..
-    if( pObjFactorySelected != nullptr )
+    if( pObjFactory != nullptr )
     {
         // .. objects will be created by drag and drop operations but not by a drawing tool.
         m_pDrawingScene->setCurrentDrawingTool(nullptr);
@@ -5388,14 +5624,7 @@ void CMainWindow::selectTreeViewObjFactoryNode( ZS::Draw::CObjFactory* i_pObjFac
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
-        if( i_pObjFactory == nullptr )
-        {
-            strMthInArgs = "ObjFactory:nullptr";
-        }
-        else
-        {
-            strMthInArgs = "ObjFactory:" + i_pObjFactory->getGraphObjTypeAsString();
-        }
+        strMthInArgs = QString(i_pObjFactory == nullptr ? "nullptr" : i_pObjFactory->path());
     }
 
     CMethodTracer mthTracer(
@@ -5456,7 +5685,6 @@ void CMainWindow::selectTreeViewObjFactoryNode( ZS::Draw::CObjFactory* i_pObjFac
         {
             throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
         }
-
     } // if( m_pTreeViewObjFactories != nullptr )
 
 } // selectTreeViewObjFactoryNode
@@ -5920,6 +6148,18 @@ void CMainWindow::updateActions()
     //{
     //    m_pActFileQuit;
     //}
+
+    // Menu - Mode
+    //------------
+
+    if( m_pActModeEdit != nullptr )
+    {
+        m_pActModeEdit->setChecked( mode == EMode::Edit );
+    }
+    if( m_pActModeSimulation != nullptr )
+    {
+        m_pActModeSimulation->setChecked( mode == EMode::Simulation );
+    }
 
     // Menu - Edit - Select
     //---------------------

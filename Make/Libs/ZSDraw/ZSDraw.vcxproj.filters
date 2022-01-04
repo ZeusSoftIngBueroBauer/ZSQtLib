@@ -120,6 +120,9 @@
     <Filter Include="Generated Files\msvc2019\Win32\Release">
       <UniqueIdentifier>{9aeb7e8b-1b61-4137-a31c-07947a4141e6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Doc Files">
+      <UniqueIdentifier>{befbc263-16ab-4db6-b1e7-8d0b4cfe7ab9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Libs\ZSDraw\ZSDrawDllMain.cpp">
@@ -1003,5 +1006,10 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\Doc\Libs\ZSDraw\ZSDraw.md">
+      <Filter>Doc Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

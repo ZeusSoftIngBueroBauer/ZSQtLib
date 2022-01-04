@@ -201,8 +201,7 @@ enum class EEditMode
     MoveShapePoint = 4, // A single shape point of the selected object is being moved.
     EditText       = 5, // A single shape point of the selected object is being moved.
     Ignore         = 6, // May be passed to methods to indicate that the argument should be ignored.
-    Select         = 7, // Reserved for internal use (subsystem test).
-    Undefined      = 8
+    Undefined      = 7
 };
 
 template class ZSDRAWDLL_API ZS::System::CEnum<EEditMode>;

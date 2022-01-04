@@ -59,7 +59,7 @@ class CGraphObjGroup;
 struct SGraphObjLabel;
 
 //******************************************************************************
-class ZSDRAWDLL_API CObjFactory : public ZS::System::CIdxTreeEntry
+class ZSDRAWDLL_API CObjFactory : public QObject, public ZS::System::CIdxTreeEntry
 //******************************************************************************
 {
 public: // class methods

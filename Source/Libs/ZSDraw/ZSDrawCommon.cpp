@@ -310,8 +310,7 @@ template<> const QVector<SEnumEntry> ZS::System::CEnum<EEditMode>::s_arEnumEntri
     /* 4 */ SEnumEntry( static_cast<int>(EEditMode::MoveShapePoint), "MoveShapePoint" ),
     /* 5 */ SEnumEntry( static_cast<int>(EEditMode::EditText),       "EditText"       ),
     /* 6 */ SEnumEntry( static_cast<int>(EEditMode::Ignore),         "Ignore"         ),
-    /* 7 */ SEnumEntry( static_cast<int>(EEditMode::Select),         "Select"         ),
-    /* 8 */ SEnumEntry( static_cast<int>(EEditMode::Undefined),      "Undefined"      )
+    /* 7 */ SEnumEntry( static_cast<int>(EEditMode::Undefined),      "Undefined"      )
 };
 
 

@@ -230,6 +230,9 @@ protected: // instance methods (for ctor)
 protected: // overridables of base class QWidget
     virtual void closeEvent( QCloseEvent* i_pEv );
 public: // instance methods
+    void setCheckedActionModeEdit( bool i_bChecked );
+    void setCheckedActionModeSimulation( bool i_bChecked );
+public: // instance methods
     void setCheckedActionEditSelect( bool i_bChecked );
     void triggerActionEditRotateLeft();
     void triggerActionEditRotateRight();
@@ -255,6 +258,9 @@ public slots: // Menu - File
     void onActionFileSaveAsTriggered( bool );
     void onActionFilePageSetupTriggered( bool );
     void onActionFileRecentTriggered( bool );
+public slots: // Menu - Mode
+    void onActionModeEditToggled( bool );
+    void onActionModeSimulationToggled( bool );
 public slots: // Menu - Edit - Select/RotateFree
     void onActionEditSelectToggled( bool );
 public slots: // Menu - Edit - Rotate
@@ -371,6 +377,11 @@ protected: // instance members
     bool                                                m_bDrawingChangedSinceLastSave;
     QString                                             m_strCurrentFile;
     QAction*                                            m_pActFileQuit;
+    // Menu - Mode
+    QMenu*                                              m_pMenuMode;
+    QToolBar*                                           m_pToolBarMode;
+    QAction*                                            m_pActModeEdit;
+    QAction*                                            m_pActModeSimulation;
     // Menu - Edit
     QMenu*                                              m_pMenuEdit;
     // Menu - Edit - Select

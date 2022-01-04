@@ -52,6 +52,7 @@ global type definitions and constants
 
 class QEvent;
 class QMimeData;
+class QModelIndex;
 class QPoint;
 class QStringList;
 class QVariant;
@@ -159,6 +160,7 @@ ZSSYSDLL_API QString qEvent2Str( QEvent* i_pEv, int i_iDetailLevel = 0 );
 ZSSYSDLL_API QString qEventType2Str( int i_iVal, bool i_bShort = true );
 ZSSYSDLL_API QString qItemDataRole2Str( int i_iVal );
 ZSSYSDLL_API QString qItemFlags2Str( quint32 i_flags );
+ZSSYSDLL_API QString qModelIndex2Str( const QModelIndex& i_modelIdx );
 
 ZSSYSDLL_API QString qKeyCode2Str( int i_iVal, EEnumEntryAliasStr i_alias = EEnumEntryAliasStrName );
 ZSSYSDLL_API int char2QKeyCode( const QChar& i_ch );    // e.g. "o", "1", "Z", " ", "?", ..

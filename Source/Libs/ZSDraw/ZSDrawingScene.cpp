@@ -890,6 +890,43 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! Setzt den Mode der Scene damit diese weiss, wie mit nachfolgenden Events zu
+    verfahren ist.
+
+    Um ein grafisches Objekt ueber Maus Events zu erzeugen, zu verschieben oder zu
+    rotieren, seine Form zu ändern, zu selektieren und zu gruppieren, muessen verschiedene
+    Modi korrekt gesetzt werden.
+
+    @param i_mode [in] Range [Edit, Simulation und Ignore]
+        Ignore ist zu übergeben, wenn der Mode nicht geändert werden soll und das Argument
+        somit zu ignorieren ist.
+        Nur im Edit Mode können Objekte auf der grafischen Oberfläche durch die Maus angelegt
+        und verändert werden.
+        Der Simulation Mode dient dazu, die Maus-Events an die Objekte selbst weiterzuleiten,
+        die entsprechend darauf reagieren können. Ist z.B. eine ComboBox als Objekt der Empfänger
+        der Maus-Events verarbeitet die ComboBox die Events, um z.B. die PullDown-List zu öffnen.
+        Bei dem Objekt kann es sich aber auch um ein vollständig benutzerdefiniertes Objekt wie
+        einen grafischen Schalter handeln, der über Maus-Klicks seinen On/Off Zustand ändert.
+    @param i_editTool [in] Range [Select, CreateObjects, Ignore, Undefined]
+        Ignore ist zu übergeben, wenn das EditTool nicht geändert werden soll und das Argument
+        somit zu ignorieren ist.
+        Undefined zeigt an, dass kein EditTool ausgewählt ist.
+        Wird Select übergeben, sollen nachfolgende Maus-Events dazu dienen, Objekte zu selektieren.
+        Mit CreateObjects wird angezeigt, dass über nachfolgende Maus-Events Objekte erzeugt werden sollen.
+    @param i_editMode [in] Range [Creating, Move, Resize, Rotate, MoveShapePoint, EditText, Ignore, Undefined]
+        Ignore ist zu übergeben, wenn der EditMode nicht geändert werden soll und das Argument
+        somit zu ignorieren ist.
+        Undefined zeigt an, dass kein EditMode ausgewählt ist.
+        Die anderen EditModes zeigen an, auf welche Art und Weise das Objekt zu modifizieren ist und hängen
+        im wesentlichen davon ab, an welchem Eckpunkt (SelectionPoint) das Objekt mit der Maus gepackt wurde.
+    @param i_editResizeMode [in] Range [ResizeAll, ResizeHor, ResizeVer, Ignore, Undefined]
+        Ignore ist zu übergeben, wenn der ResizeMode nicht geändert werden soll und das Argument
+        somit zu ignorieren ist.
+        Undefined zeigt an, dass kein ResizeMode ausgewählt ist.
+    @param i_bObjFactoryTypeChanged [in]
+        true, falls der grafische Object Type und damit die Objekt Factory zur Erzeugung des Objekt verändert wurde.
+        falls otherwise.
+*/
 void CDrawingScene::setMode(
     const ZS::System::CEnumMode& i_mode,
     const CEnumEditTool&         i_editTool,
@@ -899,6 +936,7 @@ void CDrawingScene::setMode(
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
+    QString strAddTrcInfo;
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
@@ -990,6 +1028,16 @@ void CDrawingScene::setMode(
         emit modeChanged();
     }
 
+    if( mthTracer.isActive(ETraceDetailLevelInternalStates) )
+    {
+        strAddTrcInfo  = "Mode:" + m_mode.toString();
+        strAddTrcInfo += ", EditTool:" + m_editTool.toString();
+        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
+        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
+        strAddTrcInfo += ", GraphObjCreating: " + QString(m_pGraphObjCreating == nullptr ? "nullptr" : m_pGraphObjCreating->path());
+        mthTracer.trace(strAddTrcInfo);
+    }
+
 } // setMode
 
 /*==============================================================================
@@ -997,6 +1045,21 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! Activates the given drawing tool by activating the corresponding object factory.
+
+    The method may only be called if the drawing scene is in Edit mode.
+
+    If a new object factory is activated the scenes mode will be adjusted
+    so that a graphical object will be created by the following mouse click event.
+
+    @param i_pObjFactory [in] Pointer to Object Factory instance to be used as the
+                              drawing tool's object factory.
+                              nullptr may be passed to deactivate any currently
+                              selected object factory.
+
+    @note Throws a critical exception
+          - with Result = InvalidMethodCall if the scene is not in Edit mode.
+*/
 void CDrawingScene::setCurrentDrawingTool( CObjFactory* i_pObjFactory )
 //------------------------------------------------------------------------------
 {
@@ -1005,15 +1068,7 @@ void CDrawingScene::setCurrentDrawingTool( CObjFactory* i_pObjFactory )
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
-        if( i_pObjFactory == nullptr )
-        {
-            strMthInArgs = "ObjFactory: nullptr";
-        }
-        else
-        {
-            strMthInArgs  = "Group:" + i_pObjFactory->getGroupName();
-            strMthInArgs += ", ObjType:" + i_pObjFactory->getGraphObjTypeAsString();
-        }
+        strMthInArgs = QString(i_pObjFactory == nullptr ? "nullptr" : i_pObjFactory->path());
     }
 
     CMethodTracer mthTracer(
@@ -1031,64 +1086,93 @@ void CDrawingScene::setCurrentDrawingTool( CObjFactory* i_pObjFactory )
         mthTracer.trace(strAddTrcInfo);
     }
 
-    if( m_mode == EMode::Edit )
+    if( m_mode != EMode::Edit )
     {
-        int iGraphObjTypePrev = static_cast<int>(EGraphObjTypeUndefined);
+        throw ZS::System::CException(__FILE__, __LINE__, EResultInvalidMethodCall, "m_mode != EMode::Edit");
+    }
 
-        if( m_pObjFactory != nullptr )
+    int iGraphObjTypePrev = static_cast<int>(EGraphObjTypeUndefined);
+
+    if( m_pObjFactory != nullptr )
+    {
+        if( !QObject::disconnect(
+            /* pObjSender   */ m_pObjFactory,
+            /* szSignal     */ SIGNAL(destroyed(QObject*)),
+            /* pObjReceiver */ this,
+            /* szSlot       */ SLOT(onGraphObjFactoryDestroyed(QObject*)) ) )
         {
-            iGraphObjTypePrev = m_pObjFactory->getGraphObjType();
+            throw ZS::System::CException(__FILE__, __LINE__, EResultSignalSlotConnectionFailed);
         }
 
-        int iGraphObjTypeCurr = iGraphObjTypePrev;
+        iGraphObjTypePrev = m_pObjFactory->getGraphObjType();
+    }
 
-        m_pObjFactory = i_pObjFactory;
+    int iGraphObjTypeCurr = iGraphObjTypePrev;
 
-        if( m_pObjFactory != nullptr )
+    m_pObjFactory = i_pObjFactory;
+
+    if( m_pObjFactory != nullptr )
+    {
+        if( !QObject::connect(
+            /* pObjSender   */ m_pObjFactory,
+            /* szSignal     */ SIGNAL(destroyed(QObject*)),
+            /* pObjReceiver */ this,
+            /* szSlot       */ SLOT(onGraphObjFactoryDestroyed(QObject*)) ) )
         {
-            iGraphObjTypeCurr = m_pObjFactory->getGraphObjType();
+            throw ZS::System::CException(__FILE__, __LINE__, EResultSignalSlotConnectionFailed);
+        }
+
+        iGraphObjTypeCurr = m_pObjFactory->getGraphObjType();
+    }
+    else
+    {
+        iGraphObjTypeCurr = static_cast<int>(EGraphObjTypeUndefined);
+    }
+
+    if( iGraphObjTypePrev != iGraphObjTypeCurr )
+    {
+        if( iGraphObjTypeCurr == static_cast<int>(EGraphObjTypeUndefined) )
+        {
+            CEnumEditTool editTool = m_editTool;
+
+            if( m_editTool != EEditTool::Select )
+            {
+                editTool = EEditTool::Undefined;
+            }
+            setMode(EMode::Ignore, editTool, EEditMode::Undefined, EEditResizeMode::Undefined, true);
         }
         else
         {
-            iGraphObjTypeCurr = static_cast<int>(EGraphObjTypeUndefined);
+            setMode(EMode::Ignore, EEditTool::CreateObjects, EEditMode::Undefined, EEditResizeMode::Undefined, true);
         }
-
-        if( iGraphObjTypePrev != iGraphObjTypeCurr )
-        {
-            if( iGraphObjTypeCurr == static_cast<int>(EGraphObjTypeUndefined) )
-            {
-                CEnumEditTool editTool = m_editTool;
-
-                if( m_editTool != EEditTool::Select )
-                {
-                    editTool = EEditTool::Undefined;
-                }
-                setMode( EMode::Ignore, editTool, EEditMode::Undefined, EEditResizeMode::Undefined, true );
-            }
-            else
-            {
-                setMode( EMode::Ignore, EEditTool::CreateObjects, EEditMode::Undefined, EEditResizeMode::Undefined, true );
-            }
-        }
-    } // if( m_mode == EMode::Edit )
+    }
 
     if( mthTracer.isActive(ETraceDetailLevelInternalStates) )
     {
-        if( m_pObjFactory == nullptr )
-        {
-            strAddTrcInfo = "nullptr";
-        }
-        else
-        {
-            strAddTrcInfo  = "GroupName:" + m_pObjFactory->getGroupName();
-            strAddTrcInfo += ", ObjType:" + m_pObjFactory->getGraphObjTypeAsString();
-        }
+        strAddTrcInfo = QString(m_pObjFactory == nullptr ? "nullptr" : m_pObjFactory->path());
         mthTracer.trace(strAddTrcInfo);
     }
 
 } // setCurrentDrawingTool
 
 //------------------------------------------------------------------------------
+/*! Activates the given drawing tool by activating the corresponding object factory.
+
+    The method may only be called if the drawing scene is in Edit mode.
+
+    The object factory with the given group name and graph object type must have
+    been created before.
+
+    @param i_strFactoryGrpName [in] Group name of the drawing tool's object factory.
+    @param i_strGraphObjType [in] Name of the drawing tool's object class.
+                                  An empty string may be passed to deactivate any
+                                  currently selected object factory.
+
+    @note Throws a critical exception
+          - with Result = InvalidMethodCall if the scene is not in Edit mode.
+          - with Result = ObjNotRegistered if no object factory with the given group name
+                          and object type is not registered.
+*/
 void CDrawingScene::setCurrentDrawingTool(
     const QString& i_strFactoryGrpName,
     const QString& i_strGraphObjType )
@@ -1099,8 +1183,7 @@ void CDrawingScene::setCurrentDrawingTool(
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
-        strMthInArgs  = "FactoryGroupName:" + i_strFactoryGrpName;
-        strMthInArgs += ", ObjType:" + i_strGraphObjType;
+        strMthInArgs = i_strFactoryGrpName + "::" + i_strGraphObjType;
     }
 
     CMethodTracer mthTracer(
@@ -1109,71 +1192,19 @@ void CDrawingScene::setCurrentDrawingTool(
         /* strMethod    */ "setCurrentDrawingTool",
         /* strAddInfo   */ strMthInArgs );
 
-    if( mthTracer.isActive(ETraceDetailLevelInternalStates) )
+    if( m_mode != EMode::Edit )
     {
-        strAddTrcInfo  = "Mode:" + m_mode.toString();
-        strAddTrcInfo += ", EditTool:" + m_editTool.toString();
-        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
-        strAddTrcInfo += ", EditResizeMode:" + m_editResizeMode.toString();
-        mthTracer.trace(strAddTrcInfo);
+        throw ZS::System::CException(__FILE__, __LINE__, EResultInvalidMethodCall, "m_mode != EMode::Edit");
     }
 
-    QString strGraphObjTypePrev;
+    CObjFactory* pObjFactory = CObjFactory::FindObjFactory(i_strFactoryGrpName, i_strGraphObjType);
 
-    if( m_pObjFactory != nullptr )
+    if( pObjFactory == nullptr )
     {
-        strGraphObjTypePrev = m_pObjFactory->getGraphObjTypeAsString();
+        throw ZS::System::CException(__FILE__, __LINE__, EResultObjNotRegistered, "pObjFactory == nullptr");
     }
 
-    QString strGraphObjTypeCurr;
-
-    if( i_strGraphObjType.isEmpty() )
-    {
-        m_pObjFactory = nullptr;
-    }
-    else if( m_mode == EMode::Edit )
-    {
-        CObjFactory* pObjFactory = CObjFactory::FindObjFactory(i_strFactoryGrpName, i_strGraphObjType );
-
-        if( pObjFactory == nullptr )
-        {
-            throw ZS::System::CException(__FILE__,__LINE__,EResultObjNotRegistered);
-        }
-        m_pObjFactory = pObjFactory;
-        strGraphObjTypeCurr = i_strGraphObjType;
-    }
-
-    if( strGraphObjTypePrev != strGraphObjTypeCurr )
-    {
-        if( strGraphObjTypeCurr.isEmpty() )
-        {
-            CEnumEditTool editTool = m_editTool;
-
-            if( m_editTool != EEditTool::Select )
-            {
-                editTool = EEditTool::Undefined;
-            }
-                setMode( EMode::Ignore, editTool, EEditMode::Undefined, EEditResizeMode::Undefined, true );
-            }
-            else
-            {
-                setMode( EMode::Ignore, EEditTool::CreateObjects, EEditMode::Undefined, EEditResizeMode::Undefined, true );
-            }
-    }
-
-    if( mthTracer.isActive(ETraceDetailLevelInternalStates) )
-    {
-        if( m_pObjFactory == nullptr )
-        {
-            strAddTrcInfo = "nullptr";
-        }
-        else
-        {
-            strAddTrcInfo  = "GroupName:" + m_pObjFactory->getGroupName();
-            strAddTrcInfo += ", ObjType:" + m_pObjFactory->getGraphObjTypeAsString();
-        }
-        mthTracer.trace(strAddTrcInfo);
-    }
+    setCurrentDrawingTool(pObjFactory);
 
 } // setCurrentDrawingTool
 
@@ -1895,7 +1926,7 @@ void CDrawingScene::onGraphObjCreated( CGraphObj* i_pGraphObj )
                 m_pGraphicsItemAddingShapePoints = nullptr;
                 m_pGraphObjAddingShapePoints = nullptr;
 
-                setMode( EMode::Ignore, EEditTool::Ignore, EEditMode::Undefined, EEditResizeMode::Undefined, false );
+                setMode(EMode::Ignore, EEditTool::Ignore, EEditMode::Undefined, EEditResizeMode::Undefined, false);
             }
         }
     }
@@ -2341,7 +2372,7 @@ int CDrawingScene::groupGraphObjsSelected()
                 throw ZS::System::CException( __FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphicsItem == nullptr" );
             }
 
-            pGraphObjGroup = dynamic_cast<CGraphObjGroup*>(m_pGraphicsItemCreating);
+            pGraphObjGroup = dynamic_cast<CGraphObjGroup*>(m_pGraphObjCreating);
 
             if( pGraphObjGroup == nullptr )
             {
@@ -3238,25 +3269,8 @@ void CDrawingScene::dragMoveEvent( QGraphicsSceneDragDropEvent* i_pEv )
         strMthInArgs += ", EditMode:" + m_editMode.toString();
         strMthInArgs += ", EditResizeMode:" + m_editResizeMode.toString();
 
-        if( m_pObjFactory == nullptr )
-        {
-            strMthInArgs += ", ObjFactory:nullptr";
-        }
-        else
-        {
-            strMthInArgs += ", ObjFactory:" + m_pObjFactory->getGraphObjTypeAsString();
-        }
-
-        if( m_pGraphObjCreating == nullptr )
-        {
-            strMthInArgs += ", GraphObjCreating:nullptr";
-        }
-        else
-        {
-            strMthInArgs += ", GraphObjCreating:" + m_pGraphObjCreating->nameSpace();
-            strMthInArgs += "::" + m_pGraphObjCreating->className();
-            strMthInArgs += "::" + m_pGraphObjCreating->name();
-        }
+        strMthInArgs += ", ObjFactory:" + QString(m_pObjFactory == nullptr ? "nullptr" : m_pObjFactory->path());
+        strMthInArgs += ", GraphObjCreating:" + QString(m_pGraphObjCreating == nullptr ? "nullptr" : m_pGraphObjCreating->path());
 
         strMthInArgs += ", SceneRect(x,y,w,h):(" + QString::number(sceneRect().x()) + "," + QString::number(sceneRect().y());
         strMthInArgs += "," + QString::number(sceneRect().width()) + "," + QString::number(sceneRect().height()) + ")";
@@ -3313,25 +3327,8 @@ void CDrawingScene::dragLeaveEvent( QGraphicsSceneDragDropEvent* i_pEv )
         strMthInArgs += ", EditMode:" + m_editMode.toString();
         strMthInArgs += ", EditResizeMode:" + m_editResizeMode.toString();
 
-        if( m_pObjFactory == nullptr )
-        {
-            strMthInArgs += ", ObjFactory:nullptr";
-        }
-        else
-        {
-            strMthInArgs += ", ObjFactory:" + m_pObjFactory->getGraphObjTypeAsString();
-        }
-
-        if( m_pGraphObjCreating == nullptr )
-        {
-            strMthInArgs += ", GraphObjCreating:nullptr";
-        }
-        else
-        {
-            strMthInArgs += ", GraphObjCreating:" + m_pGraphObjCreating->nameSpace();
-            strMthInArgs += "::" + m_pGraphObjCreating->className();
-            strMthInArgs += "::" + m_pGraphObjCreating->name();
-        }
+        strMthInArgs += ", ObjFactory:" + QString(m_pObjFactory == nullptr ? "nullptr" : m_pObjFactory->path());
+        strMthInArgs += ", GraphObjCreating:" + QString(m_pGraphObjCreating == nullptr ? "nullptr" : m_pGraphObjCreating->path());
 
         strMthInArgs += ", SceneRect(x,y,w,h):(" + QString::number(sceneRect().x()) + "," + QString::number(sceneRect().y());
         strMthInArgs += "," + QString::number(sceneRect().width()) + "," + QString::number(sceneRect().height()) + ")";
@@ -3401,25 +3398,8 @@ void CDrawingScene::dropEvent( QGraphicsSceneDragDropEvent* i_pEv )
         strMthInArgs += ", EditMode:" + m_editMode.toString();
         strMthInArgs += ", EditResizeMode:" + m_editResizeMode.toString();
 
-        if( m_pObjFactory == nullptr )
-        {
-            strMthInArgs += ", ObjFactory:nullptr";
-        }
-        else
-        {
-            strMthInArgs += ", ObjFactory:" + m_pObjFactory->getGraphObjTypeAsString();
-        }
-
-        if( m_pGraphObjCreating == nullptr )
-        {
-            strMthInArgs += ", GraphObjCreating:nullptr";
-        }
-        else
-        {
-            strMthInArgs += ", GraphObjCreating:" + m_pGraphObjCreating->nameSpace();
-            strMthInArgs += "::" + m_pGraphObjCreating->className();
-            strMthInArgs += "::" + m_pGraphObjCreating->name();
-        }
+        strMthInArgs += ", ObjFactory:" + QString(m_pObjFactory == nullptr ? "nullptr" : m_pObjFactory->path());
+        strMthInArgs += ", GraphObjCreating:" + QString(m_pGraphObjCreating == nullptr ? "nullptr" : m_pGraphObjCreating->path());
 
         strMthInArgs += ", SceneRect(x,y,w,h):(" + QString::number(sceneRect().x()) + "," + QString::number(sceneRect().y());
         strMthInArgs += "," + QString::number(sceneRect().width()) + "," + QString::number(sceneRect().height()) + ")";
@@ -3603,16 +3583,16 @@ void CDrawingScene::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
 
     if( m_mode != EMode::Edit )
     {
-        if( m_pGraphicsItemCreating != nullptr || iObjFactoryType != static_cast<int>(EGraphObjTypeUndefined) )
+        if( m_pGraphObjCreating != nullptr || iObjFactoryType != static_cast<int>(EGraphObjTypeUndefined) )
         {
-            throw ZS::System::CException(__FILE__,__LINE__,EResultInvalidMethodCall);
+            throw ZS::System::CException(__FILE__, __LINE__, EResultInternalProgramError);
         }
     }
 
     if( m_mode == EMode::Edit )
     {
         // If currently an object is "under construction" ...
-        if( m_pGraphicsItemCreating != nullptr )
+        if( m_pGraphObjCreating != nullptr )
         {
             // ... dispatch mouse event to object "under construction".
             QGraphicsSceneMouseEvent evMouse(QEvent::GraphicsSceneMousePress);
@@ -3635,14 +3615,14 @@ void CDrawingScene::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
             evMouse.setButtons(i_pEv->buttons());
             evMouse.setModifiers(i_pEv->modifiers());
 
-            sendEvent( m_pGraphicsItemCreating, &evMouse );
+            sendEvent(m_pGraphicsItemCreating, &evMouse);
 
             bEventHandled = true;
 
-        } // if( m_pGraphicsItemCreating != nullptr )
+        } // if( m_pGraphObjCreating != nullptr )
 
         // If currently an object is "under construction" ...
-        else if( m_pGraphicsItemAddingShapePoints != nullptr )
+        else if( m_pGraphObjAddingShapePoints != nullptr )
         {
             // ... dispatch mouse event to object "under construction".
             QGraphicsSceneMouseEvent evMouse(QEvent::GraphicsSceneMousePress);
@@ -3665,14 +3645,14 @@ void CDrawingScene::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
             evMouse.setButtons(i_pEv->buttons());
             evMouse.setModifiers(i_pEv->modifiers());
 
-            sendEvent( m_pGraphicsItemAddingShapePoints, &evMouse );
+            sendEvent(m_pGraphicsItemAddingShapePoints, &evMouse);
 
             bEventHandled = true;
 
-        } // if( m_pGraphicsItemAddingShapePoints != nullptr )
+        } // if( m_pGraphObjAddingShapePoints != nullptr )
 
         // If currently no object is "under construction" ...
-        else // if( m_pGraphicsItemCreating == nullptr && m_pGraphicsItemAddingShapePoints == nullptr )
+        else // if( m_pGraphObjCreating == nullptr && m_pGraphObjAddingShapePoints == nullptr )
         {
             if( m_editTool == EEditTool::CreateObjects )
             {
@@ -3760,12 +3740,12 @@ void CDrawingScene::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
 
                             emit modeChanged();
 
-                        } // if( m_pGraphicsItemCreating != nullptr )
+                        } // if( m_pGraphObjCreating != nullptr )
                     } // if( bCreateObj )
                 } // if( m_pObjFactory != nullptr )
 
                 // If an object has been newly created and is still under construction ...
-                if( m_pGraphicsItemCreating != nullptr )
+                if( m_pGraphObjCreating != nullptr )
                 {
                     // ... dispatch mouse event to object "under construction".
                     QGraphicsSceneMouseEvent evMouse(QEvent::GraphicsSceneMousePress);
@@ -3788,16 +3768,13 @@ void CDrawingScene::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
                     evMouse.setButtons(i_pEv->buttons());
                     evMouse.setModifiers(i_pEv->modifiers());
 
-                    sendEvent( m_pGraphicsItemCreating, &evMouse );
+                    sendEvent(m_pGraphicsItemCreating, &evMouse);
 
                     bEventHandled = true;
 
-                } // if( m_pGraphicsItemCreating != nullptr )
-
+                } // if( m_pGraphObjCreating != nullptr )
             } // if( m_editTool == EEditTool::CreateObjects )
-
-        } // if( m_pGraphicsItemCreating == nullptr && m_pGraphicsItemAddingShapePoints == nullptr )
-
+        } // if( m_pGraphObjCreating == nullptr && m_pGraphObjAddingShapePoints == nullptr )
     } // if( m_mode == EMode::Edit )
 
     if( !bEventHandled )
@@ -4007,7 +3984,6 @@ void CDrawingScene::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
                     }
                 }
             }
-
         } // if( arpGraphicsItemsHit.size() > 0 )
 
         // Dispatch mouse press event to objects which have been hit.
@@ -4124,9 +4100,9 @@ void CDrawingScene::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
 
     if( m_mode != EMode::Edit )
     {
-        if( m_pGraphicsItemCreating != nullptr || iObjFactoryType != static_cast<int>(EGraphObjTypeUndefined) )
+        if( m_pGraphObjCreating != nullptr || iObjFactoryType != static_cast<int>(EGraphObjTypeUndefined) )
         {
-            throw ZS::System::CException(__FILE__,__LINE__,EResultInvalidMethodCall);
+            throw ZS::System::CException(__FILE__,__LINE__,EResultInternalProgramError);
         }
     }
 
@@ -4147,7 +4123,7 @@ void CDrawingScene::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
     if( m_mode == EMode::Edit )
     {
         // If currently an object is "under construction" ...
-        if( m_pGraphicsItemCreating != nullptr )
+        if( m_pGraphObjCreating != nullptr )
         {
             // ... dispatch mouse event to object "under construction".
             QGraphicsSceneMouseEvent evMouse(QEvent::GraphicsSceneMouseMove);
@@ -4170,12 +4146,12 @@ void CDrawingScene::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
             evMouse.setModifiers(i_pEv->modifiers());
             evMouse.setAccepted(i_pEv->isAccepted());
 
-            sendEvent( m_pGraphicsItemCreating, &evMouse );
+            sendEvent(m_pGraphicsItemCreating, &evMouse);
 
-        } // if( m_pGraphicsItemCreating != nullptr )
+        } // if( m_pGraphObjCreating != nullptr )
 
         // If currently an object is "under construction" ...
-        else if( m_pGraphicsItemAddingShapePoints != nullptr )
+        else if( m_pGraphObjAddingShapePoints != nullptr )
         {
             // ... dispatch mouse event to object "under construction".
             QGraphicsSceneMouseEvent evMouse(QEvent::GraphicsSceneMouseMove);
@@ -4198,12 +4174,12 @@ void CDrawingScene::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
             evMouse.setModifiers(i_pEv->modifiers());
             evMouse.setAccepted(i_pEv->isAccepted());
 
-            sendEvent( m_pGraphicsItemAddingShapePoints, &evMouse );
+            sendEvent(m_pGraphicsItemAddingShapePoints, &evMouse);
 
-        } // if( m_pGraphicsItemAddingShapePoints != nullptr )
+        } // if( m_pGraphObjAddingShapePoints != nullptr )
 
         // If currently no object is "under construction" ...
-        else // if( m_pGraphicsItemCreating == nullptr && m_pGraphicsItemAddingShapePoints == nullptr )
+        else // if( m_pGraphObjCreating == nullptr && m_pGraphObjAddingShapePoints == nullptr )
         {
             bool bDispatchMouseEvents2ObjectsUnderMouseCursor = false;
             bool bDispatchMouseEvents2ConnectionPointsUnderMouseCursor = false;
@@ -4256,7 +4232,6 @@ void CDrawingScene::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
                     }
 
                 } // if( iMouseButtonState == Qt::NoButton )
-
             } // if( m_editTool == EEditTool::CreateObjects )
 
             else if( m_editTool == EEditTool::Select )
@@ -4365,8 +4340,8 @@ void CDrawingScene::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
                                     arpGraphicsItemsHit.append(pGraphicsItem);
                                 }
                             }
-                        }
-                    }
+                        } // if( pGraphicsItem != nullptr && pGraphObj != nullptr )
+                    } // for( idxGraphObj = 0; idxGraphObj < arpGraphicsItemsIntersected.size(); idxGraphObj++ )
                 } // if( arpGraphicsItemsIntersected.size() > 0 )
 
                 // Objects which have been hit by mouse cursor temporarily accept hover events.
@@ -4409,8 +4384,8 @@ void CDrawingScene::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
                                 m_arpGraphicsItemsAcceptingHoverEvents.append(pGraphicsItemHit);
                             }
                         }
-                    }
-                }
+                    } // if( pGraphicsItemHit != nullptr && pGraphObjHit != nullptr )
+                } // for( idxGraphObjHit = 0; idxGraphObjHit < arpGraphicsItemsHit.size(); idxGraphObjHit++ )
 
                 // Objects which have not been hit but have been part of the list temporarily accepting hover events
                 // must be removed from the list and are no longer accepting hover events.
@@ -4458,9 +4433,7 @@ void CDrawingScene::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
                 QGraphicsScene::mouseMoveEvent(i_pEv);
 
             } // if( bDispatchMouseEvents2ObjectsUnderMouseCursor || bDispatchMouseEvents2ConnectionPointsUnderMouseCursor )
-
-        } // if( m_pGraphicsItemCreating == nullptr && m_pGraphicsItemAddingShapePoints == nullptr )
-
+        } // if( m_pGraphObjCreating == nullptr && m_pGraphObjAddingShapePoints == nullptr )
     } // if( m_mode == EMode::Edit )
 
     else if( m_mode == EMode::Simulation )
@@ -4526,9 +4499,9 @@ void CDrawingScene::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
 
     if( m_mode != EMode::Edit )
     {
-        if( m_pGraphicsItemCreating != nullptr || iObjFactoryType != static_cast<int>(EGraphObjTypeUndefined) )
+        if( m_pGraphObjCreating != nullptr || iObjFactoryType != static_cast<int>(EGraphObjTypeUndefined) )
         {
-            throw ZS::System::CException(__FILE__,__LINE__,EResultInvalidMethodCall);
+            throw ZS::System::CException(__FILE__, __LINE__, EResultInternalProgramError);
         }
     }
 
@@ -4539,7 +4512,7 @@ void CDrawingScene::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
     if( m_mode == EMode::Edit )
     {
         // If currently an object is "under construction" ...
-        if( m_pGraphicsItemCreating != nullptr )
+        if( m_pGraphObjCreating != nullptr )
         {
             // ... dispatch mouse event to object "under construction".
             QGraphicsSceneMouseEvent* pEv = new QGraphicsSceneMouseEvent(QEvent::GraphicsSceneMouseRelease);
@@ -4552,14 +4525,14 @@ void CDrawingScene::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
             pEv->setPos(ptItemPos);
             pEv->setScenePos(ptScenePos);
             pEv->setScreenPos(ptScreenPos);
-            sendEvent( m_pGraphicsItemCreating, pEv );
+            sendEvent(m_pGraphicsItemCreating, pEv);
             delete pEv;
             pEv = nullptr;
 
-        } // if( m_pGraphicsItemCreating != nullptr )
+        } // if( m_pGraphObjCreating != nullptr )
 
         // If currently an object is "under construction" ...
-        else if( m_pGraphicsItemAddingShapePoints != nullptr )
+        else if( m_pGraphObjAddingShapePoints != nullptr )
         {
             // ... dispatch mouse event to object "under construction".
             QGraphicsSceneMouseEvent* pEv = new QGraphicsSceneMouseEvent(QEvent::GraphicsSceneMouseRelease);
@@ -4572,14 +4545,14 @@ void CDrawingScene::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
             pEv->setPos(ptItemPos);
             pEv->setScenePos(ptScenePos);
             pEv->setScreenPos(ptScreenPos);
-            sendEvent( m_pGraphicsItemAddingShapePoints, pEv );
+            sendEvent(m_pGraphicsItemAddingShapePoints, pEv);
             delete pEv;
             pEv = nullptr;
 
-        } // if( m_pGraphicsItemAddingShapePoints != nullptr )
+        } // if( m_pGraphObjAddingShapePoints != nullptr )
 
         // If currently no object is "under construction" ...
-        else // if( m_pGraphicsItemCreating == nullptr && m_pGraphicsItemAddingShapePoints == nullptr )
+        else // if( m_pGraphObjCreating == nullptr && m_pGraphObjAddingShapePoints == nullptr )
         {
             // ... dispatch mouse press event to objects "under cursor".
             QGraphicsScene::mouseReleaseEvent(i_pEv);
@@ -4611,9 +4584,7 @@ void CDrawingScene::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
             //    // ... dispatch mouse press event to objects "under cursor".
             //    QGraphicsScene::mouseReleaseEvent(i_pEv);
             //}
-
-        } // if( m_pGraphicsItemCreating == nullptr && m_pGraphicsItemAddingShapePoints == nullptr )
-
+        } // if( m_pGraphObjCreating == nullptr && m_pGraphObjAddingShapePoints == nullptr )
     } // if( m_mode == EMode::Edit )
 
     else if( m_mode == EMode::Simulation )
@@ -4686,9 +4657,9 @@ void CDrawingScene::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv )
 
     if( m_mode != EMode::Edit )
     {
-        if( m_pGraphicsItemCreating != nullptr || iObjFactoryType != static_cast<int>(EGraphObjTypeUndefined) )
+        if( m_pGraphObjCreating != nullptr || iObjFactoryType != static_cast<int>(EGraphObjTypeUndefined) )
         {
-            throw ZS::System::CException(__FILE__,__LINE__,EResultInvalidMethodCall);
+            throw ZS::System::CException(__FILE__, __LINE__, EResultInternalProgramError);
         }
     }
 
@@ -4699,7 +4670,7 @@ void CDrawingScene::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv )
     if( m_mode == EMode::Edit )
     {
         // If currently an object is "under construction" ...
-        if( m_pGraphicsItemCreating != nullptr )
+        if( m_pGraphObjCreating != nullptr )
         {
             // If currently a connection line is "under construction" ...
             if( m_pGraphicsItemCreating->type() == static_cast<int>(EGraphObjTypeConnectionLine) )
@@ -4735,11 +4706,10 @@ void CDrawingScene::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv )
                     m_pGraphObjAddingShapePoints = nullptr;
                     pGraphObjCnctLine = nullptr;
                 }
-
-            } // if( m_pGraphicsItemCreating->type() == EGraphObjTypeConnectionLine 
+            } // if( m_pGraphicsItemCreating->type() == EGraphObjTypeConnectionLine )
 
             // ... dispatch mouse event to object "under construction".
-            if( m_pGraphicsItemCreating != nullptr )
+            if( m_pGraphObjCreating != nullptr )
             {
                 QGraphicsSceneMouseEvent* pEv = new QGraphicsSceneMouseEvent(QEvent::GraphicsSceneMouseDoubleClick);
                 QPointF ptItemPos = i_pEv->pos();
@@ -4751,15 +4721,14 @@ void CDrawingScene::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv )
                 pEv->setPos(ptItemPos);
                 pEv->setScenePos(ptScenePos);
                 pEv->setScreenPos(ptScreenPos);
-                sendEvent( m_pGraphicsItemCreating, pEv );
+                sendEvent(m_pGraphicsItemCreating, pEv);
                 delete pEv;
                 pEv = nullptr;
             }
-
-        } // if( m_pGraphicsItemCreating != nullptr )
+        } // if( m_pGraphObjCreating != nullptr )
 
         // If currently an object is "under construction" ...
-        else if( m_pGraphicsItemAddingShapePoints != nullptr )
+        else if( m_pGraphObjAddingShapePoints != nullptr )
         {
             // ... dispatch mouse event to object "under construction".
             QGraphicsSceneMouseEvent* pEv = new QGraphicsSceneMouseEvent(QEvent::GraphicsSceneMouseDoubleClick);
@@ -4772,14 +4741,14 @@ void CDrawingScene::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv )
             pEv->setPos(ptItemPos);
             pEv->setScenePos(ptScenePos);
             pEv->setScreenPos(ptScreenPos);
-            sendEvent( m_pGraphicsItemAddingShapePoints, pEv );
+            sendEvent(m_pGraphicsItemAddingShapePoints, pEv);
             delete pEv;
             pEv = nullptr;
 
-        } // if( m_pGraphicsItemAddingShapePoints != nullptr )
+        } // if( m_pGraphObjAddingShapePoints != nullptr )
 
         // If currently no object is "under construction" ...
-        else // if( m_pGraphicsItemCreating == nullptr && m_pGraphicsItemAddingShapePoints == nullptr )
+        else // if( m_pGraphObjCreating == nullptr && m_pGraphObjAddingShapePoints == nullptr )
         {
             // ... dispatch mouse event to objects "under cursor".
             QGraphicsScene::mouseDoubleClickEvent(i_pEv);
@@ -5452,3 +5421,31 @@ void CDrawingScene::drawForeground( QPainter* i_pPainter, const QRectF& i_rect )
     QGraphicsScene::drawForeground(i_pPainter,i_rect);
 
 } // drawForeground
+
+/*==============================================================================
+protected slots:
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CDrawingScene::onGraphObjFactoryDestroyed( QObject* i_pObjFactory )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    QString strAddTrcInfo;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    {
+        strMthInArgs = QString(i_pObjFactory == nullptr ? "nullptr" : i_pObjFactory->objectName());
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* strMethod    */ "onGraphObjFactoryDestroyed",
+        /* strAddInfo   */ strMthInArgs );
+
+    if( m_pObjFactory == i_pObjFactory )
+    {
+        m_pObjFactory = nullptr;
+    }
+} // onGraphObjFactoryDestroyed

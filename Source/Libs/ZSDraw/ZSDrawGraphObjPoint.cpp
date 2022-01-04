@@ -1094,9 +1094,7 @@ void CGraphObjPoint::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
                 }
 
             } // if( m_pDrawingScene->isMouseDoubleClickEventInProcess() )
-
         } // if( editToolDrawing == EEditTool::Select && m_editMode == EEditMode::Undefined )
-
     } // if( modeDrawing == EMode::Edit )
 
     if( mthTracer.isActive(ETraceDetailLevelInternalStates) )

@@ -175,6 +175,7 @@ CObjFactory::CObjFactory(
     const QString& i_strGraphObjType,
     const QIcon&   i_toolIcon ) :
 //------------------------------------------------------------------------------
+    QObject(),
     CIdxTreeEntry(EIdxTreeEntryType::Leave, i_strGraphObjType),
     m_strGroupName(i_strGroupName),
     m_iGraphObjType(i_iGraphObjType),
@@ -182,6 +183,8 @@ CObjFactory::CObjFactory(
     m_strFileName(),
     m_pTrcAdminObj(nullptr)
 {
+    setObjectName(i_strGroupName + "::" + i_strGraphObjType);
+
     s_iInstCount++;
 
     if( s_pIdxTree == nullptr )

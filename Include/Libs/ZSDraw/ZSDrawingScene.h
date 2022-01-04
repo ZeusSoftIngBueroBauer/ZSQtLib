@@ -65,7 +65,6 @@ class ZSDRAWDLL_API CDrawingScene : public QGraphicsScene
 {
     Q_OBJECT
 public: // class methods
-public: // class methods
     /*! Returns the namespace the class belongs to. */
     static QString NameSpace() { return "ZS::Draw"; } // Please note that the static class functions name must be different from the non static virtual member function "nameSpace"
     /*! Returns the class name. */
@@ -224,6 +223,8 @@ public: // overridables of base class QGraphicsScene
 protected: // overridables of base class QGraphicsScene
     virtual void drawBackground( QPainter* i_pPainter, const QRectF& i_rect );
     virtual void drawForeground( QPainter* i_pPainter, const QRectF& i_rect );
+protected slots:
+    void onGraphObjFactoryDestroyed( QObject* i_pObjFactory );
 protected: // instance members
     CDrawSettings            m_drawSettings;
     double                   m_fXResolution_dpmm;
@@ -233,11 +234,11 @@ protected: // instance members
     CEnumEditMode            m_editMode;
     CEnumEditResizeMode      m_editResizeMode;
     QGraphicsRectItem*       m_pGraphicsItemSelectionArea;
-    CObjFactory*             m_pObjFactory;                    // corresponds to the selected drawing tool
-    QGraphicsItem*           m_pGraphicsItemCreating;          // Same object as GraphObjCreating (just a different name for the same thing)
-    CGraphObj*               m_pGraphObjCreating;              // Same object as GraphicsItemCreating (just a different name for the same thing)
-    QGraphicsItem*           m_pGraphicsItemAddingShapePoints; // Same object as GraphObjAddingShapePoints (just a different name for the same thing)
-    CGraphObj*               m_pGraphObjAddingShapePoints;     // Same object as GraphicsItemAddingShapePoints (just a different name for the same thing)
+    CObjFactory*             m_pObjFactory;                    /*! Corresponds to the selected drawing tool. */
+    QGraphicsItem*           m_pGraphicsItemCreating;          /*! Same object as GraphObjCreating (just a different name for the same thing to avoid unnecessary dynamic_casts). */
+    CGraphObj*               m_pGraphObjCreating;              /*! Same object as GraphicsItemCreating (just a different name for the same thing to avoid unnecessary dynamic_casts). */
+    QGraphicsItem*           m_pGraphicsItemAddingShapePoints; /*! Same object as GraphObjAddingShapePoints (just a different name for the same thing to avoid unnecessary dynamic_casts). */
+    CGraphObj*               m_pGraphObjAddingShapePoints;     /*! Same object as GraphicsItemAddingShapePoints (just a different name for the same thing to avoid unnecessary dynamic_casts). */
     QString                  m_strGraphObjNameSeparator;
     bool                     m_bGraphObjIdChangedByMyself;
     ZS::System::CIdxTree*    m_pGraphObjsIdxTree;
