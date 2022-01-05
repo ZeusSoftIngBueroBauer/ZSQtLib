@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -784,7 +784,8 @@ CTestStep* CTest::getNextTestStep(
         mthTracer.trace(strAddTrcInfo);
     }
 
-    CTestStep* pTestStep = nullptr;
+    CTestStep*      pTestStep      = nullptr;
+    CTestStepGroup* pTestStepGroup = nullptr;
 
     // No parent: no next test step.
     if( i_pTreeEntryParent != nullptr )
@@ -822,8 +823,14 @@ CTestStep* CTest::getNextTestStep(
                 // Group entry ..
                 else
                 {
-                    // .. get first step to be executed in child group.
-                    pTestStep = getNextTestStep(pTreeEntryChild, nullptr);
+                    // .. next test step to be executed is this leave entry if the entry is enabled.
+                    pTestStepGroup = dynamic_cast<CTestStepGroup*>(pTreeEntryChild);
+
+                    if( pTestStepGroup->isEnabled() )
+                    {
+                        // .. get first step to be executed in child group.
+                        pTestStep = getNextTestStep(pTreeEntryChild, nullptr);
+                    }
                 }
                 if( pTestStep != nullptr )
                 {

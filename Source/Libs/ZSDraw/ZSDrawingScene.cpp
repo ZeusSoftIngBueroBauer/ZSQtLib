@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -142,7 +142,6 @@ CDrawingScene::CDrawingScene( QObject* i_pObjParent ) :
     m_pGraphicsItemAddingShapePoints(nullptr),
     m_pGraphObjAddingShapePoints(nullptr),
     m_strGraphObjNameSeparator("/"),
-    m_bGraphObjIdChangedByMyself(false),
     m_pGraphObjsIdxTree(nullptr),
     m_pGraphObjsIdxTreeClipboard(nullptr),
     m_arpGraphicsItemsAcceptingHoverEvents(),
@@ -251,7 +250,6 @@ CDrawingScene::~CDrawingScene()
     m_pGraphicsItemAddingShapePoints = nullptr;
     m_pGraphObjAddingShapePoints = nullptr;
     //m_strGraphObjNameSeparator;
-    m_bGraphObjIdChangedByMyself = false;
     m_pGraphObjsIdxTree = nullptr;
     m_pGraphObjsIdxTreeClipboard = nullptr;
     //m_arpGraphicsItemsAcceptingHoverEvents;
@@ -305,6 +303,83 @@ void CDrawingScene::clear()
 } // clear
 
 //------------------------------------------------------------------------------
+void CDrawingScene::addGraphObj( CGraphObj* i_pGraphObj, CGraphObj* i_pGraphObjParent )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    {
+        strMthInArgs = QString(i_pGraphObj == nullptr ? "nullptr" : i_pGraphObj->path());
+        strMthInArgs += ", Parent: " + QString(i_pGraphObjParent == nullptr ? "nullptr" : i_pGraphObjParent->path());
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* strMethod    */ "addGraphObj",
+        /* strAddInfo   */ strMthInArgs );
+
+    QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(i_pGraphObj);
+
+    if( pGraphicsItem == nullptr )
+    {
+        throw ZS::System::CException(__FILE__, __LINE__, EResultInvalidDynamicTypeCast, "dynamic_cast<QGraphicsItem*>(i_pGraphObj)");
+    }
+
+    addItem(pGraphicsItem);
+
+    m_pGraphObjsIdxTree->add(i_pGraphObj, i_pGraphObjParent);
+
+} // addGraphObj
+
+//------------------------------------------------------------------------------
+void CDrawingScene::removeGraphObj( CGraphObj* i_pGraphObj )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    {
+        strMthInArgs = QString(i_pGraphObj == nullptr ? "nullptr" : i_pGraphObj->path());
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* strMethod    */ "removeGraphObj",
+        /* strAddInfo   */ strMthInArgs );
+
+    QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(i_pGraphObj);
+
+    if( pGraphicsItem != nullptr )
+    {
+        removeItem(pGraphicsItem);
+    }
+
+} // removeGraphObj
+
+/*==============================================================================
+protected: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CDrawingScene::addItem( QGraphicsItem* i_pGraphicsItem )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    {
+        CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(i_pGraphicsItem);
+        strMthInArgs = QString(pGraphObj == nullptr ? "nullptr" : pGraphObj->path());
+    }
+
+    QGraphicsScene::addItem(i_pGraphicsItem);
+
+} // addItem
+
+//------------------------------------------------------------------------------
 void CDrawingScene::removeItem( QGraphicsItem* i_pGraphicsItem )
 //------------------------------------------------------------------------------
 {
@@ -313,15 +388,7 @@ void CDrawingScene::removeItem( QGraphicsItem* i_pGraphicsItem )
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
         CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(i_pGraphicsItem);
-
-        if( pGraphObj == nullptr )
-        {
-            strMthInArgs = "GraphObj:nullptr";
-        }
-        else
-        {
-            strMthInArgs = "GraphObj:" + pGraphObj->name();
-        }
+        strMthInArgs = QString(pGraphObj == nullptr ? "nullptr" : pGraphObj->path());
     }
 
     CMethodTracer mthTracer(
@@ -334,39 +401,6 @@ void CDrawingScene::removeItem( QGraphicsItem* i_pGraphicsItem )
 
 } // removeItem
 
-//------------------------------------------------------------------------------
-void CDrawingScene::removeItem( CGraphObj* i_pGraphObj )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
-    {
-        if( i_pGraphObj == nullptr )
-        {
-            strMthInArgs = "GraphObj:nullptr";
-        }
-        else
-        {
-            strMthInArgs = "GraphObj:" + i_pGraphObj->name();
-        }
-    }
-
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strMethod    */ "removeItem",
-        /* strAddInfo   */ strMthInArgs );
-
-    QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(i_pGraphObj);
-
-    if( pGraphicsItem != nullptr )
-    {
-        QGraphicsScene::removeItem(pGraphicsItem);
-    }
-
-} // removeItem
-
 /*==============================================================================
 protected: // instance methods
 ==============================================================================*/
@@ -375,20 +409,12 @@ protected: // instance methods
 void CDrawingScene::deleteItem( QGraphicsItem* i_pGraphicsItem )
 //------------------------------------------------------------------------------
 {
-    CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(i_pGraphicsItem);
-
     QString strMthInArgs;
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
-        if( pGraphObj == nullptr )
-        {
-            strMthInArgs = "GraphObj:nullptr";
-        }
-        else
-        {
-            strMthInArgs = "GraphObj:" + pGraphObj->name();
-        }
+        CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(i_pGraphicsItem);
+        strMthInArgs = QString(pGraphObj == nullptr ? "nullptr" : pGraphObj->path());
     }
 
     CMethodTracer mthTracer(
@@ -396,6 +422,8 @@ void CDrawingScene::deleteItem( QGraphicsItem* i_pGraphicsItem )
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "deleteItem",
         /* strAddInfo   */ strMthInArgs );
+
+    CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(i_pGraphicsItem);
 
     if( pGraphObj != nullptr )
     {
@@ -414,14 +442,7 @@ void CDrawingScene::deleteItem( CGraphObj* i_pGraphObj )
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
-        if( i_pGraphObj == nullptr )
-        {
-            strMthInArgs = "GraphObj:nullptr";
-        }
-        else
-        {
-            strMthInArgs = "GraphObj:" + i_pGraphObj->name();
-        }
+        strMthInArgs = QString(i_pGraphObj == nullptr ? "nullptr" : i_pGraphObj->path());
     }
 
     CMethodTracer mthTracer(
@@ -490,20 +511,12 @@ protected: // instance methods
 void CDrawingScene::addChildItems( QGraphicsItem* i_pGraphicsItem )
 //------------------------------------------------------------------------------
 {
-    CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(i_pGraphicsItem);
-
     QString strMthInArgs;
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
-        if( pGraphObj == nullptr )
-        {
-            strMthInArgs = "GraphObj:nullptr";
-        }
-        else
-        {
-            strMthInArgs = "GraphObj:" + pGraphObj->name();
-        }
+        CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(i_pGraphicsItem);
+        strMthInArgs = QString(pGraphObj == nullptr ? "nullptr" : pGraphObj->path());
     }
 
     CMethodTracer mthTracer(
@@ -511,6 +524,8 @@ void CDrawingScene::addChildItems( QGraphicsItem* i_pGraphicsItem )
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "addChildItems",
         /* strAddInfo   */ strMthInArgs );
+
+    CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(i_pGraphicsItem);
 
     if( i_pGraphicsItem != nullptr )
     {
@@ -528,7 +543,7 @@ void CDrawingScene::addChildItems( QGraphicsItem* i_pGraphicsItem )
             {
                 addItem(pGraphicsItemChild);
 
-                onGraphObjCreated(pGraphObjChild);
+                onGraphObjCreationFinished(pGraphObjChild);
 
                 if( pGraphicsItemChild->childItems().size() > 0 )
                 {
@@ -536,7 +551,6 @@ void CDrawingScene::addChildItems( QGraphicsItem* i_pGraphicsItem )
                 }
             }
         }
-
     } // if( i_pGraphicsItem != nullptr )
 
 } // addChildItems
@@ -1502,15 +1516,7 @@ double CDrawingScene::bringToFront( QGraphicsItem* i_pGraphicsItem, const QPoint
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
         CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(i_pGraphicsItem);
-
-        if( pGraphObj == nullptr )
-        {
-            strMthInArgs = "GraphObjName:nullptr";
-        }
-        else
-        {
-            strMthInArgs = "GraphObjName:" + pGraphObj->name();
-        }
+        strMthInArgs = QString(pGraphObj == nullptr ? "nullptr" : pGraphObj->path());
         strMthInArgs += ", ScenePos:" + point2Str(i_ptScenePos);
     }
 
@@ -1535,15 +1541,7 @@ double CDrawingScene::sendToBack( QGraphicsItem* i_pGraphicsItem, const QPointF&
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
         CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(i_pGraphicsItem);
-
-        if( pGraphObj == nullptr )
-        {
-            strMthInArgs = "GraphObjName:nullptr";
-        }
-        else
-        {
-            strMthInArgs = "GraphObjName:" + pGraphObj->name();
-        }
+        strMthInArgs = QString(pGraphObj == nullptr ? "nullptr" : pGraphObj->path());
         strMthInArgs += ", ScenePos:" + point2Str(i_ptScenePos);
     }
 
@@ -1825,12 +1823,11 @@ public: // to be called by graphical objects (as graphical objects are not deriv
     initially created (after they have been completely created e.g. after
     a rectangle has been resized and the mouse button has been released).
     After creating the object via mouse events the edit mode of the drawing
-    has to be reset. In addition the name of the object has to be inserted
-    in the hash of item names.
+    has to be reset.
 
     @param i_pGraphObj [in] Pointer to graphic item.
 */
-void CDrawingScene::onGraphObjCreated( CGraphObj* i_pGraphObj )
+void CDrawingScene::onGraphObjCreationFinished( CGraphObj* i_pGraphObj )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -1845,7 +1842,7 @@ void CDrawingScene::onGraphObjCreated( CGraphObj* i_pGraphObj )
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strMethod    */ "onGraphObjCreated",
+        /* strMethod    */ "onGraphObjCreationFinished",
         /* strAddInfo   */ strMthInArgs );
 
     if( mthTracer.isActive(ETraceDetailLevelInternalStates) )
@@ -1864,49 +1861,6 @@ void CDrawingScene::onGraphObjCreated( CGraphObj* i_pGraphObj )
     {
         throw ZS::System::CException( __FILE__, __LINE__, EResultArgOutOfRange, "i_pGraphObj == nullptr" );
     }
-
-    QString strGraphObjNameSpace = i_pGraphObj->nameSpace();
-    QString strGraphObjClassName = i_pGraphObj->className();
-    //QString strGraphObjName      = i_pGraphObj->name(true,m_strGraphObjNameSeparator);
-    QString strGraphObjId        = i_pGraphObj->keyInTree();
-
-    QString strGraphObjTypeName;
-
-    if( strGraphObjNameSpace.isEmpty() )
-    {
-        strGraphObjTypeName = strGraphObjClassName;
-    }
-    else
-    {
-        strGraphObjTypeName = strGraphObjNameSpace + m_strGraphObjNameSeparator + strGraphObjClassName;
-    }
-
-    // Ensure that the object name is unique below its parent:
-    //--------------------------------------------------------
-
-    //strGraphObjName = findUniqueGraphObjName(i_pGraphObj);
-    //i_pGraphObj->setName(strGraphObjName);
-
-    // Ensure that the object id is unique and insert into map with objects sorted by id:
-    //-----------------------------------------------------------------------------------
-
-    //if( m_dctpGraphObjs.contains(strGraphObjId) )
-    //{
-    //    strGraphObjId = FindUniqueGraphObjId( m_dctpGraphObjs, strGraphObjId );
-
-    //    // The old object id is inserted in the dictionary. On changing the
-    //    // object id the graph object calls "onGraphObjIdChanged" as a reentry.
-    //    // This method would search for the object with the old id - which is not
-    //    // the object which has just been created but is the object with the already
-    //    // existing id. So we need to block the "onGraphObjIdChanged" method:
-    //    m_bGraphObjIdChangedByMyself = true;
-    //    i_pGraphObj->setKeyInTree(strGraphObjId);
-    //    m_bGraphObjIdChangedByMyself = false;
-    //}
-
-    m_bGraphObjIdChangedByMyself = true;
-    m_pGraphObjsIdxTree->add(i_pGraphObj);
-    m_bGraphObjIdChangedByMyself = false;
 
     // Reset drawings scenes edit modes:
     //----------------------------------
@@ -1939,7 +1893,7 @@ void CDrawingScene::onGraphObjCreated( CGraphObj* i_pGraphObj )
         mthTracer.trace(strAddTrcInfo);
     }
 
-} // onGraphObjCreated
+} // onGraphObjCreationFinished
 
 //------------------------------------------------------------------------------
 void CDrawingScene::onGraphObjDestroying( const QString& i_strObjId )
@@ -2091,8 +2045,7 @@ void CDrawingScene::onGraphObjIdChanged( const QString& i_strObjIdOld, const QSt
 
     if( mthTracer.isActive(ETraceDetailLevelInternalStates) )
     {
-        strAddTrcInfo  = "ChangedByMyself:" + bool2Str(m_bGraphObjIdChangedByMyself);
-        strAddTrcInfo += ", Mode:" + m_mode.toString();
+        strAddTrcInfo  = "Mode:" + m_mode.toString();
         strAddTrcInfo += ", EditTool:" + m_editTool.toString();
         strAddTrcInfo += ", EditMode:" + m_editMode.toString();
         strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
@@ -2380,7 +2333,7 @@ int CDrawingScene::groupGraphObjsSelected()
             }
 
             // Add new (empty) group to graphics scene.
-            addItem(pGraphObjGroup);
+            addGraphObj(pGraphObjGroup);
 
             // Start creation of group.
             pGraphObjGroup->setEditMode(EEditMode::Creating);
@@ -2568,7 +2521,7 @@ int CDrawingScene::groupGraphObjsSelected()
             pGraphObjGroup->setEditMode(EEditMode::Undefined);
             pGraphObjGroup->setEditResizeMode(EEditResizeMode::Undefined);
 
-            onGraphObjCreated(pGraphObjGroup);
+            onGraphObjCreationFinished(pGraphObjGroup);
 
             pGraphObjGroup->setSelected(true);
 
@@ -3464,12 +3417,12 @@ void CDrawingScene::dropEvent( QGraphicsSceneDragDropEvent* i_pEv )
                                     throw ZS::System::CException( __FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphicsItem == nullptr" );
                                 }
 
-                                addItem(pGraphicsItem);
+                                addGraphObj(pGraphObj);
 
                                 pGraphicsItem->setPos( i_pEv->scenePos() );
                                 pGraphicsItem->setSelected(true);
 
-                                onGraphObjCreated(pGraphObj);
+                                onGraphObjCreationFinished(pGraphObj);
 
                                 setMode( EMode::Ignore, EEditTool::Select, EEditMode::Move, EEditResizeMode::Undefined, false );
                             }
@@ -3505,11 +3458,11 @@ void CDrawingScene::dropEvent( QGraphicsSceneDragDropEvent* i_pEv )
 
                 pGraphObjImage->setImageFilePath(strFilePath);
 
-                addItem(pGraphObjImage);
+                addGraphObj(pGraphObjImage);
 
                 pGraphObjImage->setPos( i_pEv->scenePos() );
 
-                onGraphObjCreated(pGraphObjImage);
+                onGraphObjCreationFinished(pGraphObjImage);
 
                 setMode( EMode::Ignore, EEditTool::Select, EEditMode::Move, EEditResizeMode::Undefined, false );
             }
@@ -3700,7 +3653,7 @@ void CDrawingScene::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
                                 throw ZS::System::CException( __FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphicsItem == nullptr" );
                             }
 
-                            addItem(m_pGraphicsItemCreating);
+                            addGraphObj(m_pGraphObjCreating);
 
                             m_pGraphObjCreating->setEditMode(EEditMode::Creating);
 
@@ -4205,7 +4158,7 @@ void CDrawingScene::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
                             throw ZS::System::CException( __FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphicsItem == nullptr" );
                         }
 
-                        addItem(m_pGraphicsItemCreating);
+                        addGraphObj(m_pGraphObjCreating);
 
                         m_pGraphObjCreating->setEditMode(EEditMode::Creating);
 
@@ -4214,10 +4167,10 @@ void CDrawingScene::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
 
                         // The current "mouseMove" event is not dispatched to the newly created object but to the
                         // object previously created by the "mousePress" event (even if the previously created
-                        // object was explicitly unselected by the "onGraphObjCreated" method). So we call
-                        // "onGraphObjCreated" on our own hoping that the object states set by the ctor are
+                        // object was explicitly unselected by the "onGraphObjCreationFinished" method). So we call
+                        // "onGraphObjCreationFinished" on our own hoping that the object states set by the ctor are
                         // sufficient for the graphical object.
-                        onGraphObjCreated(m_pGraphObjCreating);
+                        onGraphObjCreationFinished(m_pGraphObjCreating);
 
                     } // if( m_pObjFactory != nullptr && iObjFactoryType == EGraphObjTypePoint )
                 } // if( iMouseButtonState & Qt::LeftButton )
@@ -4559,7 +4512,7 @@ void CDrawingScene::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
 
             if( m_pGraphicsItemSelectionArea != nullptr )
             {
-                QGraphicsScene::removeItem(m_pGraphicsItemSelectionArea);
+                removeItem(m_pGraphicsItemSelectionArea);
 
                 delete m_pGraphicsItemSelectionArea;
                 m_pGraphicsItemSelectionArea = nullptr;
@@ -5191,9 +5144,9 @@ void CDrawingScene::keyPressEvent( QKeyEvent* i_pEv )
                 //                    throw ZS::System::CException( __FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphicsItem == nullptr" );
                 //                }
 
-                //                addItem(pGraphicsItemClone);
+                //                addGraphObj(pGraphObjClone);
 
-                //                onGraphObjCreated(pGraphObjClone);
+                //                onGraphObjCreationFinished(pGraphObjClone);
 
                 //                ptPos = pGraphicsItemClone->pos();
 
@@ -5287,9 +5240,9 @@ void CDrawingScene::keyPressEvent( QKeyEvent* i_pEv )
                 //                            throw ZS::System::CException( __FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphicsItem == nullptr" );
                 //                        }
 
-                //                        addItem(pGraphicsItemClone);
+                //                        addGraphObj(pGraphObjClone);
 
-                //                        onGraphObjCreated(pGraphObjCnctLineClone);
+                //                        onGraphObjCreationFinished(pGraphObjCnctLineClone);
 
                 //                        // Please note that the position for connection lines is defined by the connection points
                 //                        // and that connection lins never have children (calling "addChildItems" is not necessary).

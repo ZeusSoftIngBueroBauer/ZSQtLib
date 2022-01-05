@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -76,6 +76,24 @@ CGraphObjElectricity::~CGraphObjElectricity()
 //------------------------------------------------------------------------------
 {
     m_bDtorInProgress = true;
+
+    // Please note that the dynamic cast to QGraphicsItem returns nullptr if the
+    // dtor of QGraphicsItem has already been executed. The order the dtors
+    // of inherited classes are called depends on the order the classes
+    // appear in the list of the inherited classes on defining the
+    // class implementation. So we can't call "removeItem" from within the
+    // dtor of the base class CGraphObj but must remove the graphics item from
+    // the drawing scene's item list before the dtor of class QGraphicsItem is
+    // called. And this is only always the case in the dtor of the class
+    // derived from QGraphicsItem.
+    // Moreover on removing (deleting) a group the group's children have already
+    // been removed from the drawing scene by the dtor of class QGraphicsItemGroup
+    // (which is inherited by CGraphObjGroup) and "scene()" may return nullptr.
+
+    if( m_pDrawingScene != nullptr )
+    {
+        m_pDrawingScene->removeGraphObj(this);
+    }
 
 } // dtor
 

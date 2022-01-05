@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -65,70 +65,55 @@ class CTest : public ZS::Test::CTest
 //******************************************************************************
 {
     Q_OBJECT
-public: // type definitions and constants
-    //enum ETestStepLev1
-    //{
-    //    ETestStepLev1StandardShapes = 0,
-    //    ETestStepLev1Electricity    = 1,
-    //    ETestStepLev1Count
-    //};
-    //enum ETestStepLev2StandardShapes
-    //{
-    //    ETestStepLev2StandardShapesPoints      = 0,
-    //    ETestStepLev2StandardShapesLines       = 1,
-    //    ETestStepLev2StandardShapesRectangles  = 2,
-    //    ETestStepLev2StandardShapesEllipses    = 3,
-    //    ETestStepLev2StandardShapesPolylines   = 4,
-    //    ETestStepLev2StandardShapesPolygons    = 5,
-    //    ETestStepLev2StandardShapesTexts       = 6,
-    //    ETestStepLev2StandardShapesImages      = 7,
-    //    ETestStepLev2StandardShapesConnections = 8,
-    //    ETestStepLev2StandardShapesGroups      = 9,
-    //    ETestStepLev2StandardShapesCount
-    //};
-    //enum ETestStepLev2Electricity
-    //{
-    //    ETestStepLev2ElectricityResistors   = 0,
-    //    ETestStepLev2ElectricityCapacitors  = 1,
-    //    ETestStepLev2ElectricityInductors   = 2,
-    //    ETestStepLev2ElectricityTransistors = 3,
-    //    ETestStepLev2ElectricitySwitches    = 4,
-    //    ETestStepLev2ElectricityCount
-    //};
 public: // ctors and dtor
     CTest( const QString& i_strTestStepsFileName );
     ~CTest();
 public: // instance methods
     void setMainWindow( CMainWindow* i_pMainWindow );
-public: // overridables of base class Test::CTest
-    //virtual void start();
-protected slots: // overridables of base class Test::CTest
-    //virtual void doTestStep();
 protected: // instance methods
     void createTestGroupAndroidWallpaperTemplate( int& io_idxGroup );
-protected slots: // test step methods
+protected slots:
     void doTestStepAndroidWallpaperTemplatePageSetup( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepAndroidWallpaperTemplateDrawGridLines( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepAndroidWallpaperTemplateSaveAsWallpaperPng( ZS::Test::CTestStep* i_pTestStep );
 protected: // instance methods
-    //virtual void doTestStepStandardShapes();
-    //virtual void doTestStepStandardShapesPoints( ZS::Test::CTestStepGroup* i_pTestStep );
-    //virtual void doTestStepStandardShapesLines( ZS::Test::CTestStepGroup* i_pTestStep );
-    //virtual void doTestStepStandardShapesRectangles( ZS::Test::CTestStepGroup* i_pTestStep );
-    //virtual void doTestStepStandardShapesEllipses( ZS::Test::CTestStepGroup* i_pTestStep );
-    //virtual void doTestStepStandardShapesPolylines( ZS::Test::CTestStepGroup* i_pTestStep );
-    //virtual void doTestStepStandardShapesPolygons( ZS::Test::CTestStepGroup* i_pTestStep );
-    //virtual void doTestStepStandardShapesTexts( ZS::Test::CTestStepGroup* i_pTestStep );
-    //virtual void doTestStepStandardShapesImages( ZS::Test::CTestStepGroup* i_pTestStep );
-    //virtual void doTestStepStandardShapesConnections( ZS::Test::CTestStepGroup* i_pTestStep );
-    //virtual void doTestStepStandardShapesGroups( ZS::Test::CTestStepGroup* i_pTestStep );
+    void createTestGroupMouseEvents( int& io_idxGroup );
 protected: // instance methods
-    //virtual void doTestStepElectricity();
-    //virtual void doTestStepElectricityResistors( ZS::Test::CTestStepGroup* i_pTestStep );
-    //virtual void doTestStepElectricityCapacitors( ZS::Test::CTestStepGroup* i_pTestStep );
-    //virtual void doTestStepElectricityInductors( ZS::Test::CTestStepGroup* i_pTestStep );
-    //virtual void doTestStepElectricityTransistors( ZS::Test::CTestStepGroup* i_pTestStep );
-    //virtual void doTestStepElectricitySwitches( ZS::Test::CTestStepGroup* i_pTestStep );
+    void createTestGroupMouseEventsStandardShapes( ZS::Test::CTestStepGroup* i_pTestGroupParent, int& io_idxGroup );
+protected: // instance methods
+    void createTestGroupMouseEventsStandardShapesPoints( ZS::Test::CTestStepGroup* i_pTestGroupParent, int& io_idxGroup );
+protected slots:
+    void doTestStepMouseEventsStandardShapesPointsClearDrawingScene( ZS::Test::CTestStep* i_pTestStep );
+    void doTestStepMouseEventsStandardShapesPointsActivateDrawingTool( ZS::Test::CTestStep* i_pTestStep );
+    void doTestStepMouseEventsStandardShapesPointsCreateFirstPoint( ZS::Test::CTestStep* i_pTestStep );
+    void doTestStepMouseEventsStandardShapesPointsCreateFurtherPoints( ZS::Test::CTestStep* i_pTestStep );
+    void doTestStepMouseEventsStandardShapesPointsMouseRelease( ZS::Test::CTestStep* i_pTestStep );
+protected slots:
+    //void doTestStepStandardShapesLines( ZS::Test::CTestStep* i_pTestStep );
+protected slots:
+    //void doTestStepStandardShapesRectangles( ZS::Test::CTestStep* i_pTestStep );
+protected slots:
+    //void doTestStepStandardShapesEllipses( ZS::Test::CTestStep* i_pTestStep );
+protected slots:
+    //void doTestStepStandardShapesPolylines( ZS::Test::CTestStep* i_pTestStep );
+protected slots:
+    //void doTestStepStandardShapesPolygons( ZS::Test::CTestStep* i_pTestStep );
+protected slots:
+    //void doTestStepStandardShapesTexts( ZS::Test::CTestStep* i_pTestStep );
+protected slots:
+    //void doTestStepStandardShapesImages( ZS::Test::CTestStep* i_pTestStep );
+protected slots:
+    //void doTestStepStandardShapesConnections( ZS::Test::CTestStep* i_pTestStep );
+protected slots:
+    //void doTestStepStandardShapesGroups( ZS::Test::CTestStep* i_pTestStep );
+protected: // instance methods
+    //void createTestGroupElectricityResistors();
+protected slots:
+    //void doTestStepElectricityResistors( ZS::Test::CTestStep* i_pTestStep );
+    //void doTestStepElectricityCapacitors( ZS::Test::CTestStep* i_pTestStep );
+    //void doTestStepElectricityInductors( ZS::Test::CTestStep* i_pTestStep );
+    //void doTestStepElectricityTransistors( ZS::Test::CTestStep* i_pTestStep );
+    //void doTestStepElectricitySwitches( ZS::Test::CTestStep* i_pTestStep );
 public: // instance members
     CMainWindow*             m_pMainWindow;
     ZS::Draw::CDrawingView*  m_pDrawingView;

@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -68,38 +68,13 @@ public: // overridables
         This method can be reimplemented in derived classes so when invoked for the
         polymorphic base type the method returns the name of the derived class. */
     virtual QString className() const { return ClassName(); }
-//public: // instance methods
-//    void clear();
-//    void update();
-//public: // instance methods
-//    CGraphObjModelEntry* getModelEntry( CGraphObj* i_pGraphObj ) const;
-//    CGraphObjModelEntry* getModelEntry( QGraphicsItem* i_pGraphicsItem ) const;
-//    CGraphObjModelEntry* getModelEntry( const QString& i_strObjId ) const;
-//    QModelIndex getModelIndex( CGraphObj* i_pGraphObj ) const;
-//    QModelIndex getModelIndex( QGraphicsItem* i_pGraphicsItem ) const;
-//    QModelIndex getModelIndex( const QString& i_strObjId ) const;
-//public: // instance methods (model entries need access as friend class to protected createIndex method)
-//    QModelIndex createIndex( int i_iRow, int i_iClm, void* i_pvData = nullptr ) const { return QAbstractItemModel::createIndex(i_iRow,i_iClm,i_pvData); }
-//protected: // instance methods
-//    void clearModelEntry( CGraphObjModelEntry* i_pModelEntry );
-//protected slots:
-//    void onDrawingSceneGraphObjCreated( ZS::Draw::CGraphObj* i_pGraphObj );
-//    void onDrawingSceneGraphObjDestroying( const QString& i_strObjId );
-//    void onDrawingSceneGraphObjIdChanged( const QString& i_strObjIdOld, const QString& i_strObjIdNew );
-//    void onDrawingSceneGraphObjNameChanged( const QString& i_strObjId, const QString& i_strObjNameOld, const QString& i_strObjNameNew );
 public: // overridables of base class QAbstractItemModel
-    //virtual int rowCount( const QModelIndex& i_modelIdxParent = QModelIndex() ) const;
     virtual int columnCount( const QModelIndex& i_modelIdxParent = QModelIndex() ) const;
     virtual QVariant headerData( int i_iSection, Qt::Orientation i_orientation, int i_iRole = Qt::DisplayRole ) const;
     virtual QVariant data( const QModelIndex& i_modelIdx, int i_iRole = Qt::DisplayRole ) const;
-    //virtual QModelIndex index( int i_iRow, int i_iCol, const QModelIndex& i_modelIdxParent = QModelIndex() ) const;
-    //virtual QModelIndex parent( const QModelIndex& i_modelIdx ) const;
 protected: // instance members
-    QIcon                              m_iconRootEntry;
-    //CDrawingScene*                     m_pDrawingScene;
-    //CGraphObjModelEntry*               m_pRootEntry;
-    //QMap<QString,CGraphObjModelEntry*> m_dctpGraphObjs;          // sorted by name (names including parents)
-    ZS::Trace::CTrcAdminObj*           m_pTrcAdminObj;
+    QIcon                    m_iconRootEntry;
+    ZS::Trace::CTrcAdminObj* m_pTrcAdminObj;
 
 }; // class CGraphicsItemsModel
 

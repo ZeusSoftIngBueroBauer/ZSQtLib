@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer, Germany
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer, Germany
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -486,10 +486,6 @@ void CMainWindow::closeEvent( QCloseEvent* i_pEv )
 
 } // closeEvent
 
-/*==============================================================================
-protected: // overridables of base class QObject
-==============================================================================*/
-
 //------------------------------------------------------------------------------
 bool CMainWindow::eventFilter( QObject* i_pObjWatched, QEvent* i_pEv )
 //------------------------------------------------------------------------------
@@ -618,7 +614,7 @@ protected slots:
 void CMainWindow::onActInfoErrLogTriggered()
 //------------------------------------------------------------------------------
 {
-    QString strDlgTitle = getMainWindowTitle() + ": Error Log";
+    QString strDlgTitle = QCoreApplication::applicationName() + ": Error Log";
 
     CDlgErrLog* pDlg = dynamic_cast<CDlgErrLog*>(CDlgErrLog::GetInstance("ErrLog"));
 
@@ -646,7 +642,7 @@ void CMainWindow::onActInfoErrLogTriggered()
 void CMainWindow::onActInfoRequestExecTreeTriggered()
 //------------------------------------------------------------------------------
 {
-    QString strDlgTitle = getMainWindowTitle() + ": Requests Execution Tree";
+    QString strDlgTitle = QCoreApplication::applicationName() + ": Requests Execution Tree";
 
     CDlgRequestExecTree* pDlg = dynamic_cast<CDlgRequestExecTree*>(CDlgRequestExecTree::GetInstance(strDlgTitle));
 
@@ -679,24 +675,21 @@ void CMainWindow::onErrLogEntryAdded( const ZS::System::SErrResultInfo& /*i_errR
 //------------------------------------------------------------------------------
 {
     updateErrorsStatus();
-
-} // onErrLogEntryAdded
+}
 
 //------------------------------------------------------------------------------
 void CMainWindow::onErrLogEntryChanged( const ZS::System::SErrResultInfo& /*i_errResultInfo*/ )
 //------------------------------------------------------------------------------
 {
     updateErrorsStatus();
-
-} // onErrLogEntryChanged
+}
 
 //------------------------------------------------------------------------------
 void CMainWindow::onErrLogEntryRemoved( const ZS::System::SErrResultInfo& /*i_errResultInfo*/ )
 //------------------------------------------------------------------------------
 {
     updateErrorsStatus();
-
-} // onErrLogEntryRemoved
+}
 
 /*==============================================================================
 protected: // instance methods

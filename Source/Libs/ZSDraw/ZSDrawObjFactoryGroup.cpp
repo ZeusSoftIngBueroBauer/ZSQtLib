@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -541,16 +541,14 @@ CGraphObj* CObjFactoryGroup::loadGraphObj(
 
             pGraphObjGroup->setDrawSettings(drawSettings);
 
-            pGraphicsItem = dynamic_cast<QGraphicsItem*>(pGraphObjGroup);
-
-            i_pDrawingScene->addItem(pGraphicsItem);
+            i_pDrawingScene->addGraphObj(pGraphObjGroup);
 
             pGraphObjGroup->setPos(ptPos);
             pGraphObjGroup->setSize(rctGroup.size());
             pGraphObjGroup->setRotationAngleInDegree(fRotAngle_deg);
             pGraphObjGroup->setStackingOrderValue(fZValue);
 
-            // Before calling "onGraphObjCreated" the object must have been added
+            // Before calling "onGraphObjCreationFinished" the object must have been added
             // to its parent group. Otherwise the drawing scene is not able to retrieve
             // the unique object id and add the object to the hash.
             if( i_pGraphObjGroup != nullptr )
@@ -558,7 +556,7 @@ CGraphObj* CObjFactoryGroup::loadGraphObj(
                 i_pGraphObjGroup->addGraphObj(pGraphObjGroup);
             }
 
-            i_pDrawingScene->onGraphObjCreated(pGraphObjGroup);
+            i_pDrawingScene->onGraphObjCreationFinished(pGraphObjGroup);
 
             pGraphObjGroup->acceptCurrentAsOriginalCoors();
             pGraphObjGroup->setEditMode(EEditMode::Undefined);

@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -294,7 +294,7 @@ void CTest::doTestStepElectricityCapacitors( ZS::Test::CTestStepGroup* i_pTestSt
                 pGraphicsItem->setPos(m_ptDrawingSceneMousePos);
                 pGraphicsItem->setSelected(true);
 
-                m_pDrawingScene->onGraphObjCreated(pGraphObj);
+                m_pDrawingScene->onGraphObjCreationFinished(pGraphObj);
 
                 m_pDrawingScene->setMode( EMode::Ignore, EEditTool::Select, EEditMode::Move, EEditResizeMode::Undefined, false );
 

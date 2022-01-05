@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer, Germany
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer, Germany
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -518,7 +518,7 @@ protected slots:
 void CMainWindow::onActDebugErrLogTriggered()
 //------------------------------------------------------------------------------
 {
-    QString strDlgTitle = getMainWindowTitle() + ": Error Log";
+    QString strDlgTitle = QCoreApplication::applicationName() + ": Error Log";
 
     CDlgErrLog* pDlg = dynamic_cast<CDlgErrLog*>(CDlgErrLog::GetInstance("ErrLog"));
 

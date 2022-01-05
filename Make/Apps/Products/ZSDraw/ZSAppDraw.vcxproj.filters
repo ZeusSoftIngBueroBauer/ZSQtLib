@@ -26,9 +26,6 @@
     <Filter Include="Source Files\Test">
       <UniqueIdentifier>{8d6823db-7c0f-46a3-930e-a3be3bf5bda3}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Test\Standard">
-      <UniqueIdentifier>{3294162f-5798-47ba-9369-8f3ff4e09075}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Test\Electricity">
       <UniqueIdentifier>{f7aa830b-2e35-4fb5-9f10-a6142c50f0d4}</UniqueIdentifier>
     </Filter>
@@ -157,6 +154,12 @@
     <Filter Include="Source Files\Test\AndroidWallpaperTemplate">
       <UniqueIdentifier>{0a67a358-cf98-43e2-b12a-50e77fa87b89}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Test\Mouse Events">
+      <UniqueIdentifier>{c6fdffe5-847c-4ab4-936a-c10211715cf2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Test\Mouse Events\Standard Shapes">
+      <UniqueIdentifier>{3294162f-5798-47ba-9369-8f3ff4e09075}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\Source\Apps\Products\ZSDraw\App.cpp">
@@ -255,38 +258,35 @@
     <ClCompile Include="..\..\..\..\Source\Apps\Products\ZSDraw\Test.cpp">
       <Filter>Source Files\Test</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\Source\Apps\Products\ZSDraw\TestStepStandardShapes.cpp">
-      <Filter>Source Files\Test\Standard</Filter>
+    <ClCompile Include="..\..\..\..\Source\Apps\Products\ZSDraw\TestStepMouseEventsStandardShapesConnections.cpp">
+      <Filter>Source Files\Test\Mouse Events\Standard Shapes</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\Source\Apps\Products\ZSDraw\TestStepStandardShapesConnections.cpp">
-      <Filter>Source Files\Test\Standard</Filter>
+    <ClCompile Include="..\..\..\..\Source\Apps\Products\ZSDraw\TestStepMouseEventsStandardShapesEllipses.cpp">
+      <Filter>Source Files\Test\Mouse Events\Standard Shapes</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\Source\Apps\Products\ZSDraw\TestStepStandardShapesEllipses.cpp">
-      <Filter>Source Files\Test\Standard</Filter>
+    <ClCompile Include="..\..\..\..\Source\Apps\Products\ZSDraw\TestStepMouseEventsStandardShapesGroups.cpp">
+      <Filter>Source Files\Test\Mouse Events\Standard Shapes</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\Source\Apps\Products\ZSDraw\TestStepStandardShapesGroups.cpp">
-      <Filter>Source Files\Test\Standard</Filter>
+    <ClCompile Include="..\..\..\..\Source\Apps\Products\ZSDraw\TestStepMouseEventsStandardShapesImages.cpp">
+      <Filter>Source Files\Test\Mouse Events\Standard Shapes</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\Source\Apps\Products\ZSDraw\TestStepStandardShapesImages.cpp">
-      <Filter>Source Files\Test\Standard</Filter>
+    <ClCompile Include="..\..\..\..\Source\Apps\Products\ZSDraw\TestStepMouseEventsStandardShapesLines.cpp">
+      <Filter>Source Files\Test\Mouse Events\Standard Shapes</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\Source\Apps\Products\ZSDraw\TestStepStandardShapesLines.cpp">
-      <Filter>Source Files\Test\Standard</Filter>
+    <ClCompile Include="..\..\..\..\Source\Apps\Products\ZSDraw\TestStepMouseEventsStandardShapesPoints.cpp">
+      <Filter>Source Files\Test\Mouse Events\Standard Shapes</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\Source\Apps\Products\ZSDraw\TestStepStandardShapesPoints.cpp">
-      <Filter>Source Files\Test\Standard</Filter>
+    <ClCompile Include="..\..\..\..\Source\Apps\Products\ZSDraw\TestStepMouseEventsStandardShapesPolygons.cpp">
+      <Filter>Source Files\Test\Mouse Events\Standard Shapes</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\Source\Apps\Products\ZSDraw\TestStepStandardShapesPolygons.cpp">
-      <Filter>Source Files\Test\Standard</Filter>
+    <ClCompile Include="..\..\..\..\Source\Apps\Products\ZSDraw\TestStepMouseEventsStandardShapesPolylines.cpp">
+      <Filter>Source Files\Test\Mouse Events\Standard Shapes</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\Source\Apps\Products\ZSDraw\TestStepStandardShapesPolylines.cpp">
-      <Filter>Source Files\Test\Standard</Filter>
+    <ClCompile Include="..\..\..\..\Source\Apps\Products\ZSDraw\TestStepMouseEventsStandardShapesRectangles.cpp">
+      <Filter>Source Files\Test\Mouse Events\Standard Shapes</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\Source\Apps\Products\ZSDraw\TestStepStandardShapesRectangles.cpp">
-      <Filter>Source Files\Test\Standard</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\Source\Apps\Products\ZSDraw\TestStepStandardShapesTexts.cpp">
-      <Filter>Source Files\Test\Standard</Filter>
+    <ClCompile Include="..\..\..\..\Source\Apps\Products\ZSDraw\TestStepMouseEventsStandardShapesTexts.cpp">
+      <Filter>Source Files\Test\Mouse Events\Standard Shapes</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\Source\Apps\Products\ZSDraw\TestStepElectricity.cpp">
       <Filter>Source Files\Test\Electricity</Filter>

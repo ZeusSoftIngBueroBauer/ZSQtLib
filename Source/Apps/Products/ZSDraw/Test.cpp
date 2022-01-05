@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -154,6 +154,11 @@ CTest::CTest( const QString& i_strTestStepsFileName ) :
 
     createTestGroupAndroidWallpaperTemplate(idxGroup);
 
+    // Mouse Events
+    //-------------
+
+    createTestGroupMouseEvents(idxGroup);
+
     // Recall test step settings
     //--------------------------
 
@@ -237,7 +242,7 @@ CTest::~CTest()
 } // dtor
 
 /*==============================================================================
-public: // overridables of base class Test::CTest
+public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
@@ -250,81 +255,72 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
 }
 
 /*==============================================================================
-public: // overridables of base class Test::CTest
+protected: // instance methods
 ==============================================================================*/
 
-////------------------------------------------------------------------------------
-//void CTest::start()
-////------------------------------------------------------------------------------
-//{
-//    ZS::Test::CTestStepGroup* pTSGrpDraw = getTestStepGroup("Draw",nullptr);
-//
-//    if( pTSGrpDraw->isEnabled() )
-//    {
-//        //m_pMainWindow->setGeometry(50,50,1400,800);
-//
-//        m_pDrawingScene->clear();
-//        m_pDrawingScene->setMode( EMode::Edit, EEditTool::Ignore, EEditModeIgnore, EEditResizeModeIgnore, false );
-//
-//        CGraphObjPoint::ResetCtorsDtorsCounters();            m_iPointsCount = 0;
-//        CGraphObjLine::ResetCtorsDtorsCounters();             m_iLinesCount = 0;
-//        CGraphObjRect::ResetCtorsDtorsCounters();             m_iRectanglesCount = 0;
-//        CGraphObjEllipse::ResetCtorsDtorsCounters();          m_iEllipsesCount = 0;
-//        CGraphObjPolyline::ResetCtorsDtorsCounters();         m_iPolylinesCount = 0;
-//        CGraphObjPolygon::ResetCtorsDtorsCounters();          m_iPolygonsCount = 0;
-//        CGraphObjText::ResetCtorsDtorsCounters();             m_iTextsCount = 0;
-//        CGraphObjImage::ResetCtorsDtorsCounters();            m_iImagesCount = 0;
-//        CGraphObjConnectionPoint::ResetCtorsDtorsCounters();  m_iConnectionPointsCount = 0;
-//        CGraphObjConnectionLine::ResetCtorsDtorsCounters();   m_iConnectionLinesCount = 0;
-//        CGraphObjGroup::ResetCtorsDtorsCounters();            m_iGroupsCount = 0;
-//
-//        CGraphObjResistor::ResetCtorsDtorsCounters();         m_iElectricityResistorsCount = 0;
-//        CGraphObjCapacitor::ResetCtorsDtorsCounters();        m_iElectricityCapacitorsCount = 0;
-//        CGraphObjInductor::ResetCtorsDtorsCounters();         m_iElectricityInductorsCount = 0;
-//        CGraphObjTransistor::ResetCtorsDtorsCounters();       m_iElectricityTransistorsCount = 0;
-//        CGraphObjSwitch::ResetCtorsDtorsCounters();           m_iElectricitySwitchesCount = 0;
-//
-//        CGraphObjWdgtCheckBox::ResetCtorsDtorsCounters();     m_iWdgtCheckBoxesCount = 0;
-//        CGraphObjWdgtComboBox::ResetCtorsDtorsCounters();     m_iWdgtComboBoxesCount = 0;
-//        CGraphObjWdgtGroupBox::ResetCtorsDtorsCounters();     m_iWdgtGroupBoxesCount = 0;
-//        CGraphObjWdgtLabel::ResetCtorsDtorsCounters();        m_iWdgtLabelsCount = 0;
-//        CGraphObjWdgtLineEdit::ResetCtorsDtorsCounters();     m_iWdgtLineEditsCount = 0;
-//        CGraphObjWdgtPushButton::ResetCtorsDtorsCounters();   m_iWdgtPushButtonsCount = 0;
-//
-//        m_iTestStepLev1 = ETestStepLev1StandardShapes;
-//        m_iTestStepLev2 = 0;
-//        m_iTestStepLev3 = 0;
-//        m_iTestStepLev4 = 0;
-//
-//        ZS::Test::CTest::start();
-//    }
-//
-//} // start
+//------------------------------------------------------------------------------
+void CTest::createTestGroupMouseEvents( int& io_idxGroup )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    QString strMthOutArgs;
 
-/*==============================================================================
-protected slots: // overridables of base class Test::CTest
-==============================================================================*/
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    {
+        strMthInArgs = "IdxGroup:" + QString::number(io_idxGroup);
+    }
 
-////------------------------------------------------------------------------------
-//void CTest::doTestStep()
-////------------------------------------------------------------------------------
-//{
-//    m_bDoTestStepPending = false;
-//
-//    if( m_iTestStepLev1 == ETestStepLev1StandardShapes )
-//    {
-//        doTestStepStandardShapes();
-//    }
-//    else if( m_iTestStepLev1 == ETestStepLev1Electricity )
-//    {
-//        doTestStepElectricity();
-//    }
-//    else
-//    {
-//        if( m_state == EStateRunning ) // not Paused or already Stopped
-//        {
-//            stop();
-//        }
-//    }
-//
-//} // doTestStep
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* strMethod    */ "createTestGroupMouseEvents",
+        /* strAddInfo   */ strMthInArgs );
+
+    ZS::Test::CTestStepGroup* pGrp = new ZS::Test::CTestStepGroup(
+        /* pTest           */ this,
+        /* strName         */ "Group " + QString::number(++io_idxGroup) + " Mouse Events",
+        /* pTSGrpParent    */ nullptr );
+
+    createTestGroupMouseEventsStandardShapes(pGrp, io_idxGroup);
+
+    if( mthTracer.isActive(ETraceDetailLevelMethodArgs) )
+    {
+        strMthOutArgs = "IdxGroup:" + QString::number(io_idxGroup);
+        mthTracer.setMethodOutArgs(strMthOutArgs);
+    }
+
+} // createTestGroupMouseEvents
+
+//------------------------------------------------------------------------------
+void CTest::createTestGroupMouseEventsStandardShapes( ZS::Test::CTestStepGroup* i_pTestGroupParent, int& io_idxGroup )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    QString strMthOutArgs;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    {
+        strMthInArgs = "Parent: " + QString(i_pTestGroupParent == nullptr ? "nullptr" : i_pTestGroupParent->path());
+        strMthInArgs += ", IdxGroup:" + QString::number(io_idxGroup);
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* strMethod    */ "createTestGroupMouseEventsStandardShapes",
+        /* strAddInfo   */ strMthInArgs );
+
+    ZS::Test::CTestStepGroup* pGrp = new ZS::Test::CTestStepGroup(
+        /* pTest           */ this,
+        /* strName         */ "Group " + QString::number(++io_idxGroup) + " Standard Shapes",
+        /* pTSGrpParent    */ i_pTestGroupParent );
+
+    createTestGroupMouseEventsStandardShapesPoints(pGrp, io_idxGroup);
+
+    if( mthTracer.isActive(ETraceDetailLevelMethodArgs) )
+    {
+        strMthOutArgs = "IdxGroup:" + QString::number(io_idxGroup);
+        mthTracer.setMethodOutArgs(strMthOutArgs);
+    }
+
+} // createTestGroupMouseEventsStandardShapes

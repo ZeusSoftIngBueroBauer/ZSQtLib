@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -56,8 +56,8 @@ public: // class methods
 
 //------------------------------------------------------------------------------
 CDlgErrLog* CDlgErrLog::CreateInstance(
-    const QString&  i_strErrLogName,
     const QString&  i_strDlgTitle,
+    const QString&  i_strErrLogName,
     QWidget*        i_pWdgtParent,
     Qt::WindowFlags i_wFlags )
 //------------------------------------------------------------------------------
@@ -69,8 +69,8 @@ CDlgErrLog* CDlgErrLog::CreateInstance(
     }
 
     return new CDlgErrLog(
-        /* strObjName   */ i_strErrLogName,
         /* strDlgTitle  */ i_strDlgTitle,
+        /* strObjName   */ i_strErrLogName,
         /* pWdgtParent  */ i_pWdgtParent,
         /* wFlags       */ i_wFlags );
 

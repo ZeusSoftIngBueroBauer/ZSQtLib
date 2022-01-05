@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -63,6 +63,20 @@ protected slots: // test step methods
 void CTest::createTestGroupAndroidWallpaperTemplate( int& io_idxGroup )
 //------------------------------------------------------------------------------
 {
+    QString strMthInArgs;
+    QString strMthOutArgs;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    {
+        strMthInArgs = "IdxGroup:" + QString::number(io_idxGroup);
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* strMethod    */ "createTestGroupAndroidWallpaperTemplate",
+        /* strAddInfo   */ strMthInArgs );
+
     ZS::Test::CTestStepGroup* pGrpGridLines = new ZS::Test::CTestStepGroup(
         /* pTest           */ this,
         /* strName         */ "Group " + QString::number(++io_idxGroup) + " Grid Lines",
@@ -91,6 +105,12 @@ void CTest::createTestGroupAndroidWallpaperTemplate( int& io_idxGroup )
         /* pTSGrpParent    */ pGrpGridLines,
         /* szDoTestStepFct */ SLOT(doTestStepAndroidWallpaperTemplateSaveAsWallpaperPng(ZS::Test::CTestStep*)) );
 
+    if( mthTracer.isActive(ETraceDetailLevelMethodArgs) )
+    {
+        strMthOutArgs = "IdxGroup:" + QString::number(io_idxGroup);
+        mthTracer.setMethodOutArgs(strMthOutArgs);
+    }
+
 } // createTestGroupAndroidWallpaperTemplate
 
 //------------------------------------------------------------------------------
@@ -111,7 +131,7 @@ void CTest::doTestStepAndroidWallpaperTemplatePageSetup( ZS::Test::CTestStep* i_
         /* strAddInfo   */ strMthInArgs );
 
     // Expected Values
-    //---------------
+    //----------------
 
     QStringList strlstExpectedValues = { "Width: ? px", "Height: ? px" };
 
@@ -353,8 +373,8 @@ void CTest::doTestStepAndroidWallpaperTemplateDrawGridLines( ZS::Test::CTestStep
             arpGraphObjs.append(pGraphObjLine);
 
             pGraphObjLine->setLine( QLine(x1_px, y1_px, x2_px, y2_px) );
-            m_pDrawingScene->addItem(pGraphObjLine);
-            m_pDrawingScene->onGraphObjCreated(pGraphObjLine);
+            m_pDrawingScene->addGraphObj(pGraphObjLine);
+            m_pDrawingScene->onGraphObjCreationFinished(pGraphObjLine);
             pGraphObjLine->acceptCurrentAsOriginalCoors();
 
             y1_px += yOffs_px;
@@ -401,8 +421,8 @@ void CTest::doTestStepAndroidWallpaperTemplateDrawGridLines( ZS::Test::CTestStep
 
             pGraphObjLine->setLine( QLine(x1_px, y1_px, x2_px, y2_px) );
 
-            m_pDrawingScene->addItem(pGraphObjLine);
-            m_pDrawingScene->onGraphObjCreated(pGraphObjLine);
+            m_pDrawingScene->addGraphObj(pGraphObjLine);
+            m_pDrawingScene->onGraphObjCreationFinished(pGraphObjLine);
             pGraphObjLine->acceptCurrentAsOriginalCoors();
 
             x1_px += xOffs_px;
@@ -442,8 +462,8 @@ void CTest::doTestStepAndroidWallpaperTemplateDrawGridLines( ZS::Test::CTestStep
 
                 pGraphObjText->setPos( QPoint(x1_px, y1_px) );
                 pGraphObjText->setPlainText(QString::number(y1_px));
-                m_pDrawingScene->addItem(pGraphObjText);
-                m_pDrawingScene->onGraphObjCreated(pGraphObjText);
+                m_pDrawingScene->addGraphObj(pGraphObjText);
+                m_pDrawingScene->onGraphObjCreationFinished(pGraphObjText);
                 pGraphObjText->acceptCurrentAsOriginalCoors();
 
                 QRectF boundingRect = pGraphObjText->boundingRect();
@@ -457,8 +477,8 @@ void CTest::doTestStepAndroidWallpaperTemplateDrawGridLines( ZS::Test::CTestStep
 
                 pGraphObjText->setPos( QPoint(sizeDrawing.width()/2, y1_px) );
                 pGraphObjText->setPlainText(QString::number(y1_px));
-                m_pDrawingScene->addItem(pGraphObjText);
-                m_pDrawingScene->onGraphObjCreated(pGraphObjText);
+                m_pDrawingScene->addGraphObj(pGraphObjText);
+                m_pDrawingScene->onGraphObjCreationFinished(pGraphObjText);
                 pGraphObjText->acceptCurrentAsOriginalCoors();
 
                 boundingRect = pGraphObjText->boundingRect();
@@ -472,8 +492,8 @@ void CTest::doTestStepAndroidWallpaperTemplateDrawGridLines( ZS::Test::CTestStep
 
                 pGraphObjText->setPos( QPoint(x2_px, y1_px) );
                 pGraphObjText->setPlainText(QString::number(y1_px));
-                m_pDrawingScene->addItem(pGraphObjText);
-                m_pDrawingScene->onGraphObjCreated(pGraphObjText);
+                m_pDrawingScene->addGraphObj(pGraphObjText);
+                m_pDrawingScene->onGraphObjCreationFinished(pGraphObjText);
                 pGraphObjText->acceptCurrentAsOriginalCoors();
 
                 boundingRect = pGraphObjText->boundingRect();
@@ -511,8 +531,8 @@ void CTest::doTestStepAndroidWallpaperTemplateDrawGridLines( ZS::Test::CTestStep
 
                 pGraphObjText->setPos( QPoint(x1_px, y1_px) );
                 pGraphObjText->setPlainText(QString::number(x1_px));
-                m_pDrawingScene->addItem(pGraphObjText);
-                m_pDrawingScene->onGraphObjCreated(pGraphObjText);
+                m_pDrawingScene->addGraphObj(pGraphObjText);
+                m_pDrawingScene->onGraphObjCreationFinished(pGraphObjText);
                 pGraphObjText->acceptCurrentAsOriginalCoors();
 
                 QRectF boundingRect = pGraphObjText->boundingRect();
@@ -526,8 +546,8 @@ void CTest::doTestStepAndroidWallpaperTemplateDrawGridLines( ZS::Test::CTestStep
 
                 pGraphObjText->setPos( QPoint(x1_px, sizeDrawing.height()/2) );
                 pGraphObjText->setPlainText(QString::number(x1_px));
-                m_pDrawingScene->addItem(pGraphObjText);
-                m_pDrawingScene->onGraphObjCreated(pGraphObjText);
+                m_pDrawingScene->addGraphObj(pGraphObjText);
+                m_pDrawingScene->onGraphObjCreationFinished(pGraphObjText);
                 pGraphObjText->acceptCurrentAsOriginalCoors();
 
                 boundingRect = pGraphObjText->boundingRect();
@@ -541,8 +561,8 @@ void CTest::doTestStepAndroidWallpaperTemplateDrawGridLines( ZS::Test::CTestStep
 
                 pGraphObjText->setPos( QPoint(x1_px, y2_px) );
                 pGraphObjText->setPlainText(QString::number(x1_px));
-                m_pDrawingScene->addItem(pGraphObjText);
-                m_pDrawingScene->onGraphObjCreated(pGraphObjText);
+                m_pDrawingScene->addGraphObj(pGraphObjText);
+                m_pDrawingScene->onGraphObjCreationFinished(pGraphObjText);
                 pGraphObjText->acceptCurrentAsOriginalCoors();
 
                 boundingRect = pGraphObjText->boundingRect();
@@ -589,8 +609,8 @@ void CTest::doTestStepAndroidWallpaperTemplateDrawGridLines( ZS::Test::CTestStep
     //    /* strObjName    */ "WallpaperRect" );
 
     //pGraphObjWallpaperRect->setRect( QRectF(fx1_px, fy1_px, fWallpaperVisibleWidth, fWallpaperVisibleHeight) );
-    //m_pDrawingScene->addItem(pGraphObjWallpaperRect);
-    //m_pDrawingScene->onGraphObjCreated(pGraphObjWallpaperRect);
+    //m_pDrawingScene->addGraphObj(pGraphObjWallpaperRect);
+    //m_pDrawingScene->onGraphObjCreationFinished(pGraphObjWallpaperRect);
     //pGraphObjWallpaperRect->acceptCurrentAsOriginalCoors();
 
     // Result Values
@@ -660,7 +680,21 @@ void CTest::doTestStepAndroidWallpaperTemplateSaveAsWallpaperPng( ZS::Test::CTes
     //---------------
 
     QStringList strlstExpectedValues;
-    strlstExpectedValues += "FileSize: 121926";
+
+    QSize sizeDrawing = m_pDrawingView->getDrawingSizeInPixels();
+
+    if( sizeDrawing.width() == 640 )
+    {
+        strlstExpectedValues += "FileSize: 19743";
+    }
+    else if( sizeDrawing.width() == 2048 )
+    {
+        strlstExpectedValues += "FileSize: 121926";
+    }
+    else
+    {
+        strlstExpectedValues += "FileSize: ?";
+    }
 
     i_pTestStep->setExpectedValues(strlstExpectedValues);
 
@@ -676,7 +710,6 @@ void CTest::doTestStepAndroidWallpaperTemplateSaveAsWallpaperPng( ZS::Test::CTes
     QString strIniFileScope = "System"; // Default
     #endif
 
-    QSize sizeDrawing = m_pDrawingView->getDrawingSizeInPixels();
     QString strDim = QString::number(sizeDrawing.width()) + "x" + QString::number(sizeDrawing.height());
 
     QString strAppLogDir = ZS::System::getAppLogDir(strIniFileScope);

@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -201,16 +201,20 @@ CGraphObjConnectionLine::~CGraphObjConnectionLine()
                 }
             }
 
-            // On removing (deleting) a group the group's children have already been
-            // removed from the graphics scene. The dtor of class CGraphObjGroup
-            // removes the item from the drawing scene (see following line) whereupon
-            // also the children of the group are removed by the QGraphicsScene class.
-            // In this case "scene()" will return nullptr.
-            QGraphicsScene* pGraphicsScene = pGraphicsItem->scene();
-            if( pGraphicsScene != nullptr ) // if not already removed from the scene ...
-            {
-                m_pDrawingScene->removeItem(pGraphicsItem);
-            }
+            // Please note that the dynamic cast to QGraphicsItem returns nullptr if the
+            // dtor of QGraphicsItem has already been executed. The order the dtors
+            // of inherited classes are called depends on the order the classes
+            // appear in the list of the inherited classes on defining the
+            // class implementation. So we can't call "removeItem" from within the
+            // dtor of the base class CGraphObj but must remove the graphics item from
+            // the drawing scene's item list before the dtor of class QGraphicsItem is
+            // called. And this is only always the case in the dtor of the class
+            // derived from QGraphicsItem.
+            // Moreover on removing (deleting) a group the group's children have already
+            // been removed from the drawing scene by the dtor of class QGraphicsItemGroup
+            // (which is inherited by CGraphObjGroup) and "scene()" may return nullptr.
+            m_pDrawingScene->removeGraphObj(this);
+
         } // if( m_pDrawingScene != nullptr )
     } // if( pGraphicsItem != nullptr )
 
@@ -1574,7 +1578,7 @@ void CGraphObjConnectionLine::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
                 /* idxPt             */ plg.size()-1 );
             m_arpSelPtsPolygon.append(pGraphObjSelPt);
 
-            m_pDrawingScene->addItem(pGraphObjSelPt);
+            m_pDrawingScene->addGraphObj(pGraphObjSelPt);
 
             //pGraphObjSelPt->setParentItem(this); see comment in header file of class CGraphObjSelectionPoint
             pGraphObjSelPt->installSceneEventFilter(this);
@@ -1620,7 +1624,7 @@ void CGraphObjConnectionLine::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
                 /* idxPt             */ m_idxSelPtSelectedPolygon );
             m_arpSelPtsPolygon.append(pGraphObjSelPt);
 
-            m_pDrawingScene->addItem(pGraphObjSelPt);
+            m_pDrawingScene->addGraphObj(pGraphObjSelPt);
 
             //pGraphObjSelPt->setParentItem(this); see comment in header file of class CGraphObjSelectionPoint
             pGraphObjSelPt->installSceneEventFilter(this);
@@ -1728,7 +1732,7 @@ void CGraphObjConnectionLine::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
                             /* pGraphObjSelected */ this,
                             /* idxPt             */ idxSelPt );
 
-                        m_pDrawingScene->addItem(pGraphObjSelPt);
+                        m_pDrawingScene->addGraphObj(pGraphObjSelPt);
 
                         //pGraphObjSelPt->setParentItem(this); see comment in header file of class CGraphObjSelectionPoint
                         pGraphObjSelPt->installSceneEventFilter(this);
@@ -1961,7 +1965,7 @@ void CGraphObjConnectionLine::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv
                         m_arpSelPtsPolygon.append(pGraphObjSelPt);
                     }
 
-                    m_pDrawingScene->addItem(pGraphObjSelPt);
+                    m_pDrawingScene->addGraphObj(pGraphObjSelPt);
 
                     //pGraphObjSelPt->setParentItem(this); see comment in header file of class CGraphObjSelectionPoint
                     pGraphObjSelPt->installSceneEventFilter(this);
@@ -2193,7 +2197,7 @@ void CGraphObjConnectionLine::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i
     CEnumEditMode editModePrev = m_editMode;
     int           idxSelPtSelectedPolygon = m_idxSelPtSelectedPolygon;
 
-    // Reset before calling "drawingScene->onGraphObjCreated".
+    // Reset before calling "drawingScene->onGraphObjCreationFinished".
     m_editMode = EEditMode::Undefined;
     m_editResizeMode = EEditResizeMode::Undefined;
     m_idxSelPtSelectedPolygon = -1;
@@ -2243,7 +2247,7 @@ void CGraphObjConnectionLine::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i
                                 /* idxPt             */ idxSelPtSelectedPolygon );
                             m_arpSelPtsPolygon.insert(0,pGraphObjSelPt);
 
-                            m_pDrawingScene->addItem(pGraphObjSelPt);
+                            m_pDrawingScene->addGraphObj(pGraphObjSelPt);
 
                             //pGraphObjSelPt->setParentItem(this); see comment in header file of class CGraphObjSelectionPoint
                             pGraphObjSelPt->installSceneEventFilter(this);
@@ -2261,7 +2265,7 @@ void CGraphObjConnectionLine::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i
                                 /* idxPt             */ idxSelPtSelectedPolygon );
                             m_arpSelPtsPolygon.insert(0,pGraphObjSelPt);
 
-                            m_pDrawingScene->addItem(pGraphObjSelPt);
+                            m_pDrawingScene->addGraphObj(pGraphObjSelPt);
 
                             //pGraphObjSelPt->setParentItem(this); see comment in header file of class CGraphObjSelectionPoint
                             pGraphObjSelPt->installSceneEventFilter(this);
@@ -2286,7 +2290,7 @@ void CGraphObjConnectionLine::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i
                                 /* idxPt             */ idxSelPtSelectedPolygon );
                             m_arpSelPtsPolygon.append(pGraphObjSelPt);
 
-                            m_pDrawingScene->addItem(pGraphObjSelPt);
+                            m_pDrawingScene->addGraphObj(pGraphObjSelPt);
 
                             //pGraphObjSelPt->setParentItem(this); see comment in header file of class CGraphObjSelectionPoint
                             pGraphObjSelPt->installSceneEventFilter(this);
@@ -2305,7 +2309,7 @@ void CGraphObjConnectionLine::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i
                                 /* idxPt             */ idxSelPtSelectedPolygon );
                             m_arpSelPtsPolygon.append(pGraphObjSelPt);
 
-                            m_pDrawingScene->addItem(pGraphObjSelPt);
+                            m_pDrawingScene->addGraphObj(pGraphObjSelPt);
 
                             //pGraphObjSelPt->setParentItem(this); see comment in header file of class CGraphObjSelectionPoint
                             pGraphObjSelPt->installSceneEventFilter(this);
@@ -2407,7 +2411,7 @@ void CGraphObjConnectionLine::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i
                 // The object has been initially created.
                 if( editModePrev == EEditMode::Creating )
                 {
-                    m_pDrawingScene->onGraphObjCreated(this);
+                    m_pDrawingScene->onGraphObjCreationFinished(this);
                 }
                 else // if( editModePrev == EEditMode::MoveShapePoint )
                 {

@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -327,7 +327,7 @@ CGraphObj::CGraphObj(
     const QString&       i_strObjName,
     const CDrawSettings& i_settings ) :
 //------------------------------------------------------------------------------
-    CIdxTreeEntry(EIdxTreeEntryType::Leave, i_strObjName),
+    CIdxTreeEntry(EIdxTreeEntryType::Branch, i_strObjName),
     m_pDrawingScene(i_pDrawingScene),
     m_strFactoryGroupName(i_strFactoryGroupName),
     m_type(i_type),
@@ -2657,7 +2657,7 @@ QPointF CGraphObj::getSelectionPoint( ESelectionPoint i_selPt ) const
 } // getSelectionPoint
 
 /*==============================================================================
-public: // overridables
+protected: // overridables
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
@@ -2727,12 +2727,16 @@ void CGraphObj::hideSelectionPoints( ESelectionPoints i_selPts )
                 // Deleting child objects leads to itemChange and an updateToolTip call
                 // accessing the array of selection points.
                 pGraphObjSelPt = m_arpSelPtsBoundingRect[idxSelPt];
-                m_arpSelPtsBoundingRect[idxSelPt] = nullptr;
 
-                //m_pDrawingScene->removeItem(pGraphObjSelPt); // the dtor of the selection point removes itself from the drawing scene
+                if( pGraphObjSelPt != nullptr )
+                {
+                    m_arpSelPtsBoundingRect[idxSelPt] = nullptr;
 
-                delete pGraphObjSelPt;
-                pGraphObjSelPt = nullptr;
+                    //m_pDrawingScene->removeGraphObj(pGraphObjSelPt); // the dtor of the selection point removes itself from the drawing scene
+
+                    delete pGraphObjSelPt;
+                    pGraphObjSelPt = nullptr;
+                }
             }
         }
 
@@ -2747,7 +2751,7 @@ void CGraphObj::hideSelectionPoints( ESelectionPoints i_selPts )
                     pGraphObjSelPt = m_arpSelPtsPolygon[idxSelPt];
                     m_arpSelPtsPolygon[idxSelPt] = nullptr;
 
-                    //m_pDrawingScene->removeItem(pGraphObjSelPt); // the dtor of the selection point (dtor of CGraphObj) removes itself from the drawing scene
+                    //m_pDrawingScene->removeGraphObj(pGraphObjSelPt); // the dtor of the selection point (dtor of CGraphObj) removes itself from the drawing scene
 
                     delete pGraphObjSelPt;
                     pGraphObjSelPt = nullptr;
@@ -2755,7 +2759,6 @@ void CGraphObj::hideSelectionPoints( ESelectionPoints i_selPts )
                 m_arpSelPtsPolygon.clear();
             }
         }
-
     } // if( pGraphicsItem != nullptr )
 
 } // hideSelectionPoints
@@ -2853,7 +2856,6 @@ void CGraphObj::bringSelectionPointsToFront( ESelectionPoints i_selPts )
                 }
             }
         }
-
     } // if( pGraphicsItem != nullptr )
 
 } // bringSelectionPointsToFront
@@ -2936,7 +2938,7 @@ void CGraphObj::showSelectionPointsOfBoundingRect( const QRectF& i_rct, unsigned
                         /* pGraphObjSelected */ this,
                         /* selectionPoint    */ selPt );
 
-                    m_pDrawingScene->addItem(pGraphObjSelPt);
+                    m_pDrawingScene->addGraphObj(pGraphObjSelPt, this);
 
                     //pGraphObjSelPt->setParentItem(this); see comment in header file of class CGraphObjSelectionPoint
                     pGraphObjSelPt->installSceneEventFilter(pGraphicsItem); // event filters can only be installed on items in a scene
@@ -2965,11 +2967,8 @@ void CGraphObj::showSelectionPointsOfBoundingRect( const QRectF& i_rct, unsigned
                     pGraphObjSelPt->setPos(ptSel);
                     pGraphObjSelPt->setZValue( pGraphicsItem->zValue()+0.05 );
                 }
-
             } // if( bShowSelPt )
-
         } // for( idxSelPt = 0; idxSelPt < CEnumSelectionPoint::count(); idxSelPt++ )
-
     } // if( pGraphicsItem != nullptr )
 
 } // showSelectionPointsOfBoundingRect
@@ -3064,11 +3063,8 @@ void CGraphObj::updateSelectionPointsOfBoundingRect( const QRectF& i_rct, unsign
                     pGraphObjSelPt->setPos(ptSel);
                     pGraphObjSelPt->setZValue( pGraphicsItem->zValue()+0.05 );
                 }
-
             } // if( bShowSelPt )
-
         } // for( idxSelPt = 0; idxSelPt < CEnumSelectionPoint::count(); idxSelPt++ )
-
     } // if( pGraphicsItem != nullptr )
 
 } // updateSelectionPointsOfBoundingRect
@@ -3110,7 +3106,7 @@ void CGraphObj::showSelectionPointsOfPolygon( const QPolygonF& i_plg )
                     pGraphObjSelPt = m_arpSelPtsPolygon[idxSelPt];
                     m_arpSelPtsPolygon[idxSelPt] = nullptr;
 
-                    //m_pDrawingScene->removeItem(pGraphObjSelPt); // the dtor of the selection point (dtor of CGraphObj) removes itself from the drawing scene
+                    //m_pDrawingScene->removeGraphObj(pGraphObjSelPt); // the dtor of the selection point (dtor of CGraphObj) removes itself from the drawing scene
 
                     delete pGraphObjSelPt;
                     pGraphObjSelPt = nullptr;
@@ -3136,7 +3132,7 @@ void CGraphObj::showSelectionPointsOfPolygon( const QPolygonF& i_plg )
 
                 pGraphObjSelPt = m_arpSelPtsPolygon[idxSelPt];
 
-                m_pDrawingScene->addItem(pGraphObjSelPt);
+                m_pDrawingScene->addGraphObj(pGraphObjSelPt, this);
 
                 //pGraphObjSelPt->setParentItem(this); see comment in header file of class CGraphObjSelectionPoint
                 pGraphObjSelPt->installSceneEventFilter(pGraphicsItem); // event filters can only be installed on items in a scene
@@ -3150,7 +3146,6 @@ void CGraphObj::showSelectionPointsOfPolygon( const QPolygonF& i_plg )
                 pGraphObjSelPt->setZValue( pGraphicsItem->zValue()+0.05 );
             }
         }
-
     } // if( pGraphicsItem != nullptr )
 
 } // showSelectionPointsOfPolygon
@@ -3196,7 +3191,6 @@ void CGraphObj::updateSelectionPointsOfPolygon( const QPolygonF& i_plg )
                 }
             }
         }
-
     } // if( pGraphicsItem != nullptr )
 
 } // updateSelectionPointsOfPolygon
@@ -3424,7 +3418,7 @@ void CGraphObj::showLabel( const QString& i_strKey )
                     /* strKey            */ pGraphObjLabel->m_strKey,
                     /* strText           */ pGraphObjLabel->m_strText,
                     /* selPt             */ pGraphObjLabel->m_selPt.enumerator() );
-                m_pDrawingScene->addItem(pGraphObjLabel->m_pGraphObjLabel);
+                m_pDrawingScene->addGraphObj(pGraphObjLabel->m_pGraphObjLabel, this);
                 //pGraphObjLabel->m_pGraphObjLabel->setParentItem(this); see comment in header file of class CGraphObjLabel
             }
 
@@ -3508,7 +3502,7 @@ void CGraphObj::hideLabel( const QString& i_strKey )
     {
         SGraphObjLabel* pGraphObjLabel = m_arpLabels[i_strKey];
 
-        //m_pDrawingScene->removeItem(pGraphObjLabel); // the dtor of the label removes itself from the drawing scene
+        //m_pDrawingScene->removeGraphObj(pGraphObjLabel); // the dtor of the label removes itself from the drawing scene
 
         delete pGraphObjLabel->m_pGraphObjLabel;
         pGraphObjLabel->m_pGraphObjLabel = nullptr;
@@ -3820,6 +3814,65 @@ void CGraphObj::addLabels( QHash<QString,SGraphObjLabel*> i_arpLabels )
     }
 
 } // addLabels
+
+/*==============================================================================
+public: // overridables
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! If currently objects are selected their selection points are created.
+    When deleting the graphics scene all items including selection points will
+    be destroyed. Selection points may be destroyed before its parent object
+    the selection points belong to. The parent object got to be informed if the
+    selection point will be destroyed by someone else.
+*/
+void CGraphObj::onSelectionPointDestroying( CGraphObjSelectionPoint* i_pSelectionPoint )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->isActive(ETraceDetailLevelMethodArgs) )
+    {
+        strMthInArgs = QString(i_pSelectionPoint == nullptr ? "nullptr" : i_pSelectionPoint->path());
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "onSelectionPointDestroying",
+        /* strAddInfo   */ strMthInArgs );
+
+    CGraphObjSelectionPoint* pGraphObjSelPt;
+    int                      idxSelPt;
+
+    if( m_arpSelPtsBoundingRect.size() > 0 )
+    {
+        for( idxSelPt = m_arpSelPtsBoundingRect.size()-1; idxSelPt >= 0; idxSelPt-- )
+        {
+            pGraphObjSelPt = m_arpSelPtsBoundingRect[idxSelPt];
+
+            if( pGraphObjSelPt == i_pSelectionPoint )
+            {
+                m_arpSelPtsBoundingRect[idxSelPt] = nullptr;
+            }
+        }
+    }
+
+    if( m_arpSelPtsPolygon.size() > 0 )
+    {
+        for( idxSelPt = m_arpSelPtsPolygon.size()-1; idxSelPt >= 0; idxSelPt-- )
+        {
+            pGraphObjSelPt = m_arpSelPtsPolygon[idxSelPt];
+
+            if( pGraphObjSelPt == i_pSelectionPoint )
+            {
+                m_arpSelPtsPolygon[idxSelPt] = nullptr;
+            }
+        }
+    }
+
+} // onSelectionPointDestroying
 
 /*==============================================================================
 public: // instance methods (simulation methods)

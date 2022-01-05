@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer, Germany
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer, Germany
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -627,7 +627,6 @@ void CMainWindow::onActFileSaveTriggered()
 
 } // onActFileSaveTriggered
 
-
 /*==============================================================================
 protected slots:
 ==============================================================================*/
@@ -636,7 +635,7 @@ protected slots:
 void CMainWindow::onActDebugErrLogTriggered()
 //------------------------------------------------------------------------------
 {
-    QString strDlgTitle = getMainWindowTitle() + ": Error Log";
+    QString strDlgTitle = QCoreApplication::applicationName() + ": Error Log";
 
     CDlgErrLog* pDlg = dynamic_cast<CDlgErrLog*>(CDlgErrLog::GetInstance("ErrLog"));
 
@@ -664,7 +663,7 @@ void CMainWindow::onActDebugErrLogTriggered()
 void CMainWindow::onActDebugTrcServerTriggered()
 //------------------------------------------------------------------------------
 {
-    QString strDlgTitle = getMainWindowTitle() + ": Method Trace Server";
+    QString strDlgTitle = QCoreApplication::applicationName() + ": Method Trace Server";
 
     CDlgTrcServer* pDlg = dynamic_cast<CDlgTrcServer*>(CDlgTrcServer::GetInstance(strDlgTitle));
 
@@ -694,7 +693,7 @@ void CMainWindow::onActDebugTrcServerTriggered()
 void CMainWindow::onActDebugTrcAdminObjIdxTreeTriggered()
 //------------------------------------------------------------------------------
 {
-    QString strDlgTitle = getMainWindowTitle() + ": Method Trace Admin Objects";
+    QString strDlgTitle = QCoreApplication::applicationName() + ": Method Trace Admin Objects";
 
     CDlgIdxTreeTrcAdminObjs* pDlg = CDlgIdxTreeTrcAdminObjs::GetInstance(CTrcServer::GetTraceAdminObjIdxTree()->objectName());
 

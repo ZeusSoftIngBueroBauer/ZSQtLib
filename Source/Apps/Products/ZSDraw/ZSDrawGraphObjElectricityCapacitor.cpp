@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -204,8 +204,8 @@ CGraphObjCapacitor::CGraphObjCapacitor(
         /* strObjName    */ "CnctLine" );
 
     m_pLinCnct->setLine( QLineF( QPointF(0.0,0.0), QPointF(rctBounding.right(),0.0) ) );
-    m_pDrawingScene->addItem(m_pLinCnct);
-    m_pDrawingScene->onGraphObjCreated(m_pLinCnct);
+    m_pDrawingScene->addGraphObj(m_pLinCnct);
+    m_pDrawingScene->onGraphObjCreationFinished(m_pLinCnct);
     m_pLinCnct->setPos( QPointF(0.0,rctCnctPt1.center().y()) );
     addGraphObj(m_pLinCnct);
 
@@ -225,8 +225,8 @@ CGraphObjCapacitor::CGraphObjCapacitor(
         /* strObjName    */ "Dielectric" );
 
     m_pRctDielectric->setRect( 0.0, 0.0, rctBody.width(), rctBody.height() );
-    m_pDrawingScene->addItem(m_pRctDielectric);
-    m_pDrawingScene->onGraphObjCreated(m_pRctDielectric);
+    m_pDrawingScene->addGraphObj(m_pRctDielectric);
+    m_pDrawingScene->onGraphObjCreationFinished(m_pRctDielectric);
     m_pRctDielectric->setPos( rctBody.topLeft() );
     addGraphObj(m_pRctDielectric);
 
@@ -248,8 +248,8 @@ CGraphObjCapacitor::CGraphObjCapacitor(
         /* strObjName    */ "Plate1" );
 
     m_pLinPlate1->setLine( QLineF( QPointF(0.0, 0.0), QPointF(0.0,rctBody.height()) ) );
-    m_pDrawingScene->addItem(m_pLinPlate1);
-    m_pDrawingScene->onGraphObjCreated(m_pLinPlate1);
+    m_pDrawingScene->addGraphObj(m_pLinPlate1);
+    m_pDrawingScene->onGraphObjCreationFinished(m_pLinPlate1);
     m_pLinPlate1->setPos( rctBody.topLeft() );
     addGraphObj(m_pLinPlate1);
 
@@ -269,8 +269,8 @@ CGraphObjCapacitor::CGraphObjCapacitor(
         /* strObjName    */ "Plate2" );
 
     m_pLinPlate2->setLine( QLineF( QPointF(0.0, 0.0), QPointF(0.0,rctBody.height()) ) );
-    m_pDrawingScene->addItem(m_pLinPlate2);
-    m_pDrawingScene->onGraphObjCreated(m_pLinPlate2);
+    m_pDrawingScene->addGraphObj(m_pLinPlate2);
+    m_pDrawingScene->onGraphObjCreationFinished(m_pLinPlate2);
     m_pLinPlate2->setPos( rctBody.topRight() );
     addGraphObj(m_pLinPlate2);
 
@@ -293,8 +293,8 @@ CGraphObjCapacitor::CGraphObjCapacitor(
     m_pCnctPt1->setInnerCircleWidthInPx(fCnctPtWidth);
     m_pCnctPt1->setRect( 0.0, 0.0, rctCnctPt1.width(), rctCnctPt1.height() );
     m_pCnctPt1->setFixedSize( QSize(fCnctPtWidth,fCnctPtWidth) );
-    m_pDrawingScene->addItem(m_pCnctPt1);
-    m_pDrawingScene->onGraphObjCreated(m_pCnctPt1);
+    m_pDrawingScene->addGraphObj(m_pCnctPt1);
+    m_pDrawingScene->onGraphObjCreationFinished(m_pCnctPt1);
     m_pCnctPt1->setPos( rctCnctPt1.topLeft() );
     addGraphObj(m_pCnctPt1);
 
@@ -315,8 +315,8 @@ CGraphObjCapacitor::CGraphObjCapacitor(
     m_pCnctPt2->setInnerCircleWidthInPx(fCnctPtWidth);
     m_pCnctPt2->setRect( 0.0, 0.0, rctCnctPt2.width(), rctCnctPt2.height() );
     m_pCnctPt2->setFixedSize( QSize(fCnctPtWidth,fCnctPtWidth) );
-    m_pDrawingScene->addItem(m_pCnctPt2);
-    m_pDrawingScene->onGraphObjCreated(m_pCnctPt2);
+    m_pDrawingScene->addGraphObj(m_pCnctPt2);
+    m_pDrawingScene->onGraphObjCreationFinished(m_pCnctPt2);
     m_pCnctPt2->setPos( rctCnctPt2.topLeft() );
     addGraphObj(m_pCnctPt2);
 
@@ -359,31 +359,6 @@ CGraphObjCapacitor::~CGraphObjCapacitor()
         /* strObjName   */ m_strName,
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
-
-    // Please note that the dynamic cast to QGraphicsItem returns nullptr if the
-    // dtor of QGraphicsItem has already been executed. The order the dtors
-    // of inherited classes are called depends on the order the classes
-    // appear in the list of the inherited classes on defining the
-    // class implementation. So we can't call "removeItem" from within the
-    // dtor of the base class CGraphObj but must remove the graphics item from
-    // the drawing scene's item list before the dtor of class QGraphicsItem is
-    // called. And this is only always the case in the dtor of the class
-    // derived from QGraphicsItem.
-    // Moreover on removing (deleting) a group the group's children have already
-    // been removed from the drawing scene by the dtor of class QGraphicsItemGroup
-    // (which is inherited by CGraphObjGroup) and "scene()" may return nullptr.
-
-    QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
-
-    if( pGraphicsItem != nullptr )
-    {
-        QGraphicsScene* pGraphicsScene = pGraphicsItem->scene();
-
-        if( pGraphicsScene != nullptr )
-        {
-            pGraphicsScene->removeItem(pGraphicsItem);
-        }
-    }
 
     m_pLinCnct = nullptr;
     m_pRctDielectric = nullptr;

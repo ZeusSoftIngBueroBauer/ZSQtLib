@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -63,6 +63,8 @@ public: // class methods
     /*! Returns the class name. */
     static QString ClassName() { return "CGraphObjSelectionPoint"; } // Please note that the static class functions name must be different from the non static virtual member function "className"
 public: // class methods
+    static int getCurrentInstCount() { return s_iInstCount; }
+public: // class methods
     static double GetDefaultRadiusInPx() { return s_fRadius_px; }
 public: // ctors and dtor
     CGraphObjSelectionPoint( // for (bounding) rectangles
@@ -84,6 +86,7 @@ public: // overridables
 public: // instance methods
     ESelectionPointType getSelectionPointType() const { return m_selPtType.enumerator(); }
 public: // instance methods
+    CGraphObj* getSelectedGraphObj() { return m_pGraphObjSelected; }
     void setSelectionPoint( ESelectionPoint i_selPt );
     ESelectionPoint getSelectionPoint() const { return m_selPt.enumerator(); }
     void setShapePointIndex( int i_idxPt );

@@ -108,19 +108,19 @@ Maus Events ohne gedrückte Taste ignoriert.
 
 Erreicht man die gewünschte Position und drückt die linke Maus Taste, wird das grafische Objekt "Point"
 in der Methode "mousePressEvent" über den Factory Aufruf "createGraphObj" erzeugt und der graphics scene
-als graphic item hinzugefügt. In der Regel ist ein grafisches Objekt nach dem ersten Maus Click nicht
-fertig gestellt sondern wird durch ziehen der Maus bei gedrückter Maustaste noch in der Form geändert und
-befindet sich somit noch "under construction". Da das Objekt selbst dafür verantwortlich ist, die Anfasspunkte
-zu erzeugen wird ihm dieser Zustand durch den Aufruf "setEditMode(EEditMode::Creating)" mitgeteilt.
+als graphic item hinzugefügt. Die Drawing Scene fügt das Objekt daraufhin auch in den Index Tree seiner
+grafischen Objekte ein.
 
-Nachdem das Objekt erzeugt wurde wird der Mouse Click Event an das Objekt weitergeleitet und kann
+In der Regel ist ein grafisches Objekt nach dem ersten Maus Click nicht fertig gestellt sondern wird durch
+ziehen der Maus bei gedrückter Maustaste noch in der Form geändert und befindet sich somit noch "under construction".
+Da das Objekt selbst am besten weiß, wie es über Maus-Events erzeugt wird und z.B. SelectionPoints temporär
+erzeugen muss, wird ihm dieser Zustand durch den Aufruf "setEditMode(EEditMode::Creating)" mitgeteilt
+und der Mouse Click Event an das Objekt weitergeleitet. Bei Verarbeitung dieses Events kann das Objekt selbst
 entsprechend seinem Objekt Typ und seinem aktuellen Zustand darauf reagieren.
 
 Im Falle des Point Objekts ist das Objekt mit dem ersten Maus Click fertig gestellt und in der
 "mousePressEvent" Methode des Point Objekts wird bei Empfang des Mouse Clicks Events der Drawing Scene
-durch Aufruf von "onGraphObjCreated" mitgeteilt, dass das Objekt fertig gestellt ist.
-
-Die Drawing Scene fügt das Objekt daraufhin in den Index Tree ein.
+durch Aufruf von "onGraphObjCreationFinished" mitgeteilt, dass das Objekt fertig gestellt ist.
 
 Wird die Maus Taste nach Erzeugen des Point Objekts gedrückt gehalten und die Maus bewegt, werden
 weitere Punkte innerhalb der "mouseMoveEvent" Methode erzeugt. Dies ist eine Besonderheit des grafischen

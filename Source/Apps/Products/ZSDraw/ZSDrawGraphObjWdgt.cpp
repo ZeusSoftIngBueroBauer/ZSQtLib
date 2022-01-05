@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -129,14 +129,11 @@ CGraphObjWdgt::~CGraphObjWdgt()
                 }
             }
 
-            QGraphicsScene* pGraphicsScene = pGraphicsItem->scene();
-            if( pGraphicsScene != nullptr )
+            if( m_pDrawingScene != nullptr )
             {
-                pGraphicsScene->removeItem(pGraphicsItem);
+                m_pDrawingScene->removeGraphObj(this);
             }
-
         } // if( m_pDrawingScene != nullptr )
-
     } // if( pGraphicsItem != nullptr )
 
 } // dtor

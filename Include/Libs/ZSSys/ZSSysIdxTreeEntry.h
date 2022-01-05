@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -44,9 +44,9 @@ class CIdxTree;
 
 enum class EIdxTreeEntryType
 {
-    Root    = 0,
-    Branch  = 1,
-    Leave   = 2,
+    Root    = 0,    /*! The root entry may have childrens but does not have a parent. */
+    Branch  = 1,    /*! Branches may have childrens. */
+    Leave   = 2,    /*! Leaves may not have childrens. */
     Count,
     Undefined
 };

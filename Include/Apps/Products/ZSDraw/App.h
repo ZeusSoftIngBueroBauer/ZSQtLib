@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -81,6 +81,8 @@ public: // ctors and dtor
 public: // instance methods
     void readSettings();
     void saveSettings();
+public: // instance methods
+    QSettings* getSettingsFile() const { return m_pSettingsFile; }
 protected slots: // instance methods of system shutdown
     void onLastWindowClosed();
 protected: // instance members

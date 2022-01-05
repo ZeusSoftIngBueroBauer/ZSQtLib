@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -70,6 +70,7 @@ may result in using the software modules.
 
 
 #include "MainWindow.h"
+#include "App.h"
 #include "ZSDrawObjFactoryWdgtCheckBox.h"
 #include "ZSDrawObjFactoryWdgtComboBox.h"
 #include "ZSDrawObjFactoryWdgtGroupBox.h"
@@ -90,7 +91,7 @@ may result in using the software modules.
 #include "ZSDraw/ZSDrawingScene.h"
 #include "ZSDraw/ZSDrawingView.h"
 #include "ZSDraw/ZSDrawGraphicsItemsModel.h"
-#include "ZSDraw/ZSDrawGraphObj.h"
+#include "ZSDraw/ZSDrawGraphObjSelectionPoint.h"
 #include "ZSDraw/ZSDrawObjFactoriesModel.h"
 #include "ZSDraw/ZSDrawObjFactoryConnectionLine.h"
 #include "ZSDraw/ZSDrawObjFactoryConnectionPoint.h"
@@ -350,6 +351,7 @@ CMainWindow::CMainWindow(
     // Menu - Info
     m_pMenuInfo(nullptr),
     m_pActInfoVersion(nullptr),
+    m_pActInfoSettingsFile(nullptr),
     // Dock Widgets
     // Dock Widget - Object Factories
     m_pDockWdgtObjFactories(nullptr),
@@ -375,6 +377,7 @@ CMainWindow::CMainWindow(
     m_pLblStatusBarDrawingSceneRect(nullptr),
     m_pLblStatusBarDrawingSceneMouseCursorPos(nullptr),
     m_pLblStatusBarDrawingViewMouseCursorPos(nullptr),
+    m_pLblErrors(nullptr),
     // Central Widget with Drawing
     m_pLyt(nullptr),
     m_pDrawingScene(nullptr),
@@ -412,11 +415,6 @@ CMainWindow::CMainWindow(
 
     createActions();
 
-    // Toolbox
-    //--------
-
-    //createToolBox();
-
     // Menu
     //-----
 
@@ -448,6 +446,44 @@ CMainWindow::CMainWindow(
     m_pLblStatusBarDrawingViewMouseCursorPos = new QLabel( "ViewPos: -/- [" + Geometry::GraphDevice()->Pixel()->getSymbol() + "]" );
     m_pLblStatusBarDrawingViewMouseCursorPos->setMinimumWidth(140);
     statusBar()->addPermanentWidget(m_pLblStatusBarDrawingViewMouseCursorPos);
+
+    // <Label> Errors
+    //---------------
+
+    if( CErrLog::GetInstance() != nullptr )
+    {
+        m_pLblErrors = new QLabel("Errors");
+        m_pLblErrors->installEventFilter(this);
+        statusBar()->addPermanentWidget(m_pLblErrors);
+        m_pLblErrors->hide();
+
+        updateErrorsStatus();
+
+        if( !QObject::connect(
+            /* pObjSender   */ CErrLog::GetInstance(),
+            /* szSignal     */ SIGNAL(entryAdded(const ZS::System::SErrResultInfo&)),
+            /* pObjReceiver */ this,
+            /* szSlot       */ SLOT(onErrLogEntryAdded(const ZS::System::SErrResultInfo&)) ) )
+        {
+            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
+        }
+        if( !QObject::connect(
+            /* pObjSender   */ CErrLog::GetInstance(),
+            /* szSignal     */ SIGNAL(entryChanged(const ZS::System::SErrResultInfo&)),
+            /* pObjReceiver */ this,
+            /* szSlot       */ SLOT(onErrLogEntryChanged(const ZS::System::SErrResultInfo&)) ) )
+        {
+            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
+        }
+        if( !QObject::connect(
+            /* pObjSender   */ CErrLog::GetInstance(),
+            /* szSignal     */ SIGNAL(entryRemoved(const ZS::System::SErrResultInfo&)),
+            /* pObjReceiver */ this,
+            /* szSlot       */ SLOT(onErrLogEntryRemoved(const ZS::System::SErrResultInfo&)) ) )
+        {
+            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
+        }
+    } // if( CErrLog::GetInstance() != nullptr )
 
     // Drawing Scene
     //---------------
@@ -1012,6 +1048,7 @@ CMainWindow::~CMainWindow()
     // Menu - Info
     m_pMenuInfo = nullptr;
     m_pActInfoVersion = nullptr;
+    m_pActInfoSettingsFile = nullptr;
     // Dock Widgets
     // Dock Widget - Object Factories
     m_pDockWdgtObjFactories = nullptr;
@@ -1037,6 +1074,7 @@ CMainWindow::~CMainWindow()
     m_pLblStatusBarDrawingSceneGraphObjEditInfo = nullptr;
     m_pLblStatusBarDrawingSceneMouseCursorPos = nullptr;
     m_pLblStatusBarDrawingViewMouseCursorPos = nullptr;
+    m_pLblErrors = nullptr;
     // Central Widget with Drawing
     m_pLyt = nullptr;
     m_pDrawingScene = nullptr;
@@ -2191,6 +2229,16 @@ void CMainWindow::createActions()
 
     m_pActInfoVersion = new QAction(strActionInfoVersion,this);
 
+    // <MenuItem> Info::Settings File
+    //-------------------------------
+
+    if( CApplication::GetInstance()->getSettingsFile() != nullptr )
+    {
+        QString strActionInfoSettingsFile = "Settings File: " + CApplication::GetInstance()->getSettingsFile()->fileName();
+
+        m_pActInfoSettingsFile = new QAction(strActionInfoSettingsFile,this);
+    }
+
 } // createActions
 
 //------------------------------------------------------------------------------
@@ -2583,6 +2631,11 @@ void CMainWindow::createMenus()
     if( m_pActInfoVersion != nullptr )
     {
         m_pMenuInfo->addAction(m_pActInfoVersion);
+    }
+
+    if( m_pActInfoSettingsFile != nullptr )
+    {
+        m_pMenuInfo->addAction(m_pActInfoSettingsFile);
     }
 
 } // createMenus
@@ -3184,6 +3237,48 @@ void CMainWindow::closeEvent( QCloseEvent* i_pEv )
     }
 
 } // closeEvent
+
+//------------------------------------------------------------------------------
+bool CMainWindow::eventFilter( QObject* i_pObjWatched, QEvent* i_pEv )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    {
+        strMthInArgs = "Obj: " + QString(i_pObjWatched == nullptr ? "nullptr" : i_pObjWatched->objectName());
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* strMethod    */ "eventFilter",
+        /* strAddInfo   */ strMthInArgs );
+
+    bool bHandled = false;
+
+    if( i_pObjWatched == m_pLblErrors )
+    {
+        if( i_pEv->type() == QEvent::MouseButtonDblClick )
+        {
+            onActionTraceErrLogTriggered(false);
+            bHandled = true;
+        }
+    }
+    else
+    {
+        // pass the event on to the parent class
+        bHandled = QMainWindow::eventFilter(i_pObjWatched,i_pEv);
+    }
+
+    if( mthTracer.isActive(ETraceDetailLevelMethodArgs) )
+    {
+        mthTracer.setMethodReturn(bHandled);
+    }
+
+    return bHandled;
+
+} // eventFilter
 
 /*==============================================================================
 public: // instance methods
@@ -5781,23 +5876,53 @@ void CMainWindow::onTreeViewGraphicsItemsCurrentChanged(
 
     if( pGraphicsItem != nullptr )
     {
-        QObject::disconnect(
-            /* pObjSender   */ m_pDrawingScene,
-            /* szSignal     */ SIGNAL(selectionChanged()),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onDrawingSceneSelectionChanged()) );
+        CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
 
-        m_pDrawingScene->clearSelection();
-
-        pGraphicsItem->setSelected(true);
-
-        if( !QObject::connect(
-            /* pObjSender   */ m_pDrawingScene,
-            /* szSignal     */ SIGNAL(selectionChanged()),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onDrawingSceneSelectionChanged()) ) )
+        if( pGraphObj != nullptr )
         {
-            throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
+            QGraphicsItem* pGraphicsItemSelected = pGraphicsItem;
+            CGraphObj*     pGraphObjSelected = pGraphObj;
+
+            // Selection Points cannot be selected. When clicking on a selection point
+            // the parent got to be selected.
+            if( pGraphObj->getType() == EGraphObjTypeSelectionPoint )
+            {
+                CGraphObjSelectionPoint* pSelectionPoint = dynamic_cast<CGraphObjSelectionPoint*>(pGraphObj);
+
+                if( pSelectionPoint != nullptr )
+                {
+                    pGraphObjSelected = pSelectionPoint->getSelectedGraphObj();
+                    pGraphicsItemSelected = dynamic_cast<QGraphicsItem*>(pGraphObjSelected);
+                }
+            }
+
+            // On clicking on a selection point and removing the selection of it's parent object
+            // the parent object will hide and destroy the selection point - which has currently
+            // beeing clicked. The selection may only be cleared therefore if a new object has
+            // been selected. Otherwise the selected tree view entry would be destroyed while it
+            // has been selected. And afterwards created again. And so on. This will either end up
+            // in a deadlock (endless loop) or at least with access violations,
+            if( !pGraphicsItemSelected->isSelected() )
+            {
+                QObject::disconnect(
+                    /* pObjSender   */ m_pDrawingScene,
+                    /* szSignal     */ SIGNAL(selectionChanged()),
+                    /* pObjReceiver */ this,
+                    /* szSlot       */ SLOT(onDrawingSceneSelectionChanged()) );
+
+                m_pDrawingScene->clearSelection();
+
+                pGraphicsItemSelected->setSelected(true);
+
+                if( !QObject::connect(
+                    /* pObjSender   */ m_pDrawingScene,
+                    /* szSignal     */ SIGNAL(selectionChanged()),
+                    /* pObjReceiver */ this,
+                    /* szSlot       */ SLOT(onDrawingSceneSelectionChanged()) ) )
+                {
+                    throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
+                }
+            }
         }
     }
 
@@ -6707,3 +6832,158 @@ void CMainWindow::updateActionsFilesRecent()
     }
 
 } // updateActionsFilesRecent
+
+/*==============================================================================
+protected slots:
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CMainWindow::onErrLogEntryAdded( const ZS::System::SErrResultInfo& /*i_errResultInfo*/ )
+//------------------------------------------------------------------------------
+{
+    updateErrorsStatus();
+}
+
+//------------------------------------------------------------------------------
+void CMainWindow::onErrLogEntryChanged( const ZS::System::SErrResultInfo& /*i_errResultInfo*/ )
+//------------------------------------------------------------------------------
+{
+    updateErrorsStatus();
+}
+
+//------------------------------------------------------------------------------
+void CMainWindow::onErrLogEntryRemoved( const ZS::System::SErrResultInfo& /*i_errResultInfo*/ )
+//------------------------------------------------------------------------------
+{
+    updateErrorsStatus();
+}
+
+/*==============================================================================
+protected: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CMainWindow::updateErrorsStatus()
+//------------------------------------------------------------------------------
+{
+    CErrLog* pErrLog = CErrLog::GetInstance();
+
+    EResultSeverity severityMax = EResultSeveritySuccess;
+    QString         strToolTip;
+    SErrLogEntry*   pErrLogEntry = nullptr;
+    EResultSeverity severity;
+    int             iRowIdx;
+
+    int ariErrorsCount[EResultSeverityCount];
+    int iErrorsCount = 0;
+
+    memset( ariErrorsCount, 0x00, sizeof(ariErrorsCount) );
+
+    if( pErrLog != nullptr )
+    {
+        pErrLog->lock();
+
+        for( iRowIdx = 0; iRowIdx < pErrLog->getEntryCount(); iRowIdx++ )
+        {
+            pErrLogEntry = pErrLog->getEntry(iRowIdx);
+
+            if( pErrLogEntry != nullptr )
+            {
+                if( pErrLogEntry->m_errResultInfo.getSeverity() > severityMax )
+                {
+                    severityMax = pErrLogEntry->m_errResultInfo.getSeverity();
+                }
+                if( pErrLogEntry->m_errResultInfo.getSeverity() >= EResultSeverityInfo && pErrLogEntry->m_errResultInfo.getSeverity() < EResultSeverityCount )
+                {
+                    ariErrorsCount[pErrLogEntry->m_errResultInfo.getSeverity()]++;
+                    iErrorsCount++;
+                }
+            }
+        }
+        pErrLog->unlock();
+
+        if( iErrorsCount == 0 )
+        {
+            strToolTip = "There is no Info, no Warning, no Error and no Critical Error message pending";
+            m_pLblErrors->hide();
+        }
+        else if( iErrorsCount > 0 )
+        {
+            int iErrorsCountTmp = 0;
+            int iRowIdxTmp;
+
+            if( iErrorsCount == 1 )
+            {
+                strToolTip = "There is ";
+            }
+            else
+            {
+                strToolTip = "There are ";
+            }
+
+            for( iRowIdx = EResultSeverityInfo; iRowIdx < EResultSeverityCount; iRowIdx++ )
+            {
+                severity = static_cast<EResultSeverity>(iRowIdx);
+
+                if( ariErrorsCount[iRowIdx] > 0 )
+                {
+                    strToolTip += QString::number(ariErrorsCount[iRowIdx]) + " " + resultSeverity2Str(severity);
+
+                    if( severity == EResultSeverityInfo || severity == EResultSeverityWarning || severity == EResultSeverityError )
+                    {
+                        if( ariErrorsCount[iRowIdx] > 1 )
+                        {
+                            strToolTip += "s";
+                        }
+                    }
+                    else if( severity == EResultSeverityCritical )
+                    {
+                        if( ariErrorsCount[iRowIdx] == 1 )
+                        {
+                            strToolTip += " Error";
+                        }
+                        else
+                        {
+                            strToolTip += " Errors";
+                        }
+                    }
+
+                    iErrorsCountTmp += ariErrorsCount[iRowIdx];
+
+                    if( iErrorsCountTmp < iErrorsCount )
+                    {
+                        int iSeveritiesWithErrorsFollow = 0;
+
+                        for( iRowIdxTmp = iRowIdx+1; iRowIdxTmp < EResultSeverityCount; iRowIdxTmp++ )
+                        {
+                            if( ariErrorsCount[iRowIdxTmp] > 0 )
+                            {
+                                iSeveritiesWithErrorsFollow++;
+                            }
+                        }
+                        if( iSeveritiesWithErrorsFollow >= 2 )
+                        {
+                            strToolTip += ", ";
+                        }
+                        else if( iSeveritiesWithErrorsFollow >= 1 )
+                        {
+                            strToolTip += " and ";
+                        }
+                    }
+                }
+            }
+            m_pLblErrors->show();
+
+        } // if( iErrorsCount > 0 )
+
+        strToolTip += ".";
+
+    } // if( pErrLog != nullptr )
+
+    if( m_pLblErrors != nullptr )
+    {
+        m_pLblErrors->setPixmap( getErrPixmap(severityMax) );
+        m_pLblErrors->setToolTip(strToolTip);
+    }
+
+} // updateErrorsStatus

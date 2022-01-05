@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -93,9 +93,11 @@ public: // instance methods
     ZS::System::CIdxTree* getGraphObjsIdxTree() { return m_pGraphObjsIdxTree; }
 public: // instance methods
     void clear();
-    void removeItem( QGraphicsItem* i_pGraphicsItem );
-    void removeItem( CGraphObj* i_pGraphObj );
+    void addGraphObj( CGraphObj* i_pGraphObj, CGraphObj* i_pGraphObjParent = nullptr );
+    void removeGraphObj( CGraphObj* i_pGraphObj );
 protected: // instance methods
+    void addItem( QGraphicsItem* i_pGraphicsItem );
+    void removeItem( QGraphicsItem* i_pGraphicsItem );
     void deleteItem( QGraphicsItem* i_pGraphicsItem );
     void deleteItem( CGraphObj* i_pGraphObj );
 protected: // instance methods
@@ -142,7 +144,7 @@ public: // to be called by graphical objects (as graphical objects are not deriv
     void onGraphObjAddingShapePointsStarted( CGraphObj* i_pGraphObj );
     void onGraphObjAddingShapePointsFinished( CGraphObj* i_pGraphObj );
 public: // to be called by graphical objects (as graphical objects are not derived from QObject and cannot emit signals)
-    void onGraphObjCreated( CGraphObj* i_pGraphObj );   // This call assigns the object ids
+    void onGraphObjCreationFinished( CGraphObj* i_pGraphObj );
     void onGraphObjDestroying( const QString& i_strObjId );
     void onGraphObjDestroyed( const QString& i_strObjId );
     void onGraphObjIdChanged( const QString& i_strObjIdOld, const QString& i_strObjIdNew );
@@ -240,7 +242,6 @@ protected: // instance members
     QGraphicsItem*           m_pGraphicsItemAddingShapePoints; /*! Same object as GraphObjAddingShapePoints (just a different name for the same thing to avoid unnecessary dynamic_casts). */
     CGraphObj*               m_pGraphObjAddingShapePoints;     /*! Same object as GraphicsItemAddingShapePoints (just a different name for the same thing to avoid unnecessary dynamic_casts). */
     QString                  m_strGraphObjNameSeparator;
-    bool                     m_bGraphObjIdChangedByMyself;
     ZS::System::CIdxTree*    m_pGraphObjsIdxTree;
     ZS::System::CIdxTree*    m_pGraphObjsIdxTreeClipboard;
     QList<QGraphicsItem*>    m_arpGraphicsItemsAcceptingHoverEvents;

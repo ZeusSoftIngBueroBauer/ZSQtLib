@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -350,9 +350,7 @@ CGraphObj* CObjFactoryConnectionLine::loadGraphObj(
                 /* drawSettings  */ drawSettings,
                 /* strObjName    */ i_strObjName );
 
-            QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(pGraphObj);
-
-            i_pDrawingScene->addItem(pGraphicsItem);
+            i_pDrawingScene->addGraphObj(pGraphObj);
 
             pGraphObj->setConnectionPoint( ELinePoint::Start, pCnctPtStart );
             pGraphObj->setConnectionPoint( ELinePoint::End, pCnctPtEnd );
@@ -363,7 +361,7 @@ CGraphObj* CObjFactoryConnectionLine::loadGraphObj(
 
             pGraphObj->setStackingOrderValue(fZValue);
 
-            i_pDrawingScene->onGraphObjCreated(pGraphObj);
+            i_pDrawingScene->onGraphObjCreationFinished(pGraphObj);
 
             pGraphObj->acceptCurrentAsOriginalCoors();
 

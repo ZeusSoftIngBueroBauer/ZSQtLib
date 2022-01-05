@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -52,6 +52,8 @@ namespace ZS
 {
 namespace System
 {
+struct SErrResultInfo;
+
 namespace GUI
 {
 class CDlgErrLog;
@@ -229,6 +231,7 @@ protected: // instance methods (for ctor)
     void createDockWidgets();
 protected: // overridables of base class QWidget
     virtual void closeEvent( QCloseEvent* i_pEv );
+    virtual bool eventFilter( QObject* i_pObjWatched, QEvent* i_pEv );
 public: // instance methods
     void setCheckedActionModeEdit( bool i_bChecked );
     void setCheckedActionModeSimulation( bool i_bChecked );
@@ -329,6 +332,12 @@ protected: // instance methods
     void updateStatusBar();
     void updateActions();
     void updateActionsFilesRecent();
+protected slots:
+    void onErrLogEntryAdded( const ZS::System::SErrResultInfo& i_errResultInfo );
+    void onErrLogEntryChanged( const ZS::System::SErrResultInfo& i_errResultInfo );
+    void onErrLogEntryRemoved( const ZS::System::SErrResultInfo& i_errResultInfo );
+protected: // instance methods
+    void updateErrorsStatus();
 protected: // type definitions and constants
     enum { EFilesRecentCountMax = 4 };
 protected: // class members
@@ -446,6 +455,7 @@ protected: // instance members
     // Menu - Info
     QMenu*                                              m_pMenuInfo;
     QAction*                                            m_pActInfoVersion;
+    QAction*                                            m_pActInfoSettingsFile;
     // Dock Widgets
     // Dock Widget - Object Factories
     QDockWidget*                                        m_pDockWdgtObjFactories;
@@ -471,6 +481,7 @@ protected: // instance members
     QLabel*                                             m_pLblStatusBarDrawingSceneRect;
     QLabel*                                             m_pLblStatusBarDrawingSceneMouseCursorPos;
     QLabel*                                             m_pLblStatusBarDrawingViewMouseCursorPos;
+    QLabel*                                             m_pLblErrors;
     // Central Widget with Drawing
     QHBoxLayout*                                        m_pLyt;
     ZS::Draw::CDrawingScene*                            m_pDrawingScene;
