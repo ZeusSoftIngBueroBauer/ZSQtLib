@@ -66,13 +66,13 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CObjFactoryInductor::CObjFactoryInductor( const QIcon& i_toolIcon ) :
+CObjFactoryInductor::CObjFactoryInductor( const QPixmap& i_pxmToolIcon ) :
 //------------------------------------------------------------------------------
     CObjFactory(
         /* strGroupName    */ CGraphObjElectricity::c_strFactoryGroupName,
         /* iGraphObjType   */ EGraphObjTypeUserDefined,
         /* strGraphObjType */ "Inductor",
-        /* toolIcon        */ i_toolIcon )
+        /* toolIcon        */ i_pxmToolIcon )
 {
 } // default ctor
 

@@ -94,7 +94,7 @@ CGraphObjWdgtComboBox::CGraphObjWdgtComboBox(
 
     QString strAddTrcInfo;
 
-    QString strNameSpace = NameSpace() + CObjFactory::c_strGroupSeparater + c_strFactoryGroupName;
+    QString strNameSpace = NameSpace();
     m_pTrcAdminObjCtorsAndDtor = CTrcServer::GetTraceAdminObj(strNameSpace, ClassName(), "CtorsAndDtor");
     m_pTrcAdminObjItemChange = CTrcServer::GetTraceAdminObj(strNameSpace, ClassName(), "ItemChange");
     m_pTrcAdminObjBoundingRect = CTrcServer::GetTraceAdminObj(strNameSpace, ClassName(), "BoundingRect");

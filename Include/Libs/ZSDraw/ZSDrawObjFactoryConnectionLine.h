@@ -44,7 +44,7 @@ public: // class methods
     /*! Returns the class name. */
     static QString ClassName() { return "CObjFactoryConnectionLine"; }  // Please note that the static class functions name must be different from the non static virtual member function "className"
 public: // ctors and dtor
-    CObjFactoryConnectionLine( const QIcon& i_toolIcon = QIcon() );
+    CObjFactoryConnectionLine( const QPixmap& i_pxmToolIcon = QPixmap() );
     virtual ~CObjFactoryConnectionLine();
 public: // overridables
     /*! This virtual method returns the name space of the object's class.

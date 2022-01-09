@@ -65,13 +65,13 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CObjFactoryWdgtCheckBox::CObjFactoryWdgtCheckBox( const QIcon& i_toolIcon ) :
+CObjFactoryWdgtCheckBox::CObjFactoryWdgtCheckBox( const QPixmap& i_pxmToolIcon ) :
 //------------------------------------------------------------------------------
     CObjFactory(
         /* strGroupName    */ CGraphObjWdgt::c_strFactoryGroupName,
         /* iGraphObjType   */ EGraphObjTypeUserDefined,
         /* strGraphObjType */ "CheckBox",
-        /* toolIcon        */ i_toolIcon )
+        /* toolIcon        */ i_pxmToolIcon )
 {
 } // default ctor
 

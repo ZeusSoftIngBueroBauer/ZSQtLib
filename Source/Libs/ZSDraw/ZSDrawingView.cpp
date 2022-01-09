@@ -114,6 +114,8 @@ CDrawingView::~CDrawingView()
 
     //saveSettings();
 
+    mthTracer.onAdminObjAboutToBeReleased();
+
     CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
     CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjMouseMoveEvent);
     CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjPaintEvent);

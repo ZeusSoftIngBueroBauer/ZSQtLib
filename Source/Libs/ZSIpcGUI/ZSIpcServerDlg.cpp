@@ -161,6 +161,8 @@ CDlgIpcServer::~CDlgIpcServer()
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
 
+    mthTracer.onAdminObjAboutToBeReleased();
+
     CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
 
     m_pLyt = nullptr;

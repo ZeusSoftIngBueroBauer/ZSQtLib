@@ -70,9 +70,9 @@ public: // class methods
     /*! Returns the class name. */
     static QString ClassName() { return "CDrawingScene"; } // Please note that the static class functions name must be different from the non static virtual member function "className"
 public: // class methods
-    static QString FindUniqueGraphObjId(
-        const QMap<QString,CGraphObj*>& i_dctpGraphObjs,
-        const QString&                  i_strObjIdCurr );
+    //static QString FindUniqueGraphObjId(
+    //    const QMap<QString,CGraphObj*>& i_dctpGraphObjs,
+    //    const QString&                  i_strObjIdCurr );
 public: // ctors and dtor
     CDrawingScene( QObject* i_pObjParent = nullptr );
     ~CDrawingScene();

@@ -41,7 +41,7 @@ class CObjFactoryDiode : public CObjFactory
 //******************************************************************************
 {
 public: // ctors and dtor
-    CObjFactoryDiode( const QIcon& i_toolIcon = QIcon() );
+    CObjFactoryDiode( const QPixmap& i_pxmToolIcon = QPixmap() );
     virtual ~CObjFactoryDiode();
 public: // interface methods of base class CObjFactory
     virtual CGraphObj* createGraphObj(

@@ -836,7 +836,7 @@
     <ClCompile Include="..\..\..\Source\Libs\ZSDraw\ZSDrawDlgFormatGraphObjs.cpp" />
     <ClCompile Include="..\..\..\Source\Libs\ZSDraw\ZSDrawDlgPageSetup.cpp" />
     <ClCompile Include="..\..\..\Source\Libs\ZSDraw\ZSDrawDllMain.cpp" />
-    <ClCompile Include="..\..\..\Source\Libs\ZSDraw\ZSDrawGraphicsItemsModel.cpp" />
+    <ClCompile Include="..\..\..\Source\Libs\ZSDraw\ZSDrawGraphObjsTreeModel.cpp" />
     <ClCompile Include="..\..\..\Source\Libs\ZSDraw\ZSDrawGraphObj.cpp" />
     <ClCompile Include="..\..\..\Source\Libs\ZSDraw\ZSDrawGraphObjConnectionLine.cpp" />
     <ClCompile Include="..\..\..\Source\Libs\ZSDraw\ZSDrawGraphObjConnectionPoint.cpp" />
@@ -851,6 +851,8 @@
     <ClCompile Include="..\..\..\Source\Libs\ZSDraw\ZSDrawGraphObjPolyline.cpp" />
     <ClCompile Include="..\..\..\Source\Libs\ZSDraw\ZSDrawGraphObjRect.cpp" />
     <ClCompile Include="..\..\..\Source\Libs\ZSDraw\ZSDrawGraphObjSelectionPoint.cpp" />
+    <ClCompile Include="..\..\..\Source\Libs\ZSDraw\ZSDrawGraphObjsTreeView.cpp" />
+    <ClCompile Include="..\..\..\Source\Libs\ZSDraw\ZSDrawGraphObjsTreeWdgt.cpp" />
     <ClCompile Include="..\..\..\Source\Libs\ZSDraw\ZSDrawGraphObjText.cpp" />
     <ClCompile Include="..\..\..\Source\Libs\ZSDraw\ZSDrawingScene.cpp" />
     <ClCompile Include="..\..\..\Source\Libs\ZSDraw\ZSDrawingView.cpp" />
@@ -919,7 +921,35 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2015\Win32\moc_ZSDrawGraphicsItemsModel.cpp">
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2015\Win32\moc_ZSDrawGraphObjsTreeModel.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2015\Win32\moc_ZSDrawGraphObjsTreeView.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2015\Win32\moc_ZSDrawGraphObjsTreeWdgt.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|Win32'">true</ExcludedFromBuild>
@@ -1073,6 +1103,34 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|x64'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2015\x64\moc_ZSDrawGraphObjsTreeModel.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2015\x64\moc_ZSDrawGraphObjsTreeWdgt.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2017\Win32\emb_ZSDraw.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">false</ExcludedFromBuild>
@@ -1115,7 +1173,35 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2017\Win32\moc_ZSDrawGraphicsItemsModel.cpp">
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2017\Win32\moc_ZSDrawGraphObjsTreeModel.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2017\Win32\moc_ZSDrawGraphObjsTreeView.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2017\Win32\moc_ZSDrawGraphObjsTreeWdgt.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|Win32'">true</ExcludedFromBuild>
@@ -1269,6 +1355,34 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|x64'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2017\x64\moc_ZSDrawGraphObjsTreeModel.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2017\x64\moc_ZSDrawGraphObjsTreeWdgt.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2019\Win32\emb_ZSDraw.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">true</ExcludedFromBuild>
@@ -1311,7 +1425,35 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2019\Win32\moc_ZSDrawGraphicsItemsModel.cpp">
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2019\Win32\moc_ZSDrawGraphObjsTreeModel.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2019\Win32\moc_ZSDrawGraphObjsTreeView.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2019\Win32\moc_ZSDrawGraphObjsTreeWdgt.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|Win32'">false</ExcludedFromBuild>
@@ -1507,7 +1649,35 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2019\x64\moc_ZSDrawGraphicsItemsModel.cpp">
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2019\x64\moc_ZSDrawGraphObjsTreeModel.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2019\x64\moc_ZSDrawGraphObjsTreeView.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2019\x64\moc_ZSDrawGraphObjsTreeWdgt.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|Win32'">true</ExcludedFromBuild>
@@ -1703,7 +1873,35 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2015\Win32\moc_ZSDrawGraphicsItemsModel.cpp">
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2015\Win32\moc_ZSDrawGraphObjsTreeModel.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2015\Win32\moc_ZSDrawGraphObjsTreeView.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2015\Win32\moc_ZSDrawGraphObjsTreeWdgt.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|Win32'">true</ExcludedFromBuild>
@@ -1857,6 +2055,34 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|x64'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2015\x64\moc_ZSDrawGraphObjsTreeModel.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2015\x64\moc_ZSDrawGraphObjsTreeWdgt.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2017\Win32\emb_ZSDraw.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">true</ExcludedFromBuild>
@@ -1899,7 +2125,35 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2017\Win32\moc_ZSDrawGraphicsItemsModel.cpp">
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2017\Win32\moc_ZSDrawGraphObjsTreeModel.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2017\Win32\moc_ZSDrawGraphObjsTreeView.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2017\Win32\moc_ZSDrawGraphObjsTreeWdgt.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|Win32'">true</ExcludedFromBuild>
@@ -2095,7 +2349,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2015\x64\moc_ZSDrawGraphicsItemsModel.cpp">
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2015\x64\moc_ZSDrawGraphObjsTreeView.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|Win32'">true</ExcludedFromBuild>
@@ -2291,7 +2545,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2017\x64\moc_ZSDrawGraphicsItemsModel.cpp">
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2017\x64\moc_ZSDrawGraphObjsTreeView.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|Win32'">true</ExcludedFromBuild>
@@ -2487,7 +2741,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2015\x64\moc_ZSDrawGraphicsItemsModel.cpp">
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2015\x64\moc_ZSDrawGraphObjsTreeView.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|Win32'">true</ExcludedFromBuild>
@@ -2683,7 +2937,35 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2017\x64\moc_ZSDrawGraphicsItemsModel.cpp">
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2017\x64\moc_ZSDrawGraphObjsTreeModel.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2017\x64\moc_ZSDrawGraphObjsTreeView.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2017\x64\moc_ZSDrawGraphObjsTreeWdgt.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|Win32'">true</ExcludedFromBuild>
@@ -2879,7 +3161,21 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2019\Win32\moc_ZSDrawGraphicsItemsModel.cpp">
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2019\Win32\moc_ZSDrawGraphObjsTreeModel.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|x64'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2019\Win32\moc_ZSDrawGraphObjsTreeView.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|Win32'">true</ExcludedFromBuild>
@@ -2892,6 +3188,20 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2019\Win32\moc_ZSDrawGraphObjsTreeWdgt.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|x64'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2019\Win32\moc_ZSDrawingScene.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">true</ExcludedFromBuild>
@@ -3075,7 +3385,35 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|x64'">false</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2019\x64\moc_ZSDrawGraphicsItemsModel.cpp">
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2019\x64\moc_ZSDrawGraphObjsTreeModel.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|x64'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2019\x64\moc_ZSDrawGraphObjsTreeView.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|x64'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Release_msvc2019\x64\moc_ZSDrawGraphObjsTreeWdgt.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|Win32'">true</ExcludedFromBuild>
@@ -3310,7 +3648,7 @@
     <ClInclude Include="..\..\..\Include\Libs\ZSDraw\ZSDrawAux.h" />
     <ClInclude Include="..\..\..\Include\Libs\ZSDraw\ZSDrawCommon.h" />
     <ClInclude Include="..\..\..\Include\Libs\ZSDraw\ZSDrawDllMain.h" />
-    <CustomBuild Include="..\..\..\Include\Libs\ZSDraw\ZSDrawGraphicsItemsModel.h">
+    <CustomBuild Include="..\..\..\Include\Libs\ZSDraw\ZSDrawGraphObjsTreeModel.h">
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">$(QTDIR_MSVC2017_Win32)\bin\moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Message>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|Win32'">$(QTDIR_MSVC2019_Win32)\bin\moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Message>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">$(QTDIR_MSVC2015_Win32)\bin\moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Message>
@@ -3362,6 +3700,82 @@
     <ClInclude Include="..\..\..\Include\Libs\ZSDraw\ZSDrawGraphObjPolyline.h" />
     <ClInclude Include="..\..\..\Include\Libs\ZSDraw\ZSDrawGraphObjRect.h" />
     <ClInclude Include="..\..\..\Include\Libs\ZSDraw\ZSDrawGraphObjSelectionPoint.h" />
+    <CustomBuild Include="..\..\..\Include\Libs\ZSDraw\ZSDrawGraphObjsTreeView.h">
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">$(QTDIR_MSVC2015_Win32)\bin\moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">$(QTDIR_MSVC2015_Win32)\bin\moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">$(QTDIR_MSVC2017_Win32)\bin\moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">$(QTDIR_MSVC2017_Win32)\bin\moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|Win32'">$(QTDIR_MSVC2019_Win32)\bin\moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|Win32'">$(QTDIR_MSVC2019_Win32)\bin\moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|Win32'">..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|Win32'">$(QTDIR_MSVC2015_Win32)\bin\moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|Win32'">$(QTDIR_MSVC2015_Win32)\bin\moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|Win32'">..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|Win32'">$(QTDIR_MSVC2017_Win32)\bin\moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|Win32'">$(QTDIR_MSVC2017_Win32)\bin\moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|Win32'">..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|Win32'">$(QTDIR_MSVC2019_Win32)\bin\moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|Win32'">$(QTDIR_MSVC2019_Win32)\bin\moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|Win32'">..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|x64'">$(QTDIR_MSVC2015_x64)\bin\moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|x64'">$(QTDIR_MSVC2015_x64)\bin\moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|x64'">..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|x64'">$(QTDIR_MSVC2017_x64)\bin\moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|x64'">$(QTDIR_MSVC2017_x64)\bin\moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|x64'">..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|x64'">$(QTDIR_MSVC2019_x64)\bin\moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|x64'">$(QTDIR_MSVC2019_x64)\bin\moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|x64'">..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|x64'">$(QTDIR_MSVC2015_x64)\bin\moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|x64'">$(QTDIR_MSVC2015_x64)\bin\moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|x64'">..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|x64'">$(QTDIR_MSVC2017_x64)\bin\moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|x64'">$(QTDIR_MSVC2017_x64)\bin\moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|x64'">..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|x64'">$(QTDIR_MSVC2019_x64)\bin\moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|x64'">$(QTDIR_MSVC2019_x64)\bin\moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|x64'">..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Include\Libs\ZSDraw\ZSDrawGraphObjsTreeWdgt.h">
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">$(QTDIR_MSVC2015_Win32)\bin\moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">$(QTDIR_MSVC2015_Win32)\bin\moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">$(QTDIR_MSVC2017_Win32)\bin\moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">$(QTDIR_MSVC2017_Win32)\bin\moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|Win32'">$(QTDIR_MSVC2019_Win32)\bin\moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|Win32'">$(QTDIR_MSVC2019_Win32)\bin\moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|Win32'">..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|Win32'">$(QTDIR_MSVC2015_Win32)\bin\moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|Win32'">$(QTDIR_MSVC2015_Win32)\bin\moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|Win32'">..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|Win32'">$(QTDIR_MSVC2017_Win32)\bin\moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|Win32'">$(QTDIR_MSVC2017_Win32)\bin\moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|Win32'">..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|Win32'">$(QTDIR_MSVC2019_Win32)\bin\moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|Win32'">$(QTDIR_MSVC2019_Win32)\bin\moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|Win32'">..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|x64'">$(QTDIR_MSVC2015_x64)\bin\moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|x64'">$(QTDIR_MSVC2015_x64)\bin\moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|x64'">..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|x64'">$(QTDIR_MSVC2017_x64)\bin\moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|x64'">$(QTDIR_MSVC2017_x64)\bin\moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|x64'">..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|x64'">$(QTDIR_MSVC2019_x64)\bin\moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|x64'">$(QTDIR_MSVC2019_x64)\bin\moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|x64'">..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|x64'">$(QTDIR_MSVC2015_x64)\bin\moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|x64'">$(QTDIR_MSVC2015_x64)\bin\moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|x64'">..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|x64'">$(QTDIR_MSVC2017_x64)\bin\moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|x64'">$(QTDIR_MSVC2017_x64)\bin\moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|x64'">..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|x64'">$(QTDIR_MSVC2019_x64)\bin\moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|x64'">$(QTDIR_MSVC2019_x64)\bin\moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|x64'">..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Outputs>
+    </CustomBuild>
     <ClInclude Include="..\..\..\Include\Libs\ZSDraw\ZSDrawGraphObjText.h" />
     <CustomBuild Include="..\..\..\Include\Libs\ZSDraw\ZSDrawingScene.h">
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">$(QTDIR_MSVC2017_Win32)\bin\moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Message>

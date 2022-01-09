@@ -233,6 +233,8 @@ CWdgtFormatGraphObjsObjName::~CWdgtFormatGraphObjsObjName()
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
 
+    mthTracer.onAdminObjAboutToBeReleased();
+
     CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
     m_pTrcAdminObj = nullptr;
 

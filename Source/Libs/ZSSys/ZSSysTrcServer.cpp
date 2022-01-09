@@ -567,6 +567,9 @@ CTrcServer::CTrcServer( const QString& i_strName, int i_iTrcDetailLevel ) :
         /* strMethod          */ "ctor",
         /* strMthInArgs       */ "" );
 
+    // Create index tree of trace admin objects. Pass the server as the parent object.
+    // If the parent object is the trace server the index tree will not create a trace
+    // admin object to trace the method calls.
     m_pTrcAdminObjIdxTree = new CIdxTreeTrcAdminObjs(i_strName, this, i_iTrcDetailLevel);
 
     // See comment in "CreateInstance" above.

@@ -66,13 +66,13 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CObjFactoryDiode::CObjFactoryDiode( const QIcon& i_toolIcon ) :
+CObjFactoryDiode::CObjFactoryDiode( const QPixmap& i_pxmToolIcon ) :
 //------------------------------------------------------------------------------
     CObjFactory(
         /* strGroupName    */ CGraphObjElectricity::c_strFactoryGroupName,
         /* iGraphObjType   */ EGraphObjTypeUserDefined,
         /* strGraphObjType */ "Diode",
-        /* toolIcon        */ i_toolIcon )
+        /* toolIcon        */ i_pxmToolIcon )
 {
 } // default ctor
 

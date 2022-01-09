@@ -109,6 +109,8 @@ CInProcMsgServerWrapper::~CInProcMsgServerWrapper()
 
     if( m_pTrcAdminObj != nullptr )
     {
+        mthTracer.onAdminObjAboutToBeReleased();
+
         CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
         m_pTrcAdminObj = nullptr;
     }

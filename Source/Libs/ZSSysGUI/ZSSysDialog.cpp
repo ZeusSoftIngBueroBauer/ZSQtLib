@@ -206,6 +206,8 @@ CDialog::~CDialog()
         s_hshpDlgs.remove(strKey);
     }
 
+    mthTracer.onAdminObjAboutToBeReleased();
+
     CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
 
     //m_strNameSpace;

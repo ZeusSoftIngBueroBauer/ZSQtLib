@@ -1,15 +1,16 @@
 <RCC>
     <qresource prefix="/ZS/App">
+        <file>ModeEdit16x16.bmp</file>
+        <file>ModeEdit24x24.bmp</file>
+        <file>ModeEdit32x32.bmp</file>
+        <file>ModeSimulation16x16.bmp</file>
+        <file>ModeSimulation24x24.bmp</file>
+        <file>ModeSimulation32x32.bmp</file>
         <file>RSIcon16x16.bmp</file>
         <file>RSIcon32x32.bmp</file>
         <file>Zeus16x16.bmp</file>
         <file>Zeus32x32.bmp</file>
-        <file>ModeSimulation16x16.bmp</file>
-        <file>ModeSimulation24x24.bmp</file>
-        <file>ModeSimulation32x32.bmp</file>
-        <file>ModeEdit16x16.bmp</file>
-        <file>ModeEdit24x24.bmp</file>
-        <file>ModeEdit32x32.bmp</file>
+        <file>Thermometer.png</file>
         <file>Thermometer16x16.bmp</file>
         <file>Thermometer24x24.bmp</file>
         <file>Thermometer32x32.bmp</file>
@@ -19,13 +20,13 @@
         <file>ButtonAdd24x24.bmp</file>
         <file>ButtonClose16x16.bmp</file>
         <file>ButtonClose24x24.bmp</file>
-        <file>ButtonDelete16x16.bmp</file>
-        <file>ButtonDelete24x24.bmp</file>
         <file>ButtonCmdPause16x16.bmp</file>
         <file>ButtonCmdStart16x16.bmp</file>
         <file>ButtonCmdStepForward16x16.bmp</file>
         <file>ButtonCmdStop16x16.bmp</file>
         <file>ButtonCmdStepBackward16x16.bmp</file>
+        <file>ButtonDelete16x16.bmp</file>
+        <file>ButtonDelete24x24.bmp</file>
         <file>ButtonFileNew16x16.bmp</file>
         <file>ButtonFileOpen16x16.bmp</file>
         <file>ButtonFileSave16x16.bmp</file>
@@ -55,9 +56,6 @@
         <file>LedCircleRed.png</file>
         <file>LedCircleYellow.png</file>
     </qresource>
-    <qresource prefix="/ZS/FileExplorer">
-        <file>FileExplorerDirEntry16x16.bmp</file>
-    </qresource>
     <qresource prefix="/ZS/Menu">
         <file>MenuFileAdd16x16.bmp</file>
         <file>MenuFileEdit16x16.bmp</file>
@@ -67,34 +65,38 @@
         <file>MenuFileSaveAs16x16.bmp</file>
     </qresource>
     <qresource prefix="/ZS/TreeView">
-        <file>TreeViewRootEntry.bmp</file>
         <file>TreeViewBranchEntry.bmp</file>
         <file>TreeViewLeaveEntry.bmp</file>
-        <file>TreeViewExpandAll.bmp</file>
+        <file>TreeViewRootEntry.bmp</file>
         <file>TreeViewCollapseAll.bmp</file>
+        <file>TreeViewExpandAll.bmp</file>
         <file>TreeViewResizeToContents.bmp</file>
         <file>TreeViewSortOrderConfig.bmp</file>
         <file>TreeViewSortOrderAscending.bmp</file>
         <file>TreeViewViewModeNavPanelOnly.bmp</file>
         <file>TreeViewViewModeNavPanelAndBranchContent.bmp</file>
     </qresource>
-    <qresource prefix="/ZS/TreeView">
-        <file>IdxTreeTrcAdminObjsBranchEntryNormalOff.bmp</file>
-        <file>IdxTreeTrcAdminObjsBranchEntrySelectedOff.bmp</file>
-        <file>IdxTreeTrcAdminObjsLeaveEntryNormalOff.bmp</file>
-        <file>IdxTreeTrcAdminObjsLeaveEntrySelectedOff.bmp</file>
+    <qresource prefix="/ZS/TreeView/FileExplorer">
+        <file>TreeViewFileExplorerBranchEntryNormalOff.bmp</file>
+        <file>TreeViewFileExplorerBranchEntryNormalOn.bmp</file>
+        <file>TreeViewFileExplorerBranchEntryDisabledOff.bmp</file>
+        <file>TreeViewFileExplorerBranchEntryDisabledOn.bmp</file>
+        <file>TreeViewFileExplorerBranchEntryActiveOff.bmp</file>
+        <file>TreeViewFileExplorerBranchEntryActiveOn.bmp</file>
+        <file>TreeViewFileExplorerBranchEntrySelectedOff.bmp</file>
+        <file>TreeViewFileExplorerBranchEntrySelectedOn.bmp</file>
     </qresource>
-    <qresource prefix="/ZS/ObjPoolExplorer">
-        <file>ObjPoolEntryTypeNameSpaceNormalOff.bmp</file>
-        <file>ObjPoolEntryTypeNameSpaceSelectedOff.bmp</file>
-        <file>ObjPoolEntryTypeObjectNormalOff.bmp</file>
-        <file>ObjPoolEntryTypeObjectSelectedOff.bmp</file>
+    <qresource prefix="/ZS/TreeView/Requests">
+        <file>TreeViewRequestsBranchEntryNormalOff.bmp</file>
+        <file>TreeViewRequestsBranchEntrySelectedOff.bmp</file>
+        <file>TreeViewRequestsLeaveEntryNormalOff.bmp</file>
+        <file>TreeViewRequestsLeaveEntrySelectedOff.bmp</file>
     </qresource>
-    <qresource prefix="/ZS/RequestTreeExplorer">
-        <file>RequestEntryTypeGroupNodeNormalOff.bmp</file>
-        <file>RequestEntryTypeGroupNodeSelectedOff.bmp</file>
-        <file>RequestEntryTypeActiveNodeNormalOff.bmp</file>
-        <file>RequestEntryTypeActiveNodeSelectedOff.bmp</file>
+    <qresource prefix="/ZS/TreeView/TrcAdminObjs">
+        <file>TreeViewTrcAdminObjsBranchEntryNormalOff.bmp</file>
+        <file>TreeViewTrcAdminObjsBranchEntrySelectedOff.bmp</file>
+        <file>TreeViewTrcAdminObjsLeaveEntryNormalOff.bmp</file>
+        <file>TreeViewTrcAdminObjsLeaveEntrySelectedOff.bmp</file>
     </qresource>
     <qresource prefix="/ZS/Result">
         <file>ResultSeveritySuccess.bmp</file>

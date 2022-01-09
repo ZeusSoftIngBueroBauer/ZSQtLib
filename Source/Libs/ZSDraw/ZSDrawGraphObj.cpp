@@ -514,6 +514,8 @@ CGraphObj::~CGraphObj()
         }
     } // if( m_pDrawingScene != nullptr )
 
+    mthTracer.onAdminObjAboutToBeReleased();
+
     CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjCtorsAndDtor);
     CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjItemChange);
     CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjBoundingRect);

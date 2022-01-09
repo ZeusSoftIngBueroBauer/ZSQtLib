@@ -69,7 +69,7 @@ public: // ctors and dtor
 CTestStepIdxTree::CTestStepIdxTree( CTest* i_pTest ) :
 //------------------------------------------------------------------------------
     CIdxTree(
-        /* strIdxTreeName   */ i_pTest->objectName(),
+        /* strIdxTreeName   */ i_pTest->objectName() + "-TestSteps",
         /* pRootTreeEntry   */ new CTestStepRoot(i_pTest, i_pTest->objectName()),
         /* strNodeSeparator */ "\\",
         /* bCreateMutex     */ true,
@@ -77,7 +77,7 @@ CTestStepIdxTree::CTestStepIdxTree( CTest* i_pTest ) :
     m_pTest(i_pTest),
     m_pTrcAdminObj(nullptr)
 {
-    setObjectName(i_pTest->objectName());
+    setObjectName(i_pTest->objectName() + "-TestSteps");
 
     m_pTrcAdminObj = CTrcServer::GetTraceAdminObj("ZS::Test", "CTestStepIdxTree", objectName());
 
@@ -102,6 +102,8 @@ CTestStepIdxTree::~CTestStepIdxTree()
         /* iFilterLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "dtor",
         /* strMthArgs   */ strAddTrcInfo);
+
+    mthTracer.onAdminObjAboutToBeReleased();
 
     CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
 

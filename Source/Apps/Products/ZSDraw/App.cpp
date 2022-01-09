@@ -363,9 +363,6 @@ CApplication::~CApplication()
     }
     m_pMainWindow = nullptr;
 
-    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
-    m_pTrcServer->saveAdminObjs();
-
     try
     {
         delete m_pTest;
@@ -381,6 +378,11 @@ CApplication::~CApplication()
     // wants to output traces the server must still be alive. Otherwise the trace admin
     // objects referenced by the message dtor would have already been destroyed before the dtor
     // of the event (message) is called.
+
+    mthTracer.onAdminObjAboutToBeReleased();
+
+    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
+    m_pTrcServer->saveAdminObjs();
 
     try
     {

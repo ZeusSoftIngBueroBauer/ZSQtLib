@@ -66,13 +66,13 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CObjFactorySwitch::CObjFactorySwitch( const QIcon& i_toolIcon ) :
+CObjFactorySwitch::CObjFactorySwitch( const QPixmap& i_pxmToolIcon ) :
 //------------------------------------------------------------------------------
     CObjFactory(
         /* strGroupName    */ CGraphObjElectricity::c_strFactoryGroupName,
         /* iGraphObjType   */ EGraphObjTypeUserDefined,
         /* strGraphObjType */ "Switch",
-        /* toolIcon        */ i_toolIcon )
+        /* toolIcon        */ i_pxmToolIcon )
 {
 } // default ctor
 

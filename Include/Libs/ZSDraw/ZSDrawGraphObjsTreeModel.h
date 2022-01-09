@@ -24,8 +24,8 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#ifndef ZSDraw_GraphicsItemsModel_h
-#define ZSDraw_GraphicsItemsModel_h
+#ifndef ZSDraw_GraphObjsTreeModel_h
+#define ZSDraw_GraphObjsTreeModel_h
 
 #include "ZSDraw/ZSDrawDllMain.h"
 #include "ZSSysGUI/ZSSysIdxTreeModel.h"
@@ -39,8 +39,10 @@ class CTrcAdminObj;
 
 namespace Draw
 {
+class CDrawingScene;
+
 //******************************************************************************
-class ZSDRAWDLL_API CModelIdxTreeGraphicsItems : public ZS::System::GUI::CModelIdxTree
+class ZSDRAWDLL_API CModelIdxTreeGraphObjs : public ZS::System::GUI::CModelIdxTree
 //******************************************************************************
 {
     Q_OBJECT
@@ -48,17 +50,18 @@ public: // class methods
     /*! Returns the namespace the class belongs to. */
     static QString NameSpace() { return "ZS::Draw"; } // Please note that the static class functions name must be different from the non static virtual member function "nameSpace"
     /*! Returns the class name. */
-    static QString ClassName() { return "CModelIdxTreeGraphicsItems"; } // Please note that the static class functions name must be different from the non static virtual member function "className"
+    static QString ClassName() { return "CModelIdxTreeGraphObjs"; } // Please note that the static class functions name must be different from the non static virtual member function "className"
 public: // type definitions and constants
     typedef enum
     {
-        EColumnGraphObjName =  0,
-        EColumnGraphObjId   =  1,
+        EColumnGraphObjName  =  0,
+        EColumnGraphObjId    =  1,
+        EColumnGraphObjState =  2,
         EColumnCount
     }   EColumn;
 public: // ctors and dtor
-    CModelIdxTreeGraphicsItems( ZS::System::CIdxTree* i_pIdxTree, QObject* i_pObjParent = nullptr );
-    virtual ~CModelIdxTreeGraphicsItems();
+    CModelIdxTreeGraphObjs( CDrawingScene* i_pDrawingScene, QObject* i_pObjParent = nullptr );
+    virtual ~CModelIdxTreeGraphObjs();
 public: // overridables
     /*! This virtual method returns the name space of the object's class.
         This method can be reimplemented in derived classes so when invoked for the
@@ -68,18 +71,25 @@ public: // overridables
         This method can be reimplemented in derived classes so when invoked for the
         polymorphic base type the method returns the name of the derived class. */
     virtual QString className() const { return ClassName(); }
+public:
+    CDrawingScene* getDrawingScene() { return m_pDrawingScene; }
 public: // overridables of base class QAbstractItemModel
     virtual int columnCount( const QModelIndex& i_modelIdxParent = QModelIndex() ) const;
     virtual QVariant headerData( int i_iSection, Qt::Orientation i_orientation, int i_iRole = Qt::DisplayRole ) const;
     virtual QVariant data( const QModelIndex& i_modelIdx, int i_iRole = Qt::DisplayRole ) const;
 protected: // instance members
+    CDrawingScene*           m_pDrawingScene;
     QIcon                    m_iconRootEntry;
+    QIcon                    m_iconSelectionPointEntry;
+    QIcon                    m_iconLabelEntry;
+    QIcon                    m_iconBranchEntry;
+    QIcon                    m_iconLeaveEntry;
     ZS::Trace::CTrcAdminObj* m_pTrcAdminObj;
 
-}; // class CGraphicsItemsModel
+}; // class CModelIdxTreeGraphObjs
 
 } // namespace Draw
 
 } // namespace ZS
 
-#endif // #ifndef ZSDraw_GraphicsItemsModel_h
+#endif // #ifndef ZSDraw_GraphObjsTreeModel_h

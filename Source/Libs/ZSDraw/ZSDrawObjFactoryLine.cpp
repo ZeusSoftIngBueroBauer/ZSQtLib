@@ -58,13 +58,13 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CObjFactoryLine::CObjFactoryLine( const QIcon& i_toolIcon ) :
+CObjFactoryLine::CObjFactoryLine( const QPixmap& i_pxmToolIcon ) :
 //------------------------------------------------------------------------------
     CObjFactory(
         /* strGroupName    */ c_strGroupNameStandardShapes,
         /* iGraphObjType   */ EGraphObjTypeLine,
         /* strGraphObjType */ ZS::Draw::graphObjType2Str(EGraphObjTypeLine),
-        /* toolIcon        */ i_toolIcon )
+        /* toolIcon        */ i_pxmToolIcon )
 {
 } // default ctor
 

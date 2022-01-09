@@ -157,6 +157,8 @@ CInProcMsgSocketsAdminObj::~CInProcMsgSocketsAdminObj()
     {
     }
 
+    mthTracer.onAdminObjAboutToBeReleased();
+
     CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
 
     m_pMutex = nullptr;
@@ -545,6 +547,8 @@ CInProcMsgSocket::~CInProcMsgSocket()
     m_pInProcMsgServer = nullptr;
     m_pInProcMsgSocketPeer = nullptr;
     m_pTimer = nullptr;
+
+    mthTracer.onAdminObjAboutToBeReleased();
 
     CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
     m_pTrcAdminObj = nullptr;

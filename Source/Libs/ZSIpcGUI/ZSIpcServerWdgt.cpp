@@ -542,6 +542,8 @@ CWdgtIpcServer::~CWdgtIpcServer()
 
     saveSettings();
 
+    mthTracer.onAdminObjAboutToBeReleased();
+
     CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
 
     m_pServer = nullptr;

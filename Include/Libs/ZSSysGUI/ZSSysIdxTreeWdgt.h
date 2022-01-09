@@ -104,6 +104,8 @@ protected slots:
     void onBtnSortOrderClicked( bool i_bChecked );
 protected slots:
     void onTreeViewSelectionModelCurrentRowChanged( const QModelIndex& i_modelIdxCurr, const QModelIndex& i_modelIdxPrev );
+protected slots:
+    void onTrcAdminObjChanged( QObject* i_pTrcAdminObj );
 protected: // instance members
     EViewMode                       m_viewMode;
     QSize                           m_szBtns;
@@ -120,7 +122,11 @@ protected: // instance members
     QSplitter*                      m_pSplitter;
     CTreeViewIdxTree*               m_pTreeView;
     CTableViewIdxTreeBranchContent* m_pTableViewBranchContent;
-    int                             m_iTrcDetailLevel;
+    int                             m_iTrcDetailLevel;    /*!< Trace detail level for method tracing.
+                                                               Trace output may not be controlled by trace admin objects
+                                                               if the index tree belongs the trace server. */
+    ZS::Trace::CTrcAdminObj*        m_pTrcAdminObj;       /*!< Trace admin object to control trace outputs of the class.
+                                                               The object will not be created if the index tree's belongs to the trace server. */
 
 }; // class CWdgtIdxTree
 

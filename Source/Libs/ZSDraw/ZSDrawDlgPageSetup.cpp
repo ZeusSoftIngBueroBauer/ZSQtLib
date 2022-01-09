@@ -260,6 +260,8 @@ CDlgPageSetup::~CDlgPageSetup()
 
     settings.setValue( objectName()+"/Geometry", saveGeometry() );
 
+    mthTracer.onAdminObjAboutToBeReleased();
+
     CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
     m_pTrcAdminObj = nullptr;
 

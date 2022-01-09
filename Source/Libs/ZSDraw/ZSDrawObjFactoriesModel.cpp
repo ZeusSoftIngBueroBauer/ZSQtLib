@@ -112,7 +112,7 @@ QVariant CObjFactoriesModel::data( const QModelIndex& i_modelIdx, int i_iRole ) 
                         }
                         else
                         {
-                            varData = pObjFactory->getToolIcon();
+                            varData = pObjFactory->getToolIconPixmap();
                         }
                     }
                     break;

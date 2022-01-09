@@ -238,6 +238,8 @@ CTestModule2::~CTestModule2()
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
 
+    mthTracer.onAdminObjAboutToBeReleased();
+
     CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
 
     m_pTestModule2Thread = nullptr;

@@ -706,11 +706,11 @@ void CMainWindow::onActDebugErrLogTriggered()
 {
     QString strDlgTitle = QCoreApplication::applicationName() + ": Error Log";
 
-    CDlgErrLog* pDlg = dynamic_cast<CDlgErrLog*>(CDlgErrLog::GetInstance("ErrLog"));
+    CDlgErrLog* pDlg = dynamic_cast<CDlgErrLog*>(CDlgErrLog::GetInstance(strDlgTitle));
 
     if( pDlg == nullptr )
     {
-        pDlg = CDlgErrLog::CreateInstance("ErrLog", strDlgTitle);
+        pDlg = CDlgErrLog::CreateInstance(strDlgTitle);
         pDlg->setAttribute(Qt::WA_DeleteOnClose, true);
         pDlg->adjustSize();
         pDlg->show();

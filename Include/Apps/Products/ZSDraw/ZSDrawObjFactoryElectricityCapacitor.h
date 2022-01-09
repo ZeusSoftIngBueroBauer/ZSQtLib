@@ -41,7 +41,7 @@ class CObjFactoryCapacitor : public CObjFactory
 //******************************************************************************
 {
 public: // ctors and dtor
-    CObjFactoryCapacitor( const QIcon& i_toolIcon = QIcon() );
+    CObjFactoryCapacitor( const QPixmap& i_pxmToolIcon = QPixmap() );
     virtual ~CObjFactoryCapacitor();
 public: // interface methods of base class CObjFactory
     virtual CGraphObj* createGraphObj(

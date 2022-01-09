@@ -157,6 +157,8 @@ CInProcMsgServersAdminObj::~CInProcMsgServersAdminObj()
 
     m_pMutex = nullptr;
 
+    mthTracer.onAdminObjAboutToBeReleased();
+
     CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
     m_pTrcAdminObj = nullptr;
 
@@ -423,6 +425,8 @@ CInProcMsgServer::~CInProcMsgServer()
     }
 
     m_pMutex = nullptr;
+
+    mthTracer.onAdminObjAboutToBeReleased();
 
     CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
     m_pTrcAdminObj = nullptr;

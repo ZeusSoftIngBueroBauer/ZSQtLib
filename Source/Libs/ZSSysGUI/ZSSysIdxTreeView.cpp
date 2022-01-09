@@ -70,9 +70,33 @@ CDelegateIdxTree::CDelegateIdxTree( QObject* i_pObjParent, int i_iTrcDetailLevel
     QStyledItemDelegate(i_pObjParent),
     m_pEdtName(nullptr),
     m_bEdtNameDestroyedSignalConnected(false),
-    m_iTrcDetailLevel(i_iTrcDetailLevel)
+    m_iTrcDetailLevel(i_iTrcDetailLevel),
+    m_pTrcAdminObj(nullptr)
 {
     setObjectName( QString(i_pObjParent == nullptr ? "IdxTree" : i_pObjParent->objectName()) );
+
+    // If the tree's parent is the trace server the detail level of trace outputs
+    // may not be controlled by trace admin objects as the belong to the index tree
+    // of the trace server.
+    if( dynamic_cast<CTrcServer*>(i_pObjParent->parent()) == nullptr )
+    {
+        m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName());
+
+        if( m_pTrcAdminObj != nullptr )
+        {
+            m_iTrcDetailLevel = m_pTrcAdminObj->getTraceDetailLevel();
+
+            if( !QObject::connect(
+                /* pObjSender   */ m_pTrcAdminObj,
+                /* szSignal     */ SIGNAL(changed(QObject*)),
+                /* pObjReceiver */ this,
+                /* szSlot       */ SLOT(onTrcAdminObjChanged(QObject*)),
+                /* cnctType     */ Qt::DirectConnection ) )
+            {
+                throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
+            }
+        }
+    }
 
     QString strMthInArgs;
 
@@ -82,6 +106,7 @@ CDelegateIdxTree::CDelegateIdxTree( QObject* i_pObjParent, int i_iTrcDetailLevel
     }
 
     CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* iTrcDetailLevel    */ m_iTrcDetailLevel,
         /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
@@ -100,6 +125,7 @@ CDelegateIdxTree::~CDelegateIdxTree()
     QString strMthInArgs;
 
     CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* iTrcDetailLevel    */ m_iTrcDetailLevel,
         /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
@@ -109,9 +135,17 @@ CDelegateIdxTree::~CDelegateIdxTree()
         /* strMethod          */ "dtor",
         /* strMethodInArgs    */ strMthInArgs );
 
+    if( m_pTrcAdminObj != nullptr )
+    {
+        mthTracer.onAdminObjAboutToBeReleased();
+
+        CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
+    }
+
     m_pEdtName = nullptr;
     m_bEdtNameDestroyedSignalConnected = false;
     m_iTrcDetailLevel = 0;
+    m_pTrcAdminObj = nullptr;
 
 } // dtor
 
@@ -145,6 +179,7 @@ QWidget* CDelegateIdxTree::createEditor(
     }
 
     CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* iTrcDetailLevel    */ m_iTrcDetailLevel,
         /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
@@ -192,8 +227,8 @@ QWidget* CDelegateIdxTree::createEditor(
 
 //------------------------------------------------------------------------------
 void CDelegateIdxTree::setEditorData(
-    QWidget*            i_pWdgtEditor,
-    const QModelIndex&  i_modelIdx ) const
+    QWidget*           i_pWdgtEditor,
+    const QModelIndex& i_modelIdx ) const
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -204,6 +239,7 @@ void CDelegateIdxTree::setEditorData(
     }
 
     CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* iTrcDetailLevel    */ m_iTrcDetailLevel,
         /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
@@ -233,6 +269,7 @@ void CDelegateIdxTree::setModelData(
     }
 
     CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* iTrcDetailLevel    */ m_iTrcDetailLevel,
         /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
@@ -291,6 +328,7 @@ void CDelegateIdxTree::updateEditorGeometry(
     }
 
     CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* iTrcDetailLevel    */ m_iTrcDetailLevel,
         /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
@@ -315,6 +353,7 @@ void CDelegateIdxTree::onEdtNameDestroyed( QObject* /*i_pWdgtEditor*/ )
     QString strMthInArgs;
 
     CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* iTrcDetailLevel    */ m_iTrcDetailLevel,
         /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
@@ -328,6 +367,22 @@ void CDelegateIdxTree::onEdtNameDestroyed( QObject* /*i_pWdgtEditor*/ )
     m_pEdtName = nullptr;
 
 } // onEdtNameDestroyed
+
+/*==============================================================================
+protected slots:
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CDelegateIdxTree::onTrcAdminObjChanged( QObject* i_pTrcAdminObj )
+//------------------------------------------------------------------------------
+{
+    CTrcAdminObj* pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(i_pTrcAdminObj);
+
+    if( pTrcAdminObj != nullptr && m_pTrcAdminObj == pTrcAdminObj )
+    {
+        m_iTrcDetailLevel = pTrcAdminObj->getTraceDetailLevel();
+    }
+}
 
 
 /*******************************************************************************
@@ -368,9 +423,33 @@ CTreeViewIdxTree::CTreeViewIdxTree(
     m_pasteMode(EPasteMode::Undefined),
     m_bSilentlyExecuteDeleteRequests(false),
     m_bSilentlyIgnoreInvalidCopyRequests(false),
-    m_iTrcDetailLevel(i_iTrcDetailLevel)
+    m_iTrcDetailLevel(i_iTrcDetailLevel),
+    m_pTrcAdminObj(nullptr)
 {
     setObjectName( QString(i_pModel == nullptr ? "IdxTree" : i_pModel->objectName()) );
+
+    // If the tree's parent is the trace server the detail level of trace outputs
+    // may not be controlled by trace admin objects as the belong to the index tree
+    // of the trace server.
+    if( dynamic_cast<CTrcServer*>(i_pModel->idxTree()->parent()) == nullptr )
+    {
+        m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName());
+
+        if( m_pTrcAdminObj != nullptr )
+        {
+            m_iTrcDetailLevel = m_pTrcAdminObj->getTraceDetailLevel();
+
+            if( !QObject::connect(
+                /* pObjSender   */ m_pTrcAdminObj,
+                /* szSignal     */ SIGNAL(changed(QObject*)),
+                /* pObjReceiver */ this,
+                /* szSlot       */ SLOT(onTrcAdminObjChanged(QObject*)),
+                /* cnctType     */ Qt::DirectConnection ) )
+            {
+                throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
+            }
+        }
+    }
 
     QString strMthInArgs;
 
@@ -380,6 +459,7 @@ CTreeViewIdxTree::CTreeViewIdxTree(
     }
 
     CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* iTrcDetailLevel    */ m_iTrcDetailLevel,
         /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
@@ -623,6 +703,7 @@ CTreeViewIdxTree::~CTreeViewIdxTree()
     QString strMthInArgs;
 
     CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* iTrcDetailLevel    */ m_iTrcDetailLevel,
         /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
@@ -631,6 +712,13 @@ CTreeViewIdxTree::~CTreeViewIdxTree()
         /* strObjName         */ objectName(),
         /* strMethod          */ "dtor",
         /* strMethodInArgs    */ strMthInArgs );
+
+    if( m_pTrcAdminObj != nullptr )
+    {
+        mthTracer.onAdminObjAboutToBeReleased();
+
+        CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
+    }
 
     m_pDelegate = nullptr;
     m_pMenuBranchContext = nullptr;
@@ -656,6 +744,7 @@ CTreeViewIdxTree::~CTreeViewIdxTree()
     m_bSilentlyExecuteDeleteRequests = false;
     m_bSilentlyIgnoreInvalidCopyRequests = false;
     m_iTrcDetailLevel = 0;
+    m_pTrcAdminObj = nullptr;
 
 } // dtor
 
@@ -675,6 +764,7 @@ void CTreeViewIdxTree::setSortOrder( EIdxTreeSortOrder i_sortOrder )
     }
 
     CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* iTrcDetailLevel    */ m_iTrcDetailLevel,
         /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
@@ -756,6 +846,7 @@ void CTreeViewIdxTree::setSilentlyExecuteDeleteRequests( bool i_bExecuteSilently
     }
 
     CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* iTrcDetailLevel    */ m_iTrcDetailLevel,
         /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
@@ -781,6 +872,7 @@ void CTreeViewIdxTree::setSilentlyIgnoreInvalidCopyRequests( bool i_bExecuteSile
     }
 
     CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* iTrcDetailLevel    */ m_iTrcDetailLevel,
         /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
@@ -805,6 +897,7 @@ void CTreeViewIdxTree::expandAll()
     QString strMthInArgs;
 
     CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* iTrcDetailLevel    */ m_iTrcDetailLevel,
         /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
@@ -831,6 +924,7 @@ void CTreeViewIdxTree::collapseAll()
     QString strMthInArgs;
 
     CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* iTrcDetailLevel    */ m_iTrcDetailLevel,
         /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
@@ -864,6 +958,7 @@ void CTreeViewIdxTree::expandRecursive( const QModelIndex& i_modelIdx )
     }
 
     CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* iTrcDetailLevel    */ m_iTrcDetailLevel,
         /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
@@ -913,6 +1008,7 @@ void CTreeViewIdxTree::collapseRecursive( const QModelIndex& i_modelIdx )
     }
 
     CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* iTrcDetailLevel    */ m_iTrcDetailLevel,
         /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
@@ -965,6 +1061,7 @@ void CTreeViewIdxTree::expand( const QModelIndex& i_modelIdx )
     }
 
     CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* iTrcDetailLevel    */ m_iTrcDetailLevel,
         /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
@@ -1000,6 +1097,7 @@ void CTreeViewIdxTree::collapse( const QModelIndex& i_modelIdx )
     }
 
     CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* iTrcDetailLevel    */ m_iTrcDetailLevel,
         /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
@@ -1039,6 +1137,7 @@ void CTreeViewIdxTree::onCollapsed( const QModelIndex& i_modelIdx )
     }
 
     CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* iTrcDetailLevel    */ m_iTrcDetailLevel,
         /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
@@ -1075,6 +1174,7 @@ void CTreeViewIdxTree::onExpanded( const QModelIndex& i_modelIdx )
     }
 
     CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* iTrcDetailLevel    */ m_iTrcDetailLevel,
         /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
@@ -1122,6 +1222,7 @@ bool CTreeViewIdxTree::event( QEvent* i_pEv )
     }
 
     CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* iTrcDetailLevel    */ m_iTrcDetailLevel,
         /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
@@ -1152,6 +1253,7 @@ void CTreeViewIdxTree::keyPressEvent( QKeyEvent* i_pEv )
     }
 
     CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* iTrcDetailLevel    */ m_iTrcDetailLevel,
         /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
@@ -1353,6 +1455,7 @@ void CTreeViewIdxTree::mousePressEvent( QMouseEvent* i_pEv )
     }
 
     CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* iTrcDetailLevel    */ m_iTrcDetailLevel,
         /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
@@ -1443,6 +1546,7 @@ void CTreeViewIdxTree::mouseReleaseEvent( QMouseEvent* i_pEv )
     }
 
     CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* iTrcDetailLevel    */ m_iTrcDetailLevel,
         /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
@@ -1494,6 +1598,7 @@ void CTreeViewIdxTree::mouseDoubleClickEvent( QMouseEvent* i_pEv )
     }
 
     CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* iTrcDetailLevel    */ m_iTrcDetailLevel,
         /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
@@ -1525,6 +1630,7 @@ void CTreeViewIdxTree::mouseMoveEvent( QMouseEvent* i_pEv )
     }
 
     CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* iTrcDetailLevel    */ m_iTrcDetailLevel,
         /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
@@ -1559,6 +1665,7 @@ void CTreeViewIdxTree::startDrag( Qt::DropActions i_supportedActions )
     }
 
     CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* iTrcDetailLevel    */ m_iTrcDetailLevel,
         /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
@@ -1659,6 +1766,7 @@ void CTreeViewIdxTree::dragEnterEvent( QDragEnterEvent* i_pEv )
     }
 
     CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* iTrcDetailLevel    */ m_iTrcDetailLevel,
         /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
@@ -1685,6 +1793,7 @@ void CTreeViewIdxTree::dragLeaveEvent( QDragLeaveEvent* i_pEv )
     }
 
     CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* iTrcDetailLevel    */ m_iTrcDetailLevel,
         /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
@@ -1711,6 +1820,7 @@ void CTreeViewIdxTree::dragMoveEvent( QDragMoveEvent* i_pEv )
     }
 
     CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* iTrcDetailLevel    */ m_iTrcDetailLevel,
         /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
@@ -1737,6 +1847,7 @@ void CTreeViewIdxTree::dropEvent( QDropEvent* i_pEv )
     }
 
     CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* iTrcDetailLevel    */ m_iTrcDetailLevel,
         /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
@@ -1766,6 +1877,7 @@ void CTreeViewIdxTree::onActionBranchExpandTriggered( bool i_bChecked )
     }
 
     CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* iTrcDetailLevel    */ m_iTrcDetailLevel,
         /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
@@ -1798,6 +1910,7 @@ void CTreeViewIdxTree::onActionBranchCollapseTriggered( bool i_bChecked )
     }
 
     CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* iTrcDetailLevel    */ m_iTrcDetailLevel,
         /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
@@ -1825,6 +1938,7 @@ void CTreeViewIdxTree::onActionBranchCreateNewBranchTriggered( bool i_bChecked )
     }
 
     CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* iTrcDetailLevel    */ m_iTrcDetailLevel,
         /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
@@ -1884,6 +1998,7 @@ void CTreeViewIdxTree::onActionBranchCreateNewLeaveTriggered( bool i_bChecked )
     }
 
     CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* iTrcDetailLevel    */ m_iTrcDetailLevel,
         /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
@@ -1943,6 +2058,7 @@ void CTreeViewIdxTree::onActionBranchDeleteTriggered( bool i_bChecked )
     }
 
     CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* iTrcDetailLevel    */ m_iTrcDetailLevel,
         /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
@@ -1991,6 +2107,7 @@ void CTreeViewIdxTree::onActionBranchCutTriggered( bool i_bChecked )
     }
 
     CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* iTrcDetailLevel    */ m_iTrcDetailLevel,
         /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
@@ -2026,6 +2143,7 @@ void CTreeViewIdxTree::onActionBranchCopyTriggered( bool i_bChecked )
     }
 
     CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* iTrcDetailLevel    */ m_iTrcDetailLevel,
         /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
@@ -2061,6 +2179,7 @@ void CTreeViewIdxTree::onActionBranchPasteTriggered( bool i_bChecked )
     }
 
     CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* iTrcDetailLevel    */ m_iTrcDetailLevel,
         /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
@@ -2131,6 +2250,7 @@ void CTreeViewIdxTree::onActionLeaveDeleteTriggered( bool i_bChecked )
     }
 
     CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* iTrcDetailLevel    */ m_iTrcDetailLevel,
         /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
@@ -2179,6 +2299,7 @@ void CTreeViewIdxTree::onActionLeaveCutTriggered( bool i_bChecked )
     }
 
     CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* iTrcDetailLevel    */ m_iTrcDetailLevel,
         /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
@@ -2214,6 +2335,7 @@ void CTreeViewIdxTree::onActionLeaveCopyTriggered( bool i_bChecked )
     }
 
     CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* iTrcDetailLevel    */ m_iTrcDetailLevel,
         /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
@@ -2249,6 +2371,7 @@ void CTreeViewIdxTree::onActionLeavePasteTriggered( bool i_bChecked )
     }
 
     CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* iTrcDetailLevel    */ m_iTrcDetailLevel,
         /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
@@ -2302,3 +2425,19 @@ void CTreeViewIdxTree::onActionLeavePasteTriggered( bool i_bChecked )
     } // if( m_modelIdxSelectedOnMousePressEvent.isValid() )
 
 } // onActionLeavePasteTriggered
+
+/*==============================================================================
+protected slots:
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CTreeViewIdxTree::onTrcAdminObjChanged( QObject* i_pTrcAdminObj )
+//------------------------------------------------------------------------------
+{
+    CTrcAdminObj* pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(i_pTrcAdminObj);
+
+    if( pTrcAdminObj != nullptr && m_pTrcAdminObj == pTrcAdminObj )
+    {
+        m_iTrcDetailLevel = pTrcAdminObj->getTraceDetailLevel();
+    }
+}

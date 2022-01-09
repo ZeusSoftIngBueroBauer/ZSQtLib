@@ -19,9 +19,6 @@
     <Filter Include="Resource Files\CnctState">
       <UniqueIdentifier>{76faec91-4eae-41cd-b595-e647ec20a819}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Resource Files\ObjPoolExplorer">
-      <UniqueIdentifier>{25eca1ed-7813-4359-bb68-babcaab090da}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Resource Files\Result">
       <UniqueIdentifier>{df238e0d-bebb-42db-8e20-1faa4aa44136}</UniqueIdentifier>
     </Filter>
@@ -33,12 +30,6 @@
     </Filter>
     <Filter Include="Include Files">
       <UniqueIdentifier>{7ca73a20-441b-4741-a384-0cb2b2fea038}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Resource Files\FileExplorer">
-      <UniqueIdentifier>{f5d23b6f-d439-4f83-8c9c-194a39d82056}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Resource Files\RequestTreeExplorer">
-      <UniqueIdentifier>{51016e85-886e-4da3-a566-f43319592f34}</UniqueIdentifier>
     </Filter>
     <Filter Include="Generated Files\msvc2015">
       <UniqueIdentifier>{a43c651e-81b4-494a-b543-9556434c9b1a}</UniqueIdentifier>
@@ -102,6 +93,18 @@
     </Filter>
     <Filter Include="Generated Files\msvc2019\x64\Release">
       <UniqueIdentifier>{afb257a8-e2a5-461a-977a-919cd4720efd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\TreeView">
+      <UniqueIdentifier>{51016e85-886e-4da3-a566-f43319592f34}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\TreeView\FileExplorer">
+      <UniqueIdentifier>{add31c2e-c335-4c1b-8624-cdfdd64fb2eb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\TreeView\TrcAdminObjs">
+      <UniqueIdentifier>{887ea6db-232f-4750-aa94-b880321e184d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\TreeView\Requests">
+      <UniqueIdentifier>{ef3cd1e1-46c0-4521-b205-1db3f6557b42}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -954,18 +957,6 @@
     <Image Include="..\..\..\Images\Libs\ZSSys\LedCircleYellow.png">
       <Filter>Resource Files\CnctState</Filter>
     </Image>
-    <Image Include="..\..\..\Images\Libs\ZSSys\ObjPoolEntryTypeNameSpaceNormalOff.bmp">
-      <Filter>Resource Files\ObjPoolExplorer</Filter>
-    </Image>
-    <Image Include="..\..\..\Images\Libs\ZSSys\ObjPoolEntryTypeNameSpaceSelectedOff.bmp">
-      <Filter>Resource Files\ObjPoolExplorer</Filter>
-    </Image>
-    <Image Include="..\..\..\Images\Libs\ZSSys\ObjPoolEntryTypeObjectNormalOff.bmp">
-      <Filter>Resource Files\ObjPoolExplorer</Filter>
-    </Image>
-    <Image Include="..\..\..\Images\Libs\ZSSys\ObjPoolEntryTypeObjectSelectedOff.bmp">
-      <Filter>Resource Files\ObjPoolExplorer</Filter>
-    </Image>
     <Image Include="..\..\..\Images\Libs\ZSSys\ResultSeverityCritical.bmp">
       <Filter>Resource Files\Result</Filter>
     </Image>
@@ -1077,23 +1068,8 @@
     <Image Include="..\..\..\Images\Libs\ZSSys\ModeSimulation32x32.bmp">
       <Filter>Resource Files\App</Filter>
     </Image>
-    <Image Include="..\..\..\Images\Libs\ZSSys\FileExplorerDirEntry16x16.bmp">
-      <Filter>Resource Files\FileExplorer</Filter>
-    </Image>
     <Image Include="..\..\..\Images\Libs\ZSSys\ButtonTableView16x16.bmp">
       <Filter>Resource Files\Button</Filter>
-    </Image>
-    <Image Include="..\..\..\Images\Libs\ZSSys\RequestEntryTypeGroupNodeNormalOff.bmp">
-      <Filter>Resource Files\RequestTreeExplorer</Filter>
-    </Image>
-    <Image Include="..\..\..\Images\Libs\ZSSys\RequestEntryTypeGroupNodeSelectedOff.bmp">
-      <Filter>Resource Files\RequestTreeExplorer</Filter>
-    </Image>
-    <Image Include="..\..\..\Images\Libs\ZSSys\RequestEntryTypeActiveNodeNormalOff.bmp">
-      <Filter>Resource Files\RequestTreeExplorer</Filter>
-    </Image>
-    <Image Include="..\..\..\Images\Libs\ZSSys\RequestEntryTypeActiveNodeSelectedOff.bmp">
-      <Filter>Resource Files\RequestTreeExplorer</Filter>
     </Image>
     <Image Include="..\..\..\Images\Libs\ZSSys\ButtonZoomIn16x16.bmp">
       <Filter>Resource Files\Button</Filter>
@@ -1106,6 +1082,117 @@
     </Image>
     <Image Include="..\..\..\Images\Libs\ZSSys\ButtonZoomOut24x24.bmp">
       <Filter>Resource Files\Button</Filter>
+    </Image>
+    <Image Include="..\..\..\Images\Libs\ZSSys\Thermometer.png">
+      <Filter>Resource Files\App</Filter>
+    </Image>
+    <Image Include="..\..\..\Images\Libs\ZSSys\Thermometer16x16.bmp">
+      <Filter>Resource Files\App</Filter>
+    </Image>
+    <Image Include="..\..\..\Images\Libs\ZSSys\Thermometer24x24.bmp">
+      <Filter>Resource Files\App</Filter>
+    </Image>
+    <Image Include="..\..\..\Images\Libs\ZSSys\Thermometer32x32.bmp">
+      <Filter>Resource Files\App</Filter>
+    </Image>
+    <Image Include="..\..\..\Images\Libs\ZSSys\ButtonClose16x16.bmp">
+      <Filter>Resource Files\Button</Filter>
+    </Image>
+    <Image Include="..\..\..\Images\Libs\ZSSys\ButtonClose24x24.bmp">
+      <Filter>Resource Files\Button</Filter>
+    </Image>
+    <Image Include="..\..\..\Images\Libs\ZSSys\ButtonCmdPause16x16.bmp">
+      <Filter>Resource Files\Button</Filter>
+    </Image>
+    <Image Include="..\..\..\Images\Libs\ZSSys\ButtonCmdStart16x16.bmp">
+      <Filter>Resource Files\Button</Filter>
+    </Image>
+    <Image Include="..\..\..\Images\Libs\ZSSys\ButtonCmdStepBackward16x16.bmp">
+      <Filter>Resource Files\Button</Filter>
+    </Image>
+    <Image Include="..\..\..\Images\Libs\ZSSys\ButtonCmdStepForward16x16.bmp">
+      <Filter>Resource Files\Button</Filter>
+    </Image>
+    <Image Include="..\..\..\Images\Libs\ZSSys\ButtonCmdStop16x16.bmp">
+      <Filter>Resource Files\Button</Filter>
+    </Image>
+    <Image Include="..\..\..\Images\Libs\ZSSys\TreeViewBranchEntry.bmp">
+      <Filter>Resource Files\TreeView</Filter>
+    </Image>
+    <Image Include="..\..\..\Images\Libs\ZSSys\TreeViewCollapseAll.bmp">
+      <Filter>Resource Files\TreeView</Filter>
+    </Image>
+    <Image Include="..\..\..\Images\Libs\ZSSys\TreeViewExpandAll.bmp">
+      <Filter>Resource Files\TreeView</Filter>
+    </Image>
+    <Image Include="..\..\..\Images\Libs\ZSSys\TreeViewLeaveEntry.bmp">
+      <Filter>Resource Files\TreeView</Filter>
+    </Image>
+    <Image Include="..\..\..\Images\Libs\ZSSys\TreeViewResizeToContents.bmp">
+      <Filter>Resource Files\TreeView</Filter>
+    </Image>
+    <Image Include="..\..\..\Images\Libs\ZSSys\TreeViewRootEntry.bmp">
+      <Filter>Resource Files\TreeView</Filter>
+    </Image>
+    <Image Include="..\..\..\Images\Libs\ZSSys\TreeViewSortOrderAscending.bmp">
+      <Filter>Resource Files\TreeView</Filter>
+    </Image>
+    <Image Include="..\..\..\Images\Libs\ZSSys\TreeViewSortOrderConfig.bmp">
+      <Filter>Resource Files\TreeView</Filter>
+    </Image>
+    <Image Include="..\..\..\Images\Libs\ZSSys\TreeViewViewModeNavPanelAndBranchContent.bmp">
+      <Filter>Resource Files\TreeView</Filter>
+    </Image>
+    <Image Include="..\..\..\Images\Libs\ZSSys\TreeViewViewModeNavPanelOnly.bmp">
+      <Filter>Resource Files\TreeView</Filter>
+    </Image>
+    <Image Include="..\..\..\Images\Libs\ZSSys\TreeViewFileExplorerBranchEntryActiveOff.bmp">
+      <Filter>Resource Files\TreeView\FileExplorer</Filter>
+    </Image>
+    <Image Include="..\..\..\Images\Libs\ZSSys\TreeViewFileExplorerBranchEntryActiveOn.bmp">
+      <Filter>Resource Files\TreeView\FileExplorer</Filter>
+    </Image>
+    <Image Include="..\..\..\Images\Libs\ZSSys\TreeViewFileExplorerBranchEntryDisabledOff.bmp">
+      <Filter>Resource Files\TreeView\FileExplorer</Filter>
+    </Image>
+    <Image Include="..\..\..\Images\Libs\ZSSys\TreeViewFileExplorerBranchEntryDisabledOn.bmp">
+      <Filter>Resource Files\TreeView\FileExplorer</Filter>
+    </Image>
+    <Image Include="..\..\..\Images\Libs\ZSSys\TreeViewFileExplorerBranchEntryNormalOff.bmp">
+      <Filter>Resource Files\TreeView\FileExplorer</Filter>
+    </Image>
+    <Image Include="..\..\..\Images\Libs\ZSSys\TreeViewFileExplorerBranchEntryNormalOn.bmp">
+      <Filter>Resource Files\TreeView\FileExplorer</Filter>
+    </Image>
+    <Image Include="..\..\..\Images\Libs\ZSSys\TreeViewFileExplorerBranchEntrySelectedOff.bmp">
+      <Filter>Resource Files\TreeView\FileExplorer</Filter>
+    </Image>
+    <Image Include="..\..\..\Images\Libs\ZSSys\TreeViewFileExplorerBranchEntrySelectedOn.bmp">
+      <Filter>Resource Files\TreeView\FileExplorer</Filter>
+    </Image>
+    <Image Include="..\..\..\Images\Libs\ZSSys\TreeViewRequestsBranchEntryNormalOff.bmp">
+      <Filter>Resource Files\TreeView\Requests</Filter>
+    </Image>
+    <Image Include="..\..\..\Images\Libs\ZSSys\TreeViewRequestsBranchEntrySelectedOff.bmp">
+      <Filter>Resource Files\TreeView\Requests</Filter>
+    </Image>
+    <Image Include="..\..\..\Images\Libs\ZSSys\TreeViewRequestsLeaveEntryNormalOff.bmp">
+      <Filter>Resource Files\TreeView\Requests</Filter>
+    </Image>
+    <Image Include="..\..\..\Images\Libs\ZSSys\TreeViewRequestsLeaveEntrySelectedOff.bmp">
+      <Filter>Resource Files\TreeView\Requests</Filter>
+    </Image>
+    <Image Include="..\..\..\Images\Libs\ZSSys\TreeViewTrcAdminObjsBranchEntryNormalOff.bmp">
+      <Filter>Resource Files\TreeView\TrcAdminObjs</Filter>
+    </Image>
+    <Image Include="..\..\..\Images\Libs\ZSSys\TreeViewTrcAdminObjsBranchEntrySelectedOff.bmp">
+      <Filter>Resource Files\TreeView\TrcAdminObjs</Filter>
+    </Image>
+    <Image Include="..\..\..\Images\Libs\ZSSys\TreeViewTrcAdminObjsLeaveEntryNormalOff.bmp">
+      <Filter>Resource Files\TreeView\TrcAdminObjs</Filter>
+    </Image>
+    <Image Include="..\..\..\Images\Libs\ZSSys\TreeViewTrcAdminObjsLeaveEntrySelectedOff.bmp">
+      <Filter>Resource Files\TreeView\TrcAdminObjs</Filter>
     </Image>
   </ItemGroup>
   <ItemGroup>

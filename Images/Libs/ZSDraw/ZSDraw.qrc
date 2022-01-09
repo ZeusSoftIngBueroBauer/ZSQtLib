@@ -18,11 +18,13 @@
         <file>DrawConnectionPoint16x16.bmp</file>
         <file>DrawEllipse16x16.bmp</file>
         <file>DrawImage16x16.bmp</file>
+        <file>DrawLabel16x16.bmp</file>
         <file>DrawLine16x16.bmp</file>
         <file>DrawPoint16x16.bmp</file>
         <file>DrawPolygon16x16.bmp</file>
         <file>DrawPolyline16x16.bmp</file>
         <file>DrawRect16x16.bmp</file>
+        <file>DrawSelectionPoint16x16.bmp</file>
         <file>DrawText16x16.bmp</file>
         <file>EditGroup16x16.bmp</file>
         <file>EditUngroup16x16.bmp</file>

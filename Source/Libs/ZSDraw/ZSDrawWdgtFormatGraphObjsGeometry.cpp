@@ -798,6 +798,8 @@ CWdgtFormatGraphObjsGeometry::~CWdgtFormatGraphObjsGeometry()
     }
     m_pModelShapePoints = nullptr;
 
+    mthTracer.onAdminObjAboutToBeReleased();
+
     CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
     m_pTrcAdminObj = nullptr;
 

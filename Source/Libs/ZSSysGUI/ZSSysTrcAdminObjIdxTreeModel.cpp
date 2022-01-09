@@ -78,16 +78,16 @@ QIcon CModelIdxTreeTrcAdminObjs::GetIcon( EIdxTreeEntryType i_entryType )
 
     if( !s_bIconsCreated )
     {
-        s_pPxmBranchEntryNormalOff = new QPixmap(":/ZS/TreeView/IdxTreeTrcAdminObjsBranchEntryNormalOff.bmp");
+        s_pPxmBranchEntryNormalOff = new QPixmap(":/ZS/TreeView/TrcAdminObjs/TreeViewTrcAdminObjsBranchEntryNormalOff.bmp");
         s_pPxmBranchEntryNormalOff->setMask(s_pPxmBranchEntryNormalOff->createHeuristicMask());
 
-        s_pPxmBranchEntrySelectedOff = new QPixmap(":/ZS/TreeView/IdxTreeTrcAdminObjsBranchEntrySelectedOff.bmp");
+        s_pPxmBranchEntrySelectedOff = new QPixmap(":/ZS/TreeView/TrcAdminObjs/TreeViewTrcAdminObjsBranchEntrySelectedOff.bmp");
         s_pPxmBranchEntrySelectedOff->setMask(s_pPxmBranchEntrySelectedOff->createHeuristicMask());
 
-        s_pPxmLeaveEntryNormalOff = new QPixmap(":/ZS/TreeView/IdxTreeTrcAdminObjsLeaveEntryNormalOff.bmp");
+        s_pPxmLeaveEntryNormalOff = new QPixmap(":/ZS/TreeView/TrcAdminObjs/TreeViewTrcAdminObjsLeaveEntryNormalOff.bmp");
         s_pPxmLeaveEntryNormalOff->setMask(s_pPxmLeaveEntryNormalOff->createHeuristicMask());
 
-        s_pPxmLeaveEntrySelectedOff = new QPixmap(":/ZS/TreeView/IdxTreeTrcAdminObjsLeaveEntrySelectedOff.bmp");
+        s_pPxmLeaveEntrySelectedOff = new QPixmap(":/ZS/TreeView/TrcAdminObjs/TreeViewTrcAdminObjsLeaveEntrySelectedOff.bmp");
         s_pPxmLeaveEntrySelectedOff->setMask(s_pPxmLeaveEntrySelectedOff->createHeuristicMask());
 
         s_pIconBranch = new QIcon();

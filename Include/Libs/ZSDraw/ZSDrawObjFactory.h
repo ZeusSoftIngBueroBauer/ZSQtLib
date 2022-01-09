@@ -29,7 +29,7 @@ may result in using the software modules.
 
 #include <QtCore/qobject.h>
 #include <QtCore/qsize.h>
-#include <QtGui/qicon.h>
+#include <QtGui/qpixmap.h>
 #include "ZSDraw/ZSDrawDllMain.h"
 #include "ZSSys/ZSSysIdxTreeEntry.h"
 #include "ZSSys/ZSSysErrResult.h"
@@ -93,7 +93,7 @@ protected: // ctor
         const QString& i_strGroupName,
         int            i_iGraphObjType,
         const QString& i_strGraphObjType,
-        const QIcon&   i_toolIcon = QIcon() );
+        const QPixmap& i_pxmToolIcon = QPixmap() );
 public: // dtor
     virtual ~CObjFactory();
 public: // overridables
@@ -125,8 +125,8 @@ public: // instance methods
     int getGraphObjType() const { return m_iGraphObjType; }
     QString getGraphObjTypeAsString() const { return m_strName; }
 public: // instance methods
-    void setToolIcon( const QIcon& i_toolIcon );
-    QIcon getToolIcon() const { return m_toolIcon; }
+    void setToolIconPixmap( const QPixmap& i_pxm );
+    QPixmap getToolIconPixmap() const { return m_pxmToolIcon; }
 public: // instance methods
     void setFileDir( const QString& i_strFileDir );   // The file's path (which may be absolute or relative). This doesn't include the file name.
     QString getFileDir() const { return m_strFileDir; }
@@ -146,7 +146,7 @@ protected: // class members
 protected: // instance members
     QString                  m_strGroupName;            /*!< To group the factory in index tree (e.g. "Draw::Standard Shapes", "Draw::Widgets", "Draw::Electricity") */
     int                      m_iGraphObjType;           /*!< Type as int of the graphic items created by this factory. */
-    QIcon                    m_toolIcon;                /*!< Icon to indicate the graphic items created by this factory in the index tree. */
+    QPixmap                  m_pxmToolIcon;             /*!< Pixmap for icon to indicate the graphic items created by this factory in the index tree. */
     QString                  m_strFileDir;              /*!< The file's path (which may be absolute or relative). This doesn't include the file name. */
     QString                  m_strFileName;             /*!< Name of the file, excluding the path. */
     ZS::Trace::CTrcAdminObj* m_pTrcAdminObj;            /*!< Trace admin object. */

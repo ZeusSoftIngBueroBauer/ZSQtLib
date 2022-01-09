@@ -173,13 +173,13 @@ CObjFactory::CObjFactory(
     const QString& i_strGroupName,
     int            i_iGraphObjType,
     const QString& i_strGraphObjType,
-    const QIcon&   i_toolIcon ) :
+    const QPixmap& i_pxmToolIcon ) :
 //------------------------------------------------------------------------------
     QObject(),
     CIdxTreeEntry(EIdxTreeEntryType::Leave, i_strGraphObjType),
     m_strGroupName(i_strGroupName),
     m_iGraphObjType(i_iGraphObjType),
-    m_toolIcon(i_toolIcon),
+    m_pxmToolIcon(i_pxmToolIcon),
     m_strFileName(),
     m_pTrcAdminObj(nullptr)
 {
@@ -190,7 +190,7 @@ CObjFactory::CObjFactory(
     if( s_pIdxTree == nullptr )
     {
         s_pIdxTree = new CIdxTree(
-            /* strObjName       */ "Graphical Object Factories",
+            /* strObjName       */ "DrawObjectFactories",
             /* pRootTreeEntry   */ nullptr,
             /* strNodeSeparator */ "::" );
     }
@@ -250,6 +250,8 @@ CObjFactory::~CObjFactory()
         s_pIdxTree = nullptr;
     }
 
+    mthTracer.onAdminObjAboutToBeReleased();
+
     CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
 
     //m_strGroupName;
@@ -266,7 +268,7 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CObjFactory::setToolIcon( const QIcon& i_toolIcon )
+void CObjFactory::setToolIconPixmap( const QPixmap& i_pxm )
 //------------------------------------------------------------------------------
 {
     QString strAddTrcInfo;
@@ -278,12 +280,12 @@ void CObjFactory::setToolIcon( const QIcon& i_toolIcon )
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strMethod    */ "setToolIcon",
+        /* strMethod    */ "setToolIconPixmap",
         /* strAddInfo   */ strAddTrcInfo );
 
-    m_toolIcon = i_toolIcon;
+    m_pxmToolIcon = i_pxm;
 
-} // setToolIcon
+} // setToolIconPixmap
 
 /*==============================================================================
 public: // instance methods

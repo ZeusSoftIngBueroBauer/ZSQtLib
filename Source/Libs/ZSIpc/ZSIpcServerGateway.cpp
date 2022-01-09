@@ -111,6 +111,8 @@ CServerGatewayThread::~CServerGatewayThread()
 
     if( m_pTrcAdminObj != nullptr )
     {
+        mthTracer.onAdminObjAboutToBeReleased();
+
         CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
         m_pTrcAdminObj = nullptr;
     }
@@ -378,6 +380,8 @@ CServerGateway::~CServerGateway()
 
     if( m_pTrcAdminObj != nullptr )
     {
+        mthTracer.onAdminObjAboutToBeReleased();
+
         CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
         m_pTrcAdminObj = nullptr;
     }

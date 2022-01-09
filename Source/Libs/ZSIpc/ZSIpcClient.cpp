@@ -295,6 +295,8 @@ CClient::~CClient()
     //    emit stateChanged(this,m_state);
     //}
 
+    mthTracer.onAdminObjAboutToBeReleased();
+
     if( m_pTrcAdminObj != nullptr )
     {
         CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);

@@ -413,6 +413,8 @@ CWdgtFormatGraphObjsTextStyle::~CWdgtFormatGraphObjsTextStyle()
     }
     m_pPxmBtnTextColor = nullptr;
 
+    mthTracer.onAdminObjAboutToBeReleased();
+
     CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
     m_pTrcAdminObj = nullptr;
 

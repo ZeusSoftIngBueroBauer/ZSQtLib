@@ -14,9 +14,11 @@ Content: This file is part of the ZSQtLib.
 *******************************************************************************/
 
 #include <QtGui/QBitmap>
+#include <QtGui/QPainter>
 
-#include "ZSDraw/ZSDrawGraphicsItemsModel.h"
+#include "ZSDraw/ZSDrawGraphObjsTreeModel.h"
 #include "ZSDraw/ZSDrawGraphObj.h"
+#include "ZSDraw/ZSDrawingScene.h"
 #include "ZSDraw/ZSDrawObjFactory.h"
 #include "ZSSysGUI/ZSSysIdxTreeModelEntry.h"
 #include "ZSSys/ZSSysAux.h"
@@ -34,7 +36,7 @@ using namespace ZS::Trace;
 
 
 /*******************************************************************************
-class ZSDRAWDLL_API CModelIdxTreeGraphicsItems : public ZS::System::GUI::CModelIdxTree
+class ZSDRAWDLL_API CModelIdxTreeGraphObjs : public ZS::System::GUI::CModelIdxTree
 *******************************************************************************/
 
 /*==============================================================================
@@ -42,12 +44,17 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CModelIdxTreeGraphicsItems::CModelIdxTreeGraphicsItems(
-    CIdxTree* i_pIdxTree,
-    QObject*  i_pObjParent ) :
+CModelIdxTreeGraphObjs::CModelIdxTreeGraphObjs(
+    CDrawingScene* i_pDrawingScene,
+    QObject*       i_pObjParent ) :
 //------------------------------------------------------------------------------
-    CModelIdxTree(i_pIdxTree, i_pObjParent),
+    CModelIdxTree(i_pDrawingScene->getGraphObjsIdxTree(), i_pObjParent),
+    m_pDrawingScene(i_pDrawingScene),
     m_iconRootEntry(),
+    m_iconSelectionPointEntry(),
+    m_iconLabelEntry(),
+    m_iconBranchEntry(),
+    m_iconLeaveEntry(),
     m_pTrcAdminObj(nullptr)
 {
     m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName());
@@ -58,15 +65,79 @@ CModelIdxTreeGraphicsItems::CModelIdxTreeGraphicsItems(
         /* strMethod    */ "ctor",
         /* strAddInfo   */ "" );
 
-    QPixmap pxm(":/ZS/IdxTreeExplorer/IdxTreeEntryTypeNameSpaceNormalOff.bmp");
-    pxm.setMask(pxm.createHeuristicMask());
+    QPixmap pxmRootEntryNormalOff(":/ZS/TreeView/FileExplorer/TreeViewFileExplorerBranchEntryNormalOff.bmp");
+    pxmRootEntryNormalOff.setMask(pxmRootEntryNormalOff.createHeuristicMask());
 
-    m_iconRootEntry.addPixmap(pxm);
+    QPixmap pxmRootEntryNormalOn(":/ZS/TreeView/FileExplorer/TreeViewFileExplorerBranchEntryNormalOn.bmp");
+    pxmRootEntryNormalOn.setMask(pxmRootEntryNormalOn.createHeuristicMask());
+
+    QPixmap pxmRootEntryDisabledOff(":/ZS/TreeView/FileExplorer/TreeViewFileExplorerBranchEntryDisabledOff.bmp");
+    pxmRootEntryDisabledOff.setMask(pxmRootEntryDisabledOff.createHeuristicMask());
+
+    QPixmap pxmRootEntryDisabledOn(":/ZS/TreeView/FileExplorer/TreeViewFileExplorerBranchEntryDisabledOn.bmp");
+    pxmRootEntryDisabledOn.setMask(pxmRootEntryDisabledOn.createHeuristicMask());
+
+    QPixmap pxmRootEntryActiveOff(":/ZS/TreeView/FileExplorer/TreeViewFileExplorerBranchEntryActiveOff.bmp");
+    pxmRootEntryActiveOff.setMask(pxmRootEntryActiveOff.createHeuristicMask());
+
+    QPixmap pxmRootEntryActiveOn(":/ZS/TreeView/FileExplorer/TreeViewFileExplorerBranchEntryActiveOn.bmp");
+    pxmRootEntryActiveOn.setMask(pxmRootEntryActiveOn.createHeuristicMask());
+
+    QPixmap pxmRootEntrySelectedOff(":/ZS/TreeView/FileExplorer/TreeViewFileExplorerBranchEntrySelectedOff.bmp");
+    pxmRootEntrySelectedOff.setMask(pxmRootEntrySelectedOff.createHeuristicMask());
+
+    QPixmap pxmRootEntrySelectedOn(":/ZS/TreeView/FileExplorer/TreeViewFileExplorerBranchEntrySelectedOn.bmp");
+    pxmRootEntrySelectedOn.setMask(pxmRootEntrySelectedOn.createHeuristicMask());
+
+    m_iconRootEntry.addPixmap(pxmRootEntryNormalOff, QIcon::Normal, QIcon::Off);
+    m_iconRootEntry.addPixmap(pxmRootEntryNormalOn, QIcon::Normal, QIcon::On);
+    m_iconRootEntry.addPixmap(pxmRootEntryActiveOff, QIcon::Active, QIcon::Off);
+    m_iconRootEntry.addPixmap(pxmRootEntryActiveOn, QIcon::Active, QIcon::On);
+    m_iconRootEntry.addPixmap(pxmRootEntryDisabledOff, QIcon::Disabled, QIcon::Off);
+    m_iconRootEntry.addPixmap(pxmRootEntryDisabledOn, QIcon::Disabled, QIcon::On);
+    m_iconRootEntry.addPixmap(pxmRootEntrySelectedOff, QIcon::Selected, QIcon::Off);
+    m_iconRootEntry.addPixmap(pxmRootEntrySelectedOn, QIcon::Selected, QIcon::On);
+
+    QPixmap pxmSelectionPointNormalOff(":/ZS/Draw/DrawSelectionPoint16x16.bmp");
+    pxmSelectionPointNormalOff.setMask(pxmSelectionPointNormalOff.createHeuristicMask());
+
+    QPixmap pxmSelectionPointEntrySelectedOff(":/ZS/Draw/DrawSelectionPoint16x16.bmp");
+    pxmSelectionPointEntrySelectedOff.setMask(pxmSelectionPointEntrySelectedOff.createHeuristicMask());
+
+    m_iconSelectionPointEntry.addPixmap(pxmSelectionPointNormalOff, QIcon::Normal, QIcon::Off);
+    m_iconSelectionPointEntry.addPixmap(pxmSelectionPointEntrySelectedOff, QIcon::Selected, QIcon::Off);
+
+    QPixmap pxmLabelNormalOff(":/ZS/Draw/DrawLabel16x16.bmp");
+    pxmLabelNormalOff.setMask(pxmLabelNormalOff.createHeuristicMask());
+
+    QPixmap pxmLabelEntrySelectedOff(":/ZS/Draw/DrawLabel16x16.bmp");
+    pxmLabelEntrySelectedOff.setMask(pxmLabelEntrySelectedOff.createHeuristicMask());
+
+    m_iconLabelEntry.addPixmap(pxmLabelNormalOff, QIcon::Normal, QIcon::Off);
+    m_iconLabelEntry.addPixmap(pxmLabelEntrySelectedOff, QIcon::Selected, QIcon::Off);
+
+    QPixmap pxmBranchNormalOff(":/ZS/TreeView/TreeViewBranchEntry.bmp");
+    pxmBranchNormalOff.setMask(pxmBranchNormalOff.createHeuristicMask());
+
+    QPixmap pxmBranchEntrySelectedOff(":/ZS/TreeView/TreeViewBranchEntry.bmp");
+    pxmBranchEntrySelectedOff.setMask(pxmBranchEntrySelectedOff.createHeuristicMask());
+
+    m_iconBranchEntry.addPixmap(pxmBranchNormalOff, QIcon::Normal, QIcon::Off);
+    m_iconBranchEntry.addPixmap(pxmBranchEntrySelectedOff, QIcon::Selected, QIcon::Off);
+
+    QPixmap pxmLeaveNormalOff(":/ZS/TreeView/TreeViewLeaveEntry.bmp");
+    pxmLeaveNormalOff.setMask(pxmLeaveNormalOff.createHeuristicMask());
+
+    QPixmap pxmLeaveEntrySelectedOff(":/ZS/TreeView/TreeViewLeaveEntry.bmp");
+    pxmLeaveEntrySelectedOff.setMask(pxmLeaveEntrySelectedOff.createHeuristicMask());
+
+    m_iconLeaveEntry.addPixmap(pxmLeaveNormalOff, QIcon::Normal, QIcon::Off);
+    m_iconLeaveEntry.addPixmap(pxmLeaveEntrySelectedOff, QIcon::Selected, QIcon::Off);
 
 } // ctor
 
 //------------------------------------------------------------------------------
-CModelIdxTreeGraphicsItems::~CModelIdxTreeGraphicsItems()
+CModelIdxTreeGraphObjs::~CModelIdxTreeGraphObjs()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -75,9 +146,16 @@ CModelIdxTreeGraphicsItems::~CModelIdxTreeGraphicsItems()
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
 
+    mthTracer.onAdminObjAboutToBeReleased();
+
     CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
 
+    m_pDrawingScene = nullptr;
     //m_iconRootEntry;
+    //m_iconSelectionPointEntry;
+    //m_iconLabelEntry;
+    //m_iconBranchEntry;
+    //m_iconLeaveEntry;
     m_pTrcAdminObj = nullptr;
 
 } // dtor
@@ -87,7 +165,7 @@ public: // must overridables of base class QAbstractItemModel
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-int CModelIdxTreeGraphicsItems::columnCount( const QModelIndex& i_modelIdxParent ) const
+int CModelIdxTreeGraphObjs::columnCount( const QModelIndex& i_modelIdxParent ) const
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -113,7 +191,7 @@ int CModelIdxTreeGraphicsItems::columnCount( const QModelIndex& i_modelIdxParent
 } // columnCount
 
 //------------------------------------------------------------------------------
-QVariant CModelIdxTreeGraphicsItems::headerData(
+QVariant CModelIdxTreeGraphObjs::headerData(
     int             i_iSection,
     Qt::Orientation i_orientation,
     int             i_iRole ) const
@@ -160,6 +238,14 @@ QVariant CModelIdxTreeGraphicsItems::headerData(
                 }
                 break;
             }
+            case EColumnGraphObjState:
+            {
+                if( i_iRole == Qt::DisplayRole )
+                {
+                    varData = "State (ActiveEnabledSelected)";
+                }
+                break;
+            }
             default:
             {
                 if( i_iRole == Qt::DisplayRole )
@@ -182,7 +268,7 @@ QVariant CModelIdxTreeGraphicsItems::headerData(
 } // headerData
 
 //------------------------------------------------------------------------------
-QVariant CModelIdxTreeGraphicsItems::data( const QModelIndex& i_modelIdx, int i_iRole ) const
+QVariant CModelIdxTreeGraphObjs::data( const QModelIndex& i_modelIdx, int i_iRole ) const
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -234,21 +320,39 @@ QVariant CModelIdxTreeGraphicsItems::data( const QModelIndex& i_modelIdx, int i_
                     {
                         varData = m_iconRootEntry;
                     }
-                    else
+                    else if( pGraphObj != nullptr && pGraphicsItem != nullptr )
                     {
                         CObjFactory* pObjFactory = nullptr;
 
-                        if( pGraphObj != nullptr )
-                        {
-                            pObjFactory = CObjFactory::FindObjFactory(pGraphObj->getFactoryGroupName(), pGraphObj->getTypeAsString());
-                        }
+                        pObjFactory = CObjFactory::FindObjFactory(pGraphObj->getFactoryGroupName(), pGraphObj->getTypeAsString());
+
                         if( pObjFactory != nullptr )
                         {
-                            varData = pObjFactory->getToolIcon();
+                            QPixmap pxm = pObjFactory->getToolIconPixmap();
+                            if( pGraphicsItem->isSelected() )
+                            {
+                                QPainter painter(&pxm);
+                                painter.setPen(Qt::red);
+                                QSize size = pxm.size();
+                                painter.drawEllipse(2,2,12,12);
+                            }
+                            varData = pxm;
+                        }
+                        else if( pGraphObj->getType() == EGraphObjTypeSelectionPoint )
+                        {
+                            varData = m_iconSelectionPointEntry;
+                        }
+                        else if( pGraphObj->getType() == EGraphObjTypeLabel )
+                        {
+                            varData = m_iconLabelEntry;
+                        }
+                        else if( pIdxTreeEntry->isBranch() )
+                        {
+                            varData = m_iconBranchEntry;
                         }
                         else
                         {
-                            varData = m_iconRootEntry;
+                            varData = m_iconLeaveEntry;
                         }
                     }
                 }
@@ -259,6 +363,21 @@ QVariant CModelIdxTreeGraphicsItems::data( const QModelIndex& i_modelIdx, int i_
                 if( i_iRole == Qt::DisplayRole || i_iRole == Qt::EditRole )
                 {
                     varData = pIdxTreeEntry->keyInTree();
+                }
+                break;
+            }
+            case EColumnGraphObjState:
+            {
+                if( i_iRole == Qt::DisplayRole || i_iRole == Qt::EditRole )
+                {
+                    if( pGraphObj != nullptr && pGraphicsItem != nullptr )
+                    {
+                        QString strData;
+                        strData += pGraphicsItem->isActive() ? "a" : "-";
+                        strData += pGraphicsItem->isEnabled() ? "e" : "-";
+                        strData += pGraphicsItem->isSelected() ? "s" : "-";
+                        varData = strData;
+                    }
                 }
                 break;
             }

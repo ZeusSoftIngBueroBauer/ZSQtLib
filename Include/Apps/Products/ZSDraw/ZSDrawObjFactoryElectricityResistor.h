@@ -41,7 +41,7 @@ class CObjFactoryResistor : public CObjFactory
 //******************************************************************************
 {
 public: // ctors and dtor
-    CObjFactoryResistor( const QIcon& i_toolIcon = QIcon() );
+    CObjFactoryResistor( const QPixmap& i_pxmToolIcon = QPixmap() );
     virtual ~CObjFactoryResistor();
 public: // interface methods of base class CObjFactory
     virtual CGraphObj* createGraphObj(

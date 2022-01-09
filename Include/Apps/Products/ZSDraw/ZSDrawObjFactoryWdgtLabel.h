@@ -41,7 +41,7 @@ class CObjFactoryWdgtLabel : public CObjFactory
 //******************************************************************************
 {
 public: // ctors and dtor
-    CObjFactoryWdgtLabel( const QIcon& i_toolIcon = QIcon() );
+    CObjFactoryWdgtLabel( const QPixmap& i_pxmToolIcon = QPixmap() );
     virtual ~CObjFactoryWdgtLabel();
 public: // interface methods of base class CObjFactory
     virtual CGraphObj* createGraphObj(

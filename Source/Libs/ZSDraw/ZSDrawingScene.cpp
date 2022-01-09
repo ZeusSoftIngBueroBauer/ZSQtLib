@@ -79,46 +79,46 @@ static const QString c_strGraphObjIdName4PoolByTypes   = "graphIdxTreeByTypes";
 public: // class methods
 ==============================================================================*/
 
-//------------------------------------------------------------------------------
-QString CDrawingScene::FindUniqueGraphObjId(
-    const QMap<QString,CGraphObj*>& i_dctpGraphObjs,
-    const QString&                  i_strObjIdCurr )
-//------------------------------------------------------------------------------
-{
-    QString strObjId = i_strObjIdCurr;
-    int     iObjNr   = 1;
-    QString strObjNr;
-
-    // Remove trailing number (if any).
-    if( strObjId.length() > 0 && isDigitChar(strObjId[strObjId.length()-1]) )
-    {
-        while( isDigitChar(strObjId[strObjId.length()-1]) )
-        {
-            strObjNr.insert( 0, strObjId[strObjId.length()-1] );
-            strObjId.remove( strObjId.length()-1, 1 );
-        }
-        iObjNr = strObjNr.toInt();
-        iObjNr++;
-    }
-    else
-    {
-        strObjNr = QString::number(iObjNr);
-    }
-
-    QString strObjBaseName = strObjId;
-
-    strObjId = strObjBaseName + strObjNr;
-
-    while( i_dctpGraphObjs.contains(strObjId) )
-    {
-        iObjNr++;
-        strObjNr = QString::number(iObjNr);
-        strObjId = strObjBaseName + strObjNr;
-    }
-
-    return strObjId;
-
-} // FindUniqueGraphObjId
+////------------------------------------------------------------------------------
+//QString CDrawingScene::FindUniqueGraphObjId(
+//    const QMap<QString,CGraphObj*>& i_dctpGraphObjs,
+//    const QString&                  i_strObjIdCurr )
+////------------------------------------------------------------------------------
+//{
+//    QString strObjId = i_strObjIdCurr;
+//    int     iObjNr   = 1;
+//    QString strObjNr;
+//
+//    // Remove trailing number (if any).
+//    if( strObjId.length() > 0 && isDigitChar(strObjId[strObjId.length()-1]) )
+//    {
+//        while( isDigitChar(strObjId[strObjId.length()-1]) )
+//        {
+//            strObjNr.insert( 0, strObjId[strObjId.length()-1] );
+//            strObjId.remove( strObjId.length()-1, 1 );
+//        }
+//        iObjNr = strObjNr.toInt();
+//        iObjNr++;
+//    }
+//    else
+//    {
+//        strObjNr = QString::number(iObjNr);
+//    }
+//
+//    QString strObjBaseName = strObjId;
+//
+//    strObjId = strObjBaseName + strObjNr;
+//
+//    while( i_dctpGraphObjs.contains(strObjId) )
+//    {
+//        iObjNr++;
+//        strObjNr = QString::number(iObjNr);
+//        strObjId = strObjBaseName + strObjNr;
+//    }
+//
+//    return strObjId;
+//
+//} // FindUniqueGraphObjId
 
 /*==============================================================================
 public: // ctors and dtor
@@ -170,14 +170,14 @@ CDrawingScene::CDrawingScene( QObject* i_pObjParent ) :
         /* strAddInfo   */ "" );
 
     m_pGraphObjsIdxTree = new CIdxTree(
-        /* strObjName       */ objectName(),
+        /* strObjName       */ objectName() + "-GraphObjs",
         /* pRootTreeEntry   */ nullptr,
         /* strNodeSeparator */ "::",
         /* bCreateMutex     */ false,
         /* pObjParent       */ nullptr,
         /* iTrcDetailLevel  */ ETraceDetailLevelNone );
     m_pGraphObjsIdxTreeClipboard = new CIdxTree(
-        /* strObjName       */ objectName() + "-Clipboard",
+        /* strObjName       */ objectName() + "-Clipboard-GraphObjs",
         /* pRootTreeEntry   */ nullptr,
         /* strNodeSeparator */ "::",
         /* bCreateMutex     */ false,
@@ -231,6 +231,8 @@ CDrawingScene::~CDrawingScene()
     catch(...)
     {
     }
+
+    mthTracer.onAdminObjAboutToBeReleased();
 
     CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
     CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjMouseMoveEvent);
@@ -1298,13 +1300,13 @@ QCursor CDrawingScene::getProposedCursor( const QPointF& i_ptPos ) const
     QString strMthInArgs;
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObjMouseMoveEvent != nullptr && m_pTrcAdminObjMouseMoveEvent->isActive(ETraceDetailLevelMethodArgs) )
     {
         strMthInArgs = "Pos:" + point2Str(i_ptPos);
     }
 
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
+        /* pAdminObj    */ m_pTrcAdminObjMouseMoveEvent,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "getProposedCursor",
         /* strAddInfo   */ strMthInArgs );
@@ -2053,50 +2055,7 @@ void CDrawingScene::onGraphObjIdChanged( const QString& i_strObjIdOld, const QSt
         mthTracer.trace(strAddTrcInfo);
     }
 
-    //if( !m_bGraphObjIdChangedByMyself )
-    //{
-    //    CGraphObj* pGraphObj = nullptr;
-
-    //    if( m_dctpGraphObjs.contains(i_strObjIdOld) )
-    //    {
-    //        pGraphObj = m_dctpGraphObjs.value(i_strObjIdOld);
-    //    }
-
-    //    // Please note that this method may also be called as a reentry on creating a new
-    //    // object with an ambiguous name whereupon the drawing scene corrects the name
-    //    // of the object.
-
-    //    // If the graphical object has a valid object id ..
-    //    if( pGraphObj != nullptr )
-    //    {
-    //        // Before this slot is called the object must have gotten its new object id.
-    //        if( pGraphObj->keyInTree() != i_strObjIdNew )
-    //        {
-    //            throw ZS::System::CException( __FILE__, __LINE__, EResultInvalidObjId, pGraphObj->keyInTree() + " != " + i_strObjIdNew );
-    //        }
-
-    //        QString strObjIdNew = i_strObjIdNew;
-
-    //        if( m_dctpGraphObjs.contains(strObjIdNew) )
-    //        {
-    //            strObjIdNew = FindUniqueGraphObjId( m_dctpGraphObjs, strObjIdNew );
-
-    //            // As the new object id is not yet inserted in the dictionary
-    //            // the "onGraphObjIdChanged" method (called as a reentry)
-    //            // returns without doing anything.
-    //            pGraphObj->setKeyInTree(strObjIdNew);
-    //        }
-
-    //        // Update sorted map:
-    //        //-------------------
-
-    //        m_dctpGraphObjs.remove(i_strObjIdOld);
-    //        m_dctpGraphObjs.insert(strObjIdNew,pGraphObj);
-
-    //        emit graphObjIdChanged(i_strObjIdOld,strObjIdNew);
-
-    //    } // if( pGraphObj != nullptr )
-    //} // if( !m_bGraphObjIdChangedByMyself )
+    emit graphObjIdChanged(i_strObjIdOld, i_strObjIdNew);
 
 } // onGraphObjIdChanged
 
@@ -2133,7 +2092,7 @@ void CDrawingScene::onGraphObjNameChanged(
         mthTracer.trace(strAddTrcInfo);
     }
 
-    emit graphObjNameChanged(i_strObjId,i_strObjNameOld,i_strObjNameNew);
+    emit graphObjNameChanged(i_strObjId, i_strObjNameOld, i_strObjNameNew);
 
 } // onGraphObjNameChanged
 

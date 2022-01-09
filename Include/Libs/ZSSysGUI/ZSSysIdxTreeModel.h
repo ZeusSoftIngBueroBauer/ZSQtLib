@@ -222,6 +222,8 @@ protected: // reimplemented to trace emitting signals for debugging purposes
     void _endMoveColumns();
     void _beginResetModel();
     void _endResetModel();
+protected slots:
+    void onTrcAdminObjChanged( QObject* i_pTrcAdminObj );
 protected: // class members
     static int      s_iInstCount;
     static bool     s_bIconsCreated;
@@ -237,7 +239,11 @@ protected: // instance members
     EIdxTreeSortOrder                  m_sortOrder;
     QMap<QString, CModelIdxTreeEntry*> m_mappModelTreeEntries;   // Key is: <EntryTypeSymbol>:<ParentPath>/<Name> (e.g. "L:ZS::Data::CDataTable::FDAC::RF1In")
     CModelIdxTreeEntry*                m_pModelRoot;
-    int                                m_iTrcDetailLevel;
+    int                                m_iTrcDetailLevel;    /*!< Trace detail level for method tracing.
+                                                                  Trace output may not be controlled by trace admin objects
+                                                                  if the index tree belongs the trace server. */
+    ZS::Trace::CTrcAdminObj*           m_pTrcAdminObj;       /*!< Trace admin object to control trace outputs of the class.
+                                                                  The object will not be created if the index tree's belongs to the trace server. */
 
 }; // class CModelIdxTree
 

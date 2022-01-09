@@ -41,7 +41,7 @@ class CObjFactorySwitch : public CObjFactory
 //******************************************************************************
 {
 public: // ctors and dtor
-    CObjFactorySwitch( const QIcon& i_toolIcon = QIcon() );
+    CObjFactorySwitch( const QPixmap& i_pxmToolIcon = QPixmap() );
     virtual ~CObjFactorySwitch();
 public: // interface methods of base class CObjFactory
     virtual CGraphObj* createGraphObj(

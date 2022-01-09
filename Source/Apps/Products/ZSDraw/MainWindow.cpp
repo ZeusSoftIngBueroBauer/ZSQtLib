@@ -90,8 +90,9 @@ may result in using the software modules.
 #include "ZSDraw/ZSDrawDlgPageSetup.h"
 #include "ZSDraw/ZSDrawingScene.h"
 #include "ZSDraw/ZSDrawingView.h"
-#include "ZSDraw/ZSDrawGraphicsItemsModel.h"
-#include "ZSDraw/ZSDrawGraphObjSelectionPoint.h"
+#include "ZSDraw/ZSDrawGraphObj.h"
+#include "ZSDraw/ZSDrawGraphObjsTreeModel.h"
+#include "ZSDraw/ZSDrawGraphObjsTreeWdgt.h"
 #include "ZSDraw/ZSDrawObjFactoriesModel.h"
 #include "ZSDraw/ZSDrawObjFactoryConnectionLine.h"
 #include "ZSDraw/ZSDrawObjFactoryConnectionPoint.h"
@@ -362,12 +363,7 @@ CMainWindow::CMainWindow(
     m_pTabWdgtGraphObjs(nullptr),
     // Dock Widget - GraphObjs - Tab GraphicsItems (tree View with graphics items as in drawing scene's items list)
     m_pWdgtGraphicsItems(nullptr),
-    m_pLytGraphicsItems(nullptr),
-    m_pLytGraphicsItemsLineRefresh(nullptr),
-    m_pLblGraphicsItemsRefresh(nullptr),
-    m_pBtnGraphicsItemsRefresh(nullptr),
-    m_pTreeViewGraphicsItems(nullptr),
-    m_pModelIdxTreeGraphicsItems(nullptr),
+    m_pModelIdxTreeGraphObjs(nullptr),
     // Dialogs
     m_pDlgTest(nullptr),
     // Status Bar
@@ -550,31 +546,6 @@ CMainWindow::CMainWindow(
         throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
     }
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pDrawingScene,
-        /* szSignal     */ SIGNAL(graphObjCreated(ZS::Draw::CGraphObj*)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onDrawingSceneGraphObjCreated(ZS::Draw::CGraphObj*)) ) )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-    }
-    if( !QObject::connect(
-        /* pObjSender   */ m_pDrawingScene,
-        /* szSignal     */ SIGNAL(graphObjDestroyed(const QString&)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onDrawingSceneGraphObjDestroyed(const QString&)) ) )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-    }
-    if( !QObject::connect(
-        /* pObjSender   */ m_pDrawingScene,
-        /* szSignal     */ SIGNAL(graphObjIdChanged(const QString&,const QString&)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onDrawingSceneGraphObjIdChanged(const QString&,const QString&)) ) )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-    }
-
     // ToolBars
     //---------
 
@@ -655,12 +626,12 @@ CMainWindow::~CMainWindow()
 
     try
     {
-        delete m_pModelIdxTreeGraphicsItems;
+        delete m_pModelIdxTreeGraphObjs;
     }
     catch(...)
     {
     }
-    m_pModelIdxTreeGraphicsItems = nullptr;
+    m_pModelIdxTreeGraphObjs = nullptr;
 
     try
     {
@@ -935,6 +906,8 @@ CMainWindow::~CMainWindow()
         m_pLblStatusBarDrawingViewMouseCursorPos = nullptr;
     }
 
+    mthTracer.onAdminObjAboutToBeReleased();
+
     CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
     m_pTrcAdminObj = nullptr;
 
@@ -1059,12 +1032,7 @@ CMainWindow::~CMainWindow()
     m_pTabWdgtGraphObjs = nullptr;
     // Dock Widget - GraphObjs - Tab GraphicsItems (tree View with graphics items as in drawing scene's items list)
     m_pWdgtGraphicsItems = nullptr;
-    m_pLytGraphicsItems = nullptr;
-    m_pLytGraphicsItemsLineRefresh = nullptr;
-    m_pLblGraphicsItemsRefresh = nullptr;
-    m_pBtnGraphicsItemsRefresh = nullptr;
-    m_pTreeViewGraphicsItems = nullptr;
-    m_pModelIdxTreeGraphicsItems = nullptr;
+    m_pModelIdxTreeGraphObjs = nullptr;
     // Dialogs
     m_pDlgTest = nullptr;
     // Status Bar
@@ -1151,14 +1119,9 @@ void CMainWindow::createObjFactories()
     // <MenuItem> Edit::Group
     //-----------------------
 
-    QIcon   iconEditGroup;
     QPixmap pxmEditGroup16x16(":/ZS/Draw/EditGroup16x16.bmp");
-
     pxmEditGroup16x16.setMask(pxmEditGroup16x16.createMaskFromColor(Qt::white));
-
-    iconEditGroup.addPixmap(pxmEditGroup16x16);
-
-    m_pObjFactoryGroup = new CObjFactoryGroup(iconEditGroup);
+    m_pObjFactoryGroup = new CObjFactoryGroup(pxmEditGroup16x16);
 
     // <Menu> Draw
     //============
@@ -1169,86 +1132,51 @@ void CMainWindow::createObjFactories()
     // <MenuItem> Draw::Standard Shapes::Draw Point
     //---------------------------------------------
 
-    QIcon   iconDrawStandardShapesPoint;
     QPixmap pxmDrawStandardShapesPoint16x16(":/ZS/Draw/DrawPoint16x16.bmp");
-
     pxmDrawStandardShapesPoint16x16.setMask(pxmDrawStandardShapesPoint16x16.createHeuristicMask());
-
-    iconDrawStandardShapesPoint.addPixmap(pxmDrawStandardShapesPoint16x16);
-
-    m_pObjFactoryPoint = new CObjFactoryPoint(iconDrawStandardShapesPoint);
+    m_pObjFactoryPoint = new CObjFactoryPoint(pxmDrawStandardShapesPoint16x16);
 
     // <MenuItem> Draw::Standard Shapes::Draw Line
     //--------------------------------------------
 
-    QIcon   iconDrawStandardShapesLine;
     QPixmap pxmDrawStandardShapesLine16x16(":/ZS/Draw/DrawLine16x16.bmp");
-
     pxmDrawStandardShapesLine16x16.setMask(pxmDrawStandardShapesLine16x16.createHeuristicMask());
-
-    iconDrawStandardShapesLine.addPixmap(pxmDrawStandardShapesLine16x16);
-
-    m_pObjFactoryLine = new CObjFactoryLine(iconDrawStandardShapesLine);
+    m_pObjFactoryLine = new CObjFactoryLine(pxmDrawStandardShapesLine16x16);
 
     // <MenuItem> Draw::Standard Shapes::Draw Rect
     //--------------------------------------------
 
-    QIcon   iconDrawStandardShapesRect;
     QPixmap pxmDrawStandardShapesRect16x16(":/ZS/Draw/DrawRect16x16.bmp");
-
     pxmDrawStandardShapesRect16x16.setMask(pxmDrawStandardShapesRect16x16.createHeuristicMask());
-
-    iconDrawStandardShapesRect.addPixmap(pxmDrawStandardShapesRect16x16);
-
-    m_pObjFactoryRect = new CObjFactoryRect(iconDrawStandardShapesRect);
+    m_pObjFactoryRect = new CObjFactoryRect(pxmDrawStandardShapesRect16x16);
 
     // <MenuItem> Draw::Standard Shapes::Draw Ellipse
     //-----------------------------------------------
 
-    QIcon   iconDrawStandardShapesEllipse;
     QPixmap pxmDrawStandardShapesEllipse16x16(":/ZS/Draw/DrawEllipse16x16.bmp");
-
     pxmDrawStandardShapesEllipse16x16.setMask(pxmDrawStandardShapesEllipse16x16.createHeuristicMask());
-
-    iconDrawStandardShapesEllipse.addPixmap(pxmDrawStandardShapesEllipse16x16);
-
-    m_pObjFactoryEllipse = new CObjFactoryEllipse(iconDrawStandardShapesEllipse);
+    m_pObjFactoryEllipse = new CObjFactoryEllipse(pxmDrawStandardShapesEllipse16x16);
 
     // <MenuItem> Draw::Standard Shapes::Draw Polyline
     //------------------------------------------------
 
-    QIcon   iconDrawStandardShapesPolyline;
     QPixmap pxmDrawStandardShapesPolyline16x16(":/ZS/Draw/DrawPolyline16x16.bmp");
-
     pxmDrawStandardShapesPolyline16x16.setMask(pxmDrawStandardShapesPolyline16x16.createHeuristicMask());
-
-    iconDrawStandardShapesPolyline.addPixmap(pxmDrawStandardShapesPolyline16x16);
-
-    m_pObjFactoryPolyline = new CObjFactoryPolyline(iconDrawStandardShapesPolyline);
+    m_pObjFactoryPolyline = new CObjFactoryPolyline(pxmDrawStandardShapesPolyline16x16);
 
     // <MenuItem> Draw::Standard Shapes::Draw Polygon
     //------------------------------------------------
 
-    QIcon   iconDrawStandardShapesPolygon;
     QPixmap pxmDrawStandardShapesPolygon16x16(":/ZS/Draw/DrawPolygon16x16.bmp");
-
     pxmDrawStandardShapesPolygon16x16.setMask(pxmDrawStandardShapesPolygon16x16.createHeuristicMask());
-
-    iconDrawStandardShapesPolygon.addPixmap(pxmDrawStandardShapesPolygon16x16);
-
-    m_pObjFactoryPolygon = new CObjFactoryPolygon(iconDrawStandardShapesPolygon);
+    m_pObjFactoryPolygon = new CObjFactoryPolygon(pxmDrawStandardShapesPolygon16x16);
 
     // <MenuItem> Draw::Standard Shapes::Draw Text
     //------------------------------------------------
 
-    QIcon   iconDrawStandardShapesText;
     QPixmap pxmDrawStandardShapesText16x16(":/ZS/Draw/DrawText16x16.bmp");
-
     pxmDrawStandardShapesText16x16.setMask(pxmDrawStandardShapesText16x16.createHeuristicMask());
-
-    iconDrawStandardShapesText.addPixmap(pxmDrawStandardShapesText16x16);
-
-    m_pObjFactoryText = new CObjFactoryText(iconDrawStandardShapesText);
+    m_pObjFactoryText = new CObjFactoryText(pxmDrawStandardShapesText16x16);
 
     // <Menu> Draw::Graphics
     //----------------------
@@ -1256,14 +1184,9 @@ void CMainWindow::createObjFactories()
     // <MenuItem> Draw::Graphics::Image
     //---------------------------------
 
-    QIcon   iconDrawGraphicsImage;
     QPixmap pxmDrawGraphicsImage16x16(":/ZS/Draw/DrawImage16x16.bmp");
-
     pxmDrawGraphicsImage16x16.setMask(pxmDrawGraphicsImage16x16.createHeuristicMask());
-
-    iconDrawGraphicsImage.addPixmap(pxmDrawGraphicsImage16x16);
-
-    m_pObjFactoryImage = new CObjFactoryImage(iconDrawGraphicsImage);
+    m_pObjFactoryImage = new CObjFactoryImage(pxmDrawGraphicsImage16x16);
 
     // <Menu> Draw::Connections
     //-------------------------
@@ -1271,26 +1194,16 @@ void CMainWindow::createObjFactories()
     // <MenuItem> Draw::Connections::Draw Connection Point
     //----------------------------------------------------
 
-    QIcon   iconDrawConnectionPoint;
     QPixmap pxmDrawConnectionPoint16x16(":/ZS/Draw/DrawConnectionPoint16x16.bmp");
-
     pxmDrawConnectionPoint16x16.setMask(pxmDrawConnectionPoint16x16.createHeuristicMask());
-
-    iconDrawConnectionPoint.addPixmap(pxmDrawConnectionPoint16x16);
-
-    m_pObjFactoryConnectionPoint = new CObjFactoryConnectionPoint(iconDrawConnectionPoint);
+    m_pObjFactoryConnectionPoint = new CObjFactoryConnectionPoint(pxmDrawConnectionPoint16x16);
 
     // <MenuItem> Draw::Connections::Draw Connection Line
     //----------------------------------------------------
 
-    QIcon   iconDrawConnectionLine;
     QPixmap pxmDrawConnectionLine16x16(":/ZS/Draw/DrawConnectionLine16x16.bmp");
-
     pxmDrawConnectionLine16x16.setMask(pxmDrawConnectionLine16x16.createHeuristicMask());
-
-    iconDrawConnectionLine.addPixmap(pxmDrawConnectionLine16x16);
-
-    m_pObjFactoryConnectionLine = new CObjFactoryConnectionLine(iconDrawConnectionLine);
+    m_pObjFactoryConnectionLine = new CObjFactoryConnectionLine(pxmDrawConnectionLine16x16);
 
     // <Menu> Draw::Widgets
     //----------------------
@@ -1300,74 +1213,44 @@ void CMainWindow::createObjFactories()
         // <MenuItem> Draw::Widgets::CheckBox
         //-----------------------------------
 
-        QIcon   iconDrawWdgtCheckBox;
         QPixmap pxmDrawWdgtCheckBox16x16(":/ZS/Draw/QtWidgets/CheckBox16x16.bmp");
-
         pxmDrawWdgtCheckBox16x16.setMask(pxmDrawWdgtCheckBox16x16.createHeuristicMask());
-
-        iconDrawWdgtCheckBox.addPixmap(pxmDrawWdgtCheckBox16x16);
-
-        m_pObjFactoryWdgtCheckBox = new CObjFactoryWdgtCheckBox(iconDrawWdgtCheckBox);
+        m_pObjFactoryWdgtCheckBox = new CObjFactoryWdgtCheckBox(pxmDrawWdgtCheckBox16x16);
 
         // <MenuItem> Draw::Widgets::ComboBox
         //-----------------------------------
 
-        QIcon   iconDrawWdgtComboBox;
         QPixmap pxmDrawWdgtComboBox16x16(":/ZS/Draw/QtWidgets/ComboBox16x16.bmp");
-
         pxmDrawWdgtComboBox16x16.setMask(pxmDrawWdgtComboBox16x16.createHeuristicMask());
-
-        iconDrawWdgtComboBox.addPixmap(pxmDrawWdgtComboBox16x16);
-
-        m_pObjFactoryWdgtComboBox = new CObjFactoryWdgtComboBox(iconDrawWdgtComboBox);
+        m_pObjFactoryWdgtComboBox = new CObjFactoryWdgtComboBox(pxmDrawWdgtComboBox16x16);
 
         // <MenuItem> Draw::Widgets::GroupBox
         //-----------------------------------
 
-        QIcon   iconDrawWdgtGroupBox;
         QPixmap pxmDrawWdgtGroupBox16x16(":/ZS/Draw/QtWidgets/GroupBox16x16.bmp");
-
         pxmDrawWdgtGroupBox16x16.setMask(pxmDrawWdgtGroupBox16x16.createHeuristicMask());
-
-        iconDrawWdgtGroupBox.addPixmap(pxmDrawWdgtGroupBox16x16);
-
-        m_pObjFactoryWdgtGroupBox = new CObjFactoryWdgtGroupBox(iconDrawWdgtGroupBox);
+        m_pObjFactoryWdgtGroupBox = new CObjFactoryWdgtGroupBox(pxmDrawWdgtGroupBox16x16);
 
         // <MenuItem> Draw::Widgets::Label
         //-----------------------------------
 
-        QIcon   iconDrawWdgtLabel;
         QPixmap pxmDrawWdgtLabel16x16(":/ZS/Draw/QtWidgets/Label16x16.bmp");
-
         pxmDrawWdgtLabel16x16.setMask(pxmDrawWdgtLabel16x16.createHeuristicMask());
-
-        iconDrawWdgtLabel.addPixmap(pxmDrawWdgtLabel16x16);
-
-        m_pObjFactoryWdgtLabel = new CObjFactoryWdgtLabel(iconDrawWdgtLabel);
+        m_pObjFactoryWdgtLabel = new CObjFactoryWdgtLabel(pxmDrawWdgtLabel16x16);
 
         // <MenuItem> Draw::Widgets::LineEdit
         //-----------------------------------
 
-        QIcon   iconDrawWdgtLineEdit;
         QPixmap pxmDrawWdgtLineEdit16x16(":/ZS/Draw/QtWidgets/LineEdit16x16.bmp");
-
         pxmDrawWdgtLineEdit16x16.setMask(pxmDrawWdgtLineEdit16x16.createHeuristicMask());
-
-        iconDrawWdgtLineEdit.addPixmap(pxmDrawWdgtLineEdit16x16);
-
-        m_pObjFactoryWdgtLineEdit = new CObjFactoryWdgtLineEdit(iconDrawWdgtLineEdit);
+        m_pObjFactoryWdgtLineEdit = new CObjFactoryWdgtLineEdit(pxmDrawWdgtLineEdit16x16);
 
         // <MenuItem> Draw::Widgets::PushButton
         //-------------------------------------
 
-        QIcon   iconDrawWdgtPushButton;
         QPixmap pxmDrawWdgtPushButton16x16(":/ZS/Draw/QtWidgets/PushButton16x16.bmp");
-
         pxmDrawWdgtPushButton16x16.setMask(pxmDrawWdgtPushButton16x16.createHeuristicMask());
-
-        iconDrawWdgtPushButton.addPixmap(pxmDrawWdgtPushButton16x16);
-
-        m_pObjFactoryWdgtPushButton = new CObjFactoryWdgtPushButton(iconDrawWdgtPushButton);
+        m_pObjFactoryWdgtPushButton = new CObjFactoryWdgtPushButton(pxmDrawWdgtPushButton16x16);
 
     } // if( m_uAddObjFactories & EAddObjFactoriesQtWidgets )
 
@@ -1379,86 +1262,51 @@ void CMainWindow::createObjFactories()
         // <MenuItem> Draw::Electricity::VoltageSource
         //--------------------------------------------
 
-        QIcon   iconDrawVoltageSource;
         QPixmap pxmDrawVoltageSource(":/ZS/Draw/Electricity/VoltageSource16x16.bmp");
-
         pxmDrawVoltageSource.setMask(pxmDrawVoltageSource.createHeuristicMask());
-
-        iconDrawVoltageSource.addPixmap(pxmDrawVoltageSource);
-
-        m_pObjFactoryElectricityVoltageSource = new CObjFactoryVoltageSource(iconDrawVoltageSource);
+        m_pObjFactoryElectricityVoltageSource = new CObjFactoryVoltageSource(pxmDrawVoltageSource);
 
         // <MenuItem> Draw::Electricity::Resistor
         //---------------------------------------
 
-        QIcon   iconDrawResistor;
         QPixmap pxmDrawResistor(":/ZS/Draw/Electricity/Resistor16x16.bmp");
-
         pxmDrawResistor.setMask(pxmDrawResistor.createHeuristicMask());
-
-        iconDrawResistor.addPixmap(pxmDrawResistor);
-
-        m_pObjFactoryElectricityResistor = new CObjFactoryResistor(iconDrawResistor);
+        m_pObjFactoryElectricityResistor = new CObjFactoryResistor(pxmDrawResistor);
 
         // <MenuItem> Draw::Electricity::Inductor
         //---------------------------------------
 
-        QIcon   iconDrawInductor;
         QPixmap pxmDrawInductor(":/ZS/Draw/Electricity/Inductor16x16.bmp");
-
         pxmDrawInductor.setMask(pxmDrawInductor.createHeuristicMask());
-
-        iconDrawInductor.addPixmap(pxmDrawInductor);
-
-        m_pObjFactoryElectricityInductor = new CObjFactoryInductor(iconDrawInductor);
+        m_pObjFactoryElectricityInductor = new CObjFactoryInductor(pxmDrawInductor);
 
         // <MenuItem> Draw::Electricity::Capacitor
         //---------------------------------------
 
-        QIcon   iconDrawCapacitor;
         QPixmap pxmDrawCapacitor(":/ZS/Draw/Electricity/Capacitor16x16.bmp");
-
         pxmDrawCapacitor.setMask(pxmDrawCapacitor.createHeuristicMask());
-
-        iconDrawCapacitor.addPixmap(pxmDrawCapacitor);
-
-        m_pObjFactoryElectricityCapacitor = new CObjFactoryCapacitor(iconDrawCapacitor);
+        m_pObjFactoryElectricityCapacitor = new CObjFactoryCapacitor(pxmDrawCapacitor);
 
         // <MenuItem> Draw::Electricity::Switch
         //---------------------------------------
 
-        QIcon   iconDrawSwitch;
         QPixmap pxmDrawSwitch(":/ZS/Draw/Electricity/Switch16x16.bmp");
-
         pxmDrawSwitch.setMask(pxmDrawSwitch.createHeuristicMask());
-
-        iconDrawSwitch.addPixmap(pxmDrawSwitch);
-
-        m_pObjFactoryElectricitySwitch = new CObjFactorySwitch(iconDrawSwitch);
+        m_pObjFactoryElectricitySwitch = new CObjFactorySwitch(pxmDrawSwitch);
 
         // <MenuItem> Draw::Electricity::Diode
         //-----------------------------------------
 
-        QIcon   iconDrawDiode;
         QPixmap pxmDrawDiode(":/ZS/Draw/Electricity/Diode16x16.bmp");
-
         pxmDrawDiode.setMask(pxmDrawDiode.createHeuristicMask());
-
-        iconDrawDiode.addPixmap(pxmDrawDiode);
-
-        m_pObjFactoryElectricityDiode = new CObjFactoryDiode(iconDrawDiode);
+        m_pObjFactoryElectricityDiode = new CObjFactoryDiode(pxmDrawDiode);
 
         // <MenuItem> Draw::Electricity::Transistor
         //-----------------------------------------
 
-        QIcon   iconDrawTransistor;
         QPixmap pxmDrawTransistor(":/ZS/Draw/Electricity/Transistor16x16.bmp");
-
         pxmDrawTransistor.setMask(pxmDrawTransistor.createHeuristicMask());
-
-        iconDrawTransistor.addPixmap(pxmDrawTransistor);
-
-        m_pObjFactoryElectricityTransistor = new CObjFactoryTransistor(iconDrawTransistor);
+        m_pObjFactoryElectricityTransistor = new CObjFactoryTransistor(pxmDrawTransistor);
 
     } // if( m_uAddObjFactories & EAddObjFactoriesElectricity )
 
@@ -1823,8 +1671,15 @@ void CMainWindow::createActions()
     // <MenuItem> Edit::Group
     //-----------------------
 
-    m_pActEditGroup = new QAction( m_pObjFactoryGroup->getToolIcon(), c_strActionNameEditGroup.section(":",-1,-1), this );
-    m_pActEditGroup->setStatusTip( tr("Group Selected Objects") );
+    QIcon   iconEditGroup;
+    QPixmap pxmEditGroup16x16(":/ZS/Draw/EditGroup16x16.bmp");
+
+    pxmEditGroup16x16.setMask(pxmEditGroup16x16.createMaskFromColor(Qt::white));
+
+    iconEditGroup.addPixmap(pxmEditGroup16x16);
+
+    m_pActEditGroup = new QAction(iconEditGroup, c_strActionNameEditGroup.section(":",-1,-1), this);
+    m_pActEditGroup->setStatusTip(tr("Group Selected Objects"));
     m_pActEditGroup->setEnabled(false);
 
     if( !connect(
@@ -1937,8 +1792,13 @@ void CMainWindow::createActions()
     // <MenuItem> Draw::Standard Shapes::Draw Point
     //---------------------------------------------
 
-    m_pActDrawStandardShapePoint = new QAction( m_pObjFactoryPoint->getToolIcon(), c_strActionNameDrawStandardShapePoint.section(":",-1,-1), this );
-    m_pActDrawStandardShapePoint->setStatusTip( tr("Draw Points") );
+    QIcon iconDrawPoint;
+    QPixmap pxmDrawPoint(":/ZS/Draw/DrawPoint16x16.bmp");
+    pxmDrawPoint.setMask(pxmDrawPoint.createHeuristicMask());
+    iconDrawPoint.addPixmap(pxmDrawPoint);
+
+    m_pActDrawStandardShapePoint = new QAction(iconDrawPoint, c_strActionNameDrawStandardShapePoint.section(":",-1,-1), this);
+    m_pActDrawStandardShapePoint->setStatusTip(tr("Draw Points"));
     m_pActDrawStandardShapePoint->setCheckable(true);
 
     if( !connect(
@@ -1953,8 +1813,13 @@ void CMainWindow::createActions()
     // <MenuItem> Draw::Standard Shapes::Draw Line
     //--------------------------------------------
 
-    m_pActDrawStandardShapeLine = new QAction( m_pObjFactoryLine->getToolIcon(), c_strActionNameDrawStandardShapeLine.section(":",-1,-1), this );
-    m_pActDrawStandardShapeLine->setStatusTip( tr("Draw Lines") );
+    QIcon iconDrawLine;
+    QPixmap pxmDrawLine(":/ZS/Draw/DrawLine16x16.bmp");
+    pxmDrawLine.setMask(pxmDrawLine.createHeuristicMask());
+    iconDrawLine.addPixmap(pxmDrawLine);
+
+    m_pActDrawStandardShapeLine = new QAction(iconDrawLine, c_strActionNameDrawStandardShapeLine.section(":",-1,-1), this);
+    m_pActDrawStandardShapeLine->setStatusTip(tr("Draw Lines"));
     m_pActDrawStandardShapeLine->setCheckable(true);
 
     if( !connect(
@@ -1969,8 +1834,13 @@ void CMainWindow::createActions()
     // <MenuItem> Draw::Standard Shapes::Draw Rect
     //--------------------------------------------
 
-    m_pActDrawStandardShapeRect = new QAction( m_pObjFactoryRect->getToolIcon(), c_strActionNameDrawStandardShapeRect.section(":",-1,-1), this );
-    m_pActDrawStandardShapeRect->setStatusTip( tr("Draw Rectangles") );
+    QIcon iconDrawRect;
+    QPixmap pxmDrawRect(":/ZS/Draw/DrawRect16x16.bmp");
+    pxmDrawRect.setMask(pxmDrawRect.createHeuristicMask());
+    iconDrawRect.addPixmap(pxmDrawRect);
+
+    m_pActDrawStandardShapeRect = new QAction(iconDrawRect, c_strActionNameDrawStandardShapeRect.section(":",-1,-1), this);
+    m_pActDrawStandardShapeRect->setStatusTip(tr("Draw Rectangles"));
     m_pActDrawStandardShapeRect->setCheckable(true);
 
     if( !connect(
@@ -1985,8 +1855,13 @@ void CMainWindow::createActions()
     // <MenuItem> Draw::Standard Shapes::Draw Ellipse
     //-----------------------------------------------
 
-    m_pActDrawStandardShapeEllipse = new QAction( m_pObjFactoryEllipse->getToolIcon(), c_strActionNameDrawStandardShapeEllipse.section(":",-1,-1), this );
-    m_pActDrawStandardShapeEllipse->setStatusTip( tr("Draw Ellipses") );
+    QIcon iconDrawEllipse;
+    QPixmap pxmDrawEllipse(":/ZS/Draw/DrawEllipse16x16.bmp");
+    pxmDrawEllipse.setMask(pxmDrawEllipse.createHeuristicMask());
+    iconDrawEllipse.addPixmap(pxmDrawEllipse);
+
+    m_pActDrawStandardShapeEllipse = new QAction(iconDrawEllipse, c_strActionNameDrawStandardShapeEllipse.section(":",-1,-1), this);
+    m_pActDrawStandardShapeEllipse->setStatusTip(tr("Draw Ellipses"));
     m_pActDrawStandardShapeEllipse->setCheckable(true);
 
     if( !connect(
@@ -2001,8 +1876,13 @@ void CMainWindow::createActions()
     // <MenuItem> Draw::Standard Shapes::Draw Polyline
     //------------------------------------------------
 
-    m_pActDrawStandardShapePolyline = new QAction( m_pObjFactoryPolyline->getToolIcon(), c_strActionNameDrawStandardShapePolyline.section(":",-1,-1), this );
-    m_pActDrawStandardShapePolyline->setStatusTip( tr("Draw Polylines") );
+    QIcon iconDrawPolyline;
+    QPixmap pxmDrawPolyline(":/ZS/Draw/DrawPolyline16x16.bmp");
+    pxmDrawPolyline.setMask(pxmDrawPolyline.createHeuristicMask());
+    iconDrawPolyline.addPixmap(pxmDrawPolyline);
+
+    m_pActDrawStandardShapePolyline = new QAction(iconDrawPolyline, c_strActionNameDrawStandardShapePolyline.section(":",-1,-1), this);
+    m_pActDrawStandardShapePolyline->setStatusTip(tr("Draw Polylines"));
     m_pActDrawStandardShapePolyline->setCheckable(true);
 
     if( !connect(
@@ -2017,8 +1897,13 @@ void CMainWindow::createActions()
     // <MenuItem> Draw::Standard Shapes::Draw Polygon
     //------------------------------------------------
 
-    m_pActDrawStandardShapePolygon = new QAction( m_pObjFactoryPolygon->getToolIcon(), c_strActionNameDrawStandardShapePolygon.section(":",-1,-1), this );
-    m_pActDrawStandardShapePolygon->setStatusTip( tr("Draw Polygons") );
+    QIcon iconDrawPolygon;
+    QPixmap pxmDrawPolygon(":/ZS/Draw/DrawPolygon16x16.bmp");
+    pxmDrawPolygon.setMask(pxmDrawPolygon.createHeuristicMask());
+    iconDrawPolygon.addPixmap(pxmDrawPolygon);
+
+    m_pActDrawStandardShapePolygon = new QAction(iconDrawPolygon, c_strActionNameDrawStandardShapePolygon.section(":",-1,-1), this);
+    m_pActDrawStandardShapePolygon->setStatusTip(tr("Draw Polygons"));
     m_pActDrawStandardShapePolygon->setCheckable(true);
 
     if( !connect(
@@ -2033,8 +1918,13 @@ void CMainWindow::createActions()
     // <MenuItem> Draw::Standard Shapes::Draw Text
     //------------------------------------------------
 
-    m_pActDrawStandardShapeText = new QAction( m_pObjFactoryText->getToolIcon(), c_strActionNameDrawStandardShapeText.section(":",-1,-1), this );
-    m_pActDrawStandardShapeText->setStatusTip( tr("Draw Texts") );
+    QIcon iconDrawText;
+    QPixmap pxmDrawText(":/ZS/Draw/DrawText16x16.bmp");
+    pxmDrawText.setMask(pxmDrawText.createHeuristicMask());
+    iconDrawText.addPixmap(pxmDrawText);
+
+    m_pActDrawStandardShapeText = new QAction(iconDrawText, c_strActionNameDrawStandardShapeText.section(":",-1,-1), this);
+    m_pActDrawStandardShapeText->setStatusTip(tr("Draw Texts"));
     m_pActDrawStandardShapeText->setCheckable(true);
 
     if( !connect(
@@ -2052,8 +1942,13 @@ void CMainWindow::createActions()
     // <MenuItem> Draw::Graphics::Image
     //---------------------------------
 
-    m_pActDrawGraphicsImage = new QAction( m_pObjFactoryImage->getToolIcon(), c_strActionNameDrawGraphicsImage.section(":",-1,-1), this );
-    m_pActDrawGraphicsImage->setStatusTip( tr("Insert Images") );
+    QIcon iconDrawImage;
+    QPixmap pxmDrawImage(":/ZS/Draw/DrawImage16x16.bmp");
+    pxmDrawImage.setMask(pxmDrawImage.createHeuristicMask());
+    iconDrawImage.addPixmap(pxmDrawImage);
+
+    m_pActDrawGraphicsImage = new QAction(iconDrawImage, c_strActionNameDrawGraphicsImage.section(":",-1,-1), this);
+    m_pActDrawGraphicsImage->setStatusTip(tr("Insert Images"));
     m_pActDrawGraphicsImage->setCheckable(false);
 
     if( !connect(
@@ -2071,8 +1966,13 @@ void CMainWindow::createActions()
     // <MenuItem> Draw::Connections::Draw Connection Point
     //----------------------------------------------------
 
-    m_pActDrawConnectionPoint = new QAction( m_pObjFactoryConnectionPoint->getToolIcon(), c_strActionNameDrawConnectionPoint.section(":",-1,-1), this );
-    m_pActDrawConnectionPoint->setStatusTip( tr("Draw Connection Point") );
+    QIcon iconDrawConnectionPoint;
+    QPixmap pxmDrawConnectionPoint(":/ZS/Draw/DrawConnectionPoint16x16.bmp");
+    pxmDrawConnectionPoint.setMask(pxmDrawConnectionPoint.createHeuristicMask());
+    iconDrawConnectionPoint.addPixmap(pxmDrawConnectionPoint);
+
+    m_pActDrawConnectionPoint = new QAction(iconDrawConnectionPoint, c_strActionNameDrawConnectionPoint.section(":",-1,-1), this);
+    m_pActDrawConnectionPoint->setStatusTip(tr("Draw Connection Point"));
     m_pActDrawConnectionPoint->setCheckable(true);
 
     if( !connect(
@@ -2087,8 +1987,13 @@ void CMainWindow::createActions()
     // <MenuItem> Draw::Connections::Draw Connection Line
     //----------------------------------------------------
 
-    m_pActDrawConnectionLine = new QAction( m_pObjFactoryConnectionLine->getToolIcon(), c_strActionNameDrawConnectionLine.section(":",-1,-1), this );
-    m_pActDrawConnectionLine->setStatusTip( tr("Draw Connection Line") );
+    QIcon iconDrawConnectionLine;
+    QPixmap pxmDrawConnectionLine(":/ZS/Draw/DrawConnectionLine16x16.bmp");
+    pxmDrawConnectionLine.setMask(pxmDrawConnectionLine.createHeuristicMask());
+    iconDrawConnectionLine.addPixmap(pxmDrawConnectionLine);
+
+    m_pActDrawConnectionLine = new QAction(iconDrawConnectionLine, c_strActionNameDrawConnectionLine.section(":",-1,-1), this);
+    m_pActDrawConnectionLine->setStatusTip(tr("Draw Connection Line"));
     m_pActDrawConnectionLine->setCheckable(true);
 
     if( !connect(
@@ -3099,87 +3004,10 @@ void CMainWindow::createDockWidgets()
 
     // Tree View with graphics items as in drawing scene's items list
 
-    m_pWdgtGraphicsItems = new QWidget();
+    m_pModelIdxTreeGraphObjs = new CModelIdxTreeGraphObjs(m_pDrawingScene);
+
+    m_pWdgtGraphicsItems = new CWdgtIdxTreeGraphObjs(m_pModelIdxTreeGraphObjs);
     m_pTabWdgtGraphObjs->addTab( m_pWdgtGraphicsItems, "Graphics Items" );
-
-    m_pLytGraphicsItems = new QVBoxLayout();
-    m_pWdgtGraphicsItems->setLayout(m_pLytGraphicsItems);
-
-    // <Line> Refresh
-    //---------------
-
-    m_pLytGraphicsItemsLineRefresh = new QHBoxLayout();
-    m_pLytGraphicsItems->addLayout(m_pLytGraphicsItemsLineRefresh);
-
-    m_pLblGraphicsItemsRefresh = new QLabel("Refresh");
-    m_pLytGraphicsItemsLineRefresh->addWidget(m_pLblGraphicsItemsRefresh);
-
-    QIcon   iconRefresh;
-    QPixmap pxmRefresh(":/ZS/Draw/Refresh16x16.bmp");
-
-    pxmRefresh.setMask(pxmRefresh.createMaskFromColor(Qt::white));
-
-    iconRefresh.addPixmap(pxmRefresh);
-
-    m_pBtnGraphicsItemsRefresh = new QPushButton();
-    m_pLytGraphicsItemsLineRefresh->addWidget(m_pBtnGraphicsItemsRefresh);
-    m_pBtnGraphicsItemsRefresh->setIcon(iconRefresh);
-    m_pBtnGraphicsItemsRefresh->setMaximumWidth(pxmRefresh.width()+12);
-
-    m_pLytGraphicsItemsLineRefresh->addStretch();
-
-    if( !QObject::connect(
-        /* pObjSender   */ m_pBtnGraphicsItemsRefresh,
-        /* szSignal     */ SIGNAL( clicked(bool) ),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT( onTreeViewGraphicsItemsBtnRefreshClicked(bool) ) ) )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-    }
-
-    // <TreeView> Graphics Items
-    //--------------------------
-
-    m_pModelIdxTreeGraphicsItems = new CModelIdxTreeGraphicsItems(m_pDrawingScene->getGraphObjsIdxTree());
-
-    m_pTreeViewGraphicsItems = new QTreeView(this);
-    m_pLytGraphicsItems->addWidget(m_pTreeViewGraphicsItems);
-
-    m_pTreeViewGraphicsItems->setModel(m_pModelIdxTreeGraphicsItems);
-    m_pTreeViewGraphicsItems->setSelectionBehavior(QAbstractItemView::SelectItems);
-    m_pTreeViewGraphicsItems->setSelectionMode(QAbstractItemView::SingleSelection);
-    //m_pTreeViewGraphicsItems->setAllColumnsShowFocus(true);
-    m_pTreeViewGraphicsItems->setDragEnabled(true);
-    m_pTreeViewGraphicsItems->setDropIndicatorShown(true);
-    // Please note that the first column should not be hidden to allow
-    // collapsing and expanding the tree view.
-
-    if( !QObject::connect(
-        /* pObjSender   */ m_pTreeViewGraphicsItems,
-        /* szSignal     */ SIGNAL( expanded(const QModelIndex&) ),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT( onTreeViewGraphicsItemsExpanded(const QModelIndex&) ) ) )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-    }
-
-    if( !QObject::connect(
-        /* pObjSender   */ m_pTreeViewGraphicsItems->selectionModel(),
-        /* szSignal     */ SIGNAL( currentChanged(const QModelIndex&, const QModelIndex&) ),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT( onTreeViewGraphicsItemsCurrentChanged(const QModelIndex&, const QModelIndex&) ) ) )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-    }
-
-    if( !QObject::connect(
-        /* pObjSender   */ m_pTreeViewGraphicsItems,
-        /* szSignal     */ SIGNAL( doubleClicked(const QModelIndex&) ),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT( onTreeViewGraphicsItemsDoubleClicked(const QModelIndex&) ) ) )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-    }
 
 } // createDockWidgets
 
@@ -5306,41 +5134,6 @@ void CMainWindow::onDrawingSceneSelectionChanged()
 
     updateActions();
 
-    //QObject::disconnect(
-    //    /* pObjSender   */ m_pTreeViewGraphicsItems->selectionModel(),
-    //    /* szSignal     */ SIGNAL( currentChanged(const QModelIndex&, const QModelIndex&) ),
-    //    /* pObjReceiver */ this,
-    //    /* szSlot       */ SLOT( onTreeViewGraphicsItemsCurrentChanged(const QModelIndex&, const QModelIndex&) ) );
-
-    //m_pTreeViewGraphicsItems->clearSelection();
-
-    //QList<QGraphicsItem*> arpGraphicItems = m_pDrawingScene->selectedItems();
-    //QGraphicsItem*        pGraphicsItem;
-    //QModelIndex           modelIdx;
-    //int                   idxGraphObj;
-
-    //for( idxGraphObj = 0; idxGraphObj < arpGraphicItems.size(); idxGraphObj++ )
-    //{
-    //    pGraphicsItem = arpGraphicItems[idxGraphObj];
-
-    //    modelIdx = m_pModelIdxTreeGraphicsItems->getModelIndex(pGraphicsItem);
-
-    //    if( modelIdx.isValid() )
-    //    {
-    //        m_pTreeViewGraphicsItems->setCurrentIndex(modelIdx);
-    //        m_pTreeViewGraphicsItems->scrollTo(modelIdx);
-    //    }
-    //}
-
-    //if( !QObject::connect(
-    //    /* pObjSender   */ m_pTreeViewGraphicsItems->selectionModel(),
-    //    /* szSignal     */ SIGNAL( currentChanged(const QModelIndex&, const QModelIndex&) ),
-    //    /* pObjReceiver */ this,
-    //    /* szSlot       */ SLOT( onTreeViewGraphicsItemsCurrentChanged(const QModelIndex&, const QModelIndex&) ) ) )
-    //{
-    //    throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-    //}
-
 } // onDrawingSceneSelectionChanged
 
 //------------------------------------------------------------------------------
@@ -5527,73 +5320,6 @@ void CMainWindow::onDrawingSceneDrawSettingsChanged( const CDrawSettings& i_draw
     } // if( m_pActDrawSettingsText != nullptr )
 
 } // onDrawingSceneDrawSettingsChanged
-
-//------------------------------------------------------------------------------
-void CMainWindow::onDrawingSceneGraphObjCreated( ZS::Draw::CGraphObj* i_pGraphObj )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
-    {
-        if( i_pGraphObj == nullptr )
-        {
-            strMthInArgs = "GraphObj:nullptr";
-        }
-        else
-        {
-            strMthInArgs = "GraphObj:" + i_pGraphObj->name();
-        }
-    }
-
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strMethod    */ "onDrawingSceneGraphObjCreated",
-        /* strAddInfo   */ strMthInArgs );
-
-} // onDrawingSceneGraphObjCreated
-
-//------------------------------------------------------------------------------
-void CMainWindow::onDrawingSceneGraphObjDestroyed( const QString& i_strObjId )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
-    {
-        strMthInArgs = "GraphObjId:" + i_strObjId;
-    }
-
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strMethod    */ "onDrawingSceneGraphObjDestroyed",
-        /* strAddInfo   */ strMthInArgs );
-
-} // onDrawingSceneGraphObjDestroyed
-
-//------------------------------------------------------------------------------
-void CMainWindow::onDrawingSceneGraphObjIdChanged(
-    const QString& i_strObjIdOld,
-    const QString& i_strObjIdNew )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
-    {
-        strMthInArgs  = "GraphObjIdOld:" + i_strObjIdOld;
-        strMthInArgs += ", GraphObjIdNew:" + i_strObjIdNew;
-    }
-
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strMethod    */ "onDrawingSceneGraphObjIdChanged",
-        /* strAddInfo   */ strMthInArgs );
-
-} // onDrawingSceneGraphObjIdChanged
 
 /*==============================================================================
 protected slots: // Drawing View
@@ -5783,206 +5509,6 @@ void CMainWindow::selectTreeViewObjFactoryNode( ZS::Draw::CObjFactory* i_pObjFac
     } // if( m_pTreeViewObjFactories != nullptr )
 
 } // selectTreeViewObjFactoryNode
-
-/*==============================================================================
-protected slots: // Tree View Graphics Items
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-void CMainWindow::onTreeViewGraphicsItemsBtnRefreshClicked( bool )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
-    {
-    }
-
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strMethod    */ "onTreeViewGraphicsItemsExpanded",
-        /* strAddInfo   */ strMthInArgs );
-
-    //if( m_pModelIdxTreeGraphicsItems != nullptr )
-    //{
-    //    m_pModelIdxTreeGraphicsItems->update();
-    //}
-
-} // onTreeViewGraphicsItemsBtnRefreshClicked
-
-//------------------------------------------------------------------------------
-void CMainWindow::onTreeViewGraphicsItemsExpanded( const QModelIndex& i_modelIdx )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
-    {
-    }
-
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strMethod    */ "onTreeViewGraphicsItemsExpanded",
-        /* strAddInfo   */ strMthInArgs );
-
-    if( i_modelIdx.isValid() )
-    {
-        m_pTreeViewGraphicsItems->resizeColumnToContents(i_modelIdx.column());
-    }
-
-} // onTreeViewGraphicsItemsExpanded
-
-//------------------------------------------------------------------------------
-void CMainWindow::onTreeViewGraphicsItemsCurrentChanged(
-    const QModelIndex& i_modelIdxCurr,
-    const QModelIndex& /*i_modelIdxPrev*/ )
-//------------------------------------------------------------------------------
-{
-    CGraphObj* pGraphObj = nullptr;
-
-    if( i_modelIdxCurr.isValid() )
-    {
-        CModelIdxTreeEntry* pModelEntry = static_cast<CModelIdxTreeEntry*>(i_modelIdxCurr.internalPointer());
-
-        if( pModelEntry != nullptr )
-        {
-            pGraphObj = dynamic_cast<CGraphObj*>(pModelEntry->treeEntry());
-        }
-    }
-
-    QString strMthInArgs;
-
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
-    {
-        if( pGraphObj == nullptr )
-        {
-            strMthInArgs = "GraphObj:nullptr";
-        }
-        else
-        {
-            strMthInArgs = "GraphObj:" + pGraphObj->name();
-        }
-    }
-
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strMethod    */ "onTreeViewGraphicsItemsCurrentChanged",
-        /* strAddInfo   */ strMthInArgs );
-
-    QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(pGraphObj);
-
-    if( pGraphicsItem != nullptr )
-    {
-        CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
-
-        if( pGraphObj != nullptr )
-        {
-            QGraphicsItem* pGraphicsItemSelected = pGraphicsItem;
-            CGraphObj*     pGraphObjSelected = pGraphObj;
-
-            // Selection Points cannot be selected. When clicking on a selection point
-            // the parent got to be selected.
-            if( pGraphObj->getType() == EGraphObjTypeSelectionPoint )
-            {
-                CGraphObjSelectionPoint* pSelectionPoint = dynamic_cast<CGraphObjSelectionPoint*>(pGraphObj);
-
-                if( pSelectionPoint != nullptr )
-                {
-                    pGraphObjSelected = pSelectionPoint->getSelectedGraphObj();
-                    pGraphicsItemSelected = dynamic_cast<QGraphicsItem*>(pGraphObjSelected);
-                }
-            }
-
-            // On clicking on a selection point and removing the selection of it's parent object
-            // the parent object will hide and destroy the selection point - which has currently
-            // beeing clicked. The selection may only be cleared therefore if a new object has
-            // been selected. Otherwise the selected tree view entry would be destroyed while it
-            // has been selected. And afterwards created again. And so on. This will either end up
-            // in a deadlock (endless loop) or at least with access violations,
-            if( !pGraphicsItemSelected->isSelected() )
-            {
-                QObject::disconnect(
-                    /* pObjSender   */ m_pDrawingScene,
-                    /* szSignal     */ SIGNAL(selectionChanged()),
-                    /* pObjReceiver */ this,
-                    /* szSlot       */ SLOT(onDrawingSceneSelectionChanged()) );
-
-                m_pDrawingScene->clearSelection();
-
-                pGraphicsItemSelected->setSelected(true);
-
-                if( !QObject::connect(
-                    /* pObjSender   */ m_pDrawingScene,
-                    /* szSignal     */ SIGNAL(selectionChanged()),
-                    /* pObjReceiver */ this,
-                    /* szSlot       */ SLOT(onDrawingSceneSelectionChanged()) ) )
-                {
-                    throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-                }
-            }
-        }
-    }
-
-} // onTreeViewGraphicsItemsCurrentChanged
-
-//------------------------------------------------------------------------------
-void CMainWindow::onTreeViewGraphicsItemsDoubleClicked( const QModelIndex& i_modelIdx )
-//------------------------------------------------------------------------------
-{
-    CGraphObj* pGraphObj = nullptr;
-
-    if( i_modelIdx.isValid() )
-    {
-        CModelIdxTreeEntry* pModelEntry = static_cast<CModelIdxTreeEntry*>(i_modelIdx.internalPointer());
-
-        if( pModelEntry != nullptr )
-        {
-            pGraphObj = dynamic_cast<CGraphObj*>(pModelEntry->treeEntry());
-        }
-    }
-
-    QString strMthInArgs;
-
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
-    {
-        if( pGraphObj == nullptr )
-        {
-            strMthInArgs = "GraphObj:nullptr";
-        }
-        else
-        {
-            strMthInArgs = "GraphObj:" + pGraphObj->name();
-        }
-    }
-
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strMethod    */ "onTreeViewGraphicsItemsDoubleClicked",
-        /* strAddInfo   */ strMthInArgs );
-
-    QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(pGraphObj);
-
-    if( pGraphicsItem != nullptr )
-    {
-        m_pDrawingScene->clearSelection();
-
-        pGraphicsItem->setSelected(true);
-
-        CDlgFormatGraphObjs* pDlgFormatGraphObjs = new CDlgFormatGraphObjs(m_pDrawingScene,pGraphObj);
-
-        pDlgFormatGraphObjs->setCurrentWidget(CDlgFormatGraphObjs::c_strWdgtObjName);
-
-        pDlgFormatGraphObjs->exec();
-
-        delete pDlgFormatGraphObjs;
-        pDlgFormatGraphObjs = nullptr;
-    }
-
-} // onTreeViewGraphicsItemsDoubleClicked
 
 /*==============================================================================
 protected: // overridables of base class QWidget

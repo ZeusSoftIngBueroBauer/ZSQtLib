@@ -41,7 +41,7 @@ class CObjFactoryInductor : public CObjFactory
 //******************************************************************************
 {
 public: // ctors and dtor
-    CObjFactoryInductor( const QIcon& i_toolIcon = QIcon() );
+    CObjFactoryInductor( const QPixmap& i_pxmToolIcon = QPixmap() );
     virtual ~CObjFactoryInductor();
 public: // interface methods of base class CObjFactory
     virtual CGraphObj* createGraphObj(

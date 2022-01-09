@@ -118,11 +118,35 @@ CWdgtIdxTree::CWdgtIdxTree(
     m_pSplitter(nullptr),
     m_pTreeView(nullptr),
     m_pTableViewBranchContent(nullptr),
-    m_iTrcDetailLevel(i_iTrcDetailLevel)
+    m_iTrcDetailLevel(i_iTrcDetailLevel),
+    m_pTrcAdminObj(nullptr)
 {
     setObjectName( i_pModel == nullptr ? "IdxTree" : i_pModel->objectName() );
 
     QString strMthInArgs;
+
+    // If the tree's parent is the trace server the detail level of trace outputs
+    // may not be controlled by trace admin objects as the belong to the index tree
+    // of the trace server.
+    if( dynamic_cast<CTrcServer*>(i_pModel->idxTree()->parent()) == nullptr )
+    {
+        m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName());
+
+        if( m_pTrcAdminObj != nullptr )
+        {
+            m_iTrcDetailLevel = m_pTrcAdminObj->getTraceDetailLevel();
+
+            if( !QObject::connect(
+                /* pObjSender   */ m_pTrcAdminObj,
+                /* szSignal     */ SIGNAL(changed(QObject*)),
+                /* pObjReceiver */ this,
+                /* szSlot       */ SLOT(onTrcAdminObjChanged(QObject*)),
+                /* cnctType     */ Qt::DirectConnection ) )
+            {
+                throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
+            }
+        }
+    }
 
     if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
     {
@@ -130,6 +154,7 @@ CWdgtIdxTree::CWdgtIdxTree(
     }
 
     CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* iTrcDetailLevel    */ m_iTrcDetailLevel,
         /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
@@ -301,6 +326,7 @@ CWdgtIdxTree::~CWdgtIdxTree()
     QString strMthInArgs;
 
     CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* iTrcDetailLevel    */ m_iTrcDetailLevel,
         /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
@@ -309,6 +335,13 @@ CWdgtIdxTree::~CWdgtIdxTree()
         /* strObjName         */ objectName(),
         /* strMethod          */ "dtor",
         /* strMethodInArgs    */ strMthInArgs );
+
+    if( m_pTrcAdminObj != nullptr )
+    {
+        mthTracer.onAdminObjAboutToBeReleased();
+
+        CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
+    }
 
     m_szBtns = QSize(0, 0);
     m_viewMode = static_cast<EViewMode>(0);
@@ -326,6 +359,7 @@ CWdgtIdxTree::~CWdgtIdxTree()
     m_pTreeView = nullptr;
     m_pTableViewBranchContent = nullptr;
     m_iTrcDetailLevel = 0;
+    m_pTrcAdminObj = nullptr;
 
 } // dtor
 
@@ -345,6 +379,7 @@ void CWdgtIdxTree::setViewMode( EViewMode i_viewMode )
     }
 
     CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* iTrcDetailLevel    */ m_iTrcDetailLevel,
         /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
@@ -433,6 +468,7 @@ void CWdgtIdxTree::onBtnViewModeClicked( bool i_bChecked )
     }
 
     CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* iTrcDetailLevel    */ m_iTrcDetailLevel,
         /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
@@ -469,6 +505,7 @@ void CWdgtIdxTree::onBtnTreeViewResizeRowsAndColumnsToContentsClicked( bool i_bC
     }
 
     CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* iTrcDetailLevel    */ m_iTrcDetailLevel,
         /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
@@ -500,6 +537,7 @@ void CWdgtIdxTree::onBtnTreeViewExpandAllClicked( bool i_bChecked )
     }
 
     CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* iTrcDetailLevel    */ m_iTrcDetailLevel,
         /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
@@ -533,6 +571,7 @@ void CWdgtIdxTree::onBtnTreeViewCollapseAllClicked( bool i_bChecked )
     }
 
     CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* iTrcDetailLevel    */ m_iTrcDetailLevel,
         /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
@@ -561,6 +600,7 @@ void CWdgtIdxTree::onBtnSortOrderClicked( bool i_bChecked )
     }
 
     CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* iTrcDetailLevel    */ m_iTrcDetailLevel,
         /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
@@ -618,6 +658,7 @@ void CWdgtIdxTree::onTreeViewSelectionModelCurrentRowChanged(
     }
 
     CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* iTrcDetailLevel    */ m_iTrcDetailLevel,
         /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
@@ -659,3 +700,19 @@ void CWdgtIdxTree::onTreeViewSelectionModelCurrentRowChanged(
     } // if( i_modelIdxCurr.isValid() )
 
 } // onTreeViewSelectionModelCurrentRowChanged
+
+/*==============================================================================
+protected slots:
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CWdgtIdxTree::onTrcAdminObjChanged( QObject* i_pTrcAdminObj )
+//------------------------------------------------------------------------------
+{
+    CTrcAdminObj* pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(i_pTrcAdminObj);
+
+    if( pTrcAdminObj != nullptr && m_pTrcAdminObj == pTrcAdminObj )
+    {
+        m_iTrcDetailLevel = pTrcAdminObj->getTraceDetailLevel();
+    }
+}

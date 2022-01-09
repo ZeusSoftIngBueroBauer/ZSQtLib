@@ -41,7 +41,7 @@ class CObjFactoryWdgtComboBox : public CObjFactory
 //******************************************************************************
 {
 public: // ctors and dtor
-    CObjFactoryWdgtComboBox( const QIcon& i_toolIcon = QIcon() );
+    CObjFactoryWdgtComboBox( const QPixmap& i_pxmToolIcon = QPixmap() );
     virtual ~CObjFactoryWdgtComboBox();
 public: // interface methods of base class CObjFactory
     virtual CGraphObj* createGraphObj(

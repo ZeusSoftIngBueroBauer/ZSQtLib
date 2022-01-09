@@ -564,6 +564,8 @@ CWdgtFormatGraphObjsLineStyle::~CWdgtFormatGraphObjsLineStyle()
     }
     m_pModelLineEndSizesLineEnd = nullptr;
 
+    mthTracer.onAdminObjAboutToBeReleased();
+
     CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
     m_pTrcAdminObj = nullptr;
 

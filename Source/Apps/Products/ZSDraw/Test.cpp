@@ -199,6 +199,8 @@ CTest::~CTest()
         }
     }
 
+    mthTracer.onAdminObjAboutToBeReleased();
+
     CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
 
     m_pMainWindow = nullptr;

@@ -44,7 +44,7 @@ public: // class methods
     /*! Returns the class name. */
     static QString ClassName() { return "CObjFactoryGroup"; }  // Please note that the static class functions name must be different from the non static virtual member function "className"
 public: // ctors and dtor
-    CObjFactoryGroup( const QIcon& i_toolIcon = QIcon() );
+    CObjFactoryGroup( const QPixmap& i_pxmToolIcon = QPixmap() );
     virtual ~CObjFactoryGroup();
 public: // overridables
     /*! This virtual method returns the name space of the object's class.

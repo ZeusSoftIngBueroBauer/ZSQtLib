@@ -41,7 +41,7 @@ class CObjFactoryWdgtLineEdit : public CObjFactory
 //******************************************************************************
 {
 public: // ctors and dtor
-    CObjFactoryWdgtLineEdit( const QIcon& i_toolIcon = QIcon() );
+    CObjFactoryWdgtLineEdit( const QPixmap& i_pxmToolIcon = QPixmap() );
     virtual ~CObjFactoryWdgtLineEdit();
 public: // interface methods of base class CObjFactory
     virtual CGraphObj* createGraphObj(

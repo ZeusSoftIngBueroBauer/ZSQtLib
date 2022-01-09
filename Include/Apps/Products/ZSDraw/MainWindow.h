@@ -85,7 +85,6 @@ namespace Draw
 class CDrawingScene;
 class CDrawingView;
 class CDrawSettings;
-class CModelIdxTreeGraphicsItems;
 class CGraphObj;
 class CObjFactoriesModel;
 class CObjFactory;
@@ -100,6 +99,8 @@ class CObjFactoryText;
 class CObjFactoryConnectionPoint;
 class CObjFactoryConnectionLine;
 class CObjFactoryGroup;
+class CModelIdxTreeGraphObjs;
+class CWdgtIdxTreeGraphObjs;
 
 namespace QtWidgets
 {
@@ -309,9 +310,6 @@ public slots: // Drawing Scene
     void onDrawingSceneMousePosChanged( const QPointF& i_ptMousePos );
     void onDrawingSceneModeChanged();
     void onDrawingSceneDrawSettingsChanged( const ZS::Draw::CDrawSettings& i_drawSettings );
-    void onDrawingSceneGraphObjCreated( ZS::Draw::CGraphObj* i_pGraphObj );
-    void onDrawingSceneGraphObjDestroyed( const QString& i_strObjId );
-    void onDrawingSceneGraphObjIdChanged( const QString& i_strObjIdOld, const QString& i_strObjIdNew );
 protected slots: // Drawing View
     void onDrawingViewMousePosChanged( const QPointF& i_ptMousePos );
 protected slots: // Tree View Object Factories (ToolBox)
@@ -319,11 +317,6 @@ protected slots: // Tree View Object Factories (ToolBox)
     void onTreeViewObjFactoriesCurrentChanged( const QModelIndex& i_modelIdxCurr, const QModelIndex& i_modelIdxPrev );
 public: // instance methods
     void selectTreeViewObjFactoryNode( ZS::Draw::CObjFactory* i_pObjFactory );
-protected slots: // Tree View Graphics Items
-    void onTreeViewGraphicsItemsBtnRefreshClicked( bool i_bCheched = true );
-    void onTreeViewGraphicsItemsExpanded( const QModelIndex& i_modelIdx );
-    void onTreeViewGraphicsItemsCurrentChanged( const QModelIndex& i_modelIdxCurr, const QModelIndex& i_modelIdxPrev );
-    void onTreeViewGraphicsItemsDoubleClicked( const QModelIndex& i_modelIdx );
 protected: // overridables of base class QWidget
     virtual void resizeEvent( QResizeEvent* i_pEv ) override;
     virtual void showEvent( QShowEvent* i_pEv ) override;
@@ -465,13 +458,8 @@ protected: // instance members
     QDockWidget*                                        m_pDockWdgtGraphObjs;
     QTabWidget*                                         m_pTabWdgtGraphObjs;
     // Dock Widget - GraphObjs - Tab GraphicsItems (tree View with graphics items as in drawing scene's items list)
-    QWidget*                                            m_pWdgtGraphicsItems;
-    QVBoxLayout*                                        m_pLytGraphicsItems;
-    QHBoxLayout*                                        m_pLytGraphicsItemsLineRefresh;
-    QLabel*                                             m_pLblGraphicsItemsRefresh;
-    QPushButton*                                        m_pBtnGraphicsItemsRefresh;
-    QTreeView*                                          m_pTreeViewGraphicsItems;
-    ZS::Draw::CModelIdxTreeGraphicsItems*               m_pModelIdxTreeGraphicsItems;
+    ZS::Draw::CWdgtIdxTreeGraphObjs*                    m_pWdgtGraphicsItems;
+    ZS::Draw::CModelIdxTreeGraphObjs*                   m_pModelIdxTreeGraphObjs;
     // Dialogs
     ZS::Test::GUI::CDlgTest*                            m_pDlgTest;
     // Status Bar

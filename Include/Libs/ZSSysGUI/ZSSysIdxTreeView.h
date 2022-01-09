@@ -86,14 +86,20 @@ public: // overridables of base class QStyledItemDelegate
         const QModelIndex&          i_modelIdx ) const override;
 protected slots:
     void onEdtNameDestroyed( QObject* i_pWdgtEditor );
+protected slots:
+    void onTrcAdminObjChanged( QObject* i_pTrcAdminObj );
 private: // copy ctor not implemented
     CDelegateIdxTree( const CDelegateIdxTree& );
 private: // assignment operator not implemented
     CDelegateIdxTree& operator = ( const CDelegateIdxTree& );
 private: // instance members
-    QLineEdit* m_pEdtName;
-    bool       m_bEdtNameDestroyedSignalConnected;
-    int        m_iTrcDetailLevel;
+    QLineEdit*               m_pEdtName;           /*!< Line edit to edit the name of the tree entry. */
+    bool                     m_bEdtNameDestroyedSignalConnected; /*!< true if the destroyed signal of the line editor is connected to the onEdtNameDestroyed slot. */
+    int                      m_iTrcDetailLevel;    /*!< Trace detail level for method tracing.
+                                                        Trace output may not be controlled by trace admin objects
+                                                        if the index tree belongs the trace server. */
+    ZS::Trace::CTrcAdminObj* m_pTrcAdminObj;       /*!< Trace admin object to control trace outputs of the class.
+                                                        The object will not be created if the index tree's belongs to the trace server. */
 
 }; // class CDelegateIdxTree
 
@@ -174,31 +180,37 @@ protected slots:
     void onActionLeaveCutTriggered( bool i_bChecked );
     void onActionLeaveCopyTriggered( bool i_bChecked );
     void onActionLeavePasteTriggered( bool i_bChecked );
+protected slots:
+    void onTrcAdminObjChanged( QObject* i_pTrcAdminObj );
 protected: // instance members
-    CDelegateIdxTree* m_pDelegate;
-    QMenu*            m_pMenuBranchContext;
-    QAction*          m_pActionBranchTitle;
-    QAction*          m_pActionBranchExpand;
-    QAction*          m_pActionBranchCollapse;
-    QAction*          m_pActionBranchCreateNewBranch;
-    QAction*          m_pActionBranchCreateNewLeave;
-    QAction*          m_pActionBranchDelete;
-    QAction*          m_pActionBranchCut;
-    QAction*          m_pActionBranchCopy;
-    QAction*          m_pActionBranchPaste;
-    QMenu*            m_pMenuLeaveContext;
-    QAction*          m_pActionLeaveTitle;
-    QAction*          m_pActionLeaveDelete;
-    QAction*          m_pActionLeaveCut;
-    QAction*          m_pActionLeaveCopy;
-    QAction*          m_pActionLeavePaste;
-    QModelIndex       m_modelIdxSelectedOnMousePressEvent;
-    QModelIndex       m_modelIdxSelectedOnMouseReleaseEvent;
-    QModelIndex       m_modelIdxSelectedForPaste;
-    EPasteMode        m_pasteMode;
-    bool              m_bSilentlyExecuteDeleteRequests;
-    bool              m_bSilentlyIgnoreInvalidCopyRequests;
-    int               m_iTrcDetailLevel;
+    CDelegateIdxTree*        m_pDelegate;
+    QMenu*                   m_pMenuBranchContext;
+    QAction*                 m_pActionBranchTitle;
+    QAction*                 m_pActionBranchExpand;
+    QAction*                 m_pActionBranchCollapse;
+    QAction*                 m_pActionBranchCreateNewBranch;
+    QAction*                 m_pActionBranchCreateNewLeave;
+    QAction*                 m_pActionBranchDelete;
+    QAction*                 m_pActionBranchCut;
+    QAction*                 m_pActionBranchCopy;
+    QAction*                 m_pActionBranchPaste;
+    QMenu*                   m_pMenuLeaveContext;
+    QAction*                 m_pActionLeaveTitle;
+    QAction*                 m_pActionLeaveDelete;
+    QAction*                 m_pActionLeaveCut;
+    QAction*                 m_pActionLeaveCopy;
+    QAction*                 m_pActionLeavePaste;
+    QModelIndex              m_modelIdxSelectedOnMousePressEvent;
+    QModelIndex              m_modelIdxSelectedOnMouseReleaseEvent;
+    QModelIndex              m_modelIdxSelectedForPaste;
+    EPasteMode               m_pasteMode;
+    bool                     m_bSilentlyExecuteDeleteRequests;
+    bool                     m_bSilentlyIgnoreInvalidCopyRequests;
+    int                      m_iTrcDetailLevel;    /*!< Trace detail level for method tracing.
+                                                        Trace output may not be controlled by trace admin objects
+                                                        if the index tree belongs the trace server. */
+    ZS::Trace::CTrcAdminObj* m_pTrcAdminObj;       /*!< Trace admin object to control trace outputs of the class.
+                                                        The object will not be created if the index tree's belongs to the trace server. */
 
 }; // class CTreeViewIdxTree
 

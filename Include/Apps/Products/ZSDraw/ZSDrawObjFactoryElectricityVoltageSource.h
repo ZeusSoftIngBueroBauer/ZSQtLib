@@ -41,7 +41,7 @@ class CObjFactoryVoltageSource : public CObjFactory
 //******************************************************************************
 {
 public: // ctors and dtor
-    CObjFactoryVoltageSource( const QIcon& i_toolIcon = QIcon() );
+    CObjFactoryVoltageSource( const QPixmap& i_pxmToolIcon = QPixmap() );
     virtual ~CObjFactoryVoltageSource();
 public: // interface methods of base class CObjFactory
     virtual CGraphObj* createGraphObj(
