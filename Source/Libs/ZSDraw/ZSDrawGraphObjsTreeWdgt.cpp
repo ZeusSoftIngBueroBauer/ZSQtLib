@@ -211,7 +211,11 @@ CWdgtIdxTreeGraphObjs::CWdgtIdxTreeGraphObjs(
     //===========
 
     m_pTreeView = new CTreeViewIdxTreeGraphObjs(m_pModel, this);
-    m_pTreeView->setAlternatingRowColors(true);
+    m_pTreeView->setSelectionBehavior(QAbstractItemView::SelectRows);
+    m_pTreeView->setSelectionMode(QAbstractItemView::ExtendedSelection);
+    m_pTreeView->setAllColumnsShowFocus(true);
+    m_pTreeView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    //m_pTreeView->setAlternatingRowColors(true);
     m_pLytMain->addWidget(m_pTreeView, 1);
 
     if( !QObject::connect(

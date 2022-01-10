@@ -1095,11 +1095,12 @@ void CWdgtTrcMthList::onTraceDataReceived( QObject* /*i_pObjSender*/, const QStr
                                 strTrace += pTrcAdminObj->getObjectName();
                                 strTrace += ".";
                             }
-                            else if( !strObjName.isEmpty() )
-                            {
-                                strTrace += strObjName;
-                                strTrace += ".";
-                            }
+                        }
+
+                        if( !strObjName.isEmpty() )
+                        {
+                            strTrace += strObjName;
+                            strTrace += ".";
                         }
 
                         strTrace += strMthName;

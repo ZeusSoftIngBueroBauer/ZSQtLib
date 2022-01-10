@@ -56,6 +56,8 @@ public: // overridables
     virtual QString nameSpace() const { return NameSpace(); }
     virtual QString className() const { return ClassName(); }
 public: // instance methods
+    bool isAboutToBeDestroyed() const;
+public: // instance methods
     CIdxTreeEntry* treeEntry() { return m_pTreeEntry; }
 public: // instance methods
     EIdxTreeEntryType entryType() const { return m_pTreeEntry->entryType(); }

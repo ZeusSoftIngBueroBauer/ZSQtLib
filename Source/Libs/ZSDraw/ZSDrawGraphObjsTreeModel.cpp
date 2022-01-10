@@ -333,8 +333,9 @@ QVariant CModelIdxTreeGraphObjs::data( const QModelIndex& i_modelIdx, int i_iRol
                             {
                                 QPainter painter(&pxm);
                                 painter.setPen(Qt::red);
+                                painter.setBrush(Qt::white);
                                 QSize size = pxm.size();
-                                painter.drawEllipse(2,2,12,12);
+                                painter.drawEllipse(0, size.height()/2-3, 6, 6);
                             }
                             varData = pxm;
                         }

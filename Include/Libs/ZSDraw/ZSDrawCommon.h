@@ -109,21 +109,6 @@ typedef ZS::System::CEnum<EPrinterPaperSource> CEnumPrinterPaperSource;
 
 
 //==============================================================================
-/*! Custom data may be set for QGraphicsItem via the setData call.
-    This enum defines the keys for the key/value pairs.
-*/
-enum class EGraphItemDataKey
-//==============================================================================
-{
-    ObjId   = 0, /*!< Key to set the id of the object. The id must be a string. */
-    ObjType = 1  /*!< Key to set the type of the object. The type must be an enumerator of EGraphObjType and is of type int. */
-};
-
-template class ZSDRAWDLL_API ZS::System::CEnum<EGraphItemDataKey>;
-typedef ZS::System::CEnum<EGraphItemDataKey> CEnumGraphItemDataKey;
-
-
-//==============================================================================
 /*! enum EGraphObjType
 
     Not CEnum as the enumerators don`t start with 0 and there will be user defined

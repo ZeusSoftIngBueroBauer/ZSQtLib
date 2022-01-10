@@ -125,12 +125,13 @@ public: // type definitions and constants
     static const QString c_strKeyLabelObjId;
 protected: // ctor
     CGraphObj(
-        CDrawingScene*       i_pDrawingScene,
-        const QString&       i_strFactoryGroupName,
-        EGraphObjType        i_type,
-        const QString&       i_strType,
-        const QString&       i_strObjName,
-        const CDrawSettings& i_drawSettings );
+        CDrawingScene*                i_pDrawingScene,
+        const QString&                i_strFactoryGroupName,
+        EGraphObjType                 i_type,
+        const QString&                i_strType,
+        const QString&                i_strObjName,
+        const CDrawSettings&          i_drawSettings,
+        ZS::System::EIdxTreeEntryType i_idxTreeEntryType = ZS::System::EIdxTreeEntryType::Branch );
 public: // dtor
     virtual ~CGraphObj();
 public: // must overridables

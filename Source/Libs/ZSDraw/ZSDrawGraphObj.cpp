@@ -318,6 +318,12 @@ protected: // ctor
         Object name (e.g. "Line1", "Rect5", "CheckBoxUseFeature", "Resistor500OhmToGnd").
     @param i_drawSettings [in]
         Draw settings used to paint the item on the scene.
+    @param idxTreeEntryType [in]
+        Entry type. As default the entry type of the graph objects is Branch as all of
+        them may have children. Groups anyway have children. But also any other types
+        as if objects are selected they will create selection points. Also labels may
+        be created as children. Only for selection points and labels the entry type
+        will be set to Leave.
 */
 CGraphObj::CGraphObj(
     CDrawingScene*       i_pDrawingScene,
@@ -325,9 +331,10 @@ CGraphObj::CGraphObj(
     EGraphObjType        i_type,
     const QString&       i_strType,
     const QString&       i_strObjName,
-    const CDrawSettings& i_settings ) :
+    const CDrawSettings& i_settings,
+    EIdxTreeEntryType    i_idxTreeEntryType ) :
 //------------------------------------------------------------------------------
-    CIdxTreeEntry(EIdxTreeEntryType::Branch, i_strObjName),
+    CIdxTreeEntry(i_idxTreeEntryType, i_strObjName),
     m_pDrawingScene(i_pDrawingScene),
     m_strFactoryGroupName(i_strFactoryGroupName),
     m_type(i_type),
@@ -482,37 +489,37 @@ CGraphObj::~CGraphObj()
         pGraphObjLabel = nullptr;
     }
 
-    if( m_pDrawingScene != nullptr )
-    {
-        // Please note that "onGraphObjDestroyed" is used to remove the graphical object from
-        // the dictionary, the index list, and the sorted object pools of the drawing scene.
-        // But selection points have just been added to the drawing scene's item list and
-        // therefore don't have valid object ids.
-        if( !m_strKeyInTree.isEmpty() )
-        {
-            try
-            {
-                m_pDrawingScene->onGraphObjDestroyed(m_strKeyInTree);
-            }
-            catch(...)
-            {
-            }
-        }
-        else
-        {
-            // Please note that the dynamic cast to QGraphicsItem returns nullptr if the
-            // dtor of QGraphicsItem has already been executed. The order the dtors
-            // of QGraphicsItem has already been executed. The order the dtors
-            // of inherited classes are called depend on the order the classes
-            // appear in the list of the inherited classes on defining the
-            // class implementation. So we can't call "removeItem" here but must
-            // remove the graphics item from the drawing scene's item list before
-            // the dtor of class QGraphicsItem is called. And this is only always
-            // the case in the dtor of the class derived from QGraphicsItem.
-            //QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
-            //m_pDrawingScene->removeItem(pGraphicsItem);
-        }
-    } // if( m_pDrawingScene != nullptr )
+    //if( m_pDrawingScene != nullptr )
+    //{
+    //    // Please note that "onGraphObjDestroyed" is used to remove the graphical object from
+    //    // the dictionary, the index list, and the sorted object pools of the drawing scene.
+    //    // But selection points have just been added to the drawing scene's item list and
+    //    // therefore don't have valid object ids.
+    //    if( !m_strKeyInTree.isEmpty() )
+    //    {
+    //        try
+    //        {
+    //            m_pDrawingScene->onGraphObjDestroyed(m_strKeyInTree);
+    //        }
+    //        catch(...)
+    //        {
+    //        }
+    //    }
+    //    else
+    //    {
+    //        // Please note that the dynamic cast to QGraphicsItem returns nullptr if the
+    //        // dtor of QGraphicsItem has already been executed. The order the dtors
+    //        // of QGraphicsItem has already been executed. The order the dtors
+    //        // of inherited classes are called depend on the order the classes
+    //        // appear in the list of the inherited classes on defining the
+    //        // class implementation. So we can't call "removeItem" here but must
+    //        // remove the graphics item from the drawing scene's item list before
+    //        // the dtor of class QGraphicsItem is called. And this is only always
+    //        // the case in the dtor of the class derived from QGraphicsItem.
+    //        //QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
+    //        //m_pDrawingScene->removeItem(pGraphicsItem);
+    //    }
+    //} // if( m_pDrawingScene != nullptr )
 
     mthTracer.onAdminObjAboutToBeReleased();
 
@@ -611,7 +618,7 @@ void CGraphObj::setName( const QString& i_strName )
 
         m_strName = i_strName;
 
-        m_pDrawingScene->onGraphObjNameChanged(m_strKeyInTree, strNameOld, strNameNew);
+        //m_pDrawingScene->onGraphObjNameChanged(m_strKeyInTree, strNameOld, strNameNew);
 
         if( m_arpLabels.contains(c_strKeyLabelObjName) )
         {
@@ -655,15 +662,15 @@ void CGraphObj::setKeyInTree( const QString& i_strKey )
 
         m_strKeyInTree = i_strKey;
 
-        // Please note that on calling "onGraphObjIdChanged" the drawing scene
-        // may correct my object id on calling "setObjId" as a reentry. If we would
-        // pass a reference to "m_strObjId" the argument will be changed on executing
-        // the "onGraphObjIdChanged" method and after calling "setObjId" the new but
-        // not the old object id would be passed around by the drawing scene on emitting
-        // the "graphObjIdChanged" signal. Thats why we first assign the object id to
-        // a QString variable on the stack.
+        //// Please note that on calling "onGraphObjIdChanged" the drawing scene
+        //// may correct my object id on calling "setObjId" as a reentry. If we would
+        //// pass a reference to "m_strObjId" the argument will be changed on executing
+        //// the "onGraphObjIdChanged" method and after calling "setObjId" the new but
+        //// not the old object id would be passed around by the drawing scene on emitting
+        //// the "graphObjIdChanged" signal. Thats why we first assign the object id to
+        //// a QString variable on the stack.
 
-        m_pDrawingScene->onGraphObjIdChanged(strKeyOld, strKeyNew);
+        //m_pDrawingScene->onGraphObjIdChanged(strKeyOld, strKeyNew);
 
         if( m_arpLabels.contains(c_strKeyLabelObjId) )
         {
@@ -690,17 +697,26 @@ public: // instance methods
 CGraphObj* CGraphObj::parentGraphObj()
 //------------------------------------------------------------------------------
 {
-    QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
-    QGraphicsItem* pGraphicsItemParent = pGraphicsItemThis->parentItem();
-    CGraphObj*     pGraphObjParent1 = dynamic_cast<CGraphObj*>(pGraphicsItemParent);
-    CGraphObj*     pGraphObjParent2 = dynamic_cast<CGraphObj*>(parentBranch());
+    CGraphObj* pGraphObjParent = dynamic_cast<CGraphObj*>(parentBranch());
 
-    if( pGraphObjParent1 != pGraphObjParent2 )
+    // Please note that selection points and labels should not belong as child to the graphics items.
+    // Otherwise the "boundingRect" call of groups (which implicitly calls childrenBoundingRect) does
+    // not work as the childs bounding rectangles would be included. But the selection points and
+    // labels should appear as childs in the index tree of the drawing scene.
+
+    if( m_type != EGraphObjTypeSelectionPoint && m_type != EGraphObjTypeLabel )
     {
-        throw ZS::System::CException(__FILE__, __LINE__, EResultInternalProgramError, "pGraphObjParent1 != pGraphObjParent2");
+        QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
+        QGraphicsItem* pGraphicsItemParent = pGraphicsItemThis->parentItem();
+        CGraphObj*     pGraphObjParentTmp = dynamic_cast<CGraphObj*>(pGraphicsItemParent);
+
+        if( pGraphObjParentTmp != pGraphObjParent )
+        {
+            throw ZS::System::CException(__FILE__, __LINE__, EResultInternalProgramError, "pGraphObjParent != pGraphicsItemParent");
+        }
     }
 
-    return pGraphObjParent1;
+    return pGraphObjParent;
 
 } // parentGraphObj
 
@@ -2940,6 +2956,12 @@ void CGraphObj::showSelectionPointsOfBoundingRect( const QRectF& i_rct, unsigned
                         /* pGraphObjSelected */ this,
                         /* selectionPoint    */ selPt );
 
+                    // Please note that selection points should not belong as child to the graphics items
+                    // for which the selection points are created. Otherwise the "boundingRect" call
+                    // of groups (which implicitly calls childrenBoundingRect) does not work as the
+                    // selection points of the bounding rectangle would be included. But the selection
+                    // points should appear as childs in the index tree of the drawing scene. This has to
+                    // be taken into account by the "addGraphObj" method of the drawing scene.
                     m_pDrawingScene->addGraphObj(pGraphObjSelPt, this);
 
                     //pGraphObjSelPt->setParentItem(this); see comment in header file of class CGraphObjSelectionPoint
@@ -3134,6 +3156,12 @@ void CGraphObj::showSelectionPointsOfPolygon( const QPolygonF& i_plg )
 
                 pGraphObjSelPt = m_arpSelPtsPolygon[idxSelPt];
 
+                // Please note that the labels should not belong as child to the graphics items
+                // for which the selection points are created. Otherwise the "boundingRect" call
+                // of groups (which implicitly calls childrenBoundingRect) does not work as the
+                // labels would be included. But the labels should appear as childs in the index
+                // tree of the drawing scene. This has to be taken into account by the "addGraphObj"
+                // method of the drawing scene.
                 m_pDrawingScene->addGraphObj(pGraphObjSelPt, this);
 
                 //pGraphObjSelPt->setParentItem(this); see comment in header file of class CGraphObjSelectionPoint

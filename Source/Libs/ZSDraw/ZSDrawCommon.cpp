@@ -108,22 +108,6 @@ template<> const QVector<SEnumEntry> ZS::System::CEnum<EPrinterPaperSource>::s_a
 
 
 /*==============================================================================
-Enum EGraphItemDataKey
-==============================================================================*/
-
-template<> QMutex ZS::System::CEnum<EGraphItemDataKey>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
-template<> QVector<QHash<QString, int>> ZS::System::CEnum<EGraphItemDataKey>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
-
-//------------------------------------------------------------------------------
-template<> const QVector<SEnumEntry> ZS::System::CEnum<EGraphItemDataKey>::s_arEnumEntries =
-//------------------------------------------------------------------------------
-{                       // Enumerator,                                  Name,      Symbol, Text,  SCIPShort, SCPILong, Value
-    /*  0 */ SEnumEntry( static_cast<int>(EGraphItemDataKey::ObjId),   "ObjId"   ),
-    /*  1 */ SEnumEntry( static_cast<int>(EGraphItemDataKey::ObjType), "ObjType" )
-};
-
-
-/*==============================================================================
 Enum EGraphObjType
 ==============================================================================*/
 

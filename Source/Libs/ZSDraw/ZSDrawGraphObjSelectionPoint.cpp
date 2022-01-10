@@ -44,6 +44,7 @@ may result in using the software modules.
 #include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysErrCode.h"
 #include "ZSSys/ZSSysException.h"
+#include "ZSSys/ZSSysIdxTree.h"
 #include "ZSSys/ZSSysMath.h"
 #include "ZSSys/ZSSysTrcAdminObj.h"
 #include "ZSSys/ZSSysTrcMethod.h"
@@ -86,7 +87,8 @@ CGraphObjSelectionPoint::CGraphObjSelectionPoint(
         /* type                */ EGraphObjTypeSelectionPoint,
         /* strType             */ ZS::Draw::graphObjType2Str(EGraphObjTypeSelectionPoint),
         /* strObjName          */ "SelPt." + CEnumSelectionPoint(i_selectionPoint).toString(),
-        /* drawSettings        */ CDrawSettings() ),
+        /* drawSettings        */ CDrawSettings(),
+        /* idxTreeEntryType    */ EIdxTreeEntryType::Leave ),
     QGraphicsEllipseItem( QRectF( -s_fRadius_px, -s_fRadius_px, 2.0*s_fRadius_px, 2.0*s_fRadius_px ) ),
     m_pGraphObjSelected(i_pGraphObjSelected),
     m_selPtType(ESelectionPointType::BoundingRectangle),
@@ -123,9 +125,6 @@ CGraphObjSelectionPoint::CGraphObjSelectionPoint(
 
     m_selPtSelectedBoundingRect = i_selectionPoint;
 
-    setData(static_cast<int>(EGraphItemDataKey::ObjId), m_strKeyInTree);
-    setData(static_cast<int>(EGraphItemDataKey::ObjType), m_type);
-
     //setFlags( QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemSendsGeometryChanges );
 
     setAcceptHoverEvents(true);
@@ -151,7 +150,8 @@ CGraphObjSelectionPoint::CGraphObjSelectionPoint(
         /* type                */ EGraphObjTypeSelectionPoint,
         /* strType             */ ZS::Draw::graphObjType2Str(EGraphObjTypeSelectionPoint),
         /* strObjName          */ "SelPt." + QString::number(i_idxPt),
-        /* drawSettings        */ CDrawSettings() ),
+        /* drawSettings        */ CDrawSettings(),
+        /* idxTreeEntryType    */ EIdxTreeEntryType::Leave ),
     QGraphicsEllipseItem( QRectF( -s_fRadius_px, -s_fRadius_px, 2.0*s_fRadius_px, 2.0*s_fRadius_px ) ),
     m_pGraphObjSelected(i_pGraphObjSelected),
     m_selPtType(ESelectionPointType::PolygonShapePoint),
@@ -187,9 +187,6 @@ CGraphObjSelectionPoint::CGraphObjSelectionPoint(
         /* strAddInfo   */ strAddTrcInfo );
 
     m_idxSelPtSelectedPolygon = i_idxPt;
-
-    setData(static_cast<int>(EGraphItemDataKey::ObjId), m_strKeyInTree);
-    setData(static_cast<int>(EGraphItemDataKey::ObjType), m_type);
 
     //setFlags( /*QGraphicsItem::ItemIsMovable |*/ QGraphicsItem::ItemIsSelectable /*| QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemSendsGeometryChanges*/ );
 
@@ -246,8 +243,7 @@ CGraphObjSelectionPoint::~CGraphObjSelectionPoint()
                 {
                     // Cannot be called from within dtor of "CGraphObj" as the dtor
                     // of class "QGraphicsItem" may have already been processed and
-                    // models and Views may still try to access the graphical object
-                    // if the drawing scene emits the signal "graphObjDestroying".
+                    // models and Views may still try to access the graphical object.
                     m_pDrawingScene->onGraphObjDestroying(m_strKeyInTree);
                 }
                 catch(...)
@@ -824,21 +820,24 @@ void CGraphObjSelectionPoint::paint(
         if( m_idxSelPtSelectedPolygon >= 0 )
         {
             pn.setColor(Qt::magenta);
-            brsh.setStyle(Qt::SolidPattern);
-            brsh.setColor(Qt::magenta);
+            //brsh.setStyle(Qt::SolidPattern);
+            //brsh.setColor(Qt::magenta);
+            brsh.setStyle(Qt::NoBrush);
         }
         else if( m_selPtSelectedBoundingRect != ESelectionPoint::Undefined )
         {
             pn.setColor(Qt::blue);
-            brsh.setStyle(Qt::SolidPattern);
-            brsh.setColor(Qt::blue);
+            //brsh.setStyle(Qt::SolidPattern);
+            //brsh.setColor(Qt::blue);
+            brsh.setStyle(Qt::NoBrush);
         }
     }
     else
     {
         pn.setColor(Qt::red);
-        brsh.setStyle(Qt::SolidPattern);
-        brsh.setColor(Qt::white);
+        //brsh.setStyle(Qt::SolidPattern);
+        //brsh.setColor(Qt::white);
+        brsh.setStyle(Qt::NoBrush);
     }
 
     //QGraphicsEllipseItem::paint( i_pPainter, i_pStyleOption, i_pWdgt );
@@ -1394,6 +1393,8 @@ QVariant CGraphObjSelectionPoint::itemChange( GraphicsItemChange i_change, const
 
     QVariant valChanged = i_value;
 
+    bool bTreeEntryChanged = false;
+
     if( i_change == ItemSelectedHasChanged )
     {
     } // if( i_change == ItemSelectedHasChanged )
@@ -1440,6 +1441,11 @@ QVariant CGraphObjSelectionPoint::itemChange( GraphicsItemChange i_change, const
          //  || i_change == ItemScaleHasChanged
          //  || i_change == ItemTransformOriginPointHasChanged )
     {
+    }
+
+    if( bTreeEntryChanged && m_pTree != nullptr )
+    {
+        m_pTree->onTreeEntryChanged(this);
     }
 
     valChanged = QGraphicsItem::itemChange(i_change,i_value);

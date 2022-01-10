@@ -47,6 +47,7 @@ may result in using the software modules.
 #include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysErrCode.h"
 #include "ZSSys/ZSSysException.h"
+#include "ZSSys/ZSSysIdxTree.h"
 #include "ZSSys/ZSSysMath.h"
 #include "ZSSys/ZSSysTrcAdminObj.h"
 #include "ZSSys/ZSSysTrcMethod.h"
@@ -122,9 +123,6 @@ CGraphObjImage::CGraphObjImage(
 
     m_ptRotOriginCurr = rctBounding.center();
 
-    setData(static_cast<int>(EGraphItemDataKey::ObjId), m_strKeyInTree);
-    setData(static_cast<int>(EGraphItemDataKey::ObjType), m_type);
-
     setFlags( QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemSendsGeometryChanges );
 
     onDrawSettingsChanged();
@@ -179,8 +177,7 @@ CGraphObjImage::~CGraphObjImage()
                 {
                     // Cannot be called from within dtor of "CGraphObj" as the dtor
                     // of class "QGraphicsItem" may have already been processed and
-                    // models and Views may still try to access the graphical object
-                    // if the drawing scene emits the signal "graphObjDestroying".
+                    // models and Views may still try to access the graphical object.
                     m_pDrawingScene->onGraphObjDestroying(m_strKeyInTree);
                 }
                 catch(...)
@@ -1612,6 +1609,8 @@ QVariant CGraphObjImage::itemChange( GraphicsItemChange i_change, const QVariant
 
     QVariant valChanged = i_value;
 
+    bool bTreeEntryChanged = false;
+
     if( i_change == ItemSelectedHasChanged )
     {
         prepareGeometryChange();
@@ -1652,6 +1651,8 @@ QVariant CGraphObjImage::itemChange( GraphicsItemChange i_change, const QVariant
 
         updateEditInfo();
         updateToolTip();
+
+        bTreeEntryChanged = true;
 
     } // if( i_change == ItemSelectedHasChanged )
 
@@ -1759,6 +1760,10 @@ QVariant CGraphObjImage::itemChange( GraphicsItemChange i_change, const QVariant
         }
     }
 
+    if( bTreeEntryChanged && m_pTree != nullptr )
+    {
+        m_pTree->onTreeEntryChanged(this);
+    }
 
     valChanged = QGraphicsItem::itemChange(i_change,i_value);
 

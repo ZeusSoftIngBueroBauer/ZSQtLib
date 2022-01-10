@@ -119,9 +119,6 @@ CGraphObjPolygon::CGraphObjPolygon(
 
     m_ptRotOriginCurr = rctBounding.center();
 
-    setData(static_cast<int>(EGraphItemDataKey::ObjId), m_strKeyInTree);
-    setData(static_cast<int>(EGraphItemDataKey::ObjType), m_type);
-
     setFlags( QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemSendsGeometryChanges );
 
     onDrawSettingsChanged();

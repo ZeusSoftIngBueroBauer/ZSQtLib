@@ -84,11 +84,11 @@ signals:
     void modeChanged();
     void drawSettingsChanged( const ZS::Draw::CDrawSettings& i_drawSettings );
 signals:
-    void graphObjCreated( ZS::Draw::CGraphObj* i_pGraphObj );
-    void graphObjDestroying( const QString& i_strObjId );
-    void graphObjDestroyed( const QString& i_strObjId );
-    void graphObjIdChanged( const QString& i_strObjIdOld, const QString& i_strObjIdNew );
-    void graphObjNameChanged( const QString& i_strObjId, const QString& i_strObjNameOld, const QString& i_strObjNameNew );
+    //void graphObjCreated( ZS::Draw::CGraphObj* i_pGraphObj );
+    //void graphObjDestroying( const QString& i_strObjId );
+    //void graphObjDestroyed( const QString& i_strObjId );
+    //void graphObjIdChanged( const QString& i_strObjIdOld, const QString& i_strObjIdNew );
+    //void graphObjNameChanged( const QString& i_strObjId, const QString& i_strObjNameOld, const QString& i_strObjNameNew );
 public: // instance methods
     ZS::System::CIdxTree* getGraphObjsIdxTree() { return m_pGraphObjsIdxTree; }
 public: // instance methods
@@ -96,12 +96,12 @@ public: // instance methods
     void addGraphObj( CGraphObj* i_pGraphObj, CGraphObj* i_pGraphObjParent = nullptr );
     void removeGraphObj( CGraphObj* i_pGraphObj );
 protected: // instance methods
-    void addItem( QGraphicsItem* i_pGraphicsItem );
+    void addItem( QGraphicsItem* i_pGraphicsItem, QGraphicsItem* i_pGraphicsItemParent = nullptr );
     void removeItem( QGraphicsItem* i_pGraphicsItem );
     void deleteItem( QGraphicsItem* i_pGraphicsItem );
     void deleteItem( CGraphObj* i_pGraphObj );
 protected: // instance methods
-    void addChildItems( QGraphicsItem* i_pGraphicsItem );
+    //void addChildItems( QGraphicsItem* i_pGraphicsItem );
 public: // instance methods
     ZS::System::SErrResultInfo load( const QString& i_strFileName );
     ZS::System::SErrResultInfo save( const QString& i_strFileName );
@@ -146,12 +146,12 @@ public: // to be called by graphical objects (as graphical objects are not deriv
 public: // to be called by graphical objects (as graphical objects are not derived from QObject and cannot emit signals)
     void onGraphObjCreationFinished( CGraphObj* i_pGraphObj );
     void onGraphObjDestroying( const QString& i_strObjId );
-    void onGraphObjDestroyed( const QString& i_strObjId );
-    void onGraphObjIdChanged( const QString& i_strObjIdOld, const QString& i_strObjIdNew );
-    void onGraphObjNameChanged(
-        const QString& i_strObjId,
-        const QString& i_strObjNameOld,     // !!! NOT including name of parents !!!
-        const QString& i_strObjNameNew );   // !!! NOT including name of parents !!!
+    //void onGraphObjDestroyed( const QString& i_strObjId );
+    //void onGraphObjIdChanged( const QString& i_strObjIdOld, const QString& i_strObjIdNew );
+    //void onGraphObjNameChanged(
+    //    const QString& i_strObjId,
+    //    const QString& i_strObjNameOld,     // !!! NOT including name of parents !!!
+    //    const QString& i_strObjNameNew );   // !!! NOT including name of parents !!!
 public: // instance methods
     QGraphicsItem* findGraphicsItem( const QString& i_strObjId );
     CGraphObj* findGraphObj( const QString& i_strObjId );

@@ -103,13 +103,6 @@ class ZSDRAWDLL_API CTreeViewIdxTreeGraphObjs : public QTreeView
 //******************************************************************************
 {
     Q_OBJECT
-public: // type definitions and constants
-    enum class EPasteMode {
-        Copy = 0,
-        Cut  = 1,
-        Count,
-        Undefined
-        };
 public: // class methods
     static QString NameSpace() { return "ZS::Draw"; }
     static QString ClassName() { return "CTreeViewIdxTreeGraphObjs"; }
@@ -127,9 +120,6 @@ public: // instance methods
 public: // instance methods
     void setSilentlyExecuteDeleteRequests( bool i_bExecuteSilently );
     bool silentlyExecuteDeleteRequests() const { return m_bSilentlyExecuteDeleteRequests; }
-public: // instance methods
-    void setSilentlyIgnoreInvalidCopyRequests( bool i_bExecuteSilently );
-    bool silentlyIgnoreInvalidCopyRequests() const { return m_bSilentlyIgnoreInvalidCopyRequests; }
 public: // instance methods (hiding not overridable methods with same name in QTreeView)
     virtual void expandAll();
     virtual void collapseAll();
@@ -144,64 +134,35 @@ public: // overridables of base class QTreeView (access from protect to public f
 protected slots:
     void onCollapsed( const QModelIndex& i_modelIdx );
     void onExpanded( const QModelIndex& i_modelIdx );
-    void onCurrentChanged( const QModelIndex& i_modelIdxCurr, const QModelIndex& i_modelIdxPrev );
-    void onDoubleClicked( const QModelIndex& i_modelIdx );
+    //void onCurrentChanged( const QModelIndex& i_modelIdxCurr, const QModelIndex& i_modelIdxPrev );
 protected slots:
     void onDrawingSceneSelectionChanged();
 protected: // overridables of base class QTreeView
     virtual bool event( QEvent* i_pEv ) override;
 protected: // overridables of base class QTreeView
     virtual void keyPressEvent( QKeyEvent* i_pEv ) override;
-public: // overridables of base class QTreeView (public to pass mouse events from test steps)
+protected: // overridables of base class QTreeView
     virtual void mousePressEvent( QMouseEvent* i_pEv ) override;
     virtual void mouseReleaseEvent( QMouseEvent* i_pEv ) override;
     virtual void mouseDoubleClickEvent( QMouseEvent* i_pEv ) override;
     virtual void mouseMoveEvent( QMouseEvent* i_pEv ) override;
 protected: // overridables of base class QTreeView
-    virtual void startDrag( Qt::DropActions i_supportedActions );
-    virtual void dragEnterEvent( QDragEnterEvent* i_pEv ) override;
-    virtual void dragLeaveEvent( QDragLeaveEvent* i_pEv ) override;
-    virtual void dragMoveEvent( QDragMoveEvent* i_pEv ) override;
-    virtual void dropEvent( QDropEvent* i_pEv ) override;
+    virtual void selectionChanged( const QItemSelection& i_selected, const QItemSelection& i_deselected ) override;
 protected slots:
-    void onActionBranchExpandTriggered( bool i_bChecked );
-    void onActionBranchCollapseTriggered( bool i_bChecked );
-    void onActionBranchCreateNewBranchTriggered( bool i_bChecked );
-    void onActionBranchCreateNewLeaveTriggered( bool i_bChecked );
-    void onActionBranchDeleteTriggered( bool i_bChecked );
-    void onActionBranchCutTriggered( bool i_bChecked );
-    void onActionBranchCopyTriggered( bool i_bChecked );
-    void onActionBranchPasteTriggered( bool i_bChecked );
-protected slots:
-    void onActionLeaveDeleteTriggered( bool i_bChecked );
-    void onActionLeaveCutTriggered( bool i_bChecked );
-    void onActionLeaveCopyTriggered( bool i_bChecked );
-    void onActionLeavePasteTriggered( bool i_bChecked );
+    void onActionGraphObjExpandTriggered( bool i_bChecked );
+    void onActionGraphObjCollapseTriggered( bool i_bChecked );
+    void onActionGraphObjDeleteTriggered( bool i_bChecked );
 protected: // instance members
     CDrawingScene*             m_pDrawingScene;
     CDelegateIdxTreeGraphObjs* m_pDelegate;
-    QMenu*                     m_pMenuBranchContext;
-    QAction*                   m_pActionBranchTitle;
-    QAction*                   m_pActionBranchExpand;
-    QAction*                   m_pActionBranchCollapse;
-    QAction*                   m_pActionBranchCreateNewBranch;
-    QAction*                   m_pActionBranchCreateNewLeave;
-    QAction*                   m_pActionBranchDelete;
-    QAction*                   m_pActionBranchCut;
-    QAction*                   m_pActionBranchCopy;
-    QAction*                   m_pActionBranchPaste;
-    QMenu*                     m_pMenuLeaveContext;
-    QAction*                   m_pActionLeaveTitle;
-    QAction*                   m_pActionLeaveDelete;
-    QAction*                   m_pActionLeaveCut;
-    QAction*                   m_pActionLeaveCopy;
-    QAction*                   m_pActionLeavePaste;
+    QMenu*                     m_pMenuGraphObjContext;
+    QAction*                   m_pActionGraphObjTitle;
+    QAction*                   m_pActionGraphObjExpand;
+    QAction*                   m_pActionGraphObjCollapse;
+    QAction*                   m_pActionGraphObjDelete;
     QModelIndex                m_modelIdxSelectedOnMousePressEvent;
     QModelIndex                m_modelIdxSelectedOnMouseReleaseEvent;
-    QModelIndex                m_modelIdxSelectedForPaste;
-    EPasteMode                 m_pasteMode;
     bool                       m_bSilentlyExecuteDeleteRequests;
-    bool                       m_bSilentlyIgnoreInvalidCopyRequests;
     ZS::Trace::CTrcAdminObj*   m_pTrcAdminObj;
     ZS::Trace::CTrcAdminObj*   m_pTrcAdminObjEvent;
 

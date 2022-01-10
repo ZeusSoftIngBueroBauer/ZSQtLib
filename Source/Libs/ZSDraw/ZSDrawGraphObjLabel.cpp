@@ -44,6 +44,7 @@ may result in using the software modules.
 #include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysErrCode.h"
 #include "ZSSys/ZSSysException.h"
+#include "ZSSys/ZSSysIdxTree.h"
 #include "ZSSys/ZSSysMath.h"
 #include "ZSSys/ZSSysTrcAdminObj.h"
 #include "ZSSys/ZSSysTrcMethod.h"
@@ -86,7 +87,8 @@ CGraphObjLabel::CGraphObjLabel(
         /* type                */ EGraphObjTypeLabel,
         /* strType             */ ZS::Draw::graphObjType2Str(EGraphObjTypeLabel),
         /* strObjName          */ i_pGraphObj->name() + ".Label." + i_strKey,
-        /* drawSettings        */ CDrawSettings() ),
+        /* drawSettings        */ CDrawSettings(),
+        /* idxTreeEntryType    */ EIdxTreeEntryType::Leave ),
     QGraphicsSimpleTextItem(i_strText),
     m_strKey(i_strKey),
     m_pGraphObjParent(i_pGraphObj),
@@ -126,9 +128,6 @@ CGraphObjLabel::CGraphObjLabel(
     {
         throw ZS::System::CException( __FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphicsItem == nullptr" );
     }
-
-    setData(static_cast<int>(EGraphItemDataKey::ObjId), m_strKeyInTree);
-    setData(static_cast<int>(EGraphItemDataKey::ObjType), m_type);
 
     setFlags( QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemSendsGeometryChanges );
 
@@ -176,8 +175,7 @@ CGraphObjLabel::~CGraphObjLabel()
                 {
                     // Cannot be called from within dtor of "CGraphObj" as the dtor
                     // of class "QGraphicsItem" may have already been processed and
-                    // models and Views may still try to access the graphical object
-                    // if the drawing scene emits the signal "graphObjDestroying".
+                    // models and Views may still try to access the graphical object.
                     m_pDrawingScene->onGraphObjDestroying(m_strKeyInTree);
                 }
                 catch(...)
@@ -1058,6 +1056,8 @@ QVariant CGraphObjLabel::itemChange( GraphicsItemChange i_change, const QVariant
 
     QVariant valChanged = i_value;
 
+    bool bTreeEntryChanged = false;
+
     if( i_change == ItemSelectedHasChanged )
     {
         if( m_pGraphObjParent != nullptr && m_pGraphicsItemParent != nullptr )
@@ -1076,6 +1076,8 @@ QVariant CGraphObjLabel::itemChange( GraphicsItemChange i_change, const QVariant
 
         updateEditInfo();
         updateToolTip();
+
+        bTreeEntryChanged = true;
 
     } // if( i_change == ItemSelectedHasChanged )
 
@@ -1135,6 +1137,11 @@ QVariant CGraphObjLabel::itemChange( GraphicsItemChange i_change, const QVariant
     else // if( i_change == ItemSceneHasChanged
          //  || i_change == ItemZValueHasChanged )
     {
+    }
+
+    if( bTreeEntryChanged && m_pTree != nullptr )
+    {
+        m_pTree->onTreeEntryChanged(this);
     }
 
     valChanged = QGraphicsItem::itemChange(i_change,i_value);

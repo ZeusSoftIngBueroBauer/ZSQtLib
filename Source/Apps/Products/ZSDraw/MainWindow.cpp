@@ -5078,8 +5078,10 @@ void CMainWindow::onDrawingSceneFocusItemChanged(
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
-        strMthInArgs  = "NewItem:" + QString(i_pNewFocusItem == nullptr ? "nullptr" : i_pNewFocusItem->data(static_cast<int>(EGraphItemDataKey::ObjId)).toString());
-        strMthInArgs += ", OldItem:" + QString(i_pOldFocusItem == nullptr ? "nullptr" : i_pOldFocusItem->data(static_cast<int>(EGraphItemDataKey::ObjId)).toString());
+        CGraphObj* pGraphObjNew = dynamic_cast<CGraphObj*>(i_pNewFocusItem);
+        CGraphObj* pGraphObjOld = dynamic_cast<CGraphObj*>(i_pOldFocusItem);
+        strMthInArgs  = "NewItem:" + QString(pGraphObjNew == nullptr ? "nullptr" : pGraphObjNew->path());
+        strMthInArgs += ", OldItem:" + QString(pGraphObjOld == nullptr ? "nullptr" : pGraphObjOld->path());
         strMthInArgs += ", Reason: " + qFocusReason2Str(reason);
     }
 
