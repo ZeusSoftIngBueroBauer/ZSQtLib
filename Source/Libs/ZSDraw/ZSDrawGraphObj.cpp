@@ -32,6 +32,7 @@ may result in using the software modules.
 #include "ZSDraw/ZSDrawGraphObjSelectionPoint.h"
 #include "ZSDraw/ZSDrawingScene.h"
 #include "ZSDraw/ZSDrawDlgFormatGraphObjs.h"
+#include "ZSPhysVal/ZSPhysValDllMain.h"
 #include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysMath.h"
 #include "ZSSys/ZSSysTrcMethod.h"
@@ -2119,6 +2120,25 @@ public: // overridables
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! Accepts the current coordindates of the graphic item as the original coordinates.
+
+    The current coordinates are in scene coordinates and define the position and size
+    of the item on the scene.
+
+    When rotating an item or resizing a group the original coordinates are important
+    and will be used to calculate the resulting position and size of the item and
+    its children on the scene.
+
+    If a transformation, grouping and/or ungrouping items, resizing a group, initial
+    creating or changing the position of an item has been finished it is essential
+    to accept the current as the original coordinates.
+
+    Items belonging to a group may not be absolutely positioned within the group but
+    relative with alignment parameters like aligned to top, to bottom, center etc.
+    If the group is resized the relative distance to the border should be kept while
+    resizing the group. For this "applyGeometryChangeToChildrens" is using the
+    original coordinates.
+*/
 void CGraphObj::acceptCurrentAsOriginalCoors()
 //------------------------------------------------------------------------------
 {
@@ -4404,8 +4424,7 @@ void CGraphObj::updateToolTip()
         QString strNodeSeparator = m_pDrawingScene->getGraphObjNameNodeSeparator();
         QPointF ptPos;
 
-        m_strToolTip  = "ObjName:\t" + name();
-        m_strToolTip += "\nObjId:\t\t" + keyInTree();
+        m_strToolTip = "ObjPath:\t\t" + path();
 
         // "scenePos" returns mapToScene(0,0). This is NOT equivalent to the
         // position of the item's top left corner before applying the rotation
@@ -4426,7 +4445,7 @@ void CGraphObj::updateToolTip()
         }
 
         m_strToolTip += "\nSize:\t\t" + size2Str(getSize());
-        m_strToolTip += "\nRotation:\t" + QString::number(m_fRotAngleCurr_deg,'f',1) + "°";
+        m_strToolTip += "\nRotation:\t" + QString::number(m_fRotAngleCurr_deg,'f',1) + " " + ZS::PhysVal::c_strSymbolDegree;
         m_strToolTip += "\nZValue:\t\t" + QString::number(pGraphicsItem->zValue());
 
         pGraphicsItem->setToolTip(m_strToolTip);
@@ -4461,7 +4480,7 @@ void CGraphObj::updateEditInfo()
         m_strEditInfo  = "C:" + point2Str( pGraphicsItem->mapToScene(m_rctCurr.center()) );
         m_strEditInfo += ", W:" + QString::number(m_rctCurr.width(),'f',1);
         m_strEditInfo += ", H:" + QString::number(m_rctCurr.height(),'f',1);
-        m_strEditInfo += ", " + strAngleSymbol + ":" + QString::number(m_fRotAngleCurr_deg,'f',1) + "°";
+        m_strEditInfo += ", " + strAngleSymbol + ":" + QString::number(m_fRotAngleCurr_deg,'f',1) + " " + ZS::PhysVal::c_strSymbolDegree;
 
     } // if( pGraphicsItem != nullptr )
 

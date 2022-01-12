@@ -134,7 +134,6 @@ public: // overridables of base class QTreeView (access from protect to public f
 protected slots:
     void onCollapsed( const QModelIndex& i_modelIdx );
     void onExpanded( const QModelIndex& i_modelIdx );
-    //void onCurrentChanged( const QModelIndex& i_modelIdxCurr, const QModelIndex& i_modelIdxPrev );
 protected slots:
     void onDrawingSceneSelectionChanged();
 protected: // overridables of base class QTreeView

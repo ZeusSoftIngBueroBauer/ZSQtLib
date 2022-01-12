@@ -75,9 +75,9 @@ public: // instance methods
     void setBreakpoint();
     void removeBreakpoint();
     bool isBreakpointSet() const { return m_bBreakpoint; }
-    void enableBreakpoint();
-    void disableBreakpoint();
-    bool isBreakpointEnabled() const { return m_bBreakpointEnabled; }
+    void setBreakpointEnabled( ZS::System::EEnabled i_enabled );
+    ZS::System::EEnabled getBreakpointEnabled() const { return m_breakpointEnabled; };
+    bool isBreakpointEnabled() const { return m_breakpointEnabled == ZS::System::EEnabled::Yes; }
 public: // instance methods
     void reset();
 public: // must overridables of base class CAbstractTestStepIdxTreeEntry
@@ -94,14 +94,14 @@ private: // copy ctor not allowed
     CTestStep( const CTestStep& );
 protected: // instance members
     //TFctDoTestStep m_fctDoTestStep;
-    QString         m_strOperation;
-    QString         m_strDescription;
-    QStringList     m_strlstExpectedValues;
-    QStringList     m_strlstResultValues;
-    double          m_fTimeTestStart_s;
-    double          m_fTimeTestEnd_s;
-    bool            m_bBreakpoint;
-    bool            m_bBreakpointEnabled;
+    QString              m_strOperation;
+    QString              m_strDescription;
+    QStringList          m_strlstExpectedValues;
+    QStringList          m_strlstResultValues;
+    double               m_fTimeTestStart_s;
+    double               m_fTimeTestEnd_s;
+    bool                 m_bBreakpoint;
+    ZS::System::EEnabled m_breakpointEnabled;
 
 }; // class CTestStep
 

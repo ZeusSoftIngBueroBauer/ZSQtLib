@@ -374,6 +374,8 @@ void CTest::doTestStepAndroidWallpaperTemplateDrawGridLines( ZS::Test::CTestStep
 
             pGraphObjLine->setLine( QLine(x1_px, y1_px, x2_px, y2_px) );
             m_pDrawingScene->addGraphObj(pGraphObjLine);
+
+            #pragma message(__TODO__"The following two methods should become protected and it should not be necessary to explicitly call them")
             m_pDrawingScene->onGraphObjCreationFinished(pGraphObjLine);
             pGraphObjLine->acceptCurrentAsOriginalCoors();
 
@@ -420,8 +422,9 @@ void CTest::doTestStepAndroidWallpaperTemplateDrawGridLines( ZS::Test::CTestStep
             arpGraphObjs.append(pGraphObjLine);
 
             pGraphObjLine->setLine( QLine(x1_px, y1_px, x2_px, y2_px) );
-
             m_pDrawingScene->addGraphObj(pGraphObjLine);
+
+            #pragma message(__TODO__"The following two methods should become protected and it should not be necessary to explicitly call them")
             m_pDrawingScene->onGraphObjCreationFinished(pGraphObjLine);
             pGraphObjLine->acceptCurrentAsOriginalCoors();
 
@@ -463,6 +466,8 @@ void CTest::doTestStepAndroidWallpaperTemplateDrawGridLines( ZS::Test::CTestStep
                 pGraphObjText->setPos( QPoint(x1_px, y1_px) );
                 pGraphObjText->setPlainText(QString::number(y1_px));
                 m_pDrawingScene->addGraphObj(pGraphObjText);
+
+                #pragma message(__TODO__"The following two methods should become protected and it should not be necessary to explicitly call them")
                 m_pDrawingScene->onGraphObjCreationFinished(pGraphObjText);
                 pGraphObjText->acceptCurrentAsOriginalCoors();
 
@@ -478,6 +483,8 @@ void CTest::doTestStepAndroidWallpaperTemplateDrawGridLines( ZS::Test::CTestStep
                 pGraphObjText->setPos( QPoint(sizeDrawing.width()/2, y1_px) );
                 pGraphObjText->setPlainText(QString::number(y1_px));
                 m_pDrawingScene->addGraphObj(pGraphObjText);
+
+                #pragma message(__TODO__"The following two methods should become protected and it should not be necessary to explicitly call them")
                 m_pDrawingScene->onGraphObjCreationFinished(pGraphObjText);
                 pGraphObjText->acceptCurrentAsOriginalCoors();
 
@@ -493,6 +500,8 @@ void CTest::doTestStepAndroidWallpaperTemplateDrawGridLines( ZS::Test::CTestStep
                 pGraphObjText->setPos( QPoint(x2_px, y1_px) );
                 pGraphObjText->setPlainText(QString::number(y1_px));
                 m_pDrawingScene->addGraphObj(pGraphObjText);
+
+                #pragma message(__TODO__"The following two methods should become protected and it should not be necessary to explicitly call them")
                 m_pDrawingScene->onGraphObjCreationFinished(pGraphObjText);
                 pGraphObjText->acceptCurrentAsOriginalCoors();
 
@@ -532,6 +541,8 @@ void CTest::doTestStepAndroidWallpaperTemplateDrawGridLines( ZS::Test::CTestStep
                 pGraphObjText->setPos( QPoint(x1_px, y1_px) );
                 pGraphObjText->setPlainText(QString::number(x1_px));
                 m_pDrawingScene->addGraphObj(pGraphObjText);
+
+                #pragma message(__TODO__"The following two methods should become protected and it should not be necessary to explicitly call them")
                 m_pDrawingScene->onGraphObjCreationFinished(pGraphObjText);
                 pGraphObjText->acceptCurrentAsOriginalCoors();
 
@@ -547,6 +558,8 @@ void CTest::doTestStepAndroidWallpaperTemplateDrawGridLines( ZS::Test::CTestStep
                 pGraphObjText->setPos( QPoint(x1_px, sizeDrawing.height()/2) );
                 pGraphObjText->setPlainText(QString::number(x1_px));
                 m_pDrawingScene->addGraphObj(pGraphObjText);
+
+                #pragma message(__TODO__"The following two methods should become protected and it should not be necessary to explicitly call them")
                 m_pDrawingScene->onGraphObjCreationFinished(pGraphObjText);
                 pGraphObjText->acceptCurrentAsOriginalCoors();
 
@@ -562,6 +575,8 @@ void CTest::doTestStepAndroidWallpaperTemplateDrawGridLines( ZS::Test::CTestStep
                 pGraphObjText->setPos( QPoint(x1_px, y2_px) );
                 pGraphObjText->setPlainText(QString::number(x1_px));
                 m_pDrawingScene->addGraphObj(pGraphObjText);
+
+                #pragma message(__TODO__"The following two methods should become protected and it should not be necessary to explicitly call them")
                 m_pDrawingScene->onGraphObjCreationFinished(pGraphObjText);
                 pGraphObjText->acceptCurrentAsOriginalCoors();
 
@@ -610,6 +625,7 @@ void CTest::doTestStepAndroidWallpaperTemplateDrawGridLines( ZS::Test::CTestStep
 
     //pGraphObjWallpaperRect->setRect( QRectF(fx1_px, fy1_px, fWallpaperVisibleWidth, fWallpaperVisibleHeight) );
     //m_pDrawingScene->addGraphObj(pGraphObjWallpaperRect);
+    //#pragma message(__TODO__"The following two methods should become protected and it should not be necessary to explicitly call them")
     //m_pDrawingScene->onGraphObjCreationFinished(pGraphObjWallpaperRect);
     //pGraphObjWallpaperRect->acceptCurrentAsOriginalCoors();
 

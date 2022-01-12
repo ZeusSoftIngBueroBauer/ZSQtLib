@@ -513,7 +513,7 @@ QVariant CModeldxTreeTestSteps::data( const QModelIndex& i_modelIdx, int i_iRole
             }
             case EColumnEnabled:
             {
-                if( pTestStepEntry != nullptr )
+                if( pTestStepGroup != nullptr || pTestStep != nullptr )
                 {
                     if( i_iRole == Qt::DisplayRole || i_iRole == Qt::EditRole )
                     {

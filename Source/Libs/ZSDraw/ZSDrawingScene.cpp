@@ -1664,7 +1664,7 @@ double CDrawingScene::bringToFront( QGraphicsItem* i_pGraphicsItem, const QList<
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
         CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(i_pGraphicsItem);
-        strMthInArgs = "GraphObjName: " + QString(pGraphObj == nullptr ? "nullptr" : pGraphObj->name());
+        strMthInArgs = QString(pGraphObj == nullptr ? "nullptr" : pGraphObj->keyInTree());
     }
 
     CMethodTracer mthTracer(
@@ -1732,7 +1732,7 @@ double CDrawingScene::sendToBack( QGraphicsItem* i_pGraphicsItem, const QList<QG
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
         CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(i_pGraphicsItem);
-        strMthInArgs = "GraphObjName: " + QString(pGraphObj == nullptr ? "nullptr" : pGraphObj->name());
+        strMthInArgs = QString(pGraphObj == nullptr ? "nullptr" : pGraphObj->keyInTree());
     }
 
     CMethodTracer mthTracer(
@@ -1798,7 +1798,7 @@ void CDrawingScene::onGraphObjAddingShapePointsStarted( CGraphObj* i_pGraphObj )
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
-        strMthInArgs = "GraphObjName: " + QString(i_pGraphObj == nullptr ? "nullptr" : i_pGraphObj->name());
+        strMthInArgs = QString(i_pGraphObj == nullptr ? "nullptr" : i_pGraphObj->keyInTree());
     }
 
     CMethodTracer mthTracer(
@@ -1857,7 +1857,7 @@ void CDrawingScene::onGraphObjAddingShapePointsFinished( CGraphObj* i_pGraphObj 
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
-        strMthInArgs = "GraphObjName: " + QString(i_pGraphObj == nullptr ? "nullptr" : i_pGraphObj->name());
+        strMthInArgs = QString(i_pGraphObj == nullptr ? "nullptr" : i_pGraphObj->keyInTree());
     }
 
     CMethodTracer mthTracer(
@@ -1873,8 +1873,8 @@ void CDrawingScene::onGraphObjAddingShapePointsFinished( CGraphObj* i_pGraphObj 
         strAddTrcInfo += ", EditMode:" + m_editMode.toString();
         strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
         strAddTrcInfo += ", ObjFactory:" + QString(m_pObjFactory == nullptr ? "nullptr" : m_pObjFactory->path());
-        strAddTrcInfo += ", GraphObjCreating:" + QString(m_pGraphObjCreating == nullptr ? "nullptr" : m_pGraphObjCreating->name());
-        strAddTrcInfo += ", GraphObjAddingShapePoints:" + QString(m_pGraphObjAddingShapePoints == nullptr ? "nullptr" : m_pGraphObjAddingShapePoints->name());
+        strAddTrcInfo += ", GraphObjCreating:" + QString(m_pGraphObjCreating == nullptr ? "nullptr" : m_pGraphObjCreating->keyInTree());
+        strAddTrcInfo += ", GraphObjAddingShapePoints:" + QString(m_pGraphObjAddingShapePoints == nullptr ? "nullptr" : m_pGraphObjAddingShapePoints->keyInTree());
         mthTracer.trace(strAddTrcInfo);
     }
 
@@ -1914,8 +1914,7 @@ void CDrawingScene::onGraphObjCreationFinished( CGraphObj* i_pGraphObj )
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
-        strMthInArgs = "GraphObjName: " + QString(i_pGraphObj == nullptr ? "nullptr" : i_pGraphObj->name());
-        strMthInArgs += ", GraphObjId:" + QString(i_pGraphObj == nullptr ? "-" : i_pGraphObj->keyInTree());
+        strMthInArgs = QString(i_pGraphObj == nullptr ? "nullptr" : i_pGraphObj->keyInTree());
     }
 
     CMethodTracer mthTracer(
@@ -2305,6 +2304,14 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! Combines the currently selected objects into a group.
+
+    A graphical group item is created and the selected objects will be added
+    as childs of this group.
+
+    The coordinates of the child objects are adjusted so that they are relative
+    to their new parent group.
+*/
 int CDrawingScene::groupGraphObjsSelected()
 //------------------------------------------------------------------------------
 {
@@ -2341,7 +2348,6 @@ int CDrawingScene::groupGraphObjsSelected()
         CObjFactory* pObjFactoryTmp = CObjFactory::FindObjFactory(CObjFactory::c_strGroupNameStandardShapes, graphObjType2Str(EGraphObjTypeGroup));
 
         CObjFactoryGroup* pObjFactoryGroup = dynamic_cast<CObjFactoryGroup*>(pObjFactoryTmp);
-        CGraphObjGroup*   pGraphObjGroup = nullptr;
 
         if( pObjFactoryGroup != nullptr )
         {
@@ -2358,14 +2364,21 @@ int CDrawingScene::groupGraphObjsSelected()
 
             if( m_pGraphicsItemCreating == nullptr )
             {
-                throw ZS::System::CException( __FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphicsItem == nullptr" );
+                throw ZS::System::CException( __FILE__, __LINE__, EResultInvalidDynamicTypeCast, "m_pGraphicsItemCreating == nullptr" );
             }
 
-            pGraphObjGroup = dynamic_cast<CGraphObjGroup*>(m_pGraphObjCreating);
+            CGraphObjGroup* pGraphObjGroup = dynamic_cast<CGraphObjGroup*>(m_pGraphObjCreating);
 
             if( pGraphObjGroup == nullptr )
             {
                 throw ZS::System::CException( __FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphObjGroup == nullptr" );
+            }
+
+            QGraphicsItemGroup* pGraphicsItemGroup = dynamic_cast<QGraphicsItemGroup*>(pGraphObjGroup);
+
+            if( pGraphicsItemGroup == nullptr )
+            {
+                throw ZS::System::CException( __FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphicsItemGroup == nullptr" );
             }
 
             // Add new (empty) group to graphics scene.
@@ -2380,13 +2393,7 @@ int CDrawingScene::groupGraphObjsSelected()
             // On adding the object to a parent group object they will be positioned
             // relative to the top left corner of the group's bounding rectangle.
 
-            QGraphicsItem* pGraphicsItem;
-            CGraphObj*     pGraphObj;
-            int            idxGraphObj;
             QRectF         rctGroupSceneCoors;
-            QPointF        posItem;
-            QSizeF         sizItem;
-            QRectF         rctItem;
             double         fXLeftMin   = INT_MAX;
             double         fYTopMin    = INT_MAX;
             double         fXRightMax  = INT_MIN;
@@ -2428,17 +2435,20 @@ int CDrawingScene::groupGraphObjsSelected()
             // indirectly belongs to two different groups.
 
             // Calculate resulting bounding rectangle of group (without selection rectangle and selection points).
-            for( idxGraphObj = 0; idxGraphObj < arpGraphicsItemsSelected.size(); idxGraphObj++ )
+            for( auto* pGraphicsItemSelected : arpGraphicsItemsSelected )
             {
-                pGraphicsItem = arpGraphicsItemsSelected[idxGraphObj];
+                CGraphObj* pGraphObjSelected = dynamic_cast<CGraphObj*>(pGraphicsItemSelected);
 
-                if( pGraphicsItem->type() != static_cast<int>(EGraphObjTypeConnectionLine) )
+                if( pGraphObjSelected == nullptr )
                 {
-                    pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
+                    throw ZS::System::CException( __FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphObjSelected == nullptr" );
+                }
 
-                    posItem = pGraphObj->getPos();
-                    sizItem = pGraphObj->getSize();
-                    rctItem = QRectF(posItem,sizItem);
+                if( pGraphObjSelected->getType() != EGraphObjTypeConnectionLine )
+                {
+                    QPointF posItem = pGraphObjSelected->getPos();
+                    QSizeF  sizItem = pGraphObjSelected->getSize();
+                    QRectF  rctItem = QRectF(posItem, sizItem);
 
                     if( rctItem.width() >= 0.0 )
                     {
@@ -2485,8 +2495,8 @@ int CDrawingScene::groupGraphObjsSelected()
                             fYBottomMax = rctItem.top();
                         }
                     }
-                }
-            }
+                } // if( pGraphObjSelected->getType() != EGraphObjTypeConnectionLine )
+            } // for( auto* pGraphicsItemSelected : arpGraphicsItemsSelected )
 
             rctGroupSceneCoors.setLeft(fXLeftMin);
             rctGroupSceneCoors.setTop(fYTopMin);
@@ -2496,62 +2506,60 @@ int CDrawingScene::groupGraphObjsSelected()
             pGraphObjGroup->setPos( rctGroupSceneCoors.topLeft() );
 
             // Add child items to group.
-            for( idxGraphObj = 0; idxGraphObj < arpGraphicsItemsSelected.size(); idxGraphObj++ )
+            for( auto* pGraphicsItemSelected : arpGraphicsItemsSelected )
             {
-                pGraphicsItem = arpGraphicsItemsSelected[idxGraphObj];
+                CGraphObj* pGraphObjSelected = dynamic_cast<CGraphObj*>(pGraphicsItemSelected);
 
-                if( pGraphicsItem->type() != static_cast<int>(EGraphObjTypeConnectionLine) )
+                if( pGraphObjSelected->getType() != EGraphObjTypeConnectionLine )
                 {
-                    pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
+                    QPointF posItem = pGraphObjSelected->getPos(); // for debugging purposes also called here before adding the item to the group
+                    QSizeF  sizItem = pGraphObjSelected->getSize();
 
-                    if( pGraphObj != nullptr )
-                    {
-                        //posItem = pGraphObj->getPos(); // for debugging purposes also called here before adding the item to the group
-                        //sizItem = pGraphObj->getSize();
+                    pGraphicsItemGroup->addToGroup(pGraphicsItemSelected);
 
-                        pGraphObjGroup->addGraphObj(pGraphObj);
+                    posItem = pGraphObjSelected->getPos();
+                    sizItem = pGraphObjSelected->getSize();
 
-                        //posItem = pGraphObj->getPos();
-                        //sizItem = pGraphObj->getSize();
+                    m_pGraphObjsIdxTree->move(pGraphObjSelected, pGraphObjGroup);
 
-                        //alignmentLeft.m_fVal = 0.0;
-                        //alignmentTop.m_fVal = 0.0;
-                        //alignmentWidth.m_fVal = 0.0;
-                        //alignmentHeight.m_fVal = 0.0;
+                    pGraphObjSelected->acceptCurrentAsOriginalCoors();
 
-                        //if( rctGroupSceneCoors.width() != 0.0 )
-                        //{
-                        //    alignmentLeft.m_fVal = posItem.x() / rctGroupSceneCoors.width();
-                        //}
-                        //if( rctGroupSceneCoors.height() != 0.0 )
-                        //{
-                        //    alignmentTop.m_fVal = posItem.y() / rctGroupSceneCoors.height();
-                        //}
-                        //if( rctGroupSceneCoors.width() != 0.0 )
-                        //{
-                        //    alignmentWidth.m_fVal = sizItem.width() / rctGroupSceneCoors.width();
-                        //}
-                        //if( rctGroupSceneCoors.height() != 0.0 )
-                        //{
-                        //    alignmentHeight.m_fVal = sizItem.height() / rctGroupSceneCoors.height();
-                        //}
+                    //alignmentLeft.m_fVal = 0.0;
+                    //alignmentTop.m_fVal = 0.0;
+                    //alignmentWidth.m_fVal = 0.0;
+                    //alignmentHeight.m_fVal = 0.0;
 
-                        //// The alignments will be adjusted in the order they are added. The order
-                        //// takes effect on the result. Usually the size should be adjusted before
-                        //// the positions to get relative adjustments working as expected.
-                        //pGraphObj->addAlignment(alignmentWidth);
-                        //pGraphObj->addAlignment(alignmentHeight);
-                        //pGraphObj->addAlignment(alignmentLeft);
-                        //pGraphObj->addAlignment(alignmentTop);
+                    //if( rctGroupSceneCoors.width() != 0.0 )
+                    //{
+                    //    alignmentLeft.m_fVal = posItem.x() / rctGroupSceneCoors.width();
+                    //}
+                    //if( rctGroupSceneCoors.height() != 0.0 )
+                    //{
+                    //    alignmentTop.m_fVal = posItem.y() / rctGroupSceneCoors.height();
+                    //}
+                    //if( rctGroupSceneCoors.width() != 0.0 )
+                    //{
+                    //    alignmentWidth.m_fVal = sizItem.width() / rctGroupSceneCoors.width();
+                    //}
+                    //if( rctGroupSceneCoors.height() != 0.0 )
+                    //{
+                    //    alignmentHeight.m_fVal = sizItem.height() / rctGroupSceneCoors.height();
+                    //}
 
-                        iObjsGroupedCount++;
+                    //// The alignments will be adjusted in the order they are added. The order
+                    //// takes effect on the result. Usually the size should be adjusted before
+                    //// the positions to get relative adjustments working as expected.
+                    //pGraphObj->addAlignment(alignmentWidth);
+                    //pGraphObj->addAlignment(alignmentHeight);
+                    //pGraphObj->addAlignment(alignmentLeft);
+                    //pGraphObj->addAlignment(alignmentTop);
 
-                    } // if( pGraphObj != nullptr )
-                } // if( pGraphicsItem->type() != EGraphObjTypeConnectionLine )
-            } // for( idxGraphObj = 0; idxGraphObj < arpGraphicsItemsSelected.size(); idxGraphObj++ )
+                    iObjsGroupedCount++;
+
+                } // if( pGraphObj->getType() != EGraphObjTypeConnectionLine )
+            } // for( auto* pGraphicsItem : arpGraphicsItemsSelected )
 
             // Finish creation of group.
-
             pGraphObjGroup->setSize( rctGroupSceneCoors.size() );
             pGraphObjGroup->acceptCurrentAsOriginalCoors();
             pGraphObjGroup->setEditMode(EEditMode::Undefined);
@@ -2564,7 +2572,6 @@ int CDrawingScene::groupGraphObjsSelected()
             m_editTool = editToolPrev;
 
         } // if( pObjFactoryGroup != nullptr )
-
     } // if( arpGraphicsItemsSelected.size() > 1 )
 
     return iObjsGroupedCount;
@@ -2572,6 +2579,12 @@ int CDrawingScene::groupGraphObjsSelected()
 } // groupGraphObjsSelected
 
 //------------------------------------------------------------------------------
+/*! Dissolves all currently selected group objects.
+
+    The child objects are retained and are assigned to the drawing scene as
+    immediate child objects. The coordinates of the child objects are adjusted so
+    that they become relative to the drawing scene.
+*/
 int CDrawingScene::ungroupGraphObjsSelected()
 //------------------------------------------------------------------------------
 {
@@ -2603,66 +2616,58 @@ int CDrawingScene::ungroupGraphObjsSelected()
 
     QList<QGraphicsItem*> arpGraphicsItemsSelected = selectedItems();
 
-    if( arpGraphicsItemsSelected.size() > 0 )
+    for( auto* pGraphicsItemSelected : arpGraphicsItemsSelected )
     {
-        QGraphicsItem*        pGraphicsItem;
-        CGraphObjGroup*       pGraphObjGroup;
-        int                   idxGraphObj;
-        QList<QGraphicsItem*> arpGraphicItemsChilds;
-        QGraphicsItem*        pGraphicsItemChild;
-        CGraphObj*            pGraphObjChild;
-        QString               strObjIdOld;
-        QString               strObjIdNew;
-        int                   idxGraphObjChild;
+        CGraphObj* pGraphObjSelected = dynamic_cast<CGraphObj*>(pGraphicsItemSelected);
 
-        for( idxGraphObj = arpGraphicsItemsSelected.size()-1; idxGraphObj >= 0; idxGraphObj-- )
+        if( pGraphObjSelected == nullptr )
         {
-            pGraphicsItem = arpGraphicsItemsSelected[idxGraphObj];
+            throw ZS::System::CException( __FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphObjSelected == nullptr" );
+        }
 
-            pGraphObjGroup = nullptr;
+        if( pGraphObjSelected->getType() == EGraphObjTypeGroup )
+        {
+            CGraphObjGroup* pGraphObjGroupSelected = dynamic_cast<CGraphObjGroup*>(pGraphicsItemSelected);
 
-            if( pGraphicsItem->type() == static_cast<int>(EGraphObjTypeGroup) )
+            if( pGraphObjGroupSelected == nullptr )
             {
-                pGraphObjGroup = dynamic_cast<CGraphObjGroup*>(pGraphicsItem);
+                throw ZS::System::CException( __FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphObjGroup == nullptr" );
+            }
 
-                if( pGraphObjGroup != nullptr )
+            QGraphicsItemGroup* pGraphicsItemGroupSelected = dynamic_cast<QGraphicsItemGroup*>(pGraphObjGroupSelected);
+
+            if( pGraphicsItemGroupSelected == nullptr )
+            {
+                throw ZS::System::CException( __FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphicsItemGroup == nullptr" );
+            }
+
+            for( auto* pGraphicsItemChild : pGraphicsItemGroupSelected->childItems() )
+            {
+                CGraphObj* pGraphObjChild = dynamic_cast<CGraphObj*>(pGraphicsItemChild);
+
+                if( pGraphObjChild == nullptr )
                 {
-                    arpGraphicItemsChilds = pGraphicsItem->childItems();
+                    throw ZS::System::CException( __FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphObjChild == nullptr" );
+                }
 
-                    if( arpGraphicItemsChilds.size() > 0 )
-                    {
-                        for( idxGraphObjChild = arpGraphicItemsChilds.size()-1; idxGraphObjChild >= 0; idxGraphObjChild-- )
-                        {
-                            pGraphicsItemChild = arpGraphicItemsChilds[idxGraphObjChild];
+                QPointF posItem = pGraphObjSelected->getPos(); // for debugging purposes also called here before removing the item from the group
+                QSizeF  sizItem = pGraphObjSelected->getSize();
 
-                            pGraphObjChild = dynamic_cast<CGraphObj*>(pGraphicsItemChild);
+                pGraphicsItemGroupSelected->removeFromGroup(pGraphicsItemChild);
 
-                            pGraphObjGroup->removeGraphObj(pGraphObjChild);
+                posItem = pGraphObjSelected->getPos();
+                sizItem = pGraphObjSelected->getSize();
 
-                            if( pGraphObjChild != nullptr )
-                            {
-                                strObjIdOld = pGraphObjChild->keyInTree();
-                                //strObjIdNew = pGraphObjChild->name(true);
+                m_pGraphObjsIdxTree->move(pGraphObjChild, nullptr);
+            }
 
-                                m_pGraphObjsIdxTree->remove(strObjIdOld);
-                                m_pGraphObjsIdxTree->add(pGraphObjChild);
-                                //pGraphObjChild->setKeyInTree(strObjIdNew);
-                                strObjIdNew = pGraphObjChild->keyInTree();
+            delete pGraphObjGroupSelected;
+            pGraphObjGroupSelected = nullptr;
 
-                                //emit graphObjIdChanged(strObjIdOld, strObjIdNew);
-                            }
-                        }
-                    }
+            iObjsUngroupedCount++;
 
-                    delete pGraphObjGroup;
-                    pGraphObjGroup = nullptr;
-
-                    iObjsUngroupedCount++;
-
-                } // if( pGraphObjGroup != nullptr )
-            } // if( pGraphicsItem->type() == EGraphObjTypeGroup )
-        } // for( idxGraphObj = arpGraphicsItemsSelected.size()-1; idxGraphObj >= 0; idxGraphObj-- )
-    } // if( arpGraphicsItemsSelected.size() > 1 )
+        } // if( pGraphObjSelected->getType() == EGraphObjTypeGroup )
+    } // for( auto* pGraphicsItemSelected : arpGraphicsItemsSelected )
 
     return iObjsUngroupedCount;
 
@@ -3787,7 +3792,7 @@ void CDrawingScene::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
 
         QList<QGraphicsItem*> arpGraphicsItemsIntersected = items( i_pEv->scenePos(), Qt::IntersectsItemShape, Qt::AscendingOrder );
         QList<QGraphicsItem*> arpGraphicsItemsHit;
-        QList<QGraphicsItem*> arpGraphicsItemsBroughtToFront;
+        QStringList           strlstKeysInTreeGraphicsItemsBroughtToFront;
         QPointF               ptMouseItemPos;
         SGraphObjHitInfo      graphObjHitInfo;
         QGraphicsItem*        pGraphicsItem;
@@ -3967,7 +3972,7 @@ void CDrawingScene::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
                             {
                                 bringToFront( pGraphicsItem, arpGraphicsItemsIntersected );
                                 pGraphicsItem->setAcceptedMouseButtons(Qt::LeftButton|Qt::RightButton|Qt::MiddleButton|Qt::XButton1|Qt::XButton2);
-                                arpGraphicsItemsBroughtToFront.append(pGraphicsItem);
+                                strlstKeysInTreeGraphicsItemsBroughtToFront.append(pGraphObj->keyInTree());
                             }
                         }
                     }
@@ -3978,15 +3983,17 @@ void CDrawingScene::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
         // Dispatch mouse press event to objects which have been hit.
         QGraphicsScene::mousePressEvent(i_pEv);
 
-        // After the mouse event has been dispatched the Z-order of the objects
-        // temporarily brought to front must be restored.
-        for( idxGraphObj = 0; idxGraphObj < arpGraphicsItemsBroughtToFront.size(); idxGraphObj++ )
+        // After the mouse event has been dispatched the Z-order of the objects temporarily brought to front must be restored.
+        // Because while dispatching the mouse press event to the graphics scene objects some of the object may have been destroyed
+        // (e.g. selection points or labels) not the pointer to the objects but their keys (object ids) have been stored.
+        // The dtor of CGraphObj will remove themselves from the index tree and they cannot be found anymore.
+        for( const auto& strKeyInTree : strlstKeysInTreeGraphicsItemsBroughtToFront )
         {
-            pGraphicsItem = arpGraphicsItemsBroughtToFront[idxGraphObj];
-            pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
+            pGraphObj = findGraphObj(strKeyInTree);
 
-            if( pGraphicsItem != nullptr && pGraphObj != nullptr )
+            if( pGraphObj != nullptr )
             {
+                pGraphicsItem = dynamic_cast<QGraphicsItem*>(pGraphObj);
                 pGraphicsItem->setZValue( pGraphObj->getStackingOrderValue() );
             }
         }

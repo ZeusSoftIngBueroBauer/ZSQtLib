@@ -369,11 +369,13 @@ CGraphObj* CObjFactoryResistor::loadGraphObj(
             // the unique object id and add the object to the hash.
             if( i_pGraphObjGroup != nullptr )
             {
-                i_pGraphObjGroup->addGraphObj(pGraphObj);
+                throw ZS::System::CException(__FILE__, __LINE__, EResultMethodNotYetImplemented);
+                //i_pGraphObjGroup->addGraphObj(pGraphObj);
             }
 
             i_pDrawingScene->onGraphObjCreationFinished(pGraphObj);
 
+            #pragma message(__TODO__"The methods onGraphObjCreationFinished and acceptCurrentAsOriginalCoors should become protected and it should not be necessary to explicitly call them")
             pGraphObj->acceptCurrentAsOriginalCoors();
 
             if( arpLabels.size() > 0 )

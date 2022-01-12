@@ -287,7 +287,8 @@ CGraphObjTransistor::CGraphObjTransistor(
     m_pDrawingScene->addGraphObj(m_pEllBody);
     m_pDrawingScene->onGraphObjCreationFinished(m_pEllBody);
     m_pEllBody->setPos( rctBody.topLeft() );
-    addGraphObj(m_pEllBody);
+    throw ZS::System::CException(__FILE__, __LINE__, EResultMethodNotYetImplemented);
+    //addGraphObj(m_pEllBody);
 
     // Base Line
     //----------------
@@ -304,7 +305,8 @@ CGraphObjTransistor::CGraphObjTransistor(
     m_pDrawingScene->addGraphObj(m_pLinBase);
     m_pDrawingScene->onGraphObjCreationFinished(m_pLinBase);
     m_pLinBase->setPos( QPointF(ptLinBaseCenter.x(),rctBody.top()+fBodyDiameter/4.0) );
-    addGraphObj(m_pLinBase);
+    throw ZS::System::CException(__FILE__, __LINE__, EResultMethodNotYetImplemented);
+    //addGraphObj(m_pLinBase);
 
     // Line from center of base line upwards
     //--------------------------------------
@@ -322,7 +324,8 @@ CGraphObjTransistor::CGraphObjTransistor(
     m_pDrawingScene->addGraphObj(m_pLinBaseUp);
     m_pDrawingScene->onGraphObjCreationFinished(m_pLinBaseUp);
     m_pLinBaseUp->setPos(ptLinBaseUpStart);
-    addGraphObj(m_pLinBaseUp);
+    throw ZS::System::CException(__FILE__, __LINE__, EResultMethodNotYetImplemented);
+    //addGraphObj(m_pLinBaseUp);
 
     alignment = SGraphObjAlignment( EAlignmentRef::Left, EAlignmentRef::Left, false, ptLinBaseUpStart.x()/rctBounding.width() );
     m_pLinBaseUp->addAlignment(alignment);
@@ -349,7 +352,8 @@ CGraphObjTransistor::CGraphObjTransistor(
     m_pDrawingScene->addGraphObj(m_pLinBaseDn);
     m_pDrawingScene->onGraphObjCreationFinished(m_pLinBaseDn);
     m_pLinBaseDn->setPos(ptLinBaseDnStart);
-    addGraphObj(m_pLinBaseDn);
+    throw ZS::System::CException(__FILE__, __LINE__, EResultMethodNotYetImplemented);
+    //addGraphObj(m_pLinBaseDn);
 
     alignment = SGraphObjAlignment( EAlignmentRef::Left, EAlignmentRef::Left, false, ptLinBaseDnStart.x()/rctBounding.width() );
     m_pLinBaseDn->addAlignment(alignment);
@@ -372,7 +376,8 @@ CGraphObjTransistor::CGraphObjTransistor(
     m_pDrawingScene->addGraphObj(m_pLinCnctPt1);
     m_pDrawingScene->onGraphObjCreationFinished(m_pLinCnctPt1);
     m_pLinCnctPt1->setPos( QPointF(rctCnctPt1.left(),rctCnctPt1.center().y()) );
-    addGraphObj(m_pLinCnctPt1);
+    throw ZS::System::CException(__FILE__, __LINE__, EResultMethodNotYetImplemented);
+    //addGraphObj(m_pLinCnctPt1);
 
     // Line from end of line Up to CnctPt2
     //------------------------------------
@@ -386,7 +391,8 @@ CGraphObjTransistor::CGraphObjTransistor(
     m_pDrawingScene->addGraphObj(m_pLinCnctPt2);
     m_pDrawingScene->onGraphObjCreationFinished(m_pLinCnctPt2);
     m_pLinCnctPt2->setPos(ptLinBaseUpEnd);
-    addGraphObj(m_pLinCnctPt2);
+    throw ZS::System::CException(__FILE__, __LINE__, EResultMethodNotYetImplemented);
+    //addGraphObj(m_pLinCnctPt2);
 
     alignment = SGraphObjAlignment( EAlignmentRef::Left, EAlignmentRef::Left, false, rctCnctPt2.center().x()/rctBounding.width() );
     m_pLinCnctPt2->addAlignment(alignment);
@@ -407,7 +413,8 @@ CGraphObjTransistor::CGraphObjTransistor(
     m_pDrawingScene->addGraphObj(m_pLinCnctPt3);
     m_pDrawingScene->onGraphObjCreationFinished(m_pLinCnctPt3);
     m_pLinCnctPt3->setPos(ptLinBaseDnEnd);
-    addGraphObj(m_pLinCnctPt3);
+    throw ZS::System::CException(__FILE__, __LINE__, EResultMethodNotYetImplemented);
+    //addGraphObj(m_pLinCnctPt3);
 
     alignment = SGraphObjAlignment( EAlignmentRef::Left, EAlignmentRef::Left, false, rctCnctPt3.center().x()/rctBounding.width() );
     m_pLinCnctPt3->addAlignment(alignment);
@@ -431,7 +438,8 @@ CGraphObjTransistor::CGraphObjTransistor(
     m_pDrawingScene->addGraphObj(m_pCnctPt1);
     m_pDrawingScene->onGraphObjCreationFinished(m_pCnctPt1);
     m_pCnctPt1->setPos( rctCnctPt1.topLeft() );
-    addGraphObj(m_pCnctPt1);
+    throw ZS::System::CException(__FILE__, __LINE__, EResultMethodNotYetImplemented);
+    //addGraphObj(m_pCnctPt1);
 
     alignment = SGraphObjAlignment( EAlignmentRef::Left, EAlignmentRef::Left, true, 0.0 );
     m_pCnctPt1->addAlignment(alignment);
@@ -452,7 +460,8 @@ CGraphObjTransistor::CGraphObjTransistor(
     m_pCnctPt2->setFixedSize( QSize(fCnctPtWidth,fCnctPtWidth) );
     m_pDrawingScene->addGraphObj(m_pCnctPt2);
     m_pDrawingScene->onGraphObjCreationFinished(m_pCnctPt2);
-    addGraphObj(m_pCnctPt2);
+    throw ZS::System::CException(__FILE__, __LINE__, EResultMethodNotYetImplemented);
+    //addGraphObj(m_pCnctPt2);
 
     m_pCnctPt2->setPos( rctCnctPt2.topLeft() );
     alignment = SGraphObjAlignment( EAlignmentRef::HCenter, EAlignmentRef::Left, false, rctCnctPt2.center().x()/rctBounding.width() );
@@ -475,7 +484,8 @@ CGraphObjTransistor::CGraphObjTransistor(
     m_pDrawingScene->addGraphObj(m_pCnctPt3);
     m_pDrawingScene->onGraphObjCreationFinished(m_pCnctPt3);
     m_pCnctPt3->setPos( rctCnctPt3.topLeft() );
-    addGraphObj(m_pCnctPt3);
+    throw ZS::System::CException(__FILE__, __LINE__, EResultMethodNotYetImplemented);
+    //addGraphObj(m_pCnctPt3);
 
     alignment = SGraphObjAlignment( EAlignmentRef::HCenter, EAlignmentRef::Left, false, rctCnctPt3.center().x()/rctBounding.width() );
     m_pCnctPt3->addAlignment(alignment);
@@ -489,6 +499,7 @@ CGraphObjTransistor::CGraphObjTransistor(
 
     m_ptRotOriginCurr = m_rctCurr.center();
 
+    #pragma message(__TODO__"The methods onGraphObjCreationFinished and acceptCurrentAsOriginalCoors should become protected and it should not be necessary to explicitly call them")
     acceptCurrentAsOriginalCoors();
 
     updateToolTip();
@@ -803,7 +814,7 @@ void CGraphObjTransistor::updateToolTip()
         }
 
         m_strToolTip += "\nSize:\t\t" + size2Str(getSize());
-        m_strToolTip += "\nRotation:\t" + QString::number(m_fRotAngleCurr_deg,'f',1) + "°";
+        m_strToolTip += "\nRotation:\t" + QString::number(m_fRotAngleCurr_deg,'f',1) + " " + ZS::PhysVal::c_strSymbolDegree;
         m_strToolTip += "\nZValue:\t\t" + QString::number(pGraphicsItem->zValue());
 
         pGraphicsItem->setToolTip(m_strToolTip);

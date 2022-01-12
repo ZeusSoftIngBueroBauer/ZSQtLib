@@ -93,7 +93,7 @@ CTestStep::CTestStep(
     m_fTimeTestStart_s(0.0),
     m_fTimeTestEnd_s(0.0),
     m_bBreakpoint(false),
-    m_bBreakpointEnabled(true)
+    m_breakpointEnabled(EEnabled::Yes)
 {
     if (!QObject::connect(
         /* pObjSender   */ this,
@@ -117,7 +117,7 @@ CTestStep::~CTestStep()
     m_fTimeTestStart_s = 0.0;
     m_fTimeTestEnd_s = 0.0;
     m_bBreakpoint = false;
-    m_bBreakpointEnabled = false;
+    m_breakpointEnabled = static_cast<EEnabled>(0);
 
 } // dtor
 
@@ -257,6 +257,9 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! Sets a breakpoint for the test step and informs the tree that the content of the
+    entry has been changed and got to be updated.
+*/
 void CTestStep::setBreakpoint()
 //------------------------------------------------------------------------------
 {
@@ -273,6 +276,9 @@ void CTestStep::setBreakpoint()
 } // setBreakpoint
 
 //------------------------------------------------------------------------------
+/*! Removes the breakpoint for the test step and informs the tree that the content of the
+    entry has been changed and got to be updated.
+*/
 void CTestStep::removeBreakpoint()
 //------------------------------------------------------------------------------
 {
@@ -289,12 +295,17 @@ void CTestStep::removeBreakpoint()
 } // removeBreakpoint
 
 //------------------------------------------------------------------------------
-void CTestStep::enableBreakpoint()
+/*! Enables or disables the breakpoint and informs the tree that the content of the
+    entry has been changed and got to be updated.
+
+    /param i_enabled [in] Flag to enable or disable the breakpoint.
+*/
+void CTestStep::setBreakpointEnabled( EEnabled i_enabled )
 //------------------------------------------------------------------------------
 {
-    if( !m_bBreakpointEnabled )
+    if( m_breakpointEnabled != i_enabled )
     {
-        m_bBreakpointEnabled = true;
+        m_breakpointEnabled = i_enabled;
 
         if( m_pTree != nullptr )
         {
@@ -302,29 +313,18 @@ void CTestStep::enableBreakpoint()
         }
     }
 
-} // enableBreakpoint
-
-//------------------------------------------------------------------------------
-void CTestStep::disableBreakpoint()
-//------------------------------------------------------------------------------
-{
-    if( m_bBreakpointEnabled )
-    {
-        m_bBreakpointEnabled = false;
-
-        if( m_pTree != nullptr )
-        {
-            m_pTree->onTreeEntryChanged(this);
-        }
-    }
-
-} // disableBreakpoint
+} // setBreakpointEnabled
 
 /*==============================================================================
 public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! Resets the test step to default values by clearing the expected and
+    result values and invalidating the start and end time of the test.
+    The tree will be informed that the content of the entry has been changed
+    and got to be updated.
+*/
 void CTestStep::reset()
 //------------------------------------------------------------------------------
 {
@@ -346,6 +346,10 @@ public: // must overridables of base class CAbstractTestStepIdxTreeEntry
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! Returns the duration of the test step in seconds.
+
+    @return Duration in seconds.
+*/
 double CTestStep::getTestDurationInSec() const
 //------------------------------------------------------------------------------
 {
@@ -374,6 +378,8 @@ protected: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! Internally called by "doTestStep".
+*/
 void CTestStep::onTestStepStarted()
 //------------------------------------------------------------------------------
 {
@@ -388,6 +394,8 @@ void CTestStep::onTestStepStarted()
 } // onTestStepStarted
 
 //------------------------------------------------------------------------------
+/*! Internally called by "setResultValues".
+*/
 void CTestStep::onTestStepFinished()
 //------------------------------------------------------------------------------
 {

@@ -26,12 +26,6 @@
     <Filter Include="Source Files\Test">
       <UniqueIdentifier>{8d6823db-7c0f-46a3-930e-a3be3bf5bda3}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Test\Electricity">
-      <UniqueIdentifier>{f7aa830b-2e35-4fb5-9f10-a6142c50f0d4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Test\QtWidgets">
-      <UniqueIdentifier>{62f95f5a-0dc4-4b30-80d0-a3bf310b5da6}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Dialogs">
       <UniqueIdentifier>{d05ff7ad-1f7b-4974-a30d-6e5ecaa7598b}</UniqueIdentifier>
     </Filter>
@@ -159,6 +153,12 @@
     </Filter>
     <Filter Include="Source Files\Test\Mouse Events\Standard Shapes">
       <UniqueIdentifier>{3294162f-5798-47ba-9369-8f3ff4e09075}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Test\Mouse Events\Electricity">
+      <UniqueIdentifier>{f7aa830b-2e35-4fb5-9f10-a6142c50f0d4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Test\Mouse Events\QtWidgets">
+      <UniqueIdentifier>{62f95f5a-0dc4-4b30-80d0-a3bf310b5da6}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -289,22 +289,22 @@
       <Filter>Source Files\Test\Mouse Events\Standard Shapes</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\Source\Apps\Products\ZSDraw\TestStepElectricity.cpp">
-      <Filter>Source Files\Test\Electricity</Filter>
+      <Filter>Source Files\Test\Mouse Events\Electricity</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\Source\Apps\Products\ZSDraw\TestStepElectricityCapacitors.cpp">
-      <Filter>Source Files\Test\Electricity</Filter>
+      <Filter>Source Files\Test\Mouse Events\Electricity</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\Source\Apps\Products\ZSDraw\TestStepElectricityInductors.cpp">
-      <Filter>Source Files\Test\Electricity</Filter>
+      <Filter>Source Files\Test\Mouse Events\Electricity</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\Source\Apps\Products\ZSDraw\TestStepElectricityResistors.cpp">
-      <Filter>Source Files\Test\Electricity</Filter>
+      <Filter>Source Files\Test\Mouse Events\Electricity</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\Source\Apps\Products\ZSDraw\TestStepElectricitySwitches.cpp">
-      <Filter>Source Files\Test\Electricity</Filter>
+      <Filter>Source Files\Test\Mouse Events\Electricity</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\Source\Apps\Products\ZSDraw\TestStepElectricityTransistors.cpp">
-      <Filter>Source Files\Test\Electricity</Filter>
+      <Filter>Source Files\Test\Mouse Events\Electricity</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\Source\Apps\Products\ZSDraw\ZSDrawWdgtFormatGraphObjsElectricityCapacitor.cpp">
       <Filter>Source Files\Dialogs\Electricity</Filter>

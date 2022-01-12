@@ -133,7 +133,7 @@ CTestStepGroup* CTestStepIdxTree::findTestStepGroup(
 {
     QString strParentPath;
 
-    if( i_pTestGroupParent != nullptr )
+    if( i_pTestGroupParent != nullptr && !i_pTestGroupParent->isRoot() )
     {
         strParentPath = i_pTestGroupParent->path();
     }
@@ -382,7 +382,7 @@ SErrResultInfo CTestStepIdxTree::recall( const QString& i_strAbsFilePath )
 
         SErrResultInfo errResultInfoTmp = ErrResultInfoSuccess(strMth);
 
-        CTestStepGroup* pTSGrp = nullptr;
+        CTestStepGroup* pTSGrp = dynamic_cast<CTestStepGroup*>(m_pRoot);
         CTestStep*      pTestStep = nullptr;
 
         QString  strElemName;
@@ -538,8 +538,8 @@ SErrResultInfo CTestStepIdxTree::recall( const QString& i_strAbsFilePath )
                                             if( xmlStreamReader.attributes().hasAttribute("BreakpointEnabled") )
                                             {
                                                 strVal = xmlStreamReader.attributes().value("BreakpointEnabled").toString();
-                                                bVal = str2Bool(strVal, &bConverted);
-                                                if( !bConverted )
+                                                enabled = CEnumEnabled::toEnumerator(strVal);
+                                                if( enabled == EEnabled::Undefined )
                                                 {
                                                     strAddErrInfo = "Attribute \"BreakpointEnabled\" for " + strElemName + " \"" + pTestStep->path() + "\" is out of range.";
                                                     errResultInfoTmp.setSeverity(EResultSeverityError);
@@ -550,13 +550,9 @@ SErrResultInfo CTestStepIdxTree::recall( const QString& i_strAbsFilePath )
                                                         CErrLog::GetInstance()->addEntry(errResultInfoTmp);
                                                     }
                                                 }
-                                                else if( bVal )
-                                                {
-                                                    pTestStep->disableBreakpoint();
-                                                }
                                                 else
                                                 {
-                                                    pTestStep->enableBreakpoint();
+                                                    pTestStep->setBreakpointEnabled(enabled);
                                                 }
                                             }
                                         } // if( bVal )
@@ -639,7 +635,7 @@ void CTestStepIdxTree::save(
         i_xmlStreamWriter.writeAttribute( "Breakpoint", bool2Str(pTestStep->isBreakpointSet()) );
         if( pTestStep->isBreakpointSet() )
         {
-            i_xmlStreamWriter.writeAttribute( "BreakpointEnabled", bool2Str(pTestStep->isBreakpointEnabled()) );
+            i_xmlStreamWriter.writeAttribute( "BreakpointEnabled", CEnumEnabled::toString(pTestStep->getBreakpointEnabled()) );
         }
         i_xmlStreamWriter.writeEndElement(/*"TestStep"*/);
     }

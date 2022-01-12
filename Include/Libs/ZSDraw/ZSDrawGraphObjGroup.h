@@ -81,8 +81,8 @@ public: // overridables of base class QGraphicsItem
 public: // must overridables of base class CGraphObj
     virtual CGraphObj* clone();
 public: // instance methods
-    void addGraphObj( CGraphObj* i_pGraphObj );     // to be used instead of QGraphisItemGroup::addToGroup()
-    void removeGraphObj( CGraphObj* i_pGraphObj );  // to be used instead of QGraphisItemGroup::removeFromGroup()
+    //void addGraphObj( CGraphObj* i_pGraphObj );     // to be used instead of QGraphisItemGroup::addToGroup()
+    //void removeGraphObj( CGraphObj* i_pGraphObj );  // to be used instead of QGraphisItemGroup::removeFromGroup()
     CGraphObj* findGraphObj( const QString& i_strObjName );
 private: // hiding method of base class QGraphisItemGroup
     void addToGroup( QGraphicsItem* i_pGraphicsItem );

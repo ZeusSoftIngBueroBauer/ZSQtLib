@@ -204,7 +204,8 @@ CGraphObjResistor::CGraphObjResistor(
     m_pDrawingScene->addGraphObj(m_pLinCnct);
     m_pDrawingScene->onGraphObjCreationFinished(m_pLinCnct);
     m_pLinCnct->setPos( QPointF(0.0,rctCnctPt1.center().y()) );
-    addGraphObj(m_pLinCnct);
+    throw ZS::System::CException(__FILE__, __LINE__, EResultMethodNotYetImplemented);
+    //addGraphObj(m_pLinCnct);
 
     //alignment = SGraphObjAlignment( EAlignmentRefWidth, EAlignmentRefWidth, false, 1.0 );
     //m_pLinCnct->addAlignment(alignment);
@@ -225,7 +226,8 @@ CGraphObjResistor::CGraphObjResistor(
     m_pDrawingScene->addGraphObj(m_pRctBody);
     m_pDrawingScene->onGraphObjCreationFinished(m_pRctBody);
     m_pRctBody->setPos( rctBody.topLeft() );
-    addGraphObj(m_pRctBody);
+    throw ZS::System::CException(__FILE__, __LINE__, EResultMethodNotYetImplemented);
+    //addGraphObj(m_pRctBody);
 
     //alignment = SGraphObjAlignment( EAlignmentRefWidth, EAlignmentRefWidth, false, rctBody.width()/rctBounding.width() );
     //m_pRctBody->addAlignment(alignment);
@@ -251,7 +253,8 @@ CGraphObjResistor::CGraphObjResistor(
     m_pDrawingScene->addGraphObj(m_pCnctPt1);
     m_pDrawingScene->onGraphObjCreationFinished(m_pCnctPt1);
     m_pCnctPt1->setPos( rctCnctPt1.topLeft() );
-    addGraphObj(m_pCnctPt1);
+    throw ZS::System::CException(__FILE__, __LINE__, EResultMethodNotYetImplemented);
+    //addGraphObj(m_pCnctPt1);
 
     alignment = SGraphObjAlignment( EAlignmentRef::Left, EAlignmentRef::Left, true, 0.0 );
     m_pCnctPt1->addAlignment(alignment);
@@ -272,7 +275,8 @@ CGraphObjResistor::CGraphObjResistor(
     m_pCnctPt2->setFixedSize( QSize(fCnctPtWidth,fCnctPtWidth) );
     m_pDrawingScene->addGraphObj(m_pCnctPt2);
     m_pDrawingScene->onGraphObjCreationFinished(m_pCnctPt2);
-    addGraphObj(m_pCnctPt2);
+    throw ZS::System::CException(__FILE__, __LINE__, EResultMethodNotYetImplemented);
+    //addGraphObj(m_pCnctPt2);
 
     m_pCnctPt2->setPos( rctCnctPt2.topLeft() );
     alignment = SGraphObjAlignment( EAlignmentRef::Right, EAlignmentRef::Right, true, 0.0 );
@@ -287,6 +291,7 @@ CGraphObjResistor::CGraphObjResistor(
 
     m_ptRotOriginCurr = m_rctCurr.center();
 
+    #pragma message(__TODO__"The methods onGraphObjCreationFinished and acceptCurrentAsOriginalCoors should become protected and it should not be necessary to explicitly call them")
     acceptCurrentAsOriginalCoors();
 
     updateToolTip();
@@ -547,7 +552,7 @@ void CGraphObjResistor::updateToolTip()
         }
 
         m_strToolTip += "\nSize:\t\t" + size2Str(getSize());
-        m_strToolTip += "\nRotation:\t" + QString::number(m_fRotAngleCurr_deg,'f',1) + "°";
+        m_strToolTip += "\nRotation:\t" + QString::number(m_fRotAngleCurr_deg,'f',1) + " " + ZS::PhysVal::c_strSymbolDegree;
         m_strToolTip += "\nZValue:\t\t" + QString::number(pGraphicsItem->zValue());
 
         pGraphicsItem->setToolTip(m_strToolTip);

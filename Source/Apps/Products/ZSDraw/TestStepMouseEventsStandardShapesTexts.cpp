@@ -1000,7 +1000,7 @@ void CTest::doTestStepStandardShapesTexts( ZS::Test::CTestStepGroup* i_pTestStep
             strlstExpectedValues.append( strCurrentGraphObj + ": " + polygon2Str(s_plgText1) );
 
             pTestStep->setOperation( "view.mouseMoveEvent( ViewPos:" + point2Str(m_ptDrawingViewMousePos) + " )" );
-            pTestStep->setDescription( "scene." + strCurrentGraphObj + ".rotateTo( " + QString::number(m_fAngle_degree) + "° )" );
+            pTestStep->setDescription( "scene." + strCurrentGraphObj + ".rotateTo( " + QString::number(m_fAngle_degree) + " " +  + " " + ZS::PhysVal::c_strSymbolDegree + ")" );
             pTestStep->setExpectedValues(strlstExpectedValues);
             pTestStep->testStarted();
 

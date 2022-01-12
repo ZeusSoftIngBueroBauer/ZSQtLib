@@ -1911,8 +1911,7 @@ void CGraphObjLine::updateToolTip()
         QLineF  lin = line();
         QPointF ptPos;
 
-        m_strToolTip  = "ObjName:\t" + name();
-        m_strToolTip += "\nObjId:\t\t" + keyInTree();
+        m_strToolTip  = "ObjPath:\t" + path();
 
         m_strToolTip += "\nP1:\t\t" + point2Str(lin.p1());
         m_strToolTip += "\nP2:\t\t" + point2Str(lin.p2());

@@ -3420,7 +3420,7 @@ void CTest::doTestStepStandardShapesPolylines( ZS::Test::CTestStepGroup* i_pTest
             strlstExpectedValues.append( strCurrentGraphObj + ": " + polygon2Str(s_plg1Curr) );
 
             pTestStep->setOperation( "view.mouseMoveEvent( ViewPos:" + point2Str(m_ptDrawingViewMousePos) + " )" );
-            pTestStep->setDescription( "scene." + strCurrentGraphObj + ".rotateTo( " + QString::number(m_fAngle_degree) + "° )" );
+            pTestStep->setDescription( "scene." + strCurrentGraphObj + ".rotateTo( " + QString::number(m_fAngle_degree) + " " +  + " " + ZS::PhysVal::c_strSymbolDegree + ")" );
             pTestStep->setExpectedValues(strlstExpectedValues);
             pTestStep->testStarted();
 

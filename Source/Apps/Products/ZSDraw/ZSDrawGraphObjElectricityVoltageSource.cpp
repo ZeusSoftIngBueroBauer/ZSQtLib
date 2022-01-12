@@ -215,7 +215,8 @@ CGraphObjVoltageSource::CGraphObjVoltageSource(
     m_pDrawingScene->addGraphObj(m_pLinCnct);
     m_pDrawingScene->onGraphObjCreationFinished(m_pLinCnct);
     m_pLinCnct->setPos( QPointF(0.0,rctCnctPt1.center().y()) );
-    addGraphObj(m_pLinCnct);
+    throw ZS::System::CException(__FILE__, __LINE__, EResultMethodNotYetImplemented);
+    //addGraphObj(m_pLinCnct);
 
     //alignment = SGraphObjAlignment( EAlignmentRefWidth, EAlignmentRefWidth, false, 1.0 );
     //m_pLinCnct->addAlignment(alignment);
@@ -236,7 +237,8 @@ CGraphObjVoltageSource::CGraphObjVoltageSource(
     m_pDrawingScene->addGraphObj(m_pEllBody);
     m_pDrawingScene->onGraphObjCreationFinished(m_pEllBody);
     m_pEllBody->setPos( rctBody.topLeft() );
-    addGraphObj(m_pEllBody);
+    throw ZS::System::CException(__FILE__, __LINE__, EResultMethodNotYetImplemented);
+    //addGraphObj(m_pEllBody);
 
     //alignment = SGraphObjAlignment( EAlignmentRefWidth, EAlignmentRefWidth, false, rctBody.width()/rctBounding.width() );
     //m_pEllBody->addAlignment(alignment);
@@ -259,7 +261,8 @@ CGraphObjVoltageSource::CGraphObjVoltageSource(
     m_pDrawingScene->addGraphObj(m_pLinSignMinus);
     m_pDrawingScene->onGraphObjCreationFinished(m_pLinSignMinus);
     m_pLinSignMinus->setPos(ptPosLinSignMinus);
-    addGraphObj(m_pLinSignMinus);
+    throw ZS::System::CException(__FILE__, __LINE__, EResultMethodNotYetImplemented);
+    //addGraphObj(m_pLinSignMinus);
 
     // Plus Sign
     //----------------
@@ -273,7 +276,8 @@ CGraphObjVoltageSource::CGraphObjVoltageSource(
     m_pDrawingScene->addGraphObj(m_pLinSignPlusHor);
     m_pDrawingScene->onGraphObjCreationFinished(m_pLinSignPlusHor);
     m_pLinSignPlusHor->setPos(ptPosLinSignPlusHor);
-    addGraphObj(m_pLinSignPlusHor);
+    throw ZS::System::CException(__FILE__, __LINE__, EResultMethodNotYetImplemented);
+    //addGraphObj(m_pLinSignPlusHor);
 
     m_pLinSignPlusVer = new CGraphObjLine(
         /* pDrawingScene */ m_pDrawingScene,
@@ -284,7 +288,8 @@ CGraphObjVoltageSource::CGraphObjVoltageSource(
     m_pDrawingScene->addGraphObj(m_pLinSignPlusVer);
     m_pDrawingScene->onGraphObjCreationFinished(m_pLinSignPlusVer);
     m_pLinSignPlusVer->setPos(ptPosLinSignPlusVer);
-    addGraphObj(m_pLinSignPlusVer);
+    throw ZS::System::CException(__FILE__, __LINE__, EResultMethodNotYetImplemented);
+    //addGraphObj(m_pLinSignPlusVer);
 
     // Connection Point 1
     //-------------------
@@ -301,7 +306,8 @@ CGraphObjVoltageSource::CGraphObjVoltageSource(
     m_pDrawingScene->addGraphObj(m_pCnctPt1);
     m_pDrawingScene->onGraphObjCreationFinished(m_pCnctPt1);
     m_pCnctPt1->setPos( rctCnctPt1.topLeft() );
-    addGraphObj(m_pCnctPt1);
+    throw ZS::System::CException(__FILE__, __LINE__, EResultMethodNotYetImplemented);
+    //addGraphObj(m_pCnctPt1);
 
     alignment = SGraphObjAlignment( EAlignmentRef::Left, EAlignmentRef::Left, true, 0.0 );
     m_pCnctPt1->addAlignment(alignment);
@@ -323,7 +329,8 @@ CGraphObjVoltageSource::CGraphObjVoltageSource(
     m_pDrawingScene->addGraphObj(m_pCnctPt2);
     m_pDrawingScene->onGraphObjCreationFinished(m_pCnctPt2);
     m_pCnctPt2->setPos( rctCnctPt2.topLeft() );
-    addGraphObj(m_pCnctPt2);
+    throw ZS::System::CException(__FILE__, __LINE__, EResultMethodNotYetImplemented);
+    //addGraphObj(m_pCnctPt2);
 
     alignment = SGraphObjAlignment( EAlignmentRef::Right, EAlignmentRef::Right, true, 0.0 );
     m_pCnctPt2->addAlignment(alignment);
@@ -337,6 +344,7 @@ CGraphObjVoltageSource::CGraphObjVoltageSource(
 
     m_ptRotOriginCurr = m_rctCurr.center();
 
+    #pragma message(__TODO__"The methods onGraphObjCreationFinished and acceptCurrentAsOriginalCoors should become protected and it should not be necessary to explicitly call them")
     acceptCurrentAsOriginalCoors();
 
     updateToolTip();
@@ -604,7 +612,7 @@ void CGraphObjVoltageSource::updateToolTip()
         }
 
         m_strToolTip += "\nSize:\t\t" + size2Str(getSize());
-        m_strToolTip += "\nRotation:\t" + QString::number(m_fRotAngleCurr_deg,'f',1) + "°";
+        m_strToolTip += "\nRotation:\t" + QString::number(m_fRotAngleCurr_deg,'f',1) + " " + ZS::PhysVal::c_strSymbolDegree;
         m_strToolTip += "\nZValue:\t\t" + QString::number(pGraphicsItem->zValue());
 
         pGraphicsItem->setToolTip(m_strToolTip);

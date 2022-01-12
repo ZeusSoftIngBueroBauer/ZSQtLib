@@ -68,6 +68,7 @@ may result in using the software modules.
 #include "ZSDraw/ZSDrawGraphObjRect.h"
 #include "ZSDraw/ZSDrawGraphObjText.h"
 #include "ZSDraw/ZSDrawingScene.h"
+#include "ZSPhysVal/ZSPhysValDllMain.h"
 #include "ZSSysGUI/ZSSysPushButton.h"
 #include "ZSSys/ZSSysErrResult.h"
 #include "ZSSys/ZSSysException.h"
@@ -697,7 +698,7 @@ CWdgtFormatGraphObjsGeometry::CWdgtFormatGraphObjsGeometry(
         m_pEdtRotationAngle->setRange(0.0,360.0);
         m_pEdtRotationAngle->setDecimals(1);
         m_pEdtRotationAngle->setSingleStep(0.1);
-        m_pEdtRotationAngle->setSuffix(" °");
+        m_pEdtRotationAngle->setSuffix(" " + ZS::PhysVal::c_strSymbolDegree);
         m_pEdtRotationAngle->setValue(m_fRotAngle_deg);
         m_pLytRotationAngle->addWidget(m_pEdtRotationAngle);
         m_pLytRotationAngle->addStretch();

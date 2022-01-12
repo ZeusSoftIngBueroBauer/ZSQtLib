@@ -208,7 +208,8 @@ CGraphObjDiode::CGraphObjDiode(
     m_pDrawingScene->addGraphObj(m_pLinCnct);
     m_pDrawingScene->onGraphObjCreationFinished(m_pLinCnct);
     m_pLinCnct->setPos( QPointF(0.0,rctCnctPt1.center().y()) );
-    addGraphObj(m_pLinCnct);
+    throw ZS::System::CException(__FILE__, __LINE__, EResultMethodNotYetImplemented);
+    //addGraphObj(m_pLinCnct);
 
     //alignment = SGraphObjAlignment( EAlignmentRefWidth, EAlignmentRefWidth, false, 1.0 );
     //m_pLinCnct->addAlignment(alignment);
@@ -235,7 +236,8 @@ CGraphObjDiode::CGraphObjDiode(
     m_pDrawingScene->addGraphObj(m_pPlgBody);
     m_pDrawingScene->onGraphObjCreationFinished(m_pPlgBody);
     m_pPlgBody->setPos( rctBody.topLeft() );
-    addGraphObj(m_pPlgBody);
+    throw ZS::System::CException(__FILE__, __LINE__, EResultMethodNotYetImplemented);
+    //addGraphObj(m_pPlgBody);
 
     //alignment = SGraphObjAlignment( EAlignmentRefWidth, EAlignmentRefWidth, false, rctBody.width()/rctBounding.width() );
     //m_pPlgBody->addAlignment(alignment);
@@ -255,7 +257,8 @@ CGraphObjDiode::CGraphObjDiode(
     m_pDrawingScene->addGraphObj(m_pLinBody);
     m_pDrawingScene->onGraphObjCreationFinished(m_pLinBody);
     m_pLinBody->setPos(ptPosLinBody);
-    addGraphObj(m_pLinBody);
+    throw ZS::System::CException(__FILE__, __LINE__, EResultMethodNotYetImplemented);
+    //addGraphObj(m_pLinBody);
 
     // Connection Point 1
     //-------------------
@@ -272,7 +275,8 @@ CGraphObjDiode::CGraphObjDiode(
     m_pDrawingScene->addGraphObj(m_pCnctPt1);
     m_pDrawingScene->onGraphObjCreationFinished(m_pCnctPt1);
     m_pCnctPt1->setPos( rctCnctPt1.topLeft() );
-    addGraphObj(m_pCnctPt1);
+    throw ZS::System::CException(__FILE__, __LINE__, EResultMethodNotYetImplemented);
+    //addGraphObj(m_pCnctPt1);
 
     alignment = SGraphObjAlignment( EAlignmentRef::Left, EAlignmentRef::Left, true, 0.0 );
     m_pCnctPt1->addAlignment(alignment);
@@ -294,7 +298,8 @@ CGraphObjDiode::CGraphObjDiode(
     m_pDrawingScene->addGraphObj(m_pCnctPt2);
     m_pDrawingScene->onGraphObjCreationFinished(m_pCnctPt2);
     m_pCnctPt2->setPos( rctCnctPt2.topLeft() );
-    addGraphObj(m_pCnctPt2);
+    throw ZS::System::CException(__FILE__, __LINE__, EResultMethodNotYetImplemented);
+    //addGraphObj(m_pCnctPt2);
 
     alignment = SGraphObjAlignment( EAlignmentRef::Right, EAlignmentRef::Right, true, 0.0 );
     m_pCnctPt2->addAlignment(alignment);
@@ -308,6 +313,7 @@ CGraphObjDiode::CGraphObjDiode(
 
     m_ptRotOriginCurr = m_rctCurr.center();
 
+    #pragma message(__TODO__"The methods onGraphObjCreationFinished and acceptCurrentAsOriginalCoors should become protected and it should not be necessary to explicitly call them")
     acceptCurrentAsOriginalCoors();
 
     updateToolTip();
@@ -569,7 +575,7 @@ void CGraphObjDiode::updateToolTip()
         }
 
         m_strToolTip += "\nSize:\t\t" + size2Str(getSize());
-        m_strToolTip += "\nRotation:\t" + QString::number(m_fRotAngleCurr_deg,'f',1) + "°";
+        m_strToolTip += "\nRotation:\t" + QString::number(m_fRotAngleCurr_deg,'f',1) + " " + ZS::PhysVal::c_strSymbolDegree;
         m_strToolTip += "\nZValue:\t\t" + QString::number(pGraphicsItem->zValue());
 
         pGraphicsItem->setToolTip(m_strToolTip);

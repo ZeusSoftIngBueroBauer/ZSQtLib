@@ -553,7 +553,8 @@ CGraphObj* CObjFactoryGroup::loadGraphObj(
             // the unique object id and add the object to the hash.
             if( i_pGraphObjGroup != nullptr )
             {
-                i_pGraphObjGroup->addGraphObj(pGraphObjGroup);
+                throw ZS::System::CException(__FILE__, __LINE__, EResultMethodNotYetImplemented);
+                //i_pGraphObjGroup->addGraphObj(pGraphObjGroup);
             }
 
             i_pDrawingScene->onGraphObjCreationFinished(pGraphObjGroup);

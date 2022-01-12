@@ -131,6 +131,9 @@ public: // ctors
 //-----------------------------------------------------------------------------
 /*! Constructs an index tree entry.
 
+    After creation the entry has to be added to the index tree stating the
+    desired target parent entry.
+
     @param i_entryType [in] Tree entry type.
     @param i_strName [in] Name of the entry.
 */
@@ -155,6 +158,9 @@ CIdxTreeEntry::CIdxTreeEntry(
 
 //-----------------------------------------------------------------------------
 /*! Constructs a copy of i_other.
+
+    After creation the entry has to be added to the index tree stating the
+    desired target parent entry.
 
     @param i_other [in] Tree entry to be copied.
 
@@ -823,6 +829,13 @@ int CIdxTreeEntry::add( CIdxTreeEntry* i_pTreeEntry )
     QString strEntryType = i_pTreeEntry->entryType2Str(EEnumEntryAliasStrSymbol);
     QString strKeyInParentBranch = strEntryType + ":" + i_pTreeEntry->name();
 
+    if( i_pTreeEntry->parentBranch() != nullptr )
+    {
+        QString strErrInfo = i_pTreeEntry->keyInTree() + " already belongs to " + i_pTreeEntry->parentBranch()->keyInTree();
+        SErrResultInfo errResultInfo = ErrResultInfoCritical("add", EResultObjAlreadyInList, strErrInfo);
+        throw CException(__FILE__, __LINE__, errResultInfo);
+    }
+
     if( m_mappTreeEntries.contains(strKeyInParentBranch) )
     {
         SErrResultInfo errResultInfo = ErrResultInfoCritical("add", EResultObjAlreadyInList, strKeyInParentBranch);
@@ -879,6 +892,13 @@ int CIdxTreeEntry::insert( int i_iIdx, CIdxTreeEntry* i_pTreeEntry )
 
     QString strEntryType = i_pTreeEntry->entryType2Str(EEnumEntryAliasStrSymbol);
     QString strKeyInParentBranch = strEntryType + ":" + i_pTreeEntry->name();
+
+    if( i_pTreeEntry->parentBranch() != nullptr )
+    {
+        QString strErrInfo = i_pTreeEntry->keyInTree() + " already belongs to " + i_pTreeEntry->parentBranch()->keyInTree();
+        SErrResultInfo errResultInfo = ErrResultInfoCritical("insert", EResultObjAlreadyInList, strErrInfo);
+        throw CException(__FILE__, __LINE__, errResultInfo);
+    }
 
     if( m_mappTreeEntries.contains(strKeyInParentBranch) )
     {

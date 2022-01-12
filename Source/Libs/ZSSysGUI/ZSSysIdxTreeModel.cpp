@@ -1241,8 +1241,17 @@ CModelIdxTreeEntry* CModelIdxTree::findModelEntry( CIdxTreeEntry* i_pTreeEntry )
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(m_pIdxTree == nullptr ? nullptr : m_pIdxTree->mutex());
-    QString strKeyInTree = i_pTreeEntry->keyInTree();
-    return m_mappModelTreeEntries.value(strKeyInTree, nullptr);
+    CModelIdxTreeEntry* pModelTreeEntry = nullptr;
+    if( i_pTreeEntry->isRoot() )
+    {
+        pModelTreeEntry = m_pModelRoot;
+    }
+    else
+    {
+        QString strKeyInTree = i_pTreeEntry->keyInTree();
+        pModelTreeEntry = m_mappModelTreeEntries.value(strKeyInTree, nullptr);
+    }
+    return pModelTreeEntry;
 }
 
 /*==============================================================================

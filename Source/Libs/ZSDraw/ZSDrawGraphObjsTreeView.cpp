@@ -879,93 +879,6 @@ void CTreeViewIdxTreeGraphObjs::onExpanded( const QModelIndex& i_modelIdx )
 
 } // onExpanded
 
-////------------------------------------------------------------------------------
-//void CTreeViewIdxTreeGraphObjs::onCurrentChanged(
-//    const QModelIndex& i_modelIdxCurr,
-//    const QModelIndex& /*i_modelIdxPrev*/ )
-////------------------------------------------------------------------------------
-//{
-//    CGraphObj* pGraphObj = nullptr;
-//
-//    if( i_modelIdxCurr.isValid() )
-//    {
-//        CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(i_modelIdxCurr.internalPointer());
-//
-//        if( pModelTreeEntry != nullptr )
-//        {
-//            pGraphObj = dynamic_cast<CGraphObj*>(pModelTreeEntry->treeEntry());
-//        }
-//    }
-//
-//    QString strMthInArgs;
-//
-//    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
-//    {
-//        strMthInArgs = "GraphObj: " + QString(pGraphObj == nullptr ? "nullptr" : pGraphObj->path());
-//    }
-//
-//    CMethodTracer mthTracer(
-//        /* pAdminObj    */ m_pTrcAdminObj,
-//        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-//        /* strMethod    */ "onCurrentChanged",
-//        /* strAddInfo   */ strMthInArgs );
-//
-//    QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(pGraphObj);
-//
-//    if( pGraphicsItem != nullptr )
-//    {
-//        CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
-//
-//        if( pGraphObj != nullptr )
-//        {
-//            QGraphicsItem* pGraphicsItemSelected = pGraphicsItem;
-//            CGraphObj*     pGraphObjSelected = pGraphObj;
-//
-//            // Selection Points cannot be selected. When clicking on a selection point
-//            // the parent got to be selected.
-//            if( pGraphObj->getType() == EGraphObjTypeSelectionPoint )
-//            {
-//                CGraphObjSelectionPoint* pSelectionPoint = dynamic_cast<CGraphObjSelectionPoint*>(pGraphObj);
-//
-//                if( pSelectionPoint != nullptr )
-//                {
-//                    pGraphObjSelected = pSelectionPoint->getSelectedGraphObj();
-//                    pGraphicsItemSelected = dynamic_cast<QGraphicsItem*>(pGraphObjSelected);
-//                }
-//            }
-//
-//            // On clicking on a selection point and removing the selection of it's parent object
-//            // the parent object will hide and destroy the selection point - which has currently
-//            // beeing clicked. The selection may only be cleared therefore if a new object has
-//            // been selected. Otherwise the selected tree view entry would be destroyed while it
-//            // has been selected. And afterwards created again. And so on. This will either end up
-//            // in a deadlock (endless loop) or at least with access violations,
-//            if( !pGraphicsItemSelected->isSelected() )
-//            {
-//                QObject::disconnect(
-//                    /* pObjSender   */ m_pDrawingScene,
-//                    /* szSignal     */ SIGNAL(selectionChanged()),
-//                    /* pObjReceiver */ this,
-//                    /* szSlot       */ SLOT(onDrawingSceneSelectionChanged()) );
-//
-//                m_pDrawingScene->clearSelection();
-//
-//                pGraphicsItemSelected->setSelected(true);
-//
-//                if( !QObject::connect(
-//                    /* pObjSender   */ m_pDrawingScene,
-//                    /* szSignal     */ SIGNAL(selectionChanged()),
-//                    /* pObjReceiver */ this,
-//                    /* szSlot       */ SLOT(onDrawingSceneSelectionChanged()) ) )
-//                {
-//                    throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-//                }
-//            }
-//        }
-//    }
-//
-//} // onCurrentChanged
-
 /*==============================================================================
 protected slots:
 ==============================================================================*/
@@ -1122,29 +1035,32 @@ void CTreeViewIdxTreeGraphObjs::keyPressEvent( QKeyEvent* i_pEv )
                 {
                     CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pModelTreeEntry->treeEntry());
 
-                    // Selection points and labels cannot be deleted by the user
-                    // but will be implicitly deleted if the item is deselected.
-                    if( pGraphObj->getType() != EGraphObjTypeSelectionPoint && pGraphObj->getType() != EGraphObjTypeLabel )
+                    if( pGraphObj != nullptr && !pGraphObj->isRoot() )
                     {
-                        int iRet = QMessageBox::Yes;
+                        // Selection points and labels cannot be deleted by the user
+                        // but will be implicitly deleted if the item is deselected.
+                        if( pGraphObj->getType() != EGraphObjTypeSelectionPoint && pGraphObj->getType() != EGraphObjTypeLabel )
+                        {
+                            int iRet = QMessageBox::Yes;
 
-                        if( !m_bSilentlyExecuteDeleteRequests )
-                        {
-                            QString strMsg = "Do you really want to delete \"" + pModelTreeEntry->keyInTree() + "\"?";
-                            iRet = QMessageBox::question(
-                                /* pWdgtParent     */ this,
-                                /* strTitle        */ getMainWindowTitle(),
-                                /* strText         */ strMsg,
-                                /* standardButtons */ QMessageBox::Yes | QMessageBox::No,
-                                /* defaultButton   */ QMessageBox::No );
-                        }
-                        if( iRet == QMessageBox::Yes )
-                        {
-                            delete pGraphObj;
-                            pGraphObj = nullptr;
-                            pModelTreeEntry = nullptr;
-                        }
-                    } // if( pGraphObj->getType() != EGraphObjTypeSelectionPoint && pGraphObj->getType() != EGraphObjTypeLabel )
+                            if( !m_bSilentlyExecuteDeleteRequests )
+                            {
+                                QString strMsg = "Do you really want to delete \"" + pModelTreeEntry->keyInTree() + "\"?";
+                                iRet = QMessageBox::question(
+                                    /* pWdgtParent     */ this,
+                                    /* strTitle        */ getMainWindowTitle(),
+                                    /* strText         */ strMsg,
+                                    /* standardButtons */ QMessageBox::Yes | QMessageBox::No,
+                                    /* defaultButton   */ QMessageBox::No );
+                            }
+                            if( iRet == QMessageBox::Yes )
+                            {
+                                delete pGraphObj;
+                                pGraphObj = nullptr;
+                                pModelTreeEntry = nullptr;
+                            }
+                        } // if( pGraphObj->getType() != EGraphObjTypeSelectionPoint && pGraphObj->getType() != EGraphObjTypeLabel )
+                    } // if( pGraphObj != nullptr && !pGraphObj->isRoot() )
                     bEventHandled = true;
                     break;
                 }
@@ -1205,78 +1121,46 @@ void CTreeViewIdxTreeGraphObjs::mousePressEvent( QMouseEvent* i_pEv )
             mthTracer.trace(strAddTrcInfo);
         }
 
-        //CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(m_modelIdxSelectedOnMousePressEvent.internalPointer());
+        CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(m_modelIdxSelectedOnMousePressEvent.internalPointer());
 
-        //if( pModelTreeEntry != nullptr )
-        //{
-        //    CGraphObj*     pGraphObjClicked = dynamic_cast<CGraphObj*>(pModelTreeEntry->treeEntry());
-        //    QGraphicsItem* pGraphicsItemClicked = dynamic_cast<QGraphicsItem*>(pGraphObjClicked);
+        if( pModelTreeEntry != nullptr )
+        {
+            CGraphObj* pGraphObjClicked = dynamic_cast<CGraphObj*>(pModelTreeEntry->treeEntry());
 
-        //    CGraphObj*     pGraphObj = pGraphObjClicked;
-        //    QGraphicsItem* pGraphicsItem = pGraphicsItemClicked;
+            if( pGraphObjClicked != nullptr && !pGraphObjClicked->isRoot() )
+            {
+                QGraphicsItem* pGraphicsItemClicked = dynamic_cast<QGraphicsItem*>(pGraphObjClicked);
 
-        //    // Ensure that only the clicked graphic item is selected taking into accout that selection points
-        //    // and labels cannot be selected but instead select their parents (if not already selected).
-        //    if( pGraphObjClicked->getType() == EGraphObjTypeSelectionPoint || pGraphObjClicked->getType() == EGraphObjTypeLabel )
-        //    {
-        //        pGraphObj = pGraphObjClicked->parentGraphObj();
-        //        // Selection points and labels don't have graphics item as a parent.
-        //        // Instead we must use the parent graph object in the index tree.
-        //        pGraphicsItem = dynamic_cast<QGraphicsItem*>(pGraphObj);
-        //    }
+                CGraphObj*     pGraphObj = pGraphObjClicked;
+                QGraphicsItem* pGraphicsItem = pGraphicsItemClicked;
 
-        //    if( pGraphicsItem != nullptr )
-        //    {
-        //        if( i_pEv->buttons() & Qt::LeftButton )
-        //        {
-        //            // If a Ctrl key on the keyboard is pressed ..
-        //            if( i_pEv->modifiers().testFlag(Qt::ControlModifier) )
-        //            {
-        //                // .. and if the clicked item is not a selection point or a label and is already selected ..
-        //                if( pGraphicsItemClicked == pGraphicsItem )
-        //                {
-        //                    // .. toggle the selection state of the item.
-        //                    pGraphicsItem->setSelected(!pGraphicsItem->isSelected());
-        //                }
-        //            }
-        //            // If a Shift key on the keyboard is pressed ..
-        //            else if( i_pEv->modifiers().testFlag(Qt::ControlModifier) )
-        //            {
-        //                // .. and if the clicked item is not a selection point or a label and is already selected ..
-        //                if( pGraphicsItemClicked == pGraphicsItem )
-        //                {
-        //                    // .. toggle the selection state of the item.
-        //                    pGraphicsItem->setSelected(!pGraphicsItem->isSelected());
-        //                }
-        //            }
-        //            // If no Ctrl key on the keyboard is pressed ..
-        //            else
-        //            {
-        //                QList<QGraphicsItem*> arpSelectedItems = m_pDrawingScene->selectedItems();
-        //                for( auto& pItem : arpSelectedItems )
-        //                {
-        //                    if( pItem != pGraphicsItem )
-        //                    {
-        //                        pItem->setSelected(false);
-        //                    }
-        //                }
-        //                if( !pGraphicsItem->isSelected() )
-        //                {
-        //                    pGraphicsItem->setSelected(true);
-        //                }
-        //            }
-        //        }
-        //        else if( i_pEv->buttons() & Qt::RightButton )
-        //        {
-        //            if( m_pMenuGraphObjContext != nullptr )
-        //            {
-        //                m_pActionGraphObjTitle->setText( "Object: " + pGraphObj->name() );
-        //                m_pMenuGraphObjContext->popup(QWidget::mapToGlobal(i_pEv->pos()));
-        //            }
-        //            bEventHandled = true;
-        //        }
-        //    } // if( pGraphicsItemClicked != nullptr )
-        //} // if( pModelTreeEntry != nullptr )
+                // Ensure that only the clicked graphic item is selected taking into accout that selection points
+                // and labels cannot be selected but instead select their parents (if not already selected).
+                if( pGraphObjClicked->getType() == EGraphObjTypeSelectionPoint || pGraphObjClicked->getType() == EGraphObjTypeLabel )
+                {
+                    pGraphObj = pGraphObjClicked->parentGraphObj();
+                    // Selection points and labels don't have graphics item as a parent.
+                    // Instead we must use the parent graph object in the index tree.
+                    pGraphicsItem = dynamic_cast<QGraphicsItem*>(pGraphObj);
+                }
+
+                if( pGraphicsItem != nullptr )
+                {
+                    if( i_pEv->buttons() & Qt::LeftButton )
+                    {
+                    }
+                    else if( i_pEv->buttons() & Qt::RightButton )
+                    {
+                        if( m_pMenuGraphObjContext != nullptr )
+                        {
+                            m_pActionGraphObjTitle->setText( "Object: " + pGraphObj->name() );
+                            m_pMenuGraphObjContext->popup(QWidget::mapToGlobal(i_pEv->pos()));
+                        }
+                        bEventHandled = true;
+                    }
+                } // if( pGraphicsItemClicked != nullptr )
+            } // if( pGraphObjClicked != nullptr && !pGraphObjClicked->isRoot() )
+        } // if( pModelTreeEntry != nullptr )
     } // if( m_modelIdxSelectedOnMousePressEvent.isValid() )
 
     if( !bEventHandled )
@@ -1316,16 +1200,7 @@ void CTreeViewIdxTreeGraphObjs::mouseReleaseEvent( QMouseEvent* i_pEv )
             strAddTrcInfo = "ModelIdxReleased {" + CModelIdxTree::ModelIdx2Str(m_modelIdxSelectedOnMouseReleaseEvent) + "}";
             mthTracer.trace(strAddTrcInfo);
         }
-
-        //CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(m_modelIdxSelectedOnMouseReleaseEvent.internalPointer());
-
-        //if( pModelTreeEntry != nullptr )
-        //{
-        //    if( i_pEv->buttons() & Qt::LeftButton )
-        //    {
-        //    }
-        //}
-    } // if( m_modelIdxSelectedOnMouseReleaseEvent.isValid() )
+    }
 
     if( !bEventHandled )
     {
@@ -1365,65 +1240,54 @@ void CTreeViewIdxTreeGraphObjs::mouseDoubleClickEvent( QMouseEvent* i_pEv )
             mthTracer.trace(strAddTrcInfo);
         }
 
-        //CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(modelIdx.internalPointer());
+        CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(modelIdx.internalPointer());
 
-        //if( pModelTreeEntry != nullptr )
-        //{
-        //    CGraphObj*     pGraphObjClicked = dynamic_cast<CGraphObj*>(pModelTreeEntry->treeEntry());
-        //    QGraphicsItem* pGraphicsItemClicked = dynamic_cast<QGraphicsItem*>(pGraphObjClicked);
+        if( pModelTreeEntry != nullptr )
+        {
+            CGraphObj* pGraphObjClicked = dynamic_cast<CGraphObj*>(pModelTreeEntry->treeEntry());
 
-        //    if( pGraphicsItemClicked != nullptr )
-        //    {
-        //        if( i_pEv->buttons() & Qt::LeftButton )
-        //        {
-        //            CGraphObj*     pGraphObjSelected = pGraphObjClicked;
-        //            QGraphicsItem* pGraphicsItemSelected = pGraphicsItemClicked;
+            if( pGraphObjClicked != nullptr && !pGraphObjClicked->isRoot() )
+            {
+                QGraphicsItem* pGraphicsItemClicked = dynamic_cast<QGraphicsItem*>(pGraphObjClicked);
 
-        //            // Ensure that only the clicked graphic item is selected taking into accout that selection points
-        //            // and labels cannot be selected but instead select their parents (if not already selected).
-        //            if( pGraphObjClicked->getType() == EGraphObjTypeSelectionPoint || pGraphObjClicked->getType() == EGraphObjTypeLabel )
-        //            {
-        //                pGraphObjSelected = pGraphObjClicked->parentGraphObj();
-        //                // Selection points and labels don't have graphics item as a parent.
-        //                // Instead we must use the parent graph object in the index tree.
-        //                pGraphicsItemSelected = dynamic_cast<QGraphicsItem*>(pGraphObjSelected);
-        //            }
-        //            if( pGraphicsItemSelected != nullptr )
-        //            {
-        //                QList<QGraphicsItem*> arpSelectedItems = m_pDrawingScene->selectedItems();
-        //                for( auto& pGraphicsItem : arpSelectedItems )
-        //                {
-        //                    if( pGraphicsItemSelected != pGraphicsItem )
-        //                    {
-        //                        pGraphicsItem->setSelected(false);
-        //                    }
-        //                }
-        //                if( !pGraphicsItemSelected->isSelected() )
-        //                {
-        //                    pGraphicsItemSelected->setSelected(true);
-        //                }
-        //            }
+                if( pGraphicsItemClicked != nullptr )
+                {
+                    if( i_pEv->buttons() & Qt::LeftButton )
+                    {
+                        CGraphObj*     pGraphObjSelected = pGraphObjClicked;
+                        QGraphicsItem* pGraphicsItemSelected = pGraphicsItemClicked;
 
-        //            CDlgFormatGraphObjs* pDlgFormatGraphObjs = new CDlgFormatGraphObjs(m_pDrawingScene, pGraphObjSelected);
+                        // Ensure that only the clicked graphic item is selected taking into accout that selection points
+                        // and labels cannot be selected but instead select their parents (if not already selected).
+                        if( pGraphObjClicked->getType() == EGraphObjTypeSelectionPoint || pGraphObjClicked->getType() == EGraphObjTypeLabel )
+                        {
+                            pGraphObjSelected = pGraphObjClicked->parentGraphObj();
+                            // Selection points and labels don't have graphics item as a parent.
+                            // Instead we must use the parent graph object in the index tree.
+                            pGraphicsItemSelected = dynamic_cast<QGraphicsItem*>(pGraphObjSelected);
+                        }
 
-        //            pDlgFormatGraphObjs->setCurrentWidget(CDlgFormatGraphObjs::c_strWdgtObjName);
+                        CDlgFormatGraphObjs* pDlgFormatGraphObjs = new CDlgFormatGraphObjs(m_pDrawingScene, pGraphObjSelected);
 
-        //            pDlgFormatGraphObjs->exec();
+                        pDlgFormatGraphObjs->setCurrentWidget(CDlgFormatGraphObjs::c_strWdgtObjName);
 
-        //            delete pDlgFormatGraphObjs;
-        //            pDlgFormatGraphObjs = nullptr;
-        //        }
-        //        else if( i_pEv->buttons() & Qt::RightButton )
-        //        {
-        //            if( m_pMenuGraphObjContext != nullptr )
-        //            {
-        //                m_pActionGraphObjTitle->setText( "Object: " + pModelTreeEntry->name() );
-        //                m_pMenuGraphObjContext->popup(QWidget::mapToGlobal(i_pEv->pos()));
-        //            }
-        //            bEventHandled = true;
-        //        }
-        //    } // if( pGraphicsItem != nullptr )
-        //} // if( pModelTreeEntry != nullptr )
+                        pDlgFormatGraphObjs->exec();
+
+                        delete pDlgFormatGraphObjs;
+                        pDlgFormatGraphObjs = nullptr;
+                    }
+                    else if( i_pEv->buttons() & Qt::RightButton )
+                    {
+                        if( m_pMenuGraphObjContext != nullptr )
+                        {
+                            m_pActionGraphObjTitle->setText( "Object: " + pModelTreeEntry->name() );
+                            m_pMenuGraphObjContext->popup(QWidget::mapToGlobal(i_pEv->pos()));
+                        }
+                        bEventHandled = true;
+                    }
+                } // if( pGraphicsItem != nullptr )
+            } // if( pGraphObjClicked != nullptr && !pGraphObjClicked->isRoot() )
+        } // if( pModelTreeEntry != nullptr )
     } // if( modelIdx.isValid() )
 
     if( !bEventHandled )
@@ -1515,28 +1379,32 @@ void CTreeViewIdxTreeGraphObjs::selectionChanged(
 
         if( pModelTreeEntry != nullptr && !pModelTreeEntry->isAboutToBeDestroyed() )
         {
-            CGraphObj*     pGraphObjSelected = dynamic_cast<CGraphObj*>(pModelTreeEntry->treeEntry());
-            QGraphicsItem* pGraphicsItemSelected = dynamic_cast<QGraphicsItem*>(pGraphObjSelected);
+            CGraphObj* pGraphObjSelected = dynamic_cast<CGraphObj*>(pModelTreeEntry->treeEntry());
 
-            CGraphObj*     pGraphObj = pGraphObjSelected;
-            QGraphicsItem* pGraphicsItem = pGraphicsItemSelected;
-
-            // Selection points and labels cannot be selected but instead select their parents (if not already selected).
-            if( pGraphObj->getType() == EGraphObjTypeSelectionPoint || pGraphObj->getType() == EGraphObjTypeLabel )
+            if( pGraphObjSelected != nullptr && !pGraphObjSelected->isRoot() )
             {
-                pGraphObj = pGraphObj->parentGraphObj();
-                // Selection points and labels don't have graphics item as a parent.
-                // Instead we must use the parent graph object in the index tree.
-                pGraphicsItem = dynamic_cast<QGraphicsItem*>(pGraphObj);
-            }
+                QGraphicsItem* pGraphicsItemSelected = dynamic_cast<QGraphicsItem*>(pGraphObjSelected);
 
-            if( pGraphicsItem != nullptr )
-            {
-                if( !hshGraphicsItemsSelected.contains(pGraphObj->keyInTree()) )
+                CGraphObj*     pGraphObj = pGraphObjSelected;
+                QGraphicsItem* pGraphicsItem = pGraphicsItemSelected;
+
+                // Selection points and labels cannot be selected but instead select their parents (if not already selected).
+                if( pGraphObj->getType() == EGraphObjTypeSelectionPoint || pGraphObj->getType() == EGraphObjTypeLabel )
                 {
-                    hshGraphicsItemsSelected.insert(pGraphObj->keyInTree(), pGraphicsItem);
+                    pGraphObj = pGraphObj->parentGraphObj();
+                    // Selection points and labels don't have graphics item as a parent.
+                    // Instead we must use the parent graph object in the index tree.
+                    pGraphicsItem = dynamic_cast<QGraphicsItem*>(pGraphObj);
                 }
-            }
+
+                if( pGraphicsItem != nullptr )
+                {
+                    if( !hshGraphicsItemsSelected.contains(pGraphObj->keyInTree()) )
+                    {
+                        hshGraphicsItemsSelected.insert(pGraphObj->keyInTree(), pGraphicsItem);
+                    }
+                }
+            } // if( pGraphObjSelected != nullptr && !pGraphObjSelected->isRoot() )
         } // if( pModelTreeEntry != nullptr && !pModelTreeEntry->isAboutToBeDestroyed() )
     } // for( const auto& modelIdx : i_selected.indexes() )
 
@@ -1548,32 +1416,36 @@ void CTreeViewIdxTreeGraphObjs::selectionChanged(
 
         if( pModelTreeEntry != nullptr && !pModelTreeEntry->isAboutToBeDestroyed() )
         {
-            CGraphObj*     pGraphObjSelected = dynamic_cast<CGraphObj*>(pModelTreeEntry->treeEntry());
-            QGraphicsItem* pGraphicsItemSelected = dynamic_cast<QGraphicsItem*>(pGraphObjSelected);
+            CGraphObj* pGraphObjSelected = dynamic_cast<CGraphObj*>(pModelTreeEntry->treeEntry());
 
-            CGraphObj*     pGraphObj = pGraphObjSelected;
-            QGraphicsItem* pGraphicsItem = pGraphicsItemSelected;
-
-            // Selection points and labels can neither be selected nor deselected.
-            if( pGraphObj->getType() == EGraphObjTypeSelectionPoint || pGraphObj->getType() == EGraphObjTypeLabel )
+            if( pGraphObjSelected != nullptr && !pGraphObjSelected->isRoot() )
             {
-                pGraphObj = pGraphObj->parentGraphObj();
-                // Selection points and labels don't have graphics item as a parent.
-                // Instead we must use the parent graph object in the index tree.
-                pGraphicsItem = dynamic_cast<QGraphicsItem*>(pGraphObj);
-            }
+                QGraphicsItem* pGraphicsItemSelected = dynamic_cast<QGraphicsItem*>(pGraphObjSelected);
 
-            if( pGraphicsItem != nullptr )
-            {
-                // If the tree view entry for a selection point or label is deselected it might be that
-                // the parent is still selected or has been selected by selecting one of its child
-                // selection points or labels. So we add the parent object only to the hash of items
-                // to be deselected if the item has not inserted into the hash of selected items.
-                if( !hshGraphicsItemsSelected.contains(pGraphObj->keyInTree()) && !hshGraphicsItemsDeselected.contains(pGraphObj->keyInTree()) )
+                CGraphObj*     pGraphObj = pGraphObjSelected;
+                QGraphicsItem* pGraphicsItem = pGraphicsItemSelected;
+
+                // Selection points and labels can neither be selected nor deselected.
+                if( pGraphObj->getType() == EGraphObjTypeSelectionPoint || pGraphObj->getType() == EGraphObjTypeLabel )
                 {
-                    hshGraphicsItemsDeselected.insert(pGraphObj->keyInTree(), pGraphicsItem);
+                    pGraphObj = pGraphObj->parentGraphObj();
+                    // Selection points and labels don't have graphics item as a parent.
+                    // Instead we must use the parent graph object in the index tree.
+                    pGraphicsItem = dynamic_cast<QGraphicsItem*>(pGraphObj);
                 }
-            }
+
+                if( pGraphicsItem != nullptr )
+                {
+                    // If the tree view entry for a selection point or label is deselected it might be that
+                    // the parent is still selected or has been selected by selecting one of its child
+                    // selection points or labels. So we add the parent object only to the hash of items
+                    // to be deselected if the item has not inserted into the hash of selected items.
+                    if( !hshGraphicsItemsSelected.contains(pGraphObj->keyInTree()) && !hshGraphicsItemsDeselected.contains(pGraphObj->keyInTree()) )
+                    {
+                        hshGraphicsItemsDeselected.insert(pGraphObj->keyInTree(), pGraphicsItem);
+                    }
+                }
+            } // if( pGraphObjSelected != nullptr && !pGraphObjSelected->isRoot() )
         } // if( pModelTreeEntry != nullptr && !pModelTreeEntry->isAboutToBeDestroyed() )
     } // for( const auto& modelIdx : i_deselected.indexes() )
 
@@ -1676,29 +1548,32 @@ void CTreeViewIdxTreeGraphObjs::onActionGraphObjDeleteTriggered( bool i_bChecked
         {
             CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pModelTreeEntry->treeEntry());
 
-            // Selection points and labels cannot be deleted by the user
-            // but will be implicitly deleted if the item is deselected.
-            if( pGraphObj->getType() != EGraphObjTypeSelectionPoint && pGraphObj->getType() != EGraphObjTypeLabel )
+            if( pGraphObj != nullptr && !pGraphObj->isRoot() )
             {
-                int iRet = QMessageBox::Yes;
+                // Selection points and labels cannot be deleted by the user
+                // but will be implicitly deleted if the item is deselected.
+                if( pGraphObj->getType() != EGraphObjTypeSelectionPoint && pGraphObj->getType() != EGraphObjTypeLabel )
+                {
+                    int iRet = QMessageBox::Yes;
 
-                if( !m_bSilentlyExecuteDeleteRequests )
-                {
-                    QString strMsg = "Do you really want to delete \"" + pModelTreeEntry->keyInTree() + "\"?";
-                    iRet = QMessageBox::question(
-                        /* pWdgtParent     */ this,
-                        /* strTitle        */ getMainWindowTitle(),
-                        /* strText         */ strMsg,
-                        /* standardButtons */ QMessageBox::Yes | QMessageBox::No,
-                        /* defaultButton   */ QMessageBox::No );
-                }
-                if( iRet == QMessageBox::Yes )
-                {
-                    delete pGraphObj;
-                    pGraphObj = nullptr;
-                    pModelTreeEntry = nullptr;
-                }
-            } // if( pGraphObj->getType() != EGraphObjTypeSelectionPoint && pGraphObj->getType() != EGraphObjTypeLabel )
+                    if( !m_bSilentlyExecuteDeleteRequests )
+                    {
+                        QString strMsg = "Do you really want to delete \"" + pModelTreeEntry->keyInTree() + "\"?";
+                        iRet = QMessageBox::question(
+                            /* pWdgtParent     */ this,
+                            /* strTitle        */ getMainWindowTitle(),
+                            /* strText         */ strMsg,
+                            /* standardButtons */ QMessageBox::Yes | QMessageBox::No,
+                            /* defaultButton   */ QMessageBox::No );
+                    }
+                    if( iRet == QMessageBox::Yes )
+                    {
+                        delete pGraphObj;
+                        pGraphObj = nullptr;
+                        pModelTreeEntry = nullptr;
+                    }
+                } // if( pGraphObj->getType() != EGraphObjTypeSelectionPoint && pGraphObj->getType() != EGraphObjTypeLabel )
+            } // if( pGraphObj != nullptr && !pGraphObj->isRoot() )
         } // if( pModelTreeEntry != nullptr )
     } // if( m_modelIdxSelectedOnMousePressEvent.isValid() )
 
