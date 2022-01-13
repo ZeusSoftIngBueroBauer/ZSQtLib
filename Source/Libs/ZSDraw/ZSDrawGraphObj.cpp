@@ -2922,7 +2922,7 @@ void CGraphObj::showSelectionPointsOfBoundingRect( const QRectF& i_rct, unsigned
 
     QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
 
-    if( pGraphicsItem != nullptr )
+    if( pGraphicsItem != nullptr && pGraphicsItem->parentItem() == nullptr )
     {
         CGraphObjSelectionPoint* pGraphObjSelPt;
         QPointF                  ptSel;
@@ -3013,7 +3013,7 @@ void CGraphObj::showSelectionPointsOfBoundingRect( const QRectF& i_rct, unsigned
                 }
             } // if( bShowSelPt )
         } // for( idxSelPt = 0; idxSelPt < CEnumSelectionPoint::count(); idxSelPt++ )
-    } // if( pGraphicsItem != nullptr )
+    } // if( pGraphicsItem != nullptr && pGraphicsItem->parentItem() == nullptr )
 
 } // showSelectionPointsOfBoundingRect
 
@@ -3037,50 +3037,50 @@ void CGraphObj::updateSelectionPointsOfBoundingRect( const QRectF& i_rct, unsign
 
     QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
 
-    if( pGraphicsItem != nullptr )
+    if( pGraphicsItem != nullptr && pGraphicsItem->parentItem() == nullptr )
     {
         CGraphObjSelectionPoint* pGraphObjSelPt;
         QPointF                  ptSel;
         ESelectionPoint          selPt;
         int                      idxSelPt;
-        bool                     bShowSelPt;
+        bool                     bUpdateSelPt;
 
         for( idxSelPt = 0; idxSelPt < CEnumSelectionPoint::count(); idxSelPt++ )
         {
             selPt = static_cast<ESelectionPoint>(idxSelPt);
 
-            bShowSelPt = false;
+            bUpdateSelPt = false;
 
             if( selPt >= ESelectionPoint::CornerMin && selPt <= ESelectionPoint::CornerMax )
             {
                 if( i_selPts & ESelectionPointsBoundingRectCorner )
                 {
-                    bShowSelPt = true;
+                    bUpdateSelPt = true;
                 }
             }
             else if( selPt >= ESelectionPoint::LineCenterMin && selPt <= ESelectionPoint::LineCenterMax )
             {
                 if( i_selPts & ESelectionPointsBoundingRectLineCenter )
                 {
-                    bShowSelPt = true;
+                    bUpdateSelPt = true;
                 }
             }
             else if( selPt == ESelectionPoint::Center )
             {
                 if( i_selPts & ESelectionPointsBoundingRectCenter )
                 {
-                    bShowSelPt = true;
+                    bUpdateSelPt = true;
                 }
             }
             else if( selPt >= ESelectionPoint::RotateMin && selPt <= ESelectionPoint::RotateMax )
             {
                 if( i_selPts & ESelectionPointsBoundingRectRotate )
                 {
-                    bShowSelPt = true;
+                    bUpdateSelPt = true;
                 }
             }
 
-            if( bShowSelPt )
+            if( bUpdateSelPt )
             {
                 pGraphObjSelPt = m_arpSelPtsBoundingRect[idxSelPt];
 
@@ -3107,9 +3107,9 @@ void CGraphObj::updateSelectionPointsOfBoundingRect( const QRectF& i_rct, unsign
                     pGraphObjSelPt->setPos(ptSel);
                     pGraphObjSelPt->setZValue( pGraphicsItem->zValue()+0.05 );
                 }
-            } // if( bShowSelPt )
+            } // if( bUpdateSelPt )
         } // for( idxSelPt = 0; idxSelPt < CEnumSelectionPoint::count(); idxSelPt++ )
-    } // if( pGraphicsItem != nullptr )
+    } // if( pGraphicsItem != nullptr && pGraphicsItem->parentItem() == nullptr )
 
 } // updateSelectionPointsOfBoundingRect
 
@@ -3133,7 +3133,7 @@ void CGraphObj::showSelectionPointsOfPolygon( const QPolygonF& i_plg )
 
     QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
 
-    if( pGraphicsItem != nullptr )
+    if( pGraphicsItem != nullptr && pGraphicsItem->parentItem() == nullptr )
     {
         CGraphObjSelectionPoint* pGraphObjSelPt;
         QPointF                  ptSel;
@@ -3196,7 +3196,7 @@ void CGraphObj::showSelectionPointsOfPolygon( const QPolygonF& i_plg )
                 pGraphObjSelPt->setZValue( pGraphicsItem->zValue()+0.05 );
             }
         }
-    } // if( pGraphicsItem != nullptr )
+    } // if( pGraphicsItem != nullptr && pGraphicsItem->parentItem() == nullptr )
 
 } // showSelectionPointsOfPolygon
 
@@ -3220,7 +3220,7 @@ void CGraphObj::updateSelectionPointsOfPolygon( const QPolygonF& i_plg )
 
     QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
 
-    if( pGraphicsItem != nullptr )
+    if( pGraphicsItem != nullptr && pGraphicsItem->parentItem() == nullptr )
     {
         if( i_plg.size() == m_arpSelPtsPolygon.size() )
         {
@@ -3241,7 +3241,7 @@ void CGraphObj::updateSelectionPointsOfPolygon( const QPolygonF& i_plg )
                 }
             }
         }
-    } // if( pGraphicsItem != nullptr )
+    } // if( pGraphicsItem != nullptr && pGraphicsItem->parentItem() == nullptr )
 
 } // updateSelectionPointsOfPolygon
 

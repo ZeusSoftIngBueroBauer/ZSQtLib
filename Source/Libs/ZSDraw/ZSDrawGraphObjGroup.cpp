@@ -2701,7 +2701,6 @@ bool CGraphObjGroup::isHit( const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo ) 
         {
             o_pHitInfo->setCursor( Math::deg2Rad(m_fRotAngleCurr_deg) );
         }
-
     } // if( pGraphicsItem != nullptr )
 
     if( mthTracer.isActive(ETraceDetailLevelMethodArgs) )
@@ -2725,6 +2724,32 @@ bool CGraphObjGroup::isHit( const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo ) 
 } // isHit
 
 /*==============================================================================
+public: // reimplementing methods of base class QGraphicItem
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CGraphObjGroup::setCursor( const QCursor& i_cursor )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->isActive(ETraceDetailLevelMethodArgs) )
+    {
+        strMthInArgs = qCursorShape2Str(i_cursor.shape());
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "setCursor",
+        /* strAddInfo   */ strMthInArgs );
+
+    QGraphicsItemGroup::setCursor(i_cursor);
+
+} // setCursor
+
+/*==============================================================================
 protected: // must overridables of base class CGraphObj
 ==============================================================================*/
 
@@ -2746,8 +2771,10 @@ void CGraphObjGroup::showSelectionPoints( unsigned char i_selPts )
         /* strMethod    */ "showSelectionPoints",
         /* strAddInfo   */ strMthInArgs );
 
-    showSelectionPointsOfBoundingRect( m_rctCurr, i_selPts );
-
+    if( parentItem() == nullptr )
+    {
+        showSelectionPointsOfBoundingRect( m_rctCurr, i_selPts );
+    }
 } // showSelectionPoints
 
 //------------------------------------------------------------------------------
@@ -2768,8 +2795,10 @@ void CGraphObjGroup::updateSelectionPoints( unsigned char i_selPts )
         /* strMethod    */ "updateSelectionPoints",
         /* strAddInfo   */ strMthInArgs );
 
-    updateSelectionPointsOfBoundingRect( m_rctCurr, i_selPts );
-
+    if( parentItem() == nullptr )
+    {
+        updateSelectionPointsOfBoundingRect( m_rctCurr, i_selPts );
+    }
 } // updateSelectionPoints
 
 /*==============================================================================
@@ -3232,7 +3261,6 @@ void CGraphObjGroup::hoverEnterEvent( QGraphicsSceneHoverEvent* i_pEv )
                 setCursor(hitInfo.m_cursor);
             }
         }
-
     } // if( modeDrawing == EMode::Edit && editToolDrawing == EEditTool::Select )
 
 } // hoverEnterEvent
@@ -3285,7 +3313,6 @@ void CGraphObjGroup::hoverMoveEvent( QGraphicsSceneHoverEvent* i_pEv )
                 setCursor(hitInfo.m_cursor);
             }
         }
-
     } // if( modeDrawing == EMode::Edit && editToolDrawing == EEditTool::Select )
 
 } // hoverMoveEvent
@@ -3373,7 +3400,9 @@ void CGraphObjGroup::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
 
             SGraphObjHitInfo hitInfo;
 
-            //bool bIsHit = isHit( ptMouseItemPos, &hitInfo );
+            QPointF ptMouseItemPos = i_pEv->pos();
+
+            bool bIsHit = isHit(ptMouseItemPos, &hitInfo);
 
             m_editMode                  = hitInfo.m_editMode;
             m_editResizeMode            = hitInfo.m_editResizeMode;

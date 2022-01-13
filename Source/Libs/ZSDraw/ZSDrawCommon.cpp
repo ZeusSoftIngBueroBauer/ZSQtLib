@@ -24,29 +24,13 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-//#include <QtCore/qglobal.h>
-//#include <QtGui/QBitmap>
-
 #include "ZSDraw/ZSDrawCommon.h"
-//#include "ZSDraw/ZSDrawGraphObjRect.h"
-//#include "ZSPhysSizes/Geometry/ZSPhysSizes.h"
-//#include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysEnumEntry.h"
-//#include "ZSSys/ZSSysMath.h"
-//#include "ZSSys/ZSSysVersion.h"
-
-//#ifdef _WINDOWS
-//// As "min" will be defined as a macro with two arguments and qdatetime uses "min"
-//// as a function with no arguments "windows.h" must be included after qdatetime
-//// (which is included by ZSSysTime (which again is included by ZSSysAux)).
-//#include <windows.h>
-//#endif
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
 
 using namespace ZS::System;
-//using namespace ZS::PhysVal;
 using namespace ZS::Draw;
 
 

@@ -702,6 +702,32 @@ bool CGraphObjPolyline::isHit( const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo
 } // isHit
 
 /*==============================================================================
+public: // reimplementing methods of base class QGraphicItem
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CGraphObjPolyline::setCursor( const QCursor& i_cursor )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->isActive(ETraceDetailLevelMethodArgs) )
+    {
+        strMthInArgs = qCursorShape2Str(i_cursor.shape());
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "setCursor",
+        /* strAddInfo   */ strMthInArgs );
+
+    QGraphicsPolygonItem::setCursor(i_cursor);
+
+} // setCursor
+
+/*==============================================================================
 protected: // must overridables of base class CGraphObj
 ==============================================================================*/
 
@@ -723,20 +749,22 @@ void CGraphObjPolyline::showSelectionPoints( unsigned char i_selPts )
         /* strMethod    */ "showSelectionPoints",
         /* strAddInfo   */ strAddTrcInfo );
 
-    QPolygonF plg = polygon();
-    QRectF    rct = plg.boundingRect();
-
-    // Create bounding rectangle's selection points before shape edge points so that
-    // the shape edge points receive mouse events before the bounding rectangle's
-    // selection points (as they are "above" them).
-
-    showSelectionPointsOfBoundingRect( rct, i_selPts );
-
-    if( i_selPts & ESelectionPointsPolygonShapePoints )
+    if( parentItem() == nullptr )
     {
-        showSelectionPointsOfPolygon( plg );
-    }
+        QPolygonF plg = polygon();
+        QRectF    rct = plg.boundingRect();
 
+        // Create bounding rectangle's selection points before shape edge points so that
+        // the shape edge points receive mouse events before the bounding rectangle's
+        // selection points (as they are "above" them).
+
+        showSelectionPointsOfBoundingRect( rct, i_selPts );
+
+        if( i_selPts & ESelectionPointsPolygonShapePoints )
+        {
+            showSelectionPointsOfPolygon( plg );
+        }
+    }
 } // showSelectionPoints
 
 //------------------------------------------------------------------------------
@@ -757,16 +785,18 @@ void CGraphObjPolyline::updateSelectionPoints( unsigned char i_selPts )
         /* strMethod    */ "updateSelectionPoints",
         /* strAddInfo   */ strAddTrcInfo );
 
-    QPolygonF plg = polygon();
-    QRectF    rct = plg.boundingRect();
+    if( parentItem() == nullptr )
+    {
+        QPolygonF plg = polygon();
+        QRectF    rct = plg.boundingRect();
 
-    // Create bounding rectangle's selection points before shape edge points so that
-    // the shape edge points receive mouse events before the bounding rectangle's
-    // selection points (as they are "above" them).
+        // Create bounding rectangle's selection points before shape edge points so that
+        // the shape edge points receive mouse events before the bounding rectangle's
+        // selection points (as they are "above" them).
 
-    updateSelectionPointsOfBoundingRect( rct, i_selPts );
-    updateSelectionPointsOfPolygon( plg );
-
+        updateSelectionPointsOfBoundingRect( rct, i_selPts );
+        updateSelectionPointsOfPolygon( plg );
+    }
 } // updateSelectionPoints
 
 /*==============================================================================

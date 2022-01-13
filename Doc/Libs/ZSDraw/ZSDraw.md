@@ -141,8 +141,16 @@ Point Objekts.
 Selektieren von Objekten
 ========================
 
+Dies geschieht durch einen Mouse Click auf das Objekt oder durch expliziten Aufruf von QGraphicsItem::select.
+Fuer die selektierten Objekte muessen Mouse Button Events gesetzt werden, die es akzeptieren soll, damit die
+Qt Graphics Scene den Mouse Click Event unmittelbar als auch nachfolgende Mouse Events an das Item schickt.
+
 Verschieben von Objekten
 ========================
+
+Um ein Objekt verschieben zu koennen, muss es vorher selektiert und als Mouse Event Grabber der Scene bekannt
+gegeben werden. Damit werden die Mouse Events, die an der Position des Objekt eintreffen, an das Objekt weitergeleitet.
+Das Objekt muss die Mouse Move Events entsprechend verarbeiten.
 
 Form Änderungen
 ===============

@@ -91,6 +91,8 @@ public: // must overridables of base class CGraphObj
     virtual void setIsHit( bool i_bHit );
 public: // overridables of base class CGraphObj
     virtual bool isHit( const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo ) const;
+public: // reimplementing methods of base class QGraphicItem
+    void setCursor( const QCursor& cursor );
 public: // overridables of base class CGraphObj
     virtual QPointF getSelectionPoint( ESelectionPoint i_selPt ) const; // returns coordinates of selection point in item's coordinate system
 protected: // must overridables of base class CGraphObj

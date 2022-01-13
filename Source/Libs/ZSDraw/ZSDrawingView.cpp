@@ -453,13 +453,13 @@ void CDrawingView::mouseMoveEvent( QMouseEvent* i_pEv )
         /* strMethod    */ "mouseMoveEvent",
         /* strAddInfo   */ strMthInArgs );
 
-    QPointF ptPos = i_pEv->pos();
+    QPoint ptPos = i_pEv->pos();
 
     emit mousePosChanged(ptPos);
 
     QGraphicsView::mouseMoveEvent(i_pEv);
 
-    QList<QGraphicsItem*> arpGraphicsItemsUnderCursor = items(mapFromGlobal(QCursor::pos()));
+    QList<QGraphicsItem*> arpGraphicsItemsUnderCursor = items(ptPos);
     QGraphicsItem*        pGraphicsItem;
     int                   idxGraphObj;
     QCursor               cursor;
@@ -471,7 +471,6 @@ void CDrawingView::mouseMoveEvent( QMouseEvent* i_pEv )
 
         if( pGraphicsItem->hasCursor() )
         {
-            //QMetaObject::invokeMethod( this, "_q_setViewportCursor", Q_ARG(QCursor,itemUnderCursor->cursor()) );
             bGraphicsItemHasCursor = true;
             cursor = pGraphicsItem->cursor();
             break;
@@ -485,7 +484,7 @@ void CDrawingView::mouseMoveEvent( QMouseEvent* i_pEv )
     }
     else // if( !bGraphicsItemHasCursor )
     {
-        QPointF ptScenePos = mapToScene(ptPos.toPoint());
+        QPointF ptScenePos = mapToScene(ptPos);
         QRectF  rctScene = m_pDrawingScene->sceneRect();
 
         if( rctScene.contains(ptScenePos) )

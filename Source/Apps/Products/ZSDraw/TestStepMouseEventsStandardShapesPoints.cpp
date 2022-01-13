@@ -115,35 +115,35 @@ void CTest::createTestGroupMouseEventsStandardShapesPoints( ZS::Test::CTestStepG
         /* strName         */ "Step " + QString::number(++idxStep) + ": Create First Point - MousePress",
         /* strOperation    */ "view.mousePressEvent(30, 30)",
         /* pTSGrpParent    */ pGrp,
-        /* szDoTestStepFct */ SLOT(doTestStepMouseEventsStandardShapesPointsCreatePoints(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepMouseEventsStandardShapesPoints(ZS::Test::CTestStep*)) );
 
     new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + ": Create First Point - MouseRelease",
         /* strOperation    */ "view.mouseReleaseEvent(30, 30)",
         /* pTSGrpParent    */ pGrp,
-        /* szDoTestStepFct */ SLOT(doTestStepMouseEventsStandardShapesPointsCreatePoints(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepMouseEventsStandardShapesPoints(ZS::Test::CTestStep*)) );
 
     new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + ": Create Further Points - MousePress",
         /* strOperation    */ "view.mousePressEvent(40, 40)",
         /* pTSGrpParent    */ pGrp,
-        /* szDoTestStepFct */ SLOT(doTestStepMouseEventsStandardShapesPointsCreatePoints(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepMouseEventsStandardShapesPoints(ZS::Test::CTestStep*)) );
 
     new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + ": Create Further Points - MouseMove",
         /* strOperation    */ "view.mouseMoveEvent(50, 50)",
         /* pTSGrpParent    */ pGrp,
-        /* szDoTestStepFct */ SLOT(doTestStepMouseEventsStandardShapesPointsCreatePoints(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepMouseEventsStandardShapesPoints(ZS::Test::CTestStep*)) );
 
     new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + ": Create Further Points - MouseRelease",
         /* strOperation    */ "view.mouseReleaseEvent(50, 50)",
         /* pTSGrpParent    */ pGrp,
-        /* szDoTestStepFct */ SLOT(doTestStepMouseEventsStandardShapesPointsCreatePoints(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepMouseEventsStandardShapesPoints(ZS::Test::CTestStep*)) );
 
     new ZS::Test::CTestStep(
         /* pTest           */ this,
@@ -154,220 +154,241 @@ void CTest::createTestGroupMouseEventsStandardShapesPoints( ZS::Test::CTestStepG
 
     new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + ": Select Point - MousePress",
+        /* strName         */ "Step " + QString::number(++idxStep) + ": Move Point - SelectByArea - MousePress",
         /* strOperation    */ "view.mousePressEvent(45, 45)",
         /* pTSGrpParent    */ pGrp,
-        /* szDoTestStepFct */ SLOT(doTestStepMouseEventsStandardShapesPointsSelectPoint(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepMouseEventsStandardShapesPoints(ZS::Test::CTestStep*)) );
 
     new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + ": Select Point - MouseMove",
+        /* strName         */ "Step " + QString::number(++idxStep) + ": Move Point - SelectByArea - MouseMove",
         /* strOperation    */ "view.mouseMoveEvent(50, 50)",
         /* pTSGrpParent    */ pGrp,
-        /* szDoTestStepFct */ SLOT(doTestStepMouseEventsStandardShapesPointsSelectPoint(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepMouseEventsStandardShapesPoints(ZS::Test::CTestStep*)) );
 
     new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + ": Select Point - MouseMove",
+        /* strName         */ "Step " + QString::number(++idxStep) + ": Move Point - SelectByArea - MouseMove",
         /* strOperation    */ "view.mouseMoveEvent(55, 55)",
         /* pTSGrpParent    */ pGrp,
-        /* szDoTestStepFct */ SLOT(doTestStepMouseEventsStandardShapesPointsSelectPoint(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepMouseEventsStandardShapesPoints(ZS::Test::CTestStep*)) );
 
     new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + ": Select Point - MouseRelease",
+        /* strName         */ "Step " + QString::number(++idxStep) + ": Move Point - SelectByArea - MouseRelease",
         /* strOperation    */ "view.mouseReleaseEvent(55, 55)",
         /* pTSGrpParent    */ pGrp,
-        /* szDoTestStepFct */ SLOT(doTestStepMouseEventsStandardShapesPointsSelectPoint(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepMouseEventsStandardShapesPoints(ZS::Test::CTestStep*)) );
 
     new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + ": Select Point - Check Selected",
+        /* strName         */ "Step " + QString::number(++idxStep) + ": Move Point - SelectByArea - Check Selected",
         /* strOperation    */ "Point.isSelected(50, 50): true",
         /* pTSGrpParent    */ pGrp,
-        /* szDoTestStepFct */ SLOT(doTestStepMouseEventsStandardShapesPointsCheckSelectResult(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepMouseEventsStandardShapesPointsCheckResult(ZS::Test::CTestStep*)) );
 
     new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + ": Select Point - MousePress",
+        /* strName         */ "Step " + QString::number(++idxStep) + ": Move Point - SelectOnClick - MousePress",
         /* strOperation    */ "view.mousePressEvent(50, 50)",
         /* pTSGrpParent    */ pGrp,
-        /* szDoTestStepFct */ SLOT(doTestStepMouseEventsStandardShapesPointsSelectPoint(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepMouseEventsStandardShapesPoints(ZS::Test::CTestStep*)) );
 
     new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + ": Select Point - Check Selected",
+        /* strName         */ "Step " + QString::number(++idxStep) + ": Move Point - SelectOnClick - Check Selected",
         /* strOperation    */ "Point.isSelected(50, 50): true",
         /* pTSGrpParent    */ pGrp,
-        /* szDoTestStepFct */ SLOT(doTestStepMouseEventsStandardShapesPointsCheckSelectResult(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepMouseEventsStandardShapesPointsCheckResult(ZS::Test::CTestStep*)) );
 
     new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + ": Select Point - MouseMove",
+        /* strName         */ "Step " + QString::number(++idxStep) + ": Move Point - MouseMove",
         /* strOperation    */ "view.mouseMoveEvent(52, 52)",
         /* pTSGrpParent    */ pGrp,
-        /* szDoTestStepFct */ SLOT(doTestStepMouseEventsStandardShapesPointsSelectPoint(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepMouseEventsStandardShapesPoints(ZS::Test::CTestStep*)) );
 
     new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + ": Select Point - Check Selected",
+        /* strName         */ "Step " + QString::number(++idxStep) + ": Move Point - Check Selected",
         /* strOperation    */ "Point.isSelected(52, 52): true",
         /* pTSGrpParent    */ pGrp,
-        /* szDoTestStepFct */ SLOT(doTestStepMouseEventsStandardShapesPointsCheckSelectResult(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepMouseEventsStandardShapesPointsCheckResult(ZS::Test::CTestStep*)) );
 
     new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + ": Select Point - MouseMove",
+        /* strName         */ "Step " + QString::number(++idxStep) + ": Move Point - MouseMove",
         /* strOperation    */ "view.mouseMoveEvent(55, 55)",
         /* pTSGrpParent    */ pGrp,
-        /* szDoTestStepFct */ SLOT(doTestStepMouseEventsStandardShapesPointsSelectPoint(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepMouseEventsStandardShapesPoints(ZS::Test::CTestStep*)) );
 
     new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + ": Select Point - Check Selected",
+        /* strName         */ "Step " + QString::number(++idxStep) + ": Move Point - Check Selected",
         /* strOperation    */ "Point.isSelected(55, 55): true",
         /* pTSGrpParent    */ pGrp,
-        /* szDoTestStepFct */ SLOT(doTestStepMouseEventsStandardShapesPointsCheckSelectResult(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepMouseEventsStandardShapesPointsCheckResult(ZS::Test::CTestStep*)) );
 
     new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + ": Select Point - MouseRelease",
+        /* strName         */ "Step " + QString::number(++idxStep) + ": Move Point - MouseRelease",
         /* strOperation    */ "view.mouseReleaseEvent(55, 55)",
         /* pTSGrpParent    */ pGrp,
-        /* szDoTestStepFct */ SLOT(doTestStepMouseEventsStandardShapesPointsSelectPoint(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepMouseEventsStandardShapesPoints(ZS::Test::CTestStep*)) );
 
     new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + ": Select Point - Check Selected",
+        /* strName         */ "Step " + QString::number(++idxStep) + ": Move Point - Check Selected",
         /* strOperation    */ "Point.isSelected(55, 55): true",
         /* pTSGrpParent    */ pGrp,
-        /* szDoTestStepFct */ SLOT(doTestStepMouseEventsStandardShapesPointsCheckSelectResult(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepMouseEventsStandardShapesPointsCheckResult(ZS::Test::CTestStep*)) );
 
     new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + ": Select Points - MousePress",
+        /* strName         */ "Step " + QString::number(++idxStep) + ": Select Points - SelectByArea - MousePress",
         /* strOperation    */ "view.mousePressEvent(20, 20)",
         /* pTSGrpParent    */ pGrp,
-        /* szDoTestStepFct */ SLOT(doTestStepMouseEventsStandardShapesPointsSelectPoint(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepMouseEventsStandardShapesPoints(ZS::Test::CTestStep*)) );
 
     new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + ": Select Points - Check Selected",
+        /* strName         */ "Step " + QString::number(++idxStep) + ": Select Points - SelectByArea - Check Unselected",
         /* strOperation    */ "Point.isSelected(55, 55): false",
         /* pTSGrpParent    */ pGrp,
-        /* szDoTestStepFct */ SLOT(doTestStepMouseEventsStandardShapesPointsCheckSelectResult(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepMouseEventsStandardShapesPointsCheckResult(ZS::Test::CTestStep*)) );
 
     new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + ": Select Points - MouseMove",
+        /* strName         */ "Step " + QString::number(++idxStep) + ": Select Points - SelectByArea - MouseMove",
         /* strOperation    */ "view.mouseMoveEvent(25, 25)",
         /* pTSGrpParent    */ pGrp,
-        /* szDoTestStepFct */ SLOT(doTestStepMouseEventsStandardShapesPointsSelectPoint(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepMouseEventsStandardShapesPoints(ZS::Test::CTestStep*)) );
 
     new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + ": Select Points - MouseMove",
+        /* strName         */ "Step " + QString::number(++idxStep) + ": Select Points - SelectByArea - MouseMove",
         /* strOperation    */ "view.mouseMoveEvent(30, 30)",
         /* pTSGrpParent    */ pGrp,
-        /* szDoTestStepFct */ SLOT(doTestStepMouseEventsStandardShapesPointsSelectPoint(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepMouseEventsStandardShapesPoints(ZS::Test::CTestStep*)) );
 
     new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + ": Select Points - MouseMove",
-        /* strOperation    */ "view.mouseMoveEvent(35, 35)",
-        /* pTSGrpParent    */ pGrp,
-        /* szDoTestStepFct */ SLOT(doTestStepMouseEventsStandardShapesPointsSelectPoint(ZS::Test::CTestStep*)) );
-
-    new ZS::Test::CTestStep(
-        /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + ": Select Points - MouseMove",
+        /* strName         */ "Step " + QString::number(++idxStep) + ": Select Points - SelectByArea - MouseMove",
         /* strOperation    */ "view.mouseMoveEvent(40, 40)",
         /* pTSGrpParent    */ pGrp,
-        /* szDoTestStepFct */ SLOT(doTestStepMouseEventsStandardShapesPointsSelectPoint(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepMouseEventsStandardShapesPoints(ZS::Test::CTestStep*)) );
 
     new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + ": Select Points - MouseMove",
-        /* strOperation    */ "view.mouseMoveEvent(45, 45)",
-        /* pTSGrpParent    */ pGrp,
-        /* szDoTestStepFct */ SLOT(doTestStepMouseEventsStandardShapesPointsSelectPoint(ZS::Test::CTestStep*)) );
-
-    new ZS::Test::CTestStep(
-        /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + ": Select Points - MouseMove",
+        /* strName         */ "Step " + QString::number(++idxStep) + ": Select Points - SelectByArea - MouseMove",
         /* strOperation    */ "view.mouseMoveEvent(50, 50)",
         /* pTSGrpParent    */ pGrp,
-        /* szDoTestStepFct */ SLOT(doTestStepMouseEventsStandardShapesPointsSelectPoint(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepMouseEventsStandardShapesPoints(ZS::Test::CTestStep*)) );
 
     new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + ": Select Points - MouseMove",
-        /* strOperation    */ "view.mouseMoveEvent(55, 55)",
-        /* pTSGrpParent    */ pGrp,
-        /* szDoTestStepFct */ SLOT(doTestStepMouseEventsStandardShapesPointsSelectPoint(ZS::Test::CTestStep*)) );
-
-    new ZS::Test::CTestStep(
-        /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + ": Select Points - MouseMove",
+        /* strName         */ "Step " + QString::number(++idxStep) + ": Select Points - SelectByArea - MouseMove",
         /* strOperation    */ "view.mouseMoveEvent(60, 60)",
         /* pTSGrpParent    */ pGrp,
-        /* szDoTestStepFct */ SLOT(doTestStepMouseEventsStandardShapesPointsSelectPoint(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepMouseEventsStandardShapesPoints(ZS::Test::CTestStep*)) );
 
     new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + ": Select Points - MouseRelease",
+        /* strName         */ "Step " + QString::number(++idxStep) + ": Select Points - SelectByArea - MouseRelease",
         /* strOperation    */ "view.mouseReleaseEvent(60, 60)",
         /* pTSGrpParent    */ pGrp,
-        /* szDoTestStepFct */ SLOT(doTestStepMouseEventsStandardShapesPointsSelectPoint(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepMouseEventsStandardShapesPoints(ZS::Test::CTestStep*)) );
 
     new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + ": Select Points - Check Selected",
         /* strOperation    */ "Point.isSelected(30, 30): true",
         /* pTSGrpParent    */ pGrp,
-        /* szDoTestStepFct */ SLOT(doTestStepMouseEventsStandardShapesPointsCheckSelectResult(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepMouseEventsStandardShapesPointsCheckResult(ZS::Test::CTestStep*)) );
 
     new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + ": Select Points - Check Selected",
         /* strOperation    */ "Point.isSelected(40, 40): true",
         /* pTSGrpParent    */ pGrp,
-        /* szDoTestStepFct */ SLOT(doTestStepMouseEventsStandardShapesPointsCheckSelectResult(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepMouseEventsStandardShapesPointsCheckResult(ZS::Test::CTestStep*)) );
 
     new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + ": Select Points - Check Selected",
         /* strOperation    */ "Point.isSelected(55, 55): true",
         /* pTSGrpParent    */ pGrp,
-        /* szDoTestStepFct */ SLOT(doTestStepMouseEventsStandardShapesPointsCheckSelectResult(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepMouseEventsStandardShapesPointsCheckResult(ZS::Test::CTestStep*)) );
 
     new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + ": Trigger Edit Group",
+        /* strName         */ "Step " + QString::number(++idxStep) + ": Group Points - Trigger Edit Group",
         /* strOperation    */ "drawing.groupGraphObjsSelected()",
         /* pTSGrpParent    */ pGrp,
         /* szDoTestStepFct */ SLOT(doTestStepMouseEventsStandardShapesPointsTriggerEditGroup(ZS::Test::CTestStep*)) );
 
     new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + ": Group - Check Existing and Selected",
+        /* strName         */ "Step " + QString::number(++idxStep) + ": Group Points - Check Group Existing and Selected",
         /* strOperation    */ "Group.isSelected(30, 40): true",
         /* pTSGrpParent    */ pGrp,
-        /* szDoTestStepFct */ SLOT(doTestStepMouseEventsStandardShapesPointsCheckSelectResult(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepMouseEventsStandardShapesPointsCheckResult(ZS::Test::CTestStep*)) );
 
     new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + ": Trigger Edit Ungroup",
+        /* strName         */ "Step " + QString::number(++idxStep) + ": Move Group - Select",
+        /* strOperation    */ "view.mousePressEvent(43, 43)",
+        /* pTSGrpParent    */ pGrp,
+        /* szDoTestStepFct */ SLOT(doTestStepMouseEventsStandardShapesPoints(ZS::Test::CTestStep*)) );
+
+    new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + ": Move Group - MouseMove",
+        /* strOperation    */ "view.mouseMoveEvent(53, 53)",
+        /* pTSGrpParent    */ pGrp,
+        /* szDoTestStepFct */ SLOT(doTestStepMouseEventsStandardShapesPoints(ZS::Test::CTestStep*)) );
+
+    new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + ": Move Group - MouseMove",
+        /* strOperation    */ "view.mouseMoveEvent(63, 63)",
+        /* pTSGrpParent    */ pGrp,
+        /* szDoTestStepFct */ SLOT(doTestStepMouseEventsStandardShapesPoints(ZS::Test::CTestStep*)) );
+
+    new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + ": Move Group - MouseMove",
+        /* strOperation    */ "view.mouseMoveEvent(73, 73)",
+        /* pTSGrpParent    */ pGrp,
+        /* szDoTestStepFct */ SLOT(doTestStepMouseEventsStandardShapesPoints(ZS::Test::CTestStep*)) );
+
+    new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + ": Move Group - MouseRelease",
+        /* strOperation    */ "view.mouseReleaseEvent(73, 73)",
+        /* pTSGrpParent    */ pGrp,
+        /* szDoTestStepFct */ SLOT(doTestStepMouseEventsStandardShapesPoints(ZS::Test::CTestStep*)) );
+
+    new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + ": Move Group - Check Group Moved",
+        /* strOperation    */ "Group.isSelected(73, 73): true",
+        /* pTSGrpParent    */ pGrp,
+        /* szDoTestStepFct */ SLOT(doTestStepMouseEventsStandardShapesPointsCheckResult(ZS::Test::CTestStep*)) );
+
+    new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + ": Ungroup Points - Trigger Edit Ungroup",
         /* strOperation    */ "drawing.ungroupGraphObjsSelected()",
         /* pTSGrpParent    */ pGrp,
         /* szDoTestStepFct */ SLOT(doTestStepMouseEventsStandardShapesPointsTriggerEditUngroup(ZS::Test::CTestStep*)) );
 
     new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + ": Group - Check Not Existing",
+        /* strName         */ "Step " + QString::number(++idxStep) + ": Ungroup Group - Check Group Not Existing",
         /* strOperation    */ "?.isSelected(30, 40): ?",
         /* pTSGrpParent    */ pGrp,
-        /* szDoTestStepFct */ SLOT(doTestStepMouseEventsStandardShapesPointsCheckSelectResult(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepMouseEventsStandardShapesPointsCheckResult(ZS::Test::CTestStep*)) );
 
     if( mthTracer.isActive(ETraceDetailLevelMethodArgs) )
     {
@@ -477,245 +498,6 @@ void CTest::doTestStepMouseEventsStandardShapesPointsActivateDrawingTool( ZS::Te
 } // doTestStepMouseEventsStandardShapesActivateDrawingTool
 
 //------------------------------------------------------------------------------
-void CTest::doTestStepMouseEventsStandardShapesPointsCreatePoints( ZS::Test::CTestStep* i_pTestStep )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
-    {
-        strMthInArgs = i_pTestStep->path();
-    }
-
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strMethod    */ "doTestStepMouseEventsStandardShapesPointsCreatePoints",
-        /* strAddInfo   */ strMthInArgs );
-
-    // Expected Values
-    //----------------
-
-    QStringList strlstExpectedValues;
-
-    /* strOperation might be:
-
-       view.mousePressEvent(10, 10)
-       view.mouseMoveEvent(10, 10)
-       view.mouseReleaseEvent(10, 10)
-    */
-
-    QPoint ptSceneMousePos;
-
-    QString strOperation = i_pTestStep->getOperation();
-
-    QEvent::Type eventType = QEvent::None;
-    Qt::MouseButton mouseButton = Qt::NoButton;
-    Qt::MouseButtons mouseButtons = Qt::NoButton;
-
-    if( strOperation.contains("view.mousePressEvent") )
-    {
-        QString strCoors = strOperation;
-
-        strCoors = strCoors.remove("view.mousePressEvent");
-        strCoors = strCoors.remove("(");
-        strCoors = strCoors.remove(")");
-
-        QStringList strlstCoors = strCoors.split(",");
-
-        if( strlstCoors.size() == 2 )
-        {
-            bool bConvertedX = false;
-            bool bConvertedY = false;
-            int  xCoor = strlstCoors[0].trimmed().toInt(&bConvertedX);
-            int  yCoor = strlstCoors[1].trimmed().toInt(&bConvertedY);
-            if( bConvertedX && bConvertedY )
-            {
-                ptSceneMousePos.setX(xCoor);
-                ptSceneMousePos.setY(yCoor);
-            }
-        }
-
-        s_arPts.append(ptSceneMousePos);
-
-        eventType = QEvent::MouseButtonPress;
-        mouseButton = Qt::LeftButton;
-        mouseButtons = Qt::NoButton;
-
-        i_pTestStep->setDescription("scene.create" + graphObjType2Str(EGraphObjTypePoint) + "( ScenePos:" + point2Str(ptSceneMousePos) + " )");
-
-    } // if( strOperation.contains("view.mousePressEvent") )
-
-    else if( strOperation.contains("view.mouseMoveEvent") )
-    {
-        QString strCoors = strOperation;
-
-        strCoors = strCoors.remove("view.mouseMoveEvent");
-        strCoors = strCoors.remove("(");
-        strCoors = strCoors.remove(")");
-
-        QStringList strlstCoors = strCoors.split(",");
-
-        if( strlstCoors.size() == 2 )
-        {
-            bool bConvertedX = false;
-            bool bConvertedY = false;
-            int  xCoor = strlstCoors[0].trimmed().toInt(&bConvertedX);
-            int  yCoor = strlstCoors[1].trimmed().toInt(&bConvertedY);
-            if( bConvertedX && bConvertedY )
-            {
-                ptSceneMousePos.setX(xCoor);
-                ptSceneMousePos.setY(yCoor);
-            }
-        }
-
-        ptSceneMousePos.setX( ptSceneMousePos.x() );
-        ptSceneMousePos.setY( ptSceneMousePos.y() );
-
-        s_arPts.append(ptSceneMousePos);
-
-        eventType = QEvent::MouseMove;
-        mouseButton = Qt::NoButton;
-        mouseButtons = Qt::LeftButton;
-
-        i_pTestStep->setDescription("scene.create" + graphObjType2Str(EGraphObjTypePoint) + "( ScenePos:" + point2Str(ptSceneMousePos) + " )");
-
-    } // if( strOperation.contains("view.mouseMoveEvent") )
-
-    else if( strOperation.contains("view.mouseReleaseEvent") )
-    {
-        QString strCoors = strOperation;
-
-        strCoors = strCoors.remove("view.mouseReleaseEvent");
-        strCoors = strCoors.remove("(");
-        strCoors = strCoors.remove(")");
-
-        QStringList strlstCoors = strCoors.split(",");
-
-        if( strlstCoors.size() == 2 )
-        {
-            bool bConvertedX = false;
-            bool bConvertedY = false;
-            int  xCoor = strlstCoors[0].trimmed().toInt(&bConvertedX);
-            int  yCoor = strlstCoors[1].trimmed().toInt(&bConvertedY);
-            if( bConvertedX && bConvertedY )
-            {
-                ptSceneMousePos.setX(xCoor);
-                ptSceneMousePos.setY(yCoor);
-            }
-        }
-
-        ptSceneMousePos.setX( ptSceneMousePos.x() );
-        ptSceneMousePos.setY( ptSceneMousePos.y() );
-
-        eventType = QEvent::MouseButtonRelease;
-        mouseButton = Qt::LeftButton;
-        mouseButtons = Qt::NoButton;
-
-        i_pTestStep->setDescription( "view.mouseReleaseEvent( ScenePos:" + point2Str(ptSceneMousePos) + " )" );
-    }
-
-    QPoint ptViewMousePos = m_pDrawingView->mapFromScene(ptSceneMousePos);
-
-    QPoint ptMousePosGlobal = m_pDrawingView->mapToGlobal(ptViewMousePos);
-
-    ptMousePosGlobal.setX(ptMousePosGlobal.x()+1); // Maybe graphics view or graphics scene bug on calculating the screen position.
-    ptMousePosGlobal.setY(ptMousePosGlobal.y()+1); // Without adding 1 pixel the newly created object will not be selected by the scene.
-
-    strlstExpectedValues.append("EditTool: " + CEnumEditTool(EEditTool::CreateObjects).toString());
-    strlstExpectedValues.append("DrawingTool: " + graphObjType2Str(EGraphObjTypePoint));
-
-    int idx = s_iStartTestInstCount;
-    for( const auto& pt : s_arPts )
-    {
-        QString strCurrentGraphObj = graphObjType2Str(EGraphObjTypePoint) + QString::number(idx++);
-        strlstExpectedValues.append(strCurrentGraphObj + ": " + point2Str(QPointF(pt)));
-    }
-
-    i_pTestStep->setExpectedValues(strlstExpectedValues);
-
-    // Test Step
-    //----------
-
-    QMouseEvent* pMouseEv = new QMouseEvent(
-        /* type      */ eventType,
-        /* pos       */ ptViewMousePos,
-        /* globalPos */ ptMousePosGlobal,
-        /* button    */ mouseButton,
-        /* buttons   */ mouseButtons,
-        /* modifiers */ Qt::NoModifier );
-    if( eventType == QEvent::MouseButtonPress )
-    {
-        m_pDrawingView->mousePressEvent(pMouseEv);
-    }
-    else if( eventType == QEvent::MouseMove )
-    {
-        m_pDrawingView->mouseMoveEvent(pMouseEv);
-    }
-    else if( eventType == QEvent::MouseButtonRelease )
-    {
-        m_pDrawingView->mouseReleaseEvent(pMouseEv);
-    }
-    delete pMouseEv;
-    pMouseEv = nullptr;
-
-    // Result Values
-    //--------------
-
-    QStringList strlstResultValues;
-
-    QString strCurrentDrawingTool;
-
-    if( m_pDrawingScene->getCurrentDrawingTool() != nullptr )
-    {
-        strCurrentDrawingTool = m_pDrawingScene->getCurrentDrawingTool()->getGraphObjTypeAsString();
-    }
-
-    strlstResultValues.append("EditTool: " + m_pDrawingScene->getEditTool().toString());
-    strlstResultValues.append("DrawingTool: " + strCurrentDrawingTool);
-
-    // Need to sort the list of graphics items return be the scene to follow the order
-    // the objects have been created by the test steps.
-    QList<QGraphicsItem*> arpGraphicsItems;
-    QList<QGraphicsItem*> arpGraphicsItemsTmp = m_pDrawingScene->items();
-    idx = s_iStartTestInstCount;
-    for( const auto& pt : s_arPts )
-    {
-        QString strCurrentGraphObj = graphObjType2Str(EGraphObjTypePoint) + QString::number(idx++);
-
-        for( auto* pGraphicsItem : arpGraphicsItemsTmp )
-        {
-            CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
-            if( pGraphObj->path() == strCurrentGraphObj )
-            {
-                arpGraphicsItems.append(pGraphicsItem);
-                arpGraphicsItemsTmp.removeOne(pGraphicsItem);
-                break;
-            }
-        }
-        // Append not expected graphics items to result list.
-        while( !arpGraphicsItemsTmp.isEmpty() )
-        {
-            QGraphicsItem* pGraphicsItem = arpGraphicsItemsTmp.takeLast();
-            arpGraphicsItems.append(pGraphicsItem);
-            arpGraphicsItemsTmp.removeOne(pGraphicsItem);
-        }
-    }
-    // Graphics items in sorted list are the result values.
-    for( auto* pGraphicsItem : arpGraphicsItems )
-    {
-        CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
-        if( pGraphicsItem != nullptr && pGraphObj != nullptr )
-        {
-            strlstResultValues.append(pGraphObj->path() + ": " + pGraphObj->getScenePolygonShapePointsString());
-        }
-    }
-
-    i_pTestStep->setResultValues(strlstResultValues);
-
-} // doTestStepMouseEventsStandardShapesPointsCreatePoints
-
-//------------------------------------------------------------------------------
 void CTest::doTestStepMouseEventsStandardShapesPointsActivateEditSelect( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
@@ -769,378 +551,6 @@ void CTest::doTestStepMouseEventsStandardShapesPointsActivateEditSelect( ZS::Tes
     i_pTestStep->setResultValues(strlstResultValues);
 
 } // doTestStepMouseEventsStandardShapesPointsActivateEditSelect
-
-//------------------------------------------------------------------------------
-void CTest::doTestStepMouseEventsStandardShapesPointsSelectPoint( ZS::Test::CTestStep* i_pTestStep )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
-    {
-        strMthInArgs = i_pTestStep->path();
-    }
-
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strMethod    */ "doTestStepMouseEventsStandardShapesPointsSelectPoint",
-        /* strAddInfo   */ strMthInArgs );
-
-    // Expected Values
-    //----------------
-
-    QStringList strlstExpectedValues;
-
-    /* strOperation might be:
-
-       view.mouseHoverEvent(50, 50)
-       view.mousePressEvent(50, 50)
-       view.mouseReleaseEvent(50, 50)
-    */
-
-    QPoint ptSceneMousePos;
-    QPoint ptViewMousePos;
-    QPoint ptMousePosGlobal;
-
-    QString strOperation = i_pTestStep->getOperation();
-
-    QEvent::Type eventType = QEvent::None;
-    Qt::MouseButton mouseButton = Qt::NoButton;
-    Qt::MouseButtons mouseButtons = Qt::NoButton;
-
-    if( strOperation.contains("view.mouseHoverEvent") )
-    {
-        QString strCoors = strOperation;
-
-        strCoors = strCoors.remove("view.mouseHoverEvent");
-        strCoors = strCoors.remove("(");
-        strCoors = strCoors.remove(")");
-
-        QStringList strlstCoors = strCoors.split(",");
-
-        if( strlstCoors.size() == 2 )
-        {
-            bool bConvertedX = false;
-            bool bConvertedY = false;
-            int  xCoor = strlstCoors[0].trimmed().toInt(&bConvertedX);
-            int  yCoor = strlstCoors[1].trimmed().toInt(&bConvertedY);
-            if( bConvertedX && bConvertedY )
-            {
-                ptSceneMousePos.setX(xCoor);
-                ptSceneMousePos.setY(yCoor);
-            }
-        }
-
-        eventType = QEvent::MouseMove;
-        mouseButton = Qt::NoButton;
-        mouseButtons = Qt::NoButton;
-
-        ptViewMousePos = m_pDrawingView->mapFromScene(ptSceneMousePos);
-        ptMousePosGlobal = m_pDrawingView->mapToGlobal(ptViewMousePos);
-
-        i_pTestStep->setDescription("view.mouseMoveEvent" + graphObjType2Str(EGraphObjTypePoint) + "( ScenePos:" + point2Str(ptSceneMousePos) + " )");
-
-    } // if( strOperation.contains("view.mouseHoverEvent") )
-
-    else if( strOperation.contains("view.mousePressEvent") )
-    {
-        QString strCoors = strOperation;
-
-        strCoors = strCoors.remove("view.mousePressEvent");
-        strCoors = strCoors.remove("(");
-        strCoors = strCoors.remove(")");
-
-        QStringList strlstCoors = strCoors.split(",");
-
-        if( strlstCoors.size() == 2 )
-        {
-            bool bConvertedX = false;
-            bool bConvertedY = false;
-            int  xCoor = strlstCoors[0].trimmed().toInt(&bConvertedX);
-            int  yCoor = strlstCoors[1].trimmed().toInt(&bConvertedY);
-            if( bConvertedX && bConvertedY )
-            {
-                ptSceneMousePos.setX(xCoor);
-                ptSceneMousePos.setY(yCoor);
-            }
-        }
-
-        ptViewMousePos = m_pDrawingView->mapFromScene(ptSceneMousePos);
-        // Strange: but for mouse press and mouse release events the viewport must be used.
-        ptMousePosGlobal = m_pDrawingView->viewport()->mapToGlobal(ptViewMousePos);
-
-        eventType = QEvent::MouseButtonPress;
-        // I don't know why. But for this test step both mouseButton and mouseButtons must be set to LeftButton.
-        mouseButton = Qt::LeftButton;
-        mouseButtons = Qt::LeftButton;
-
-        i_pTestStep->setDescription("scene.select" + graphObjType2Str(EGraphObjTypePoint) + "( ScenePos:" + point2Str(ptSceneMousePos) + " )");
-
-    } // if( strOperation.contains("view.mousePressEvent") )
-
-    else if( strOperation.contains("view.mouseMoveEvent") )
-    {
-        QString strCoors = strOperation;
-
-        strCoors = strCoors.remove("view.mouseMoveEvent");
-        strCoors = strCoors.remove("(");
-        strCoors = strCoors.remove(")");
-
-        QStringList strlstCoors = strCoors.split(",");
-
-        if( strlstCoors.size() == 2 )
-        {
-            bool bConvertedX = false;
-            bool bConvertedY = false;
-            int  xCoor = strlstCoors[0].trimmed().toInt(&bConvertedX);
-            int  yCoor = strlstCoors[1].trimmed().toInt(&bConvertedY);
-            if( bConvertedX && bConvertedY )
-            {
-                ptSceneMousePos.setX(xCoor);
-                ptSceneMousePos.setY(yCoor);
-            }
-        }
-
-        ptViewMousePos = m_pDrawingView->mapFromScene(ptSceneMousePos);
-        ptMousePosGlobal = m_pDrawingView->mapToGlobal(ptViewMousePos);
-
-        eventType = QEvent::MouseMove;
-        mouseButton = Qt::NoButton;
-        mouseButtons = Qt::LeftButton;
-
-        i_pTestStep->setDescription("scene.create" + graphObjType2Str(EGraphObjTypePoint) + "( ScenePos:" + point2Str(ptSceneMousePos) + " )");
-
-    } // if( strOperation.contains("view.mouseMoveEvent") )
-
-    else if( strOperation.contains("view.mouseReleaseEvent") )
-    {
-        QString strCoors = strOperation;
-
-        strCoors = strCoors.remove("view.mouseReleaseEvent");
-        strCoors = strCoors.remove("(");
-        strCoors = strCoors.remove(")");
-
-        QStringList strlstCoors = strCoors.split(",");
-
-        if( strlstCoors.size() == 2 )
-        {
-            bool bConvertedX = false;
-            bool bConvertedY = false;
-            int  xCoor = strlstCoors[0].trimmed().toInt(&bConvertedX);
-            int  yCoor = strlstCoors[1].trimmed().toInt(&bConvertedY);
-            if( bConvertedX && bConvertedY )
-            {
-                ptSceneMousePos.setX(xCoor);
-                ptSceneMousePos.setY(yCoor);
-            }
-        }
-
-        ptViewMousePos = m_pDrawingView->mapFromScene(ptSceneMousePos);
-        // Strange: but for mouse press and mouse release events the viewport must be used.
-        ptMousePosGlobal = m_pDrawingView->viewport()->mapToGlobal(ptViewMousePos);
-
-        eventType = QEvent::MouseButtonRelease;
-        mouseButton = Qt::LeftButton;
-        mouseButtons = Qt::NoButton;
-
-        i_pTestStep->setDescription("scene.select" + graphObjType2Str(EGraphObjTypePoint));
-    }
-
-    ptMousePosGlobal.setX(ptMousePosGlobal.x()+1); // Maybe graphics view or graphics scene bug on calculating the screen position.
-    ptMousePosGlobal.setY(ptMousePosGlobal.y()+1); // Without adding 1 pixel the newly created object will not be selected by the scene.
-
-    strlstExpectedValues.append("EditTool: " + CEnumEditTool(EEditTool::Select).toString());
-    strlstExpectedValues.append("DrawingTool: ");
-
-    i_pTestStep->setExpectedValues(strlstExpectedValues);
-
-    // Test Step
-    //----------
-
-    QMouseEvent* pMouseEv = new QMouseEvent(
-        /* type      */ eventType,
-        /* pos       */ ptViewMousePos,
-        /* globalPos */ ptMousePosGlobal,
-        /* button    */ mouseButton,
-        /* buttons   */ mouseButtons,
-        /* modifiers */ Qt::NoModifier );
-    if( eventType == QEvent::MouseButtonPress )
-    {
-        m_pDrawingView->mousePressEvent(pMouseEv);
-    }
-    else if( eventType == QEvent::MouseMove )
-    {
-        m_pDrawingView->mouseMoveEvent(pMouseEv);
-    }
-    else if( eventType == QEvent::MouseButtonRelease )
-    {
-        m_pDrawingView->mouseReleaseEvent(pMouseEv);
-    }
-    delete pMouseEv;
-    pMouseEv = nullptr;
-
-    // Result Values
-    //--------------
-
-    QStringList strlstResultValues;
-
-    QString strCurrentDrawingTool;
-
-    if( m_pDrawingScene->getCurrentDrawingTool() != nullptr )
-    {
-        strCurrentDrawingTool = m_pDrawingScene->getCurrentDrawingTool()->getGraphObjTypeAsString();
-    }
-
-    strlstResultValues.append("EditTool: " + m_pDrawingScene->getEditTool().toString());
-    strlstResultValues.append("DrawingTool: " + strCurrentDrawingTool);
-
-    i_pTestStep->setResultValues(strlstResultValues);
-
-} // doTestStepMouseEventsStandardShapesPointsSelectPoint
-
-//------------------------------------------------------------------------------
-/*! Checking the result of selecting graphical objects cannot be done in the same
-    test step method in which the according mouse events are processed. The events
-    may be queued by Qt's event loop and will not be immediately applied to the objects.
-*/
-void CTest::doTestStepMouseEventsStandardShapesPointsCheckSelectResult( ZS::Test::CTestStep* i_pTestStep )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
-    {
-        strMthInArgs = i_pTestStep->path();
-    }
-
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strMethod    */ "doTestStepMouseEventsStandardShapesPointsCheckSelectResult",
-        /* strAddInfo   */ strMthInArgs );
-
-    // Expected Values
-    //----------------
-
-    QStringList strlstExpectedValues;
-
-    /* strOperation might be:
-
-       Point.isSelected(45, 45): false
-    */
-
-    QPoint ptSceneMousePos;
-    QString strIsSelected = "?";
-    EGraphObjType graphObjType = EGraphObjTypeUndefined;
-
-    QString strOperation = i_pTestStep->getOperation();
-
-    if( strOperation.contains(".isSelected") )
-    {
-        QStringList strlstArgs = strOperation.split(":");
-
-        if( strlstArgs.size() == 2 )
-        {
-            QString strCoors = strlstArgs[0];
-
-            if( strCoors.startsWith("Point") )
-            {
-                graphObjType = EGraphObjTypePoint;
-                strCoors = strCoors.remove("Point.isSelected");
-            }
-            else if( strCoors.startsWith("Group") )
-            {
-                graphObjType = EGraphObjTypeGroup;
-                strCoors = strCoors.remove("Group.isSelected");
-            }
-            strCoors = strCoors.remove("(");
-            strCoors = strCoors.remove(")");
-
-            QStringList strlstCoors = strCoors.split(",");
-
-            if( strlstCoors.size() == 2 )
-            {
-                bool bConvertedX = false;
-                bool bConvertedY = false;
-                int  xCoor = strlstCoors[0].trimmed().toInt(&bConvertedX);
-                int  yCoor = strlstCoors[1].trimmed().toInt(&bConvertedY);
-                if( bConvertedX && bConvertedY )
-                {
-                    ptSceneMousePos.setX(xCoor);
-                    ptSceneMousePos.setY(yCoor);
-                }
-            }
-
-            strIsSelected = strlstArgs[1].trimmed();
-        }
-
-        i_pTestStep->setDescription(graphObjType2Str(graphObjType) + ".isSelected( ScenePos:" + point2Str(ptSceneMousePos) + " )");
-
-    } // if( strOperation.contains("point.isSelected") )
-
-    QPoint ptViewMousePos = m_pDrawingView->mapFromScene(ptSceneMousePos);
-
-    QPoint ptMousePosGlobal = m_pDrawingView->mapToGlobal(ptViewMousePos);
-
-    ptMousePosGlobal.setX(ptMousePosGlobal.x()+1); // Maybe graphics view or graphics scene bug on calculating the screen position.
-    ptMousePosGlobal.setY(ptMousePosGlobal.y()+1); // Without adding 1 pixel the newly created object will not be selected by the scene.
-
-    strlstExpectedValues.append("EditTool: " + CEnumEditTool(EEditTool::Select).toString());
-    strlstExpectedValues.append("DrawingTool: ");
-
-    QString strCurrentGraphObj = "?.isSelected(): ?";
-    if( graphObjType != EGraphObjTypeUndefined )
-    {
-        strCurrentGraphObj = graphObjType2Str(graphObjType) + ".isSelected(): " + strIsSelected;
-    }
-    strlstExpectedValues.append(strCurrentGraphObj);
-
-    i_pTestStep->setExpectedValues(strlstExpectedValues);
-
-    // Test Step
-    //----------
-
-    CGraphObj*     pGraphObj = nullptr;
-    QGraphicsItem* pGraphicsItem = nullptr;
-
-    QList<QGraphicsItem*> arpGraphicsItems = m_pDrawingScene->items(ptSceneMousePos);
-    for( auto* pItem : arpGraphicsItems )
-    {
-        pGraphObj = dynamic_cast<CGraphObj*>(pItem);
-        if( pGraphObj != nullptr && pGraphObj->getType() == graphObjType )
-        {
-            pGraphicsItem = dynamic_cast<QGraphicsItem*>(pGraphObj);
-            break;
-        }
-    }
-
-    // Result Values
-    //--------------
-
-    QStringList strlstResultValues;
-
-    QString strCurrentDrawingTool;
-
-    if( m_pDrawingScene->getCurrentDrawingTool() != nullptr )
-    {
-        strCurrentDrawingTool = m_pDrawingScene->getCurrentDrawingTool()->getGraphObjTypeAsString();
-    }
-
-    strlstResultValues.append("EditTool: " + m_pDrawingScene->getEditTool().toString());
-    strlstResultValues.append("DrawingTool: " + strCurrentDrawingTool);
-
-    strCurrentGraphObj = "?.isSelected(): ?";
-
-    if( pGraphObj != nullptr && pGraphicsItem != nullptr )
-    {
-        strCurrentGraphObj = pGraphObj->getTypeAsString() + ".isSelected(): " + bool2Str(pGraphicsItem->isSelected());
-    }
-    strlstResultValues.append(strCurrentGraphObj);
-
-    i_pTestStep->setResultValues(strlstResultValues);
-
-} // doTestStepMouseEventsStandardShapesPointsCheckSelectResult
 
 //------------------------------------------------------------------------------
 void CTest::doTestStepMouseEventsStandardShapesPointsTriggerEditGroup( ZS::Test::CTestStep* i_pTestStep )
@@ -1251,3 +661,431 @@ void CTest::doTestStepMouseEventsStandardShapesPointsTriggerEditUngroup( ZS::Tes
     i_pTestStep->setResultValues(strlstResultValues);
 
 } // doTestStepMouseEventsStandardShapesPointsTriggerEditUngroup
+
+//------------------------------------------------------------------------------
+/*! Checking the result of selecting graphical objects cannot be done in the same
+    test step method in which the according mouse events are processed. The events
+    may be queued by Qt's event loop and will not be immediately applied to the objects.
+*/
+void CTest::doTestStepMouseEventsStandardShapesPointsCheckResult( ZS::Test::CTestStep* i_pTestStep )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    {
+        strMthInArgs = i_pTestStep->path();
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* strMethod    */ "doTestStepMouseEventsStandardShapesPointsCheckResult",
+        /* strAddInfo   */ strMthInArgs );
+
+    // Expected Values
+    //----------------
+
+    QStringList strlstExpectedValues;
+
+    /* strOperation might be:
+
+       Point.isSelected(45, 45): false
+    */
+
+    QPoint ptSceneMousePos;
+    QString strIsSelected = "?";
+    EGraphObjType graphObjType = EGraphObjTypeUndefined;
+
+    QString strOperation = i_pTestStep->getOperation();
+
+    if( strOperation.contains(".isSelected") )
+    {
+        QStringList strlstArgs = strOperation.split(":");
+
+        if( strlstArgs.size() == 2 )
+        {
+            QString strCoors = strlstArgs[0];
+
+            if( strCoors.startsWith("Point") )
+            {
+                graphObjType = EGraphObjTypePoint;
+                strCoors = strCoors.remove("Point.isSelected");
+            }
+            else if( strCoors.startsWith("Group") )
+            {
+                graphObjType = EGraphObjTypeGroup;
+                strCoors = strCoors.remove("Group.isSelected");
+            }
+            strCoors = strCoors.remove("(");
+            strCoors = strCoors.remove(")");
+
+            QStringList strlstCoors = strCoors.split(",");
+
+            if( strlstCoors.size() == 2 )
+            {
+                bool bConvertedX = false;
+                bool bConvertedY = false;
+                int  xCoor = strlstCoors[0].trimmed().toInt(&bConvertedX);
+                int  yCoor = strlstCoors[1].trimmed().toInt(&bConvertedY);
+                if( bConvertedX && bConvertedY )
+                {
+                    ptSceneMousePos.setX(xCoor);
+                    ptSceneMousePos.setY(yCoor);
+                }
+            }
+
+            strIsSelected = strlstArgs[1].trimmed();
+        }
+    } // if( strOperation.contains("point.isSelected") )
+
+    QPoint ptViewMousePos = m_pDrawingView->mapFromScene(ptSceneMousePos);
+
+    QPoint ptMousePosGlobal = m_pDrawingView->mapToGlobal(ptViewMousePos);
+
+    ptMousePosGlobal.setX(ptMousePosGlobal.x()+1); // Maybe graphics view or graphics scene bug on calculating the screen position.
+    ptMousePosGlobal.setY(ptMousePosGlobal.y()+1); // Without adding 1 pixel the newly created object will not be selected by the scene.
+
+    strlstExpectedValues.append("EditTool: " + CEnumEditTool(EEditTool::Select).toString());
+    strlstExpectedValues.append("DrawingTool: ");
+
+    QString strCurrentGraphObj = "?.isSelected(): ?";
+    if( graphObjType != EGraphObjTypeUndefined )
+    {
+        strCurrentGraphObj = graphObjType2Str(graphObjType) + ".isSelected(): " + strIsSelected;
+    }
+    strlstExpectedValues.append(strCurrentGraphObj);
+
+    i_pTestStep->setExpectedValues(strlstExpectedValues);
+
+    // Test Step
+    //----------
+
+    CGraphObj*     pGraphObj = nullptr;
+    QGraphicsItem* pGraphicsItem = nullptr;
+
+    QList<QGraphicsItem*> arpGraphicsItems = m_pDrawingScene->items(ptSceneMousePos);
+    for( auto* pItem : arpGraphicsItems )
+    {
+        pGraphObj = dynamic_cast<CGraphObj*>(pItem);
+        if( pGraphObj != nullptr && pGraphObj->getType() == graphObjType )
+        {
+            pGraphicsItem = dynamic_cast<QGraphicsItem*>(pGraphObj);
+            break;
+        }
+    }
+
+    // Result Values
+    //--------------
+
+    QStringList strlstResultValues;
+
+    QString strCurrentDrawingTool;
+
+    if( m_pDrawingScene->getCurrentDrawingTool() != nullptr )
+    {
+        strCurrentDrawingTool = m_pDrawingScene->getCurrentDrawingTool()->getGraphObjTypeAsString();
+    }
+
+    strlstResultValues.append("EditTool: " + m_pDrawingScene->getEditTool().toString());
+    strlstResultValues.append("DrawingTool: " + strCurrentDrawingTool);
+
+    strCurrentGraphObj = "?.isSelected(): ?";
+
+    if( pGraphObj != nullptr && pGraphicsItem != nullptr )
+    {
+        strCurrentGraphObj = pGraphObj->getTypeAsString() + ".isSelected(): " + bool2Str(pGraphicsItem->isSelected());
+    }
+    strlstResultValues.append(strCurrentGraphObj);
+
+    i_pTestStep->setResultValues(strlstResultValues);
+
+} // doTestStepMouseEventsStandardShapesPointsCheckResult
+
+//------------------------------------------------------------------------------
+void CTest::doTestStepMouseEventsStandardShapesPoints( ZS::Test::CTestStep* i_pTestStep )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    {
+        strMthInArgs = i_pTestStep->path();
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* strMethod    */ "doTestStepMouseEventsStandardShapesPoints",
+        /* strAddInfo   */ strMthInArgs );
+
+    // Expected Values
+    //----------------
+
+    QStringList strlstExpectedValues;
+
+    /* strOperation might be:
+
+       view.mouseHoverEvent(50, 50)
+       view.mousePressEvent(50, 50)
+       view.mouseMoveEvent(50, 50)
+       view.mouseReleaseEvent(50, 50)
+    */
+
+    QPoint ptSceneMousePos;
+    QPoint ptViewMousePos;
+    QPoint ptMousePosGlobal;
+
+    QString strTestStep = i_pTestStep->name();
+    QString strOperation = i_pTestStep->getOperation();
+
+    QEvent::Type eventType = QEvent::None;
+    Qt::MouseButton mouseButton = Qt::NoButton;
+    Qt::MouseButtons mouseButtons = Qt::NoButton;
+
+    if( strOperation.contains("view.mouseHoverEvent") )
+    {
+        QString strCoors = strOperation;
+
+        strCoors = strCoors.remove("view.mouseHoverEvent");
+        strCoors = strCoors.remove("(");
+        strCoors = strCoors.remove(")");
+
+        QStringList strlstCoors = strCoors.split(",");
+
+        if( strlstCoors.size() == 2 )
+        {
+            bool bConvertedX = false;
+            bool bConvertedY = false;
+            int  xCoor = strlstCoors[0].trimmed().toInt(&bConvertedX);
+            int  yCoor = strlstCoors[1].trimmed().toInt(&bConvertedY);
+            if( bConvertedX && bConvertedY )
+            {
+                ptSceneMousePos.setX(xCoor);
+                ptSceneMousePos.setY(yCoor);
+            }
+        }
+
+        eventType = QEvent::MouseMove;
+        mouseButton = Qt::NoButton;
+        mouseButtons = Qt::NoButton;
+
+        ptViewMousePos = m_pDrawingView->mapFromScene(ptSceneMousePos);
+        ptMousePosGlobal = m_pDrawingView->mapToGlobal(ptViewMousePos);
+
+    } // if( strOperation.contains("view.mouseHoverEvent") )
+
+    else if( strOperation.contains("view.mousePressEvent") )
+    {
+        QString strCoors = strOperation;
+
+        strCoors = strCoors.remove("view.mousePressEvent");
+        strCoors = strCoors.remove("(");
+        strCoors = strCoors.remove(")");
+
+        QStringList strlstCoors = strCoors.split(",");
+
+        if( strlstCoors.size() == 2 )
+        {
+            bool bConvertedX = false;
+            bool bConvertedY = false;
+            int  xCoor = strlstCoors[0].trimmed().toInt(&bConvertedX);
+            int  yCoor = strlstCoors[1].trimmed().toInt(&bConvertedY);
+            if( bConvertedX && bConvertedY )
+            {
+                ptSceneMousePos.setX(xCoor);
+                ptSceneMousePos.setY(yCoor);
+            }
+        }
+
+        if( strTestStep.contains("Create") )
+        {
+            s_arPts.append(ptSceneMousePos);
+        }
+
+        ptViewMousePos = m_pDrawingView->mapFromScene(ptSceneMousePos);
+        // Strange: but for mouse press and mouse release events the viewport must be used.
+        ptMousePosGlobal = m_pDrawingView->viewport()->mapToGlobal(ptViewMousePos);
+
+        eventType = QEvent::MouseButtonPress;
+        // I don't know why. But for this test step both mouseButton and mouseButtons must be set to LeftButton.
+        mouseButton = Qt::LeftButton;
+        mouseButtons = Qt::LeftButton;
+
+    } // if( strOperation.contains("view.mousePressEvent") )
+
+    else if( strOperation.contains("view.mouseMoveEvent") )
+    {
+        QString strCoors = strOperation;
+
+        strCoors = strCoors.remove("view.mouseMoveEvent");
+        strCoors = strCoors.remove("(");
+        strCoors = strCoors.remove(")");
+
+        QStringList strlstCoors = strCoors.split(",");
+
+        if( strlstCoors.size() == 2 )
+        {
+            bool bConvertedX = false;
+            bool bConvertedY = false;
+            int  xCoor = strlstCoors[0].trimmed().toInt(&bConvertedX);
+            int  yCoor = strlstCoors[1].trimmed().toInt(&bConvertedY);
+            if( bConvertedX && bConvertedY )
+            {
+                ptSceneMousePos.setX(xCoor);
+                ptSceneMousePos.setY(yCoor);
+            }
+        }
+
+        if( strTestStep.contains("Create") )
+        {
+            s_arPts.append(ptSceneMousePos);
+        }
+
+        ptViewMousePos = m_pDrawingView->mapFromScene(ptSceneMousePos);
+        ptMousePosGlobal = m_pDrawingView->mapToGlobal(ptViewMousePos);
+
+        eventType = QEvent::MouseMove;
+        mouseButton = Qt::NoButton;
+        mouseButtons = Qt::LeftButton;
+
+    } // if( strOperation.contains("view.mouseMoveEvent") )
+
+    else if( strOperation.contains("view.mouseReleaseEvent") )
+    {
+        QString strCoors = strOperation;
+
+        strCoors = strCoors.remove("view.mouseReleaseEvent");
+        strCoors = strCoors.remove("(");
+        strCoors = strCoors.remove(")");
+
+        QStringList strlstCoors = strCoors.split(",");
+
+        if( strlstCoors.size() == 2 )
+        {
+            bool bConvertedX = false;
+            bool bConvertedY = false;
+            int  xCoor = strlstCoors[0].trimmed().toInt(&bConvertedX);
+            int  yCoor = strlstCoors[1].trimmed().toInt(&bConvertedY);
+            if( bConvertedX && bConvertedY )
+            {
+                ptSceneMousePos.setX(xCoor);
+                ptSceneMousePos.setY(yCoor);
+            }
+        }
+
+        ptViewMousePos = m_pDrawingView->mapFromScene(ptSceneMousePos);
+        // Strange: but for mouse press and mouse release events the viewport must be used.
+        ptMousePosGlobal = m_pDrawingView->viewport()->mapToGlobal(ptViewMousePos);
+
+        eventType = QEvent::MouseButtonRelease;
+        mouseButton = Qt::LeftButton;
+        mouseButtons = Qt::NoButton;
+    }
+
+    ptMousePosGlobal.setX(ptMousePosGlobal.x()+1); // Maybe graphics view or graphics scene bug on calculating the screen position.
+    ptMousePosGlobal.setY(ptMousePosGlobal.y()+1); // Without adding 1 pixel the newly created object will not be selected by the scene.
+
+    if( strTestStep.contains("Create") )
+    {
+        strlstExpectedValues.append("EditTool: " + CEnumEditTool(EEditTool::CreateObjects).toString());
+        strlstExpectedValues.append("DrawingTool: " + graphObjType2Str(EGraphObjTypePoint));
+
+        int idx = s_iStartTestInstCount;
+        for( const auto& pt : s_arPts )
+        {
+            QString strCurrentGraphObj = graphObjType2Str(EGraphObjTypePoint) + QString::number(idx++);
+            strlstExpectedValues.append(strCurrentGraphObj + ": " + point2Str(QPointF(pt)));
+        }
+    }
+    else
+    {
+        strlstExpectedValues.append("EditTool: " + CEnumEditTool(EEditTool::Select).toString());
+        strlstExpectedValues.append("DrawingTool: ");
+    }
+
+    i_pTestStep->setExpectedValues(strlstExpectedValues);
+
+    // Test Step
+    //----------
+
+    QMouseEvent* pMouseEv = new QMouseEvent(
+        /* type      */ eventType,
+        /* pos       */ ptViewMousePos,
+        /* globalPos */ ptMousePosGlobal,
+        /* button    */ mouseButton,
+        /* buttons   */ mouseButtons,
+        /* modifiers */ Qt::NoModifier );
+    if( eventType == QEvent::MouseButtonPress )
+    {
+        m_pDrawingView->mousePressEvent(pMouseEv);
+    }
+    else if( eventType == QEvent::MouseMove )
+    {
+        m_pDrawingView->mouseMoveEvent(pMouseEv);
+    }
+    else if( eventType == QEvent::MouseButtonRelease )
+    {
+        m_pDrawingView->mouseReleaseEvent(pMouseEv);
+    }
+    delete pMouseEv;
+    pMouseEv = nullptr;
+
+    // Result Values
+    //--------------
+
+    QStringList strlstResultValues;
+
+    QString strCurrentDrawingTool;
+
+    if( m_pDrawingScene->getCurrentDrawingTool() != nullptr )
+    {
+        strCurrentDrawingTool = m_pDrawingScene->getCurrentDrawingTool()->getGraphObjTypeAsString();
+    }
+
+    strlstResultValues.append("EditTool: " + m_pDrawingScene->getEditTool().toString());
+    strlstResultValues.append("DrawingTool: " + strCurrentDrawingTool);
+
+    if( strTestStep.contains("Create") )
+    {
+        // Need to sort the list of graphics items return be the scene to follow the order
+        // the objects have been created by the test steps.
+        QList<QGraphicsItem*> arpGraphicsItems;
+        QList<QGraphicsItem*> arpGraphicsItemsTmp = m_pDrawingScene->items();
+        int idx = s_iStartTestInstCount;
+        for( const auto& pt : s_arPts )
+        {
+            QString strCurrentGraphObj = graphObjType2Str(EGraphObjTypePoint) + QString::number(idx++);
+
+            for( auto* pGraphicsItem : arpGraphicsItemsTmp )
+            {
+                CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
+                if( pGraphObj->path() == strCurrentGraphObj )
+                {
+                    arpGraphicsItems.append(pGraphicsItem);
+                    arpGraphicsItemsTmp.removeOne(pGraphicsItem);
+                    break;
+                }
+            }
+            // Append not expected graphics items to result list.
+            while( !arpGraphicsItemsTmp.isEmpty() )
+            {
+                QGraphicsItem* pGraphicsItem = arpGraphicsItemsTmp.takeLast();
+                arpGraphicsItems.append(pGraphicsItem);
+                arpGraphicsItemsTmp.removeOne(pGraphicsItem);
+            }
+        }
+        // Graphics items in sorted list are the result values.
+        for( auto* pGraphicsItem : arpGraphicsItems )
+        {
+            CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
+            if( pGraphicsItem != nullptr && pGraphObj != nullptr )
+            {
+                strlstResultValues.append(pGraphObj->path() + ": " + pGraphObj->getScenePolygonShapePointsString());
+            }
+        }
+    }
+
+    i_pTestStep->setResultValues(strlstResultValues);
+
+} // doTestStepMouseEventsStandardShapesPoints

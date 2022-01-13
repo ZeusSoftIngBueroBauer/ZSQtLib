@@ -787,6 +787,32 @@ bool CGraphObjConnectionLine::isHit( const QPointF& i_pt, SGraphObjHitInfo* o_pH
 } // isHit
 
 /*==============================================================================
+public: // reimplementing methods of base class QGraphicItem
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CGraphObjConnectionLine::setCursor( const QCursor& i_cursor )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->isActive(ETraceDetailLevelMethodArgs) )
+    {
+        strMthInArgs = qCursorShape2Str(i_cursor.shape());
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "setCursor",
+        /* strAddInfo   */ strMthInArgs );
+
+    QGraphicsPolygonItem::setCursor(i_cursor);
+
+} // setCursor
+
+/*==============================================================================
 protected: // must overridables of base class CGraphObj
 ==============================================================================*/
 
@@ -808,11 +834,13 @@ void CGraphObjConnectionLine::showSelectionPoints( unsigned char i_selPts )
         /* strMethod    */ "showSelectionPoints",
         /* strAddInfo   */ strAddTrcInfo );
 
-    if( i_selPts & ESelectionPointsPolygonShapePoints )
+    if( parentItem() == nullptr )
     {
-        showSelectionPointsOfPolygon( polygon() );
+        if( i_selPts & ESelectionPointsPolygonShapePoints )
+        {
+            showSelectionPointsOfPolygon( polygon() );
+        }
     }
-
 } // showSelectionPoints
 
 //------------------------------------------------------------------------------
@@ -833,8 +861,10 @@ void CGraphObjConnectionLine::updateSelectionPoints( unsigned char i_selPts )
         /* strMethod    */ "updateSelectionPoints",
         /* strAddInfo   */ strAddTrcInfo );
 
-    updateSelectionPointsOfPolygon( polygon() );
-
+    if( parentItem() == nullptr )
+    {
+        updateSelectionPointsOfPolygon( polygon() );
+    }
 } // updateSelectionPoints
 
 /*==============================================================================

@@ -70,6 +70,8 @@ public: // overridables of base class CGraphObj
     virtual void onDrawSettingsChanged();
 public: // overridables of base class CGraphObj
     virtual bool isHit( const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo ) const;
+public: // reimplementing methods of base class QGraphicItem
+    void setCursor( const QCursor& cursor );
 public: // overridables of base class QGraphicsItem
     virtual int type() const { return EGraphObjTypePolygon; }
 public: // must overridables of base class QGraphicsItem

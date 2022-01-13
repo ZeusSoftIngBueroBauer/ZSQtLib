@@ -757,6 +757,32 @@ bool CGraphObjSelectionPoint::isHit( const QPointF& i_pt, SGraphObjHitInfo* o_pH
 } // isHit
 
 /*==============================================================================
+public: // reimplementing methods of base class QGraphicItem
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CGraphObjSelectionPoint::setCursor( const QCursor& i_cursor )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->isActive(ETraceDetailLevelMethodArgs) )
+    {
+        strMthInArgs = qCursorShape2Str(i_cursor.shape());
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "setCursor",
+        /* strAddInfo   */ strMthInArgs );
+
+    QGraphicsEllipseItem::setCursor(i_cursor);
+
+} // setCursor
+
+/*==============================================================================
 protected: // overridables of base class CGraphObj
 ==============================================================================*/
 
@@ -764,6 +790,19 @@ protected: // overridables of base class CGraphObj
 void CGraphObjSelectionPoint::updateToolTip()
 //------------------------------------------------------------------------------
 {
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->isActive(ETraceDetailLevelMethodArgs) )
+    {
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "updateToolTip",
+        /* strAddInfo   */ strMthInArgs );
+
     if( m_pGraphObjSelected != nullptr )
     {
         m_strToolTip = m_pGraphObjSelected->getToolTip();
@@ -772,7 +811,8 @@ void CGraphObjSelectionPoint::updateToolTip()
     {
         m_strToolTip = CGraphObj::getToolTip();
     }
-}
+
+} // updateToolTip
 
 /*==============================================================================
 public: // overridables of base class QGraphicsPolygonItem
@@ -1032,7 +1072,6 @@ void CGraphObjSelectionPoint::hoverEnterEvent( QGraphicsSceneHoverEvent* i_pEv )
         {
             setCursor(cursor);
         }
-
     } // if( editToolDrawing == EEditTool::Select )
 
     else if( editToolDrawing == EEditTool::CreateObjects )

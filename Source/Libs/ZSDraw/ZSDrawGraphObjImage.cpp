@@ -600,6 +600,32 @@ bool CGraphObjImage::isHit( const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo ) 
 } // isHit
 
 /*==============================================================================
+public: // reimplementing methods of base class QGraphicItem
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CGraphObjImage::setCursor( const QCursor& i_cursor )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->isActive(ETraceDetailLevelMethodArgs) )
+    {
+        strMthInArgs = qCursorShape2Str(i_cursor.shape());
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "setCursor",
+        /* strAddInfo   */ strMthInArgs );
+
+    QGraphicsPixmapItem::setCursor(i_cursor);
+
+} // setCursor
+
+/*==============================================================================
 protected: // must overridables of base class CGraphObj
 ==============================================================================*/
 
@@ -621,10 +647,12 @@ void CGraphObjImage::showSelectionPoints( unsigned char i_selPts )
         /* strMethod    */ "showSelectionPoints",
         /* strAddInfo   */ strAddTrcInfo );
 
-    QRectF rct = QGraphicsPixmapItem::boundingRect();
+    if( parentItem() == nullptr )
+    {
+        QRectF rct = QGraphicsPixmapItem::boundingRect();
 
-    showSelectionPointsOfBoundingRect( rct, i_selPts );
-
+        showSelectionPointsOfBoundingRect( rct, i_selPts );
+    }
 } // showSelectionPoints
 
 //------------------------------------------------------------------------------
@@ -645,10 +673,12 @@ void CGraphObjImage::updateSelectionPoints( unsigned char i_selPts )
         /* strMethod    */ "updateSelectionPoints",
         /* strAddInfo   */ strAddTrcInfo );
 
-    QRectF rct = QGraphicsPixmapItem::boundingRect();
+    if( parentItem() == nullptr )
+    {
+        QRectF rct = QGraphicsPixmapItem::boundingRect();
 
-    updateSelectionPointsOfBoundingRect( rct, i_selPts );
-
+        updateSelectionPointsOfBoundingRect( rct, i_selPts );
+    }
 } // updateSelectionPoints
 
 /*==============================================================================

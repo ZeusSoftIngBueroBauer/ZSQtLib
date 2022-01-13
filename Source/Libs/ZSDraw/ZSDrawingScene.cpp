@@ -1407,9 +1407,7 @@ QCursor CDrawingScene::getProposedCursor( const QPointF& i_ptPos ) const
     if( m_mode == EMode::Simulation )
     {
         cursor = Qt::ArrowCursor;
-
-    } // if( i_iMode == EMode::Simulation )
-
+    }
     else if( m_mode == EMode::Edit )
     {
         QList<QGraphicsItem*> arpGraphicsItemsUnderCursor = items(i_ptPos);
@@ -1566,16 +1564,12 @@ QCursor CDrawingScene::getProposedCursor( const QPointF& i_ptPos ) const
                 cursor = Qt::ArrowCursor;
                 break;
             }
-
         } // switch( m_editTool )
-
     } // if( m_mode == EMode::Edit )
 
     if( mthTracer.isActive(ETraceDetailLevelMethodArgs) )
     {
-        strMthInArgs  = "Cursor:" + qCursorShape2Str(cursor.shape());
-        //strMthInArgs  = ", CursorPrev:" + qCursorShape2Str(cursorShapePrev);
-        mthTracer.setMethodReturn(strMthInArgs);
+        mthTracer.setMethodReturn(qCursorShape2Str(cursor.shape()));
     }
 
     return cursor;
@@ -2523,6 +2517,9 @@ int CDrawingScene::groupGraphObjsSelected()
                     m_pGraphObjsIdxTree->move(pGraphObjSelected, pGraphObjGroup);
 
                     pGraphObjSelected->acceptCurrentAsOriginalCoors();
+
+                    // Unselect object to destroy selection points.
+                    pGraphicsItemSelected->setSelected(false);
 
                     //alignmentLeft.m_fVal = 0.0;
                     //alignmentTop.m_fVal = 0.0;
@@ -3773,22 +3770,15 @@ void CDrawingScene::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
 
     if( !bEventHandled )
     {
-        // Dispatch mouse move events to objects under mouse cursor.
-        // Some items may completely overlap (encircle) other objects
-        // (a big rectangle may completely enclose a smaller rectangle
-        // or the bounding rectangle of a polyline may enclose other
-        // objects). In this case Qt's graphic scene does not dispatch
-        // the mouse events as hover events to the enclosed objects if
-        // they are not "on top" (according to the scene's item list
-        // Z order) of the enclosing items. If the outer object does not
-        // hide the inner object (fill style solid pattern)this behavior
-        // is not what we want and what the user expects. E.g. if a rectangle
-        // with "FillStyle = NoFill" would enclose another object the user
-        // would expect that the inner object can be selected by mouse
-        // clicks. And if you consider polylines which are never "filled"
-        // objects the inner objects should always be selectable by mouse
-        // clicks. The polyline as the outer object should only be selected
-        // if one of its line segments would be hit.
+        // Dispatch mouse move events to objects under mouse cursor. Some items may completely overlap (encircle)
+        // other objects (a big rectangle may completely enclose a smaller rectangle or the bounding rectangle of
+        // a polyline may enclose other objects). In this case Qt's graphic scene does not dispatch the mouse events
+        // as hover events to the enclosed objects if they are not "on top" (according to the scene's item list Z order)
+        // of the enclosing items. If the outer object does not hide the inner object (fill style solid pattern) this
+        // behavior is not what we want and what the user expects. E.g. if a rectangle with "FillStyle = NoFill" would
+        // enclose another object the user would expect that the inner object can be selected by mouse clicks.
+        // And if you consider polylines which are never "filled" objects the inner objects should always be selectable
+        // by mouse clicks. The polyline as the outer object should only be selected if one of its line segments would be hit.
 
         QList<QGraphicsItem*> arpGraphicsItemsIntersected = items( i_pEv->scenePos(), Qt::IntersectsItemShape, Qt::AscendingOrder );
         QList<QGraphicsItem*> arpGraphicsItemsHit;

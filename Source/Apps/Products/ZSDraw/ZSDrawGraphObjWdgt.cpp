@@ -353,21 +353,25 @@ protected: // must overridables of base class CGraphObj
 void CGraphObjWdgt::showSelectionPoints( unsigned char i_selPts )
 //------------------------------------------------------------------------------
 {
-    QRectF rct = QGraphicsProxyWidget::boundingRect();
+    if( parentItem() == nullptr )
+    {
+        QRectF rct = QGraphicsProxyWidget::boundingRect();
 
-    showSelectionPointsOfBoundingRect(rct,i_selPts);
-
-} // showSelectionPoints
+        showSelectionPointsOfBoundingRect(rct,i_selPts);
+    }
+}
 
 //------------------------------------------------------------------------------
 void CGraphObjWdgt::updateSelectionPoints( unsigned char i_selPts )
 //------------------------------------------------------------------------------
 {
-    QRectF rct = QGraphicsProxyWidget::boundingRect();
+    if( parent() == nullptr )
+    {
+        QRectF rct = QGraphicsProxyWidget::boundingRect();
 
-    updateSelectionPointsOfBoundingRect(rct,i_selPts);
-
-} // updateSelectionPoints
+        updateSelectionPointsOfBoundingRect(rct,i_selPts);
+    }
+}
 
 /*==============================================================================
 protected: // overridables of base class QGraphicsItem

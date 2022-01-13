@@ -418,7 +418,7 @@ void CGraphObjPoint::setIsHit( bool i_bHit )
         {
             QRectF rct = ZS::Draw::boundingRect( QPointF(0.0,0.0), 1.0 );
 
-            showSelectionPointsOfBoundingRect(rct,ESelectionPointsBoundingRectCenter);
+            showSelectionPointsOfBoundingRect(rct, ESelectionPointsBoundingRectCenter);
         }
         else if( !isSelected() )
         {
@@ -462,12 +462,12 @@ bool CGraphObjPoint::isHit( const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo ) 
     {
         if( pGraphicsItem->isSelected() )
         {
-            bIsHit = isPolygonSelectionPointHit(i_pt,o_pHitInfo);
+            bIsHit = isPolygonSelectionPointHit(i_pt, o_pHitInfo);
         }
 
         if( !bIsHit )
         {
-            QRectF rct = ZS::Draw::boundingRect(i_pt,m_pDrawingScene->getHitToleranceInPx());
+            QRectF rct = ZS::Draw::boundingRect(i_pt, m_pDrawingScene->getHitToleranceInPx());
 
             if( rct.contains(i_pt) )
             {
@@ -482,7 +482,7 @@ bool CGraphObjPoint::isHit( const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo ) 
             o_pHitInfo->m_selPtBoundingRect = ESelectionPoint::Center;
             o_pHitInfo->m_idxPolygonShapePoint = 0;
             o_pHitInfo->m_idxLineSegment = -1;
-            o_pHitInfo->m_ptSelected = QPointF(0.0,0.0);
+            o_pHitInfo->m_ptSelected = QPointF(0.0, 0.0);
             o_pHitInfo->m_cursor = Qt::SizeAllCursor;
         }
 
@@ -506,6 +506,32 @@ bool CGraphObjPoint::isHit( const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo ) 
     return bIsHit;
 
 } // isHit
+
+/*==============================================================================
+public: // reimplementing methods of base class QGraphicItem
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CGraphObjPoint::setCursor( const QCursor& i_cursor )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->isActive(ETraceDetailLevelMethodArgs) )
+    {
+        strMthInArgs = qCursorShape2Str(i_cursor.shape());
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "setCursor",
+        /* strAddInfo   */ strMthInArgs );
+
+    QAbstractGraphicsShapeItem::setCursor(i_cursor);
+
+} // setCursor
 
 /*==============================================================================
 public: // overridables of base class CGraphObj
@@ -540,10 +566,12 @@ void CGraphObjPoint::showSelectionPoints( unsigned char i_selPts )
         /* strMethod    */ "showSelectionPoints",
         /* strAddInfo   */ strMthInArgs );
 
-    QRectF rct = ZS::Draw::boundingRect( QPointF(0.0,0.0), 1.0 );
+    if( parentItem() == nullptr )
+    {
+        QRectF rct = ZS::Draw::boundingRect( QPointF(0.0,0.0), 1.0 );
 
-    showSelectionPointsOfBoundingRect(rct,ESelectionPointsBoundingRectCenter);
-
+        showSelectionPointsOfBoundingRect(rct,ESelectionPointsBoundingRectCenter);
+    }
 } // showSelectionPoints
 
 //------------------------------------------------------------------------------
@@ -564,10 +592,12 @@ void CGraphObjPoint::updateSelectionPoints( unsigned char i_selPts )
         /* strMethod    */ "updateSelectionPoints",
         /* strAddInfo   */ strMthInArgs );
 
-    QRectF rct = ZS::Draw::boundingRect( QPointF(0.0,0.0), 1.0 );
+    if( parentItem() == nullptr )
+    {
+        QRectF rct = ZS::Draw::boundingRect( QPointF(0.0,0.0), 1.0 );
 
-    updateSelectionPointsOfBoundingRect(rct,ESelectionPointsBoundingRectCenter);
-
+        updateSelectionPointsOfBoundingRect(rct,ESelectionPointsBoundingRectCenter);
+    }
 } // updateSelectionPoints
 
 /*==============================================================================

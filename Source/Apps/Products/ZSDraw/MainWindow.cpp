@@ -5674,8 +5674,8 @@ void CMainWindow::updateStatusBar()
 
     if( m_pLblStatusBarDrawingSceneEditMode != nullptr || m_pLblStatusBarDrawingSceneGraphObjEditInfo != nullptr )
     {
-        QString strEditModeInfo = "Mode: ";
-        QString strGraphObjEditInfo = "Info: ";
+        QString strEditModeInfo;
+        QString strGraphObjEditInfo;
 
         CEnumEditMode       editMode       = m_pDrawingScene->getEditMode();
         CEnumEditResizeMode editResizeMode = m_pDrawingScene->getEditResizeMode();
@@ -5687,7 +5687,7 @@ void CMainWindow::updateStatusBar()
 
         if( editMode != EEditMode::Undefined )
         {
-            if( arGraphicsItemSelected.size() == 1 )
+            if( arGraphicsItemSelected.size() > 0 )
             {
                 pGraphicsItem = arGraphicsItemSelected[0];
             }
@@ -5740,12 +5740,12 @@ void CMainWindow::updateStatusBar()
 
         if( m_pLblStatusBarDrawingSceneEditMode != nullptr )
         {
-            m_pLblStatusBarDrawingSceneEditMode->setText(strEditModeInfo);
+            m_pLblStatusBarDrawingSceneEditMode->setText("Mode: " + strEditModeInfo);
         }
 
         if( m_pLblStatusBarDrawingSceneGraphObjEditInfo != nullptr )
         {
-            m_pLblStatusBarDrawingSceneGraphObjEditInfo->setText(strGraphObjEditInfo);
+            m_pLblStatusBarDrawingSceneGraphObjEditInfo->setText("Info: " + strGraphObjEditInfo);
         }
 
 

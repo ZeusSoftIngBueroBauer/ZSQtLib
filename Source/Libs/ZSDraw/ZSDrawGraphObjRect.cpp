@@ -619,6 +619,32 @@ bool CGraphObjRect::isHit( const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo ) c
 } // isHit
 
 /*==============================================================================
+public: // reimplementing methods of base class QGraphicItem
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CGraphObjRect::setCursor( const QCursor& i_cursor )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->isActive(ETraceDetailLevelMethodArgs) )
+    {
+        strMthInArgs = qCursorShape2Str(i_cursor.shape());
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "setCursor",
+        /* strAddInfo   */ strMthInArgs );
+
+    QGraphicsRectItem::setCursor(i_cursor);
+
+} // setCursor
+
+/*==============================================================================
 protected: // must overridables of base class CGraphObj
 ==============================================================================*/
 
@@ -640,8 +666,10 @@ void CGraphObjRect::showSelectionPoints( unsigned char i_selPts )
         /* strMethod    */ "showSelectionPoints",
         /* strAddInfo   */ strAddTrcInfo );
 
-    showSelectionPointsOfBoundingRect( rect(), i_selPts );
-
+    if( parentItem() == nullptr )
+    {
+        showSelectionPointsOfBoundingRect( rect(), i_selPts );
+    }
 } // showSelectionPoints
 
 //------------------------------------------------------------------------------
@@ -662,8 +690,10 @@ void CGraphObjRect::updateSelectionPoints( unsigned char i_selPts )
         /* strMethod    */ "updateSelectionPoints",
         /* strAddInfo   */ strAddTrcInfo );
 
-    updateSelectionPointsOfBoundingRect( rect(), i_selPts );
-
+    if( parentItem() == nullptr )
+    {
+        updateSelectionPointsOfBoundingRect( rect(), i_selPts );
+    }
 } // updateSelectionPoints
 
 /*==============================================================================

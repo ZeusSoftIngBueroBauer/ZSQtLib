@@ -85,12 +85,11 @@ protected: // instance methods
 protected slots:
     void doTestStepMouseEventsStandardShapesPointsClearDrawingScene( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepMouseEventsStandardShapesPointsActivateDrawingTool( ZS::Test::CTestStep* i_pTestStep );
-    void doTestStepMouseEventsStandardShapesPointsCreatePoints( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepMouseEventsStandardShapesPointsActivateEditSelect( ZS::Test::CTestStep* i_pTestStep );
-    void doTestStepMouseEventsStandardShapesPointsSelectPoint( ZS::Test::CTestStep* i_pTestStep );
-    void doTestStepMouseEventsStandardShapesPointsCheckSelectResult( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepMouseEventsStandardShapesPointsTriggerEditGroup( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepMouseEventsStandardShapesPointsTriggerEditUngroup( ZS::Test::CTestStep* i_pTestStep );
+    void doTestStepMouseEventsStandardShapesPointsCheckResult( ZS::Test::CTestStep* i_pTestStep );
+    void doTestStepMouseEventsStandardShapesPoints( ZS::Test::CTestStep* i_pTestStep );
 protected slots:
     //void doTestStepStandardShapesLines( ZS::Test::CTestStep* i_pTestStep );
 protected slots:

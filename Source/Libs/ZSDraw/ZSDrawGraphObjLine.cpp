@@ -612,6 +612,32 @@ bool CGraphObjLine::isHit( const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo ) c
 } // isHit
 
 /*==============================================================================
+public: // reimplementing methods of base class QGraphicItem
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CGraphObjLine::setCursor( const QCursor& i_cursor )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->isActive(ETraceDetailLevelMethodArgs) )
+    {
+        strMthInArgs = qCursorShape2Str(i_cursor.shape());
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "setCursor",
+        /* strAddInfo   */ strMthInArgs );
+
+    QGraphicsLineItem::setCursor(i_cursor);
+
+} // setCursor
+
+/*==============================================================================
 public: // overridables of base class CGraphObj
 ==============================================================================*/
 
@@ -649,17 +675,19 @@ void CGraphObjLine::showSelectionPoints( unsigned char i_selPts )
         /* strMethod    */ "showSelectionPoints",
         /* strAddInfo   */ strAddTrcInfo );
 
-    QPolygonF plg;
-    QLineF    lineF = line();
-
-    plg.append(lineF.p1());
-    plg.append(lineF.p2());
-
-    if( i_selPts & ESelectionPointsPolygonShapePoints )
+    if( parentItem() == nullptr )
     {
-        showSelectionPointsOfPolygon(plg);
-    }
+        QPolygonF plg;
+        QLineF    lineF = line();
 
+        plg.append(lineF.p1());
+        plg.append(lineF.p2());
+
+        if( i_selPts & ESelectionPointsPolygonShapePoints )
+        {
+            showSelectionPointsOfPolygon(plg);
+        }
+    }
 } // showSelectionPoints
 
 //------------------------------------------------------------------------------
@@ -680,14 +708,16 @@ void CGraphObjLine::updateSelectionPoints( unsigned char i_selPts )
         /* strMethod    */ "updateSelectionPoints",
         /* strAddInfo   */ strAddTrcInfo );
 
-    QPolygonF plg;
-    QLineF    lineF = line();
+    if( parentItem() == nullptr )
+    {
+        QPolygonF plg;
+        QLineF    lineF = line();
 
-    plg.append(lineF.p1());
-    plg.append(lineF.p2());
+        plg.append(lineF.p1());
+        plg.append(lineF.p2());
 
-    updateSelectionPointsOfPolygon(plg);
-
+        updateSelectionPointsOfPolygon(plg);
+    }
 } // updateSelectionPoints
 
 /*==============================================================================

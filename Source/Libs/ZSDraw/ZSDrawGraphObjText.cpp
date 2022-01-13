@@ -533,6 +533,32 @@ bool CGraphObjText::isHit( const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo ) c
 } // isHit
 
 /*==============================================================================
+public: // reimplementing methods of base class QGraphicItem
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CGraphObjText::setCursor( const QCursor& i_cursor )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->isActive(ETraceDetailLevelMethodArgs) )
+    {
+        strMthInArgs = qCursorShape2Str(i_cursor.shape());
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "setCursor",
+        /* strAddInfo   */ strMthInArgs );
+
+    QGraphicsTextItem::setCursor(i_cursor);
+
+} // setCursor
+
+/*==============================================================================
 protected: // must overridables of base class CGraphObj
 ==============================================================================*/
 
@@ -554,10 +580,12 @@ void CGraphObjText::showSelectionPoints( unsigned char i_selPts )
         /* strMethod    */ "showSelectionPoints",
         /* strAddInfo   */ strAddTrcInfo );
 
-    unsigned char selPts = i_selPts & ESelectionPointsBoundingRectRotate;
+    if( parent() == nullptr )
+    {
+        unsigned char selPts = i_selPts & ESelectionPointsBoundingRectRotate;
 
-    showSelectionPointsOfBoundingRect( rect(), selPts );
-
+        showSelectionPointsOfBoundingRect( rect(), selPts );
+    }
 } // showSelectionPoints
 
 //------------------------------------------------------------------------------
@@ -578,10 +606,12 @@ void CGraphObjText::updateSelectionPoints( unsigned char i_selPts )
         /* strMethod    */ "updateSelectionPoints",
         /* strAddInfo   */ strAddTrcInfo );
 
-    unsigned char selPts = i_selPts & ESelectionPointsBoundingRectRotate;
+    if( parent() == nullptr )
+    {
+        unsigned char selPts = i_selPts & ESelectionPointsBoundingRectRotate;
 
-    updateSelectionPointsOfBoundingRect( rect(), selPts );
-
+        updateSelectionPointsOfBoundingRect( rect(), selPts );
+    }
 } // updateSelectionPoints
 
 /*==============================================================================
