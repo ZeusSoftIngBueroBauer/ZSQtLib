@@ -247,7 +247,7 @@ CIdxTreeEntry::~CIdxTreeEntry()
 
     if( m_pParentBranch != nullptr )
     {
-        m_pParentBranch->remove(this);
+        m_pParentBranch->removeChild(this);
     }
 
     try
@@ -571,10 +571,14 @@ bool CIdxTreeEntry::isAboutToBeDestroyed() const
 
 } // isAboutToBeDestroyed
 
+/*=============================================================================
+public: // instance methods (for branch entries)
+=============================================================================*/
+
 //-----------------------------------------------------------------------------
 /*! Returns the index of the given child tree entry in the branch.
 
-    @param i_pTreeEntry [in] Pointer to child entry whose index is desired.
+    @param i_pChildTreeEntry [in] Pointer to child entry whose index is desired.
 
     @return Index of the given child entry in the branch.
 
@@ -589,25 +593,25 @@ bool CIdxTreeEntry::isAboutToBeDestroyed() const
           - with Result = IdxOutOfRange if the child's index in the parent branch
                           is not correct.
 */
-int CIdxTreeEntry::indexOf( const CIdxTreeEntry* i_pTreeEntry ) const
+int CIdxTreeEntry::indexOf( const CIdxTreeEntry* i_pChildTreeEntry ) const
 //-----------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(m_pMtx);
 
-    int idxInParentBranch = i_pTreeEntry->indexInParentBranch();
+    int idxInParentBranch = i_pChildTreeEntry->indexInParentBranch();
 
     if( idxInParentBranch < 0 || idxInParentBranch >= m_arpTreeEntries.size() )
     {
-        QString strAddErrInfo = i_pTreeEntry->keyInTree() + ".indexInParentBranch: " + QString::number(idxInParentBranch);
+        QString strAddErrInfo = i_pChildTreeEntry->keyInTree() + ".indexInParentBranch: " + QString::number(idxInParentBranch);
         SErrResultInfo errResultInfo = ErrResultInfoCritical("indexOf", EResultIdxOutOfRange, strAddErrInfo);
         throw CException(__FILE__, __LINE__, errResultInfo);
     }
 
-    CIdxTreeEntry* pTreeEntry = const_cast<CIdxTreeEntry*>(i_pTreeEntry);
+    CIdxTreeEntry* pTreeEntry = const_cast<CIdxTreeEntry*>(i_pChildTreeEntry);
 
     if( idxInParentBranch != m_arpTreeEntries.indexOf(pTreeEntry) )
     {
-        QString strAddErrInfo = i_pTreeEntry->keyInTree() + ".indexInParentBranch: " + QString::number(idxInParentBranch);
+        QString strAddErrInfo = i_pChildTreeEntry->keyInTree() + ".indexInParentBranch: " + QString::number(idxInParentBranch);
         SErrResultInfo errResultInfo = ErrResultInfoCritical("indexOf", EResultIdxOutOfRange, strAddErrInfo);
         throw CException(__FILE__, __LINE__, errResultInfo);
     }
@@ -752,7 +756,7 @@ CIdxTreeEntry* CIdxTreeEntry::find( EIdxTreeEntryType i_entryType, const QString
 }
 
 /*=============================================================================
-public: // instance methods
+public: // instance methods (for branch entries)
 =============================================================================*/
 
 //-----------------------------------------------------------------------------
@@ -763,17 +767,17 @@ public: // instance methods
 
     @return Index of the given child entry in the branch.
 */
-int CIdxTreeEntry::indexOfChildInListWithSameEntryTypes( const CIdxTreeEntry* i_pTreeEntry ) const
+int CIdxTreeEntry::indexOfChildInListWithSameEntryTypes( const CIdxTreeEntry* i_pChildTreeEntry ) const
 //-----------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(m_pMtx);
 
     int idxInParentBranch = -1;
 
-    EIdxTreeEntryType entryTypeFilter = i_pTreeEntry->entryType();
+    EIdxTreeEntryType entryTypeFilter = i_pChildTreeEntry->entryType();
 
     CIdxTreeEntry* pTreeEntryTmp;
-    int                    idxTmp;
+    int            idxTmp;
 
     for( idxTmp = 0; idxTmp < m_arpTreeEntries.size(); ++idxTmp )
     {
@@ -783,7 +787,7 @@ int CIdxTreeEntry::indexOfChildInListWithSameEntryTypes( const CIdxTreeEntry* i_
         {
             ++idxInParentBranch;
         }
-        if( pTreeEntryTmp == i_pTreeEntry )
+        if( pTreeEntryTmp == i_pChildTreeEntry )
         {
             break;
         }
@@ -794,11 +798,13 @@ int CIdxTreeEntry::indexOfChildInListWithSameEntryTypes( const CIdxTreeEntry* i_
 } // indexOfChildInListWithSameEntryTypes
 
 /*=============================================================================
-public: // instance methods
+protected: // instance methods (for branch entries)
 =============================================================================*/
 
 //-----------------------------------------------------------------------------
 /*! Adds the given tree entry as a child of the branch.
+
+    This method is for internal use only and is called by the index tree.
 
     The entry will be appended at the end of the list of child entries.
     A reference to the child entry will be inserted in the map of the child entries
@@ -819,19 +825,19 @@ public: // instance methods
           - with Result = ObjAlreadyInList if a child with the same name and
                           type already belongs to the branch.
 */
-int CIdxTreeEntry::add( CIdxTreeEntry* i_pTreeEntry )
+int CIdxTreeEntry::addChild( CIdxTreeEntry* i_pChildTreeEntry )
 //-----------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(m_pMtx);
 
     int idxInParentBranch = -1;
 
-    QString strEntryType = i_pTreeEntry->entryType2Str(EEnumEntryAliasStrSymbol);
-    QString strKeyInParentBranch = strEntryType + ":" + i_pTreeEntry->name();
+    QString strEntryType = i_pChildTreeEntry->entryType2Str(EEnumEntryAliasStrSymbol);
+    QString strKeyInParentBranch = strEntryType + ":" + i_pChildTreeEntry->name();
 
-    if( i_pTreeEntry->parentBranch() != nullptr )
+    if( i_pChildTreeEntry->parentBranch() != nullptr )
     {
-        QString strErrInfo = i_pTreeEntry->keyInTree() + " already belongs to " + i_pTreeEntry->parentBranch()->keyInTree();
+        QString strErrInfo = i_pChildTreeEntry->keyInTree() + " already belongs to " + i_pChildTreeEntry->parentBranch()->keyInTree();
         SErrResultInfo errResultInfo = ErrResultInfoCritical("add", EResultObjAlreadyInList, strErrInfo);
         throw CException(__FILE__, __LINE__, errResultInfo);
     }
@@ -844,19 +850,21 @@ int CIdxTreeEntry::add( CIdxTreeEntry* i_pTreeEntry )
 
     idxInParentBranch = m_arpTreeEntries.size();
 
-    m_arpTreeEntries.append(i_pTreeEntry);
-    m_mappTreeEntries.insert(strKeyInParentBranch, i_pTreeEntry);
+    m_arpTreeEntries.append(i_pChildTreeEntry);
+    m_mappTreeEntries.insert(strKeyInParentBranch, i_pChildTreeEntry);
 
-    i_pTreeEntry->setParentBranch(this);
-    i_pTreeEntry->setKeyInParentBranch(strKeyInParentBranch);
-    i_pTreeEntry->setIndexInParentBranch(idxInParentBranch);
+    i_pChildTreeEntry->setParentBranch(this);
+    i_pChildTreeEntry->setKeyInParentBranch(strKeyInParentBranch);
+    i_pChildTreeEntry->setIndexInParentBranch(idxInParentBranch);
 
     return idxInParentBranch;
 
-} // add
+} // addChild
 
 //-----------------------------------------------------------------------------
 /*! Inserts the given tree entry at the given index as a child of the branch.
+
+    This method is for internal use only and is called by the index tree.
 
     If the given index is lower than 0 or greater than the number of entries in the
     list of child entries the entry will be appended at the end of the list.
@@ -871,7 +879,7 @@ int CIdxTreeEntry::add( CIdxTreeEntry* i_pTreeEntry )
     - The index of the child entry in the branch will be set at the child entry.
 
     @param i_iIdx [in] Index in the list of child entries where the child should be inserted.
-    @param i_pTreeEntry [in] Pointer to tree entry to be inserted as a child.
+    @param i_pChildTreeEntry [in] Pointer to tree entry to be inserted as a child.
 
     @return Index of the child entry. Might be different from the given index if the index
             was less than 0 or greater the current size of the child list.
@@ -883,19 +891,19 @@ int CIdxTreeEntry::add( CIdxTreeEntry* i_pTreeEntry )
           - with Result = ObjAlreadyInList if a child with the same name and
                           type already belongs to the branch.
 */
-int CIdxTreeEntry::insert( int i_iIdx, CIdxTreeEntry* i_pTreeEntry )
+int CIdxTreeEntry::insertChild( int i_iIdx, CIdxTreeEntry* i_pChildTreeEntry )
 //-----------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(m_pMtx);
 
     int idxInParentBranch = -1;
 
-    QString strEntryType = i_pTreeEntry->entryType2Str(EEnumEntryAliasStrSymbol);
-    QString strKeyInParentBranch = strEntryType + ":" + i_pTreeEntry->name();
+    QString strEntryType = i_pChildTreeEntry->entryType2Str(EEnumEntryAliasStrSymbol);
+    QString strKeyInParentBranch = strEntryType + ":" + i_pChildTreeEntry->name();
 
-    if( i_pTreeEntry->parentBranch() != nullptr )
+    if( i_pChildTreeEntry->parentBranch() != nullptr )
     {
-        QString strErrInfo = i_pTreeEntry->keyInTree() + " already belongs to " + i_pTreeEntry->parentBranch()->keyInTree();
+        QString strErrInfo = i_pChildTreeEntry->keyInTree() + " already belongs to " + i_pChildTreeEntry->parentBranch()->keyInTree();
         SErrResultInfo errResultInfo = ErrResultInfoCritical("insert", EResultObjAlreadyInList, strErrInfo);
         throw CException(__FILE__, __LINE__, errResultInfo);
     }
@@ -909,7 +917,7 @@ int CIdxTreeEntry::insert( int i_iIdx, CIdxTreeEntry* i_pTreeEntry )
     if( i_iIdx >= 0 && i_iIdx < m_arpTreeEntries.size() )
     {
         idxInParentBranch = i_iIdx;
-        m_arpTreeEntries.insert(idxInParentBranch, i_pTreeEntry);
+        m_arpTreeEntries.insert(idxInParentBranch, i_pChildTreeEntry);
 
         CIdxTreeEntry* pTreeEntry;
         int                    idxEntry;
@@ -923,21 +931,23 @@ int CIdxTreeEntry::insert( int i_iIdx, CIdxTreeEntry* i_pTreeEntry )
     else
     {
         idxInParentBranch = m_arpTreeEntries.size();
-        m_arpTreeEntries.append(i_pTreeEntry);
+        m_arpTreeEntries.append(i_pChildTreeEntry);
     }
 
-    m_mappTreeEntries.insert(strKeyInParentBranch, i_pTreeEntry);
+    m_mappTreeEntries.insert(strKeyInParentBranch, i_pChildTreeEntry);
 
-    i_pTreeEntry->setParentBranch(this);
-    i_pTreeEntry->setKeyInParentBranch(strKeyInParentBranch);
-    i_pTreeEntry->setIndexInParentBranch(idxInParentBranch);
+    i_pChildTreeEntry->setParentBranch(this);
+    i_pChildTreeEntry->setKeyInParentBranch(strKeyInParentBranch);
+    i_pChildTreeEntry->setIndexInParentBranch(idxInParentBranch);
 
     return idxInParentBranch;
 
-} // insert
+} // insertChild
 
 //-----------------------------------------------------------------------------
 /*! Removes the given tree entry from the branch.
+
+    This method is for internal use only and is called by the index tree.
 
     This method is either called when an entry is going about to be destroyed
     or if an entry is moved within the tree.
@@ -948,7 +958,7 @@ int CIdxTreeEntry::insert( int i_iIdx, CIdxTreeEntry* i_pTreeEntry )
     - The unique key of the child entry within the branch will be set to an empty string.
     - The index of the child entry in the branch will be set to -1.
 
-    @param i_pTreeEntry [in] Pointer to tree entry to be removed.
+    @param i_pChildTreeEntry [in] Pointer to tree entry to be removed.
 
     @note If the child entry is not the last entry in the list of child entries
           the index of all following child entries will be corrected.
@@ -959,41 +969,41 @@ int CIdxTreeEntry::insert( int i_iIdx, CIdxTreeEntry* i_pTreeEntry )
     @note Throws a critical exception
           - with Result = ObjNotInList if the tree entry is not a child of the branch.
 */
-void CIdxTreeEntry::remove( CIdxTreeEntry* i_pTreeEntry )
+void CIdxTreeEntry::removeChild( CIdxTreeEntry* i_pChildTreeEntry )
 //-----------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(m_pMtx);
 
-    int idxInParentBranch = i_pTreeEntry->indexInParentBranch();
+    int idxInParentBranch = i_pChildTreeEntry->indexInParentBranch();
 
     if( idxInParentBranch < 0 || idxInParentBranch >= m_arpTreeEntries.size() )
     {
-        QString strAddErrInfo = i_pTreeEntry->keyInTree() + ".indexInParentBranch: " + QString::number(idxInParentBranch);
+        QString strAddErrInfo = i_pChildTreeEntry->keyInTree() + ".indexInParentBranch: " + QString::number(idxInParentBranch);
         SErrResultInfo errResultInfo = ErrResultInfoCritical("remove", EResultIdxOutOfRange, strAddErrInfo);
         throw CException(__FILE__, __LINE__, errResultInfo);
     }
 
-    if( idxInParentBranch != m_arpTreeEntries.indexOf(i_pTreeEntry) )
+    if( idxInParentBranch != m_arpTreeEntries.indexOf(i_pChildTreeEntry) )
     {
-        QString strAddErrInfo = i_pTreeEntry->keyInTree() + ".indexInParentBranch: " + QString::number(idxInParentBranch);
+        QString strAddErrInfo = i_pChildTreeEntry->keyInTree() + ".indexInParentBranch: " + QString::number(idxInParentBranch);
         SErrResultInfo errResultInfo = ErrResultInfoCritical("indexOf", EResultIdxOutOfRange, strAddErrInfo);
         throw CException(__FILE__, __LINE__, errResultInfo);
     }
 
-    QString strKeyInParentBranch = i_pTreeEntry->keyInParentBranch();
+    QString strKeyInParentBranch = i_pChildTreeEntry->keyInParentBranch();
 
     if( !m_mappTreeEntries.contains(strKeyInParentBranch) )
     {
-        SErrResultInfo errResultInfo = ErrResultInfoCritical("remove", EResultObjNotInList, i_pTreeEntry->keyInParentBranch());
+        SErrResultInfo errResultInfo = ErrResultInfoCritical("remove", EResultObjNotInList, i_pChildTreeEntry->keyInParentBranch());
         throw CException(__FILE__, __LINE__, errResultInfo);
     }
 
     m_arpTreeEntries.remove(idxInParentBranch);
     m_mappTreeEntries.remove(strKeyInParentBranch);
 
-    i_pTreeEntry->setParentBranch(nullptr);
-    i_pTreeEntry->setKeyInParentBranch("");
-    i_pTreeEntry->setIndexInParentBranch(-1);
+    i_pChildTreeEntry->setParentBranch(nullptr);
+    i_pChildTreeEntry->setKeyInParentBranch("");
+    i_pChildTreeEntry->setIndexInParentBranch(-1);
 
     CIdxTreeEntry* pTreeEntry;
     int            idxEntry;
@@ -1004,16 +1014,18 @@ void CIdxTreeEntry::remove( CIdxTreeEntry* i_pTreeEntry )
         pTreeEntry->setIndexInParentBranch(idxEntry);
     }
 
-} // remove
+} // removeChild
 
 //-----------------------------------------------------------------------------
-/*! Renames the given tree entry to the given new name.
+/*! Renames the given child tree entry to the given new name.
+
+    This method is for internal use only and is called by the index tree.
 
     The following members of the given child entry will be modified:
 
     - The unique key of the child entry within the branch will be modified.
 
-    @param i_pTreeEntry [in] Pointer to tree entry to be renamed.
+    @param i_pChildTreeEntry [in] Pointer to child tree entry to be renamed.
     @param i_strNameNew [in] New name of the child entry.
 
     @note Throws a critical exception
@@ -1022,28 +1034,28 @@ void CIdxTreeEntry::remove( CIdxTreeEntry* i_pTreeEntry )
     @note Throws a critical exception
           - with Result = ObjNotInList if the tree entry is not a child of the branch.
 */
-void CIdxTreeEntry::rename( CIdxTreeEntry* i_pTreeEntry, const QString& i_strNameNew )
+void CIdxTreeEntry::renameChild( CIdxTreeEntry* i_pChildTreeEntry, const QString& i_strNameNew )
 //-----------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(m_pMtx);
 
-    int idxInParentBranch = i_pTreeEntry->indexInParentBranch();
+    int idxInParentBranch = i_pChildTreeEntry->indexInParentBranch();
 
     if( idxInParentBranch < 0 || idxInParentBranch >= m_arpTreeEntries.size() )
     {
-        QString strAddErrInfo = i_pTreeEntry->keyInTree() + ".indexInParentBranch: " + QString::number(idxInParentBranch);
+        QString strAddErrInfo = i_pChildTreeEntry->keyInTree() + ".indexInParentBranch: " + QString::number(idxInParentBranch);
         SErrResultInfo errResultInfo = ErrResultInfoCritical("rename", EResultIdxOutOfRange, strAddErrInfo);
         throw CException(__FILE__, __LINE__, errResultInfo);
     }
 
-    if( idxInParentBranch != m_arpTreeEntries.indexOf(i_pTreeEntry) )
+    if( idxInParentBranch != m_arpTreeEntries.indexOf(i_pChildTreeEntry) )
     {
-        QString strAddErrInfo = i_pTreeEntry->keyInTree() + ".indexInParentBranch: " + QString::number(idxInParentBranch);
+        QString strAddErrInfo = i_pChildTreeEntry->keyInTree() + ".indexInParentBranch: " + QString::number(idxInParentBranch);
         SErrResultInfo errResultInfo = ErrResultInfoCritical("indexOf", EResultIdxOutOfRange, strAddErrInfo);
         throw CException(__FILE__, __LINE__, errResultInfo);
     }
 
-    QString strKeyInParentBranchOrig = i_pTreeEntry->keyInParentBranch();
+    QString strKeyInParentBranchOrig = i_pChildTreeEntry->keyInParentBranch();
 
     if( !m_mappTreeEntries.contains(strKeyInParentBranchOrig) )
     {
@@ -1051,7 +1063,7 @@ void CIdxTreeEntry::rename( CIdxTreeEntry* i_pTreeEntry, const QString& i_strNam
         throw CException(__FILE__, __LINE__, errResultInfo);
     }
 
-    QString strEntryType = i_pTreeEntry->entryType2Str(EEnumEntryAliasStrSymbol);
+    QString strEntryType = i_pChildTreeEntry->entryType2Str(EEnumEntryAliasStrSymbol);
     QString strKeyInParentBranchNew = strEntryType + ":" + i_strNameNew;
 
     if( m_mappTreeEntries.contains(strKeyInParentBranchNew) )
@@ -1060,11 +1072,126 @@ void CIdxTreeEntry::rename( CIdxTreeEntry* i_pTreeEntry, const QString& i_strNam
         throw CException(__FILE__, __LINE__, errResultInfo);
     }
 
-    i_pTreeEntry->setName(i_strNameNew);
+    i_pChildTreeEntry->setName(i_strNameNew);
 
     m_mappTreeEntries.remove(strKeyInParentBranchOrig);
-    m_mappTreeEntries.insert(strKeyInParentBranchNew, i_pTreeEntry);
+    m_mappTreeEntries.insert(strKeyInParentBranchNew, i_pChildTreeEntry);
 
-    i_pTreeEntry->setKeyInParentBranch(strKeyInParentBranchNew);
+    i_pChildTreeEntry->setKeyInParentBranch(strKeyInParentBranchNew);
 
-} // rename
+} // renameChild
+
+/*=============================================================================
+protected: // overridables
+=============================================================================*/
+
+//-----------------------------------------------------------------------------
+/*! Sets the current name of the tree entry.
+
+    This method is for internal use only and is called by the index tree
+    if an entry is renamed.
+
+    Changing the name also changes its key.
+    If the name of a branch is changed also the keys of all children must
+    be set correspondingly. This is handled by the index tree.
+
+    @param i_strName [in] New name of the tree entry.
+*/
+//-----------------------------------------------------------------------------
+void CIdxTreeEntry::setName( const QString& i_strName )
+{
+    m_strName = i_strName;
+}
+
+//-----------------------------------------------------------------------------
+/*! Sets the key of the entry in the index tree.
+
+    This method is for internal use only and is implicitely called by the
+    index tree if the name or the parent of an entry is changed.
+
+    @param i_strKey [in] New key of the tree entry.
+*/
+//-----------------------------------------------------------------------------
+void CIdxTreeEntry::setKeyInTree( const QString& i_strKey )
+{
+    m_strKeyInTree = i_strKey;
+}
+
+//-----------------------------------------------------------------------------
+/*! Sets the index of the entry in the index trees vector of entries.
+
+    This method is for internal use only and is called by the index tree on
+    adding new entries.
+
+    @param i_idx [in] New index of the tree entry in the vector of the index tree.
+*/
+//-----------------------------------------------------------------------------
+void CIdxTreeEntry::setIndexInTree( int i_idx )
+{
+    m_idxInTree = i_idx;
+}
+
+/*=============================================================================
+protected: // overridables
+=============================================================================*/
+
+//-----------------------------------------------------------------------------
+/*! Sets the parent branch of the entry.
+
+    This method is for internal use only and is called by the index tree on
+    moving tree entries from one branch to another or on adding new entries.
+
+    @param i_pParent [in] Pointer to new parent entry.
+*/
+//-----------------------------------------------------------------------------
+void CIdxTreeEntry::setParentBranch( CIdxTreeEntry* i_pParent )
+{
+    m_pParentBranch = i_pParent;
+}
+
+//-----------------------------------------------------------------------------
+/*! Sets the unique key of the entry within it's parent branch.
+
+    This method is for internal use only and is called by the index tree on
+    moving tree entries from one branch to another or on adding new entries.
+
+    @param i_strKey [in] New key in parent branch.
+
+*/
+//-----------------------------------------------------------------------------
+void CIdxTreeEntry::setKeyInParentBranch( const QString& i_strKey )
+{
+    m_strKeyInParentBranch = i_strKey;
+}
+
+//-----------------------------------------------------------------------------
+/*! Sets the index of the entry within it's parent branches vector of entries.
+
+    This method is for internal use only and is called by the index tree on
+    moving tree entries from one branch to another or on adding new entries.
+
+    @param i_idx [in] New index of the entry in the vector of its parent branch.
+*/
+//-----------------------------------------------------------------------------
+void CIdxTreeEntry::setIndexInParentBranch( int i_idx )
+{
+    m_idxInParentBranch = i_idx;
+}
+
+/*=============================================================================
+protected: // overridables
+=============================================================================*/
+
+//-----------------------------------------------------------------------------
+/*! Sets the index tree the entry belongs to.
+
+    This method is for internal use only and is called by the index tree on
+    on adding new entries.
+
+    @param i_pTree [in] Pointer to index tree the tree entry belongs to.
+*/
+//-----------------------------------------------------------------------------
+void CIdxTreeEntry::setTree( CIdxTree* i_pTree )
+{
+    m_pTree = i_pTree;
+}

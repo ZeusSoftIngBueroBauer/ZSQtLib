@@ -353,9 +353,9 @@ void CGraphObjResistor::setResistance( double i_fResistance_Ohm )
     {
         m_fResistance_Ohm = i_fResistance_Ohm;
 
-        if( m_arpLabels.contains(c_strKeyLabelResistance) )
+        if( m_arpUserLabels.contains(c_strKeyLabelResistance) )
         {
-            SGraphObjLabel* pGraphObjLabel = m_arpLabels[c_strKeyLabelResistance];
+            SGraphObjLabel* pGraphObjLabel = m_arpUserLabels[c_strKeyLabelResistance];
 
             if( pGraphObjLabel->m_pGraphObjLabel != nullptr )
             {
@@ -378,31 +378,21 @@ void CGraphObjResistor::showResistance( ESelectionPoint i_selPtPos )
 {
     QString str = QString::number(m_fResistance_Ohm) + "Ohm";
 
-    if( !m_arpLabels.contains(c_strKeyLabelResistance) )
-    {
-        addLabel(c_strKeyLabelResistance,str,i_selPtPos);
-    }
-    else
-    {
-        setLabelText(c_strKeyLabelResistance,str);
-    }
-
-    showLabel(c_strKeyLabelResistance);
-
-} // showResistance
+    showUserDefinedLabel(c_strKeyLabelResistance, str, i_selPtPos);
+}
 
 //------------------------------------------------------------------------------
 void CGraphObjResistor::hideResistance()
 //------------------------------------------------------------------------------
 {
-    hideLabel(c_strKeyLabelResistance);
+    hideUserDefinedLabel(c_strKeyLabelResistance);
 }
 
 //------------------------------------------------------------------------------
 bool CGraphObjResistor::isResistanceVisible() const
 //------------------------------------------------------------------------------
 {
-    return isLabelVisible(c_strKeyLabelResistance);
+    return isUserDefinedLabelVisible(c_strKeyLabelResistance);
 }
 
 /*==============================================================================

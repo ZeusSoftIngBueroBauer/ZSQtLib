@@ -409,9 +409,9 @@ void CGraphObjVoltageSource::setVoltage( double i_fVoltage_V )
     {
         m_fVoltage_V = i_fVoltage_V;
 
-        if( m_arpLabels.contains(c_strKeyLabelVoltage) )
+        if( m_arpUserLabels.contains(c_strKeyLabelVoltage) )
         {
-            SGraphObjLabel* pGraphObjLabel = m_arpLabels[c_strKeyLabelVoltage];
+            SGraphObjLabel* pGraphObjLabel = m_arpUserLabels[c_strKeyLabelVoltage];
 
             if( pGraphObjLabel->m_pGraphObjLabel != nullptr )
             {
@@ -419,7 +419,6 @@ void CGraphObjVoltageSource::setVoltage( double i_fVoltage_V )
                 pGraphObjLabel->m_pGraphObjLabel->setText(str);
             }
         }
-
     } // if( m_fVoltage_V != i_fVoltage_V )
 
 } // setVoltage
@@ -434,31 +433,21 @@ void CGraphObjVoltageSource::showVoltage( ESelectionPoint i_selPtPos )
 {
     QString str = QString::number(m_fVoltage_V) + "V";
 
-    if( !m_arpLabels.contains(c_strKeyLabelVoltage) )
-    {
-        addLabel(c_strKeyLabelVoltage,str,i_selPtPos);
-    }
-    else
-    {
-        setLabelText(c_strKeyLabelVoltage,str);
-    }
-
-    showLabel(c_strKeyLabelVoltage);
-
-} // showVoltage
+    showUserDefinedLabel(c_strKeyLabelVoltage, str, i_selPtPos);
+}
 
 //------------------------------------------------------------------------------
 void CGraphObjVoltageSource::hideVoltage()
 //------------------------------------------------------------------------------
 {
-    hideLabel(c_strKeyLabelVoltage);
+    hideUserDefinedLabel(c_strKeyLabelVoltage);
 }
 
 //------------------------------------------------------------------------------
 bool CGraphObjVoltageSource::isVoltageVisible() const
 //------------------------------------------------------------------------------
 {
-    return isLabelVisible(c_strKeyLabelVoltage);
+    return isUserDefinedLabelVisible(c_strKeyLabelVoltage);
 }
 
 /*==============================================================================

@@ -595,9 +595,9 @@ void CGraphObjTransistor::setDopingType( EDopingType i_type )
         m_pLinBaseUp->setDrawSettings(drawSettingsLineBaseUp);
         m_pLinBaseDn->setDrawSettings(drawSettingsLineBaseDn);
 
-        if( m_arpLabels.contains(c_strKeyLabelDopingType) )
+        if( m_arpUserLabels.contains(c_strKeyLabelDopingType) )
         {
-            SGraphObjLabel* pGraphObjLabel = m_arpLabels[c_strKeyLabelDopingType];
+            SGraphObjLabel* pGraphObjLabel = m_arpUserLabels[c_strKeyLabelDopingType];
 
             if( pGraphObjLabel->m_pGraphObjLabel != nullptr )
             {
@@ -620,31 +620,21 @@ void CGraphObjTransistor::showDopingType( ESelectionPoint i_selPtPos )
 {
     QString str = DopingType2Str(m_dopingType);
 
-    if( !m_arpLabels.contains(c_strKeyLabelDopingType) )
-    {
-        addLabel(c_strKeyLabelDopingType,str,i_selPtPos);
-    }
-    else
-    {
-        setLabelText(c_strKeyLabelDopingType,str);
-    }
-
-    showLabel(c_strKeyLabelDopingType);
-
-} // showDopingType
+    showUserDefinedLabel(c_strKeyLabelDopingType, str, i_selPtPos);
+}
 
 //------------------------------------------------------------------------------
 void CGraphObjTransistor::hideDopingType()
 //------------------------------------------------------------------------------
 {
-    hideLabel(c_strKeyLabelDopingType);
+    hideUserDefinedLabel(c_strKeyLabelDopingType);
 }
 
 //------------------------------------------------------------------------------
 bool CGraphObjTransistor::isDopingTypeVisible() const
 //------------------------------------------------------------------------------
 {
-    return isLabelVisible(c_strKeyLabelDopingType);
+    return isUserDefinedLabelVisible(c_strKeyLabelDopingType);
 }
 
 /*==============================================================================

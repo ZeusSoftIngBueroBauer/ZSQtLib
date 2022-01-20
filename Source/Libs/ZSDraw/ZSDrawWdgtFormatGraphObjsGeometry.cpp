@@ -32,6 +32,7 @@ may result in using the software modules.
 
 #if QT_VERSION < 0x050000
 #include <QtGui/qapplication.h>
+#include <QtGui/qcheckbox.h>
 #include <QtGui/qcolordialog.h>
 #include <QtGui/qcombobox.h>
 #include <QtGui/qgroupbox.h>
@@ -39,17 +40,20 @@ may result in using the software modules.
 #include <QtGui/qlabel.h>
 #include <QtGui/qlayout.h>
 #include <QtGui/qlineedit.h>
+#include <QtGui/qmessagebox.h>
 #include <QtGui/qpushbutton.h>
 #include <QtGui/qspinbox.h>
 #include <QtGui/qtableview.h>
 #else
 #include <QtWidgets/qapplication.h>
+#include <QtWidgets/qcheckbox.h>
 #include <QtWidgets/qcolordialog.h>
 #include <QtWidgets/qcombobox.h>
 #include <QtWidgets/qheaderview.h>
 #include <QtWidgets/qlabel.h>
 #include <QtWidgets/qlayout.h>
 #include <QtWidgets/qlineedit.h>
+#include <QtWidgets/qmessagebox.h>
 #include <QtWidgets/qpushbutton.h>
 #include <QtWidgets/qspinbox.h>
 #include <QtWidgets/qtableview.h>
@@ -70,6 +74,7 @@ may result in using the software modules.
 #include "ZSDraw/ZSDrawingScene.h"
 #include "ZSPhysVal/ZSPhysValDllMain.h"
 #include "ZSSysGUI/ZSSysPushButton.h"
+#include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysErrResult.h"
 #include "ZSSys/ZSSysException.h"
 #include "ZSSys/ZSSysTrcAdminObj.h"
@@ -108,33 +113,27 @@ CWdgtFormatGraphObjsGeometry::CWdgtFormatGraphObjsGeometry(
     m_bIsChangingValue(false),
     m_pLyt(nullptr),
     m_pLblHeadLine(nullptr),
-    m_pWdgtPosition(nullptr),
-    m_pLytWdgtPosition(nullptr),
-    m_pLytLinePosition(nullptr),
-    m_pLblLinePosition(nullptr),
-    m_pSepLinePosition(nullptr),
-    m_pLytPositionX(nullptr),
-    m_pLblPositionX(nullptr),
-    m_pEdtPositionX(nullptr),
-    m_pLytPositionY(nullptr),
-    m_pLblPositionY(nullptr),
-    m_pEdtPositionY(nullptr),
-    m_pWdgtSize(nullptr),
-    m_pLytWdgtSize(nullptr),
+    m_pWdgtPosSize(nullptr),
+    m_pLytWdgtPosSize(nullptr),
+    m_pLytHeadLineWdgtPosSize(nullptr),
+    m_pLblHeadLinePosSize(nullptr),
+    m_pSepHeadLinePosSize(nullptr),
+    m_pLytLinePos(nullptr),
+    m_pLblPosX(nullptr),
+    m_pEdtPosX(nullptr),
+    m_pLblPosY(nullptr),
+    m_pEdtPosY(nullptr),
     m_pLytLineSize(nullptr),
-    m_pLblLineSize(nullptr),
-    m_pSepLineSize(nullptr),
-    m_pLytSizeWidth(nullptr),
+    m_pLblSize(nullptr),
     m_pLblSizeWidth(nullptr),
     m_pEdtSizeWidth(nullptr),
-    m_pLytSizeHeight(nullptr),
     m_pLblSizeHeight(nullptr),
     m_pEdtSizeHeight(nullptr),
     m_pWdgtShapePoints(nullptr),
     m_pLytWdgtShapePoints(nullptr),
-    m_pLytLineShapePoints(nullptr),
-    m_pLblLineShapePoints(nullptr),
-    m_pSepLineShapePoints(nullptr),
+    m_pLytHeadLineShapePoints(nullptr),
+    m_pLblHeadLineShapePoints(nullptr),
+    m_pSepHeadLineShapePoints(nullptr),
     m_pLytShapePoints(nullptr),
     m_pModelShapePoints(nullptr),
     m_pViewShapePoints(nullptr),
@@ -147,40 +146,110 @@ CWdgtFormatGraphObjsGeometry::CWdgtFormatGraphObjsGeometry(
     m_bOnModelShapePointsItemChangedInProcess(false),
     m_pWdgtRotation(nullptr),
     m_pLytWdgtRotation(nullptr),
-    m_pLytLineRotation(nullptr),
-    m_pLblLineRotation(nullptr),
-    m_pSepLineRotation(nullptr),
-    m_pLytRotationAngle(nullptr),
+    m_pLytHeadLineRotation(nullptr),
+    m_pLblHeadLineRotation(nullptr),
+    m_pSepHeadLineRotation(nullptr),
+    m_pLytLineRotationAngle(nullptr),
     m_pLblRotationAngle(nullptr),
     m_pEdtRotationAngle(nullptr),
-    m_pWdgtZValue(nullptr),
-    m_pLytWdgtZValue(nullptr),
+    m_pWdgtStackingOrder(nullptr),
+    m_pLytWdgtStackingOrder(nullptr),
+    m_pLytHeadLineStackingOrder(nullptr),
+    m_pLblHeadLineStackingOrder(nullptr),
+    m_pSepHeadLineStackingOrder(nullptr),
     m_pLytLineZValue(nullptr),
-    m_pLblLineZValue(nullptr),
-    m_pSepLineZValue(nullptr),
-    m_pLytZValue(nullptr),
     m_pLblZValue(nullptr),
     m_pEdtZValue(nullptr),
-    // Trace
+    m_pWdgtLabelVisibilities(nullptr),
+    m_pLytWdgtLabelVisibilities(nullptr),
+    m_pLytHeadLineWdgtLabelVisibilities(nullptr),
+    m_pLblHeadLineLabelVisibilities(nullptr),
+    m_pSepHeadLineLabelVisibilities(nullptr),
+    m_pLytLinePosLabelVisibilities(nullptr),
+    m_pLblPosLabelAnchorSelPt(nullptr),
+    m_pCmbPosLabelAnchorSelPt(nullptr),
+    m_pLblPosLabelVisible(nullptr),
+    m_pChkPosLabelVisible(nullptr),
+    m_pLblPosLabelAnchorLineVisible(nullptr),
+    m_pChkPosLabelAnchorLineVisible(nullptr),
+    m_pLytLineSizeWidthLabelVisible(nullptr),
+    m_pLblSizeWidthLabelAnchorSelPt(nullptr),
+    m_pCmbSizeWidthLabelAnchorSelPt(nullptr),
+    m_pLblSizeWidthLabelVisible(nullptr),
+    m_pChkSizeWidthLabelVisible(nullptr),
+    m_pLblSizeWidthLabelAnchorLineVisible(nullptr),
+    m_pChkSizeWidthLabelAnchorLineVisible(nullptr),
+    m_pLytLineSizeHeightLabelVisible(nullptr),
+    m_pLblSizeHeightLabelAnchorSelPt(nullptr),
+    m_pCmbSizeHeightLabelAnchorSelPt(nullptr),
+    m_pLblSizeHeightLabelVisible(nullptr),
+    m_pChkSizeHeightLabelVisible(nullptr),
+    m_pLblSizeHeightLabelAnchorLineVisible(nullptr),
+    m_pChkSizeHeightLabelAnchorLineVisible(nullptr),
+    m_pLytLineRotationAngleLabelVisible(nullptr),
+    m_pLblRotationAngleLabelAnchorSelPt(nullptr),
+    m_pCmbRotationAngleLabelAnchorSelPt(nullptr),
+    m_pLblRotationAngleLabelVisible(nullptr),
+    m_pChkRotationAngleLabelVisible(nullptr),
+    m_pLblRotationAngleLabelAnchorLineVisible(nullptr),
+    m_pChkRotationAngleLabelAnchorLineVisible(nullptr),
+    m_pWdgtDimensionLinesVisibilities(nullptr),
+    m_pLytWdgtDimensionLinesVisibilities(nullptr),
+    m_pLytHeadLineWdgtDimensionLinesVisibilities(nullptr),
+    m_pLblHeadLineDimensionLinesVisibilities(nullptr),
+    m_pSepHeadLineDimensionLinesVisibilities(nullptr),
+    m_pLytLineDimensionLinesBoundingRectVisibile(nullptr),
+    m_pLblDimensionLinesBoundingRectVisible(nullptr),
+    m_pChkDimensionLinesBoundingRectVisible(nullptr),
+    m_pLytLineDimensionLinesBoundingRectDiagonalsVisible(nullptr),
+    m_pLblDimensionLinesBoundingRectDiagonalsVisible(nullptr),
+    m_pChkDimensionLinesBoundingRectDiagonalsVisible(nullptr),
+    m_pLytLineDimensionLinesBoundingRectHorizontalSymmetryAxisVisible(nullptr),
+    m_pLblDimensionLinesBoundingRectHorizontalSymmetryAxisVisible(nullptr),
+    m_pChkDimensionLinesBoundingRectHorizontalSymmetryAxisVisible(nullptr),
+    m_pLytLineDimensionLinesBoundingRectVerticalSymmetryAxisVisible(nullptr),
+    m_pLblDimensionLinesBoundingRectVerticalSymmetryAxisVisible(nullptr),
+    m_pChkDimensionLinesBoundingRectVerticalSymmetryAxisVisible(nullptr),
+   // Trace
     m_pTrcAdminObj(nullptr)
 {
     setObjectName("WdgtFormatGraphObjsGeometry");
 
     m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName());
 
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    {
+        strMthInArgs = QString(i_pGraphObj == nullptr ? "nullptr" : i_pGraphObj->path());
+    }
+
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "ctor",
-        /* strAddInfo   */ "" );
+        /* strAddInfo   */ strMthInArgs );
+
+    if( i_pGraphObj == nullptr )
+    {
+        throw ZS::System::CException(__FILE__, __LINE__, EResultArgOutOfRange, "i_pGraphObj == nullptr");
+    }
 
     QRectF rctScene = m_pDrawingScene->sceneRect();
 
     QVBoxLayout* m_pLyt = new QVBoxLayout();
     setLayout(m_pLyt);
 
-    int cxLblWidth = 90;
-    //int cxEdtWidth = 80;
+    int cxLblWidthClm0 = 60;
+    int cxLblWidthClm1 = 40;
+    int cxLblWidthClm2 = 40;
+    int cxLblWidthClm3 = 20;
+    int cxEdtWidthClm1 = 80;
+    int cxEdtWidthClm2 = 80;
+    int cxSpacingClm1Cml2 = 10;
+    int cxSpacingClm2Cml3 = 10;
+
+    EGraphObjType graphObjType = m_pGraphObj->getType();
 
     // Headline
     //=========
@@ -194,81 +263,63 @@ CWdgtFormatGraphObjsGeometry::CWdgtFormatGraphObjsGeometry(
     m_pLyt->addWidget(m_pLblHeadLine);
     m_pLyt->addSpacing(4);
 
-    // <Widget> Position
-    //==================
+    // <Widget> Position and Size
+    //===========================
 
-    if( m_pGraphObj != nullptr )
+    m_ptPos = m_pGraphObj->getPos();
+    m_size  = m_pGraphObj->getSize();
+
+    if( graphObjType != EGraphObjTypeLine && graphObjType != EGraphObjTypeConnectionLine )
     {
-        m_ptPos = m_pGraphicsItem->pos();
+        m_pWdgtPosSize = new QWidget();
+        m_pLytWdgtPosSize = new QVBoxLayout();
+        m_pLytWdgtPosSize->setContentsMargins(0,0,0,0);
+        m_pWdgtPosSize->setLayout(m_pLytWdgtPosSize);
+        m_pLyt->addWidget(m_pWdgtPosSize);
 
-        switch( m_pGraphObj->getType() )
-        {
-            case EGraphObjTypeLine:
-            case EGraphObjTypeConnectionLine:
-            {
-                break;
-            }
-            case EGraphObjTypePoint:
-            case EGraphObjTypeRect:
-            case EGraphObjTypeEllipse:
-            case EGraphObjTypePolygon:
-            case EGraphObjTypePolyline:
-            case EGraphObjTypeText:
-            case EGraphObjTypeImage:
-            case EGraphObjTypeConnectionPoint:
-            case EGraphObjTypeGroup:
-            case EGraphObjTypeUserDefined:
-            default:
-            {
-                m_pWdgtPosition = new QWidget();
-                m_pLytWdgtPosition = new QVBoxLayout();
-                m_pLytWdgtPosition->setContentsMargins(0,0,0,0);
-                m_pWdgtPosition->setLayout(m_pLytWdgtPosition);
-                m_pLyt->addWidget(m_pWdgtPosition);
-                break;
-            }
+        // <Separator> Position and Size
+        //------------------------------
 
-        } // switch( m_pGraphObj->getType() )
+        m_pLytWdgtPosSize->addSpacing(4);
 
-    } // if( m_pGraphObj != nullptr )
+        m_pLytHeadLineWdgtPosSize = new QHBoxLayout();
+        m_pLytWdgtPosSize->addLayout(m_pLytHeadLineWdgtPosSize);
 
-    if( m_pWdgtPosition != nullptr )
-    {
-        // <Separator> Position
-        //----------------------
+        m_pLblHeadLinePosSize = new QLabel("Position and Size:");
+        m_pLytHeadLineWdgtPosSize->addWidget(m_pLblHeadLinePosSize);
+        m_pSepHeadLinePosSize = new QFrame();
+        m_pSepHeadLinePosSize->setFrameStyle(QFrame::HLine|QFrame::Sunken);
+        m_pLytHeadLineWdgtPosSize->addWidget(m_pSepHeadLinePosSize, 1);
 
-        m_pLytWdgtPosition->addSpacing(4);
+        m_pLytWdgtPosSize->addSpacing(4);
 
-        m_pLytLinePosition = new QHBoxLayout();
-        m_pLytWdgtPosition->addLayout(m_pLytLinePosition);
+        // <Line> Position X/Y
+        //--------------------
 
-        m_pLblLinePosition = new QLabel("Position:");
-        m_pLytLinePosition->addWidget(m_pLblLinePosition);
-        m_pSepLinePosition = new QFrame();
-        m_pSepLinePosition->setFrameStyle(QFrame::HLine|QFrame::Sunken);
-        m_pLytLinePosition->addWidget(m_pSepLinePosition,1);
-
-        m_pLytWdgtPosition->addSpacing(4);
+        m_pLytLinePos = new QHBoxLayout();
+        m_pLytWdgtPosSize->addLayout(m_pLytLinePos);
+        m_pLblPos = new QLabel("Position");
+        m_pLblPos->setFixedWidth(cxLblWidthClm0);
+        m_pLytLinePos->addWidget(m_pLblPos);
 
         // <Edit> Position X
         //------------------
 
-        m_pLytPositionX = new QHBoxLayout();
-        m_pLytWdgtPosition->addLayout(m_pLytPositionX);
-        m_pLblPositionX = new QLabel("X:");
-        m_pLblPositionX->setFixedWidth(cxLblWidth);
-        m_pLytPositionX->addWidget(m_pLblPositionX);
-        m_pEdtPositionX = new QDoubleSpinBox();
-        m_pEdtPositionX->setRange(0.0,rctScene.right());
-        m_pEdtPositionX->setDecimals(1);
-        m_pEdtPositionX->setSingleStep(0.1);
-        m_pEdtPositionX->setSuffix(" px");
-        m_pEdtPositionX->setValue(m_ptPos.x());
-        m_pLytPositionX->addWidget(m_pEdtPositionX);
-        m_pLytPositionX->addStretch();
+        m_pLblPosX = new QLabel("X:");
+        m_pLblPosX->setFixedWidth(cxLblWidthClm1);
+        m_pLytLinePos->addWidget(m_pLblPosX);
+        m_pEdtPosX = new QDoubleSpinBox();
+        m_pEdtPosX->setFixedWidth(cxEdtWidthClm1);
+        m_pEdtPosX->setRange(0.0, rctScene.right());
+        m_pEdtPosX->setDecimals(1);
+        m_pEdtPosX->setSingleStep(0.1);
+        m_pEdtPosX->setSuffix(" px");
+        m_pEdtPosX->setValue(m_ptPos.x());
+        m_pLytLinePos->addWidget(m_pEdtPosX);
+        m_pLytLinePos->addSpacing(cxSpacingClm1Cml2);
 
         if( !connect(
-            /* pObjSender   */ m_pEdtPositionX,
+            /* pObjSender   */ m_pEdtPosX,
             /* szSignal     */ SIGNAL(valueChanged(double)),
             /* pObjReceiver */ this,
             /* szSlot       */ SLOT(onEdtPositionXValueChanged(double)) ) )
@@ -279,22 +330,21 @@ CWdgtFormatGraphObjsGeometry::CWdgtFormatGraphObjsGeometry(
         // <Edit> Position Y
         //------------------
 
-        m_pLytPositionY = new QHBoxLayout();
-        m_pLytWdgtPosition->addLayout(m_pLytPositionY);
-        m_pLblPositionY = new QLabel("Y:");
-        m_pLblPositionY->setFixedWidth(cxLblWidth);
-        m_pLytPositionY->addWidget(m_pLblPositionY);
-        m_pEdtPositionY = new QDoubleSpinBox();
-        m_pEdtPositionY->setRange(0.0,rctScene.right());
-        m_pEdtPositionY->setDecimals(1);
-        m_pEdtPositionY->setSingleStep(0.1);
-        m_pEdtPositionY->setSuffix(" px");
-        m_pEdtPositionY->setValue(m_ptPos.y());
-        m_pLytPositionY->addWidget(m_pEdtPositionY);
-        m_pLytPositionY->addStretch();
+        m_pLblPosY = new QLabel("Y:");
+        m_pLblPosY->setFixedWidth(cxLblWidthClm2);
+        m_pLytLinePos->addWidget(m_pLblPosY);
+        m_pEdtPosY = new QDoubleSpinBox();
+        m_pEdtPosY->setFixedWidth(cxEdtWidthClm2);
+        m_pEdtPosY->setRange(0.0,rctScene.right());
+        m_pEdtPosY->setDecimals(1);
+        m_pEdtPosY->setSingleStep(0.1);
+        m_pEdtPosY->setSuffix(" px");
+        m_pEdtPosY->setValue(m_ptPos.y());
+        m_pLytLinePos->addWidget(m_pEdtPosY);
+        m_pLytLinePos->addStretch();
 
         if( !connect(
-            /* pObjSender   */ m_pEdtPositionY,
+            /* pObjSender   */ m_pEdtPosY,
             /* szSignal     */ SIGNAL(valueChanged(double)),
             /* pObjReceiver */ this,
             /* szSlot       */ SLOT(onEdtPositionYValueChanged(double)) ) )
@@ -302,185 +352,109 @@ CWdgtFormatGraphObjsGeometry::CWdgtFormatGraphObjsGeometry(
             throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
         }
 
-    } // if( m_pWdgtPosition != nullptr )
-
-    // <Widget> Size
-    //==================
-
-    if( m_pGraphObj != nullptr )
-    {
-        m_size = m_pGraphObj->getSize();
-
-        switch( m_pGraphObj->getType() )
+        if( m_pGraphObj->hasBoundingRect() )
         {
-            case EGraphObjTypePoint:
-            case EGraphObjTypeLine:
-            case EGraphObjTypeText:
-            case EGraphObjTypeConnectionPoint:
-            case EGraphObjTypeConnectionLine:
+            // <Line> Size Width/Height
+            //------------ ------------
+
+            m_pLytLineSize = new QHBoxLayout();
+            m_pLytWdgtPosSize->addLayout(m_pLytLineSize);
+            m_pLblSize = new QLabel("Size");
+            m_pLblSize->setFixedWidth(cxLblWidthClm0);
+            m_pLytLineSize->addWidget(m_pLblSize);
+
+            // <Edit> Size Width
+            //-------------------
+
+            m_pLblSizeWidth = new QLabel("Width:");
+            m_pLblSizeWidth->setFixedWidth(cxLblWidthClm1);
+            m_pLytLineSize->addWidget(m_pLblSizeWidth);
+            m_pEdtSizeWidth = new QDoubleSpinBox();
+            m_pEdtSizeWidth->setFixedWidth(cxEdtWidthClm1);
+            m_pEdtSizeWidth->setRange(0.0, rctScene.right());
+            m_pEdtSizeWidth->setDecimals(1);
+            m_pEdtSizeWidth->setSingleStep(0.1);
+            m_pEdtSizeWidth->setSuffix(" px");
+            m_pEdtSizeWidth->setValue(m_size.width());
+            m_pLytLineSize->addWidget(m_pEdtSizeWidth);
+            m_pLytLineSize->addSpacing(cxSpacingClm1Cml2);
+
+            if( !connect(
+                /* pObjSender   */ m_pEdtSizeWidth,
+                /* szSignal     */ SIGNAL(valueChanged(double)),
+                /* pObjReceiver */ this,
+                /* szSlot       */ SLOT(onEdtSizeWidthValueChanged(double)) ) )
             {
-                break;
+                throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
             }
-            case EGraphObjTypeRect:
-            case EGraphObjTypeEllipse:
-            case EGraphObjTypeImage:
-            case EGraphObjTypeGroup:
-            case EGraphObjTypePolygon:
-            case EGraphObjTypePolyline:
-            case EGraphObjTypeUserDefined:
-            default:
+            if( !connect(
+                /* pObjSender   */ m_pEdtSizeWidth,
+                /* szSignal     */ SIGNAL(editingFinished()),
+                /* pObjReceiver */ this,
+                /* szSlot       */ SLOT(onEdtSizeWidthEditingFinished()) ) )
             {
-                m_pWdgtSize = new QWidget();
-                m_pLytWdgtSize = new QVBoxLayout();
-                m_pLytWdgtSize->setContentsMargins(0,0,0,0);
-                m_pWdgtSize->setLayout(m_pLytWdgtSize);
-                m_pLyt->addWidget(m_pWdgtSize);
-                break;
+                throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
             }
 
-        } // switch( m_pGraphObj->getType() )
+            // <Edit> Size Height
+            //-------------------
 
-    } // if( m_pGraphObj != nullptr )
+            m_pLblSizeHeight = new QLabel("Height:");
+            m_pLblSizeHeight->setFixedWidth(cxLblWidthClm2);
+            m_pLytLineSize->addWidget(m_pLblSizeHeight);
+            m_pEdtSizeHeight = new QDoubleSpinBox();
+            m_pEdtSizeHeight->setFixedWidth(cxEdtWidthClm2);
+            m_pEdtSizeHeight->setRange(0.0, rctScene.right());
+            m_pEdtSizeHeight->setDecimals(1);
+            m_pEdtSizeHeight->setSingleStep(0.1);
+            m_pEdtSizeHeight->setSuffix(" px");
+            m_pEdtSizeHeight->setValue(m_size.height());
+            m_pLytLineSize->addWidget(m_pEdtSizeHeight);
+            m_pLytLineSize->addStretch();
 
-    if( m_pWdgtSize != nullptr )
-    {
-        // <Separator> Size
-        //-----------------
-
-        m_pLytWdgtSize->addSpacing(4);
-
-        m_pLytLineSize = new QHBoxLayout();
-        m_pLytWdgtSize->addLayout(m_pLytLineSize);
-
-        m_pLblLineSize = new QLabel("Size:");
-        m_pLytLineSize->addWidget(m_pLblLineSize);
-        m_pSepLineSize = new QFrame();
-        m_pSepLineSize->setFrameStyle(QFrame::HLine|QFrame::Sunken);
-        m_pLytLineSize->addWidget(m_pSepLineSize,1);
-
-        m_pLytWdgtSize->addSpacing(4);
-
-        // <Edit> Size Width
-        //-------------------
-
-        m_pLytSizeWidth = new QHBoxLayout();
-        m_pLytWdgtSize->addLayout(m_pLytSizeWidth);
-        m_pLblSizeWidth = new QLabel("Width:");
-        m_pLblSizeWidth->setFixedWidth(cxLblWidth);
-        m_pLytSizeWidth->addWidget(m_pLblSizeWidth);
-        m_pEdtSizeWidth = new QDoubleSpinBox();
-        m_pEdtSizeWidth->setRange(0.0,rctScene.right());
-        m_pEdtSizeWidth->setDecimals(1);
-        m_pEdtSizeWidth->setSingleStep(0.1);
-        m_pEdtSizeWidth->setSuffix(" px");
-        m_pEdtSizeWidth->setValue(m_size.width());
-        m_pLytSizeWidth->addWidget(m_pEdtSizeWidth);
-        m_pLytSizeWidth->addStretch();
-
-        if( !connect(
-            /* pObjSender   */ m_pEdtSizeWidth,
-            /* szSignal     */ SIGNAL(valueChanged(double)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onEdtSizeWidthValueChanged(double)) ) )
-        {
-            throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-        }
-        if( !connect(
-            /* pObjSender   */ m_pEdtSizeWidth,
-            /* szSignal     */ SIGNAL(editingFinished()),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onEdtSizeWidthEditingFinished()) ) )
-        {
-            throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-        }
-
-        // <Edit> Size Height
-        //-------------------
-
-        m_pLytSizeHeight = new QHBoxLayout();
-        m_pLytWdgtSize->addLayout(m_pLytSizeHeight);
-        m_pLblSizeHeight = new QLabel("Height:");
-        m_pLblSizeHeight->setFixedWidth(cxLblWidth);
-        m_pLytSizeHeight->addWidget(m_pLblSizeHeight);
-        m_pEdtSizeHeight = new QDoubleSpinBox();
-        m_pEdtSizeHeight->setRange(0.0,rctScene.right());
-        m_pEdtSizeHeight->setDecimals(1);
-        m_pEdtSizeHeight->setSingleStep(0.1);
-        m_pEdtSizeHeight->setSuffix(" px");
-        m_pEdtSizeHeight->setValue(m_size.height());
-        m_pLytSizeHeight->addWidget(m_pEdtSizeHeight);
-        m_pLytSizeHeight->addStretch();
-
-        if( !connect(
-            /* pObjSender   */ m_pEdtSizeHeight,
-            /* szSignal     */ SIGNAL(valueChanged(double)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onEdtSizeHeightValueChanged(double)) ) )
-        {
-            throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-        }
-        if( !connect(
-            /* pObjSender   */ m_pEdtSizeHeight,
-            /* szSignal     */ SIGNAL(editingFinished()),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onEdtSizeHeightEditingFinished()) ) )
-        {
-            throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-        }
-
-    } // if( m_pWdgtSize != nullptr )
+            if( !connect(
+                /* pObjSender   */ m_pEdtSizeHeight,
+                /* szSignal     */ SIGNAL(valueChanged(double)),
+                /* pObjReceiver */ this,
+                /* szSlot       */ SLOT(onEdtSizeHeightValueChanged(double)) ) )
+            {
+                throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
+            }
+            if( !connect(
+                /* pObjSender   */ m_pEdtSizeHeight,
+                /* szSignal     */ SIGNAL(editingFinished()),
+                /* pObjReceiver */ this,
+                /* szSlot       */ SLOT(onEdtSizeHeightEditingFinished()) ) )
+            {
+                throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
+            }
+        } // if( m_pGraphObj->hasBoundingRect() )
+    } // if( graphObjType != EGraphObjTypeLine && graphObjType != EGraphObjTypeConnectionLine )
 
     // <Widget> Shape Points
     //======================
 
-    if( m_pGraphObj != nullptr )
+    if( m_pGraphObj->hasLineShapePoints() )
     {
-        switch( m_pGraphObj->getType() )
-        {
-            case EGraphObjTypeLine:
-            case EGraphObjTypePolygon:
-            case EGraphObjTypePolyline:
-            case EGraphObjTypeConnectionLine:
-            {
-                m_pWdgtShapePoints = new QWidget();
-                m_pLytWdgtShapePoints = new QVBoxLayout();
-                m_pLytWdgtShapePoints->setContentsMargins(0,0,0,0);
-                m_pWdgtShapePoints->setLayout(m_pLytWdgtShapePoints);
-                m_pLyt->addWidget(m_pWdgtShapePoints);
-                break;
-            }
-            case EGraphObjTypePoint:
-            case EGraphObjTypeRect:
-            case EGraphObjTypeEllipse:
-            case EGraphObjTypeText:
-            case EGraphObjTypeImage:
-            case EGraphObjTypeConnectionPoint:
-            case EGraphObjTypeGroup:
-            case EGraphObjTypeUserDefined:
-            default:
-            {
-                break;
-            }
+        m_pWdgtShapePoints = new QWidget();
+        m_pLytWdgtShapePoints = new QVBoxLayout();
+        m_pLytWdgtShapePoints->setContentsMargins(0,0,0,0);
+        m_pWdgtShapePoints->setLayout(m_pLytWdgtShapePoints);
+        m_pLyt->addWidget(m_pWdgtShapePoints);
 
-        } // switch( m_pGraphObj->getType() )
-
-    } // if( m_pGraphObj != nullptr )
-
-    if( m_pWdgtShapePoints != nullptr )
-    {
         // <Separator> ShapePoints
         //------------------------
 
         m_pLytWdgtShapePoints->addSpacing(4);
 
-        m_pLytLineShapePoints = new QHBoxLayout();
-        m_pLytWdgtShapePoints->addLayout(m_pLytLineShapePoints);
+        m_pLytHeadLineShapePoints = new QHBoxLayout();
+        m_pLytWdgtShapePoints->addLayout(m_pLytHeadLineShapePoints);
 
-        m_pLblLineShapePoints = new QLabel("Shape Points:");
-        m_pLytLineShapePoints->addWidget(m_pLblLineShapePoints);
-        m_pSepLineShapePoints = new QFrame();
-        m_pSepLineShapePoints->setFrameStyle(QFrame::HLine|QFrame::Sunken);
-        m_pLytLineShapePoints->addWidget(m_pSepLineShapePoints,1);
+        m_pLblHeadLineShapePoints = new QLabel("Shape Points:");
+        m_pLytHeadLineShapePoints->addWidget(m_pLblHeadLineShapePoints);
+        m_pSepHeadLineShapePoints = new QFrame();
+        m_pSepHeadLineShapePoints->setFrameStyle(QFrame::HLine|QFrame::Sunken);
+        m_pLytHeadLineShapePoints->addWidget(m_pSepHeadLineShapePoints,1);
 
         m_pLytWdgtShapePoints->addSpacing(4);
 
@@ -505,42 +479,21 @@ CWdgtFormatGraphObjsGeometry::CWdgtFormatGraphObjsGeometry(
             throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
         }
 
-        fillShapePointsModel();
+        // Called by onGraphObjChanged:
+        //fillShapePointsModel();
 
         // <Widget> Shape Point Buttons
         //-----------------------------
 
-        switch( m_pGraphObj->getType() )
+        if( graphObjType != EGraphObjTypeLine )
         {
-            case EGraphObjTypePolygon:
-            case EGraphObjTypePolyline:
-            case EGraphObjTypeConnectionLine:
-            {
-                m_pWdgtShapePointButtons = new QWidget();
-                m_pLytWdgtShapePointButtons = new QVBoxLayout();
-                m_pLytWdgtShapePointButtons->setContentsMargins(10,10,0,0);
-                m_pWdgtShapePointButtons->setLayout(m_pLytWdgtShapePointButtons);
-                m_pLytShapePoints->addWidget(m_pWdgtShapePointButtons);
-                m_pLytShapePoints->addStretch();
-                break;
-            }
-            case EGraphObjTypePoint:
-            case EGraphObjTypeLine:
-            case EGraphObjTypeRect:
-            case EGraphObjTypeEllipse:
-            case EGraphObjTypeText:
-            case EGraphObjTypeImage:
-            case EGraphObjTypeConnectionPoint:
-            case EGraphObjTypeGroup:
-            case EGraphObjTypeUserDefined:
-            default:
-            {
-                break;
-            }
-        }
+            m_pWdgtShapePointButtons = new QWidget();
+            m_pLytWdgtShapePointButtons = new QVBoxLayout();
+            m_pLytWdgtShapePointButtons->setContentsMargins(10,10,0,0);
+            m_pWdgtShapePointButtons->setLayout(m_pLytWdgtShapePointButtons);
+            m_pLytShapePoints->addWidget(m_pWdgtShapePointButtons);
+            m_pLytShapePoints->addStretch();
 
-        if( m_pWdgtShapePointButtons != nullptr )
-        {
             // <Button> Shape Point Add
             //-------------------------
 
@@ -625,83 +578,60 @@ CWdgtFormatGraphObjsGeometry::CWdgtFormatGraphObjsGeometry(
             {
                 throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
             }
-
-        } // if( m_pWdgtShapePointButtons != nullptr )
-
-    } // if( m_pWdgtShapePoints != nullptr )
+        } // if( graphObjType != EGraphObjTypeLine )
+    } // if( m_pGraphObj->hasLineShapePoints() )
 
     // <Widget> Rotation
-    //======================
+    //==================
 
-    if( m_pGraphObj != nullptr )
+    m_fRotAngle_deg = m_pGraphObj->getRotationAngleInDegree();
+
+    if( m_pGraphObj->hasRotationSelectionPoints() )
     {
-        m_fRotAngle_deg = m_pGraphObj->getRotationAngleInDegree();
+        m_pWdgtRotation = new QWidget();
+        m_pLytWdgtRotation = new QVBoxLayout();
+        m_pLytWdgtRotation->setContentsMargins(0,0,0,0);
+        m_pWdgtRotation->setLayout(m_pLytWdgtRotation);
+        m_pLyt->addWidget(m_pWdgtRotation);
 
-        switch( m_pGraphObj->getType() )
-        {
-            case EGraphObjTypePoint:
-            case EGraphObjTypeLine:
-            case EGraphObjTypeConnectionPoint:
-            case EGraphObjTypeConnectionLine:
-            {
-                break;
-            }
-            case EGraphObjTypeRect:
-            case EGraphObjTypeEllipse:
-            case EGraphObjTypePolygon:
-            case EGraphObjTypePolyline:
-            case EGraphObjTypeText:
-            case EGraphObjTypeImage:
-            case EGraphObjTypeGroup:
-            case EGraphObjTypeUserDefined:
-            default:
-            {
-                m_pWdgtRotation = new QWidget();
-                m_pLytWdgtRotation = new QVBoxLayout();
-                m_pLytWdgtRotation->setContentsMargins(0,0,0,0);
-                m_pWdgtRotation->setLayout(m_pLytWdgtRotation);
-                m_pLyt->addWidget(m_pWdgtRotation);
-                break;
-            }
-
-        } // switch( m_pGraphObj->getType() )
-
-    } // if( m_pGraphObj != nullptr )
-
-    if( m_pWdgtRotation != nullptr )
-    {
         // <Separator> Rotation
         //----------------------
 
         m_pLytWdgtRotation->addSpacing(4);
 
-        m_pLytLineRotation = new QHBoxLayout();
-        m_pLytWdgtRotation->addLayout(m_pLytLineRotation);
+        m_pLytHeadLineRotation = new QHBoxLayout();
+        m_pLytWdgtRotation->addLayout(m_pLytHeadLineRotation);
 
-        m_pLblLineRotation = new QLabel("Rotation:");
-        m_pLytLineRotation->addWidget(m_pLblLineRotation);
-        m_pSepLineRotation = new QFrame();
-        m_pSepLineRotation->setFrameStyle(QFrame::HLine|QFrame::Sunken);
-        m_pLytLineRotation->addWidget(m_pSepLineRotation,1);
+        m_pLblHeadLineRotation = new QLabel("Rotation:");
+        m_pLytHeadLineRotation->addWidget(m_pLblHeadLineRotation);
+        m_pSepHeadLineRotation = new QFrame();
+        m_pSepHeadLineRotation->setFrameStyle(QFrame::HLine|QFrame::Sunken);
+        m_pLytHeadLineRotation->addWidget(m_pSepHeadLineRotation, 1);
 
         m_pLytWdgtRotation->addSpacing(4);
+
+        // <Line> Rotation Angle
+        //----------------------
+
+        m_pLytLineRotationAngle = new QHBoxLayout();
+        m_pLytWdgtRotation->addLayout(m_pLytLineRotationAngle);
+        m_pLblRotationAngle = new QLabel("Angle:");
+        m_pLblRotationAngle->setFixedWidth(cxLblWidthClm0);
+        m_pLytLineRotationAngle->addWidget(m_pLblRotationAngle);
 
         // <Edit> Rotation Angle
         //----------------------
 
-        m_pLytRotationAngle = new QHBoxLayout();
-        m_pLytWdgtRotation->addLayout(m_pLytRotationAngle);
-        m_pLblRotationAngle = new QLabel("Rotation Angle:");
-        m_pLblRotationAngle->setFixedWidth(cxLblWidth);
-        m_pLytRotationAngle->addWidget(m_pLblRotationAngle);
+        m_pLytLineRotationAngle->addSpacing(cxLblWidthClm1 + 4);
         m_pEdtRotationAngle = new QDoubleSpinBox();
-        m_pEdtRotationAngle->setRange(0.0,360.0);
+        m_pEdtRotationAngle->setFixedWidth(cxEdtWidthClm1);
+        m_pEdtRotationAngle->setRange(-360.0, 360.0);
         m_pEdtRotationAngle->setDecimals(1);
         m_pEdtRotationAngle->setSingleStep(0.1);
         m_pEdtRotationAngle->setSuffix(" " + ZS::PhysVal::c_strSymbolDegree);
-        m_pEdtRotationAngle->setValue(m_fRotAngle_deg);
-        m_pLytRotationAngle->addWidget(m_pEdtRotationAngle);
-        m_pLytRotationAngle->addStretch();
+        //m_pEdtRotationAngle->setValue(m_fRotAngle_deg);
+        m_pLytLineRotationAngle->addWidget(m_pEdtRotationAngle);
+        m_pLytLineRotationAngle->addStretch();
 
         if( !connect(
             /* pObjSender   */ m_pEdtRotationAngle,
@@ -711,70 +641,392 @@ CWdgtFormatGraphObjsGeometry::CWdgtFormatGraphObjsGeometry(
         {
             throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
         }
+    } // if( m_pGraphObj->hasRotationSelectionPoints() )
 
-    } // if( m_pWdgtRotation != nullptr )
+    // <Widget> Stacking Order
+    //========================
 
-    // <Widget> Z Value
-    //======================
+    m_fZValue = m_pGraphObj->getStackingOrderValue();
 
-    if( m_pGraphObj != nullptr )
+    m_pWdgtStackingOrder = new QWidget();
+    m_pLytWdgtStackingOrder = new QVBoxLayout();
+    m_pLytWdgtStackingOrder->setContentsMargins(0, 0, 0, 0);
+    m_pWdgtStackingOrder->setLayout(m_pLytWdgtStackingOrder);
+    m_pLyt->addWidget(m_pWdgtStackingOrder);
+
+    // <Separator> Z Value
+    //----------------------
+
+    m_pLytWdgtStackingOrder->addSpacing(4);
+
+    m_pLytHeadLineStackingOrder = new QHBoxLayout();
+    m_pLytWdgtStackingOrder->addLayout(m_pLytHeadLineStackingOrder);
+
+    m_pLblHeadLineStackingOrder = new QLabel("Stacking Order:");
+    m_pLytHeadLineStackingOrder->addWidget(m_pLblHeadLineStackingOrder);
+    m_pSepHeadLineStackingOrder = new QFrame();
+    m_pSepHeadLineStackingOrder->setFrameStyle(QFrame::HLine|QFrame::Sunken);
+    m_pLytHeadLineStackingOrder->addWidget(m_pSepHeadLineStackingOrder,1);
+
+    m_pLytWdgtStackingOrder->addSpacing(4);
+
+    // <Line> ZValue Angle
+    //----------------------
+
+    m_pLytLineZValue = new QHBoxLayout();
+    m_pLytWdgtStackingOrder->addLayout(m_pLytLineZValue);
+    m_pLblZValue = new QLabel("ZValue:");
+    m_pLblZValue->setFixedWidth(cxLblWidthClm0);
+    m_pLytLineZValue->addWidget(m_pLblZValue);
+
+    // <Edit> ZValue Angle
+    //----------------------
+
+    m_pLytLineZValue->addSpacing(cxLblWidthClm1 + 4);
+    m_pEdtZValue = new QDoubleSpinBox();
+    m_pEdtZValue->setFixedWidth(cxEdtWidthClm1);
+    m_pEdtZValue->setRange(0.0, 360.0);
+    m_pEdtZValue->setDecimals(1);
+    m_pEdtZValue->setSingleStep(0.1);
+    m_pEdtZValue->setValue(m_fZValue);
+    m_pLytLineZValue->addWidget(m_pEdtZValue);
+    m_pLytLineZValue->addStretch();
+
+    if( !connect(
+        /* pObjSender   */ m_pEdtZValue,
+        /* szSignal     */ SIGNAL(valueChanged(double)),
+        /* pObjReceiver */ this,
+        /* szSlot       */ SLOT(onEdtZValueValueChanged(double)) ) )
     {
-        m_fZValue = m_pGraphObj->getStackingOrderValue();
-
-        m_pWdgtZValue = new QWidget();
-        m_pLytWdgtZValue = new QVBoxLayout();
-        m_pLytWdgtZValue->setContentsMargins(0,0,0,0);
-        m_pWdgtZValue->setLayout(m_pLytWdgtZValue);
-        m_pLyt->addWidget(m_pWdgtZValue);
+        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
     }
 
-    if( m_pWdgtZValue != nullptr )
+    // <Widget> Dimension Label Visibilities
+    //======================================
+
+    if( graphObjType != EGraphObjTypeLine && graphObjType != EGraphObjTypeConnectionLine )
     {
-        // <Separator> Z Value
-        //----------------------
+        cxLblWidthClm0 = 104;
+        cxLblWidthClm1 = 0;
+        cxLblWidthClm2 = 0;
+        cxEdtWidthClm2 = 20;
+        cxSpacingClm1Cml2 = 20;
 
-        m_pLytWdgtZValue->addSpacing(4);
+        m_pWdgtLabelVisibilities = new QWidget();
+        m_pLytWdgtLabelVisibilities = new QVBoxLayout();
+        m_pLytWdgtLabelVisibilities->setContentsMargins(0,0,0,0);
+        m_pWdgtLabelVisibilities->setLayout(m_pLytWdgtLabelVisibilities);
+        m_pLyt->addWidget(m_pWdgtLabelVisibilities);
 
-        m_pLytLineZValue = new QHBoxLayout();
-        m_pLytWdgtZValue->addLayout(m_pLytLineZValue);
+        // <Separator> Position and Size
+        //------------------------------
 
-        m_pLblLineZValue = new QLabel("Z-Value:");
-        m_pLytLineZValue->addWidget(m_pLblLineZValue);
-        m_pSepLineZValue = new QFrame();
-        m_pSepLineZValue->setFrameStyle(QFrame::HLine|QFrame::Sunken);
-        m_pLytLineZValue->addWidget(m_pSepLineZValue,1);
+        m_pLytWdgtLabelVisibilities->addSpacing(4);
 
-        m_pLytWdgtZValue->addSpacing(4);
+        m_pLytHeadLineWdgtLabelVisibilities = new QHBoxLayout();
+        m_pLytWdgtLabelVisibilities->addLayout(m_pLytHeadLineWdgtLabelVisibilities);
 
-        // <Edit> ZValue Angle
-        //----------------------
+        m_pLblHeadLineLabelVisibilities = new QLabel("Dimension Label Visibilities:");
+        m_pLytHeadLineWdgtLabelVisibilities->addWidget(m_pLblHeadLineLabelVisibilities);
+        m_pSepHeadLineLabelVisibilities = new QFrame();
+        m_pSepHeadLineLabelVisibilities->setFrameStyle(QFrame::HLine|QFrame::Sunken);
+        m_pLytHeadLineWdgtLabelVisibilities->addWidget(m_pSepHeadLineLabelVisibilities, 1);
 
-        m_pLytZValue = new QHBoxLayout();
-        m_pLytWdgtZValue->addLayout(m_pLytZValue);
-        m_pLblZValue = new QLabel("ZValue :");
-        m_pLblZValue->setFixedWidth(cxLblWidth);
-        m_pLytZValue->addWidget(m_pLblZValue);
-        m_pEdtZValue = new QDoubleSpinBox();
-        m_pEdtZValue->setRange(0.0,360.0);
-        m_pEdtZValue->setDecimals(1);
-        m_pEdtZValue->setSingleStep(0.1);
-        m_pEdtZValue->setValue(m_fZValue);
-        m_pLytZValue->addWidget(m_pEdtZValue);
-        m_pLytZValue->addStretch();
+        m_pLytWdgtLabelVisibilities->addSpacing(4);
+
+        // <Line> Position Visible
+        //------------------------
+
+        m_pLytLinePosLabelVisibilities = new QHBoxLayout();
+        m_pLytWdgtLabelVisibilities->addLayout(m_pLytLinePosLabelVisibilities);
+        m_pLblPosLabelVisible = new QLabel("Position:");
+        m_pLblPosLabelVisible->setFixedWidth(cxLblWidthClm0);
+        m_pLytLinePosLabelVisibilities->addWidget(m_pLblPosLabelVisible);
+
+        // <ComboBox> Anchor Selection Point
+        //----------------------------------
+
+        //m_pLblPosLabelAnchorSelPt = new QLabel("Selection Point:");
+        //m_pLblPosLabelAnchorSelPt->setFixedWidth(cxLblWidthClm1);
+        //m_pLytLinePosLabelVisibilities->addWidget(m_pLblPosLabelAnchorSelPt);
+        m_pCmbPosLabelAnchorSelPt = new QComboBox();
+        fillComboAnchorSelPt(m_pCmbPosLabelAnchorSelPt);
+        m_pCmbPosLabelAnchorSelPt->setFixedWidth(cxEdtWidthClm1);
+        m_pLytLinePosLabelVisibilities->addWidget(m_pCmbPosLabelAnchorSelPt);
+        m_pLytLinePosLabelVisibilities->addSpacing(cxSpacingClm1Cml2);
 
         if( !connect(
-            /* pObjSender   */ m_pEdtZValue,
-            /* szSignal     */ SIGNAL(valueChanged(double)),
+            /* pObjSender   */ m_pCmbPosLabelAnchorSelPt,
+            /* szSignal     */ SIGNAL(currentIndexChanged(int)),
             /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onEdtZValueValueChanged(double)) ) )
+            /* szSlot       */ SLOT(onCmbPosLabelAnchorSelPtCurrentIndexChanged(int)) ) )
         {
             throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
         }
 
-    } // if( m_pWdgtZValue != nullptr )
+        // <CheckBox> Show Coors
+        //----------------------
+
+        m_pChkPosLabelVisible = new QCheckBox();
+        m_pChkPosLabelVisible->setTristate(true);
+        m_pLytLinePosLabelVisibilities->addWidget(m_pChkPosLabelVisible);
+        m_pLytLinePosLabelVisibilities->addSpacing(cxSpacingClm2Cml3);
+
+        if( !connect(
+            /* pObjSender   */ m_pChkPosLabelVisible,
+            /* szSignal     */ SIGNAL(stateChanged(int)),
+            /* pObjReceiver */ this,
+            /* szSlot       */ SLOT(onChkPosLabelVisibleStateChanged(int)) ) )
+        {
+            throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
+        }
+
+        // <CheckBox> Show Anchor Line
+        //----------------------------
+
+        m_pLblPosLabelAnchorLineVisible = new QLabel("Line:");
+        m_pLblPosLabelAnchorLineVisible->setFixedWidth(cxLblWidthClm3);
+        m_pLytLinePosLabelVisibilities->addWidget(m_pLblPosLabelAnchorLineVisible);
+        m_pChkPosLabelAnchorLineVisible = new QCheckBox();
+        m_pChkPosLabelAnchorLineVisible->setTristate(true);
+        m_pLytLinePosLabelVisibilities->addWidget(m_pChkPosLabelAnchorLineVisible);
+        m_pLytLinePosLabelVisibilities->addStretch();
+
+        if( !connect(
+            /* pObjSender   */ m_pChkPosLabelAnchorLineVisible,
+            /* szSignal     */ SIGNAL(stateChanged(int)),
+            /* pObjReceiver */ this,
+            /* szSlot       */ SLOT(onChkPosLabelAnchorLineVisibleStateChanged(int)) ) )
+        {
+            throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
+        }
+
+        if( m_pGraphObj->hasBoundingRect() )
+        {
+            // <Line> Width Visible
+            //---------------------
+
+            m_pLytLineSizeWidthLabelVisible = new QHBoxLayout();
+            m_pLytWdgtLabelVisibilities->addLayout(m_pLytLineSizeWidthLabelVisible);
+            m_pLblSizeWidthLabelVisible = new QLabel("Width:");
+            m_pLblSizeWidthLabelVisible->setFixedWidth(cxLblWidthClm0);
+            m_pLytLineSizeWidthLabelVisible->addWidget(m_pLblSizeWidthLabelVisible);
+
+            // <ComboBox> Anchor Selection Point
+            //----------------------------------
+
+            //m_pLblSizeWidthLabelAnchorSelPt = new QLabel("Selection Point:");
+            //m_pLblSizeWidthLabelAnchorSelPt->setFixedWidth(cxLblWidthClm1);
+            //m_pLytLineSizeWidthLabelVisible->addWidget(m_pLblSizeWidthLabelAnchorSelPt);
+            m_pCmbSizeWidthLabelAnchorSelPt = new QComboBox();
+            fillComboAnchorSelPt(m_pCmbSizeWidthLabelAnchorSelPt);
+            m_pCmbSizeWidthLabelAnchorSelPt->setFixedWidth(cxEdtWidthClm1);
+            m_pLytLineSizeWidthLabelVisible->addWidget(m_pCmbSizeWidthLabelAnchorSelPt);
+            m_pLytLineSizeWidthLabelVisible->addSpacing(cxSpacingClm1Cml2);
+
+            // <CheckBox> Show Width
+            //----------------------
+
+            m_pChkSizeWidthLabelVisible = new QCheckBox("");
+            m_pLytLineSizeWidthLabelVisible->addWidget(m_pChkSizeWidthLabelVisible);
+            m_pLytLineSizeWidthLabelVisible->addSpacing(cxSpacingClm2Cml3);
+
+            // <CheckBox> Show Anchor Line
+            //----------------------------
+
+            m_pLblSizeWidthLabelAnchorLineVisible = new QLabel("Line:");
+            m_pLblSizeWidthLabelAnchorLineVisible->setFixedWidth(cxLblWidthClm3);
+            m_pLytLineSizeWidthLabelVisible->addWidget(m_pLblSizeWidthLabelAnchorLineVisible);
+            m_pChkSizeWidthLabelAnchorLineVisible = new QCheckBox();
+            m_pLytLineSizeWidthLabelVisible->addWidget(m_pChkSizeWidthLabelAnchorLineVisible);
+            m_pLytLineSizeWidthLabelVisible->addStretch();
+
+            // <Line> Height Visible
+            //----------------------
+
+            m_pLytLineSizeHeightLabelVisible = new QHBoxLayout();
+            m_pLytWdgtLabelVisibilities->addLayout(m_pLytLineSizeHeightLabelVisible);
+            m_pLblSizeHeightLabelVisible = new QLabel("Height:");
+            m_pLblSizeHeightLabelVisible->setFixedWidth(cxLblWidthClm0);
+            m_pLytLineSizeHeightLabelVisible->addWidget(m_pLblSizeHeightLabelVisible);
+
+            // <ComboBox> Anchor Selection Point
+            //----------------------------------
+
+            // The combo box will be filled by onGraphObjChanged.
+            //m_pLblSizeHeightLabelAnchorSelPt = new QLabel("Selection Point:");
+            //m_pLblSizeHeightLabelAnchorSelPt->setFixedWidth(cxLblWidthClm1);
+            //m_pLytLineSizeHeightLabelVisible->addWidget(m_pLblSizeHeightLabelAnchorSelPt);
+            m_pCmbSizeHeightLabelAnchorSelPt = new QComboBox();
+            fillComboAnchorSelPt(m_pCmbSizeHeightLabelAnchorSelPt);
+            m_pCmbSizeHeightLabelAnchorSelPt->setFixedWidth(cxEdtWidthClm1);
+            m_pLytLineSizeHeightLabelVisible->addWidget(m_pCmbSizeHeightLabelAnchorSelPt);
+            m_pLytLineSizeHeightLabelVisible->addSpacing(cxSpacingClm1Cml2);
+
+            // <CheckBox> Show Height
+            //-------------------------
+
+            m_pChkSizeHeightLabelVisible = new QCheckBox();
+            m_pLytLineSizeHeightLabelVisible->addWidget(m_pChkSizeHeightLabelVisible);
+            m_pLytLineSizeHeightLabelVisible->addSpacing(cxSpacingClm2Cml3);
+
+            // <CheckBox> Show Anchor Line
+            //----------------------------
+
+            m_pLblSizeHeightLabelAnchorLineVisible = new QLabel("Line:");
+            m_pLblSizeHeightLabelAnchorLineVisible->setFixedWidth(cxLblWidthClm3);
+            m_pLytLineSizeHeightLabelVisible->addWidget(m_pLblSizeHeightLabelAnchorLineVisible);
+            m_pChkSizeHeightLabelAnchorLineVisible = new QCheckBox();
+            m_pLytLineSizeHeightLabelVisible->addWidget(m_pChkSizeHeightLabelAnchorLineVisible);
+            m_pLytLineSizeHeightLabelVisible->addStretch();
+
+            // <Line> Rotation Angle Visible
+            //------------------------------
+
+            m_pLytLineRotationAngleLabelVisible = new QHBoxLayout();
+            m_pLytWdgtLabelVisibilities->addLayout(m_pLytLineRotationAngleLabelVisible);
+            m_pLblRotationAngleLabelVisible = new QLabel("Rotation Angle:");
+            m_pLblRotationAngleLabelVisible->setFixedWidth(cxLblWidthClm0);
+            m_pLytLineRotationAngleLabelVisible->addWidget(m_pLblRotationAngleLabelVisible);
+
+            // <ComboBox> Anchor Selection Point
+            //----------------------------------
+
+            // The combo box will be filled by onGraphObjChanged.
+            //m_pLblRotationAngleLabelAnchorSelPt = new QLabel("Selection Point:");
+            //m_pLblRotationAngleLabelAnchorSelPt->setFixedWidth(cxLblWidthClm1);
+            //m_pLytLineRotationAngleLabelVisible->addWidget(m_pLblRotationAngleLabelAnchorSelPt);
+            m_pCmbRotationAngleLabelAnchorSelPt = new QComboBox();
+            fillComboAnchorSelPt(m_pCmbRotationAngleLabelAnchorSelPt);
+            m_pCmbRotationAngleLabelAnchorSelPt->setFixedWidth(cxEdtWidthClm1);
+            m_pLytLineRotationAngleLabelVisible->addWidget(m_pCmbRotationAngleLabelAnchorSelPt);
+            m_pLytLineRotationAngleLabelVisible->addSpacing(cxSpacingClm1Cml2);
+
+            // <CheckBox> Show Rotation Angle
+            //-------------------------------
+
+            m_pChkRotationAngleLabelVisible = new QCheckBox();
+            m_pLytLineRotationAngleLabelVisible->addWidget(m_pChkRotationAngleLabelVisible);
+            m_pLytLineRotationAngleLabelVisible->addSpacing(cxSpacingClm2Cml3);
+
+            // <CheckBox> Show Anchor Line
+            //----------------------------
+
+            m_pLblRotationAngleLabelAnchorLineVisible = new QLabel("Line:");
+            m_pLblRotationAngleLabelAnchorLineVisible->setFixedWidth(cxLblWidthClm3);
+            m_pLytLineRotationAngleLabelVisible->addWidget(m_pLblRotationAngleLabelAnchorLineVisible);
+            m_pChkRotationAngleLabelAnchorLineVisible = new QCheckBox();
+            m_pLytLineRotationAngleLabelVisible->addWidget(m_pChkRotationAngleLabelAnchorLineVisible);
+            m_pLytLineRotationAngleLabelVisible->addStretch();
+
+        } // if( m_pGraphObj->hasBoundingRect() )
+    } // if( graphObjType != EGraphObjTypeLine && graphObjType != EGraphObjTypeConnectionLine )
+
+    // <Widget> Dimension Line Visibilities
+    //=====================================
+
+    if( m_pGraphObj->hasBoundingRect() )
+    {
+        cxLblWidthClm2 = 120;
+
+        m_pWdgtDimensionLinesVisibilities = new QWidget();
+        m_pLytWdgtDimensionLinesVisibilities = new QVBoxLayout();
+        m_pLytWdgtDimensionLinesVisibilities->setContentsMargins(0,0,0,0);
+        m_pWdgtDimensionLinesVisibilities->setLayout(m_pLytWdgtDimensionLinesVisibilities);
+        m_pLyt->addWidget(m_pWdgtDimensionLinesVisibilities);
+
+        // <Separator> Position and Size
+        //------------------------------
+
+        m_pLytWdgtDimensionLinesVisibilities->addSpacing(4);
+
+        m_pLytHeadLineWdgtDimensionLinesVisibilities = new QHBoxLayout();
+        m_pLytWdgtDimensionLinesVisibilities->addLayout(m_pLytHeadLineWdgtDimensionLinesVisibilities);
+
+        m_pLblHeadLineDimensionLinesVisibilities = new QLabel("Dimension Line Visibilities:");
+        m_pLytHeadLineWdgtDimensionLinesVisibilities->addWidget(m_pLblHeadLineDimensionLinesVisibilities);
+        m_pSepHeadLineDimensionLinesVisibilities = new QFrame();
+        m_pSepHeadLineDimensionLinesVisibilities->setFrameStyle(QFrame::HLine|QFrame::Sunken);
+        m_pLytHeadLineWdgtDimensionLinesVisibilities->addWidget(m_pSepHeadLineDimensionLinesVisibilities, 1);
+
+        m_pLytWdgtDimensionLinesVisibilities->addSpacing(4);
+
+        // <Line> Bounding Rectangle
+        //--------------------------
+
+        m_pLytLineDimensionLinesBoundingRectVisibile = new QHBoxLayout();
+        m_pLytWdgtDimensionLinesVisibilities->addLayout(m_pLytLineDimensionLinesBoundingRectVisibile);
+        m_pLblDimensionLinesBoundingRectVisible = new QLabel("Bounding Rectangle:");
+        m_pLblDimensionLinesBoundingRectVisible->setFixedWidth(cxLblWidthClm0);
+        m_pLytLineDimensionLinesBoundingRectVisibile->addWidget(m_pLblDimensionLinesBoundingRectVisible);
+
+        // <CheckBox> Visibility
+        //----------------------
+
+        m_pChkDimensionLinesBoundingRectVisible = new QCheckBox();
+        m_pLytLineDimensionLinesBoundingRectVisibile->addWidget(m_pChkDimensionLinesBoundingRectVisible);
+        m_pLytLineDimensionLinesBoundingRectVisibile->addStretch();
+
+        // <Line> Bounding Rectangle Diagonals
+        //------------------------------------
+
+        m_pLytLineDimensionLinesBoundingRectDiagonalsVisible = new QHBoxLayout();
+        m_pLytWdgtDimensionLinesVisibilities->addLayout(m_pLytLineDimensionLinesBoundingRectDiagonalsVisible);
+        m_pLblDimensionLinesBoundingRectDiagonalsVisible = new QLabel("Rectangle Diagonals:");
+        m_pLblDimensionLinesBoundingRectDiagonalsVisible->setFixedWidth(cxLblWidthClm0);
+        m_pLytLineDimensionLinesBoundingRectDiagonalsVisible->addWidget(m_pLblDimensionLinesBoundingRectDiagonalsVisible);
+
+        // <CheckBox> Visibility
+        //----------------------
+
+        m_pChkDimensionLinesBoundingRectDiagonalsVisible = new QCheckBox();
+        m_pLytLineDimensionLinesBoundingRectDiagonalsVisible->addWidget(m_pChkDimensionLinesBoundingRectDiagonalsVisible);
+        m_pLytLineDimensionLinesBoundingRectDiagonalsVisible->addStretch();
+
+        // <Line> Bounding Rectangle Horizontal Symmetry Axis
+        //---------------------------------------------------
+
+        m_pLytLineDimensionLinesBoundingRectHorizontalSymmetryAxisVisible = new QHBoxLayout();
+        m_pLytWdgtDimensionLinesVisibilities->addLayout(m_pLytLineDimensionLinesBoundingRectHorizontalSymmetryAxisVisible);
+        m_pLblDimensionLinesBoundingRectHorizontalSymmetryAxisVisible = new QLabel("Horizontal Axis:");
+        m_pLblDimensionLinesBoundingRectHorizontalSymmetryAxisVisible->setFixedWidth(cxLblWidthClm0);
+        m_pLytLineDimensionLinesBoundingRectHorizontalSymmetryAxisVisible->addWidget(m_pLblDimensionLinesBoundingRectHorizontalSymmetryAxisVisible);
+
+        // <CheckBox> Visibility
+        //----------------------
+
+        m_pChkDimensionLinesBoundingRectHorizontalSymmetryAxisVisible = new QCheckBox();
+        m_pLytLineDimensionLinesBoundingRectHorizontalSymmetryAxisVisible->addWidget(m_pChkDimensionLinesBoundingRectHorizontalSymmetryAxisVisible);
+        m_pLytLineDimensionLinesBoundingRectHorizontalSymmetryAxisVisible->addStretch();
+
+        // <Line> Bounding Rectangle Vertical Symmetry Axis
+        //---------------------------------------------------
+
+        m_pLytLineDimensionLinesBoundingRectVerticalSymmetryAxisVisible = new QHBoxLayout();
+        m_pLytWdgtDimensionLinesVisibilities->addLayout(m_pLytLineDimensionLinesBoundingRectVerticalSymmetryAxisVisible);
+        m_pLblDimensionLinesBoundingRectVerticalSymmetryAxisVisible = new QLabel("Vertical Axis:");
+        m_pLblDimensionLinesBoundingRectVerticalSymmetryAxisVisible->setFixedWidth(cxLblWidthClm0);
+        m_pLytLineDimensionLinesBoundingRectVerticalSymmetryAxisVisible->addWidget(m_pLblDimensionLinesBoundingRectVerticalSymmetryAxisVisible);
+
+        // <CheckBox> Visibility
+        //----------------------
+
+        m_pChkDimensionLinesBoundingRectVerticalSymmetryAxisVisible = new QCheckBox();
+        m_pLytLineDimensionLinesBoundingRectVerticalSymmetryAxisVisible->addWidget(m_pChkDimensionLinesBoundingRectVerticalSymmetryAxisVisible);
+        m_pLytLineDimensionLinesBoundingRectVerticalSymmetryAxisVisible->addStretch();
+
+    } // if( m_pGraphObj->hasBoundingRect() )
+
+    // Set settings at GUI controls
+    //=============================
+
+    if( m_pGraphObj != nullptr )
+    {
+        onGraphObjChanged();
+    }
 
     // <Stretch> at bottom of Widget
-    //------------------------------
+    //==============================
 
     m_pLyt->addStretch();
 
@@ -804,35 +1056,35 @@ CWdgtFormatGraphObjsGeometry::~CWdgtFormatGraphObjsGeometry()
     CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
     m_pTrcAdminObj = nullptr;
 
+    //m_ptPos;
+    //m_size;
+    //m_plg.clear();
+    m_fRotAngle_deg = 0.0;
+    m_fZValue = 0.0;
     m_pLyt = nullptr;
     m_pLblHeadLine = nullptr;
-    m_pWdgtPosition = nullptr;
-    m_pLytWdgtPosition = nullptr;
-    m_pLytLinePosition = nullptr;
-    m_pLblLinePosition = nullptr;
-    m_pSepLinePosition = nullptr;
-    m_pLytPositionX = nullptr;
-    m_pLblPositionX = nullptr;
-    m_pEdtPositionX = nullptr;
-    m_pLytPositionY = nullptr;
-    m_pLblPositionY = nullptr;
-    m_pEdtPositionY = nullptr;
-    m_pWdgtSize = nullptr;
-    m_pLytWdgtSize = nullptr;
+    m_pWdgtPosSize = nullptr;
+    m_pLytWdgtPosSize = nullptr;
+    m_pLytHeadLineWdgtPosSize = nullptr;
+    m_pLblHeadLinePosSize = nullptr;
+    m_pSepHeadLinePosSize = nullptr;
+    m_pLytLinePos = nullptr;
+    m_pLblPos = nullptr;
+    m_pLblPosX = nullptr;
+    m_pEdtPosX = nullptr;
+    m_pLblPosY = nullptr;
+    m_pEdtPosY = nullptr;
     m_pLytLineSize = nullptr;
-    m_pLblLineSize = nullptr;
-    m_pSepLineSize = nullptr;
-    m_pLytSizeWidth = nullptr;
+    m_pLblSize = nullptr;
     m_pLblSizeWidth = nullptr;
     m_pEdtSizeWidth = nullptr;
-    m_pLytSizeHeight = nullptr;
     m_pLblSizeHeight = nullptr;
     m_pEdtSizeHeight = nullptr;
     m_pWdgtShapePoints = nullptr;
     m_pLytWdgtShapePoints = nullptr;
-    m_pLytLineShapePoints = nullptr;
-    m_pLblLineShapePoints = nullptr;
-    m_pSepLineShapePoints = nullptr;
+    m_pLytHeadLineShapePoints = nullptr;
+    m_pLblHeadLineShapePoints = nullptr;
+    m_pSepHeadLineShapePoints = nullptr;
     m_pLytShapePoints = nullptr;
     m_pModelShapePoints = nullptr;
     m_pViewShapePoints = nullptr;
@@ -845,20 +1097,70 @@ CWdgtFormatGraphObjsGeometry::~CWdgtFormatGraphObjsGeometry()
     m_bOnModelShapePointsItemChangedInProcess = false;
     m_pWdgtRotation = nullptr;
     m_pLytWdgtRotation = nullptr;
-    m_pLytLineRotation = nullptr;
-    m_pLblLineRotation = nullptr;
-    m_pSepLineRotation = nullptr;
-    m_pLytRotationAngle = nullptr;
+    m_pLytHeadLineRotation = nullptr;
+    m_pLblHeadLineRotation = nullptr;
+    m_pSepHeadLineRotation = nullptr;
+    m_pLytLineRotationAngle = nullptr;
     m_pLblRotationAngle = nullptr;
     m_pEdtRotationAngle = nullptr;
-    m_pWdgtZValue = nullptr;
-    m_pLytZValue = nullptr;
+    m_pWdgtStackingOrder = nullptr;
+    m_pLytWdgtStackingOrder = nullptr;
+    m_pLytHeadLineStackingOrder = nullptr;
+    m_pLblHeadLineStackingOrder = nullptr;
+    m_pSepHeadLineStackingOrder = nullptr;
     m_pLytLineZValue = nullptr;
-    m_pLblLineZValue = nullptr;
-    m_pSepLineZValue = nullptr;
-    m_pLytZValue = nullptr;
     m_pLblZValue = nullptr;
     m_pEdtZValue = nullptr;
+    m_pWdgtLabelVisibilities = nullptr;
+    m_pLytWdgtLabelVisibilities = nullptr;
+    m_pLytHeadLineWdgtLabelVisibilities = nullptr;
+    m_pLblHeadLineLabelVisibilities = nullptr;
+    m_pSepHeadLineLabelVisibilities = nullptr;
+    m_pLytLinePosLabelVisibilities = nullptr;
+    m_pLblPosLabelAnchorSelPt = nullptr;
+    m_pCmbPosLabelAnchorSelPt = nullptr;
+    m_pLblPosLabelVisible = nullptr;
+    m_pChkPosLabelVisible = nullptr;
+    m_pLblPosLabelAnchorLineVisible = nullptr;
+    m_pChkPosLabelAnchorLineVisible = nullptr;
+    m_pLytLineSizeWidthLabelVisible = nullptr;
+    m_pLblSizeWidthLabelAnchorSelPt = nullptr;
+    m_pCmbSizeWidthLabelAnchorSelPt = nullptr;
+    m_pLblSizeWidthLabelVisible = nullptr;
+    m_pChkSizeWidthLabelVisible = nullptr;
+    m_pLblSizeWidthLabelAnchorLineVisible = nullptr;
+    m_pChkSizeWidthLabelAnchorLineVisible = nullptr;
+    m_pLytLineSizeHeightLabelVisible = nullptr;
+    m_pLblSizeHeightLabelAnchorSelPt = nullptr;
+    m_pCmbSizeHeightLabelAnchorSelPt = nullptr;
+    m_pLblSizeHeightLabelVisible = nullptr;
+    m_pChkSizeHeightLabelVisible = nullptr;
+    m_pLblSizeHeightLabelAnchorLineVisible = nullptr;
+    m_pChkSizeHeightLabelAnchorLineVisible = nullptr;
+    m_pLytLineRotationAngleLabelVisible = nullptr;
+    m_pLblRotationAngleLabelAnchorSelPt = nullptr;
+    m_pCmbRotationAngleLabelAnchorSelPt = nullptr;
+    m_pLblRotationAngleLabelVisible = nullptr;
+    m_pChkRotationAngleLabelVisible = nullptr;
+    m_pLblRotationAngleLabelAnchorLineVisible = nullptr;
+    m_pChkRotationAngleLabelAnchorLineVisible = nullptr;
+    m_pWdgtDimensionLinesVisibilities = nullptr;
+    m_pLytWdgtDimensionLinesVisibilities = nullptr;
+    m_pLytHeadLineWdgtDimensionLinesVisibilities = nullptr;
+    m_pLblHeadLineDimensionLinesVisibilities = nullptr;
+    m_pSepHeadLineDimensionLinesVisibilities = nullptr;
+    m_pLytLineDimensionLinesBoundingRectVisibile = nullptr;
+    m_pLblDimensionLinesBoundingRectVisible = nullptr;
+    m_pChkDimensionLinesBoundingRectVisible = nullptr;
+    m_pLytLineDimensionLinesBoundingRectDiagonalsVisible = nullptr;
+    m_pLblDimensionLinesBoundingRectDiagonalsVisible = nullptr;
+    m_pChkDimensionLinesBoundingRectDiagonalsVisible = nullptr;
+    m_pLytLineDimensionLinesBoundingRectHorizontalSymmetryAxisVisible = nullptr;
+    m_pLblDimensionLinesBoundingRectHorizontalSymmetryAxisVisible = nullptr;
+    m_pChkDimensionLinesBoundingRectHorizontalSymmetryAxisVisible = nullptr;
+    m_pLytLineDimensionLinesBoundingRectVerticalSymmetryAxisVisible = nullptr;
+    m_pLblDimensionLinesBoundingRectVerticalSymmetryAxisVisible = nullptr;
+    m_pChkDimensionLinesBoundingRectVerticalSymmetryAxisVisible = nullptr;
 
     // Trace
     m_pTrcAdminObj = nullptr;
@@ -873,7 +1175,7 @@ public: // must overridables of base class CWdgtFormatGraphObjs
 void CWdgtFormatGraphObjsGeometry::applyChanges()
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
@@ -883,75 +1185,113 @@ void CWdgtFormatGraphObjsGeometry::applyChanges()
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "applyChanges",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
-    if( m_pGraphObj != nullptr )
+    // Position and Size
+    //==================
+
+    if( m_pWdgtPosSize != nullptr )
     {
-        // Position
-        //==================
+        m_pGraphicsItem->setPos(m_ptPos);
+        m_pGraphObj->setSize(m_size);
+    }
 
-        if( m_pWdgtPosition != nullptr )
+    // Shape Points
+    //=============
+
+    if( m_pWdgtShapePoints != nullptr )
+    {
+        CGraphObjLine* pGraphObjLine = dynamic_cast<CGraphObjLine*>(m_pGraphObj);
+        if( pGraphObjLine != nullptr && m_plg.size() == 2 )
         {
-            m_pGraphicsItem->setPos(m_ptPos);
+            QPointF pt1 = pGraphObjLine->mapFromParent(m_plg[0]);
+            QPointF pt2 = pGraphObjLine->mapFromParent(m_plg[1]);
+            QLineF  lin( pt1, pt2 );
+            pGraphObjLine->setLine(lin);
         }
-
-        // Size
-        //==================
-
-        if( m_pWdgtSize != nullptr )
+        else
         {
-            m_pGraphObj->setSize(m_size);
-        }
-
-        // Shape Points
-        //==================
-
-        if( m_pWdgtShapePoints != nullptr )
-        {
-            CGraphObjLine* pGraphObjLine = dynamic_cast<CGraphObjLine*>(m_pGraphObj);
-            if( pGraphObjLine != nullptr && m_plg.size() == 2 )
+            CGraphObjPolyline* pGraphObjPolyline = dynamic_cast<CGraphObjPolyline*>(m_pGraphObj);
+            if( pGraphObjPolyline != nullptr )
             {
-                QPointF pt1 = pGraphObjLine->mapFromParent(m_plg[0]);
-                QPointF pt2 = pGraphObjLine->mapFromParent(m_plg[1]);
-                QLineF  lin( pt1, pt2 );
-                pGraphObjLine->setLine(lin);
+                pGraphObjPolyline->setPolygon(m_plg);
             }
             else
             {
-                CGraphObjPolyline* pGraphObjPolyline = dynamic_cast<CGraphObjPolyline*>(m_pGraphObj);
-                if( pGraphObjPolyline != nullptr )
+                CGraphObjConnectionLine* pGraphObjCnctLine = dynamic_cast<CGraphObjConnectionLine*>(m_pGraphObj);
+                if( pGraphObjCnctLine != nullptr )
                 {
-                    pGraphObjPolyline->setPolygon(m_plg);
-                }
-                else
-                {
-                    CGraphObjConnectionLine* pGraphObjCnctLine = dynamic_cast<CGraphObjConnectionLine*>(m_pGraphObj);
-                    if( pGraphObjCnctLine != nullptr )
-                    {
-                        QPolygonF plg = pGraphObjCnctLine->mapFromScene(m_plg);
-                        pGraphObjCnctLine->setPolygon(plg);
-                    }
+                    QPolygonF plg = pGraphObjCnctLine->mapFromScene(m_plg);
+                    pGraphObjCnctLine->setPolygon(plg);
                 }
             }
         }
+    }
 
-        // Rotation
-        //==================
+    // Rotation
+    //=========
 
-        if( m_pWdgtRotation != nullptr )
+    if( m_pWdgtRotation != nullptr )
+    {
+        m_pGraphObj->setRotationAngleInDegree(m_fRotAngle_deg);
+    }
+
+    // Stacking Order
+    //===============
+
+    if( m_pWdgtStackingOrder != nullptr )
+    {
+        m_pGraphObj->setStackingOrderValue(m_fZValue);
+    }
+
+    // Dimension Label Visibilities
+    //=============================
+
+    if( m_pCmbPosLabelAnchorSelPt != nullptr && m_pChkPosLabelVisible != nullptr && m_pChkPosLabelAnchorLineVisible != nullptr )
+    {
+        QString strAnchorSelPt = m_pCmbPosLabelAnchorSelPt->currentText();
+        bool bConverted = false;
+        CEnumSelectionPoint eSelPt = CEnumSelectionPoint::fromString(strAnchorSelPt, &bConverted);
+
+        if( bConverted )
         {
-            m_pGraphObj->setRotationAngleInDegree(m_fRotAngle_deg);
+            Qt::CheckState checkStatePosLabelVisible = m_pChkPosLabelVisible->checkState();
+            Qt::CheckState checkStatePosLabelAnchorLineVisible = m_pChkPosLabelAnchorLineVisible->checkState();
+
+            if( checkStatePosLabelVisible == Qt::Checked )
+            {
+                if( !m_pGraphObj->isPositionLabelVisible(eSelPt.enumerator()) )
+                {
+                    m_pGraphObj->showPositionLabel(eSelPt.enumerator());
+                }
+            }
+            else if( checkStatePosLabelVisible == Qt::Unchecked )
+            {
+                if( m_pGraphObj->isPositionLabelVisible(eSelPt.enumerator()) )
+                {
+                    m_pGraphObj->hidePositionLabel(eSelPt.enumerator());
+                }
+            }
+            if( checkStatePosLabelAnchorLineVisible == Qt::Checked )
+            {
+                if( !m_pGraphObj->isPositionLabelAnchorLineVisible(eSelPt.enumerator()) )
+                {
+                    m_pGraphObj->showPositionLabelAnchorLine(eSelPt.enumerator());
+                }
+            }
+            else if( checkStatePosLabelAnchorLineVisible == Qt::Unchecked )
+            {
+                if( m_pGraphObj->isPositionLabelAnchorLineVisible(eSelPt.enumerator()) )
+                {
+                    m_pGraphObj->hidePositionLabelAnchorLine(eSelPt.enumerator());
+                }
+            }
         }
+    }
 
-        // Z Value
-        //==================
+    // Dimension Line Visibilities
+    //============================
 
-        if( m_pWdgtZValue != nullptr )
-        {
-            m_pGraphObj->setStackingOrderValue(m_fZValue);
-        }
-
-    } // if( m_pGraphObj != nullptr )
 
 } // applyChanges
 
@@ -959,7 +1299,7 @@ void CWdgtFormatGraphObjsGeometry::applyChanges()
 void CWdgtFormatGraphObjsGeometry::resetChanges()
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
@@ -969,52 +1309,9 @@ void CWdgtFormatGraphObjsGeometry::resetChanges()
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "resetChanges",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
-    m_ptPos = QPointF(0.0,0.0);
-    m_size = QSizeF(0.0,0.0);
-    m_plg.clear();
-    m_fRotAngle_deg = 0.0;
-    m_fZValue = 0.0;
-
-    if( m_pGraphObj != nullptr )
-    {
-        m_ptPos = m_pGraphicsItem->pos();
-        m_size = m_pGraphObj->getSize();
-        m_fRotAngle_deg = m_pGraphObj->getRotationAngleInDegree();
-        m_fZValue = m_pGraphObj->getStackingOrderValue();
-
-        if( m_pEdtPositionX != nullptr )
-        {
-            m_pEdtPositionX->setValue(m_ptPos.x());
-        }
-        if( m_pEdtPositionY != nullptr )
-        {
-            m_pEdtPositionY->setValue(m_ptPos.y());
-        }
-
-        if( m_pEdtSizeWidth != nullptr )
-        {
-            m_pEdtSizeWidth->setValue(m_size.width());
-        }
-        if( m_pEdtSizeHeight != nullptr )
-        {
-            m_pEdtSizeWidth->setValue(m_size.height());
-        }
-
-        if( m_pEdtRotationAngle != nullptr )
-        {
-            m_pEdtRotationAngle->setValue(m_fRotAngle_deg);
-        }
-
-        if( m_pEdtZValue != nullptr )
-        {
-            m_pEdtZValue->setValue(m_fZValue);
-        }
-
-    } // if( m_pGraphObj != nullptr )
-
-    fillShapePointsModel();
+    onGraphObjChanged();
 
 } // resetChanges
 
@@ -1022,14 +1319,26 @@ void CWdgtFormatGraphObjsGeometry::resetChanges()
 bool CWdgtFormatGraphObjsGeometry::hasChanges() const
 //------------------------------------------------------------------------------
 {
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    {
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* strMethod    */ "hasChanges",
+        /* strAddInfo   */ strMthInArgs );
+
     bool bHasChanges = m_bIsChangingValue;
 
-    if( !bHasChanges && m_pGraphObj != nullptr )
+    if( !bHasChanges )
     {
-        // Position
+        // Position and Size
         //==================
 
-        if( m_pWdgtPosition != nullptr )
+        if( m_pWdgtPosSize != nullptr )
         {
             QPointF ptPos = m_pGraphicsItem->pos();
 
@@ -1037,13 +1346,7 @@ bool CWdgtFormatGraphObjsGeometry::hasChanges() const
             {
                 bHasChanges = true;
             }
-        }
 
-        // Size
-        //==================
-
-        if( !bHasChanges && m_pWdgtSize != nullptr )
-        {
             QSizeF siz = m_pGraphObj->getSize();
 
             if( m_size != siz )
@@ -1090,11 +1393,10 @@ bool CWdgtFormatGraphObjsGeometry::hasChanges() const
             {
                 bHasChanges = true;
             }
-
         } // if( !bHasChanges && m_pWdgtShapePoints != nullptr )
 
         // Rotation
-        //==================
+        //=========
 
         if( !bHasChanges && m_pWdgtRotation != nullptr )
         {
@@ -1106,10 +1408,10 @@ bool CWdgtFormatGraphObjsGeometry::hasChanges() const
             }
         }
 
-        // Z Value
-        //==================
+        // Stacking Order
+        //===============
 
-        if( !bHasChanges && m_pWdgtZValue != nullptr )
+        if( !bHasChanges && m_pWdgtStackingOrder != nullptr )
         {
             double fZValue = m_pGraphObj->getStackingOrderValue();
 
@@ -1119,11 +1421,150 @@ bool CWdgtFormatGraphObjsGeometry::hasChanges() const
             }
         }
 
-    } // if( m_pGraphObj != nullptr )
+        // Dimension Label Visibilities
+        //=============================
+
+        if( !bHasChanges && m_pCmbPosLabelAnchorSelPt != nullptr && m_pChkPosLabelVisible != nullptr && m_pChkPosLabelAnchorLineVisible != nullptr )
+        {
+            QString strAnchorSelPt = m_pCmbPosLabelAnchorSelPt->currentText();
+            bool bConverted = false;
+            CEnumSelectionPoint eSelPt = CEnumSelectionPoint::fromString(strAnchorSelPt, &bConverted);
+
+            if( bConverted )
+            {
+                Qt::CheckState checkStatePosLabelVisible = m_pChkPosLabelVisible->checkState();
+                Qt::CheckState checkStatePosLabelAnchorLineVisible = m_pChkPosLabelAnchorLineVisible->checkState();
+
+                if( checkStatePosLabelVisible == Qt::Checked )
+                {
+                    bHasChanges = !m_pGraphObj->isPositionLabelVisible(eSelPt.enumerator());
+                }
+                else if( checkStatePosLabelVisible == Qt::Unchecked )
+                {
+                    bHasChanges = m_pGraphObj->isPositionLabelVisible(eSelPt.enumerator());
+                }
+                if( checkStatePosLabelAnchorLineVisible == Qt::Checked )
+                {
+                    bHasChanges = !m_pGraphObj->isPositionLabelAnchorLineVisible(eSelPt.enumerator());
+                }
+                else if( checkStatePosLabelAnchorLineVisible == Qt::Unchecked )
+                {
+                    bHasChanges = m_pGraphObj->isPositionLabelAnchorLineVisible(eSelPt.enumerator());
+                }
+            }
+        }
+
+        // Dimension Line Visibilities
+        //=============================
+
+    } // if( !bHasChanges )
+
+    if( mthTracer.isActive(ETraceDetailLevelMethodArgs) )
+    {
+        mthTracer.setMethodReturn(bHasChanges);
+    }
 
     return bHasChanges;
 
 } // hasChanges
+
+/*==============================================================================
+protected: // must overridables of base class CWdgtFormatGraphObjs
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CWdgtFormatGraphObjsGeometry::onGraphObjChanged()
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    {
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* strMethod    */ "onGraphObjChanged",
+        /* strAddInfo   */ strMthInArgs );
+
+    m_ptPos = m_pGraphicsItem->pos();
+    m_size = m_pGraphObj->getSize();
+    m_fRotAngle_deg = m_pGraphObj->getRotationAngleInDegree();
+    m_fZValue = m_pGraphObj->getStackingOrderValue();
+
+    if( m_pEdtPosX != nullptr )
+    {
+        m_pEdtPosX->setValue(m_ptPos.x());
+    }
+    if( m_pEdtPosY != nullptr )
+    {
+        m_pEdtPosY->setValue(m_ptPos.y());
+    }
+
+    if( m_pEdtSizeWidth != nullptr )
+    {
+        m_pEdtSizeWidth->setValue(m_size.width());
+    }
+    if( m_pEdtSizeHeight != nullptr )
+    {
+        m_pEdtSizeWidth->setValue(m_size.height());
+    }
+
+    if( m_pEdtRotationAngle != nullptr )
+    {
+        m_pEdtRotationAngle->setValue(m_fRotAngle_deg);
+    }
+
+    if( m_pEdtZValue != nullptr )
+    {
+        m_pEdtZValue->setValue(m_fZValue);
+    }
+
+    if( m_pModelShapePoints != nullptr )
+    {
+        fillShapePointsModel();
+    }
+
+    if( m_pCmbPosLabelAnchorSelPt != nullptr && m_pChkPosLabelVisible != nullptr && m_pChkPosLabelAnchorLineVisible != nullptr )
+    {
+        QString strAnchorSelPt = m_pCmbPosLabelAnchorSelPt->currentText();
+        bool bConverted = false;
+        CEnumSelectionPoint eSelPt = CEnumSelectionPoint::fromString(strAnchorSelPt, &bConverted);
+
+        if( bConverted )
+        {
+            if( eSelPt == ESelectionPoint::All )
+            {
+                bool bAllPosLabelsAreVisible = m_pGraphObj->isPositionLabelVisible(ESelectionPoint::All);
+                bool bAnyPosLabelsIsVisible = m_pGraphObj->isPositionLabelVisible(ESelectionPoint::Any);
+                bool bAllPosLabelsAnchorLinesAreVisible = m_pGraphObj->isPositionLabelAnchorLineVisible(ESelectionPoint::All);
+                bool bAnyPosLabelsAnchorLineIsVisible = m_pGraphObj->isPositionLabelAnchorLineVisible(ESelectionPoint::Any);
+
+                Qt::CheckState checkStatePosLabelVisible = bAllPosLabelsAreVisible ? Qt::Checked : bAnyPosLabelsIsVisible ? Qt::PartiallyChecked : Qt::Unchecked;
+                Qt::CheckState checkStatePosLabelAnchorLineVisible = bAllPosLabelsAnchorLinesAreVisible ? Qt::Checked : bAnyPosLabelsAnchorLineIsVisible ? Qt::PartiallyChecked : Qt::Unchecked;
+
+                m_pChkPosLabelVisible->setCheckState(checkStatePosLabelVisible);
+                m_pChkPosLabelAnchorLineVisible->setCheckState(checkStatePosLabelAnchorLineVisible);
+            }
+            else
+            {
+                bool bIsPosLabelVisible = m_pGraphObj->isPositionLabelVisible(eSelPt.enumerator());
+                m_pChkPosLabelVisible->setCheckState(bIsPosLabelVisible ? Qt::Checked : Qt::Unchecked);
+                if( bIsPosLabelVisible )
+                {
+                    bool bIsPosLabelAnchorLineVisible = m_pGraphObj->isPositionLabelAnchorLineVisible(eSelPt.enumerator());
+                    m_pChkPosLabelAnchorLineVisible->setCheckState(bIsPosLabelAnchorLineVisible ? Qt::Checked : Qt::Unchecked);
+                }
+                else
+                {
+                    m_pChkPosLabelAnchorLineVisible->setCheckState(Qt::Unchecked);
+                }
+            }
+        }
+    }
+
+} // onGraphObjChanged
 
 /*==============================================================================
 protected: // instance methods
@@ -1133,7 +1574,7 @@ protected: // instance methods
 void CWdgtFormatGraphObjsGeometry::fillShapePointsModel( )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
@@ -1143,9 +1584,9 @@ void CWdgtFormatGraphObjsGeometry::fillShapePointsModel( )
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "fillShapePointsModel",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
-    if( m_pGraphObj != nullptr && m_pModelShapePoints != nullptr )
+    if( m_pModelShapePoints != nullptr )
     {
         if( !disconnect(
             /* pObjSender   */ m_pModelShapePoints,
@@ -1290,8 +1731,7 @@ void CWdgtFormatGraphObjsGeometry::fillShapePointsModel( )
         {
             throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
         }
-
-    } // if( m_pGraphObj != nullptr && m_pModelShapePoints != nullptr )
+    } // if( m_pModelShapePoints != nullptr )
 
 } // fillShapePointsModel
 
@@ -1303,7 +1743,7 @@ protected slots:
 void CWdgtFormatGraphObjsGeometry::onEdtPositionXValueChanged( double i_fVal )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
@@ -1313,7 +1753,7 @@ void CWdgtFormatGraphObjsGeometry::onEdtPositionXValueChanged( double i_fVal )
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "onEdtPositionXValueChanged",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     m_ptPos.setX(i_fVal);
 
@@ -1323,7 +1763,7 @@ void CWdgtFormatGraphObjsGeometry::onEdtPositionXValueChanged( double i_fVal )
 void CWdgtFormatGraphObjsGeometry::onEdtPositionYValueChanged( double i_fVal )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
@@ -1333,7 +1773,7 @@ void CWdgtFormatGraphObjsGeometry::onEdtPositionYValueChanged( double i_fVal )
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "onEdtPositionYValueChanged",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     m_ptPos.setY(i_fVal);
 
@@ -1343,7 +1783,7 @@ void CWdgtFormatGraphObjsGeometry::onEdtPositionYValueChanged( double i_fVal )
 void CWdgtFormatGraphObjsGeometry::onEdtSizeWidthValueChanged( double i_fVal )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
@@ -1353,7 +1793,7 @@ void CWdgtFormatGraphObjsGeometry::onEdtSizeWidthValueChanged( double i_fVal )
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "onEdtSizeWidthValueChanged",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     if( i_fVal != m_size.width() )
     {
@@ -1370,7 +1810,7 @@ void CWdgtFormatGraphObjsGeometry::onEdtSizeWidthValueChanged( double i_fVal )
 void CWdgtFormatGraphObjsGeometry::onEdtSizeWidthEditingFinished()
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
@@ -1380,7 +1820,7 @@ void CWdgtFormatGraphObjsGeometry::onEdtSizeWidthEditingFinished()
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "onEdtSizeWidthEditingFinished",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     double fVal = m_pEdtSizeWidth->value();
 
@@ -1446,7 +1886,7 @@ void CWdgtFormatGraphObjsGeometry::onEdtSizeWidthEditingFinished()
 void CWdgtFormatGraphObjsGeometry::onEdtSizeHeightValueChanged( double i_fVal )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
@@ -1456,7 +1896,7 @@ void CWdgtFormatGraphObjsGeometry::onEdtSizeHeightValueChanged( double i_fVal )
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "onEdtSizeHeightValueChanged",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     if( i_fVal != m_size.height() )
     {
@@ -1473,7 +1913,7 @@ void CWdgtFormatGraphObjsGeometry::onEdtSizeHeightValueChanged( double i_fVal )
 void CWdgtFormatGraphObjsGeometry::onEdtSizeHeightEditingFinished()
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
@@ -1483,7 +1923,7 @@ void CWdgtFormatGraphObjsGeometry::onEdtSizeHeightEditingFinished()
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "onEdtSizeHeightEditingFinished",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     double fVal = m_pEdtSizeHeight->value();
 
@@ -1549,7 +1989,7 @@ void CWdgtFormatGraphObjsGeometry::onEdtSizeHeightEditingFinished()
 void CWdgtFormatGraphObjsGeometry::onModelShapePointsItemChanged( QStandardItem* i_pItem )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
@@ -1559,7 +1999,7 @@ void CWdgtFormatGraphObjsGeometry::onModelShapePointsItemChanged( QStandardItem*
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "onModelShapePointsItemChanged",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     if( m_bOnModelShapePointsItemChangedInProcess )
     {
@@ -1675,7 +2115,7 @@ void CWdgtFormatGraphObjsGeometry::onModelShapePointsItemChanged( QStandardItem*
 void CWdgtFormatGraphObjsGeometry::onBtnShapePointAddClicked()
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
@@ -1685,7 +2125,7 @@ void CWdgtFormatGraphObjsGeometry::onBtnShapePointAddClicked()
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "onBtnShapePointAddClicked",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     QItemSelectionModel* pItemSelModel = m_pViewShapePoints->selectionModel();
     int                  idxRow = m_pModelShapePoints->rowCount();
@@ -1761,7 +2201,7 @@ void CWdgtFormatGraphObjsGeometry::onBtnShapePointAddClicked()
 void CWdgtFormatGraphObjsGeometry::onBtnShapePointDeleteClicked()
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
@@ -1771,7 +2211,7 @@ void CWdgtFormatGraphObjsGeometry::onBtnShapePointDeleteClicked()
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "onBtnShapePointDeleteClicked",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     QItemSelectionModel* pItemSelModel = m_pViewShapePoints->selectionModel();
 
@@ -1917,7 +2357,7 @@ void CWdgtFormatGraphObjsGeometry::onBtnShapePointDeleteClicked()
 void CWdgtFormatGraphObjsGeometry::onBtnShapePointUpClicked()
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
@@ -1927,7 +2367,7 @@ void CWdgtFormatGraphObjsGeometry::onBtnShapePointUpClicked()
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "onBtnShapePointUpClicked",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     if( m_pModelShapePoints->rowCount() > 1 && m_plg.size() > 1 )
     {
@@ -1980,7 +2420,7 @@ void CWdgtFormatGraphObjsGeometry::onBtnShapePointUpClicked()
 void CWdgtFormatGraphObjsGeometry::onBtnShapePointDownClicked()
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
@@ -1990,7 +2430,7 @@ void CWdgtFormatGraphObjsGeometry::onBtnShapePointDownClicked()
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "onBtnShapePointDownClicked",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     if( m_pModelShapePoints->rowCount() > 1 && m_plg.size() > 1 )
     {
@@ -2043,7 +2483,7 @@ void CWdgtFormatGraphObjsGeometry::onBtnShapePointDownClicked()
 void CWdgtFormatGraphObjsGeometry::onEdtRotationAngleValueChanged( double i_fVal )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
@@ -2053,7 +2493,7 @@ void CWdgtFormatGraphObjsGeometry::onEdtRotationAngleValueChanged( double i_fVal
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "onEdtRotationAngleValueChanged",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     m_fRotAngle_deg = i_fVal;
 
@@ -2063,7 +2503,7 @@ void CWdgtFormatGraphObjsGeometry::onEdtRotationAngleValueChanged( double i_fVal
 void CWdgtFormatGraphObjsGeometry::onEdtZValueValueChanged( double i_fVal )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
@@ -2073,8 +2513,179 @@ void CWdgtFormatGraphObjsGeometry::onEdtZValueValueChanged( double i_fVal )
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "onEdtZValueValueChanged",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     m_fZValue = i_fVal;
 
 } // onEdtZValueValueChanged
+
+//------------------------------------------------------------------------------
+void CWdgtFormatGraphObjsGeometry::onCmbPosLabelAnchorSelPtCurrentIndexChanged( int i_iIdx )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    {
+        strMthInArgs = CEnumSelectionPoint::toString(static_cast<ESelectionPoint>(i_iIdx));
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* strMethod    */ "onCmbPosLabelAnchorSelPtCurrentIndexChanged",
+        /* strAddInfo   */ strMthInArgs );
+
+    if( hasChanges() )
+    {
+        QString strMsgText;
+
+        strMsgText  = "You have unsaved changes?\n";
+        strMsgText += "Do you want to apply your changes?";
+
+        QMessageBox::StandardButton msgBoxBtn = QMessageBox::question(
+            /* pWdgtParent */ this,
+            /* strTitle    */ QApplication::applicationName(),
+            /* strText     */ strMsgText,
+            /* buttons     */ QMessageBox::Yes | QMessageBox::No );
+
+        if( msgBoxBtn == QMessageBox::Yes )
+        {
+            applyChanges();
+        }
+    }
+
+    QString strAnchorSelPt = m_pCmbPosLabelAnchorSelPt->currentText();
+    bool bConverted = false;
+    CEnumSelectionPoint eSelPt = CEnumSelectionPoint::fromString(strAnchorSelPt, &bConverted);
+
+    if( bConverted )
+    {
+        if( eSelPt == ESelectionPoint::All )
+        {
+            bool bAllPosLabelsAreVisible = m_pGraphObj->isPositionLabelVisible(ESelectionPoint::All);
+            bool bAnyPosLabelsIsVisible = m_pGraphObj->isPositionLabelVisible(ESelectionPoint::Any);
+            bool bAllPosLabelsAnchorLinesAreVisible = m_pGraphObj->isPositionLabelAnchorLineVisible(ESelectionPoint::All);
+            bool bAnyPosLabelsAnchorLineIsVisible = m_pGraphObj->isPositionLabelAnchorLineVisible(ESelectionPoint::Any);
+
+            Qt::CheckState checkStatePosLabelVisible = bAllPosLabelsAreVisible ? Qt::Checked : bAnyPosLabelsIsVisible ? Qt::PartiallyChecked : Qt::Unchecked;
+            Qt::CheckState checkStatePosLabelAnchorLineVisible = bAllPosLabelsAnchorLinesAreVisible ? Qt::Checked : bAnyPosLabelsAnchorLineIsVisible ? Qt::PartiallyChecked : Qt::Unchecked;
+
+            m_pChkPosLabelVisible->setCheckState(checkStatePosLabelVisible);
+            m_pChkPosLabelAnchorLineVisible->setCheckState(checkStatePosLabelAnchorLineVisible);
+        }
+        else
+        {
+            bool bIsPosLabelVisible = m_pGraphObj->isPositionLabelVisible(eSelPt.enumerator());
+            m_pChkPosLabelVisible->setCheckState(bIsPosLabelVisible ? Qt::Checked : Qt::Unchecked);
+            if( bIsPosLabelVisible )
+            {
+                bool bIsPosLabelAnchorLineVisible = m_pGraphObj->isPositionLabelAnchorLineVisible(eSelPt.enumerator());
+                m_pChkPosLabelAnchorLineVisible->setCheckState(bIsPosLabelAnchorLineVisible ? Qt::Checked : Qt::Unchecked);
+            }
+            else
+            {
+                m_pChkPosLabelAnchorLineVisible->setCheckState(Qt::Unchecked);
+            }
+        }
+    }
+} // onCmbPosLabelAnchorSelPtCurrentIndexChanged
+
+//------------------------------------------------------------------------------
+void CWdgtFormatGraphObjsGeometry::onChkPosLabelVisibleStateChanged( int i_iCheckState )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    {
+        strMthInArgs = qCheckState2Str(i_iCheckState);
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* strMethod    */ "onChkPosLabelVisibleStateChanged",
+        /* strAddInfo   */ strMthInArgs );
+
+    QString strAnchorSelPt = m_pCmbPosLabelAnchorSelPt->currentText();
+    bool bConverted = false;
+    CEnumSelectionPoint eSelPt = CEnumSelectionPoint::fromString(strAnchorSelPt, &bConverted);
+
+    if( bConverted )
+    {
+        if( eSelPt == ESelectionPoint::All )
+        {
+            bool bAllPosLabelsAnchorLinesAreVisible = m_pGraphObj->isPositionLabelAnchorLineVisible(ESelectionPoint::All);
+            bool bAnyPosLabelsAnchorLineIsVisible = m_pGraphObj->isPositionLabelAnchorLineVisible(ESelectionPoint::Any);
+
+            Qt::CheckState checkStatePosLabelAnchorLineVisible = bAllPosLabelsAnchorLinesAreVisible ? Qt::Checked : bAnyPosLabelsAnchorLineIsVisible ? Qt::PartiallyChecked : Qt::Unchecked;
+
+            m_pChkPosLabelAnchorLineVisible->setCheckState(checkStatePosLabelAnchorLineVisible);
+        }
+        else
+        {
+            if( i_iCheckState == Qt::Checked )
+            {
+                bool bIsPosLabelAnchorLineVisible = m_pGraphObj->isPositionLabelAnchorLineVisible(eSelPt.enumerator());
+                m_pChkPosLabelAnchorLineVisible->setCheckState(bIsPosLabelAnchorLineVisible ? Qt::Checked : Qt::Unchecked);
+            }
+            else if( i_iCheckState == Qt::Unchecked )
+            {
+                m_pChkPosLabelAnchorLineVisible->setCheckState(Qt::Unchecked);
+            }
+        }
+    }
+} // onChkPosLabelVisibleStateChanged
+
+//------------------------------------------------------------------------------
+void CWdgtFormatGraphObjsGeometry::onChkPosLabelAnchorLineVisibleStateChanged( int i_iCheckState )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    {
+        strMthInArgs = qCheckState2Str(i_iCheckState);
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* strMethod    */ "onChkPosLabelAnchorLineVisibleStateChanged",
+        /* strAddInfo   */ strMthInArgs );
+
+} // onChkPosLabelAnchorLineVisibleStateChanged
+
+/*==============================================================================
+protected: // auxiliary methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CWdgtFormatGraphObjsGeometry::fillComboAnchorSelPt( QComboBox* i_pCmb )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    {
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* strMethod    */ "fillComboAnchorSelPt",
+        /* strAddInfo   */ strMthInArgs );
+
+    CEnumSelectionPoint eSelPt;
+    for( eSelPt = 0; eSelPt < CEnumSelectionPoint::count(); ++eSelPt )
+    {
+        if( eSelPt != ESelectionPoint::None && eSelPt != ESelectionPoint::Any
+         && eSelPt != ESelectionPoint::RotateTop && eSelPt != ESelectionPoint::RotateBottom )
+        {
+            i_pCmb->addItem(eSelPt.toString(EEnumEntryAliasStrText), eSelPt.enumeratorAsInt());
+        }
+    }
+    i_pCmb->setCurrentText( CEnumSelectionPoint(ESelectionPoint::TopLeft).toString(EEnumEntryAliasStrText) );
+
+} // fillComboAnchorSelPt

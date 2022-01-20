@@ -132,9 +132,9 @@ CDrawingScene::CDrawingScene( QObject* i_pObjParent ) :
     m_fXResolution_dpmm(1.0),
     m_fYResolution_dpmm(1.0),
     m_mode(EMode::Undefined),
-    m_editTool(EEditTool::Undefined),
-    m_editMode(EEditMode::Undefined),
-    m_editResizeMode(EEditResizeMode::Undefined),
+    m_editTool(EEditTool::None),
+    m_editMode(EEditMode::None),
+    m_editResizeMode(EEditResizeMode::None),
     m_pGraphicsItemSelectionArea(nullptr),
     m_pObjFactory(nullptr),
     m_pGraphicsItemCreating(nullptr),
@@ -176,6 +176,40 @@ CDrawingScene::CDrawingScene( QObject* i_pObjParent ) :
         /* bCreateMutex     */ false,
         /* pObjParent       */ nullptr,
         /* iTrcDetailLevel  */ ETraceDetailLevelNone );
+
+    if( !QObject::connect(
+        /* pObjSender   */ m_pGraphObjsIdxTree,
+        /* szSignal     */ SIGNAL(treeEntryAdded(ZS::System::CIdxTree*, ZS::System::CIdxTreeEntry*)),
+        /* pObjReceiver */ this,
+        /* szSlot       */ SLOT(onGraphObjsIdxTreeEntryAdded(ZS::System::CIdxTree*, ZS::System::CIdxTreeEntry*))) )
+    {
+        throw ZS::System::CException(__FILE__, __LINE__, EResultSignalSlotConnectionFailed);
+    }
+    if( !QObject::connect(
+        /* pObjSender   */ m_pGraphObjsIdxTree,
+        /* szSignal     */ SIGNAL(treeEntryChanged(ZS::System::CIdxTree*, ZS::System::CIdxTreeEntry*)),
+        /* pObjReceiver */ this,
+        /* szSlot       */ SLOT(onGraphObjsIdxTreeEntryChanged(ZS::System::CIdxTree*, ZS::System::CIdxTreeEntry*))) )
+    {
+        throw ZS::System::CException(__FILE__, __LINE__, EResultSignalSlotConnectionFailed);
+    }
+    if( !QObject::connect(
+        /* pObjSender   */ m_pGraphObjsIdxTree,
+        /* szSignal     */ SIGNAL(treeEntryMoved(ZS::System::CIdxTree*, ZS::System::CIdxTreeEntry*, const QString&, ZS::System::CIdxTreeEntry*)),
+        /* pObjReceiver */ this,
+        /* szSlot       */ SLOT(onGraphObjsIdxTreeEntryMoved(ZS::System::CIdxTree*, ZS::System::CIdxTreeEntry*, const QString&, ZS::System::CIdxTreeEntry*))) )
+    {
+        throw ZS::System::CException(__FILE__, __LINE__, EResultSignalSlotConnectionFailed);
+    }
+    if( !QObject::connect(
+        /* pObjSender   */ m_pGraphObjsIdxTree,
+        /* szSignal     */ SIGNAL(treeEntryRenamed(ZS::System::CIdxTree*, ZS::System::CIdxTreeEntry*, const QString&, const QString&)),
+        /* pObjReceiver */ this,
+        /* szSlot       */ SLOT(onGraphObjsIdxTreeEntryRenamed(ZS::System::CIdxTree*, ZS::System::CIdxTreeEntry*, const QString&, const QString&))) )
+    {
+        throw ZS::System::CException(__FILE__, __LINE__, EResultSignalSlotConnectionFailed);
+    }
+
     m_pGraphObjsIdxTreeClipboard = new CIdxTree(
         /* strObjName       */ objectName() + "-Clipboard-GraphObjs",
         /* pRootTreeEntry   */ nullptr,
@@ -1000,22 +1034,22 @@ public: // instance methods
         der Maus-Events verarbeitet die ComboBox die Events, um z.B. die PullDown-List zu öffnen.
         Bei dem Objekt kann es sich aber auch um ein vollständig benutzerdefiniertes Objekt wie
         einen grafischen Schalter handeln, der über Maus-Klicks seinen On/Off Zustand ändert.
-    @param i_editTool [in] Range [Select, CreateObjects, Ignore, Undefined]
+    @param i_editTool [in] Range [Select, CreateObjects, Ignore, None]
         Ignore ist zu übergeben, wenn das EditTool nicht geändert werden soll und das Argument
         somit zu ignorieren ist.
-        Undefined zeigt an, dass kein EditTool ausgewählt ist.
+        None zeigt an, dass kein EditTool ausgewählt ist.
         Wird Select übergeben, sollen nachfolgende Maus-Events dazu dienen, Objekte zu selektieren.
         Mit CreateObjects wird angezeigt, dass über nachfolgende Maus-Events Objekte erzeugt werden sollen.
-    @param i_editMode [in] Range [Creating, Move, Resize, Rotate, MoveShapePoint, EditText, Ignore, Undefined]
+    @param i_editMode [in] Range [Creating, Move, Resize, Rotate, MoveShapePoint, EditText, Ignore, None]
         Ignore ist zu übergeben, wenn der EditMode nicht geändert werden soll und das Argument
         somit zu ignorieren ist.
-        Undefined zeigt an, dass kein EditMode ausgewählt ist.
+        None zeigt an, dass kein EditMode ausgewählt ist.
         Die anderen EditModes zeigen an, auf welche Art und Weise das Objekt zu modifizieren ist und hängen
         im wesentlichen davon ab, an welchem Eckpunkt (SelectionPoint) das Objekt mit der Maus gepackt wurde.
-    @param i_editResizeMode [in] Range [ResizeAll, ResizeHor, ResizeVer, Ignore, Undefined]
+    @param i_editResizeMode [in] Range [ResizeAll, ResizeHor, ResizeVer, Ignore, None]
         Ignore ist zu übergeben, wenn der ResizeMode nicht geändert werden soll und das Argument
         somit zu ignorieren ist.
-        Undefined zeigt an, dass kein ResizeMode ausgewählt ist.
+        None zeigt an, dass kein ResizeMode ausgewählt ist.
     @param i_bObjFactoryTypeChanged [in]
         true, falls der grafische Object Type und damit die Objekt Factory zur Erzeugung des Objekt verändert wurde.
         falls otherwise.
@@ -1058,15 +1092,15 @@ void CDrawingScene::setMode(
         {
             if( i_editTool == EEditTool::Ignore )
             {
-                m_editTool = EEditTool::Undefined;
+                m_editTool = EEditTool::None;
             }
             if( i_editMode == EEditMode::Ignore )
             {
-                m_editMode = EEditMode::Undefined;
+                m_editMode = EEditMode::None;
             }
             if( i_editResizeMode == EEditResizeMode::Ignore )
             {
-                m_editResizeMode = EEditResizeMode::Undefined;
+                m_editResizeMode = EEditResizeMode::None;
             }
         }
 
@@ -1230,13 +1264,13 @@ void CDrawingScene::setCurrentDrawingTool( CObjFactory* i_pObjFactory )
 
             if( m_editTool != EEditTool::Select )
             {
-                editTool = EEditTool::Undefined;
+                editTool = EEditTool::None;
             }
-            setMode(EMode::Ignore, editTool, EEditMode::Undefined, EEditResizeMode::Undefined, true);
+            setMode(EMode::Ignore, editTool, EEditMode::None, EEditResizeMode::None, true);
         }
         else
         {
-            setMode(EMode::Ignore, EEditTool::CreateObjects, EEditMode::Undefined, EEditResizeMode::Undefined, true);
+            setMode(EMode::Ignore, EEditTool::CreateObjects, EEditMode::None, EEditResizeMode::None, true);
         }
     }
 
@@ -1441,7 +1475,7 @@ QCursor CDrawingScene::getProposedCursor( const QPointF& i_ptPos ) const
                             {
                                 break;
                             }
-                            case EEditResizeMode::Undefined:
+                            case EEditResizeMode::None:
                             default:
                             {
                                 break;
@@ -1463,7 +1497,7 @@ QCursor CDrawingScene::getProposedCursor( const QPointF& i_ptPos ) const
                         break;
                     }
                     case EEditMode::Creating: // this mode is only used by graphical object but not by the scene
-                    case EEditMode::Undefined:
+                    case EEditMode::None:
                     default:
                     {
                         cursor = Qt::ArrowCursor;
@@ -1497,7 +1531,7 @@ QCursor CDrawingScene::getProposedCursor( const QPointF& i_ptPos ) const
                             {
                                 break;
                             }
-                            case EEditResizeMode::Undefined:
+                            case EEditResizeMode::None:
                             default:
                             {
                                 break;
@@ -1523,7 +1557,7 @@ QCursor CDrawingScene::getProposedCursor( const QPointF& i_ptPos ) const
                         break;
                     }
                     case EEditMode::Creating: // this mode is only used by graphical object but not by the scene
-                    case EEditMode::Undefined:
+                    case EEditMode::None:
                     default:
                     {
                         if( iObjFactoryType != static_cast<int>(EGraphObjTypeUndefined) )
@@ -1558,7 +1592,7 @@ QCursor CDrawingScene::getProposedCursor( const QPointF& i_ptPos ) const
                 break;
             } // case EEditTool::CreateObjects
 
-            case EEditTool::Undefined:
+            case EEditTool::None:
             default:
             {
                 cursor = Qt::ArrowCursor;
@@ -1952,7 +1986,7 @@ void CDrawingScene::onGraphObjCreationFinished( CGraphObj* i_pGraphObj )
                 m_pGraphicsItemAddingShapePoints = nullptr;
                 m_pGraphObjAddingShapePoints = nullptr;
 
-                setMode(EMode::Ignore, EEditTool::Ignore, EEditMode::Undefined, EEditResizeMode::Undefined, false);
+                setMode(EMode::Ignore, EEditTool::Ignore, EEditMode::None, EEditResizeMode::None, false);
             }
         }
     }
@@ -2559,8 +2593,8 @@ int CDrawingScene::groupGraphObjsSelected()
             // Finish creation of group.
             pGraphObjGroup->setSize( rctGroupSceneCoors.size() );
             pGraphObjGroup->acceptCurrentAsOriginalCoors();
-            pGraphObjGroup->setEditMode(EEditMode::Undefined);
-            pGraphObjGroup->setEditResizeMode(EEditResizeMode::Undefined);
+            pGraphObjGroup->setEditMode(EEditMode::None);
+            pGraphObjGroup->setEditResizeMode(EEditResizeMode::None);
 
             onGraphObjCreationFinished(pGraphObjGroup);
 
@@ -3462,7 +3496,7 @@ void CDrawingScene::dropEvent( QGraphicsSceneDragDropEvent* i_pEv )
 
                                 onGraphObjCreationFinished(pGraphObj);
 
-                                setMode( EMode::Ignore, EEditTool::Select, EEditMode::Move, EEditResizeMode::Undefined, false );
+                                setMode( EMode::Ignore, EEditTool::Select, EEditMode::Move, EEditResizeMode::None, false );
                             }
                         } // if( strType.compare("ObjFactory",Qt::CaseInsensitive) == 0 )
                     } // if( strlstObjPath.size() > 1 ) // must contain type and object path
@@ -3502,7 +3536,7 @@ void CDrawingScene::dropEvent( QGraphicsSceneDragDropEvent* i_pEv )
 
                 onGraphObjCreationFinished(pGraphObjImage);
 
-                setMode( EMode::Ignore, EEditTool::Select, EEditMode::Move, EEditResizeMode::Undefined, false );
+                setMode( EMode::Ignore, EEditTool::Select, EEditMode::Move, EEditResizeMode::None, false );
             }
         } // if( pMimeData->hasUrls() )
     } // if( sceneRect().contains(i_pEv->scenePos()) )
@@ -3994,7 +4028,7 @@ void CDrawingScene::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
             // If no item has been hit ...
             if( selectedItems().size() == 0 )
             {
-                setMode( EMode::Ignore, EEditTool::Ignore, EEditMode::Undefined, EEditResizeMode::Undefined, false );
+                setMode( EMode::Ignore, EEditTool::Ignore, EEditMode::None, EEditResizeMode::None, false );
 
                 QRectF rctSelectionArea(
                     /* x      */ m_ptMouseEvScenePosOnMousePressEvent.x(),
@@ -5413,6 +5447,15 @@ protected slots:
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! This slot is called if the currently selected drawing tool (the active
+    object factory) is destroyed.
+
+    During system shutdown or on unloading a library with user defined object
+    factories this might be essential to avoid accessing a deleted factory instanz.
+
+    @param i_pObjFactoy [in]
+        Pointer to destroyed object factory.
+*/
 void CDrawingScene::onGraphObjFactoryDestroyed( QObject* i_pObjFactory )
 //------------------------------------------------------------------------------
 {
@@ -5435,3 +5478,183 @@ void CDrawingScene::onGraphObjFactoryDestroyed( QObject* i_pObjFactory )
         m_pObjFactory = nullptr;
     }
 } // onGraphObjFactoryDestroyed
+
+/*==============================================================================
+protected slots:
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! Slot connected to the treeEntryAdded signal of the index tree containing the
+    graphical objects in the drawing scene.
+
+    The drawing scene just forwards this signal by emitting the graphObjChanged signal.
+
+    @param i_pIdxTree [in]
+        Pointer to the index tree of the drawing scene.
+    @param i_pTreeEntry [in]
+        Pointer to the tree entry which has been newly added.
+*/
+void CDrawingScene::onGraphObjsIdxTreeEntryAdded( CIdxTree* i_pIdxTree, CIdxTreeEntry* i_pTreeEntry )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    QString strAddTrcInfo;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    {
+        strMthInArgs =  "Tree: " + QString(i_pIdxTree == nullptr ? "nullptr" : i_pIdxTree->objectName());
+        strMthInArgs += ", Entry: " + QString(i_pTreeEntry == nullptr ? "nullptr" : i_pTreeEntry->path());
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* strMethod    */ "onGraphObjsIdxTreeEntryAdded",
+        /* strAddInfo   */ strMthInArgs );
+
+    CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(i_pTreeEntry);
+
+    if( pGraphObj == nullptr )
+    {
+        throw(__FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphObj == nullptr");
+    }
+
+    emit graphObjChanged(this, pGraphObj);
+
+} // onGraphObjsIdxTreeEntryAdded
+
+//------------------------------------------------------------------------------
+/*! Slot connected to the treeEntryChanged signal of the index tree containing the
+    graphical objects in the drawing scene.
+
+    The drawing scene just forwards this signal by emitting the graphObjChanged signal.
+
+    @param i_pIdxTree [in]
+        Pointer to the index tree of the drawing scene.
+    @param i_pTreeEntry [in]
+        Pointer to the tree entry for which properties have been changed.
+*/
+void CDrawingScene::onGraphObjsIdxTreeEntryChanged( CIdxTree* i_pIdxTree, CIdxTreeEntry* i_pTreeEntry )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    QString strAddTrcInfo;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    {
+        strMthInArgs =  "Tree: " + QString(i_pIdxTree == nullptr ? "nullptr" : i_pIdxTree->objectName());
+        strMthInArgs += ", Entry: " + QString(i_pTreeEntry == nullptr ? "nullptr" : i_pTreeEntry->path());
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* strMethod    */ "onGraphObjsIdxTreeEntryChanged",
+        /* strAddInfo   */ strMthInArgs );
+
+    CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(i_pTreeEntry);
+
+    if( pGraphObj == nullptr )
+    {
+        throw(__FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphObj == nullptr");
+    }
+
+    emit graphObjChanged(this, pGraphObj);
+
+} // onGraphObjsIdxTreeEntryChanged
+
+//------------------------------------------------------------------------------
+/*! Slot connected to the treeEntryMoved signal of the index tree containing the
+    graphical objects in the drawing scene.
+
+    The drawing scene just forwards this signal by emitting the graphObjChanged signal.
+
+    @param i_pIdxTree [in]
+        Pointer to the index tree of the drawing scene.
+    @param i_pTreeEntry [in]
+        Pointer to the tree entry which has been removed from the tree.
+    @param i_strKeyInTreePrev [in]
+        Key of the tree entry (before it was moved).
+    @param i_pTargetBranch [in]
+        Pointer to target tree entry to which the tree entry was moved.
+*/
+void CDrawingScene::onGraphObjsIdxTreeEntryMoved(
+    CIdxTree*      i_pIdxTree,
+    CIdxTreeEntry* i_pTreeEntry,
+    const QString& i_strKeyInTreePrev,
+    CIdxTreeEntry* i_pTargetBranch )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    QString strAddTrcInfo;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    {
+        strMthInArgs =  "Tree: " + QString(i_pIdxTree == nullptr ? "nullptr" : i_pIdxTree->objectName());
+        strMthInArgs += ", Entry: " + QString(i_pTreeEntry == nullptr ? "nullptr" : i_pTreeEntry->path());
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* strMethod    */ "onGraphObjsIdxTreeEntryMoved",
+        /* strAddInfo   */ strMthInArgs );
+
+    CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(i_pTreeEntry);
+
+    if( pGraphObj == nullptr )
+    {
+        throw(__FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphObj == nullptr");
+    }
+
+    emit graphObjChanged(this, pGraphObj);
+
+} // onGraphObjsIdxTreeEntryMoved
+
+//------------------------------------------------------------------------------
+/*! Slot connected to the treeEntryRenamed signal of the index tree containing the
+    graphical objects in the drawing scene.
+
+    The drawing scene just forwards this signal by emitting the graphObjChanged signal.
+
+    @param i_pIdxTree [in]
+        Pointer to the index tree of the drawing scene.
+    @param i_pTreeEntry [in]
+        Pointer to the tree entry which has been removed from the tree.
+    @param i_strKeyInTreePrev [in]
+        Key of the tree tree (before it was moved).
+    @param i_strNamePrev [in]
+        Old name of the tree entry.
+*/
+void CDrawingScene::onGraphObjsIdxTreeEntryRenamed(
+    CIdxTree*      i_pIdxTree,
+    CIdxTreeEntry* i_pTreeEntry,
+    const QString& i_strKeyInTreePrev,
+    const QString& i_strNamePrev )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    QString strAddTrcInfo;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    {
+        strMthInArgs =  "Tree: " + QString(i_pIdxTree == nullptr ? "nullptr" : i_pIdxTree->objectName());
+        strMthInArgs += ", Entry: " + QString(i_pTreeEntry == nullptr ? "nullptr" : i_pTreeEntry->path());
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* strMethod    */ "onGraphObjsIdxTreeEntryRenamed",
+        /* strAddInfo   */ strMthInArgs );
+
+    CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(i_pTreeEntry);
+
+    if( pGraphObj == nullptr )
+    {
+        throw(__FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphObj == nullptr");
+    }
+
+    emit graphObjChanged(this, pGraphObj);
+
+} // onGraphObjsIdxTreeEntryRenamed

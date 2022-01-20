@@ -478,7 +478,7 @@ bool CGraphObjPoint::isHit( const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo ) 
         if( bIsHit && o_pHitInfo != nullptr )
         {
             o_pHitInfo->m_editMode = EEditMode::Move;
-            o_pHitInfo->m_editResizeMode = EEditResizeMode::Undefined;
+            o_pHitInfo->m_editResizeMode = EEditResizeMode::None;
             o_pHitInfo->m_selPtBoundingRect = ESelectionPoint::Center;
             o_pHitInfo->m_idxPolygonShapePoint = 0;
             o_pHitInfo->m_idxLineSegment = -1;
@@ -652,31 +652,31 @@ QRectF CGraphObjPoint::boundingRect() const
         }
     }
 
-    if( m_bIsHit || isSelected() )
-    {
-        QHashIterator<QString,SGraphObjLabel*> itLabels(m_arpLabels);
-        SGraphObjLabel* pGraphObjLabel;
-        QRectF          rctLabel;
-        QPolygonF       plgLabel;
+    //if( m_bIsHit || isSelected() )
+    //{
+    //    QHashIterator<QString,SGraphObjLabel*> itLabels(m_arpLabels);
+    //    SGraphObjLabel* pGraphObjLabel;
+    //    QRectF          rctLabel;
+    //    QPolygonF       plgLabel;
 
-        while( itLabels.hasNext() )
-        {
-            itLabels.next();
-            pGraphObjLabel = itLabels.value();
+    //    while( itLabels.hasNext() )
+    //    {
+    //        itLabels.next();
+    //        pGraphObjLabel = itLabels.value();
 
-            if( pGraphObjLabel->m_pGraphObjLabel != nullptr )
-            {
-                // Calling pGraphObjLabel->boundingRect() may lead to endless recursion as the
-                // label itself may call the boundingRect method of its parent item (which is
-                // this item) if the label is selected or has been hit. For this we call
-                // boundingRect of the label with a different signature to indicate that we
-                // are only interested in the bounding rect of the simple text item.
-                rctLabel = pGraphObjLabel->m_pGraphObjLabel->boundingRect(true);
-                plgLabel = mapFromItem( pGraphObjLabel->m_pGraphObjLabel, rctLabel );
-                rctBounding |= plgLabel.boundingRect();
-            }
-        }
-    }
+    //        if( pGraphObjLabel->m_pGraphObjLabel != nullptr )
+    //        {
+    //            // Calling pGraphObjLabel->boundingRect() may lead to endless recursion as the
+    //            // label itself may call the boundingRect method of its parent item (which is
+    //            // this item) if the label is selected or has been hit. For this we call
+    //            // boundingRect of the label with a different signature to indicate that we
+    //            // are only interested in the bounding rect of the simple text item.
+    //            rctLabel = pGraphObjLabel->m_pGraphObjLabel->boundingRect(true);
+    //            plgLabel = mapFromItem( pGraphObjLabel->m_pGraphObjLabel, rctLabel );
+    //            rctBounding |= plgLabel.boundingRect();
+    //        }
+    //    }
+    //}
 
     if( mthTracer.isActive(ETraceDetailLevelMethodArgs) )
     {
@@ -740,23 +740,22 @@ void CGraphObjPoint::paint(
         QPointF ptSelPt = QPointF(0.0,0.0);
         QPointF ptLabelSelPt;
 
-        QHashIterator<QString,SGraphObjLabel*> itLabels(m_arpLabels);
-        SGraphObjLabel* pGraphObjLabel;
+        //QHashIterator<QString,SGraphObjLabel*> itLabels(m_arpLabels);
+        //SGraphObjLabel* pGraphObjLabel;
 
-        while( itLabels.hasNext() )
-        {
-            itLabels.next();
-            pGraphObjLabel = itLabels.value();
+        //while( itLabels.hasNext() )
+        //{
+        //    itLabels.next();
+        //    pGraphObjLabel = itLabels.value();
 
-            if( pGraphObjLabel->m_pGraphObjLabel != nullptr )
-            {
-                ptLabelSelPt = pGraphObjLabel->m_pGraphObjLabel->getSelectionPoint(ESelectionPoint::Center);
-                ptLabelSelPt = mapFromItem( pGraphObjLabel->m_pGraphObjLabel, ptLabelSelPt );
+        //    if( pGraphObjLabel->m_pGraphObjLabel != nullptr )
+        //    {
+        //        ptLabelSelPt = pGraphObjLabel->m_pGraphObjLabel->getSelectionPoint(ESelectionPoint::Center);
+        //        ptLabelSelPt = mapFromItem( pGraphObjLabel->m_pGraphObjLabel, ptLabelSelPt );
 
-                i_pPainter->drawLine( ptSelPt, ptLabelSelPt );
-            }
-        }
-
+        //        i_pPainter->drawLine( ptSelPt, ptLabelSelPt );
+        //    }
+        //}
     } // if( m_pDrawingScene->getMode() == EMode::Edit && (m_bIsHit || isSelected()) )
 
     i_pPainter->restore();
@@ -1119,10 +1118,10 @@ void CGraphObjPoint::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
         if( editToolDrawing == EEditTool::CreateObjects && m_editMode == EEditMode::Creating )
         {
             // The object has been initially created.
-            m_editMode = EEditMode::Undefined;
-            m_editResizeMode = EEditResizeMode::Undefined;
+            m_editMode = EEditMode::None;
+            m_editResizeMode = EEditResizeMode::None;
             m_idxSelPtSelectedPolygon = -1;
-            m_selPtSelectedBoundingRect = ESelectionPoint::Undefined;
+            m_selPtSelectedBoundingRect = ESelectionPoint::None;
 
             acceptCurrentAsOriginalCoors();
 
@@ -1133,12 +1132,12 @@ void CGraphObjPoint::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
 
         } // if( editToolDrawing == EEditTool::CreateObjects && m_editMode == EEditMode::Creating )
 
-        else if( editToolDrawing == EEditTool::Select && m_editMode == EEditMode::Undefined )
+        else if( editToolDrawing == EEditTool::Select && m_editMode == EEditMode::None )
         {
             QAbstractGraphicsShapeItem::mousePressEvent(i_pEv); // this will select the item (creating selection points)
 
             m_editMode       = EEditMode::Move;
-            m_editResizeMode = EEditResizeMode::Undefined;
+            m_editResizeMode = EEditResizeMode::None;
             m_idxSelPtSelectedPolygon = 0;
 
             m_pDrawingScene->setMode( EMode::Ignore, EEditTool::Ignore, m_editMode, m_editResizeMode, false );
@@ -1159,7 +1158,7 @@ void CGraphObjPoint::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
                 }
 
             } // if( m_pDrawingScene->isMouseDoubleClickEventInProcess() )
-        } // if( editToolDrawing == EEditTool::Select && m_editMode == EEditMode::Undefined )
+        } // if( editToolDrawing == EEditTool::Select && m_editMode == EEditMode::None )
     } // if( modeDrawing == EMode::Edit )
 
     if( mthTracer.isActive(ETraceDetailLevelInternalStates) )
@@ -1272,10 +1271,10 @@ void CGraphObjPoint::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
 
         } // if( m_editMode == EEditMode::Move )
 
-        m_editMode = EEditMode::Undefined;
-        m_editResizeMode = EEditResizeMode::Undefined;
+        m_editMode = EEditMode::None;
+        m_editResizeMode = EEditResizeMode::None;
         m_idxSelPtSelectedPolygon = -1;
-        m_selPtSelectedBoundingRect = ESelectionPoint::Undefined;
+        m_selPtSelectedBoundingRect = ESelectionPoint::None;
 
     } // if( modeDrawing == EMode::Edit )
 
@@ -1441,9 +1440,9 @@ QVariant CGraphObjPoint::itemChange( GraphicsItemChange i_change, const QVariant
 
             setZValue(m_fZValue); // restore ZValue as before selecting the object
 
-            m_editMode = EEditMode::Undefined;
-            m_editResizeMode = EEditResizeMode::Undefined;
-            m_selPtSelectedBoundingRect = ESelectionPoint::Undefined;
+            m_editMode = EEditMode::None;
+            m_editResizeMode = EEditResizeMode::None;
+            m_selPtSelectedBoundingRect = ESelectionPoint::None;
             m_idxSelPtSelectedPolygon = -1;
         }
 
@@ -1533,21 +1532,21 @@ QVariant CGraphObjPoint::itemChange( GraphicsItemChange i_change, const QVariant
             }
         }
 
-        QHashIterator<QString,SGraphObjLabel*> itLabels(m_arpLabels);
+        //QHashIterator<QString,SGraphObjLabel*> itLabels(m_arpLabels);
 
-        SGraphObjLabel* pGraphObjLabel;
+        //SGraphObjLabel* pGraphObjLabel;
 
-        while( itLabels.hasNext() )
-        {
-            itLabels.next();
+        //while( itLabels.hasNext() )
+        //{
+        //    itLabels.next();
 
-            pGraphObjLabel = itLabels.value();
+        //    pGraphObjLabel = itLabels.value();
 
-            if( pGraphObjLabel->m_pGraphObjLabel != nullptr )
-            {
-                pGraphObjLabel->m_pGraphObjLabel->setZValue( zValue() + 0.02 );
-            }
-        }
+        //    if( pGraphObjLabel->m_pGraphObjLabel != nullptr )
+        //    {
+        //        pGraphObjLabel->m_pGraphObjLabel->setZValue( zValue() + 0.02 );
+        //    }
+        //}
     }
 
     if( bTreeEntryChanged && m_pTree != nullptr )

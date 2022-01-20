@@ -164,14 +164,14 @@ SErrResultInfo CObjFactoryGroup::saveGraphObj(
     // Labels
     //----------------
 
-    QHash<QString,SGraphObjLabel*> arpLabels = pGraphObjGroup->getLabels();
+    //QHash<QString,SGraphObjLabel*> arpLabels = pGraphObjGroup->getLabels();
 
-    if( arpLabels.size() > 0 )
-    {
-        i_xmlStreamWriter.writeStartElement("Labels");
-        errResultInfo = saveGraphObjLabels( arpLabels, i_xmlStreamWriter );
-        i_xmlStreamWriter.writeEndElement();
-    }
+    //if( arpLabels.size() > 0 )
+    //{
+    //    i_xmlStreamWriter.writeStartElement("Labels");
+    //    errResultInfo = saveGraphObjLabels( arpLabels, i_xmlStreamWriter );
+    //    i_xmlStreamWriter.writeEndElement();
+    //}
 
     // Group members (childrens)
     //--------------------------
@@ -560,14 +560,13 @@ CGraphObj* CObjFactoryGroup::loadGraphObj(
             i_pDrawingScene->onGraphObjCreationFinished(pGraphObjGroup);
 
             pGraphObjGroup->acceptCurrentAsOriginalCoors();
-            pGraphObjGroup->setEditMode(EEditMode::Undefined);
-            pGraphObjGroup->setEditResizeMode(EEditResizeMode::Undefined);
+            pGraphObjGroup->setEditMode(EEditMode::None);
+            pGraphObjGroup->setEditResizeMode(EEditResizeMode::None);
 
-            if( arpLabels.size() > 0 )
-            {
-                pGraphObjGroup->addLabels(arpLabels);
-            }
-
+            //if( arpLabels.size() > 0 )
+            //{
+            //    pGraphObjGroup->addLabels(arpLabels);
+            //}
         } // if( bPosValid )
 
         else

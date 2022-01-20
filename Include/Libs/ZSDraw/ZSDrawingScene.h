@@ -47,6 +47,7 @@ namespace ZS
 namespace System
 {
 class CIdxTree;
+class CIdxTreeEntry;
 }
 namespace Trace
 {
@@ -83,6 +84,12 @@ signals:
     void mousePosChanged( const QPointF& i_ptMousePos );
     void modeChanged();
     void drawSettingsChanged( const ZS::Draw::CDrawSettings& i_drawSettings );
+    /*! Signal which will be emitted if a graphical object has been added, changed, is going to be removed,
+        has been moved or renamed. The drawing scene connects to those signals, combines them to one signal
+        and forwards them by emitting the graphObjChanged signal.
+        @param i_pIdxTree [in] Pointer to index tree.
+        @param i_pTreeEntry [in] Pointer to tree entry which has been changed. */
+    void graphObjChanged( ZS::Draw::CDrawingScene* i_pDrawingScene, ZS::Draw::CGraphObj* i_pGraphObj );
 signals:
     //void graphObjCreated( ZS::Draw::CGraphObj* i_pGraphObj );
     //void graphObjDestroying( const QString& i_strObjId );
@@ -227,6 +234,11 @@ protected: // overridables of base class QGraphicsScene
     virtual void drawForeground( QPainter* i_pPainter, const QRectF& i_rect );
 protected slots:
     void onGraphObjFactoryDestroyed( QObject* i_pObjFactory );
+protected slots:
+    void onGraphObjsIdxTreeEntryAdded( ZS::System::CIdxTree* i_pIdxTree, ZS::System::CIdxTreeEntry* i_pTreeEntry );
+    void onGraphObjsIdxTreeEntryChanged( ZS::System::CIdxTree* i_pIdxTree, ZS::System::CIdxTreeEntry* i_pTreeEntry );
+    void onGraphObjsIdxTreeEntryMoved( ZS::System::CIdxTree* i_pIdxTree, ZS::System::CIdxTreeEntry* i_pTreeEntry, const QString& i_strKeyInTreePrev, ZS::System::CIdxTreeEntry* i_pTargetBranch );
+    void onGraphObjsIdxTreeEntryRenamed( ZS::System::CIdxTree* i_pIdxTree, ZS::System::CIdxTreeEntry* i_pTreeEntry, const QString& i_strKeyInTreePrev, const QString& i_strNamePrev );
 protected: // instance members
     CDrawSettings            m_drawSettings;
     double                   m_fXResolution_dpmm;

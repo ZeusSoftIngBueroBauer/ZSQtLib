@@ -87,11 +87,18 @@ CWdgtFormatGraphObjsText::CWdgtFormatGraphObjsText(
 
     m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName());
 
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    {
+        strMthInArgs = QString(i_pGraphObj == nullptr ? "nullptr" : i_pGraphObj->path());
+    }
+
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "ctor",
-        /* strAddInfo   */ "" );
+        /* strAddInfo   */ strMthInArgs );
 
     QVBoxLayout* m_pLyt = new QVBoxLayout();
     setLayout(m_pLyt);
@@ -236,6 +243,18 @@ void CWdgtFormatGraphObjsText::resetChanges()
 bool CWdgtFormatGraphObjsText::hasChanges() const
 //------------------------------------------------------------------------------
 {
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    {
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* strMethod    */ "hasChanges",
+        /* strAddInfo   */ strMthInArgs );
+
     bool bHasChanges = false;
 
     CGraphObjText* pGraphObjText = dynamic_cast<CGraphObjText*>(m_pGraphObj);
@@ -255,6 +274,33 @@ bool CWdgtFormatGraphObjsText::hasChanges() const
         }
     }
 
+    if( mthTracer.isActive(ETraceDetailLevelMethodArgs) )
+    {
+        mthTracer.setMethodReturn(bHasChanges);
+    }
+
     return bHasChanges;
 
 } // hasChanges
+
+/*==============================================================================
+protected: // must overridables of base class CWdgtFormatGraphObjs
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CWdgtFormatGraphObjsText::onGraphObjChanged()
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    {
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* strMethod    */ "onGraphObjChanged",
+        /* strAddInfo   */ strMthInArgs );
+
+} // onGraphObjChanged

@@ -301,3 +301,13 @@ bool CWdgtFormatGraphObjsDiode::hasChanges() const
     return bHasChanges;
 
 } // hasChanges
+
+/*==============================================================================
+protected: // must overridables of base class CWdgtFormatGraphObjs
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CWdgtFormatGraphObjsDiode::onGraphObjChanged()
+//------------------------------------------------------------------------------
+{
+} // onGraphObjChanged

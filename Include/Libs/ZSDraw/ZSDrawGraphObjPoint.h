@@ -83,6 +83,9 @@ public: // must overridables of base class CGraphObj
     virtual void setHeight( double i_fHeight );
     virtual void setSize( double i_fWidth, double i_fHeight );
     virtual void setSize( const QSizeF& i_size );
+    virtual bool hasBoundingRect() const { return false; }
+    virtual bool hasLineShapePoints() const { return false; }
+    virtual bool hasRotationSelectionPoints() const { return false; }
 public: // must overridables of base class CGraphObj
     virtual void setIsHit( bool i_bHit );
 public: // overridables of base class CGraphObj

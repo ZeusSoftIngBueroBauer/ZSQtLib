@@ -465,8 +465,8 @@ bool CGraphObjText::isHit( const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo ) c
                 if( o_pHitInfo != nullptr && o_pHitInfo->m_editMode == EEditMode::Resize )
                 {
                     o_pHitInfo->m_editMode = EEditMode::Move;
-                    o_pHitInfo->m_editResizeMode = EEditResizeMode::Undefined;
-                    o_pHitInfo->m_selPtBoundingRect = ESelectionPoint::Undefined;
+                    o_pHitInfo->m_editResizeMode = EEditResizeMode::None;
+                    o_pHitInfo->m_selPtBoundingRect = ESelectionPoint::None;
                 }
             }
             else
@@ -479,8 +479,8 @@ bool CGraphObjText::isHit( const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo ) c
                     if( o_pHitInfo != nullptr && o_pHitInfo->m_editMode == EEditMode::Move )
                     {
                         o_pHitInfo->m_editMode = EEditMode::EditText;
-                        o_pHitInfo->m_editResizeMode = EEditResizeMode::Undefined;
-                        o_pHitInfo->m_selPtBoundingRect = ESelectionPoint::Undefined;
+                        o_pHitInfo->m_editResizeMode = EEditResizeMode::None;
+                        o_pHitInfo->m_selPtBoundingRect = ESelectionPoint::None;
                     }
                 }
             }
@@ -495,8 +495,8 @@ bool CGraphObjText::isHit( const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo ) c
                 if( o_pHitInfo != nullptr )
                 {
                     o_pHitInfo->m_editMode = EEditMode::EditText;
-                    o_pHitInfo->m_editResizeMode = EEditResizeMode::Undefined;
-                    o_pHitInfo->m_selPtBoundingRect = ESelectionPoint::Undefined;
+                    o_pHitInfo->m_editResizeMode = EEditResizeMode::None;
+                    o_pHitInfo->m_selPtBoundingRect = ESelectionPoint::None;
                     o_pHitInfo->m_idxPolygonShapePoint = -1;
                     o_pHitInfo->m_idxLineSegment = -1;
                     o_pHitInfo->m_ptSelected = i_pt;
@@ -658,31 +658,31 @@ QRectF CGraphObjText::boundingRect() const
         }
     }
 
-    if( m_bIsHit || isSelected() )
-    {
-        QHashIterator<QString,SGraphObjLabel*> itLabels(m_arpLabels);
-        SGraphObjLabel* pGraphObjLabel;
-        QRectF          rctLabel;
-        QPolygonF       plgLabel;
+    //if( m_bIsHit || isSelected() )
+    //{
+    //    QHashIterator<QString,SGraphObjLabel*> itLabels(m_arpLabels);
+    //    SGraphObjLabel* pGraphObjLabel;
+    //    QRectF          rctLabel;
+    //    QPolygonF       plgLabel;
 
-        while( itLabels.hasNext() )
-        {
-            itLabels.next();
-            pGraphObjLabel = itLabels.value();
+    //    while( itLabels.hasNext() )
+    //    {
+    //        itLabels.next();
+    //        pGraphObjLabel = itLabels.value();
 
-            if( pGraphObjLabel->m_pGraphObjLabel != nullptr )
-            {
-                // Calling pGraphObjLabel->boundingRect() may lead to endless recursion as the
-                // label itself may call the boundingRect method of its parent item (which is
-                // this item) if the label is selected or has been hit. For this we call
-                // boundingRect of the label with a different signature to indicate that we
-                // are only interested in the bounding rect of the simple text item.
-                rctLabel = pGraphObjLabel->m_pGraphObjLabel->boundingRect(true);
-                plgLabel = mapFromItem( pGraphObjLabel->m_pGraphObjLabel, rctLabel );
-                rctBounding |= plgLabel.boundingRect();
-            }
-        }
-    }
+    //        if( pGraphObjLabel->m_pGraphObjLabel != nullptr )
+    //        {
+    //            // Calling pGraphObjLabel->boundingRect() may lead to endless recursion as the
+    //            // label itself may call the boundingRect method of its parent item (which is
+    //            // this item) if the label is selected or has been hit. For this we call
+    //            // boundingRect of the label with a different signature to indicate that we
+    //            // are only interested in the bounding rect of the simple text item.
+    //            rctLabel = pGraphObjLabel->m_pGraphObjLabel->boundingRect(true);
+    //            plgLabel = mapFromItem( pGraphObjLabel->m_pGraphObjLabel, rctLabel );
+    //            rctBounding |= plgLabel.boundingRect();
+    //        }
+    //    }
+    //}
 
     if( mthTracer.isActive(ETraceDetailLevelMethodArgs) )
     {
@@ -780,28 +780,27 @@ void CGraphObjText::paint(
                 }
             } // if( isSelected() )
 
-            QHashIterator<QString,SGraphObjLabel*> itLabels(m_arpLabels);
-            SGraphObjLabel*                        pGraphObjLabel;
+            //QHashIterator<QString,SGraphObjLabel*> itLabels(m_arpLabels);
+            //SGraphObjLabel*                        pGraphObjLabel;
 
-            QPointF ptSelPt;
-            QPointF ptLabelSelPt;
+            //QPointF ptSelPt;
+            //QPointF ptLabelSelPt;
 
-            while( itLabels.hasNext() )
-            {
-                itLabels.next();
-                pGraphObjLabel = itLabels.value();
+            //while( itLabels.hasNext() )
+            //{
+            //    itLabels.next();
+            //    pGraphObjLabel = itLabels.value();
 
-                if( pGraphObjLabel->m_pGraphObjLabel != nullptr )
-                {
-                    ptSelPt = getSelectionPoint(pGraphObjLabel->m_selPt.enumerator());
+            //    if( pGraphObjLabel->m_pGraphObjLabel != nullptr )
+            //    {
+            //        ptSelPt = getSelectionPoint(pGraphObjLabel->m_selPt.enumerator());
 
-                    ptLabelSelPt = pGraphObjLabel->m_pGraphObjLabel->getSelectionPoint(ESelectionPoint::Center);
-                    ptLabelSelPt = mapFromItem( pGraphObjLabel->m_pGraphObjLabel, ptLabelSelPt );
+            //        ptLabelSelPt = pGraphObjLabel->m_pGraphObjLabel->getSelectionPoint(ESelectionPoint::Center);
+            //        ptLabelSelPt = mapFromItem( pGraphObjLabel->m_pGraphObjLabel, ptLabelSelPt );
 
-                    i_pPainter->drawLine( ptSelPt, ptLabelSelPt );
-                }
-            }
-
+            //        i_pPainter->drawLine( ptSelPt, ptLabelSelPt );
+            //    }
+            //}
         } // if( m_bIsHit || isSelected() )
 
         else if( m_drawSettings.getLineStyle() != ELineStyle::NoLine )
@@ -1232,10 +1231,10 @@ void CGraphObjText::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
             //m_pDrawingScene->onGraphObjCreationFinished(this);
 
             //// The object has been initially created.
-            //m_editMode = EEditMode::Undefined;
-            //m_editResizeMode = EEditResizeMode::Undefined;
+            //m_editMode = EEditMode::None;
+            //m_editResizeMode = EEditResizeMode::None;
             //m_idxSelPtSelectedPolygon = -1;
-            //m_selPtSelectedBoundingRect = ESelectionPoint::Undefined;
+            //m_selPtSelectedBoundingRect = ESelectionPoint::None;
 
             //m_pDrawingScene->setMode( EMode::Ignore, EEditTool::Select, m_editMode, m_editResizeMode, true );
 
@@ -1258,7 +1257,7 @@ void CGraphObjText::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
 
         } // if( editToolDrawing == EEditTool::CreateObjects && m_editMode == EEditMode::Creating )
 
-        else if( editToolDrawing == EEditTool::Select && m_editMode == EEditMode::Undefined )
+        else if( editToolDrawing == EEditTool::Select && m_editMode == EEditMode::None )
         {
             if( !isSelected() )
             {
@@ -1324,7 +1323,7 @@ void CGraphObjText::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
             updateEditInfo();
             updateToolTip();
 
-        } // if( editToolDrawing == EEditTool::Select && m_editMode == EEditMode::Undefined )
+        } // if( editToolDrawing == EEditTool::Select && m_editMode == EEditMode::None )
 
     } // if( modeDrawing == EMode::Edit )
 
@@ -1532,10 +1531,10 @@ void CGraphObjText::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
             {
             } // if( m_editMode == EEditMode::MoveShapePoint )
 
-            m_editMode = EEditMode::Undefined;
-            m_editResizeMode = EEditResizeMode::Undefined;
+            m_editMode = EEditMode::None;
+            m_editResizeMode = EEditResizeMode::None;
             m_idxSelPtSelectedPolygon = -1;
-            m_selPtSelectedBoundingRect = ESelectionPoint::Undefined;
+            m_selPtSelectedBoundingRect = ESelectionPoint::None;
 
             // The mouse release event would select the object.
             // This is not wanted if the selection tool is not active.
@@ -1767,9 +1766,9 @@ QVariant CGraphObjText::itemChange( GraphicsItemChange i_change, const QVariant&
 
             setZValue(m_fZValue); // restore ZValue as before selecting the object
 
-            m_editMode = EEditMode::Undefined;
-            m_editResizeMode = EEditResizeMode::Undefined;
-            m_selPtSelectedBoundingRect = ESelectionPoint::Undefined;
+            m_editMode = EEditMode::None;
+            m_editResizeMode = EEditResizeMode::None;
+            m_selPtSelectedBoundingRect = ESelectionPoint::None;
             m_idxSelPtSelectedPolygon = -1;
 
         } // if( !isSelected() )
@@ -1868,21 +1867,21 @@ QVariant CGraphObjText::itemChange( GraphicsItemChange i_change, const QVariant&
             }
         }
 
-        QHashIterator<QString,SGraphObjLabel*> itLabels(m_arpLabels);
+        //QHashIterator<QString,SGraphObjLabel*> itLabels(m_arpLabels);
 
-        SGraphObjLabel* pGraphObjLabel;
+        //SGraphObjLabel* pGraphObjLabel;
 
-        while( itLabels.hasNext() )
-        {
-            itLabels.next();
+        //while( itLabels.hasNext() )
+        //{
+        //    itLabels.next();
 
-            pGraphObjLabel = itLabels.value();
+        //    pGraphObjLabel = itLabels.value();
 
-            if( pGraphObjLabel->m_pGraphObjLabel != nullptr )
-            {
-                pGraphObjLabel->m_pGraphObjLabel->setZValue( zValue() + 0.02 );
-            }
-        }
+        //    if( pGraphObjLabel->m_pGraphObjLabel != nullptr )
+        //    {
+        //        pGraphObjLabel->m_pGraphObjLabel->setZValue( zValue() + 0.02 );
+        //    }
+        //}
     }
 
     if( bTreeEntryChanged && m_pTree != nullptr )

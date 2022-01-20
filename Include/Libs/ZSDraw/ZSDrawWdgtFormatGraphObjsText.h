@@ -75,9 +75,11 @@ public: // overridables
         polymorphic base type the method returns the name of the derived class. */
     virtual QString className() const { return ClassName(); }
 public: // must overridables of base class CWdgtFormatGraphObjs
-    virtual void applyChanges();
-    virtual void resetChanges();
-    virtual bool hasChanges() const;
+    virtual void applyChanges() override;
+    virtual void resetChanges() override;
+    virtual bool hasChanges() const override;
+protected: // must overridables of base class CWdgtFormatGraphObjs
+    virtual void onGraphObjChanged() override;
 private: // instance members
     QVBoxLayout*             m_pLyt;
     QLabel*                  m_pLblHeadLine;

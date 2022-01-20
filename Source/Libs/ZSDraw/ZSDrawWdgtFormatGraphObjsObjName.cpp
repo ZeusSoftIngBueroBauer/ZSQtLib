@@ -74,17 +74,17 @@ CWdgtFormatGraphObjsObjName::CWdgtFormatGraphObjsObjName(
     CGraphObj*     i_pGraphObj,
     QWidget*       i_pWdgtParent ) :
 //------------------------------------------------------------------------------
-    CWdgtFormatGraphObjs(i_pDrawingScene,i_pGraphObj,i_pWdgtParent),
+    CWdgtFormatGraphObjs(i_pDrawingScene, i_pGraphObj, i_pWdgtParent),
     m_pLyt(nullptr),
     m_pLblHeadLine(nullptr),
-    m_pLytObjName(nullptr),
-    m_pLblObjName(nullptr),
-    m_pEdtObjName(nullptr),
-    m_pChkObjNameVisible(nullptr),
-    m_pLytObjId(nullptr),
-    m_pLblObjId(nullptr),
-    m_pEdtObjId(nullptr),
-    m_pChkObjIdVisible(nullptr),
+    m_pLytName(nullptr),
+    m_pLblName(nullptr),
+    m_pEdtName(nullptr),
+    m_pChkNameVisible(nullptr),
+    m_pLytPath(nullptr),
+    m_pLblPath(nullptr),
+    m_pEdtPath(nullptr),
+    m_pChkPathVisible(nullptr),
     // Trace
     m_pTrcAdminObj(nullptr)
 {
@@ -92,11 +92,18 @@ CWdgtFormatGraphObjsObjName::CWdgtFormatGraphObjsObjName(
 
     m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName());
 
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    {
+        strMthInArgs = QString(i_pGraphObj == nullptr ? "nullptr" : i_pGraphObj->path());
+    }
+
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "ctor",
-        /* strAddInfo   */ "" );
+        /* strAddInfo   */ strMthInArgs );
 
     QVBoxLayout* m_pLyt = new QVBoxLayout();
     setLayout(m_pLyt);
@@ -113,108 +120,63 @@ CWdgtFormatGraphObjsObjName::CWdgtFormatGraphObjsObjName(
     m_pLyt->addWidget(m_pLblHeadLine);
     m_pLyt->addSpacing(4);
 
-    // <Line> Object Name
-    //===================
+    // <Line> Name
+    //============
 
-    m_pLytObjName = new QHBoxLayout();
-    m_pLyt->addLayout(m_pLytObjName);
+    m_pLytName = new QHBoxLayout();
+    m_pLyt->addLayout(m_pLytName);
 
-    // <LineEdit> Object Name
-    //-----------------------
+    // <LineEdit> Name
+    //----------------
 
-    m_pLblObjName = new QLabel("Name:");
-    m_pLblObjName->setFixedWidth(cxLblWidth);
-    m_pLytObjName->addWidget(m_pLblObjName);
-    m_pEdtObjName = new QLineEdit();
-    m_pLytObjName->addWidget(m_pEdtObjName);
+    m_pLblName = new QLabel("Name:");
+    m_pLblName->setFixedWidth(cxLblWidth);
+    m_pLytName->addWidget(m_pLblName);
+    m_pEdtName = new QLineEdit();
+    m_pLytName->addWidget(m_pEdtName);
 
-    if( !connect(
-        /* pObjSender   */ m_pEdtObjName,
-        /* szSignal     */ SIGNAL(textChanged(const QString&)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onEdtObjNameTextChanged(const QString&)) ) )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-    }
+    // <CheckBox> Show Name
+    //---------------------
 
-    // <CheckBox> Show Object Name
-    //-----------------------------
+    m_pChkNameVisible = new QCheckBox("Visible");
+    m_pLytName->addWidget(m_pChkNameVisible);
 
-    m_pChkObjNameVisible = new QCheckBox("Visible");
-    m_pLytObjName->addWidget(m_pChkObjNameVisible);
+    // <Line> Path
+    //============
 
-    // <Line> Object Id
-    //=================
+    m_pLytPath = new QHBoxLayout();
+    m_pLyt->addLayout(m_pLytPath);
 
-    m_pLytObjId = new QHBoxLayout();
-    m_pLyt->addLayout(m_pLytObjId);
+    // <LineEdit> Path
+    //----------------
 
-    // <LineEdit> Object Id
-    //-----------------------
+    m_pLblPath = new QLabel("Path:");
+    m_pLblPath->setFixedWidth(cxLblWidth);
+    m_pLytPath->addWidget(m_pLblPath);
+    m_pEdtPath = new QLineEdit();
+    m_pEdtPath->setEnabled(false);
+    //m_pEdtPath->setReadOnly(true);
+    m_pLytPath->addWidget(m_pEdtPath);
 
-    m_pLblObjId = new QLabel("Id:");
-    m_pLblObjId->setFixedWidth(cxLblWidth);
-    m_pLytObjId->addWidget(m_pLblObjId);
-    m_pEdtObjId = new QLineEdit();
-    m_pLytObjId->addWidget(m_pEdtObjId);
+    // <CheckBox> Show Path
+    //---------------------
 
-    if( !connect(
-        /* pObjSender   */ m_pEdtObjId,
-        /* szSignal     */ SIGNAL(textChanged(const QString&)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onEdtObjIdTextChanged(const QString&)) ) )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-    }
-
-    // <CheckBox> Show Object Id
-    //-----------------------------
-
-    m_pChkObjIdVisible = new QCheckBox("Visible");
-    m_pLytObjId->addWidget(m_pChkObjIdVisible);
+    m_pChkPathVisible = new QCheckBox("Visible");
+    m_pLytPath->addWidget(m_pChkPathVisible);
 
     // Set settings at GUI controls
     //-----------------------------
 
     if( m_pGraphObj == nullptr )
     {
-        m_strObjName = "";
-        m_strObjId   = "";
-
-        m_pEdtObjName->setEnabled(false);
-        m_pEdtObjId->setEnabled(false);
-
-        if( m_pChkObjNameVisible != nullptr )
-        {
-            m_pChkObjNameVisible->setEnabled(false);
-        }
-        if( m_pChkObjIdVisible != nullptr )
-        {
-            m_pChkObjIdVisible->setEnabled(false);
-        }
+        m_pEdtName->setEnabled(false);
+        m_pChkNameVisible->setEnabled(false);
+        m_pChkPathVisible->setEnabled(false);
     }
     else // if( m_pGraphObj != nullptr )
     {
-        m_strObjName = m_pGraphObj->name();
-        m_strObjId   = m_pGraphObj->keyInTree();
-
-        m_pEdtObjName->setEnabled(true);
-        m_pEdtObjId->setEnabled(true);
-
-        if( m_pChkObjNameVisible != nullptr )
-        {
-            m_pChkObjNameVisible->setChecked( m_pGraphObj->isObjNameVisible() );
-            m_pChkObjNameVisible->setEnabled(true);
-        }
-        if( m_pChkObjIdVisible != nullptr )
-        {
-            m_pChkObjIdVisible->setChecked( m_pGraphObj->isObjIdVisible() );
-            m_pChkObjIdVisible->setEnabled(true);
-        }
-    } // if( m_pGraphObj != nullptr )
-
-    m_pEdtObjName->setText(m_strObjName);
-    m_pEdtObjId->setText(m_strObjId);
+        onGraphObjChanged();
+    }
 
     // <Stretch> at bottom of Widget
     //==============================
@@ -240,14 +202,14 @@ CWdgtFormatGraphObjsObjName::~CWdgtFormatGraphObjsObjName()
 
     m_pLyt = nullptr;
     m_pLblHeadLine = nullptr;
-    m_pLytObjName = nullptr;
-    m_pLblObjName = nullptr;
-    m_pEdtObjName = nullptr;
-    m_pChkObjNameVisible = nullptr;
-    m_pLytObjId = nullptr;
-    m_pLblObjId = nullptr;
-    m_pEdtObjId = nullptr;
-    m_pChkObjIdVisible = nullptr;
+    m_pLytName = nullptr;
+    m_pLblName = nullptr;
+    m_pEdtName = nullptr;
+    m_pChkNameVisible = nullptr;
+    m_pLytPath = nullptr;
+    m_pLblPath = nullptr;
+    m_pEdtPath = nullptr;
+    m_pChkPathVisible = nullptr;
 
     // Trace
     m_pTrcAdminObj = nullptr;
@@ -262,7 +224,7 @@ public: // must overridables of base class CWdgtFormatGraphObjs
 void CWdgtFormatGraphObjsObjName::applyChanges()
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
@@ -272,51 +234,41 @@ void CWdgtFormatGraphObjsObjName::applyChanges()
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "applyChanges",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     if( m_pGraphObj != nullptr )
     {
-        throw ZS::System::CException(__FILE__, __LINE__, EResultMethodNotYetImplemented);
+        m_pGraphObj->rename(m_pEdtName->text());
 
-        //m_pGraphObj->setName(m_strObjName);
-        //m_pGraphObj->setKeyInTree(m_strObjId);
-
-        if( m_pChkObjNameVisible != nullptr )
+        if( m_pChkNameVisible->isChecked() )
         {
-            if( m_pChkObjNameVisible->isChecked() )
+            if( !m_pGraphObj->isNameLabelVisible() )
             {
-                if( !m_pGraphObj->isObjNameVisible() )
-                {
-                    m_pGraphObj->showObjName();
-                }
+                m_pGraphObj->showNameLabel();
             }
-            else
+        }
+        else
+        {
+            if( m_pGraphObj->isNameLabelVisible() )
             {
-                if( m_pGraphObj->isObjNameVisible() )
-                {
-                    m_pGraphObj->hideObjName();
-                }
+                m_pGraphObj->hideNameLabel();
             }
         }
 
-        if( m_pChkObjIdVisible != nullptr )
+        if( m_pChkPathVisible->isChecked() )
         {
-            if( m_pChkObjIdVisible->isChecked() )
+            if( !m_pGraphObj->isPathLabelVisible() )
             {
-                if( !m_pGraphObj->isObjIdVisible() )
-                {
-                    m_pGraphObj->showObjId();
-                }
-            }
-            else
-            {
-                if( m_pGraphObj->isObjIdVisible() )
-                {
-                    m_pGraphObj->hideObjId();
-                }
+                m_pGraphObj->showPathLabel();
             }
         }
-
+        else
+        {
+            if( m_pGraphObj->isPathLabelVisible() )
+            {
+                m_pGraphObj->hidePathLabel();
+            }
+        }
     } // if( m_pGraphObj != nullptr )
 
 } // applyChanges
@@ -325,7 +277,7 @@ void CWdgtFormatGraphObjsObjName::applyChanges()
 void CWdgtFormatGraphObjsObjName::resetChanges()
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
@@ -334,31 +286,18 @@ void CWdgtFormatGraphObjsObjName::resetChanges()
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strMethod    */ "setGraphObj",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strMethod    */ "resetChanges",
+        /* strAddInfo   */ strMthInArgs );
 
     if( m_pGraphObj == nullptr )
     {
-        m_strObjName = "";
-        m_strObjId   = "";
+        m_pEdtName->setText("");
+        m_pEdtPath->setText("");
     }
     else // if( m_pGraphObj != nullptr )
     {
-        m_strObjName = m_pGraphObj->name();
-        m_strObjId   = m_pGraphObj->keyInTree();
-
-        if( m_pChkObjNameVisible != nullptr )
-        {
-            m_pChkObjNameVisible->setChecked( m_pGraphObj->isObjNameVisible() );
-        }
-        if( m_pChkObjIdVisible != nullptr )
-        {
-            m_pChkObjIdVisible->setChecked( m_pGraphObj->isObjIdVisible() );
-        }
-    } // if( m_pGraphObj != nullptr )
-
-    m_pEdtObjName->setText(m_strObjName);
-    m_pEdtObjId->setText(m_strObjId);
+        onGraphObjChanged();
+    }
 
 } // resetChanges
 
@@ -366,40 +305,58 @@ void CWdgtFormatGraphObjsObjName::resetChanges()
 bool CWdgtFormatGraphObjsObjName::hasChanges() const
 //------------------------------------------------------------------------------
 {
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    {
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* strMethod    */ "hasChanges",
+        /* strAddInfo   */ strMthInArgs );
+
     bool bHasChanges = false;
 
     if( m_pGraphObj != nullptr )
     {
-        if( m_pGraphObj->name() != m_strObjName )
+        if( m_pGraphObj->name() != m_pEdtName->text() )
         {
             bHasChanges = true;
         }
-        else if( m_pGraphObj->keyInTree() != m_strObjId )
+        else if( m_pGraphObj->path() != m_pEdtPath->text() )
         {
             bHasChanges = true;
         }
-        if( !bHasChanges && m_pChkObjNameVisible != nullptr )
+        if( !bHasChanges )
         {
-            bHasChanges = (m_pGraphObj->isObjNameVisible() != m_pChkObjNameVisible->isChecked());
+            bHasChanges = (m_pGraphObj->isNameLabelVisible() != m_pChkNameVisible->isChecked());
         }
-        if( !bHasChanges && m_pChkObjIdVisible != nullptr )
+        if( !bHasChanges )
         {
-            bHasChanges = (m_pGraphObj->isObjIdVisible() != m_pChkObjIdVisible->isChecked());
+            bHasChanges = (m_pGraphObj->isPathLabelVisible() != m_pChkPathVisible->isChecked());
         }
     }
+
+    if( mthTracer.isActive(ETraceDetailLevelMethodArgs) )
+    {
+        mthTracer.setMethodReturn(bHasChanges);
+    }
+
     return bHasChanges;
 
 } // hasChanges
 
 /*==============================================================================
-protected slots:
+protected: // must overridables of base class CWdgtFormatGraphObjs
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CWdgtFormatGraphObjsObjName::onEdtObjNameTextChanged( const QString& /*i_strText*/ )
+void CWdgtFormatGraphObjsObjName::onGraphObjChanged()
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
@@ -408,29 +365,23 @@ void CWdgtFormatGraphObjsObjName::onEdtObjNameTextChanged( const QString& /*i_st
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strMethod    */ "onEdtObjNameTextChanged",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strMethod    */ "onGraphObjChanged",
+        /* strAddInfo   */ strMthInArgs );
 
-    m_strObjName = m_pEdtObjName->text();
-
-} // onEdtObjNameTextChanged
-
-//------------------------------------------------------------------------------
-void CWdgtFormatGraphObjsObjName::onEdtObjIdTextChanged( const QString& /*i_strText*/ )
-//------------------------------------------------------------------------------
-{
-    QString strAddTrcInfo;
-
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pEdtName->text() != m_pGraphObj->name() )
     {
+        m_pEdtName->setText(m_pGraphObj->name());
     }
-
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strMethod    */ "onEdtObjIdTextChanged",
-        /* strAddInfo   */ strAddTrcInfo );
-
-    m_strObjId = m_pEdtObjId->text();
-
-} // onEdtObjIdTextChanged
+    if( m_pEdtPath->text() != m_pGraphObj->path() )
+    {
+        m_pEdtPath->setText(m_pGraphObj->path());
+    }
+    if( m_pGraphObj->isNameLabelVisible() != m_pChkNameVisible->isChecked() )
+    {
+        m_pChkNameVisible->setChecked( m_pGraphObj->isNameLabelVisible() );
+    }
+    if( m_pGraphObj->isPathLabelVisible() != m_pChkPathVisible->isChecked() )
+    {
+        m_pChkPathVisible->setChecked( m_pGraphObj->isPathLabelVisible() );
+    }
+} // onGraphObjChanged

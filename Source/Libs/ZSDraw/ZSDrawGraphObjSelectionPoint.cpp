@@ -156,7 +156,7 @@ CGraphObjSelectionPoint::CGraphObjSelectionPoint(
     QGraphicsEllipseItem( QRectF( -s_fRadius_px, -s_fRadius_px, 2.0*s_fRadius_px, 2.0*s_fRadius_px ) ),
     m_pGraphObjSelected(i_pGraphObjSelected),
     m_selPtType(ESelectionPointType::PolygonShapePoint),
-    m_selPt(ESelectionPoint::Undefined),
+    m_selPt(ESelectionPoint::None),
     m_idxPt(i_idxPt),
     m_fRadius_px(s_fRadius_px),
     m_bSelected(false)
@@ -714,8 +714,8 @@ bool CGraphObjSelectionPoint::isHit( const QPointF& i_pt, SGraphObjHitInfo* o_pH
                 else if( m_selPtType == ESelectionPointType::PolygonShapePoint )
                 {
                     o_pHitInfo->m_editMode = EEditMode::MoveShapePoint;
-                    o_pHitInfo->m_editResizeMode = EEditResizeMode::Undefined;
-                    o_pHitInfo->m_selPtBoundingRect = ESelectionPoint::Undefined;
+                    o_pHitInfo->m_editResizeMode = EEditResizeMode::None;
+                    o_pHitInfo->m_selPtBoundingRect = ESelectionPoint::None;
                     o_pHitInfo->m_idxPolygonShapePoint = m_idxPt;
                     o_pHitInfo->m_idxLineSegment = -1;
                     o_pHitInfo->m_ptSelected = rct.center();
@@ -892,7 +892,7 @@ void CGraphObjSelectionPoint::paint(
             //brsh.setColor(Qt::magenta);
             brsh.setStyle(Qt::NoBrush);
         }
-        else if( m_selPtSelectedBoundingRect != ESelectionPoint::Undefined )
+        else if( m_selPtSelectedBoundingRect != ESelectionPoint::None )
         {
             pn.setColor(Qt::blue);
             //brsh.setStyle(Qt::SolidPattern);
@@ -974,7 +974,7 @@ void CGraphObjSelectionPoint::hoverEnterEvent( QGraphicsSceneHoverEvent* i_pEv )
             fRotAngleCurr_rad = Math::deg2Rad(m_pGraphObjSelected->getRotationAngleInDegree());
         }
 
-        if( m_selPtSelectedBoundingRect != ESelectionPoint::Undefined )
+        if( m_selPtSelectedBoundingRect != ESelectionPoint::None )
         {
             switch( m_selPtSelectedBoundingRect.enumerator() )
             {
@@ -1061,7 +1061,7 @@ void CGraphObjSelectionPoint::hoverEnterEvent( QGraphicsSceneHoverEvent* i_pEv )
                     cursor = Qt::SizeHorCursor;
                 }
             } // if( bSetResizeCursor )
-        } // if( m_selPtSelectedBoundingRect != ESelectionPoint::Undefined )
+        } // if( m_selPtSelectedBoundingRect != ESelectionPoint::None )
 
         else if( m_idxSelPtSelectedPolygon >= 0 )
         {
@@ -1124,7 +1124,7 @@ void CGraphObjSelectionPoint::hoverMoveEvent( QGraphicsSceneHoverEvent* i_pEv )
             fRotAngleCurr_rad = Math::deg2Rad(m_pGraphObjSelected->getRotationAngleInDegree());
         }
 
-        if( m_selPtSelectedBoundingRect != ESelectionPoint::Undefined )
+        if( m_selPtSelectedBoundingRect != ESelectionPoint::None )
         {
             switch( m_selPtSelectedBoundingRect.enumerator() )
             {
@@ -1213,7 +1213,7 @@ void CGraphObjSelectionPoint::hoverMoveEvent( QGraphicsSceneHoverEvent* i_pEv )
 
             } // if( bSetResizeCursor )
 
-        } // if( m_selPtSelectedBoundingRect != ESelectionPoint::Undefined )
+        } // if( m_selPtSelectedBoundingRect != ESelectionPoint::None )
 
         else if( m_idxSelPtSelectedPolygon >= 0 )
         {

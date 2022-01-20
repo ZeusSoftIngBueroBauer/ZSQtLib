@@ -1464,7 +1464,7 @@ int CIdxTree::add( CIdxTreeEntry* i_pTreeEntry, CIdxTreeEntry* i_pTargetBranch )
 
     int idxInTree = -1;
 
-    int idxInTargetBranch = pTargetBranch->add(i_pTreeEntry);
+    int idxInTargetBranch = pTargetBranch->addChild(i_pTreeEntry);
 
     if( idxInTargetBranch >= 0 )
     {
@@ -1973,11 +1973,11 @@ int CIdxTree::insert(
 
     if( i_idxInTargetBranch >= 0 )
     {
-        idxInTargetBranch = pTargetBranch->insert(i_idxInTargetBranch, i_pTreeEntry);
+        idxInTargetBranch = pTargetBranch->insertChild(i_idxInTargetBranch, i_pTreeEntry);
     }
     else
     {
-        idxInTargetBranch = pTargetBranch->add(i_pTreeEntry);
+        idxInTargetBranch = pTargetBranch->addChild(i_pTreeEntry);
     }
 
     if( idxInTargetBranch >= 0 )
@@ -2364,7 +2364,7 @@ void CIdxTree::remove( CIdxTreeEntry* i_pTreeEntry )
 
         CIdxTreeEntry* pTargetBranch = i_pTreeEntry->parentBranch();
 
-        pTargetBranch->remove(i_pTreeEntry);
+        pTargetBranch->removeChild(i_pTreeEntry);
 
     } // if( i_pTreeEntry != m_pRoot )
 
@@ -2988,17 +2988,17 @@ void CIdxTree::move(
 
     CIdxTreeEntry* pParentBranch = i_pTreeEntry->parentBranch();
 
-    pParentBranch->remove(i_pTreeEntry);
+    pParentBranch->removeChild(i_pTreeEntry);
 
     int idxInParentBranch = -1;
 
     if( i_idxInTargetBranch >= 0 )
     {
-        idxInParentBranch = pTargetBranch->insert(i_idxInTargetBranch, i_pTreeEntry);
+        idxInParentBranch = pTargetBranch->insertChild(i_idxInTargetBranch, i_pTreeEntry);
     }
     else
     {
-        idxInParentBranch = pTargetBranch->add(i_pTreeEntry);
+        idxInParentBranch = pTargetBranch->addChild(i_pTreeEntry);
     }
 
     if( idxInParentBranch >= 0 )
@@ -3947,7 +3947,7 @@ void CIdxTree::rename( CIdxTreeEntry* i_pTreeEntry, const QString& i_strNameNew 
 
     CIdxTreeEntry* pParentBranch = i_pTreeEntry->parentBranch();
 
-    pParentBranch->rename(i_pTreeEntry, i_strNameNew);
+    pParentBranch->renameChild(i_pTreeEntry, i_strNameNew);
 
     updateKeyInTree(i_pTreeEntry);
 

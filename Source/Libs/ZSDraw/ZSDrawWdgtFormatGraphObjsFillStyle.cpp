@@ -107,11 +107,18 @@ CWdgtFormatGraphObjsFillStyle::CWdgtFormatGraphObjsFillStyle(
 
     m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName());
 
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    {
+        strMthInArgs = QString(i_pGraphObj == nullptr ? "nullptr" : i_pGraphObj->path());
+    }
+
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "ctor",
-        /* strAddInfo   */ "" );
+        /* strAddInfo   */ strMthInArgs );
 
     QVBoxLayout* m_pLyt = new QVBoxLayout();
     setLayout(m_pLyt);
@@ -343,6 +350,18 @@ void CWdgtFormatGraphObjsFillStyle::resetChanges()
 bool CWdgtFormatGraphObjsFillStyle::hasChanges() const
 //------------------------------------------------------------------------------
 {
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    {
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* strMethod    */ "hasChanges",
+        /* strAddInfo   */ strMthInArgs );
+
     bool bHasChanges = false;
 
     if( m_pGraphObj != nullptr )
@@ -367,9 +386,37 @@ bool CWdgtFormatGraphObjsFillStyle::hasChanges() const
             bHasChanges = true;
         }
     }
+
+    if( mthTracer.isActive(ETraceDetailLevelMethodArgs) )
+    {
+        mthTracer.setMethodReturn(bHasChanges);
+    }
+
     return bHasChanges;
 
 } // hasChanges
+
+/*==============================================================================
+protected: // must overridables of base class CWdgtFormatGraphObjs
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CWdgtFormatGraphObjsFillStyle::onGraphObjChanged()
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    {
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* strMethod    */ "onGraphObjChanged",
+        /* strAddInfo   */ strMthInArgs );
+
+} // onGraphObjChanged
 
 /*==============================================================================
 protected: // instance methods

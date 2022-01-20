@@ -636,7 +636,7 @@ void CGraphObjWdgt::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
 
         } // if( m_editMode == EEditMode::Creating )
 
-        else if( m_editMode == EEditMode::Undefined )
+        else if( m_editMode == EEditMode::None )
         {
             if( editToolDrawing == EEditTool::Select )
             {
@@ -681,7 +681,7 @@ void CGraphObjWdgt::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
 
             } // if( editToolDrawing == EEditTool::Select )
 
-        } // if( m_editMode == EEditMode::Undefined )
+        } // if( m_editMode == EEditMode::None )
 
     } // if( modeDrawing == EMode::Edit )
 
@@ -786,10 +786,10 @@ void CGraphObjWdgt::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
     {
         //EEditMode editModePrev = m_editMode;
 
-        m_editMode = EEditMode::Undefined;
-        m_editResizeMode = EEditResizeMode::Undefined;
+        m_editMode = EEditMode::None;
+        m_editResizeMode = EEditResizeMode::None;
         m_idxSelPtSelectedPolygon = -1;
-        m_selPtSelectedBoundingRect = ESelectionPoint::Undefined;
+        m_selPtSelectedBoundingRect = ESelectionPoint::None;
 
         // The mouse release event would select the object.
         // This is not wanted if the selection tool is not active.
@@ -889,9 +889,9 @@ QVariant CGraphObjWdgt::itemChange( GraphicsItemChange i_change, const QVariant&
 
             setZValue(m_fZValue); // restore ZValue as before selecting the object
 
-            m_editMode = EEditMode::Undefined;
-            m_editResizeMode = EEditResizeMode::Undefined;
-            m_selPtSelectedBoundingRect = ESelectionPoint::Undefined;
+            m_editMode = EEditMode::None;
+            m_editResizeMode = EEditResizeMode::None;
+            m_selPtSelectedBoundingRect = ESelectionPoint::None;
             m_idxSelPtSelectedPolygon = -1;
         }
 

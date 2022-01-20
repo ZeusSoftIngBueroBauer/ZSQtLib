@@ -312,3 +312,13 @@ bool CWdgtFormatGraphObjsSwitch::hasChanges() const
     return bHasChanges;
 
 } // hasChanges
+
+/*==============================================================================
+protected: // must overridables of base class CWdgtFormatGraphObjs
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CWdgtFormatGraphObjsSwitch::onGraphObjChanged()
+//------------------------------------------------------------------------------
+{
+} // onGraphObjChanged

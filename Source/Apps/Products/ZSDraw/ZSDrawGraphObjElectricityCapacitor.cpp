@@ -402,9 +402,9 @@ void CGraphObjCapacitor::setCapacitance( double i_fCapacitance_F )
     {
         m_fCapacitance_F = i_fCapacitance_F;
 
-        if( m_arpLabels.contains(c_strKeyLabelCapacitance) )
+        if( m_arpUserLabels.contains(c_strKeyLabelCapacitance) )
         {
-            SGraphObjLabel* pGraphObjLabel = m_arpLabels[c_strKeyLabelCapacitance];
+            SGraphObjLabel* pGraphObjLabel = m_arpUserLabels[c_strKeyLabelCapacitance];
 
             if( pGraphObjLabel->m_pGraphObjLabel != nullptr )
             {
@@ -412,7 +412,6 @@ void CGraphObjCapacitor::setCapacitance( double i_fCapacitance_F )
                 pGraphObjLabel->m_pGraphObjLabel->setText(str);
             }
         }
-
     } // if( m_fCapacitance_F != i_fCapacitance_F )
 
 } // setCapacitance
@@ -427,31 +426,21 @@ void CGraphObjCapacitor::showCapacitance( ESelectionPoint i_selPtPos )
 {
     QString str = QString::number(m_fCapacitance_F) + "F";
 
-    if( !m_arpLabels.contains(c_strKeyLabelCapacitance) )
-    {
-        addLabel(c_strKeyLabelCapacitance,str,i_selPtPos);
-    }
-    else
-    {
-        setLabelText(c_strKeyLabelCapacitance,str);
-    }
-
-    showLabel(c_strKeyLabelCapacitance);
-
-} // showCapacitance
+    showUserDefinedLabel(c_strKeyLabelCapacitance, str, i_selPtPos);
+}
 
 //------------------------------------------------------------------------------
 void CGraphObjCapacitor::hideCapacitance()
 //------------------------------------------------------------------------------
 {
-    hideLabel(c_strKeyLabelCapacitance);
+    hideUserDefinedLabel(c_strKeyLabelCapacitance);
 }
 
 //------------------------------------------------------------------------------
 bool CGraphObjCapacitor::isCapacitanceVisible() const
 //------------------------------------------------------------------------------
 {
-    return isLabelVisible(c_strKeyLabelCapacitance);
+    return isUserDefinedLabelVisible(c_strKeyLabelCapacitance);
 }
 
 /*==============================================================================

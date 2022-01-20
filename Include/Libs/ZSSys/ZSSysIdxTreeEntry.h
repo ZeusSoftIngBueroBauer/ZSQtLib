@@ -136,7 +136,7 @@ public: // instance methods
     QString getCalculatedKeyInTree() const;
 public: // instance methods
     bool isAboutToBeDestroyed() const;
-public: // operators
+public: // operators (for branch entries)
     /*! Returns the pointer to the child object at the given index.
         @param i_idx [in] Index of the child entry.
         @return Pointer to child entry. */
@@ -145,7 +145,7 @@ public: // operators
         @param i_idx [in] Index of the child entry.
         @return Pointer to child entry. */
     const CIdxTreeEntry* operator [] ( int i_idx ) const { return m_arpTreeEntries[i_idx]; }
-public: // instance methods
+public: // instance methods (for branch entries)
     /*! Returns the number of child entries. */
     int count() const { return m_arpTreeEntries.size(); }
     /*! Returns the number of child entries (same as count). */
@@ -154,36 +154,29 @@ public: // instance methods
     int size() const { return m_arpTreeEntries.size(); }
     /*! Returns the child entry at the given index. */
     CIdxTreeEntry* at( int i_idx ) const { return m_arpTreeEntries.at(i_idx); }
-public: // instance methods
-    int indexOf( const CIdxTreeEntry* i_pTreeEntry ) const;
+public: // instance methods (for branch entries)
+    int indexOf( const CIdxTreeEntry* i_pChildTreeEntry ) const;
     int indexOf( const QString& i_strKeyInParentBranch ) const;
     int indexOf( EIdxTreeEntryType i_entryType, const QString& i_strName ) const;
     CIdxTreeEntry* find( const QString& i_strKeyInParentBranch ) const;
     CIdxTreeEntry* find( EIdxTreeEntryType i_entryType, const QString& i_strName ) const;
-public: // instance methods (applying filter)
-    int indexOfChildInListWithSameEntryTypes( const CIdxTreeEntry* i_pTreeEntry ) const;
-public: // overridables
-    virtual int add( CIdxTreeEntry* i_pTreeEntry );
-    virtual int insert( int i_iIdx, CIdxTreeEntry* i_pTreeEntry );
-    virtual void remove( CIdxTreeEntry* i_pTreeEntry );
-    virtual void rename( CIdxTreeEntry* i_pTreeEntry, const QString& i_strNameNew );
+public: // instance methods  (for branch entries) (applying filter)
+    int indexOfChildInListWithSameEntryTypes( const CIdxTreeEntry* i_pChildTreeEntry ) const;
+protected: // overridables (for branch entries)
+    virtual int addChild( CIdxTreeEntry* i_pChildTreeEntry );
+    virtual int insertChild( int i_iIdx, CIdxTreeEntry* i_pChildTreeEntry );
+    virtual void removeChild( CIdxTreeEntry* i_pChildTreeEntry );
+    virtual void renameChild( CIdxTreeEntry* i_pChildTreeEntry, const QString& i_strNameNew );
 protected: // overridables
-    /*! Sets the current name of the tree entry. As changing the name also changes its key also setKeyInTree and setKeyInParentBranch must be invoked. */
-    virtual void setName( const QString& i_strName ) { m_strName = i_strName; }
-    /*! Sets the key of the entry in the index tree. */
-    virtual void setKeyInTree( const QString& i_strKey ) { m_strKeyInTree = i_strKey; }
-    /*! Sets the index of the entry in the index trees vector of entries. */
-    virtual void setIndexInTree( int i_idx ) { m_idxInTree = i_idx; }
+    virtual void setName( const QString& i_strName );
+    virtual void setKeyInTree( const QString& i_strKey );
+    virtual void setIndexInTree( int i_idx );
 protected: // overridables
-    /*! Sets the parent branch of the entry. */
-    virtual void setParentBranch( CIdxTreeEntry* i_pParent ) { m_pParentBranch = i_pParent; }
-    /*! Sets the unique key of the entry within it's parent branch. */
-    virtual void setKeyInParentBranch( const QString& i_strKey ) { m_strKeyInParentBranch = i_strKey; }
-    /*! Sets the index of the entry within it's parent branches vector of entries. */
-    virtual void setIndexInParentBranch( int i_idx ) { m_idxInParentBranch = i_idx; }
+    virtual void setParentBranch( CIdxTreeEntry* i_pParent );
+    virtual void setKeyInParentBranch( const QString& i_strKey );
+    virtual void setIndexInParentBranch( int i_idx );
 protected: // instance methods
-    /*! Sets the index tree the entry belongs to. */
-    void setTree( CIdxTree* i_pTree ) { m_pTree = i_pTree; }
+    void setTree( CIdxTree* i_pTree );
 protected: // instance members
     EIdxTreeEntryType m_entryType;               /*!< The type may be either Root, Branch or Leave.
                                                       Leave entries may not have children.

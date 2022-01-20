@@ -76,23 +76,22 @@ public: // overridables
         polymorphic base type the method returns the name of the derived class. */
     virtual QString className() const { return ClassName(); }
 public: // must overridables of base class CWdgtFormatGraphObjs
-    virtual void applyChanges();
-    virtual void resetChanges();
-    virtual bool hasChanges() const;
-protected slots:
-    void onEdtObjNameTextChanged( const QString& i_strText );
-    void onEdtObjIdTextChanged( const QString& i_strText );
+    virtual void applyChanges() override;
+    virtual void resetChanges() override;
+    virtual bool hasChanges() const override;
+protected: // must overridables of base class CWdgtFormatGraphObjs
+    virtual void onGraphObjChanged() override;
 private: // instance members
     QVBoxLayout*             m_pLyt;
     QLabel*                  m_pLblHeadLine;
-    QHBoxLayout*             m_pLytObjName;
-    QLabel*                  m_pLblObjName;
-    QLineEdit*               m_pEdtObjName;
-    QCheckBox*               m_pChkObjNameVisible;
-    QHBoxLayout*             m_pLytObjId;
-    QLabel*                  m_pLblObjId;
-    QLineEdit*               m_pEdtObjId;
-    QCheckBox*               m_pChkObjIdVisible;
+    QHBoxLayout*             m_pLytName;
+    QLabel*                  m_pLblName;
+    QLineEdit*               m_pEdtName;
+    QCheckBox*               m_pChkNameVisible;
+    QHBoxLayout*             m_pLytPath;
+    QLabel*                  m_pLblPath;
+    QLineEdit*               m_pEdtPath;
+    QCheckBox*               m_pChkPathVisible;
     // Trace
     ZS::Trace::CTrcAdminObj* m_pTrcAdminObj;
 

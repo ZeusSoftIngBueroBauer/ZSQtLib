@@ -79,6 +79,9 @@
     <Filter Include="Generated Files\msvc2019\x64\Release">
       <UniqueIdentifier>{a5b6e391-cefa-4b90-8531-7a9b2248731b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Doc Files">
+      <UniqueIdentifier>{887e76d0-bc46-4795-af2c-20d40c271124}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Libs\ZSSys\ZSSysAux.cpp">
@@ -720,5 +723,10 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\Doc\Libs\ZSSys\ZSSys.md">
+      <Filter>Doc Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

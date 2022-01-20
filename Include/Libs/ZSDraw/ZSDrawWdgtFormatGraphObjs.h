@@ -49,6 +49,7 @@ class CGraphObj;
 class ZSDRAWDLL_API CWdgtFormatGraphObjs : public QWidget
 //******************************************************************************
 {
+    Q_OBJECT
 public: // class methods
     /*! Returns the namespace the class belongs to. */
     static QString NameSpace() { return "ZS::Draw"; } // Please note that the static class functions name must be different from the non static virtual member function "nameSpace"
@@ -75,12 +76,14 @@ public: // must overridables
     virtual bool hasChanges() const = 0;
 public: // overridables
     virtual void hidePopups( QWidget* i_pWdgtKeepVisible = nullptr );
+protected: // must overridables
+    virtual void onGraphObjChanged() = 0;
+private slots:
+    void onDrawingSceneGraphObjChanged( ZS::Draw::CDrawingScene* i_pDrawingScene, ZS::Draw::CGraphObj* i_pGraphObj );
 protected: // instance members
     CDrawingScene*  m_pDrawingScene;
     CGraphObj*      m_pGraphObj;
     QGraphicsItem*  m_pGraphicsItem;
-    QString         m_strObjName;
-    QString         m_strObjId;
     CDrawSettings   m_drawSettings;
     // List of popup widgets which have to be closed on activating other widgets
     QList<QWidget*> m_arpWdgtsPopup;

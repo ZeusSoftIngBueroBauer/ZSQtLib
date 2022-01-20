@@ -170,7 +170,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">
     <OutDir>..\..\..\Tmp\Out\Libs\$(ProjectName)\$(Configuration)\$(Platform)\</OutDir>
     <IntDir>..\..\..\Tmp\Int\Libs\$(ProjectName)\$(Configuration)\$(Platform)\</IntDir>
-    <LinkIncremental>true</LinkIncremental>
+    <LinkIncremental>false</LinkIncremental>
     <IncludePath>$(QTDIR_MSVC2017_Win32)\include;$(IncludePath);$(VCInstallDir)atlmfc\include</IncludePath>
     <TargetName>$(ProjectName)Qt$(QT_VERSION_MAJOR)_msvc2017_$(Platform)_d</TargetName>
     <LibraryPath>$(QTDIR_MSVC2017_Win32)\lib;$(LibraryPath)</LibraryPath>
@@ -178,7 +178,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|Win32'">
     <OutDir>..\..\..\Tmp\Out\Libs\$(ProjectName)\$(Configuration)\$(Platform)\</OutDir>
     <IntDir>..\..\..\Tmp\Int\Libs\$(ProjectName)\$(Configuration)\$(Platform)\</IntDir>
-    <LinkIncremental>true</LinkIncremental>
+    <LinkIncremental>false</LinkIncremental>
     <IncludePath>$(QTDIR_MSVC2019_Win32)\include;$(IncludePath)</IncludePath>
     <TargetName>$(ProjectName)Qt$(QT_VERSION_MAJOR)_msvc2019_$(Platform)_d</TargetName>
     <LibraryPath>$(QTDIR_MSVC2019_Win32)\lib;$(LibraryPath)</LibraryPath>
@@ -186,13 +186,13 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">
     <OutDir>..\..\..\Tmp\Out\Libs\$(ProjectName)\$(Configuration)\$(Platform)\</OutDir>
     <IntDir>..\..\..\Tmp\Int\Libs\$(ProjectName)\$(Configuration)\$(Platform)\</IntDir>
-    <LinkIncremental>true</LinkIncremental>
+    <LinkIncremental>false</LinkIncremental>
     <IncludePath>$(QTDIR_MSVC2015_Win32)\include;$(IncludePath)</IncludePath>
     <TargetName>$(ProjectName)Qt$(QT_VERSION_MAJOR)_msvc2015_$(Platform)_d</TargetName>
     <LibraryPath>$(QTDIR_MSVC2015_Win32)\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|x64'">
-    <LinkIncremental>true</LinkIncremental>
+    <LinkIncremental>false</LinkIncremental>
     <IncludePath>$(QTDIR_MSVC2017_x64)\include;$(IncludePath);$(VC_IncludePath)</IncludePath>
     <TargetName>$(ProjectName)Qt$(QT_VERSION_MAJOR)_msvc2017_$(Platform)_d</TargetName>
     <OutDir>..\..\..\Tmp\Out\Libs\$(ProjectName)\$(Configuration)\$(Platform)\</OutDir>
@@ -201,7 +201,7 @@
     <ExcludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(VC_ExecutablePath_x86);$(WindowsSDK_ExecutablePath);$(VS_ExecutablePath);$(FxCopDir);$(MSBuild_ExecutablePath);$(VC_LibraryPath_x86);$(SystemRoot)</ExcludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|x64'">
-    <LinkIncremental>true</LinkIncremental>
+    <LinkIncremental>false</LinkIncremental>
     <IncludePath>$(QTDIR_MSVC2019_x64)\include;$(IncludePath)</IncludePath>
     <TargetName>$(ProjectName)Qt$(QT_VERSION_MAJOR)_msvc2019_$(Platform)_d</TargetName>
     <OutDir>..\..\..\Tmp\Out\Libs\$(ProjectName)\$(Configuration)\$(Platform)\</OutDir>
@@ -209,7 +209,7 @@
     <LibraryPath>$(QTDIR_MSVC2019_x64)\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|x64'">
-    <LinkIncremental>true</LinkIncremental>
+    <LinkIncremental>false</LinkIncremental>
     <IncludePath>$(QTDIR_MSVC2015_x64)\include;$(IncludePath)</IncludePath>
     <TargetName>$(ProjectName)Qt$(QT_VERSION_MAJOR)_msvc2015_$(Platform)_d</TargetName>
     <OutDir>..\..\..\Tmp\Out\Libs\$(ProjectName)\$(Configuration)\$(Platform)\</OutDir>
@@ -219,7 +219,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|Win32'">
     <OutDir>..\..\..\Tmp\Out\Libs\$(ProjectName)\$(Configuration)\$(Platform)\</OutDir>
     <IntDir>..\..\..\Tmp\Int\Libs\$(ProjectName)\$(Configuration)\$(Platform)\</IntDir>
-    <LinkIncremental>true</LinkIncremental>
+    <LinkIncremental>false</LinkIncremental>
     <IncludePath>$(QTDIR_MSVC2017_Win32)\include;$(IncludePath)</IncludePath>
     <LibraryPath>$(QTDIR_MSVC2017_Win32)\lib;$(LibraryPath)</LibraryPath>
     <TargetName>$(ProjectName)Qt$(QT_VERSION_MAJOR)_msvc2017_$(Platform)</TargetName>
@@ -227,7 +227,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|Win32'">
     <OutDir>..\..\..\Tmp\Out\Libs\$(ProjectName)\$(Configuration)\$(Platform)\</OutDir>
     <IntDir>..\..\..\Tmp\Int\Libs\$(ProjectName)\$(Configuration)\$(Platform)\</IntDir>
-    <LinkIncremental>true</LinkIncremental>
+    <LinkIncremental>false</LinkIncremental>
     <IncludePath>$(QTDIR_MSVC2019_Win32)\include;$(IncludePath)</IncludePath>
     <LibraryPath>$(QTDIR_MSVC2019_Win32)\lib;$(LibraryPath)</LibraryPath>
     <TargetName>$(ProjectName)Qt$(QT_VERSION_MAJOR)_msvc2019_$(Platform)</TargetName>
@@ -235,13 +235,13 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|Win32'">
     <OutDir>..\..\..\Tmp\Out\Libs\$(ProjectName)\$(Configuration)\$(Platform)\</OutDir>
     <IntDir>..\..\..\Tmp\Int\Libs\$(ProjectName)\$(Configuration)\$(Platform)\</IntDir>
-    <LinkIncremental>true</LinkIncremental>
+    <LinkIncremental>false</LinkIncremental>
     <IncludePath>$(QTDIR_MSVC2015_Win32)\include;$(IncludePath)</IncludePath>
     <LibraryPath>$(QTDIR_MSVC2015_Win32)\lib;$(LibraryPath)</LibraryPath>
     <TargetName>$(ProjectName)Qt$(QT_VERSION_MAJOR)_msvc2015_$(Platform)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|x64'">
-    <LinkIncremental>true</LinkIncremental>
+    <LinkIncremental>false</LinkIncremental>
     <IncludePath>$(QTDIR_MSVC2017_x64)\include;$(IncludePath)</IncludePath>
     <OutDir>..\..\..\Tmp\Out\Libs\$(ProjectName)\$(Configuration)\$(Platform)\</OutDir>
     <IntDir>..\..\..\Tmp\Int\Libs\$(ProjectName)\$(Configuration)\$(Platform)\</IntDir>
@@ -249,7 +249,7 @@
     <TargetName>$(ProjectName)Qt$(QT_VERSION_MAJOR)_msvc2017_$(Platform)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|x64'">
-    <LinkIncremental>true</LinkIncremental>
+    <LinkIncremental>false</LinkIncremental>
     <IncludePath>$(QTDIR_MSVC2019_x64)\include;$(IncludePath)</IncludePath>
     <OutDir>..\..\..\Tmp\Out\Libs\$(ProjectName)\$(Configuration)\$(Platform)\</OutDir>
     <IntDir>..\..\..\Tmp\Int\Libs\$(ProjectName)\$(Configuration)\$(Platform)\</IntDir>
@@ -257,7 +257,7 @@
     <TargetName>$(ProjectName)Qt$(QT_VERSION_MAJOR)_msvc2019_$(Platform)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|x64'">
-    <LinkIncremental>true</LinkIncremental>
+    <LinkIncremental>false</LinkIncremental>
     <IncludePath>$(QTDIR_MSVC2015_x64)\include;$(IncludePath)</IncludePath>
     <OutDir>..\..\..\Tmp\Out\Libs\$(ProjectName)\$(Configuration)\$(Platform)\</OutDir>
     <IntDir>..\..\..\Tmp\Int\Libs\$(ProjectName)\$(Configuration)\$(Platform)\</IntDir>
@@ -277,7 +277,7 @@
       <ProgramDataBaseFileName>$(IntDir)$(TargetName)_local.pdb</ProgramDataBaseFileName>
       <BrowseInformation>true</BrowseInformation>
       <WarningLevel>Level3</WarningLevel>
-      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <StringPooling>true</StringPooling>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -317,7 +317,7 @@
       <ProgramDataBaseFileName>$(IntDir)$(TargetName)_local.pdb</ProgramDataBaseFileName>
       <BrowseInformation>true</BrowseInformation>
       <WarningLevel>Level3</WarningLevel>
-      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <StringPooling>true</StringPooling>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -358,7 +358,7 @@
       <ProgramDataBaseFileName>$(IntDir)$(TargetName)_local.pdb</ProgramDataBaseFileName>
       <BrowseInformation>true</BrowseInformation>
       <WarningLevel>Level3</WarningLevel>
-      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <StringPooling>true</StringPooling>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -400,7 +400,7 @@
       <ProgramDataBaseFileName>$(IntDir)$(TargetName)_local.pdb</ProgramDataBaseFileName>
       <BrowseInformation>true</BrowseInformation>
       <WarningLevel>Level3</WarningLevel>
-      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <StringPooling>true</StringPooling>
       <FloatingPointExceptions>true</FloatingPointExceptions>
@@ -442,7 +442,7 @@
       <ProgramDataBaseFileName>$(IntDir)$(TargetName)_local.pdb</ProgramDataBaseFileName>
       <BrowseInformation>true</BrowseInformation>
       <WarningLevel>Level3</WarningLevel>
-      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <StringPooling>true</StringPooling>
       <FloatingPointExceptions>true</FloatingPointExceptions>
@@ -485,7 +485,7 @@
       <ProgramDataBaseFileName>$(IntDir)$(TargetName)_local.pdb</ProgramDataBaseFileName>
       <BrowseInformation>true</BrowseInformation>
       <WarningLevel>Level3</WarningLevel>
-      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <StringPooling>true</StringPooling>
       <FloatingPointExceptions>true</FloatingPointExceptions>
@@ -3427,6 +3427,9 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\Doc\Libs\ZSSys\ZSSys.md" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

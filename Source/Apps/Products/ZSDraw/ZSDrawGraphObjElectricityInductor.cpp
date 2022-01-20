@@ -324,9 +324,9 @@ void CGraphObjInductor::setInductance( double i_fInductance_H )
     {
         m_fInductance_H = i_fInductance_H;
 
-        if( m_arpLabels.contains(c_strKeyLabelInductance) )
+        if( m_arpUserLabels.contains(c_strKeyLabelInductance) )
         {
-            SGraphObjLabel* pGraphObjLabel = m_arpLabels[c_strKeyLabelInductance];
+            SGraphObjLabel* pGraphObjLabel = m_arpUserLabels[c_strKeyLabelInductance];
 
             if( pGraphObjLabel->m_pGraphObjLabel != nullptr )
             {
@@ -349,31 +349,21 @@ void CGraphObjInductor::showInductance( ESelectionPoint i_selPtPos )
 {
     QString str = QString::number(m_fInductance_H) + "H";
 
-    if( !m_arpLabels.contains(c_strKeyLabelInductance) )
-    {
-        addLabel(c_strKeyLabelInductance,str,i_selPtPos);
-    }
-    else
-    {
-        setLabelText(c_strKeyLabelInductance,str);
-    }
-
-    showLabel(c_strKeyLabelInductance);
-
-} // showInductance
+    showUserDefinedLabel(c_strKeyLabelInductance, str, i_selPtPos);
+}
 
 //------------------------------------------------------------------------------
 void CGraphObjInductor::hideInductance()
 //------------------------------------------------------------------------------
 {
-    hideLabel(c_strKeyLabelInductance);
+    hideUserDefinedLabel(c_strKeyLabelInductance);
 }
 
 //------------------------------------------------------------------------------
 bool CGraphObjInductor::isInductanceVisible() const
 //------------------------------------------------------------------------------
 {
-    return isLabelVisible(c_strKeyLabelInductance);
+    return isUserDefinedLabelVisible(c_strKeyLabelInductance);
 }
 
 /*==============================================================================

@@ -173,14 +173,14 @@ SErrResultInfo CObjFactoryEllipse::saveGraphObj(
     // Labels
     //----------------
 
-    QHash<QString,SGraphObjLabel*> arpLabels = i_pGraphObj->getLabels();
+    //QHash<QString,SGraphObjLabel*> arpLabels = i_pGraphObj->getLabels();
 
-    if( arpLabels.size() > 0 )
-    {
-        i_xmlStreamWriter.writeStartElement("Labels");
-        errResultInfo = saveGraphObjLabels( arpLabels, i_xmlStreamWriter );
-        i_xmlStreamWriter.writeEndElement();
-    }
+    //if( arpLabels.size() > 0 )
+    //{
+    //    i_xmlStreamWriter.writeStartElement("Labels");
+    //    errResultInfo = saveGraphObjLabels( arpLabels, i_xmlStreamWriter );
+    //    i_xmlStreamWriter.writeEndElement();
+    //}
 
     if( mthTracer.isActive(ETraceDetailLevelMethodArgs) )
     {
@@ -348,11 +348,10 @@ CGraphObj* CObjFactoryEllipse::loadGraphObj(
 
             pGraphObj->acceptCurrentAsOriginalCoors();
 
-            if( arpLabels.size() > 0 )
-            {
-                pGraphObj->addLabels(arpLabels);
-            }
-
+            //if( arpLabels.size() > 0 )
+            //{
+            //    pGraphObj->addLabels(arpLabels);
+            //}
         } // if( bPosValid && bSizeValid )
 
         if( arpLabels.size() > 0 )

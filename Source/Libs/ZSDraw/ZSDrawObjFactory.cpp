@@ -478,7 +478,7 @@ QHash<QString,SGraphObjLabel*> CObjFactory::loadGraphObjLabels(
             {
                 QString         strKey;
                 QString         strText;
-                ESelectionPoint selPt = ESelectionPoint::Undefined;
+                ESelectionPoint selPt = ESelectionPoint::None;
                 QSizeF          sizDist;
                 bool            bDistValid = false;
                 bool            bVisible = false;
@@ -522,7 +522,7 @@ QHash<QString,SGraphObjLabel*> CObjFactory::loadGraphObjLabels(
                     bVisible = str2Bool(strAttr);
                 }
 
-                if( !strKey.isEmpty() && !strText.isEmpty() && !arpLabels.contains(strKey) && selPt != ESelectionPoint::Undefined && bDistValid )
+                if( !strKey.isEmpty() && !strText.isEmpty() && !arpLabels.contains(strKey) && selPt != ESelectionPoint::None && bDistValid )
                 {
                     if( pGraphObjLabel != nullptr )
                     {

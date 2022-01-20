@@ -209,14 +209,14 @@ SErrResultInfo CObjFactoryConnectionLine::saveGraphObj(
     // Labels
     //----------------
 
-    QHash<QString,SGraphObjLabel*> arpLabels = i_pGraphObj->getLabels();
+    //QHash<QString,SGraphObjLabel*> arpLabels = i_pGraphObj->getLabels();
 
-    if( arpLabels.size() > 0 )
-    {
-        i_xmlStreamWriter.writeStartElement("Labels");
-        errResultInfo = saveGraphObjLabels( arpLabels, i_xmlStreamWriter );
-        i_xmlStreamWriter.writeEndElement();
-    }
+    //if( arpLabels.size() > 0 )
+    //{
+    //    i_xmlStreamWriter.writeStartElement("Labels");
+    //    errResultInfo = saveGraphObjLabels( arpLabels, i_xmlStreamWriter );
+    //    i_xmlStreamWriter.writeEndElement();
+    //}
 
     if( mthTracer.isActive(ETraceDetailLevelMethodArgs) )
     {
@@ -365,10 +365,10 @@ CGraphObj* CObjFactoryConnectionLine::loadGraphObj(
 
             pGraphObj->acceptCurrentAsOriginalCoors();
 
-            if( arpLabels.size() > 0 )
-            {
-                pGraphObj->addLabels(arpLabels);
-            }
+            //if( arpLabels.size() > 0 )
+            //{
+            //    pGraphObj->addLabels(arpLabels);
+            //}
         } // if( pCnctPtStart != nullptr && pCnctPtEnd != nullptr && plg.size() > 1 )
 
         if( arpLabels.size() > 0 )

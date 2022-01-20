@@ -106,7 +106,7 @@ const int EInvalidEnumerator = -1;
 
     for( eProcClock = 0; eProcClock < CEnumProcessorClock::count(); ++eProcClock )
     {
-        pCmbProcClock->addItem(enumInst.toString(), enumInst.toValue());
+        pCmbProcClock->addItem(eProcClock.toString(), eProcClock.toValue());
     }
 
     eProcClock = "Low";
@@ -162,8 +162,8 @@ public: // ctors
     CEnum();
     CEnum( E i_enumerator );
     CEnum( int i_iEnumerator );
-    CEnum( const char* i_szName, int i_idxAlias = EEnumEntryAliasStrName, Qt::CaseSensitivity i_caseSensitivity = Qt::CaseInsensitive );
-    CEnum( const QString& i_strName, int i_idxAlias = EEnumEntryAliasStrName, Qt::CaseSensitivity i_caseSensitivity = Qt::CaseInsensitive );
+    CEnum( const char* i_szName, int i_idxAlias = EEnumEntryAliasStrUndefined, Qt::CaseSensitivity i_caseSensitivity = Qt::CaseInsensitive );
+    CEnum( const QString& i_strName, int i_idxAlias = EEnumEntryAliasStrUndefined, Qt::CaseSensitivity i_caseSensitivity = Qt::CaseInsensitive );
     CEnum( const CEnum& i_other );
 public: // assignment operators
     CEnum& operator = ( E i_enumerator );

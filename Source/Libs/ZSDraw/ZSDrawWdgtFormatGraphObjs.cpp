@@ -56,14 +56,21 @@ CWdgtFormatGraphObjs::CWdgtFormatGraphObjs(
     m_pDrawingScene(i_pDrawingScene),
     m_pGraphObj(i_pGraphObj),
     m_pGraphicsItem(nullptr),
-    m_strObjName(),
-    m_strObjId(),
     m_drawSettings(),
     // List of popup widgets which have to be closed on activating other widgets
     m_arpWdgtsPopup()
 {
     if( m_pGraphObj != nullptr )
     {
+        if( !QObject::connect(
+            /* pObjSender   */ m_pDrawingScene,
+            /* szSignal     */ SIGNAL(graphObjChanged(ZS::Draw::CDrawingScene*, ZS::Draw::CGraphObj*)),
+            /* pObjReceiver */ this,
+            /* szSlot       */ SLOT(onDrawingSceneGraphObjChanged(ZS::Draw::CDrawingScene*, ZS::Draw::CGraphObj*))) )
+        {
+            throw ZS::System::CException(__FILE__, __LINE__, EResultSignalSlotConnectionFailed);
+        }
+
         m_pGraphicsItem = dynamic_cast<QGraphicsItem*>(m_pGraphObj);
 
         if( m_pGraphicsItem == nullptr )
@@ -85,6 +92,9 @@ CWdgtFormatGraphObjs::~CWdgtFormatGraphObjs()
 {
     m_pDrawingScene = nullptr;
     m_pGraphObj = nullptr;
+    m_pGraphicsItem = nullptr;
+    //m_drawSettings;
+    m_arpWdgtsPopup.clear();
 
 } // dtor
 
@@ -178,3 +188,33 @@ void CWdgtFormatGraphObjs::hidePopups( QWidget* i_pWdgtKeepVisible )
     }
 
 } // hidePopups
+
+/*==============================================================================
+private slots:
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! Slot connected to the graphObjChanged signal of the drawing scene.
+
+    The signal is emitted for any changed object of the drawing scene.
+    The slot checks whether the changed object is the object shown by the widget
+    and invokes the pure virtual method onGraphObjChanged.
+    For all other objects the slot will be ignored.
+
+    @param i_pDrawingScene [in]
+        Drawing scene hosting the graphical object which was changed.
+    @param i_pGraphObj [in]
+        Changed graphical object. This may be any graphical object of the
+        drawing scene. The slot checks whether the changed object is the
+        object shown by the widget.
+*/
+void CWdgtFormatGraphObjs::onDrawingSceneGraphObjChanged(
+    CDrawingScene* i_pDrawingScene,
+    CGraphObj*     i_pGraphObj )
+//------------------------------------------------------------------------------
+{
+    if( m_pDrawingScene == i_pDrawingScene && i_pGraphObj == m_pGraphObj )
+    {
+        onGraphObjChanged();
+    }
+}

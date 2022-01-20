@@ -299,3 +299,13 @@ bool CWdgtFormatGraphObjsVoltageSource::hasChanges() const
     return bHasChanges;
 
 } // hasChanges
+
+/*==============================================================================
+protected: // must overridables of base class CWdgtFormatGraphObjs
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CWdgtFormatGraphObjsVoltageSource::onGraphObjChanged()
+//------------------------------------------------------------------------------
+{
+} // onGraphObjChanged

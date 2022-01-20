@@ -57,7 +57,6 @@ enum class EPaperFormat
     DinA3       = 2, /*!< DinA3 (297 x 420 mm). */
     DinA2       = 3, /*!< DinA2 (420 x 594 mm). */
     UserDefined = 4  /*!< User defined format. */
-    //Undefined = 5, /*!< Indicates that the format is not yet defined. */
 };
 
 template class ZSDRAWDLL_API ZS::System::CEnum<EPaperFormat>;
@@ -84,7 +83,6 @@ enum class EPaperOrientation
 {
     Portrait  = 0,   /*!< Portrait (vertical). */
     Landscape = 1    /*!< Landscape (horizontal). */
-    //Undefined = 2  /*!< Indicates that the orientation is not yet defined. */
 };
 
 template class ZSDRAWDLL_API ZS::System::CEnum<EPaperOrientation>;
@@ -100,8 +98,7 @@ enum class EPrinterPaperSource
     AutoSelect = 0,
     ManualFeed = 1,
     Tray1      = 2,
-    Tray2      = 3,
-    //Undefined  = 4
+    Tray2      = 3
 };
 
 template class ZSDRAWDLL_API ZS::System::CEnum<EPrinterPaperSource>;
@@ -148,10 +145,10 @@ ZSDRAWDLL_API EGraphObjType className2GraphObjType( const QString& i_str );
 enum class EEditTool
 //==============================================================================
 {
-    Select        = 0, /*! Objects may be selected. */
-    CreateObjects = 1, /*! A valid object factory is selected and objects may be created. */
-    Ignore        = 2, /*! May be passed to methods to indicate that the argument should be ignored. */
-    Undefined     = 3  /*! Indicates that no edit tool is selected. */
+    None          = 0, /*! Indicates that no edit tool is selected. */
+    Select        = 1, /*! Objects may be selected. */
+    CreateObjects = 2, /*! A valid object factory is selected and objects may be created. */
+    Ignore        = 3  /*! May be passed to methods to indicate that the argument should be ignored. */
 };
 
 template class ZSDRAWDLL_API ZS::System::CEnum<EEditTool>;
@@ -166,7 +163,6 @@ enum class ECoordinatesVersion
 {
     Original  = 0,
     Current   = 1
-    //Undefined = 2
 };
 
 template class ZSDRAWDLL_API ZS::System::CEnum<ECoordinatesVersion>;
@@ -179,14 +175,14 @@ typedef ZS::System::CEnum<ECoordinatesVersion> CEnum;
 enum class EEditMode
 //==============================================================================
 {
-    Creating       = 0, // The object has been initially created and is still under construction (e.g. adding points to poly lines). !! This mode is not used by the scene !!
-    Move           = 1, // The selected objects are moved.
-    Resize         = 2, // The selected object is resized.
-    Rotate         = 3, // The selected object is rotated around the centre point of its bounding rectangle.
-    MoveShapePoint = 4, // A single shape point of the selected object is being moved.
-    EditText       = 5, // A single shape point of the selected object is being moved.
-    Ignore         = 6, // May be passed to methods to indicate that the argument should be ignored.
-    Undefined      = 7
+    None           = 0,
+    Creating       = 1, // The object has been initially created and is still under construction (e.g. adding points to poly lines). !! This mode is not used by the scene !!
+    Move           = 2, // The selected objects are moved.
+    Resize         = 3, // The selected object is resized.
+    Rotate         = 4, // The selected object is rotated around the centre point of its bounding rectangle.
+    MoveShapePoint = 5, // A single shape point of the selected object is being moved.
+    EditText       = 6, // A single shape point of the selected object is being moved.
+    Ignore         = 7  // May be passed to methods to indicate that the argument should be ignored.
 };
 
 template class ZSDRAWDLL_API ZS::System::CEnum<EEditMode>;
@@ -199,11 +195,11 @@ typedef ZS::System::CEnum<EEditMode> CEnumEditMode;
 enum class EEditResizeMode
 //==============================================================================
 {
-    ResizeAll = 0, // The selected object is resized horizontally and vertically.
-    ResizeHor = 1, // The selected object is resized horizontally.
-    ResizeVer = 2, // The selected object is resized vertically.
-    Ignore    = 3, // May be passed to methods to indicate that the argument should be ignored.
-    Undefined = 4
+    None      = 0,
+    ResizeAll = 1, // The selected object is resized horizontally and vertically.
+    ResizeHor = 2, // The selected object is resized horizontally.
+    ResizeVer = 3, // The selected object is resized vertically.
+    Ignore    = 4, // May be passed to methods to indicate that the argument should be ignored.
 };
 
 template class ZSDRAWDLL_API ZS::System::CEnum<EEditResizeMode>;
@@ -218,7 +214,6 @@ enum class ESelectionPointType
 {
     BoundingRectangle = 0,
     PolygonShapePoint = 1
-    //Undefined       = 2
 };
 
 template class ZSDRAWDLL_API ZS::System::CEnum<ESelectionPointType>;
@@ -250,27 +245,28 @@ ZSDRAWDLL_API QString selectionPoints2Str( int i_selPts );
 enum class ESelectionPoint
 //==============================================================================
 {
-    TopLeft       =  0, // =  RectMin = CornerMin
+    None          =  0,
+    TopLeft       =  1, // =  RectMin = CornerMin
     RectMin       = TopLeft,
     CornerMin     = TopLeft,
-    TopRight      =  1,
-    BottomRight   =  2,
-    BottomLeft    =  3, // = CornerMax
+    TopRight      =  2,
+    BottomRight   =  3,
+    BottomLeft    =  4, // = CornerMax
     CornerMax     = BottomLeft,
-    TopCenter     =  4, // = LineCenterMin
+    TopCenter     =  5, // = LineCenterMin
     LineCenterMin = TopCenter,
-    RightCenter   =  5,
-    BottomCenter  =  6,
-    LeftCenter    =  7, // = RectMax = LineCenterMax
+    RightCenter   =  6,
+    BottomCenter  =  7,
+    LeftCenter    =  8, // = RectMax = LineCenterMax
     RectMax       = LeftCenter,
     LineCenterMax = LeftCenter,
-    Center        =  8,
-    RotateTop     =  9, // = RotateMin
+    Center        =  9,
+    RotateTop     = 10, // = RotateMin
     RotateMin     = RotateTop,
-    RotateBottom  = 10, // = RotateMax
+    RotateBottom  = 11, // = RotateMax
     RotateMax     = RotateBottom,
-    //Default,
-    Undefined     = 11
+    All           = 12,
+    Any           = 13
 };
 
 template class ZSDRAWDLL_API ZS::System::CEnum<ESelectionPoint>;
@@ -293,9 +289,9 @@ ZSDRAWDLL_API Qt::CursorShape selectionPoint2CursorShape( ESelectionPoint i_selP
 enum class ELinePoint
 //==============================================================================
 {
-    Start     = 0,
-    End       = 1,
-    Undefined = 2
+    None  = 0,
+    Start = 1,
+    End   = 2
 };
 
 template class ZSDRAWDLL_API ZS::System::CEnum<ELinePoint>;
@@ -311,7 +307,7 @@ enum class ETextStyle
    Normal     = 0,
    Italic     = 1,
    Bold       = 2,
-   BoldItalic = 3, // Italic|Bold
+   BoldItalic = 3  // Italic|Bold
 };
 
 template class ZSDRAWDLL_API ZS::System::CEnum<ETextStyle>;
@@ -395,8 +391,6 @@ enum class EFillStyle
     RadialGradientPattern  = 16,
     ConicalGradientPattern = 17,
     TexturePattern         = 18
-    //Default              = 19,
-    //Undefined
 } ;
 
 template class ZSDRAWDLL_API ZS::System::CEnum<EFillStyle>;
@@ -418,8 +412,6 @@ enum class ELineStyle
     DotLine        = 3,
     DashDotLine    = 4,
     DashDotDotLine = 5
-    //Default,
-    //Undefined
 };
 
 template class ZSDRAWDLL_API ZS::System::CEnum<ELineStyle>;
@@ -437,8 +429,6 @@ enum class ELineRecordType
     Normal = 0,
     Double = 1,
     Triple = 2
-    //Default,
-    //Undefined
 };
 
 template class ZSDRAWDLL_API ZS::System::CEnum<ELineRecordType>;
@@ -453,8 +443,6 @@ enum class ELineEndStyle
 {
     Normal    = 0,
     ArrowHead = 1
-    //Default,
-    //Undefined
 };
 
 template class ZSDRAWDLL_API ZS::System::CEnum<ELineEndStyle>;
@@ -469,8 +457,6 @@ enum class ELineEndFillStyle
 {
     NoFill       = 0,
     SolidPattern = 1
-    //Default,
-    //Undefined
 };
 
 template class ZSDRAWDLL_API ZS::System::CEnum<ELineEndFillStyle>;
@@ -488,8 +474,6 @@ enum class ELineEndBaseLineType
     NoLine   = 0,
     Normal   = 1, // straight lined
     Indented = 2
-    //Default,
-    //Undefined
 };
 
 template class ZSDRAWDLL_API ZS::System::CEnum<ELineEndBaseLineType>;
@@ -505,8 +489,6 @@ enum class ELineEndWidth
     Thin   = 0,    //  7 Pixel
     Medium = 1,    // 13 Pixel
     Wide   = 2     // 19 Pixel
-    //Default,
-    //Undefined
 };
 
 template class ZSDRAWDLL_API ZS::System::CEnum<ELineEndWidth>;
@@ -524,8 +506,6 @@ enum class ELineEndLength
     Short  = 0,   //  7 Pixel
     Medium = 1,   // 10 Pixel
     Long   = 2    // 13 Pixel
-    //Default,
-    //Undefined
 };
 
 template class ZSDRAWDLL_API ZS::System::CEnum<ELineEndLength>;
@@ -540,15 +520,15 @@ ZSDRAWDLL_API double lineEndLength2dx( ELineEndLength i_lineEndLength );
 enum class EAlignmentRef
 //==============================================================================
 {
-    Left      = 0,
-    HCenter   = 1,
-    Right     = 2,
-    Top       = 3,
-    VCenter   = 4,
-    Bottom    = 5,
-    Width     = 6,
-    Height    = 7,
-    Undefined = 8
+    None      = 0,
+    Left      = 1,
+    HCenter   = 2,
+    Right     = 3,
+    Top       = 4,
+    VCenter   = 5,
+    Bottom    = 6,
+    Width     = 7,
+    Height    = 8
 };
 
 template class ZSDRAWDLL_API ZS::System::CEnum<EAlignmentRef>;

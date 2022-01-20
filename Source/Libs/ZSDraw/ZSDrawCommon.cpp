@@ -236,11 +236,11 @@ template<> QVector<QHash<QString, int>> ZS::System::CEnum<EEditTool>::s_armapsSt
 //------------------------------------------------------------------------------
 template<> const QVector<SEnumEntry> ZS::System::CEnum<EEditTool>::s_arEnumEntries =
 //------------------------------------------------------------------------------
-{                       // Enumerator,                              Name,      Symbol, Text,  SCIPShort, SCPILong, Value
-    /* 0 */ SEnumEntry( static_cast<int>(EEditTool::Select),        "Select"        ),
-    /* 1 */ SEnumEntry( static_cast<int>(EEditTool::CreateObjects), "CreateObjects" ),
-    /* 2 */ SEnumEntry( static_cast<int>(EEditTool::Ignore),        "Ignore"        ),
-    /* 3 */ SEnumEntry( static_cast<int>(EEditTool::Undefined),     "Undefined"     )
+{                       // Enumerator,                              Name,           Symbol, Text,  SCIPShort, SCPILong, Value
+    /* 0 */ SEnumEntry( static_cast<int>(EEditTool::None),          "None",          "-" ),
+    /* 1 */ SEnumEntry( static_cast<int>(EEditTool::Select),        "Select",        "S" ),
+    /* 2 */ SEnumEntry( static_cast<int>(EEditTool::CreateObjects), "CreateObjects", "C" ),
+    /* 3 */ SEnumEntry( static_cast<int>(EEditTool::Ignore),        "Ignore",        "I" )
 };
 
 
@@ -270,15 +270,15 @@ template<> QVector<QHash<QString, int>> ZS::System::CEnum<EEditMode>::s_armapsSt
 //------------------------------------------------------------------------------
 template<> const QVector<SEnumEntry> ZS::System::CEnum<EEditMode>::s_arEnumEntries =
 //------------------------------------------------------------------------------
-{                       // Enumerator,                                Name,      Symbol, Text,  SCIPShort, SCPILong, Value
-    /* 0 */ SEnumEntry( static_cast<int>(EEditMode::Creating),       "Creating"       ),
-    /* 1 */ SEnumEntry( static_cast<int>(EEditMode::Move),           "Move"           ),
-    /* 2 */ SEnumEntry( static_cast<int>(EEditMode::Resize),         "Resize"         ),
-    /* 3 */ SEnumEntry( static_cast<int>(EEditMode::Rotate),         "Rotate"         ),
-    /* 4 */ SEnumEntry( static_cast<int>(EEditMode::MoveShapePoint), "MoveShapePoint" ),
-    /* 5 */ SEnumEntry( static_cast<int>(EEditMode::EditText),       "EditText"       ),
-    /* 6 */ SEnumEntry( static_cast<int>(EEditMode::Ignore),         "Ignore"         ),
-    /* 7 */ SEnumEntry( static_cast<int>(EEditMode::Undefined),      "Undefined"      )
+{                       // Enumerator,                                Name,            Symbol, Text,  SCIPShort, SCPILong, Value
+    /* 0 */ SEnumEntry( static_cast<int>(EEditMode::None),           "None",           "-" ),
+    /* 1 */ SEnumEntry( static_cast<int>(EEditMode::Creating),       "Creating",       "C" ),
+    /* 2 */ SEnumEntry( static_cast<int>(EEditMode::Move),           "Move",           "M" ),
+    /* 3 */ SEnumEntry( static_cast<int>(EEditMode::Resize),         "Resize",         "S" ),
+    /* 4 */ SEnumEntry( static_cast<int>(EEditMode::Rotate),         "Rotate",         "R" ),
+    /* 5 */ SEnumEntry( static_cast<int>(EEditMode::MoveShapePoint), "MoveShapePoint", "M" ),
+    /* 6 */ SEnumEntry( static_cast<int>(EEditMode::EditText),       "EditText",       "E" ),
+    /* 7 */ SEnumEntry( static_cast<int>(EEditMode::Ignore),         "Ignore",         "I" )
 };
 
 
@@ -292,12 +292,12 @@ template<> QVector<QHash<QString, int>> ZS::System::CEnum<EEditResizeMode>::s_ar
 //------------------------------------------------------------------------------
 template<> const QVector<SEnumEntry> ZS::System::CEnum<EEditResizeMode>::s_arEnumEntries =
 //------------------------------------------------------------------------------
-{                       // Enumerator,                                  Name,      Symbol, Text,  SCIPShort, SCPILong, Value
-    /* 0 */ SEnumEntry( static_cast<int>(EEditResizeMode::ResizeAll), "ResizeAll" ),
-    /* 1 */ SEnumEntry( static_cast<int>(EEditResizeMode::ResizeHor), "ResizeHor" ),
-    /* 2 */ SEnumEntry( static_cast<int>(EEditResizeMode::ResizeVer), "ResizeVer" ),
-    /* 3 */ SEnumEntry( static_cast<int>(EEditResizeMode::Ignore),    "Ignore"    ),
-    /* 4 */ SEnumEntry( static_cast<int>(EEditResizeMode::Undefined), "Undefined" )
+{                       // Enumerator,                                Name,       Symbol, Text,  SCIPShort, SCPILong, Value
+    /* 0 */ SEnumEntry( static_cast<int>(EEditResizeMode::None),      "None"      "-" ),
+    /* 1 */ SEnumEntry( static_cast<int>(EEditResizeMode::ResizeAll), "ResizeAll" "A" ),
+    /* 2 */ SEnumEntry( static_cast<int>(EEditResizeMode::ResizeHor), "ResizeHor" "H" ),
+    /* 3 */ SEnumEntry( static_cast<int>(EEditResizeMode::ResizeVer), "ResizeVer" "V" ),
+    /* 4 */ SEnumEntry( static_cast<int>(EEditResizeMode::Ignore),    "Ignore"    "I" )
 };
 
 
@@ -380,19 +380,21 @@ static double s_fSelectionPointRotateDistance_px = 20.0;
 //------------------------------------------------------------------------------
 template<> const QVector<SEnumEntry> ZS::System::CEnum<ESelectionPoint>::s_arEnumEntries =
 //------------------------------------------------------------------------------
-{                       // Enumerator,                                  Name,      Symbol, Text,  SCIPShort, SCPILong, Value
-    /*  0 */ SEnumEntry( static_cast<int>(ESelectionPoint::TopLeft),      "TL", "TopLeft"      ),
-    /*  1 */ SEnumEntry( static_cast<int>(ESelectionPoint::TopRight),     "TR", "TopRight"     ),
-    /*  2 */ SEnumEntry( static_cast<int>(ESelectionPoint::BottomRight),  "BR", "BottomRight"  ),
-    /*  3 */ SEnumEntry( static_cast<int>(ESelectionPoint::BottomLeft),   "BL", "BottomLeft"   ),
-    /*  4 */ SEnumEntry( static_cast<int>(ESelectionPoint::TopCenter),    "TC", "TopCenter"    ),
-    /*  5 */ SEnumEntry( static_cast<int>(ESelectionPoint::RightCenter),  "RC", "RightCenter"  ),
-    /*  6 */ SEnumEntry( static_cast<int>(ESelectionPoint::BottomCenter), "BC", "BottomCenter" ),
-    /*  7 */ SEnumEntry( static_cast<int>(ESelectionPoint::LeftCenter),   "LC", "LeftCenter"   ),
-    /*  8 */ SEnumEntry( static_cast<int>(ESelectionPoint::Center),       "C",  "Center"       ),
-    /*  9 */ SEnumEntry( static_cast<int>(ESelectionPoint::RotateTop),    "OT", "RotateTop"    ),
-    /* 10 */ SEnumEntry( static_cast<int>(ESelectionPoint::RotateBottom), "OB", "RotateBottom" ),
-    /* 11 */ SEnumEntry( static_cast<int>(ESelectionPoint::Undefined),    "?",  "Undefined"    )
+{                       // Enumerator,                                    Name,          Symbol, Text,          SCIPShort, SCPILong, Value
+    /*  0 */ SEnumEntry( static_cast<int>(ESelectionPoint::None),         "None",         "-",   "None"          ),
+    /*  1 */ SEnumEntry( static_cast<int>(ESelectionPoint::TopLeft),      "TopLeft",      "TL",  "Top Left"      ),
+    /*  2 */ SEnumEntry( static_cast<int>(ESelectionPoint::TopRight),     "TopRight",     "TR",  "Top Right"     ),
+    /*  3 */ SEnumEntry( static_cast<int>(ESelectionPoint::BottomRight),  "BottomRight",  "BR",  "Bottom Right"  ),
+    /*  4 */ SEnumEntry( static_cast<int>(ESelectionPoint::BottomLeft),   "BottomLeft",   "BL",  "Bottom Left"   ),
+    /*  5 */ SEnumEntry( static_cast<int>(ESelectionPoint::TopCenter),    "TopCenter",    "TC",  "Top Center"    ),
+    /*  6 */ SEnumEntry( static_cast<int>(ESelectionPoint::RightCenter),  "RightCenter",  "RC",  "Right Center"  ),
+    /*  7 */ SEnumEntry( static_cast<int>(ESelectionPoint::BottomCenter), "BottomCenter", "BC",  "Bottom Center" ),
+    /*  8 */ SEnumEntry( static_cast<int>(ESelectionPoint::LeftCenter),   "LeftCenter",   "LC",  "Left Center"   ),
+    /*  9 */ SEnumEntry( static_cast<int>(ESelectionPoint::Center),       "Center",       "C",   "Center"        ),
+    /* 10 */ SEnumEntry( static_cast<int>(ESelectionPoint::RotateTop),    "RotateTop",    "OT",  "Rotate Top"    ),
+    /* 11 */ SEnumEntry( static_cast<int>(ESelectionPoint::RotateBottom), "RotateBottom", "OB",  "Rotate Bottom" ),
+    /* 12 */ SEnumEntry( static_cast<int>(ESelectionPoint::All),          "All",          "All", "All"           ),
+    /* 13 */ SEnumEntry( static_cast<int>(ESelectionPoint::Any),          "Any",          "Any", "Any"           )
 };
 
 //------------------------------------------------------------------------------
@@ -574,21 +576,21 @@ ESelectionPoint ZS::Draw::getSelectionPointOpposite( ESelectionPoint i_selPt )
 {
     static const ESelectionPoint s_arSelectionPointsOpposite[] =
     {
-        /*  0: TopLeft      */ ESelectionPoint::BottomRight,
-        /*  1: TopRight     */ ESelectionPoint::BottomLeft,
-        /*  2: BottomRight  */ ESelectionPoint::TopLeft,
-        /*  3: BottomLeft   */ ESelectionPoint::TopRight,
-        /*  4: TopCenter    */ ESelectionPoint::BottomCenter,
-        /*  5: RightCenter  */ ESelectionPoint::LeftCenter,
-        /*  6: BottomCenter */ ESelectionPoint::TopCenter,
-        /*  7: LeftCenter   */ ESelectionPoint::RightCenter,
-        /*  8: Center       */ ESelectionPoint::Center,
-        /*  9: RotateTop    */ ESelectionPoint::RotateBottom,
-        /* 10: RotateBottom */ ESelectionPoint::RotateTop,
-        /* 11: Undefined    */ ESelectionPoint::Undefined
+        /*  0: None         */ ESelectionPoint::None,
+        /*  1: TopLeft      */ ESelectionPoint::BottomRight,
+        /*  2: TopRight     */ ESelectionPoint::BottomLeft,
+        /*  3: BottomRight  */ ESelectionPoint::TopLeft,
+        /*  4: BottomLeft   */ ESelectionPoint::TopRight,
+        /*  5: TopCenter    */ ESelectionPoint::BottomCenter,
+        /*  6: RightCenter  */ ESelectionPoint::LeftCenter,
+        /*  7: BottomCenter */ ESelectionPoint::TopCenter,
+        /*  8: LeftCenter   */ ESelectionPoint::RightCenter,
+        /*  9: Center       */ ESelectionPoint::Center,
+        /* 10: RotateTop    */ ESelectionPoint::RotateBottom,
+        /* 11: RotateBottom */ ESelectionPoint::RotateTop
     };
 
-    ESelectionPoint selPtOpp = ESelectionPoint::Undefined;
+    ESelectionPoint selPtOpp = ESelectionPoint::None;
 
     if( static_cast<int>(i_selPt) >= 0 && static_cast<int>(i_selPt) < _ZSArrLen(s_arSelectionPointsOpposite) )
     {
@@ -604,21 +606,21 @@ CEnumEditMode ZS::Draw::selectionPoint2EditMode( ESelectionPoint i_selPt )
 {
     const EEditMode s_arEditModes[] =
     {
-        /*  0: TopLeft      */ EEditMode::Resize,
-        /*  1: TopRight     */ EEditMode::Resize,
-        /*  2: BottomRight  */ EEditMode::Resize,
-        /*  3: BottomLeft   */ EEditMode::Resize,
-        /*  4: TopCenter    */ EEditMode::Resize,
-        /*  5: RightCenter  */ EEditMode::Resize,
-        /*  6: BottomCenter */ EEditMode::Resize,
-        /*  7: LeftCenter   */ EEditMode::Resize,
-        /*  8: Center       */ EEditMode::Move,
-        /*  9: RotateTop    */ EEditMode::Rotate,
-        /* 10: RotateBottom */ EEditMode::Rotate,
-        /* 11: Undefined    */ EEditMode::Undefined
+        /*  0: None         */ EEditMode::None,
+        /*  1: TopLeft      */ EEditMode::Resize,
+        /*  2: TopRight     */ EEditMode::Resize,
+        /*  3: BottomRight  */ EEditMode::Resize,
+        /*  4: BottomLeft   */ EEditMode::Resize,
+        /*  5: TopCenter    */ EEditMode::Resize,
+        /*  6: RightCenter  */ EEditMode::Resize,
+        /*  7: BottomCenter */ EEditMode::Resize,
+        /*  8: LeftCenter   */ EEditMode::Resize,
+        /*  9: Center       */ EEditMode::Move,
+        /* 10: RotateTop    */ EEditMode::Rotate,
+        /* 11: RotateBottom */ EEditMode::Rotate
     };
 
-    EEditMode editMode = EEditMode::Undefined;
+    EEditMode editMode = EEditMode::None;
 
     if( static_cast<int>(i_selPt) >= 0 && static_cast<int>(i_selPt) < _ZSArrLen(s_arEditModes) )
     {
@@ -634,21 +636,21 @@ CEnumEditResizeMode ZS::Draw::selectionPoint2EditResizeMode( ESelectionPoint i_s
 {
     static const EEditResizeMode s_arEditResizeModes[] =
     {
-        /*  0: TopLeft      */ EEditResizeMode::ResizeAll,
-        /*  1: TopRight     */ EEditResizeMode::ResizeAll,
-        /*  2: BottomRight  */ EEditResizeMode::ResizeAll,
-        /*  3: BottomLeft   */ EEditResizeMode::ResizeAll,
-        /*  4: TopCenter    */ EEditResizeMode::ResizeVer,
-        /*  5: RightCenter  */ EEditResizeMode::ResizeHor,
-        /*  6: BottomCenter */ EEditResizeMode::ResizeVer,
-        /*  7: LeftCenter   */ EEditResizeMode::ResizeHor,
-        /*  8: Center       */ EEditResizeMode::Undefined,
-        /*  9: RotateTop    */ EEditResizeMode::Undefined,
-        /* 10: RotateBottom */ EEditResizeMode::Undefined,
-        /* 11: Undefined    */ EEditResizeMode::Undefined
+        /*  0: None         */ EEditResizeMode::None,
+        /*  1: TopLeft      */ EEditResizeMode::ResizeAll,
+        /*  2: TopRight     */ EEditResizeMode::ResizeAll,
+        /*  3: BottomRight  */ EEditResizeMode::ResizeAll,
+        /*  4: BottomLeft   */ EEditResizeMode::ResizeAll,
+        /*  5: TopCenter    */ EEditResizeMode::ResizeVer,
+        /*  6: RightCenter  */ EEditResizeMode::ResizeHor,
+        /*  7: BottomCenter */ EEditResizeMode::ResizeVer,
+        /*  8: LeftCenter   */ EEditResizeMode::ResizeHor,
+        /*  9: Center       */ EEditResizeMode::None,
+        /* 10: RotateTop    */ EEditResizeMode::None,
+        /* 11: RotateBottom */ EEditResizeMode::None
     };
 
-    EEditResizeMode editResizeMode = EEditResizeMode::Undefined;
+    EEditResizeMode editResizeMode = EEditResizeMode::None;
 
     if( static_cast<int>(i_selPt) >= 0 && static_cast<int>(i_selPt) < _ZSArrLen(s_arEditResizeModes) )
     {
@@ -664,18 +666,18 @@ Qt::CursorShape ZS::Draw::selectionPoint2CursorShape( ESelectionPoint i_selPt )
 {
     static const Qt::CursorShape s_arCursorShapes[] =
     {
-        /*  0: TopLeft      */ Qt::SizeFDiagCursor, /*  \  */
-        /*  1: TopRight     */ Qt::SizeBDiagCursor, /*  /  */
-        /*  2: BottomRight  */ Qt::SizeFDiagCursor, /*  \  */
-        /*  3: BottomLeft   */ Qt::SizeBDiagCursor, /*  /  */
-        /*  4: TopCenter    */ Qt::SizeVerCursor,
-        /*  5: RightCenter  */ Qt::SizeHorCursor,
-        /*  6: BottomCenter */ Qt::SizeVerCursor,
-        /*  7: LeftCenter   */ Qt::SizeHorCursor,
-        /*  8: Center       */ Qt::SizeAllCursor,
-        /*  9: RotateTop    */ Qt::BitmapCursor,
-        /* 10: RotateBottom */ Qt::BitmapCursor,
-        /* 11: Undefined    */ Qt::ForbiddenCursor
+        /*  0: None         */ Qt::ForbiddenCursor,
+        /*  1: TopLeft      */ Qt::SizeFDiagCursor, /*  \  */
+        /*  2: TopRight     */ Qt::SizeBDiagCursor, /*  /  */
+        /*  3: BottomRight  */ Qt::SizeFDiagCursor, /*  \  */
+        /*  4: BottomLeft   */ Qt::SizeBDiagCursor, /*  /  */
+        /*  5: TopCenter    */ Qt::SizeVerCursor,
+        /*  6: RightCenter  */ Qt::SizeHorCursor,
+        /*  7: BottomCenter */ Qt::SizeVerCursor,
+        /*  8: LeftCenter   */ Qt::SizeHorCursor,
+        /*  9: Center       */ Qt::SizeAllCursor,
+        /* 10: RotateTop    */ Qt::BitmapCursor,
+        /* 11: RotateBottom */ Qt::BitmapCursor
     };
 
     Qt::CursorShape cursorShape = Qt::ArrowCursor;
@@ -699,10 +701,10 @@ template<> QVector<QHash<QString, int>> ZS::System::CEnum<ELinePoint>::s_armapsS
 //------------------------------------------------------------------------------
 template<> const QVector<SEnumEntry> ZS::System::CEnum<ELinePoint>::s_arEnumEntries =
 //------------------------------------------------------------------------------
-{                       // Enumerator,                           Name,        Symbol, Text,  SCIPShort, SCPILong, Value
-    /* 0 */ SEnumEntry( static_cast<int>(ELinePoint::Start),     "Start",     "Start" ),
-    /* 1 */ SEnumEntry( static_cast<int>(ELinePoint::End),       "End",       "End"   ),
-    /* 2 */ SEnumEntry( static_cast<int>(ELinePoint::Undefined), "Undefined",  "?"    )
+{                       // Enumerator,                       Name,    Symbol, Text,  SCIPShort, SCPILong, Value
+    /* 0 */ SEnumEntry( static_cast<int>(ELinePoint::None),  "None",  "-"     ),
+    /* 1 */ SEnumEntry( static_cast<int>(ELinePoint::Start), "Start", "Start" ),
+    /* 2 */ SEnumEntry( static_cast<int>(ELinePoint::End),   "End",   "End"   )
 };
 
 
@@ -1143,13 +1145,13 @@ template<> QVector<QHash<QString, int>> ZS::System::CEnum<EAlignmentRef>::s_arma
 template<> const QVector<SEnumEntry> ZS::System::CEnum<EAlignmentRef>::s_arEnumEntries =
 //------------------------------------------------------------------------------
 {                       // Enumerator,                              Name,      Symbol, Text,  SCIPShort, SCPILong, Value
-    /* 0 */ SEnumEntry( static_cast<int>(EAlignmentRef::Left),      "Left",       "L"  ),
-    /* 1 */ SEnumEntry( static_cast<int>(EAlignmentRef::HCenter),   "HCenter",    "HC" ),
-    /* 2 */ SEnumEntry( static_cast<int>(EAlignmentRef::Right),     "Right",      "R"  ),
-    /* 3 */ SEnumEntry( static_cast<int>(EAlignmentRef::Top),       "Top",        "T"  ),
-    /* 4 */ SEnumEntry( static_cast<int>(EAlignmentRef::VCenter),   "VCenter",    "VC" ),
-    /* 5 */ SEnumEntry( static_cast<int>(EAlignmentRef::Bottom),    "Bottom",     "B"  ),
-    /* 6 */ SEnumEntry( static_cast<int>(EAlignmentRef::Width),     "Width",      "W"  ),
-    /* 7 */ SEnumEntry( static_cast<int>(EAlignmentRef::Height),    "Height",     "H"  ),
-    /* 8 */ SEnumEntry( static_cast<int>(EAlignmentRef::Undefined), "Undefined",  "?"  )
+    /* 0 */ SEnumEntry( static_cast<int>(EAlignmentRef::None),      "None",    "-"  ),
+    /* 1 */ SEnumEntry( static_cast<int>(EAlignmentRef::Left),      "Left",    "L"  ),
+    /* 2 */ SEnumEntry( static_cast<int>(EAlignmentRef::HCenter),   "HCenter", "HC" ),
+    /* 3 */ SEnumEntry( static_cast<int>(EAlignmentRef::Right),     "Right",   "R"  ),
+    /* 4 */ SEnumEntry( static_cast<int>(EAlignmentRef::Top),       "Top",     "T"  ),
+    /* 5 */ SEnumEntry( static_cast<int>(EAlignmentRef::VCenter),   "VCenter", "VC" ),
+    /* 6 */ SEnumEntry( static_cast<int>(EAlignmentRef::Bottom),    "Bottom",  "B"  ),
+    /* 7 */ SEnumEntry( static_cast<int>(EAlignmentRef::Width),     "Width",   "W"  ),
+    /* 8 */ SEnumEntry( static_cast<int>(EAlignmentRef::Height),    "Height",  "H"  )
 };

@@ -83,8 +83,8 @@ struct ZSDRAWDLL_API SGraphObjAlignment
 {
 public: // ctor
     SGraphObjAlignment() :
-        m_alignmentRefChild(EAlignmentRef::Undefined),
-        m_alignmentRefParent(EAlignmentRef::Undefined),
+        m_alignmentRefChild(EAlignmentRef::None),
+        m_alignmentRefParent(EAlignmentRef::None),
         m_bAlignAbsolute(true),
         m_fVal(0.0)
     {
@@ -111,18 +111,61 @@ public: // struct members
 }; // struct SGraphObjAlignment
 
 
+//==============================================================================
+struct ZSDRAWDLL_API SGraphObjLabel
+//==============================================================================
+{
+public: // ctors
+    SGraphObjLabel() :
+        m_strKey(),
+        m_strText(),
+        m_selPt(ESelectionPoint::None),
+        m_sizDist(),
+        m_bDistValid(false),
+        m_bVisible(false),
+        m_bAnchorLineVisible(false),
+        m_pGraphObjLabel(nullptr)
+    {
+    }
+    SGraphObjLabel( const QString& i_strKey, const QString& i_strText, ESelectionPoint i_selPt = ESelectionPoint::TopCenter ) :
+        m_strKey(i_strKey),
+        m_strText(i_strText),
+        m_selPt(i_selPt),
+        m_sizDist(),
+        m_bDistValid(false),
+        m_bVisible(false),
+        m_bAnchorLineVisible(false),
+        m_pGraphObjLabel(nullptr)
+    {
+    }
+public: // struct members
+    QString             m_strKey;
+    QString             m_strText;
+    CEnumSelectionPoint m_selPt;        // Selection point of the parent item the label is aligned to.
+    QSizeF              m_sizDist;      // Distance between the scene position of the label and selection point of parent item.
+    bool                m_bDistValid;   // If the graphic item is created for the first time the distance will be calculated and stored for following show events.
+    bool                m_bVisible;
+    bool                m_bAnchorLineVisible;
+    CGraphObjLabel*     m_pGraphObjLabel;
+
+}; // struct SGraphObjLabel
+
+
 //******************************************************************************
 class ZSDRAWDLL_API CGraphObj : public ZS::System::CIdxTreeEntry
 //******************************************************************************
 {
+friend class CGraphObjLabel;
+
 public: // class methods
     /*! Returns the namespace the class belongs to. */
     static QString NameSpace() { return "ZS::Draw"; } // Please note that the static class functions name must be different from the non static virtual member function "nameSpace"
     /*! Returns the class name. */
     static QString ClassName() { return "CGraphObj"; } // Please note that the static class functions name must be different from the non static virtual member function "className"
 public: // type definitions and constants
-    static const QString c_strKeyLabelObjName;
-    static const QString c_strKeyLabelObjId;
+    static const QString c_strKeyLabelName;
+    static const QString c_strKeyLabelPath;
+    static const QString c_strKeyLabelPosition;
 protected: // ctor
     CGraphObj(
         CDrawingScene*                i_pDrawingScene,
@@ -141,6 +184,8 @@ public: // overridables
     virtual QString className() { return ClassName(); }
 public: // instance methods
     CDrawingScene* getDrawingScene() { return m_pDrawingScene; }
+public: // instance methods
+    void rename( const QString& i_strNameNew );
 protected: // overridables of base class CIdxTreeEntry
     virtual void setName( const QString& i_strName ) override;
     virtual void setKeyInTree( const QString& i_strKey ) override;
@@ -250,6 +295,9 @@ public: // must overridables
     virtual void setHeight( double i_fHeight ) = 0;
     virtual void setSize( double i_fWidth, double i_fHeight ) = 0;
     virtual void setSize( const QSizeF& i_size ) = 0;
+    virtual bool hasBoundingRect() const = 0;
+    virtual bool hasLineShapePoints() const = 0;
+    virtual bool hasRotationSelectionPoints() const = 0;
 public: // overridables
     virtual QPointF getPos( ECoordinatesVersion i_version = ECoordinatesVersion::Current ) const;
     virtual double getWidth( ECoordinatesVersion i_version = ECoordinatesVersion::Current ) const;
@@ -272,6 +320,10 @@ public: // overridables
     virtual void setStackingOrderValue( double i_fZValue ); // you must call this method instead of setZValue of QGraphicsItem
     double getStackingOrderValue() { return m_fZValue; }
 public: // overridables
+    virtual void showBoundingRect();
+    virtual void hideBoundingRect();
+    virtual bool isBoundingRectVisible() const { return m_bBoundRectVisible; }
+public: // overridables
     virtual bool isBoundingRectSelectionPointHit( const QPointF& i_pt, int i_iSelPtsCount, const ESelectionPoint* i_pSelPts, SGraphObjHitInfo* o_pHitInfo ) const;
     virtual bool isPolygonSelectionPointHit( const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo ) const;
 public: // overridables
@@ -288,32 +340,40 @@ protected: // overridables
     virtual void showSelectionPointsOfPolygon( const QPolygonF& i_plg );                                                                // creates the selection points if not yet created
     virtual void updateSelectionPointsOfPolygon( const QPolygonF& i_plg );
 public: // overridables
-    virtual void showObjName( ESelectionPoint i_selPtPos = ESelectionPoint::TopCenter );     // strKeyLabel = "ObjName"
-    virtual void hideObjName();     // strKeyLabel = "ObjName"
-    virtual bool isObjNameVisible() const;
-    virtual void showObjId( ESelectionPoint i_selPtPos = ESelectionPoint::TopCenter );       // strKeyLabel = "ObjId"
-    virtual void hideObjId();       // strKeyLabel = "ObjId"
-    virtual bool isObjIdVisible() const;
+    virtual void showNameLabel( ESelectionPoint i_selPt = ESelectionPoint::TopCenter ); 
+    virtual void hideNameLabel();
+    virtual bool isNameLabelVisible() const;
 public: // overridables
-    virtual void addLabel( const QString& i_strKey, const QString& i_strText, ESelectionPoint i_selPtPos = ESelectionPoint::TopCenter );  // does not create the graph object label item
-    virtual void removeLabel( const QString& i_strKey );    // also destroys the graph object label item
-    virtual void showLabel( const QString& i_strKey );      // creates the graph object label item
-    virtual void hideLabel( const QString& i_strKey );      // destroys the graph object label item
-    virtual void setLabelText( const QString& i_strKey, const QString& i_strText );
-    virtual bool isLabelVisible( const QString& i_strKey ) const;
-    virtual void updateLabelDistance( const QString& i_strKey );
-    virtual void updateLabelPositions();
+    virtual void showPathLabel( ESelectionPoint i_selPt = ESelectionPoint::TopCenter );
+    virtual void hidePathLabel();
+    virtual bool isPathLabelVisible() const;
 public: // overridables
-    virtual void showLabels(); // also creates the labels if not yet created
-    virtual void hideLabels(); // not just hides but also destroys the labels
-public: // instance methods
-    QStringList getLabelsKeys() const;
-    SGraphObjLabel* getLabel( const QString& i_strKey ) const;
-    QHash<QString,SGraphObjLabel*> getLabels() { return m_arpLabels; }
-    void addLabels( QHash<QString,SGraphObjLabel*> i_arpLabels );
+    virtual void showPositionLabel( ESelectionPoint i_selPt = ESelectionPoint::TopLeft );
+    virtual void hidePositionLabel( ESelectionPoint i_selPt = ESelectionPoint::TopLeft );
+    virtual bool isPositionLabelVisible( ESelectionPoint i_selPt = ESelectionPoint::TopLeft ) const;
+public: // overridables (KeyLabel = "Position<SelPt>")
+    virtual void showPositionLabelAnchorLine( ESelectionPoint i_selPt = ESelectionPoint::TopLeft );
+    virtual void hidePositionLabelAnchorLine( ESelectionPoint i_selPt = ESelectionPoint::TopLeft );
+    virtual bool isPositionLabelAnchorLineVisible( ESelectionPoint i_selPt = ESelectionPoint::TopLeft ) const;
+public: // overridables (user defined labels)
+    virtual void showUserDefinedLabel( const QString& i_strKey, const QString& i_strText, ESelectionPoint i_selPt = ESelectionPoint::TopCenter );
+    virtual void hideUserDefinedLabel( const QString& i_strKey );
+    virtual void setUserDefinedLabelText( const QString& i_strKey, const QString& i_strText );
+    virtual bool isUserDefinedLabelVisible( const QString& i_strKey ) const;
+protected: // overridables (user defined labels)
+    virtual void updateLabelDistance( CGraphObjLabel* i_pGraphObjLabel );
+//public: // overridables
+//    virtual void showLabels(); // also creates the labels if not yet created
+//    virtual void hideLabels(); // not just hides but also destroys the labels
+//public: // instance methods
+//    QStringList getLabelsKeys() const;
+//    SGraphObjLabel* getLabel( const QString& i_strKey ) const;
+//    QHash<QString,SGraphObjLabel*> getLabels() { return m_arpLabels; }
+//    void addLabels( QHash<QString,SGraphObjLabel*> i_arpLabels );
 public: // overridables
     virtual void onParentItemCoorsHasChanged( CGraphObj* /*i_pGraphObjParent*/ ) {}
     virtual void onSelectionPointDestroying( CGraphObjSelectionPoint* i_pSelectionPoint );
+    virtual void onLabelDestroying( CGraphObjLabel* i_pLabel );
 public: // instance methods (simulation methods)
     void addMousePressEventFunction( TFctMouseEvent i_pFct, void* i_pvThis = nullptr, void* i_pvData = nullptr );
     void removeMousePressEventFunction( TFctMouseEvent i_pFct, void* i_pvThis = nullptr, void* i_pvData = nullptr );
@@ -331,7 +391,13 @@ protected: // overridables
     virtual void updateTransform();
     virtual void updateToolTip();
     virtual void updateEditInfo();
+    virtual void updateLabelPositions();
+protected: // overridables
+    virtual void showLabel( QHash<QString, SGraphObjLabel*>& i_arpLabels, const QString& i_strKey );
+    virtual void hideLabel( QHash<QString, SGraphObjLabel*>& i_arpLabels, const QString& i_strKey );
+    virtual void destroyLabels( QHash<QString, SGraphObjLabel*>& i_arpLabels );
 protected: // instance members
+    bool                              m_bDtorInProgress;
     CDrawingScene*                    m_pDrawingScene;
     QString                           m_strFactoryGroupName;
     EGraphObjType                     m_type;
@@ -345,12 +411,15 @@ protected: // instance members
     CEnumEditMode                     m_editMode;
     CEnumEditResizeMode               m_editResizeMode;
     double                            m_fZValue;
-    bool                              m_bDtorInProgress;
+    bool                              m_bBoundRectVisible;
     int                               m_idxSelPtSelectedPolygon;
     QList<CGraphObjSelectionPoint*>   m_arpSelPtsPolygon;
     CEnumSelectionPoint               m_selPtSelectedBoundingRect;
     QVector<CGraphObjSelectionPoint*> m_arpSelPtsBoundingRect;
-    QHash<QString,SGraphObjLabel*>    m_arpLabels;        // Keys e.g. c_strKeyLabelObjName", "Resistance", etc.
+    QHash<QString, SGraphObjLabel*>   m_arpNameLabels;          // Keys: c_strKeyLabelName, c_strKeyLabelPath
+    QHash<QString, SGraphObjLabel*>   m_arpPosLabels;           // Keys: <SelPt>
+    QHash<QString, SGraphObjLabel*>   m_arpDimLineLabels;       // Keys: <SelPt>
+    QHash<QString, SGraphObjLabel*>   m_arpUserLabels;          // Keys: "Resistance", etc.
     QString                           m_strToolTip;
     QString                           m_strEditInfo;
     // Current item coordinates and transform values:

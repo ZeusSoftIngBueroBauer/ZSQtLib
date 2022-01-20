@@ -86,7 +86,7 @@ CGraphObjLabel::CGraphObjLabel(
         /* strFactoryGroupName */ CObjFactory::c_strGroupNameStandardShapes,
         /* type                */ EGraphObjTypeLabel,
         /* strType             */ ZS::Draw::graphObjType2Str(EGraphObjTypeLabel),
-        /* strObjName          */ i_pGraphObj->name() + ".Label." + i_strKey,
+        /* strObjName          */ "Label." + i_strKey,
         /* drawSettings        */ CDrawSettings(),
         /* idxTreeEntryType    */ EIdxTreeEntryType::Leave ),
     QGraphicsSimpleTextItem(i_strText),
@@ -149,6 +149,11 @@ CGraphObjLabel::~CGraphObjLabel()
         /* strObjName   */ m_strName,
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
+
+    if( m_pGraphObjParent != nullptr )
+    {
+        m_pGraphObjParent->onLabelDestroying(this);
+    }
 
     m_pGraphObjParent = nullptr;
     m_pGraphicsItemParent = nullptr;
@@ -260,7 +265,7 @@ void CGraphObjLabel::setText( const QString& i_strText )
         updateSelectionPoints();
     }
 
-    updateLabelPositions();
+    //updateLabelPositions();
 
 } // setText
 
@@ -364,7 +369,7 @@ void CGraphObjLabel::onDrawSettingsChanged()
             updateSelectionPoints();
         }
 
-        updateLabelPositions();
+        //updateLabelPositions();
     }
 
 } // onDrawSettingsChanged
@@ -451,8 +456,8 @@ bool CGraphObjLabel::isHit( const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo ) 
     if( bIsHit && o_pHitInfo != nullptr )
     {
         o_pHitInfo->m_editMode = EEditMode::Move;
-        o_pHitInfo->m_editResizeMode = EEditResizeMode::Undefined;
-        o_pHitInfo->m_selPtBoundingRect = ESelectionPoint::Undefined;
+        o_pHitInfo->m_editResizeMode = EEditResizeMode::None;
+        o_pHitInfo->m_selPtBoundingRect = ESelectionPoint::None;
         o_pHitInfo->m_idxPolygonShapePoint = -1;
         o_pHitInfo->m_idxLineSegment = -1;
         o_pHitInfo->m_ptSelected = rctBounding.center();
@@ -1153,7 +1158,7 @@ QVariant CGraphObjLabel::itemChange( GraphicsItemChange i_change, const QVariant
     {
         if( m_pGraphObjParent != nullptr && m_pGraphicsItemParent != nullptr )
         {
-            m_pGraphObjParent->updateLabelDistance(m_strKey);
+            m_pGraphObjParent->updateLabelDistance(this);
         }
 
         updateEditInfo();

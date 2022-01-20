@@ -185,14 +185,14 @@ SErrResultInfo CObjFactoryTransistor::saveGraphObj(
     // Labels
     //----------------
 
-    QHash<QString,SGraphObjLabel*> arpLabels = i_pGraphObj->getLabels();
+    //QHash<QString,SGraphObjLabel*> arpLabels = i_pGraphObj->getLabels();
 
-    if( arpLabels.size() > 0 )
-    {
-        i_xmlStreamWriter.writeStartElement("Labels");
-        errResultInfo = saveGraphObjLabels( arpLabels, i_xmlStreamWriter );
-        i_xmlStreamWriter.writeEndElement();
-    }
+    //if( arpLabels.size() > 0 )
+    //{
+    //    i_xmlStreamWriter.writeStartElement("Labels");
+    //    errResultInfo = saveGraphObjLabels( arpLabels, i_xmlStreamWriter );
+    //    i_xmlStreamWriter.writeEndElement();
+    //}
 
     if( mthTracer.isActive(ETraceDetailLevelMethodArgs) )
     {
@@ -377,11 +377,10 @@ CGraphObj* CObjFactoryTransistor::loadGraphObj(
             #pragma message(__TODO__"The methods onGraphObjCreationFinished and acceptCurrentAsOriginalCoors should become protected and it should not be necessary to explicitly call them")
             pGraphObj->acceptCurrentAsOriginalCoors();
 
-            if( arpLabels.size() > 0 )
-            {
-                pGraphObj->addLabels(arpLabels);
-            }
-
+            //if( arpLabels.size() > 0 )
+            //{
+            //    pGraphObj->addLabels(arpLabels);
+            //}
         } // if( !strText.isEmpty() && bPosValid )
 
         if( arpLabels.size() > 0 )

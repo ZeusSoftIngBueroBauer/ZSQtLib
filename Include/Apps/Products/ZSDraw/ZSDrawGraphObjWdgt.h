@@ -85,6 +85,9 @@ public: // must overridables of base class CGraphObj
     virtual void setHeight( double i_fHeight );
     virtual void setSize( double i_fWidth, double i_fHeight );
     virtual void setSize( const QSizeF& i_size );
+    virtual bool hasBoundingRect() const { return false; }
+    virtual bool hasLineShapePoints() const { return false; }
+    virtual bool hasRotationSelectionPoints() const { return false; }
 public: // must overridables of base class QGraphicsItem, overriding implementation of QGraphicsWidget
     virtual QRectF boundingRect() const;
     virtual void paint( QPainter* i_pPainter, const QStyleOptionGraphicsItem* i_pStyleOption, QWidget* i_pWdgt = nullptr );

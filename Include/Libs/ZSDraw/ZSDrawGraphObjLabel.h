@@ -49,43 +49,6 @@ namespace Draw
 {
 class CDrawSettings;
 
-//==============================================================================
-struct ZSDRAWDLL_API SGraphObjLabel
-//==============================================================================
-{
-public: // ctors
-    SGraphObjLabel() :
-        m_strKey(),
-        m_strText(),
-        m_selPt(ESelectionPoint::Undefined),
-        m_sizDist(),
-        m_bDistValid(false),
-        m_bVisible(false),
-        m_pGraphObjLabel(nullptr)
-    {
-    }
-    SGraphObjLabel( const QString& i_strKey, const QString& i_strText, ESelectionPoint i_selPt = ESelectionPoint::TopCenter ) :
-        m_strKey(i_strKey),
-        m_strText(i_strText),
-        m_selPt(i_selPt),
-        m_sizDist(),
-        m_bDistValid(false),
-        m_bVisible(false),
-        m_pGraphObjLabel(nullptr)
-    {
-    }
-public: // struct members
-    QString             m_strKey;
-    QString             m_strText;
-    CEnumSelectionPoint m_selPt;        // Selection point of the parent item the label is aligned to.
-    QSizeF              m_sizDist;      // Distance between the scene position of the label and selection point of parent item.
-    bool                m_bDistValid;   // If the graphic item is created for the first time the distance will be calculated and stored for following show events.
-    bool                m_bVisible;
-    CGraphObjLabel*     m_pGraphObjLabel;
-
-}; // struct SGraphObjLabel
-
-
 //******************************************************************************
 /*!
     @note Labels should not belong as child to the graphics items for which the
@@ -135,6 +98,9 @@ public: // must overridables of base class CGraphObj
     virtual void setHeight( double /*i_fHeight*/ ) {}
     virtual void setSize( double /*i_fWidth*/, double /*i_fHeight*/ ) {}
     virtual void setSize( const QSizeF& /*i_size*/ ) {}
+    virtual bool hasBoundingRect() const { return false; }
+    virtual bool hasLineShapePoints() const { return false; }
+    virtual bool hasRotationSelectionPoints() const { return false; }
 public: // overridables of base class CGraphObj
     virtual void setRotationAngleInDegree( double /*i_fRotAngle_deg*/ ) {} // not supported for labels
 public: // must overridables of base class CGraphObj
@@ -165,11 +131,13 @@ protected: // overridables of base class QGraphicsItem
 protected: // class members
     static qint64 s_iInstCount;
 protected: // instance members
-    QString         m_strKey;
-    CGraphObj*      m_pGraphObjParent;
-    QGraphicsItem*  m_pGraphicsItemParent;
-    ESelectionPoint m_selPtGraphObjParent;      // Selection point of parent item the label is aligned to.
-    //QSizeF        m_sizGraphObjParentDist;    // With this distance to the scene position of the label.
+    QString         m_strKey;                   /*!< Key of the label within the list of labels of the graphical objects. */
+    CGraphObj*      m_pGraphObjParent;          /*!< Graphical parent object this label belongs to. */
+    QGraphicsItem*  m_pGraphicsItemParent;      /*!< Graphical parent object this label belongs to.
+                                                     Same as m_pGraphObjParent but stored to avoid unnecessary
+                                                     dynamic casts during runtime. */
+    ESelectionPoint m_selPtGraphObjParent;      /*!< Selection point of parent item the label is aligned to. */
+    //QSizeF        m_sizGraphObjParentDist;    /*!< Distance to the selection point the label is aligned to. */
 
 }; // class CGraphObjLabel
 

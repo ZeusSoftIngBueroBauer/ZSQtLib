@@ -3027,13 +3027,12 @@ void CMainWindow::closeEvent( QCloseEvent* i_pEv )
 
     if( m_bDrawingChangedSinceLastSave )
     {
-        QString                     strMsgText;
-        QMessageBox::StandardButton msgBoxBtn;
+        QString strMsgText;
 
         strMsgText  = "The drawing has been modified.\n";
         strMsgText += "Do you want to save your changes?";
 
-        msgBoxBtn = QMessageBox::warning(
+        QMessageBox::StandardButton msgBoxBtn = QMessageBox::warning(
             /* pWdgtParent */ this,
             /* strTitle    */ QApplication::applicationName(),
             /* strText     */ strMsgText,
@@ -3843,7 +3842,7 @@ void CMainWindow::onActionEditSelectToggled( bool i_bChecked )
         m_pActDrawChecked = m_pActEditSelect;
 
         m_pDrawingScene->setCurrentDrawingTool(nullptr);
-        m_pDrawingScene->setMode( EMode::Ignore, EEditTool::Select, EEditMode::Undefined, EEditResizeMode::Undefined );
+        m_pDrawingScene->setMode( EMode::Ignore, EEditTool::Select, EEditMode::None, EEditResizeMode::None );
 
     } // if( i_bChecked )
 
@@ -3855,7 +3854,7 @@ void CMainWindow::onActionEditSelectToggled( bool i_bChecked )
         }
         if( m_pDrawingScene->getEditTool() == EEditTool::Select )
         {
-            m_pDrawingScene->setMode( EMode::Ignore, EEditTool::Undefined, EEditMode::Undefined, EEditResizeMode::Undefined );
+            m_pDrawingScene->setMode( EMode::Ignore, EEditTool::None, EEditMode::None, EEditResizeMode::None );
         }
     } // if( !i_bChecked )
 
@@ -5663,7 +5662,7 @@ void CMainWindow::updateStatusBar()
 
             strEditInfo += "Create " + strObjFactory;
         }
-        else if( editTool != EEditTool::Undefined )
+        else if( editTool != EEditTool::None )
         {
             strEditInfo += editTool.toString();
         }
@@ -5685,7 +5684,7 @@ void CMainWindow::updateStatusBar()
         QGraphicsItem*        pGraphicsItem = nullptr;
         CGraphObj*            pGraphObj = nullptr;
 
-        if( editMode != EEditMode::Undefined )
+        if( editMode != EEditMode::None )
         {
             if( arGraphicsItemSelected.size() > 0 )
             {
@@ -5718,7 +5717,7 @@ void CMainWindow::updateStatusBar()
                     }
                     strEditModeInfo += editResizeMode.toString();
                 }
-                else if( editMode != EEditMode::Undefined )
+                else if( editMode != EEditMode::None )
                 {
                     if( !strEditModeInfo.isEmpty() )
                     {
@@ -5736,7 +5735,7 @@ void CMainWindow::updateStatusBar()
                 strEditModeInfo += editMode.toString();
             }
 
-        } // if( m_editMode != EEditMode::Undefined )
+        } // if( m_editMode != EEditMode::None )
 
         if( m_pLblStatusBarDrawingSceneEditMode != nullptr )
         {

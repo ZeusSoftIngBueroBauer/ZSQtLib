@@ -376,9 +376,9 @@ void CGraphObjDiode::setCutOffVoltage( double i_fCutOffVoltage_V )
     {
         m_fCutOffVoltage_V = i_fCutOffVoltage_V;
 
-        if( m_arpLabels.contains(c_strKeyLabelCutOffVoltage) )
+        if( m_arpUserLabels.contains(c_strKeyLabelCutOffVoltage) )
         {
-            SGraphObjLabel* pGraphObjLabel = m_arpLabels[c_strKeyLabelCutOffVoltage];
+            SGraphObjLabel* pGraphObjLabel = m_arpUserLabels[c_strKeyLabelCutOffVoltage];
 
             if( pGraphObjLabel->m_pGraphObjLabel != nullptr )
             {
@@ -401,31 +401,21 @@ void CGraphObjDiode::showCutOffVoltage( ESelectionPoint i_selPtPos )
 {
     QString str = QString::number(m_fCutOffVoltage_V) + "V";
 
-    if( !m_arpLabels.contains(c_strKeyLabelCutOffVoltage) )
-    {
-        addLabel(c_strKeyLabelCutOffVoltage,str,i_selPtPos);
-    }
-    else
-    {
-        setLabelText(c_strKeyLabelCutOffVoltage,str);
-    }
-
-    showLabel(c_strKeyLabelCutOffVoltage);
-
-} // showCutOffVoltage
+    showUserDefinedLabel(c_strKeyLabelCutOffVoltage, str, i_selPtPos);
+}
 
 //------------------------------------------------------------------------------
 void CGraphObjDiode::hideCutOffVoltage()
 //------------------------------------------------------------------------------
 {
-    hideLabel(c_strKeyLabelCutOffVoltage);
+    hideUserDefinedLabel(c_strKeyLabelCutOffVoltage);
 }
 
 //------------------------------------------------------------------------------
 bool CGraphObjDiode::isCutOffVoltageVisible() const
 //------------------------------------------------------------------------------
 {
-    return isLabelVisible(c_strKeyLabelCutOffVoltage);
+    return isUserDefinedLabelVisible(c_strKeyLabelCutOffVoltage);
 }
 
 /*==============================================================================

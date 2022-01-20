@@ -400,9 +400,9 @@ void CGraphObjSwitch::setState( EState i_state )
             m_pLinSwitch->setAlignment(m_idxLinSwitchAlignmentTop,alignment);
         }
 
-        if( m_arpLabels.contains(c_strKeyLabelState) )
+        if( m_arpUserLabels.contains(c_strKeyLabelState) )
         {
-            SGraphObjLabel* pGraphObjLabel = m_arpLabels[c_strKeyLabelState];
+            SGraphObjLabel* pGraphObjLabel = m_arpUserLabels[c_strKeyLabelState];
 
             if( pGraphObjLabel->m_pGraphObjLabel != nullptr )
             {
@@ -454,31 +454,21 @@ void CGraphObjSwitch::showState( ESelectionPoint i_selPtPos )
 {
     QString str = State2Str(m_state);
 
-    if( !m_arpLabels.contains(c_strKeyLabelState) )
-    {
-        addLabel(c_strKeyLabelState,str,i_selPtPos);
-    }
-    else
-    {
-        setLabelText(c_strKeyLabelState,str);
-    }
-
-    showLabel(c_strKeyLabelState);
-
-} // showState
+    showUserDefinedLabel(c_strKeyLabelState, str, i_selPtPos);
+}
 
 //------------------------------------------------------------------------------
 void CGraphObjSwitch::hideState()
 //------------------------------------------------------------------------------
 {
-    hideLabel(c_strKeyLabelState);
+    hideUserDefinedLabel(c_strKeyLabelState);
 }
 
 //------------------------------------------------------------------------------
 bool CGraphObjSwitch::isStateVisible() const
 //------------------------------------------------------------------------------
 {
-    return isLabelVisible(c_strKeyLabelState);
+    return isUserDefinedLabelVisible(c_strKeyLabelState);
 }
 
 /*==============================================================================
