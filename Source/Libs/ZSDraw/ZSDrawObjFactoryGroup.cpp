@@ -164,7 +164,7 @@ SErrResultInfo CObjFactoryGroup::saveGraphObj(
     // Labels
     //----------------
 
-    //QHash<QString,SGraphObjLabel*> arpLabels = pGraphObjGroup->getLabels();
+    //QHash<QString, CGraphObjLabel*> arpLabels = pGraphObjGroup->getLabels();
 
     //if( arpLabels.size() > 0 )
     //{
@@ -308,16 +308,16 @@ CGraphObj* CObjFactoryGroup::loadGraphObj(
 
     if( i_pDrawingScene->findGraphObj(i_strObjId) == nullptr )
     {
-        QXmlStreamAttributes           xmlStreamAttrs;
-        QString                        strElemName;
-        QString                        strElemText;
-        bool                           bConverted;
-        CDrawSettings                  drawSettings(EGraphObjTypeGroup);
-        QPointF                        ptPos;
-        bool                           bPosValid = false;
-        double                         fRotAngle_deg = 0.0;
-        double                         fZValue = 0.0;
-        QHash<QString,SGraphObjLabel*> arpLabels;
+        QXmlStreamAttributes            xmlStreamAttrs;
+        QString                         strElemName;
+        QString                         strElemText;
+        bool                            bConverted;
+        CDrawSettings                   drawSettings(EGraphObjTypeGroup);
+        QPointF                         ptPos;
+        bool                            bPosValid = false;
+        double                          fRotAngle_deg = 0.0;
+        double                          fZValue = 0.0;
+        QHash<QString, CGraphObjLabel*> arpLabels;
 
         pGraphObjGroup = new CGraphObjGroup(
             /* pDrawingScene */ i_pDrawingScene,
@@ -577,8 +577,8 @@ CGraphObj* CObjFactoryGroup::loadGraphObj(
 
         if( arpLabels.size() > 0 )
         {
-            QHashIterator<QString,SGraphObjLabel*> itLabels(arpLabels);
-            SGraphObjLabel*                        pGraphObjLabel;
+            QHashIterator<QString, CGraphObjLabel*> itLabels(arpLabels);
+            CGraphObjLabel* pGraphObjLabel;
 
             while( itLabels.hasNext() )
             {
@@ -586,7 +586,7 @@ CGraphObj* CObjFactoryGroup::loadGraphObj(
 
                 pGraphObjLabel = itLabels.value();
 
-                arpLabels.remove(pGraphObjLabel->m_strKey);
+                arpLabels.remove(pGraphObjLabel->getKey());
 
                 delete pGraphObjLabel;
                 pGraphObjLabel = nullptr;

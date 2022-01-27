@@ -411,12 +411,12 @@ void CGraphObjVoltageSource::setVoltage( double i_fVoltage_V )
 
         if( m_arpUserLabels.contains(c_strKeyLabelVoltage) )
         {
-            SGraphObjLabel* pGraphObjLabel = m_arpUserLabels[c_strKeyLabelVoltage];
+            CGraphObjLabel* pGraphObjLabel = m_arpUserLabels[c_strKeyLabelVoltage];
 
-            if( pGraphObjLabel->m_pGraphObjLabel != nullptr )
+            if( pGraphObjLabel != nullptr )
             {
                 QString str = QString::number(m_fVoltage_V) + "V";
-                pGraphObjLabel->m_pGraphObjLabel->setText(str);
+                pGraphObjLabel->setText(str);
             }
         }
     } // if( m_fVoltage_V != i_fVoltage_V )

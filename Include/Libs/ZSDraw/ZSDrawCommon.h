@@ -274,8 +274,8 @@ typedef ZS::System::CEnum<ESelectionPoint> CEnumSelectionPoint;
 
 ZSDRAWDLL_API void setSelectionPointRotateDistance( double i_fDist_px );
 ZSDRAWDLL_API double getSelectionPointRotateDistance();
-ZSDRAWDLL_API QPointF getSelectionPoint( const QLineF& i_lin, ESelectionPoint i_selPt );
-ZSDRAWDLL_API QPointF getSelectionPoint( const QRectF& i_rct, ESelectionPoint i_selPt );
+ZSDRAWDLL_API QPointF getSelectionPointCoors( const QLineF& i_lin, ESelectionPoint i_selPt );
+ZSDRAWDLL_API QPointF getSelectionPointCoors( const QRectF& i_rct, ESelectionPoint i_selPt );
 ZSDRAWDLL_API QPointF getSelectionPointOpposite( const QRectF& i_rct, ESelectionPoint i_selPt );
 ZSDRAWDLL_API ESelectionPoint getSelectionPointOpposite( ESelectionPoint i_selPt );
 ZSDRAWDLL_API CEnumEditMode selectionPoint2EditMode( ESelectionPoint i_selPt );

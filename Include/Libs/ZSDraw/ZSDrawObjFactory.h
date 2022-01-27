@@ -56,7 +56,7 @@ class CDrawingScene;
 class CDrawSettings;
 class CGraphObj;
 class CGraphObjGroup;
-struct SGraphObjLabel;
+class CGraphObjLabel;
 
 //******************************************************************************
 class ZSDRAWDLL_API CObjFactory : public QObject, public ZS::System::CIdxTreeEntry
@@ -138,8 +138,8 @@ public: // overridables
     virtual bool hasInitialSize() const { return false; }
     virtual QSizeF getInitialSize() const { return QSizeF(); }
 protected: // overridables
-    virtual ZS::System::SErrResultInfo saveGraphObjLabels( const QHash<QString,SGraphObjLabel*>& i_arpLabels, QXmlStreamWriter& i_xmlStreamWriter );
-    virtual QHash<QString,SGraphObjLabel*> loadGraphObjLabels( QXmlStreamReader& i_xmlStreamReader, ZS::System::SErrResultInfo& io_errResultInfo );
+    virtual ZS::System::SErrResultInfo saveGraphObjLabels( const QHash<QString, CGraphObjLabel*>& i_arpLabels, QXmlStreamWriter& i_xmlStreamWriter );
+    virtual QHash<QString, CGraphObjLabel*> loadGraphObjLabels( QXmlStreamReader& i_xmlStreamReader, ZS::System::SErrResultInfo& io_errResultInfo );
 protected: // class members
     static int                   s_iInstCount;
     static ZS::System::CIdxTree* s_pIdxTree;

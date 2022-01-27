@@ -13,8 +13,10 @@ Die Klasse ZS::Draw::CDrawingScene ist von QGraphicsScene abgeleitet.
 Die Klasse ZS::Draw::CDrawingView is von QGraphicsView abgeleitet.
 
 Grafische Draw Objekte sind sowohl von QQraphicsItems abgeleitet als auch von der Klassen CGraphObj abgeleitet.
-Da CGraphObj wiederum von CIdxTreeEntry abgeleitet ist können die grafischen Draw Objekte sowohl dem Datencontainer
-QGraphicsScene als auch einem Index Tree der von QGraphicsScene abgeleiteten Klasse CDrawingScene hinzugefügt werden.
+CGraphObj wiederum ist von der Klasse CIdxTreeEntry abgeleitet, da die grafischen Draw Objekte nicht nur dem
+Datencontainer QGraphicsScene sondern auch einem Index Tree der von QGraphicsScene abgeleiteten Klasse
+CDrawingScene hinzugefügt werden. Über den Index Tree können die grafischen Objekte anhand ihres Namens
+referenziert und hierarchisch sortiert werden.
 
 Grafische Draw Objekte können auf drei verschiedene Arten erzeugt werden:
 
@@ -95,6 +97,11 @@ grafische Objekte auf der Zeichenfläche mittels Maus erzeugt werden.
 1. Point
 --------
 
+Ein Point besteht nur aus einem Punkt, der nicht als Polygon behandelt wird.
+Das Bounding Rectangle des Punktes ist der Punkt selbst.
+Da alle Selection Points des Bounding Rectangles übereinander liegen würden,
+wird der Center Point des des Bounding Rectangles verwendet.
+
 Betrachten wir das Malen eines Punktes, das das einfachste, grafische Objekt darstellt.
 
 Über den Aufruf CDrawingScene::setCurrentDrawingTool wird zunächst die Objekt Faktory aktiviert, über die
@@ -145,6 +152,22 @@ Dies geschieht durch einen Mouse Click auf das Objekt oder durch expliziten Aufr
 Fuer die selektierten Objekte muessen Mouse Button Events gesetzt werden, die es akzeptieren soll, damit die
 Qt Graphics Scene den Mouse Click Event unmittelbar als auch nachfolgende Mouse Events an das Item schickt.
 
+Selection Points:
+-----------------
+
+Selection Points werden zum einen für jeden Polygon Punkt eines Objekts erzeugt.
+Zum Anderen auch für die markanten Punkte des Bounding Rectangles sowie zwei
+Rotation Points zentriert jeweils oberhalb und unterhalt des Bounding Rectangles.
+
+Folgende Tabelle zeigt, welche Selection Points erzeugt werden, wenn das jeweilige
+grafische Objekt selektiert wird.
+
+Objekt-Type | Polygon | BoundingRectangle | RotationPoints
+------------+---------+-------------------+---------------
+Point       | -       | Center            | -
+Line        | +       | -                 | -
+            |         |                   | -
+
 Verschieben von Objekten
 ========================
 
@@ -163,6 +186,45 @@ Gruppieren von Objekten
 
 Löschen der Objekte
 ===================
+
+Labels
+======
+
+Jedem grafischen Objekt können verschiedene Labels zugewiesen werden.
+Die Labels werden nach einem Selektion Point ausgerichtet. Welcher Selection Point sinnvoll ist,
+hängt zum einen vom Labeltyp als auch vom Typ des grafischen Objekts ab.
+
+Labels selbst haben keine Selektion Points.
+
+Folgende Label-Typen können an ein grafisches Objekt gebunden werden:
+
+- Name und Path Labels zeigen den Namen des Objektes an, wobei das Path-Label auch den Namen des Objektes anzeigt.
+  Auch wenn es möglich ist, macht es wenig Sinn, Name und Path Label gleichzeitig anzuzeigen.
+  Name und Path Labels können je nach Objekt Typ an folgende Selection Points gebunden werden:
+  Point ... BoundingRectangle.CenterPoint
+  Group ... BoundingRectangle.All
+
+- Position Labels zeigen die Position von Selection Points des Objektes an.
+  Jedem Selection Point(bis auf die Rotation Points, falls existent) kann ein Position Label zugewiesen werden.
+
+- Dimension Line Labels zeigen die Ausmasse des Objektes wie Breite oder Höhe des Bounding Rectangles des Objekts an.
+  Die Breite des Bounding Rectangles wird entweder an die obere oder untere Begrenzungslinie des Bounding Rectangles gebunden.
+  Die Hoehe des Bounding Rectangles wird entweder an die linke oder rechte Begrenzungslinie des Bounding Rectangles gebunden.
+  Der Rotationswinkel ist immer an den Center Point des Bounding Rectangles und an einen der Center Points der Begrenzungslinien gebunden.
+
+- User Defined Labels zeigen benutzerdefinierten Text an und können an jeden existierenden Selection Point
+  gebunden werden.
+
+Zwischen Label und Selektion Point existiert eine virtuelle, normalerweise nicht sichtbare Verbindungslinie.
+Diese Verbindungslinie wird sichtbar, wenn über das Label "gehoovert" wird oder wenn das Label selektiert wird.
+Durch Aufruf von "show<LabelType>" und "hide<LabelType>" können diese Verbindungslinien dauerhaft ein- und
+ausgeschaltet werden. Die Verbindungsline wird durch das Label gezeichnet (nicht durch das Objekt, an das das
+Label gebunden ist).
+
+Wird das grafische Objekt verschoben, an das das Label gebunden ist, muss der Abstand zwischen Label und
+dem grafischen Objekt beibehalten werden. Hierzu speichert das Label den aktuellen Abstand zum Selection
+Point des Objekts ab, mit dem das Label verankert ist. Das verschobene Objekt aktualisiert unter Beibehaltung
+des Abstands die Position all seiner Labels (updateLabelPositions).
 
 Benutzerdefinierte Objekte
 ==========================

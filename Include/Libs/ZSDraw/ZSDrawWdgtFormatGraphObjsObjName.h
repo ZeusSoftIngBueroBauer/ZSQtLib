@@ -87,11 +87,9 @@ private: // instance members
     QHBoxLayout*             m_pLytName;
     QLabel*                  m_pLblName;
     QLineEdit*               m_pEdtName;
-    QCheckBox*               m_pChkNameVisible;
     QHBoxLayout*             m_pLytPath;
     QLabel*                  m_pLblPath;
     QLineEdit*               m_pEdtPath;
-    QCheckBox*               m_pChkPathVisible;
     // Trace
     ZS::Trace::CTrcAdminObj* m_pTrcAdminObj;
 

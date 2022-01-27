@@ -355,12 +355,12 @@ void CGraphObjResistor::setResistance( double i_fResistance_Ohm )
 
         if( m_arpUserLabels.contains(c_strKeyLabelResistance) )
         {
-            SGraphObjLabel* pGraphObjLabel = m_arpUserLabels[c_strKeyLabelResistance];
+            CGraphObjLabel* pGraphObjLabel = m_arpUserLabels[c_strKeyLabelResistance];
 
-            if( pGraphObjLabel->m_pGraphObjLabel != nullptr )
+            if( pGraphObjLabel != nullptr )
             {
                 QString str = QString::number(m_fResistance_Ohm) + "Ohm";
-                pGraphObjLabel->m_pGraphObjLabel->setText(str);
+                pGraphObjLabel->setText(str);
             }
         }
 

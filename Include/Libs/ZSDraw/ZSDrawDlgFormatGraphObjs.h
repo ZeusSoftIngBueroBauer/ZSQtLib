@@ -89,6 +89,7 @@ public: // type definitions and constants
     static const QString c_strWdgtTextStyle;
     static const QString c_strWdgtGeometry;
     static const QString c_strWdgtText;
+    static const QString c_strWdgtLabels;
 public: // ctors and dtor
     CDlgFormatGraphObjs(
         CDrawingScene* i_pDrawingScene,

@@ -752,7 +752,7 @@ void CGraphObjWdgt::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
 
                 if( pGraphObjSelPt != nullptr )
                 {
-                    ptSel = ZS::Draw::getSelectionPoint(rctItemNew,selPt.enumerator());
+                    ptSel = ZS::Draw::getSelectionPointCoors(rctItemNew,selPt.enumerator());
                     ptSel = mapToScene(ptSel);
                     pGraphObjSelPt->setPos(ptSel);
                 }
@@ -945,7 +945,7 @@ QVariant CGraphObjWdgt::itemChange( GraphicsItemChange i_change, const QVariant&
 
             if( pGraphObjSelPt != nullptr )
             {
-                ptSel = getSelectionPoint(selPt.enumerator());
+                ptSel = getSelectionPointCoors(selPt.enumerator());
                 ptSel = mapToScene(ptSel);
                 pGraphObjSelPt->setPos(ptSel);
             }
@@ -975,7 +975,7 @@ QVariant CGraphObjWdgt::itemChange( GraphicsItemChange i_change, const QVariant&
 
             if( pGraphObjSelPt != nullptr )
             {
-                ptSel = getSelectionPoint(selPt.enumerator());
+                ptSel = getSelectionPointCoors(selPt.enumerator());
                 ptSel = mapToScene(ptSel);
                 pGraphObjSelPt->setPos(ptSel);
 

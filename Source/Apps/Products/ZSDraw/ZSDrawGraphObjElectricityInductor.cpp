@@ -326,12 +326,12 @@ void CGraphObjInductor::setInductance( double i_fInductance_H )
 
         if( m_arpUserLabels.contains(c_strKeyLabelInductance) )
         {
-            SGraphObjLabel* pGraphObjLabel = m_arpUserLabels[c_strKeyLabelInductance];
+            CGraphObjLabel* pGraphObjLabel = m_arpUserLabels[c_strKeyLabelInductance];
 
-            if( pGraphObjLabel->m_pGraphObjLabel != nullptr )
+            if( pGraphObjLabel != nullptr )
             {
                 QString str = QString::number(m_fInductance_H) + "H";
-                pGraphObjLabel->m_pGraphObjLabel->setText(str);
+                pGraphObjLabel->setText(str);
             }
         }
 

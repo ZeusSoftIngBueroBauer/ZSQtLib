@@ -412,7 +412,7 @@ double ZS::Draw::getSelectionPointRotateDistance()
 }
 
 //------------------------------------------------------------------------------
-QPointF ZS::Draw::getSelectionPoint( const QLineF& i_lin, ESelectionPoint /*i_selPt*/ )
+QPointF ZS::Draw::getSelectionPointCoors( const QLineF& i_lin, ESelectionPoint /*i_selPt*/ )
 //------------------------------------------------------------------------------
 {
     double fx = i_lin.p1().x() + i_lin.dx()/2.0;
@@ -422,10 +422,10 @@ QPointF ZS::Draw::getSelectionPoint( const QLineF& i_lin, ESelectionPoint /*i_se
 
     return pt;
 
-} // getSelectionPoint
+} // getSelectionPointCoors
 
 //------------------------------------------------------------------------------
-QPointF ZS::Draw::getSelectionPoint( const QRectF& i_rct, ESelectionPoint i_selPt )
+QPointF ZS::Draw::getSelectionPointCoors( const QRectF& i_rct, ESelectionPoint i_selPt )
 //------------------------------------------------------------------------------
 {
     QPointF pt = i_rct.center();
@@ -495,7 +495,7 @@ QPointF ZS::Draw::getSelectionPoint( const QRectF& i_rct, ESelectionPoint i_selP
 
     return pt;
 
-} // getSelectionPoint
+} // getSelectionPointCoors
 
 //------------------------------------------------------------------------------
 QPointF ZS::Draw::getSelectionPointOpposite( const QRectF& i_rct, ESelectionPoint i_selPt )

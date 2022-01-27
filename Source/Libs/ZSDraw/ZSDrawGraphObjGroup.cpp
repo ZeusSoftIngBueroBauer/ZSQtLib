@@ -2911,8 +2911,8 @@ QRectF CGraphObjGroup::boundingRect() const
 
     //if( m_bIsHit || isSelected() )
     //{
-    //    QHashIterator<QString,SGraphObjLabel*> itLabels(m_arpLabels);
-    //    SGraphObjLabel* pGraphObjLabel;
+    //    QHashIterator<QString, CGraphObjLabel*> itLabels(m_arpLabels);
+    //    CGraphObjLabel* pGraphObjLabel;
     //    QRectF          rctLabel;
     //    QPolygonF       plgLabel;
 
@@ -2977,10 +2977,10 @@ void CGraphObjGroup::paint(
 
     i_pPainter->save();
 
+    QPen pn(Qt::DotLine);
+
     if( m_bBoundRectVisible || (m_pDrawingScene->getMode() == EMode::Edit && (m_bIsHit || isSelected())) )
     {
-        QPen pn(Qt::DotLine);
-
         if( m_bIsHit || isSelected() )
         {
             pn.setColor(Qt::blue);
@@ -3025,28 +3025,6 @@ void CGraphObjGroup::paint(
                 i_pPainter->drawLine( ptRctM, ptRotM );
             }
         } // if( isSelected() )
-
-        //QHashIterator<QString,SGraphObjLabel*> itLabels(m_arpLabels);
-        //SGraphObjLabel*                        pGraphObjLabel;
-
-        //QPointF ptSelPt;
-        //QPointF ptLabelSelPt;
-
-        //while( itLabels.hasNext() )
-        //{
-        //    itLabels.next();
-        //    pGraphObjLabel = itLabels.value();
-
-        //    if( pGraphObjLabel->m_pGraphObjLabel != nullptr )
-        //    {
-        //        ptSelPt = getSelectionPoint(pGraphObjLabel->m_selPt.enumerator());
-
-        //        ptLabelSelPt = pGraphObjLabel->m_pGraphObjLabel->getSelectionPoint(ESelectionPoint::Center);
-        //        ptLabelSelPt = mapFromItem( pGraphObjLabel->m_pGraphObjLabel, ptLabelSelPt );
-
-        //        i_pPainter->drawLine( ptSelPt, ptLabelSelPt );
-        //    }
-        //}
     } // if( m_pDrawingScene->getMode() == EMode::Edit && (m_bIsHit || isSelected()) )
 
     i_pPainter->restore();
@@ -4136,19 +4114,19 @@ QVariant CGraphObjGroup::itemChange( GraphicsItemChange i_change, const QVariant
         //    {
         //        if( idxSelPt == ESelectionPoint::RotateTop && m_fScaleFacYCurr != 0.0 )
         //        {
-        //            ptSel = getSelectionPoint(m_rctCurr,ESelectionPoint::TopCenter);
+        //            ptSel = getSelectionPointCoors(m_rctCurr,ESelectionPoint::TopCenter);
         //            ptSel.setY( ptSel.y() - getSelectionPointRotateDistance()/m_fScaleFacYCurr );
         //            ptSel = mapToScene(ptSel);
         //        }
         //        else if( idxSelPt == ESelectionPoint::RotateBottom && m_fScaleFacYCurr != 0.0 )
         //        {
-        //            ptSel = getSelectionPoint(m_rctCurr,ESelectionPoint::BottomCenter);
+        //            ptSel = getSelectionPointCoors(m_rctCurr,ESelectionPoint::BottomCenter);
         //            ptSel.setY( ptSel.y() + getSelectionPointRotateDistance()/m_fScaleFacYCurr );
         //            ptSel = mapToScene(ptSel);
         //        }
         //        else
         //        {
-        //            ptSel = getSelectionPoint(m_rctCurr,selPt);
+        //            ptSel = getSelectionPointCoors(m_rctCurr,selPt);
         //            ptSel = mapToScene(ptSel);
         //        }
         //        pGraphObjSelPt->setPos(ptSel);
@@ -4234,9 +4212,9 @@ QVariant CGraphObjGroup::itemChange( GraphicsItemChange i_change, const QVariant
             }
         }
 
-        //QHashIterator<QString,SGraphObjLabel*> itLabels(m_arpLabels);
+        //QHashIterator<QString, CGraphObjLabel*> itLabels(m_arpLabels);
 
-        //SGraphObjLabel* pGraphObjLabel;
+        //CGraphObjLabel* pGraphObjLabel;
 
         //while( itLabels.hasNext() )
         //{

@@ -58,7 +58,8 @@ CWdgtFormatGraphObjs::CWdgtFormatGraphObjs(
     m_pGraphicsItem(nullptr),
     m_drawSettings(),
     // List of popup widgets which have to be closed on activating other widgets
-    m_arpWdgtsPopup()
+    m_arpWdgtsPopup(),
+    m_bApplyingChanges(false)
 {
     if( m_pGraphObj != nullptr )
     {
@@ -95,6 +96,7 @@ CWdgtFormatGraphObjs::~CWdgtFormatGraphObjs()
     m_pGraphicsItem = nullptr;
     //m_drawSettings;
     m_arpWdgtsPopup.clear();
+    m_bApplyingChanges = false;
 
 } // dtor
 
@@ -104,9 +106,20 @@ public: // must overridables
 
 #if 0
 //------------------------------------------------------------------------------
+/*! On changing a setting of the graphical object "onGraphObjChanged" will be called as reentry.
+    "onGraphObjChanged" will modify the states of the GUI controls. E.g. if the "NameLabelVisible" and
+    "NameLabelAnchorLineVisible" CheckBoxes are checked and you call "showLabel" "onGraphObjChanged"
+    is immediately called resetting the check state of "NameLabelAnchorLineVisible".
+    To avoid this undesired correction the "onGraphObjChanged" method must be disabled while applying
+    changes but will be called after all changes have been applied. For this the flag "m_bApplyingChanges"
+    of the base class "CWdgtFormatGraphObjs" is set at the beginning, reset at the end of "applyChanges"
+    and afterwards "onGraphObjChanged" is explicitly called.
+*/
 void CWdgtFormatGraphObjs::applyChanges()
 //------------------------------------------------------------------------------
 {
+    m_bApplyingChanges = true;
+
     if( m_pDrawingScene != nullptr )
     {
         m_pDrawingScene->setDrawSettings(m_drawSettingsNew);
@@ -118,6 +131,10 @@ void CWdgtFormatGraphObjs::applyChanges()
     }
 
     m_drawSettingsOld = m_drawSettingsNew;
+
+    m_bApplyingChanges = false;
+
+    onGraphObjChanged();
 
 } // applyChanges
 #endif
@@ -215,6 +232,18 @@ void CWdgtFormatGraphObjs::onDrawingSceneGraphObjChanged(
 {
     if( m_pDrawingScene == i_pDrawingScene && i_pGraphObj == m_pGraphObj )
     {
-        onGraphObjChanged();
+        /*! On changing a setting of the graphical object "onGraphObjChanged" will be called as reentry.
+            "onGraphObjChanged" will modify the states of the GUI controls. E.g. if the "NameLabelVisible" and
+            "NameLabelAnchorLineVisible" CheckBoxes are checked and you call "showLabel" "onGraphObjChanged"
+            is immediately called resetting the check state of "NameLabelAnchorLineVisible".
+            To avoid this undesired correction the "onGraphObjChanged" method must be disabled while applying
+            changes but will be called after all changes have been applied. For this the flag "m_bApplyingChanges"
+            of the base class "CWdgtFormatGraphObjs" is set at the beginning, reset at the end of "applyChanges"
+            and afterwards "onGraphObjChanged" is explicitly called.
+        */
+        if( !m_bApplyingChanges )
+        {
+            onGraphObjChanged();
+        }
     }
 }

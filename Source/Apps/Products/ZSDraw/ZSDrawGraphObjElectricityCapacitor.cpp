@@ -404,12 +404,12 @@ void CGraphObjCapacitor::setCapacitance( double i_fCapacitance_F )
 
         if( m_arpUserLabels.contains(c_strKeyLabelCapacitance) )
         {
-            SGraphObjLabel* pGraphObjLabel = m_arpUserLabels[c_strKeyLabelCapacitance];
+            CGraphObjLabel* pGraphObjLabel = m_arpUserLabels[c_strKeyLabelCapacitance];
 
-            if( pGraphObjLabel->m_pGraphObjLabel != nullptr )
+            if( pGraphObjLabel != nullptr )
             {
                 QString str = QString::number(m_fCapacitance_F) + "F";
-                pGraphObjLabel->m_pGraphObjLabel->setText(str);
+                pGraphObjLabel->setText(str);
             }
         }
     } // if( m_fCapacitance_F != i_fCapacitance_F )

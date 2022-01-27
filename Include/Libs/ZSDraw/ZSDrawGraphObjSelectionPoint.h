@@ -88,7 +88,7 @@ public: // instance methods
 public: // instance methods
     CGraphObj* getSelectedGraphObj() { return m_pGraphObjSelected; }
     void setSelectionPoint( ESelectionPoint i_selPt );
-    ESelectionPoint getSelectionPoint() const { return m_selPt.enumerator(); }
+    ESelectionPoint getSelectionPointCoors() const { return m_selPt.enumerator(); }
     void setShapePointIndex( int i_idxPt );
     int getShapePointIndex() const { return m_idxPt; }
 public: // instance methods

@@ -177,7 +177,7 @@ SErrResultInfo CObjFactoryRect::saveGraphObj(
     // Labels
     //----------------
 
-    //QHash<QString,SGraphObjLabel*> arpLabels = i_pGraphObj->getLabels();
+    //QHash<QString, CGraphObjLabel*> arpLabels = i_pGraphObj->getLabels();
 
     //if( arpLabels.size() > 0 )
     //{
@@ -235,7 +235,7 @@ CGraphObj* CObjFactoryRect::loadGraphObj(
         double        fRotAngle_deg = 0.0;
         double        fZValue = 0.0;
 
-        QHash<QString,SGraphObjLabel*> arpLabels;
+        QHash<QString, CGraphObjLabel*> arpLabels;
 
         while( !i_xmlStreamReader.hasError() && !i_xmlStreamReader.atEnd() )
         {
@@ -353,8 +353,8 @@ CGraphObj* CObjFactoryRect::loadGraphObj(
 
         if( arpLabels.size() > 0 )
         {
-            QHashIterator<QString,SGraphObjLabel*> itLabels(arpLabels);
-            SGraphObjLabel*                        pGraphObjLabel;
+            QHashIterator<QString, CGraphObjLabel*> itLabels(arpLabels);
+            CGraphObjLabel* pGraphObjLabel;
 
             while( itLabels.hasNext() )
             {
@@ -362,7 +362,7 @@ CGraphObj* CObjFactoryRect::loadGraphObj(
 
                 pGraphObjLabel = itLabels.value();
 
-                arpLabels.remove(pGraphObjLabel->m_strKey);
+                arpLabels.remove(pGraphObjLabel->getKey());
 
                 delete pGraphObjLabel;
                 pGraphObjLabel = nullptr;

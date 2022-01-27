@@ -642,16 +642,16 @@ public: // overridables of base class CGraphObj
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-QPointF CGraphObjLine::getSelectionPoint( ESelectionPoint i_selPt ) const
+QPointF CGraphObjLine::getSelectionPointCoors( ESelectionPoint i_selPt ) const
 //------------------------------------------------------------------------------
 {
     QLineF lin = line();
 
-    QPointF ptSel = ZS::Draw::getSelectionPoint(lin,i_selPt);
+    QPointF ptSel = ZS::Draw::getSelectionPointCoors(lin,i_selPt);
 
     return ptSel;
 
-} // getSelectionPoint
+} // getSelectionPointCoors
 
 /*==============================================================================
 protected: // must overridables of base class CGraphObj
@@ -776,8 +776,8 @@ QRectF CGraphObjLine::boundingRect() const
 
     //if( m_bIsHit || isSelected() )
     //{
-    //    QHashIterator<QString,SGraphObjLabel*> itLabels(m_arpLabels);
-    //    SGraphObjLabel* pGraphObjLabel;
+    //    QHashIterator<QString, CGraphObjLabel*> itLabels(m_arpLabels);
+    //    CGraphObjLabel* pGraphObjLabel;
     //    QRectF          rctLabel;
     //    QPolygonF       plgLabel;
 
@@ -965,8 +965,8 @@ void CGraphObjLine::paint(
         i_pPainter->setPen(pn);
         i_pPainter->setBrush(Qt::NoBrush);
 
-        //QHashIterator<QString,SGraphObjLabel*> itLabels(m_arpLabels);
-        //SGraphObjLabel*                        pGraphObjLabel;
+        //QHashIterator<QString, CGraphObjLabel*> itLabels(m_arpLabels);
+        //CGraphObjLabel* pGraphObjLabel;
 
         //QPointF ptSelPt;
         //QPointF ptLabelSelPt;
@@ -978,9 +978,9 @@ void CGraphObjLine::paint(
 
         //    if( pGraphObjLabel->m_pGraphObjLabel != nullptr )
         //    {
-        //        ptSelPt = getSelectionPoint(pGraphObjLabel->m_selPt.enumerator());
+        //        ptSelPt = getSelectionPointCoors(pGraphObjLabel->m_selPt.enumerator());
 
-        //        ptLabelSelPt = pGraphObjLabel->m_pGraphObjLabel->getSelectionPoint(ESelectionPoint::Center);
+        //        ptLabelSelPt = pGraphObjLabel->m_pGraphObjLabel->getSelectionPointCoors(ESelectionPoint::Center);
         //        ptLabelSelPt = mapFromItem( pGraphObjLabel->m_pGraphObjLabel, ptLabelSelPt );
 
         //        i_pPainter->drawLine( ptSelPt, ptLabelSelPt );
@@ -1823,9 +1823,9 @@ QVariant CGraphObjLine::itemChange( GraphicsItemChange i_change, const QVariant&
             }
         }
 
-        //QHashIterator<QString,SGraphObjLabel*> itLabels(m_arpLabels);
+        //QHashIterator<QString, CGraphObjLabel*> itLabels(m_arpLabels);
 
-        //SGraphObjLabel* pGraphObjLabel;
+        //CGraphObjLabel* pGraphObjLabel;
 
         //while( itLabels.hasNext() )
         //{

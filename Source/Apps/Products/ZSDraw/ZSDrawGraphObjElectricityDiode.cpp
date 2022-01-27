@@ -378,12 +378,12 @@ void CGraphObjDiode::setCutOffVoltage( double i_fCutOffVoltage_V )
 
         if( m_arpUserLabels.contains(c_strKeyLabelCutOffVoltage) )
         {
-            SGraphObjLabel* pGraphObjLabel = m_arpUserLabels[c_strKeyLabelCutOffVoltage];
+            CGraphObjLabel* pGraphObjLabel = m_arpUserLabels[c_strKeyLabelCutOffVoltage];
 
-            if( pGraphObjLabel->m_pGraphObjLabel != nullptr )
+            if( pGraphObjLabel != nullptr )
             {
                 QString str = QString::number(m_fCutOffVoltage_V) + "V";
-                pGraphObjLabel->m_pGraphObjLabel->setText(str);
+                pGraphObjLabel->setText(str);
             }
         }
 

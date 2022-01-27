@@ -597,12 +597,12 @@ void CGraphObjTransistor::setDopingType( EDopingType i_type )
 
         if( m_arpUserLabels.contains(c_strKeyLabelDopingType) )
         {
-            SGraphObjLabel* pGraphObjLabel = m_arpUserLabels[c_strKeyLabelDopingType];
+            CGraphObjLabel* pGraphObjLabel = m_arpUserLabels[c_strKeyLabelDopingType];
 
-            if( pGraphObjLabel->m_pGraphObjLabel != nullptr )
+            if( pGraphObjLabel != nullptr )
             {
                 QString str = DopingType2Str(m_dopingType);
-                pGraphObjLabel->m_pGraphObjLabel->setText(str);
+                pGraphObjLabel->setText(str);
             }
         }
 

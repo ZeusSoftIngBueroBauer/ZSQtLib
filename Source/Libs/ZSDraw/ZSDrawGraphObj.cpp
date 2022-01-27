@@ -25,6 +25,7 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include <QtGui/QBitmap>
+#include <QtGui/QPainter>
 
 #include "ZSDraw/ZSDrawGraphObj.h"
 #include "ZSDraw/ZSDrawAux.h"
@@ -304,7 +305,10 @@ protected: // ctor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-/*! Creates an graphic object instance.
+/*! Creates a graphical object instance.
+
+    The ctor does neither add the instance as a graphic item to Qt's grapics scene
+    nor to the index tree of the drawing scene.
 
     @param i_pDrawingScene [in]
         Pointer to drawing scene the object will be added.
@@ -669,21 +673,21 @@ void CGraphObj::setName( const QString& i_strName )
 
         if( m_arpNameLabels.contains(c_strKeyLabelName) )
         {
-            SGraphObjLabel* pGraphObjLabel = m_arpNameLabels[c_strKeyLabelName];
+            CGraphObjLabel* pGraphObjLabel = m_arpNameLabels[c_strKeyLabelName];
 
-            if( pGraphObjLabel->m_pGraphObjLabel != nullptr )
+            if( pGraphObjLabel != nullptr )
             {
-                pGraphObjLabel->m_pGraphObjLabel->setText(name());
+                pGraphObjLabel->setText(name());
             }
         }
 
         if( m_arpNameLabels.contains(c_strKeyLabelPath) )
         {
-            SGraphObjLabel* pGraphObjLabel = m_arpNameLabels[c_strKeyLabelPath];
+            CGraphObjLabel* pGraphObjLabel = m_arpNameLabels[c_strKeyLabelPath];
 
-            if( pGraphObjLabel->m_pGraphObjLabel != nullptr )
+            if( pGraphObjLabel != nullptr )
             {
-                pGraphObjLabel->m_pGraphObjLabel->setText(path());
+                pGraphObjLabel->setText(path());
             }
         }
 
@@ -728,21 +732,21 @@ void CGraphObj::setKeyInTree( const QString& i_strKey )
 
         if( m_arpNameLabels.contains(c_strKeyLabelName) )
         {
-            SGraphObjLabel* pGraphObjLabel = m_arpNameLabels[c_strKeyLabelName];
+            CGraphObjLabel* pGraphObjLabel = m_arpNameLabels[c_strKeyLabelName];
 
-            if( pGraphObjLabel->m_pGraphObjLabel != nullptr )
+            if( pGraphObjLabel != nullptr )
             {
-                pGraphObjLabel->m_pGraphObjLabel->setText(name());
+                pGraphObjLabel->setText(name());
             }
         }
 
         if( m_arpNameLabels.contains(c_strKeyLabelPath) )
         {
-            SGraphObjLabel* pGraphObjLabel = m_arpNameLabels[c_strKeyLabelPath];
+            CGraphObjLabel* pGraphObjLabel = m_arpNameLabels[c_strKeyLabelPath];
 
-            if( pGraphObjLabel->m_pGraphObjLabel != nullptr )
+            if( pGraphObjLabel != nullptr )
             {
-                pGraphObjLabel->m_pGraphObjLabel->setText(path());
+                pGraphObjLabel->setText(path());
             }
         }
 
@@ -2373,6 +2377,26 @@ public: // overridables
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! Returns the position of the item in parent coordinates. If the item has no parent,
+    its position is given in scene coordinates.
+
+    The position of the item describes its origin (local coordinate (0, 0)) in parent
+    coordinates; this function returns the same as mapToParent(0, 0).
+
+    Items may be transformed (rotated, resized, etc.). Each rotation step may
+    include inaccuracy when calculation the resulting position. The more often
+    it is rotated, the greater the inaccuracy. If the original rotation angle of 0.0
+    will be reached the resulting position in scene coordinates may not be the same
+    as the original position. Therefore the original coordinates of the item are
+    stored. The given version either selects the current (transformed) postion
+    or the orignal (not transformed) position of the item.
+
+    @param i_version [in]
+        Original .. Return the original coordinates without transformation.
+        Current ... Return the current coordinates calculated with transformation.
+
+    @return Position of the item in parent coordinates.
+*/
 QPointF CGraphObj::getPos( ECoordinatesVersion i_version ) const
 //------------------------------------------------------------------------------
 {
@@ -2912,16 +2936,16 @@ public: // overridables
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-QPointF CGraphObj::getSelectionPoint( ESelectionPoint i_selPt ) const
+QPointF CGraphObj::getSelectionPointCoors( ESelectionPoint i_selPt ) const
 //------------------------------------------------------------------------------
 {
     QRectF rct( QPointF(0.0,0.0), getSize() );
 
-    QPointF ptSel = ZS::Draw::getSelectionPoint(rct,i_selPt);
+    QPointF ptSel = ZS::Draw::getSelectionPointCoors(rct,i_selPt);
 
     return ptSel;
 
-} // getSelectionPoint
+} // getSelectionPointCoors
 
 /*==============================================================================
 protected: // overridables
@@ -3221,19 +3245,19 @@ void CGraphObj::showSelectionPointsOfBoundingRect( const QRectF& i_rct, unsigned
                 {
                     if( selPt == ESelectionPoint::RotateTop /*&& m_fScaleFacYCurr != 0.0*/ )
                     {
-                        ptSel = ZS::Draw::getSelectionPoint(i_rct,ESelectionPoint::TopCenter);
+                        ptSel = ZS::Draw::getSelectionPointCoors(i_rct,ESelectionPoint::TopCenter);
                         ptSel.setY( ptSel.y() - getSelectionPointRotateDistance()/*/m_fScaleFacYCurr*/ );
                         ptSel = pGraphicsItem->mapToScene(ptSel);
                     }
                     else if( selPt == ESelectionPoint::RotateBottom /*&& m_fScaleFacYCurr != 0.0*/ )
                     {
-                        ptSel = ZS::Draw::getSelectionPoint(i_rct,ESelectionPoint::BottomCenter);
+                        ptSel = ZS::Draw::getSelectionPointCoors(i_rct,ESelectionPoint::BottomCenter);
                         ptSel.setY( ptSel.y() + getSelectionPointRotateDistance()/*/m_fScaleFacYCurr*/ );
                         ptSel = pGraphicsItem->mapToScene(ptSel);
                     }
                     else
                     {
-                        ptSel = ZS::Draw::getSelectionPoint(i_rct,selPt);
+                        ptSel = ZS::Draw::getSelectionPointCoors(i_rct,selPt);
                         ptSel = pGraphicsItem->mapToScene(ptSel);
                     }
 
@@ -3317,19 +3341,19 @@ void CGraphObj::updateSelectionPointsOfBoundingRect( const QRectF& i_rct, unsign
                 {
                     if( selPt == ESelectionPoint::RotateTop /*&& m_fScaleFacYCurr != 0.0*/ )
                     {
-                        ptSel = ZS::Draw::getSelectionPoint(i_rct,ESelectionPoint::TopCenter);
+                        ptSel = ZS::Draw::getSelectionPointCoors(i_rct,ESelectionPoint::TopCenter);
                         ptSel.setY( ptSel.y() - getSelectionPointRotateDistance()/*/m_fScaleFacYCurr*/ );
                         ptSel = pGraphicsItem->mapToScene(ptSel);
                     }
                     else if( selPt == ESelectionPoint::RotateBottom /*&& m_fScaleFacYCurr != 0.0*/ )
                     {
-                        ptSel = ZS::Draw::getSelectionPoint(i_rct,ESelectionPoint::BottomCenter);
+                        ptSel = ZS::Draw::getSelectionPointCoors(i_rct,ESelectionPoint::BottomCenter);
                         ptSel.setY( ptSel.y() + getSelectionPointRotateDistance()/*/m_fScaleFacYCurr*/ );
                         ptSel = pGraphicsItem->mapToScene(ptSel);
                     }
                     else
                     {
-                        ptSel = ZS::Draw::getSelectionPoint(i_rct,selPt);
+                        ptSel = ZS::Draw::getSelectionPointCoors(i_rct,selPt);
                         ptSel = pGraphicsItem->mapToScene(ptSel);
                     }
 
@@ -3496,20 +3520,7 @@ void CGraphObj::showNameLabel( ESelectionPoint i_selPt )
         /* strMethod    */ "showNameLabel",
         /* strAddInfo   */ strMthInArgs );
 
-    SGraphObjLabel* pGraphObjLabel = nullptr;
-
-    if( !m_arpNameLabels.contains(c_strKeyLabelName) )
-    {
-        pGraphObjLabel = new SGraphObjLabel(c_strKeyLabelName, name(), i_selPt);
-        m_arpNameLabels.insert(c_strKeyLabelName, pGraphObjLabel);
-    }
-    else
-    {
-        pGraphObjLabel = m_arpNameLabels[c_strKeyLabelName];
-        pGraphObjLabel->m_strText = name();
-    }
-
-    showLabel(m_arpNameLabels, c_strKeyLabelName);
+    showLabel(m_arpNameLabels, c_strKeyLabelName, name(), i_selPt);
 
 } // showNameLabel
 
@@ -3534,13 +3545,162 @@ void CGraphObj::hideNameLabel()
 }
 
 //------------------------------------------------------------------------------
-bool CGraphObj::isNameLabelVisible() const
+bool CGraphObj::isNameLabelVisible( ESelectionPoint i_selPt ) const
 //------------------------------------------------------------------------------
 {
-    SGraphObjLabel* pGraphObjLabel = m_arpNameLabels.value(c_strKeyLabelName, nullptr);
-    bool bIsVisible = pGraphObjLabel == nullptr ? false : pGraphObjLabel->m_bVisible;
+    bool bIsVisible = false;
+
+    CGraphObjLabel* pGraphObjLabel = m_arpNameLabels.value(c_strKeyLabelName, nullptr);
+
+    if( pGraphObjLabel != nullptr )
+    {
+        bIsVisible = pGraphObjLabel->isVisible();
+
+        if( i_selPt == ESelectionPoint::None )
+        {
+            bIsVisible = !bIsVisible;
+        }
+        else if( i_selPt == ESelectionPoint::Any || i_selPt == ESelectionPoint::All )
+        {
+        }
+        else if( i_selPt != ESelectionPoint::RotateTop && i_selPt != ESelectionPoint::RotateBottom )
+        {
+            bIsVisible = (pGraphObjLabel->getLinkedSelectionPoint() == i_selPt);
+        }
+    }
+
     return bIsVisible;
-}
+
+} // isNameLabelVisible
+
+//------------------------------------------------------------------------------
+/*! Shows the line between the name label and the selection point
+    the label is aligned to.
+
+    The method just sets a flag. The line becomes only visible if also
+    the name label is visible.
+
+    @param i_selPt [in]
+        Selection point(s) for which anchor lines to the labels should be created.
+        None, Any, RotateTop and RotateBottom is not allowed.
+        All .... Shows anchor lines for all labels for all selection points instead of
+                 RotateTop and RotateBottom.
+*/
+void CGraphObj::showNameLabelAnchorLine( ESelectionPoint i_selPt )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->isActive(ETraceDetailLevelMethodArgs) )
+    {
+        strMthInArgs = CEnumSelectionPoint(i_selPt).toString();
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "showNameLabelAnchorLine",
+        /* strAddInfo   */ strMthInArgs );
+
+    CGraphObjLabel* pGraphObjLabel = m_arpNameLabels.value(c_strKeyLabelName, nullptr);
+
+    if( pGraphObjLabel != nullptr )
+    {
+        pGraphObjLabel->showAnchorLine();
+    }
+
+    if( m_pTree != nullptr )
+    {
+        m_pTree->onTreeEntryChanged(this);
+    }
+
+} // showNameLabelAnchorLine
+
+//------------------------------------------------------------------------------
+/*! Hides the line between the name label and the selection point
+    the label is aligned to.
+
+    The method just sets a flag. If the position lable is not visible the method
+    has no effect.
+
+    @param i_selPt [in]
+        Selection point(s) for which anchor lines to labels should be created.
+        None, Any, RotateTop and RotateBottom is not allowed.
+        All .... Shows anchro lines to labels for all selection points instead of
+                 RotateTop and RotateBottom.
+*/
+void CGraphObj::hideNameLabelAnchorLine()
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->isActive(ETraceDetailLevelMethodArgs) )
+    {
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "hideNameLabelAnchorLine",
+        /* strAddInfo   */ strMthInArgs );
+
+    CGraphObjLabel* pGraphObjLabel = m_arpNameLabels.value(c_strKeyLabelName, nullptr);
+
+    if( pGraphObjLabel != nullptr )
+    {
+        //m_pDrawingScene->removeGraphObj(pGraphObjLabel); // the dtor of the label removes itself from the drawing scene
+
+        delete pGraphObjLabel;
+        pGraphObjLabel = nullptr;
+
+        if( m_pTree != nullptr )
+        {
+            m_pTree->onTreeEntryChanged(this);
+        }
+    }
+} // hideNameLabelAnchorLine
+
+//------------------------------------------------------------------------------
+/*! Checks whether the line between the name label and the selection point
+    the label is aligned is visible.
+
+    @param i_selPt [in]
+        Selection point(s) to be checked.
+    @return
+        RotateTop and RotateBottom is not allowed and is just ignored by returning false.
+        None ... true is returned if no anchor line is visible, false if any anchror line is visible.
+        All .... true is returned if all anchor lines are visible, false if not all anchor lines are visible.
+        Any .... true is returned if any anchor line is visible, false if no anchor is visible.
+*/
+bool CGraphObj::isNameLabelAnchorLineVisible( ESelectionPoint i_selPt ) const
+//------------------------------------------------------------------------------
+{
+    bool bIsVisible = false;
+
+    CGraphObjLabel* pGraphObjLabel = m_arpNameLabels.value(c_strKeyLabelName, nullptr);
+
+    if( pGraphObjLabel != nullptr )
+    {
+        bIsVisible = pGraphObjLabel->isAnchorLineVisible();
+
+        if( i_selPt == ESelectionPoint::None )
+        {
+            bIsVisible = !bIsVisible;
+        }
+        else if( i_selPt == ESelectionPoint::Any || i_selPt == ESelectionPoint::All )
+        {
+        }
+        else if( bIsVisible && i_selPt != ESelectionPoint::RotateTop && i_selPt != ESelectionPoint::RotateBottom )
+        {
+            bIsVisible = (pGraphObjLabel->getLinkedSelectionPoint() == i_selPt);
+        }
+    }
+
+    return bIsVisible;
+
+} // isNameLabelAnchorLineVisible
 
 /*==============================================================================
 public: // overridables (KeyLabel = "Path")
@@ -3564,20 +3724,7 @@ void CGraphObj::showPathLabel( ESelectionPoint i_selPt )
         /* strMethod    */ "showPathLabel",
         /* strAddInfo   */ strMthInArgs );
 
-    SGraphObjLabel* pGraphObjLabel = nullptr;
-
-    if( !m_arpNameLabels.contains(c_strKeyLabelPath) )
-    {
-        pGraphObjLabel = new SGraphObjLabel(c_strKeyLabelPath, path(), i_selPt);
-        m_arpNameLabels.insert(c_strKeyLabelPath, pGraphObjLabel);
-    }
-    else
-    {
-        pGraphObjLabel = m_arpNameLabels[c_strKeyLabelPath];
-        pGraphObjLabel->m_strText = path();
-    }
-
-    showLabel(m_arpNameLabels, c_strKeyLabelPath);
+    showLabel(m_arpNameLabels, c_strKeyLabelPath, path(), i_selPt);
 
 } // showPathLabel
 
@@ -3602,16 +3749,166 @@ void CGraphObj::hidePathLabel()
 }
 
 //------------------------------------------------------------------------------
-bool CGraphObj::isPathLabelVisible() const
+bool CGraphObj::isPathLabelVisible( ESelectionPoint i_selPt ) const
 //------------------------------------------------------------------------------
 {
-    SGraphObjLabel* pGraphObjLabel = m_arpNameLabels.value(c_strKeyLabelPath, nullptr);
-    bool bIsVisible = pGraphObjLabel == nullptr ? false : pGraphObjLabel->m_bVisible;
+    bool bIsVisible = false;
+
+    CGraphObjLabel* pGraphObjLabel = m_arpNameLabels.value(c_strKeyLabelPath, nullptr);
+
+    if( pGraphObjLabel != nullptr )
+    {
+        bIsVisible = pGraphObjLabel->isVisible();
+
+        if( i_selPt == ESelectionPoint::None )
+        {
+            bIsVisible = !bIsVisible;
+        }
+        else if( i_selPt == ESelectionPoint::Any || i_selPt == ESelectionPoint::All )
+        {
+        }
+        else if( i_selPt != ESelectionPoint::RotateTop && i_selPt != ESelectionPoint::RotateBottom )
+        {
+            bIsVisible = (pGraphObjLabel->getLinkedSelectionPoint() == i_selPt);
+        }
+    }
+
     return bIsVisible;
-}
+
+} // isPathLabelVisible
+
+//------------------------------------------------------------------------------
+/*! Shows the line between the path label and the selection point
+    the label is aligned to.
+
+    The method just sets a flag. The line becomes only visible if also
+    the name label is visible.
+
+    @param i_selPt [in]
+        Selection point(s) for which anchor lines to labels should be created.
+        None, Any, RotateTop and RotateBottom is not allowed.
+        All .... Shows anchor lines to labels for all selection points instead of
+                 RotateTop and RotateBottom.
+*/
+void CGraphObj::showPathLabelAnchorLine( ESelectionPoint i_selPt )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->isActive(ETraceDetailLevelMethodArgs) )
+    {
+        strMthInArgs = CEnumSelectionPoint(i_selPt).toString();
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "showPathLabelAnchorLine",
+        /* strAddInfo   */ strMthInArgs );
+
+    CGraphObjLabel* pGraphObjLabel = m_arpNameLabels.value(c_strKeyLabelPath, nullptr);
+
+    if( pGraphObjLabel != nullptr )
+    {
+        pGraphObjLabel->showAnchorLine();
+    }
+
+    if( m_pTree != nullptr )
+    {
+        m_pTree->onTreeEntryChanged(this);
+    }
+
+} // showPathLabelAnchorLine
+
+//------------------------------------------------------------------------------
+/*! Hides the line between the path label and the selection point
+    the label is aligned to.
+
+    The method just sets a flag. If the position lable is not visible the method
+    has no effect.
+
+    @param i_selPt [in]
+        Selection point(s) for which anchor lines to labels should be created.
+        None, Any, RotateTop and RotateBottom is not allowed.
+        All .... Shows anchor lines to labels for all selection points instead of
+                 RotateTop and RotateBottom.
+*/
+void CGraphObj::hidePathLabelAnchorLine()
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->isActive(ETraceDetailLevelMethodArgs) )
+    {
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "hidePathLabelAnchorLine",
+        /* strAddInfo   */ strMthInArgs );
+
+    CGraphObjLabel* pGraphObjLabel = m_arpNameLabels.value(c_strKeyLabelPath, nullptr);
+
+    if( pGraphObjLabel != nullptr )
+    {
+        //m_pDrawingScene->removeGraphObj(pGraphObjLabel); // the dtor of the label removes itself from the drawing scene
+
+        delete pGraphObjLabel;
+        pGraphObjLabel = nullptr;
+
+        if( m_pTree != nullptr )
+        {
+            m_pTree->onTreeEntryChanged(this);
+        }
+    }
+
+} // hidePathLabelAnchorLine
+
+//------------------------------------------------------------------------------
+/*! Checks whether the line between the path label and the selection point
+    the label is aligned is visible.
+
+    @param i_selPt [in]
+        Selection point(s) to be checked.
+    @return
+        RotateTop and RotateBottom is not allowed and is just ignored by returning false.
+        None ... true is returned if no anchor line is visible, false if any anchor line is visible.
+        All .... true is returned if all anchor lines are visible, false if not all anchor lines are visible.
+        Any .... true is returned if any anchor line is visible, false if no anchor line is visible.
+*/
+bool CGraphObj::isPathLabelAnchorLineVisible( ESelectionPoint i_selPt ) const
+//------------------------------------------------------------------------------
+{
+    bool bIsVisible = false;
+
+    CGraphObjLabel* pGraphObjLabel = m_arpNameLabels.value(c_strKeyLabelPath, nullptr);
+
+    if( pGraphObjLabel != nullptr )
+    {
+        bIsVisible = pGraphObjLabel->isAnchorLineVisible();
+
+        if( i_selPt == ESelectionPoint::None )
+        {
+            bIsVisible = !bIsVisible;
+        }
+        else if( i_selPt == ESelectionPoint::Any || i_selPt == ESelectionPoint::All )
+        {
+        }
+        else if( i_selPt != ESelectionPoint::RotateTop && i_selPt != ESelectionPoint::RotateBottom )
+        {
+            bIsVisible = (pGraphObjLabel->getLinkedSelectionPoint() == i_selPt);
+        }
+    }
+
+    return bIsVisible;
+
+} // isPathLabelAnchorLineVisible
 
 /*==============================================================================
-public: // overridables (KeyLabel = "Position")
+public: // overridables (KeyLabel = "Position<SelPt>")
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
@@ -3648,30 +3945,16 @@ void CGraphObj::showPositionLabel( ESelectionPoint i_selPt )
              && selPt != ESelectionPoint::RotateTop && selPt != ESelectionPoint::RotateBottom )
             {
                 QString strKey = selPt.toString();
-                SGraphObjLabel* pGraphObjLabel = m_arpPosLabels.value(strKey, nullptr);
-                if( pGraphObjLabel == nullptr )
-                {
-                    pGraphObjLabel = new SGraphObjLabel(strKey, point2Str(getSelectionPoint(selPt.enumerator())), selPt.enumerator());
-                    m_arpPosLabels.insert(strKey, pGraphObjLabel);
-                }
-                pGraphObjLabel->m_strText = point2Str(getSelectionPoint(selPt.enumerator()));
-
-                showLabel(m_arpPosLabels, strKey);
+                QString strText = point2Str(getSelectionPointCoors(selPt.enumerator()));
+                showLabel(m_arpPosLabels, strKey, strText, selPt.enumerator());
             }
         }
     }
     else
     {
         QString strKey = CEnumSelectionPoint::toString(i_selPt);
-        SGraphObjLabel* pGraphObjLabel = m_arpPosLabels.value(strKey, nullptr);
-        if( pGraphObjLabel == nullptr )
-        {
-            pGraphObjLabel = new SGraphObjLabel(strKey, point2Str(getSelectionPoint(i_selPt)), i_selPt);
-            m_arpPosLabels.insert(strKey, pGraphObjLabel);
-        }
-        pGraphObjLabel->m_strText = point2Str(getSelectionPoint(i_selPt));
-
-        showLabel(m_arpPosLabels, strKey);
+        QString strText = point2Str(getSelectionPointCoors(i_selPt));
+        showLabel(m_arpPosLabels, strKey, strText, i_selPt);
     }
 
 } // showPositionLabel
@@ -3742,7 +4025,7 @@ bool CGraphObj::isPositionLabelVisible( ESelectionPoint i_selPt ) const
     {
         for( auto* pGraphObjLabel : m_arpPosLabels )
         {
-            bIsVisible = pGraphObjLabel->m_bVisible;
+            bIsVisible = pGraphObjLabel->isVisible();
             if( bIsVisible )
             {
                 bIsVisible = false;
@@ -3754,7 +4037,7 @@ bool CGraphObj::isPositionLabelVisible( ESelectionPoint i_selPt ) const
     {
         for( auto* pGraphObjLabel : m_arpPosLabels )
         {
-            bIsVisible = pGraphObjLabel->m_bVisible;
+            bIsVisible = pGraphObjLabel->isVisible();
             if( !bIsVisible )
             {
                 break;
@@ -3765,7 +4048,7 @@ bool CGraphObj::isPositionLabelVisible( ESelectionPoint i_selPt ) const
     {
         for( auto* pGraphObjLabel : m_arpPosLabels )
         {
-            bIsVisible = pGraphObjLabel->m_bVisible;
+            bIsVisible = pGraphObjLabel->isVisible();
             if( bIsVisible )
             {
                 break;
@@ -3775,17 +4058,13 @@ bool CGraphObj::isPositionLabelVisible( ESelectionPoint i_selPt ) const
     else
     {
         QString strKey = CEnumSelectionPoint::toString(i_selPt);
-        SGraphObjLabel* pGraphObjLabel = m_arpPosLabels.value(strKey, nullptr);
-        bIsVisible = pGraphObjLabel == nullptr ? false : pGraphObjLabel->m_bVisible;
+        CGraphObjLabel* pGraphObjLabel = m_arpPosLabels.value(strKey, nullptr);
+        bIsVisible = pGraphObjLabel == nullptr ? false : pGraphObjLabel->isVisible();
     }
 
     return bIsVisible;
 
 } // isPositionLabelVisible
-
-/*==============================================================================
-public: // overridables (KeyLabel = "Position<SelPt>")
-==============================================================================*/
 
 //------------------------------------------------------------------------------
 /*! Shows the line between the position label and the selection point
@@ -3795,9 +4074,9 @@ public: // overridables (KeyLabel = "Position<SelPt>")
     the position label is visible.
 
     @param i_selPt [in]
-        Selection point(s) for which position labels should be created.
+        Selection point(s) for which anchor labels should be created.
         None, Any, RotateTop and RotateBottom is not allowed.
-        All .... Shows position labels for all selection points instead of
+        All .... Shows anchor lines to labels for all selection points instead of
                  RotateTop and RotateBottom.
 */
 void CGraphObj::showPositionLabelAnchorLine( ESelectionPoint i_selPt )
@@ -3825,26 +4104,22 @@ void CGraphObj::showPositionLabelAnchorLine( ESelectionPoint i_selPt )
              && selPt != ESelectionPoint::RotateTop && selPt != ESelectionPoint::RotateBottom )
             {
                 QString strKey = selPt.toString();
-                SGraphObjLabel* pGraphObjLabel = m_arpPosLabels.value(strKey, nullptr);
-                if( pGraphObjLabel == nullptr )
+                CGraphObjLabel* pGraphObjLabel = m_arpPosLabels.value(strKey, nullptr);
+                if( pGraphObjLabel != nullptr )
                 {
-                    pGraphObjLabel = new SGraphObjLabel(strKey, point2Str(getSelectionPoint(selPt.enumerator())), selPt.enumerator());
-                    m_arpPosLabels.insert(strKey, pGraphObjLabel);
+                    pGraphObjLabel->showAnchorLine();
                 }
-                pGraphObjLabel->m_bAnchorLineVisible = true;
             }
         }
     }
     else
     {
         QString strKey = CEnumSelectionPoint::toString(i_selPt);
-        SGraphObjLabel* pGraphObjLabel = m_arpPosLabels.value(strKey, nullptr);
-        if( pGraphObjLabel == nullptr )
+        CGraphObjLabel* pGraphObjLabel = m_arpPosLabels.value(strKey, nullptr);
+        if( pGraphObjLabel != nullptr )
         {
-            pGraphObjLabel = new SGraphObjLabel(strKey, point2Str(getSelectionPoint(i_selPt)), i_selPt);
-            m_arpPosLabels.insert(strKey, pGraphObjLabel);
+            pGraphObjLabel->showAnchorLine();
         }
-        pGraphObjLabel->m_bAnchorLineVisible = true;
     }
 
     if( m_pTree != nullptr )
@@ -3862,9 +4137,9 @@ void CGraphObj::showPositionLabelAnchorLine( ESelectionPoint i_selPt )
     has no effect.
 
     @param i_selPt [in]
-        Selection point(s) for which position labels should be created.
+        Selection point(s) for which anchor lines to labels should be created.
         None, Any, RotateTop and RotateBottom is not allowed.
-        All .... Shows position labels for all selection points instead of
+        All .... Shows anchor lines to labels for all selection points instead of
                  RotateTop and RotateBottom.
 */
 void CGraphObj::hidePositionLabelAnchorLine( ESelectionPoint i_selPt )
@@ -3892,10 +4167,10 @@ void CGraphObj::hidePositionLabelAnchorLine( ESelectionPoint i_selPt )
              && selPt != ESelectionPoint::RotateTop && selPt != ESelectionPoint::RotateBottom )
             {
                 QString strKey = selPt.toString();
-                SGraphObjLabel* pGraphObjLabel = m_arpPosLabels.value(strKey, nullptr);
+                CGraphObjLabel* pGraphObjLabel = m_arpPosLabels.value(strKey, nullptr);
                 if( pGraphObjLabel != nullptr )
                 {
-                    pGraphObjLabel->m_bAnchorLineVisible = false;
+                    pGraphObjLabel->hideAnchorLine();
                 }
             }
         }
@@ -3903,10 +4178,10 @@ void CGraphObj::hidePositionLabelAnchorLine( ESelectionPoint i_selPt )
     else
     {
         QString strKey = CEnumSelectionPoint::toString(i_selPt);
-        SGraphObjLabel* pGraphObjLabel = m_arpPosLabels.value(strKey, nullptr);
+        CGraphObjLabel* pGraphObjLabel = m_arpPosLabels.value(strKey, nullptr);
         if( pGraphObjLabel != nullptr )
         {
-            pGraphObjLabel->m_bAnchorLineVisible = false;
+            pGraphObjLabel->hideAnchorLine();
         }
     }
 
@@ -3925,9 +4200,9 @@ void CGraphObj::hidePositionLabelAnchorLine( ESelectionPoint i_selPt )
         Selection point(s) to be checked.
     @return
         RotateTop and RotateBottom is not allowed and is just ignored by returning false.
-        None ... true is returned if no label is visible, false if any label is visible.
-        All .... true is returned if all labels are visible, false if not all labels are visible.
-        Any .... true is returned if any label is visible, false if no label is visible.
+        None ... true is returned if no anchor line is visible, false if any no anchor line is visible.
+        All .... true is returned if all no anchor lines are visible, false if not all no anchor lines are visible.
+        Any .... true is returned if any no anchor line is visible, false if no no anchor line is visible.
 */
 bool CGraphObj::isPositionLabelAnchorLineVisible( ESelectionPoint i_selPt ) const
 //------------------------------------------------------------------------------
@@ -3938,7 +4213,7 @@ bool CGraphObj::isPositionLabelAnchorLineVisible( ESelectionPoint i_selPt ) cons
     {
         for( auto* pGraphObjLabel : m_arpPosLabels )
         {
-            bIsVisible = pGraphObjLabel->m_bAnchorLineVisible;
+            bIsVisible = pGraphObjLabel->isAnchorLineVisible();
             if( bIsVisible )
             {
                 bIsVisible = false;
@@ -3950,7 +4225,7 @@ bool CGraphObj::isPositionLabelAnchorLineVisible( ESelectionPoint i_selPt ) cons
     {
         for( auto* pGraphObjLabel : m_arpPosLabels )
         {
-            bIsVisible = pGraphObjLabel->m_bAnchorLineVisible;
+            bIsVisible = pGraphObjLabel->isAnchorLineVisible();
             if( !bIsVisible )
             {
                 break;
@@ -3961,7 +4236,7 @@ bool CGraphObj::isPositionLabelAnchorLineVisible( ESelectionPoint i_selPt ) cons
     {
         for( auto* pGraphObjLabel : m_arpPosLabels )
         {
-            bIsVisible = pGraphObjLabel->m_bAnchorLineVisible;
+            bIsVisible = pGraphObjLabel->isAnchorLineVisible();
             if( bIsVisible )
             {
                 break;
@@ -3971,8 +4246,8 @@ bool CGraphObj::isPositionLabelAnchorLineVisible( ESelectionPoint i_selPt ) cons
     else
     {
         QString strKey = CEnumSelectionPoint::toString(i_selPt);
-        SGraphObjLabel* pGraphObjLabel = m_arpPosLabels.value(strKey, nullptr);
-        bIsVisible = pGraphObjLabel == nullptr ? false : pGraphObjLabel->m_bAnchorLineVisible;
+        CGraphObjLabel* pGraphObjLabel = m_arpPosLabels.value(strKey, nullptr);
+        bIsVisible = pGraphObjLabel == nullptr ? false : pGraphObjLabel->isAnchorLineVisible();
     }
 
     return bIsVisible;
@@ -4013,88 +4288,6 @@ void CGraphObj::showUserDefinedLabel( const QString& i_strKey, const QString& i_
         /* strMethod    */ "showUserDefinedLabel",
         /* strAddInfo   */ strMthInArgs );
 
-    QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
-
-    if( pGraphicsItem != nullptr )
-    {
-        if( m_arpUserLabels.contains(i_strKey) )
-        {
-            SGraphObjLabel* pGraphObjLabel = m_arpUserLabels[i_strKey];
-
-            QPointF ptSelPt = getSelectionPoint(pGraphObjLabel->m_selPt.enumerator());
-            QPointF ptLabel;
-
-            ptSelPt = pGraphicsItem->mapToScene(ptSelPt);
-
-            if( pGraphObjLabel->m_pGraphObjLabel == nullptr )
-            {
-                pGraphObjLabel->m_pGraphObjLabel = new CGraphObjLabel(
-                    /* pDrawingScene     */ m_pDrawingScene,
-                    /* pGraphObjSelected */ this,
-                    /* strKey            */ pGraphObjLabel->m_strKey,
-                    /* strText           */ pGraphObjLabel->m_strText,
-                    /* selPt             */ pGraphObjLabel->m_selPt.enumerator() );
-                m_pDrawingScene->addGraphObj(pGraphObjLabel->m_pGraphObjLabel, this);
-                //pGraphObjLabel->m_pGraphObjLabel->setParentItem(this); see comment in header file of class CGraphObjLabel
-            }
-
-            if( !pGraphObjLabel->m_bDistValid )
-            {
-                QPointF ptLabelTmp = ptSelPt;
-
-                if( pGraphObjLabel->m_selPt != ESelectionPoint::BottomRight
-                 && pGraphObjLabel->m_selPt != ESelectionPoint::BottomLeft
-                 && pGraphObjLabel->m_selPt != ESelectionPoint::BottomCenter )
-                {
-                    ptLabelTmp.setY( ptLabelTmp.y() - pGraphObjLabel->m_pGraphObjLabel->getHeight() );
-                }
-
-                bool bUniquePos = false;
-
-                while( !bUniquePos )
-                {
-                    bUniquePos = true;
-
-                    QHashIterator<QString,SGraphObjLabel*> itLabels(m_arpUserLabels);
-
-                    while( itLabels.hasNext() )
-                    {
-                        itLabels.next();
-                        SGraphObjLabel* pGraphObjLabelTmp = itLabels.value();
-
-                        if( pGraphObjLabelTmp->m_strKey != i_strKey )
-                        {
-                            if( pGraphObjLabelTmp->m_pGraphObjLabel != nullptr && pGraphObjLabelTmp->m_pGraphObjLabel->scenePos() == ptLabelTmp )
-                            {
-                                bUniquePos = false;
-                                ptLabelTmp.setX( pGraphObjLabelTmp->m_pGraphObjLabel->scenePos().x() + pGraphObjLabelTmp->m_pGraphObjLabel->getWidth() + 4 );
-                                break;
-                            }
-                        }
-                    }
-                }
-
-                pGraphObjLabel->m_sizDist.setWidth( ptLabelTmp.x() - ptSelPt.x() );
-                pGraphObjLabel->m_sizDist.setHeight( ptLabelTmp.y() - ptSelPt.y() );
-
-                pGraphObjLabel->m_bDistValid = true;
-
-            } // if( !pGraphObjLabel->m_bDistValid )
-
-            ptLabel.setX( ptSelPt.x() + pGraphObjLabel->m_sizDist.width() );
-            ptLabel.setY( ptSelPt.y() + pGraphObjLabel->m_sizDist.height() );
-
-            pGraphObjLabel->m_bVisible = true;
-
-            pGraphObjLabel->m_pGraphObjLabel->setPos(ptLabel);
-            pGraphObjLabel->m_pGraphObjLabel->setZValue(pGraphicsItem->zValue()+0.02);
-
-            if( m_pTree != nullptr )
-            {
-                m_pTree->onTreeEntryChanged(this);
-            }
-        } // if( m_arpLabels.contains(i_strKey) )
-    } // if( pGraphicsItem != nullptr )
 
 } // showUserDefinedLabel
 
@@ -4118,19 +4311,6 @@ void CGraphObj::hideUserDefinedLabel( const QString& i_strKey )
 
     if( m_arpUserLabels.contains(i_strKey) )
     {
-        SGraphObjLabel* pGraphObjLabel = m_arpUserLabels[i_strKey];
-
-        //m_pDrawingScene->removeGraphObj(pGraphObjLabel); // the dtor of the label removes itself from the drawing scene
-
-        delete pGraphObjLabel->m_pGraphObjLabel;
-        pGraphObjLabel->m_pGraphObjLabel = nullptr;
-
-        pGraphObjLabel->m_bVisible = false;
-
-        if( m_pTree != nullptr )
-        {
-            m_pTree->onTreeEntryChanged(this);
-        }
     }
 
 } // hideUserDefinedLabel
@@ -4155,13 +4335,11 @@ void CGraphObj::setUserDefinedLabelText( const QString& i_strKey, const QString&
 
     if( m_arpUserLabels.contains(i_strKey) )
     {
-        SGraphObjLabel* pGraphObjLabel = m_arpUserLabels[i_strKey];
+        CGraphObjLabel* pGraphObjLabel = m_arpUserLabels[i_strKey];
 
-        pGraphObjLabel->m_strText = i_strText;
-
-        if( pGraphObjLabel->m_pGraphObjLabel != nullptr )
+        if( pGraphObjLabel != nullptr )
         {
-            pGraphObjLabel->m_pGraphObjLabel->setText(pGraphObjLabel->m_strText);
+            pGraphObjLabel->setText(i_strText);
 
             if( m_pTree != nullptr )
             {
@@ -4173,30 +4351,103 @@ void CGraphObj::setUserDefinedLabelText( const QString& i_strKey, const QString&
 } // setUserDefinedLabelText
 
 //------------------------------------------------------------------------------
-bool CGraphObj::isUserDefinedLabelVisible( const QString& i_strKey ) const
+bool CGraphObj::isUserDefinedLabelVisible( const QString& i_strKey, ESelectionPoint i_selPt ) const
 //------------------------------------------------------------------------------
 {
     bool bIsVisible = false;
 
     if( m_arpUserLabels.contains(i_strKey) )
     {
-        SGraphObjLabel* pGraphObjLabel = m_arpUserLabels[i_strKey];
+        CGraphObjLabel* pGraphObjLabel = m_arpUserLabels[i_strKey];
 
-        bIsVisible = pGraphObjLabel->m_bVisible;
+        bIsVisible = pGraphObjLabel == nullptr ? false : pGraphObjLabel->isVisible();
     }
-
     return bIsVisible;
 
 } // isUserDefinedLabelVisible
+
+//------------------------------------------------------------------------------
+/*! Shows the line between the user defined labeland the given selection point.
+
+    @param i_strKey [in]
+        Key to identify the label. The key must be unique for all user defined labels.
+    @param i_strText [in]
+        Text to be shown by the user defined label.
+    @param i_selPt [in]
+        Selection point to which the label should be aligned to.
+        None, Any, All, RotateTop and RotateBottom is not allowed.
+*/
+void CGraphObj::showUserDefinedLabelAnchorLine(
+    const QString&  i_strKey,
+    const QString&  i_strText,
+    ESelectionPoint i_selPt )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->isActive(ETraceDetailLevelMethodArgs) )
+    {
+        strMthInArgs = "Key: " + i_strKey;
+        strMthInArgs += ", Text: " + i_strText;
+        strMthInArgs += ", SelPt: " + CEnumSelectionPoint::toString(i_selPt);
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "showUserDefinedLabelAnchorLine",
+        /* strAddInfo   */ strMthInArgs );
+
+
+} // showUserDefinedLabelAnchorLine
+
+//------------------------------------------------------------------------------
+void CGraphObj::hideUserDefinedLabelAnchorLine( const QString& i_strKey )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->isActive(ETraceDetailLevelMethodArgs) )
+    {
+        strMthInArgs = i_strKey;
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "hideUserDefinedLabelAnchorLine",
+        /* strAddInfo   */ strMthInArgs );
+
+    if( m_arpUserLabels.contains(i_strKey) )
+    {
+    }
+
+} // hideUserDefinedLabelAnchorLine
+
+//------------------------------------------------------------------------------
+bool CGraphObj::isUserDefinedLabelAnchorLineVisible( const QString& i_strKey, ESelectionPoint i_selPt ) const
+//------------------------------------------------------------------------------
+{
+    bool bIsVisible = false;
+
+    if( m_arpUserLabels.contains(i_strKey) )
+    {
+        CGraphObjLabel* pGraphObjLabel = m_arpUserLabels[i_strKey];
+
+        bIsVisible = pGraphObjLabel == nullptr ? false : pGraphObjLabel->isVisible();
+    }
+    return bIsVisible;
+
+} // isUserDefinedLabelAnchorLineVisible
 
 /*==============================================================================
 protected: // overridables (user defined labels)
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-/*! This method is called by the label if the position or geometry of the label
-    has been changed to update the corresponding values in the label meta data
-    (the SGraphObjLabel struct).
+/*! 
 
     @param i_pGraphObjLabel [in]
         Pointer to label which has been changed.
@@ -4224,40 +4475,40 @@ void CGraphObj::updateLabelDistance( CGraphObjLabel* i_pGraphObjLabel )
     {
         bool bLabelFound = false;
 
-        SGraphObjLabel* pGraphObjLabel = m_arpNameLabels.value(i_pGraphObjLabel->getKey(), nullptr);
+        CGraphObjLabel* pGraphObjLabel = m_arpNameLabels.value(i_pGraphObjLabel->getKey(), nullptr);
 
-        if( pGraphObjLabel != nullptr && pGraphObjLabel->m_pGraphObjLabel == i_pGraphObjLabel )
+        if( pGraphObjLabel != nullptr && pGraphObjLabel == i_pGraphObjLabel )
         {
             bLabelFound = true;
 
-            QPointF ptSelPt = getSelectionPoint(pGraphObjLabel->m_selPt.enumerator());
-            QPointF ptLabel = pGraphObjLabel->m_pGraphObjLabel->scenePos();
+            //QPointF ptSelPt = getSelectionPointCoors(pGraphObjLabel->m_selPt.enumerator());
+            //QPointF ptLabel = pGraphObjLabel->scenePos();
 
-            ptSelPt = pGraphicsItem->mapToScene(ptSelPt);
+            //ptSelPt = pGraphicsItem->mapToScene(ptSelPt);
 
-            pGraphObjLabel->m_sizDist.setWidth( ptLabel.x() - ptSelPt.x() );
-            pGraphObjLabel->m_sizDist.setHeight( ptLabel.y() - ptSelPt.y() );
+            //pGraphObjLabel->m_sizDist.setWidth( ptLabel.x() - ptSelPt.x() );
+            //pGraphObjLabel->m_sizDist.setHeight( ptLabel.y() - ptSelPt.y() );
 
-            pGraphObjLabel->m_bDistValid = true;
+            //pGraphObjLabel->m_bDistValid = true;
         }
 
         if( !bLabelFound )
         {
             pGraphObjLabel = m_arpPosLabels.value(i_pGraphObjLabel->getKey(), nullptr);
 
-            if( pGraphObjLabel != nullptr && pGraphObjLabel->m_pGraphObjLabel == i_pGraphObjLabel )
+            if( pGraphObjLabel != nullptr && pGraphObjLabel == i_pGraphObjLabel )
             {
                 bLabelFound = true;
 
-                QPointF ptSelPt = getSelectionPoint(pGraphObjLabel->m_selPt.enumerator());
-                QPointF ptLabel = pGraphObjLabel->m_pGraphObjLabel->scenePos();
+                //QPointF ptSelPt = getSelectionPointCoors(pGraphObjLabel->m_selPt.enumerator());
+                //QPointF ptLabel = pGraphObjLabel->m_pGraphObjLabel->scenePos();
 
-                ptSelPt = pGraphicsItem->mapToScene(ptSelPt);
+                //ptSelPt = pGraphicsItem->mapToScene(ptSelPt);
 
-                pGraphObjLabel->m_sizDist.setWidth( ptLabel.x() - ptSelPt.x() );
-                pGraphObjLabel->m_sizDist.setHeight( ptLabel.y() - ptSelPt.y() );
+                //pGraphObjLabel->m_sizDist.setWidth( ptLabel.x() - ptSelPt.x() );
+                //pGraphObjLabel->m_sizDist.setHeight( ptLabel.y() - ptSelPt.y() );
 
-                pGraphObjLabel->m_bDistValid = true;
+                //pGraphObjLabel->m_bDistValid = true;
             }
         }
 
@@ -4265,19 +4516,19 @@ void CGraphObj::updateLabelDistance( CGraphObjLabel* i_pGraphObjLabel )
         {
             pGraphObjLabel = m_arpDimLineLabels.value(i_pGraphObjLabel->getKey(), nullptr);
 
-            if( pGraphObjLabel != nullptr && pGraphObjLabel->m_pGraphObjLabel == i_pGraphObjLabel )
+            if( pGraphObjLabel != nullptr && pGraphObjLabel == i_pGraphObjLabel )
             {
                 bLabelFound = true;
 
-                QPointF ptSelPt = getSelectionPoint(pGraphObjLabel->m_selPt.enumerator());
-                QPointF ptLabel = pGraphObjLabel->m_pGraphObjLabel->scenePos();
+                //QPointF ptSelPt = getSelectionPointCoors(pGraphObjLabel->m_selPt.enumerator());
+                //QPointF ptLabel = pGraphObjLabel->m_pGraphObjLabel->scenePos();
 
-                ptSelPt = pGraphicsItem->mapToScene(ptSelPt);
+                //ptSelPt = pGraphicsItem->mapToScene(ptSelPt);
 
-                pGraphObjLabel->m_sizDist.setWidth( ptLabel.x() - ptSelPt.x() );
-                pGraphObjLabel->m_sizDist.setHeight( ptLabel.y() - ptSelPt.y() );
+                //pGraphObjLabel->m_sizDist.setWidth( ptLabel.x() - ptSelPt.x() );
+                //pGraphObjLabel->m_sizDist.setHeight( ptLabel.y() - ptSelPt.y() );
 
-                pGraphObjLabel->m_bDistValid = true;
+                //pGraphObjLabel->m_bDistValid = true;
             }
         }
 
@@ -4285,19 +4536,19 @@ void CGraphObj::updateLabelDistance( CGraphObjLabel* i_pGraphObjLabel )
         {
             pGraphObjLabel = m_arpUserLabels.value(i_pGraphObjLabel->getKey(), nullptr);
 
-            if( pGraphObjLabel != nullptr && pGraphObjLabel->m_pGraphObjLabel == i_pGraphObjLabel )
+            if( pGraphObjLabel != nullptr && pGraphObjLabel == i_pGraphObjLabel )
             {
                 bLabelFound = true;
 
-                QPointF ptSelPt = getSelectionPoint(pGraphObjLabel->m_selPt.enumerator());
-                QPointF ptLabel = pGraphObjLabel->m_pGraphObjLabel->scenePos();
+                //QPointF ptSelPt = getSelectionPointCoors(pGraphObjLabel->m_selPt.enumerator());
+                //QPointF ptLabel = pGraphObjLabel->m_pGraphObjLabel->scenePos();
 
-                ptSelPt = pGraphicsItem->mapToScene(ptSelPt);
+                //ptSelPt = pGraphicsItem->mapToScene(ptSelPt);
 
-                pGraphObjLabel->m_sizDist.setWidth( ptLabel.x() - ptSelPt.x() );
-                pGraphObjLabel->m_sizDist.setHeight( ptLabel.y() - ptSelPt.y() );
+                //pGraphObjLabel->m_sizDist.setWidth( ptLabel.x() - ptSelPt.x() );
+                //pGraphObjLabel->m_sizDist.setHeight( ptLabel.y() - ptSelPt.y() );
 
-                pGraphObjLabel->m_bDistValid = true;
+                //pGraphObjLabel->m_bDistValid = true;
             }
         }
     } // if( pGraphicsItem != nullptr )
@@ -4325,8 +4576,8 @@ public: // overridables
 //        /* strMethod    */ "showLabels",
 //        /* strAddInfo   */ strMthInArgs );
 //
-//    QHashIterator<QString,SGraphObjLabel*> itLabels(m_arpLabels);
-//    SGraphObjLabel*                        pGraphObjLabel;
+//    QHashIterator<QString, CGraphObjLabel*> itLabels(m_arpLabels);
+//    CGraphObjLabel*                         pGraphObjLabel;
 //
 //    while( itLabels.hasNext() )
 //    {
@@ -4359,8 +4610,8 @@ public: // overridables
 //        /* strMethod    */ "hideLabels",
 //        /* strAddInfo   */ strMthInArgs );
 //
-//    QHashIterator<QString,SGraphObjLabel*> itLabels(m_arpLabels);
-//    SGraphObjLabel*                        pGraphObjLabel;
+//    QHashIterator<QString, CGraphObjLabel*> itLabels(m_arpLabels);
+//    CGraphObjLabel*                         pGraphObjLabel;
 //
 //    while( itLabels.hasNext() )
 //    {
@@ -4388,10 +4639,10 @@ public: // instance methods
 //}
 //
 ////------------------------------------------------------------------------------
-//SGraphObjLabel* CGraphObj::getLabel( const QString& i_strKey ) const
+//CGraphObjLabel* CGraphObj::getLabel( const QString& i_strKey ) const
 ////------------------------------------------------------------------------------
 //{
-//    SGraphObjLabel* pGraphObjLabel = nullptr;
+//    CGraphObjLabel* pGraphObjLabel = nullptr;
 //
 //    if( m_arpLabels.contains(i_strKey) )
 //    {
@@ -4402,7 +4653,7 @@ public: // instance methods
 //} // getLabel
 //
 ////------------------------------------------------------------------------------
-//void CGraphObj::addLabels( QHash<QString,SGraphObjLabel*> i_arpLabels )
+//void CGraphObj::addLabels( QHash<QString, CGraphObjLabel*> i_arpLabels )
 ////------------------------------------------------------------------------------
 //{
 //    QString strMthInArgs;
@@ -4418,9 +4669,9 @@ public: // instance methods
 //        /* strMethod    */ "addLabels",
 //        /* strAddInfo   */ strMthInArgs );
 //
-//    QHashIterator<QString,SGraphObjLabel*> itLabels(i_arpLabels);
+//    QHashIterator<QString, CGraphObjLabel*> itLabels(i_arpLabels);
 //
-//    SGraphObjLabel* pGraphObjLabel;
+//    CGraphObjLabel* pGraphObjLabel;
 //    QString         strKey;
 //    QString         strText;
 //    ESelectionPoint selPt;
@@ -4556,84 +4807,40 @@ void CGraphObj::onLabelDestroying( CGraphObjLabel* i_pLabel )
 
     if( m_arpNameLabels.contains(i_pLabel->getKey()) )
     {
-        SGraphObjLabel* pGraphObjLabel = m_arpNameLabels.value(i_pLabel->getKey());
-
-        if( pGraphObjLabel->m_pGraphObjLabel = i_pLabel )
+        CGraphObjLabel* pGraphObjLabel = m_arpNameLabels.value(i_pLabel->getKey());
+        if( pGraphObjLabel = i_pLabel )
         {
             bLabelFound = true;
-
-            try
-            {
-                delete pGraphObjLabel;
-            }
-            catch(...)
-            {
-            }
-            pGraphObjLabel = nullptr;
-
             m_arpNameLabels.remove(i_pLabel->getKey());
         }
     }
 
     if( !bLabelFound && m_arpPosLabels.contains(i_pLabel->getKey()) )
     {
-        SGraphObjLabel* pGraphObjLabel = m_arpPosLabels.value(i_pLabel->getKey());
-
-        if( pGraphObjLabel->m_pGraphObjLabel = i_pLabel )
+        CGraphObjLabel* pGraphObjLabel = m_arpPosLabels.value(i_pLabel->getKey());
+        if( pGraphObjLabel = i_pLabel )
         {
             bLabelFound = true;
-
-            try
-            {
-                delete pGraphObjLabel;
-            }
-            catch(...)
-            {
-            }
-            pGraphObjLabel = nullptr;
-
             m_arpPosLabels.remove(i_pLabel->getKey());
         }
     }
 
     if( !bLabelFound && m_arpDimLineLabels.contains(i_pLabel->getKey()) )
     {
-        SGraphObjLabel* pGraphObjLabel = m_arpDimLineLabels.value(i_pLabel->getKey());
-
-        if( pGraphObjLabel->m_pGraphObjLabel = i_pLabel )
+        CGraphObjLabel* pGraphObjLabel = m_arpDimLineLabels.value(i_pLabel->getKey());
+        if( pGraphObjLabel = i_pLabel )
         {
             bLabelFound = true;
-
-            try
-            {
-                delete pGraphObjLabel;
-            }
-            catch(...)
-            {
-            }
-            pGraphObjLabel = nullptr;
-
             m_arpDimLineLabels.remove(i_pLabel->getKey());
         }
     }
 
     if( !bLabelFound && m_arpUserLabels.contains(i_pLabel->getKey()) )
     {
-        SGraphObjLabel* pGraphObjLabel = m_arpUserLabels.value(i_pLabel->getKey());
-
-        if( pGraphObjLabel->m_pGraphObjLabel = i_pLabel )
+        CGraphObjLabel* pGraphObjLabel = m_arpUserLabels.value(i_pLabel->getKey());
+        if( pGraphObjLabel = i_pLabel )
         {
             bLabelFound = true;
-
-            try
-            {
-                delete pGraphObjLabel;
-            }
-            catch(...)
-            {
-            }
-            pGraphObjLabel = nullptr;
-
             m_arpUserLabels.remove(i_pLabel->getKey());
         }
     }
@@ -5218,13 +5425,38 @@ void CGraphObj::updateLabelPositions()
         /* strMethod    */ "updateLabelPositions",
         /* strAddInfo   */ strMthInArgs );
 
+    updateLabelPositions(m_arpNameLabels);
+    updateLabelPositions(m_arpPosLabels);
+    updateLabelPositions(m_arpDimLineLabels);
+    updateLabelPositions(m_arpUserLabels);
+
+} // updateLabelPositions
+
+//------------------------------------------------------------------------------
+void CGraphObj::updateLabelPositions( QHash<QString, CGraphObjLabel*>& i_arpLabels )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->isActive(ETraceDetailLevelMethodArgs) )
+    {
+        strMthInArgs = "Labels [" + QString::number(i_arpLabels.size()) + "]";
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "updateLabelPositions",
+        /* strAddInfo   */ strMthInArgs );
+
     QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
 
     if( pGraphicsItem != nullptr )
     {
-        QHashIterator<QString,SGraphObjLabel*> itLabels(m_arpNameLabels);
+        QHashIterator<QString, CGraphObjLabel*> itLabels(i_arpLabels);
 
-        SGraphObjLabel* pGraphObjLabel;
+        CGraphObjLabel* pGraphObjLabel;
         QPointF         ptSelPt;
         QPointF         ptLabel;
 
@@ -5234,19 +5466,20 @@ void CGraphObj::updateLabelPositions()
 
             pGraphObjLabel = itLabels.value();
 
-            if( pGraphObjLabel->m_pGraphObjLabel != nullptr )
+            if( pGraphObjLabel != nullptr )
             {
-                ptSelPt = getSelectionPoint(pGraphObjLabel->m_selPt.enumerator());
+                ptSelPt = getSelectionPointCoors(pGraphObjLabel->getLinkedSelectionPoint());
                 ptSelPt = pGraphicsItem->mapToScene(ptSelPt);
 
-                ptLabel.setX( ptSelPt.x() + pGraphObjLabel->m_sizDist.width() );
-                ptLabel.setY( ptSelPt.y() + pGraphObjLabel->m_sizDist.height() );
+                QSizeF sizeDistance = pGraphObjLabel->getLinkedSelectionPointDistance();
 
-                pGraphObjLabel->m_pGraphObjLabel->setPos(ptLabel);
+                ptLabel.setX( ptSelPt.x() + sizeDistance.width() );
+                ptLabel.setY( ptSelPt.y() + sizeDistance.height() );
+
+                pGraphObjLabel->setPos(ptLabel);
             }
         }
-    } // if( pGraphicsItem != nullptr )
-
+    }
 } // updateLabelPositions
 
 /*==============================================================================
@@ -5254,138 +5487,117 @@ protected: // overridables
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CGraphObj::showLabel( QHash<QString, SGraphObjLabel*>& i_arpLabels, const QString& i_strKey )
-//------------------------------------------------------------------------------
-{
-    QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
-
-    if( pGraphicsItem != nullptr )
-    {
-        if( i_arpLabels.contains(i_strKey) )
-        {
-            SGraphObjLabel* pGraphObjLabel = i_arpLabels[i_strKey];
-
-            QPointF ptSelPt = getSelectionPoint(pGraphObjLabel->m_selPt.enumerator());
-            QPointF ptLabel;
-
-            ptSelPt = pGraphicsItem->mapToScene(ptSelPt);
-
-            if( pGraphObjLabel->m_pGraphObjLabel == nullptr )
-            {
-                pGraphObjLabel->m_pGraphObjLabel = new CGraphObjLabel(
-                    /* pDrawingScene     */ m_pDrawingScene,
-                    /* pGraphObjSelected */ this,
-                    /* strKey            */ pGraphObjLabel->m_strKey,
-                    /* strText           */ pGraphObjLabel->m_strText,
-                    /* selPt             */ pGraphObjLabel->m_selPt.enumerator() );
-                m_pDrawingScene->addGraphObj(pGraphObjLabel->m_pGraphObjLabel, this);
-                //pGraphObjLabel->m_pGraphObjLabel->setParentItem(this); see comment in header file of class CGraphObjLabel
-            }
-
-            if( !pGraphObjLabel->m_bDistValid )
-            {
-                QPointF ptLabelTmp = ptSelPt;
-
-                if( pGraphObjLabel->m_selPt != ESelectionPoint::BottomRight
-                 && pGraphObjLabel->m_selPt != ESelectionPoint::BottomLeft
-                 && pGraphObjLabel->m_selPt != ESelectionPoint::BottomCenter )
-                {
-                    ptLabelTmp.setY( ptLabelTmp.y() - pGraphObjLabel->m_pGraphObjLabel->getHeight() );
-                }
-
-                bool bUniquePos = false;
-
-                while( !bUniquePos )
-                {
-                    bUniquePos = true;
-
-                    QHashIterator<QString,SGraphObjLabel*> itLabels(i_arpLabels);
-
-                    while( itLabels.hasNext() )
-                    {
-                        itLabels.next();
-
-                        SGraphObjLabel* pGraphObjLabelTmp = itLabels.value();
-
-                        if( pGraphObjLabelTmp->m_strKey != i_strKey )
-                        {
-                            if( pGraphObjLabelTmp->m_pGraphObjLabel != nullptr && pGraphObjLabelTmp->m_pGraphObjLabel->scenePos() == ptLabelTmp )
-                            {
-                                bUniquePos = false;
-                                ptLabelTmp.setX( pGraphObjLabelTmp->m_pGraphObjLabel->scenePos().x() + pGraphObjLabelTmp->m_pGraphObjLabel->getWidth() + 4 );
-                                break;
-                            }
-                        }
-                    }
-                }
-
-                pGraphObjLabel->m_sizDist.setWidth( ptLabelTmp.x() - ptSelPt.x() );
-                pGraphObjLabel->m_sizDist.setHeight( ptLabelTmp.y() - ptSelPt.y() );
-
-                pGraphObjLabel->m_bDistValid = true;
-
-            } // if( !pGraphObjLabel->m_bDistValid )
-
-            ptLabel.setX( ptSelPt.x() + pGraphObjLabel->m_sizDist.width() );
-            ptLabel.setY( ptSelPt.y() + pGraphObjLabel->m_sizDist.height() );
-
-            pGraphObjLabel->m_bVisible = true;
-
-            pGraphObjLabel->m_pGraphObjLabel->setPos(ptLabel);
-            pGraphObjLabel->m_pGraphObjLabel->setZValue(pGraphicsItem->zValue()+0.02);
-
-            if( m_pTree != nullptr )
-            {
-                m_pTree->onTreeEntryChanged(this);
-            }
-        } // if( i_arpLabels.contains(i_strKey) )
-    } // if( pGraphicsItem != nullptr )
-
-} // showLabel
-
-//------------------------------------------------------------------------------
-void CGraphObj::hideLabel( QHash<QString, SGraphObjLabel*>& i_arpLabels, const QString& i_strKey )
+void CGraphObj::showLabel(
+    QHash<QString, CGraphObjLabel*>& i_arpLabels,
+    const QString&                   i_strKey,
+    const QString&                   i_strText,
+    ESelectionPoint                  i_selPt )
 //------------------------------------------------------------------------------
 {
     if( i_arpLabels.contains(i_strKey) )
     {
-        SGraphObjLabel* pGraphObjLabel = i_arpLabels[i_strKey];
+        throw ZS::System::CException(__FILE__, __LINE__, EResultObjAlreadyInList, i_strKey);
+    }
 
-        //m_pDrawingScene->removeGraphObj(pGraphObjLabel); // the dtor of the label removes itself from the drawing scene
+    QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
 
-        delete pGraphObjLabel->m_pGraphObjLabel;
-        pGraphObjLabel->m_pGraphObjLabel = nullptr;
+    if( pGraphicsItem == nullptr )
+    {
+        throw ZS::System::CException(__FILE__, __LINE__, EResultInvalidDynamicTypeCast, "dynamic_cast<QGraphicsItem*>(this)");
+    }
 
-        pGraphObjLabel->m_bVisible = false;
+    CGraphObjLabel* pGraphObjLabel = new CGraphObjLabel(
+            /* pDrawingScene     */ m_pDrawingScene,
+            /* pGraphObjSelected */ this,
+            /* strKey            */ i_strKey,
+            /* strText           */ i_strText,
+            /* selPt             */ i_selPt );
+    m_pDrawingScene->addGraphObj(pGraphObjLabel, this);
 
-        if( m_pTree != nullptr )
+    i_arpLabels.insert(i_strKey, pGraphObjLabel);
+
+    QPointF ptSelPt = getSelectionPointCoors(i_selPt);
+
+    ptSelPt = pGraphicsItem->mapToScene(ptSelPt);
+
+    QPointF ptLabelTmp = ptSelPt;
+
+    if( i_selPt != ESelectionPoint::BottomRight && i_selPt != ESelectionPoint::BottomLeft && i_selPt != ESelectionPoint::BottomCenter )
+    {
+        ptLabelTmp.setY( ptLabelTmp.y() - pGraphObjLabel->getHeight() );
+    }
+
+    bool bUniquePos = false;
+
+    while( !bUniquePos )
+    {
+        bUniquePos = true;
+
+        QHashIterator<QString, CGraphObjLabel*> itLabels(i_arpLabels);
+
+        while( itLabels.hasNext() )
         {
-            m_pTree->onTreeEntryChanged(this);
+            itLabels.next();
+
+            CGraphObjLabel* pGraphObjLabelTmp = itLabels.value();
+
+            if( pGraphObjLabelTmp->getKey() != i_strKey )
+            {
+                if( pGraphObjLabelTmp->scenePos() == ptLabelTmp )
+                {
+                    bUniquePos = false;
+                    ptLabelTmp.setX( pGraphObjLabelTmp->scenePos().x() + pGraphObjLabelTmp->getWidth() + 4 );
+                    break;
+                }
+            }
         }
+    }
+
+    QSize sizeDist(ptLabelTmp.x() - ptSelPt.x(), ptLabelTmp.y() - ptSelPt.y());
+
+    //pGraphObjLabel->m_bDistValid = true;
+
+    QPointF ptLabel( ptSelPt.x() + sizeDist.width(), ptSelPt.y() + sizeDist.height() );
+
+    pGraphObjLabel->setPos(ptLabel);
+    pGraphObjLabel->setZValue(pGraphicsItem->zValue() + 0.02);
+
+    if( m_pTree != nullptr )
+    {
+        m_pTree->onTreeEntryChanged(this);
+    }
+
+} // showLabel
+
+//------------------------------------------------------------------------------
+void CGraphObj::hideLabel( QHash<QString, CGraphObjLabel*>& i_arpLabels, const QString& i_strKey )
+//------------------------------------------------------------------------------
+{
+    CGraphObjLabel* pGraphObjLabel = i_arpLabels.value(i_strKey, nullptr);
+
+    //m_pDrawingScene->removeGraphObj(pGraphObjLabel); // the dtor of the label removes itself from the drawing scene
+
+    delete pGraphObjLabel;
+    pGraphObjLabel = nullptr;
+
+    if( m_pTree != nullptr )
+    {
+        m_pTree->onTreeEntryChanged(this);
     }
 
 } // hideLabel
 
 //------------------------------------------------------------------------------
-void CGraphObj::destroyLabels( QHash<QString, SGraphObjLabel*>& i_arpLabels )
+void CGraphObj::destroyLabels( QHash<QString, CGraphObjLabel*>& i_arpLabels )
 //------------------------------------------------------------------------------
 {
-    QHashIterator<QString,SGraphObjLabel*> itLabels(i_arpLabels);
-    SGraphObjLabel* pGraphObjLabel;
+    QHashIterator<QString, CGraphObjLabel*> itLabels(i_arpLabels);
+    CGraphObjLabel* pGraphObjLabel;
 
     while( itLabels.hasNext() )
     {
         itLabels.next();
         pGraphObjLabel = itLabels.value();
-
-        try
-        {
-            delete pGraphObjLabel->m_pGraphObjLabel;
-        }
-        catch(...)
-        {
-        }
-        pGraphObjLabel->m_pGraphObjLabel = nullptr;
 
         try
         {

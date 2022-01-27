@@ -87,6 +87,10 @@ protected: // instance members
     CDrawSettings   m_drawSettings;
     // List of popup widgets which have to be closed on activating other widgets
     QList<QWidget*> m_arpWdgtsPopup;
+    bool            m_bApplyingChanges; /*!< Flag to indicate the changes will be applied to the graphical object.
+                                             This flag has to be set at the beginning of "applyChanges" and reset
+                                             if all changes have been set. Afterwards "onGraphObjChanged" has to
+                                             be explicitely called at the end of "applyChanges". */
 
 }; // class CWdgtFormatGraphObjs
 

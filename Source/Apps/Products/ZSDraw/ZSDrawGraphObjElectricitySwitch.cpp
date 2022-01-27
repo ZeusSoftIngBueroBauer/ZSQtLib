@@ -402,15 +402,14 @@ void CGraphObjSwitch::setState( EState i_state )
 
         if( m_arpUserLabels.contains(c_strKeyLabelState) )
         {
-            SGraphObjLabel* pGraphObjLabel = m_arpUserLabels[c_strKeyLabelState];
+            CGraphObjLabel* pGraphObjLabel = m_arpUserLabels[c_strKeyLabelState];
 
-            if( pGraphObjLabel->m_pGraphObjLabel != nullptr )
+            if( pGraphObjLabel != nullptr )
             {
                 QString str = State2Str(m_state);
-                pGraphObjLabel->m_pGraphObjLabel->setText(str);
+                pGraphObjLabel->setText(str);
             }
         }
-
     } // if( m_state != i_state )
 
 } // setState

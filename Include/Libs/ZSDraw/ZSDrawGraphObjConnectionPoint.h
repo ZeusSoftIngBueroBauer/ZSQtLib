@@ -111,7 +111,7 @@ public: // overridables of base class CGraphObj
 public: // reimplementing methods of base class QGraphicItem
     void setCursor( const QCursor& cursor );
 public: // overridables of base class CGraphObj
-    virtual QPointF getSelectionPoint( ESelectionPoint i_selPt ) const; // returns coordinates of selection point in item's coordinate system
+    virtual QPointF getSelectionPointCoors( ESelectionPoint i_selPt ) const; // returns coordinates of selection point in item's coordinate system
 protected: // must overridables of base class CGraphObj
     virtual void showSelectionPoints( unsigned char i_selPts = ESelectionPointsAll ) { i_selPts = i_selPts; }
     virtual void updateSelectionPoints( unsigned char i_selPts = ESelectionPointsAll ) { i_selPts = i_selPts; }

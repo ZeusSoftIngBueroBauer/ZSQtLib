@@ -80,11 +80,9 @@ CWdgtFormatGraphObjsObjName::CWdgtFormatGraphObjsObjName(
     m_pLytName(nullptr),
     m_pLblName(nullptr),
     m_pEdtName(nullptr),
-    m_pChkNameVisible(nullptr),
     m_pLytPath(nullptr),
     m_pLblPath(nullptr),
     m_pEdtPath(nullptr),
-    m_pChkPathVisible(nullptr),
     // Trace
     m_pTrcAdminObj(nullptr)
 {
@@ -135,12 +133,6 @@ CWdgtFormatGraphObjsObjName::CWdgtFormatGraphObjsObjName(
     m_pEdtName = new QLineEdit();
     m_pLytName->addWidget(m_pEdtName);
 
-    // <CheckBox> Show Name
-    //---------------------
-
-    m_pChkNameVisible = new QCheckBox("Visible");
-    m_pLytName->addWidget(m_pChkNameVisible);
-
     // <Line> Path
     //============
 
@@ -158,20 +150,12 @@ CWdgtFormatGraphObjsObjName::CWdgtFormatGraphObjsObjName(
     //m_pEdtPath->setReadOnly(true);
     m_pLytPath->addWidget(m_pEdtPath);
 
-    // <CheckBox> Show Path
-    //---------------------
-
-    m_pChkPathVisible = new QCheckBox("Visible");
-    m_pLytPath->addWidget(m_pChkPathVisible);
-
     // Set settings at GUI controls
     //-----------------------------
 
     if( m_pGraphObj == nullptr )
     {
         m_pEdtName->setEnabled(false);
-        m_pChkNameVisible->setEnabled(false);
-        m_pChkPathVisible->setEnabled(false);
     }
     else // if( m_pGraphObj != nullptr )
     {
@@ -205,11 +189,9 @@ CWdgtFormatGraphObjsObjName::~CWdgtFormatGraphObjsObjName()
     m_pLytName = nullptr;
     m_pLblName = nullptr;
     m_pEdtName = nullptr;
-    m_pChkNameVisible = nullptr;
     m_pLytPath = nullptr;
     m_pLblPath = nullptr;
     m_pEdtPath = nullptr;
-    m_pChkPathVisible = nullptr;
 
     // Trace
     m_pTrcAdminObj = nullptr;
@@ -239,38 +221,7 @@ void CWdgtFormatGraphObjsObjName::applyChanges()
     if( m_pGraphObj != nullptr )
     {
         m_pGraphObj->rename(m_pEdtName->text());
-
-        if( m_pChkNameVisible->isChecked() )
-        {
-            if( !m_pGraphObj->isNameLabelVisible() )
-            {
-                m_pGraphObj->showNameLabel();
-            }
-        }
-        else
-        {
-            if( m_pGraphObj->isNameLabelVisible() )
-            {
-                m_pGraphObj->hideNameLabel();
-            }
-        }
-
-        if( m_pChkPathVisible->isChecked() )
-        {
-            if( !m_pGraphObj->isPathLabelVisible() )
-            {
-                m_pGraphObj->showPathLabel();
-            }
-        }
-        else
-        {
-            if( m_pGraphObj->isPathLabelVisible() )
-            {
-                m_pGraphObj->hidePathLabel();
-            }
-        }
-    } // if( m_pGraphObj != nullptr )
-
+    }
 } // applyChanges
 
 //------------------------------------------------------------------------------
@@ -329,14 +280,6 @@ bool CWdgtFormatGraphObjsObjName::hasChanges() const
         {
             bHasChanges = true;
         }
-        if( !bHasChanges )
-        {
-            bHasChanges = (m_pGraphObj->isNameLabelVisible() != m_pChkNameVisible->isChecked());
-        }
-        if( !bHasChanges )
-        {
-            bHasChanges = (m_pGraphObj->isPathLabelVisible() != m_pChkPathVisible->isChecked());
-        }
     }
 
     if( mthTracer.isActive(ETraceDetailLevelMethodArgs) )
@@ -375,13 +318,5 @@ void CWdgtFormatGraphObjsObjName::onGraphObjChanged()
     if( m_pEdtPath->text() != m_pGraphObj->path() )
     {
         m_pEdtPath->setText(m_pGraphObj->path());
-    }
-    if( m_pGraphObj->isNameLabelVisible() != m_pChkNameVisible->isChecked() )
-    {
-        m_pChkNameVisible->setChecked( m_pGraphObj->isNameLabelVisible() );
-    }
-    if( m_pGraphObj->isPathLabelVisible() != m_pChkPathVisible->isChecked() )
-    {
-        m_pChkPathVisible->setChecked( m_pGraphObj->isPathLabelVisible() );
     }
 } // onGraphObjChanged

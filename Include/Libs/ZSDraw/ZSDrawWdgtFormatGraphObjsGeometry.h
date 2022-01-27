@@ -115,11 +115,6 @@ protected slots:
     void onBtnShapePointDownClicked();
     void onEdtRotationAngleValueChanged( double );
     void onEdtZValueValueChanged( double );
-    void onCmbPosLabelAnchorSelPtCurrentIndexChanged( int );
-    void onChkPosLabelVisibleStateChanged( int );
-    void onChkPosLabelAnchorLineVisibleStateChanged( int );
-protected: // auxiliary methods
-    void fillComboAnchorSelPt( QComboBox* i_pCmb );
 private: // instance members
     QPointF                       m_ptPos;   // Values (pos, size, plg, angle, zValue) are used to  detect whether coordinates have been changed.
     QSizeF                        m_size;    // Changing the size of a polygon also changes the shape points of the polygon.
@@ -177,56 +172,6 @@ private: // instance members
     QHBoxLayout*                  m_pLytLineZValue;
     QLabel*                       m_pLblZValue;
     QDoubleSpinBox*               m_pEdtZValue;
-    QWidget*                      m_pWdgtLabelVisibilities;
-    QVBoxLayout*                  m_pLytWdgtLabelVisibilities;
-    QHBoxLayout*                  m_pLytHeadLineWdgtLabelVisibilities;
-    QLabel*                       m_pLblHeadLineLabelVisibilities;
-    QFrame*                       m_pSepHeadLineLabelVisibilities;
-    QHBoxLayout*                  m_pLytLinePosLabelVisibilities;
-    QLabel*                       m_pLblPosLabelAnchorSelPt;
-    QComboBox*                    m_pCmbPosLabelAnchorSelPt;
-    QLabel*                       m_pLblPosLabelVisible;
-    QCheckBox*                    m_pChkPosLabelVisible;
-    QLabel*                       m_pLblPosLabelAnchorLineVisible;
-    QCheckBox*                    m_pChkPosLabelAnchorLineVisible;
-    QHBoxLayout*                  m_pLytLineSizeWidthLabelVisible;
-    QLabel*                       m_pLblSizeWidthLabelAnchorSelPt;
-    QComboBox*                    m_pCmbSizeWidthLabelAnchorSelPt;
-    QLabel*                       m_pLblSizeWidthLabelVisible;
-    QCheckBox*                    m_pChkSizeWidthLabelVisible;
-    QLabel*                       m_pLblSizeWidthLabelAnchorLineVisible;
-    QCheckBox*                    m_pChkSizeWidthLabelAnchorLineVisible;
-    QHBoxLayout*                  m_pLytLineSizeHeightLabelVisible;
-    QLabel*                       m_pLblSizeHeightLabelAnchorSelPt;
-    QComboBox*                    m_pCmbSizeHeightLabelAnchorSelPt;
-    QLabel*                       m_pLblSizeHeightLabelVisible;
-    QCheckBox*                    m_pChkSizeHeightLabelVisible;
-    QLabel*                       m_pLblSizeHeightLabelAnchorLineVisible;
-    QCheckBox*                    m_pChkSizeHeightLabelAnchorLineVisible;
-    QHBoxLayout*                  m_pLytLineRotationAngleLabelVisible;
-    QLabel*                       m_pLblRotationAngleLabelVisible;
-    QComboBox*                    m_pCmbRotationAngleLabelAnchorSelPt;
-    QLabel*                       m_pLblRotationAngleLabelAnchorLineVisible;
-    QCheckBox*                    m_pChkRotationAngleLabelVisible;
-    QLabel*                       m_pLblRotationAngleLabelAnchorSelPt;
-    QCheckBox*                    m_pChkRotationAngleLabelAnchorLineVisible;
-    QWidget*                      m_pWdgtDimensionLinesVisibilities;
-    QVBoxLayout*                  m_pLytWdgtDimensionLinesVisibilities;
-    QHBoxLayout*                  m_pLytHeadLineWdgtDimensionLinesVisibilities;
-    QLabel*                       m_pLblHeadLineDimensionLinesVisibilities;
-    QFrame*                       m_pSepHeadLineDimensionLinesVisibilities;
-    QHBoxLayout*                  m_pLytLineDimensionLinesBoundingRectVisibile;
-    QLabel*                       m_pLblDimensionLinesBoundingRectVisible;
-    QCheckBox*                    m_pChkDimensionLinesBoundingRectVisible;
-    QHBoxLayout*                  m_pLytLineDimensionLinesBoundingRectDiagonalsVisible;
-    QLabel*                       m_pLblDimensionLinesBoundingRectDiagonalsVisible;
-    QCheckBox*                    m_pChkDimensionLinesBoundingRectDiagonalsVisible;
-    QHBoxLayout*                  m_pLytLineDimensionLinesBoundingRectHorizontalSymmetryAxisVisible;
-    QLabel*                       m_pLblDimensionLinesBoundingRectHorizontalSymmetryAxisVisible;
-    QCheckBox*                    m_pChkDimensionLinesBoundingRectHorizontalSymmetryAxisVisible;
-    QHBoxLayout*                  m_pLytLineDimensionLinesBoundingRectVerticalSymmetryAxisVisible;
-    QLabel*                       m_pLblDimensionLinesBoundingRectVerticalSymmetryAxisVisible;
-    QCheckBox*                    m_pChkDimensionLinesBoundingRectVerticalSymmetryAxisVisible;
     // Trace
     ZS::Trace::CTrcAdminObj*      m_pTrcAdminObj;
 

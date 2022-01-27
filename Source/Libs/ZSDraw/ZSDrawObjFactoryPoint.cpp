@@ -169,7 +169,7 @@ SErrResultInfo CObjFactoryPoint::saveGraphObj(
     // Labels
     //----------------
 
-    //QHash<QString,SGraphObjLabel*> arpLabels = i_pGraphObj->getLabels();
+    //QHash<QString, CGraphObjLabel*> arpLabels = i_pGraphObj->getLabels();
 
     //if( arpLabels.size() > 0 )
     //{
@@ -214,14 +214,14 @@ CGraphObj* CObjFactoryPoint::loadGraphObj(
 
     if( i_pDrawingScene->findGraphObj(i_strObjId) == nullptr )
     {
-        QString                        strElemName;
-        QString                        strElemText;
-        bool                           bConverted;
-        CDrawSettings                  drawSettings(EGraphObjTypePoint);
-        QPointF                        ptPos;
-        bool                           bPosValid = false;
-        double                         fZValue = 0.0;
-        QHash<QString,SGraphObjLabel*> arpLabels;
+        QString                         strElemName;
+        QString                         strElemText;
+        bool                            bConverted;
+        CDrawSettings                   drawSettings(EGraphObjTypePoint);
+        QPointF                         ptPos;
+        bool                            bPosValid = false;
+        double                          fZValue = 0.0;
+        QHash<QString, CGraphObjLabel*> arpLabels;
 
         while( !i_xmlStreamReader.hasError() && !i_xmlStreamReader.atEnd() )
         {
@@ -318,8 +318,8 @@ CGraphObj* CObjFactoryPoint::loadGraphObj(
 
         if( arpLabels.size() > 0 )
         {
-            QHashIterator<QString,SGraphObjLabel*> itLabels(arpLabels);
-            SGraphObjLabel*                        pGraphObjLabel;
+            QHashIterator<QString, CGraphObjLabel*> itLabels(arpLabels);
+            CGraphObjLabel* pGraphObjLabel;
 
             while( itLabels.hasNext() )
             {
@@ -327,7 +327,7 @@ CGraphObj* CObjFactoryPoint::loadGraphObj(
 
                 pGraphObjLabel = itLabels.value();
 
-                arpLabels.remove(pGraphObjLabel->m_strKey);
+                arpLabels.remove(pGraphObjLabel->getKey());
 
                 delete pGraphObjLabel;
                 pGraphObjLabel = nullptr;

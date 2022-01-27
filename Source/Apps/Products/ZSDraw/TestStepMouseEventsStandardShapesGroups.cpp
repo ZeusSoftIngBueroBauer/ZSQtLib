@@ -6303,7 +6303,7 @@ void CTest::doTestStepStandardShapesGroups( ZS::Test::CTestStepGroup* i_pTestSte
                 s_plgGroup1 = rotateRect( s_rctGroup1.center(), s_rctGroup1, fAngle_rad );
                 s_plgGroup1.append(s_plgGroup1[0]);
 
-                QPointF ptSelPtRot = getSelectionPoint( s_rctGroup1, ESelectionPoint::RotateTop );
+                QPointF ptSelPtRot = getSelectionPointCoors( s_rctGroup1, ESelectionPoint::RotateTop );
 
                 m_ptDrawingSceneMousePos = rotatePoint( s_rctGroup1.center(), ptSelPtRot, fAngle_rad ).toPoint();
             }

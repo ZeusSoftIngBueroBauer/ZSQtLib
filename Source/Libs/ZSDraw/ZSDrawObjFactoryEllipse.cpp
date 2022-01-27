@@ -173,7 +173,7 @@ SErrResultInfo CObjFactoryEllipse::saveGraphObj(
     // Labels
     //----------------
 
-    //QHash<QString,SGraphObjLabel*> arpLabels = i_pGraphObj->getLabels();
+    //QHash<QString, CGraphObjLabel*> arpLabels = i_pGraphObj->getLabels();
 
     //if( arpLabels.size() > 0 )
     //{
@@ -218,17 +218,17 @@ CGraphObj* CObjFactoryEllipse::loadGraphObj(
 
     if( i_pDrawingScene->findGraphObj(i_strObjId) == nullptr )
     {
-        QString                        strElemName;
-        QString                        strElemText;
-        bool                           bConverted;
-        CDrawSettings                  drawSettings(EGraphObjTypeEllipse);
-        QPointF                        ptPos;
-        QSizeF                         siz;
-        bool                           bPosValid = false;
-        bool                           bSizeValid = false;
-        double                         fRotAngle_deg = 0.0;
-        double                         fZValue = 0.0;
-        QHash<QString,SGraphObjLabel*> arpLabels;
+        QString                         strElemName;
+        QString                         strElemText;
+        bool                            bConverted;
+        CDrawSettings                   drawSettings(EGraphObjTypeEllipse);
+        QPointF                         ptPos;
+        QSizeF                          siz;
+        bool                            bPosValid = false;
+        bool                            bSizeValid = false;
+        double                          fRotAngle_deg = 0.0;
+        double                          fZValue = 0.0;
+        QHash<QString, CGraphObjLabel*> arpLabels;
 
         while( !i_xmlStreamReader.hasError() && !i_xmlStreamReader.atEnd() )
         {
@@ -356,8 +356,8 @@ CGraphObj* CObjFactoryEllipse::loadGraphObj(
 
         if( arpLabels.size() > 0 )
         {
-            QHashIterator<QString,SGraphObjLabel*> itLabels(arpLabels);
-            SGraphObjLabel*                        pGraphObjLabel;
+            QHashIterator<QString, CGraphObjLabel*> itLabels(arpLabels);
+            CGraphObjLabel* pGraphObjLabel;
 
             while( itLabels.hasNext() )
             {
@@ -365,7 +365,7 @@ CGraphObj* CObjFactoryEllipse::loadGraphObj(
 
                 pGraphObjLabel = itLabels.value();
 
-                arpLabels.remove(pGraphObjLabel->m_strKey);
+                arpLabels.remove(pGraphObjLabel->getKey());
 
                 delete pGraphObjLabel;
                 pGraphObjLabel = nullptr;

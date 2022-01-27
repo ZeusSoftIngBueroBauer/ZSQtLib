@@ -69,7 +69,7 @@ public: // class methods
 public: // ctors and dtor
     CGraphObjLabel( // for (bounding) rectangles
         CDrawingScene*  i_pDrawingScene,
-        CGraphObj*      i_pGraphObj,
+        CGraphObj*      i_pGraphObjParent,
         const QString&  i_strKey,
         const QString&  i_strText,
         ESelectionPoint i_selPt );
@@ -85,7 +85,13 @@ public: // replacing methods of QGraphicsSimpleTextItem
     void setText( const QString& i_strText );
 public: // overridables
     virtual QString getKey() const { return m_strKey; }
-    virtual ESelectionPoint getGraphObjParentSelectionPoint() const { return m_selPtGraphObjParent; }
+public: // overridables
+    virtual ESelectionPoint getLinkedSelectionPoint() const { return m_selPtLinked; }
+    QSizeF getLinkedSelectionPointDistance() const { return m_sizeLinkedSelPtDist; }
+public: // overridables
+    virtual void showAnchorLine();
+    virtual void hideAnchorLine();
+    virtual bool isAnchorLineVisible() const { return m_bShowAnchorLine; }
 public: // overridables
     //virtual void saveGraphObjDistance();
     //virtual QSizeF getGraphObjDistance() const { return m_sizGraphObjDist; }
@@ -112,8 +118,6 @@ public: // reimplementing methods of base class QGraphicItem
 protected: // must overridables of base class CGraphObj
     virtual void showSelectionPoints( unsigned char i_selPts = ESelectionPointsAll ) { i_selPts = i_selPts; }
     virtual void updateSelectionPoints( unsigned char i_selPts = ESelectionPointsAll ) { i_selPts = i_selPts; }
-public: // overridables (to avoid endless recursion)
-    virtual QRectF boundingRect( bool i_bSimpleTextItemOnly ) const;
 public: // must overridables of base class QGraphicsItem
     virtual QRectF boundingRect() const;
     virtual void paint( QPainter* i_pPainter, const QStyleOptionGraphicsItem* i_pStyleOption, QWidget* i_pWdgt = nullptr );
@@ -131,13 +135,20 @@ protected: // overridables of base class QGraphicsItem
 protected: // class members
     static qint64 s_iInstCount;
 protected: // instance members
-    QString         m_strKey;                   /*!< Key of the label within the list of labels of the graphical objects. */
-    CGraphObj*      m_pGraphObjParent;          /*!< Graphical parent object this label belongs to. */
-    QGraphicsItem*  m_pGraphicsItemParent;      /*!< Graphical parent object this label belongs to.
-                                                     Same as m_pGraphObjParent but stored to avoid unnecessary
-                                                     dynamic casts during runtime. */
-    ESelectionPoint m_selPtGraphObjParent;      /*!< Selection point of parent item the label is aligned to. */
-    //QSizeF        m_sizGraphObjParentDist;    /*!< Distance to the selection point the label is aligned to. */
+    QString         m_strKey;              /*!< Key of the label within the list of labels of the graphical objects. */
+    CGraphObj*      m_pGraphObjParent;     /*!< Graphical parent object this label belongs to. */
+    QGraphicsItem*  m_pGraphicsItemParent; /*!< Graphical parent object this label belongs to.
+                                                Same as m_pGraphObjParent but stored to avoid unnecessary
+                                                dynamic casts during runtime. */
+    ESelectionPoint m_selPtLinked;         /*!< Selection point of parent item the label is linked and aligned to. */
+    QSizeF          m_sizeLinkedSelPtDist; /*!< Distance to the selection point the label is aligned to.
+                                                Calculated as:
+                                                    width = this.x - LinkedSelPt.x
+                                                    height = this.y - LinkedSelPt.y
+                                                This means if the label is right of the parent items selection point the width is positive.
+                                                If the label is above of the parent items selection point the height is positive. */
+    bool            m_bShowAnchorLine;     /*! Flag to indicate whether the anchor line (line from label to parent's selection point the
+                                               labe is linked to) should always be visible. */
 
 }; // class CGraphObjLabel
 

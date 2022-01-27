@@ -395,8 +395,8 @@ protected: // overridables
 
 //------------------------------------------------------------------------------
 SErrResultInfo CObjFactory::saveGraphObjLabels(
-    const QHash<QString,SGraphObjLabel*>& i_arpLabels,
-    QXmlStreamWriter&                     i_xmlStreamWriter )
+    const QHash<QString, CGraphObjLabel*>& i_arpLabels,
+    QXmlStreamWriter&                      i_xmlStreamWriter )
 //------------------------------------------------------------------------------
 {
     QString strAddTrcInfo;
@@ -413,8 +413,8 @@ SErrResultInfo CObjFactory::saveGraphObjLabels(
 
     SErrResultInfo errResultInfo;
 
-    QHashIterator<QString,SGraphObjLabel*> itLabels(i_arpLabels);
-    SGraphObjLabel*                        pGraphObjLabel;
+    QHashIterator<QString, CGraphObjLabel*> itLabels(i_arpLabels);
+    CGraphObjLabel* pGraphObjLabel;
 
     while( itLabels.hasNext() )
     {
@@ -426,11 +426,11 @@ SErrResultInfo CObjFactory::saveGraphObjLabels(
 
         // To keep the XML file as short as possible the properties of
         // the labels are stored as attributes and not as text elements.
-        i_xmlStreamWriter.writeAttribute( "Key", pGraphObjLabel->m_strKey );
-        i_xmlStreamWriter.writeAttribute( "Text", pGraphObjLabel->m_strText );
-        i_xmlStreamWriter.writeAttribute( "SelectionPoint", pGraphObjLabel->m_selPt.toString() );
-        i_xmlStreamWriter.writeAttribute( "Distance", size2Str(pGraphObjLabel->m_sizDist) );
-        i_xmlStreamWriter.writeAttribute( "Visible", bool2Str(pGraphObjLabel->m_bVisible) );
+        //i_xmlStreamWriter.writeAttribute( "Key", pGraphObjLabel->m_strKey );
+        //i_xmlStreamWriter.writeAttribute( "Text", pGraphObjLabel->m_strText );
+        //i_xmlStreamWriter.writeAttribute( "SelectionPoint", pGraphObjLabel->m_selPt.toString() );
+        //i_xmlStreamWriter.writeAttribute( "Distance", size2Str(pGraphObjLabel->m_sizDist) );
+        //i_xmlStreamWriter.writeAttribute( "Visible", bool2Str(pGraphObjLabel->m_bVisible) );
 
         i_xmlStreamWriter.writeEndElement();
     }
@@ -445,7 +445,7 @@ SErrResultInfo CObjFactory::saveGraphObjLabels(
 } // saveGraphObjLabels
 
 //------------------------------------------------------------------------------
-QHash<QString,SGraphObjLabel*> CObjFactory::loadGraphObjLabels(
+QHash<QString, CGraphObjLabel*> CObjFactory::loadGraphObjLabels(
     QXmlStreamReader& i_xmlStreamReader,
     SErrResultInfo&   io_errResultInfo )
 //------------------------------------------------------------------------------
@@ -458,14 +458,14 @@ QHash<QString,SGraphObjLabel*> CObjFactory::loadGraphObjLabels(
         /* strMethod    */ "loadGraphObjLabels",
         /* strAddInfo   */ strAddTrcInfo );
 
-    QHash<QString,SGraphObjLabel*> arpLabels;
+    QHash<QString, CGraphObjLabel*> arpLabels;
 
     QXmlStreamAttributes xmlStreamAttrs;
 
     QString         strElemName;
     QString         strAttr;
     bool            bConverted;
-    SGraphObjLabel* pGraphObjLabel = nullptr;
+    CGraphObjLabel* pGraphObjLabel = nullptr;
 
     while( !i_xmlStreamReader.hasError() && !i_xmlStreamReader.atEnd() )
     {
@@ -526,19 +526,19 @@ QHash<QString,SGraphObjLabel*> CObjFactory::loadGraphObjLabels(
                 {
                     if( pGraphObjLabel != nullptr )
                     {
-                        if( arpLabels.contains(pGraphObjLabel->m_strKey) )
-                        {
-                            arpLabels.remove(pGraphObjLabel->m_strKey);
-                        }
-                        delete pGraphObjLabel;
-                        pGraphObjLabel = nullptr;
+                        //if( arpLabels.contains(pGraphObjLabel->m_strKey) )
+                        //{
+                        //    arpLabels.remove(pGraphObjLabel->m_strKey);
+                        //}
+                        //delete pGraphObjLabel;
+                        //pGraphObjLabel = nullptr;
                     }
 
-                    pGraphObjLabel = new SGraphObjLabel(strKey,strText,selPt);
+                    //pGraphObjLabel = new CGraphObjLabel(strKey,strText,selPt);
 
-                    pGraphObjLabel->m_sizDist = sizDist;
-                    pGraphObjLabel->m_bDistValid = bDistValid;
-                    pGraphObjLabel->m_bVisible = bVisible;
+                    //pGraphObjLabel->m_sizDist = sizDist;
+                    //pGraphObjLabel->m_bDistValid = bDistValid;
+                    //pGraphObjLabel->m_bVisible = bVisible;
                 }
             } // if( strElemName == "Label" )
         } // if( i_xmlStreamReader.isStartElement() )
@@ -547,11 +547,11 @@ QHash<QString,SGraphObjLabel*> CObjFactory::loadGraphObjLabels(
         {
             if( strElemName == "Label" )
             {
-                if( pGraphObjLabel != nullptr && !pGraphObjLabel->m_strKey.isEmpty() && !arpLabels.contains(pGraphObjLabel->m_strKey) )
-                {
-                    arpLabels.insert( pGraphObjLabel->m_strKey, pGraphObjLabel );
-                    pGraphObjLabel = nullptr;
-                }
+                //if( pGraphObjLabel != nullptr && !pGraphObjLabel->m_strKey.isEmpty() && !arpLabels.contains(pGraphObjLabel->m_strKey) )
+                //{
+                //    arpLabels.insert( pGraphObjLabel->m_strKey, pGraphObjLabel );
+                //    pGraphObjLabel = nullptr;
+                //}
             }
             else if( strElemName == "Labels" )
             {
