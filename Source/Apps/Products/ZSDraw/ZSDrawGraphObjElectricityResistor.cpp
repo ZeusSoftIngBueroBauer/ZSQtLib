@@ -75,8 +75,7 @@ class CGraphObjCapacitor : public CGraphObjElectricity
 public: // type definitions and constants
 ==============================================================================*/
 
-const QSize   CGraphObjResistor::c_sizInitial(42.0,8.0);
-const QString CGraphObjResistor::c_strKeyLabelResistance = "Resistance";
+const QSize CGraphObjResistor::c_sizInitial(42.0, 8.0);
 
 /*==============================================================================
 protected: // class members
@@ -353,19 +352,8 @@ void CGraphObjResistor::setResistance( double i_fResistance_Ohm )
     {
         m_fResistance_Ohm = i_fResistance_Ohm;
 
-        if( m_arpUserLabels.contains(c_strKeyLabelResistance) )
-        {
-            CGraphObjLabel* pGraphObjLabel = m_arpUserLabels[c_strKeyLabelResistance];
-
-            if( pGraphObjLabel != nullptr )
-            {
-                QString str = QString::number(m_fResistance_Ohm) + "Ohm";
-                pGraphObjLabel->setText(str);
-            }
-        }
-
-    } // if( m_fResistance_Ohm != i_fResistance_Ohm )
-
+        setDescription( QString::number(m_fResistance_Ohm) + " Ohm" );
+    }
 } // setResistance
 
 /*==============================================================================
@@ -376,23 +364,21 @@ public: // instance methods
 void CGraphObjResistor::showResistance( ESelectionPoint i_selPtPos )
 //------------------------------------------------------------------------------
 {
-    QString str = QString::number(m_fResistance_Ohm) + "Ohm";
-
-    showUserDefinedLabel(c_strKeyLabelResistance, str, i_selPtPos);
+    showDescriptionLabel(i_selPtPos);
 }
 
 //------------------------------------------------------------------------------
 void CGraphObjResistor::hideResistance()
 //------------------------------------------------------------------------------
 {
-    hideUserDefinedLabel(c_strKeyLabelResistance);
+    hideDescriptionLabel();
 }
 
 //------------------------------------------------------------------------------
-bool CGraphObjResistor::isResistanceVisible() const
+bool CGraphObjResistor::isResistanceVisible( ESelectionPoint i_selPtPos ) const
 //------------------------------------------------------------------------------
 {
-    return isUserDefinedLabelVisible(c_strKeyLabelResistance);
+    return isDescriptionLabelVisible(i_selPtPos);
 }
 
 /*==============================================================================

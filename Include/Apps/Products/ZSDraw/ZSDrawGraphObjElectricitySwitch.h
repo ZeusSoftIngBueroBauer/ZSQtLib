@@ -53,8 +53,7 @@ public: // class methods
     /*! Returns the class name. */
     static QString ClassName() { return "CGraphObjSwitch"; } // Please note that the static class functions name must be different from the non static virtual member function "className"
 public: // type definitions and constants
-    static const QSize   c_sizInitial;
-    static const QString c_strKeyLabelState;
+    static const QSize c_sizInitial;
     typedef enum {
         EStateOpened = 0,
         EStateClosed = 1,
@@ -81,7 +80,7 @@ public: // instance methods
 public: // instance methods
     void showState( ESelectionPoint i_selPtPos = ESelectionPoint::BottomCenter );
     void hideState();
-    bool isStateVisible() const;
+    bool isStateVisible( ESelectionPoint i_selPtPos = ESelectionPoint::BottomCenter ) const;
 public: // must overridables of base class CGraphObj
     virtual CGraphObj* clone();
 public: // overridables of base class CGraphObj

@@ -355,7 +355,7 @@ bool CGraphObjConnectionLine::setConnectionPoint( ELinePoint i_linePoint, CGraph
             } // if( linePoint == ELinePoint::End )
 
             updateSelectionPointsOfPolygon(plg);
-            updateLabelPositions();
+            updateLabelPositionsAndContents();
             updateToolTip();
             updateEditInfo();
 
@@ -451,7 +451,7 @@ void CGraphObjConnectionLine::setPolygon( const QPolygonF& i_plg )
             }
         }
 
-        updateLabelPositions();
+        updateLabelPositionsAndContents();
 
         m_bCoorsDirty = true;
 
@@ -2606,7 +2606,7 @@ QVariant CGraphObjConnectionLine::itemChange( GraphicsItemChange i_change, const
           #endif
     {
         updateSelectionPointsOfPolygon( polygon() );
-        updateLabelPositions();
+        updateLabelPositionsAndContents();
         updateEditInfo();
         updateToolTip();
         update();

@@ -76,8 +76,7 @@ class CGraphObjTransistor : public CGraphObjElectricity
 public: // type definitions and constants
 ==============================================================================*/
 
-const QSize   CGraphObjTransistor::c_sizInitial(42.0,48.0);
-const QString CGraphObjTransistor::c_strKeyLabelDopingType = "DopingType";
+const QSize CGraphObjTransistor::c_sizInitial(42.0, 48.0);
 
 /* EType
 ==============================================================================*/
@@ -595,16 +594,7 @@ void CGraphObjTransistor::setDopingType( EDopingType i_type )
         m_pLinBaseUp->setDrawSettings(drawSettingsLineBaseUp);
         m_pLinBaseDn->setDrawSettings(drawSettingsLineBaseDn);
 
-        if( m_arpUserLabels.contains(c_strKeyLabelDopingType) )
-        {
-            CGraphObjLabel* pGraphObjLabel = m_arpUserLabels[c_strKeyLabelDopingType];
-
-            if( pGraphObjLabel != nullptr )
-            {
-                QString str = DopingType2Str(m_dopingType);
-                pGraphObjLabel->setText(str);
-            }
-        }
+        setDescription( DopingType2Str(m_dopingType) );
 
     } // if( m_dopingType != i_type )
 
@@ -618,23 +608,21 @@ public: // instance methods
 void CGraphObjTransistor::showDopingType( ESelectionPoint i_selPtPos )
 //------------------------------------------------------------------------------
 {
-    QString str = DopingType2Str(m_dopingType);
-
-    showUserDefinedLabel(c_strKeyLabelDopingType, str, i_selPtPos);
+    showDescriptionLabel(i_selPtPos);
 }
 
 //------------------------------------------------------------------------------
 void CGraphObjTransistor::hideDopingType()
 //------------------------------------------------------------------------------
 {
-    hideUserDefinedLabel(c_strKeyLabelDopingType);
+    hideDescriptionLabel();
 }
 
 //------------------------------------------------------------------------------
-bool CGraphObjTransistor::isDopingTypeVisible() const
+bool CGraphObjTransistor::isDopingTypeVisible( ESelectionPoint i_selPtPos ) const
 //------------------------------------------------------------------------------
 {
-    return isUserDefinedLabelVisible(c_strKeyLabelDopingType);
+    return isDescriptionLabelVisible(i_selPtPos);
 }
 
 /*==============================================================================

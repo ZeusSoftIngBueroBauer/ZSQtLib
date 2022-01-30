@@ -270,7 +270,7 @@ void CGraphObjText::setHtml( const QString& i_strText )
         updateSelectionPoints();
     }
 
-    updateLabelPositions();
+    updateLabelPositionsAndContents();
 
 } // setHtml
 
@@ -301,7 +301,7 @@ void CGraphObjText::setPlainText( const QString& i_strText )
         updateSelectionPoints();
     }
 
-    updateLabelPositions();
+    updateLabelPositionsAndContents();
 
 } // setPlainText
 
@@ -379,7 +379,7 @@ void CGraphObjText::onDrawSettingsChanged()
             updateSelectionPoints();
         }
 
-        updateLabelPositions();
+        updateLabelPositionsAndContents();
     }
 
 } // onDrawSettingsChanged
@@ -1654,7 +1654,7 @@ void CGraphObjText::keyPressEvent( QKeyEvent* i_pEv )
 
     updateSelectionPoints();
 
-    updateLabelPositions();
+    updateLabelPositionsAndContents();
 
 } // keyPressEvent
 
@@ -1687,7 +1687,7 @@ void CGraphObjText::keyReleaseEvent( QKeyEvent* i_pEv )
 
     updateSelectionPoints();
 
-    updateLabelPositions();
+    updateLabelPositionsAndContents();
 
 } // keyReleaseEvent
 
@@ -1814,7 +1814,7 @@ QVariant CGraphObjText::itemChange( GraphicsItemChange i_change, const QVariant&
     else if( i_change == ItemTransformHasChanged )
     {
         updateSelectionPointsOfBoundingRect( rect() );
-        updateLabelPositions();
+        updateLabelPositionsAndContents();
         updateEditInfo();
         updateToolTip();
     }
@@ -1834,7 +1834,7 @@ QVariant CGraphObjText::itemChange( GraphicsItemChange i_change, const QVariant&
     {
         updateTransform();
         updateSelectionPointsOfBoundingRect( rect() );
-        updateLabelPositions();
+        updateLabelPositionsAndContents();
         updateEditInfo();
         updateToolTip();
     }

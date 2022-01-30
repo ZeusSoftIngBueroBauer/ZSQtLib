@@ -75,8 +75,7 @@ class CGraphObjCapacitor : public CGraphObjElectricity
 public: // type definitions and constants
 ==============================================================================*/
 
-const QSize   CGraphObjCapacitor::c_sizInitial(24.0,24.0);
-const QString CGraphObjCapacitor::c_strKeyLabelCapacitance = "Capacitance";
+const QSize CGraphObjCapacitor::c_sizInitial(24.0, 24.0);
 
 /*==============================================================================
 protected: // class members
@@ -402,18 +401,8 @@ void CGraphObjCapacitor::setCapacitance( double i_fCapacitance_F )
     {
         m_fCapacitance_F = i_fCapacitance_F;
 
-        if( m_arpUserLabels.contains(c_strKeyLabelCapacitance) )
-        {
-            CGraphObjLabel* pGraphObjLabel = m_arpUserLabels[c_strKeyLabelCapacitance];
-
-            if( pGraphObjLabel != nullptr )
-            {
-                QString str = QString::number(m_fCapacitance_F) + "F";
-                pGraphObjLabel->setText(str);
-            }
-        }
-    } // if( m_fCapacitance_F != i_fCapacitance_F )
-
+        setDescription(QString::number(m_fCapacitance_F) + " F");
+    }
 } // setCapacitance
 
 /*==============================================================================
@@ -424,23 +413,21 @@ public: // instance methods
 void CGraphObjCapacitor::showCapacitance( ESelectionPoint i_selPtPos )
 //------------------------------------------------------------------------------
 {
-    QString str = QString::number(m_fCapacitance_F) + "F";
-
-    showUserDefinedLabel(c_strKeyLabelCapacitance, str, i_selPtPos);
+    showDescriptionLabel(i_selPtPos);
 }
 
 //------------------------------------------------------------------------------
 void CGraphObjCapacitor::hideCapacitance()
 //------------------------------------------------------------------------------
 {
-    hideUserDefinedLabel(c_strKeyLabelCapacitance);
+    hideDescriptionLabel();
 }
 
 //------------------------------------------------------------------------------
-bool CGraphObjCapacitor::isCapacitanceVisible() const
+bool CGraphObjCapacitor::isCapacitanceVisible( ESelectionPoint i_selPtPos ) const
 //------------------------------------------------------------------------------
 {
-    return isUserDefinedLabelVisible(c_strKeyLabelCapacitance);
+    return isDescriptionLabelVisible(i_selPtPos);
 }
 
 /*==============================================================================

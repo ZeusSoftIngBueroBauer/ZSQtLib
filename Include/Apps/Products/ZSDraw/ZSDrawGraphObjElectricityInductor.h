@@ -55,8 +55,7 @@ public: // class methods
     /*! Returns the class name. */
     static QString ClassName() { return "CGraphObjInductor"; } // Please note that the static class functions name must be different from the non static virtual member function "className"
 public: // type definitions and constants
-    static const QSize   c_sizInitial;
-    static const QString c_strKeyLabelInductance;
+    static const QSize c_sizInitial;
 public: // ctors and dtor
     CGraphObjInductor(
         CDrawingScene*       i_pDrawingScene,
@@ -72,7 +71,7 @@ public: // instance methods
 public: // instance methods
     void showInductance( ESelectionPoint i_selPtPos = ESelectionPoint::BottomCenter );
     void hideInductance();
-    bool isInductanceVisible() const;
+    bool isInductanceVisible( ESelectionPoint i_selPtPos = ESelectionPoint::BottomCenter ) const;
 public: // must overridables of base class CGraphObj
     virtual CGraphObj* clone();
 public: // overridables of base class CGraphObj

@@ -296,9 +296,9 @@ class CGraphObj
 public: // type definitions and constants
 ==============================================================================*/
 
-const QString CGraphObj::c_strKeyLabelName = "Name";
-const QString CGraphObj::c_strKeyLabelPath = "Path";
-const QString CGraphObj::c_strKeyLabelPosition = "Position";
+const QString CGraphObj::c_strKeyLabelName        = "Name";
+const QString CGraphObj::c_strKeyLabelPath        = "Path";
+const QString CGraphObj::c_strKeyLabelDescription = "Description";
 
 /*==============================================================================
 protected: // ctor
@@ -345,6 +345,7 @@ CGraphObj::CGraphObj(
     m_strFactoryGroupName(i_strFactoryGroupName),
     m_type(i_type),
     m_strType(i_strType),
+    m_strDescription(),
     m_drawSettings(i_type),
     m_sizMinimum(),
     m_sizMaximum(),
@@ -362,7 +363,6 @@ CGraphObj::CGraphObj(
     m_arpNameLabels(),
     m_arpPosLabels(),
     m_arpDimLineLabels(),
-    m_arpUserLabels(),
     m_strToolTip(),
     m_strEditInfo(),
     // Current item coordinates and transform values:
@@ -474,7 +474,6 @@ CGraphObj::~CGraphObj()
     destroyLabels(m_arpNameLabels);
     destroyLabels(m_arpPosLabels);
     destroyLabels(m_arpDimLineLabels);
-    destroyLabels(m_arpUserLabels);
 
     //if( m_pDrawingScene != nullptr )
     //{
@@ -525,6 +524,7 @@ CGraphObj::~CGraphObj()
     //m_strFactoryGroupName;
     m_type = static_cast<EGraphObjType>(0);
     //m_strType;
+    //m_strDescription;
     //m_drawSettings;
     //m_sizMinimum;
     //m_sizMaximum;
@@ -542,7 +542,6 @@ CGraphObj::~CGraphObj()
     //m_arpNameLabels;
     //m_arpPosLabels;
     //m_arpDimLineLabels;
-    //m_arpUserLabels;
     //m_strToolTip;
     //m_strEditInfo;
     // Current item coordinates and transform values:
@@ -594,6 +593,9 @@ public: // instance methods
     entry. As a precondition the entry (the graphical object) must have been
     added before to the index tree of the drawing scene.
 
+    As a reentry the index tree calls "setName" of the tree entry. "setName"
+    is overridden by the graphical object to update the label text (if visible).
+
     @param i_strNameNew [in] New name of the tree entry.
 
     @note Throws a critical exception
@@ -629,6 +631,63 @@ void CGraphObj::rename( const QString& i_strNameNew )
     }
 
 } // rename
+
+//------------------------------------------------------------------------------
+/*! Sets the description text of the object.
+
+    If the description label is visible the indicated text is updated.
+
+    @param i_strDescription [in] New description text.
+*/
+//------------------------------------------------------------------------------
+void CGraphObj::setDescription( const QString& i_strDescription )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->isActive(ETraceDetailLevelMethodArgs) )
+    {
+        strMthInArgs = i_strDescription;
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "setDescription",
+        /* strAddInfo   */ strMthInArgs );
+
+    if( m_strDescription != i_strDescription )
+    {
+        m_strDescription = i_strDescription;
+
+        if( m_arpNameLabels.contains(c_strKeyLabelDescription) )
+        {
+            CGraphObjLabel* pGraphObjLabel = m_arpNameLabels[c_strKeyLabelDescription];
+
+            if( pGraphObjLabel != nullptr )
+            {
+                pGraphObjLabel->setText(m_strDescription);
+            }
+        }
+
+        if( m_pTree != nullptr )
+        {
+            m_pTree->onTreeEntryChanged(this);
+        }
+    }
+} // setDescription
+
+//------------------------------------------------------------------------------
+/*! Returns the description text.
+
+    @return Description text
+*/
+QString CGraphObj::getDescription() const
+//------------------------------------------------------------------------------
+{
+    return m_strDescription;
+}
 
 /*==============================================================================
 protected: // overridables of base class CIdxTreeEntry
@@ -811,7 +870,7 @@ void CGraphObj::onCreateAndExecDlgFormatGraphObjs()
 
     CDlgFormatGraphObjs* pDlgFormatGraphObjs = new CDlgFormatGraphObjs(m_pDrawingScene,this);
 
-    pDlgFormatGraphObjs->setCurrentWidget(CDlgFormatGraphObjs::c_strWdgtObjName);
+    pDlgFormatGraphObjs->setCurrentWidget(CDlgFormatGraphObjs::c_strWdgtLabels);
 
     pDlgFormatGraphObjs->exec();
 
@@ -3503,6 +3562,16 @@ public: // overridables (KeyLabel = "Name")
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! Shows the name in a text label linked to the given selection point.
+
+    If the label is already visible at a different selection point the label
+    remains visible but will be linked to the new given selection point.
+    This is realized by destroying the current label and creating a new label.
+
+    @param i_selPt
+        Selection point the label should be linked to.
+        None, Any, All, RotateTop and RotateBottom is not allowed.
+*/
 void CGraphObj::showNameLabel( ESelectionPoint i_selPt )
 //------------------------------------------------------------------------------
 {
@@ -3520,11 +3589,36 @@ void CGraphObj::showNameLabel( ESelectionPoint i_selPt )
         /* strMethod    */ "showNameLabel",
         /* strAddInfo   */ strMthInArgs );
 
-    showLabel(m_arpNameLabels, c_strKeyLabelName, name(), i_selPt);
+    CGraphObjLabel* pGraphObjLabel = m_arpNameLabels.value(c_strKeyLabelName, nullptr);
 
+    bool bShowAnchorLine = false;
+
+    if( pGraphObjLabel != nullptr )
+    {
+        if( pGraphObjLabel->getLinkedSelectionPoint() != i_selPt )
+        {
+            bShowAnchorLine = pGraphObjLabel->isAnchorLineVisible();
+            hideLabel(m_arpNameLabels, c_strKeyLabelName);
+            pGraphObjLabel = nullptr;
+        }
+    }
+
+    if( pGraphObjLabel == nullptr )
+    {
+        showLabel(m_arpNameLabels, c_strKeyLabelName, name(), i_selPt);
+
+        pGraphObjLabel = m_arpNameLabels.value(c_strKeyLabelName, nullptr);
+
+        if( pGraphObjLabel != nullptr && bShowAnchorLine )
+        {
+            pGraphObjLabel->showAnchorLine();
+        }
+    }
 } // showNameLabel
 
 //------------------------------------------------------------------------------
+/*! Hides the name label - if currently visible.
+*/
 void CGraphObj::hideNameLabel()
 //------------------------------------------------------------------------------
 {
@@ -3542,9 +3636,20 @@ void CGraphObj::hideNameLabel()
         /* strAddInfo   */ strMthInArgs );
 
     hideLabel(m_arpNameLabels, c_strKeyLabelName);
-}
+
+} // hideNameLabel
 
 //------------------------------------------------------------------------------
+/*! Checks whether the name label is visible for the given selection point.
+
+    @param i_selPt
+        Selection point the label is linked to.
+        RotateTop and RotateBottom is not allowed.
+        None ...... If you pass None the method returns true if the label is NOT visible.
+        Any, All .. Returns true if the label is visible at any selection point.
+    @return true, if the label is visible or if None has been passed, if the label is not visible.
+            false, if the label is not visible or if None has been passed, if the label is visible.
+*/
 bool CGraphObj::isNameLabelVisible( ESelectionPoint i_selPt ) const
 //------------------------------------------------------------------------------
 {
@@ -3574,26 +3679,18 @@ bool CGraphObj::isNameLabelVisible( ESelectionPoint i_selPt ) const
 } // isNameLabelVisible
 
 //------------------------------------------------------------------------------
-/*! Shows the line between the name label and the selection point
-    the label is aligned to.
+/*! Shows the line between the name label and the selection point the label is aligned to.
 
     The method just sets a flag. The line becomes only visible if also
     the name label is visible.
-
-    @param i_selPt [in]
-        Selection point(s) for which anchor lines to the labels should be created.
-        None, Any, RotateTop and RotateBottom is not allowed.
-        All .... Shows anchor lines for all labels for all selection points instead of
-                 RotateTop and RotateBottom.
 */
-void CGraphObj::showNameLabelAnchorLine( ESelectionPoint i_selPt )
+void CGraphObj::showNameLabelAnchorLine()
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
 
     if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->isActive(ETraceDetailLevelMethodArgs) )
     {
-        strMthInArgs = CEnumSelectionPoint(i_selPt).toString();
     }
 
     CMethodTracer mthTracer(
@@ -3608,27 +3705,18 @@ void CGraphObj::showNameLabelAnchorLine( ESelectionPoint i_selPt )
     if( pGraphObjLabel != nullptr )
     {
         pGraphObjLabel->showAnchorLine();
-    }
 
-    if( m_pTree != nullptr )
-    {
-        m_pTree->onTreeEntryChanged(this);
+        if( m_pTree != nullptr )
+        {
+            m_pTree->onTreeEntryChanged(this);
+        }
     }
-
 } // showNameLabelAnchorLine
 
 //------------------------------------------------------------------------------
-/*! Hides the line between the name label and the selection point
-    the label is aligned to.
+/*! Hides the line between the name label and the selection point the label is aligned to.
 
-    The method just sets a flag. If the position lable is not visible the method
-    has no effect.
-
-    @param i_selPt [in]
-        Selection point(s) for which anchor lines to labels should be created.
-        None, Any, RotateTop and RotateBottom is not allowed.
-        All .... Shows anchro lines to labels for all selection points instead of
-                 RotateTop and RotateBottom.
+    The method just sets a flag. If the name label is not visible the method has no effect.
 */
 void CGraphObj::hideNameLabelAnchorLine()
 //------------------------------------------------------------------------------
@@ -3650,10 +3738,7 @@ void CGraphObj::hideNameLabelAnchorLine()
 
     if( pGraphObjLabel != nullptr )
     {
-        //m_pDrawingScene->removeGraphObj(pGraphObjLabel); // the dtor of the label removes itself from the drawing scene
-
-        delete pGraphObjLabel;
-        pGraphObjLabel = nullptr;
+        pGraphObjLabel->hideAnchorLine();
 
         if( m_pTree != nullptr )
         {
@@ -3665,16 +3750,8 @@ void CGraphObj::hideNameLabelAnchorLine()
 //------------------------------------------------------------------------------
 /*! Checks whether the line between the name label and the selection point
     the label is aligned is visible.
-
-    @param i_selPt [in]
-        Selection point(s) to be checked.
-    @return
-        RotateTop and RotateBottom is not allowed and is just ignored by returning false.
-        None ... true is returned if no anchor line is visible, false if any anchror line is visible.
-        All .... true is returned if all anchor lines are visible, false if not all anchor lines are visible.
-        Any .... true is returned if any anchor line is visible, false if no anchor is visible.
 */
-bool CGraphObj::isNameLabelAnchorLineVisible( ESelectionPoint i_selPt ) const
+bool CGraphObj::isNameLabelAnchorLineVisible() const
 //------------------------------------------------------------------------------
 {
     bool bIsVisible = false;
@@ -3684,18 +3761,6 @@ bool CGraphObj::isNameLabelAnchorLineVisible( ESelectionPoint i_selPt ) const
     if( pGraphObjLabel != nullptr )
     {
         bIsVisible = pGraphObjLabel->isAnchorLineVisible();
-
-        if( i_selPt == ESelectionPoint::None )
-        {
-            bIsVisible = !bIsVisible;
-        }
-        else if( i_selPt == ESelectionPoint::Any || i_selPt == ESelectionPoint::All )
-        {
-        }
-        else if( bIsVisible && i_selPt != ESelectionPoint::RotateTop && i_selPt != ESelectionPoint::RotateBottom )
-        {
-            bIsVisible = (pGraphObjLabel->getLinkedSelectionPoint() == i_selPt);
-        }
     }
 
     return bIsVisible;
@@ -3707,6 +3772,16 @@ public: // overridables (KeyLabel = "Path")
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! Shows the path in a text label linked to the given selection point.
+
+    If the label is already visible at a different selection point the label
+    remains visible but will be linked to the new given selection point.
+    This is realized by destroying the current label and creating a new label.
+
+    @param i_selPt
+        Selection point the label should be linked to.
+        None, Any, All, RotateTop and RotateBottom is not allowed.
+*/
 void CGraphObj::showPathLabel( ESelectionPoint i_selPt )
 //------------------------------------------------------------------------------
 {
@@ -3724,11 +3799,36 @@ void CGraphObj::showPathLabel( ESelectionPoint i_selPt )
         /* strMethod    */ "showPathLabel",
         /* strAddInfo   */ strMthInArgs );
 
-    showLabel(m_arpNameLabels, c_strKeyLabelPath, path(), i_selPt);
+    CGraphObjLabel* pGraphObjLabel = m_arpNameLabels.value(c_strKeyLabelPath, nullptr);
 
+    bool bShowAnchorLine = false;
+
+    if( pGraphObjLabel != nullptr )
+    {
+        if( pGraphObjLabel->getLinkedSelectionPoint() != i_selPt )
+        {
+            bShowAnchorLine = pGraphObjLabel->isAnchorLineVisible();
+            hideLabel(m_arpNameLabels, c_strKeyLabelDescription);
+            pGraphObjLabel = nullptr;
+        }
+    }
+
+    if( pGraphObjLabel == nullptr )
+    {
+        showLabel(m_arpNameLabels, c_strKeyLabelPath, path(), i_selPt);
+
+        pGraphObjLabel = m_arpNameLabels.value(c_strKeyLabelPath, nullptr);
+
+        if( pGraphObjLabel != nullptr && bShowAnchorLine )
+        {
+            pGraphObjLabel->showAnchorLine();
+        }
+    }
 } // showPathLabel
 
 //------------------------------------------------------------------------------
+/*! Hides the name label - if currently visible.
+*/
 void CGraphObj::hidePathLabel()
 //------------------------------------------------------------------------------
 {
@@ -3746,9 +3846,20 @@ void CGraphObj::hidePathLabel()
         /* strAddInfo   */ strMthInArgs );
 
     hideLabel(m_arpNameLabels, c_strKeyLabelPath);
-}
+
+} // hidePathLabel
 
 //------------------------------------------------------------------------------
+/*! Checks whether the path label is visible for the given selection point.
+
+    @param i_selPt
+        Selection point the label is linked to.
+        RotateTop and RotateBottom is not allowed.
+        None ...... If you pass None the method returns true if the label is NOT visible.
+        Any, All .. Returns true if the label is visible at any selection point.
+    @return true, if the label is visible or if None has been passed, if the label is not visible.
+            false, if the label is not visible or if None has been passed, if the label is visible.
+*/
 bool CGraphObj::isPathLabelVisible( ESelectionPoint i_selPt ) const
 //------------------------------------------------------------------------------
 {
@@ -3778,26 +3889,18 @@ bool CGraphObj::isPathLabelVisible( ESelectionPoint i_selPt ) const
 } // isPathLabelVisible
 
 //------------------------------------------------------------------------------
-/*! Shows the line between the path label and the selection point
-    the label is aligned to.
+/*! Shows the line between the path label and the selection point the label is aligned to.
 
     The method just sets a flag. The line becomes only visible if also
-    the name label is visible.
-
-    @param i_selPt [in]
-        Selection point(s) for which anchor lines to labels should be created.
-        None, Any, RotateTop and RotateBottom is not allowed.
-        All .... Shows anchor lines to labels for all selection points instead of
-                 RotateTop and RotateBottom.
+    the path label is visible.
 */
-void CGraphObj::showPathLabelAnchorLine( ESelectionPoint i_selPt )
+void CGraphObj::showPathLabelAnchorLine()
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
 
     if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->isActive(ETraceDetailLevelMethodArgs) )
     {
-        strMthInArgs = CEnumSelectionPoint(i_selPt).toString();
     }
 
     CMethodTracer mthTracer(
@@ -3812,27 +3915,18 @@ void CGraphObj::showPathLabelAnchorLine( ESelectionPoint i_selPt )
     if( pGraphObjLabel != nullptr )
     {
         pGraphObjLabel->showAnchorLine();
-    }
 
-    if( m_pTree != nullptr )
-    {
-        m_pTree->onTreeEntryChanged(this);
+        if( m_pTree != nullptr )
+        {
+            m_pTree->onTreeEntryChanged(this);
+        }
     }
-
 } // showPathLabelAnchorLine
 
 //------------------------------------------------------------------------------
-/*! Hides the line between the path label and the selection point
-    the label is aligned to.
+/*! Hides the line between the path label and the selection point the label is aligned to.
 
-    The method just sets a flag. If the position lable is not visible the method
-    has no effect.
-
-    @param i_selPt [in]
-        Selection point(s) for which anchor lines to labels should be created.
-        None, Any, RotateTop and RotateBottom is not allowed.
-        All .... Shows anchor lines to labels for all selection points instead of
-                 RotateTop and RotateBottom.
+    The method just sets a flag. If the path lable is not visible the method has no effect.
 */
 void CGraphObj::hidePathLabelAnchorLine()
 //------------------------------------------------------------------------------
@@ -3854,32 +3948,20 @@ void CGraphObj::hidePathLabelAnchorLine()
 
     if( pGraphObjLabel != nullptr )
     {
-        //m_pDrawingScene->removeGraphObj(pGraphObjLabel); // the dtor of the label removes itself from the drawing scene
-
-        delete pGraphObjLabel;
-        pGraphObjLabel = nullptr;
+        pGraphObjLabel->hideAnchorLine();
 
         if( m_pTree != nullptr )
         {
             m_pTree->onTreeEntryChanged(this);
         }
     }
-
 } // hidePathLabelAnchorLine
 
 //------------------------------------------------------------------------------
 /*! Checks whether the line between the path label and the selection point
     the label is aligned is visible.
-
-    @param i_selPt [in]
-        Selection point(s) to be checked.
-    @return
-        RotateTop and RotateBottom is not allowed and is just ignored by returning false.
-        None ... true is returned if no anchor line is visible, false if any anchor line is visible.
-        All .... true is returned if all anchor lines are visible, false if not all anchor lines are visible.
-        Any .... true is returned if any anchor line is visible, false if no anchor line is visible.
 */
-bool CGraphObj::isPathLabelAnchorLineVisible( ESelectionPoint i_selPt ) const
+bool CGraphObj::isPathLabelAnchorLineVisible() const
 //------------------------------------------------------------------------------
 {
     bool bIsVisible = false;
@@ -3889,6 +3971,115 @@ bool CGraphObj::isPathLabelAnchorLineVisible( ESelectionPoint i_selPt ) const
     if( pGraphObjLabel != nullptr )
     {
         bIsVisible = pGraphObjLabel->isAnchorLineVisible();
+    }
+
+    return bIsVisible;
+
+} // isPathLabelAnchorLineVisible
+
+/*==============================================================================
+public: // overridables
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! Shows the description in a text label linked to the given selection point.
+
+    If the label is already visible at a different selection point the label
+    remains visible but will be linked to the new given selection point.
+    This is realized by destroying the current label and creating a new label.
+
+    @param i_selPt [in]
+        Selection point to which the label should be aligned to.
+        None, Any, All, RotateTop and RotateBottom is not allowed.
+*/
+void CGraphObj::showDescriptionLabel( ESelectionPoint i_selPt )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->isActive(ETraceDetailLevelMethodArgs) )
+    {
+        strMthInArgs = CEnumSelectionPoint::toString(i_selPt);
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "showDescriptionLabel",
+        /* strAddInfo   */ strMthInArgs );
+
+    CGraphObjLabel* pGraphObjLabel = m_arpNameLabels.value(c_strKeyLabelDescription, nullptr);
+
+    bool bShowAnchorLine = false;
+
+    if( pGraphObjLabel != nullptr )
+    {
+        if( pGraphObjLabel->getLinkedSelectionPoint() != i_selPt )
+        {
+            bShowAnchorLine = pGraphObjLabel->isAnchorLineVisible();
+            hideLabel(m_arpNameLabels, c_strKeyLabelDescription);
+            pGraphObjLabel = nullptr;
+        }
+    }
+
+    if( pGraphObjLabel == nullptr )
+    {
+        showLabel(m_arpNameLabels, c_strKeyLabelDescription, getDescription(), i_selPt);
+
+        pGraphObjLabel = m_arpNameLabels.value(c_strKeyLabelDescription, nullptr);
+
+        if( pGraphObjLabel != nullptr && bShowAnchorLine )
+        {
+            pGraphObjLabel->showAnchorLine();
+        }
+    }
+} // showDescriptionLabel
+
+//------------------------------------------------------------------------------
+/*! Hides the description label - if currently visible.
+*/
+void CGraphObj::hideDescriptionLabel()
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->isActive(ETraceDetailLevelMethodArgs) )
+    {
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "hideDescriptionLabel",
+        /* strAddInfo   */ strMthInArgs );
+
+    hideLabel(m_arpNameLabels, c_strKeyLabelDescription);
+
+} // hideDescriptionLabel
+
+//------------------------------------------------------------------------------
+/*! Checks whether the description label is visible for the given selection point.
+
+    @param i_selPt
+        Selection point the label is linked to.
+        RotateTop and RotateBottom is not allowed.
+        None ...... If you pass None the method returns true if the label is NOT visible.
+        Any, All .. Returns true if the label is visible at any selection point.
+    @return true, if the label is visible or if None has been passed, if the label is not visible.
+            false, if the label is not visible or if None has been passed, if the label is visible.
+*/
+bool CGraphObj::isDescriptionLabelVisible( ESelectionPoint i_selPt ) const
+//------------------------------------------------------------------------------
+{
+    bool bIsVisible = false;
+
+    CGraphObjLabel* pGraphObjLabel = m_arpNameLabels.value(c_strKeyLabelDescription, nullptr);
+
+    if( pGraphObjLabel != nullptr )
+    {
+        bIsVisible = pGraphObjLabel->isVisible();
 
         if( i_selPt == ESelectionPoint::None )
         {
@@ -3905,7 +4096,96 @@ bool CGraphObj::isPathLabelAnchorLineVisible( ESelectionPoint i_selPt ) const
 
     return bIsVisible;
 
-} // isPathLabelAnchorLineVisible
+} // isDescriptionLabelVisible
+
+//------------------------------------------------------------------------------
+/*! Shows the line between the description label and the selection point the label is aligned to.
+
+    The method just sets a flag. The line becomes only visible if also
+    the description label is visible.
+*/
+void CGraphObj::showDescriptionLabelAnchorLine()
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->isActive(ETraceDetailLevelMethodArgs) )
+    {
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "showDescriptionLabelAnchorLine",
+        /* strAddInfo   */ strMthInArgs );
+
+    CGraphObjLabel* pGraphObjLabel = m_arpNameLabels.value(c_strKeyLabelDescription, nullptr);
+
+    if( pGraphObjLabel != nullptr )
+    {
+        pGraphObjLabel->showAnchorLine();
+
+        if( m_pTree != nullptr )
+        {
+            m_pTree->onTreeEntryChanged(this);
+        }
+    }
+} // showDescriptionLabelAnchorLine
+
+//------------------------------------------------------------------------------
+/*! Hides the line between the description label and the selection point the label is aligned to.
+
+    The method just sets a flag. If the description label is not visible the method has no effect.
+*/
+void CGraphObj::hideDescriptionLabelAnchorLine()
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->isActive(ETraceDetailLevelMethodArgs) )
+    {
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "hideDescriptionLabelAnchorLine",
+        /* strAddInfo   */ strMthInArgs );
+
+    CGraphObjLabel* pGraphObjLabel = m_arpNameLabels.value(c_strKeyLabelDescription, nullptr);
+
+    if( pGraphObjLabel != nullptr )
+    {
+        pGraphObjLabel->hideAnchorLine();
+
+        if( m_pTree != nullptr )
+        {
+            m_pTree->onTreeEntryChanged(this);
+        }
+    }
+} // hideDescriptionLabelAnchorLine
+
+//------------------------------------------------------------------------------
+/*! Checks whether the line between the name label and the selection point
+    the label is aligned is visible.
+*/
+bool CGraphObj::isDescriptionLabelAnchorLineVisible() const
+//------------------------------------------------------------------------------
+{
+    bool bIsVisible = false;
+
+    CGraphObjLabel* pGraphObjLabel = m_arpNameLabels.value(c_strKeyLabelDescription, nullptr);
+
+    if( pGraphObjLabel != nullptr )
+    {
+        bIsVisible = pGraphObjLabel->isAnchorLineVisible();
+    }
+
+    return bIsVisible;
+
+} // isDescriptionLabelAnchorLineVisible
 
 /*==============================================================================
 public: // overridables (KeyLabel = "Position<SelPt>")
@@ -3937,6 +4217,8 @@ void CGraphObj::showPositionLabel( ESelectionPoint i_selPt )
         /* strMethod    */ "showPositionLabel",
         /* strAddInfo   */ strMthInArgs );
 
+    QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
+
     if( i_selPt == ESelectionPoint::All )
     {
         for( CEnumSelectionPoint selPt = 0; selPt < CEnumSelectionPoint::count(); ++selPt )
@@ -3945,7 +4227,11 @@ void CGraphObj::showPositionLabel( ESelectionPoint i_selPt )
              && selPt != ESelectionPoint::RotateTop && selPt != ESelectionPoint::RotateBottom )
             {
                 QString strKey = selPt.toString();
-                QString strText = point2Str(getSelectionPointCoors(selPt.enumerator()));
+                // Coordinates of the selection point in relation to the parent (thats me).
+                QPointF ptSelPt = getSelectionPointCoors(selPt.enumerator());
+                // Got to map the coordinates to my parent (which might be the scene).
+                ptSelPt = pGraphicsItem->mapToParent(ptSelPt);
+                QString strText = point2Str(ptSelPt);
                 showLabel(m_arpPosLabels, strKey, strText, selPt.enumerator());
             }
         }
@@ -3953,7 +4239,11 @@ void CGraphObj::showPositionLabel( ESelectionPoint i_selPt )
     else
     {
         QString strKey = CEnumSelectionPoint::toString(i_selPt);
-        QString strText = point2Str(getSelectionPointCoors(i_selPt));
+        // Coordinates of the selection point in relation to the parent (thats me).
+        QPointF ptSelPt = getSelectionPointCoors(i_selPt);
+        // Got to map the coordinates to my parent (which might be the scene).
+        ptSelPt = pGraphicsItem->mapToParent(ptSelPt);
+        QString strText = point2Str(ptSelPt);
         showLabel(m_arpPosLabels, strKey, strText, i_selPt);
     }
 
@@ -4255,195 +4545,7 @@ bool CGraphObj::isPositionLabelAnchorLineVisible( ESelectionPoint i_selPt ) cons
 } // isPositionLabelAnchorLineVisible
 
 /*==============================================================================
-public: // overridables (user defined labels)
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-/*! Creates and shows a user defined label for the given selection point.
-
-    @param i_strKey [in]
-        Key to identify the label. The key must be unique for all user defined labels.
-    @param i_strText [in]
-        Text to be shown by the user defined label.
-    @param i_selPt [in]
-        Selection point to which the label should be aligned to.
-        None, Any, All, RotateTop and RotateBottom is not allowed.
-*/
-void CGraphObj::showUserDefinedLabel( const QString& i_strKey, const QString& i_strText, ESelectionPoint i_selPt )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-
-    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->isActive(ETraceDetailLevelMethodArgs) )
-    {
-        strMthInArgs = "Key: " + i_strKey;
-        strMthInArgs += ", Text: " + i_strText;
-        strMthInArgs += ", SelPt: " + CEnumSelectionPoint::toString(i_selPt);
-    }
-
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strObjName   */ m_strName,
-        /* strMethod    */ "showUserDefinedLabel",
-        /* strAddInfo   */ strMthInArgs );
-
-
-} // showUserDefinedLabel
-
-//------------------------------------------------------------------------------
-void CGraphObj::hideUserDefinedLabel( const QString& i_strKey )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-
-    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->isActive(ETraceDetailLevelMethodArgs) )
-    {
-        strMthInArgs = i_strKey;
-    }
-
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strObjName   */ m_strName,
-        /* strMethod    */ "hideUserDefinedLabel",
-        /* strAddInfo   */ strMthInArgs );
-
-    if( m_arpUserLabels.contains(i_strKey) )
-    {
-    }
-
-} // hideUserDefinedLabel
-
-//------------------------------------------------------------------------------
-void CGraphObj::setUserDefinedLabelText( const QString& i_strKey, const QString& i_strText )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-
-    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->isActive(ETraceDetailLevelMethodArgs) )
-    {
-        strMthInArgs = i_strKey + ", " + i_strText;
-    }
-
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strObjName   */ m_strName,
-        /* strMethod    */ "setUserDefinedLabelText",
-        /* strAddInfo   */ strMthInArgs );
-
-    if( m_arpUserLabels.contains(i_strKey) )
-    {
-        CGraphObjLabel* pGraphObjLabel = m_arpUserLabels[i_strKey];
-
-        if( pGraphObjLabel != nullptr )
-        {
-            pGraphObjLabel->setText(i_strText);
-
-            if( m_pTree != nullptr )
-            {
-                m_pTree->onTreeEntryChanged(this);
-            }
-        }
-    }
-
-} // setUserDefinedLabelText
-
-//------------------------------------------------------------------------------
-bool CGraphObj::isUserDefinedLabelVisible( const QString& i_strKey, ESelectionPoint i_selPt ) const
-//------------------------------------------------------------------------------
-{
-    bool bIsVisible = false;
-
-    if( m_arpUserLabels.contains(i_strKey) )
-    {
-        CGraphObjLabel* pGraphObjLabel = m_arpUserLabels[i_strKey];
-
-        bIsVisible = pGraphObjLabel == nullptr ? false : pGraphObjLabel->isVisible();
-    }
-    return bIsVisible;
-
-} // isUserDefinedLabelVisible
-
-//------------------------------------------------------------------------------
-/*! Shows the line between the user defined labeland the given selection point.
-
-    @param i_strKey [in]
-        Key to identify the label. The key must be unique for all user defined labels.
-    @param i_strText [in]
-        Text to be shown by the user defined label.
-    @param i_selPt [in]
-        Selection point to which the label should be aligned to.
-        None, Any, All, RotateTop and RotateBottom is not allowed.
-*/
-void CGraphObj::showUserDefinedLabelAnchorLine(
-    const QString&  i_strKey,
-    const QString&  i_strText,
-    ESelectionPoint i_selPt )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-
-    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->isActive(ETraceDetailLevelMethodArgs) )
-    {
-        strMthInArgs = "Key: " + i_strKey;
-        strMthInArgs += ", Text: " + i_strText;
-        strMthInArgs += ", SelPt: " + CEnumSelectionPoint::toString(i_selPt);
-    }
-
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strObjName   */ m_strName,
-        /* strMethod    */ "showUserDefinedLabelAnchorLine",
-        /* strAddInfo   */ strMthInArgs );
-
-
-} // showUserDefinedLabelAnchorLine
-
-//------------------------------------------------------------------------------
-void CGraphObj::hideUserDefinedLabelAnchorLine( const QString& i_strKey )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-
-    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->isActive(ETraceDetailLevelMethodArgs) )
-    {
-        strMthInArgs = i_strKey;
-    }
-
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strObjName   */ m_strName,
-        /* strMethod    */ "hideUserDefinedLabelAnchorLine",
-        /* strAddInfo   */ strMthInArgs );
-
-    if( m_arpUserLabels.contains(i_strKey) )
-    {
-    }
-
-} // hideUserDefinedLabelAnchorLine
-
-//------------------------------------------------------------------------------
-bool CGraphObj::isUserDefinedLabelAnchorLineVisible( const QString& i_strKey, ESelectionPoint i_selPt ) const
-//------------------------------------------------------------------------------
-{
-    bool bIsVisible = false;
-
-    if( m_arpUserLabels.contains(i_strKey) )
-    {
-        CGraphObjLabel* pGraphObjLabel = m_arpUserLabels[i_strKey];
-
-        bIsVisible = pGraphObjLabel == nullptr ? false : pGraphObjLabel->isVisible();
-    }
-    return bIsVisible;
-
-} // isUserDefinedLabelAnchorLineVisible
-
-/*==============================================================================
-protected: // overridables (user defined labels)
+protected: // overridables
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
@@ -4515,26 +4617,6 @@ void CGraphObj::updateLabelDistance( CGraphObjLabel* i_pGraphObjLabel )
         if( !bLabelFound )
         {
             pGraphObjLabel = m_arpDimLineLabels.value(i_pGraphObjLabel->getKey(), nullptr);
-
-            if( pGraphObjLabel != nullptr && pGraphObjLabel == i_pGraphObjLabel )
-            {
-                bLabelFound = true;
-
-                //QPointF ptSelPt = getSelectionPointCoors(pGraphObjLabel->m_selPt.enumerator());
-                //QPointF ptLabel = pGraphObjLabel->m_pGraphObjLabel->scenePos();
-
-                //ptSelPt = pGraphicsItem->mapToScene(ptSelPt);
-
-                //pGraphObjLabel->m_sizDist.setWidth( ptLabel.x() - ptSelPt.x() );
-                //pGraphObjLabel->m_sizDist.setHeight( ptLabel.y() - ptSelPt.y() );
-
-                //pGraphObjLabel->m_bDistValid = true;
-            }
-        }
-
-        if( !bLabelFound )
-        {
-            pGraphObjLabel = m_arpUserLabels.value(i_pGraphObjLabel->getKey(), nullptr);
 
             if( pGraphObjLabel != nullptr && pGraphObjLabel == i_pGraphObjLabel )
             {
@@ -4832,16 +4914,6 @@ void CGraphObj::onLabelDestroying( CGraphObjLabel* i_pLabel )
         {
             bLabelFound = true;
             m_arpDimLineLabels.remove(i_pLabel->getKey());
-        }
-    }
-
-    if( !bLabelFound && m_arpUserLabels.contains(i_pLabel->getKey()) )
-    {
-        CGraphObjLabel* pGraphObjLabel = m_arpUserLabels.value(i_pLabel->getKey());
-        if( pGraphObjLabel = i_pLabel )
-        {
-            bLabelFound = true;
-            m_arpUserLabels.remove(i_pLabel->getKey());
         }
     }
 
@@ -5409,7 +5481,7 @@ void CGraphObj::updateEditInfo()
 } // updateEditInfo
 
 //------------------------------------------------------------------------------
-void CGraphObj::updateLabelPositions()
+void CGraphObj::updateLabelPositionsAndContents()
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -5422,15 +5494,20 @@ void CGraphObj::updateLabelPositions()
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "updateLabelPositions",
+        /* strMethod    */ "updateLabelPositionsAndContents",
         /* strAddInfo   */ strMthInArgs );
 
     updateLabelPositions(m_arpNameLabels);
     updateLabelPositions(m_arpPosLabels);
     updateLabelPositions(m_arpDimLineLabels);
-    updateLabelPositions(m_arpUserLabels);
 
-} // updateLabelPositions
+    updatePositionLabelsContent();
+
+} // updateLabelPositionsAndContents
+
+/*==============================================================================
+protected: // overridables
+==============================================================================*/
 
 //------------------------------------------------------------------------------
 void CGraphObj::updateLabelPositions( QHash<QString, CGraphObjLabel*>& i_arpLabels )
@@ -5481,6 +5558,52 @@ void CGraphObj::updateLabelPositions( QHash<QString, CGraphObjLabel*>& i_arpLabe
         }
     }
 } // updateLabelPositions
+
+//------------------------------------------------------------------------------
+void CGraphObj::updatePositionLabelsContent()
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObjItemChange != nullptr && m_pTrcAdminObjItemChange->isActive(ETraceDetailLevelMethodArgs) )
+    {
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "updatePositionLabelsContent",
+        /* strAddInfo   */ strMthInArgs );
+
+    QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
+
+    if( pGraphicsItem != nullptr )
+    {
+        QHashIterator<QString, CGraphObjLabel*> itLabels(m_arpPosLabels);
+
+        CGraphObjLabel* pGraphObjLabel;
+        QPointF         ptSelPt;
+        QPointF         ptLabel;
+
+        while( itLabels.hasNext() )
+        {
+            itLabels.next();
+
+            pGraphObjLabel = itLabels.value();
+
+            if( pGraphObjLabel != nullptr )
+            {
+                // Coordinates of the selection point in relation to the parent (thats me).
+                ptSelPt = getSelectionPointCoors(pGraphObjLabel->getLinkedSelectionPoint());
+                // Got to map the coordinates to my parent (which might be the scene).
+                ptSelPt = pGraphicsItem->mapToParent(ptSelPt);
+                QString strText = point2Str(ptSelPt);
+                pGraphObjLabel->setText(strText);
+            }
+        }
+    }
+} // updatePositionLabelsContent
 
 /*==============================================================================
 protected: // overridables

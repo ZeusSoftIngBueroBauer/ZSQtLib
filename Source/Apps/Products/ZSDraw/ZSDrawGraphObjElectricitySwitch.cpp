@@ -76,8 +76,7 @@ class CGraphObjSwitch : public CGraphObjElectricity
 public: // type definitions and constants
 ==============================================================================*/
 
-const QSize   CGraphObjSwitch::c_sizInitial(24.0,10.0);
-const QString CGraphObjSwitch::c_strKeyLabelState = "State";
+const QSize CGraphObjSwitch::c_sizInitial(24.0, 10.0);
 
 /* EState
 ==============================================================================*/
@@ -400,16 +399,8 @@ void CGraphObjSwitch::setState( EState i_state )
             m_pLinSwitch->setAlignment(m_idxLinSwitchAlignmentTop,alignment);
         }
 
-        if( m_arpUserLabels.contains(c_strKeyLabelState) )
-        {
-            CGraphObjLabel* pGraphObjLabel = m_arpUserLabels[c_strKeyLabelState];
+        setDescription( State2Str(m_state) );
 
-            if( pGraphObjLabel != nullptr )
-            {
-                QString str = State2Str(m_state);
-                pGraphObjLabel->setText(str);
-            }
-        }
     } // if( m_state != i_state )
 
 } // setState
@@ -451,23 +442,21 @@ public: // instance methods
 void CGraphObjSwitch::showState( ESelectionPoint i_selPtPos )
 //------------------------------------------------------------------------------
 {
-    QString str = State2Str(m_state);
-
-    showUserDefinedLabel(c_strKeyLabelState, str, i_selPtPos);
+    showDescriptionLabel(i_selPtPos);
 }
 
 //------------------------------------------------------------------------------
 void CGraphObjSwitch::hideState()
 //------------------------------------------------------------------------------
 {
-    hideUserDefinedLabel(c_strKeyLabelState);
+    hideDescriptionLabel();
 }
 
 //------------------------------------------------------------------------------
-bool CGraphObjSwitch::isStateVisible() const
+bool CGraphObjSwitch::isStateVisible( ESelectionPoint i_selPtPos ) const
 //------------------------------------------------------------------------------
 {
-    return isUserDefinedLabelVisible(c_strKeyLabelState);
+    return isDescriptionLabelVisible(i_selPtPos);
 }
 
 /*==============================================================================

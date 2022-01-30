@@ -1499,7 +1499,7 @@ QVariant CGraphObjPoint::itemChange( GraphicsItemChange i_change, const QVariant
           #endif
     {
         updateSelectionPoints();
-        updateLabelPositions();
+        updateLabelPositionsAndContents();
         updateEditInfo();
         updateToolTip();
     }

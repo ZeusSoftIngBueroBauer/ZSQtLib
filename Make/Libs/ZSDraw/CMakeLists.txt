@@ -63,7 +63,7 @@ list(APPEND _Sources
     ../../../Include/Libs/ZSDraw/ZSDrawWdgtFormatGraphObjsFillStyle.h ../../../Source/Libs/ZSDraw/ZSDrawWdgtFormatGraphObjsFillStyle.cpp
     ../../../Include/Libs/ZSDraw/ZSDrawWdgtFormatGraphObjsGeometry.h  ../../../Source/Libs/ZSDraw/ZSDrawWdgtFormatGraphObjsGeometry.cpp
     ../../../Include/Libs/ZSDraw/ZSDrawWdgtFormatGraphObjsLineStyle.h ../../../Source/Libs/ZSDraw/ZSDrawWdgtFormatGraphObjsLineStyle.cpp
-    ../../../Include/Libs/ZSDraw/ZSDrawWdgtFormatGraphObjsObjName.h   ../../../Source/Libs/ZSDraw/ZSDrawWdgtFormatGraphObjsObjName.cpp
+    ../../../Include/Libs/ZSDraw/ZSDrawWdgtFormatGraphObjsLabels.h   ../../../Source/Libs/ZSDraw/ZSDrawWdgtFormatGraphObjsLabels.cpp
     ../../../Include/Libs/ZSDraw/ZSDrawWdgtFormatGraphObjsText.h      ../../../Source/Libs/ZSDraw/ZSDrawWdgtFormatGraphObjsText.cpp
     ../../../Include/Libs/ZSDraw/ZSDrawWdgtFormatGraphObjsTextStyle.h ../../../Source/Libs/ZSDraw/ZSDrawWdgtFormatGraphObjsTextStyle.cpp
     ../../../Include/Libs/ZSDraw/ZSDrawWdgtPageSetup.h                ../../../Source/Libs/ZSDraw/ZSDrawWdgtPageSetup.cpp

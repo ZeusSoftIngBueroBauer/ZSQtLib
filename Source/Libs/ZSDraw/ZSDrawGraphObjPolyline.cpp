@@ -316,7 +316,7 @@ void CGraphObjPolyline::setPolygon( const QPolygonF& i_plg )
         }
     }
 
-    updateLabelPositions();
+    updateLabelPositionsAndContents();
 
     m_bCoorsDirty = true;
 
@@ -1491,7 +1491,7 @@ void CGraphObjPolyline::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
             showSelectionPointsOfPolygon(plg);
             updateSelectionPointsOfBoundingRect(m_rctCurr);
 
-            updateLabelPositions();
+            updateLabelPositionsAndContents();
 
             updateTransform();
 
@@ -1670,7 +1670,7 @@ void CGraphObjPolyline::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
                 updateSelectionPointsOfPolygon(plg);
                 updateSelectionPointsOfBoundingRect(m_rctCurr);
 
-                updateLabelPositions();
+                updateLabelPositionsAndContents();
 
                 m_bCoorsDirty = true;
 
@@ -1710,7 +1710,7 @@ void CGraphObjPolyline::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
                 updateSelectionPointsOfPolygon(plg);
                 updateSelectionPointsOfBoundingRect(m_rctCurr);
 
-                updateLabelPositions();
+                updateLabelPositionsAndContents();
 
                 m_bCoorsDirty = true;
 
@@ -2299,7 +2299,7 @@ QVariant CGraphObjPolyline::itemChange( GraphicsItemChange i_change, const QVari
         updateSelectionPointsOfBoundingRect(rctBounding);
         updateSelectionPointsOfPolygon(plg);
 
-        updateLabelPositions();
+        updateLabelPositionsAndContents();
 
         updateEditInfo();
         updateToolTip();
@@ -2326,7 +2326,7 @@ QVariant CGraphObjPolyline::itemChange( GraphicsItemChange i_change, const QVari
         updateSelectionPointsOfBoundingRect(rctBounding);
         updateSelectionPointsOfPolygon(plg);
 
-        updateLabelPositions();
+        updateLabelPositionsAndContents();
 
         updateEditInfo();
         updateToolTip();

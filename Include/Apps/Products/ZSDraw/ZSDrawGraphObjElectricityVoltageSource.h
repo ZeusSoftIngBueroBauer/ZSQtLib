@@ -56,8 +56,7 @@ public: // class methods
     /*! Returns the class name. */
     static QString ClassName() { return "CGraphObjVoltageSource"; } // Please note that the static class functions name must be different from the non static virtual member function "className"
 public: // type definitions and constants
-    static const QSize   c_sizInitial;
-    static const QString c_strKeyLabelVoltage;
+    static const QSize c_sizInitial;
 public: // ctors and dtor
     CGraphObjVoltageSource(
         CDrawingScene*       i_pDrawingScene,
@@ -73,7 +72,7 @@ public: // instance methods
 public: // instance methods
     void showVoltage( ESelectionPoint i_selPtPos = ESelectionPoint::BottomCenter );
     void hideVoltage();
-    bool isVoltageVisible() const;
+    bool isVoltageVisible( ESelectionPoint i_selPtPos = ESelectionPoint::BottomCenter ) const;
 public: // must overridables of base class CGraphObj
     virtual CGraphObj* clone();
 public: // overridables of base class CGraphObj

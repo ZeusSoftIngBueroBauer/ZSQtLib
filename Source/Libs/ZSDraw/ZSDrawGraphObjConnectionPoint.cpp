@@ -434,7 +434,7 @@ void CGraphObjConnectionPoint::setRect( const QRectF& i_rct )
         updateSelectionPointsOfBoundingRect(m_rctCurr);
     }
 
-    updateLabelPositions();
+    updateLabelPositionsAndContents();
 
     // As "setRect" does not end up in an "itemChange" call (even if the
     // flag "ItemSendsGeometryChanges" has been set) we call the "itemChange"
@@ -1869,7 +1869,7 @@ QVariant CGraphObjConnectionPoint::itemChange( GraphicsItemChange i_change, cons
             setZValue(m_fZValue); // restore ZValue as before selecting the object
         }
 
-        updateLabelPositions();
+        updateLabelPositionsAndContents();
         updateEditInfo();
         updateToolTip();
 
@@ -1892,7 +1892,7 @@ QVariant CGraphObjConnectionPoint::itemChange( GraphicsItemChange i_change, cons
             }
         }
 
-        updateLabelPositions();
+        updateLabelPositionsAndContents();
 
         updateEditInfo();
         updateToolTip();
@@ -1943,7 +1943,7 @@ QVariant CGraphObjConnectionPoint::itemChange( GraphicsItemChange i_change, cons
           || i_change == ItemScenePositionHasChanged )
           #endif
     {
-        updateLabelPositions();
+        updateLabelPositionsAndContents();
         updateEditInfo();
         updateToolTip();
     }

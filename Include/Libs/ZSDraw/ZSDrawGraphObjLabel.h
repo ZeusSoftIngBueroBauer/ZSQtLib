@@ -81,10 +81,11 @@ public: // must overridables of base class CGraphObj
 public: // overridables
     virtual QString nameSpace() { return NameSpace(); }
     virtual QString className() { return ClassName(); }
-public: // replacing methods of QGraphicsSimpleTextItem
-    void setText( const QString& i_strText );
 public: // overridables
     virtual QString getKey() const { return m_strKey; }
+public: // replacing methods of QGraphicsSimpleTextItem
+    void setText( const QString& i_strText );
+    QString getText() const;
 public: // overridables
     virtual ESelectionPoint getLinkedSelectionPoint() const { return m_selPtLinked; }
     QSizeF getLinkedSelectionPointDistance() const { return m_sizeLinkedSelPtDist; }

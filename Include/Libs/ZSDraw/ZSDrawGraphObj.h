@@ -164,7 +164,7 @@ public: // class methods
 public: // type definitions and constants
     static const QString c_strKeyLabelName;
     static const QString c_strKeyLabelPath;
-    static const QString c_strKeyLabelPosition;
+    static const QString c_strKeyLabelDescription;
 protected: // ctor
     CGraphObj(
         CDrawingScene*                i_pDrawingScene,
@@ -183,8 +183,10 @@ public: // overridables
     virtual QString className() { return ClassName(); }
 public: // instance methods
     CDrawingScene* getDrawingScene() { return m_pDrawingScene; }
-public: // instance methods
-    void rename( const QString& i_strNameNew );
+public: // overridables
+    virtual void rename( const QString& i_strNameNew );
+    virtual void setDescription( const QString& i_strDescription );
+    virtual QString getDescription() const;
 protected: // overridables of base class CIdxTreeEntry
     virtual void setName( const QString& i_strName ) override;
     virtual void setKeyInTree( const QString& i_strKey ) override;
@@ -339,19 +341,26 @@ protected: // overridables
     virtual void showSelectionPointsOfPolygon( const QPolygonF& i_plg );                                                                // creates the selection points if not yet created
     virtual void updateSelectionPointsOfPolygon( const QPolygonF& i_plg );
 public: // overridables
-    virtual void showNameLabel( ESelectionPoint i_selPt = ESelectionPoint::TopCenter ); 
+    virtual void showNameLabel( ESelectionPoint i_selPt = ESelectionPoint::TopCenter );
     virtual void hideNameLabel();
     virtual bool isNameLabelVisible( ESelectionPoint i_selPt = ESelectionPoint::Any ) const;
-    virtual void showNameLabelAnchorLine( ESelectionPoint i_selPt = ESelectionPoint::TopCenter );
+    virtual void showNameLabelAnchorLine();
     virtual void hideNameLabelAnchorLine();
-    virtual bool isNameLabelAnchorLineVisible( ESelectionPoint i_selPt = ESelectionPoint::Any ) const;
+    virtual bool isNameLabelAnchorLineVisible() const;
 public: // overridables
     virtual void showPathLabel( ESelectionPoint i_selPt = ESelectionPoint::TopCenter );
     virtual void hidePathLabel();
     virtual bool isPathLabelVisible( ESelectionPoint i_selPt = ESelectionPoint::Any ) const;
-    virtual void showPathLabelAnchorLine( ESelectionPoint i_selPt = ESelectionPoint::TopCenter );
+    virtual void showPathLabelAnchorLine();
     virtual void hidePathLabelAnchorLine();
-    virtual bool isPathLabelAnchorLineVisible( ESelectionPoint i_selPt = ESelectionPoint::Any ) const;
+    virtual bool isPathLabelAnchorLineVisible() const;
+public: // overridables
+    virtual void showDescriptionLabel( ESelectionPoint i_selPt = ESelectionPoint::TopCenter );
+    virtual void hideDescriptionLabel();
+    virtual bool isDescriptionLabelVisible( ESelectionPoint i_selPt = ESelectionPoint::Any ) const;
+    virtual void showDescriptionLabelAnchorLine();
+    virtual void hideDescriptionLabelAnchorLine();
+    virtual bool isDescriptionLabelAnchorLineVisible() const;
 public: // overridables (KeyLabel = "Position<SelPt>")
     virtual void showPositionLabel( ESelectionPoint i_selPt = ESelectionPoint::TopLeft );
     virtual void hidePositionLabel( ESelectionPoint i_selPt = ESelectionPoint::TopLeft );
@@ -359,15 +368,7 @@ public: // overridables (KeyLabel = "Position<SelPt>")
     virtual void showPositionLabelAnchorLine( ESelectionPoint i_selPt = ESelectionPoint::TopLeft );
     virtual void hidePositionLabelAnchorLine( ESelectionPoint i_selPt = ESelectionPoint::TopLeft );
     virtual bool isPositionLabelAnchorLineVisible( ESelectionPoint i_selPt = ESelectionPoint::TopLeft ) const;
-public: // overridables (user defined labels)
-    virtual void showUserDefinedLabel( const QString& i_strKey, const QString& i_strText, ESelectionPoint i_selPt = ESelectionPoint::TopCenter );
-    virtual void hideUserDefinedLabel( const QString& i_strKey );
-    virtual void setUserDefinedLabelText( const QString& i_strKey, const QString& i_strText );
-    virtual bool isUserDefinedLabelVisible( const QString& i_strKey, ESelectionPoint i_selPt = ESelectionPoint::TopCenter ) const;
-    virtual void showUserDefinedLabelAnchorLine( const QString& i_strKey, const QString& i_strText, ESelectionPoint i_selPt = ESelectionPoint::TopCenter );
-    virtual void hideUserDefinedLabelAnchorLine( const QString& i_strKey );
-    virtual bool isUserDefinedLabelAnchorLineVisible( const QString& i_strKey, ESelectionPoint i_selPt = ESelectionPoint::TopCenter ) const;
-protected: // overridables (user defined labels)
+protected: // overridables
     virtual void updateLabelDistance( CGraphObjLabel* i_pGraphObjLabel );
 //public: // overridables
 //    virtual void showLabels(); // also creates the labels if not yet created
@@ -398,8 +399,10 @@ protected: // overridables
     virtual void updateTransform();
     virtual void updateToolTip();
     virtual void updateEditInfo();
-    virtual void updateLabelPositions();
+    virtual void updateLabelPositionsAndContents();
+protected: // overridables
     virtual void updateLabelPositions( QHash<QString, CGraphObjLabel*>& i_arpLabels );
+    virtual void updatePositionLabelsContent();
 protected: // overridables
     virtual void showLabel( QHash<QString, CGraphObjLabel*>& i_arpLabels, const QString& i_strKey, const QString& i_strText, ESelectionPoint i_selPt );
     virtual void hideLabel( QHash<QString, CGraphObjLabel*>& i_arpLabels, const QString& i_strKey );
@@ -410,6 +413,7 @@ protected: // instance members
     QString                           m_strFactoryGroupName;
     EGraphObjType                     m_type;
     QString                           m_strType;
+    QString                           m_strDescription;
     CDrawSettings                     m_drawSettings;     // Set by ctor or setSettings. Changed also by graphics items methods "setPen", "setBrush", etc.. Call "updateSettings" before accessing settings to keep this struct up to date with graphics item settings.
     QSize                             m_sizMinimum;
     QSize                             m_sizMaximum;
@@ -424,10 +428,9 @@ protected: // instance members
     QList<CGraphObjSelectionPoint*>   m_arpSelPtsPolygon;
     CEnumSelectionPoint               m_selPtSelectedBoundingRect;
     QVector<CGraphObjSelectionPoint*> m_arpSelPtsBoundingRect;
-    QHash<QString, CGraphObjLabel*>   m_arpNameLabels;          // Keys: c_strKeyLabelName, c_strKeyLabelPath
+    QHash<QString, CGraphObjLabel*>   m_arpNameLabels;          // Keys: c_strKeyLabelName, c_strKeyLabelPath, c_strKeyLabelDescription
     QHash<QString, CGraphObjLabel*>   m_arpPosLabels;           // Keys: <SelPt>
     QHash<QString, CGraphObjLabel*>   m_arpDimLineLabels;       // Keys: <SelPt>
-    QHash<QString, CGraphObjLabel*>   m_arpUserLabels;          // Keys: "Resistance", etc.
     QString                           m_strToolTip;
     QString                           m_strEditInfo;
     // Current item coordinates and transform values:

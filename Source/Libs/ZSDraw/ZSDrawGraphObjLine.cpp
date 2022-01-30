@@ -275,7 +275,7 @@ void CGraphObjLine::setLine( const QLineF& i_lin )
         updateSelectionPointsOfPolygon(plg);
     }
 
-    updateLabelPositions();
+    updateLabelPositionsAndContents();
 
     m_bCoorsDirty = true;
 
@@ -1449,7 +1449,7 @@ void CGraphObjLine::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
 
                 updateSelectionPointsOfPolygon(plg);
 
-                updateLabelPositions();
+                updateLabelPositionsAndContents();
 
                 m_bCoorsDirty = true;
 
@@ -1787,7 +1787,7 @@ QVariant CGraphObjLine::itemChange( GraphicsItemChange i_change, const QVariant&
 
         updateSelectionPointsOfPolygon(plg);
 
-        updateLabelPositions();
+        updateLabelPositionsAndContents();
 
         m_bCoorsDirty = true;
 

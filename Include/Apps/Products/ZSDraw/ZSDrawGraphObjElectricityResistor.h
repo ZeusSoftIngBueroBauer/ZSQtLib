@@ -56,8 +56,7 @@ public: // class methods
     /*! Returns the class name. */
     static QString ClassName() { return "CGraphObjResistor"; } // Please note that the static class functions name must be different from the non static virtual member function "className"
 public: // type definitions and constants
-    static const QSize   c_sizInitial;
-    static const QString c_strKeyLabelResistance;
+    static const QSize c_sizInitial;
 public: // ctors and dtor
     CGraphObjResistor(
         CDrawingScene*       i_pDrawingScene,
@@ -73,7 +72,7 @@ public: // instance methods
 public: // instance methods
     void showResistance( ESelectionPoint i_selPtPos = ESelectionPoint::BottomCenter );
     void hideResistance();
-    bool isResistanceVisible() const;
+    bool isResistanceVisible( ESelectionPoint i_selPtPos = ESelectionPoint::BottomCenter ) const;
 public: // must overridables of base class CGraphObj
     virtual CGraphObj* clone();
 public: // overridables of base class CGraphObj

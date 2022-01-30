@@ -302,7 +302,7 @@ void CGraphObjImage::setPixmap( const QPixmap& i_pxm )
         updateSelectionPoints();
     }
 
-    updateLabelPositions();
+    updateLabelPositionsAndContents();
 
 } // setPixmap
 
@@ -457,7 +457,7 @@ void CGraphObjImage::setSize( double i_fWidth, double i_fHeight )
             updateSelectionPointsOfBoundingRect(m_rctCurr);
         }
 
-        updateLabelPositions();
+        updateLabelPositionsAndContents();
 
         //itemChange( ItemPositionHasChanged, pos() ); // ItemSizeHasChanged does not exist
     }
@@ -1355,7 +1355,7 @@ void CGraphObjImage::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
 
             updateSelectionPointsOfBoundingRect(m_rctCurr);
 
-            updateLabelPositions();
+            updateLabelPositionsAndContents();
 
             updateEditInfo();
             updateToolTip();
@@ -1491,7 +1491,7 @@ void CGraphObjImage::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
 
             updateSelectionPointsOfBoundingRect(m_rctCurr);
 
-            updateLabelPositions();
+            updateLabelPositionsAndContents();
 
             acceptCurrentAsOriginalCoors();
 
@@ -1719,7 +1719,7 @@ QVariant CGraphObjImage::itemChange( GraphicsItemChange i_change, const QVariant
     else if( i_change == ItemTransformHasChanged )
     {
         updateSelectionPointsOfBoundingRect(m_rctCurr);
-        updateLabelPositions();
+        updateLabelPositionsAndContents();
         updateEditInfo();
         updateToolTip();
     }
@@ -1739,7 +1739,7 @@ QVariant CGraphObjImage::itemChange( GraphicsItemChange i_change, const QVariant
     {
         updateTransform();
         updateSelectionPointsOfBoundingRect(m_rctCurr);
-        updateLabelPositions();
+        updateLabelPositionsAndContents();
         updateEditInfo();
         updateToolTip();
     }

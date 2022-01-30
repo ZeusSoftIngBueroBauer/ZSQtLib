@@ -270,9 +270,16 @@ void CGraphObjLabel::setText( const QString& i_strText )
         updateSelectionPoints();
     }
 
-    //updateLabelPositions();
+    //updateLabelPositionsAndContents();
 
 } // setText
+
+//------------------------------------------------------------------------------
+QString CGraphObjLabel::getText() const
+//------------------------------------------------------------------------------
+{
+    return QGraphicsSimpleTextItem::text();
+}
 
 /*==============================================================================
 public: // overridables of base class CGraphObj
@@ -434,7 +441,7 @@ void CGraphObjLabel::onDrawSettingsChanged()
             updateSelectionPoints();
         }
 
-        //updateLabelPositions();
+        //updateLabelPositionsAndContents();
     }
 
 } // onDrawSettingsChanged

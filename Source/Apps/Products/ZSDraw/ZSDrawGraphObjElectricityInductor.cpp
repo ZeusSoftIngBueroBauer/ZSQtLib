@@ -74,8 +74,7 @@ class CGraphObjInductor : public CGraphObjElectricity
 public: // type definitions and constants
 ==============================================================================*/
 
-const QSize   CGraphObjInductor::c_sizInitial(42.0,10.0);
-const QString CGraphObjInductor::c_strKeyLabelInductance = "Inductance";
+const QSize CGraphObjInductor::c_sizInitial(42.0, 10.0);
 
 /*==============================================================================
 protected: // class members
@@ -324,19 +323,8 @@ void CGraphObjInductor::setInductance( double i_fInductance_H )
     {
         m_fInductance_H = i_fInductance_H;
 
-        if( m_arpUserLabels.contains(c_strKeyLabelInductance) )
-        {
-            CGraphObjLabel* pGraphObjLabel = m_arpUserLabels[c_strKeyLabelInductance];
-
-            if( pGraphObjLabel != nullptr )
-            {
-                QString str = QString::number(m_fInductance_H) + "H";
-                pGraphObjLabel->setText(str);
-            }
-        }
-
-    } // if( m_fInductance_H != i_fInductance_H )
-
+        setDescription( QString::number(m_fInductance_H) + " H" );
+    }
 } // setInductance
 
 /*==============================================================================
@@ -347,23 +335,21 @@ public: // instance methods
 void CGraphObjInductor::showInductance( ESelectionPoint i_selPtPos )
 //------------------------------------------------------------------------------
 {
-    QString str = QString::number(m_fInductance_H) + "H";
-
-    showUserDefinedLabel(c_strKeyLabelInductance, str, i_selPtPos);
+    showDescriptionLabel(i_selPtPos);
 }
 
 //------------------------------------------------------------------------------
 void CGraphObjInductor::hideInductance()
 //------------------------------------------------------------------------------
 {
-    hideUserDefinedLabel(c_strKeyLabelInductance);
+    hideDescriptionLabel();
 }
 
 //------------------------------------------------------------------------------
-bool CGraphObjInductor::isInductanceVisible() const
+bool CGraphObjInductor::isInductanceVisible( ESelectionPoint i_selPtPos ) const
 //------------------------------------------------------------------------------
 {
-    return isUserDefinedLabelVisible(c_strKeyLabelInductance);
+    return isDescriptionLabelVisible(i_selPtPos);
 }
 
 /*==============================================================================

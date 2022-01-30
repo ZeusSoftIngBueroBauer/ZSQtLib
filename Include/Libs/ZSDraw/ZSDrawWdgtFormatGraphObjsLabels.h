@@ -33,21 +33,16 @@ may result in using the software modules.
 #include "ZSDraw/ZSDrawWdgtFormatGraphObjs.h"
 
 class QCheckBox;
-class QComboBox;
-class QFrame;
 class QLabel;
+class QLineEdit;
+
+class QLayout;
+class QBoxLayout;
 class QHBoxLayout;
 class QVBoxLayout;
 
 namespace ZS
 {
-namespace System
-{
-namespace GUI
-{
-class CPushButton;
-}
-}
 namespace Trace
 {
 class CTrcAdminObj;
@@ -65,17 +60,10 @@ public: // class methods
     static QString NameSpace() { return "ZS::Draw"; } // Please note that the static class functions name must be different from the non static virtual member function "nameSpace"
     /*! Returns the class name. */
     static QString ClassName() { return "CWdgtFormatGraphObjsLabels"; } // Please note that the static class functions name must be different from the non static virtual member function "className"
-public: // type definitions and constants
-    enum EClmModelShapePoints
-    {
-        EClmX = 0,
-        EClmY = 1,
-        EClmCount
-    };
 public: // ctors and dtor
     CWdgtFormatGraphObjsLabels(
         CDrawingScene* i_pDrawingScene,
-        CGraphObj*     i_pGraphObj,
+        CGraphObj*     i_pGraphObj = nullptr,  // if nullptr the draw settings of the drawing scene are edited, if != nullptr the attributes of the grapic item are edited
         QWidget*       i_pWdgtParent = nullptr );
     virtual ~CWdgtFormatGraphObjsLabels();
 public: // overridables
@@ -93,98 +81,18 @@ public: // must overridables of base class CWdgtFormatGraphObjs
     virtual bool hasChanges() const override;
 protected: // must overridables of base class CWdgtFormatGraphObjs
     virtual void onGraphObjChanged() override;
-protected slots:
-    void onCmbNameLabelAnchorSelPtCurrentIndexChanged( int );
-    void onChkNameLabelVisibleStateChanged( int );
-    void onChkNameLabelAnchorLineVisibleStateChanged( int );
-    void onCmbPathLabelAnchorSelPtCurrentIndexChanged( int );
-    void onChkPathLabelVisibleStateChanged( int );
-    void onChkPathLabelAnchorLineVisibleStateChanged( int );
-    void onCmbDimensionPosLabelAnchorSelPtCurrentIndexChanged( int );
-    void onChkDimensionPosLabelVisibleStateChanged( int );
-    void onChkDimensionPosLabelAnchorLineVisibleStateChanged( int );
-    void onCmbDimensionWidthLabelAnchorSelPtCurrentIndexChanged( int );
-    void onChkDimensionWidthLabelVisibleStateChanged( int );
-    void onChkDimensionWidthLabelAnchorLineVisibleStateChanged( int );
-    void onCmbDimensionHeightLabelAnchorSelPtCurrentIndexChanged( int );
-    void onChkDimensionHeightLabelVisibleStateChanged( int );
-    void onChkDimensionHeightLabelAnchorLineVisibleStateChanged( int );
-    void onCmbDimensionRotationAngleLabelAnchorSelPtCurrentIndexChanged( int );
-    void onChkDimensionRotationAngleLabelVisibleStateChanged( int );
-    void onChkDimensionRotationAngleLabelAnchorLineVisibleStateChanged( int );
-    void onChkDimensionLinesBoundingRectVisibleStateChanged( int );
-    void onChkDimensionLinesBoundingRectDiagonalsVisibleStateChanged( int );
-    void onChkDimensionLinesBoundingRectHorizontalSymmetryAxisVisibleStateChanged( int );
-    void onChkDimensionLinesBoundingRectVerticalSymmetryAxisVisibleStateChanged( int );
-protected: // auxiliary methods
-    void fillComboAnchorSelPt( QComboBox* i_pCmb );
-    void updateVisibilityCheckStates( QComboBox* i_pCmbSelPt, QCheckBox* i_pChkLabelVisible, QCheckBox* i_pChkLabelAnchorLineVisible );
 private: // instance members
     QVBoxLayout*             m_pLyt;
     QLabel*                  m_pLblHeadLine;
-    QWidget*                 m_pWdgtNameLabelVisibilities;
-    QVBoxLayout*             m_pLytWdgtNameLabelVisibilities;
-    QHBoxLayout*             m_pLytHeadLineWdgtNameLabelVisibilities;
-    QLabel*                  m_pLblHeadLineNameLabelVisibilities;
-    QFrame*                  m_pSepHeadLineNameLabelVisibilities;
-    QHBoxLayout*             m_pLytLineNameLabelVisibilities;
-    QLabel*                  m_pLblNameLabel;
-    QComboBox*               m_pCmbNameLabelAnchorSelPt;
-    QCheckBox*               m_pChkNameLabelVisible;
-    QLabel*                  m_pLblNameLabelAnchorLineVisible;
-    QCheckBox*               m_pChkNameLabelAnchorLineVisible;
-    QHBoxLayout*             m_pLytLinePathLabelVisibilities;
-    QLabel*                  m_pLblPathLabel;
-    QComboBox*               m_pCmbPathLabelAnchorSelPt;
-    QCheckBox*               m_pChkPathLabelVisible;
-    QLabel*                  m_pLblPathLabelAnchorLineVisible;
-    QCheckBox*               m_pChkPathLabelAnchorLineVisible;
-    QWidget*                 m_pWdgtDimensionLabelVisibilities;
-    QVBoxLayout*             m_pLytWdgtDimensionLabelVisibilities;
-    QHBoxLayout*             m_pLytHeadLineWdgtDimensionLabelVisibilities;
-    QLabel*                  m_pLblHeadLineDimensionLabelVisibilities;
-    QFrame*                  m_pSepHeadLineDimensionLabelVisibilities;
-    QHBoxLayout*             m_pLytLineDimensionPosLabelVisibilities;
-    QLabel*                  m_pLblDimensionPosLabel;
-    QComboBox*               m_pCmbDimensionPosLabelAnchorSelPt;
-    QCheckBox*               m_pChkDimensionPosLabelVisible;
-    QLabel*                  m_pLblDimensionPosLabelAnchorLineVisible;
-    QCheckBox*               m_pChkDimensionPosLabelAnchorLineVisible;
-    QHBoxLayout*             m_pLytLineDimensionWidthLabelVisibilities;
-    QLabel*                  m_pLblDimensionWidthLabel;
-    QComboBox*               m_pCmbDimensionWidthLabelAnchorSelPt;
-    QCheckBox*               m_pChkDimensionWidthLabelVisible;
-    QLabel*                  m_pLblDimensionWidthLabelAnchorLineVisible;
-    QCheckBox*               m_pChkDimensionWidthLabelAnchorLineVisible;
-    QHBoxLayout*             m_pLytLineDimensionHeightLabelVisibilities;
-    QLabel*                  m_pLblDimensionHeightLabel;
-    QComboBox*               m_pCmbDimensionHeightLabelAnchorSelPt;
-    QCheckBox*               m_pChkDimensionHeightLabelVisible;
-    QLabel*                  m_pLblDimensionHeightLabelAnchorLineVisible;
-    QCheckBox*               m_pChkDimensionHeightLabelAnchorLineVisible;
-    QHBoxLayout*             m_pLytLineDimensionRotationAngleLabelVisible;
-    QLabel*                  m_pLblDimensionRotationAngleLabel;
-    QComboBox*               m_pCmbDimensionRotationAngleLabelAnchorSelPt;
-    QCheckBox*               m_pChkDimensionRotationAngleLabelVisible;
-    QLabel*                  m_pLblDimensionRotationAngleLabelAnchorLineVisible;
-    QCheckBox*               m_pChkDimensionRotationAngleLabelAnchorLineVisible;
-    QWidget*                 m_pWdgtDimensionLinesVisibilities;
-    QVBoxLayout*             m_pLytWdgtDimensionLinesVisibilities;
-    QHBoxLayout*             m_pLytHeadLineWdgtDimensionLinesVisibilities;
-    QLabel*                  m_pLblHeadLineDimensionLinesVisibilities;
-    QFrame*                  m_pSepHeadLineDimensionLinesVisibilities;
-    QHBoxLayout*             m_pLytLineDimensionLinesBoundingRectVisibile;
-    QLabel*                  m_pLblDimensionLinesBoundingRectVisible;
-    QCheckBox*               m_pChkDimensionLinesBoundingRectVisible;
-    QHBoxLayout*             m_pLytLineDimensionLinesBoundingRectDiagonalsVisible;
-    QLabel*                  m_pLblDimensionLinesBoundingRectDiagonalsVisible;
-    QCheckBox*               m_pChkDimensionLinesBoundingRectDiagonalsVisible;
-    QHBoxLayout*             m_pLytLineDimensionLinesBoundingRectHorizontalSymmetryAxisVisible;
-    QLabel*                  m_pLblDimensionLinesBoundingRectHorizontalSymmetryAxisVisible;
-    QCheckBox*               m_pChkDimensionLinesBoundingRectHorizontalSymmetryAxisVisible;
-    QHBoxLayout*             m_pLytLineDimensionLinesBoundingRectVerticalSymmetryAxisVisible;
-    QLabel*                  m_pLblDimensionLinesBoundingRectVerticalSymmetryAxisVisible;
-    QCheckBox*               m_pChkDimensionLinesBoundingRectVerticalSymmetryAxisVisible;
+    QHBoxLayout*             m_pLytName;
+    QLabel*                  m_pLblName;
+    QLineEdit*               m_pEdtName;
+    QHBoxLayout*             m_pLytPath;
+    QLabel*                  m_pLblPath;
+    QLineEdit*               m_pEdtPath;
+    QHBoxLayout*             m_pLytDescription;
+    QLabel*                  m_pLblDescription;
+    QLineEdit*               m_pEdtDescription;
     // Trace
     ZS::Trace::CTrcAdminObj* m_pTrcAdminObj;
 

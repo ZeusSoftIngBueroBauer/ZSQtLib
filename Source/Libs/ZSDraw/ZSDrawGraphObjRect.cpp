@@ -265,7 +265,7 @@ void CGraphObjRect::setRect( const QRectF& i_rct )
         updateSelectionPointsOfBoundingRect(m_rctCurr);
     }
 
-    updateLabelPositions();
+    updateLabelPositionsAndContents();
 
     // As "setRect" does not end up in an "itemChange" call (even if the
     // flag "ItemSendsGeometryChanges" has been set) we call the "itemChange"
@@ -1351,7 +1351,7 @@ void CGraphObjRect::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
 
             updateSelectionPointsOfBoundingRect(m_rctCurr);
 
-            updateLabelPositions();
+            updateLabelPositionsAndContents();
 
             updateEditInfo();
             updateToolTip();
@@ -1470,7 +1470,7 @@ void CGraphObjRect::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
 
             updateSelectionPointsOfBoundingRect(m_rctCurr);
 
-            updateLabelPositions();
+            updateLabelPositionsAndContents();
 
             // The object has been initially created.
             m_pDrawingScene->onGraphObjCreationFinished(this);
@@ -1518,7 +1518,7 @@ void CGraphObjRect::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
 
             updateSelectionPointsOfBoundingRect(m_rctCurr);
 
-            updateLabelPositions();
+            updateLabelPositionsAndContents();
 
             acceptCurrentAsOriginalCoors();
 
@@ -1754,7 +1754,7 @@ QVariant CGraphObjRect::itemChange( GraphicsItemChange i_change, const QVariant&
     else if( i_change == ItemTransformHasChanged )
     {
         updateSelectionPointsOfBoundingRect( rect() );
-        updateLabelPositions();
+        updateLabelPositionsAndContents();
         updateEditInfo();
         updateToolTip();
     }
@@ -1774,7 +1774,7 @@ QVariant CGraphObjRect::itemChange( GraphicsItemChange i_change, const QVariant&
     {
         updateTransform();
         updateSelectionPointsOfBoundingRect( rect() );
-        updateLabelPositions();
+        updateLabelPositionsAndContents();
         updateEditInfo();
         updateToolTip();
     }

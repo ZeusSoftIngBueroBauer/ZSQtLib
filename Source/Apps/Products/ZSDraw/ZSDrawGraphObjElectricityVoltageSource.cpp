@@ -76,8 +76,7 @@ class CGraphObjVoltageSource : public CGraphObjElectricity
 public: // type definitions and constants
 ==============================================================================*/
 
-const QSize   CGraphObjVoltageSource::c_sizInitial(36.0,16.0);
-const QString CGraphObjVoltageSource::c_strKeyLabelVoltage = "Voltage";
+const QSize CGraphObjVoltageSource::c_sizInitial(36.0, 16.0);
 
 /*==============================================================================
 protected: // class members
@@ -409,18 +408,8 @@ void CGraphObjVoltageSource::setVoltage( double i_fVoltage_V )
     {
         m_fVoltage_V = i_fVoltage_V;
 
-        if( m_arpUserLabels.contains(c_strKeyLabelVoltage) )
-        {
-            CGraphObjLabel* pGraphObjLabel = m_arpUserLabels[c_strKeyLabelVoltage];
-
-            if( pGraphObjLabel != nullptr )
-            {
-                QString str = QString::number(m_fVoltage_V) + "V";
-                pGraphObjLabel->setText(str);
-            }
-        }
-    } // if( m_fVoltage_V != i_fVoltage_V )
-
+        setDescription(QString::number(m_fVoltage_V) + " V");
+    }
 } // setVoltage
 
 /*==============================================================================
@@ -431,23 +420,21 @@ public: // instance methods
 void CGraphObjVoltageSource::showVoltage( ESelectionPoint i_selPtPos )
 //------------------------------------------------------------------------------
 {
-    QString str = QString::number(m_fVoltage_V) + "V";
-
-    showUserDefinedLabel(c_strKeyLabelVoltage, str, i_selPtPos);
+    showDescriptionLabel(i_selPtPos);
 }
 
 //------------------------------------------------------------------------------
 void CGraphObjVoltageSource::hideVoltage()
 //------------------------------------------------------------------------------
 {
-    hideUserDefinedLabel(c_strKeyLabelVoltage);
+    hideDescriptionLabel();
 }
 
 //------------------------------------------------------------------------------
-bool CGraphObjVoltageSource::isVoltageVisible() const
+bool CGraphObjVoltageSource::isVoltageVisible( ESelectionPoint i_selPtPos ) const
 //------------------------------------------------------------------------------
 {
-    return isUserDefinedLabelVisible(c_strKeyLabelVoltage);
+    return isDescriptionLabelVisible(i_selPtPos);
 }
 
 /*==============================================================================

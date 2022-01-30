@@ -76,8 +76,7 @@ class CGraphObjCapacitor : public CGraphObjElectricity
 public: // type definitions and constants
 ==============================================================================*/
 
-const QSize   CGraphObjDiode::c_sizInitial(42.0,24.0);
-const QString CGraphObjDiode::c_strKeyLabelCutOffVoltage = "CutOffVoltage";
+const QSize CGraphObjDiode::c_sizInitial(42.0, 24.0);
 
 /*==============================================================================
 protected: // class members
@@ -376,19 +375,8 @@ void CGraphObjDiode::setCutOffVoltage( double i_fCutOffVoltage_V )
     {
         m_fCutOffVoltage_V = i_fCutOffVoltage_V;
 
-        if( m_arpUserLabels.contains(c_strKeyLabelCutOffVoltage) )
-        {
-            CGraphObjLabel* pGraphObjLabel = m_arpUserLabels[c_strKeyLabelCutOffVoltage];
-
-            if( pGraphObjLabel != nullptr )
-            {
-                QString str = QString::number(m_fCutOffVoltage_V) + "V";
-                pGraphObjLabel->setText(str);
-            }
-        }
-
-    } // if( m_fCutOffVoltage_V != i_fCutOffVoltage_V )
-
+        setDescription(QString::number(m_fCutOffVoltage_V) + " V");
+    }
 } // setCutOffVoltage
 
 /*==============================================================================
@@ -399,23 +387,21 @@ public: // instance methods
 void CGraphObjDiode::showCutOffVoltage( ESelectionPoint i_selPtPos )
 //------------------------------------------------------------------------------
 {
-    QString str = QString::number(m_fCutOffVoltage_V) + "V";
-
-    showUserDefinedLabel(c_strKeyLabelCutOffVoltage, str, i_selPtPos);
+    showDescriptionLabel(i_selPtPos);
 }
 
 //------------------------------------------------------------------------------
 void CGraphObjDiode::hideCutOffVoltage()
 //------------------------------------------------------------------------------
 {
-    hideUserDefinedLabel(c_strKeyLabelCutOffVoltage);
+    hideDescriptionLabel();
 }
 
 //------------------------------------------------------------------------------
-bool CGraphObjDiode::isCutOffVoltageVisible() const
+bool CGraphObjDiode::isCutOffVoltageVisible( ESelectionPoint i_selPtPos ) const
 //------------------------------------------------------------------------------
 {
-    return isUserDefinedLabelVisible(c_strKeyLabelCutOffVoltage);
+    return isDescriptionLabelVisible(i_selPtPos);
 }
 
 /*==============================================================================

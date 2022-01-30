@@ -64,8 +64,7 @@ public: // class methods
     /*! Returns the class name. */
     static QString ClassName() { return "CGraphObjTransistor"; } // Please note that the static class functions name must be different from the non static virtual member function "className"
 public: // type definitions and constants
-    static const QSize   c_sizInitial;
-    static const QString c_strKeyLabelDopingType;
+    static const QSize c_sizInitial;
     typedef enum {
         EDopingTypeNPN = 0,
         EDopingTypePNP = 1,
@@ -91,7 +90,7 @@ public: // instance methods
 public: // instance methods
     void showDopingType( ESelectionPoint i_selPtPos = ESelectionPoint::BottomCenter );
     void hideDopingType();
-    bool isDopingTypeVisible() const;
+    bool isDopingTypeVisible( ESelectionPoint i_selPtPos = ESelectionPoint::BottomCenter ) const;
 public: // must overridables of base class CGraphObj
     virtual CGraphObj* clone();
 public: // overridables of base class CGraphObj

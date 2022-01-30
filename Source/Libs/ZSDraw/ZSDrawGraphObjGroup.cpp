@@ -499,7 +499,7 @@ void CGraphObjGroup::setSize( double i_fWidth, double i_fHeight )
             updateSelectionPointsOfBoundingRect(m_rctCurr);
         }
 
-        updateLabelPositions();
+        updateLabelPositionsAndContents();
 
         //itemChange( ItemPositionHasChanged, pos() ); // ItemSizeHasChanged does not exist
 
@@ -3518,7 +3518,7 @@ void CGraphObjGroup::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
 
             updateSelectionPointsOfBoundingRect(m_rctCurr);
 
-            updateLabelPositions();
+            updateLabelPositionsAndContents();
 
             updateEditInfo();
             updateToolTip();
@@ -3688,7 +3688,7 @@ void CGraphObjGroup::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
 
             updateSelectionPointsOfBoundingRect(m_rctCurr);
 
-            updateLabelPositions();
+            updateLabelPositionsAndContents();
 
             // Not for group items. Otherwise the layout information would get lost.
             //acceptCurrentAsOriginalCoors();
@@ -4176,7 +4176,7 @@ QVariant CGraphObjGroup::itemChange( GraphicsItemChange i_change, const QVariant
 
         updateSelectionPointsOfBoundingRect(m_rctCurr);
 
-        updateLabelPositions();
+        updateLabelPositionsAndContents();
 
         updateEditInfo();
         updateToolTip();

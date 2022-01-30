@@ -44,10 +44,10 @@ may result in using the software modules.
 #endif
 
 #include "ZSDraw/ZSDrawDlgFormatGraphObjs.h"
-#include "ZSDraw/ZSDrawWdgtFormatGraphObjsObjName.h"
+#include "ZSDraw/ZSDrawWdgtFormatGraphObjsLabels.h"
 #include "ZSDraw/ZSDrawWdgtFormatGraphObjsFillStyle.h"
 #include "ZSDraw/ZSDrawWdgtFormatGraphObjsGeometry.h"
-#include "ZSDraw/ZSDrawWdgtFormatGraphObjsLabels.h"
+#include "ZSDraw/ZSDrawWdgtFormatGraphObjsLabelVisibilities.h"
 #include "ZSDraw/ZSDrawWdgtFormatGraphObjsLineStyle.h"
 #include "ZSDraw/ZSDrawWdgtFormatGraphObjsText.h"
 #include "ZSDraw/ZSDrawWdgtFormatGraphObjsTextStyle.h"
@@ -76,13 +76,13 @@ class CDlgFormatGraphObjs : public QDialog
 public: // type definitions and constants
 ==============================================================================*/
 
-const QString CDlgFormatGraphObjs::c_strWdgtObjName   = "Object Name";
-const QString CDlgFormatGraphObjs::c_strWdgtLineStyle = "Line Style";
-const QString CDlgFormatGraphObjs::c_strWdgtFillStyle = "Fill Style";
-const QString CDlgFormatGraphObjs::c_strWdgtTextStyle = "Text Style";
-const QString CDlgFormatGraphObjs::c_strWdgtGeometry  = "Geometry";
-const QString CDlgFormatGraphObjs::c_strWdgtText      = "Text";
-const QString CDlgFormatGraphObjs::c_strWdgtLabels    = "Labels";
+const QString CDlgFormatGraphObjs::c_strWdgtLabels            = "Labels";
+const QString CDlgFormatGraphObjs::c_strWdgtLineStyle         = "Line Style";
+const QString CDlgFormatGraphObjs::c_strWdgtFillStyle         = "Fill Style";
+const QString CDlgFormatGraphObjs::c_strWdgtTextStyle         = "Text Style";
+const QString CDlgFormatGraphObjs::c_strWdgtGeometry          = "Geometry";
+const QString CDlgFormatGraphObjs::c_strWdgtText              = "Text";
+const QString CDlgFormatGraphObjs::c_strWdgtLabelVisibilities = "Label Visibilities";
 
 /*==============================================================================
 public: // ctors and dtor
@@ -153,17 +153,17 @@ CDlgFormatGraphObjs::CDlgFormatGraphObjs(
     m_pStackedWdgt = new QStackedWidget();
     m_pLytSettings->addWidget(m_pStackedWdgt,1);
 
-    QIcon   iconObjName;
-    QPixmap pxmObjName(":/ZS/Draw/Key16x16.bmp");
-    pxmObjName.setMask(pxmObjName.createHeuristicMask());
-    iconObjName.addPixmap(pxmObjName);
+    QIcon   iconLabels;
+    QPixmap pxmLabels(":/ZS/Draw/Key16x16.bmp");
+    pxmLabels.setMask(pxmLabels.createHeuristicMask());
+    iconLabels.addPixmap(pxmLabels);
 
-    QListWidgetItem* pListWdgtItemObjName = new QListWidgetItem( iconObjName, c_strWdgtObjName, m_pListWdgt );
-    m_arpListWdgtItems.insert(c_strWdgtObjName,pListWdgtItemObjName);
+    QListWidgetItem* pListWdgtItemLabels = new QListWidgetItem( iconLabels, c_strWdgtLabels, m_pListWdgt );
+    m_arpListWdgtItems.insert(c_strWdgtLabels,pListWdgtItemLabels);
 
-    CWdgtFormatGraphObjsObjName* pWdgtObjName = new CWdgtFormatGraphObjsObjName(m_pDrawingScene,m_pGraphObj);
-    m_arpWdgtsFormatGraphObjs.insert(c_strWdgtObjName,pWdgtObjName);
-    m_pStackedWdgt->addWidget(pWdgtObjName);
+    CWdgtFormatGraphObjsLabels* pWdgtLabels = new CWdgtFormatGraphObjsLabels(m_pDrawingScene,m_pGraphObj);
+    m_arpWdgtsFormatGraphObjs.insert(c_strWdgtLabels,pWdgtLabels);
+    m_pStackedWdgt->addWidget(pWdgtLabels);
 
     if( drawSettings.isPenUsed() )
     {
@@ -246,17 +246,17 @@ CDlgFormatGraphObjs::CDlgFormatGraphObjs(
         m_pStackedWdgt->addWidget(pWdgtText);
     }
 
-    QIcon   iconLabel;
-    QPixmap pxmLabel(":/ZS/Draw/DrawText16x16.bmp");
-    pxmLabel.setMask(pxmLabel.createHeuristicMask());
-    iconLabel.addPixmap(pxmLabel);
+    QIcon   iconLabelVisibilities;
+    QPixmap pxmLabelVisibilities(":/ZS/Draw/DrawText16x16.bmp");
+    pxmLabelVisibilities.setMask(pxmLabelVisibilities.createHeuristicMask());
+    iconLabelVisibilities.addPixmap(pxmLabelVisibilities);
 
-    QListWidgetItem* pListWdgtItemLabels = new QListWidgetItem(iconLabel, c_strWdgtLabels, m_pListWdgt);
-    m_arpListWdgtItems.insert(c_strWdgtLabels, pListWdgtItemLabels);
+    QListWidgetItem* pListWdgtItemLabelVisibilitiess = new QListWidgetItem(iconLabelVisibilities, c_strWdgtLabelVisibilities, m_pListWdgt);
+    m_arpListWdgtItems.insert(c_strWdgtLabelVisibilities, pListWdgtItemLabelVisibilitiess);
 
-    CWdgtFormatGraphObjsLabels* pWdgtLabels = new CWdgtFormatGraphObjsLabels(m_pDrawingScene, m_pGraphObj);
-    m_arpWdgtsFormatGraphObjs.insert(c_strWdgtText, pWdgtLabels);
-    m_pStackedWdgt->addWidget(pWdgtLabels);
+    CWdgtFormatGraphObjsLabelVisibilities* pWdgtLabelVisibilitiess = new CWdgtFormatGraphObjsLabelVisibilities(m_pDrawingScene, m_pGraphObj);
+    m_arpWdgtsFormatGraphObjs.insert(c_strWdgtText, pWdgtLabelVisibilitiess);
+    m_pStackedWdgt->addWidget(pWdgtLabelVisibilitiess);
 
     if( !connect(
         /* pObjSender   */ m_pListWdgt,

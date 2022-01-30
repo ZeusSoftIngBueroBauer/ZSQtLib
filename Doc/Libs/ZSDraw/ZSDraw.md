@@ -224,7 +224,7 @@ Label gebunden ist).
 Wird das grafische Objekt verschoben, an das das Label gebunden ist, muss der Abstand zwischen Label und
 dem grafischen Objekt beibehalten werden. Hierzu speichert das Label den aktuellen Abstand zum Selection
 Point des Objekts ab, mit dem das Label verankert ist. Das verschobene Objekt aktualisiert unter Beibehaltung
-des Abstands die Position all seiner Labels (updateLabelPositions).
+des Abstands die Position all seiner Labels (updateLabelPositionsAndContents).
 
 Benutzerdefinierte Objekte
 ==========================
