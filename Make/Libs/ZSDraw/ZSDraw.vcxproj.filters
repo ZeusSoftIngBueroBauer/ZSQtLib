@@ -920,6 +920,12 @@
     <ClCompile Include="..\..\..\Tmp\Moc\Libs\ZSDraw\Debug_msvc2015\Win32\moc_ZSDrawWdgtFormatGraphObjsLabelVisibilities.cpp">
       <Filter>Generated Files\msvc2015\Win32\Debug</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSDraw\ZSDrawPageSetup.cpp">
+      <Filter>Source Files\Drawing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Libs\ZSDraw\ZSDrawPhysSizeGeometry.cpp">
+      <Filter>Source Files\Drawing</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Include\Libs\ZSDraw\ZSDrawDllMain.h">
@@ -1020,6 +1026,12 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Libs\ZSDraw\ZSDrawGraphObjEventFct.h">
       <Filter>Header Files\GraphObjs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Libs\ZSDraw\ZSDrawPageSetup.h">
+      <Filter>Header Files\Drawing</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Libs\ZSDraw\ZSDrawPhysSizeGeometry.h">
+      <Filter>Header Files\Drawing</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

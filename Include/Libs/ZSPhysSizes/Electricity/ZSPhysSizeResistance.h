@@ -49,7 +49,7 @@ class ZSPHYSSIZESELECTRICITYDLL_API CPhysSizeResistance : public CPhysSize
 //******************************************************************************
 {
 public: // ctors and dtor
-    CPhysSizeResistance();
+    CPhysSizeResistance( CUnitsPool* i_pUnitsPool );
     ~CPhysSizeResistance();
 public: // overridables of base class CPhysSize
     virtual double getRefVal( CPhysUnit* i_pPhysUnitRef ) const;

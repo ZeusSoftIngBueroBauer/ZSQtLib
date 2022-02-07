@@ -48,7 +48,6 @@ may result in using the software modules.
 #include "ZSDraw/ZSDrawDlgFormatGraphObjs.h"
 #include "ZSDraw/ZSDrawingScene.h"
 #include "ZSDraw/ZSDrawObjFactory.h"
-#include "ZSPhysSizes/Geometry/ZSPhysSizes.h"
 #include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysEnumEntry.h"
 #include "ZSSys/ZSSysErrCode.h"

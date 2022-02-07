@@ -102,10 +102,6 @@ protected slots: // List Widget
 protected slots:
     void onWdgtDrawingPaperSettingsChanged();
     void onWdgtDrawingViewSettingsChanged();
-private: // instance methods
-    ZS::PhysVal::CPhysSize* getDrawingScenePhysSize();
-    ZS::PhysVal::CPhysUnit* getDrawingScenePhysUnit();
-    void updateDrawingSize();
 private: // instance members
     CDrawingView*               m_pDrawingView;
     QVBoxLayout*                m_pLyt;

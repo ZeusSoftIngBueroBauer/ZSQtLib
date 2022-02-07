@@ -42,7 +42,7 @@ class ZSPHYSSIZESKINEMATICSDLL_API CPhysSizeSamples : public CPhysSize
 //******************************************************************************
 {
 public: // ctors and dtor
-    CPhysSizeSamples();
+    CPhysSizeSamples( CUnitsPool* i_pUnitsPool );
     ~CPhysSizeSamples();
 public: // instance methods
     CPhysUnit* Samples() { return &m_physUnitSamples; }

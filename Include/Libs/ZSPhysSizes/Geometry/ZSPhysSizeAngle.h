@@ -44,7 +44,7 @@ class ZSPHYSSIZESGEOMETRYDLL_API CPhysSizeAngle : public CPhysSize
 //******************************************************************************
 {
 public: // ctors and dtor
-    CPhysSizeAngle();
+    CPhysSizeAngle( CUnitsPool* i_pUnitsPool );
     ~CPhysSizeAngle();
 public: // instance methods
     CPhysUnit* Rad() { return &m_physUnitRad; }

@@ -27,10 +27,14 @@ may result in using the software modules.
 #include <QtCore/qglobal.h>
 
 #if QT_VERSION < 0x050000
+#include <QtGui/qcheckbox.h>
+#include <QtGui/qcombobox.h>
 #include <QtGui/qlabel.h>
 #include <QtGui/qlayout.h>
 #include <QtGui/qspinbox.h>
 #else
+#include <QtWidgets/qcheckbox.h>
+#include <QtWidgets/qcombobox.h>
 #include <QtWidgets/qlabel.h>
 #include <QtWidgets/qlayout.h>
 #include <QtWidgets/qspinbox.h>
@@ -39,7 +43,6 @@ may result in using the software modules.
 #include "ZSDraw/ZSDrawWdgtDrawingViewPageSetup.h"
 #include "ZSDraw/ZSDrawingView.h"
 #include "ZSDraw/ZSDrawingScene.h"
-#include "ZSPhysSizes/Geometry/ZSPhysSizes.h"
 #include "ZSSys/ZSSysException.h"
 #include "ZSSys/ZSSysTrcAdminObj.h"
 #include "ZSSys/ZSSysTrcMethod.h"
@@ -79,28 +82,46 @@ CWdgtDrawingViewPageSetup::CWdgtDrawingViewPageSetup(
     m_pLblResolutionDpmm(nullptr),
     m_pLblResolutionDpmmVal(nullptr),
     m_pLblResolutionDpmmUnit(nullptr),
-    m_pLytSepLineSize(nullptr),
-    m_pLblSepLineSize(nullptr),
-    m_pSepLineSize(nullptr),
-    m_pLytSizeWidth(nullptr),
-    m_pLblSizeWidth(nullptr),
-    m_pEdtSizeWidth(nullptr),
-    m_pLytSizeHeight(nullptr),
-    m_pLblSizeHeight(nullptr),
-    m_pEdtSizeHeight(nullptr),
+    m_pLytSepLineImageSize(nullptr),
+    m_pLblSepLineImageSize(nullptr),
+    m_pSepLineImageSize(nullptr),
+    m_pLytLineImageSize(nullptr),
+    m_pLblImageSizeWidth(nullptr),
+    m_pEdtImageSizeWidth(nullptr),
+    m_pLblImageSizeHeight(nullptr),
+    m_pEdtImageSizeHeight(nullptr),
+    m_pLytLineImageUseDrawingMetrics(nullptr),
+    m_pLblImageUseDrawingMetrics(nullptr),
+    m_pChkImageUseDrawingMetrics(nullptr),
+    m_pLytSepLineDrawingMetricsSize(nullptr),
+    m_pLblSepLineDrawingMetricsSize(nullptr),
+    m_pSepLineDrawingMetricsSize(nullptr),
+    m_pLytLineDrawingMetricsKeepAspectRatio(nullptr),
+    m_pLblDrawingMetricsKeepAspectRatio(nullptr),
+    m_pChkDrawingMetricsKeepAspectRatio(nullptr),
+    m_pLytLineDrawingMetricsSize(nullptr),
+    m_pLblDrawingMetricsSizeWidth(nullptr),
+    m_pEdtDrawingMetricsSizeWidth(nullptr),
+    m_pLblDrawingMetricsSizeHeight(nullptr),
+    m_pEdtDrawingMetricsSizeHeight(nullptr),
+    m_pLblDrawingMetricsSizeUnit(nullptr),
+    m_pCmbDrawingMetricsSizeUnit(nullptr),
+    m_pLytLineDrawingMetricsSizeScaleFactors(nullptr),
+    m_pLblDrawingMetricsSizeScaleFactorWidth(nullptr),
+    m_pEdtDrawingMetricsSizeScaleFactorWidth(nullptr),
+    m_pLblDrawingMetricsSizeScaleFactorHeight(nullptr),
+    m_pEdtDrawingMetricsSizeScaleFactorHeight(nullptr),
     m_pLytSepLineMargins(nullptr),
     m_pLblSepLineMargins(nullptr),
     m_pSepLineMargins(nullptr),
-    m_pLytMarginsLeft(nullptr),
+    m_pLytLineMarginsLeftRight(nullptr),
     m_pLblMarginsLeft(nullptr),
     m_pEdtMarginsLeft(nullptr),
-    m_pLytMarginsTop(nullptr),
-    m_pLblMarginsTop(nullptr),
-    m_pEdtMarginsTop(nullptr),
-    m_pLytMarginsRight(nullptr),
     m_pLblMarginsRight(nullptr),
     m_pEdtMarginsRight(nullptr),
-    m_pLytMarginsBottom(nullptr),
+    m_pLytLineMarginsTopBottom(nullptr),
+    m_pLblMarginsTop(nullptr),
+    m_pEdtMarginsTop(nullptr),
     m_pLblMarginsBottom(nullptr),
     m_pEdtMarginsBottom(nullptr),
     // Trace
@@ -132,7 +153,7 @@ CWdgtDrawingViewPageSetup::CWdgtDrawingViewPageSetup(
     m_pLyt->addSpacing(4);
 
     // <Section> Resolution
-    //---------------------
+    //=====================
 
     double  fXResolution_dpi = i_pDrawingView->getXResolutionInDpmm()*25.4;
     double  fYResolution_dpi = i_pDrawingView->getYResolutionInDpmm()*25.4;
@@ -171,6 +192,9 @@ CWdgtDrawingViewPageSetup::CWdgtDrawingViewPageSetup(
     m_pLytResolutionDpmm->addWidget(m_pLblResolutionDpmmUnit);
     m_pLytResolutionDpmm->addStretch();
 
+    // <Section> Image Size
+    //=====================
+
     // <Separator> Size
     //-----------------
 
@@ -180,36 +204,39 @@ CWdgtDrawingViewPageSetup::CWdgtDrawingViewPageSetup(
 
     m_pLyt->addSpacing(4);
 
-    m_pLytSepLineSize = new QHBoxLayout();
-    m_pLyt->addLayout(m_pLytSepLineSize);
+    m_pLytSepLineImageSize = new QHBoxLayout();
+    m_pLyt->addLayout(m_pLytSepLineImageSize);
 
-    m_pLblSepLineSize = new QLabel("Size:");
-    m_pLytSepLineSize->addWidget(m_pLblSepLineSize);
-    m_pSepLineSize = new QFrame();
-    m_pSepLineSize->setFrameStyle(QFrame::HLine|QFrame::Sunken);
-    m_pLytSepLineSize->addWidget(m_pSepLineSize,1);
+    m_pLblSepLineImageSize = new QLabel("Size:");
+    m_pLytSepLineImageSize->addWidget(m_pLblSepLineImageSize);
+    m_pSepLineImageSize = new QFrame();
+    m_pSepLineImageSize->setFrameStyle(QFrame::HLine|QFrame::Sunken);
+    m_pLytSepLineImageSize->addWidget(m_pSepLineImageSize,1);
 
     m_pLyt->addSpacing(4);
 
-    // <LineEdit> Size - Width
-    //------------------------
+    // <Line> Image Size
+    //------------------
 
-    m_pLytSizeWidth = new QHBoxLayout();
-    m_pLyt->addLayout(m_pLytSizeWidth);
-    m_pLblSizeWidth = new QLabel("Width:");
-    m_pLblSizeWidth->setFixedWidth(cxLblWidth);
-    m_pLytSizeWidth->addWidget(m_pLblSizeWidth);
-    m_pEdtSizeWidth = new QSpinBox();
-    m_pEdtSizeWidth->setFixedWidth(cxEdtWidth);
-    m_pEdtSizeWidth->setMinimum(1);
-    m_pEdtSizeWidth->setMaximum(100000);
-    m_pEdtSizeWidth->setSuffix(" px");
-    m_pEdtSizeWidth->setValue(sizeDrawing.width());
-    m_pLytSizeWidth->addWidget(m_pEdtSizeWidth);
-    m_pLytSizeWidth->addStretch();
+    m_pLytLineImageSize = new QHBoxLayout();
+    m_pLyt->addLayout(m_pLytLineImageSize);
+
+    // <Edit> Image Width
+    //--------------------
+
+    m_pLblImageSizeWidth = new QLabel("Width:");
+    m_pLblImageSizeWidth->setFixedWidth(cxLblWidth);
+    m_pLytLineImageSize->addWidget(m_pLblImageSizeWidth);
+    m_pEdtImageSizeWidth = new QSpinBox();
+    m_pEdtImageSizeWidth->setFixedWidth(cxEdtWidth);
+    m_pEdtImageSizeWidth->setMinimum(1);
+    m_pEdtImageSizeWidth->setMaximum(100000);
+    m_pEdtImageSizeWidth->setSuffix(" px");
+    m_pEdtImageSizeWidth->setValue(sizeDrawing.width());
+    m_pLytLineImageSize->addWidget(m_pEdtImageSizeWidth);
 
     if( !connect(
-        /* pObjSender   */ m_pEdtSizeWidth,
+        /* pObjSender   */ m_pEdtImageSizeWidth,
         /* szSignal     */ SIGNAL(editingFinished()),
         /* pObjReceiver */ this,
         /* szSlot       */ SLOT(onEdtSizeWidthEditingFinished()) ) )
@@ -217,31 +244,216 @@ CWdgtDrawingViewPageSetup::CWdgtDrawingViewPageSetup(
         throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
     }
 
-    // <LineEdit> Size - Height
-    //-------------------------
+    // <Edit> Image Height
+    //--------------------
 
-    m_pLytSizeHeight = new QHBoxLayout();
-    m_pLyt->addLayout(m_pLytSizeHeight);
-    m_pLblSizeHeight = new QLabel("Height:");
-    m_pLblSizeHeight->setFixedWidth(cxLblWidth);
-    m_pLytSizeHeight->addWidget(m_pLblSizeHeight);
-    m_pEdtSizeHeight = new QSpinBox();
-    m_pEdtSizeHeight->setFixedWidth(cxEdtWidth);
-    m_pEdtSizeHeight->setMinimum(1);
-    m_pEdtSizeHeight->setMaximum(100000);
-    m_pEdtSizeHeight->setSuffix(" px");
-    m_pEdtSizeHeight->setValue(sizeDrawing.height());
-    m_pLytSizeHeight->addWidget(m_pEdtSizeHeight);
-    m_pLytSizeHeight->addStretch();
+    m_pLblImageSizeHeight = new QLabel("Height:");
+    m_pLblImageSizeHeight->setFixedWidth(cxLblWidth);
+    m_pLytLineImageSize->addWidget(m_pLblImageSizeHeight);
+    m_pEdtImageSizeHeight = new QSpinBox();
+    m_pEdtImageSizeHeight->setFixedWidth(cxEdtWidth);
+    m_pEdtImageSizeHeight->setMinimum(1);
+    m_pEdtImageSizeHeight->setMaximum(100000);
+    m_pEdtImageSizeHeight->setSuffix(" px");
+    m_pEdtImageSizeHeight->setValue(sizeDrawing.height());
+    m_pLytLineImageSize->addWidget(m_pEdtImageSizeHeight);
+    m_pLytLineImageSize->addStretch();
 
     if( !connect(
-        /* pObjSender   */ m_pEdtSizeHeight,
+        /* pObjSender   */ m_pEdtImageSizeHeight,
         /* szSignal     */ SIGNAL(editingFinished()),
         /* pObjReceiver */ this,
         /* szSlot       */ SLOT(onEdtSizeHeightEditingFinished()) ) )
     {
         throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
     }
+
+    // <Line> Use Drawing Metrics
+    //---------------------------
+
+    m_pLytLineImageUseDrawingMetrics = new QHBoxLayout();
+    m_pLyt->addLayout(m_pLytLineImageUseDrawingMetrics);
+
+    // <CheckBox> Use Drawing Metrics
+    //-------------------------------
+
+    m_pLblImageUseDrawingMetrics = new QLabel("Use Metrics:");
+    m_pLblImageUseDrawingMetrics->setFixedWidth(cxLblWidth);
+    m_pLytLineImageUseDrawingMetrics->addWidget(m_pLblImageUseDrawingMetrics);
+    m_pChkImageUseDrawingMetrics = new QCheckBox();
+    m_pChkImageUseDrawingMetrics->setChecked(false);
+    m_pLytLineImageUseDrawingMetrics->addWidget(m_pChkImageUseDrawingMetrics);
+    m_pLytLineImageUseDrawingMetrics->addStretch();
+
+    //if( !connect(
+    //    /* pObjSender   */ m_pChkImageUseDrawingMetrics,
+    //    /* szSignal     */ SIGNAL(stateChanged(int)),
+    //    /* pObjReceiver */ this,
+    //    /* szSlot       */ SLOT(onChkImageUseDrawingMetricsStateChanged(int)) ) )
+    //{
+    //    throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
+    //}
+
+    // <Section> Drawing Metrics
+    //==========================
+
+    // <Separator> Metrics
+    //--------------------
+
+    //int cxEdtWidth = 100;
+
+    m_pLyt->addSpacing(4);
+
+    m_pLytSepLineDrawingMetricsSize = new QHBoxLayout();
+    m_pLyt->addLayout(m_pLytSepLineDrawingMetricsSize);
+
+    m_pLblSepLineDrawingMetricsSize = new QLabel("Metrics:");
+    m_pLytSepLineDrawingMetricsSize->addWidget(m_pLblSepLineDrawingMetricsSize);
+    m_pSepLineDrawingMetricsSize = new QFrame();
+    m_pSepLineDrawingMetricsSize->setFrameStyle(QFrame::HLine|QFrame::Sunken);
+    m_pLytSepLineDrawingMetricsSize->addWidget(m_pSepLineDrawingMetricsSize,1);
+
+    m_pLyt->addSpacing(4);
+
+    // <Line> Keep Aspect Ratio
+    //-------------------------
+
+    m_pLytLineDrawingMetricsKeepAspectRatio = new QHBoxLayout();
+    m_pLyt->addLayout(m_pLytLineDrawingMetricsKeepAspectRatio);
+
+    // <CheckBox> Keep Aspect Ratio
+    //-----------------------------
+
+    m_pLblDrawingMetricsKeepAspectRatio = new QLabel("Keep Aspect Ratio:");
+    m_pLblDrawingMetricsKeepAspectRatio->setFixedWidth(cxLblWidth);
+    m_pLytLineDrawingMetricsKeepAspectRatio->addWidget(m_pLblDrawingMetricsKeepAspectRatio);
+    m_pChkDrawingMetricsKeepAspectRatio = new QCheckBox();
+    m_pChkDrawingMetricsKeepAspectRatio->setChecked(true);
+    m_pLytLineDrawingMetricsKeepAspectRatio->addWidget(m_pChkDrawingMetricsKeepAspectRatio);
+
+    //if( !connect(
+    //    /* pObjSender   */ m_pChkDrawingMetricsKeepAspectRatio,
+    //    /* szSignal     */ SIGNAL(stateChanged(int)),
+    //    /* pObjReceiver */ this,
+    //    /* szSlot       */ SLOT(onChkDrawingMetricsKeepAspectRatioStateChanged(int)) ) )
+    //{
+    //    throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
+    //}
+
+    // <Line> Metrics Size
+    //--------------------
+
+    m_pLytLineDrawingMetricsSize = new QHBoxLayout();
+    m_pLyt->addLayout(m_pLytLineDrawingMetricsSize);
+
+    // <Edit> Metrics Width
+    //---------------------
+
+    m_pLblDrawingMetricsSizeWidth = new QLabel("Width:");
+    m_pLblDrawingMetricsSizeWidth->setFixedWidth(cxLblWidth);
+    m_pLytLineDrawingMetricsSize->addWidget(m_pLblDrawingMetricsSizeWidth);
+    m_pEdtDrawingMetricsSizeWidth = new QSpinBox();
+    m_pEdtDrawingMetricsSizeWidth->setFixedWidth(cxEdtWidth);
+    m_pEdtDrawingMetricsSizeWidth->setMinimum(1);
+    m_pEdtDrawingMetricsSizeWidth->setMaximum(100000);
+    m_pEdtDrawingMetricsSizeWidth->setSuffix(" " + m_pCmbDrawingMetricsSizeUnit->currentText());
+    //m_pEdtDrawingMetricsSizeWidth->setValue(sizeDrawing.width());
+    m_pLytLineDrawingMetricsSize->addWidget(m_pEdtDrawingMetricsSizeWidth);
+
+    //if( !connect(
+    //    /* pObjSender   */ m_pEdtDrawingMetricsSizeWidth,
+    //    /* szSignal     */ SIGNAL(editingFinished()),
+    //    /* pObjReceiver */ this,
+    //    /* szSlot       */ SLOT(onEdtDrawingMetricsSizeWidthEditingFinished()) ) )
+    //{
+    //    throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
+    //}
+
+    // <Edit> Metrics Height
+    //----------------------
+
+    m_pLblDrawingMetricsSizeHeight = new QLabel("Height:");
+    m_pLblDrawingMetricsSizeHeight->setFixedWidth(cxLblWidth);
+    m_pLytLineDrawingMetricsSize->addWidget(m_pLblDrawingMetricsSizeHeight);
+    m_pEdtDrawingMetricsSizeHeight = new QSpinBox();
+    m_pEdtDrawingMetricsSizeHeight->setFixedWidth(cxEdtWidth);
+    m_pEdtDrawingMetricsSizeHeight->setMinimum(1);
+    m_pEdtDrawingMetricsSizeHeight->setMaximum(100000);
+    m_pEdtDrawingMetricsSizeHeight->setSuffix(" " + m_pCmbDrawingMetricsSizeUnit->currentText());
+    //m_pEdtDrawingMetricsSizeHeight->setValue(sizeDrawing.height());
+    m_pLytLineDrawingMetricsSize->addWidget(m_pEdtDrawingMetricsSizeHeight);
+
+    //if( !connect(
+    //    /* pObjSender   */ m_pEdtDrawingMetricsSizeHeight,
+    //    /* szSignal     */ SIGNAL(editingFinished()),
+    //    /* pObjReceiver */ this,
+    //    /* szSlot       */ SLOT(onEdtDrawingMetricsSizeHeightEditingFinished()) ) )
+    //{
+    //    throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
+    //}
+
+    // <ComboBox> Metrics Unit
+    //-------------------------
+
+    m_pLblDrawingMetricsSizeUnit = new QLabel("Unit:");
+    m_pLblDrawingMetricsSizeUnit->setFixedWidth(cxLblWidth);
+    m_pLytLineDrawingMetricsSize->addWidget(m_pLblDrawingMetricsSizeUnit);
+    m_pCmbDrawingMetricsSizeUnit = new QComboBox();
+    m_pCmbDrawingMetricsSizeUnit->setFixedWidth(cxEdtWidth);
+
+    CPageSetup* pageSetup = m_pDrawingView->getPageSetup();
+    CPhysSizeGeometry* physSizeGeometry = pageSetup->getPhysSizeWidth();
+
+    for( int idxUnit = 0; idxUnit < physSizeGeometry->getUnitCount(); ++idxUnit )
+    {
+        m_pCmbDrawingMetricsSizeUnit->addItem(physSizeGeometry->getUnit(idxUnit)->getSymbol());
+    }
+    m_pCmbDrawingMetricsSizeUnit->setCurrentText(physSizeGeometry->CentiMeter()->getSymbol());
+    m_pLytLineDrawingMetricsSize->addWidget(m_pCmbDrawingMetricsSizeUnit);
+    m_pLytLineDrawingMetricsSize->addStretch();
+
+    //if( !connect(
+    //    /* pObjSender   */ m_pCmbDrawingMetricsSizeUnit,
+    //    /* szSignal     */ SIGNAL(currentIndexChanged()),
+    //    /* pObjReceiver */ this,
+    //    /* szSlot       */ SLOT(onCmbDrawingMetricsSizeUnitCurrentIndexChanged(int)) ) )
+    //{
+    //    throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
+    //}
+
+    // <Line> Scale Factors
+    //---------------------
+
+    m_pLytLineDrawingMetricsSizeScaleFactors = new QHBoxLayout();
+    m_pLyt->addLayout(m_pLytLineDrawingMetricsSizeScaleFactors);
+
+    // <Edit> Factor Width
+    //---------------------
+
+    m_pLblDrawingMetricsSizeScaleFactorWidth = new QLabel("Scale Factor:");
+    m_pLblDrawingMetricsSizeScaleFactorWidth->setFixedWidth(cxLblWidth);
+    m_pLytLineDrawingMetricsSizeScaleFactors->addWidget(m_pLblDrawingMetricsSizeScaleFactorWidth);
+    m_pEdtDrawingMetricsSizeScaleFactorWidth = new QSpinBox();
+    m_pEdtDrawingMetricsSizeScaleFactorWidth->setFixedWidth(cxEdtWidth);
+    m_pEdtDrawingMetricsSizeScaleFactorWidth->setEnabled(false);
+    //m_pEdtDrawingMetricsSizeScaleFactorWidth->setValue(sizeDrawing.width());
+    m_pLytLineDrawingMetricsSizeScaleFactors->addWidget(m_pEdtDrawingMetricsSizeScaleFactorWidth);
+
+    // <Edit> Factor Height
+    //----------------------
+
+    m_pLblDrawingMetricsSizeScaleFactorHeight = new QLabel("Scale Factor:");
+    m_pLblDrawingMetricsSizeScaleFactorHeight->setFixedWidth(cxLblWidth);
+    m_pLytLineDrawingMetricsSizeScaleFactors->addWidget(m_pLblDrawingMetricsSizeScaleFactorHeight);
+    m_pEdtDrawingMetricsSizeScaleFactorHeight = new QSpinBox();
+    m_pEdtDrawingMetricsSizeScaleFactorHeight->setFixedWidth(cxEdtWidth);
+    m_pEdtDrawingMetricsSizeScaleFactorHeight->setEnabled(false);
+    //m_pEdtDrawingMetricsSizeScaleFactorHeight->setValue(sizeDrawing.width());
+    m_pLytLineDrawingMetricsSizeScaleFactors->addWidget(m_pEdtDrawingMetricsSizeScaleFactorHeight);
+    m_pLytLineDrawingMetricsSizeScaleFactors->addStretch();
+
+    // <Section> Margins
+    //==================
 
     // <Separator> Margins
     //--------------------
@@ -261,22 +473,25 @@ CWdgtDrawingViewPageSetup::CWdgtDrawingViewPageSetup(
 
     m_pLyt->addSpacing(4);
 
+    // <Line> Margins - Left/Right
+    //----------------------------
+
+    m_pLytLineMarginsLeftRight = new QHBoxLayout();
+    m_pLyt->addLayout(m_pLytLineMarginsLeftRight);
+
     // <LineEdit> Margins - Left
     //--------------------------
 
-    m_pLytMarginsLeft = new QHBoxLayout();
-    m_pLyt->addLayout(m_pLytMarginsLeft);
     m_pLblMarginsLeft = new QLabel("Left:");
     m_pLblMarginsLeft->setFixedWidth(cxLblWidth);
-    m_pLytMarginsLeft->addWidget(m_pLblMarginsLeft);
+    m_pLytLineMarginsLeftRight->addWidget(m_pLblMarginsLeft);
     m_pEdtMarginsLeft = new QSpinBox();
     m_pEdtMarginsLeft->setFixedWidth(cxEdtWidth);
     m_pEdtMarginsLeft->setMinimum(0);
     m_pEdtMarginsLeft->setMaximum(100);
     m_pEdtMarginsLeft->setSuffix(" px");
     m_pEdtMarginsLeft->setValue(margins.left());
-    m_pLytMarginsLeft->addWidget(m_pEdtMarginsLeft);
-    m_pLytMarginsLeft->addStretch();
+    m_pLytLineMarginsLeftRight->addWidget(m_pEdtMarginsLeft);
 
     if( !connect(
         /* pObjSender   */ m_pEdtMarginsLeft,
@@ -287,48 +502,20 @@ CWdgtDrawingViewPageSetup::CWdgtDrawingViewPageSetup(
         throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
     }
 
-    // <LineEdit> Margins - Top
-    //--------------------------
-
-    m_pLytMarginsTop = new QHBoxLayout();
-    m_pLyt->addLayout(m_pLytMarginsTop);
-    m_pLblMarginsTop = new QLabel("Top:");
-    m_pLblMarginsTop->setFixedWidth(cxLblWidth);
-    m_pLytMarginsTop->addWidget(m_pLblMarginsTop);
-    m_pEdtMarginsTop = new QSpinBox();
-    m_pEdtMarginsTop->setFixedWidth(cxEdtWidth);
-    m_pEdtMarginsTop->setMinimum(0);
-    m_pEdtMarginsTop->setMaximum(100);
-    m_pEdtMarginsTop->setSuffix(" px");
-    m_pEdtMarginsTop->setValue(margins.left());
-    m_pLytMarginsTop->addWidget(m_pEdtMarginsTop);
-    m_pLytMarginsTop->addStretch();
-
-    if( !connect(
-        /* pObjSender   */ m_pEdtMarginsTop,
-        /* szSignal     */ SIGNAL(editingFinished()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onEdtMarginsTopEditingFinished()) ) )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-    }
-
     // <LineEdit> Margins - Right
     //--------------------------
 
-    m_pLytMarginsRight = new QHBoxLayout();
-    m_pLyt->addLayout(m_pLytMarginsRight);
     m_pLblMarginsRight = new QLabel("Right:");
     m_pLblMarginsRight->setFixedWidth(cxLblWidth);
-    m_pLytMarginsRight->addWidget(m_pLblMarginsRight);
+    m_pLytLineMarginsLeftRight->addWidget(m_pLblMarginsRight);
     m_pEdtMarginsRight = new QSpinBox();
     m_pEdtMarginsRight->setFixedWidth(cxEdtWidth);
     m_pEdtMarginsRight->setMinimum(0);
     m_pEdtMarginsRight->setMaximum(100);
     m_pEdtMarginsRight->setSuffix(" px");
     m_pEdtMarginsRight->setValue(margins.left());
-    m_pLytMarginsRight->addWidget(m_pEdtMarginsRight);
-    m_pLytMarginsRight->addStretch();
+    m_pLytLineMarginsLeftRight->addWidget(m_pEdtMarginsRight);
+    m_pLytLineMarginsLeftRight->addStretch();
 
     if( !connect(
         /* pObjSender   */ m_pEdtMarginsRight,
@@ -339,22 +526,49 @@ CWdgtDrawingViewPageSetup::CWdgtDrawingViewPageSetup(
         throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
     }
 
+    // <Line> Margins - Top/Bottom
+    //----------------------------
+
+    m_pLytLineMarginsTopBottom = new QHBoxLayout();
+    m_pLyt->addLayout(m_pLytLineMarginsTopBottom);
+
+    // <LineEdit> Margins - Top
+    //--------------------------
+
+    m_pLblMarginsTop = new QLabel("Top:");
+    m_pLblMarginsTop->setFixedWidth(cxLblWidth);
+    m_pLytLineMarginsTopBottom->addWidget(m_pLblMarginsTop);
+    m_pEdtMarginsTop = new QSpinBox();
+    m_pEdtMarginsTop->setFixedWidth(cxEdtWidth);
+    m_pEdtMarginsTop->setMinimum(0);
+    m_pEdtMarginsTop->setMaximum(100);
+    m_pEdtMarginsTop->setSuffix(" px");
+    m_pEdtMarginsTop->setValue(margins.left());
+    m_pLytLineMarginsTopBottom->addWidget(m_pEdtMarginsTop);
+
+    if( !connect(
+        /* pObjSender   */ m_pEdtMarginsTop,
+        /* szSignal     */ SIGNAL(editingFinished()),
+        /* pObjReceiver */ this,
+        /* szSlot       */ SLOT(onEdtMarginsTopEditingFinished()) ) )
+    {
+        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
+    }
+
     // <LineEdit> Margins - Bottom
     //--------------------------
 
-    m_pLytMarginsBottom = new QHBoxLayout();
-    m_pLyt->addLayout(m_pLytMarginsBottom);
     m_pLblMarginsBottom = new QLabel("Bottom:");
     m_pLblMarginsBottom->setFixedWidth(cxLblWidth);
-    m_pLytMarginsBottom->addWidget(m_pLblMarginsBottom);
+    m_pLytLineMarginsTopBottom->addWidget(m_pLblMarginsBottom);
     m_pEdtMarginsBottom = new QSpinBox();
     m_pEdtMarginsBottom->setFixedWidth(cxEdtWidth);
     m_pEdtMarginsBottom->setMinimum(0);
     m_pEdtMarginsBottom->setMaximum(100);
     m_pEdtMarginsBottom->setSuffix(" px");
     m_pEdtMarginsBottom->setValue(margins.left());
-    m_pLytMarginsBottom->addWidget(m_pEdtMarginsBottom);
-    m_pLytMarginsBottom->addStretch();
+    m_pLytLineMarginsTopBottom->addWidget(m_pEdtMarginsBottom);
+    m_pLytLineMarginsTopBottom->addStretch();
 
     if( !connect(
         /* pObjSender   */ m_pEdtMarginsBottom,
@@ -398,28 +612,46 @@ CWdgtDrawingViewPageSetup::~CWdgtDrawingViewPageSetup()
     m_pLblResolutionDpmm = nullptr;
     m_pLblResolutionDpmmVal = nullptr;
     m_pLblResolutionDpmmUnit = nullptr;
-    m_pLytSepLineSize = nullptr;
-    m_pLblSepLineSize = nullptr;
-    m_pSepLineSize = nullptr;
-    m_pLytSizeWidth = nullptr;
-    m_pLblSizeWidth = nullptr;
-    m_pEdtSizeWidth = nullptr;
-    m_pLytSizeHeight = nullptr;
-    m_pLblSizeHeight = nullptr;
-    m_pEdtSizeHeight = nullptr;
+    m_pLytSepLineImageSize = nullptr;
+    m_pLblSepLineImageSize = nullptr;
+    m_pSepLineImageSize = nullptr;
+    m_pLytLineImageSize = nullptr;
+    m_pLblImageSizeWidth = nullptr;
+    m_pEdtImageSizeWidth = nullptr;
+    m_pLblImageSizeHeight = nullptr;
+    m_pEdtImageSizeHeight = nullptr;
+    m_pLytLineImageUseDrawingMetrics = nullptr;
+    m_pLblImageUseDrawingMetrics = nullptr;
+    m_pChkImageUseDrawingMetrics = nullptr;
+    m_pLytSepLineDrawingMetricsSize = nullptr;
+    m_pLblSepLineDrawingMetricsSize = nullptr;
+    m_pSepLineDrawingMetricsSize = nullptr;
+    m_pLytLineDrawingMetricsKeepAspectRatio = nullptr;
+    m_pLblDrawingMetricsKeepAspectRatio = nullptr;
+    m_pChkDrawingMetricsKeepAspectRatio = nullptr;
+    m_pLytLineDrawingMetricsSize = nullptr;
+    m_pLblDrawingMetricsSizeWidth = nullptr;
+    m_pEdtDrawingMetricsSizeWidth = nullptr;
+    m_pLblDrawingMetricsSizeHeight = nullptr;
+    m_pEdtDrawingMetricsSizeHeight = nullptr;
+    m_pLblDrawingMetricsSizeUnit = nullptr;
+    m_pCmbDrawingMetricsSizeUnit = nullptr;
+    m_pLytLineDrawingMetricsSizeScaleFactors = nullptr;
+    m_pLblDrawingMetricsSizeScaleFactorWidth = nullptr;
+    m_pEdtDrawingMetricsSizeScaleFactorWidth = nullptr;
+    m_pLblDrawingMetricsSizeScaleFactorHeight = nullptr;
+    m_pEdtDrawingMetricsSizeScaleFactorHeight = nullptr;
     m_pLytSepLineMargins = nullptr;
     m_pLblSepLineMargins = nullptr;
     m_pSepLineMargins = nullptr;
-    m_pLytMarginsLeft = nullptr;
+    m_pLytLineMarginsLeftRight = nullptr;
     m_pLblMarginsLeft = nullptr;
     m_pEdtMarginsLeft = nullptr;
-    m_pLytMarginsTop = nullptr;
-    m_pLblMarginsTop = nullptr;
-    m_pEdtMarginsTop = nullptr;
-    m_pLytMarginsRight = nullptr;
     m_pLblMarginsRight = nullptr;
     m_pEdtMarginsRight = nullptr;
-    m_pLytMarginsBottom = nullptr;
+    m_pLytLineMarginsTopBottom = nullptr;
+    m_pLblMarginsTop = nullptr;
+    m_pEdtMarginsTop = nullptr;
     m_pLblMarginsBottom = nullptr;
     m_pEdtMarginsBottom = nullptr;
 
@@ -438,8 +670,8 @@ bool CWdgtDrawingViewPageSetup::hasChanges() const
 {
     bool bHasChanges = false;
 
-    int cxWidth = m_pEdtSizeWidth->value();
-    int cyHeight = m_pEdtSizeHeight->value();
+    int cxWidth = m_pEdtImageSizeWidth->value();
+    int cyHeight = m_pEdtImageSizeHeight->value();
 
     QRectF rect = m_pDrawingView->sceneRect();
 
@@ -478,8 +710,8 @@ void CWdgtDrawingViewPageSetup::acceptChanges() const
         /* strMethod    */ "acceptChanges",
         /* strAddInfo   */ "" );
 
-    int cxWidth = m_pEdtSizeWidth->value();
-    int cyHeight = m_pEdtSizeHeight->value();
+    int cxWidth = m_pEdtImageSizeWidth->value();
+    int cyHeight = m_pEdtImageSizeHeight->value();
 
     QRectF rect = m_pDrawingView->sceneRect();
 
@@ -521,7 +753,7 @@ void CWdgtDrawingViewPageSetup::onEdtSizeWidthEditingFinished()
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
-        strMthInArgs = "Height: " + m_pEdtSizeWidth->text();
+        strMthInArgs = "Height: " + m_pEdtImageSizeWidth->text();
     }
 
     CMethodTracer mthTracer(
@@ -542,7 +774,7 @@ void CWdgtDrawingViewPageSetup::onEdtSizeHeightEditingFinished()
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
-        strMthInArgs = "Height: " + m_pEdtSizeHeight->text();
+        strMthInArgs = "Height: " + m_pEdtImageSizeHeight->text();
     }
 
     CMethodTracer mthTracer(

@@ -56,7 +56,7 @@ CUnitDataQuantity::CUnitDataQuantity(
         /* fLogFactor     */ 1.0,
         /* strName        */ i_strName,
         /* strSymbol      */ i_strSymbol,
-        /* strKey         */ i_pUnitGrp->getKey() + CUnitsPool::GetNameSeparator() + i_strSymbol ),
+        /* strKey         */ i_pUnitGrp->getKey() + i_pUnitGrp->getNameSeparator() + i_strSymbol ),
     m_fFactor(i_fFactor)
 {
 } // ctor
@@ -135,14 +135,15 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CUnitGrpDataQuantity::CUnitGrpDataQuantity() :
+CUnitGrpDataQuantity::CUnitGrpDataQuantity( CUnitsPool* i_pUnitsPool ) :
 //------------------------------------------------------------------------------
     CUnitGrp(
+        /* pUnitsPool       */ i_pUnitsPool,
         /* type             */ EUnitClassTypeDataQuantity,
         /* strName          */ "DataQuantity",
         /* strKey           */ "DataQuantity",
         /* bIsNameSpaceNode */ false,
-        /* pUnitGrpParent   */ CUnitsPool::GetUnitClassTypeGroup(EUnitClassTypeDataQuantity) ),
+        /* pUnitGrpParent   */ i_pUnitsPool == nullptr ? nullptr : i_pUnitsPool->getUnitClassTypeGroup(EUnitClassTypeDataQuantity) ),
     m_physUnitByte(
         /* pUnitGrp  */ this,
         /* strName   */ "Byte",

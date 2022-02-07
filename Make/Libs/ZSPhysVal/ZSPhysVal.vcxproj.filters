@@ -79,6 +79,9 @@
     <Filter Include="Generated Files\msvc2019\Win32\Release">
       <UniqueIdentifier>{4b473204-1206-40c1-83d8-0d0cf537488a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Doc Files">
+      <UniqueIdentifier>{f15e24a0-4ced-4b53-adcf-200a51ce692f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Libs\ZSPhysVal\ZSPhysSize.cpp">

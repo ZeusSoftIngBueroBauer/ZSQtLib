@@ -48,7 +48,6 @@ may result in using the software modules.
 #include "ZSDraw/ZSDrawWdgtDrawingViewPageSetup.h"
 #include "ZSDraw/ZSDrawingScene.h"
 #include "ZSDraw/ZSDrawingView.h"
-#include "ZSPhysSizes/Geometry/ZSPhysSizes.h"
 #include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysErrResult.h"
 #include "ZSSys/ZSSysException.h"
@@ -516,85 +515,3 @@ void CDlgPageSetup::onWdgtDrawingViewSettingsChanged()
     }
 
 } // onWdgtDrawingViewSettingsChanged
-
-/*==============================================================================
-private: // instance methods
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-CPhysSize* CDlgPageSetup::getDrawingScenePhysSize()
-//------------------------------------------------------------------------------
-{
-    CPhysSize* pPhysSize = nullptr;
-
-    //if( m_pCmbDrawingPhysSize->currentText() == Geometry::GraphDevice().getSIUnit()->getName() )
-    //{
-    //    pPhysSize = &Geometry::GraphDevice();
-    //}
-    //else if( m_pCmbDrawingPhysSize->currentText() == Geometry::Length().getSIUnit()->getName() )
-    //{
-        pPhysSize = Geometry::Length();
-    //}
-    return pPhysSize;
-
-} // getDrawingScenePhysSize
-
-//------------------------------------------------------------------------------
-CPhysUnit* CDlgPageSetup::getDrawingScenePhysUnit()
-//------------------------------------------------------------------------------
-{
-    CPhysSize* pPhysSize = getDrawingScenePhysSize();
-    CPhysUnit* pPhysUnit = nullptr;
-
-    if( pPhysSize == Geometry::GraphDevice() )
-    {
-        pPhysUnit = Geometry::GraphDevice()->Pixel();
-    }
-    else if( pPhysSize == Geometry::Length() )
-    {
-        pPhysUnit = Geometry::Length()->MilliMeter();
-    }
-    return pPhysUnit;
-
-} // getDrawingScenePhysUnit
-
-//------------------------------------------------------------------------------
-void CDlgPageSetup::updateDrawingSize()
-//------------------------------------------------------------------------------
-{
-    //double fPaperWidth_mm         = m_pEdtPaperWidth->text().toDouble();
-    //double fPaperHeight_mm        = m_pEdtPaperHeight->text().toDouble();
-    //double fPaperMarginLeft_mm    = m_pEdtPaperMarginLeft->text().toDouble();
-    //double fPaperMarginRight_mm   = m_pEdtPaperMarginRight->text().toDouble();
-    //double fPaperMarginTop_mm     = m_pEdtPaperMarginTop->text().toDouble();
-    //double fPaperMarginBottom_mm  = m_pEdtPaperMarginBottom->text().toDouble();
-    //double fDrawingWidth_mm       = fPaperWidth_mm - fPaperMarginLeft_mm - fPaperMarginRight_mm;
-    //double fDrawingHeight_mm      = fPaperHeight_mm - fPaperMarginTop_mm - fPaperMarginBottom_mm;
-    //double fDrawingXScale         = m_pEdtDrawingXScale->text().toDouble();
-    //double fDrawingYScale         = m_pEdtDrawingYScale->text().toDouble();
-
-    //CPhysVal physValDrawingWidth  = CPhysVal( fDrawingWidth_mm / fDrawingXScale, Geometry::Length().MilliMeter() );
-    //CPhysVal physValDrawingHeight = CPhysVal( fDrawingHeight_mm / fDrawingYScale, Geometry::Length().MilliMeter() );
-
-    //if( *getDrawingScenePhysSize() == Geometry::GraphDevice() )
-    //{
-    //    //double fDrawingWidth_pix  = m_pDrawingView->getDrawingScene()->getXInPixels(physValDrawingWidth);
-    //    //double fDrawingHeight_pix = m_pDrawingView->getDrawingScene()->getYInPixels(physValDrawingHeight);
-
-    //    //physValDrawingWidth  = CPhysVal( fDrawingWidth_pix, Geometry::GraphDevice().Pixel() );
-    //    //physValDrawingHeight = CPhysVal( fDrawingHeight_pix, Geometry::GraphDevice().Pixel() );
-    //}
-
-    //QString strUnit, strLbl;
-
-    //strUnit = physValDrawingWidth.getPhysUnit()->getSymbol();
-    //strLbl  = "Width [" + strUnit + "]";
-    //m_pLblDrawingSizeWidth->setText(strLbl);
-    //m_pEdtDrawingSizeWidth->setText(QString::number(physValDrawingWidth.getVal()));
-
-    //strUnit = physValDrawingHeight.getPhysUnit()->getSymbol();
-    //strLbl  = "Height [" + strUnit + "]";
-    //m_pLblDrawingSizeHeight->setText(strLbl);
-    //m_pEdtDrawingSizeHeight->setText(QString::number(physValDrawingHeight.getVal()));
-
-} // updateDrawingSize

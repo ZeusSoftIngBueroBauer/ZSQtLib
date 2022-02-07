@@ -26,7 +26,6 @@ may result in using the software modules.
 
 #include "App.h"
 
-#include "ZSPhysSizes/Geometry/ZSPhysSizes.h"
 #include "ZSSys/ZSSysTrcServer.h"
 #include "ZSSys/ZSSysVersion.h"
 
@@ -76,8 +75,6 @@ Libraries depending on build configuration and used Qt version
 #pragma comment(lib, ZSPHYSVALLIB)
 #pragma message(__FILE__ ": Linking against = " ZSPHYSVALGUILIB)
 #pragma comment(lib, ZSPHYSVALGUILIB)
-#pragma message(__FILE__ ": Linking against = " ZSPHYSSIZESGEOMETRYLIB)
-#pragma comment(lib, ZSPHYSSIZESGEOMETRYLIB)
 #pragma message(__FILE__ ": Linking against = " ZSDRAWLIB)
 #pragma comment(lib, ZSDRAWLIB)
 
@@ -95,13 +92,6 @@ int main( int argc, char* argv[] )
 //------------------------------------------------------------------------------
 {
     int iAppResult = 0;
-
-    // Initialize static objects of dlls (where necessary)
-    //----------------------------------------------------
-
-    ZS::PhysVal::createUnitsPool();
-
-    ZS::PhysVal::Geometry::createPhysSizes();
 
     // Create and start application
     //-----------------------------
@@ -160,13 +150,6 @@ int main( int argc, char* argv[] )
     //    }
     //    pTrcServer = nullptr;
     //}
-
-    // Remove static objects of dlls (where necessary)
-    //------------------------------------------------
-
-    ZS::PhysVal::Geometry::deletePhysSizes();
-
-    ZS::PhysVal::deleteUnitsPool();
 
     delete pApp;
     pApp = nullptr;

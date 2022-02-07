@@ -42,7 +42,7 @@ class ZSPHYSSIZESGEOMETRYDLL_API CPhysSizeLength : public CPhysSize
 //******************************************************************************
 {
 public: // ctors and dtor
-    CPhysSizeLength();
+    CPhysSizeLength( CUnitsPool* i_pUnitsPool );
     ~CPhysSizeLength();
 public: // instance methods
     //CPhysUnit* YoktoMeter();

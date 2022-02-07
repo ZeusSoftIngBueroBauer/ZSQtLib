@@ -56,7 +56,7 @@ CUnitRatio::CUnitRatio(
         /* fLogFactor     */ 1.0,
         /* strName        */ i_strName,
         /* strSymbol      */ i_strSymbol,
-        /* strKey         */ i_pUnitGrp->getKey() + CUnitsPool::GetNameSeparator() + i_strSymbol ),
+        /* strKey         */ i_pUnitGrp->getKey() + i_pUnitGrp->getNameSeparator() + i_strSymbol ),
     m_fFactor(i_fFactor)
 {
 } // ctor
@@ -136,14 +136,15 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CUnitGrpRatio::CUnitGrpRatio() :
+CUnitGrpRatio::CUnitGrpRatio( CUnitsPool* i_pUnitsPool ) :
 //------------------------------------------------------------------------------
     CUnitGrp(
+        /* pUnitsPool       */ i_pUnitsPool,
         /* type             */ EUnitClassTypeRatios,
         /* strName          */ "Ratio",
         /* strKey           */ "Ratio",
         /* bIsNameSpaceNode */ false,
-        /* pUnitGrpParent   */ CUnitsPool::GetUnitClassTypeGroup(EUnitClassTypeRatios) ),
+        /* pUnitGrpParent   */ i_pUnitsPool == nullptr ? nullptr : i_pUnitsPool->getUnitClassTypeGroup(EUnitClassTypeRatios) ),
     m_unitRatioPerOne(
         /* pUnitGrp  */ this,
         /* strName   */ "Per One",

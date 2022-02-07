@@ -150,9 +150,10 @@ ZSPHYSVALDLL_API EFormatResult parseValStr(
     bool*          o_pbResOk,
     double*        o_pfResVal,
     CUnitGrp**     io_ppUnitGrpRes,
-    CUnit**        io_ppUnitRes );
+    CUnit**        io_ppUnitRes,
+    CUnitsPool*    i_pUnitsPool );
 
-ZSPHYSVALDLL_API EFormatResult getSubStrings( const QString& i_strVal, QString* io_arSubStr/*[ESubStrCount]*/ );
+ZSPHYSVALDLL_API EFormatResult getSubStrings( const QString& i_strVal, QString* io_arSubStr/*[ESubStrCount]*/, CUnitsPool* i_pUnitsPool );
 
 //******************************************************************************
 struct ZSPHYSVALDLL_API SValueFormatProvider

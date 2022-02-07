@@ -44,6 +44,7 @@ class ZSPHYSVALDLL_API CPhysSize : public CUnitGrp
 {
 public: // ctors and dtor
     CPhysSize(
+        CUnitsPool*       i_pUnitsPool,
         EPhysScienceField i_scienceField,
         const QString&    i_strName,           // e.g. "Time", "Length", "Power", "Voltage", ...
         const QString&    i_strSIUnitName,     // e.g. "Second" for Time, "Meter" for Length, "Watt" for el. Power, "Volt" for el. Voltage, ...

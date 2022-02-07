@@ -1,7 +1,5 @@
 @page _PAGE_BasicConcepts Basic Concepts
 
-In File BasicConcepts.md: Basic Concepts
-
 - @subpage _PAGE_BasicConcepts_CodingGuidelines
 - @subpage _PAGE_BasicConcepts_Enumerations
 - @subpage _PAGE_BasicConcepts_ErrorHandling

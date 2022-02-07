@@ -42,7 +42,7 @@ class ZSPHYSSIZESKINEMATICSDLL_API CPhysSizeBitRate : public CPhysSize
 //******************************************************************************
 {
 public: // ctors and dtor
-    CPhysSizeBitRate();
+    CPhysSizeBitRate( CUnitsPool* i_pUnitsPool );
     ~CPhysSizeBitRate();
 public: // instance methods
     CPhysUnit* BitsPerSec() { return &m_physUnitBitsPerSec; }

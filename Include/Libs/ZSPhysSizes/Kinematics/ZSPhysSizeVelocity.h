@@ -42,7 +42,7 @@ class ZSPHYSSIZESKINEMATICSDLL_API CPhysSizeVelocity : public CPhysSize
 //******************************************************************************
 {
 public: // ctors and dtor
-    CPhysSizeVelocity();
+    CPhysSizeVelocity( CUnitsPool* i_pUnitsPool );
     ~CPhysSizeVelocity();
 public: // instance methods
     CPhysUnit* MetersPerSecond() { return &m_physUnitMetersPerSecond; }

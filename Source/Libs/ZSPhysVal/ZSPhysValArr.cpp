@@ -769,17 +769,9 @@ void CPhysValArr::setUnit( CUnit* i_pUnit )
     {
         m_pUnitGrp = nullptr;
     }
-    else if( m_pUnit->classType() == EUnitClassTypeRatios )
+    else
     {
-        m_pUnitGrp = Ratio();
-    }
-    else if( m_pUnit->classType() == EUnitClassTypeDataQuantity )
-    {
-        m_pUnitGrp = DataQuantity();
-    }
-    else if( m_pUnit->classType() == EUnitClassTypePhysScienceFields )
-    {
-        m_pUnitGrp = dynamic_cast<CPhysUnit*>(m_pUnit)->getPhysSize();
+        m_pUnitGrp = m_pUnit->getUnitGroup();
     }
 
     if( m_pUnitGrp != pUnitGrp )

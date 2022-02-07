@@ -869,6 +869,8 @@
     <ClCompile Include="..\..\..\Source\Libs\ZSDraw\ZSDrawObjFactoryPolyline.cpp" />
     <ClCompile Include="..\..\..\Source\Libs\ZSDraw\ZSDrawObjFactoryRect.cpp" />
     <ClCompile Include="..\..\..\Source\Libs\ZSDraw\ZSDrawObjFactoryText.cpp" />
+    <ClCompile Include="..\..\..\Source\Libs\ZSDraw\ZSDrawPageSetup.cpp" />
+    <ClCompile Include="..\..\..\Source\Libs\ZSDraw\ZSDrawPhysSizeGeometry.cpp" />
     <ClCompile Include="..\..\..\Source\Libs\ZSDraw\ZSDrawSettings.cpp" />
     <ClCompile Include="..\..\..\Source\Libs\ZSDraw\ZSDrawWdgtFormatGraphObjs.cpp" />
     <ClCompile Include="..\..\..\Source\Libs\ZSDraw\ZSDrawWdgtFormatGraphObjsFillStyle.cpp" />
@@ -4276,6 +4278,8 @@
     <ClInclude Include="..\..\..\Include\Libs\ZSDraw\ZSDrawObjFactoryPolyline.h" />
     <ClInclude Include="..\..\..\Include\Libs\ZSDraw\ZSDrawObjFactoryRect.h" />
     <ClInclude Include="..\..\..\Include\Libs\ZSDraw\ZSDrawObjFactoryText.h" />
+    <ClInclude Include="..\..\..\Include\Libs\ZSDraw\ZSDrawPageSetup.h" />
+    <ClInclude Include="..\..\..\Include\Libs\ZSDraw\ZSDrawPhysSizeGeometry.h" />
     <ClInclude Include="..\..\..\Include\Libs\ZSDraw\ZSDrawSettings.h" />
     <CustomBuild Include="..\..\..\Include\Libs\ZSDraw\ZSDrawWdgtFormatGraphObjs.h">
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|Win32'">$(QTDIR_MSVC2015_Win32)\bin\moc %(FullPath) -o ..\..\..\Tmp\Moc\Libs\$(ProjectName)\$(Configuration)\$(Platform)\moc_%(Filename).cpp</Message>

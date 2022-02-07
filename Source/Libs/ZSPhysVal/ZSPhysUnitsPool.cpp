@@ -47,290 +47,111 @@ class CUnitsPools
 protected: // class members
 ==============================================================================*/
 
-CUnitsPool* CUnitsPool::s_pInstance = nullptr;
+QHash<QString, CUnitsPool*> CUnitsPool::s_hshpInstances;
 
 /*==============================================================================
 public: // class methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-QChar CUnitsPool::GetNameSeparator()
+CUnitsPool* CUnitsPool::GetInstance( const QString& i_strName )
 //------------------------------------------------------------------------------
 {
-    if( s_pInstance == nullptr )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSingletonClassNotInstantiated );
-    }
-    return s_pInstance->m_cNameSeparator;
+    return s_hshpInstances.value(i_strName, nullptr);
 }
 
 //------------------------------------------------------------------------------
-void CUnitsPool::SetNameSeparator( QChar i_cSeparator )
+/*! Creates a unit pool with the given name if an instance with the given
+    name is not already existing.
+
+    If an instance with the given name is already existing the reference to
+    the existing instance is returned and a reference counter is incremented.
+
+    \param i_strName [in] Name of the unit pool (default "ZSPhysSizes")
+
+    \return Pointer to unit pool instance.
+*/
+CUnitsPool* CUnitsPool::CreateInstance( const QString& i_strName )
 //------------------------------------------------------------------------------
 {
-    if( s_pInstance == nullptr )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSingletonClassNotInstantiated );
-    }
-    s_pInstance->m_cNameSeparator = i_cSeparator;
-}
+    CUnitsPool* pUnitsPool = s_hshpInstances.value(i_strName, nullptr);
 
-/*==============================================================================
-public: // class methods
-==============================================================================*/
+    if( pUnitsPool == NULL )
+    {
+        pUnitsPool = new CUnitsPool(i_strName);
+    }
+
+    pUnitsPool->incrementRefCount();
+
+    return pUnitsPool;
+
+} // CreateInstance
 
 //------------------------------------------------------------------------------
-CUnitGrp* CUnitsPool::GetUnitClassTypeGroup( EUnitClassType i_classType )
+void CUnitsPool::ReleaseInstance( const QString& i_strName )
 //------------------------------------------------------------------------------
 {
-    if( s_pInstance == nullptr )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSingletonClassNotInstantiated );
-    }
-    return s_pInstance->m_arpUnitGrpClassTypes[i_classType];
-}
+    CUnitsPool* pUnitsPool = s_hshpInstances.value(i_strName, nullptr);
 
-//------------------------------------------------------------------------------
-CUnitGrp* CUnitsPool::GetPhysScienceFieldUnitGroup( EPhysScienceField i_scienceField )
-//------------------------------------------------------------------------------
-{
-    if( s_pInstance == nullptr )
+    if( pUnitsPool == nullptr )
     {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSingletonClassNotInstantiated );
-    }
-    return s_pInstance->m_arpUnitGrpPhysScienceFields[i_scienceField];
-}
-
-/*==============================================================================
-public: // class methods
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-CUnitGrp* CUnitsPool::FindUnitGrp( const QString& i_strUnitGrpKey )
-//------------------------------------------------------------------------------
-{
-    if( s_pInstance == nullptr )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSingletonClassNotInstantiated );
+        throw CException(__FILE__, __LINE__, EResultObjNotInList, "CUnitsPool::" + i_strName);
     }
 
-    CUnitGrp* pUnitGrp = nullptr;
+    int iRefCount = pUnitsPool->decrementRefCount();
 
-    if( s_pInstance->m_hshpUnitGrps.contains(i_strUnitGrpKey) )
+    if( iRefCount == 0 )
     {
-        pUnitGrp = s_pInstance->m_hshpUnitGrps[i_strUnitGrpKey];
-    }
-    return pUnitGrp;
+        s_hshpInstances.remove(i_strName);
 
-} // findUnitGrp
-
-//------------------------------------------------------------------------------
-CPhysSize* CUnitsPool::FindPhysSize( const QString& i_strUnitGrpKey )
-//------------------------------------------------------------------------------
-{
-    if( s_pInstance == nullptr )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSingletonClassNotInstantiated );
-    }
-
-    CPhysSize* pPhysSize = nullptr;
-
-    if( s_pInstance->m_hshpUnitGrps.contains(i_strUnitGrpKey) )
-    {
-        CUnitGrp* pUnitGrp = s_pInstance->m_hshpUnitGrps[i_strUnitGrpKey];
-
-        if( pUnitGrp->classType() == EUnitClassTypePhysScienceFields )
+        try
         {
-            pPhysSize = dynamic_cast<CPhysSize*>(pUnitGrp);
+            delete pUnitsPool;
         }
-    }
-    return pPhysSize;
-
-} // findPhysSize
-
-/*==============================================================================
-public: // class methods
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-CUnit* CUnitsPool::FindUnit( const QString& i_strUnitKey )
-//------------------------------------------------------------------------------
-{
-    if( s_pInstance == nullptr )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSingletonClassNotInstantiated );
-    }
-
-    CUnit* pUnit = nullptr;
-
-    if( s_pInstance->m_hshpUnits.contains(i_strUnitKey) )
-    {
-        pUnit = s_pInstance->m_hshpUnits[i_strUnitKey];
-    }
-    return pUnit;
-
-} // findUnit
-
-//------------------------------------------------------------------------------
-CUnit* CUnitsPool::FindUnit( const QString& i_strUnitGrpKey, const QString& i_strUnitKey )
-//------------------------------------------------------------------------------
-{
-    if( s_pInstance == nullptr )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSingletonClassNotInstantiated );
-    }
-
-    CUnit*  pUnit = nullptr;
-    QString strUnitKey = i_strUnitGrpKey;
-
-    if( !strUnitKey.isEmpty() )
-    {
-        strUnitKey += s_pInstance->m_cNameSeparator;
-    }
-    strUnitKey += i_strUnitKey;
-
-    if( s_pInstance->m_hshpUnits.contains(strUnitKey) )
-    {
-        pUnit = s_pInstance->m_hshpUnits[strUnitKey];
-    }
-    else // if( !s_pInstance->m_hshpUnits.contains(strUnitKey) )
-    {
-        CUnitGrp* pUnitGrp = FindUnitGrp(i_strUnitGrpKey);
-
-        if( pUnitGrp != nullptr && pUnitGrp->isNameSpaceNode() )
+        catch(...)
         {
-            CUnitGrp* pUnitGrpChild;
-            int       idxUnitGrpChild;
-            QString   strUnitGrpKeyChild;
-
-            for( idxUnitGrpChild = 0; idxUnitGrpChild < pUnitGrp->getChildUnitGrpCount(); idxUnitGrpChild++ )
-            {
-                pUnitGrpChild = pUnitGrp->getChildUnitGrp(idxUnitGrpChild);
-
-                strUnitGrpKeyChild = pUnitGrpChild->getKey();
-
-                strUnitKey = strUnitGrpKeyChild + s_pInstance->m_cNameSeparator + i_strUnitKey;
-
-                if( s_pInstance->m_hshpUnits.contains(strUnitKey) )
-                {
-                    pUnit = s_pInstance->m_hshpUnits[strUnitKey];
-                    break;
-                }
-            }
-        } // if( pUnitGrp != nullptr && pUnitGrp->isNameSpaceNode() )
-    } // if( !s_pInstance->m_hshpUnits.contains(strUnitKey) )
-
-    return pUnit;
-
-} // findUnit
-
-//------------------------------------------------------------------------------
-CPhysUnit* CUnitsPool::FindPhysUnit( const QString& i_strUnitKey )
-//------------------------------------------------------------------------------
-{
-    if( s_pInstance == nullptr )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSingletonClassNotInstantiated );
-    }
-
-    CPhysUnit* pPhysUnit = nullptr;
-
-    if( s_pInstance->m_hshpUnits.contains(i_strUnitKey) )
-    {
-        CUnit* pUnit = s_pInstance->m_hshpUnits[i_strUnitKey];
-
-        if( pUnit->classType() == EUnitClassTypePhysScienceFields )
-        {
-            pPhysUnit = dynamic_cast<CPhysUnit*>(pUnit);
         }
+        pUnitsPool = nullptr;
     }
-    return pPhysUnit;
-
-} // findPhysUnit
+} // ReleaseInstance
 
 //------------------------------------------------------------------------------
-CPhysUnit* CUnitsPool::FindPhysUnit( const QString& i_strUnitGrpKey, const QString& i_strUnitKey )
+void CUnitsPool::ReleaseInstance( CUnitsPool* i_pUnitsPool )
 //------------------------------------------------------------------------------
 {
-    if( s_pInstance == nullptr )
+    QString strName = i_pUnitsPool->name();
+
+    if( !s_hshpInstances.contains(strName) )
     {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSingletonClassNotInstantiated );
+        throw CException(__FILE__, __LINE__, EResultObjNotInList, "CUnitsPool::" + strName);
     }
 
-    CPhysUnit* pPhysUnit = nullptr;
-    QString    strUnitKey = i_strUnitGrpKey;
+    int iRefCount = i_pUnitsPool->decrementRefCount();
 
-    if( !strUnitKey.isEmpty() )
+    if( iRefCount == 0 )
     {
-        strUnitKey += s_pInstance->m_cNameSeparator;
+        s_hshpInstances.remove(strName);
+
+        delete i_pUnitsPool;
+        i_pUnitsPool = nullptr;
     }
-    strUnitKey += i_strUnitKey;
-
-    if( s_pInstance->m_hshpUnits.contains(strUnitKey) )
-    {
-        CUnit* pUnit = s_pInstance->m_hshpUnits[strUnitKey];
-
-        if( pUnit->classType() == EUnitClassTypePhysScienceFields )
-        {
-            pPhysUnit = dynamic_cast<CPhysUnit*>(pUnit);
-        }
-    }
-    else // if( !s_pInstance->m_hshpUnits.contains(strUnitKey) )
-    {
-        CUnitGrp* pUnitGrp = FindUnitGrp(i_strUnitGrpKey);
-
-        if( pUnitGrp != nullptr && pUnitGrp->isNameSpaceNode() )
-        {
-            CUnitGrp* pUnitGrpChild;
-            int       idxUnitGrpChild;
-            QString   strUnitGrpKeyChild;
-            CUnit*    pUnit;
-
-            for( idxUnitGrpChild = 0; idxUnitGrpChild < pUnitGrp->getChildUnitGrpCount(); idxUnitGrpChild++ )
-            {
-                pUnitGrpChild = pUnitGrp->getChildUnitGrp(idxUnitGrpChild);
-
-                strUnitGrpKeyChild = pUnitGrpChild->getKey();
-
-                strUnitKey = strUnitGrpKeyChild + s_pInstance->m_cNameSeparator + i_strUnitKey;
-
-                if( s_pInstance->m_hshpUnits.contains(strUnitKey) )
-                {
-                    pUnit = s_pInstance->m_hshpUnits[strUnitKey];
-
-                    if( pUnit->classType() == EUnitClassTypePhysScienceFields )
-                    {
-                        pPhysUnit = dynamic_cast<CPhysUnit*>(pUnit);
-                        break;
-                    }
-                }
-            }
-        } // if( pUnitGrp != nullptr && pUnitGrp == m_arpUnitGrpClassTypes[EUnitClassTypePhysScienceFields] )
-    } // if( !s_pInstance->m_hshpUnits.contains(strUnitKey) )
-
-    return pPhysUnit;
-
-} // findPhysUnit
+} // ReleaseInstance
 
 /*==============================================================================
 public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CUnitsPool::CUnitsPool() :
+CUnitsPool::CUnitsPool( const QString& i_strName ) :
 //------------------------------------------------------------------------------
+    m_strName(i_strName),
     m_cNameSeparator('.'),
     m_hshpUnitGrps(),
-    m_hshpUnits()
+    m_hshpUnits(),
     //m_arpUnitGrpClassTypes[EUnitClassTypeCount]
     //m_arpUnitGrpPhysScienceFields[EPhysScienceFieldCount]
+    m_iRefCount(0)
 {
-    if( s_pInstance != nullptr )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSingletonClassAlreadyInstantiated );
-    }
-    s_pInstance = this;
-
     memset( m_arpUnitGrpClassTypes, 0x00, sizeof(m_arpUnitGrpClassTypes) );
     memset( m_arpUnitGrpPhysScienceFields, 0x00, sizeof(m_arpUnitGrpPhysScienceFields) );
 
@@ -345,15 +166,16 @@ CUnitsPool::CUnitsPool() :
 
         if( classType == EUnitClassTypeRatios )
         {
-            m_arpUnitGrpClassTypes[idxClassType] = new CUnitGrpRatio();
+            m_arpUnitGrpClassTypes[idxClassType] = new CUnitGrpRatio(this);
         }
         else if( classType == EUnitClassTypeDataQuantity )
         {
-            m_arpUnitGrpClassTypes[idxClassType] = new CUnitGrpDataQuantity();
+            m_arpUnitGrpClassTypes[idxClassType] = new CUnitGrpDataQuantity(this);
         }
         else if( classType == EUnitClassTypePhysScienceFields )
         {
             m_arpUnitGrpClassTypes[idxClassType] = new CUnitGrp(
+                /* pUnitsPool       */ this,
                 /* classType        */ classType,
                 /* strName          */ unitClassType2Str(classType),
                 /* strKey           */ unitClassType2Str(classType),
@@ -365,6 +187,7 @@ CUnitsPool::CUnitsPool() :
                 scienceField = static_cast<EPhysScienceField>(idxScienceField);
 
                 m_arpUnitGrpPhysScienceFields[idxScienceField] = new CUnitGrp(
+                    /* pUnitsPool       */ this,
                     /* classType        */ classType,
                     /* strName          */ physScienceField2Str(scienceField),
                     /* strKey           */ physScienceField2Str(scienceField),
@@ -375,6 +198,7 @@ CUnitsPool::CUnitsPool() :
         else // if( classType == EUnitClassTypeUserDefinedQuantities )
         {
             m_arpUnitGrpClassTypes[idxClassType] = new CUnitGrp(
+                /* pUnitsPool       */ this,
                 /* classType        */ classType,
                 /* strName          */ unitClassType2Str(classType),
                 /* strKey           */ unitClassType2Str(classType),
@@ -422,9 +246,233 @@ CUnitsPool::~CUnitsPool()
         m_arpUnitGrpClassTypes[classType] = nullptr;
     }
 
-    s_pInstance = nullptr;
+    //m_strName;
+    //m_strName;
+    //m_cNameSeparator;
+    //m_hshpUnitGrps;
+    //m_hshpUnits;
+    //m_arpUnitGrpClassTypes[EUnitClassTypeCount];
+    //m_arpUnitGrpPhysScienceFields[EPhysScienceFieldCount];
+    m_iRefCount = 0;
 
 } // dtor
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+QChar CUnitsPool::getNameSeparator() const
+//------------------------------------------------------------------------------
+{
+    return m_cNameSeparator;
+}
+
+//------------------------------------------------------------------------------
+void CUnitsPool::setNameSeparator( QChar i_cSeparator )
+//------------------------------------------------------------------------------
+{
+    m_cNameSeparator = i_cSeparator;
+}
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+CUnitGrp* CUnitsPool::getUnitClassTypeGroup( EUnitClassType i_classType )
+//------------------------------------------------------------------------------
+{
+    return m_arpUnitGrpClassTypes[i_classType];
+}
+
+//------------------------------------------------------------------------------
+CUnitGrp* CUnitsPool::getPhysScienceFieldUnitGroup( EPhysScienceField i_scienceField )
+//------------------------------------------------------------------------------
+{
+    return m_arpUnitGrpPhysScienceFields[i_scienceField];
+}
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+CUnitGrp* CUnitsPool::findUnitGrp( const QString& i_strUnitGrpKey )
+//------------------------------------------------------------------------------
+{
+    CUnitGrp* pUnitGrp = nullptr;
+
+    if( m_hshpUnitGrps.contains(i_strUnitGrpKey) )
+    {
+        pUnitGrp = m_hshpUnitGrps[i_strUnitGrpKey];
+    }
+    return pUnitGrp;
+
+} // findUnitGrp
+
+//------------------------------------------------------------------------------
+CPhysSize* CUnitsPool::findPhysSize( const QString& i_strUnitGrpKey )
+//------------------------------------------------------------------------------
+{
+    CPhysSize* pPhysSize = nullptr;
+
+    if( m_hshpUnitGrps.contains(i_strUnitGrpKey) )
+    {
+        CUnitGrp* pUnitGrp = m_hshpUnitGrps[i_strUnitGrpKey];
+
+        if( pUnitGrp->classType() == EUnitClassTypePhysScienceFields )
+        {
+            pPhysSize = dynamic_cast<CPhysSize*>(pUnitGrp);
+        }
+    }
+    return pPhysSize;
+
+} // findPhysSize
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+CUnit* CUnitsPool::findUnit( const QString& i_strUnitKey )
+//------------------------------------------------------------------------------
+{
+    CUnit* pUnit = nullptr;
+
+    if( m_hshpUnits.contains(i_strUnitKey) )
+    {
+        pUnit = m_hshpUnits[i_strUnitKey];
+    }
+    return pUnit;
+
+} // findUnit
+
+//------------------------------------------------------------------------------
+CUnit* CUnitsPool::findUnit( const QString& i_strUnitGrpKey, const QString& i_strUnitKey )
+//------------------------------------------------------------------------------
+{
+    CUnit*  pUnit = nullptr;
+    QString strUnitKey = i_strUnitGrpKey;
+
+    if( !strUnitKey.isEmpty() )
+    {
+        strUnitKey += m_cNameSeparator;
+    }
+    strUnitKey += i_strUnitKey;
+
+    if( m_hshpUnits.contains(strUnitKey) )
+    {
+        pUnit = m_hshpUnits[strUnitKey];
+    }
+    else // if( !m_hshpUnits.contains(strUnitKey) )
+    {
+        CUnitGrp* pUnitGrp = findUnitGrp(i_strUnitGrpKey);
+
+        if( pUnitGrp != nullptr && pUnitGrp->isNameSpaceNode() )
+        {
+            CUnitGrp* pUnitGrpChild;
+            int       idxUnitGrpChild;
+            QString   strUnitGrpKeyChild;
+
+            for( idxUnitGrpChild = 0; idxUnitGrpChild < pUnitGrp->getChildUnitGrpCount(); idxUnitGrpChild++ )
+            {
+                pUnitGrpChild = pUnitGrp->getChildUnitGrp(idxUnitGrpChild);
+
+                strUnitGrpKeyChild = pUnitGrpChild->getKey();
+
+                strUnitKey = strUnitGrpKeyChild + m_cNameSeparator + i_strUnitKey;
+
+                if( m_hshpUnits.contains(strUnitKey) )
+                {
+                    pUnit = m_hshpUnits[strUnitKey];
+                    break;
+                }
+            }
+        } // if( pUnitGrp != nullptr && pUnitGrp->isNameSpaceNode() )
+    } // if( !m_hshpUnits.contains(strUnitKey) )
+
+    return pUnit;
+
+} // findUnit
+
+//------------------------------------------------------------------------------
+CPhysUnit* CUnitsPool::findPhysUnit( const QString& i_strUnitKey )
+//------------------------------------------------------------------------------
+{
+    CPhysUnit* pPhysUnit = nullptr;
+
+    if( m_hshpUnits.contains(i_strUnitKey) )
+    {
+        CUnit* pUnit = m_hshpUnits[i_strUnitKey];
+
+        if( pUnit->classType() == EUnitClassTypePhysScienceFields )
+        {
+            pPhysUnit = dynamic_cast<CPhysUnit*>(pUnit);
+        }
+    }
+    return pPhysUnit;
+
+} // findPhysUnit
+
+//------------------------------------------------------------------------------
+CPhysUnit* CUnitsPool::findPhysUnit( const QString& i_strUnitGrpKey, const QString& i_strUnitKey )
+//------------------------------------------------------------------------------
+{
+    CPhysUnit* pPhysUnit = nullptr;
+    QString    strUnitKey = i_strUnitGrpKey;
+
+    if( !strUnitKey.isEmpty() )
+    {
+        strUnitKey += m_cNameSeparator;
+    }
+    strUnitKey += i_strUnitKey;
+
+    if( m_hshpUnits.contains(strUnitKey) )
+    {
+        CUnit* pUnit = m_hshpUnits[strUnitKey];
+
+        if( pUnit->classType() == EUnitClassTypePhysScienceFields )
+        {
+            pPhysUnit = dynamic_cast<CPhysUnit*>(pUnit);
+        }
+    }
+    else // if( !m_hshpUnits.contains(strUnitKey) )
+    {
+        CUnitGrp* pUnitGrp = findUnitGrp(i_strUnitGrpKey);
+
+        if( pUnitGrp != nullptr && pUnitGrp->isNameSpaceNode() )
+        {
+            CUnitGrp* pUnitGrpChild;
+            int       idxUnitGrpChild;
+            QString   strUnitGrpKeyChild;
+            CUnit*    pUnit;
+
+            for( idxUnitGrpChild = 0; idxUnitGrpChild < pUnitGrp->getChildUnitGrpCount(); idxUnitGrpChild++ )
+            {
+                pUnitGrpChild = pUnitGrp->getChildUnitGrp(idxUnitGrpChild);
+
+                strUnitGrpKeyChild = pUnitGrpChild->getKey();
+
+                strUnitKey = strUnitGrpKeyChild + m_cNameSeparator + i_strUnitKey;
+
+                if( m_hshpUnits.contains(strUnitKey) )
+                {
+                    pUnit = m_hshpUnits[strUnitKey];
+
+                    if( pUnit->classType() == EUnitClassTypePhysScienceFields )
+                    {
+                        pPhysUnit = dynamic_cast<CPhysUnit*>(pUnit);
+                        break;
+                    }
+                }
+            }
+        } // if( pUnitGrp != nullptr && pUnitGrp == m_arpUnitGrpClassTypes[EUnitClassTypePhysScienceFields] )
+    } // if( !m_hshpUnits.contains(strUnitKey) )
+
+    return pPhysUnit;
+
+} // findPhysUnit
 
 /*==============================================================================
 protected: // instance methods
@@ -490,3 +538,41 @@ void CUnitsPool::onUnitDestroyed( const QString& i_strUnitKey )
 
 } // onUnitDestroyed
 
+//------------------------------------------------------------------------------
+/*! Returns the number of active references to this instance.
+    If the count reaches 0 the instance has to be deleted.
+
+    /return Number of active references.
+*/
+//------------------------------------------------------------------------------
+int CUnitsPool::getRefCount() const
+{
+    return m_iRefCount;
+}
+
+//------------------------------------------------------------------------------
+/*! Increments the number of active reference to this instance.
+
+    /return Number of active references after increment.
+*/
+//------------------------------------------------------------------------------
+int CUnitsPool::incrementRefCount()
+{
+    return ++m_iRefCount;
+}
+
+//------------------------------------------------------------------------------
+/*! Decrements the number of active reference to this instance.
+    If the count reaches 0 the instance has to be deleted.
+
+    /return Number of active references after decrement.
+*/
+//------------------------------------------------------------------------------
+int CUnitsPool::decrementRefCount()
+{
+    if( m_iRefCount <= 0)
+    {
+        throw CException(__FILE__, __LINE__, EResultObjRefCounterIsZero, "CUnitsPool::" + name());
+    }
+    return --m_iRefCount;
+}

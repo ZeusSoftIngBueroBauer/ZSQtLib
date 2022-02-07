@@ -42,7 +42,7 @@ class ZSPHYSSIZESKINEMATICSDLL_API CPhysSizeTime : public CPhysSize
 //******************************************************************************
 {
 public: // ctors and dtor
-    CPhysSizeTime();
+    CPhysSizeTime( CUnitsPool* i_pUnitsPool );
     ~CPhysSizeTime();
 public: // instance methods
     CPhysUnit* NanoSeconds() { return &m_physUnitNanoSeconds; }

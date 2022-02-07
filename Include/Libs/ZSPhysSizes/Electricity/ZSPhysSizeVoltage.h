@@ -45,7 +45,7 @@ class ZSPHYSSIZESELECTRICITYDLL_API CPhysSizeVoltage : public CPhysSize
 //******************************************************************************
 {
 public: // ctors and dtor
-    CPhysSizeVoltage();
+    CPhysSizeVoltage( CUnitsPool* i_pUnitsPool );
     ~CPhysSizeVoltage();
 public: // instance methods
     //CPhysUnit* YoktoVolt();

@@ -45,7 +45,7 @@ class ZSPHYSSIZESELECTRICITYDLL_API CPhysSizeCurrent : public CPhysSize
 //******************************************************************************
 {
 public: // ctors and dtor
-    CPhysSizeCurrent();
+    CPhysSizeCurrent( CUnitsPool* i_pUnitsPool );
     ~CPhysSizeCurrent();
 public: // instance methods
     //CPhysUnit* YoktoAmpere();

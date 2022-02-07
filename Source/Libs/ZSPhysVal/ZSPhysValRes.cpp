@@ -138,7 +138,7 @@ CPhysValRes::CPhysValRes( CUnitRatio* i_pUnitRatio, EResType i_resType ) :
 //------------------------------------------------------------------------------
     m_resType(i_resType),
     m_fVal(0.0),
-    m_pUnitGrp(Ratio()),
+    m_pUnitGrp(i_pUnitRatio->getUnitGroup()),
     m_pUnit(i_pUnitRatio),
     m_strUnitGrpKey(),
     m_strUnitKey()
@@ -159,7 +159,7 @@ CPhysValRes::CPhysValRes( CUnitDataQuantity* i_pUnitDataQuantity, EResType i_res
 //------------------------------------------------------------------------------
     m_resType(i_resType),
     m_fVal(0.0),
-    m_pUnitGrp(DataQuantity()),
+    m_pUnitGrp(i_pUnitDataQuantity->getUnitGroup()),
     m_pUnit(i_pUnitDataQuantity),
     m_strUnitGrpKey(),
     m_strUnitKey()
@@ -264,7 +264,7 @@ CPhysValRes::CPhysValRes( double i_fVal, CUnitRatio* i_pUnitRatio, EResType i_re
 //------------------------------------------------------------------------------
     m_resType(i_resType),
     m_fVal(i_fVal),
-    m_pUnitGrp(Ratio()),
+    m_pUnitGrp(i_pUnitRatio->getUnitGroup()),
     m_pUnit(i_pUnitRatio),
     m_strUnitGrpKey(),
     m_strUnitKey()
@@ -285,7 +285,7 @@ CPhysValRes::CPhysValRes( double i_fVal, CUnitDataQuantity* i_pUnitDataQuantity,
 //------------------------------------------------------------------------------
     m_resType(i_resType),
     m_fVal(i_fVal),
-    m_pUnitGrp(DataQuantity()),
+    m_pUnitGrp(i_pUnitDataQuantity->getUnitGroup()),
     m_pUnit(i_pUnitDataQuantity),
     m_strUnitGrpKey(),
     m_strUnitKey()
@@ -394,7 +394,7 @@ CPhysValRes::CPhysValRes( const QString& i_strVal, CUnitRatio* i_pUnitRatio, ERe
 //------------------------------------------------------------------------------
     m_resType(i_resType),
     m_fVal(0.0),
-    m_pUnitGrp(Ratio()),
+    m_pUnitGrp(i_pUnitRatio->getUnitGroup()),
     m_pUnit(i_pUnitRatio),
     m_strUnitGrpKey(),
     m_strUnitKey()
@@ -417,7 +417,7 @@ CPhysValRes::CPhysValRes( const QString& i_strVal, CUnitDataQuantity* i_pUnitDat
 //------------------------------------------------------------------------------
     m_resType(i_resType),
     m_fVal(0.0),
-    m_pUnitGrp(DataQuantity()),
+    m_pUnitGrp(i_pUnitDataQuantity->getUnitGroup()),
     m_pUnit(i_pUnitDataQuantity),
     m_strUnitGrpKey(),
     m_strUnitKey()
@@ -591,17 +591,9 @@ void CPhysValRes::setUnit( CUnit* i_pUnit )
     {
         m_pUnitGrp = nullptr;
     }
-    else if( m_pUnit->classType() == EUnitClassTypeRatios )
+    else
     {
-        m_pUnitGrp = Ratio();
-    }
-    else if( m_pUnit->classType() == EUnitClassTypeDataQuantity )
-    {
-        m_pUnitGrp = DataQuantity();
-    }
-    else if( m_pUnit->classType() == EUnitClassTypePhysScienceFields )
-    {
-        m_pUnitGrp = dynamic_cast<CPhysUnit*>(m_pUnit)->getPhysSize();
+        m_pUnitGrp = m_pUnit->getUnitGroup();
     }
 
     if( m_pUnitGrp != nullptr )
@@ -627,7 +619,7 @@ void CPhysValRes::setUnitRatio( CUnitRatio* i_pUnitRatio )
     }
     else
     {
-        m_pUnitGrp = Ratio();
+        m_pUnitGrp = m_pUnit->getUnitGroup();
     }
 
     if( m_pUnitGrp != nullptr )
@@ -653,7 +645,7 @@ void CPhysValRes::setUnitDataQuantity( CUnitDataQuantity* i_pUnitDataQuantity )
     }
     else
     {
-        m_pUnitGrp = DataQuantity();
+        m_pUnitGrp = m_pUnit->getUnitGroup();
     }
 
     if( m_pUnitGrp != nullptr )
@@ -821,7 +813,7 @@ EFormatResult CPhysValRes::setVal( const QString& i_strVal )
     CUnitGrp*     pUnitGrpVal = m_pUnitGrp;
     CUnit*        pUnitVal = m_pUnit;
 
-    formatResult = parseValStr(i_strVal,&bValOk,&fVal,&pUnitGrpVal,&pUnitVal,nullptr,nullptr,nullptr,nullptr);
+    formatResult = parseValStr(i_strVal, &bValOk, &fVal, &pUnitGrpVal, &pUnitVal, nullptr, nullptr, nullptr, nullptr, nullptr);
 
     if( !(formatResult & EFormatResultError) && bValOk )
     {
@@ -978,7 +970,7 @@ QString CPhysValRes::toString( EUnitFind i_unitFind, int i_iSubStrVisibility ) c
             strVal += strUnitGrp;
             if( !strUnit.isEmpty() )
             {
-                strVal += CUnitsPool::GetNameSeparator();
+                strVal += m_pUnit->getNameSeparator();
             }
         }
         if( !strUnit.isEmpty() )
@@ -1051,7 +1043,7 @@ QString CPhysValRes::toString( const CUnit* i_pUnit, int i_iSubStrVisibility ) c
             strVal += strUnitGrp;
             if( !strUnit.isEmpty() )
             {
-                strVal += CUnitsPool::GetNameSeparator();
+                strVal += i_pUnit->getNameSeparator();
             }
         }
         if( !strUnit.isEmpty() )
@@ -1061,7 +1053,7 @@ QString CPhysValRes::toString( const CUnit* i_pUnit, int i_iSubStrVisibility ) c
     }
     return strVal;
 
-} // toSring
+} // toString
 
 /*==============================================================================
 public: // operators

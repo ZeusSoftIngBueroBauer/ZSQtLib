@@ -1940,7 +1940,7 @@ QString CTrcServer::currentThreadName()
 } // currentThreadName
 
 //------------------------------------------------------------------------------
-/*! Returns the number of actove references to this trace server.
+/*! Returns the number of active references to this instance.
     If the count reaches 0 the instance has to be deleted.
 
     /return Number of active references.
@@ -1952,7 +1952,7 @@ int CTrcServer::getRefCount() const
 }
 
 //------------------------------------------------------------------------------
-/*! Increments the number of active reference to this trace server.
+/*! Increments the number of active reference to this instance.
 
     /return Number of active references after increment.
 */
@@ -1963,7 +1963,7 @@ int CTrcServer::incrementRefCount()
 }
 
 //------------------------------------------------------------------------------
-/*! Decrements the number of active reference to this trace server.
+/*! Decrements the number of active reference to this instance.
     If the count reaches 0 the instance has to be deleted.
 
     /return Number of active references after decrement.

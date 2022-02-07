@@ -40,7 +40,6 @@ may result in using the software modules.
 #include "ZSDraw/ZSDrawAux.h"
 #include "ZSDraw/ZSDrawingScene.h"
 #include "ZSDraw/ZSDrawObjFactory.h"
-#include "ZSPhysSizes/Geometry/ZSPhysSizes.h"
 #include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysErrCode.h"
 #include "ZSSys/ZSSysException.h"

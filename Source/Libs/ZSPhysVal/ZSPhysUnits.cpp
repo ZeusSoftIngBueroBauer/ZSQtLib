@@ -220,7 +220,7 @@ QString CUnit::getName( bool i_bInsertParentNames ) const
     {
         if( m_pUnitGrp != nullptr )
         {
-            strName.insert( 0, CUnitsPool::GetNameSeparator() );
+            strName.insert( 0, m_pUnitGrp->getNameSeparator() );
             strName.insert( 0, m_pUnitGrp->getName(true) );
         }
     }
@@ -228,6 +228,18 @@ QString CUnit::getName( bool i_bInsertParentNames ) const
     return strName;
 
 } // getName
+
+//------------------------------------------------------------------------------
+QChar CUnit::getNameSeparator() const
+//------------------------------------------------------------------------------
+{
+    QChar cNameSeparator = '.';
+    if( m_pUnitGrp != nullptr )
+    {
+        cNameSeparator = m_pUnitGrp->getNameSeparator();
+    }
+    return cNameSeparator;
+}
 
 /*==============================================================================
 public: // operators
@@ -434,7 +446,7 @@ CPhysUnit::CPhysUnit( CPhysSize* i_pPhysSize, const QString& i_strPrefix ) :
         /* fLogFactor     */ 1.0,
         /* strName        */ getExponentStrFromPrefixStr(i_strPrefix) + i_pPhysSize->getSIUnitName(),
         /* strSymbol      */ i_strPrefix + i_pPhysSize->getSIUnitSymbol(),
-        /* strKey         */ i_pPhysSize->getKey() + CUnitsPool::GetNameSeparator() + i_strPrefix + i_pPhysSize->getSIUnitSymbol() ),
+        /* strKey         */ i_pPhysSize->getKey() + i_pPhysSize->getNameSeparator() + i_strPrefix + i_pPhysSize->getSIUnitSymbol() ),
     m_pPhysSize(i_pPhysSize),
     m_pPhysUnitSI(nullptr),
     m_strPrefix(i_strPrefix),
@@ -489,7 +501,7 @@ CPhysUnit::CPhysUnit(
         /* fLogFactor     */ 1.0,
         /* strName        */ i_strName,
         /* strSymbol      */ i_strSymbol,
-        /* strKey         */ i_pPhysSize->getKey() + CUnitsPool::GetNameSeparator() + i_strSymbol ),
+        /* strKey         */ i_pPhysSize->getKey() + i_pPhysSize->getNameSeparator() + i_strSymbol ),
     m_pPhysSize(i_pPhysSize),
     m_pPhysUnitSI(nullptr),
     m_strPrefix(""),
@@ -585,6 +597,17 @@ bool CPhysUnit::operator != ( const CPhysUnit& i_physUnitOther ) const
 //------------------------------------------------------------------------------
 {
     return !(*this == i_physUnitOther);
+}
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CPhysUnit::setFactorConvertFromSIUnit( double i_fFactor )
+//------------------------------------------------------------------------------
+{
+    m_fctConvertFromSIUnit.m_fM = i_fFactor;
 }
 
 /*==============================================================================

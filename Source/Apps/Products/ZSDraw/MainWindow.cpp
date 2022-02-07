@@ -106,7 +106,6 @@ may result in using the software modules.
 #include "ZSDraw/ZSDrawObjFactoryRect.h"
 #include "ZSDraw/ZSDrawObjFactoryText.h"
 #include "ZSPhysValGUI/ZSPhysValDlgEditPhysVal.h"
-#include "ZSPhysSizes/Geometry/ZSPhysSizes.h"
 #include "ZSIpcTraceGUI/ZSIpcTrcServerDlg.h"
 #include "ZSTestGUI/ZSTestDlg.h"
 #include "ZSSysGUI/ZSSysErrLogDlg.h"
@@ -406,85 +405,10 @@ CMainWindow::CMainWindow(
 
     createObjFactories();
 
-    // Actions
-    //--------
-
-    createActions();
-
-    // Menu
-    //-----
-
-    createMenus();
-
-    // Status bar
-    //-----------
-
-    m_pLblStatusBarDrawingSceneEditTool = new QLabel("Tool: -");
-    m_pLblStatusBarDrawingSceneEditTool->setMinimumWidth(80);
-    statusBar()->addPermanentWidget(m_pLblStatusBarDrawingSceneEditTool);
-
-    m_pLblStatusBarDrawingSceneEditMode = new QLabel("Mode: ");
-    m_pLblStatusBarDrawingSceneEditMode->setMinimumWidth(100);
-    statusBar()->addPermanentWidget(m_pLblStatusBarDrawingSceneEditMode);
-
-    m_pLblStatusBarDrawingSceneGraphObjEditInfo = new QLabel("Edit: -");
-    m_pLblStatusBarDrawingSceneGraphObjEditInfo->setMinimumWidth(120);
-    statusBar()->addPermanentWidget(m_pLblStatusBarDrawingSceneGraphObjEditInfo);
-
-    m_pLblStatusBarDrawingSceneRect = new QLabel("SceneRect: -/-, -/- [" + Geometry::GraphDevice()->Pixel()->getSymbol() + "]");
-    m_pLblStatusBarDrawingSceneRect->setMinimumWidth(160);
-    statusBar()->addPermanentWidget(m_pLblStatusBarDrawingSceneRect);
-
-    m_pLblStatusBarDrawingSceneMouseCursorPos = new QLabel( "ScenePos: -/- [" + Geometry::GraphDevice()->Pixel()->getSymbol() + "]" );
-    m_pLblStatusBarDrawingSceneMouseCursorPos->setMinimumWidth(140);
-    statusBar()->addPermanentWidget(m_pLblStatusBarDrawingSceneMouseCursorPos);
-
-    m_pLblStatusBarDrawingViewMouseCursorPos = new QLabel( "ViewPos: -/- [" + Geometry::GraphDevice()->Pixel()->getSymbol() + "]" );
-    m_pLblStatusBarDrawingViewMouseCursorPos->setMinimumWidth(140);
-    statusBar()->addPermanentWidget(m_pLblStatusBarDrawingViewMouseCursorPos);
-
-    // <Label> Errors
-    //---------------
-
-    if( CErrLog::GetInstance() != nullptr )
-    {
-        m_pLblErrors = new QLabel("Errors");
-        m_pLblErrors->installEventFilter(this);
-        statusBar()->addPermanentWidget(m_pLblErrors);
-        m_pLblErrors->hide();
-
-        updateErrorsStatus();
-
-        if( !QObject::connect(
-            /* pObjSender   */ CErrLog::GetInstance(),
-            /* szSignal     */ SIGNAL(entryAdded(const ZS::System::SErrResultInfo&)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onErrLogEntryAdded(const ZS::System::SErrResultInfo&)) ) )
-        {
-            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-        }
-        if( !QObject::connect(
-            /* pObjSender   */ CErrLog::GetInstance(),
-            /* szSignal     */ SIGNAL(entryChanged(const ZS::System::SErrResultInfo&)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onErrLogEntryChanged(const ZS::System::SErrResultInfo&)) ) )
-        {
-            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-        }
-        if( !QObject::connect(
-            /* pObjSender   */ CErrLog::GetInstance(),
-            /* szSignal     */ SIGNAL(entryRemoved(const ZS::System::SErrResultInfo&)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onErrLogEntryRemoved(const ZS::System::SErrResultInfo&)) ) )
-        {
-            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-        }
-    } // if( CErrLog::GetInstance() != nullptr )
-
     // Drawing Scene
     //---------------
 
-    // Belongs to central widget but must be created before the tool bars.
+    // Belongs to central widget but must be created before status and tool bars.
 
     m_pDrawingScene = new CDrawingScene(/*this*/);
     //m_pDrawingScene->setBackgroundBrush(Qt::blue);
@@ -545,6 +469,84 @@ CMainWindow::CMainWindow(
     {
         throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
     }
+
+    // Actions
+    //--------
+
+    createActions();
+
+    // Menu
+    //-----
+
+    createMenus();
+
+    // Status bar
+    //-----------
+
+    CPageSetup* pageSetup = m_pDrawingView->getPageSetup();
+    CPhysSizeGeometry* physSizeWidth = pageSetup->getPhysSizeWidth();
+
+    m_pLblStatusBarDrawingSceneEditTool = new QLabel("Tool: -");
+    m_pLblStatusBarDrawingSceneEditTool->setMinimumWidth(80);
+    statusBar()->addPermanentWidget(m_pLblStatusBarDrawingSceneEditTool);
+
+    m_pLblStatusBarDrawingSceneEditMode = new QLabel("Mode: ");
+    m_pLblStatusBarDrawingSceneEditMode->setMinimumWidth(100);
+    statusBar()->addPermanentWidget(m_pLblStatusBarDrawingSceneEditMode);
+
+    m_pLblStatusBarDrawingSceneGraphObjEditInfo = new QLabel("Edit: -");
+    m_pLblStatusBarDrawingSceneGraphObjEditInfo->setMinimumWidth(120);
+    statusBar()->addPermanentWidget(m_pLblStatusBarDrawingSceneGraphObjEditInfo);
+
+    m_pLblStatusBarDrawingSceneRect = new QLabel("SceneRect: -/-, -/- [" + physSizeWidth->Pixel()->getSymbol() + "]");
+    m_pLblStatusBarDrawingSceneRect->setMinimumWidth(160);
+    statusBar()->addPermanentWidget(m_pLblStatusBarDrawingSceneRect);
+
+    m_pLblStatusBarDrawingSceneMouseCursorPos = new QLabel( "ScenePos: -/- [" + physSizeWidth->Pixel()->getSymbol() + "]" );
+    m_pLblStatusBarDrawingSceneMouseCursorPos->setMinimumWidth(140);
+    statusBar()->addPermanentWidget(m_pLblStatusBarDrawingSceneMouseCursorPos);
+
+    m_pLblStatusBarDrawingViewMouseCursorPos = new QLabel( "ViewPos: -/- [" + physSizeWidth->Pixel()->getSymbol() + "]" );
+    m_pLblStatusBarDrawingViewMouseCursorPos->setMinimumWidth(140);
+    statusBar()->addPermanentWidget(m_pLblStatusBarDrawingViewMouseCursorPos);
+
+    // <Label> Errors
+    //---------------
+
+    if( CErrLog::GetInstance() != nullptr )
+    {
+        m_pLblErrors = new QLabel("Errors");
+        m_pLblErrors->installEventFilter(this);
+        statusBar()->addPermanentWidget(m_pLblErrors);
+        m_pLblErrors->hide();
+
+        updateErrorsStatus();
+
+        if( !QObject::connect(
+            /* pObjSender   */ CErrLog::GetInstance(),
+            /* szSignal     */ SIGNAL(entryAdded(const ZS::System::SErrResultInfo&)),
+            /* pObjReceiver */ this,
+            /* szSlot       */ SLOT(onErrLogEntryAdded(const ZS::System::SErrResultInfo&)) ) )
+        {
+            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
+        }
+        if( !QObject::connect(
+            /* pObjSender   */ CErrLog::GetInstance(),
+            /* szSignal     */ SIGNAL(entryChanged(const ZS::System::SErrResultInfo&)),
+            /* pObjReceiver */ this,
+            /* szSlot       */ SLOT(onErrLogEntryChanged(const ZS::System::SErrResultInfo&)) ) )
+        {
+            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
+        }
+        if( !QObject::connect(
+            /* pObjSender   */ CErrLog::GetInstance(),
+            /* szSignal     */ SIGNAL(entryRemoved(const ZS::System::SErrResultInfo&)),
+            /* pObjReceiver */ this,
+            /* szSlot       */ SLOT(onErrLogEntryRemoved(const ZS::System::SErrResultInfo&)) ) )
+        {
+            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
+        }
+    } // if( CErrLog::GetInstance() != nullptr )
 
     // ToolBars
     //---------
@@ -5113,11 +5115,13 @@ void CMainWindow::onDrawingSceneRectChanged( const QRectF& i_rect )
     {
         if( m_pDrawingView != nullptr )
         {
+            CPageSetup* pageSetup = m_pDrawingView->getPageSetup();
+            CPhysSizeGeometry* physSizeWidth = pageSetup->getPhysSizeWidth();
             QRectF rect = m_pDrawingScene->sceneRect();
             QPointF ptTL = m_pDrawingView->mapFromScene(rect.topLeft());
             rect.moveTopLeft(ptTL);
             QString strRect = point2Str(ptTL) + ", " + size2Str(rect.size());
-            m_pLblStatusBarDrawingSceneRect->setText("SceneRect: " + strRect + " [" + Geometry::GraphDevice()->Pixel()->getSymbol() + "]");
+            m_pLblStatusBarDrawingSceneRect->setText("SceneRect: " + strRect + " [" + physSizeWidth->Pixel()->getSymbol() + "]");
         }
     }
 
@@ -5156,6 +5160,9 @@ void CMainWindow::onDrawingSceneMousePosChanged( const QPointF& i_ptMousePos )
 
     if( m_pLblStatusBarDrawingSceneMouseCursorPos != nullptr )
     {
+        CPageSetup* pageSetup = m_pDrawingView->getPageSetup();
+        CPhysSizeGeometry* physSizeWidth = pageSetup->getPhysSizeWidth();
+
         QString strMouseCursorPos;
 
         strMouseCursorPos += QString("ScenePos: ");
@@ -5163,7 +5170,7 @@ void CMainWindow::onDrawingSceneMousePosChanged( const QPointF& i_ptMousePos )
         strMouseCursorPos += QString("/");
         strMouseCursorPos += QString::number(i_ptMousePos.y());
         strMouseCursorPos += QString(" [");
-        strMouseCursorPos += QString(Geometry::GraphDevice()->Pixel()->getSymbol());
+        strMouseCursorPos += QString(physSizeWidth->Pixel()->getSymbol());
         strMouseCursorPos += QString("]");
 
         //if( m_drawArea.isValid() && m_drawArea.m_physValWidth.getPhysSize() != &Geometry::GraphDevice() )
@@ -5345,6 +5352,9 @@ void CMainWindow::onDrawingViewMousePosChanged( const QPointF& i_ptMousePos )
 
     if( m_pLblStatusBarDrawingViewMouseCursorPos != nullptr )
     {
+        CPageSetup* pageSetup = m_pDrawingView->getPageSetup();
+        CPhysSizeGeometry* physSizeWidth = pageSetup->getPhysSizeWidth();
+
         QString strMouseCursorPos;
 
         strMouseCursorPos += QString("ViewPos: ");
@@ -5352,7 +5362,7 @@ void CMainWindow::onDrawingViewMousePosChanged( const QPointF& i_ptMousePos )
         strMouseCursorPos += QString("/");
         strMouseCursorPos += QString::number(i_ptMousePos.y());
         strMouseCursorPos += QString(" [");
-        strMouseCursorPos += QString(Geometry::GraphDevice()->Pixel()->getSymbol());
+        strMouseCursorPos += QString(physSizeWidth->Pixel()->getSymbol());
         strMouseCursorPos += QString("]");
 
         m_pLblStatusBarDrawingViewMouseCursorPos->setText(strMouseCursorPos);
@@ -5539,11 +5549,13 @@ void CMainWindow::resizeEvent( QResizeEvent* i_pEv )
     {
         if( m_pDrawingView != nullptr )
         {
+            CPageSetup* pageSetup = m_pDrawingView->getPageSetup();
+            CPhysSizeGeometry* physSizeWidth = pageSetup->getPhysSizeWidth();
             QRectF rect = m_pDrawingScene->sceneRect();
             QPointF ptTL = m_pDrawingView->mapFromScene(rect.topLeft());
             rect.moveTopLeft(ptTL);
             QString strRect = point2Str(ptTL) + ", " + size2Str(rect.size());
-            m_pLblStatusBarDrawingSceneRect->setText("SceneRect: " + strRect + " [" + Geometry::GraphDevice()->Pixel()->getSymbol() + "]");
+            m_pLblStatusBarDrawingSceneRect->setText("SceneRect: " + strRect + " [" + physSizeWidth->Pixel()->getSymbol() + "]");
         }
     }
 
@@ -5571,11 +5583,13 @@ void CMainWindow::showEvent( QShowEvent* i_pEv )
     {
         if( m_pDrawingView != nullptr )
         {
+            CPageSetup* pageSetup = m_pDrawingView->getPageSetup();
+            CPhysSizeGeometry* physSizeWidth = pageSetup->getPhysSizeWidth();
             QRectF rect = m_pDrawingScene->sceneRect();
             QPointF ptTL = m_pDrawingView->mapFromScene(rect.topLeft());
             rect.moveTopLeft(ptTL);
             QString strRect = point2Str(ptTL) + ", " + size2Str(rect.size());
-            m_pLblStatusBarDrawingSceneRect->setText("SceneRect: " + strRect + " [" + Geometry::GraphDevice()->Pixel()->getSymbol() + "]");
+            m_pLblStatusBarDrawingSceneRect->setText("SceneRect: " + strRect + " [" + physSizeWidth->Pixel()->getSymbol() + "]");
         }
     }
 

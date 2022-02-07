@@ -47,12 +47,14 @@ public: // ctors and dtor
 
 //------------------------------------------------------------------------------
 CUnitGrp::CUnitGrp(
+    CUnitsPool*    i_pUnitsPool,
     EUnitClassType i_classType,
     const QString& i_strName,
     const QString& i_strKey,
     bool           i_bIsNameSpaceNode,
     CUnitGrp*      i_pUnitGrpParent ) :
 //------------------------------------------------------------------------------
+    m_pUnitsPool(i_pUnitsPool),
     m_classType(i_classType),
     m_strName(i_strName),
     m_strKey(i_strKey),
@@ -128,7 +130,16 @@ CUnitGrp::~CUnitGrp()
         m_pUnitGrpParent->removeChildUnitGrp(m_strName);
     }
 
+    m_pUnitsPool = nullptr;
+    m_classType = static_cast<EUnitClassType>(0);
+    //m_strName;
+    //m_strKey;
+    m_bIsNameSpaceNode = false;
     m_pUnitGrpParent = nullptr;
+    //m_vecpUnitGrpChilds;
+    //m_hshpUnitGrpChilds;
+    //m_vecpUnits;
+    //m_hshpUnits;
 
     CUnitsPool::GetInstance()->onUnitGrpDestroyed(m_strKey);
 
@@ -186,7 +197,7 @@ QString CUnitGrp::getParentGroupName( bool i_bInsertParentNames ) const
 
         while( pUnitGrpParent != nullptr )
         {
-            strName.insert( 0, CUnitsPool::GetNameSeparator() );
+            strName.insert( 0, pUnitGrpParent->getNameSeparator() );
             strName.insert( 0, pUnitGrpParent->getName() );
 
             pUnitGrpParent = pUnitGrpParent->m_pUnitGrpParent;
@@ -207,7 +218,7 @@ QString CUnitGrp::getName( bool i_bInsertParentNames ) const
     {
         if( m_pUnitGrpParent != nullptr )
         {
-            strName.insert( 0, CUnitsPool::GetNameSeparator() );
+            strName.insert( 0, m_pUnitGrpParent->getNameSeparator() );
             strName.insert( 0, m_pUnitGrpParent->getName(true) );
         }
     }
@@ -215,6 +226,18 @@ QString CUnitGrp::getName( bool i_bInsertParentNames ) const
     return strName;
 
 } // getName
+
+//------------------------------------------------------------------------------
+QChar CUnitGrp::getNameSeparator() const
+//------------------------------------------------------------------------------
+{
+    QChar cNameSeparator = '.';
+    if( m_pUnitsPool != nullptr )
+    {
+        cNameSeparator = m_pUnitsPool->getNameSeparator();
+    }
+    return cNameSeparator;
+}
 
 /*==============================================================================
 public: // instance methods

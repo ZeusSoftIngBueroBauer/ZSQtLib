@@ -75,6 +75,7 @@ public: // instance methods (configuration)
     QString getName( bool i_bInsertParentNames = false ) const;
     QString getSymbol() const { return m_strSymbol; }
     QString getKey() const { return m_strKey; }
+    QChar getNameSeparator() const;
 public: // operators
     bool operator == ( const CUnit& i_unitOther ) const;
     bool operator != ( const CUnit& i_unitOther ) const;
@@ -132,6 +133,9 @@ public: // instance methods
     CPhysSize* getPhysSize() const { return m_pPhysSize; }
     CPhysUnit* getSIUnit() const { return m_pPhysUnitSI; }
     QString getPrefixStr() const { return m_strPrefix; }
+public: // instance methods
+    double getFactorConvertFromSIUnit() const { return m_fctConvertFromSIUnit.m_fM; }
+    void setFactorConvertFromSIUnit( double i_fFactor );
 public: // overridables of base class CUnit (converting values)
     virtual bool isConvertible( const CUnit* i_pUnitDst, double i_fVal = 1.0 ) const;
     virtual double convertValue( double i_fVal, const CUnit* i_pUnitDst ) const;

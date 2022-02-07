@@ -44,7 +44,7 @@ class ZSPHYSSIZESKINEMATICSDLL_API CPhysSizeFrequency : public CPhysSize
 //******************************************************************************
 {
 public: // ctors and dtor
-    CPhysSizeFrequency();
+    CPhysSizeFrequency( CUnitsPool* i_pUnitsPool );
     ~CPhysSizeFrequency();
 public: // instance methods
     //CPhysUnit* YoktoHertz();

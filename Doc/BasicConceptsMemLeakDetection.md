@@ -31,8 +31,7 @@ CRT heap reporting functions:
         return iAppResult;
     }
 
-How to exclude memory blocks from being dumped:
------------------------------------------------
+**How to exclude memory blocks from being dumped**
 
 Sometimes memory blocks allocated with the new operator should not be freed during
 runtime of the system (e.g. internal heap objects or static class variables). But

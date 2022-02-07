@@ -31,7 +31,6 @@ may result in using the software modules.
 #include "ZSDraw/ZSDrawingScene.h"
 #include "ZSDraw/ZSDrawObjFactory.h"
 #include "ZSDraw/ZSDrawGraphObj.h"
-#include "ZSPhysSizes/Geometry/ZSPhysSizes.h"
 #include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysException.h"
 #include "ZSSys/ZSSysTrcAdminObj.h"
@@ -60,6 +59,7 @@ CDrawingView::CDrawingView(
     QWidget*       i_pWdgtParent ) :
 //------------------------------------------------------------------------------
     QGraphicsView(i_pDrawingScene,i_pWdgtParent),
+    m_pageSetup(),
     m_pDrawingScene(i_pDrawingScene),
     m_pTrcAdminObj(nullptr),
     m_pTrcAdminObjMouseMoveEvent(nullptr),
@@ -80,6 +80,9 @@ CDrawingView::CDrawingView(
 
     double fXResolution_dpmm = logicalDpiX() / 25.4; // dots per milli meter
     double fYResolution_dpmm = logicalDpiY() / 25.4; // dots per milli meter
+
+    m_pageSetup.setXResolutionInDpmm(fXResolution_dpmm);
+    m_pageSetup.setYResolutionInDpmm(fYResolution_dpmm);
 
     m_pDrawingScene->setXResolutionInDpmm(fXResolution_dpmm);
     m_pDrawingScene->setYResolutionInDpmm(fYResolution_dpmm);
@@ -120,6 +123,7 @@ CDrawingView::~CDrawingView()
     CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjMouseMoveEvent);
     CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjPaintEvent);
 
+    //m_pageSetup;
     m_pDrawingScene = nullptr;
     m_pTrcAdminObj = nullptr;
     m_pTrcAdminObjMouseMoveEvent = nullptr;

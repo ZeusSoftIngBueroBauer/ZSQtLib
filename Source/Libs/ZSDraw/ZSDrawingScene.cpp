@@ -128,9 +128,9 @@ public: // ctors and dtor
 CDrawingScene::CDrawingScene( QObject* i_pObjParent ) :
 //------------------------------------------------------------------------------
     QGraphicsScene(i_pObjParent),
+    m_physSizeWidth(),
+    m_physSizeHeight(),
     m_drawSettings(),
-    m_fXResolution_dpmm(1.0),
-    m_fYResolution_dpmm(1.0),
     m_mode(EMode::Undefined),
     m_editTool(EEditTool::None),
     m_editMode(EEditMode::None),
@@ -272,9 +272,9 @@ CDrawingScene::~CDrawingScene()
     CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjMouseMoveEvent);
     CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjPaintEvent);
 
+    //m_physSizeWidth;
+    //m_physSizeHeight;
     //m_drawSettings;
-    m_fXResolution_dpmm = 0.0;
-    m_fYResolution_dpmm = 0.0;
     m_mode = static_cast<ZS::System::EMode>(0);
     m_editTool = static_cast<EEditTool>(0);
     m_editMode = static_cast<EEditMode>(0);
@@ -299,6 +299,382 @@ CDrawingScene::~CDrawingScene()
     m_pTrcAdminObjPaintEvent = nullptr;
 
 } // dtor
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CDrawingScene::setXResolutionInDpmm( double i_fRes_dpmm )
+//------------------------------------------------------------------------------
+{
+    m_physSizeWidth.setDpmm(i_fRes_dpmm);
+}
+
+//------------------------------------------------------------------------------
+double CDrawingScene::getXResolutionInDpmm() const
+//------------------------------------------------------------------------------
+{
+    return m_physSizeWidth.getDpmm();
+}
+
+//------------------------------------------------------------------------------
+void CDrawingScene::setYResolutionInDpmm( double i_fRes_dpmm )
+//------------------------------------------------------------------------------
+{
+    m_physSizeHeight.setDpmm(i_fRes_dpmm);
+}
+
+//------------------------------------------------------------------------------
+double CDrawingScene::getYResolutionInDpmm() const
+//------------------------------------------------------------------------------
+{
+    return m_physSizeHeight.getDpmm();
+}
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+SErrResultInfo CDrawingScene::load( const QString& i_strFileName )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    {
+        strMthInArgs = "FileName:" + i_strFileName;
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* strMethod    */ "load",
+        /* strAddInfo   */ strMthInArgs );
+
+    SErrResultInfo errResultInfo;
+
+    QFile fileXML;
+
+    if( i_strFileName.isEmpty() )
+    {
+        errResultInfo = ErrResultInfoError("load", EResultInvalidFileName, "File name is empty");
+    }
+    else
+    {
+        fileXML.setFileName(i_strFileName);
+
+        if( !fileXML.open(QIODevice::ReadOnly) )
+        {
+            errResultInfo = ErrResultInfoError("load", EResultFileOpenForRead, i_strFileName);
+        }
+    }
+
+    if( !errResultInfo.isErrorResult() )
+    {
+        QXmlStreamReader            xmlStreamReader(&fileXML);
+        QXmlStreamAttributes        xmlStreamAttrs;
+        QXmlStreamReader::TokenType xmlStreamTokenType;
+        QString                     strElemName;
+        QString                     strAttr;
+        bool                        bConverted;
+
+        xmlStreamTokenType = xmlStreamReader.readNext();
+
+        if( xmlStreamTokenType != QXmlStreamReader::StartDocument )
+        {
+            xmlStreamReader.raiseError("Invalid XML document");
+        }
+
+        while( !xmlStreamReader.hasError() && !xmlStreamReader.atEnd() )
+        {
+            xmlStreamTokenType = xmlStreamReader.readNext();
+
+            if( xmlStreamReader.isStartElement() || xmlStreamReader.isEndElement() )
+            {
+                strElemName = xmlStreamReader.name().toString();
+
+                if( xmlStreamReader.isStartElement() )
+                {
+                    //--------------------------------
+                    if( strElemName == "Drawing" )
+                    //--------------------------------
+                    {
+                        xmlStreamAttrs = xmlStreamReader.attributes();
+
+                        if( xmlStreamAttrs.hasAttribute("Rect") )
+                        {
+                            strAttr = xmlStreamAttrs.value("Rect").toString();
+
+                            QRectF rctDrawing = str2RectF(strAttr,&bConverted);
+
+                            if( bConverted )
+                            {
+                                setSceneRect(rctDrawing);
+                            }
+                        }
+                    } // if( (strElemName == "Drawing") )
+
+                    //--------------------------------
+                    else if( strElemName == "GraphObj" )
+                    //--------------------------------
+                    {
+                        QString strFactoryGrpName;
+                        QString strNameSpace;
+                        QString strClassName;
+                        QString strGraphObjType;
+                        QString strObjName;
+                        QString strObjId;
+
+                        xmlStreamAttrs = xmlStreamReader.attributes();
+
+                        if( xmlStreamAttrs.hasAttribute("FactoryGroupName") )
+                        {
+                            strFactoryGrpName = xmlStreamAttrs.value("FactoryGroupName").toString();;
+                        }
+                        if( xmlStreamAttrs.hasAttribute("NameSpace") )
+                        {
+                            strNameSpace = xmlStreamAttrs.value("NameSpace").toString();;
+                        }
+                        if( xmlStreamAttrs.hasAttribute("ClassName") )
+                        {
+                            strClassName = xmlStreamAttrs.value("ClassName").toString();;
+                        }
+                        if( xmlStreamAttrs.hasAttribute("ObjectType") )
+                        {
+                            strGraphObjType = xmlStreamAttrs.value("ObjectType").toString();
+                        }
+                        if( xmlStreamAttrs.hasAttribute("ObjectName") )
+                        {
+                            strObjName = xmlStreamAttrs.value("ObjectName").toString();;
+                        }
+                        if( xmlStreamAttrs.hasAttribute("ObjectId") )
+                        {
+                            strObjId = xmlStreamAttrs.value("ObjectId").toString();;
+                        }
+
+                        CObjFactory* pObjFactory = CObjFactory::FindObjFactory(strFactoryGrpName, strGraphObjType);
+
+                        if( pObjFactory != nullptr )
+                        {
+                            pObjFactory->loadGraphObj(
+                                /* pDrawingScene   */ this,
+                                /* pGraphObjGroup  */ nullptr,
+                                /* strObjName      */ strObjName,
+                                /* strObjId        */ strObjId,
+                                /* xmlStreamReader */ xmlStreamReader,
+                                /* errResultInfo   */ errResultInfo );
+                        }
+                    } // if( strElemName == "GraphObj" )
+                } // if( xmlStreamReader.isStartElement() )
+
+                else // if( xmlStreamReader.isEndElement() )
+                {
+                }
+            } // if( xmlStreamReader.isStartElement() || xmlStreamReader.isEndElement() )
+        } // while( !xmlStreamReader.hasError() && !xmlStreamReader.atEnd() )
+
+        if( xmlStreamReader.hasError() )
+        {
+            QString strAddErrInfo;
+            strAddErrInfo += xmlStreamReader.errorString() + " on reading \"" + i_strFileName + "\" ";
+            strAddErrInfo += "(Line:" + QString::number(xmlStreamReader.lineNumber());
+            strAddErrInfo += ", Column:" + QString::number(xmlStreamReader.columnNumber()) + ")";
+            errResultInfo = ErrResultInfoError("load", EResultFileReadContent, strAddErrInfo);
+        }
+    } // if( !errResultInfo.isErrorResult() )
+
+    if( mthTracer.isActive(ETraceDetailLevelMethodArgs) )
+    {
+        mthTracer.setMethodReturn(errResultInfo);
+    }
+
+    return errResultInfo;
+
+} // load
+
+//------------------------------------------------------------------------------
+SErrResultInfo CDrawingScene::save( const QString& i_strFileName )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    {
+        strMthInArgs = "FileName:" + i_strFileName;
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* strMethod    */ "save",
+        /* strAddInfo   */ strMthInArgs );
+
+    SErrResultInfo errResultInfo;
+
+    QFile fileXML;
+
+    if( i_strFileName.isEmpty() )
+    {
+        errResultInfo = ErrResultInfoError("save", EResultInvalidFileName, "File name is empty");
+    }
+    else
+    {
+        fileXML.setFileName(i_strFileName);
+
+        if( !fileXML.open(QIODevice::WriteOnly) )
+        {
+            errResultInfo = ErrResultInfoError("save", EResultFileOpenForWrite, i_strFileName);
+        }
+    }
+
+    if( !errResultInfo.isErrorResult() )
+    {
+        QXmlStreamWriter xmlStreamWriter(&fileXML);
+
+        xmlStreamWriter.setAutoFormatting(true);
+
+        xmlStreamWriter.writeStartDocument();
+
+        xmlStreamWriter.writeStartElement("Drawing");
+        xmlStreamWriter.writeAttribute( "Rect", rect2Str(sceneRect()) );
+
+        QGraphicsItem* pGraphicsItem;
+        CGraphObj*     pGraphObj;
+        int            idxGraphObj;
+
+        // Connection points need to be recalled before the connection lines as on
+        // creating the connection lines their connection points must already exist.
+        // For this the connection lines will be saved at the end of the XML file.
+        for( idxGraphObj = 0; idxGraphObj < items().size(); idxGraphObj++ )
+        {
+            pGraphicsItem = items()[idxGraphObj];
+            pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
+
+            if( pGraphicsItem->type() != static_cast<int>(EGraphObjTypeSelectionPoint)
+             && pGraphicsItem->type() != static_cast<int>(EGraphObjTypeLabel)
+             && pGraphicsItem->type() != static_cast<int>(EGraphObjTypeConnectionLine) )
+            {
+                // Group members will be saved as child items of the groups.
+                if( pGraphicsItem->parentItem() == nullptr )
+                {
+                    errResultInfo = save(pGraphObj,xmlStreamWriter);
+
+                    if( errResultInfo.isErrorResult() )
+                    {
+                        break;
+                    }
+                }
+            }
+        }
+
+        if( !errResultInfo.isErrorResult() )
+        {
+            for( idxGraphObj = 0; idxGraphObj < items().size(); idxGraphObj++ )
+            {
+                pGraphicsItem = items()[idxGraphObj];
+
+                if( pGraphicsItem->type() != static_cast<int>(EGraphObjTypeSelectionPoint)
+                 && pGraphicsItem->type() != static_cast<int>(EGraphObjTypeLabel)
+                 && pGraphicsItem->type() == static_cast<int>(EGraphObjTypeConnectionLine) )
+                {
+                    // Group members will be saved as child items of the groups.
+                    if( pGraphicsItem->parentItem() == nullptr )
+                    {
+                        pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
+
+                        errResultInfo = save(pGraphObj,xmlStreamWriter);
+
+                        if( errResultInfo.isErrorResult() )
+                        {
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        xmlStreamWriter.writeEndElement();  // Drawing
+
+        xmlStreamWriter.writeEndDocument();
+
+    } // if( !errResultInfo.isErrorResult() )
+
+    if( mthTracer.isActive(ETraceDetailLevelMethodArgs) )
+    {
+        mthTracer.setMethodReturn(errResultInfo);
+    }
+    return errResultInfo;
+
+} // save
+
+/*==============================================================================
+protected: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+SErrResultInfo CDrawingScene::save( CGraphObj* i_pGraphObj, QXmlStreamWriter& i_xmlStreamWriter )
+//------------------------------------------------------------------------------
+{
+    if( i_pGraphObj == nullptr )
+    {
+        throw ZS::System::CException( __FILE__, __LINE__, EResultArgOutOfRange, "pGraphObj == nullptr" );
+    }
+
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    {
+        strMthInArgs  = "GraphObj:" + i_pGraphObj->nameSpace();
+        strMthInArgs += "::" + i_pGraphObj->className();
+        strMthInArgs += "::" + i_pGraphObj->name();
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* strMethod    */ "save",
+        /* strAddInfo   */ strMthInArgs );
+
+    SErrResultInfo errResultInfo;
+
+    QString strNameSpace    = i_pGraphObj->nameSpace();
+    QString strClassName    = i_pGraphObj->className();
+    QString strGraphObjType = i_pGraphObj->getTypeAsString();
+    QString strObjName      = i_pGraphObj->name();
+    QString strObjId        = i_pGraphObj->keyInTree();
+
+    CObjFactory* pObjFactory = CObjFactory::FindObjFactory(i_pGraphObj->getFactoryGroupName(), strGraphObjType);
+
+    if( pObjFactory == nullptr )
+    {
+        QString strAddErrInfo = strNameSpace + "::" + strClassName + " (" + strGraphObjType + ")";
+        errResultInfo = ErrResultInfoError("save", EResultObjFactoryNotFound, strAddErrInfo);
+    }
+    else
+    {
+        i_xmlStreamWriter.writeStartElement("GraphObj");
+
+        i_xmlStreamWriter.writeAttribute( "NameSpace", strNameSpace );
+        i_xmlStreamWriter.writeAttribute( "ClassName", strClassName );
+        i_xmlStreamWriter.writeAttribute( "ObjectType", strGraphObjType );
+        i_xmlStreamWriter.writeAttribute( "ObjectName", strObjName );
+        i_xmlStreamWriter.writeAttribute( "ObjectId", strObjId );
+
+        errResultInfo = pObjFactory->saveGraphObj(i_pGraphObj,i_xmlStreamWriter);
+
+        i_xmlStreamWriter.writeEndElement();
+    }
+
+    if( mthTracer.isActive(ETraceDetailLevelMethodArgs) )
+    {
+        mthTracer.setMethodReturn(errResultInfo);
+    }
+
+    return errResultInfo;
+
+} // save
 
 /*==============================================================================
 public: // instance methods
@@ -667,350 +1043,6 @@ protected: // instance methods
 //    } // if( i_pGraphicsItem != nullptr )
 //
 //} // addChildItems
-
-/*==============================================================================
-public: // instance methods
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-SErrResultInfo CDrawingScene::load( const QString& i_strFileName )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
-    {
-        strMthInArgs = "FileName:" + i_strFileName;
-    }
-
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strMethod    */ "load",
-        /* strAddInfo   */ strMthInArgs );
-
-    SErrResultInfo errResultInfo;
-
-    QFile fileXML;
-
-    if( i_strFileName.isEmpty() )
-    {
-        errResultInfo = ErrResultInfoError("load", EResultInvalidFileName, "File name is empty");
-    }
-    else
-    {
-        fileXML.setFileName(i_strFileName);
-
-        if( !fileXML.open(QIODevice::ReadOnly) )
-        {
-            errResultInfo = ErrResultInfoError("load", EResultFileOpenForRead, i_strFileName);
-        }
-    }
-
-    if( !errResultInfo.isErrorResult() )
-    {
-        QXmlStreamReader            xmlStreamReader(&fileXML);
-        QXmlStreamAttributes        xmlStreamAttrs;
-        QXmlStreamReader::TokenType xmlStreamTokenType;
-        QString                     strElemName;
-        QString                     strAttr;
-        bool                        bConverted;
-
-        xmlStreamTokenType = xmlStreamReader.readNext();
-
-        if( xmlStreamTokenType != QXmlStreamReader::StartDocument )
-        {
-            xmlStreamReader.raiseError("Invalid XML document");
-        }
-
-        while( !xmlStreamReader.hasError() && !xmlStreamReader.atEnd() )
-        {
-            xmlStreamTokenType = xmlStreamReader.readNext();
-
-            if( xmlStreamReader.isStartElement() || xmlStreamReader.isEndElement() )
-            {
-                strElemName = xmlStreamReader.name().toString();
-
-                if( xmlStreamReader.isStartElement() )
-                {
-                    //--------------------------------
-                    if( strElemName == "Drawing" )
-                    //--------------------------------
-                    {
-                        xmlStreamAttrs = xmlStreamReader.attributes();
-
-                        if( xmlStreamAttrs.hasAttribute("Rect") )
-                        {
-                            strAttr = xmlStreamAttrs.value("Rect").toString();
-
-                            QRectF rctDrawing = str2RectF(strAttr,&bConverted);
-
-                            if( bConverted )
-                            {
-                                setSceneRect(rctDrawing);
-                            }
-                        }
-                    } // if( (strElemName == "Drawing") )
-
-                    //--------------------------------
-                    else if( strElemName == "GraphObj" )
-                    //--------------------------------
-                    {
-                        QString strFactoryGrpName;
-                        QString strNameSpace;
-                        QString strClassName;
-                        QString strGraphObjType;
-                        QString strObjName;
-                        QString strObjId;
-
-                        xmlStreamAttrs = xmlStreamReader.attributes();
-
-                        if( xmlStreamAttrs.hasAttribute("FactoryGroupName") )
-                        {
-                            strFactoryGrpName = xmlStreamAttrs.value("FactoryGroupName").toString();;
-                        }
-                        if( xmlStreamAttrs.hasAttribute("NameSpace") )
-                        {
-                            strNameSpace = xmlStreamAttrs.value("NameSpace").toString();;
-                        }
-                        if( xmlStreamAttrs.hasAttribute("ClassName") )
-                        {
-                            strClassName = xmlStreamAttrs.value("ClassName").toString();;
-                        }
-                        if( xmlStreamAttrs.hasAttribute("ObjectType") )
-                        {
-                            strGraphObjType = xmlStreamAttrs.value("ObjectType").toString();
-                        }
-                        if( xmlStreamAttrs.hasAttribute("ObjectName") )
-                        {
-                            strObjName = xmlStreamAttrs.value("ObjectName").toString();;
-                        }
-                        if( xmlStreamAttrs.hasAttribute("ObjectId") )
-                        {
-                            strObjId = xmlStreamAttrs.value("ObjectId").toString();;
-                        }
-
-                        CObjFactory* pObjFactory = CObjFactory::FindObjFactory(strFactoryGrpName, strGraphObjType);
-
-                        if( pObjFactory != nullptr )
-                        {
-                            pObjFactory->loadGraphObj(
-                                /* pDrawingScene   */ this,
-                                /* pGraphObjGroup  */ nullptr,
-                                /* strObjName      */ strObjName,
-                                /* strObjId        */ strObjId,
-                                /* xmlStreamReader */ xmlStreamReader,
-                                /* errResultInfo   */ errResultInfo );
-                        }
-                    } // if( strElemName == "GraphObj" )
-                } // if( xmlStreamReader.isStartElement() )
-
-                else // if( xmlStreamReader.isEndElement() )
-                {
-                }
-            } // if( xmlStreamReader.isStartElement() || xmlStreamReader.isEndElement() )
-        } // while( !xmlStreamReader.hasError() && !xmlStreamReader.atEnd() )
-
-        if( xmlStreamReader.hasError() )
-        {
-            QString strAddErrInfo;
-            strAddErrInfo += xmlStreamReader.errorString() + " on reading \"" + i_strFileName + "\" ";
-            strAddErrInfo += "(Line:" + QString::number(xmlStreamReader.lineNumber());
-            strAddErrInfo += ", Column:" + QString::number(xmlStreamReader.columnNumber()) + ")";
-            errResultInfo = ErrResultInfoError("load", EResultFileReadContent, strAddErrInfo);
-        }
-    } // if( !errResultInfo.isErrorResult() )
-
-    if( mthTracer.isActive(ETraceDetailLevelMethodArgs) )
-    {
-        mthTracer.setMethodReturn(errResultInfo);
-    }
-
-    return errResultInfo;
-
-} // load
-
-//------------------------------------------------------------------------------
-SErrResultInfo CDrawingScene::save( const QString& i_strFileName )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
-    {
-        strMthInArgs = "FileName:" + i_strFileName;
-    }
-
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strMethod    */ "save",
-        /* strAddInfo   */ strMthInArgs );
-
-    SErrResultInfo errResultInfo;
-
-    QFile fileXML;
-
-    if( i_strFileName.isEmpty() )
-    {
-        errResultInfo = ErrResultInfoError("save", EResultInvalidFileName, "File name is empty");
-    }
-    else
-    {
-        fileXML.setFileName(i_strFileName);
-
-        if( !fileXML.open(QIODevice::WriteOnly) )
-        {
-            errResultInfo = ErrResultInfoError("save", EResultFileOpenForWrite, i_strFileName);
-        }
-    }
-
-    if( !errResultInfo.isErrorResult() )
-    {
-        QXmlStreamWriter xmlStreamWriter(&fileXML);
-
-        xmlStreamWriter.setAutoFormatting(true);
-
-        xmlStreamWriter.writeStartDocument();
-
-        xmlStreamWriter.writeStartElement("Drawing");
-        xmlStreamWriter.writeAttribute( "Rect", rect2Str(sceneRect()) );
-
-        QGraphicsItem* pGraphicsItem;
-        CGraphObj*     pGraphObj;
-        int            idxGraphObj;
-
-        // Connection points need to be recalled before the connection lines as on
-        // creating the connection lines their connection points must already exist.
-        // For this the connection lines will be saved at the end of the XML file.
-        for( idxGraphObj = 0; idxGraphObj < items().size(); idxGraphObj++ )
-        {
-            pGraphicsItem = items()[idxGraphObj];
-            pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
-
-            if( pGraphicsItem->type() != static_cast<int>(EGraphObjTypeSelectionPoint)
-             && pGraphicsItem->type() != static_cast<int>(EGraphObjTypeLabel)
-             && pGraphicsItem->type() != static_cast<int>(EGraphObjTypeConnectionLine) )
-            {
-                // Group members will be saved as child items of the groups.
-                if( pGraphicsItem->parentItem() == nullptr )
-                {
-                    errResultInfo = save(pGraphObj,xmlStreamWriter);
-
-                    if( errResultInfo.isErrorResult() )
-                    {
-                        break;
-                    }
-                }
-            }
-        }
-
-        if( !errResultInfo.isErrorResult() )
-        {
-            for( idxGraphObj = 0; idxGraphObj < items().size(); idxGraphObj++ )
-            {
-                pGraphicsItem = items()[idxGraphObj];
-
-                if( pGraphicsItem->type() != static_cast<int>(EGraphObjTypeSelectionPoint)
-                 && pGraphicsItem->type() != static_cast<int>(EGraphObjTypeLabel)
-                 && pGraphicsItem->type() == static_cast<int>(EGraphObjTypeConnectionLine) )
-                {
-                    // Group members will be saved as child items of the groups.
-                    if( pGraphicsItem->parentItem() == nullptr )
-                    {
-                        pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
-
-                        errResultInfo = save(pGraphObj,xmlStreamWriter);
-
-                        if( errResultInfo.isErrorResult() )
-                        {
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-
-        xmlStreamWriter.writeEndElement();  // Drawing
-
-        xmlStreamWriter.writeEndDocument();
-
-    } // if( !errResultInfo.isErrorResult() )
-
-    if( mthTracer.isActive(ETraceDetailLevelMethodArgs) )
-    {
-        mthTracer.setMethodReturn(errResultInfo);
-    }
-    return errResultInfo;
-
-} // save
-
-/*==============================================================================
-protected: // instance methods
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-SErrResultInfo CDrawingScene::save( CGraphObj* i_pGraphObj, QXmlStreamWriter& i_xmlStreamWriter )
-//------------------------------------------------------------------------------
-{
-    if( i_pGraphObj == nullptr )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultArgOutOfRange, "pGraphObj == nullptr" );
-    }
-
-    QString strMthInArgs;
-
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
-    {
-        strMthInArgs  = "GraphObj:" + i_pGraphObj->nameSpace();
-        strMthInArgs += "::" + i_pGraphObj->className();
-        strMthInArgs += "::" + i_pGraphObj->name();
-    }
-
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strMethod    */ "save",
-        /* strAddInfo   */ strMthInArgs );
-
-    SErrResultInfo errResultInfo;
-
-    QString strNameSpace    = i_pGraphObj->nameSpace();
-    QString strClassName    = i_pGraphObj->className();
-    QString strGraphObjType = i_pGraphObj->getTypeAsString();
-    QString strObjName      = i_pGraphObj->name();
-    QString strObjId        = i_pGraphObj->keyInTree();
-
-    CObjFactory* pObjFactory = CObjFactory::FindObjFactory(i_pGraphObj->getFactoryGroupName(), strGraphObjType);
-
-    if( pObjFactory == nullptr )
-    {
-        QString strAddErrInfo = strNameSpace + "::" + strClassName + " (" + strGraphObjType + ")";
-        errResultInfo = ErrResultInfoError("save", EResultObjFactoryNotFound, strAddErrInfo);
-    }
-    else
-    {
-        i_xmlStreamWriter.writeStartElement("GraphObj");
-
-        i_xmlStreamWriter.writeAttribute( "NameSpace", strNameSpace );
-        i_xmlStreamWriter.writeAttribute( "ClassName", strClassName );
-        i_xmlStreamWriter.writeAttribute( "ObjectType", strGraphObjType );
-        i_xmlStreamWriter.writeAttribute( "ObjectName", strObjName );
-        i_xmlStreamWriter.writeAttribute( "ObjectId", strObjId );
-
-        errResultInfo = pObjFactory->saveGraphObj(i_pGraphObj,i_xmlStreamWriter);
-
-        i_xmlStreamWriter.writeEndElement();
-    }
-
-    if( mthTracer.isActive(ETraceDetailLevelMethodArgs) )
-    {
-        mthTracer.setMethodReturn(errResultInfo);
-    }
-
-    return errResultInfo;
-
-} // save
 
 /*==============================================================================
 public: // instance methods

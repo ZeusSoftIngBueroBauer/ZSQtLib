@@ -48,6 +48,7 @@ public: // ctors and dtor
 
 //------------------------------------------------------------------------------
 CPhysSize::CPhysSize(
+    CUnitsPool*       i_pUnitsPool,
     EPhysScienceField i_scienceField,
     const QString&    i_strName,
     const QString&    i_strSIUnitName,
@@ -56,11 +57,12 @@ CPhysSize::CPhysSize(
     bool              i_bIsPowerRelated ) :
 //------------------------------------------------------------------------------
     CUnitGrp(
+        /* pUnitsPool       */ i_pUnitsPool,
         /* type             */ EUnitClassTypePhysScienceFields,
         /* strName          */ i_strName,
-        /* strKey           */ physScienceField2Str(i_scienceField) + CUnitsPool::GetNameSeparator() + i_strName,
+        /* strKey           */ physScienceField2Str(i_scienceField) + QString(CUnitsPool::GetInstance() == nullptr ? "." : QString(CUnitsPool::GetInstance()->getNameSeparator())) + i_strName,
         /* bIsNameSpaceNode */ false,
-        /* pUnitGrpParent   */ CUnitsPool::GetPhysScienceFieldUnitGroup(i_scienceField) ),
+        /* pUnitGrpParent   */ i_pUnitsPool == nullptr ? nullptr : i_pUnitsPool->getPhysScienceFieldUnitGroup(i_scienceField) ),
     m_strSIUnitName(i_strSIUnitName),
     m_strSIUnitSymbol(i_strSIUnitSymbol),
     m_pPhysUnitSI(nullptr),

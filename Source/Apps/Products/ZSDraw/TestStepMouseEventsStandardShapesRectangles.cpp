@@ -42,7 +42,6 @@ may result in using the software modules.
 #include "ZSDraw/ZSDrawingView.h"
 #include "ZSDraw/ZSDrawGraphObjRect.h"
 #include "ZSDraw/ZSDrawObjFactory.h"
-#include "ZSPhysSizes/Geometry/ZSPhysSizes.h"
 #include "ZSPhysVal/ZSPhysVal.h"
 #include "ZSTest/ZSTestStep.h"
 #include "ZSTest/ZSTestStepGroup.h"

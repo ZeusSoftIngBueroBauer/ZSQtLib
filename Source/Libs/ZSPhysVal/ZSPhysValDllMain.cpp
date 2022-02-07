@@ -388,67 +388,7 @@ QString ZS::PhysVal::getExponentStrFromPrefixStr( const QString& i_strPrefix )
 
 
 /*******************************************************************************
-Initialization of the DLL
-*******************************************************************************/
-
-//------------------------------------------------------------------------------
-void ZS::PhysVal::createUnitsPool()
-//------------------------------------------------------------------------------
-{
-    if( s_pUnitsPool != nullptr )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSingletonClassAlreadyInstantiated );
-    }
-    s_pUnitsPool = new CUnitsPool();
-
-} // createUnitsPool
-
-//------------------------------------------------------------------------------
-void ZS::PhysVal::deleteUnitsPool()
-//------------------------------------------------------------------------------
-{
-    try
-    {
-        delete s_pUnitsPool;
-    }
-    catch(...)
-    {
-    }
-    s_pUnitsPool = nullptr;
-
-} // removeDll
-
-
-/*******************************************************************************
 Auxiliary methods
-*******************************************************************************/
-
-//------------------------------------------------------------------------------
-CUnitsPool* ZS::PhysVal::getUnitsPool()
-//------------------------------------------------------------------------------
-{
-    return s_pUnitsPool;
-}
-
-//------------------------------------------------------------------------------
-CUnitGrpRatio* ZS::PhysVal::Ratio()
-//------------------------------------------------------------------------------
-{
-    CUnitGrpRatio* pRatio = dynamic_cast<CUnitGrpRatio*>(CUnitsPool::GetUnitClassTypeGroup(EUnitClassTypeRatios));
-    return pRatio;
-}
-
-//------------------------------------------------------------------------------
-CUnitGrpDataQuantity* ZS::PhysVal::DataQuantity()
-//------------------------------------------------------------------------------
-{
-    CUnitGrpDataQuantity* pDataQuantity = dynamic_cast<CUnitGrpDataQuantity*>(CUnitsPool::GetUnitClassTypeGroup(EUnitClassTypeDataQuantity));
-    return pDataQuantity;
-}
-
-
-/*******************************************************************************
-Public methods
 *******************************************************************************/
 
 //------------------------------------------------------------------------------

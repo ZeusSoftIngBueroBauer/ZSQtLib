@@ -32,7 +32,6 @@ may result in using the software modules.
 
 #include "ZSDraw/ZSDrawGraphObj.h"
 //#include "ZSDraw/ZSDrawGraphObjRect.h"
-//#include "ZSPhysSizes/Geometry/ZSPhysSizes.h"
 #include "ZSPhysVal/ZSPhysVal.h"
 //#include "ZSSys/ZSSysAux.h"
 //#include "ZSSys/ZSSysEnumEntry.h"

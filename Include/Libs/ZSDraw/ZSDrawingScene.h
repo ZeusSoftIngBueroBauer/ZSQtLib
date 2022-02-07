@@ -37,6 +37,7 @@ may result in using the software modules.
 
 #include "ZSDraw/ZSDrawDllMain.h"
 #include "ZSDraw/ZSDrawCommon.h"
+#include "ZSDraw/ZSDrawPhysSizeGeometry.h"
 #include "ZSSys/ZSSysCommon.h"
 #include "ZSDraw/ZSDrawSettings.h"
 
@@ -99,6 +100,16 @@ signals:
 public: // instance methods
     ZS::System::CIdxTree* getGraphObjsIdxTree() { return m_pGraphObjsIdxTree; }
 public: // instance methods
+    void setXResolutionInDpmm( double i_fRes_dpmm );
+    double getXResolutionInDpmm() const;
+    void setYResolutionInDpmm( double i_fRes_dpmm );
+    double getYResolutionInDpmm() const;
+public: // instance methods
+    ZS::System::SErrResultInfo load( const QString& i_strFileName );
+    ZS::System::SErrResultInfo save( const QString& i_strFileName );
+protected: // instance methods
+    ZS::System::SErrResultInfo save( CGraphObj* i_pGraphObj, QXmlStreamWriter& i_xmlStreamWriter );
+public: // instance methods
     void clear();
     void addGraphObj( CGraphObj* i_pGraphObj, CGraphObj* i_pGraphObjParent = nullptr );
     void removeGraphObj( CGraphObj* i_pGraphObj );
@@ -109,16 +120,6 @@ protected: // instance methods
     void deleteItem( CGraphObj* i_pGraphObj );
 protected: // instance methods
     //void addChildItems( QGraphicsItem* i_pGraphicsItem );
-public: // instance methods
-    ZS::System::SErrResultInfo load( const QString& i_strFileName );
-    ZS::System::SErrResultInfo save( const QString& i_strFileName );
-protected: // instance methods
-    ZS::System::SErrResultInfo save( CGraphObj* i_pGraphObj, QXmlStreamWriter& i_xmlStreamWriter );
-public: // instance methods
-    void setXResolutionInDpmm( double i_fRes_dpmm ) { m_fXResolution_dpmm = i_fRes_dpmm; }
-    double getXResolutionInDpmm() const { return m_fXResolution_dpmm; }
-    void setYResolutionInDpmm( double i_fRes_dpmm ) { m_fYResolution_dpmm = i_fRes_dpmm; }
-    double getYResolutionInDpmm() const { return m_fYResolution_dpmm; }
 public: // instance methods
     void setMode(
         const ZS::System::CEnumMode& i_mode,
@@ -240,9 +241,9 @@ protected slots:
     void onGraphObjsIdxTreeEntryMoved( ZS::System::CIdxTree* i_pIdxTree, ZS::System::CIdxTreeEntry* i_pTreeEntry, const QString& i_strKeyInTreePrev, ZS::System::CIdxTreeEntry* i_pTargetBranch );
     void onGraphObjsIdxTreeEntryRenamed( ZS::System::CIdxTree* i_pIdxTree, ZS::System::CIdxTreeEntry* i_pTreeEntry, const QString& i_strKeyInTreePrev, const QString& i_strNamePrev );
 protected: // instance members
+    CPhysSizeGeometry        m_physSizeWidth;
+    CPhysSizeGeometry        m_physSizeHeight;
     CDrawSettings            m_drawSettings;
-    double                   m_fXResolution_dpmm;
-    double                   m_fYResolution_dpmm;
     ZS::System::CEnumMode    m_mode;
     CEnumEditTool            m_editTool;
     CEnumEditMode            m_editMode;

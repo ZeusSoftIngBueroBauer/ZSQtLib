@@ -24,17 +24,17 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#include "ZSPhysSizes/Geometry/ZSPhysSizeLength.h"
+#include "ZSDraw/ZSDrawPhysSizeGeometry.h"
 #include "ZSSys/ZSSysMath.h"
 #include "ZSSys/ZSSysMemLeakDump.h"
 
+using namespace ZS::Draw;
 using namespace ZS::System::Math;
 using namespace ZS::PhysVal;
-using namespace ZS::PhysVal::Geometry;
 
 
 /*******************************************************************************
-class CPhysSizeLength : public CPhysSize
+class CPhysSizeGeometry : public CPhysSize
 *******************************************************************************/
 
 /*==============================================================================
@@ -42,7 +42,17 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CPhysSizeLength::CPhysSizeLength() :
+/*! Creates the physical size with units for the drawing's page setup.
+
+    Allows conversion from pixel to metrics units and vice versa.
+
+    As the resolution in X and Y direction may be different two instances of
+    the physical size will be created by the page setup.
+
+    @param [in] i_fDpmm
+        Pixel resolution in dots per milli meter (= px/mm).
+*/
+CPhysSizeGeometry::CPhysSizeGeometry( double i_fDpmm ) :
 //------------------------------------------------------------------------------
     CPhysSize(
         /* scienceField     */ EPhysScienceFieldGeometry,
@@ -51,12 +61,12 @@ CPhysSizeLength::CPhysSizeLength() :
         /* strSIUnitSymbol  */ "m",
         /* strFormulaSymbol */ "l",
         /* bIsPowerRelated  */ false ),
-    m_physUnitPicoMeter(
-        /* pPhysSize */ this,
-        /* strPrefix */ c_strPrefixPico ),
-    m_physUnitNanoMeter(
-        /* pPhysSize */ this,
-        /* strPrefix */ c_strPrefixNano ),
+    m_physUnitPixel(
+        /* pPhysSize      */ this,
+        /* bIsLogarithmic */ false,
+        /* strName        */ "Pixel",
+        /* strSymbol      */ "px",
+        /* fMFromSI       */ 1000.0 * i_fDpmm ),
     m_physUnitMicroMeter(
         /* pPhysSize */ this,
         /* strPrefix */ c_strPrefixMicro ),
@@ -74,37 +84,7 @@ CPhysSizeLength::CPhysSizeLength() :
         /* strPrefix */ "" ),
     m_physUnitKiloMeter(
         /* pPhysSize */ this,
-        /* strPrefix */ c_strPrefixKilo ),
-    m_physUnitInch(
-        /* pPhysSize      */ this,
-        /* bIsLogarithmic */ false,
-        /* strName        */ "Inch",
-        /* strSymbol      */ "in",
-        /* fMFromSI       */ 1.0/0.0254 ),
-    m_physUnitFoot(
-        /* pPhysSize      */ this,
-        /* bIsLogarithmic */ false,
-        /* strName        */ "Foot",
-        /* strSymbol      */ "ft",
-        /* fMFromSI       */ 1.0/(12.0*0.0254) ),
-    m_physUnitYard(
-        /* pPhysSize      */ this,
-        /* bIsLogarithmic */ false,
-        /* strName        */ "Yard",
-        /* strSymbol      */ "yd",
-        /* fMFromSI       */ 1.0/(36.0*0.0254) ),
-    m_physUnitMile(
-        /* pPhysSize      */ this,
-        /* bIsLogarithmic */ false,
-        /* strName        */ "Mile",
-        /* strSymbol      */ "mi",
-        /* fMFromSI       */ 1.0/1609.344 ),
-    m_physUnitNauticalMile(
-        /* pPhysSize      */ this,
-        /* bIsLogarithmic */ false,
-        /* strName        */ "Nautical Mile",
-        /* strSymbol      */ "sm",
-        /* fMFromSI       */ 1.0/1852.0 )
+        /* strPrefix */ c_strPrefixKilo )
 {
     // Call function of base class CPhysSize to initialize the physical size together
     // with its units (e.g. to create the field with internal conversion routines).
@@ -116,9 +96,7 @@ CPhysSizeLength::CPhysSizeLength() :
     // Link the units to a chained list for the "findBestUnit" functionality:
     //======================================================================
 
-    m_physUnitPicoMeter. setNextLowerHigherUnits( nullptr,               &m_physUnitNanoMeter  );
-    m_physUnitNanoMeter. setNextLowerHigherUnits( &m_physUnitPicoMeter,  &m_physUnitMicroMeter );
-    m_physUnitMicroMeter.setNextLowerHigherUnits( &m_physUnitNanoMeter,  &m_physUnitMilliMeter );
+    m_physUnitMicroMeter.setNextLowerHigherUnits( nullptr,               &m_physUnitMilliMeter );
     m_physUnitMilliMeter.setNextLowerHigherUnits( &m_physUnitMicroMeter, &m_physUnitMeter      );
     m_physUnitMeter.     setNextLowerHigherUnits( &m_physUnitMilliMeter, &m_physUnitKiloMeter  );
     m_physUnitKiloMeter. setNextLowerHigherUnits( &m_physUnitMeter,      nullptr               );
@@ -126,7 +104,46 @@ CPhysSizeLength::CPhysSizeLength() :
 } // ctor
 
 //------------------------------------------------------------------------------
-CPhysSizeLength::~CPhysSizeLength()
+/*! Destroys the physical size.
+*/
+CPhysSizeGeometry::~CPhysSizeGeometry()
 //------------------------------------------------------------------------------
 {
+    //m_physUnitPixel;
+    //m_physUnitMicroMeter;
+    //m_physUnitMilliMeter;
+    //m_physUnitCentiMeter;
+    //m_physUnitDeziMeter;
+    //m_physUnitMeter;
+    //m_physUnitKiloMeter;
+
 } // dtor
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! Sets the resolution of a pixel on the screen in dots per milli meter.
+
+    @param [in] i_fDpmm
+        Pixel resolution in dots per milli meter (= px/mm).
+*/
+//------------------------------------------------------------------------------
+void CPhysSizeGeometry::setDpmm( double i_fDpmm )
+{
+    m_physUnitPixel.setFactorConvertFromSIUnit(1000.0 * i_fDpmm);
+}
+
+//------------------------------------------------------------------------------
+/*! Returns the resolution of a pixel on the screen in dots per milli meter.
+
+    @return
+        Pixel resolution in dots per milli meter (= px/mm).
+*/
+//------------------------------------------------------------------------------
+double CPhysSizeGeometry::getDpmm() const
+{
+    return m_physUnitPixel.getFactorConvertFromSIUnit() / 1000.0;
+}
+

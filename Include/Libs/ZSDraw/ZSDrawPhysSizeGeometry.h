@@ -24,37 +24,49 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#ifndef ZSPhysSizes_Geometry_GraphDevice_h
-#define ZSPhysSizes_Geometry_GraphDevice_h
+#ifndef ZSDraw_PhysSizesGeometry_h
+#define ZSDraw_PhysSizesGeometry_h
 
-#include "ZSPhysSizes/Geometry/ZSPhysSizesGeometryDllMain.h"
+#include "ZSDraw/ZSDrawDllMain.h"
+
 #include "ZSPhysVal/ZSPhysSize.h"
 #include "ZSPhysVal/ZSPhysUnits.h"
 
 namespace ZS
 {
-namespace PhysVal
-{
-namespace Geometry
+namespace Draw
 {
 //******************************************************************************
-class ZSPHYSSIZESGEOMETRYDLL_API CPhysSizeGraphDevice : public CPhysSize
+class ZSDRAWDLL_API CPhysSizeGeometry : public ZS::PhysVal::CPhysSize
 //******************************************************************************
 {
 public: // ctors and dtor
-    CPhysSizeGraphDevice( CUnitsPool* i_pUnitsPool );
-    ~CPhysSizeGraphDevice();
+    CPhysSizeGeometry( double i_fDpmm = 3.78 );
+    ~CPhysSizeGeometry();
 public: // instance methods
-    CPhysUnit* Pixel() { return &m_physUnitPixel; }
+    ZS::PhysVal::CPhysUnit* Pixel() { return &m_physUnitPixel; }
+    ZS::PhysVal::CPhysUnit* MicroMeter() { return &m_physUnitMicroMeter; }
+    ZS::PhysVal::CPhysUnit* MilliMeter() { return &m_physUnitMilliMeter; }
+    ZS::PhysVal::CPhysUnit* CentiMeter() { return &m_physUnitCentiMeter; }
+    ZS::PhysVal::CPhysUnit* DeziMeter() { return &m_physUnitDeziMeter; }
+    ZS::PhysVal::CPhysUnit* Meter() { return &m_physUnitMeter; }
+    ZS::PhysVal::CPhysUnit* KiloMeter() { return &m_physUnitKiloMeter; }
+public: // instance methods
+    void setDpmm( double i_fDpmm );
+    double getDpmm() const;
 protected: // instance members
-    CPhysUnit m_physUnitPixel;
+    ZS::PhysVal::CPhysUnit m_physUnitPixel;
+    ZS::PhysVal::CPhysUnit m_physUnitMicroMeter;
+    ZS::PhysVal::CPhysUnit m_physUnitMilliMeter;
+    ZS::PhysVal::CPhysUnit m_physUnitCentiMeter;
+    ZS::PhysVal::CPhysUnit m_physUnitDeziMeter;
+    ZS::PhysVal::CPhysUnit m_physUnitMeter;
+    ZS::PhysVal::CPhysUnit m_physUnitKiloMeter;
 
-}; // CPhysSizeGraphDevice
+}; // CPhysSizeGeometry
 
-} // namespace Geometry
-
-} // namespace PhysVal
+} // namespace Draw
 
 } // namespace ZS
 
-#endif // #ifndef ZSPhysSizes_Geometry_GraphDevice_h
+#endif // #ifndef ZSPhysSizes_Geometry_Length_h

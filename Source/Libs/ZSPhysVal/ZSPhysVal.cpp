@@ -583,7 +583,7 @@ EFormatResult ZS::PhysVal::formatValue(
         if( pUnitVal != nullptr && pUnitRes != nullptr && pUnitVal != pUnitRes )
         {
             // If the accuracy is defined as a ratio number ..
-            if( pUnitRes->getUnitGroup() == Ratio() )
+            if( pUnitRes->getUnitGroup()->classType() == EUnitClassTypeRatios )
             {
                 // .. the absolute resolution value need to be calculated in the unit
                 // of the value.
@@ -1473,7 +1473,8 @@ EFormatResult ZS::PhysVal::parseValStr(
     bool*          o_pbResOk,
     double*        o_pfRes,
     CUnitGrp**     io_ppUnitGrpRes,
-    CUnit**        io_ppUnitRes )
+    CUnit**        io_ppUnitRes,
+    CUnitsPool*    i_pUnitsPool )
 //------------------------------------------------------------------------------
 {
     EFormatResult formatResult = EFormatResultOk;
@@ -1496,7 +1497,7 @@ EFormatResult ZS::PhysVal::parseValStr(
     }
 
     // Extract sub strings from input string:
-    formatResult = getSubStrings(i_strVal,arSubStr);
+    formatResult = getSubStrings(i_strVal, arSubStr, i_pUnitsPool);
     if( formatResult != EFormatResultOk )
     {
         return formatResult;
@@ -1571,10 +1572,10 @@ EFormatResult ZS::PhysVal::parseValStr(
             pUnitVal = pUnitGrpVal->findUnit(arSubStr[ESubStrValUnit]);
         }
         // If the group name of the unit was specified within the input string ...
-        else
+        else if( i_pUnitsPool != nullptr )
         {
             // .. we need to find both, the unit group and the unit by their names.
-            pUnitVal = CUnitsPool::FindUnit( arSubStr[ESubStrValUnitGrp], arSubStr[ESubStrValUnit] );
+            pUnitVal = i_pUnitsPool->findUnit( arSubStr[ESubStrValUnitGrp], arSubStr[ESubStrValUnit] );
         }
         if( pUnitVal == nullptr )
         {
@@ -1612,9 +1613,9 @@ EFormatResult ZS::PhysVal::parseValStr(
         {
             if( arSubStr[ESubStrResUnitGrp].isEmpty() )
             {
-                if( io_ppUnitGrpRes != nullptr && *io_ppUnitGrpRes == Ratio() )
+                if( io_ppUnitGrpRes != nullptr && (*io_ppUnitGrpRes)->classType() == EUnitClassTypeRatios )
                 {
-                    arSubStr[ESubStrResUnitGrp] = Ratio()->getKey();
+                    arSubStr[ESubStrResUnitGrp] = (*io_ppUnitGrpRes)->getKey();
                 }
                 else
                 {
@@ -1680,10 +1681,10 @@ EFormatResult ZS::PhysVal::parseValStr(
                 pUnitRes = pUnitGrpRes->findUnit(arSubStr[ESubStrResUnit]);
             }
             // If the group name of the unit was specified within the input string ...
-            else
+            else if( i_pUnitsPool != nullptr )
             {
                 // .. we need to find both, the unit group and the unit by their names.
-                pUnitRes = CUnitsPool::FindUnit( arSubStr[ESubStrResUnitGrp], arSubStr[ESubStrResUnit] );
+                pUnitRes = i_pUnitsPool->findUnit( arSubStr[ESubStrResUnitGrp], arSubStr[ESubStrResUnit] );
             }
             if( pUnitRes == nullptr )
             {
@@ -1707,7 +1708,10 @@ EFormatResult ZS::PhysVal::parseValStr(
 } // parseValStr
 
 //------------------------------------------------------------------------------
-EFormatResult ZS::PhysVal::getSubStrings( const QString& i_strVal, QString* io_arSubStr/*[ESubStrCount]*/ )
+EFormatResult ZS::PhysVal::getSubStrings(
+    const QString& i_strVal,
+    QString*       io_arSubStr/*[ESubStrCount]*/,
+    CUnitsPool*    i_pUnitsPool )
 //------------------------------------------------------------------------------
 {
     if( io_arSubStr == nullptr )
@@ -1840,7 +1844,7 @@ EFormatResult ZS::PhysVal::getSubStrings( const QString& i_strVal, QString* io_a
                         {
                             break;
                         }
-                        if( i_strVal[idxChar] == CUnitsPool::GetNameSeparator() )
+                        if( i_strVal[idxChar] == QChar(i_pUnitsPool == nullptr ? '.' : i_pUnitsPool->getNameSeparator()) )
                         {
                             aridxSubStrUnitLenTmp[idxTmp] = idxChar-aridxSubStrUnitBegTmp[idxTmp];
                             idxChar++;
@@ -2010,7 +2014,7 @@ EFormatResult ZS::PhysVal::getSubStrings( const QString& i_strVal, QString* io_a
                     {
                         break;
                     }
-                    if( i_strVal[idxChar] == CUnitsPool::GetNameSeparator() )
+                    if( i_strVal[idxChar] == QChar(i_pUnitsPool == nullptr ? '.' : i_pUnitsPool->getNameSeparator()) )
                     {
                         aridxSubStrUnitLenTmp[idxTmp] = idxChar-aridxSubStrUnitBegTmp[idxTmp];
                         idxChar++;
@@ -2581,7 +2585,7 @@ CPhysVal::CPhysVal( double i_fVal, CUnit* i_pUnitVal, const CPhysValRes& i_physV
 //------------------------------------------------------------------------------
 CPhysVal::CPhysVal( double i_fVal, CUnitRatio* i_pUnitRatio, double i_fResVal, EResType i_resType ) :
 //------------------------------------------------------------------------------
-    m_pUnitGrp(Ratio()),
+    m_pUnitGrp(i_pUnitRatio->getUnitGroup()),
     m_pUnit(i_pUnitRatio),
     m_strUnitGrpKey(),
     m_strUnitKey(),
@@ -2603,7 +2607,7 @@ CPhysVal::CPhysVal( double i_fVal, CUnitRatio* i_pUnitRatio, double i_fResVal, E
 //------------------------------------------------------------------------------
 CPhysVal::CPhysVal(  double i_fVal, CUnitRatio* i_pUnitRatioVal, double i_fResVal, CUnitRatio* i_pUnitRatioRes, EResType i_resType ) :
 //------------------------------------------------------------------------------
-    m_pUnitGrp(Ratio()),
+    m_pUnitGrp(i_pUnitRatioVal->getUnitGroup()),
     m_pUnit(i_pUnitRatioVal),
     m_strUnitGrpKey(),
     m_strUnitKey(),
@@ -2625,7 +2629,7 @@ CPhysVal::CPhysVal(  double i_fVal, CUnitRatio* i_pUnitRatioVal, double i_fResVa
 //------------------------------------------------------------------------------
 CPhysVal::CPhysVal( double i_fVal, CUnitRatio* i_pUnitRatioVal, const CPhysValRes& i_physValRes ) :
 //------------------------------------------------------------------------------
-    m_pUnitGrp(Ratio()),
+    m_pUnitGrp(i_pUnitRatioVal->getUnitGroup()),
     m_pUnit(i_pUnitRatioVal),
     m_strUnitGrpKey(),
     m_strUnitKey(),
@@ -2647,7 +2651,7 @@ CPhysVal::CPhysVal( double i_fVal, CUnitRatio* i_pUnitRatioVal, const CPhysValRe
 //------------------------------------------------------------------------------
 CPhysVal::CPhysVal( double i_fVal, CUnitDataQuantity* i_pUnitDataQuantity, double i_fResVal, EResType i_resType ) :
 //------------------------------------------------------------------------------
-    m_pUnitGrp(DataQuantity()),
+    m_pUnitGrp(i_pUnitDataQuantity->getUnitGroup()),
     m_pUnit(i_pUnitDataQuantity),
     m_strUnitGrpKey(),
     m_strUnitKey(),
@@ -2669,7 +2673,7 @@ CPhysVal::CPhysVal( double i_fVal, CUnitDataQuantity* i_pUnitDataQuantity, doubl
 //------------------------------------------------------------------------------
 CPhysVal::CPhysVal( double i_fVal, CUnitDataQuantity* i_pUnitDataQuantity, double i_fResVal, CUnitRatio* i_pUnitRatioRes, EResType i_resType ) :
 //------------------------------------------------------------------------------
-    m_pUnitGrp(DataQuantity()),
+    m_pUnitGrp(i_pUnitDataQuantity->getUnitGroup()),
     m_pUnit(i_pUnitDataQuantity),
     m_strUnitGrpKey(),
     m_strUnitKey(),
@@ -2691,7 +2695,7 @@ CPhysVal::CPhysVal( double i_fVal, CUnitDataQuantity* i_pUnitDataQuantity, doubl
 //------------------------------------------------------------------------------
 CPhysVal::CPhysVal( double i_fVal, CUnitDataQuantity* i_pUnitDataQuantity, const CPhysValRes& i_physValRes ) :
 //------------------------------------------------------------------------------
-    m_pUnitGrp(DataQuantity()),
+    m_pUnitGrp(i_pUnitDataQuantity->getUnitGroup()),
     m_pUnit(i_pUnitDataQuantity),
     m_strUnitGrpKey(),
     m_strUnitKey(),
@@ -3147,7 +3151,7 @@ CPhysVal::CPhysVal( const QString& i_strVal, CUnitGrp* i_pUnitGrpVal, const CPhy
 //------------------------------------------------------------------------------
 CPhysVal::CPhysVal( const QString& i_strVal, CUnitRatio* i_pUnitRatio, EResType i_resType ) :
 //------------------------------------------------------------------------------
-    m_pUnitGrp(Ratio()),
+    m_pUnitGrp(i_pUnitRatio->getUnitGroup()),
     m_pUnit(i_pUnitRatio),
     m_strUnitGrpKey(),
     m_strUnitKey(),
@@ -3171,7 +3175,7 @@ CPhysVal::CPhysVal( const QString& i_strVal, CUnitRatio* i_pUnitRatio, EResType 
 //------------------------------------------------------------------------------
 CPhysVal::CPhysVal( const QString& i_strVal, CUnitRatio* i_pUnitRatio, double i_fResVal, EResType i_resType ) :
 //------------------------------------------------------------------------------
-    m_pUnitGrp(Ratio()),
+    m_pUnitGrp(i_pUnitRatio->getUnitGroup()),
     m_pUnit(i_pUnitRatio),
     m_strUnitGrpKey(),
     m_strUnitKey(),
@@ -3195,7 +3199,7 @@ CPhysVal::CPhysVal( const QString& i_strVal, CUnitRatio* i_pUnitRatio, double i_
 //------------------------------------------------------------------------------
 CPhysVal::CPhysVal( const QString& i_strVal, CUnitRatio* i_pUnitRatioVal, double i_fResVal, CUnitRatio* i_pUnitRatioRes, EResType i_resType ) :
 //------------------------------------------------------------------------------
-    m_pUnitGrp(Ratio()),
+    m_pUnitGrp(i_pUnitRatioVal->getUnitGroup()),
     m_pUnit(i_pUnitRatioVal),
     m_strUnitGrpKey(),
     m_strUnitKey(),
@@ -3219,7 +3223,7 @@ CPhysVal::CPhysVal( const QString& i_strVal, CUnitRatio* i_pUnitRatioVal, double
 //------------------------------------------------------------------------------
 CPhysVal::CPhysVal( const QString& i_strVal, CUnitRatio* i_pUnitRatioVal, const CPhysValRes& i_physValRes ) :
 //------------------------------------------------------------------------------
-    m_pUnitGrp(Ratio()),
+    m_pUnitGrp(i_pUnitRatioVal->getUnitGroup()),
     m_pUnit(i_pUnitRatioVal),
     m_strUnitGrpKey(),
     m_strUnitKey(),
@@ -3243,7 +3247,7 @@ CPhysVal::CPhysVal( const QString& i_strVal, CUnitRatio* i_pUnitRatioVal, const 
 //------------------------------------------------------------------------------
 CPhysVal::CPhysVal( const QString& i_strVal, CUnitDataQuantity* i_pUnitDataQuantity, EResType i_resType ) :
 //------------------------------------------------------------------------------
-    m_pUnitGrp(DataQuantity()),
+    m_pUnitGrp(i_pUnitDataQuantity->getUnitGroup()),
     m_pUnit(i_pUnitDataQuantity),
     m_strUnitGrpKey(),
     m_strUnitKey(),
@@ -3267,7 +3271,7 @@ CPhysVal::CPhysVal( const QString& i_strVal, CUnitDataQuantity* i_pUnitDataQuant
 //------------------------------------------------------------------------------
 CPhysVal::CPhysVal( const QString& i_strVal, CUnitDataQuantity* i_pUnitDataQuantity, double i_fResVal, EResType i_resType ) :
 //------------------------------------------------------------------------------
-    m_pUnitGrp(DataQuantity()),
+    m_pUnitGrp(i_pUnitDataQuantity->getUnitGroup()),
     m_pUnit(i_pUnitDataQuantity),
     m_strUnitGrpKey(),
     m_strUnitKey(),
@@ -3291,7 +3295,7 @@ CPhysVal::CPhysVal( const QString& i_strVal, CUnitDataQuantity* i_pUnitDataQuant
 //------------------------------------------------------------------------------
 CPhysVal::CPhysVal( const QString& i_strVal, CUnitDataQuantity* i_pUnitDataQuantity, double i_fResVal, CUnitRatio* i_pUnitRatioRes, EResType i_resType ) :
 //------------------------------------------------------------------------------
-    m_pUnitGrp(DataQuantity()),
+    m_pUnitGrp(i_pUnitDataQuantity->getUnitGroup()),
     m_pUnit(i_pUnitDataQuantity),
     m_strUnitGrpKey(),
     m_strUnitKey(),
@@ -3315,7 +3319,7 @@ CPhysVal::CPhysVal( const QString& i_strVal, CUnitDataQuantity* i_pUnitDataQuant
 //------------------------------------------------------------------------------
 CPhysVal::CPhysVal( const QString& i_strVal, CUnitDataQuantity* i_pUnitDataQuantity, double i_fResVal, CUnitDataQuantity* i_pUnitDataQuantityRes, EResType i_resType ) :
 //------------------------------------------------------------------------------
-    m_pUnitGrp(DataQuantity()),
+    m_pUnitGrp(i_pUnitDataQuantity->getUnitGroup()),
     m_pUnit(i_pUnitDataQuantity),
     m_strUnitGrpKey(),
     m_strUnitKey(),
@@ -3339,7 +3343,7 @@ CPhysVal::CPhysVal( const QString& i_strVal, CUnitDataQuantity* i_pUnitDataQuant
 //------------------------------------------------------------------------------
 CPhysVal::CPhysVal( const QString& i_strVal, CUnitDataQuantity* i_pUnitDataQuantity, const CPhysValRes& i_physValRes ) :
 //------------------------------------------------------------------------------
-    m_pUnitGrp(DataQuantity()),
+    m_pUnitGrp(i_pUnitDataQuantity->getUnitGroup()),
     m_pUnit(i_pUnitDataQuantity),
     m_strUnitGrpKey(),
     m_strUnitKey(),
@@ -4267,11 +4271,11 @@ void CPhysVal::setUnit( CUnit* i_pUnit )
     }
     else if( m_pUnit->classType() == EUnitClassTypeRatios )
     {
-        m_pUnitGrp = Ratio();
+        m_pUnitGrp = dynamic_cast<CUnitGrpRatio*>(m_pUnit->getUnitGroup());
     }
     else if( m_pUnit->classType() == EUnitClassTypeDataQuantity )
     {
-        m_pUnitGrp = DataQuantity();
+        m_pUnitGrp = dynamic_cast<CUnitGrpDataQuantity*>(m_pUnit->getUnitGroup());
     }
     else if( m_pUnit->classType() == EUnitClassTypePhysScienceFields )
     {
@@ -4322,7 +4326,7 @@ void CPhysVal::setUnitRatio( CUnitRatio* i_pUnitRatio )
     }
     else
     {
-        m_pUnitGrp = Ratio();
+        m_pUnitGrp = m_pUnit->getUnitGroup();
     }
 
     if( m_pUnitGrp != nullptr )
@@ -4350,7 +4354,7 @@ void CPhysVal::setUnitDataQuantity( CUnitDataQuantity* i_pUnitDataQuantity )
     }
     else
     {
-        m_pUnitGrp = DataQuantity();
+        m_pUnitGrp = i_pUnitDataQuantity->getUnitGroup();
     }
 
     if( m_pUnitGrp != nullptr )
@@ -4514,7 +4518,7 @@ EFormatResult CPhysVal::setVal( const QString& i_strVal )
     CUnitGrp*     pUnitGrpRes = m_physValRes.getUnitGroup();
     CUnit*        pUnitRes = m_physValRes.getUnit();
 
-    formatResult = parseValStr(i_strVal,&bValOk,&fVal,&pUnitGrpVal,&pUnitVal,&bResOk,&fResVal,&pUnitGrpRes,&pUnitRes);
+    formatResult = parseValStr(i_strVal, &bValOk, &fVal, &pUnitGrpVal, &pUnitVal, &bResOk, &fResVal, &pUnitGrpRes, &pUnitRes, nullptr);
 
     if( !(formatResult & EFormatResultError) && bValOk )
     {

@@ -47,38 +47,49 @@ class ZSPHYSVALDLL_API CUnitsPool
 friend class CUnit;
 friend class CUnitGrp;
 public: // class methods
-    static CUnitsPool* GetInstance() { return s_pInstance; }
-public: // class methods
-    static QChar GetNameSeparator();
-    static void SetNameSeparator( QChar i_cSeparator );
-public: // class methods
-    static CUnitGrp* GetUnitClassTypeGroup( EUnitClassType i_classType );
-    static CUnitGrp* GetPhysScienceFieldUnitGroup( EPhysScienceField i_scienceField );
-public: // class methods
-    static CUnitGrp* FindUnitGrp( const QString& i_strUnitGrpKey );
-    static CPhysSize* FindPhysSize( const QString& i_strUnitGrpKey );  // same as "findUnitGrp" but with implicit type cast
-public: // class methods
-    static CUnit* FindUnit( const QString& i_strUnitKey );
-    static CUnit* FindUnit( const QString& i_strUnitGrpKey, const QString& i_strUnitKey );
-    static CPhysUnit* FindPhysUnit( const QString& i_strUnitKey );     // same as "findUnit" but with implicit type cast
-    static CPhysUnit* FindPhysUnit( const QString& i_strUnitGrpKey, const QString& i_strUnitKey );
-public: // ctors and dtor
-    CUnitsPool();
+    static CUnitsPool* GetInstance( const QString& i_strName = "ZSPhysSizes" );
+    static CUnitsPool* CreateInstance( const QString& i_strName = "ZSPhysSizes" );
+    static void ReleaseInstance( const QString& i_strName = "ZSPhysSizes" );
+    static void ReleaseInstance( CUnitsPool* i_pUnitsPool );
+protected: // ctors and dtor
+    CUnitsPool( const QString& i_strName );
     ~CUnitsPool();
+public: // ctors and dtor
+    QString name() const { return m_strName; }
+public: // instance methods
+    QChar getNameSeparator() const;
+    void setNameSeparator( QChar i_cSeparator );
+public: // instance methods
+    CUnitGrp* getUnitClassTypeGroup( EUnitClassType i_classType );
+    CUnitGrp* getPhysScienceFieldUnitGroup( EPhysScienceField i_scienceField );
+public: // instance methods
+    CUnitGrp* findUnitGrp( const QString& i_strUnitGrpKey );
+    CPhysSize* findPhysSize( const QString& i_strUnitGrpKey );  // same as "findUnitGrp" but with implicit type cast
+public: // instance methods
+    CUnit* findUnit( const QString& i_strUnitKey );
+    CUnit* findUnit( const QString& i_strUnitGrpKey, const QString& i_strUnitKey );
+    CPhysUnit* findPhysUnit( const QString& i_strUnitKey );     // same as "findUnit" but with implicit type cast
+    CPhysUnit* findPhysUnit( const QString& i_strUnitGrpKey, const QString& i_strUnitKey );
 protected: // instance methods
     void onUnitGrpCreated( CUnitGrp* i_pUnitGrp );
     void onUnitGrpDestroyed( const QString& i_strUnitGrpKey );
 protected: // instance methods
     void onUnitCreated( CUnit* i_pUnit );
     void onUnitDestroyed( const QString& i_strUnitKey );
+protected: // reference counter
+    int getRefCount() const;
+    int incrementRefCount();
+    int decrementRefCount();
 protected: // class members
-    static CUnitsPool* s_pInstance; // singleton class
+    static QHash<QString, CUnitsPool*> s_hshpInstances; /*!< Hash with all created unit pools (key is name of instance). */
 protected: // instance members
+    QString                  m_strName;
     QChar                    m_cNameSeparator;
     QHash<QString,CUnitGrp*> m_hshpUnitGrps;
     QHash<QString,CUnit*>    m_hshpUnits;
     CUnitGrp*                m_arpUnitGrpClassTypes[EUnitClassTypeCount];
     CUnitGrp*                m_arpUnitGrpPhysScienceFields[EPhysScienceFieldCount];
+    int                      m_iRefCount;
 
 }; // class CUnitsPool
 

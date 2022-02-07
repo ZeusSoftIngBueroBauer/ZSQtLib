@@ -7,7 +7,7 @@ ZSAppDraw ist ein innerhalb der ZSQtLib verfuegbares 2D Vektor Mal Programm das 
 
 ![ZSAppDraw](Libs/ZSDraw/ZSAppDraw.png)
 
-ZSDraw verwendet die Klassen QGraphicsScene und QGraphicsView der Qt Klassenbibliothek.
+ZSDraw verwendet Klassen des Graphics View Frameworks der Qt Klassenbibliothek.
 
 Die Klasse ZS::Draw::CDrawingScene ist von QGraphicsScene abgeleitet.
 Die Klasse ZS::Draw::CDrawingView is von QGraphicsView abgeleitet.
@@ -72,6 +72,64 @@ die mehrere Argumente erwartet.
 Da die Auswahl der verschiedenen Modis nicht unabhängig voneinender geschieht sondern nur in Kombination mit
 anderen Modis Sinn macht, wurden nicht separate Methoden für jeden Mode implementiert sondern das Ändern der
 Modes in einer Methode zusammengefasst.
+
+Weltkoordinaten
+===============
+
+Auf dem Bildschirm werden die grafischen Objekte immer in Pixel Koordinaten positioniert.
+Soll die Zeichnung ein Abbild aus der realen Welt wie z.B. eine technische Zeichung oder eine Landkarte
+darstellen, ist eine Transformation in eine Einheit aus dem metrischen System notwendig.
+
+Für die Umrechnung müssen Breite und Höhe der real darzustellenden Fläche im metrischen System
+als auch ein Massstab angegeben werden. Diese reale Fläche muss in das Pixel System übernommen werden.
+
+Um Koordinaten aus dem metrischen System umrechnen zu können, muss ein Umrechnungsfaktor definiert werden,
+der sich aus dem Verhältnis der realen Masse aus dem metrischen System zur Anzahl der Pixel des Bildes ergibt.
+
+\f[
+xFaktor = \frac {{width}_{world}} {{width}_{px}} \\
+yFaktor = \frac {{height}_{world}} {{height}_{px}}
+\f]
+
+Damit das Bild nicht gestaucht wird, sollten xFaktor und yFaktor identisch sein.
+
+Ein Pixel des Bildschirms hat ein metrische Dimension die in dpi (dots per inch) angegeben wird.
+Ein möglicher Wert wäre \f${96.0 * 96.0}_{dpi}\f$.
+In Millimeter angegeben entspräche dies \f${3.78 * 3.78}_{dpmm}\f$.
+Ein Pixel entspricht also ca. \f$\simeq{0.26}_{mm}\f$.
+
+Um ein DINA4 Blatt mit den Ausmaßen \f${297}_{mm} * {210}_{mm}\f$ exakt auf dem Bildschirm wiederzugeben
+müsste das Bild folglich
+
+- die Höhe \f${297}_{mm} * {3.78}_{dpmm} \simeq {1122.66}_{px}\f$ und
+- die Breite \f${210}_{mm} * {3.78}_{dpmm} \simeq {793.8}_{px}\f$ besitzen.
+
+\f[
+xFaktor = \frac {{210}_{mm}} {{794}_{px}} \simeq 0.26 \frac {mm} {px} \\
+yFaktor = \frac {{297}_{mm}} {{1123}_{px}} \simeq 0.26 \frac {mm} {px}
+\f]
+
+Oder anders ausgedrückt eine Linie auf dem Blatt Papier beginnend von \f${(100/100)}_{mm}\f$ bis \f${(110/110)}_{mm}\f$
+entspräche auf dem Bildchirm einer Linie von \f${(378.0/378.0)}_{px}\f$ bis \f${(415.8/415.8)}_{px}\f$.
+
+Eine Linie mit realen Weltkoordinaten kann niemals exakt auf dem Bildschirm wiedergegeben werden.
+Das muss beim Malen auf dem Bilschirm mit der Maus berücksichtigt werden.
+
+Wird ein Objekt malerisch erzeugt, besitzt es Pixel-Koordinaten, die in Welt-Koordinaten umgerechnet werden können,
+diese entsprechen aber sehr wahrscheinlich nie den tatsächlich gewünschten Massen der realen Welt.
+
+Da die grafischen Objekte z.B. für eine technische Zeichnung automatisch bemasst werden sollen, müssen die Positionen
+und Abmessungen für das metrische System nach dem Zeichnen manuell eingegeben werden.
+
+Nach jeder grafischen Operation am Objekt mit der Maus (verschieben, skalieren, rotieren) müssen ggf. Position,
+Höhe und Breite sowie Drehwinkel manuell für das metrische Einheiten-System korrigiert werden.
+
+Das PageSetup definiert die Ausmasse der Zeichnung. Es kann hier die Bilgröße angegeben werden und - falls eine
+Transformation in das metrische System mit Weltkoordinaten erforderlich ist - Breite und Höhe in einer Einheit
+aus dem metrischen System (z.B. mm, cm, m, km, etc.).
+
+Über ein Flag kann gesteuert werden, ob nach Änderung eines Wertes versucht werden soll, x und y Faktor identisch zu halten.
+
 
 Erzeugen von Objekten
 =====================

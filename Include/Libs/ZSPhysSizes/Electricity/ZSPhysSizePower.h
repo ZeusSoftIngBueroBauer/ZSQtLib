@@ -43,7 +43,7 @@ class ZSPHYSSIZESELECTRICITYDLL_API CPhysSizePower : public CPhysSize
 //******************************************************************************
 {
 public: // ctors and dtor
-    CPhysSizePower();
+    CPhysSizePower( CUnitsPool* i_pUnitsPool );
     ~CPhysSizePower();
 public: // instance methods
     //CPhysUnit* YoktoWatt();

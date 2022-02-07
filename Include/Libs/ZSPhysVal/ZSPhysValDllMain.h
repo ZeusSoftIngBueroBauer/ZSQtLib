@@ -281,20 +281,8 @@ ZSPHYSVALDLL_API QString getExponentStrFromPrefixStr( const QString& i_strPrefix
 
 
 /*******************************************************************************
-Initialization of the DLL
-*******************************************************************************/
-
-ZSPHYSVALDLL_API void createUnitsPool();
-ZSPHYSVALDLL_API void deleteUnitsPool();
-
-
-/*******************************************************************************
 Auxiliary methods
 *******************************************************************************/
-
-ZSPHYSVALDLL_API CUnitsPool* getUnitsPool();
-ZSPHYSVALDLL_API CUnitGrpRatio* Ratio();                // same as getUnitsPool().getUnitClassTypeGroup(EUnitClassTypeRatios)
-ZSPHYSVALDLL_API CUnitGrpDataQuantity* DataQuantity();  // same as getUnitsPool().getUnitClassTypeGroup(EUnitClassTypeDataQuantity)
 
 ZSPHYSVALDLL_API QString getUnitName( const CUnit* i_pUnit, bool i_bInsertParentNames = false );
 ZSPHYSVALDLL_API QString getUnitGroupName( const CUnit* i_pUnit, bool i_bInsertParentNames = false  );

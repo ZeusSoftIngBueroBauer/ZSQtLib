@@ -53,7 +53,6 @@ may result in using the software modules.
 #include "ZSDraw/ZSDrawWdgtFormatGraphObjsFillStyle.h"
 #include "ZSDraw/ZSDrawGraphObj.h"
 #include "ZSDraw/ZSDrawingScene.h"
-#include "ZSPhysSizes/Geometry/ZSPhysSizes.h"
 #include "ZSSysGUI/ZSSysPushButton.h"
 #include "ZSSys/ZSSysErrResult.h"
 #include "ZSSys/ZSSysException.h"

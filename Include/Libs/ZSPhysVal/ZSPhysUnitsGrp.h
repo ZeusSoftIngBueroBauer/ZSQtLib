@@ -46,6 +46,7 @@ class ZSPHYSVALDLL_API CUnitGrp
 {
 public: // ctors and dtor
     CUnitGrp(
+        CUnitsPool*    i_pUnitsPool,
         EUnitClassType i_classType,                 // [PhysScienceFields, Ratios, UserDefinedQuantities]
         const QString& i_strName,                   // e.g. "Time", "Power", "Voltage", "Current", ...
         const QString& i_strKey,                    // e.g. "PhysScienceFields", "Ratios", "Kinematics", "Kinematics::Time", ...
@@ -61,6 +62,7 @@ public: // instance methods
     QString getParentGroupName( bool i_bInsertParentNames = false ) const;
     QString getName( bool i_bInsertParentNames = false ) const;
     QString getKey() const { return m_strKey; }
+    QChar getNameSeparator() const;
 public: // instance methods
     bool isNameSpaceNode() const { return m_bIsNameSpaceNode; }
 public: // instance methods
@@ -87,6 +89,7 @@ private: // default and copy ctor not allowed
 private: // assignment operator not allowed
     CUnitGrp& operator = ( const CUnitGrp& );
 protected: // instance members
+    CUnitsPool*              m_pUnitsPool;
     EUnitClassType           m_classType;
     QString                  m_strName;
     QString                  m_strKey;              // key used to insert the group in the units pool

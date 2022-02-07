@@ -36,6 +36,7 @@ may result in using the software modules.
 #endif
 
 #include "ZSDraw/ZSDrawDllMain.h"
+#include "ZSDraw/ZSDrawPageSetup.h"
 
 namespace ZS
 {
@@ -76,6 +77,7 @@ public: // overridables
         polymorphic base type the method returns the name of the derived class. */
     virtual QString className() const { return ClassName(); }
 public: // instance methods
+    CPageSetup* getPageSetup() { return &m_pageSetup; }
     CDrawingScene* getDrawingScene() { return m_pDrawingScene; }
 public: // instance methods
     double getXResolutionInDpmm();  // horizontal resolution of paint device in dots per milli meter
@@ -105,6 +107,7 @@ protected: // overridables of base class QGraphicsView
 protected slots:
     void onSceneRectChanged( const QRectF& i_rect );
 protected: // instance members
+    CPageSetup               m_pageSetup;
     CDrawingScene*           m_pDrawingScene;
     ZS::Trace::CTrcAdminObj* m_pTrcAdminObj;
     ZS::Trace::CTrcAdminObj* m_pTrcAdminObjMouseMoveEvent;

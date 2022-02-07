@@ -35,7 +35,6 @@ may result in using the software modules.
 #include "ZSDraw/ZSDrawGraphObjLine.h"
 #include "ZSDraw/ZSDrawGraphObjText.h"
 #include "ZSDraw/ZSDrawGraphObjRect.h"
-#include "ZSPhysSizes/Geometry/ZSPhysSizes.h"
 #include "ZSPhysVal/ZSPhysValExceptions.h"
 #include "ZSPhysVal/ZSPhysVal.h"
 #include "ZSTest/ZSTestStep.h"
@@ -146,8 +145,11 @@ void CTest::doTestStepAndroidWallpaperTemplatePageSetup( ZS::Test::CTestStep* i_
 
     if( strOperation.contains("Width:") && strOperation.contains("Height:") )
     {
-        CPhysVal physValWidth(Geometry::GraphDevice());
-        CPhysVal physValHeight(Geometry::GraphDevice());
+        CPageSetup* pageSetup = m_pDrawingView->getPageSetup();
+        CPhysSizeGeometry* physSizeWidth = pageSetup->getPhysSizeWidth();
+        CPhysSizeGeometry* physSizeHeight = pageSetup->getPhysSizeHeight();
+        CPhysVal physValWidth(physSizeWidth);
+        CPhysVal physValHeight(physSizeHeight);
 
         QString strCoors = strOperation;
 
@@ -173,8 +175,8 @@ void CTest::doTestStepAndroidWallpaperTemplatePageSetup( ZS::Test::CTestStep* i_
 
             try
             {
-                int cxWidth = physValWidth.getVal(Geometry::GraphDevice()->Pixel());
-                int cyHeight = physValHeight.getVal(Geometry::GraphDevice()->Pixel());
+                int cxWidth = physValWidth.getVal(physSizeWidth->Pixel());
+                int cyHeight = physValHeight.getVal(physSizeHeight->Pixel());
 
                 strlstExpectedValues[0] = "Width: " + QString::number(cxWidth) + " px";
                 strlstExpectedValues[1] = "Height: " + QString::number(cyHeight) + " px";
@@ -246,8 +248,11 @@ void CTest::doTestStepAndroidWallpaperTemplateDrawGridLines( ZS::Test::CTestStep
 
     if( strOperation.contains("xOffs:") && strOperation.contains("yOffs:") )
     {
-        CPhysVal physValXOffs(Geometry::GraphDevice());
-        CPhysVal physValYOffs(Geometry::GraphDevice());
+        CPageSetup* pageSetup = m_pDrawingView->getPageSetup();
+        CPhysSizeGeometry* physSizeWidth = pageSetup->getPhysSizeWidth();
+        CPhysSizeGeometry* physSizeHeight = pageSetup->getPhysSizeHeight();
+        CPhysVal physValXOffs(physSizeWidth);
+        CPhysVal physValYOffs(physSizeHeight);
 
         QString strCoors = strOperation;
 
@@ -273,8 +278,8 @@ void CTest::doTestStepAndroidWallpaperTemplateDrawGridLines( ZS::Test::CTestStep
 
             try
             {
-                xOffs_px = physValXOffs.getVal(Geometry::GraphDevice()->Pixel());
-                yOffs_px = physValYOffs.getVal(Geometry::GraphDevice()->Pixel());
+                xOffs_px = physValXOffs.getVal(physSizeWidth->Pixel());
+                yOffs_px = physValYOffs.getVal(physSizeHeight->Pixel());
             }
             catch( CPhysValException& )
             {
