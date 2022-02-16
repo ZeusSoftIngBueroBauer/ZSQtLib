@@ -56,8 +56,20 @@ list(APPEND _Sources
     ../../../Include/Libs/ZSSys/ZSSysTrcMethod.h          ../../../Source/Libs/ZSSys/ZSSysTrcMethod.cpp
     ../../../Include/Libs/ZSSys/ZSSysTrcMthFile.h         ../../../Source/Libs/ZSSys/ZSSysTrcMthFile.cpp
     ../../../Include/Libs/ZSSys/ZSSysTrcServer.h          ../../../Source/Libs/ZSSys/ZSSysTrcServer.cpp
-    ../../../Include/Libs/ZSSys/ZSSysVersion.h
 )
+
+configure_file(
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../../Include/Libs/ZSSys/ZSSysVersion.h.in
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../../Include/Libs/ZSSys/ZSSysVersion.h)
+set(_Sources ${_Sources} ${CMAKE_CURRENT_SOURCE_DIR}/../../../Include/Libs/ZSSys/ZSSysVersion.h)
+
+if(WIN32)
+    configure_file(
+        ${CMAKE_CURRENT_SOURCE_DIR}/../../../Include/Libs/ZSSys/ZSSysVersion.rc.in
+        ${CMAKE_CURRENT_BINARY_DIR}/ZSSysVersion.rc
+        @ONLY)
+    set(_Sources ${_Sources} ${CMAKE_CURRENT_BINARY_DIR}/ZSSysVersion.rc)
+endif()
 
 # Got to create the following output name:
 # (ProjectName)Qt$(QT_VERSION_MAJOR)_$(Compiler)_$(Platform)[_d]

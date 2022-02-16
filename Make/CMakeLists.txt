@@ -1,41 +1,9 @@
-# Build instructions
-# ==================
+#*******************************************************************************
+# ZSQtLib Main CMake File
+#*******************************************************************************
 #
-# Recommended Build Directories:
-# ------------------------------
-# Please verify that your compiler supports the desired architecture (platform).
-# VS-2008 express edition for example does not support the X64 architecture.
-# - for VS-2008: ./ZSQtLib/CMake-Build/msvc2008/<Platform>/<Debug|Release>
-# - for VS-2010: ./ZSQtLib/CMake-Build/msvc2010/<Platform>/<Debug|Release>
-# - for VS-2012: ./ZSQtLib/CMake-Build/msvc2012/<Platform>/<Debug|Release>
-# - for VS-2013: ./ZSQtLib/CMake-Build/msvc2013/<Platform>/<Debug|Release>
-# - for VS-2015: ./ZSQtLib/CMake-Build/msvc2015/<Platform>/<Debug|Release>
-# - for VS-2017: ./ZSQtLib/CMake-Build/msvc2017/<Platform>/<Debug|Release>
-# - for VS-2019: ./ZSQtLib/CMake-Build/msvc2019/<Platform>/<Debug|Release>
+# For build instructions see "Readme_BuildZSQtLib.md".
 #
-# Call CMake from build directory:
-# --------------------------------
-# You need to specify the path to the Qt install directory. Depending on the Qt version the install directory is different.
-# For Qt4 you need to specify the directory where "qmake" is located.
-# For Qt5 you need to specify the directory where "QtConfig.cmake" is located.
-# You may have installed a precompiled Qt version or you may have compiled Qt on your own either from the Git repository
-# or from the downloaded zipped source files.
-# Make sure you use the same generator to compile ZSQtLib as it has been used to compile Qt.
-# Change into the build directory to invoke cmake for building ZSQtLib.
-# For your convience some examples are shown below.
-# - for VS-2008, Qt-Version 4.8.4 (Qt binaries and qmake on drive D in D:/Qt/Bin/4.8.4/msvc2008/Win32/bin):
-#   cmake -G "Visual Studio 9 2008" -A Win32 -DCMAKE_BUILD_TYPE=Debug -DQT_VERSION_MAJOR=4 -DCMAKE_PREFIX_PATH=D:/Qt/Bin/4.8.4/msvc2008/Win32/bin ../../../../Make
-# - for VS-2008, Qt-Version 4.8.8 (Qt binaries and qmake on drive C in C:/Qt/Build/4.8.4/msvc2008/Win32/bin):
-#   cmake -G "Visual Studio 9 2008" -A Win32 -DCMAKE_BUILD_TYPE=Debug -DQT_VERSION_MAJOR=4 -DCMAKE_PREFIX_PATH="C:/Qt/Build/4.8.8/msvc2008/Win32/bin" ../../../../Make
-# - for VS-2013, Qt-Version 5.6.3 (QtConfig.cmake located in D:/Qt/5.6/5.6.3/msvc2013_x64_Swp/lib/cmake/Qt5):
-#   cmake -G "Visual Studio 12 2013" -A x64 -DCMAKE_BUILD_TYPE=Debug -DQT_VERSION_MAJOR=5 -DQt5_DIR="D:/Qt/5.6/5.6.3/msvc2013_64_Swp/lib/cmake" ../../../../Make
-# - for VS-2019, Qt-Version 5.15.2 (QtConfig.cmake located in /Qt/Bin/5.15.2/msvc2019/x64/lib/cmake/Qt5):
-#   cmake -G "Visual Studio 16 2019" -A x64 -DCMAKE_BUILD_TYPE=Debug -DQT_VERSION_MAJOR=5 -DQt5_DIR="/Qt/Bin/5.15.2/msvc2019/x64/lib/cmake/Qt5" ../../../../Make
-#
-# Build packages:
-# ---------------
-# cmake --build . --config DEBUG -v
-
 # SOURCE_DIR Variables
 # ====================
 #
@@ -64,7 +32,7 @@
 # This is the directory that contains the CMakeLists.txt file that contains the project(projectName) definition.
 # Every CMakeLists.txt file need not define a project, but one reason to define a project is to create this
 # variable so you can refer to its source files later, in other CMakeLists.txt files.
-
+#
 # BINARY_DIR Variables
 # ====================
 #
@@ -99,7 +67,7 @@
 
 cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
 
-project(ZSQtLibs)
+project(ZSQtLibs LANGUAGES CXX)
 
 message(STATUS "")
 message(STATUS "---------------------------------------------------------------------------------------------")
@@ -118,6 +86,10 @@ endif()
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
+set(CMAKE_AUTOUIC ON)
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 message(STATUS "CMAKE_BINARY_DIR:         ${CMAKE_BINARY_DIR}")
 message(STATUS "CMAKE_CURRENT_BINARY_DIR: ${CMAKE_CURRENT_BINARY_DIR}")
@@ -153,6 +125,10 @@ elseif(CMAKE_GENERATOR MATCHES "Visual Studio 15 2017")
     set(Compiler "msvc2017")
 elseif(CMAKE_GENERATOR MATCHES "Visual Studio 16 2019")
     set(Compiler "msvc2019")
+elseif(CMAKE_GENERATOR MATCHES "MinGW Makefiles")
+    set(Compiler "mingw81")
+else()
+    message(ERROR "Unsupported Generator")
 endif()
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
@@ -179,12 +155,20 @@ elseif(CMAKE_BUILD_TYPE MATCHES MinSizeRel)
 endif()
 
 if(CMAKE_CXX_COMPILER_ID MATCHES MSVC)
-    if(CMAKE_CXX_COMPILER_ARCHITECTURE_ID MATCHES x64)
-        set(Platform "x64")
-    else()
+    if(CMAKE_CXX_COMPILER_ARCHITECTURE_ID MATCHES Win32)
         set(Platform "Win32")
+    else()
+        set(Platform "x64")
     endif()
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup")
+elseif(CMAKE_CXX_COMPILER_ID MATCHES GNU)
+    if(CMAKE_CXX_COMPILER_ARCHITECTURE_ID MATCHES Win32)
+        set(Platform "Win32")
+    else()
+        set(Platform "x64")
+    endif()
+else()
+    message(ERROR "Unsupported Compiler")
 endif()
 
 message(STATUS "")
@@ -213,10 +197,6 @@ message(STATUS "CMAKE_LIBRARY_OUTPUT_DIRECTORY_DEBUG:   ${CMAKE_LIBRARY_OUTPUT_D
 message(STATUS "CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE: ${CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE}")
 message(STATUS "CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG:   ${CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG}")
 message(STATUS "CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE: ${CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE}")
-
-set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTORCC ON)
-set(CMAKE_AUTOUIC ON)
 
 message(STATUS "")
 message(STATUS "---------------------------------------------------------------------------------------------")
@@ -291,6 +271,12 @@ if(QT_FOUND)
             get_filename_component(QT_BINARY_DIR ${Qt5Core_Location} DIRECTORY)
         endif()
     endif()
+    if(NOT QT_VERSION_MAJOR AND QT_DEFAULT_MAJOR_VERSION)
+        set(QT_VERSION_MAJOR ${QT_DEFAULT_MAJOR_VERSION})
+    endif()
+    message("QT_DEFAULT_MAJOR_VERSION:           ${QT_DEFAULT_MAJOR_VERSION}")
+    message("QT_DEFAULT_MINOR_VERSION:           ${QT_DEFAULT_MINOR_VERSION}")
+    message("QT_DEFAULT_PATCH_VERSION:           ${QT_DEFAULT_PATCH_VERSION}")
     message("QT_VERSION_MAJOR:                   ${QT_VERSION_MAJOR}")
     message("QT_VERSION_MINOR:                   ${QT_VERSION_MINOR}")
     message("QT_VERSION_PATCH:                   ${QT_VERSION_PATCH}")
@@ -302,12 +288,12 @@ if(QT_FOUND)
     message("QT_VISIBILITY_AVAILABLE:            ${QT_VISIBILITY_AVAILABLE}")
 endif()
 
-message(STATUS "")
-message(STATUS "---------------------------------------------------------------------------------------------")
-message(STATUS "Find Package Python Interpreter")
-message(STATUS "---------------------------------------------------------------------------------------------")
-
 if(CREATE_PYTHON_BINDINGS)
+    message(STATUS "")
+    message(STATUS "---------------------------------------------------------------------------------------------")
+    message(STATUS "Find Package Python Interpreter")
+    message(STATUS "---------------------------------------------------------------------------------------------")
+
     find_package(Python3)
     message("PYTHON_EXECUTABLE:     ${PYTHON_EXECUTABLE}")
     message("PYTHON_VERSION_STRING: ${PYTHON_VERSION_STRING}")
@@ -319,6 +305,17 @@ if(CREATE_PYTHON_BINDINGS)
     message("PYTHON_INCLUDE_DIRS:   ${PYTHON_INCLUDE_DIRS}")
     message("PYTHON_LIBRARIES:      ${PYTHON_LIBRARIES}")
 endif()
+
+# Retrieve VERSION_MAJOR, ~MINOR, ~PATCH from git repository.
+# The output variables will be used to configure "ZSQtLib-config-version.cmake" below and to
+# configure "ZSSysVersion.h" and "ZSSysVersion.rc" by the CMakeList file of subdirectory ZSSys.
+include(${CMAKE_CURRENT_SOURCE_DIR}./git_version_info.cmake)
+
+configure_file(
+    ${CMAKE_CURRENT_SOURCE_DIR}/ZSQtLib-config-version.cmake.in
+    ${CMAKE_CURRENT_BINARY_DIR}/ZSQtLib-config-version.cmake
+    @ONLY)
+
 
 message(STATUS "")
 message(STATUS "---------------------------------------------------------------------------------------------")

@@ -1,0 +1,18 @@
+# ZSQtLib-config-version.cmake
+# Checks version: major, minor and patch must match exactly
+
+set(PACKAGE_VERSION @ZSQTLIB_VERSION@)
+
+if("${PACKAGE_FIND_VERSION_MAJOR}" EQUAL "@ZSQTLIB_VERSION_MAJOR@")
+    if ("${PACKAGE_FIND_VERSION_MINOR}" EQUAL "@ZSQTLIB_VERSION_MINOR@")
+        if ("${PACKAGE_FIND_VERSION_PATCH}" EQUAL "@ZSQTLIB_VERSION_PATCH@")
+            set(PACKAGE_VERSION_EXACT TRUE)
+        else()
+            set(PACKAGE_VERSION_UNSUITABLE TRUE)
+        endif()
+    else()
+        set(PACKAGE_VERSION_UNSUITABLE TRUE)
+    endif()
+else()
+    set(PACKAGE_VERSION_UNSUITABLE TRUE)
+endif()
