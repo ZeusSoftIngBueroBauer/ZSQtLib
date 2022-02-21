@@ -73,8 +73,10 @@ class CIpcTrcServerThread;
 public Dll interface methods
 *******************************************************************************/
 
+#ifdef _WINDOWS
 static int s_iDLL_PROCESS_ATTACH = 0;
 static int s_iDLL_THREAD_ATTACH = 0;
+#endif
 
 static QMutex DllIf_s_mtx;
 
@@ -715,10 +717,12 @@ ZSIPCTRACEDLL_EXTERN_API DllIf::CTrcAdminObj* TrcServer_GetTraceAdminObj(
     int         i_iDefaultDetailLevel )
 //------------------------------------------------------------------------------
 {
+    #ifdef _WINDOWS
     if( s_iDLL_PROCESS_ATTACH <= 0 ) // Dll already unloaded
     {
         return NULL;
     }
+    #endif
 
     QMutexLocker mtxLocker(&DllIf_s_mtx);
 
@@ -795,10 +799,12 @@ ZSIPCTRACEDLL_EXTERN_API void TrcServer_ReleaseTraceAdminObj(
     DllIf::CTrcAdminObj* i_pTrcAdminObj )
 //------------------------------------------------------------------------------
 {
+    #ifdef _WINDOWS
     if( s_iDLL_PROCESS_ATTACH <= 0 ) // Dll already unloaded
     {
         return;
     }
+    #endif
 
     QMutexLocker mtxLocker(&DllIf_s_mtx);
 
@@ -2284,7 +2290,7 @@ ZSIPCTRACEDLL_EXTERN_API void IpcTrcServer_ReleaseInstance( DllIf::CIpcTrcServer
                 /* strMethod          */ "IpcTrcServer_ReleaseInstance",
                 /* strMthInArgs       */ strMthInArgs );
 
-            DllIf::CIpcTrcServer* pDllIfTrcServer = DllIf_IpcTrcServer_s_hshpInstances.value(strServerName, nullptr);
+            //DllIf::CIpcTrcServer* pDllIfTrcServer = DllIf_IpcTrcServer_s_hshpInstances.value(strServerName, nullptr);
 
             iRefCount = DllIf_IpcTrcServer_s_hshiTrcServerRefCount.value(strServerName, 0) - 1;
 
@@ -2422,10 +2428,9 @@ ZSIPCTRACEDLL_EXTERN_API bool IpcTrcServer_startup( DllIf::CIpcTrcServer* i_pTrc
 
             while( !pTrcServerThread->isServerStarted() )
             {
-                #ifdef _WINDOWS
+                #ifdef _WIN32
                 Sleep(200);
-                #endif
-                #ifdef __linux__
+                #else
                 usleep(200000);
                 #endif
 
@@ -2503,10 +2508,9 @@ ZSIPCTRACEDLL_EXTERN_API bool IpcTrcServer_shutdown( DllIf::CIpcTrcServer* i_pTr
             {
                 while( !pTrcServerThread->isServerShutdown() )
                 {
-                    #ifdef _WINDOWS
+                    #ifdef _WIN32
                     Sleep(200);
-                    #endif
-                    #ifdef __linux__
+                    #else
                     usleep(200000);
                     #endif
 

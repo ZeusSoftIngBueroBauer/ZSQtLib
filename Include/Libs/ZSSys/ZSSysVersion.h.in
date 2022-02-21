@@ -36,8 +36,8 @@ namespace ZS
 namespace System
 {
 //==============================================================================
-/*! This file contains all the necessary version information to be able to determine the
-    associated git commit from which the installed package was created.
+/*! This file contains all the necessary version information to be able to determine
+    the associated git commit from which the installed package was created.
 
     GIT_VERSION_INFO is created by the git command
 
@@ -45,43 +45,40 @@ namespace System
 
     This command returns something like
 
-        v0.01-0-g835e9e5
+        v0.01.02-0-g835e9e5
 
     - The substring before the first '-' corresponds to the defined tag.
-      In order to retrieve VERSION_MAJOR and VERSION_MINOR from the tag it must follow the
-      regular expression "[v]\d{1,}[.]\d{1,}".
-      - 0  should become VERSION_MAJOR
-      - 01 should become VERSION_MINOR
-    - The substring after the first '-' corresponds to the number of commits on top of the tag.
-      This value is not extracted from the GIT_VERSION_INFO string and is not saved in a separate variable.
-    - The substring after the second '-' corresponds to the abbreviated commit hash
-      (usually the first seven digits of the hash) preceded by the abbreviated object name 'g' for 'git'.
-      The 'g' will be removed and the abbreviated commit hash will be converted to an integer value
-      (CMake expects integer values for version numbers in decimal format).
-      This automatically generated integer value will be used as VERSION_PATCH.
+      In order to retrieve VERSION_MAJOR, VERSION_MINOR and VERSION_PATCH from the
+      tag it must follow the regular expression "[v]\d{1,}[.]\d{1,}[.]\d{1,}".
+      - 0  becomes VERSION_MAJOR
+      - 01 becomes VERSION_MINOR
+      - 02 becomes VERSION_PATCH
+    - The string including and following the first '-' is only output if the commit
+      does not match a tag. If a tag is not hit:
+      - The first substring corresponds to the number of commits on top of the tag.
+        This value is not extracted from the GIT_VERSION_INFO string and is not saved
+        in a separate variable.
+      - The substring after the second '-' corresponds to the abbreviated commit hash
+        (usually the first seven digits of the hash) preceded by the abbreviated object
+        name 'g' for 'git'.
 
 Version Number Format:
 ----------------------
 
-<MajorVersion>.<MinorVersion>.<ReleaseId>
+<VersionMajor>.<VersionMinor>.<VersionPatch>
 
-<MajorVersion> .. Major version number of the ZSQtLib. This version number
-                  will only be changed on radical changes concerning the whole
-                  library. On changing the QtMajorVersion the ZSQtLibMajorVersion
-                  will not be changed.
+<VersionMajor> .. Major version number of the ZSQtLib. This version number will only
+                  be changed on radical changes concerning the whole library.
 
-<MinorVersion> .. Minor version number of the ZSQtLib. This version number
+<VersionMinor> .. Minor version number of the ZSQtLib. This version number
                   will be changed if significant changes have been made within
                   already existing and released sub systems of the ZSQtLib
                   concerning the architecture, class design or interfaces.
-                  Will be reset to 1 if the ZSQtLibMajorVersion will be
-                  incremented or reset.
+                  Will be reset to 1 if the VersionMajor will be changed.
 
-<ReleaseId>       Will be incremented each time a new version of the library
+<VersionPatch> .. Will be incremented each time a new version of the library
                   will be released after bugfixes or improvements.
-                  Will be reset to 1 if the FeatureId will be incremented
-                  or reset.
-
+                  Will be reset to 1 if the VersionMinor will be changed.
 */
 //==============================================================================
 

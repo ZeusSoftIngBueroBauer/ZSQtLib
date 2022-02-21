@@ -24,8 +24,6 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-//#include <QtCore/qtimer.h>
-
 #include "Test.h"
 
 #include "ZSTest/ZSTestStep.h"
@@ -620,12 +618,12 @@ void CTest::doTestStepEnumEntryClassMethodsEnumerator2Val( ZS::Test::CTestStep* 
         }
 
         strDesiredValue = "SEnumEntry::enumerator2Val(" + strEnumerator + "): ";
-        if( valExpected.canConvert(QVariant::Double) ) strDesiredValue += QString::number(valExpected.toDouble(),'g');
+        if( valExpected.canConvert(QVariant::Double) ) strDesiredValue += QString::number(valExpected.toDouble(),'f',1);
         strlstDesiredValues.append(strDesiredValue);
 
         valResult = SEnumEntry::enumerator2Val(pEnumArr, iEnumArrLen, static_cast<int>(enumerator));
         strActualValue = "SEnumEntry::enumerator2Val(" + strEnumerator + "): ";
-        if( valResult.canConvert(QVariant::Double) ) strActualValue += QString::number(valResult.toDouble(),'g');
+        if( valResult.canConvert(QVariant::Double) ) strActualValue += QString::number(valResult.toDouble(),'f',1);
         strlstActualValues.append(strActualValue);
     }
 
@@ -639,7 +637,7 @@ void CTest::doTestStepEnumEntryClassMethodsEnumerator2Val( ZS::Test::CTestStep* 
         strEnumerator = QString::number(static_cast<int>(enumerator));
         strActualValue = "SEnumEntry::enumerator2Val(" + strEnumerator + "): ";
         valResult = SEnumEntry::enumerator2Val(pEnumArr, iEnumArrLen, static_cast<int>(enumerator));
-        if( valResult.canConvert(QVariant::Double) ) strActualValue += QString::number(valResult.toDouble(),'g');
+        if( valResult.canConvert(QVariant::Double) ) strActualValue += QString::number(valResult.toDouble(),'f',1);
     }
     catch( CException& exc )
     {
@@ -657,7 +655,7 @@ void CTest::doTestStepEnumEntryClassMethodsEnumerator2Val( ZS::Test::CTestStep* 
         strEnumerator = QString::number(static_cast<int>(enumerator));
         strActualValue = "SEnumEntry::enumerator2Val(" + strEnumerator + "): ";
         valResult = SEnumEntry::enumerator2Val(pEnumArr, iEnumArrLen, static_cast<int>(enumerator));
-        if( valResult.canConvert(QVariant::Double) ) strActualValue += QString::number(valResult.toDouble(),'g');
+        if( valResult.canConvert(QVariant::Double) ) strActualValue += QString::number(valResult.toDouble(),'f',1);
     }
     catch( CException& exc )
     {
@@ -669,9 +667,9 @@ void CTest::doTestStepEnumEntryClassMethodsEnumerator2Val( ZS::Test::CTestStep* 
 
     for( iEnumerator = 0; iEnumerator < iEnumArrLen; ++iEnumerator )
     {
-        if( iEnumerator == 0 ) { enumerator = EProcessorClock::Low; strEnumerator = "Low"; strValResult = "5.12e+6"; }
-        else if( iEnumerator == 1 ) { enumerator = EProcessorClock::Medium; strEnumerator = "Medium"; strValResult = "5.12e+8"; }
-        else if( iEnumerator == 2 ) { enumerator = EProcessorClock::High; strEnumerator = "High"; strValResult = "5.12e+9"; }
+        if( iEnumerator == 0 ) { enumerator = EProcessorClock::Low; strEnumerator = "Low"; strValResult = QString::number(5.12e6,'f',1); }
+        else if( iEnumerator == 1 ) { enumerator = EProcessorClock::Medium; strEnumerator = "Medium"; strValResult = QString::number(5.12e8,'f',1); }
+        else if( iEnumerator == 2 ) { enumerator = EProcessorClock::High; strEnumerator = "High"; strValResult = QString::number(5.12e9,'f',1); }
         else { enumerator = static_cast<EProcessorClock>(iEnumerator); strEnumerator = QString::number(static_cast<int>(enumerator)); strValResult = ""; }
 
         strDesiredValue = "SEnumEntry::enumerator2Val(" + strEnumerator + ", Double, &bOk): " + strValResult + ", true";
@@ -679,7 +677,7 @@ void CTest::doTestStepEnumEntryClassMethodsEnumerator2Val( ZS::Test::CTestStep* 
 
         strActualValue = "SEnumEntry::enumerator2Val(" + strEnumerator + ", Double, &bOk): ";
         valResult = SEnumEntry::enumerator2Val(pEnumArr, iEnumArrLen, static_cast<int>(enumerator), QVariant::Double, &bOk);
-        if( bOk ) strActualValue += QString::number(valResult.toDouble(),'g') + ", " + bool2Str(bOk);
+        if( bOk ) strActualValue += QString::number(valResult.toDouble(),'f',1) + ", " + bool2Str(bOk);
         else strActualValue += valResult.toString() + ", " + bool2Str(bOk);
         strlstActualValues.append(strActualValue);
     }
@@ -696,7 +694,7 @@ void CTest::doTestStepEnumEntryClassMethodsEnumerator2Val( ZS::Test::CTestStep* 
 
         strActualValue = "SEnumEntry::enumerator2Val(" + strEnumerator + ", Double, &bOk): ";
         valResult = SEnumEntry::enumerator2Val(pEnumArr, iEnumArrLen, static_cast<int>(enumerator), QVariant::Double, &bOk);
-        if( bOk ) strActualValue += QString::number(valResult.toDouble(),'g') + ", " + bool2Str(bOk);
+        if( bOk ) strActualValue += QString::number(valResult.toDouble(),'f',1) + ", " + bool2Str(bOk);
         else strActualValue += valResult.toString() + ", " + bool2Str(bOk);
     }
     catch( CException& exc )
@@ -717,7 +715,7 @@ void CTest::doTestStepEnumEntryClassMethodsEnumerator2Val( ZS::Test::CTestStep* 
 
         strActualValue = "SEnumEntry::enumerator2Val(" + strEnumerator + ", Double, &bOk): ";
         valResult = SEnumEntry::enumerator2Val(pEnumArr, iEnumArrLen, static_cast<int>(enumerator), QVariant::Double, &bOk);
-        if( bOk ) strActualValue += QString::number(valResult.toDouble(),'g') + ", " + bool2Str(bOk);
+        if( bOk ) strActualValue += QString::number(valResult.toDouble(),'f',1) + ", " + bool2Str(bOk);
         else strActualValue += valResult.toString() + ", " + bool2Str(bOk);
     }
     catch( CException& exc )
@@ -1026,9 +1024,9 @@ void CTest::doTestStepEnumEntryClassMethodsStr2Val( ZS::Test::CTestStep* i_pTest
 
     for( iEnumerator = 0; iEnumerator < iEnumArrLen; ++iEnumerator )
     {
-        if( iEnumerator == 0 ) { strEnumeratorSource = "Low"; strValResult = "5.12e+6"; }
-        else if( iEnumerator == 1 ) { strEnumeratorSource = "Medium"; strValResult = "5.12e+8"; }
-        else if( iEnumerator == 2 ) { strEnumeratorSource = "High"; strValResult = "5.12e+9"; }
+        if( iEnumerator == 0 ) { strEnumeratorSource = "Low"; strValResult = QString::number(5.12e6,'f',1); }
+        else if( iEnumerator == 1 ) { strEnumeratorSource = "Medium"; strValResult = QString::number(5.12e8,'f',1); }
+        else if( iEnumerator == 2 ) { strEnumeratorSource = "High"; strValResult = QString::number(5.12e9,'f',1); }
         else { strEnumeratorSource = ""; strValResult = ""; }
 
         strDesiredValue = "SEnumEntry::str2Val(" + strEnumeratorSource + "): ";
@@ -1037,7 +1035,7 @@ void CTest::doTestStepEnumEntryClassMethodsStr2Val( ZS::Test::CTestStep* i_pTest
 
         strActualValue = "SEnumEntry::str2Val(" + strEnumeratorSource + "): ";
         valResult = SEnumEntry::str2Val(pEnumArr, iEnumArrLen, strEnumeratorSource);
-        if( valResult.canConvert(QVariant::Double) ) strValResult = QString::number(valResult.toDouble(),'g');
+        if( valResult.canConvert(QVariant::Double) ) strValResult = QString::number(valResult.toDouble(),'f',1);
         else strValResult = "";
         strActualValue += strValResult;
         strlstActualValues.append(strActualValue);
@@ -1053,7 +1051,7 @@ void CTest::doTestStepEnumEntryClassMethodsStr2Val( ZS::Test::CTestStep* i_pTest
         {
             if( iEnumerator == 0 )
             {
-                strValResult = "5.12e+6";
+                strValResult = QString::number(5.12e6,'f',1);
 
                 if( idxAlias == EEnumEntryAliasStrName ) strEnumeratorSource = "Low";
                 else if( idxAlias == EEnumEntryAliasStrSymbol ) strEnumeratorSource = "L";
@@ -1064,7 +1062,7 @@ void CTest::doTestStepEnumEntryClassMethodsStr2Val( ZS::Test::CTestStep* i_pTest
             }
             else if( iEnumerator == 1 )
             {
-                strValResult = "5.12e+8";
+                strValResult = QString::number(5.12e8,'f',1);
 
                 if( idxAlias == EEnumEntryAliasStrName ) strEnumeratorSource = "Medium";
                 else if( idxAlias == EEnumEntryAliasStrSymbol ) strEnumeratorSource = "M";
@@ -1075,7 +1073,7 @@ void CTest::doTestStepEnumEntryClassMethodsStr2Val( ZS::Test::CTestStep* i_pTest
             }
             else if( iEnumerator == 2 )
             {
-                strValResult = "5.12e+9";
+                strValResult = QString::number(5.12e9,'f',1);
 
                 if( idxAlias == EEnumEntryAliasStrName ) strEnumeratorSource = "High";
                 else if( idxAlias == EEnumEntryAliasStrSymbol ) strEnumeratorSource = "H";
@@ -1095,7 +1093,7 @@ void CTest::doTestStepEnumEntryClassMethodsStr2Val( ZS::Test::CTestStep* i_pTest
 
             strActualValue = "SEnumEntry::str2Val(" + strEnumeratorSource + ", Double, " + strAlias + "): ";
             valResult = SEnumEntry::str2Val(pEnumArr, iEnumArrLen, strEnumeratorSource, QVariant::Double, idxAlias);
-            if( valResult.canConvert(QVariant::Double) ) strValResult = QString::number(valResult.toDouble(),'g');
+            if( valResult.canConvert(QVariant::Double) ) strValResult = QString::number(valResult.toDouble(),'f',1);
             else strValResult = "";
             strActualValue += strValResult;
             strlstActualValues.append(strActualValue);
@@ -1110,7 +1108,7 @@ void CTest::doTestStepEnumEntryClassMethodsStr2Val( ZS::Test::CTestStep* i_pTest
     strAlias = enumEntryAlias2Str(static_cast<EEnumEntryAliasStr>(idxAlias));
     caseSensitivity = Qt::CaseSensitive;
     strCaseSensitivity = qCaseSensitivity2Str(caseSensitivity);
-    strValResult = "5.12e+8";
+    strValResult = QString::number(5.12e8,'f',1);
 
     strDesiredValue = "SEnumEntry::str2Val(" + strEnumeratorSource + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
     strDesiredValue += strValResult + ", true";
@@ -1118,7 +1116,7 @@ void CTest::doTestStepEnumEntryClassMethodsStr2Val( ZS::Test::CTestStep* i_pTest
 
     strActualValue = "SEnumEntry::str2Val(" + strEnumeratorSource + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
     valResult = SEnumEntry::str2Val(pEnumArr, iEnumArrLen, strEnumeratorSource, QVariant::Invalid, idxAlias, caseSensitivity, &bOk);
-    if( valResult.canConvert(QVariant::Double) ) strValResult = QString::number(valResult.toDouble(),'g');
+    if( valResult.canConvert(QVariant::Double) ) strValResult = QString::number(valResult.toDouble(),'f',1);
     else strValResult = "";
     strActualValue += strValResult + ", " + bool2Str(bOk);
     strlstActualValues.append(strActualValue);
@@ -1136,7 +1134,7 @@ void CTest::doTestStepEnumEntryClassMethodsStr2Val( ZS::Test::CTestStep* i_pTest
 
     strActualValue = "SEnumEntry::str2Val(" + strEnumeratorSource + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
     valResult = SEnumEntry::str2Val(pEnumArr, iEnumArrLen, strEnumeratorSource, QVariant::Invalid, idxAlias, caseSensitivity, &bOk);
-    if( valResult.canConvert(QVariant::Double) ) strValResult = QString::number(valResult.toDouble(),'g');
+    if( valResult.canConvert(QVariant::Double) ) strValResult = QString::number(valResult.toDouble(),'f',1);
     else strValResult = "";
     strActualValue += strValResult + ", " + bool2Str(bOk);
     strlstActualValues.append(strActualValue);
@@ -1146,7 +1144,7 @@ void CTest::doTestStepEnumEntryClassMethodsStr2Val( ZS::Test::CTestStep* i_pTest
     strAlias = enumEntryAlias2Str(static_cast<EEnumEntryAliasStr>(idxAlias));
     caseSensitivity = Qt::CaseInsensitive;
     strCaseSensitivity = qCaseSensitivity2Str(caseSensitivity);
-    strValResult = "5.12e+8";
+    strValResult = QString::number(5.12e8,'f',1);
 
     strDesiredValue = "SEnumEntry::str2Val(" + strEnumeratorSource + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
     strDesiredValue += strValResult + ", true";
@@ -1154,7 +1152,7 @@ void CTest::doTestStepEnumEntryClassMethodsStr2Val( ZS::Test::CTestStep* i_pTest
 
     strActualValue = "SEnumEntry::str2Val(" + strEnumeratorSource + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
     valResult = SEnumEntry::str2Val(pEnumArr, iEnumArrLen, strEnumeratorSource, QVariant::Invalid, idxAlias, caseSensitivity, &bOk);
-    if( valResult.canConvert(QVariant::Double) ) strValResult = QString::number(valResult.toDouble(),'g');
+    if( valResult.canConvert(QVariant::Double) ) strValResult = QString::number(valResult.toDouble(),'f',1);
     else strValResult = "";
     strActualValue += strValResult + ", " + bool2Str(bOk);
     strlstActualValues.append(strActualValue);
@@ -1190,7 +1188,7 @@ void CTest::doTestStepEnumEntryClassMethodsStr2Val( ZS::Test::CTestStep* i_pTest
 
     strActualValue = "SEnumEntry::str2Val(" + strEnumeratorSource + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
     valResult = SEnumEntry::str2Val(pEnumArr, iEnumArrLen, strEnumeratorSource, QVariant::Invalid, idxAlias, caseSensitivity, &bOk);
-    if( valResult.canConvert(QVariant::Double) ) strValResult = QString::number(valResult.toDouble(),'g');
+    if( valResult.canConvert(QVariant::Double) ) strValResult = QString::number(valResult.toDouble(),'f',1);
     else strValResult = "";
     strActualValue += strValResult + ", " + bool2Str(bOk);
     strlstActualValues.append(strActualValue);
@@ -1200,7 +1198,7 @@ void CTest::doTestStepEnumEntryClassMethodsStr2Val( ZS::Test::CTestStep* i_pTest
     strAlias = enumEntryAlias2Str(static_cast<EEnumEntryAliasStr>(idxAlias));
     caseSensitivity = Qt::CaseInsensitive;
     strCaseSensitivity = qCaseSensitivity2Str(caseSensitivity);
-    strValResult = "5.12e+8";
+    strValResult = QString::number(5.12e8,'f',1);
 
     strDesiredValue = "SEnumEntry::str2Val(" + strEnumeratorSource + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
     strDesiredValue += strValResult + ", true";
@@ -1208,7 +1206,7 @@ void CTest::doTestStepEnumEntryClassMethodsStr2Val( ZS::Test::CTestStep* i_pTest
 
     strActualValue = "SEnumEntry::str2Val(" + strEnumeratorSource + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
     valResult = SEnumEntry::str2Val(pEnumArr, iEnumArrLen, strEnumeratorSource, QVariant::Invalid, idxAlias, caseSensitivity, &bOk);
-    if( valResult.canConvert(QVariant::Double) ) strValResult = QString::number(valResult.toDouble(),'g');
+    if( valResult.canConvert(QVariant::Double) ) strValResult = QString::number(valResult.toDouble(),'f',1);
     else strValResult = "";
     strActualValue += strValResult + ", " + bool2Str(bOk);
     strlstActualValues.append(strActualValue);
@@ -1226,7 +1224,7 @@ void CTest::doTestStepEnumEntryClassMethodsStr2Val( ZS::Test::CTestStep* i_pTest
 
     strActualValue = "SEnumEntry::str2Val(" + strEnumeratorSource + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
     valResult = SEnumEntry::str2Val(pEnumArr, iEnumArrLen, strEnumeratorSource, QVariant::Invalid, idxAlias, caseSensitivity, &bOk);
-    if( valResult.canConvert(QVariant::Double) ) strValResult = QString::number(valResult.toDouble(),'g');
+    if( valResult.canConvert(QVariant::Double) ) strValResult = QString::number(valResult.toDouble(),'f',1);
     else strValResult = "";
     strActualValue += strValResult + ", " + bool2Str(bOk);
     strlstActualValues.append(strActualValue);
@@ -1919,9 +1917,9 @@ void CTest::doTestStepEnumEntryClassMethodsMapStr2Val( ZS::Test::CTestStep* i_pT
 
     for( iEnumerator = 0; iEnumerator < iEnumArrLen; ++iEnumerator )
     {
-        if( iEnumerator == 0 ) { strEnumeratorSource = "Low"; strValResult = "5.12e+6"; }
-        else if( iEnumerator == 1 ) { strEnumeratorSource = "Medium"; strValResult = "5.12e+8"; }
-        else if( iEnumerator == 2 ) { strEnumeratorSource = "High"; strValResult = "5.12e+9"; }
+        if( iEnumerator == 0 ) { strEnumeratorSource = "Low"; strValResult = QString::number(5.12e6,'f',1); }
+        else if( iEnumerator == 1 ) { strEnumeratorSource = "Medium"; strValResult = QString::number(5.12e8,'f',1); }
+        else if( iEnumerator == 2 ) { strEnumeratorSource = "High"; strValResult = QString::number(5.12e9,'f',1); }
         else { strEnumeratorSource = ""; strValResult = ""; }
 
         strDesiredValue = "SEnumEntry::str2Val(" + strEnumeratorSource + "): ";
@@ -1930,7 +1928,7 @@ void CTest::doTestStepEnumEntryClassMethodsMapStr2Val( ZS::Test::CTestStep* i_pT
 
         strActualValue = "SEnumEntry::str2Val(" + strEnumeratorSource + "): ";
         valResult = SEnumEntry::str2Val(armapsStr2Enumerators, pEnumArr, iEnumArrLen, strEnumeratorSource);
-        if( valResult.canConvert(QVariant::Double) ) strValResult = QString::number(valResult.toDouble(),'g');
+        if( valResult.canConvert(QVariant::Double) ) strValResult = QString::number(valResult.toDouble(),'f',1);
         else strValResult = "";
         strActualValue += strValResult;
         strlstActualValues.append(strActualValue);
@@ -1946,7 +1944,7 @@ void CTest::doTestStepEnumEntryClassMethodsMapStr2Val( ZS::Test::CTestStep* i_pT
         {
             if( iEnumerator == 0 )
             {
-                strValResult = "5.12e+6";
+                strValResult = QString::number(5.12e6,'f',1);
 
                 if( idxAlias == EEnumEntryAliasStrName ) strEnumeratorSource = "Low";
                 else if( idxAlias == EEnumEntryAliasStrSymbol ) strEnumeratorSource = "L";
@@ -1957,7 +1955,7 @@ void CTest::doTestStepEnumEntryClassMethodsMapStr2Val( ZS::Test::CTestStep* i_pT
             }
             else if( iEnumerator == 1 )
             {
-                strValResult = "5.12e+8";
+                strValResult = QString::number(5.12e8,'f',1);
 
                 if( idxAlias == EEnumEntryAliasStrName ) strEnumeratorSource = "Medium";
                 else if( idxAlias == EEnumEntryAliasStrSymbol ) strEnumeratorSource = "M";
@@ -1968,7 +1966,7 @@ void CTest::doTestStepEnumEntryClassMethodsMapStr2Val( ZS::Test::CTestStep* i_pT
             }
             else if( iEnumerator == 2 )
             {
-                strValResult = "5.12e+9";
+                strValResult = QString::number(5.12e9,'f',1);
 
                 if( idxAlias == EEnumEntryAliasStrName ) strEnumeratorSource = "High";
                 else if( idxAlias == EEnumEntryAliasStrSymbol ) strEnumeratorSource = "H";
@@ -1988,7 +1986,7 @@ void CTest::doTestStepEnumEntryClassMethodsMapStr2Val( ZS::Test::CTestStep* i_pT
 
             strActualValue = "SEnumEntry::str2Val(" + strEnumeratorSource + ", Double, " + strAlias + "): ";
             valResult = SEnumEntry::str2Val(armapsStr2Enumerators, pEnumArr, iEnumArrLen, strEnumeratorSource, QVariant::Double, idxAlias);
-            if( valResult.canConvert(QVariant::Double) ) strValResult = QString::number(valResult.toDouble(),'g');
+            if( valResult.canConvert(QVariant::Double) ) strValResult = QString::number(valResult.toDouble(),'f',1);
             else strValResult = "";
             strActualValue += strValResult;
             strlstActualValues.append(strActualValue);
@@ -2003,7 +2001,7 @@ void CTest::doTestStepEnumEntryClassMethodsMapStr2Val( ZS::Test::CTestStep* i_pT
     strAlias = enumEntryAlias2Str(static_cast<EEnumEntryAliasStr>(idxAlias));
     caseSensitivity = Qt::CaseSensitive;
     strCaseSensitivity = qCaseSensitivity2Str(caseSensitivity);
-    strValResult = "5.12e+8";
+    strValResult = QString::number(5.12e8,'f',1);
 
     strDesiredValue = "SEnumEntry::str2Val(" + strEnumeratorSource + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
     strDesiredValue += strValResult + ", true";
@@ -2011,7 +2009,7 @@ void CTest::doTestStepEnumEntryClassMethodsMapStr2Val( ZS::Test::CTestStep* i_pT
 
     strActualValue = "SEnumEntry::str2Val(" + strEnumeratorSource + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
     valResult = SEnumEntry::str2Val(armapsStr2Enumerators, pEnumArr, iEnumArrLen, strEnumeratorSource, QVariant::Invalid, idxAlias, caseSensitivity, &bOk);
-    if( valResult.canConvert(QVariant::Double) ) strValResult = QString::number(valResult.toDouble(),'g');
+    if( valResult.canConvert(QVariant::Double) ) strValResult = QString::number(valResult.toDouble(),'f',1);
     else strValResult = "";
     strActualValue += strValResult + ", " + bool2Str(bOk);
     strlstActualValues.append(strActualValue);
@@ -2029,7 +2027,7 @@ void CTest::doTestStepEnumEntryClassMethodsMapStr2Val( ZS::Test::CTestStep* i_pT
 
     strActualValue = "SEnumEntry::str2Val(" + strEnumeratorSource + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
     valResult = SEnumEntry::str2Val(armapsStr2Enumerators, pEnumArr, iEnumArrLen, strEnumeratorSource, QVariant::Invalid, idxAlias, caseSensitivity, &bOk);
-    if( valResult.canConvert(QVariant::Double) ) strValResult = QString::number(valResult.toDouble(),'g');
+    if( valResult.canConvert(QVariant::Double) ) strValResult = QString::number(valResult.toDouble(),'f',1);
     else strValResult = "";
     strActualValue += strValResult + ", " + bool2Str(bOk);
     strlstActualValues.append(strActualValue);
@@ -2039,7 +2037,7 @@ void CTest::doTestStepEnumEntryClassMethodsMapStr2Val( ZS::Test::CTestStep* i_pT
     strAlias = enumEntryAlias2Str(static_cast<EEnumEntryAliasStr>(idxAlias));
     caseSensitivity = Qt::CaseInsensitive;
     strCaseSensitivity = qCaseSensitivity2Str(caseSensitivity);
-    strValResult = "5.12e+8";
+    strValResult = QString::number(5.12e8,'f',1);
 
     strDesiredValue = "SEnumEntry::str2Val(" + strEnumeratorSource + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
     strDesiredValue += strValResult + ", true";
@@ -2047,7 +2045,7 @@ void CTest::doTestStepEnumEntryClassMethodsMapStr2Val( ZS::Test::CTestStep* i_pT
 
     strActualValue = "SEnumEntry::str2Val(" + strEnumeratorSource + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
     valResult = SEnumEntry::str2Val(armapsStr2Enumerators, pEnumArr, iEnumArrLen, strEnumeratorSource, QVariant::Invalid, idxAlias, caseSensitivity, &bOk);
-    if( valResult.canConvert(QVariant::Double) ) strValResult = QString::number(valResult.toDouble(),'g');
+    if( valResult.canConvert(QVariant::Double) ) strValResult = QString::number(valResult.toDouble(),'f',1);
     else strValResult = "";
     strActualValue += strValResult + ", " + bool2Str(bOk);
     strlstActualValues.append(strActualValue);
@@ -2083,7 +2081,7 @@ void CTest::doTestStepEnumEntryClassMethodsMapStr2Val( ZS::Test::CTestStep* i_pT
 
     strActualValue = "SEnumEntry::str2Val(" + strEnumeratorSource + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
     valResult = SEnumEntry::str2Val(armapsStr2Enumerators, pEnumArr, iEnumArrLen, strEnumeratorSource, QVariant::Invalid, idxAlias, caseSensitivity, &bOk);
-    if( valResult.canConvert(QVariant::Double) ) strValResult = QString::number(valResult.toDouble(),'g');
+    if( valResult.canConvert(QVariant::Double) ) strValResult = QString::number(valResult.toDouble(),'f',1);
     else strValResult = "";
     strActualValue += strValResult + ", " + bool2Str(bOk);
     strlstActualValues.append(strActualValue);
@@ -2093,7 +2091,7 @@ void CTest::doTestStepEnumEntryClassMethodsMapStr2Val( ZS::Test::CTestStep* i_pT
     strAlias = enumEntryAlias2Str(static_cast<EEnumEntryAliasStr>(idxAlias));
     caseSensitivity = Qt::CaseInsensitive;
     strCaseSensitivity = qCaseSensitivity2Str(caseSensitivity);
-    strValResult = "5.12e+8";
+    strValResult = QString::number(5.12e8,'f',1);
 
     strDesiredValue = "SEnumEntry::str2Val(" + strEnumeratorSource + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
     strDesiredValue += strValResult + ", true";
@@ -2101,7 +2099,7 @@ void CTest::doTestStepEnumEntryClassMethodsMapStr2Val( ZS::Test::CTestStep* i_pT
 
     strActualValue = "SEnumEntry::str2Val(" + strEnumeratorSource + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
     valResult = SEnumEntry::str2Val(armapsStr2Enumerators, pEnumArr, iEnumArrLen, strEnumeratorSource, QVariant::Invalid, idxAlias, caseSensitivity, &bOk);
-    if( valResult.canConvert(QVariant::Double) ) strValResult = QString::number(valResult.toDouble(),'g');
+    if( valResult.canConvert(QVariant::Double) ) strValResult = QString::number(valResult.toDouble(),'f',1);
     else strValResult = "";
     strActualValue += strValResult + ", " + bool2Str(bOk);
     strlstActualValues.append(strActualValue);
@@ -2121,7 +2119,7 @@ void CTest::doTestStepEnumEntryClassMethodsMapStr2Val( ZS::Test::CTestStep* i_pT
     {
         strActualValue = "SEnumEntry::str2Val(" + strEnumeratorSource + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
         valResult = SEnumEntry::str2Val(armapsStr2Enumerators, pEnumArr, iEnumArrLen, strEnumeratorSource, QVariant::Invalid, idxAlias, caseSensitivity, &bOk);
-        if( valResult.canConvert(QVariant::Double) ) strValResult = QString::number(valResult.toDouble(),'g');
+        if( valResult.canConvert(QVariant::Double) ) strValResult = QString::number(valResult.toDouble(),'f',1);
         else strValResult = "";
         strActualValue += strValResult + ", " + bool2Str(bOk);
     }
@@ -7594,12 +7592,12 @@ void CTest::doTestStepEnumClassTemplateUserDefinedClassMethodToValue( ZS::Test::
         }
 
         strDesiredValue = "CEnumProcessorClock::toValue(" + strEnumerator + "): ";
-        if( valExpected.canConvert(QVariant::Double) ) strDesiredValue += QString::number(valExpected.toDouble(),'g');
+        if( valExpected.canConvert(QVariant::Double) ) strDesiredValue += QString::number(valExpected.toDouble(),'f',1);
         strlstDesiredValues.append(strDesiredValue);
 
         valResult = CEnumProcessorClock::toValue(enumerator);
         strActualValue = "CEnumProcessorClock::toValue(" + strEnumerator + "): ";
-        if( valResult.canConvert(QVariant::Double) ) strActualValue += QString::number(valResult.toDouble(),'g');
+        if( valResult.canConvert(QVariant::Double) ) strActualValue += QString::number(valResult.toDouble(),'f',1);
         strlstActualValues.append(strActualValue);
     }
 
@@ -7615,7 +7613,7 @@ void CTest::doTestStepEnumClassTemplateUserDefinedClassMethodToValue( ZS::Test::
     {
         strActualValue = "CEnumProcessorClock::toValue(" + strEnumerator + "): ";
         valResult = CEnumProcessorClock::toValue(enumerator);
-        if( valResult.canConvert(QVariant::Double) ) strActualValue += QString::number(valResult.toDouble(),'g');
+        if( valResult.canConvert(QVariant::Double) ) strActualValue += QString::number(valResult.toDouble(),'f',1);
     }
     catch( CException& exc )
     {
@@ -7635,7 +7633,7 @@ void CTest::doTestStepEnumClassTemplateUserDefinedClassMethodToValue( ZS::Test::
     {
         strActualValue = "CEnumProcessorClock::toValue(" + strEnumerator + "): ";
         valResult = CEnumProcessorClock::toValue(enumerator);
-        if( valResult.canConvert(QVariant::Double) ) strActualValue += QString::number(valResult.toDouble(),'g');
+        if( valResult.canConvert(QVariant::Double) ) strActualValue += QString::number(valResult.toDouble(),'f',1);
     }
     catch( CException& exc )
     {
@@ -7673,13 +7671,13 @@ void CTest::doTestStepEnumClassTemplateUserDefinedClassMethodToValue( ZS::Test::
         }
 
         strDesiredValue = "CEnumProcessorClock::toValue(" + strEnumerator + ", Double, &bOk): ";
-        if( valExpected.canConvert(QVariant::Double) ) strDesiredValue += QString::number(valExpected.toDouble(),'g') + ", true";
+        if( valExpected.canConvert(QVariant::Double) ) strDesiredValue += QString::number(valExpected.toDouble(),'f',1) + ", true";
         else strDesiredValue += valExpected.toString() + ", false";
         strlstDesiredValues.append(strDesiredValue);
 
         strActualValue = "CEnumProcessorClock::toValue(" + strEnumerator + ", Double, &bOk): ";
         valResult = CEnumProcessorClock::toValue(enumerator, QVariant::Double, &bOk);
-        if( bOk ) strActualValue += QString::number(valResult.toDouble(),'g') + ", " + bool2Str(bOk);
+        if( bOk ) strActualValue += QString::number(valResult.toDouble(),'f',1) + ", " + bool2Str(bOk);
         else strActualValue += valResult.toString() + ", " + bool2Str(bOk);
         strlstActualValues.append(strActualValue);
     }
@@ -7698,7 +7696,7 @@ void CTest::doTestStepEnumClassTemplateUserDefinedClassMethodToValue( ZS::Test::
     {
         strActualValue = "CEnumProcessorClock::toValue(" + strEnumerator + ", Double, &bOk): ";
         valResult = CEnumProcessorClock::toValue(enumerator, QVariant::Double, &bOk);
-        if( bOk ) strActualValue += QString::number(valResult.toDouble(),'g') + ", " + bool2Str(bOk);
+        if( bOk ) strActualValue += QString::number(valResult.toDouble(),'f',1) + ", " + bool2Str(bOk);
         else strActualValue += valResult.toString() + ", " + bool2Str(bOk);
     }
     catch( CException& exc )
@@ -7719,7 +7717,7 @@ void CTest::doTestStepEnumClassTemplateUserDefinedClassMethodToValue( ZS::Test::
     {
         strActualValue = "CEnumProcessorClock::toValue(" + strEnumerator + ", Double, &bOk): ";
         valResult = CEnumProcessorClock::toValue(enumerator, QVariant::Double, &bOk);
-        if( bOk ) strActualValue += QString::number(valResult.toDouble(),'g') + ", " + bool2Str(bOk);
+        if( bOk ) strActualValue += QString::number(valResult.toDouble(),'f',1) + ", " + bool2Str(bOk);
         else strActualValue += valResult.toString() + ", " + bool2Str(bOk);
     }
     catch( CException& exc )
@@ -7758,13 +7756,13 @@ void CTest::doTestStepEnumClassTemplateUserDefinedClassMethodToValue( ZS::Test::
         }
 
         strDesiredValue = "CEnumProcessorClock::toValue(" + strEnumerator + "): ";
-        if( valExpected.canConvert(QVariant::Double) ) strDesiredValue += QString::number(valExpected.toDouble(),'g');
+        if( valExpected.canConvert(QVariant::Double) ) strDesiredValue += QString::number(valExpected.toDouble(),'f',1);
         else strDesiredValue += valExpected.toString();
         strlstDesiredValues.append(strDesiredValue);
 
         strActualValue = "CEnumProcessorClock::toValue(" + strEnumerator + "): ";
         valResult = CEnumProcessorClock::toValue(strEnumerator);
-        if( valResult.canConvert(QVariant::Double) ) strActualValue += QString::number(valResult.toDouble(),'g');
+        if( valResult.canConvert(QVariant::Double) ) strActualValue += QString::number(valResult.toDouble(),'f',1);
         strlstActualValues.append(strActualValue);
     }
 
@@ -7816,13 +7814,13 @@ void CTest::doTestStepEnumClassTemplateUserDefinedClassMethodToValue( ZS::Test::
             }
 
             strDesiredValue = "CEnumProcessorClock::toValue(" + strEnumerator + ", Double, " + strAlias + "): ";
-            if( valExpected.canConvert(QVariant::Double) ) strDesiredValue += QString::number(valExpected.toDouble(),'g');
+            if( valExpected.canConvert(QVariant::Double) ) strDesiredValue += QString::number(valExpected.toDouble(),'f',1);
             else strDesiredValue += valExpected.toString();
             strlstDesiredValues.append(strDesiredValue);
 
             strActualValue = "CEnumProcessorClock::toValue(" + strEnumerator + ", Double, " + strAlias + "): ";
             valResult = CEnumProcessorClock::toValue(strEnumerator, QVariant::Double, idxAlias);
-            if( valResult.canConvert(QVariant::Double) ) strActualValue += QString::number(valResult.toDouble(),'g');
+            if( valResult.canConvert(QVariant::Double) ) strActualValue += QString::number(valResult.toDouble(),'f',1);
             else strActualValue += valResult.toString();
             strlstActualValues.append(strActualValue);
 
@@ -7839,13 +7837,13 @@ void CTest::doTestStepEnumClassTemplateUserDefinedClassMethodToValue( ZS::Test::
     valExpected = 5.12e8;
 
     strDesiredValue = "CEnumProcessorClock::toValue(" + strEnumerator + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
-    if( valExpected.canConvert(QVariant::Double) ) strDesiredValue += QString::number(valExpected.toDouble(),'g') + ", true";
+    if( valExpected.canConvert(QVariant::Double) ) strDesiredValue += QString::number(valExpected.toDouble(),'f',1) + ", true";
     else strDesiredValue += valExpected.toString() + ", false";
     strlstDesiredValues.append(strDesiredValue);
 
     strActualValue = "CEnumProcessorClock::toValue(" + strEnumerator + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
     valResult = CEnumProcessorClock::toValue(strEnumerator, QVariant::Invalid, idxAlias, caseSensitivity, &bOk);
-    if( valResult.canConvert(QVariant::Double) ) strActualValue += QString::number(valResult.toDouble(),'g') + ", true";
+    if( valResult.canConvert(QVariant::Double) ) strActualValue += QString::number(valResult.toDouble(),'f',1) + ", true";
     else strActualValue += valResult.toString() + ", false";
     strlstActualValues.append(strActualValue);
 
@@ -7857,13 +7855,13 @@ void CTest::doTestStepEnumClassTemplateUserDefinedClassMethodToValue( ZS::Test::
     valExpected = QVariant();
 
     strDesiredValue = "CEnumProcessorClock::toValue(" + strEnumerator + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
-    if( valExpected.canConvert(QVariant::Double) ) strDesiredValue += QString::number(valExpected.toDouble(),'g') + ", true";
+    if( valExpected.canConvert(QVariant::Double) ) strDesiredValue += QString::number(valExpected.toDouble(),'f',1) + ", true";
     else strDesiredValue += valExpected.toString() + ", false";
     strlstDesiredValues.append(strDesiredValue);
 
     strActualValue = "CEnumProcessorClock::toValue(" + strEnumerator + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
     valResult = CEnumProcessorClock::toValue(strEnumerator, QVariant::Invalid, idxAlias, caseSensitivity, &bOk);
-    if( valResult.canConvert(QVariant::Double) ) strActualValue += QString::number(valResult.toDouble(),'g') + ", true";
+    if( valResult.canConvert(QVariant::Double) ) strActualValue += QString::number(valResult.toDouble(),'f',1) + ", true";
     else strActualValue += valResult.toString() + ", false";
     strlstActualValues.append(strActualValue);
 
@@ -7875,13 +7873,13 @@ void CTest::doTestStepEnumClassTemplateUserDefinedClassMethodToValue( ZS::Test::
     valExpected = 5.12e8;
 
     strDesiredValue = "CEnumProcessorClock::toValue(" + strEnumerator + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
-    if( valExpected.canConvert(QVariant::Double) ) strDesiredValue += QString::number(valExpected.toDouble(),'g') + ", true";
+    if( valExpected.canConvert(QVariant::Double) ) strDesiredValue += QString::number(valExpected.toDouble(),'f',1) + ", true";
     else strDesiredValue += valExpected.toString() + ", false";
     strlstDesiredValues.append(strDesiredValue);
 
     strActualValue = "CEnumProcessorClock::toValue(" + strEnumerator + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
     valResult = CEnumProcessorClock::toValue(strEnumerator, QVariant::Invalid, idxAlias, caseSensitivity, &bOk);
-    if( valResult.canConvert(QVariant::Double) ) strActualValue += QString::number(valResult.toDouble(),'g') + ", true";
+    if( valResult.canConvert(QVariant::Double) ) strActualValue += QString::number(valResult.toDouble(),'f',1) + ", true";
     else strActualValue += valResult.toString() + ", false";
     strlstActualValues.append(strActualValue);
 
@@ -7893,13 +7891,13 @@ void CTest::doTestStepEnumClassTemplateUserDefinedClassMethodToValue( ZS::Test::
     valExpected = 5.12e8;
 
     strDesiredValue = "CEnumProcessorClock::toValue(" + strEnumerator + ", " + strAlias + ", Int, " + strCaseSensitivity + ", &bOk): ";
-    if( valExpected.canConvert(QVariant::Double) ) strDesiredValue += QString::number(valExpected.toDouble(),'g') + ", true";
+    if( valExpected.canConvert(QVariant::Double) ) strDesiredValue += QString::number(valExpected.toDouble(),'f',1) + ", true";
     else strDesiredValue += valExpected.toString() + ", false";
     strlstDesiredValues.append(strDesiredValue);
 
     strActualValue = "CEnumProcessorClock::toValue(" + strEnumerator + ", " + strAlias + ", Int, " + strCaseSensitivity + ", &bOk): ";
     valResult = CEnumProcessorClock::toValue(strEnumerator, QVariant::Int, idxAlias, caseSensitivity, &bOk);
-    if( valResult.canConvert(QVariant::Double) ) strActualValue += QString::number(valResult.toDouble(),'g') + ", true";
+    if( valResult.canConvert(QVariant::Double) ) strActualValue += QString::number(valResult.toDouble(),'f',1) + ", true";
     else strActualValue += valResult.toString() + ", false";
     strlstActualValues.append(strActualValue);
 
@@ -7911,13 +7909,13 @@ void CTest::doTestStepEnumClassTemplateUserDefinedClassMethodToValue( ZS::Test::
     valExpected = QVariant();
 
     strDesiredValue = "CEnumProcessorClock::toValue(" + strEnumerator + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
-    if( valExpected.canConvert(QVariant::Double) ) strDesiredValue += QString::number(valExpected.toDouble(),'g') + ", true";
+    if( valExpected.canConvert(QVariant::Double) ) strDesiredValue += QString::number(valExpected.toDouble(),'f',1) + ", true";
     else strDesiredValue += valExpected.toString() + ", false";
     strlstDesiredValues.append(strDesiredValue);
 
     strActualValue = "CEnumProcessorClock::toValue(" + strEnumerator + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
     valResult = CEnumProcessorClock::toValue(strEnumerator, QVariant::Invalid, idxAlias, caseSensitivity, &bOk);
-    if( valResult.canConvert(QVariant::Double) ) strActualValue += QString::number(valResult.toDouble(),'g') + ", true";
+    if( valResult.canConvert(QVariant::Double) ) strActualValue += QString::number(valResult.toDouble(),'f',1) + ", true";
     else strActualValue += valResult.toString() + ", false";
     strlstActualValues.append(strActualValue);
 
@@ -7929,13 +7927,13 @@ void CTest::doTestStepEnumClassTemplateUserDefinedClassMethodToValue( ZS::Test::
     valExpected = 5.12e8;
 
     strDesiredValue = "CEnumProcessorClock::toValue(" + strEnumerator + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
-    if( valExpected.canConvert(QVariant::Double) ) strDesiredValue += QString::number(valExpected.toDouble(),'g') + ", true";
+    if( valExpected.canConvert(QVariant::Double) ) strDesiredValue += QString::number(valExpected.toDouble(),'f',1) + ", true";
     else strDesiredValue += valExpected.toString() + ", false";
     strlstDesiredValues.append(strDesiredValue);
 
     strActualValue = "CEnumProcessorClock::toValue(" + strEnumerator + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
     valResult = CEnumProcessorClock::toValue(strEnumerator, QVariant::Invalid, idxAlias, caseSensitivity, &bOk);
-    if( valResult.canConvert(QVariant::Double) ) strActualValue += QString::number(valResult.toDouble(),'g') + ", true";
+    if( valResult.canConvert(QVariant::Double) ) strActualValue += QString::number(valResult.toDouble(),'f',1) + ", true";
     else strActualValue += valResult.toString() + ", false";
     strlstActualValues.append(strActualValue);
 
@@ -7954,7 +7952,7 @@ void CTest::doTestStepEnumClassTemplateUserDefinedClassMethodToValue( ZS::Test::
     {
         strActualValue = "CEnumProcessorClock::toValue(" + strEnumerator + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
         valResult = CEnumProcessorClock::toValue(strEnumerator, QVariant::Invalid, idxAlias, caseSensitivity, &bOk);
-        if( valResult.canConvert(QVariant::Double) ) strActualValue += QString::number(valResult.toDouble(),'g') + ", true";
+        if( valResult.canConvert(QVariant::Double) ) strActualValue += QString::number(valResult.toDouble(),'f',1) + ", true";
         else strActualValue += valResult.toString() + ", false";
     }
     catch( CException& exc )

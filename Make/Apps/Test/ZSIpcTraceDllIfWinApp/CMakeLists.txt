@@ -33,6 +33,10 @@ list(APPEND _Sources
     ../../../../Include/Libs/ZSIpcTrace/ZSIpcTrcDllIf.h                                 ../../../../Source/Libs/ZSIpcTrace/ZSIpcTrcDllIf.cpp
 )
 
+if(WIN32)
+    set(_Sources ${_Sources} ${CMAKE_CURRENT_BINARY_DIR}/../../../Libs/ZSSys/ZSSysVersion.rc)
+endif()
+
 # Got to create the following target name:
 # (ProjectName)[_d]
 # e.g.: "ZSAppTestIpcTraceDllIfWinApp_d"
@@ -51,6 +55,10 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
     COMPILE_DEFINITIONS _AFXDLL,_UNICODE,UNICODE,_BIND_TO_CURRENT_CRT_VERSION,_BIND_TO_CURRENT_MFC_VERSION
     LINK_FLAGS "/ENTRY:\"wWinMainCRTStartup\""
     OUTPUT_NAME ${TargetOutputName})
+
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+    target_compile_options(${PROJECT_NAME} PRIVATE "-Wno-cast-function-type")
+endif()
 
 target_include_directories(${PROJECT_NAME}
     PRIVATE ${CMAKE_SOURCE_DIR}/../Include/Apps/Test/ZSIpcTraceDllIfWinApp)

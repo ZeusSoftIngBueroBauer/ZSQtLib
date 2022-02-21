@@ -321,6 +321,8 @@ public type definitions and constants
 #define QT_VERSION_MAJOR 5
 #endif
 
+#ifndef COMPILERLIBINFIX
+#ifdef _MSC_VER
 /*
 Visual Studio version            | _MSC_VER
 ---------------------------------+---------------
@@ -351,8 +353,6 @@ Visual Studio 2019 version 16.7  | 1927
 Visual Studio 2019 version 16.8  | 1928
 Visual Studio 2019 version 16.10 | 1929
 */
-#ifdef _WINDOWS
-#ifndef COMPILERLIBINFIX
 #if _MSC_VER <= 1200
 #define __CXX_STANDARD__ 1
 #define COMPILERLIBINFIX "msvc2000"
@@ -389,14 +389,33 @@ Visual Studio 2019 version 16.10 | 1929
 #else
 #define __CXX_STANDARD__ 1
 #endif
+
+/*
+MinGW versions
+--------------
+*/
+#elif defined __MINGW64__
+#if (__GNUC__ == 5) && (__GNUC_MINOR__ == 1)
+#define COMPILERLIBINFIX "mingw51"
+#elif (__GNUC__ == 8) && (__GNUC_MINOR__ == 1)
+#define COMPILERLIBINFIX "mingw81"
 #endif
-#endif // #ifdef _WINDOWS
+
+/*
+GNU CC versions
+---------------
+*/
+//#elif defined __GNUC__
+#else
+#error Compiler not supported
+#endif // #ifdef _MSC_VER
+#endif // #ifndef COMPILERLIBINFIX
 
 #ifndef COMPILERLIBINFIX
 #define COMPILERLIBINFIX ""
 #endif
 
-#ifdef _WINDOWS
+#ifdef __CXX_STANDARD__
 #if (__CXX_STANDARD__ == 201703)
 #define CXX_STANDARD 17
 #elif (__CXX_STANDARD__ == 201402)
@@ -411,7 +430,7 @@ Visual Studio 2019 version 16.10 | 1929
 #define nullptr 0
 #endif
 #endif
-#endif // #ifdef _WINDOWS
+#endif // #ifdef __CXX_STANDARD__
 
 // Some customers are configuring Qt to rename the Qt libraries to Qt*<infix>.
 #define QTLIBINFIX ""
@@ -419,11 +438,11 @@ Visual Studio 2019 version 16.10 | 1929
 //#define QTLIBINFIX "SWP"
 
 #ifndef PLATFORMLIBINFIX
-#ifdef _WIN64
+#ifdef __x86_64__
 #define PLATFORMLIBINFIX "x64"
 #else
 #define PLATFORMLIBINFIX "Win32"
-#endif
+#endif // #ifdef __x86_64__
 #endif
 
 #ifndef PLATFORMLIBINFIX

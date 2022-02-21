@@ -4,7 +4,9 @@ ZSQtLib is a C++ class library based on Qt.
 
 The class library provides you with classes which may help you to realize your C++ projects using Qt.
 
-## Quick Startup to Create and Install ZSQtLib Libraries, Products and Test Applications
+## Quick Startup
+
+### Create and Install ZSQtLib Libraries, Products and Test Applications
 
 > **Please verify that your compiler supports the desired architecture (platform).
 VS-2008 express edition for example does not support the X64 architecture.**
@@ -73,6 +75,93 @@ To generate, build and install a release build use the following commands (x64 i
     cmake --build .\Build\mingw81_x64_Release -j8
     cmake --install .\Build\mingw81_x64_Release
 
+### Use ZSQtLib Libraries in other Packages
+
+To use the libraries in other packages you need to add a `find_package` call and add
+the library to `target_link_libraries` in the `CMakeList.txt`.
+
+#### find_package
+
+If you want to use the libraries in other packages you need to add a `find_package` call
+to the `CMakeList.txt` file of that package.
+
+Add the following lines to the "CMakeList.txt" file of the package in which you want to integrate
+the libraries:
+
+    find_package(ZSQtLibs <VERSION_MAJOR>.<VERSION_MINOR>.<VERSION_PATCH> CONFIG REQUIRED ZSSys ZSIpc)
+    if (ZSQtLibs_FOUND)
+        message(STATUS "ZSQtLibs found")
+    else ()
+        message(STATUS "ZSQtLibs not found")
+    endif ()
+
+    # Workaround to set binary and include directories:
+    if(NOT ZSQTLIBS_BINARY_DIR)
+        get_target_property(ZSQtLibs_ZSSys_BinPath ZSQtLibs::ZSSys LOCATION)
+        get_filename_component(ZSQTLIBS_BINARY_DIR ${ZSQtLibs_ZSSys_BinPath} DIRECTORY)
+    endif()
+    if(NOT ZSQTLIBS_INCLUDE_DIRS)
+        set(ZSQTLIBS_INCLUDE_DIRS "${ZSQTLIBS_BINARY_DIR}/include")
+    endif()
+
+Replace the required version numbers <VERSION_MAJOR>.<VERSION_MINOR>.<VERSION_PATCH> with the version
+numbers of the installed package.
+
+> The version number of the **installed** ZSQtLibs may be retrieved from
+the installation directory in file `./include/ZSSys/ZSSysVersion.h`.
+
+The `ZSSysVersion.h` file may contain the following code lines (in the following code extract
+the comments have been removed from the file):
+
+    #ifndef ZSSys_Version_h
+    #define ZSSys_Version_h
+
+    #include <QString>
+
+    namespace ZS
+    {
+    namespace System
+    {
+    const int ZSQTLIB_VERSION_MAJOR = 0;
+    const int ZSQTLIB_VERSION_MINOR = 01;
+    const long int ZSQTLIB_VERSION_PATCH = 2;
+
+    const QString ZSQTLIB_GIT_VERSION_INFO = "v0.01.2-42-g4728566";
+
+    } // namespace System
+
+    } // namespace ZS
+
+    #endif // #ifndef ZSSys_Version_h
+
+On generating the build tree and installing the libraries the version numbers have been automatically
+created from the repository's git commit and were written into `include\ZSSys\ZSSysVersion.h`.
+
+Copy the integer numbers for the MAJOR, MINOR and PATCH version to the 'find_package' call
+of the `CMakeList.txt` file in which you want to use the installed libraries.
+Please note that `find_package` will check for an exact version match also for PATCH_VERSION.
+
+In this `ZSSysVersion.h` file beside the defined MAJOR, MINOR and PATCH version numbers
+you will find GIT_VERSION_INFO defined as follows:
+
+    const QString ZSQTLIB_GIT_VERSION_INFO = "v0.01.2-42-g4728566";
+
+- `v0.01.2` corresponds to the most recent tag. VERSION_MAJOR, VERSION_MINOR and VERSION_PATCH is contained in this tag.
+- `42` defines the number of commits on top of the most recent tag. This information might be useful to find
+  the corresponding git commit in the repository from which the libraries have been generated and build.
+- `g` is the object name of the most recent commit and can be ignored.
+- `4728566` specifies the abbreviated Git commit hash (usually the first seven digits of the git commit hash).
+  This information can be used to find the corresponding git commit in the repository from which the libraries
+  has been generated and build.
+
+#### target_link_libraries
+
+To link the libraries to the target package add a dependency in `target_link_libraries` as follows:
+
+    target_link_libraries(${PROJECT_NAME} <OTHERLIBS> ZSSys ZSIpc)
+
+***
+
 
 ## Additional Informations
 
@@ -109,12 +198,10 @@ number as defined in the main CMakeList file. The generated cmake file must be e
 For the libraries (so's on Linux Machines, dll's on Windows Machines) additional informations
 is included in the target names. This way it is possible to create a set of shared ZSQtLib
 libraries and install them on the target machine into the same target folder.
-When loading the libraries through a DllIf header file (like ZSIpcTrcDllIf) the DllIf is
-able to load the correct version of the library no matter by which compiler the application
+When including the interface header file into your applications source code during compile
+time the used compiler, platform and build type is detected. This way it is possible to
+load the correct version of the library no matter by which compiler the application
 has been built with.
-
-This approach is used by the installer of the Trace Method Client which installs different
-libraries for a set of Compilers, Qt Frameworks and platforms.
 
 The following additional informations is included in the names of the libraries:
 
@@ -130,13 +217,24 @@ But for both the libraries and the product and test applications a `d` is append
 so that both release and debug versions of the created applications can be installed into the same
 target directory.
 
-**Exammple for a library**
+**Example for a library**
 
-ZSSysQt5_msvc2019_x64_d.dll
+    ZSSysQt5_msvc2019_x64_d.dll
 
-**Exammple for an application**
+**Example for an application**
 
-ZSAppTrcMthClientd.exe
+    ZSAppTrcMthClientd.exe
+
+Including the compiler name, the platform, the Qt major version and the build type into the
+libraries file names allows installing the ZSQtLib libraries into one location and using
+them by applications created by different compilers and platforms and built types.
+
+- If you have an application created with Visual Studio 2008 using Qt Version 4 and you want
+  to use the ZSIpcTraceDll Interface the dll `ZSIpcTraceQt5_msvc2008_win32.dll` has to be loaded.
+- If you have an application created with MinGW Version 8.1 using Qt Version 5 and you want to
+  use the ZSIpcTraceDll Interface the dll `ZSIpcTraceQt5_mingw81_x64.dll` has to be loaded.
+
+> Of course you need to build and install the ZSQtLib using the correct build generator in advance.
 
 ### Create and Install ZSQtLib Libraries, Products and Test Applications
 
@@ -153,7 +251,6 @@ installation directory of the libraries.
 
 As alternative you can use `CMAKE_INSTALL_PREFIX` together with `CMAKE_PREFIX_PATH` for
 installing and referencing the libraries using CMake together with `find_package`.
-
 
 ## CMake
 
@@ -197,6 +294,10 @@ The relative path to the build directory is
 
 The default installation directory for the `ZSQtLib` binaries on Windows Machines is
 `C:\Program Files (x86)\ZSQtLib`.<br/>
+
+This is not the standard installation directory for Windows Applications including the company name.<br/>
+Moreover installing to "Program Files" for development purposes may conflict with the installation of
+already installed packages.
 
 A more suitable bin directory for development packages would be something like
 

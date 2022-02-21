@@ -1,8 +1,8 @@
 #*******************************************************************************
-# ZSQtLib Main CMake File
+# ZSQtLibs Main CMake File
 #*******************************************************************************
 #
-# For build instructions see "Readme_BuildZSQtLib.md".
+# For build instructions see "README.md".
 #
 # SOURCE_DIR Variables
 # ====================
@@ -91,6 +91,12 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
+# Retrieve VERSION_MAJOR, ~MINOR, ~PATCH from git repository.
+# The output variables will be used to configure "ZSQtLibs-config-version.cmake" below and to
+# configure "ZSSysVersion.h" and "ZSSysVersion.rc" by the CMakeList file of subdirectory ZSSys.
+include(${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}GetGitVersionInfo.cmake)
+
+message(STATUS "")
 message(STATUS "CMAKE_BINARY_DIR:         ${CMAKE_BINARY_DIR}")
 message(STATUS "CMAKE_CURRENT_BINARY_DIR: ${CMAKE_CURRENT_BINARY_DIR}")
 message(STATUS "CMAKE_PREFIX_PATH:        ${CMAKE_PREFIX_PATH}")
@@ -135,12 +141,15 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
     #add_compile_options(/W3 /WX)
     add_compile_options(/W3)
 else()
-    add_compile_options(-W -Wall -Werror)
+    add_compile_options(-W -Wall)
+    #add_compile_options(-Werror) not yet as long as Qt4 is supported
     add_compile_options(-Wextra -Wpedantic)
+    add_compile_options(-W -Wall)
 endif()
 
 message(STATUS "")
 if(CMAKE_BUILD_TYPE MATCHES Debug)
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -D_DEBUG")
     message(STATUS "C Flags, Debug:            ${CMAKE_C_FLAGS_DEBUG}")
     message(STATUS "C++ Flags, Debug:          ${CMAKE_CXX_FLAGS_DEBUG}")
 elseif(CMAKE_BUILD_TYPE MATCHES Release)
@@ -306,17 +315,6 @@ if(CREATE_PYTHON_BINDINGS)
     message("PYTHON_LIBRARIES:      ${PYTHON_LIBRARIES}")
 endif()
 
-# Retrieve VERSION_MAJOR, ~MINOR, ~PATCH from git repository.
-# The output variables will be used to configure "ZSQtLib-config-version.cmake" below and to
-# configure "ZSSysVersion.h" and "ZSSysVersion.rc" by the CMakeList file of subdirectory ZSSys.
-include(${CMAKE_CURRENT_SOURCE_DIR}./git_version_info.cmake)
-
-configure_file(
-    ${CMAKE_CURRENT_SOURCE_DIR}/ZSQtLib-config-version.cmake.in
-    ${CMAKE_CURRENT_BINARY_DIR}/ZSQtLib-config-version.cmake
-    @ONLY)
-
-
 message(STATUS "")
 message(STATUS "---------------------------------------------------------------------------------------------")
 message(STATUS "Processing sub directories")
@@ -325,21 +323,53 @@ message(STATUS "----------------------------------------------------------------
 enable_testing()
 
 add_subdirectory(Libs/ZSSys)
-add_subdirectory(Libs/ZSSysGUI)
-add_subdirectory(Libs/ZSTest)
-add_subdirectory(Libs/ZSTestGUI)
+#add_subdirectory(Libs/ZSSysGUI)
+#add_subdirectory(Libs/ZSTest)
+#add_subdirectory(Libs/ZSTestGUI)
 add_subdirectory(Libs/ZSIpc)
-add_subdirectory(Libs/ZSIpcGUI)
-add_subdirectory(Libs/ZSIpcTrace)
-add_subdirectory(Libs/ZSIpcTraceGUI)
-if(CREATE_PYTHON_BINDINGS)
-    add_subdirectory(Libs/ZSIpcTracePy)
-endif()
-add_subdirectory(Apps/Products/ZSTrcMthClient)
-add_subdirectory(Apps/Test/ZSIpcTrace)
-add_subdirectory(Apps/Test/ZSIpcTraceDllIfQtApp)
-add_subdirectory(Apps/Test/ZSSysEnums)
-add_subdirectory(Apps/Test/ZSSysErrLog)
-add_subdirectory(Apps/Test/ZSSysIdxTree)
-add_subdirectory(Apps/Test/ZSSysLogFile)
-add_subdirectory(Apps/Test/ZSTestTemplate)
+#add_subdirectory(Libs/ZSIpcGUI)
+#add_subdirectory(Libs/ZSIpcTrace)
+#add_subdirectory(Libs/ZSIpcTraceGUI)
+#if(CREATE_PYTHON_BINDINGS)
+#    add_subdirectory(Libs/ZSIpcTracePy)
+#endif()
+#add_subdirectory(Apps/Products/ZSTrcMthClient)
+#add_subdirectory(Apps/Test/ZSIpcTrace)
+#add_subdirectory(Apps/Test/ZSIpcTraceDllIfQtApp)
+#add_subdirectory(Apps/Test/ZSSysEnums)
+#add_subdirectory(Apps/Test/ZSSysErrLog)
+#add_subdirectory(Apps/Test/ZSSysIdxTree)
+#add_subdirectory(Apps/Test/ZSSysLogFile)
+#add_subdirectory(Apps/Test/ZSTestTemplate)
+
+include(GNUInstallDirs)
+include(CMakePackageConfigHelpers)
+
+# Generate the version file for the config file
+write_basic_package_version_file(
+    "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake"
+    VERSION ${ZSQTLIB_VERSION}
+    COMPATIBILITY AnyNewerVersion
+)
+
+# Create config file
+configure_package_config_file(
+    ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}Config.cmake.in
+    "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
+    INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
+)
+
+set(ConfigPackageLocation lib/cmake/${PROJECT_NAME})
+
+install(EXPORT ${PROJECT_NAME}Targets
+    NAMESPACE ZSQtLibs::
+    DESTINATION ${ConfigPackageLocation}
+)
+
+# Install config files
+install(
+    FILES
+        "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
+        "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake"
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
+)

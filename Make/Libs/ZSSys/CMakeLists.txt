@@ -1,15 +1,11 @@
-# Call CMake from build directory (e.g. ./bin/msvc2019_x64) with:
-# - for VS-2017: cmake -G "Visual Studio 15 2017" -A x64 -DCMAKE_BUILD_TYPE=Debug ../Make/Libs/ZSSys
-# - for VS-2019: cmake -G "Visual Studio 16 2019" -A x64 -DCMAKE_BUILD_TYPE=Debug ../Make/Libs/ZSSys
-
 cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
 
 project(ZSSys)
 
 message(STATUS "")
 message(STATUS "---------------------------------------------------------------------------------------------")
-message(STATUS "Processing: ${CMAKE_CURRENT_SOURCE_DIR}")
-message(STATUS "---------------------------------------------------------------------------------------------")
+message(STATUS "-> ${CMAKE_CURRENT_SOURCE_DIR}")
+message(STATUS "")
 
 message(STATUS "CMAKE_PROJECT_NAME:       ${CMAKE_PROJECT_NAME}")
 message(STATUS "PROJECT_NAME:             ${PROJECT_NAME}")
@@ -22,50 +18,96 @@ message(STATUS "CMAKE_BINARY_DIR:         ${CMAKE_BINARY_DIR}")
 message(STATUS "CMAKE_CURRENT_BINARY_DIR: ${CMAKE_CURRENT_BINARY_DIR}")
 message(STATUS "PROJECT_BINARY_DIR:       ${PROJECT_BINARY_DIR}")
 
+# In source code the headers are included together with the ${PROJECT_NAME} as follows:
+# include "${PROJECT_NAME}/HeaderFileName.h"
+# e.g. #include "ZSSys/ZSSysIdxTree.h"
+# For "target_include_directories" the header path without ${PROJECT_NAME} must be
+# passed and therefore _HeadersPath will be defined without ${PROJECT_NAME} so that
+# this define can be used further one in this CMake list file.
+# _SourcePaths will be defined in the same way.
+set(_HeadersPath ${CMAKE_CURRENT_SOURCE_DIR}/../../../Include/Libs)
+set(_SourcesPath ${CMAKE_CURRENT_SOURCE_DIR}/../../../Source/Libs)
+
+list(APPEND _Headers
+    ${_HeadersPath}/${PROJECT_NAME}/ZSSysApp.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSSysAux.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSSysCommon.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSSysDllMain.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSSysEnumEntry.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSSysEnumeration.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSSysEnumerationIdxTree.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSSysEnumTemplate.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSSysEnumVal.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSSysEnumValArr.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSSysErrCode.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSSysErrLog.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSSysErrResult.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSSysException.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSSysIdxTree.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSSysIdxTreeEntries.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSSysLogFile.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSSysMath.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSSysMemLeakDump.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSSysMsg.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSSysMsgProtocol.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSSysObjPool.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSSysRequest.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSSysRequestExecTree.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSSysRequestQueue.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSSysRequestSequencer.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSSysSleeperThread.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSSysTime.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSSysTrcAdminObj.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSSysTrcAdminObjIdxTree.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSSysTrcMethod.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSSysTrcMthFile.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSSysTrcServer.h
+)
+
 list(APPEND _Sources
-    ../../../Include/Libs/ZSSys/ZSSysApp.h                ../../../Source/Libs/ZSSys/ZSSysApp.cpp
-    ../../../Include/Libs/ZSSys/ZSSysAux.h                ../../../Source/Libs/ZSSys/ZSSysAux.cpp
-    ../../../Include/Libs/ZSSys/ZSSysCommon.h             ../../../Source/Libs/ZSSys/ZSSysCommon.cpp
-    ../../../Include/Libs/ZSSys/ZSSysDllMain.h            ../../../Source/Libs/ZSSys/ZSSysDllMain.cpp
-    ../../../Include/Libs/ZSSys/ZSSysEnumEntry.h          ../../../Source/Libs/ZSSys/ZSSysEnumEntry.cpp
-    ../../../Include/Libs/ZSSys/ZSSysEnumeration.h        ../../../Source/Libs/ZSSys/ZSSysEnumeration.cpp
-    ../../../Include/Libs/ZSSys/ZSSysEnumerationIdxTree.h ../../../Source/Libs/ZSSys/ZSSysEnumerationIdxTree.cpp
-    ../../../Include/Libs/ZSSys/ZSSysEnumTemplate.h
-    ../../../Include/Libs/ZSSys/ZSSysEnumVal.h            ../../../Source/Libs/ZSSys/ZSSysEnumVal.cpp
-    ../../../Include/Libs/ZSSys/ZSSysEnumValArr.h         ../../../Source/Libs/ZSSys/ZSSysEnumValArr.cpp
-    ../../../Include/Libs/ZSSys/ZSSysErrCode.h            ../../../Source/Libs/ZSSys/ZSSysErrCode.cpp
-    ../../../Include/Libs/ZSSys/ZSSysErrLog.h             ../../../Source/Libs/ZSSys/ZSSysErrLog.cpp
-    ../../../Include/Libs/ZSSys/ZSSysErrResult.h          ../../../Source/Libs/ZSSys/ZSSysErrResult.cpp
-    ../../../Include/Libs/ZSSys/ZSSysException.h          ../../../Source/Libs/ZSSys/ZSSysException.cpp
-    ../../../Include/Libs/ZSSys/ZSSysIdxTree.h            ../../../Source/Libs/ZSSys/ZSSysIdxTree.cpp
-    ../../../Include/Libs/ZSSys/ZSSysIdxTreeEntries.h     ../../../Source/Libs/ZSSys/ZSSysIdxTreeEntries.cpp
-    ../../../Include/Libs/ZSSys/ZSSysLogFile.h            ../../../Source/Libs/ZSSys/ZSSysLogFile.cpp
-    ../../../Include/Libs/ZSSys/ZSSysMath.h               ../../../Source/Libs/ZSSys/ZSSysMath.cpp
-    ../../../Include/Libs/ZSSys/ZSSysMemLeakDump.h        ../../../Source/Libs/ZSSys/ZSSysMemLeakDump.cpp
-    ../../../Include/Libs/ZSSys/ZSSysMsg.h                ../../../Source/Libs/ZSSys/ZSSysMsg.cpp
-    ../../../Include/Libs/ZSSys/ZSSysMsgProtocol.h        ../../../Source/Libs/ZSSys/ZSSysMsgProtocol.cpp
-    ../../../Include/Libs/ZSSys/ZSSysObjPool.h            ../../../Source/Libs/ZSSys/ZSSysObjPool.cpp
-    ../../../Include/Libs/ZSSys/ZSSysRequest.h            ../../../Source/Libs/ZSSys/ZSSysRequest.cpp
-    ../../../Include/Libs/ZSSys/ZSSysRequestExecTree.h    ../../../Source/Libs/ZSSys/ZSSysRequestExecTree.cpp
-    ../../../Include/Libs/ZSSys/ZSSysRequestQueue.h       ../../../Source/Libs/ZSSys/ZSSysRequestQueue.cpp
-    ../../../Include/Libs/ZSSys/ZSSysRequestSequencer.h   ../../../Source/Libs/ZSSys/ZSSysRequestSequencer.cpp
-    ../../../Include/Libs/ZSSys/ZSSysSleeperThread.h      ../../../Source/Libs/ZSSys/ZSSysSleeperThread.cpp
-    ../../../Include/Libs/ZSSys/ZSSysTime.h               ../../../Source/Libs/ZSSys/ZSSysTime.cpp
-    ../../../Include/Libs/ZSSys/ZSSysTrcAdminObj.h        ../../../Source/Libs/ZSSys/ZSSysTrcAdminObj.cpp
-    ../../../Include/Libs/ZSSys/ZSSysTrcAdminObjIdxTree.h ../../../Source/Libs/ZSSys/ZSSysTrcAdminObjIdxTree.cpp
-    ../../../Include/Libs/ZSSys/ZSSysTrcMethod.h          ../../../Source/Libs/ZSSys/ZSSysTrcMethod.cpp
-    ../../../Include/Libs/ZSSys/ZSSysTrcMthFile.h         ../../../Source/Libs/ZSSys/ZSSysTrcMthFile.cpp
-    ../../../Include/Libs/ZSSys/ZSSysTrcServer.h          ../../../Source/Libs/ZSSys/ZSSysTrcServer.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSSysApp.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSSysAux.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSSysCommon.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSSysDllMain.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSSysEnumEntry.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSSysEnumeration.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSSysEnumerationIdxTree.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSSysEnumVal.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSSysEnumValArr.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSSysErrCode.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSSysErrLog.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSSysErrResult.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSSysException.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSSysIdxTree.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSSysIdxTreeEntries.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSSysLogFile.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSSysMath.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSSysMemLeakDump.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSSysMsg.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSSysMsgProtocol.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSSysObjPool.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSSysRequest.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSSysRequestExecTree.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSSysRequestQueue.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSSysRequestSequencer.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSSysSleeperThread.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSSysTime.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSSysTrcAdminObj.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSSysTrcAdminObjIdxTree.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSSysTrcMethod.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSSysTrcMthFile.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSSysTrcServer.cpp
 )
 
 configure_file(
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../../Include/Libs/ZSSys/ZSSysVersion.h.in
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../../Include/Libs/ZSSys/ZSSysVersion.h)
-set(_Sources ${_Sources} ${CMAKE_CURRENT_SOURCE_DIR}/../../../Include/Libs/ZSSys/ZSSysVersion.h)
+    ${_HeadersPath}/${PROJECT_NAME}/ZSSysVersion.h.in
+    ${_HeadersPath}/${PROJECT_NAME}/ZSSysVersion.h)
+set(_Headers ${_Headers} ${_HeadersPath}/${PROJECT_NAME}/ZSSysVersion.h)
 
 if(WIN32)
+    # Add version info as meta information to Dll.
     configure_file(
-        ${CMAKE_CURRENT_SOURCE_DIR}/../../../Include/Libs/ZSSys/ZSSysVersion.rc.in
+        ${_HeadersPath}/${PROJECT_NAME}/ZSSysVersion.rc.in
         ${CMAKE_CURRENT_BINARY_DIR}/ZSSysVersion.rc
         @ONLY)
     set(_Sources ${_Sources} ${CMAKE_CURRENT_BINARY_DIR}/ZSSysVersion.rc)
@@ -74,7 +116,6 @@ endif()
 # Got to create the following output name:
 # (ProjectName)Qt$(QT_VERSION_MAJOR)_$(Compiler)_$(Platform)[_d]
 # e.g.: "ZSSysQt5_msvc2019_x64_d"
-
 set(TargetOutputName ${PROJECT_NAME}Qt${QT_VERSION_MAJOR}_${Compiler}_${Platform})
 
 if(CMAKE_BUILD_TYPE MATCHES Debug)
@@ -83,7 +124,7 @@ endif()
 
 message(STATUS "TargetOutputName: ${TargetOutputName}")
 
-add_library(${PROJECT_NAME} SHARED ${_Sources})
+add_library(${PROJECT_NAME} SHARED ${_Headers} ${_Sources})
 
 set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME ${TargetOutputName})
 
@@ -92,7 +133,9 @@ target_compile_definitions(${PROJECT_NAME}
     PUBLIC MDd _UNICODE UNICODE)
 
 target_include_directories(${PROJECT_NAME}
-    PUBLIC ${CMAKE_SOURCE_DIR}/../Include/Libs)
+    PUBLIC
+    $<BUILD_INTERFACE:${_HeadersPath}>
+    $<INSTALL_INTERFACE:include/${PROJECT_NAME}>)
 
 if(QT_VERSION_MAJOR EQUAL 4)
     if(QT_LIB)
@@ -106,40 +149,29 @@ if(QT_VERSION_MAJOR EQUAL 4)
             PUBLIC Qt4::QtXml
             PUBLIC Qt4::QtNetwork)
     endif()
-    if(CMAKE_BUILD_TYPE MATCHES Debug)
-        message(STATUS "Copying Qt4 Debug Dlls")
-        # Please note: Executed during build but not during configure process.
-        add_custom_command(TARGET ${PROJECT_NAME} PRE_BUILD
-            COMMENT "Copy Qt Dlls"
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${QT_BINARY_DIR}/QtCored4.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG}/QtCored4.dll
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${QT_BINARY_DIR}/QtXmld4.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG}/QtXmld4.dll
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${QT_BINARY_DIR}/QtNetworkd4.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG}/QtNetworkd4.dll
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${QT_BINARY_DIR}/QtGuid4.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG}/QtGuid4.dll)
-    else()
-        message(STATUS "Copying Qt4 Release Dlls")
-        # Please note: Executed during build but not during configure process.
-        add_custom_command(TARGET ${PROJECT_NAME} PRE_BUILD
-            COMMENT "Copy Qt Dlls"
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${QT_BINARY_DIR}/QtCore4.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG}/QtCore4.dll
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${QT_BINARY_DIR}/QtXml4.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG}/QtXml4.dll
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${QT_BINARY_DIR}/QtNetwork4.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG}/QtNetwork4.dll
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${QT_BINARY_DIR}/QtGui4.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG}/QtGui4.dll)
-    endif()
 elseif(QT_VERSION_MAJOR EQUAL 5)
     target_link_libraries(${PROJECT_NAME}
         PUBLIC Qt5::Core
         PUBLIC Qt5::Xml
         PUBLIC Qt5::Network)
-    message(STATUS "Copying Qt5 Dlls")
-    # Please note: Executed during build but not during configure process.
-    add_custom_command(TARGET ${PROJECT_NAME} PRE_BUILD
-        COMMENT "Copy Qt Dlls"
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt5::Core> $<TARGET_FILE_DIR:${PROJECT_NAME}>
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt5::Xml> $<TARGET_FILE_DIR:${PROJECT_NAME}>
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt5::Network> $<TARGET_FILE_DIR:${PROJECT_NAME}>
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt5::Gui> $<TARGET_FILE_DIR:${PROJECT_NAME}>
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt5::Widgets> $<TARGET_FILE_DIR:${PROJECT_NAME}>
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${QT_BINARY_DIR}/../plugins/platforms/qwindows.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/plugins/platforms/qwindows.dll
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${QT_BINARY_DIR}/../plugins/platforms/qwindowsd.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/plugins/platforms/qwindowsd.dll)
 endif()
 
+# Copy Qt Dlls to bin directory.
+include(${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}CopyQtDlls.cmake)
+
+include(GNUInstallDirs)
+
+install(TARGETS ${PROJECT_NAME} EXPORT ${CMAKE_PROJECT_NAME}Targets
+    LIBRARY DESTINATION lib
+    ARCHIVE DESTINATION lib
+    RUNTIME DESTINATION .
+    INCLUDES DESTINATION include)
+
+install(FILES ${_Headers}
+    DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}"
+    COMPONENT Devel)
+
+message(STATUS "")
+message(STATUS "<- ${CMAKE_CURRENT_SOURCE_DIR}")
+message(STATUS "---------------------------------------------------------------------------------------------")
+message(STATUS "")

@@ -31,6 +31,10 @@ list(APPEND _Sources
     ../../../Include/Libs/ZSTest/ZSTestStepGroup.h        ../../../Source/Libs/ZSTest/ZSTestStepGroup.cpp
 )
 
+if(WIN32)
+    set(_Sources ${_Sources} ${CMAKE_CURRENT_BINARY_DIR}/../../Libs/ZSSys/ZSSysVersion.rc)
+endif()
+
 # Got to create the following target name:
 # (ProjectName)Qt$(QT_VERSION_MAJOR)_$(Compiler)_$(Platform)[_d]
 # e.g.: "ZSTestQt5_msvc2019_x64_d"

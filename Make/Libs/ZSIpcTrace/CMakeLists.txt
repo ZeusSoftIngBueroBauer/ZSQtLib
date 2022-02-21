@@ -30,6 +30,10 @@ list(APPEND _Sources
     ../../../Include/Libs/ZSIpcTrace/ZSIpcTrcServer.h             ../../../Source/Libs/ZSIpcTrace/ZSIpcTrcServer.cpp
 )
 
+if(WIN32)
+    set(_Sources ${_Sources} ${CMAKE_CURRENT_BINARY_DIR}/../../Libs/ZSSys/ZSSysVersion.rc)
+endif()
+
 # Got to create the following target name:
 # (ProjectName)Qt$(QT_VERSION_MAJOR)_$(Compiler)_$(Platform)[_d]
 # e.g.: "ZSIpcTraceQt5_msvc2019_x64_d"
@@ -45,6 +49,10 @@ message(STATUS "TargetOutputName: ${TargetOutputName}")
 add_library(${PROJECT_NAME} SHARED ${_Sources})
 
 set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME ${TargetOutputName})
+
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+    target_compile_options(${PROJECT_NAME} PRIVATE "-Wno-cast-function-type")
+endif()
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE ZSIPCTRACEDLL_EXPORTS)
 

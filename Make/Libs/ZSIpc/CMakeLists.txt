@@ -1,15 +1,11 @@
-# Call CMake from build directory (e.g. ./bin/msvc2019_x64) with:
-# - for VS-2017: cmake -G "Visual Studio 15 2017" -A x64 -DCMAKE_BUILD_TYPE=Debug ../Make/Libs/ZSSys
-# - for VS-2019: cmake -G "Visual Studio 16 2019" -A x64 -DCMAKE_BUILD_TYPE=Debug ../Make/Libs/ZSSys
-
 cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
 
 project(ZSIpc)
 
 message(STATUS "")
 message(STATUS "---------------------------------------------------------------------------------------------")
-message(STATUS "Processing: ${CMAKE_CURRENT_SOURCE_DIR}")
-message(STATUS "---------------------------------------------------------------------------------------------")
+message(STATUS "-> ${CMAKE_CURRENT_SOURCE_DIR}")
+message(STATUS "")
 
 message(STATUS "CMAKE_PROJECT_NAME:       ${CMAKE_PROJECT_NAME}")
 message(STATUS "PROJECT_NAME:             ${PROJECT_NAME}")
@@ -22,38 +18,84 @@ message(STATUS "CMAKE_BINARY_DIR:         ${CMAKE_BINARY_DIR}")
 message(STATUS "CMAKE_CURRENT_BINARY_DIR: ${CMAKE_CURRENT_BINARY_DIR}")
 message(STATUS "PROJECT_BINARY_DIR:       ${PROJECT_BINARY_DIR}")
 
-list(APPEND _Sources
-    ../../../Include/Libs/ZSIpc/ZSIpcBlkType.h                ../../../Source/Libs/ZSIpc/ZSIpcBlkType.cpp
-    ../../../Include/Libs/ZSIpc/ZSIpcBlkTypeE.h               ../../../Source/Libs/ZSIpc/ZSIpcBlkTypeE.cpp
-    ../../../Include/Libs/ZSIpc/ZSIpcBlkTypeL.h               ../../../Source/Libs/ZSIpc/ZSIpcBlkTypeL.cpp
-    ../../../Include/Libs/ZSIpc/ZSIpcBlkTypeNone.h            ../../../Source/Libs/ZSIpc/ZSIpcBlkTypeNone.cpp
-    ../../../Include/Libs/ZSIpc/ZSIpcBlkTypeSL.h              ../../../Source/Libs/ZSIpc/ZSIpcBlkTypeSL.cpp
-    ../../../Include/Libs/ZSIpc/ZSIpcBlkTypeTLV.h             ../../../Source/Libs/ZSIpc/ZSIpcBlkTypeTLV.cpp
-    ../../../Include/Libs/ZSIpc/ZSIpcBlkTypeUser.h            ../../../Source/Libs/ZSIpc/ZSIpcBlkTypeUser.cpp
-    ../../../Include/Libs/ZSIpc/ZSIpcClient.h                 ../../../Source/Libs/ZSIpc/ZSIpcClient.cpp
-    ../../../Include/Libs/ZSIpc/ZSIpcClientGateway.h          ../../../Source/Libs/ZSIpc/ZSIpcClientGateway.cpp
-    ../../../Include/Libs/ZSIpc/ZSIpcCommon.h                 ../../../Source/Libs/ZSIpc/ZSIpcCommon.cpp
-    ../../../Include/Libs/ZSIpc/ZSIpcDllMain.h                ../../../Source/Libs/ZSIpc/ZSIpcDllMain.cpp
-    ../../../Include/Libs/ZSIpc/ZSIpcInProcMsgServer.h        ../../../Source/Libs/ZSIpc/ZSIpcInProcMsgServer.cpp
-    ../../../Include/Libs/ZSIpc/ZSIpcInProcMsgSocket.h        ../../../Source/Libs/ZSIpc/ZSIpcInProcMsgSocket.cpp
-    ../../../Include/Libs/ZSIpc/ZSIpcServer.h                 ../../../Source/Libs/ZSIpc/ZSIpcServer.cpp
-    ../../../Include/Libs/ZSIpc/ZSIpcServerGateway.h          ../../../Source/Libs/ZSIpc/ZSIpcServerGateway.cpp
-    ../../../Include/Libs/ZSIpc/ZSIpcServerWrapper.h          ../../../Source/Libs/ZSIpc/ZSIpcServerWrapper.cpp
-    ../../../Include/Libs/ZSIpc/ZSIpcServerWrapperInProcMsg.h ../../../Source/Libs/ZSIpc/ZSIpcServerWrapperInProcMsg.cpp
-    ../../../Include/Libs/ZSIpc/ZSIpcServerWrapperShm.h       ../../../Source/Libs/ZSIpc/ZSIpcServerWrapperShm.cpp
-    ../../../Include/Libs/ZSIpc/ZSIpcServerWrapperTcp.h       ../../../Source/Libs/ZSIpc/ZSIpcServerWrapperTcp.cpp
-    ../../../Include/Libs/ZSIpc/ZSIpcSocketWrapper.h          ../../../Source/Libs/ZSIpc/ZSIpcSocketWrapper.cpp
-    ../../../Include/Libs/ZSIpc/ZSIpcSocketWrapperInProcMsg.h ../../../Source/Libs/ZSIpc/ZSIpcSocketWrapperInProcMsg.cpp
-    ../../../Include/Libs/ZSIpc/ZSIpcSocketWrapperShm.h       ../../../Source/Libs/ZSIpc/ZSIpcSocketWrapperShm.cpp
-    ../../../Include/Libs/ZSIpc/ZSIpcSocketWrapperTcp.h       ../../../Source/Libs/ZSIpc/ZSIpcSocketWrapperTcp.cpp
-    ../../../Include/Libs/ZSIpc/ZSIpcSrvCltBaseGateway.h      ../../../Source/Libs/ZSIpc/ZSIpcSrvCltBaseGateway.cpp
-    ../../../Include/Libs/ZSIpc/ZSIpcSrvCltMsg.h              ../../../Source/Libs/ZSIpc/ZSIpcSrvCltMsg.cpp
+# In source code the headers are included together with the ${PROJECT_NAME} as follows:
+# include "${PROJECT_NAME}/HeaderFileName.h"
+# e.g. #include "ZSSys/ZSSysIdxTree.h"
+# For "target_include_directories" the header path without ${PROJECT_NAME} must be
+# passed and therefore _HeadersPath will be defined without ${PROJECT_NAME} so that
+# this define can be used further one in this CMake list file.
+# _SourcePaths will be defined in the same way.
+set(_HeadersPath ${CMAKE_CURRENT_SOURCE_DIR}/../../../Include/Libs)
+set(_SourcesPath ${CMAKE_CURRENT_SOURCE_DIR}/../../../Source/Libs)
+
+list(APPEND _Headers
+    ${_HeadersPath}/${PROJECT_NAME}/ZSIpcBlkType.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSIpcBlkTypeE.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSIpcBlkTypeL.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSIpcBlkTypeNone.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSIpcBlkTypeSL.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSIpcBlkTypeTLV.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSIpcBlkTypeUser.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSIpcClient.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSIpcClientGateway.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSIpcCommon.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSIpcDllMain.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSIpcInProcMsgServer.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSIpcInProcMsgSocket.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSIpcServer.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSIpcServerGateway.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSIpcServerWrapper.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSIpcServerWrapperInProcMsg.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSIpcServerWrapperShm.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSIpcServerWrapperTcp.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSIpcSocketWrapper.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSIpcSocketWrapperInProcMsg.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSIpcSocketWrapperShm.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSIpcSocketWrapperTcp.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSIpcSrvCltBaseGateway.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSIpcSrvCltMsg.h
 )
+
+list(APPEND _Sources
+    ${_SourcesPath}/${PROJECT_NAME}/ZSIpcBlkType.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSIpcBlkTypeE.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSIpcBlkTypeL.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSIpcBlkTypeNone.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSIpcBlkTypeSL.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSIpcBlkTypeTLV.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSIpcBlkTypeUser.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSIpcClient.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSIpcClientGateway.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSIpcCommon.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSIpcDllMain.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSIpcInProcMsgServer.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSIpcInProcMsgSocket.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSIpcServer.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSIpcServerGateway.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSIpcServerWrapper.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSIpcServerWrapperInProcMsg.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSIpcServerWrapperShm.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSIpcServerWrapperTcp.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSIpcSocketWrapper.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSIpcSocketWrapperInProcMsg.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSIpcSocketWrapperShm.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSIpcSocketWrapperTcp.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSIpcSrvCltBaseGateway.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSIpcSrvCltMsg.cpp
+)
+
+if(WIN32)
+    # Add version info as meta information to Dll.
+    configure_file(
+        ${_HeadersPath}/ZSSys/ZSSysVersion.rc.in
+        ${CMAKE_CURRENT_BINARY_DIR}/../../Libs/ZSSys/ZSSysVersion.rc
+        @ONLY)
+    set(_Sources ${_Sources} ${CMAKE_CURRENT_BINARY_DIR}/../../Libs/ZSSys/ZSSysVersion.rc)
+endif()
 
 # Got to create the following target name:
 # (ProjectName)Qt$(QT_VERSION_MAJOR)_$(Compiler)_$(Platform)[_d]
 # e.g.: "ZSIpcQt5_msvc2019_x64_d"
-
 set(TargetOutputName ${PROJECT_NAME}Qt${QT_VERSION_MAJOR}_${Compiler}_${Platform})
 
 if(CMAKE_BUILD_TYPE MATCHES Debug)
@@ -62,10 +104,33 @@ endif()
 
 message(STATUS "TargetOutputName: ${TargetOutputName}")
 
-add_library(${PROJECT_NAME} SHARED ${_Sources})
+add_library(${PROJECT_NAME} SHARED ${_Headers} ${_Sources})
 
 set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME ${TargetOutputName})
 
-target_compile_definitions(${PROJECT_NAME} PRIVATE ZSIPCDLL_EXPORTS)
+target_compile_definitions(${PROJECT_NAME}
+    PRIVATE ZSIPCDLL_EXPORTS)
+
+target_include_directories(${PROJECT_NAME}
+    PUBLIC
+    $<BUILD_INTERFACE:${_HeadersPath}>
+    $<INSTALL_INTERFACE:include/${PROJECT_NAME}>)
 
 target_link_libraries(${PROJECT_NAME} PUBLIC ZSSys)
+
+include(GNUInstallDirs)
+
+install(TARGETS ${PROJECT_NAME} EXPORT ${CMAKE_PROJECT_NAME}Targets
+    LIBRARY DESTINATION lib
+    ARCHIVE DESTINATION lib
+    RUNTIME DESTINATION .
+    INCLUDES DESTINATION include)
+
+install(FILES ${_Headers}
+    DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}"
+    COMPONENT Devel)
+
+message(STATUS "")
+message(STATUS "<- ${CMAKE_CURRENT_SOURCE_DIR}")
+message(STATUS "---------------------------------------------------------------------------------------------")
+message(STATUS "")

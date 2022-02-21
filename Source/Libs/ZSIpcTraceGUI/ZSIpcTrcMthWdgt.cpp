@@ -950,10 +950,10 @@ void CWdgtTrcMthList::onTraceDataReceived( QObject* /*i_pObjSender*/, const QStr
     QString            strObjName;
     QString            strMthName;
     QString            strMthThreadName;
-    EMethodDir         mthDir;
+    EMethodDir         mthDir = EMethodDir::Undefined;
     STrcMthThreadEntry threadEntry;
     QString            strDateTime;
-    double             fSysTime_s;
+    double             fSysTime_s = -1.0;
     QString            strMthInArgs;
     QString            strMthOutArgs;
     QString            strMthRet;

@@ -30,6 +30,10 @@ list(APPEND _Sources
     ../../../../Include/Apps/Test/ZSSysLogFile/Test.h            ../../../../Source/Apps/Test/ZSSysLogFile/Test.cpp
 )
 
+if(WIN32)
+    set(_Sources ${_Sources} ${CMAKE_CURRENT_BINARY_DIR}/../../../Libs/ZSSys/ZSSysVersion.rc)
+endif()
+
 # Got to create the following target name:
 # (ProjectName)[_d]
 # e.g.: "ZSAppTestSysLogFile_d"
@@ -42,7 +46,11 @@ endif()
 
 message(STATUS "TargetOutputName: ${TargetOutputName}")
 
-add_executable(${PROJECT_NAME} ${_Sources})
+if(WIN32)
+    add_executable(${PROJECT_NAME} WIN32 ${_Sources})
+else()
+    add_executable(${PROJECT_NAME} ${_Sources})
+endif()
 
 set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME ${TargetOutputName})
 

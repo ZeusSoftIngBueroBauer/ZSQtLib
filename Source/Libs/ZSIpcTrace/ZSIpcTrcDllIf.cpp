@@ -51,7 +51,7 @@ namespace ZS
 {
 namespace System
 {
-#ifdef _WINDOWS
+#ifdef _WIN32
 //------------------------------------------------------------------------------
 wstring s2ws( const string& s )
 //------------------------------------------------------------------------------
@@ -65,7 +65,7 @@ wstring s2ws( const string& s )
     delete[] buf;
     return r;
 }
-#endif
+#endif // #ifdef _WIN32
 
 } // namespace System
 
@@ -154,7 +154,7 @@ static instances
 
 static char* s_szTrcDllFileName = nullptr;
 
-#ifdef _WINDOWS
+#ifdef _WIN32
 static HMODULE s_hndIpcTrcDllIf = NULL;
 #else
 static void* s_hndIpcTrcDllIf = NULL;
@@ -330,47 +330,69 @@ bool ZS::Trace::DllIf::loadDll(
     sprintf(szQtVersionMajor, "%d", i_iQtVersionMajor);
     #endif
 
-    // Example for dlll file name: "ZSIpcTraceQt5_msvc2015_x64_d"
+    /* Examples for library file names:
+     *  "ZSIpcTraceQt5_msvc2015_x64_d"
+     *  "ZSIpcTraceQt5_mingw81_x64_d"
+     *  "libZSIpcTraceQt5_mingw81_x64_d"
+     * The GNU compiler (MinGW on Windows) are inserting "lib"
+     * at the beginning of the file names (also on Windows machines).
+     * We are going to try both versions of file names.
+    */
 
-    const char* szZSDllName = "ZSIpcTraceQt";
+    const char* szZSDllName1 = "ZSIpcTraceQt";
+    const char* szZSDllName2 = "libZSIpcTraceQt";
 
-    delete s_szTrcDllFileName;
-    s_szTrcDllFileName = nullptr;
-
-    size_t iStrLenDllFileName = strlen(szZSDllName) + strlen(szQtVersionMajor) + 1 + strlen(szCompiler) + 1 + strlen(szPlatform) + 1 + strlen(szConfig);
-    s_szTrcDllFileName = new char[iStrLenDllFileName+1];
-    memset(s_szTrcDllFileName, 0x00, iStrLenDllFileName+1);
-
-    size_t iStrPos = 0;
-    memcpy(&s_szTrcDllFileName[iStrPos], szZSDllName, strlen(szZSDllName));           // "ZSIpcTraceQt"
-    iStrPos += strlen(szZSDllName);
-    memcpy(&s_szTrcDllFileName[iStrPos], szQtVersionMajor, strlen(szQtVersionMajor)); // "ZSIpcTraceQt5"
-    iStrPos += strlen(szQtVersionMajor);
-    memcpy(&s_szTrcDllFileName[iStrPos], "_", 1);                                     // "ZSIpcTraceQt5_"
-    iStrPos += 1;
-    memcpy(&s_szTrcDllFileName[iStrPos], szCompiler, strlen(szCompiler));             // "ZSIpcTraceQt5_msvc2015"
-    iStrPos += strlen(szCompiler);
-    memcpy(&s_szTrcDllFileName[iStrPos], "_", 1);                                     // "ZSIpcTraceQt5_msvc2015_"
-    iStrPos += 1;
-    memcpy(&s_szTrcDllFileName[iStrPos], szPlatform, strlen(szPlatform));             // "ZSIpcTraceQt5_msvc2015_x64"
-    iStrPos += strlen(szPlatform);
-    if( strlen(szConfig) > 0 )
+    for( int iFileNameTries = 0; iFileNameTries < 2; ++iFileNameTries )
     {
-        memcpy(&s_szTrcDllFileName[iStrPos], "_", 1);                                 // "ZSIpcTraceQt5_msvc2015_x64_"
+        const char* szZSDllName = szZSDllName1;
+        if( iFileNameTries == 1 )
+        {
+            szZSDllName = szZSDllName2;
+        }
+
+        delete s_szTrcDllFileName;
+        s_szTrcDllFileName = nullptr;
+
+        size_t iStrLenDllFileName = strlen(szZSDllName) + strlen(szQtVersionMajor) + 1 + strlen(szCompiler) + 1 + strlen(szPlatform) + 1 + strlen(szConfig);
+        s_szTrcDllFileName = new char[iStrLenDllFileName+1];
+        memset(s_szTrcDllFileName, 0x00, iStrLenDllFileName+1);
+
+        size_t iStrPos = 0;
+        memcpy(&s_szTrcDllFileName[iStrPos], szZSDllName, strlen(szZSDllName));           // "ZSIpcTraceQt"
+        iStrPos += strlen(szZSDllName);
+        memcpy(&s_szTrcDllFileName[iStrPos], szQtVersionMajor, strlen(szQtVersionMajor)); // "ZSIpcTraceQt5"
+        iStrPos += strlen(szQtVersionMajor);
+        memcpy(&s_szTrcDllFileName[iStrPos], "_", 1);                                     // "ZSIpcTraceQt5_"
         iStrPos += 1;
-        memcpy(&s_szTrcDllFileName[iStrPos], szConfig, strlen(szConfig));             // "ZSIpcTraceQt5_msvc2015_x64_d"
-        iStrPos += strlen(szConfig);
-    }
+        memcpy(&s_szTrcDllFileName[iStrPos], szCompiler, strlen(szCompiler));             // "ZSIpcTraceQt5_msvc2015"
+        iStrPos += strlen(szCompiler);
+        memcpy(&s_szTrcDllFileName[iStrPos], "_", 1);                                     // "ZSIpcTraceQt5_msvc2015_"
+        iStrPos += 1;
+        memcpy(&s_szTrcDllFileName[iStrPos], szPlatform, strlen(szPlatform));             // "ZSIpcTraceQt5_msvc2015_x64"
+        iStrPos += strlen(szPlatform);
+        if( strlen(szConfig) > 0 )
+        {
+            memcpy(&s_szTrcDllFileName[iStrPos], "_", 1);                                 // "ZSIpcTraceQt5_msvc2015_x64_"
+            iStrPos += 1;
+            memcpy(&s_szTrcDllFileName[iStrPos], szConfig, strlen(szConfig));             // "ZSIpcTraceQt5_msvc2015_x64_d"
+            iStrPos += strlen(szConfig);
+        }
+
+        #ifdef _WIN32
+        const wstring wstrTrcDllFileName = ZS::System::s2ws(s_szTrcDllFileName);
+        s_hndIpcTrcDllIf = LoadLibrary(wstrTrcDllFileName.c_str());
+        #else
+        s_hndIpcTrcDllIf = dlopen(s_szTrcDllFileName, RTLD_LAZY);
+        #endif
+
+        if( s_hndIpcTrcDllIf != NULL )
+        {
+            break;
+        }
+    } // for( int iFileNameTries = 0; iFileNameTries < 2; ++iFileNameTries )
 
     delete [] szQtVersionMajor;
     szQtVersionMajor = nullptr;
-
-    #ifdef _WINDOWS
-    const wstring wstrTrcDllFileName = ZS::System::s2ws(s_szTrcDllFileName);
-    s_hndIpcTrcDllIf = LoadLibrary(wstrTrcDllFileName.c_str());
-    #elif defined __linux__
-    s_hndIpcTrcDllIf = dlopen(s_szTrcDllFileName, RTLD_LAZY);
-    #endif
 
     bool bOk = false;
 
@@ -2023,7 +2045,7 @@ public: // instance methods
 
     @return true if the trace server has been started.
 */
-bool DllIf::CIpcTrcServer::startup( int i_iTimeout_ms, bool i_bWait )
+bool DllIf::CIpcTrcServer::startup( int i_iTimeout_ms, bool /*i_bWait*/ )
 //------------------------------------------------------------------------------
 {
     bool bOk = false;
@@ -2057,7 +2079,7 @@ bool DllIf::CIpcTrcServer::startup( int i_iTimeout_ms, bool i_bWait )
 
     @return true if the trace server has been shutdown.
 */
-bool DllIf::CIpcTrcServer::shutdown( int i_iTimeout_ms, bool i_bWait )
+bool DllIf::CIpcTrcServer::shutdown( int i_iTimeout_ms, bool /*i_bWait*/ )
 //------------------------------------------------------------------------------
 {
     bool bOk = false;

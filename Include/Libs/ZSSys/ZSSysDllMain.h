@@ -72,6 +72,8 @@ global type definitions and constants
 #define QT_VERSION_MAJOR 4
 #endif
 
+#ifndef COMPILERLIBINFIX
+#ifdef _MSC_VER
 /*
 Visual Studio version            | _MSC_VER
 ---------------------------------+---------------
@@ -102,7 +104,6 @@ Visual Studio 2019 version 16.7  | 1927
 Visual Studio 2019 version 16.8  | 1928
 Visual Studio 2019 version 16.10 | 1929
 */
-#ifdef _WINDOWS
 #if _MSC_VER <= 1200
 #define __CXX_STANDARD__ 1
 #define COMPILERLIBINFIX "msvc2000"
@@ -139,7 +140,27 @@ Visual Studio 2019 version 16.10 | 1929
 #else
 #define __CXX_STANDARD__ 1
 #endif
-#endif // #ifdef _WINDOWS
+
+/*
+MinGW versions
+--------------
+*/
+#elif defined __MINGW64__
+#if (__GNUC__ == 5) && (__GNUC_MINOR__ == 1)
+#define COMPILERLIBINFIX "mingw51"
+#elif (__GNUC__ == 8) && (__GNUC_MINOR__ == 1)
+#define COMPILERLIBINFIX "mingw81"
+#endif
+
+/*
+GNU CC versions
+---------------
+*/
+//#elif defined __GNUC__
+#else
+#error Compiler not supported
+#endif // #ifdef _MSC_VER
+#endif // #ifndef COMPILERLIBINFIX
 
 #ifndef COMPILERLIBINFIX
 #define COMPILERLIBINFIX ""
@@ -175,23 +196,25 @@ Visual Studio 2019 version 16.10 | 1929
 //#define QTLIBINFIX "Isar"
 //#define QTLIBINFIX "SWP"
 
-#ifdef _WINDOWS
-#ifdef _WIN64
+#ifndef PLATFORMLIBINFIX
+#ifdef __x86_64__
 #define PLATFORMLIBINFIX "x64"
 #else
 #define PLATFORMLIBINFIX "Win32"
+#endif // #ifdef __x86_64__
 #endif
-#endif // #ifdef _WINDOWS
 
 #ifndef PLATFORMLIBINFIX
 #define PLATFORMLIBINFIX ""
 #endif
 
+#ifndef CONFIGLIBINFIX
 #ifdef _DEBUG
 #define CONFIGLIBINFIX "d"
 #else
 #define CONFIGLIBINFIX ""
 #endif
+#endif // #ifndef CONFIGLIBINFIX
 
 #ifdef _WINDOWS
 #define QTMAINLIB "qtmain" QTLIBINFIX "" CONFIGLIBINFIX

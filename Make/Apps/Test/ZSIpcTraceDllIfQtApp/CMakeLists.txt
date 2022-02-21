@@ -34,6 +34,10 @@ list(APPEND _Sources
     ../../../../Include/Libs/ZSIpcTrace/ZSIpcTrcDllIf.h                ../../../../Source/Libs/ZSIpcTrace/ZSIpcTrcDllIf.cpp
 )
 
+if(WIN32)
+    set(_Sources ${_Sources} ${CMAKE_CURRENT_BINARY_DIR}/../../../Libs/ZSSys/ZSSysVersion.rc)
+endif()
+
 # Got to create the following target name:
 # (ProjectName)[_d]
 # e.g.: "ZSAppTestIpcTraceDllIfQtApp_d"
@@ -46,9 +50,17 @@ endif()
 
 message(STATUS "TargetOutputName: ${TargetOutputName}")
 
-add_executable(${PROJECT_NAME} ${_Sources})
+if(WIN32)
+    add_executable(${PROJECT_NAME} WIN32 ${_Sources})
+else()
+    add_executable(${PROJECT_NAME} ${_Sources})
+endif()
 
 set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME ${TargetOutputName})
+
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+    target_compile_options(${PROJECT_NAME} PRIVATE "-Wno-cast-function-type")
+endif()
 
 target_include_directories(${PROJECT_NAME}
     PRIVATE ${CMAKE_SOURCE_DIR}/../Include/Apps/Test/ZSIpcTraceDllIfQtApp)
