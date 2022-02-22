@@ -117,12 +117,10 @@ endif()
 # (ProjectName)Qt$(QT_VERSION_MAJOR)_$(Compiler)_$(Platform)[_d]
 # e.g.: "ZSSysQt5_msvc2019_x64_d"
 set(TargetOutputName ${PROJECT_NAME}Qt${QT_VERSION_MAJOR}_${Compiler}_${Platform})
-
 if(CMAKE_BUILD_TYPE MATCHES Debug)
     set(TargetOutputName ${TargetOutputName}_d)
 endif()
-
-message(STATUS "TargetOutputName: ${TargetOutputName}")
+message(STATUS "TargetOutputName:         ${TargetOutputName}")
 
 add_library(${PROJECT_NAME} SHARED ${_Headers} ${_Sources})
 

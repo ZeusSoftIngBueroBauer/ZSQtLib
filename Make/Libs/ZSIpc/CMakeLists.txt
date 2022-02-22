@@ -86,10 +86,6 @@ list(APPEND _Sources
 
 if(WIN32)
     # Add version info as meta information to Dll.
-    configure_file(
-        ${_HeadersPath}/ZSSys/ZSSysVersion.rc.in
-        ${CMAKE_CURRENT_BINARY_DIR}/../../Libs/ZSSys/ZSSysVersion.rc
-        @ONLY)
     set(_Sources ${_Sources} ${CMAKE_CURRENT_BINARY_DIR}/../../Libs/ZSSys/ZSSysVersion.rc)
 endif()
 
@@ -97,11 +93,9 @@ endif()
 # (ProjectName)Qt$(QT_VERSION_MAJOR)_$(Compiler)_$(Platform)[_d]
 # e.g.: "ZSIpcQt5_msvc2019_x64_d"
 set(TargetOutputName ${PROJECT_NAME}Qt${QT_VERSION_MAJOR}_${Compiler}_${Platform})
-
 if(CMAKE_BUILD_TYPE MATCHES Debug)
     set(TargetOutputName ${TargetOutputName}_d)
 endif()
-
 message(STATUS "TargetOutputName: ${TargetOutputName}")
 
 add_library(${PROJECT_NAME} SHARED ${_Headers} ${_Sources})

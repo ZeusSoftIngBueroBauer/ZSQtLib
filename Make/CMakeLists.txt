@@ -2,7 +2,38 @@
 # ZSQtLibs Main CMake File
 #*******************************************************************************
 #
-# For build instructions see "README.md".
+# Quick Startup Usage
+# ===================
+#
+# For more detailled build instructions see "README.md".
+#
+# Generator: Visual Studio 16 (2019)
+#
+# - Release Build
+#
+#   cmake -G "Visual Studio 16 2019" -A x64 .\Make -B .\Build\msvc2019_x64_Release -DCMAKE_CONFIGURATION_TYPES="Release" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=C:\Projekte\ZeusSoft\ZSQtLib\Bin
+#   cmake --build .\Build\msvc2019_x64_Release --config=Release -j8
+#   cmake --install .\Build\msvc2019_x64_Release --config=Release
+#
+# - Debug Build
+#
+#   cmake -G "Visual Studio 16 2019" -A x64 .\Make -B .\Build\msvc2019_x64_Debug -DCMAKE_CONFIGURATION_TYPES="Debug" -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=C:\Projekte\ZeusSoft\ZSQtLib\Bin
+#   cmake --build .\Build\msvc2019_x64_Debug --config=Debug -j8
+#   cmake --install .\Build\msvc2019_x64_Debug --config=Debug
+#
+# Generator: MinGW Makefiles
+#
+# - Release Build
+#
+#   cmake -G "MinGW Makefiles" .\Make -B .\Build\mingw81_x64_Release -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=C:\Projekte\ZeusSoft\ZSQtLib\Bin
+#   cmake --build .\Build\mingw81_x64_Release -j8
+#   cmake --install .\Build\mingw81_x64_Release
+#
+# - Debug Build
+#
+#   cmake -G "MinGW Makefiles" .\Make -B .\Build\mingw81_X64_Debug -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=C:\Projekte\ZeusSoft\ZSQtLib\Bin
+#   cmake --build .\Build\mingw81_x64_Debug -j8
+#   cmake --install .\Build\mingw81_x64_Debug
 #
 # SOURCE_DIR Variables
 # ====================
@@ -218,13 +249,13 @@ if(NOT QT_VERSION_MAJOR OR QT_VERSION_MAJOR GREATER_EQUAL 5)
     message(STATUS "---------------------------------------------------------------------------------------------")
     message(STATUS "Qt5_DIR: ${Qt5_DIR}")
     find_package(Qt5 COMPONENTS Core Xml Network Gui Widgets)
-    message("Qt5Core_FOUND: ${Qt5Core_FOUND}")
+    message(STATUS "Qt5Core_FOUND: ${Qt5Core_FOUND}")
     if(Qt5Core_FOUND)
         set(QT_FOUND 1)
     endif()
-    message("QT_FOUND: ${QT_FOUND}")
+    message(STATUS "QT_FOUND: ${QT_FOUND}")
 endif()
-message("QT_FOUND: ${QT_FOUND}")
+message(STATUS "QT_FOUND: ${QT_FOUND}")
 if(NOT QT_FOUND)
     message(STATUS "")
     message(STATUS "Trying to find Qt Version 4")
@@ -248,34 +279,34 @@ if(QT_FOUND)
                 set(QT_LIB "${Qt4Core_LIB_DIRS}/qt.lib")
             endif()
         endif()
-        message("Qt4Core_VERSION_STRING:             ${Qt4Core_VERSION_STRING}")
-        message("Qt4Core_Location:                   ${Qt4Core_Location}")
-        message("Qt4Core_INCLUDE_DIRS:               ${Qt4Core_INCLUDE_DIRS}")
-        message("Qt4Core_LIB_DIRS:                   ${Qt4Core_LIB_DIRS}")
-        message("Qt4Core_LIBRARIES:                  ${Qt4Core_LIBRARIES}")
-        message("Qt4Core_PRIVATE_INCLUDE_DIRS:       ${Qt4Core_PRIVATE_INCLUDE_DIRS}")
-        message("Qt4Core_COMPILE_DEFINITIONS:        ${Qt4Core_COMPILE_DEFINITIONS}")
-        message("Qt4Core_DEFINITIONS:                ${Qt4Core_DEFINITIONS}")
-        message("Qt4Core_EXECUTABLE_COMPILE_FLAGS:   ${Qt4Core_EXECUTABLE_COMPILE_FLAGS}")
-        message("Qt4_INCLUDE_DIRS:                   ${Qt4_INCLUDE_DIRS}")
+        message(STATUS "Qt4Core_VERSION_STRING:             ${Qt4Core_VERSION_STRING}")
+        message(STATUS "Qt4Core_Location:                   ${Qt4Core_Location}")
+        message(STATUS "Qt4Core_INCLUDE_DIRS:               ${Qt4Core_INCLUDE_DIRS}")
+        message(STATUS "Qt4Core_LIB_DIRS:                   ${Qt4Core_LIB_DIRS}")
+        message(STATUS "Qt4Core_LIBRARIES:                  ${Qt4Core_LIBRARIES}")
+        message(STATUS "Qt4Core_PRIVATE_INCLUDE_DIRS:       ${Qt4Core_PRIVATE_INCLUDE_DIRS}")
+        message(STATUS "Qt4Core_COMPILE_DEFINITIONS:        ${Qt4Core_COMPILE_DEFINITIONS}")
+        message(STATUS "Qt4Core_DEFINITIONS:                ${Qt4Core_DEFINITIONS}")
+        message(STATUS "Qt4Core_EXECUTABLE_COMPILE_FLAGS:   ${Qt4Core_EXECUTABLE_COMPILE_FLAGS}")
+        message(STATUS "Qt4_INCLUDE_DIRS:                   ${Qt4_INCLUDE_DIRS}")
         if(QT_LIB)
-            message("QT_LIB:                             ${QT_LIB}")
+            message(STATUS "QT_LIB:                             ${QT_LIB}")
         else()
-            message("QT_LIB:                             NOT EXISTING")
+            message(STATUS "QT_LIB:                             NOT EXISTING")
         endif()
         if(NOT QT_BINARY_DIR)
             get_filename_component(QT_BINARY_DIR ${Qt4Core_Location} DIRECTORY)
         endif()
     elseif(Qt5_FOUND)
         get_target_property(Qt5Core_Location Qt5::Core LOCATION)
-        message("Qt5Core_VERSION_STRING:             ${Qt5Core_VERSION_STRING}")
-        message("Qt5Core_Location:                   ${Qt5Core_Location}")
-        message("Qt5Core_INCLUDE_DIRS:               ${Qt5Core_INCLUDE_DIRS}")
-        message("Qt5Core_LIBRARIES:                  ${Qt5Core_LIBRARIES}")
-        message("Qt5Core_PRIVATE_INCLUDE_DIRS:       ${Qt5Core_PRIVATE_INCLUDE_DIRS}")
-        message("Qt5Core_COMPILE_DEFINITIONS:        ${Qt5Core_COMPILE_DEFINITIONS}")
-        message("Qt5Core_DEFINITIONS:                ${Qt5Core_DEFINITIONS}")
-        message("Qt5Core_EXECUTABLE_COMPILE_FLAGS:   ${Qt5Core_EXECUTABLE_COMPILE_FLAGS}")
+        message(STATUS "Qt5Core_VERSION_STRING:             ${Qt5Core_VERSION_STRING}")
+        message(STATUS "Qt5Core_Location:                   ${Qt5Core_Location}")
+        message(STATUS "Qt5Core_INCLUDE_DIRS:               ${Qt5Core_INCLUDE_DIRS}")
+        message(STATUS "Qt5Core_LIBRARIES:                  ${Qt5Core_LIBRARIES}")
+        message(STATUS "Qt5Core_PRIVATE_INCLUDE_DIRS:       ${Qt5Core_PRIVATE_INCLUDE_DIRS}")
+        message(STATUS "Qt5Core_COMPILE_DEFINITIONS:        ${Qt5Core_COMPILE_DEFINITIONS}")
+        message(STATUS "Qt5Core_DEFINITIONS:                ${Qt5Core_DEFINITIONS}")
+        message(STATUS "Qt5Core_EXECUTABLE_COMPILE_FLAGS:   ${Qt5Core_EXECUTABLE_COMPILE_FLAGS}")
         if(NOT QT_BINARY_DIR)
             get_filename_component(QT_BINARY_DIR ${Qt5Core_Location} DIRECTORY)
         endif()
@@ -283,18 +314,18 @@ if(QT_FOUND)
     if(NOT QT_VERSION_MAJOR AND QT_DEFAULT_MAJOR_VERSION)
         set(QT_VERSION_MAJOR ${QT_DEFAULT_MAJOR_VERSION})
     endif()
-    message("QT_DEFAULT_MAJOR_VERSION:           ${QT_DEFAULT_MAJOR_VERSION}")
-    message("QT_DEFAULT_MINOR_VERSION:           ${QT_DEFAULT_MINOR_VERSION}")
-    message("QT_DEFAULT_PATCH_VERSION:           ${QT_DEFAULT_PATCH_VERSION}")
-    message("QT_VERSION_MAJOR:                   ${QT_VERSION_MAJOR}")
-    message("QT_VERSION_MINOR:                   ${QT_VERSION_MINOR}")
-    message("QT_VERSION_PATCH:                   ${QT_VERSION_PATCH}")
-    message("QT_DEFAULT_MAJOR_VERSION:           ${QT_DEFAULT_MAJOR_VERSION}")
-    message("QT_BINARY_DIR:                      ${QT_BINARY_DIR}")
-    message("QT_LIBINFIX:                        ${QT_LIBINFIX}")
-    message("QT_NO_CREATE_VERSIONLESS_FUNCTIONS: ${QT_NO_CREATE_VERSIONLESS_FUNCTIONS}")
-    message("QT_NO_CREATE_VERSIONLESS_TARGETS:   ${QT_NO_CREATE_VERSIONLESS_TARGETS}")
-    message("QT_VISIBILITY_AVAILABLE:            ${QT_VISIBILITY_AVAILABLE}")
+    message(STATUS "QT_DEFAULT_MAJOR_VERSION:           ${QT_DEFAULT_MAJOR_VERSION}")
+    message(STATUS "QT_DEFAULT_MINOR_VERSION:           ${QT_DEFAULT_MINOR_VERSION}")
+    message(STATUS "QT_DEFAULT_PATCH_VERSION:           ${QT_DEFAULT_PATCH_VERSION}")
+    message(STATUS "QT_VERSION_MAJOR:                   ${QT_VERSION_MAJOR}")
+    message(STATUS "QT_VERSION_MINOR:                   ${QT_VERSION_MINOR}")
+    message(STATUS "QT_VERSION_PATCH:                   ${QT_VERSION_PATCH}")
+    message(STATUS "QT_DEFAULT_MAJOR_VERSION:           ${QT_DEFAULT_MAJOR_VERSION}")
+    message(STATUS "QT_BINARY_DIR:                      ${QT_BINARY_DIR}")
+    message(STATUS "QT_LIBINFIX:                        ${QT_LIBINFIX}")
+    message(STATUS "QT_NO_CREATE_VERSIONLESS_FUNCTIONS: ${QT_NO_CREATE_VERSIONLESS_FUNCTIONS}")
+    message(STATUS "QT_NO_CREATE_VERSIONLESS_TARGETS:   ${QT_NO_CREATE_VERSIONLESS_TARGETS}")
+    message(STATUS "QT_VISIBILITY_AVAILABLE:            ${QT_VISIBILITY_AVAILABLE}")
 endif()
 
 if(CREATE_PYTHON_BINDINGS)
@@ -304,15 +335,15 @@ if(CREATE_PYTHON_BINDINGS)
     message(STATUS "---------------------------------------------------------------------------------------------")
 
     find_package(Python3)
-    message("PYTHON_EXECUTABLE:     ${PYTHON_EXECUTABLE}")
-    message("PYTHON_VERSION_STRING: ${PYTHON_VERSION_STRING}")
-    message("PYTHON_VERSION_MAJOR:  ${PYTHON_VERSION_MAJOR}")
-    message("PYTHON_VERSION_MINOR:  ${PYTHON_VERSION_MINOR}")
-    message("PYTHON_VERSION_PATCH:  ${PYTHON_VERSION_PATCH}")
+    message(STATUS "PYTHON_EXECUTABLE:     ${PYTHON_EXECUTABLE}")
+    message(STATUS "PYTHON_VERSION_STRING: ${PYTHON_VERSION_STRING}")
+    message(STATUS "PYTHON_VERSION_MAJOR:  ${PYTHON_VERSION_MAJOR}")
+    message(STATUS "PYTHON_VERSION_MINOR:  ${PYTHON_VERSION_MINOR}")
+    message(STATUS "PYTHON_VERSION_PATCH:  ${PYTHON_VERSION_PATCH}")
 
     find_package(PythonLibs ${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR} EXACT REQUIRED)
-    message("PYTHON_INCLUDE_DIRS:   ${PYTHON_INCLUDE_DIRS}")
-    message("PYTHON_LIBRARIES:      ${PYTHON_LIBRARIES}")
+    message(STATUS "PYTHON_INCLUDE_DIRS:   ${PYTHON_INCLUDE_DIRS}")
+    message(STATUS "PYTHON_LIBRARIES:      ${PYTHON_LIBRARIES}")
 endif()
 
 message(STATUS "")
@@ -323,24 +354,24 @@ message(STATUS "----------------------------------------------------------------
 enable_testing()
 
 add_subdirectory(Libs/ZSSys)
-#add_subdirectory(Libs/ZSSysGUI)
-#add_subdirectory(Libs/ZSTest)
-#add_subdirectory(Libs/ZSTestGUI)
+add_subdirectory(Libs/ZSSysGUI)
+add_subdirectory(Libs/ZSTest)
+add_subdirectory(Libs/ZSTestGUI)
 add_subdirectory(Libs/ZSIpc)
-#add_subdirectory(Libs/ZSIpcGUI)
-#add_subdirectory(Libs/ZSIpcTrace)
-#add_subdirectory(Libs/ZSIpcTraceGUI)
-#if(CREATE_PYTHON_BINDINGS)
-#    add_subdirectory(Libs/ZSIpcTracePy)
-#endif()
-#add_subdirectory(Apps/Products/ZSTrcMthClient)
-#add_subdirectory(Apps/Test/ZSIpcTrace)
-#add_subdirectory(Apps/Test/ZSIpcTraceDllIfQtApp)
-#add_subdirectory(Apps/Test/ZSSysEnums)
-#add_subdirectory(Apps/Test/ZSSysErrLog)
-#add_subdirectory(Apps/Test/ZSSysIdxTree)
-#add_subdirectory(Apps/Test/ZSSysLogFile)
-#add_subdirectory(Apps/Test/ZSTestTemplate)
+add_subdirectory(Libs/ZSIpcGUI)
+add_subdirectory(Libs/ZSIpcTrace)
+add_subdirectory(Libs/ZSIpcTraceGUI)
+if(CREATE_PYTHON_BINDINGS)
+    add_subdirectory(Libs/ZSIpcTracePy)
+endif()
+add_subdirectory(Apps/Products/ZSTrcMthClient)
+add_subdirectory(Apps/Test/ZSIpcTrace)
+add_subdirectory(Apps/Test/ZSIpcTraceDllIfQtApp)
+add_subdirectory(Apps/Test/ZSSysEnums)
+add_subdirectory(Apps/Test/ZSSysErrLog)
+add_subdirectory(Apps/Test/ZSSysIdxTree)
+add_subdirectory(Apps/Test/ZSSysLogFile)
+add_subdirectory(Apps/Test/ZSTestTemplate)
 
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)

@@ -1,15 +1,11 @@
-# Call CMake from build directory (e.g. ./bin/msvc2019_x64) with:
-# - for VS-2017: cmake -G "Visual Studio 15 2017" -A x64 -DCMAKE_BUILD_TYPE=Debug ../Make/Libs/ZSSys
-# - for VS-2019: cmake -G "Visual Studio 16 2019" -A x64 -DCMAKE_BUILD_TYPE=Debug ../Make/Libs/ZSSys
-
 cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
 
 project(ZSAppTestSysEnums)
 
 message(STATUS "")
 message(STATUS "---------------------------------------------------------------------------------------------")
-message(STATUS "Processing: ${CMAKE_CURRENT_SOURCE_DIR}")
-message(STATUS "---------------------------------------------------------------------------------------------")
+message(STATUS "-> ${CMAKE_CURRENT_SOURCE_DIR}")
+message(STATUS "")
 
 message(STATUS "CMAKE_PROJECT_NAME:       ${CMAKE_PROJECT_NAME}")
 message(STATUS "PROJECT_NAME:             ${PROJECT_NAME}")
@@ -22,15 +18,33 @@ message(STATUS "CMAKE_BINARY_DIR:         ${CMAKE_BINARY_DIR}")
 message(STATUS "CMAKE_CURRENT_BINARY_DIR: ${CMAKE_CURRENT_BINARY_DIR}")
 message(STATUS "PROJECT_BINARY_DIR:       ${PROJECT_BINARY_DIR}")
 
+# In source code the headers are included together with the ${PROJECT_NAME} as follows:
+# include "${PROJECT_NAME}/HeaderFileName.h"
+# e.g. #include "ZSSys/ZSSysIdxTree.h"
+# For "target_include_directories" the header path without ${PROJECT_NAME} must be
+# passed and therefore _HeadersPath will be defined without ${PROJECT_NAME} so that
+# this define can be used further one in this CMake list file.
+# _SourcePaths will be defined in the same way.
+set(_HeadersPath ${CMAKE_CURRENT_SOURCE_DIR}/../../../../Include/Apps/Test)
+set(_SourcesPath ${CMAKE_CURRENT_SOURCE_DIR}/../../../../Source/Apps/Test)
+
+list(APPEND _Headers
+    ${_HeadersPath}/ZSSysEnums/App.h
+    ${_HeadersPath}/ZSSysEnums/MainWindow.h
+    ${_HeadersPath}/ZSSysEnums/WidgetCentral.h
+    ${_HeadersPath}/ZSSysEnums/Test.h
+)
+
 list(APPEND _Sources
-                                                             ../../../../Source/Apps/Test/ZSSysEnums/Main.cpp
-    ../../../../Include/Apps/Test/ZSSysEnums/App.h           ../../../../Source/Apps/Test/ZSSysEnums/App.cpp
-    ../../../../Include/Apps/Test/ZSSysEnums/MainWindow.h    ../../../../Source/Apps/Test/ZSSysEnums/MainWindow.cpp
-    ../../../../Include/Apps/Test/ZSSysEnums/WidgetCentral.h ../../../../Source/Apps/Test/ZSSysEnums/WidgetCentral.cpp
-    ../../../../Include/Apps/Test/ZSSysEnums/Test.h          ../../../../Source/Apps/Test/ZSSysEnums/Test.cpp
+    ${_SourcesPath}/ZSSysEnums/Main.cpp
+    ${_SourcesPath}/ZSSysEnums/App.cpp
+    ${_SourcesPath}/ZSSysEnums/MainWindow.cpp
+    ${_SourcesPath}/ZSSysEnums/WidgetCentral.cpp
+    ${_SourcesPath}/ZSSysEnums/Test.cpp
 )
 
 if(WIN32)
+    # Add version info as meta information to exe.
     set(_Sources ${_Sources} ${CMAKE_CURRENT_BINARY_DIR}/../../../Libs/ZSSys/ZSSysVersion.rc)
 endif()
 
@@ -39,17 +53,15 @@ endif()
 # e.g.: "ZSAppTestSysEnums_d"
 
 set(TargetOutputName ${PROJECT_NAME})
-
 if(CMAKE_BUILD_TYPE MATCHES Debug)
     set(TargetOutputName ${TargetOutputName}_d)
 endif()
-
-message(STATUS "TargetOutputName: ${TargetOutputName}")
+message(STATUS "TargetOutputName:         ${TargetOutputName}")
 
 if(WIN32)
-    add_executable(${PROJECT_NAME} WIN32 ${_Sources})
+    add_executable(${PROJECT_NAME} WIN32 ${_Headers} ${_Sources})
 else()
-    add_executable(${PROJECT_NAME} ${_Sources})
+    add_executable(${PROJECT_NAME} ${_Headers} ${_Sources})
 endif()
 
 set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME ${TargetOutputName})
@@ -64,3 +76,12 @@ add_test(
     NAME ZSSysEnums
     COMMAND $<TARGET_FILE:${PROJECT_NAME}>
     COMMENT "Running ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${TargetOutputName}")
+
+include(GNUInstallDirs)
+
+install(TARGETS ${PROJECT_NAME} EXPORT ${CMAKE_PROJECT_NAME}Targets RUNTIME DESTINATION .)
+
+message(STATUS "")
+message(STATUS "<- ${CMAKE_CURRENT_SOURCE_DIR}")
+message(STATUS "---------------------------------------------------------------------------------------------")
+message(STATUS "")

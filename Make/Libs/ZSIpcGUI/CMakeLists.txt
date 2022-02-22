@@ -1,15 +1,11 @@
-# Call CMake from build directory (e.g. ./bin/msvc2019_x64) with:
-# - for VS-2017: cmake -G "Visual Studio 15 2017" -A x64 -DCMAKE_BUILD_TYPE=Debug ../Make/Libs/ZSSys
-# - for VS-2019: cmake -G "Visual Studio 16 2019" -A x64 -DCMAKE_BUILD_TYPE=Debug ../Make/Libs/ZSSys
-
 cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
 
 project(ZSIpcGUI)
 
 message(STATUS "")
 message(STATUS "---------------------------------------------------------------------------------------------")
-message(STATUS "Processing: ${CMAKE_CURRENT_SOURCE_DIR}")
-message(STATUS "---------------------------------------------------------------------------------------------")
+message(STATUS "-> ${CMAKE_CURRENT_SOURCE_DIR}")
+message(STATUS "")
 
 message(STATUS "CMAKE_PROJECT_NAME:       ${CMAKE_PROJECT_NAME}")
 message(STATUS "PROJECT_NAME:             ${PROJECT_NAME}")
@@ -22,33 +18,51 @@ message(STATUS "CMAKE_BINARY_DIR:         ${CMAKE_BINARY_DIR}")
 message(STATUS "CMAKE_CURRENT_BINARY_DIR: ${CMAKE_CURRENT_BINARY_DIR}")
 message(STATUS "PROJECT_BINARY_DIR:       ${PROJECT_BINARY_DIR}")
 
+# In source code the headers are included together with the ${PROJECT_NAME} as follows:
+# include "${PROJECT_NAME}/HeaderFileName.h"
+# e.g. #include "ZSSys/ZSSysIdxTree.h"
+# For "target_include_directories" the header path without ${PROJECT_NAME} must be
+# passed and therefore _HeadersPath will be defined without ${PROJECT_NAME} so that
+# this define can be used further one in this CMake list file.
+# _SourcePaths will be defined in the same way.
+set(_HeadersPath ${CMAKE_CURRENT_SOURCE_DIR}/../../../Include/Libs)
+set(_SourcesPath ${CMAKE_CURRENT_SOURCE_DIR}/../../../Source/Libs)
+
+list(APPEND _Headers
+    ${_HeadersPath}/${PROJECT_NAME}/ZSIpcClientDlg.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSIpcClientWdgt.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSIpcGUIDllMain.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSIpcModelSrvCltConnection.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSIpcServerDlg.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSIpcServerWdgt.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSIpcTrcMsgLogWdgt.h
+)
+
 list(APPEND _Sources
-    ../../../Include/Libs/ZSIpcGUI/ZSIpcClientDlg.h             ../../../Source/Libs/ZSIpcGUI/ZSIpcClientDlg.cpp
-    ../../../Include/Libs/ZSIpcGUI/ZSIpcClientWdgt.h            ../../../Source/Libs/ZSIpcGUI/ZSIpcClientWdgt.cpp
-    ../../../Include/Libs/ZSIpcGUI/ZSIpcGUIDllMain.h            ../../../Source/Libs/ZSIpcGUI/ZSIpcGUIDllMain.cpp
-    ../../../Include/Libs/ZSIpcGUI/ZSIpcModelSrvCltConnection.h ../../../Source/Libs/ZSIpcGUI/ZSIpcModelSrvCltConnection.cpp
-    ../../../Include/Libs/ZSIpcGUI/ZSIpcServerDlg.h             ../../../Source/Libs/ZSIpcGUI/ZSIpcServerDlg.cpp
-    ../../../Include/Libs/ZSIpcGUI/ZSIpcServerWdgt.h            ../../../Source/Libs/ZSIpcGUI/ZSIpcServerWdgt.cpp
-    ../../../Include/Libs/ZSIpcGUI/ZSIpcTrcMsgLogWdgt.h         ../../../Source/Libs/ZSIpcGUI/ZSIpcTrcMsgLogWdgt.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSIpcClientDlg.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSIpcClientWdgt.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSIpcGUIDllMain.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSIpcModelSrvCltConnection.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSIpcServerDlg.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSIpcServerWdgt.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSIpcTrcMsgLogWdgt.cpp
 )
 
 if(WIN32)
+    # Add version info as meta information to Dll.
     set(_Sources ${_Sources} ${CMAKE_CURRENT_BINARY_DIR}/../../Libs/ZSSys/ZSSysVersion.rc)
 endif()
 
 # Got to create the following target name:
 # (ProjectName)Qt$(QT_VERSION_MAJOR)_$(Compiler)_$(Platform)[_d]
 # e.g.: "ZSIpcGUIQt5_msvc2019_x64_d"
-
 set(TargetOutputName ${PROJECT_NAME}Qt${QT_VERSION_MAJOR}_${Compiler}_${Platform})
-
 if(CMAKE_BUILD_TYPE MATCHES Debug)
     set(TargetOutputName ${TargetOutputName}_d)
 endif()
+message(STATUS "TargetOutputName:         ${TargetOutputName}")
 
-message(STATUS "TargetOutputName: ${TargetOutputName}")
-
-add_library(${PROJECT_NAME} SHARED ${_Sources})
+add_library(${PROJECT_NAME} SHARED ${_Headers} ${_Sources})
 
 set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME ${TargetOutputName})
 
@@ -56,3 +70,19 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE ZSIPCGUIDLL_EXPORTS)
 
 target_link_libraries(${PROJECT_NAME} PUBLIC ZSSys ZSIpc ZSSysGUI)
 
+include(GNUInstallDirs)
+
+install(TARGETS ${PROJECT_NAME} EXPORT ${CMAKE_PROJECT_NAME}Targets
+    LIBRARY DESTINATION lib
+    ARCHIVE DESTINATION lib
+    RUNTIME DESTINATION .
+    INCLUDES DESTINATION include)
+
+install(FILES ${_Headers}
+    DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}"
+    COMPONENT Devel)
+
+message(STATUS "")
+message(STATUS "<- ${CMAKE_CURRENT_SOURCE_DIR}")
+message(STATUS "---------------------------------------------------------------------------------------------")
+message(STATUS "")
