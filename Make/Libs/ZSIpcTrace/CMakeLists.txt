@@ -69,6 +69,9 @@ endif()
 target_compile_definitions(${PROJECT_NAME} PRIVATE ZSIPCTRACEDLL_EXPORTS)
 
 target_link_libraries(${PROJECT_NAME} PUBLIC ZSSys ZSIpc)
+if(UNIX)
+    target_link_libraries(${PROJECT_NAME} PUBLIC ${CMAKE_DL_LIBS})
+endif()
 
 include(GNUInstallDirs)
 

@@ -309,6 +309,9 @@ may result in using the software modules.
 public type definitions and constants
 *******************************************************************************/
 
+#define __STR__(x) #x
+#define __STRING__(x) __STR__(x)
+
 #ifndef QT_VERSION_MAJOR
 #if QT_VERSION >= 0x050000
 #define QT_VERSION_MAJOR 5
@@ -323,93 +326,97 @@ public type definitions and constants
 
 #ifndef COMPILERLIBINFIX
 #ifdef _MSC_VER
-/*
-Visual Studio version            | _MSC_VER
----------------------------------+---------------
-Visual Studio 6.0                | 1200
-Visual Studio .NET 2002 (7.0)    | 1300
-Visual Studio .NET 2003 (7.1)    | 1310
-Visual Studio 2005 (8.0)         | 1400
-Visual Studio 2008 (9.0)         | 1500
-Visual Studio 2010 (10.0)        | 1600
-Visual Studio 2012 (11.0)        | 1700
-Visual Studio 2013 (12.0)        | 1800
-Visual Studio 2015 (14.0)        | 1900
-Visual Studio 2017 RTW (15.0)    | 1910
-Visual Studio 2017 version 15.3  | 1911
-Visual Studio 2017 version 15.5  | 1912
-Visual Studio 2017 version 15.6  | 1913
-Visual Studio 2017 version 15.7  | 1914
-Visual Studio 2017 version 15.8  | 1915
-Visual Studio 2017 version 15.9  | 1916
-Visual Studio 2019 RTW (16.0)    | 1920
-Visual Studio 2019 version 16.1  | 1921
-Visual Studio 2019 version 16.2  | 1922
-Visual Studio 2019 version 16.3  | 1923
-Visual Studio 2019 version 16.4  | 1924
-Visual Studio 2019 version 16.5  | 1925
-Visual Studio 2019 version 16.6  | 1926
-Visual Studio 2019 version 16.7  | 1927
-Visual Studio 2019 version 16.8  | 1928
-Visual Studio 2019 version 16.10 | 1929
-*/
-#if _MSC_VER <= 1200
-#define __CXX_STANDARD__ 1
-#define COMPILERLIBINFIX "msvc2000"
-#elif _MSC_VER >= 1300 && _MSC_VER <= 1300
-#define __CXX_STANDARD__ 1
-#define COMPILERLIBINFIX "msvc2002"
-#elif _MSC_VER >= 1310 && _MSC_VER <= 1310
-#define __CXX_STANDARD__ 1
-#define COMPILERLIBINFIX "msvc2003"
-#elif _MSC_VER >= 1400 && _MSC_VER <= 1400
-#define __CXX_STANDARD__ 1
-#define COMPILERLIBINFIX "msvc2005"
-#elif _MSC_VER >= 1500 && _MSC_VER <= 1500
-#define __CXX_STANDARD__ 1
-#define COMPILERLIBINFIX "msvc2008"
-#elif _MSC_VER >= 1600 && _MSC_VER <= 1600
-#define __CXX_STANDARD__ 1
-#define COMPILERLIBINFIX "msvc2010"
-#elif _MSC_VER >= 1700 && _MSC_VER <= 1700
-#define __CXX_STANDARD__ 1
-#define COMPILERLIBINFIX "msvc2012"
-#elif _MSC_VER >= 1800 && _MSC_VER <= 1800
-#define __CXX_STANDARD__ 201402
-#define COMPILERLIBINFIX "msvc2013"
-#elif _MSC_VER >= 1900 && _MSC_VER <= 1900
-#define __CXX_STANDARD__ 201703
-#define COMPILERLIBINFIX "msvc2015"
-#elif _MSC_VER >= 1910 && _MSC_VER <= 1916
-#define __CXX_STANDARD__ 201703
-#define COMPILERLIBINFIX "msvc2017"
-#elif _MSC_VER >= 1920 && _MSC_VER <= 1929
-#define __CXX_STANDARD__ 201703
-#define COMPILERLIBINFIX "msvc2019"
-#else
-#define __CXX_STANDARD__ 1
-#endif
+    /*
+    Visual Studio version            | _MSC_VER
+    ---------------------------------+---------------
+    Visual Studio 6.0                | 1200
+    Visual Studio .NET 2002 (7.0)    | 1300
+    Visual Studio .NET 2003 (7.1)    | 1310
+    Visual Studio 2005 (8.0)         | 1400
+    Visual Studio 2008 (9.0)         | 1500
+    Visual Studio 2010 (10.0)        | 1600
+    Visual Studio 2012 (11.0)        | 1700
+    Visual Studio 2013 (12.0)        | 1800
+    Visual Studio 2015 (14.0)        | 1900
+    Visual Studio 2017 RTW (15.0)    | 1910
+    Visual Studio 2017 version 15.3  | 1911
+    Visual Studio 2017 version 15.5  | 1912
+    Visual Studio 2017 version 15.6  | 1913
+    Visual Studio 2017 version 15.7  | 1914
+    Visual Studio 2017 version 15.8  | 1915
+    Visual Studio 2017 version 15.9  | 1916
+    Visual Studio 2019 RTW (16.0)    | 1920
+    Visual Studio 2019 version 16.1  | 1921
+    Visual Studio 2019 version 16.2  | 1922
+    Visual Studio 2019 version 16.3  | 1923
+    Visual Studio 2019 version 16.4  | 1924
+    Visual Studio 2019 version 16.5  | 1925
+    Visual Studio 2019 version 16.6  | 1926
+    Visual Studio 2019 version 16.7  | 1927
+    Visual Studio 2019 version 16.8  | 1928
+    Visual Studio 2019 version 16.10 | 1929
+    */
+    #if _MSC_VER <= 1200
+        #define __CXX_STANDARD__ 1
+        #define COMPILERLIBINFIX "msvc2000"
+    #elif _MSC_VER >= 1300 && _MSC_VER <= 1300
+        #define __CXX_STANDARD__ 1
+        #define COMPILERLIBINFIX "msvc2002"
+    #elif _MSC_VER >= 1310 && _MSC_VER <= 1310
+        #define __CXX_STANDARD__ 1
+        #define COMPILERLIBINFIX "msvc2003"
+    #elif _MSC_VER >= 1400 && _MSC_VER <= 1400
+        #define __CXX_STANDARD__ 1
+        #define COMPILERLIBINFIX "msvc2005"
+    #elif _MSC_VER >= 1500 && _MSC_VER <= 1500
+        #define __CXX_STANDARD__ 1
+        #define COMPILERLIBINFIX "msvc2008"
+    #elif _MSC_VER >= 1600 && _MSC_VER <= 1600
+        #define __CXX_STANDARD__ 1
+        #define COMPILERLIBINFIX "msvc2010"
+    #elif _MSC_VER >= 1700 && _MSC_VER <= 1700
+        #define __CXX_STANDARD__ 1
+        #define COMPILERLIBINFIX "msvc2012"
+    #elif _MSC_VER >= 1800 && _MSC_VER <= 1800
+        #define __CXX_STANDARD__ 201402
+        #define COMPILERLIBINFIX "msvc2013"
+    #elif _MSC_VER >= 1900 && _MSC_VER <= 1900
+        #define __CXX_STANDARD__ 201703
+        #define COMPILERLIBINFIX "msvc2015"
+    #elif _MSC_VER >= 1910 && _MSC_VER <= 1916
+        #define __CXX_STANDARD__ 201703
+        #define COMPILERLIBINFIX "msvc2017"
+    #elif _MSC_VER >= 1920 && _MSC_VER <= 1929
+        #define __CXX_STANDARD__ 201703
+        #define COMPILERLIBINFIX "msvc2019"
+    #else
+        #define __CXX_STANDARD__ 1
+        #error _MSV_VER not yet supported
+    #endif
 
 /*
 MinGW versions
 --------------
 */
 #elif defined __MINGW64__
-#if (__GNUC__ == 5) && (__GNUC_MINOR__ == 1)
-#define COMPILERLIBINFIX "mingw51"
-#elif (__GNUC__ == 8) && (__GNUC_MINOR__ == 1)
-#define COMPILERLIBINFIX "mingw81"
-#endif
+    #define COMPILERLIBINFIX "mingw" __STRING__(__GNUC__) __STRING__(__GNUC_MINOR__)
 
 /*
 GNU CC versions
 ---------------
 */
-//#elif defined __GNUC__
+#elif defined __GNUC__
+    #define COMPILERLIBINFIX "gnu" __STRING__(__GNUC__) __STRING__(__GNUC_MINOR__)
+
+/*
+Unsuported yet
+---------------
+*/
 #else
-#error Compiler not supported
-#endif // #ifdef _MSC_VER
+    #error Compiler not supported
+#endif
 #endif // #ifndef COMPILERLIBINFIX
+
 
 #ifndef COMPILERLIBINFIX
 #define COMPILERLIBINFIX ""

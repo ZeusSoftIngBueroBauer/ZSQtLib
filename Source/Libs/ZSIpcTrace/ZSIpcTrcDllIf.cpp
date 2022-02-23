@@ -330,6 +330,8 @@ bool ZS::Trace::DllIf::loadDll(
     sprintf(szQtVersionMajor, "%d", i_iQtVersionMajor);
     #endif
 
+    char* szError = nullptr;
+
     /* Examples for library file names:
      *  "ZSIpcTraceQt5_msvc2015_x64_d"
      *  "ZSIpcTraceQt5_mingw81_x64_d"
@@ -353,7 +355,7 @@ bool ZS::Trace::DllIf::loadDll(
         delete s_szTrcDllFileName;
         s_szTrcDllFileName = nullptr;
 
-        size_t iStrLenDllFileName = strlen(szZSDllName) + strlen(szQtVersionMajor) + 1 + strlen(szCompiler) + 1 + strlen(szPlatform) + 1 + strlen(szConfig);
+        size_t iStrLenDllFileName = strlen(szZSDllName) + strlen(szQtVersionMajor) + 1 + strlen(szCompiler) + 1 + strlen(szPlatform) + 1 + strlen(szConfig) + 4;
         s_szTrcDllFileName = new char[iStrLenDllFileName+1];
         memset(s_szTrcDllFileName, 0x00, iStrLenDllFileName+1);
 
@@ -382,7 +384,15 @@ bool ZS::Trace::DllIf::loadDll(
         const wstring wstrTrcDllFileName = ZS::System::s2ws(s_szTrcDllFileName);
         s_hndIpcTrcDllIf = LoadLibrary(wstrTrcDllFileName.c_str());
         #else
+        memcpy(&s_szTrcDllFileName[iStrPos], ".so", 3);                                 // "ZSIpcTraceQt5_msvc2015_x64_d.so"
         s_hndIpcTrcDllIf = dlopen(s_szTrcDllFileName, RTLD_LAZY);
+        if( s_hndIpcTrcDllIf == NULL )
+        {
+            // Helps to find the reason in debugger why shared library could not be loaded.
+            if( szError == nullptr ) szError = new char[10000];
+            memset(szError, 0x00, 10000);
+            sprintf(szError, "%s", dlerror());
+        }
         #endif
 
         if( s_hndIpcTrcDllIf != NULL )
@@ -390,6 +400,9 @@ bool ZS::Trace::DllIf::loadDll(
             break;
         }
     } // for( int iFileNameTries = 0; iFileNameTries < 2; ++iFileNameTries )
+
+    delete [] szError;
+    szError = nullptr;
 
     delete [] szQtVersionMajor;
     szQtVersionMajor = nullptr;

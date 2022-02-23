@@ -54,8 +54,8 @@
 # PROJECT_SOURCE_DIR
 # ------------------
 # Top level source directory for the current project.
-# Not every CMakeLists.txt file defines a project–this is the directory that contains
-# the most recent CMakeLists.txt file that defined a project.
+# Not every CMakeLists.txt file defines a project.
+# This is the directory that contains the most recent CMakeLists.txt file that defined a project.
 #
 # projectName_SOURCE_DIR
 # ----------------------
@@ -162,10 +162,20 @@ elseif(CMAKE_GENERATOR MATCHES "Visual Studio 15 2017")
     set(Compiler "msvc2017")
 elseif(CMAKE_GENERATOR MATCHES "Visual Studio 16 2019")
     set(Compiler "msvc2019")
+elseif(CMAKE_GENERATOR MATCHES "Unix Makefiles")
+    string(TOLOWER ${CMAKE_CXX_COMPILER_ID} Compiler)
+    string(REPLACE "." ";" CompilerVersionList ${CMAKE_CXX_COMPILER_VERSION})
+    list(LENGTH CompilerVersionList listLen)
+    if(listLen LESS 2)
+        message(FATAL_ERROR "Compiler Version Number ${CompilerVersion} with invalid format")
+    endif()
+    list(GET CompilerVersionList 0 CompilerVersionMajor)
+    list(GET CompilerVersionList 1 CompilerVersionMinor)
+    set(Compiler ${Compiler}${CompilerVersionMajor}${CompilerVersionMinor})
 elseif(CMAKE_GENERATOR MATCHES "MinGW Makefiles")
     set(Compiler "mingw81")
 else()
-    message(ERROR "Unsupported Generator")
+    message(FATAL_ERROR "Unsupported Generator ${CMAKE_GENERATOR}")
 endif()
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
@@ -174,8 +184,8 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
 else()
     add_compile_options(-W -Wall)
     #add_compile_options(-Werror) not yet as long as Qt4 is supported
+    add_compile_options(-Wno-deprecated)
     add_compile_options(-Wextra -Wpedantic)
-    add_compile_options(-W -Wall)
 endif()
 
 message(STATUS "")
@@ -216,8 +226,13 @@ message(STATUS "")
 message(STATUS "Platform: ${Platform}")
 message(STATUS "Compiler: ${Compiler}")
 
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/../Lib/${Compiler}_${Platform})
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/../Lib/${Compiler}_${Platform})
+if(WIN32)
+    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/../Lib/${Compiler}_${Platform})
+    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/../Lib/${Compiler}_${Platform})
+else()
+    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/../Bin/${Compiler}_${Platform})
+    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/../Bin/${Compiler}_${Platform})
+endif()
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/../Bin/${Compiler}_${Platform})
 
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_DEBUG ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY})
