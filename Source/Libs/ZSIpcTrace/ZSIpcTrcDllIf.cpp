@@ -24,6 +24,8 @@ may result in using the software modules.
 
 *******************************************************************************/
 
+#ifdef USE_ZS_IPTRACE_DLL_IF
+
 #include "ZSIpcTrace/ZSIpcTrcDllIf.h"
 
 #include <string>
@@ -237,6 +239,8 @@ Exported methods
 //------------------------------------------------------------------------------
 /*! Loads the Remote Method Tracing Dlls.
 
+    @ingroup _GRP_Namespace_ZS_Trace_DllIf
+
     @param i_szCompiler [in] Spezifies the used compiler.
            Default: nullptr
            For Visual Studio Compilers this parameter is automatically detected
@@ -381,9 +385,13 @@ bool ZS::Trace::DllIf::loadDll(
         }
 
         #ifdef _WIN32
+        #ifdef UNICODE
         const wstring wstrTrcDllFileName = ZS::System::s2ws(s_szTrcDllFileName);
         s_hndIpcTrcDllIf = LoadLibrary(wstrTrcDllFileName.c_str());
         #else
+        s_hndIpcTrcDllIf = LoadLibrary(s_szTrcDllFileName);
+        #endif
+        #else // !_WIN32
         memcpy(&s_szTrcDllFileName[iStrPos], ".so", 3);                                 // "ZSIpcTraceQt5_msvc2015_x64_d.so"
         s_hndIpcTrcDllIf = dlopen(s_szTrcDllFileName, RTLD_LAZY);
         if( s_hndIpcTrcDllIf == NULL )
@@ -629,7 +637,10 @@ bool ZS::Trace::DllIf::loadDll(
 //------------------------------------------------------------------------------
 /*! Returns the file name of the loaded ZSIpcTrace Dll.
 
+    @ingroup _GRP_Namespace_ZS_Trace_DllIf
+
     @return name of the dll.
+        ! Don't free this pointer as this is a const char pointer created during compile time !
 */
 const char* ZS::Trace::DllIf::getDllFileName()
 //------------------------------------------------------------------------------
@@ -639,6 +650,8 @@ const char* ZS::Trace::DllIf::getDllFileName()
 
 //------------------------------------------------------------------------------
 /*! Returns Releases the Remote Method Trace Dlls.
+
+    @ingroup _GRP_Namespace_ZS_Trace_DllIf
 
     @return true if dll was release.
             false in case of an error (if the dll was not loaded).
@@ -2168,3 +2181,5 @@ unsigned short DllIf::CIpcTrcServer::getPort() const
     return uPort;
 
 } // getPort
+
+#endif // #ifdef USE_ZS_IPTRACE_DLL_IF

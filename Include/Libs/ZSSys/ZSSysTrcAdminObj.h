@@ -45,7 +45,7 @@ class CIdxTreeTrcAdminObjs;
 class CTrcServer;
 
 //******************************************************************************
-/*! Instances of this class are used to filter method tracing.
+/*! @brief Instances of this class are used to filter method tracing.
 
     To debug and profile applications method tracing is used.
     Applikationen bestehen in der Regel aus einer Vielzahl von Module, Klassen

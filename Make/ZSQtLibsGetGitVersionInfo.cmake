@@ -1,14 +1,15 @@
 # Retrieve version information with "git describe --always --tags --long".
 # ------------------------------------------------------------------------
 #
-# This CMake macro generates the version info out of the most recent git tag.
-# Only the git tag is evaluated. This means that for all commits after a valid
-# git tag will get the same version number. This is also the intention as only
-# commits with an assigned tag are considered as release versions.
+# Using --long will always output the long format even when it matches a tags
+# (the tag, the number of commits and the abbreviated commit name).
 #
-# If you are using a commit with doesn't match a tag the commit hash will
-# be set at the output variable ZSQTLIB_GIT_VERSION_INFO. If a tag is assigned
-# to the commit the ZSQTLIB_GIT_VERSION_INFO is empty.
+# This CMake macro generates the version info out of the most recent git tag.
+#
+# If you are using a commit with doesn't match a tag the number of commits since
+# the last recent tag is 0. You can check the corresponding output variable
+# (see below) to determine wheter you have checkout out an official release or
+# an unofficial temporary version used for development.
 #
 # This allows identifying the exaclty used git tag in the configured "version.h"
 # and "version.rc" file and my be shown either as the "About" info of your application
@@ -16,28 +17,31 @@
 # such meta information.
 #
 # The result returned by "git describe --always --tags" will have the following format:
-#   v0.01.02[-0-g835e9e5]
+#   v0.01.02-0-g835e9e5
 #
 # - The substring before the first '-' corresponds to the defined tag.
-#   In order to retrieve VERSION_MAJOR, VERSION_MINOR and VERSION_PATCH from the tag it must follow the
-#   regular expression "[v]\d{1,}[.]\d{1,}[.]\d{1,}".
 #   - 0  becomes VERSION_MAJOR
 #   - 01 becomes VERSION_MINOR
 #   - 02 becomes VERSION_PATCH
-# - The string including and following the first '-' is only output if the commit does
-#   not match a tag. If a tag is not hit:
-#   - The first substring corresponds to the number of commits on top of the tag.
-#     This value is not extracted from the GIT_VERSION_INFO string and is not saved in a separate variable.
-#   - The substring after the second '-' corresponds to the abbreviated commit hash
-#     (usually the first seven digits of the hash) preceded by the abbreviated object name 'g' for 'git'.
-#
+# - The substring after the first '-' corresponds to the number of commits on top of the tag.
+# - The substring after the second '-' corresponds to the abbreviated commit hash
+#   (usually the first seven digits of the hash) preceded by the abbreviated object name 'g' for 'git'.
+#   The 'g' will be removed and the abbreviated commit hash will also be converted to an integer value
+#   (CMake expects integer values for version numbers in decimal format).
+#   This automatically generated integer value will be used as VERSION_PATCH.
+
 # Output Variables:
 # -----------------
-# ZSQTLIB_GIT_VERSION_INFO .. The git version info as result of the git describe call.
-# ZSQTLIB_VERSION_MAJOR ..... Major version number retrieved from git tag.
-# ZSQTLIB_VERSION_MINOR ..... Minor version number retrieved from git tag.
-# ZSQTLIB_VERSION_PATCH ..... Patch version number retrieved from git tag.
-# ZSQTLIB_VERSION ........... Complete version number consisting of <MAJOR>.<MINOR>.<PATCH>.
+# ZSQTLIB_GIT_VERSION_INFO ....... The git version info as result of the git describe call.
+# ZSQTLIB_GIT_COMMITS_SINCE_TAG .. Number of commits on top of tag.
+#                                  If 0 the commit matches a tag and the commit is an official release.
+#                                  If greater than 0 the commit is a temporary development version.
+# ZSQTLIB_GIT_COMMIT_HASH_HEX .... Abbreviated git commit hash (hexadecimal value as used by git).
+# ZSQTLIB_GIT_COMMIT_HASH_INT .... Abbreviated git commit hash converted into integer value.
+# ZSQTLIB_VERSION_MAJOR .......... Major version number retrieved from git tag.
+# ZSQTLIB_VERSION_MINOR .......... Minor version number retrieved from git tag.
+# ZSQTLIB_VERSION_PATCH .......... Patch version number retrieved from git tag.
+# ZSQTLIB_VERSION ................ Complete version number consisting of <MAJOR>.<MINOR>.<PATCH>.
 
 message(STATUS "")
 message(STATUS "---------------------------------------------------------------------------------------------")
@@ -66,27 +70,28 @@ else()
 endif()
 message(STATUS "GIT_WORKING_DIRECTORY: ${GIT_WORKING_DIRECTORY}")
 
-execute_process(COMMAND ${GIT_EXECUTABLE} describe --always --tags
+execute_process(COMMAND ${GIT_EXECUTABLE} describe --always --tags --long
     WORKING_DIRECTORY "${GIT_WORKING_DIRECTORY}"
     OUTPUT_VARIABLE ZSQTLIB_GIT_VERSION_INFO
     ERROR_QUIET
     OUTPUT_STRIP_TRAILING_WHITESPACE)
-message(STATUS "ZSQTLIB_GIT_VERSION_INFO: ${ZSQTLIB_GIT_VERSION_INFO}")
+message(STATUS "ZSQTLIB_GIT_VERSION_INFO:      ${ZSQTLIB_GIT_VERSION_INFO}")
 
 # Split ZSQTLIB_GIT_VERSION_INFO into list containing git tag, number of commits and commit hash value.
 string(REPLACE "-" ";" ZSQTLIB_GIT_VERSION_INFO_LIST ${ZSQTLIB_GIT_VERSION_INFO})
 list(LENGTH ZSQTLIB_GIT_VERSION_INFO_LIST versionInfoListLen)
-if (versionInfoListLen EQUAL 1)
-    list(GET ZSQTLIB_GIT_VERSION_INFO_LIST 0 ZSQTLIB_GIT_TAG)
-    set(ZSQTLIB_GIT_COMMIT_HASH "")
-elseif (versionInfoListLen EQUAL 3)
-    list(GET ZSQTLIB_GIT_VERSION_INFO_LIST 0 ZSQTLIB_GIT_TAG)
-    list(GET ZSQTLIB_GIT_VERSION_INFO_LIST 2 ZSQTLIB_GIT_COMMIT_HASH)
-else()
-    # Abort CMake if version info does not follow the expected format either
-    # with just one section or with 3 sections.
+# Abort CMake if version info does not follow the expected format with 3 sections separated by '-'.
+if (NOT versionInfoListLen EQUAL 3)
     message(FATAL_ERROR "Cannot create version file for ZSQtLib as ${ZSQTLIB_GIT_VERSION_INFO} has wrong format")
 endif()
+list(GET ZSQTLIB_GIT_VERSION_INFO_LIST 0 ZSQTLIB_GIT_TAG)
+list(GET ZSQTLIB_GIT_VERSION_INFO_LIST 1 ZSQTLIB_GIT_COMMITS_SINCE_TAG)
+list(GET ZSQTLIB_GIT_VERSION_INFO_LIST 2 ZSQTLIB_GIT_COMMIT_HASH_HEX)
+
+# Remove leading 'g' from git commit hash.
+string(REPLACE "g" "" ZSQTLIB_GIT_COMMIT_HASH_HEX ${ZSQTLIB_GIT_COMMIT_HASH_HEX})
+# Convert hexadecimal value of git hash into integer value.
+math(EXPR ZSQTLIB_GIT_COMMIT_HASH_INT "0x${ZSQTLIB_GIT_COMMIT_HASH_HEX}" OUTPUT_FORMAT DECIMAL)
 
 # Remove starting "v" character from first git tag and split into list with
 # VERSION_MAJOR, VERSION_MINOR and VERSION_PATCH.
@@ -103,10 +108,13 @@ list(GET ZSQTLIB_GIT_TAG_LIST 2 ZSQTLIB_VERSION_PATCH)
 
 set(ZSQTLIB_VERSION ${ZSQTLIB_VERSION_MAJOR}.${ZSQTLIB_VERSION_MINOR}.${ZSQTLIB_VERSION_PATCH} CACHE STRING "ZSQtLibVersion" FORCE)
 
-message(STATUS "ZSQTLIB_VERSION_MAJOR:    ${ZSQTLIB_VERSION_MAJOR}")
-message(STATUS "ZSQTLIB_VERSION_MINOR:    ${ZSQTLIB_VERSION_MINOR}")
-message(STATUS "ZSQTLIB_VERSION_PATCH:    ${ZSQTLIB_VERSION_PATCH}")
-message(STATUS "ZSQTLIB_VERSION:          ${ZSQTLIB_VERSION}")
+message(STATUS "ZSQTLIB_GIT_COMMITS_SINCE_TAG: ${ZSQTLIB_GIT_COMMITS_SINCE_TAG}")
+message(STATUS "ZSQTLIB_GIT_COMMIT_HASH_HEX:   ${ZSQTLIB_GIT_COMMIT_HASH_HEX}")
+message(STATUS "ZSQTLIB_GIT_COMMIT_HASH_INT:   ${ZSQTLIB_GIT_COMMIT_HASH_INT}")
+message(STATUS "ZSQTLIB_VERSION_MAJOR:         ${ZSQTLIB_VERSION_MAJOR}")
+message(STATUS "ZSQTLIB_VERSION_MINOR:         ${ZSQTLIB_VERSION_MINOR}")
+message(STATUS "ZSQTLIB_VERSION_PATCH:         ${ZSQTLIB_VERSION_PATCH}")
+message(STATUS "ZSQTLIB_VERSION:               ${ZSQTLIB_VERSION}")
 
 message(STATUS "")
 message(STATUS "<- ZSQtLib/Make/ZSQtLibsGetGitVersionInfo.cmake")

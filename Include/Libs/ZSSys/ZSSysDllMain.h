@@ -67,6 +67,7 @@ global type definitions and constants
 #define __TODO__ __FILELINE__ "TODO: "
 
 #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+// Align with definitions in ZSIpcTrcDllIf.h
 #define QT_VERSION_MAJOR 5
 #elif QT_VERSION >= QT_VERSION_CHECK(4, 8, 4)
 #define QT_VERSION_MAJOR 4
@@ -104,6 +105,7 @@ global type definitions and constants
     Visual Studio 2019 version 16.8  | 1928
     Visual Studio 2019 version 16.10 | 1929
     */
+    // Align with definitions in ZSIpcTrcDllIf.h
     #if _MSC_VER <= 1200
         #define __CXX_STANDARD__ 1
         #define COMPILERLIBINFIX "msvc2000"
@@ -147,6 +149,7 @@ MinGW versions
 --------------
 */
 #elif defined __MINGW64__
+    // Align with definitions in ZSIpcTrcDllIf.h
     #define COMPILERLIBINFIX "mingw" __STRING__(__GNUC__) __STRING__(__GNUC_MINOR__)
 
 /*
@@ -154,6 +157,7 @@ GNU CC versions
 ---------------
 */
 #elif defined __GNUC__
+    // Align with definitions in ZSIpcTrcDllIf.h
     #define COMPILERLIBINFIX "gnu" __STRING__(__GNUC__) __STRING__(__GNUC_MINOR__)
 
 /*
@@ -195,16 +199,21 @@ Unsuported yet
 #endif
 
 // Some customers are configuring Qt to rename the Qt libraries to Qt*<infix>.
+// Align with definitions in ZSIpcTrcDllIf.h
 #define QTLIBINFIX ""
 //#define QTLIBINFIX "Isar"
 //#define QTLIBINFIX "SWP"
 
 #ifndef PLATFORMLIBINFIX
-#ifdef __x86_64__
+// Align with definitions in ZSIpcTrcDllIf.h
+#include <stdint.h>
+#if INTPTR_MAX == INT32_MAX
+#define PLATFORMLIBINFIX "Win32"
+#elif INTPTR_MAX == INT64_MAX
 #define PLATFORMLIBINFIX "x64"
 #else
-#define PLATFORMLIBINFIX "Win32"
-#endif // #ifdef __x86_64__
+#error "Environment neither 32 nor 64-bit."
+#endif
 #endif
 
 #ifndef PLATFORMLIBINFIX
@@ -212,6 +221,7 @@ Unsuported yet
 #endif
 
 #ifndef CONFIGLIBINFIX
+// Align with definitions in ZSIpcTrcDllIf.h
 #ifdef _DEBUG
 #define CONFIGLIBINFIX "d"
 #else

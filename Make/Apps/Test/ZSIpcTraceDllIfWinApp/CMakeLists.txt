@@ -72,6 +72,8 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
     target_compile_options(${PROJECT_NAME} PRIVATE "-Wno-cast-function-type")
 endif()
 
+target_compile_definitions(${PROJECT_NAME} PRIVATE USE_ZS_IPTRACE_DLL_IF)
+
 target_include_directories(${PROJECT_NAME}
     PRIVATE ${CMAKE_SOURCE_DIR}/../Include/Apps/Test/ZSIpcTraceDllIfWinApp)
 

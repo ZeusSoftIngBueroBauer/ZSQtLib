@@ -110,6 +110,13 @@ message(STATUS "CMAKE_SOURCE_DIR:         ${CMAKE_SOURCE_DIR}")
 message(STATUS "CMAKE_CURRENT_SOURCE_DIR: ${CMAKE_CURRENT_SOURCE_DIR}")
 message(STATUS "PROJECT_SOURCE_DIR:       ${PROJECT_SOURCE_DIR}")
 
+# Retrieve version information from current git commit.
+# The version numbers will be used
+# - to configure "ZSQtLibs-config-version.cmake" below and
+# - to configure "ZSSysVersion.h" and "ZSSysVersion.rc".
+# !! The version header and resource files are configured by the CMakeList file of subdirectory ZSSys. !!
+include(${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}GetGitVersionInfo.cmake)
+
 # Perform a Debug build by default
 if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Debug CACHE STRING "Build type" FORCE)
@@ -121,11 +128,6 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
-
-# Retrieve VERSION_MAJOR, ~MINOR, ~PATCH from git repository.
-# The output variables will be used to configure "ZSQtLibs-config-version.cmake" below and to
-# configure "ZSSysVersion.h" and "ZSSysVersion.rc" by the CMakeList file of subdirectory ZSSys.
-include(${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}GetGitVersionInfo.cmake)
 
 message(STATUS "")
 message(STATUS "CMAKE_BINARY_DIR:         ${CMAKE_BINARY_DIR}")
@@ -379,9 +381,15 @@ add_subdirectory(Libs/ZSIpcTraceGUI)
 if(CREATE_PYTHON_BINDINGS)
     add_subdirectory(Libs/ZSIpcTracePy)
 endif()
+
 add_subdirectory(Apps/Products/ZSTrcMthClient)
+
+#add_subdirectory(Apps/Test/ZSIpc) got to be revised
 add_subdirectory(Apps/Test/ZSIpcTrace)
 add_subdirectory(Apps/Test/ZSIpcTraceDllIfQtApp)
+if(WIN32)
+    add_subdirectory(Apps/Test/ZSIpcTraceDllIfWinApp)
+endif()
 add_subdirectory(Apps/Test/ZSSysEnums)
 add_subdirectory(Apps/Test/ZSSysErrLog)
 add_subdirectory(Apps/Test/ZSSysIdxTree)

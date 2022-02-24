@@ -51,6 +51,8 @@ class CTrcMthFile;
 class CTrcServer;
 
 //******************************************************************************
+/*! class CMethodTracer
+*/
 class ZSSYSDLL_API CMethodTracer : public QObject
 //******************************************************************************
 {

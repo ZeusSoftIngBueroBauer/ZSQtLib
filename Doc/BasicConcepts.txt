@@ -1,5 +1,0 @@
-/*!
-@defgroup _GRP_BasicConcepts Basic Concepts
-@brief
-
-*/

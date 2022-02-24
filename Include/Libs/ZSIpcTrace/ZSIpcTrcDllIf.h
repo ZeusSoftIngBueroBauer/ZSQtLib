@@ -24,286 +24,17 @@ may result in using the software modules.
 
 *******************************************************************************/
 
+#ifdef USE_ZS_IPTRACE_DLL_IF
+
 #ifndef ZSIpcTrace_DllIf_h
 #define ZSIpcTrace_DllIf_h
 
-//******************************************************************************
-/*! Diese Header File stellt das DLL Interface für das Remote Method Tracing.
-    der ZSQtLib dar. Um es verwenden zu koennen, muss auch das cpp File in die
-    Anwendung oder die Dll compiliert werden, in der das Interface verwendet
-    soll.
+/*! This header file represents the DLL interface for the remote method tracing
+    of the ZSQtLib. In order to be able to use it, the cpp file must also be
+    compiled into the application or the dll in which the interface is to be used.
 
-    Die Anwendung oder Dll, die die ZSIpcTrace Dlls ueber das ZSIpcTrace Dll Interface
-    einbindet, wird im folgenden als Master-Anwendung bzw. Master-Dll bezeichnet.
-
-    Dieses File als auch allen anderen fuer das Remote Method Tracing notwendigen
-    Dateien koennen ueber das Git-Repository https://github.com/ZeusSoftIngBueroBauer/ZSQtLib
-    bezogen werden.
-
-    - Erstellen eines Verzeichnisses fuer das lokale Reposity.
-      (z.B. "mkdir \Projects\ZeusSoft")
-    - git clone https://github.com/ZeusSoftIngBueroBauer/ZSQtLib
-    - cd ZSQtLib
-    - git checkout origin/main
-
-    Das Header File "ZSIpcTrcDllIf.h" ist im Unterverzeichnis "Include\Libs\ZSIpcTrace" zu finden.
-    Das Source File "ZSIpcTrcDllIf.cpp" ist im Unterverzeichnis "Source\Libs\ZSIpcTrace" zu finden.
-
-    Zunaechst ist es ratsam, sowohl das Header File "ZSIpcTrcDllIf.h" als auch
-    das Source File "ZSIpcTrcDllIf.cpp" an eine Stelle zu kopieren, in der die
-    Files in die Master-Anwendung includiert und mit compiliert werden koennen.
-
-    Das Dll Interface ist eine reine C Schnittstelle, verwendet nicht die STL
-    und auch keine C++ spezifischen Konstrukte.
-
-    Falls die Klassen der ZSQtLib Bibliotheken "ZSSys", "ZSIpc" und "ZSIpcTrace"
-    nicht in die Anwendung oder Dll compiliert und gelinkt werden koennen, kann
-    trotzdem ZSIpcTrace verwendet werden.
-
-    Wird das ZSIpcTrace Dll Interface verwendet, werden die ZSQtLib Dlls
-    dynamisch zur Laufzeit geladen.
-
-    Das ZSIpcTrace Dll Interface kann sowohl dann verwendet werden, wenn die
-    Master-Anwendung oder Master-Dll selbst Qt verwendet aber auch, wenn die
-    Master-Anwendung kein Qt verwendet. Im zweiten Fall muss zum Compilieren
-    der ZSQtLib-Dlls vorher eine Qt Version installiert werden.
-
-    Hierzu muessen die ZSQtLib-Dlls separat erstellt werden. Dabei ist darauf zu
-    achten, dass derselbe Compiler verwendet wird, mit der auch die Master Anwendung
-    erstellt wird.
-
-    Falls es sich bei der Master-Anwendung um eine Anwendung handelt, die selbst
-    Qt verwendet, ist ferner darauf zu achten, dass die ZSQtLib Dlls auch mit
-    dieser Qt Version erstellt werden (zumindest sollte die Qt Major Version
-    uebereinstimmen).
-
-    Manche Master-Anwendungen benennen die Qt Dlls durch Definition eines
-    "Lib-Infixes" um. Dieser "Lib-Infix" ist auch bei der Erstellung der ZSQtLib
-    Dlls zu verwenden, da ansonsten die Qt-Applikation zweimal intstanziiert
-    wird, was zwangsweise dazu fuehrt, dass die Master-Applikation nicht mehr
-    korrekt funktioniert und wahrscheinlich sogar abstuerzt.
-
-    Selbstverstaendlich duerfen auch Debug und Release Versionen wie auch
-    Prozessor-Architektur hinsichtlich 32 und 64 Bit Anwendung nicht vermischt
-    werden.
-
-    Um etwaiige Versions-Konflikte verwendeter Compiler-, Qt-, Debug/Release,
-    Win32/x64 Builds weitgehends vermeiden zu koennen, werden die ZSQtLib
-    Dlls entsprechend benamst.
-
-    So erhalten die mit dem Microsoft Visual Studio 2017 (Version 15) in der
-    Debug Version für 64 Bit unter Vewendung von Qt 5.5 kompilierten Dlls
-    folgende Namen:
-
-    - ZSSysQt5_msvc2017_x64_d.dll
-    - ZSIpcQt5_msvc2017_x64_d.dll
-    - ZSIpcTraceQt5_msvc2017_x64_d.dll
-
-    Sollten die Qt-Dlls mit dem Lib-Infix "Swp" erstellt worden sein,
-    erhalten die Dlls folgende Namen.
-
-    - ZSSysQt5Swp_msvc2017_x64_d.dll
-    - ZSIpcQt5Swp_msvc2017_x64_d.dll
-    - ZSIpcTraceQt5Swp_msvc2017_x64_d.dll
-
-    Bitte lesen Sie die Dokumentation in "Make/CMakeLists.txt" um zu erfahren,
-    wie die ZSQtLib Dlls zu erstellen sind.
-
-    Hier wird beschrieben, wie das Remote Method Tracing über das Dll Interface
-    anzusprechen und zu verwenden ist.
-
-    Fuer weiter gehende Informationen ueber Features und Internas des Remote
-    Method Tracings lesen Sie bitte die entsprechende Online Dokumentation,
-    die ueber Doxygen erstellt werden kann.
-
-    Ferner gibt es im Repository Test Anwendungen, sowohl fuer eine Qt Applikation
-    als auch eine native Windows Anwendungen, die Sie als Copy and Paste
-    Vorlage verwenden koennen.
-
-    Haben Sie, wie anfangs beschrieben, sowohl das Header File "ZSIpcTrcDllIf.h"
-    als auch das Source File "ZSIpcTrcDllIf.cpp" an eine Stelle kopiert, von dem
-    aus die Files in die Master-Anwendung includiert und mit compiliert werden koennen,
-    muss zunaechst ggf. das Include auf "ZSIpcTrcDllIf.h" im Source File "ZSIpcTrcDllIf.cpp"
-    angepasst werden. Moeglicherweise muessen Sie "StdAfx.h" vor "ZSIpcTrcDllIf.h"
-    includieren und den Include Pfad fuer "ZSIpcTrcDllIf.h" korrigieren.
-
-    Falls sie eine Qt Anwendung verwenden, sollte vor der Include Anweisung fuer "ZSIpcTrcDllIf.h"
-    eine Qt-Header Datei includiert werden, um die verwendete QT_VERSION bekannt zu machen:
-
-        @code
-        #include <QtCore/qglobal.h>.
-        #include "ZSIpcTrcDllIf.h"
-        @endcode
-
-    Falls sie keine Qt Anwendung verwenden, und nicht die QT_VERSION 5 verwenden, muss QT_VERSION
-    vor includieren von "ZSIpcTrcDllIf.h" entsprechend gesetzt werden:
-
-        @code
-        #include <QtCore/qglobal.h>.
-        #include "ZSIpcTrcDllIf.h"
-        @endcode
-
-    Stellen Sie sicher, dass das Source File "ZSIpcTrcDllIf.cpp" compiliert werden
-    kann.
-
-    1. Laden der ZSQtLib-Dlls
-
-        Die erste Aufgabe besteht nun darin, die erforderlichen ZSQtLib Dlls in die
-        Master Anwendung zu laden. Idealerweise erfolgt dies im Main-Modul der Anwendung.
-        Falls Sie keine Moeglichkeit haben, die Dlls im Main-Modul der Anwendung zu
-        laden und stattdessen das Remote Method Tracing nur in einem oder mehreren
-        PlugIn-Dlls verwenden wollen, koennen oder duerfen, waehlen Sie hierzu das
-        geeignete Main-Module der PlugIn-Dll aus.
-
-        Geladen werden die Remote Method Tracing Dlls ueber folgenden Aufruf:
-
-        @code
-        bool bZSQtLibDllsLoaded = ZS::Trace::DllIf::loadDll();
-        @endcode
-
-        or ..
-
-        @code
-        bool bZSQtLibDllsLoaded = ZS::Trace::DllIf::loadDll("msvc2013", "x64", EBuildConfigurationDebug, 5);
-        @endconde
-
-        Moegliche Ursachen dafuer, dass die Dlls nicht geladen werden konnten, sind:
-
-        - Dlls wurden nicht gefunden
-          - Ggf. PATH erweitern, so dass das Betriebssystem die Dlls finden koennen.
-          - Dateinamen sind nicht korrekt (alle Lib-Infixes pruefen).
-        - Incompatible Versionen (x64/Win32, Qt Version 4 statt 5, etc.).
-        - Qt Dlls konnten nicht geladen werden
-          - Wurden die Qt Dlls ggf. mit einem LibInfix compiliert?
-          - Kann das Betriebssystem die Qt-Dlls finden?
-
-    2. Instanziieren des Trace Servers, einlesen des Trace Admin Object XML Files und setzen einiger Attribute.
-
-        Falls das Laden der ZSQtLib Dlls erfolgreich war, kann der Trace Server instanziiert werden.
-        Dies erfolgt ueber einen CreateInstance Aufruf. Wird CreateInstance mit den Default-Parametern
-        aufgeufen, wird geprueft, ob es eine Trace Server Instanz mit dem Namen "ZSTrcServer" bereits
-        gibt. Wenn ja, wird ein Referenz-Counter incrementiert und eine Referenz auf diese Instanz
-        zurückgegeben. Existiert noch kein Trace Server mit dem Namen "ZSTrcServer" wird eine neue
-        Instanz angelegt und der Referenz-Counter auf 1 gesetzt.
-
-        Damit der Trace Server weiss, wo er das Log File und das Settings File ablegen soll,
-        sollte der Name der Applikation und der Name der Organisation mitgeteilt werden, wie im
-        folgenden Code-Abschnitt gezeigt.
-
-        @code
-        if( bZSQtLibDllsLoaded )
-        {
-            char* szOrgName = CIpcTrcServer::GetOrganizationName();
-            char* szAppName = CIpcTrcServer::GetApplicationName();
-
-            std::string stdstrOrgName(szOrgName);
-            std::string stdstrAppName(szAppName);
-
-            if( stdstrOrgName.empty() )
-            {
-                CIpcTrcServer::SetOrganizationName("Rohde-Schwarz");
-            }
-            if( stdstrAppName.empty() )
-            {
-                CIpcTrcServer::SetApplicationName("CMW");
-            }
-
-            m_pTrcServer = CIpcTrcServer::CreateInstance();
-
-            delete szOrgName;
-            szOrgName = nullptr;
-            delete szAppName;
-            szAppName = nullptr;
-        }
-        @endcode
-
-        Mit GetDefaultFilePaths kann gepueft werden, ob der Trace Server die gewuenschten Pfade verwendet.
-
-        @code
-        if( bZSQtLibDllsLoaded )
-        {
-            char* szAdminObjFileAbsFilePath = CIpcTrcServer::GetDefaultAdminObjFileAbsoluteFilePath();
-            char* szLocalTrcFileAbsFilePath = CIpcTrcServer::GetDefaultLocalTrcFileAbsoluteFilePath();
-
-            std::string stdstrAdminObjFileAbsFilePath(szAdminObjFileAbsFilePath);
-            std::string stdstrLocalTrcFileAbsFilePath(szLocalTrcFileAbsFilePath);
-
-            if( stdstrAdminObjFileAbsFilePath.empty() )
-            {
-            }
-            if( stdstrLocalTrcFileAbsFilePath.empty() )
-            {
-            }
-
-            delete szAdminObjFileAbsFilePath;
-            szAdminObjFileAbsFilePath = nullptr;
-            delete szLocalTrcFileAbsFilePath;
-            szLocalTrcFileAbsFilePath = nullptr;
-        }
-        @endcode
-
-        Wurde der Trace Server erfolgreich erzeugt ist der zuletzt gesicherte Stand der TraceAdmin Objekt
-        Instancen in den Index Tree des Trace Servers einzulesen (trace detail level, enabled).
-
-        Des weiteren koennen einige Eigenschaften der Trace Server gesetzt werden. Im Folgenden Code
-        Beispiel wird das Caching des Methoden Trace aktiviert, damit auch die Methoden im Client
-        erscheinen, die getraced wurden, waehrend der Client sich noch nicht verbunden hatte
-        (Methoden Trace beim Startup der Applikation).
-
-        @code
-        if( m_pTrcServer != nullptr )
-        {
-            m_pTrcServer->setCacheTrcDataIfNotConnected(true);
-            m_pTrcServer->setCacheTrcDataMaxArrLen(1000);
-
-            m_pTrcServer::recallAdminObjs();
-        }
-        @endcode
-
-    3. Admin Object XML File sichern und Trace Server freigeben
-
-        Eigentlich der letzte Schritt der Sequenz. Aber in jedem Fall notwendig und sollte deshalb
-        gleich nach Schritt 2 implementiert werden.
-        Wird der Trace Server nicht mehr gebraucht, muss dieser freigegeben werden.
-        Dies erfolgt ueber einen ReleaseInstance Aufruf, bei dem die bei ReleaseInstance erhaltene
-        Referenz auf den Trace Server zu uebergbeben ist.
-        Beim ReleaseInstance wird der Referenz-Counter decrementiert. Erreicht der Referenz-Counter
-        den Wert 0 wird der Trace Server zerstoert. Der Destructor des Trace Servers beendet auch
-        den Gateway Thread und zerstoert damit auch den Ipc server. Alle aktiven Verbindungen
-        werden dabei geschlossen.
-
-        Bevor der Trace Server freigegeben wird sollte der aktuelle Zustand der Trace Admin Objekte
-        im XML File gesichert werden, damit die Zustaende (trace detail level, enabled) beim Neustart
-        der Applikation wieder hergestellt werden koennen.
-
-        @code
-        if( m_pTrcServer != nullptr )
-        {
-            m_pTrcServer->saveAdminObjs();
-
-            CIpcTrcServer::ReleaseInstance(m_pTrcServer);
-        }
-        @endcode
-
-    4. Trace Server starten
-
-        Der Ipc Server des Trace Servers wird in einem eigenen Gateway Thread
-        instanziiert und wartet dort auf ankommende Verbindungsanforderungen.
-        Das starten des Trace Servers ist ein asynchroner Vorgang der mit
-        der Methode "startup" in Gang gesetzt wird. Ruft man diese Methode
-        mit den Uebergabeparametern auf, returniert die Methode erst, wenn
-        der Gateway Thread gestartet wurde und sich der Ipc Server im Listen-Mode
-        befindet. Oder nach Ablauf des mit 5000 ms bemessenen timeouts.
-
-        @code
-        if( m_pTrcServer != nullptr )
-        {
-            CIpcTrcServer::startup();
-        }
-        @endcode
-
+    @ref _PAGE_Overview_MethodTracing
 */
-//******************************************************************************
 
 /*******************************************************************************
 public type definitions and constants
@@ -313,6 +44,7 @@ public type definitions and constants
 #define __STRING__(x) __STR__(x)
 
 #ifndef QT_VERSION_MAJOR
+// Align with definitions in ZSSysDllMain.h
 #if QT_VERSION >= 0x050000
 #define QT_VERSION_MAJOR 5
 #elif QT_VERSION >= 0x040804
@@ -356,6 +88,7 @@ public type definitions and constants
     Visual Studio 2019 version 16.8  | 1928
     Visual Studio 2019 version 16.10 | 1929
     */
+    // Align with definitions in ZSSysDllMain.h
     #if _MSC_VER <= 1200
         #define __CXX_STANDARD__ 1
         #define COMPILERLIBINFIX "msvc2000"
@@ -399,6 +132,7 @@ MinGW versions
 --------------
 */
 #elif defined __MINGW64__
+    // Align with definitions in ZSSysDllMain.h
     #define COMPILERLIBINFIX "mingw" __STRING__(__GNUC__) __STRING__(__GNUC_MINOR__)
 
 /*
@@ -406,6 +140,7 @@ GNU CC versions
 ---------------
 */
 #elif defined __GNUC__
+    // Align with definitions in ZSSysDllMain.h
     #define COMPILERLIBINFIX "gnu" __STRING__(__GNUC__) __STRING__(__GNUC_MINOR__)
 
 /*
@@ -440,16 +175,21 @@ Unsuported yet
 #endif // #ifdef __CXX_STANDARD__
 
 // Some customers are configuring Qt to rename the Qt libraries to Qt*<infix>.
+// Align with definitions in ZSSysDllMain.h
 #define QTLIBINFIX ""
 //#define QTLIBINFIX "Isar"
 //#define QTLIBINFIX "SWP"
 
 #ifndef PLATFORMLIBINFIX
-#ifdef __x86_64__
+// Align with definitions in ZSSysDllMain.h
+#include <stdint.h>
+#if INTPTR_MAX == INT32_MAX
+#define PLATFORMLIBINFIX "Win32"
+#elif INTPTR_MAX == INT64_MAX
 #define PLATFORMLIBINFIX "x64"
 #else
-#define PLATFORMLIBINFIX "Win32"
-#endif // #ifdef __x86_64__
+#error "Environment neither 32 nor 64-bit."
+#endif
 #endif
 
 #ifndef PLATFORMLIBINFIX
@@ -457,6 +197,7 @@ Unsuported yet
 #endif
 
 #ifndef CONFIGLIBINFIX
+// Align with definitions in ZSSysDllMain.h
 #ifdef _DEBUG
 #define CONFIGLIBINFIX "d"
 #else
@@ -520,6 +261,10 @@ enum ETraceDetailLevel
 };
 
 //******************************************************************************
+/*! Instances of this class are used to filter method tracing.
+
+    @ref ZS::Trace::CTrcAdminObj
+*/
 class CTrcAdminObj
 //******************************************************************************
 {
@@ -552,6 +297,10 @@ protected: // instance members
 
 
 //******************************************************************************
+/*! class CMethodTracer
+
+    @ref ZS::Trace::CMethodTracer
+*/
 class CMethodTracer
 //******************************************************************************
 {
@@ -600,6 +349,10 @@ protected: // instance members
 
 
 //******************************************************************************
+/*! struct STrcServerSettings
+
+    @ref ZS::Trace::STrcServerSettings
+*/
 struct STrcServerSettings
 //******************************************************************************
 {
@@ -623,6 +376,10 @@ void STrcServerSettings_release( STrcServerSettings& i_trcSettings );
 
 
 //******************************************************************************
+/*! class CTrcServer
+
+    @ref ZS::Trace::CTrcServer
+*/
 class CTrcServer
 //******************************************************************************
 {
@@ -734,6 +491,10 @@ protected: // instance members
 
 
 //******************************************************************************
+/*! class CIpcTrcServer
+
+    @ref ZS::Trace::CTrcServer
+*/
 class CIpcTrcServer : public CTrcServer
 //******************************************************************************
 {
@@ -759,12 +520,14 @@ public: // ctors and dtor (declared public but for internal use only, implemente
 }; // class CIpcTrcServer
 
 //==============================================================================
+/*! Selects the config type (Debug or Release) which has been used to compile.
+*/
 enum EBuildConfiguration
 //==============================================================================
 {
-    EBuildConfigurationRelease    =  0,
-    EBuildConfigurationDebug      =  1,
-    EBuildConfigurationAutoDetect =  2
+    EBuildConfigurationRelease    =  0, /*! Debug built was used. */
+    EBuildConfigurationDebug      =  1, /*! Release built was used. */
+    EBuildConfigurationAutoDetect =  2  /*! The config type should be automatically detected. */
 };
 
 bool loadDll(
@@ -785,3 +548,5 @@ bool releaseDll();
 } // extern "C"
 
 #endif // #ifndef ZSIpcTrace_DllIf_h
+
+#endif // #ifdef USE_ZS_IPTRACE_DLL_IF

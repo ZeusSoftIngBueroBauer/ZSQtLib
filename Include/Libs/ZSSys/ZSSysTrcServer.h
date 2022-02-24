@@ -49,6 +49,8 @@ class CIdxTreeTrcAdminObjs;
 class CTrcMthFile;
 
 //******************************************************************************
+/*! struct STrcServerSettings
+*/
 struct ZSSYSDLL_API STrcServerSettings
 //******************************************************************************
 {

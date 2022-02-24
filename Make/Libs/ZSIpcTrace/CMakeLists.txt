@@ -67,6 +67,7 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
 endif()
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE ZSIPCTRACEDLL_EXPORTS)
+target_compile_definitions(${PROJECT_NAME} PRIVATE USE_ZS_IPTRACE_DLL_IF)
 
 target_link_libraries(${PROJECT_NAME} PUBLIC ZSSys ZSIpc)
 if(UNIX)
@@ -83,6 +84,10 @@ install(TARGETS ${PROJECT_NAME} EXPORT ${CMAKE_PROJECT_NAME}Targets
 
 install(FILES ${_Headers}
     DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}"
+    COMPONENT Devel)
+
+install(FILES ${_SourcesPath}/${PROJECT_NAME}/ZSIpcTrcDllIf.cpp
+    DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/../Source/${PROJECT_NAME}"
     COMPONENT Devel)
 
 message(STATUS "")

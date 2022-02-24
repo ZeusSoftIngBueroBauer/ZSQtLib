@@ -30,4 +30,8 @@
 @ingroup _GRP_Namespace_ZS
 @brief Namespace for all types and classes used for tracing.
 
+@defgroup _GRP_Namespace_ZS_Trace_DllIf Namespace ZS::Trace::DllIf
+@ingroup _GRP_Namespace_ZS_Trace
+@brief Namespace for all types and classes used for the trace method dll interface.
+
 */

@@ -17,6 +17,10 @@ used to control the application layer classes or indicate the content of the dat
 
 ![Packages_Overview](packages_overview.png)
 
-The ZSQtLib is devided into the following areas:
-- @subpage _PAGE_Libs
-- @subpage _PAGE_Apps
+- @subpage _PAGE_Overview_BuildInstructions
+- @subpage _PAGE_Overview_CodingGuidelines
+- @subpage _PAGE_Overview_Enumerations
+- @subpage _PAGE_Overview_ErrorHandling
+- @subpage _PAGE_Overview_IndexTree
+- @subpage _PAGE_Overview_MemLeakDetection
+- @subpage _PAGE_Overview_MethodTracing
