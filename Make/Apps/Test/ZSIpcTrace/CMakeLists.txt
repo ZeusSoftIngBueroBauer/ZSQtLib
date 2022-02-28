@@ -32,7 +32,6 @@ list(APPEND _Headers
     ${_HeadersPath}/ZSIpcTrace/App.h
     ${_HeadersPath}/ZSIpcTrace/MainWindow.h
     ${_HeadersPath}/ZSIpcTrace/WidgetCentral.h
-    ${_HeadersPath}/ZSIpcTrace/WdgtTestOutput.h
     ${_HeadersPath}/ZSIpcTrace/MsgTest.h
     ${_HeadersPath}/ZSIpcTrace/Test.h
     ${_HeadersPath}/ZSIpcTrace/TestModule1.h
@@ -44,7 +43,6 @@ list(APPEND _Sources
     ${_SourcesPath}/ZSIpcTrace/App.cpp
     ${_SourcesPath}/ZSIpcTrace/MainWindow.cpp
     ${_SourcesPath}/ZSIpcTrace/WidgetCentral.cpp
-    ${_SourcesPath}/ZSIpcTrace/WdgtTestOutput.cpp
     ${_SourcesPath}/ZSIpcTrace/MsgTest.cpp
     ${_SourcesPath}/ZSIpcTrace/Test.cpp
     ${_SourcesPath}/ZSIpcTrace/TestModule1.cpp

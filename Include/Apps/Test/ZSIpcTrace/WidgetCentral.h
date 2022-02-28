@@ -65,7 +65,6 @@ namespace Test
 namespace IpcTrace
 {
 class CTest;
-class CWdgtTestOutput;
 
 //******************************************************************************
 class CWidgetCentral : public QWidget
@@ -86,9 +85,6 @@ protected: // instance members
     QVBoxLayout*                     m_pLyt;
     QSplitter*                       m_pSplitter;
     ZS::Test::GUI::CWdgtTest*        m_pWdgtTest;
-    QGroupBox*                       m_pGrpTestOutput;
-    QVBoxLayout*                     m_pLytGrpTestOutput;
-    CWdgtTestOutput*                 m_pWdgtTestOutput;
     ZS::Trace::GUI::CWdgtTrcMthList* m_pWdgtMthList;
 
 }; // class CWidgetCentral

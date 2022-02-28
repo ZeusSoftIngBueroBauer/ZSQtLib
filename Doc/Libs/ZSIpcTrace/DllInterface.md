@@ -1,6 +1,4 @@
-@page _PAGE_Overview_MethodTracing_DllInterface Using the Dll Interface
-
-## Using the Dll interface
+@page _PAGE_Libs_ZSIpcTrace_DllInterface Using the ZSIpcTrace Dll Interface
 
 If you want to use method tracing by a none Qt application or if for any reason you cannot
 or don't want to link to the ZSQtLib libraries you can integrate the method tracing into

@@ -1,8 +1,8 @@
 @page _PAGE_Overview_BuildInstructions Build Instructions
 
-## Quick Startup
+# Quick Startup
 
-### Create and Install ZSQtLib Libraries, Products and Test Applications
+## Create and Install ZSQtLib Libraries, Products and Test Applications
 
 > **Please verify that your compiler supports the desired architecture (platform).
 VS-2008 express edition for example does not support the X64 architecture.**
@@ -87,7 +87,7 @@ To generate, build and install a release build use the following commands (x64 i
       cmake --build .\Build\mingw81_x64_Debug -j8
       cmake --install .\Build\mingw81_x64_Debug
 
-### Use ZSQtLib Libraries in other Packages
+## Use ZSQtLib Libraries in other Packages
 
 To use the libraries and to include the header files in other packages you need to add a `find_package` call.
 
@@ -98,7 +98,7 @@ If you don't want to link to the libraries at compile time but instead want to u
 to load the libraries during runtime you need to add the ZS package to the "target_include_directories"
 in `CMakeList.txt`.
 
-#### find_package
+### find_package
 
 If you want to use the libraries in other packages you need to add a `find_package` call
 to the `CMakeList.txt` file of that package.
@@ -181,7 +181,7 @@ you will find GIT_VERSION_INFO defined as follows:
   This information can be used to find the corresponding git commit in the repository from which the libraries
   has been generated and build.
 
-#### target_link_libraries
+### target_link_libraries
 
 If you want to link to the libraries at compile time you need to add the libraries to the
 `target_link_libraries` in `CMakeList.txt`.
@@ -195,7 +195,7 @@ To link the libraries to the target package add a dependency in `target_link_lib
         ZSSys ZSIpc ZSTrace
     )
 
-#### target_include_libraries
+### target_include_libraries
 
 If you don't want to link to the libraries at compile time but instead want to use a Dll interface
 to load the libraries during runtime you need to add the path to the ZSQtLibs header files
@@ -218,11 +218,11 @@ preprocessor directive USE_ZS_IPTRACE_DLL_IF.
 ***
 
 
-## Additional Informations
+# Additional Informations
 
-### Repository Content
+## Repository Content
 
-#### ZSSysVersion.h
+### ZSSysVersion.h
 
 A `ZSSysVersion.h` is generated from the `.\Include\Libs\ZSSys\ZSSysVersion.h.in` file.
 The generated version file is also put into the source directory `.\Include\Libs\ZSSys` but this
@@ -241,14 +241,14 @@ This is the reason that the path to the ZSQtLib repository may not include white
 
 (The resource compiler provided by Visual Studio or the Windows SDK does not have this limitation.)
 
-#### CMake Version Config
+### CMake Version Config
 
 A `ZSQtLib-config-version.cmake.in` is provided. This file will be copied into
 `ZSQtLib-config-version.cmake` replacing the version number tags with the current version
 number as defined in the main CMakeList file. The generated cmake file must be exported so that a
 **REQUIRED** version number can be specified in dependent projects.
 
-### Naming of the Generated Binaries
+## Naming of the Generated Binaries
 
 For the libraries (so's on Linux Machines, dll's on Windows Machines) additional informations
 is included in the target names. This way it is possible to create a set of shared ZSQtLib
@@ -291,9 +291,9 @@ them by applications created by different compilers and platforms and built type
 
 > Of course you need to build and install the ZSQtLib using the correct build generator in advance.
 
-### Create and Install ZSQtLib Libraries, Products and Test Applications
+## Create and Install ZSQtLib Libraries, Products and Test Applications
 
-#### What need to be installed to use the libraries by other packages
+### What need to be installed to use the libraries by other packages
 
 The binaries together with the header files containing the definitions of the exported symbols
 must be installed at a location accessible by the package using the libraries.
@@ -307,7 +307,7 @@ installation directory of the libraries.
 As alternative you can use `CMAKE_INSTALL_PREFIX` together with `CMAKE_PREFIX_PATH` for
 installing and referencing the libraries using CMake together with `find_package`.
 
-## CMake
+### CMake
 
 The `ZSQtLib` libraries are installed using CMake.
 
@@ -323,7 +323,7 @@ to build and install the library.
 Additional CMakeLists files are located in sub directories which are added by a
 "add_subdirectory" entry in the main CMakeLists file.
 
-### Building the ZSQtLib
+#### Building the ZSQtLib
 
 When building the ZSQtLib you should choose the sub directory `.\Build\CompilerId_Platform_BuildType`
 to contain the generated build tree.
@@ -382,7 +382,7 @@ the binaries and header files to a different location.
 case you will find the binaries at least two times in the ./Bin directory. In the root and in
 the CompilerName_Platform subdirectories.**
 
-#### Generate make files, build and install project
+##### Generate make files, build and install project
 
 To let CMake generate the build tree, build and install the packages you may invoke the following commands
 from command line.
@@ -392,7 +392,7 @@ Open a command line and change to the root directory of the project.
 > If you intend to install the ZSQtLib binaries below `Program Files` you must open the command prompt
 with administrator priviliges.
 
-##### Generator: Visual Studio 16 (2019)
+###### Generator: Visual Studio 16 (2019)
 
 Visual Studio is a multiple-configuration generator. The available configuration types can be tweaked with
 the `CMAKE_CONFIGURATION_TYPES` variable. To create a build tree for both Release and Debug build but skipping
@@ -418,7 +418,7 @@ the project binaries by using the `--config` flag.
       cmake --build .\Build\msvc2019_x64_Debug --config=Debug -j8
       cmake --install .\Build\msvc2019_x64_Debug --config=Debug
 
-###### Visual Studio IDE
+####### Visual Studio IDE
 
 If you want to proceed with Visual Studio to build the project instead of the command line you could open the
 solution `ZSQtLib.sln` located in `.\Build\msvc2019_x64_Debug|Release`.
@@ -431,7 +431,7 @@ To be able to run and/or debug the executables (e.g. the tests) you need to
 - in the "Command" edit line enter the path to the installed executable (e.g. "C:\Projekte\ZeusSoft\ZSQtLib\Bin\$(TargetName).exe") and
 - enter the directory of the installed executable as the working directory (e.g. "C:\Projekte\ZeusSoft\ZSQtLib\Bin").
 
-##### Generator: MinGW Makefiles
+###### Generator: MinGW Makefiles
 
 MinGW is a single configuration generator. To build the project either in Debug or Release build
 requires running CMake twice, which is a full reconfiguration of the project.
@@ -450,9 +450,9 @@ The following example calls are creating the build tree, build the binaries and 
       cmake --build .\Build\mingw81_x64_Debug -j8
       cmake --install .\Build\mingw81_x64_Debug
 
-### Using (Referencing) the ZSQtLib Libraries in other Packages
+#### Using (Referencing) the ZSQtLib Libraries in other Packages
 
-#### C++ Internals
+##### C++ Internals
 
 In order to use the defined methods, constants, type definitions, classes etc. of a library in dependent
 packages the main header file of the library got to be included in all files which want to use the exported
@@ -466,7 +466,7 @@ package module using the ZSQtLib library class `ZS::Ipc::CIpcServer` just to inc
 
     #include "ZSIpcServer.h"
 
-#### CMake Usage
+##### CMake Usage
 
 If the libraries were successfully installed, to include the libraries in dependent projects, you can use
 the following code lines in the CMakeList file:
@@ -540,10 +540,9 @@ The commands shown will install the target package to `C:\Projekte\MyCompanyName
 
 
 
+# Appendix
 
-## Appendix
-
-### Using Qt
+## Using Qt
 
 For build instruction of the Qt Framework see `./Make/Readme_BuildQt.txt`.
 
@@ -565,10 +564,10 @@ For your convience some examples are shown below.
 - for VS-2019, Qt-Version 5.15.2 (QtConfig.cmake located in /Qt/Bin/5.15.2/msvc2019/x64/lib/cmake/Qt5):
   cmake -G "Visual Studio 16 2019" -A x64 -DCMAKE_BUILD_TYPE=Debug -DQT_VERSION_MAJOR=5 -DQt5_DIR="/Qt/Bin/5.15.2/msvc2019/x64/lib/cmake/Qt5" ../../../../Make
 
-### Linux Setup
+## Linux Setup
 
 see ./Make/Readme_SetupLinux.txt
 
-### Install Visual Studio
+## Install Visual Studio
 
 see ./Make/Readme_InstallVS.txt

@@ -29,7 +29,6 @@ may result in using the software modules.
 
 #include <QtCore/qabstractitemmodel.h>
 #include <QtGui/qtextdocument.h>
-
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 #include <QtGui/qitemdelegate.h>
 #include <QtGui/qtableview.h>

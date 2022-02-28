@@ -43,7 +43,6 @@ may result in using the software modules.
 #include "WidgetCentral.h"
 #include "App.h"
 #include "Test.h"
-#include "WdgtTestOutput.h"
 
 #include "ZSIpcTrace/ZSIpcTrcServer.h"
 #include "ZSTestGUI/ZSTestWdgt.h"
@@ -96,9 +95,7 @@ CWidgetCentral::CWidgetCentral(
     m_pTest(i_pTest),
     m_pLyt(nullptr),
     m_pSplitter(nullptr),
-    m_pGrpTestOutput(nullptr),
-    m_pLytGrpTestOutput(nullptr),
-    m_pWdgtTestOutput(nullptr),
+    m_pWdgtTest(nullptr),
     m_pWdgtMthList(nullptr)
 {
     if( s_pThis != nullptr )
@@ -124,17 +121,6 @@ CWidgetCentral::CWidgetCentral(
 
     m_pWdgtTest = new CWdgtTest( CApplication::GetInstance()->getTest() );
     m_pSplitter->addWidget(m_pWdgtTest);
-
-    // <GroupBox> Test
-    //---------------------------
-
-    m_pGrpTestOutput = new QGroupBox("Test");
-    m_pLytGrpTestOutput = new QVBoxLayout();
-    m_pGrpTestOutput->setLayout(m_pLytGrpTestOutput);
-    m_pSplitter->addWidget(m_pGrpTestOutput);
-
-    m_pWdgtTestOutput = new CWdgtTestOutput(m_pTest);
-    m_pLytGrpTestOutput->addWidget(m_pWdgtTestOutput);
 
     // <MethodTrace>
     //----------------
@@ -194,9 +180,6 @@ CWidgetCentral::~CWidgetCentral()
     m_pLyt = nullptr;
     m_pSplitter = nullptr;
     m_pWdgtTest = nullptr;
-    m_pGrpTestOutput = nullptr;
-    m_pLytGrpTestOutput = nullptr;
-    m_pWdgtTestOutput = nullptr;
     m_pWdgtMthList = nullptr;
 
     s_pThis = nullptr;

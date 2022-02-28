@@ -94,10 +94,7 @@ CApplication::CApplication(
     m_fReqExecTreeGarbageCollectorInterval_s(5.0),
     m_fReqExecTreeGarbageCollectorElapsed_s(60.0),
     m_pReqExecTree(nullptr),
-    m_trcServerHostSettings(
-        /* strLocalHostName       */ "127.0.0.1",
-        /* uLocalPort             */ 24763,
-        /* uMaxPendingConnections */ 30 ),
+    m_trcServerHostSettings(24763, 30),
     m_trcServerSettings(),
     m_pTrcServer(nullptr),
     m_strTestStepsFileAbsFilePath(),

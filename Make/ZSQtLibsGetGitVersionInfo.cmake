@@ -1,10 +1,10 @@
 # Retrieve version information with "git describe --always --tags --long".
 # ------------------------------------------------------------------------
 #
-# Using --long will always output the long format even when it matches a tags
-# (the tag, the number of commits and the abbreviated commit name).
-#
 # This CMake macro generates the version info out of the most recent git tag.
+#
+# Using --long will always output the long format even when it matches a tag
+# (the tag, the number of commits and the abbreviated commit name).
 #
 # If you are using a commit with doesn't match a tag the number of commits since
 # the last recent tag is 0. You can check the corresponding output variable
