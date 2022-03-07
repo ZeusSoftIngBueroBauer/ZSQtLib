@@ -166,7 +166,6 @@ public: // ctors and dtor
         QObject*     i_pObjLocal,
         unsigned int i_uMaxPendingConnections = 30 );
     SServerHostSettings( const SSocketDscr& i_socketDscr );
-    //SServerHostSettings( const QString& i_strCnct );
 public: // struct methods
     void toSocketDscr( SSocketDscr& i_socketDscr ) const;
     SSocketDscr getSocketDscr() const;
@@ -207,7 +206,6 @@ public: // ctors and dtor
     SClientHostSettings( // ctor for sockets with socketType = InProcMsg
         QObject*     i_pObjRemote,
         int          i_iConnectTimeout_ms = 5000 );
-    //SClientHostSettings( const QString& i_strCnct );
     SClientHostSettings( const SSocketDscr& i_socketDscr );
 public: // struct methods
     void toSocketDscr( SSocketDscr& i_socketDscr ) const;

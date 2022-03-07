@@ -111,26 +111,13 @@ CApplication::CApplication(
     m_fReqExecTreeGarbageCollectorInterval_s(5.0),
     m_fReqExecTreeGarbageCollectorElapsed_s(60.0),
     m_pReqExecTree(nullptr),
-    m_trcServerHostSettings(24763, 30),
-    m_trcServerSettings(),
-    m_pTrcServer(nullptr),
-    m_iTrcDetailLevelTrcServer(ETraceDetailLevelNone),
-    m_trcClientHostSettings("127.0.0.1", 24763, 5000),
-    m_pTrcClient(nullptr),
-    m_strThreadClrFileAbsFilePath(),
-    m_strTestStepsFileAbsFilePath(),
+    m_iZSTrcServerTrcDetailLevel(ETraceDetailLevelNone),
+    m_pZSTrcServer(nullptr),
+    m_clientHostSettingsZSTrcServer("127.0.0.1", 24763, 5000),
+    m_pZSTrcClient(nullptr),
     m_pTest(nullptr),
     m_pMainWindow(nullptr)
 {
-    m_trcServerHostSettings = SServerHostSettings(ZS::Ipc::ESocketTypeTcp);
-
-    m_trcServerHostSettings.m_uLocalPort = 24763;
-    m_trcServerHostSettings.m_uMaxPendingConnections = 5000;
-
-    m_trcServerSettings = STrcServerSettings();
-
-    m_trcServerSettings.m_bLocalTrcFileCloseFileAfterEachWrite = true;
-
     setObjectName("theApp");
 
     if( thread()->objectName().length() == 0 )
@@ -161,19 +148,8 @@ CApplication::CApplication(
     int         idxArg;
     QString     strArg;
     QString     strVal;
-    int         iVal;
-    bool        bConverted;
     QStringList strListArgsPar;
     QStringList strListArgsVal;
-
-    // Range of IniFileScope: ["AppDir", "User", "System"]
-    #ifdef __linux__
-    // Using "System" on linux Mint ends up in directory "etc/xdg/<CompanyName>"
-    // where the application has not write access rights. Stupid ...
-    QString strIniFileScope = "User";
-    #else
-    QString strIniFileScope = "System"; // Default
-    #endif
 
     parseAppArgs( i_argc, i_argv, strListArgsPar, strListArgsVal );
 
@@ -186,67 +162,16 @@ CApplication::CApplication(
         strArg = strListArgsPar[idxArg];
         strVal = strListArgsVal[idxArg];
 
-        // Here only the command arguments concerning the location of the ini file are parsed.
-        // Other arguments (e.g. mode) are parsed further below.
-        if( strArg.compare("IniFileScope",Qt::CaseInsensitive) == 0 )
+        if( strArg == "TrcServerTraceDetailLevel" )
         {
-            strIniFileScope = strVal;
-        }
-        else if( strArg == "TrcServerTraceDetailLevel" )
-        {
-            m_iTrcDetailLevelTrcServer = str2TraceDetailLevel(strVal);
-        }
-        else if( strArg == "TrcServerSettingsTrcFileLineCountMax" )
-        {
-            iVal = strVal.toInt(&bConverted);
-            if( bConverted ) m_trcServerSettings.m_iLocalTrcFileSubFileLineCountMax = iVal;
+            m_iZSTrcServerTrcDetailLevel = str2TraceDetailLevel(strVal);
         }
     }
-
-    // Calculate default file paths
-    //-----------------------------
-
-    QString strAppNameNormalized = QCoreApplication::applicationName();
-
-    // The application name may contain characters which are invalid in file names:
-    strAppNameNormalized.remove(":");
-    strAppNameNormalized.remove(" ");
-    strAppNameNormalized.remove("\\");
-    strAppNameNormalized.remove("/");
-    strAppNameNormalized.remove("<");
-    strAppNameNormalized.remove(">");
-
-    QString strAppConfigDir = ZS::System::getAppConfigDir(strIniFileScope);
-    QString strAppLogDir = ZS::System::getAppLogDir(strIniFileScope);
-
-    QString strErrLogFileBaseName = strAppNameNormalized + "-Error";
-    QString strErrLogFileSuffix = "xml";
-
-    m_strErrLogFileAbsFilePath = strAppLogDir + "/" + strErrLogFileBaseName + "." + strErrLogFileSuffix;
-
-    QString strTrcAdminObjFileSuffix = "xml";
-    QString strTrcAdminObjFileBaseName = strAppNameNormalized + "-TrcMthAdmObj";
-
-    QString strTrcLogFileSuffix = "log";
-    QString strTrcLogFileBaseName = strAppNameNormalized + "-TrcMth";
-
-    m_trcServerSettings.m_strAdminObjFileAbsFilePath = strAppConfigDir + "/" + strTrcAdminObjFileBaseName + "." + strTrcAdminObjFileSuffix;
-    m_trcServerSettings.m_strLocalTrcFileAbsFilePath = strAppLogDir + "/" + strTrcLogFileBaseName + "." + strTrcLogFileSuffix;
-
-    QString strTestStepsFileBaseName = strAppNameNormalized + "-TestSteps";
-    QString strTestStepsFileSuffix = "xml";
-
-    m_strTestStepsFileAbsFilePath = strAppConfigDir + "/" + strTestStepsFileBaseName + "." + strTestStepsFileSuffix;
-
-    QString strThreadClrFileBaseName = strAppNameNormalized + "-ThreadColors";
-    QString strThreadClrFileSuffix = "xml";
-
-    m_strThreadClrFileAbsFilePath = strAppConfigDir + "/" + strThreadClrFileBaseName + "." + strThreadClrFileSuffix;
 
     // Create error manager
     //---------------------
 
-    CErrLog::CreateInstance(true, m_strErrLogFileAbsFilePath);
+    CErrLog::CreateInstance();
 
     // Request Execution Tree
     //------------------------
@@ -260,7 +185,7 @@ CApplication::CApplication(
     // Test
     //----------------
 
-    m_pTest = new CTest(m_strTestStepsFileAbsFilePath);
+    m_pTest = new CTest();
 
     // Trace Server
     //-------------
@@ -270,23 +195,17 @@ CApplication::CApplication(
     // But create trace server before the main window so that the main window can connect
     // to the stateChanged signal of the trace server.
 
-    m_pTrcServer = CIpcTrcServer::CreateInstance("ZSTrcServer", m_iTrcDetailLevelTrcServer);
+    m_pZSTrcServer = CIpcTrcServer::CreateInstance("ZSTrcServer", m_iZSTrcServerTrcDetailLevel);
 
-    m_pTrcServer->setHostSettings(m_trcServerHostSettings);
-    m_pTrcServer->setTraceSettings(m_trcServerSettings);
-    m_pTrcServer->changeSettings();
-
-    m_pTrcServer->recallAdminObjs();
-    m_pTrcServer->saveAdminObjs();
+    m_pZSTrcServer->recallAdminObjs();
 
     // Trace client
     //-------------
 
-    m_pTrcClient = new CIpcTrcClient("TrcMthClient");
+    m_pZSTrcClient = new CIpcTrcClient("ZSTrcClient");
 
-    m_pTrcClient->setWatchDogTimerUsed(false);
-    m_pTrcClient->setHostSettings(m_trcClientHostSettings);
-    m_pTrcClient->changeSettings();
+    m_pZSTrcClient->setHostSettings(m_clientHostSettingsZSTrcServer);
+    m_pZSTrcClient->changeSettings();
 
     // Main Window
     //------------
@@ -315,22 +234,10 @@ CApplication::~CApplication()
 
     try
     {
-        delete m_pTrcClient;
+        delete m_pZSTrcClient;
     }
     catch(...)
     {
-    }
-
-    // Destroy trace server
-    if( m_pTrcServer != nullptr )
-    {
-        try
-        {
-            ZS::Trace::CTrcServer::ReleaseInstance(m_pTrcServer);
-        }
-        catch(...)
-        {
-        }
     }
 
     try
@@ -341,35 +248,33 @@ CApplication::~CApplication()
     {
     }
 
-    //try
-    //{
-    //    delete m_pSettingsFile;
-    //}
-    //catch(...)
-    //{
-    //}
+    // Destroy trace server
+    if( m_pZSTrcServer != nullptr )
+    {
+        m_pZSTrcServer->saveAdminObjs();
+
+        try
+        {
+            ZS::Trace::CTrcServer::ReleaseInstance(m_pZSTrcServer);
+        }
+        catch(...)
+        {
+        }
+    }
 
     CRequestExecTree::DestroyInstance();
 
     CErrLog::ReleaseInstance();
 
-    //m_bTrcDetailLevelTrcServerSetViaProgArgs = false;
-    //m_bTrcServerSettingsTrcFileLineCountMaxSetViaProgArgs = false;
-    //m_pSettingsFile = nullptr;
     //m_strErrLogFileAbsFilePath;
     m_bReqExecTreeGarbageCollectorEnabled = false;
     m_fReqExecTreeGarbageCollectorInterval_s = 0.0;
     m_fReqExecTreeGarbageCollectorElapsed_s = 0.0;
     m_pReqExecTree = nullptr;
-    //m_trcServerHostSettings;
-    //m_trcServerSettings;
-    m_pTrcServer = nullptr;
-    m_iTrcDetailLevelTrcServer = 0;
-    //m_strThreadClrFileAbsFilePath;
-    //m_trcClientHostSettings;
-    m_pTrcClient = nullptr;
-    //m_state = static_cast<EState>(0);
-    //m_pReqInProgress = nullptr;
+    m_iZSTrcServerTrcDetailLevel = 0;
+    m_pZSTrcServer = nullptr;
+    //m_clientHostSettingsZSTrcServer;
+    m_pZSTrcClient = nullptr;
     //m_strTestStepsFileAbsFilePath;
     m_pTest = nullptr;
     m_pMainWindow = nullptr;

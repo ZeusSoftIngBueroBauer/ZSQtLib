@@ -53,7 +53,6 @@ public: // class methods
         int                i_iTrcDetailLevel = ZS::Trace::ETraceDetailLevelNone );
     static void DestroyInstance( const QString& i_strName = "ZS::System::EnumerationIdxTree" );
     static void DestroyInstance( CEnumerationIdxTree* i_pIdxTree );
-    static void DestroyAllInstances();
 protected: // ctors and dtor
     CEnumerationIdxTree(
         const QString&     i_strName,

@@ -77,7 +77,7 @@ class CTest : public ZS::Test::CTest
 public: // type definitions and constants
     static const QString c_strTrcAdmObjIdxTreeName;
 public: // ctors and dtor
-    CTest( const QString& i_strTestStepsFileName );
+    CTest();
     ~CTest();
 signals:
     void idxTreeAdded( ZS::System::CIdxTree* i_pIdxTree );

@@ -129,7 +129,6 @@ public: // class methods
         int i_iTrcDetailLevel = ETraceDetailLevelNone );
     static void ReleaseInstance( const QString& i_strName = "ZSTrcServer" );
     static void ReleaseInstance( CTrcServer* i_pTrcServer );
-    static void DestroyAllInstances();
 public: // class methods to register thread names
     static void RegisterCurrentThread(const QString& i_strThreadName);
     static void UnregisterCurrentThread();

@@ -43,7 +43,7 @@ class CTest : public ZS::Test::CTest
 {
     Q_OBJECT
 public: // ctors and dtor
-    CTest( const QString& i_strTestStepsFileName );
+    CTest();
     ~CTest();
 signals:
     void errLogCreated( const QString& i_strErrLogName );

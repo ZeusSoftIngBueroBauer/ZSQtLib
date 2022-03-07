@@ -48,13 +48,9 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CTest::CTest( const QString& i_strTestStepsFileName ) :
+CTest::CTest() :
 //------------------------------------------------------------------------------
-    ZS::Test::CTest(
-        /* strName              */ "ZS::System::Template",
-        /* strTestStepsFileName */ i_strTestStepsFileName,
-        /* strNodeSeparator     */ "\\",
-        /* iTestStepInterval_ms */ 0 )
+    ZS::Test::CTest("ZS::System::Template")
 {
     // Create test groups
     //-------------------
@@ -64,7 +60,7 @@ CTest::CTest( const QString& i_strTestStepsFileName ) :
     // Recall test admin object settings
     //----------------------------------
 
-    m_pAdminObjPool->read_(i_strTestStepsFileName);
+    m_pAdminObjPool->read_();
 
 } // default ctor
 

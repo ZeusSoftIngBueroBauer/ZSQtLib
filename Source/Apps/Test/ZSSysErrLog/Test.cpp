@@ -54,9 +54,9 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CTest::CTest( const QString& i_strTestStepsFileName ) :
+CTest::CTest() :
 //------------------------------------------------------------------------------
-    ZS::Test::CTest( "ZSErrLog", i_strTestStepsFileName )
+    ZS::Test::CTest("ZSErrLog")
 {
     int idxStep = 0;
 
@@ -91,7 +91,7 @@ CTest::CTest( const QString& i_strTestStepsFileName ) :
     // Recall test admin object settings
     //----------------------------------
 
-    m_pAdminObjPool->read_(i_strTestStepsFileName);
+    m_pAdminObjPool->read_();
 
 } // default ctor
 

@@ -64,6 +64,7 @@ may result in using the software modules.
 #include "ZSIpcTrace/ZSIpcTrcClient.h"
 #include "ZSSysGUI/ZSSysFindTextDlg.h"
 #include "ZSSysGUI/ZSSysProgressBar.h"
+#include "ZSSys/ZSSysApp.h"
 #include "ZSSys/ZSSysTrcAdminObj.h"
 #include "ZSSys/ZSSysTrcAdminObjIdxTree.h"
 #include "ZSSys/ZSSysErrLog.h"
@@ -118,14 +119,13 @@ public: // ctors and dtor
 //------------------------------------------------------------------------------
 CWdgtTrcMthList::CWdgtTrcMthList(
     CIpcTrcClient* i_pTrcClient,
-    const QString& i_strThreadClrFileAbsFilePath,
     int            i_iItemsCountMax,
     QWidget*       i_pWdgtParent ) :
 //------------------------------------------------------------------------------
     QWidget(i_pWdgtParent),
     m_pTrcClient(i_pTrcClient),
     m_pReqInProgress(nullptr),
-    m_strThreadClrFileAbsFilePath(i_strThreadClrFileAbsFilePath),
+    m_strThreadClrFileAbsFilePath(),
     m_iEdtItemsCountMax(i_iItemsCountMax),
     m_iEdtItems(0),
     m_bEdtFull(false),
@@ -137,6 +137,29 @@ CWdgtTrcMthList::CWdgtTrcMthList(
     m_pBtnConnect(nullptr),
     m_pProgressBarCnct(nullptr)
 {
+    // Calculate default file path for thread colors definition
+    //--------------------------------------------------------
+
+    QString strAppNameNormalized = QCoreApplication::applicationName();
+
+    // The application name may contain characters which are invalid in file names:
+    strAppNameNormalized.remove(":");
+    strAppNameNormalized.remove(" ");
+    strAppNameNormalized.remove("\\");
+    strAppNameNormalized.remove("/");
+    strAppNameNormalized.remove("<");
+    strAppNameNormalized.remove(">");
+
+    QString strAppConfigDir = ZS::System::getAppConfigDir("System");
+
+    QString strThreadClrFileBaseName = strAppNameNormalized + "-ThreadColors";
+    QString strThreadClrFileSuffix = "xml";
+
+    m_strThreadClrFileAbsFilePath = strAppConfigDir + "/" + strThreadClrFileBaseName + "." + strThreadClrFileSuffix;
+
+    // <Widget> Trace Outputs
+    //=======================
+
     QFont fntListWidget(
         /* strFamily  */ "Courier New",
         /* iPointSize */ 8,

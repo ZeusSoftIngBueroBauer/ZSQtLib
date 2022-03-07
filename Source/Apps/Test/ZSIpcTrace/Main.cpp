@@ -37,50 +37,6 @@ using namespace ZS::Apps::Test::IpcTrace;
 
 
 /*******************************************************************************
-Libraries depending on build configuration and used Qt version
-*******************************************************************************/
-
-#ifdef _WINDOWS
-
-#ifdef USE_PRAGMA_COMMENT_LIB_INCLUDE_IN_MAIN_MODULES
-
-#pragma message(__FILE__ ": Linking against = " QTMAINLIB)
-#pragma comment( lib, QTMAINLIB )
-#pragma message(__FILE__ ": Linking against = " QTCORELIB)
-#pragma comment(lib, QTCORELIB)
-#pragma message(__FILE__ ": Linking against = " QTNETWORKLIB)
-#pragma comment(lib, QTNETWORKLIB)
-#pragma message(__FILE__ ": Linking against = " QTXMLLIB)
-#pragma comment(lib, QTXMLLIB)
-#pragma message(__FILE__ ": Linking against = " QTGUILIB)
-#pragma comment( lib, QTGUILIB )
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0) && QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-#pragma message(__FILE__ ": Linking against = " QTWIDGETSLIB)
-#pragma comment( lib, QTWIDGETSLIB )
-#endif
-#pragma message(__FILE__ ": Linking against = " ZSSYSLIB)
-#pragma comment(lib, ZSSYSLIB)
-#pragma message(__FILE__ ": Linking against = " ZSSYSGUILIB)
-#pragma comment(lib, ZSSYSGUILIB)
-#pragma message(__FILE__ ": Linking against = " ZSIPCLIB)
-#pragma comment(lib, ZSIPCLIB)
-#pragma message(__FILE__ ": Linking against = " ZSIPCGUILIB)
-#pragma comment(lib, ZSIPCGUILIB)
-#pragma message(__FILE__ ": Linking against = " ZSIPCTRACELIB)
-#pragma comment(lib, ZSIPCTRACELIB)
-#pragma message(__FILE__ ": Linking against = " ZSIPCTRACEGUILIB)
-#pragma comment(lib, ZSIPCTRACEGUILIB)
-#pragma message(__FILE__ ": Linking against = " ZSTESTLIB)
-#pragma comment(lib, ZSTESTLIB)
-#pragma message(__FILE__ ": Linking against = " ZSTESTGUILIB)
-#pragma comment(lib, ZSTESTGUILIB)
-
-#endif // #ifdef USE_PRAGMA_COMMENT_LIB_INCLUDE_IN_MAIN_MODULES
-
-#endif // #ifdef _WINDOWS
-
-
-/*******************************************************************************
 Entry point for the application.
 *******************************************************************************/
 

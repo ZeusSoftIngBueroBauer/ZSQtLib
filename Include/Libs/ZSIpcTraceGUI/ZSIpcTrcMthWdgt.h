@@ -91,7 +91,6 @@ public: // class methods
 public: // ctors and dtor
     CWdgtTrcMthList(
         CIpcTrcClient* i_pTrcClient,
-        const QString& i_strThreadClrFileAbsFilePath,
         int            i_iItemsCountMax = 0,
         QWidget*       i_pWdgtParent = nullptr );
     virtual ~CWdgtTrcMthList();

@@ -78,6 +78,9 @@ CIpcTrcClient::CIpcTrcClient( const QString& i_strName ) :
 
     m_hostSettings.m_uRemotePort = 24763;
 
+    // Watch dog timer not used for the trace method client.
+    m_bWatchDogTimerUsed = false;
+
     // Connect to signals of the Ipc client
     //-------------------------------------
 

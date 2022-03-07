@@ -2466,7 +2466,19 @@ void CServer::executeChangeSettingsRequest( CRequest* i_pReq )
 
             if( i_pReq->isBlockingRequest() )
             {
-                if( !i_pReq->wait() )
+                if( i_pReq->wait() )
+                {
+                    CMsgCon* pMsgCon = i_pReq->getExecutionConfirmationMessage();
+                    if( pMsgCon != nullptr )
+                    {
+                        errResultInfo = pMsgCon->getErrResultInfo();
+                    }
+                    else
+                    {
+                        errResultInfo = i_pReq->getErrResultInfo();
+                    }
+                }
+                else // if( !i_pReq->wait() )
                 {
                     errResultInfo.setSeverity(EResultSeverityError);
                     errResultInfo.setResult(EResultTimeout);
@@ -3128,6 +3140,15 @@ CRequest* CServer::startupGateway( int i_iTimeout_ms, bool i_bWait, qint64 i_iRe
 
         if( pReqStartupGateway->wait() )
         {
+            CMsgCon* pMsgCon = pReqStartupGateway->getExecutionConfirmationMessage();
+            if( pMsgCon != nullptr )
+            {
+                errResultInfo = pMsgCon->getErrResultInfo();
+            }
+            else
+            {
+                errResultInfo = pReqStartupGateway->getErrResultInfo();
+            }
             if( errResultInfo.getResult() == EResultUndefined )
             {
                 errResultInfo.setErrResult(ErrResultSuccess);
@@ -3318,6 +3339,15 @@ CRequest* CServer::shutdownGateway( int i_iTimeout_ms, bool i_bWait, qint64 i_iR
 
         if( pReqShutdownGateway->wait() )
         {
+            CMsgCon* pMsgCon = pReqShutdownGateway->getExecutionConfirmationMessage();
+            if( pMsgCon != nullptr )
+            {
+                errResultInfo = pMsgCon->getErrResultInfo();
+            }
+            else
+            {
+                errResultInfo = pReqShutdownGateway->getErrResultInfo();
+            }
             if( errResultInfo.getResult() == EResultUndefined )
             {
                 errResultInfo.setErrResult(ErrResultSuccess);

@@ -74,7 +74,7 @@ public: // type definitions and constants
 public: // ctors and dtor
     CTest(
         const QString& i_strName,
-        const QString& i_strTestStepsFileName,
+        const QString& i_strTestStepsFileName = "",
         const QString& i_strNodeSeparator = "\\",
         int            i_iTestStepInterval_ms = 0 );
     ~CTest();

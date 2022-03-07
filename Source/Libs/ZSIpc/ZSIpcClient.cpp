@@ -2458,7 +2458,19 @@ void CClient::executeChangeSettingsRequest( CRequest* i_pReq )
 
             if( i_pReq->isBlockingRequest() )
             {
-                if( !i_pReq->wait() )
+                if( i_pReq->wait() )
+                {
+                    CMsgCon* pMsgCon = i_pReq->getExecutionConfirmationMessage();
+                    if( pMsgCon != nullptr )
+                    {
+                        errResultInfo = pMsgCon->getErrResultInfo();
+                    }
+                    else
+                    {
+                        errResultInfo = i_pReq->getErrResultInfo();
+                    }
+                }
+                else // if( !i_pReq->wait() )
                 {
                     errResultInfo.setSeverity(EResultSeverityError);
                     errResultInfo.setResult(EResultTimeout);
@@ -3150,6 +3162,15 @@ CRequest* CClient::connectGateway( int i_iTimeout_ms, bool i_bWait, qint64 i_iRe
 
         if( pReqConnectGateway->wait() )
         {
+            CMsgCon* pMsgCon = pReqConnectGateway->getExecutionConfirmationMessage();
+            if( pMsgCon != nullptr )
+            {
+                errResultInfo = pMsgCon->getErrResultInfo();
+            }
+            else
+            {
+                errResultInfo = pReqConnectGateway->getErrResultInfo();
+            }
             if( errResultInfo.getResult() == EResultUndefined )
             {
                 errResultInfo.setErrResult(ErrResultSuccess);
@@ -3349,6 +3370,15 @@ CRequest* CClient::disconnectGateway( int i_iTimeout_ms, bool i_bWait, qint64 i_
 
         if( pReqDisconnectGateway->wait() )
         {
+            CMsgCon* pMsgCon = pReqDisconnectGateway->getExecutionConfirmationMessage();
+            if( pMsgCon != nullptr )
+            {
+                errResultInfo = pMsgCon->getErrResultInfo();
+            }
+            else
+            {
+                errResultInfo = pReqDisconnectGateway->getErrResultInfo();
+            }
             if( errResultInfo.getResult() == EResultUndefined )
             {
                 errResultInfo.setErrResult(ErrResultSuccess);

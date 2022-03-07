@@ -385,13 +385,9 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CTest::CTest( const QString& i_strTestStepsFileName ) :
+CTest::CTest() :
 //------------------------------------------------------------------------------
-    ZS::Test::CTest(
-        /* strName              */ "ZS::System::IdxTree",
-        /* strTestStepsFileName */ i_strTestStepsFileName,
-        /* strNodeSeparator     */ "\\",
-        /* iTestStepInterval_ms */ 0 ),
+    ZS::Test::CTest("ZS::System::IdxTree"),
     m_pIdxTree(nullptr)
 {
     // Sub-Group: CreateIdxTree
@@ -2133,7 +2129,7 @@ CTest::CTest( const QString& i_strTestStepsFileName ) :
     // Recall test admin object settings
     //----------------------------------
 
-    m_pAdminObjPool->read_(i_strTestStepsFileName);
+    m_pAdminObjPool->read_();
 
 } // default ctor
 

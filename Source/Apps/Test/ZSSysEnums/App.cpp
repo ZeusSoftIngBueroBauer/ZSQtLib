@@ -26,7 +26,6 @@ may result in using the software modules.
 
 #include <QtCore/qdir.h>
 #include <QtCore/qfileinfo.h>
-#include <QtCore/qsettings.h>
 #include <QtCore/qthread.h>
 #include <QtCore/qtimer.h>
 #include <QtGui/qbitmap.h>
@@ -84,9 +83,6 @@ CApplication::CApplication(
     const QString& i_strWindowTitle ) :
 //------------------------------------------------------------------------------
     CGUIApp(i_argc,i_argv),
-    m_pSettingsFile(nullptr),
-    m_strErrLogFileAbsFilePath(),
-    m_strTestStepsFileAbsFilePath(),
     m_pTest(nullptr),
     m_pMainWindow(nullptr)
 {
@@ -114,100 +110,15 @@ CApplication::CApplication(
 
     QApplication::setWindowIcon(iconApp);
 
-    // Parse command arguments (first part, IniFile)
-    //----------------------------------------------
-
-    int         idxArg;
-    QString     strArg;
-    QString     strVal;
-    QStringList strListArgsPar;
-    QStringList strListArgsVal;
-
-    // Range of IniFileScope: ["AppDir", "User", "System"]
-    #ifdef __linux__
-    // Using "System" on linux Mint ends up in directory "etc/xdg/<CompanyName>"
-    // where the application has not write access rights. Stupid ...
-    QString strIniFileScope = "User";
-    #else
-    QString strIniFileScope = "System"; // Default
-    #endif
-
-    parseAppArgs( i_argc, i_argv, strListArgsPar, strListArgsVal );
-
-    #if QT_VERSION >= QT_VERSION_CHECK(4, 5, 1)
-    for( idxArg = 0; idxArg < strListArgsPar.length() && idxArg < strListArgsVal.length(); idxArg++ )
-    #else
-    for( idxArg = 0; idxArg < strListArgsPar.size() && idxArg < strListArgsVal.size(); idxArg++ )
-    #endif
-    {
-        strArg = strListArgsPar[idxArg];
-        strVal = strListArgsVal[idxArg];
-
-        // Here only the command arguments concerning the location of the ini file are parsed.
-        // Other arguments (e.g. mode) are parsed further below.
-        if( strArg.compare("IniFileScope",Qt::CaseInsensitive) == 0 )
-        {
-            strIniFileScope = strVal;
-        }
-    }
-
-    // Calculate default file paths and create ini file
-    //-------------------------------------------------
-
-    QString strAppNameNormalized = QCoreApplication::applicationName();
-
-    // The application name may contain characters which are invalid in file names:
-    strAppNameNormalized.remove(":");
-    strAppNameNormalized.remove(" ");
-    strAppNameNormalized.remove("\\");
-    strAppNameNormalized.remove("/");
-    strAppNameNormalized.remove("<");
-    strAppNameNormalized.remove(">");
-
-    QString strAppConfigDir = ZS::System::getAppConfigDir(strIniFileScope);
-    QString strAppLogDir = ZS::System::getAppLogDir(strIniFileScope);
-
-    QString strIniFileBaseName = strAppNameNormalized;
-    QString strIniFileSuffix = "ini";
-
-    QString strIniFileAbsFilePath = strAppConfigDir + "/" + strIniFileBaseName + "." + strIniFileSuffix;
-
-    m_pSettingsFile = new QSettings( strIniFileAbsFilePath, QSettings::IniFormat );
-
-    QString strErrLogFileBaseName = strAppNameNormalized + "-Error";
-    QString strErrLogFileSuffix = "xml";
-
-    m_strErrLogFileAbsFilePath = strAppLogDir + "/" + strErrLogFileBaseName + "." + strErrLogFileSuffix;
-
-    QString strTestStepsFileBaseName = strAppNameNormalized + "-TestSteps";
-    QString strTestStepsFileSuffix = "xml";
-
-    m_strTestStepsFileAbsFilePath = strAppConfigDir + "/" + strTestStepsFileBaseName + "." + strTestStepsFileSuffix;
-
-    readSettings();
-
-    // Parse command arguments (second part, overwriting IniFile settings)
-    //--------------------------------------------------------------------
-
-    #if QT_VERSION >= QT_VERSION_CHECK(4, 5, 1)
-    for( idxArg = 0; idxArg < strListArgsPar.length() && idxArg < strListArgsVal.length(); idxArg++ )
-    #else
-    for( idxArg = 0; idxArg < strListArgsPar.size() && idxArg < strListArgsVal.size(); idxArg++ )
-    #endif
-    {
-        strArg = strListArgsPar[idxArg];
-        strVal = strListArgsVal[idxArg];
-    }
-
     // Create error manager
     //------------------------
 
-    CErrLog::CreateInstance(true, m_strErrLogFileAbsFilePath);
+    CErrLog::CreateInstance();
 
     // Test
     //----------------------------
 
-    m_pTest = new CTest(m_strTestStepsFileAbsFilePath);
+    m_pTest = new CTest();
 
     // Main Window
     //------------
@@ -221,11 +132,6 @@ CApplication::CApplication(
 CApplication::~CApplication()
 //------------------------------------------------------------------------------
 {
-    // Save settings of the application
-    //--------------------------------------
-
-    saveSettings();
-
     try
     {
         delete m_pMainWindow;
@@ -242,100 +148,12 @@ CApplication::~CApplication()
     {
     }
 
-    try
-    {
-        delete m_pSettingsFile;
-    }
-    catch(...)
-    {
-    }
-
     CErrLog::ReleaseInstance();
 
-    m_pSettingsFile = nullptr;
-    //m_strErrLogFileAbsFilePath;
-    //m_strTestStepsFileAbsFilePath;
     m_pTest = nullptr;
     m_pMainWindow = nullptr;
 
 } // dtor
-
-/*==============================================================================
-public: // instance methods
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-void CApplication::readSettings()
-//------------------------------------------------------------------------------
-{
-    if( m_pSettingsFile != nullptr )
-    {
-        QString strSettingsKey;
-        bool    bSyncSettings = false;
-
-        // Err Log
-        //------------------------
-
-        strSettingsKey = "ErrLog";
-
-        if( m_pSettingsFile->contains(strSettingsKey+"/FileName") )
-        {
-            m_strErrLogFileAbsFilePath = m_pSettingsFile->value(strSettingsKey+"/FileName",m_strErrLogFileAbsFilePath).toString();
-        }
-        else
-        {
-            m_pSettingsFile->setValue( strSettingsKey+"/FileName", m_strErrLogFileAbsFilePath );
-            bSyncSettings = true;
-        }
-
-        // Test Steps
-        //-------------
-
-        strSettingsKey = "TestSteps";
-        bSyncSettings  = false;
-
-        if( m_pSettingsFile->contains(strSettingsKey+"/FileName") )
-        {
-            m_strTestStepsFileAbsFilePath = m_pSettingsFile->value(strSettingsKey+"/FileName",m_strTestStepsFileAbsFilePath).toString();
-        }
-        else
-        {
-            m_pSettingsFile->setValue(strSettingsKey+"/FileName",m_strTestStepsFileAbsFilePath);
-            bSyncSettings = true;
-        }
-
-        if( bSyncSettings )
-        {
-            m_pSettingsFile->sync();
-        }
-
-    } // if( m_pSettingsFile != nullptr )
-
-} // readSettings
-
-//------------------------------------------------------------------------------
-void CApplication::saveSettings()
-//------------------------------------------------------------------------------
-{
-    if( m_pSettingsFile != nullptr )
-    {
-        QString strSettingsKey;
-
-        // Test Steps
-        //-------------
-
-        if( m_pTest != nullptr )
-        {
-            strSettingsKey = "TestSteps";
-
-            m_pSettingsFile->setValue( strSettingsKey+"/FileName", m_pTest->getAdminObjIdxTree()->getFileName() );
-
-            m_pSettingsFile->sync();
-
-        } // if( m_pTest != nullptr )
-    } // if( m_pSettingsFile != nullptr )
-
-} // saveSettings
 
 /*==============================================================================
 public slots: // instance methods of system shutdown

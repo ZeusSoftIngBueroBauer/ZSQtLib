@@ -82,7 +82,6 @@ protected slots:
     void onLastWindowClosed();
 private: // instance members
     QSettings*                    m_pSettingsFile;
-    QString                       m_strErrLogFileAbsFilePath;
     ZS::System::CErrLog*          m_pErrLog;
     bool                          m_bReqExecTreeGarbageCollectorEnabled;
     double                        m_fReqExecTreeGarbageCollectorInterval_s;
@@ -91,7 +90,6 @@ private: // instance members
     ZS::Ipc::SServerHostSettings  m_trcServerHostSettings;
     ZS::Trace::STrcServerSettings m_trcServerSettings;
     ZS::Trace::CIpcTrcServer*     m_pTrcServer;
-    QString                       m_strTestStepsFileAbsFilePath;
     CTest*                        m_pTest;
     CMainWindow*                  m_pMainWindow;
 

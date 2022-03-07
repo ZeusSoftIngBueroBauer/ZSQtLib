@@ -45,9 +45,8 @@ class CTest : public ZS::Test::CTest
 //******************************************************************************
 {
     Q_OBJECT
-public: // type definitions and constants
 public: // ctors and dtor
-    CTest( const QString& i_strTestStepsFileName );
+    CTest();
     ~CTest();
 public slots: // test step methods (GrpZSSysLogFile)
     void doTestStepClearLogFileDir( ZS::Test::CTestStep* i_pTestStep );

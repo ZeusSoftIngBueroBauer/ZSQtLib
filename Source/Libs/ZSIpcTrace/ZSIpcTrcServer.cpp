@@ -235,6 +235,19 @@ public: // class methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief Returns the address of the trace server.
+
+    This method does neither create an instance of the class nor increments the reference counter.
+    If no instance has been created yet the method returns nullptr.
+
+    If you just need to access an already existing instance and you can be sure that an instance
+    is already existing this method should be preferred to the createInstance call as this method
+    does not affect the reference counter and there is no need to call releaseInstance later on.
+
+    @note After a getInstance call a releaseInstance MUST NOT be called.
+
+    @return Pointer to license manager or nullptr, if an instance has not been created yet.
+*/
 CIpcTrcServer* CIpcTrcServer::GetInstance( const QString& i_strName )
 //------------------------------------------------------------------------------
 {
@@ -264,9 +277,7 @@ CIpcTrcServer* CIpcTrcServer::GetInstance( const QString& i_strName )
 
     \return Pointer to trace server instance.
 */
-CIpcTrcServer* CIpcTrcServer::CreateInstance(
-    const QString& i_strName,
-    int            i_iTrcDetailLevel )
+CIpcTrcServer* CIpcTrcServer::CreateInstance( const QString& i_strName, int i_iTrcDetailLevel )
 //------------------------------------------------------------------------------
 {
     // The class may be accessed from within different thread contexts and
@@ -309,6 +320,18 @@ CIpcTrcServer* CIpcTrcServer::CreateInstance(
 } // CreateInstance
 
 //------------------------------------------------------------------------------
+/*! @brief Releases the given trace server instance by name.
+
+    Before invoking this method a reference to the instance must have been retrieved
+    with a createInstance call.
+
+    This method decrements the reference counter of the instance.
+    If the reference counter reaches 0 the instance will be destroyed.
+
+    @note A reference returned by getInstance MUST NOT be freed.
+
+    @param Name of the trace server to be released.
+*/
 void CIpcTrcServer::ReleaseInstance( const QString& i_strName )
 //------------------------------------------------------------------------------
 {
@@ -316,17 +339,22 @@ void CIpcTrcServer::ReleaseInstance( const QString& i_strName )
 }
 
 //------------------------------------------------------------------------------
+/*! @brief Releases the given trace server instance.
+
+    Before invoking this method a reference to the instance must have been retrieved
+    with a createInstance call.
+
+    This method decrements the reference counter of the instance.
+    If the reference counter reaches 0 the instance will be destroyed.
+
+    @note A reference returned by getInstance MUST NOT be freed.
+
+    @param Reference to trace server which has been returned by a previous createInstance method.
+*/
 void CIpcTrcServer::ReleaseInstance( CIpcTrcServer* i_pTrcServer )
 //------------------------------------------------------------------------------
 {
     CTrcServer::ReleaseInstance(i_pTrcServer);
-}
-
-//------------------------------------------------------------------------------
-void CIpcTrcServer::DestroyAllInstances()
-//------------------------------------------------------------------------------
-{
-    CTrcServer::DestroyAllInstances();
 }
 
 /*==============================================================================

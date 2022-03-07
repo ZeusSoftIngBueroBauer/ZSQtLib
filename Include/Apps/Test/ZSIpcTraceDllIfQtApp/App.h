@@ -69,8 +69,6 @@ public: // ctors and dtor
 public: // instance methods
     CTest* getTest() { return m_pTest; }
 private: // instance members
-    QString      m_strErrLogFileAbsFilePath;
-    QString      m_strTestStepsFileAbsFilePath;
     CTest*       m_pTest;
     CMainWindow* m_pMainWindow;
 

@@ -37,10 +37,10 @@ class QTimer;
 
 namespace ZS
 {
-namespace Ipc
+namespace Trace
 {
-class CClient;
-class CServer;
+class CIpcTrcClient;
+class CIpcTrcServer;
 }
 
 namespace Apps
@@ -58,28 +58,41 @@ class CTest : public ZS::Test::CTest
 {
     Q_OBJECT
 public: // ctors and dtor
-    CTest( const QString& i_strTestStepsFileName );
+    CTest();
     ~CTest();
+signals:
+    void trcServerCreated(ZS::Trace::CIpcTrcServer*);
+    void trcServerAboutToBeDestroyed(ZS::Trace::CIpcTrcServer*);
+    void trcClientCreated(ZS::Trace::CIpcTrcClient*);
+    void trcClientAboutToBeDestroyed(ZS::Trace::CIpcTrcClient*);
 public: // instance methods
+    ZS::Trace::CIpcTrcServer* getTestTrcServer() { return m_pTestTrcServer; }
+    ZS::Trace::CIpcTrcClient* getTestTrcClient() { return m_pTestTrcClient; }
     CTestModule1* getTestModule1() const { return m_pTestModule1; }
     CTestModule2* getTestModule2() const { return m_pTestModule2; }
 public slots: // test step methods
-    void doTestStepTraceServerStartup( ZS::Test::CTestStep* i_pTestStep );
-    void doTestStepTraceServerShutdown( ZS::Test::CTestStep* i_pTestStep );
+    void doTestStepTraceServerCreateInstance( ZS::Test::CTestStep* i_pTestStep );
+    void doTestStepTraceServerReleaseInstance( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepTraceServerRecallAdminObjs( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepTraceServerSaveAdminObjs( ZS::Test::CTestStep* i_pTestStep );
+    void doTestStepTraceServerStartup( ZS::Test::CTestStep* i_pTestStep );
+    void doTestStepTraceServerShutdown( ZS::Test::CTestStep* i_pTestStep );
+    void doTestStepTraceClientCreate( ZS::Test::CTestStep* i_pTestStep );
+    void doTestStepTraceClientDestroy( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepTraceClientConnect( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepTraceClientDisconnect( ZS::Test::CTestStep* i_pTestStep );
-    void doTestStepCreateModule1( ZS::Test::CTestStep* i_pTestStep );
-    void doTestStepDeleteModule1( ZS::Test::CTestStep* i_pTestStep );
-    void doTestStepCreateModule2( ZS::Test::CTestStep* i_pTestStep );
-    void doTestStepDeleteModule2( ZS::Test::CTestStep* i_pTestStep );
+    //void doTestStepCreateModule1( ZS::Test::CTestStep* i_pTestStep );
+    //void doTestStepDeleteModule1( ZS::Test::CTestStep* i_pTestStep );
+    //void doTestStepCreateModule2( ZS::Test::CTestStep* i_pTestStep );
+    //void doTestStepDeleteModule2( ZS::Test::CTestStep* i_pTestStep );
 private slots:
     void onRequestChanged( ZS::System::SRequestDscr i_reqDscr );
-    void onTraceClientTraceAdminObjInserted( QObject* i_pTrcClient, const QString& i_strKeyInTree );
-    void onTraceClientTrcMthListWdgtTextItemAdded( const QString& i_strText );
+    void onZSTraceClientTraceAdminObjInserted( QObject* i_pTrcClient, const QString& i_strKeyInTree );
+    void onZSTraceClientTrcMthListWdgtTextItemAdded( const QString& i_strText );
     void onTimerTestStepTimeout();
 private: // instance members
+    ZS::Trace::CIpcTrcServer*            m_pTestTrcServer;
+    ZS::Trace::CIpcTrcClient*            m_pTestTrcClient;
     QTimer*                              m_pTmrTestStepTimeout;
     QHash<qint64, ZS::System::CRequest*> m_hshReqsInProgress;
     CTestModule1*                        m_pTestModule1;

@@ -169,6 +169,19 @@ public: // class methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief Returns the address of the trace server.
+
+    This method does neither create an instance of the class nor increments the reference counter.
+    If no instance has been created yet the method returns nullptr.
+
+    If you just need to access an already existing instance and you can be sure that an instance
+    is already existing this method should be preferred to the createInstance call as this method
+    does not affect the reference counter and there is no need to call releaseInstance later on.
+
+    @note After a getInstance call a releaseInstance MUST NOT be called.
+
+    @return Pointer to license manager or nullptr, if an instance has not been created yet.
+*/
 CTrcServer* CTrcServer::GetInstance( const QString& i_strName )
 //------------------------------------------------------------------------------
 {
@@ -192,9 +205,7 @@ CTrcServer* CTrcServer::GetInstance( const QString& i_strName )
 
     \return Pointer to trace server instance.
 */
-CTrcServer* CTrcServer::CreateInstance(
-    const QString& i_strName,
-    int i_iTrcDetailLevel )
+CTrcServer* CTrcServer::CreateInstance( const QString& i_strName, int i_iTrcDetailLevel )
 //------------------------------------------------------------------------------
 {
     // The class may be accessed from within different thread contexts and
@@ -223,6 +234,18 @@ CTrcServer* CTrcServer::CreateInstance(
 } // CreateInstance
 
 //------------------------------------------------------------------------------
+/*! @brief Releases the given trace server instance by name.
+
+    Before invoking this method a reference to the instance must have been retrieved
+    with a createInstance call.
+
+    This method decrements the reference counter of the instance.
+    If the reference counter reaches 0 the instance will be destroyed.
+
+    @note A reference returned by getInstance MUST NOT be freed.
+
+    @param Name of the trace server to be released.
+*/
 void CTrcServer::ReleaseInstance( const QString& i_strName )
 //------------------------------------------------------------------------------
 {
@@ -255,6 +278,18 @@ void CTrcServer::ReleaseInstance( const QString& i_strName )
 } // ReleaseInstance
 
 //------------------------------------------------------------------------------
+/*! @brief Releases the given trace server instance.
+
+    Before invoking this method a reference to the instance must have been retrieved
+    with a createInstance call.
+
+    This method decrements the reference counter of the instance.
+    If the reference counter reaches 0 the instance will be destroyed.
+
+    @note A reference returned by getInstance MUST NOT be freed.
+
+    @param Reference to trace server which has been returned by a previous createInstance method.
+*/
 void CTrcServer::ReleaseInstance( CTrcServer* i_pTrcServer )
 //------------------------------------------------------------------------------
 {
@@ -279,34 +314,6 @@ void CTrcServer::ReleaseInstance( CTrcServer* i_pTrcServer )
         i_pTrcServer = nullptr;
     }
 } // ReleaseInstance
-
-//------------------------------------------------------------------------------
-void CTrcServer::DestroyAllInstances()
-//------------------------------------------------------------------------------
-{
-    // The class may be accessed from within different thread contexts and
-    // therefore accessing the class must be serialized using a mutex ..
-    QMutexLocker mtxLocker(&s_mtx);
-
-    CTrcServer* pTrcServer;
-    QString     strName;
-
-    QHash<QString, CTrcServer*>::iterator itTrcServer;
-
-    for( itTrcServer = s_hshpInstances.begin(); itTrcServer != s_hshpInstances.end(); itTrcServer++ )
-    {
-        strName = itTrcServer.key();
-        pTrcServer = itTrcServer.value();
-
-        s_hshpInstances[strName] = nullptr;
-
-        delete pTrcServer;
-        pTrcServer = nullptr;
-    }
-
-    s_hshpInstances.clear();
-
-} // DestroyAllInstances
 
 /*==============================================================================
 public: // class methods to register thread names

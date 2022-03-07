@@ -99,7 +99,6 @@ protected: // instance members
     QAction*        m_pActDebugErrLog;
     QMenu*          m_pMnuInfo;
     QAction*        m_pActInfoVersion;
-    QAction*        m_pActInfoSettingsFile;
     QStatusBar*     m_pStatusBar;
     QLabel*         m_pLblErrors;
     CWidgetCentral* m_pWdgtCentral;

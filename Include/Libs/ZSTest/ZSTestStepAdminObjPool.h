@@ -52,7 +52,7 @@ public: // class methods
 public: // ctors and dtor
     CTestStepAdminObjPool(
         CTest*         i_pTest,
-        const QString& i_strObjPoolFileName,
+        const QString& i_strTestStepsFileName = "",
         const QString& i_strNodeSeparator = "\\" );
     virtual ~CTestStepAdminObjPool();
 signals:
@@ -68,7 +68,7 @@ public: // instance methods
     CTest* getTest() { return m_pTest; }
     CTestStepGroup* getTestStepGroupRoot() { return m_pTSGrpRoot; }
 public: // instance methods
-    ZS::System::SErrResultInfo read_( const QString& i_strFileName );
+    ZS::System::SErrResultInfo read_( const QString& i_strFileName = "" );
     ZS::System::SErrResultInfo save_( const QString& i_strFileName = "" );
 public: // instance methods
     int getTestStepsCount() const;

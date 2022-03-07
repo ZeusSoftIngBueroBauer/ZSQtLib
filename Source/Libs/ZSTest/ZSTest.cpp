@@ -78,7 +78,7 @@ public: // ctors and dtor
 //------------------------------------------------------------------------------
 CTest::CTest(
     const QString& i_strName,
-    const QString& i_strObjPoolFileName,
+    const QString& i_strTestStepsFileName,
     const QString& i_strNodeSeparator,
     int            i_iTestStepInterval_ms ) :
 //------------------------------------------------------------------------------
@@ -105,7 +105,7 @@ CTest::CTest(
 
     m_pAdminObjPool = new CTestStepAdminObjPool(
         /* pTest              */ this,
-        /* strObjPoolFileName */ i_strObjPoolFileName,
+        /* strObjPoolFileName */ i_strTestStepsFileName,
         /* strNodeSeparator   */ i_strNodeSeparator );
 
     // Should be called by derived class if desired.

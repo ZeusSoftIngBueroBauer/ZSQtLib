@@ -41,8 +41,8 @@ may result in using the software modules.
 #include "ZSTest/ZSTestStep.h"
 #include "ZSTest/ZSTestStepGroup.h"
 #include "ZSTest/ZSTest.h"
+#include "ZSSys/ZSSysApp.h"
 #include "ZSSys/ZSSysAux.h"
-//#include "ZSSys/ZSSysEnumEntry.h"
 #include "ZSSys/ZSSysErrLog.h"
 #include "ZSSys/ZSSysErrResult.h"
 #include "ZSSys/ZSSysException.h"
@@ -93,9 +93,25 @@ CTestStepAdminObjPool::CTestStepAdminObjPool(
 
     if( strTestStepsFileName.isEmpty() )
     {
-        #ifdef _WINDOWS
-        #pragma message(__TODO__"Default file name")
-        #endif
+        // Calculate default file path
+        //----------------------------
+
+        QString strAppNameNormalized = QCoreApplication::applicationName();
+
+        // The application name may contain characters which are invalid in file names:
+        strAppNameNormalized.remove(":");
+        strAppNameNormalized.remove(" ");
+        strAppNameNormalized.remove("\\");
+        strAppNameNormalized.remove("/");
+        strAppNameNormalized.remove("<");
+        strAppNameNormalized.remove(">");
+
+        QString strAppConfigDir = ZS::System::getAppConfigDir("System");
+
+        QString strTestStepsFileBaseName = strAppNameNormalized + "-TestSteps";
+        QString strTestStepsFileSuffix = "xml";
+
+        strTestStepsFileName = strAppConfigDir + "/" + strTestStepsFileBaseName + "." + strTestStepsFileSuffix;
     }
 
     m_strFileName = strTestStepsFileName;
@@ -154,11 +170,6 @@ SErrResultInfo CTestStepAdminObjPool::read_( const QString& i_strFileName )
 
     SErrResultInfo errResultInfo(nameSpace(), className(), objectName(), strMth);
 
-    if( m_strFileName.isEmpty() )
-    {
-        m_strFileName = i_strFileName;
-    }
-
     QString strFileName = m_strFileName;
 
     if( !i_strFileName.isEmpty() )
@@ -204,19 +215,9 @@ SErrResultInfo CTestStepAdminObjPool::save_( const QString& i_strFileName )
     // objects might be called from within different thread contexts.
     QMutexLocker mtxLocker(m_pMtxObjs);
 
-    if( !i_strFileName.isEmpty() )
-    {
-        m_strFileName = i_strFileName;
-    }
-
     QString strMth = nameSpace() + "::" + className() + "::" + objectName() + ".save_";
 
     SErrResultInfo errResultInfo(nameSpace(), className(), objectName(), strMth);
-
-    if( m_strFileName.isEmpty() )
-    {
-        m_strFileName = i_strFileName;
-    }
 
     QString strFileName = m_strFileName;
 

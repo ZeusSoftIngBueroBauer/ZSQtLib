@@ -214,7 +214,6 @@ public: // class methods
     static CErrLog* CreateInstance( bool i_bInstallQtMsgHandler = true, const QString& i_strAbsFilePath = "", const QString& i_strName = "ZSErrLog" );
     static void ReleaseInstance( const QString& i_strName = "ZSErrLog" );
     static void ReleaseInstance( CErrLog* i_pErrLog );
-    static void DestroyAllInstances();
 private: // class methods
     static void InstallQtMsgHandler();
     static void RemoveQtMsgHandler();

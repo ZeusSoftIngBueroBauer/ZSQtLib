@@ -87,7 +87,6 @@ CApplication::CApplication(
 //------------------------------------------------------------------------------
     CGUIApp(i_argc,i_argv),
     m_pSettingsFile(nullptr),
-    m_strThreadClrFileAbsFilePath(),
     // State Machine
     m_bReqExecTreeGarbageCollectorEnabled(true),
     m_fReqExecTreeGarbageCollectorInterval_s(5.0),
@@ -188,17 +187,7 @@ CApplication::CApplication(
 
     QString strIniFileAbsFilePath = strAppConfigDir + "/" + strIniFileBaseName + "." + strIniFileSuffix;
 
-    m_pSettingsFile = new QSettings( strIniFileAbsFilePath, QSettings::IniFormat );
-
-    QString strErrLogFileBaseName = strAppNameNormalized + "-Error";
-    QString strErrLogFileSuffix = "xml";
-
-    m_strErrLogFileAbsFilePath = strAppLogDir + "/" + strErrLogFileBaseName + "." + strErrLogFileSuffix;
-
-    QString strThreadClrFileBaseName = strAppNameNormalized + "-ThreadColors";
-    QString strThreadClrFileSuffix = "xml";
-
-    m_strThreadClrFileAbsFilePath = strAppConfigDir + "/" + strThreadClrFileBaseName + "." + strThreadClrFileSuffix;
+    m_pSettingsFile = new QSettings(strIniFileAbsFilePath, QSettings::IniFormat);
 
     readSettings();
 
@@ -231,7 +220,7 @@ CApplication::CApplication(
     // Create error manager
     //------------------------
 
-    CErrLog::CreateInstance(true, m_strErrLogFileAbsFilePath);
+    CErrLog::CreateInstance();
 
     // Request Execution Tree
     //------------------------
@@ -305,8 +294,6 @@ CApplication::~CApplication()
     CErrLog::ReleaseInstance();
 
     m_pSettingsFile = nullptr;
-    //m_strThreadClrFileAbsFilePath;
-    //m_strErrLogFileAbsFilePath;
     m_bReqExecTreeGarbageCollectorEnabled = false;
     m_fReqExecTreeGarbageCollectorInterval_s = 0.0;
     m_fReqExecTreeGarbageCollectorElapsed_s = 0.0;
@@ -340,27 +327,6 @@ void CApplication::readSettings()
     {
         QString strSettingsKey;
         bool    bSyncSettings;
-
-        // Err Log
-        //------------------------
-
-        strSettingsKey = "ErrLog";
-        bSyncSettings  = false;
-
-        if( m_pSettingsFile->contains(strSettingsKey+"/FileName") )
-        {
-            m_strErrLogFileAbsFilePath = m_pSettingsFile->value(strSettingsKey+"/FileName",m_strErrLogFileAbsFilePath).toString();
-        }
-        else
-        {
-            m_pSettingsFile->setValue( strSettingsKey+"/FileName", m_strErrLogFileAbsFilePath );
-            bSyncSettings = true;
-        }
-
-        if( bSyncSettings )
-        {
-            m_pSettingsFile->sync();
-        }
 
         // Request Execution Tree
         //------------------------

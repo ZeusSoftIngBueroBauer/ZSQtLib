@@ -126,10 +126,9 @@ CWidgetCentral::CWidgetCentral(
     //----------------
 
     m_pWdgtMthList = new CWdgtTrcMthList(
-        /* pTrcClient                  */ CApplication::GetInstance()->getTrcClient(),
-        /* strThreadClrFileAbsFilePath */ CApplication::GetInstance()->getThreadColorFileAbsFilePath(),
-        /* iItemsCountMax              */ 0,
-        /* pWdgtParent                 */ nullptr );
+        /* pTrcClient     */ CApplication::GetInstance()->getTrcClient(),
+        /* iItemsCountMax */ 0,
+        /* pWdgtParent    */ nullptr );
     m_pSplitter->addWidget(m_pWdgtMthList);
 
     // Restore geometry of widget

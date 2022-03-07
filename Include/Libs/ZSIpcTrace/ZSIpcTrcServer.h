@@ -90,7 +90,6 @@ public: // class methods
         int i_iTrcDetailLevel = ETraceDetailLevelNone );
     static void ReleaseInstance( const QString& i_strName = "ZSTrcServer" );
     static void ReleaseInstance( CIpcTrcServer* i_pTrcServer );
-    static void DestroyAllInstances();
 protected: // ctors and dtor
     CIpcTrcServer( const QString& i_strName, int i_iTrcDetailLevel = ETraceDetailLevelNone );
     virtual ~CIpcTrcServer();
