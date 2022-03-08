@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer, Germany
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer, Germany
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -40,7 +40,7 @@ may result in using the software modules.
 #include "App.h"
 #include "Test.h"
 
-#include "ZSTestGUI/ZSTestWdgt.h"
+#include "ZSTestGUI/ZSTestStepIdxTreeWdgt.h"
 #include "ZSSysGUI/ZSSysErrLogWdgt.h"
 #include "ZSSys/ZSSysErrCode.h"
 #include "ZSSys/ZSSysException.h"
@@ -108,7 +108,7 @@ CWidgetCentral::CWidgetCentral( QWidget* i_pWdgtParent, Qt::WindowFlags i_wflags
     m_pLytGrpTest = new QVBoxLayout();
     m_pGrpTest->setLayout(m_pLytGrpTest);
 
-    m_pWdgtTest = new CWdgtTest( CApplication::GetInstance()->getTest() );
+    m_pWdgtTest = new CWdgtIdxTreeTestSteps( CApplication::GetInstance()->getTest() );
     m_pLytGrpTest->addWidget(m_pWdgtTest);
 
     // <GroupBox> Error Log

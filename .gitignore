@@ -76,8 +76,9 @@ Makefile.*
 /Doc/html
 /Doc/latex
 
-#Generated header files
+#Generated header and resource files
 /Include/Libs/ZSSys/ZSSysVersion.h
+/Source/Libs/ZSSys/ZSSysVersion.rc
 
 #Explizit
 #RemoteRepositories.txt

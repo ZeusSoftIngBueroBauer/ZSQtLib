@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -181,7 +181,6 @@ CWdgtIdxTreeTrcAdminObjs::CWdgtIdxTreeTrcAdminObjs(
     m_pModel = new CModelIdxTreeTrcAdminObjs(m_pIdxTree, nullptr, i_iTrcDetailLevel);
 
     m_pTreeView = new CTreeViewIdxTreeTrcAdminObjs(dynamic_cast<CModelIdxTreeTrcAdminObjs*>(m_pModel), nullptr, i_iTrcDetailLevel);
-    m_pTreeView->setAlternatingRowColors(true);
 
     m_pLytMain->addWidget(m_pTreeView, 1);
 

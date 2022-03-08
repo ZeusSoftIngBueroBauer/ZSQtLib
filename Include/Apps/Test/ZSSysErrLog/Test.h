@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer, Germany
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer, Germany
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -45,11 +45,7 @@ class CTest : public ZS::Test::CTest
 public: // ctors and dtor
     CTest();
     ~CTest();
-signals:
-    void errLogCreated( const QString& i_strErrLogName );
 public slots: // test step methods
-    void doTestStepCreateErrLogInstance( ZS::Test::CTestStep* i_pTestStep );
-    void doTestStepDestroyErrLogInstance( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepAddErrLogEntries( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepClearErrLog( ZS::Test::CTestStep* i_pTestStep );
 

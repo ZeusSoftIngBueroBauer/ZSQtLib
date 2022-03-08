@@ -57,6 +57,10 @@ if(CMAKE_BUILD_TYPE MATCHES Debug)
 endif()
 message(STATUS "TargetOutputName:         ${TargetOutputName}")
 
+# Create the source groups for source tree with root at CMAKE_CURRENT_SOURCE_DIR.
+source_group(TREE ${_HeadersPath}/${PROJECT_NAME} FILES ${_Headers})
+source_group(TREE ${_SourcesPath}/${PROJECT_NAME} FILES ${_Sources})
+
 if(WIN32)
     add_executable(${PROJECT_NAME} WIN32 ${_Headers} ${_Sources})
 else()

@@ -1,6 +1,6 @@
 ﻿/*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -101,16 +101,16 @@ QIcon CModelRequestSequencer::GetIcon( ERequestEntryType i_entryType )
         s_pIconTypeGroupNode = new QIcon();
         s_pIconTypeActiveNode = new QIcon();
 
-        s_pPxmTypeGroupNodeNormalOff = new QPixmap(":/ZS/RequestTreeExplorer/RequestEntryTypeGroupNodeNormalOff.bmp");
+        s_pPxmTypeGroupNodeNormalOff = new QPixmap(":/ZS/TreeView/Requests/TreeViewRequestsBranchEntryNormalOff.bmp");
         s_pPxmTypeGroupNodeNormalOff->setMask(s_pPxmTypeGroupNodeNormalOff->createHeuristicMask());
 
-        s_pPxmTypeGroupNodeSelectedOff = new QPixmap(":/ZS/RequestTreeExplorer/RequestEntryTypeGroupNodeSelectedOff.bmp");
+        s_pPxmTypeGroupNodeSelectedOff = new QPixmap(":/ZS/TreeView/Requests/TreeViewRequestsBranchEntrySelectedOff.bmp");
         s_pPxmTypeGroupNodeSelectedOff->setMask(s_pPxmTypeGroupNodeSelectedOff->createHeuristicMask());
 
-        s_pPxmTypeActiveNodeNormalOff = new QPixmap(":/ZS/RequestTreeExplorer/RequestEntryTypeActiveNodeNormalOff.bmp");
+        s_pPxmTypeActiveNodeNormalOff = new QPixmap(":/ZS/TreeView/Requests/TreeViewRequestsLeaveEntryNormalOff.bmp");
         s_pPxmTypeActiveNodeNormalOff->setMask(s_pPxmTypeActiveNodeNormalOff->createHeuristicMask());
 
-        s_pPxmTypeActiveNodeSelectedOff = new QPixmap(":/ZS/RequestTreeExplorer/RequestEntryTypeActiveNodeSelectedOff.bmp");
+        s_pPxmTypeActiveNodeSelectedOff = new QPixmap(":/ZS/TreeView/Requests/TreeViewRequestsLeaveEntrySelectedOff.bmp");
         s_pPxmTypeActiveNodeSelectedOff->setMask(s_pPxmTypeActiveNodeSelectedOff->createHeuristicMask());
 
         sizePxm = s_pPxmTypeGroupNodeNormalOff->size();

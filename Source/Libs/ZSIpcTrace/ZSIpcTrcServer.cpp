@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -399,18 +399,18 @@ CIpcTrcServer::CIpcTrcServer( const QString& i_strName, int i_iTrcDetailLevel ) 
 
     if( !QObject::connect(
         /* pObjSender   */ m_pTrcAdminObjIdxTree,
-        /* szSignal     */ SIGNAL( treeEntryAdded(ZS::System::CIdxTree*, ZS::System::CAbstractIdxTreeEntry*) ),
+        /* szSignal     */ SIGNAL( treeEntryAdded(ZS::System::CIdxTree*, ZS::System::CIdxTreeEntry*) ),
         /* pObjReceiver */ this,
-        /* szSlot       */ SLOT( onTrcAdminObjIdxTreeEntryAdded(ZS::System::CIdxTree*, ZS::System::CAbstractIdxTreeEntry*) ),
+        /* szSlot       */ SLOT( onTrcAdminObjIdxTreeEntryAdded(ZS::System::CIdxTree*, ZS::System::CIdxTreeEntry*) ),
         /* cnctType     */ Qt::DirectConnection ) )
     {
         throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
     }
     if( !QObject::connect(
         /* pObjSender   */ m_pTrcAdminObjIdxTree,
-        /* szSignal     */ SIGNAL( treeEntryChanged(ZS::System::CIdxTree*, ZS::System::CAbstractIdxTreeEntry*) ),
+        /* szSignal     */ SIGNAL( treeEntryChanged(ZS::System::CIdxTree*, ZS::System::CIdxTreeEntry*) ),
         /* pObjReceiver */ this,
-        /* szSlot       */ SLOT( onTrcAdminObjIdxTreeEntryChanged(ZS::System::CIdxTree*, ZS::System::CAbstractIdxTreeEntry*) ),
+        /* szSlot       */ SLOT( onTrcAdminObjIdxTreeEntryChanged(ZS::System::CIdxTree*, ZS::System::CIdxTreeEntry*) ),
         /* cnctType     */ Qt::DirectConnection ) )
     {
         throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
@@ -1587,7 +1587,7 @@ void CIpcTrcServer::sendBranch(
     int                         i_iSocketId,
     MsgProtocol::TSystemMsgType i_systemMsgType,
     MsgProtocol::TCommand       i_cmd,
-    CBranchIdxTreeEntry*        i_pBranch )
+    CIdxTreeEntry*              i_pBranch )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -1644,8 +1644,8 @@ void CIpcTrcServer::sendBranch(
 
         } // if( i_pBranch->entryType() != EIdxTreeEntryType::Root )
 
-        CAbstractIdxTreeEntry* pTreeEntry;
-        int                    idxEntry;
+        CIdxTreeEntry* pTreeEntry;
+        int            idxEntry;
 
         for( idxEntry = 0; idxEntry < i_pBranch->count(); ++idxEntry )
         {
@@ -1660,7 +1660,7 @@ void CIpcTrcServer::sendBranch(
                         /* iSocketId     */ i_iSocketId,
                         /* systemMsgType */ i_systemMsgType,
                         /* cmd           */ i_cmd,
-                        /* pBranch       */ dynamic_cast<CBranchIdxTreeEntry*>(pTreeEntry) );
+                        /* pBranch       */ pTreeEntry );
                 }
                 else if( pTreeEntry->entryType() == EIdxTreeEntryType::Leave )
                 {
@@ -1760,7 +1760,7 @@ void CIpcTrcServer::sendBranch(
     int                         i_iSocketId,
     MsgProtocol::TSystemMsgType i_systemMsgType,
     MsgProtocol::TCommand       i_cmd,
-    CBranchIdxTreeEntry*        i_pBranch,
+    CIdxTreeEntry*              i_pBranch,
     EEnabled                    i_enabled,
     int                         i_iDetailLevel )
 //------------------------------------------------------------------------------
@@ -2401,7 +2401,7 @@ void CIpcTrcServer::onIpcServerReceivedReqUpdate( int i_iSocketId, const QString
                     }
                     else // if( iObjId >= 0 && iObjId < m_pTrcAdminObjIdxTree->treeEntriesVectorSize() )
                     {
-                        CAbstractIdxTreeEntry* pTreeEntry = m_pTrcAdminObjIdxTree->getEntry(iObjId);
+                        CIdxTreeEntry* pTreeEntry = m_pTrcAdminObjIdxTree->getEntry(iObjId);
 
                         if( pTreeEntry == nullptr )
                         {
@@ -2452,8 +2452,8 @@ protected slots:
 
 //------------------------------------------------------------------------------
 void CIpcTrcServer::onTrcAdminObjIdxTreeEntryAdded(
-    CIdxTree*              /*i_pIdxTree*/,
-    CAbstractIdxTreeEntry* i_pTreeEntry )
+    CIdxTree*      /*i_pIdxTree*/,
+    CIdxTreeEntry* i_pTreeEntry )
 //------------------------------------------------------------------------------
 {
     // The class (and all instances of the class) may be accessed from within
@@ -2495,7 +2495,7 @@ void CIpcTrcServer::onTrcAdminObjIdxTreeEntryAdded(
                 /* iSocketId     */ ESocketIdAllSockets,
                 /* systemMsgType */ MsgProtocol::ESystemMsgTypeInd,
                 /* cmd           */ MsgProtocol::ECommandInsert,
-                /* pBranch       */ dynamic_cast<CBranchIdxTreeEntry*>(i_pTreeEntry) );
+                /* pBranch       */ i_pTreeEntry );
         }
         else if( i_pTreeEntry->entryType() == EIdxTreeEntryType::Leave )
         {
@@ -2510,8 +2510,8 @@ void CIpcTrcServer::onTrcAdminObjIdxTreeEntryAdded(
 
 //------------------------------------------------------------------------------
 void CIpcTrcServer::onTrcAdminObjIdxTreeEntryChanged(
-    CIdxTree*              /*i_pIdxTree*/,
-    CAbstractIdxTreeEntry* i_pTreeEntry )
+    CIdxTree*      /*i_pIdxTree*/,
+    CIdxTreeEntry* i_pTreeEntry )
 //------------------------------------------------------------------------------
 {
     // The class (and all instances of the class) may be accessed from within
@@ -2553,7 +2553,7 @@ void CIpcTrcServer::onTrcAdminObjIdxTreeEntryChanged(
                 /* iSocketId     */ ESocketIdAllSockets,
                 /* systemMsgType */ MsgProtocol::ESystemMsgTypeInd,
                 /* cmd           */ MsgProtocol::ECommandInsert,
-                /* pBranch       */ dynamic_cast<CBranchIdxTreeEntry*>(i_pTreeEntry) );
+                /* pBranch       */ i_pTreeEntry );
         }
         else if( i_pTreeEntry->entryType() == EIdxTreeEntryType::Leave )
         {

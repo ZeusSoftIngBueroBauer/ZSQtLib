@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -51,47 +51,103 @@ class CTrcMthFile;
 class CTrcServer;
 
 //******************************************************************************
-/*! class CMethodTracer
+/*! The CMethodTracer class is a convenience class that simplifies tracing entering
+    and leaving methods and should be created within a function when entering and
+    leaving the function should be traced.
+
+    Tracing leaving methods in complex functions and statements or in exception
+    handling code may be error-prone. CMethodTracer can be used in such situations
+    to ensure that leaving the method is always traced as the destructor of the
+    CMethodTracer is used to trace leaving the function.
+
+    @note If the CMethodTracer is used in the destructor of a class and a trace
+          admin object is used the trace admin object is usually released in this
+          destructor. In this case leaving the destructor cannot be traced if the
+          CMethodTracer class as the trace admin object is no longer accessible
+          if the destructor of the CMethodTracer class is called.
+          So when using CMethodTracer in destructors the CMethodTracer got to be
+          informed that the trace adming object will be released to trace leaving
+          the method before the trace admin object is released. For this the method
+          "onAdminObjAboutToBeReleased" has to be applied at the method tracer instance
+          as this method will trace leaving the current method.
+
+        @code
+
+        CIdxTree::~CIdxTree()
+        {
+            QString strMthInArgs;
+
+            CMethodTracer mthTracer(
+                ** pTrcAdminObj       ** m_pTrcAdminObj,
+                ** pTrcServer         ** CTrcServer::GetInstance(),
+                ** iTrcDetailLevel    ** m_iTrcDetailLevel,
+                ** iFilterDetailLevel ** ETraceDetailLevelMethodCalls,
+                ** strNameSpace       ** NameSpace(),
+                ** strClassName       ** ClassName(),
+                ** strObjName         ** objectName(),
+                ** strMethod          ** "dtor",
+                ** strMethodInArgs    ** strMthInArgs );
+
+            ...
+
+            if( m_pTrcAdminObj != nullptr )
+            {
+                mthTracer.onAdminObjAboutToBeReleased();
+
+                CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
+            }
+        }
+        @endcode
 */
 class ZSSYSDLL_API CMethodTracer : public QObject
 //******************************************************************************
 {
     Q_OBJECT
 public: // ctors and dtor
-    CMethodTracer(  // instance tracer (name space, class and object name set at trace admin object)
+    CMethodTracer(
         CTrcAdminObj*  i_pTrcAdminObj,
-        int            i_iFilterDetailLevel,    // Entering and leaving the method is traced if the admin objects detail level is greater or equal than the filter setting than the detail level.
+        int            i_iFilterDetailLevel,
         const QString& i_strMethod,
         const QString& i_strMethodInArgs );
-    CMethodTracer(  // class tracer (name space and class name (but not object name) set at trace admin object)
+    CMethodTracer(
         CTrcAdminObj*  i_pTrcAdminObj,
-        int            i_iFilterDetailLevel,    // Entering and leaving the method is traced if the admin objects detail level is greater or equal than the filter setting than the detail level.
+        int            i_iFilterDetailLevel,
         const QString& i_strObjName,
         const QString& i_strMethod,
         const QString& i_strMethodInArgs );
-    CMethodTracer( // method trace without trace admin object but with trace server
+    CMethodTracer(
+        CTrcAdminObj*  i_pTrcAdminObj,
         CTrcServer*    i_pTrcServer,
-        int            i_iTrcDetailLevel,      // Entering and leaving the method is traced if the method trace detail level is greater or equal than the filter setting than the detail level.
-        int            i_iFilterDetailLevel,   // Entering and leaving the method is traced if the admin objects detail level is greater or equal than the filter setting than the detail level.
+        int            i_iTrcDetailLevel,
+        int            i_iFilterDetailLevel,
         const QString& i_strNameSpace,
         const QString& i_strClassName,
         const QString& i_strObjName,
         const QString& i_strMethod,
         const QString& i_strMethodInArgs = "" );
-    CMethodTracer( // method trace without trace admin object but with trace method file
+    CMethodTracer( // 
+        CTrcServer*    i_pTrcServer,
+        int            i_iTrcDetailLevel,
+        int            i_iFilterDetailLevel,
+        const QString& i_strNameSpace,
+        const QString& i_strClassName,
+        const QString& i_strObjName,
+        const QString& i_strMethod,
+        const QString& i_strMethodInArgs = "" );
+    CMethodTracer(
         CTrcMthFile*   i_pTrcMthFile,
-        int            i_iTrcDetailLevel,       // Entering and leaving the method is traced if the method trace detail level is greater or equal than the filter setting than the detail level.
-        int            i_iFilterDetailLevel,    // Entering and leaving the method is traced if the admin objects detail level is greater or equal than the filter setting than the detail level.
+        int            i_iTrcDetailLevel,
+        int            i_iFilterDetailLevel,
         const QString& i_strNameSpace,
         const QString& i_strClassName,
         const QString& i_strObjName,
         const QString& i_strMethod,
         const QString& i_strMethodInArgs = "" );
-    CMethodTracer( // method trace either with trace admin object or with trace method file
-        CTrcAdminObj*  i_pTrcAdminObj,          // if != nullptr TrcMthFile is expected to be nullptr
-        CTrcMthFile*   i_pTrcMthFile,           // if != nullptr TrcAdminObj is expected to be nullptr
-        int            i_iTrcDetailLevel,       // Entering and leaving the method is traced if the method trace detail level is greater or equal than the filter setting than the detail level (only used if TrcMthFiel is != nullptr).
-        int            i_iFilterDetailLevel,    // Entering and leaving the method is traced if the admin objects detail level is greater or equal than the filter setting than the detail level.
+    CMethodTracer( // 
+        CTrcAdminObj*  i_pTrcAdminObj,
+        CTrcMthFile*   i_pTrcMthFile,
+        int            i_iTrcDetailLevel,
+        int            i_iFilterDetailLevel,
         const QString& i_strNameSpace,
         const QString& i_strClassName,
         const QString& i_strObjName,

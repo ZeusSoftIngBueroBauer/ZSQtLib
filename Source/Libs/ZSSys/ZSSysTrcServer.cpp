@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -574,6 +574,9 @@ CTrcServer::CTrcServer( const QString& i_strName, int i_iTrcDetailLevel ) :
         /* strMethod          */ "ctor",
         /* strMthInArgs       */ "" );
 
+    // Create index tree of trace admin objects. Pass the server as the parent object.
+    // If the parent object is the trace server the index tree will not create a trace
+    // admin object to trace the method calls.
     m_pTrcAdminObjIdxTree = new CIdxTreeTrcAdminObjs(i_strName, this, i_iTrcDetailLevel);
 
     // See comment in "CreateInstance" above.
@@ -687,7 +690,7 @@ CTrcAdminObj* CTrcServer::getTraceAdminObj(
 
     QString strParentBranchPath = buildPathStr(m_pTrcAdminObjIdxTree->nodeSeparator(), i_strNameSpace, i_strClassName);
 
-    CLeaveIdxTreeEntry* pLeave = m_pTrcAdminObjIdxTree->findLeave(strParentBranchPath, i_strObjName);
+    CIdxTreeEntry* pLeave = m_pTrcAdminObjIdxTree->findLeave(strParentBranchPath, i_strObjName);
 
     bool bInitiallyCreated = pLeave == nullptr;
 
@@ -1944,7 +1947,7 @@ QString CTrcServer::currentThreadName()
 } // currentThreadName
 
 //------------------------------------------------------------------------------
-/*! Returns the number of actove references to this trace server.
+/*! Returns the number of active references to this instance.
     If the count reaches 0 the instance has to be deleted.
 
     /return Number of active references.
@@ -1956,7 +1959,7 @@ int CTrcServer::getRefCount() const
 }
 
 //------------------------------------------------------------------------------
-/*! Increments the number of active reference to this trace server.
+/*! Increments the number of active reference to this instance.
 
     /return Number of active references after increment.
 */
@@ -1967,7 +1970,7 @@ int CTrcServer::incrementRefCount()
 }
 
 //------------------------------------------------------------------------------
-/*! Decrements the number of active reference to this trace server.
+/*! Decrements the number of active reference to this instance.
     If the count reaches 0 the instance has to be deleted.
 
     /return Number of active references after decrement.

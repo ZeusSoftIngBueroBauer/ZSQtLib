@@ -35,7 +35,6 @@ list(APPEND _Headers
     ${_HeadersPath}/ZSIpcTraceDllIfWinApp/TestModule1.h
     ${_HeadersPath}/ZSIpcTraceDllIfWinApp/TestModule2.h
     ${_HeadersPath}/ZSIpcTraceDllIfWinApp/ZSAppTestIpcTraceDllIfWinApp.h
-    ../../../../Include/Libs/ZSIpcTrace/ZSIpcTrcDllIf.h
 )
 
 list(APPEND _Sources
@@ -43,12 +42,21 @@ list(APPEND _Sources
     ${_SourcesPath}/ZSIpcTraceDllIfWinApp/stdafx.cpp
     ${_SourcesPath}/ZSIpcTraceDllIfWinApp/TestModule1.cpp
     ${_SourcesPath}/ZSIpcTraceDllIfWinApp/TestModule2.cpp
+)
+
+list(APPEND _Interfaces
+    ../../../../Include/Libs/ZSIpcTrace/ZSIpcTrcDllIf.h
+    ../../../../Source/Libs/ZSIpcTrace/ZSIpcTrcDllIf.cpp
+)
+
+list(APPEND _Resources
+    ../../../../Include/Libs/ZSIpcTrace/ZSIpcTrcDllIf.h
     ../../../../Source/Libs/ZSIpcTrace/ZSIpcTrcDllIf.cpp
 )
 
 if(WIN32)
-    # Add version info as meta information to exe.
-    set(_Sources ${_Sources} ${CMAKE_CURRENT_BINARY_DIR}/../../../Libs/ZSSys/ZSSysVersion.rc)
+    # Add version info as meta information to Dll.
+    set(_Resources ${_Resources} ${_SourcesPath}/../../Libs/ZSSys/ZSSysVersion.rc)
 endif()
 
 # Got to create the following target name:
@@ -61,7 +69,12 @@ if(CMAKE_BUILD_TYPE MATCHES Debug)
 endif()
 message(STATUS "TargetOutputName:         ${TargetOutputName}")
 
-add_executable(${PROJECT_NAME} WIN32 ${_Headers} ${_Sources})
+# Create the source groups for source tree with root at CMAKE_CURRENT_SOURCE_DIR.
+source_group(TREE ${_HeadersPath}/ZSIpcTraceDllIfWinApp FILES ${_Headers})
+source_group(TREE ${_SourcesPath}/ZSIpcTraceDllIfWinApp FILES ${_Sources})
+#source_group(TREE ${_ResourcesPath}/ZSIpcTraceDllIfWinApp FILES ${_Resources})
+
+add_executable(${PROJECT_NAME} WIN32 ${_Headers} ${_Sources} ${_Interfaces} ${_Resources})
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
     COMPILE_DEFINITIONS _AFXDLL,_UNICODE,UNICODE,_BIND_TO_CURRENT_CRT_VERSION,_BIND_TO_CURRENT_MFC_VERSION

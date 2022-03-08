@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -633,6 +633,8 @@ CWdgtIpcClient::~CWdgtIpcClient()
         /* strAddInfo   */ strAddTrcInfo );
 
     saveSettings();
+
+    mthTracer.onAdminObjAboutToBeReleased();
 
     CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
 

@@ -27,6 +27,7 @@ message(STATUS "PROJECT_BINARY_DIR:       ${PROJECT_BINARY_DIR}")
 # _SourcePaths will be defined in the same way.
 set(_HeadersPath ${CMAKE_CURRENT_SOURCE_DIR}/../../../Include/Libs)
 set(_SourcesPath ${CMAKE_CURRENT_SOURCE_DIR}/../../../Source/Libs)
+set(_ResourcesPath ${CMAKE_CURRENT_SOURCE_DIR}/../../../Images/Libs)
 
 list(APPEND _Headers
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysDialog.h
@@ -40,11 +41,10 @@ list(APPEND _Headers
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysGUIDllMain.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysIdxTreeModel.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysIdxTreeModelBranchContent.h
-    ${_HeadersPath}/${PROJECT_NAME}/ZSSysIdxTreeModelEntries.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSSysIdxTreeModelEntry.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysIdxTreeTableViewBranchContent.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysIdxTreeView.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysIdxTreeWdgt.h
-    ${_HeadersPath}/${PROJECT_NAME}/ZSSysObjPoolModel.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysProgressBar.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysPushButton.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysPushButtonCloseWidget.h
@@ -73,11 +73,10 @@ list(APPEND _Sources
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysGUIDllMain.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysIdxTreeModel.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysIdxTreeModelBranchContent.cpp
-    ${_SourcesPath}/${PROJECT_NAME}/ZSSysIdxTreeModelEntries.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSSysIdxTreeModelEntry.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysIdxTreeTableViewBranchContent.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysIdxTreeView.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysIdxTreeWdgt.cpp
-    ${_SourcesPath}/${PROJECT_NAME}/ZSSysObjPoolModel.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysProgressBar.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysPushButton.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysPushButtonCloseWidget.cpp
@@ -92,12 +91,15 @@ list(APPEND _Sources
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysTrcAdminObjIdxTreeModel.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysTrcAdminObjIdxTreeView.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysTrcAdminObjIdxTreeWdgt.cpp
-    ../../../Images/Libs/ZSSys/ZSSys.qrc
+)
+
+list(APPEND _Resources
+    ${_ResourcesPath}/ZSSys/ZSSys.qrc
 )
 
 if(WIN32)
     # Add version info as meta information to Dll.
-    set(_Sources ${_Sources} ${CMAKE_CURRENT_BINARY_DIR}/../../Libs/ZSSys/ZSSysVersion.rc)
+    set(_Resources ${_Resources} ${_SourcesPath}/ZSSys/ZSSysVersion.rc)
 endif()
 
 # Got to create the following target name:
@@ -109,7 +111,12 @@ if(CMAKE_BUILD_TYPE MATCHES Debug)
 endif()
 message(STATUS "TargetOutputName:         ${TargetOutputName}")
 
-add_library(${PROJECT_NAME} SHARED ${_Headers} ${_Sources})
+# Create the source groups for source tree with root at CMAKE_CURRENT_SOURCE_DIR.
+source_group(TREE ${_HeadersPath}/${PROJECT_NAME} FILES ${_Headers})
+source_group(TREE ${_SourcesPath}/${PROJECT_NAME} FILES ${_Sources})
+#source_group(TREE ${_ResourcesPath}/${PROJECT_NAME} FILES ${_Resources})
+
+add_library(${PROJECT_NAME} SHARED ${_Headers} ${_Sources} ${_Resources})
 
 set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME ${TargetOutputName})
 

@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -106,7 +106,7 @@ const int EInvalidEnumerator = -1;
 
     for( eProcClock = 0; eProcClock < CEnumProcessorClock::count(); ++eProcClock )
     {
-        pCmbProcClock->addItem(enumInst.toString(), enumInst.toValue());
+        pCmbProcClock->addItem(eProcClock.toString(), eProcClock.toValue());
     }
 
     eProcClock = "Low";
@@ -162,8 +162,8 @@ public: // ctors
     CEnum();
     CEnum( E i_enumerator );
     CEnum( int i_iEnumerator );
-    CEnum( const char* i_szName, int i_idxAlias = EEnumEntryAliasStrName, Qt::CaseSensitivity i_caseSensitivity = Qt::CaseInsensitive );
-    CEnum( const QString& i_strName, int i_idxAlias = EEnumEntryAliasStrName, Qt::CaseSensitivity i_caseSensitivity = Qt::CaseInsensitive );
+    CEnum( const char* i_szName, int i_idxAlias = EEnumEntryAliasStrUndefined, Qt::CaseSensitivity i_caseSensitivity = Qt::CaseInsensitive );
+    CEnum( const QString& i_strName, int i_idxAlias = EEnumEntryAliasStrUndefined, Qt::CaseSensitivity i_caseSensitivity = Qt::CaseInsensitive );
     CEnum( const CEnum& i_other );
 public: // assignment operators
     CEnum& operator = ( E i_enumerator );
@@ -213,6 +213,7 @@ public: // increment/decrement operators
     CEnum& operator -- (int); // Postfix decrement operator.
 public: // instance methods
     E enumerator() const;
+    int enumeratorAsInt() const;
     bool isValid() const;
     QString toString( int i_idxAlias = EEnumEntryAliasStrName ) const;
     QVariant toValue( QVariant::Type i_type = QVariant::Invalid, bool* o_pbOk = nullptr ) const;
@@ -1697,6 +1698,18 @@ E CEnum<E>::enumerator() const
 //------------------------------------------------------------------------------
 {
     return m_enumerator;
+}
+
+//------------------------------------------------------------------------------
+/*! Returns the enumerator of this enum instance as an integer value to avoid
+    to use "static_cast<int>(enumerator())" if the enumerator is e.g. needed to
+    address array elements.
+*/
+template <typename E>
+int CEnum<E>::enumeratorAsInt() const
+//------------------------------------------------------------------------------
+{
+    return static_cast<int>(m_enumerator);
 }
 
 //------------------------------------------------------------------------------

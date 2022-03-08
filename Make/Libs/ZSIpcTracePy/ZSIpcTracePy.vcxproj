@@ -201,6 +201,7 @@
     <TargetName>$(ProjectName)_d</TargetName>
     <IncludePath>$(QTDIR_MSVC2017_Win32)\include;$(IncludePath)</IncludePath>
     <LibraryPath>$(QTDIR_MSVC2017_Win32)\lib;$(LibraryPath)</LibraryPath>
+    <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|Win32'">
     <TargetExt>.pyd</TargetExt>
@@ -209,6 +210,7 @@
     <TargetName>$(ProjectName)_d</TargetName>
     <IncludePath>$(QTDIR_MSVC2017_Win32)\include;$(IncludePath)</IncludePath>
     <LibraryPath>$(QTDIR_MSVC2017_Win32)\lib;$(LibraryPath)</LibraryPath>
+    <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|Win32'">
     <TargetExt>.pyd</TargetExt>
@@ -217,6 +219,7 @@
     <TargetName>$(ProjectName)_d</TargetName>
     <IncludePath>$(QTDIR_MSVC2015_Win32)\include;$(IncludePath)</IncludePath>
     <LibraryPath>$(QTDIR_MSVC2015_Win32)\lib;$(LibraryPath)</LibraryPath>
+    <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|Win32'">
     <TargetExt>.pyd</TargetExt>
@@ -224,7 +227,7 @@
     <IntDir>..\..\..\Tmp\Int\Libs\$(ProjectName)\$(Configuration)\$(Platform)\</IntDir>
     <IncludePath>$(QTDIR_MSVC2017_Win32)\include;$(IncludePath)</IncludePath>
     <LibraryPath>$(QTDIR_MSVC2017_Win32)\lib;$(LibraryPath)</LibraryPath>
-    <LinkIncremental>true</LinkIncremental>
+    <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|Win32'">
     <TargetExt>.pyd</TargetExt>
@@ -232,7 +235,7 @@
     <IntDir>..\..\..\Tmp\Int\Libs\$(ProjectName)\$(Configuration)\$(Platform)\</IntDir>
     <IncludePath>$(QTDIR_MSVC2019_Win32)\include;$(IncludePath)</IncludePath>
     <LibraryPath>$(QTDIR_MSVC2019_Win32)\lib;$(LibraryPath)</LibraryPath>
-    <LinkIncremental>true</LinkIncremental>
+    <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|Win32'">
     <TargetExt>.pyd</TargetExt>
@@ -240,7 +243,7 @@
     <IntDir>..\..\..\Tmp\Int\Libs\$(ProjectName)\$(Configuration)\$(Platform)\</IntDir>
     <IncludePath>$(QTDIR_MSVC2015_Win32)\include;$(IncludePath)</IncludePath>
     <LibraryPath>$(QTDIR_MSVC2015_Win32)\lib;$(LibraryPath)</LibraryPath>
-    <LinkIncremental>true</LinkIncremental>
+    <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|x64'">
     <TargetExt>.pyd</TargetExt>
@@ -249,6 +252,7 @@
     <TargetName>$(ProjectName)_d</TargetName>
     <IncludePath>$(QTDIR_MSVC2017_x64)\include;$(IncludePath)</IncludePath>
     <LibraryPath>$(QTDIR_MSVC2017_x64)\lib;$(LibraryPath)</LibraryPath>
+    <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2019|x64'">
     <TargetExt>.pyd</TargetExt>
@@ -257,6 +261,7 @@
     <TargetName>$(ProjectName)_d</TargetName>
     <IncludePath>$(QTDIR_MSVC2019_x64)\include;$(IncludePath)</IncludePath>
     <LibraryPath>$(QTDIR_MSVC2019_x64)\lib;$(LibraryPath)</LibraryPath>
+    <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2015|x64'">
     <TargetExt>.pyd</TargetExt>
@@ -265,6 +270,7 @@
     <TargetName>$(ProjectName)_d</TargetName>
     <IncludePath>$(QTDIR_MSVC2015_x64)\include;$(IncludePath)</IncludePath>
     <LibraryPath>$(QTDIR_MSVC2015_x64)\lib;$(LibraryPath)</LibraryPath>
+    <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_msvc2017|x64'">
     <TargetExt>.pyd</TargetExt>
@@ -272,7 +278,7 @@
     <IntDir>..\..\..\Tmp\Int\Libs\$(ProjectName)\$(Configuration)\$(Platform)\</IntDir>
     <IncludePath>$(QTDIR_MSVC2017_x64)\include;$(IncludePath)</IncludePath>
     <LibraryPath>$(QTDIR_MSVC2017_x64)\lib;$(LibraryPath)</LibraryPath>
-    <LinkIncremental>true</LinkIncremental>
+    <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_msvc2019|x64'">
     <TargetExt>.pyd</TargetExt>
@@ -280,7 +286,7 @@
     <IntDir>..\..\..\Tmp\Int\Libs\$(ProjectName)\$(Configuration)\$(Platform)\</IntDir>
     <IncludePath>$(QTDIR_MSVC2019_x64)\include;$(IncludePath)</IncludePath>
     <LibraryPath>$(QTDIR_MSVC2019_x64)\lib;$(LibraryPath)</LibraryPath>
-    <LinkIncremental>true</LinkIncremental>
+    <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_msvc2015|x64'">
     <TargetExt>.pyd</TargetExt>
@@ -288,7 +294,7 @@
     <IntDir>..\..\..\Tmp\Int\Libs\$(ProjectName)\$(Configuration)\$(Platform)\</IntDir>
     <IncludePath>$(QTDIR_MSVC2015_x64)\include;$(IncludePath)</IncludePath>
     <LibraryPath>$(QTDIR_MSVC2015_x64)\lib;$(LibraryPath)</LibraryPath>
-    <LinkIncremental>true</LinkIncremental>
+    <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug_msvc2017|x64'">
     <ClCompile>
@@ -299,6 +305,8 @@
       <AdditionalIncludeDirectories>..\..\..\Include\Libs;$(PYTHONDIR)/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;ZSIPCTRACEPYDLL_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <ProgramDataBaseFileName>$(IntDir)$(TargetName)_local.pdb</ProgramDataBaseFileName>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>..\..\..\lib\msvc2017_$(Platform);$(PYTHONDIR)\libs</AdditionalLibraryDirectories>
@@ -320,6 +328,8 @@
       <AdditionalIncludeDirectories>..\..\..\Include\Libs;$(PYTHONDIR)/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;ZSIPCTRACEPYDLL_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <ProgramDataBaseFileName>$(IntDir)$(TargetName)_local.pdb</ProgramDataBaseFileName>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>..\..\..\lib\msvc2019_$(Platform);$(PYTHONDIR)\libs</AdditionalLibraryDirectories>
@@ -341,6 +351,8 @@
       <AdditionalIncludeDirectories>..\..\..\Include\Libs;$(PYTHONDIR)/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;ZSIPCTRACEPYDLL_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <ProgramDataBaseFileName>$(IntDir)$(TargetName)_local.pdb</ProgramDataBaseFileName>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>..\..\..\lib\msvc2015_$(Platform);$(PYTHONDIR)\libs</AdditionalLibraryDirectories>
@@ -362,6 +374,8 @@
       <AdditionalIncludeDirectories>..\..\..\Include\Libs;$(PYTHONDIR)/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;ZSIPCTRACEPYDLL_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <ProgramDataBaseFileName>$(IntDir)$(TargetName)_local.pdb</ProgramDataBaseFileName>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>..\..\..\lib\msvc2017_$(Platform);$(PYTHONDIR)\libs</AdditionalLibraryDirectories>
@@ -383,6 +397,8 @@
       <AdditionalIncludeDirectories>..\..\..\Include\Libs;$(PYTHONDIR)/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;ZSIPCTRACEPYDLL_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <ProgramDataBaseFileName>$(IntDir)$(TargetName)_local.pdb</ProgramDataBaseFileName>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>..\..\..\lib\msvc2019_$(Platform);$(PYTHONDIR)\libs</AdditionalLibraryDirectories>
@@ -404,6 +420,8 @@
       <AdditionalIncludeDirectories>..\..\..\Include\Libs;$(PYTHONDIR)/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;ZSIPCTRACEPYDLL_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <ProgramDataBaseFileName>$(IntDir)$(TargetName)_local.pdb</ProgramDataBaseFileName>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>..\..\..\lib\msvc2015_$(Platform);$(PYTHONDIR)\libs</AdditionalLibraryDirectories>
@@ -426,6 +444,7 @@
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>..\..\..\Include\Libs;$(PYTHONDIR)/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;ZSIPCTRACEPYDLL_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ProgramDataBaseFileName>$(IntDir)$(TargetName)_local.pdb</ProgramDataBaseFileName>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -450,6 +469,7 @@
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>..\..\..\Include\Libs;$(PYTHONDIR)/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;ZSIPCTRACEPYDLL_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ProgramDataBaseFileName>$(IntDir)$(TargetName)_local.pdb</ProgramDataBaseFileName>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -474,6 +494,7 @@
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>..\..\..\Include\Libs;$(PYTHONDIR)/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;ZSIPCTRACEPYDLL_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ProgramDataBaseFileName>$(IntDir)$(TargetName)_local.pdb</ProgramDataBaseFileName>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -498,6 +519,7 @@
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>..\..\..\Include\Libs;$(PYTHONDIR)/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;ZSIPCTRACEPYDLL_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ProgramDataBaseFileName>$(IntDir)$(TargetName)_local.pdb</ProgramDataBaseFileName>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -522,6 +544,7 @@
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>..\..\..\Include\Libs;$(PYTHONDIR)/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;ZSIPCTRACEPYDLL_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ProgramDataBaseFileName>$(IntDir)$(TargetName)_local.pdb</ProgramDataBaseFileName>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -546,6 +569,7 @@
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>..\..\..\Include\Libs;$(PYTHONDIR)/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;ZSIPCTRACEPYDLL_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ProgramDataBaseFileName>$(IntDir)$(TargetName)_local.pdb</ProgramDataBaseFileName>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>

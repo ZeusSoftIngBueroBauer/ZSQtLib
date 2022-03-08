@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -90,7 +90,7 @@ public: // class methods
     static QString NameSpace() { return "ZS::Ipc::GUI"; }
     static QString ClassName() { return "CWdgtIpcServer"; }
 public: // ctors and dtor
-    CWdgtIpcServer( const QString& i_strObjName, QWidget* i_pWdgtParent = nullptr );
+    CWdgtIpcServer( const QString& i_strServerName = "IpcServer", QWidget* i_pWdgtParent = nullptr );
     virtual ~CWdgtIpcServer();
 signals:
     void accepted();

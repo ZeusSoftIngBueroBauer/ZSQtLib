@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer, Germany
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer, Germany
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -249,7 +249,7 @@ CMainWindow::CMainWindow(
         throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
     }
 
-    // <MenuItem> Debug::ZSTraceServerAdminObjPool
+    // <MenuItem> Debug::ZSTraceServerAdminIdxTree
     //--------------------------------------------
 
     m_pActDebugZSTrcServerAdminObjIdxTree = new QAction("ZS Trace Server Admin Objects",this);
@@ -279,7 +279,7 @@ CMainWindow::CMainWindow(
         throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
     }
 
-    // <MenuItem> Debug::ZSTraceClientAdminObjPool
+    // <MenuItem> Debug::ZSTraceClientAdminIdxTree
     //--------------------------------------------
 
     m_pActDebugZSTrcClientAdminObjIdxTree = new QAction("ZS Trace Client Admin Objects",this);
@@ -678,7 +678,7 @@ protected slots:
 void CMainWindow::onActDebugZSTrcServerTriggered()
 //------------------------------------------------------------------------------
 {
-    QString strDlgTitle = getMainWindowTitle() + ": ZS Trace Server";
+    QString strDlgTitle = QCoreApplication::applicationName() + ": ZS Trace Server";
 
     CIpcTrcServer* pServer = CIpcTrcServer::GetInstance("ZSTrcServer");
 
@@ -712,7 +712,7 @@ void CMainWindow::onActDebugZSTrcServerTriggered()
 void CMainWindow::onActDebugZSTrcServerAdminObjIdxTreeTriggered()
 //------------------------------------------------------------------------------
 {
-    QString strDlgTitle = getMainWindowTitle() + ": ZS Trace Server Admin Objects";
+    QString strDlgTitle = QCoreApplication::applicationName() + ": ZS Trace Server Admin Objects";
 
     CIpcTrcServer* pServer = CIpcTrcServer::GetInstance("ZSTrcServer");
 
@@ -723,7 +723,7 @@ void CMainWindow::onActDebugZSTrcServerAdminObjIdxTreeTriggered()
         if( pDlg == nullptr )
         {
             pDlg = CDlgIdxTreeTrcAdminObjs::CreateInstance(
-                /* pTrcAdmObjPool  */ pServer->getTraceAdminObjIdxTree(),
+                /* pTrcAdmIdxTree  */ pServer->getTraceAdminObjIdxTree(),
                 /* strDlgTitle     */ strDlgTitle,
                 /* pWdgtParent     */ nullptr,
                 /* wFlags          */ Qt::WindowFlags(),
@@ -780,7 +780,7 @@ void CMainWindow::onActDebugZSTrcClientTriggered()
 void CMainWindow::onActDebugZSTrcClientAdminObjIdxTreeTriggered()
 //------------------------------------------------------------------------------
 {
-    QString strDlgTitle = getMainWindowTitle() + ": ZS Trace Client Admin Objects";
+    QString strDlgTitle = QCoreApplication::applicationName() + ": ZS Trace Client";
 
     CIpcTrcClient* pTrcClient = CApplication::GetInstance()->getTrcClient();
 
@@ -850,7 +850,7 @@ void CMainWindow::onActDebugTestTrcServerTriggered()
 void CMainWindow::onActDebugTestTrcServerAdminObjIdxTreeTriggered()
 //------------------------------------------------------------------------------
 {
-    QString strDlgTitle = getMainWindowTitle() + ": Trace Server Admin Objects";
+    QString strDlgTitle = QCoreApplication::applicationName() + ": Test Trace Server Admin Objects";
 
     CIpcTrcServer* pServer = CIpcTrcServer::GetInstance("TestTrcServer");
 
@@ -861,7 +861,7 @@ void CMainWindow::onActDebugTestTrcServerAdminObjIdxTreeTriggered()
         if( pDlg == nullptr )
         {
             pDlg = CDlgIdxTreeTrcAdminObjs::CreateInstance(
-                /* pTrcAdmObjPool  */ pServer->getTraceAdminObjIdxTree(),
+                /* pTrcAdmIdxTree  */ pServer->getTraceAdminObjIdxTree(),
                 /* strDlgTitle     */ strDlgTitle,
                 /* pWdgtParent     */ nullptr,
                 /* wFlags          */ Qt::WindowFlags(),
@@ -954,13 +954,13 @@ void CMainWindow::onActDebugTestTrcClientAdminObjIdxTreeTriggered()
 void CMainWindow::onActDebugErrLogTriggered()
 //------------------------------------------------------------------------------
 {
-    QString strDlgTitle = getMainWindowTitle() + ": Error Log";
+    QString strDlgTitle = QCoreApplication::applicationName() + ": Error Log";
 
-    CDlgErrLog* pDlg = dynamic_cast<CDlgErrLog*>(CDlgErrLog::GetInstance("ErrLog"));
+    CDlgErrLog* pDlg = dynamic_cast<CDlgErrLog*>(CDlgErrLog::GetInstance(strDlgTitle));
 
     if( pDlg == nullptr )
     {
-        pDlg = CDlgErrLog::CreateInstance("ErrLog", strDlgTitle);
+        pDlg = CDlgErrLog::CreateInstance(strDlgTitle);
         pDlg->setAttribute(Qt::WA_DeleteOnClose, true);
         pDlg->adjustSize();
         pDlg->show();
@@ -982,7 +982,7 @@ void CMainWindow::onActDebugErrLogTriggered()
 void CMainWindow::onActDebugRequestExecTreeTriggered()
 //------------------------------------------------------------------------------
 {
-    QString strDlgTitle = getMainWindowTitle() + ": Requests Execution Tree";
+    QString strDlgTitle = QCoreApplication::applicationName() + ": Requests Execution Tree";
 
     CDlgRequestExecTree* pDlg = dynamic_cast<CDlgRequestExecTree*>(CDlgRequestExecTree::GetInstance(strDlgTitle));
 

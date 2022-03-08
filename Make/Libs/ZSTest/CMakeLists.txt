@@ -32,23 +32,28 @@ list(APPEND _Headers
     ${_HeadersPath}/${PROJECT_NAME}/ZSTest.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSTestDllMain.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSTestStep.h
-    ${_HeadersPath}/${PROJECT_NAME}/ZSTestStepAdminObj.h
-    ${_HeadersPath}/${PROJECT_NAME}/ZSTestStepAdminObjPool.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSTestStepGroup.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSTestStepIdxTree.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSTestStepIdxTreeEntry.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSTestStepRoot.h
 )
 
 list(APPEND _Sources
     ${_SourcesPath}/${PROJECT_NAME}/ZSTest.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSTestDllMain.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSTestStep.cpp
-    ${_SourcesPath}/${PROJECT_NAME}/ZSTestStepAdminObj.cpp
-    ${_SourcesPath}/${PROJECT_NAME}/ZSTestStepAdminObjPool.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSTestStepGroup.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSTestStepIdxTree.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSTestStepIdxTreeEntry.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSTestStepRoot.cpp
+)
+
+list(APPEND _Resources
 )
 
 if(WIN32)
     # Add version info as meta information to Dll.
-    set(_Sources ${_Sources} ${CMAKE_CURRENT_BINARY_DIR}/../../Libs/ZSSys/ZSSysVersion.rc)
+    set(_Resources ${_Resources} ${_SourcesPath}/ZSSys/ZSSysVersion.rc)
 endif()
 
 # Got to create the following target name:
@@ -60,7 +65,12 @@ if(CMAKE_BUILD_TYPE MATCHES Debug)
 endif()
 message(STATUS "TargetOutputName:         ${TargetOutputName}")
 
-add_library(${PROJECT_NAME} SHARED ${_Headers} ${_Sources})
+# Create the source groups for source tree with root at CMAKE_CURRENT_SOURCE_DIR.
+source_group(TREE ${_HeadersPath}/${PROJECT_NAME} FILES ${_Headers})
+source_group(TREE ${_SourcesPath}/${PROJECT_NAME} FILES ${_Sources})
+#source_group(TREE ${_ResourcesPath}/${PROJECT_NAME} FILES ${_Resources})
+
+add_library(${PROJECT_NAME} SHARED ${_Headers} ${_Sources} ${_Resources})
 
 set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME ${TargetOutputName})
 

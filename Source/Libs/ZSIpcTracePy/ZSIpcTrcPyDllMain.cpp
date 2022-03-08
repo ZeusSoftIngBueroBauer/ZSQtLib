@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -267,7 +267,7 @@ static CTrcAdminObj* getTraceAdminObj( int i_idxInTree, const QString& i_strServ
     if( pTrcServer != nullptr )
     {
         CIdxTreeTrcAdminObjs*  pIdxTree = pTrcServer->getTraceAdminObjIdxTree();
-        CAbstractIdxTreeEntry* pTreeEntry = pIdxTree->getEntry(i_idxInTree);
+        CIdxTreeEntry* pTreeEntry = pIdxTree->getEntry(i_idxInTree);
 
         pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(pTreeEntry);
     }
@@ -289,7 +289,7 @@ static CTrcAdminObj* getTraceAdminObj( const QString& i_strKeyInTree, const QStr
     if( pTrcServer != nullptr )
     {
         CIdxTreeTrcAdminObjs*  pIdxTree = pTrcServer->getTraceAdminObjIdxTree();
-        CAbstractIdxTreeEntry* pTreeEntry = pIdxTree->findEntry(i_strKeyInTree);
+        CIdxTreeEntry* pTreeEntry = pIdxTree->findEntry(i_strKeyInTree);
 
         pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(pTreeEntry);
     }

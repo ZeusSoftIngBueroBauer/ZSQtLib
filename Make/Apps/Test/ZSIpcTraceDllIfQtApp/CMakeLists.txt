@@ -36,7 +36,6 @@ list(APPEND _Headers
     ${_HeadersPath}/ZSIpcTraceDllIfQtApp/Test.h
     ${_HeadersPath}/ZSIpcTraceDllIfQtApp/TestModule1.h
     ${_HeadersPath}/ZSIpcTraceDllIfQtApp/TestModule2.h
-    ../../../../Include/Libs/ZSIpcTrace/ZSIpcTrcDllIf.h
 )
 
 list(APPEND _Sources
@@ -48,12 +47,19 @@ list(APPEND _Sources
     ${_SourcesPath}/ZSIpcTraceDllIfQtApp/Test.cpp
     ${_SourcesPath}/ZSIpcTraceDllIfQtApp/TestModule1.cpp
     ${_SourcesPath}/ZSIpcTraceDllIfQtApp/TestModule2.cpp
+)
+
+list(APPEND _Interfaces
+    ../../../../Include/Libs/ZSIpcTrace/ZSIpcTrcDllIf.h
     ../../../../Source/Libs/ZSIpcTrace/ZSIpcTrcDllIf.cpp
 )
 
+list(APPEND _Resources
+)
+
 if(WIN32)
-    # Add version info as meta information to exe.
-    set(_Sources ${_Sources} ${CMAKE_CURRENT_BINARY_DIR}/../../../Libs/ZSSys/ZSSysVersion.rc)
+    # Add version info as meta information to Dll.
+    set(_Resources ${_Resources} ${_SourcesPath}/../../Libs/ZSSys/ZSSysVersion.rc)
 endif()
 
 # Got to create the following target name:
@@ -65,10 +71,15 @@ if(CMAKE_BUILD_TYPE MATCHES Debug)
 endif()
 message(STATUS "TargetOutputName:         ${TargetOutputName}")
 
+# Create the source groups for source tree with root at CMAKE_CURRENT_SOURCE_DIR.
+source_group(TREE ${_HeadersPath}/ZSIpcTraceDllIfQtApp FILES ${_Headers})
+source_group(TREE ${_SourcesPath}/ZSIpcTraceDllIfQtApp FILES ${_Sources})
+#source_group(TREE ${_ResourcesPath}/ZSIpcTraceDllIfQtApp FILES ${_Resources})
+
 if(WIN32)
-    add_executable(${PROJECT_NAME} WIN32 ${_Headers} ${_Sources})
+    add_executable(${PROJECT_NAME} WIN32 ${_Headers} ${_Sources} ${_Interfaces} ${_Resources})
 else()
-    add_executable(${PROJECT_NAME} ${_Headers} ${_Sources})
+    add_executable(${PROJECT_NAME} ${_Headers} ${_Sources} ${_Interfaces} ${_Resources})
 endif()
 
 set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME ${TargetOutputName})

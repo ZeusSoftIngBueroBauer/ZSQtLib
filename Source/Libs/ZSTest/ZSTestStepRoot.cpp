@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -24,22 +24,24 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#include "TSGrpTemplate.h"
-#include "Test.h"
-
-#include "ZSTest/ZSTestStep.h"
-#include "ZSSys/ZSSysException.h"
-#include "ZSSys/ZSSysTrcAdminObj.h"
-#include "ZSSys/ZSSysTrcMethod.h"
+#include "ZSTest/ZSTestStepRoot.h"
+//#include "ZSTest/ZSTest.h"
+//#include "ZSTest/ZSTestStep.h"
+//#include "ZSTest/ZSTestStepIdxTree.h"
+//
+//#include "ZSSys/ZSSysErrResult.h"
+//#include "ZSSys/ZSSysException.h"
+//#include "ZSSys/ZSSysMath.h"
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
+
 using namespace ZS::System;
-using namespace ZS::Apps::Test::Template;
+using namespace ZS::Test;
 
 
 /*******************************************************************************
-class CTSGrpTemplate : public ZS::Test::CTestStepGroup
+class CTestStepRoot : public CTestStepGroup
 *******************************************************************************/
 
 /*==============================================================================
@@ -47,53 +49,24 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CTSGrpTemplate::CTSGrpTemplate( CTest* i_pTest, ZS::Test::CTestStepGroup* i_pTSGrpParent ) :
+/*! Constructs the root entry of the test step index tree.
+
+    The entry will be added to the index tree of the passed test instance.
+
+    @param i_pTest [in] Reference to test the entry belongs to (must not be nullptr).
+    @param i_strName [in] Name of the entry.
+    @param i_pTSGrpParent [in] Parent test group or nullptr, if the entry does not have a parent.
+*/
+CTestStepRoot::CTestStepRoot(
+    CTest*          i_pTest,
+    const QString&  i_strName ) :
 //------------------------------------------------------------------------------
-    ZS::Test::CTestStepGroup(i_pTest, "Template", i_pTSGrpParent)
+    CTestStepGroup(i_pTest, EIdxTreeEntryType::Root, i_strName)
 {
-    int idxStep = 0;
-
-    new ZS::Test::CTestStep(
-        /* pTest           */ i_pTest,
-        /* strName         */ "Step " + QString::number(++idxStep) + " Test Something",
-        /* strOperation    */ "Test Something",
-        /* pTSGrpParent    */ this,
-        /* szDoTestStepFct */ SLOT(doTestStepGrpTemplateTestStep1(ZS::Test::CTestStep*)) );
-
 } // ctor
 
 //------------------------------------------------------------------------------
-CTSGrpTemplate::~CTSGrpTemplate()
+CTestStepRoot::~CTestStepRoot()
 //------------------------------------------------------------------------------
 {
 } // dtor
-
-//------------------------------------------------------------------------------
-void CTest::doTestStepGrpTemplateTestStep1( ZS::Test::CTestStep* i_pTestStep )
-//------------------------------------------------------------------------------
-{
-    QString     strDesiredValue;
-    QStringList strlstDesiredValues;
-    QString     strActualValue;
-    QStringList strlstActualValues;
-
-    // Test Step
-    //----------
-
-    // Desired Values
-    //---------------
-
-    strDesiredValue  = "TestStep1TestOutput";
-    strlstDesiredValues.append(strDesiredValue);
-
-    i_pTestStep->setDesiredValues(strlstDesiredValues);
-
-    // Actual Values
-    //---------------
-
-    strActualValue  = "TestStep1TestOutput";
-    strlstActualValues.append(strActualValue);
-
-    i_pTestStep->setActualValues(strlstActualValues);
-
-} // doTestStepGrpTemplateTestStep1

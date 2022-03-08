@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer, Germany
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer, Germany
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -33,7 +33,7 @@ may result in using the software modules.
 #include "App.h"
 #include "MainWindow.h"
 
-#include "ZSTest/ZSTestStepAdminObjPool.h"
+#include "ZSTest/ZSTestStepIdxTree.h"
 #include "ZSSys/ZSSysApp.h"
 #include "ZSSys/ZSSysErrLog.h"
 #include "ZSSys/ZSSysErrResult.h"
@@ -45,6 +45,8 @@ may result in using the software modules.
 
 using namespace ZS::System;
 using namespace ZS::System::GUI;
+using namespace ZS::Ipc;
+using namespace ZS::Trace;
 using namespace ZS::Apps::Test::Template;
 
 
@@ -77,6 +79,9 @@ CApplication::CApplication(
     const QString& i_strWindowTitle ) :
 //------------------------------------------------------------------------------
     CGUIApp(i_argc,i_argv),
+    m_trcServerHostSettings(24763),
+    m_trcServerSettings(),
+    m_pTrcServer(nullptr),
     m_pTest(nullptr),
     m_pMainWindow(nullptr)
 {
@@ -104,10 +109,23 @@ CApplication::CApplication(
 
     QApplication::setWindowIcon(iconApp);
 
+    ZS::Ipc::SServerHostSettings  trcServerHostSettingsDefault = m_trcServerHostSettings;
+    ZS::Trace::STrcServerSettings trcServerSettingsDefault = m_trcServerSettings;
+
     // Create error manager
     //------------------------
 
     CErrLog::CreateInstance();
+
+    // Create trace server
+    //------------------------
+
+    m_pTrcServer = ZS::Trace::CIpcTrcServer::CreateInstance();
+
+    m_pTrcServer->setHostSettings(m_trcServerHostSettings);
+    m_pTrcServer->setTraceSettings(m_trcServerSettings);
+    m_pTrcServer->recallAdminObjs();
+    m_pTrcServer->startup();
 
     // Test
     //----------------------------
@@ -129,7 +147,10 @@ CApplication::~CApplication()
     // Save settings of the application
     //--------------------------------------
 
-    //saveSettings();
+    if( m_pTrcServer != nullptr )
+    {
+        m_pTrcServer->saveAdminObjs();
+    }
 
     try
     {
@@ -142,6 +163,14 @@ CApplication::~CApplication()
     try
     {
         delete m_pTest;
+    }
+    catch(...)
+    {
+    }
+
+    try
+    {
+        ZS::Trace::CTrcServer::ReleaseInstance(m_pTrcServer);
     }
     catch(...)
     {

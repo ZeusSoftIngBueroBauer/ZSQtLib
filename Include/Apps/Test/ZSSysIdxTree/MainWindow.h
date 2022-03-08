@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer, Germany
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer, Germany
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -91,13 +91,12 @@ protected: // overridables of base class QWidget
 protected: // overridables of base class QObject
     virtual bool eventFilter( QObject* i_pObjWatched, QEvent* i_pEv );
 protected slots:
-    void onActFileNewTriggered();
     void onActFileOpenTriggered();
     void onActFileSaveTriggered();
 protected slots:
+    void onActDebugErrLogTriggered();
     void onActDebugTrcServerTriggered();
     void onActDebugTrcAdminObjIdxTreeTriggered();
-    void onActDebugErrLogTriggered();
 protected slots:
     void onTestIdxTreeAdded( ZS::System::CIdxTree* i_pIdxTree );
     void onTestIdxTreeDestroyed( QObject* i_pIdxTree );
@@ -113,20 +112,18 @@ protected: // instance members
     QSettings*                      m_pSettingsFile;
     QMenu*                          m_pMnuFile;
     QToolBar*                       m_pToolBarFile;
-    QAction*                        m_pActFileNew;
     QAction*                        m_pActFileOpen;
     QAction*                        m_pActFileSave;
     QAction*                        m_pActFileQuit;
     QMenu*                          m_pMnuView;
     QAction*                        m_pActViewDockWdgtTrcAdmObjTree;
     QMenu*                          m_pMnuDebug;
+    QAction*                        m_pActDebugErrLog;
     QAction*                        m_pActDebugTrcServer;
     QAction*                        m_pActDebugTrcAdminObjIdxTree;
-    QAction*                        m_pActDebugErrLog;
     QMenu*                          m_pMnuInfo;
     QAction*                        m_pActInfoVersion;
     QAction*                        m_pActInfoSettingsFile;
-    QAction*                        m_pActInfoTrcMthFile;
     QStatusBar*                     m_pStatusBar;
     QLabel*                         m_pLblErrors;
     CWidgetCentral*                 m_pWdgtCentral;

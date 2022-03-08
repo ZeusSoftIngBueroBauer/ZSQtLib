@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -44,7 +44,7 @@ public: // ctors and dtor
 //------------------------------------------------------------------------------
 CEnumeration::CEnumeration( const QString& /*i_strNameSpace*/, const QString& i_strEnumName ) :
 //------------------------------------------------------------------------------
-    CLeaveIdxTreeEntry(i_strEnumName),
+    CIdxTreeEntry(EIdxTreeEntryType::Leave, i_strEnumName),
     m_arpEntries(),
     m_bMaxEnumEntryIndexDirty(false),
     m_iMaxEnumEntryIndex(-1),
@@ -60,7 +60,7 @@ CEnumeration::CEnumeration(
     const SEnumEntry* i_pEnumArr,
     int               i_iArrLen ) :
 //------------------------------------------------------------------------------
-    CLeaveIdxTreeEntry(i_strEnumName),
+    CIdxTreeEntry(EIdxTreeEntryType::Leave, i_strEnumName),
     m_arpEntries(),
     m_bMaxEnumEntryIndexDirty(false),
     m_iMaxEnumEntryIndex(-1),
@@ -95,7 +95,7 @@ CEnumeration::CEnumeration(
 ////------------------------------------------------------------------------------
 //CEnumeration::CEnumeration( const CEnumeration& i_other ) :
 ////------------------------------------------------------------------------------
-//    CLeaveIdxTreeEntry(i_other),
+//    CIdxTreeEntry(i_other),
 //    m_strNameSpace(i_other.m_strNameSpace),
 //    m_arpEntries(),
 //    m_bMaxEnumEntryIndexDirty(i_other.m_bMaxEnumEntryIndexDirty),
@@ -222,14 +222,14 @@ public: // instance methods
 QString CEnumeration::getNameSpace() const
 //------------------------------------------------------------------------------
 {
-    return CLeaveIdxTreeEntry::path();
+    return CIdxTreeEntry::path();
 }
 
 //------------------------------------------------------------------------------
 QString CEnumeration::getName() const
 //------------------------------------------------------------------------------
 {
-    return CLeaveIdxTreeEntry::name();
+    return CIdxTreeEntry::name();
 }
 
 /*==============================================================================

@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -109,9 +109,9 @@ CIpcTrcClient::CIpcTrcClient( const QString& i_strName ) :
 
     if( !QObject::connect(
         /* pObjSender   */ m_pTrcAdminObjIdxTree,
-        /* szSignal     */ SIGNAL( treeEntryChanged(ZS::System::CIdxTree*, ZS::System::CAbstractIdxTreeEntry*) ),
+        /* szSignal     */ SIGNAL( treeEntryChanged(ZS::System::CIdxTree*, ZS::System::CIdxTreeEntry*) ),
         /* pObjReceiver */ this,
-        /* szSlot       */ SLOT( onTrcAdminObjIdxTreeEntryChanged(ZS::System::CIdxTree*, ZS::System::CAbstractIdxTreeEntry*) ),
+        /* szSlot       */ SLOT( onTrcAdminObjIdxTreeEntryChanged(ZS::System::CIdxTree*, ZS::System::CIdxTreeEntry*) ),
         /* cnctType     */ Qt::DirectConnection ) )
     {
         throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
@@ -537,7 +537,7 @@ void CIpcTrcClient::sendAdminObj(
 void CIpcTrcClient::sendNameSpace(
     MsgProtocol::TSystemMsgType i_systemMsgType,
     MsgProtocol::TCommand       i_cmd,
-    CBranchIdxTreeEntry*        i_pBranch,
+    CIdxTreeEntry*              i_pBranch,
     EEnabled                    i_enabled,
     int                         i_iDetailLevel )
 //------------------------------------------------------------------------------
@@ -742,7 +742,7 @@ void CIpcTrcClient::onReceivedData( const QByteArray& i_byteArr )
 
                     if( !xmlStreamReader.hasError() )
                     {
-                        CBranchIdxTreeEntry* pBranch = m_pTrcAdminObjIdxTree->getBranch(idxInTree);
+                        CIdxTreeEntry* pBranch = m_pTrcAdminObjIdxTree->getEntry(idxInTree);
 
                         if( strBranchName.isEmpty() && pBranch == nullptr )
                         {
@@ -946,8 +946,8 @@ protected slots: // connected to the slots of the trace admin object pool model
 
 //------------------------------------------------------------------------------
 void CIpcTrcClient::onTrcAdminObjIdxTreeEntryChanged(
-    CIdxTree*              /*i_pIdxTree*/,
-    CAbstractIdxTreeEntry* i_pTreeEntry )
+    CIdxTree*      /*i_pIdxTree*/,
+    CIdxTreeEntry* i_pTreeEntry )
 //------------------------------------------------------------------------------
 {
     if( m_bOnReceivedDataUpdateInProcess )
@@ -985,11 +985,11 @@ protected: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CIpcTrcClient::resetTrcAdminRefCounters( ZS::System::CBranchIdxTreeEntry* i_pBranch )
+void CIpcTrcClient::resetTrcAdminRefCounters( ZS::System::CIdxTreeEntry* i_pBranch )
 //------------------------------------------------------------------------------
 {
-    CAbstractIdxTreeEntry* pTreeEntry;
-    int                    idxEntry;
+    CIdxTreeEntry* pTreeEntry;
+    int            idxEntry;
 
     for( idxEntry = i_pBranch->count()-1; idxEntry >= 0; --idxEntry )
     {
@@ -999,7 +999,7 @@ void CIpcTrcClient::resetTrcAdminRefCounters( ZS::System::CBranchIdxTreeEntry* i
         {
             if( pTreeEntry->entryType() == EIdxTreeEntryType::Branch )
             {
-                resetTrcAdminRefCounters(dynamic_cast<CBranchIdxTreeEntry*>(pTreeEntry));
+                resetTrcAdminRefCounters(pTreeEntry);
             }
             else if( pTreeEntry->entryType() == EIdxTreeEntryType::Leave )
             {

@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -24,18 +24,23 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#include <QtCore/qtimer.h>
+#include <QtCore/qfileinfo.h>
+#include <QtCore/qrandom.h>
+#include <QtCore/qthread.h>
 
 #include "Test.h"
-#include "TSGrpTemplate.h"
 
-#include "ZSTest/ZSTestStepAdminObj.h"
-#include "ZSTest/ZSTestStepAdminObjPool.h"
+#include "ZSTest/ZSTestStep.h"
+#include "ZSTest/ZSTestStepGroup.h"
+#include "ZSSys/ZSSysErrLog.h"
+#include "ZSSys/ZSSysTrcAdminObj.h"
+#include "ZSSys/ZSSysTrcMethod.h"
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
 
 using namespace ZS::System;
+using namespace ZS::Trace;
 using namespace ZS::Apps::Test::Template;
 
 
@@ -52,15 +57,68 @@ CTest::CTest() :
 //------------------------------------------------------------------------------
     ZS::Test::CTest("ZS::System::Template")
 {
-    // Create test groups
-    //-------------------
+    int idxGroup = 0;
 
-    new CTSGrpTemplate(this);
+    ZS::Test::CTestStepGroup* pGrp1 = new ZS::Test::CTestStepGroup(
+        /* pTest      */ this,
+        /* strName    */ "Group " + QString::number(++idxGroup),
+        /* pGrpParent */ nullptr );
 
-    // Recall test admin object settings
-    //----------------------------------
+    int idxStep = 0;
 
-    m_pAdminObjPool->read_();
+    new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " Test Something",
+        /* strOperation    */ "Test Something",
+        /* pGrpParent      */ pGrp1,
+        /* szDoTestStepFct */ SLOT(doTestStepGrp1Step1(ZS::Test::CTestStep*)) );
+
+    new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " Test Something",
+        /* strOperation    */ "Test Something",
+        /* pGrpParent      */ pGrp1,
+        /* szDoTestStepFct */ SLOT(doTestStepGrp1Step2(ZS::Test::CTestStep*)) );
+
+    new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " Test Something",
+        /* strOperation    */ "Test Something",
+        /* pGrpParent      */ pGrp1,
+        /* szDoTestStepFct */ SLOT(doTestStepGrp1Step3(ZS::Test::CTestStep*)) );
+
+    ZS::Test::CTestStepGroup* pGrp2 = new ZS::Test::CTestStepGroup(
+        /* pTest      */ this,
+        /* strName    */ "Group " + QString::number(++idxGroup),
+        /* pGrpParent */ nullptr );
+
+    idxStep = 0;
+
+    new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " Test Something",
+        /* strOperation    */ "Test Something",
+        /* pGrpParent      */ pGrp2,
+        /* szDoTestStepFct */ SLOT(doTestStepGrp2Step1(ZS::Test::CTestStep*)) );
+
+    new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " Test Something",
+        /* strOperation    */ "Test Something",
+        /* pGrpParent      */ pGrp2,
+        /* szDoTestStepFct */ SLOT(doTestStepGrp2Step2(ZS::Test::CTestStep*)) );
+
+    new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " Test Something",
+        /* strOperation    */ "Test Something",
+        /* pGrpParent      */ pGrp2,
+        /* szDoTestStepFct */ SLOT(doTestStepGrp2Step3(ZS::Test::CTestStep*)) );
+
+    // Recall test step settings
+    //--------------------------
+
+    recall();
 
 } // default ctor
 
@@ -68,6 +126,296 @@ CTest::CTest() :
 CTest::~CTest()
 //------------------------------------------------------------------------------
 {
-    m_pAdminObjPool->save_();
+    SErrResultInfo errResultInfo = save();
+
+    if(errResultInfo.isErrorResult())
+    {
+        if(CErrLog::GetInstance() != nullptr)
+        {
+            CErrLog::GetInstance()->addEntry(errResultInfo);
+        }
+    }
 
 } // dtor
+
+//------------------------------------------------------------------------------
+void CTest::doTestStepGrp1Step1( ZS::Test::CTestStep* i_pTestStep )
+//------------------------------------------------------------------------------
+{
+    QString strAddTrcInfo;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    {
+        strAddTrcInfo = "TestStep: " + QString(i_pTestStep == nullptr ? "nullptr" : i_pTestStep->path());
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iFilterLevel */ ETraceDetailLevelMethodCalls,
+        /* strMethod    */ "doTestStepGrp1Step1",
+        /* strAddInfo   */ strAddTrcInfo );
+
+    QString     strExpectedValue;
+    QStringList strlstExpectedValues;
+    QString     strResultValue;
+    QStringList strlstResultValues;
+
+    // Expected Values
+    //---------------
+
+    strExpectedValue  = "TestOutput";
+    strlstExpectedValues.append(strExpectedValue);
+
+    i_pTestStep->setExpectedValues(strlstExpectedValues);
+
+    // Do Test Step
+    //-------------
+
+    QRandomGenerator randGen;
+    unsigned long uTestStepDuration_ms = 100 + randGen.generate() % 900;
+    QThread::msleep(uTestStepDuration_ms);
+
+    // Result Values
+    //---------------
+
+    strResultValue  = "TestOutput";
+    strlstResultValues.append(strResultValue);
+
+    i_pTestStep->setResultValues(strlstResultValues);
+
+} // doTestStepGrp1Step1
+
+//------------------------------------------------------------------------------
+void CTest::doTestStepGrp1Step2( ZS::Test::CTestStep* i_pTestStep )
+//------------------------------------------------------------------------------
+{
+    QString strAddTrcInfo;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    {
+        strAddTrcInfo = "TestStep: " + QString(i_pTestStep == nullptr ? "nullptr" : i_pTestStep->path());
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iFilterLevel */ ETraceDetailLevelMethodCalls,
+        /* strMethod    */ "doTestStepGrp1Step2",
+        /* strAddInfo   */ strAddTrcInfo );
+
+    QString     strExpectedValue;
+    QStringList strlstExpectedValues;
+    QString     strResultValue;
+    QStringList strlstResultValues;
+
+    // Expected Values
+    //---------------
+
+    strExpectedValue  = "TestOutput";
+    strlstExpectedValues.append(strExpectedValue);
+
+    i_pTestStep->setExpectedValues(strlstExpectedValues);
+
+    // Do Test Step
+    //-------------
+
+    QRandomGenerator randGen;
+    unsigned long uTestStepDuration_ms = 100 + randGen.generate() % 900;
+    QThread::msleep(uTestStepDuration_ms);
+
+    // Result Values
+    //---------------
+
+    strResultValue  = "TestOutput";
+    strlstResultValues.append(strResultValue);
+
+    i_pTestStep->setResultValues(strlstResultValues);
+
+} // doTestStepGrp1Step2
+
+//------------------------------------------------------------------------------
+void CTest::doTestStepGrp1Step3( ZS::Test::CTestStep* i_pTestStep )
+//------------------------------------------------------------------------------
+{
+    QString strAddTrcInfo;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    {
+        strAddTrcInfo = "TestStep: " + QString(i_pTestStep == nullptr ? "nullptr" : i_pTestStep->path());
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iFilterLevel */ ETraceDetailLevelMethodCalls,
+        /* strMethod    */ "doTestStepGrp1Step3",
+        /* strAddInfo   */ strAddTrcInfo );
+
+    QString     strExpectedValue;
+    QStringList strlstExpectedValues;
+    QString     strResultValue;
+    QStringList strlstResultValues;
+
+    // Expected Values
+    //---------------
+
+    strExpectedValue  = "TestOutput";
+    strlstExpectedValues.append(strExpectedValue);
+
+    i_pTestStep->setExpectedValues(strlstExpectedValues);
+
+    // Do Test Step
+    //-------------
+
+    QRandomGenerator randGen;
+    unsigned long uTestStepDuration_ms = 100 + randGen.generate() % 900;
+    QThread::msleep(uTestStepDuration_ms);
+
+    // Result Values
+    //---------------
+
+    strResultValue  = "TestOutput";
+    strlstResultValues.append(strResultValue);
+
+    i_pTestStep->setResultValues(strlstResultValues);
+
+} // doTestStepGrp1Step3
+
+//------------------------------------------------------------------------------
+void CTest::doTestStepGrp2Step1( ZS::Test::CTestStep* i_pTestStep )
+//------------------------------------------------------------------------------
+{
+    QString strAddTrcInfo;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    {
+        strAddTrcInfo = "TestStep: " + QString(i_pTestStep == nullptr ? "nullptr" : i_pTestStep->path());
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iFilterLevel */ ETraceDetailLevelMethodCalls,
+        /* strMethod    */ "doTestStepGrp2Step1",
+        /* strAddInfo   */ strAddTrcInfo );
+
+    QString     strExpectedValue;
+    QStringList strlstExpectedValues;
+    QString     strResultValue;
+    QStringList strlstResultValues;
+
+    // Expected Values
+    //---------------
+
+    strExpectedValue  = "TestOutput";
+    strlstExpectedValues.append(strExpectedValue);
+
+    i_pTestStep->setExpectedValues(strlstExpectedValues);
+
+    // Do Test Step
+    //-------------
+
+    QRandomGenerator randGen;
+    unsigned long uTestStepDuration_ms = 100 + randGen.generate() % 900;
+    QThread::msleep(uTestStepDuration_ms);
+
+    // Result Values
+    //---------------
+
+    strResultValue  = "TestOutput";
+    strlstResultValues.append(strResultValue);
+
+    i_pTestStep->setResultValues(strlstResultValues);
+
+} // doTestStepGrp2Step1
+
+//------------------------------------------------------------------------------
+void CTest::doTestStepGrp2Step2( ZS::Test::CTestStep* i_pTestStep )
+//------------------------------------------------------------------------------
+{
+    QString strAddTrcInfo;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    {
+        strAddTrcInfo = "TestStep: " + QString(i_pTestStep == nullptr ? "nullptr" : i_pTestStep->path());
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iFilterLevel */ ETraceDetailLevelMethodCalls,
+        /* strMethod    */ "doTestStepGrp2Step2",
+        /* strAddInfo   */ strAddTrcInfo );
+
+    QString     strExpectedValue;
+    QStringList strlstExpectedValues;
+    QString     strResultValue;
+    QStringList strlstResultValues;
+
+    // Expected Values
+    //---------------
+
+    strExpectedValue  = "TestOutput";
+    strlstExpectedValues.append(strExpectedValue);
+
+    i_pTestStep->setExpectedValues(strlstExpectedValues);
+
+    // Do Test Step
+    //-------------
+
+    QRandomGenerator randGen;
+    unsigned long uTestStepDuration_ms = 100 + randGen.generate() % 900;
+    QThread::msleep(uTestStepDuration_ms);
+
+    // Result Values
+    //---------------
+
+    strResultValue  = "TestOutputtt";
+    strlstResultValues.append(strResultValue);
+
+    i_pTestStep->setResultValues(strlstResultValues);
+
+} // doTestStepGrp2Step2
+
+//------------------------------------------------------------------------------
+void CTest::doTestStepGrp2Step3( ZS::Test::CTestStep* i_pTestStep )
+//------------------------------------------------------------------------------
+{
+    QString strAddTrcInfo;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    {
+        strAddTrcInfo = "TestStep: " + QString(i_pTestStep == nullptr ? "nullptr" : i_pTestStep->path());
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iFilterLevel */ ETraceDetailLevelMethodCalls,
+        /* strMethod    */ "doTestStepGrp2Step3",
+        /* strAddInfo   */ strAddTrcInfo );
+
+    QString     strExpectedValue;
+    QStringList strlstExpectedValues;
+    QString     strResultValue;
+    QStringList strlstResultValues;
+
+    // Expected Values
+    //---------------
+
+    strExpectedValue  = "TestOutput";
+    strlstExpectedValues.append(strExpectedValue);
+
+    i_pTestStep->setExpectedValues(strlstExpectedValues);
+
+    // Do Test Step
+    //-------------
+
+    QRandomGenerator randGen;
+    unsigned long uTestStepDuration_ms = 100 + randGen.generate() % 900;
+    QThread::msleep(uTestStepDuration_ms);
+
+    // Result Values
+    //---------------
+
+    strResultValue  = "TestOutput";
+    strlstResultValues.append(strResultValue);
+
+    i_pTestStep->setResultValues(strlstResultValues);
+
+} // doTestStepGrp2Step3

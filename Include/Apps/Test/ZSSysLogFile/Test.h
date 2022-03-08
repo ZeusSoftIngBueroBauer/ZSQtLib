@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -28,7 +28,7 @@ may result in using the software modules.
 #define ZSApps_TestZSSysLogFile_Test_h
 
 #include "ZSTest/ZSTest.h"
-#include "ZSTest/ZSTestStepAdminObj.h"
+#include "ZSTest/ZSTestStepIdxTreeEntry.h"
 
 class QTimer;
 

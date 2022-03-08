@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer, Germany
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer, Germany
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -41,7 +41,7 @@ may result in using the software modules.
 #include "MainWindow.h"
 
 #include "ZSIpcTrace/ZSIpcTrcServer.h"
-#include "ZSTest/ZSTestStepAdminObjPool.h"
+#include "ZSTest/ZSTestStepIdxTree.h"
 #include "ZSSys/ZSSysApp.h"
 #include "ZSSys/ZSSysErrLog.h"
 #include "ZSSys/ZSSysErrResult.h"

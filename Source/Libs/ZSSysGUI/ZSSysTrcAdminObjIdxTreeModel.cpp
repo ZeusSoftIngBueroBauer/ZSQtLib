@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -32,7 +32,7 @@ may result in using the software modules.
 #include <QtGui/qicon.h>
 
 #include "ZSSysGUI/ZSSysTrcAdminObjIdxTreeModel.h"
-#include "ZSSysGUI/ZSSysIdxTreeModelEntries.h"
+#include "ZSSysGUI/ZSSysIdxTreeModelEntry.h"
 #include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysTrcAdminObjIdxTree.h"
 #include "ZSSys/ZSSysTrcAdminObj.h"
@@ -50,7 +50,7 @@ using namespace ZS::Trace::GUI;
 
 
 /*******************************************************************************
-class CModelIdxTreeTrcAdminObjs : public ZS::Trace::CModelObjPool
+class CModelIdxTreeTrcAdminObjs : public ZS::Trace::CModelIdxTree
 *******************************************************************************/
 
 /*==============================================================================
@@ -78,16 +78,16 @@ QIcon CModelIdxTreeTrcAdminObjs::GetIcon( EIdxTreeEntryType i_entryType )
 
     if( !s_bIconsCreated )
     {
-        s_pPxmBranchEntryNormalOff = new QPixmap(":/ZS/TreeView/IdxTreeTrcAdminObjsBranchEntryNormalOff.bmp");
+        s_pPxmBranchEntryNormalOff = new QPixmap(":/ZS/TreeView/TrcAdminObjs/TreeViewTrcAdminObjsBranchEntryNormalOff.bmp");
         s_pPxmBranchEntryNormalOff->setMask(s_pPxmBranchEntryNormalOff->createHeuristicMask());
 
-        s_pPxmBranchEntrySelectedOff = new QPixmap(":/ZS/TreeView/IdxTreeTrcAdminObjsBranchEntrySelectedOff.bmp");
+        s_pPxmBranchEntrySelectedOff = new QPixmap(":/ZS/TreeView/TrcAdminObjs/TreeViewTrcAdminObjsBranchEntrySelectedOff.bmp");
         s_pPxmBranchEntrySelectedOff->setMask(s_pPxmBranchEntrySelectedOff->createHeuristicMask());
 
-        s_pPxmLeaveEntryNormalOff = new QPixmap(":/ZS/TreeView/IdxTreeTrcAdminObjsLeaveEntryNormalOff.bmp");
+        s_pPxmLeaveEntryNormalOff = new QPixmap(":/ZS/TreeView/TrcAdminObjs/TreeViewTrcAdminObjsLeaveEntryNormalOff.bmp");
         s_pPxmLeaveEntryNormalOff->setMask(s_pPxmLeaveEntryNormalOff->createHeuristicMask());
 
-        s_pPxmLeaveEntrySelectedOff = new QPixmap(":/ZS/TreeView/IdxTreeTrcAdminObjsLeaveEntrySelectedOff.bmp");
+        s_pPxmLeaveEntrySelectedOff = new QPixmap(":/ZS/TreeView/TrcAdminObjs/TreeViewTrcAdminObjsLeaveEntrySelectedOff.bmp");
         s_pPxmLeaveEntrySelectedOff->setMask(s_pPxmLeaveEntrySelectedOff->createHeuristicMask());
 
         s_pIconBranch = new QIcon();
@@ -147,7 +147,7 @@ CModelIdxTreeTrcAdminObjs::CModelIdxTreeTrcAdminObjs(
     int                   i_iTrcDetailLevel ) :
 //------------------------------------------------------------------------------
     CModelIdxTree(
-        /* pObjPool        */ i_pTrcAdminObjIdxTree,
+        /* pIdxTree        */ i_pTrcAdminObjIdxTree,
         /* pObjParent      */ i_pObjParent,
         /* iTrcDetailLevel */ i_iTrcDetailLevel )
 {
@@ -413,7 +413,7 @@ Qt::ItemFlags CModelIdxTreeTrcAdminObjs::flags( const QModelIndex& i_modelIdx ) 
 
     if( i_modelIdx.isValid() && i_modelIdx.column() == EColumnDetailLevel )
     {
-        CModelAbstractTreeEntry* pModelTreeEntry = static_cast<CModelAbstractTreeEntry*>(i_modelIdx.internalPointer());
+        CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(i_modelIdx.internalPointer());
 
         CTrcAdminObj* pTrcAdminObj = nullptr;
 
@@ -465,27 +465,27 @@ QVariant CModelIdxTreeTrcAdminObjs::data( const QModelIndex& i_modelIdx, int i_i
 
     QVariant varData;
 
-    CModelAbstractTreeEntry* pModelTreeEntry = nullptr;
+    CModelIdxTreeEntry* pModelTreeEntry = nullptr;
 
     if( i_modelIdx.isValid() )
     {
-        pModelTreeEntry = static_cast<CModelAbstractTreeEntry*>(i_modelIdx.internalPointer());
+        pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(i_modelIdx.internalPointer());
     }
 
     if( pModelTreeEntry != nullptr )
     {
-        CModelBranchTreeEntry* pModelBranch = nullptr;
-        CModelLeaveTreeEntry*  pModelLeave  = nullptr;
+        CModelIdxTreeEntry* pModelBranch = nullptr;
+        CModelIdxTreeEntry* pModelLeave  = nullptr;
 
         CTrcAdminObj* pTrcAdminObj = nullptr;
 
         if( pModelTreeEntry->entryType() == EIdxTreeEntryType::Root || pModelTreeEntry->entryType() == EIdxTreeEntryType::Branch )
         {
-            pModelBranch = dynamic_cast<CModelBranchTreeEntry*>(pModelTreeEntry);
+            pModelBranch = pModelTreeEntry;
         }
         else if( pModelTreeEntry->entryType() == EIdxTreeEntryType::Leave )
         {
-            pModelLeave = dynamic_cast<CModelLeaveTreeEntry*>(pModelTreeEntry);
+            pModelLeave = pModelTreeEntry;
             pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(pModelLeave->treeEntry());
         }
 
@@ -739,27 +739,27 @@ bool CModelIdxTreeTrcAdminObjs::setData( const QModelIndex& i_modelIdx, const QV
 
     if( i_iRole == Qt::EditRole && i_varData.isValid() && i_modelIdx.isValid() && i_modelIdx.column() == EColumnDetailLevel )
     {
-        CModelAbstractTreeEntry* pModelTreeEntry = nullptr;
+        CModelIdxTreeEntry* pModelTreeEntry = nullptr;
 
         if( i_modelIdx.isValid() )
         {
-            pModelTreeEntry = static_cast<CModelAbstractTreeEntry*>(i_modelIdx.internalPointer());
+            pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(i_modelIdx.internalPointer());
         }
 
         if( pModelTreeEntry != nullptr )
         {
-            //CModelBranchTreeEntry* pModelBranch = nullptr;
-            CModelLeaveTreeEntry*  pModelLeave  = nullptr;
+            //CModelIdxTreeEntry* pModelBranch = nullptr;
+            CModelIdxTreeEntry*   pModelLeave  = nullptr;
 
             CTrcAdminObj* pTrcAdminObj = nullptr;
 
             if( pModelTreeEntry->entryType() == EIdxTreeEntryType::Root || pModelTreeEntry->entryType() == EIdxTreeEntryType::Branch )
             {
-                //pModelBranch = dynamic_cast<CModelBranchTreeEntry*>(pModelTreeEntry);
+                //pModelBranch = pModelTreeEntry;
             }
             else if( pModelTreeEntry->entryType() == EIdxTreeEntryType::Leave )
             {
-                pModelLeave = dynamic_cast<CModelLeaveTreeEntry*>(pModelTreeEntry);
+                pModelLeave = pModelTreeEntry;
                 pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(pModelLeave->treeEntry());
             }
 
