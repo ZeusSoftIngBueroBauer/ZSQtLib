@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -24,38 +24,37 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#ifndef ZSApps_TestTemplate_TSGrpTemplate_h
-#define ZSApps_TestTemplate_TSGrpTemplate_h
+#ifndef ZSTest_TestStepRoot_h
+#define ZSTest_TestStepRoot_h
 
-#include "ZSTest/ZSTest.h"
 #include "ZSTest/ZSTestStepGroup.h"
 
 namespace ZS
 {
-namespace Apps
-{
 namespace Test
 {
-namespace Template
-{
-class CTest;
-
 //******************************************************************************
-class CTSGrpTemplate : public ZS::Test::CTestStepGroup
+class ZSTESTDLL_API CTestStepRoot : public CTestStepGroup
 //******************************************************************************
 {
+public: // class methods
+    static QString NameSpace() { return "ZS::Test"; }
+    static QString ClassName() { return "CTestStepRoot"; }
 public: // ctors and dtor
-    CTSGrpTemplate( CTest* i_pTest, ZS::Test::CTestStepGroup* i_pTSGrpParent = nullptr );
-    ~CTSGrpTemplate();
+    CTestStepRoot( CTest* i_pTest, const QString&  i_strName );
+    virtual ~CTestStepRoot();
+public: // overridables
+    virtual QString nameSpace() const { return CTestStepRoot::NameSpace(); }
+    virtual QString className() const { return CTestStepRoot::ClassName(); }
+private: // default ctor not allowed
+    CTestStepRoot();
+private: // copy ctor not allowed
+    CTestStepRoot( const CTestStepRoot& );
 
-}; // class CTSGrpTemplate
-
-} // namespace Template
+}; // class CTestStepRoot
 
 } // namespace Test
 
-} // namespace Apps
-
 } // namespace ZS
 
-#endif // #ifndef ZSApps_TestTemplate_TSGrpTemplate_h
+#endif // #ifndef ZSTest_TestStepRoot_h

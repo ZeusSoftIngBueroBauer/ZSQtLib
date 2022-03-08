@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -24,13 +24,15 @@ may result in using the software modules.
 
 *******************************************************************************/
 
+#include <QtCore/qfileinfo.h>
 #include "Test.h"
 
 #include "ZSTest/ZSTestStep.h"
 #include "ZSTest/ZSTestStepGroup.h"
-#include "ZSTest/ZSTestStepAdminObj.h"
-#include "ZSTest/ZSTestStepAdminObjPool.h"
+#include "ZSTest/ZSTestStepIdxTreeEntry.h"
+#include "ZSTest/ZSTestStepIdxTree.h"
 #include "ZSSys/ZSSysEnumTemplate.h"
+#include "ZSSys/ZSSysErrLog.h"
 #include "ZSSys/ZSSysException.h"
 
 #include "ZSSys/ZSSysMemLeakDump.h"
@@ -383,10 +385,10 @@ CTest::CTest() :
         /* pGrpParent      */ pTstGrp,
         /* szDoTestStepFct */ SLOT(doTestStepEnumClassTemplateUserDefinedForLoop(ZS::Test::CTestStep*)) );
 
-    // Recall test admin object settings
-    //----------------------------------
+    // Recall test step settings
+    //--------------------------
 
-    m_pAdminObjPool->read_();
+    recall();
 
 } // default ctor
 
@@ -394,7 +396,15 @@ CTest::CTest() :
 CTest::~CTest()
 //------------------------------------------------------------------------------
 {
-    m_pAdminObjPool->save_();
+    SErrResultInfo errResultInfo = save();
+
+    if(errResultInfo.isErrorResult())
+    {
+        if(CErrLog::GetInstance() != nullptr)
+        {
+            CErrLog::GetInstance()->addEntry(errResultInfo);
+        }
+    }
 
 } // dtor
 
@@ -406,11 +416,11 @@ public: // test step methods
 void CTest::doTestStepEnumEntryClassMethodsEnumerator2Str( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
-    QStringList strlstDesiredValues;
-    QStringList strlstActualValues;
+    QStringList strlstExpectedValues;
+    QStringList strlstResultValues;
 
-    QString strDesiredValue;
-    QString strActualValue;
+    QString strExpectedValue;
+    QString strResultValue;
 
     EProcessorClock enumerator;
     QString         strEnumerator;
@@ -431,12 +441,12 @@ void CTest::doTestStepEnumEntryClassMethodsEnumerator2Str( ZS::Test::CTestStep* 
         else if( iEnumerator == 2 ) { enumerator = EProcessorClock::High; strEnumerator = "High"; }
         else { enumerator = static_cast<EProcessorClock>(iEnumerator); strEnumerator = QString::number(static_cast<int>(enumerator)); }
 
-        strDesiredValue = "SEnumEntry::enumerator2Str(" + strEnumerator + "): " + strEnumerator;
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "SEnumEntry::enumerator2Str(" + strEnumerator + "): " + strEnumerator;
+        strlstExpectedValues.append(strExpectedValue);
 
-        strActualValue = "SEnumEntry::enumerator2Str(" + strEnumerator + "): ";
-        strActualValue += SEnumEntry::enumerator2Str(pEnumArr, iEnumArrLen, static_cast<int>(enumerator));
-        strlstActualValues.append(strActualValue);
+        strResultValue = "SEnumEntry::enumerator2Str(" + strEnumerator + "): ";
+        strResultValue += SEnumEntry::enumerator2Str(pEnumArr, iEnumArrLen, static_cast<int>(enumerator));
+        strlstResultValues.append(strResultValue);
     }
 
     // -------------------------------------------------------------------------
@@ -482,14 +492,14 @@ void CTest::doTestStepEnumEntryClassMethodsEnumerator2Str( ZS::Test::CTestStep* 
                 strResultExpected = "?, ?";
             }
 
-            strDesiredValue = "SEnumEntry::enumerator2Str(" + strEnumerator + ", " + enumEntryAlias2Str(static_cast<EEnumEntryAliasStr>(idxAlias)) + "): ";
-            strDesiredValue += strResultExpected;
-            strlstDesiredValues.append(strDesiredValue);
+            strExpectedValue = "SEnumEntry::enumerator2Str(" + strEnumerator + ", " + enumEntryAlias2Str(static_cast<EEnumEntryAliasStr>(idxAlias)) + "): ";
+            strExpectedValue += strResultExpected;
+            strlstExpectedValues.append(strExpectedValue);
 
-            strActualValue = "SEnumEntry::enumerator2Str(" + strEnumerator + ", " + enumEntryAlias2Str(static_cast<EEnumEntryAliasStr>(idxAlias)) + "): ";
+            strResultValue = "SEnumEntry::enumerator2Str(" + strEnumerator + ", " + enumEntryAlias2Str(static_cast<EEnumEntryAliasStr>(idxAlias)) + "): ";
             strEnumerator = SEnumEntry::enumerator2Str(pEnumArr, iEnumArrLen, static_cast<int>(enumerator), idxAlias);
-            strActualValue += strEnumerator;
-            strlstActualValues.append(strActualValue);
+            strResultValue += strEnumerator;
+            strlstResultValues.append(strResultValue);
         }
     }
 
@@ -504,61 +514,61 @@ void CTest::doTestStepEnumEntryClassMethodsEnumerator2Str( ZS::Test::CTestStep* 
         else if( iEnumerator == 2 ) { enumerator = EProcessorClock::High; strEnumerator = "High"; }
         else { enumerator = static_cast<EProcessorClock>(iEnumerator); strEnumerator = QString::number(static_cast<int>(enumerator)); }
 
-        strDesiredValue  = "SEnumEntry::enumerator2Str(" + strEnumerator + ", " + enumEntryAlias2Str(static_cast<EEnumEntryAliasStr>(idxAlias)) + "): ";
-        strDesiredValue += "Enumerator " + strEnumerator + " does not have an alias string at index " + QString::number(idxAlias);
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue  = "SEnumEntry::enumerator2Str(" + strEnumerator + ", " + enumEntryAlias2Str(static_cast<EEnumEntryAliasStr>(idxAlias)) + "): ";
+        strExpectedValue += "Enumerator " + strEnumerator + " does not have an alias string at index " + QString::number(idxAlias);
+        strlstExpectedValues.append(strExpectedValue);
 
         try
         {
-            strActualValue = "SEnumEntry::enumerator2Str(" + strEnumerator + ", " + enumEntryAlias2Str(static_cast<EEnumEntryAliasStr>(idxAlias)) + "): ";
+            strResultValue = "SEnumEntry::enumerator2Str(" + strEnumerator + ", " + enumEntryAlias2Str(static_cast<EEnumEntryAliasStr>(idxAlias)) + "): ";
             strEnumerator = SEnumEntry::enumerator2Str(pEnumArr, iEnumArrLen, static_cast<int>(enumerator), idxAlias);
-            strActualValue += strEnumerator;
+            strResultValue += strEnumerator;
         }
         catch( CException& exc )
         {
-            strActualValue += exc.getAddErrInfo();
+            strResultValue += exc.getAddErrInfo();
         }
-        strlstActualValues.append(strActualValue);
+        strlstResultValues.append(strResultValue);
     }
 
     // -------------------------------------------------------------------------
 
-    strDesiredValue = "SEnumEntry::enumerator2Str(-1): Enumerator -1 not in range [0..2][Low..High]";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "SEnumEntry::enumerator2Str(-1): Enumerator -1 not in range [0..2][Low..High]";
+    strlstExpectedValues.append(strExpectedValue);
 
     try
     {
         iEnumerator = -1;
         enumerator = static_cast<EProcessorClock>(iEnumerator);
-        strActualValue = "SEnumEntry::enumerator2Str(" + QString::number(static_cast<int>(enumerator)) + "): ";
-        strActualValue += SEnumEntry::enumerator2Str(pEnumArr, iEnumArrLen, static_cast<int>(enumerator));
+        strResultValue = "SEnumEntry::enumerator2Str(" + QString::number(static_cast<int>(enumerator)) + "): ";
+        strResultValue += SEnumEntry::enumerator2Str(pEnumArr, iEnumArrLen, static_cast<int>(enumerator));
     }
     catch( CException& exc )
     {
-        strActualValue += exc.getAddErrInfo();
+        strResultValue += exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
-    strDesiredValue = "SEnumEntry::enumerator2Str(3): Enumerator 3 not in range [0..2][Low..High]";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "SEnumEntry::enumerator2Str(3): Enumerator 3 not in range [0..2][Low..High]";
+    strlstExpectedValues.append(strExpectedValue);
 
     try
     {
         iEnumerator = iEnumArrLen;
         enumerator = static_cast<EProcessorClock>(iEnumerator);
-        strActualValue = "SEnumEntry::enumerator2Str(" + QString::number(static_cast<int>(enumerator)) + "): ";
-        strActualValue += SEnumEntry::enumerator2Str(pEnumArr, iEnumArrLen, static_cast<int>(enumerator));
+        strResultValue = "SEnumEntry::enumerator2Str(" + QString::number(static_cast<int>(enumerator)) + "): ";
+        strResultValue += SEnumEntry::enumerator2Str(pEnumArr, iEnumArrLen, static_cast<int>(enumerator));
     }
     catch( CException& exc )
     {
-        strActualValue = "SEnumEntry::enumerator2Str(" + QString::number(iEnumerator) + "): " + exc.getAddErrInfo();
+        strResultValue = "SEnumEntry::enumerator2Str(" + QString::number(iEnumerator) + "): " + exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
-    i_pTestStep->setDesiredValues(strlstDesiredValues);
-    i_pTestStep->setActualValues(strlstActualValues);
+    i_pTestStep->setExpectedValues(strlstExpectedValues);
+    i_pTestStep->setResultValues(strlstResultValues);
 
 } // doTestStepEnumEntryClassMethodsEnumerator2Str
 
@@ -566,11 +576,11 @@ void CTest::doTestStepEnumEntryClassMethodsEnumerator2Str( ZS::Test::CTestStep* 
 void CTest::doTestStepEnumEntryClassMethodsEnumerator2Val( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
-    QStringList strlstDesiredValues;
-    QStringList strlstActualValues;
+    QStringList strlstExpectedValues;
+    QStringList strlstResultValues;
 
-    QString strDesiredValue;
-    QString strActualValue;
+    QString strExpectedValue;
+    QString strResultValue;
 
     EProcessorClock enumerator;
     QString         strEnumerator;
@@ -613,69 +623,69 @@ void CTest::doTestStepEnumEntryClassMethodsEnumerator2Val( ZS::Test::CTestStep* 
             valExpected = QVariant();
         }
 
-        strDesiredValue = "SEnumEntry::enumerator2Val(" + strEnumerator + "): ";
-        if( valExpected.canConvert(QVariant::Double) ) strDesiredValue += QString::number(valExpected.toDouble(),'f',1);
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "SEnumEntry::enumerator2Val(" + strEnumerator + "): ";
+        if( valExpected.canConvert(QVariant::Double) ) strExpectedValue += QString::number(valExpected.toDouble(),'f',1);
+        strlstExpectedValues.append(strExpectedValue);
 
         valResult = SEnumEntry::enumerator2Val(pEnumArr, iEnumArrLen, static_cast<int>(enumerator));
-        strActualValue = "SEnumEntry::enumerator2Val(" + strEnumerator + "): ";
-        if( valResult.canConvert(QVariant::Double) ) strActualValue += QString::number(valResult.toDouble(),'f',1);
-        strlstActualValues.append(strActualValue);
+        strResultValue = "SEnumEntry::enumerator2Val(" + strEnumerator + "): ";
+        if( valResult.canConvert(QVariant::Double) ) strResultValue += QString::number(valResult.toDouble(),'f',1);
+        strlstResultValues.append(strResultValue);
     }
 
-    strDesiredValue = "SEnumEntry::enumerator2Val(-1): Enumerator -1 not in range [0..2][Low..High]";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "SEnumEntry::enumerator2Val(-1): Enumerator -1 not in range [0..2][Low..High]";
+    strlstExpectedValues.append(strExpectedValue);
 
     try
     {
         iEnumerator = -1;
         enumerator = static_cast<EProcessorClock>(iEnumerator);
         strEnumerator = QString::number(static_cast<int>(enumerator));
-        strActualValue = "SEnumEntry::enumerator2Val(" + strEnumerator + "): ";
+        strResultValue = "SEnumEntry::enumerator2Val(" + strEnumerator + "): ";
         valResult = SEnumEntry::enumerator2Val(pEnumArr, iEnumArrLen, static_cast<int>(enumerator));
-        if( valResult.canConvert(QVariant::Double) ) strActualValue += QString::number(valResult.toDouble(),'f',1);
+        if( valResult.canConvert(QVariant::Double) ) strResultValue += QString::number(valResult.toDouble(),'f',1);
     }
     catch( CException& exc )
     {
-        strActualValue = "SEnumEntry::enumerator2Val(" + strEnumerator + "): " + exc.getAddErrInfo();
+        strResultValue = "SEnumEntry::enumerator2Val(" + strEnumerator + "): " + exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
-    strDesiredValue = "SEnumEntry::enumerator2Val(3): Enumerator 3 not in range [0..2][Low..High]";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "SEnumEntry::enumerator2Val(3): Enumerator 3 not in range [0..2][Low..High]";
+    strlstExpectedValues.append(strExpectedValue);
 
     try
     {
         iEnumerator = iEnumArrLen;
         enumerator = static_cast<EProcessorClock>(iEnumerator);
         strEnumerator = QString::number(static_cast<int>(enumerator));
-        strActualValue = "SEnumEntry::enumerator2Val(" + strEnumerator + "): ";
+        strResultValue = "SEnumEntry::enumerator2Val(" + strEnumerator + "): ";
         valResult = SEnumEntry::enumerator2Val(pEnumArr, iEnumArrLen, static_cast<int>(enumerator));
-        if( valResult.canConvert(QVariant::Double) ) strActualValue += QString::number(valResult.toDouble(),'f',1);
+        if( valResult.canConvert(QVariant::Double) ) strResultValue += QString::number(valResult.toDouble(),'f',1);
     }
     catch( CException& exc )
     {
-        strActualValue = "SEnumEntry::enumerator2Val(" + strEnumerator + "): " + exc.getAddErrInfo();
+        strResultValue = "SEnumEntry::enumerator2Val(" + strEnumerator + "): " + exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     for( iEnumerator = 0; iEnumerator < iEnumArrLen; ++iEnumerator )
     {
-        if( iEnumerator == 0 ) { enumerator = EProcessorClock::Low; strEnumerator = "Low"; strValResult = QString::number(5.12e6,'f',1); }
-        else if( iEnumerator == 1 ) { enumerator = EProcessorClock::Medium; strEnumerator = "Medium"; strValResult = QString::number(5.12e8,'f',1); }
-        else if( iEnumerator == 2 ) { enumerator = EProcessorClock::High; strEnumerator = "High"; strValResult = QString::number(5.12e9,'f',1); }
+        if( iEnumerator == 0 ) { enumerator = EProcessorClock::Low; strEnumerator = "Low"; strValResult = "5120000.0"; }
+        else if( iEnumerator == 1 ) { enumerator = EProcessorClock::Medium; strEnumerator = "Medium"; strValResult = "512000000.0"; }
+        else if( iEnumerator == 2 ) { enumerator = EProcessorClock::High; strEnumerator = "High"; strValResult = "5120000000.0"; }
         else { enumerator = static_cast<EProcessorClock>(iEnumerator); strEnumerator = QString::number(static_cast<int>(enumerator)); strValResult = ""; }
 
-        strDesiredValue = "SEnumEntry::enumerator2Val(" + strEnumerator + ", Double, &bOk): " + strValResult + ", true";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "SEnumEntry::enumerator2Val(" + strEnumerator + ", Double, &bOk): " + strValResult + ", true";
+        strlstExpectedValues.append(strExpectedValue);
 
-        strActualValue = "SEnumEntry::enumerator2Val(" + strEnumerator + ", Double, &bOk): ";
+        strResultValue = "SEnumEntry::enumerator2Val(" + strEnumerator + ", Double, &bOk): ";
         valResult = SEnumEntry::enumerator2Val(pEnumArr, iEnumArrLen, static_cast<int>(enumerator), QVariant::Double, &bOk);
-        if( bOk ) strActualValue += QString::number(valResult.toDouble(),'f',1) + ", " + bool2Str(bOk);
-        else strActualValue += valResult.toString() + ", " + bool2Str(bOk);
-        strlstActualValues.append(strActualValue);
+        if( bOk ) strResultValue += QString::number(valResult.toDouble(),'f',1) + ", " + bool2Str(bOk);
+        else strResultValue += valResult.toString() + ", " + bool2Str(bOk);
+        strlstResultValues.append(strResultValue);
     }
 
     try
@@ -684,20 +694,20 @@ void CTest::doTestStepEnumEntryClassMethodsEnumerator2Val( ZS::Test::CTestStep* 
         enumerator = static_cast<EProcessorClock>(iEnumerator);
         strEnumerator = QString::number(static_cast<int>(enumerator));
 
-        strDesiredValue = "SEnumEntry::enumerator2Val(" + strEnumerator + ", Double, &bOk): ";
-        strDesiredValue += "Enumerator " + strEnumerator + " not in range [0..2][Low..High]";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "SEnumEntry::enumerator2Val(" + strEnumerator + ", Double, &bOk): ";
+        strExpectedValue += "Enumerator " + strEnumerator + " not in range [0..2][Low..High]";
+        strlstExpectedValues.append(strExpectedValue);
 
-        strActualValue = "SEnumEntry::enumerator2Val(" + strEnumerator + ", Double, &bOk): ";
+        strResultValue = "SEnumEntry::enumerator2Val(" + strEnumerator + ", Double, &bOk): ";
         valResult = SEnumEntry::enumerator2Val(pEnumArr, iEnumArrLen, static_cast<int>(enumerator), QVariant::Double, &bOk);
-        if( bOk ) strActualValue += QString::number(valResult.toDouble(),'f',1) + ", " + bool2Str(bOk);
-        else strActualValue += valResult.toString() + ", " + bool2Str(bOk);
+        if( bOk ) strResultValue += QString::number(valResult.toDouble(),'f',1) + ", " + bool2Str(bOk);
+        else strResultValue += valResult.toString() + ", " + bool2Str(bOk);
     }
     catch( CException& exc )
     {
-        strActualValue = "SEnumEntry::enumerator2Val(" + QString::number(iEnumerator) + ", Double, &bOk): " + exc.getAddErrInfo();
+        strResultValue = "SEnumEntry::enumerator2Val(" + QString::number(iEnumerator) + ", Double, &bOk): " + exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
@@ -705,25 +715,25 @@ void CTest::doTestStepEnumEntryClassMethodsEnumerator2Val( ZS::Test::CTestStep* 
         enumerator = static_cast<EProcessorClock>(iEnumerator);
         strEnumerator = QString::number(static_cast<int>(enumerator));
 
-        strDesiredValue = "SEnumEntry::enumerator2Val(" + strEnumerator + ", Double, &bOk): ";
-        strDesiredValue += "Enumerator " + strEnumerator + " not in range [0..2][Low..High]";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "SEnumEntry::enumerator2Val(" + strEnumerator + ", Double, &bOk): ";
+        strExpectedValue += "Enumerator " + strEnumerator + " not in range [0..2][Low..High]";
+        strlstExpectedValues.append(strExpectedValue);
 
-        strActualValue = "SEnumEntry::enumerator2Val(" + strEnumerator + ", Double, &bOk): ";
+        strResultValue = "SEnumEntry::enumerator2Val(" + strEnumerator + ", Double, &bOk): ";
         valResult = SEnumEntry::enumerator2Val(pEnumArr, iEnumArrLen, static_cast<int>(enumerator), QVariant::Double, &bOk);
-        if( bOk ) strActualValue += QString::number(valResult.toDouble(),'f',1) + ", " + bool2Str(bOk);
-        else strActualValue += valResult.toString() + ", " + bool2Str(bOk);
+        if( bOk ) strResultValue += QString::number(valResult.toDouble(),'f',1) + ", " + bool2Str(bOk);
+        else strResultValue += valResult.toString() + ", " + bool2Str(bOk);
     }
     catch( CException& exc )
     {
-        strActualValue = "SEnumEntry::enumerator2Val(" + strEnumerator + ", Double, &bOk): " + exc.getAddErrInfo();
+        strResultValue = "SEnumEntry::enumerator2Val(" + strEnumerator + ", Double, &bOk): " + exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
-    i_pTestStep->setDesiredValues(strlstDesiredValues);
-    i_pTestStep->setActualValues(strlstActualValues);
+    i_pTestStep->setExpectedValues(strlstExpectedValues);
+    i_pTestStep->setResultValues(strlstResultValues);
 
 } // doTestStepEnumEntryClassMethodsEnumerator2Val
 
@@ -731,11 +741,11 @@ void CTest::doTestStepEnumEntryClassMethodsEnumerator2Val( ZS::Test::CTestStep* 
 void CTest::doTestStepEnumEntryClassMethodsStr2Enumerator( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
-    QStringList strlstDesiredValues;
-    QStringList strlstActualValues;
+    QStringList strlstExpectedValues;
+    QStringList strlstResultValues;
 
-    QString strDesiredValue;
-    QString strActualValue;
+    QString strExpectedValue;
+    QString strResultValue;
 
     EProcessorClock     enumerator;
     QString             strEnumeratorSource;
@@ -760,9 +770,9 @@ void CTest::doTestStepEnumEntryClassMethodsStr2Enumerator( ZS::Test::CTestStep* 
         else if( iEnumerator == 2 ) { strEnumeratorSource = "High"; }
         else { strEnumeratorSource = QString::number(iEnumerator); }
 
-        strDesiredValue = "SEnumEntry::str2Enumerator(" + strEnumeratorSource + "): ";
-        strDesiredValue += strEnumeratorSource;
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "SEnumEntry::str2Enumerator(" + strEnumeratorSource + "): ";
+        strExpectedValue += strEnumeratorSource;
+        strlstExpectedValues.append(strExpectedValue);
 
         enumerator = static_cast<EProcessorClock>(SEnumEntry::str2Enumerator(pEnumArr, iEnumArrLen, strEnumeratorSource));
 
@@ -771,9 +781,9 @@ void CTest::doTestStepEnumEntryClassMethodsStr2Enumerator( ZS::Test::CTestStep* 
         else if( enumerator == EProcessorClock::High ) { strEnumeratorResult = "High"; }
         else { strEnumeratorResult = QString::number(static_cast<int>(enumerator)); }
 
-        strActualValue = "SEnumEntry::str2Enumerator(" + strEnumeratorSource + "): ";
-        strActualValue += strEnumeratorResult;
-        strlstActualValues.append(strActualValue);
+        strResultValue = "SEnumEntry::str2Enumerator(" + strEnumeratorSource + "): ";
+        strResultValue += strEnumeratorResult;
+        strlstResultValues.append(strResultValue);
     }
 
     // -------------------------------------------------------------------------
@@ -827,18 +837,18 @@ void CTest::doTestStepEnumEntryClassMethodsStr2Enumerator( ZS::Test::CTestStep* 
                 strEnumeratorSource = QString::number(iEnumerator);
             }
 
-            strDesiredValue = "SEnumEntry::str2Enumerator(" + strEnumeratorSource + ", " + strAlias + "): ";
-            strDesiredValue += strEnumeratorResult;
-            strlstDesiredValues.append(strDesiredValue);
+            strExpectedValue = "SEnumEntry::str2Enumerator(" + strEnumeratorSource + ", " + strAlias + "): ";
+            strExpectedValue += strEnumeratorResult;
+            strlstExpectedValues.append(strExpectedValue);
 
-            strActualValue = "SEnumEntry::str2Enumerator(" + strEnumeratorSource + ", " + strAlias + "): ";
+            strResultValue = "SEnumEntry::str2Enumerator(" + strEnumeratorSource + ", " + strAlias + "): ";
             enumerator = static_cast<EProcessorClock>(SEnumEntry::str2Enumerator(pEnumArr, iEnumArrLen, strEnumeratorSource, idxAlias));
             if( enumerator == EProcessorClock::Low ) strEnumeratorResult = "Low";
             else if( enumerator == EProcessorClock::Medium ) strEnumeratorResult = "Medium";
             else if( enumerator == EProcessorClock::High ) strEnumeratorResult = "High";
             else strEnumeratorResult = QString::number(static_cast<int>(enumerator));
-            strActualValue += strEnumeratorResult;
-            strlstActualValues.append(strActualValue);
+            strResultValue += strEnumeratorResult;
+            strlstResultValues.append(strResultValue);
 
         } // for( iEnumerator = 0; iEnumerator < iEnumArrLen; ++iEnumerator )
     } // for( idxAlias = 0; idxAlias <= EEnumEntryAliasStrSCPILong; ++idxAlias )
@@ -852,18 +862,18 @@ void CTest::doTestStepEnumEntryClassMethodsStr2Enumerator( ZS::Test::CTestStep* 
     strCaseSensitivity = qCaseSensitivity2Str(caseSensitivity);
     strEnumeratorResult = "Medium";
 
-    strDesiredValue = "SEnumEntry::str2Enumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
-    strDesiredValue += strEnumeratorResult + ", true";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "SEnumEntry::str2Enumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
+    strExpectedValue += strEnumeratorResult + ", true";
+    strlstExpectedValues.append(strExpectedValue);
 
-    strActualValue = "SEnumEntry::str2Enumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
+    strResultValue = "SEnumEntry::str2Enumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
     enumerator = static_cast<EProcessorClock>(SEnumEntry::str2Enumerator(pEnumArr, iEnumArrLen, strEnumeratorSource, idxAlias, caseSensitivity, &bOk));
     if( enumerator == EProcessorClock::Low ) strEnumeratorResult = "Low";
     else if( enumerator == EProcessorClock::Medium ) strEnumeratorResult = "Medium";
     else if( enumerator == EProcessorClock::High ) strEnumeratorResult = "High";
     else strEnumeratorResult = QString::number(static_cast<int>(enumerator));
-    strActualValue += strEnumeratorResult + ", " + bool2Str(bOk);
-    strlstActualValues.append(strActualValue);
+    strResultValue += strEnumeratorResult + ", " + bool2Str(bOk);
+    strlstResultValues.append(strResultValue);
 
     strEnumeratorSource = "medIUM";
     idxAlias = ZS::System::EEnumEntryAliasStrName;
@@ -872,18 +882,18 @@ void CTest::doTestStepEnumEntryClassMethodsStr2Enumerator( ZS::Test::CTestStep* 
     strCaseSensitivity = qCaseSensitivity2Str(caseSensitivity);
     strEnumeratorResult = "-1";
 
-    strDesiredValue = "SEnumEntry::str2Enumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
-    strDesiredValue += strEnumeratorResult + ", false";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "SEnumEntry::str2Enumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
+    strExpectedValue += strEnumeratorResult + ", false";
+    strlstExpectedValues.append(strExpectedValue);
 
-    strActualValue = "SEnumEntry::str2Enumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
+    strResultValue = "SEnumEntry::str2Enumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
     enumerator = static_cast<EProcessorClock>(SEnumEntry::str2Enumerator(pEnumArr, iEnumArrLen, strEnumeratorSource, idxAlias, caseSensitivity, &bOk));
     if( enumerator == EProcessorClock::Low ) strEnumeratorResult = "Low";
     else if( enumerator == EProcessorClock::Medium ) strEnumeratorResult = "Medium";
     else if( enumerator == EProcessorClock::High ) strEnumeratorResult = "High";
     else strEnumeratorResult = QString::number(static_cast<int>(enumerator));
-    strActualValue += strEnumeratorResult + ", " + bool2Str(bOk);
-    strlstActualValues.append(strActualValue);
+    strResultValue += strEnumeratorResult + ", " + bool2Str(bOk);
+    strlstResultValues.append(strResultValue);
 
     strEnumeratorSource = "medIUM";
     idxAlias = ZS::System::EEnumEntryAliasStrName;
@@ -892,18 +902,18 @@ void CTest::doTestStepEnumEntryClassMethodsStr2Enumerator( ZS::Test::CTestStep* 
     strCaseSensitivity = qCaseSensitivity2Str(caseSensitivity);
     strEnumeratorResult = "Medium";
 
-    strDesiredValue = "SEnumEntry::str2Enumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
-    strDesiredValue += strEnumeratorResult + ", true";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "SEnumEntry::str2Enumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
+    strExpectedValue += strEnumeratorResult + ", true";
+    strlstExpectedValues.append(strExpectedValue);
 
-    strActualValue = "SEnumEntry::str2Enumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
+    strResultValue = "SEnumEntry::str2Enumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
     enumerator = static_cast<EProcessorClock>(SEnumEntry::str2Enumerator(pEnumArr, iEnumArrLen, strEnumeratorSource, idxAlias, caseSensitivity, &bOk));
     if( enumerator == EProcessorClock::Low ) strEnumeratorResult = "Low";
     else if( enumerator == EProcessorClock::Medium ) strEnumeratorResult = "Medium";
     else if( enumerator == EProcessorClock::High ) strEnumeratorResult = "High";
     else strEnumeratorResult = QString::number(static_cast<int>(enumerator));
-    strActualValue += strEnumeratorResult + ", " + bool2Str(bOk);
-    strlstActualValues.append(strActualValue);
+    strResultValue += strEnumeratorResult + ", " + bool2Str(bOk);
+    strlstResultValues.append(strResultValue);
 
     strEnumeratorSource = "MEDium";
     idxAlias = ZS::System::EEnumEntryAliasStrUndefined;
@@ -912,18 +922,18 @@ void CTest::doTestStepEnumEntryClassMethodsStr2Enumerator( ZS::Test::CTestStep* 
     strCaseSensitivity = qCaseSensitivity2Str(caseSensitivity);
     strEnumeratorResult = "Medium";
 
-    strDesiredValue = "SEnumEntry::str2Enumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
-    strDesiredValue += strEnumeratorResult + ", true";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "SEnumEntry::str2Enumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
+    strExpectedValue += strEnumeratorResult + ", true";
+    strlstExpectedValues.append(strExpectedValue);
 
-    strActualValue = "SEnumEntry::str2Enumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
+    strResultValue = "SEnumEntry::str2Enumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
     enumerator = static_cast<EProcessorClock>(SEnumEntry::str2Enumerator(pEnumArr, iEnumArrLen, strEnumeratorSource, idxAlias, caseSensitivity, &bOk));
     if( enumerator == EProcessorClock::Low ) strEnumeratorResult = "Low";
     else if( enumerator == EProcessorClock::Medium ) strEnumeratorResult = "Medium";
     else if( enumerator == EProcessorClock::High ) strEnumeratorResult = "High";
     else strEnumeratorResult = QString::number(static_cast<int>(enumerator));
-    strActualValue += strEnumeratorResult + ", " + bool2Str(bOk);
-    strlstActualValues.append(strActualValue);
+    strResultValue += strEnumeratorResult + ", " + bool2Str(bOk);
+    strlstResultValues.append(strResultValue);
 
     strEnumeratorSource = "meDIUM";
     idxAlias = ZS::System::EEnumEntryAliasStrUndefined;
@@ -932,18 +942,18 @@ void CTest::doTestStepEnumEntryClassMethodsStr2Enumerator( ZS::Test::CTestStep* 
     strCaseSensitivity = qCaseSensitivity2Str(caseSensitivity);
     strEnumeratorResult = "-1";
 
-    strDesiredValue = "SEnumEntry::str2Enumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
-    strDesiredValue += strEnumeratorResult + ", false";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "SEnumEntry::str2Enumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
+    strExpectedValue += strEnumeratorResult + ", false";
+    strlstExpectedValues.append(strExpectedValue);
 
-    strActualValue = "SEnumEntry::str2Enumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
+    strResultValue = "SEnumEntry::str2Enumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
     enumerator = static_cast<EProcessorClock>(SEnumEntry::str2Enumerator(pEnumArr, iEnumArrLen, strEnumeratorSource, idxAlias, caseSensitivity, &bOk));
     if( enumerator == EProcessorClock::Low ) strEnumeratorResult = "Low";
     else if( enumerator == EProcessorClock::Medium ) strEnumeratorResult = "Medium";
     else if( enumerator == EProcessorClock::High ) strEnumeratorResult = "High";
     else strEnumeratorResult = QString::number(static_cast<int>(enumerator));
-    strActualValue += strEnumeratorResult + ", " + bool2Str(bOk);
-    strlstActualValues.append(strActualValue);
+    strResultValue += strEnumeratorResult + ", " + bool2Str(bOk);
+    strlstResultValues.append(strResultValue);
 
     strEnumeratorSource = "meDIUM";
     idxAlias = ZS::System::EEnumEntryAliasStrUndefined;
@@ -952,18 +962,18 @@ void CTest::doTestStepEnumEntryClassMethodsStr2Enumerator( ZS::Test::CTestStep* 
     strCaseSensitivity = qCaseSensitivity2Str(caseSensitivity);
     strEnumeratorResult = "Medium";
 
-    strDesiredValue = "SEnumEntry::str2Enumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
-    strDesiredValue += strEnumeratorResult + ", true";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "SEnumEntry::str2Enumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
+    strExpectedValue += strEnumeratorResult + ", true";
+    strlstExpectedValues.append(strExpectedValue);
 
-    strActualValue = "SEnumEntry::str2Enumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
+    strResultValue = "SEnumEntry::str2Enumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
     enumerator = static_cast<EProcessorClock>(SEnumEntry::str2Enumerator(pEnumArr, iEnumArrLen, strEnumeratorSource, idxAlias, caseSensitivity, &bOk));
     if( enumerator == EProcessorClock::Low ) strEnumeratorResult = "Low";
     else if( enumerator == EProcessorClock::Medium ) strEnumeratorResult = "Medium";
     else if( enumerator == EProcessorClock::High ) strEnumeratorResult = "High";
     else strEnumeratorResult = QString::number(static_cast<int>(enumerator));
-    strActualValue += strEnumeratorResult + ", " + bool2Str(bOk);
-    strlstActualValues.append(strActualValue);
+    strResultValue += strEnumeratorResult + ", " + bool2Str(bOk);
+    strlstResultValues.append(strResultValue);
 
     strEnumeratorSource = "Medium";
     idxAlias = ZS::System::EEnumEntryAliasStrAlias6;
@@ -972,23 +982,23 @@ void CTest::doTestStepEnumEntryClassMethodsStr2Enumerator( ZS::Test::CTestStep* 
     strCaseSensitivity = qCaseSensitivity2Str(caseSensitivity);
     strEnumeratorResult = "-1";
 
-    strDesiredValue = "SEnumEntry::str2Enumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
-    strDesiredValue += strEnumeratorResult + ", false";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "SEnumEntry::str2Enumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
+    strExpectedValue += strEnumeratorResult + ", false";
+    strlstExpectedValues.append(strExpectedValue);
 
-    strActualValue = "SEnumEntry::str2Enumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
+    strResultValue = "SEnumEntry::str2Enumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
     enumerator = static_cast<EProcessorClock>(SEnumEntry::str2Enumerator(pEnumArr, iEnumArrLen, strEnumeratorSource, idxAlias, caseSensitivity, &bOk));
     if( enumerator == EProcessorClock::Low ) strEnumeratorResult = "Low";
     else if( enumerator == EProcessorClock::Medium ) strEnumeratorResult = "Medium";
     else if( enumerator == EProcessorClock::High ) strEnumeratorResult = "High";
     else strEnumeratorResult = QString::number(static_cast<int>(enumerator));
-    strActualValue += strEnumeratorResult + ", " + bool2Str(bOk);
-    strlstActualValues.append(strActualValue);
+    strResultValue += strEnumeratorResult + ", " + bool2Str(bOk);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
-    i_pTestStep->setDesiredValues(strlstDesiredValues);
-    i_pTestStep->setActualValues(strlstActualValues);
+    i_pTestStep->setExpectedValues(strlstExpectedValues);
+    i_pTestStep->setResultValues(strlstResultValues);
 
 } // doTestStepEnumEntryClassMethodsStr2Enumerator
 
@@ -996,11 +1006,11 @@ void CTest::doTestStepEnumEntryClassMethodsStr2Enumerator( ZS::Test::CTestStep* 
 void CTest::doTestStepEnumEntryClassMethodsStr2Val( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
-    QStringList strlstDesiredValues;
-    QStringList strlstActualValues;
+    QStringList strlstExpectedValues;
+    QStringList strlstResultValues;
 
-    QString strDesiredValue;
-    QString strActualValue;
+    QString strExpectedValue;
+    QString strResultValue;
 
     QString             strEnumeratorSource;
     QVariant            valResult;
@@ -1020,21 +1030,21 @@ void CTest::doTestStepEnumEntryClassMethodsStr2Val( ZS::Test::CTestStep* i_pTest
 
     for( iEnumerator = 0; iEnumerator < iEnumArrLen; ++iEnumerator )
     {
-        if( iEnumerator == 0 ) { strEnumeratorSource = "Low"; strValResult = QString::number(5.12e6,'f',1); }
-        else if( iEnumerator == 1 ) { strEnumeratorSource = "Medium"; strValResult = QString::number(5.12e8,'f',1); }
-        else if( iEnumerator == 2 ) { strEnumeratorSource = "High"; strValResult = QString::number(5.12e9,'f',1); }
+        if( iEnumerator == 0 ) { strEnumeratorSource = "Low"; strValResult = "5120000.0"; }
+        else if( iEnumerator == 1 ) { strEnumeratorSource = "Medium"; strValResult = "512000000.0"; }
+        else if( iEnumerator == 2 ) { strEnumeratorSource = "High"; strValResult = "5120000000.0"; }
         else { strEnumeratorSource = ""; strValResult = ""; }
 
-        strDesiredValue = "SEnumEntry::str2Val(" + strEnumeratorSource + "): ";
-        strDesiredValue += strValResult;
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "SEnumEntry::str2Val(" + strEnumeratorSource + "): ";
+        strExpectedValue += strValResult;
+        strlstExpectedValues.append(strExpectedValue);
 
-        strActualValue = "SEnumEntry::str2Val(" + strEnumeratorSource + "): ";
+        strResultValue = "SEnumEntry::str2Val(" + strEnumeratorSource + "): ";
         valResult = SEnumEntry::str2Val(pEnumArr, iEnumArrLen, strEnumeratorSource);
         if( valResult.canConvert(QVariant::Double) ) strValResult = QString::number(valResult.toDouble(),'f',1);
         else strValResult = "";
-        strActualValue += strValResult;
-        strlstActualValues.append(strActualValue);
+        strResultValue += strValResult;
+        strlstResultValues.append(strResultValue);
     }
 
     // -------------------------------------------------------------------------
@@ -1083,16 +1093,16 @@ void CTest::doTestStepEnumEntryClassMethodsStr2Val( ZS::Test::CTestStep* i_pTest
                 strValResult = "";
             }
 
-            strDesiredValue = "SEnumEntry::str2Val(" + strEnumeratorSource + ", Double, " + strAlias + "): ";
-            strDesiredValue += strValResult;
-            strlstDesiredValues.append(strDesiredValue);
+            strExpectedValue = "SEnumEntry::str2Val(" + strEnumeratorSource + ", Double, " + strAlias + "): ";
+            strExpectedValue += strValResult;
+            strlstExpectedValues.append(strExpectedValue);
 
-            strActualValue = "SEnumEntry::str2Val(" + strEnumeratorSource + ", Double, " + strAlias + "): ";
+            strResultValue = "SEnumEntry::str2Val(" + strEnumeratorSource + ", Double, " + strAlias + "): ";
             valResult = SEnumEntry::str2Val(pEnumArr, iEnumArrLen, strEnumeratorSource, QVariant::Double, idxAlias);
             if( valResult.canConvert(QVariant::Double) ) strValResult = QString::number(valResult.toDouble(),'f',1);
             else strValResult = "";
-            strActualValue += strValResult;
-            strlstActualValues.append(strActualValue);
+            strResultValue += strValResult;
+            strlstResultValues.append(strResultValue);
 
         } // for( iEnumerator = 0; iEnumerator < iEnumArrLen; ++iEnumerator )
     } // for( idxAlias = 0; idxAlias <= EEnumEntryAliasStrSCPILong; ++idxAlias )
@@ -1106,16 +1116,16 @@ void CTest::doTestStepEnumEntryClassMethodsStr2Val( ZS::Test::CTestStep* i_pTest
     strCaseSensitivity = qCaseSensitivity2Str(caseSensitivity);
     strValResult = QString::number(5.12e8,'f',1);
 
-    strDesiredValue = "SEnumEntry::str2Val(" + strEnumeratorSource + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
-    strDesiredValue += strValResult + ", true";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "SEnumEntry::str2Val(" + strEnumeratorSource + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
+    strExpectedValue += strValResult + ", true";
+    strlstExpectedValues.append(strExpectedValue);
 
-    strActualValue = "SEnumEntry::str2Val(" + strEnumeratorSource + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
+    strResultValue = "SEnumEntry::str2Val(" + strEnumeratorSource + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
     valResult = SEnumEntry::str2Val(pEnumArr, iEnumArrLen, strEnumeratorSource, QVariant::Invalid, idxAlias, caseSensitivity, &bOk);
     if( valResult.canConvert(QVariant::Double) ) strValResult = QString::number(valResult.toDouble(),'f',1);
     else strValResult = "";
-    strActualValue += strValResult + ", " + bool2Str(bOk);
-    strlstActualValues.append(strActualValue);
+    strResultValue += strValResult + ", " + bool2Str(bOk);
+    strlstResultValues.append(strResultValue);
 
     strEnumeratorSource = "medIUM";
     idxAlias = ZS::System::EEnumEntryAliasStrName;
@@ -1124,16 +1134,16 @@ void CTest::doTestStepEnumEntryClassMethodsStr2Val( ZS::Test::CTestStep* i_pTest
     strCaseSensitivity = qCaseSensitivity2Str(caseSensitivity);
     strValResult = "";
 
-    strDesiredValue = "SEnumEntry::str2Val(" + strEnumeratorSource + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
-    strDesiredValue += strValResult + ", false";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "SEnumEntry::str2Val(" + strEnumeratorSource + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
+    strExpectedValue += strValResult + ", false";
+    strlstExpectedValues.append(strExpectedValue);
 
-    strActualValue = "SEnumEntry::str2Val(" + strEnumeratorSource + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
+    strResultValue = "SEnumEntry::str2Val(" + strEnumeratorSource + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
     valResult = SEnumEntry::str2Val(pEnumArr, iEnumArrLen, strEnumeratorSource, QVariant::Invalid, idxAlias, caseSensitivity, &bOk);
     if( valResult.canConvert(QVariant::Double) ) strValResult = QString::number(valResult.toDouble(),'f',1);
     else strValResult = "";
-    strActualValue += strValResult + ", " + bool2Str(bOk);
-    strlstActualValues.append(strActualValue);
+    strResultValue += strValResult + ", " + bool2Str(bOk);
+    strlstResultValues.append(strResultValue);
 
     strEnumeratorSource = "medIUM";
     idxAlias = ZS::System::EEnumEntryAliasStrName;
@@ -1142,16 +1152,16 @@ void CTest::doTestStepEnumEntryClassMethodsStr2Val( ZS::Test::CTestStep* i_pTest
     strCaseSensitivity = qCaseSensitivity2Str(caseSensitivity);
     strValResult = QString::number(5.12e8,'f',1);
 
-    strDesiredValue = "SEnumEntry::str2Val(" + strEnumeratorSource + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
-    strDesiredValue += strValResult + ", true";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "SEnumEntry::str2Val(" + strEnumeratorSource + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
+    strExpectedValue += strValResult + ", true";
+    strlstExpectedValues.append(strExpectedValue);
 
-    strActualValue = "SEnumEntry::str2Val(" + strEnumeratorSource + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
+    strResultValue = "SEnumEntry::str2Val(" + strEnumeratorSource + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
     valResult = SEnumEntry::str2Val(pEnumArr, iEnumArrLen, strEnumeratorSource, QVariant::Invalid, idxAlias, caseSensitivity, &bOk);
     if( valResult.canConvert(QVariant::Double) ) strValResult = QString::number(valResult.toDouble(),'f',1);
     else strValResult = "";
-    strActualValue += strValResult + ", " + bool2Str(bOk);
-    strlstActualValues.append(strActualValue);
+    strResultValue += strValResult + ", " + bool2Str(bOk);
+    strlstResultValues.append(strResultValue);
 
     strEnumeratorSource = "MEDium";
     idxAlias = ZS::System::EEnumEntryAliasStrUndefined;
@@ -1160,16 +1170,16 @@ void CTest::doTestStepEnumEntryClassMethodsStr2Val( ZS::Test::CTestStep* i_pTest
     strCaseSensitivity = qCaseSensitivity2Str(caseSensitivity);
     strValResult = "512000000";
 
-    strDesiredValue = "SEnumEntry::str2Val(" + strEnumeratorSource + ", " + strAlias + ", Int, " + strCaseSensitivity + ", &bOk): ";
-    strDesiredValue += strValResult + ", true";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "SEnumEntry::str2Val(" + strEnumeratorSource + ", " + strAlias + ", Int, " + strCaseSensitivity + ", &bOk): ";
+    strExpectedValue += strValResult + ", true";
+    strlstExpectedValues.append(strExpectedValue);
 
-    strActualValue = "SEnumEntry::str2Val(" + strEnumeratorSource + ", " + strAlias + ", Int, " + strCaseSensitivity + ", &bOk): ";
+    strResultValue = "SEnumEntry::str2Val(" + strEnumeratorSource + ", " + strAlias + ", Int, " + strCaseSensitivity + ", &bOk): ";
     valResult = SEnumEntry::str2Val(pEnumArr, iEnumArrLen, strEnumeratorSource, QVariant::Int, idxAlias, caseSensitivity, &bOk);
     if( valResult.canConvert(QVariant::Int) ) strValResult = QString::number(valResult.toInt());
     else strValResult = "";
-    strActualValue += strValResult + ", " + bool2Str(bOk);
-    strlstActualValues.append(strActualValue);
+    strResultValue += strValResult + ", " + bool2Str(bOk);
+    strlstResultValues.append(strResultValue);
 
     strEnumeratorSource = "meDIUM";
     idxAlias = ZS::System::EEnumEntryAliasStrUndefined;
@@ -1178,16 +1188,16 @@ void CTest::doTestStepEnumEntryClassMethodsStr2Val( ZS::Test::CTestStep* i_pTest
     strCaseSensitivity = qCaseSensitivity2Str(caseSensitivity);
     strValResult = "";
 
-    strDesiredValue = "SEnumEntry::str2Val(" + strEnumeratorSource + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
-    strDesiredValue += strValResult + ", false";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "SEnumEntry::str2Val(" + strEnumeratorSource + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
+    strExpectedValue += strValResult + ", false";
+    strlstExpectedValues.append(strExpectedValue);
 
-    strActualValue = "SEnumEntry::str2Val(" + strEnumeratorSource + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
+    strResultValue = "SEnumEntry::str2Val(" + strEnumeratorSource + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
     valResult = SEnumEntry::str2Val(pEnumArr, iEnumArrLen, strEnumeratorSource, QVariant::Invalid, idxAlias, caseSensitivity, &bOk);
     if( valResult.canConvert(QVariant::Double) ) strValResult = QString::number(valResult.toDouble(),'f',1);
     else strValResult = "";
-    strActualValue += strValResult + ", " + bool2Str(bOk);
-    strlstActualValues.append(strActualValue);
+    strResultValue += strValResult + ", " + bool2Str(bOk);
+    strlstResultValues.append(strResultValue);
 
     strEnumeratorSource = "meDIUM";
     idxAlias = ZS::System::EEnumEntryAliasStrUndefined;
@@ -1196,16 +1206,16 @@ void CTest::doTestStepEnumEntryClassMethodsStr2Val( ZS::Test::CTestStep* i_pTest
     strCaseSensitivity = qCaseSensitivity2Str(caseSensitivity);
     strValResult = QString::number(5.12e8,'f',1);
 
-    strDesiredValue = "SEnumEntry::str2Val(" + strEnumeratorSource + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
-    strDesiredValue += strValResult + ", true";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "SEnumEntry::str2Val(" + strEnumeratorSource + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
+    strExpectedValue += strValResult + ", true";
+    strlstExpectedValues.append(strExpectedValue);
 
-    strActualValue = "SEnumEntry::str2Val(" + strEnumeratorSource + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
+    strResultValue = "SEnumEntry::str2Val(" + strEnumeratorSource + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
     valResult = SEnumEntry::str2Val(pEnumArr, iEnumArrLen, strEnumeratorSource, QVariant::Invalid, idxAlias, caseSensitivity, &bOk);
     if( valResult.canConvert(QVariant::Double) ) strValResult = QString::number(valResult.toDouble(),'f',1);
     else strValResult = "";
-    strActualValue += strValResult + ", " + bool2Str(bOk);
-    strlstActualValues.append(strActualValue);
+    strResultValue += strValResult + ", " + bool2Str(bOk);
+    strlstResultValues.append(strResultValue);
 
     strEnumeratorSource = "Medium";
     idxAlias = ZS::System::EEnumEntryAliasStrAlias6;
@@ -1214,21 +1224,21 @@ void CTest::doTestStepEnumEntryClassMethodsStr2Val( ZS::Test::CTestStep* i_pTest
     strCaseSensitivity = qCaseSensitivity2Str(caseSensitivity);
     strValResult = "";
 
-    strDesiredValue = "SEnumEntry::str2Val(" + strEnumeratorSource + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
-    strDesiredValue += strValResult + ", false";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "SEnumEntry::str2Val(" + strEnumeratorSource + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
+    strExpectedValue += strValResult + ", false";
+    strlstExpectedValues.append(strExpectedValue);
 
-    strActualValue = "SEnumEntry::str2Val(" + strEnumeratorSource + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
+    strResultValue = "SEnumEntry::str2Val(" + strEnumeratorSource + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
     valResult = SEnumEntry::str2Val(pEnumArr, iEnumArrLen, strEnumeratorSource, QVariant::Invalid, idxAlias, caseSensitivity, &bOk);
     if( valResult.canConvert(QVariant::Double) ) strValResult = QString::number(valResult.toDouble(),'f',1);
     else strValResult = "";
-    strActualValue += strValResult + ", " + bool2Str(bOk);
-    strlstActualValues.append(strActualValue);
+    strResultValue += strValResult + ", " + bool2Str(bOk);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
-    i_pTestStep->setDesiredValues(strlstDesiredValues);
-    i_pTestStep->setActualValues(strlstActualValues);
+    i_pTestStep->setExpectedValues(strlstExpectedValues);
+    i_pTestStep->setResultValues(strlstResultValues);
 
 } // doTestStepEnumEntryClassMethodsStr2Val
 
@@ -1236,11 +1246,11 @@ void CTest::doTestStepEnumEntryClassMethodsStr2Val( ZS::Test::CTestStep* i_pTest
 void CTest::doTestStepEnumEntryClassMethodsVal2Enumerator( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
-    QStringList strlstDesiredValues;
-    QStringList strlstActualValues;
+    QStringList strlstExpectedValues;
+    QStringList strlstResultValues;
 
-    QString strDesiredValue;
-    QString strActualValue;
+    QString strExpectedValue;
+    QString strResultValue;
 
     EProcessorClock enumerator;
     QString         strEnumerator;
@@ -1264,11 +1274,11 @@ void CTest::doTestStepEnumEntryClassMethodsVal2Enumerator( ZS::Test::CTestStep* 
         else if( iEnumerator == 1 ) { val = 5.12e8; strEnumerator = "Medium"; }
         else if( iEnumerator == 2 ) { val = 5.12e9; strEnumerator = "High"; }
 
-        strDesiredValue = "SEnumEntry::val2Enumerator(" + val.toString() + "): ";
-        strDesiredValue += strEnumerator;
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "SEnumEntry::val2Enumerator(" + val.toString() + "): ";
+        strExpectedValue += strEnumerator;
+        strlstExpectedValues.append(strExpectedValue);
 
-        strActualValue = "SEnumEntry::val2Enumerator(" + val.toString() + "): ";
+        strResultValue = "SEnumEntry::val2Enumerator(" + val.toString() + "): ";
         enumerator = static_cast<EProcessorClock>(SEnumEntry::val2Enumerator(pEnumArr, iEnumArrLen, val));
 
         if( enumerator == EProcessorClock::Low ) { strEnumerator = "Low"; }
@@ -1276,61 +1286,61 @@ void CTest::doTestStepEnumEntryClassMethodsVal2Enumerator( ZS::Test::CTestStep* 
         else if( enumerator == EProcessorClock::High ) { strEnumerator = "High"; }
         else { strEnumerator = QString::number(static_cast<int>(enumerator)); }
 
-        strActualValue += strEnumerator;
-        strlstActualValues.append(strActualValue);
+        strResultValue += strEnumerator;
+        strlstResultValues.append(strResultValue);
     }
 
     // -------------------------------------------------------------------------
 
     val = 5.12e8;
 
-    strDesiredValue = "SEnumEntry::val2Enumerator(" + val.toString() + ", &bOk): ";
-    strDesiredValue += "Medium, true";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "SEnumEntry::val2Enumerator(" + val.toString() + ", &bOk): ";
+    strExpectedValue += "Medium, true";
+    strlstExpectedValues.append(strExpectedValue);
 
-    strActualValue = "SEnumEntry::val2Enumerator(" + val.toString() + ", &bOk): ";
+    strResultValue = "SEnumEntry::val2Enumerator(" + val.toString() + ", &bOk): ";
     enumerator = static_cast<EProcessorClock>(SEnumEntry::val2Enumerator(pEnumArr, iEnumArrLen, val, &bOk));
     if( enumerator == EProcessorClock::Low ) { strEnumerator = "Low"; }
     else if( enumerator == EProcessorClock::Medium ) { strEnumerator = "Medium"; }
     else if( enumerator == EProcessorClock::High ) { strEnumerator = "High"; }
     else { strEnumerator = QString::number(static_cast<int>(enumerator)); }
-    strActualValue += strEnumerator + ", " + bool2Str(bOk);
-    strlstActualValues.append(strActualValue);
+    strResultValue += strEnumerator + ", " + bool2Str(bOk);
+    strlstResultValues.append(strResultValue);
 
     val = QVariant();
 
-    strDesiredValue = "SEnumEntry::val2Enumerator(" + val.toString() + ", &bOk): ";
-    strDesiredValue += "-1, false";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "SEnumEntry::val2Enumerator(" + val.toString() + ", &bOk): ";
+    strExpectedValue += "-1, false";
+    strlstExpectedValues.append(strExpectedValue);
 
-    strActualValue = "SEnumEntry::val2Enumerator(" + val.toString() + ", &bOk): ";
+    strResultValue = "SEnumEntry::val2Enumerator(" + val.toString() + ", &bOk): ";
     enumerator = static_cast<EProcessorClock>(SEnumEntry::val2Enumerator(pEnumArr, iEnumArrLen, val, &bOk));
     if( enumerator == EProcessorClock::Low ) { strEnumerator = "Low"; }
     else if( enumerator == EProcessorClock::Medium ) { strEnumerator = "Medium"; }
     else if( enumerator == EProcessorClock::High ) { strEnumerator = "High"; }
     else { strEnumerator = QString::number(static_cast<int>(enumerator)); }
-    strActualValue += strEnumerator + ", " + bool2Str(bOk);
-    strlstActualValues.append(strActualValue);
+    strResultValue += strEnumerator + ", " + bool2Str(bOk);
+    strlstResultValues.append(strResultValue);
 
     val = 5.12e3;
 
-    strDesiredValue = "SEnumEntry::val2Enumerator(" + val.toString() + ", &bOk): ";
-    strDesiredValue += "-1, false";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "SEnumEntry::val2Enumerator(" + val.toString() + ", &bOk): ";
+    strExpectedValue += "-1, false";
+    strlstExpectedValues.append(strExpectedValue);
 
-    strActualValue = "SEnumEntry::val2Enumerator(" + val.toString() + ", &bOk): ";
+    strResultValue = "SEnumEntry::val2Enumerator(" + val.toString() + ", &bOk): ";
     enumerator = static_cast<EProcessorClock>(SEnumEntry::val2Enumerator(pEnumArr, iEnumArrLen, val, &bOk));
     if( enumerator == EProcessorClock::Low ) { strEnumerator = "Low"; }
     else if( enumerator == EProcessorClock::Medium ) { strEnumerator = "Medium"; }
     else if( enumerator == EProcessorClock::High ) { strEnumerator = "High"; }
     else { strEnumerator = QString::number(static_cast<int>(enumerator)); }
-    strActualValue += strEnumerator + ", " + bool2Str(bOk);
-    strlstActualValues.append(strActualValue);
+    strResultValue += strEnumerator + ", " + bool2Str(bOk);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
-    i_pTestStep->setDesiredValues(strlstDesiredValues);
-    i_pTestStep->setActualValues(strlstActualValues);
+    i_pTestStep->setExpectedValues(strlstExpectedValues);
+    i_pTestStep->setResultValues(strlstResultValues);
 
 } // doTestStepEnumEntryClassMethodsVal2Enumerator
 
@@ -1338,11 +1348,11 @@ void CTest::doTestStepEnumEntryClassMethodsVal2Enumerator( ZS::Test::CTestStep* 
 void CTest::doTestStepEnumEntryClassMethodsVal2Str( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
-    QStringList strlstDesiredValues;
-    QStringList strlstActualValues;
+    QStringList strlstExpectedValues;
+    QStringList strlstResultValues;
 
-    QString strDesiredValue;
-    QString strActualValue;
+    QString strExpectedValue;
+    QString strResultValue;
 
     QString  strEnumerator;
     QString  strValResult;
@@ -1366,14 +1376,14 @@ void CTest::doTestStepEnumEntryClassMethodsVal2Str( ZS::Test::CTestStep* i_pTest
         else if( iEnumerator == 1 ) { val = 5.12e8; strValResult = "Medium"; }
         else if( iEnumerator == 2 ) { val = 5.12e9; strValResult = "High"; }
 
-        strDesiredValue = "SEnumEntry::val2Str(" + val.toString() + "): ";
-        strDesiredValue += strValResult;
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "SEnumEntry::val2Str(" + val.toString() + "): ";
+        strExpectedValue += strValResult;
+        strlstExpectedValues.append(strExpectedValue);
 
-        strActualValue = "SEnumEntry::val2Str(" + val.toString() + "): ";
+        strResultValue = "SEnumEntry::val2Str(" + val.toString() + "): ";
         strValResult = SEnumEntry::val2Str(pEnumArr, iEnumArrLen, val);
-        strActualValue += strValResult;
-        strlstActualValues.append(strActualValue);
+        strResultValue += strValResult;
+        strlstResultValues.append(strResultValue);
     }
 
     // -------------------------------------------------------------------------
@@ -1417,14 +1427,14 @@ void CTest::doTestStepEnumEntryClassMethodsVal2Str( ZS::Test::CTestStep* i_pTest
                 else if( idxAlias == EEnumEntryAliasStrSCPILong ) { strValResult = "HIGH"; }
             }
 
-            strDesiredValue = "SEnumEntry::val2Str(" + val.toString() + ", " + enumEntryAlias2Str(static_cast<EEnumEntryAliasStr>(idxAlias)) + ", &bOk): ";
-            strDesiredValue += strValResult + ", " + bool2Str(bOk);
-            strlstDesiredValues.append(strDesiredValue);
+            strExpectedValue = "SEnumEntry::val2Str(" + val.toString() + ", " + enumEntryAlias2Str(static_cast<EEnumEntryAliasStr>(idxAlias)) + ", &bOk): ";
+            strExpectedValue += strValResult + ", " + bool2Str(bOk);
+            strlstExpectedValues.append(strExpectedValue);
 
-            strActualValue = "SEnumEntry::val2Str(" + val.toString() + ", " + enumEntryAlias2Str(static_cast<EEnumEntryAliasStr>(idxAlias)) + ", &bOk): ";
+            strResultValue = "SEnumEntry::val2Str(" + val.toString() + ", " + enumEntryAlias2Str(static_cast<EEnumEntryAliasStr>(idxAlias)) + ", &bOk): ";
             strValResult = SEnumEntry::val2Str(pEnumArr, iEnumArrLen, val, idxAlias, &bOk);
-            strActualValue += strValResult + ", " + bool2Str(bOk);
-            strlstActualValues.append(strActualValue);
+            strResultValue += strValResult + ", " + bool2Str(bOk);
+            strlstResultValues.append(strResultValue);
         }
     }
 
@@ -1440,28 +1450,28 @@ void CTest::doTestStepEnumEntryClassMethodsVal2Str( ZS::Test::CTestStep* i_pTest
         else if( iEnumerator == 1 ) { val = 5.12e8; strEnumerator = "Medium"; }
         else if( iEnumerator == 2 ) { val = 5.12e9; strEnumerator = "High"; }
 
-        strDesiredValue = "SEnumEntry::val2Str(" + val.toString() + ", " + enumEntryAlias2Str(static_cast<EEnumEntryAliasStr>(idxAlias)) + ", &bOk): ";
-        if( iEnumerator <= 2 ) strDesiredValue += "Enumerator " + strEnumerator + " does not have an alias string at index " + QString::number(idxAlias);
-        else strDesiredValue += ", false";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "SEnumEntry::val2Str(" + val.toString() + ", " + enumEntryAlias2Str(static_cast<EEnumEntryAliasStr>(idxAlias)) + ", &bOk): ";
+        if( iEnumerator <= 2 ) strExpectedValue += "Enumerator " + strEnumerator + " does not have an alias string at index " + QString::number(idxAlias);
+        else strExpectedValue += ", false";
+        strlstExpectedValues.append(strExpectedValue);
 
         try
         {
-            strActualValue = "SEnumEntry::val2Str(" + val.toString() + ", " + enumEntryAlias2Str(static_cast<EEnumEntryAliasStr>(idxAlias)) + ", &bOk): ";
+            strResultValue = "SEnumEntry::val2Str(" + val.toString() + ", " + enumEntryAlias2Str(static_cast<EEnumEntryAliasStr>(idxAlias)) + ", &bOk): ";
             strValResult = SEnumEntry::val2Str(pEnumArr, iEnumArrLen, val, idxAlias, &bOk);
-            strActualValue += strValResult + ", " + bool2Str(bOk);
+            strResultValue += strValResult + ", " + bool2Str(bOk);
         }
         catch( CException& exc )
         {
-            strActualValue += exc.getAddErrInfo();
+            strResultValue += exc.getAddErrInfo();
         }
-        strlstActualValues.append(strActualValue);
+        strlstResultValues.append(strResultValue);
     }
 
     // -------------------------------------------------------------------------
 
-    i_pTestStep->setDesiredValues(strlstDesiredValues);
-    i_pTestStep->setActualValues(strlstActualValues);
+    i_pTestStep->setExpectedValues(strlstExpectedValues);
+    i_pTestStep->setResultValues(strlstResultValues);
 
 } // doTestStepEnumEntryClassMethodsVal2Str
 
@@ -1469,11 +1479,11 @@ void CTest::doTestStepEnumEntryClassMethodsVal2Str( ZS::Test::CTestStep* i_pTest
 void CTest::doTestStepEnumEntryClassMethodsIsValidEnumerator( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
-    QStringList strlstDesiredValues;
-    QStringList strlstActualValues;
+    QStringList strlstExpectedValues;
+    QStringList strlstResultValues;
 
-    QString strDesiredValue;
-    QString strActualValue;
+    QString strExpectedValue;
+    QString strResultValue;
 
     QString strEnumerator;
     bool    bOk;
@@ -1492,12 +1502,12 @@ void CTest::doTestStepEnumEntryClassMethodsIsValidEnumerator( ZS::Test::CTestSte
         if( iEnumerator == 0 ) { strEnumerator = "Low"; bOk = true; }
         if( iEnumerator == 1 ) { strEnumerator = "Medium"; bOk = true; }
         if( iEnumerator == 2 ) { strEnumerator = "High"; bOk = true; }
-        strDesiredValue = "SEnumEntry::isValidEnumerator(" + strEnumerator + "): " + bool2Str(bOk);
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "SEnumEntry::isValidEnumerator(" + strEnumerator + "): " + bool2Str(bOk);
+        strlstExpectedValues.append(strExpectedValue);
 
         bOk = SEnumEntry::isValidEnumerator(pEnumArr, iEnumArrLen, iEnumerator);
-        strActualValue = "SEnumEntry::isValidEnumerator(" + strEnumerator + "): " + bool2Str(bOk);
-        strlstActualValues.append(strActualValue);
+        strResultValue = "SEnumEntry::isValidEnumerator(" + strEnumerator + "): " + bool2Str(bOk);
+        strlstResultValues.append(strResultValue);
     }
 
     // -------------------------------------------------------------------------
@@ -1505,27 +1515,27 @@ void CTest::doTestStepEnumEntryClassMethodsIsValidEnumerator( ZS::Test::CTestSte
     iEnumerator = -1;
     strEnumerator = QString::number(iEnumerator);
     bOk = false;
-    strDesiredValue = "SEnumEntry::isValidEnumerator(" + strEnumerator + "): " + bool2Str(bOk);
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "SEnumEntry::isValidEnumerator(" + strEnumerator + "): " + bool2Str(bOk);
+    strlstExpectedValues.append(strExpectedValue);
 
     bOk = SEnumEntry::isValidEnumerator(pEnumArr, iEnumArrLen, iEnumerator);
-    strActualValue = "SEnumEntry::isValidEnumerator(" + strEnumerator + "): " + bool2Str(bOk);
-    strlstActualValues.append(strActualValue);
+    strResultValue = "SEnumEntry::isValidEnumerator(" + strEnumerator + "): " + bool2Str(bOk);
+    strlstResultValues.append(strResultValue);
 
     iEnumerator = 5;
     strEnumerator = QString::number(iEnumerator);
     bOk = false;
-    strDesiredValue = "SEnumEntry::isValidEnumerator(" + strEnumerator + "): " + bool2Str(bOk);
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "SEnumEntry::isValidEnumerator(" + strEnumerator + "): " + bool2Str(bOk);
+    strlstExpectedValues.append(strExpectedValue);
 
     bOk = SEnumEntry::isValidEnumerator(pEnumArr, iEnumArrLen, iEnumerator);
-    strActualValue = "SEnumEntry::isValidEnumerator(" + strEnumerator + "): " + bool2Str(bOk);
-    strlstActualValues.append(strActualValue);
+    strResultValue = "SEnumEntry::isValidEnumerator(" + strEnumerator + "): " + bool2Str(bOk);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
-    i_pTestStep->setDesiredValues(strlstDesiredValues);
-    i_pTestStep->setActualValues(strlstActualValues);
+    i_pTestStep->setExpectedValues(strlstExpectedValues);
+    i_pTestStep->setResultValues(strlstResultValues);
 
 } // doTestStepEnumEntryClassMethodsIsValidEnumerator
 
@@ -1533,11 +1543,11 @@ void CTest::doTestStepEnumEntryClassMethodsIsValidEnumerator( ZS::Test::CTestSte
 void CTest::doTestStepEnumEntryClassMethodsInitStr2EnumeratorMaps( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
-    QStringList strlstDesiredValues;
-    QStringList strlstActualValues;
+    QStringList strlstExpectedValues;
+    QStringList strlstResultValues;
 
-    QString strDesiredValue;
-    QString strActualValue;
+    QString strExpectedValue;
+    QString strResultValue;
 
     const SEnumEntry* pEnumArr = CEnumProcessorClock::s_arEnumEntries.data();
     const int         iEnumArrLen = CEnumProcessorClock::s_arEnumEntries.count();
@@ -1551,11 +1561,11 @@ void CTest::doTestStepEnumEntryClassMethodsInitStr2EnumeratorMaps( ZS::Test::CTe
 
     SEnumEntry::initStr2EnumeratorMaps(pEnumArr, iEnumArrLen, armapsStr2Enumerators, nullptr);
 
-    strDesiredValue = "AliasCount = " + QString::number(EEnumEntryAliasStrSCPILong + 1);
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "AliasCount = " + QString::number(EEnumEntryAliasStrSCPILong + 1);
+    strlstExpectedValues.append(strExpectedValue);
 
-    strActualValue = "AliasCount = " + QString::number(armapsStr2Enumerators.size());
-    strlstActualValues.append(strActualValue);
+    strResultValue = "AliasCount = " + QString::number(armapsStr2Enumerators.size());
+    strlstResultValues.append(strResultValue);
 
     for( idxAlias = 0; idxAlias <= EEnumEntryAliasStrSCPILong; ++idxAlias )
     {
@@ -1586,24 +1596,24 @@ void CTest::doTestStepEnumEntryClassMethodsInitStr2EnumeratorMaps( ZS::Test::CTe
                 else if( idxAlias == EEnumEntryAliasStrSCPILong ) { strEnumerator = "HIGH"; }
             }
 
-            strDesiredValue = "armapsStr2Enumerators[" + enumEntryAlias2Str(static_cast<EEnumEntryAliasStr>(idxAlias)) + "][" + strEnumerator + "]: " + QString::number(iEnumerator);
-            strlstDesiredValues.append(strDesiredValue);
+            strExpectedValue = "armapsStr2Enumerators[" + enumEntryAlias2Str(static_cast<EEnumEntryAliasStr>(idxAlias)) + "][" + strEnumerator + "]: " + QString::number(iEnumerator);
+            strlstExpectedValues.append(strExpectedValue);
 
             try
             {
                 iEnumerator = armapsStr2Enumerators[idxAlias][strEnumerator];
-                strActualValue = "armapsStr2Enumerators[" + enumEntryAlias2Str(static_cast<EEnumEntryAliasStr>(idxAlias)) + "][" + strEnumerator + "]: " + QString::number(iEnumerator);
+                strResultValue = "armapsStr2Enumerators[" + enumEntryAlias2Str(static_cast<EEnumEntryAliasStr>(idxAlias)) + "][" + strEnumerator + "]: " + QString::number(iEnumerator);
             }
             catch(...)
             {
-                strActualValue = "Unexpected exception thrown";
+                strResultValue = "Unexpected exception thrown";
             }
-            strlstActualValues.append(strActualValue);
+            strlstResultValues.append(strResultValue);
         }
     }
 
-    i_pTestStep->setDesiredValues(strlstDesiredValues);
-    i_pTestStep->setActualValues(strlstActualValues);
+    i_pTestStep->setExpectedValues(strlstExpectedValues);
+    i_pTestStep->setResultValues(strlstResultValues);
 
 } // doTestStepEnumEntryClassMethodsInitStr2EnumeratorMaps
 
@@ -1611,11 +1621,11 @@ void CTest::doTestStepEnumEntryClassMethodsInitStr2EnumeratorMaps( ZS::Test::CTe
 void CTest::doTestStepEnumEntryClassMethodsMapStr2Enumerator( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
-    QStringList strlstDesiredValues;
-    QStringList strlstActualValues;
+    QStringList strlstExpectedValues;
+    QStringList strlstResultValues;
 
-    QString strDesiredValue;
-    QString strActualValue;
+    QString strExpectedValue;
+    QString strResultValue;
 
     EProcessorClock     enumerator;
     QString             strEnumeratorSource;
@@ -1644,18 +1654,18 @@ void CTest::doTestStepEnumEntryClassMethodsMapStr2Enumerator( ZS::Test::CTestSte
         else if( iEnumerator == 2 ) { strEnumeratorSource = "High"; strEnumeratorResult = "High"; }
         else { strEnumeratorSource = QString::number(iEnumerator); }
 
-        strDesiredValue = "SEnumEntry::str2Enumerator(" + strEnumeratorSource + "): ";
-        strDesiredValue += strEnumeratorResult;
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "SEnumEntry::str2Enumerator(" + strEnumeratorSource + "): ";
+        strExpectedValue += strEnumeratorResult;
+        strlstExpectedValues.append(strExpectedValue);
 
-        strActualValue = "SEnumEntry::str2Enumerator(" + strEnumeratorSource + "): ";
+        strResultValue = "SEnumEntry::str2Enumerator(" + strEnumeratorSource + "): ";
         enumerator = static_cast<EProcessorClock>(SEnumEntry::str2Enumerator(armapsStr2Enumerators, strEnumeratorSource));
         if( enumerator == EProcessorClock::Low ) strEnumeratorResult = "Low";
         else if( enumerator == EProcessorClock::Medium ) strEnumeratorResult = "Medium";
         else if( enumerator == EProcessorClock::High ) strEnumeratorResult = "High";
         else strEnumeratorResult = QString::number(static_cast<int>(enumerator));
-        strActualValue += strEnumeratorResult;
-        strlstActualValues.append(strActualValue);
+        strResultValue += strEnumeratorResult;
+        strlstResultValues.append(strResultValue);
     }
 
     // -------------------------------------------------------------------------
@@ -1709,18 +1719,18 @@ void CTest::doTestStepEnumEntryClassMethodsMapStr2Enumerator( ZS::Test::CTestSte
                 strEnumeratorSource = QString::number(iEnumerator);
             }
 
-            strDesiredValue = "SEnumEntry::str2Enumerator(" + strEnumeratorSource + ", " + strAlias + "): ";
-            strDesiredValue += strEnumeratorResult;
-            strlstDesiredValues.append(strDesiredValue);
+            strExpectedValue = "SEnumEntry::str2Enumerator(" + strEnumeratorSource + ", " + strAlias + "): ";
+            strExpectedValue += strEnumeratorResult;
+            strlstExpectedValues.append(strExpectedValue);
 
-            strActualValue = "SEnumEntry::str2Enumerator(" + strEnumeratorSource + ", " + strAlias + "): ";
+            strResultValue = "SEnumEntry::str2Enumerator(" + strEnumeratorSource + ", " + strAlias + "): ";
             enumerator = static_cast<EProcessorClock>(SEnumEntry::str2Enumerator(armapsStr2Enumerators, strEnumeratorSource, idxAlias));
             if( enumerator == EProcessorClock::Low ) strEnumeratorResult = "Low";
             else if( enumerator == EProcessorClock::Medium ) strEnumeratorResult = "Medium";
             else if( enumerator == EProcessorClock::High ) strEnumeratorResult = "High";
             else strEnumeratorResult = QString::number(static_cast<int>(enumerator));
-            strActualValue += strEnumeratorResult;
-            strlstActualValues.append(strActualValue);
+            strResultValue += strEnumeratorResult;
+            strlstResultValues.append(strResultValue);
 
         } // for( iEnumerator = 0; iEnumerator < iEnumArrLen; ++iEnumerator )
     } // for( idxAlias = 0; idxAlias <= EEnumEntryAliasStrSCPILong; ++idxAlias )
@@ -1734,18 +1744,18 @@ void CTest::doTestStepEnumEntryClassMethodsMapStr2Enumerator( ZS::Test::CTestSte
     strCaseSensitivity = qCaseSensitivity2Str(caseSensitivity);
     strEnumeratorResult = "Medium";
 
-    strDesiredValue = "SEnumEntry::str2Enumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
-    strDesiredValue += strEnumeratorResult + ", true";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "SEnumEntry::str2Enumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
+    strExpectedValue += strEnumeratorResult + ", true";
+    strlstExpectedValues.append(strExpectedValue);
 
-    strActualValue = "SEnumEntry::str2Enumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
+    strResultValue = "SEnumEntry::str2Enumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
     enumerator = static_cast<EProcessorClock>(SEnumEntry::str2Enumerator(armapsStr2Enumerators, strEnumeratorSource, idxAlias, caseSensitivity, &bOk));
     if( enumerator == EProcessorClock::Low ) strEnumeratorResult = "Low";
     else if( enumerator == EProcessorClock::Medium ) strEnumeratorResult = "Medium";
     else if( enumerator == EProcessorClock::High ) strEnumeratorResult = "High";
     else strEnumeratorResult = QString::number(static_cast<int>(enumerator));
-    strActualValue += strEnumeratorResult + ", " + bool2Str(bOk);
-    strlstActualValues.append(strActualValue);
+    strResultValue += strEnumeratorResult + ", " + bool2Str(bOk);
+    strlstResultValues.append(strResultValue);
 
     strEnumeratorSource = "medIUM";
     idxAlias = ZS::System::EEnumEntryAliasStrName;
@@ -1754,18 +1764,18 @@ void CTest::doTestStepEnumEntryClassMethodsMapStr2Enumerator( ZS::Test::CTestSte
     strCaseSensitivity = qCaseSensitivity2Str(caseSensitivity);
     strEnumeratorResult = "-1";
 
-    strDesiredValue = "SEnumEntry::str2Enumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
-    strDesiredValue += strEnumeratorResult + ", false";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "SEnumEntry::str2Enumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
+    strExpectedValue += strEnumeratorResult + ", false";
+    strlstExpectedValues.append(strExpectedValue);
 
-    strActualValue = "SEnumEntry::str2Enumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
+    strResultValue = "SEnumEntry::str2Enumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
     enumerator = static_cast<EProcessorClock>(SEnumEntry::str2Enumerator(armapsStr2Enumerators, strEnumeratorSource, idxAlias, caseSensitivity, &bOk));
     if( enumerator == EProcessorClock::Low ) strEnumeratorResult = "Low";
     else if( enumerator == EProcessorClock::Medium ) strEnumeratorResult = "Medium";
     else if( enumerator == EProcessorClock::High ) strEnumeratorResult = "High";
     else strEnumeratorResult = QString::number(static_cast<int>(enumerator));
-    strActualValue += strEnumeratorResult + ", " + bool2Str(bOk);
-    strlstActualValues.append(strActualValue);
+    strResultValue += strEnumeratorResult + ", " + bool2Str(bOk);
+    strlstResultValues.append(strResultValue);
 
     strEnumeratorSource = "medIUM";
     idxAlias = ZS::System::EEnumEntryAliasStrName;
@@ -1774,18 +1784,18 @@ void CTest::doTestStepEnumEntryClassMethodsMapStr2Enumerator( ZS::Test::CTestSte
     strCaseSensitivity = qCaseSensitivity2Str(caseSensitivity);
     strEnumeratorResult = "Medium";
 
-    strDesiredValue = "SEnumEntry::str2Enumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
-    strDesiredValue += strEnumeratorResult + ", true";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "SEnumEntry::str2Enumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
+    strExpectedValue += strEnumeratorResult + ", true";
+    strlstExpectedValues.append(strExpectedValue);
 
-    strActualValue = "SEnumEntry::str2Enumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
+    strResultValue = "SEnumEntry::str2Enumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
     enumerator = static_cast<EProcessorClock>(SEnumEntry::str2Enumerator(armapsStr2Enumerators, strEnumeratorSource, idxAlias, caseSensitivity, &bOk));
     if( enumerator == EProcessorClock::Low ) strEnumeratorResult = "Low";
     else if( enumerator == EProcessorClock::Medium ) strEnumeratorResult = "Medium";
     else if( enumerator == EProcessorClock::High ) strEnumeratorResult = "High";
     else strEnumeratorResult = QString::number(static_cast<int>(enumerator));
-    strActualValue += strEnumeratorResult + ", " + bool2Str(bOk);
-    strlstActualValues.append(strActualValue);
+    strResultValue += strEnumeratorResult + ", " + bool2Str(bOk);
+    strlstResultValues.append(strResultValue);
 
     strEnumeratorSource = "MEDium";
     idxAlias = ZS::System::EEnumEntryAliasStrUndefined;
@@ -1794,18 +1804,18 @@ void CTest::doTestStepEnumEntryClassMethodsMapStr2Enumerator( ZS::Test::CTestSte
     strCaseSensitivity = qCaseSensitivity2Str(caseSensitivity);
     strEnumeratorResult = "Medium";
 
-    strDesiredValue = "SEnumEntry::str2Enumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
-    strDesiredValue += strEnumeratorResult + ", true";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "SEnumEntry::str2Enumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
+    strExpectedValue += strEnumeratorResult + ", true";
+    strlstExpectedValues.append(strExpectedValue);
 
-    strActualValue = "SEnumEntry::str2Enumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
+    strResultValue = "SEnumEntry::str2Enumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
     enumerator = static_cast<EProcessorClock>(SEnumEntry::str2Enumerator(armapsStr2Enumerators, strEnumeratorSource, idxAlias, caseSensitivity, &bOk));
     if( enumerator == EProcessorClock::Low ) strEnumeratorResult = "Low";
     else if( enumerator == EProcessorClock::Medium ) strEnumeratorResult = "Medium";
     else if( enumerator == EProcessorClock::High ) strEnumeratorResult = "High";
     else strEnumeratorResult = QString::number(static_cast<int>(enumerator));
-    strActualValue += strEnumeratorResult + ", " + bool2Str(bOk);
-    strlstActualValues.append(strActualValue);
+    strResultValue += strEnumeratorResult + ", " + bool2Str(bOk);
+    strlstResultValues.append(strResultValue);
 
     strEnumeratorSource = "meDIUM";
     idxAlias = ZS::System::EEnumEntryAliasStrUndefined;
@@ -1814,18 +1824,18 @@ void CTest::doTestStepEnumEntryClassMethodsMapStr2Enumerator( ZS::Test::CTestSte
     strCaseSensitivity = qCaseSensitivity2Str(caseSensitivity);
     strEnumeratorResult = "-1";
 
-    strDesiredValue = "SEnumEntry::str2Enumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
-    strDesiredValue += strEnumeratorResult + ", false";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "SEnumEntry::str2Enumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
+    strExpectedValue += strEnumeratorResult + ", false";
+    strlstExpectedValues.append(strExpectedValue);
 
-    strActualValue = "SEnumEntry::str2Enumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
+    strResultValue = "SEnumEntry::str2Enumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
     enumerator = static_cast<EProcessorClock>(SEnumEntry::str2Enumerator(armapsStr2Enumerators, strEnumeratorSource, idxAlias, caseSensitivity, &bOk));
     if( enumerator == EProcessorClock::Low ) strEnumeratorResult = "Low";
     else if( enumerator == EProcessorClock::Medium ) strEnumeratorResult = "Medium";
     else if( enumerator == EProcessorClock::High ) strEnumeratorResult = "High";
     else strEnumeratorResult = QString::number(static_cast<int>(enumerator));
-    strActualValue += strEnumeratorResult + ", " + bool2Str(bOk);
-    strlstActualValues.append(strActualValue);
+    strResultValue += strEnumeratorResult + ", " + bool2Str(bOk);
+    strlstResultValues.append(strResultValue);
 
     strEnumeratorSource = "meDIUM";
     idxAlias = ZS::System::EEnumEntryAliasStrUndefined;
@@ -1834,18 +1844,18 @@ void CTest::doTestStepEnumEntryClassMethodsMapStr2Enumerator( ZS::Test::CTestSte
     strCaseSensitivity = qCaseSensitivity2Str(caseSensitivity);
     strEnumeratorResult = "Medium";
 
-    strDesiredValue = "SEnumEntry::str2Enumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
-    strDesiredValue += strEnumeratorResult + ", true";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "SEnumEntry::str2Enumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
+    strExpectedValue += strEnumeratorResult + ", true";
+    strlstExpectedValues.append(strExpectedValue);
 
-    strActualValue = "SEnumEntry::str2Enumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
+    strResultValue = "SEnumEntry::str2Enumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
     enumerator = static_cast<EProcessorClock>(SEnumEntry::str2Enumerator(armapsStr2Enumerators, strEnumeratorSource, idxAlias, caseSensitivity, &bOk));
     if( enumerator == EProcessorClock::Low ) strEnumeratorResult = "Low";
     else if( enumerator == EProcessorClock::Medium ) strEnumeratorResult = "Medium";
     else if( enumerator == EProcessorClock::High ) strEnumeratorResult = "High";
     else strEnumeratorResult = QString::number(static_cast<int>(enumerator));
-    strActualValue += strEnumeratorResult + ", " + bool2Str(bOk);
-    strlstActualValues.append(strActualValue);
+    strResultValue += strEnumeratorResult + ", " + bool2Str(bOk);
+    strlstResultValues.append(strResultValue);
 
     strEnumeratorSource = "Medium";
     idxAlias = ZS::System::EEnumEntryAliasStrAlias6;
@@ -1854,30 +1864,30 @@ void CTest::doTestStepEnumEntryClassMethodsMapStr2Enumerator( ZS::Test::CTestSte
     strCaseSensitivity = qCaseSensitivity2Str(caseSensitivity);
     strEnumeratorResult = "-1";
 
-    strDesiredValue = "SEnumEntry::str2Enumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
-    strDesiredValue += "Map does not contain alias strings at index " + QString::number(idxAlias);
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "SEnumEntry::str2Enumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
+    strExpectedValue += "Map does not contain alias strings at index " + QString::number(idxAlias);
+    strlstExpectedValues.append(strExpectedValue);
 
     try
     {
-        strActualValue = "SEnumEntry::str2Enumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
+        strResultValue = "SEnumEntry::str2Enumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
         enumerator = static_cast<EProcessorClock>(SEnumEntry::str2Enumerator(armapsStr2Enumerators, strEnumeratorSource, idxAlias, caseSensitivity, &bOk));
         if( enumerator == EProcessorClock::Low ) strEnumeratorResult = "Low";
         else if( enumerator == EProcessorClock::Medium ) strEnumeratorResult = "Medium";
         else if( enumerator == EProcessorClock::High ) strEnumeratorResult = "High";
         else strEnumeratorResult = QString::number(static_cast<int>(enumerator));
-        strActualValue += strEnumeratorResult + ", " + bool2Str(bOk);
+        strResultValue += strEnumeratorResult + ", " + bool2Str(bOk);
     }
     catch( CException& exc )
     {
-        strActualValue += exc.getAddErrInfo();
+        strResultValue += exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
-    i_pTestStep->setDesiredValues(strlstDesiredValues);
-    i_pTestStep->setActualValues(strlstActualValues);
+    i_pTestStep->setExpectedValues(strlstExpectedValues);
+    i_pTestStep->setResultValues(strlstResultValues);
 
 } // doTestStepEnumEntryClassMethodsMapStr2Enumerator
 
@@ -1885,11 +1895,11 @@ void CTest::doTestStepEnumEntryClassMethodsMapStr2Enumerator( ZS::Test::CTestSte
 void CTest::doTestStepEnumEntryClassMethodsMapStr2Val( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
-    QStringList strlstDesiredValues;
-    QStringList strlstActualValues;
+    QStringList strlstExpectedValues;
+    QStringList strlstResultValues;
 
-    QString strDesiredValue;
-    QString strActualValue;
+    QString strExpectedValue;
+    QString strResultValue;
 
     QString             strEnumeratorSource;
     QVariant            valResult;
@@ -1918,16 +1928,16 @@ void CTest::doTestStepEnumEntryClassMethodsMapStr2Val( ZS::Test::CTestStep* i_pT
         else if( iEnumerator == 2 ) { strEnumeratorSource = "High"; strValResult = QString::number(5.12e9,'f',1); }
         else { strEnumeratorSource = ""; strValResult = ""; }
 
-        strDesiredValue = "SEnumEntry::str2Val(" + strEnumeratorSource + "): ";
-        strDesiredValue += strValResult;
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "SEnumEntry::str2Val(" + strEnumeratorSource + "): ";
+        strExpectedValue += strValResult;
+        strlstExpectedValues.append(strExpectedValue);
 
-        strActualValue = "SEnumEntry::str2Val(" + strEnumeratorSource + "): ";
+        strResultValue = "SEnumEntry::str2Val(" + strEnumeratorSource + "): ";
         valResult = SEnumEntry::str2Val(armapsStr2Enumerators, pEnumArr, iEnumArrLen, strEnumeratorSource);
         if( valResult.canConvert(QVariant::Double) ) strValResult = QString::number(valResult.toDouble(),'f',1);
         else strValResult = "";
-        strActualValue += strValResult;
-        strlstActualValues.append(strActualValue);
+        strResultValue += strValResult;
+        strlstResultValues.append(strResultValue);
     }
 
     // -------------------------------------------------------------------------
@@ -1976,16 +1986,16 @@ void CTest::doTestStepEnumEntryClassMethodsMapStr2Val( ZS::Test::CTestStep* i_pT
                 strValResult = "";
             }
 
-            strDesiredValue = "SEnumEntry::str2Val(" + strEnumeratorSource + ", Double, " + strAlias + "): ";
-            strDesiredValue += strValResult;
-            strlstDesiredValues.append(strDesiredValue);
+            strExpectedValue = "SEnumEntry::str2Val(" + strEnumeratorSource + ", Double, " + strAlias + "): ";
+            strExpectedValue += strValResult;
+            strlstExpectedValues.append(strExpectedValue);
 
-            strActualValue = "SEnumEntry::str2Val(" + strEnumeratorSource + ", Double, " + strAlias + "): ";
+            strResultValue = "SEnumEntry::str2Val(" + strEnumeratorSource + ", Double, " + strAlias + "): ";
             valResult = SEnumEntry::str2Val(armapsStr2Enumerators, pEnumArr, iEnumArrLen, strEnumeratorSource, QVariant::Double, idxAlias);
             if( valResult.canConvert(QVariant::Double) ) strValResult = QString::number(valResult.toDouble(),'f',1);
             else strValResult = "";
-            strActualValue += strValResult;
-            strlstActualValues.append(strActualValue);
+            strResultValue += strValResult;
+            strlstResultValues.append(strResultValue);
 
         } // for( iEnumerator = 0; iEnumerator < iEnumArrLen; ++iEnumerator )
     } // for( idxAlias = 0; idxAlias <= EEnumEntryAliasStrSCPILong; ++idxAlias )
@@ -1999,16 +2009,16 @@ void CTest::doTestStepEnumEntryClassMethodsMapStr2Val( ZS::Test::CTestStep* i_pT
     strCaseSensitivity = qCaseSensitivity2Str(caseSensitivity);
     strValResult = QString::number(5.12e8,'f',1);
 
-    strDesiredValue = "SEnumEntry::str2Val(" + strEnumeratorSource + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
-    strDesiredValue += strValResult + ", true";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "SEnumEntry::str2Val(" + strEnumeratorSource + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
+    strExpectedValue += strValResult + ", true";
+    strlstExpectedValues.append(strExpectedValue);
 
-    strActualValue = "SEnumEntry::str2Val(" + strEnumeratorSource + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
+    strResultValue = "SEnumEntry::str2Val(" + strEnumeratorSource + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
     valResult = SEnumEntry::str2Val(armapsStr2Enumerators, pEnumArr, iEnumArrLen, strEnumeratorSource, QVariant::Invalid, idxAlias, caseSensitivity, &bOk);
     if( valResult.canConvert(QVariant::Double) ) strValResult = QString::number(valResult.toDouble(),'f',1);
     else strValResult = "";
-    strActualValue += strValResult + ", " + bool2Str(bOk);
-    strlstActualValues.append(strActualValue);
+    strResultValue += strValResult + ", " + bool2Str(bOk);
+    strlstResultValues.append(strResultValue);
 
     strEnumeratorSource = "medIUM";
     idxAlias = ZS::System::EEnumEntryAliasStrName;
@@ -2017,16 +2027,16 @@ void CTest::doTestStepEnumEntryClassMethodsMapStr2Val( ZS::Test::CTestStep* i_pT
     strCaseSensitivity = qCaseSensitivity2Str(caseSensitivity);
     strValResult = "";
 
-    strDesiredValue = "SEnumEntry::str2Val(" + strEnumeratorSource + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
-    strDesiredValue += strValResult + ", false";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "SEnumEntry::str2Val(" + strEnumeratorSource + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
+    strExpectedValue += strValResult + ", false";
+    strlstExpectedValues.append(strExpectedValue);
 
-    strActualValue = "SEnumEntry::str2Val(" + strEnumeratorSource + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
+    strResultValue = "SEnumEntry::str2Val(" + strEnumeratorSource + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
     valResult = SEnumEntry::str2Val(armapsStr2Enumerators, pEnumArr, iEnumArrLen, strEnumeratorSource, QVariant::Invalid, idxAlias, caseSensitivity, &bOk);
     if( valResult.canConvert(QVariant::Double) ) strValResult = QString::number(valResult.toDouble(),'f',1);
     else strValResult = "";
-    strActualValue += strValResult + ", " + bool2Str(bOk);
-    strlstActualValues.append(strActualValue);
+    strResultValue += strValResult + ", " + bool2Str(bOk);
+    strlstResultValues.append(strResultValue);
 
     strEnumeratorSource = "medIUM";
     idxAlias = ZS::System::EEnumEntryAliasStrName;
@@ -2035,16 +2045,16 @@ void CTest::doTestStepEnumEntryClassMethodsMapStr2Val( ZS::Test::CTestStep* i_pT
     strCaseSensitivity = qCaseSensitivity2Str(caseSensitivity);
     strValResult = QString::number(5.12e8,'f',1);
 
-    strDesiredValue = "SEnumEntry::str2Val(" + strEnumeratorSource + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
-    strDesiredValue += strValResult + ", true";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "SEnumEntry::str2Val(" + strEnumeratorSource + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
+    strExpectedValue += strValResult + ", true";
+    strlstExpectedValues.append(strExpectedValue);
 
-    strActualValue = "SEnumEntry::str2Val(" + strEnumeratorSource + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
+    strResultValue = "SEnumEntry::str2Val(" + strEnumeratorSource + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
     valResult = SEnumEntry::str2Val(armapsStr2Enumerators, pEnumArr, iEnumArrLen, strEnumeratorSource, QVariant::Invalid, idxAlias, caseSensitivity, &bOk);
     if( valResult.canConvert(QVariant::Double) ) strValResult = QString::number(valResult.toDouble(),'f',1);
     else strValResult = "";
-    strActualValue += strValResult + ", " + bool2Str(bOk);
-    strlstActualValues.append(strActualValue);
+    strResultValue += strValResult + ", " + bool2Str(bOk);
+    strlstResultValues.append(strResultValue);
 
     strEnumeratorSource = "MEDium";
     idxAlias = ZS::System::EEnumEntryAliasStrUndefined;
@@ -2053,16 +2063,16 @@ void CTest::doTestStepEnumEntryClassMethodsMapStr2Val( ZS::Test::CTestStep* i_pT
     strCaseSensitivity = qCaseSensitivity2Str(caseSensitivity);
     strValResult = "512000000";
 
-    strDesiredValue = "SEnumEntry::str2Val(" + strEnumeratorSource + ", " + strAlias + ", Int, " + strCaseSensitivity + ", &bOk): ";
-    strDesiredValue += strValResult + ", true";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "SEnumEntry::str2Val(" + strEnumeratorSource + ", " + strAlias + ", Int, " + strCaseSensitivity + ", &bOk): ";
+    strExpectedValue += strValResult + ", true";
+    strlstExpectedValues.append(strExpectedValue);
 
-    strActualValue = "SEnumEntry::str2Val(" + strEnumeratorSource + ", " + strAlias + ", Int, " + strCaseSensitivity + ", &bOk): ";
+    strResultValue = "SEnumEntry::str2Val(" + strEnumeratorSource + ", " + strAlias + ", Int, " + strCaseSensitivity + ", &bOk): ";
     valResult = SEnumEntry::str2Val(armapsStr2Enumerators, pEnumArr, iEnumArrLen, strEnumeratorSource, QVariant::Int, idxAlias, caseSensitivity, &bOk);
     if( valResult.canConvert(QVariant::Int) ) strValResult = QString::number(valResult.toInt());
     else strValResult = "";
-    strActualValue += strValResult + ", " + bool2Str(bOk);
-    strlstActualValues.append(strActualValue);
+    strResultValue += strValResult + ", " + bool2Str(bOk);
+    strlstResultValues.append(strResultValue);
 
     strEnumeratorSource = "meDIUM";
     idxAlias = ZS::System::EEnumEntryAliasStrUndefined;
@@ -2071,16 +2081,16 @@ void CTest::doTestStepEnumEntryClassMethodsMapStr2Val( ZS::Test::CTestStep* i_pT
     strCaseSensitivity = qCaseSensitivity2Str(caseSensitivity);
     strValResult = "";
 
-    strDesiredValue = "SEnumEntry::str2Val(" + strEnumeratorSource + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
-    strDesiredValue += strValResult + ", false";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "SEnumEntry::str2Val(" + strEnumeratorSource + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
+    strExpectedValue += strValResult + ", false";
+    strlstExpectedValues.append(strExpectedValue);
 
-    strActualValue = "SEnumEntry::str2Val(" + strEnumeratorSource + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
+    strResultValue = "SEnumEntry::str2Val(" + strEnumeratorSource + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
     valResult = SEnumEntry::str2Val(armapsStr2Enumerators, pEnumArr, iEnumArrLen, strEnumeratorSource, QVariant::Invalid, idxAlias, caseSensitivity, &bOk);
     if( valResult.canConvert(QVariant::Double) ) strValResult = QString::number(valResult.toDouble(),'f',1);
     else strValResult = "";
-    strActualValue += strValResult + ", " + bool2Str(bOk);
-    strlstActualValues.append(strActualValue);
+    strResultValue += strValResult + ", " + bool2Str(bOk);
+    strlstResultValues.append(strResultValue);
 
     strEnumeratorSource = "meDIUM";
     idxAlias = ZS::System::EEnumEntryAliasStrUndefined;
@@ -2089,16 +2099,16 @@ void CTest::doTestStepEnumEntryClassMethodsMapStr2Val( ZS::Test::CTestStep* i_pT
     strCaseSensitivity = qCaseSensitivity2Str(caseSensitivity);
     strValResult = QString::number(5.12e8,'f',1);
 
-    strDesiredValue = "SEnumEntry::str2Val(" + strEnumeratorSource + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
-    strDesiredValue += strValResult + ", true";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "SEnumEntry::str2Val(" + strEnumeratorSource + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
+    strExpectedValue += strValResult + ", true";
+    strlstExpectedValues.append(strExpectedValue);
 
-    strActualValue = "SEnumEntry::str2Val(" + strEnumeratorSource + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
+    strResultValue = "SEnumEntry::str2Val(" + strEnumeratorSource + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
     valResult = SEnumEntry::str2Val(armapsStr2Enumerators, pEnumArr, iEnumArrLen, strEnumeratorSource, QVariant::Invalid, idxAlias, caseSensitivity, &bOk);
     if( valResult.canConvert(QVariant::Double) ) strValResult = QString::number(valResult.toDouble(),'f',1);
     else strValResult = "";
-    strActualValue += strValResult + ", " + bool2Str(bOk);
-    strlstActualValues.append(strActualValue);
+    strResultValue += strValResult + ", " + bool2Str(bOk);
+    strlstResultValues.append(strResultValue);
 
     strEnumeratorSource = "Medium";
     idxAlias = ZS::System::EEnumEntryAliasStrAlias6;
@@ -2107,28 +2117,28 @@ void CTest::doTestStepEnumEntryClassMethodsMapStr2Val( ZS::Test::CTestStep* i_pT
     strCaseSensitivity = qCaseSensitivity2Str(caseSensitivity);
     strValResult = "";
 
-    strDesiredValue = "SEnumEntry::str2Val(" + strEnumeratorSource + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
-    strDesiredValue += "Map does not contain alias strings at index " + QString::number(idxAlias);
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "SEnumEntry::str2Val(" + strEnumeratorSource + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
+    strExpectedValue += "Map does not contain alias strings at index " + QString::number(idxAlias);
+    strlstExpectedValues.append(strExpectedValue);
 
     try
     {
-        strActualValue = "SEnumEntry::str2Val(" + strEnumeratorSource + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
+        strResultValue = "SEnumEntry::str2Val(" + strEnumeratorSource + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
         valResult = SEnumEntry::str2Val(armapsStr2Enumerators, pEnumArr, iEnumArrLen, strEnumeratorSource, QVariant::Invalid, idxAlias, caseSensitivity, &bOk);
         if( valResult.canConvert(QVariant::Double) ) strValResult = QString::number(valResult.toDouble(),'f',1);
         else strValResult = "";
-        strActualValue += strValResult + ", " + bool2Str(bOk);
+        strResultValue += strValResult + ", " + bool2Str(bOk);
     }
     catch( CException& exc )
     {
-        strActualValue += exc.getAddErrInfo();
+        strResultValue += exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
-    i_pTestStep->setDesiredValues(strlstDesiredValues);
-    i_pTestStep->setActualValues(strlstActualValues);
+    i_pTestStep->setExpectedValues(strlstExpectedValues);
+    i_pTestStep->setResultValues(strlstResultValues);
 
 } // doTestStepEnumEntryClassMethodsMapStr2Val
 
@@ -2140,11 +2150,11 @@ public: // test step methods
 void CTest::doTestStepEnumClassTemplateZSSysModeClassMethodToString( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
-    QStringList strlstDesiredValues;
-    QStringList strlstActualValues;
+    QStringList strlstExpectedValues;
+    QStringList strlstResultValues;
 
-    QString strDesiredValue;
-    QString strActualValue;
+    QString strExpectedValue;
+    QString strResultValue;
 
     EMode enumerator;
 
@@ -2163,11 +2173,11 @@ void CTest::doTestStepEnumClassTemplateZSSysModeClassMethodToString( ZS::Test::C
         else if( iEnumerator == 2 ) { enumerator = EMode::Simulation; strEnumerator = "Undefined"; }
         else { enumerator = static_cast<EMode>(iEnumerator); strEnumerator = QString::number(iEnumerator); }
 
-        strDesiredValue = "CEnumMode::toString(" + strEnumerator + "): " + strEnumerator;
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "CEnumMode::toString(" + strEnumerator + "): " + strEnumerator;
+        strlstExpectedValues.append(strExpectedValue);
 
-        strActualValue = "CEnumMode::toString(" + strEnumerator + "): " + CEnumMode::toString(static_cast<EMode>(iEnumerator));
-        strlstActualValues.append(strActualValue);
+        strResultValue = "CEnumMode::toString(" + strEnumerator + "): " + CEnumMode::toString(static_cast<EMode>(iEnumerator));
+        strlstResultValues.append(strResultValue);
     }
 
     // -------------------------------------------------------------------------
@@ -2207,14 +2217,14 @@ void CTest::doTestStepEnumClassTemplateZSSysModeClassMethodToString( ZS::Test::C
                 strResultExpected = "?, ?";
             }
 
-            strDesiredValue = "CEnumMode::toString(" + strEnumerator + ", " + enumEntryAlias2Str(static_cast<EEnumEntryAliasStr>(idxAlias)) + "): ";
-            strDesiredValue += strResultExpected;
-            strlstDesiredValues.append(strDesiredValue);
+            strExpectedValue = "CEnumMode::toString(" + strEnumerator + ", " + enumEntryAlias2Str(static_cast<EEnumEntryAliasStr>(idxAlias)) + "): ";
+            strExpectedValue += strResultExpected;
+            strlstExpectedValues.append(strExpectedValue);
 
-            strActualValue = "CEnumMode::toString(" + strEnumerator + ", " + enumEntryAlias2Str(static_cast<EEnumEntryAliasStr>(idxAlias)) + "): ";
+            strResultValue = "CEnumMode::toString(" + strEnumerator + ", " + enumEntryAlias2Str(static_cast<EEnumEntryAliasStr>(idxAlias)) + "): ";
             strEnumerator = CEnumMode::toString(enumerator, idxAlias);
-            strActualValue += strEnumerator;
-            strlstActualValues.append(strActualValue);
+            strResultValue += strEnumerator;
+            strlstResultValues.append(strResultValue);
         }
     }
 
@@ -2229,61 +2239,61 @@ void CTest::doTestStepEnumClassTemplateZSSysModeClassMethodToString( ZS::Test::C
         else if( iEnumerator == 2 ) { enumerator = EMode::Undefined; strEnumerator = "Undefined"; }
         else { enumerator = static_cast<EMode>(iEnumerator); strEnumerator = QString::number(static_cast<int>(enumerator)); }
 
-        strDesiredValue = "CEnumMode::toString(" + strEnumerator + ", " + enumEntryAlias2Str(static_cast<EEnumEntryAliasStr>(idxAlias)) + "): ";
-        strDesiredValue += "Enumerator " + strEnumerator + " does not have an alias string at index " + QString::number(idxAlias);
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "CEnumMode::toString(" + strEnumerator + ", " + enumEntryAlias2Str(static_cast<EEnumEntryAliasStr>(idxAlias)) + "): ";
+        strExpectedValue += "Enumerator " + strEnumerator + " does not have an alias string at index " + QString::number(idxAlias);
+        strlstExpectedValues.append(strExpectedValue);
 
         try
         {
-            strActualValue = "CEnumMode::toString(" + strEnumerator + ", " + enumEntryAlias2Str(static_cast<EEnumEntryAliasStr>(idxAlias)) + "): ";
+            strResultValue = "CEnumMode::toString(" + strEnumerator + ", " + enumEntryAlias2Str(static_cast<EEnumEntryAliasStr>(idxAlias)) + "): ";
             strEnumerator = CEnumMode::toString(enumerator, idxAlias);
-            strActualValue += strEnumerator;
+            strResultValue += strEnumerator;
         }
         catch( CException& exc )
         {
-            strActualValue += exc.getAddErrInfo();
+            strResultValue += exc.getAddErrInfo();
         }
-        strlstActualValues.append(strActualValue);
+        strlstResultValues.append(strResultValue);
     }
 
     // -------------------------------------------------------------------------
 
-    strDesiredValue = "CEnumMode::toString(-1): Enumerator -1 of enumeration class ZS::System::CEnum<enum ZS::System::EMode> not in range [0..2][Edit..Undefined]";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "CEnumMode::toString(-1): Enumerator -1 of enumeration class ZS::System::CEnum<enum ZS::System::EMode> not in range [0..2][Edit..Undefined]";
+    strlstExpectedValues.append(strExpectedValue);
 
     try
     {
         iEnumerator = -1;
         enumerator = static_cast<EMode>(iEnumerator);
-        strActualValue = "CEnumMode::toString(" + QString::number(static_cast<int>(enumerator)) + "): ";
-        strActualValue += CEnumMode::toString(enumerator);
+        strResultValue = "CEnumMode::toString(" + QString::number(static_cast<int>(enumerator)) + "): ";
+        strResultValue += CEnumMode::toString(enumerator);
     }
     catch( CException& exc )
     {
-        strActualValue += exc.getAddErrInfo();
+        strResultValue += exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
-    strDesiredValue = "CEnumMode::toString(3): Enumerator 3 of enumeration class ZS::System::CEnum<enum ZS::System::EMode> not in range [0..2][Edit..Undefined]";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "CEnumMode::toString(3): Enumerator 3 of enumeration class ZS::System::CEnum<enum ZS::System::EMode> not in range [0..2][Edit..Undefined]";
+    strlstExpectedValues.append(strExpectedValue);
 
     try
     {
         iEnumerator = CEnumMode::count();
         enumerator = static_cast<EMode>(iEnumerator);
-        strActualValue = "CEnumMode::toString(" + QString::number(static_cast<int>(enumerator)) + "): ";
-        strActualValue += CEnumMode::toString(enumerator);
+        strResultValue = "CEnumMode::toString(" + QString::number(static_cast<int>(enumerator)) + "): ";
+        strResultValue += CEnumMode::toString(enumerator);
     }
     catch( CException& exc )
     {
-        strActualValue = "CEnumMode::toString(" + QString::number(iEnumerator) + "): " + exc.getAddErrInfo();
+        strResultValue = "CEnumMode::toString(" + QString::number(iEnumerator) + "): " + exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
-    i_pTestStep->setDesiredValues(strlstDesiredValues);
-    i_pTestStep->setActualValues(strlstActualValues);
+    i_pTestStep->setExpectedValues(strlstExpectedValues);
+    i_pTestStep->setResultValues(strlstResultValues);
 
 } // doTestStepEnumClassTemplateZSSysModeClassMethodToString
 
@@ -2291,11 +2301,11 @@ void CTest::doTestStepEnumClassTemplateZSSysModeClassMethodToString( ZS::Test::C
 void CTest::doTestStepEnumClassTemplateZSSysModeClassMethodToEnumerator( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
-    QStringList strlstDesiredValues;
-    QStringList strlstActualValues;
+    QStringList strlstExpectedValues;
+    QStringList strlstResultValues;
 
-    QString strDesiredValue;
-    QString strActualValue;
+    QString strExpectedValue;
+    QString strResultValue;
 
     EMode               enumerator;
     QString             strEnumeratorSource;
@@ -2317,9 +2327,9 @@ void CTest::doTestStepEnumClassTemplateZSSysModeClassMethodToEnumerator( ZS::Tes
         else if( iEnumerator == 2 ) { strEnumeratorSource = "Undefined"; }
         else { strEnumeratorSource = QString::number(iEnumerator); }
 
-        strDesiredValue = "CEnumMode::toEnumerator(" + strEnumeratorSource + "): ";
-        strDesiredValue += strEnumeratorSource;
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "CEnumMode::toEnumerator(" + strEnumeratorSource + "): ";
+        strExpectedValue += strEnumeratorSource;
+        strlstExpectedValues.append(strExpectedValue);
 
         enumerator = CEnumMode::toEnumerator(strEnumeratorSource);
 
@@ -2328,9 +2338,9 @@ void CTest::doTestStepEnumClassTemplateZSSysModeClassMethodToEnumerator( ZS::Tes
         else if( enumerator == EMode::Undefined ) { strEnumeratorResult = "Undefined"; }
         else { strEnumeratorResult = QString::number(static_cast<int>(enumerator)); }
 
-        strActualValue = "CEnumMode::toEnumerator(" + strEnumeratorSource + "): ";
-        strActualValue += strEnumeratorResult;
-        strlstActualValues.append(strActualValue);
+        strResultValue = "CEnumMode::toEnumerator(" + strEnumeratorSource + "): ";
+        strResultValue += strEnumeratorResult;
+        strlstResultValues.append(strResultValue);
     }
 
     // -------------------------------------------------------------------------
@@ -2378,9 +2388,9 @@ void CTest::doTestStepEnumClassTemplateZSSysModeClassMethodToEnumerator( ZS::Tes
                 strEnumeratorSource = QString::number(iEnumerator);
             }
 
-            strDesiredValue = "CEnumMode::toEnumerator(" + strEnumeratorSource + ", " + strAlias + "): ";
-            strDesiredValue += strEnumeratorResult;
-            strlstDesiredValues.append(strDesiredValue);
+            strExpectedValue = "CEnumMode::toEnumerator(" + strEnumeratorSource + ", " + strAlias + "): ";
+            strExpectedValue += strEnumeratorResult;
+            strlstExpectedValues.append(strExpectedValue);
 
             enumerator = CEnumMode::toEnumerator(strEnumeratorSource, idxAlias);
 
@@ -2389,9 +2399,9 @@ void CTest::doTestStepEnumClassTemplateZSSysModeClassMethodToEnumerator( ZS::Tes
             else if( enumerator == EMode::Undefined ) { strEnumeratorResult = "Undefined"; }
             else { strEnumeratorResult = QString::number(static_cast<int>(enumerator)); }
 
-            strActualValue = "CEnumMode::toEnumerator(" + strEnumeratorSource + ", " + strAlias + "): ";
-            strActualValue += strEnumeratorResult;
-            strlstActualValues.append(strActualValue);
+            strResultValue = "CEnumMode::toEnumerator(" + strEnumeratorSource + ", " + strAlias + "): ";
+            strResultValue += strEnumeratorResult;
+            strlstResultValues.append(strResultValue);
 
         } // for( iEnumerator = 0; iEnumerator < iEnumArrLen; ++iEnumerator )
     } // for( idxAlias = 0; idxAlias <= EEnumEntryAliasStrText; ++idxAlias )
@@ -2405,18 +2415,18 @@ void CTest::doTestStepEnumClassTemplateZSSysModeClassMethodToEnumerator( ZS::Tes
     strCaseSensitivity = qCaseSensitivity2Str(caseSensitivity);
     strEnumeratorResult = "Simulation";
 
-    strDesiredValue = "CEnumMode::toEnumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
-    strDesiredValue += strEnumeratorResult + ", true";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "CEnumMode::toEnumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
+    strExpectedValue += strEnumeratorResult + ", true";
+    strlstExpectedValues.append(strExpectedValue);
 
     enumerator = CEnumMode::toEnumerator(strEnumeratorSource, idxAlias, caseSensitivity, &bOk);
     if( enumerator == EMode::Edit ) strEnumeratorResult = "Edit";
     else if( enumerator == EMode::Simulation ) strEnumeratorResult = "Simulation";
     else if( enumerator == EMode::Undefined ) strEnumeratorResult = "Undefined";
     else strEnumeratorResult = QString::number(static_cast<int>(enumerator));
-    strActualValue = "CEnumMode::toEnumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
-    strActualValue += strEnumeratorResult + ", " + bool2Str(bOk);
-    strlstActualValues.append(strActualValue);
+    strResultValue = "CEnumMode::toEnumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
+    strResultValue += strEnumeratorResult + ", " + bool2Str(bOk);
+    strlstResultValues.append(strResultValue);
 
     strEnumeratorSource = "simULATION";
     idxAlias = ZS::System::EEnumEntryAliasStrName;
@@ -2425,18 +2435,18 @@ void CTest::doTestStepEnumClassTemplateZSSysModeClassMethodToEnumerator( ZS::Tes
     strCaseSensitivity = qCaseSensitivity2Str(caseSensitivity);
     strEnumeratorResult = "-1";
 
-    strDesiredValue = "CEnumMode::toEnumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
-    strDesiredValue += strEnumeratorResult + ", false";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "CEnumMode::toEnumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
+    strExpectedValue += strEnumeratorResult + ", false";
+    strlstExpectedValues.append(strExpectedValue);
 
     enumerator = CEnumMode::toEnumerator(strEnumeratorSource, idxAlias, caseSensitivity, &bOk);
     if( enumerator == EMode::Edit ) strEnumeratorResult = "Edit";
     else if( enumerator == EMode::Simulation ) strEnumeratorResult = "Simulation";
     else if( enumerator == EMode::Undefined ) strEnumeratorResult = "Undefined";
     else strEnumeratorResult = QString::number(static_cast<int>(enumerator));
-    strActualValue = "CEnumMode::toEnumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
-    strActualValue += strEnumeratorResult + ", " + bool2Str(bOk);
-    strlstActualValues.append(strActualValue);
+    strResultValue = "CEnumMode::toEnumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
+    strResultValue += strEnumeratorResult + ", " + bool2Str(bOk);
+    strlstResultValues.append(strResultValue);
 
     strEnumeratorSource = "simULATION";
     idxAlias = ZS::System::EEnumEntryAliasStrName;
@@ -2445,18 +2455,18 @@ void CTest::doTestStepEnumClassTemplateZSSysModeClassMethodToEnumerator( ZS::Tes
     strCaseSensitivity = qCaseSensitivity2Str(caseSensitivity);
     strEnumeratorResult = "Simulation";
 
-    strDesiredValue = "CEnumMode::toEnumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
-    strDesiredValue += strEnumeratorResult + ", true";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "CEnumMode::toEnumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
+    strExpectedValue += strEnumeratorResult + ", true";
+    strlstExpectedValues.append(strExpectedValue);
 
     enumerator = CEnumMode::toEnumerator(strEnumeratorSource, idxAlias, caseSensitivity, &bOk);
     if( enumerator == EMode::Edit ) strEnumeratorResult = "Edit";
     else if( enumerator == EMode::Simulation ) strEnumeratorResult = "Simulation";
     else if( enumerator == EMode::Undefined ) strEnumeratorResult = "Undefined";
     else strEnumeratorResult = QString::number(static_cast<int>(enumerator));
-    strActualValue = "CEnumMode::toEnumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
-    strActualValue += strEnumeratorResult + ", " + bool2Str(bOk);
-    strlstActualValues.append(strActualValue);
+    strResultValue = "CEnumMode::toEnumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
+    strResultValue += strEnumeratorResult + ", " + bool2Str(bOk);
+    strlstResultValues.append(strResultValue);
 
     strEnumeratorSource = "simULATION";
     idxAlias = ZS::System::EEnumEntryAliasStrUndefined;
@@ -2465,18 +2475,18 @@ void CTest::doTestStepEnumClassTemplateZSSysModeClassMethodToEnumerator( ZS::Tes
     strCaseSensitivity = qCaseSensitivity2Str(caseSensitivity);
     strEnumeratorResult = "-1";
 
-    strDesiredValue = "CEnumMode::toEnumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
-    strDesiredValue += strEnumeratorResult + ", false";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "CEnumMode::toEnumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
+    strExpectedValue += strEnumeratorResult + ", false";
+    strlstExpectedValues.append(strExpectedValue);
 
     enumerator = CEnumMode::toEnumerator(strEnumeratorSource, idxAlias, caseSensitivity, &bOk);
     if( enumerator == EMode::Edit ) strEnumeratorResult = "Edit";
     else if( enumerator == EMode::Simulation ) strEnumeratorResult = "Simulation";
     else if( enumerator == EMode::Undefined ) strEnumeratorResult = "Undefined";
     else strEnumeratorResult = QString::number(static_cast<int>(enumerator));
-    strActualValue = "CEnumMode::toEnumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
-    strActualValue += strEnumeratorResult + ", " + bool2Str(bOk);
-    strlstActualValues.append(strActualValue);
+    strResultValue = "CEnumMode::toEnumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
+    strResultValue += strEnumeratorResult + ", " + bool2Str(bOk);
+    strlstResultValues.append(strResultValue);
 
     strEnumeratorSource = "simULATION";
     idxAlias = ZS::System::EEnumEntryAliasStrUndefined;
@@ -2485,18 +2495,18 @@ void CTest::doTestStepEnumClassTemplateZSSysModeClassMethodToEnumerator( ZS::Tes
     strCaseSensitivity = qCaseSensitivity2Str(caseSensitivity);
     strEnumeratorResult = "Simulation";
 
-    strDesiredValue = "CEnumMode::toEnumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
-    strDesiredValue += strEnumeratorResult + ", true";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "CEnumMode::toEnumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
+    strExpectedValue += strEnumeratorResult + ", true";
+    strlstExpectedValues.append(strExpectedValue);
 
     enumerator = CEnumMode::toEnumerator(strEnumeratorSource, idxAlias, caseSensitivity, &bOk);
     if( enumerator == EMode::Edit ) strEnumeratorResult = "Edit";
     else if( enumerator == EMode::Simulation ) strEnumeratorResult = "Simulation";
     else if( enumerator == EMode::Undefined ) strEnumeratorResult = "Undefined";
     else strEnumeratorResult = QString::number(static_cast<int>(enumerator));
-    strActualValue = "CEnumMode::toEnumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
-    strActualValue += strEnumeratorResult + ", " + bool2Str(bOk);
-    strlstActualValues.append(strActualValue);
+    strResultValue = "CEnumMode::toEnumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
+    strResultValue += strEnumeratorResult + ", " + bool2Str(bOk);
+    strlstResultValues.append(strResultValue);
 
     strEnumeratorSource = "Simulation";
     idxAlias = ZS::System::EEnumEntryAliasStrAlias8;
@@ -2505,9 +2515,9 @@ void CTest::doTestStepEnumClassTemplateZSSysModeClassMethodToEnumerator( ZS::Tes
     strCaseSensitivity = qCaseSensitivity2Str(caseSensitivity);
     strEnumeratorResult = "Map does not contain alias strings at index " + QString::number(idxAlias);
 
-    strDesiredValue = "CEnumMode::toEnumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
-    strDesiredValue += strEnumeratorResult + ", false";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "CEnumMode::toEnumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
+    strExpectedValue += strEnumeratorResult + ", false";
+    strlstExpectedValues.append(strExpectedValue);
 
     try
     {
@@ -2522,14 +2532,14 @@ void CTest::doTestStepEnumClassTemplateZSSysModeClassMethodToEnumerator( ZS::Tes
     {
         strEnumeratorResult = exc.getAddErrInfo();
     }
-    strActualValue = "CEnumMode::toEnumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
-    strActualValue += strEnumeratorResult + ", " + bool2Str(bOk);
-    strlstActualValues.append(strActualValue);
+    strResultValue = "CEnumMode::toEnumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
+    strResultValue += strEnumeratorResult + ", " + bool2Str(bOk);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
-    i_pTestStep->setDesiredValues(strlstDesiredValues);
-    i_pTestStep->setActualValues(strlstActualValues);
+    i_pTestStep->setExpectedValues(strlstExpectedValues);
+    i_pTestStep->setResultValues(strlstResultValues);
 
 } // doTestStepEnumClassTemplateZSSysModeClassMethodToEnumerator
 
@@ -2537,11 +2547,11 @@ void CTest::doTestStepEnumClassTemplateZSSysModeClassMethodToEnumerator( ZS::Tes
 void CTest::doTestStepEnumClassTemplateZSSysModeClassMethodFromString( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
-    QStringList strlstDesiredValues;
-    QStringList strlstActualValues;
+    QStringList strlstExpectedValues;
+    QStringList strlstResultValues;
 
-    QString strDesiredValue;
-    QString strActualValue;
+    QString strExpectedValue;
+    QString strResultValue;
 
     CEnumMode           enumInst;
     QString             strEnumeratorSource;
@@ -2563,9 +2573,9 @@ void CTest::doTestStepEnumClassTemplateZSSysModeClassMethodFromString( ZS::Test:
         else if( iEnumerator == 2 ) { strEnumeratorSource = "Undefined"; }
         else { strEnumeratorSource = QString::number(iEnumerator); }
 
-        strDesiredValue = "CEnumMode::fromString(" + strEnumeratorSource + "): ";
-        strDesiredValue += strEnumeratorSource;
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "CEnumMode::fromString(" + strEnumeratorSource + "): ";
+        strExpectedValue += strEnumeratorSource;
+        strlstExpectedValues.append(strExpectedValue);
 
         enumInst = CEnumMode::fromString(strEnumeratorSource);
 
@@ -2574,9 +2584,9 @@ void CTest::doTestStepEnumClassTemplateZSSysModeClassMethodFromString( ZS::Test:
         else if( enumInst.enumerator() == EMode::Undefined ) { strEnumeratorResult = "Undefined"; }
         else { strEnumeratorResult = QString::number(static_cast<int>(enumInst.enumerator())); }
 
-        strActualValue = "CEnumMode::fromString(" + strEnumeratorSource + "): ";
-        strActualValue += strEnumeratorResult;
-        strlstActualValues.append(strActualValue);
+        strResultValue = "CEnumMode::fromString(" + strEnumeratorSource + "): ";
+        strResultValue += strEnumeratorResult;
+        strlstResultValues.append(strResultValue);
     }
 
     // -------------------------------------------------------------------------
@@ -2620,18 +2630,18 @@ void CTest::doTestStepEnumClassTemplateZSSysModeClassMethodFromString( ZS::Test:
                 strEnumeratorSource = QString::number(iEnumerator);
             }
 
-            strDesiredValue = "CEnumMode::fromString(" + strEnumeratorSource + ", " + strAlias + "): ";
-            strDesiredValue += strEnumeratorResult;
-            strlstDesiredValues.append(strDesiredValue);
+            strExpectedValue = "CEnumMode::fromString(" + strEnumeratorSource + ", " + strAlias + "): ";
+            strExpectedValue += strEnumeratorResult;
+            strlstExpectedValues.append(strExpectedValue);
 
-            strActualValue = "CEnumMode::fromString(" + strEnumeratorSource + ", " + strAlias + "): ";
+            strResultValue = "CEnumMode::fromString(" + strEnumeratorSource + ", " + strAlias + "): ";
             enumInst = CEnumMode::fromString(strEnumeratorSource, idxAlias);
             if( enumInst.enumerator() == EMode::Edit ) strEnumeratorResult = "Edit";
             else if( enumInst.enumerator() == EMode::Simulation ) strEnumeratorResult = "Simulation";
             else if( enumInst.enumerator() == EMode::Undefined ) strEnumeratorResult = "Undefined";
             else strEnumeratorResult = QString::number(static_cast<int>(enumInst.enumerator()));
-            strActualValue += strEnumeratorResult;
-            strlstActualValues.append(strActualValue);
+            strResultValue += strEnumeratorResult;
+            strlstResultValues.append(strResultValue);
 
         } // for( iEnumerator = 0; iEnumerator < iEnumArrLen; ++iEnumerator )
     } // for( idxAlias = 0; idxAlias <= EEnumEntryAliasStrText; ++idxAlias )
@@ -2645,18 +2655,18 @@ void CTest::doTestStepEnumClassTemplateZSSysModeClassMethodFromString( ZS::Test:
     strCaseSensitivity = qCaseSensitivity2Str(caseSensitivity);
     strEnumeratorResult = "Simulation";
 
-    strDesiredValue = "CEnumMode::fromString(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
-    strDesiredValue += strEnumeratorResult + ", true";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "CEnumMode::fromString(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
+    strExpectedValue += strEnumeratorResult + ", true";
+    strlstExpectedValues.append(strExpectedValue);
 
-    strActualValue = "CEnumMode::fromString(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
+    strResultValue = "CEnumMode::fromString(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
     enumInst = CEnumMode::fromString(strEnumeratorSource, idxAlias, caseSensitivity, &bOk);
     if( enumInst.enumerator() == EMode::Edit ) strEnumeratorResult = "Edit";
     else if( enumInst.enumerator() == EMode::Simulation ) strEnumeratorResult = "Simulation";
     else if( enumInst.enumerator() == EMode::Undefined ) strEnumeratorResult = "Undefined";
     else strEnumeratorResult = QString::number(static_cast<int>(enumInst.enumerator()));
-    strActualValue += strEnumeratorResult + ", " + bool2Str(bOk);
-    strlstActualValues.append(strActualValue);
+    strResultValue += strEnumeratorResult + ", " + bool2Str(bOk);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
@@ -2667,18 +2677,18 @@ void CTest::doTestStepEnumClassTemplateZSSysModeClassMethodFromString( ZS::Test:
     strCaseSensitivity = qCaseSensitivity2Str(caseSensitivity);
     strEnumeratorResult = "-1";
 
-    strDesiredValue = "CEnumMode::fromString(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
-    strDesiredValue += strEnumeratorResult + ", false";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "CEnumMode::fromString(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
+    strExpectedValue += strEnumeratorResult + ", false";
+    strlstExpectedValues.append(strExpectedValue);
 
-    strActualValue = "CEnumMode::fromString(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
+    strResultValue = "CEnumMode::fromString(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
     enumInst = CEnumMode::fromString(strEnumeratorSource, idxAlias, caseSensitivity, &bOk);
     if( enumInst.enumerator() == EMode::Edit ) strEnumeratorResult = "Edit";
     else if( enumInst.enumerator() == EMode::Simulation ) strEnumeratorResult = "Simulation";
     else if( enumInst.enumerator() == EMode::Undefined ) strEnumeratorResult = "Undefined";
     else strEnumeratorResult = QString::number(static_cast<int>(enumInst.enumerator()));
-    strActualValue += strEnumeratorResult + ", " + bool2Str(bOk);
-    strlstActualValues.append(strActualValue);
+    strResultValue += strEnumeratorResult + ", " + bool2Str(bOk);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
@@ -2689,18 +2699,18 @@ void CTest::doTestStepEnumClassTemplateZSSysModeClassMethodFromString( ZS::Test:
     strCaseSensitivity = qCaseSensitivity2Str(caseSensitivity);
     strEnumeratorResult = "Simulation";
 
-    strDesiredValue = "CEnumMode::fromString(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
-    strDesiredValue += strEnumeratorResult + ", true";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "CEnumMode::fromString(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
+    strExpectedValue += strEnumeratorResult + ", true";
+    strlstExpectedValues.append(strExpectedValue);
 
-    strActualValue = "CEnumMode::fromString(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
+    strResultValue = "CEnumMode::fromString(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
     enumInst = CEnumMode::fromString(strEnumeratorSource, idxAlias, caseSensitivity, &bOk);
     if( enumInst.enumerator() == EMode::Edit ) strEnumeratorResult = "Edit";
     else if( enumInst.enumerator() == EMode::Simulation ) strEnumeratorResult = "Simulation";
     else if( enumInst.enumerator() == EMode::Undefined ) strEnumeratorResult = "Undefined";
     else strEnumeratorResult = QString::number(static_cast<int>(enumInst.enumerator()));
-    strActualValue += strEnumeratorResult + ", " + bool2Str(bOk);
-    strlstActualValues.append(strActualValue);
+    strResultValue += strEnumeratorResult + ", " + bool2Str(bOk);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
@@ -2711,18 +2721,18 @@ void CTest::doTestStepEnumClassTemplateZSSysModeClassMethodFromString( ZS::Test:
     strCaseSensitivity = qCaseSensitivity2Str(caseSensitivity);
     strEnumeratorResult = "-1";
 
-    strDesiredValue = "CEnumMode::fromString(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
-    strDesiredValue += strEnumeratorResult + ", false";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "CEnumMode::fromString(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
+    strExpectedValue += strEnumeratorResult + ", false";
+    strlstExpectedValues.append(strExpectedValue);
 
-    strActualValue = "CEnumMode::fromString(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
+    strResultValue = "CEnumMode::fromString(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
     enumInst = CEnumMode::fromString(strEnumeratorSource, idxAlias, caseSensitivity, &bOk);
     if( enumInst.enumerator() == EMode::Edit ) strEnumeratorResult = "Edit";
     else if( enumInst.enumerator() == EMode::Simulation ) strEnumeratorResult = "Simulation";
     else if( enumInst.enumerator() == EMode::Undefined ) strEnumeratorResult = "Undefined";
     else strEnumeratorResult = QString::number(static_cast<int>(enumInst.enumerator()));
-    strActualValue += strEnumeratorResult + ", " + bool2Str(bOk);
-    strlstActualValues.append(strActualValue);
+    strResultValue += strEnumeratorResult + ", " + bool2Str(bOk);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
@@ -2733,18 +2743,18 @@ void CTest::doTestStepEnumClassTemplateZSSysModeClassMethodFromString( ZS::Test:
     strCaseSensitivity = qCaseSensitivity2Str(caseSensitivity);
     strEnumeratorResult = "Simulation";
 
-    strDesiredValue = "CEnumMode::fromString(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
-    strDesiredValue += strEnumeratorResult + ", true";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "CEnumMode::fromString(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
+    strExpectedValue += strEnumeratorResult + ", true";
+    strlstExpectedValues.append(strExpectedValue);
 
-    strActualValue = "CEnumMode::fromString(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
+    strResultValue = "CEnumMode::fromString(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
     enumInst = CEnumMode::fromString(strEnumeratorSource, idxAlias, caseSensitivity, &bOk);
     if( enumInst.enumerator() == EMode::Edit ) strEnumeratorResult = "Edit";
     else if( enumInst.enumerator() == EMode::Simulation ) strEnumeratorResult = "Simulation";
     else if( enumInst.enumerator() == EMode::Undefined ) strEnumeratorResult = "Undefined";
     else strEnumeratorResult = QString::number(static_cast<int>(enumInst.enumerator()));
-    strActualValue += strEnumeratorResult + ", " + bool2Str(bOk);
-    strlstActualValues.append(strActualValue);
+    strResultValue += strEnumeratorResult + ", " + bool2Str(bOk);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
@@ -2755,30 +2765,30 @@ void CTest::doTestStepEnumClassTemplateZSSysModeClassMethodFromString( ZS::Test:
     strCaseSensitivity = qCaseSensitivity2Str(caseSensitivity);
     strEnumeratorResult = "-1";
 
-    strDesiredValue = "CEnumMode::fromString(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
-    strDesiredValue += "Map does not contain alias strings at index " + QString::number(idxAlias);
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "CEnumMode::fromString(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
+    strExpectedValue += "Map does not contain alias strings at index " + QString::number(idxAlias);
+    strlstExpectedValues.append(strExpectedValue);
 
     try
     {
-        strActualValue = "CEnumMode::fromString(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
+        strResultValue = "CEnumMode::fromString(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
         enumInst = CEnumMode::fromString(strEnumeratorSource, idxAlias, caseSensitivity, &bOk);
         if( enumInst.enumerator() == EMode::Edit ) strEnumeratorResult = "Edit";
         else if( enumInst.enumerator() == EMode::Simulation ) strEnumeratorResult = "Simulation";
         else if( enumInst.enumerator() == EMode::Undefined ) strEnumeratorResult = "Undefined";
         else strEnumeratorResult = QString::number(static_cast<int>(enumInst.enumerator()));
-        strActualValue += strEnumeratorResult + ", " + bool2Str(bOk);
+        strResultValue += strEnumeratorResult + ", " + bool2Str(bOk);
     }
     catch( CException& exc )
     {
-        strActualValue += exc.getAddErrInfo();
+        strResultValue += exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
-    i_pTestStep->setDesiredValues(strlstDesiredValues);
-    i_pTestStep->setActualValues(strlstActualValues);
+    i_pTestStep->setExpectedValues(strlstExpectedValues);
+    i_pTestStep->setResultValues(strlstResultValues);
 
 } // doTestStepEnumClassTemplateZSSysModeClassMethodFromString
 
@@ -2786,11 +2796,11 @@ void CTest::doTestStepEnumClassTemplateZSSysModeClassMethodFromString( ZS::Test:
 void CTest::doTestStepEnumClassTemplateZSSysModeCtors( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
-    QStringList strlstDesiredValues;
-    QStringList strlstActualValues;
+    QStringList strlstExpectedValues;
+    QStringList strlstResultValues;
 
-    QString strDesiredValue;
-    QString strActualValue;
+    QString strExpectedValue;
+    QString strResultValue;
 
     CEnumMode* pEnumInst = nullptr;
 
@@ -2805,16 +2815,16 @@ void CTest::doTestStepEnumClassTemplateZSSysModeCtors( ZS::Test::CTestStep* i_pT
 
     // -------------------------------------------------------------------------
 
-    strDesiredValue = "CEnumMode::ctor(): -1";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "CEnumMode::ctor(): -1";
+    strlstExpectedValues.append(strExpectedValue);
 
     pEnumInst = new CEnumMode();
     if( pEnumInst->enumerator() == EMode::Edit ) { strEnumerator = "Edit"; }
     else if( pEnumInst->enumerator() == EMode::Simulation ) { strEnumerator = "Simulation"; }
     else if( pEnumInst->enumerator() == EMode::Undefined ) { strEnumerator = "Undefined"; }
     else { strEnumerator = QString::number(static_cast<int>(pEnumInst->enumerator())); }
-    strActualValue = "CEnumMode::ctor(): " + strEnumerator;
-    strlstActualValues.append(strActualValue);
+    strResultValue = "CEnumMode::ctor(): " + strEnumerator;
+    strlstResultValues.append(strResultValue);
     delete pEnumInst;
     pEnumInst = nullptr;
 
@@ -2829,18 +2839,18 @@ void CTest::doTestStepEnumClassTemplateZSSysModeCtors( ZS::Test::CTestStep* i_pT
         else if( iEnumerator == 2 ) { strEnumerator = "Undefined"; }
         else { strEnumerator = QString::number(iEnumerator); }
 
-        strDesiredValue = "CEnumMode::ctor(" + strEnumerator + "): ";
-        strDesiredValue += strEnumerator;
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "CEnumMode::ctor(" + strEnumerator + "): ";
+        strExpectedValue += strEnumerator;
+        strlstExpectedValues.append(strExpectedValue);
 
-        strActualValue = "CEnumMode::ctor(" + strEnumerator + "): ";
+        strResultValue = "CEnumMode::ctor(" + strEnumerator + "): ";
         pEnumInst = new CEnumMode(static_cast<EMode>(iEnumerator));
         if( pEnumInst->enumerator() == EMode::Edit ) { strEnumerator = "Edit"; }
         else if( pEnumInst->enumerator() == EMode::Simulation ) { strEnumerator = "Simulation"; }
         else if( pEnumInst->enumerator() == EMode::Undefined ) { strEnumerator = "Undefined"; }
         else { strEnumerator = QString::number(static_cast<int>(pEnumInst->enumerator())); }
-        strActualValue += strEnumerator;
-        strlstActualValues.append(strActualValue);
+        strResultValue += strEnumerator;
+        strlstResultValues.append(strResultValue);
         delete pEnumInst;
         pEnumInst = nullptr;
     }
@@ -2850,25 +2860,25 @@ void CTest::doTestStepEnumClassTemplateZSSysModeCtors( ZS::Test::CTestStep* i_pT
     iEnumerator = -1;
     strEnumerator = QString::number(iEnumerator);
 
-    strDesiredValue = "CEnumMode::ctor(" + strEnumerator + "): ";
-    strDesiredValue += "Enumerator " + QString::number(iEnumerator) + " of enumeration class ZS::System::CEnum<enum ZS::System::EMode> not in range [0..2][Edit..Undefined]";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "CEnumMode::ctor(" + strEnumerator + "): ";
+    strExpectedValue += "Enumerator " + QString::number(iEnumerator) + " of enumeration class ZS::System::CEnum<enum ZS::System::EMode> not in range [0..2][Edit..Undefined]";
+    strlstExpectedValues.append(strExpectedValue);
 
     try
     {
-        strActualValue = "CEnumMode::ctor(" + strEnumerator + "): ";
+        strResultValue = "CEnumMode::ctor(" + strEnumerator + "): ";
         pEnumInst = new CEnumMode(static_cast<EMode>(iEnumerator));
         if( pEnumInst->enumerator() == EMode::Edit ) { strEnumerator = "Edit"; }
         else if( pEnumInst->enumerator() == EMode::Simulation ) { strEnumerator = "Simulation"; }
         else if( pEnumInst->enumerator() == EMode::Undefined ) { strEnumerator = "Undefined"; }
         else { strEnumerator = QString::number(static_cast<int>(pEnumInst->enumerator())); }
-        strActualValue += strEnumerator;
+        strResultValue += strEnumerator;
     }
     catch( CException& exc )
     {
-        strActualValue += exc.getAddErrInfo();
+        strResultValue += exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
     delete pEnumInst;
     pEnumInst = nullptr;
 
@@ -2877,25 +2887,25 @@ void CTest::doTestStepEnumClassTemplateZSSysModeCtors( ZS::Test::CTestStep* i_pT
     iEnumerator = CEnumMode::count();
     strEnumerator = QString::number(iEnumerator);
 
-    strDesiredValue = "CEnumMode::ctor(" + strEnumerator + "): ";
-    strDesiredValue += "Enumerator " + QString::number(iEnumerator) + " of enumeration class ZS::System::CEnum<enum ZS::System::EMode> not in range [0..2][Edit..Undefined]";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "CEnumMode::ctor(" + strEnumerator + "): ";
+    strExpectedValue += "Enumerator " + QString::number(iEnumerator) + " of enumeration class ZS::System::CEnum<enum ZS::System::EMode> not in range [0..2][Edit..Undefined]";
+    strlstExpectedValues.append(strExpectedValue);
 
     try
     {
-        strActualValue = "CEnumMode::ctor(" + strEnumerator + "): ";
+        strResultValue = "CEnumMode::ctor(" + strEnumerator + "): ";
         pEnumInst = new CEnumMode(static_cast<EMode>(iEnumerator));
         if( pEnumInst->enumerator() == EMode::Edit ) { strEnumerator = "Edit"; }
         else if( pEnumInst->enumerator() == EMode::Simulation ) { strEnumerator = "Simulation"; }
         else if( pEnumInst->enumerator() == EMode::Undefined ) { strEnumerator = "Undefined"; }
         else { strEnumerator = QString::number(static_cast<int>(pEnumInst->enumerator())); }
-        strActualValue += strEnumerator;
+        strResultValue += strEnumerator;
     }
     catch( CException& exc )
     {
-        strActualValue += exc.getAddErrInfo();
+        strResultValue += exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
     delete pEnumInst;
     pEnumInst = nullptr;
 
@@ -2910,18 +2920,18 @@ void CTest::doTestStepEnumClassTemplateZSSysModeCtors( ZS::Test::CTestStep* i_pT
         else if( iEnumerator == 2 ) { strEnumerator = "Undefined"; }
         else { strEnumerator = QString::number(iEnumerator); }
 
-        strDesiredValue = "CEnumMode::ctor(" + strEnumerator + "): ";
-        strDesiredValue += strEnumerator;
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "CEnumMode::ctor(" + strEnumerator + "): ";
+        strExpectedValue += strEnumerator;
+        strlstExpectedValues.append(strExpectedValue);
 
-        strActualValue = "CEnumMode::ctor(" + strEnumerator + "): ";
+        strResultValue = "CEnumMode::ctor(" + strEnumerator + "): ";
         pEnumInst = new CEnumMode(iEnumerator);
         if( pEnumInst->enumerator() == EMode::Edit ) { strEnumerator = "Edit"; }
         else if( pEnumInst->enumerator() == EMode::Simulation ) { strEnumerator = "Simulation"; }
         else if( pEnumInst->enumerator() == EMode::Undefined ) { strEnumerator = "Undefined"; }
         else { strEnumerator = QString::number(static_cast<int>(pEnumInst->enumerator())); }
-        strActualValue += strEnumerator;
-        strlstActualValues.append(strActualValue);
+        strResultValue += strEnumerator;
+        strlstResultValues.append(strResultValue);
         delete pEnumInst;
         pEnumInst = nullptr;
     }
@@ -2931,25 +2941,25 @@ void CTest::doTestStepEnumClassTemplateZSSysModeCtors( ZS::Test::CTestStep* i_pT
     iEnumerator = -1;
     strEnumerator = QString::number(iEnumerator);
 
-    strDesiredValue = "CEnumMode::ctor(" + strEnumerator + "): ";
-    strDesiredValue += "Enumerator " + QString::number(iEnumerator) + " of enumeration class ZS::System::CEnum<enum ZS::System::EMode> not in range [0..2][Edit..Undefined]";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "CEnumMode::ctor(" + strEnumerator + "): ";
+    strExpectedValue += "Enumerator " + QString::number(iEnumerator) + " of enumeration class ZS::System::CEnum<enum ZS::System::EMode> not in range [0..2][Edit..Undefined]";
+    strlstExpectedValues.append(strExpectedValue);
 
     try
     {
-        strActualValue = "CEnumMode::ctor(" + strEnumerator + "): ";
+        strResultValue = "CEnumMode::ctor(" + strEnumerator + "): ";
         pEnumInst = new CEnumMode(iEnumerator);
         if( pEnumInst->enumerator() == EMode::Edit ) { strEnumerator = "Edit"; }
         else if( pEnumInst->enumerator() == EMode::Simulation ) { strEnumerator = "Simulation"; }
         else if( pEnumInst->enumerator() == EMode::Undefined ) { strEnumerator = "Undefined"; }
         else { strEnumerator = QString::number(static_cast<int>(pEnumInst->enumerator())); }
-        strActualValue += strEnumerator;
+        strResultValue += strEnumerator;
     }
     catch( CException& exc )
     {
-        strActualValue += exc.getAddErrInfo();
+        strResultValue += exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
     delete pEnumInst;
     pEnumInst = nullptr;
 
@@ -2958,25 +2968,25 @@ void CTest::doTestStepEnumClassTemplateZSSysModeCtors( ZS::Test::CTestStep* i_pT
     iEnumerator = CEnumMode::count();
     strEnumerator = QString::number(iEnumerator);
 
-    strDesiredValue = "CEnumMode::ctor(" + strEnumerator + "): ";
-    strDesiredValue += "Enumerator " + QString::number(iEnumerator) + " of enumeration class ZS::System::CEnum<enum ZS::System::EMode> not in range [0..2][Edit..Undefined]";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "CEnumMode::ctor(" + strEnumerator + "): ";
+    strExpectedValue += "Enumerator " + QString::number(iEnumerator) + " of enumeration class ZS::System::CEnum<enum ZS::System::EMode> not in range [0..2][Edit..Undefined]";
+    strlstExpectedValues.append(strExpectedValue);
 
     try
     {
-        strActualValue = "CEnumMode::ctor(" + strEnumerator + "): ";
+        strResultValue = "CEnumMode::ctor(" + strEnumerator + "): ";
         pEnumInst = new CEnumMode(iEnumerator);
         if( pEnumInst->enumerator() == EMode::Edit ) { strEnumerator = "Edit"; }
         else if( pEnumInst->enumerator() == EMode::Simulation ) { strEnumerator = "Simulation"; }
         else if( pEnumInst->enumerator() == EMode::Undefined ) { strEnumerator = "Undefined"; }
         else { strEnumerator = QString::number(static_cast<int>(pEnumInst->enumerator())); }
-        strActualValue += strEnumerator;
+        strResultValue += strEnumerator;
     }
     catch( CException& exc )
     {
-        strActualValue += exc.getAddErrInfo();
+        strResultValue += exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
     delete pEnumInst;
     pEnumInst = nullptr;
 
@@ -2991,18 +3001,18 @@ void CTest::doTestStepEnumClassTemplateZSSysModeCtors( ZS::Test::CTestStep* i_pT
         else if( iEnumerator == 2 ) { strEnumerator = "Undefined"; }
         else { strEnumerator = QString::number(iEnumerator); }
 
-        strDesiredValue = "CEnumMode::ctor(" + strEnumerator + "): ";
-        strDesiredValue += strEnumerator;
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "CEnumMode::ctor(" + strEnumerator + "): ";
+        strExpectedValue += strEnumerator;
+        strlstExpectedValues.append(strExpectedValue);
 
-        strActualValue = "CEnumMode::ctor(" + strEnumerator + "): ";
+        strResultValue = "CEnumMode::ctor(" + strEnumerator + "): ";
         pEnumInst = new CEnumMode(strEnumerator);
         if( pEnumInst->enumerator() == EMode::Edit ) { strEnumerator = "Edit"; }
         else if( pEnumInst->enumerator() == EMode::Simulation ) { strEnumerator = "Simulation"; }
         else if( pEnumInst->enumerator() == EMode::Undefined ) { strEnumerator = "Undefined"; }
         else { strEnumerator = QString::number(static_cast<int>(pEnumInst->enumerator())); }
-        strActualValue += strEnumerator;
-        strlstActualValues.append(strActualValue);
+        strResultValue += strEnumerator;
+        strlstResultValues.append(strResultValue);
         delete pEnumInst;
         pEnumInst = nullptr;
     }
@@ -3015,18 +3025,18 @@ void CTest::doTestStepEnumClassTemplateZSSysModeCtors( ZS::Test::CTestStep* i_pT
     caseSensitivity = Qt::CaseSensitive;
     strCaseSensitivity = qCaseSensitivity2Str(caseSensitivity);
 
-    strDesiredValue = "CEnumMode::ctor(" + strEnumerator + ", " + strAlias + ", " + strCaseSensitivity + "): ";
-    strDesiredValue += strEnumerator;
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "CEnumMode::ctor(" + strEnumerator + ", " + strAlias + ", " + strCaseSensitivity + "): ";
+    strExpectedValue += strEnumerator;
+    strlstExpectedValues.append(strExpectedValue);
 
-    strActualValue = "CEnumMode::ctor(" + strEnumerator + ", " + strAlias + ", " + strCaseSensitivity + "): ";
+    strResultValue = "CEnumMode::ctor(" + strEnumerator + ", " + strAlias + ", " + strCaseSensitivity + "): ";
     pEnumInst = new CEnumMode(strEnumerator, idxAlias, caseSensitivity);
     if( pEnumInst->enumerator() == EMode::Edit ) strEnumerator = "Edit";
     else if( pEnumInst->enumerator() == EMode::Simulation ) strEnumerator = "Simulation";
     else if( pEnumInst->enumerator() == EMode::Undefined ) { strEnumerator = "Undefined"; }
     else strEnumerator = QString::number(static_cast<int>(pEnumInst->enumerator()));
-    strActualValue += strEnumerator;
-    strlstActualValues.append(strActualValue);
+    strResultValue += strEnumerator;
+    strlstResultValues.append(strResultValue);
     delete pEnumInst;
     pEnumInst = nullptr;
 
@@ -3039,18 +3049,18 @@ void CTest::doTestStepEnumClassTemplateZSSysModeCtors( ZS::Test::CTestStep* i_pT
     strCaseSensitivity = qCaseSensitivity2Str(caseSensitivity);
     strEnumerator = "-1";
 
-    strDesiredValue = "CEnumMode::ctor(" + strEnumerator + ", " + strAlias + ", " + strCaseSensitivity + "): ";
-    strDesiredValue += strEnumerator;
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "CEnumMode::ctor(" + strEnumerator + ", " + strAlias + ", " + strCaseSensitivity + "): ";
+    strExpectedValue += strEnumerator;
+    strlstExpectedValues.append(strExpectedValue);
 
-    strActualValue = "CEnumMode::ctor(" + strEnumerator + ", " + strAlias + ", " + strCaseSensitivity + "): ";
+    strResultValue = "CEnumMode::ctor(" + strEnumerator + ", " + strAlias + ", " + strCaseSensitivity + "): ";
     pEnumInst = new CEnumMode(strEnumerator, idxAlias, caseSensitivity);
     if( pEnumInst->enumerator() == EMode::Edit ) strEnumerator = "Edit";
     else if( pEnumInst->enumerator() == EMode::Simulation ) strEnumerator = "Simulation";
     else if( pEnumInst->enumerator() == EMode::Undefined ) { strEnumerator = "Undefined"; }
     else strEnumerator = QString::number(static_cast<int>(pEnumInst->enumerator()));
-    strActualValue += strEnumerator;
-    strlstActualValues.append(strActualValue);
+    strResultValue += strEnumerator;
+    strlstResultValues.append(strResultValue);
     delete pEnumInst;
     pEnumInst = nullptr;
 
@@ -3063,18 +3073,18 @@ void CTest::doTestStepEnumClassTemplateZSSysModeCtors( ZS::Test::CTestStep* i_pT
     strCaseSensitivity = qCaseSensitivity2Str(caseSensitivity);
     strEnumerator = "Simulation";
 
-    strDesiredValue = "CEnumMode::ctor(" + strEnumerator + ", " + strAlias + ", " + strCaseSensitivity + "): ";
-    strDesiredValue += strEnumerator;
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "CEnumMode::ctor(" + strEnumerator + ", " + strAlias + ", " + strCaseSensitivity + "): ";
+    strExpectedValue += strEnumerator;
+    strlstExpectedValues.append(strExpectedValue);
 
-    strActualValue = "CEnumMode::ctor(" + strEnumerator + ", " + strAlias + ", " + strCaseSensitivity + "): ";
+    strResultValue = "CEnumMode::ctor(" + strEnumerator + ", " + strAlias + ", " + strCaseSensitivity + "): ";
     pEnumInst = new CEnumMode(strEnumerator, idxAlias, caseSensitivity);
     if( pEnumInst->enumerator() == EMode::Edit ) strEnumerator = "Edit";
     else if( pEnumInst->enumerator() == EMode::Simulation ) strEnumerator = "Simulation";
     else if( pEnumInst->enumerator() == EMode::Undefined ) { strEnumerator = "Undefined"; }
     else strEnumerator = QString::number(static_cast<int>(pEnumInst->enumerator()));
-    strActualValue += strEnumerator;
-    strlstActualValues.append(strActualValue);
+    strResultValue += strEnumerator;
+    strlstResultValues.append(strResultValue);
     delete pEnumInst;
     pEnumInst = nullptr;
 
@@ -3087,18 +3097,18 @@ void CTest::doTestStepEnumClassTemplateZSSysModeCtors( ZS::Test::CTestStep* i_pT
     strCaseSensitivity = qCaseSensitivity2Str(caseSensitivity);
     strEnumerator = "Simulation";
 
-    strDesiredValue = "CEnumMode::ctor(" + strEnumerator + ", " + strAlias + ", " + strCaseSensitivity + "): ";
-    strDesiredValue += strEnumerator;
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "CEnumMode::ctor(" + strEnumerator + ", " + strAlias + ", " + strCaseSensitivity + "): ";
+    strExpectedValue += strEnumerator;
+    strlstExpectedValues.append(strExpectedValue);
 
-    strActualValue = "CEnumMode::ctor(" + strEnumerator + ", " + strAlias + ", " + strCaseSensitivity + "): ";
+    strResultValue = "CEnumMode::ctor(" + strEnumerator + ", " + strAlias + ", " + strCaseSensitivity + "): ";
     pEnumInst = new CEnumMode(strEnumerator, idxAlias, caseSensitivity);
     if( pEnumInst->enumerator() == EMode::Edit ) strEnumerator = "Edit";
     else if( pEnumInst->enumerator() == EMode::Simulation ) strEnumerator = "Simulation";
     else if( pEnumInst->enumerator() == EMode::Undefined ) { strEnumerator = "Undefined"; }
     else strEnumerator = QString::number(static_cast<int>(pEnumInst->enumerator()));
-    strActualValue += strEnumerator;
-    strlstActualValues.append(strActualValue);
+    strResultValue += strEnumerator;
+    strlstResultValues.append(strResultValue);
     delete pEnumInst;
     pEnumInst = nullptr;
 
@@ -3111,18 +3121,18 @@ void CTest::doTestStepEnumClassTemplateZSSysModeCtors( ZS::Test::CTestStep* i_pT
     strCaseSensitivity = qCaseSensitivity2Str(caseSensitivity);
     strEnumerator = "-1";
 
-    strDesiredValue = "CEnumMode::ctor(" + strEnumerator + ", " + strAlias + ", " + strCaseSensitivity + "): ";
-    strDesiredValue += strEnumerator;
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "CEnumMode::ctor(" + strEnumerator + ", " + strAlias + ", " + strCaseSensitivity + "): ";
+    strExpectedValue += strEnumerator;
+    strlstExpectedValues.append(strExpectedValue);
 
-    strActualValue = "CEnumMode::ctor(" + strEnumerator + ", " + strAlias + ", " + strCaseSensitivity + "): ";
+    strResultValue = "CEnumMode::ctor(" + strEnumerator + ", " + strAlias + ", " + strCaseSensitivity + "): ";
     pEnumInst = new CEnumMode(strEnumerator, idxAlias, caseSensitivity);
     if( pEnumInst->enumerator() == EMode::Edit ) strEnumerator = "Edit";
     else if( pEnumInst->enumerator() == EMode::Simulation ) strEnumerator = "Simulation";
     else if( pEnumInst->enumerator() == EMode::Undefined ) { strEnumerator = "Undefined"; }
     else strEnumerator = QString::number(static_cast<int>(pEnumInst->enumerator()));
-    strActualValue += strEnumerator;
-    strlstActualValues.append(strActualValue);
+    strResultValue += strEnumerator;
+    strlstResultValues.append(strResultValue);
     delete pEnumInst;
     pEnumInst = nullptr;
 
@@ -3135,18 +3145,18 @@ void CTest::doTestStepEnumClassTemplateZSSysModeCtors( ZS::Test::CTestStep* i_pT
     strCaseSensitivity = qCaseSensitivity2Str(caseSensitivity);
     strEnumerator = "Simulation";
 
-    strDesiredValue = "CEnumMode::ctor(" + strEnumerator + ", " + strAlias + ", " + strCaseSensitivity + "): ";
-    strDesiredValue += strEnumerator;
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "CEnumMode::ctor(" + strEnumerator + ", " + strAlias + ", " + strCaseSensitivity + "): ";
+    strExpectedValue += strEnumerator;
+    strlstExpectedValues.append(strExpectedValue);
 
-    strActualValue = "CEnumMode::ctor(" + strEnumerator + ", " + strAlias + ", " + strCaseSensitivity + "): ";
+    strResultValue = "CEnumMode::ctor(" + strEnumerator + ", " + strAlias + ", " + strCaseSensitivity + "): ";
     pEnumInst = new CEnumMode(strEnumerator, idxAlias, caseSensitivity);
     if( pEnumInst->enumerator() == EMode::Edit ) strEnumerator = "Edit";
     else if( pEnumInst->enumerator() == EMode::Simulation ) strEnumerator = "Simulation";
     else if( pEnumInst->enumerator() == EMode::Undefined ) { strEnumerator = "Undefined"; }
     else strEnumerator = QString::number(static_cast<int>(pEnumInst->enumerator()));
-    strActualValue += strEnumerator;
-    strlstActualValues.append(strActualValue);
+    strResultValue += strEnumerator;
+    strlstResultValues.append(strResultValue);
     delete pEnumInst;
     pEnumInst = nullptr;
 
@@ -3159,32 +3169,32 @@ void CTest::doTestStepEnumClassTemplateZSSysModeCtors( ZS::Test::CTestStep* i_pT
     strCaseSensitivity = qCaseSensitivity2Str(caseSensitivity);
     strEnumerator = "-1";
 
-    strDesiredValue = "CEnumMode::ctor(" + strEnumerator + ", " + strAlias + ", " + strCaseSensitivity + "): ";
-    strDesiredValue += "Map does not contain alias strings at index " + QString::number(idxAlias);
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "CEnumMode::ctor(" + strEnumerator + ", " + strAlias + ", " + strCaseSensitivity + "): ";
+    strExpectedValue += "Map does not contain alias strings at index " + QString::number(idxAlias);
+    strlstExpectedValues.append(strExpectedValue);
 
     try
     {
-        strActualValue = "CEnumMode::ctor(" + strEnumerator + ", " + strAlias + ", " + strCaseSensitivity + "): ";
+        strResultValue = "CEnumMode::ctor(" + strEnumerator + ", " + strAlias + ", " + strCaseSensitivity + "): ";
         pEnumInst = new CEnumMode(strEnumerator, idxAlias, caseSensitivity);
         if( pEnumInst->enumerator() == EMode::Edit ) strEnumerator = "Edit";
         else if( pEnumInst->enumerator() == EMode::Simulation ) strEnumerator = "Simulation";
         else if( pEnumInst->enumerator() == EMode::Undefined ) { strEnumerator = "Undefined"; }
         else strEnumerator = QString::number(static_cast<int>(pEnumInst->enumerator()));
-        strActualValue += strEnumerator;
+        strResultValue += strEnumerator;
     }
     catch( CException& exc )
     {
-        strActualValue += exc.getAddErrInfo();
+        strResultValue += exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
     delete pEnumInst;
     pEnumInst = nullptr;
 
     // -------------------------------------------------------------------------
 
-    i_pTestStep->setDesiredValues(strlstDesiredValues);
-    i_pTestStep->setActualValues(strlstActualValues);
+    i_pTestStep->setExpectedValues(strlstExpectedValues);
+    i_pTestStep->setResultValues(strlstResultValues);
 
 } // doTestStepEnumClassTemplateZSSysModeCtors
 
@@ -3192,11 +3202,11 @@ void CTest::doTestStepEnumClassTemplateZSSysModeCtors( ZS::Test::CTestStep* i_pT
 void CTest::doTestStepEnumClassTemplateZSSysModeOperatorAssign( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
-    QStringList strlstDesiredValues;
-    QStringList strlstActualValues;
+    QStringList strlstExpectedValues;
+    QStringList strlstResultValues;
 
-    QString strDesiredValue;
-    QString strActualValue;
+    QString strExpectedValue;
+    QString strResultValue;
 
     CEnumMode enumInst;
 
@@ -3219,18 +3229,18 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorAssign( ZS::Test::CTestS
         else if( iEnumerator == 2 ) { strEnumeratorSource = "Undefined"; }
         else { strEnumeratorSource = QString::number(iEnumerator); }
 
-        strDesiredValue = "CEnumMode = " + strEnumeratorSource + ": ";
-        strDesiredValue += strEnumeratorSource;
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "CEnumMode = " + strEnumeratorSource + ": ";
+        strExpectedValue += strEnumeratorSource;
+        strlstExpectedValues.append(strExpectedValue);
 
-        strActualValue = "CEnumMode = " + strEnumeratorSource + ": ";
+        strResultValue = "CEnumMode = " + strEnumeratorSource + ": ";
         enumInst = static_cast<EMode>(iEnumerator);
         if( enumInst.enumerator() == EMode::Edit ) { strEnumeratorResult = "Edit"; }
         else if( enumInst.enumerator() == EMode::Simulation ) { strEnumeratorResult = "Simulation"; }
         else if( enumInst.enumerator() == EMode::Undefined ) { strEnumeratorResult = "Undefined"; }
         else { strEnumeratorResult = QString::number(static_cast<int>(enumInst.enumerator())); }
-        strActualValue += strEnumeratorResult;
-        strlstActualValues.append(strActualValue);
+        strResultValue += strEnumeratorResult;
+        strlstResultValues.append(strResultValue);
     }
 
     // -------------------------------------------------------------------------
@@ -3238,50 +3248,50 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorAssign( ZS::Test::CTestS
     iEnumerator = -1;
     strEnumeratorSource = QString::number(iEnumerator);
 
-    strDesiredValue = "CEnumMode = " + strEnumeratorSource + ": ";
-    strDesiredValue += "Enumerator " + QString::number(iEnumerator) + " of enumeration class ZS::System::CEnum<enum ZS::System::EMode> not in range [0..2][Edit..Undefined]";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "CEnumMode = " + strEnumeratorSource + ": ";
+    strExpectedValue += "Enumerator " + QString::number(iEnumerator) + " of enumeration class ZS::System::CEnum<enum ZS::System::EMode> not in range [0..2][Edit..Undefined]";
+    strlstExpectedValues.append(strExpectedValue);
 
     try
     {
-        strActualValue = "CEnumMode = " + strEnumeratorSource + ": ";
+        strResultValue = "CEnumMode = " + strEnumeratorSource + ": ";
         enumInst = static_cast<EMode>(iEnumerator);
         if( enumInst.enumerator() == EMode::Edit ) { strEnumeratorResult = "Edit"; }
         else if( enumInst.enumerator() == EMode::Simulation ) { strEnumeratorResult = "Simulation"; }
         else if( enumInst.enumerator() == EMode::Undefined ) { strEnumeratorResult = "Undefined"; }
         else { strEnumeratorResult = QString::number(static_cast<int>(enumInst.enumerator())); }
-        strActualValue += strEnumeratorResult;
+        strResultValue += strEnumeratorResult;
     }
     catch( CException& exc )
     {
-        strActualValue += exc.getAddErrInfo();
+        strResultValue += exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     iEnumerator = CEnumMode::count();
     strEnumeratorSource = QString::number(iEnumerator);
 
-    strDesiredValue = "CEnumMode = " + strEnumeratorSource + ": ";
-    strDesiredValue += "Enumerator " + QString::number(iEnumerator) + " of enumeration class ZS::System::CEnum<enum ZS::System::EMode> not in range [0..2][Edit..Undefined]";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "CEnumMode = " + strEnumeratorSource + ": ";
+    strExpectedValue += "Enumerator " + QString::number(iEnumerator) + " of enumeration class ZS::System::CEnum<enum ZS::System::EMode> not in range [0..2][Edit..Undefined]";
+    strlstExpectedValues.append(strExpectedValue);
 
     try
     {
-        strActualValue = "CEnumMode = " + strEnumeratorSource + ": ";
+        strResultValue = "CEnumMode = " + strEnumeratorSource + ": ";
         enumInst = static_cast<EMode>(iEnumerator);
         if( enumInst.enumerator() == EMode::Edit ) { strEnumeratorResult = "Edit"; }
         else if( enumInst.enumerator() == EMode::Simulation ) { strEnumeratorResult = "Simulation"; }
         else if( enumInst.enumerator() == EMode::Undefined ) { strEnumeratorResult = "Undefined"; }
         else { strEnumeratorResult = QString::number(static_cast<int>(enumInst.enumerator())); }
-        strActualValue += strEnumeratorResult;
+        strResultValue += strEnumeratorResult;
     }
     catch( CException& exc )
     {
-        strActualValue += exc.getAddErrInfo();
+        strResultValue += exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
@@ -3294,18 +3304,18 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorAssign( ZS::Test::CTestS
         else if( iEnumerator == 2 ) { strEnumeratorSource = "Undefined"; }
         else { strEnumeratorSource = QString::number(iEnumerator); }
 
-        strDesiredValue = "CEnumMode = " + strEnumeratorSource + ": ";
-        strDesiredValue += strEnumeratorSource;
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "CEnumMode = " + strEnumeratorSource + ": ";
+        strExpectedValue += strEnumeratorSource;
+        strlstExpectedValues.append(strExpectedValue);
 
-        strActualValue = "CEnumMode = " + strEnumeratorSource + ": ";
+        strResultValue = "CEnumMode = " + strEnumeratorSource + ": ";
         enumInst = iEnumerator;
         if( enumInst.enumerator() == EMode::Edit ) { strEnumeratorResult = "Edit"; }
         else if( enumInst.enumerator() == EMode::Simulation ) { strEnumeratorResult = "Simulation"; }
         else if( enumInst.enumerator() == EMode::Undefined ) { strEnumeratorResult = "Undefined"; }
         else { strEnumeratorResult = QString::number(static_cast<int>(enumInst.enumerator())); }
-        strActualValue += strEnumeratorResult;
-        strlstActualValues.append(strActualValue);
+        strResultValue += strEnumeratorResult;
+        strlstResultValues.append(strResultValue);
     }
 
     // -------------------------------------------------------------------------
@@ -3313,50 +3323,50 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorAssign( ZS::Test::CTestS
     iEnumerator = -1;
     strEnumeratorSource = QString::number(iEnumerator);
 
-    strDesiredValue = "CEnumMode = " + strEnumeratorSource + ": ";
-    strDesiredValue += "Enumerator " + QString::number(iEnumerator) + " of enumeration class ZS::System::CEnum<enum ZS::System::EMode> not in range [0..2][Edit..Undefined]";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "CEnumMode = " + strEnumeratorSource + ": ";
+    strExpectedValue += "Enumerator " + QString::number(iEnumerator) + " of enumeration class ZS::System::CEnum<enum ZS::System::EMode> not in range [0..2][Edit..Undefined]";
+    strlstExpectedValues.append(strExpectedValue);
 
     try
     {
-        strActualValue = "CEnumMode = " + strEnumeratorSource + ": ";
+        strResultValue = "CEnumMode = " + strEnumeratorSource + ": ";
         enumInst = iEnumerator;
         if( enumInst.enumerator() == EMode::Edit ) { strEnumeratorResult = "Edit"; }
         else if( enumInst.enumerator() == EMode::Simulation ) { strEnumeratorResult = "Simulation"; }
         else if( enumInst.enumerator() == EMode::Undefined ) { strEnumeratorResult = "Undefined"; }
         else { strEnumeratorResult = QString::number(static_cast<int>(enumInst.enumerator())); }
-        strActualValue += strEnumeratorResult;
+        strResultValue += strEnumeratorResult;
     }
     catch( CException& exc )
     {
-        strActualValue += exc.getAddErrInfo();
+        strResultValue += exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     iEnumerator = CEnumMode::count();
     strEnumeratorSource = QString::number(iEnumerator);
 
-    strDesiredValue = "CEnumMode = " + strEnumeratorSource + ": ";
-    strDesiredValue += "Enumerator " + QString::number(iEnumerator) + " of enumeration class ZS::System::CEnum<enum ZS::System::EMode> not in range [0..2][Edit..Undefined]";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "CEnumMode = " + strEnumeratorSource + ": ";
+    strExpectedValue += "Enumerator " + QString::number(iEnumerator) + " of enumeration class ZS::System::CEnum<enum ZS::System::EMode> not in range [0..2][Edit..Undefined]";
+    strlstExpectedValues.append(strExpectedValue);
 
     try
     {
-        strActualValue = "CEnumMode = " + strEnumeratorSource + ": ";
+        strResultValue = "CEnumMode = " + strEnumeratorSource + ": ";
         enumInst = iEnumerator;
         if( enumInst.enumerator() == EMode::Edit ) { strEnumeratorResult = "Edit"; }
         else if( enumInst.enumerator() == EMode::Simulation ) { strEnumeratorResult = "Simulation"; }
         else if( enumInst.enumerator() == EMode::Undefined ) { strEnumeratorResult = "Undefined"; }
         else { strEnumeratorResult = QString::number(static_cast<int>(enumInst.enumerator())); }
-        strActualValue += strEnumeratorResult;
+        strResultValue += strEnumeratorResult;
     }
     catch( CException& exc )
     {
-        strActualValue += exc.getAddErrInfo();
+        strResultValue += exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
@@ -3399,18 +3409,18 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorAssign( ZS::Test::CTestS
                 strEnumeratorSource = QString::number(iEnumerator);
             }
 
-            strDesiredValue = "CEnumMode = " + strEnumeratorSource + ": ";
-            strDesiredValue += strEnumeratorResult;
-            strlstDesiredValues.append(strDesiredValue);
+            strExpectedValue = "CEnumMode = " + strEnumeratorSource + ": ";
+            strExpectedValue += strEnumeratorResult;
+            strlstExpectedValues.append(strExpectedValue);
 
-            strActualValue = "CEnumMode = " + strEnumeratorSource + ": ";
+            strResultValue = "CEnumMode = " + strEnumeratorSource + ": ";
             enumInst = strEnumeratorSource;
             if( enumInst.enumerator() == EMode::Edit ) strEnumeratorResult = "Edit";
             else if( enumInst.enumerator() == EMode::Simulation ) strEnumeratorResult = "Simulation";
             else if( enumInst.enumerator() == EMode::Undefined ) strEnumeratorResult = "Undefined";
             else strEnumeratorResult = QString::number(static_cast<int>(enumInst.enumerator()));
-            strActualValue += strEnumeratorResult;
-            strlstActualValues.append(strActualValue);
+            strResultValue += strEnumeratorResult;
+            strlstResultValues.append(strResultValue);
 
         } // for( iEnumerator = 0; iEnumerator < iEnumArrLen; ++iEnumerator )
     } // for( idxAlias = 0; idxAlias <= EEnumEntryAliasStrText; ++idxAlias )
@@ -3419,22 +3429,22 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorAssign( ZS::Test::CTestS
 
     strEnumeratorSource = "simULATION";
 
-    strDesiredValue = "CEnumMode = " + strEnumeratorSource + ": -1";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "CEnumMode = " + strEnumeratorSource + ": -1";
+    strlstExpectedValues.append(strExpectedValue);
 
-    strActualValue = "CEnumMode = " + strEnumeratorSource + ": ";
+    strResultValue = "CEnumMode = " + strEnumeratorSource + ": ";
     enumInst = strEnumeratorSource;
     if( enumInst.enumerator() == EMode::Edit ) strEnumeratorResult = "Edit";
     else if( enumInst.enumerator() == EMode::Simulation ) strEnumeratorResult = "Simulation";
     else if( enumInst.enumerator() == EMode::Undefined ) strEnumeratorResult = "Undefined";
     else strEnumeratorResult = QString::number(static_cast<int>(enumInst.enumerator()));
-    strActualValue += strEnumeratorResult;
-    strlstActualValues.append(strActualValue);
+    strResultValue += strEnumeratorResult;
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
-    i_pTestStep->setDesiredValues(strlstDesiredValues);
-    i_pTestStep->setActualValues(strlstActualValues);
+    i_pTestStep->setExpectedValues(strlstExpectedValues);
+    i_pTestStep->setResultValues(strlstResultValues);
 
 } // doTestStepEnumClassTemplateZSSysModeOperatorAssign
 
@@ -3442,11 +3452,11 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorAssign( ZS::Test::CTestS
 void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithEnumerator( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
-    QStringList strlstDesiredValues;
-    QStringList strlstActualValues;
+    QStringList strlstExpectedValues;
+    QStringList strlstResultValues;
 
-    QString strDesiredValue;
-    QString strActualValue;
+    QString strExpectedValue;
+    QString strResultValue;
 
     EMode enumerator;
 
@@ -3459,127 +3469,127 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithEnumerator( Z
 
     try
     {
-        strDesiredValue = "Simulation == Simulation";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Simulation == Simulation";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst == enumerator )
         {
-            strActualValue = "Simulation == Simulation";
+            strResultValue = "Simulation == Simulation";
         }
         else
         {
-            strActualValue = "Simulation != Simulation";
+            strResultValue = "Simulation != Simulation";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Simulation == Simulation";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Simulation == Simulation";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst != enumerator )
         {
-            strActualValue = "Simulation != Simulation";
+            strResultValue = "Simulation != Simulation";
         }
         else
         {
-            strActualValue = "Simulation == Simulation";
+            strResultValue = "Simulation == Simulation";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     try
     {
-        strDesiredValue = "Simulation >= Simulation";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Simulation >= Simulation";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst < enumerator )
         {
-            strActualValue = "Simulation < Simulation";
+            strResultValue = "Simulation < Simulation";
         }
         else
         {
-            strActualValue = "Simulation >= Simulation";
+            strResultValue = "Simulation >= Simulation";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Simulation <= Simulation";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Simulation <= Simulation";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst > enumerator )
         {
-            strActualValue = "Simulation > Simulation";
+            strResultValue = "Simulation > Simulation";
         }
         else
         {
-            strActualValue = "Simulation <= Simulation";
+            strResultValue = "Simulation <= Simulation";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     try
     {
-        strDesiredValue = "Simulation <= Simulation";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Simulation <= Simulation";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst <= enumerator )
         {
-            strActualValue = "Simulation <= Simulation";
+            strResultValue = "Simulation <= Simulation";
         }
         else
         {
-            strActualValue = "Simulation > Simulation";
+            strResultValue = "Simulation > Simulation";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Simulation >= Simulation";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Simulation >= Simulation";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst >= enumerator )
         {
-            strActualValue = "Simulation >= Simulation";
+            strResultValue = "Simulation >= Simulation";
         }
         else
         {
-            strActualValue = "Simulation < Simulation";
+            strResultValue = "Simulation < Simulation";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
@@ -3588,127 +3598,127 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithEnumerator( Z
 
     try
     {
-        strDesiredValue = "Edit != Simulation";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Edit != Simulation";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst == enumerator )
         {
-            strActualValue = "Edit == Simulation";
+            strResultValue = "Edit == Simulation";
         }
         else
         {
-            strActualValue = "Edit != Simulation";
+            strResultValue = "Edit != Simulation";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Edit != Simulation";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Edit != Simulation";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst != enumerator )
         {
-            strActualValue = "Edit != Simulation";
+            strResultValue = "Edit != Simulation";
         }
         else
         {
-            strActualValue = "Edit == Simulation";
+            strResultValue = "Edit == Simulation";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     try
     {
-        strDesiredValue = "Edit < Simulation";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Edit < Simulation";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst < enumerator )
         {
-            strActualValue = "Edit < Simulation";
+            strResultValue = "Edit < Simulation";
         }
         else
         {
-            strActualValue = "Edit >= Simulation";
+            strResultValue = "Edit >= Simulation";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Edit <= Simulation";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Edit <= Simulation";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst > enumerator )
         {
-            strActualValue = "Edit > Simulation";
+            strResultValue = "Edit > Simulation";
         }
         else
         {
-            strActualValue = "Edit <= Simulation";
+            strResultValue = "Edit <= Simulation";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     try
     {
-        strDesiredValue = "Edit <= Simulation";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Edit <= Simulation";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst <= enumerator )
         {
-            strActualValue = "Edit <= Simulation";
+            strResultValue = "Edit <= Simulation";
         }
         else
         {
-            strActualValue = "Edit > Simulation";
+            strResultValue = "Edit > Simulation";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Edit < Simulation";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Edit < Simulation";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst >= enumerator )
         {
-            strActualValue = "Edit >= Simulation";
+            strResultValue = "Edit >= Simulation";
         }
         else
         {
-            strActualValue = "Edit < Simulation";
+            strResultValue = "Edit < Simulation";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
@@ -3717,127 +3727,127 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithEnumerator( Z
 
     try
     {
-        strDesiredValue = "Invalid != Simulation";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Invalid != Simulation";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst == enumerator )
         {
-            strActualValue = "Invalid == Simulation";
+            strResultValue = "Invalid == Simulation";
         }
         else
         {
-            strActualValue = "Invalid != Simulation";
+            strResultValue = "Invalid != Simulation";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Invalid != Simulation";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Invalid != Simulation";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst != enumerator )
         {
-            strActualValue = "Invalid != Simulation";
+            strResultValue = "Invalid != Simulation";
         }
         else
         {
-            strActualValue = "Invalid == Simulation";
+            strResultValue = "Invalid == Simulation";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     try
     {
-        strDesiredValue = "Enumerator -1 of enumeration class ZS::System::CEnum<enum ZS::System::EMode> not in range [0..2][Edit..Undefined]";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Enumerator -1 of enumeration class ZS::System::CEnum<enum ZS::System::EMode> not in range [0..2][Edit..Undefined]";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst < enumerator )
         {
-            strActualValue = "Invalid < Simulation";
+            strResultValue = "Invalid < Simulation";
         }
         else
         {
-            strActualValue = "Invalid >= Simulation";
+            strResultValue = "Invalid >= Simulation";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Enumerator -1 of enumeration class ZS::System::CEnum<enum ZS::System::EMode> not in range [0..2][Edit..Undefined]";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Enumerator -1 of enumeration class ZS::System::CEnum<enum ZS::System::EMode> not in range [0..2][Edit..Undefined]";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst > enumerator )
         {
-            strActualValue = "Invalid > Simulation";
+            strResultValue = "Invalid > Simulation";
         }
         else
         {
-            strActualValue = "Invalid <= Simulation";
+            strResultValue = "Invalid <= Simulation";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     try
     {
-        strDesiredValue = "Enumerator -1 of enumeration class ZS::System::CEnum<enum ZS::System::EMode> not in range [0..2][Edit..Undefined]";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Enumerator -1 of enumeration class ZS::System::CEnum<enum ZS::System::EMode> not in range [0..2][Edit..Undefined]";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst <= enumerator )
         {
-            strActualValue = "Invalid <= Simulation";
+            strResultValue = "Invalid <= Simulation";
         }
         else
         {
-            strActualValue = "Invalid > Simulation";
+            strResultValue = "Invalid > Simulation";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Enumerator -1 of enumeration class ZS::System::CEnum<enum ZS::System::EMode> not in range [0..2][Edit..Undefined]";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Enumerator -1 of enumeration class ZS::System::CEnum<enum ZS::System::EMode> not in range [0..2][Edit..Undefined]";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst >= enumerator )
         {
-            strActualValue = "Invalid >= Simulation";
+            strResultValue = "Invalid >= Simulation";
         }
         else
         {
-            strActualValue = "Invalid < Simulation";
+            strResultValue = "Invalid < Simulation";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
@@ -3846,127 +3856,127 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithEnumerator( Z
 
     try
     {
-        strDesiredValue = "Simulation != Invalid";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Simulation != Invalid";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst == enumerator )
         {
-            strActualValue = "Simulation == Invalid";
+            strResultValue = "Simulation == Invalid";
         }
         else
         {
-            strActualValue = "Simulation != Invalid";
+            strResultValue = "Simulation != Invalid";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Simulation != Invalid";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Simulation != Invalid";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst != enumerator )
         {
-            strActualValue = "Simulation != Invalid";
+            strResultValue = "Simulation != Invalid";
         }
         else
         {
-            strActualValue = "Simulation == Invalid";
+            strResultValue = "Simulation == Invalid";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     try
     {
-        strDesiredValue = "Enumerator -1 of enumeration class ZS::System::CEnum<enum ZS::System::EMode> not in range [0..2][Edit..Undefined]";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Enumerator -1 of enumeration class ZS::System::CEnum<enum ZS::System::EMode> not in range [0..2][Edit..Undefined]";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst < enumerator )
         {
-            strActualValue = "Simulation < Invalid";
+            strResultValue = "Simulation < Invalid";
         }
         else
         {
-            strActualValue = "Simulation >= Invalid";
+            strResultValue = "Simulation >= Invalid";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Enumerator -1 of enumeration class ZS::System::CEnum<enum ZS::System::EMode> not in range [0..2][Edit..Undefined]";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Enumerator -1 of enumeration class ZS::System::CEnum<enum ZS::System::EMode> not in range [0..2][Edit..Undefined]";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst > enumerator )
         {
-            strActualValue = "Simulation > Invalid";
+            strResultValue = "Simulation > Invalid";
         }
         else
         {
-            strActualValue = "Simulation <= Invalid";
+            strResultValue = "Simulation <= Invalid";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     try
     {
-        strDesiredValue = "Enumerator -1 of enumeration class ZS::System::CEnum<enum ZS::System::EMode> not in range [0..2][Edit..Undefined]";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Enumerator -1 of enumeration class ZS::System::CEnum<enum ZS::System::EMode> not in range [0..2][Edit..Undefined]";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst <= enumerator )
         {
-            strActualValue = "Simulation <= Invalid";
+            strResultValue = "Simulation <= Invalid";
         }
         else
         {
-            strActualValue = "Simulation > Invalid";
+            strResultValue = "Simulation > Invalid";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Enumerator -1 of enumeration class ZS::System::CEnum<enum ZS::System::EMode> not in range [0..2][Edit..Undefined]";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Enumerator -1 of enumeration class ZS::System::CEnum<enum ZS::System::EMode> not in range [0..2][Edit..Undefined]";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst >= enumerator )
         {
-            strActualValue = "Simulation >= Invalid";
+            strResultValue = "Simulation >= Invalid";
         }
         else
         {
-            strActualValue = "Simulation < Invalid";
+            strResultValue = "Simulation < Invalid";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
@@ -3975,132 +3985,132 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithEnumerator( Z
 
     try
     {
-        strDesiredValue = "Invalid == Invalid";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Invalid == Invalid";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst == enumerator )
         {
-            strActualValue = "Invalid == Invalid";
+            strResultValue = "Invalid == Invalid";
         }
         else
         {
-            strActualValue = "Invalid != Invalid";
+            strResultValue = "Invalid != Invalid";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Invalid == Invalid";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Invalid == Invalid";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst != enumerator )
         {
-            strActualValue = "Invalid != Invalid";
+            strResultValue = "Invalid != Invalid";
         }
         else
         {
-            strActualValue = "Invalid == Invalid";
+            strResultValue = "Invalid == Invalid";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     try
     {
-        strDesiredValue = "Enumerator -1 of enumeration class ZS::System::CEnum<enum ZS::System::EMode> not in range [0..2][Edit..Undefined]";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Enumerator -1 of enumeration class ZS::System::CEnum<enum ZS::System::EMode> not in range [0..2][Edit..Undefined]";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst < enumerator )
         {
-            strActualValue = "Invalid < Invalid";
+            strResultValue = "Invalid < Invalid";
         }
         else
         {
-            strActualValue = "Invalid >= Invalid";
+            strResultValue = "Invalid >= Invalid";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Enumerator -1 of enumeration class ZS::System::CEnum<enum ZS::System::EMode> not in range [0..2][Edit..Undefined]";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Enumerator -1 of enumeration class ZS::System::CEnum<enum ZS::System::EMode> not in range [0..2][Edit..Undefined]";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst > enumerator )
         {
-            strActualValue = "Invalid > Invalid";
+            strResultValue = "Invalid > Invalid";
         }
         else
         {
-            strActualValue = "Invalid <= Invalid";
+            strResultValue = "Invalid <= Invalid";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     try
     {
-        strDesiredValue = "Enumerator -1 of enumeration class ZS::System::CEnum<enum ZS::System::EMode> not in range [0..2][Edit..Undefined]";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Enumerator -1 of enumeration class ZS::System::CEnum<enum ZS::System::EMode> not in range [0..2][Edit..Undefined]";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst <= enumerator )
         {
-            strActualValue = "Invalid <= Invalid";
+            strResultValue = "Invalid <= Invalid";
         }
         else
         {
-            strActualValue = "Invalid > Invalid";
+            strResultValue = "Invalid > Invalid";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Enumerator -1 of enumeration class ZS::System::CEnum<enum ZS::System::EMode> not in range [0..2][Edit..Undefined]";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Enumerator -1 of enumeration class ZS::System::CEnum<enum ZS::System::EMode> not in range [0..2][Edit..Undefined]";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst >= enumerator )
         {
-            strActualValue = "Invalid >= Invalid";
+            strResultValue = "Invalid >= Invalid";
         }
         else
         {
-            strActualValue = "Invalid < Invalid";
+            strResultValue = "Invalid < Invalid";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
-    i_pTestStep->setDesiredValues(strlstDesiredValues);
-    i_pTestStep->setActualValues(strlstActualValues);
+    i_pTestStep->setExpectedValues(strlstExpectedValues);
+    i_pTestStep->setResultValues(strlstResultValues);
 
 } // doTestStepEnumClassTemplateZSSysModeOperatorCompareWithEnumerator
 
@@ -4108,11 +4118,11 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithEnumerator( Z
 void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithInt( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
-    QStringList strlstDesiredValues;
-    QStringList strlstActualValues;
+    QStringList strlstExpectedValues;
+    QStringList strlstResultValues;
 
-    QString strDesiredValue;
-    QString strActualValue;
+    QString strExpectedValue;
+    QString strResultValue;
 
     CEnumMode enumInst;
 
@@ -4125,127 +4135,127 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithInt( ZS::Test
 
     try
     {
-        strDesiredValue = "Simulation == Simulation";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Simulation == Simulation";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst == iEnumerator )
         {
-            strActualValue = "Simulation == Simulation";
+            strResultValue = "Simulation == Simulation";
         }
         else
         {
-            strActualValue = "Simulation != Simulation";
+            strResultValue = "Simulation != Simulation";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Simulation == Simulation";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Simulation == Simulation";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst != iEnumerator )
         {
-            strActualValue = "Simulation != Simulation";
+            strResultValue = "Simulation != Simulation";
         }
         else
         {
-            strActualValue = "Simulation == Simulation";
+            strResultValue = "Simulation == Simulation";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     try
     {
-        strDesiredValue = "Simulation >= Simulation";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Simulation >= Simulation";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst < iEnumerator )
         {
-            strActualValue = "Simulation < Simulation";
+            strResultValue = "Simulation < Simulation";
         }
         else
         {
-            strActualValue = "Simulation >= Simulation";
+            strResultValue = "Simulation >= Simulation";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Simulation <= Simulation";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Simulation <= Simulation";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst > iEnumerator )
         {
-            strActualValue = "Simulation > Simulation";
+            strResultValue = "Simulation > Simulation";
         }
         else
         {
-            strActualValue = "Simulation <= Simulation";
+            strResultValue = "Simulation <= Simulation";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     try
     {
-        strDesiredValue = "Simulation <= Simulation";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Simulation <= Simulation";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst <= iEnumerator )
         {
-            strActualValue = "Simulation <= Simulation";
+            strResultValue = "Simulation <= Simulation";
         }
         else
         {
-            strActualValue = "Simulation > Simulation";
+            strResultValue = "Simulation > Simulation";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Simulation >= Simulation";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Simulation >= Simulation";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst >= iEnumerator )
         {
-            strActualValue = "Simulation >= Simulation";
+            strResultValue = "Simulation >= Simulation";
         }
         else
         {
-            strActualValue = "Simulation < Simulation";
+            strResultValue = "Simulation < Simulation";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
@@ -4254,127 +4264,127 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithInt( ZS::Test
 
     try
     {
-        strDesiredValue = "Edit != Simulation";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Edit != Simulation";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst == iEnumerator )
         {
-            strActualValue = "Edit == Simulation";
+            strResultValue = "Edit == Simulation";
         }
         else
         {
-            strActualValue = "Edit != Simulation";
+            strResultValue = "Edit != Simulation";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Edit != Simulation";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Edit != Simulation";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst != iEnumerator )
         {
-            strActualValue = "Edit != Simulation";
+            strResultValue = "Edit != Simulation";
         }
         else
         {
-            strActualValue = "Edit == Simulation";
+            strResultValue = "Edit == Simulation";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     try
     {
-        strDesiredValue = "Edit < Simulation";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Edit < Simulation";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst < iEnumerator )
         {
-            strActualValue = "Edit < Simulation";
+            strResultValue = "Edit < Simulation";
         }
         else
         {
-            strActualValue = "Edit >= Simulation";
+            strResultValue = "Edit >= Simulation";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Edit <= Simulation";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Edit <= Simulation";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst > iEnumerator )
         {
-            strActualValue = "Edit > Simulation";
+            strResultValue = "Edit > Simulation";
         }
         else
         {
-            strActualValue = "Edit <= Simulation";
+            strResultValue = "Edit <= Simulation";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     try
     {
-        strDesiredValue = "Edit <= Simulation";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Edit <= Simulation";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst <= iEnumerator )
         {
-            strActualValue = "Edit <= Simulation";
+            strResultValue = "Edit <= Simulation";
         }
         else
         {
-            strActualValue = "Edit > Simulation";
+            strResultValue = "Edit > Simulation";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Edit < Simulation";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Edit < Simulation";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst >= iEnumerator )
         {
-            strActualValue = "Edit >= Simulation";
+            strResultValue = "Edit >= Simulation";
         }
         else
         {
-            strActualValue = "Edit < Simulation";
+            strResultValue = "Edit < Simulation";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
@@ -4383,127 +4393,127 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithInt( ZS::Test
 
     try
     {
-        strDesiredValue = "Invalid != Simulation";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Invalid != Simulation";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst == iEnumerator )
         {
-            strActualValue = "Invalid == Simulation";
+            strResultValue = "Invalid == Simulation";
         }
         else
         {
-            strActualValue = "Invalid != Simulation";
+            strResultValue = "Invalid != Simulation";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Invalid != Simulation";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Invalid != Simulation";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst != iEnumerator )
         {
-            strActualValue = "Invalid != Simulation";
+            strResultValue = "Invalid != Simulation";
         }
         else
         {
-            strActualValue = "Invalid == Simulation";
+            strResultValue = "Invalid == Simulation";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     try
     {
-        strDesiredValue = "Invalid < Simulation: false";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Invalid < Simulation: false";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst < iEnumerator )
         {
-            strActualValue = "Invalid < Simulation";
+            strResultValue = "Invalid < Simulation";
         }
         else
         {
-            strActualValue = "Invalid < Simulation: false";
+            strResultValue = "Invalid < Simulation: false";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Invalid > Simulation: false";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Invalid > Simulation: false";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst > iEnumerator )
         {
-            strActualValue = "Invalid > Simulation";
+            strResultValue = "Invalid > Simulation";
         }
         else
         {
-            strActualValue = "Invalid > Simulation: false";
+            strResultValue = "Invalid > Simulation: false";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     try
     {
-        strDesiredValue = "Invalid <= Simulation: false";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Invalid <= Simulation: false";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst <= iEnumerator )
         {
-            strActualValue = "Invalid <= Simulation";
+            strResultValue = "Invalid <= Simulation";
         }
         else
         {
-            strActualValue = "Invalid <= Simulation: false";
+            strResultValue = "Invalid <= Simulation: false";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Invalid >= Simulation: false";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Invalid >= Simulation: false";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst >= iEnumerator )
         {
-            strActualValue = "Invalid >= Simulation";
+            strResultValue = "Invalid >= Simulation";
         }
         else
         {
-            strActualValue = "Invalid >= Simulation: false";
+            strResultValue = "Invalid >= Simulation: false";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
@@ -4512,127 +4522,127 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithInt( ZS::Test
 
     try
     {
-        strDesiredValue = "Simulation != Invalid";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Simulation != Invalid";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst == iEnumerator )
         {
-            strActualValue = "Simulation == Invalid";
+            strResultValue = "Simulation == Invalid";
         }
         else
         {
-            strActualValue = "Simulation != Invalid";
+            strResultValue = "Simulation != Invalid";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Simulation != Invalid";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Simulation != Invalid";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst != iEnumerator )
         {
-            strActualValue = "Simulation != Invalid";
+            strResultValue = "Simulation != Invalid";
         }
         else
         {
-            strActualValue = "Simulation == Invalid";
+            strResultValue = "Simulation == Invalid";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     try
     {
-        strDesiredValue = "Simulation < Invalid: false";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Simulation < Invalid: false";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst < iEnumerator )
         {
-            strActualValue = "Simulation < Invalid";
+            strResultValue = "Simulation < Invalid";
         }
         else
         {
-            strActualValue = "Simulation < Invalid: false";
+            strResultValue = "Simulation < Invalid: false";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Simulation > Invalid: false";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Simulation > Invalid: false";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst > iEnumerator )
         {
-            strActualValue = "Simulation > Invalid";
+            strResultValue = "Simulation > Invalid";
         }
         else
         {
-            strActualValue = "Simulation > Invalid: false";
+            strResultValue = "Simulation > Invalid: false";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     try
     {
-        strDesiredValue = "Simulation <= Invalid: false";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Simulation <= Invalid: false";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst <= iEnumerator )
         {
-            strActualValue = "Simulation <= Invalid";
+            strResultValue = "Simulation <= Invalid";
         }
         else
         {
-            strActualValue = "Simulation <= Invalid: false";
+            strResultValue = "Simulation <= Invalid: false";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Simulation >= Invalid: false";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Simulation >= Invalid: false";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst >= iEnumerator )
         {
-            strActualValue = "Simulation >= Invalid";
+            strResultValue = "Simulation >= Invalid";
         }
         else
         {
-            strActualValue = "Simulation >= Invalid: false";
+            strResultValue = "Simulation >= Invalid: false";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
@@ -4641,132 +4651,132 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithInt( ZS::Test
 
     try
     {
-        strDesiredValue = "Invalid == Invalid";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Invalid == Invalid";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst == iEnumerator )
         {
-            strActualValue = "Invalid == Invalid";
+            strResultValue = "Invalid == Invalid";
         }
         else
         {
-            strActualValue = "Invalid != Invalid";
+            strResultValue = "Invalid != Invalid";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Invalid == Invalid";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Invalid == Invalid";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst != iEnumerator )
         {
-            strActualValue = "Invalid != Invalid";
+            strResultValue = "Invalid != Invalid";
         }
         else
         {
-            strActualValue = "Invalid == Invalid";
+            strResultValue = "Invalid == Invalid";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     try
     {
-        strDesiredValue = "Invalid < Invalid: false";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Invalid < Invalid: false";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst < iEnumerator )
         {
-            strActualValue = "Invalid < Invalid";
+            strResultValue = "Invalid < Invalid";
         }
         else
         {
-            strActualValue = "Invalid < Invalid: false";
+            strResultValue = "Invalid < Invalid: false";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Invalid > Invalid: false";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Invalid > Invalid: false";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst > iEnumerator )
         {
-            strActualValue = "Invalid > Invalid";
+            strResultValue = "Invalid > Invalid";
         }
         else
         {
-            strActualValue = "Invalid > Invalid: false";
+            strResultValue = "Invalid > Invalid: false";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     try
     {
-        strDesiredValue = "Invalid <= Invalid: false";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Invalid <= Invalid: false";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst <= iEnumerator )
         {
-            strActualValue = "Invalid <= Invalid";
+            strResultValue = "Invalid <= Invalid";
         }
         else
         {
-            strActualValue = "Invalid <= Invalid: false";
+            strResultValue = "Invalid <= Invalid: false";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Invalid >= Invalid: false";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Invalid >= Invalid: false";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst >= iEnumerator )
         {
-            strActualValue = "Invalid >= Invalid";
+            strResultValue = "Invalid >= Invalid";
         }
         else
         {
-            strActualValue = "Invalid >= Invalid: false";
+            strResultValue = "Invalid >= Invalid: false";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
-    i_pTestStep->setDesiredValues(strlstDesiredValues);
-    i_pTestStep->setActualValues(strlstActualValues);
+    i_pTestStep->setExpectedValues(strlstExpectedValues);
+    i_pTestStep->setResultValues(strlstResultValues);
 
 } // doTestStepEnumClassTemplateZSSysModeOperatorCompareWithInt
 
@@ -4774,11 +4784,11 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithInt( ZS::Test
 void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithCharPtr( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
-    QStringList strlstDesiredValues;
-    QStringList strlstActualValues;
+    QStringList strlstExpectedValues;
+    QStringList strlstResultValues;
 
-    QString strDesiredValue;
-    QString strActualValue;
+    QString strExpectedValue;
+    QString strResultValue;
 
     CEnumMode enumInst;
 
@@ -4789,127 +4799,127 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithCharPtr( ZS::
 
     try
     {
-        strDesiredValue = "Simulation == Simulation";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Simulation == Simulation";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst == szEnumerator )
         {
-            strActualValue = "Simulation == Simulation";
+            strResultValue = "Simulation == Simulation";
         }
         else
         {
-            strActualValue = "Simulation != Simulation";
+            strResultValue = "Simulation != Simulation";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Simulation == Simulation";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Simulation == Simulation";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst != szEnumerator )
         {
-            strActualValue = "Simulation != Simulation";
+            strResultValue = "Simulation != Simulation";
         }
         else
         {
-            strActualValue = "Simulation == Simulation";
+            strResultValue = "Simulation == Simulation";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     try
     {
-        strDesiredValue = "Simulation >= Simulation";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Simulation >= Simulation";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst < szEnumerator )
         {
-            strActualValue = "Simulation < Simulation";
+            strResultValue = "Simulation < Simulation";
         }
         else
         {
-            strActualValue = "Simulation >= Simulation";
+            strResultValue = "Simulation >= Simulation";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Simulation <= Simulation";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Simulation <= Simulation";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst > szEnumerator )
         {
-            strActualValue = "Simulation > Simulation";
+            strResultValue = "Simulation > Simulation";
         }
         else
         {
-            strActualValue = "Simulation <= Simulation";
+            strResultValue = "Simulation <= Simulation";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     try
     {
-        strDesiredValue = "Simulation <= Simulation";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Simulation <= Simulation";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst <= szEnumerator )
         {
-            strActualValue = "Simulation <= Simulation";
+            strResultValue = "Simulation <= Simulation";
         }
         else
         {
-            strActualValue = "Simulation > Simulation";
+            strResultValue = "Simulation > Simulation";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Simulation >= Simulation";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Simulation >= Simulation";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst >= szEnumerator )
         {
-            strActualValue = "Simulation >= Simulation";
+            strResultValue = "Simulation >= Simulation";
         }
         else
         {
-            strActualValue = "Simulation < Simulation";
+            strResultValue = "Simulation < Simulation";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
@@ -4918,127 +4928,127 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithCharPtr( ZS::
 
     try
     {
-        strDesiredValue = "Edit != Simulation";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Edit != Simulation";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst == szEnumerator )
         {
-            strActualValue = "Edit == Simulation";
+            strResultValue = "Edit == Simulation";
         }
         else
         {
-            strActualValue = "Edit != Simulation";
+            strResultValue = "Edit != Simulation";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Edit != Simulation";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Edit != Simulation";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst != szEnumerator )
         {
-            strActualValue = "Edit != Simulation";
+            strResultValue = "Edit != Simulation";
         }
         else
         {
-            strActualValue = "Edit == Simulation";
+            strResultValue = "Edit == Simulation";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     try
     {
-        strDesiredValue = "Edit < Simulation";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Edit < Simulation";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst < szEnumerator )
         {
-            strActualValue = "Edit < Simulation";
+            strResultValue = "Edit < Simulation";
         }
         else
         {
-            strActualValue = "Edit >= Simulation";
+            strResultValue = "Edit >= Simulation";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Edit <= Simulation";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Edit <= Simulation";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst > szEnumerator )
         {
-            strActualValue = "Edit > Simulation";
+            strResultValue = "Edit > Simulation";
         }
         else
         {
-            strActualValue = "Edit <= Simulation";
+            strResultValue = "Edit <= Simulation";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     try
     {
-        strDesiredValue = "Edit <= Simulation";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Edit <= Simulation";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst <= szEnumerator )
         {
-            strActualValue = "Edit <= Simulation";
+            strResultValue = "Edit <= Simulation";
         }
         else
         {
-            strActualValue = "Edit > Simulation";
+            strResultValue = "Edit > Simulation";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Edit < Simulation";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Edit < Simulation";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst >= szEnumerator )
         {
-            strActualValue = "Edit >= Simulation";
+            strResultValue = "Edit >= Simulation";
         }
         else
         {
-            strActualValue = "Edit < Simulation";
+            strResultValue = "Edit < Simulation";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
@@ -5047,127 +5057,127 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithCharPtr( ZS::
 
     try
     {
-        strDesiredValue = "Invalid != Simulation";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Invalid != Simulation";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst == szEnumerator )
         {
-            strActualValue = "Invalid == Simulation";
+            strResultValue = "Invalid == Simulation";
         }
         else
         {
-            strActualValue = "Invalid != Simulation";
+            strResultValue = "Invalid != Simulation";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Invalid != Simulation";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Invalid != Simulation";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst != szEnumerator )
         {
-            strActualValue = "Invalid != Simulation";
+            strResultValue = "Invalid != Simulation";
         }
         else
         {
-            strActualValue = "Invalid == Simulation";
+            strResultValue = "Invalid == Simulation";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     try
     {
-        strDesiredValue = "Invalid < Simulation: false";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Invalid < Simulation: false";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst < szEnumerator )
         {
-            strActualValue = "Invalid < Simulation";
+            strResultValue = "Invalid < Simulation";
         }
         else
         {
-            strActualValue = "Invalid < Simulation: false";
+            strResultValue = "Invalid < Simulation: false";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Invalid > Simulation: false";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Invalid > Simulation: false";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst > szEnumerator )
         {
-            strActualValue = "Invalid > Simulation";
+            strResultValue = "Invalid > Simulation";
         }
         else
         {
-            strActualValue = "Invalid > Simulation: false";
+            strResultValue = "Invalid > Simulation: false";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     try
     {
-        strDesiredValue = "Invalid <= Simulation: false";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Invalid <= Simulation: false";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst <= szEnumerator )
         {
-            strActualValue = "Invalid <= Simulation";
+            strResultValue = "Invalid <= Simulation";
         }
         else
         {
-            strActualValue = "Invalid <= Simulation: false";
+            strResultValue = "Invalid <= Simulation: false";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Invalid >= Simulation: false";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Invalid >= Simulation: false";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst >= szEnumerator )
         {
-            strActualValue = "Invalid >= Simulation";
+            strResultValue = "Invalid >= Simulation";
         }
         else
         {
-            strActualValue = "Invalid >= Simulation: false";
+            strResultValue = "Invalid >= Simulation: false";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
@@ -5176,127 +5186,127 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithCharPtr( ZS::
 
     try
     {
-        strDesiredValue = "Simulation != Unknown";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Simulation != Unknown";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst == szEnumerator )
         {
-            strActualValue = "Simulation == Unknown";
+            strResultValue = "Simulation == Unknown";
         }
         else
         {
-            strActualValue = "Simulation != Unknown";
+            strResultValue = "Simulation != Unknown";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Simulation != Unknown";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Simulation != Unknown";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst != szEnumerator )
         {
-            strActualValue = "Simulation != Unknown";
+            strResultValue = "Simulation != Unknown";
         }
         else
         {
-            strActualValue = "Simulation == Unknown";
+            strResultValue = "Simulation == Unknown";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     try
     {
-        strDesiredValue = "Simulation < Unknown: false";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Simulation < Unknown: false";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst < szEnumerator )
         {
-            strActualValue = "Simulation < Unknown";
+            strResultValue = "Simulation < Unknown";
         }
         else
         {
-            strActualValue = "Simulation < Unknown: false";
+            strResultValue = "Simulation < Unknown: false";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Simulation > Unknown: false";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Simulation > Unknown: false";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst > szEnumerator )
         {
-            strActualValue = "Simulation > Unknown";
+            strResultValue = "Simulation > Unknown";
         }
         else
         {
-            strActualValue = "Simulation > Unknown: false";
+            strResultValue = "Simulation > Unknown: false";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     try
     {
-        strDesiredValue = "Simulation <= Unknown: false";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Simulation <= Unknown: false";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst <= szEnumerator )
         {
-            strActualValue = "Simulation <= Unknown";
+            strResultValue = "Simulation <= Unknown";
         }
         else
         {
-            strActualValue = "Simulation <= Unknown: false";
+            strResultValue = "Simulation <= Unknown: false";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Simulation >= Unknown: false";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Simulation >= Unknown: false";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst >= szEnumerator )
         {
-            strActualValue = "Simulation >= Unknown";
+            strResultValue = "Simulation >= Unknown";
         }
         else
         {
-            strActualValue = "Simulation >= Unknown: false";
+            strResultValue = "Simulation >= Unknown: false";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
@@ -5305,132 +5315,132 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithCharPtr( ZS::
 
     try
     {
-        strDesiredValue = "Invalid != Unknown";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Invalid != Unknown";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst == szEnumerator )
         {
-            strActualValue = "Invalid == Unknown";
+            strResultValue = "Invalid == Unknown";
         }
         else
         {
-            strActualValue = "Invalid != Unknown";
+            strResultValue = "Invalid != Unknown";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Invalid != Unknown";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Invalid != Unknown";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst != szEnumerator )
         {
-            strActualValue = "Invalid != Unknown";
+            strResultValue = "Invalid != Unknown";
         }
         else
         {
-            strActualValue = "Invalid == Unknown";
+            strResultValue = "Invalid == Unknown";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     try
     {
-        strDesiredValue = "Invalid < Unknown: false";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Invalid < Unknown: false";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst < szEnumerator )
         {
-            strActualValue = "Invalid < Unknown";
+            strResultValue = "Invalid < Unknown";
         }
         else
         {
-            strActualValue = "Invalid < Unknown: false";
+            strResultValue = "Invalid < Unknown: false";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Invalid > Unknown: false";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Invalid > Unknown: false";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst > szEnumerator )
         {
-            strActualValue = "Invalid > Unknown";
+            strResultValue = "Invalid > Unknown";
         }
         else
         {
-            strActualValue = "Invalid > Unknown: false";
+            strResultValue = "Invalid > Unknown: false";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     try
     {
-        strDesiredValue = "Invalid <= Unknown: false";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Invalid <= Unknown: false";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst <= szEnumerator )
         {
-            strActualValue = "Invalid <= Unknown";
+            strResultValue = "Invalid <= Unknown";
         }
         else
         {
-            strActualValue = "Invalid <= Unknown: false";
+            strResultValue = "Invalid <= Unknown: false";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Invalid >= Unknown: false";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Invalid >= Unknown: false";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst >= szEnumerator )
         {
-            strActualValue = "Invalid >= Unknown";
+            strResultValue = "Invalid >= Unknown";
         }
         else
         {
-            strActualValue = "Invalid >= Unknown: false";
+            strResultValue = "Invalid >= Unknown: false";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
-    i_pTestStep->setDesiredValues(strlstDesiredValues);
-    i_pTestStep->setActualValues(strlstActualValues);
+    i_pTestStep->setExpectedValues(strlstExpectedValues);
+    i_pTestStep->setResultValues(strlstResultValues);
 
 } // doTestStepEnumClassTemplateZSSysModeOperatorCompareWithCharPtr
 
@@ -5438,11 +5448,11 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithCharPtr( ZS::
 void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithQString( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
-    QStringList strlstDesiredValues;
-    QStringList strlstActualValues;
+    QStringList strlstExpectedValues;
+    QStringList strlstResultValues;
 
-    QString strDesiredValue;
-    QString strActualValue;
+    QString strExpectedValue;
+    QString strResultValue;
 
     CEnumMode enumInst;
 
@@ -5455,127 +5465,127 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithQString( ZS::
 
     try
     {
-        strDesiredValue = "Simulation == Simulation";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Simulation == Simulation";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst == strEnumerator )
         {
-            strActualValue = "Simulation == Simulation";
+            strResultValue = "Simulation == Simulation";
         }
         else
         {
-            strActualValue = "Simulation != Simulation";
+            strResultValue = "Simulation != Simulation";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Simulation == Simulation";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Simulation == Simulation";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst != strEnumerator )
         {
-            strActualValue = "Simulation != Simulation";
+            strResultValue = "Simulation != Simulation";
         }
         else
         {
-            strActualValue = "Simulation == Simulation";
+            strResultValue = "Simulation == Simulation";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     try
     {
-        strDesiredValue = "Simulation >= Simulation";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Simulation >= Simulation";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst < strEnumerator )
         {
-            strActualValue = "Simulation < Simulation";
+            strResultValue = "Simulation < Simulation";
         }
         else
         {
-            strActualValue = "Simulation >= Simulation";
+            strResultValue = "Simulation >= Simulation";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Simulation <= Simulation";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Simulation <= Simulation";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst > strEnumerator )
         {
-            strActualValue = "Simulation > Simulation";
+            strResultValue = "Simulation > Simulation";
         }
         else
         {
-            strActualValue = "Simulation <= Simulation";
+            strResultValue = "Simulation <= Simulation";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     try
     {
-        strDesiredValue = "Simulation <= Simulation";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Simulation <= Simulation";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst <= strEnumerator )
         {
-            strActualValue = "Simulation <= Simulation";
+            strResultValue = "Simulation <= Simulation";
         }
         else
         {
-            strActualValue = "Simulation > Simulation";
+            strResultValue = "Simulation > Simulation";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Simulation >= Simulation";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Simulation >= Simulation";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst >= strEnumerator )
         {
-            strActualValue = "Simulation >= Simulation";
+            strResultValue = "Simulation >= Simulation";
         }
         else
         {
-            strActualValue = "Simulation < Simulation";
+            strResultValue = "Simulation < Simulation";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
@@ -5584,127 +5594,127 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithQString( ZS::
 
     try
     {
-        strDesiredValue = "Edit != Simulation";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Edit != Simulation";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst == strEnumerator )
         {
-            strActualValue = "Edit == Simulation";
+            strResultValue = "Edit == Simulation";
         }
         else
         {
-            strActualValue = "Edit != Simulation";
+            strResultValue = "Edit != Simulation";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Edit != Simulation";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Edit != Simulation";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst != strEnumerator )
         {
-            strActualValue = "Edit != Simulation";
+            strResultValue = "Edit != Simulation";
         }
         else
         {
-            strActualValue = "Edit == Simulation";
+            strResultValue = "Edit == Simulation";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     try
     {
-        strDesiredValue = "Edit < Simulation";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Edit < Simulation";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst < strEnumerator )
         {
-            strActualValue = "Edit < Simulation";
+            strResultValue = "Edit < Simulation";
         }
         else
         {
-            strActualValue = "Edit >= Simulation";
+            strResultValue = "Edit >= Simulation";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Edit <= Simulation";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Edit <= Simulation";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst > strEnumerator )
         {
-            strActualValue = "Edit > Simulation";
+            strResultValue = "Edit > Simulation";
         }
         else
         {
-            strActualValue = "Edit <= Simulation";
+            strResultValue = "Edit <= Simulation";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     try
     {
-        strDesiredValue = "Edit <= Simulation";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Edit <= Simulation";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst <= strEnumerator )
         {
-            strActualValue = "Edit <= Simulation";
+            strResultValue = "Edit <= Simulation";
         }
         else
         {
-            strActualValue = "Edit > Simulation";
+            strResultValue = "Edit > Simulation";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Edit < Simulation";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Edit < Simulation";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst >= strEnumerator )
         {
-            strActualValue = "Edit >= Simulation";
+            strResultValue = "Edit >= Simulation";
         }
         else
         {
-            strActualValue = "Edit < Simulation";
+            strResultValue = "Edit < Simulation";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
@@ -5713,127 +5723,127 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithQString( ZS::
 
     try
     {
-        strDesiredValue = "Invalid != Simulation";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Invalid != Simulation";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst == strEnumerator )
         {
-            strActualValue = "Invalid == Simulation";
+            strResultValue = "Invalid == Simulation";
         }
         else
         {
-            strActualValue = "Invalid != Simulation";
+            strResultValue = "Invalid != Simulation";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Invalid != Simulation";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Invalid != Simulation";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst != strEnumerator )
         {
-            strActualValue = "Invalid != Simulation";
+            strResultValue = "Invalid != Simulation";
         }
         else
         {
-            strActualValue = "Invalid == Simulation";
+            strResultValue = "Invalid == Simulation";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     try
     {
-        strDesiredValue = "Invalid < Simulation: false";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Invalid < Simulation: false";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst < strEnumerator )
         {
-            strActualValue = "Invalid < Simulation";
+            strResultValue = "Invalid < Simulation";
         }
         else
         {
-            strActualValue = "Invalid < Simulation: false";
+            strResultValue = "Invalid < Simulation: false";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Invalid > Simulation: false";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Invalid > Simulation: false";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst > strEnumerator )
         {
-            strActualValue = "Invalid > Simulation";
+            strResultValue = "Invalid > Simulation";
         }
         else
         {
-            strActualValue = "Invalid > Simulation: false";
+            strResultValue = "Invalid > Simulation: false";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     try
     {
-        strDesiredValue = "Invalid <= Simulation: false";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Invalid <= Simulation: false";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst <= strEnumerator )
         {
-            strActualValue = "Invalid <= Simulation";
+            strResultValue = "Invalid <= Simulation";
         }
         else
         {
-            strActualValue = "Invalid <= Simulation: false";
+            strResultValue = "Invalid <= Simulation: false";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Invalid >= Simulation: false";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Invalid >= Simulation: false";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst >= strEnumerator )
         {
-            strActualValue = "Invalid >= Simulation";
+            strResultValue = "Invalid >= Simulation";
         }
         else
         {
-            strActualValue = "Invalid >= Simulation: false";
+            strResultValue = "Invalid >= Simulation: false";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
@@ -5842,127 +5852,127 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithQString( ZS::
 
     try
     {
-        strDesiredValue = "Simulation != Unknown";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Simulation != Unknown";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst == strEnumerator )
         {
-            strActualValue = "Simulation == Unknown";
+            strResultValue = "Simulation == Unknown";
         }
         else
         {
-            strActualValue = "Simulation != Unknown";
+            strResultValue = "Simulation != Unknown";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Simulation != Unknown";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Simulation != Unknown";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst != strEnumerator )
         {
-            strActualValue = "Simulation != Unknown";
+            strResultValue = "Simulation != Unknown";
         }
         else
         {
-            strActualValue = "Simulation == Unknown";
+            strResultValue = "Simulation == Unknown";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     try
     {
-        strDesiredValue = "Simulation < Unknown: false";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Simulation < Unknown: false";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst < strEnumerator )
         {
-            strActualValue = "Simulation < Unknown";
+            strResultValue = "Simulation < Unknown";
         }
         else
         {
-            strActualValue = "Simulation < Unknown: false";
+            strResultValue = "Simulation < Unknown: false";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Simulation > Unknown: false";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Simulation > Unknown: false";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst > strEnumerator )
         {
-            strActualValue = "Simulation > Unknown";
+            strResultValue = "Simulation > Unknown";
         }
         else
         {
-            strActualValue = "Simulation > Unknown: false";
+            strResultValue = "Simulation > Unknown: false";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     try
     {
-        strDesiredValue = "Simulation <= Unknown: false";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Simulation <= Unknown: false";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst <= strEnumerator )
         {
-            strActualValue = "Simulation <= Unknown";
+            strResultValue = "Simulation <= Unknown";
         }
         else
         {
-            strActualValue = "Simulation <= Unknown: false";
+            strResultValue = "Simulation <= Unknown: false";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Simulation >= Unknown: false";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Simulation >= Unknown: false";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst >= strEnumerator )
         {
-            strActualValue = "Simulation >= Unknown";
+            strResultValue = "Simulation >= Unknown";
         }
         else
         {
-            strActualValue = "Simulation >= Unknown: false";
+            strResultValue = "Simulation >= Unknown: false";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
@@ -5971,132 +5981,132 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithQString( ZS::
 
     try
     {
-        strDesiredValue = "Invalid != Unknown";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Invalid != Unknown";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst == strEnumerator )
         {
-            strActualValue = "Invalid == Unknown";
+            strResultValue = "Invalid == Unknown";
         }
         else
         {
-            strActualValue = "Invalid != Unknown";
+            strResultValue = "Invalid != Unknown";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Invalid != Unknown";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Invalid != Unknown";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst != strEnumerator )
         {
-            strActualValue = "Invalid != Unknown";
+            strResultValue = "Invalid != Unknown";
         }
         else
         {
-            strActualValue = "Invalid == Unknown";
+            strResultValue = "Invalid == Unknown";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     try
     {
-        strDesiredValue = "Invalid < Unknown: false";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Invalid < Unknown: false";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst < strEnumerator )
         {
-            strActualValue = "Invalid < Unknown";
+            strResultValue = "Invalid < Unknown";
         }
         else
         {
-            strActualValue = "Invalid < Unknown: false";
+            strResultValue = "Invalid < Unknown: false";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Invalid > Unknown: false";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Invalid > Unknown: false";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst > strEnumerator )
         {
-            strActualValue = "Invalid > Unknown";
+            strResultValue = "Invalid > Unknown";
         }
         else
         {
-            strActualValue = "Invalid > Unknown: false";
+            strResultValue = "Invalid > Unknown: false";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     try
     {
-        strDesiredValue = "Invalid <= Unknown: false";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Invalid <= Unknown: false";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst <= strEnumerator )
         {
-            strActualValue = "Invalid <= Unknown";
+            strResultValue = "Invalid <= Unknown";
         }
         else
         {
-            strActualValue = "Invalid <= Unknown: false";
+            strResultValue = "Invalid <= Unknown: false";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Invalid >= Unknown: false";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Invalid >= Unknown: false";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst >= strEnumerator )
         {
-            strActualValue = "Invalid >= Unknown";
+            strResultValue = "Invalid >= Unknown";
         }
         else
         {
-            strActualValue = "Invalid >= Unknown: false";
+            strResultValue = "Invalid >= Unknown: false";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
-    i_pTestStep->setDesiredValues(strlstDesiredValues);
-    i_pTestStep->setActualValues(strlstActualValues);
+    i_pTestStep->setExpectedValues(strlstExpectedValues);
+    i_pTestStep->setResultValues(strlstResultValues);
 
 } // doTestStepEnumClassTemplateZSSysModeOperatorCompareWithQString
 
@@ -6104,11 +6114,11 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithQString( ZS::
 void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithEnumTemplate( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
-    QStringList strlstDesiredValues;
-    QStringList strlstActualValues;
+    QStringList strlstExpectedValues;
+    QStringList strlstResultValues;
 
-    QString strDesiredValue;
-    QString strActualValue;
+    QString strExpectedValue;
+    QString strResultValue;
 
     CEnumMode enumInst1;
     CEnumMode enumInst2;
@@ -6120,127 +6130,127 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithEnumTemplate(
 
     try
     {
-        strDesiredValue = "Simulation == Simulation";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Simulation == Simulation";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst1 == enumInst2 )
         {
-            strActualValue = "Simulation == Simulation";
+            strResultValue = "Simulation == Simulation";
         }
         else
         {
-            strActualValue = "Simulation != Simulation";
+            strResultValue = "Simulation != Simulation";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Simulation == Simulation";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Simulation == Simulation";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst1 != enumInst2 )
         {
-            strActualValue = "Simulation != Simulation";
+            strResultValue = "Simulation != Simulation";
         }
         else
         {
-            strActualValue = "Simulation == Simulation";
+            strResultValue = "Simulation == Simulation";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     try
     {
-        strDesiredValue = "Simulation >= Simulation";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Simulation >= Simulation";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst1 < enumInst2 )
         {
-            strActualValue = "Simulation < Simulation";
+            strResultValue = "Simulation < Simulation";
         }
         else
         {
-            strActualValue = "Simulation >= Simulation";
+            strResultValue = "Simulation >= Simulation";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Simulation <= Simulation";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Simulation <= Simulation";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst1 > enumInst2 )
         {
-            strActualValue = "Simulation > Simulation";
+            strResultValue = "Simulation > Simulation";
         }
         else
         {
-            strActualValue = "Simulation <= Simulation";
+            strResultValue = "Simulation <= Simulation";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     try
     {
-        strDesiredValue = "Simulation <= Simulation";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Simulation <= Simulation";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst1 <= enumInst2 )
         {
-            strActualValue = "Simulation <= Simulation";
+            strResultValue = "Simulation <= Simulation";
         }
         else
         {
-            strActualValue = "Simulation > Simulation";
+            strResultValue = "Simulation > Simulation";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Simulation >= Simulation";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Simulation >= Simulation";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst1 >= enumInst2 )
         {
-            strActualValue = "Simulation >= Simulation";
+            strResultValue = "Simulation >= Simulation";
         }
         else
         {
-            strActualValue = "Simulation < Simulation";
+            strResultValue = "Simulation < Simulation";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
@@ -6249,127 +6259,127 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithEnumTemplate(
 
     try
     {
-        strDesiredValue = "Edit != Simulation";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Edit != Simulation";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst1 == enumInst2 )
         {
-            strActualValue = "Edit == Simulation";
+            strResultValue = "Edit == Simulation";
         }
         else
         {
-            strActualValue = "Edit != Simulation";
+            strResultValue = "Edit != Simulation";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Edit != Simulation";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Edit != Simulation";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst1 != enumInst2 )
         {
-            strActualValue = "Edit != Simulation";
+            strResultValue = "Edit != Simulation";
         }
         else
         {
-            strActualValue = "Edit == Simulation";
+            strResultValue = "Edit == Simulation";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     try
     {
-        strDesiredValue = "Edit < Simulation";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Edit < Simulation";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst1 < enumInst2 )
         {
-            strActualValue = "Edit < Simulation";
+            strResultValue = "Edit < Simulation";
         }
         else
         {
-            strActualValue = "Edit >= Simulation";
+            strResultValue = "Edit >= Simulation";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Edit <= Simulation";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Edit <= Simulation";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst1 > enumInst2 )
         {
-            strActualValue = "Edit > Simulation";
+            strResultValue = "Edit > Simulation";
         }
         else
         {
-            strActualValue = "Edit <= Simulation";
+            strResultValue = "Edit <= Simulation";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     try
     {
-        strDesiredValue = "Edit <= Simulation";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Edit <= Simulation";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst1 <= enumInst2 )
         {
-            strActualValue = "Edit <= Simulation";
+            strResultValue = "Edit <= Simulation";
         }
         else
         {
-            strActualValue = "Edit > Simulation";
+            strResultValue = "Edit > Simulation";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Edit < Simulation";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Edit < Simulation";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst1 >= enumInst2 )
         {
-            strActualValue = "Edit >= Simulation";
+            strResultValue = "Edit >= Simulation";
         }
         else
         {
-            strActualValue = "Edit < Simulation";
+            strResultValue = "Edit < Simulation";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
@@ -6378,127 +6388,127 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithEnumTemplate(
 
     try
     {
-        strDesiredValue = "Invalid != Simulation";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Invalid != Simulation";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst1 == enumInst2 )
         {
-            strActualValue = "Invalid == Simulation";
+            strResultValue = "Invalid == Simulation";
         }
         else
         {
-            strActualValue = "Invalid != Simulation";
+            strResultValue = "Invalid != Simulation";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Invalid != Simulation";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Invalid != Simulation";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst1 != enumInst2 )
         {
-            strActualValue = "Invalid != Simulation";
+            strResultValue = "Invalid != Simulation";
         }
         else
         {
-            strActualValue = "Invalid == Simulation";
+            strResultValue = "Invalid == Simulation";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     try
     {
-        strDesiredValue = "Enumerator -1 of enumeration class ZS::System::CEnum<enum ZS::System::EMode> not in range [0..2][Edit..Undefined]";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Enumerator -1 of enumeration class ZS::System::CEnum<enum ZS::System::EMode> not in range [0..2][Edit..Undefined]";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst1 < enumInst2 )
         {
-            strActualValue = "Invalid < Simulation";
+            strResultValue = "Invalid < Simulation";
         }
         else
         {
-            strActualValue = "Invalid >= Simulation";
+            strResultValue = "Invalid >= Simulation";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Enumerator -1 of enumeration class ZS::System::CEnum<enum ZS::System::EMode> not in range [0..2][Edit..Undefined]";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Enumerator -1 of enumeration class ZS::System::CEnum<enum ZS::System::EMode> not in range [0..2][Edit..Undefined]";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst1 > enumInst2 )
         {
-            strActualValue = "Invalid > Simulation";
+            strResultValue = "Invalid > Simulation";
         }
         else
         {
-            strActualValue = "Invalid <= Simulation";
+            strResultValue = "Invalid <= Simulation";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     try
     {
-        strDesiredValue = "Enumerator -1 of enumeration class ZS::System::CEnum<enum ZS::System::EMode> not in range [0..2][Edit..Undefined]";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Enumerator -1 of enumeration class ZS::System::CEnum<enum ZS::System::EMode> not in range [0..2][Edit..Undefined]";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst1 <= enumInst2 )
         {
-            strActualValue = "Invalid <= Simulation";
+            strResultValue = "Invalid <= Simulation";
         }
         else
         {
-            strActualValue = "Invalid > Simulation";
+            strResultValue = "Invalid > Simulation";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Enumerator -1 of enumeration class ZS::System::CEnum<enum ZS::System::EMode> not in range [0..2][Edit..Undefined]";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Enumerator -1 of enumeration class ZS::System::CEnum<enum ZS::System::EMode> not in range [0..2][Edit..Undefined]";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst1 >= enumInst2 )
         {
-            strActualValue = "Invalid >= Simulation";
+            strResultValue = "Invalid >= Simulation";
         }
         else
         {
-            strActualValue = "Invalid < Simulation";
+            strResultValue = "Invalid < Simulation";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
@@ -6507,127 +6517,127 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithEnumTemplate(
 
     try
     {
-        strDesiredValue = "Simulation != Invalid";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Simulation != Invalid";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst1 == enumInst2 )
         {
-            strActualValue = "Simulation == Invalid";
+            strResultValue = "Simulation == Invalid";
         }
         else
         {
-            strActualValue = "Simulation != Invalid";
+            strResultValue = "Simulation != Invalid";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Simulation != Invalid";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Simulation != Invalid";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst1 != enumInst2 )
         {
-            strActualValue = "Simulation != Invalid";
+            strResultValue = "Simulation != Invalid";
         }
         else
         {
-            strActualValue = "Simulation == Invalid";
+            strResultValue = "Simulation == Invalid";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     try
     {
-        strDesiredValue = "Enumerator -1 of enumeration class ZS::System::CEnum<enum ZS::System::EMode> not in range [0..2][Edit..Undefined]";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Enumerator -1 of enumeration class ZS::System::CEnum<enum ZS::System::EMode> not in range [0..2][Edit..Undefined]";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst1 < enumInst2 )
         {
-            strActualValue = "Simulation < Invalid";
+            strResultValue = "Simulation < Invalid";
         }
         else
         {
-            strActualValue = "Simulation >= Invalid";
+            strResultValue = "Simulation >= Invalid";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Enumerator -1 of enumeration class ZS::System::CEnum<enum ZS::System::EMode> not in range [0..2][Edit..Undefined]";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Enumerator -1 of enumeration class ZS::System::CEnum<enum ZS::System::EMode> not in range [0..2][Edit..Undefined]";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst1 > enumInst2 )
         {
-            strActualValue = "Simulation > Invalid";
+            strResultValue = "Simulation > Invalid";
         }
         else
         {
-            strActualValue = "Simulation <= Invalid";
+            strResultValue = "Simulation <= Invalid";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     try
     {
-        strDesiredValue = "Enumerator -1 of enumeration class ZS::System::CEnum<enum ZS::System::EMode> not in range [0..2][Edit..Undefined]";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Enumerator -1 of enumeration class ZS::System::CEnum<enum ZS::System::EMode> not in range [0..2][Edit..Undefined]";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst1 <= enumInst2 )
         {
-            strActualValue = "Simulation <= Invalid";
+            strResultValue = "Simulation <= Invalid";
         }
         else
         {
-            strActualValue = "Simulation > Invalid";
+            strResultValue = "Simulation > Invalid";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Enumerator -1 of enumeration class ZS::System::CEnum<enum ZS::System::EMode> not in range [0..2][Edit..Undefined]";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Enumerator -1 of enumeration class ZS::System::CEnum<enum ZS::System::EMode> not in range [0..2][Edit..Undefined]";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst1 >= enumInst2 )
         {
-            strActualValue = "Simulation >= Invalid";
+            strResultValue = "Simulation >= Invalid";
         }
         else
         {
-            strActualValue = "Simulation < Invalid";
+            strResultValue = "Simulation < Invalid";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
@@ -6636,132 +6646,132 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithEnumTemplate(
 
     try
     {
-        strDesiredValue = "Invalid == Invalid";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Invalid == Invalid";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst1 == enumInst2 )
         {
-            strActualValue = "Invalid == Invalid";
+            strResultValue = "Invalid == Invalid";
         }
         else
         {
-            strActualValue = "Invalid != Invalid";
+            strResultValue = "Invalid != Invalid";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Invalid == Invalid";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Invalid == Invalid";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst1 != enumInst2 )
         {
-            strActualValue = "Invalid != Invalid";
+            strResultValue = "Invalid != Invalid";
         }
         else
         {
-            strActualValue = "Invalid == Invalid";
+            strResultValue = "Invalid == Invalid";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     try
     {
-        strDesiredValue = "Enumerator -1 of enumeration class ZS::System::CEnum<enum ZS::System::EMode> not in range [0..2][Edit..Undefined]";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Enumerator -1 of enumeration class ZS::System::CEnum<enum ZS::System::EMode> not in range [0..2][Edit..Undefined]";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst1 < enumInst2 )
         {
-            strActualValue = "Invalid < Invalid";
+            strResultValue = "Invalid < Invalid";
         }
         else
         {
-            strActualValue = "Invalid >= Invalid";
+            strResultValue = "Invalid >= Invalid";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Enumerator -1 of enumeration class ZS::System::CEnum<enum ZS::System::EMode> not in range [0..2][Edit..Undefined]";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Enumerator -1 of enumeration class ZS::System::CEnum<enum ZS::System::EMode> not in range [0..2][Edit..Undefined]";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst1 > enumInst2 )
         {
-            strActualValue = "Invalid > Invalid";
+            strResultValue = "Invalid > Invalid";
         }
         else
         {
-            strActualValue = "Invalid <= Invalid";
+            strResultValue = "Invalid <= Invalid";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     try
     {
-        strDesiredValue = "Enumerator -1 of enumeration class ZS::System::CEnum<enum ZS::System::EMode> not in range [0..2][Edit..Undefined]";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Enumerator -1 of enumeration class ZS::System::CEnum<enum ZS::System::EMode> not in range [0..2][Edit..Undefined]";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst1 <= enumInst2 )
         {
-            strActualValue = "Invalid <= Invalid";
+            strResultValue = "Invalid <= Invalid";
         }
         else
         {
-            strActualValue = "Invalid > Invalid";
+            strResultValue = "Invalid > Invalid";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Enumerator -1 of enumeration class ZS::System::CEnum<enum ZS::System::EMode> not in range [0..2][Edit..Undefined]";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Enumerator -1 of enumeration class ZS::System::CEnum<enum ZS::System::EMode> not in range [0..2][Edit..Undefined]";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst1 >= enumInst2 )
         {
-            strActualValue = "Invalid >= Invalid";
+            strResultValue = "Invalid >= Invalid";
         }
         else
         {
-            strActualValue = "Invalid < Invalid";
+            strResultValue = "Invalid < Invalid";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
-    i_pTestStep->setDesiredValues(strlstDesiredValues);
-    i_pTestStep->setActualValues(strlstActualValues);
+    i_pTestStep->setExpectedValues(strlstExpectedValues);
+    i_pTestStep->setResultValues(strlstResultValues);
 
 } // doTestStepEnumClassTemplateZSSysModeOperatorCompareWithEnumTemplate
 
@@ -6769,11 +6779,11 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithEnumTemplate(
 void CTest::doTestStepEnumClassTemplateZSSysModeOperatorIncDec( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
-    QStringList strlstDesiredValues;
-    QStringList strlstActualValues;
+    QStringList strlstExpectedValues;
+    QStringList strlstResultValues;
 
-    QString strDesiredValue;
-    QString strActualValue;
+    QString strExpectedValue;
+    QString strResultValue;
 
     QString strEnumeratorResult;
     QString strEnumeratorSource;
@@ -6793,21 +6803,21 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorIncDec( ZS::Test::CTestS
             else if( enumInst.enumerator() == EMode::Simulation ) { strEnumeratorSource = "Simulation"; strEnumeratorResult = "Undefined"; }
             else if( enumInst.enumerator() == EMode::Undefined ) { strEnumeratorSource = "Undefined"; strEnumeratorResult = "Invalid"; }
             else strEnumeratorSource = "Invalid";
-            strDesiredValue = strEnumeratorSource + "++: " + strEnumeratorResult;
-            strlstDesiredValues.append(strDesiredValue);
+            strExpectedValue = strEnumeratorSource + "++: " + strEnumeratorResult;
+            strlstExpectedValues.append(strExpectedValue);
 
             enumInst++;
             if( enumInst.enumerator() == EMode::Edit ) { strEnumeratorResult = "Edit"; }
             else if( enumInst.enumerator() == EMode::Simulation ) { strEnumeratorResult = "Simulation"; }
             else if( enumInst.enumerator() == EMode::Undefined ) { strEnumeratorResult = "Undefined"; }
             else strEnumeratorResult = "Invalid";
-            strActualValue = strEnumeratorSource + "++: " + strEnumeratorResult;
+            strResultValue = strEnumeratorSource + "++: " + strEnumeratorResult;
         }
         catch( CException& exc )
         {
-            strActualValue = exc.getAddErrInfo();
+            strResultValue = exc.getAddErrInfo();
         }
-        strlstActualValues.append(strActualValue);
+        strlstResultValues.append(strResultValue);
     }
 
     // -------------------------------------------------------------------------
@@ -6821,21 +6831,21 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorIncDec( ZS::Test::CTestS
             else if( enumInst.enumerator() == EMode::Simulation ) { strEnumeratorSource = "Simulation"; strEnumeratorResult = "Undefined"; }
             else if( enumInst.enumerator() == EMode::Undefined ) { strEnumeratorSource = "Undefined"; strEnumeratorResult = "Invalid"; }
             else strEnumeratorSource = "Invalid";
-            strDesiredValue = "++" + strEnumeratorSource + ": " + strEnumeratorResult;
-            strlstDesiredValues.append(strDesiredValue);
+            strExpectedValue = "++" + strEnumeratorSource + ": " + strEnumeratorResult;
+            strlstExpectedValues.append(strExpectedValue);
 
             ++enumInst;
             if( enumInst.enumerator() == EMode::Edit ) { strEnumeratorResult = "Edit"; }
             else if( enumInst.enumerator() == EMode::Simulation ) { strEnumeratorResult = "Simulation"; }
             else if( enumInst.enumerator() == EMode::Undefined ) { strEnumeratorResult = "Undefined"; }
             else strEnumeratorResult = "Invalid";
-            strActualValue = "++" + strEnumeratorSource + ": " + strEnumeratorResult;
+            strResultValue = "++" + strEnumeratorSource + ": " + strEnumeratorResult;
         }
         catch( CException& exc )
         {
-            strActualValue = exc.getAddErrInfo();
+            strResultValue = exc.getAddErrInfo();
         }
-        strlstActualValues.append(strActualValue);
+        strlstResultValues.append(strResultValue);
     }
 
     // -------------------------------------------------------------------------
@@ -6849,21 +6859,21 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorIncDec( ZS::Test::CTestS
             else if( enumInst.enumerator() == EMode::Simulation ) { strEnumeratorSource = "Simulation"; strEnumeratorResult = "Edit"; }
             else if( enumInst.enumerator() == EMode::Undefined ) { strEnumeratorSource = "Undefined"; strEnumeratorResult = "Simulation"; }
             else strEnumeratorSource = "Invalid";
-            strDesiredValue = strEnumeratorSource + "--: " + strEnumeratorResult;
-            strlstDesiredValues.append(strDesiredValue);
+            strExpectedValue = strEnumeratorSource + "--: " + strEnumeratorResult;
+            strlstExpectedValues.append(strExpectedValue);
 
             enumInst--;
             if( enumInst.enumerator() == EMode::Edit ) { strEnumeratorResult = "Edit"; }
             else if( enumInst.enumerator() == EMode::Simulation ) { strEnumeratorResult = "Simulation"; }
             else if( enumInst.enumerator() == EMode::Undefined ) { strEnumeratorResult = "Undefined"; }
             else strEnumeratorResult = "Invalid";
-            strActualValue = strEnumeratorSource + "--: " + strEnumeratorResult;
+            strResultValue = strEnumeratorSource + "--: " + strEnumeratorResult;
         }
         catch( CException& exc )
         {
-            strActualValue = exc.getAddErrInfo();
+            strResultValue = exc.getAddErrInfo();
         }
-        strlstActualValues.append(strActualValue);
+        strlstResultValues.append(strResultValue);
     }
 
     // -------------------------------------------------------------------------
@@ -6877,27 +6887,27 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorIncDec( ZS::Test::CTestS
             else if( enumInst.enumerator() == EMode::Simulation ) { strEnumeratorSource = "Simulation"; strEnumeratorResult = "Edit"; }
             else if( enumInst.enumerator() == EMode::Undefined ) { strEnumeratorSource = "Undefined"; strEnumeratorResult = "Simulation"; }
             else strEnumeratorSource = "Invalid";
-            strDesiredValue = "--" + strEnumeratorSource + ": " + strEnumeratorResult;
-            strlstDesiredValues.append(strDesiredValue);
+            strExpectedValue = "--" + strEnumeratorSource + ": " + strEnumeratorResult;
+            strlstExpectedValues.append(strExpectedValue);
 
             --enumInst;
             if( enumInst.enumerator() == EMode::Edit ) { strEnumeratorResult = "Edit"; }
             else if( enumInst.enumerator() == EMode::Simulation ) { strEnumeratorResult = "Simulation"; }
             else if( enumInst.enumerator() == EMode::Undefined ) { strEnumeratorResult = "Undefined"; }
             else strEnumeratorResult = "Invalid";
-            strActualValue = "--" + strEnumeratorSource + ": " + strEnumeratorResult;
+            strResultValue = "--" + strEnumeratorSource + ": " + strEnumeratorResult;
         }
         catch( CException& exc )
         {
-            strActualValue = exc.getAddErrInfo();
+            strResultValue = exc.getAddErrInfo();
         }
-        strlstActualValues.append(strActualValue);
+        strlstResultValues.append(strResultValue);
     }
 
     // -------------------------------------------------------------------------
 
-    i_pTestStep->setDesiredValues(strlstDesiredValues);
-    i_pTestStep->setActualValues(strlstActualValues);
+    i_pTestStep->setExpectedValues(strlstExpectedValues);
+    i_pTestStep->setResultValues(strlstResultValues);
 
 } // doTestStepEnumClassTemplateZSSysModeOperatorIncDec
 
@@ -6905,11 +6915,11 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorIncDec( ZS::Test::CTestS
 void CTest::doTestStepEnumClassTemplateZSSysModeInstMethodToString( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
-    QStringList strlstDesiredValues;
-    QStringList strlstActualValues;
+    QStringList strlstExpectedValues;
+    QStringList strlstResultValues;
 
-    QString strDesiredValue;
-    QString strActualValue;
+    QString strExpectedValue;
+    QString strResultValue;
 
     QString strEnumeratorSource;
     QString strEnumeratorResult;
@@ -6958,24 +6968,24 @@ void CTest::doTestStepEnumClassTemplateZSSysModeInstMethodToString( ZS::Test::CT
                     strEnumeratorSource = "Invalid";
                 }
 
-                strDesiredValue = strEnumeratorSource + ".toString(" + strAlias + "): " + strEnumeratorSource;
-                strlstDesiredValues.append(strDesiredValue);
+                strExpectedValue = strEnumeratorSource + ".toString(" + strAlias + "): " + strEnumeratorSource;
+                strlstExpectedValues.append(strExpectedValue);
 
                 strEnumeratorResult = enumInst.toString(idxAlias);
-                strActualValue = strEnumeratorSource + ".toString(" + strAlias + "): " + strEnumeratorResult;
+                strResultValue = strEnumeratorSource + ".toString(" + strAlias + "): " + strEnumeratorResult;
             }
             catch( CException& exc )
             {
-                strActualValue = exc.getAddErrInfo();
+                strResultValue = exc.getAddErrInfo();
             }
-            strlstActualValues.append(strActualValue);
+            strlstResultValues.append(strResultValue);
         }
     }
 
     // -------------------------------------------------------------------------
 
-    i_pTestStep->setDesiredValues(strlstDesiredValues);
-    i_pTestStep->setActualValues(strlstActualValues);
+    i_pTestStep->setExpectedValues(strlstExpectedValues);
+    i_pTestStep->setResultValues(strlstResultValues);
 
 } // doTestStepEnumClassTemplateZSSysModeInstMethodToString
 
@@ -6983,11 +6993,11 @@ void CTest::doTestStepEnumClassTemplateZSSysModeInstMethodToString( ZS::Test::CT
 void CTest::doTestStepEnumClassTemplateZSSysModeForLoop( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
-    QStringList strlstDesiredValues;
-    QStringList strlstActualValues;
+    QStringList strlstExpectedValues;
+    QStringList strlstResultValues;
 
-    QString strDesiredValue;
-    QString strActualValue;
+    QString strExpectedValue;
+    QString strResultValue;
 
     QString strEnumerator;
 
@@ -7004,11 +7014,11 @@ void CTest::doTestStepEnumClassTemplateZSSysModeForLoop( ZS::Test::CTestStep* i_
         else if( iEnumerator == 2 ) { strEnumerator = "Undefined"; }
         else { strEnumerator = QString::number(iEnumerator); }
 
-        strDesiredValue = strEnumerator + ".toString(): " + strEnumerator;
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = strEnumerator + ".toString(): " + strEnumerator;
+        strlstExpectedValues.append(strExpectedValue);
 
-        strActualValue = strEnumerator + ".toString(): " + enumInst.toString();
-        strlstActualValues.append(strActualValue);
+        strResultValue = strEnumerator + ".toString(): " + enumInst.toString();
+        strlstResultValues.append(strResultValue);
     }
 
     // -------------------------------------------------------------------------
@@ -7020,17 +7030,17 @@ void CTest::doTestStepEnumClassTemplateZSSysModeForLoop( ZS::Test::CTestStep* i_
         else if( iEnumerator == 2 ) { strEnumerator = "Undefined"; }
         else { strEnumerator = QString::number(iEnumerator); }
 
-        strDesiredValue = strEnumerator + ".toString(): " + strEnumerator;
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = strEnumerator + ".toString(): " + strEnumerator;
+        strlstExpectedValues.append(strExpectedValue);
 
-        strActualValue = strEnumerator + ".toString(): " + enumInst.toString();
-        strlstActualValues.append(strActualValue);
+        strResultValue = strEnumerator + ".toString(): " + enumInst.toString();
+        strlstResultValues.append(strResultValue);
     }
 
     // -------------------------------------------------------------------------
 
-    i_pTestStep->setDesiredValues(strlstDesiredValues);
-    i_pTestStep->setActualValues(strlstActualValues);
+    i_pTestStep->setExpectedValues(strlstExpectedValues);
+    i_pTestStep->setResultValues(strlstResultValues);
 
 } // doTestStepEnumClassTemplateZSSysModeForLoop
 
@@ -7042,11 +7052,11 @@ public: // test step methods
 void CTest::doTestStepEnumClassTemplateUserDefinedClassMethodToString( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
-    QStringList strlstDesiredValues;
-    QStringList strlstActualValues;
+    QStringList strlstExpectedValues;
+    QStringList strlstResultValues;
 
-    QString strDesiredValue;
-    QString strActualValue;
+    QString strExpectedValue;
+    QString strResultValue;
 
     EProcessorClock enumerator;
     QString         strEnumerator;
@@ -7064,11 +7074,11 @@ void CTest::doTestStepEnumClassTemplateUserDefinedClassMethodToString( ZS::Test:
         else if( iEnumerator == 2 ) { enumerator = EProcessorClock::High; strEnumerator = "High"; }
         else { enumerator = static_cast<EProcessorClock>(iEnumerator); strEnumerator = QString::number(iEnumerator); }
 
-        strDesiredValue = "CEnumProcessorClock::toString(" + strEnumerator + "): " + strEnumerator;
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "CEnumProcessorClock::toString(" + strEnumerator + "): " + strEnumerator;
+        strlstExpectedValues.append(strExpectedValue);
 
-        strActualValue = "CEnumProcessorClock::toString(" + strEnumerator + "): " + CEnumProcessorClock::toString(static_cast<EProcessorClock>(iEnumerator));
-        strlstActualValues.append(strActualValue);
+        strResultValue = "CEnumProcessorClock::toString(" + strEnumerator + "): " + CEnumProcessorClock::toString(static_cast<EProcessorClock>(iEnumerator));
+        strlstResultValues.append(strResultValue);
     }
 
     // -------------------------------------------------------------------------
@@ -7114,14 +7124,14 @@ void CTest::doTestStepEnumClassTemplateUserDefinedClassMethodToString( ZS::Test:
                 strResultExpected = "?, ?";
             }
 
-            strDesiredValue = "CEnumProcessorClock::toString(" + strEnumerator + ", " + enumEntryAlias2Str(static_cast<EEnumEntryAliasStr>(idxAlias)) + "): ";
-            strDesiredValue += strResultExpected;
-            strlstDesiredValues.append(strDesiredValue);
+            strExpectedValue = "CEnumProcessorClock::toString(" + strEnumerator + ", " + enumEntryAlias2Str(static_cast<EEnumEntryAliasStr>(idxAlias)) + "): ";
+            strExpectedValue += strResultExpected;
+            strlstExpectedValues.append(strExpectedValue);
 
-            strActualValue = "CEnumProcessorClock::toString(" + strEnumerator + ", " + enumEntryAlias2Str(static_cast<EEnumEntryAliasStr>(idxAlias)) + "): ";
+            strResultValue = "CEnumProcessorClock::toString(" + strEnumerator + ", " + enumEntryAlias2Str(static_cast<EEnumEntryAliasStr>(idxAlias)) + "): ";
             strEnumerator = CEnumProcessorClock::toString(enumerator, idxAlias);
-            strActualValue += strEnumerator;
-            strlstActualValues.append(strActualValue);
+            strResultValue += strEnumerator;
+            strlstResultValues.append(strResultValue);
         }
     }
 
@@ -7136,61 +7146,61 @@ void CTest::doTestStepEnumClassTemplateUserDefinedClassMethodToString( ZS::Test:
         else if( iEnumerator == 2 ) { enumerator = EProcessorClock::High; strEnumerator = "High"; }
         else { enumerator = static_cast<EProcessorClock>(iEnumerator); strEnumerator = QString::number(static_cast<int>(enumerator)); }
 
-        strDesiredValue = "CEnumProcessorClock::toString(" + strEnumerator + ", " + enumEntryAlias2Str(static_cast<EEnumEntryAliasStr>(idxAlias)) + "): ";
-        strDesiredValue += "Enumerator " + strEnumerator + " does not have an alias string at index " + QString::number(idxAlias);
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "CEnumProcessorClock::toString(" + strEnumerator + ", " + enumEntryAlias2Str(static_cast<EEnumEntryAliasStr>(idxAlias)) + "): ";
+        strExpectedValue += "Enumerator " + strEnumerator + " does not have an alias string at index " + QString::number(idxAlias);
+        strlstExpectedValues.append(strExpectedValue);
 
         try
         {
-            strActualValue = "CEnumProcessorClock::toString(" + strEnumerator + ", " + enumEntryAlias2Str(static_cast<EEnumEntryAliasStr>(idxAlias)) + "): ";
+            strResultValue = "CEnumProcessorClock::toString(" + strEnumerator + ", " + enumEntryAlias2Str(static_cast<EEnumEntryAliasStr>(idxAlias)) + "): ";
             strEnumerator = CEnumProcessorClock::toString(enumerator, idxAlias);
-            strActualValue += strEnumerator;
+            strResultValue += strEnumerator;
         }
         catch( CException& exc )
         {
-            strActualValue += exc.getAddErrInfo();
+            strResultValue += exc.getAddErrInfo();
         }
-        strlstActualValues.append(strActualValue);
+        strlstResultValues.append(strResultValue);
     }
 
     // -------------------------------------------------------------------------
 
-    strDesiredValue = "CEnumProcessorClock::toString(-1): Enumerator -1 of enumeration class ZS::System::CEnum<enum EProcessorClock> not in range [0..2][Low..High]";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "CEnumProcessorClock::toString(-1): Enumerator -1 of enumeration class ZS::System::CEnum<enum EProcessorClock> not in range [0..2][Low..High]";
+    strlstExpectedValues.append(strExpectedValue);
 
     try
     {
         iEnumerator = -1;
         enumerator = static_cast<EProcessorClock>(iEnumerator);
-        strActualValue = "CEnumProcessorClock::toString(" + QString::number(static_cast<int>(enumerator)) + "): ";
-        strActualValue += CEnumProcessorClock::toString(enumerator);
+        strResultValue = "CEnumProcessorClock::toString(" + QString::number(static_cast<int>(enumerator)) + "): ";
+        strResultValue += CEnumProcessorClock::toString(enumerator);
     }
     catch( CException& exc )
     {
-        strActualValue += exc.getAddErrInfo();
+        strResultValue += exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
-    strDesiredValue = "CEnumProcessorClock::toString(3): Enumerator 3 of enumeration class ZS::System::CEnum<enum EProcessorClock> not in range [0..2][Low..High]";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "CEnumProcessorClock::toString(3): Enumerator 3 of enumeration class ZS::System::CEnum<enum EProcessorClock> not in range [0..2][Low..High]";
+    strlstExpectedValues.append(strExpectedValue);
 
     try
     {
         iEnumerator = CEnumProcessorClock::count();
         enumerator = static_cast<EProcessorClock>(iEnumerator);
-        strActualValue = "CEnumProcessorClock::toString(" + QString::number(static_cast<int>(enumerator)) + "): ";
-        strActualValue += CEnumProcessorClock::toString(enumerator);
+        strResultValue = "CEnumProcessorClock::toString(" + QString::number(static_cast<int>(enumerator)) + "): ";
+        strResultValue += CEnumProcessorClock::toString(enumerator);
     }
     catch( CException& exc )
     {
-        strActualValue = "CEnumProcessorClock::toString(" + QString::number(iEnumerator) + "): " + exc.getAddErrInfo();
+        strResultValue = "CEnumProcessorClock::toString(" + QString::number(iEnumerator) + "): " + exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
-    i_pTestStep->setDesiredValues(strlstDesiredValues);
-    i_pTestStep->setActualValues(strlstActualValues);
+    i_pTestStep->setExpectedValues(strlstExpectedValues);
+    i_pTestStep->setResultValues(strlstResultValues);
 
 } // doTestStepEnumClassTemplateUserDefinedClassMethodToString
 
@@ -7198,11 +7208,11 @@ void CTest::doTestStepEnumClassTemplateUserDefinedClassMethodToString( ZS::Test:
 void CTest::doTestStepEnumClassTemplateUserDefinedClassMethodToEnumerator( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
-    QStringList strlstDesiredValues;
-    QStringList strlstActualValues;
+    QStringList strlstExpectedValues;
+    QStringList strlstResultValues;
 
-    QString strDesiredValue;
-    QString strActualValue;
+    QString strExpectedValue;
+    QString strResultValue;
 
     EProcessorClock     enumerator;
     QString             strEnumeratorSource;
@@ -7225,9 +7235,9 @@ void CTest::doTestStepEnumClassTemplateUserDefinedClassMethodToEnumerator( ZS::T
         else if( iEnumerator == 2 ) { strEnumeratorSource = "High"; }
         else { strEnumeratorSource = QString::number(iEnumerator); }
 
-        strDesiredValue = "CEnumProcessorClock::toEnumerator(" + strEnumeratorSource + "): ";
-        strDesiredValue += strEnumeratorSource;
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "CEnumProcessorClock::toEnumerator(" + strEnumeratorSource + "): ";
+        strExpectedValue += strEnumeratorSource;
+        strlstExpectedValues.append(strExpectedValue);
 
         enumerator = CEnumProcessorClock::toEnumerator(strEnumeratorSource);
 
@@ -7236,9 +7246,9 @@ void CTest::doTestStepEnumClassTemplateUserDefinedClassMethodToEnumerator( ZS::T
         else if( enumerator == EProcessorClock::High ) { strEnumeratorResult = "High"; }
         else { strEnumeratorResult = QString::number(static_cast<int>(enumerator)); }
 
-        strActualValue = "CEnumProcessorClock::toEnumerator(" + strEnumeratorSource + "): ";
-        strActualValue += strEnumeratorResult;
-        strlstActualValues.append(strActualValue);
+        strResultValue = "CEnumProcessorClock::toEnumerator(" + strEnumeratorSource + "): ";
+        strResultValue += strEnumeratorResult;
+        strlstResultValues.append(strResultValue);
     }
 
     // -------------------------------------------------------------------------
@@ -7292,9 +7302,9 @@ void CTest::doTestStepEnumClassTemplateUserDefinedClassMethodToEnumerator( ZS::T
                 strEnumeratorSource = QString::number(iEnumerator);
             }
 
-            strDesiredValue = "CEnumProcessorClock::toEnumerator(" + strEnumeratorSource + ", " + strAlias + "): ";
-            strDesiredValue += strEnumeratorResult;
-            strlstDesiredValues.append(strDesiredValue);
+            strExpectedValue = "CEnumProcessorClock::toEnumerator(" + strEnumeratorSource + ", " + strAlias + "): ";
+            strExpectedValue += strEnumeratorResult;
+            strlstExpectedValues.append(strExpectedValue);
 
             enumerator = CEnumProcessorClock::toEnumerator(strEnumeratorSource, idxAlias);
 
@@ -7303,9 +7313,9 @@ void CTest::doTestStepEnumClassTemplateUserDefinedClassMethodToEnumerator( ZS::T
             else if( enumerator == EProcessorClock::High ) { strEnumeratorResult = "High"; }
             else { strEnumeratorResult = QString::number(static_cast<int>(enumerator)); }
 
-            strActualValue = "CEnumProcessorClock::toEnumerator(" + strEnumeratorSource + ", " + strAlias + "): ";
-            strActualValue += strEnumeratorResult;
-            strlstActualValues.append(strActualValue);
+            strResultValue = "CEnumProcessorClock::toEnumerator(" + strEnumeratorSource + ", " + strAlias + "): ";
+            strResultValue += strEnumeratorResult;
+            strlstResultValues.append(strResultValue);
 
         } // for( iEnumerator = 0; iEnumerator < iEnumArrLen; ++iEnumerator )
     } // for( idxAlias = 0; idxAlias <= EEnumEntryAliasStrSCPILong; ++idxAlias )
@@ -7319,18 +7329,18 @@ void CTest::doTestStepEnumClassTemplateUserDefinedClassMethodToEnumerator( ZS::T
     strCaseSensitivity = qCaseSensitivity2Str(caseSensitivity);
     strEnumeratorResult = "Medium";
 
-    strDesiredValue = "CEnumProcessorClock::toEnumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
-    strDesiredValue += strEnumeratorResult + ", true";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "CEnumProcessorClock::toEnumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
+    strExpectedValue += strEnumeratorResult + ", true";
+    strlstExpectedValues.append(strExpectedValue);
 
     enumerator = CEnumProcessorClock::toEnumerator(strEnumeratorSource, idxAlias, caseSensitivity, &bOk);
     if( enumerator == EProcessorClock::Low ) strEnumeratorResult = "Low";
     else if( enumerator == EProcessorClock::Medium ) strEnumeratorResult = "Medium";
     else if( enumerator == EProcessorClock::High ) strEnumeratorResult = "High";
     else strEnumeratorResult = QString::number(static_cast<int>(enumerator));
-    strActualValue = "CEnumProcessorClock::toEnumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
-    strActualValue += strEnumeratorResult + ", " + bool2Str(bOk);
-    strlstActualValues.append(strActualValue);
+    strResultValue = "CEnumProcessorClock::toEnumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
+    strResultValue += strEnumeratorResult + ", " + bool2Str(bOk);
+    strlstResultValues.append(strResultValue);
 
     strEnumeratorSource = "medIUM";
     idxAlias = ZS::System::EEnumEntryAliasStrName;
@@ -7339,18 +7349,18 @@ void CTest::doTestStepEnumClassTemplateUserDefinedClassMethodToEnumerator( ZS::T
     strCaseSensitivity = qCaseSensitivity2Str(caseSensitivity);
     strEnumeratorResult = "-1";
 
-    strDesiredValue = "CEnumProcessorClock::toEnumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
-    strDesiredValue += strEnumeratorResult + ", false";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "CEnumProcessorClock::toEnumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
+    strExpectedValue += strEnumeratorResult + ", false";
+    strlstExpectedValues.append(strExpectedValue);
 
     enumerator = CEnumProcessorClock::toEnumerator(strEnumeratorSource, idxAlias, caseSensitivity, &bOk);
     if( enumerator == EProcessorClock::Low ) strEnumeratorResult = "Low";
     else if( enumerator == EProcessorClock::Medium ) strEnumeratorResult = "Medium";
     else if( enumerator == EProcessorClock::High ) strEnumeratorResult = "High";
     else strEnumeratorResult = QString::number(static_cast<int>(enumerator));
-    strActualValue = "CEnumProcessorClock::toEnumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
-    strActualValue += strEnumeratorResult + ", " + bool2Str(bOk);
-    strlstActualValues.append(strActualValue);
+    strResultValue = "CEnumProcessorClock::toEnumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
+    strResultValue += strEnumeratorResult + ", " + bool2Str(bOk);
+    strlstResultValues.append(strResultValue);
 
     strEnumeratorSource = "medIUM";
     idxAlias = ZS::System::EEnumEntryAliasStrName;
@@ -7359,18 +7369,18 @@ void CTest::doTestStepEnumClassTemplateUserDefinedClassMethodToEnumerator( ZS::T
     strCaseSensitivity = qCaseSensitivity2Str(caseSensitivity);
     strEnumeratorResult = "Medium";
 
-    strDesiredValue = "CEnumProcessorClock::toEnumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
-    strDesiredValue += strEnumeratorResult + ", true";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "CEnumProcessorClock::toEnumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
+    strExpectedValue += strEnumeratorResult + ", true";
+    strlstExpectedValues.append(strExpectedValue);
 
     enumerator = CEnumProcessorClock::toEnumerator(strEnumeratorSource, idxAlias, caseSensitivity, &bOk);
     if( enumerator == EProcessorClock::Low ) strEnumeratorResult = "Low";
     else if( enumerator == EProcessorClock::Medium ) strEnumeratorResult = "Medium";
     else if( enumerator == EProcessorClock::High ) strEnumeratorResult = "High";
     else strEnumeratorResult = QString::number(static_cast<int>(enumerator));
-    strActualValue = "CEnumProcessorClock::toEnumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
-    strActualValue += strEnumeratorResult + ", " + bool2Str(bOk);
-    strlstActualValues.append(strActualValue);
+    strResultValue = "CEnumProcessorClock::toEnumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
+    strResultValue += strEnumeratorResult + ", " + bool2Str(bOk);
+    strlstResultValues.append(strResultValue);
 
     strEnumeratorSource = "MEDium";
     idxAlias = ZS::System::EEnumEntryAliasStrUndefined;
@@ -7379,18 +7389,18 @@ void CTest::doTestStepEnumClassTemplateUserDefinedClassMethodToEnumerator( ZS::T
     strCaseSensitivity = qCaseSensitivity2Str(caseSensitivity);
     strEnumeratorResult = "Medium";
 
-    strDesiredValue = "CEnumProcessorClock::toEnumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
-    strDesiredValue += strEnumeratorResult + ", true";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "CEnumProcessorClock::toEnumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
+    strExpectedValue += strEnumeratorResult + ", true";
+    strlstExpectedValues.append(strExpectedValue);
 
     enumerator = CEnumProcessorClock::toEnumerator(strEnumeratorSource, idxAlias, caseSensitivity, &bOk);
     if( enumerator == EProcessorClock::Low ) strEnumeratorResult = "Low";
     else if( enumerator == EProcessorClock::Medium ) strEnumeratorResult = "Medium";
     else if( enumerator == EProcessorClock::High ) strEnumeratorResult = "High";
     else strEnumeratorResult = QString::number(static_cast<int>(enumerator));
-    strActualValue = "CEnumProcessorClock::toEnumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
-    strActualValue += strEnumeratorResult + ", " + bool2Str(bOk);
-    strlstActualValues.append(strActualValue);
+    strResultValue = "CEnumProcessorClock::toEnumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
+    strResultValue += strEnumeratorResult + ", " + bool2Str(bOk);
+    strlstResultValues.append(strResultValue);
 
     strEnumeratorSource = "meDIUM";
     idxAlias = ZS::System::EEnumEntryAliasStrUndefined;
@@ -7399,18 +7409,18 @@ void CTest::doTestStepEnumClassTemplateUserDefinedClassMethodToEnumerator( ZS::T
     strCaseSensitivity = qCaseSensitivity2Str(caseSensitivity);
     strEnumeratorResult = "-1";
 
-    strDesiredValue = "CEnumProcessorClock::toEnumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
-    strDesiredValue += strEnumeratorResult + ", false";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "CEnumProcessorClock::toEnumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
+    strExpectedValue += strEnumeratorResult + ", false";
+    strlstExpectedValues.append(strExpectedValue);
 
     enumerator = CEnumProcessorClock::toEnumerator(strEnumeratorSource, idxAlias, caseSensitivity, &bOk);
     if( enumerator == EProcessorClock::Low ) strEnumeratorResult = "Low";
     else if( enumerator == EProcessorClock::Medium ) strEnumeratorResult = "Medium";
     else if( enumerator == EProcessorClock::High ) strEnumeratorResult = "High";
     else strEnumeratorResult = QString::number(static_cast<int>(enumerator));
-    strActualValue = "CEnumProcessorClock::toEnumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
-    strActualValue += strEnumeratorResult + ", " + bool2Str(bOk);
-    strlstActualValues.append(strActualValue);
+    strResultValue = "CEnumProcessorClock::toEnumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
+    strResultValue += strEnumeratorResult + ", " + bool2Str(bOk);
+    strlstResultValues.append(strResultValue);
 
     strEnumeratorSource = "meDIUM";
     idxAlias = ZS::System::EEnumEntryAliasStrUndefined;
@@ -7419,18 +7429,18 @@ void CTest::doTestStepEnumClassTemplateUserDefinedClassMethodToEnumerator( ZS::T
     strCaseSensitivity = qCaseSensitivity2Str(caseSensitivity);
     strEnumeratorResult = "Medium";
 
-    strDesiredValue = "CEnumProcessorClock::toEnumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
-    strDesiredValue += strEnumeratorResult + ", true";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "CEnumProcessorClock::toEnumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
+    strExpectedValue += strEnumeratorResult + ", true";
+    strlstExpectedValues.append(strExpectedValue);
 
     enumerator = CEnumProcessorClock::toEnumerator(strEnumeratorSource, idxAlias, caseSensitivity, &bOk);
     if( enumerator == EProcessorClock::Low ) strEnumeratorResult = "Low";
     else if( enumerator == EProcessorClock::Medium ) strEnumeratorResult = "Medium";
     else if( enumerator == EProcessorClock::High ) strEnumeratorResult = "High";
     else strEnumeratorResult = QString::number(static_cast<int>(enumerator));
-    strActualValue = "CEnumProcessorClock::toEnumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
-    strActualValue += strEnumeratorResult + ", " + bool2Str(bOk);
-    strlstActualValues.append(strActualValue);
+    strResultValue = "CEnumProcessorClock::toEnumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
+    strResultValue += strEnumeratorResult + ", " + bool2Str(bOk);
+    strlstResultValues.append(strResultValue);
 
     strEnumeratorSource = "Medium";
     idxAlias = ZS::System::EEnumEntryAliasStrAlias6;
@@ -7439,9 +7449,9 @@ void CTest::doTestStepEnumClassTemplateUserDefinedClassMethodToEnumerator( ZS::T
     strCaseSensitivity = qCaseSensitivity2Str(caseSensitivity);
     strEnumeratorResult = "Map does not contain alias strings at index " + QString::number(idxAlias);
 
-    strDesiredValue = "CEnumProcessorClock::toEnumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
-    strDesiredValue += strEnumeratorResult + ", false";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "CEnumProcessorClock::toEnumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
+    strExpectedValue += strEnumeratorResult + ", false";
+    strlstExpectedValues.append(strExpectedValue);
 
     try
     {
@@ -7456,80 +7466,80 @@ void CTest::doTestStepEnumClassTemplateUserDefinedClassMethodToEnumerator( ZS::T
     {
         strEnumeratorResult = exc.getAddErrInfo();
     }
-    strActualValue = "CEnumProcessorClock::toEnumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
-    strActualValue += strEnumeratorResult + ", " + bool2Str(bOk);
-    strlstActualValues.append(strActualValue);
+    strResultValue = "CEnumProcessorClock::toEnumerator(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
+    strResultValue += strEnumeratorResult + ", " + bool2Str(bOk);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     valSource = 5.12e6;
     strEnumeratorResult = "Low";
 
-    strDesiredValue = "CEnumProcessorClock::toEnumerator(" + valSource.toString() + ", &bOk): ";
-    strDesiredValue += strEnumeratorResult + ", true";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "CEnumProcessorClock::toEnumerator(" + valSource.toString() + ", &bOk): ";
+    strExpectedValue += strEnumeratorResult + ", true";
+    strlstExpectedValues.append(strExpectedValue);
 
     enumerator = CEnumProcessorClock::toEnumerator(valSource, &bOk);
     if( enumerator == EProcessorClock::Low ) strEnumeratorResult = "Low";
     else if( enumerator == EProcessorClock::Medium ) strEnumeratorResult = "Medium";
     else if( enumerator == EProcessorClock::High ) strEnumeratorResult = "High";
     else strEnumeratorResult = QString::number(static_cast<int>(enumerator));
-    strActualValue = "CEnumProcessorClock::toEnumerator(" + valSource.toString() + ", &bOk): ";
-    strActualValue += strEnumeratorResult + ", " + bool2Str(bOk);
-    strlstActualValues.append(strActualValue);
+    strResultValue = "CEnumProcessorClock::toEnumerator(" + valSource.toString() + ", &bOk): ";
+    strResultValue += strEnumeratorResult + ", " + bool2Str(bOk);
+    strlstResultValues.append(strResultValue);
 
     valSource = 5.12e8;
     strEnumeratorResult = "Medium";
 
-    strDesiredValue = "CEnumProcessorClock::toEnumerator(" + valSource.toString() + ", &bOk): ";
-    strDesiredValue += strEnumeratorResult + ", true";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "CEnumProcessorClock::toEnumerator(" + valSource.toString() + ", &bOk): ";
+    strExpectedValue += strEnumeratorResult + ", true";
+    strlstExpectedValues.append(strExpectedValue);
 
     enumerator = CEnumProcessorClock::toEnumerator(valSource, &bOk);
     if( enumerator == EProcessorClock::Low ) strEnumeratorResult = "Low";
     else if( enumerator == EProcessorClock::Medium ) strEnumeratorResult = "Medium";
     else if( enumerator == EProcessorClock::High ) strEnumeratorResult = "High";
     else strEnumeratorResult = QString::number(static_cast<int>(enumerator));
-    strActualValue = "CEnumProcessorClock::toEnumerator(" + valSource.toString() + ", &bOk): ";
-    strActualValue += strEnumeratorResult + ", " + bool2Str(bOk);
-    strlstActualValues.append(strActualValue);
+    strResultValue = "CEnumProcessorClock::toEnumerator(" + valSource.toString() + ", &bOk): ";
+    strResultValue += strEnumeratorResult + ", " + bool2Str(bOk);
+    strlstResultValues.append(strResultValue);
 
     valSource = 5.12e9;
     strEnumeratorResult = "High";
 
-    strDesiredValue = "CEnumProcessorClock::toEnumerator(" + valSource.toString() + ", &bOk): ";
-    strDesiredValue += strEnumeratorResult + ", true";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "CEnumProcessorClock::toEnumerator(" + valSource.toString() + ", &bOk): ";
+    strExpectedValue += strEnumeratorResult + ", true";
+    strlstExpectedValues.append(strExpectedValue);
 
     enumerator = CEnumProcessorClock::toEnumerator(valSource, &bOk);
     if( enumerator == EProcessorClock::Low ) strEnumeratorResult = "Low";
     else if( enumerator == EProcessorClock::Medium ) strEnumeratorResult = "Medium";
     else if( enumerator == EProcessorClock::High ) strEnumeratorResult = "High";
     else strEnumeratorResult = QString::number(static_cast<int>(enumerator));
-    strActualValue = "CEnumProcessorClock::toEnumerator(" + valSource.toString() + ", &bOk): ";
-    strActualValue += strEnumeratorResult + ", " + bool2Str(bOk);
-    strlstActualValues.append(strActualValue);
+    strResultValue = "CEnumProcessorClock::toEnumerator(" + valSource.toString() + ", &bOk): ";
+    strResultValue += strEnumeratorResult + ", " + bool2Str(bOk);
+    strlstResultValues.append(strResultValue);
 
     valSource = 5.12;
     strEnumeratorResult = "-1";
 
-    strDesiredValue = "CEnumProcessorClock::toEnumerator(" + valSource.toString() + ", &bOk): ";
-    strDesiredValue += strEnumeratorResult + ", false";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "CEnumProcessorClock::toEnumerator(" + valSource.toString() + ", &bOk): ";
+    strExpectedValue += strEnumeratorResult + ", false";
+    strlstExpectedValues.append(strExpectedValue);
 
     enumerator = CEnumProcessorClock::toEnumerator(valSource, &bOk);
     if( enumerator == EProcessorClock::Low ) strEnumeratorResult = "Low";
     else if( enumerator == EProcessorClock::Medium ) strEnumeratorResult = "Medium";
     else if( enumerator == EProcessorClock::High ) strEnumeratorResult = "High";
     else strEnumeratorResult = QString::number(static_cast<int>(enumerator));
-    strActualValue = "CEnumProcessorClock::toEnumerator(" + valSource.toString() + ", &bOk): ";
-    strActualValue += strEnumeratorResult + ", " + bool2Str(bOk);
-    strlstActualValues.append(strActualValue);
+    strResultValue = "CEnumProcessorClock::toEnumerator(" + valSource.toString() + ", &bOk): ";
+    strResultValue += strEnumeratorResult + ", " + bool2Str(bOk);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
-    i_pTestStep->setDesiredValues(strlstDesiredValues);
-    i_pTestStep->setActualValues(strlstActualValues);
+    i_pTestStep->setExpectedValues(strlstExpectedValues);
+    i_pTestStep->setResultValues(strlstResultValues);
 
 } // doTestStepEnumClassTemplateUserDefinedClassMethodToEnumerator
 
@@ -7537,11 +7547,11 @@ void CTest::doTestStepEnumClassTemplateUserDefinedClassMethodToEnumerator( ZS::T
 void CTest::doTestStepEnumClassTemplateUserDefinedClassMethodToValue( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
-    QStringList strlstDesiredValues;
-    QStringList strlstActualValues;
+    QStringList strlstExpectedValues;
+    QStringList strlstResultValues;
 
-    QString strDesiredValue;
-    QString strActualValue;
+    QString strExpectedValue;
+    QString strResultValue;
 
     EProcessorClock enumerator;
 
@@ -7587,55 +7597,55 @@ void CTest::doTestStepEnumClassTemplateUserDefinedClassMethodToValue( ZS::Test::
             valExpected = QVariant();
         }
 
-        strDesiredValue = "CEnumProcessorClock::toValue(" + strEnumerator + "): ";
-        if( valExpected.canConvert(QVariant::Double) ) strDesiredValue += QString::number(valExpected.toDouble(),'f',1);
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "CEnumProcessorClock::toValue(" + strEnumerator + "): ";
+        if( valExpected.canConvert(QVariant::Double) ) strExpectedValue += QString::number(valExpected.toDouble(),'f',1);
+        strlstExpectedValues.append(strExpectedValue);
 
         valResult = CEnumProcessorClock::toValue(enumerator);
-        strActualValue = "CEnumProcessorClock::toValue(" + strEnumerator + "): ";
-        if( valResult.canConvert(QVariant::Double) ) strActualValue += QString::number(valResult.toDouble(),'f',1);
-        strlstActualValues.append(strActualValue);
+        strResultValue = "CEnumProcessorClock::toValue(" + strEnumerator + "): ";
+        if( valResult.canConvert(QVariant::Double) ) strResultValue += QString::number(valResult.toDouble(),'f',1);
+        strlstResultValues.append(strResultValue);
     }
 
     iEnumerator = -1;
     enumerator = static_cast<EProcessorClock>(iEnumerator);
     strEnumerator = QString::number(static_cast<int>(enumerator));
 
-    strDesiredValue = "CEnumProcessorClock::toValue(" + strEnumerator + "): ";
-    strDesiredValue += "Enumerator " + strEnumerator + " of enumeration class ZS::System::CEnum<enum EProcessorClock> not in range [0..2][Low..High]";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "CEnumProcessorClock::toValue(" + strEnumerator + "): ";
+    strExpectedValue += "Enumerator " + strEnumerator + " of enumeration class ZS::System::CEnum<enum EProcessorClock> not in range [0..2][Low..High]";
+    strlstExpectedValues.append(strExpectedValue);
 
     try
     {
-        strActualValue = "CEnumProcessorClock::toValue(" + strEnumerator + "): ";
+        strResultValue = "CEnumProcessorClock::toValue(" + strEnumerator + "): ";
         valResult = CEnumProcessorClock::toValue(enumerator);
-        if( valResult.canConvert(QVariant::Double) ) strActualValue += QString::number(valResult.toDouble(),'f',1);
+        if( valResult.canConvert(QVariant::Double) ) strResultValue += QString::number(valResult.toDouble(),'f',1);
     }
     catch( CException& exc )
     {
-        strActualValue += exc.getAddErrInfo();
+        strResultValue += exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     iEnumerator = CEnumProcessorClock::count();
     enumerator = static_cast<EProcessorClock>(iEnumerator);
     strEnumerator = QString::number(static_cast<int>(enumerator));
 
-    strDesiredValue = "CEnumProcessorClock::toValue(" + strEnumerator + "): ";
-    strDesiredValue += "Enumerator " + strEnumerator + " of enumeration class ZS::System::CEnum<enum EProcessorClock> not in range [0..2][Low..High]";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "CEnumProcessorClock::toValue(" + strEnumerator + "): ";
+    strExpectedValue += "Enumerator " + strEnumerator + " of enumeration class ZS::System::CEnum<enum EProcessorClock> not in range [0..2][Low..High]";
+    strlstExpectedValues.append(strExpectedValue);
 
     try
     {
-        strActualValue = "CEnumProcessorClock::toValue(" + strEnumerator + "): ";
+        strResultValue = "CEnumProcessorClock::toValue(" + strEnumerator + "): ";
         valResult = CEnumProcessorClock::toValue(enumerator);
-        if( valResult.canConvert(QVariant::Double) ) strActualValue += QString::number(valResult.toDouble(),'f',1);
+        if( valResult.canConvert(QVariant::Double) ) strResultValue += QString::number(valResult.toDouble(),'f',1);
     }
     catch( CException& exc )
     {
-        strActualValue += exc.getAddErrInfo();
+        strResultValue += exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
@@ -7666,16 +7676,16 @@ void CTest::doTestStepEnumClassTemplateUserDefinedClassMethodToValue( ZS::Test::
             valExpected = QVariant();
         }
 
-        strDesiredValue = "CEnumProcessorClock::toValue(" + strEnumerator + ", Double, &bOk): ";
-        if( valExpected.canConvert(QVariant::Double) ) strDesiredValue += QString::number(valExpected.toDouble(),'f',1) + ", true";
-        else strDesiredValue += valExpected.toString() + ", false";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "CEnumProcessorClock::toValue(" + strEnumerator + ", Double, &bOk): ";
+        if( valExpected.canConvert(QVariant::Double) ) strExpectedValue += QString::number(valExpected.toDouble(),'f',1) + ", true";
+        else strExpectedValue += valExpected.toString() + ", false";
+        strlstExpectedValues.append(strExpectedValue);
 
-        strActualValue = "CEnumProcessorClock::toValue(" + strEnumerator + ", Double, &bOk): ";
+        strResultValue = "CEnumProcessorClock::toValue(" + strEnumerator + ", Double, &bOk): ";
         valResult = CEnumProcessorClock::toValue(enumerator, QVariant::Double, &bOk);
-        if( bOk ) strActualValue += QString::number(valResult.toDouble(),'f',1) + ", " + bool2Str(bOk);
-        else strActualValue += valResult.toString() + ", " + bool2Str(bOk);
-        strlstActualValues.append(strActualValue);
+        if( bOk ) strResultValue += QString::number(valResult.toDouble(),'f',1) + ", " + bool2Str(bOk);
+        else strResultValue += valResult.toString() + ", " + bool2Str(bOk);
+        strlstResultValues.append(strResultValue);
     }
 
     // -------------------------------------------------------------------------
@@ -7684,43 +7694,43 @@ void CTest::doTestStepEnumClassTemplateUserDefinedClassMethodToValue( ZS::Test::
     enumerator = static_cast<EProcessorClock>(iEnumerator);
     strEnumerator = QString::number(static_cast<int>(enumerator));
 
-    strDesiredValue = "CEnumProcessorClock::toValue(" + strEnumerator + ", Double, &bOk): ";
-    strDesiredValue += "Enumerator " + strEnumerator + " of enumeration class ZS::System::CEnum<enum EProcessorClock> not in range [0..2][Low..High]";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "CEnumProcessorClock::toValue(" + strEnumerator + ", Double, &bOk): ";
+    strExpectedValue += "Enumerator " + strEnumerator + " of enumeration class ZS::System::CEnum<enum EProcessorClock> not in range [0..2][Low..High]";
+    strlstExpectedValues.append(strExpectedValue);
 
     try
     {
-        strActualValue = "CEnumProcessorClock::toValue(" + strEnumerator + ", Double, &bOk): ";
+        strResultValue = "CEnumProcessorClock::toValue(" + strEnumerator + ", Double, &bOk): ";
         valResult = CEnumProcessorClock::toValue(enumerator, QVariant::Double, &bOk);
-        if( bOk ) strActualValue += QString::number(valResult.toDouble(),'f',1) + ", " + bool2Str(bOk);
-        else strActualValue += valResult.toString() + ", " + bool2Str(bOk);
+        if( bOk ) strResultValue += QString::number(valResult.toDouble(),'f',1) + ", " + bool2Str(bOk);
+        else strResultValue += valResult.toString() + ", " + bool2Str(bOk);
     }
     catch( CException& exc )
     {
-        strActualValue += exc.getAddErrInfo();
+        strResultValue += exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     iEnumerator = CEnumProcessorClock::count();
     enumerator = static_cast<EProcessorClock>(iEnumerator);
     strEnumerator = QString::number(static_cast<int>(enumerator));
 
-    strDesiredValue = "CEnumProcessorClock::toValue(" + strEnumerator + ", Double, &bOk): ";
-    strDesiredValue += "Enumerator " + strEnumerator + " of enumeration class ZS::System::CEnum<enum EProcessorClock> not in range [0..2][Low..High]";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "CEnumProcessorClock::toValue(" + strEnumerator + ", Double, &bOk): ";
+    strExpectedValue += "Enumerator " + strEnumerator + " of enumeration class ZS::System::CEnum<enum EProcessorClock> not in range [0..2][Low..High]";
+    strlstExpectedValues.append(strExpectedValue);
 
     try
     {
-        strActualValue = "CEnumProcessorClock::toValue(" + strEnumerator + ", Double, &bOk): ";
+        strResultValue = "CEnumProcessorClock::toValue(" + strEnumerator + ", Double, &bOk): ";
         valResult = CEnumProcessorClock::toValue(enumerator, QVariant::Double, &bOk);
-        if( bOk ) strActualValue += QString::number(valResult.toDouble(),'f',1) + ", " + bool2Str(bOk);
-        else strActualValue += valResult.toString() + ", " + bool2Str(bOk);
+        if( bOk ) strResultValue += QString::number(valResult.toDouble(),'f',1) + ", " + bool2Str(bOk);
+        else strResultValue += valResult.toString() + ", " + bool2Str(bOk);
     }
     catch( CException& exc )
     {
-        strActualValue += exc.getAddErrInfo();
+        strResultValue += exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
@@ -7751,15 +7761,15 @@ void CTest::doTestStepEnumClassTemplateUserDefinedClassMethodToValue( ZS::Test::
             valExpected = QVariant();
         }
 
-        strDesiredValue = "CEnumProcessorClock::toValue(" + strEnumerator + "): ";
-        if( valExpected.canConvert(QVariant::Double) ) strDesiredValue += QString::number(valExpected.toDouble(),'f',1);
-        else strDesiredValue += valExpected.toString();
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "CEnumProcessorClock::toValue(" + strEnumerator + "): ";
+        if( valExpected.canConvert(QVariant::Double) ) strExpectedValue += QString::number(valExpected.toDouble(),'f',1);
+        else strExpectedValue += valExpected.toString();
+        strlstExpectedValues.append(strExpectedValue);
 
-        strActualValue = "CEnumProcessorClock::toValue(" + strEnumerator + "): ";
+        strResultValue = "CEnumProcessorClock::toValue(" + strEnumerator + "): ";
         valResult = CEnumProcessorClock::toValue(strEnumerator);
-        if( valResult.canConvert(QVariant::Double) ) strActualValue += QString::number(valResult.toDouble(),'f',1);
-        strlstActualValues.append(strActualValue);
+        if( valResult.canConvert(QVariant::Double) ) strResultValue += QString::number(valResult.toDouble(),'f',1);
+        strlstResultValues.append(strResultValue);
     }
 
     // -------------------------------------------------------------------------
@@ -7809,16 +7819,16 @@ void CTest::doTestStepEnumClassTemplateUserDefinedClassMethodToValue( ZS::Test::
                 strEnumerator = QString::number(iEnumerator);
             }
 
-            strDesiredValue = "CEnumProcessorClock::toValue(" + strEnumerator + ", Double, " + strAlias + "): ";
-            if( valExpected.canConvert(QVariant::Double) ) strDesiredValue += QString::number(valExpected.toDouble(),'f',1);
-            else strDesiredValue += valExpected.toString();
-            strlstDesiredValues.append(strDesiredValue);
+            strExpectedValue = "CEnumProcessorClock::toValue(" + strEnumerator + ", Double, " + strAlias + "): ";
+            if( valExpected.canConvert(QVariant::Double) ) strExpectedValue += QString::number(valExpected.toDouble(),'f',1);
+            else strExpectedValue += valExpected.toString();
+            strlstExpectedValues.append(strExpectedValue);
 
-            strActualValue = "CEnumProcessorClock::toValue(" + strEnumerator + ", Double, " + strAlias + "): ";
+            strResultValue = "CEnumProcessorClock::toValue(" + strEnumerator + ", Double, " + strAlias + "): ";
             valResult = CEnumProcessorClock::toValue(strEnumerator, QVariant::Double, idxAlias);
-            if( valResult.canConvert(QVariant::Double) ) strActualValue += QString::number(valResult.toDouble(),'f',1);
-            else strActualValue += valResult.toString();
-            strlstActualValues.append(strActualValue);
+            if( valResult.canConvert(QVariant::Double) ) strResultValue += QString::number(valResult.toDouble(),'f',1);
+            else strResultValue += valResult.toString();
+            strlstResultValues.append(strResultValue);
 
         } // for( iEnumerator = 0; iEnumerator < iEnumArrLen; ++iEnumerator )
     } // for( idxAlias = 0; idxAlias <= EEnumEntryAliasStrSCPILong; ++idxAlias )
@@ -7832,16 +7842,16 @@ void CTest::doTestStepEnumClassTemplateUserDefinedClassMethodToValue( ZS::Test::
     strCaseSensitivity = qCaseSensitivity2Str(caseSensitivity);
     valExpected = 5.12e8;
 
-    strDesiredValue = "CEnumProcessorClock::toValue(" + strEnumerator + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
-    if( valExpected.canConvert(QVariant::Double) ) strDesiredValue += QString::number(valExpected.toDouble(),'f',1) + ", true";
-    else strDesiredValue += valExpected.toString() + ", false";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "CEnumProcessorClock::toValue(" + strEnumerator + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
+    if( valExpected.canConvert(QVariant::Double) ) strExpectedValue += QString::number(valExpected.toDouble(),'f',1) + ", true";
+    else strExpectedValue += valExpected.toString() + ", false";
+    strlstExpectedValues.append(strExpectedValue);
 
-    strActualValue = "CEnumProcessorClock::toValue(" + strEnumerator + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
+    strResultValue = "CEnumProcessorClock::toValue(" + strEnumerator + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
     valResult = CEnumProcessorClock::toValue(strEnumerator, QVariant::Invalid, idxAlias, caseSensitivity, &bOk);
-    if( valResult.canConvert(QVariant::Double) ) strActualValue += QString::number(valResult.toDouble(),'f',1) + ", true";
-    else strActualValue += valResult.toString() + ", false";
-    strlstActualValues.append(strActualValue);
+    if( valResult.canConvert(QVariant::Double) ) strResultValue += QString::number(valResult.toDouble(),'f',1) + ", true";
+    else strResultValue += valResult.toString() + ", false";
+    strlstResultValues.append(strResultValue);
 
     strEnumerator = "medIUM";
     idxAlias = ZS::System::EEnumEntryAliasStrName;
@@ -7850,16 +7860,16 @@ void CTest::doTestStepEnumClassTemplateUserDefinedClassMethodToValue( ZS::Test::
     strCaseSensitivity = qCaseSensitivity2Str(caseSensitivity);
     valExpected = QVariant();
 
-    strDesiredValue = "CEnumProcessorClock::toValue(" + strEnumerator + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
-    if( valExpected.canConvert(QVariant::Double) ) strDesiredValue += QString::number(valExpected.toDouble(),'f',1) + ", true";
-    else strDesiredValue += valExpected.toString() + ", false";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "CEnumProcessorClock::toValue(" + strEnumerator + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
+    if( valExpected.canConvert(QVariant::Double) ) strExpectedValue += QString::number(valExpected.toDouble(),'f',1) + ", true";
+    else strExpectedValue += valExpected.toString() + ", false";
+    strlstExpectedValues.append(strExpectedValue);
 
-    strActualValue = "CEnumProcessorClock::toValue(" + strEnumerator + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
+    strResultValue = "CEnumProcessorClock::toValue(" + strEnumerator + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
     valResult = CEnumProcessorClock::toValue(strEnumerator, QVariant::Invalid, idxAlias, caseSensitivity, &bOk);
-    if( valResult.canConvert(QVariant::Double) ) strActualValue += QString::number(valResult.toDouble(),'f',1) + ", true";
-    else strActualValue += valResult.toString() + ", false";
-    strlstActualValues.append(strActualValue);
+    if( valResult.canConvert(QVariant::Double) ) strResultValue += QString::number(valResult.toDouble(),'f',1) + ", true";
+    else strResultValue += valResult.toString() + ", false";
+    strlstResultValues.append(strResultValue);
 
     strEnumerator = "medIUM";
     idxAlias = ZS::System::EEnumEntryAliasStrName;
@@ -7868,16 +7878,16 @@ void CTest::doTestStepEnumClassTemplateUserDefinedClassMethodToValue( ZS::Test::
     strCaseSensitivity = qCaseSensitivity2Str(caseSensitivity);
     valExpected = 5.12e8;
 
-    strDesiredValue = "CEnumProcessorClock::toValue(" + strEnumerator + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
-    if( valExpected.canConvert(QVariant::Double) ) strDesiredValue += QString::number(valExpected.toDouble(),'f',1) + ", true";
-    else strDesiredValue += valExpected.toString() + ", false";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "CEnumProcessorClock::toValue(" + strEnumerator + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
+    if( valExpected.canConvert(QVariant::Double) ) strExpectedValue += QString::number(valExpected.toDouble(),'f',1) + ", true";
+    else strExpectedValue += valExpected.toString() + ", false";
+    strlstExpectedValues.append(strExpectedValue);
 
-    strActualValue = "CEnumProcessorClock::toValue(" + strEnumerator + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
+    strResultValue = "CEnumProcessorClock::toValue(" + strEnumerator + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
     valResult = CEnumProcessorClock::toValue(strEnumerator, QVariant::Invalid, idxAlias, caseSensitivity, &bOk);
-    if( valResult.canConvert(QVariant::Double) ) strActualValue += QString::number(valResult.toDouble(),'f',1) + ", true";
-    else strActualValue += valResult.toString() + ", false";
-    strlstActualValues.append(strActualValue);
+    if( valResult.canConvert(QVariant::Double) ) strResultValue += QString::number(valResult.toDouble(),'f',1) + ", true";
+    else strResultValue += valResult.toString() + ", false";
+    strlstResultValues.append(strResultValue);
 
     strEnumerator = "MEDium";
     idxAlias = ZS::System::EEnumEntryAliasStrUndefined;
@@ -7886,16 +7896,16 @@ void CTest::doTestStepEnumClassTemplateUserDefinedClassMethodToValue( ZS::Test::
     strCaseSensitivity = qCaseSensitivity2Str(caseSensitivity);
     valExpected = 5.12e8;
 
-    strDesiredValue = "CEnumProcessorClock::toValue(" + strEnumerator + ", " + strAlias + ", Int, " + strCaseSensitivity + ", &bOk): ";
-    if( valExpected.canConvert(QVariant::Double) ) strDesiredValue += QString::number(valExpected.toDouble(),'f',1) + ", true";
-    else strDesiredValue += valExpected.toString() + ", false";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "CEnumProcessorClock::toValue(" + strEnumerator + ", " + strAlias + ", Int, " + strCaseSensitivity + ", &bOk): ";
+    if( valExpected.canConvert(QVariant::Double) ) strExpectedValue += QString::number(valExpected.toDouble(),'f',1) + ", true";
+    else strExpectedValue += valExpected.toString() + ", false";
+    strlstExpectedValues.append(strExpectedValue);
 
-    strActualValue = "CEnumProcessorClock::toValue(" + strEnumerator + ", " + strAlias + ", Int, " + strCaseSensitivity + ", &bOk): ";
+    strResultValue = "CEnumProcessorClock::toValue(" + strEnumerator + ", " + strAlias + ", Int, " + strCaseSensitivity + ", &bOk): ";
     valResult = CEnumProcessorClock::toValue(strEnumerator, QVariant::Int, idxAlias, caseSensitivity, &bOk);
-    if( valResult.canConvert(QVariant::Double) ) strActualValue += QString::number(valResult.toDouble(),'f',1) + ", true";
-    else strActualValue += valResult.toString() + ", false";
-    strlstActualValues.append(strActualValue);
+    if( valResult.canConvert(QVariant::Double) ) strResultValue += QString::number(valResult.toDouble(),'f',1) + ", true";
+    else strResultValue += valResult.toString() + ", false";
+    strlstResultValues.append(strResultValue);
 
     strEnumerator = "meDIUM";
     idxAlias = ZS::System::EEnumEntryAliasStrUndefined;
@@ -7904,16 +7914,16 @@ void CTest::doTestStepEnumClassTemplateUserDefinedClassMethodToValue( ZS::Test::
     strCaseSensitivity = qCaseSensitivity2Str(caseSensitivity);
     valExpected = QVariant();
 
-    strDesiredValue = "CEnumProcessorClock::toValue(" + strEnumerator + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
-    if( valExpected.canConvert(QVariant::Double) ) strDesiredValue += QString::number(valExpected.toDouble(),'f',1) + ", true";
-    else strDesiredValue += valExpected.toString() + ", false";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "CEnumProcessorClock::toValue(" + strEnumerator + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
+    if( valExpected.canConvert(QVariant::Double) ) strExpectedValue += QString::number(valExpected.toDouble(),'f',1) + ", true";
+    else strExpectedValue += valExpected.toString() + ", false";
+    strlstExpectedValues.append(strExpectedValue);
 
-    strActualValue = "CEnumProcessorClock::toValue(" + strEnumerator + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
+    strResultValue = "CEnumProcessorClock::toValue(" + strEnumerator + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
     valResult = CEnumProcessorClock::toValue(strEnumerator, QVariant::Invalid, idxAlias, caseSensitivity, &bOk);
-    if( valResult.canConvert(QVariant::Double) ) strActualValue += QString::number(valResult.toDouble(),'f',1) + ", true";
-    else strActualValue += valResult.toString() + ", false";
-    strlstActualValues.append(strActualValue);
+    if( valResult.canConvert(QVariant::Double) ) strResultValue += QString::number(valResult.toDouble(),'f',1) + ", true";
+    else strResultValue += valResult.toString() + ", false";
+    strlstResultValues.append(strResultValue);
 
     strEnumerator = "meDIUM";
     idxAlias = ZS::System::EEnumEntryAliasStrUndefined;
@@ -7922,16 +7932,16 @@ void CTest::doTestStepEnumClassTemplateUserDefinedClassMethodToValue( ZS::Test::
     strCaseSensitivity = qCaseSensitivity2Str(caseSensitivity);
     valExpected = 5.12e8;
 
-    strDesiredValue = "CEnumProcessorClock::toValue(" + strEnumerator + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
-    if( valExpected.canConvert(QVariant::Double) ) strDesiredValue += QString::number(valExpected.toDouble(),'f',1) + ", true";
-    else strDesiredValue += valExpected.toString() + ", false";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "CEnumProcessorClock::toValue(" + strEnumerator + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
+    if( valExpected.canConvert(QVariant::Double) ) strExpectedValue += QString::number(valExpected.toDouble(),'f',1) + ", true";
+    else strExpectedValue += valExpected.toString() + ", false";
+    strlstExpectedValues.append(strExpectedValue);
 
-    strActualValue = "CEnumProcessorClock::toValue(" + strEnumerator + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
+    strResultValue = "CEnumProcessorClock::toValue(" + strEnumerator + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
     valResult = CEnumProcessorClock::toValue(strEnumerator, QVariant::Invalid, idxAlias, caseSensitivity, &bOk);
-    if( valResult.canConvert(QVariant::Double) ) strActualValue += QString::number(valResult.toDouble(),'f',1) + ", true";
-    else strActualValue += valResult.toString() + ", false";
-    strlstActualValues.append(strActualValue);
+    if( valResult.canConvert(QVariant::Double) ) strResultValue += QString::number(valResult.toDouble(),'f',1) + ", true";
+    else strResultValue += valResult.toString() + ", false";
+    strlstResultValues.append(strResultValue);
 
     strEnumerator = "Medium";
     idxAlias = ZS::System::EEnumEntryAliasStrAlias6;
@@ -7940,27 +7950,27 @@ void CTest::doTestStepEnumClassTemplateUserDefinedClassMethodToValue( ZS::Test::
     strCaseSensitivity = qCaseSensitivity2Str(caseSensitivity);
     valExpected = QVariant();
 
-    strDesiredValue = "CEnumProcessorClock::toValue(" + strEnumerator + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
-    strDesiredValue += "Map does not contain alias strings at index " + QString::number(idxAlias);
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "CEnumProcessorClock::toValue(" + strEnumerator + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
+    strExpectedValue += "Map does not contain alias strings at index " + QString::number(idxAlias);
+    strlstExpectedValues.append(strExpectedValue);
 
     try
     {
-        strActualValue = "CEnumProcessorClock::toValue(" + strEnumerator + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
+        strResultValue = "CEnumProcessorClock::toValue(" + strEnumerator + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
         valResult = CEnumProcessorClock::toValue(strEnumerator, QVariant::Invalid, idxAlias, caseSensitivity, &bOk);
-        if( valResult.canConvert(QVariant::Double) ) strActualValue += QString::number(valResult.toDouble(),'f',1) + ", true";
-        else strActualValue += valResult.toString() + ", false";
+        if( valResult.canConvert(QVariant::Double) ) strResultValue += QString::number(valResult.toDouble(),'f',1) + ", true";
+        else strResultValue += valResult.toString() + ", false";
     }
     catch( CException& exc )
     {
-        strActualValue += exc.getAddErrInfo();
+        strResultValue += exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
-    i_pTestStep->setDesiredValues(strlstDesiredValues);
-    i_pTestStep->setActualValues(strlstActualValues);
+    i_pTestStep->setExpectedValues(strlstExpectedValues);
+    i_pTestStep->setResultValues(strlstResultValues);
 
 } // doTestStepEnumClassTemplateUserDefinedClassMethodToValue
 
@@ -7968,11 +7978,11 @@ void CTest::doTestStepEnumClassTemplateUserDefinedClassMethodToValue( ZS::Test::
 void CTest::doTestStepEnumClassTemplateUserDefinedClassMethodFromString( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
-    QStringList strlstDesiredValues;
-    QStringList strlstActualValues;
+    QStringList strlstExpectedValues;
+    QStringList strlstResultValues;
 
-    QString strDesiredValue;
-    QString strActualValue;
+    QString strExpectedValue;
+    QString strResultValue;
 
     CEnumProcessorClock enumInst;
     QString             strEnumeratorSource;
@@ -7994,9 +8004,9 @@ void CTest::doTestStepEnumClassTemplateUserDefinedClassMethodFromString( ZS::Tes
         else if( iEnumerator == 2 ) { strEnumeratorSource = "High"; }
         else { strEnumeratorSource = QString::number(iEnumerator); }
 
-        strDesiredValue = "CEnumProcessorClock::fromString(" + strEnumeratorSource + "): ";
-        strDesiredValue += strEnumeratorSource;
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "CEnumProcessorClock::fromString(" + strEnumeratorSource + "): ";
+        strExpectedValue += strEnumeratorSource;
+        strlstExpectedValues.append(strExpectedValue);
 
         enumInst = CEnumProcessorClock::fromString(strEnumeratorSource);
 
@@ -8005,9 +8015,9 @@ void CTest::doTestStepEnumClassTemplateUserDefinedClassMethodFromString( ZS::Tes
         else if( enumInst.enumerator() == EProcessorClock::High ) { strEnumeratorResult = "High"; }
         else { strEnumeratorResult = QString::number(static_cast<int>(enumInst.enumerator())); }
 
-        strActualValue = "CEnumProcessorClock::fromString(" + strEnumeratorSource + "): ";
-        strActualValue += strEnumeratorResult;
-        strlstActualValues.append(strActualValue);
+        strResultValue = "CEnumProcessorClock::fromString(" + strEnumeratorSource + "): ";
+        strResultValue += strEnumeratorResult;
+        strlstResultValues.append(strResultValue);
     }
 
     // -------------------------------------------------------------------------
@@ -8057,18 +8067,18 @@ void CTest::doTestStepEnumClassTemplateUserDefinedClassMethodFromString( ZS::Tes
                 strEnumeratorSource = QString::number(iEnumerator);
             }
 
-            strDesiredValue = "CEnumProcessorClock::fromString(" + strEnumeratorSource + ", " + strAlias + "): ";
-            strDesiredValue += strEnumeratorResult;
-            strlstDesiredValues.append(strDesiredValue);
+            strExpectedValue = "CEnumProcessorClock::fromString(" + strEnumeratorSource + ", " + strAlias + "): ";
+            strExpectedValue += strEnumeratorResult;
+            strlstExpectedValues.append(strExpectedValue);
 
-            strActualValue = "CEnumProcessorClock::fromString(" + strEnumeratorSource + ", " + strAlias + "): ";
+            strResultValue = "CEnumProcessorClock::fromString(" + strEnumeratorSource + ", " + strAlias + "): ";
             enumInst = CEnumProcessorClock::fromString(strEnumeratorSource, idxAlias);
             if( enumInst.enumerator() == EProcessorClock::Low ) strEnumeratorResult = "Low";
             else if( enumInst.enumerator() == EProcessorClock::Medium ) strEnumeratorResult = "Medium";
             else if( enumInst.enumerator() == EProcessorClock::High ) strEnumeratorResult = "High";
             else strEnumeratorResult = QString::number(static_cast<int>(enumInst.enumerator()));
-            strActualValue += strEnumeratorResult;
-            strlstActualValues.append(strActualValue);
+            strResultValue += strEnumeratorResult;
+            strlstResultValues.append(strResultValue);
 
         } // for( iEnumerator = 0; iEnumerator < iEnumArrLen; ++iEnumerator )
     } // for( idxAlias = 0; idxAlias <= EEnumEntryAliasStrSCPILong; ++idxAlias )
@@ -8082,18 +8092,18 @@ void CTest::doTestStepEnumClassTemplateUserDefinedClassMethodFromString( ZS::Tes
     strCaseSensitivity = qCaseSensitivity2Str(caseSensitivity);
     strEnumeratorResult = "Medium";
 
-    strDesiredValue = "CEnumProcessorClock::fromString(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
-    strDesiredValue += strEnumeratorResult + ", true";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "CEnumProcessorClock::fromString(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
+    strExpectedValue += strEnumeratorResult + ", true";
+    strlstExpectedValues.append(strExpectedValue);
 
-    strActualValue = "CEnumProcessorClock::fromString(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
+    strResultValue = "CEnumProcessorClock::fromString(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
     enumInst = CEnumProcessorClock::fromString(strEnumeratorSource, idxAlias, caseSensitivity, &bOk);
     if( enumInst.enumerator() == EProcessorClock::Low ) strEnumeratorResult = "Low";
     else if( enumInst.enumerator() == EProcessorClock::Medium ) strEnumeratorResult = "Medium";
     else if( enumInst.enumerator() == EProcessorClock::High ) strEnumeratorResult = "High";
     else strEnumeratorResult = QString::number(static_cast<int>(enumInst.enumerator()));
-    strActualValue += strEnumeratorResult + ", " + bool2Str(bOk);
-    strlstActualValues.append(strActualValue);
+    strResultValue += strEnumeratorResult + ", " + bool2Str(bOk);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
@@ -8104,18 +8114,18 @@ void CTest::doTestStepEnumClassTemplateUserDefinedClassMethodFromString( ZS::Tes
     strCaseSensitivity = qCaseSensitivity2Str(caseSensitivity);
     strEnumeratorResult = "-1";
 
-    strDesiredValue = "CEnumProcessorClock::fromString(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
-    strDesiredValue += strEnumeratorResult + ", false";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "CEnumProcessorClock::fromString(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
+    strExpectedValue += strEnumeratorResult + ", false";
+    strlstExpectedValues.append(strExpectedValue);
 
-    strActualValue = "CEnumProcessorClock::fromString(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
+    strResultValue = "CEnumProcessorClock::fromString(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
     enumInst = CEnumProcessorClock::fromString(strEnumeratorSource, idxAlias, caseSensitivity, &bOk);
     if( enumInst.enumerator() == EProcessorClock::Low ) strEnumeratorResult = "Low";
     else if( enumInst.enumerator() == EProcessorClock::Medium ) strEnumeratorResult = "Medium";
     else if( enumInst.enumerator() == EProcessorClock::High ) strEnumeratorResult = "High";
     else strEnumeratorResult = QString::number(static_cast<int>(enumInst.enumerator()));
-    strActualValue += strEnumeratorResult + ", " + bool2Str(bOk);
-    strlstActualValues.append(strActualValue);
+    strResultValue += strEnumeratorResult + ", " + bool2Str(bOk);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
@@ -8126,18 +8136,18 @@ void CTest::doTestStepEnumClassTemplateUserDefinedClassMethodFromString( ZS::Tes
     strCaseSensitivity = qCaseSensitivity2Str(caseSensitivity);
     strEnumeratorResult = "Medium";
 
-    strDesiredValue = "CEnumProcessorClock::fromString(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
-    strDesiredValue += strEnumeratorResult + ", true";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "CEnumProcessorClock::fromString(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
+    strExpectedValue += strEnumeratorResult + ", true";
+    strlstExpectedValues.append(strExpectedValue);
 
-    strActualValue = "CEnumProcessorClock::fromString(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
+    strResultValue = "CEnumProcessorClock::fromString(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
     enumInst = CEnumProcessorClock::fromString(strEnumeratorSource, idxAlias, caseSensitivity, &bOk);
     if( enumInst.enumerator() == EProcessorClock::Low ) strEnumeratorResult = "Low";
     else if( enumInst.enumerator() == EProcessorClock::Medium ) strEnumeratorResult = "Medium";
     else if( enumInst.enumerator() == EProcessorClock::High ) strEnumeratorResult = "High";
     else strEnumeratorResult = QString::number(static_cast<int>(enumInst.enumerator()));
-    strActualValue += strEnumeratorResult + ", " + bool2Str(bOk);
-    strlstActualValues.append(strActualValue);
+    strResultValue += strEnumeratorResult + ", " + bool2Str(bOk);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
@@ -8148,18 +8158,18 @@ void CTest::doTestStepEnumClassTemplateUserDefinedClassMethodFromString( ZS::Tes
     strCaseSensitivity = qCaseSensitivity2Str(caseSensitivity);
     strEnumeratorResult = "Medium";
 
-    strDesiredValue = "CEnumProcessorClock::fromString(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
-    strDesiredValue += strEnumeratorResult + ", true";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "CEnumProcessorClock::fromString(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
+    strExpectedValue += strEnumeratorResult + ", true";
+    strlstExpectedValues.append(strExpectedValue);
 
-    strActualValue = "CEnumProcessorClock::fromString(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
+    strResultValue = "CEnumProcessorClock::fromString(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
     enumInst = CEnumProcessorClock::fromString(strEnumeratorSource, idxAlias, caseSensitivity, &bOk);
     if( enumInst.enumerator() == EProcessorClock::Low ) strEnumeratorResult = "Low";
     else if( enumInst.enumerator() == EProcessorClock::Medium ) strEnumeratorResult = "Medium";
     else if( enumInst.enumerator() == EProcessorClock::High ) strEnumeratorResult = "High";
     else strEnumeratorResult = QString::number(static_cast<int>(enumInst.enumerator()));
-    strActualValue += strEnumeratorResult + ", " + bool2Str(bOk);
-    strlstActualValues.append(strActualValue);
+    strResultValue += strEnumeratorResult + ", " + bool2Str(bOk);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
@@ -8170,18 +8180,18 @@ void CTest::doTestStepEnumClassTemplateUserDefinedClassMethodFromString( ZS::Tes
     strCaseSensitivity = qCaseSensitivity2Str(caseSensitivity);
     strEnumeratorResult = "-1";
 
-    strDesiredValue = "CEnumProcessorClock::fromString(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
-    strDesiredValue += strEnumeratorResult + ", false";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "CEnumProcessorClock::fromString(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
+    strExpectedValue += strEnumeratorResult + ", false";
+    strlstExpectedValues.append(strExpectedValue);
 
-    strActualValue = "CEnumProcessorClock::fromString(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
+    strResultValue = "CEnumProcessorClock::fromString(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
     enumInst = CEnumProcessorClock::fromString(strEnumeratorSource, idxAlias, caseSensitivity, &bOk);
     if( enumInst.enumerator() == EProcessorClock::Low ) strEnumeratorResult = "Low";
     else if( enumInst.enumerator() == EProcessorClock::Medium ) strEnumeratorResult = "Medium";
     else if( enumInst.enumerator() == EProcessorClock::High ) strEnumeratorResult = "High";
     else strEnumeratorResult = QString::number(static_cast<int>(enumInst.enumerator()));
-    strActualValue += strEnumeratorResult + ", " + bool2Str(bOk);
-    strlstActualValues.append(strActualValue);
+    strResultValue += strEnumeratorResult + ", " + bool2Str(bOk);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
@@ -8192,18 +8202,18 @@ void CTest::doTestStepEnumClassTemplateUserDefinedClassMethodFromString( ZS::Tes
     strCaseSensitivity = qCaseSensitivity2Str(caseSensitivity);
     strEnumeratorResult = "Medium";
 
-    strDesiredValue = "CEnumProcessorClock::fromString(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
-    strDesiredValue += strEnumeratorResult + ", true";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "CEnumProcessorClock::fromString(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
+    strExpectedValue += strEnumeratorResult + ", true";
+    strlstExpectedValues.append(strExpectedValue);
 
-    strActualValue = "CEnumProcessorClock::fromString(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
+    strResultValue = "CEnumProcessorClock::fromString(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
     enumInst = CEnumProcessorClock::fromString(strEnumeratorSource, idxAlias, caseSensitivity, &bOk);
     if( enumInst.enumerator() == EProcessorClock::Low ) strEnumeratorResult = "Low";
     else if( enumInst.enumerator() == EProcessorClock::Medium ) strEnumeratorResult = "Medium";
     else if( enumInst.enumerator() == EProcessorClock::High ) strEnumeratorResult = "High";
     else strEnumeratorResult = QString::number(static_cast<int>(enumInst.enumerator()));
-    strActualValue += strEnumeratorResult + ", " + bool2Str(bOk);
-    strlstActualValues.append(strActualValue);
+    strResultValue += strEnumeratorResult + ", " + bool2Str(bOk);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
@@ -8214,30 +8224,30 @@ void CTest::doTestStepEnumClassTemplateUserDefinedClassMethodFromString( ZS::Tes
     strCaseSensitivity = qCaseSensitivity2Str(caseSensitivity);
     strEnumeratorResult = "-1";
 
-    strDesiredValue = "CEnumProcessorClock::fromString(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
-    strDesiredValue += "Map does not contain alias strings at index " + QString::number(idxAlias);
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "CEnumProcessorClock::fromString(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
+    strExpectedValue += "Map does not contain alias strings at index " + QString::number(idxAlias);
+    strlstExpectedValues.append(strExpectedValue);
 
     try
     {
-        strActualValue = "CEnumProcessorClock::fromString(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
+        strResultValue = "CEnumProcessorClock::fromString(" + strEnumeratorSource + ", " + strAlias + ", " + strCaseSensitivity + ", &bOk): ";
         enumInst = CEnumProcessorClock::fromString(strEnumeratorSource, idxAlias, caseSensitivity, &bOk);
         if( enumInst.enumerator() == EProcessorClock::Low ) strEnumeratorResult = "Low";
         else if( enumInst.enumerator() == EProcessorClock::Medium ) strEnumeratorResult = "Medium";
         else if( enumInst.enumerator() == EProcessorClock::High ) strEnumeratorResult = "High";
         else strEnumeratorResult = QString::number(static_cast<int>(enumInst.enumerator()));
-        strActualValue += strEnumeratorResult + ", " + bool2Str(bOk);
+        strResultValue += strEnumeratorResult + ", " + bool2Str(bOk);
     }
     catch( CException& exc )
     {
-        strActualValue += exc.getAddErrInfo();
+        strResultValue += exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
-    i_pTestStep->setDesiredValues(strlstDesiredValues);
-    i_pTestStep->setActualValues(strlstActualValues);
+    i_pTestStep->setExpectedValues(strlstExpectedValues);
+    i_pTestStep->setResultValues(strlstResultValues);
 
 } // doTestStepEnumClassTemplateUserDefinedClassMethodFromString
 
@@ -8245,11 +8255,11 @@ void CTest::doTestStepEnumClassTemplateUserDefinedClassMethodFromString( ZS::Tes
 void CTest::doTestStepEnumClassTemplateUserDefinedClassMethodFromValue( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
-    QStringList strlstDesiredValues;
-    QStringList strlstActualValues;
+    QStringList strlstExpectedValues;
+    QStringList strlstResultValues;
 
-    QString strDesiredValue;
-    QString strActualValue;
+    QString strExpectedValue;
+    QString strResultValue;
 
     CEnumProcessorClock enumInst;
 
@@ -8270,11 +8280,11 @@ void CTest::doTestStepEnumClassTemplateUserDefinedClassMethodFromValue( ZS::Test
         else if( iEnumerator == 1 ) { val = 5.12e8; strEnumerator = "Medium"; }
         else if( iEnumerator == 2 ) { val = 5.12e9; strEnumerator = "High"; }
 
-        strDesiredValue = "CEnumProcessorClock::fromValue(" + val.toString() + "): ";
-        strDesiredValue += strEnumerator;
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "CEnumProcessorClock::fromValue(" + val.toString() + "): ";
+        strExpectedValue += strEnumerator;
+        strlstExpectedValues.append(strExpectedValue);
 
-        strActualValue = "CEnumProcessorClock::fromValue(" + val.toString() + "): ";
+        strResultValue = "CEnumProcessorClock::fromValue(" + val.toString() + "): ";
         enumInst = CEnumProcessorClock::fromValue(val);
 
         if( enumInst.enumerator() == EProcessorClock::Low ) { strEnumerator = "Low"; }
@@ -8282,65 +8292,65 @@ void CTest::doTestStepEnumClassTemplateUserDefinedClassMethodFromValue( ZS::Test
         else if( enumInst.enumerator() == EProcessorClock::High ) { strEnumerator = "High"; }
         else { strEnumerator = QString::number(static_cast<int>(enumInst.enumerator())); }
 
-        strActualValue += strEnumerator;
-        strlstActualValues.append(strActualValue);
+        strResultValue += strEnumerator;
+        strlstResultValues.append(strResultValue);
     }
 
     // -------------------------------------------------------------------------
 
     val = 5.12e8;
 
-    strDesiredValue = "CEnumProcessorClock::fromValue(" + val.toString() + ", &bOk): ";
-    strDesiredValue += "Medium, true";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "CEnumProcessorClock::fromValue(" + val.toString() + ", &bOk): ";
+    strExpectedValue += "Medium, true";
+    strlstExpectedValues.append(strExpectedValue);
 
-    strActualValue = "CEnumProcessorClock::fromValue(" + val.toString() + ", &bOk): ";
+    strResultValue = "CEnumProcessorClock::fromValue(" + val.toString() + ", &bOk): ";
     enumInst = CEnumProcessorClock::fromValue(val, &bOk);
     if( enumInst.enumerator() == EProcessorClock::Low ) { strEnumerator = "Low"; }
     else if( enumInst.enumerator() == EProcessorClock::Medium ) { strEnumerator = "Medium"; }
     else if( enumInst.enumerator() == EProcessorClock::High ) { strEnumerator = "High"; }
     else { strEnumerator = QString::number(static_cast<int>(enumInst.enumerator())); }
-    strActualValue += strEnumerator + ", " + bool2Str(bOk);
-    strlstActualValues.append(strActualValue);
+    strResultValue += strEnumerator + ", " + bool2Str(bOk);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     val = QVariant();
 
-    strDesiredValue = "CEnumProcessorClock::fromValue(" + val.toString() + ", &bOk): ";
-    strDesiredValue += "-1, false";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "CEnumProcessorClock::fromValue(" + val.toString() + ", &bOk): ";
+    strExpectedValue += "-1, false";
+    strlstExpectedValues.append(strExpectedValue);
 
-    strActualValue = "CEnumProcessorClock::fromValue(" + val.toString() + ", &bOk): ";
+    strResultValue = "CEnumProcessorClock::fromValue(" + val.toString() + ", &bOk): ";
     enumInst = CEnumProcessorClock::fromValue(val, &bOk);
     if( enumInst.enumerator() == EProcessorClock::Low ) { strEnumerator = "Low"; }
     else if( enumInst.enumerator() == EProcessorClock::Medium ) { strEnumerator = "Medium"; }
     else if( enumInst.enumerator() == EProcessorClock::High ) { strEnumerator = "High"; }
     else { strEnumerator = QString::number(static_cast<int>(enumInst.enumerator())); }
-    strActualValue += strEnumerator + ", " + bool2Str(bOk);
-    strlstActualValues.append(strActualValue);
+    strResultValue += strEnumerator + ", " + bool2Str(bOk);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     val = 5.12e3;
 
-    strDesiredValue = "CEnumProcessorClock::fromValue(" + val.toString() + ", &bOk): ";
-    strDesiredValue += "-1, false";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "CEnumProcessorClock::fromValue(" + val.toString() + ", &bOk): ";
+    strExpectedValue += "-1, false";
+    strlstExpectedValues.append(strExpectedValue);
 
-    strActualValue = "CEnumProcessorClock::fromValue(" + val.toString() + ", &bOk): ";
+    strResultValue = "CEnumProcessorClock::fromValue(" + val.toString() + ", &bOk): ";
     enumInst = CEnumProcessorClock::fromValue(val, &bOk);
     if( enumInst.enumerator() == EProcessorClock::Low ) { strEnumerator = "Low"; }
     else if( enumInst.enumerator() == EProcessorClock::Medium ) { strEnumerator = "Medium"; }
     else if( enumInst.enumerator() == EProcessorClock::High ) { strEnumerator = "High"; }
     else { strEnumerator = QString::number(static_cast<int>(enumInst.enumerator())); }
-    strActualValue += strEnumerator + ", " + bool2Str(bOk);
-    strlstActualValues.append(strActualValue);
+    strResultValue += strEnumerator + ", " + bool2Str(bOk);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
-    i_pTestStep->setDesiredValues(strlstDesiredValues);
-    i_pTestStep->setActualValues(strlstActualValues);
+    i_pTestStep->setExpectedValues(strlstExpectedValues);
+    i_pTestStep->setResultValues(strlstResultValues);
 
 } // doTestStepEnumClassTemplateUserDefinedClassMethodFromValue
 
@@ -8348,11 +8358,11 @@ void CTest::doTestStepEnumClassTemplateUserDefinedClassMethodFromValue( ZS::Test
 void CTest::doTestStepEnumClassTemplateUserDefinedCtors( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
-    QStringList strlstDesiredValues;
-    QStringList strlstActualValues;
+    QStringList strlstExpectedValues;
+    QStringList strlstResultValues;
 
-    QString strDesiredValue;
-    QString strActualValue;
+    QString strExpectedValue;
+    QString strResultValue;
 
     CEnumProcessorClock* pEnumInst = nullptr;
 
@@ -8367,16 +8377,16 @@ void CTest::doTestStepEnumClassTemplateUserDefinedCtors( ZS::Test::CTestStep* i_
 
     // -------------------------------------------------------------------------
 
-    strDesiredValue = "CEnumProcessorClock::ctor(): -1";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "CEnumProcessorClock::ctor(): -1";
+    strlstExpectedValues.append(strExpectedValue);
 
     pEnumInst = new CEnumProcessorClock();
     if( pEnumInst->enumerator() == EProcessorClock::Low ) { strEnumerator = "Low"; }
     else if( pEnumInst->enumerator() == EProcessorClock::Medium ) { strEnumerator = "Medium"; }
     else if( pEnumInst->enumerator() == EProcessorClock::High ) { strEnumerator = "High"; }
     else { strEnumerator = QString::number(static_cast<int>(pEnumInst->enumerator())); }
-    strActualValue = "CEnumProcessorClock::ctor(): " + strEnumerator;
-    strlstActualValues.append(strActualValue);
+    strResultValue = "CEnumProcessorClock::ctor(): " + strEnumerator;
+    strlstResultValues.append(strResultValue);
     delete pEnumInst;
     pEnumInst = nullptr;
 
@@ -8391,18 +8401,18 @@ void CTest::doTestStepEnumClassTemplateUserDefinedCtors( ZS::Test::CTestStep* i_
         else if( iEnumerator == 2 ) { strEnumerator = "High"; }
         else { strEnumerator = QString::number(iEnumerator); }
 
-        strDesiredValue = "CEnumProcessorClock::ctor(" + strEnumerator + "): ";
-        strDesiredValue += strEnumerator;
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "CEnumProcessorClock::ctor(" + strEnumerator + "): ";
+        strExpectedValue += strEnumerator;
+        strlstExpectedValues.append(strExpectedValue);
 
-        strActualValue = "CEnumProcessorClock::ctor(" + strEnumerator + "): ";
+        strResultValue = "CEnumProcessorClock::ctor(" + strEnumerator + "): ";
         pEnumInst = new CEnumProcessorClock(static_cast<EProcessorClock>(iEnumerator));
         if( pEnumInst->enumerator() == EProcessorClock::Low ) { strEnumerator = "Low"; }
         else if( pEnumInst->enumerator() == EProcessorClock::Medium ) { strEnumerator = "Medium"; }
         else if( pEnumInst->enumerator() == EProcessorClock::High ) { strEnumerator = "High"; }
         else { strEnumerator = QString::number(static_cast<int>(pEnumInst->enumerator())); }
-        strActualValue += strEnumerator;
-        strlstActualValues.append(strActualValue);
+        strResultValue += strEnumerator;
+        strlstResultValues.append(strResultValue);
         delete pEnumInst;
         pEnumInst = nullptr;
     }
@@ -8412,25 +8422,25 @@ void CTest::doTestStepEnumClassTemplateUserDefinedCtors( ZS::Test::CTestStep* i_
     iEnumerator = -1;
     strEnumerator = QString::number(iEnumerator);
 
-    strDesiredValue = "CEnumProcessorClock::ctor(" + strEnumerator + "): ";
-    strDesiredValue += "Enumerator " + QString::number(iEnumerator) + " of enumeration class ZS::System::CEnum<enum EProcessorClock> not in range [0..2][Low..High]";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "CEnumProcessorClock::ctor(" + strEnumerator + "): ";
+    strExpectedValue += "Enumerator " + QString::number(iEnumerator) + " of enumeration class ZS::System::CEnum<enum EProcessorClock> not in range [0..2][Low..High]";
+    strlstExpectedValues.append(strExpectedValue);
 
     try
     {
-        strActualValue = "CEnumProcessorClock::ctor(" + strEnumerator + "): ";
+        strResultValue = "CEnumProcessorClock::ctor(" + strEnumerator + "): ";
         pEnumInst = new CEnumProcessorClock(static_cast<EProcessorClock>(iEnumerator));
         if( pEnumInst->enumerator() == EProcessorClock::Low ) { strEnumerator = "Low"; }
         else if( pEnumInst->enumerator() == EProcessorClock::Medium ) { strEnumerator = "Medium"; }
         else if( pEnumInst->enumerator() == EProcessorClock::High ) { strEnumerator = "High"; }
         else { strEnumerator = QString::number(static_cast<int>(pEnumInst->enumerator())); }
-        strActualValue += strEnumerator;
+        strResultValue += strEnumerator;
     }
     catch( CException& exc )
     {
-        strActualValue += exc.getAddErrInfo();
+        strResultValue += exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
     delete pEnumInst;
     pEnumInst = nullptr;
 
@@ -8439,25 +8449,25 @@ void CTest::doTestStepEnumClassTemplateUserDefinedCtors( ZS::Test::CTestStep* i_
     iEnumerator = CEnumProcessorClock::count();
     strEnumerator = QString::number(iEnumerator);
 
-    strDesiredValue = "CEnumProcessorClock::ctor(" + strEnumerator + "): ";
-    strDesiredValue += "Enumerator " + QString::number(iEnumerator) + " of enumeration class ZS::System::CEnum<enum EProcessorClock> not in range [0..2][Low..High]";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "CEnumProcessorClock::ctor(" + strEnumerator + "): ";
+    strExpectedValue += "Enumerator " + QString::number(iEnumerator) + " of enumeration class ZS::System::CEnum<enum EProcessorClock> not in range [0..2][Low..High]";
+    strlstExpectedValues.append(strExpectedValue);
 
     try
     {
-        strActualValue = "CEnumProcessorClock::ctor(" + strEnumerator + "): ";
+        strResultValue = "CEnumProcessorClock::ctor(" + strEnumerator + "): ";
         pEnumInst = new CEnumProcessorClock(static_cast<EProcessorClock>(iEnumerator));
         if( pEnumInst->enumerator() == EProcessorClock::Low ) { strEnumerator = "Low"; }
         else if( pEnumInst->enumerator() == EProcessorClock::Medium ) { strEnumerator = "Medium"; }
         else if( pEnumInst->enumerator() == EProcessorClock::High ) { strEnumerator = "High"; }
         else { strEnumerator = QString::number(static_cast<int>(pEnumInst->enumerator())); }
-        strActualValue += strEnumerator;
+        strResultValue += strEnumerator;
     }
     catch( CException& exc )
     {
-        strActualValue += exc.getAddErrInfo();
+        strResultValue += exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
     delete pEnumInst;
     pEnumInst = nullptr;
 
@@ -8472,18 +8482,18 @@ void CTest::doTestStepEnumClassTemplateUserDefinedCtors( ZS::Test::CTestStep* i_
         else if( iEnumerator == 2 ) { strEnumerator = "High"; }
         else { strEnumerator = QString::number(iEnumerator); }
 
-        strDesiredValue = "CEnumProcessorClock::ctor(" + strEnumerator + "): ";
-        strDesiredValue += strEnumerator;
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "CEnumProcessorClock::ctor(" + strEnumerator + "): ";
+        strExpectedValue += strEnumerator;
+        strlstExpectedValues.append(strExpectedValue);
 
-        strActualValue = "CEnumProcessorClock::ctor(" + strEnumerator + "): ";
+        strResultValue = "CEnumProcessorClock::ctor(" + strEnumerator + "): ";
         pEnumInst = new CEnumProcessorClock(iEnumerator);
         if( pEnumInst->enumerator() == EProcessorClock::Low ) { strEnumerator = "Low"; }
         else if( pEnumInst->enumerator() == EProcessorClock::Medium ) { strEnumerator = "Medium"; }
         else if( pEnumInst->enumerator() == EProcessorClock::High ) { strEnumerator = "High"; }
         else { strEnumerator = QString::number(static_cast<int>(pEnumInst->enumerator())); }
-        strActualValue += strEnumerator;
-        strlstActualValues.append(strActualValue);
+        strResultValue += strEnumerator;
+        strlstResultValues.append(strResultValue);
         delete pEnumInst;
         pEnumInst = nullptr;
     }
@@ -8493,25 +8503,25 @@ void CTest::doTestStepEnumClassTemplateUserDefinedCtors( ZS::Test::CTestStep* i_
     iEnumerator = -1;
     strEnumerator = QString::number(iEnumerator);
 
-    strDesiredValue = "CEnumProcessorClock::ctor(" + strEnumerator + "): ";
-    strDesiredValue += "Enumerator " + QString::number(iEnumerator) + " of enumeration class ZS::System::CEnum<enum EProcessorClock> not in range [0..2][Low..High]";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "CEnumProcessorClock::ctor(" + strEnumerator + "): ";
+    strExpectedValue += "Enumerator " + QString::number(iEnumerator) + " of enumeration class ZS::System::CEnum<enum EProcessorClock> not in range [0..2][Low..High]";
+    strlstExpectedValues.append(strExpectedValue);
 
     try
     {
-        strActualValue = "CEnumProcessorClock::ctor(" + strEnumerator + "): ";
+        strResultValue = "CEnumProcessorClock::ctor(" + strEnumerator + "): ";
         pEnumInst = new CEnumProcessorClock(iEnumerator);
         if( pEnumInst->enumerator() == EProcessorClock::Low ) { strEnumerator = "Low"; }
         else if( pEnumInst->enumerator() == EProcessorClock::Medium ) { strEnumerator = "Medium"; }
         else if( pEnumInst->enumerator() == EProcessorClock::High ) { strEnumerator = "High"; }
         else { strEnumerator = QString::number(static_cast<int>(pEnumInst->enumerator())); }
-        strActualValue += strEnumerator;
+        strResultValue += strEnumerator;
     }
     catch( CException& exc )
     {
-        strActualValue += exc.getAddErrInfo();
+        strResultValue += exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
     delete pEnumInst;
     pEnumInst = nullptr;
 
@@ -8520,25 +8530,25 @@ void CTest::doTestStepEnumClassTemplateUserDefinedCtors( ZS::Test::CTestStep* i_
     iEnumerator = CEnumProcessorClock::count();
     strEnumerator = QString::number(iEnumerator);
 
-    strDesiredValue = "CEnumProcessorClock::ctor(" + strEnumerator + "): ";
-    strDesiredValue += "Enumerator " + QString::number(iEnumerator) + " of enumeration class ZS::System::CEnum<enum EProcessorClock> not in range [0..2][Low..High]";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "CEnumProcessorClock::ctor(" + strEnumerator + "): ";
+    strExpectedValue += "Enumerator " + QString::number(iEnumerator) + " of enumeration class ZS::System::CEnum<enum EProcessorClock> not in range [0..2][Low..High]";
+    strlstExpectedValues.append(strExpectedValue);
 
     try
     {
-        strActualValue = "CEnumProcessorClock::ctor(" + strEnumerator + "): ";
+        strResultValue = "CEnumProcessorClock::ctor(" + strEnumerator + "): ";
         pEnumInst = new CEnumProcessorClock(iEnumerator);
         if( pEnumInst->enumerator() == EProcessorClock::Low ) { strEnumerator = "Low"; }
         else if( pEnumInst->enumerator() == EProcessorClock::Medium ) { strEnumerator = "Medium"; }
         else if( pEnumInst->enumerator() == EProcessorClock::High ) { strEnumerator = "High"; }
         else { strEnumerator = QString::number(static_cast<int>(pEnumInst->enumerator())); }
-        strActualValue += strEnumerator;
+        strResultValue += strEnumerator;
     }
     catch( CException& exc )
     {
-        strActualValue += exc.getAddErrInfo();
+        strResultValue += exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
     delete pEnumInst;
     pEnumInst = nullptr;
 
@@ -8553,18 +8563,18 @@ void CTest::doTestStepEnumClassTemplateUserDefinedCtors( ZS::Test::CTestStep* i_
         else if( iEnumerator == 2 ) { strEnumerator = "High"; }
         else { strEnumerator = QString::number(iEnumerator); }
 
-        strDesiredValue = "CEnumProcessorClock::ctor(" + strEnumerator + "): ";
-        strDesiredValue += strEnumerator;
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "CEnumProcessorClock::ctor(" + strEnumerator + "): ";
+        strExpectedValue += strEnumerator;
+        strlstExpectedValues.append(strExpectedValue);
 
-        strActualValue = "CEnumProcessorClock::ctor(" + strEnumerator + "): ";
+        strResultValue = "CEnumProcessorClock::ctor(" + strEnumerator + "): ";
         pEnumInst = new CEnumProcessorClock(strEnumerator);
         if( pEnumInst->enumerator() == EProcessorClock::Low ) { strEnumerator = "Low"; }
         else if( pEnumInst->enumerator() == EProcessorClock::Medium ) { strEnumerator = "Medium"; }
         else if( pEnumInst->enumerator() == EProcessorClock::High ) { strEnumerator = "High"; }
         else { strEnumerator = QString::number(static_cast<int>(pEnumInst->enumerator())); }
-        strActualValue += strEnumerator;
-        strlstActualValues.append(strActualValue);
+        strResultValue += strEnumerator;
+        strlstResultValues.append(strResultValue);
         delete pEnumInst;
         pEnumInst = nullptr;
     }
@@ -8577,18 +8587,18 @@ void CTest::doTestStepEnumClassTemplateUserDefinedCtors( ZS::Test::CTestStep* i_
     caseSensitivity = Qt::CaseSensitive;
     strCaseSensitivity = qCaseSensitivity2Str(caseSensitivity);
 
-    strDesiredValue = "CEnumProcessorClock::ctor(" + strEnumerator + ", " + strAlias + ", " + strCaseSensitivity + "): ";
-    strDesiredValue += strEnumerator;
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "CEnumProcessorClock::ctor(" + strEnumerator + ", " + strAlias + ", " + strCaseSensitivity + "): ";
+    strExpectedValue += strEnumerator;
+    strlstExpectedValues.append(strExpectedValue);
 
-    strActualValue = "CEnumProcessorClock::ctor(" + strEnumerator + ", " + strAlias + ", " + strCaseSensitivity + "): ";
+    strResultValue = "CEnumProcessorClock::ctor(" + strEnumerator + ", " + strAlias + ", " + strCaseSensitivity + "): ";
     pEnumInst = new CEnumProcessorClock(strEnumerator, idxAlias, caseSensitivity);
     if( pEnumInst->enumerator() == EProcessorClock::Low ) strEnumerator = "Low";
     else if( pEnumInst->enumerator() == EProcessorClock::Medium ) strEnumerator = "Medium";
     else if( pEnumInst->enumerator() == EProcessorClock::High ) strEnumerator = "High";
     else strEnumerator = QString::number(static_cast<int>(pEnumInst->enumerator()));
-    strActualValue += strEnumerator;
-    strlstActualValues.append(strActualValue);
+    strResultValue += strEnumerator;
+    strlstResultValues.append(strResultValue);
     delete pEnumInst;
     pEnumInst = nullptr;
 
@@ -8601,18 +8611,18 @@ void CTest::doTestStepEnumClassTemplateUserDefinedCtors( ZS::Test::CTestStep* i_
     strCaseSensitivity = qCaseSensitivity2Str(caseSensitivity);
     strEnumerator = "-1";
 
-    strDesiredValue = "CEnumProcessorClock::ctor(" + strEnumerator + ", " + strAlias + ", " + strCaseSensitivity + "): ";
-    strDesiredValue += strEnumerator;
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "CEnumProcessorClock::ctor(" + strEnumerator + ", " + strAlias + ", " + strCaseSensitivity + "): ";
+    strExpectedValue += strEnumerator;
+    strlstExpectedValues.append(strExpectedValue);
 
-    strActualValue = "CEnumProcessorClock::ctor(" + strEnumerator + ", " + strAlias + ", " + strCaseSensitivity + "): ";
+    strResultValue = "CEnumProcessorClock::ctor(" + strEnumerator + ", " + strAlias + ", " + strCaseSensitivity + "): ";
     pEnumInst = new CEnumProcessorClock(strEnumerator, idxAlias, caseSensitivity);
     if( pEnumInst->enumerator() == EProcessorClock::Low ) strEnumerator = "Low";
     else if( pEnumInst->enumerator() == EProcessorClock::Medium ) strEnumerator = "Medium";
     else if( pEnumInst->enumerator() == EProcessorClock::High ) strEnumerator = "High";
     else strEnumerator = QString::number(static_cast<int>(pEnumInst->enumerator()));
-    strActualValue += strEnumerator;
-    strlstActualValues.append(strActualValue);
+    strResultValue += strEnumerator;
+    strlstResultValues.append(strResultValue);
     delete pEnumInst;
     pEnumInst = nullptr;
 
@@ -8625,18 +8635,18 @@ void CTest::doTestStepEnumClassTemplateUserDefinedCtors( ZS::Test::CTestStep* i_
     strCaseSensitivity = qCaseSensitivity2Str(caseSensitivity);
     strEnumerator = "Medium";
 
-    strDesiredValue = "CEnumProcessorClock::ctor(" + strEnumerator + ", " + strAlias + ", " + strCaseSensitivity + "): ";
-    strDesiredValue += strEnumerator;
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "CEnumProcessorClock::ctor(" + strEnumerator + ", " + strAlias + ", " + strCaseSensitivity + "): ";
+    strExpectedValue += strEnumerator;
+    strlstExpectedValues.append(strExpectedValue);
 
-    strActualValue = "CEnumProcessorClock::ctor(" + strEnumerator + ", " + strAlias + ", " + strCaseSensitivity + "): ";
+    strResultValue = "CEnumProcessorClock::ctor(" + strEnumerator + ", " + strAlias + ", " + strCaseSensitivity + "): ";
     pEnumInst = new CEnumProcessorClock(strEnumerator, idxAlias, caseSensitivity);
     if( pEnumInst->enumerator() == EProcessorClock::Low ) strEnumerator = "Low";
     else if( pEnumInst->enumerator() == EProcessorClock::Medium ) strEnumerator = "Medium";
     else if( pEnumInst->enumerator() == EProcessorClock::High ) strEnumerator = "High";
     else strEnumerator = QString::number(static_cast<int>(pEnumInst->enumerator()));
-    strActualValue += strEnumerator;
-    strlstActualValues.append(strActualValue);
+    strResultValue += strEnumerator;
+    strlstResultValues.append(strResultValue);
     delete pEnumInst;
     pEnumInst = nullptr;
 
@@ -8649,18 +8659,18 @@ void CTest::doTestStepEnumClassTemplateUserDefinedCtors( ZS::Test::CTestStep* i_
     strCaseSensitivity = qCaseSensitivity2Str(caseSensitivity);
     strEnumerator = "Medium";
 
-    strDesiredValue = "CEnumProcessorClock::ctor(" + strEnumerator + ", " + strAlias + ", " + strCaseSensitivity + "): ";
-    strDesiredValue += strEnumerator;
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "CEnumProcessorClock::ctor(" + strEnumerator + ", " + strAlias + ", " + strCaseSensitivity + "): ";
+    strExpectedValue += strEnumerator;
+    strlstExpectedValues.append(strExpectedValue);
 
-    strActualValue = "CEnumProcessorClock::ctor(" + strEnumerator + ", " + strAlias + ", " + strCaseSensitivity + "): ";
+    strResultValue = "CEnumProcessorClock::ctor(" + strEnumerator + ", " + strAlias + ", " + strCaseSensitivity + "): ";
     pEnumInst = new CEnumProcessorClock(strEnumerator, idxAlias, caseSensitivity);
     if( pEnumInst->enumerator() == EProcessorClock::Low ) strEnumerator = "Low";
     else if( pEnumInst->enumerator() == EProcessorClock::Medium ) strEnumerator = "Medium";
     else if( pEnumInst->enumerator() == EProcessorClock::High ) strEnumerator = "High";
     else strEnumerator = QString::number(static_cast<int>(pEnumInst->enumerator()));
-    strActualValue += strEnumerator;
-    strlstActualValues.append(strActualValue);
+    strResultValue += strEnumerator;
+    strlstResultValues.append(strResultValue);
     delete pEnumInst;
     pEnumInst = nullptr;
 
@@ -8673,18 +8683,18 @@ void CTest::doTestStepEnumClassTemplateUserDefinedCtors( ZS::Test::CTestStep* i_
     strCaseSensitivity = qCaseSensitivity2Str(caseSensitivity);
     strEnumerator = "-1";
 
-    strDesiredValue = "CEnumProcessorClock::ctor(" + strEnumerator + ", " + strAlias + ", " + strCaseSensitivity + "): ";
-    strDesiredValue += strEnumerator;
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "CEnumProcessorClock::ctor(" + strEnumerator + ", " + strAlias + ", " + strCaseSensitivity + "): ";
+    strExpectedValue += strEnumerator;
+    strlstExpectedValues.append(strExpectedValue);
 
-    strActualValue = "CEnumProcessorClock::ctor(" + strEnumerator + ", " + strAlias + ", " + strCaseSensitivity + "): ";
+    strResultValue = "CEnumProcessorClock::ctor(" + strEnumerator + ", " + strAlias + ", " + strCaseSensitivity + "): ";
     pEnumInst = new CEnumProcessorClock(strEnumerator, idxAlias, caseSensitivity);
     if( pEnumInst->enumerator() == EProcessorClock::Low ) strEnumerator = "Low";
     else if( pEnumInst->enumerator() == EProcessorClock::Medium ) strEnumerator = "Medium";
     else if( pEnumInst->enumerator() == EProcessorClock::High ) strEnumerator = "High";
     else strEnumerator = QString::number(static_cast<int>(pEnumInst->enumerator()));
-    strActualValue += strEnumerator;
-    strlstActualValues.append(strActualValue);
+    strResultValue += strEnumerator;
+    strlstResultValues.append(strResultValue);
     delete pEnumInst;
     pEnumInst = nullptr;
 
@@ -8697,18 +8707,18 @@ void CTest::doTestStepEnumClassTemplateUserDefinedCtors( ZS::Test::CTestStep* i_
     strCaseSensitivity = qCaseSensitivity2Str(caseSensitivity);
     strEnumerator = "Medium";
 
-    strDesiredValue = "CEnumProcessorClock::ctor(" + strEnumerator + ", " + strAlias + ", " + strCaseSensitivity + "): ";
-    strDesiredValue += strEnumerator;
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "CEnumProcessorClock::ctor(" + strEnumerator + ", " + strAlias + ", " + strCaseSensitivity + "): ";
+    strExpectedValue += strEnumerator;
+    strlstExpectedValues.append(strExpectedValue);
 
-    strActualValue = "CEnumProcessorClock::ctor(" + strEnumerator + ", " + strAlias + ", " + strCaseSensitivity + "): ";
+    strResultValue = "CEnumProcessorClock::ctor(" + strEnumerator + ", " + strAlias + ", " + strCaseSensitivity + "): ";
     pEnumInst = new CEnumProcessorClock(strEnumerator, idxAlias, caseSensitivity);
     if( pEnumInst->enumerator() == EProcessorClock::Low ) strEnumerator = "Low";
     else if( pEnumInst->enumerator() == EProcessorClock::Medium ) strEnumerator = "Medium";
     else if( pEnumInst->enumerator() == EProcessorClock::High ) strEnumerator = "High";
     else strEnumerator = QString::number(static_cast<int>(pEnumInst->enumerator()));
-    strActualValue += strEnumerator;
-    strlstActualValues.append(strActualValue);
+    strResultValue += strEnumerator;
+    strlstResultValues.append(strResultValue);
     delete pEnumInst;
     pEnumInst = nullptr;
 
@@ -8721,32 +8731,32 @@ void CTest::doTestStepEnumClassTemplateUserDefinedCtors( ZS::Test::CTestStep* i_
     strCaseSensitivity = qCaseSensitivity2Str(caseSensitivity);
     strEnumerator = "-1";
 
-    strDesiredValue = "CEnumProcessorClock::ctor(" + strEnumerator + ", " + strAlias + ", " + strCaseSensitivity + "): ";
-    strDesiredValue += "Map does not contain alias strings at index " + QString::number(idxAlias);
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "CEnumProcessorClock::ctor(" + strEnumerator + ", " + strAlias + ", " + strCaseSensitivity + "): ";
+    strExpectedValue += "Map does not contain alias strings at index " + QString::number(idxAlias);
+    strlstExpectedValues.append(strExpectedValue);
 
     try
     {
-        strActualValue = "CEnumProcessorClock::ctor(" + strEnumerator + ", " + strAlias + ", " + strCaseSensitivity + "): ";
+        strResultValue = "CEnumProcessorClock::ctor(" + strEnumerator + ", " + strAlias + ", " + strCaseSensitivity + "): ";
         pEnumInst = new CEnumProcessorClock(strEnumerator, idxAlias, caseSensitivity);
         if( pEnumInst->enumerator() == EProcessorClock::Low ) strEnumerator = "Low";
         else if( pEnumInst->enumerator() == EProcessorClock::Medium ) strEnumerator = "Medium";
         else if( pEnumInst->enumerator() == EProcessorClock::High ) strEnumerator = "High";
         else strEnumerator = QString::number(static_cast<int>(pEnumInst->enumerator()));
-        strActualValue += strEnumerator;
+        strResultValue += strEnumerator;
     }
     catch( CException& exc )
     {
-        strActualValue += exc.getAddErrInfo();
+        strResultValue += exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
     delete pEnumInst;
     pEnumInst = nullptr;
 
     // -------------------------------------------------------------------------
 
-    i_pTestStep->setDesiredValues(strlstDesiredValues);
-    i_pTestStep->setActualValues(strlstActualValues);
+    i_pTestStep->setExpectedValues(strlstExpectedValues);
+    i_pTestStep->setResultValues(strlstResultValues);
 
 } // doTestStepEnumClassTemplateUserDefinedCtors
 
@@ -8754,11 +8764,11 @@ void CTest::doTestStepEnumClassTemplateUserDefinedCtors( ZS::Test::CTestStep* i_
 void CTest::doTestStepEnumClassTemplateUserDefinedOperatorAssign( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
-    QStringList strlstDesiredValues;
-    QStringList strlstActualValues;
+    QStringList strlstExpectedValues;
+    QStringList strlstResultValues;
 
-    QString strDesiredValue;
-    QString strActualValue;
+    QString strExpectedValue;
+    QString strResultValue;
 
     CEnumProcessorClock enumInst;
 
@@ -8781,18 +8791,18 @@ void CTest::doTestStepEnumClassTemplateUserDefinedOperatorAssign( ZS::Test::CTes
         else if( iEnumerator == 2 ) { strEnumeratorSource = "High"; }
         else { strEnumeratorSource = QString::number(iEnumerator); }
 
-        strDesiredValue = "CEnumProcessorClock = " + strEnumeratorSource + ": ";
-        strDesiredValue += strEnumeratorSource;
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "CEnumProcessorClock = " + strEnumeratorSource + ": ";
+        strExpectedValue += strEnumeratorSource;
+        strlstExpectedValues.append(strExpectedValue);
 
-        strActualValue = "CEnumProcessorClock = " + strEnumeratorSource + ": ";
+        strResultValue = "CEnumProcessorClock = " + strEnumeratorSource + ": ";
         enumInst = static_cast<EProcessorClock>(iEnumerator);
         if( enumInst.enumerator() == EProcessorClock::Low ) { strEnumeratorResult = "Low"; }
         else if( enumInst.enumerator() == EProcessorClock::Medium ) { strEnumeratorResult = "Medium"; }
         else if( enumInst.enumerator() == EProcessorClock::High ) { strEnumeratorResult = "High"; }
         else { strEnumeratorResult = QString::number(static_cast<int>(enumInst.enumerator())); }
-        strActualValue += strEnumeratorResult;
-        strlstActualValues.append(strActualValue);
+        strResultValue += strEnumeratorResult;
+        strlstResultValues.append(strResultValue);
     }
 
     // -------------------------------------------------------------------------
@@ -8800,50 +8810,50 @@ void CTest::doTestStepEnumClassTemplateUserDefinedOperatorAssign( ZS::Test::CTes
     iEnumerator = -1;
     strEnumeratorSource = QString::number(iEnumerator);
 
-    strDesiredValue = "CEnumProcessorClock = " + strEnumeratorSource + ": ";
-    strDesiredValue += "Enumerator " + QString::number(iEnumerator) + " of enumeration class ZS::System::CEnum<enum EProcessorClock> not in range [0..2][Low..High]";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "CEnumProcessorClock = " + strEnumeratorSource + ": ";
+    strExpectedValue += "Enumerator " + QString::number(iEnumerator) + " of enumeration class ZS::System::CEnum<enum EProcessorClock> not in range [0..2][Low..High]";
+    strlstExpectedValues.append(strExpectedValue);
 
     try
     {
-        strActualValue = "CEnumProcessorClock = " + strEnumeratorSource + ": ";
+        strResultValue = "CEnumProcessorClock = " + strEnumeratorSource + ": ";
         enumInst = static_cast<EProcessorClock>(iEnumerator);
         if( enumInst.enumerator() == EProcessorClock::Low ) { strEnumeratorResult = "Low"; }
         else if( enumInst.enumerator() == EProcessorClock::Medium ) { strEnumeratorResult = "Medium"; }
         else if( enumInst.enumerator() == EProcessorClock::High ) { strEnumeratorResult = "High"; }
         else { strEnumeratorResult = QString::number(static_cast<int>(enumInst.enumerator())); }
-        strActualValue += strEnumeratorResult;
+        strResultValue += strEnumeratorResult;
     }
     catch( CException& exc )
     {
-        strActualValue += exc.getAddErrInfo();
+        strResultValue += exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     iEnumerator = CEnumProcessorClock::count();
     strEnumeratorSource = QString::number(iEnumerator);
 
-    strDesiredValue = "CEnumProcessorClock = " + strEnumeratorSource + ": ";
-    strDesiredValue += "Enumerator " + QString::number(iEnumerator) + " of enumeration class ZS::System::CEnum<enum EProcessorClock> not in range [0..2][Low..High]";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "CEnumProcessorClock = " + strEnumeratorSource + ": ";
+    strExpectedValue += "Enumerator " + QString::number(iEnumerator) + " of enumeration class ZS::System::CEnum<enum EProcessorClock> not in range [0..2][Low..High]";
+    strlstExpectedValues.append(strExpectedValue);
 
     try
     {
-        strActualValue = "CEnumProcessorClock = " + strEnumeratorSource + ": ";
+        strResultValue = "CEnumProcessorClock = " + strEnumeratorSource + ": ";
         enumInst = static_cast<EProcessorClock>(iEnumerator);
         if( enumInst.enumerator() == EProcessorClock::Low ) { strEnumeratorResult = "Low"; }
         else if( enumInst.enumerator() == EProcessorClock::Medium ) { strEnumeratorResult = "Medium"; }
         else if( enumInst.enumerator() == EProcessorClock::High ) { strEnumeratorResult = "High"; }
         else { strEnumeratorResult = QString::number(static_cast<int>(enumInst.enumerator())); }
-        strActualValue += strEnumeratorResult;
+        strResultValue += strEnumeratorResult;
     }
     catch( CException& exc )
     {
-        strActualValue += exc.getAddErrInfo();
+        strResultValue += exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
@@ -8856,18 +8866,18 @@ void CTest::doTestStepEnumClassTemplateUserDefinedOperatorAssign( ZS::Test::CTes
         else if( iEnumerator == 2 ) { strEnumeratorSource = "High"; }
         else { strEnumeratorSource = QString::number(iEnumerator); }
 
-        strDesiredValue = "CEnumProcessorClock = " + strEnumeratorSource + ": ";
-        strDesiredValue += strEnumeratorSource;
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "CEnumProcessorClock = " + strEnumeratorSource + ": ";
+        strExpectedValue += strEnumeratorSource;
+        strlstExpectedValues.append(strExpectedValue);
 
-        strActualValue = "CEnumProcessorClock = " + strEnumeratorSource + ": ";
+        strResultValue = "CEnumProcessorClock = " + strEnumeratorSource + ": ";
         enumInst = iEnumerator;
         if( enumInst.enumerator() == EProcessorClock::Low ) { strEnumeratorResult = "Low"; }
         else if( enumInst.enumerator() == EProcessorClock::Medium ) { strEnumeratorResult = "Medium"; }
         else if( enumInst.enumerator() == EProcessorClock::High ) { strEnumeratorResult = "High"; }
         else { strEnumeratorResult = QString::number(static_cast<int>(enumInst.enumerator())); }
-        strActualValue += strEnumeratorResult;
-        strlstActualValues.append(strActualValue);
+        strResultValue += strEnumeratorResult;
+        strlstResultValues.append(strResultValue);
     }
 
     // -------------------------------------------------------------------------
@@ -8875,50 +8885,50 @@ void CTest::doTestStepEnumClassTemplateUserDefinedOperatorAssign( ZS::Test::CTes
     iEnumerator = -1;
     strEnumeratorSource = QString::number(iEnumerator);
 
-    strDesiredValue = "CEnumProcessorClock = " + strEnumeratorSource + ": ";
-    strDesiredValue += "Enumerator " + QString::number(iEnumerator) + " of enumeration class ZS::System::CEnum<enum EProcessorClock> not in range [0..2][Low..High]";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "CEnumProcessorClock = " + strEnumeratorSource + ": ";
+    strExpectedValue += "Enumerator " + QString::number(iEnumerator) + " of enumeration class ZS::System::CEnum<enum EProcessorClock> not in range [0..2][Low..High]";
+    strlstExpectedValues.append(strExpectedValue);
 
     try
     {
-        strActualValue = "CEnumProcessorClock = " + strEnumeratorSource + ": ";
+        strResultValue = "CEnumProcessorClock = " + strEnumeratorSource + ": ";
         enumInst = iEnumerator;
         if( enumInst.enumerator() == EProcessorClock::Low ) { strEnumeratorResult = "Low"; }
         else if( enumInst.enumerator() == EProcessorClock::Medium ) { strEnumeratorResult = "Medium"; }
         else if( enumInst.enumerator() == EProcessorClock::High ) { strEnumeratorResult = "High"; }
         else { strEnumeratorResult = QString::number(static_cast<int>(enumInst.enumerator())); }
-        strActualValue += strEnumeratorResult;
+        strResultValue += strEnumeratorResult;
     }
     catch( CException& exc )
     {
-        strActualValue += exc.getAddErrInfo();
+        strResultValue += exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     iEnumerator = CEnumProcessorClock::count();
     strEnumeratorSource = QString::number(iEnumerator);
 
-    strDesiredValue = "CEnumProcessorClock = " + strEnumeratorSource + ": ";
-    strDesiredValue += "Enumerator " + QString::number(iEnumerator) + " of enumeration class ZS::System::CEnum<enum EProcessorClock> not in range [0..2][Low..High]";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "CEnumProcessorClock = " + strEnumeratorSource + ": ";
+    strExpectedValue += "Enumerator " + QString::number(iEnumerator) + " of enumeration class ZS::System::CEnum<enum EProcessorClock> not in range [0..2][Low..High]";
+    strlstExpectedValues.append(strExpectedValue);
 
     try
     {
-        strActualValue = "CEnumProcessorClock = " + strEnumeratorSource + ": ";
+        strResultValue = "CEnumProcessorClock = " + strEnumeratorSource + ": ";
         enumInst = iEnumerator;
         if( enumInst.enumerator() == EProcessorClock::Low ) { strEnumeratorResult = "Low"; }
         else if( enumInst.enumerator() == EProcessorClock::Medium ) { strEnumeratorResult = "Medium"; }
         else if( enumInst.enumerator() == EProcessorClock::High ) { strEnumeratorResult = "High"; }
         else { strEnumeratorResult = QString::number(static_cast<int>(enumInst.enumerator())); }
-        strActualValue += strEnumeratorResult;
+        strResultValue += strEnumeratorResult;
     }
     catch( CException& exc )
     {
-        strActualValue += exc.getAddErrInfo();
+        strResultValue += exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
@@ -8967,18 +8977,18 @@ void CTest::doTestStepEnumClassTemplateUserDefinedOperatorAssign( ZS::Test::CTes
                 strEnumeratorSource = QString::number(iEnumerator);
             }
 
-            strDesiredValue = "CEnumProcessorClock = " + strEnumeratorSource + ": ";
-            strDesiredValue += strEnumeratorResult;
-            strlstDesiredValues.append(strDesiredValue);
+            strExpectedValue = "CEnumProcessorClock = " + strEnumeratorSource + ": ";
+            strExpectedValue += strEnumeratorResult;
+            strlstExpectedValues.append(strExpectedValue);
 
-            strActualValue = "CEnumProcessorClock = " + strEnumeratorSource + ": ";
+            strResultValue = "CEnumProcessorClock = " + strEnumeratorSource + ": ";
             enumInst = strEnumeratorSource;
             if( enumInst.enumerator() == EProcessorClock::Low ) strEnumeratorResult = "Low";
             else if( enumInst.enumerator() == EProcessorClock::Medium ) strEnumeratorResult = "Medium";
             else if( enumInst.enumerator() == EProcessorClock::High ) strEnumeratorResult = "High";
             else strEnumeratorResult = QString::number(static_cast<int>(enumInst.enumerator()));
-            strActualValue += strEnumeratorResult;
-            strlstActualValues.append(strActualValue);
+            strResultValue += strEnumeratorResult;
+            strlstResultValues.append(strResultValue);
 
         } // for( iEnumerator = 0; iEnumerator < iEnumArrLen; ++iEnumerator )
     } // for( idxAlias = 0; idxAlias <= EEnumEntryAliasStrSCPILong; ++idxAlias )
@@ -8987,22 +8997,22 @@ void CTest::doTestStepEnumClassTemplateUserDefinedOperatorAssign( ZS::Test::CTes
 
     strEnumeratorSource = "medIUM";
 
-    strDesiredValue = "CEnumProcessorClock = " + strEnumeratorSource + ": -1";
-    strlstDesiredValues.append(strDesiredValue);
+    strExpectedValue = "CEnumProcessorClock = " + strEnumeratorSource + ": -1";
+    strlstExpectedValues.append(strExpectedValue);
 
-    strActualValue = "CEnumProcessorClock = " + strEnumeratorSource + ": ";
+    strResultValue = "CEnumProcessorClock = " + strEnumeratorSource + ": ";
     enumInst = strEnumeratorSource;
     if( enumInst.enumerator() == EProcessorClock::Low ) strEnumeratorResult = "Low";
     else if( enumInst.enumerator() == EProcessorClock::Medium ) strEnumeratorResult = "Medium";
     else if( enumInst.enumerator() == EProcessorClock::High ) strEnumeratorResult = "High";
     else strEnumeratorResult = QString::number(static_cast<int>(enumInst.enumerator()));
-    strActualValue += strEnumeratorResult;
-    strlstActualValues.append(strActualValue);
+    strResultValue += strEnumeratorResult;
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
-    i_pTestStep->setDesiredValues(strlstDesiredValues);
-    i_pTestStep->setActualValues(strlstActualValues);
+    i_pTestStep->setExpectedValues(strlstExpectedValues);
+    i_pTestStep->setResultValues(strlstResultValues);
 
 } // doTestStepEnumClassTemplateUserDefinedOperatorAssign
 
@@ -9010,11 +9020,11 @@ void CTest::doTestStepEnumClassTemplateUserDefinedOperatorAssign( ZS::Test::CTes
 void CTest::doTestStepEnumClassTemplateUserDefinedOperatorCompareWithEnumerator( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
-    QStringList strlstDesiredValues;
-    QStringList strlstActualValues;
+    QStringList strlstExpectedValues;
+    QStringList strlstResultValues;
 
-    QString strDesiredValue;
-    QString strActualValue;
+    QString strExpectedValue;
+    QString strResultValue;
 
     EProcessorClock enumerator;
 
@@ -9027,127 +9037,127 @@ void CTest::doTestStepEnumClassTemplateUserDefinedOperatorCompareWithEnumerator(
 
     try
     {
-        strDesiredValue = "Medium == Medium";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Medium == Medium";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst == enumerator )
         {
-            strActualValue = "Medium == Medium";
+            strResultValue = "Medium == Medium";
         }
         else
         {
-            strActualValue = "Medium != Medium";
+            strResultValue = "Medium != Medium";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Medium == Medium";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Medium == Medium";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst != enumerator )
         {
-            strActualValue = "Medium != Medium";
+            strResultValue = "Medium != Medium";
         }
         else
         {
-            strActualValue = "Medium == Medium";
+            strResultValue = "Medium == Medium";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     try
     {
-        strDesiredValue = "Medium >= Medium";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Medium >= Medium";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst < enumerator )
         {
-            strActualValue = "Medium < Medium";
+            strResultValue = "Medium < Medium";
         }
         else
         {
-            strActualValue = "Medium >= Medium";
+            strResultValue = "Medium >= Medium";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Medium <= Medium";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Medium <= Medium";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst > enumerator )
         {
-            strActualValue = "Medium > Medium";
+            strResultValue = "Medium > Medium";
         }
         else
         {
-            strActualValue = "Medium <= Medium";
+            strResultValue = "Medium <= Medium";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     try
     {
-        strDesiredValue = "Medium <= Medium";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Medium <= Medium";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst <= enumerator )
         {
-            strActualValue = "Medium <= Medium";
+            strResultValue = "Medium <= Medium";
         }
         else
         {
-            strActualValue = "Medium > Medium";
+            strResultValue = "Medium > Medium";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Medium >= Medium";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Medium >= Medium";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst >= enumerator )
         {
-            strActualValue = "Medium >= Medium";
+            strResultValue = "Medium >= Medium";
         }
         else
         {
-            strActualValue = "Medium < Medium";
+            strResultValue = "Medium < Medium";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
@@ -9156,127 +9166,127 @@ void CTest::doTestStepEnumClassTemplateUserDefinedOperatorCompareWithEnumerator(
 
     try
     {
-        strDesiredValue = "Low != High";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Low != High";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst == enumerator )
         {
-            strActualValue = "Low == High";
+            strResultValue = "Low == High";
         }
         else
         {
-            strActualValue = "Low != High";
+            strResultValue = "Low != High";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Low != High";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Low != High";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst != enumerator )
         {
-            strActualValue = "Low != High";
+            strResultValue = "Low != High";
         }
         else
         {
-            strActualValue = "Low == High";
+            strResultValue = "Low == High";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     try
     {
-        strDesiredValue = "Low < High";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Low < High";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst < enumerator )
         {
-            strActualValue = "Low < High";
+            strResultValue = "Low < High";
         }
         else
         {
-            strActualValue = "Low >= High";
+            strResultValue = "Low >= High";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Low <= High";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Low <= High";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst > enumerator )
         {
-            strActualValue = "Low > High";
+            strResultValue = "Low > High";
         }
         else
         {
-            strActualValue = "Low <= High";
+            strResultValue = "Low <= High";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     try
     {
-        strDesiredValue = "Low <= High";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Low <= High";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst <= enumerator )
         {
-            strActualValue = "Low <= High";
+            strResultValue = "Low <= High";
         }
         else
         {
-            strActualValue = "Low > High";
+            strResultValue = "Low > High";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Low < High";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Low < High";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst >= enumerator )
         {
-            strActualValue = "Low >= High";
+            strResultValue = "Low >= High";
         }
         else
         {
-            strActualValue = "Low < High";
+            strResultValue = "Low < High";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
@@ -9285,127 +9295,127 @@ void CTest::doTestStepEnumClassTemplateUserDefinedOperatorCompareWithEnumerator(
 
     try
     {
-        strDesiredValue = "Invalid != Medium";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Invalid != Medium";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst == enumerator )
         {
-            strActualValue = "Invalid == Medium";
+            strResultValue = "Invalid == Medium";
         }
         else
         {
-            strActualValue = "Invalid != Medium";
+            strResultValue = "Invalid != Medium";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Invalid != Medium";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Invalid != Medium";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst != enumerator )
         {
-            strActualValue = "Invalid != Medium";
+            strResultValue = "Invalid != Medium";
         }
         else
         {
-            strActualValue = "Invalid == Medium";
+            strResultValue = "Invalid == Medium";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     try
     {
-        strDesiredValue = "Enumerator -1 of enumeration class ZS::System::CEnum<enum EProcessorClock> not in range [0..2][Low..High]";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Enumerator -1 of enumeration class ZS::System::CEnum<enum EProcessorClock> not in range [0..2][Low..High]";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst < enumerator )
         {
-            strActualValue = "Invalid < Medium";
+            strResultValue = "Invalid < Medium";
         }
         else
         {
-            strActualValue = "Invalid >= Medium";
+            strResultValue = "Invalid >= Medium";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Enumerator -1 of enumeration class ZS::System::CEnum<enum EProcessorClock> not in range [0..2][Low..High]";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Enumerator -1 of enumeration class ZS::System::CEnum<enum EProcessorClock> not in range [0..2][Low..High]";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst > enumerator )
         {
-            strActualValue = "Invalid > Medium";
+            strResultValue = "Invalid > Medium";
         }
         else
         {
-            strActualValue = "Invalid <= Medium";
+            strResultValue = "Invalid <= Medium";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     try
     {
-        strDesiredValue = "Enumerator -1 of enumeration class ZS::System::CEnum<enum EProcessorClock> not in range [0..2][Low..High]";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Enumerator -1 of enumeration class ZS::System::CEnum<enum EProcessorClock> not in range [0..2][Low..High]";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst <= enumerator )
         {
-            strActualValue = "Invalid <= Medium";
+            strResultValue = "Invalid <= Medium";
         }
         else
         {
-            strActualValue = "Invalid > Medium";
+            strResultValue = "Invalid > Medium";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Enumerator -1 of enumeration class ZS::System::CEnum<enum EProcessorClock> not in range [0..2][Low..High]";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Enumerator -1 of enumeration class ZS::System::CEnum<enum EProcessorClock> not in range [0..2][Low..High]";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst >= enumerator )
         {
-            strActualValue = "Invalid >= Medium";
+            strResultValue = "Invalid >= Medium";
         }
         else
         {
-            strActualValue = "Invalid < Medium";
+            strResultValue = "Invalid < Medium";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
@@ -9414,127 +9424,127 @@ void CTest::doTestStepEnumClassTemplateUserDefinedOperatorCompareWithEnumerator(
 
     try
     {
-        strDesiredValue = "Medium != Invalid";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Medium != Invalid";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst == enumerator )
         {
-            strActualValue = "Medium == Invalid";
+            strResultValue = "Medium == Invalid";
         }
         else
         {
-            strActualValue = "Medium != Invalid";
+            strResultValue = "Medium != Invalid";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Medium != Invalid";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Medium != Invalid";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst != enumerator )
         {
-            strActualValue = "Medium != Invalid";
+            strResultValue = "Medium != Invalid";
         }
         else
         {
-            strActualValue = "Medium == Invalid";
+            strResultValue = "Medium == Invalid";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     try
     {
-        strDesiredValue = "Enumerator -1 of enumeration class ZS::System::CEnum<enum EProcessorClock> not in range [0..2][Low..High]";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Enumerator -1 of enumeration class ZS::System::CEnum<enum EProcessorClock> not in range [0..2][Low..High]";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst < enumerator )
         {
-            strActualValue = "Medium < Invalid";
+            strResultValue = "Medium < Invalid";
         }
         else
         {
-            strActualValue = "Medium >= Invalid";
+            strResultValue = "Medium >= Invalid";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Enumerator -1 of enumeration class ZS::System::CEnum<enum EProcessorClock> not in range [0..2][Low..High]";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Enumerator -1 of enumeration class ZS::System::CEnum<enum EProcessorClock> not in range [0..2][Low..High]";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst > enumerator )
         {
-            strActualValue = "Medium > Invalid";
+            strResultValue = "Medium > Invalid";
         }
         else
         {
-            strActualValue = "Medium <= Invalid";
+            strResultValue = "Medium <= Invalid";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     try
     {
-        strDesiredValue = "Enumerator -1 of enumeration class ZS::System::CEnum<enum EProcessorClock> not in range [0..2][Low..High]";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Enumerator -1 of enumeration class ZS::System::CEnum<enum EProcessorClock> not in range [0..2][Low..High]";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst <= enumerator )
         {
-            strActualValue = "Medium <= Invalid";
+            strResultValue = "Medium <= Invalid";
         }
         else
         {
-            strActualValue = "Medium > Invalid";
+            strResultValue = "Medium > Invalid";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Enumerator -1 of enumeration class ZS::System::CEnum<enum EProcessorClock> not in range [0..2][Low..High]";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Enumerator -1 of enumeration class ZS::System::CEnum<enum EProcessorClock> not in range [0..2][Low..High]";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst >= enumerator )
         {
-            strActualValue = "Medium >= Invalid";
+            strResultValue = "Medium >= Invalid";
         }
         else
         {
-            strActualValue = "Medium < Invalid";
+            strResultValue = "Medium < Invalid";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
@@ -9543,132 +9553,132 @@ void CTest::doTestStepEnumClassTemplateUserDefinedOperatorCompareWithEnumerator(
 
     try
     {
-        strDesiredValue = "Invalid == Invalid";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Invalid == Invalid";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst == enumerator )
         {
-            strActualValue = "Invalid == Invalid";
+            strResultValue = "Invalid == Invalid";
         }
         else
         {
-            strActualValue = "Invalid != Invalid";
+            strResultValue = "Invalid != Invalid";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Invalid == Invalid";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Invalid == Invalid";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst != enumerator )
         {
-            strActualValue = "Invalid != Invalid";
+            strResultValue = "Invalid != Invalid";
         }
         else
         {
-            strActualValue = "Invalid == Invalid";
+            strResultValue = "Invalid == Invalid";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     try
     {
-        strDesiredValue = "Enumerator -1 of enumeration class ZS::System::CEnum<enum EProcessorClock> not in range [0..2][Low..High]";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Enumerator -1 of enumeration class ZS::System::CEnum<enum EProcessorClock> not in range [0..2][Low..High]";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst < enumerator )
         {
-            strActualValue = "Invalid < Invalid";
+            strResultValue = "Invalid < Invalid";
         }
         else
         {
-            strActualValue = "Invalid >= Invalid";
+            strResultValue = "Invalid >= Invalid";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Enumerator -1 of enumeration class ZS::System::CEnum<enum EProcessorClock> not in range [0..2][Low..High]";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Enumerator -1 of enumeration class ZS::System::CEnum<enum EProcessorClock> not in range [0..2][Low..High]";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst > enumerator )
         {
-            strActualValue = "Invalid > Invalid";
+            strResultValue = "Invalid > Invalid";
         }
         else
         {
-            strActualValue = "Invalid <= Invalid";
+            strResultValue = "Invalid <= Invalid";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     try
     {
-        strDesiredValue = "Enumerator -1 of enumeration class ZS::System::CEnum<enum EProcessorClock> not in range [0..2][Low..High]";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Enumerator -1 of enumeration class ZS::System::CEnum<enum EProcessorClock> not in range [0..2][Low..High]";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst <= enumerator )
         {
-            strActualValue = "Invalid <= Invalid";
+            strResultValue = "Invalid <= Invalid";
         }
         else
         {
-            strActualValue = "Invalid > Invalid";
+            strResultValue = "Invalid > Invalid";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Enumerator -1 of enumeration class ZS::System::CEnum<enum EProcessorClock> not in range [0..2][Low..High]";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Enumerator -1 of enumeration class ZS::System::CEnum<enum EProcessorClock> not in range [0..2][Low..High]";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst >= enumerator )
         {
-            strActualValue = "Invalid >= Invalid";
+            strResultValue = "Invalid >= Invalid";
         }
         else
         {
-            strActualValue = "Invalid < Invalid";
+            strResultValue = "Invalid < Invalid";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
-    i_pTestStep->setDesiredValues(strlstDesiredValues);
-    i_pTestStep->setActualValues(strlstActualValues);
+    i_pTestStep->setExpectedValues(strlstExpectedValues);
+    i_pTestStep->setResultValues(strlstResultValues);
 
 } // doTestStepEnumClassTemplateUserDefinedOperatorCompareWithEnumerator
 
@@ -9676,11 +9686,11 @@ void CTest::doTestStepEnumClassTemplateUserDefinedOperatorCompareWithEnumerator(
 void CTest::doTestStepEnumClassTemplateUserDefinedOperatorCompareWithInt( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
-    QStringList strlstDesiredValues;
-    QStringList strlstActualValues;
+    QStringList strlstExpectedValues;
+    QStringList strlstResultValues;
 
-    QString strDesiredValue;
-    QString strActualValue;
+    QString strExpectedValue;
+    QString strResultValue;
 
     CEnumProcessorClock enumInst;
 
@@ -9693,127 +9703,127 @@ void CTest::doTestStepEnumClassTemplateUserDefinedOperatorCompareWithInt( ZS::Te
 
     try
     {
-        strDesiredValue = "Medium == Medium";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Medium == Medium";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst == iEnumerator )
         {
-            strActualValue = "Medium == Medium";
+            strResultValue = "Medium == Medium";
         }
         else
         {
-            strActualValue = "Medium != Medium";
+            strResultValue = "Medium != Medium";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Medium == Medium";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Medium == Medium";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst != iEnumerator )
         {
-            strActualValue = "Medium != Medium";
+            strResultValue = "Medium != Medium";
         }
         else
         {
-            strActualValue = "Medium == Medium";
+            strResultValue = "Medium == Medium";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     try
     {
-        strDesiredValue = "Medium >= Medium";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Medium >= Medium";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst < iEnumerator )
         {
-            strActualValue = "Medium < Medium";
+            strResultValue = "Medium < Medium";
         }
         else
         {
-            strActualValue = "Medium >= Medium";
+            strResultValue = "Medium >= Medium";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Medium <= Medium";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Medium <= Medium";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst > iEnumerator )
         {
-            strActualValue = "Medium > Medium";
+            strResultValue = "Medium > Medium";
         }
         else
         {
-            strActualValue = "Medium <= Medium";
+            strResultValue = "Medium <= Medium";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     try
     {
-        strDesiredValue = "Medium <= Medium";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Medium <= Medium";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst <= iEnumerator )
         {
-            strActualValue = "Medium <= Medium";
+            strResultValue = "Medium <= Medium";
         }
         else
         {
-            strActualValue = "Medium > Medium";
+            strResultValue = "Medium > Medium";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Medium >= Medium";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Medium >= Medium";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst >= iEnumerator )
         {
-            strActualValue = "Medium >= Medium";
+            strResultValue = "Medium >= Medium";
         }
         else
         {
-            strActualValue = "Medium < Medium";
+            strResultValue = "Medium < Medium";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
@@ -9822,127 +9832,127 @@ void CTest::doTestStepEnumClassTemplateUserDefinedOperatorCompareWithInt( ZS::Te
 
     try
     {
-        strDesiredValue = "Low != High";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Low != High";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst == iEnumerator )
         {
-            strActualValue = "Low == High";
+            strResultValue = "Low == High";
         }
         else
         {
-            strActualValue = "Low != High";
+            strResultValue = "Low != High";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Low != High";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Low != High";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst != iEnumerator )
         {
-            strActualValue = "Low != High";
+            strResultValue = "Low != High";
         }
         else
         {
-            strActualValue = "Low == High";
+            strResultValue = "Low == High";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     try
     {
-        strDesiredValue = "Low < High";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Low < High";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst < iEnumerator )
         {
-            strActualValue = "Low < High";
+            strResultValue = "Low < High";
         }
         else
         {
-            strActualValue = "Low >= High";
+            strResultValue = "Low >= High";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Low <= High";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Low <= High";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst > iEnumerator )
         {
-            strActualValue = "Low > High";
+            strResultValue = "Low > High";
         }
         else
         {
-            strActualValue = "Low <= High";
+            strResultValue = "Low <= High";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     try
     {
-        strDesiredValue = "Low <= High";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Low <= High";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst <= iEnumerator )
         {
-            strActualValue = "Low <= High";
+            strResultValue = "Low <= High";
         }
         else
         {
-            strActualValue = "Low > High";
+            strResultValue = "Low > High";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Low < High";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Low < High";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst >= iEnumerator )
         {
-            strActualValue = "Low >= High";
+            strResultValue = "Low >= High";
         }
         else
         {
-            strActualValue = "Low < High";
+            strResultValue = "Low < High";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
@@ -9951,127 +9961,127 @@ void CTest::doTestStepEnumClassTemplateUserDefinedOperatorCompareWithInt( ZS::Te
 
     try
     {
-        strDesiredValue = "Invalid != Medium";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Invalid != Medium";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst == iEnumerator )
         {
-            strActualValue = "Invalid == Medium";
+            strResultValue = "Invalid == Medium";
         }
         else
         {
-            strActualValue = "Invalid != Medium";
+            strResultValue = "Invalid != Medium";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Invalid != Medium";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Invalid != Medium";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst != iEnumerator )
         {
-            strActualValue = "Invalid != Medium";
+            strResultValue = "Invalid != Medium";
         }
         else
         {
-            strActualValue = "Invalid == Medium";
+            strResultValue = "Invalid == Medium";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     try
     {
-        strDesiredValue = "Invalid < Medium: false";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Invalid < Medium: false";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst < iEnumerator )
         {
-            strActualValue = "Invalid < Medium";
+            strResultValue = "Invalid < Medium";
         }
         else
         {
-            strActualValue = "Invalid < Medium: false";
+            strResultValue = "Invalid < Medium: false";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Invalid > Medium: false";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Invalid > Medium: false";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst > iEnumerator )
         {
-            strActualValue = "Invalid > Medium";
+            strResultValue = "Invalid > Medium";
         }
         else
         {
-            strActualValue = "Invalid > Medium: false";
+            strResultValue = "Invalid > Medium: false";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     try
     {
-        strDesiredValue = "Invalid <= Medium: false";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Invalid <= Medium: false";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst <= iEnumerator )
         {
-            strActualValue = "Invalid <= Medium";
+            strResultValue = "Invalid <= Medium";
         }
         else
         {
-            strActualValue = "Invalid <= Medium: false";
+            strResultValue = "Invalid <= Medium: false";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Invalid >= Medium: false";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Invalid >= Medium: false";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst >= iEnumerator )
         {
-            strActualValue = "Invalid >= Medium";
+            strResultValue = "Invalid >= Medium";
         }
         else
         {
-            strActualValue = "Invalid >= Medium: false";
+            strResultValue = "Invalid >= Medium: false";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
@@ -10080,127 +10090,127 @@ void CTest::doTestStepEnumClassTemplateUserDefinedOperatorCompareWithInt( ZS::Te
 
     try
     {
-        strDesiredValue = "Medium != Invalid";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Medium != Invalid";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst == iEnumerator )
         {
-            strActualValue = "Medium == Invalid";
+            strResultValue = "Medium == Invalid";
         }
         else
         {
-            strActualValue = "Medium != Invalid";
+            strResultValue = "Medium != Invalid";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Medium != Invalid";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Medium != Invalid";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst != iEnumerator )
         {
-            strActualValue = "Medium != Invalid";
+            strResultValue = "Medium != Invalid";
         }
         else
         {
-            strActualValue = "Medium == Invalid";
+            strResultValue = "Medium == Invalid";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     try
     {
-        strDesiredValue = "Medium < Invalid: false";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Medium < Invalid: false";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst < iEnumerator )
         {
-            strActualValue = "Medium < Invalid";
+            strResultValue = "Medium < Invalid";
         }
         else
         {
-            strActualValue = "Medium < Invalid: false";
+            strResultValue = "Medium < Invalid: false";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Medium > Invalid: false";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Medium > Invalid: false";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst > iEnumerator )
         {
-            strActualValue = "Medium > Invalid";
+            strResultValue = "Medium > Invalid";
         }
         else
         {
-            strActualValue = "Medium > Invalid: false";
+            strResultValue = "Medium > Invalid: false";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     try
     {
-        strDesiredValue = "Medium <= Invalid: false";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Medium <= Invalid: false";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst <= iEnumerator )
         {
-            strActualValue = "Medium <= Invalid";
+            strResultValue = "Medium <= Invalid";
         }
         else
         {
-            strActualValue = "Medium <= Invalid: false";
+            strResultValue = "Medium <= Invalid: false";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Medium >= Invalid: false";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Medium >= Invalid: false";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst >= iEnumerator )
         {
-            strActualValue = "Medium >= Invalid";
+            strResultValue = "Medium >= Invalid";
         }
         else
         {
-            strActualValue = "Medium >= Invalid: false";
+            strResultValue = "Medium >= Invalid: false";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
@@ -10209,132 +10219,132 @@ void CTest::doTestStepEnumClassTemplateUserDefinedOperatorCompareWithInt( ZS::Te
 
     try
     {
-        strDesiredValue = "Invalid == Invalid";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Invalid == Invalid";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst == iEnumerator )
         {
-            strActualValue = "Invalid == Invalid";
+            strResultValue = "Invalid == Invalid";
         }
         else
         {
-            strActualValue = "Invalid != Invalid";
+            strResultValue = "Invalid != Invalid";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Invalid == Invalid";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Invalid == Invalid";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst != iEnumerator )
         {
-            strActualValue = "Invalid != Invalid";
+            strResultValue = "Invalid != Invalid";
         }
         else
         {
-            strActualValue = "Invalid == Invalid";
+            strResultValue = "Invalid == Invalid";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     try
     {
-        strDesiredValue = "Invalid < Invalid: false";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Invalid < Invalid: false";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst < iEnumerator )
         {
-            strActualValue = "Invalid < Invalid";
+            strResultValue = "Invalid < Invalid";
         }
         else
         {
-            strActualValue = "Invalid < Invalid: false";
+            strResultValue = "Invalid < Invalid: false";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Invalid > Invalid: false";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Invalid > Invalid: false";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst > iEnumerator )
         {
-            strActualValue = "Invalid > Invalid";
+            strResultValue = "Invalid > Invalid";
         }
         else
         {
-            strActualValue = "Invalid > Invalid: false";
+            strResultValue = "Invalid > Invalid: false";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     try
     {
-        strDesiredValue = "Invalid <= Invalid: false";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Invalid <= Invalid: false";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst <= iEnumerator )
         {
-            strActualValue = "Invalid <= Invalid";
+            strResultValue = "Invalid <= Invalid";
         }
         else
         {
-            strActualValue = "Invalid <= Invalid: false";
+            strResultValue = "Invalid <= Invalid: false";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Invalid >= Invalid: false";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Invalid >= Invalid: false";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst >= iEnumerator )
         {
-            strActualValue = "Invalid >= Invalid";
+            strResultValue = "Invalid >= Invalid";
         }
         else
         {
-            strActualValue = "Invalid >= Invalid: false";
+            strResultValue = "Invalid >= Invalid: false";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
-    i_pTestStep->setDesiredValues(strlstDesiredValues);
-    i_pTestStep->setActualValues(strlstActualValues);
+    i_pTestStep->setExpectedValues(strlstExpectedValues);
+    i_pTestStep->setResultValues(strlstResultValues);
 
 } // doTestStepEnumClassTemplateUserDefinedOperatorCompareWithInt
 
@@ -10342,11 +10352,11 @@ void CTest::doTestStepEnumClassTemplateUserDefinedOperatorCompareWithInt( ZS::Te
 void CTest::doTestStepEnumClassTemplateUserDefinedOperatorCompareWithCharPtr( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
-    QStringList strlstDesiredValues;
-    QStringList strlstActualValues;
+    QStringList strlstExpectedValues;
+    QStringList strlstResultValues;
 
-    QString strDesiredValue;
-    QString strActualValue;
+    QString strExpectedValue;
+    QString strResultValue;
 
     CEnumProcessorClock enumInst;
 
@@ -10357,127 +10367,127 @@ void CTest::doTestStepEnumClassTemplateUserDefinedOperatorCompareWithCharPtr( ZS
 
     try
     {
-        strDesiredValue = "Medium == Medium";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Medium == Medium";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst == szEnumerator )
         {
-            strActualValue = "Medium == Medium";
+            strResultValue = "Medium == Medium";
         }
         else
         {
-            strActualValue = "Medium != Medium";
+            strResultValue = "Medium != Medium";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Medium == Medium";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Medium == Medium";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst != szEnumerator )
         {
-            strActualValue = "Medium != Medium";
+            strResultValue = "Medium != Medium";
         }
         else
         {
-            strActualValue = "Medium == Medium";
+            strResultValue = "Medium == Medium";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     try
     {
-        strDesiredValue = "Medium >= Medium";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Medium >= Medium";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst < szEnumerator )
         {
-            strActualValue = "Medium < Medium";
+            strResultValue = "Medium < Medium";
         }
         else
         {
-            strActualValue = "Medium >= Medium";
+            strResultValue = "Medium >= Medium";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Medium <= Medium";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Medium <= Medium";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst > szEnumerator )
         {
-            strActualValue = "Medium > Medium";
+            strResultValue = "Medium > Medium";
         }
         else
         {
-            strActualValue = "Medium <= Medium";
+            strResultValue = "Medium <= Medium";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     try
     {
-        strDesiredValue = "Medium <= Medium";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Medium <= Medium";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst <= szEnumerator )
         {
-            strActualValue = "Medium <= Medium";
+            strResultValue = "Medium <= Medium";
         }
         else
         {
-            strActualValue = "Medium > Medium";
+            strResultValue = "Medium > Medium";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Medium >= Medium";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Medium >= Medium";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst >= szEnumerator )
         {
-            strActualValue = "Medium >= Medium";
+            strResultValue = "Medium >= Medium";
         }
         else
         {
-            strActualValue = "Medium < Medium";
+            strResultValue = "Medium < Medium";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
@@ -10486,127 +10496,127 @@ void CTest::doTestStepEnumClassTemplateUserDefinedOperatorCompareWithCharPtr( ZS
 
     try
     {
-        strDesiredValue = "Low != High";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Low != High";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst == szEnumerator )
         {
-            strActualValue = "Low == High";
+            strResultValue = "Low == High";
         }
         else
         {
-            strActualValue = "Low != High";
+            strResultValue = "Low != High";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Low != High";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Low != High";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst != szEnumerator )
         {
-            strActualValue = "Low != High";
+            strResultValue = "Low != High";
         }
         else
         {
-            strActualValue = "Low == High";
+            strResultValue = "Low == High";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     try
     {
-        strDesiredValue = "Low < High";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Low < High";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst < szEnumerator )
         {
-            strActualValue = "Low < High";
+            strResultValue = "Low < High";
         }
         else
         {
-            strActualValue = "Low >= High";
+            strResultValue = "Low >= High";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Low <= High";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Low <= High";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst > szEnumerator )
         {
-            strActualValue = "Low > High";
+            strResultValue = "Low > High";
         }
         else
         {
-            strActualValue = "Low <= High";
+            strResultValue = "Low <= High";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     try
     {
-        strDesiredValue = "Low <= High";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Low <= High";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst <= szEnumerator )
         {
-            strActualValue = "Low <= High";
+            strResultValue = "Low <= High";
         }
         else
         {
-            strActualValue = "Low > High";
+            strResultValue = "Low > High";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Low < High";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Low < High";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst >= szEnumerator )
         {
-            strActualValue = "Low >= High";
+            strResultValue = "Low >= High";
         }
         else
         {
-            strActualValue = "Low < High";
+            strResultValue = "Low < High";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
@@ -10615,127 +10625,127 @@ void CTest::doTestStepEnumClassTemplateUserDefinedOperatorCompareWithCharPtr( ZS
 
     try
     {
-        strDesiredValue = "Invalid != Medium";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Invalid != Medium";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst == szEnumerator )
         {
-            strActualValue = "Invalid == Medium";
+            strResultValue = "Invalid == Medium";
         }
         else
         {
-            strActualValue = "Invalid != Medium";
+            strResultValue = "Invalid != Medium";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Invalid != Medium";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Invalid != Medium";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst != szEnumerator )
         {
-            strActualValue = "Invalid != Medium";
+            strResultValue = "Invalid != Medium";
         }
         else
         {
-            strActualValue = "Invalid == Medium";
+            strResultValue = "Invalid == Medium";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     try
     {
-        strDesiredValue = "Invalid < Medium: false";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Invalid < Medium: false";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst < szEnumerator )
         {
-            strActualValue = "Invalid < Medium";
+            strResultValue = "Invalid < Medium";
         }
         else
         {
-            strActualValue = "Invalid < Medium: false";
+            strResultValue = "Invalid < Medium: false";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Invalid > Medium: false";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Invalid > Medium: false";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst > szEnumerator )
         {
-            strActualValue = "Invalid > Medium";
+            strResultValue = "Invalid > Medium";
         }
         else
         {
-            strActualValue = "Invalid > Medium: false";
+            strResultValue = "Invalid > Medium: false";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     try
     {
-        strDesiredValue = "Invalid <= Medium: false";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Invalid <= Medium: false";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst <= szEnumerator )
         {
-            strActualValue = "Invalid <= Medium";
+            strResultValue = "Invalid <= Medium";
         }
         else
         {
-            strActualValue = "Invalid <= Medium: false";
+            strResultValue = "Invalid <= Medium: false";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Invalid >= Medium: false";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Invalid >= Medium: false";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst >= szEnumerator )
         {
-            strActualValue = "Invalid >= Medium";
+            strResultValue = "Invalid >= Medium";
         }
         else
         {
-            strActualValue = "Invalid >= Medium: false";
+            strResultValue = "Invalid >= Medium: false";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
@@ -10744,127 +10754,127 @@ void CTest::doTestStepEnumClassTemplateUserDefinedOperatorCompareWithCharPtr( ZS
 
     try
     {
-        strDesiredValue = "Medium != Undefined";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Medium != Undefined";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst == szEnumerator )
         {
-            strActualValue = "Medium == Undefined";
+            strResultValue = "Medium == Undefined";
         }
         else
         {
-            strActualValue = "Medium != Undefined";
+            strResultValue = "Medium != Undefined";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Medium != Undefined";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Medium != Undefined";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst != szEnumerator )
         {
-            strActualValue = "Medium != Undefined";
+            strResultValue = "Medium != Undefined";
         }
         else
         {
-            strActualValue = "Medium == Undefined";
+            strResultValue = "Medium == Undefined";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     try
     {
-        strDesiredValue = "Medium < Undefined: false";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Medium < Undefined: false";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst < szEnumerator )
         {
-            strActualValue = "Medium < Undefined";
+            strResultValue = "Medium < Undefined";
         }
         else
         {
-            strActualValue = "Medium < Undefined: false";
+            strResultValue = "Medium < Undefined: false";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Medium > Undefined: false";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Medium > Undefined: false";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst > szEnumerator )
         {
-            strActualValue = "Medium > Undefined";
+            strResultValue = "Medium > Undefined";
         }
         else
         {
-            strActualValue = "Medium > Undefined: false";
+            strResultValue = "Medium > Undefined: false";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     try
     {
-        strDesiredValue = "Medium <= Undefined: false";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Medium <= Undefined: false";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst <= szEnumerator )
         {
-            strActualValue = "Medium <= Undefined";
+            strResultValue = "Medium <= Undefined";
         }
         else
         {
-            strActualValue = "Medium <= Undefined: false";
+            strResultValue = "Medium <= Undefined: false";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Medium >= Undefined: false";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Medium >= Undefined: false";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst >= szEnumerator )
         {
-            strActualValue = "Medium >= Undefined";
+            strResultValue = "Medium >= Undefined";
         }
         else
         {
-            strActualValue = "Medium >= Undefined: false";
+            strResultValue = "Medium >= Undefined: false";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
@@ -10873,132 +10883,132 @@ void CTest::doTestStepEnumClassTemplateUserDefinedOperatorCompareWithCharPtr( ZS
 
     try
     {
-        strDesiredValue = "Invalid != Undefined";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Invalid != Undefined";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst == szEnumerator )
         {
-            strActualValue = "Invalid == Undefined";
+            strResultValue = "Invalid == Undefined";
         }
         else
         {
-            strActualValue = "Invalid != Undefined";
+            strResultValue = "Invalid != Undefined";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Invalid != Undefined";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Invalid != Undefined";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst != szEnumerator )
         {
-            strActualValue = "Invalid != Undefined";
+            strResultValue = "Invalid != Undefined";
         }
         else
         {
-            strActualValue = "Invalid == Undefined";
+            strResultValue = "Invalid == Undefined";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     try
     {
-        strDesiredValue = "Invalid < Undefined: false";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Invalid < Undefined: false";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst < szEnumerator )
         {
-            strActualValue = "Invalid < Undefined";
+            strResultValue = "Invalid < Undefined";
         }
         else
         {
-            strActualValue = "Invalid < Undefined: false";
+            strResultValue = "Invalid < Undefined: false";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Invalid > Undefined: false";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Invalid > Undefined: false";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst > szEnumerator )
         {
-            strActualValue = "Invalid > Undefined";
+            strResultValue = "Invalid > Undefined";
         }
         else
         {
-            strActualValue = "Invalid > Undefined: false";
+            strResultValue = "Invalid > Undefined: false";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     try
     {
-        strDesiredValue = "Invalid <= Undefined: false";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Invalid <= Undefined: false";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst <= szEnumerator )
         {
-            strActualValue = "Invalid <= Undefined";
+            strResultValue = "Invalid <= Undefined";
         }
         else
         {
-            strActualValue = "Invalid <= Undefined: false";
+            strResultValue = "Invalid <= Undefined: false";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Invalid >= Undefined: false";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Invalid >= Undefined: false";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst >= szEnumerator )
         {
-            strActualValue = "Invalid >= Undefined";
+            strResultValue = "Invalid >= Undefined";
         }
         else
         {
-            strActualValue = "Invalid >= Undefined: false";
+            strResultValue = "Invalid >= Undefined: false";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
-    i_pTestStep->setDesiredValues(strlstDesiredValues);
-    i_pTestStep->setActualValues(strlstActualValues);
+    i_pTestStep->setExpectedValues(strlstExpectedValues);
+    i_pTestStep->setResultValues(strlstResultValues);
 
 } // doTestStepEnumClassTemplateUserDefinedOperatorCompareWithCharPtr
 
@@ -11006,11 +11016,11 @@ void CTest::doTestStepEnumClassTemplateUserDefinedOperatorCompareWithCharPtr( ZS
 void CTest::doTestStepEnumClassTemplateUserDefinedOperatorCompareWithQString( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
-    QStringList strlstDesiredValues;
-    QStringList strlstActualValues;
+    QStringList strlstExpectedValues;
+    QStringList strlstResultValues;
 
-    QString strDesiredValue;
-    QString strActualValue;
+    QString strExpectedValue;
+    QString strResultValue;
 
     CEnumProcessorClock enumInst;
 
@@ -11023,127 +11033,127 @@ void CTest::doTestStepEnumClassTemplateUserDefinedOperatorCompareWithQString( ZS
 
     try
     {
-        strDesiredValue = "Medium == Medium";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Medium == Medium";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst == strEnumerator )
         {
-            strActualValue = "Medium == Medium";
+            strResultValue = "Medium == Medium";
         }
         else
         {
-            strActualValue = "Medium != Medium";
+            strResultValue = "Medium != Medium";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Medium == Medium";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Medium == Medium";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst != strEnumerator )
         {
-            strActualValue = "Medium != Medium";
+            strResultValue = "Medium != Medium";
         }
         else
         {
-            strActualValue = "Medium == Medium";
+            strResultValue = "Medium == Medium";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     try
     {
-        strDesiredValue = "Medium >= Medium";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Medium >= Medium";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst < strEnumerator )
         {
-            strActualValue = "Medium < Medium";
+            strResultValue = "Medium < Medium";
         }
         else
         {
-            strActualValue = "Medium >= Medium";
+            strResultValue = "Medium >= Medium";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Medium <= Medium";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Medium <= Medium";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst > strEnumerator )
         {
-            strActualValue = "Medium > Medium";
+            strResultValue = "Medium > Medium";
         }
         else
         {
-            strActualValue = "Medium <= Medium";
+            strResultValue = "Medium <= Medium";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     try
     {
-        strDesiredValue = "Medium <= Medium";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Medium <= Medium";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst <= strEnumerator )
         {
-            strActualValue = "Medium <= Medium";
+            strResultValue = "Medium <= Medium";
         }
         else
         {
-            strActualValue = "Medium > Medium";
+            strResultValue = "Medium > Medium";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Medium >= Medium";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Medium >= Medium";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst >= strEnumerator )
         {
-            strActualValue = "Medium >= Medium";
+            strResultValue = "Medium >= Medium";
         }
         else
         {
-            strActualValue = "Medium < Medium";
+            strResultValue = "Medium < Medium";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
@@ -11152,127 +11162,127 @@ void CTest::doTestStepEnumClassTemplateUserDefinedOperatorCompareWithQString( ZS
 
     try
     {
-        strDesiredValue = "Low != High";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Low != High";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst == strEnumerator )
         {
-            strActualValue = "Low == High";
+            strResultValue = "Low == High";
         }
         else
         {
-            strActualValue = "Low != High";
+            strResultValue = "Low != High";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Low != High";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Low != High";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst != strEnumerator )
         {
-            strActualValue = "Low != High";
+            strResultValue = "Low != High";
         }
         else
         {
-            strActualValue = "Low == High";
+            strResultValue = "Low == High";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     try
     {
-        strDesiredValue = "Low < High";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Low < High";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst < strEnumerator )
         {
-            strActualValue = "Low < High";
+            strResultValue = "Low < High";
         }
         else
         {
-            strActualValue = "Low >= High";
+            strResultValue = "Low >= High";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Low <= High";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Low <= High";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst > strEnumerator )
         {
-            strActualValue = "Low > High";
+            strResultValue = "Low > High";
         }
         else
         {
-            strActualValue = "Low <= High";
+            strResultValue = "Low <= High";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     try
     {
-        strDesiredValue = "Low <= High";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Low <= High";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst <= strEnumerator )
         {
-            strActualValue = "Low <= High";
+            strResultValue = "Low <= High";
         }
         else
         {
-            strActualValue = "Low > High";
+            strResultValue = "Low > High";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Low < High";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Low < High";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst >= strEnumerator )
         {
-            strActualValue = "Low >= High";
+            strResultValue = "Low >= High";
         }
         else
         {
-            strActualValue = "Low < High";
+            strResultValue = "Low < High";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
@@ -11281,127 +11291,127 @@ void CTest::doTestStepEnumClassTemplateUserDefinedOperatorCompareWithQString( ZS
 
     try
     {
-        strDesiredValue = "Invalid != Medium";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Invalid != Medium";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst == strEnumerator )
         {
-            strActualValue = "Invalid == Medium";
+            strResultValue = "Invalid == Medium";
         }
         else
         {
-            strActualValue = "Invalid != Medium";
+            strResultValue = "Invalid != Medium";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Invalid != Medium";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Invalid != Medium";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst != strEnumerator )
         {
-            strActualValue = "Invalid != Medium";
+            strResultValue = "Invalid != Medium";
         }
         else
         {
-            strActualValue = "Invalid == Medium";
+            strResultValue = "Invalid == Medium";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     try
     {
-        strDesiredValue = "Invalid < Medium: false";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Invalid < Medium: false";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst < strEnumerator )
         {
-            strActualValue = "Invalid < Medium";
+            strResultValue = "Invalid < Medium";
         }
         else
         {
-            strActualValue = "Invalid < Medium: false";
+            strResultValue = "Invalid < Medium: false";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Invalid > Medium: false";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Invalid > Medium: false";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst > strEnumerator )
         {
-            strActualValue = "Invalid > Medium";
+            strResultValue = "Invalid > Medium";
         }
         else
         {
-            strActualValue = "Invalid > Medium: false";
+            strResultValue = "Invalid > Medium: false";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     try
     {
-        strDesiredValue = "Invalid <= Medium: false";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Invalid <= Medium: false";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst <= strEnumerator )
         {
-            strActualValue = "Invalid <= Medium";
+            strResultValue = "Invalid <= Medium";
         }
         else
         {
-            strActualValue = "Invalid <= Medium: false";
+            strResultValue = "Invalid <= Medium: false";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Invalid >= Medium: false";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Invalid >= Medium: false";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst >= strEnumerator )
         {
-            strActualValue = "Invalid >= Medium";
+            strResultValue = "Invalid >= Medium";
         }
         else
         {
-            strActualValue = "Invalid >= Medium: false";
+            strResultValue = "Invalid >= Medium: false";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
@@ -11410,127 +11420,127 @@ void CTest::doTestStepEnumClassTemplateUserDefinedOperatorCompareWithQString( ZS
 
     try
     {
-        strDesiredValue = "Medium != Undefined";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Medium != Undefined";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst == strEnumerator )
         {
-            strActualValue = "Medium == Undefined";
+            strResultValue = "Medium == Undefined";
         }
         else
         {
-            strActualValue = "Medium != Undefined";
+            strResultValue = "Medium != Undefined";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Medium != Undefined";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Medium != Undefined";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst != strEnumerator )
         {
-            strActualValue = "Medium != Undefined";
+            strResultValue = "Medium != Undefined";
         }
         else
         {
-            strActualValue = "Medium == Undefined";
+            strResultValue = "Medium == Undefined";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     try
     {
-        strDesiredValue = "Medium < Undefined: false";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Medium < Undefined: false";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst < strEnumerator )
         {
-            strActualValue = "Medium < Undefined";
+            strResultValue = "Medium < Undefined";
         }
         else
         {
-            strActualValue = "Medium < Undefined: false";
+            strResultValue = "Medium < Undefined: false";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Medium > Undefined: false";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Medium > Undefined: false";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst > strEnumerator )
         {
-            strActualValue = "Medium > Undefined";
+            strResultValue = "Medium > Undefined";
         }
         else
         {
-            strActualValue = "Medium > Undefined: false";
+            strResultValue = "Medium > Undefined: false";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     try
     {
-        strDesiredValue = "Medium <= Undefined: false";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Medium <= Undefined: false";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst <= strEnumerator )
         {
-            strActualValue = "Medium <= Undefined";
+            strResultValue = "Medium <= Undefined";
         }
         else
         {
-            strActualValue = "Medium <= Undefined: false";
+            strResultValue = "Medium <= Undefined: false";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Medium >= Undefined: false";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Medium >= Undefined: false";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst >= strEnumerator )
         {
-            strActualValue = "Medium >= Undefined";
+            strResultValue = "Medium >= Undefined";
         }
         else
         {
-            strActualValue = "Medium >= Undefined: false";
+            strResultValue = "Medium >= Undefined: false";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
@@ -11539,132 +11549,132 @@ void CTest::doTestStepEnumClassTemplateUserDefinedOperatorCompareWithQString( ZS
 
     try
     {
-        strDesiredValue = "Invalid != Undefined";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Invalid != Undefined";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst == strEnumerator )
         {
-            strActualValue = "Invalid == Undefined";
+            strResultValue = "Invalid == Undefined";
         }
         else
         {
-            strActualValue = "Invalid != Undefined";
+            strResultValue = "Invalid != Undefined";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Invalid != Undefined";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Invalid != Undefined";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst != strEnumerator )
         {
-            strActualValue = "Invalid != Undefined";
+            strResultValue = "Invalid != Undefined";
         }
         else
         {
-            strActualValue = "Invalid == Undefined";
+            strResultValue = "Invalid == Undefined";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     try
     {
-        strDesiredValue = "Invalid < Undefined: false";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Invalid < Undefined: false";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst < strEnumerator )
         {
-            strActualValue = "Invalid < Undefined";
+            strResultValue = "Invalid < Undefined";
         }
         else
         {
-            strActualValue = "Invalid < Undefined: false";
+            strResultValue = "Invalid < Undefined: false";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Invalid > Undefined: false";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Invalid > Undefined: false";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst > strEnumerator )
         {
-            strActualValue = "Invalid > Undefined";
+            strResultValue = "Invalid > Undefined";
         }
         else
         {
-            strActualValue = "Invalid > Undefined: false";
+            strResultValue = "Invalid > Undefined: false";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     try
     {
-        strDesiredValue = "Invalid <= Undefined: false";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Invalid <= Undefined: false";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst <= strEnumerator )
         {
-            strActualValue = "Invalid <= Undefined";
+            strResultValue = "Invalid <= Undefined";
         }
         else
         {
-            strActualValue = "Invalid <= Undefined: false";
+            strResultValue = "Invalid <= Undefined: false";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Invalid >= Undefined: false";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Invalid >= Undefined: false";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst >= strEnumerator )
         {
-            strActualValue = "Invalid >= Undefined";
+            strResultValue = "Invalid >= Undefined";
         }
         else
         {
-            strActualValue = "Invalid >= Undefined: false";
+            strResultValue = "Invalid >= Undefined: false";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
-    i_pTestStep->setDesiredValues(strlstDesiredValues);
-    i_pTestStep->setActualValues(strlstActualValues);
+    i_pTestStep->setExpectedValues(strlstExpectedValues);
+    i_pTestStep->setResultValues(strlstResultValues);
 
 } // doTestStepEnumClassTemplateUserDefinedOperatorCompareWithQString
 
@@ -11672,11 +11682,11 @@ void CTest::doTestStepEnumClassTemplateUserDefinedOperatorCompareWithQString( ZS
 void CTest::doTestStepEnumClassTemplateUserDefinedOperatorCompareWithEnumTemplate( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
-    QStringList strlstDesiredValues;
-    QStringList strlstActualValues;
+    QStringList strlstExpectedValues;
+    QStringList strlstResultValues;
 
-    QString strDesiredValue;
-    QString strActualValue;
+    QString strExpectedValue;
+    QString strResultValue;
 
     CEnumProcessorClock enumInst1;
     CEnumProcessorClock enumInst2;
@@ -11688,127 +11698,127 @@ void CTest::doTestStepEnumClassTemplateUserDefinedOperatorCompareWithEnumTemplat
 
     try
     {
-        strDesiredValue = "Medium == Medium";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Medium == Medium";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst1 == enumInst2 )
         {
-            strActualValue = "Medium == Medium";
+            strResultValue = "Medium == Medium";
         }
         else
         {
-            strActualValue = "Medium != Medium";
+            strResultValue = "Medium != Medium";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Medium == Medium";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Medium == Medium";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst1 != enumInst2 )
         {
-            strActualValue = "Medium != Medium";
+            strResultValue = "Medium != Medium";
         }
         else
         {
-            strActualValue = "Medium == Medium";
+            strResultValue = "Medium == Medium";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     try
     {
-        strDesiredValue = "Medium >= Medium";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Medium >= Medium";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst1 < enumInst2 )
         {
-            strActualValue = "Medium < Medium";
+            strResultValue = "Medium < Medium";
         }
         else
         {
-            strActualValue = "Medium >= Medium";
+            strResultValue = "Medium >= Medium";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Medium <= Medium";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Medium <= Medium";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst1 > enumInst2 )
         {
-            strActualValue = "Medium > Medium";
+            strResultValue = "Medium > Medium";
         }
         else
         {
-            strActualValue = "Medium <= Medium";
+            strResultValue = "Medium <= Medium";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     try
     {
-        strDesiredValue = "Medium <= Medium";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Medium <= Medium";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst1 <= enumInst2 )
         {
-            strActualValue = "Medium <= Medium";
+            strResultValue = "Medium <= Medium";
         }
         else
         {
-            strActualValue = "Medium > Medium";
+            strResultValue = "Medium > Medium";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Medium >= Medium";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Medium >= Medium";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst1 >= enumInst2 )
         {
-            strActualValue = "Medium >= Medium";
+            strResultValue = "Medium >= Medium";
         }
         else
         {
-            strActualValue = "Medium < Medium";
+            strResultValue = "Medium < Medium";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
@@ -11817,127 +11827,127 @@ void CTest::doTestStepEnumClassTemplateUserDefinedOperatorCompareWithEnumTemplat
 
     try
     {
-        strDesiredValue = "Low != High";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Low != High";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst1 == enumInst2 )
         {
-            strActualValue = "Low == High";
+            strResultValue = "Low == High";
         }
         else
         {
-            strActualValue = "Low != High";
+            strResultValue = "Low != High";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Low != High";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Low != High";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst1 != enumInst2 )
         {
-            strActualValue = "Low != High";
+            strResultValue = "Low != High";
         }
         else
         {
-            strActualValue = "Low == High";
+            strResultValue = "Low == High";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     try
     {
-        strDesiredValue = "Low < High";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Low < High";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst1 < enumInst2 )
         {
-            strActualValue = "Low < High";
+            strResultValue = "Low < High";
         }
         else
         {
-            strActualValue = "Low >= High";
+            strResultValue = "Low >= High";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Low <= High";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Low <= High";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst1 > enumInst2 )
         {
-            strActualValue = "Low > High";
+            strResultValue = "Low > High";
         }
         else
         {
-            strActualValue = "Low <= High";
+            strResultValue = "Low <= High";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     try
     {
-        strDesiredValue = "Low <= High";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Low <= High";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst1 <= enumInst2 )
         {
-            strActualValue = "Low <= High";
+            strResultValue = "Low <= High";
         }
         else
         {
-            strActualValue = "Low > High";
+            strResultValue = "Low > High";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Low < High";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Low < High";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst1 >= enumInst2 )
         {
-            strActualValue = "Low >= High";
+            strResultValue = "Low >= High";
         }
         else
         {
-            strActualValue = "Low < High";
+            strResultValue = "Low < High";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
@@ -11946,127 +11956,127 @@ void CTest::doTestStepEnumClassTemplateUserDefinedOperatorCompareWithEnumTemplat
 
     try
     {
-        strDesiredValue = "Invalid != Medium";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Invalid != Medium";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst1 == enumInst2 )
         {
-            strActualValue = "Invalid == Medium";
+            strResultValue = "Invalid == Medium";
         }
         else
         {
-            strActualValue = "Invalid != Medium";
+            strResultValue = "Invalid != Medium";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Invalid != Medium";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Invalid != Medium";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst1 != enumInst2 )
         {
-            strActualValue = "Invalid != Medium";
+            strResultValue = "Invalid != Medium";
         }
         else
         {
-            strActualValue = "Invalid == Medium";
+            strResultValue = "Invalid == Medium";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     try
     {
-        strDesiredValue = "Enumerator -1 of enumeration class ZS::System::CEnum<enum EProcessorClock> not in range [0..2][Low..High]";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Enumerator -1 of enumeration class ZS::System::CEnum<enum EProcessorClock> not in range [0..2][Low..High]";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst1 < enumInst2 )
         {
-            strActualValue = "Invalid < Medium";
+            strResultValue = "Invalid < Medium";
         }
         else
         {
-            strActualValue = "Invalid >= Medium";
+            strResultValue = "Invalid >= Medium";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Enumerator -1 of enumeration class ZS::System::CEnum<enum EProcessorClock> not in range [0..2][Low..High]";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Enumerator -1 of enumeration class ZS::System::CEnum<enum EProcessorClock> not in range [0..2][Low..High]";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst1 > enumInst2 )
         {
-            strActualValue = "Invalid > Medium";
+            strResultValue = "Invalid > Medium";
         }
         else
         {
-            strActualValue = "Invalid <= Medium";
+            strResultValue = "Invalid <= Medium";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     try
     {
-        strDesiredValue = "Enumerator -1 of enumeration class ZS::System::CEnum<enum EProcessorClock> not in range [0..2][Low..High]";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Enumerator -1 of enumeration class ZS::System::CEnum<enum EProcessorClock> not in range [0..2][Low..High]";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst1 <= enumInst2 )
         {
-            strActualValue = "Invalid <= Medium";
+            strResultValue = "Invalid <= Medium";
         }
         else
         {
-            strActualValue = "Invalid > Medium";
+            strResultValue = "Invalid > Medium";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Enumerator -1 of enumeration class ZS::System::CEnum<enum EProcessorClock> not in range [0..2][Low..High]";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Enumerator -1 of enumeration class ZS::System::CEnum<enum EProcessorClock> not in range [0..2][Low..High]";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst1 >= enumInst2 )
         {
-            strActualValue = "Invalid >= Medium";
+            strResultValue = "Invalid >= Medium";
         }
         else
         {
-            strActualValue = "Invalid < Medium";
+            strResultValue = "Invalid < Medium";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
@@ -12075,127 +12085,127 @@ void CTest::doTestStepEnumClassTemplateUserDefinedOperatorCompareWithEnumTemplat
 
     try
     {
-        strDesiredValue = "Medium != Invalid";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Medium != Invalid";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst1 == enumInst2 )
         {
-            strActualValue = "Medium == Invalid";
+            strResultValue = "Medium == Invalid";
         }
         else
         {
-            strActualValue = "Medium != Invalid";
+            strResultValue = "Medium != Invalid";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Medium != Invalid";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Medium != Invalid";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst1 != enumInst2 )
         {
-            strActualValue = "Medium != Invalid";
+            strResultValue = "Medium != Invalid";
         }
         else
         {
-            strActualValue = "Medium == Invalid";
+            strResultValue = "Medium == Invalid";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     try
     {
-        strDesiredValue = "Enumerator -1 of enumeration class ZS::System::CEnum<enum EProcessorClock> not in range [0..2][Low..High]";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Enumerator -1 of enumeration class ZS::System::CEnum<enum EProcessorClock> not in range [0..2][Low..High]";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst1 < enumInst2 )
         {
-            strActualValue = "Medium < Invalid";
+            strResultValue = "Medium < Invalid";
         }
         else
         {
-            strActualValue = "Medium >= Invalid";
+            strResultValue = "Medium >= Invalid";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Enumerator -1 of enumeration class ZS::System::CEnum<enum EProcessorClock> not in range [0..2][Low..High]";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Enumerator -1 of enumeration class ZS::System::CEnum<enum EProcessorClock> not in range [0..2][Low..High]";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst1 > enumInst2 )
         {
-            strActualValue = "Medium > Invalid";
+            strResultValue = "Medium > Invalid";
         }
         else
         {
-            strActualValue = "Medium <= Invalid";
+            strResultValue = "Medium <= Invalid";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     try
     {
-        strDesiredValue = "Enumerator -1 of enumeration class ZS::System::CEnum<enum EProcessorClock> not in range [0..2][Low..High]";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Enumerator -1 of enumeration class ZS::System::CEnum<enum EProcessorClock> not in range [0..2][Low..High]";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst1 <= enumInst2 )
         {
-            strActualValue = "Medium <= Invalid";
+            strResultValue = "Medium <= Invalid";
         }
         else
         {
-            strActualValue = "Medium > Invalid";
+            strResultValue = "Medium > Invalid";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Enumerator -1 of enumeration class ZS::System::CEnum<enum EProcessorClock> not in range [0..2][Low..High]";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Enumerator -1 of enumeration class ZS::System::CEnum<enum EProcessorClock> not in range [0..2][Low..High]";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst1 >= enumInst2 )
         {
-            strActualValue = "Medium >= Invalid";
+            strResultValue = "Medium >= Invalid";
         }
         else
         {
-            strActualValue = "Medium < Invalid";
+            strResultValue = "Medium < Invalid";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
@@ -12204,132 +12214,132 @@ void CTest::doTestStepEnumClassTemplateUserDefinedOperatorCompareWithEnumTemplat
 
     try
     {
-        strDesiredValue = "Invalid == Invalid";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Invalid == Invalid";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst1 == enumInst2 )
         {
-            strActualValue = "Invalid == Invalid";
+            strResultValue = "Invalid == Invalid";
         }
         else
         {
-            strActualValue = "Invalid != Invalid";
+            strResultValue = "Invalid != Invalid";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Invalid == Invalid";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Invalid == Invalid";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst1 != enumInst2 )
         {
-            strActualValue = "Invalid != Invalid";
+            strResultValue = "Invalid != Invalid";
         }
         else
         {
-            strActualValue = "Invalid == Invalid";
+            strResultValue = "Invalid == Invalid";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     try
     {
-        strDesiredValue = "Enumerator -1 of enumeration class ZS::System::CEnum<enum EProcessorClock> not in range [0..2][Low..High]";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Enumerator -1 of enumeration class ZS::System::CEnum<enum EProcessorClock> not in range [0..2][Low..High]";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst1 < enumInst2 )
         {
-            strActualValue = "Invalid < Invalid";
+            strResultValue = "Invalid < Invalid";
         }
         else
         {
-            strActualValue = "Invalid >= Invalid";
+            strResultValue = "Invalid >= Invalid";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Enumerator -1 of enumeration class ZS::System::CEnum<enum EProcessorClock> not in range [0..2][Low..High]";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Enumerator -1 of enumeration class ZS::System::CEnum<enum EProcessorClock> not in range [0..2][Low..High]";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst1 > enumInst2 )
         {
-            strActualValue = "Invalid > Invalid";
+            strResultValue = "Invalid > Invalid";
         }
         else
         {
-            strActualValue = "Invalid <= Invalid";
+            strResultValue = "Invalid <= Invalid";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
     try
     {
-        strDesiredValue = "Enumerator -1 of enumeration class ZS::System::CEnum<enum EProcessorClock> not in range [0..2][Low..High]";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Enumerator -1 of enumeration class ZS::System::CEnum<enum EProcessorClock> not in range [0..2][Low..High]";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst1 <= enumInst2 )
         {
-            strActualValue = "Invalid <= Invalid";
+            strResultValue = "Invalid <= Invalid";
         }
         else
         {
-            strActualValue = "Invalid > Invalid";
+            strResultValue = "Invalid > Invalid";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     try
     {
-        strDesiredValue = "Enumerator -1 of enumeration class ZS::System::CEnum<enum EProcessorClock> not in range [0..2][Low..High]";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = "Enumerator -1 of enumeration class ZS::System::CEnum<enum EProcessorClock> not in range [0..2][Low..High]";
+        strlstExpectedValues.append(strExpectedValue);
 
         if( enumInst1 >= enumInst2 )
         {
-            strActualValue = "Invalid >= Invalid";
+            strResultValue = "Invalid >= Invalid";
         }
         else
         {
-            strActualValue = "Invalid < Invalid";
+            strResultValue = "Invalid < Invalid";
         }
     }
     catch( CException& exc )
     {
-        strActualValue = exc.getAddErrInfo();
+        strResultValue = exc.getAddErrInfo();
     }
-    strlstActualValues.append(strActualValue);
+    strlstResultValues.append(strResultValue);
 
     // -------------------------------------------------------------------------
 
-    i_pTestStep->setDesiredValues(strlstDesiredValues);
-    i_pTestStep->setActualValues(strlstActualValues);
+    i_pTestStep->setExpectedValues(strlstExpectedValues);
+    i_pTestStep->setResultValues(strlstResultValues);
 
 } // doTestStepEnumClassTemplateUserDefinedOperatorCompareWithEnumTemplate
 
@@ -12337,11 +12347,11 @@ void CTest::doTestStepEnumClassTemplateUserDefinedOperatorCompareWithEnumTemplat
 void CTest::doTestStepEnumClassTemplateUserDefinedOperatorIncDec( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
-    QStringList strlstDesiredValues;
-    QStringList strlstActualValues;
+    QStringList strlstExpectedValues;
+    QStringList strlstResultValues;
 
-    QString strDesiredValue;
-    QString strActualValue;
+    QString strExpectedValue;
+    QString strResultValue;
 
     QString strEnumeratorResult;
     QString strEnumeratorSource;
@@ -12361,21 +12371,21 @@ void CTest::doTestStepEnumClassTemplateUserDefinedOperatorIncDec( ZS::Test::CTes
             else if( enumInst.enumerator() == EProcessorClock::Medium ) { strEnumeratorSource = "Medium"; strEnumeratorResult = "High"; }
             else if( enumInst.enumerator() == EProcessorClock::High ) { strEnumeratorSource = "High"; strEnumeratorResult = "Invalid"; }
             else strEnumeratorSource = "Invalid";
-            strDesiredValue = strEnumeratorSource + "++: " + strEnumeratorResult;
-            strlstDesiredValues.append(strDesiredValue);
+            strExpectedValue = strEnumeratorSource + "++: " + strEnumeratorResult;
+            strlstExpectedValues.append(strExpectedValue);
 
             enumInst++;
             if( enumInst.enumerator() == EProcessorClock::Low ) { strEnumeratorResult = "Low"; }
             else if( enumInst.enumerator() == EProcessorClock::Medium ) { strEnumeratorResult = "Medium"; }
             else if( enumInst.enumerator() == EProcessorClock::High ) { strEnumeratorResult = "High"; }
             else strEnumeratorResult = "Invalid";
-            strActualValue = strEnumeratorSource + "++: " + strEnumeratorResult;
+            strResultValue = strEnumeratorSource + "++: " + strEnumeratorResult;
         }
         catch( CException& exc )
         {
-            strActualValue = exc.getAddErrInfo();
+            strResultValue = exc.getAddErrInfo();
         }
-        strlstActualValues.append(strActualValue);
+        strlstResultValues.append(strResultValue);
     }
 
     // -------------------------------------------------------------------------
@@ -12389,21 +12399,21 @@ void CTest::doTestStepEnumClassTemplateUserDefinedOperatorIncDec( ZS::Test::CTes
             else if( enumInst.enumerator() == EProcessorClock::Medium ) { strEnumeratorSource = "Medium"; strEnumeratorResult = "High"; }
             else if( enumInst.enumerator() == EProcessorClock::High ) { strEnumeratorSource = "High"; strEnumeratorResult = "Invalid"; }
             else strEnumeratorSource = "Invalid";
-            strDesiredValue = "++" + strEnumeratorSource + ": " + strEnumeratorResult;
-            strlstDesiredValues.append(strDesiredValue);
+            strExpectedValue = "++" + strEnumeratorSource + ": " + strEnumeratorResult;
+            strlstExpectedValues.append(strExpectedValue);
 
             ++enumInst;
             if( enumInst.enumerator() == EProcessorClock::Low ) { strEnumeratorResult = "Low"; }
             else if( enumInst.enumerator() == EProcessorClock::Medium ) { strEnumeratorResult = "Medium"; }
             else if( enumInst.enumerator() == EProcessorClock::High ) { strEnumeratorResult = "High"; }
             else strEnumeratorResult = "Invalid";
-            strActualValue = "++" + strEnumeratorSource + ": " + strEnumeratorResult;
+            strResultValue = "++" + strEnumeratorSource + ": " + strEnumeratorResult;
         }
         catch( CException& exc )
         {
-            strActualValue = exc.getAddErrInfo();
+            strResultValue = exc.getAddErrInfo();
         }
-        strlstActualValues.append(strActualValue);
+        strlstResultValues.append(strResultValue);
     }
 
     // -------------------------------------------------------------------------
@@ -12417,21 +12427,21 @@ void CTest::doTestStepEnumClassTemplateUserDefinedOperatorIncDec( ZS::Test::CTes
             else if( enumInst.enumerator() == EProcessorClock::Medium ) { strEnumeratorSource = "Medium"; strEnumeratorResult = "Low"; }
             else if( enumInst.enumerator() == EProcessorClock::High ) { strEnumeratorSource = "High"; strEnumeratorResult = "Medium"; }
             else strEnumeratorSource = "Invalid";
-            strDesiredValue = strEnumeratorSource + "--: " + strEnumeratorResult;
-            strlstDesiredValues.append(strDesiredValue);
+            strExpectedValue = strEnumeratorSource + "--: " + strEnumeratorResult;
+            strlstExpectedValues.append(strExpectedValue);
 
             enumInst--;
             if( enumInst.enumerator() == EProcessorClock::Low ) { strEnumeratorResult = "Low"; }
             else if( enumInst.enumerator() == EProcessorClock::Medium ) { strEnumeratorResult = "Medium"; }
             else if( enumInst.enumerator() == EProcessorClock::High ) { strEnumeratorResult = "High"; }
             else strEnumeratorResult = "Invalid";
-            strActualValue = strEnumeratorSource + "--: " + strEnumeratorResult;
+            strResultValue = strEnumeratorSource + "--: " + strEnumeratorResult;
         }
         catch( CException& exc )
         {
-            strActualValue = exc.getAddErrInfo();
+            strResultValue = exc.getAddErrInfo();
         }
-        strlstActualValues.append(strActualValue);
+        strlstResultValues.append(strResultValue);
     }
 
     // -------------------------------------------------------------------------
@@ -12445,27 +12455,27 @@ void CTest::doTestStepEnumClassTemplateUserDefinedOperatorIncDec( ZS::Test::CTes
             else if( enumInst.enumerator() == EProcessorClock::Medium ) { strEnumeratorSource = "Medium"; strEnumeratorResult = "Low"; }
             else if( enumInst.enumerator() == EProcessorClock::High ) { strEnumeratorSource = "High"; strEnumeratorResult = "Medium"; }
             else strEnumeratorSource = "Invalid";
-            strDesiredValue = "--" + strEnumeratorSource + ": " + strEnumeratorResult;
-            strlstDesiredValues.append(strDesiredValue);
+            strExpectedValue = "--" + strEnumeratorSource + ": " + strEnumeratorResult;
+            strlstExpectedValues.append(strExpectedValue);
 
             --enumInst;
             if( enumInst.enumerator() == EProcessorClock::Low ) { strEnumeratorResult = "Low"; }
             else if( enumInst.enumerator() == EProcessorClock::Medium ) { strEnumeratorResult = "Medium"; }
             else if( enumInst.enumerator() == EProcessorClock::High ) { strEnumeratorResult = "High"; }
             else strEnumeratorResult = "Invalid";
-            strActualValue = "--" + strEnumeratorSource + ": " + strEnumeratorResult;
+            strResultValue = "--" + strEnumeratorSource + ": " + strEnumeratorResult;
         }
         catch( CException& exc )
         {
-            strActualValue = exc.getAddErrInfo();
+            strResultValue = exc.getAddErrInfo();
         }
-        strlstActualValues.append(strActualValue);
+        strlstResultValues.append(strResultValue);
     }
 
     // -------------------------------------------------------------------------
 
-    i_pTestStep->setDesiredValues(strlstDesiredValues);
-    i_pTestStep->setActualValues(strlstActualValues);
+    i_pTestStep->setExpectedValues(strlstExpectedValues);
+    i_pTestStep->setResultValues(strlstResultValues);
 
 } // doTestStepEnumClassTemplateUserDefinedOperatorIncDec
 
@@ -12473,11 +12483,11 @@ void CTest::doTestStepEnumClassTemplateUserDefinedOperatorIncDec( ZS::Test::CTes
 void CTest::doTestStepEnumClassTemplateUserDefinedInstMethodToString( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
-    QStringList strlstDesiredValues;
-    QStringList strlstActualValues;
+    QStringList strlstExpectedValues;
+    QStringList strlstResultValues;
 
-    QString strDesiredValue;
-    QString strActualValue;
+    QString strExpectedValue;
+    QString strResultValue;
 
     QString strEnumeratorSource;
     QString strEnumeratorResult;
@@ -12532,24 +12542,24 @@ void CTest::doTestStepEnumClassTemplateUserDefinedInstMethodToString( ZS::Test::
                     strEnumeratorSource = "Invalid";
                 }
 
-                strDesiredValue = strEnumeratorSource + ".toString(" + strAlias + "): " + strEnumeratorSource;
-                strlstDesiredValues.append(strDesiredValue);
+                strExpectedValue = strEnumeratorSource + ".toString(" + strAlias + "): " + strEnumeratorSource;
+                strlstExpectedValues.append(strExpectedValue);
 
                 strEnumeratorResult = enumInst.toString(idxAlias);
-                strActualValue = strEnumeratorSource + ".toString(" + strAlias + "): " + strEnumeratorResult;
+                strResultValue = strEnumeratorSource + ".toString(" + strAlias + "): " + strEnumeratorResult;
             }
             catch( CException& exc )
             {
-                strActualValue = exc.getAddErrInfo();
+                strResultValue = exc.getAddErrInfo();
             }
-            strlstActualValues.append(strActualValue);
+            strlstResultValues.append(strResultValue);
         }
     }
 
     // -------------------------------------------------------------------------
 
-    i_pTestStep->setDesiredValues(strlstDesiredValues);
-    i_pTestStep->setActualValues(strlstActualValues);
+    i_pTestStep->setExpectedValues(strlstExpectedValues);
+    i_pTestStep->setResultValues(strlstResultValues);
 
 } // doTestStepEnumClassTemplateUserDefinedInstMethodToString
 
@@ -12557,11 +12567,11 @@ void CTest::doTestStepEnumClassTemplateUserDefinedInstMethodToString( ZS::Test::
 void CTest::doTestStepEnumClassTemplateUserDefinedInstMethodToValue( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
-    QStringList strlstDesiredValues;
-    QStringList strlstActualValues;
+    QStringList strlstExpectedValues;
+    QStringList strlstResultValues;
 
-    QString strDesiredValue;
-    QString strActualValue;
+    QString strExpectedValue;
+    QString strResultValue;
 
     QString  strEnumerator;
     QVariant val;
@@ -12583,17 +12593,17 @@ void CTest::doTestStepEnumClassTemplateUserDefinedInstMethodToValue( ZS::Test::C
             else if( iEnumerator == static_cast<int>(EProcessorClock::Medium) ) { strEnumerator = "Medium"; val = 5.12e8; bOk = true; }
             else if( iEnumerator == static_cast<int>(EProcessorClock::High) ) { strEnumerator = "High"; val = 5.12e9; bOk = true; }
             else { strEnumerator = "Invalid"; val = QVariant(); bOk = false; }
-            strDesiredValue = strEnumerator + ".toValue(QVariant::Double, &bOk): " + val.toString() + ", " + bool2Str(bOk);
-            strlstDesiredValues.append(strDesiredValue);
+            strExpectedValue = strEnumerator + ".toValue(QVariant::Double, &bOk): " + val.toString() + ", " + bool2Str(bOk);
+            strlstExpectedValues.append(strExpectedValue);
 
             val = enumInst.toValue(QVariant::Double, &bOk);
-            strActualValue = strEnumerator + ".toValue(QVariant::Double, &bOk): " + val.toString() + ", " + bool2Str(bOk);
+            strResultValue = strEnumerator + ".toValue(QVariant::Double, &bOk): " + val.toString() + ", " + bool2Str(bOk);
         }
         catch( CException& exc )
         {
-            strActualValue = exc.getAddErrInfo();
+            strResultValue = exc.getAddErrInfo();
         }
-        strlstActualValues.append(strActualValue);
+        strlstResultValues.append(strResultValue);
     }
 
     // -------------------------------------------------------------------------
@@ -12608,23 +12618,23 @@ void CTest::doTestStepEnumClassTemplateUserDefinedInstMethodToValue( ZS::Test::C
             else if( iEnumerator == static_cast<int>(EProcessorClock::Medium) ) { strEnumerator = "Medium"; val = 5.12e8; bOk = true; }
             else if( iEnumerator == static_cast<int>(EProcessorClock::High) ) { strEnumerator = "High"; val = 5.12e9; bOk = true; }
             else { strEnumerator = "Invalid"; val = QVariant(); bOk = false; }
-            strDesiredValue = strEnumerator + ".toValue(QVariant::Invalid, &bOk): " + val.toString() + ", " + bool2Str(bOk);
-            strlstDesiredValues.append(strDesiredValue);
+            strExpectedValue = strEnumerator + ".toValue(QVariant::Invalid, &bOk): " + val.toString() + ", " + bool2Str(bOk);
+            strlstExpectedValues.append(strExpectedValue);
 
             val = enumInst.toValue(QVariant::Invalid, &bOk);
-            strActualValue = strEnumerator + ".toValue(QVariant::Invalid, &bOk): " + val.toString() + ", " + bool2Str(bOk);
+            strResultValue = strEnumerator + ".toValue(QVariant::Invalid, &bOk): " + val.toString() + ", " + bool2Str(bOk);
         }
         catch( CException& exc )
         {
-            strActualValue = exc.getAddErrInfo();
+            strResultValue = exc.getAddErrInfo();
         }
-        strlstActualValues.append(strActualValue);
+        strlstResultValues.append(strResultValue);
     }
 
     // -------------------------------------------------------------------------
 
-    i_pTestStep->setDesiredValues(strlstDesiredValues);
-    i_pTestStep->setActualValues(strlstActualValues);
+    i_pTestStep->setExpectedValues(strlstExpectedValues);
+    i_pTestStep->setResultValues(strlstResultValues);
 
 } // doTestStepEnumClassTemplateUserDefinedInstMethodToValue
 
@@ -12632,11 +12642,11 @@ void CTest::doTestStepEnumClassTemplateUserDefinedInstMethodToValue( ZS::Test::C
 void CTest::doTestStepEnumClassTemplateUserDefinedForLoop( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
-    QStringList strlstDesiredValues;
-    QStringList strlstActualValues;
+    QStringList strlstExpectedValues;
+    QStringList strlstResultValues;
 
-    QString strDesiredValue;
-    QString strActualValue;
+    QString strExpectedValue;
+    QString strResultValue;
 
     QString strEnumerator;
 
@@ -12653,11 +12663,11 @@ void CTest::doTestStepEnumClassTemplateUserDefinedForLoop( ZS::Test::CTestStep* 
         else if( iEnumerator == 2 ) { strEnumerator = "High"; }
         else { strEnumerator = QString::number(iEnumerator); }
 
-        strDesiredValue = strEnumerator + ".toString(): " + strEnumerator;
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = strEnumerator + ".toString(): " + strEnumerator;
+        strlstExpectedValues.append(strExpectedValue);
 
-        strActualValue = strEnumerator + ".toString(): " + enumInst.toString();
-        strlstActualValues.append(strActualValue);
+        strResultValue = strEnumerator + ".toString(): " + enumInst.toString();
+        strlstResultValues.append(strResultValue);
     }
 
     // -------------------------------------------------------------------------
@@ -12669,17 +12679,17 @@ void CTest::doTestStepEnumClassTemplateUserDefinedForLoop( ZS::Test::CTestStep* 
         else if( iEnumerator == 2 ) { strEnumerator = "High"; }
         else { strEnumerator = QString::number(iEnumerator); }
 
-        strDesiredValue = strEnumerator + ".toString(): " + strEnumerator;
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = strEnumerator + ".toString(): " + strEnumerator;
+        strlstExpectedValues.append(strExpectedValue);
 
-        strActualValue = strEnumerator + ".toString(): " + enumInst.toString();
-        strlstActualValues.append(strActualValue);
+        strResultValue = strEnumerator + ".toString(): " + enumInst.toString();
+        strlstResultValues.append(strResultValue);
     }
 
     // -------------------------------------------------------------------------
 
-    i_pTestStep->setDesiredValues(strlstDesiredValues);
-    i_pTestStep->setActualValues(strlstActualValues);
+    i_pTestStep->setExpectedValues(strlstExpectedValues);
+    i_pTestStep->setResultValues(strlstResultValues);
 
 } // doTestStepEnumClassTemplateUserDefinedForLoop
 

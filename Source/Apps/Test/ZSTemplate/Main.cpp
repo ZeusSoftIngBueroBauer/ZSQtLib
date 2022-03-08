@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer, Germany
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer, Germany
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -39,6 +39,14 @@ using namespace ZS::Apps::Test::Template;
 
 
 /*******************************************************************************
+#pragma message(__FILE__ ": Linking against = " ZSIPCLIB)
+#pragma comment(lib, ZSIPCLIB)
+#pragma message(__FILE__ ": Linking against = " ZSIPCGUILIB)
+#pragma comment(lib, ZSIPCGUILIB)
+#pragma message(__FILE__ ": Linking against = " ZSIPCTRACELIB)
+#pragma comment(lib, ZSIPCTRACELIB)
+#pragma message(__FILE__ ": Linking against = " ZSIPCTRACEGUILIB)
+#pragma comment(lib, ZSIPCTRACEGUILIB)
 Entry point for the application.
 *******************************************************************************/
 

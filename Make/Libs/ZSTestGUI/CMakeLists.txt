@@ -28,23 +28,30 @@ message(STATUS "PROJECT_BINARY_DIR:       ${PROJECT_BINARY_DIR}")
 set(_HeadersPath ${CMAKE_CURRENT_SOURCE_DIR}/../../../Include/Libs)
 set(_SourcesPath ${CMAKE_CURRENT_SOURCE_DIR}/../../../Source/Libs)
 
-list(APPEND _Sources
+list(APPEND _Headers
     ${_HeadersPath}/${PROJECT_NAME}/ZSTestDlg.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSTestGUIDllMain.h
-    ${_HeadersPath}/${PROJECT_NAME}/ZSTestStepAdminObjPoolModel.h
-    ${_HeadersPath}/${PROJECT_NAME}/ZSTestWdgt.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSTestStepIdxTreeDelegate.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSTestStepIdxTreeModel.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSTestStepIdxTreeView.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSTestStepIdxTreeWdgt.h
 )
 
 list(APPEND _Sources
     ${_SourcesPath}/${PROJECT_NAME}/ZSTestDlg.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSTestGUIDllMain.cpp
-    ${_SourcesPath}/${PROJECT_NAME}/ZSTestStepAdminObjPoolModel.cpp
-    ${_SourcesPath}/${PROJECT_NAME}/ZSTestWdgt.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSTestStepIdxTreeDelegate.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSTestStepIdxTreeModel.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSTestStepIdxTreeView.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSTestStepIdxTreeWdgt.cpp
+)
+
+list(APPEND _Resources
 )
 
 if(WIN32)
     # Add version info as meta information to Dll.
-    set(_Sources ${_Sources} ${CMAKE_CURRENT_BINARY_DIR}/../../Libs/ZSSys/ZSSysVersion.rc)
+    set(_Resources ${_Resources} ${_SourcesPath}/ZSSys/ZSSysVersion.rc)
 endif()
 
 # Got to create the following target name:
@@ -56,7 +63,12 @@ if(CMAKE_BUILD_TYPE MATCHES Debug)
 endif()
 message(STATUS "TargetOutputName:         ${TargetOutputName}")
 
-add_library(${PROJECT_NAME} SHARED ${_Headers} ${_Sources})
+# Create the source groups for source tree with root at CMAKE_CURRENT_SOURCE_DIR.
+source_group(TREE ${_HeadersPath}/${PROJECT_NAME} FILES ${_Headers})
+source_group(TREE ${_SourcesPath}/${PROJECT_NAME} FILES ${_Sources})
+#source_group(TREE ${_ResourcesPath}/${PROJECT_NAME} FILES ${_Resources})
+
+add_library(${PROJECT_NAME} SHARED ${_Headers} ${_Sources} ${_Resources})
 
 set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME ${TargetOutputName})
 

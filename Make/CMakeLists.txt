@@ -31,7 +31,7 @@
 #
 # - Debug Build
 #
-#   cmake -G "MinGW Makefiles" .\Make -B .\Build\mingw81_X64_Debug -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=C:\Projekte\ZeusSoft\ZSQtLib\Bin
+#   cmake -G "MinGW Makefiles" .\Make -B .\Build\mingw81_x64_Debug -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=C:\Projekte\ZeusSoft\ZSQtLib\Bin
 #   cmake --build .\Build\mingw81_x64_Debug -j8
 #   cmake --install .\Build\mingw81_x64_Debug
 #
@@ -368,7 +368,7 @@ message(STATUS "----------------------------------------------------------------
 message(STATUS "Processing sub directories")
 message(STATUS "---------------------------------------------------------------------------------------------")
 
-enable_testing()
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 add_subdirectory(Libs/ZSSys)
 add_subdirectory(Libs/ZSSysGUI)
@@ -383,6 +383,8 @@ if(CREATE_PYTHON_BINDINGS)
 endif()
 
 add_subdirectory(Apps/Products/ZSTrcMthClient)
+
+enable_testing()
 
 #add_subdirectory(Apps/Test/ZSIpc) got to be revised
 add_subdirectory(Apps/Test/ZSIpcTrace)

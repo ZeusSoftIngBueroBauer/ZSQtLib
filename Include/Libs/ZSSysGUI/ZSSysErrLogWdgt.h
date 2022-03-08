@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -62,7 +62,7 @@ class ZSSYSGUIDLL_API CWdgtErrLog : public QWidget
 {
     Q_OBJECT
 public: // ctors and dtor
-    CWdgtErrLog( const QString& i_strHeadline = "", QWidget* i_pWdgtParent = nullptr );
+    CWdgtErrLog( const QString& i_strErrLogName = "ZSErrLog", const QString& i_strHeadline = "", QWidget* i_pWdgtParent = nullptr );
     virtual ~CWdgtErrLog();
 public: // instance methods
     void showColumn( CModelErrLog::EColumn i_clm );

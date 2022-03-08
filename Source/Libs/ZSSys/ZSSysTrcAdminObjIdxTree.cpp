@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -111,8 +111,12 @@ public: // instance methods to get and release admin objects
 /*! Returns the trace admin object with the given name space, class name and
     object name.
 
-    If no admin object is yet existing with the given name space, class name and
-    object name a new object is created and added to the index tree.
+    If an admin object with the given name space, class name and object name
+    is not yet existing in the index tree a new object is created and added to
+    the index tree.
+    If an admin object with the given name space, class name and object name
+    is already existing a reference counter will be incremented and the already
+    existing admin object is returned.
 */
 CTrcAdminObj* CIdxTreeTrcAdminObjs::getTraceAdminObj(
     const QString& i_strNameSpace,
@@ -145,7 +149,7 @@ CTrcAdminObj* CIdxTreeTrcAdminObjs::getTraceAdminObj(
 
     QString strParentBranchPath = buildPathStr(i_strNameSpace, i_strClassName);
 
-    CLeaveIdxTreeEntry* pLeave = findLeave(strParentBranchPath, i_strObjName);
+    CIdxTreeEntry* pLeave = findLeave(strParentBranchPath, i_strObjName);
 
     CTrcAdminObj* pTrcAdminObj = nullptr;
 
@@ -159,7 +163,7 @@ CTrcAdminObj* CIdxTreeTrcAdminObjs::getTraceAdminObj(
         QString     strParentPath;
         QString     strPath;
 
-        CBranchIdxTreeEntry* pBranch;
+        CIdxTreeEntry* pBranch;
 
         for( auto& strBranchName : strlstBranchNames )
         {
@@ -200,15 +204,6 @@ CTrcAdminObj* CIdxTreeTrcAdminObjs::getTraceAdminObj( int i_idxInTree ) const
 }
 
 //------------------------------------------------------------------------------
-/*! Returns the branch (name space or class name node) at the given tree index.
-*/
-CBranchIdxTreeEntry* CIdxTreeTrcAdminObjs::getBranch( int i_idxInTree ) const
-//------------------------------------------------------------------------------
-{
-    return dynamic_cast<CBranchIdxTreeEntry*>(getEntry(i_idxInTree));
-}
-
-//------------------------------------------------------------------------------
 void CIdxTreeTrcAdminObjs::releaseTraceAdminObj( CTrcAdminObj* i_pTrcAdminObj )
 //------------------------------------------------------------------------------
 {
@@ -246,7 +241,7 @@ public: // instance methods to insert branch nodes and admin objects
 /*! Inserts a branch into the index tree.
 
 */
-CBranchIdxTreeEntry* CIdxTreeTrcAdminObjs::insertBranch(
+CIdxTreeEntry* CIdxTreeTrcAdminObjs::insertBranch(
     int            i_iParentBranchIdxInTree,
     const QString& i_strBranchName,
     int            i_idxInTree )
@@ -273,16 +268,16 @@ CBranchIdxTreeEntry* CIdxTreeTrcAdminObjs::insertBranch(
         /* strMethod          */ "insertBranch",
         /* strMethodInArgs    */ strAddTrcInfo );
 
-    CBranchIdxTreeEntry* pBranch = nullptr;
+    CIdxTreeEntry* pBranch = nullptr;
 
     QString strMth = "insertBranch";
     QString strAddErrInfo;
 
-    CBranchIdxTreeEntry* pBranchParent = nullptr;
+    CIdxTreeEntry* pBranchParent = nullptr;
 
     if( i_iParentBranchIdxInTree >= 0 )
     {
-        pBranchParent = dynamic_cast<CBranchIdxTreeEntry*>(getEntry(i_iParentBranchIdxInTree));
+        pBranchParent = getEntry(i_iParentBranchIdxInTree);
 
         if( pBranchParent == nullptr )
         {
@@ -302,7 +297,7 @@ CBranchIdxTreeEntry* CIdxTreeTrcAdminObjs::insertBranch(
 
     if( i_idxInTree >= 0 )
     {
-        CAbstractIdxTreeEntry* pTreeEntry = getEntry(i_idxInTree);
+        CIdxTreeEntry* pTreeEntry = getEntry(i_idxInTree);
 
         // If there is already a tree entry at the given index ..
         if( pTreeEntry != nullptr )
@@ -369,11 +364,11 @@ CTrcAdminObj* CIdxTreeTrcAdminObjs::insertTraceAdminObj(
     QString strMth = "insertTraceAdminObj";
     QString strAddErrInfo;
 
-    CBranchIdxTreeEntry* pBranchParent = nullptr;
+    CIdxTreeEntry* pBranchParent = nullptr;
 
     if( i_iParentBranchIdxInTree >= 0 )
     {
-        pBranchParent = dynamic_cast<CBranchIdxTreeEntry*>(getEntry(i_iParentBranchIdxInTree));
+        pBranchParent = getEntry(i_iParentBranchIdxInTree);
 
         if( pBranchParent == nullptr )
         {
@@ -393,7 +388,7 @@ CTrcAdminObj* CIdxTreeTrcAdminObjs::insertTraceAdminObj(
 
     if( i_idxInTree >= 0 )
     {
-        CAbstractIdxTreeEntry* pTreeEntry = getEntry(i_idxInTree);
+        CIdxTreeEntry* pTreeEntry = getEntry(i_idxInTree);
 
         // If there is already a tree entry at the given index ..
         if( pTreeEntry != nullptr )
@@ -446,18 +441,13 @@ void CIdxTreeTrcAdminObjs::setEnabled( int i_iObjId, EEnabled i_enabled )
         /* strMethod          */ "setEnabled",
         /* strMethodInArgs    */ strAddTrcInfo );
 
-    CAbstractIdxTreeEntry* pTreeEntry = getEntry(i_iObjId);
+    CIdxTreeEntry* pTreeEntry = getEntry(i_iObjId);
 
     if( pTreeEntry != nullptr )
     {
         if( pTreeEntry->entryType() == EIdxTreeEntryType::Root || pTreeEntry->entryType() == EIdxTreeEntryType::Branch )
         {
-            CBranchIdxTreeEntry* pBranch = dynamic_cast<CBranchIdxTreeEntry*>(pTreeEntry);
-
-            if( pBranch != nullptr )
-            {
-                setEnabled(pBranch, i_enabled);
-            }
+            setEnabled(pTreeEntry, i_enabled);
         }
         else if( pTreeEntry->entryType() == EIdxTreeEntryType::Leave )
         {
@@ -496,18 +486,13 @@ void CIdxTreeTrcAdminObjs::setTraceDetailLevel( int i_iObjId, int i_iDetailLevel
         /* strMethod          */ "setTraceDetailLevel",
         /* strMethodInArgs    */ strAddTrcInfo );
 
-    CAbstractIdxTreeEntry* pTreeEntry = getEntry(i_iObjId);
+    CIdxTreeEntry* pTreeEntry = getEntry(i_iObjId);
 
     if( pTreeEntry != nullptr )
     {
         if( pTreeEntry->entryType() == EIdxTreeEntryType::Root || pTreeEntry->entryType() == EIdxTreeEntryType::Branch )
         {
-            CBranchIdxTreeEntry* pBranch = dynamic_cast<CBranchIdxTreeEntry*>(pTreeEntry);
-
-            if( pBranch != nullptr )
-            {
-                setTraceDetailLevel(pBranch, i_iDetailLevel);
-            }
+            setTraceDetailLevel(pTreeEntry, i_iDetailLevel);
         }
         else if( pTreeEntry->entryType() == EIdxTreeEntryType::Leave )
         {
@@ -527,7 +512,7 @@ public: // instance methods to recursively modify admin objects via namespace no
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CIdxTreeTrcAdminObjs::setEnabled( CBranchIdxTreeEntry* i_pBranch, EEnabled i_enabled )
+void CIdxTreeTrcAdminObjs::setEnabled( CIdxTreeEntry* i_pBranch, EEnabled i_enabled )
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(m_pMtx);
@@ -552,10 +537,9 @@ void CIdxTreeTrcAdminObjs::setEnabled( CBranchIdxTreeEntry* i_pBranch, EEnabled 
 
     if( i_pBranch != nullptr )
     {
-        CAbstractIdxTreeEntry* pTreeEntry;
-        CBranchIdxTreeEntry*   pBranch;
-        CTrcAdminObj*          pTrcAdminObj;
-        int                    idxEntry;
+        CIdxTreeEntry* pTreeEntry;
+        CTrcAdminObj*  pTrcAdminObj;
+        int            idxEntry;
 
         for( idxEntry = 0; idxEntry < i_pBranch->count(); ++idxEntry )
         {
@@ -577,12 +561,7 @@ void CIdxTreeTrcAdminObjs::setEnabled( CBranchIdxTreeEntry* i_pBranch, EEnabled 
                 }
                 else // if( pTreeEntry->entryType() == EIdxTreeEntryType::Root || Branch )
                 {
-                    pBranch = dynamic_cast<CBranchIdxTreeEntry*>(pTreeEntry);
-
-                    if( pBranch != nullptr )
-                    {
-                        setEnabled(pBranch, i_enabled );
-                    }
+                    setEnabled(pTreeEntry, i_enabled );
                 }
             }
         } // for( idxEntry = 0; idxEntry < i_pBranch->count(); ++idxEntry )
@@ -591,7 +570,7 @@ void CIdxTreeTrcAdminObjs::setEnabled( CBranchIdxTreeEntry* i_pBranch, EEnabled 
 } // setEnabled
 
 //------------------------------------------------------------------------------
-void CIdxTreeTrcAdminObjs::setTraceDetailLevel( CBranchIdxTreeEntry* i_pBranch, int i_iDetailLevel )
+void CIdxTreeTrcAdminObjs::setTraceDetailLevel( CIdxTreeEntry* i_pBranch, int i_iDetailLevel )
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(m_pMtx);
@@ -616,10 +595,9 @@ void CIdxTreeTrcAdminObjs::setTraceDetailLevel( CBranchIdxTreeEntry* i_pBranch, 
 
     if( i_pBranch != nullptr )
     {
-        CAbstractIdxTreeEntry* pTreeEntry;
-        CBranchIdxTreeEntry*   pBranch;
-        CTrcAdminObj*          pTrcAdminObj;
-        int                    idxEntry;
+        CIdxTreeEntry* pTreeEntry;
+        CTrcAdminObj*  pTrcAdminObj;
+        int            idxEntry;
 
         for( idxEntry = 0; idxEntry < i_pBranch->count(); ++idxEntry )
         {
@@ -641,12 +619,7 @@ void CIdxTreeTrcAdminObjs::setTraceDetailLevel( CBranchIdxTreeEntry* i_pBranch, 
                 }
                 else // if( pTreeEntry->entryType() == EIdxTreeEntryType::Root || Branch )
                 {
-                    pBranch = dynamic_cast<CBranchIdxTreeEntry*>(pTreeEntry);
-
-                    if( pBranch != nullptr )
-                    {
-                        setTraceDetailLevel(pBranch, i_iDetailLevel );
-                    }
+                    setTraceDetailLevel(pTreeEntry, i_iDetailLevel );
                 }
             }
         } // for( idxEntry = 0; idxEntry < i_pBranch->count(); ++idxEntry )
@@ -916,16 +889,16 @@ protected: // auxiliary instance methods
 
 //------------------------------------------------------------------------------
 void CIdxTreeTrcAdminObjs::save(
-    QXmlStreamWriter&      i_xmlStreamWriter,
-    CAbstractIdxTreeEntry* i_pTreeEntry ) const
+    QXmlStreamWriter& i_xmlStreamWriter,
+    CIdxTreeEntry*    i_pTreeEntry ) const
 //------------------------------------------------------------------------------
 {
     // This is a protected method which may only be called through the public
     // methods. The mutex to protect the list and tree has already been locked.
 
-    CAbstractIdxTreeEntry* pTreeEntry;
-    CTrcAdminObj*          pTrcAdminObj;
-    int                    idxEntry;
+    CIdxTreeEntry* pTreeEntry;
+    CTrcAdminObj*  pTrcAdminObj;
+    int            idxEntry;
 
     if( i_pTreeEntry->entryType() == EIdxTreeEntryType::Leave )
     {
@@ -942,11 +915,9 @@ void CIdxTreeTrcAdminObjs::save(
     }
     else // if( pTreeEntry->entryType() == EIdxTreeEntryType::Root || Branch )
     {
-        CBranchIdxTreeEntry* pBranch = dynamic_cast<CBranchIdxTreeEntry*>(i_pTreeEntry);
-
-        for( idxEntry = 0; idxEntry < pBranch->count(); ++idxEntry )
+        for( idxEntry = 0; idxEntry < i_pTreeEntry->count(); ++idxEntry )
         {
-            pTreeEntry = pBranch->at(idxEntry);
+            pTreeEntry = i_pTreeEntry->at(idxEntry);
 
             if( pTreeEntry != nullptr )
             {

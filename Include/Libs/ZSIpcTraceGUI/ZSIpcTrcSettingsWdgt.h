@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -63,7 +63,7 @@ class ZSIPCTRACEGUIDLL_API CWdgtTrcSettings : public QWidget
 {
     Q_OBJECT
 public: // ctors and dtor
-    CWdgtTrcSettings( QWidget* i_pWdgtParent = nullptr );
+    CWdgtTrcSettings( const QString& i_strObjName = "TrcSettings", QWidget* i_pWdgtParent = nullptr );
     virtual ~CWdgtTrcSettings();
 public: // instance methods
     void setServer( CIpcTrcServer* i_pTrcServer );

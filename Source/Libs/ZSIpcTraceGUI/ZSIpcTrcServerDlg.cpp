@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -94,15 +94,15 @@ protected: // ctor
 
 //------------------------------------------------------------------------------
 CDlgTrcServer::CDlgTrcServer(
-    const QString&  i_strObjName,
     const QString&  i_strDlgTitle,
+    const QString&  i_strTrcServerName,
     QWidget*        i_pWdgtParent,
     Qt::WindowFlags i_wFlags ) :
 //------------------------------------------------------------------------------
     CDialog(
         /* strNameSpace */ NameSpace(),
         /* strClassName */ ClassName(),
-        /* strObjName   */ i_strObjName,
+        /* strObjName   */ i_strTrcServerName,
         /* strDlgTitle  */ i_strDlgTitle,
         /* pWdgtParent  */ i_pWdgtParent,
         /* wFlags       */ i_wFlags ),
@@ -124,38 +124,54 @@ CDlgTrcServer::CDlgTrcServer(
     m_pTabWidget = new QTabWidget();
     m_pLyt->addWidget(m_pTabWidget);
 
-    m_pWdgtIpcServer = new ZS::Ipc::GUI::CWdgtIpcServer(objectName());
-    m_pTabWidget->addTab(m_pWdgtIpcServer, "Connection Settings");
+    CIpcTrcServer* pTrcServer = CIpcTrcServer::GetInstance(i_strTrcServerName);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pWdgtIpcServer,
-        /* szSignal     */ SIGNAL(accepted()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onSettingsAccepted()) ) )
+    if( pTrcServer != nullptr)
     {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+        // IPC Connection Settings
+        //------------------------
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pWdgtIpcServer,
-        /* szSignal     */ SIGNAL(rejected()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onSettingsRejected()) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+        m_pWdgtIpcServer = new ZS::Ipc::GUI::CWdgtIpcServer(i_strTrcServerName);
+        m_pWdgtIpcServer->setServer(pTrcServer->getIpcServer());
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pWdgtIpcServer,
-        /* szSignal     */ SIGNAL(detailsVisibilityChanged(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onWdgtIpcServerDetailsVisibilityChanged(bool)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+        m_pTabWidget->addTab(m_pWdgtIpcServer, "Connection Settings");
 
-    m_pWdgtTrcSettings = new CWdgtTrcSettings();
-    m_pTabWidget->addTab( m_pWdgtTrcSettings, "Trace Settings" );
+        if( !QObject::connect(
+            /* pObjSender   */ m_pWdgtIpcServer,
+            /* szSignal     */ SIGNAL(accepted()),
+            /* pObjReceiver */ this,
+            /* szSlot       */ SLOT(onSettingsAccepted()) ) )
+        {
+            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
+        }
+
+        if( !QObject::connect(
+            /* pObjSender   */ m_pWdgtIpcServer,
+            /* szSignal     */ SIGNAL(rejected()),
+            /* pObjReceiver */ this,
+            /* szSlot       */ SLOT(onSettingsRejected()) ) )
+        {
+            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
+        }
+
+        if( !QObject::connect(
+            /* pObjSender   */ m_pWdgtIpcServer,
+            /* szSignal     */ SIGNAL(detailsVisibilityChanged(bool)),
+            /* pObjReceiver */ this,
+            /* szSlot       */ SLOT(onWdgtIpcServerDetailsVisibilityChanged(bool)) ) )
+        {
+            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
+        }
+
+        // Trace Settings
+        //---------------
+
+        m_pWdgtTrcSettings = new CWdgtTrcSettings(i_strTrcServerName);
+        m_pWdgtTrcSettings->setServer(pTrcServer);
+
+        m_pTabWidget->addTab(m_pWdgtTrcSettings, "Trace Settings");
+
+    } // if( pTrcServer != nullptr)
 
 } // ctor
 

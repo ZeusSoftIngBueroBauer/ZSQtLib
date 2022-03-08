@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer, Germany
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer, Germany
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -98,7 +98,6 @@ public: // ctors and dtor
     ~CMainWindow();
 protected: // overridables of base class QWidget
     virtual void closeEvent( QCloseEvent* i_pEv );
-protected: // overridables of base class QObject
     virtual bool eventFilter( QObject* i_pObjWatched, QEvent* i_pEv );
 protected slots:
     void onActEditFindTriggered();

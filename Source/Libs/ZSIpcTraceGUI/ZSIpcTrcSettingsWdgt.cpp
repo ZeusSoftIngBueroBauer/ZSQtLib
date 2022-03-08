@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -79,7 +79,7 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CWdgtTrcSettings::CWdgtTrcSettings( QWidget* i_pWdgtParent ) :
+CWdgtTrcSettings::CWdgtTrcSettings( const QString& i_strObjName, QWidget* i_pWdgtParent ) :
 //------------------------------------------------------------------------------
     QWidget(i_pWdgtParent),
     m_pTrcServer(nullptr),
@@ -105,7 +105,7 @@ CWdgtTrcSettings::CWdgtTrcSettings( QWidget* i_pWdgtParent ) :
     m_pLblCacheDataMaxArrLen(nullptr),
     m_pEdtCacheDataMaxArrLen(nullptr)
 {
-    setObjectName("WdgtTrcSettings");
+    setObjectName(i_strObjName);
 
     m_pLyt = new QVBoxLayout();
     setLayout(m_pLyt);

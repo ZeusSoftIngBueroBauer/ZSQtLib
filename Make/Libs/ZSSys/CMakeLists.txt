@@ -44,13 +44,12 @@ list(APPEND _Headers
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysErrResult.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysException.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysIdxTree.h
-    ${_HeadersPath}/${PROJECT_NAME}/ZSSysIdxTreeEntries.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSSysIdxTreeEntry.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysLogFile.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysMath.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysMemLeakDump.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysMsg.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysMsgProtocol.h
-    ${_HeadersPath}/${PROJECT_NAME}/ZSSysObjPool.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysRequest.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysRequestExecTree.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysRequestQueue.h
@@ -79,13 +78,12 @@ list(APPEND _Sources
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysErrResult.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysException.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysIdxTree.cpp
-    ${_SourcesPath}/${PROJECT_NAME}/ZSSysIdxTreeEntries.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSSysIdxTreeEntry.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysLogFile.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysMath.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysMemLeakDump.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysMsg.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysMsgProtocol.cpp
-    ${_SourcesPath}/${PROJECT_NAME}/ZSSysObjPool.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysRequest.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysRequestExecTree.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysRequestQueue.cpp
@@ -108,9 +106,9 @@ if(WIN32)
     # Add version info as meta information to Dll.
     configure_file(
         ${_HeadersPath}/${PROJECT_NAME}/ZSSysVersion.rc.in
-        ${CMAKE_CURRENT_BINARY_DIR}/ZSSysVersion.rc
+        ${_SourcesPath}/${PROJECT_NAME}/ZSSysVersion.rc
         @ONLY)
-    set(_Sources ${_Sources} ${CMAKE_CURRENT_BINARY_DIR}/ZSSysVersion.rc)
+    set(_Sources ${_Sources} ${_SourcesPath}/${PROJECT_NAME}/ZSSysVersion.rc)
 endif()
 
 # Got to create the following output name:
@@ -121,6 +119,10 @@ if(CMAKE_BUILD_TYPE MATCHES Debug)
     set(TargetOutputName ${TargetOutputName}_d)
 endif()
 message(STATUS "TargetOutputName:         ${TargetOutputName}")
+
+# Create the source groups for source tree with root at CMAKE_CURRENT_SOURCE_DIR.
+source_group(TREE ${_HeadersPath}/${PROJECT_NAME} FILES ${_Headers})
+source_group(TREE ${_SourcesPath}/${PROJECT_NAME} FILES ${_Sources})
 
 add_library(${PROJECT_NAME} SHARED ${_Headers} ${_Sources})
 

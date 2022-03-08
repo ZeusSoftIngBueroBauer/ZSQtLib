@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -76,6 +76,10 @@ public: // instance methods
     //virtual void reset();
 public: // overridables of base class QAbstractItemModel
     virtual int columnCount( const QModelIndex& i_modelIdxParent = QModelIndex() ) const override;
+    virtual QVariant headerData( int i_iSection, Qt::Orientation i_orientation, int i_iRole = Qt::DisplayRole) const;
+    virtual Qt::ItemFlags flags( const QModelIndex& i_modelIdx ) const override;
+    virtual QVariant data( const QModelIndex& i_modelIdx, int i_iRole = Qt::DisplayRole ) const override;
+    virtual bool setData( const QModelIndex& i_modelIdx, const QVariant& i_value, int i_iRole = Qt::EditRole ) override;
 protected: // class members (hiding class members of base class CModelIdxTree)
     static bool     s_bIconsCreated;
     static QPixmap* s_pPxmBranchEntryNormalOff;
@@ -84,11 +88,6 @@ protected: // class members (hiding class members of base class CModelIdxTree)
     static QPixmap* s_pPxmLeaveEntrySelectedOff;
     static QIcon*   s_pIconBranch;
     static QIcon*   s_pIconLeave;
-public: // overridables of base class QAbstractItemModel
-    virtual QVariant headerData( int i_iSection, Qt::Orientation i_orientation, int i_iRole = Qt::DisplayRole) const;
-    virtual Qt::ItemFlags flags( const QModelIndex& i_modelIdx ) const override;
-    virtual QVariant data( const QModelIndex& i_modelIdx, int i_iRole = Qt::DisplayRole ) const override;
-    virtual bool setData( const QModelIndex& i_modelIdx, const QVariant& i_value, int i_iRole = Qt::EditRole ) override;
 
 }; // class CModelIdxTreeTrcAdminObjs
 

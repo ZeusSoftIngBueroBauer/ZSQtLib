@@ -43,9 +43,12 @@ list(APPEND _Sources
     ${_SourcesPath}/ZSSysIdxTree/Test.cpp
 )
 
+list(APPEND _Resources
+)
+
 if(WIN32)
-    # Add version info as meta information to exe.
-    set(_Sources ${_Sources} ${CMAKE_CURRENT_BINARY_DIR}/../../../Libs/ZSSys/ZSSysVersion.rc)
+    # Add version info as meta information to Dll.
+    set(_Resources ${_Resources} ${_SourcesPath}/../../Libs/ZSSys/ZSSysVersion.rc)
 endif()
 
 # Got to create the following target name:
@@ -58,10 +61,15 @@ if(CMAKE_BUILD_TYPE MATCHES Debug)
 endif()
 message(STATUS "TargetOutputName:         ${TargetOutputName}")
 
+# Create the source groups for source tree with root at CMAKE_CURRENT_SOURCE_DIR.
+source_group(TREE ${_HeadersPath}/ZSSysIdxTree FILES ${_Headers})
+source_group(TREE ${_SourcesPath}/ZSSysIdxTree FILES ${_Sources})
+#source_group(TREE ${_ResourcesPath}/ZSSysIdxTree FILES ${_Resources})
+
 if(WIN32)
-    add_executable(${PROJECT_NAME} WIN32 ${_Headers} ${_Sources})
+    add_executable(${PROJECT_NAME} WIN32 ${_Headers} ${_Sources} ${_Resources})
 else()
-    add_executable(${PROJECT_NAME} ${_Headers} ${_Sources})
+    add_executable(${PROJECT_NAME} ${_Headers} ${_Sources} ${_Resources})
 endif()
 
 set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME ${TargetOutputName})

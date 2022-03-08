@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -42,10 +42,7 @@ namespace System
 {
 namespace GUI
 {
-class CModelAbstractTreeEntry;
-class CModelBranchTreeEntry;
-class CModelLeaveTreeEntry;
-class CModelRootTreeEntry;
+class CModelIdxTreeEntry;
 
 /*******************************************************************************
 Type definitions and constants
@@ -100,16 +97,16 @@ public: // type definitions and constants
         {
         }
     public:
-        CModelAbstractTreeEntry* operator * () const;
+        CModelIdxTreeEntry* operator * () const;
         bool operator == ( const iterator& i_other ) const;
         bool operator == ( iterator& i_other ) const;
         bool operator != ( const iterator& i_other ) const;
         bool operator != ( iterator& i_other ) const;
         iterator& operator ++ ();
     private:
-        CModelIdxTree*           m_pModel = nullptr;
-        CModelAbstractTreeEntry* m_pModelTreeEntryCurr = nullptr;
-        ETraversalOrder          m_traversalOrder = ETraversalOrder::Index;
+        CModelIdxTree*      m_pModel = nullptr;
+        CModelIdxTreeEntry* m_pModelTreeEntryCurr = nullptr;
+        ETraversalOrder     m_traversalOrder = ETraversalOrder::Index;
     };
 public: // type definitions and constants
     enum EColumn {
@@ -141,27 +138,25 @@ public: // instance methods
     CIdxTree* idxTree() { return m_pIdxTree; }
 public: // instance methods
     QString nodeSeparator() const;
-    CModelRootTreeEntry* modelRoot() const { return m_pModelRoot; }
-    QMap<QString, CModelAbstractTreeEntry*> treeEntriesMap() const { return m_mappModelTreeEntries; }
+    CModelIdxTreeEntry* modelRoot() const { return m_pModelRoot; }
+    QMap<QString, CModelIdxTreeEntry*> treeEntriesMap() const { return m_mappModelTreeEntries; }
 public: // instance methods
     void setFilter( EIdxTreeEntryType i_entryType );
     EIdxTreeEntryType getFilter() const { return m_entryTypeFilter; }
 protected: // instance methods
-    void setFilter( CModelBranchTreeEntry* i_pModelBranch, EIdxTreeEntryType i_entryType, bool i_bRecursive );
+    void setFilter( CModelIdxTreeEntry* i_pModelBranch, EIdxTreeEntryType i_entryType, bool i_bRecursive );
 public: // instance methods
     void setSortOrder( EIdxTreeSortOrder i_sortOrder );
     EIdxTreeSortOrder sortOrder() const { return m_sortOrder; }
 protected: // instance methods
-    void setSortOrder( CModelBranchTreeEntry* i_pModelBranch, EIdxTreeSortOrder i_sortOrder, bool i_bRecursive );
+    void setSortOrder( CModelIdxTreeEntry* i_pModelBranch, EIdxTreeSortOrder i_sortOrder, bool i_bRecursive );
 public: // instance methods
-    void setIsExpanded( CModelBranchTreeEntry* i_pModelBranch, bool i_bIsExpanded );
-    bool areAllParentBranchesExpanded( CModelBranchTreeEntry* i_pModelBranch ) const;
+    void setIsExpanded( CModelIdxTreeEntry* i_pModelBranch, bool i_bIsExpanded );
+    bool areAllParentBranchesExpanded( CModelIdxTreeEntry* i_pModelBranch ) const;
 public: // instance methods
-    void setIsSelected( CModelAbstractTreeEntry* i_pModelTreeEntry, bool i_bIsSelected, bool i_bRecursive = false );
+    void setIsSelected( CModelIdxTreeEntry* i_pModelTreeEntry, bool i_bIsSelected, bool i_bRecursive = false );
 public: // instance methods
-    CModelBranchTreeEntry* findModelBranch( CBranchIdxTreeEntry* i_pBranch );
-    CModelLeaveTreeEntry* findModelLeave( CLeaveIdxTreeEntry* i_pLeave );
-    CModelAbstractTreeEntry* findModelEntry( CAbstractIdxTreeEntry* i_pTreeEntry );
+    CModelIdxTreeEntry* findModelEntry( CIdxTreeEntry* i_pTreeEntry );
 public: // instance methods
     QModelIndex index( const QString& i_strKeyInTree, int i_iClm ) const;
 public: // iterator methods
@@ -169,15 +164,15 @@ public: // iterator methods
     iterator end();
 protected slots:
     void onIdxTreeAboutToBeDestroyed( QObject* i_pIdxTree );
-protected slots:
-    void onIdxTreeEntryAdded( ZS::System::CIdxTree* i_pIdxTree, ZS::System::CAbstractIdxTreeEntry* i_pTreeEntry );
-    void onIdxTreeEntryChanged( ZS::System::CIdxTree* i_pIdxTree, ZS::System::CAbstractIdxTreeEntry* i_pTreeEntry );
-    void onIdxTreeEntryAboutToBeRemoved( ZS::System::CIdxTree* i_pIdxTree, ZS::System::CAbstractIdxTreeEntry* i_pTreeEntry );
-    void onIdxTreeEntryMoved( ZS::System::CIdxTree* i_pIdxTree, ZS::System::CAbstractIdxTreeEntry* i_pTreeEntry, const QString& i_strKeyInTreePrev, ZS::System::CBranchIdxTreeEntry* i_pTargetBranch );
-    void onIdxTreeEntryKeyInTreeChanged( ZS::System::CIdxTree* i_pIdxTree, ZS::System::CAbstractIdxTreeEntry* i_pTreeEntry, const QString& i_strKeyInTreePrev );
+protected slots: // overridables
+    virtual void onIdxTreeEntryAdded( ZS::System::CIdxTree* i_pIdxTree, ZS::System::CIdxTreeEntry* i_pTreeEntry );
+    virtual void onIdxTreeEntryChanged( ZS::System::CIdxTree* i_pIdxTree, ZS::System::CIdxTreeEntry* i_pTreeEntry );
+    virtual void onIdxTreeEntryAboutToBeRemoved( ZS::System::CIdxTree* i_pIdxTree, ZS::System::CIdxTreeEntry* i_pTreeEntry );
+    virtual void onIdxTreeEntryMoved( ZS::System::CIdxTree* i_pIdxTree, ZS::System::CIdxTreeEntry* i_pTreeEntry, const QString& i_strKeyInTreePrev, ZS::System::CIdxTreeEntry* i_pTargetBranch );
+    virtual void onIdxTreeEntryKeyInTreeChanged( ZS::System::CIdxTree* i_pIdxTree, ZS::System::CIdxTreeEntry* i_pTreeEntry, const QString& i_strKeyInTreePrev );
 protected: // instance methods
-    void clear( CModelBranchTreeEntry* i_pModelBranch, bool i_bDestroyTreeEntries = true );
-    void remove( CModelAbstractTreeEntry* i_pModelTreeEntry );
+    void clear( CModelIdxTreeEntry* i_pModelBranch, bool i_bDestroyTreeEntries = true );
+    void remove( CModelIdxTreeEntry* i_pModelTreeEntry );
 public: // overridables of base class QAbstractItemModel
     virtual int rowCount( const QModelIndex& i_modelIdxParent = QModelIndex() ) const override;
     virtual int columnCount( const QModelIndex& i_modelIdxParent = QModelIndex() ) const override;
@@ -227,6 +222,8 @@ protected: // reimplemented to trace emitting signals for debugging purposes
     void _endMoveColumns();
     void _beginResetModel();
     void _endResetModel();
+protected slots:
+    void onTrcAdminObjChanged( QObject* i_pTrcAdminObj );
 protected: // class members
     static int      s_iInstCount;
     static bool     s_bIconsCreated;
@@ -237,12 +234,16 @@ protected: // class members
     static QIcon*   s_pIconBranch;
     static QIcon*   s_pIconLeave;
 protected: // instance members
-    CIdxTree*                               m_pIdxTree;
-    EIdxTreeEntryType                       m_entryTypeFilter;
-    EIdxTreeSortOrder                       m_sortOrder;
-    QMap<QString, CModelAbstractTreeEntry*> m_mappModelTreeEntries;   // Key is: <EntryTypeSymbol>:<ParentPath>/<Name> (e.g. "L:ZS::Data::CDataTable::FDAC::RF1In")
-    CModelRootTreeEntry*                    m_pModelRoot;
-    int                                     m_iTrcDetailLevel;
+    CIdxTree*                          m_pIdxTree;
+    EIdxTreeEntryType                  m_entryTypeFilter;
+    EIdxTreeSortOrder                  m_sortOrder;
+    QMap<QString, CModelIdxTreeEntry*> m_mappModelTreeEntries;   // Key is: <EntryTypeSymbol>:<ParentPath>/<Name> (e.g. "L:ZS::Data::CDataTable::FDAC::RF1In")
+    CModelIdxTreeEntry*                m_pModelRoot;
+    int                                m_iTrcDetailLevel;    /*!< Trace detail level for method tracing.
+                                                                  Trace output may not be controlled by trace admin objects
+                                                                  if the index tree belongs the trace server. */
+    ZS::Trace::CTrcAdminObj*           m_pTrcAdminObj;       /*!< Trace admin object to control trace outputs of the class.
+                                                                  The object will not be created if the index tree's belongs to the trace server. */
 
 }; // class CModelIdxTree
 

@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer, Germany
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer, Germany
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -45,7 +45,7 @@ may result in using the software modules.
 #include "Test.h"
 
 #include "ZSIpcTrace/ZSIpcTrcServer.h"
-#include "ZSTestGUI/ZSTestWdgt.h"
+#include "ZSTestGUI/ZSTestStepIdxTreeWdgt.h"
 #include "ZSIpcTraceGUI/ZSIpcTrcMthWdgt.h"
 #include "ZSSys/ZSSysException.h"
 
@@ -119,7 +119,7 @@ CWidgetCentral::CWidgetCentral(
     // <TestSteps>
     //----------------
 
-    m_pWdgtTest = new CWdgtTest( CApplication::GetInstance()->getTest() );
+    m_pWdgtTest = new CWdgtIdxTreeTestSteps( CApplication::GetInstance()->getTest() );
     m_pSplitter->addWidget(m_pWdgtTest);
 
     // <MethodTrace>

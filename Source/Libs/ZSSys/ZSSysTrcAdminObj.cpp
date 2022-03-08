@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -41,11 +41,11 @@ using namespace ZS::Trace;
 
 
 /*******************************************************************************
-class CTrcAdminObj : public QObject, public CLeaveIdxTreeEntry
+class CTrcAdminObj : public QObject, public CIdxTreeEntry
 *******************************************************************************/
 
 /*==============================================================================
-protected: // ctors and dtor (trace admin objects may only be created by the model)
+protected: // ctors and dtor (trace admin objects may only be created by the trace server)
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
@@ -94,7 +94,7 @@ protected: // ctors and dtor (trace admin objects may only be created by the mod
 CTrcAdminObj::CTrcAdminObj( const QString& i_strObjName, const QString& /*i_strObjThreadName*/ ) :
 //------------------------------------------------------------------------------
     QObject(),
-    CLeaveIdxTreeEntry(i_strObjName),
+    CIdxTreeEntry(EIdxTreeEntryType::Leave, i_strObjName),
     m_iBlockTreeEntryChangedSignalCounter(0),
     m_strObjThreadName(),
     m_iRefCount(0),

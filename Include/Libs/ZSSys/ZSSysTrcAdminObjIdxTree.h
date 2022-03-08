@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -63,10 +63,9 @@ public: // instance methods to get and release admin objects
         const QString& i_strObjName,
         bool           i_bIncrementRefCount = true );
     CTrcAdminObj* getTraceAdminObj( int i_idxInTree ) const;
-    ZS::System::CBranchIdxTreeEntry* getBranch( int i_idxInTree ) const;
     void releaseTraceAdminObj( CTrcAdminObj* i_pTrcAdminObj );
 public: // instance methods to insert branch nodes and admin objects
-    ZS::System::CBranchIdxTreeEntry* insertBranch(
+    ZS::System::CIdxTreeEntry* insertBranch(
         int            i_iParentBranchIdxInTree,
         const QString& i_strBranchName,
         int            i_idxInTree );
@@ -78,13 +77,13 @@ public: // instance methods to recursively modify admin objects via object index
     void setEnabled( int i_idxInTree, ZS::System::EEnabled i_enabled );
     void setTraceDetailLevel( int i_idxInTree, int i_iDetailLevel = -1 );
 public: // instance methods to recursively modify admin objects via namespace node entries
-    void setEnabled( ZS::System::CBranchIdxTreeEntry* i_pBranch, ZS::System::EEnabled i_enabled );
-    void setTraceDetailLevel( ZS::System::CBranchIdxTreeEntry* i_pBranch, int i_iDetailLevel = -1 );
+    void setEnabled( ZS::System::CIdxTreeEntry* i_pBranch, ZS::System::EEnabled i_enabled );
+    void setTraceDetailLevel( ZS::System::CIdxTreeEntry* i_pBranch, int i_iDetailLevel = -1 );
 public: // overridables
     virtual ZS::System::SErrResultInfo save( const QString& i_strAbsFilePath ) const;
     virtual ZS::System::SErrResultInfo recall( const QString& i_strAbsFilePath );
 protected: // auxiliary instance methods
-    virtual void save( QXmlStreamWriter& xmlStreamWriter, ZS::System::CAbstractIdxTreeEntry* i_pTreeEntry ) const;
+    virtual void save( QXmlStreamWriter& xmlStreamWriter, ZS::System::CIdxTreeEntry* i_pTreeEntry ) const;
 
 }; // class CIdxTreeTrcAdminObjs
 

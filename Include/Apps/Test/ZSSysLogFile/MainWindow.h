@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer, Germany
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer, Germany
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -76,7 +76,6 @@ protected: // overridables of base class QWidget
 protected: // overridables of base class QObject
     virtual bool eventFilter( QObject* i_pObjWatched, QEvent* i_pEv );
 protected slots:
-    void onActFileNewTriggered();
     void onActFileOpenTriggered();
     void onActFileSaveTriggered();
 protected slots:
@@ -93,7 +92,6 @@ protected: // instance members
     QSettings*      m_pSettingsFile;
     QMenu*          m_pMnuFile;
     QToolBar*       m_pToolBarFile;
-    QAction*        m_pActFileNew;
     QAction*        m_pActFileOpen;
     QAction*        m_pActFileSave;
     QAction*        m_pActFileQuit;

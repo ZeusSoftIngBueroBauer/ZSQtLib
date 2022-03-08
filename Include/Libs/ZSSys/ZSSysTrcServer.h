@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -281,16 +281,16 @@ protected: // reference counter
     int incrementRefCount();
     int decrementRefCount();
 protected: // class members
-    static QMutex                      s_mtx;               /*!< Mutex to protect the class and instance methods of the class for multithreaded access. */
-    static QHash<QString, CTrcServer*> s_hshpInstances;     /*!< Hash with all created trace servers (key is name of instance). */
-    static QHash<Qt::HANDLE, QString>  s_hshThreadNames;    /*!< Hash with registered threads (key is thread id, value is name of thread). */
-    static QHash<QString, Qt::HANDLE>  s_hshThreadIds;      /*!< Hash with registered threads (key name of thread, value is thread id). */
+    static QMutex                      s_mtx;            /*!< Mutex to protect the class and instance methods of the class for multithreaded access. */
+    static QHash<QString, CTrcServer*> s_hshpInstances;  /*!< Hash with all created trace servers (key is name of instance). */
+    static QHash<Qt::HANDLE, QString>  s_hshThreadNames; /*!< Hash with registered threads (key is thread id, value is name of thread). */
+    static QHash<QString, Qt::HANDLE>  s_hshThreadIds;   /*!< Hash with registered threads (key name of thread, value is thread id). */
 protected: // instance members
-    CIdxTreeTrcAdminObjs*              m_pTrcAdminObjIdxTree;   /*<! Index tree containg a hierarchically order tree of the trace admin objects. */
-    STrcServerSettings                 m_trcSettings;           /*<! Currently used trace settings. */
-    CTrcMthFile*                       m_pTrcMthFile;           /*<! Reference to local trace method file. */
-    int                                m_iTrcDetailLevel;       /*<! If the trace server itself got to be logged. */
-    int                                m_iRefCount;             /*<! Reference counter for createInstance and releaseInstance. */
+    CIdxTreeTrcAdminObjs* m_pTrcAdminObjIdxTree; /*<! Index tree containg a hierarchically order tree of the trace admin objects. */
+    STrcServerSettings    m_trcSettings;         /*<! Currently used trace settings. */
+    CTrcMthFile*          m_pTrcMthFile;         /*<! Reference to local trace method file. */
+    int                   m_iTrcDetailLevel;     /*<! If the trace server itself got to be logged. */
+    int                   m_iRefCount;           /*<! Reference counter for createInstance and releaseInstance. */
 
 }; // class CTrcServer
 
