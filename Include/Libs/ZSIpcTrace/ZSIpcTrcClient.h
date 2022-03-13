@@ -59,25 +59,12 @@ signals: // on receiving trace data
     void traceAdminObjInserted( QObject* i_pTrcClient, const QString& i_strKeyInTree );
 public: // instance methods
     CIdxTreeTrcAdminObjs* getTraceAdminObjIdxTree() { return m_pTrcAdminObjIdxTree; }
+public: // instance methods to read remote application settings
+    QString getRemoteApplicationName() const;
+    QString getRemoteServerName() const;
 public: // instance methods to set and read trace settings of the server
-    void setEnabled( bool i_bEnabled );
-    bool isEnabled() const;
-    void setNewTrcAdminObjsEnabledAsDefault( bool i_bEnabled );
-    bool areNewTrcAdminObjsEnabledAsDefault() const;
-    void setNewTrcAdminObjsDefaultDetailLevel( int i_iDetailLevel );
-    int getNewTrcAdminObjsDefaultDetailLevel() const;
-    void setCacheTrcDataIfNotConnected( bool i_bCacheData );
-    bool getCacheTrcDataIfNotConnected() const;
-    void setCacheTrcDataMaxArrLen( int i_iMaxArrLen );
-    int getCacheTrcDataMaxArrLen() const;
-    void setAdminObjFileAbsoluteFilePath( const QString& i_strAbsFilePath );
-    QString getAdminObjFileAbsoluteFilePath() const;
-    void setUseLocalTrcFile( bool i_bUse );
-    bool isLocalTrcFileUsed() const;
-    void setLocalTrcFileAbsoluteFilePath( const QString& i_strAbsFilePath );
-    QString getLocalTrcFileAbsoluteFilePath() const;
-    void setLocalTrcFileCloseFileAfterEachWrite( bool i_bCloseFile );
-    bool getLocalTrcFileCloseFileAfterEachWrite() const;
+    STrcServerSettings getTraceSettings() const;
+    void setTraceSettings( const STrcServerSettings& i_settings );
 protected: // instance methods to send admin objects to the connected server
     void sendAdminObj(
         ZS::System::MsgProtocol::TSystemMsgType i_systemMsgType,
@@ -99,8 +86,15 @@ protected slots: // connected to the slots of the trace admin object pool model
 protected: // instance methods
     void resetTrcAdminRefCounters( ZS::System::CIdxTreeEntry* i_pBranch );
 protected: // instance members
+    QString               m_strRemoteApplicationName;
+    QString               m_strRemoteServerName;
     STrcServerSettings    m_trcServerSettings;
     CIdxTreeTrcAdminObjs* m_pTrcAdminObjIdxTree;
+    /*!< This flag is set to true if the client receives data and onReceivedData is in progress updating
+         the clients data with the settings read from the remote application. If the settings are updated
+         the signal traceSettingsReceived is not emitted before all settings have been applied and the
+         client knows that the settings are changed by the server and not be the client and that the
+         data must not be send back to the remote application. */
     bool                  m_bOnReceivedDataUpdateInProcess;
 
 }; // class CIpcTrcClient

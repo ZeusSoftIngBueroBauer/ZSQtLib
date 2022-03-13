@@ -100,7 +100,6 @@ CWdgtIpcServer::CWdgtIpcServer( const QString& i_strServerName, QWidget* i_pWdgt
 //------------------------------------------------------------------------------
     QWidget(i_pWdgtParent),
     m_pServer(nullptr),
-    m_bServerObjNameVisible(true),
     m_bProtocolTypeImageVisible(true),
     m_iLblWidth(140),
     m_pLyt(nullptr),
@@ -114,7 +113,6 @@ CWdgtIpcServer::CWdgtIpcServer( const QString& i_strServerName, QWidget* i_pWdgt
     // Connection Settings (SServerHostSettings)
     m_hostSettingsServer(),
     m_hostSettingsWidget(),
-    m_pLytLineDefault(nullptr),
     m_pLytCnct(nullptr),
     m_pLblSocketType(nullptr),
     m_pCmbSocketType(nullptr),
@@ -247,24 +245,6 @@ CWdgtIpcServer::CWdgtIpcServer( const QString& i_strServerName, QWidget* i_pWdgt
     pLine = new CSepLine();
     m_pLytWdgtServerObjName->addWidget(pLine);
     m_pLytWdgtServerObjName->addSpacing(5);
-
-    // <Line> Default
-    //---------------
-
-    m_pLytLineDefault = new QHBoxLayout();
-    m_pLyt->addLayout(m_pLytLineDefault);
-
-    m_pLytLineDefault->addStretch();
-
-    // <Separator>
-    //-------------
-
-    m_pLyt->addSpacing(5);
-
-    pLine = new CSepLine();
-    m_pLyt->addWidget(pLine);
-
-    m_pLyt->addSpacing(5);
 
     // <FormLayout> Connection Parameters
     //-----------------------------------
@@ -547,7 +527,6 @@ CWdgtIpcServer::~CWdgtIpcServer()
     CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
 
     m_pServer = nullptr;
-    m_bServerObjNameVisible = false;
     m_bProtocolTypeImageVisible = false;
     m_iLblWidth = 0;
     m_pLyt = nullptr;
@@ -561,7 +540,6 @@ CWdgtIpcServer::~CWdgtIpcServer()
     // Connection Settings
     //m_hostSettingsServer;
     //m_hostSettingsWidget;
-    m_pLytLineDefault = nullptr;
     m_pLytCnct = nullptr;
     m_pLblSocketType = nullptr;
     m_pCmbSocketType = nullptr;
@@ -639,50 +617,6 @@ void CWdgtIpcServer::setServer( CServer* i_pServer )
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "setServer",
         /* strAddInfo   */ strAddTrcInfo );
-
-    //bool bIsTrcServer = false;
-
-    //// Cannot trace methods of trace server as this would result in endless recursion loops.
-    //if( i_pServer != nullptr && i_pServer->parent() != nullptr )
-    //{
-    //    // The trace server hosts the IPC server as an instance member.
-    //    // On creating the Ipc server instance the trace server sets itself as
-    //    // the parent object of the Ipc server (see ctor of class ZS::Trace::CTrcServer).
-    //    CTrcServer* pTrcServer = dynamic_cast<CTrcServer*>(i_pServer->parent());
-    //    if( pTrcServer != nullptr )
-    //    {
-    //        bIsTrcServer = true;
-    //    }
-    //}
-
-    //if( m_pTrcAdminObj != nullptr )
-    //{
-    //    if( bIsTrcServer )
-    //    {
-    //        m_pTrcAdminObj->setEnabled(EEnabled::No);
-
-    //        CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
-    //        m_pTrcAdminObj = nullptr;
-    //    }
-    //}
-    //else // if( m_pTrcAdminObj == nullptr )
-    //{
-    //    if( !bIsTrcServer )
-    //    {
-    //        m_pTrcAdminObj = CTrcServer::GetTraceAdminObj("ZS::Ipc::GUI", "CWdgtIpcServer", objectName());
-    //    }
-    //}
-
-    //if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
-    //{
-    //    strAddTrcInfo = "Server: " + QString( i_pServer == nullptr ? "nullptr" : i_pServer->objectName() );
-    //}
-
-    //CMethodTracer mthTracer(
-    //    /* pAdminObj    */ m_pTrcAdminObj,
-    //    /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-    //    /* strMethod    */ "setServer",
-    //    /* strAddInfo   */ strAddTrcInfo );
 
     // Show/hide GUI controls depending on active connection (depending on protocol type),
     // show/hide details, fill connection controls (connection parameters and watch dog settings)
@@ -802,6 +736,11 @@ void CWdgtIpcServer::setServer( CServer* i_pServer )
                     m_pModelSrvCltConnection->setServer(m_pServer);
                 }
 
+                if( m_pWdgtTrcMsgLog != nullptr )
+                {
+                    m_pWdgtTrcMsgLog->setServer(m_pServer);
+                }
+
                 fillDetailControls();
             }
         } // if( m_pServer != nullptr )
@@ -809,69 +748,6 @@ void CWdgtIpcServer::setServer( CServer* i_pServer )
     } // if( m_pServer != i_pServer )
 
 } // setServer
-
-/*==============================================================================
-public: // instance methods
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-void CWdgtIpcServer::setServerObjectNameVisible( bool i_bVisible )
-//------------------------------------------------------------------------------
-{
-    QString strAddTrcInfo;
-
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
-    {
-        strAddTrcInfo = bool2Str(i_bVisible);
-    }
-
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strMethod    */ "setServerObjectNameVisible",
-        /* strAddInfo   */ strAddTrcInfo );
-
-    if( m_bServerObjNameVisible != i_bVisible )
-    {
-        m_bServerObjNameVisible = i_bVisible;
-
-        if( m_bServerObjNameVisible )
-        {
-            m_pLytLineDefault->removeWidget(m_pLblServerState);
-            m_pLytLineDefault->removeWidget(m_pLedServerState);
-
-            m_pLytLineServerObjName->addWidget(m_pLblServerState);
-            m_pLytLineServerObjName->addWidget(m_pLedServerState);
-
-            m_pWdgtServerObjName->show();
-
-            if( m_bProtocolTypeImageVisible )
-            {
-                m_pLytLineDefault->removeWidget(m_pLblServerProtocolTypeImg);
-                int idxLblServerState = m_pLytLineServerObjName->indexOf(m_pLblServerState);
-                m_pLytLineServerObjName->insertWidget(idxLblServerState, m_pLblServerProtocolTypeImg);
-            }
-        }
-        else // if( !m_bServerObjNameVisible )
-        {
-            m_pLytLineServerObjName->removeWidget(m_pLblServerState);
-            m_pLytLineServerObjName->removeWidget(m_pLedServerState);
-
-            m_pWdgtServerObjName->hide();
-
-            m_pLytLineDefault->addWidget(m_pLblServerState);
-            m_pLytLineDefault->addWidget(m_pLedServerState);
-
-            if( m_bProtocolTypeImageVisible )
-            {
-                m_pLytLineServerObjName->removeWidget(m_pLblServerProtocolTypeImg);
-                int idxLblServerState = m_pLytLineDefault->indexOf(m_pLblServerState);
-                m_pLytLineDefault->insertWidget(idxLblServerState, m_pLblServerProtocolTypeImg);
-            }
-        }
-    } // if( m_bServerObjNameVisible != i_bVisible )
-
-} // setServerObjectNameVisible
 
 /*==============================================================================
 public: // instance methods
@@ -925,27 +801,12 @@ void CWdgtIpcServer::setProtocolTypeImageVisible( bool i_bVisible )
 
         if( m_bProtocolTypeImageVisible )
         {
-            if( m_bServerObjNameVisible )
-            {
-                int idxLblServerState = m_pLytLineServerObjName->indexOf(m_pLblServerState);
-                m_pLytLineServerObjName->insertWidget(idxLblServerState, m_pLblServerProtocolTypeImg);
-            }
-            else
-            {
-                int idxLblServerState = m_pLytLineDefault->indexOf(m_pLblServerState);
-                m_pLytLineDefault->insertWidget(idxLblServerState, m_pLblServerProtocolTypeImg);
-            }
+            int idxLblServerState = m_pLytLineServerObjName->indexOf(m_pLblServerState);
+            m_pLytLineServerObjName->insertWidget(idxLblServerState, m_pLblServerProtocolTypeImg);
         }
-        else // if( !m_bProtocolTypeImageVisible )
+        else
         {
-            if( m_bServerObjNameVisible )
-            {
-                m_pLytLineServerObjName->removeWidget(m_pLblServerProtocolTypeImg);
-            }
-            else
-            {
-                m_pLytLineDefault->removeWidget(m_pLblServerProtocolTypeImg);
-            }
+            m_pLytLineServerObjName->removeWidget(m_pLblServerProtocolTypeImg);
         }
     } // if( m_bProtocolTypeImageVisible != i_bVisible )
 
@@ -2185,7 +2046,6 @@ void CWdgtIpcServer::onShowDetailsChanged()
             {
                 m_pWdgtTrcMsgLog->setServer(m_pServer);
             }
-
         } // if( m_pWdgtDetailsStates == nullptr )
 
         // Fill detail controls:

@@ -63,8 +63,8 @@ public: // class methods
 
 //------------------------------------------------------------------------------
 CDlgFindText* CDlgFindText::CreateInstance(
-    const QString& i_strObjName,
-    const QString& i_strDlgTitle,
+    const QString&  i_strDlgTitle,
+    const QString&  i_strObjName,
     QWidget*        i_pWdgtParent,
     Qt::WindowFlags i_wFlags )
 //------------------------------------------------------------------------------
@@ -76,8 +76,8 @@ CDlgFindText* CDlgFindText::CreateInstance(
     }
 
     return new CDlgFindText(
-        /* strObjName   */ i_strObjName,
         /* strDlgTitle  */ i_strDlgTitle,
+        /* strObjName   */ i_strObjName,
         /* pWdgtParent  */ i_pWdgtParent,
         /* wFlags       */ i_wFlags );
 
@@ -96,8 +96,8 @@ protected: // ctor
 
 //------------------------------------------------------------------------------
 CDlgFindText::CDlgFindText(
-    const QString&  i_strObjName,
     const QString&  i_strDlgTitle,
+    const QString&  i_strObjName,
     QWidget*        i_pWdgtParent,
     Qt::WindowFlags i_wFlags ) :
 //------------------------------------------------------------------------------

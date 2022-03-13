@@ -50,15 +50,15 @@ public: // class methods
     static QString ClassName() { return "CDlgRequestSequencer"; }
 public: // class methods
     static CDlgRequestSequencer* CreateInstance(
-        const QString&  i_strObjName,
         const QString&  i_strDlgTitle,
+        const QString&  i_strObjName,
         QWidget*        i_pWdgtParent = nullptr,
         Qt::WindowFlags i_wFlags = Qt::WindowFlags() );
     static CDlgRequestSequencer* GetInstance( const QString& i_strObjName );
 protected: // ctors
     CDlgRequestSequencer(
-        const QString&  i_strObjName,
         const QString&  i_strDlgTitle,
+        const QString&  i_strObjName,
         QWidget*        i_pWdgtParent = nullptr,
         Qt::WindowFlags i_wFlags = Qt::WindowFlags());
 public: // dtor

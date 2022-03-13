@@ -387,7 +387,7 @@ public: // class methods to add, remove and modify admin objects
     static CTrcAdminObj* GetTraceAdminObj(
         const char* i_szNameSpace,
         const char* i_szClassName,
-        const char* i_szObjName,
+        const char* i_szObjName = "",
         EEnabled    i_bEnabledAsDefault = EEnabledUndefined,
         int         i_iDefaultDetailLevel = ETraceDetailLevelUndefined,
         const char* i_szServerName = "ZSTrcServer" );
@@ -400,8 +400,8 @@ public: // class method to save/recall admin objects file
     static char* GetOrganizationName(); // returned string must be freed by caller
     static void SetApplicationName( const char* i_szName );
     static char* GetApplicationName();  // returned string must be freed by caller
-    static char* GetDefaultAdminObjFileAbsoluteFilePath( const char* i_szIniFileScope = "System" );
-    static char* GetDefaultLocalTrcFileAbsoluteFilePath( const char* i_szIniFileScope = "System" );
+    static char* GetDefaultAdminObjFileAbsoluteFilePath( const char* i_szServerName = "ZSTrcServer", const char* i_szIniFileScope = "System" );
+    static char* GetDefaultLocalTrcFileAbsoluteFilePath( const char* i_szServerName = "ZSTrcServer", const char* i_szIniFileScope = "System" );
 public: // class methods
     static void RegisterCurrentThread( const char* i_szThreadName );
     static void UnregisterCurrentThread();
@@ -432,8 +432,8 @@ public: // instance methods
     char* getLocalTrcFileCompleteBaseName() const;  // returned string must be freed by caller
     char* getLocalTrcFileAbsolutePath() const;      // returned string must be freed by caller
     bool isLocalTrcFileActive() const;
-    void setLocalTrcFileAutoSaveInterval( int i_iAutoSaveInterval_ms );
-    int getLocalTrcFileAutoSaveInterval() const;
+    void setLocalTrcFileAutoSaveIntervalInMs( int i_iAutoSaveInterval_ms );
+    int getLocalTrcFileAutoSaveIntervalInMs() const;
     void setLocalTrcFileCloseFileAfterEachWrite( bool i_bCloseFile );
     bool getLocalTrcFileCloseFileAfterEachWrite() const;
 public: // instance methods

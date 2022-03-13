@@ -71,9 +71,6 @@ public: // overridables of base class ZS::System::GUI::CDialog
 public: // instance methods
     void setClient( CClient* i_pClient );
 public: // instance methods
-    void setClientObjectNameVisible( bool i_bVisible );
-    bool isClientObjectNameVisible() const;
-public: // instance methods
     void setProtocolTypeImage( const QPixmap& i_pxm );
     void setProtocolTypeImageVisible( bool i_bVisible );
     bool isProtocolTypeImageVisible() const;

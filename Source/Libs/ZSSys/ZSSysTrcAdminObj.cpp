@@ -659,3 +659,171 @@ bool CTrcAdminObj::isTreeEntryChangedSignalBlocked() const
 {
     return (m_iBlockTreeEntryChangedSignalCounter > 0);
 }
+
+
+/*******************************************************************************
+class CTrcAdminObjRefAnchor
+*******************************************************************************/
+
+/*==============================================================================
+protected: // ctors and dtor
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+CTrcAdminObjRefAnchor::CTrcAdminObjRefAnchor(
+    const QString& i_strNameSpace,
+    const QString& i_strClassName,
+    const QString& i_strServerName ) :
+//------------------------------------------------------------------------------
+    m_strNameSpace(i_strNameSpace),
+    m_strClassName(i_strClassName),
+    m_strServerName(i_strServerName),
+    m_pTrcAdminObj(nullptr)
+{
+}
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CTrcAdminObjRefAnchor::allocTrcAdminObj()
+//------------------------------------------------------------------------------
+{
+    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(m_strNameSpace, m_strClassName, "", m_strServerName);
+
+    if( m_pTrcAdminObj != nullptr )
+    {
+        if( !QObject::connect(
+            /* pObjSender   */ m_pTrcAdminObj,
+            /* szSignal     */ SIGNAL(destroyed(QObject*)),
+            /* pObjReceiver */ this,
+            /* szSlot       */ SLOT(onAdminObjDestroyed(QObject*)),
+            /* cnctType     */ Qt::DirectConnection ) )
+        {
+            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
+        }
+    }
+}
+
+//------------------------------------------------------------------------------
+void CTrcAdminObjRefAnchor::releaseTrcAdminObj()
+//------------------------------------------------------------------------------
+{
+    if( m_pTrcAdminObj != nullptr )
+    {
+        QObject::disconnect(
+            /* pObjSender   */ m_pTrcAdminObj,
+            /* szSignal     */ SIGNAL(destroyed(QObject*)),
+            /* pObjReceiver */ this,
+            /* szSlot       */ SLOT(onAdminObjDestroyed(QObject*)));
+
+        CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
+        m_pTrcAdminObj = nullptr;
+    }
+}
+
+//------------------------------------------------------------------------------
+CTrcAdminObj* CTrcAdminObjRefAnchor::trcAdminObj()
+//------------------------------------------------------------------------------
+{
+    return m_pTrcAdminObj;
+}
+
+//------------------------------------------------------------------------------
+void CTrcAdminObjRefAnchor::setTraceDetailLevel( int i_iTrcDetailLevel )
+//------------------------------------------------------------------------------
+{
+    if( m_pTrcAdminObj != nullptr )
+    {
+        m_pTrcAdminObj->setTraceDetailLevel(i_iTrcDetailLevel);
+    }
+}
+
+//------------------------------------------------------------------------------
+bool CTrcAdminObjRefAnchor::isActive( int i_iFilterDetailLevel ) const
+//------------------------------------------------------------------------------
+{
+    bool bActive = false;
+    if( m_pTrcAdminObj != nullptr )
+    {
+        bActive = m_pTrcAdminObj->isActive(i_iFilterDetailLevel);
+    }
+    return bActive;
+}
+
+/*==============================================================================
+private slots:
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CTrcAdminObjRefAnchor::onTrcAdminObjDestroyed( QObject* i_pTrcAdminObj )
+//------------------------------------------------------------------------------
+{
+    if( m_pTrcAdminObj == i_pTrcAdminObj )
+    {
+        m_pTrcAdminObj = nullptr;
+    }
+}
+
+
+/*******************************************************************************
+class CTrcAdminObjRefGuard
+*******************************************************************************/
+
+/*==============================================================================
+public: // ctors and dtor
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+CTrcAdminObjRefGuard::CTrcAdminObjRefGuard(CTrcAdminObjRefAnchor* i_pRefAnchor) :
+//------------------------------------------------------------------------------
+    m_pRefAnchor(i_pRefAnchor)
+{
+    m_pRefAnchor->allocTrcAdminObj();
+}
+
+//------------------------------------------------------------------------------
+CTrcAdminObjRefGuard::~CTrcAdminObjRefGuard()
+//------------------------------------------------------------------------------
+{
+    m_pRefAnchor->releaseTrcAdminObj();
+}
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+CTrcAdminObj* CTrcAdminObjRefGuard::trcAdminObj()
+//------------------------------------------------------------------------------
+{
+    CTrcAdminObj* pTrcAdminObj = nullptr;
+    if( m_pRefAnchor != nullptr )
+    {
+        pTrcAdminObj = m_pRefAnchor->trcAdminObj();
+    }
+    return pTrcAdminObj;
+}
+
+//------------------------------------------------------------------------------
+void CTrcAdminObjRefGuard::setTraceDetailLevel(int i_iTrcDetailLevel)
+//------------------------------------------------------------------------------
+{
+    if( m_pRefAnchor != nullptr )
+    {
+        m_pRefAnchor->setTraceDetailLevel(i_iTrcDetailLevel);
+    }
+}
+
+//------------------------------------------------------------------------------
+bool CTrcAdminObjRefGuard::isActive(int i_iFilterDetailLevel) const
+//------------------------------------------------------------------------------
+{
+    bool bActive = false;
+    if( m_pRefAnchor != nullptr )
+    {
+        bActive = m_pRefAnchor->isActive(i_iFilterDetailLevel);
+    }
+    return bActive;
+}

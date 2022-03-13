@@ -616,7 +616,7 @@ void CMainWindow::onActInfoErrLogTriggered()
 {
     QString strDlgTitle = QCoreApplication::applicationName() + ": Error Log";
 
-    CDlgErrLog* pDlg = dynamic_cast<CDlgErrLog*>(CDlgErrLog::GetInstance(strDlgTitle));
+    CDlgErrLog* pDlg = dynamic_cast<CDlgErrLog*>(CDlgErrLog::GetInstance());
 
     if( pDlg == nullptr )
     {
@@ -644,7 +644,7 @@ void CMainWindow::onActInfoRequestExecTreeTriggered()
 {
     QString strDlgTitle = QCoreApplication::applicationName() + ": Requests Execution Tree";
 
-    CDlgRequestExecTree* pDlg = dynamic_cast<CDlgRequestExecTree*>(CDlgRequestExecTree::GetInstance(strDlgTitle));
+    CDlgRequestExecTree* pDlg = dynamic_cast<CDlgRequestExecTree*>(CDlgRequestExecTree::GetInstance("ReqExecTree"));
 
     if( pDlg == nullptr )
     {

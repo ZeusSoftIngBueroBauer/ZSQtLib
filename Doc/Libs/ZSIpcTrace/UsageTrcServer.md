@@ -1,4 +1,4 @@
-@page _PAGE_Libs_ZSIpcTrace_Usage_TrcServer Instantiating the Trace Server
+@page _PAGE_Libs_ZSIpcTrace_Usage_TrcServer Instantiating and starting the Trace Server
 
 The following code examples are taken from the test application ZSIpcTrace.
 
@@ -58,7 +58,6 @@ trace admin objects should be saved so that they can be recalled when restarting
     CApplication::~CApplication()
     {
         ...
-
         if( m_pZSTrcServer != nullptr )
         {
             m_pZSTrcServer->saveAdminObjs();
@@ -72,24 +71,115 @@ trace admin objects should be saved so that they can be recalled when restarting
             }
         }
         m_pZSTrcServer = nullptr;
-
         ...
     }
 
 In the ZSIpcTrace test application an additional trace server is created in test step doTestStepTestTraceCreateInstance.
-This test trace server must use a different port and the host settings will be changed as shown in the example below
-for the test trace server.
+This test trace server must use a different port and the host settings will be changed as shown in the example below.
+Please note that setHostSettings just stores the new values but does not apply them. To apply the values you must
+call changeSettings. This pattern allows changing several settings one after another. The server will collect the
+changes and with changeSettings all changed settings will be applied at once.
+
+    void CTest::doTestStepTraceServerCreateInstance( ZS::Test::CTestStep* i_pTestStep )
+    {
+        ...
+        m_pTestTrcServer = ZS::Trace::CIpcTrcServer::GetInstance("TestTrcServer");
+        SServerHostSettings hostSettings(24764);
+        m_pTestTrcServer->setHostSettings(hostSettings);
+        m_pTestTrcServer->changeSettings();
+        ...
+    }
+
+In the test step doTestStepTraceServerReleaseInstance the test trace server will be deleted again as follows.
+
+    void CTest::doTestStepTraceServerReleaseInstance( ZS::Test::CTestStep* i_pTestStep )
+    {
+        ...
+        ZS::Trace::CIpcTrcServer::ReleaseInstance(m_pTestTrcServer);
+        m_pTestTrcServer = nullptr;
+        ...
+    }
+
+The settings of the trace admin objects (enabled/disable, trace detail level) are stored in an xml file.
+In the startup sequence the settings of the trace admin objects got to be recalled, during shutdown
+they have to be saved as shown below:
+
+    void CTest::doTestStepTraceServerRecallAdminObjs( ZS::Test::CTestStep* i_pTestStep )
+    {
+        ...
+        SErrResultInfo errResultInfo = pTrcServer->recallAdminObjs();
+        ...
+    }
+
+    void CTest::doTestStepTraceServerSaveAdminObjs( ZS::Test::CTestStep* i_pTestStep )
+    {
+        ...
+        SErrResultInfo errResultInfo = pTrcServer->saveAdminObjs();
+        ...
+    }
+
+The server got to be started.
+
+The QTcpServer is instantiated in a gateway thread and listens there for incoming connections.
+If data receives the data will be parsed and split into blocks depending on the defined block type.
+The IpcServer of the trace server uses the block type "<Len>[Data]" with the block data length
+encoded as binary data in 4 bytes (EBlkLenDataTypeBinUINT32).
+
+As the QTcpServer lives in a separated thread preparsing and splitting the received data into blocks
+will not block the main thread. If a complete block has been received the block will be wrapped into
+a message and sent from the gateway thread to the Ipc Server instance (which very likely lives in
+the main thread).
+
+In the constructor of class CTrcIpcServer the trace server connects the slot `onIpcServerReceivedData`
+to the signal `receivedData` of the Ipc server.
+
+Data which may be sent to the TrcIpcServer are commands to modify the trace admin objects (enabled,
+trace detail level) or properties (STrcSettings) of the TrcIpcServer itself.
+
+Starting the server is an asynchronous request as the startup must be synchronized with the
+gateway thread. A CRequest instance is returned when starting the server.
+
+As arguments you may pass
+
+- a timeout in milliseconds and
+- a wait flag defining whether the method should immediately return or return only after
+  the specified timeout or the gatweay thread has been started and QTcpServer has been
+  created in the gateway thread.
 
     void CTest::doTestStepTraceServerStartup( ZS::Test::CTestStep* i_pTestStep )
     {
         ...
+        CRequest* pReq = pTrcServer->startup(5000);
 
-        SServerHostSettings hostSettings(24764);
-        pTrcServer = ZS::Trace::CIpcTrcServer::GetInstance("TestTrcServer");
-        pTrcServer->setHostSettings(hostSettings);
-        pTrcServer->changeSettings();
-
+        if( isAsynchronousRequest(pReq) )
+        {
+            strResultValue = "startupTrcServer not expected to be asynchronous";
+        }
+        else // if( isAsynchronousRequest(pReq) )
+        {
+            Trace Server state should be `Listening`.
+        }
         ...
     }
 
+If the server is no longer need it should be shutdown.
+
+Shutting down the trace is also an asynchronous request as the gateway thread has to be stopped
+and destroyed afterwards.
+
+    void CTest::doTestStepTraceServerShutdown( ZS::Test::CTestStep* i_pTestStep )
+    {
+        ...
+        CRequest* pReq = pTrcServer->shutdown();
+
+        if( isAsynchronousRequest(pReq) )
+        {
+            strResultValue = "shutdownTrcServer not expected to be asynchronous";
+        }
+        else // if( isAsynchronousRequest(pReq) )
+        {
+            Trace Server state should be `Idle`.
+        }
+        ...
+    }
 

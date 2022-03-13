@@ -109,10 +109,15 @@ public: // overridables of base class CTrcServer
 public: // overridables of base class CTrcServer
     virtual void setUseLocalTrcFile( bool i_bUse ) override;
     virtual void setLocalTrcFileAbsoluteFilePath( const QString& i_strAbsFilePath ) override;
+    virtual void setLocalTrcFileAutoSaveIntervalInMs( int i_iAutoSaveInterval_ms ) override;
+    virtual void setLocalTrcFileSubFileCountMax( int i_iCountMax ) override;
+    virtual void setLocalTrcFileSubFileLineCountMax( int i_iCountMax ) override;
     virtual void setLocalTrcFileCloseFileAfterEachWrite( bool i_bCloseFile ) override;
 public: // overridables of base class CTrcServer
-    void setCacheTrcDataIfNotConnected( bool i_bCacheData ) override;
-    void setCacheTrcDataMaxArrLen( int i_iMaxArrLen ) override;
+    virtual void setCacheTrcDataIfNotConnected( bool i_bCacheData ) override;
+    virtual void setCacheTrcDataMaxArrLen( int i_iMaxArrLen ) override;
+public: // overridables of base class CTrcServer
+    virtual void setTraceSettings( const STrcServerSettings& i_settings ) override;
 public: // overridables of base class CTrcServer
     virtual void traceMethodEnter(
         const CTrcAdminObj* i_pAdminObj,

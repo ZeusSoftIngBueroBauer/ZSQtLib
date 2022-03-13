@@ -101,8 +101,8 @@ typedef void (*TFctTrcServer_SetOrganizationName)( const char* i_szName );
 typedef char* (*TFctTrcServer_GetOrganizationName)();
 typedef void (*TFctTrcServer_SetApplicationName)( const char* i_szName );
 typedef char* (*TFctTrcServer_GetApplicationName)();
-typedef char* (*TFctTrcServer_GetDefaultAdminObjFileAbsoluteFilePath)( const char* i_szIniFileScope );
-typedef char* (*TFctTrcServer_GetDefaultLocalTrcFileAbsoluteFilePath)( const char* i_szIniFileScope );
+typedef char* (*TFctTrcServer_GetDefaultAdminObjFileAbsoluteFilePath)( const char* i_szServerName, const char* i_szIniFileScope );
+typedef char* (*TFctTrcServer_GetDefaultLocalTrcFileAbsoluteFilePath)( const char* i_szServerName, const char* i_szIniFileScope );
 typedef void (*TFctTrcServer_RegisterCurrentThread)( const char* i_szThreadName );
 typedef void (*TFctTrcServer_UnregisterCurrentThread)();
 typedef char* (*TFctTrcServer_GetCurrentThreadName)();
@@ -124,8 +124,8 @@ typedef char* (*TFctTrcServer_getLocalTrcFileAbsoluteFilePath)( const DllIf::CTr
 typedef char* (*TFctTrcServer_getLocalTrcFileCompleteBaseName)( const DllIf::CTrcServer* i_pTrcServer );
 typedef char* (*TFctTrcServer_getLocalTrcFileAbsolutePath)( const DllIf::CTrcServer* i_pTrcServer );
 typedef bool (*TFctTrcServer_isLocalTrcFileActive)( const DllIf::CTrcServer* i_pTrcServer );
-typedef void (*TFctTrcServer_setLocalTrcFileAutoSaveInterval)( DllIf::CTrcServer* i_pTrcServer, int i_iAutoSaveInterval_ms );
-typedef int (*TFctTrcServer_getLocalTrcFileAutoSaveInterval)( const DllIf::CTrcServer* i_pTrcServer );
+typedef void (*TFctTrcServer_setLocalTrcFileAutoSaveIntervalInMs)( DllIf::CTrcServer* i_pTrcServer, int i_iAutoSaveInterval_ms );
+typedef int (*TFctTrcServer_getLocalTrcFileAutoSaveIntervalInMs)( const DllIf::CTrcServer* i_pTrcServer );
 typedef void (*TFctTrcServer_setLocalTrcFileCloseFileAfterEachWrite)( DllIf::CTrcServer* i_pTrcServer, bool i_bCloseFile );
 typedef bool (*TFctTrcServer_getLocalTrcFileCloseFileAfterEachWrite)( const DllIf::CTrcServer* i_pTrcServer );
 typedef void (*TFctTrcServer_setLocalTrcFileSubFileCountMax)( DllIf::CTrcServer* i_pTrcServer, int i_iCountMax );
@@ -205,8 +205,8 @@ TFctTrcServer_getLocalTrcFileAbsoluteFilePath        s_pFctTrcServer_getLocalTrc
 TFctTrcServer_getLocalTrcFileCompleteBaseName        s_pFctTrcServer_getLocalTrcFileCompleteBaseName        = NULL;
 TFctTrcServer_getLocalTrcFileAbsolutePath            s_pFctTrcServer_getLocalTrcFileAbsolutePath            = NULL;
 TFctTrcServer_isLocalTrcFileActive                   s_pFctTrcServer_isLocalTrcFileActive                   = NULL;
-TFctTrcServer_setLocalTrcFileAutoSaveInterval        s_pFctTrcServer_setLocalTrcFileAutoSaveInterval        = NULL;
-TFctTrcServer_getLocalTrcFileAutoSaveInterval        s_pFctTrcServer_getLocalTrcFileAutoSaveInterval        = NULL;
+TFctTrcServer_setLocalTrcFileAutoSaveIntervalInMs    s_pFctTrcServer_setLocalTrcFileAutoSaveIntervalInMs    = NULL;
+TFctTrcServer_getLocalTrcFileAutoSaveIntervalInMs    s_pFctTrcServer_getLocalTrcFileAutoSaveIntervalInMs    = NULL;
 TFctTrcServer_setLocalTrcFileCloseFileAfterEachWrite s_pFctTrcServer_setLocalTrcFileCloseFileAfterEachWrite = NULL;
 TFctTrcServer_getLocalTrcFileCloseFileAfterEachWrite s_pFctTrcServer_getLocalTrcFileCloseFileAfterEachWrite = NULL;
 TFctTrcServer_setLocalTrcFileSubFileCountMax         s_pFctTrcServer_setLocalTrcFileSubFileCountMax         = NULL;
@@ -553,11 +553,11 @@ bool ZS::Trace::DllIf::loadDll(
         s_pFctTrcServer_isLocalTrcFileActive = (TFctTrcServer_isLocalTrcFileActive)GetProcAddress(s_hndIpcTrcDllIf, "TrcServer_isLocalTrcFileActive");
         if( s_pFctTrcServer_isLocalTrcFileActive == NULL ) bOk = false;
 
-        s_pFctTrcServer_setLocalTrcFileAutoSaveInterval = (TFctTrcServer_setLocalTrcFileAutoSaveInterval)GetProcAddress(s_hndIpcTrcDllIf, "TrcServer_setLocalTrcFileAutoSaveInterval");
-        if( s_pFctTrcServer_setLocalTrcFileAutoSaveInterval == NULL ) bOk = false;
+        s_pFctTrcServer_setLocalTrcFileAutoSaveIntervalInMs = (TFctTrcServer_setLocalTrcFileAutoSaveIntervalInMs)GetProcAddress(s_hndIpcTrcDllIf, "TrcServer_setLocalTrcFileAutoSaveIntervalInMs");
+        if( s_pFctTrcServer_setLocalTrcFileAutoSaveIntervalInMs == NULL ) bOk = false;
 
-        s_pFctTrcServer_getLocalTrcFileAutoSaveInterval = (TFctTrcServer_getLocalTrcFileAutoSaveInterval)GetProcAddress(s_hndIpcTrcDllIf, "TrcServer_getLocalTrcFileAutoSaveInterval");
-        if( s_pFctTrcServer_getLocalTrcFileAutoSaveInterval == NULL ) bOk = false;
+        s_pFctTrcServer_getLocalTrcFileAutoSaveIntervalInMs = (TFctTrcServer_getLocalTrcFileAutoSaveIntervalInMs)GetProcAddress(s_hndIpcTrcDllIf, "TrcServer_getLocalTrcFileAutoSaveIntervalInMs");
+        if( s_pFctTrcServer_getLocalTrcFileAutoSaveIntervalInMs == NULL ) bOk = false;
 
         s_pFctTrcServer_setLocalTrcFileCloseFileAfterEachWrite = (TFctTrcServer_setLocalTrcFileCloseFileAfterEachWrite)GetProcAddress(s_hndIpcTrcDllIf, "TrcServer_setLocalTrcFileCloseFileAfterEachWrite");
         if( s_pFctTrcServer_setLocalTrcFileCloseFileAfterEachWrite == NULL ) bOk = false;
@@ -714,8 +714,8 @@ bool ZS::Trace::DllIf::releaseDll()
         s_pFctTrcServer_getLocalTrcFileCompleteBaseName        = NULL;
         s_pFctTrcServer_getLocalTrcFileAbsolutePath            = NULL;
         s_pFctTrcServer_isLocalTrcFileActive                   = NULL;
-        s_pFctTrcServer_setLocalTrcFileAutoSaveInterval        = NULL;
-        s_pFctTrcServer_getLocalTrcFileAutoSaveInterval        = NULL;
+        s_pFctTrcServer_setLocalTrcFileAutoSaveIntervalInMs    = NULL;
+        s_pFctTrcServer_getLocalTrcFileAutoSaveIntervalInMs    = NULL;
         s_pFctTrcServer_setLocalTrcFileCloseFileAfterEachWrite = NULL;
         s_pFctTrcServer_getLocalTrcFileCloseFileAfterEachWrite = NULL;
         s_pFctTrcServer_setLocalTrcFileSubFileCountMax         = NULL;
@@ -1322,12 +1322,12 @@ char* DllIf::CTrcServer::GetApplicationName()
     @return Character buffer containing the files absolute path. The caller
             must free this buffer.
 */
-char* DllIf::CTrcServer::GetDefaultAdminObjFileAbsoluteFilePath( const char* i_szIniFileScope )
+char* DllIf::CTrcServer::GetDefaultAdminObjFileAbsoluteFilePath( const char* i_szServerName, const char* i_szIniFileScope )
 //------------------------------------------------------------------------------
 {
     if( s_hndIpcTrcDllIf != NULL && s_pFctTrcServer_GetDefaultAdminObjFileAbsoluteFilePath != NULL )
     {
-        return s_pFctTrcServer_GetDefaultAdminObjFileAbsoluteFilePath(i_szIniFileScope);
+        return s_pFctTrcServer_GetDefaultAdminObjFileAbsoluteFilePath(i_szServerName, i_szIniFileScope);
     }
     return NULL;
 
@@ -1343,12 +1343,12 @@ char* DllIf::CTrcServer::GetDefaultAdminObjFileAbsoluteFilePath( const char* i_s
     @return Character buffer containing the files absolute path. The caller
             must free this buffer.
 */
-char* DllIf::CTrcServer::GetDefaultLocalTrcFileAbsoluteFilePath( const char* i_szIniFileScope )
+char* DllIf::CTrcServer::GetDefaultLocalTrcFileAbsoluteFilePath( const char* i_szServerName, const char* i_szIniFileScope )
 //------------------------------------------------------------------------------
 {
     if( s_hndIpcTrcDllIf != NULL && s_pFctTrcServer_GetDefaultLocalTrcFileAbsoluteFilePath != NULL )
     {
-        return s_pFctTrcServer_GetDefaultLocalTrcFileAbsoluteFilePath(i_szIniFileScope);
+        return s_pFctTrcServer_GetDefaultLocalTrcFileAbsoluteFilePath(i_szServerName, i_szIniFileScope);
     }
     return NULL;
 
@@ -1629,24 +1629,24 @@ bool DllIf::CTrcServer::isLocalTrcFileActive() const
 } // isLocalTrcFileActive
 
 //------------------------------------------------------------------------------
-void DllIf::CTrcServer::setLocalTrcFileAutoSaveInterval( int i_iAutoSaveInterval_ms )
+void DllIf::CTrcServer::setLocalTrcFileAutoSaveIntervalInMs( int i_iAutoSaveInterval_ms )
 //------------------------------------------------------------------------------
 {
-    if( s_hndIpcTrcDllIf != NULL && s_pFctTrcServer_setLocalTrcFileAutoSaveInterval != NULL )
+    if( s_hndIpcTrcDllIf != NULL && s_pFctTrcServer_setLocalTrcFileAutoSaveIntervalInMs != NULL )
     {
-        s_pFctTrcServer_setLocalTrcFileAutoSaveInterval(this, i_iAutoSaveInterval_ms);
+        s_pFctTrcServer_setLocalTrcFileAutoSaveIntervalInMs(this, i_iAutoSaveInterval_ms);
     }
 } // setLocalTrcFileAutoSaveInterval
 
 //------------------------------------------------------------------------------
-int DllIf::CTrcServer::getLocalTrcFileAutoSaveInterval() const
+int DllIf::CTrcServer::getLocalTrcFileAutoSaveIntervalInMs() const
 //------------------------------------------------------------------------------
 {
     int iAutoSaveInterval_ms = 0;
 
-    if( s_hndIpcTrcDllIf != NULL && s_pFctTrcServer_getLocalTrcFileAutoSaveInterval != NULL )
+    if( s_hndIpcTrcDllIf != NULL && s_pFctTrcServer_getLocalTrcFileAutoSaveIntervalInMs != NULL )
     {
-        iAutoSaveInterval_ms = s_pFctTrcServer_getLocalTrcFileAutoSaveInterval(this);
+        iAutoSaveInterval_ms = s_pFctTrcServer_getLocalTrcFileAutoSaveIntervalInMs(this);
     }
     return iAutoSaveInterval_ms;
 

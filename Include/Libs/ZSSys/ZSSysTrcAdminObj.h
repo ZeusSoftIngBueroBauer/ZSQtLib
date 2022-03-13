@@ -143,6 +143,52 @@ protected: // instance members
 
 }; // class CTrcAdminObj
 
+//******************************************************************************
+/*! @brief Instances of this class are used in combination with class
+           CTrcAdminObjRefGuard to ensure that static class trace admin objects
+           are freed and released if needed.
+*******************************************************************************/
+class ZSSYSDLL_API CTrcAdminObjRefAnchor : public QObject
+{
+    Q_OBJECT
+public: // ctors and dtor
+    CTrcAdminObjRefAnchor(
+        const QString& i_strNameSpace,
+        const QString& i_strClassName,
+        const QString& i_strServerName = "ZSTrcServer" );
+public: // instance methods
+    void allocTrcAdminObj();
+    void releaseTrcAdminObj();
+    CTrcAdminObj* trcAdminObj();
+    void setTraceDetailLevel(int i_iTrcDetailLevel);
+    bool isActive(int i_iFilterDetailLevel) const;
+private slots:
+    void onTrcAdminObjDestroyed(QObject* i_pTrcAdminObj);
+private: // instance members
+    QString       m_strNameSpace;
+    QString       m_strClassName;
+    QString       m_strServerName;
+    CTrcAdminObj* m_pTrcAdminObj;
+};
+
+//******************************************************************************
+/*! @brief Instances of this class are used in combination with class
+           CTrcAdminObjRefGuard to ensure that static class trace admin objects
+           are freed and released if needed.
+*******************************************************************************/
+class ZSSYSDLL_API CTrcAdminObjRefGuard
+{
+public: // ctors and dtor
+    CTrcAdminObjRefGuard(CTrcAdminObjRefAnchor* i_pRefAnchor);
+    ~CTrcAdminObjRefGuard();
+public: // instance methods
+    CTrcAdminObj* trcAdminObj();
+    void setTraceDetailLevel(int i_iTrcDetailLevel);
+    bool isActive(int i_iFilterDetailLevel) const;
+private: // instance members
+    CTrcAdminObjRefAnchor* m_pRefAnchor;
+};
+
 } // namespace Trace
 
 } // namespace ZS

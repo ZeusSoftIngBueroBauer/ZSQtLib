@@ -191,18 +191,18 @@ CModelIdxTreeTrcAdminObjs::~CModelIdxTreeTrcAdminObjs()
     if( s_iInstCount == 1 )
     {
         delete s_pIconBranch;
-        s_pIconBranch = NULL;
+        s_pIconBranch = nullptr;
         delete s_pIconLeave;
-        s_pIconLeave = NULL;
+        s_pIconLeave = nullptr;
 
         delete s_pPxmBranchEntryNormalOff;
-        s_pPxmBranchEntryNormalOff = NULL;
+        s_pPxmBranchEntryNormalOff = nullptr;
         delete s_pPxmBranchEntrySelectedOff;
-        s_pPxmBranchEntrySelectedOff = NULL;
+        s_pPxmBranchEntrySelectedOff = nullptr;
         delete s_pPxmLeaveEntryNormalOff;
-        s_pPxmLeaveEntryNormalOff = NULL;
+        s_pPxmLeaveEntryNormalOff = nullptr;
         delete s_pPxmLeaveEntrySelectedOff;
-        s_pPxmLeaveEntrySelectedOff = NULL;
+        s_pPxmLeaveEntrySelectedOff = nullptr;
 
         s_bIconsCreated = false;
     }

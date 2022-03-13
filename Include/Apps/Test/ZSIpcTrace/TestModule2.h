@@ -64,6 +64,8 @@ public: // instance methods
     void sleep( unsigned long i_uTime_s );
 public: // overridables of base class QThread
     void run();
+private: // class members
+    ZS::Trace::CTrcAdminObj* s_pTrcAdminObj;
 private: // instance members
     CTestModule1*            m_pTestModule1;
     QString                  m_strTestModule2ObjName;
@@ -91,6 +93,8 @@ protected slots:
     void onTmrMessagesTimeout();
 protected: // overridables of base class QObject
     virtual bool event( QEvent* i_pEv ) override;
+private: // class members
+    ZS::Trace::CTrcAdminObj* s_pTrcAdminObj;
 private: // instance members
     CTestModule2Thread*      m_pTestModule2Thread;
     QTimer*                  m_pTmrMessages;

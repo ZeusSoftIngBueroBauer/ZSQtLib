@@ -97,7 +97,6 @@ CWdgtIpcClient::CWdgtIpcClient( const QString& i_strObjName, QWidget* i_pWdgtPar
 //------------------------------------------------------------------------------
     QWidget(i_pWdgtParent),
     m_pClient(nullptr),
-    m_bClientObjNameVisible(true),
     m_bProtocolTypeImageVisible(true),
     m_iLblWidth(120),
     m_pLyt(nullptr),
@@ -111,7 +110,6 @@ CWdgtIpcClient::CWdgtIpcClient( const QString& i_strObjName, QWidget* i_pWdgtPar
     // Connection Settings
     m_hostSettingsClient(),
     m_hostSettingsWidget(),
-    m_pLytLineDefault(nullptr),
     m_pLytCnct(nullptr),
     m_pLblSocketType(nullptr),
     m_pCmbSocketType(nullptr),
@@ -258,24 +256,6 @@ CWdgtIpcClient::CWdgtIpcClient( const QString& i_strObjName, QWidget* i_pWdgtPar
     pLine = new CSepLine();
     m_pLytWdgtClientObjName->addWidget(pLine);
     m_pLytWdgtClientObjName->addSpacing(5);
-
-    // <Line> Default
-    //---------------
-
-    m_pLytLineDefault = new QHBoxLayout();
-    m_pLyt->addLayout(m_pLytLineDefault);
-
-    m_pLytLineDefault->addStretch();
-
-    // <Separator>
-    //-------------
-
-    m_pLyt->addSpacing(5);
-
-    pLine = new CSepLine();
-    m_pLyt->addWidget(pLine);
-
-    m_pLyt->addSpacing(5);
 
     // <FormLayout> Connection Parameters
     //-----------------------------------
@@ -639,7 +619,6 @@ CWdgtIpcClient::~CWdgtIpcClient()
     CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
 
     m_pClient = nullptr;
-    m_bClientObjNameVisible = false;
     m_bProtocolTypeImageVisible = false;
     m_iLblWidth = 0;
     m_pLyt = nullptr;
@@ -654,7 +633,6 @@ CWdgtIpcClient::~CWdgtIpcClient()
     //m_hostSettingsClient;
     //m_hostSettingsClientDefault;
     //m_hostSettingsWidget;
-    m_pLytLineDefault = nullptr;
     m_pLytCnct = nullptr;
     m_pLblSocketType = nullptr;
     m_pCmbSocketType = nullptr;
@@ -829,75 +807,17 @@ void CWdgtIpcClient::setClient( CClient* i_pClient )
 
             if( m_bShowDetails )
             {
+                if( m_pWdgtTrcMsgLog != nullptr )
+                {
+                    m_pWdgtTrcMsgLog->setClient(m_pClient);
+                }
+
                 fillDetailControls();
             }
         } // if( m_pClient != nullptr )
     } // if( m_pClient != i_pClient )
 
 } // setClient
-
-/*==============================================================================
-public: // instance methods
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-void CWdgtIpcClient::setClientObjectNameVisible( bool i_bVisible )
-//------------------------------------------------------------------------------
-{
-    QString strAddTrcInfo;
-
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
-    {
-        strAddTrcInfo = bool2Str(i_bVisible);
-    }
-
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strMethod    */ "setClientObjectNameVisible",
-        /* strAddInfo   */ strAddTrcInfo );
-
-    if( m_bClientObjNameVisible != i_bVisible )
-    {
-        m_bClientObjNameVisible = i_bVisible;
-
-        if( m_bClientObjNameVisible )
-        {
-            m_pLytLineDefault->removeWidget(m_pLblClientState);
-            m_pLytLineDefault->removeWidget(m_pLedClientState);
-
-            m_pLytLineClientObjName->addWidget(m_pLblClientState);
-            m_pLytLineClientObjName->addWidget(m_pLedClientState);
-
-            m_pWdgtClientObjName->show();
-
-            if( m_bProtocolTypeImageVisible )
-            {
-                m_pLytLineDefault->removeWidget(m_pLblClientProtocolTypeImg);
-                int idxLblClientState = m_pLytLineClientObjName->indexOf(m_pLblClientState);
-                m_pLytLineClientObjName->insertWidget(idxLblClientState, m_pLblClientProtocolTypeImg);
-            }
-        }
-        else // if( !m_bClientObjNameVisible )
-        {
-            m_pLytLineClientObjName->removeWidget(m_pLblClientState);
-            m_pLytLineClientObjName->removeWidget(m_pLedClientState);
-
-            m_pWdgtClientObjName->hide();
-
-            m_pLytLineDefault->addWidget(m_pLblClientState);
-            m_pLytLineDefault->addWidget(m_pLedClientState);
-
-            if( m_bProtocolTypeImageVisible )
-            {
-                m_pLytLineClientObjName->removeWidget(m_pLblClientProtocolTypeImg);
-                int idxLblClientState = m_pLytLineDefault->indexOf(m_pLblClientState);
-                m_pLytLineDefault->insertWidget(idxLblClientState, m_pLblClientProtocolTypeImg);
-            }
-        }
-    } // if( m_bClientObjNameVisible != i_bVisible )
-
-} // setClientObjectNameVisible
 
 /*==============================================================================
 public: // instance methods
@@ -951,27 +871,12 @@ void CWdgtIpcClient::setProtocolTypeImageVisible( bool i_bVisible )
 
         if( m_bProtocolTypeImageVisible )
         {
-            if( m_bClientObjNameVisible )
-            {
-                int idxLblClientState = m_pLytLineClientObjName->indexOf(m_pLblClientState);
-                m_pLytLineClientObjName->insertWidget(idxLblClientState, m_pLblClientProtocolTypeImg);
-            }
-            else
-            {
-                int idxLblClientState = m_pLytLineDefault->indexOf(m_pLblClientState);
-                m_pLytLineDefault->insertWidget(idxLblClientState, m_pLblClientProtocolTypeImg);
-            }
+            int idxLblClientState = m_pLytLineClientObjName->indexOf(m_pLblClientState);
+            m_pLytLineClientObjName->insertWidget(idxLblClientState, m_pLblClientProtocolTypeImg);
         }
         else // if( !m_bProtocolTypeImageVisible )
         {
-            if( m_bClientObjNameVisible )
-            {
-                m_pLytLineClientObjName->removeWidget(m_pLblClientProtocolTypeImg);
-            }
-            else
-            {
-                m_pLytLineDefault->removeWidget(m_pLblClientProtocolTypeImg);
-            }
+            m_pLytLineClientObjName->removeWidget(m_pLblClientProtocolTypeImg);
         }
     } // if( m_bProtocolTypeImageVisible != i_bVisible )
 

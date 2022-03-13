@@ -59,8 +59,8 @@ public: // class methods
 
 //------------------------------------------------------------------------------
 CDlgRequestSequencer* CDlgRequestSequencer::CreateInstance(
-    const QString&  i_strObjName,
     const QString&  i_strDlgTitle,
+    const QString&  i_strObjName,
     QWidget*        i_pWdgtParent,
     Qt::WindowFlags i_wFlags )
 //------------------------------------------------------------------------------
@@ -92,8 +92,8 @@ protected: // ctors
 
 //------------------------------------------------------------------------------
 CDlgRequestSequencer::CDlgRequestSequencer(
-    const QString&  i_strObjName,
     const QString&  i_strDlgTitle,
+    const QString&  i_strObjName,
     QWidget*        i_pWdgtParent,
     Qt::WindowFlags i_wFlags ) :
 //------------------------------------------------------------------------------

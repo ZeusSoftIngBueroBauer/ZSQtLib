@@ -725,8 +725,6 @@ void CSrvCltBaseGateway::removeTrcMsgLogObject( QObject* i_pObj )
         m_arpTrcMsgLogObjects.removeAt(idxObj);
     }
 
-    m_arpTrcMsgLogObjects.removeAt(idxObj);
-
 } // removeTrcMsgLogObject
 
 /*==============================================================================

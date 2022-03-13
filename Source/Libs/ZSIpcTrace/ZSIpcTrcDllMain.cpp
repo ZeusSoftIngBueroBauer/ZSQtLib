@@ -917,13 +917,14 @@ ZSIPCTRACEDLL_EXTERN_API char* TrcServer_GetApplicationName()
 } // TrcServer_GetApplicationName
 
 //------------------------------------------------------------------------------
-ZSIPCTRACEDLL_EXTERN_API char* TrcServer_GetDefaultAdminObjFileAbsoluteFilePath( const char* i_szIniFileScope )
+ZSIPCTRACEDLL_EXTERN_API char* TrcServer_GetDefaultAdminObjFileAbsoluteFilePath( const char* i_szServerName, const char* i_szIniFileScope )
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&DllIf_s_mtx);
 
+    QString strServerName = i_szServerName;
     QString strIniFileScope = i_szIniFileScope;
-    std::string stdstrAbsFilePath = CTrcServer::GetDefaultAdminObjFileAbsoluteFilePath(strIniFileScope).toStdString();
+    std::string stdstrAbsFilePath = CTrcServer::GetDefaultAdminObjFileAbsoluteFilePath(strServerName, strIniFileScope).toStdString();
     char* szAbsFilePath = new char[stdstrAbsFilePath.size() + 1];
     memcpy(szAbsFilePath, stdstrAbsFilePath.c_str(), stdstrAbsFilePath.size());
     szAbsFilePath[stdstrAbsFilePath.size()] = 0x00;
@@ -932,13 +933,14 @@ ZSIPCTRACEDLL_EXTERN_API char* TrcServer_GetDefaultAdminObjFileAbsoluteFilePath(
 } // TrcServer_GetDefaultAdminObjFileAbsoluteFilePath
 
 //------------------------------------------------------------------------------
-ZSIPCTRACEDLL_EXTERN_API char* TrcServer_GetDefaultLocalTrcFileAbsoluteFilePath( const char* i_szIniFileScope )
+ZSIPCTRACEDLL_EXTERN_API char* TrcServer_GetDefaultLocalTrcFileAbsoluteFilePath( const char* i_szServerName, const char* i_szIniFileScope )
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&DllIf_s_mtx);
 
+    QString strServerName = i_szServerName;
     QString strIniFileScope = i_szIniFileScope;
-    std::string stdstrAbsFilePath = CTrcServer::GetDefaultLocalTrcFileAbsoluteFilePath(strIniFileScope).toStdString();
+    std::string stdstrAbsFilePath = CTrcServer::GetDefaultLocalTrcFileAbsoluteFilePath(strServerName, strIniFileScope).toStdString();
     char* szAbsFilePath = new char[stdstrAbsFilePath.size() + 1];
     memcpy(szAbsFilePath, stdstrAbsFilePath.c_str(), stdstrAbsFilePath.size());
     szAbsFilePath[stdstrAbsFilePath.size()] = 0x00;
@@ -1565,7 +1567,7 @@ ZSIPCTRACEDLL_EXTERN_API int TrcServer_isLocalTrcFileActive( const DllIf::CTrcSe
 } // TrcServer_isLocalTrcFileActive
 
 //------------------------------------------------------------------------------
-ZSIPCTRACEDLL_EXTERN_API void TrcServer_setLocalTrcFileAutoSaveInterval( const DllIf::CTrcServer* i_pTrcServer, int i_iAutoSaveInterval_ms )
+ZSIPCTRACEDLL_EXTERN_API void TrcServer_setLocalTrcFileAutoSaveIntervalInMs( const DllIf::CTrcServer* i_pTrcServer, int i_iAutoSaveInterval_ms )
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&DllIf_s_mtx);
@@ -1598,14 +1600,14 @@ ZSIPCTRACEDLL_EXTERN_API void TrcServer_setLocalTrcFileAutoSaveInterval( const D
 
         if( pTrcServer != nullptr )
         {
-            pTrcServer->setLocalTrcFileAutoSaveInterval(i_iAutoSaveInterval_ms);
+            pTrcServer->setLocalTrcFileAutoSaveIntervalInMs(i_iAutoSaveInterval_ms);
         }
     } // if( i_pTrcServer != nullptr )
 
-} // TrcServer_setLocalTrcFileAutoSaveInterval
+} // TrcServer_setLocalTrcFileAutoSaveIntervalInMs
 
 //------------------------------------------------------------------------------
-ZSIPCTRACEDLL_EXTERN_API int TrcServer_getLocalTrcFileAutoSaveInterval( const DllIf::CTrcServer* i_pTrcServer )
+ZSIPCTRACEDLL_EXTERN_API int TrcServer_getLocalTrcFileAutoSaveIntervalInMs( const DllIf::CTrcServer* i_pTrcServer )
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&DllIf_s_mtx);
@@ -1620,13 +1622,13 @@ ZSIPCTRACEDLL_EXTERN_API int TrcServer_getLocalTrcFileAutoSaveInterval( const Dl
 
         if( pTrcServer != nullptr )
         {
-            iAutoSaveInterval_ms = pTrcServer->getLocalTrcFileAutoSaveInterval();
+            iAutoSaveInterval_ms = pTrcServer->getLocalTrcFileAutoSaveIntervalInMs();
         }
     } // if( i_pTrcServer != nullptr )
 
     return iAutoSaveInterval_ms;
 
-} // TrcServer_getLocalTrcFileAutoSaveInterval
+} // TrcServer_getLocalTrcFileAutoSaveIntervalInMs
 
 //------------------------------------------------------------------------------
 ZSIPCTRACEDLL_EXTERN_API void TrcServer_setLocalTrcFileCloseFileAfterEachWrite( const DllIf::CTrcServer* i_pTrcServer, bool i_bCloseFile )

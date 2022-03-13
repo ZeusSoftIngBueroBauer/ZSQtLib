@@ -58,8 +58,8 @@ public: // class methods
 
 //------------------------------------------------------------------------------
 CDlgRequestExecTree* CDlgRequestExecTree::CreateInstance(
-    const QString&  i_strObjName,
     const QString&  i_strDlgTitle,
+    const QString&  i_strObjName,
     QWidget*        i_pWdgtParent,
     Qt::WindowFlags i_wFlags )
 //------------------------------------------------------------------------------
@@ -91,8 +91,8 @@ protected: // ctor
 
 //------------------------------------------------------------------------------
 CDlgRequestExecTree::CDlgRequestExecTree(
-    const QString&  i_strObjName,
     const QString&  i_strDlgTitle,
+    const QString&  i_strObjName,
     QWidget*        i_pWdgtParent,
     Qt::WindowFlags i_wFlags ) :
 //------------------------------------------------------------------------------

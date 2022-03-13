@@ -52,6 +52,46 @@ using namespace ZS::Apps::Test::IpcTrace;
 class CTestModule1 : public QObject
 *******************************************************************************/
 
+CTrcAdminObjRefAnchor CTestModule1::s_trcAdminObjRefAnchor(
+    CTestModule1::NameSpace(), CTestModule1::ClassName());
+
+/*==============================================================================
+public: // class methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+QString CTestModule1::classMethod(const QString& i_strMthInArgs)
+//------------------------------------------------------------------------------
+{
+    QString strResult;
+    QString strMthInArgs;
+    QString strMthRet;
+
+    CTrcAdminObjRefGuard trcAdminObjGuard(&s_trcAdminObjRefAnchor);
+
+    if( trcAdminObjGuard.isActive(ETraceDetailLevelMethodArgs) )
+    {
+        strMthInArgs = i_strMthInArgs;
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ trcAdminObjGuard.trcAdminObj(),
+        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* strMethod    */ "classMethod",
+        /* strAddInfo   */ strMthInArgs );
+
+    strResult = "Hello World";
+
+    if( mthTracer.isActive(ETraceDetailLevelMethodArgs) )
+    {
+        strMthRet = strResult;
+        mthTracer.setMethodReturn(strMthRet);
+    }
+
+    return strResult;
+
+} // classMethod
+
 /*==============================================================================
 public: // ctors and dtor
 ==============================================================================*/
@@ -62,26 +102,26 @@ CTestModule1::CTestModule1( const QString& i_strObjName, const QString& i_strTes
     QObject(),
     m_strTestModule2ObjName(i_strTestModule2ObjName),
     m_pTestModule2Thread(nullptr),
-    m_pTestModule2(nullptr),
-    m_pTrcAdminObj(nullptr)
+    m_pTestModule2(nullptr)
 {
     setObjectName(i_strObjName);
 
-    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName());
+    s_trcAdminObjRefAnchor.allocTrcAdminObj();
 
-    m_pTrcAdminObj->setTraceDetailLevel(ETraceDetailLevelMethodArgs);
+    s_trcAdminObjRefAnchor.setTraceDetailLevel(ETraceDetailLevelMethodArgs);
 
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->getTraceDetailLevel() >= ETraceDetailLevelMethodArgs )
+    if( s_trcAdminObjRefAnchor.isActive(ETraceDetailLevelMethodArgs) )
     {
         strMthInArgs  = "ObjName: " + i_strObjName;
         strMthInArgs += ", TestModule2ObjName: " + i_strTestModule2ObjName;
     }
 
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
+        /* pAdminObj    */ s_trcAdminObjRefAnchor.trcAdminObj(),
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* strObjName   */ objectName(),
         /* strMethod    */ "ctor",
         /* strAddInfo   */ strMthInArgs );
 
@@ -92,8 +132,9 @@ CTestModule1::~CTestModule1()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
+        /* pAdminObj    */ s_trcAdminObjRefAnchor.trcAdminObj(),
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* strObjName   */ objectName(),
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
 
@@ -115,8 +156,7 @@ CTestModule1::~CTestModule1()
 
     mthTracer.onAdminObjAboutToBeReleased();
 
-    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
-    m_pTrcAdminObj = nullptr;
+    s_trcAdminObjRefAnchor.releaseTrcAdminObj();
 
 } // dtor
 
@@ -131,13 +171,10 @@ CTestModule2* CTestModule1::createModule2()
     QString strMthInArgs;
     QString strMthRet;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
-    {
-    }
-
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
+        /* pAdminObj    */ s_trcAdminObjRefAnchor.trcAdminObj(),
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* strObjName   */ objectName(),
         /* strMethod    */ "createModule2",
         /* strAddInfo   */ strMthInArgs );
 
@@ -154,7 +191,7 @@ CTestModule2* CTestModule1::createModule2()
     const int c_iMaxWaitCount = 25;
     int iWaitCount = 0;
 
-    if( m_pTestModule2Thread != NULL )
+    if( m_pTestModule2Thread != nullptr )
     {
         m_pTestModule2 = m_pTestModule2Thread->getTestModule2();
 
@@ -176,7 +213,7 @@ CTestModule2* CTestModule1::createModule2()
         }
     }
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( mthTracer.isActive(ETraceDetailLevelMethodArgs) )
     {
         strMthRet = QString(m_pTestModule2 == nullptr ? "null" : m_pTestModule2->objectName());
         mthTracer.trace(strMthRet);
@@ -192,13 +229,10 @@ void CTestModule1::deleteModule2()
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
-    {
-    }
-
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
+        /* pAdminObj    */ s_trcAdminObjRefAnchor.trcAdminObj(),
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* strObjName   */ objectName(),
         /* strMethod    */ "deleteModule2",
         /* strAddInfo   */ strMthInArgs );
 

@@ -71,9 +71,6 @@ public: // overridables of base class ZS::System::GUI::CDialog
 public: // instance methods
     void setServer( CServer* i_pServer );
 public: // instance methods
-    void setServerObjectNameVisible( bool i_bVisible );
-    bool isServerObjectNameVisible() const;
-public: // instance methods
     void setProtocolTypeImage( const QPixmap& i_pxm );
     void setProtocolTypeImageVisible( bool i_bVisible );
     bool isProtocolTypeImageVisible() const;

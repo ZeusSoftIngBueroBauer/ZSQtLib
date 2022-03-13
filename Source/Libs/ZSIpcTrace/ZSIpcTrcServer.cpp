@@ -288,7 +288,7 @@ CIpcTrcServer* CIpcTrcServer::CreateInstance( const QString& i_strName, int i_iT
 
     CIpcTrcServer* pIpcTrcServer = nullptr;
 
-    if (pTrcServer == NULL)
+    if (pTrcServer == nullptr)
     {
         pIpcTrcServer = new CIpcTrcServer(i_strName, i_iTrcDetailLevel);
     }
@@ -362,6 +362,18 @@ protected: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief Creates an instance of the Ipc Trace Server.
+
+    To avoid multiple inheritance from QObject the server is not derived from
+    CIpcServer but aggregates an instance of the Ipc server.
+
+    The IpcServer of the trace server uses the block type "<Len>[Data]".
+
+    \param i_strName [in] Name of the trace server (default "ZSTrcServer")
+    \param i_iTrcDetailLevel [in]
+        If the methods of the trace server itself should be logged a value
+        greater than 0 (ETraceDetailLevelNone) could be passed here.
+*/
 CIpcTrcServer::CIpcTrcServer( const QString& i_strName, int i_iTrcDetailLevel ) :
 //------------------------------------------------------------------------------
     CTrcServer(i_strName, i_iTrcDetailLevel),
@@ -544,7 +556,7 @@ void CIpcTrcServer::setEnabled( bool i_bEnabled )
 
         emit traceSettingsChanged(this);
 
-        if( isConnected() )
+        if( !m_bOnReceivedDataUpdateInProcess && isConnected() )
         {
             QString strMsg;
 
@@ -587,7 +599,7 @@ void CIpcTrcServer::setNewTrcAdminObjsEnabledAsDefault( bool i_bEnabled )
 
         emit traceSettingsChanged(this);
 
-        if( isConnected() )
+        if( !m_bOnReceivedDataUpdateInProcess && isConnected() )
         {
             QString strMsg;
 
@@ -630,7 +642,7 @@ void CIpcTrcServer::setNewTrcAdminObjsDefaultDetailLevel( int i_iDetailLevel )
 
         emit traceSettingsChanged(this);
 
-        if( isConnected() )
+        if( !m_bOnReceivedDataUpdateInProcess && isConnected() )
         {
             QString strMsg;
 
@@ -677,7 +689,7 @@ void CIpcTrcServer::setAdminObjFileAbsoluteFilePath( const QString& i_strAbsFile
 
         emit traceSettingsChanged(this);
 
-        if( isConnected() )
+        if( !m_bOnReceivedDataUpdateInProcess && isConnected() )
         {
             QString strMsg;
 
@@ -729,7 +741,7 @@ void CIpcTrcServer::setUseLocalTrcFile( bool i_bUse )
 
         emit traceSettingsChanged(this);
 
-        if( isConnected() )
+        if( !m_bOnReceivedDataUpdateInProcess && isConnected() )
         {
             QString strMsg;
 
@@ -799,7 +811,7 @@ void CIpcTrcServer::setLocalTrcFileAbsoluteFilePath( const QString& i_strAbsFile
 
         emit traceSettingsChanged(this);
 
-        if( isConnected() )
+        if( !m_bOnReceivedDataUpdateInProcess && isConnected() )
         {
             QString strMsg;
 
@@ -812,6 +824,159 @@ void CIpcTrcServer::setLocalTrcFileAbsoluteFilePath( const QString& i_strAbsFile
     }
 
 } // setLocalTrcFileAbsFilePath
+
+//------------------------------------------------------------------------------
+void CIpcTrcServer::setLocalTrcFileAutoSaveIntervalInMs( int i_iAutoSaveInterval_ms )
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(&s_mtx);
+
+    QString strMthInArgs;
+
+    if( m_pTrcMthFile != nullptr && m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
+    {
+        strMthInArgs = QString::number(i_iAutoSaveInterval_ms);
+    }
+
+    CMethodTracer mthTracer(
+        /* pTrcMthFile        */ m_pTrcMthFile,
+        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
+        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* strNameSpace       */ nameSpace(),
+        /* strClassName       */ className(),
+        /* strObjName         */ objectName(),
+        /* strMethod          */ "setLocalTrcFileAutoSaveIntervalInMs",
+        /* strMthInArgs       */ strMthInArgs );
+
+    if( m_trcSettings.m_iLocalTrcFileAutoSaveInterval_ms != i_iAutoSaveInterval_ms )
+    {
+        m_trcSettings.m_iLocalTrcFileAutoSaveInterval_ms = i_iAutoSaveInterval_ms;
+
+        if( m_pTrcMthFile != nullptr )
+        {
+            if( m_pTrcMthFile->getAutoSaveInterval() != i_iAutoSaveInterval_ms )
+            {
+                m_pTrcMthFile->setAutoSaveInterval(i_iAutoSaveInterval_ms);
+            }
+        }
+
+        emit traceSettingsChanged(this);
+
+        if( !m_bOnReceivedDataUpdateInProcess && isConnected() )
+        {
+            QString strMsg;
+
+            strMsg += systemMsgType2Str(MsgProtocol::ESystemMsgTypeInd) + " ";
+            strMsg += command2Str(MsgProtocol::ECommandUpdate) + " ";
+            strMsg += "<ServerSettings LocalTrcFileAutoSaveInterval_ms=\"" + QString::number(m_trcSettings.m_iLocalTrcFileAutoSaveInterval_ms) + "\"/>";
+
+            sendData( ESocketIdAllSockets, str2ByteArr(strMsg) );
+        }
+    }
+
+} // setLocalTrcFileAutoSaveIntervalInMs
+
+//------------------------------------------------------------------------------
+void CIpcTrcServer::setLocalTrcFileSubFileCountMax( int i_iCountMax )
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(&s_mtx);
+
+    QString strMthInArgs;
+
+    if( m_pTrcMthFile != nullptr && m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
+    {
+        strMthInArgs = QString::number(i_iCountMax);
+    }
+
+    CMethodTracer mthTracer(
+        /* pTrcMthFile        */ m_pTrcMthFile,
+        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
+        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* strNameSpace       */ nameSpace(),
+        /* strClassName       */ className(),
+        /* strObjName         */ objectName(),
+        /* strMethod          */ "setLocalTrcFileSubFileCountMax",
+        /* strMthInArgs       */ strMthInArgs );
+
+    if( m_trcSettings.m_iLocalTrcFileSubFileCountMax != i_iCountMax )
+    {
+        m_trcSettings.m_iLocalTrcFileSubFileCountMax = i_iCountMax;
+
+        if( m_pTrcMthFile != nullptr )
+        {
+            if( m_pTrcMthFile->getSubFileCountMax() != i_iCountMax )
+            {
+                m_pTrcMthFile->setSubFileCountMax(i_iCountMax);
+            }
+        }
+
+        emit traceSettingsChanged(this);
+
+        if( !m_bOnReceivedDataUpdateInProcess && isConnected() )
+        {
+            QString strMsg;
+
+            strMsg += systemMsgType2Str(MsgProtocol::ESystemMsgTypeInd) + " ";
+            strMsg += command2Str(MsgProtocol::ECommandUpdate) + " ";
+            strMsg += "<ServerSettings LocalTrcFileSubFileCountMax=\"" + QString::number(m_trcSettings.m_iLocalTrcFileSubFileCountMax) + "\"/>";
+
+            sendData( ESocketIdAllSockets, str2ByteArr(strMsg) );
+        }
+    }
+
+} // setLocalTrcFileSubFileCountMax
+
+//------------------------------------------------------------------------------
+void CIpcTrcServer::setLocalTrcFileSubFileLineCountMax( int i_iCountMax )
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(&s_mtx);
+
+    QString strMthInArgs;
+
+    if( m_pTrcMthFile != nullptr && m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
+    {
+        strMthInArgs = QString::number(i_iCountMax);
+    }
+
+    CMethodTracer mthTracer(
+        /* pTrcMthFile        */ m_pTrcMthFile,
+        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
+        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* strNameSpace       */ nameSpace(),
+        /* strClassName       */ className(),
+        /* strObjName         */ objectName(),
+        /* strMethod          */ "setLocalTrcFileSubFileLineCountMax",
+        /* strMthInArgs       */ strMthInArgs );
+
+    if( m_trcSettings.m_iLocalTrcFileSubFileLineCountMax != i_iCountMax )
+    {
+        m_trcSettings.m_iLocalTrcFileSubFileLineCountMax = i_iCountMax;
+
+        if( m_pTrcMthFile != nullptr )
+        {
+            if( m_pTrcMthFile->getSubFileLineCountMax() != i_iCountMax )
+            {
+                m_pTrcMthFile->setSubFileLineCountMax(i_iCountMax);
+            }
+        }
+
+        emit traceSettingsChanged(this);
+
+        if( !m_bOnReceivedDataUpdateInProcess && isConnected() )
+        {
+            QString strMsg;
+
+            strMsg += systemMsgType2Str(MsgProtocol::ESystemMsgTypeInd) + " ";
+            strMsg += command2Str(MsgProtocol::ECommandUpdate) + " ";
+            strMsg += "<ServerSettings LocalTrcFileSubFileLineCountMax=\"" + QString::number(m_trcSettings.m_iLocalTrcFileSubFileLineCountMax) + "\"/>";
+
+            sendData( ESocketIdAllSockets, str2ByteArr(strMsg) );
+        }
+    }
+
+} // setLocalTrcFileSubFileLineCountMax
 
 //------------------------------------------------------------------------------
 void CIpcTrcServer::setLocalTrcFileCloseFileAfterEachWrite( bool i_bCloseFile )
@@ -850,7 +1015,7 @@ void CIpcTrcServer::setLocalTrcFileCloseFileAfterEachWrite( bool i_bCloseFile )
 
         emit traceSettingsChanged(this);
 
-        if( isConnected() )
+        if( !m_bOnReceivedDataUpdateInProcess && isConnected() )
         {
             QString strMsg;
 
@@ -897,7 +1062,7 @@ void CIpcTrcServer::setCacheTrcDataIfNotConnected( bool i_bCacheData )
 
         emit traceSettingsChanged(this);
 
-        if( isConnected() )
+        if( !m_bOnReceivedDataUpdateInProcess && isConnected() )
         {
             QString strMsg;
 
@@ -940,7 +1105,7 @@ void CIpcTrcServer::setCacheTrcDataMaxArrLen( int i_iMaxArrLen )
 
         emit traceSettingsChanged(this);
 
-        if( isConnected() )
+        if( !m_bOnReceivedDataUpdateInProcess && isConnected() )
         {
             QString strMsg;
 
@@ -953,6 +1118,88 @@ void CIpcTrcServer::setCacheTrcDataMaxArrLen( int i_iMaxArrLen )
     }
 
 } // setCacheTrcDataIfNotConnected
+
+/*==============================================================================
+public: // instance methods to enable and disable the client and server
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CIpcTrcServer::setTraceSettings( const STrcServerSettings& i_settings )
+//------------------------------------------------------------------------------
+{
+    if( m_trcSettings != i_settings )
+    {
+        // If not called on receiving trace settings from the server and if the client is connected ..
+        if( !m_bOnReceivedDataUpdateInProcess && isConnected() )
+        {
+            QString strMsg;
+
+            strMsg += systemMsgType2Str(MsgProtocol::ESystemMsgTypeInd) + " ";
+            strMsg += command2Str(MsgProtocol::ECommandUpdate) + " ";
+            strMsg += "<ServerSettings";
+
+            if( m_trcSettings.m_bEnabled != i_settings.m_bEnabled )
+            {
+                strMsg += " Enabled=\"" + bool2Str(i_settings.m_bEnabled) + "\"";
+            }
+            if( m_trcSettings.m_bCacheDataIfNotConnected != i_settings.m_bCacheDataIfNotConnected )
+            {
+                strMsg += " CacheDataIfNotConnected=\"" + bool2Str(i_settings.m_bCacheDataIfNotConnected) + "\"";
+            }
+            if( m_trcSettings.m_iCacheDataMaxArrLen != i_settings.m_iCacheDataMaxArrLen )
+            {
+                strMsg += " CacheDataMaxArrLen =\"" + QString::number(i_settings.m_iCacheDataMaxArrLen) + "\"";
+            }
+            if( m_trcSettings.m_strAdminObjFileAbsFilePath != i_settings.m_strAdminObjFileAbsFilePath )
+            {
+                strMsg += " AdminObjFileAbsFilePath=\"" + i_settings.m_strAdminObjFileAbsFilePath + "\"";
+            }
+            if( m_trcSettings.m_bNewTrcAdminObjsEnabledAsDefault != i_settings.m_bNewTrcAdminObjsEnabledAsDefault )
+            {
+                strMsg += " NewTrcAdminObjsEnabledAsDefault=\"" + bool2Str(i_settings.m_bNewTrcAdminObjsEnabledAsDefault) + "\"";
+            }
+            if( m_trcSettings.m_iNewTrcAdminObjsDefaultDetailLevel != i_settings.m_iNewTrcAdminObjsDefaultDetailLevel )
+            {
+                strMsg += " NewTrcAdminObjsDefaultDetailLevel=\"" + QString::number(i_settings.m_iNewTrcAdminObjsDefaultDetailLevel) + "\"";
+            }
+            if( m_trcSettings.m_bUseLocalTrcFile != i_settings.m_bUseLocalTrcFile )
+            {
+                strMsg += " UseLocalTrcFile=\"" + bool2Str(i_settings.m_bUseLocalTrcFile) + "\"";
+            }
+            if( m_trcSettings.m_strLocalTrcFileAbsFilePath != i_settings.m_strLocalTrcFileAbsFilePath )
+            {
+                strMsg += " LocalTrcFileAbsFilePath=\"" + i_settings.m_strLocalTrcFileAbsFilePath + "\"";
+            }
+            if( m_trcSettings.m_iLocalTrcFileAutoSaveInterval_ms != i_settings.m_iLocalTrcFileAutoSaveInterval_ms )
+            {
+                strMsg += " LocalTrcFileAutoSaveInterval_ms=\"" + QString::number(i_settings.m_iLocalTrcFileAutoSaveInterval_ms) + "\"";
+            }
+            if( m_trcSettings.m_iLocalTrcFileSubFileCountMax != i_settings.m_iLocalTrcFileSubFileCountMax )
+            {
+                strMsg += " LocalTrcFileSubFileCountMax=\"" + QString::number(i_settings.m_iLocalTrcFileSubFileCountMax) + "\"";
+            }
+            if( m_trcSettings.m_iLocalTrcFileSubFileLineCountMax != i_settings.m_iLocalTrcFileSubFileLineCountMax )
+            {
+                strMsg += " LocalTrcFileSubFileLineCountMax=\"" + QString::number(i_settings.m_iLocalTrcFileSubFileLineCountMax) + "\"";
+            }
+            if( m_trcSettings.m_bLocalTrcFileCloseFileAfterEachWrite != i_settings.m_bLocalTrcFileCloseFileAfterEachWrite )
+            {
+                strMsg += " LocalTrcFileCloseAfterEachWrite=\"" + bool2Str(i_settings.m_bLocalTrcFileCloseFileAfterEachWrite) + "\"";
+            }
+            strMsg += "/>";
+
+            sendData( ESocketIdAllSockets, str2ByteArr(strMsg) );
+        }
+
+        m_trcSettings = i_settings;
+
+        // If not called on receiving trace settings from the server ..
+        if( !m_bOnReceivedDataUpdateInProcess )
+        {
+            emit traceSettingsChanged(this);
+        }
+    }
+}
 
 /*==============================================================================
 public: // overridables of base class CTrcServer
@@ -2098,15 +2345,20 @@ void CIpcTrcServer::onIpcServerReceivedReqSelect( int i_iSocketId, const QString
                     // Send attributes of the server itself.
                     strDataSnd  = systemMsgType2Str(MsgProtocol::ESystemMsgTypeCon) + " ";
                     strDataSnd += command2Str(MsgProtocol::ECommandSelect) + " ";
-                    strDataSnd += "<ServerSettings ";
+                    strDataSnd += "<ServerSettings";
+                    strDataSnd += " ApplicationName=\"" + QCoreApplication::applicationName() + "\"";
+                    strDataSnd += " ServerName=\"" + objectName() + "\"";
                     strDataSnd += " Enabled=\"" + bool2Str(m_trcSettings.m_bEnabled) + "\"";
-                    strDataSnd += " NewTrcAdminObjsEnabledAsDefault=\"" + bool2Str(m_trcSettings.m_bNewTrcAdminObjsEnabledAsDefault) + "\"";
-                    strDataSnd += " NewTrcAdminObjsDefaultDetailLevel=\"" + QString::number(m_trcSettings.m_iNewTrcAdminObjsDefaultDetailLevel) + "\"";
                     strDataSnd += " CacheDataIfNotConnected=\"" + bool2Str(m_trcSettings.m_bCacheDataIfNotConnected) + "\"";
                     strDataSnd += " CacheDataMaxArrLen=\"" + QString::number(m_trcSettings.m_iCacheDataMaxArrLen) + "\"";
                     strDataSnd += " AdminObjFileAbsFilePath=\"" + m_trcSettings.m_strAdminObjFileAbsFilePath + "\"";
+                    strDataSnd += " NewTrcAdminObjsEnabledAsDefault=\"" + bool2Str(m_trcSettings.m_bNewTrcAdminObjsEnabledAsDefault) + "\"";
+                    strDataSnd += " NewTrcAdminObjsDefaultDetailLevel=\"" + QString::number(m_trcSettings.m_iNewTrcAdminObjsDefaultDetailLevel) + "\"";
                     strDataSnd += " UseLocalTrcFile=\"" + bool2Str(m_trcSettings.m_bUseLocalTrcFile) + "\"";
                     strDataSnd += " LocalTrcFileAbsFilePath=\"" + m_trcSettings.m_strLocalTrcFileAbsFilePath + "\"";
+                    strDataSnd += " LocalTrcFileAutoSaveInterval_ms=\"" + QString::number(m_trcSettings.m_iLocalTrcFileAutoSaveInterval_ms) + "\"";
+                    strDataSnd += " LocalTrcFileSubFileCountMax=\"" + QString::number(m_trcSettings.m_iLocalTrcFileSubFileCountMax) + "\"";
+                    strDataSnd += " LocalTrcFileSubFileLineCountMax=\"" + QString::number(m_trcSettings.m_iLocalTrcFileSubFileLineCountMax) + "\"";
                     strDataSnd += " LocalTrcFileCloseAfterEachWrite=\"" + bool2Str(m_trcSettings.m_bLocalTrcFileCloseFileAfterEachWrite) + "\"";
                     strDataSnd += "/>";
 
@@ -2222,13 +2474,15 @@ void CIpcTrcServer::onIpcServerReceivedReqUpdate( int i_iSocketId, const QString
     QXmlStreamReader xmlStreamReader(i_strData);
 
     QXmlStreamReader::TokenType xmlStreamTokenType;
-    QString                     strElemName;
-    QString                     strAttr;
-    int                         iVal;
-    int                         iObjId;
-    EEnabled                    enabled;
-    int                         iDetailLevel;
-    bool                        bConverted;
+
+    QString  strElemName;
+    QString  strAttr;
+    bool     bVal;
+    int      iVal;
+    int      iObjId;
+    EEnabled enabled;
+    int      iDetailLevel;
+    bool     bOk;
 
     xmlStreamTokenType = xmlStreamReader.readNext();
 
@@ -2248,64 +2502,103 @@ void CIpcTrcServer::onIpcServerReceivedReqUpdate( int i_iSocketId, const QString
 
                 // For best performance start with the most frequently used element names ..
 
-                if( strElemName == "Server" )
+                if( strElemName == "ServerSettings" )
                 {
+                    STrcServerSettings trcServerSettings = m_trcSettings;
+
                     if( xmlStreamReader.attributes().hasAttribute("Enabled") )
                     {
                         strAttr = xmlStreamReader.attributes().value("Enabled").toString();
-                        enabled = CEnumEnabled::toEnumerator(strAttr);
-                        if( enabled == EEnabled::Undefined )
-                        {
-                            xmlStreamReader.raiseError("Attribute \"Enabled\" (" + strAttr + ") for \"" + strElemName + "\" is out of range");
-                        }
-                    }
-                    if( xmlStreamReader.attributes().hasAttribute("NewTrcAdminObjsEnabledAsDefault") )
-                    {
-                        strAttr = xmlStreamReader.attributes().value("NewTrcAdminObjsEnabledAsDefault").toString();
-                        setNewTrcAdminObjsEnabledAsDefault( str2Bool(strAttr) );
-                    }
-                    if( xmlStreamReader.attributes().hasAttribute("NewTrcAdminObjsDefaultDetailLevel") )
-                    {
-                        strAttr = xmlStreamReader.attributes().value("NewTrcAdminObjsDefaultDetailLevel").toString();
-                        iDetailLevel = strAttr.toInt(&bConverted);
-                        if( !bConverted )
-                        {
-                            xmlStreamReader.raiseError("Attribute \"NewTrcAdminObjsDefaultDetailLevel\" (" + strAttr + ") for \"" + strElemName + "\" is out of range");
-                        }
-                        else
-                        {
-                            setNewTrcAdminObjsDefaultDetailLevel(iDetailLevel);
-                        }
+                        bVal = str2Bool(strAttr, &bOk);
+                        if( bOk ) trcServerSettings.m_bEnabled = bVal;
+                        else xmlStreamReader.raiseError("Attribute \"Enabled\" (" + strAttr + ") is out of range");
                     }
                     if( xmlStreamReader.attributes().hasAttribute("CacheDataIfNotConnected") )
                     {
                         strAttr = xmlStreamReader.attributes().value("CacheDataIfNotConnected").toString();
-                        setCacheTrcDataIfNotConnected( str2Bool(strAttr) );
+                        bVal = str2Bool(strAttr, &bOk);
+                        if( bOk ) trcServerSettings.m_bCacheDataIfNotConnected = bVal;
+                        else xmlStreamReader.raiseError("Attribute \"CacheDataIfNotConnected\" (" + strAttr + ") is out of range");
                     }
                     if( xmlStreamReader.attributes().hasAttribute("CacheDataMaxArrLen") )
                     {
                         strAttr = xmlStreamReader.attributes().value("CacheDataMaxArrLen").toString();
-                        iVal = strAttr.toInt(&bConverted);
-                        if( !bConverted )
-                        {
-                            xmlStreamReader.raiseError("Attribute \"CacheDataMaxArrLen\" (" + strAttr + ") for \"" + strElemName + "\" is out of range");
-                        }
-                        else
-                        {
-                            setNewTrcAdminObjsDefaultDetailLevel(iVal);
-                        }
+                        iVal = strAttr.toInt(&bOk);
+                        if( bOk ) trcServerSettings.m_iCacheDataMaxArrLen = iVal;
+                        else xmlStreamReader.raiseError("Attribute \"CacheDataMaxArrLen\" (" + strAttr + ") is out of range");
                     }
-                    if( xmlStreamReader.attributes().hasAttribute("LocalTrcFileCloseAfterEachWrite") )
+                    if( xmlStreamReader.attributes().hasAttribute("AdminObjFileAbsFilePath") )
                     {
-                        strAttr = xmlStreamReader.attributes().value("LocalTrcFileCloseAfterEachWrite").toString();
-                        setLocalTrcFileCloseFileAfterEachWrite( str2Bool(strAttr) );
+                        strAttr = xmlStreamReader.attributes().value("AdminObjFileAbsFilePath").toString();
+                        trcServerSettings.m_strAdminObjFileAbsFilePath = strAttr;
+                    }
+                    if( xmlStreamReader.attributes().hasAttribute("NewTrcAdminObjsEnabledAsDefault") )
+                    {
+                        strAttr = xmlStreamReader.attributes().value("NewTrcAdminObjsEnabledAsDefault").toString();
+                        bVal = str2Bool(strAttr, &bOk);
+                        if( bOk ) trcServerSettings.m_bNewTrcAdminObjsEnabledAsDefault = bVal;
+                        else xmlStreamReader.raiseError("Attribute \"NewTrcAdminObjsEnabledAsDefault\" (" + strAttr + ") is out of range");
+                    }
+                    if( xmlStreamReader.attributes().hasAttribute("NewTrcAdminObjsDefaultDetailLevel") )
+                    {
+                        strAttr = xmlStreamReader.attributes().value("NewTrcAdminObjsDefaultDetailLevel").toString();
+                        iVal = strAttr.toInt(&bOk);
+                        if( bOk ) trcServerSettings.m_iNewTrcAdminObjsDefaultDetailLevel = iVal;
+                        else xmlStreamReader.raiseError("Attribute \"NewTrcAdminObjsDefaultDetailLevel\" (" + strAttr + ") is out of range");
                     }
                     if( xmlStreamReader.attributes().hasAttribute("UseLocalTrcFile") )
                     {
                         strAttr = xmlStreamReader.attributes().value("UseLocalTrcFile").toString();
-                        setUseLocalTrcFile( str2Bool(strAttr) );
+                        bVal = str2Bool(strAttr, &bOk);
+                        if( bOk ) trcServerSettings.m_bUseLocalTrcFile = bVal;
+                        else xmlStreamReader.raiseError("Attribute \"UseLocalTrcFile\" (" + strAttr + ") is out of range");
                     }
-                } // if( strElemName == "Server" )
+                    if( xmlStreamReader.attributes().hasAttribute("LocalTrcFileAbsFilePath") )
+                    {
+                        strAttr = xmlStreamReader.attributes().value("LocalTrcFileAbsFilePath").toString();
+                        trcServerSettings.m_strLocalTrcFileAbsFilePath = strAttr;
+                    }
+                    if( xmlStreamReader.attributes().hasAttribute("LocalTrcFileAutoSaveInterval_ms") )
+                    {
+                        strAttr = xmlStreamReader.attributes().value("LocalTrcFileAutoSaveInterval_ms").toString();
+                        iVal = strAttr.toInt(&bOk);
+                        if( bOk ) trcServerSettings.m_iLocalTrcFileAutoSaveInterval_ms = iVal;
+                        else xmlStreamReader.raiseError("Attribute \"LocalTrcFileAutoSaveInterval_ms\" (" + strAttr + ") is out of range");
+                    }
+                    if( xmlStreamReader.attributes().hasAttribute("LocalTrcFileSubFileCountMax") )
+                    {
+                        strAttr = xmlStreamReader.attributes().value("LocalTrcFileSubFileCountMax").toString();
+                        iVal = strAttr.toInt(&bOk);
+                        if( bOk ) trcServerSettings.m_iLocalTrcFileSubFileCountMax = iVal;
+                        else xmlStreamReader.raiseError("Attribute \"LocalTrcFileSubFileCountMax\" (" + strAttr + ") is out of range");
+                    }
+                    if( xmlStreamReader.attributes().hasAttribute("LocalTrcFileSubFileLineCountMax") )
+                    {
+                        strAttr = xmlStreamReader.attributes().value("LocalTrcFileSubFileLineCountMax").toString();
+                        iVal = strAttr.toInt(&bOk);
+                        if( bOk ) trcServerSettings.m_iLocalTrcFileSubFileLineCountMax = iVal;
+                        else xmlStreamReader.raiseError("Attribute \"LocalTrcFileSubFileLineCountMax\" (" + strAttr + ") is out of range");
+                    }
+                    if( xmlStreamReader.attributes().hasAttribute("LocalTrcFileCloseAfterEachWrite") )
+                    {
+                        strAttr = xmlStreamReader.attributes().value("LocalTrcFileCloseAfterEachWrite").toString();
+                        bVal = str2Bool(strAttr, &bOk);
+                        if( bOk ) trcServerSettings.m_bLocalTrcFileCloseFileAfterEachWrite = bVal;
+                        else xmlStreamReader.raiseError("Attribute \"LocalTrcFileCloseAfterEachWrite\" (" + strAttr + ") is out of range");
+                    }
+
+                    // While receiving the trace settings emitting the traceSettingsChanged signal is blocked
+                    // by setting the flag m_bOnReceivedDataUpdateInProcess to true to accumulate all changes
+                    // and emit the signal just once. setTraceSettings will check if the settings have been
+                    // changed before taken them over. But setTraceSettings will not emit the settings changed
+                    // signal as the flag m_bOnReceivedDataUpdateInProcess is set. So we need to do this check
+                    // here also and emit the signal.
+                    if( trcServerSettings != m_trcSettings )
+                    {
+                        setTraceSettings(trcServerSettings);
+                        emit traceSettingsChanged(this);
+                    }
+                } // if( strElemName == "ServerSettings" )
 
                 if( strElemName == "TrcAdminObj" )
                 {
@@ -2316,8 +2609,8 @@ void CIpcTrcServer::onIpcServerReceivedReqUpdate( int i_iSocketId, const QString
                     if( xmlStreamReader.attributes().hasAttribute("ObjId") )
                     {
                         strAttr = xmlStreamReader.attributes().value("ObjId").toString();
-                        iObjId = strAttr.toInt(&bConverted);
-                        if( !bConverted )
+                        iObjId = strAttr.toInt(&bOk);
+                        if( !bOk )
                         {
                             xmlStreamReader.raiseError("Attribute \"ObjId\" (" + strAttr + ") for \"" + strElemName + "\" is out of range");
                         }
@@ -2334,8 +2627,8 @@ void CIpcTrcServer::onIpcServerReceivedReqUpdate( int i_iSocketId, const QString
                     if( xmlStreamReader.attributes().hasAttribute("DetailLevel") )
                     {
                         strAttr = xmlStreamReader.attributes().value("DetailLevel").toString();
-                        iDetailLevel = strAttr.toInt(&bConverted);
-                        if( !bConverted )
+                        iDetailLevel = strAttr.toInt(&bOk);
+                        if( !bOk )
                         {
                             xmlStreamReader.raiseError("Attribute \"DetailLevel\" (" + strAttr + ") for \"" + strElemName + "\" is out of range");
                         }
@@ -2370,8 +2663,8 @@ void CIpcTrcServer::onIpcServerReceivedReqUpdate( int i_iSocketId, const QString
                     if( xmlStreamReader.attributes().hasAttribute("ObjId") )
                     {
                         strAttr = xmlStreamReader.attributes().value("ObjId").toString();
-                        iObjId = strAttr.toInt(&bConverted);
-                        if( !bConverted )
+                        iObjId = strAttr.toInt(&bOk);
+                        if( !bOk )
                         {
                             xmlStreamReader.raiseError("Attribute \"ObjId\" (" + strAttr + ") for \"" + strElemName + "\" is out of range");
                         }
@@ -2388,8 +2681,8 @@ void CIpcTrcServer::onIpcServerReceivedReqUpdate( int i_iSocketId, const QString
                     if( xmlStreamReader.attributes().hasAttribute("DetailLevel") )
                     {
                         strAttr = xmlStreamReader.attributes().value("DetailLevel").toString();
-                        iDetailLevel = strAttr.toInt(&bConverted);
-                        if( !bConverted )
+                        iDetailLevel = strAttr.toInt(&bOk);
+                        if( !bOk )
                         {
                             xmlStreamReader.raiseError("Attribute \"DetailLevel\" (" + strAttr + ") for \"" + strElemName + "\" is out of range");
                         }

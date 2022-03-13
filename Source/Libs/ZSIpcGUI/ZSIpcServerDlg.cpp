@@ -233,38 +233,6 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CDlgIpcServer::setServerObjectNameVisible( bool i_bVisible )
-//------------------------------------------------------------------------------
-{
-    QString strAddTrcInfo;
-
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
-    {
-        strAddTrcInfo = bool2Str(i_bVisible);
-    }
-
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strMethod    */ "setServerObjectNameVisible",
-        /* strAddInfo   */ strAddTrcInfo );
-
-    m_pWdgtIpcServer->setServerObjectNameVisible(i_bVisible);
-
-} // setServerObjectNameVisible
-
-//------------------------------------------------------------------------------
-bool CDlgIpcServer::isServerObjectNameVisible() const
-//------------------------------------------------------------------------------
-{
-    return m_pWdgtIpcServer->isServerObjectNameVisible();
-}
-
-/*==============================================================================
-public: // instance methods
-==============================================================================*/
-
-//------------------------------------------------------------------------------
 void CDlgIpcServer::setProtocolTypeImage( const QPixmap& i_pxm )
 //------------------------------------------------------------------------------
 {

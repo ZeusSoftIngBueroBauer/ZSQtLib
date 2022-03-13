@@ -27,16 +27,10 @@ may result in using the software modules.
 #ifndef ZSApps_TestIpcTrace_TestModule1_h
 #define ZSApps_TestIpcTrace_TestModule1_h
 
-#include <QtCore/qobject.h>
-#include <QtCore/qstring.h>
+#include "ZSSys/ZSSysTrcAdminObj.h"
 
 namespace ZS
 {
-namespace Trace
-{
-class CTrcAdminObj;
-}
-
 namespace Apps
 {
 namespace Test
@@ -54,6 +48,8 @@ class CTestModule1 : public QObject
 public: // class methods
     static QString NameSpace() { return "ZS::Apps::Test::IpcTrace"; }
     static QString ClassName() { return "CTestModule1"; }
+public: // class methods
+    static QString classMethod(const QString& i_strMthInArgs);
 public: // ctors and dtor
     CTestModule1( const QString& i_strObjName, const QString& i_strTestModule2ObjName );
     virtual ~CTestModule1();
@@ -63,11 +59,12 @@ public: // instance methods
 public: // instance methods
     CTestModule2* createModule2();
     void deleteModule2();
+private: // class members
+    static ZS::Trace::CTrcAdminObjRefAnchor s_trcAdminObjRefAnchor;
 private: // instance members
-    QString                  m_strTestModule2ObjName;
-    CTestModule2Thread*      m_pTestModule2Thread;
-    CTestModule2*            m_pTestModule2;
-    ZS::Trace::CTrcAdminObj* m_pTrcAdminObj;
+    QString             m_strTestModule2ObjName;
+    CTestModule2Thread* m_pTestModule2Thread;
+    CTestModule2*       m_pTestModule2;
 
 }; // class CTestModule1
 

@@ -195,7 +195,13 @@ CTest::CTest() :
         /* szDoTestStepFct */ SLOT(doTestStepTraceClientConnect(ZS::Test::CTestStep*)) );
 
 
-    // TODO Test modules with admin objects and tracing
+    new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " Module1::classMethod",
+        /* strOperation    */ "Module1::classMethod",
+        /* pTSGrpParent    */ pGrp,
+        /* szDoTestStepFct */ SLOT(doTestStepTraceModule1ClassMethod(ZS::Test::CTestStep*)) );
+
 
     new ZS::Test::CTestStep(
         /* pTest           */ this,
@@ -341,9 +347,9 @@ public slots: // test step methods
 void CTest::doTestStepTraceServerCreateInstance( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
-    QStringList strlstActualValues;
+    QStringList strlstResultValues;
 
-    // Desired Values
+    // Expected Values
     //---------------
 
     i_pTestStep->setExpectedValue("TestTrcServer Created");
@@ -365,21 +371,21 @@ void CTest::doTestStepTraceServerCreateInstance( ZS::Test::CTestStep* i_pTestSte
         }
         catch(...)
         {
-            strlstActualValues.append("Exception thrown on CIpcTrcServer::CreateInstance");
+            strlstResultValues.append("Exception thrown on CIpcTrcServer::CreateInstance");
             pTrcServer = nullptr;
         }
     }
 
     if( pTrcServer != nullptr )
     {
-        strlstActualValues.append("TestTrcServer Created");
+        strlstResultValues.append("TestTrcServer Created");
     }
     else
     {
-        strlstActualValues.append("TestTrcServer Not Created");
+        strlstResultValues.append("TestTrcServer Not Created");
     }
 
-    i_pTestStep->setResultValues(strlstActualValues);
+    i_pTestStep->setResultValues(strlstResultValues);
 
 } // doTestStepTraceServerCreateInstance
 
@@ -387,9 +393,9 @@ void CTest::doTestStepTraceServerCreateInstance( ZS::Test::CTestStep* i_pTestSte
 void CTest::doTestStepTraceServerReleaseInstance( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
-    QStringList strlstActualValues;
+    QStringList strlstResultValues;
 
-    // Desired Values
+    // Expected Values
     //---------------
 
     i_pTestStep->setExpectedValue("TestTrcServer Released");
@@ -412,7 +418,7 @@ void CTest::doTestStepTraceServerReleaseInstance( ZS::Test::CTestStep* i_pTestSt
         }
         catch(...)
         {
-            strlstActualValues.append("Exception thrown on CIpcTrcServer::ReleaseInstance");
+            strlstResultValues.append("Exception thrown on CIpcTrcServer::ReleaseInstance");
         }
         m_pTestTrcServer = nullptr;
 
@@ -421,14 +427,14 @@ void CTest::doTestStepTraceServerReleaseInstance( ZS::Test::CTestStep* i_pTestSt
 
     if( pTrcServer == nullptr )
     {
-        strlstActualValues.append("TestTrcServer Released");
+        strlstResultValues.append("TestTrcServer Released");
     }
     else
     {
-        strlstActualValues.append("TestTrcServer Not Released");
+        strlstResultValues.append("TestTrcServer Not Released");
     }
 
-    i_pTestStep->setResultValues(strlstActualValues);
+    i_pTestStep->setResultValues(strlstResultValues);
 
 } // doTestStepTraceServerReleaseInstance
 
@@ -436,10 +442,10 @@ void CTest::doTestStepTraceServerReleaseInstance( ZS::Test::CTestStep* i_pTestSt
 void CTest::doTestStepTraceServerRecallAdminObjs( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
-    QStringList strlstDesiredValues;
-    QStringList strlstActualValues;
+    QStringList strlstExpectedValues;
+    QStringList strlstResultValues;
 
-    // Desired Values
+    // Expected Values
     //---------------
 
     CIpcTrcServer* pTrcServer = nullptr;
@@ -490,24 +496,24 @@ void CTest::doTestStepTraceServerRecallAdminObjs( ZS::Test::CTestStep* i_pTestSt
         errResultInfo.setAddErrInfoDscr(strTrcAdminObjFileAbsFilePath);
     }
 
-    strlstDesiredValues.append(errResultInfo.getResultStr());
+    strlstExpectedValues.append(errResultInfo.getResultStr());
 
-    i_pTestStep->setExpectedValues(strlstDesiredValues);
+    i_pTestStep->setExpectedValues(strlstExpectedValues);
 
     // Test Step
     //----------
 
     if( pTrcServer == nullptr )
     {
-        strlstActualValues.append("Trace server not found");
+        strlstResultValues.append("Trace server not found");
     }
     else
     {
         SErrResultInfo errResultInfo = pTrcServer->recallAdminObjs();
-        strlstActualValues.append(errResultInfo.getResultStr());
+        strlstResultValues.append(errResultInfo.getResultStr());
     }
 
-    i_pTestStep->setResultValues(strlstActualValues);
+    i_pTestStep->setResultValues(strlstResultValues);
 
 } // doTestStepTraceServerRecallAdminObjs
 
@@ -515,9 +521,9 @@ void CTest::doTestStepTraceServerRecallAdminObjs( ZS::Test::CTestStep* i_pTestSt
 void CTest::doTestStepTraceServerSaveAdminObjs( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
-    QStringList strlstActualValues;
+    QStringList strlstResultValues;
 
-    // Desired Values
+    // Expected Values
     //---------------
 
     i_pTestStep->setExpectedValue(result2Str(ZS::System::EResultSuccess));
@@ -538,15 +544,15 @@ void CTest::doTestStepTraceServerSaveAdminObjs( ZS::Test::CTestStep* i_pTestStep
 
     if( pTrcServer == nullptr )
     {
-        strlstActualValues.append("Trace server not found");
+        strlstResultValues.append("Trace server not found");
     }
     else
     {
         SErrResultInfo errResultInfo = pTrcServer->saveAdminObjs();
-        strlstActualValues.append(errResultInfo.getResultStr());
+        strlstResultValues.append(errResultInfo.getResultStr());
     }
 
-    i_pTestStep->setResultValues(strlstActualValues);
+    i_pTestStep->setResultValues(strlstResultValues);
 
 } // doTestStepTraceServerSaveAdminObjs
 
@@ -554,12 +560,12 @@ void CTest::doTestStepTraceServerSaveAdminObjs( ZS::Test::CTestStep* i_pTestStep
 void CTest::doTestStepTraceServerStartup( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
-    QString     strDesiredValue;
-    QStringList strlstDesiredValues;
-    QString     strActualValue;
-    QStringList strlstActualValues;
+    QString     strExpectedValue;
+    QStringList strlstExpectedValues;
+    QString     strResultValue;
+    QStringList strlstResultValues;
 
-    // Desired Values
+    // Expected Values
     //---------------
 
     CIpcTrcServer* pTrcServer = nullptr;
@@ -583,14 +589,14 @@ void CTest::doTestStepTraceServerStartup( ZS::Test::CTestStep* i_pTestStep )
 
         ZS::Ipc::SServerHostSettings hostSettings = pTrcServer->getHostSettings();
 
-        strDesiredValue = ZS::Ipc::CServer::State2Str(Ipc::CServer::EStateListening) + " (";
-        strDesiredValue += hostSettings.m_strLocalHostName;
-        strDesiredValue += ":" + QString::number(hostSettings.m_uLocalPort);
-        strDesiredValue += ":" + ZS::Ipc::socketType2Str(hostSettings.m_socketType);
-        strDesiredValue += ")";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = ZS::Ipc::CServer::State2Str(Ipc::CServer::EStateListening) + " (";
+        strExpectedValue += hostSettings.m_strLocalHostName;
+        strExpectedValue += ":" + QString::number(hostSettings.m_uLocalPort);
+        strExpectedValue += ":" + ZS::Ipc::socketType2Str(hostSettings.m_socketType);
+        strExpectedValue += ")";
+        strlstExpectedValues.append(strExpectedValue);
 
-        i_pTestStep->setExpectedValues(strlstDesiredValues);
+        i_pTestStep->setExpectedValues(strlstExpectedValues);
     }
 
     // Test Step
@@ -606,22 +612,22 @@ void CTest::doTestStepTraceServerStartup( ZS::Test::CTestStep* i_pTestStep )
 
         if( isAsynchronousRequest(pReq) )
         {
-            strActualValue = "startupTrcServer not expected to be asynchronous";
+            strResultValue = "startupTrcServer not expected to be asynchronous";
         }
         else // if( isAsynchronousRequest(pReq) )
         {
             ZS::Ipc::SServerHostSettings hostSettings = pTrcServer->getHostSettings();
 
-            strActualValue = ZS::Ipc::CServer::State2Str(pTrcServer->getState()) + " (";
-            strActualValue += hostSettings.m_strLocalHostName;
-            strActualValue += ":" + QString::number(hostSettings.m_uLocalPort);
-            strActualValue += ":" + ZS::Ipc::socketType2Str(hostSettings.m_socketType);
-            strActualValue += ")";
+            strResultValue = ZS::Ipc::CServer::State2Str(pTrcServer->getState()) + " (";
+            strResultValue += hostSettings.m_strLocalHostName;
+            strResultValue += ":" + QString::number(hostSettings.m_uLocalPort);
+            strResultValue += ":" + ZS::Ipc::socketType2Str(hostSettings.m_socketType);
+            strResultValue += ")";
         }
-        strlstActualValues.append(strActualValue);
+        strlstResultValues.append(strResultValue);
     }
 
-    i_pTestStep->setResultValues(strlstActualValues);
+    i_pTestStep->setResultValues(strlstResultValues);
 
 } // doTestStepTraceServerStartup
 
@@ -629,12 +635,12 @@ void CTest::doTestStepTraceServerStartup( ZS::Test::CTestStep* i_pTestStep )
 void CTest::doTestStepTraceServerShutdown( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
-    QString     strDesiredValue;
-    QStringList strlstDesiredValues;
-    QString     strActualValue;
-    QStringList strlstActualValues;
+    QString     strExpectedValue;
+    QStringList strlstExpectedValues;
+    QString     strResultValue;
+    QStringList strlstResultValues;
 
-    // Desired Values
+    // Expected Values
     //---------------
 
     CIpcTrcServer* pTrcServer = nullptr;
@@ -656,14 +662,14 @@ void CTest::doTestStepTraceServerShutdown( ZS::Test::CTestStep* i_pTestStep )
     {
         ZS::Ipc::SServerHostSettings hostSettings = pTrcServer->getHostSettings();
 
-        strDesiredValue = ZS::Ipc::CServer::State2Str(Ipc::CServer::EStateIdle) + " (";
-        strDesiredValue += hostSettings.m_strLocalHostName;
-        strDesiredValue += ":" + QString::number(hostSettings.m_uLocalPort);
-        strDesiredValue += ":" + ZS::Ipc::socketType2Str(hostSettings.m_socketType);
-        strDesiredValue += ")";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = ZS::Ipc::CServer::State2Str(Ipc::CServer::EStateIdle) + " (";
+        strExpectedValue += hostSettings.m_strLocalHostName;
+        strExpectedValue += ":" + QString::number(hostSettings.m_uLocalPort);
+        strExpectedValue += ":" + ZS::Ipc::socketType2Str(hostSettings.m_socketType);
+        strExpectedValue += ")";
+        strlstExpectedValues.append(strExpectedValue);
 
-        i_pTestStep->setExpectedValues(strlstDesiredValues);
+        i_pTestStep->setExpectedValues(strlstExpectedValues);
     }
 
     // Test Step
@@ -679,21 +685,21 @@ void CTest::doTestStepTraceServerShutdown( ZS::Test::CTestStep* i_pTestStep )
 
         if( isAsynchronousRequest(pReq) )
         {
-            strActualValue = "shutdownTrcServer not expected to be asynchronous";
+            strResultValue = "shutdownTrcServer not expected to be asynchronous";
         }
         else // if( isAsynchronousRequest(pReq) )
         {
             ZS::Ipc::SServerHostSettings hostSettings = pTrcServer->getHostSettings();
 
-            strActualValue = ZS::Ipc::CServer::State2Str(pTrcServer->getState()) + " (";
-            strActualValue += hostSettings.m_strLocalHostName;
-            strActualValue += ":" + QString::number(hostSettings.m_uLocalPort);
-            strActualValue += ":" + ZS::Ipc::socketType2Str(hostSettings.m_socketType);
-            strActualValue += ")";
+            strResultValue = ZS::Ipc::CServer::State2Str(pTrcServer->getState()) + " (";
+            strResultValue += hostSettings.m_strLocalHostName;
+            strResultValue += ":" + QString::number(hostSettings.m_uLocalPort);
+            strResultValue += ":" + ZS::Ipc::socketType2Str(hostSettings.m_socketType);
+            strResultValue += ")";
         }
-        strlstActualValues.append(strActualValue);
+        strlstResultValues.append(strResultValue);
 
-        i_pTestStep->setResultValues(strlstActualValues);
+        i_pTestStep->setResultValues(strlstResultValues);
     }
 
 } // doTestStepTraceServerShutdown
@@ -702,9 +708,9 @@ void CTest::doTestStepTraceServerShutdown( ZS::Test::CTestStep* i_pTestStep )
 void CTest::doTestStepTraceClientCreate( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
-    QStringList strlstActualValues;
+    QStringList strlstResultValues;
 
-    // Desired Values
+    // Expected Values
     //---------------
 
     i_pTestStep->setExpectedValue("TestTrcClient Created");
@@ -725,14 +731,14 @@ void CTest::doTestStepTraceClientCreate( ZS::Test::CTestStep* i_pTestStep )
 
     if( pTrcClient != nullptr )
     {
-        strlstActualValues.append("TestTrcClient Created");
+        strlstResultValues.append("TestTrcClient Created");
     }
     else
     {
-        strlstActualValues.append("TestTrcClient Not Created");
+        strlstResultValues.append("TestTrcClient Not Created");
     }
 
-    i_pTestStep->setResultValues(strlstActualValues);
+    i_pTestStep->setResultValues(strlstResultValues);
 
 } // doTestStepTraceClientCreate
 
@@ -740,9 +746,9 @@ void CTest::doTestStepTraceClientCreate( ZS::Test::CTestStep* i_pTestStep )
 void CTest::doTestStepTraceClientDestroy( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
-    QStringList strlstActualValues;
+    QStringList strlstResultValues;
 
-    // Desired Values
+    // Expected Values
     //---------------
 
     i_pTestStep->setExpectedValue("TestTrcClient Destroyed");
@@ -765,21 +771,21 @@ void CTest::doTestStepTraceClientDestroy( ZS::Test::CTestStep* i_pTestStep )
         }
         catch(...)
         {
-            strlstActualValues.append("Exception thrown on deleting TestTrcClient");
+            strlstResultValues.append("Exception thrown on deleting TestTrcClient");
         }
         pTrcClient = m_pTestTrcClient = nullptr;
     }
 
     if( pTrcClient == nullptr )
     {
-        strlstActualValues.append("TestTrcClient Destroyed");
+        strlstResultValues.append("TestTrcClient Destroyed");
     }
     else
     {
-        strlstActualValues.append("TestTrcClient Not Destroyed");
+        strlstResultValues.append("TestTrcClient Not Destroyed");
     }
 
-    i_pTestStep->setResultValues(strlstActualValues);
+    i_pTestStep->setResultValues(strlstResultValues);
 
 } // doTestStepTraceClientDestroy
 
@@ -787,12 +793,12 @@ void CTest::doTestStepTraceClientDestroy( ZS::Test::CTestStep* i_pTestStep )
 void CTest::doTestStepTraceClientConnect( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
-    QString     strDesiredValue;
-    QStringList strlstDesiredValues;
-    QString     strActualValue;
-    QStringList strlstActualValues;
+    QString     strExpectedValue;
+    QStringList strlstExpectedValues;
+    QString     strResultValue;
+    QStringList strlstResultValues;
 
-    // Desired Values
+    // Expected Values
     //---------------
 
     QVector<CIdxTreeEntry*> arpTreeEntriesServer;
@@ -819,12 +825,12 @@ void CTest::doTestStepTraceClientConnect( ZS::Test::CTestStep* i_pTestStep )
     {
         ZS::Ipc::SClientHostSettings hostSettings = pTrcClient->getHostSettings();
 
-        strDesiredValue = ZS::Ipc::CClient::State2Str(Ipc::CClient::EStateConnected) + " (";
-        strDesiredValue += hostSettings.m_strRemoteHostName;
-        strDesiredValue += ":" + QString::number(hostSettings.m_uRemotePort);
-        strDesiredValue += ":" + ZS::Ipc::socketType2Str(hostSettings.m_socketType);
-        strDesiredValue += ")";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = ZS::Ipc::CClient::State2Str(Ipc::CClient::EStateConnected) + " (";
+        strExpectedValue += hostSettings.m_strRemoteHostName;
+        strExpectedValue += ":" + QString::number(hostSettings.m_uRemotePort);
+        strExpectedValue += ":" + ZS::Ipc::socketType2Str(hostSettings.m_socketType);
+        strExpectedValue += ")";
+        strlstExpectedValues.append(strExpectedValue);
 
         CIdxTreeTrcAdminObjs* pIdxTreeServer = pTrcServer->getTraceAdminObjIdxTree();
 
@@ -842,15 +848,15 @@ void CTest::doTestStepTraceClientConnect( ZS::Test::CTestStep* i_pTestStep )
                 // as they will be created during the connect request.
                 if( !pTrcAdminObj->keyInTree().contains("TrcClient") )
                 {
-                    strDesiredValue = pTrcAdminObj->keyInTree() + ": ";
-                    strDesiredValue += "RefCount: " + QString::number(pTrcAdminObj->getRefCount());
-                    strDesiredValue += ", Enabled: " + CEnumEnabled(pTrcAdminObj->getEnabled()).toString();
-                    strDesiredValue += ", DetailLevel: " + QString::number(pTrcAdminObj->getTraceDetailLevel());
-                    strlstDesiredValues.append(strDesiredValue);
+                    strExpectedValue = pTrcAdminObj->keyInTree() + ": ";
+                    strExpectedValue += "RefCount: " + QString::number(pTrcAdminObj->getRefCount());
+                    strExpectedValue += ", Enabled: " + CEnumEnabled(pTrcAdminObj->getEnabled()).toString();
+                    strExpectedValue += ", DetailLevel: " + QString::number(pTrcAdminObj->getTraceDetailLevel());
+                    strlstExpectedValues.append(strExpectedValue);
                 }
             }
         }
-        i_pTestStep->setExpectedValues(strlstDesiredValues);
+        i_pTestStep->setExpectedValues(strlstExpectedValues);
     }
 
     // Test Step
@@ -895,9 +901,9 @@ void CTest::doTestStepTraceClientConnect( ZS::Test::CTestStep* i_pTestStep )
         }
         else // if( !isAsynchronousRequest(pReq) )
         {
-            strActualValue = "connectTrcClient expected to be asynchronous";
-            strlstActualValues.append(strActualValue);
-            i_pTestStep->setResultValues(strlstActualValues);
+            strResultValue = "connectTrcClient expected to be asynchronous";
+            strlstResultValues.append(strResultValue);
+            i_pTestStep->setResultValues(strlstResultValues);
         }
     }
 
@@ -907,12 +913,12 @@ void CTest::doTestStepTraceClientConnect( ZS::Test::CTestStep* i_pTestStep )
 void CTest::doTestStepTraceClientDisconnect( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
-    QString     strDesiredValue;
-    QStringList strlstDesiredValues;
-    QString     strActualValue;
-    QStringList strlstActualValues;
+    QString     strExpectedValue;
+    QStringList strlstExpectedValues;
+    QString     strResultValue;
+    QStringList strlstResultValues;
 
-    // Desired Values
+    // Expected Values
     //---------------
 
     CIpcTrcClient* pTrcClient = nullptr;
@@ -934,22 +940,22 @@ void CTest::doTestStepTraceClientDisconnect( ZS::Test::CTestStep* i_pTestStep )
     {
         ZS::Ipc::SClientHostSettings hostSettings = pTrcClient->getHostSettings();
 
-        strDesiredValue = ZS::Ipc::CClient::State2Str(Ipc::CClient::EStateUnconnected) + " (";
-        strDesiredValue += hostSettings.m_strRemoteHostName;
-        strDesiredValue += ":" + QString::number(hostSettings.m_uRemotePort);
-        strDesiredValue += ":" + ZS::Ipc::socketType2Str(hostSettings.m_socketType);
-        strDesiredValue += ")";
-        strlstDesiredValues.append(strDesiredValue);
+        strExpectedValue = ZS::Ipc::CClient::State2Str(Ipc::CClient::EStateUnconnected) + " (";
+        strExpectedValue += hostSettings.m_strRemoteHostName;
+        strExpectedValue += ":" + QString::number(hostSettings.m_uRemotePort);
+        strExpectedValue += ":" + ZS::Ipc::socketType2Str(hostSettings.m_socketType);
+        strExpectedValue += ")";
+        strlstExpectedValues.append(strExpectedValue);
 
         // We could also check whether the trace client cleared the index tree of admin objects.
         // But the order in which the onDisconnected slots are invoked when emitting the
         // IpcClient disconnected signal is unpredictable. The test may receive this signal before
         // the trace client and the trace admin object index tree may not be cleared at this time.
 
-        //strDesiredValue = "TrcAdminObjIdxTree.isEmpty";
-        //strlstDesiredValues.append(strDesiredValue);
+        //strExpectedValue = "TrcAdminObjIdxTree.isEmpty";
+        //strlstExpectedValues.append(strExpectedValue);
 
-        i_pTestStep->setExpectedValues(strlstDesiredValues);
+        i_pTestStep->setExpectedValues(strlstExpectedValues);
     }
 
     // Test Step
@@ -976,9 +982,9 @@ void CTest::doTestStepTraceClientDisconnect( ZS::Test::CTestStep* i_pTestStep )
         }
         else // if( isAsynchronousRequest(pReq) )
         {
-            strActualValue = "disconnectTrcClient expected to be asynchronous";
-            strlstActualValues.append(strActualValue);
-            i_pTestStep->setResultValues(strlstActualValues);
+            strResultValue = "disconnectTrcClient expected to be asynchronous";
+            strlstResultValues.append(strResultValue);
+            i_pTestStep->setResultValues(strlstResultValues);
         }
     }
     else
@@ -988,17 +994,66 @@ void CTest::doTestStepTraceClientDisconnect( ZS::Test::CTestStep* i_pTestStep )
 
 } // doTestStepTraceClientDisconnect
 
+//------------------------------------------------------------------------------
+void CTest::doTestStepTraceModule1ClassMethod( ZS::Test::CTestStep* i_pTestStep )
+//------------------------------------------------------------------------------
+{
+    QString     strExpectedValue;
+    QStringList strlstExpectedValues;
+    QString     strResultValue;
+    QStringList strlstResultValues;
+
+    // Expected Values
+    //----------------
+
+    QString strNameSpace  = CTestModule1::NameSpace();
+    QString strClassName  = CTestModule1::ClassName();
+    QString strObjName    = "TestModule1";
+    QString strMthName    = "classMethod";
+    QString strMthInArgs  = "ObjName: TestModule1, TestModule2ObjName: TestModule2";
+    QString strMthOutArgs = "";
+
+    QString strTrcMethodEnter = "-> <" + strNameSpace + "::" + strClassName + "> " + strObjName + "." + strMthName + "(" + strMthInArgs + ")";
+    QString strTrcMethodLeave = "<- <" + strNameSpace + "::" + strClassName + "> " + strObjName + "." + strMthName + "(" + strMthOutArgs + ")";
+
+    strlstExpectedValues.append(strTrcMethodEnter);
+    strlstExpectedValues.append(strTrcMethodLeave);
+
+    i_pTestStep->setExpectedValues(strlstExpectedValues);
+
+    // Test Step
+    //----------
+
+    QString strReturn = CTestModule1::classMethod("InArgs");
+
+    CWidgetCentral* pWdgtCentral = CWidgetCentral::GetInstance();
+
+    CWdgtTrcMthList* pWdgtTrcMthList = pWdgtCentral->getTrcMthListWdgt();
+
+    if( !QObject::connect(
+        /* pObjSender   */ pWdgtTrcMthList,
+        /* szSignal     */ SIGNAL(textItemAdded(const QString&)),
+        /* pObjReceiver */ this,
+        /* szSlot       */ SLOT(onZSTraceClientTrcMthListWdgtTextItemAdded(const QString&)) ) )
+    {
+        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
+    }
+
+    m_pTmrTestStepTimeout->start(5000);
+
+} // doTestStepTraceModule1ClassMethod
+
 #if 0
 //------------------------------------------------------------------------------
 void CTest::doTestStepCreateModule1( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
-    QString     strDesiredValue;
-    QStringList strlstDesiredValues;
-    QString     strActualValue;
-    QStringList strlstActualValues;
+    QString     strExpectedValue;
+    QStringList strlstExpectedValues;
+    QString     strResultValue;
+    QStringList strlstResultValues;
 
-    // Desired Values
+    // Expected Values
     //---------------
 
     QString strNameSpace  = CTestModule1::NameSpace();
@@ -1011,10 +1066,10 @@ void CTest::doTestStepCreateModule1( ZS::Test::CTestStep* i_pTestStep )
     QString strTrcMethodEnter = "-> <" + strNameSpace + "::" + strClassName + "> " + strObjName + "." + strMthName + "(" + strMthInArgs + ")";
     QString strTrcMethodLeave = "<- <" + strNameSpace + "::" + strClassName + "> " + strObjName + "." + strMthName + "(" + strMthOutArgs + ")";
 
-    strlstDesiredValues.append(strTrcMethodEnter);
-    strlstDesiredValues.append(strTrcMethodLeave);
+    strlstExpectedValues.append(strTrcMethodEnter);
+    strlstExpectedValues.append(strTrcMethodLeave);
 
-    i_pTestStep->setExpectedValues(strlstDesiredValues);
+    i_pTestStep->setExpectedValues(strlstExpectedValues);
 
     // Test Step
     //----------
@@ -1044,12 +1099,12 @@ void CTest::doTestStepCreateModule1( ZS::Test::CTestStep* i_pTestStep )
 void CTest::doTestStepDeleteModule1( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
-    QString     strDesiredValue;
-    QStringList strlstDesiredValues;
-    QString     strActualValue;
-    QStringList strlstActualValues;
+    QString     strExpectedValue;
+    QStringList strlstExpectedValues;
+    QString     strResultValue;
+    QStringList strlstResultValues;
 
-    // Desired Values
+    // Expected Values
     //---------------
 
     QString strNameSpace  = CTestModule1::NameSpace();
@@ -1062,10 +1117,10 @@ void CTest::doTestStepDeleteModule1( ZS::Test::CTestStep* i_pTestStep )
     QString strTrcMethodEnter = "-> <" + strNameSpace + "::" + strClassName + "> " + strObjName + "." + strMthName + "(" + strMthInArgs + ")";
     QString strTrcMethodLeave = "<- <" + strNameSpace + "::" + strClassName + "> " + strObjName + "." + strMthName + "(" + strMthOutArgs + ")";
 
-    strlstDesiredValues.append(strTrcMethodEnter);
-    strlstDesiredValues.append(strTrcMethodLeave);
+    strlstExpectedValues.append(strTrcMethodEnter);
+    strlstExpectedValues.append(strTrcMethodLeave);
 
-    i_pTestStep->setExpectedValues(strlstDesiredValues);
+    i_pTestStep->setExpectedValues(strlstExpectedValues);
 
     // Test Step
     //----------
@@ -1096,12 +1151,12 @@ void CTest::doTestStepDeleteModule1( ZS::Test::CTestStep* i_pTestStep )
 void CTest::doTestStepCreateModule2( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
-    QString     strDesiredValue;
-    QStringList strlstDesiredValues;
-    QString     strActualValue;
-    QStringList strlstActualValues;
+    QString     strExpectedValue;
+    QStringList strlstExpectedValues;
+    QString     strResultValue;
+    QStringList strlstResultValues;
 
-    // Desired Values
+    // Expected Values
     //---------------
 
     QString strNameSpace  = CTestModule2::NameSpace();
@@ -1115,24 +1170,24 @@ void CTest::doTestStepCreateModule2( ZS::Test::CTestStep* i_pTestStep )
 
     QString strTrcMethodLeave = "<- <" + strNameSpace + "::" + strClassName + "> " + strObjName + "." + strMthName + "(" + strMthOutArgs + ")";
     if( !strMthRet.isEmpty() ) strTrcMethodLeave += ": " + strMthRet;
-    strlstDesiredValues.append(strTrcMethodLeave);
+    strlstExpectedValues.append(strTrcMethodLeave);
 
     strMthTrace = "   -> <" + strNameSpace + "::" + strClassName + "> TestModule2.ctor(TestModule2Thread: TestModule2, ObjName: TestModule2)";
-    strlstDesiredValues.append(strMthTrace);
+    strlstExpectedValues.append(strMthTrace);
 
     strMthTrace = "   <- <" + strNameSpace + "::" + strClassName + "> TestModule2.ctor()";
-    strlstDesiredValues.append(strMthTrace);
+    strlstExpectedValues.append(strMthTrace);
 
     strMthTrace = "                                 <- <" + strNameSpace + "::" + strClassName + "> TestModule2.recursiveTraceMethod(): 10";
-    strlstDesiredValues.append(strMthTrace);
+    strlstExpectedValues.append(strMthTrace);
 
     strMthTrace = "   <- <" + strNameSpace + "::" + strClassName + "> TestModule2.recursiveTraceMethod(): 0";
-    strlstDesiredValues.append(strMthTrace);
+    strlstExpectedValues.append(strMthTrace);
 
     strMthTrace = "   -> <" + strNameSpace + "::" + strClassName + "> TestModule2.event(Msg: ZS::Apps::Test::IpcTrace::ReqTest)";
-    strlstDesiredValues.append(strMthTrace);
+    strlstExpectedValues.append(strMthTrace);
 
-    i_pTestStep->setExpectedValues(strlstDesiredValues);
+    i_pTestStep->setExpectedValues(strlstExpectedValues);
 
     // Test Step
     //----------
@@ -1165,12 +1220,12 @@ void CTest::doTestStepCreateModule2( ZS::Test::CTestStep* i_pTestStep )
 void CTest::doTestStepDeleteModule2( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
-    QString     strDesiredValue;
-    QStringList strlstDesiredValues;
-    QString     strActualValue;
-    QStringList strlstActualValues;
+    QString     strExpectedValue;
+    QStringList strlstExpectedValues;
+    QString     strResultValue;
+    QStringList strlstResultValues;
 
-    // Desired Values
+    // Expected Values
     //---------------
 
     QString strNameSpace  = CTestModule2::NameSpace();
@@ -1182,9 +1237,9 @@ void CTest::doTestStepDeleteModule2( ZS::Test::CTestStep* i_pTestStep )
 
     QString strTrcMethodLeave = "<- <" + strNameSpace + "::" + strClassName + "> " + strObjName + "." + strMthName + "(" + strMthOutArgs + ")";
 
-    strlstDesiredValues.append(strTrcMethodLeave);
+    strlstExpectedValues.append(strTrcMethodLeave);
 
-    i_pTestStep->setExpectedValues(strlstDesiredValues);
+    i_pTestStep->setExpectedValues(strlstExpectedValues);
 
     // Test Step
     //----------
@@ -1298,42 +1353,42 @@ void CTest::onRequestChanged( ZS::System::SRequestDscr i_reqDscr )
                         // is finished after the trace client is connected. But this should not be the case.
                         if( arpTreeEntriesServer.size() == 0 )
                         {
-                            QString     strActualValue;
-                            QStringList strlstActualValues;
+                            QString     strResultValue;
+                            QStringList strlstResultValues;
 
                             ZS::Ipc::SClientHostSettings hostSettings = pTrcClient->getHostSettings();
 
-                            strActualValue = ZS::Ipc::CClient::State2Str(pTrcClient->getState()) + " (";
-                            strActualValue += hostSettings.m_strRemoteHostName;
-                            strActualValue += ":" + QString::number(hostSettings.m_uRemotePort);
-                            strActualValue += ":" + ZS::Ipc::socketType2Str(hostSettings.m_socketType);
-                            strActualValue += ")";
-                            strlstActualValues.append(strActualValue);
+                            strResultValue = ZS::Ipc::CClient::State2Str(pTrcClient->getState()) + " (";
+                            strResultValue += hostSettings.m_strRemoteHostName;
+                            strResultValue += ":" + QString::number(hostSettings.m_uRemotePort);
+                            strResultValue += ":" + ZS::Ipc::socketType2Str(hostSettings.m_socketType);
+                            strResultValue += ")";
+                            strlstResultValues.append(strResultValue);
 
-                            pTestStep->setResultValues(strlstActualValues);
+                            pTestStep->setResultValues(strlstResultValues);
                         }
                     } // if( pTestStep->getOperation().contains("TrcClient::connect") )
 
                     else if( pTestStep->getOperation().contains("TrcClient::disconnect") )
                     {
-                        QString     strActualValue;
-                        QStringList strlstActualValues;
+                        QString     strResultValue;
+                        QStringList strlstResultValues;
 
                         ZS::Ipc::SClientHostSettings hostSettings = pTrcClient->getHostSettings();
 
-                        strActualValue = ZS::Ipc::CClient::State2Str(pTrcClient->getState()) + " (";
-                        strActualValue += hostSettings.m_strRemoteHostName;
-                        strActualValue += ":" + QString::number(hostSettings.m_uRemotePort);
-                        strActualValue += ":" + ZS::Ipc::socketType2Str(hostSettings.m_socketType);
-                        strActualValue += ")";
-                        strlstActualValues.append(strActualValue);
+                        strResultValue = ZS::Ipc::CClient::State2Str(pTrcClient->getState()) + " (";
+                        strResultValue += hostSettings.m_strRemoteHostName;
+                        strResultValue += ":" + QString::number(hostSettings.m_uRemotePort);
+                        strResultValue += ":" + ZS::Ipc::socketType2Str(hostSettings.m_socketType);
+                        strResultValue += ")";
+                        strlstResultValues.append(strResultValue);
 
                         // We could also check whether the trace client cleared the index tree of admin objects.
                         // But the order in which the onDisconnected slots are invoked when emitting the
                         // IpcClient disconnected signal is unpredictable. The test may receive this signal before
                         // the trace client and the trace admin object index tree may not be cleared at this time.
 
-                        pTestStep->setResultValues(strlstActualValues);
+                        pTestStep->setResultValues(strlstResultValues);
 
                     } // if( pTestStep->getOperation().contains("TrcClient::disconnect") )
                 } // if( pTrcClient != nullptr )
@@ -1427,17 +1482,17 @@ void CTest::onZSTraceClientTraceAdminObjInserted( QObject* /*i_pTrcClient*/, con
                         /* pObjReceiver */ this,
                         /* szSlot       */ SLOT(onZSTraceClientTraceAdminObjInserted(QObject*, const QString&)) );
 
-                    QString     strActualValue;
-                    QStringList strlstActualValues;
+                    QString     strResultValue;
+                    QStringList strlstResultValues;
 
                     ZS::Ipc::SClientHostSettings hostSettings = pTrcClient->getHostSettings();
 
-                    strActualValue = ZS::Ipc::CClient::State2Str(pTrcClient->getState()) + " (";
-                    strActualValue += hostSettings.m_strRemoteHostName;
-                    strActualValue += ":" + QString::number(hostSettings.m_uRemotePort);
-                    strActualValue += ":" + ZS::Ipc::socketType2Str(hostSettings.m_socketType);
-                    strActualValue += ")";
-                    strlstActualValues.append(strActualValue);
+                    strResultValue = ZS::Ipc::CClient::State2Str(pTrcClient->getState()) + " (";
+                    strResultValue += hostSettings.m_strRemoteHostName;
+                    strResultValue += ":" + QString::number(hostSettings.m_uRemotePort);
+                    strResultValue += ":" + ZS::Ipc::socketType2Str(hostSettings.m_socketType);
+                    strResultValue += ")";
+                    strlstResultValues.append(strResultValue);
 
                     for( auto& pTreeEntry : arpTreeEntriesClient )
                     {
@@ -1451,16 +1506,16 @@ void CTest::onZSTraceClientTraceAdminObjInserted( QObject* /*i_pTrcClient*/, con
                             // as they will be created during the connect request.
                             if( !pTrcAdminObj->keyInTree().contains("TrcClient") )
                             {
-                                strActualValue = pTrcAdminObj->keyInTree() + ": ";
-                                strActualValue += "RefCount: " + QString::number(pTrcAdminObj->getRefCount());
-                                strActualValue += ", Enabled: " + CEnumEnabled(pTrcAdminObj->getEnabled()).toString();
-                                strActualValue += ", DetailLevel: " + QString::number(pTrcAdminObj->getTraceDetailLevel());
-                                strlstActualValues.append(strActualValue);
+                                strResultValue = pTrcAdminObj->keyInTree() + ": ";
+                                strResultValue += "RefCount: " + QString::number(pTrcAdminObj->getRefCount());
+                                strResultValue += ", Enabled: " + CEnumEnabled(pTrcAdminObj->getEnabled()).toString();
+                                strResultValue += ", DetailLevel: " + QString::number(pTrcAdminObj->getTraceDetailLevel());
+                                strlstResultValues.append(strResultValue);
                             }
                         }
                     }
 
-                    pTestStep->setResultValues(strlstActualValues);
+                    pTestStep->setResultValues(strlstResultValues);
 
                 } // if( bTestStepFinished )
             } // if( pTestStep->getOperation().contains("TrcClient::connect") )
@@ -1512,8 +1567,8 @@ void CTest::onZSTraceClientTrcMthListWdgtTextItemAdded( const QString& i_strText
 
                 if( strText.contains(strNameSpace) && strText.contains(strClassName) && strText.contains(strObjName) && strText.contains(strMthName) )
                 {
-                    QString     strActualValue;
-                    QStringList strlstActualValues;
+                    QString     strResultValue;
+                    QStringList strlstResultValues;
 
                     CWidgetCentral* pWdgtCentral = CWidgetCentral::GetInstance();
 
@@ -1536,13 +1591,13 @@ void CTest::onZSTraceClientTrcMthListWdgtTextItemAdded( const QString& i_strText
 
                     QTextCursor textCursor = pDocTrcMthList->find(strTrcMethodEnter);
 
-                    if( !textCursor.isNull() ) strlstActualValues.append(strTrcMethodEnter);
-                    else strlstActualValues.append(strTrcMethodEnter + ": not found in text edit widget");
+                    if( !textCursor.isNull() ) strlstResultValues.append(strTrcMethodEnter);
+                    else strlstResultValues.append(strTrcMethodEnter + ": not found in text edit widget");
 
                     textCursor = pDocTrcMthList->find(strTrcMethodLeave);
 
-                    if( !textCursor.isNull() ) strlstActualValues.append(strTrcMethodLeave);
-                    else strlstActualValues.append(strTrcMethodLeave + ": not found in text edit widget");
+                    if( !textCursor.isNull() ) strlstResultValues.append(strTrcMethodLeave);
+                    else strlstResultValues.append(strTrcMethodLeave + ": not found in text edit widget");
 
                     // Range of IniFileScope: ["AppDir", "User", "System"]
                     #ifdef __linux__
@@ -1574,7 +1629,7 @@ void CTest::onZSTraceClientTrcMthListWdgtTextItemAdded( const QString& i_strText
 
                     if( !fileTrcMthFile.open(QIODevice::ReadOnly|QIODevice::Text) )
                     {
-                        strlstActualValues.append("Could not open file " + strTrcMthFileAbsFilePath);
+                        strlstResultValues.append("Could not open file " + strTrcMthFileAbsFilePath);
                     }
                     else
                     {
@@ -1585,11 +1640,11 @@ void CTest::onZSTraceClientTrcMthListWdgtTextItemAdded( const QString& i_strText
                         bool bTrcMethodEnterFound = strTrcMthFile.contains(strTrcMethodEnter);
                         bool bTrcMethodLeaveFound = strTrcMthFile.contains(strTrcMethodLeave);
 
-                        if( !bTrcMethodEnterFound ) strlstActualValues.append(strTrcMethodEnter + ": not found in trace method file");
-                        if( !bTrcMethodLeaveFound ) strlstActualValues.append(strTrcMethodLeave + ": not found in trace method file");
+                        if( !bTrcMethodEnterFound ) strlstResultValues.append(strTrcMethodEnter + ": not found in trace method file");
+                        if( !bTrcMethodLeaveFound ) strlstResultValues.append(strTrcMethodLeave + ": not found in trace method file");
                     }
 
-                    pTestStep->setResultValues(strlstActualValues);
+                    pTestStep->setResultValues(strlstResultValues);
 
                 } // if( strText.contains(strNameSpace) && strText.contains(strClassName) && strText.contains(strObjName) && strText.contains(strMthName) )
             } // if( strText.contains("<-") )
@@ -1645,8 +1700,8 @@ void CTest::onZSTraceClientTrcMthListWdgtTextItemAdded( const QString& i_strText
 
                 if( strText.contains(strNameSpace) && strText.contains(strClassName) && strText.contains(strObjName) && strText.contains(strMthName) && strText.contains(strMthRet) )
                 {
-                    QString     strActualValue;
-                    QStringList strlstActualValues;
+                    QString     strResultValue;
+                    QStringList strlstResultValues;
 
                     CWidgetCentral* pWdgtCentral = CWidgetCentral::GetInstance();
 
@@ -1669,38 +1724,38 @@ void CTest::onZSTraceClientTrcMthListWdgtTextItemAdded( const QString& i_strText
 
                     QTextCursor textCursor = pDocTrcMthList->find(strTrcMethodLeave);
 
-                    if( !textCursor.isNull() ) strlstActualValues.append(strTrcMethodLeave);
-                    else strlstActualValues.append(strTrcMethodLeave + ": not found in text edit widget");
+                    if( !textCursor.isNull() ) strlstResultValues.append(strTrcMethodLeave);
+                    else strlstResultValues.append(strTrcMethodLeave + ": not found in text edit widget");
 
                     if( !strTrc1.isEmpty() )
                     {
                         textCursor = pDocTrcMthList->find(strTrc1);
-                        if( !textCursor.isNull() ) strlstActualValues.append(strTrc1);
-                        else strlstActualValues.append(strTrc1 + ": not found in text edit widget");
+                        if( !textCursor.isNull() ) strlstResultValues.append(strTrc1);
+                        else strlstResultValues.append(strTrc1 + ": not found in text edit widget");
                     }
                     if( !strTrc2.isEmpty() )
                     {
                         textCursor = pDocTrcMthList->find(strTrc2);
-                        if( !textCursor.isNull() ) strlstActualValues.append(strTrc2);
-                        else strlstActualValues.append(strTrc2 + ": not found in text edit widget");
+                        if( !textCursor.isNull() ) strlstResultValues.append(strTrc2);
+                        else strlstResultValues.append(strTrc2 + ": not found in text edit widget");
                     }
                     if( !strTrc3.isEmpty() )
                     {
                         textCursor = pDocTrcMthList->find(strTrc3);
-                        if( !textCursor.isNull() ) strlstActualValues.append(strTrc3);
-                        else strlstActualValues.append(strTrc3 + ": not found in text edit widget");
+                        if( !textCursor.isNull() ) strlstResultValues.append(strTrc3);
+                        else strlstResultValues.append(strTrc3 + ": not found in text edit widget");
                     }
                     if( !strTrc4.isEmpty() )
                     {
                         textCursor = pDocTrcMthList->find(strTrc4);
-                        if( !textCursor.isNull() ) strlstActualValues.append(strTrc4);
-                        else strlstActualValues.append(strTrc4 + ": not found in text edit widget");
+                        if( !textCursor.isNull() ) strlstResultValues.append(strTrc4);
+                        else strlstResultValues.append(strTrc4 + ": not found in text edit widget");
                     }
                     if( !strTrc5.isEmpty() )
                     {
                         textCursor = pDocTrcMthList->find(strTrc5);
-                        if( !textCursor.isNull() ) strlstActualValues.append(strTrc5);
-                        else strlstActualValues.append(strTrc5 + ": not found in text edit widget");
+                        if( !textCursor.isNull() ) strlstResultValues.append(strTrc5);
+                        else strlstResultValues.append(strTrc5 + ": not found in text edit widget");
                     }
 
                     // Range of IniFileScope: ["AppDir", "User", "System"]
@@ -1733,7 +1788,7 @@ void CTest::onZSTraceClientTrcMthListWdgtTextItemAdded( const QString& i_strText
 
                     if( !fileTrcMthFile.open(QIODevice::ReadOnly|QIODevice::Text) )
                     {
-                        strlstActualValues.append("Could not open file " + strTrcMthFileAbsFilePath);
+                        strlstResultValues.append("Could not open file " + strTrcMthFileAbsFilePath);
                     }
                     else
                     {
@@ -1743,36 +1798,36 @@ void CTest::onZSTraceClientTrcMthListWdgtTextItemAdded( const QString& i_strText
 
                         bool bStringFound = strTrcMthFile.contains(strTrcMethodLeave);
 
-                        if( !bStringFound ) strlstActualValues.append(strTrcMethodLeave + ": not found in trace method file");
+                        if( !bStringFound ) strlstResultValues.append(strTrcMethodLeave + ": not found in trace method file");
 
                         if( !strTrc1.isEmpty() )
                         {
                             bStringFound = strTrcMthFile.contains(strTrc1);
-                            if( !bStringFound ) strlstActualValues.append(strTrc1 + ": not found in trace method file");
+                            if( !bStringFound ) strlstResultValues.append(strTrc1 + ": not found in trace method file");
                         }
                         if( !strTrc2.isEmpty() )
                         {
                             bStringFound = strTrcMthFile.contains(strTrc2);
-                            if( !bStringFound ) strlstActualValues.append(strTrc2 + ": not found in trace method file");
+                            if( !bStringFound ) strlstResultValues.append(strTrc2 + ": not found in trace method file");
                         }
                         if( !strTrc3.isEmpty() )
                         {
                             bStringFound = strTrcMthFile.contains(strTrc3);
-                            if( !bStringFound ) strlstActualValues.append(strTrc3 + ": not found in trace method file");
+                            if( !bStringFound ) strlstResultValues.append(strTrc3 + ": not found in trace method file");
                         }
                         if( !strTrc4.isEmpty() )
                         {
                             bStringFound = strTrcMthFile.contains(strTrc4);
-                            if( !bStringFound ) strlstActualValues.append(strTrc4 + ": not found in trace method file");
+                            if( !bStringFound ) strlstResultValues.append(strTrc4 + ": not found in trace method file");
                         }
                         if( !strTrc5.isEmpty() )
                         {
                             bStringFound = strTrcMthFile.contains(strTrc5);
-                            if( !bStringFound ) strlstActualValues.append(strTrc5 + ": not found in trace method file");
+                            if( !bStringFound ) strlstResultValues.append(strTrc5 + ": not found in trace method file");
                         }
                     }
 
-                    pTestStep->setResultValues(strlstActualValues);
+                    pTestStep->setResultValues(strlstResultValues);
 
                 } // if( strText.contains(strNameSpace) && strText.contains(strClassName) && strText.contains(strObjName) && strText.contains(strMthName) )
             } // if( strText.contains("<-") )
@@ -1789,13 +1844,13 @@ void CTest::onTimerTestStepTimeout()
 
     if( pTestStep != nullptr )
     {
-        QString     strActualValue;
-        QStringList strlstActualValues;
+        QString     strResultValue;
+        QStringList strlstResultValues;
 
-        strActualValue = "Test step not finished in time";
-        strlstActualValues.append(strActualValue);
+        strResultValue = "Test step not finished in time";
+        strlstResultValues.append(strResultValue);
 
-        pTestStep->setResultValues(strlstActualValues);
+        pTestStep->setResultValues(strlstResultValues);
 
         if( pTestStep->getOperation() == "CIpcTrcClient::connect" )
         {

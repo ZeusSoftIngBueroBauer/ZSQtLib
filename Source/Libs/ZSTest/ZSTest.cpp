@@ -64,23 +64,10 @@ QString CTest::GetDefaultTestStepsAbsFilePath( const QString& i_strIniFileScope 
 //------------------------------------------------------------------------------
 {
     QString strAppConfigDir = ZS::System::getAppConfigDir(i_strIniFileScope);
-
-    QString strAppNameNormalized = QCoreApplication::applicationName();
-
-    // The application name may contain characters which are invalid in file names:
-    strAppNameNormalized.remove(":");
-    strAppNameNormalized.remove(" ");
-    strAppNameNormalized.remove("\\");
-    strAppNameNormalized.remove("/");
-    strAppNameNormalized.remove("<");
-    strAppNameNormalized.remove(">");
-
     QString strFileSuffix = "xml";
-    QString strFileBaseName = strAppNameNormalized + "-TestSteps";
-
+    QString strFileBaseName = "TestSteps";
     return strAppConfigDir + "/" + strFileBaseName + "." + strFileSuffix;
-
-} // GetDefaultAdminObjFileAbsoluteFilePath
+}
 
 /*==============================================================================
 public: // ctors and dtor

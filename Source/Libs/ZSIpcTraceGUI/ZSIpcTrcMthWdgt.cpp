@@ -137,26 +137,6 @@ CWdgtTrcMthList::CWdgtTrcMthList(
     m_pBtnConnect(nullptr),
     m_pProgressBarCnct(nullptr)
 {
-    // Calculate default file path for thread colors definition
-    //--------------------------------------------------------
-
-    QString strAppNameNormalized = QCoreApplication::applicationName();
-
-    // The application name may contain characters which are invalid in file names:
-    strAppNameNormalized.remove(":");
-    strAppNameNormalized.remove(" ");
-    strAppNameNormalized.remove("\\");
-    strAppNameNormalized.remove("/");
-    strAppNameNormalized.remove("<");
-    strAppNameNormalized.remove(">");
-
-    QString strAppConfigDir = ZS::System::getAppConfigDir("System");
-
-    QString strThreadClrFileBaseName = strAppNameNormalized + "-ThreadColors";
-    QString strThreadClrFileSuffix = "xml";
-
-    m_strThreadClrFileAbsFilePath = strAppConfigDir + "/" + strThreadClrFileBaseName + "." + strThreadClrFileSuffix;
-
     // <Widget> Trace Outputs
     //=======================
 
@@ -327,6 +307,44 @@ CWdgtTrcMthList::~CWdgtTrcMthList()
 /*==============================================================================
 public: // instance methods
 ==============================================================================*/
+
+//------------------------------------------------------------------------------
+QString CWdgtTrcMthList::getDefaultThreadColorsFilePath() const
+//------------------------------------------------------------------------------
+{
+    // Calculate default file path for thread colors definition
+    //--------------------------------------------------------
+
+    QString strAppName = QString(m_pTrcClient != nullptr ? m_pTrcClient->getRemoteApplicationName() : "");
+
+    if( strAppName.isEmpty() )
+    {
+        strAppName = QCoreApplication::applicationName();
+    }
+
+    // The application name may contain characters which are invalid in file names:
+    strAppName.remove(":");
+    strAppName.remove(" ");
+    strAppName.remove("\\");
+    strAppName.remove("/");
+    strAppName.remove("<");
+    strAppName.remove(">");
+
+    QString strServerName = QString(m_pTrcClient != nullptr ? m_pTrcClient->getRemoteServerName() : "");
+
+    QString strThreadClrFileBaseName = strAppName;
+
+    if( !strServerName.isEmpty() )
+    {
+        strThreadClrFileBaseName += "-" + strServerName;
+    }
+    strThreadClrFileBaseName += "-ThreadColors";
+
+    QString strAppConfigDir = ZS::System::getAppConfigDir("System");
+    QString strThreadClrFileSuffix = "xml";
+
+    return strAppConfigDir + "/" + strThreadClrFileBaseName + "." + strThreadClrFileSuffix;
+}
 
 #if QT_VERSION >= QT_VERSION_CHECK(4, 5, 1)
 //------------------------------------------------------------------------------
@@ -668,16 +686,10 @@ void CWdgtTrcMthList::onBtnClearClicked( bool /*i_bChecked*/ )
 void CWdgtTrcMthList::onChkServerTracingEnabledToggled( bool i_bChecked )
 //------------------------------------------------------------------------------
 {
-    if( i_bChecked )
-    {
-        m_pTrcClient->setEnabled(true);
-    }
-    else
-    {
-        m_pTrcClient->setEnabled(false);
-    }
-
-} // onChkServerTracingEnabledToggled
+    STrcServerSettings trcServerSettings = m_pTrcClient->getTraceSettings();
+    trcServerSettings.m_bEnabled = i_bChecked;
+    m_pTrcClient->setTraceSettings(trcServerSettings);
+}
 
 //------------------------------------------------------------------------------
 void CWdgtTrcMthList::onBtnConnectClicked( bool /*i_bChecked*/ )
@@ -798,6 +810,8 @@ void CWdgtTrcMthList::onIpcClientConnected( QObject* /*i_pClient*/ )
 
     m_hashThreads.clear();
 
+    m_strThreadClrFileAbsFilePath = getDefaultThreadColorsFilePath();
+
     #if QT_VERSION >= QT_VERSION_CHECK(4, 5, 1)
     loadThreadColors();
     #endif
@@ -828,6 +842,8 @@ void CWdgtTrcMthList::onIpcClientDisconnected( QObject* /*i_pClient*/ )
     saveThreadColors();
     #endif
 
+    m_strThreadClrFileAbsFilePath = "";
+
     m_hashThreads.clear();
 
     if( m_pBtnConnect != nullptr )
@@ -849,6 +865,26 @@ void CWdgtTrcMthList::onIpcClientDisconnected( QObject* /*i_pClient*/ )
 void CWdgtTrcMthList::onIpcClientSettingsChanged( QObject* /*i_pClient*/ )
 //------------------------------------------------------------------------------
 {
+    // If the remote application name or the remote server name has been
+    // initially received the default file path of the thread colors file
+    // will be corrected and the thread colors got to be newly read.
+    // If the client has been newly connected thread colors have been read
+    // from "MyAppName-ThreadColors.xml" (e.g. "ZSAppTrcMthClient-ThreadColors.xml")
+    // to have some colors. But as the number of threads and their names depend
+    // on the remote application they will be read for each remote application
+    // and remote server within this application separately.
+
+    QString strThreadClrFileAbsFilePath = getDefaultThreadColorsFilePath();
+
+    if( strThreadClrFileAbsFilePath != m_strThreadClrFileAbsFilePath )
+    {
+        m_strThreadClrFileAbsFilePath = strThreadClrFileAbsFilePath;
+
+        #if QT_VERSION >= QT_VERSION_CHECK(4, 5, 1)
+        loadThreadColors();
+        #endif
+    }
+
     if( m_pProgressBarCnct != nullptr )
     {
         SClientHostSettings cnctSettings = m_pTrcClient->getHostSettings();
@@ -944,7 +980,7 @@ void CWdgtTrcMthList::onTraceSettingsChanged( QObject* /*i_pTrcClient*/ )
 {
     if( m_pChkServerTracingEnabled != nullptr )
     {
-        m_pChkServerTracingEnabled->setChecked( m_pTrcClient->isEnabled() );
+        m_pChkServerTracingEnabled->setChecked( m_pTrcClient->getTraceSettings().m_bEnabled );
     }
 
 } // onTraceSettingsChanged

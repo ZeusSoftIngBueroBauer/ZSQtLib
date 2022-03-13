@@ -148,7 +148,7 @@ CTestModule2* CTestModule1::createModule2()
     const int c_iMaxWaitCount = 25;
     int iWaitCount = 0;
 
-    if( m_pTestModule2Thread != NULL )
+    if( m_pTestModule2Thread != nullptr )
     {
         m_pTestModule2 = m_pTestModule2Thread->getTestModule2();
 

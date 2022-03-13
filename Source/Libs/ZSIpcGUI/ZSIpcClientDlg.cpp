@@ -200,38 +200,6 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CDlgIpcClient::setClientObjectNameVisible( bool i_bVisible )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
-    {
-        strMthInArgs = bool2Str(i_bVisible);
-    }
-
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strMethod    */ "setClientObjectNameVisible",
-        /* strAddInfo   */ strMthInArgs );
-
-    m_pWdgtIpcClient->setClientObjectNameVisible(i_bVisible);
-
-} // setClientObjectNameVisible
-
-//------------------------------------------------------------------------------
-bool CDlgIpcClient::isClientObjectNameVisible() const
-//------------------------------------------------------------------------------
-{
-    return m_pWdgtIpcClient->isClientObjectNameVisible();
-}
-
-/*==============================================================================
-public: // instance methods
-==============================================================================*/
-
-//------------------------------------------------------------------------------
 void CDlgIpcClient::setProtocolTypeImage( const QPixmap& i_pxm )
 //------------------------------------------------------------------------------
 {

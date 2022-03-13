@@ -71,11 +71,11 @@ public: // operators
     bool operator != ( const STrcServerSettings& i_settingsOther ) const;
 public: // struct members
     bool    m_bEnabled;                             /*!< Tracing may be enabled or disabled for the whole server. */
+    QString m_strAdminObjFileAbsFilePath;           /*!< Absolute file path the tree of trace admin objects and their settings will be saved and recalled. */
     bool    m_bNewTrcAdminObjsEnabledAsDefault;     /*!< Defines whether newly created trace admin objects should be enabled as default. */
     int     m_iNewTrcAdminObjsDefaultDetailLevel;   /*!< Defines the trace detail level for newly created trace admin objects. */
     bool    m_bCacheDataIfNotConnected;             /*!< If a trace client is not connect the flag defines whether trace data should be internally cached until a client connects. */
     int     m_iCacheDataMaxArrLen;                  /*!< If caching is enabled defines the maximum number of trace entries which should be locally cached. */
-    QString m_strAdminObjFileAbsFilePath;           /*!< Absolute file path the tree of trace admin objects and their settings will be saved and recalled. */
     bool    m_bUseLocalTrcFile;                     /*!< Defines whether trace should also be output to a local log file. */
     QString m_strLocalTrcFileAbsFilePath;           /*!< If a local log file is used defines the absolute file path for the log file. */
     int     m_iLocalTrcFileAutoSaveInterval_ms;     /*!< Auto save interval for the local log file. */
@@ -138,7 +138,7 @@ public: // class methods to add, remove and modify admin objects
     static CTrcAdminObj* GetTraceAdminObj(
         const QString& i_strNameSpace,
         const QString& i_strClassName,
-        const QString& i_strObjName,
+        const QString& i_strObjName = "",
         const QString& i_strServerName = "ZSTrcServer" );
     static CTrcAdminObj* GetTraceAdminObj(
         const QString&       i_strNameSpace,
@@ -149,8 +149,8 @@ public: // class methods to add, remove and modify admin objects
         const QString&       i_strServerName = "ZSTrcServer" );
     static void ReleaseTraceAdminObj( CTrcAdminObj* i_pTrcAdminObj, const QString& i_strServerName = "ZSTrcServer" );
 public: // class methods to get default file paths
-    static QString GetDefaultAdminObjFileAbsoluteFilePath( const QString& i_strIniFileScope = "System" );
-    static QString GetDefaultLocalTrcFileAbsoluteFilePath( const QString& i_strIniFileScope = "System" );
+    static QString GetDefaultAdminObjFileAbsoluteFilePath( const QString& i_strServerName = "ZSTrcServer", const QString& i_strIniFileScope = "System" );
+    static QString GetDefaultLocalTrcFileAbsoluteFilePath( const QString& i_strServerName = "ZSTrcServer", const QString& i_strIniFileScope = "System" );
 protected: // ctors and dtor
     CTrcServer( const QString& i_strName, int i_iTrcDetailLevel = ETraceDetailLevelNone );
     virtual ~CTrcServer();
@@ -243,8 +243,8 @@ public: // overridables
     virtual QString getLocalTrcFileAbsolutePath() const;
     virtual bool isLocalTrcFileActive() const;
     virtual CTrcMthFile* getLocalTrcFile();
-    virtual void setLocalTrcFileAutoSaveInterval( int i_iAutoSaveInterval_ms );
-    virtual int getLocalTrcFileAutoSaveInterval() const;
+    virtual void setLocalTrcFileAutoSaveIntervalInMs( int i_iAutoSaveInterval_ms );
+    virtual int getLocalTrcFileAutoSaveIntervalInMs() const;
     virtual void setLocalTrcFileCloseFileAfterEachWrite( bool i_bCloseFile );
     virtual bool getLocalTrcFileCloseFileAfterEachWrite() const;
 public: // overridables

@@ -42,9 +42,10 @@ may result in using the software modules.
 class QCheckBox;
 class QGroupBox;
 class QLabel;
+class QLineEdit;
 class QSpinBox;
-class QTextEdit;
 class QFormLayout;
+class QPushButton;
 class QHBoxLayout;
 class QVBoxLayout;
 
@@ -65,44 +66,79 @@ class ZSIPCTRACEGUIDLL_API CWdgtTrcSettings : public QWidget
 public: // ctors and dtor
     CWdgtTrcSettings( const QString& i_strObjName = "TrcSettings", QWidget* i_pWdgtParent = nullptr );
     virtual ~CWdgtTrcSettings();
+signals:
+    void accepted();
+    void rejected();
 public: // instance methods
     void setServer( CIpcTrcServer* i_pTrcServer );
     void setClient( CIpcTrcClient* i_pTrcClient );
+protected: // instance methods
+    void enableGuiControls( bool i_bEnabled );
+    void connectGuiControlsOnValueChangedSignals();
+    void disconnectGuiControlsOnValueChangedSignals();
 protected slots: // connected to the signals of my user controls
     void onChkTracingEnabledToggled( bool i_bChecked );
-    void onChkUseLocalTrcFileToggled( bool i_bChecked );
-    void onChkLocalTrcFileCloseFileAfterEachWriteToggled( bool i_bChecked );
+    void onChkNewTrcAdminObjsEnabledAsDefaultToggled( bool i_bChecked );
+    void onEdtNewTrcAdminObjsDefaultDetailLevelValueChanged( int i_iDetailLevel );
     void onChkCacheDataIfNotConnectedToggled( bool i_bChecked );
     void onEdtCacheDataMaxArrLenValueChanged( int i_iMaxArrLen );
+    void onChkUseLocalTrcFileToggled( bool i_bChecked );
+    void onEdtLocalTrcFileAutoSaveIntervalValueChanged( int i_iInterval_ms );
+    void onEdtLocalTrcFileSubFileCountMaxValueChanged( int i_iCountMax );
+    void onEdtLocalTrcFileSubFileLineCountMaxValueChanged( int i_iCountMax );
+    void onChkLocalTrcFileCloseFileAfterEachWriteToggled( bool i_bChecked );
 protected slots: // connected to the signals of the trace server
+    void onIpcClientConnected( QObject* i_pClient );
+    void onIpcClientDisconnected( QObject* i_pClient );
     void onTraceSettingsChanged( QObject* i_pServer );
+protected slots:
+    void onBtnOkClicked( bool i_bChecked );
+    void onBtnCancelClicked( bool i_bChecked );
+    void onBtnResetClicked( bool i_bChecked );
+    void onBtnApplyClicked( bool i_bChecked );
 protected: // instance methods
     STrcServerSettings getTraceSettings() const;
-protected: // instance methods
-    void fillControls( const STrcServerSettings& i_trcSettings );
+    bool hasChanges() const;
+    void applyChanges();
 protected: // instance members
     CIpcTrcServer* m_pTrcServer;
     CIpcTrcClient* m_pTrcClient;
     QVBoxLayout*   m_pLyt;
-    QFormLayout*   m_pLytTop;
+    QFormLayout*   m_pLytSettings;
+    QLabel*        m_pLblApplicationName;
+    QLineEdit*     m_pEdtApplicationName;
+    QLabel*        m_pLblServerName;
+    QLineEdit*     m_pEdtServerName;
     QLabel*        m_pLblTracingEnabled;
     QCheckBox*     m_pChkTracingEnabled;
-    QLabel*        m_pLblAdminObjFileName;
-    QLabel*        m_pEdtAdminObjFileName;
-    QFormLayout*   m_pLytLocalTrcFile;
-    QLabel*        m_pLblLocalTrcFileHdr;
-    QLabel*        m_pLblUseLocalTrcFile;
-    QCheckBox*     m_pChkUseLocalTrcFile;
-    QLabel*        m_pLblLocalTrcFileCloseFileAfterEachWrite;
-    QCheckBox*     m_pChkLocalTrcFileCloseFileAfterEachWrite;
-    QLabel*        m_pLblLocalTrcFile;
-    QLabel*        m_pEdtLocalTrcFile;
-    QFormLayout*   m_pLytCacheData;
-    QLabel*        m_pLblCacheDataHdr;
     QLabel*        m_pLblCacheDataIfNotConnected;
     QCheckBox*     m_pChkCacheDataIfNotConnected;
     QLabel*        m_pLblCacheDataMaxArrLen;
     QSpinBox*      m_pEdtCacheDataMaxArrLen;
+    QLabel*        m_pLblAdminObjFileAbsFilePath;
+    QLineEdit*     m_pEdtAdminObjFileAbsFilePath;
+    QLabel*        m_pLblNewTrcAdminObjsEnabledAsDefault;
+    QCheckBox*     m_pChkNewTrcAdminObjsEnabledAsDefault;
+    QLabel*        m_pLblNewTrcAdminObjsDefaultDetailLevel;
+    QSpinBox*      m_pEdtNewTrcAdminObjsDefaultDetailLevel;
+    QLabel*        m_pLblUseLocalTrcFile;
+    QCheckBox*     m_pChkUseLocalTrcFile;
+    QLabel*        m_pLblLocalTrcFileAbsFilePath;
+    QLineEdit*     m_pEdtLocalTrcFileAbsFilePath;
+    QLabel*        m_pLblLocalTrcFileAutoSaveInterval;
+    QSpinBox*      m_pEdtLocalTrcFileAutoSaveInterval;
+    QLabel*        m_pLblLocalTrcFileSubFileCountMax;
+    QSpinBox*      m_pEdtLocalTrcFileSubFileCountMax;
+    QLabel*        m_pLblLocalTrcFileSubFileLineCountMax;
+    QSpinBox*      m_pEdtLocalTrcFileSubFileLineCountMax;
+    QLabel*        m_pLblLocalTrcFileCloseFileAfterEachWrite;
+    QCheckBox*     m_pChkLocalTrcFileCloseFileAfterEachWrite;
+    // Buttons
+    QHBoxLayout*   m_pLytBtns;
+    QPushButton*   m_pBtnOk;
+    QPushButton*   m_pBtnCancel;
+    QPushButton*   m_pBtnReset;
+    QPushButton*   m_pBtnApply;
 
 }; // class CWdgtTrcSettings
 

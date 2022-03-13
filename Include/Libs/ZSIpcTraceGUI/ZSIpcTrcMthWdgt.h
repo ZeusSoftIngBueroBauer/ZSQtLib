@@ -101,6 +101,7 @@ signals:
     void progressBarConnectDblClicked();
     void textItemAdded( const QString& i_strText );
 public: // instance methods
+    QString getDefaultThreadColorsFilePath() const;
     #if QT_VERSION >= QT_VERSION_CHECK(4, 5, 1)
     void loadThreadColors( const QString& i_strAbsFilePath = "" );
     void saveThreadColors( const QString& i_strAbsFilePath = "" );

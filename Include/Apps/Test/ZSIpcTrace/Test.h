@@ -81,6 +81,7 @@ public slots: // test step methods
     void doTestStepTraceClientDestroy( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepTraceClientConnect( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepTraceClientDisconnect( ZS::Test::CTestStep* i_pTestStep );
+    void doTestStepTraceModule1ClassMethod( ZS::Test::CTestStep* i_pTestStep );
     //void doTestStepCreateModule1( ZS::Test::CTestStep* i_pTestStep );
     //void doTestStepDeleteModule1( ZS::Test::CTestStep* i_pTestStep );
     //void doTestStepCreateModule2( ZS::Test::CTestStep* i_pTestStep );

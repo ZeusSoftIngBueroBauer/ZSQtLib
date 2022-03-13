@@ -67,11 +67,11 @@ STrcServerSettings::STrcServerSettings(
     bool i_bLocalTrcFileCloseFileAfterEachWrite ) :
 //------------------------------------------------------------------------------
     m_bEnabled(i_bEnabled),
+    m_strAdminObjFileAbsFilePath(),
     m_bNewTrcAdminObjsEnabledAsDefault(i_bNewTrcAdminObjsActivatedAsDefault),
     m_iNewTrcAdminObjsDefaultDetailLevel(i_iNewTrcAdminObjsDefaultDetailLevel),
     m_bCacheDataIfNotConnected(i_bCacheDataIfNotConnected),
     m_iCacheDataMaxArrLen(i_iCacheDataMaxArrLen),
-    m_strAdminObjFileAbsFilePath(),
     m_bUseLocalTrcFile(i_bUseLocalTrcFile),
     m_strLocalTrcFileAbsFilePath(),
     m_iLocalTrcFileAutoSaveInterval_ms(i_iLocalTrcFileAutoSaveInterval_ms),
@@ -214,7 +214,7 @@ CTrcServer* CTrcServer::CreateInstance( const QString& i_strName, int i_iTrcDeta
 
     CTrcServer* pTrcServer = s_hshpInstances.value(i_strName, nullptr);
 
-    if( pTrcServer == NULL )
+    if( pTrcServer == nullptr )
     {
         pTrcServer = new CTrcServer(i_strName, i_iTrcDetailLevel);
     }
@@ -498,46 +498,30 @@ public: // class methods to get default file paths
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-QString CTrcServer::GetDefaultAdminObjFileAbsoluteFilePath( const QString& i_strIniFileScope )
+QString CTrcServer::GetDefaultAdminObjFileAbsoluteFilePath(
+    const QString& i_strServerName,
+    const QString& i_strIniFileScope )
 //------------------------------------------------------------------------------
 {
     QString strAppConfigDir = ZS::System::getAppConfigDir(i_strIniFileScope);
 
-    QString strAppNameNormalized = QCoreApplication::applicationName();
-
-    // The application name may contain characters which are invalid in file names:
-    strAppNameNormalized.remove(":");
-    strAppNameNormalized.remove(" ");
-    strAppNameNormalized.remove("\\");
-    strAppNameNormalized.remove("/");
-    strAppNameNormalized.remove("<");
-    strAppNameNormalized.remove(">");
-
     QString strTrcAdminObjFileSuffix = "xml";
-    QString strTrcAdminObjFileBaseName = strAppNameNormalized + "-TrcMthAdmObj";
+    QString strTrcAdminObjFileBaseName = i_strServerName + "-TrcMthAdmObj";
 
     return strAppConfigDir + "/" + strTrcAdminObjFileBaseName + "." + strTrcAdminObjFileSuffix;
 
 } // GetDefaultAdminObjFileAbsoluteFilePath
 
 //------------------------------------------------------------------------------
-QString CTrcServer::GetDefaultLocalTrcFileAbsoluteFilePath( const QString& i_strIniFileScope )
+QString CTrcServer::GetDefaultLocalTrcFileAbsoluteFilePath(
+    const QString& i_strServerName,
+    const QString& i_strIniFileScope )
 //------------------------------------------------------------------------------
 {
     QString strAppLogDir = ZS::System::getAppLogDir(i_strIniFileScope);
 
-    QString strAppNameNormalized = QCoreApplication::applicationName();
-
-    // The application name may contain characters which are invalid in file names:
-    strAppNameNormalized.remove(":");
-    strAppNameNormalized.remove(" ");
-    strAppNameNormalized.remove("\\");
-    strAppNameNormalized.remove("/");
-    strAppNameNormalized.remove("<");
-    strAppNameNormalized.remove(">");
-
     QString strTrcLogFileSuffix = "log";
-    QString strTrcLogFileBaseName = strAppNameNormalized + "-TrcMth";
+    QString strTrcLogFileBaseName = i_strServerName + "-TrcMth";
 
     return strAppLogDir + "/" + strTrcLogFileBaseName + "." + strTrcLogFileSuffix;
 
@@ -559,8 +543,8 @@ CTrcServer::CTrcServer( const QString& i_strName, int i_iTrcDetailLevel ) :
 {
     setObjectName(i_strName);
 
-    m_trcSettings.m_strAdminObjFileAbsFilePath = GetDefaultAdminObjFileAbsoluteFilePath();
-    m_trcSettings.m_strLocalTrcFileAbsFilePath = GetDefaultLocalTrcFileAbsoluteFilePath();
+    m_trcSettings.m_strAdminObjFileAbsFilePath = GetDefaultAdminObjFileAbsoluteFilePath(objectName(), "System");
+    m_trcSettings.m_strLocalTrcFileAbsFilePath = GetDefaultLocalTrcFileAbsoluteFilePath(objectName(), "System");
 
     m_pTrcMthFile = CTrcMthFile::Alloc(m_trcSettings.m_strLocalTrcFileAbsFilePath);
 
@@ -1486,7 +1470,7 @@ CTrcMthFile* CTrcServer::getLocalTrcFile()
 }
 
 //------------------------------------------------------------------------------
-void CTrcServer::setLocalTrcFileAutoSaveInterval( int i_iAutoSaveInterval_ms )
+void CTrcServer::setLocalTrcFileAutoSaveIntervalInMs( int i_iAutoSaveInterval_ms )
 //------------------------------------------------------------------------------
 {
     // The class (and all instances of the class) may be accessed from within
@@ -1505,10 +1489,10 @@ void CTrcServer::setLocalTrcFileAutoSaveInterval( int i_iAutoSaveInterval_ms )
         emit traceSettingsChanged(this);
     }
 
-} // setLocalTrcFileAutoSaveInterval
+} // setLocalTrcFileAutoSaveIntervalInMs
 
 //------------------------------------------------------------------------------
-int CTrcServer::getLocalTrcFileAutoSaveInterval() const
+int CTrcServer::getLocalTrcFileAutoSaveIntervalInMs() const
 //------------------------------------------------------------------------------
 {
     // The class (and all instances of the class) may be accessed from within
@@ -1781,8 +1765,7 @@ void CTrcServer::setTraceSettings( const STrcServerSettings& i_settings )
 
         if( m_trcSettings.m_bEnabled != i_settings.m_bEnabled )
         {
-            // Will take over the enabled state into the settings struct and saves the current settings:
-            setEnabled(i_settings.m_bEnabled);
+            m_trcSettings.m_bEnabled = i_settings.m_bEnabled;
         }
 
         emit traceSettingsChanged(this);
