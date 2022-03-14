@@ -156,6 +156,10 @@ public: // ctors and dtor
         const QString& i_strNameSpace,
         const QString& i_strClassName,
         const QString& i_strServerName = "ZSTrcServer" );
+    virtual ~CTrcAdminObjRefAnchor();
+public: // instance methods
+    void setServerName( const QString& i_strServerName );
+    QString getServerName() const;
 public: // instance methods
     void allocTrcAdminObj();
     void releaseTrcAdminObj();
@@ -168,6 +172,7 @@ private: // instance members
     QString       m_strNameSpace;
     QString       m_strClassName;
     QString       m_strServerName;
+    int           m_idxInTree;
     CTrcAdminObj* m_pTrcAdminObj;
 };
 

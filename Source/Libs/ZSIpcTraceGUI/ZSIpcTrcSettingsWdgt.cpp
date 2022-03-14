@@ -705,118 +705,76 @@ void CWdgtTrcSettings::connectGuiControlsOnValueChangedSignals()
 void CWdgtTrcSettings::disconnectGuiControlsOnValueChangedSignals()
 //------------------------------------------------------------------------------
 {
-    if( !QObject::disconnect(
+    QObject::disconnect(
         /* pObjSender   */ m_pChkTracingEnabled,
         /* szSignal     */ SIGNAL(toggled(bool)),
         /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onChkTracingEnabledToggled(bool)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-    if( !QObject::disconnect(
+        /* szSlot       */ SLOT(onChkTracingEnabledToggled(bool)) );
+    QObject::disconnect(
         /* pObjSender   */ m_pChkCacheDataIfNotConnected,
         /* szSignal     */ SIGNAL(toggled(bool)),
         /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onChkCacheDataIfNotConnectedToggled(bool)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-    if( !QObject::disconnect(
+        /* szSlot       */ SLOT(onChkCacheDataIfNotConnectedToggled(bool)) );
+    QObject::disconnect(
         /* pObjSender   */ m_pEdtCacheDataMaxArrLen,
         /* szSignal     */ SIGNAL(valueChanged(int)),
         /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onEdtCacheDataMaxArrLenValueChanged(int)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-    if( !QObject::disconnect(
+        /* szSlot       */ SLOT(onEdtCacheDataMaxArrLenValueChanged(int)) );
+    QObject::disconnect(
         /* pObjSender   */ m_pChkNewTrcAdminObjsEnabledAsDefault,
         /* szSignal     */ SIGNAL(toggled(bool)),
         /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onChkNewTrcAdminObjsEnabledAsDefaultToggled(bool)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-    if( !QObject::disconnect(
+        /* szSlot       */ SLOT(onChkNewTrcAdminObjsEnabledAsDefaultToggled(bool)) );
+    QObject::disconnect(
         /* pObjSender   */ m_pEdtNewTrcAdminObjsDefaultDetailLevel,
         /* szSignal     */ SIGNAL(valueChanged(int)),
         /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onEdtNewTrcAdminObjsDefaultDetailLevelValueChanged(int)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-    if( !QObject::disconnect(
+        /* szSlot       */ SLOT(onEdtNewTrcAdminObjsDefaultDetailLevelValueChanged(int)) );
+    QObject::disconnect(
         /* pObjSender   */ m_pChkUseLocalTrcFile,
         /* szSignal     */ SIGNAL(toggled(bool)),
         /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onChkUseLocalTrcFileToggled(bool)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-    if( !QObject::disconnect(
+        /* szSlot       */ SLOT(onChkUseLocalTrcFileToggled(bool)) );
+    QObject::disconnect(
         /* pObjSender   */ m_pEdtLocalTrcFileAutoSaveInterval,
         /* szSignal     */ SIGNAL(valueChanged(int)),
         /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onEdtLocalTrcFileAutoSaveIntervalValueChanged(int)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-    if( !QObject::disconnect(
+        /* szSlot       */ SLOT(onEdtLocalTrcFileAutoSaveIntervalValueChanged(int)) );
+    QObject::disconnect(
         /* pObjSender   */ m_pEdtLocalTrcFileSubFileCountMax,
         /* szSignal     */ SIGNAL(valueChanged(int)),
         /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onEdtLocalTrcFileSubFileCountMaxValueChanged(int)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-    if( !QObject::disconnect(
+        /* szSlot       */ SLOT(onEdtLocalTrcFileSubFileCountMaxValueChanged(int)) );
+    QObject::disconnect(
         /* pObjSender   */ m_pEdtLocalTrcFileSubFileLineCountMax,
         /* szSignal     */ SIGNAL(valueChanged(int)),
         /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onEdtLocalTrcFileSubFileLineCountMaxValueChanged(int)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-    if( !QObject::disconnect(
+        /* szSlot       */ SLOT(onEdtLocalTrcFileSubFileLineCountMaxValueChanged(int)) );
+    QObject::disconnect(
         /* pObjSender   */ m_pChkLocalTrcFileCloseFileAfterEachWrite,
         /* szSignal     */ SIGNAL(toggled(bool)),
         /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onChkLocalTrcFileCloseFileAfterEachWriteToggled(bool)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-    if( !QObject::disconnect(
+        /* szSlot       */ SLOT(onChkLocalTrcFileCloseFileAfterEachWriteToggled(bool)) );
+    QObject::disconnect(
         /* pObjSender   */ m_pBtnOk,
         /* szSignal     */ SIGNAL(clicked(bool)),
         /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onBtnOkClicked(bool)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-    if( !QObject::disconnect(
+        /* szSlot       */ SLOT(onBtnOkClicked(bool)) );
+    QObject::disconnect(
         /* pObjSender   */ m_pBtnCancel,
         /* szSignal     */ SIGNAL(clicked(bool)),
         /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onBtnCancelClicked(bool)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-    if( !QObject::disconnect(
+        /* szSlot       */ SLOT(onBtnCancelClicked(bool)) );
+    QObject::disconnect(
         /* pObjSender   */ m_pBtnReset,
         /* szSignal     */ SIGNAL(clicked(bool)),
         /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onBtnResetClicked(bool)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-    if( !QObject::disconnect(
+        /* szSlot       */ SLOT(onBtnResetClicked(bool)) );
+    QObject::disconnect(
         /* pObjSender   */ m_pBtnApply,
         /* szSignal     */ SIGNAL(clicked(bool)),
         /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onBtnApplyClicked(bool)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+        /* szSlot       */ SLOT(onBtnApplyClicked(bool)) );
 }
 
 /*==============================================================================

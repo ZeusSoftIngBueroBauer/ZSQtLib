@@ -18,6 +18,8 @@ message(STATUS "CMAKE_BINARY_DIR:         ${CMAKE_BINARY_DIR}")
 message(STATUS "CMAKE_CURRENT_BINARY_DIR: ${CMAKE_CURRENT_BINARY_DIR}")
 message(STATUS "PROJECT_BINARY_DIR:       ${PROJECT_BINARY_DIR}")
 
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+
 # In source code the headers are included together with the ${PROJECT_NAME} as follows:
 # include "${PROJECT_NAME}/HeaderFileName.h"
 # e.g. #include "ZSSys/ZSSysIdxTree.h"

@@ -135,6 +135,7 @@ public: // class methods to register thread names
     static QString GetCurrentThreadName();
 public: // class methods to add, remove and modify admin objects
     static CIdxTreeTrcAdminObjs* GetTraceAdminObjIdxTree( const QString& i_strServerName = "ZSTrcServer" );
+    static CTrcAdminObj* GetTraceAdminObj( int i_idxInTree, const QString& i_strServerName = "ZSTrcServer" );
     static CTrcAdminObj* GetTraceAdminObj(
         const QString& i_strNameSpace,
         const QString& i_strClassName,
@@ -162,6 +163,10 @@ public: // instance methods
 public: // instance methods
     CIdxTreeTrcAdminObjs* getTraceAdminObjIdxTree();
 public: // overridables to add, remove and modify admin objects
+    virtual CTrcAdminObj* getTraceAdminObj(             // For each of the names an empty (or Null) string is allowed.
+        int                  i_idxInTree,
+        ZS::System::EEnabled i_bEnabledAsDefault,       // Undefined means use "trcServerSettings".
+        int                  i_iDefaultDetailLevel );   // -1 means use "trcServerSettings".
     virtual CTrcAdminObj* getTraceAdminObj(             // For each of the names an empty (or Null) string is allowed.
         const QString&       i_strNameSpace,            // Name space of the objects class (e.g. "ZS::Diagram")
         const QString&       i_strClassName,            // Class name of the object (e.g. "CWdgtDiagram")

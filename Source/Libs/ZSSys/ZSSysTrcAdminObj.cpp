@@ -678,8 +678,38 @@ CTrcAdminObjRefAnchor::CTrcAdminObjRefAnchor(
     m_strNameSpace(i_strNameSpace),
     m_strClassName(i_strClassName),
     m_strServerName(i_strServerName),
+    m_idxInTree(-1),
     m_pTrcAdminObj(nullptr)
 {
+}
+
+//------------------------------------------------------------------------------
+CTrcAdminObjRefAnchor::~CTrcAdminObjRefAnchor()
+//------------------------------------------------------------------------------
+{
+    //m_strNameSpace;
+    //m_strClassName;
+    //m_strServerName;
+    m_idxInTree = 0;
+    m_pTrcAdminObj = nullptr;
+}
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CTrcAdminObjRefAnchor::setServerName( const QString& i_strServerName )
+//------------------------------------------------------------------------------
+{
+    m_strServerName = i_strServerName;
+}
+
+//------------------------------------------------------------------------------
+QString CTrcAdminObjRefAnchor::getServerName() const
+//------------------------------------------------------------------------------
+{
+    return m_strServerName;
 }
 
 /*==============================================================================
@@ -690,15 +720,25 @@ public: // instance methods
 void CTrcAdminObjRefAnchor::allocTrcAdminObj()
 //------------------------------------------------------------------------------
 {
-    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(m_strNameSpace, m_strClassName, "", m_strServerName);
+    if( m_idxInTree >= 0 )
+    {
+        m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(m_idxInTree, m_strServerName);
+    }
+
+    if( m_pTrcAdminObj == nullptr )
+    {
+        m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(m_strNameSpace, m_strClassName, "", m_strServerName);
+    }
 
     if( m_pTrcAdminObj != nullptr )
     {
+        m_idxInTree = m_pTrcAdminObj->indexInTree();
+
         if( !QObject::connect(
             /* pObjSender   */ m_pTrcAdminObj,
             /* szSignal     */ SIGNAL(destroyed(QObject*)),
             /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onAdminObjDestroyed(QObject*)),
+            /* szSlot       */ SLOT(onTrcAdminObjDestroyed(QObject*)),
             /* cnctType     */ Qt::DirectConnection ) )
         {
             throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
@@ -716,7 +756,7 @@ void CTrcAdminObjRefAnchor::releaseTrcAdminObj()
             /* pObjSender   */ m_pTrcAdminObj,
             /* szSignal     */ SIGNAL(destroyed(QObject*)),
             /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onAdminObjDestroyed(QObject*)));
+            /* szSlot       */ SLOT(onTrcAdminObjDestroyed(QObject*)));
 
         CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
         m_pTrcAdminObj = nullptr;

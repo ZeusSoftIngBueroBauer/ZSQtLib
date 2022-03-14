@@ -53,7 +53,18 @@ class CTestModule1 : public QObject
 *******************************************************************************/
 
 CTrcAdminObjRefAnchor CTestModule1::s_trcAdminObjRefAnchor(
-    CTestModule1::NameSpace(), CTestModule1::ClassName());
+    CTestModule1::NameSpace(), CTestModule1::ClassName(), "ZSTrcServer");
+
+/*==============================================================================
+public: // class methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CTestModule1::setTraceServerName( const QString& i_strServerName )
+//------------------------------------------------------------------------------
+{
+    s_trcAdminObjRefAnchor.setServerName(i_strServerName);
+}
 
 /*==============================================================================
 public: // class methods

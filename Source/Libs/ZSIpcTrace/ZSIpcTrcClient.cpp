@@ -405,7 +405,7 @@ void CIpcTrcClient::onReceivedData( const QByteArray& i_byteArr )
         }
         else // if( xmlStreamTokenType == QXmlStreamReader::StartDocument )
         {
-            while( xmlStreamTokenType != QXmlStreamReader::EndElement )
+            while( xmlStreamTokenType != QXmlStreamReader::EndElement && xmlStreamTokenType != QXmlStreamReader::Invalid )
             {
                 xmlStreamTokenType = xmlStreamReader.readNext();
 
@@ -711,7 +711,7 @@ void CIpcTrcClient::onReceivedData( const QByteArray& i_byteArr )
                         xmlStreamReader.raiseError("Invalid element name \"" + strElemName + "\" in received XML data");
                     }
                 } // if( xmlStreamReader.isStartElement() )
-            } // while( !xmlStreamReader.atEnd() )
+            } // while( xmlStreamTokenType != QXmlStreamReader::EndElement && xmlStreamTokenType != QXmlStreamReader::Invalid )
         } // if( xmlStreamTokenType == QXmlStreamReader::StartDocument )
 
         if( xmlStreamReader.hasError() )

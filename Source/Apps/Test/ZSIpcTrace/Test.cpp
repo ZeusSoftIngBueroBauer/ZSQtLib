@@ -120,7 +120,14 @@ CTest::CTest() :
         /* pTSGrpParent    */ pGrp,
         /* szDoTestStepFct */ SLOT(doTestStepTraceClientConnect(ZS::Test::CTestStep*)) );
 
-    // TODO Test modules with admin objects and tracing
+    #pragma message(__TODO__ "Test modules with admin objects and tracing")
+
+    new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " Module1::classMethod",
+        /* strOperation    */ "ZSTrcServer/CTestModule1::classMethod",
+        /* pTSGrpParent    */ pGrp,
+        /* szDoTestStepFct */ SLOT(doTestStepTraceModule1ClassMethod(ZS::Test::CTestStep*)) );
 
     new ZS::Test::CTestStep(
         /* pTest           */ this,
@@ -195,12 +202,7 @@ CTest::CTest() :
         /* szDoTestStepFct */ SLOT(doTestStepTraceClientConnect(ZS::Test::CTestStep*)) );
 
 
-    new ZS::Test::CTestStep(
-        /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " Module1::classMethod",
-        /* strOperation    */ "Module1::classMethod",
-        /* pTSGrpParent    */ pGrp,
-        /* szDoTestStepFct */ SLOT(doTestStepTraceModule1ClassMethod(ZS::Test::CTestStep*)) );
+    #pragma message(__TODO__ "Test modules with admin objects and tracing")
 
 
     new ZS::Test::CTestStep(
@@ -1006,20 +1008,45 @@ void CTest::doTestStepTraceModule1ClassMethod( ZS::Test::CTestStep* i_pTestStep 
     // Expected Values
     //----------------
 
-    QString strNameSpace  = CTestModule1::NameSpace();
-    QString strClassName  = CTestModule1::ClassName();
-    QString strObjName    = "TestModule1";
-    QString strMthName    = "classMethod";
-    QString strMthInArgs  = "ObjName: TestModule1, TestModule2ObjName: TestModule2";
-    QString strMthOutArgs = "";
+    /* Example for strOperation:
+       "ZSTrcServer/Module1::classMethod"
+    */
 
-    QString strTrcMethodEnter = "-> <" + strNameSpace + "::" + strClassName + "> " + strObjName + "." + strMthName + "(" + strMthInArgs + ")";
-    QString strTrcMethodLeave = "<- <" + strNameSpace + "::" + strClassName + "> " + strObjName + "." + strMthName + "(" + strMthOutArgs + ")";
+    CIpcTrcServer* pTrcServer = nullptr;
 
-    strlstExpectedValues.append(strTrcMethodEnter);
-    strlstExpectedValues.append(strTrcMethodLeave);
+    if( i_pTestStep->getOperation().startsWith("ZSTrcServer") )
+    {
+        pTrcServer = ZS::Trace::CIpcTrcServer::GetInstance("ZSTrcServer");
+        CTestModule1::setTraceServerName("ZSTrcServer");
+    }
+    else if( i_pTestStep->getOperation().startsWith("TestTrcServer") )
+    {
+        pTrcServer = ZS::Trace::CIpcTrcServer::GetInstance("TestTrcServer");
+        CTestModule1::setTraceServerName("TestTrcServer");
+    }
 
-    i_pTestStep->setExpectedValues(strlstExpectedValues);
+    if( pTrcServer == nullptr )
+    {
+        i_pTestStep->setExpectedValue("Invalid test operation");
+    }
+    else
+    {
+        pTrcServer->setNewTrcAdminObjsDefaultDetailLevel(ETraceDetailLevelMethodArgs);
+
+        QString strNameSpace = CTestModule1::NameSpace();
+        QString strClassName = CTestModule1::ClassName();
+        QString strMthName   = "classMethod";
+        QString strMthInArgs = "InArgs";
+        QString strMthRet    = "Hello World";
+
+        QString strTrcMethodEnter = "-> <" + strNameSpace + "> " + strClassName + "." + strMthName + "(" + strMthInArgs + ")";
+        QString strTrcMethodLeave = "<- <" + strNameSpace + "> " + strClassName + "." + strMthName + "(): " + strMthRet;
+
+        strlstExpectedValues.append(strTrcMethodEnter);
+        strlstExpectedValues.append(strTrcMethodLeave);
+
+        i_pTestStep->setExpectedValues(strlstExpectedValues);
+    }
 
     // Test Step
     //----------
@@ -1532,7 +1559,15 @@ void CTest::onZSTraceClientTrcMthListWdgtTextItemAdded( const QString& i_strText
 
     if( pTestStep != nullptr )
     {
-        if( pTestStep->getOperation() == "new CTestModule1()" || pTestStep->getOperation() == "delete CTestModule1()" )
+        QString     strResultValue;
+        QStringList strlstResultValues;
+
+        if( pTestStep->getOperation().contains("CTestModule1::classMethod") )
+        {
+            strResultValue = "Test Step under construction";
+            pTestStep->setResultValue(strResultValue);
+        }
+        else if( pTestStep->getOperation() == "new CTestModule1()" || pTestStep->getOperation() == "delete CTestModule1()" )
         {
             QString strText = i_strText;
 
@@ -1567,9 +1602,6 @@ void CTest::onZSTraceClientTrcMthListWdgtTextItemAdded( const QString& i_strText
 
                 if( strText.contains(strNameSpace) && strText.contains(strClassName) && strText.contains(strObjName) && strText.contains(strMthName) )
                 {
-                    QString     strResultValue;
-                    QStringList strlstResultValues;
-
                     CWidgetCentral* pWdgtCentral = CWidgetCentral::GetInstance();
 
                     CWdgtTrcMthList* pWdgtTrcMthList = pWdgtCentral->getTrcMthListWdgt();
@@ -1700,9 +1732,6 @@ void CTest::onZSTraceClientTrcMthListWdgtTextItemAdded( const QString& i_strText
 
                 if( strText.contains(strNameSpace) && strText.contains(strClassName) && strText.contains(strObjName) && strText.contains(strMthName) && strText.contains(strMthRet) )
                 {
-                    QString     strResultValue;
-                    QStringList strlstResultValues;
-
                     CWidgetCentral* pWdgtCentral = CWidgetCentral::GetInstance();
 
                     CWdgtTrcMthList* pWdgtTrcMthList = pWdgtCentral->getTrcMthListWdgt();

@@ -147,48 +147,94 @@ CTrcAdminObj* CIdxTreeTrcAdminObjs::getTraceAdminObj(
         /* strMethod          */ "getTraceAdminObj",
         /* strMethodInArgs    */ strAddTrcInfo );
 
-    QString strParentBranchPath = buildPathStr(i_strNameSpace, i_strClassName);
-
-    CIdxTreeEntry* pLeave = findLeave(strParentBranchPath, i_strObjName);
-
     CTrcAdminObj* pTrcAdminObj = nullptr;
 
-    if( pLeave != nullptr )
+    if( i_strObjName.isEmpty() && i_strClassName.isEmpty() && i_strNameSpace.isEmpty() )
     {
-        pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(pLeave);
-    }
-    else // if( pLeave == nullptr )
-    {
-        QStringList strlstBranchNames = strParentBranchPath.split(m_strNodeSeparator);
-        QString     strParentPath;
-        QString     strPath;
+        SErrResultInfo errResultInfo(
+            /* errSource     */ nameSpace(), className(), objectName(), "getTraceAdminObj",
+            /* result        */ EResultArgOutOfRange,
+            /* severity      */ EResultSeverityError,
+            /* strAddErrInfo */ "Neither NameSpace nor ClassName nor ObjectName defined");
 
-        CIdxTreeEntry* pBranch;
-
-        for( auto& strBranchName : strlstBranchNames )
+        if( CErrLog::GetInstance() != nullptr )
         {
-            strPath = buildPathStr(strPath, strBranchName);
+            CErrLog::GetInstance()->addEntry(errResultInfo);
+        }
+    }
+    else // if( !i_strObjName.isEmpty() || !i_strClassName.isEmpty() || !i_strNameSpace.isEmpty() )
+    {
+        QString strParentBranchPath;
 
-            pBranch = findBranch(strPath);
+        QString strObjName = i_strObjName;
 
-            if( pBranch == nullptr )
+        if( i_strObjName.isEmpty() )
+        {
+            if( i_strClassName.isEmpty() )
             {
-                pBranch = createBranch(strBranchName);
-                add(pBranch, strParentPath);
+                strObjName = i_strNameSpace;
             }
-            strParentPath = buildPathStr(strParentPath, strBranchName);
+            else
+            {
+                strObjName = i_strClassName;
+                strParentBranchPath = i_strNameSpace;
+            }
+        }
+        else
+        {
+            if( i_strClassName.isEmpty() )
+            {
+                strParentBranchPath = i_strNameSpace;
+            }
+            else if( i_strNameSpace.isEmpty() )
+            {
+                strParentBranchPath = i_strClassName;
+            }
+            else
+            {
+                strParentBranchPath = buildPathStr(i_strNameSpace, i_strClassName);
+            }
         }
 
-        pTrcAdminObj = new CTrcAdminObj(i_strObjName);
+        CIdxTreeEntry* pLeave = findLeave(strParentBranchPath, strObjName);
 
-        add(pTrcAdminObj, strParentBranchPath);
+        if( pLeave != nullptr )
+        {
+            pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(pLeave);
+        }
+        else // if( pLeave == nullptr )
+        {
+            QStringList strlstBranchNames = strParentBranchPath.split(m_strNodeSeparator);
+            QString     strParentPath;
+            QString     strPath;
 
-    } // if( pLeave == nullptr )
+            CIdxTreeEntry* pBranch;
 
-    if( i_bIncrementRefCount )
-    {
-        pTrcAdminObj->incrementRefCount();
-    }
+            for( auto& strBranchName : strlstBranchNames )
+            {
+                strPath = buildPathStr(strPath, strBranchName);
+
+                pBranch = findBranch(strPath);
+
+                if( pBranch == nullptr )
+                {
+                    pBranch = createBranch(strBranchName);
+                    add(pBranch, strParentPath);
+                }
+                strParentPath = buildPathStr(strParentPath, strBranchName);
+            }
+
+            pTrcAdminObj = new CTrcAdminObj(strObjName);
+
+            add(pTrcAdminObj, strParentBranchPath);
+
+        } // if( pLeave == nullptr )
+
+        if( i_bIncrementRefCount )
+        {
+            pTrcAdminObj->incrementRefCount();
+        }
+    } // if( !i_strObjName.isEmpty() || !i_strClassName.isEmpty() || !i_strNameSpace.isEmpty() )
 
     return pTrcAdminObj;
 

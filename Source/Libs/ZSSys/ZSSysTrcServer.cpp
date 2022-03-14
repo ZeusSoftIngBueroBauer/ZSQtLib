@@ -413,6 +413,30 @@ CIdxTreeTrcAdminObjs* CTrcServer::GetTraceAdminObjIdxTree( const QString& i_strS
 } // GetTraceAdminObjIdxTree
 
 //------------------------------------------------------------------------------
+CTrcAdminObj* CTrcServer::GetTraceAdminObj( int i_idxInTree, const QString& i_strServerName )
+//------------------------------------------------------------------------------
+{
+    // The class may be accessed from within different thread contexts and
+    // therefore accessing the class must be serialized using a mutex ..
+    QMutexLocker mtxLocker(&s_mtx);
+
+    CTrcAdminObj* pTrcAdminObj = nullptr;
+
+    CTrcServer* pTrcServer = GetInstance(i_strServerName);
+
+    if( pTrcServer != nullptr )
+    {
+        pTrcAdminObj = pTrcServer->getTraceAdminObj(
+            /* idxInTree           */ i_idxInTree,
+            /* bEnabledAsDefault   */ EEnabled::Undefined,
+            /* iDefaultDetailLevel */ -1 );
+    }
+
+    return pTrcAdminObj;
+
+} // GetTraceAdminObj
+
+//------------------------------------------------------------------------------
 CTrcAdminObj* CTrcServer::GetTraceAdminObj(
     const QString& i_strNameSpace,
     const QString& i_strClassName,
@@ -638,6 +662,75 @@ public: // instance methods to add, remove and modify admin objects
 
 //------------------------------------------------------------------------------
 CTrcAdminObj* CTrcServer::getTraceAdminObj(
+    int      i_idxInTree,
+    EEnabled i_bEnabledAsDefault,
+    int      i_iDefaultDetailLevel )
+//------------------------------------------------------------------------------
+{
+    // The class (and all instances of the class) may be accessed from within
+    // different thread contexts and therefore accessing the class and the
+    // instances must be serialized using a mutex ..
+    QMutexLocker mtxLocker(&s_mtx);
+
+    QString strMthInArgs;
+    QString strMthRet;
+
+    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
+    {
+        strMthInArgs  = "IdxInTree: " + QString::number(i_idxInTree);
+        strMthInArgs += ", EnabledAsDefault: " + CEnumEnabled::toString(i_bEnabledAsDefault);
+        strMthInArgs += ", DefaultDetailLevel: " + QString::number(i_iDefaultDetailLevel);
+    }
+
+    CMethodTracer mthTracer(
+        /* pTrcMthFile        */ m_pTrcMthFile,
+        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
+        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* strNameSpace       */ nameSpace(),
+        /* strClassName       */ className(),
+        /* strObjName         */ objectName(),
+        /* strMethod          */ "getTraceAdminObj",
+        /* strMthInArgs       */ strMthInArgs );
+
+    CTrcAdminObj* pTrcAdminObj = nullptr;
+
+    if( i_idxInTree < 0 )
+    {
+        SErrResultInfo errResultInfo(
+            /* errSource     */ nameSpace(), className(), objectName(), "getTraceAdminObj",
+            /* result        */ EResultArgOutOfRange,
+            /* severity      */ EResultSeverityError,
+            /* strAddErrInfo */ "Idx In Tree (=" + QString::number(i_idxInTree) + ") is out of range");
+
+        if( CErrLog::GetInstance() != nullptr )
+        {
+            CErrLog::GetInstance()->addEntry(errResultInfo);
+        }
+    }
+    else // if( !i_strObjName.isEmpty() || !i_strClassName.isEmpty() || !i_strNameSpace.isEmpty() )
+    {
+        pTrcAdminObj = m_pTrcAdminObjIdxTree->getTraceAdminObj(i_idxInTree);
+
+        if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
+        {
+            if( pTrcAdminObj != nullptr )
+            {
+                strMthRet = pTrcAdminObj->getCalculatedKeyInTree();
+            }
+            else
+            {
+                strMthRet = "nullptr";
+            }
+            mthTracer.setMethodReturn(strMthRet);
+        }
+    } // if( !i_strObjName.isEmpty() || !i_strClassName.isEmpty() || !i_strNameSpace.isEmpty() )
+
+    return pTrcAdminObj;
+
+} // getTraceAdminObj
+
+//------------------------------------------------------------------------------
+CTrcAdminObj* CTrcServer::getTraceAdminObj(
     const QString& i_strNameSpace,
     const QString& i_strClassName,
     const QString& i_strObjName,
@@ -672,40 +765,95 @@ CTrcAdminObj* CTrcServer::getTraceAdminObj(
         /* strMethod          */ "getTraceAdminObj",
         /* strMthInArgs       */ strMthInArgs );
 
-    QString strParentBranchPath = buildPathStr(m_pTrcAdminObjIdxTree->nodeSeparator(), i_strNameSpace, i_strClassName);
+    CTrcAdminObj* pTrcAdminObj = nullptr;
 
-    CIdxTreeEntry* pLeave = m_pTrcAdminObjIdxTree->findLeave(strParentBranchPath, i_strObjName);
-
-    bool bInitiallyCreated = pLeave == nullptr;
-
-    CTrcAdminObj* pTrcAdminObj = m_pTrcAdminObjIdxTree->getTraceAdminObj(i_strNameSpace, i_strClassName, i_strObjName);
-
-    if( pTrcAdminObj != nullptr )
+    if( i_strObjName.isEmpty() && i_strClassName.isEmpty() && i_strNameSpace.isEmpty() )
     {
-        if( bInitiallyCreated )
+        SErrResultInfo errResultInfo(
+            /* errSource     */ nameSpace(), className(), objectName(), "getTraceAdminObj",
+            /* result        */ EResultArgOutOfRange,
+            /* severity      */ EResultSeverityError,
+            /* strAddErrInfo */ "Neither NameSpace nor ClassName nor ObjectName defined");
+
+        if( CErrLog::GetInstance() != nullptr )
         {
-            EEnabled bEnabled     = m_trcSettings.m_bNewTrcAdminObjsEnabledAsDefault ? EEnabled::Yes : EEnabled::No;
-            int      iDetailLevel = m_trcSettings.m_iNewTrcAdminObjsDefaultDetailLevel;
+            CErrLog::GetInstance()->addEntry(errResultInfo);
+        }
+    }
+    else // if( !i_strObjName.isEmpty() || !i_strClassName.isEmpty() || !i_strNameSpace.isEmpty() )
+    {
+        QString strParentBranchPath;
 
-            if( i_bEnabledAsDefault != EEnabled::Undefined )
-            {
-                bEnabled = i_bEnabledAsDefault;
-            }
-            if( i_iDefaultDetailLevel >= 0 )
-            {
-                iDetailLevel = i_iDefaultDetailLevel;
-            }
+        QString strObjName = i_strObjName;
 
-            pTrcAdminObj->setEnabled(bEnabled);
-            pTrcAdminObj->setTraceDetailLevel(iDetailLevel);
+        if( i_strObjName.isEmpty() )
+        {
+            if( i_strClassName.isEmpty() )
+            {
+                strObjName = i_strNameSpace;
+            }
+            else
+            {
+                strObjName = i_strClassName;
+                strParentBranchPath = i_strNameSpace;
+            }
+        }
+        else
+        {
+            if( i_strClassName.isEmpty() )
+            {
+                strParentBranchPath = i_strNameSpace;
+            }
+            else if( i_strNameSpace.isEmpty() )
+            {
+                strParentBranchPath = i_strClassName;
+            }
+            else
+            {
+                strParentBranchPath = buildPathStr(m_pTrcAdminObjIdxTree->nodeSeparator(), i_strNameSpace, i_strClassName);
+            }
+        }
+
+        CIdxTreeEntry* pLeave = m_pTrcAdminObjIdxTree->findLeave(strParentBranchPath, strObjName);
+
+        bool bInitiallyCreated = pLeave == nullptr;
+
+        pTrcAdminObj = m_pTrcAdminObjIdxTree->getTraceAdminObj(i_strNameSpace, i_strClassName, i_strObjName);
+
+        if( pTrcAdminObj != nullptr )
+        {
+            if( bInitiallyCreated )
+            {
+                EEnabled bEnabled     = m_trcSettings.m_bNewTrcAdminObjsEnabledAsDefault ? EEnabled::Yes : EEnabled::No;
+                int      iDetailLevel = m_trcSettings.m_iNewTrcAdminObjsDefaultDetailLevel;
+
+                if( i_bEnabledAsDefault != EEnabled::Undefined )
+                {
+                    bEnabled = i_bEnabledAsDefault;
+                }
+                if( i_iDefaultDetailLevel >= 0 )
+                {
+                    iDetailLevel = i_iDefaultDetailLevel;
+                }
+
+                pTrcAdminObj->setEnabled(bEnabled);
+                pTrcAdminObj->setTraceDetailLevel(iDetailLevel);
+            }
         }
 
         if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
         {
-            strMthRet = pTrcAdminObj->getCalculatedKeyInTree();
+            if( pTrcAdminObj != nullptr )
+            {
+                strMthRet = pTrcAdminObj->getCalculatedKeyInTree();
+            }
+            else
+            {
+                strMthRet = "nullptr";
+            }
             mthTracer.setMethodReturn(strMthRet);
         }
-    }
+    } // if( !i_strObjName.isEmpty() || !i_strClassName.isEmpty() || !i_strNameSpace.isEmpty() )
 
     return pTrcAdminObj;
 

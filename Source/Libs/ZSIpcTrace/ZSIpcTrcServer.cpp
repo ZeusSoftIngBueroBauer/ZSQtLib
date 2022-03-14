@@ -2330,7 +2330,7 @@ void CIpcTrcServer::onIpcServerReceivedReqSelect( int i_iSocketId, const QString
     }
     else // if( xmlStreamTokenType == QXmlStreamReader::StartDocument )
     {
-        while( xmlStreamTokenType != QXmlStreamReader::EndElement )
+        while( xmlStreamTokenType != QXmlStreamReader::EndElement && xmlStreamTokenType != QXmlStreamReader::Invalid )
         {
             xmlStreamTokenType = xmlStreamReader.readNext();
 
@@ -2418,7 +2418,7 @@ void CIpcTrcServer::onIpcServerReceivedReqSelect( int i_iSocketId, const QString
                     xmlStreamReader.raiseError("Invalid element \"" + strElemName + "\" in select request");
                 }
             } // if( xmlStreamTokenType == QXmlStreamReader::StartElement )
-        } // while( !xmlStreamReader.atEnd() )
+        } // while( xmlStreamTokenType != QXmlStreamReader::EndElement && xmlStreamTokenType != QXmlStreamReader::Invalid )
     } // if( xmlStreamTokenType == QXmlStreamReader::StartDocument )
 
     if( xmlStreamReader.hasError() )
@@ -2492,7 +2492,7 @@ void CIpcTrcServer::onIpcServerReceivedReqUpdate( int i_iSocketId, const QString
     }
     else // if( xmlStreamTokenType == QXmlStreamReader::StartDocument )
     {
-        while( !xmlStreamReader.atEnd() )
+        while( xmlStreamTokenType != QXmlStreamReader::EndElement && xmlStreamTokenType != QXmlStreamReader::Invalid )
         {
             xmlStreamTokenType = xmlStreamReader.readNext();
 
@@ -2713,7 +2713,7 @@ void CIpcTrcServer::onIpcServerReceivedReqUpdate( int i_iSocketId, const QString
                     } // if( iObjId >= 0 && iObjId < m_pTrcAdminObjIdxTree->treeEntriesVectorSize() )
                 } // if( strElemName == "NameSpace" )
             } // if( xmlStreamReader.isStartElement() )
-        } // while( !xmlStreamReader.atEnd() )
+        } // while( xmlStreamTokenType != QXmlStreamReader::EndElement && xmlStreamTokenType != QXmlStreamReader::Invalid )
     } // if( xmlStreamTokenType == QXmlStreamReader::StartDocument )
 
     if( xmlStreamReader.hasError() )

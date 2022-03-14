@@ -49,6 +49,8 @@ public: // class methods
     static QString NameSpace() { return "ZS::Apps::Test::IpcTrace"; }
     static QString ClassName() { return "CTestModule1"; }
 public: // class methods
+    static void setTraceServerName( const QString& i_strServerName );
+public: // class methods
     static QString classMethod(const QString& i_strMthInArgs);
 public: // ctors and dtor
     CTestModule1( const QString& i_strObjName, const QString& i_strTestModule2ObjName );
