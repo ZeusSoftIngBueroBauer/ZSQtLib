@@ -85,11 +85,11 @@ CInProcMsgSocketsAdminObj::CInProcMsgSocketsAdminObj( bool i_bTracingEnabled ) :
     m_bTracingEnabled(i_bTracingEnabled),
     m_pTrcAdminObj(nullptr)
 {
-    #pragma push_macro("_SMSYSDBGNEW_CLIENT_BLOCK_SUBTYPE")
+    #pragma push_macro("_ZSSYS_DBGNEW_CLIENT_BLOCK_SUBTYPE")
     #ifdef _WINDOWS
     #pragma warning( disable : 4005 )
     #endif
-    #define _SMSYSDBGNEW_CLIENT_BLOCK_SUBTYPE 0
+    #define _ZSSYS_DBGNEW_CLIENT_BLOCK_SUBTYPE 0
 
     if( m_bTracingEnabled )
     {
@@ -107,7 +107,7 @@ CInProcMsgSocketsAdminObj::CInProcMsgSocketsAdminObj( bool i_bTracingEnabled ) :
     #ifdef _WINDOWS
     #pragma warning( default : 4005 )
     #endif
-    #pragma pop_macro("_SMSYSDBGNEW_CLIENT_BLOCK_SUBTYPE")
+    #pragma pop_macro("_ZSSYS_DBGNEW_CLIENT_BLOCK_SUBTYPE")
 
 } // ctor
 
@@ -401,11 +401,11 @@ CInProcMsgSocket::CInProcMsgSocket(
         /* strMethod    */ "ctor",
         /* strAddInfo   */ "" );
 
-    #pragma push_macro("_SMSYSDBGNEW_CLIENT_BLOCK_SUBTYPE")
+    #pragma push_macro("_ZSSYS_DBGNEW_CLIENT_BLOCK_SUBTYPE")
     #ifdef _WINDOWS
     #pragma warning( disable : 4005 )
     #endif
-    #define _SMSYSDBGNEW_CLIENT_BLOCK_SUBTYPE 0
+    #define _ZSSYS_DBGNEW_CLIENT_BLOCK_SUBTYPE 0
 
     if( s_pInProcMsgSocketsAdminObj == nullptr )
     {
@@ -415,7 +415,7 @@ CInProcMsgSocket::CInProcMsgSocket(
     #ifdef _WINDOWS
     #pragma warning( default : 4005 )
     #endif
-    #pragma pop_macro("_SMSYSDBGNEW_CLIENT_BLOCK_SUBTYPE")
+    #pragma pop_macro("_ZSSYS_DBGNEW_CLIENT_BLOCK_SUBTYPE")
 
     m_pMutex = new QMutex(QMutex::Recursive);
     m_pTimer = new QTimer(this);

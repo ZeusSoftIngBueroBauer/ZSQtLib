@@ -122,13 +122,13 @@ if(CMAKE_BUILD_TYPE MATCHES Debug)
 endif()
 message(STATUS "TargetOutputName:         ${TargetOutputName}")
 
-# Create the source groups for source tree with root at CMAKE_CURRENT_SOURCE_DIR.
-source_group(TREE ${_HeadersPath}/${PROJECT_NAME} FILES ${_Headers})
-source_group(TREE ${_SourcesPath}/${PROJECT_NAME} FILES ${_Sources})
-
 add_library(${PROJECT_NAME} SHARED ${_Headers} ${_Sources})
 
 set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME ${TargetOutputName})
+set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER Libs)
+
+source_group(TREE ${_HeadersPath}/${PROJECT_NAME} PREFIX "Header Files" FILES ${_Headers})
+source_group(TREE ${_SourcesPath}/${PROJECT_NAME} PREFIX "Source Files" FILES ${_Sources})
 
 target_compile_definitions(${PROJECT_NAME}
     PRIVATE ZSSYSDLL_EXPORTS

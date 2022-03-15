@@ -37,38 +37,38 @@ namespace Test
 {
 namespace IpcTrace
 {
-class CTestModule2Thread;
-class CTestModule2;
+class CMyClass2Thread;
+class CMyClass2;
 
 //******************************************************************************
-class CTestModule1 : public QObject
+class CMyClass1 : public QObject
 //******************************************************************************
 {
     Q_OBJECT
 public: // class methods
     static QString NameSpace() { return "ZS::Apps::Test::IpcTrace"; }
-    static QString ClassName() { return "CTestModule1"; }
+    static QString ClassName() { return "CMyClass1"; }
 public: // class methods
     static void setTraceServerName( const QString& i_strServerName );
 public: // class methods
     static QString classMethod(const QString& i_strMthInArgs);
 public: // ctors and dtor
-    CTestModule1( const QString& i_strObjName, const QString& i_strTestModule2ObjName );
-    virtual ~CTestModule1();
+    CMyClass1( const QString& i_strObjName, const QString& i_strMyClass2ObjName );
+    virtual ~CMyClass1();
 public: // instance methods
-    CTestModule2Thread* getTestModule2Thread() const { return m_pTestModule2Thread; }
-    CTestModule2* getTestModule2() const { return m_pTestModule2; }
+    CMyClass2Thread* getMyClass2Thread() const { return m_pMyClass2Thread; }
+    CMyClass2* getMyClass2() const { return m_pMyClass2; }
 public: // instance methods
-    CTestModule2* createModule2();
+    CMyClass2* createModule2();
     void deleteModule2();
 private: // class members
     static ZS::Trace::CTrcAdminObjRefAnchor s_trcAdminObjRefAnchor;
 private: // instance members
-    QString             m_strTestModule2ObjName;
-    CTestModule2Thread* m_pTestModule2Thread;
-    CTestModule2*       m_pTestModule2;
+    QString          m_strMyClass2ObjName;
+    CMyClass2Thread* m_pMyClass2Thread;
+    CMyClass2*       m_pMyClass2;
 
-}; // class CTestModule1
+}; // class CMyClass1
 
 } // namespace IpcTrace
 

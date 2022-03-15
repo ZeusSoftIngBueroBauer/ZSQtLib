@@ -381,8 +381,7 @@ bool CWdgtTrcMsgLog::event( QEvent* i_pMsg )
                             strSysTime.replace(" ","&nbsp;");
                         }
                         strItem = strTime + " (" + strSysTime + "): " + pMsg->getMsg();
-                        strItem.replace("<","&lt;");
-                        strItem.replace(">","&gt;");
+                        strItem = encodeForHtml(strItem);
 
                         m_uLogItemCount++;
 

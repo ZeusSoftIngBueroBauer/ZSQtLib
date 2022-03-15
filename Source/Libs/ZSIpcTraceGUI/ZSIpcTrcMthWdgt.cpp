@@ -1006,6 +1006,8 @@ void CWdgtTrcMthList::onTraceDataReceived( QObject* /*i_pObjSender*/, const QStr
     CIdxTreeTrcAdminObjs* pIdxTree = m_pTrcClient->getTraceAdminObjIdxTree();
 
     CTrcAdminObj*      pTrcAdminObj = nullptr;
+    QString            strNameSpace;
+    QString            strClassName;
     QString            strObjName;
     QString            strMthName;
     QString            strMthThreadName;
@@ -1036,6 +1038,8 @@ void CWdgtTrcMthList::onTraceDataReceived( QObject* /*i_pObjSender*/, const QStr
                     if( xmlStreamReader.isStartElement() )
                     {
                         pTrcAdminObj = nullptr;
+                        strNameSpace = "";
+                        strClassName = "";
                         strObjName = "";
                         strMthName = "";
                         strMthThreadName = "";
@@ -1136,24 +1140,18 @@ void CWdgtTrcMthList::onTraceDataReceived( QObject* /*i_pObjSender*/, const QStr
 
                         m_hashThreads[strMthThreadName].m_iCallDepth = threadEntry.m_iCallDepth;
 
-                        QString strObjPath;
-
                         if( pTrcAdminObj != nullptr )
                         {
-                            strObjPath = pIdxTree->buildPathStr( pTrcAdminObj->getNameSpace(), pTrcAdminObj->getClassName() );
+                            strNameSpace = pTrcAdminObj->getNameSpace();
+                            strClassName = pTrcAdminObj->getClassName();
+                            strObjName   = pTrcAdminObj->getObjectName();
                         }
+
+                        QString strObjPath = pIdxTree->buildPathStr(strNameSpace, strClassName);
+
                         if( !strObjPath.isEmpty() )
                         {
                             strTrace += "&lt;" + strObjPath + "&gt;&nbsp;";
-                        }
-
-                        if( pTrcAdminObj != nullptr )
-                        {
-                            if( !pTrcAdminObj->getObjectName().isEmpty() )
-                            {
-                                strTrace += pTrcAdminObj->getObjectName();
-                                strTrace += ".";
-                            }
                         }
 
                         if( !strObjName.isEmpty() )
@@ -1338,20 +1336,5 @@ protected: // instance methods
 void CWdgtTrcMthList::normalize( QString& i_str ) const
 //------------------------------------------------------------------------------
 {
-    if( i_str.contains('<') )
-    {
-        i_str.replace("<","&lt;");
-    }
-    if( i_str.contains('>') )
-    {
-        i_str.replace(">","&gt;");
-    }
-    if( i_str.contains('"') )
-    {
-        i_str.replace("\"","&quot;");
-    }
-    if( i_str.contains("'") )
-    {
-        i_str.replace("'","&apos;");
-    }
-} // normalize
+    i_str = encodeForHtml(i_str);
+}

@@ -18,6 +18,8 @@ message(STATUS "CMAKE_BINARY_DIR:         ${CMAKE_BINARY_DIR}")
 message(STATUS "CMAKE_CURRENT_BINARY_DIR: ${CMAKE_CURRENT_BINARY_DIR}")
 message(STATUS "PROJECT_BINARY_DIR:       ${PROJECT_BINARY_DIR}")
 
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+
 # In source code the headers are included together with the ${PROJECT_NAME} as follows:
 # include "${PROJECT_NAME}/HeaderFileName.h"
 # e.g. #include "ZSSys/ZSSysIdxTree.h"
@@ -71,11 +73,6 @@ if(CMAKE_BUILD_TYPE MATCHES Debug)
 endif()
 message(STATUS "TargetOutputName:         ${TargetOutputName}")
 
-# Create the source groups for source tree with root at CMAKE_CURRENT_SOURCE_DIR.
-source_group(TREE ${_HeadersPath}/ZSIpcTraceDllIfQtApp FILES ${_Headers})
-source_group(TREE ${_SourcesPath}/ZSIpcTraceDllIfQtApp FILES ${_Sources})
-#source_group(TREE ${_ResourcesPath}/ZSIpcTraceDllIfQtApp FILES ${_Resources})
-
 if(WIN32)
     add_executable(${PROJECT_NAME} WIN32 ${_Headers} ${_Sources} ${_Interfaces} ${_Resources})
 else()
@@ -83,6 +80,10 @@ else()
 endif()
 
 set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME ${TargetOutputName})
+set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER Tests)
+
+source_group(TREE ${_HeadersPath}/ZSIpcTraceDllIfQtApp PREFIX "Header Files" FILES ${_Headers})
+source_group(TREE ${_SourcesPath}/ZSIpcTraceDllIfQtApp PREFIX "Source Files" FILES ${_Sources})
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
     target_compile_options(${PROJECT_NAME} PRIVATE "-Wno-cast-function-type")

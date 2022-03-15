@@ -192,15 +192,7 @@ CTest::CTest() :
     // Recall test step settings
     //--------------------------
 
-    SErrResultInfo errResultInfo = recall();
-
-    if(errResultInfo.isErrorResult())
-    {
-        if(CErrLog::GetInstance() != nullptr)
-        {
-            CErrLog::GetInstance()->addEntry(errResultInfo);
-        }
-    }
+    recall();
 
 } // default ctor
 
@@ -210,7 +202,7 @@ CTest::~CTest()
 {
     SErrResultInfo errResultInfo = save();
 
-    if(errResultInfo.isErrorResult())
+    if( errResultInfo.isErrorResult() )
     {
         if(CErrLog::GetInstance() != nullptr)
         {
@@ -518,20 +510,10 @@ void CTest::doTestStepTraceServerRecallAdminObjs( ZS::Test::CTestStep* i_pTestSt
     QString strIniFileScope = "System"; // Default
     #endif
 
-    QString strAppNameNormalized = QCoreApplication::applicationName();
-
-    // The application name may contain characters which are invalid in file names:
-    strAppNameNormalized.remove(":");
-    strAppNameNormalized.remove(" ");
-    strAppNameNormalized.remove("\\");
-    strAppNameNormalized.remove("/");
-    strAppNameNormalized.remove("<");
-    strAppNameNormalized.remove(">");
-
     QString strAppConfigDir = ZS::System::getAppConfigDir(strIniFileScope);
 
     QString strTrcAdminObjFileSuffix = "xml";
-    QString strTrcAdminObjFileBaseName = strAppNameNormalized + "-TrcMthAdmObj";
+    QString strTrcAdminObjFileBaseName = QString(m_pTrcServer->name()) + "-TrcMthAdmObj";
 
     QString strTrcAdminObjFileAbsFilePath = strAppConfigDir + "/" + strTrcAdminObjFileBaseName + "." + strTrcAdminObjFileSuffix;
 

@@ -782,64 +782,25 @@ CTrcAdminObj* CTrcServer::getTraceAdminObj(
     }
     else // if( !i_strObjName.isEmpty() || !i_strClassName.isEmpty() || !i_strNameSpace.isEmpty() )
     {
-        QString strParentBranchPath;
+        EEnabled bEnabled     = m_trcSettings.m_bNewTrcAdminObjsEnabledAsDefault ? EEnabled::Yes : EEnabled::No;
+        int      iDetailLevel = m_trcSettings.m_iNewTrcAdminObjsDefaultDetailLevel;
 
-        QString strObjName = i_strObjName;
-
-        if( i_strObjName.isEmpty() )
+        if( i_bEnabledAsDefault != EEnabled::Undefined )
         {
-            if( i_strClassName.isEmpty() )
-            {
-                strObjName = i_strNameSpace;
-            }
-            else
-            {
-                strObjName = i_strClassName;
-                strParentBranchPath = i_strNameSpace;
-            }
+            bEnabled = i_bEnabledAsDefault;
         }
-        else
+        if( i_iDefaultDetailLevel >= 0 )
         {
-            if( i_strClassName.isEmpty() )
-            {
-                strParentBranchPath = i_strNameSpace;
-            }
-            else if( i_strNameSpace.isEmpty() )
-            {
-                strParentBranchPath = i_strClassName;
-            }
-            else
-            {
-                strParentBranchPath = buildPathStr(m_pTrcAdminObjIdxTree->nodeSeparator(), i_strNameSpace, i_strClassName);
-            }
+            iDetailLevel = i_iDefaultDetailLevel;
         }
 
-        CIdxTreeEntry* pLeave = m_pTrcAdminObjIdxTree->findLeave(strParentBranchPath, strObjName);
-
-        bool bInitiallyCreated = pLeave == nullptr;
-
-        pTrcAdminObj = m_pTrcAdminObjIdxTree->getTraceAdminObj(i_strNameSpace, i_strClassName, i_strObjName);
-
-        if( pTrcAdminObj != nullptr )
-        {
-            if( bInitiallyCreated )
-            {
-                EEnabled bEnabled     = m_trcSettings.m_bNewTrcAdminObjsEnabledAsDefault ? EEnabled::Yes : EEnabled::No;
-                int      iDetailLevel = m_trcSettings.m_iNewTrcAdminObjsDefaultDetailLevel;
-
-                if( i_bEnabledAsDefault != EEnabled::Undefined )
-                {
-                    bEnabled = i_bEnabledAsDefault;
-                }
-                if( i_iDefaultDetailLevel >= 0 )
-                {
-                    iDetailLevel = i_iDefaultDetailLevel;
-                }
-
-                pTrcAdminObj->setEnabled(bEnabled);
-                pTrcAdminObj->setTraceDetailLevel(iDetailLevel);
-            }
-        }
+        pTrcAdminObj = m_pTrcAdminObjIdxTree->getTraceAdminObj(
+            /* strNameSpace        */ i_strNameSpace,
+            /* strClassName        */ i_strClassName,
+            /* strObjName          */ i_strObjName,
+            /* bEnabledAsDefault   */ bEnabled,
+            /* iDefaultDetailLevel */ iDetailLevel,
+            /* bIncrementRefCount  */ true );
 
         if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
         {
@@ -1974,34 +1935,25 @@ void CTrcServer::addEntry(
     // instances must be serialized using a mutex ..
     QMutexLocker mtxLocker(&s_mtx);
 
-    //if( strMthArgs.contains('<') )
-    //{
-    //    strMthArgs.replace("<","&lt;");
-    //}
-    //if( strMthArgs.contains('>') )
-    //{
-    //    strMthArgs.replace(">","&gt;");
-    //}
-    //if( strMthArgs.contains('"') )
-    //{
-    //    strMthArgs.replace("\"","&quot;");
-    //}
-    //if( strMthArgs.contains("'") )
-    //{
-    //    strMthArgs.replace("'","&apos;");
-    //}
-
     if( m_trcSettings.m_bUseLocalTrcFile && m_pTrcMthFile != nullptr )
     {
         QString strMth;
 
         if( m_pTrcAdminObjIdxTree != nullptr )
         {
-            strMth = "<" + m_pTrcAdminObjIdxTree->buildPathStr(i_strNameSpace, i_strClassName) + "> " + i_strObjName + "." + i_strMethod;
+            strMth = "<" + m_pTrcAdminObjIdxTree->buildPathStr(i_strNameSpace, i_strClassName) + "> ";
         }
         else
         {
-            strMth = "<" + buildPathStr("::", i_strNameSpace, i_strClassName) + "> " + i_strObjName + "." + i_strMethod;
+            strMth = "<" + buildPathStr("::", i_strNameSpace, i_strClassName) + "> ";
+        }
+        if( i_strObjName.isEmpty() )
+        {
+            strMth += i_strMethod;
+        }
+        else
+        {
+            strMth += i_strObjName + "." + i_strMethod;
         }
 
         if( i_mthDir == EMethodDir::Enter )

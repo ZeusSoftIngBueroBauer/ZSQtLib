@@ -263,46 +263,13 @@ void CIpcTrcClient::sendAdminObj(
     if( i_pTrcAdminObj != nullptr && isConnected() )
     {
         QString strMsg;
-        //QString strNameSpace = i_pTrcAdminObj->getNameSpace();
-        //QString strClassName = i_pTrcAdminObj->getClassName();
-        //QString strObjName = i_pTrcAdminObj->getObjectName();
-
-        //if( strNameSpace.contains('<') )
-        //{
-        //    strNameSpace.replace("<","&lt;");
-        //}
-        //if( strNameSpace.contains('>') )
-        //{
-        //    strNameSpace.replace(">","&gt;");
-        //}
-        //if( strClassName.contains('<') )
-        //{
-        //    strClassName.replace("<","&lt;");
-        //}
-        //if( strClassName.contains('>') )
-        //{
-        //    strClassName.replace(">","&gt;");
-        //}
-        //if( strObjName.contains('<') )
-        //{
-        //    strObjName.replace("<","&lt;");
-        //}
-        //if( strObjName.contains('>') )
-        //{
-        //    strObjName.replace(">","&gt;");
-        //}
 
         strMsg += systemMsgType2Str(i_systemMsgType) + " ";
         strMsg += command2Str(i_cmd) + " ";
         strMsg += "<TrcAdminObj ";
-        //strMsg += " NameSpace=\"" + strNameSpace + "\"";
-        //strMsg += " ClassName=\"" + strClassName + "\"";
-        //strMsg += " ObjName=\"" + strObjName + "\"";
-        //strMsg += " ThreadName=\"" + strThreadName + "\"";
         strMsg += " ObjId=\"" + QString::number(i_pTrcAdminObj->indexInTree()) + "\"";
         strMsg += " Enabled=\"" + CEnumEnabled::toString(i_pTrcAdminObj->getEnabled()) + "\"";
         strMsg += " DetailLevel=\"" + QString::number(i_pTrcAdminObj->getTraceDetailLevel()) + "\"";
-        //strMsg += " RefCount=" + QString::number(i_pTrcAdminObj->getRefCount());
         strMsg += "/>";
 
         sendData( str2ByteArr(strMsg) );
@@ -603,6 +570,8 @@ void CIpcTrcClient::onReceivedData( const QByteArray& i_byteArr )
                     else if( strElemName == "TrcAdminObj" )
                     {
                         int      iParentPranchIdxInTree = -1;
+                        QString  strNameSpace;
+                        QString  strClassName;
                         QString  strObjName;
                         int      idxInTree = -1;
                         QString  strThreadName;
@@ -631,9 +600,17 @@ void CIpcTrcClient::onReceivedData( const QByteArray& i_byteArr )
                                 if( bOk || iVal < 0 ) iParentPranchIdxInTree = iVal;
                                 else xmlStreamReader.raiseError("Attribute \"ParentBranchIdxInTree\" (" + strAttr + ") is out of range");
                             }
-                            if( !xmlStreamReader.hasError() && xmlStreamReader.attributes().hasAttribute("Name") )
+                            if( !xmlStreamReader.hasError() && xmlStreamReader.attributes().hasAttribute("NameSpace") )
                             {
-                                strObjName = xmlStreamReader.attributes().value("Name").toString();
+                                strNameSpace = xmlStreamReader.attributes().value("NameSpace").toString();
+                            }
+                            if( !xmlStreamReader.hasError() && xmlStreamReader.attributes().hasAttribute("ClassName") )
+                            {
+                                strClassName = xmlStreamReader.attributes().value("ClassName").toString();
+                            }
+                            if( !xmlStreamReader.hasError() && xmlStreamReader.attributes().hasAttribute("ObjName") )
+                            {
+                                strObjName = xmlStreamReader.attributes().value("ObjName").toString();
                             }
                             if( !xmlStreamReader.hasError() && xmlStreamReader.attributes().hasAttribute("Thread") )
                             {
@@ -664,29 +641,7 @@ void CIpcTrcClient::onReceivedData( const QByteArray& i_byteArr )
                             {
                                 CTrcAdminObj* pTrcAdminObj = m_pTrcAdminObjIdxTree->getTraceAdminObj(idxInTree);
 
-                                if( strObjName.isEmpty() && pTrcAdminObj == nullptr )
-                                {
-                                    xmlStreamReader.raiseError("There is no trace admin object at tree index " + QString::number(idxInTree));
-                                }
-                                else if( !strObjName.isEmpty() && pTrcAdminObj == nullptr )
-                                {
-                                    pTrcAdminObj = m_pTrcAdminObjIdxTree->insertTraceAdminObj(iParentPranchIdxInTree, strObjName, idxInTree);
-
-                                    if( pTrcAdminObj != nullptr )
-                                    {
-                                        bool bSignalsBlocked = pTrcAdminObj->blockTreeEntryChangedSignal(true);
-
-                                        if( !strThreadName.isEmpty() ) pTrcAdminObj->setObjectThreadName(strThreadName);
-                                        if( enabled != EEnabled::Undefined ) pTrcAdminObj->setEnabled(enabled);
-                                        if( iDetailLevel >= 0 ) pTrcAdminObj->setTraceDetailLevel(iDetailLevel);
-                                        if( iRefCount >= 0 ) pTrcAdminObj->setRefCount(iRefCount);
-
-                                        pTrcAdminObj->blockTreeEntryChangedSignal(bSignalsBlocked);
-
-                                        emit traceAdminObjInserted(this, pTrcAdminObj->keyInTree());
-                                    }
-                                }
-                                else if( pTrcAdminObj != nullptr )
+                                if( pTrcAdminObj != nullptr )
                                 {
                                     bool bSignalsBlocked = pTrcAdminObj->blockTreeEntryChangedSignal(true);
 
@@ -696,6 +651,31 @@ void CIpcTrcClient::onReceivedData( const QByteArray& i_byteArr )
                                     if( iRefCount >= 0 ) pTrcAdminObj->setRefCount(iRefCount);
 
                                     pTrcAdminObj->blockTreeEntryChangedSignal(bSignalsBlocked);
+                                }
+                                else // if( pTrcAdminObj == nullptr )
+                                {
+                                    if( strNameSpace.isEmpty() && strClassName.isEmpty() && strObjName.isEmpty() )
+                                    {
+                                        xmlStreamReader.raiseError("Neither NameSpace nor ClassName nor ObjName provided and there is no trace admin object at tree index " + QString::number(idxInTree));
+                                    }
+                                    else
+                                    {
+                                        pTrcAdminObj = m_pTrcAdminObjIdxTree->insertTraceAdminObj(iParentPranchIdxInTree, strNameSpace, strClassName, strObjName, idxInTree);
+
+                                        if( pTrcAdminObj != nullptr )
+                                        {
+                                            bool bSignalsBlocked = pTrcAdminObj->blockTreeEntryChangedSignal(true);
+
+                                            if( !strThreadName.isEmpty() ) pTrcAdminObj->setObjectThreadName(strThreadName);
+                                            if( enabled != EEnabled::Undefined ) pTrcAdminObj->setEnabled(enabled);
+                                            if( iDetailLevel >= 0 ) pTrcAdminObj->setTraceDetailLevel(iDetailLevel);
+                                            if( iRefCount >= 0 ) pTrcAdminObj->setRefCount(iRefCount);
+
+                                            pTrcAdminObj->blockTreeEntryChangedSignal(bSignalsBlocked);
+
+                                            emit traceAdminObjInserted(this, pTrcAdminObj->keyInTree());
+                                        }
+                                    }
                                 }
                             } // if( !xmlStreamReader.hasError() )
                         } // if( idxInTree >= 0 )

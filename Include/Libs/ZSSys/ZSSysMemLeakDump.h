@@ -33,29 +33,27 @@ files defining and redefining memory allocation functions leading to compile err
 The following are example code lines on how to use this module together with the
 CRT heap reporting functions:
 
-#include "ZSAppExample\Include\ZSExampleApp.h"
-#include "ZSSys\src\SMSysMemLeakDump.h" // must be incluced after all Qt header files
+    #include "ZSAppExample\Include\ZSExampleApp.h"
+    #include "ZSSys\ZSSysMemLeakDump.h" // must be incluced after all Qt header files
 
-int main( int argc, char *argv[] )
-{
-    int iAppResult = 0;
+    int main( int argc, char *argv[] )
+    {
+        int iAppResult = 0;
 
-    #ifdef _DEBUG
-    _CrtMemState crtMemState;
-    #endif
+        ZS::DbExample::CDbApplication* pAppDbExample = new ZS::DbExample::CDbApplication(argc, argv);
+        iAppResult = pAppDbExample->exec();
 
-    _CrtMemCheckpoint(&crtMemState);
+        delete pAppDbExample;
+        pAppDbExample = nullptr;
 
-    ZS::DbExample::CDbApplication* pAppDbExample = new ZS::DbExample::CDbApplication(argc,argv);
-    iAppResult = pAppDbExample->exec();
+        #ifdef _WINDOWS
+        #ifdef _DEBUG
+        _CrtDoForAllClientObjects(ZS::dumpClientHook, nullptr);
+        #endif
+        #endif
 
-    delete pAppDbExample;
-    pAppDbExample = nullptr;
-
-    _CrtMemDumpAllObjectsSince(&crtMemState);
-
-    return iAppResult;
-}
+        return iAppResult;
+    }
 
 How to exclude memory blocks from being dumped:
 -----------------------------------------------
@@ -65,16 +63,18 @@ runtime of the system (e.g. internal heap objects or static class variables). Bu
 those memory blocks would also be reported as detected memory leaks. The example
 code lines below exclude the memory block from the memory leak dump:
 
-#ifdef _MEMLEAK_DUMP
-#pragma push_macro("_SMSYSDBGNEW_CLIENT_BLOCK_SUBTYPE")
-#pragma warning( disable : 4005 )
-#define _SMSYSDBGNEW_CLIENT_BLOCK_SUBTYPE 0
-#endif
+    #ifdef _MEMLEAK_DUMP
+    #pragma push_macro("_ZSSYS_DBGNEW_CLIENT_BLOCK_SUBTYPE")
+    #pragma warning( disable : 4005 )
+    #define _ZSSYS_DBGNEW_CLIENT_BLOCK_SUBTYPE 0
+    #endif
 
-pi = new int[10];
+    pi = new int[10];
 
-#pragma warning( default : 4005 )
-#pragma pop_macro("_SMSYSDBGNEW_CLIENT_BLOCK_SUBTYPE")
+    #ifdef _MEMLEAK_DUMP
+    #pragma warning( default : 4005 )
+    #pragma pop_macro("_ZSSYS_DBGNEW_CLIENT_BLOCK_SUBTYPE")
+    #endif
 
 ==============================================================================*/
 
@@ -98,7 +98,7 @@ namespace System
 #include <crtdbg.h>
 #include <new>
 
-#define _SMSYSDBGNEW_CLIENT_BLOCK_SUBTYPE 0x0004
+#define _ZSSYS_DBGNEW_CLIENT_BLOCK_SUBTYPE 0x0004
 
 inline void* __cdecl operator new( size_t cb, int nBlockUse, const char* szFileName, int nLine, void* )
 {
@@ -124,7 +124,7 @@ inline void __cdecl operator delete[]( void* _P, int, const char *, int, void* )
 }
 #endif  // _MSC_VER >= 1200
 
-#define _DEBUG_NEW new(_CLIENT_BLOCK|(_SMSYSDBGNEW_CLIENT_BLOCK_SUBTYPE<<16),__FILE__,__LINE__)
+#define _DEBUG_NEW new(_CLIENT_BLOCK|(_ZSSYS_DBGNEW_CLIENT_BLOCK_SUBTYPE<<16),__FILE__,__LINE__)
 #ifndef ZSSys_DbgNew_cpp
 #define new _DEBUG_NEW
 #endif

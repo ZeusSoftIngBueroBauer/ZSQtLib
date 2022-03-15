@@ -258,16 +258,16 @@ static void createErrIconPixmaps()
                 strFileName = ":/ZS/Result/ResultSeverity" + strSeverity;
 
                 #ifdef _WINDOWS
-                #pragma push_macro("_SMSYSDBGNEW_CLIENT_BLOCK_SUBTYPE")
+                #pragma push_macro("_ZSSYS_DBGNEW_CLIENT_BLOCK_SUBTYPE")
                 #pragma warning( disable : 4005 )
-                #define _SMSYSDBGNEW_CLIENT_BLOCK_SUBTYPE 0
+                #define _ZSSYS_DBGNEW_CLIENT_BLOCK_SUBTYPE 0
                 #endif
 
                 pPixmap = new QPixmap(strFileName+".bmp");
 
                 #ifdef _WINDOWS
                 #pragma warning( default : 4005 )
-                #pragma pop_macro("_SMSYSDBGNEW_CLIENT_BLOCK_SUBTYPE")
+                #pragma pop_macro("_ZSSYS_DBGNEW_CLIENT_BLOCK_SUBTYPE")
                 #endif
 
                 //QSize sizePxm = pPixmap->size();

@@ -179,39 +179,19 @@ QString toXmlString() const
     /*    23 */ str += "SysTime=\"" + QString::number(m_fSysTimeInSec,'f',6) + "\" ";
     if( m_mthDir == EMethodDir::Enter )
     {
-        QString strMthInArgs = m_strMthInArgs;
-        if( strMthInArgs.contains("<") ) strMthInArgs.replace("<", "&lt;");
-        if( strMthInArgs.contains(">") ) strMthInArgs.replace(">", "&gt;");
-        if( strMthInArgs.contains("&") ) strMthInArgs.replace("&", "&amp;");
-        if( strMthInArgs.contains("\"") ) strMthInArgs.replace("\"", "&quot;");
-        if( strMthInArgs.contains("'") ) strMthInArgs.replace("'", "&apos;");
+        QString strMthInArgs = encodeForHtml(m_strMthInArgs);
     /*    10 */ str += "InArgs=\"" + strMthInArgs + "\" ";
     }
     else if( m_mthDir == EMethodDir::Leave )
     {
-        QString strMthRet = m_strMthRet;
-        if( strMthRet.contains("<") ) strMthRet.replace("<", "&lt;");
-        if( strMthRet.contains(">") ) strMthRet.replace(">", "&gt;");
-        if( strMthRet.contains("&") ) strMthRet.replace("&", "&amp;");
-        if( strMthRet.contains("\"") ) strMthRet.replace("\"", "&quot;");
-        if( strMthRet.contains("'") ) strMthRet.replace("'", "&apos;");
-        QString strMthOutArgs = m_strMthOutArgs;
-        if( strMthOutArgs.contains("<") ) strMthOutArgs.replace("<", "&lt;");
-        if( strMthOutArgs.contains(">") ) strMthOutArgs.replace(">", "&gt;");
-        if( strMthOutArgs.contains("&") ) strMthOutArgs.replace("&", "&amp;");
-        if( strMthOutArgs.contains("\"") ) strMthOutArgs.replace("\"", "&quot;");
-        if( strMthOutArgs.contains("'") ) strMthOutArgs.replace("'", "&apos;");
+        QString strMthRet = encodeForHtml(m_strMthRet);
+        QString strMthOutArgs = encodeForHtml(m_strMthOutArgs);
     /*    10 */ str += "Return=\"" + strMthRet + "\" ";
     /*    10 */ str += "OutArgs=\"" + strMthOutArgs + "\" ";
     }
     else // if( i_dir == EMethodDir::None )
     {
-        QString strMthAddInfo = m_strMthAddInfo;
-        if( strMthAddInfo.contains("<") ) strMthAddInfo.replace("<", "&lt;");
-        if( strMthAddInfo.contains(">") ) strMthAddInfo.replace(">", "&gt;");
-        if( strMthAddInfo.contains("&") ) strMthAddInfo.replace("&", "&amp;");
-        if( strMthAddInfo.contains("\"") ) strMthAddInfo.replace("\"", "&quot;");
-        if( strMthAddInfo.contains("'") ) strMthAddInfo.replace("'", "&apos;");
+        QString strMthAddInfo = encodeForHtml(m_strMthAddInfo);
     /*    10 */ str += "AddInfo=\"" + strMthAddInfo + "\" ";
     }
     /*     3 */ str += "/>";
@@ -648,7 +628,7 @@ void CIpcTrcServer::setNewTrcAdminObjsDefaultDetailLevel( int i_iDetailLevel )
 
             strMsg += systemMsgType2Str(MsgProtocol::ESystemMsgTypeInd) + " ";
             strMsg += command2Str(MsgProtocol::ECommandUpdate) + " ";
-            strMsg += "<ServerSettings NewTrcAdminObjsDefaultDetailLevel=" + QString::number(m_trcSettings.m_iNewTrcAdminObjsDefaultDetailLevel) + "/>";
+            strMsg += "<ServerSettings NewTrcAdminObjsDefaultDetailLevel=\"" + QString::number(m_trcSettings.m_iNewTrcAdminObjsDefaultDetailLevel) + "\"/>";
 
             sendData( ESocketIdAllSockets, str2ByteArr(strMsg) );
         }
@@ -1864,14 +1844,7 @@ void CIpcTrcServer::sendBranch(
             QString strMsg;
             QString strBranchName = i_pBranch->name();
 
-            if( strBranchName.contains('<') )
-            {
-                strBranchName.replace("<","&lt;");
-            }
-            if( strBranchName.contains('>') )
-            {
-                strBranchName.replace(">","&gt;");
-            }
+            strBranchName = encodeForHtml(strBranchName);
 
             strMsg += systemMsgType2Str(i_systemMsgType) + " ";
             strMsg += command2Str(i_cmd) + " ";
@@ -1960,25 +1933,15 @@ void CIpcTrcServer::sendAdminObj(
         if( i_pTrcAdminObj != nullptr )
         {
             QString strMsg;
+            QString strNameSpace = i_pTrcAdminObj->getNameSpace();
+            QString strClassName = i_pTrcAdminObj->getClassName();
             QString strObjName = i_pTrcAdminObj->getObjectName();
             QString strThreadName = i_pTrcAdminObj->getObjectThreadName();
 
-            if( strObjName.contains('<') )
-            {
-                strObjName.replace("<","&lt;");
-            }
-            if( strObjName.contains('>') )
-            {
-                strObjName.replace(">","&gt;");
-            }
-            if( strThreadName.contains('<') )
-            {
-                strThreadName.replace("<","&lt;");
-            }
-            if( strThreadName.contains('>') )
-            {
-                strThreadName.replace(">","&gt;");
-            }
+            strNameSpace = encodeForHtml(strNameSpace);
+            strClassName = encodeForHtml(strClassName);
+            strObjName = encodeForHtml(strObjName);
+            strThreadName = encodeForHtml(strThreadName);
 
             strMsg += systemMsgType2Str(i_systemMsgType) + " ";
             strMsg += command2Str(i_cmd) + " ";
@@ -1987,7 +1950,9 @@ void CIpcTrcServer::sendAdminObj(
             {
                 strMsg += " ParentBranchIdxInTree=\"" + QString::number(i_pTrcAdminObj->parentBranch()->indexInTree()) + "\"";
             }
-            strMsg += " Name=\"" + strObjName + "\"";
+            strMsg += " NameSpace=\"" + strNameSpace + "\"";
+            strMsg += " ClassName=\"" + strClassName + "\"";
+            strMsg += " ObjName=\"" + strObjName + "\"";
             strMsg += " IdxInTree=\"" + QString::number(i_pTrcAdminObj->indexInTree()) + "\"";
             strMsg += " Thread=\"" + strThreadName + "\"";
             strMsg += " Enabled=\"" + CEnumEnabled::toString(i_pTrcAdminObj->getEnabled()) + "\"";

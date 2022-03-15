@@ -108,7 +108,7 @@ public: // instance methods to get and release admin objects
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-/*! Returns the trace admin object with the given name space, class name and
+/*! @brief Returns the trace admin object with the given name space, class name and
     object name.
 
     If an admin object with the given name space, class name and object name
@@ -117,12 +117,35 @@ public: // instance methods to get and release admin objects
     If an admin object with the given name space, class name and object name
     is already existing a reference counter will be incremented and the already
     existing admin object is returned.
+
+    @param i_strNameSpace [in] Name space (may be empty).
+        The namespace will used to build the path to the tree entry.
+        If both the object and class names are empty the namespace
+        becomes the name of the leave entry.
+    @param i_strClassName [in] Class name (may be empty).
+        The class name will used to build the path to the tree entry.
+        If the object name is empty the class name becomes the name of the leave entry.
+    @param i_strObjName [in] Object name (may be empty).
+        If not empty the object name becomes the name of the leave entry.
+    @param i_bEnabledAsDefault [in] Range [Yes, No, Undefined]
+        If not Undefined the enabled flag will be set as the trace admin object.
+    @param i_iDefaultDetailLevel [in] Range [-1, 0, ..]
+        If not -1 the detail  level will be set as the trace admin object.
+    @param i_bIncrementRefCount [in]
+        true to increment the reference counter of the trace admin object.
+        false is only used if the admin objects are recalled from file as
+        at that point only the tree entries are existing as place holders
+        but the admin objects are not yet referenced.
+
+    @return Pointer to allocated trace admin objecct or nullptr on error.
 */
 CTrcAdminObj* CIdxTreeTrcAdminObjs::getTraceAdminObj(
-    const QString& i_strNameSpace,
-    const QString& i_strClassName,
-    const QString& i_strObjName,
-    bool           i_bIncrementRefCount )
+    const QString&       i_strNameSpace,
+    const QString&       i_strClassName,
+    const QString&       i_strObjName,
+    ZS::System::EEnabled i_bEnabledAsDefault,
+    int                  i_iDefaultDetailLevel,
+    bool                 i_bIncrementRefCount )
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(m_pMtx);
@@ -134,6 +157,8 @@ CTrcAdminObj* CIdxTreeTrcAdminObjs::getTraceAdminObj(
         strAddTrcInfo  = "NameSpace: " + i_strNameSpace;
         strAddTrcInfo += ", ClassName: " + i_strClassName;
         strAddTrcInfo += ", ObjName: " + i_strObjName;
+        strAddTrcInfo += ", EnabledAsDefault: " + CEnumEnabled::toString(i_bEnabledAsDefault);
+        strAddTrcInfo += ", DefaultDetailLevel: " + QString::number(i_iDefaultDetailLevel);
         strAddTrcInfo += ", IncrementRefCount: " + bool2Str(i_bIncrementRefCount);
     }
 
@@ -224,7 +249,22 @@ CTrcAdminObj* CIdxTreeTrcAdminObjs::getTraceAdminObj(
                 strParentPath = buildPathStr(strParentPath, strBranchName);
             }
 
-            pTrcAdminObj = new CTrcAdminObj(strObjName);
+            pTrcAdminObj = new CTrcAdminObj(i_strNameSpace, i_strClassName, i_strObjName);
+
+            EEnabled bEnabled     = EEnabled::Yes;
+            int      iDetailLevel = ETraceDetailLevelNone;
+
+            if( i_bEnabledAsDefault != EEnabled::Undefined )
+            {
+                bEnabled = i_bEnabledAsDefault;
+            }
+            if( i_iDefaultDetailLevel >= 0 )
+            {
+                iDetailLevel = i_iDefaultDetailLevel;
+            }
+
+            pTrcAdminObj->setEnabled(bEnabled);
+            pTrcAdminObj->setTraceDetailLevel(iDetailLevel);
 
             add(pTrcAdminObj, strParentBranchPath);
 
@@ -236,20 +276,71 @@ CTrcAdminObj* CIdxTreeTrcAdminObjs::getTraceAdminObj(
         }
     } // if( !i_strObjName.isEmpty() || !i_strClassName.isEmpty() || !i_strNameSpace.isEmpty() )
 
+    if( mthTracer.isActive(ETraceDetailLevelMethodArgs) )
+    {
+        mthTracer.setMethodReturn(QString(pTrcAdminObj == nullptr ? "nullptr" : pTrcAdminObj->keyInTree()));
+    }
+
     return pTrcAdminObj;
 
 } // getTraceAdminObj
 
 //------------------------------------------------------------------------------
-/*! Returns the trace admin object at the given tree index.
+/*! @brief Returns the trace admin object at the given tree index.
+
+    The reference counter of the trace admin object will be incremented.
+
+    @param i_idxInTree [in] Index of the trace admin object.
+
+    @return Pointer to allocated trace admin objecct or nullptr on error.
 */
 CTrcAdminObj* CIdxTreeTrcAdminObjs::getTraceAdminObj( int i_idxInTree ) const
 //------------------------------------------------------------------------------
 {
-    return dynamic_cast<CTrcAdminObj*>(getEntry(i_idxInTree));
-}
+    QMutexLocker mtxLocker(m_pMtx);
+
+    QString strAddTrcInfo;
+
+    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
+    {
+        strAddTrcInfo = "IdxInTree: " + QString::number(i_idxInTree);
+    }
+
+    CMethodTracer mthTracer(
+        /* pTrcServer         */ dynamic_cast<CTrcServer*>(parent()), // may be nullptr if the parent is not the trace server
+        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
+        /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
+        /* strObjName         */ objectName(),
+        /* strMethod          */ "getTraceAdminObj",
+        /* strMethodInArgs    */ strAddTrcInfo );
+
+    CTrcAdminObj* pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(getEntry(i_idxInTree));
+
+    if( pTrcAdminObj != nullptr )
+    {
+        pTrcAdminObj->incrementRefCount();
+    }
+
+    if( mthTracer.isActive(ETraceDetailLevelMethodArgs) )
+    {
+        mthTracer.setMethodReturn(QString(pTrcAdminObj == nullptr ? "nullptr" : pTrcAdminObj->keyInTree()));
+    }
+
+    return pTrcAdminObj;
+
+} // getTraceAdminObj
 
 //------------------------------------------------------------------------------
+/*! @brief Releases the given trace admin object.
+
+    Only the reference counter of the trace admin object will be decremented
+    but the admin object will not neither be removed from the tree nor will
+    be destroyed.
+
+    @param i_pTrcAdminObj [in] Pointer to admin object to be released.
+*/
 void CIdxTreeTrcAdminObjs::releaseTraceAdminObj( CTrcAdminObj* i_pTrcAdminObj )
 //------------------------------------------------------------------------------
 {
@@ -284,8 +375,16 @@ public: // instance methods to insert branch nodes and admin objects
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-/*! Inserts a branch into the index tree.
+/*! @brief This method is used by trace clients to insert a branch
+           at the given index in the tree.
 
+    The branch becomes a child of the branch given by parameter i_iParentBranchIdxInTree.
+
+    @param i_iParentBranchIdxInTree [in] Tree entry index of the parent entry.
+    @param i_strBranchName [in] Branch name to be created.
+    @param i_idxInTree [in] Tree entry index at which the new branch will be inserted.
+
+    @return Pointer to allocated trace admin objecct or nullptr on error.
 */
 CIdxTreeEntry* CIdxTreeTrcAdminObjs::insertBranch(
     int            i_iParentBranchIdxInTree,
@@ -369,7 +468,8 @@ CIdxTreeEntry* CIdxTreeTrcAdminObjs::insertBranch(
 } // insertBranch
 
 //------------------------------------------------------------------------------
-/*! Returns the trace admin object at the index given by the object id.
+/*! @brief This method is used by trace clients to insert a trace admin object
+           at the given index in the tree.
 
     If there is no admin object at the given index a new object is created
     with the given name space, class name and object name and inserted in the
@@ -377,9 +477,25 @@ CIdxTreeEntry* CIdxTreeTrcAdminObjs::insertBranch(
 
     If there is already an object at the given index with a different name space,
     class name or object name nullptr is returned and an err log entry is created.
+
+    As this method is used by trace clients the reference counter of the trace
+    admin object is !! NOT !! incremented.
+
+    The trace admin object becomes a child of the branch given by parameter
+    i_iParentBranchIdxInTree.
+
+    @param i_iParentBranchIdxInTree [in] Tree entry index of the parent entry.
+    @param i_strNameSpace [in] Name space of the trace amdin object.
+    @param i_strClassName [in] Class name of the trace amdin object.
+    @param i_strObjName [in] Object name of the trace amdin object.
+    @param i_idxInTree [in] Tree entry index at which the new object will be inserted.
+
+    @return Pointer to allocated trace admin objecct or nullptr on error.
 */
 CTrcAdminObj* CIdxTreeTrcAdminObjs::insertTraceAdminObj(
     int            i_iParentBranchIdxInTree,
+    const QString& i_strNameSpace,
+    const QString& i_strClassName,
     const QString& i_strObjName,
     int            i_idxInTree )
 //------------------------------------------------------------------------------
@@ -391,6 +507,8 @@ CTrcAdminObj* CIdxTreeTrcAdminObjs::insertTraceAdminObj(
     if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
     {
         strAddTrcInfo  = "ParentBranchIdxInTree: " + QString::number(i_iParentBranchIdxInTree);
+        strAddTrcInfo += ", NameSpace: " + i_strNameSpace;
+        strAddTrcInfo += ", ClassName: " + i_strClassName;
         strAddTrcInfo += ", ObjName: " + i_strObjName;
         strAddTrcInfo += ", IdxInTree: " + QString::number(i_idxInTree);
     }
@@ -450,7 +568,7 @@ CTrcAdminObj* CIdxTreeTrcAdminObjs::insertTraceAdminObj(
         // If there is no tree entry at the given index ..
         else // if( pTreeEntry == nullptr )
         {
-            pTrcAdminObj = new CTrcAdminObj(i_strObjName);
+            pTrcAdminObj = new CTrcAdminObj(i_strNameSpace, i_strClassName, i_strObjName);
             insert(pTrcAdminObj, pBranchParent, -1, i_idxInTree);
         }
     } // if( i_idxInTree >= 0 )
@@ -900,11 +1018,9 @@ SErrResultInfo CIdxTreeTrcAdminObjs::recall( const QString& i_strAbsFilePath )
                                     }
                                 }
 
-                                CTrcAdminObj* pTrcAdminObj = getTraceAdminObj(strNameSpace, strClassName, strObjName, false);
+                                CTrcAdminObj* pTrcAdminObj = getTraceAdminObj(strNameSpace, strClassName, strObjName, enabled, iDetailLevel, false);
 
                                 pTrcAdminObj->setObjectThreadName(strThread);
-                                pTrcAdminObj->setEnabled(enabled);
-                                pTrcAdminObj->setTraceDetailLevel(iDetailLevel);
 
                             } // else // if( !strNameSpace.isEmpty() || !strClassName.isEmpty() || !strObjName.isEmpty() )
                         } // if( xmlStreamReader.isStartElement() )

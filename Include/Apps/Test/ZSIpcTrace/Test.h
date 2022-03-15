@@ -49,8 +49,8 @@ namespace Test
 {
 namespace IpcTrace
 {
-class CTestModule1;
-class CTestModule2;
+class CMyClass1;
+class CMyClass2;
 
 //******************************************************************************
 class CTest : public ZS::Test::CTest
@@ -68,8 +68,8 @@ signals:
 public: // instance methods
     ZS::Trace::CIpcTrcServer* getTestTrcServer() { return m_pTestTrcServer; }
     ZS::Trace::CIpcTrcClient* getTestTrcClient() { return m_pTestTrcClient; }
-    CTestModule1* getTestModule1() const { return m_pTestModule1; }
-    CTestModule2* getTestModule2() const { return m_pTestModule2; }
+    CMyClass1* getMyClass1() const { return m_pMyClass1; }
+    CMyClass2* getMyClass2() const { return m_pMyClass2; }
 public slots: // test step methods
     void doTestStepTraceServerCreateInstance( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepTraceServerReleaseInstance( ZS::Test::CTestStep* i_pTestStep );
@@ -81,7 +81,7 @@ public slots: // test step methods
     void doTestStepTraceClientDestroy( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepTraceClientConnect( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepTraceClientDisconnect( ZS::Test::CTestStep* i_pTestStep );
-    void doTestStepTraceModule1ClassMethod( ZS::Test::CTestStep* i_pTestStep );
+    void doTestStepTraceMethodCall( ZS::Test::CTestStep* i_pTestStep );
     //void doTestStepCreateModule1( ZS::Test::CTestStep* i_pTestStep );
     //void doTestStepDeleteModule1( ZS::Test::CTestStep* i_pTestStep );
     //void doTestStepCreateModule2( ZS::Test::CTestStep* i_pTestStep );
@@ -91,13 +91,22 @@ private slots:
     void onZSTraceClientTraceAdminObjInserted( QObject* i_pTrcClient, const QString& i_strKeyInTree );
     void onZSTraceClientTrcMthListWdgtTextItemAdded( const QString& i_strText );
     void onTimerTestStepTimeout();
+private: // instance auxiliary methods
+    void splitMethodCallOperation(
+        const QString& i_strOperation,
+        QString& o_strServerName,
+        QString& o_strClassName,
+        QString& o_strObjName,
+        QString& o_strMth,
+        QStringList& o_strlstInArgs,
+        QString& o_strMthRet ) const;
 private: // instance members
     ZS::Trace::CIpcTrcServer*            m_pTestTrcServer;
     ZS::Trace::CIpcTrcClient*            m_pTestTrcClient;
     QTimer*                              m_pTmrTestStepTimeout;
     QHash<qint64, ZS::System::CRequest*> m_hshReqsInProgress;
-    CTestModule1*                        m_pTestModule1;
-    CTestModule2*                        m_pTestModule2;
+    CMyClass1*                           m_pMyClass1;
+    CMyClass2*                           m_pMyClass2;
 
 }; // class CTest
 

@@ -65,9 +65,3 @@ In order to clarify the facts described, you can take a closer look at the code 
 filtering modules, classes and instances to be traced is created, but also a complete trace method client
 is created to test the communication between client and server.
 
-@subpage _PAGE_Libs_ZSIpcTrace_Usage_TrcServer
-
-@subpage _PAGE_Libs_ZSIpcTrace_Usage_TrcAdminObjs
-
-@subpage _PAGE_Libs_ZSIpcTrace_Usage_MethodTracer
-

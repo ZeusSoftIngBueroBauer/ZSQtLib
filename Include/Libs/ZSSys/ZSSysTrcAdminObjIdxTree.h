@@ -58,10 +58,12 @@ public: // instance methods
     virtual QString className() const { return ClassName(); }
 public: // instance methods to get and release admin objects
     CTrcAdminObj* getTraceAdminObj(
-        const QString& i_strNameSpace,
-        const QString& i_strClassName,
-        const QString& i_strObjName,
-        bool           i_bIncrementRefCount = true );
+        const QString&       i_strNameSpace,
+        const QString&       i_strClassName,
+        const QString&       i_strObjName,
+        ZS::System::EEnabled i_bEnabledAsDefault,
+        int                  i_iDefaultDetailLevel,
+        bool                 i_bIncrementRefCount = true );
     CTrcAdminObj* getTraceAdminObj( int i_idxInTree ) const;
     void releaseTraceAdminObj( CTrcAdminObj* i_pTrcAdminObj );
 public: // instance methods to insert branch nodes and admin objects
@@ -71,6 +73,8 @@ public: // instance methods to insert branch nodes and admin objects
         int            i_idxInTree );
     CTrcAdminObj* insertTraceAdminObj(
         int            i_iParentBranchIdxInTree,
+        const QString& i_strNameSpace,
+        const QString& i_strClassName,
         const QString& i_strObjName,
         int            i_idxInTree );
 public: // instance methods to recursively modify admin objects via object index of node entries

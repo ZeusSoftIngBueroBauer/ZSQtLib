@@ -78,8 +78,8 @@ CTest::CTest() :
     m_pTestTrcClient(nullptr),
     m_pTmrTestStepTimeout(nullptr),
     m_hshReqsInProgress(),
-    m_pTestModule1(nullptr),
-    m_pTestModule2(nullptr)
+    m_pMyClass1(nullptr),
+    m_pMyClass2(nullptr)
 {
     m_pTmrTestStepTimeout = new QTimer();
     m_pTmrTestStepTimeout->setSingleShot(true);
@@ -124,10 +124,10 @@ CTest::CTest() :
 
     new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " Module1::classMethod",
-        /* strOperation    */ "ZSTrcServer/CTestModule1::classMethod",
+        /* strName         */ "Step " + QString::number(++idxStep) + " CMyClass1::classMethod",
+        /* strOperation    */ "ZSTrcServer/CMyClass1::classMethod(Hello Class): Hello World",
         /* pTSGrpParent    */ pGrp,
-        /* szDoTestStepFct */ SLOT(doTestStepTraceModule1ClassMethod(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepTraceMethodCall(ZS::Test::CTestStep*)) );
 
     new ZS::Test::CTestStep(
         /* pTest           */ this,
@@ -257,28 +257,28 @@ CTest::CTest() :
     //new ZS::Test::CTestStep(
     //    /* pTest           */ this,
     //    /* strName         */ "Step " + QString::number(++idxStep) + " Create Module 1",
-    //    /* strOperation    */ "new CTestModule1()",
+    //    /* strOperation    */ "new CMyClass1()",
     //    /* pTSGrpParent    */ nullptr,
     //    /* szDoTestStepFct */ SLOT(doTestStepCreateModule1(ZS::Test::CTestStep*)) );
 
     //new ZS::Test::CTestStep(
     //    /* pTest           */ this,
     //    /* strName         */ "Step " + QString::number(++idxStep) + " Create Module 2",
-    //    /* strOperation    */ "new CTestModule2()",
+    //    /* strOperation    */ "new CMyClass2()",
     //    /* pTSGrpParent    */ nullptr,
     //    /* szDoTestStepFct */ SLOT(doTestStepCreateModule2(ZS::Test::CTestStep*)) );
 
     //new ZS::Test::CTestStep(
     //    /* pTest           */ this,
     //    /* strName         */ "Step " + QString::number(++idxStep) + " Delete Module 2",
-    //    /* strOperation    */ "delete CTestModule2()",
+    //    /* strOperation    */ "delete CMyClass2()",
     //    /* pTSGrpParent    */ nullptr,
     //    /* szDoTestStepFct */ SLOT(doTestStepDeleteModule2(ZS::Test::CTestStep*)) );
 
     //new ZS::Test::CTestStep(
     //    /* pTest           */ this,
     //    /* strName         */ "Step " + QString::number(++idxStep) + " Delete Module 1",
-    //    /* strOperation    */ "delete CTestModule1()",
+    //    /* strOperation    */ "delete CMyClass1()",
     //    /* pTSGrpParent    */ nullptr,
     //    /* szDoTestStepFct */ SLOT(doTestStepDeleteModule1(ZS::Test::CTestStep*)) );
 
@@ -305,7 +305,7 @@ CTest::~CTest()
 
     try
     {
-        delete m_pTestModule1;
+        delete m_pMyClass1;
     }
     catch(...)
     {
@@ -336,8 +336,8 @@ CTest::~CTest()
     m_pTestTrcClient = nullptr;
     m_pTmrTestStepTimeout = nullptr;
     m_hshReqsInProgress.clear();
-    m_pTestModule1 = nullptr;
-    m_pTestModule2 = nullptr;
+    m_pMyClass1 = nullptr;
+    m_pMyClass2 = nullptr;
 
 } // dtor
 
@@ -450,16 +450,18 @@ void CTest::doTestStepTraceServerRecallAdminObjs( ZS::Test::CTestStep* i_pTestSt
     // Expected Values
     //---------------
 
-    CIpcTrcServer* pTrcServer = nullptr;
+    QString strServerName;
 
     if( i_pTestStep->getOperation().startsWith("ZSTrcServer") )
     {
-        pTrcServer = ZS::Trace::CIpcTrcServer::GetInstance("ZSTrcServer");
+        strServerName = "ZSTrcServer";
     }
     else if( i_pTestStep->getOperation().startsWith("TestTrcServer") )
     {
-        pTrcServer = ZS::Trace::CIpcTrcServer::GetInstance("TestTrcServer");
+        strServerName = "TestTrcServer";
     }
+
+    CIpcTrcServer* pTrcServer = ZS::Trace::CIpcTrcServer::GetInstance(strServerName);
 
     // Range of IniFileScope: ["AppDir", "User", "System"]
     #ifdef __linux__
@@ -470,20 +472,10 @@ void CTest::doTestStepTraceServerRecallAdminObjs( ZS::Test::CTestStep* i_pTestSt
     QString strIniFileScope = "System"; // Default
     #endif
 
-    QString strAppNameNormalized = QCoreApplication::applicationName();
-
-    // The application name may contain characters which are invalid in file names:
-    strAppNameNormalized.remove(":");
-    strAppNameNormalized.remove(" ");
-    strAppNameNormalized.remove("\\");
-    strAppNameNormalized.remove("/");
-    strAppNameNormalized.remove("<");
-    strAppNameNormalized.remove(">");
-
     QString strAppConfigDir = ZS::System::getAppConfigDir(strIniFileScope);
 
     QString strTrcAdminObjFileSuffix = "xml";
-    QString strTrcAdminObjFileBaseName = strAppNameNormalized + "-TrcMthAdmObj";
+    QString strTrcAdminObjFileBaseName = strServerName + "-TrcMthAdmObj";
 
     QString strTrcAdminObjFileAbsFilePath = strAppConfigDir + "/" + strTrcAdminObjFileBaseName + "." + strTrcAdminObjFileSuffix;
 
@@ -874,8 +866,6 @@ void CTest::doTestStepTraceClientConnect( ZS::Test::CTestStep* i_pTestStep )
 
         if( isAsynchronousRequest(pReq) )
         {
-            m_pTmrTestStepTimeout->start(5000);
-
             pReq->setExecutionData(QString::number(pReq->getId()), i_pTestStep);
 
             m_hshReqsInProgress[pReq->getId()] = pReq;
@@ -891,6 +881,8 @@ void CTest::doTestStepTraceClientConnect( ZS::Test::CTestStep* i_pTestStep )
 
             if( arpTreeEntriesServer.size() > 0 )
             {
+                m_pTmrTestStepTimeout->start(5000);
+
                 if( !QObject::connect(
                     /* pObjSender   */ pTrcClient,
                     /* szSignal     */ SIGNAL(traceAdminObjInserted(QObject*, const QString&)),
@@ -997,7 +989,7 @@ void CTest::doTestStepTraceClientDisconnect( ZS::Test::CTestStep* i_pTestStep )
 } // doTestStepTraceClientDisconnect
 
 //------------------------------------------------------------------------------
-void CTest::doTestStepTraceModule1ClassMethod( ZS::Test::CTestStep* i_pTestStep )
+void CTest::doTestStepTraceMethodCall( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
     QString     strExpectedValue;
@@ -1008,21 +1000,38 @@ void CTest::doTestStepTraceModule1ClassMethod( ZS::Test::CTestStep* i_pTestStep 
     // Expected Values
     //----------------
 
-    /* Example for strOperation:
-       "ZSTrcServer/Module1::classMethod"
-    */
+    QString strOperation = i_pTestStep->getOperation();
+
+    QString strServerName;
+    QString strNameSpace;
+    QString strClassName;
+    QString strObjName;
+    QString strMth;
+    QStringList strlstInArgs;
+    QString strMthRet;
+
+    splitMethodCallOperation(strOperation, strServerName, strClassName, strObjName, strMth, strlstInArgs, strMthRet);
 
     CIpcTrcServer* pTrcServer = nullptr;
 
-    if( i_pTestStep->getOperation().startsWith("ZSTrcServer") )
+    if( strServerName == "ZSTrcServer" )
     {
         pTrcServer = ZS::Trace::CIpcTrcServer::GetInstance("ZSTrcServer");
-        CTestModule1::setTraceServerName("ZSTrcServer");
+        CMyClass1::setTraceServerName("ZSTrcServer");
     }
-    else if( i_pTestStep->getOperation().startsWith("TestTrcServer") )
+    else if( strServerName == "TestTrcServer" )
     {
         pTrcServer = ZS::Trace::CIpcTrcServer::GetInstance("TestTrcServer");
-        CTestModule1::setTraceServerName("TestTrcServer");
+        CMyClass1::setTraceServerName("TestTrcServer");
+    }
+
+    if( strClassName == CMyClass1::ClassName() )
+    {
+        strNameSpace = CMyClass1::NameSpace();
+    }
+    else if( strClassName == CMyClass2::ClassName() )
+    {
+        strNameSpace = CMyClass1::NameSpace();
     }
 
     if( pTrcServer == nullptr )
@@ -1032,15 +1041,22 @@ void CTest::doTestStepTraceModule1ClassMethod( ZS::Test::CTestStep* i_pTestStep 
     else
     {
         pTrcServer->setNewTrcAdminObjsDefaultDetailLevel(ETraceDetailLevelMethodArgs);
+        pTrcServer->setLocalTrcFileCloseFileAfterEachWrite(true);
 
-        QString strNameSpace = CTestModule1::NameSpace();
-        QString strClassName = CTestModule1::ClassName();
-        QString strMthName   = "classMethod";
-        QString strMthInArgs = "InArgs";
-        QString strMthRet    = "Hello World";
+        QString strTrcMethodEnter = "-> <" + strNameSpace + "::" + strClassName + "> ";
+        QString strTrcMethodLeave = "<- <" + strNameSpace + "::" + strClassName + "> ";
 
-        QString strTrcMethodEnter = "-> <" + strNameSpace + "> " + strClassName + "." + strMthName + "(" + strMthInArgs + ")";
-        QString strTrcMethodLeave = "<- <" + strNameSpace + "> " + strClassName + "." + strMthName + "(): " + strMthRet;
+        if( !strObjName.isEmpty() )
+        {
+            strTrcMethodEnter += strObjName + ".";
+            strTrcMethodLeave += strObjName + ".";
+        }
+        strTrcMethodEnter += strMth + "(" + strlstInArgs.join(", ") + ")";
+
+        if( !strMthRet.isEmpty() )
+        {
+            strTrcMethodLeave += strMth + "(): " + strMthRet;
+        }
 
         strlstExpectedValues.append(strTrcMethodEnter);
         strlstExpectedValues.append(strTrcMethodLeave);
@@ -1051,7 +1067,28 @@ void CTest::doTestStepTraceModule1ClassMethod( ZS::Test::CTestStep* i_pTestStep 
     // Test Step
     //----------
 
-    QString strReturn = CTestModule1::classMethod("InArgs");
+    if( strlstInArgs.size() == 0 )
+    {
+    }
+    else if( strlstInArgs.size() == 1 )
+    {
+        if( strClassName == CMyClass1::ClassName() )
+        {
+            if( strMth == "classMethod")
+            {
+                CMyClass1::classMethod(strlstInArgs[0]);
+            }
+        }
+    }
+    if( strlstInArgs.size() == 2 )
+    {
+    }
+
+    if( pTrcServer != nullptr )
+    {
+        pTrcServer->setNewTrcAdminObjsDefaultDetailLevel(ETraceDetailLevelNone);
+        pTrcServer->setLocalTrcFileCloseFileAfterEachWrite(false);
+    }
 
     CWidgetCentral* pWdgtCentral = CWidgetCentral::GetInstance();
 
@@ -1068,7 +1105,7 @@ void CTest::doTestStepTraceModule1ClassMethod( ZS::Test::CTestStep* i_pTestStep 
 
     m_pTmrTestStepTimeout->start(5000);
 
-} // doTestStepTraceModule1ClassMethod
+} // doTestStepTraceMethodCall
 
 #if 0
 //------------------------------------------------------------------------------
@@ -1083,11 +1120,11 @@ void CTest::doTestStepCreateModule1( ZS::Test::CTestStep* i_pTestStep )
     // Expected Values
     //---------------
 
-    QString strNameSpace  = CTestModule1::NameSpace();
-    QString strClassName  = CTestModule1::ClassName();
-    QString strObjName    = "TestModule1";
+    QString strNameSpace  = CMyClass1::NameSpace();
+    QString strClassName  = CMyClass1::ClassName();
+    QString strObjName    = "MyClass1";
     QString strMthName    = "ctor";
-    QString strMthInArgs  = "ObjName: TestModule1, TestModule2ObjName: TestModule2";
+    QString strMthInArgs  = "ObjName: MyClass1, MyClass2ObjName: MyClass2";
     QString strMthOutArgs = "";
 
     QString strTrcMethodEnter = "-> <" + strNameSpace + "::" + strClassName + "> " + strObjName + "." + strMthName + "(" + strMthInArgs + ")";
@@ -1101,7 +1138,7 @@ void CTest::doTestStepCreateModule1( ZS::Test::CTestStep* i_pTestStep )
     // Test Step
     //----------
 
-    m_pTestModule1 = new CTestModule1("TestModule1", "TestModule2");
+    m_pMyClass1 = new CMyClass1("MyClass1", "MyClass2");
 
     CWidgetCentral* pWdgtCentral = CWidgetCentral::GetInstance();
 
@@ -1134,9 +1171,9 @@ void CTest::doTestStepDeleteModule1( ZS::Test::CTestStep* i_pTestStep )
     // Expected Values
     //---------------
 
-    QString strNameSpace  = CTestModule1::NameSpace();
-    QString strClassName  = CTestModule1::ClassName();
-    QString strObjName    = "TestModule1";
+    QString strNameSpace  = CMyClass1::NameSpace();
+    QString strClassName  = CMyClass1::ClassName();
+    QString strObjName    = "MyClass1";
     QString strMthName    = "dtor";
     QString strMthInArgs  = "";
     QString strMthOutArgs = "";
@@ -1152,8 +1189,8 @@ void CTest::doTestStepDeleteModule1( ZS::Test::CTestStep* i_pTestStep )
     // Test Step
     //----------
 
-    delete m_pTestModule1;
-    m_pTestModule1 = nullptr;
+    delete m_pMyClass1;
+    m_pMyClass1 = nullptr;
 
     CWidgetCentral* pWdgtCentral = CWidgetCentral::GetInstance();
 
@@ -1186,9 +1223,9 @@ void CTest::doTestStepCreateModule2( ZS::Test::CTestStep* i_pTestStep )
     // Expected Values
     //---------------
 
-    QString strNameSpace  = CTestModule2::NameSpace();
-    QString strClassName  = CTestModule2::ClassName();
-    QString strObjName    = "TestModule2";
+    QString strNameSpace  = CMyClass2::NameSpace();
+    QString strClassName  = CMyClass2::ClassName();
+    QString strObjName    = "MyClass2";
     QString strMthName    = "event";
     QString strMthInArgs  = "Msg: ZS::Apps::Test::IpcTrace::ReqTest";
     QString strMthOutArgs = "";
@@ -1199,19 +1236,19 @@ void CTest::doTestStepCreateModule2( ZS::Test::CTestStep* i_pTestStep )
     if( !strMthRet.isEmpty() ) strTrcMethodLeave += ": " + strMthRet;
     strlstExpectedValues.append(strTrcMethodLeave);
 
-    strMthTrace = "   -> <" + strNameSpace + "::" + strClassName + "> TestModule2.ctor(TestModule2Thread: TestModule2, ObjName: TestModule2)";
+    strMthTrace = "   -> <" + strNameSpace + "::" + strClassName + "> MyClass2.ctor(MyClass2Thread: MyClass2, ObjName: MyClass2)";
     strlstExpectedValues.append(strMthTrace);
 
-    strMthTrace = "   <- <" + strNameSpace + "::" + strClassName + "> TestModule2.ctor()";
+    strMthTrace = "   <- <" + strNameSpace + "::" + strClassName + "> MyClass2.ctor()";
     strlstExpectedValues.append(strMthTrace);
 
-    strMthTrace = "                                 <- <" + strNameSpace + "::" + strClassName + "> TestModule2.recursiveTraceMethod(): 10";
+    strMthTrace = "                                 <- <" + strNameSpace + "::" + strClassName + "> MyClass2.recursiveTraceMethod(): 10";
     strlstExpectedValues.append(strMthTrace);
 
-    strMthTrace = "   <- <" + strNameSpace + "::" + strClassName + "> TestModule2.recursiveTraceMethod(): 0";
+    strMthTrace = "   <- <" + strNameSpace + "::" + strClassName + "> MyClass2.recursiveTraceMethod(): 0";
     strlstExpectedValues.append(strMthTrace);
 
-    strMthTrace = "   -> <" + strNameSpace + "::" + strClassName + "> TestModule2.event(Msg: ZS::Apps::Test::IpcTrace::ReqTest)";
+    strMthTrace = "   -> <" + strNameSpace + "::" + strClassName + "> MyClass2.event(Msg: ZS::Apps::Test::IpcTrace::ReqTest)";
     strlstExpectedValues.append(strMthTrace);
 
     i_pTestStep->setExpectedValues(strlstExpectedValues);
@@ -1219,9 +1256,9 @@ void CTest::doTestStepCreateModule2( ZS::Test::CTestStep* i_pTestStep )
     // Test Step
     //----------
 
-    if( m_pTestModule1 != nullptr )
+    if( m_pMyClass1 != nullptr )
     {
-        m_pTestModule2 = m_pTestModule1->createModule2();
+        m_pMyClass2 = m_pMyClass1->createModule2();
     }
 
     CWidgetCentral* pWdgtCentral = CWidgetCentral::GetInstance();
@@ -1255,9 +1292,9 @@ void CTest::doTestStepDeleteModule2( ZS::Test::CTestStep* i_pTestStep )
     // Expected Values
     //---------------
 
-    QString strNameSpace  = CTestModule2::NameSpace();
-    QString strClassName  = CTestModule2::ClassName();
-    QString strObjName    = "TestModule2";
+    QString strNameSpace  = CMyClass2::NameSpace();
+    QString strClassName  = CMyClass2::ClassName();
+    QString strObjName    = "MyClass2";
     QString strMthName    = "dtor";
     QString strMthInArgs  = "";
     QString strMthOutArgs = "";
@@ -1271,11 +1308,11 @@ void CTest::doTestStepDeleteModule2( ZS::Test::CTestStep* i_pTestStep )
     // Test Step
     //----------
 
-    if( m_pTestModule1 != nullptr )
+    if( m_pMyClass1 != nullptr )
     {
-        m_pTestModule1->deleteModule2();
+        m_pMyClass1->deleteModule2();
     }
-    m_pTestModule2 = nullptr;
+    m_pMyClass2 = nullptr;
 
     CWidgetCentral* pWdgtCentral = CWidgetCentral::GetInstance();
 
@@ -1559,149 +1596,186 @@ void CTest::onZSTraceClientTrcMthListWdgtTextItemAdded( const QString& i_strText
 
     if( pTestStep != nullptr )
     {
+        QString strOperation = pTestStep->getOperation();
+
+        QString strServerName;
+        QString strNameSpace;
+        QString strClassName;
+        QString strObjName;
+        QString strMth;
+        QStringList strlstInArgs;
+        QString strMthRet;
+
+        splitMethodCallOperation(strOperation, strServerName, strClassName, strObjName, strMth, strlstInArgs, strMthRet);
+
+        if( strClassName == CMyClass1::ClassName() )
+        {
+            strNameSpace = CMyClass1::NameSpace();
+        }
+        else if( strClassName == CMyClass2::ClassName() )
+        {
+            strNameSpace = CMyClass1::NameSpace();
+        }
+
         QString     strResultValue;
         QStringList strlstResultValues;
 
-        if( pTestStep->getOperation().contains("CTestModule1::classMethod") )
-        {
-            strResultValue = "Test Step under construction";
-            pTestStep->setResultValue(strResultValue);
-        }
-        else if( pTestStep->getOperation() == "new CTestModule1()" || pTestStep->getOperation() == "delete CTestModule1()" )
-        {
-            QString strText = i_strText;
+        QString strText = i_strText;
 
-            strText.replace("&lt;", "<");
-            strText.replace("&gt;", ">");
-            strText.replace("&nbsp;", "");
+        strText.replace("&lt;", "<");
+        strText.replace("&gt;", ">");
+        strText.replace("&nbsp;", "");
 
-            // Two entries must have been added to finish the test step: Enter and Leave Method.
-            // The test step is finished if the Method Leave is traced.
-            if( strText.contains("<-") )
+        // Two entries must have been added to finish the test step: Enter and Leave Method.
+        // The test step is finished if the Method Leave is traced.
+        if( strText.contains("<-") )
+        {
+            CWidgetCentral* pWdgtCentral = CWidgetCentral::GetInstance();
+            CWdgtTrcMthList* pWdgtTrcMthList = pWdgtCentral->getTrcMthListWdgt();
+            QTextEdit* pEdtTrcMthList = pWdgtTrcMthList->getTextEdit();
+            QTextDocument* pDocTrcMthList = pEdtTrcMthList->document();
+
+            // Range of IniFileScope: ["AppDir", "User", "System"]
+            #ifdef __linux__
+            // Using "System" on linux Mint ends up in directory "etc/xdg/<CompanyName>"
+            // where the application has not write access rights. Stupid ...
+            QString strIniFileScope = "User";
+            #else
+            QString strIniFileScope = "System"; // Default
+            #endif
+
+            QString strAppLogDir = ZS::System::getAppLogDir(strIniFileScope);
+
+            QString strTrcMthFileSuffix = "log";
+            QString strTrcMthFileBaseName = strServerName + "-TrcMth00";
+
+            QString strTrcMthFileAbsFilePath = strAppLogDir + "/" + strTrcMthFileBaseName + "." + strTrcMthFileSuffix;
+
+            QString strTrcMethodEnter = "-> <" + strNameSpace + "::" + strClassName + "> ";
+            QString strTrcMethodLeave = "<- <" + strNameSpace + "::" + strClassName + "> ";
+
+            if( !strObjName.isEmpty() )
             {
-                QString strNameSpace = "ZS::Apps::Test::IpcTrace";
-                QString strClassName = "CTestModule1";
-                QString strObjName   = "TestModule1";
+                strTrcMethodEnter += strObjName + ".";
+                strTrcMethodLeave += strObjName + ".";
+            }
+            strTrcMethodEnter += strMth + "(" + strlstInArgs.join(", ") + ")";
 
-                QString strMthName;
-                QString strMthInArgs;
-                QString strMthOutArgs;
-
-                if( pTestStep->getOperation() == "new CTestModule1()" )
-                {
-                    strMthName   = "ctor";
-                    strMthInArgs = "ObjName: TestModule1, TestModule2ObjName: TestModule2";
-                }
-                else if( pTestStep->getOperation() == "delete CTestModule1()" )
-                {
-                    strMthName = "dtor";
-                }
-
-                QString strTrcMethodEnter = "-> <" + strNameSpace + "::" + strClassName + "> " + strObjName + "." + strMthName + "(" + strMthInArgs + ")";
-                QString strTrcMethodLeave = "<- <" + strNameSpace + "::" + strClassName + "> " + strObjName + "." + strMthName + "(" + strMthOutArgs + ")";
-
-                if( strText.contains(strNameSpace) && strText.contains(strClassName) && strText.contains(strObjName) && strText.contains(strMthName) )
-                {
-                    CWidgetCentral* pWdgtCentral = CWidgetCentral::GetInstance();
-
-                    CWdgtTrcMthList* pWdgtTrcMthList = pWdgtCentral->getTrcMthListWdgt();
-
-                    QTextEdit* pEdtTrcMthList = pWdgtTrcMthList->getTextEdit();
-
-                    QTextDocument* pDocTrcMthList = pEdtTrcMthList->document();
-
-                    if( m_pTmrTestStepTimeout->isActive() )
-                    {
-                        m_pTmrTestStepTimeout->stop();
-                    }
-
-                    QObject::disconnect(
-                        /* pObjSender   */ pWdgtTrcMthList,
-                        /* szSignal     */ SIGNAL(textItemAdded(const QString&)),
-                        /* pObjReceiver */ this,
-                        /* szSlot       */ SLOT(onZSTraceClientTrcMthListWdgtTextItemAdded(const QString&)) );
-
-                    QTextCursor textCursor = pDocTrcMthList->find(strTrcMethodEnter);
-
-                    if( !textCursor.isNull() ) strlstResultValues.append(strTrcMethodEnter);
-                    else strlstResultValues.append(strTrcMethodEnter + ": not found in text edit widget");
-
-                    textCursor = pDocTrcMthList->find(strTrcMethodLeave);
-
-                    if( !textCursor.isNull() ) strlstResultValues.append(strTrcMethodLeave);
-                    else strlstResultValues.append(strTrcMethodLeave + ": not found in text edit widget");
-
-                    // Range of IniFileScope: ["AppDir", "User", "System"]
-                    #ifdef __linux__
-                    // Using "System" on linux Mint ends up in directory "etc/xdg/<CompanyName>"
-                    // where the application has not write access rights. Stupid ...
-                    QString strIniFileScope = "User";
-                    #else
-                    QString strIniFileScope = "System"; // Default
-                    #endif
-
-                    QString strAppNameNormalized = QCoreApplication::applicationName();
-
-                    // The application name may contain characters which are invalid in file names:
-                    strAppNameNormalized.remove(":");
-                    strAppNameNormalized.remove(" ");
-                    strAppNameNormalized.remove("\\");
-                    strAppNameNormalized.remove("/");
-                    strAppNameNormalized.remove("<");
-                    strAppNameNormalized.remove(">");
-
-                    QString strAppLogDir = ZS::System::getAppLogDir(strIniFileScope);
-
-                    QString strTrcMthFileSuffix = "log";
-                    QString strTrcMthFileBaseName = strAppNameNormalized + "-TrcMth00";
-
-                    QString strTrcMthFileAbsFilePath = strAppLogDir + "/" + strTrcMthFileBaseName + "." + strTrcMthFileSuffix;
-
-                    QFile fileTrcMthFile(strTrcMthFileAbsFilePath);
-
-                    if( !fileTrcMthFile.open(QIODevice::ReadOnly|QIODevice::Text) )
-                    {
-                        strlstResultValues.append("Could not open file " + strTrcMthFileAbsFilePath);
-                    }
-                    else
-                    {
-                        QTextStream txtstrmLogFileAppDefault(&fileTrcMthFile);
-
-                        QString strTrcMthFile = txtstrmLogFileAppDefault.readAll();
-
-                        bool bTrcMethodEnterFound = strTrcMthFile.contains(strTrcMethodEnter);
-                        bool bTrcMethodLeaveFound = strTrcMthFile.contains(strTrcMethodLeave);
-
-                        if( !bTrcMethodEnterFound ) strlstResultValues.append(strTrcMethodEnter + ": not found in trace method file");
-                        if( !bTrcMethodLeaveFound ) strlstResultValues.append(strTrcMethodLeave + ": not found in trace method file");
-                    }
-
-                    pTestStep->setResultValues(strlstResultValues);
-
-                } // if( strText.contains(strNameSpace) && strText.contains(strClassName) && strText.contains(strObjName) && strText.contains(strMthName) )
-            } // if( strText.contains("<-") )
-        } // if( pTestStep->getOperation() == "new CTestModule1()" || pTestStep->getOperation() == "delete CTestModule1()" )
-
-        else if( pTestStep->getOperation() == "new CTestModule2()" || pTestStep->getOperation() == "delete CTestModule2()" )
-        {
-            QString strText = i_strText;
-
-            strText.replace("&lt;", "<");
-            strText.replace("&gt;", ">");
-            strText.replace("&nbsp;", "");
-
-            // Two entries must have been added to finish the test step: Enter and Leave Method.
-            // The test step is finished if the Method Leave is traced.
-            if( strText.contains("<-") )
+            if( !strMthRet.isEmpty() )
             {
-                QString strNameSpace = "ZS::Apps::Test::IpcTrace";
-                QString strClassName = "CTestModule2";
-                QString strObjName   = "TestModule2";
+                strTrcMethodLeave += strMth + "(): " + strMthRet;
+            }
 
-                QString strMthName;
-                QString strMthInArgs;
-                QString strMthOutArgs;
-                QString strMthRet;
+            if( strClassName == "CMyClass1" && strMth == "classMethod" )
+            {
+                // Test step finished (only one entry expected).
+                if( m_pTmrTestStepTimeout->isActive() )
+                {
+                    m_pTmrTestStepTimeout->stop();
+                }
+
+                QObject::disconnect(
+                    /* pObjSender   */ pWdgtTrcMthList,
+                    /* szSignal     */ SIGNAL(textItemAdded(const QString&)),
+                    /* pObjReceiver */ this,
+                    /* szSlot       */ SLOT(onZSTraceClientTrcMthListWdgtTextItemAdded(const QString&)) );
+
+                // Check if entry added to trace method widget.
+                //---------------------------------------------
+
+                QTextCursor textCursor = pDocTrcMthList->find(strTrcMethodEnter);
+
+                if( !textCursor.isNull() ) strlstResultValues.append(strTrcMethodEnter);
+                else strlstResultValues.append(strTrcMethodEnter + ": not found in text edit widget");
+
+                textCursor = pDocTrcMthList->find(strTrcMethodLeave);
+
+                if( !textCursor.isNull() ) strlstResultValues.append(strTrcMethodLeave);
+                else strlstResultValues.append(strTrcMethodLeave + ": not found in text edit widget");
+
+                // Check if entry added to log file.
+                //----------------------------------
+
+                QFile fileTrcMthFile(strTrcMthFileAbsFilePath);
+
+                if( !fileTrcMthFile.open(QIODevice::ReadOnly|QIODevice::Text) )
+                {
+                    strlstResultValues.append("Could not open file " + strTrcMthFileAbsFilePath);
+                }
+                else
+                {
+                    QTextStream txtstrmLogFileAppDefault(&fileTrcMthFile);
+
+                    QString strTrcMthFile = txtstrmLogFileAppDefault.readAll();
+
+                    bool bTrcMethodEnterFound = strTrcMthFile.contains(strTrcMethodEnter);
+                    bool bTrcMethodLeaveFound = strTrcMthFile.contains(strTrcMethodLeave);
+
+                    if( !bTrcMethodEnterFound ) strlstResultValues.append(strTrcMethodEnter + ": not found in trace method file");
+                    if( !bTrcMethodLeaveFound ) strlstResultValues.append(strTrcMethodLeave + ": not found in trace method file");
+                }
+
+                pTestStep->setResultValues(strlstResultValues);
+
+            } // if( pTestStep->getOperation().contains("CMyClass1::classMethod") )
+
+            else if( pTestStep->getOperation() == "new CMyClass1()" || pTestStep->getOperation() == "delete CMyClass1()" )
+            {
+                // Test step finished (only one entry expected).
+                if( m_pTmrTestStepTimeout->isActive() )
+                {
+                    m_pTmrTestStepTimeout->stop();
+                }
+
+                QObject::disconnect(
+                    /* pObjSender   */ pWdgtTrcMthList,
+                    /* szSignal     */ SIGNAL(textItemAdded(const QString&)),
+                    /* pObjReceiver */ this,
+                    /* szSlot       */ SLOT(onZSTraceClientTrcMthListWdgtTextItemAdded(const QString&)) );
+
+                // Check if entry added to trace method widget.
+                //---------------------------------------------
+
+                QTextCursor textCursor = pDocTrcMthList->find(strTrcMethodEnter);
+
+                if( !textCursor.isNull() ) strlstResultValues.append(strTrcMethodEnter);
+                else strlstResultValues.append(strTrcMethodEnter + ": not found in text edit widget");
+
+                textCursor = pDocTrcMthList->find(strTrcMethodLeave);
+
+                if( !textCursor.isNull() ) strlstResultValues.append(strTrcMethodLeave);
+                else strlstResultValues.append(strTrcMethodLeave + ": not found in text edit widget");
+
+                // Check if entry added to log file.
+                //----------------------------------
+
+                QFile fileTrcMthFile(strTrcMthFileAbsFilePath);
+
+                if( !fileTrcMthFile.open(QIODevice::ReadOnly|QIODevice::Text) )
+                {
+                    strlstResultValues.append("Could not open file " + strTrcMthFileAbsFilePath);
+                }
+                else
+                {
+                    QTextStream txtstrmLogFileAppDefault(&fileTrcMthFile);
+
+                    QString strTrcMthFile = txtstrmLogFileAppDefault.readAll();
+
+                    bool bTrcMethodEnterFound = strTrcMthFile.contains(strTrcMethodEnter);
+                    bool bTrcMethodLeaveFound = strTrcMthFile.contains(strTrcMethodLeave);
+
+                    if( !bTrcMethodEnterFound ) strlstResultValues.append(strTrcMethodEnter + ": not found in trace method file");
+                    if( !bTrcMethodLeaveFound ) strlstResultValues.append(strTrcMethodLeave + ": not found in trace method file");
+                }
+
+                pTestStep->setResultValues(strlstResultValues);
+
+            } // if( pTestStep->getOperation() == "new CMyClass1()" || pTestStep->getOperation() == "delete CMyClass1()" )
+
+            else if( pTestStep->getOperation() == "new CMyClass2()" || pTestStep->getOperation() == "delete CMyClass2()" )
+            {
+                QString strInArgs;
+                QString strOutArgs;
 
                 QString strTrc1;
                 QString strTrc2;
@@ -1709,37 +1783,29 @@ void CTest::onZSTraceClientTrcMthListWdgtTextItemAdded( const QString& i_strText
                 QString strTrc4;
                 QString strTrc5;
 
-                if( pTestStep->getOperation() == "new CTestModule2()" )
+                if( pTestStep->getOperation() == "new CMyClass2()" )
                 {
-                    strMthName   = "event";
-                    strMthInArgs = "Msg: ZS::Apps::Test::IpcTrace::ReqTest";
-                    strMthRet    = "100";
+                    strMth    = "event";
+                    strInArgs = "Msg: ZS::Apps::Test::IpcTrace::ReqTest";
+                    strMthRet = "100";
 
-                    strTrc1 = "   -> <ZS::Apps::Test::IpcTrace::CTestModule2> TestModule2.ctor(TestModule2Thread: TestModule2, ObjName: TestModule2)";
-                    strTrc2 = "   <- <ZS::Apps::Test::IpcTrace::CTestModule2> TestModule2.ctor()";
-                    strTrc3 = "                                 <- <ZS::Apps::Test::IpcTrace::CTestModule2> TestModule2.recursiveTraceMethod(): 10";
-                    strTrc4 = "   <- <ZS::Apps::Test::IpcTrace::CTestModule2> TestModule2.recursiveTraceMethod(): 0";
-                    strTrc5 = "   -> <ZS::Apps::Test::IpcTrace::CTestModule2> TestModule2.event(Msg: ZS::Apps::Test::IpcTrace::ReqTest)";
+                    strTrc1 = "   -> <ZS::Apps::Test::IpcTrace::CMyClass2> MyClass2.ctor(MyClass2Thread: MyClass2, ObjName: MyClass2)";
+                    strTrc2 = "   <- <ZS::Apps::Test::IpcTrace::CMyClass2> MyClass2.ctor()";
+                    strTrc3 = "                                 <- <ZS::Apps::Test::IpcTrace::CMyClass2> MyClass2.recursiveTraceMethod(): 10";
+                    strTrc4 = "   <- <ZS::Apps::Test::IpcTrace::CMyClass2> MyClass2.recursiveTraceMethod(): 0";
+                    strTrc5 = "   -> <ZS::Apps::Test::IpcTrace::CMyClass2> MyClass2.event(Msg: ZS::Apps::Test::IpcTrace::ReqTest)";
                 }
-                else if( pTestStep->getOperation() == "delete CTestModule2()" )
+                else if( pTestStep->getOperation() == "delete CMyClass2()" )
                 {
-                    strMthName = "dtor";
+                    strMth = "dtor";
                 }
 
-                QString strTrcMethodLeave = "<- <" + strNameSpace + "::" + strClassName + "> " + strObjName + "." + strMthName + "(" + strMthOutArgs + ")";
+                QString strTrcMethodLeave = "<- <" + strNameSpace + "::" + strClassName + "> " + strObjName + "." + strMth + "(" + strOutArgs + ")";
 
                 if( !strMthRet.isEmpty() ) strTrcMethodLeave += ": " + strMthRet;
 
-                if( strText.contains(strNameSpace) && strText.contains(strClassName) && strText.contains(strObjName) && strText.contains(strMthName) && strText.contains(strMthRet) )
+                if( strText.contains(strNameSpace) && strText.contains(strClassName) && strText.contains(strObjName) && strText.contains(strMth) && strText.contains(strMthRet) )
                 {
-                    CWidgetCentral* pWdgtCentral = CWidgetCentral::GetInstance();
-
-                    CWdgtTrcMthList* pWdgtTrcMthList = pWdgtCentral->getTrcMthListWdgt();
-
-                    QTextEdit* pEdtTrcMthList = pWdgtTrcMthList->getTextEdit();
-
-                    QTextDocument* pDocTrcMthList = pEdtTrcMthList->document();
-
                     if( m_pTmrTestStepTimeout->isActive() )
                     {
                         m_pTmrTestStepTimeout->stop();
@@ -1750,6 +1816,9 @@ void CTest::onZSTraceClientTrcMthListWdgtTextItemAdded( const QString& i_strText
                         /* szSignal     */ SIGNAL(textItemAdded(const QString&)),
                         /* pObjReceiver */ this,
                         /* szSlot       */ SLOT(onZSTraceClientTrcMthListWdgtTextItemAdded(const QString&)) );
+
+                    // Check if entry added to trace method widget.
+                    //---------------------------------------------
 
                     QTextCursor textCursor = pDocTrcMthList->find(strTrcMethodLeave);
 
@@ -1787,31 +1856,8 @@ void CTest::onZSTraceClientTrcMthListWdgtTextItemAdded( const QString& i_strText
                         else strlstResultValues.append(strTrc5 + ": not found in text edit widget");
                     }
 
-                    // Range of IniFileScope: ["AppDir", "User", "System"]
-                    #ifdef __linux__
-                    // Using "System" on linux Mint ends up in directory "etc/xdg/<CompanyName>"
-                    // where the application has not write access rights. Stupid ...
-                    QString strIniFileScope = "User";
-                    #else
-                    QString strIniFileScope = "System"; // Default
-                    #endif
-
-                    QString strAppNameNormalized = QCoreApplication::applicationName();
-
-                    // The application name may contain characters which are invalid in file names:
-                    strAppNameNormalized.remove(":");
-                    strAppNameNormalized.remove(" ");
-                    strAppNameNormalized.remove("\\");
-                    strAppNameNormalized.remove("/");
-                    strAppNameNormalized.remove("<");
-                    strAppNameNormalized.remove(">");
-
-                    QString strAppLogDir = ZS::System::getAppLogDir(strIniFileScope);
-
-                    QString strTrcMthFileSuffix = "log";
-                    QString strTrcMthFileBaseName = strAppNameNormalized + "-TrcMth00";
-
-                    QString strTrcMthFileAbsFilePath = strAppLogDir + "/" + strTrcMthFileBaseName + "." + strTrcMthFileSuffix;
+                    // Check if entry added to log file.
+                    //----------------------------------
 
                     QFile fileTrcMthFile(strTrcMthFileAbsFilePath);
 
@@ -1859,8 +1905,8 @@ void CTest::onZSTraceClientTrcMthListWdgtTextItemAdded( const QString& i_strText
                     pTestStep->setResultValues(strlstResultValues);
 
                 } // if( strText.contains(strNameSpace) && strText.contains(strClassName) && strText.contains(strObjName) && strText.contains(strMthName) )
-            } // if( strText.contains("<-") )
-        } // if( pTestStep->getOperation() == "new CTestModule2()" || pTestStep->getOperation() == "delete CTestModule2()" )
+            } // if( pTestStep->getOperation() == "new CMyClass2()" || pTestStep->getOperation() == "delete CMyClass2()" )
+        } // if( strText.contains("<-") )
     } // if( pTestStep != nullptr )
 
 } // onZSTraceClientTrcMthListWdgtTextItemAdded
@@ -1894,3 +1940,82 @@ void CTest::onTimerTestStepTimeout()
     } // if( pTestStep != nullptr )
 
 } // onTimerTestStepTimeout()
+
+/*==============================================================================
+private: // instance auxiliary methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Splits the operation string into sections.
+
+    Examples for strOperation:
+
+    - "ZSTrcServer/CMyClass1::method(Arg1)",
+    - "ZSTrcServer/CMyClass1::method(Arg1, Arg2): Ret",
+    - "ZSTrcServer/CMyClass2::theInst.method(Arg1, Arg2)",
+    - "ZSTrcServer/CMyClass2::theInst.method(Arg1, Arg2): Ret",
+
+*/
+void CTest::splitMethodCallOperation(
+    const QString& i_strOperation,
+    QString& o_strServerName,
+    QString& o_strClassName,
+    QString& o_strObjName,
+    QString& o_strMth,
+    QStringList& o_strlstInArgs,
+    QString& o_strMthRet ) const
+//------------------------------------------------------------------------------
+{
+    o_strServerName = "";
+    o_strClassName = "";
+    o_strObjName = "";
+    o_strMth = "";
+    o_strlstInArgs.clear();
+    o_strMthRet = "";
+
+    QStringList strlst;
+
+    strlst = i_strOperation.split("/", Qt::SkipEmptyParts);
+
+    if( strlst.size() == 2 )
+    {
+        o_strServerName = strlst[0];
+        strlst = strlst[1].split("::", Qt::SkipEmptyParts);
+        if( strlst.size() == 2 )
+        {
+            o_strClassName = strlst[0];
+            strlst = strlst[1].split(".", Qt::SkipEmptyParts);
+            if( strlst.size() == 1 )
+            {
+                o_strMth = strlst[0];
+            }
+            else if( strlst.size() == 2 )
+            {
+                o_strObjName = strlst[0];
+                o_strMth = strlst[1];
+            }
+            if( !o_strMth.isEmpty() )
+            {
+                int idx1 = o_strMth.indexOf("(");
+                int idx2 = o_strMth.indexOf(")");
+                if( idx1 >= 0 && idx2 > 1 )
+                {
+                    QString strArgsRet = o_strMth.mid(idx1);
+                    o_strMth = o_strMth.mid(0, idx1);
+                    strlst = strArgsRet.split(": ", Qt::SkipEmptyParts);
+                    if( strlst.size() == 1 )
+                    {
+                        strlst[0].remove("(").remove(")");
+                        o_strlstInArgs = strlst[0].split(",", Qt::SkipEmptyParts);
+                    }
+                    else if( strlst.size() == 2 )
+                    {
+                        strlst[0].remove("(").remove(")");
+                        o_strlstInArgs = strlst[0].split(",", Qt::SkipEmptyParts);
+                        o_strMthRet = strlst[1];
+                    }
+                }
+            }
+        }
+    }
+} // splitMethodCallOperation

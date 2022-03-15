@@ -89,20 +89,20 @@ public: // class methods
     static QString NameSpace() { return "ZS::Trace"; }
     static QString ClassName() { return "CTrcAdminObj"; }
 protected: // ctors and dtor
-    CTrcAdminObj( const QString& i_strObjName, const QString& i_strObjThreadName = "" );
+    CTrcAdminObj(
+        const QString& i_strNameSpace,
+        const QString& i_strClassName,
+        const QString& i_strObjName );
     virtual ~CTrcAdminObj();
 signals:
     void changed( QObject* i_pTrcAdminObj ); /*!< Emitted if ObjState, Enabled, StateOnOff or DetailLevel has been changed */
     void aboutToBeDestroyed( ZS::Trace::CTrcAdminObj* i_pTrcAdminObj );
 public: // instance methods
-    virtual QString nameSpace() const { return NameSpace(); }
-    virtual QString className() const { return ClassName(); }
-public: // instance methods
     CIdxTreeTrcAdminObjs* getTraceAdminObjIdxTree();
     CTrcServer* getTraceServer();
 public: // instance methods
-    QString getNameSpace() const;   // starting with "get" to distinguish from name space of CTrcAdminObj (ZS::Trace)
-    QString getClassName() const;   // starting with "get" to distinguish from class name "CTrcAdminObj"
+    QString getNameSpace() const;
+    QString getClassName() const;
     QString getObjectName() const;  // starting with "get" to distinguish from QObject::objectName)
 public: // instance methods
     void setObjectThreadName( const QString& i_strThreadName );
@@ -126,6 +126,9 @@ public: // instance methods
     virtual bool isTreeEntryChangedSignalBlocked() const;
 protected: // instance members
     int                   m_iBlockTreeEntryChangedSignalCounter;    /*!< Counts the number of times the tree entry changed signal has been blocked. */
+    QString               m_strNameSpace;       /*!< Namespace of the class. May be empty. */
+    QString               m_strClassName;       /*!< Class or module name. */
+    QString               m_strObjName;         /*!< Object name. May be empty if this is a class tracer. */
     QString               m_strObjThreadName;   /*!< Name of the thread in which the object was created. */
     int                   m_iRefCount;          /*!< Usually trace admin objects are only referenced by one specific module,
                                                      class or instance of a class to control the detail level of method

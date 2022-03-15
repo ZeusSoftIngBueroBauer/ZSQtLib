@@ -24,8 +24,8 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#ifndef ZSApps_TestIpcTrace_TestModule2_h
-#define ZSApps_TestIpcTrace_TestModule2_h
+#ifndef ZSApps_TestIpcTrace_TestModule3_h
+#define ZSApps_TestIpcTrace_TestModule3_h
 
 #include <QtCore/qstring.h>
 #include <QtCore/qthread.h>
@@ -47,42 +47,45 @@ namespace IpcTrace
 {
 class CMyClass1;
 class CMyClass2;
+class CMyClass3;
 
 //******************************************************************************
-class CMyClass2Thread : public QThread
+class CMyClass3Thread : public QThread
 //******************************************************************************
 {
 public: // class methods
     static QString NameSpace() { return "ZS::Apps::Test::IpcTrace"; }
-    static QString ClassName() { return "CMyClass2Thread"; }
+    static QString ClassName() { return "CMyClass3Thread"; }
 public: // ctors and dtor
-    CMyClass2Thread( CMyClass1* i_pMyClass1, const QString& i_strMyClass2ObjName );
-    virtual  ~CMyClass2Thread();
+    CMyClass3Thread( CMyClass2* i_pMyClass2, const QString& i_strMyClass3ObjName );
+    virtual  ~CMyClass3Thread();
 public: // instance methods
-    CMyClass2* getMyClass2() { return m_pMyClass2; }
+    CMyClass3* getMyClass3() { return m_pMyClass3; }
 public: // instance methods
     void sleep( unsigned long i_uTime_s );
 public: // overridables of base class QThread
     void run();
+private: // class members
+    ZS::Trace::CTrcAdminObj* s_pTrcAdminObj;
 private: // instance members
-    CMyClass1*               m_pMyClass1;
-    QString                  m_strMyClass2ObjName;
     CMyClass2*               m_pMyClass2;
+    QString                  m_strMyClass3ObjName;
+    CMyClass3*               m_pMyClass3;
     ZS::Trace::CTrcAdminObj* m_pTrcAdminObj;
 
-}; // class CMyClass2Thread
+}; // class CMyClass3Thread
 
 //******************************************************************************
-class CMyClass2 : public QObject
+class CMyClass3 : public QObject
 //******************************************************************************
 {
     Q_OBJECT
 public: // class methods
     static QString NameSpace() { return "ZS::Apps::Test::IpcTrace"; }
-    static QString ClassName() { return "CMyClass2"; }
+    static QString ClassName() { return "CMyClass3"; }
 public: // ctors and dtor
-    CMyClass2( CMyClass2Thread* i_pMyClass2Thread, const QString& i_strObjName );
-    virtual  ~CMyClass2();
+    CMyClass3( CMyClass3Thread* i_pMyClass3Thread, const QString& i_strObjName );
+    virtual ~CMyClass3();
 public: // instance methods
     int recursiveTraceMethod();
 public: // instance methods
@@ -91,13 +94,15 @@ protected slots:
     void onTmrMessagesTimeout();
 protected: // overridables of base class QObject
     virtual bool event( QEvent* i_pEv ) override;
+private: // class members
+    ZS::Trace::CTrcAdminObj* s_pTrcAdminObj;
 private: // instance members
-    CMyClass2Thread*         m_pMyClass2Thread;
+    CMyClass3Thread*         m_pMyClass3Thread;
     QTimer*                  m_pTmrMessages;
     int                      m_iMsgCount;
     ZS::Trace::CTrcAdminObj* m_pTrcAdminObj;
 
-}; // class CMyClass2
+}; // class CMyClass3
 
 } // namespace IpcTrace
 
@@ -107,4 +112,4 @@ private: // instance members
 
 } // namespace ZS
 
-#endif // #ifndef ZSApps_TestIpcTrace_TestModule2_h
+#endif // #ifndef ZSApps_TestIpcTrace_TestModule3_h

@@ -402,7 +402,7 @@ CTreeViewIdxTreeTrcAdminObjs::CTreeViewIdxTreeTrcAdminObjs(
     //hideColumn(CModelIdxTree::EColumnTreeEntryName);
     hideColumn(CModelIdxTree::EColumnInternalId);
     hideColumn(CModelIdxTree::EColumnTreeEntryType);
-    hideColumn(CModelIdxTree::EColumnIdxInTree);
+    //hideColumn(CModelIdxTree::EColumnIdxInTree);
     hideColumn(CModelIdxTree::EColumnIdxInParentBranch);
     hideColumn(CModelIdxTree::EColumnKeyInTree);
     hideColumn(CModelIdxTree::EColumnKeyInParentBranch);

@@ -26,6 +26,7 @@ may result in using the software modules.
 
 #include <QtCore/qtimer.h>
 
+#include "TestModule3.h"
 #include "TestModule2.h"
 #include "TestModule1.h"
 #include "App.h"
@@ -45,7 +46,7 @@ using namespace ZS::Apps::Test::IpcTrace;
 
 
 /*******************************************************************************
-class CMyClass2Thread : public QThread
+class CMyClass3Thread : public QThread
 *******************************************************************************/
 
 /*==============================================================================
@@ -53,17 +54,17 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CMyClass2Thread::CMyClass2Thread(
-    CMyClass1*  i_pMyClass1,
-    const QString& i_strMyClass2ObjName ) :
+CMyClass3Thread::CMyClass3Thread(
+    CMyClass2*     i_pMyClass2,
+    const QString& i_strMyClass3ObjName ) :
 //------------------------------------------------------------------------------
-    QThread(i_pMyClass1),
-    m_pMyClass1(i_pMyClass1),
-    m_strMyClass2ObjName(i_strMyClass2ObjName),
-    m_pMyClass2(nullptr),
+    QThread(i_pMyClass2),
+    m_pMyClass2(i_pMyClass2),
+    m_strMyClass3ObjName(i_strMyClass3ObjName),
+    m_pMyClass3(nullptr),
     m_pTrcAdminObj(nullptr)
 {
-    setObjectName(m_strMyClass2ObjName);
+    setObjectName(m_strMyClass3ObjName);
 
     m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName());
 
@@ -73,8 +74,8 @@ CMyClass2Thread::CMyClass2Thread(
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->getTraceDetailLevel() >= ETraceDetailLevelMethodArgs )
     {
-        strMthInArgs  = "MyClass1: " + QString(i_pMyClass1 == nullptr ? "null" : i_pMyClass1->objectName());
-        strMthInArgs += ", MyClass2ObjName: " + i_strMyClass2ObjName;
+        strMthInArgs  = "MyClass2: " + QString(i_pMyClass2 == nullptr ? "null" : i_pMyClass2->objectName());
+        strMthInArgs += ", MyClass3ObjName: " + i_strMyClass3ObjName;
     }
 
     CMethodTracer mthTracer(
@@ -86,7 +87,7 @@ CMyClass2Thread::CMyClass2Thread(
 } // ctor
 
 //------------------------------------------------------------------------------
-CMyClass2Thread::~CMyClass2Thread()
+CMyClass3Thread::~CMyClass3Thread()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -102,7 +103,7 @@ CMyClass2Thread::~CMyClass2Thread()
         if( CErrLog::GetInstance() != nullptr )
         {
             SErrResultInfo errResultInfo(
-                /* errSource     */ "ZS::Apps::Test::IpcTrace", "CMyClass2Thread", objectName(), "dtor",
+                /* errSource     */ "ZS::Apps::Test::IpcTrace", "CMyClass3Thread", objectName(), "dtor",
                 /* result        */ EResultTimeout,
                 /* severity      */ EResultSeverityError,
                 /* strAddErrInfo */ "Waiting for thread to quit timed out" );
@@ -122,7 +123,7 @@ CMyClass2Thread::~CMyClass2Thread()
         m_pMyClass2 = nullptr;
     }
 
-    m_pMyClass1 = nullptr;
+    m_pMyClass2 = nullptr;
 
     mthTracer.onAdminObjAboutToBeReleased();
 
@@ -136,7 +137,7 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CMyClass2Thread::sleep( unsigned long i_uTime_s )
+void CMyClass3Thread::sleep( unsigned long i_uTime_s )
 //------------------------------------------------------------------------------
 {
     QThread::sleep(i_uTime_s);
@@ -147,7 +148,7 @@ public: // overridables of base class QThread
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CMyClass2Thread::run()
+void CMyClass3Thread::run()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -156,28 +157,28 @@ void CMyClass2Thread::run()
         /* strMethod    */ "run",
         /* strAddInfo   */ "" );
 
-    m_pMyClass2 = new CMyClass2(this, m_strMyClass2ObjName);
+    m_pMyClass3 = new CMyClass3(this, m_strMyClass3ObjName);
 
-    m_pMyClass2->recursiveTraceMethod();
+    m_pMyClass3->recursiveTraceMethod();
 
-    m_pMyClass2->startMessageTimer();
+    m_pMyClass3->startMessageTimer();
 
     exec();
 
     try
     {
-        delete m_pMyClass2;
+        delete m_pMyClass3;
     }
     catch(...)
     {
     }
-    m_pMyClass2 = nullptr;
+    m_pMyClass3 = nullptr;
 
 } // run
 
 
 /*******************************************************************************
-class CMyClass2 : public QObject
+class CMyClass3 : public QObject
 *******************************************************************************/
 
 /*==============================================================================
@@ -185,12 +186,12 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CMyClass2::CMyClass2(
-    CMyClass2Thread* i_pMyClass2Thread,
-    const QString&      i_strObjName ) :
+CMyClass3::CMyClass3(
+    CMyClass3Thread* i_pMyClass3Thread,
+    const QString&   i_strObjName ) :
 //------------------------------------------------------------------------------
     QObject(),
-    m_pMyClass2Thread(i_pMyClass2Thread),
+    m_pMyClass3Thread(i_pMyClass3Thread),
     m_pTmrMessages(nullptr),
     m_iMsgCount(0),
     m_pTrcAdminObj(nullptr)
@@ -205,7 +206,7 @@ CMyClass2::CMyClass2(
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->getTraceDetailLevel() >= ETraceDetailLevelMethodArgs )
     {
-        strMthInArgs  = "MyClass2Thread: " + QString(i_pMyClass2Thread == nullptr ? "null" : i_pMyClass2Thread->objectName());
+        strMthInArgs  = "MyClass3Thread: " + QString(i_pMyClass3Thread == nullptr ? "null" : i_pMyClass3Thread->objectName());
         strMthInArgs += ", ObjName: " + i_strObjName;
     }
 
@@ -229,7 +230,7 @@ CMyClass2::CMyClass2(
 } // ctor
 
 //------------------------------------------------------------------------------
-CMyClass2::~CMyClass2()
+CMyClass3::~CMyClass3()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -242,7 +243,7 @@ CMyClass2::~CMyClass2()
 
     CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
 
-    m_pMyClass2Thread = nullptr;
+    m_pMyClass3Thread = nullptr;
     m_pTmrMessages = nullptr;
     m_iMsgCount = 0;
     m_pTrcAdminObj = nullptr;
@@ -254,7 +255,7 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-int CMyClass2::recursiveTraceMethod()
+int CMyClass3::recursiveTraceMethod()
 //------------------------------------------------------------------------------
 {
     static int s_iCount = 0;
@@ -294,7 +295,7 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CMyClass2::startMessageTimer()
+void CMyClass3::startMessageTimer()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -315,7 +316,7 @@ protected: // slots
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CMyClass2::onTmrMessagesTimeout()
+void CMyClass3::onTmrMessagesTimeout()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -335,7 +336,7 @@ protected: // overridables of base class QObject
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-bool CMyClass2::event( QEvent* i_pEv )
+bool CMyClass3::event( QEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
     bool bHandled = false;

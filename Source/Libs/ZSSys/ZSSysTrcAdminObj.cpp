@@ -91,11 +91,18 @@ protected: // ctors and dtor (trace admin objects may only be created by the tra
     \param i_pTrcAdmObjIdxTree [in] Reference to the trace admin object index tree
                                     the instance will be added to.
 */
-CTrcAdminObj::CTrcAdminObj( const QString& i_strObjName, const QString& /*i_strObjThreadName*/ ) :
+CTrcAdminObj::CTrcAdminObj(
+    const QString& i_strNameSpace,
+    const QString& i_strClassName,
+    const QString& i_strObjName ) :
 //------------------------------------------------------------------------------
     QObject(),
-    CIdxTreeEntry(EIdxTreeEntryType::Leave, i_strObjName),
+    CIdxTreeEntry(EIdxTreeEntryType::Leave,
+        !i_strObjName.isEmpty() ? i_strObjName : !i_strClassName.isEmpty() ? i_strClassName : i_strNameSpace ),
     m_iBlockTreeEntryChangedSignalCounter(0),
+    m_strNameSpace(i_strNameSpace),
+    m_strClassName(i_strClassName),
+    m_strObjName(i_strObjName),
     m_strObjThreadName(),
     m_iRefCount(0),
     m_enabled(EEnabled::Yes),
@@ -238,10 +245,14 @@ public: // instance methods
 /*! Returns the name space of the module, class or instance referencing the
     trace admin object.
 
-    This is the path of the parent branch of the leave entry.
+    Usually this is equal to the parent path of the parent branch of the leave entry.
     E.g. if the trace admin object is used to control the tracing state of
     instance "ZS::Diagram::CWdgtDiagram::Analyzer" the name space would
     be "ZS::Diagram".
+
+    If the trace admin object is used to control the tracing state of
+    a class or module like "ZS::Diagram::CWdgtDiagram" the name space
+    equals the parent path of the leave entry.
 
     \return Name space of the module, class or instance referencing the
     trace admin object.
@@ -250,23 +261,21 @@ QString CTrcAdminObj::getNameSpace() const
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(m_pMtx);
-    QString strNameSpace = parentBranchPath();
-    QString strNodeSeparator = "::";
-    if( m_pTree != nullptr ) strNodeSeparator = m_pTree->nodeSeparator();
-    QStringList strlstBranchNames = strNameSpace.split(strNodeSeparator);
-    if( strlstBranchNames.size() >= 1 ) strlstBranchNames.removeLast();
-    strNameSpace = strlstBranchNames.join(strNodeSeparator);
-    return strNameSpace;
+    return m_strNameSpace;
 }
 
 //------------------------------------------------------------------------------
 /*! Returns the class name of the module, class or instance referencing the
     trace admin object.
 
-    This is the name of the parent branch of the leave entry.
+    Usually this is the name of the parent branch of the leave entry.
     E.g. if the trace admin object is used to control the tracing state of
     instance "ZS::Diagram::CWdgtDiagram::Analyzer" the class name would
     be "CWdgtDiagram".
+
+    If the trace admin object is used to control the tracing state of
+    a class or module like "ZS::Diagram::CWdgtDiagram" the class name
+    equals the name of leave entry.
 
     \return Class bame of the module, class or instance referencing the
     trace admin object.
@@ -275,17 +284,20 @@ QString CTrcAdminObj::getClassName() const
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(m_pMtx);
-    return parentBranchName();
+    return m_strClassName;
 }
 
 //------------------------------------------------------------------------------
-/*! Returns the object name of the module, class or instance referencing the
-    trace admin object.
+/*! Returns the name of the object (instance) which should be controlled
+    by the trace admin object.
 
-    This is the name of the leave entry.
+    Usually this is the name of the leave entry.
     E.g. if the trace admin object is used to control the tracing state of
     instance "ZS::Diagram::CWdgtDiagram::Analyzer" the object name would
     be "Analyzer".
+
+    If the trace admin object is used to control the tracing state of a class
+    or module like "ZS::Diagram::CWdgtDiagram" the object name is empty.
 
     \return Object name of the module, class or instance referencing the
     trace admin object.
@@ -294,7 +306,7 @@ QString CTrcAdminObj::getObjectName() const
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(m_pMtx);
-    return name();
+    return m_strObjName;
 }
 
 /*==============================================================================

@@ -214,6 +214,9 @@ ZSSYSDLL_API QString truncateStringWithEllipsisInTheMiddle(
     int            i_iMaxLength,
     const QString& i_strEllipsis = ".." );
 
+ZSSYSDLL_API QString encodeForHtml( const QString& i_str );
+ZSSYSDLL_API QString decodeFromHtml( const QString& i_str );
+
 /*******************************************************************************
 Parsing strings
 *******************************************************************************/

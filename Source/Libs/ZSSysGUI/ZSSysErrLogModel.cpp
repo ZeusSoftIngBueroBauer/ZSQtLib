@@ -575,8 +575,7 @@ QVariant CModelErrLog::data( const QModelIndex& i_modelIdx, int i_iRole ) const
     if( i_iRole == Qt::ToolTipRole )
     {
         QString strTmp = pEntryView->m_strProposal;
-        strTmp.replace("&lt;","<");
-        strTmp.replace("&gt;",">");
+        strTmp = encodeForHtml(strTmp);
         varData = strTmp;
     }
     else if( i_iRole == Qt::DecorationRole )
@@ -628,24 +627,21 @@ QVariant CModelErrLog::data( const QModelIndex& i_modelIdx, int i_iRole ) const
             case EColumnSource:
             {
                 QString strTmp = pEntryView->m_errResultInfo.getErrSource().toString();
-                strTmp.replace("&lt;","<");
-                strTmp.replace("&gt;",">");
+                strTmp = decodeFromHtml(strTmp);
                 varData = strTmp;
                 break;
             }
             case EColumnAddInfo:
             {
                 QString strTmp = pEntryView->m_errResultInfo.getAddErrInfoDscr();
-                strTmp.replace("&lt;","<");
-                strTmp.replace("&gt;",">");
+                strTmp = decodeFromHtml(strTmp);
                 varData = strTmp;
                 break;
             }
             case EColumnProposal:
             {
                 QString strTmp = pEntryView->m_strProposal;
-                strTmp.replace("&lt;","<");
-                strTmp.replace("&gt;",">");
+                strTmp = decodeFromHtml(strTmp);
                 varData = strTmp;
                 break;
             }

@@ -49,18 +49,18 @@ using namespace ZS::Apps::Test::IpcTrace;
 
 
 /*******************************************************************************
-class CTestModule1 : public QObject
+class CMyClass1 : public QObject
 *******************************************************************************/
 
-CTrcAdminObjRefAnchor CTestModule1::s_trcAdminObjRefAnchor(
-    CTestModule1::NameSpace(), CTestModule1::ClassName(), "ZSTrcServer");
+CTrcAdminObjRefAnchor CMyClass1::s_trcAdminObjRefAnchor(
+    CMyClass1::NameSpace(), CMyClass1::ClassName(), "ZSTrcServer");
 
 /*==============================================================================
 public: // class methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CTestModule1::setTraceServerName( const QString& i_strServerName )
+void CMyClass1::setTraceServerName( const QString& i_strServerName )
 //------------------------------------------------------------------------------
 {
     s_trcAdminObjRefAnchor.setServerName(i_strServerName);
@@ -71,7 +71,7 @@ public: // class methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-QString CTestModule1::classMethod(const QString& i_strMthInArgs)
+QString CMyClass1::classMethod(const QString& i_strMthInArgs)
 //------------------------------------------------------------------------------
 {
     QString strResult;
@@ -108,12 +108,12 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CTestModule1::CTestModule1( const QString& i_strObjName, const QString& i_strTestModule2ObjName ) :
+CMyClass1::CMyClass1( const QString& i_strObjName, const QString& i_strMyClass2ObjName ) :
 //------------------------------------------------------------------------------
     QObject(),
-    m_strTestModule2ObjName(i_strTestModule2ObjName),
-    m_pTestModule2Thread(nullptr),
-    m_pTestModule2(nullptr)
+    m_strMyClass2ObjName(i_strMyClass2ObjName),
+    m_pMyClass2Thread(nullptr),
+    m_pMyClass2(nullptr)
 {
     setObjectName(i_strObjName);
 
@@ -126,7 +126,7 @@ CTestModule1::CTestModule1( const QString& i_strObjName, const QString& i_strTes
     if( s_trcAdminObjRefAnchor.isActive(ETraceDetailLevelMethodArgs) )
     {
         strMthInArgs  = "ObjName: " + i_strObjName;
-        strMthInArgs += ", TestModule2ObjName: " + i_strTestModule2ObjName;
+        strMthInArgs += ", MyClass2ObjName: " + i_strMyClass2ObjName;
     }
 
     CMethodTracer mthTracer(
@@ -139,7 +139,7 @@ CTestModule1::CTestModule1( const QString& i_strObjName, const QString& i_strTes
 } // ctor
 
 //------------------------------------------------------------------------------
-CTestModule1::~CTestModule1()
+CMyClass1::~CMyClass1()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -149,21 +149,21 @@ CTestModule1::~CTestModule1()
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
 
-    if( m_pTestModule2Thread != nullptr && m_pTestModule2Thread->isRunning() )
+    if( m_pMyClass2Thread != nullptr && m_pMyClass2Thread->isRunning() )
     {
-        m_pTestModule2Thread->quit();
-        m_pTestModule2Thread->wait();
+        m_pMyClass2Thread->quit();
+        m_pMyClass2Thread->wait();
     }
 
     try
     {
-        delete m_pTestModule2Thread;
+        delete m_pMyClass2Thread;
     }
     catch(...)
     {
     }
-    m_pTestModule2Thread = nullptr;
-    m_pTestModule2 = nullptr;
+    m_pMyClass2Thread = nullptr;
+    m_pMyClass2 = nullptr;
 
     mthTracer.onAdminObjAboutToBeReleased();
 
@@ -176,7 +176,7 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CTestModule2* CTestModule1::createModule2()
+CMyClass2* CMyClass1::createModule2()
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -189,24 +189,24 @@ CTestModule2* CTestModule1::createModule2()
         /* strMethod    */ "createModule2",
         /* strAddInfo   */ strMthInArgs );
 
-    if( m_pTestModule2Thread == nullptr )
+    if( m_pMyClass2Thread == nullptr )
     {
-        m_pTestModule2Thread = new CTestModule2Thread(this, m_strTestModule2ObjName);
+        m_pMyClass2Thread = new CMyClass2Thread(this, m_strMyClass2ObjName);
     }
 
-    if( !m_pTestModule2Thread->isRunning() )
+    if( !m_pMyClass2Thread->isRunning() )
     {
-        m_pTestModule2Thread->start();
+        m_pMyClass2Thread->start();
     }
 
     const int c_iMaxWaitCount = 25;
     int iWaitCount = 0;
 
-    if( m_pTestModule2Thread != nullptr )
+    if( m_pMyClass2Thread != nullptr )
     {
-        m_pTestModule2 = m_pTestModule2Thread->getTestModule2();
+        m_pMyClass2 = m_pMyClass2Thread->getMyClass2();
 
-        while( m_pTestModule2 == nullptr )
+        while( m_pMyClass2 == nullptr )
         {
             #ifdef _WINDOWS
             Sleep(200);
@@ -220,22 +220,22 @@ CTestModule2* CTestModule1::createModule2()
             {
                 break;
             }
-            m_pTestModule2 = m_pTestModule2Thread->getTestModule2();
+            m_pMyClass2 = m_pMyClass2Thread->getMyClass2();
         }
     }
 
     if( mthTracer.isActive(ETraceDetailLevelMethodArgs) )
     {
-        strMthRet = QString(m_pTestModule2 == nullptr ? "null" : m_pTestModule2->objectName());
+        strMthRet = QString(m_pMyClass2 == nullptr ? "null" : m_pMyClass2->objectName());
         mthTracer.trace(strMthRet);
     }
 
-    return m_pTestModule2;
+    return m_pMyClass2;
 
 } // createModule2
 
 //------------------------------------------------------------------------------
-void CTestModule1::deleteModule2()
+void CMyClass1::deleteModule2()
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -247,14 +247,14 @@ void CTestModule1::deleteModule2()
         /* strMethod    */ "deleteModule2",
         /* strAddInfo   */ strMthInArgs );
 
-    if( m_pTestModule2Thread != nullptr && m_pTestModule2Thread->isRunning() )
+    if( m_pMyClass2Thread != nullptr && m_pMyClass2Thread->isRunning() )
     {
-        m_pTestModule2Thread->quit();
-        m_pTestModule2Thread->wait();
+        m_pMyClass2Thread->quit();
+        m_pMyClass2Thread->wait();
     }
 
-    delete m_pTestModule2Thread;
-    m_pTestModule2Thread = nullptr;
-    m_pTestModule2 = nullptr;
+    delete m_pMyClass2Thread;
+    m_pMyClass2Thread = nullptr;
+    m_pMyClass2 = nullptr;
 
 } // deleteModule2
