@@ -27,7 +27,8 @@ may result in using the software modules.
 #ifndef ZSApps_TestIpcTrace_TestModule3_h
 #define ZSApps_TestIpcTrace_TestModule3_h
 
-#include <QtCore/qstring.h>
+#include "ZSSys/ZSSysTrcAdminObj.h"
+
 #include <QtCore/qthread.h>
 
 class QTimer;
@@ -57,7 +58,7 @@ public: // class methods
     static QString NameSpace() { return "ZS::Apps::Test::IpcTrace"; }
     static QString ClassName() { return "CMyClass3Thread"; }
 public: // ctors and dtor
-    CMyClass3Thread( CMyClass2* i_pMyClass2, const QString& i_strMyClass3ObjName );
+    CMyClass3Thread( const QString& i_strMyClass3ObjName, CMyClass2* i_pMyClass2 = nullptr );
     virtual  ~CMyClass3Thread();
 public: // instance methods
     CMyClass3* getMyClass3() { return m_pMyClass3; }
@@ -83,9 +84,20 @@ class CMyClass3 : public QObject
 public: // class methods
     static QString NameSpace() { return "ZS::Apps::Test::IpcTrace"; }
     static QString ClassName() { return "CMyClass3"; }
+public: // class methods
+    static void setTraceServerName( const QString& i_strServerName );
+    static QString getTraceServerName();
+public: // class methods
+    static QString classMethod(const QString& i_strMthInArgs);
+    static QString noisyClassMethod(const QString& i_strMthInArgs);
+    static QString veryNoisyClassMethod(const QString& i_strMthInArgs);
 public: // ctors and dtor
-    CMyClass3( CMyClass3Thread* i_pMyClass3Thread, const QString& i_strObjName );
+    CMyClass3( const QString& i_strObjName, CMyClass3Thread* i_pMyClass3Thread = nullptr );
     virtual ~CMyClass3();
+public: // instance methods
+     QString instMethod(const QString& i_strMthInArgs);
+     QString noisyInstMethod(const QString& i_strMthInArgs);
+     QString veryNoisyInstMethod(const QString& i_strMthInArgs);
 public: // instance methods
     int recursiveTraceMethod();
 public: // instance methods
@@ -95,12 +107,16 @@ protected slots:
 protected: // overridables of base class QObject
     virtual bool event( QEvent* i_pEv ) override;
 private: // class members
-    ZS::Trace::CTrcAdminObj* s_pTrcAdminObj;
+    static ZS::Trace::CTrcAdminObjRefAnchor s_trcAdminObjRefAnchor;
+    static ZS::Trace::CTrcAdminObjRefAnchor s_trcAdminObjRefAnchorNoisyMethods;
+    static ZS::Trace::CTrcAdminObjRefAnchor s_trcAdminObjRefAnchorVeryNoisyMethods;
 private: // instance members
     CMyClass3Thread*         m_pMyClass3Thread;
     QTimer*                  m_pTmrMessages;
     int                      m_iMsgCount;
     ZS::Trace::CTrcAdminObj* m_pTrcAdminObj;
+    ZS::Trace::CTrcAdminObj* m_pTrcAdminObjNoisyMethods;
+    ZS::Trace::CTrcAdminObj* m_pTrcAdminObjVeryNoisyMethods;
 
 }; // class CMyClass3
 

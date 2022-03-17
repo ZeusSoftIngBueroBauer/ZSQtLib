@@ -256,17 +256,21 @@ Header File:
     {
         ...
     private: // class members
-        static ZS::Trace::CTrcAdminObjRefAnchor s_trcAdminObjRefAnchorInterestingMethods;
-        static ZS::Trace::CTrcAdminObjRefAnchor s_trcAdminObjRefAnchorDrawMethods;
+        static ZS::Trace::CTrcAdminObjRefAnchor s_trcAdminObjRefAnchor;
+        static ZS::Trace::CTrcAdminObjRefAnchor s_trcAdminObjRefAnchorNoisyMethods;
+        static ZS::Trace::CTrcAdminObjRefAnchor s_trcAdminObjRefAnchorVeryNoisyMethods;
     };
 
 Source File:
 
-    CTrcAdminObjRefAnchor CMyClass3::s_trcAdminObjRefAnchorInterestingMethods(
-        CMyClass3::NameSpace(), CMyClass3::ClassName() + "::InterestingMethods");
+    CTrcAdminObjRefAnchor CMyClass3::s_trcAdminObjRefAnchor(
+        CMyClass3::NameSpace(), CMyClass3::ClassName());
 
-    CTrcAdminObjRefAnchor CMyClass1::s_trcAdminObjRefAnchorDrawMethods(
-        CMyClass3::NameSpace(), CMyClass3::ClassName() + "::DrawMethods") ;
+    CTrcAdminObjRefAnchor CMyClass3::s_trcAdminObjRefAnchorNoisyMethods(
+        CMyClass3::NameSpace(), CMyClass3::ClassName() + "::NoisyMethods") ;
+
+    CTrcAdminObjRefAnchor CMyClass3::s_trcAdminObjRefAnchorVeryNoisyMethods(
+        CMyClass3::NameSpace(), CMyClass3::ClassName() + "::VeryNoisyMethods") ;
 
 Same applies for instance traces which all need a unique name.
 
@@ -279,8 +283,9 @@ Header File:
         ~CMyClass3();
         ...
     private: // instance members
-        ZS::Trace::CTrcAdminObj* m_pTrcAdminObjInterestingMethods;
-        ZS::Trace::CTrcAdminObj* m_pTrcAdminObjDrawMethods;
+        ZS::Trace::CTrcAdminObj* m_pTrcAdminObj;
+        ZS::Trace::CTrcAdminObj* m_pTrcAdminObjNoisyMethods;
+        ZS::Trace::CTrcAdminObj* m_pTrcAdminObjVeryNoisyMethods;
     };
 
 Source File:
@@ -288,18 +293,27 @@ Source File:
     CMyClass3::CMyClass3(const QString& i_strObjName) :
         QObject(i_strObjName)
     {
-        m_pTrcAdminObjInterestingMethods =
-            CTrcServer::GetTraceAdminObj(NameSpace(), ClassName() + "::InterestingMethods", objectName());
-        m_pTrcAdminObjDrawMethods =
-            CTrcServer::GetTraceAdminObj(NameSpace(), ClassName() + "::DrawMethods", objectName() + );
+        m_pTrcAdminObj =
+            CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName());
+        m_pTrcAdminObjNoisyMethods =
+            CTrcServer::GetTraceAdminObj(NameSpace(), ClassName() + "::NoisyMethods", objectName() + );
+        m_pTrcAdminObjVeryNoisyMethods =
+            CTrcServer::GetTraceAdminObj(NameSpace(), ClassName() + "::VeryNoisyMethods", objectName() + );
     }
 
     CMyClass3::~CMyClass3()
     {
-        CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjInterestingMethods);
-        m_pTrcAdminObjInterestingMethods = nullptr;
+        CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
+        m_pTrcAdminObj = nullptr;
 
-        CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjDrawMethods);
-        m_pTrcAdminObjDrawMethods = nullptr;
+        CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjNoisyMethods);
+        m_pTrcAdminObjNoisyMethods = nullptr;
+
+        CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjVeryNoisyMethods);
+        m_pTrcAdminObjVeryNoisyMethods = nullptr;
     }
 
+if you have created all trace admin objects as described in the examples above, you will get a tree with
+the following structure.
+
+![TraceAdminObjectsTree](ZSIpcTrace/TraceAdminObjectsTree.png)

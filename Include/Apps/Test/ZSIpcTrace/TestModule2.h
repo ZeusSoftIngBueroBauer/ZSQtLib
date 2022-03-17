@@ -27,7 +27,8 @@ may result in using the software modules.
 #ifndef ZSApps_TestIpcTrace_TestModule2_h
 #define ZSApps_TestIpcTrace_TestModule2_h
 
-#include <QtCore/qstring.h>
+#include "ZSSys/ZSSysTrcAdminObj.h"
+
 #include <QtCore/qthread.h>
 
 class QTimer;
@@ -56,7 +57,7 @@ public: // class methods
     static QString NameSpace() { return "ZS::Apps::Test::IpcTrace"; }
     static QString ClassName() { return "CMyClass2Thread"; }
 public: // ctors and dtor
-    CMyClass2Thread( CMyClass1* i_pMyClass1, const QString& i_strMyClass2ObjName );
+    CMyClass2Thread( const QString& i_strMyClass2ObjName, CMyClass1* i_pMyClass1 = nullptr );
     virtual  ~CMyClass2Thread();
 public: // instance methods
     CMyClass2* getMyClass2() { return m_pMyClass2; }
@@ -80,9 +81,14 @@ class CMyClass2 : public QObject
 public: // class methods
     static QString NameSpace() { return "ZS::Apps::Test::IpcTrace"; }
     static QString ClassName() { return "CMyClass2"; }
+public: // class methods
+    static void setTraceServerName( const QString& i_strServerName );
+    static QString getTraceServerName();
 public: // ctors and dtor
-    CMyClass2( CMyClass2Thread* i_pMyClass2Thread, const QString& i_strObjName );
+    CMyClass2( const QString& i_strObjName, CMyClass2Thread* i_pMyClass2Thread = nullptr );
     virtual  ~CMyClass2();
+public: // instance methods
+    QString instMethod(const QString& i_strMthInArgs);
 public: // instance methods
     int recursiveTraceMethod();
 public: // instance methods
@@ -91,6 +97,8 @@ protected slots:
     void onTmrMessagesTimeout();
 protected: // overridables of base class QObject
     virtual bool event( QEvent* i_pEv ) override;
+private: // class members
+    static QString s_strTraceServerName;
 private: // instance members
     CMyClass2Thread*         m_pMyClass2Thread;
     QTimer*                  m_pTmrMessages;

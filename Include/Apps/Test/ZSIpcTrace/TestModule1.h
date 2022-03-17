@@ -50,6 +50,7 @@ public: // class methods
     static QString ClassName() { return "CMyClass1"; }
 public: // class methods
     static void setTraceServerName( const QString& i_strServerName );
+    static QString getTraceServerName();
 public: // class methods
     static QString classMethod(const QString& i_strMthInArgs);
 public: // ctors and dtor

@@ -34,7 +34,6 @@ may result in using the software modules.
 #include "ZSIpcTrace/ZSIpcTrcServer.h"
 #include "ZSSys/ZSSysErrLog.h"
 #include "ZSSys/ZSSysException.h"
-#include "ZSSys/ZSSysTrcAdminObj.h"
 #include "ZSSys/ZSSysTrcMethod.h"
 
 #include "ZSSys/ZSSysMemLeakDump.h"
@@ -53,9 +52,7 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CMyClass2Thread::CMyClass2Thread(
-    CMyClass1*  i_pMyClass1,
-    const QString& i_strMyClass2ObjName ) :
+CMyClass2Thread::CMyClass2Thread( const QString& i_strMyClass2ObjName, CMyClass1* i_pMyClass1 ) :
 //------------------------------------------------------------------------------
     QThread(i_pMyClass1),
     m_pMyClass1(i_pMyClass1),
@@ -73,8 +70,8 @@ CMyClass2Thread::CMyClass2Thread(
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->getTraceDetailLevel() >= ETraceDetailLevelMethodArgs )
     {
-        strMthInArgs  = "MyClass1: " + QString(i_pMyClass1 == nullptr ? "null" : i_pMyClass1->objectName());
-        strMthInArgs += ", MyClass2ObjName: " + i_strMyClass2ObjName;
+        strMthInArgs = i_strMyClass2ObjName;
+        strMthInArgs += ", " + QString(i_pMyClass1 == nullptr ? "nullptr" : i_pMyClass1->objectName());
     }
 
     CMethodTracer mthTracer(
@@ -156,7 +153,7 @@ void CMyClass2Thread::run()
         /* strMethod    */ "run",
         /* strAddInfo   */ "" );
 
-    m_pMyClass2 = new CMyClass2(this, m_strMyClass2ObjName);
+    m_pMyClass2 = new CMyClass2(m_strMyClass2ObjName, this);
 
     m_pMyClass2->recursiveTraceMethod();
 
@@ -181,13 +178,35 @@ class CMyClass2 : public QObject
 *******************************************************************************/
 
 /*==============================================================================
+private: // class members
+==============================================================================*/
+
+QString CMyClass2::s_strTraceServerName = "ZSTrcServer";
+
+/*==============================================================================
+public: // class methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CMyClass2::setTraceServerName( const QString& i_strServerName )
+//------------------------------------------------------------------------------
+{
+    s_strTraceServerName;
+}
+
+//------------------------------------------------------------------------------
+QString CMyClass2::getTraceServerName()
+//------------------------------------------------------------------------------
+{
+    return s_strTraceServerName;
+}
+
+/*==============================================================================
 public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CMyClass2::CMyClass2(
-    CMyClass2Thread* i_pMyClass2Thread,
-    const QString&      i_strObjName ) :
+CMyClass2::CMyClass2( const QString& i_strObjName, CMyClass2Thread* i_pMyClass2Thread ) :
 //------------------------------------------------------------------------------
     QObject(),
     m_pMyClass2Thread(i_pMyClass2Thread),
@@ -197,16 +216,16 @@ CMyClass2::CMyClass2(
 {
     setObjectName(i_strObjName);
 
-    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName());
+    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName(), getTraceServerName());
 
     m_pTrcAdminObj->setTraceDetailLevel(ETraceDetailLevelRuntimeInfo);
 
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->getTraceDetailLevel() >= ETraceDetailLevelMethodArgs )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
-        strMthInArgs  = "MyClass2Thread: " + QString(i_pMyClass2Thread == nullptr ? "null" : i_pMyClass2Thread->objectName());
-        strMthInArgs += ", ObjName: " + i_strObjName;
+        strMthInArgs = i_strObjName;
+        strMthInArgs += ", " + QString(i_pMyClass2Thread == nullptr ? "nullptr" : i_pMyClass2Thread->objectName());
     }
 
     CMethodTracer mthTracer(
@@ -248,6 +267,41 @@ CMyClass2::~CMyClass2()
     m_pTrcAdminObj = nullptr;
 
 } // dtor
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+QString CMyClass2::instMethod(const QString& i_strMthInArgs)
+//------------------------------------------------------------------------------
+{
+    QString strResult;
+    QString strMthInArgs;
+    QString strMthRet;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    {
+        strMthInArgs = i_strMthInArgs;
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* strMethod    */ "instMethod",
+        /* strAddInfo   */ strMthInArgs );
+
+    strResult = "Hello World";
+
+    if( mthTracer.isActive(ETraceDetailLevelMethodArgs) )
+    {
+        strMthRet = strResult;
+        mthTracer.setMethodReturn(strMthRet);
+    }
+
+    return strResult;
+
+} // instMethod
 
 /*==============================================================================
 public: // instance methods

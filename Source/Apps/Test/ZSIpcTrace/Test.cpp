@@ -40,6 +40,7 @@ may result in using the software modules.
 #include "WidgetCentral.h"
 #include "TestModule1.h"
 #include "TestModule2.h"
+#include "TestModule3.h"
 
 #include "ZSTest/ZSTestStep.h"
 #include "ZSTest/ZSTestStepIdxTree.h"
@@ -78,8 +79,9 @@ CTest::CTest() :
     m_pTestTrcClient(nullptr),
     m_pTmrTestStepTimeout(nullptr),
     m_hshReqsInProgress(),
-    m_pMyClass1(nullptr),
-    m_pMyClass2(nullptr)
+    m_hshpMyClass1InstancesByName(),
+    m_hshpMyClass2InstancesByName(),
+    m_hshpMyClass3InstancesByName()
 {
     m_pTmrTestStepTimeout = new QTimer();
     m_pTmrTestStepTimeout->setSingleShot(true);
@@ -120,12 +122,143 @@ CTest::CTest() :
         /* pTSGrpParent    */ pGrp,
         /* szDoTestStepFct */ SLOT(doTestStepTraceClientConnect(ZS::Test::CTestStep*)) );
 
-    #pragma message(__TODO__ "Test modules with admin objects and tracing")
-
     new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " CMyClass1::classMethod",
         /* strOperation    */ "ZSTrcServer/CMyClass1::classMethod(Hello Class): Hello World",
+        /* pTSGrpParent    */ pGrp,
+        /* szDoTestStepFct */ SLOT(doTestStepTraceMethodCall(ZS::Test::CTestStep*)) );
+
+    new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " CMyClass2::ctor(Inst1, nullptr)",
+        /* strOperation    */ "ZSTrcServer/CMyClass2::ctor(Inst1, nullptr)",
+        /* pTSGrpParent    */ pGrp,
+        /* szDoTestStepFct */ SLOT(doTestStepTraceMethodCall(ZS::Test::CTestStep*)) );
+
+    new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " CMyClass2::ctor(Inst2, nullptr)",
+        /* strOperation    */ "ZSTrcServer/CMyClass2::ctor(Inst2, nullptr)",
+        /* pTSGrpParent    */ pGrp,
+        /* szDoTestStepFct */ SLOT(doTestStepTraceMethodCall(ZS::Test::CTestStep*)) );
+
+    new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " CMyClass2::Inst1.instMethod",
+        /* strOperation    */ "ZSTrcServer/CMyClass2::Inst1.instMethod(Hello Instance): Hello World",
+        /* pTSGrpParent    */ pGrp,
+        /* szDoTestStepFct */ SLOT(doTestStepTraceMethodCall(ZS::Test::CTestStep*)) );
+
+    new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " CMyClass2::Inst2.instMethod",
+        /* strOperation    */ "ZSTrcServer/CMyClass2::Inst2.instMethod(Hello Instance): Hello World",
+        /* pTSGrpParent    */ pGrp,
+        /* szDoTestStepFct */ SLOT(doTestStepTraceMethodCall(ZS::Test::CTestStep*)) );
+
+    new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " CMyClass2::dtor(Inst1)",
+        /* strOperation    */ "ZSTrcServer/CMyClass2::dtor(Inst1)",
+        /* pTSGrpParent    */ pGrp,
+        /* szDoTestStepFct */ SLOT(doTestStepTraceMethodCall(ZS::Test::CTestStep*)) );
+
+    new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " CMyClass2::dtor(Inst2)",
+        /* strOperation    */ "ZSTrcServer/CMyClass2::dtor(Inst2)",
+        /* pTSGrpParent    */ pGrp,
+        /* szDoTestStepFct */ SLOT(doTestStepTraceMethodCall(ZS::Test::CTestStep*)) );
+
+    new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " CMyClass3::classMethod",
+        /* strOperation    */ "ZSTrcServer/CMyClass3::classMethod(Hello Class): Hello World",
+        /* pTSGrpParent    */ pGrp,
+        /* szDoTestStepFct */ SLOT(doTestStepTraceMethodCall(ZS::Test::CTestStep*)) );
+
+    new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " CMyClass3::noisyClassMethod",
+        /* strOperation    */ "ZSTrcServer/CMyClass3::NoisyMethods::noisyClassMethod(Hello Class): Hello World",
+        /* pTSGrpParent    */ pGrp,
+        /* szDoTestStepFct */ SLOT(doTestStepTraceMethodCall(ZS::Test::CTestStep*)) );
+
+    new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " CMyClass3::veryNoisyClassMethod",
+        /* strOperation    */ "ZSTrcServer/CMyClass3::VeryNoisyMethods::veryNoisyClassMethod(Hello Class): Hello World",
+        /* pTSGrpParent    */ pGrp,
+        /* szDoTestStepFct */ SLOT(doTestStepTraceMethodCall(ZS::Test::CTestStep*)) );
+
+    new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " CMyClass3::ctor(Inst1, nullptr)",
+        /* strOperation    */ "ZSTrcServer/CMyClass3::ctor(Inst1, nullptr)",
+        /* pTSGrpParent    */ pGrp,
+        /* szDoTestStepFct */ SLOT(doTestStepTraceMethodCall(ZS::Test::CTestStep*)) );
+
+    new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " CMyClass3::ctor(Inst2, nullptr)",
+        /* strOperation    */ "ZSTrcServer/CMyClass3::ctor(Inst2, nullptr)",
+        /* pTSGrpParent    */ pGrp,
+        /* szDoTestStepFct */ SLOT(doTestStepTraceMethodCall(ZS::Test::CTestStep*)) );
+
+    new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " CMyClass3::Inst1.instMethod",
+        /* strOperation    */ "ZSTrcServer/CMyClass3::Inst1.instMethod(Hello Instance): Hello World",
+        /* pTSGrpParent    */ pGrp,
+        /* szDoTestStepFct */ SLOT(doTestStepTraceMethodCall(ZS::Test::CTestStep*)) );
+
+    new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " CMyClass3::Inst2.instMethod",
+        /* strOperation    */ "ZSTrcServer/CMyClass3::Inst2.instMethod(Hello Instance): Hello World",
+        /* pTSGrpParent    */ pGrp,
+        /* szDoTestStepFct */ SLOT(doTestStepTraceMethodCall(ZS::Test::CTestStep*)) );
+
+    new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " CMyClass3::Inst1.noisyInstMethod",
+        /* strOperation    */ "ZSTrcServer/CMyClass3::NoisyMethods::Inst1.noisyInstMethod(Hello Instance): Hello World",
+        /* pTSGrpParent    */ pGrp,
+        /* szDoTestStepFct */ SLOT(doTestStepTraceMethodCall(ZS::Test::CTestStep*)) );
+
+    new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " CMyClass3::Inst2.noisyInstMethod",
+        /* strOperation    */ "ZSTrcServer/CMyClass3::NoisyMethods::Inst2.noisyInstMethod(Hello Instance): Hello World",
+        /* pTSGrpParent    */ pGrp,
+        /* szDoTestStepFct */ SLOT(doTestStepTraceMethodCall(ZS::Test::CTestStep*)) );
+
+    new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " CMyClass3::Inst1.veryNoisyInstMethod",
+        /* strOperation    */ "ZSTrcServer/CMyClass3::VeryNoisyMethods::Inst1.veryNoisyInstMethod(Hello Instance): Hello World",
+        /* pTSGrpParent    */ pGrp,
+        /* szDoTestStepFct */ SLOT(doTestStepTraceMethodCall(ZS::Test::CTestStep*)) );
+
+    new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " CMyClass3::Inst2.veryNoisyInstMethod",
+        /* strOperation    */ "ZSTrcServer/CMyClass3::VeryNoisyMethods::Inst2.veryNoisyInstMethod(Hello Instance): Hello World",
+        /* pTSGrpParent    */ pGrp,
+        /* szDoTestStepFct */ SLOT(doTestStepTraceMethodCall(ZS::Test::CTestStep*)) );
+
+    new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " CMyClass3::dtor(Inst1)",
+        /* strOperation    */ "ZSTrcServer/CMyClass3::dtor(Inst1)",
+        /* pTSGrpParent    */ pGrp,
+        /* szDoTestStepFct */ SLOT(doTestStepTraceMethodCall(ZS::Test::CTestStep*)) );
+
+    new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " CMyClass3::dtor(Inst2)",
+        /* strOperation    */ "ZSTrcServer/CMyClass3::dtor(Inst2)",
         /* pTSGrpParent    */ pGrp,
         /* szDoTestStepFct */ SLOT(doTestStepTraceMethodCall(ZS::Test::CTestStep*)) );
 
@@ -303,12 +436,48 @@ CTest::~CTest()
         }
     }
 
-    try
+    QString strObjName;
+
+    for( auto& pObj : m_hshpMyClass1InstancesByName )
     {
-        delete m_pMyClass1;
+        strObjName = pObj->objectName();
+
+        try
+        {
+            delete pObj;
+        }
+        catch(...)
+        {
+        }
+        m_hshpMyClass1InstancesByName[strObjName] = nullptr;
     }
-    catch(...)
+
+    for( auto& pObj : m_hshpMyClass2InstancesByName )
     {
+        strObjName = pObj->objectName();
+
+        try
+        {
+            delete pObj;
+        }
+        catch(...)
+        {
+        }
+        m_hshpMyClass2InstancesByName[strObjName] = nullptr;
+    }
+
+    for( auto& pObj : m_hshpMyClass3InstancesByName )
+    {
+        strObjName = pObj->objectName();
+
+        try
+        {
+            delete pObj;
+        }
+        catch(...)
+        {
+        }
+        m_hshpMyClass3InstancesByName[strObjName] = nullptr;
     }
 
     try
@@ -336,8 +505,9 @@ CTest::~CTest()
     m_pTestTrcClient = nullptr;
     m_pTmrTestStepTimeout = nullptr;
     m_hshReqsInProgress.clear();
-    m_pMyClass1 = nullptr;
-    m_pMyClass2 = nullptr;
+    m_hshpMyClass1InstancesByName.clear();
+    m_hshpMyClass2InstancesByName.clear();
+    m_hshpMyClass3InstancesByName.clear();
 
 } // dtor
 
@@ -1005,12 +1175,13 @@ void CTest::doTestStepTraceMethodCall( ZS::Test::CTestStep* i_pTestStep )
     QString strServerName;
     QString strNameSpace;
     QString strClassName;
+    QString strSubClassName;
     QString strObjName;
     QString strMth;
     QStringList strlstInArgs;
     QString strMthRet;
 
-    splitMethodCallOperation(strOperation, strServerName, strClassName, strObjName, strMth, strlstInArgs, strMthRet);
+    splitMethodCallOperation(strOperation, strServerName, strClassName, strSubClassName, strObjName, strMth, strlstInArgs, strMthRet);
 
     CIpcTrcServer* pTrcServer = nullptr;
 
@@ -1031,7 +1202,11 @@ void CTest::doTestStepTraceMethodCall( ZS::Test::CTestStep* i_pTestStep )
     }
     else if( strClassName == CMyClass2::ClassName() )
     {
-        strNameSpace = CMyClass1::NameSpace();
+        strNameSpace = CMyClass2::NameSpace();
+    }
+    else if( strClassName == CMyClass3::ClassName() )
+    {
+        strNameSpace = CMyClass3::NameSpace();
     }
 
     if( pTrcServer == nullptr )
@@ -1043,8 +1218,16 @@ void CTest::doTestStepTraceMethodCall( ZS::Test::CTestStep* i_pTestStep )
         pTrcServer->setNewTrcAdminObjsDefaultDetailLevel(ETraceDetailLevelMethodArgs);
         pTrcServer->setLocalTrcFileCloseFileAfterEachWrite(true);
 
-        QString strTrcMethodEnter = "-> <" + strNameSpace + "::" + strClassName + "> ";
-        QString strTrcMethodLeave = "<- <" + strNameSpace + "::" + strClassName + "> ";
+        QString strTrcMethodEnter = "-> <" + strNameSpace + "::" + strClassName;
+        QString strTrcMethodLeave = "<- <" + strNameSpace + "::" + strClassName;
+
+        if( !strSubClassName.isEmpty() )
+        {
+            strTrcMethodEnter += "::" + strSubClassName;
+            strTrcMethodLeave += "::" + strSubClassName;
+        }
+        strTrcMethodEnter += "> ";
+        strTrcMethodLeave += "> ";
 
         if( !strObjName.isEmpty() )
         {
@@ -1052,10 +1235,11 @@ void CTest::doTestStepTraceMethodCall( ZS::Test::CTestStep* i_pTestStep )
             strTrcMethodLeave += strObjName + ".";
         }
         strTrcMethodEnter += strMth + "(" + strlstInArgs.join(", ") + ")";
+        strTrcMethodLeave += strMth + "()";
 
         if( !strMthRet.isEmpty() )
         {
-            strTrcMethodLeave += strMth + "(): " + strMthRet;
+            strTrcMethodLeave += ": " + strMthRet;
         }
 
         strlstExpectedValues.append(strTrcMethodEnter);
@@ -1067,22 +1251,164 @@ void CTest::doTestStepTraceMethodCall( ZS::Test::CTestStep* i_pTestStep )
     // Test Step
     //----------
 
-    if( strlstInArgs.size() == 0 )
+    bool bValidTestStep = false;
+
+    if( strClassName == CMyClass1::ClassName() )
     {
-    }
-    else if( strlstInArgs.size() == 1 )
-    {
-        if( strClassName == CMyClass1::ClassName() )
+        if( strMth == "classMethod")
         {
-            if( strMth == "classMethod")
+            if( strlstInArgs.size() == 1 )
             {
+                bValidTestStep = true;
                 CMyClass1::classMethod(strlstInArgs[0]);
             }
         }
     }
-    if( strlstInArgs.size() == 2 )
+    else if( strClassName == CMyClass2::ClassName() )
     {
-    }
+        if( strMth == "ctor" && !strObjName.isEmpty() )
+        {
+            if( m_hshpMyClass2InstancesByName.contains(strObjName) )
+            {
+                strResultValue = "CMyClass2::" + strObjName + " is already existing";
+            }
+            else if( strlstInArgs.size() == 1 )
+            {
+                bValidTestStep = true;
+                m_hshpMyClass2InstancesByName[strObjName] = new CMyClass2(strlstInArgs[0]);
+            }
+            else if( strlstInArgs.size() == 2 )
+            {
+                if( strlstInArgs[1] == "nullptr")
+                {
+                    bValidTestStep = true;
+                    m_hshpMyClass2InstancesByName[strObjName] = new CMyClass2(strlstInArgs[0], nullptr);
+                }
+            }
+        }
+        else if( strMth == "dtor" && !strObjName.isEmpty() )
+        {
+            if( !m_hshpMyClass2InstancesByName.contains(strObjName) )
+            {
+                strResultValue = "CMyClass2::" + strObjName + " is not existing";
+            }
+            else if( strlstInArgs.size() == 0 )
+            {
+                bValidTestStep = true;
+                delete m_hshpMyClass2InstancesByName[strObjName];
+                m_hshpMyClass2InstancesByName.remove(strObjName);
+            }
+        }
+        else if( strMth == "instMethod" && !strObjName.isEmpty() )
+        {
+            if( !m_hshpMyClass2InstancesByName.contains(strObjName) )
+            {
+                strResultValue = "CMyClass2::" + strObjName + " is not existing";
+            }
+            else if( strlstInArgs.size() == 1 )
+            {
+                bValidTestStep = true;
+                m_hshpMyClass2InstancesByName[strObjName]->instMethod(strlstInArgs[0]);
+            }
+        }
+    } // if( strClassName == CMyClass2::ClassName() )
+
+    else if( strClassName == CMyClass3::ClassName() )
+    {
+        if( strMth == "classMethod")
+        {
+            if( strlstInArgs.size() == 1 )
+            {
+                bValidTestStep = true;
+                CMyClass3::classMethod(strlstInArgs[0]);
+            }
+        }
+        else if( strMth == "noisyClassMethod")
+        {
+            if( strlstInArgs.size() == 1 )
+            {
+                bValidTestStep = true;
+                CMyClass3::noisyClassMethod(strlstInArgs[0]);
+            }
+        }
+        else if( strMth == "veryNoisyClassMethod")
+        {
+            if( strlstInArgs.size() == 1 )
+            {
+                bValidTestStep = true;
+                CMyClass3::veryNoisyClassMethod(strlstInArgs[0]);
+            }
+        }
+        else if( strMth == "ctor" && !strObjName.isEmpty() )
+        {
+            if( m_hshpMyClass3InstancesByName.contains(strObjName) )
+            {
+                strResultValue = "CMyClass3::" + strObjName + " is already existing";
+            }
+            else if( strlstInArgs.size() == 1 )
+            {
+                bValidTestStep = true;
+                m_hshpMyClass3InstancesByName[strObjName] = new CMyClass3(strlstInArgs[0]);
+            }
+            else if( strlstInArgs.size() == 2 )
+            {
+                if( strlstInArgs[1] == "nullptr")
+                {
+                    bValidTestStep = true;
+                    m_hshpMyClass3InstancesByName[strObjName] = new CMyClass3(strlstInArgs[0], nullptr);
+                }
+            }
+        }
+        else if( strMth == "dtor" && !strObjName.isEmpty() )
+        {
+            if( !m_hshpMyClass3InstancesByName.contains(strObjName) )
+            {
+                strResultValue = "CMyClass3::" + strObjName + " is not existing";
+            }
+            else if( strlstInArgs.size() == 0 )
+            {
+                bValidTestStep = true;
+                delete m_hshpMyClass3InstancesByName[strObjName];
+                m_hshpMyClass3InstancesByName.remove(strObjName);
+            }
+        }
+        else if( strMth == "instMethod" && !strObjName.isEmpty() )
+        {
+            if( !m_hshpMyClass3InstancesByName.contains(strObjName) )
+            {
+                strResultValue = "CMyClass3::" + strObjName + " is not existing";
+            }
+            else if( strlstInArgs.size() == 1 )
+            {
+                bValidTestStep = true;
+                m_hshpMyClass3InstancesByName[strObjName]->instMethod(strlstInArgs[0]);
+            }
+        }
+        else if( strMth == "noisyInstMethod" && !strObjName.isEmpty() )
+        {
+            if( !m_hshpMyClass3InstancesByName.contains(strObjName) )
+            {
+                strResultValue = "CMyClass3::" + strObjName + " is not existing";
+            }
+            else if( strlstInArgs.size() == 1 )
+            {
+                bValidTestStep = true;
+                m_hshpMyClass3InstancesByName[strObjName]->noisyInstMethod(strlstInArgs[0]);
+            }
+        }
+        else if( strMth == "veryNoisyInstMethod" && !strObjName.isEmpty() )
+        {
+            if( !m_hshpMyClass3InstancesByName.contains(strObjName) )
+            {
+                strResultValue = "CMyClass3::" + strObjName + " is not existing";
+            }
+            else if( strlstInArgs.size() == 1 )
+            {
+                bValidTestStep = true;
+                m_hshpMyClass3InstancesByName[strObjName]->veryNoisyInstMethod(strlstInArgs[0]);
+            }
+        }
+    } // if( strClassName == CMyClass3::ClassName() )
 
     if( pTrcServer != nullptr )
     {
@@ -1090,20 +1416,42 @@ void CTest::doTestStepTraceMethodCall( ZS::Test::CTestStep* i_pTestStep )
         pTrcServer->setLocalTrcFileCloseFileAfterEachWrite(false);
     }
 
-    CWidgetCentral* pWdgtCentral = CWidgetCentral::GetInstance();
-
-    CWdgtTrcMthList* pWdgtTrcMthList = pWdgtCentral->getTrcMthListWdgt();
-
-    if( !QObject::connect(
-        /* pObjSender   */ pWdgtTrcMthList,
-        /* szSignal     */ SIGNAL(textItemAdded(const QString&)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onZSTraceClientTrcMthListWdgtTextItemAdded(const QString&)) ) )
+    if( !bValidTestStep )
     {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
+        if( !strResultValue.isEmpty() )
+        {
+            strlstResultValues.append(strResultValue);
+            strResultValue = "";
+        }
+        strlstResultValues.append("Invalid test step operation");
     }
 
-    m_pTmrTestStepTimeout->start(5000);
+    if( !strlstResultValues.isEmpty() )
+    {
+        i_pTestStep->setResultValues(strlstResultValues);
+    }
+    if( !strResultValue.isEmpty() )
+    {
+        i_pTestStep->setResultValue(strResultValue);
+    }
+    else
+    {
+        CWidgetCentral* pWdgtCentral = CWidgetCentral::GetInstance();
+
+        CWdgtTrcMthList* pWdgtTrcMthList = pWdgtCentral->getTrcMthListWdgt();
+
+        pWdgtTrcMthList->getTextEdit()->clear();
+
+        if( !QObject::connect(
+            /* pObjSender   */ pWdgtTrcMthList,
+            /* szSignal     */ SIGNAL(textItemAdded(const QString&)),
+            /* pObjReceiver */ this,
+            /* szSlot       */ SLOT(onZSTraceClientTrcMthListWdgtTextItemAdded(const QString&)) ) )
+        {
+            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
+        }
+        m_pTmrTestStepTimeout->start(5000);
+    }
 
 } // doTestStepTraceMethodCall
 
@@ -1596,44 +1944,70 @@ void CTest::onZSTraceClientTrcMthListWdgtTextItemAdded( const QString& i_strText
 
     if( pTestStep != nullptr )
     {
-        QString strOperation = pTestStep->getOperation();
-
-        QString strServerName;
-        QString strNameSpace;
-        QString strClassName;
-        QString strObjName;
-        QString strMth;
-        QStringList strlstInArgs;
-        QString strMthRet;
-
-        splitMethodCallOperation(strOperation, strServerName, strClassName, strObjName, strMth, strlstInArgs, strMthRet);
-
-        if( strClassName == CMyClass1::ClassName() )
-        {
-            strNameSpace = CMyClass1::NameSpace();
-        }
-        else if( strClassName == CMyClass2::ClassName() )
-        {
-            strNameSpace = CMyClass1::NameSpace();
-        }
-
         QString     strResultValue;
         QStringList strlstResultValues;
+        QStringList strlstExpectedValues = pTestStep->getExpectedValues();
 
-        QString strText = i_strText;
+        CWidgetCentral* pWdgtCentral = CWidgetCentral::GetInstance();
+        CWdgtTrcMthList* pWdgtTrcMthList = pWdgtCentral->getTrcMthListWdgt();
+        QTextEdit* pEdtTrcMthList = pWdgtTrcMthList->getTextEdit();
+        QTextDocument* pDocTrcMthList = pEdtTrcMthList->document();
 
-        strText.replace("&lt;", "<");
-        strText.replace("&gt;", ">");
-        strText.replace("&nbsp;", "");
+        int iDocTrcMthListLineCount = pDocTrcMthList->lineCount();
 
-        // Two entries must have been added to finish the test step: Enter and Leave Method.
-        // The test step is finished if the Method Leave is traced.
-        if( strText.contains("<-") )
+        //QString strText = i_strText;
+
+        //strText.replace("&lt;", "<");
+        //strText.replace("&gt;", ">");
+        //strText.replace("&nbsp;", "");
+
+        if( iDocTrcMthListLineCount == strlstExpectedValues.size() )
         {
-            CWidgetCentral* pWdgtCentral = CWidgetCentral::GetInstance();
-            CWdgtTrcMthList* pWdgtTrcMthList = pWdgtCentral->getTrcMthListWdgt();
-            QTextEdit* pEdtTrcMthList = pWdgtTrcMthList->getTextEdit();
-            QTextDocument* pDocTrcMthList = pEdtTrcMthList->document();
+            // Retrieve result values from trace method list widget
+            //-----------------------------------------------------
+
+            // The list widget must be cleared on starting a new test step.
+            QString strAllLines = pEdtTrcMthList->toPlainText();
+            QTextStream txtStream(&strAllLines, QIODevice::ReadOnly);
+            while (!txtStream.atEnd())
+            {
+                QString strLine = txtStream.readLine();
+                int idxMthTrc = strLine.indexOf("->");
+                if( idxMthTrc < 0 )
+                {
+                    idxMthTrc = strLine.indexOf("<-");
+                }
+                if( idxMthTrc >= 0 )
+                {
+                    strLine = strLine.remove(0, idxMthTrc);
+                }
+                strlstResultValues << strLine;
+            }
+
+            // Check if entry added to log file.
+            //----------------------------------
+
+            QString strOperation = pTestStep->getOperation();
+
+            QString strServerName;
+            QString strNameSpace;
+            QString strClassName;
+            QString strSubClassName;
+            QString strObjName;
+            QString strMth;
+            QStringList strlstInArgs;
+            QString strMthRet;
+
+            splitMethodCallOperation(strOperation, strServerName, strClassName, strSubClassName, strObjName, strMth, strlstInArgs, strMthRet);
+
+            if( strClassName == CMyClass1::ClassName() )
+            {
+                strNameSpace = CMyClass1::NameSpace();
+            }
+            else if( strClassName == CMyClass2::ClassName() )
+            {
+                strNameSpace = CMyClass1::NameSpace();
+            }
 
             // Range of IniFileScope: ["AppDir", "User", "System"]
             #ifdef __linux__
@@ -1651,22 +2025,26 @@ void CTest::onZSTraceClientTrcMthListWdgtTextItemAdded( const QString& i_strText
 
             QString strTrcMthFileAbsFilePath = strAppLogDir + "/" + strTrcMthFileBaseName + "." + strTrcMthFileSuffix;
 
-            QString strTrcMethodEnter = "-> <" + strNameSpace + "::" + strClassName + "> ";
-            QString strTrcMethodLeave = "<- <" + strNameSpace + "::" + strClassName + "> ";
+            QFile fileTrcMthFile(strTrcMthFileAbsFilePath);
 
-            if( !strObjName.isEmpty() )
+            if( !fileTrcMthFile.open(QIODevice::ReadOnly|QIODevice::Text) )
             {
-                strTrcMethodEnter += strObjName + ".";
-                strTrcMethodLeave += strObjName + ".";
+                strlstResultValues.append("Could not open file " + strTrcMthFileAbsFilePath);
             }
-            strTrcMethodEnter += strMth + "(" + strlstInArgs.join(", ") + ")";
-
-            if( !strMthRet.isEmpty() )
+            else
             {
-                strTrcMethodLeave += strMth + "(): " + strMthRet;
+                QTextStream txtstrmLogFileAppDefault(&fileTrcMthFile);
+
+                QString strTrcMthFile = txtstrmLogFileAppDefault.readAll();
+
+                for( const auto& strLine : strlstExpectedValues )
+                {
+                    bool bEntryFound = strTrcMthFile.contains(strLine);
+                    if( !bEntryFound ) strlstResultValues.append(strLine + ": not found in trace method file");
+                }
             }
 
-            if( strClassName == "CMyClass1" && strMth == "classMethod" )
+            if( !strlstResultValues.isEmpty() || !strResultValue.isEmpty() )
             {
                 // Test step finished (only one entry expected).
                 if( m_pTmrTestStepTimeout->isActive() )
@@ -1679,234 +2057,17 @@ void CTest::onZSTraceClientTrcMthListWdgtTextItemAdded( const QString& i_strText
                     /* szSignal     */ SIGNAL(textItemAdded(const QString&)),
                     /* pObjReceiver */ this,
                     /* szSlot       */ SLOT(onZSTraceClientTrcMthListWdgtTextItemAdded(const QString&)) );
+            }
 
-                // Check if entry added to trace method widget.
-                //---------------------------------------------
-
-                QTextCursor textCursor = pDocTrcMthList->find(strTrcMethodEnter);
-
-                if( !textCursor.isNull() ) strlstResultValues.append(strTrcMethodEnter);
-                else strlstResultValues.append(strTrcMethodEnter + ": not found in text edit widget");
-
-                textCursor = pDocTrcMthList->find(strTrcMethodLeave);
-
-                if( !textCursor.isNull() ) strlstResultValues.append(strTrcMethodLeave);
-                else strlstResultValues.append(strTrcMethodLeave + ": not found in text edit widget");
-
-                // Check if entry added to log file.
-                //----------------------------------
-
-                QFile fileTrcMthFile(strTrcMthFileAbsFilePath);
-
-                if( !fileTrcMthFile.open(QIODevice::ReadOnly|QIODevice::Text) )
-                {
-                    strlstResultValues.append("Could not open file " + strTrcMthFileAbsFilePath);
-                }
-                else
-                {
-                    QTextStream txtstrmLogFileAppDefault(&fileTrcMthFile);
-
-                    QString strTrcMthFile = txtstrmLogFileAppDefault.readAll();
-
-                    bool bTrcMethodEnterFound = strTrcMthFile.contains(strTrcMethodEnter);
-                    bool bTrcMethodLeaveFound = strTrcMthFile.contains(strTrcMethodLeave);
-
-                    if( !bTrcMethodEnterFound ) strlstResultValues.append(strTrcMethodEnter + ": not found in trace method file");
-                    if( !bTrcMethodLeaveFound ) strlstResultValues.append(strTrcMethodLeave + ": not found in trace method file");
-                }
-
-                pTestStep->setResultValues(strlstResultValues);
-
-            } // if( pTestStep->getOperation().contains("CMyClass1::classMethod") )
-
-            else if( pTestStep->getOperation() == "new CMyClass1()" || pTestStep->getOperation() == "delete CMyClass1()" )
+            if( !strlstResultValues.isEmpty() )
             {
-                // Test step finished (only one entry expected).
-                if( m_pTmrTestStepTimeout->isActive() )
-                {
-                    m_pTmrTestStepTimeout->stop();
-                }
-
-                QObject::disconnect(
-                    /* pObjSender   */ pWdgtTrcMthList,
-                    /* szSignal     */ SIGNAL(textItemAdded(const QString&)),
-                    /* pObjReceiver */ this,
-                    /* szSlot       */ SLOT(onZSTraceClientTrcMthListWdgtTextItemAdded(const QString&)) );
-
-                // Check if entry added to trace method widget.
-                //---------------------------------------------
-
-                QTextCursor textCursor = pDocTrcMthList->find(strTrcMethodEnter);
-
-                if( !textCursor.isNull() ) strlstResultValues.append(strTrcMethodEnter);
-                else strlstResultValues.append(strTrcMethodEnter + ": not found in text edit widget");
-
-                textCursor = pDocTrcMthList->find(strTrcMethodLeave);
-
-                if( !textCursor.isNull() ) strlstResultValues.append(strTrcMethodLeave);
-                else strlstResultValues.append(strTrcMethodLeave + ": not found in text edit widget");
-
-                // Check if entry added to log file.
-                //----------------------------------
-
-                QFile fileTrcMthFile(strTrcMthFileAbsFilePath);
-
-                if( !fileTrcMthFile.open(QIODevice::ReadOnly|QIODevice::Text) )
-                {
-                    strlstResultValues.append("Could not open file " + strTrcMthFileAbsFilePath);
-                }
-                else
-                {
-                    QTextStream txtstrmLogFileAppDefault(&fileTrcMthFile);
-
-                    QString strTrcMthFile = txtstrmLogFileAppDefault.readAll();
-
-                    bool bTrcMethodEnterFound = strTrcMthFile.contains(strTrcMethodEnter);
-                    bool bTrcMethodLeaveFound = strTrcMthFile.contains(strTrcMethodLeave);
-
-                    if( !bTrcMethodEnterFound ) strlstResultValues.append(strTrcMethodEnter + ": not found in trace method file");
-                    if( !bTrcMethodLeaveFound ) strlstResultValues.append(strTrcMethodLeave + ": not found in trace method file");
-                }
-
                 pTestStep->setResultValues(strlstResultValues);
-
-            } // if( pTestStep->getOperation() == "new CMyClass1()" || pTestStep->getOperation() == "delete CMyClass1()" )
-
-            else if( pTestStep->getOperation() == "new CMyClass2()" || pTestStep->getOperation() == "delete CMyClass2()" )
+            }
+            else if( !strResultValue.isEmpty() )
             {
-                QString strInArgs;
-                QString strOutArgs;
-
-                QString strTrc1;
-                QString strTrc2;
-                QString strTrc3;
-                QString strTrc4;
-                QString strTrc5;
-
-                if( pTestStep->getOperation() == "new CMyClass2()" )
-                {
-                    strMth    = "event";
-                    strInArgs = "Msg: ZS::Apps::Test::IpcTrace::ReqTest";
-                    strMthRet = "100";
-
-                    strTrc1 = "   -> <ZS::Apps::Test::IpcTrace::CMyClass2> MyClass2.ctor(MyClass2Thread: MyClass2, ObjName: MyClass2)";
-                    strTrc2 = "   <- <ZS::Apps::Test::IpcTrace::CMyClass2> MyClass2.ctor()";
-                    strTrc3 = "                                 <- <ZS::Apps::Test::IpcTrace::CMyClass2> MyClass2.recursiveTraceMethod(): 10";
-                    strTrc4 = "   <- <ZS::Apps::Test::IpcTrace::CMyClass2> MyClass2.recursiveTraceMethod(): 0";
-                    strTrc5 = "   -> <ZS::Apps::Test::IpcTrace::CMyClass2> MyClass2.event(Msg: ZS::Apps::Test::IpcTrace::ReqTest)";
-                }
-                else if( pTestStep->getOperation() == "delete CMyClass2()" )
-                {
-                    strMth = "dtor";
-                }
-
-                QString strTrcMethodLeave = "<- <" + strNameSpace + "::" + strClassName + "> " + strObjName + "." + strMth + "(" + strOutArgs + ")";
-
-                if( !strMthRet.isEmpty() ) strTrcMethodLeave += ": " + strMthRet;
-
-                if( strText.contains(strNameSpace) && strText.contains(strClassName) && strText.contains(strObjName) && strText.contains(strMth) && strText.contains(strMthRet) )
-                {
-                    if( m_pTmrTestStepTimeout->isActive() )
-                    {
-                        m_pTmrTestStepTimeout->stop();
-                    }
-
-                    QObject::disconnect(
-                        /* pObjSender   */ pWdgtTrcMthList,
-                        /* szSignal     */ SIGNAL(textItemAdded(const QString&)),
-                        /* pObjReceiver */ this,
-                        /* szSlot       */ SLOT(onZSTraceClientTrcMthListWdgtTextItemAdded(const QString&)) );
-
-                    // Check if entry added to trace method widget.
-                    //---------------------------------------------
-
-                    QTextCursor textCursor = pDocTrcMthList->find(strTrcMethodLeave);
-
-                    if( !textCursor.isNull() ) strlstResultValues.append(strTrcMethodLeave);
-                    else strlstResultValues.append(strTrcMethodLeave + ": not found in text edit widget");
-
-                    if( !strTrc1.isEmpty() )
-                    {
-                        textCursor = pDocTrcMthList->find(strTrc1);
-                        if( !textCursor.isNull() ) strlstResultValues.append(strTrc1);
-                        else strlstResultValues.append(strTrc1 + ": not found in text edit widget");
-                    }
-                    if( !strTrc2.isEmpty() )
-                    {
-                        textCursor = pDocTrcMthList->find(strTrc2);
-                        if( !textCursor.isNull() ) strlstResultValues.append(strTrc2);
-                        else strlstResultValues.append(strTrc2 + ": not found in text edit widget");
-                    }
-                    if( !strTrc3.isEmpty() )
-                    {
-                        textCursor = pDocTrcMthList->find(strTrc3);
-                        if( !textCursor.isNull() ) strlstResultValues.append(strTrc3);
-                        else strlstResultValues.append(strTrc3 + ": not found in text edit widget");
-                    }
-                    if( !strTrc4.isEmpty() )
-                    {
-                        textCursor = pDocTrcMthList->find(strTrc4);
-                        if( !textCursor.isNull() ) strlstResultValues.append(strTrc4);
-                        else strlstResultValues.append(strTrc4 + ": not found in text edit widget");
-                    }
-                    if( !strTrc5.isEmpty() )
-                    {
-                        textCursor = pDocTrcMthList->find(strTrc5);
-                        if( !textCursor.isNull() ) strlstResultValues.append(strTrc5);
-                        else strlstResultValues.append(strTrc5 + ": not found in text edit widget");
-                    }
-
-                    // Check if entry added to log file.
-                    //----------------------------------
-
-                    QFile fileTrcMthFile(strTrcMthFileAbsFilePath);
-
-                    if( !fileTrcMthFile.open(QIODevice::ReadOnly|QIODevice::Text) )
-                    {
-                        strlstResultValues.append("Could not open file " + strTrcMthFileAbsFilePath);
-                    }
-                    else
-                    {
-                        QTextStream txtstrmLogFileAppDefault(&fileTrcMthFile);
-
-                        QString strTrcMthFile = txtstrmLogFileAppDefault.readAll();
-
-                        bool bStringFound = strTrcMthFile.contains(strTrcMethodLeave);
-
-                        if( !bStringFound ) strlstResultValues.append(strTrcMethodLeave + ": not found in trace method file");
-
-                        if( !strTrc1.isEmpty() )
-                        {
-                            bStringFound = strTrcMthFile.contains(strTrc1);
-                            if( !bStringFound ) strlstResultValues.append(strTrc1 + ": not found in trace method file");
-                        }
-                        if( !strTrc2.isEmpty() )
-                        {
-                            bStringFound = strTrcMthFile.contains(strTrc2);
-                            if( !bStringFound ) strlstResultValues.append(strTrc2 + ": not found in trace method file");
-                        }
-                        if( !strTrc3.isEmpty() )
-                        {
-                            bStringFound = strTrcMthFile.contains(strTrc3);
-                            if( !bStringFound ) strlstResultValues.append(strTrc3 + ": not found in trace method file");
-                        }
-                        if( !strTrc4.isEmpty() )
-                        {
-                            bStringFound = strTrcMthFile.contains(strTrc4);
-                            if( !bStringFound ) strlstResultValues.append(strTrc4 + ": not found in trace method file");
-                        }
-                        if( !strTrc5.isEmpty() )
-                        {
-                            bStringFound = strTrcMthFile.contains(strTrc5);
-                            if( !bStringFound ) strlstResultValues.append(strTrc5 + ": not found in trace method file");
-                        }
-                    }
-
-                    pTestStep->setResultValues(strlstResultValues);
-
-                } // if( strText.contains(strNameSpace) && strText.contains(strClassName) && strText.contains(strObjName) && strText.contains(strMthName) )
-            } // if( pTestStep->getOperation() == "new CMyClass2()" || pTestStep->getOperation() == "delete CMyClass2()" )
-        } // if( strText.contains("<-") )
+                pTestStep->setResultValue(strResultValue);
+            }
+        } // if( iDocTrcMthListLineCount == strlstExpectedValues.size() )
     } // if( pTestStep != nullptr )
 
 } // onZSTraceClientTrcMthListWdgtTextItemAdded
@@ -1950,16 +2111,27 @@ private: // instance auxiliary methods
 
     Examples for strOperation:
 
-    - "ZSTrcServer/CMyClass1::method(Arg1)",
-    - "ZSTrcServer/CMyClass1::method(Arg1, Arg2): Ret",
-    - "ZSTrcServer/CMyClass2::theInst.method(Arg1, Arg2)",
-    - "ZSTrcServer/CMyClass2::theInst.method(Arg1, Arg2): Ret",
-
+    - "ZSTrcServer/CMyClass1::classMethod(Arg1)"
+    - "ZSTrcServer/CMyClass1::classMethod(Arg1, Arg2): Ret"
+    - "ZSTrcServer/CMyClass2::ctor(Inst1)"
+    - "ZSTrcServer/CMyClass2::Inst1.instMethod(Arg1, Arg2)"
+    - "ZSTrcServer/CMyClass2::dtor(Inst1)"
+    - "ZSTrcServer/CMyClass2::Inst1.instMethod(Arg1, Arg2): Ret"
+    - "ZSTrcServer/CMyClass3::classMethod(Arg1, Arg2)"
+    - "ZSTrcServer/CMyClass3::NoisyMethods::noisyClassMethod(Arg1, Arg2)"
+    - "ZSTrcServer/CMyClass3::VeryNoisyMethods::veryNoisyClassMethod(Arg1, Arg2)"
+    - "ZSTrcServer/CMyClass3::ctor(Inst1)"
+    - "ZSTrcServer/CMyClass3::Inst1.instMethod(Arg1, Arg2)"
+    - "ZSTrcServer/CMyClass3::Inst1.instMethod(Arg1, Arg2): Ret"
+    - "ZSTrcServer/CMyClass3::NoisyMethods::Inst1.noisyInstMethod(Arg1, Arg2)"
+    - "ZSTrcServer/CMyClass3::VeryNoisyMethods::Inst1.veryNoisyInstMethod(Arg1, Arg2)"
+    - "ZSTrcServer/CMyClass3::dtor(Inst1)"
 */
 void CTest::splitMethodCallOperation(
     const QString& i_strOperation,
     QString& o_strServerName,
     QString& o_strClassName,
+    QString& o_strSubClassName,
     QString& o_strObjName,
     QString& o_strMth,
     QStringList& o_strlstInArgs,
@@ -1981,6 +2153,11 @@ void CTest::splitMethodCallOperation(
     {
         o_strServerName = strlst[0];
         strlst = strlst[1].split("::", Qt::SkipEmptyParts);
+        if( strlst.size() == 3 )
+        {
+            o_strSubClassName = strlst[1];
+            strlst.removeAt(1);
+        }
         if( strlst.size() == 2 )
         {
             o_strClassName = strlst[0];
@@ -2006,13 +2183,22 @@ void CTest::splitMethodCallOperation(
                     if( strlst.size() == 1 )
                     {
                         strlst[0].remove("(").remove(")");
-                        o_strlstInArgs = strlst[0].split(",", Qt::SkipEmptyParts);
+                        o_strlstInArgs = strlst[0].split(", ", Qt::SkipEmptyParts);
                     }
                     else if( strlst.size() == 2 )
                     {
                         strlst[0].remove("(").remove(")");
-                        o_strlstInArgs = strlst[0].split(",", Qt::SkipEmptyParts);
+                        o_strlstInArgs = strlst[0].split(", ", Qt::SkipEmptyParts);
                         o_strMthRet = strlst[1];
+                    }
+                    if( o_strMth == "ctor" && o_strlstInArgs.size() >= 1 && o_strObjName.isEmpty() )
+                    {
+                        o_strObjName = o_strlstInArgs[0];
+                    }
+                    else if( o_strMth == "dtor" && o_strlstInArgs.size() == 1 && o_strObjName.isEmpty() )
+                    {
+                        o_strObjName = o_strlstInArgs[0];
+                        o_strlstInArgs.clear();
                     }
                 }
             }

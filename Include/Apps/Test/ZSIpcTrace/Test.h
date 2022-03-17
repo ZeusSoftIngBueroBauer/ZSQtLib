@@ -51,6 +51,7 @@ namespace IpcTrace
 {
 class CMyClass1;
 class CMyClass2;
+class CMyClass3;
 
 //******************************************************************************
 class CTest : public ZS::Test::CTest
@@ -68,8 +69,9 @@ signals:
 public: // instance methods
     ZS::Trace::CIpcTrcServer* getTestTrcServer() { return m_pTestTrcServer; }
     ZS::Trace::CIpcTrcClient* getTestTrcClient() { return m_pTestTrcClient; }
-    CMyClass1* getMyClass1() const { return m_pMyClass1; }
-    CMyClass2* getMyClass2() const { return m_pMyClass2; }
+    CMyClass1* getMyClass1Instance(const QString& i_strObjName) const { return m_hshpMyClass1InstancesByName.value(i_strObjName, nullptr); }
+    CMyClass2* getMyClass2Instance(const QString& i_strObjName) const { return m_hshpMyClass2InstancesByName.value(i_strObjName, nullptr); }
+    CMyClass3* getMyClass3Instance(const QString& i_strObjName) const { return m_hshpMyClass3InstancesByName.value(i_strObjName, nullptr); }
 public slots: // test step methods
     void doTestStepTraceServerCreateInstance( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepTraceServerReleaseInstance( ZS::Test::CTestStep* i_pTestStep );
@@ -96,6 +98,7 @@ private: // instance auxiliary methods
         const QString& i_strOperation,
         QString& o_strServerName,
         QString& o_strClassName,
+        QString& o_strSubClassName,
         QString& o_strObjName,
         QString& o_strMth,
         QStringList& o_strlstInArgs,
@@ -105,8 +108,9 @@ private: // instance members
     ZS::Trace::CIpcTrcClient*            m_pTestTrcClient;
     QTimer*                              m_pTmrTestStepTimeout;
     QHash<qint64, ZS::System::CRequest*> m_hshReqsInProgress;
-    CMyClass1*                           m_pMyClass1;
-    CMyClass2*                           m_pMyClass2;
+    QHash<QString, CMyClass1*>           m_hshpMyClass1InstancesByName;
+    QHash<QString, CMyClass2*>           m_hshpMyClass2InstancesByName;
+    QHash<QString, CMyClass3*>           m_hshpMyClass3InstancesByName;
 
 }; // class CTest
 

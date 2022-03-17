@@ -34,7 +34,6 @@ may result in using the software modules.
 #include "ZSSys/ZSSysEnumEntry.h"
 #include "ZSSys/ZSSysErrResult.h"
 #include "ZSSys/ZSSysException.h"
-#include "ZSSys/ZSSysTrcAdminObj.h"
 #include "ZSSys/ZSSysTrcMethod.h"
 
 #include "ZSSys/ZSSysMemLeakDump.h"
@@ -64,6 +63,13 @@ void CMyClass1::setTraceServerName( const QString& i_strServerName )
 //------------------------------------------------------------------------------
 {
     s_trcAdminObjRefAnchor.setServerName(i_strServerName);
+}
+
+//------------------------------------------------------------------------------
+QString CMyClass1::getTraceServerName()
+//------------------------------------------------------------------------------
+{
+    return s_trcAdminObjRefAnchor.getServerName();
 }
 
 /*==============================================================================
@@ -125,8 +131,8 @@ CMyClass1::CMyClass1( const QString& i_strObjName, const QString& i_strMyClass2O
 
     if( s_trcAdminObjRefAnchor.isActive(ETraceDetailLevelMethodArgs) )
     {
-        strMthInArgs  = "ObjName: " + i_strObjName;
-        strMthInArgs += ", MyClass2ObjName: " + i_strMyClass2ObjName;
+        strMthInArgs  = i_strObjName;
+        strMthInArgs += ", " + i_strMyClass2ObjName;
     }
 
     CMethodTracer mthTracer(
@@ -191,7 +197,7 @@ CMyClass2* CMyClass1::createModule2()
 
     if( m_pMyClass2Thread == nullptr )
     {
-        m_pMyClass2Thread = new CMyClass2Thread(this, m_strMyClass2ObjName);
+        m_pMyClass2Thread = new CMyClass2Thread(m_strMyClass2ObjName, this);
     }
 
     if( !m_pMyClass2Thread->isRunning() )

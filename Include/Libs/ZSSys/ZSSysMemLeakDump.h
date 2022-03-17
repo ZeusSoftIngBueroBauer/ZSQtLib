@@ -63,7 +63,7 @@ runtime of the system (e.g. internal heap objects or static class variables). Bu
 those memory blocks would also be reported as detected memory leaks. The example
 code lines below exclude the memory block from the memory leak dump:
 
-    #ifdef _MEMLEAK_DUMP
+    #ifdef ZSSys_MemLeakDump_h
     #pragma push_macro("_ZSSYS_DBGNEW_CLIENT_BLOCK_SUBTYPE")
     #pragma warning( disable : 4005 )
     #define _ZSSYS_DBGNEW_CLIENT_BLOCK_SUBTYPE 0
@@ -71,7 +71,7 @@ code lines below exclude the memory block from the memory leak dump:
 
     pi = new int[10];
 
-    #ifdef _MEMLEAK_DUMP
+    #ifdef ZSSys_MemLeakDump_h
     #pragma warning( default : 4005 )
     #pragma pop_macro("_ZSSYS_DBGNEW_CLIENT_BLOCK_SUBTYPE")
     #endif
