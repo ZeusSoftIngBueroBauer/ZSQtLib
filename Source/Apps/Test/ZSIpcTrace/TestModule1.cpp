@@ -114,10 +114,10 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CMyClass1::CMyClass1( const QString& i_strObjName, const QString& i_strMyClass2ObjName ) :
+CMyClass1::CMyClass1( const QString& i_strObjName ) :
 //------------------------------------------------------------------------------
     QObject(),
-    m_strMyClass2ObjName(i_strMyClass2ObjName),
+    m_strMyClass2ObjName(),
     m_pMyClass2Thread(nullptr),
     m_pMyClass2(nullptr)
 {
@@ -132,7 +132,6 @@ CMyClass1::CMyClass1( const QString& i_strObjName, const QString& i_strMyClass2O
     if( s_trcAdminObjRefAnchor.isActive(ETraceDetailLevelMethodArgs) )
     {
         strMthInArgs  = i_strObjName;
-        strMthInArgs += ", " + i_strMyClass2ObjName;
     }
 
     CMethodTracer mthTracer(
@@ -182,22 +181,27 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CMyClass2* CMyClass1::createModule2()
+CMyClass2* CMyClass1::startClass2Thread(const QString& i_strMyClass2ObjName)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     QString strMthRet;
 
+    if( s_trcAdminObjRefAnchor.isActive(ETraceDetailLevelMethodArgs) )
+    {
+        strMthInArgs  = i_strMyClass2ObjName;
+    }
+
     CMethodTracer mthTracer(
         /* pAdminObj    */ s_trcAdminObjRefAnchor.trcAdminObj(),
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strObjName   */ objectName(),
-        /* strMethod    */ "createModule2",
+        /* strMethod    */ "startClass2Thread",
         /* strAddInfo   */ strMthInArgs );
 
     if( m_pMyClass2Thread == nullptr )
     {
-        m_pMyClass2Thread = new CMyClass2Thread(m_strMyClass2ObjName, this);
+        m_pMyClass2Thread = new CMyClass2Thread(i_strMyClass2ObjName, this);
     }
 
     if( !m_pMyClass2Thread->isRunning() )
@@ -233,15 +237,15 @@ CMyClass2* CMyClass1::createModule2()
     if( mthTracer.isActive(ETraceDetailLevelMethodArgs) )
     {
         strMthRet = QString(m_pMyClass2 == nullptr ? "null" : m_pMyClass2->objectName());
-        mthTracer.trace(strMthRet);
+        mthTracer.setMethodReturn(strMthRet);
     }
 
     return m_pMyClass2;
 
-} // createModule2
+} // startClass2Thread
 
 //------------------------------------------------------------------------------
-void CMyClass1::deleteModule2()
+void CMyClass1::stopClass2Thread()
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -250,7 +254,7 @@ void CMyClass1::deleteModule2()
         /* pAdminObj    */ s_trcAdminObjRefAnchor.trcAdminObj(),
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strObjName   */ objectName(),
-        /* strMethod    */ "deleteModule2",
+        /* strMethod    */ "stopClass2Thread",
         /* strAddInfo   */ strMthInArgs );
 
     if( m_pMyClass2Thread != nullptr && m_pMyClass2Thread->isRunning() )
@@ -263,4 +267,4 @@ void CMyClass1::deleteModule2()
     m_pMyClass2Thread = nullptr;
     m_pMyClass2 = nullptr;
 
-} // deleteModule2
+} // stopClass2Thread

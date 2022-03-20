@@ -57,6 +57,9 @@ class CMyClass3Thread : public QThread
 public: // class methods
     static QString NameSpace() { return "ZS::Apps::Test::IpcTrace"; }
     static QString ClassName() { return "CMyClass3Thread"; }
+public: // class methods
+    static void setTraceServerName( const QString& i_strServerName );
+    static QString getTraceServerName();
 public: // ctors and dtor
     CMyClass3Thread( const QString& i_strMyClass3ObjName, CMyClass2* i_pMyClass2 = nullptr );
     virtual  ~CMyClass3Thread();
@@ -68,6 +71,8 @@ public: // overridables of base class QThread
     void run();
 private: // class members
     ZS::Trace::CTrcAdminObj* s_pTrcAdminObj;
+private: // class members
+    static QString s_strTraceServerName;
 private: // instance members
     CMyClass2*               m_pMyClass2;
     QString                  m_strMyClass3ObjName;
@@ -110,6 +115,7 @@ private: // class members
     static ZS::Trace::CTrcAdminObjRefAnchor s_trcAdminObjRefAnchor;
     static ZS::Trace::CTrcAdminObjRefAnchor s_trcAdminObjRefAnchorNoisyMethods;
     static ZS::Trace::CTrcAdminObjRefAnchor s_trcAdminObjRefAnchorVeryNoisyMethods;
+    static QMutex s_mtx;
 private: // instance members
     CMyClass3Thread*         m_pMyClass3Thread;
     QTimer*                  m_pTmrMessages;

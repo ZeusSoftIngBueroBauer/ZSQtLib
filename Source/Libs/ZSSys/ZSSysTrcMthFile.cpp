@@ -794,17 +794,22 @@ void CTrcMthFile::addEntry(
 
     if( i_mthDir == EMethodDir::Enter )
     {
-        //        '<MthThreadName> '     + 'yyyy-mm-dd hh:mm:ss:zzz' + ' (12345.123456): '     + '-> '            + '()' + 'bla bla bla'
-        iStrLen = (c_iStrLenThreadMax+3) + 23                        + (c_iStrLenSysTimeMax+5) + 3*(iCallDepth+1) + 2 + i_strMethod.length() + i_strAddInfo.length();
+        //        '<MthThreadName> '     + 'yyyy-mm-dd hh:mm:ss:zzz' + ' (12345.123456): '     + '-> '                + 'method(' + 'bla bla bla' + ')'
+        iStrLen = (c_iStrLenThreadMax+3) + 23                        + (c_iStrLenSysTimeMax+5) + 3 + 3*(iCallDepth+1) + i_strMethod.length() + i_strAddInfo.length() + 2;
+    }
+    else if( i_mthDir == EMethodDir::Leave )
+    {
+        //        '<MthThreadName> '     + 'yyyy-mm-dd hh:mm:ss:zzz' + ' (12345.123456): '     + '<- '              + 'method(' + 'bla bla bla' + '): ' + 'bla'
+        iStrLen = (c_iStrLenThreadMax+3) + 23                        + (c_iStrLenSysTimeMax+5) + 3 + 3*(iCallDepth) + i_strMethod.length() + i_strMethodOutArgs.length() + 4 + i_strAddInfo.length();
     }
     else
     {
-        //        '<MthThreadName> '     + 'yyyy-mm-dd hh:mm:ss:zzz' + ' (12345.123456): '     + '<- '          + '()' + 'bla bla bla'
-        iStrLen = (c_iStrLenThreadMax+3) + 23                        + (c_iStrLenSysTimeMax+5) + 3*(iCallDepth) + 2 + i_strMethod.length() + i_strAddInfo.length();
+        //        '<MthThreadName> '     + 'yyyy-mm-dd hh:mm:ss:zzz' + ' (12345.123456): '     + '<- '                + 'method: ' + 'bla bla bla'
+        iStrLen = (c_iStrLenThreadMax+3) + 23                        + (c_iStrLenSysTimeMax+5) + 3 + 3*(iCallDepth+1) + i_strMethod.length() + 2 + i_strAddInfo.length();
     }
     str.reserve(iStrLen);
 
-    //str.fill(0x00);
+    str.fill(0x00);
 
     QString strPrintThreadName;
     strPrintThreadName.resize(c_iStrLenThreadMax+3);
@@ -882,35 +887,47 @@ void CTrcMthFile::addEntry(
 
     str.replace(iPos, i_strMethod.length() ,i_strMethod);
     iPos += i_strMethod.length();
-    str.replace(iPos, 1, "(");
-    iPos += 1;
 
-    if( i_mthDir != EMethodDir::Leave )
+    if( i_mthDir == EMethodDir::Enter )
     {
+        str.replace(iPos, 1, "(");
+        iPos += 1;
         if( i_strAddInfo.length() > 0 )
         {
             str.replace(iPos, i_strAddInfo.length(), i_strAddInfo);
             iPos += i_strAddInfo.length();
         }
+        str.replace(iPos, 1, ")");
+        iPos += 1;
     }
-    else // if( i_mthDir == EMethodDir::Leave )
+    else if( i_mthDir == EMethodDir::Leave )
     {
+        str.replace(iPos, 1, "(");
+        iPos += 1;
         if( i_strMethodOutArgs.length() > 0 )
         {
             str.replace(iPos, i_strMethodOutArgs.length(), i_strMethodOutArgs);
             iPos += i_strMethodOutArgs.length();
         }
+        str.replace(iPos, 1, ")");
+        iPos += 1;
+
+        if( i_strAddInfo.length() > 0 )
+        {
+            str.replace(iPos, 2, ": ");
+            iPos += 2;
+            str.replace(iPos, i_strAddInfo.length(), i_strAddInfo);
+            iPos += i_strAddInfo.length();
+        }
     }
-
-    str.replace(iPos, 1, ")");
-    iPos += 1;
-
-    if( i_mthDir == EMethodDir::Leave )
+    else
     {
         if( i_strAddInfo.length() > 0 )
         {
-            str += ": " + i_strAddInfo;
-            iPos += (2 + i_strAddInfo.length());
+            str.replace(iPos, 2, ": ");
+            iPos += 2;
+            str.replace(iPos, i_strAddInfo.length(), i_strAddInfo);
+            iPos += i_strAddInfo.length();
         }
     }
 

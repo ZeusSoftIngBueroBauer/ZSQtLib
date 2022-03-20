@@ -96,7 +96,8 @@ CWidgetCentral::CWidgetCentral(
     m_pLyt(nullptr),
     m_pSplitter(nullptr),
     m_pWdgtTest(nullptr),
-    m_pWdgtMthList(nullptr)
+    m_pTabWidgetTrcMthLists(nullptr),
+    m_hsppWdgtMthList()
 {
     if( s_pThis != nullptr )
     {
@@ -125,11 +126,31 @@ CWidgetCentral::CWidgetCentral(
     // <MethodTrace>
     //----------------
 
-    m_pWdgtMthList = new CWdgtTrcMthList(
-        /* pTrcClient     */ CApplication::GetInstance()->getTrcClient(),
-        /* iItemsCountMax */ 0,
-        /* pWdgtParent    */ nullptr );
-    m_pSplitter->addWidget(m_pWdgtMthList);
+    m_pTabWidgetTrcMthLists = new QTabWidget();
+    m_pSplitter->addWidget(m_pTabWidgetTrcMthLists);
+
+    CIpcTrcClient* pTrcClient = CApplication::GetInstance()->getTrcClient();
+    QString strCltName = pTrcClient->objectName();
+    CWdgtTrcMthList* pWdgtTrcMthList = new CWdgtTrcMthList(pTrcClient);
+    m_hsppWdgtMthList[strCltName] = pWdgtTrcMthList;
+    m_pTabWidgetTrcMthLists->addTab(pWdgtTrcMthList, strCltName);
+
+    if( !QObject::connect(
+        /* pObjSender   */ m_pTest,
+        /* szSignal     */ SIGNAL(trcClientCreated(ZS::Trace::CIpcTrcClient*)),
+        /* pObjReceiver */ this,
+        /* szSlot       */ SLOT(onTestTrcClientCreated(ZS::Trace::CIpcTrcClient*)) ) )
+    {
+        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
+    }
+    if( !QObject::connect(
+        /* pObjSender   */ m_pTest,
+        /* szSignal     */ SIGNAL(trcClientAboutToBeDestroyed(ZS::Trace::CIpcTrcClient*)),
+        /* pObjReceiver */ this,
+        /* szSlot       */ SLOT(onTestTrcClientAboutToBeDestroyed(ZS::Trace::CIpcTrcClient*)) ) )
+    {
+        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
+    }
 
     // Restore geometry of widget
     //---------------------------
@@ -179,8 +200,57 @@ CWidgetCentral::~CWidgetCentral()
     m_pLyt = nullptr;
     m_pSplitter = nullptr;
     m_pWdgtTest = nullptr;
-    m_pWdgtMthList = nullptr;
+    m_pTabWidgetTrcMthLists = nullptr;
+    m_hsppWdgtMthList.clear();
 
     s_pThis = nullptr;
 
 } // dtor
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+CWdgtTrcMthList* CWidgetCentral::getTrcMthListWdgt(const QString& i_strServerName )
+//------------------------------------------------------------------------------
+{
+    return m_hsppWdgtMthList.value(i_strServerName,nullptr);
+}
+
+/*==============================================================================
+protected slots:
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CWidgetCentral::onTestTrcClientCreated( ZS::Trace::CIpcTrcClient* i_pTrcClient )
+//------------------------------------------------------------------------------
+{
+    if( i_pTrcClient != nullptr )
+    {
+        QString strCltName = i_pTrcClient->objectName();
+        CWdgtTrcMthList* pWdgtTrcMthList = new CWdgtTrcMthList(i_pTrcClient);
+        m_hsppWdgtMthList[strCltName] = pWdgtTrcMthList;
+        m_pTabWidgetTrcMthLists->addTab(pWdgtTrcMthList, strCltName);
+    }
+} // onTestTrcClientCreated
+
+//------------------------------------------------------------------------------
+void CWidgetCentral::onTestTrcClientAboutToBeDestroyed( ZS::Trace::CIpcTrcClient* i_pTrcClient )
+//------------------------------------------------------------------------------
+{
+    if( i_pTrcClient != nullptr )
+    {
+        QString strCltName = i_pTrcClient->objectName();
+
+        if( m_hsppWdgtMthList.contains(strCltName) )
+        {
+            //m_pTabWidgetTrcMthLists->removeTab(pWdgtTrcMthList, strCltName);
+            CWdgtTrcMthList* pWdgtTrcMthList = m_hsppWdgtMthList[strCltName];
+            m_hsppWdgtMthList.remove(strCltName);
+            delete pWdgtTrcMthList;
+            pWdgtTrcMthList = nullptr;
+        }
+    }
+} // onTestTrcClientAboutToBeDestroyed
+

@@ -691,7 +691,7 @@ void CMainWindow::onActDebugZSTrcServerTriggered()
             pDlg = CDlgTrcServer::CreateInstance(
                 /* strObjName  */ pServer->objectName(),
                 /* strDlgTitle */ strDlgTitle);
-            pDlg->setServer(CIpcTrcServer::GetInstance());
+            pDlg->setServer(pServer);
             pDlg->setAttribute(Qt::WA_DeleteOnClose, true);
             pDlg->adjustSize();
             pDlg->show();
@@ -759,7 +759,7 @@ void CMainWindow::onActDebugZSTrcClientTriggered()
         if( pDlg == nullptr )
         {
             pDlg = CDlgTrcClient::CreateInstance(pTrcClient->objectName(), strDlgTitle);
-            pDlg->setClient(CApplication::GetInstance()->getTrcClient());
+            pDlg->setClient(pTrcClient);
             pDlg->setAttribute(Qt::WA_DeleteOnClose, true);
             pDlg->adjustSize();
             pDlg->show();
@@ -829,7 +829,7 @@ void CMainWindow::onActDebugTestTrcServerTriggered()
             pDlg = CDlgTrcServer::CreateInstance(
                 /* strObjName  */ pServer->objectName(),
                 /* strDlgTitle */ strDlgTitle);
-            pDlg->setServer(CIpcTrcServer::GetInstance());
+            pDlg->setServer(pServer);
             pDlg->setAttribute(Qt::WA_DeleteOnClose, true);
             pDlg->adjustSize();
             pDlg->show();
@@ -897,7 +897,7 @@ void CMainWindow::onActDebugTestTrcClientTriggered()
         if( pDlg == nullptr )
         {
             pDlg = CDlgTrcClient::CreateInstance(pTrcClient->objectName(), strDlgTitle);
-            pDlg->setClient(CApplication::GetInstance()->getTrcClient());
+            pDlg->setClient(pTrcClient);
             pDlg->setAttribute(Qt::WA_DeleteOnClose, true);
             pDlg->adjustSize();
             pDlg->show();

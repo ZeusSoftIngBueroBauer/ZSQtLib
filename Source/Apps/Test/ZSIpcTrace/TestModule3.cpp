@@ -49,6 +49,30 @@ class CMyClass3Thread : public QThread
 *******************************************************************************/
 
 /*==============================================================================
+private: // class members
+==============================================================================*/
+
+QString CMyClass3Thread::s_strTraceServerName = "ZSTrcServer";
+
+/*==============================================================================
+public: // class methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CMyClass3Thread::setTraceServerName( const QString& i_strServerName )
+//------------------------------------------------------------------------------
+{
+    s_strTraceServerName = i_strServerName;
+}
+
+//------------------------------------------------------------------------------
+QString CMyClass3Thread::getTraceServerName()
+//------------------------------------------------------------------------------
+{
+    return s_strTraceServerName;
+}
+
+/*==============================================================================
 public: // ctors and dtor
 ==============================================================================*/
 
@@ -63,7 +87,7 @@ CMyClass3Thread::CMyClass3Thread( const QString& i_strMyClass3ObjName, CMyClass2
 {
     setObjectName(m_strMyClass3ObjName);
 
-    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName());
+    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName(), getTraceServerName());
 
     m_pTrcAdminObj->setTraceDetailLevel(ETraceDetailLevelMethodArgs);
 
@@ -186,6 +210,8 @@ CTrcAdminObjRefAnchor CMyClass3::s_trcAdminObjRefAnchorNoisyMethods(
 
 CTrcAdminObjRefAnchor CMyClass3::s_trcAdminObjRefAnchorVeryNoisyMethods(
     CMyClass3::NameSpace(), CMyClass3::ClassName() + "::VeryNoisyMethods", "ZSTrcServer") ;
+
+QMutex CMyClass3::s_mtx(QMutex::Recursive);
 
 /*==============================================================================
 public: // class methods

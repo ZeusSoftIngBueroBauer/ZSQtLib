@@ -1144,7 +1144,16 @@ void CWdgtTrcMthList::onTraceDataReceived( QObject* /*i_pObjSender*/, const QStr
                         {
                             strNameSpace = pTrcAdminObj->getNameSpace();
                             strClassName = pTrcAdminObj->getClassName();
-                            strObjName   = pTrcAdminObj->getObjectName();
+
+                            // When using class (module) trace admin objects the object name must be
+                            // passed to the method tracer when tracing instance methods.
+                            // When using instance trace admin objects the object name should not be
+                            // provided to the method tracer when tracing instance methods.
+                            // But if the object name is passed to the method tracer use this object name.
+                            if( strObjName.isEmpty() )
+                            {
+                                strObjName = pTrcAdminObj->getObjectName();
+                            }
                         }
 
                         QString strObjPath = pIdxTree->buildPathStr(strNameSpace, strClassName);

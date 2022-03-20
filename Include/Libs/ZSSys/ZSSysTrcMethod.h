@@ -179,7 +179,7 @@ public: // instance methods
 public: // instance methods
     void trace( // Trace detail level defined by trace admin object or by ctor of method tracer
         const QString& i_strAddInfo,
-        int            i_iFilterDetailLevel = ETraceDetailLevelInternalStates ) const;
+        int            i_iFilterDetailLevel = ETraceDetailLevelMethodCalls ) const;
     void trace( // Trace detail level defined by calling module, class or class instance
         const QString& i_strAddInfo,
         int            i_iTrcDetailLevel,

@@ -56,6 +56,9 @@ class CMyClass2Thread : public QThread
 public: // class methods
     static QString NameSpace() { return "ZS::Apps::Test::IpcTrace"; }
     static QString ClassName() { return "CMyClass2Thread"; }
+public: // class methods
+    static void setTraceServerName( const QString& i_strServerName );
+    static QString getTraceServerName();
 public: // ctors and dtor
     CMyClass2Thread( const QString& i_strMyClass2ObjName, CMyClass1* i_pMyClass1 = nullptr );
     virtual  ~CMyClass2Thread();
@@ -65,6 +68,15 @@ public: // instance methods
     void sleep( unsigned long i_uTime_s );
 public: // overridables of base class QThread
     void run();
+public: // replacing methods of base class QThread
+    void start( QThread::Priority i_priority = InheritPriority );
+    void quit();
+    bool wait( QDeadlineTimer i_deadline = QDeadlineTimer(QDeadlineTimer::Forever) );
+    bool wait( unsigned long i_time_ms );
+protected: // replacing methods of base class QThread
+    int exec();
+private: // class members
+    static QString s_strTraceServerName;
 private: // instance members
     CMyClass1*               m_pMyClass1;
     QString                  m_strMyClass2ObjName;
@@ -102,6 +114,8 @@ private: // class members
 private: // instance members
     CMyClass2Thread*         m_pMyClass2Thread;
     QTimer*                  m_pTmrMessages;
+    QMutex                   m_mtxCounters;
+    int                      m_iRecursionCount;
     int                      m_iMsgCount;
     ZS::Trace::CTrcAdminObj* m_pTrcAdminObj;
 

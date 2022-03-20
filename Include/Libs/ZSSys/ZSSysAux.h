@@ -32,6 +32,7 @@ may result in using the software modules.
 #include <QtCore/qmutex.h>
 #include <QtCore/qprocess.h>
 #include <QtCore/qstring.h>
+#include <QtCore/qthread.h>
 
 #include "ZSSys/ZSSysDllMain.h"
 #include "ZSSys/ZSSysCommon.h"
@@ -150,6 +151,8 @@ ZSSYSDLL_API QProcess::ExitStatus str2QProcessExitStatus( const QString& i_str, 
 
 ZSSYSDLL_API QString qProcessError2Str( int i_iVal, EEnumEntryAliasStr i_alias = EEnumEntryAliasStrName );
 ZSSYSDLL_API QProcess::ProcessError str2QProcessError( const QString& i_str, EEnumEntryAliasStr i_alias = EEnumEntryAliasStrName, bool* o_pbConverted = nullptr );
+
+ZSSYSDLL_API QString qThreadPriority2Str( QThread::Priority i_priority, EEnumEntryAliasStr i_alias = EEnumEntryAliasStrName );
 
 ZSSYSDLL_API QString qXmlStreamTokenType2Str( int i_iVal, EEnumEntryAliasStr i_alias = EEnumEntryAliasStrName );
 

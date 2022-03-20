@@ -120,7 +120,7 @@ public: // instance methods
     void setTraceDetailLevel( int i_iTrcDetailLevel );
     int getTraceDetailLevel() const;
 public: // instance methods
-    bool isActive( int i_iDetailLevel ) const;
+    bool isActive( int i_iFilterDetailLevel ) const;
 public: // instance methods
     virtual bool blockTreeEntryChangedSignal( bool i_bBlock );
     virtual bool isTreeEntryChangedSignalBlocked() const;

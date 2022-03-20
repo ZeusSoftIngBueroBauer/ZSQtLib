@@ -873,14 +873,14 @@ int DllIf::CTrcAdminObj::getTraceDetailLevel() const
 } // getTraceDetailLevel
 
 //------------------------------------------------------------------------------
-bool DllIf::CTrcAdminObj::isActive( int i_iDetailLevel ) const
+bool DllIf::CTrcAdminObj::isActive( int i_iFilterDetailLevel ) const
 //------------------------------------------------------------------------------
 {
     bool bIsActive = false;
 
     if( s_hndIpcTrcDllIf != NULL && s_pFctTrcAdminObj_isActive != NULL )
     {
-        bIsActive = s_pFctTrcAdminObj_isActive(this, i_iDetailLevel);
+        bIsActive = s_pFctTrcAdminObj_isActive(this, i_iFilterDetailLevel);
     }
     return bIsActive;
 

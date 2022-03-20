@@ -54,14 +54,14 @@ public: // class methods
 public: // class methods
     static QString classMethod(const QString& i_strMthInArgs);
 public: // ctors and dtor
-    CMyClass1( const QString& i_strObjName, const QString& i_strMyClass2ObjName );
+    CMyClass1( const QString& i_strObjName );
     virtual ~CMyClass1();
 public: // instance methods
     CMyClass2Thread* getMyClass2Thread() const { return m_pMyClass2Thread; }
     CMyClass2* getMyClass2() const { return m_pMyClass2; }
 public: // instance methods
-    CMyClass2* createModule2();
-    void deleteModule2();
+    CMyClass2* startClass2Thread(const QString& i_strMyClass2ObjName);
+    void stopClass2Thread();
 private: // class members
     static ZS::Trace::CTrcAdminObjRefAnchor s_trcAdminObjRefAnchor;
 private: // instance members

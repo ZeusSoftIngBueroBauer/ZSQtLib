@@ -586,22 +586,24 @@ public: // instance methods
         bTracingActive = pTrcAdminObj->isActive(ETraceDetailLevelMethodCalls); .. returns true
         bTracingActive = pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs);  .. returns false
 
-    /param i_iDetailLevel [in] Detail level to which the trace admin objects
-                               current detail level should be compared with.
+    /param i_iFilterDetailLevel [in]
+        Trace outputs should be generated if the given filter detail level
+        is greater or equal than the current detail level set at the trace
+        admin object or at the method tracer itself.
 
     /return Flag indicating whether method trace output is active or not.
 .
 */
-bool CTrcAdminObj::isActive( int i_iDetailLevel ) const
+bool CTrcAdminObj::isActive( int i_iFilterDetailLevel ) const
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(m_pMtx);
 
     bool bActive = false;
 
-    if( i_iDetailLevel > ETraceDetailLevelNone )
+    if( i_iFilterDetailLevel > ETraceDetailLevelNone )
     {
-        if( m_enabled == EEnabled::Yes && m_iTrcDetailLevel >= i_iDetailLevel )
+        if( m_enabled == EEnabled::Yes && m_iTrcDetailLevel >= i_iFilterDetailLevel )
         {
             bActive = true;
         }
@@ -714,7 +716,25 @@ public: // instance methods
 void CTrcAdminObjRefAnchor::setServerName( const QString& i_strServerName )
 //------------------------------------------------------------------------------
 {
-    m_strServerName = i_strServerName;
+    if( m_strServerName != i_strServerName )
+    {
+        m_idxInTree = -1;
+
+        bool bReleased = false;
+
+        if( m_pTrcAdminObj != nullptr )
+        {
+            releaseTrcAdminObj();
+            bReleased = true;
+        }
+
+        m_strServerName = i_strServerName;
+
+        if( bReleased )
+        {
+            allocTrcAdminObj();
+        }
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -769,8 +789,7 @@ void CTrcAdminObjRefAnchor::releaseTrcAdminObj()
             /* szSignal     */ SIGNAL(destroyed(QObject*)),
             /* pObjReceiver */ this,
             /* szSlot       */ SLOT(onTrcAdminObjDestroyed(QObject*)));
-
-        CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
+        CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj, m_strServerName);
         m_pTrcAdminObj = nullptr;
     }
 }

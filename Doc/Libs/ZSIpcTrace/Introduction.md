@@ -65,3 +65,11 @@ In order to clarify the facts described, you can take a closer look at the code 
 filtering modules, classes and instances to be traced is created, but also a complete trace method client
 is created to test the communication between client and server.
 
+in order to use method tracing, three main tasks have to be completed which are
+
+- creating and starting the trace server,
+- creating trace admin objects and
+- use a method trace to output the trace messages.
+
+These three tasks are described in the next chapters.
+

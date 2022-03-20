@@ -90,7 +90,7 @@ CMethodTracer::CMethodTracer(
 
         if( m_pTrcAdminObj->isActive(m_iEnterLeaveFilterDetailLevel) )
         {
-            CTrcServer* pTrcServer = CTrcServer::GetInstance();
+            CTrcServer* pTrcServer = m_pTrcAdminObj->getTraceServer();
 
             if( pTrcServer != nullptr )
             {

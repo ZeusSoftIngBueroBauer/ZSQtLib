@@ -285,7 +285,7 @@ public: // instance methods
     void setTraceDetailLevel( int i_iTrcDetailLevel );
     int getTraceDetailLevel() const;
 public: // instance methods
-    bool isActive( int i_iDetailLevel ) const;
+    bool isActive( int i_iFilterDetailLevel ) const;
 public: // ctors and dtor (declared public but for internal use only, implemented in ZSIpcTrace::ZSIpcTrcDllMain)
     CTrcAdminObj( const char* i_szServerName, const char* i_szKeyInTree );
     ~CTrcAdminObj();

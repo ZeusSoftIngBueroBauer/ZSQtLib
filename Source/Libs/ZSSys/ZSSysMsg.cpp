@@ -174,36 +174,23 @@ void ZS::System::POST_OR_DELETE_MESSAGE(
 {
     if( i_pMsg != nullptr )
     {
-        QString strAddTrcInfo;
-        QString strMsgTrcInfo;
-
         CMsg* pMsg = dynamic_cast<CMsg*>(i_pMsg);
 
         QObject* pObjReceiver = nullptr;
 
         int iTrcDetailLevel = ETraceDetailLevelNone;
 
-        if( i_pMethodTracer != nullptr )
-        {
-            iTrcDetailLevel = i_pMethodTracer->getTraceDetailLevel();
-
-            if( i_pMethodTracer->isActive(i_iFilterDetailLevel) )
-            {
-                strMsgTrcInfo = "Addr: " + pointer2Str(i_pMsg);
-            }
-        }
-
         if( pMsg != nullptr )
         {
             pObjReceiver = pMsg->getReceiver();
 
-            strMsgTrcInfo += ", Content { " + pMsg->getAddTrcInfoStr(iTrcDetailLevel >= ETraceDetailLevelRuntimeInfo ? 1 : 0) + " } )";
+            QString strMsgTrcInfo = "{" + pMsg->getAddTrcInfoStr(iTrcDetailLevel >= ETraceDetailLevelRuntimeInfo ? 1 : 0) + "}";
 
             if( pObjReceiver != nullptr )
             {
                 if( i_pMethodTracer != nullptr && i_pMethodTracer->isActive(i_iFilterDetailLevel) )
                 {
-                    strAddTrcInfo = "postEvent( " + strMsgTrcInfo + " )";
+                    QString strAddTrcInfo = "postEvent( " + strMsgTrcInfo + " )";
                     i_pMethodTracer->trace(strAddTrcInfo, i_iFilterDetailLevel);
                 }
                 QCoreApplication::postEvent(pObjReceiver, i_pMsg);
@@ -212,7 +199,7 @@ void ZS::System::POST_OR_DELETE_MESSAGE(
             {
                 if( i_pMethodTracer != nullptr && i_pMethodTracer->isActive(i_iFilterDetailLevel) )
                 {
-                    strAddTrcInfo = "deleteEvent( " + strMsgTrcInfo + " )";
+                    QString strAddTrcInfo = "deleteEvent( " + strMsgTrcInfo + " )";
                     i_pMethodTracer->trace(strAddTrcInfo, i_iFilterDetailLevel);
                 }
                 delete i_pMsg;

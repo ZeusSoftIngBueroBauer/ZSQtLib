@@ -1338,7 +1338,29 @@ QProcess::ProcessError ZS::System::str2QProcessError( const QString& i_str, EEnu
 
 
 /*==============================================================================
-Enum QProcess::Error
+Enum QThread::Priority
+==============================================================================*/
+
+static const SEnumEntry s_arEnumStrQThreadPriorities[] = {
+    /*  0 */ SEnumEntry( QThread::IdlePriority,         "IdlePriority"         ),
+    /*  0 */ SEnumEntry( QThread::LowestPriority,       "LowestPriority"       ),
+    /*  0 */ SEnumEntry( QThread::LowPriority,          "LowPriority"          ),
+    /*  0 */ SEnumEntry( QThread::NormalPriority,       "NormalPriority"       ),
+    /*  0 */ SEnumEntry( QThread::HighPriority,         "HighPriority"         ),
+    /*  0 */ SEnumEntry( QThread::HighestPriority,      "HighestPriority"      ),
+    /*  0 */ SEnumEntry( QThread::TimeCriticalPriority, "TimeCriticalPriority" ),
+    /*  0 */ SEnumEntry( QThread::InheritPriority,      "InheritPriority"      )
+};
+
+//------------------------------------------------------------------------------
+QString ZS::System::qThreadPriority2Str( QThread::Priority i_priority, EEnumEntryAliasStr i_alias )
+//------------------------------------------------------------------------------
+{
+    return SEnumEntry::enumerator2Str(s_arEnumStrQThreadPriorities, _ZSArrLen(s_arEnumStrQThreadPriorities), i_priority, i_alias);
+}
+
+/*==============================================================================
+Enum QXmlStreamReader::TokenType
 ==============================================================================*/
 
 static const SEnumEntry s_arEnumStrQXmlStreamTokenTypes[] = {

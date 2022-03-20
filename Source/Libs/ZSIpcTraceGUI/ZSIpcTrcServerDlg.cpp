@@ -94,15 +94,15 @@ protected: // ctor
 
 //------------------------------------------------------------------------------
 CDlgTrcServer::CDlgTrcServer(
+    const QString&  i_strObjName,
     const QString&  i_strDlgTitle,
-    const QString&  i_strTrcServerName,
     QWidget*        i_pWdgtParent,
     Qt::WindowFlags i_wFlags ) :
 //------------------------------------------------------------------------------
     CDialog(
         /* strNameSpace */ NameSpace(),
         /* strClassName */ ClassName(),
-        /* strObjName   */ i_strTrcServerName,
+        /* strObjName   */ i_strObjName,
         /* strDlgTitle  */ i_strDlgTitle,
         /* pWdgtParent  */ i_pWdgtParent,
         /* wFlags       */ i_wFlags ),
@@ -124,12 +124,12 @@ CDlgTrcServer::CDlgTrcServer(
     m_pTabWidget = new QTabWidget();
     m_pLyt->addWidget(m_pTabWidget);
 
-    CIpcTrcServer* pTrcServer = CIpcTrcServer::GetInstance(i_strTrcServerName);
+    CIpcTrcServer* pTrcServer = CIpcTrcServer::GetInstance(i_strObjName);
 
     // IPC Connection Settings
     //------------------------
 
-    m_pWdgtIpcServer = new ZS::Ipc::GUI::CWdgtIpcServer(i_strTrcServerName);
+    m_pWdgtIpcServer = new ZS::Ipc::GUI::CWdgtIpcServer(i_strObjName);
 
     m_pTabWidget->addTab(m_pWdgtIpcServer, "Connection Settings");
 
@@ -163,8 +163,7 @@ CDlgTrcServer::CDlgTrcServer(
     // Trace Settings
     //---------------
 
-    m_pWdgtTrcSettings = new CWdgtTrcSettings(i_strTrcServerName);
-
+    m_pWdgtTrcSettings = new CWdgtTrcSettings();
     m_pTabWidget->addTab(m_pWdgtTrcSettings, "Trace Settings");
 
     // Assign server to widgets if there is one already defined.
