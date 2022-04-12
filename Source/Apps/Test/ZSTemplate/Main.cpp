@@ -39,14 +39,6 @@ using namespace ZS::Apps::Test::Template;
 
 
 /*******************************************************************************
-#pragma message(__FILE__ ": Linking against = " ZSIPCLIB)
-#pragma comment(lib, ZSIPCLIB)
-#pragma message(__FILE__ ": Linking against = " ZSIPCGUILIB)
-#pragma comment(lib, ZSIPCGUILIB)
-#pragma message(__FILE__ ": Linking against = " ZSIPCTRACELIB)
-#pragma comment(lib, ZSIPCTRACELIB)
-#pragma message(__FILE__ ": Linking against = " ZSIPCTRACEGUILIB)
-#pragma comment(lib, ZSIPCTRACEGUILIB)
 Entry point for the application.
 *******************************************************************************/
 

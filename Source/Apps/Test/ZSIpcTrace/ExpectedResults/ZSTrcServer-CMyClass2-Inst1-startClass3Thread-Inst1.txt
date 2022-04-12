@@ -31,124 +31,80 @@
 <CMyClass2ThreadInst1    >          <- <ZS::Apps::Test::IpcTrace::CMyClass2> Inst1.startClass3Thread(): Inst1
 <CMyClass2ThreadInst1    >       <- <ZS::Apps::Test::IpcTrace::CMyClass2> Inst1.event()
 <CMyClass3ThreadInst1    >    -> <ZS::Apps::Test::IpcTrace::CMyClass3> Inst1.recursiveTraceMethod()
-<CMyClass3ThreadInst1    >       -> <ZS::System::CMutexLocker> CMyClass3::Inst1::Counters.ctor()
-<CMyClass3ThreadInst1    >          -> <ZS::System::CMutex> CMyClass3::Inst1::Counters.lock()
-<CMyClass3ThreadInst1    >          <- <ZS::System::CMutex> CMyClass3::Inst1::Counters.lock()
-<CMyClass3ThreadInst1    >       <- <ZS::System::CMutexLocker> CMyClass3::Inst1::Counters.ctor()
+<CMyClass3ThreadInst1    >       -> <ZS::System::CMutex> CMyClass3::Inst1::Counters.lock()
+<CMyClass3ThreadInst1    >       <- <ZS::System::CMutex> CMyClass3::Inst1::Counters.lock()
 <CMyClass3ThreadInst1    >       <ZS::Apps::Test::IpcTrace::CMyClass3> Inst1.recursiveTraceMethod: RecursionCount=0
 <CMyClass3ThreadInst1    >       -> <ZS::Apps::Test::IpcTrace::CMyClass3> Inst1.recursiveTraceMethod()
-<CMyClass3ThreadInst1    >          -> <ZS::System::CMutexLocker> CMyClass3::Inst1::Counters.ctor()
-<CMyClass3ThreadInst1    >             -> <ZS::System::CMutex> CMyClass3::Inst1::Counters.lock()
-<CMyClass3ThreadInst1    >             <- <ZS::System::CMutex> CMyClass3::Inst1::Counters.lock()
-<CMyClass3ThreadInst1    >          <- <ZS::System::CMutexLocker> CMyClass3::Inst1::Counters.ctor()
+<CMyClass3ThreadInst1    >          -> <ZS::System::CMutex> CMyClass3::Inst1::Counters.lock()
+<CMyClass3ThreadInst1    >          <- <ZS::System::CMutex> CMyClass3::Inst1::Counters.lock()
 <CMyClass3ThreadInst1    >          <ZS::Apps::Test::IpcTrace::CMyClass3> Inst1.recursiveTraceMethod: RecursionCount=1
 <CMyClass3ThreadInst1    >          -> <ZS::Apps::Test::IpcTrace::CMyClass3> Inst1.recursiveTraceMethod()
-<CMyClass3ThreadInst1    >             -> <ZS::System::CMutexLocker> CMyClass3::Inst1::Counters.ctor()
-<CMyClass3ThreadInst1    >                -> <ZS::System::CMutex> CMyClass3::Inst1::Counters.lock()
-<CMyClass3ThreadInst1    >                <- <ZS::System::CMutex> CMyClass3::Inst1::Counters.lock()
-<CMyClass3ThreadInst1    >             <- <ZS::System::CMutexLocker> CMyClass3::Inst1::Counters.ctor()
+<CMyClass3ThreadInst1    >             -> <ZS::System::CMutex> CMyClass3::Inst1::Counters.lock()
+<CMyClass3ThreadInst1    >             <- <ZS::System::CMutex> CMyClass3::Inst1::Counters.lock()
 <CMyClass3ThreadInst1    >             <ZS::Apps::Test::IpcTrace::CMyClass3> Inst1.recursiveTraceMethod: RecursionCount=2
 <CMyClass3ThreadInst1    >             -> <ZS::Apps::Test::IpcTrace::CMyClass3> Inst1.recursiveTraceMethod()
-<CMyClass3ThreadInst1    >                -> <ZS::System::CMutexLocker> CMyClass3::Inst1::Counters.ctor()
-<CMyClass3ThreadInst1    >                   -> <ZS::System::CMutex> CMyClass3::Inst1::Counters.lock()
-<CMyClass3ThreadInst1    >                   <- <ZS::System::CMutex> CMyClass3::Inst1::Counters.lock()
-<CMyClass3ThreadInst1    >                <- <ZS::System::CMutexLocker> CMyClass3::Inst1::Counters.ctor()
+<CMyClass3ThreadInst1    >                -> <ZS::System::CMutex> CMyClass3::Inst1::Counters.lock()
+<CMyClass3ThreadInst1    >                <- <ZS::System::CMutex> CMyClass3::Inst1::Counters.lock()
 <CMyClass3ThreadInst1    >                <ZS::Apps::Test::IpcTrace::CMyClass3> Inst1.recursiveTraceMethod: RecursionCount=3
 <CMyClass3ThreadInst1    >                -> <ZS::Apps::Test::IpcTrace::CMyClass3> Inst1.recursiveTraceMethod()
-<CMyClass3ThreadInst1    >                   -> <ZS::System::CMutexLocker> CMyClass3::Inst1::Counters.ctor()
-<CMyClass3ThreadInst1    >                      -> <ZS::System::CMutex> CMyClass3::Inst1::Counters.lock()
-<CMyClass3ThreadInst1    >                      <- <ZS::System::CMutex> CMyClass3::Inst1::Counters.lock()
-<CMyClass3ThreadInst1    >                   <- <ZS::System::CMutexLocker> CMyClass3::Inst1::Counters.ctor()
+<CMyClass3ThreadInst1    >                   -> <ZS::System::CMutex> CMyClass3::Inst1::Counters.lock()
+<CMyClass3ThreadInst1    >                   <- <ZS::System::CMutex> CMyClass3::Inst1::Counters.lock()
 <CMyClass3ThreadInst1    >                   <ZS::Apps::Test::IpcTrace::CMyClass3> Inst1.recursiveTraceMethod: RecursionCount=4
 <CMyClass3ThreadInst1    >                   -> <ZS::Apps::Test::IpcTrace::CMyClass3> Inst1.recursiveTraceMethod()
-<CMyClass3ThreadInst1    >                      -> <ZS::System::CMutexLocker> CMyClass3::Inst1::Counters.ctor()
-<CMyClass3ThreadInst1    >                         -> <ZS::System::CMutex> CMyClass3::Inst1::Counters.lock()
-<CMyClass3ThreadInst1    >                         <- <ZS::System::CMutex> CMyClass3::Inst1::Counters.lock()
-<CMyClass3ThreadInst1    >                      <- <ZS::System::CMutexLocker> CMyClass3::Inst1::Counters.ctor()
+<CMyClass3ThreadInst1    >                      -> <ZS::System::CMutex> CMyClass3::Inst1::Counters.lock()
+<CMyClass3ThreadInst1    >                      <- <ZS::System::CMutex> CMyClass3::Inst1::Counters.lock()
 <CMyClass3ThreadInst1    >                      <ZS::Apps::Test::IpcTrace::CMyClass3> Inst1.recursiveTraceMethod: RecursionCount=5
 <CMyClass3ThreadInst1    >                      -> <ZS::Apps::Test::IpcTrace::CMyClass3> Inst1.recursiveTraceMethod()
-<CMyClass3ThreadInst1    >                         -> <ZS::System::CMutexLocker> CMyClass3::Inst1::Counters.ctor()
-<CMyClass3ThreadInst1    >                            -> <ZS::System::CMutex> CMyClass3::Inst1::Counters.lock()
-<CMyClass3ThreadInst1    >                            <- <ZS::System::CMutex> CMyClass3::Inst1::Counters.lock()
-<CMyClass3ThreadInst1    >                         <- <ZS::System::CMutexLocker> CMyClass3::Inst1::Counters.ctor()
+<CMyClass3ThreadInst1    >                         -> <ZS::System::CMutex> CMyClass3::Inst1::Counters.lock()
+<CMyClass3ThreadInst1    >                         <- <ZS::System::CMutex> CMyClass3::Inst1::Counters.lock()
 <CMyClass3ThreadInst1    >                         <ZS::Apps::Test::IpcTrace::CMyClass3> Inst1.recursiveTraceMethod: RecursionCount=6
 <CMyClass3ThreadInst1    >                         -> <ZS::Apps::Test::IpcTrace::CMyClass3> Inst1.recursiveTraceMethod()
-<CMyClass3ThreadInst1    >                            -> <ZS::System::CMutexLocker> CMyClass3::Inst1::Counters.ctor()
-<CMyClass3ThreadInst1    >                               -> <ZS::System::CMutex> CMyClass3::Inst1::Counters.lock()
-<CMyClass3ThreadInst1    >                               <- <ZS::System::CMutex> CMyClass3::Inst1::Counters.lock()
-<CMyClass3ThreadInst1    >                            <- <ZS::System::CMutexLocker> CMyClass3::Inst1::Counters.ctor()
+<CMyClass3ThreadInst1    >                            -> <ZS::System::CMutex> CMyClass3::Inst1::Counters.lock()
+<CMyClass3ThreadInst1    >                            <- <ZS::System::CMutex> CMyClass3::Inst1::Counters.lock()
 <CMyClass3ThreadInst1    >                            <ZS::Apps::Test::IpcTrace::CMyClass3> Inst1.recursiveTraceMethod: RecursionCount=7
 <CMyClass3ThreadInst1    >                            -> <ZS::Apps::Test::IpcTrace::CMyClass3> Inst1.recursiveTraceMethod()
-<CMyClass3ThreadInst1    >                               -> <ZS::System::CMutexLocker> CMyClass3::Inst1::Counters.ctor()
-<CMyClass3ThreadInst1    >                                  -> <ZS::System::CMutex> CMyClass3::Inst1::Counters.lock()
-<CMyClass3ThreadInst1    >                                  <- <ZS::System::CMutex> CMyClass3::Inst1::Counters.lock()
-<CMyClass3ThreadInst1    >                               <- <ZS::System::CMutexLocker> CMyClass3::Inst1::Counters.ctor()
+<CMyClass3ThreadInst1    >                               -> <ZS::System::CMutex> CMyClass3::Inst1::Counters.lock()
+<CMyClass3ThreadInst1    >                               <- <ZS::System::CMutex> CMyClass3::Inst1::Counters.lock()
 <CMyClass3ThreadInst1    >                               <ZS::Apps::Test::IpcTrace::CMyClass3> Inst1.recursiveTraceMethod: RecursionCount=8
 <CMyClass3ThreadInst1    >                               -> <ZS::Apps::Test::IpcTrace::CMyClass3> Inst1.recursiveTraceMethod()
-<CMyClass3ThreadInst1    >                                  -> <ZS::System::CMutexLocker> CMyClass3::Inst1::Counters.ctor()
-<CMyClass3ThreadInst1    >                                     -> <ZS::System::CMutex> CMyClass3::Inst1::Counters.lock()
-<CMyClass3ThreadInst1    >                                     <- <ZS::System::CMutex> CMyClass3::Inst1::Counters.lock()
-<CMyClass3ThreadInst1    >                                  <- <ZS::System::CMutexLocker> CMyClass3::Inst1::Counters.ctor()
+<CMyClass3ThreadInst1    >                                  -> <ZS::System::CMutex> CMyClass3::Inst1::Counters.lock()
+<CMyClass3ThreadInst1    >                                  <- <ZS::System::CMutex> CMyClass3::Inst1::Counters.lock()
 <CMyClass3ThreadInst1    >                                  <ZS::Apps::Test::IpcTrace::CMyClass3> Inst1.recursiveTraceMethod: RecursionCount=9
 <CMyClass3ThreadInst1    >                                  -> <ZS::Apps::Test::IpcTrace::CMyClass3> Inst1.recursiveTraceMethod()
-<CMyClass3ThreadInst1    >                                     -> <ZS::System::CMutexLocker> CMyClass3::Inst1::Counters.ctor()
-<CMyClass3ThreadInst1    >                                        -> <ZS::System::CMutex> CMyClass3::Inst1::Counters.lock()
-<CMyClass3ThreadInst1    >                                        <- <ZS::System::CMutex> CMyClass3::Inst1::Counters.lock()
-<CMyClass3ThreadInst1    >                                     <- <ZS::System::CMutexLocker> CMyClass3::Inst1::Counters.ctor()
+<CMyClass3ThreadInst1    >                                     -> <ZS::System::CMutex> CMyClass3::Inst1::Counters.lock()
+<CMyClass3ThreadInst1    >                                     <- <ZS::System::CMutex> CMyClass3::Inst1::Counters.lock()
 <CMyClass3ThreadInst1    >                                     <ZS::Apps::Test::IpcTrace::CMyClass3> Inst1.recursiveTraceMethod: RecursionCount=10
-<CMyClass3ThreadInst1    >                                     -> <ZS::System::CMutexLocker> CMyClass3::Inst1::Counters.dtor()
-<CMyClass3ThreadInst1    >                                        -> <ZS::System::CMutex> CMyClass3::Inst1::Counters.unlock()
-<CMyClass3ThreadInst1    >                                        <- <ZS::System::CMutex> CMyClass3::Inst1::Counters.unlock()
-<CMyClass3ThreadInst1    >                                     <- <ZS::System::CMutexLocker> CMyClass3::Inst1::Counters.dtor()
-<CMyClass3ThreadInst1    >                                  <- <ZS::Apps::Test::IpcTrace::CMyClass3> Inst1.recursiveTraceMethod(): 10
-<CMyClass3ThreadInst1    >                                  -> <ZS::System::CMutexLocker> CMyClass3::Inst1::Counters.dtor()
 <CMyClass3ThreadInst1    >                                     -> <ZS::System::CMutex> CMyClass3::Inst1::Counters.unlock()
 <CMyClass3ThreadInst1    >                                     <- <ZS::System::CMutex> CMyClass3::Inst1::Counters.unlock()
-<CMyClass3ThreadInst1    >                                  <- <ZS::System::CMutexLocker> CMyClass3::Inst1::Counters.dtor()
-<CMyClass3ThreadInst1    >                               <- <ZS::Apps::Test::IpcTrace::CMyClass3> Inst1.recursiveTraceMethod(): 9
-<CMyClass3ThreadInst1    >                               -> <ZS::System::CMutexLocker> CMyClass3::Inst1::Counters.dtor()
+<CMyClass3ThreadInst1    >                                  <- <ZS::Apps::Test::IpcTrace::CMyClass3> Inst1.recursiveTraceMethod(): 10
 <CMyClass3ThreadInst1    >                                  -> <ZS::System::CMutex> CMyClass3::Inst1::Counters.unlock()
 <CMyClass3ThreadInst1    >                                  <- <ZS::System::CMutex> CMyClass3::Inst1::Counters.unlock()
-<CMyClass3ThreadInst1    >                               <- <ZS::System::CMutexLocker> CMyClass3::Inst1::Counters.dtor()
-<CMyClass3ThreadInst1    >                            <- <ZS::Apps::Test::IpcTrace::CMyClass3> Inst1.recursiveTraceMethod(): 8
-<CMyClass3ThreadInst1    >                            -> <ZS::System::CMutexLocker> CMyClass3::Inst1::Counters.dtor()
+<CMyClass3ThreadInst1    >                               <- <ZS::Apps::Test::IpcTrace::CMyClass3> Inst1.recursiveTraceMethod(): 9
 <CMyClass3ThreadInst1    >                               -> <ZS::System::CMutex> CMyClass3::Inst1::Counters.unlock()
 <CMyClass3ThreadInst1    >                               <- <ZS::System::CMutex> CMyClass3::Inst1::Counters.unlock()
-<CMyClass3ThreadInst1    >                            <- <ZS::System::CMutexLocker> CMyClass3::Inst1::Counters.dtor()
-<CMyClass3ThreadInst1    >                         <- <ZS::Apps::Test::IpcTrace::CMyClass3> Inst1.recursiveTraceMethod(): 7
-<CMyClass3ThreadInst1    >                         -> <ZS::System::CMutexLocker> CMyClass3::Inst1::Counters.dtor()
+<CMyClass3ThreadInst1    >                            <- <ZS::Apps::Test::IpcTrace::CMyClass3> Inst1.recursiveTraceMethod(): 8
 <CMyClass3ThreadInst1    >                            -> <ZS::System::CMutex> CMyClass3::Inst1::Counters.unlock()
 <CMyClass3ThreadInst1    >                            <- <ZS::System::CMutex> CMyClass3::Inst1::Counters.unlock()
-<CMyClass3ThreadInst1    >                         <- <ZS::System::CMutexLocker> CMyClass3::Inst1::Counters.dtor()
-<CMyClass3ThreadInst1    >                      <- <ZS::Apps::Test::IpcTrace::CMyClass3> Inst1.recursiveTraceMethod(): 6
-<CMyClass3ThreadInst1    >                      -> <ZS::System::CMutexLocker> CMyClass3::Inst1::Counters.dtor()
+<CMyClass3ThreadInst1    >                         <- <ZS::Apps::Test::IpcTrace::CMyClass3> Inst1.recursiveTraceMethod(): 7
 <CMyClass3ThreadInst1    >                         -> <ZS::System::CMutex> CMyClass3::Inst1::Counters.unlock()
 <CMyClass3ThreadInst1    >                         <- <ZS::System::CMutex> CMyClass3::Inst1::Counters.unlock()
-<CMyClass3ThreadInst1    >                      <- <ZS::System::CMutexLocker> CMyClass3::Inst1::Counters.dtor()
-<CMyClass3ThreadInst1    >                   <- <ZS::Apps::Test::IpcTrace::CMyClass3> Inst1.recursiveTraceMethod(): 5
-<CMyClass3ThreadInst1    >                   -> <ZS::System::CMutexLocker> CMyClass3::Inst1::Counters.dtor()
+<CMyClass3ThreadInst1    >                      <- <ZS::Apps::Test::IpcTrace::CMyClass3> Inst1.recursiveTraceMethod(): 6
 <CMyClass3ThreadInst1    >                      -> <ZS::System::CMutex> CMyClass3::Inst1::Counters.unlock()
 <CMyClass3ThreadInst1    >                      <- <ZS::System::CMutex> CMyClass3::Inst1::Counters.unlock()
-<CMyClass3ThreadInst1    >                   <- <ZS::System::CMutexLocker> CMyClass3::Inst1::Counters.dtor()
-<CMyClass3ThreadInst1    >                <- <ZS::Apps::Test::IpcTrace::CMyClass3> Inst1.recursiveTraceMethod(): 4
-<CMyClass3ThreadInst1    >                -> <ZS::System::CMutexLocker> CMyClass3::Inst1::Counters.dtor()
+<CMyClass3ThreadInst1    >                   <- <ZS::Apps::Test::IpcTrace::CMyClass3> Inst1.recursiveTraceMethod(): 5
 <CMyClass3ThreadInst1    >                   -> <ZS::System::CMutex> CMyClass3::Inst1::Counters.unlock()
 <CMyClass3ThreadInst1    >                   <- <ZS::System::CMutex> CMyClass3::Inst1::Counters.unlock()
-<CMyClass3ThreadInst1    >                <- <ZS::System::CMutexLocker> CMyClass3::Inst1::Counters.dtor()
-<CMyClass3ThreadInst1    >             <- <ZS::Apps::Test::IpcTrace::CMyClass3> Inst1.recursiveTraceMethod(): 3
-<CMyClass3ThreadInst1    >             -> <ZS::System::CMutexLocker> CMyClass3::Inst1::Counters.dtor()
+<CMyClass3ThreadInst1    >                <- <ZS::Apps::Test::IpcTrace::CMyClass3> Inst1.recursiveTraceMethod(): 4
 <CMyClass3ThreadInst1    >                -> <ZS::System::CMutex> CMyClass3::Inst1::Counters.unlock()
 <CMyClass3ThreadInst1    >                <- <ZS::System::CMutex> CMyClass3::Inst1::Counters.unlock()
-<CMyClass3ThreadInst1    >             <- <ZS::System::CMutexLocker> CMyClass3::Inst1::Counters.dtor()
-<CMyClass3ThreadInst1    >          <- <ZS::Apps::Test::IpcTrace::CMyClass3> Inst1.recursiveTraceMethod(): 2
-<CMyClass3ThreadInst1    >          -> <ZS::System::CMutexLocker> CMyClass3::Inst1::Counters.dtor()
+<CMyClass3ThreadInst1    >             <- <ZS::Apps::Test::IpcTrace::CMyClass3> Inst1.recursiveTraceMethod(): 3
 <CMyClass3ThreadInst1    >             -> <ZS::System::CMutex> CMyClass3::Inst1::Counters.unlock()
 <CMyClass3ThreadInst1    >             <- <ZS::System::CMutex> CMyClass3::Inst1::Counters.unlock()
-<CMyClass3ThreadInst1    >          <- <ZS::System::CMutexLocker> CMyClass3::Inst1::Counters.dtor()
-<CMyClass3ThreadInst1    >       <- <ZS::Apps::Test::IpcTrace::CMyClass3> Inst1.recursiveTraceMethod(): 1
-<CMyClass3ThreadInst1    >       -> <ZS::System::CMutexLocker> CMyClass3::Inst1::Counters.dtor()
+<CMyClass3ThreadInst1    >          <- <ZS::Apps::Test::IpcTrace::CMyClass3> Inst1.recursiveTraceMethod(): 2
 <CMyClass3ThreadInst1    >          -> <ZS::System::CMutex> CMyClass3::Inst1::Counters.unlock()
 <CMyClass3ThreadInst1    >          <- <ZS::System::CMutex> CMyClass3::Inst1::Counters.unlock()
-<CMyClass3ThreadInst1    >       <- <ZS::System::CMutexLocker> CMyClass3::Inst1::Counters.dtor()
+<CMyClass3ThreadInst1    >       <- <ZS::Apps::Test::IpcTrace::CMyClass3> Inst1.recursiveTraceMethod(): 1
+<CMyClass3ThreadInst1    >       -> <ZS::System::CMutex> CMyClass3::Inst1::Counters.unlock()
+<CMyClass3ThreadInst1    >       <- <ZS::System::CMutex> CMyClass3::Inst1::Counters.unlock()
 <CMyClass3ThreadInst1    >    <- <ZS::Apps::Test::IpcTrace::CMyClass3> Inst1.recursiveTraceMethod(): 0
 <CMyClass3ThreadInst1    >    -> <ZS::Apps::Test::IpcTrace::CMyClass3Thread> CMyClass3ThreadInst1.exec()
