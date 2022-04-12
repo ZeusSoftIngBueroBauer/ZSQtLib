@@ -58,19 +58,52 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CIpcTrcClient::CIpcTrcClient( const QString& i_strName ) :
+/*! @brief Creates the trace client.
+
+    @param i_strName [in] Name of the client.
+    @param i_iTrcMthFileDetailLevel [in]
+        If the methods of the trace client itself should be logged a value
+        greater than 0 (ETraceDetailLevelNone) could be passed here.
+    @param i_iTrcMthFileDetailLevelGateway [in]
+        If the methods of the clients gateway should be logged a value greater
+        than 0 (ETraceDetailLevelNone) could be passed here.
+*/
+CIpcTrcClient::CIpcTrcClient(
+    const QString& i_strName,
+    int            i_iTrcMthFileDetailLevel,
+    int            i_iTrcMthFileDetailLevelGateway ) :
 //------------------------------------------------------------------------------
     CClient(
-        /* strObjName             */ i_strName,
-        /* bMultiThreadedAccess   */ false,
-        /* pTrcMthFile            */ nullptr,
-        /* iTrcMthFileDetailLevel */ ETraceDetailLevelNone ),
+        /* strObjName                    */ i_strName,
+        /* bMultiThreadedAccess          */ false,
+        /* iTrcMthFileDetailLevel        */ i_iTrcMthFileDetailLevel,
+        /* iTrcMthFileDetailLevelGateway */ i_iTrcMthFileDetailLevelGateway ),
     m_strRemoteApplicationName(),
     m_strRemoteServerName(),
     m_trcServerSettings(),
     m_pTrcAdminObjIdxTree(nullptr),
     m_bOnReceivedDataUpdateInProcess(false)
 {
+    if( !i_strName.endsWith("TrcClient") )
+    {
+        // The object name is used within the Ipc Subsystem to decide whether tracing
+        // through the trace server can be used to avoid deadlocks and endless recursions
+        // (e.g. tracing a method call within the trace client would send a message
+        // through the trace server to the trace client which again would lead to tracing
+        // a method and sending a message to the client and so on ...
+        throw ZS::System::CException(__FILE__, __LINE__, EResultArgOutOfRange, "Name of trace client must end with TrcClient");
+    }
+
+    CMethodTracer mthTracer(
+        /* pTrcMthFile        */ m_pTrcMthFile,
+        /* iTrcDetailLevel    */ m_iTrcMthFileDetailLevel,
+        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* strNameSpace       */ nameSpace(),
+        /* strClassName       */ className(),
+        /* strObjName         */ objectName(),
+        /* strMethod          */ "ctor",
+        /* strMthInArgs       */ "" );
+
     m_watchDogTimerSettings.m_bEnabled = false;
 
     m_pTrcAdminObjIdxTree = new CIdxTreeTrcAdminObjs(i_strName, this);
@@ -125,16 +158,32 @@ CIpcTrcClient::CIpcTrcClient( const QString& i_strName ) :
 CIpcTrcClient::~CIpcTrcClient()
 //------------------------------------------------------------------------------
 {
-    // To avoid err log entry: The dtor is called even if the objects reference counter is not 0.
-    resetTrcAdminRefCounters(m_pTrcAdminObjIdxTree->root());
+    // The method tracer to trace method enter and method leave cannot be used here.
+    // The trace method file will be destroyed before method leave is traced.
+    // As a workaround the method tracers scope is left before the trace method
+    // file is closed and freed.
 
-    try
-    {
-        delete m_pTrcAdminObjIdxTree;
-    }
-    catch(...)
-    {
-    }
+    {   CMethodTracer mthTracer(
+        /* pTrcMthFile        */ m_pTrcMthFile,
+        /* iTrcDetailLevel    */ m_iTrcMthFileDetailLevel,
+        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* strNameSpace       */ nameSpace(),
+        /* strClassName       */ className(),
+        /* strObjName         */ objectName(),
+        /* strMethod          */ "dtor",
+        /* strMthInArgs       */ "" );
+
+        // To avoid err log entry: The dtor is called even if the objects reference counter is not 0.
+        resetTrcAdminRefCounters(m_pTrcAdminObjIdxTree->root());
+
+        try
+        {
+            delete m_pTrcAdminObjIdxTree;
+        }
+        catch(...)
+        {
+        }
+    } // CMethodTracer mthTracer(
 
     //m_strRemoteApplicationName;
     //m_strRemoteServerName;
@@ -177,6 +226,23 @@ STrcServerSettings CIpcTrcClient::getTraceSettings() const
 void CIpcTrcClient::setTraceSettings( const STrcServerSettings& i_settings )
 //------------------------------------------------------------------------------
 {
+    QString strMthInArgs;
+
+    if( m_iTrcMthFileDetailLevel >= ETraceDetailLevelMethodArgs )
+    {
+        strMthInArgs = i_settings.toString();
+    }
+
+    CMethodTracer mthTracer(
+        /* pTrcMthFile        */ m_pTrcMthFile,
+        /* iTrcDetailLevel    */ m_iTrcMthFileDetailLevel,
+        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* strNameSpace       */ nameSpace(),
+        /* strClassName       */ className(),
+        /* strObjName         */ objectName(),
+        /* strMethod          */ "setTraceSettings",
+        /* strMthInArgs       */ strMthInArgs );
+
     if( m_trcServerSettings != i_settings )
     {
         // If not called on receiving trace settings from the server and if the client is connected ..
@@ -260,6 +326,25 @@ void CIpcTrcClient::sendAdminObj(
     CTrcAdminObj*               i_pTrcAdminObj )
 //------------------------------------------------------------------------------
 {
+    QString strMthInArgs;
+
+    if( m_iTrcMthFileDetailLevel >= ETraceDetailLevelMethodArgs )
+    {
+        strMthInArgs = "MsgType: " + systemMsgType2Str(i_systemMsgType);
+        strMthInArgs += ", Cmd: " + command2Str(i_cmd);
+        strMthInArgs += ", AdmObj: " + i_pTrcAdminObj->keyInTree();
+    }
+
+    CMethodTracer mthTracer(
+        /* pTrcMthFile        */ m_pTrcMthFile,
+        /* iTrcDetailLevel    */ m_iTrcMthFileDetailLevel,
+        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* strNameSpace       */ nameSpace(),
+        /* strClassName       */ className(),
+        /* strObjName         */ objectName(),
+        /* strMethod          */ "sendAdminObj",
+        /* strMthInArgs       */ strMthInArgs );
+
     if( i_pTrcAdminObj != nullptr && isConnected() )
     {
         QString strMsg;
@@ -287,6 +372,27 @@ void CIpcTrcClient::sendNameSpace(
     int                         i_iDetailLevel )
 //------------------------------------------------------------------------------
 {
+    QString strMthInArgs;
+
+    if( m_iTrcMthFileDetailLevel >= ETraceDetailLevelMethodArgs )
+    {
+        strMthInArgs = "MsgType: " + systemMsgType2Str(i_systemMsgType);
+        strMthInArgs += ", Cmd: " + command2Str(i_cmd);
+        strMthInArgs += ", Branch: " + i_pBranch->keyInTree();
+        strMthInArgs += ", Enabled: " + CEnum<EEnabled>(i_enabled).toString();
+        strMthInArgs += ", DetailLevel: " + QString::number(i_iDetailLevel);
+    }
+
+    CMethodTracer mthTracer(
+        /* pTrcMthFile        */ m_pTrcMthFile,
+        /* iTrcDetailLevel    */ m_iTrcMthFileDetailLevel,
+        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* strNameSpace       */ nameSpace(),
+        /* strClassName       */ className(),
+        /* strObjName         */ objectName(),
+        /* strMethod          */ "sendNameSpace",
+        /* strMthInArgs       */ strMthInArgs );
+
     if( i_pBranch != nullptr && isConnected() )
     {
         QString strMsg;
@@ -313,14 +419,32 @@ void CIpcTrcClient::sendNameSpace(
 
 } // sendNameSpace
 
-/*==============================================================================
-public: // overridables of base class Client
-==============================================================================*/
-
 //------------------------------------------------------------------------------
 void CIpcTrcClient::onReceivedData( const QByteArray& i_byteArr )
 //------------------------------------------------------------------------------
 {
+    QString strMthInArgs;
+
+    if( m_iTrcMthFileDetailLevel >= ETraceDetailLevelMethodArgs )
+    {
+        strMthInArgs += "[" + QString::number(i_byteArr.size()) + "]";
+        if( m_iTrcMthFileDetailLevel < ETraceDetailLevelVerbose ) {
+            strMthInArgs += "(" + truncateStringWithEllipsisInTheMiddle(byteArr2Str(i_byteArr), 30) + ")";
+        } else {
+            strMthInArgs += "(" + truncateStringWithEllipsisInTheMiddle(byteArr2Str(i_byteArr), 100) + ")";
+        }
+    }
+
+    CMethodTracer mthTracer(
+        /* pTrcMthFile        */ m_pTrcMthFile,
+        /* iTrcDetailLevel    */ m_iTrcMthFileDetailLevel,
+        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* strNameSpace       */ nameSpace(),
+        /* strClassName       */ className(),
+        /* strObjName         */ objectName(),
+        /* strMethod          */ "onReceivedData",
+        /* strMthInArgs       */ strMthInArgs );
+
     m_bOnReceivedDataUpdateInProcess = true;
 
     QString                     str = byteArr2Str(i_byteArr);
@@ -716,6 +840,22 @@ protected slots: // connected to the signals of the IPC client
 void CIpcTrcClient::onIpcClientConnected( QObject* /*i_pClient*/ )
 //------------------------------------------------------------------------------
 {
+    QString strMthInArgs;
+
+    if( m_iTrcMthFileDetailLevel >= ETraceDetailLevelMethodArgs )
+    {
+    }
+
+    CMethodTracer mthTracer(
+        /* pTrcMthFile        */ m_pTrcMthFile,
+        /* iTrcDetailLevel    */ m_iTrcMthFileDetailLevel,
+        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* strNameSpace       */ nameSpace(),
+        /* strClassName       */ className(),
+        /* strObjName         */ objectName(),
+        /* strMethod          */ "onIpcClientConnected",
+        /* strMthInArgs       */ strMthInArgs );
+
     // Request the trace admin objects from the server:
     QString strMsg;
 
@@ -747,6 +887,22 @@ void CIpcTrcClient::onIpcClientConnected( QObject* /*i_pClient*/ )
 void CIpcTrcClient::onIpcClientDisconnected( QObject* /*i_pClient*/ )
 //------------------------------------------------------------------------------
 {
+    QString strMthInArgs;
+
+    if( m_iTrcMthFileDetailLevel >= ETraceDetailLevelMethodArgs )
+    {
+    }
+
+    CMethodTracer mthTracer(
+        /* pTrcMthFile        */ m_pTrcMthFile,
+        /* iTrcDetailLevel    */ m_iTrcMthFileDetailLevel,
+        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* strNameSpace       */ nameSpace(),
+        /* strClassName       */ className(),
+        /* strObjName         */ objectName(),
+        /* strMethod          */ "onIpcClientDisconnected",
+        /* strMthInArgs       */ strMthInArgs );
+
     // Before the index tree can be cleared the ref counters of the trace admin objects
     // got to be reset to avoid an err log entry (object ref counter is not 0 in dtor).
 
@@ -774,6 +930,23 @@ void CIpcTrcClient::onTrcAdminObjIdxTreeEntryChanged(
     {
         return;
     }
+
+    QString strMthInArgs;
+
+    if( m_iTrcMthFileDetailLevel >= ETraceDetailLevelMethodArgs )
+    {
+        strMthInArgs = i_pTreeEntry == nullptr ? "nullptr" : i_pTreeEntry->keyInTree();
+    }
+
+    CMethodTracer mthTracer(
+        /* pTrcMthFile        */ m_pTrcMthFile,
+        /* iTrcDetailLevel    */ m_iTrcMthFileDetailLevel,
+        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* strNameSpace       */ nameSpace(),
+        /* strClassName       */ className(),
+        /* strObjName         */ objectName(),
+        /* strMethod          */ "onTrcAdminObjIdxTreeEntryChanged",
+        /* strMthInArgs       */ strMthInArgs );
 
     if( i_pTreeEntry != nullptr )
     {
@@ -808,6 +981,23 @@ protected: // instance methods
 void CIpcTrcClient::resetTrcAdminRefCounters( ZS::System::CIdxTreeEntry* i_pBranch )
 //------------------------------------------------------------------------------
 {
+    QString strMthInArgs;
+
+    if( m_iTrcMthFileDetailLevel >= ETraceDetailLevelMethodArgs )
+    {
+        strMthInArgs = i_pBranch == nullptr ? "null" : i_pBranch->keyInTree();
+    }
+
+    CMethodTracer mthTracer(
+        /* pTrcMthFile        */ m_pTrcMthFile,
+        /* iTrcDetailLevel    */ m_iTrcMthFileDetailLevel,
+        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* strNameSpace       */ nameSpace(),
+        /* strClassName       */ className(),
+        /* strObjName         */ objectName(),
+        /* strMethod          */ "resetTrcAdminRefCounters",
+        /* strMthInArgs       */ strMthInArgs );
+
     CIdxTreeEntry* pTreeEntry;
     int            idxEntry;
 
@@ -832,5 +1022,4 @@ void CIpcTrcClient::resetTrcAdminRefCounters( ZS::System::CIdxTreeEntry* i_pBran
             }
         }
     }
-
 } // resetTrcAdminRefCounters

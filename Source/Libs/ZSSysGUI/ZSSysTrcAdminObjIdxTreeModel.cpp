@@ -306,19 +306,27 @@ QVariant CModelIdxTreeTrcAdminObjs::headerData(
         {
             switch( i_iSection )
             {
-                case EColumnObjAddress:
-                {
-                    if( i_iRole == Qt::DisplayRole )
-                    {
-                        varData = "ObjAddress";
-                    }
-                    break;
-                }
                 case EColumnRefCount:
                 {
                     if( i_iRole == Qt::DisplayRole )
                     {
                         varData = "RefCount";
+                    }
+                    break;
+                }
+                case EColumnEnabled:
+                {
+                    if( i_iRole == Qt::DisplayRole )
+                    {
+                        varData = "Enabled";
+                    }
+                    break;
+                }
+                case EColumnDetailLevel:
+                {
+                    if( i_iRole == Qt::DisplayRole )
+                    {
+                        varData = "DetailLevel";
                     }
                     break;
                 }
@@ -354,19 +362,11 @@ QVariant CModelIdxTreeTrcAdminObjs::headerData(
                     }
                     break;
                 }
-                case EColumnEnabled:
+                case EColumnObjAddress:
                 {
                     if( i_iRole == Qt::DisplayRole )
                     {
-                        varData = "Enabled";
-                    }
-                    break;
-                }
-                case EColumnDetailLevel:
-                {
-                    if( i_iRole == Qt::DisplayRole )
-                    {
-                        varData = "DetailLevel";
+                        varData = "ObjAddress";
                     }
                     break;
                 }
@@ -606,30 +606,6 @@ QVariant CModelIdxTreeTrcAdminObjs::data( const QModelIndex& i_modelIdx, int i_i
                 }
                 break;
             }
-            case EColumnObjAddress:
-            {
-                if( i_iRole == Qt::DisplayRole )
-                {
-                    if( pTrcAdminObj != nullptr )
-                    {
-                        if( sizeof(pTrcAdminObj) == sizeof(quint32) ) // 32 bit machines
-                        {
-                            quint32 ulAddr;
-                            quint32* pulAddr = &ulAddr;
-                            memcpy( pulAddr, &pTrcAdminObj, sizeof(pTrcAdminObj) );
-                            varData = "0x" + QString::number(ulAddr,16);
-                        }
-                        else if( sizeof(pTrcAdminObj) == sizeof(quint64) ) // 64 bit machines
-                        {
-                            quint64 ulAddr;
-                            quint64* pulAddr = &ulAddr;
-                            memcpy( pulAddr, &pTrcAdminObj, sizeof(pTrcAdminObj) );
-                            varData = "0x" + QString::number(ulAddr,16);
-                        }
-                    }
-                }
-                break;
-            }
             case EColumnRefCount:
             {
                 if( i_iRole == Qt::DisplayRole)
@@ -637,6 +613,28 @@ QVariant CModelIdxTreeTrcAdminObjs::data( const QModelIndex& i_modelIdx, int i_i
                     if( pTrcAdminObj != nullptr )
                     {
                         varData = QString::number(pTrcAdminObj->getRefCount());
+                    }
+                }
+                break;
+            }
+            case EColumnEnabled:
+            {
+                if( i_iRole == Qt::DisplayRole || i_iRole == Qt::EditRole )
+                {
+                    if( pTrcAdminObj != nullptr )
+                    {
+                        varData = CEnumEnabled::toString(pTrcAdminObj->getEnabled());
+                    }
+                }
+                break;
+            }
+            case EColumnDetailLevel:
+            {
+                if( i_iRole == Qt::DisplayRole || i_iRole == Qt::EditRole )
+                {
+                    if( pTrcAdminObj != nullptr )
+                    {
+                        varData = pTrcAdminObj->getTraceDetailLevel();
                     }
                 }
                 break;
@@ -685,24 +683,26 @@ QVariant CModelIdxTreeTrcAdminObjs::data( const QModelIndex& i_modelIdx, int i_i
                 }
                 break;
             }
-            case EColumnEnabled:
+            case EColumnObjAddress:
             {
-                if( i_iRole == Qt::DisplayRole || i_iRole == Qt::EditRole )
+                if( i_iRole == Qt::DisplayRole )
                 {
                     if( pTrcAdminObj != nullptr )
                     {
-                        varData = CEnumEnabled::toString(pTrcAdminObj->getEnabled());
-                    }
-                }
-                break;
-            }
-            case EColumnDetailLevel:
-            {
-                if( i_iRole == Qt::DisplayRole || i_iRole == Qt::EditRole )
-                {
-                    if( pTrcAdminObj != nullptr )
-                    {
-                        varData = pTrcAdminObj->getTraceDetailLevel();
+                        if( sizeof(pTrcAdminObj) == sizeof(quint32) ) // 32 bit machines
+                        {
+                            quint32 ulAddr;
+                            quint32* pulAddr = &ulAddr;
+                            memcpy( pulAddr, &pTrcAdminObj, sizeof(pTrcAdminObj) );
+                            varData = "0x" + QString::number(ulAddr,16);
+                        }
+                        else if( sizeof(pTrcAdminObj) == sizeof(quint64) ) // 64 bit machines
+                        {
+                            quint64 ulAddr;
+                            quint64* pulAddr = &ulAddr;
+                            memcpy( pulAddr, &pTrcAdminObj, sizeof(pTrcAdminObj) );
+                            varData = "0x" + QString::number(ulAddr,16);
+                        }
                     }
                 }
                 break;

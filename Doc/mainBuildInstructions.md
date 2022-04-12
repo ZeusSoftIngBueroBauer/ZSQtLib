@@ -1,4 +1,4 @@
-@page _PAGE_Overview_BuildInstructions Build Instructions
+@page _PAGE_Main_BuildInstructions Build Instructions
 
 # Quick Startup
 

@@ -124,7 +124,7 @@ CDlgTrcServer::CDlgTrcServer(
     m_pTabWidget = new QTabWidget();
     m_pLyt->addWidget(m_pTabWidget);
 
-    CIpcTrcServer* pTrcServer = CIpcTrcServer::GetInstance(i_strObjName);
+    CIpcTrcServer* pTrcServer = CIpcTrcServer::GetInstance();
 
     // IPC Connection Settings
     //------------------------

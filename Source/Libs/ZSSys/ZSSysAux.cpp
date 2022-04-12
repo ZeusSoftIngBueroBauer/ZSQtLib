@@ -99,6 +99,17 @@ QString ZS::System::createGUID()
 } // createGUID
 
 //------------------------------------------------------------------------------
+/*! @brief Converts the given string with unicode characters into a byte array.
+
+    Unicode characters have two bytes. Please note that for UTF8 characters
+    the second byte will be encoded as '\0' and the resulting byte array is no
+    longer a human readable character string. To convert the byte array back to
+    a unicode character string use 'byteArr2Str'.
+
+    @param i_str [in] String to be converted.
+
+    @return Byte array containing two bytes for each character of the input string.
+*/
 QByteArray ZS::System::str2ByteArr( const QString& i_str )
 //------------------------------------------------------------------------------
 {
@@ -110,6 +121,17 @@ QByteArray ZS::System::str2ByteArr( const QString& i_str )
 } // str2ByteArr
 
 //------------------------------------------------------------------------------
+/*! @brief Converts the given byte array containg unicode characters into a
+           unicode string.
+
+    Unicode characters have two bytes. Please note that for UTF8 characters
+    the second byte will be encoded as '\0'. This method reverts the conversion
+    done with 'str2ByteArr'.
+
+    @param i_byteArr [in] Byte array to be converted.
+
+    @return String with unicode characters.
+*/
 QString ZS::System::byteArr2Str( const QByteArray& i_byteArr )
 //------------------------------------------------------------------------------
 {
@@ -3528,9 +3550,9 @@ QString ZS::System::encodeForHtml( const QString& i_str )
 //------------------------------------------------------------------------------
 {
     QString str = i_str;
+    if( str.contains("&") ) str.replace("&", "&amp;"); // this must be the first replacement
     if( str.contains('<') ) str.replace("<","&lt;");
     if( str.contains('>') ) str.replace(">","&gt;");
-    if( str.contains("&") ) str.replace("&", "&amp;");
     if( str.contains("\"") ) str.replace("\"", "&quot;");
     if( str.contains("'") ) str.replace("'", "&apos;");
     return str;
@@ -3544,9 +3566,9 @@ QString ZS::System::decodeFromHtml( const QString& i_str )
 
     if( str.contains('&lt;') ) str.replace("&lt;", "<");
     if( str.contains('&gt;') ) str.replace("&gt;", ">");
-    if( str.contains("&amp;") ) str.replace("&amp;", "&");
     if( str.contains("&quot;") ) str.replace("&quot;", "\"");
     if( str.contains("&apos;") ) str.replace("&apos;", "'");
+    if( str.contains("&amp;") ) str.replace("&amp;", "&");
     return str;
 }
 

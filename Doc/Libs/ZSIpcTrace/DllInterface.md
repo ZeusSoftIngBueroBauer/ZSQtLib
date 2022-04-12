@@ -57,10 +57,10 @@ If you are using the Dll interface there is no need to link to the ZQtLib librar
 but you need to include the header file `ZSIpcTrcDllIf.h` in all files you want to use
 method tracing.
 
-Please again refer to @ref _PAGE_Overview_BuildInstructions on how to make the include path to this
+Please again refer to @ref _PAGE_Main_BuildInstructions on how to make the include path to this
 header file available for your application without linking to the libraries.
 
-As mentioned in @ref _PAGE_Overview_BuildInstructions you need to add the include path to the
+As mentioned in @ref _PAGE_Main_BuildInstructions you need to add the include path to the
 header files of the ZSQtLibs to the `target_include_directories` cmake command as
 follows:
 

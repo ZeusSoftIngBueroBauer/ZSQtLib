@@ -42,8 +42,10 @@ struct SSocketDscr;
 
 namespace Trace
 {
-class CTrcAdminObj;
 class CIdxTreeTrcAdminObjs;
+class CTrcAdminObj;
+class CTrcMthFile;
+
 
 //******************************************************************************
 class ZSIPCTRACEDLL_API CIpcTrcClient : public ZS::Ipc::CClient
@@ -51,7 +53,10 @@ class ZSIPCTRACEDLL_API CIpcTrcClient : public ZS::Ipc::CClient
 {
     Q_OBJECT
 public: // ctors and dtor
-    CIpcTrcClient( const QString& i_strName );
+    CIpcTrcClient(
+        const QString& i_strName,
+        int            i_iTrcMthFileDetailLevel = ETraceDetailLevelNone,
+        int            i_iTrcMthFileDetailLevelGateway = ZS::Trace::ETraceDetailLevelNone );
     virtual ~CIpcTrcClient();
 signals: // on receiving trace data
     void traceSettingsChanged( QObject* i_pTrcClient );
@@ -77,7 +82,7 @@ protected: // instance methods to send admin objects to the connected server
         ZS::System::EEnabled                    i_enabled,
         int                                     i_iDetailLevel );
 protected: // overridables of base class CClient
-    virtual void onReceivedData( const QByteArray& i_byteArr );
+    virtual void onReceivedData( const QByteArray& i_byteArr ) override;
 protected slots: // connected to the signals of the IPC client
     void onIpcClientConnected( QObject* i_pClient );
     void onIpcClientDisconnected( QObject* i_pClient );
@@ -86,16 +91,23 @@ protected slots: // connected to the slots of the trace admin object pool model
 protected: // instance methods
     void resetTrcAdminRefCounters( ZS::System::CIdxTreeEntry* i_pBranch );
 protected: // instance members
-    QString               m_strRemoteApplicationName;
-    QString               m_strRemoteServerName;
-    STrcServerSettings    m_trcServerSettings;
+    /*!< When connecting to the trace server the name of the application is
+         sent together with other settings by the trace server to the client. */
+    QString m_strRemoteApplicationName;
+    /*!< When connecting to the trace server the name of the trace server is
+         sent together with other settings by the trace server to the client. */
+    QString m_strRemoteServerName;
+    /*!< When connecting to the trace server the settings are queried by the client
+         from the trace server. The response is stored in this member. */
+    STrcServerSettings m_trcServerSettings;
+    /*!< The received trace admin objects are inserted into this index tree. */
     CIdxTreeTrcAdminObjs* m_pTrcAdminObjIdxTree;
     /*!< This flag is set to true if the client receives data and onReceivedData is in progress updating
          the clients data with the settings read from the remote application. If the settings are updated
-         the signal traceSettingsReceived is not emitted before all settings have been applied and the
-         client knows that the settings are changed by the server and not be the client and that the
-         data must not be send back to the remote application. */
-    bool                  m_bOnReceivedDataUpdateInProcess;
+         the signal traceSettingsReceived is not emitted before all settings have been applied. If this
+         flag is set the client knows that the settings are changed by the server and that the
+         data must not be send back to the remote server. */
+    bool m_bOnReceivedDataUpdateInProcess;
 
 }; // class CIpcTrcClient
 

@@ -34,6 +34,8 @@ namespace ZS
 namespace Test
 {
 //******************************************************************************
+/*! @brief Single test step. Test steps are organized as leaves of the index tree.
+*/
 class ZSTESTDLL_API CTestStep : public CAbstractTestStepIdxTreeEntry
 //******************************************************************************
 {
@@ -61,6 +63,10 @@ public: // instance methods
 public: // instance methods
     QString getDescription() const { return m_strDescription; }
     void setDescription( const QString& i_strDescription );
+public: // instance methods
+    QStringList getConfigValueKeys() const;
+    QVariant getConfigValue( const QString& i_strKey ) const;
+    void setConfigValue( const QString& i_strKey, const QVariant& i_val );
 public: // instance methods
     QStringList getExpectedValues() const { return m_strlstExpectedValues; }
     void setExpectedValues( const QStringList& i_strlstExpectedValues = QStringList() );
@@ -93,15 +99,24 @@ private: // default ctor not allowed
 private: // copy ctor not allowed
     CTestStep( const CTestStep& );
 protected: // instance members
-    //TFctDoTestStep m_fctDoTestStep;
-    QString              m_strOperation;
-    QString              m_strDescription;
-    QStringList          m_strlstExpectedValues;
-    QStringList          m_strlstResultValues;
-    double               m_fTimeTestStart_s;
-    double               m_fTimeTestEnd_s;
-    bool                 m_bBreakpoint;
-    ZS::System::EEnabled m_breakpointEnabled;
+    /*!< Operation which will be executed (e.g. NameSpace::Class::Inst.method(args)). */
+    QString                  m_strOperation;
+    /*!< Description of the test step. */
+    QString                  m_strDescription;
+    /*!< Hash with config values assigned to the test step. */
+    QHash<QString, QVariant> m_hshConfigValues;
+    /*!< List with the expected result values. */
+    QStringList              m_strlstExpectedValues;
+    /*!< List with the result values. */
+    QStringList              m_strlstResultValues;
+    /*!< Start time of the test step in seconds since start of the whole test. */
+    double                   m_fTimeTestStart_s;
+    /*!< End time of the test step in seconds since start of the whole test. */
+    double                   m_fTimeTestEnd_s;
+    /*!< True if the test execution should stop before executing the step. */
+    bool                     m_bBreakpoint;
+    /*!< True if the breakpoint is enabled. */
+    ZS::System::EEnabled     m_breakpointEnabled;
 
 }; // class CTestStep
 

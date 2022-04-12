@@ -131,7 +131,7 @@ CTest::CTest() :
     // Recall test step settings
     //--------------------------
 
-    recall();
+    recallTestSteps();
 
 } // default ctor
 
@@ -139,7 +139,7 @@ CTest::CTest() :
 CTest::~CTest()
 //------------------------------------------------------------------------------
 {
-    SErrResultInfo errResultInfo = save();
+    SErrResultInfo errResultInfo = saveTestSteps();
 
     if(errResultInfo.isErrorResult())
     {

@@ -62,7 +62,6 @@ public: // ctors and dtor
 CSrvCltBaseGatewayThread::CSrvCltBaseGatewayThread(
     const QString& i_strObjNameGateway,
     CErrLog*       i_pErrLog,
-    CTrcMthFile*   i_pTrcMthFile,
     int            i_iTrcMthFileDetailLevel ) :
 //------------------------------------------------------------------------------
     QThread(),
@@ -72,7 +71,7 @@ CSrvCltBaseGatewayThread::CSrvCltBaseGatewayThread(
     m_iReqIdStartThread(-1),
     m_pWaitCondition(nullptr),
     m_iTrcMthFileDetailLevel(i_iTrcMthFileDetailLevel),
-    m_pTrcMthFile(i_pTrcMthFile),
+    m_pTrcMthFile(nullptr),
     m_pTrcAdminObj(nullptr)
 {
     // Please note that thread names must be unique within the application.
@@ -87,7 +86,7 @@ CSrvCltBaseGatewayThread::CSrvCltBaseGatewayThread(
     }
 
     // The derived classes must instantiate the trace admin object and trace the ctor.
-    //if( m_pTrcMthFile == nullptr )
+    //if( m_pTrcMthFile == nullptr && !i_strObjName.contains("TrcServer") && !i_strObjName.contains("TrcClient") )
     //{
     //    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName());
     //}
@@ -572,7 +571,6 @@ CSrvCltBaseGateway::CSrvCltBaseGateway(
     QObject*                  i_pCltSrv,
     CSrvCltBaseGatewayThread* i_pThreadGateway,
     CErrLog*                  i_pErrLog,
-    CTrcMthFile*              i_pTrcMthFile,
     int                       i_iTrcMthFileDetailLevel ) :
 //------------------------------------------------------------------------------
     QObject(),
@@ -588,7 +586,7 @@ CSrvCltBaseGateway::CSrvCltBaseGateway(
     m_pMsgCon(nullptr),
     m_arpTrcMsgLogObjects(),
     m_iTrcMthFileDetailLevel(i_iTrcMthFileDetailLevel),
-    m_pTrcMthFile(i_pTrcMthFile),
+    m_pTrcMthFile(nullptr),
     m_pTrcAdminObj(nullptr)
 {
     if( i_strObjName.isEmpty() )
@@ -601,7 +599,7 @@ CSrvCltBaseGateway::CSrvCltBaseGateway(
     }
 
     // The derived classes must instantiate the trace admin object and trace the ctor.
-    //if( m_pTrcMthFile == nullptr )
+    //if( m_pTrcMthFile == nullptr && !i_strObjName.contains("TrcServer") && !i_strObjName.contains("TrcClient") )
     //{
     //    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName());
     //}

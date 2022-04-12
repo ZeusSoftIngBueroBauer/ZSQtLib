@@ -26,15 +26,17 @@ may result in using the software modules.
 
 #include <QtCore/qthread.h>
 
-#include "TestModule1.h"
-#include "TestModule2.h"
+#include "MyClass1.h"
+#include "MyClass2.h"
 #include "App.h"
 
 #include "ZSIpcTrace/ZSIpcTrcServer.h"
 #include "ZSSys/ZSSysEnumEntry.h"
 #include "ZSSys/ZSSysErrResult.h"
 #include "ZSSys/ZSSysException.h"
+#include "ZSSys/ZSSysMutex.h"
 #include "ZSSys/ZSSysTrcMethod.h"
+#include "ZSSys/ZSSysWaitCondition.h"
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
@@ -52,25 +54,7 @@ class CMyClass1 : public QObject
 *******************************************************************************/
 
 CTrcAdminObjRefAnchor CMyClass1::s_trcAdminObjRefAnchor(
-    CMyClass1::NameSpace(), CMyClass1::ClassName(), "ZSTrcServer");
-
-/*==============================================================================
-public: // class methods
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-void CMyClass1::setTraceServerName( const QString& i_strServerName )
-//------------------------------------------------------------------------------
-{
-    s_trcAdminObjRefAnchor.setServerName(i_strServerName);
-}
-
-//------------------------------------------------------------------------------
-QString CMyClass1::getTraceServerName()
-//------------------------------------------------------------------------------
-{
-    return s_trcAdminObjRefAnchor.getServerName();
-}
+    CMyClass1::NameSpace(), CMyClass1::ClassName());
 
 /*==============================================================================
 public: // class methods
@@ -119,7 +103,9 @@ CMyClass1::CMyClass1( const QString& i_strObjName ) :
     QObject(),
     m_strMyClass2ObjName(),
     m_pMyClass2Thread(nullptr),
-    m_pMyClass2(nullptr)
+    m_pMyClass2(nullptr),
+    m_pMtxWaitClass2ThreadRunning(nullptr),
+    m_pWaitClass2ThreadRunning(nullptr)
 {
     setObjectName(i_strObjName);
 
@@ -141,6 +127,9 @@ CMyClass1::CMyClass1( const QString& i_strObjName ) :
         /* strMethod    */ "ctor",
         /* strAddInfo   */ strMthInArgs );
 
+    m_pMtxWaitClass2ThreadRunning = new CMutex(ClassName() + "::" + i_strObjName + "::WaitClass2ThreadRunning");
+    m_pWaitClass2ThreadRunning = new CWaitCondition(ClassName() + "::" + i_strObjName + "::Class2ThreadRunning");
+
 } // ctor
 
 //------------------------------------------------------------------------------
@@ -154,10 +143,16 @@ CMyClass1::~CMyClass1()
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
 
+    emit aboutToBeDestroyed(objectName());
+
     if( m_pMyClass2Thread != nullptr && m_pMyClass2Thread->isRunning() )
     {
         m_pMyClass2Thread->quit();
-        m_pMyClass2Thread->wait();
+
+        if( !m_pMyClass2Thread->wait(1000) )
+        {
+            m_pMyClass2Thread->terminate();
+        }
     }
 
     try
@@ -169,6 +164,24 @@ CMyClass1::~CMyClass1()
     }
     m_pMyClass2Thread = nullptr;
     m_pMyClass2 = nullptr;
+
+    try
+    {
+        delete m_pWaitClass2ThreadRunning;
+    }
+    catch(...)
+    {
+    }
+    m_pWaitClass2ThreadRunning = nullptr;
+
+    try
+    {
+        delete m_pMtxWaitClass2ThreadRunning;
+    }
+    catch(...)
+    {
+    }
+    m_pMtxWaitClass2ThreadRunning = nullptr;
 
     mthTracer.onAdminObjAboutToBeReleased();
 
@@ -199,37 +212,39 @@ CMyClass2* CMyClass1::startClass2Thread(const QString& i_strMyClass2ObjName)
         /* strMethod    */ "startClass2Thread",
         /* strAddInfo   */ strMthInArgs );
 
+    m_strMyClass2ObjName = i_strMyClass2ObjName;
+
     if( m_pMyClass2Thread == nullptr )
     {
         m_pMyClass2Thread = new CMyClass2Thread(i_strMyClass2ObjName, this);
+
+        if( !QObject::connect(
+            /* pObjSender   */ m_pMyClass2Thread,
+            /* szSignal     */ SIGNAL(running()),
+            /* pObjReceiver */ this,
+            /* szSlot       */ SLOT(onClass2ThreadRunning()),
+            /* cnctType     */ Qt::DirectConnection) )
+        {
+            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
+        }
     }
 
     if( !m_pMyClass2Thread->isRunning() )
     {
         m_pMyClass2Thread->start();
-    }
 
-    const int c_iMaxWaitCount = 25;
-    int iWaitCount = 0;
-
-    if( m_pMyClass2Thread != nullptr )
-    {
-        m_pMyClass2 = m_pMyClass2Thread->getMyClass2();
-
-        while( m_pMyClass2 == nullptr )
+        // It is not sufficient just to wait for the wait condition to be signalled.
+        // The thread may already have been started, created the Class3 instance and invoked
+        // the "onClass3ThreadRunning" slot which signalled the wait condition. A wait here
+        // without a timeout may therefore result in a deadlock. And in addition before and
+        // after calling "wait" it will be checked whether the Class3 instance has been created.
+        if( m_pMtxWaitClass2ThreadRunning->tryLock() )
         {
-            #ifdef _WINDOWS
-            Sleep(200);
-            #endif
-            #ifdef __linux__
-            usleep(200000);
-            #endif
-
-            iWaitCount++;
-            if( iWaitCount > c_iMaxWaitCount )
+            while( m_pMyClass2Thread->getMyClass2() == nullptr )
             {
-                break;
+                m_pWaitClass2ThreadRunning->wait(m_pMtxWaitClass2ThreadRunning, 100);
             }
+            m_pMtxWaitClass2ThreadRunning->unlock();
             m_pMyClass2 = m_pMyClass2Thread->getMyClass2();
         }
     }
@@ -268,3 +283,23 @@ void CMyClass1::stopClass2Thread()
     m_pMyClass2 = nullptr;
 
 } // stopClass2Thread
+
+/*==============================================================================
+protected slots:
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CMyClass1::onClass2ThreadRunning()
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ s_trcAdminObjRefAnchor.trcAdminObj(),
+        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* strObjName   */ objectName(),
+        /* strMethod    */ "onClass2ThreadRunning",
+        /* strAddInfo   */ strMthInArgs );
+
+    m_pWaitClass2ThreadRunning->notify_all();
+}

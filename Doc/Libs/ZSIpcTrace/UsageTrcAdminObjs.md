@@ -213,6 +213,8 @@ Source File:
     CMyClass2::CMyClass2(const QString& i_strObjName) :
         QObject(i_strObjName)
     {
+        setObjectName(i_strObjName);
+
         m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName());
     }
 
@@ -293,12 +295,14 @@ Source File:
     CMyClass3::CMyClass3(const QString& i_strObjName) :
         QObject(i_strObjName)
     {
+        setObjectName(i_strObjName);
+
         m_pTrcAdminObj =
             CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName());
         m_pTrcAdminObjNoisyMethods =
-            CTrcServer::GetTraceAdminObj(NameSpace(), ClassName() + "::NoisyMethods", objectName() + );
+            CTrcServer::GetTraceAdminObj(NameSpace(), ClassName() + "::NoisyMethods", objectName());
         m_pTrcAdminObjVeryNoisyMethods =
-            CTrcServer::GetTraceAdminObj(NameSpace(), ClassName() + "::VeryNoisyMethods", objectName() + );
+            CTrcServer::GetTraceAdminObj(NameSpace(), ClassName() + "::VeryNoisyMethods", objectName());
     }
 
     CMyClass3::~CMyClass3()
@@ -313,7 +317,118 @@ Source File:
         m_pTrcAdminObjVeryNoisyMethods = nullptr;
     }
 
-if you have created all trace admin objects as described in the examples above, you will get a tree with
+**Instance Tracer with logically Grouped Objects**
+
+If you have a class for which many instances will be created it may be reasonable to logically
+group the objects by their names.
+
+You may have a class CParameter to adjust settings of different hardware components.
+One instance of this CParameter class is used to control a specific setting of the hardware
+component. Lets assume you have to adjust the power level so you create a PowerLevel instance
+of class CParameter and of course you name the instance "PowerLevel".
+
+It is easy to imagine that there are multiple hardware components in the system for which the
+power level needs to be adjusted. For example the power level of a sound card or an equalizer.
+To distinguish the parameters from each other you name one parameter "SoundCard::PowerLevel"
+and the other one "Equalizer::PowerLevel". If you now also want to set the trace outputs
+separately for each of these parameters, the object name with this path name must be passed
+to the GetInstance method. The result is two different trace admin objects.
+
+Header File:
+
+    class CMyClass2
+    {
+    public: // ctor and dtor
+        CMyClass2();
+        ~CMyClass2();
+        ...
+    private: // instance members
+        ZS::Trace::CTrcAdminObj* m_pTrcAdminObj;
+    };
+
+Source File:
+
+    CMyClass2::CMyClass2(const QString& i_strObjName) :
+        QObject(i_strObjName)
+    {
+        setObjectName(i_strObjName);
+
+        m_pTrcAdminObj =
+            CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName());
+    }
+
+Usage:
+
+    CMyClass2 soundCardPowerLevel("SoundCard::PowerLevel");
+    CMyClass2 equalizerPowerLevel("Equalizer::PowerLevel");
+
+**Trace Admin Objects for Child Objects**
+
+There may be classes whose trace output should be checked for each instance.
+However, since there will be many of these instances distributed throughout the system,
+it will be difficult to find unique object names for these instances.
+On the other hand, you don't want to control these instances on their own, but want to
+treat them as children of objects from other classes.
+
+A good use case for this would be e.g. Mutex and WaitConditions. The Trace Admin objects
+to control the trace output of the mutex or wait condition should appear below the classes
+using those mutex and wait conditions.
+
+The prerequisite is, of course, that the classes support method tracing. Within the ZSQtLib,
+in the NameSpace ZS::System wrappers were implemented around the classes QMutex, QMutexLocker
+and QWaitCondition, to whose constructors an instance of a Trace Admin object can be passed.
+This allows one to locate race conditions or deadlocks associated with these classes by
+inspecting the trace output.
+
+On the one hand, this makes it easier to find them in the Trace Admin object tree and,
+on the other hand, it is easier to find a unique name for these objects, since these
+names then only have to be unique within the higher-level classes.
+
+Header File:
+
+    class CMyClass2
+    {
+    public: // ctor and dtor
+        CMyClass2();
+        ~CMyClass2();
+        ...
+    private: // instance members
+        ZS::System::CMutex*         m_pMtxCounters;
+        ZS::System::CMutex*         m_pMtxWaitClass3ThreadRunning;
+        ZS::System::CWaitCondition* m_pWaitClass3ThreadRunning;
+        ZS::Trace::CTrcAdminObj*    m_pTrcAdminObj;
+        ZS::Trace::CTrcAdminObj*    m_pTrcAdminObjMutexCounters;
+        ZS::Trace::CTrcAdminObj*    m_pTrcAdminObjMutexWaitClass3ThreadRunning;
+        ZS::Trace::CTrcAdminObj*    m_pTrcAdminObjWaitConditionClass3ThreadRunning;
+    };
+
+Source File:
+
+    CMyClass2::CMyClass2(const QString& i_strObjName) :
+        QObject(i_strObjName)
+    {
+        setObjectName(i_strObjName);
+
+        m_pTrcAdminObj =
+            CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName());
+        m_pTrcAdminObjMutexCounters = CTrcServer::GetTraceAdminObj(
+            NameSpace(), ClassName(), objectName() + "::CMutex::Counters", getTraceServerName());
+        m_pTrcAdminObjMutexWaitClass3ThreadRunning = CTrcServer::GetTraceAdminObj(
+            NameSpace(), ClassName(), objectName() + "::CMutex::WaitClass3ThreadRunning", getTraceServerName());
+        m_pTrcAdminObjWaitConditionClass3ThreadRunning = CTrcServer::GetTraceAdminObj(
+            NameSpace(), ClassName(), objectName() + "::CWaitCondition::Class3ThreadRunning", getTraceServerName());
+
+        m_pMtxCounters = new CMutex(
+            QMutex::Recursive, i_strObjName + "::CMutex::Counters", m_pTrcAdminObjMutexCounters);
+        m_pMtxWaitClass3ThreadRunning = new CMutex(
+            i_strObjName + "::CMutex::WaitClass3ThreadRunning", m_pTrcAdminObjMutexWaitClass3ThreadRunning);
+        m_pWaitClass3ThreadRunning = new CWaitCondition(
+            i_strObjName + "::CWaitCondition::Class3ThreadRunning", m_pTrcAdminObjWaitConditionClass3ThreadRunning);
+    }
+
+**Summary**
+
+If you have created all trace admin objects as described in the examples above, you will get a tree with
 the following structure.
 
 ![TraceAdminObjectsTree](ZSIpcTrace/TraceAdminObjectsTree.png)

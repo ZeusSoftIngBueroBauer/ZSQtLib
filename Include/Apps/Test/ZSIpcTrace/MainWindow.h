@@ -95,14 +95,11 @@ protected: // overridables of base class QWidget
 protected: // overridables of base class QObject
     virtual bool eventFilter( QObject* i_pObjWatched, QEvent* i_pEv );
 protected slots:
+    void onActFileSaveTestResultsTriggered();
     void onActDebugZSTrcServerTriggered();
     void onActDebugZSTrcServerAdminObjIdxTreeTriggered();
     void onActDebugZSTrcClientTriggered();
     void onActDebugZSTrcClientAdminObjIdxTreeTriggered();
-    void onActDebugTestTrcServerTriggered();
-    void onActDebugTestTrcServerAdminObjIdxTreeTriggered();
-    void onActDebugTestTrcClientTriggered();
-    void onActDebugTestTrcClientAdminObjIdxTreeTriggered();
     void onActDebugErrLogTriggered();
     void onActDebugRequestExecTreeTriggered();
 protected slots:
@@ -114,11 +111,6 @@ protected: // instance methods
 protected: // instance methods
     void updateReqInProgressStatus( const QString& i_strRequest, int i_iProgress_perCent );
 protected slots:
-    void onTestTrcServerCreated( ZS::Trace::CIpcTrcServer* i_pTrcServer );
-    void onTestTrcServerAboutToBeDestroyed( ZS::Trace::CIpcTrcServer* i_pTrcServer );
-    void onTestTrcClientCreated( ZS::Trace::CIpcTrcClient* i_pTrcClient );
-    void onTestTrcClientAboutToBeDestroyed( ZS::Trace::CIpcTrcClient* i_pTrcClient );
-protected slots:
     void onTrcServerStateChanged( QObject* i_pServer, int i_iState );
     void onTrcClientStateChanged( QObject* i_pClient, int i_iState );
 private: // class members
@@ -126,16 +118,13 @@ private: // class members
 private: // instance members
     CTest*          m_pTest;
     QMenu*          m_pMnuFile;
+    QAction*        m_pActFileSaveTestResults;
     QAction*        m_pActFileQuit;
     QMenu*          m_pMnuDebug;
     QAction*        m_pActDebugZSTrcServer;
     QAction*        m_pActDebugZSTrcServerAdminObjIdxTree;
     QAction*        m_pActDebugZSTrcClient;
     QAction*        m_pActDebugZSTrcClientAdminObjIdxTree;
-    QAction*        m_pActDebugTestTrcServer;
-    QAction*        m_pActDebugTestTrcServerAdminObjIdxTree;
-    QAction*        m_pActDebugTestTrcClient;
-    QAction*        m_pActDebugTestTrcClientAdminObjIdxTree;
     QAction*        m_pActDebugErrLog;
     QAction*        m_pActDebugRequestExecTree;
     QMenu*          m_pMnuInfo;
@@ -147,12 +136,6 @@ private: // instance members
     QWidget*        m_pWdgtZSTrcClientStatus;
     QLabel*         m_pLblZSTrcClientStatusIcon;
     QLabel*         m_pLblZSTrcClientStatusText;
-    QWidget*        m_pWdgtTestTrcServerStatus;
-    QLabel*         m_pLblTestTrcServerStatusIcon;
-    QLabel*         m_pLblTestTrcServerStatusText;
-    QWidget*        m_pWdgtTestTrcClientStatus;
-    QLabel*         m_pLblTestTrcClientStatusIcon;
-    QLabel*         m_pLblTestTrcClientStatusText;
     QLabel*         m_pLblReqInProgress;
     QProgressBar*   m_pBarReqInProgress;
     QLabel*         m_pLblErrors;

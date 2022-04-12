@@ -429,7 +429,7 @@ CShmSocketWrapper::CShmSocketWrapper(
     m_errResultInfo()
 {
     // The derived classes must instantiate the trace admin object and trace the ctor.
-    if( m_pTrcMthFile == nullptr )
+    if( m_pTrcMthFile == nullptr && !i_strObjName.contains("TrcServer") && !i_strObjName.contains("TrcClient") )
     {
         m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName());
     }
@@ -484,7 +484,7 @@ CShmSocketWrapper::CShmSocketWrapper(
     m_errResultInfo()
 {
     // The derived classes must instantiate the trace admin object and trace the ctor.
-    if( m_pTrcMthFile == nullptr )
+    if( m_pTrcMthFile == nullptr && !i_strObjName.contains("TrcServer") && !i_strObjName.contains("TrcClient") )
     {
         m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName());
     }

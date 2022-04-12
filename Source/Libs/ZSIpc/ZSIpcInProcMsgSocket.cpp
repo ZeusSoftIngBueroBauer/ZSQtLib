@@ -390,7 +390,7 @@ CInProcMsgSocket::CInProcMsgSocket(
 {
     setObjectName(i_strObjName);
 
-    if( m_bTracingEnabled )
+    if( m_bTracingEnabled && !i_strObjName.contains("TrcServer") && !i_strObjName.contains("TrcClient") )
     {
         m_pTrcAdminObj = CTrcServer::GetTraceAdminObj("ZS::Ipc", "CInProcMsgSocket", i_strObjName);
     }
@@ -458,7 +458,7 @@ CInProcMsgSocket::CInProcMsgSocket(
 {
     setObjectName(i_strObjName);
 
-    if( m_bTracingEnabled )
+    if( m_bTracingEnabled && !i_strObjName.contains("TrcServer") && !i_strObjName.contains("TrcClient") )
     {
         m_pTrcAdminObj = CTrcServer::GetTraceAdminObj("ZS::Ipc", "CInProcMsgSocket", i_strObjName);
     }

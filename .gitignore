@@ -52,15 +52,15 @@ __pycache__*/
 *.egg-info*/
 
 #Include Setups
-!Dist
-Dist/*
-!Dist/msvc2019_x64/
-Dist/msvc2019_x64/*
-!Dist/msvc2019_x64/Release/
-Dist/msvc2019_x64/Release/*
-!Dist/msvc2019_x64/Release/ZSAppTrcMthClient/
-Dist/msvc2019_x64/Release/ZSAppTrcMthClient/*
-!Dist/msvc2019_x64/Release/ZSAppTrcMthClient/ZSAppTrcMthClient-Setup.exe
+#!Dist
+#Dist/*
+#!Dist/msvc2019_x64/
+#Dist/msvc2019_x64/*
+#!Dist/msvc2019_x64/Release/
+#Dist/msvc2019_x64/Release/*
+#!Dist/msvc2019_x64/Release/ZSAppTrcMthClient/
+#Dist/msvc2019_x64/Release/ZSAppTrcMthClient/*
+#!Dist/msvc2019_x64/Release/ZSAppTrcMthClient/ZSAppTrcMthClient-Setup.exe
 
 #Generated Make Files
 *.db
@@ -79,6 +79,7 @@ Makefile.*
 #Generated header and resource files
 /Include/Libs/ZSSys/ZSSysVersion.h
 /Source/Libs/ZSSys/ZSSysVersion.rc
+/Include/Apps/Test/ZSIpcTrace/TestConfig.h
 
 #Explizit
 #RemoteRepositories.txt

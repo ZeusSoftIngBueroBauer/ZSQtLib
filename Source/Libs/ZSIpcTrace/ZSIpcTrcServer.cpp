@@ -220,20 +220,22 @@ public: // class methods
     This method does neither create an instance of the class nor increments the reference counter.
     If no instance has been created yet the method returns nullptr.
 
-    If you just need to access an already existing instance and you can be sure that an instance
+    If you just need to access the already existing instance and you can be sure that the instance
     is already existing this method should be preferred to the createInstance call as this method
     does not affect the reference counter and there is no need to call releaseInstance later on.
 
     @note After a getInstance call a releaseInstance MUST NOT be called.
 
-    @return Pointer to license manager or nullptr, if an instance has not been created yet.
+    @return Pointer to trace server or nullptr, if the instance has not been created yet.
 */
-CIpcTrcServer* CIpcTrcServer::GetInstance( const QString& i_strName )
+CIpcTrcServer* CIpcTrcServer::GetInstance()
 //------------------------------------------------------------------------------
 {
+    QMutexLocker mtxLocker(&s_mtx);
+
     CIpcTrcServer* pIpcTrcServer = nullptr;
 
-    CTrcServer* pTrcServer = CTrcServer::GetInstance(i_strName);
+    CTrcServer* pTrcServer = CTrcServer::GetInstance();
 
     if( pTrcServer != nullptr )
     {
@@ -244,41 +246,48 @@ CIpcTrcServer* CIpcTrcServer::GetInstance( const QString& i_strName )
 } // GetInstance
 
 //------------------------------------------------------------------------------
-/*! Creates a trace server with the given name if a trace server with the given
-    name is not already existing.
+/*! Creates the trace server if the trace server is not already existing.
 
-    If a trace server with the given name is already existing the reference to
-    the existing trace server is returned and a reference counter is incremented.
+    If the trace server is already existing the reference to the existing
+    trace server is returned and a reference counter is incremented.
 
-    \param i_strName [in] Name of the trace server (default "ZSTrcServer")
-    \param i_iTrcDetailLevel [in]
+    @param i_iTrcDetailLevel [in]
         If the methods of the trace server itself should be logged a value
         greater than 0 (ETraceDetailLevelNone) could be passed here.
+    @param i_iTrcDetailLevelIpcServer [in]
+        If the methods of the trace server's Ipc Server should be logged
+        a value greater than 0 (ETraceDetailLevelNone) could be passed here.
+    @param i_iTrcDetailLevelIpcServerGateway [in]
+        If the methods of the trace server's Ipc Server's Gateway should
+        be logged a value greater than 0 (ETraceDetailLevelNone) could be
+        passed here.
 
     \return Pointer to trace server instance.
 */
-CIpcTrcServer* CIpcTrcServer::CreateInstance( const QString& i_strName, int i_iTrcDetailLevel )
+CIpcTrcServer* CIpcTrcServer::CreateInstance(
+    int i_iTrcDetailLevel,
+    int i_iTrcDetailLevelIpcServer,
+    int i_iTrcDetailLevelIpcServerGateway )
 //------------------------------------------------------------------------------
 {
-    // The class may be accessed from within different thread contexts and
-    // therefore accessing the class must be serialized using a mutex ..
     QMutexLocker mtxLocker(&s_mtx);
 
-    CTrcServer* pTrcServer = s_hshpInstances.value(i_strName, nullptr);
+    CTrcServer* pTrcServer = s_pTheInst;
 
     CIpcTrcServer* pIpcTrcServer = nullptr;
 
-    if (pTrcServer == nullptr)
+    if( pTrcServer == nullptr )
     {
-        pIpcTrcServer = new CIpcTrcServer(i_strName, i_iTrcDetailLevel);
+        pIpcTrcServer = new CIpcTrcServer(
+            i_iTrcDetailLevel, i_iTrcDetailLevelIpcServer, i_iTrcDetailLevelIpcServerGateway);
     }
     else
     {
         pIpcTrcServer = dynamic_cast<CIpcTrcServer*>(pTrcServer);
 
-        if (pIpcTrcServer == nullptr)
+        if( pIpcTrcServer == nullptr )
         {
-            throw CException(__FILE__, __LINE__, EResultObjAlreadyInList, "CTrcServer::" + i_strName);
+            throw CException(__FILE__, __LINE__, EResultSingletonClassAlreadyInstantiated, "ZS::Trace::CTrcServer");
         }
     }
 
@@ -300,7 +309,7 @@ CIpcTrcServer* CIpcTrcServer::CreateInstance( const QString& i_strName, int i_iT
 } // CreateInstance
 
 //------------------------------------------------------------------------------
-/*! @brief Releases the given trace server instance by name.
+/*! @brief Releases the trace server.
 
     Before invoking this method a reference to the instance must have been retrieved
     with a createInstance call.
@@ -309,32 +318,11 @@ CIpcTrcServer* CIpcTrcServer::CreateInstance( const QString& i_strName, int i_iT
     If the reference counter reaches 0 the instance will be destroyed.
 
     @note A reference returned by getInstance MUST NOT be freed.
-
-    @param Name of the trace server to be released.
 */
-void CIpcTrcServer::ReleaseInstance( const QString& i_strName )
+void CIpcTrcServer::ReleaseInstance()
 //------------------------------------------------------------------------------
 {
-    CTrcServer::ReleaseInstance(i_strName);
-}
-
-//------------------------------------------------------------------------------
-/*! @brief Releases the given trace server instance.
-
-    Before invoking this method a reference to the instance must have been retrieved
-    with a createInstance call.
-
-    This method decrements the reference counter of the instance.
-    If the reference counter reaches 0 the instance will be destroyed.
-
-    @note A reference returned by getInstance MUST NOT be freed.
-
-    @param Reference to trace server which has been returned by a previous createInstance method.
-*/
-void CIpcTrcServer::ReleaseInstance( CIpcTrcServer* i_pTrcServer )
-//------------------------------------------------------------------------------
-{
-    CTrcServer::ReleaseInstance(i_pTrcServer);
+    CTrcServer::ReleaseInstance();
 }
 
 /*==============================================================================
@@ -349,18 +337,25 @@ protected: // ctors and dtor
 
     The IpcServer of the trace server uses the block type "<Len>[Data]".
 
-    \param i_strName [in] Name of the trace server (default "ZSTrcServer")
-    \param i_iTrcDetailLevel [in]
+    @param i_iTrcDetailLevel [in]
         If the methods of the trace server itself should be logged a value
         greater than 0 (ETraceDetailLevelNone) could be passed here.
+    @param i_iTrcDetailLevelIpcServer [in]
+        If the methods of the trace server's Ipc Server should be logged
+        a value greater than 0 (ETraceDetailLevelNone) could be passed here.
+    @param i_iTrcDetailLevelIpcServerGateway [in]
+        If the methods of the trace server's gateway should be logged a value
+        greater than 0 (ETraceDetailLevelNone) could be passed here.
 */
-CIpcTrcServer::CIpcTrcServer( const QString& i_strName, int i_iTrcDetailLevel ) :
+CIpcTrcServer::CIpcTrcServer(
+    int i_iTrcDetailLevel,
+    int i_iTrcDetailLevelIpcServer,
+    int i_iTrcDetailLevelIpcServerGateway ) :
 //------------------------------------------------------------------------------
-    CTrcServer(i_strName, i_iTrcDetailLevel),
+    CTrcServer(i_iTrcDetailLevel),
     m_pIpcServer(nullptr),
     m_bIsBeingDestroyed(false),
     m_ariSocketIdsConnectedTrcClients(),
-    m_ariSocketIdsRegisteredTrcClients(),
     m_bOnReceivedDataUpdateInProcess(false),
     m_pMtxListTrcDataCached(nullptr),
     m_iTrcDataCachedCount(0),
@@ -385,7 +380,13 @@ CIpcTrcServer::CIpcTrcServer( const QString& i_strName, int i_iTrcDetailLevel ) 
     // And by the way - tracing the tracer is not always necessary.
 
     // The trace server must aggregate the IpcServer to avoid multiple inheritance of QObject.
-    m_pIpcServer = new CServer(i_strName, true, m_pTrcMthFile, m_iTrcDetailLevel),
+    // The parent object got to be set to avoid that the IpcServer tries to register a trace
+    // admin object at myself.
+    m_pIpcServer = new CServer(
+        /* strObjName                    */ objectName(),
+        /* bMultiThreadedAccess          */ true,
+        /* iTrcMthFileDetailLevel        */ i_iTrcDetailLevelIpcServer,
+        /* iTrcMthFileDetailLevelGateway */ i_iTrcDetailLevelIpcServerGateway );
 
     m_pMtxListTrcDataCached = new QMutex(QMutex::Recursive);
 
@@ -481,10 +482,10 @@ CIpcTrcServer::~CIpcTrcServer()
     {
     }
 
+    // I am the parent of the IpcServer. The IpcServer will be destroyed by Qt.
     m_pIpcServer = nullptr;
     m_bIsBeingDestroyed = false;
     //m_ariSocketIdsConnectedTrcClients.clear();
-    //m_ariSocketIdsRegisteredTrcClients.clear();
     m_bOnReceivedDataUpdateInProcess = false;
     m_pMtxListTrcDataCached = nullptr;
     m_iTrcDataCachedCount = 0;
@@ -511,8 +512,6 @@ public: // overridables of base class CTrcServer
 void CIpcTrcServer::setEnabled( bool i_bEnabled )
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(&s_mtx);
-
     QString strMthInArgs;
 
     if( m_pTrcMthFile != nullptr && m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
@@ -530,11 +529,11 @@ void CIpcTrcServer::setEnabled( bool i_bEnabled )
         /* strMethod          */ "setEnabled",
         /* strMthInArgs       */ strMthInArgs );
 
+    CMutexLocker mtxLocker(&m_mtx);
+
     if( i_bEnabled != m_trcSettings.m_bEnabled )
     {
-        m_trcSettings.m_bEnabled = i_bEnabled;
-
-        emit traceSettingsChanged(this);
+        CTrcServer::setEnabled(i_bEnabled);
 
         if( !m_bOnReceivedDataUpdateInProcess && isConnected() )
         {
@@ -554,8 +553,6 @@ void CIpcTrcServer::setEnabled( bool i_bEnabled )
 void CIpcTrcServer::setNewTrcAdminObjsEnabledAsDefault( bool i_bEnabled )
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(&s_mtx);
-
     QString strMthInArgs;
 
     if( m_pTrcMthFile != nullptr && m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
@@ -573,11 +570,11 @@ void CIpcTrcServer::setNewTrcAdminObjsEnabledAsDefault( bool i_bEnabled )
         /* strMethod          */ "setNewTrcAdminObjsEnabledAsDefault",
         /* strMthInArgs       */ strMthInArgs );
 
+    CMutexLocker mtxLocker(&m_mtx);
+
     if( m_trcSettings.m_bNewTrcAdminObjsEnabledAsDefault != i_bEnabled )
     {
-        m_trcSettings.m_bNewTrcAdminObjsEnabledAsDefault = i_bEnabled;
-
-        emit traceSettingsChanged(this);
+        CTrcServer::setNewTrcAdminObjsEnabledAsDefault(i_bEnabled);
 
         if( !m_bOnReceivedDataUpdateInProcess && isConnected() )
         {
@@ -597,8 +594,6 @@ void CIpcTrcServer::setNewTrcAdminObjsEnabledAsDefault( bool i_bEnabled )
 void CIpcTrcServer::setNewTrcAdminObjsDefaultDetailLevel( int i_iDetailLevel )
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(&s_mtx);
-
     QString strMthInArgs;
 
     if( m_pTrcMthFile != nullptr && m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
@@ -616,11 +611,11 @@ void CIpcTrcServer::setNewTrcAdminObjsDefaultDetailLevel( int i_iDetailLevel )
         /* strMethod          */ "setNewTrcAdminObjsDefaultDetailLevel",
         /* strMthInArgs       */ strMthInArgs );
 
+    CMutexLocker mtxLocker(&m_mtx);
+
     if( m_trcSettings.m_iNewTrcAdminObjsDefaultDetailLevel != i_iDetailLevel )
     {
-        m_trcSettings.m_iNewTrcAdminObjsDefaultDetailLevel = i_iDetailLevel;
-
-        emit traceSettingsChanged(this);
+        CTrcServer::setNewTrcAdminObjsDefaultDetailLevel(i_iDetailLevel);
 
         if( !m_bOnReceivedDataUpdateInProcess && isConnected() )
         {
@@ -644,8 +639,6 @@ public: // overridables of base class CTrcServer
 void CIpcTrcServer::setAdminObjFileAbsoluteFilePath( const QString& i_strAbsFilePath )
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(&s_mtx);
-
     QString strMthInArgs;
 
     if( m_pTrcMthFile != nullptr && m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
@@ -663,11 +656,11 @@ void CIpcTrcServer::setAdminObjFileAbsoluteFilePath( const QString& i_strAbsFile
         /* strMethod          */ "setAdminObjFileAbsoluteFilePath",
         /* strMthInArgs       */ strMthInArgs );
 
+    CMutexLocker mtxLocker(&m_mtx);
+
     if( m_trcSettings.m_strAdminObjFileAbsFilePath != i_strAbsFilePath )
     {
-        m_trcSettings.m_strAdminObjFileAbsFilePath = i_strAbsFilePath;
-
-        emit traceSettingsChanged(this);
+        CTrcServer::setAdminObjFileAbsoluteFilePath(i_strAbsFilePath);
 
         if( !m_bOnReceivedDataUpdateInProcess && isConnected() )
         {
@@ -691,8 +684,6 @@ public: // overridables of base class CTrcServer
 void CIpcTrcServer::setUseLocalTrcFile( bool i_bUse )
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(&s_mtx);
-
     QString strMthInArgs;
 
     if( m_pTrcMthFile != nullptr && m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
@@ -710,16 +701,11 @@ void CIpcTrcServer::setUseLocalTrcFile( bool i_bUse )
         /* strMethod          */ "setUseLocalTrcFile",
         /* strMthInArgs       */ strMthInArgs );
 
+    CMutexLocker mtxLocker(&m_mtx);
+
     if( m_trcSettings.m_bUseLocalTrcFile != i_bUse )
     {
-        m_trcSettings.m_bUseLocalTrcFile = i_bUse;
-
-        if( !m_trcSettings.m_bUseLocalTrcFile && m_pTrcMthFile != nullptr )
-        {
-            m_pTrcMthFile->close();
-        }
-
-        emit traceSettingsChanged(this);
+        CTrcServer::setUseLocalTrcFile(i_bUse);
 
         if( !m_bOnReceivedDataUpdateInProcess && isConnected() )
         {
@@ -739,8 +725,6 @@ void CIpcTrcServer::setUseLocalTrcFile( bool i_bUse )
 void CIpcTrcServer::setLocalTrcFileAbsoluteFilePath( const QString& i_strAbsFilePath )
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(&s_mtx);
-
     QString strMthInArgs;
 
     if( m_pTrcMthFile != nullptr && m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
@@ -758,38 +742,12 @@ void CIpcTrcServer::setLocalTrcFileAbsoluteFilePath( const QString& i_strAbsFile
         /* strMethod          */ "setLocalTrcFileAbsoluteFilePath",
         /* strMthInArgs       */ strMthInArgs );
 
+    CMutexLocker mtxLocker(&m_mtx);
+
     if( (m_trcSettings.m_strLocalTrcFileAbsFilePath != i_strAbsFilePath)
      || (m_pTrcMthFile == nullptr && !m_trcSettings.m_strLocalTrcFileAbsFilePath.isEmpty()) )
     {
-        m_trcSettings.m_strLocalTrcFileAbsFilePath = i_strAbsFilePath;
-
-        if( m_trcSettings.m_strLocalTrcFileAbsFilePath.isEmpty() )
-        {
-            if( m_pTrcMthFile != nullptr )
-            {
-                CTrcMthFile::Free(m_pTrcMthFile);
-                m_pTrcMthFile = nullptr;
-            }
-        }
-        else // if( !m_trcSettings.m_strLocalTrcFileAbsFilePath.isEmpty() )
-        {
-            if( m_pTrcMthFile != nullptr && m_pTrcMthFile->absoluteFilePath() != m_trcSettings.m_strLocalTrcFileAbsFilePath )
-            {
-                CTrcMthFile::Free(m_pTrcMthFile);
-                m_pTrcMthFile = nullptr;
-            }
-            if( m_pTrcMthFile == nullptr )
-            {
-                m_pTrcMthFile = CTrcMthFile::Alloc(m_trcSettings.m_strLocalTrcFileAbsFilePath);
-            }
-            m_pTrcMthFile->setAutoSaveInterval(m_trcSettings.m_iLocalTrcFileAutoSaveInterval_ms);
-            m_pTrcMthFile->setSubFileCountMax(m_trcSettings.m_iLocalTrcFileSubFileCountMax);
-            m_pTrcMthFile->setSubFileLineCountMax(m_trcSettings.m_iLocalTrcFileSubFileLineCountMax);
-            m_pTrcMthFile->setCloseFileAfterEachWrite(m_trcSettings.m_bLocalTrcFileCloseFileAfterEachWrite);
-
-        } // if( !m_trcSettings.m_strLocalTrcFileAbsFilePath.isEmpty() )
-
-        emit traceSettingsChanged(this);
+        CTrcServer::setLocalTrcFileAbsoluteFilePath(i_strAbsFilePath);
 
         if( !m_bOnReceivedDataUpdateInProcess && isConnected() )
         {
@@ -809,8 +767,6 @@ void CIpcTrcServer::setLocalTrcFileAbsoluteFilePath( const QString& i_strAbsFile
 void CIpcTrcServer::setLocalTrcFileAutoSaveIntervalInMs( int i_iAutoSaveInterval_ms )
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(&s_mtx);
-
     QString strMthInArgs;
 
     if( m_pTrcMthFile != nullptr && m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
@@ -828,19 +784,11 @@ void CIpcTrcServer::setLocalTrcFileAutoSaveIntervalInMs( int i_iAutoSaveInterval
         /* strMethod          */ "setLocalTrcFileAutoSaveIntervalInMs",
         /* strMthInArgs       */ strMthInArgs );
 
+    CMutexLocker mtxLocker(&m_mtx);
+
     if( m_trcSettings.m_iLocalTrcFileAutoSaveInterval_ms != i_iAutoSaveInterval_ms )
     {
-        m_trcSettings.m_iLocalTrcFileAutoSaveInterval_ms = i_iAutoSaveInterval_ms;
-
-        if( m_pTrcMthFile != nullptr )
-        {
-            if( m_pTrcMthFile->getAutoSaveInterval() != i_iAutoSaveInterval_ms )
-            {
-                m_pTrcMthFile->setAutoSaveInterval(i_iAutoSaveInterval_ms);
-            }
-        }
-
-        emit traceSettingsChanged(this);
+        CTrcServer::setLocalTrcFileAutoSaveIntervalInMs(i_iAutoSaveInterval_ms);
 
         if( !m_bOnReceivedDataUpdateInProcess && isConnected() )
         {
@@ -860,8 +808,6 @@ void CIpcTrcServer::setLocalTrcFileAutoSaveIntervalInMs( int i_iAutoSaveInterval
 void CIpcTrcServer::setLocalTrcFileSubFileCountMax( int i_iCountMax )
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(&s_mtx);
-
     QString strMthInArgs;
 
     if( m_pTrcMthFile != nullptr && m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
@@ -879,19 +825,11 @@ void CIpcTrcServer::setLocalTrcFileSubFileCountMax( int i_iCountMax )
         /* strMethod          */ "setLocalTrcFileSubFileCountMax",
         /* strMthInArgs       */ strMthInArgs );
 
+    CMutexLocker mtxLocker(&m_mtx);
+
     if( m_trcSettings.m_iLocalTrcFileSubFileCountMax != i_iCountMax )
     {
-        m_trcSettings.m_iLocalTrcFileSubFileCountMax = i_iCountMax;
-
-        if( m_pTrcMthFile != nullptr )
-        {
-            if( m_pTrcMthFile->getSubFileCountMax() != i_iCountMax )
-            {
-                m_pTrcMthFile->setSubFileCountMax(i_iCountMax);
-            }
-        }
-
-        emit traceSettingsChanged(this);
+        CTrcServer::setLocalTrcFileSubFileCountMax(i_iCountMax);
 
         if( !m_bOnReceivedDataUpdateInProcess && isConnected() )
         {
@@ -911,8 +849,6 @@ void CIpcTrcServer::setLocalTrcFileSubFileCountMax( int i_iCountMax )
 void CIpcTrcServer::setLocalTrcFileSubFileLineCountMax( int i_iCountMax )
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(&s_mtx);
-
     QString strMthInArgs;
 
     if( m_pTrcMthFile != nullptr && m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
@@ -930,19 +866,11 @@ void CIpcTrcServer::setLocalTrcFileSubFileLineCountMax( int i_iCountMax )
         /* strMethod          */ "setLocalTrcFileSubFileLineCountMax",
         /* strMthInArgs       */ strMthInArgs );
 
+    CMutexLocker mtxLocker(&m_mtx);
+
     if( m_trcSettings.m_iLocalTrcFileSubFileLineCountMax != i_iCountMax )
     {
-        m_trcSettings.m_iLocalTrcFileSubFileLineCountMax = i_iCountMax;
-
-        if( m_pTrcMthFile != nullptr )
-        {
-            if( m_pTrcMthFile->getSubFileLineCountMax() != i_iCountMax )
-            {
-                m_pTrcMthFile->setSubFileLineCountMax(i_iCountMax);
-            }
-        }
-
-        emit traceSettingsChanged(this);
+        CTrcServer::setLocalTrcFileSubFileLineCountMax(i_iCountMax);
 
         if( !m_bOnReceivedDataUpdateInProcess && isConnected() )
         {
@@ -962,8 +890,6 @@ void CIpcTrcServer::setLocalTrcFileSubFileLineCountMax( int i_iCountMax )
 void CIpcTrcServer::setLocalTrcFileCloseFileAfterEachWrite( bool i_bCloseFile )
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(&s_mtx);
-
     QString strMthInArgs;
 
     if( m_pTrcMthFile != nullptr && m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
@@ -981,19 +907,11 @@ void CIpcTrcServer::setLocalTrcFileCloseFileAfterEachWrite( bool i_bCloseFile )
         /* strMethod          */ "setLocalTrcFileCloseFileAfterEachWrite",
         /* strMthInArgs       */ strMthInArgs );
 
+    CMutexLocker mtxLocker(&m_mtx);
+
     if( m_trcSettings.m_bLocalTrcFileCloseFileAfterEachWrite != i_bCloseFile )
     {
-        m_trcSettings.m_bLocalTrcFileCloseFileAfterEachWrite = i_bCloseFile;
-
-        if( m_pTrcMthFile != nullptr )
-        {
-            if( m_pTrcMthFile->getCloseFileAfterEachWrite() != i_bCloseFile )
-            {
-                m_pTrcMthFile->setCloseFileAfterEachWrite(i_bCloseFile);
-            }
-        }
-
-        emit traceSettingsChanged(this);
+        CTrcServer::setLocalTrcFileCloseFileAfterEachWrite(i_bCloseFile);
 
         if( !m_bOnReceivedDataUpdateInProcess && isConnected() )
         {
@@ -1017,8 +935,6 @@ public: // instance methods (trace settings)
 void CIpcTrcServer::setCacheTrcDataIfNotConnected( bool i_bCacheData )
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(&s_mtx);
-
     QString strMthInArgs;
 
     if( m_pTrcMthFile != nullptr && m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
@@ -1036,11 +952,11 @@ void CIpcTrcServer::setCacheTrcDataIfNotConnected( bool i_bCacheData )
         /* strMethod          */ "setCacheTrcDataIfNotConnected",
         /* strMthInArgs       */ strMthInArgs );
 
+    CMutexLocker mtxLocker(&m_mtx);
+
     if( m_trcSettings.m_bCacheDataIfNotConnected != i_bCacheData )
     {
-        m_trcSettings.m_bCacheDataIfNotConnected = i_bCacheData;
-
-        emit traceSettingsChanged(this);
+        CTrcServer::setCacheTrcDataIfNotConnected(i_bCacheData);
 
         if( !m_bOnReceivedDataUpdateInProcess && isConnected() )
         {
@@ -1060,8 +976,6 @@ void CIpcTrcServer::setCacheTrcDataIfNotConnected( bool i_bCacheData )
 void CIpcTrcServer::setCacheTrcDataMaxArrLen( int i_iMaxArrLen )
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(&s_mtx);
-
     QString strMthInArgs;
 
     if( m_pTrcMthFile != nullptr && m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
@@ -1079,11 +993,11 @@ void CIpcTrcServer::setCacheTrcDataMaxArrLen( int i_iMaxArrLen )
         /* strMethod          */ "setCacheTrcDataMaxArrLen",
         /* strMthInArgs       */ strMthInArgs );
 
+    CMutexLocker mtxLocker(&m_mtx);
+
     if( m_trcSettings.m_iCacheDataMaxArrLen != i_iMaxArrLen )
     {
-        m_trcSettings.m_iCacheDataMaxArrLen = i_iMaxArrLen;
-
-        emit traceSettingsChanged(this);
+        CTrcServer::setCacheTrcDataMaxArrLen(i_iMaxArrLen);
 
         if( !m_bOnReceivedDataUpdateInProcess && isConnected() )
         {
@@ -1107,6 +1021,22 @@ public: // instance methods to enable and disable the client and server
 void CIpcTrcServer::setTraceSettings( const STrcServerSettings& i_settings )
 //------------------------------------------------------------------------------
 {
+    QString strMthInArgs;
+
+    if( m_pTrcMthFile != nullptr && m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
+    {
+    }
+
+    CMethodTracer mthTracer(
+        /* pTrcMthFile        */ m_pTrcMthFile,
+        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
+        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* strNameSpace       */ nameSpace(),
+        /* strClassName       */ className(),
+        /* strObjName         */ objectName(),
+        /* strMethod          */ "setTraceSettings",
+        /* strMthInArgs       */ strMthInArgs );
+
     if( m_trcSettings != i_settings )
     {
         // If not called on receiving trace settings from the server and if the client is connected ..
@@ -1171,33 +1101,40 @@ void CIpcTrcServer::setTraceSettings( const STrcServerSettings& i_settings )
             sendData( ESocketIdAllSockets, str2ByteArr(strMsg) );
         }
 
-        m_trcSettings = i_settings;
-
-        // If not called on receiving trace settings from the server ..
-        if( !m_bOnReceivedDataUpdateInProcess )
-        {
-            emit traceSettingsChanged(this);
-        }
+        CTrcServer::setTraceSettings(i_settings);
     }
-}
+
+} // setTraceSettings
 
 /*==============================================================================
 public: // overridables of base class CTrcServer
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief Traces entering a method.
+
+    This method is intended for such trace calls if the transferred trace admin
+    object was created as an instance tracer and has a valid object name assigned
+    or if a class method should be traced.
+
+    The threads call depth counter is incremented after the trace string has been output.
+
+    @param i_pTrcAdminObj [in] Pointer to trace admin object.
+        In addition to the trace detail level the name space, the class name
+        and - in case of an instance tracer - the instance name is taken from
+        the trace admin object.
+    @param i_strMethod [in] Name of the entered method.
+    @param i_strMethodInArgs [in] String describing the input arguments.
+*/
 void CIpcTrcServer::traceMethodEnter(
     const CTrcAdminObj* i_pTrcAdminObj,
     const QString&      i_strMethod,
     const QString&      i_strMethodInArgs )
 //------------------------------------------------------------------------------
 {
-    // The class (and all instances of the class) may be accessed from within
-    // different thread contexts and therefore accessing the class and the
-    // instances must be serialized using a mutex ..
-    QMutexLocker mtxLocker(&s_mtx);
+    CMutexLocker mtxLocker(&m_mtx);
 
-    if( i_pTrcAdminObj != nullptr && i_pTrcAdminObj->isActive(ETraceDetailLevelMethodCalls) && isEnabled() && isActive() )
+    if( i_pTrcAdminObj != nullptr && (i_pTrcAdminObj->getTraceDetailLevel() > ETraceDetailLevelNone) && isEnabled() && isActive() )
     {
         addEntry(
             /* strThreadName */ currentThreadName(),
@@ -1213,6 +1150,22 @@ void CIpcTrcServer::traceMethodEnter(
 } // traceMethodEnter
 
 //------------------------------------------------------------------------------
+/*! @brief Traces entering a method.
+
+    This method is intended for such trace calls if the transferred trace admin
+    object was created as an class tracer and has no valid object name assigned
+    and if an instance method should be traced.
+
+    The threads call depth counter is incremented after the trace string has been output.
+
+    @param i_pTrcAdminObj [in] Pointer to trace admin object.
+        In addition to the trace detail level the name space, the class name
+        and - in case of an instance tracer - the instance name is taken from
+        the trace admin object.
+    @param i_strObjName [in] Object name of the instance for which the method is applied.
+    @param i_strMethod [in] Name of the entered method.
+    @param i_strMethodInArgs [in] String describing the input arguments.
+*/
 void CIpcTrcServer::traceMethodEnter(
     const CTrcAdminObj* i_pTrcAdminObj,
     const QString&      i_strObjName,
@@ -1220,12 +1173,9 @@ void CIpcTrcServer::traceMethodEnter(
     const QString&      i_strMethodInArgs )
 //------------------------------------------------------------------------------
 {
-    // The class (and all instances of the class) may be accessed from within
-    // different thread contexts and therefore accessing the class and the
-    // instances must be serialized using a mutex ..
-    QMutexLocker mtxLocker(&s_mtx);
+    CMutexLocker mtxLocker(&m_mtx);
 
-    if( i_pTrcAdminObj != nullptr && i_pTrcAdminObj->isActive(ETraceDetailLevelMethodCalls) && isEnabled() && isActive() )
+    if( i_pTrcAdminObj != nullptr && (i_pTrcAdminObj->getTraceDetailLevel() > ETraceDetailLevelNone) && isEnabled() && isActive() )
     {
         addEntry(
             /* strThreadName */ currentThreadName(),
@@ -1241,23 +1191,32 @@ void CIpcTrcServer::traceMethodEnter(
 } // traceMethodEnter
 
 //------------------------------------------------------------------------------
+/*! @brief Traces additional info within a method call.
+
+    Usually used to trace internal states or additional runtime info which might
+    be helpful.
+
+    This method is intended for such trace calls if the transferred trace admin
+    object was created as an instance tracer and has a valid object name assigned
+    or if a class method should be traced.
+
+    @param i_pTrcAdminObj [in] Pointer to trace admin object.
+        In addition to the trace detail level the name space, the class name
+        and - in case of an instance tracer - the instance name is taken from
+        the trace admin object.
+    @param i_strMethod [in] Name of the entered method.
+    @param i_strAddInfo [in] String containing the additional info to be output
+        during the method call.
+*/
 void CIpcTrcServer::traceMethod(
     const CTrcAdminObj* i_pTrcAdminObj,
     const QString&      i_strMethod,
     const QString&      i_strAddInfo )
 //------------------------------------------------------------------------------
 {
-    // The class (and all instances of the class) may be accessed from within
-    // different thread contexts and therefore accessing the class and the
-    // instances must be serialized using a mutex ..
-    QMutexLocker mtxLocker(&s_mtx);
+    CMutexLocker mtxLocker(&m_mtx);
 
-    // Send trace message to the trace server.
-    // Using messages avoids using a mutex to protect the list of traced method
-    // calls as "traceMethodEnter" is usually called from within different
-    // thread contexts.
-
-    if( i_pTrcAdminObj != nullptr && i_pTrcAdminObj->isActive(ETraceDetailLevelMethodCalls) && isEnabled() && isActive() )
+    if( i_pTrcAdminObj != nullptr && (i_pTrcAdminObj->getTraceDetailLevel() > ETraceDetailLevelNone) && isEnabled() && isActive() )
     {
         addEntry(
             /* strThreadName */ currentThreadName(),
@@ -1273,6 +1232,23 @@ void CIpcTrcServer::traceMethod(
 } // traceMethod
 
 //------------------------------------------------------------------------------
+/*! @brief Traces entering a method.
+
+    This method is intended for such trace calls if the transferred trace admin
+    object was created as an class tracer and has no valid object name assigned
+    and if an instance method should be traced.
+
+    The threads call depth counter is not changed by this method.
+
+    @param i_pTrcAdminObj [in] Pointer to trace admin object.
+        In addition to the trace detail level the name space, the class name
+        and - in case of an instance tracer - the instance name is taken from
+        the trace admin object.
+    @param i_strObjName [in] Object name of the instance for which the method is applied.
+    @param i_strMethod [in] Name of the entered method.
+    @param i_strAddInfo [in] String containing the additional info to be output
+        during the method call.
+*/
 void CIpcTrcServer::traceMethod(
     const CTrcAdminObj* i_pTrcAdminObj,
     const QString&      i_strObjName,
@@ -1280,17 +1256,9 @@ void CIpcTrcServer::traceMethod(
     const QString&      i_strAddInfo )
 //------------------------------------------------------------------------------
 {
-    // The class (and all instances of the class) may be accessed from within
-    // different thread contexts and therefore accessing the class and the
-    // instances must be serialized using a mutex ..
-    QMutexLocker mtxLocker(&s_mtx);
+    CMutexLocker mtxLocker(&m_mtx);
 
-    // Send trace message to the trace server.
-    // Using messages avoids using a mutex to protect the list of traced method
-    // calls as "traceMethodEnter" is usually called from within different
-    // thread contexts.
-
-    if( i_pTrcAdminObj != nullptr && i_pTrcAdminObj->isActive(ETraceDetailLevelMethodCalls) && isEnabled() && isActive() )
+    if( i_pTrcAdminObj != nullptr && (i_pTrcAdminObj->getTraceDetailLevel() > ETraceDetailLevelNone) && isEnabled() && isActive() )
     {
         addEntry(
             /* strThreadName */ currentThreadName(),
@@ -1306,6 +1274,22 @@ void CIpcTrcServer::traceMethod(
 } // traceMethod
 
 //------------------------------------------------------------------------------
+/*! @brief Traces leaving a method.
+
+    This method is intended for such trace calls if the transferred trace admin
+    object was created as an instance tracer and has a valid object name assigned
+    or if a class method should be traced.
+
+    The threads call depth counter is decremented before the trace string is output.
+
+    @param i_pTrcAdminObj [in] Pointer to trace admin object.
+        In addition to the trace detail level the name space, the class name
+        and - in case of an instance tracer - the instance name is taken from
+        the trace admin object.
+    @param i_strMethod [in] Name of the entered method.
+    @param i_strMethodReturn [in] String describing the return value of the method.
+    @param i_strMethodOutArgs [in] String describing the output arguments of the method.
+*/
 void CIpcTrcServer::traceMethodLeave(
     const CTrcAdminObj* i_pTrcAdminObj,
     const QString&      i_strMethod,
@@ -1313,17 +1297,9 @@ void CIpcTrcServer::traceMethodLeave(
     const QString&      i_strMethodOutArgs )
 //------------------------------------------------------------------------------
 {
-    // The class (and all instances of the class) may be accessed from within
-    // different thread contexts and therefore accessing the class and the
-    // instances must be serialized using a mutex ..
-    QMutexLocker mtxLocker(&s_mtx);
+    CMutexLocker mtxLocker(&m_mtx);
 
-    // Send trace message to the trace server.
-    // Using messages avoids using a mutex to protect the list of traced method
-    // calls as "traceMethodEnter" is usually called from within different
-    // thread contexts.
-
-    if( i_pTrcAdminObj != nullptr && i_pTrcAdminObj->isActive(ETraceDetailLevelMethodCalls) && isEnabled() && isActive() )
+    if( i_pTrcAdminObj != nullptr && (i_pTrcAdminObj->getTraceDetailLevel() > ETraceDetailLevelNone) && isEnabled() && isActive() )
     {
         addEntry(
             /* strThreadName */ currentThreadName(),
@@ -1340,6 +1316,23 @@ void CIpcTrcServer::traceMethodLeave(
 } // traceMethodLeave
 
 //------------------------------------------------------------------------------
+/*! @brief Traces leaving a method.
+
+    This method is intended for such trace calls if the transferred trace admin
+    object was created as an class tracer and has no valid object name assigned
+    and if an instance method should be traced.
+
+    The threads call depth counter is decremented before the trace string is output.
+
+    @param i_pTrcAdminObj [in] Pointer to trace admin object.
+        In addition to the trace detail level the name space, the class name
+        and - in case of an instance tracer - the instance name is taken from
+        the trace admin object.
+    @param i_strObjName [in] Object name of the instance for which the method is applied.
+    @param i_strMethod [in] Name of the entered method.
+    @param i_strMethodReturn [in] String describing the return value of the method.
+    @param i_strMethodOutArgs [in] String describing the output arguments of the method.
+*/
 void CIpcTrcServer::traceMethodLeave(
     const CTrcAdminObj* i_pTrcAdminObj,
     const QString&      i_strObjName,
@@ -1348,17 +1341,9 @@ void CIpcTrcServer::traceMethodLeave(
     const QString&      i_strMethodOutArgs )
 //------------------------------------------------------------------------------
 {
-    // The class (and all instances of the class) may be accessed from within
-    // different thread contexts and therefore accessing the class and the
-    // instances must be serialized using a mutex ..
-    QMutexLocker mtxLocker(&s_mtx);
+    CMutexLocker mtxLocker(&m_mtx);
 
-    // Send trace message to the trace server.
-    // Using messages avoids using a mutex to protect the list of traced method
-    // calls as "traceMethodEnter" is usually called from within different
-    // thread contexts.
-
-    if( i_pTrcAdminObj != nullptr && i_pTrcAdminObj->isActive(ETraceDetailLevelMethodCalls) && isEnabled() && isActive() )
+    if( i_pTrcAdminObj != nullptr && (i_pTrcAdminObj->getTraceDetailLevel() > ETraceDetailLevelNone) && isEnabled() && isActive() )
     {
         addEntry(
             /* strThreadName */ currentThreadName(),
@@ -1415,14 +1400,10 @@ void CIpcTrcServer::addEntry(
 
     if( m_trcSettings.m_bCacheDataIfNotConnected && m_trcSettings.m_iCacheDataMaxArrLen > 0 )
     {
-        // A client must have queried the trace admin objects in order to assign the
-        // received trace data to the trace admin objects by their index tree ids.
-        // Furthermore the client must have registered itself via a request select
-        // command for trace method data.
-        // Please note that only the first registered client will received the cached data.
+        // Please note that only the first connected client will received the cached data.
 
-        // If no client is registered for receiving online trace data yet ..
-        if( m_ariSocketIdsRegisteredTrcClients.length() == 0 )
+        // If no client is connected ..
+        if( m_ariSocketIdsConnectedTrcClients.length() == 0 )
         {
             // .. the trace data will be cached.
             bAdd2Cache = true;
@@ -1490,8 +1471,11 @@ void CIpcTrcServer::addEntry(
 
     } // if( bAdd2Cache )
 
-    else if( m_ariSocketIdsRegisteredTrcClients.length() > 0 )
+    else if( m_ariSocketIdsConnectedTrcClients.length() > 0 )
     {
+        // Please note that the cached data should have already been sent to the first
+        // conencted client and cleared afterwards. So the cache must be empty here.
+
         QString strMsg;
 
         strMsg += systemMsgType2Str(MsgProtocol::ESystemMsgTypeInd) + " ";
@@ -1513,11 +1497,11 @@ void CIpcTrcServer::addEntry(
 
         QByteArray byteArrMsg = str2ByteArr(strMsg);
 
-        for( auto& iSocketId : m_ariSocketIdsRegisteredTrcClients )
+        for( auto& iSocketId : m_ariSocketIdsConnectedTrcClients )
         {
             sendData(iSocketId, byteArrMsg);
         }
-    } // if( !bAdd2Cache && m_ariSocketIdsRegisteredTrcClients.length() > 0 )
+    } // if( !bAdd2Cache && m_ariSocketIdsConnectedTrcClients.length() > 0 )
 
 } // addEntry
 
@@ -2042,6 +2026,115 @@ void CIpcTrcServer::sendBranch(
 } // sendBranch
 
 /*==============================================================================
+protected: // auxiliary methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Sends the server settings including application and server name to
+           the connected client.
+
+    @param i_iSocketId [in] Socket of the connected client.
+*/
+void CIpcTrcServer::sendServerSettings(int i_iSocketId)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+
+    if( m_pTrcMthFile != nullptr && m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
+    {
+    }
+
+    CMethodTracer mthTracer(
+        /* pTrcMthFile        */ m_pTrcMthFile,
+        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
+        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* strNameSpace       */ nameSpace(),
+        /* strClassName       */ className(),
+        /* strObjName         */ objectName(),
+        /* strMethod          */ "sendServerSettings",
+        /* strMthInArgs       */ strMthInArgs );
+
+    QString strDataSnd;
+    strDataSnd  = systemMsgType2Str(MsgProtocol::ESystemMsgTypeCon) + " ";
+    strDataSnd += command2Str(MsgProtocol::ECommandSelect) + " ";
+    strDataSnd += "<ServerSettings";
+    strDataSnd += " ApplicationName=\"" + QCoreApplication::applicationName() + "\"";
+    strDataSnd += " ServerName=\"" + objectName() + "\"";
+    strDataSnd += " Enabled=\"" + bool2Str(m_trcSettings.m_bEnabled) + "\"";
+    strDataSnd += " CacheDataIfNotConnected=\"" + bool2Str(m_trcSettings.m_bCacheDataIfNotConnected) + "\"";
+    strDataSnd += " CacheDataMaxArrLen=\"" + QString::number(m_trcSettings.m_iCacheDataMaxArrLen) + "\"";
+    strDataSnd += " AdminObjFileAbsFilePath=\"" + m_trcSettings.m_strAdminObjFileAbsFilePath + "\"";
+    strDataSnd += " NewTrcAdminObjsEnabledAsDefault=\"" + bool2Str(m_trcSettings.m_bNewTrcAdminObjsEnabledAsDefault) + "\"";
+    strDataSnd += " NewTrcAdminObjsDefaultDetailLevel=\"" + QString::number(m_trcSettings.m_iNewTrcAdminObjsDefaultDetailLevel) + "\"";
+    strDataSnd += " UseLocalTrcFile=\"" + bool2Str(m_trcSettings.m_bUseLocalTrcFile) + "\"";
+    strDataSnd += " LocalTrcFileAbsFilePath=\"" + m_trcSettings.m_strLocalTrcFileAbsFilePath + "\"";
+    strDataSnd += " LocalTrcFileAutoSaveInterval_ms=\"" + QString::number(m_trcSettings.m_iLocalTrcFileAutoSaveInterval_ms) + "\"";
+    strDataSnd += " LocalTrcFileSubFileCountMax=\"" + QString::number(m_trcSettings.m_iLocalTrcFileSubFileCountMax) + "\"";
+    strDataSnd += " LocalTrcFileSubFileLineCountMax=\"" + QString::number(m_trcSettings.m_iLocalTrcFileSubFileLineCountMax) + "\"";
+    strDataSnd += " LocalTrcFileCloseAfterEachWrite=\"" + bool2Str(m_trcSettings.m_bLocalTrcFileCloseFileAfterEachWrite) + "\"";
+    strDataSnd += "/>";
+
+    sendData(i_iSocketId, str2ByteArr(strDataSnd));
+
+} // sendServerSettings
+
+//------------------------------------------------------------------------------
+/*! @brief Sends the cached trace data tothe connected client.
+
+    @param i_iSocketId [in] Socket of the connected client.
+*/
+void CIpcTrcServer::sendCachedTrcData(int i_iSocketId)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+
+    if( m_pTrcMthFile != nullptr && m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
+    {
+    }
+
+    CMethodTracer mthTracer(
+        /* pTrcMthFile        */ m_pTrcMthFile,
+        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
+        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* strNameSpace       */ nameSpace(),
+        /* strClassName       */ className(),
+        /* strObjName         */ objectName(),
+        /* strMethod          */ "sendCachedTrcData",
+        /* strMthInArgs       */ strMthInArgs );
+
+    // If traced data has been temporarily stored ...
+    if( m_iTrcDataCachedCount > 0 )
+    {
+        QString      strDataSnd;
+        SMthTrcData* pTrcData;
+        int          idx;
+
+        QMutexLocker mutexLocker(m_pMtxListTrcDataCached);
+
+        for( idx = 0; idx < m_iTrcDataCachedCount; idx++ )
+        {
+            pTrcData = m_arpTrcDataCached[idx];
+
+            if( pTrcData != nullptr )
+            {
+                strDataSnd  = systemMsgType2Str(MsgProtocol::ESystemMsgTypeCon) + " ";
+                strDataSnd += command2Str(MsgProtocol::ECommandInsert) + " ";
+                strDataSnd += pTrcData->toXmlString();
+
+                sendData(i_iSocketId, str2ByteArr(strDataSnd));
+
+                delete pTrcData;
+                pTrcData = nullptr;
+            }
+            m_arpTrcDataCached[idx] = nullptr;
+        }
+        m_arpTrcDataCached.clear();
+        m_iTrcDataCachedCount = 0;
+    }
+
+} // sendCachedTrcData
+
+/*==============================================================================
 protected: // instance methods of the remote connection
 ==============================================================================*/
 
@@ -2049,6 +2142,29 @@ protected: // instance methods of the remote connection
 CRequest* CIpcTrcServer::sendData( int i_iSocketId, const QByteArray& i_byteArr, qint64 i_iReqIdParent )
 //------------------------------------------------------------------------------
 {
+    QString strMthInArgs;
+
+    if( m_pTrcMthFile != nullptr && m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
+    {
+        strMthInArgs  = "SocketId: " + QString::number(i_iSocketId);
+        strMthInArgs += ", ByteArr[" + QString::number(i_byteArr.size()) + "]";
+        if( m_iTrcDetailLevel < ETraceDetailLevelVerbose ) {
+            strMthInArgs += "(" + truncateStringWithEllipsisInTheMiddle(byteArr2Str(i_byteArr), 30) + ")";
+        } else {
+            strMthInArgs += "(" + truncateStringWithEllipsisInTheMiddle(byteArr2Str(i_byteArr), 100) + ")";
+        }
+    }
+
+    CMethodTracer mthTracer(
+        /* pTrcMthFile        */ m_pTrcMthFile,
+        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
+        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* strNameSpace       */ nameSpace(),
+        /* strClassName       */ className(),
+        /* strObjName         */ objectName(),
+        /* strMethod          */ "sendData",
+        /* strMthInArgs       */ strMthInArgs );
+
     // The sendData method of the trace server may be called from any thread in the application.
     return m_pIpcServer->sendData(
         /* iSocketId    */ i_iSocketId,
@@ -2067,11 +2183,6 @@ protected slots: // connected to the signals of the Ipc Server
 void CIpcTrcServer::onIpcServerConnected( QObject* /*i_pServer*/, const SSocketDscr& i_socketDscr )
 //------------------------------------------------------------------------------
 {
-    // The class (and all instances of the class) may be accessed from within
-    // different thread contexts and therefore accessing the class and the
-    // instances must be serialized using a mutex ..
-    QMutexLocker mtxLocker(&s_mtx);
-
     QString strMthInArgs;
 
     if( m_pTrcMthFile != nullptr && m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
@@ -2089,9 +2200,26 @@ void CIpcTrcServer::onIpcServerConnected( QObject* /*i_pServer*/, const SSocketD
         /* strMethod          */ "onIpcServerConnected",
         /* strMthInArgs       */ strMthInArgs );
 
+    CMutexLocker mtxLocker(&m_mtx);
+
     if( !m_ariSocketIdsConnectedTrcClients.contains(i_socketDscr.m_iSocketId) )
     {
         m_ariSocketIdsConnectedTrcClients.append(i_socketDscr.m_iSocketId);
+
+        sendServerSettings(i_socketDscr.m_iSocketId);
+
+        // Send the whole admin object tree to the client ...
+        sendBranch(
+            /* iSocketId     */ i_socketDscr.m_iSocketId,
+            /* systemMsgType */ MsgProtocol::ESystemMsgTypeCon,
+            /* cmd           */ MsgProtocol::ECommandSelect,
+            /* pBranch       */ m_pTrcAdminObjIdxTree->root() );
+
+        // If traced data has been temporarily stored ...
+        if( m_iTrcDataCachedCount > 0 )
+        {
+            sendCachedTrcData(i_socketDscr.m_iSocketId);
+        }
     }
     else
     {
@@ -2105,11 +2233,6 @@ void CIpcTrcServer::onIpcServerConnected( QObject* /*i_pServer*/, const SSocketD
 void CIpcTrcServer::onIpcServerDisconnected( QObject* /*i_pServer*/, const SSocketDscr& i_socketDscr )
 //------------------------------------------------------------------------------
 {
-    // The class (and all instances of the class) may be accessed from within
-    // different thread contexts and therefore accessing the class and the
-    // instances must be serialized using a mutex ..
-    QMutexLocker mtxLocker(&s_mtx);
-
     QString strMthInArgs;
 
     if( m_pTrcMthFile != nullptr && m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
@@ -2127,13 +2250,10 @@ void CIpcTrcServer::onIpcServerDisconnected( QObject* /*i_pServer*/, const SSock
         /* strMethod          */ "onIpcServerDisconnected",
         /* strMthInArgs       */ strMthInArgs );
 
+    CMutexLocker mtxLocker(&m_mtx);
+
     if( m_ariSocketIdsConnectedTrcClients.contains(i_socketDscr.m_iSocketId) )
     {
-        if( !m_ariSocketIdsRegisteredTrcClients.contains(i_socketDscr.m_iSocketId) )
-        {
-            QString strAddErrInfo = "Received disconnected signal for socket " + i_socketDscr.getConnectionString() + " whose client did not register to receive trace data";
-            SErrResultInfo errResultInfo = ErrResultInfoError("onIpcServerDisconnected", EResultSocketIdOutOfRange, strAddErrInfo);
-        }
         m_ariSocketIdsConnectedTrcClients.removeOne(i_socketDscr.m_iSocketId);
     }
     else
@@ -2141,12 +2261,6 @@ void CIpcTrcServer::onIpcServerDisconnected( QObject* /*i_pServer*/, const SSock
         QString strAddErrInfo = "Received disconnected signal for not connected socket " + i_socketDscr.getConnectionString();
         SErrResultInfo errResultInfo = ErrResultInfoError("onIpcServerDisconnected", EResultSocketIdOutOfRange, strAddErrInfo);
     }
-
-    if( m_ariSocketIdsRegisteredTrcClients.contains(i_socketDscr.m_iSocketId) )
-    {
-        m_ariSocketIdsRegisteredTrcClients.removeOne(i_socketDscr.m_iSocketId);
-    }
-
 } // onIpcServerDisconnected
 
 //------------------------------------------------------------------------------
@@ -2156,17 +2270,17 @@ void CIpcTrcServer::onIpcServerReceivedData(
     const QByteArray& i_byteArr )
 //------------------------------------------------------------------------------
 {
-    // The class (and all instances of the class) may be accessed from within
-    // different thread contexts and therefore accessing the class and the
-    // instances must be serialized using a mutex ..
-    QMutexLocker mtxLocker(&s_mtx);
-
     QString strMthInArgs;
 
     if( m_pTrcMthFile != nullptr && m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
     {
         strMthInArgs  = "SocketId: " + QString::number(i_iSocketId);
-        strMthInArgs += ", ByteArr: " + i_byteArr.left(20);
+        strMthInArgs += ", ByteArr[" + QString::number(i_byteArr.size()) + "]";
+        if( m_iTrcDetailLevel < ETraceDetailLevelVerbose ) {
+            strMthInArgs += "(" + truncateStringWithEllipsisInTheMiddle(byteArr2Str(i_byteArr), 30) + ")";
+        } else {
+            strMthInArgs += "(" + truncateStringWithEllipsisInTheMiddle(byteArr2Str(i_byteArr), 100) + ")";
+        }
     }
 
     CMethodTracer mthTracer(
@@ -2178,6 +2292,8 @@ void CIpcTrcServer::onIpcServerReceivedData(
         /* strObjName         */ objectName(),
         /* strMethod          */ "onIpcServerReceivedData",
         /* strMthInArgs       */ strMthInArgs );
+
+    CMutexLocker mtxLocker(&m_mtx);
 
     QString                     str = byteArr2Str(i_byteArr);
     const QChar*                pcData = str.data();
@@ -2252,15 +2368,6 @@ protected: // overridables to parse and execute the incoming data stream
 void CIpcTrcServer::onIpcServerReceivedReqSelect( int i_iSocketId, const QString& i_strData )
 //------------------------------------------------------------------------------
 {
-    // The class (and all instances of the class) may be accessed from within
-    // different thread contexts and therefore accessing the class and the
-    // instances must be serialized using a mutex ..
-    QMutexLocker mtxLocker(&s_mtx);
-
-    // The trace admin object index tree will be locked so it will not be changed
-    // when sending the whole content of the index tree to the client.
-    QMutexLocker mutexLocker(m_pTrcAdminObjIdxTree->mutex());
-
     QString strMthInArgs;
 
     if( m_pTrcMthFile != nullptr && m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
@@ -2278,6 +2385,12 @@ void CIpcTrcServer::onIpcServerReceivedReqSelect( int i_iSocketId, const QString
         /* strObjName         */ objectName(),
         /* strMethod          */ "onIpcServerReceivedReqSelect",
         /* strMthInArgs       */ strMthInArgs );
+
+    CMutexLocker mtxLocker(&m_mtx);
+
+    // The trace admin object index tree will be locked so it will not be changed
+    // when sending the whole content of the index tree to the client.
+    QMutexLocker mutexLocker(m_pTrcAdminObjIdxTree->mutex());
 
     QString strMth = "onIpcServerReceivedReqSelect";
 
@@ -2305,32 +2418,8 @@ void CIpcTrcServer::onIpcServerReceivedReqSelect( int i_iSocketId, const QString
 
                 if( strElemName == "ServerSettings" )
                 {
-                    // .. parse the incoming XML data string (but here we expect no more entries).
-
-                    // Send attributes of the server itself.
-                    strDataSnd  = systemMsgType2Str(MsgProtocol::ESystemMsgTypeCon) + " ";
-                    strDataSnd += command2Str(MsgProtocol::ECommandSelect) + " ";
-                    strDataSnd += "<ServerSettings";
-                    strDataSnd += " ApplicationName=\"" + QCoreApplication::applicationName() + "\"";
-                    strDataSnd += " ServerName=\"" + objectName() + "\"";
-                    strDataSnd += " Enabled=\"" + bool2Str(m_trcSettings.m_bEnabled) + "\"";
-                    strDataSnd += " CacheDataIfNotConnected=\"" + bool2Str(m_trcSettings.m_bCacheDataIfNotConnected) + "\"";
-                    strDataSnd += " CacheDataMaxArrLen=\"" + QString::number(m_trcSettings.m_iCacheDataMaxArrLen) + "\"";
-                    strDataSnd += " AdminObjFileAbsFilePath=\"" + m_trcSettings.m_strAdminObjFileAbsFilePath + "\"";
-                    strDataSnd += " NewTrcAdminObjsEnabledAsDefault=\"" + bool2Str(m_trcSettings.m_bNewTrcAdminObjsEnabledAsDefault) + "\"";
-                    strDataSnd += " NewTrcAdminObjsDefaultDetailLevel=\"" + QString::number(m_trcSettings.m_iNewTrcAdminObjsDefaultDetailLevel) + "\"";
-                    strDataSnd += " UseLocalTrcFile=\"" + bool2Str(m_trcSettings.m_bUseLocalTrcFile) + "\"";
-                    strDataSnd += " LocalTrcFileAbsFilePath=\"" + m_trcSettings.m_strLocalTrcFileAbsFilePath + "\"";
-                    strDataSnd += " LocalTrcFileAutoSaveInterval_ms=\"" + QString::number(m_trcSettings.m_iLocalTrcFileAutoSaveInterval_ms) + "\"";
-                    strDataSnd += " LocalTrcFileSubFileCountMax=\"" + QString::number(m_trcSettings.m_iLocalTrcFileSubFileCountMax) + "\"";
-                    strDataSnd += " LocalTrcFileSubFileLineCountMax=\"" + QString::number(m_trcSettings.m_iLocalTrcFileSubFileLineCountMax) + "\"";
-                    strDataSnd += " LocalTrcFileCloseAfterEachWrite=\"" + bool2Str(m_trcSettings.m_bLocalTrcFileCloseFileAfterEachWrite) + "\"";
-                    strDataSnd += "/>";
-
-                    sendData(i_iSocketId, str2ByteArr(strDataSnd));
-
-                } // if( strElemName == "ServerSettings" )
-
+                    sendServerSettings(i_iSocketId);
+                }
                 else if( strElemName == "TrcAdminObjs" )
                 {
                     // Send the whole admin object tree to the client ...
@@ -2342,40 +2431,11 @@ void CIpcTrcServer::onIpcServerReceivedReqSelect( int i_iSocketId, const QString
                 }
                 else if( strElemName == "TrcData" )
                 {
-                    if( !m_ariSocketIdsRegisteredTrcClients.contains(i_iSocketId) )
-                    {
-                        m_ariSocketIdsRegisteredTrcClients.append(i_iSocketId);
-                    }
-
                     // If traced data has been temporarily stored ...
                     if( m_iTrcDataCachedCount > 0 )
                     {
-                        SMthTrcData* pTrcData;
-                        int          idx;
-
-                        QMutexLocker mutexLocker(m_pMtxListTrcDataCached);
-
-                        for( idx = 0; idx < m_iTrcDataCachedCount; idx++ )
-                        {
-                            pTrcData = m_arpTrcDataCached[idx];
-
-                            if( pTrcData != nullptr )
-                            {
-                                strDataSnd  = systemMsgType2Str(MsgProtocol::ESystemMsgTypeCon) + " ";
-                                strDataSnd += command2Str(MsgProtocol::ECommandInsert) + " ";
-                                strDataSnd += pTrcData->toXmlString();
-
-                                sendData(i_iSocketId, str2ByteArr(strDataSnd));
-
-                                delete pTrcData;
-                                pTrcData = nullptr;
-                            }
-                            m_arpTrcDataCached[idx] = nullptr;
-                        }
-                        m_arpTrcDataCached.clear();
-                        m_iTrcDataCachedCount = 0;
-
-                    } // if( m_iTrcDataCachedCount > 0 )
+                        sendCachedTrcData(i_iSocketId);
+                    }
                 } // if( strElemName == "TrcData" )
 
                 else
@@ -2405,11 +2465,6 @@ void CIpcTrcServer::onIpcServerReceivedReqSelect( int i_iSocketId, const QString
 void CIpcTrcServer::onIpcServerReceivedReqUpdate( int i_iSocketId, const QString& i_strData )
 //------------------------------------------------------------------------------
 {
-    // The class (and all instances of the class) may be accessed from within
-    // different thread contexts and therefore accessing the class and the
-    // instances must be serialized using a mutex ..
-    QMutexLocker mtxLocker(&s_mtx);
-
     // The trace admin object index tree will be locked so it will not be changed
     // when sending the whole content of the index tree to the client.
     QMutexLocker mutexLocker(m_pTrcAdminObjIdxTree->mutex());
@@ -2431,6 +2486,8 @@ void CIpcTrcServer::onIpcServerReceivedReqUpdate( int i_iSocketId, const QString
         /* strObjName         */ objectName(),
         /* strMethod          */ "onIpcServerReceivedReqUpdate",
         /* strMthInArgs       */ strMthInArgs );
+
+    CMutexLocker mtxLocker(&m_mtx);
 
     QString strMth = "onIpcServerReceivedReqUpdate";
 
@@ -2714,11 +2771,6 @@ void CIpcTrcServer::onTrcAdminObjIdxTreeEntryAdded(
     CIdxTreeEntry* i_pTreeEntry )
 //------------------------------------------------------------------------------
 {
-    // The class (and all instances of the class) may be accessed from within
-    // different thread contexts and therefore accessing the class and the
-    // instances must be serialized using a mutex ..
-    QMutexLocker mtxLocker(&s_mtx);
-
     // The trace admin object index tree will be locked so it will not be changed
     // when accessing it here.
     QMutexLocker mutexLocker(m_pTrcAdminObjIdxTree->mutex());
@@ -2739,6 +2791,8 @@ void CIpcTrcServer::onTrcAdminObjIdxTreeEntryAdded(
         /* strObjName         */ objectName(),
         /* strMethod          */ "onTrcAdminObjIdxTreeEntryAdded",
         /* strMthInArgs       */ strMthInArgs );
+
+    CMutexLocker mtxLocker(&m_mtx);
 
     if( m_bOnReceivedDataUpdateInProcess )
     {
@@ -2772,15 +2826,6 @@ void CIpcTrcServer::onTrcAdminObjIdxTreeEntryChanged(
     CIdxTreeEntry* i_pTreeEntry )
 //------------------------------------------------------------------------------
 {
-    // The class (and all instances of the class) may be accessed from within
-    // different thread contexts and therefore accessing the class and the
-    // instances must be serialized using a mutex ..
-    QMutexLocker mtxLocker(&s_mtx);
-
-    // The trace admin object index tree will be locked so it will not be changed
-    // when accessing it here.
-    QMutexLocker mutexLocker(m_pTrcAdminObjIdxTree->mutex());
-
     QString strMthInArgs;
 
     if( m_pTrcMthFile != nullptr && m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
@@ -2797,6 +2842,12 @@ void CIpcTrcServer::onTrcAdminObjIdxTreeEntryChanged(
         /* strObjName         */ objectName(),
         /* strMethod          */ "onTrcAdminObjIdxTreeEntryChanged",
         /* strMthInArgs       */ strMthInArgs );
+
+    CMutexLocker mtxLocker(&m_mtx);
+
+    // The trace admin object index tree will be locked so it will not be changed
+    // when accessing it here.
+    QMutexLocker mutexLocker(m_pTrcAdminObjIdxTree->mutex());
 
     if( m_bOnReceivedDataUpdateInProcess )
     {
@@ -2872,10 +2923,7 @@ bool CIpcTrcServer::event( QEvent* i_pMsg )
 
         if( pMsg != nullptr )
         {
-            // The class (and all instances of the class) may be accessed from within
-            // different thread contexts and therefore accessing the class and the
-            // instances must be serialized using a mutex ..
-            QMutexLocker mtxLocker(&s_mtx);
+            CMutexLocker mtxLocker(&m_mtx);
 
             bEventHandled = true;
 

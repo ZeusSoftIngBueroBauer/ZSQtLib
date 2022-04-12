@@ -24,12 +24,16 @@ may result in using the software modules.
 
 *******************************************************************************/
 
+#include <QtCore/qdir.h>
+#include <QtCore/qfile.h>
+#include <QtCore/qfileinfo.h>
 #include <QtCore/qtimer.h>
 
 #include "ZSTest/ZSTest.h"
 #include "ZSTest/ZSTestStepIdxTree.h"
 #include "ZSTest/ZSTestStep.h"
 #include "ZSTest/ZSTestStepGroup.h"
+#include "ZSTest/ZSTestStepRoot.h"
 
 #include "ZSSys/ZSSysApp.h"
 #include "ZSSys/ZSSysEnumEntry.h"
@@ -48,11 +52,7 @@ using namespace ZS::Trace;
 
 
 /*******************************************************************************
-Type definitions and constants
-*******************************************************************************/
-
-/*******************************************************************************
-class CTest
+class CTest : public QObject
 *******************************************************************************/
 
 /*==============================================================================
@@ -69,6 +69,16 @@ QString CTest::GetDefaultTestStepsAbsFilePath( const QString& i_strIniFileScope 
     return strAppConfigDir + "/" + strFileBaseName + "." + strFileSuffix;
 }
 
+//------------------------------------------------------------------------------
+QString CTest::GetDefaultTestResultsAbsFilePath( const QString& i_strIniFileScope )
+//------------------------------------------------------------------------------
+{
+    QString strAppConfigDir = ZS::System::getAppLogDir(i_strIniFileScope);
+    QString strFileSuffix = "log";
+    QString strFileBaseName = "TestResults";
+    return strAppConfigDir + "/" + strFileBaseName + "." + strFileSuffix;
+}
+
 /*==============================================================================
 public: // ctors and dtor
 ==============================================================================*/
@@ -78,13 +88,16 @@ CTest::CTest(
     const QString& i_strName,
     const QString& i_strTestStepsAbsFilePath,
     const QString& i_strNodeSeparator,
-    int            i_iTestStepInterval_ms ) :
+    int            i_iTestStepInterval_ms,
+    const QString& i_strTestResultsAbsFilePath ) :
 //------------------------------------------------------------------------------
     QObject(),
     m_pIdxTree(nullptr),
     m_strTestStepsAbsFilePath(i_strTestStepsAbsFilePath),
+    m_strTestResultsAbsFilePath(i_strTestResultsAbsFilePath),
     m_pTestStepCurr(nullptr),
     m_iTestStepInterval_ms(i_iTestStepInterval_ms),
+    m_iNumberOfTestRuns(0),
     m_state(ETestState::Idle),
     m_runMode(ERunMode::Continuous),
     m_bDoTestStepPending(false),
@@ -99,8 +112,10 @@ CTest::CTest(
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
     {
         strMthInArgs = "Name: " + i_strName;
-        strMthInArgs += ", FileName: " + i_strTestStepsAbsFilePath;
+        strMthInArgs += ", TestStepsFile: " + i_strTestStepsAbsFilePath;
+        strMthInArgs += ", NodeSep: " + i_strNodeSeparator;
         strMthInArgs += ", Interval: " + QString::number(i_iTestStepInterval_ms) + " ms";
+        strMthInArgs += ", ResultsFile: " + i_strTestResultsAbsFilePath;
     }
 
     CMethodTracer mthTracer(
@@ -114,6 +129,10 @@ CTest::CTest(
     if( m_strTestStepsAbsFilePath.isEmpty() )
     {
         m_strTestStepsAbsFilePath = GetDefaultTestStepsAbsFilePath();
+    }
+    if( m_strTestResultsAbsFilePath.isEmpty() )
+    {
+        m_strTestResultsAbsFilePath = GetDefaultTestResultsAbsFilePath();
     }
 
     // Should be called by derived class if desired.
@@ -150,6 +169,7 @@ CTest::~CTest()
     //m_strTestStepsAbsFilePath;
     m_pTestStepCurr = nullptr;
     m_iTestStepInterval_ms = 0;
+    m_iNumberOfTestRuns = 0;
     m_state = static_cast<ETestState>(0);
     m_runMode = static_cast<ERunMode>(0);
     m_bDoTestStepPending = false;
@@ -176,7 +196,7 @@ public: // instance methods
         The default file path has either been provided as argument to the ctor
         or has been automatically detected when creating the test instance.
 */
-SErrResultInfo CTest::save( const QString& i_strAbsFilePath )
+SErrResultInfo CTest::saveTestSteps( const QString& i_strAbsFilePath )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -189,7 +209,7 @@ SErrResultInfo CTest::save( const QString& i_strAbsFilePath )
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iFilterLevel */ ETraceDetailLevelMethodCalls,
-        /* strMethod    */ "save",
+        /* strMethod    */ "saveTestSteps",
         /* strMthInArgs */ strMthInArgs );
 
     QString strAbsFilePath = i_strAbsFilePath;
@@ -208,7 +228,7 @@ SErrResultInfo CTest::save( const QString& i_strAbsFilePath )
 
     return errResultInfo;
 
-} // save
+} // saveTestSteps
 
 //------------------------------------------------------------------------------
 /*! Recalls the settings of the test steps and test step groups from an XML file.
@@ -226,7 +246,7 @@ SErrResultInfo CTest::save( const QString& i_strAbsFilePath )
         The default file path has either been provided as argument to the ctor
         or has been automatically detected when creating the test instance.
 */
-SErrResultInfo CTest::recall( const QString& i_strAbsFilePath )
+SErrResultInfo CTest::recallTestSteps( const QString& i_strAbsFilePath )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -239,7 +259,7 @@ SErrResultInfo CTest::recall( const QString& i_strAbsFilePath )
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iFilterLevel */ ETraceDetailLevelMethodCalls,
-        /* strMethod    */ "recall",
+        /* strMethod    */ "recallTestSteps",
         /* strMthInArgs */ strMthInArgs );
 
     QString strAbsFilePath = i_strAbsFilePath;
@@ -258,7 +278,7 @@ SErrResultInfo CTest::recall( const QString& i_strAbsFilePath )
 
     return errResultInfo;
 
-} // recall
+} // recallTestSteps
 
 /*==============================================================================
 public: // instance methods
@@ -318,9 +338,13 @@ void CTest::start()
 
     if( m_state == ETestState::Idle )
     {
+        m_iNumberOfTestRuns++;
+
         m_pIdxTree->reset();
 
         setCurrentTestStep(nullptr);
+
+        onTestStarted();
     }
 
     if( m_state == ETestState::Idle || m_state == ETestState::Paused )
@@ -468,6 +492,329 @@ void CTest::resume()
     }
 
 } // resume
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! Saves the results of the test in a log file.
+
+    @param i_strAbsFilePath [in]
+        Absolute path name of the file containing the expected results.
+        Each line within this file will be added to o_strlstExpectedResults.
+    @param o_strlstExpectedResults [out]
+        The string list will be filled with the content of the file.
+
+    @return ErrResultInfo structure.
+*/
+SErrResultInfo CTest::readExpectedTestResults(
+    const QString& i_strAbsFilePath,
+    QStringList&   o_strlstExpectedResults ) const
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    {
+        strMthInArgs = i_strAbsFilePath;
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iFilterLevel */ ETraceDetailLevelMethodCalls,
+        /* strMethod    */ "readExpectedTestResults",
+        /* strMthInArgs */ strMthInArgs );
+
+    SErrResultInfo errResultInfo(nameSpace(), className(), objectName(), "saveTestResults");
+
+    QFile file;
+
+    if( i_strAbsFilePath.isEmpty() )
+    {
+        errResultInfo.setSeverity(EResultSeverityError);
+        errResultInfo.setResult(EResultInvalidFileName);
+    }
+    else
+    {
+        QFileInfo fileInfo(i_strAbsFilePath);
+
+        file.setFileName(i_strAbsFilePath);
+
+        if( !file.open(QIODevice::ReadOnly) )
+        {
+            errResultInfo.setSeverity(EResultSeverityError);
+            errResultInfo.setResult(EResultFileOpenForRead);
+            errResultInfo.setAddErrInfoDscr(i_strAbsFilePath);
+        }
+    }
+
+    if( !errResultInfo.isErrorResult() )
+    {
+        QTextStream in(&file);
+        QString line;
+
+        while( in.readLineInto(&line) )
+        {
+            o_strlstExpectedResults << line;
+        }
+    }
+
+    if( mthTracer.isActive(ETraceDetailLevelMethodArgs) )
+    {
+        mthTracer.setMethodReturn(errResultInfo);
+    }
+
+    return errResultInfo;
+
+} // readExpectedTestResults
+
+//------------------------------------------------------------------------------
+/*! Saves the results of the test in a log file.
+
+    @param i_strAbsFilePath [in]
+        Absolute path name of the test results file.
+        If an empty string is passed the default file path is used.
+        The default file path has either been provided as argument to the ctor
+        or has been automatically detected when creating the test instance.
+    @param i_bReportAllExpectedResults [in] Default: false
+        If true the expected and actual results of all test steps are output.
+        If false (default) only the expected and actual results of the failed test steps are output.
+
+    @return ErrResultInfo structure.
+*/
+SErrResultInfo CTest::saveTestResults( const QString& i_strAbsFilePath, bool i_bReportAllExpectedResults )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    {
+        strMthInArgs = "AbsFilePath: " + i_strAbsFilePath;
+        strMthInArgs += ", ReportAllResults: " + bool2Str(i_bReportAllExpectedResults);
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iFilterLevel */ ETraceDetailLevelMethodCalls,
+        /* strMethod    */ "saveTestResults",
+        /* strMthInArgs */ strMthInArgs );
+
+    SErrResultInfo errResultInfo(nameSpace(), className(), objectName(), "saveTestResults");
+
+    QString strAbsFilePath = i_strAbsFilePath;
+
+    if( strAbsFilePath.isEmpty() )
+    {
+        strAbsFilePath = m_strTestResultsAbsFilePath;
+    }
+
+    QFile file;
+
+    if( strAbsFilePath.isEmpty() )
+    {
+        errResultInfo.setSeverity(EResultSeverityError);
+        errResultInfo.setResult(EResultInvalidFileName);
+    }
+    else
+    {
+        QFileInfo fileInfo(strAbsFilePath);
+        QDir      dir = fileInfo.absoluteDir();
+
+        if( !dir.exists() )
+        {
+            dir.mkpath(dir.absolutePath());
+        }
+
+        file.setFileName(strAbsFilePath);
+
+        if( !file.open(QIODevice::WriteOnly) )
+        {
+            errResultInfo.setSeverity(EResultSeverityError);
+            errResultInfo.setResult(EResultFileOpenForWrite);
+            errResultInfo.setAddErrInfoDscr(strAbsFilePath);
+        }
+    }
+
+    if( !errResultInfo.isErrorResult() )
+    {
+        double fTestDuration_s = 0.0;
+        int iTotalNumberOfTestSteps = 0;
+        int iNumberOfFailedTestSteps = 0;
+        int iNumberOfPassedTestSteps = 0;
+        int iNumberOfDisabledTestSteps = 0;
+
+        CTestStepRoot* pRootEntry = dynamic_cast<CTestStepRoot*>(m_pIdxTree->root());
+        fTestDuration_s = pRootEntry->getTestDurationInSec();
+
+        QVector<CIdxTreeEntry*> arTreeEntries = m_pIdxTree->treeEntriesVec();
+        for( const auto& pIdxTreeEntry : arTreeEntries )
+        {
+            if( pIdxTreeEntry->isLeave())
+            {
+                CTestStep* pTestStep = dynamic_cast<CTestStep*>(pIdxTreeEntry);
+
+                iTotalNumberOfTestSteps++;
+
+                if( pTestStep->isEnabled() )
+                {
+                    if( pTestStep->getTestResult() == ETestResult::Undefined )
+                    {
+                    }
+                    else if( pTestStep->getTestResult() == ETestResult::TestFailed )
+                    {
+                        iNumberOfFailedTestSteps++;
+                    }
+                    else if( pTestStep->getTestResult() == ETestResult::TestPassed )
+                    {
+                        iNumberOfPassedTestSteps++;
+                    }
+                    else if( pTestStep->getTestResult() == ETestResult::Ignore )
+                    {
+                    }
+                }
+                else
+                {
+                    iNumberOfDisabledTestSteps++;
+                }
+            }
+        }
+
+        QTextStream out(&file);
+
+        QString strHeadLine = "Test: " + objectName();
+
+        out << strHeadLine << "\n";
+        for( int idxChar = 0; idxChar < strHeadLine.length(); ++idxChar ) {
+            out << "=";
+        }
+        out << "\n\n";
+
+        out << "TestRun: " << QString::number(m_iNumberOfTestRuns) << "\n";
+        out << "Duration: " << QString::number(fTestDuration_s, 'f', 1) << " s\n";
+        out << "Total number of test steps: " << QString::number(iTotalNumberOfTestSteps) << "\n";
+        out << "Number of failed test steps: " << QString::number(iNumberOfFailedTestSteps) << "\n";
+        out << "Number of passed test steps: " << QString::number(iNumberOfPassedTestSteps) << "\n";
+        out << "Number of disabled test steps: " << QString::number(iNumberOfDisabledTestSteps) << "\n";
+        out << "\n\n";
+
+        CIdxTree::iterator itIdxTree = m_pIdxTree->begin();
+
+        QString strIndent;
+
+        for( auto& itIdxTree = m_pIdxTree->begin(); itIdxTree != m_pIdxTree->end(); ++itIdxTree )
+        {
+            CIdxTreeEntry* pTreeEntry = *itIdxTree;
+
+            if( pTreeEntry->isBranch() )
+            {
+                CTestStepGroup* pTestStepGroup = dynamic_cast<CTestStepGroup*>(pTreeEntry);
+                strIndent = "";
+                while( !pTestStepGroup->parentBranch()->isRoot() )
+                {
+                    strIndent += "  ";
+                }
+                strHeadLine = "Group: " + pTestStepGroup->name();
+                out << strIndent << strHeadLine << "\n";
+                out << strIndent;
+                for( int idxChar = 0; idxChar < strHeadLine.length(); ++idxChar ) {
+                    out << "-";
+                }
+                out << "\n\n";
+                out << "Duration: " << QString::number(pTestStepGroup->getTestDurationInSec(), 'f', 1) << " s\n\n";
+                strIndent += "  ";
+            }
+            else if( pTreeEntry->isLeave() )
+            {
+                CTestStep* pTestStep = dynamic_cast<CTestStep*>(pTreeEntry);
+                strHeadLine = "TestStep: " + pTestStep->name();
+                out << strIndent << strHeadLine << "\n";
+                out << strIndent;
+                for( int idxChar = 0; idxChar < strHeadLine.length(); ++idxChar ) {
+                    out << "-";
+                }
+                out << "\n\n";
+                if( pTestStep->isEnabled() )
+                {
+                    if( pTestStep->getOperation().length() > 0 ) {
+                        out << strIndent << "Operation: " << pTestStep->getOperation() << "\n";
+                    }
+                    if( pTestStep->getDescription().length() > 0 ) {
+                        out << strIndent << "Description: " << pTestStep->getDescription() << "\n";
+                    }
+                    QStringList strlstConfigValueKeys = pTestStep->getConfigValueKeys();
+                    if( strlstConfigValueKeys.size() > 0 ) {
+                        strHeadLine = strIndent + "Config Values:";
+                        out << strIndent << "Config Values:" << "\n";
+                        for( const auto& strKey : strlstConfigValueKeys ) {
+                            out << strIndent << "  " << strKey << ": " << pTestStep->getConfigValue(strKey).toString() << "\n";
+                        }
+                    }
+                    out << strIndent << "Duration: " << QString::number(pTestStep->getTestDurationInSec(), 'f', 1) << " s\n\n";
+                    out << strIndent << "Result: " << pTestStep->getTestResult().toString() << "\n\n";
+                    bool bShowResults = i_bReportAllExpectedResults || (pTestStep->getTestResult() == ETestResult::TestFailed);
+                    if( bShowResults ) {
+                        QStringList strlstExpectedValues = pTestStep->getExpectedValues();
+                        QStringList strlstResultValues = pTestStep->getResultValues();
+                        if( strlstExpectedValues.size() > 0 || strlstResultValues.size() > 0 ) {
+                            out << strIndent << "Expected Result Values" << "\n";
+                            out << strIndent << "Actual Result Values" << "\n\n";
+                            int idxResult = 0;
+                            for( ; idxResult < strlstExpectedValues.size(); ++idxResult ) {
+                                bool bEqual = false;
+                                if( idxResult < strlstResultValues.size() ) {
+                                    if( strlstExpectedValues[idxResult] == strlstResultValues[idxResult] ) {
+                                        bEqual = true;
+                                    }
+                                }
+                                if( bEqual ) {
+                                    out << "  " + strIndent;
+                                } else {
+                                    out << "! " << strIndent;
+                                }
+                                out << QString::number(idxResult) << ": " << strlstExpectedValues[idxResult] << "\n";
+                                if( bEqual ) {
+                                    out << "  " + strIndent;
+                                } else {
+                                    out << "! " << strIndent;
+                                }
+                                out << QString::number(idxResult) << ": ";
+                                if( idxResult < strlstResultValues.size() ) {
+                                    out << strlstResultValues[idxResult];
+                                }
+                                out << "\n";
+                            }
+                            for( ; idxResult < strlstResultValues.size(); ++idxResult ) {
+                                bool bEqual = false;
+                                if( bEqual ) {
+                                    out << "  " + strIndent;
+                                } else {
+                                    out << "! " << strIndent;
+                                }
+                                out << QString::number(idxResult) << ":\n";
+                                if( bEqual ) {
+                                    out << "  " + strIndent;
+                                } else {
+                                    out << "! " << strIndent;
+                                }
+                                out << QString::number(idxResult) << ": " << strlstResultValues[idxResult] << "\n";
+                            }
+                        }
+                        out << "\n";
+                    }
+                }
+            }
+        }
+    }
+
+    if( mthTracer.isActive(ETraceDetailLevelMethodArgs) )
+    {
+        mthTracer.setMethodReturn(errResultInfo);
+    }
+
+    return errResultInfo;
+
+} // saveTestResults
 
 /*==============================================================================
 protected slots:
@@ -680,6 +1027,29 @@ void CTest::setRunMode( const CEnumRunMode& i_runMode )
     }
 
 } // setRunMode
+
+/*==============================================================================
+protected: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Virtual method called if test has been started.
+*/
+void CTest::onTestStarted()
+//------------------------------------------------------------------------------
+{
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Virtual method called if test has been finished.
+
+    The default implementation saves the test results.
+*/
+void CTest::onTestFinished()
+//------------------------------------------------------------------------------
+{
+    saveTestResults();
+}
 
 /*==============================================================================
 protected: // instance methods
@@ -976,6 +1346,8 @@ void CTest::triggerNextTestStep( int i_iInterval_ms )
         if( m_state == ETestState::Running ) // not Paused or already Stopped
         {
             stop();
+
+            onTestFinished();
         }
     }
 } // triggerNextTestStep

@@ -1,4 +1,4 @@
-@page _PAGE_Overview_MemLeakDetection Detecting Memory Leaks
+@page _PAGE_Main_MemLeakDetection Detecting Memory Leaks
 
 To detect memory leaks the header file "ZSSysMemLeakDump.h" must be included.
 The include statement for "ZSSysMemLeakDump" should be after all necessary

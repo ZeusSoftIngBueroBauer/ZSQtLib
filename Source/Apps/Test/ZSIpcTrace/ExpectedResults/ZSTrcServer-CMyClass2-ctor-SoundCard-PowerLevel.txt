@@ -1,0 +1,8 @@
+<GUIMain                 > -> <ZS::Apps::Test::IpcTrace::CMyClass2> SoundCard::PowerLevel.ctor(SoundCard::PowerLevel, nullptr)
+<GUIMain                 >    -> <ZS::System::CMutex> CMyClass2::SoundCard::PowerLevel::Counters.ctor(Recursive)
+<GUIMain                 >    <- <ZS::System::CMutex> CMyClass2::SoundCard::PowerLevel::Counters.ctor()
+<GUIMain                 >    -> <ZS::System::CMutex> CMyClass2::SoundCard::PowerLevel::WaitClass3ThreadRunning.ctor()
+<GUIMain                 >    <- <ZS::System::CMutex> CMyClass2::SoundCard::PowerLevel::WaitClass3ThreadRunning.ctor()
+<GUIMain                 >    -> <ZS::System::CWaitCondition> CMyClass2::SoundCard::PowerLevel::Class3ThreadRunning.ctor()
+<GUIMain                 >    <- <ZS::System::CWaitCondition> CMyClass2::SoundCard::PowerLevel::Class3ThreadRunning.ctor()
+<GUIMain                 > <- <ZS::Apps::Test::IpcTrace::CMyClass2> SoundCard::PowerLevel.ctor()

@@ -554,7 +554,7 @@ void CMainWindow::onActFileOpenTriggered()
 
         if( !strFile.isEmpty() )
         {
-            SErrResultInfo errResultInfo = pTest->recall(strFile);
+            SErrResultInfo errResultInfo = pTest->recallTestSteps(strFile);
 
             if( errResultInfo.isErrorResult() )
             {
@@ -604,7 +604,7 @@ void CMainWindow::onActFileSaveTriggered()
 
         if( !strFile.isEmpty() )
         {
-            SErrResultInfo errResultInfo = pTest->save(strFile);
+            SErrResultInfo errResultInfo = pTest->saveTestSteps(strFile);
 
             if( errResultInfo.isErrorResult() )
             {

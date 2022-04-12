@@ -76,16 +76,18 @@ public: // ctors and dtor
 public: // instance methods
     CTest* getTest() { return m_pTest; }
     ZS::Trace::CIpcTrcServer* getTrcServer() { return m_pZSTrcServer; }
-    int getTraceDetailLevelTrcServer() const { return m_iZSTrcServerTrcDetailLevel; }
     ZS::Trace::CIpcTrcClient* getTrcClient() { return m_pZSTrcClient; }
+    int getTraceDetailLevelTrcServer() const { return m_iZSTrcServerTrcDetailLevel; }
+    int getTraceDetailLevelTrcClient() const { return m_iZSTrcClientTrcDetailLevel; }
 private: // instance members
     bool                          m_bReqExecTreeGarbageCollectorEnabled;
     double                        m_fReqExecTreeGarbageCollectorInterval_s;
     double                        m_fReqExecTreeGarbageCollectorElapsed_s;
     ZS::System::CRequestExecTree* m_pReqExecTree;
     int                           m_iZSTrcServerTrcDetailLevel;
+    int                           m_iZSTrcClientTrcDetailLevel;
     ZS::Trace::CIpcTrcServer*     m_pZSTrcServer;
-    ZS::Ipc::SClientHostSettings  m_clientHostSettingsZSTrcServer;
+    ZS::Ipc::SClientHostSettings  m_clientHostSettingsZSTrcClient;
     ZS::Trace::CIpcTrcClient*     m_pZSTrcClient;
     CTest*                        m_pTest;
     CMainWindow*                  m_pMainWindow;

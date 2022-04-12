@@ -46,6 +46,7 @@ may result in using the software modules.
 #include "ZSSys/ZSSysTime.h"
 #include "ZSSys/ZSSysTrcAdminObj.h"
 #include "ZSSys/ZSSysTrcMethod.h"
+#include "ZSSys/ZSSysTrcMthFile.h"
 #include "ZSSys/ZSSysTrcServer.h"
 
 #include "ZSSys/ZSSysMemLeakDump.h"
@@ -69,16 +70,21 @@ CServerGatewayThread::CServerGatewayThread(
     const QString& i_strObjNameGateway,
     CServer*       i_pServer,
     CErrLog*       i_pErrLog,
-    CTrcMthFile*   i_pTrcMthFile,
     int            i_iTrcMthFileDetailLevel ) :
 //------------------------------------------------------------------------------
-    CSrvCltBaseGatewayThread(i_strObjNameGateway, i_pErrLog, i_pTrcMthFile, i_iTrcMthFileDetailLevel),
+    CSrvCltBaseGatewayThread(i_strObjNameGateway, i_pErrLog, i_iTrcMthFileDetailLevel),
     m_pServer(i_pServer)
 {
-    // The derived classes must instantiate the trace admin object and trace the ctor.
-    if( m_pTrcMthFile == nullptr )
+    // If the parent is the trace server the detail level of trace outputs may not be
+    // controlled by trace admin objects as they belong to the trace server itself.
+    if( i_pServer->objectName().endsWith("TrcServer") )
     {
-        m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName());
+        QString strLocalTrcFileAbsFilePath = CTrcServer::GetDefaultLocalTrcFileAbsoluteFilePath("System");
+        m_pTrcMthFile = CTrcMthFile::Alloc(strLocalTrcFileAbsFilePath);
+    }
+    else
+    {
+        m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(nameSpace(), className(), objectName());
     }
 
     CMethodTracer mthTracer(
@@ -108,6 +114,12 @@ CServerGatewayThread::~CServerGatewayThread()
         /* strObjName         */ objectName(),
         /* strMethod          */ "dtor",
         /* strAddInfo         */ "" );
+
+    if( m_pTrcMthFile != nullptr )
+    {
+        m_pTrcMthFile->close();
+        CTrcMthFile::Free(m_pTrcMthFile);
+    }
 
     if( m_pTrcAdminObj != nullptr )
     {
@@ -149,7 +161,6 @@ void CServerGatewayThread::run()
         /* pServer                */ m_pServer,
         /* pThread                */ this,
         /* pModelErrLog           */ m_pErrLog,
-        /* pTrcMthFile            */ m_pTrcMthFile,
         /* iTrcMthFileDetailLevel */ m_iTrcMthFileDetailLevel );
 
     //--------------------------------------------------------------------------
@@ -295,7 +306,6 @@ CServerGateway::CServerGateway(
     CServer*              i_pServer,
     CServerGatewayThread* i_pThreadGateway,
     CErrLog*              i_pErrLog,
-    CTrcMthFile*          i_pTrcMthFile,
     int                   i_iTrcMthFileDetailLevel ) :
 //------------------------------------------------------------------------------
     CSrvCltBaseGateway(
@@ -304,16 +314,28 @@ CServerGateway::CServerGateway(
         /* pCltSrv                */ i_pServer,
         /* pThreadGateway         */ i_pThreadGateway,
         /* pModelErrLog           */ i_pErrLog,
-        /* pTrcMthFile            */ i_pTrcMthFile,
         /* iTrcMthFileDetailLevel */ i_iTrcMthFileDetailLevel ),
     m_hostSettings(),
     m_pIpcServerWrapper(nullptr),
     m_arpIpcSocketWrapper()
 {
     // The derived classes must instantiate the trace admin object and trace the ctor.
-    if( m_pTrcMthFile == nullptr )
+    if( m_iTrcMthFileDetailLevel > ETraceDetailLevelNone )
     {
-        m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName());
+        QString strLocalTrcFileAbsFilePath = CTrcServer::GetDefaultLocalTrcFileAbsoluteFilePath("System");
+        m_pTrcMthFile = CTrcMthFile::Alloc(strLocalTrcFileAbsFilePath);
+    }
+    // If the parent is the trace server the detail level of trace outputs may not be
+    // controlled by trace admin objects as they belong to the trace server itself.
+    // If the trace admin object would be created there the gateway will registered the
+    // trace admin object at the server which would like to send the trace admin object
+    // to the client through this gateway. But the server waits for the gateway thread
+    // to be started creating this gateway instance. And this gateway would now wait
+    // for the trace admin object to be registered. The gateway waits for the server and
+    // the server waits for the gateway -> Deadlock.
+    else if( !i_pServer->objectName().endsWith("TrcServer") )
+    {
+        m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(nameSpace(), className(), objectName());
     }
 
     CMethodTracer mthTracer(
@@ -377,6 +399,12 @@ CServerGateway::~CServerGateway()
     {
     }
     m_pIpcServerWrapper = nullptr;
+
+    if( m_pTrcMthFile != nullptr )
+    {
+        m_pTrcMthFile->close();
+        CTrcMthFile::Free(m_pTrcMthFile);
+    }
 
     if( m_pTrcAdminObj != nullptr )
     {

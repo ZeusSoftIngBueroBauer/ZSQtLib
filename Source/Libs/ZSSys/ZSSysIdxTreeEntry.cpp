@@ -763,7 +763,7 @@ public: // instance methods (for branch entries)
 /*! Returns the index of the given child tree entry in the branch considering
     only entries with the same entry type of the given child entry.
 
-    @param i_pTreeEntry [in] Pointer to child entry whose index is desired.
+    @param i_pChildTreeEntry [in] Pointer to child entry whose index is desired.
 
     @return Index of the given child entry in the branch.
 */
@@ -817,7 +817,7 @@ protected: // instance methods (for branch entries)
     - The unique key of the child entry within the branch will be set at the child entry.
     - The index of the child entry in the branch will be set at the child entry.
 
-    @param i_pTreeEntry [in] Pointer to tree entry to be added as a child.
+    @param i_pChildTreeEntry [in] Pointer to tree entry to be added as a child.
 
     @return Index of the child entry.
 

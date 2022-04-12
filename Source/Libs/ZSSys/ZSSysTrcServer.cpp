@@ -36,6 +36,7 @@ may result in using the software modules.
 #include "ZSSys/ZSSysApp.h"
 #include "ZSSys/ZSSysErrLog.h"
 #include "ZSSys/ZSSysMsg.h"
+#include "ZSSys/ZSSysMutex.h"
 #include "ZSSys/ZSSysException.h"
 
 #include "ZSSys/ZSSysMemLeakDump.h"
@@ -54,6 +55,19 @@ public: // ctor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief Creates a server settings structure.
+
+    @param i_bEnabled [in] Default: true
+    @param i_bNewTrcAdminObjsEnabledAsDefault [in] Default: true
+    @param i_iNewTrcAdminObjsDefaultDetailLevel [in] Default: 0
+    @param i_bCacheDataIfNotConnected [in] Default: false
+    @param i_iCacheDataMaxArrLen [in] Default: 1000
+    @param i_bUseLocalTrcFile [in] Default: true
+    @param i_iLocalTrcFileAutoSaveInterval_ms [in] Default: 1000
+    @param i_iLocalTrcFileSubFileCountMax [in] Default: 5
+    @param i_iLocalTrcFileSubFileLineCountMax [in] Default: 2000
+    @param i_bLocalTrcFileCloseFileAfterEachWrite [in] Default: false
+*/
 STrcServerSettings::STrcServerSettings(
     bool i_bEnabled,
     bool i_bNewTrcAdminObjsActivatedAsDefault,
@@ -86,6 +100,10 @@ public: // operators
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief Equal operator.
+
+    @param i_settingsOther [in]
+*/
 bool STrcServerSettings::operator == ( const STrcServerSettings& i_settingsOther ) const
 //------------------------------------------------------------------------------
 {
@@ -144,10 +162,42 @@ bool STrcServerSettings::operator == ( const STrcServerSettings& i_settingsOther
 } // operator ==
 
 //------------------------------------------------------------------------------
+/*! @brief Unequal operator.
+
+    @param i_settingsOther [in]
+*/
 bool STrcServerSettings::operator != ( const STrcServerSettings& i_settingsOther ) const
 //------------------------------------------------------------------------------
 {
     return !(*this == i_settingsOther);
+}
+
+/*==============================================================================
+public: // struct methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Returns a human readable string describing the settings.
+
+    @return String describing the settings which can be used for logging.
+*/
+QString STrcServerSettings::toString() const
+//------------------------------------------------------------------------------
+{
+    QString str;
+    str += "Enabled: " + bool2Str(m_bEnabled);
+    str += ", AdmObjFile: " + m_strAdminObjFileAbsFilePath;
+    str += ", AdmObjDefEnabled: " + bool2Str(m_bNewTrcAdminObjsEnabledAsDefault);
+    str += ", AdmObjDefLevel: " + QString::number(m_iNewTrcAdminObjsDefaultDetailLevel);
+    str += ", CacheData: " + bool2Str(m_bCacheDataIfNotConnected);
+    str += ", CacheArrLen: " + QString::number(m_iCacheDataMaxArrLen);
+    str += ", UseLocalFile: " + bool2Str(m_bUseLocalTrcFile);
+    str += ", TrcFile: " + m_strLocalTrcFileAbsFilePath;
+    str += ", TrcFileSave: " + QString::number(m_iLocalTrcFileAutoSaveInterval_ms) + " ms";
+    str += ", TrcFileSubFiles: " + QString::number(m_iLocalTrcFileSubFileCountMax);
+    str += ", TrcFileLines: " + QString::number(m_iLocalTrcFileSubFileLineCountMax);
+    str += ", TrcFileClose: " + bool2Str(m_bLocalTrcFileCloseFileAfterEachWrite);
+    return str;
 }
 
 
@@ -160,7 +210,7 @@ protected: // class members
 ==============================================================================*/
 
 QMutex CTrcServer::s_mtx(QMutex::Recursive);
-QHash<QString, CTrcServer*> CTrcServer::s_hshpInstances;
+CTrcServer* CTrcServer::s_pTheInst;
 QHash<Qt::HANDLE, QString> CTrcServer::s_hshThreadNames;
 QHash<QString, Qt::HANDLE> CTrcServer::s_hshThreadIds;
 
@@ -171,70 +221,62 @@ public: // class methods
 //------------------------------------------------------------------------------
 /*! @brief Returns the address of the trace server.
 
-    This method does neither create an instance of the class nor increments the reference counter.
+    This method does neither create an instance of the class nor increments
+    the reference counter.
     If no instance has been created yet the method returns nullptr.
 
-    If you just need to access an already existing instance and you can be sure that an instance
-    is already existing this method should be preferred to the createInstance call as this method
-    does not affect the reference counter and there is no need to call releaseInstance later on.
+    If you just need to access the already existing instance and you can be sure
+    that the instance is already existing this method should be preferred to the
+    createInstance call as this method does not affect the reference counter and
+    there is no need to call releaseInstance later on.
 
     @note After a getInstance call a releaseInstance MUST NOT be called.
 
-    @return Pointer to license manager or nullptr, if an instance has not been created yet.
+    @return Pointer to trace server or nullptr, if the instance has not been created yet.
 */
-CTrcServer* CTrcServer::GetInstance( const QString& i_strName )
+CTrcServer* CTrcServer::GetInstance()
 //------------------------------------------------------------------------------
 {
-    // The class may be accessed from within different thread contexts and
-    // therefore accessing the class must be serialized using a mutex ..
     QMutexLocker mtxLocker(&s_mtx);
-    return s_hshpInstances.value(i_strName, nullptr);
+    return s_pTheInst;
 }
 
 //------------------------------------------------------------------------------
-/*! Creates a trace server with the given name if a trace server with the given
-    name is not already existing.
+/*! Creates the trace server if the trace server is not already existing.
 
-    If a trace server with the given name is already existing the reference to
-    the existing trace server is returned and a reference counter is incremented.
+    If the trace server is already existing the reference to the existing
+    trace server is returned and a reference counter is incremented.
 
-    \param i_strName [in] Name of the trace server (default "ZSTrcServer")
     \param i_iTrcDetailLevel [in]
         If the methods of the trace server itself should be logged a value
         greater than 0 (ETraceDetailLevelNone) could be passed here.
 
     \return Pointer to trace server instance.
 */
-CTrcServer* CTrcServer::CreateInstance( const QString& i_strName, int i_iTrcDetailLevel )
+CTrcServer* CTrcServer::CreateInstance( int i_iTrcDetailLevel )
 //------------------------------------------------------------------------------
 {
-    // The class may be accessed from within different thread contexts and
-    // therefore accessing the class must be serialized using a mutex ..
     QMutexLocker mtxLocker(&s_mtx);
 
-    CTrcServer* pTrcServer = s_hshpInstances.value(i_strName, nullptr);
-
-    if( pTrcServer == nullptr )
+    if( s_pTheInst == nullptr )
     {
-        pTrcServer = new CTrcServer(i_strName, i_iTrcDetailLevel);
+        // The ctor sets s_pTheInst to this.
+        // If the ctor itself calls methods of other classes which again recursively
+        // call "GetInstance" this way "GetInstance" does not return null but the
+        // pointer to the server instance currently beeing created.
+        // But of course this requires special caution as within the ctor it must
+        // be assured that recursively accessed instance members are already valid.
+        new CTrcServer(i_iTrcDetailLevel);
     }
 
-    pTrcServer->incrementRefCount();
+    s_pTheInst->incrementRefCount();
 
-    // The ctor adds the reference to the instance to the hash.
-    // If the ctor itself calls methods of other classes which again recursively
-    // call "GetInstance" this way "GetInstance" does not return null but the
-    // pointer to the server instance currently beeing created.
-    // But of course this requires special caution as within the ctor it must
-    // be assured that recursively accessed instance members are already valid.
-    //s_hshpInstances[i_strName] = pTrcServer;
-
-    return pTrcServer;
+    return s_pTheInst;
 
 } // CreateInstance
 
 //------------------------------------------------------------------------------
-/*! @brief Releases the given trace server instance by name.
+/*! @brief Releases the trace server instance.
 
     Before invoking this method a reference to the instance must have been retrieved
     with a createInstance call.
@@ -243,75 +285,29 @@ CTrcServer* CTrcServer::CreateInstance( const QString& i_strName, int i_iTrcDeta
     If the reference counter reaches 0 the instance will be destroyed.
 
     @note A reference returned by getInstance MUST NOT be freed.
-
-    @param Name of the trace server to be released.
 */
-void CTrcServer::ReleaseInstance( const QString& i_strName )
+void CTrcServer::ReleaseInstance()
 //------------------------------------------------------------------------------
 {
-    // The class may be accessed from within different thread contexts and
-    // therefore accessing the class must be serialized using a mutex ..
     QMutexLocker mtxLocker(&s_mtx);
 
-    CTrcServer* pTrcServer = s_hshpInstances.value(i_strName, nullptr);
-
-    if( pTrcServer == nullptr )
+    if( s_pTheInst == nullptr )
     {
-        throw CException(__FILE__, __LINE__, EResultObjNotInList, "CTrcServer::" + i_strName);
+        throw CException(__FILE__, __LINE__, EResultSingletonClassNotInstantiated, "ZS::Trace::CTrcServer");
     }
 
-    int iRefCount = pTrcServer->decrementRefCount();
+    int iRefCount = s_pTheInst->decrementRefCount();
 
     if( iRefCount == 0 )
     {
-        s_hshpInstances.remove(i_strName);
-
         try
         {
-            delete pTrcServer;
+            delete s_pTheInst;
         }
         catch(...)
         {
         }
-        pTrcServer = nullptr;
-    }
-} // ReleaseInstance
-
-//------------------------------------------------------------------------------
-/*! @brief Releases the given trace server instance.
-
-    Before invoking this method a reference to the instance must have been retrieved
-    with a createInstance call.
-
-    This method decrements the reference counter of the instance.
-    If the reference counter reaches 0 the instance will be destroyed.
-
-    @note A reference returned by getInstance MUST NOT be freed.
-
-    @param Reference to trace server which has been returned by a previous createInstance method.
-*/
-void CTrcServer::ReleaseInstance( CTrcServer* i_pTrcServer )
-//------------------------------------------------------------------------------
-{
-    // The class may be accessed from within different thread contexts and
-    // therefore accessing the class must be serialized using a mutex ..
-    QMutexLocker mtxLocker(&s_mtx);
-
-    QString strName = i_pTrcServer->objectName();
-
-    if( !s_hshpInstances.contains(strName) )
-    {
-        throw CException(__FILE__, __LINE__, EResultObjNotInList, "CTrcServer::" + strName);
-    }
-
-    int iRefCount = i_pTrcServer->decrementRefCount();
-
-    if( iRefCount == 0 )
-    {
-        s_hshpInstances.remove(strName);
-
-        delete i_pTrcServer;
-        i_pTrcServer = nullptr;
+        s_pTheInst = nullptr;
     }
 } // ReleaseInstance
 
@@ -323,8 +319,6 @@ public: // class methods to register thread names
 void CTrcServer::RegisterCurrentThread( const QString& i_strThreadName )
 //------------------------------------------------------------------------------
 {
-    // The class may be accessed from within different thread contexts and
-    // therefore accessing the class must be serialized using a mutex ..
     QMutexLocker mtxLocker(&s_mtx);
 
     // Thread Ids may change during runtime for the same thread name.
@@ -354,8 +348,6 @@ void CTrcServer::RegisterCurrentThread( const QString& i_strThreadName )
 void CTrcServer::UnregisterCurrentThread()
 //------------------------------------------------------------------------------
 {
-    // The class may be accessed from within different thread contexts and
-    // therefore accessing the class must be serialized using a mutex ..
     QMutexLocker mtxLocker(&s_mtx);
 
     Qt::HANDLE threadId = QThread::currentThreadId();
@@ -379,8 +371,6 @@ void CTrcServer::UnregisterCurrentThread()
 QString CTrcServer::GetCurrentThreadName()
 //------------------------------------------------------------------------------
 {
-    // The class may be accessed from within different thread contexts and
-    // therefore accessing the class must be serialized using a mutex ..
     QMutexLocker mtxLocker(&s_mtx);
 
     return currentThreadName();
@@ -392,37 +382,32 @@ public: // class methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CIdxTreeTrcAdminObjs* CTrcServer::GetTraceAdminObjIdxTree( const QString& i_strServerName )
+CIdxTreeTrcAdminObjs* CTrcServer::GetTraceAdminObjIdxTree()
 //------------------------------------------------------------------------------
 {
-    // The class may be accessed from within different thread contexts and
-    // therefore accessing the class must be serialized using a mutex ..
     QMutexLocker mtxLocker(&s_mtx);
 
     CIdxTreeTrcAdminObjs* pTrcAdminObjIdxTree = nullptr;
 
-    CTrcServer* pTrcServer = GetInstance(i_strServerName);
+    CTrcServer* pTrcServer = GetInstance();
 
     if( pTrcServer != nullptr )
     {
         pTrcAdminObjIdxTree = pTrcServer->getTraceAdminObjIdxTree();
     }
-
     return pTrcAdminObjIdxTree;
 
 } // GetTraceAdminObjIdxTree
 
 //------------------------------------------------------------------------------
-CTrcAdminObj* CTrcServer::GetTraceAdminObj( int i_idxInTree, const QString& i_strServerName )
+CTrcAdminObj* CTrcServer::GetTraceAdminObj( int i_idxInTree )
 //------------------------------------------------------------------------------
 {
-    // The class may be accessed from within different thread contexts and
-    // therefore accessing the class must be serialized using a mutex ..
     QMutexLocker mtxLocker(&s_mtx);
 
     CTrcAdminObj* pTrcAdminObj = nullptr;
 
-    CTrcServer* pTrcServer = GetInstance(i_strServerName);
+    CTrcServer* pTrcServer = GetInstance();
 
     if( pTrcServer != nullptr )
     {
@@ -431,7 +416,6 @@ CTrcAdminObj* CTrcServer::GetTraceAdminObj( int i_idxInTree, const QString& i_st
             /* bEnabledAsDefault   */ EEnabled::Undefined,
             /* iDefaultDetailLevel */ -1 );
     }
-
     return pTrcAdminObj;
 
 } // GetTraceAdminObj
@@ -440,17 +424,14 @@ CTrcAdminObj* CTrcServer::GetTraceAdminObj( int i_idxInTree, const QString& i_st
 CTrcAdminObj* CTrcServer::GetTraceAdminObj(
     const QString& i_strNameSpace,
     const QString& i_strClassName,
-    const QString& i_strObjName,
-    const QString& i_strServerName )
+    const QString& i_strObjName )
 //------------------------------------------------------------------------------
 {
-    // The class may be accessed from within different thread contexts and
-    // therefore accessing the class must be serialized using a mutex ..
     QMutexLocker mtxLocker(&s_mtx);
 
     CTrcAdminObj* pTrcAdminObj = nullptr;
 
-    CTrcServer* pTrcServer = GetInstance(i_strServerName);
+    CTrcServer* pTrcServer = GetInstance();
 
     if( pTrcServer != nullptr )
     {
@@ -461,7 +442,6 @@ CTrcAdminObj* CTrcServer::GetTraceAdminObj(
             /* bEnabledAsDefault   */ EEnabled::Undefined,
             /* iDefaultDetailLevel */ -1 );
     }
-
     return pTrcAdminObj;
 
 } // GetTraceAdminObj
@@ -472,17 +452,14 @@ CTrcAdminObj* CTrcServer::GetTraceAdminObj(
     const QString&       i_strClassName,
     const QString&       i_strObjName,
     ZS::System::EEnabled i_bEnabledAsDefault,
-    int                  i_iDefaultDetailLevel,
-    const QString&       i_strServerName )
+    int                  i_iDefaultDetailLevel )
 //------------------------------------------------------------------------------
 {
-    // The class may be accessed from within different thread contexts and
-    // therefore accessing the class must be serialized using a mutex ..
     QMutexLocker mtxLocker(&s_mtx);
 
     CTrcAdminObj* pTrcAdminObj = nullptr;
 
-    CTrcServer* pTrcServer = GetInstance(i_strServerName);
+    CTrcServer* pTrcServer = GetInstance();
 
     if( pTrcServer != nullptr )
     {
@@ -499,76 +476,66 @@ CTrcAdminObj* CTrcServer::GetTraceAdminObj(
 } // GetTraceAdminObj
 
 //------------------------------------------------------------------------------
-void CTrcServer::ReleaseTraceAdminObj(
-    CTrcAdminObj*  i_pTrcAdminObj,
-    const QString& i_strServerName )
+void CTrcServer::ReleaseTraceAdminObj( CTrcAdminObj*  i_pTrcAdminObj )
 //------------------------------------------------------------------------------
 {
-    // The class may be accessed from within different thread contexts and
-    // therefore accessing the class must be serialized using a mutex ..
     QMutexLocker mtxLocker(&s_mtx);
 
-    CTrcServer* pTrcServer = GetInstance(i_strServerName);
+    CTrcServer* pTrcServer = GetInstance();
 
     if( pTrcServer != nullptr )
     {
         pTrcServer->releaseTraceAdminObj(i_pTrcAdminObj);
     }
-
-} // ReleaseTraceAdminObj
+}
 
 /*==============================================================================
 public: // class methods to get default file paths
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-QString CTrcServer::GetDefaultAdminObjFileAbsoluteFilePath(
-    const QString& i_strServerName,
-    const QString& i_strIniFileScope )
+QString CTrcServer::GetDefaultAdminObjFileAbsoluteFilePath( const QString& i_strIniFileScope )
 //------------------------------------------------------------------------------
 {
     QString strAppConfigDir = ZS::System::getAppConfigDir(i_strIniFileScope);
 
     QString strTrcAdminObjFileSuffix = "xml";
-    QString strTrcAdminObjFileBaseName = i_strServerName + "-TrcMthAdmObj";
+    QString strTrcAdminObjFileBaseName = "ZSTrcServer-TrcMthAdmObj";
 
     return strAppConfigDir + "/" + strTrcAdminObjFileBaseName + "." + strTrcAdminObjFileSuffix;
-
-} // GetDefaultAdminObjFileAbsoluteFilePath
+}
 
 //------------------------------------------------------------------------------
-QString CTrcServer::GetDefaultLocalTrcFileAbsoluteFilePath(
-    const QString& i_strServerName,
-    const QString& i_strIniFileScope )
+QString CTrcServer::GetDefaultLocalTrcFileAbsoluteFilePath( const QString& i_strIniFileScope )
 //------------------------------------------------------------------------------
 {
     QString strAppLogDir = ZS::System::getAppLogDir(i_strIniFileScope);
 
     QString strTrcLogFileSuffix = "log";
-    QString strTrcLogFileBaseName = i_strServerName + "-TrcMth";
+    QString strTrcLogFileBaseName = "ZSTrcServer-TrcMth";
 
     return strAppLogDir + "/" + strTrcLogFileBaseName + "." + strTrcLogFileSuffix;
-
-} // GetDefaultLocalTrcFileAbsoluteFilePath
+}
 
 /*==============================================================================
 protected: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CTrcServer::CTrcServer( const QString& i_strName, int i_iTrcDetailLevel ) :
+CTrcServer::CTrcServer( int i_iTrcDetailLevel ) :
 //------------------------------------------------------------------------------
     QObject(),
+    m_mtx(QMutex::Recursive, "ZS::Trace::CTrcServer", i_iTrcDetailLevel),
     m_pTrcAdminObjIdxTree(nullptr),
     m_trcSettings(),
     m_pTrcMthFile(nullptr),
     m_iTrcDetailLevel(i_iTrcDetailLevel),
     m_iRefCount(0)
 {
-    setObjectName(i_strName);
+    setObjectName("ZSTrcServer");
 
-    m_trcSettings.m_strAdminObjFileAbsFilePath = GetDefaultAdminObjFileAbsoluteFilePath(objectName(), "System");
-    m_trcSettings.m_strLocalTrcFileAbsFilePath = GetDefaultLocalTrcFileAbsoluteFilePath(objectName(), "System");
+    m_trcSettings.m_strAdminObjFileAbsFilePath = GetDefaultAdminObjFileAbsoluteFilePath("System");
+    m_trcSettings.m_strLocalTrcFileAbsFilePath = GetDefaultLocalTrcFileAbsoluteFilePath("System");
 
     m_pTrcMthFile = CTrcMthFile::Alloc(m_trcSettings.m_strLocalTrcFileAbsFilePath);
 
@@ -585,10 +552,10 @@ CTrcServer::CTrcServer( const QString& i_strName, int i_iTrcDetailLevel ) :
     // Create index tree of trace admin objects. Pass the server as the parent object.
     // If the parent object is the trace server the index tree will not create a trace
     // admin object to trace the method calls.
-    m_pTrcAdminObjIdxTree = new CIdxTreeTrcAdminObjs(i_strName, this, i_iTrcDetailLevel);
+    m_pTrcAdminObjIdxTree = new CIdxTreeTrcAdminObjs("ZSTrcServer", this, i_iTrcDetailLevel);
 
     // See comment in "CreateInstance" above.
-    s_hshpInstances[i_strName] = this;
+    s_pTheInst = this;
 
 } // ctor
 
@@ -630,9 +597,8 @@ CTrcServer::~CTrcServer()
     if( m_pTrcMthFile != nullptr )
     {
         m_pTrcMthFile->close();
+        CTrcMthFile::Free(m_pTrcMthFile);
     }
-
-    CTrcMthFile::Free(m_pTrcMthFile);
 
     m_pTrcAdminObjIdxTree = nullptr;
     //m_trcSettings;
@@ -650,9 +616,7 @@ public: // instance methods
 CIdxTreeTrcAdminObjs* CTrcServer::getTraceAdminObjIdxTree()
 //------------------------------------------------------------------------------
 {
-    // The class may be accessed from within different thread contexts and
-    // therefore accessing the class must be serialized using a mutex ..
-    QMutexLocker mtxLocker(&s_mtx);
+    CMutexLocker mtxLocker(&m_mtx);
     return m_pTrcAdminObjIdxTree;
 }
 
@@ -667,11 +631,6 @@ CTrcAdminObj* CTrcServer::getTraceAdminObj(
     int      i_iDefaultDetailLevel )
 //------------------------------------------------------------------------------
 {
-    // The class (and all instances of the class) may be accessed from within
-    // different thread contexts and therefore accessing the class and the
-    // instances must be serialized using a mutex ..
-    QMutexLocker mtxLocker(&s_mtx);
-
     QString strMthInArgs;
     QString strMthRet;
 
@@ -691,6 +650,8 @@ CTrcAdminObj* CTrcServer::getTraceAdminObj(
         /* strObjName         */ objectName(),
         /* strMethod          */ "getTraceAdminObj",
         /* strMthInArgs       */ strMthInArgs );
+
+    CMutexLocker mtxLocker(&m_mtx);
 
     CTrcAdminObj* pTrcAdminObj = nullptr;
 
@@ -738,11 +699,6 @@ CTrcAdminObj* CTrcServer::getTraceAdminObj(
     int            i_iDefaultDetailLevel )
 //------------------------------------------------------------------------------
 {
-    // The class (and all instances of the class) may be accessed from within
-    // different thread contexts and therefore accessing the class and the
-    // instances must be serialized using a mutex ..
-    QMutexLocker mtxLocker(&s_mtx);
-
     QString strMthInArgs;
     QString strMthRet;
 
@@ -764,6 +720,8 @@ CTrcAdminObj* CTrcServer::getTraceAdminObj(
         /* strObjName         */ objectName(),
         /* strMethod          */ "getTraceAdminObj",
         /* strMthInArgs       */ strMthInArgs );
+
+    CMutexLocker mtxLocker(&m_mtx);
 
     CTrcAdminObj* pTrcAdminObj = nullptr;
 
@@ -824,11 +782,6 @@ CTrcAdminObj* CTrcServer::getTraceAdminObj(
 void CTrcServer::releaseTraceAdminObj( CTrcAdminObj* i_pTrcAdminObj )
 //------------------------------------------------------------------------------
 {
-    // The class (and all instances of the class) may be accessed from within
-    // different thread contexts and therefore accessing the class and the
-    // instances must be serialized using a mutex ..
-    QMutexLocker mtxLocker(&s_mtx);
-
     QString strMthInArgs;
 
     if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
@@ -846,6 +799,8 @@ void CTrcServer::releaseTraceAdminObj( CTrcAdminObj* i_pTrcAdminObj )
         /* strMethod          */ "releaseTraceAdminObj",
         /* strMthInArgs       */ strMthInArgs );
 
+    CMutexLocker mtxLocker(&m_mtx);
+
     if( i_pTrcAdminObj != nullptr )
     {
         m_pTrcAdminObjIdxTree->releaseTraceAdminObj(i_pTrcAdminObj);
@@ -858,18 +813,112 @@ public: // overridables
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief Traces entering a method.
+
+    Trace output is only created
+
+    - if the trace admin objects detail level is not set to None,
+    - if the trace server outputs are enabled and
+    - if output to local method trace file is activated.
+
+    Output to local method trace file may be deactivated via the flag
+    'UseLocalTrcFile' of the servers trace settings.
+
+    The name of the current thread, the current date time and the time in seconds
+    since the applications has been started is inserted at the beginning of the
+    log entry.
+
+    For each thread (defined by its name) the call depth is maintained.
+    Spaces are inserted according to the current call depth of the thread.
+    After output of trace string the call depth for the thread is incremented.
+    For the indentation to work correctly each thread must have a unique name.
+    For safety, the class name of the thread class can be prepended to the object
+    name of the thread:
+
+    @code
+    class MyThread : public QThread {
+    public:
+        MyThread() : QThread() {
+            setObjectName("MyThread-" + m_strMyClass2ObjName);
+        }
+    };
+    @endcode
+
+    After the thread and time information and the call stack indentation by
+    thread the tag '->' is added to indicate that the method is entered.
+
+    At next the name space and class name is output encapsulated in the tags '<' and '>'.
+
+    After the class information the method is output.
+
+    - For instance tracers the name of the instance for which the method is called
+      is added followed by the method name. The object name is separted by a '.'
+      from the method name.
+    - For class tracers only the method name is output.
+
+    At last the method input arguments are added encapsulated in the tags '(' and ')'.
+
+    Typical log outputs will look like:
+
+    @code
+    <GUIMain > 2022-04-04 22:17:30:569 ( 27.720377): -> <ZS::Apps::Test::IpcTrace::CMyClass1> classMethod(Hello Class)
+    <GUIMain > 2022-04-04 22:17:30:581 ( 27.741674):    -> <ZS::Apps::Test::IpcTrace::CMyClass1> classMethod(Hello Class)
+    @endcode
+
+    **Instance Tracer**
+
+    @code
+    <GUIMain > 2022-04-04 22:17:30:569 ( 27.720377): -> <ZS::Apps::Test::IpcTrace::CMyClass1> Inst1.instMethod(Hello Class)
+    <GUIMain > 2022-04-04 22:17:30:581 ( 27.741674):    -> <ZS::Apps::Test::IpcTrace::CMyClass1> Inst1.instMethod(Hello Class)
+    @endcode
+
+    @param i_pTrcAdminObj [in] Pointer to trace admin object.
+        In addition to the trace detail level the name space, the class name
+        and - in case of an instance tracer - the instance name is taken from
+        the trace admin object.
+
+    @param i_strMethod [in] Name of the entered method.
+
+    @param i_strMethodInArgs [in] String describing the input arguments.
+        It is up to the caller what is included in this string. If only
+        one argument is passed the name of the argument may be omitted.
+        In some cases the argument name makes no real sense. E.g. for a method
+        'setEnabled' it doesn't really make sense to add "Enabled: " before the
+        arguments value. If there are several input arguments it is useful to
+        add the name of the argument.
+
+        The following rule for type of arguments may be used:
+
+        - For values with units add the unit symbol at the end of the value.
+          @code
+          'Freq: 56.0 kHz'
+          @endcode
+
+        - For structures encapsulate the members in '{' and '}'.
+          @code
+          'Settings: {Freq: 45 Hz, Level: 6 dBm}'
+          @endcode
+
+        - For lists start with the length of the list encapsulated in '[' and ']'.
+          If the list contains elements encapsulate the list in '(' and ')' and
+          each element in '{' and '}'. For each element - if desired - start with
+          the index (or key) followed by ':' and the value. If the value is a
+          structure or a list again follow the rules for structures and lists.
+          @code
+          'Frequencies: [3]({0: 45 kHz}, {1: 12 Hz}, {2: 20.0 MHz})
+          'Settings: [2]({Input: {Freq: 45 kHz, Level: 5 W}}, {Output: {Freq: 12 Hz, Level: 2 W}})
+          'Arbitrary: [2]({Elem1: {Val1: uups}}, {Elem2: [2]({0: argh}, {1: aha})})
+          @endcode
+*/
 void CTrcServer::traceMethodEnter(
     const CTrcAdminObj* i_pTrcAdminObj,
     const QString&      i_strMethod,
     const QString&      i_strMethodInArgs )
 //------------------------------------------------------------------------------
 {
-    // The class (and all instances of the class) may be accessed from within
-    // different thread contexts and therefore accessing the class and the
-    // instances must be serialized using a mutex ..
-    QMutexLocker mtxLocker(&s_mtx);
+    CMutexLocker mtxLocker(&m_mtx);
 
-    if( i_pTrcAdminObj != nullptr && i_pTrcAdminObj->isActive(ETraceDetailLevelMethodCalls) && isEnabled() && isActive() )
+    if( i_pTrcAdminObj != nullptr && (i_pTrcAdminObj->getTraceDetailLevel() > ETraceDetailLevelNone) && isEnabled() && isActive() )
     {
         addEntry(
             /* strThreadName */ currentThreadName(),
@@ -893,12 +942,9 @@ void CTrcServer::traceMethodEnter(
     const QString&      i_strMethodInArgs )
 //------------------------------------------------------------------------------
 {
-    // The class (and all instances of the class) may be accessed from within
-    // different thread contexts and therefore accessing the class and the
-    // instances must be serialized using a mutex ..
-    QMutexLocker mtxLocker(&s_mtx);
+    CMutexLocker mtxLocker(&m_mtx);
 
-    if( i_pTrcAdminObj != nullptr && i_pTrcAdminObj->isActive(ETraceDetailLevelMethodCalls) && isEnabled() && isActive() )
+    if( i_pTrcAdminObj != nullptr && (i_pTrcAdminObj->getTraceDetailLevel() > ETraceDetailLevelNone) && isEnabled() && isActive() )
     {
         addEntry(
             /* strThreadName */ currentThreadName(),
@@ -921,17 +967,9 @@ void CTrcServer::traceMethod(
     const QString&      i_strAddInfo )
 //------------------------------------------------------------------------------
 {
-    // The class (and all instances of the class) may be accessed from within
-    // different thread contexts and therefore accessing the class and the
-    // instances must be serialized using a mutex ..
-    QMutexLocker mtxLocker(&s_mtx);
+    CMutexLocker mtxLocker(&m_mtx);
 
-    // Send trace message to the trace server.
-    // Using messages avoids using a mutex to protect the list of traced method
-    // calls as "traceMethodEnter" is usually called from within different
-    // thread contexts.
-
-    if( i_pTrcAdminObj != nullptr && i_pTrcAdminObj->isActive(ETraceDetailLevelRuntimeInfo) && isEnabled() && isActive() )
+    if( i_pTrcAdminObj != nullptr && (i_pTrcAdminObj->getTraceDetailLevel() > ETraceDetailLevelNone) && isEnabled() && isActive() )
     {
         addEntry(
             /* strThreadName */ currentThreadName(),
@@ -955,17 +993,9 @@ void CTrcServer::traceMethod(
     const QString&      i_strAddInfo )
 //------------------------------------------------------------------------------
 {
-    // The class (and all instances of the class) may be accessed from within
-    // different thread contexts and therefore accessing the class and the
-    // instances must be serialized using a mutex ..
-    QMutexLocker mtxLocker(&s_mtx);
+    CMutexLocker mtxLocker(&m_mtx);
 
-    // Send trace message to the trace server.
-    // Using messages avoids using a mutex to protect the list of traced method
-    // calls as "traceMethodEnter" is usually called from within different
-    // thread contexts.
-
-    if( i_pTrcAdminObj != nullptr && i_pTrcAdminObj->isActive(ETraceDetailLevelRuntimeInfo) && isEnabled() && isActive() )
+    if( i_pTrcAdminObj != nullptr && (i_pTrcAdminObj->getTraceDetailLevel() > ETraceDetailLevelNone) && isEnabled() && isActive() )
     {
         addEntry(
             /* strThreadName */ currentThreadName(),
@@ -982,6 +1012,20 @@ void CTrcServer::traceMethod(
 } // traceMethod
 
 //------------------------------------------------------------------------------
+/*! @brief
+
+    **Class Tracer**
+
+    @code
+    <GUIMain > 2022-04-04 22:17:30:570 ( 27.720972): <- <ZS::Apps::Test::IpcTrace::CMyClass1> classMethod(): Hello World
+    @endcode
+
+    **Instance Tracer**
+
+    @code
+    <GUIMain > 2022-04-04 22:17:30:570 ( 27.720972): <- <ZS::Apps::Test::IpcTrace::CMyClass1> Inst1.instMethod(): Hello World
+    @endcode
+*/
 void CTrcServer::traceMethodLeave(
     const CTrcAdminObj* i_pTrcAdminObj,
     const QString&      i_strMethod,
@@ -989,17 +1033,9 @@ void CTrcServer::traceMethodLeave(
     const QString&      i_strMethodOutArgs )
 //------------------------------------------------------------------------------
 {
-    // The class (and all instances of the class) may be accessed from within
-    // different thread contexts and therefore accessing the class and the
-    // instances must be serialized using a mutex ..
-    QMutexLocker mtxLocker(&s_mtx);
+    CMutexLocker mtxLocker(&m_mtx);
 
-    // Send trace message to the trace server.
-    // Using messages avoids using a mutex to protect the list of traced method
-    // calls as "traceMethodEnter" is usually called from within different
-    // thread contexts.
-
-    if( i_pTrcAdminObj != nullptr && i_pTrcAdminObj->isActive(ETraceDetailLevelMethodCalls) && isEnabled() && isActive() )
+    if( i_pTrcAdminObj != nullptr && (i_pTrcAdminObj->getTraceDetailLevel() > ETraceDetailLevelNone) && isEnabled() && isActive() )
     {
         addEntry(
             /* strThreadName */ currentThreadName(),
@@ -1025,17 +1061,9 @@ void CTrcServer::traceMethodLeave(
     const QString&      i_strMethodOutArgs )
 //------------------------------------------------------------------------------
 {
-    // The class (and all instances of the class) may be accessed from within
-    // different thread contexts and therefore accessing the class and the
-    // instances must be serialized using a mutex ..
-    QMutexLocker mtxLocker(&s_mtx);
+    CMutexLocker mtxLocker(&m_mtx);
 
-    // Send trace message to the trace server.
-    // Using messages avoids using a mutex to protect the list of traced method
-    // calls as "traceMethodEnter" is usually called from within different
-    // thread contexts.
-
-    if( i_pTrcAdminObj != nullptr && i_pTrcAdminObj->isActive(ETraceDetailLevelMethodCalls) && isEnabled() && isActive() )
+    if( i_pTrcAdminObj != nullptr && (i_pTrcAdminObj->getTraceDetailLevel() > ETraceDetailLevelNone) && isEnabled() && isActive() )
     {
         addEntry(
             /* strThreadName */ currentThreadName(),
@@ -1065,10 +1093,7 @@ void CTrcServer::traceMethodEnter(
     const QString& i_strMethodInArgs )
 //------------------------------------------------------------------------------
 {
-    // The class (and all instances of the class) may be accessed from within
-    // different thread contexts and therefore accessing the class and the
-    // instances must be serialized using a mutex ..
-    QMutexLocker mtxLocker(&s_mtx);
+    CMutexLocker mtxLocker(&m_mtx);
 
     if( isEnabled() && isActive() )
     {
@@ -1095,15 +1120,7 @@ void CTrcServer::traceMethod(
     const QString& i_strAddInfo )
 //------------------------------------------------------------------------------
 {
-    // The class (and all instances of the class) may be accessed from within
-    // different thread contexts and therefore accessing the class and the
-    // instances must be serialized using a mutex ..
-    QMutexLocker mtxLocker(&s_mtx);
-
-    // Send trace message to the trace server.
-    // Using messages avoids using a mutex to protect the list of traced method
-    // calls as "traceMethodEnter" is usually called from within different
-    // thread contexts.
+    CMutexLocker mtxLocker(&m_mtx);
 
     if( isEnabled() && isActive() )
     {
@@ -1131,15 +1148,7 @@ void CTrcServer::traceMethodLeave(
     const QString& i_strMethodOutArgs )
 //------------------------------------------------------------------------------
 {
-    // The class (and all instances of the class) may be accessed from within
-    // different thread contexts and therefore accessing the class and the
-    // instances must be serialized using a mutex ..
-    QMutexLocker mtxLocker(&s_mtx);
-
-    // Send trace message to the trace server.
-    // Using messages avoids using a mutex to protect the list of traced method
-    // calls as "traceMethodEnter" is usually called from within different
-    // thread contexts.
+    CMutexLocker mtxLocker(&m_mtx);
 
     if( isEnabled() && isActive() )
     {
@@ -1166,11 +1175,7 @@ public: // overridables
 bool CTrcServer::isActive() const
 //------------------------------------------------------------------------------
 {
-    // The class (and all instances of the class) may be accessed from within
-    // different thread contexts and therefore accessing the class and the
-    // instances must be serialized using a mutex ..
-    QMutexLocker mtxLocker(&s_mtx);
-
+    CMutexLocker mtxLocker(&m_mtx);
     return isLocalTrcFileActive();
 }
 
@@ -1182,15 +1187,17 @@ public: // overridables
 void CTrcServer::setEnabled( bool i_bEnabled )
 //------------------------------------------------------------------------------
 {
-    // The class (and all instances of the class) may be accessed from within
-    // different thread contexts and therefore accessing the class and the
-    // instances must be serialized using a mutex ..
-    QMutexLocker mtxLocker(&s_mtx);
+    CMutexLocker mtxLocker(&m_mtx);
 
     if( i_bEnabled != m_trcSettings.m_bEnabled )
     {
         m_trcSettings.m_bEnabled = i_bEnabled;
 
+        // Close (flush buffer) of trace file so it can be read by editors.
+        if( m_pTrcMthFile != nullptr )
+        {
+            m_pTrcMthFile->close();
+        }
         emit traceSettingsChanged(this);
     }
 
@@ -1200,10 +1207,7 @@ void CTrcServer::setEnabled( bool i_bEnabled )
 bool CTrcServer::isEnabled() const
 //------------------------------------------------------------------------------
 {
-    // The class (and all instances of the class) may be accessed from within
-    // different thread contexts and therefore accessing the class and the
-    // instances must be serialized using a mutex ..
-    QMutexLocker mtxLocker(&s_mtx);
+    CMutexLocker mtxLocker(&m_mtx);
     return m_trcSettings.m_bEnabled;
 }
 
@@ -1215,11 +1219,6 @@ public: // overridables
 void CTrcServer::setNewTrcAdminObjsEnabledAsDefault( bool i_bEnabled )
 //------------------------------------------------------------------------------
 {
-    // The class (and all instances of the class) may be accessed from within
-    // different thread contexts and therefore accessing the class and the
-    // instances must be serialized using a mutex ..
-    QMutexLocker mtxLocker(&s_mtx);
-
     QString strMthInArgs;
 
     if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
@@ -1237,6 +1236,8 @@ void CTrcServer::setNewTrcAdminObjsEnabledAsDefault( bool i_bEnabled )
         /* strMethod          */ "setNewTrcAdminObjsEnabledAsDefault",
         /* strMthInArgs       */ strMthInArgs );
 
+    CMutexLocker mtxLocker(&m_mtx);
+
     if( m_trcSettings.m_bNewTrcAdminObjsEnabledAsDefault != i_bEnabled )
     {
         m_trcSettings.m_bNewTrcAdminObjsEnabledAsDefault = i_bEnabled;
@@ -1250,10 +1251,7 @@ void CTrcServer::setNewTrcAdminObjsEnabledAsDefault( bool i_bEnabled )
 bool CTrcServer::areNewTrcAdminObjsEnabledAsDefault() const
 //------------------------------------------------------------------------------
 {
-    // The class (and all instances of the class) may be accessed from within
-    // different thread contexts and therefore accessing the class and the
-    // instances must be serialized using a mutex ..
-    QMutexLocker mtxLocker(&s_mtx);
+    CMutexLocker mtxLocker(&m_mtx);
     return m_trcSettings.m_bNewTrcAdminObjsEnabledAsDefault;
 }
 
@@ -1261,11 +1259,6 @@ bool CTrcServer::areNewTrcAdminObjsEnabledAsDefault() const
 void CTrcServer::setNewTrcAdminObjsDefaultDetailLevel( int i_iDetailLevel )
 //------------------------------------------------------------------------------
 {
-    // The class (and all instances of the class) may be accessed from within
-    // different thread contexts and therefore accessing the class and the
-    // instances must be serialized using a mutex ..
-    QMutexLocker mtxLocker(&s_mtx);
-
     QString strMthInArgs;
 
     if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
@@ -1283,6 +1276,8 @@ void CTrcServer::setNewTrcAdminObjsDefaultDetailLevel( int i_iDetailLevel )
         /* strMethod          */ "setNewTrcAdminObjsDefaultDetailLevel",
         /* strMthInArgs       */ strMthInArgs );
 
+    CMutexLocker mtxLocker(&m_mtx);
+
     if( m_trcSettings.m_iNewTrcAdminObjsDefaultDetailLevel != i_iDetailLevel )
     {
         m_trcSettings.m_iNewTrcAdminObjsDefaultDetailLevel = i_iDetailLevel;
@@ -1296,10 +1291,7 @@ void CTrcServer::setNewTrcAdminObjsDefaultDetailLevel( int i_iDetailLevel )
 int CTrcServer::getNewTrcAdminObjsDefaultDetailLevel() const
 //------------------------------------------------------------------------------
 {
-    // The class (and all instances of the class) may be accessed from within
-    // different thread contexts and therefore accessing the class and the
-    // instances must be serialized using a mutex ..
-    QMutexLocker mtxLocker(&s_mtx);
+    CMutexLocker mtxLocker(&m_mtx);
     return m_trcSettings.m_iNewTrcAdminObjsDefaultDetailLevel;
 }
 
@@ -1311,10 +1303,7 @@ public: // overridables
 void CTrcServer::setAdminObjFileAbsoluteFilePath( const QString& i_strAbsFilePath )
 //------------------------------------------------------------------------------
 {
-    // The class (and all instances of the class) may be accessed from within
-    // different thread contexts and therefore accessing the class and the
-    // instances must be serialized using a mutex ..
-    QMutexLocker mtxLocker(&s_mtx);
+    CMutexLocker mtxLocker(&m_mtx);
 
     if( m_trcSettings.m_strAdminObjFileAbsFilePath != i_strAbsFilePath )
     {
@@ -1329,10 +1318,7 @@ void CTrcServer::setAdminObjFileAbsoluteFilePath( const QString& i_strAbsFilePat
 QString CTrcServer::getAdminObjFileAbsoluteFilePath() const
 //------------------------------------------------------------------------------
 {
-    // The class (and all instances of the class) may be accessed from within
-    // different thread contexts and therefore accessing the class and the
-    // instances must be serialized using a mutex ..
-    QMutexLocker mtxLocker(&s_mtx);
+    CMutexLocker mtxLocker(&m_mtx);
     return m_trcSettings.m_strAdminObjFileAbsFilePath;
 }
 
@@ -1340,11 +1326,6 @@ QString CTrcServer::getAdminObjFileAbsoluteFilePath() const
 SErrResultInfo CTrcServer::recallAdminObjs( const QString& i_strAbsFilePath )
 //------------------------------------------------------------------------------
 {
-    // The class (and all instances of the class) may be accessed from within
-    // different thread contexts and therefore accessing the class and the
-    // instances must be serialized using a mutex ..
-    QMutexLocker mtxLocker(&s_mtx);
-
     QString strMthInArgs;
 
     if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
@@ -1361,6 +1342,8 @@ SErrResultInfo CTrcServer::recallAdminObjs( const QString& i_strAbsFilePath )
         /* strObjName         */ objectName(),
         /* strMethod          */ "recallAdminObjs",
         /* strMthInArgs       */ strMthInArgs );
+
+    CMutexLocker mtxLocker(&m_mtx);
 
     if( !i_strAbsFilePath.isEmpty() && m_trcSettings.m_strAdminObjFileAbsFilePath != i_strAbsFilePath )
     {
@@ -1384,11 +1367,6 @@ SErrResultInfo CTrcServer::recallAdminObjs( const QString& i_strAbsFilePath )
 SErrResultInfo CTrcServer::saveAdminObjs( const QString& i_strAbsFilePath )
 //------------------------------------------------------------------------------
 {
-    // The class (and all instances of the class) may be accessed from within
-    // different thread contexts and therefore accessing the class and the
-    // instances must be serialized using a mutex ..
-    QMutexLocker mtxLocker(&s_mtx);
-
     QString strMthInArgs;
 
     if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
@@ -1405,6 +1383,8 @@ SErrResultInfo CTrcServer::saveAdminObjs( const QString& i_strAbsFilePath )
         /* strObjName         */ objectName(),
         /* strMethod          */ "recallAdminObjs",
         /* strMthInArgs       */ strMthInArgs );
+
+    CMutexLocker mtxLocker(&m_mtx);
 
     if( !i_strAbsFilePath.isEmpty() && m_trcSettings.m_strAdminObjFileAbsFilePath != i_strAbsFilePath )
     {
@@ -1431,10 +1411,7 @@ public: // overridables
 void CTrcServer::setUseLocalTrcFile( bool i_bUse )
 //------------------------------------------------------------------------------
 {
-    // The class (and all instances of the class) may be accessed from within
-    // different thread contexts and therefore accessing the class and the
-    // instances must be serialized using a mutex ..
-    QMutexLocker mtxLocker(&s_mtx);
+    CMutexLocker mtxLocker(&m_mtx);
 
     if( m_trcSettings.m_bUseLocalTrcFile != i_bUse )
     {
@@ -1454,10 +1431,7 @@ void CTrcServer::setUseLocalTrcFile( bool i_bUse )
 bool CTrcServer::isLocalTrcFileUsed() const
 //------------------------------------------------------------------------------
 {
-    // The class (and all instances of the class) may be accessed from within
-    // different thread contexts and therefore accessing the class and the
-    // instances must be serialized using a mutex ..
-    QMutexLocker mtxLocker(&s_mtx);
+    CMutexLocker mtxLocker(&m_mtx);
     return m_trcSettings.m_bUseLocalTrcFile;
 }
 
@@ -1465,56 +1439,26 @@ bool CTrcServer::isLocalTrcFileUsed() const
 void CTrcServer::setLocalTrcFileAbsoluteFilePath( const QString& i_strAbsFilePath )
 //------------------------------------------------------------------------------
 {
-    // The class (and all instances of the class) may be accessed from within
-    // different thread contexts and therefore accessing the class and the
-    // instances must be serialized using a mutex ..
-    QMutexLocker mtxLocker(&s_mtx);
+    CMutexLocker mtxLocker(&m_mtx);
 
-    if( (m_trcSettings.m_strLocalTrcFileAbsFilePath != i_strAbsFilePath)
-     || (m_pTrcMthFile == nullptr && !m_trcSettings.m_strLocalTrcFileAbsFilePath.isEmpty()) )
+    if( m_trcSettings.m_strLocalTrcFileAbsFilePath != i_strAbsFilePath )
     {
         m_trcSettings.m_strLocalTrcFileAbsFilePath = i_strAbsFilePath;
 
-        if( m_trcSettings.m_strLocalTrcFileAbsFilePath.isEmpty() )
+        if( m_pTrcMthFile != nullptr )
         {
-            if( m_pTrcMthFile != nullptr )
-            {
-                CTrcMthFile::Free(m_pTrcMthFile);
-                m_pTrcMthFile = nullptr;
-            }
+            m_pTrcMthFile->setAbsoluteFilePath(i_strAbsFilePath);
         }
-        else // if( !m_trcSettings.m_strLocalTrcFileAbsFilePath.isEmpty() )
-        {
-            if( m_pTrcMthFile != nullptr && m_pTrcMthFile->absoluteFilePath() != m_trcSettings.m_strLocalTrcFileAbsFilePath )
-            {
-                CTrcMthFile::Free(m_pTrcMthFile);
-                m_pTrcMthFile = nullptr;
-            }
-            if( m_pTrcMthFile == nullptr )
-            {
-                m_pTrcMthFile = CTrcMthFile::Alloc(m_trcSettings.m_strLocalTrcFileAbsFilePath);
-            }
-            m_pTrcMthFile->setAutoSaveInterval(m_trcSettings.m_iLocalTrcFileAutoSaveInterval_ms);
-            m_pTrcMthFile->setSubFileCountMax(m_trcSettings.m_iLocalTrcFileSubFileCountMax);
-            m_pTrcMthFile->setSubFileLineCountMax(m_trcSettings.m_iLocalTrcFileSubFileLineCountMax);
-            m_pTrcMthFile->setCloseFileAfterEachWrite(m_trcSettings.m_bLocalTrcFileCloseFileAfterEachWrite);
-
-        } // if( !m_trcSettings.m_strLocalTrcFileAbsFilePath.isEmpty() )
 
         emit traceSettingsChanged(this);
-
-    } // if( (m_trcSettings.m_strLocalTrcFileAbsFilePath != i_strAbsFilePath) ..
-
+    }
 } // setLocalTrcFileAbsoluteFilePath
 
 //------------------------------------------------------------------------------
 QString CTrcServer::getLocalTrcFileAbsoluteFilePath() const
 //------------------------------------------------------------------------------
 {
-    // The class (and all instances of the class) may be accessed from within
-    // different thread contexts and therefore accessing the class and the
-    // instances must be serialized using a mutex ..
-    QMutexLocker mtxLocker(&s_mtx);
+    CMutexLocker mtxLocker(&m_mtx);
     return m_trcSettings.m_strLocalTrcFileAbsFilePath;
 }
 
@@ -1522,10 +1466,7 @@ QString CTrcServer::getLocalTrcFileAbsoluteFilePath() const
 QString CTrcServer::getLocalTrcFileCompleteBaseName() const
 //------------------------------------------------------------------------------
 {
-    // The class (and all instances of the class) may be accessed from within
-    // different thread contexts and therefore accessing the class and the
-    // instances must be serialized using a mutex ..
-    QMutexLocker mtxLocker(&s_mtx);
+    CMutexLocker mtxLocker(&m_mtx);
 
     QString strBaseName;
 
@@ -1541,10 +1482,7 @@ QString CTrcServer::getLocalTrcFileCompleteBaseName() const
 QString CTrcServer::getLocalTrcFileAbsolutePath() const
 //------------------------------------------------------------------------------
 {
-    // The class (and all instances of the class) may be accessed from within
-    // different thread contexts and therefore accessing the class and the
-    // instances must be serialized using a mutex ..
-    QMutexLocker mtxLocker(&s_mtx);
+    CMutexLocker mtxLocker(&m_mtx);
 
     QString strAbsPath;
 
@@ -1560,10 +1498,7 @@ QString CTrcServer::getLocalTrcFileAbsolutePath() const
 bool CTrcServer::isLocalTrcFileActive() const
 //------------------------------------------------------------------------------
 {
-    // The class (and all instances of the class) may be accessed from within
-    // different thread contexts and therefore accessing the class and the
-    // instances must be serialized using a mutex ..
-    QMutexLocker mtxLocker(&s_mtx);
+    CMutexLocker mtxLocker(&m_mtx);
     return (m_trcSettings.m_bUseLocalTrcFile && m_pTrcMthFile != nullptr);
 }
 
@@ -1571,10 +1506,7 @@ bool CTrcServer::isLocalTrcFileActive() const
 CTrcMthFile* CTrcServer::getLocalTrcFile()
 //------------------------------------------------------------------------------
 {
-    // The class (and all instances of the class) may be accessed from within
-    // different thread contexts and therefore accessing the class and the
-    // instances must be serialized using a mutex ..
-    QMutexLocker mtxLocker(&s_mtx);
+    CMutexLocker mtxLocker(&m_mtx);
     return m_pTrcMthFile;
 }
 
@@ -1582,10 +1514,7 @@ CTrcMthFile* CTrcServer::getLocalTrcFile()
 void CTrcServer::setLocalTrcFileAutoSaveIntervalInMs( int i_iAutoSaveInterval_ms )
 //------------------------------------------------------------------------------
 {
-    // The class (and all instances of the class) may be accessed from within
-    // different thread contexts and therefore accessing the class and the
-    // instances must be serialized using a mutex ..
-    QMutexLocker mtxLocker(&s_mtx);
+    CMutexLocker mtxLocker(&m_mtx);
 
     if( m_trcSettings.m_iLocalTrcFileAutoSaveInterval_ms != i_iAutoSaveInterval_ms )
     {
@@ -1604,10 +1533,7 @@ void CTrcServer::setLocalTrcFileAutoSaveIntervalInMs( int i_iAutoSaveInterval_ms
 int CTrcServer::getLocalTrcFileAutoSaveIntervalInMs() const
 //------------------------------------------------------------------------------
 {
-    // The class (and all instances of the class) may be accessed from within
-    // different thread contexts and therefore accessing the class and the
-    // instances must be serialized using a mutex ..
-    QMutexLocker mtxLocker(&s_mtx);
+    CMutexLocker mtxLocker(&m_mtx);
     return m_trcSettings.m_iLocalTrcFileAutoSaveInterval_ms;
 }
 
@@ -1615,10 +1541,7 @@ int CTrcServer::getLocalTrcFileAutoSaveIntervalInMs() const
 void CTrcServer::setLocalTrcFileCloseFileAfterEachWrite( bool i_bCloseFile )
 //------------------------------------------------------------------------------
 {
-    // The class (and all instances of the class) may be accessed from within
-    // different thread contexts and therefore accessing the class and the
-    // instances must be serialized using a mutex ..
-    QMutexLocker mtxLocker(&s_mtx);
+    CMutexLocker mtxLocker(&m_mtx);
 
     if( m_trcSettings.m_bLocalTrcFileCloseFileAfterEachWrite != i_bCloseFile )
     {
@@ -1641,10 +1564,7 @@ void CTrcServer::setLocalTrcFileCloseFileAfterEachWrite( bool i_bCloseFile )
 bool CTrcServer::getLocalTrcFileCloseFileAfterEachWrite() const
 //------------------------------------------------------------------------------
 {
-    // The class (and all instances of the class) may be accessed from within
-    // different thread contexts and therefore accessing the class and the
-    // instances must be serialized using a mutex ..
-    QMutexLocker mtxLocker(&s_mtx);
+    CMutexLocker mtxLocker(&m_mtx);
     return m_trcSettings.m_bLocalTrcFileCloseFileAfterEachWrite;
 }
 
@@ -1656,10 +1576,7 @@ public: // overridables
 void CTrcServer::setLocalTrcFileSubFileCountMax( int i_iCountMax )
 //------------------------------------------------------------------------------
 {
-    // The class (and all instances of the class) may be accessed from within
-    // different thread contexts and therefore accessing the class and the
-    // instances must be serialized using a mutex ..
-    QMutexLocker mtxLocker(&s_mtx);
+    CMutexLocker mtxLocker(&m_mtx);
 
     if( m_trcSettings.m_iLocalTrcFileSubFileCountMax != i_iCountMax )
     {
@@ -1678,10 +1595,7 @@ void CTrcServer::setLocalTrcFileSubFileCountMax( int i_iCountMax )
 int CTrcServer::getLocalTrcFileSubFileCountMax() const
 //------------------------------------------------------------------------------
 {
-    // The class (and all instances of the class) may be accessed from within
-    // different thread contexts and therefore accessing the class and the
-    // instances must be serialized using a mutex ..
-    QMutexLocker mtxLocker(&s_mtx);
+    CMutexLocker mtxLocker(&m_mtx);
     return m_trcSettings.m_iLocalTrcFileSubFileCountMax;
 }
 
@@ -1689,10 +1603,7 @@ int CTrcServer::getLocalTrcFileSubFileCountMax() const
 void CTrcServer::setLocalTrcFileSubFileLineCountMax( int i_iCountMax )
 //------------------------------------------------------------------------------
 {
-    // The class (and all instances of the class) may be accessed from within
-    // different thread contexts and therefore accessing the class and the
-    // instances must be serialized using a mutex ..
-    QMutexLocker mtxLocker(&s_mtx);
+    CMutexLocker mtxLocker(&m_mtx);
 
     if( m_trcSettings.m_iLocalTrcFileSubFileLineCountMax != i_iCountMax )
     {
@@ -1711,10 +1622,7 @@ void CTrcServer::setLocalTrcFileSubFileLineCountMax( int i_iCountMax )
 int CTrcServer::getLocalTrcFileSubFileLineCountMax() const
 //------------------------------------------------------------------------------
 {
-    // The class (and all instances of the class) may be accessed from within
-    // different thread contexts and therefore accessing the class and the
-    // instances must be serialized using a mutex ..
-    QMutexLocker mtxLocker(&s_mtx);
+    CMutexLocker mtxLocker(&m_mtx);
     return m_trcSettings.m_iLocalTrcFileSubFileLineCountMax;
 }
 
@@ -1726,10 +1634,7 @@ public: // overridables
 void CTrcServer::setCacheTrcDataIfNotConnected( bool i_bCacheData )
 //------------------------------------------------------------------------------
 {
-    // The class (and all instances of the class) may be accessed from within
-    // different thread contexts and therefore accessing the class and the
-    // instances must be serialized using a mutex ..
-    QMutexLocker mtxLocker(&s_mtx);
+    CMutexLocker mtxLocker(&m_mtx);
 
     if( m_trcSettings.m_bCacheDataIfNotConnected != i_bCacheData )
     {
@@ -1744,10 +1649,7 @@ void CTrcServer::setCacheTrcDataIfNotConnected( bool i_bCacheData )
 bool CTrcServer::getCacheTrcDataIfNotConnected() const
 //------------------------------------------------------------------------------
 {
-    // The class (and all instances of the class) may be accessed from within
-    // different thread contexts and therefore accessing the class and the
-    // instances must be serialized using a mutex ..
-    QMutexLocker mtxLocker(&s_mtx);
+    CMutexLocker mtxLocker(&m_mtx);
     return m_trcSettings.m_bCacheDataIfNotConnected;
 }
 
@@ -1755,10 +1657,7 @@ bool CTrcServer::getCacheTrcDataIfNotConnected() const
 void CTrcServer::setCacheTrcDataMaxArrLen( int i_iMaxArrLen )
 //------------------------------------------------------------------------------
 {
-    // The class (and all instances of the class) may be accessed from within
-    // different thread contexts and therefore accessing the class and the
-    // instances must be serialized using a mutex ..
-    QMutexLocker mtxLocker(&s_mtx);
+    CMutexLocker mtxLocker(&m_mtx);
 
     if( m_trcSettings.m_iCacheDataMaxArrLen != i_iMaxArrLen )
     {
@@ -1773,10 +1672,7 @@ void CTrcServer::setCacheTrcDataMaxArrLen( int i_iMaxArrLen )
 int CTrcServer::getCacheTrcDataMaxArrLen() const
 //------------------------------------------------------------------------------
 {
-    // The class (and all instances of the class) may be accessed from within
-    // different thread contexts and therefore accessing the class and the
-    // instances must be serialized using a mutex ..
-    QMutexLocker mtxLocker(&s_mtx);
+    CMutexLocker mtxLocker(&m_mtx);
     return m_trcSettings.m_iCacheDataMaxArrLen;
 }
 
@@ -1788,10 +1684,7 @@ public: // instance methods (trace settings)
 void CTrcServer::setTraceSettings( const STrcServerSettings& i_settings )
 //------------------------------------------------------------------------------
 {
-    // The class (and all instances of the class) may be accessed from within
-    // different thread contexts and therefore accessing the class and the
-    // instances must be serialized using a mutex ..
-    QMutexLocker mtxLocker(&s_mtx);
+    CMutexLocker mtxLocker(&m_mtx);
 
     if( m_trcSettings != i_settings )
     {
@@ -1886,10 +1779,7 @@ void CTrcServer::setTraceSettings( const STrcServerSettings& i_settings )
 STrcServerSettings CTrcServer::getTraceSettings() const
 //------------------------------------------------------------------------------
 {
-    // The class (and all instances of the class) may be accessed from within
-    // different thread contexts and therefore accessing the class and the
-    // instances must be serialized using a mutex ..
-    QMutexLocker mtxLocker(&s_mtx);
+    CMutexLocker mtxLocker(&m_mtx);
     return m_trcSettings;
 }
 
@@ -1901,16 +1791,11 @@ public: // overridables
 void CTrcServer::clearLocalTrcFile()
 //------------------------------------------------------------------------------
 {
-    CTrcMthFile::Free(m_pTrcMthFile);
-
-    m_pTrcMthFile = CTrcMthFile::Alloc(m_trcSettings.m_strLocalTrcFileAbsFilePath);
-
-    m_pTrcMthFile->setAutoSaveInterval(m_trcSettings.m_iLocalTrcFileAutoSaveInterval_ms);
-    m_pTrcMthFile->setSubFileCountMax(m_trcSettings.m_iLocalTrcFileSubFileCountMax);
-    m_pTrcMthFile->setSubFileLineCountMax(m_trcSettings.m_iLocalTrcFileSubFileLineCountMax);
-    m_pTrcMthFile->setCloseFileAfterEachWrite(m_trcSettings.m_bLocalTrcFileCloseFileAfterEachWrite);
-
-} // clearLocalTrcFile
+    if( m_pTrcMthFile != nullptr )
+    {
+        m_pTrcMthFile->clear();
+    }
+}
 
 /*==============================================================================
 protected: // overridables
@@ -1930,10 +1815,7 @@ void CTrcServer::addEntry(
     const QString&         i_strMethodOutArgs )
 //------------------------------------------------------------------------------
 {
-    // The class (and all instances of the class) may be accessed from within
-    // different thread contexts and therefore accessing the class and the
-    // instances must be serialized using a mutex ..
-    QMutexLocker mtxLocker(&s_mtx);
+    CMutexLocker mtxLocker(&m_mtx);
 
     if( m_trcSettings.m_bUseLocalTrcFile && m_pTrcMthFile != nullptr )
     {

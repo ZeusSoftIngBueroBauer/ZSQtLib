@@ -42,6 +42,7 @@ namespace ZS
 namespace System
 {
 class CMsg;
+class CRequest;
 }
 
 namespace Trace
@@ -125,7 +126,7 @@ public: // ctors and dtor
         const QString& i_strObjName,
         const QString& i_strMethod,
         const QString& i_strMethodInArgs = "" );
-    CMethodTracer( // 
+    CMethodTracer(
         CTrcServer*    i_pTrcServer,
         int            i_iTrcDetailLevel,
         int            i_iFilterDetailLevel,
@@ -143,7 +144,7 @@ public: // ctors and dtor
         const QString& i_strObjName,
         const QString& i_strMethod,
         const QString& i_strMethodInArgs = "" );
-    CMethodTracer( // 
+    CMethodTracer(
         CTrcAdminObj*  i_pTrcAdminObj,
         CTrcMthFile*   i_pTrcMthFile,
         int            i_iTrcDetailLevel,
@@ -169,6 +170,7 @@ public: // instance methods
     void setMethodReturn( int i_iResult );
     void setMethodReturn( ZS::System::EResult i_result );
     void setMethodReturn( const ZS::System::SErrResultInfo& i_errResultInfo );
+    void setMethodReturn( ZS::System::CRequest* i_pReq );
     void setMethodReturn( const QString& i_str );
     QString getMethodReturn() const { return m_strMethodReturn; }
 public: // instance methods

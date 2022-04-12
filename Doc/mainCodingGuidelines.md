@@ -1,4 +1,4 @@
-@page _PAGE_Overview_CodingGuidelines Coding Guidelines
+@page _PAGE_Main_CodingGuidelines Coding Guidelines
 
 For better readability naming conventions and coding guidelines are follewed.
 

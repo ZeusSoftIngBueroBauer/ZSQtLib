@@ -687,8 +687,11 @@ void CWdgtTrcMthList::onChkServerTracingEnabledToggled( bool i_bChecked )
 //------------------------------------------------------------------------------
 {
     STrcServerSettings trcServerSettings = m_pTrcClient->getTraceSettings();
-    trcServerSettings.m_bEnabled = i_bChecked;
-    m_pTrcClient->setTraceSettings(trcServerSettings);
+    if( trcServerSettings.m_bEnabled != i_bChecked )
+    {
+        trcServerSettings.m_bEnabled = i_bChecked;
+        m_pTrcClient->setTraceSettings(trcServerSettings);
+    }
 }
 
 //------------------------------------------------------------------------------

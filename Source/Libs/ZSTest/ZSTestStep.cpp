@@ -50,7 +50,7 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-/*! Constructs a test step.
+/*! @brief Creates a test step.
 
     The entry will be added to the index tree of the passed test instance.
 
@@ -88,6 +88,7 @@ CTestStep::CTestStep(
     CAbstractTestStepIdxTreeEntry(i_pTest, EIdxTreeEntryType::Leave, i_strName, i_pTSGrpParent),
     m_strOperation(i_strOperation),
     m_strDescription(),
+    m_hshConfigValues(),
     m_strlstExpectedValues(),
     m_strlstResultValues(),
     m_fTimeTestStart_s(0.0),
@@ -107,11 +108,14 @@ CTestStep::CTestStep(
 } // ctor
 
 //------------------------------------------------------------------------------
+/*! @brief Destroys the test step instance.
+*/
 CTestStep::~CTestStep()
 //------------------------------------------------------------------------------
 {
     //m_strOperation;
     //m_strDescription;
+    //m_hshConfigValues;
     //m_strlstExpectedValues.clear();
     //m_strlstResultValues.clear();
     m_fTimeTestStart_s = 0.0;
@@ -126,6 +130,24 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief Sets the operation of the test step.
+
+    The operation should describe the method which will be tested.
+
+    The string applied may be used by a test step slot method to retrieve further
+    information like class name, instance name, method to be called and so on.
+
+    By evaluating the content of the operation string a slot method might be reused
+    by several test steps.
+
+    A possible operation string could be:
+
+    @code
+    NameSpace::ClassName::InstName.method(args)
+    @endcode
+
+    @param i_strOperation [in] Operation of the test step.
+*/
 void CTestStep::setOperation( const QString& i_strOperation )
 //------------------------------------------------------------------------------
 {
@@ -138,10 +160,20 @@ void CTestStep::setOperation( const QString& i_strOperation )
             m_pTree->onTreeEntryChanged(this);
         }
     }
-
 } // setOperation
 
 //------------------------------------------------------------------------------
+/*! @brief Sets the description of the test step.
+
+    The description should describe what will be tested.
+
+    E.g. "Returns after timeout".
+
+    By evaluating the content of the description string a slot method might
+    be reused by several test steps.
+
+    @param i_strDescription [in] Description of the test step.
+*/
 void CTestStep::setDescription( const QString& i_strDescription )
 //------------------------------------------------------------------------------
 {
@@ -156,6 +188,54 @@ void CTestStep::setDescription( const QString& i_strDescription )
     }
 
 } // setDescription
+
+//------------------------------------------------------------------------------
+/*! @brief Return the config value for the given key.
+
+    @param i_strKey [in] Key for which the config value should be returned.
+
+    @return Config value of the given key. If no value was set for the key an
+            invalid QVariant value is returned.
+*/
+QStringList CTestStep::getConfigValueKeys() const
+//------------------------------------------------------------------------------
+{
+    return m_hshConfigValues.keys();
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Return the config value for the given key.
+
+    @param i_strKey [in] Key for which the config value should be returned.
+
+    @return Config value of the given key. If no value was set for the key an
+            invalid QVariant value is returned.
+*/
+QVariant CTestStep::getConfigValue( const QString& i_strKey ) const
+//------------------------------------------------------------------------------
+{
+    return m_hshConfigValues.value(i_strKey, QVariant());
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Sets a config value of the test step.
+
+    Config values may be used to configure a slot method of the test step so
+    that the slot method might be reused by several slot methods.
+
+    @param i_strKey [in] Key for which the config value should be set.
+    @param i_val [in] Config value.
+*/
+void CTestStep::setConfigValue( const QString& i_strKey, const QVariant& i_val )
+//------------------------------------------------------------------------------
+{
+    m_hshConfigValues[i_strKey] = i_val;
+
+    if( m_pTree != nullptr )
+    {
+        m_pTree->onTreeEntryChanged(this);
+    }
+}
 
 //------------------------------------------------------------------------------
 /*! Sets the expected result values of the test step.

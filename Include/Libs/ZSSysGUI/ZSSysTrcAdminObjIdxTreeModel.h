@@ -49,14 +49,14 @@ public: // class methods
     static QString ClassName() { return "CModelIdxTreeTrcAdminObjs"; }
 public: // type definitions and constants
     enum EColumn {
-        EColumnObjAddress    = CModelIdxTree::EColumnCount,
-        EColumnRefCount      = CModelIdxTree::EColumnCount + 1,
-        EColumnNameSpace     = CModelIdxTree::EColumnCount + 2,
-        EColumnClassName     = CModelIdxTree::EColumnCount + 3,
-        EColumnObjName       = CModelIdxTree::EColumnCount + 4,
-        EColumnObjThreadName = CModelIdxTree::EColumnCount + 5,
-        EColumnEnabled       = CModelIdxTree::EColumnCount + 6,
-        EColumnDetailLevel   = CModelIdxTree::EColumnCount + 7,
+        EColumnRefCount      = CModelIdxTree::EColumnCount + 0,
+        EColumnEnabled       = CModelIdxTree::EColumnCount + 1,
+        EColumnDetailLevel   = CModelIdxTree::EColumnCount + 2,
+        EColumnNameSpace     = CModelIdxTree::EColumnCount + 3,
+        EColumnClassName     = CModelIdxTree::EColumnCount + 4,
+        EColumnObjName       = CModelIdxTree::EColumnCount + 5,
+        EColumnObjThreadName = CModelIdxTree::EColumnCount + 6,
+        EColumnObjAddress    = CModelIdxTree::EColumnCount + 7,
         EColumnCount
     };
 public: // class methods

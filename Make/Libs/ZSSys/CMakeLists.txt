@@ -52,6 +52,7 @@ list(APPEND _Headers
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysMemLeakDump.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysMsg.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysMsgProtocol.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSSysMutex.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysRequest.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysRequestExecTree.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysRequestQueue.h
@@ -63,6 +64,7 @@ list(APPEND _Headers
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysTrcMethod.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysTrcMthFile.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysTrcServer.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSSysWaitCondition.h
 )
 
 list(APPEND _Sources
@@ -86,6 +88,7 @@ list(APPEND _Sources
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysMemLeakDump.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysMsg.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysMsgProtocol.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSSysMutex.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysRequest.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysRequestExecTree.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysRequestQueue.cpp
@@ -97,6 +100,7 @@ list(APPEND _Sources
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysTrcMethod.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysTrcMthFile.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysTrcServer.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSSysWaitCondition.cpp
 )
 
 configure_file(

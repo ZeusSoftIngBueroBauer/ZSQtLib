@@ -30,6 +30,7 @@ may result in using the software modules.
 #include "ZSSys/ZSSysDllMain.h"
 #include "ZSSys/ZSSysCommon.h"
 #include "ZSSys/ZSSysErrResult.h"
+#include "ZSSys/ZSSysMutex.h"
 
 #include <QtCore/qobject.h>
 #include <QtCore/qstring.h>
@@ -69,6 +70,8 @@ public: // ctor
 public: // operators
     bool operator == ( const STrcServerSettings& i_settingsOther ) const;
     bool operator != ( const STrcServerSettings& i_settingsOther ) const;
+public: // struct methods
+    QString toString() const;
 public: // struct members
     bool    m_bEnabled;                             /*!< Tracing may be enabled or disabled for the whole server. */
     QString m_strAdminObjFileAbsFilePath;           /*!< Absolute file path the tree of trace admin objects and their settings will be saved and recalled. */
@@ -123,37 +126,32 @@ public: // class methods
     static QString NameSpace() { return "ZS::Trace"; }  // Please note that the static class functions name must be different from the non static virtual member function "nameSpace"
     static QString ClassName() { return "CTrcServer"; } // Please note that the static class functions name must be different from the non static virtual member function "className"
 public: // class methods
-    static CTrcServer* GetInstance( const QString& i_strName = "ZSTrcServer" );
-    static CTrcServer* CreateInstance(
-        const QString& i_strName = "ZSTrcServer",
-        int i_iTrcDetailLevel = ETraceDetailLevelNone );
-    static void ReleaseInstance( const QString& i_strName = "ZSTrcServer" );
-    static void ReleaseInstance( CTrcServer* i_pTrcServer );
+    static CTrcServer* GetInstance();
+    static CTrcServer* CreateInstance( int i_iTrcDetailLevel = ETraceDetailLevelNone );
+    static void ReleaseInstance();
 public: // class methods to register thread names
     static void RegisterCurrentThread(const QString& i_strThreadName);
     static void UnregisterCurrentThread();
     static QString GetCurrentThreadName();
 public: // class methods to add, remove and modify admin objects
-    static CIdxTreeTrcAdminObjs* GetTraceAdminObjIdxTree( const QString& i_strServerName = "ZSTrcServer" );
-    static CTrcAdminObj* GetTraceAdminObj( int i_idxInTree, const QString& i_strServerName = "ZSTrcServer" );
+    static CIdxTreeTrcAdminObjs* GetTraceAdminObjIdxTree();
+    static CTrcAdminObj* GetTraceAdminObj( int i_idxInTree );
     static CTrcAdminObj* GetTraceAdminObj(
         const QString& i_strNameSpace,
         const QString& i_strClassName,
-        const QString& i_strObjName = "",
-        const QString& i_strServerName = "ZSTrcServer" );
+        const QString& i_strObjName = "" );
     static CTrcAdminObj* GetTraceAdminObj(
         const QString&       i_strNameSpace,
         const QString&       i_strClassName,
         const QString&       i_strObjName,
         ZS::System::EEnabled i_bEnabledAsDefault,
-        int                  i_iDefaultDetailLevel,
-        const QString&       i_strServerName = "ZSTrcServer" );
-    static void ReleaseTraceAdminObj( CTrcAdminObj* i_pTrcAdminObj, const QString& i_strServerName = "ZSTrcServer" );
+        int                  i_iDefaultDetailLevel );
+    static void ReleaseTraceAdminObj( CTrcAdminObj* i_pTrcAdminObj );
 public: // class methods to get default file paths
-    static QString GetDefaultAdminObjFileAbsoluteFilePath( const QString& i_strServerName = "ZSTrcServer", const QString& i_strIniFileScope = "System" );
-    static QString GetDefaultLocalTrcFileAbsoluteFilePath( const QString& i_strServerName = "ZSTrcServer", const QString& i_strIniFileScope = "System" );
+    static QString GetDefaultAdminObjFileAbsoluteFilePath( const QString& i_strIniFileScope = "System" );
+    static QString GetDefaultLocalTrcFileAbsoluteFilePath( const QString& i_strIniFileScope = "System" );
 protected: // ctors and dtor
-    CTrcServer( const QString& i_strName, int i_iTrcDetailLevel = ETraceDetailLevelNone );
+    CTrcServer( int i_iTrcDetailLevel = ETraceDetailLevelNone );
     virtual ~CTrcServer();
 signals:
     void traceSettingsChanged( QObject* i_pTrcServer );
@@ -286,11 +284,12 @@ protected: // reference counter
     int incrementRefCount();
     int decrementRefCount();
 protected: // class members
-    static QMutex                      s_mtx;            /*!< Mutex to protect the class and instance methods of the class for multithreaded access. */
-    static QHash<QString, CTrcServer*> s_hshpInstances;  /*!< Hash with all created trace servers (key is name of instance). */
+    static QMutex      s_mtx;       /*!< Mutex to protect the class members of the class for multithreaded access. */
+    static CTrcServer* s_pTheInst;  /*!< Pointer to singleton instance. */
     static QHash<Qt::HANDLE, QString>  s_hshThreadNames; /*!< Hash with registered threads (key is thread id, value is name of thread). */
     static QHash<QString, Qt::HANDLE>  s_hshThreadIds;   /*!< Hash with registered threads (key name of thread, value is thread id). */
 protected: // instance members
+    mutable ZS::System::CMutex m_mtx;            /*!< Mutex to protect the instance members of the class for multithreaded access. */
     CIdxTreeTrcAdminObjs* m_pTrcAdminObjIdxTree; /*<! Index tree containg a hierarchically order tree of the trace admin objects. */
     STrcServerSettings    m_trcSettings;         /*<! Currently used trace settings. */
     CTrcMthFile*          m_pTrcMthFile;         /*<! Reference to local trace method file. */

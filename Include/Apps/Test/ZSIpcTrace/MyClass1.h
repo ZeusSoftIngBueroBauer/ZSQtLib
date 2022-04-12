@@ -24,21 +24,27 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#ifndef ZSApps_TestIpcTrace_TestModule1_h
-#define ZSApps_TestIpcTrace_TestModule1_h
+#ifndef ZSApps_TestIpcTrace_MyClass1_h
+#define ZSApps_TestIpcTrace_MyClass1_h
 
 #include "ZSSys/ZSSysTrcAdminObj.h"
 
+
 namespace ZS
 {
+namespace System
+{
+class CMutex;
+class CWaitCondition;
+}
 namespace Apps
 {
 namespace Test
 {
 namespace IpcTrace
 {
-class CMyClass2Thread;
 class CMyClass2;
+class CMyClass2Thread;
 
 //******************************************************************************
 class CMyClass1 : public QObject
@@ -49,25 +55,28 @@ public: // class methods
     static QString NameSpace() { return "ZS::Apps::Test::IpcTrace"; }
     static QString ClassName() { return "CMyClass1"; }
 public: // class methods
-    static void setTraceServerName( const QString& i_strServerName );
-    static QString getTraceServerName();
-public: // class methods
     static QString classMethod(const QString& i_strMthInArgs);
 public: // ctors and dtor
     CMyClass1( const QString& i_strObjName );
     virtual ~CMyClass1();
+signals:
+    void aboutToBeDestroyed(const QString& i_strObjName);
 public: // instance methods
     CMyClass2Thread* getMyClass2Thread() const { return m_pMyClass2Thread; }
     CMyClass2* getMyClass2() const { return m_pMyClass2; }
 public: // instance methods
     CMyClass2* startClass2Thread(const QString& i_strMyClass2ObjName);
     void stopClass2Thread();
+protected slots:
+    void onClass2ThreadRunning();
 private: // class members
     static ZS::Trace::CTrcAdminObjRefAnchor s_trcAdminObjRefAnchor;
 private: // instance members
-    QString          m_strMyClass2ObjName;
-    CMyClass2Thread* m_pMyClass2Thread;
-    CMyClass2*       m_pMyClass2;
+    QString                     m_strMyClass2ObjName;
+    CMyClass2Thread*            m_pMyClass2Thread;
+    CMyClass2*                  m_pMyClass2;
+    ZS::System::CMutex*         m_pMtxWaitClass2ThreadRunning;
+    ZS::System::CWaitCondition* m_pWaitClass2ThreadRunning;
 
 }; // class CMyClass1
 
@@ -79,4 +88,4 @@ private: // instance members
 
 } // namespace ZS
 
-#endif // #ifndef ZSApps_TestIpcTrace_TestModule1_h
+#endif // #ifndef ZSApps_TestIpcTrace_MyClass1_h

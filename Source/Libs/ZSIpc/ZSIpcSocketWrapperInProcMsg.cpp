@@ -72,7 +72,7 @@ CInProcMsgSocketThread::CInProcMsgSocketThread(
 {
     setObjectName(i_strObjName);
 
-    if( m_pTrcMthFile == nullptr )
+    if( m_pTrcMthFile == nullptr && !i_strObjName.contains("TrcServer") && !i_strObjName.contains("TrcClient") )
     {
         m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName());
     }
@@ -203,7 +203,7 @@ CInProcMsgSocketWrapper::CInProcMsgSocketWrapper(
     m_pWaitCondReadyRead(nullptr)
 {
     // The derived classes must instantiate the trace admin object and trace the ctor.
-    if( m_pTrcMthFile == nullptr )
+    if( m_pTrcMthFile == nullptr && !i_strObjName.contains("TrcServer") && !i_strObjName.contains("TrcClient") )
     {
         m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName());
     }

@@ -106,16 +106,13 @@ CMainWindow::CMainWindow(
     QMainWindow(i_pWdgtParent,i_wflags),
     m_pTest(i_pTest),
     m_pMnuFile(nullptr),
+    m_pActFileSaveTestResults(nullptr),
     m_pActFileQuit(nullptr),
     m_pMnuDebug(nullptr),
     m_pActDebugZSTrcServer(nullptr),
     m_pActDebugZSTrcServerAdminObjIdxTree(nullptr),
     m_pActDebugZSTrcClient(nullptr),
     m_pActDebugZSTrcClientAdminObjIdxTree(nullptr),
-    m_pActDebugTestTrcServer(nullptr),
-    m_pActDebugTestTrcServerAdminObjIdxTree(nullptr),
-    m_pActDebugTestTrcClient(nullptr),
-    m_pActDebugTestTrcClientAdminObjIdxTree(nullptr),
     m_pActDebugErrLog(nullptr),
     m_pActDebugRequestExecTree(nullptr),
     m_pMnuInfo(nullptr),
@@ -127,12 +124,6 @@ CMainWindow::CMainWindow(
     m_pWdgtZSTrcClientStatus(nullptr),
     m_pLblZSTrcClientStatusIcon(nullptr),
     m_pLblZSTrcClientStatusText(nullptr),
-    m_pWdgtTestTrcServerStatus(nullptr),
-    m_pLblTestTrcServerStatusIcon(nullptr),
-    m_pLblTestTrcServerStatusText(nullptr),
-    m_pWdgtTestTrcClientStatus(nullptr),
-    m_pLblTestTrcClientStatusIcon(nullptr),
-    m_pLblTestTrcClientStatusText(nullptr),
     m_pLblReqInProgress(nullptr),
     m_pBarReqInProgress(nullptr),
     m_pLblErrors(nullptr),
@@ -147,39 +138,6 @@ CMainWindow::CMainWindow(
     setObjectName("MainWindow");
 
     setWindowTitle(i_strWindowTitle);
-
-    if( !QObject::connect(
-        /* pObjSender   */ m_pTest,
-        /* szSignal     */ SIGNAL(trcServerCreated(ZS::Trace::CIpcTrcServer*)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onTestTrcServerCreated(ZS::Trace::CIpcTrcServer*)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-    if( !QObject::connect(
-        /* pObjSender   */ m_pTest,
-        /* szSignal     */ SIGNAL(trcServerAboutToBeDestroyed(ZS::Trace::CIpcTrcServer*)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onTestTrcServerAboutToBeDestroyed(ZS::Trace::CIpcTrcServer*)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-    if( !QObject::connect(
-        /* pObjSender   */ m_pTest,
-        /* szSignal     */ SIGNAL(trcClientCreated(ZS::Trace::CIpcTrcClient*)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onTestTrcClientCreated(ZS::Trace::CIpcTrcClient*)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-    if( !QObject::connect(
-        /* pObjSender   */ m_pTest,
-        /* szSignal     */ SIGNAL(trcClientAboutToBeDestroyed(ZS::Trace::CIpcTrcClient*)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onTestTrcClientAboutToBeDestroyed(ZS::Trace::CIpcTrcClient*)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
 
     CIpcTrcServer* pTrcServer = CApplication::GetInstance()->getTrcServer();
 
@@ -213,6 +171,22 @@ CMainWindow::CMainWindow(
     //=============
 
     m_pMnuFile = menuBar()->addMenu(tr("&File"));
+
+    // <MenuItem> File::Quit
+    //----------------------
+
+    m_pActFileSaveTestResults = new QAction("&Save Test Results",this);
+    m_pMnuFile->addAction(m_pActFileSaveTestResults);
+    m_pMnuFile->addSeparator();
+
+    if( !connect(
+        /* pObjSender   */ m_pActFileSaveTestResults,
+        /* szSignal     */ SIGNAL(triggered()),
+        /* pObjReceiver */ this,
+        /* szSlot       */ SLOT(onActFileSaveTestResultsTriggered()) ) )
+    {
+        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
+    }
 
     // <MenuItem> File::Quit
     //----------------------
@@ -428,48 +402,6 @@ CMainWindow::CMainWindow(
         onTrcClientStateChanged( pTrcClient, pTrcClient->getState() );
     }
 
-    // <Label> Test Trace Server Status
-    //---------------------------------
-
-    m_pWdgtTestTrcServerStatus = new QWidget(this);
-
-    new QHBoxLayout(m_pWdgtTestTrcServerStatus);
-
-    m_pWdgtTestTrcServerStatus->setContentsMargins(0,0,0,0);
-    m_pWdgtTestTrcServerStatus->layout()->setContentsMargins(1,1,1,1);
-    m_pWdgtTestTrcServerStatus->installEventFilter(this);
-
-    m_pLblTestTrcServerStatusIcon = new QLabel("");
-    m_pLblTestTrcServerStatusIcon->setScaledContents(true);
-    m_pLblTestTrcServerStatusIcon->setMaximumSize( QSize(16,16) );
-    m_pWdgtTestTrcServerStatus->layout()->addWidget(m_pLblTestTrcServerStatusIcon);
-
-    m_pLblTestTrcServerStatusText = new QLabel("TestTrcServer: ---");
-    m_pWdgtTestTrcServerStatus->layout()->addWidget(m_pLblTestTrcServerStatusText);
-
-    statusBar()->addPermanentWidget(m_pWdgtTestTrcServerStatus);
-
-    // <Label> Test Trace Client Status
-    //---------------------------------
-
-    m_pWdgtTestTrcClientStatus = new QWidget(this);
-
-    new QHBoxLayout(m_pWdgtTestTrcClientStatus);
-
-    m_pWdgtTestTrcClientStatus->setContentsMargins(0,0,0,0);
-    m_pWdgtTestTrcClientStatus->layout()->setContentsMargins(1,1,1,1);
-    m_pWdgtTestTrcClientStatus->installEventFilter(this);
-
-    m_pLblTestTrcClientStatusIcon = new QLabel("");
-    m_pLblTestTrcClientStatusIcon->setScaledContents(true);
-    m_pLblTestTrcClientStatusIcon->setMaximumSize( QSize(16,16) );
-    m_pWdgtTestTrcClientStatus->layout()->addWidget(m_pLblTestTrcClientStatusIcon);
-
-    m_pLblTestTrcClientStatusText = new QLabel("TestTrcClient: ---");
-    m_pWdgtTestTrcClientStatus->layout()->addWidget(m_pLblTestTrcClientStatusText);
-
-    statusBar()->addPermanentWidget(m_pWdgtTestTrcClientStatus);
-
     // <Label> RequestInProgress with ProgressBar
     //-------------------------------------------
 
@@ -554,15 +486,12 @@ CMainWindow::~CMainWindow()
     m_pTest = nullptr;
     m_pMnuFile = nullptr;
     m_pActFileQuit = nullptr;
+    m_pActFileSaveTestResults = nullptr;
     m_pMnuDebug = nullptr;
     m_pActDebugZSTrcServer = nullptr;
     m_pActDebugZSTrcServerAdminObjIdxTree = nullptr;
     m_pActDebugZSTrcClient = nullptr;
     m_pActDebugZSTrcClientAdminObjIdxTree = nullptr;
-    m_pActDebugTestTrcServer = nullptr;
-    m_pActDebugTestTrcServerAdminObjIdxTree = nullptr;
-    m_pActDebugTestTrcClient = nullptr;
-    m_pActDebugTestTrcClientAdminObjIdxTree = nullptr;
     m_pActDebugErrLog = nullptr;
     m_pActDebugRequestExecTree = nullptr;
     m_pMnuInfo = nullptr;
@@ -574,12 +503,6 @@ CMainWindow::~CMainWindow()
     m_pWdgtZSTrcClientStatus = nullptr;
     m_pLblZSTrcClientStatusIcon = nullptr;
     m_pLblZSTrcClientStatusText = nullptr;
-    m_pWdgtTestTrcServerStatus = nullptr;
-    m_pLblTestTrcServerStatusIcon = nullptr;
-    m_pLblTestTrcServerStatusText = nullptr;
-    m_pWdgtTestTrcClientStatus = nullptr;
-    m_pLblTestTrcClientStatusIcon = nullptr;
-    m_pLblTestTrcClientStatusText = nullptr;
     m_pLblReqInProgress = nullptr;
     m_pBarReqInProgress = nullptr;
     m_pLblErrors = nullptr;
@@ -645,22 +568,6 @@ bool CMainWindow::eventFilter( QObject* i_pObjWatched, QEvent* i_pEv )
             bHandled = true;
         }
     }
-    else if( i_pObjWatched == m_pWdgtTestTrcServerStatus )
-    {
-        if( i_pEv->type() == QEvent::MouseButtonDblClick )
-        {
-            onActDebugTestTrcServerTriggered();
-            bHandled = true;
-        }
-    }
-    else if( i_pObjWatched == m_pWdgtTestTrcClientStatus )
-    {
-        if( i_pEv->type() == QEvent::MouseButtonDblClick )
-        {
-            onActDebugTestTrcClientTriggered();
-            bHandled = true;
-        }
-    }
     else
     {
         // pass the event on to the parent class
@@ -675,12 +582,19 @@ protected slots:
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+void CMainWindow::onActFileSaveTestResultsTriggered()
+//------------------------------------------------------------------------------
+{
+    m_pTest->saveTestResults();
+}
+
+//------------------------------------------------------------------------------
 void CMainWindow::onActDebugZSTrcServerTriggered()
 //------------------------------------------------------------------------------
 {
     QString strDlgTitle = QCoreApplication::applicationName() + ": ZS Trace Server";
 
-    CIpcTrcServer* pServer = CIpcTrcServer::GetInstance("ZSTrcServer");
+    CIpcTrcServer* pServer = CIpcTrcServer::GetInstance();
 
     if( pServer != nullptr )
     {
@@ -714,7 +628,7 @@ void CMainWindow::onActDebugZSTrcServerAdminObjIdxTreeTriggered()
 {
     QString strDlgTitle = QCoreApplication::applicationName() + ": ZS Trace Server Admin Objects";
 
-    CIpcTrcServer* pServer = CIpcTrcServer::GetInstance("ZSTrcServer");
+    CIpcTrcServer* pServer = CIpcTrcServer::GetInstance();
 
     if( pServer != nullptr )
     {
@@ -811,144 +725,6 @@ void CMainWindow::onActDebugZSTrcClientAdminObjIdxTreeTriggered()
         }
     }
 } // onActDebugZSTrcClientAdminObjIdxTreeTriggered
-
-//------------------------------------------------------------------------------
-void CMainWindow::onActDebugTestTrcServerTriggered()
-//------------------------------------------------------------------------------
-{
-    QString strDlgTitle = getMainWindowTitle() + ": Test Trace Server";
-
-    CIpcTrcServer* pServer = CIpcTrcServer::GetInstance("TestTrcServer");
-
-    if( pServer != nullptr )
-    {
-        CDlgTrcServer* pDlg = CDlgTrcServer::GetInstance(pServer->objectName());
-
-        if( pDlg == nullptr )
-        {
-            pDlg = CDlgTrcServer::CreateInstance(
-                /* strObjName  */ pServer->objectName(),
-                /* strDlgTitle */ strDlgTitle);
-            pDlg->setServer(pServer);
-            pDlg->setAttribute(Qt::WA_DeleteOnClose, true);
-            pDlg->adjustSize();
-            pDlg->show();
-        }
-        else // if( pDlg != nullptr )
-        {
-            if( pDlg->isHidden() )
-            {
-                pDlg->show();
-            }
-            pDlg->raise();
-            pDlg->activateWindow();
-        }
-    }
-} // onActDebugTestTrcServerTriggered
-
-//------------------------------------------------------------------------------
-void CMainWindow::onActDebugTestTrcServerAdminObjIdxTreeTriggered()
-//------------------------------------------------------------------------------
-{
-    QString strDlgTitle = QCoreApplication::applicationName() + ": Test Trace Server Admin Objects";
-
-    CIpcTrcServer* pServer = CIpcTrcServer::GetInstance("TestTrcServer");
-
-    if( pServer != nullptr )
-    {
-        CDlgIdxTreeTrcAdminObjs* pDlg = CDlgIdxTreeTrcAdminObjs::GetInstance(pServer->getTraceAdminObjIdxTree()->objectName());
-
-        if( pDlg == nullptr )
-        {
-            pDlg = CDlgIdxTreeTrcAdminObjs::CreateInstance(
-                /* pTrcAdmIdxTree  */ pServer->getTraceAdminObjIdxTree(),
-                /* strDlgTitle     */ strDlgTitle,
-                /* pWdgtParent     */ nullptr,
-                /* wFlags          */ Qt::WindowFlags(),
-                /* iTrcDetailLevel */ CApplication::GetInstance()->getTraceDetailLevelTrcServer() );
-            pDlg->setAttribute(Qt::WA_DeleteOnClose, true);
-            pDlg->adjustSize();
-            pDlg->show();
-        }
-        else // if( pDlg != nullptr )
-        {
-            if( pDlg->isHidden() )
-            {
-                pDlg->show();
-            }
-            pDlg->raise();
-            pDlg->activateWindow();
-        }
-    }
-} // onActDebugTestTrcServerAdminObjIdxTreeTriggered
-
-//------------------------------------------------------------------------------
-void CMainWindow::onActDebugTestTrcClientTriggered()
-//------------------------------------------------------------------------------
-{
-    QString strDlgTitle = getMainWindowTitle() + ": Test Trace Client";
-
-    CIpcTrcClient* pTrcClient = m_pTest->getTestTrcClient();
-
-    if( pTrcClient != nullptr )
-    {
-        CDlgTrcClient* pDlg = CDlgTrcClient::GetInstance(pTrcClient->objectName());
-
-        if( pDlg == nullptr )
-        {
-            pDlg = CDlgTrcClient::CreateInstance(pTrcClient->objectName(), strDlgTitle);
-            pDlg->setClient(pTrcClient);
-            pDlg->setAttribute(Qt::WA_DeleteOnClose, true);
-            pDlg->adjustSize();
-            pDlg->show();
-        }
-        else // if( pDlg != nullptr )
-        {
-            if( pDlg->isHidden() )
-            {
-                pDlg->show();
-            }
-            pDlg->raise();
-            pDlg->activateWindow();
-        }
-    }
-} // onActDebugTestTrcClientTriggered
-
-//------------------------------------------------------------------------------
-void CMainWindow::onActDebugTestTrcClientAdminObjIdxTreeTriggered()
-//------------------------------------------------------------------------------
-{
-    QString strDlgTitle = getMainWindowTitle() + ": Test Trace Client Admin Objects";
-
-    CIpcTrcClient* pTrcClient = m_pTest->getTestTrcClient();
-
-    if( pTrcClient != nullptr )
-    {
-        CDlgIdxTreeTrcAdminObjs* pDlg = CDlgIdxTreeTrcAdminObjs::GetInstance(pTrcClient->getTraceAdminObjIdxTree()->objectName());
-
-        if( pDlg == nullptr )
-        {
-            pDlg = CDlgIdxTreeTrcAdminObjs::CreateInstance(
-                /* pTrcAdmObjPool  */ pTrcClient->getTraceAdminObjIdxTree(),
-                /* strDlgTitle     */ strDlgTitle,
-                /* pWdgtParent     */ nullptr,
-                /* wflags          */ Qt::WindowFlags(),
-                /* iTrcDetailLevel */ CApplication::GetInstance()->getTraceDetailLevelTrcServer() );
-            pDlg->setAttribute(Qt::WA_DeleteOnClose, true);
-            pDlg->adjustSize();
-            pDlg->show();
-        }
-        else // if( pDlg != nullptr )
-        {
-            if( pDlg->isHidden() )
-            {
-                pDlg->show();
-            }
-            pDlg->raise();
-            pDlg->activateWindow();
-        }
-    }
-} // onActDebugTestTrcClientAdminObjIdxTreeTriggered
 
 //------------------------------------------------------------------------------
 void CMainWindow::onActDebugErrLogTriggered()
@@ -1197,136 +973,6 @@ protected slots:
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CMainWindow::onTestTrcServerCreated( ZS::Trace::CIpcTrcServer* i_pTrcServer )
-//------------------------------------------------------------------------------
-{
-    if( i_pTrcServer != nullptr )
-    {
-        if( !QObject::connect(
-            /* pObjSender   */ i_pTrcServer->getIpcServer(),
-            /* szSignal     */ SIGNAL(stateChanged(QObject*,int)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onTrcServerStateChanged(QObject*,int)) ) )
-        {
-            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-        }
-
-        onTrcServerStateChanged( i_pTrcServer->getIpcServer(), i_pTrcServer->getState() );
-
-        // <MenuItem> Debug::TestTraceServer
-        //----------------------------------
-
-        m_pActDebugTestTrcServer = new QAction("Test Trace Server",this);
-        m_pMnuDebug->addAction(m_pActDebugTestTrcServer);
-
-        if( !connect(
-            /* pObjSender   */ m_pActDebugTestTrcServer,
-            /* szSignal     */ SIGNAL(triggered()),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onActDebugTestTrcServerTriggered()) ) )
-        {
-            throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-        }
-
-        // <MenuItem> Debug::TestTraceServerAdminObjPool
-        //----------------------------------------------
-
-        m_pActDebugTestTrcServerAdminObjIdxTree = new QAction("Test Trace Server Admin Objects",this);
-        m_pMnuDebug->addAction(m_pActDebugTestTrcServerAdminObjIdxTree);
-
-        if( !connect(
-            /* pObjSender   */ m_pActDebugTestTrcServerAdminObjIdxTree,
-            /* szSignal     */ SIGNAL(triggered()),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onActDebugTestTrcServerAdminObjIdxTreeTriggered()) ) )
-        {
-            throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-        }
-    }
-} // onTestTrcServerCreated
-
-//------------------------------------------------------------------------------
-void CMainWindow::onTestTrcServerAboutToBeDestroyed( ZS::Trace::CIpcTrcServer* i_pTrcServer )
-//------------------------------------------------------------------------------
-{
-    m_pLblTestTrcServerStatusText->setText("TestTrcServer: ---");
-
-    delete m_pActDebugTestTrcServer;
-    m_pActDebugTestTrcServer = nullptr;
-
-    delete m_pActDebugTestTrcServerAdminObjIdxTree;
-    m_pActDebugTestTrcServerAdminObjIdxTree = nullptr;
-
-} // onTestTrcServerAboutToBeDestroyed
-
-//------------------------------------------------------------------------------
-void CMainWindow::onTestTrcClientCreated( ZS::Trace::CIpcTrcClient* i_pTrcClient )
-//------------------------------------------------------------------------------
-{
-    if( i_pTrcClient != nullptr )
-    {
-        if( !QObject::connect(
-            /* pObjSender   */ i_pTrcClient,
-            /* szSignal     */ SIGNAL(stateChanged(QObject*,int)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onTrcClientStateChanged(QObject*,int)) ) )
-        {
-            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-        }
-
-        onTrcClientStateChanged( i_pTrcClient, i_pTrcClient->getState() );
-
-        // <MenuItem> Debug::TestTraceClient
-        //----------------------------------
-
-        m_pActDebugTestTrcClient = new QAction("Test Trace Client",this);
-        m_pMnuDebug->addAction(m_pActDebugTestTrcClient);
-
-        if( !connect(
-            /* pObjSender   */ m_pActDebugTestTrcClient,
-            /* szSignal     */ SIGNAL(triggered()),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onActDebugTestTrcClientTriggered()) ) )
-        {
-            throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-        }
-
-        // <MenuItem> Debug::TestTraceClientAdminObjPool
-        //----------------------------------------------
-
-        m_pActDebugTestTrcClientAdminObjIdxTree = new QAction("Test Trace Client Admin Objects",this);
-        m_pMnuDebug->addAction(m_pActDebugTestTrcClientAdminObjIdxTree);
-
-        if( !connect(
-            /* pObjSender   */ m_pActDebugTestTrcClientAdminObjIdxTree,
-            /* szSignal     */ SIGNAL(triggered()),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onActDebugTestTrcClientAdminObjIdxTreeTriggered()) ) )
-        {
-            throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-        }
-    }
-} // onTestTrcClientCreated
-
-//------------------------------------------------------------------------------
-void CMainWindow::onTestTrcClientAboutToBeDestroyed( ZS::Trace::CIpcTrcClient* i_pTrcClient )
-//------------------------------------------------------------------------------
-{
-    m_pLblTestTrcClientStatusText->setText("TestTrcClient: ---");
-
-    delete m_pActDebugTestTrcClient;
-    m_pActDebugTestTrcClient = nullptr;
-
-    delete m_pActDebugTestTrcClientAdminObjIdxTree;
-    m_pActDebugTestTrcClientAdminObjIdxTree = nullptr;
-
-} // onTestTrcClientAboutToBeDestroyed
-
-/*==============================================================================
-protected slots:
-==============================================================================*/
-
-//------------------------------------------------------------------------------
 void CMainWindow::onTrcServerStateChanged( QObject* i_pServer, int /*i_iState*/ )
 //------------------------------------------------------------------------------
 {
@@ -1366,20 +1012,6 @@ void CMainWindow::onTrcServerStateChanged( QObject* i_pServer, int /*i_iState*/ 
             m_pLblZSTrcServerStatusText->setToolTip(strToolTip);
         }
     }
-    else if( pIpcServer->objectName() == "TestTrcServer")
-    {
-        if( m_pLblTestTrcServerStatusIcon != nullptr )
-        {
-            m_pLblTestTrcServerStatusIcon->setPixmap(pxmStatus);
-            m_pLblTestTrcServerStatusIcon->setToolTip(strToolTip);
-        }
-        if( m_pLblTestTrcServerStatusText != nullptr )
-        {
-            m_pLblTestTrcServerStatusText->setText(strStatus);
-            m_pLblTestTrcServerStatusText->setToolTip(strToolTip);
-        }
-    }
-
 } // onTrcServerStateChanged
 
 //------------------------------------------------------------------------------
@@ -1420,19 +1052,6 @@ void CMainWindow::onTrcClientStateChanged( QObject* i_pClient, int /*i_iState*/ 
         {
             m_pLblZSTrcClientStatusText->setText(strStatus);
             m_pLblZSTrcClientStatusText->setToolTip(strToolTip);
-        }
-    }
-    else if( pIpcClient->objectName() == "TestTrcClient")
-    {
-        if( m_pLblTestTrcClientStatusIcon != nullptr )
-        {
-            m_pLblTestTrcClientStatusIcon->setPixmap(pxmStatus);
-            m_pLblTestTrcClientStatusIcon->setToolTip(strToolTip);
-        }
-        if( m_pLblTestTrcClientStatusText != nullptr )
-        {
-            m_pLblTestTrcClientStatusText->setText(strStatus);
-            m_pLblTestTrcClientStatusText->setToolTip(strToolTip);
         }
     }
 } // onTrcClientStateChanged

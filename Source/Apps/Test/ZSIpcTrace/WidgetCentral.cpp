@@ -97,7 +97,7 @@ CWidgetCentral::CWidgetCentral(
     m_pSplitter(nullptr),
     m_pWdgtTest(nullptr),
     m_pTabWidgetTrcMthLists(nullptr),
-    m_hsppWdgtMthList()
+    m_pWdgtTrcMthList(nullptr)
 {
     if( s_pThis != nullptr )
     {
@@ -131,26 +131,8 @@ CWidgetCentral::CWidgetCentral(
 
     CIpcTrcClient* pTrcClient = CApplication::GetInstance()->getTrcClient();
     QString strCltName = pTrcClient->objectName();
-    CWdgtTrcMthList* pWdgtTrcMthList = new CWdgtTrcMthList(pTrcClient);
-    m_hsppWdgtMthList[strCltName] = pWdgtTrcMthList;
-    m_pTabWidgetTrcMthLists->addTab(pWdgtTrcMthList, strCltName);
-
-    if( !QObject::connect(
-        /* pObjSender   */ m_pTest,
-        /* szSignal     */ SIGNAL(trcClientCreated(ZS::Trace::CIpcTrcClient*)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onTestTrcClientCreated(ZS::Trace::CIpcTrcClient*)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-    if( !QObject::connect(
-        /* pObjSender   */ m_pTest,
-        /* szSignal     */ SIGNAL(trcClientAboutToBeDestroyed(ZS::Trace::CIpcTrcClient*)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onTestTrcClientAboutToBeDestroyed(ZS::Trace::CIpcTrcClient*)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    m_pWdgtTrcMthList = new CWdgtTrcMthList(pTrcClient);
+    m_pTabWidgetTrcMthLists->addTab(m_pWdgtTrcMthList, strCltName);
 
     // Restore geometry of widget
     //---------------------------
@@ -201,7 +183,7 @@ CWidgetCentral::~CWidgetCentral()
     m_pSplitter = nullptr;
     m_pWdgtTest = nullptr;
     m_pTabWidgetTrcMthLists = nullptr;
-    m_hsppWdgtMthList.clear();
+    m_pWdgtTrcMthList = nullptr;
 
     s_pThis = nullptr;
 
@@ -212,45 +194,8 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CWdgtTrcMthList* CWidgetCentral::getTrcMthListWdgt(const QString& i_strServerName )
+CWdgtTrcMthList* CWidgetCentral::getTrcMthListWdgt()
 //------------------------------------------------------------------------------
 {
-    return m_hsppWdgtMthList.value(i_strServerName,nullptr);
+    return m_pWdgtTrcMthList;
 }
-
-/*==============================================================================
-protected slots:
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-void CWidgetCentral::onTestTrcClientCreated( ZS::Trace::CIpcTrcClient* i_pTrcClient )
-//------------------------------------------------------------------------------
-{
-    if( i_pTrcClient != nullptr )
-    {
-        QString strCltName = i_pTrcClient->objectName();
-        CWdgtTrcMthList* pWdgtTrcMthList = new CWdgtTrcMthList(i_pTrcClient);
-        m_hsppWdgtMthList[strCltName] = pWdgtTrcMthList;
-        m_pTabWidgetTrcMthLists->addTab(pWdgtTrcMthList, strCltName);
-    }
-} // onTestTrcClientCreated
-
-//------------------------------------------------------------------------------
-void CWidgetCentral::onTestTrcClientAboutToBeDestroyed( ZS::Trace::CIpcTrcClient* i_pTrcClient )
-//------------------------------------------------------------------------------
-{
-    if( i_pTrcClient != nullptr )
-    {
-        QString strCltName = i_pTrcClient->objectName();
-
-        if( m_hsppWdgtMthList.contains(strCltName) )
-        {
-            //m_pTabWidgetTrcMthLists->removeTab(pWdgtTrcMthList, strCltName);
-            CWdgtTrcMthList* pWdgtTrcMthList = m_hsppWdgtMthList[strCltName];
-            m_hsppWdgtMthList.remove(strCltName);
-            delete pWdgtTrcMthList;
-            pWdgtTrcMthList = nullptr;
-        }
-    }
-} // onTestTrcClientAboutToBeDestroyed
-

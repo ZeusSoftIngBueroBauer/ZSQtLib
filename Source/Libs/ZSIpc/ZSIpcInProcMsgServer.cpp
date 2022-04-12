@@ -371,7 +371,7 @@ CInProcMsgServer::CInProcMsgServer( const QString& i_strObjName, bool i_bTracing
 {
     setObjectName(i_strObjName);
 
-    if( m_bTracingEnabled )
+    if( m_bTracingEnabled && !i_strObjName.contains("TrcServer") )
     {
         m_pTrcAdminObj = CTrcServer::GetTraceAdminObj("ZS::Ipc", "CInProcMsgServer", i_strObjName);
     }

@@ -61,7 +61,7 @@ CInProcMsgServerWrapper::CInProcMsgServerWrapper(
     m_pInProcMsgServer(nullptr)
 {
     // The derived classes must instantiate the trace admin object and trace the ctor.
-    if( m_pTrcMthFile == nullptr )
+    if( m_pTrcMthFile == nullptr && !i_strObjName.contains("TrcServer") )
     {
         m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName());
     }

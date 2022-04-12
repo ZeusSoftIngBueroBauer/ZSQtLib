@@ -43,16 +43,13 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-DllIf::CIpcTrcServerThread::CIpcTrcServerThread(
-    const QString& i_strServerName,
-    int            i_iTrcDetailLevel ) :
+DllIf::CIpcTrcServerThread::CIpcTrcServerThread( int i_iTrcDetailLevel ) :
 //------------------------------------------------------------------------------
     QThread(),
-    m_strServerName(i_strServerName),
     m_iTrcDetailLevel(i_iTrcDetailLevel),
     m_pTrcMthFile(nullptr)
 {
-    setObjectName(i_strServerName + "DllIf");
+    setObjectName("ZSTrcServerDllIf");
 
     #ifdef _TRACE_IPCTRACEPYDLL_METHODs
 
@@ -113,18 +110,17 @@ DllIf::CIpcTrcServerThread::~CIpcTrcServerThread()
 
     // The trace server should have been released at the end of the run method.
     // If not (for whatever unexpected reason) the server will be released here.
-    if( CIpcTrcServer::GetInstance(m_strServerName) != nullptr )
+    if( CIpcTrcServer::GetInstance() != nullptr )
     {
         try
         {
-            CIpcTrcServer::ReleaseInstance(m_strServerName);
+            CIpcTrcServer::ReleaseInstance();
         }
         catch(...)
         {
         }
     }
 
-    //m_strServerName;
     m_iTrcDetailLevel = 0;
     m_pTrcMthFile = nullptr;
 
@@ -138,7 +134,7 @@ public: // instance methods
 bool DllIf::CIpcTrcServerThread::isServerCreated()
 //------------------------------------------------------------------------------
 {
-    return (CIpcTrcServer::GetInstance(m_strServerName) != nullptr);
+    return (CIpcTrcServer::GetInstance() != nullptr);
 }
 
 //------------------------------------------------------------------------------
@@ -147,7 +143,7 @@ bool DllIf::CIpcTrcServerThread::isServerStarted()
 {
     bool bServerStarted = false;
 
-    CIpcTrcServer* pTrcServer = CIpcTrcServer::GetInstance(m_strServerName);
+    CIpcTrcServer* pTrcServer = CIpcTrcServer::GetInstance();
 
     if( pTrcServer != NULL )
     {
@@ -163,7 +159,7 @@ bool DllIf::CIpcTrcServerThread::isServerShutdown()
 {
     bool bServerShutdown = true;
 
-    CIpcTrcServer* pTrcServer = CIpcTrcServer::GetInstance(m_strServerName);
+    CIpcTrcServer* pTrcServer = CIpcTrcServer::GetInstance();
 
     if( pTrcServer != NULL )
     {
@@ -198,7 +194,7 @@ void DllIf::CIpcTrcServerThread::run()
     // Create trace server
     //--------------------
 
-    CIpcTrcServer::CreateInstance(m_strServerName, m_iTrcDetailLevel);
+    CIpcTrcServer::CreateInstance(m_iTrcDetailLevel);
 
     try
     {
@@ -245,7 +241,7 @@ void DllIf::CIpcTrcServerThread::run()
 
     try
     {
-        CIpcTrcServer::ReleaseInstance(m_strServerName);
+        CIpcTrcServer::ReleaseInstance();
     }
     catch(...)
     {

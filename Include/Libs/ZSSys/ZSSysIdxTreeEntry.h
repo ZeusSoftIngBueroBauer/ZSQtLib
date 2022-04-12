@@ -102,8 +102,11 @@ public: // overridable instance methods
 public: // instance methods
     /*! Returns the entry type of the index tree entry. */
     EIdxTreeEntryType entryType() const { return m_entryType; }
+    /*! Returns true if entry is the root entry, false otherwise. */
     bool isRoot() const { return (m_entryType == EIdxTreeEntryType::Root); }
+    /*! Returns true if entry is a branch entry, false otherwise. */
     bool isBranch() const { return (m_entryType == EIdxTreeEntryType::Branch); }
+    /*! Returns true if entry is a leave entry, false otherwise. */
     bool isLeave() const { return (m_entryType == EIdxTreeEntryType::Leave); }
     QString entryTypeSymbol() const;
     /*! Returns the entry type's string representation. */

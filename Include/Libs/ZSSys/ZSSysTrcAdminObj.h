@@ -86,16 +86,21 @@ class ZSSYSDLL_API CTrcAdminObj : public QObject, public ZS::System::CIdxTreeEnt
 friend class CIdxTreeTrcAdminObjs;
     Q_OBJECT
 public: // class methods
+    /*! Returns the name space of the class. */
     static QString NameSpace() { return "ZS::Trace"; }
+    /*! Returns the class name of the class. */
     static QString ClassName() { return "CTrcAdminObj"; }
 protected: // ctors and dtor
     CTrcAdminObj(
         const QString& i_strNameSpace,
         const QString& i_strClassName,
-        const QString& i_strObjName );
+        const QString& i_strObjName,
+        const QString& i_strTreeEntryName );
     virtual ~CTrcAdminObj();
 signals:
-    void changed( QObject* i_pTrcAdminObj ); /*!< Emitted if ObjState, Enabled, StateOnOff or DetailLevel has been changed */
+    /*! @brief Emitted if ObjState, Enabled, StateOnOff or DetailLevel has been changed. */
+    void changed( QObject* i_pTrcAdminObj );
+    /*! @brief Emitted if the object is going to be destroyed. */
     void aboutToBeDestroyed( ZS::Trace::CTrcAdminObj* i_pTrcAdminObj );
 public: // instance methods
     CIdxTreeTrcAdminObjs* getTraceAdminObjIdxTree();
@@ -155,14 +160,8 @@ class ZSSYSDLL_API CTrcAdminObjRefAnchor : public QObject
 {
     Q_OBJECT
 public: // ctors and dtor
-    CTrcAdminObjRefAnchor(
-        const QString& i_strNameSpace,
-        const QString& i_strClassName,
-        const QString& i_strServerName = "ZSTrcServer" );
+    CTrcAdminObjRefAnchor(const QString& i_strNameSpace, const QString& i_strClassName);
     virtual ~CTrcAdminObjRefAnchor();
-public: // instance methods
-    void setServerName( const QString& i_strServerName );
-    QString getServerName() const;
 public: // instance methods
     void allocTrcAdminObj();
     void releaseTrcAdminObj();
@@ -174,7 +173,6 @@ private slots:
 private: // instance members
     QString       m_strNameSpace;
     QString       m_strClassName;
-    QString       m_strServerName;
     int           m_idxInTree;
     CTrcAdminObj* m_pTrcAdminObj;
 };

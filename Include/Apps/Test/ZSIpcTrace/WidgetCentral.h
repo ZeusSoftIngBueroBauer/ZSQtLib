@@ -79,20 +79,16 @@ public: // ctors and dtor
     CWidgetCentral( CTest* i_pTest, QWidget* i_pWdgtParent = nullptr, Qt::WindowFlags i_wflags = Qt::WindowFlags() );
     ~CWidgetCentral();
 public: // instance methods
-    ZS::Trace::GUI::CWdgtTrcMthList* getTrcMthListWdgt(const QString& i_strServerName );
-protected slots:
-    void onTestTrcClientCreated( ZS::Trace::CIpcTrcClient* i_pTrcClient );
-    void onTestTrcClientAboutToBeDestroyed( ZS::Trace::CIpcTrcClient* i_pTrcClient );
+    ZS::Trace::GUI::CWdgtTrcMthList* getTrcMthListWdgt();
 private: // class members
-    static CWidgetCentral*   s_pThis; // singleton class
+    static CWidgetCentral* s_pThis; // singleton class
 protected: // instance members
-    CTest*                                           m_pTest;
-    QVBoxLayout*                                     m_pLyt;
-    QSplitter*                                       m_pSplitter;
-    ZS::Test::GUI::CWdgtIdxTreeTestSteps*            m_pWdgtTest;
-    QTabWidget*                                      m_pTabWidgetTrcMthLists;
-    /*!< The keys of the widgets are the names of the clients ("ZSTrcClient" or "TestTrcClient"). */
-    QHash<QString, ZS::Trace::GUI::CWdgtTrcMthList*> m_hsppWdgtMthList;
+    CTest*                                m_pTest;
+    QVBoxLayout*                          m_pLyt;
+    QSplitter*                            m_pSplitter;
+    ZS::Test::GUI::CWdgtIdxTreeTestSteps* m_pWdgtTest;
+    QTabWidget*                           m_pTabWidgetTrcMthLists;
+    ZS::Trace::GUI::CWdgtTrcMthList*      m_pWdgtTrcMthList;
 
 }; // class CWidgetCentral
 

@@ -112,8 +112,9 @@ CApplication::CApplication(
     m_fReqExecTreeGarbageCollectorElapsed_s(60.0),
     m_pReqExecTree(nullptr),
     m_iZSTrcServerTrcDetailLevel(ETraceDetailLevelNone),
+    m_iZSTrcClientTrcDetailLevel(ETraceDetailLevelNone),
     m_pZSTrcServer(nullptr),
-    m_clientHostSettingsZSTrcServer("127.0.0.1", 24763, 5000),
+    m_clientHostSettingsZSTrcClient("127.0.0.1", 24763, 5000),
     m_pZSTrcClient(nullptr),
     m_pTest(nullptr),
     m_pMainWindow(nullptr)
@@ -162,9 +163,13 @@ CApplication::CApplication(
         strArg = strListArgsPar[idxArg];
         strVal = strListArgsVal[idxArg];
 
-        if( strArg == "TrcServerTraceDetailLevel" )
+        if( strArg == "ZSTrcServerTraceDetailLevel" )
         {
             m_iZSTrcServerTrcDetailLevel = str2TraceDetailLevel(strVal);
+        }
+        else if( strArg == "ZSTrcClientTraceDetailLevel" )
+        {
+            m_iZSTrcClientTrcDetailLevel = str2TraceDetailLevel(strVal);
         }
     }
 
@@ -195,16 +200,20 @@ CApplication::CApplication(
     // But create trace server before the main window so that the main window can connect
     // to the stateChanged signal of the trace server.
 
-    m_pZSTrcServer = CIpcTrcServer::CreateInstance("ZSTrcServer", m_iZSTrcServerTrcDetailLevel);
-
+    m_pZSTrcServer = ZS::Trace::CIpcTrcServer::CreateInstance(
+        /* iTrcDetailLevel                 */ m_iZSTrcServerTrcDetailLevel,
+        /* iTrcDetailLevelIpcServer        */ m_iZSTrcServerTrcDetailLevel,
+        /* iTrcDetailLevelIpcServerGateway */ ETraceDetailLevelNone );
     m_pZSTrcServer->recallAdminObjs();
 
     // Trace client
     //-------------
 
-    m_pZSTrcClient = new CIpcTrcClient("ZSTrcClient");
-
-    m_pZSTrcClient->setHostSettings(m_clientHostSettingsZSTrcServer);
+    m_pZSTrcClient = new CIpcTrcClient(
+        /* strName                       */ "ZSTrcClient",
+        /* iTrcMthFileDetailLevel        */ m_iZSTrcClientTrcDetailLevel,
+        /* iTrcMthFileDetailLevelGateway */ ETraceDetailLevelNone );
+    m_pZSTrcClient->setHostSettings(m_clientHostSettingsZSTrcClient);
     m_pZSTrcClient->changeSettings();
 
     // Main Window
@@ -255,7 +264,7 @@ CApplication::~CApplication()
 
         try
         {
-            ZS::Trace::CTrcServer::ReleaseInstance(m_pZSTrcServer);
+            ZS::Trace::CTrcServer::ReleaseInstance();
         }
         catch(...)
         {
@@ -272,8 +281,9 @@ CApplication::~CApplication()
     m_fReqExecTreeGarbageCollectorElapsed_s = 0.0;
     m_pReqExecTree = nullptr;
     m_iZSTrcServerTrcDetailLevel = 0;
+    m_iZSTrcClientTrcDetailLevel = 0;
     m_pZSTrcServer = nullptr;
-    //m_clientHostSettingsZSTrcServer;
+    //m_clientHostSettingsZSTrcClient;
     m_pZSTrcClient = nullptr;
     //m_strTestStepsFileAbsFilePath;
     m_pTest = nullptr;

@@ -1,4 +1,4 @@
-﻿@page _PAGE_Overview_Enumerations Enumerations
+﻿@page _PAGE_Main_Enumerations Enumerations
 
 Here, a generally applicable approach to the definition of enumerations within an application is described.
 

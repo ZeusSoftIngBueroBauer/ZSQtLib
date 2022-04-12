@@ -269,7 +269,6 @@ class CTrcAdminObj
 //******************************************************************************
 {
 public: // instance methods
-    const char* serverName() const { return m_szServerName; }
     const char* keyInTree() const { return m_szKeyInTree; }
 public: // instance methods
     char* getNameSpace() const;     // returned character string must be freed by caller
@@ -287,10 +286,9 @@ public: // instance methods
 public: // instance methods
     bool isActive( int i_iFilterDetailLevel ) const;
 public: // ctors and dtor (declared public but for internal use only, implemented in ZSIpcTrace::ZSIpcTrcDllMain)
-    CTrcAdminObj( const char* i_szServerName, const char* i_szKeyInTree );
+    CTrcAdminObj( const char* i_szKeyInTree );
     ~CTrcAdminObj();
 protected: // instance members
-    char* m_szServerName;
     char* m_szKeyInTree;
 
 }; // class CTrcAdminObj
@@ -389,9 +387,8 @@ public: // class methods to add, remove and modify admin objects
         const char* i_szClassName,
         const char* i_szObjName = "",
         EEnabled    i_bEnabledAsDefault = EEnabledUndefined,
-        int         i_iDefaultDetailLevel = ETraceDetailLevelUndefined,
-        const char* i_szServerName = "ZSTrcServer" );
-    static void ReleaseTraceAdminObj( CTrcAdminObj* i_pTrcAdminObj, const char* i_szServerName = "ZSTrcServer" );
+        int         i_iDefaultDetailLevel = ETraceDetailLevelUndefined );
+    static void ReleaseTraceAdminObj( CTrcAdminObj* i_pTrcAdminObj );
 public: // class method to save/recall admin objects file
     // Set organization and application if the trace server is used in a none Qt Application.
     // Only if the organization and application name is set the default file paths for the
@@ -400,8 +397,8 @@ public: // class method to save/recall admin objects file
     static char* GetOrganizationName(); // returned string must be freed by caller
     static void SetApplicationName( const char* i_szName );
     static char* GetApplicationName();  // returned string must be freed by caller
-    static char* GetDefaultAdminObjFileAbsoluteFilePath( const char* i_szServerName = "ZSTrcServer", const char* i_szIniFileScope = "System" );
-    static char* GetDefaultLocalTrcFileAbsoluteFilePath( const char* i_szServerName = "ZSTrcServer", const char* i_szIniFileScope = "System" );
+    static char* GetDefaultAdminObjFileAbsoluteFilePath( const char* i_szIniFileScope = "System" );
+    static char* GetDefaultLocalTrcFileAbsoluteFilePath( const char* i_szIniFileScope = "System" );
 public: // class methods
     static void RegisterCurrentThread( const char* i_szThreadName );
     static void UnregisterCurrentThread();
@@ -482,7 +479,7 @@ public: // instance methods
         const char*         i_szMethodReturn,
         const char*         i_szMethodOutArgs );
 public: // ctors and dtor (declared public but for internal use only, implemented in ZSIpcTrace::ZSIpcTrcDllMain)
-    CTrcServer( const char* i_szName );
+    CTrcServer();
     ~CTrcServer();
 protected: // instance members
     char* m_szName;
@@ -499,10 +496,8 @@ class CIpcTrcServer : public CTrcServer
 //******************************************************************************
 {
 public: // class methods
-    static CIpcTrcServer* GetInstance( const char* i_szName = "ZSTrcServer" );
-    static CIpcTrcServer* CreateInstance(
-        const char* i_szName = "ZSTrcServer",
-        int i_iTrcDetailLevel = ETraceDetailLevelNone );
+    static CIpcTrcServer* GetInstance();
+    static CIpcTrcServer* CreateInstance( int i_iTrcDetailLevel = ETraceDetailLevelNone );
     static void ReleaseInstance( CIpcTrcServer* i_pTrcServer );
 public: // instance methods
     bool startup( int i_iTimeout_ms = 5000, bool i_bWait = true );
@@ -514,7 +509,7 @@ public: // instance methods changing and reading the host settings
     bool setPort( unsigned short i_uPort, int i_iTimeout_ms = 5000, bool i_bWait = true);
     unsigned short getPort() const;
 public: // ctors and dtor (declared public but for internal use only, implemented in ZSIpcTrace::ZSIpcTrcDllMain)
-    CIpcTrcServer( const char* i_szName, int i_iTrcDetailLevel = ETraceDetailLevelNone );
+    CIpcTrcServer( int i_iTrcDetailLevel = ETraceDetailLevelNone );
     ~CIpcTrcServer();
 
 }; // class CIpcTrcServer

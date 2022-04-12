@@ -192,7 +192,7 @@ CTest::CTest() :
     // Recall test step settings
     //--------------------------
 
-    recall();
+    recallTestSteps();
 
 } // default ctor
 
@@ -200,7 +200,7 @@ CTest::CTest() :
 CTest::~CTest()
 //------------------------------------------------------------------------------
 {
-    SErrResultInfo errResultInfo = save();
+    SErrResultInfo errResultInfo = saveTestSteps();
 
     if( errResultInfo.isErrorResult() )
     {
@@ -344,7 +344,7 @@ void CTest::doTestStepTraceServerCreateInstance( ZS::Test::CTestStep* i_pTestSte
     //----------
 
     m_pTrcServer = ZS::Trace::DllIf::CIpcTrcServer::CreateInstance(
-        "ZSTrcServer", ZS::Trace::DllIf::ETraceDetailLevelMethodArgs);
+        ZS::Trace::DllIf::ETraceDetailLevelMethodArgs);
 
     // Actual Values
     //---------------
@@ -380,7 +380,7 @@ void CTest::doTestStepTraceServerReleaseInstance( ZS::Test::CTestStep* i_pTestSt
     //----------
 
     ZS::Trace::DllIf::CIpcTrcServer::ReleaseInstance(m_pTrcServer);
-    m_pTrcServer = ZS::Trace::DllIf::CIpcTrcServer::GetInstance("ZSTrcServer");
+    m_pTrcServer = ZS::Trace::DllIf::CIpcTrcServer::GetInstance();
 
     // Actual Values
     //---------------

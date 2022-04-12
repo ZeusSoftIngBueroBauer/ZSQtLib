@@ -28,6 +28,7 @@ may result in using the software modules.
 #include "ZSSys/ZSSysTrcMthFile.h"
 #include "ZSSys/ZSSysTrcServer.h"
 #include "ZSSys/ZSSysException.h"
+#include "ZSSys/ZSSysRequest.h"
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
@@ -729,6 +730,19 @@ void CMethodTracer::setMethodReturn( const SErrResultInfo& i_errResultInfo )
 //------------------------------------------------------------------------------
 {
     m_strMethodReturn = i_errResultInfo.toString();
+}
+
+//------------------------------------------------------------------------------
+/*! If the destructor of the method tracer class is called leaving the method
+    is traced. If the method returns a value and this return value should appear
+    in the trace output the return value may be set by this method.
+
+    @param i_pReq [in] Return value of the method to be traced.
+*/
+//------------------------------------------------------------------------------
+void CMethodTracer::setMethodReturn( CRequest* i_pReq )
+{
+    m_strMethodReturn = i_pReq == nullptr ? "SUCCESS" : i_pReq->getAddTrcInfoStr();
 }
 
 //------------------------------------------------------------------------------

@@ -267,7 +267,7 @@ CApplication::~CApplication()
 
     try
     {
-        ZS::Trace::CTrcServer::ReleaseInstance(m_pTrcServer);
+        ZS::Trace::CTrcServer::ReleaseInstance();
     }
     catch(...)
     {

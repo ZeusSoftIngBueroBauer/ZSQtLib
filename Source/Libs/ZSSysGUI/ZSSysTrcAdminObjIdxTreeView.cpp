@@ -406,14 +406,14 @@ CTreeViewIdxTreeTrcAdminObjs::CTreeViewIdxTreeTrcAdminObjs(
     hideColumn(CModelIdxTree::EColumnIdxInParentBranch);
     hideColumn(CModelIdxTree::EColumnKeyInTree);
     hideColumn(CModelIdxTree::EColumnKeyInParentBranch);
-    hideColumn(CModelIdxTreeTrcAdminObjs::EColumnObjAddress);
     //hideColumn(CModelIdxTreeTrcAdminObjs::EColumnRefCount);
-    hideColumn(CModelIdxTreeTrcAdminObjs::EColumnNameSpace);
-    hideColumn(CModelIdxTreeTrcAdminObjs::EColumnClassName);
-    hideColumn(CModelIdxTreeTrcAdminObjs::EColumnObjName);
-    //hideColumn(CModelIdxTreeTrcAdminObjs::EColumnObjThreadName);
     //hideColumn(CModelIdxTreeTrcAdminObjs::EColumnEnabled);
     //hideColumn(CModelIdxTreeTrcAdminObjs::EColumnDetailLevel);
+    //hideColumn(CModelIdxTreeTrcAdminObjs::EColumnNameSpace);
+    //hideColumn(CModelIdxTreeTrcAdminObjs::EColumnClassName);
+    //hideColumn(CModelIdxTreeTrcAdminObjs::EColumnObjName);
+    //hideColumn(CModelIdxTreeTrcAdminObjs::EColumnObjThreadName);
+    hideColumn(CModelIdxTreeTrcAdminObjs::EColumnObjAddress);
 
     setItemDelegate(m_pDelegate);
 

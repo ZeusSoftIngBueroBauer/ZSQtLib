@@ -88,17 +88,32 @@ protected: // ctors and dtor (trace admin objects may only be created by the tra
     (an instance with the same name space, the same class and object name) may be
     referenced from within different threads.
 
-    \param i_pTrcAdmObjIdxTree [in] Reference to the trace admin object index tree
-                                    the instance will be added to.
+    @param i_strNameSpace [in] Namespace (e.g. "ZS::System").
+    @param i_strClassName [in] Class name (e.g. "CClient")
+        Please note that the class name may also contain node separators
+        to define group of methods which should be separately controlled.
+    @param i_strObjName [in] Object name (e.g. "ZSTrcClient")
+        Please note that the object name may also contain node separators
+        to define logically grouped objects.
+    @param i_strTreeEntryName [in] Name of the leave within the index tree.
+        This is usually equal to either the object name or the class name.
+        If the class or object name contain node separators the name of the
+        leave is different and corresponds to the last section within the
+        concatenated names.
+        E.g. NameSpace = "ZS::System"
+             ClassName = "CModelIdxTree"
+             ObjName = "ZS::IpcTrace-TestSteps"
+             -> TreeEntryName = IpcTrace-TestSteps
+        The caller must take this into account.
 */
 CTrcAdminObj::CTrcAdminObj(
     const QString& i_strNameSpace,
     const QString& i_strClassName,
-    const QString& i_strObjName ) :
+    const QString& i_strObjName,
+    const QString& i_strTreeEntryName ) :
 //------------------------------------------------------------------------------
     QObject(),
-    CIdxTreeEntry(EIdxTreeEntryType::Leave,
-        !i_strObjName.isEmpty() ? i_strObjName : !i_strClassName.isEmpty() ? i_strClassName : i_strNameSpace ),
+    CIdxTreeEntry(EIdxTreeEntryType::Leave, i_strTreeEntryName),
     m_iBlockTreeEntryChangedSignalCounter(0),
     m_strNameSpace(i_strNameSpace),
     m_strClassName(i_strClassName),
@@ -592,7 +607,6 @@ public: // instance methods
         admin object or at the method tracer itself.
 
     /return Flag indicating whether method trace output is active or not.
-.
 */
 bool CTrcAdminObj::isActive( int i_iFilterDetailLevel ) const
 //------------------------------------------------------------------------------
@@ -684,26 +698,30 @@ protected: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief Creates an instance of the class.
+
+    @param i_strNameSpace [in] Namespace of the class to be traced.
+    @param i_strClassName [in] Class name of the class to be traced.
+*/
 CTrcAdminObjRefAnchor::CTrcAdminObjRefAnchor(
     const QString& i_strNameSpace,
-    const QString& i_strClassName,
-    const QString& i_strServerName ) :
+    const QString& i_strClassName ) :
 //------------------------------------------------------------------------------
     m_strNameSpace(i_strNameSpace),
     m_strClassName(i_strClassName),
-    m_strServerName(i_strServerName),
     m_idxInTree(-1),
     m_pTrcAdminObj(nullptr)
 {
 }
 
 //------------------------------------------------------------------------------
+/*! @brief Destroys the instance.
+*/
 CTrcAdminObjRefAnchor::~CTrcAdminObjRefAnchor()
 //------------------------------------------------------------------------------
 {
     //m_strNameSpace;
     //m_strClassName;
-    //m_strServerName;
     m_idxInTree = 0;
     m_pTrcAdminObj = nullptr;
 }
@@ -712,54 +730,31 @@ CTrcAdminObjRefAnchor::~CTrcAdminObjRefAnchor()
 public: // instance methods
 ==============================================================================*/
 
-//------------------------------------------------------------------------------
-void CTrcAdminObjRefAnchor::setServerName( const QString& i_strServerName )
-//------------------------------------------------------------------------------
-{
-    if( m_strServerName != i_strServerName )
-    {
-        m_idxInTree = -1;
-
-        bool bReleased = false;
-
-        if( m_pTrcAdminObj != nullptr )
-        {
-            releaseTrcAdminObj();
-            bReleased = true;
-        }
-
-        m_strServerName = i_strServerName;
-
-        if( bReleased )
-        {
-            allocTrcAdminObj();
-        }
-    }
-}
-
-//------------------------------------------------------------------------------
-QString CTrcAdminObjRefAnchor::getServerName() const
-//------------------------------------------------------------------------------
-{
-    return m_strServerName;
-}
-
 /*==============================================================================
 public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief Allocates the trace admin object.
+
+    If the trace admin object does not yet belong to the trace server, it will
+    be added. Otherwise the reference to the already existing index tree entry
+    is return and the ref counter is incremented.
+
+    The index tree entry is locally stored to speed up further access to the
+    trace admin object.
+*/
 void CTrcAdminObjRefAnchor::allocTrcAdminObj()
 //------------------------------------------------------------------------------
 {
     if( m_idxInTree >= 0 )
     {
-        m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(m_idxInTree, m_strServerName);
+        m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(m_idxInTree);
     }
 
     if( m_pTrcAdminObj == nullptr )
     {
-        m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(m_strNameSpace, m_strClassName, "", m_strServerName);
+        m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(m_strNameSpace, m_strClassName, "");
     }
 
     if( m_pTrcAdminObj != nullptr )
@@ -779,6 +774,12 @@ void CTrcAdminObjRefAnchor::allocTrcAdminObj()
 }
 
 //------------------------------------------------------------------------------
+/*! @brief Release the trace admin object.
+
+    The trace admin object is not deleted but just a reference counter is
+    decremented. Even if the reference counter reaches 0 the trace admin object
+    stays alive to allow modifying the properties like the detail level.
+*/
 void CTrcAdminObjRefAnchor::releaseTrcAdminObj()
 //------------------------------------------------------------------------------
 {
@@ -789,12 +790,17 @@ void CTrcAdminObjRefAnchor::releaseTrcAdminObj()
             /* szSignal     */ SIGNAL(destroyed(QObject*)),
             /* pObjReceiver */ this,
             /* szSlot       */ SLOT(onTrcAdminObjDestroyed(QObject*)));
-        CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj, m_strServerName);
+        CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
         m_pTrcAdminObj = nullptr;
     }
 }
 
 //------------------------------------------------------------------------------
+/*! @brief Returns the reference to the trace admin object.
+
+    @return Reference to trace admin object. Might be nullptr if the trace admin
+            object has not yet been allocated.
+*/
 CTrcAdminObj* CTrcAdminObjRefAnchor::trcAdminObj()
 //------------------------------------------------------------------------------
 {
@@ -802,6 +808,12 @@ CTrcAdminObj* CTrcAdminObjRefAnchor::trcAdminObj()
 }
 
 //------------------------------------------------------------------------------
+/*! @brief Sets the trace detail level.
+
+    This method has no effect if the trace admin object has not yet been allocated.
+
+    @param i_iTrcDetailLevel [in] Trace detail level.
+*/
 void CTrcAdminObjRefAnchor::setTraceDetailLevel( int i_iTrcDetailLevel )
 //------------------------------------------------------------------------------
 {
@@ -812,6 +824,15 @@ void CTrcAdminObjRefAnchor::setTraceDetailLevel( int i_iTrcDetailLevel )
 }
 
 //------------------------------------------------------------------------------
+/*! @brief Checks whether tracing is active for the given filter detail level.
+
+    @param i_iFilterDetailLevel [in]
+        Trace detail level which should be checked. If the trace admin objects
+        detail level is not 0 (None) and is greater or equal the filter level
+        tracing is active.
+
+    @return true if tracing is active, false otherwise.
+*/
 bool CTrcAdminObjRefAnchor::isActive( int i_iFilterDetailLevel ) const
 //------------------------------------------------------------------------------
 {
@@ -828,6 +849,10 @@ private slots:
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief Slot which is called if the trace admin object is going to be destroyed.
+
+    @param i_pTrcAdminObj [in] Reference to trace admin object which will be destroyed.
+*/
 void CTrcAdminObjRefAnchor::onTrcAdminObjDestroyed( QObject* i_pTrcAdminObj )
 //------------------------------------------------------------------------------
 {
@@ -847,6 +872,11 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief Creates an instance of the trace admin object reference guard.
+
+    @param i_pRefAnchor [in] Pointer to trace admin object reference anchor which
+        should be guarded.
+*/
 CTrcAdminObjRefGuard::CTrcAdminObjRefGuard(CTrcAdminObjRefAnchor* i_pRefAnchor) :
 //------------------------------------------------------------------------------
     m_pRefAnchor(i_pRefAnchor)
@@ -855,6 +885,8 @@ CTrcAdminObjRefGuard::CTrcAdminObjRefGuard(CTrcAdminObjRefAnchor* i_pRefAnchor) 
 }
 
 //------------------------------------------------------------------------------
+/*! @brief Destroys the trace admin reference guard instance.
+*/
 CTrcAdminObjRefGuard::~CTrcAdminObjRefGuard()
 //------------------------------------------------------------------------------
 {
@@ -866,6 +898,11 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief Returns the pointer to the trace admin object.
+
+    @return Pointer to trace admin object (which may also be nullptr if the
+            trace admin object has not yet been allocated).
+*/
 CTrcAdminObj* CTrcAdminObjRefGuard::trcAdminObj()
 //------------------------------------------------------------------------------
 {
@@ -878,6 +915,12 @@ CTrcAdminObj* CTrcAdminObjRefGuard::trcAdminObj()
 }
 
 //------------------------------------------------------------------------------
+/*! @brief Sets the trace detail level of the trace admin object.
+
+    This method has no effect if the trace admin object has not yet been allocated.
+
+    @param i_iTrcDetailLevel [in] Trace detail level.
+*/
 void CTrcAdminObjRefGuard::setTraceDetailLevel(int i_iTrcDetailLevel)
 //------------------------------------------------------------------------------
 {
@@ -888,6 +931,15 @@ void CTrcAdminObjRefGuard::setTraceDetailLevel(int i_iTrcDetailLevel)
 }
 
 //------------------------------------------------------------------------------
+/*! @brief Checks whether tracing is active for the given filter detail level.
+
+    @param i_iFilterDetailLevel [in]
+        Trace detail level which should be checked. If the trace admin objects
+        detail level is not 0 (None) and is greater or equal the filter level
+        tracing is active.
+
+    @return true if tracing is active, false otherwise.
+*/
 bool CTrcAdminObjRefGuard::isActive(int i_iFilterDetailLevel) const
 //------------------------------------------------------------------------------
 {

@@ -1,0 +1,6 @@
+<GUIMain                 > -> <ZS::Apps::Test::IpcTrace::CMyClass1> Inst1.dtor()
+<GUIMain                 >    -> <ZS::System::CWaitCondition> CMyClass1::Inst1::Class2ThreadRunning.dtor()
+<GUIMain                 >    <- <ZS::System::CWaitCondition> CMyClass1::Inst1::Class2ThreadRunning.dtor()
+<GUIMain                 >    -> <ZS::System::CMutex> CMyClass1::Inst1::WaitClass2ThreadRunning.dtor()
+<GUIMain                 >    <- <ZS::System::CMutex> CMyClass1::Inst1::WaitClass2ThreadRunning.dtor()
+<GUIMain                 > <- <ZS::Apps::Test::IpcTrace::CMyClass1> Inst1.dtor()

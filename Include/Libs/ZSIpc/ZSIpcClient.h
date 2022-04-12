@@ -33,7 +33,6 @@ may result in using the software modules.
 #include "ZSIpc/ZSIpcSrvCltMsg.h"
 #include "ZSSys/ZSSysRequest.h"
 
-class QMutex;
 class QTimer;
 
 namespace ZS
@@ -41,6 +40,7 @@ namespace ZS
 namespace System
 {
 class CErrLog;
+class CMutex;
 class CRequest;
 class CRequestQueue;
 }
@@ -85,10 +85,10 @@ public: // type definitions and constants
     static QString Request2Str( int i_iRequest );
 public: // ctors and dtor
     CClient(
-        const QString&      i_strObjName,
-        bool                i_bMultiThreadedAccess = false,  // If true each access to member variables will be protected by a mutex (and the class becomes thread safe).
-        Trace::CTrcMthFile* i_pTrcMthFile = nullptr,         // If != nullptr trace method file with detail level is used instead of trace admin object with Trace server.
-        int                 i_iTrcMthFileDetailLevel = Trace::ETraceDetailLevelMethodArgs );
+        const QString& i_strObjName,
+        bool           i_bMultiThreadedAccess = false,
+        int            i_iTrcMthFileDetailLevel = ZS::Trace::ETraceDetailLevelNone,
+        int            i_iTrcMthFileDetailLevelGateway = ZS::Trace::ETraceDetailLevelNone );
     virtual ~CClient();
 signals: // of the remote connection
     void connected( QObject* i_pClient );
@@ -156,6 +156,8 @@ public: // instance methods (aborting requests)
 public: // instance methods to trace methods calls
     virtual void addTrcMsgLogObject( QObject* i_pObj );
     virtual void removeTrcMsgLogObject( QObject* i_pObj );
+public: // instance methods to trace methods calls
+    void setMethodTraceDetailLevel( int i_iTrcDetailLevel );
 protected: // overridables of the remote connection
     virtual void onReceivedData( const QByteArray& i_byteArr );
 protected: // instance methods
@@ -182,7 +184,7 @@ protected: // instance methods
 protected: // overridables of inherited class QObject (state machine)
     virtual bool event( QEvent* i_pEv ) override;
 protected: // instance members
-    QMutex*                    m_pMtx;
+    ZS::System::CMutex*        m_pMtx;
     QString                    m_strObjName;
     ZS::System::CErrLog*       m_pErrLog;
     // Connection settings
@@ -204,16 +206,23 @@ protected: // instance members
     QTimer*                    m_pTmrReqTimeout;
     bool                       m_bMsgReqContinuePending;
     bool                       m_bIsBeingDestroyed;
-    // The methods of the Ipc server base class and the Ipc server gateway
-    // are writing trace outputs to the local trace file. But the trace server
-    // wants to send data to the trace client. This data should not be written
-    // to the local trace file as that may just confuse the software developer.
-    // For this the "tracing enabled" flag and methods have been introduced for
-    // the Ipc server class and its gateway.
+    /*!< The methods of the Ipc server base class and the Ipc server gateway
+         are writing trace outputs to the local trace file. But the trace server
+         wants to send data to the trace client. This data should not be written
+         to the local trace file as that may just confuse the software developer.
+         For this the "tracing enabled" flag and methods have been introduced for
+         the Ipc server class and its gateway. */
     QList<QObject*>            m_arpTrcMsgLogObjects;
+    /*<! Trace detail level used if the method trace of the client got to be output
+         directly to a trace method file and not through the trace server. */
     int                        m_iTrcMthFileDetailLevel;
-    Trace::CTrcMthFile*        m_pTrcMthFile;   // Either trace method file with detail level is used or
-    ZS::Trace::CTrcAdminObj*   m_pTrcAdminObj;  // trace admin object with IpcTrace server.
+    /*<! Trace detail level used if the method trace of the client's gateway got to be output
+         directly to a trace method file and not through the trace server. */
+    int                        m_iTrcMthFileDetailLevelGateway;
+    /*<! Reference to local trace method file. Used if the trace client itself got to be logged. */
+    ZS::Trace::CTrcMthFile*    m_pTrcMthFile;
+    /*!< Trace admin object with trace server. */
+    ZS::Trace::CTrcAdminObj*   m_pTrcAdminObj;
 
 }; // class CClient
 

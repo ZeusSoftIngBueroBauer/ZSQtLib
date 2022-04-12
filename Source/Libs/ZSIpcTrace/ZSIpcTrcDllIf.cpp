@@ -95,14 +95,14 @@ typedef void (*TFctTrcAdminObj_traceMethodEnter)( const DllIf::CTrcAdminObj* i_p
 typedef void (*TFctTrcAdminObj_traceMethodLeave)( const DllIf::CTrcAdminObj* i_pTrcAdminObj, const char* i_szObjName, const char* i_szMethod, const char* i_szMethodReturn, const char* i_szMethodOutArgs );
 typedef void (*TFctTrcAdminObj_traceMethod)( const DllIf::CTrcAdminObj* i_pTrcAdminObj, const char* i_szObjName, const char* i_szMethod, const char* i_szMethodAddInfo );
 
-typedef DllIf::CTrcAdminObj* (*TFctTrcServer_GetTraceAdminObj)( const char* i_szServerName, const char* i_szNameSpace, const char* i_szClassName, const char* i_szObjName, DllIf::EEnabled i_bEnabledAsDefault, int i_iDefaultDetailLevel );
-typedef void (*TFctTrcServer_ReleaseTraceAdminObj)( const char* i_szServerName, DllIf::CTrcAdminObj* i_pTrcAdminObj );
+typedef DllIf::CTrcAdminObj* (*TFctTrcServer_GetTraceAdminObj)( const char* i_szNameSpace, const char* i_szClassName, const char* i_szObjName, DllIf::EEnabled i_bEnabledAsDefault, int i_iDefaultDetailLevel );
+typedef void (*TFctTrcServer_ReleaseTraceAdminObj)( DllIf::CTrcAdminObj* i_pTrcAdminObj );
 typedef void (*TFctTrcServer_SetOrganizationName)( const char* i_szName );
 typedef char* (*TFctTrcServer_GetOrganizationName)();
 typedef void (*TFctTrcServer_SetApplicationName)( const char* i_szName );
 typedef char* (*TFctTrcServer_GetApplicationName)();
-typedef char* (*TFctTrcServer_GetDefaultAdminObjFileAbsoluteFilePath)( const char* i_szServerName, const char* i_szIniFileScope );
-typedef char* (*TFctTrcServer_GetDefaultLocalTrcFileAbsoluteFilePath)( const char* i_szServerName, const char* i_szIniFileScope );
+typedef char* (*TFctTrcServer_GetDefaultAdminObjFileAbsoluteFilePath)( const char* i_szIniFileScope );
+typedef char* (*TFctTrcServer_GetDefaultLocalTrcFileAbsoluteFilePath)( const char* i_szIniFileScope );
 typedef void (*TFctTrcServer_RegisterCurrentThread)( const char* i_szThreadName );
 typedef void (*TFctTrcServer_UnregisterCurrentThread)();
 typedef char* (*TFctTrcServer_GetCurrentThreadName)();
@@ -140,8 +140,8 @@ typedef bool (*TFctTrcServer_setTraceSettings)( DllIf::CTrcServer* i_pTrcServer,
 typedef DllIf::STrcServerSettings (*TFctTrcServer_getTraceSettings)( const DllIf::CTrcServer* i_pTrcServer );
 typedef void (*TFctTrcServer_clearLocalTrcFile)( DllIf::CTrcServer* i_pTrcServer );
 
-typedef DllIf::CIpcTrcServer* (*TFctIpcTrcServer_GetInstance)( const char* i_szName );
-typedef DllIf::CIpcTrcServer* (*TFctIpcTrcServer_CreateInstance)( const char* i_szName, int i_iTrcDetailLevel );
+typedef DllIf::CIpcTrcServer* (*TFctIpcTrcServer_GetInstance)();
+typedef DllIf::CIpcTrcServer* (*TFctIpcTrcServer_CreateInstance)( int i_iTrcDetailLevel );
 typedef void (*TFctIpcTrcServer_ReleaseInstance)( DllIf::CIpcTrcServer* i_pTrcServer );
 typedef bool (*TFctIpcTrcServer_startup)( DllIf::CIpcTrcServer* i_pTrcServer, int i_iTimeout_ms, bool i_bWait );
 typedef bool (*TFctIpcTrcServer_shutdown)( DllIf::CIpcTrcServer* i_pTrcServer, int i_iTimeout_ms, bool i_bWait );
@@ -1218,21 +1218,23 @@ public: // class methods to add, remove and modify admin objects
            An empty string or nullptr is not a good choice.
            For admin objects which are class members the class name may be passed
            instead of an empty string.
+
+    @param i_bEnabledAsDefault [in]
+    @param i_iDefaultDetailLevel [in]
 */
 DllIf::CTrcAdminObj* DllIf::CTrcServer::GetTraceAdminObj(
     const char* i_szNameSpace,
     const char* i_szClassName,
     const char* i_szObjName,
     EEnabled    i_bEnabledAsDefault,
-    int         i_iDefaultDetailLevel,
-    const char* i_szServerName )
+    int         i_iDefaultDetailLevel )
 //------------------------------------------------------------------------------
 {
     DllIf::CTrcAdminObj* pTrcAdminObj = NULL;
 
     if( s_hndIpcTrcDllIf != NULL && s_pFctTrcServer_GetTraceAdminObj != NULL )
     {
-        pTrcAdminObj = s_pFctTrcServer_GetTraceAdminObj(i_szServerName, i_szNameSpace, i_szClassName, i_szObjName, i_bEnabledAsDefault, i_iDefaultDetailLevel);
+        pTrcAdminObj = s_pFctTrcServer_GetTraceAdminObj(i_szNameSpace, i_szClassName, i_szObjName, i_bEnabledAsDefault, i_iDefaultDetailLevel);
     }
 
     return pTrcAdminObj;
@@ -1240,12 +1242,12 @@ DllIf::CTrcAdminObj* DllIf::CTrcServer::GetTraceAdminObj(
 } // GetTraceAdminObj
 
 //------------------------------------------------------------------------------
-void DllIf::CTrcServer::ReleaseTraceAdminObj( CTrcAdminObj* i_pTrcAdminObj, const char* i_szServerName )
+void DllIf::CTrcServer::ReleaseTraceAdminObj( CTrcAdminObj* i_pTrcAdminObj )
 //------------------------------------------------------------------------------
 {
     if( s_hndIpcTrcDllIf != NULL && s_pFctTrcServer_ReleaseTraceAdminObj != NULL )
     {
-        s_pFctTrcServer_ReleaseTraceAdminObj(i_szServerName, i_pTrcAdminObj);
+        s_pFctTrcServer_ReleaseTraceAdminObj(i_pTrcAdminObj);
     }
 } // ReleaseTraceAdminObj
 
@@ -1322,16 +1324,15 @@ char* DllIf::CTrcServer::GetApplicationName()
     @return Character buffer containing the files absolute path. The caller
             must free this buffer.
 */
-char* DllIf::CTrcServer::GetDefaultAdminObjFileAbsoluteFilePath( const char* i_szServerName, const char* i_szIniFileScope )
+char* DllIf::CTrcServer::GetDefaultAdminObjFileAbsoluteFilePath( const char* i_szIniFileScope )
 //------------------------------------------------------------------------------
 {
     if( s_hndIpcTrcDllIf != NULL && s_pFctTrcServer_GetDefaultAdminObjFileAbsoluteFilePath != NULL )
     {
-        return s_pFctTrcServer_GetDefaultAdminObjFileAbsoluteFilePath(i_szServerName, i_szIniFileScope);
+        return s_pFctTrcServer_GetDefaultAdminObjFileAbsoluteFilePath(i_szIniFileScope);
     }
     return NULL;
-
-} // GetDefaultAdminObjFileAbsoluteFilePath
+}
 
 //------------------------------------------------------------------------------
 /*! Returns the path information for the trace method log file for the defined scope.
@@ -1343,16 +1344,15 @@ char* DllIf::CTrcServer::GetDefaultAdminObjFileAbsoluteFilePath( const char* i_s
     @return Character buffer containing the files absolute path. The caller
             must free this buffer.
 */
-char* DllIf::CTrcServer::GetDefaultLocalTrcFileAbsoluteFilePath( const char* i_szServerName, const char* i_szIniFileScope )
+char* DllIf::CTrcServer::GetDefaultLocalTrcFileAbsoluteFilePath( const char* i_szIniFileScope )
 //------------------------------------------------------------------------------
 {
     if( s_hndIpcTrcDllIf != NULL && s_pFctTrcServer_GetDefaultLocalTrcFileAbsoluteFilePath != NULL )
     {
-        return s_pFctTrcServer_GetDefaultLocalTrcFileAbsoluteFilePath(i_szServerName, i_szIniFileScope);
+        return s_pFctTrcServer_GetDefaultLocalTrcFileAbsoluteFilePath(i_szIniFileScope);
     }
     return NULL;
-
-} // GetDefaultLocalTrcFileAbsoluteFilePath
+}
 
 //------------------------------------------------------------------------------
 void DllIf::CTrcServer::RegisterCurrentThread( const char* i_szThreadName )
@@ -1973,7 +1973,7 @@ public: // class methods
 /*! Returns a reference to the trace server with the given name.
 
     This method is used to access an already existing trace server.
-    Neiter a trace server may be created by this method call nor a reference
+    Neither a trace server may be created by this method call nor a reference
     counter of the trace server is affected.
 
     @return Reference to trace server or nullptr, if a trace server with the
@@ -1981,14 +1981,14 @@ public: // class methods
 
    @note This method does not incremente the reference counter of the trace server.
 */
-DllIf::CIpcTrcServer* DllIf::CIpcTrcServer::GetInstance( const char* i_szName )
+DllIf::CIpcTrcServer* DllIf::CIpcTrcServer::GetInstance()
 //------------------------------------------------------------------------------
 {
     DllIf::CIpcTrcServer* pTrcServer = NULL;
 
     if( s_hndIpcTrcDllIf != NULL && s_pFctIpcTrcServer_GetInstance != NULL )
     {
-        pTrcServer = s_pFctIpcTrcServer_GetInstance(i_szName);
+        pTrcServer = s_pFctIpcTrcServer_GetInstance();
     }
     return pTrcServer;
 
@@ -2001,9 +2001,6 @@ DllIf::CIpcTrcServer* DllIf::CIpcTrcServer::GetInstance( const char* i_szName )
     If a trace server with the given name is already existing the reference to
     the existing trace server is returned and a reference counter is incremented.
 
-    @param i_szName [in] Name of the trace server.
-           Default: "ZSTrcServer"
-
     @param i_iTrcDetailLevel [in] For debugging purposes of the Dll interface
            the Dll interace methods may be traced itself by writing a log file.
            Default: ETraceDetailLevelNone
@@ -2012,16 +2009,14 @@ DllIf::CIpcTrcServer* DllIf::CIpcTrcServer::GetInstance( const char* i_szName )
             nullptr is returned if i_bCreateIfNotExisting was set to false
             and a trace server with the given name is not existing.
 */
-DllIf::CIpcTrcServer* DllIf::CIpcTrcServer::CreateInstance(
-    const char* i_szName,
-    int i_iTrcDetailLevel )
+DllIf::CIpcTrcServer* DllIf::CIpcTrcServer::CreateInstance( int i_iTrcDetailLevel )
 //------------------------------------------------------------------------------
 {
     DllIf::CIpcTrcServer* pTrcServer = NULL;
 
     if( s_hndIpcTrcDllIf != NULL && s_pFctIpcTrcServer_GetInstance != NULL )
     {
-        pTrcServer = s_pFctIpcTrcServer_CreateInstance(i_szName, i_iTrcDetailLevel);
+        pTrcServer = s_pFctIpcTrcServer_CreateInstance(i_iTrcDetailLevel);
     }
     return pTrcServer;
 

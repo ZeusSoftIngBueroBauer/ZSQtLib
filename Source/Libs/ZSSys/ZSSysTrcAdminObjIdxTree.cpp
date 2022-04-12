@@ -190,38 +190,21 @@ CTrcAdminObj* CIdxTreeTrcAdminObjs::getTraceAdminObj(
     else // if( !i_strObjName.isEmpty() || !i_strClassName.isEmpty() || !i_strNameSpace.isEmpty() )
     {
         QString strParentBranchPath;
+        QString strLeaveName;
 
-        QString strObjName = i_strObjName;
+        // ClassName and ObjName may contain node separators.
+        // For ClassName to define group of methods which can separately controlled.
+        // For ObjName to define logically grouped objects.
+        // The name of the leave got to be determined which may be either the last
+        // section of the class name or - if the object name is not empty - the last
+        // section of the object name.
+        // All three passed names will be sent to the branch names list.
+        // The last branch name will be removed afterwards and taken as the leave name.
 
-        if( i_strObjName.isEmpty() )
-        {
-            if( i_strClassName.isEmpty() )
-            {
-                strObjName = i_strNameSpace;
-            }
-            else
-            {
-                strObjName = i_strClassName;
-                strParentBranchPath = i_strNameSpace;
-            }
-        }
-        else
-        {
-            if( i_strClassName.isEmpty() )
-            {
-                strParentBranchPath = i_strNameSpace;
-            }
-            else if( i_strNameSpace.isEmpty() )
-            {
-                strParentBranchPath = i_strClassName;
-            }
-            else
-            {
-                strParentBranchPath = buildPathStr(i_strNameSpace, i_strClassName);
-            }
-        }
+        QString strPath = buildPathStr(i_strNameSpace, i_strClassName, i_strObjName);
+        splitPathStr(strPath, &strParentBranchPath, &strLeaveName);
 
-        CIdxTreeEntry* pLeave = findLeave(strParentBranchPath, strObjName);
+        CIdxTreeEntry* pLeave = findLeave(strParentBranchPath, strLeaveName);
 
         if( pLeave != nullptr )
         {
@@ -230,8 +213,8 @@ CTrcAdminObj* CIdxTreeTrcAdminObjs::getTraceAdminObj(
         else // if( pLeave == nullptr )
         {
             QStringList strlstBranchNames = strParentBranchPath.split(m_strNodeSeparator);
-            QString     strParentPath;
-            QString     strPath;
+            QString strParentPath;
+            QString strPath;
 
             CIdxTreeEntry* pBranch;
 
@@ -249,7 +232,7 @@ CTrcAdminObj* CIdxTreeTrcAdminObjs::getTraceAdminObj(
                 strParentPath = buildPathStr(strParentPath, strBranchName);
             }
 
-            pTrcAdminObj = new CTrcAdminObj(i_strNameSpace, i_strClassName, i_strObjName);
+            pTrcAdminObj = new CTrcAdminObj(i_strNameSpace, i_strClassName, i_strObjName, strLeaveName);
 
             EEnabled bEnabled     = EEnabled::Yes;
             int      iDetailLevel = ETraceDetailLevelNone;
@@ -568,7 +551,10 @@ CTrcAdminObj* CIdxTreeTrcAdminObjs::insertTraceAdminObj(
         // If there is no tree entry at the given index ..
         else // if( pTreeEntry == nullptr )
         {
-            pTrcAdminObj = new CTrcAdminObj(i_strNameSpace, i_strClassName, i_strObjName);
+            QString strLeaveName;
+            QString strPath = buildPathStr(m_strNodeSeparator, i_strNameSpace, i_strClassName, i_strObjName);
+            splitPathStr(strPath, nullptr, &strLeaveName);
+            pTrcAdminObj = new CTrcAdminObj(i_strNameSpace, i_strClassName, i_strObjName, strLeaveName);
             insert(pTrcAdminObj, pBranchParent, -1, i_idxInTree);
         }
     } // if( i_idxInTree >= 0 )

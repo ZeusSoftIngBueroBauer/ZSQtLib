@@ -36,10 +36,15 @@ list(APPEND _Headers
     ${_HeadersPath}/ZSIpcTrace/WidgetCentral.h
     ${_HeadersPath}/ZSIpcTrace/MsgTest.h
     ${_HeadersPath}/ZSIpcTrace/Test.h
-    ${_HeadersPath}/ZSIpcTrace/TestModule1.h
-    ${_HeadersPath}/ZSIpcTrace/TestModule2.h
-    ${_HeadersPath}/ZSIpcTrace/TestModule3.h
+    ${_HeadersPath}/ZSIpcTrace/MyClass1.h
+    ${_HeadersPath}/ZSIpcTrace/MyClass2.h
+    ${_HeadersPath}/ZSIpcTrace/MyClass3.h
 )
+
+configure_file(
+    ${_HeadersPath}/ZSIpcTrace/TestConfig.h.in
+    ${_HeadersPath}/ZSIpcTrace/TestConfig.h)
+set(_Headers ${_Headers} ${_HeadersPath}/ZSIpcTrace/TestConfig.h)
 
 list(APPEND _Sources
     ${_SourcesPath}/ZSIpcTrace/Main.cpp
@@ -48,9 +53,9 @@ list(APPEND _Sources
     ${_SourcesPath}/ZSIpcTrace/WidgetCentral.cpp
     ${_SourcesPath}/ZSIpcTrace/MsgTest.cpp
     ${_SourcesPath}/ZSIpcTrace/Test.cpp
-    ${_SourcesPath}/ZSIpcTrace/TestModule1.cpp
-    ${_SourcesPath}/ZSIpcTrace/TestModule2.cpp
-    ${_SourcesPath}/ZSIpcTrace/TestModule3.cpp
+    ${_SourcesPath}/ZSIpcTrace/MyClass1.cpp
+    ${_SourcesPath}/ZSIpcTrace/MyClass2.cpp
+    ${_SourcesPath}/ZSIpcTrace/MyClass3.cpp
 )
 
 list(APPEND _Resources

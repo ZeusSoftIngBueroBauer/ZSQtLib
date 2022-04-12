@@ -1,4 +1,4 @@
-@page _PAGE_Overview_IndexTree Index Tree
+@page _PAGE_Main_IndexTree Index Tree
 
 Entries in the index tree are structured both in a tree structure and in an
 index-based vector.

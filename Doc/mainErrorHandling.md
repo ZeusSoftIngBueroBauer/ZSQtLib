@@ -1,4 +1,4 @@
-@page _PAGE_Overview_ErrorHandling Error Handling
+@page _PAGE_Main_ErrorHandling Error Handling
 
 Description of an error
 =======================
