@@ -97,7 +97,8 @@ CApplication::CApplication(
     m_trcServerSettings(),
     m_pTrcServer(nullptr),
     m_pTest(nullptr),
-    m_pMainWindow(nullptr)
+    m_pMainWindow(nullptr),
+    m_bAutoStartTest(false)
 {
     setObjectName("theApp");
 
@@ -166,6 +167,10 @@ CApplication::CApplication(
         if( strArg.compare("IniFileScope",Qt::CaseInsensitive) == 0 )
         {
             strIniFileScope = strVal;
+        }
+        else if( strArg == "AutoStartTest" )
+        {
+            m_bAutoStartTest = true;
         }
     }
 
@@ -242,6 +247,22 @@ CApplication::CApplication(
     m_pMainWindow = new CMainWindow(i_strWindowTitle);
     m_pMainWindow->show();
 
+    // Start test automatically if desired
+    //------------------------------------
+
+    if( m_bAutoStartTest )
+    {
+        m_pTest->start();
+
+        if( !QObject::connect(
+            /* pObjSender   */ m_pTest,
+            /* szSignal     */ SIGNAL(testFinished(const ZS::Test::CEnumTestResult&)),
+            /* pObjReceiver */ this,
+            /* szSlot       */ SLOT(onTestFinished(const ZS::Test::CEnumTestResult&)) ) )
+        {
+            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
+        }
+    }
 } // ctor
 
 //------------------------------------------------------------------------------
@@ -297,6 +318,7 @@ CApplication::~CApplication()
     m_pTrcServer = nullptr;
     m_pTest = nullptr;
     m_pMainWindow = nullptr;
+    m_bAutoStartTest = false;
 
 } // dtor
 
@@ -598,5 +620,16 @@ public slots: // instance methods of system shutdown
 void CApplication::onLastWindowClosed()
 //------------------------------------------------------------------------------
 {
-    quit();
+    exit(m_pTest->getTestResult() == ZS::Test::ETestResult::TestPassed ? 0 : 1);
+}
+
+/*==============================================================================
+protected slots:
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CApplication::onTestFinished( const ZS::Test::CEnumTestResult& i_result )
+//------------------------------------------------------------------------------
+{
+    exit(i_result == ZS::Test::ETestResult::TestPassed ? 0 : 1);
 }

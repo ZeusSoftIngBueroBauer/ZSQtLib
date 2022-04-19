@@ -69,12 +69,15 @@ public: // instance methods
     CTest* getTest() { return m_pTest; }
 protected slots:
     void onLastWindowClosed();
+protected slots:
+    void onTestFinished( const ZS::Test::CEnumTestResult& i_result );
 private: // instance members
     ZS::Ipc::SServerHostSettings  m_trcServerHostSettings;
     ZS::Trace::STrcServerSettings m_trcServerSettings;
     ZS::Trace::CIpcTrcServer*     m_pTrcServer;
     CTest*                        m_pTest;
     CMainWindow*                  m_pMainWindow;
+    bool                          m_bAutoStartTest;
 
 }; // class CApplication
 

@@ -105,10 +105,11 @@ target_include_directories(${PROJECT_NAME}
 target_link_libraries(${PROJECT_NAME}
     PRIVATE ZSSys ZSSysGUI ZSTest ZSTestGUI ZSIpc ZSIpcGUI ZSIpcTrace ZSIpcTraceGUI)
 
-add_test(
-    NAME ZSIpcTraceDllIfQtApp
-    COMMAND $<TARGET_FILE:${PROJECT_NAME}>
-    COMMENT "Running ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${TargetOutputName}")
+# The test application needs user interaction and cannot be executed automatically.
+#enable_testing()
+#include(CTest)
+#include(Dart)
+#add_test(ZSIpcTraceDllIfQtApp ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${TargetOutputName} "AutoStartTest")
 
 include(GNUInstallDirs)
 

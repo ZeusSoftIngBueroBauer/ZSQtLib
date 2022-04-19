@@ -90,6 +90,31 @@ include(GNUInstallDirs)
 
 install(TARGETS ${PROJECT_NAME} EXPORT ${CMAKE_PROJECT_NAME}Targets RUNTIME DESTINATION .)
 
+# Prepare installer files
+
+# Get Current Date Time
+string(TIMESTAMP RELEASE_DATE_YEAR "%Y" UTC)
+string(TIMESTAMP RELEASE_DATE_TIME "%Y-%m-%d %H:%m" UTC)
+message(STATUS "RELEASE_DATE: ${RELEASE_DATE_TIME}")
+
+if(WIN32)
+    set(ApplicationsDir "$ENV{ProgramFiles}")
+    string(REPLACE "\\" "/" ApplicationsDir ${ApplicationsDir})
+    set(AppDataDir "$ENV{APPDATA}")
+    string(REPLACE "\\" "/" AppDataDir ${AppDataDir})
+    message(STATUS "ApplicationsDir: ${ApplicationsDir}")
+    message(STATUS "AppDataDir:      ${AppDataDir}")
+
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Installer/config/config.xml.in
+                   ${CMAKE_CURRENT_SOURCE_DIR}/Installer/config/config.xml)
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Installer/packages/de.zeussoft.TrcMthClient/meta/license.txt.in
+                   ${CMAKE_CURRENT_SOURCE_DIR}/Installer/packages/de.zeussoft.TrcMthClient/meta/license.txt)
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Installer/packages/de.zeussoft.TrcMthClient/meta/package.xml.in
+                   ${CMAKE_CURRENT_SOURCE_DIR}/Installer/packages/de.zeussoft.TrcMthClient/meta/package.xml)
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Installer/packages/de.zeussoft.TrcMthClient/meta/installscript.qs.in
+                   ${CMAKE_CURRENT_SOURCE_DIR}/Installer/packages/de.zeussoft.TrcMthClient/meta/installscript.qs)
+endif()
+
 message(STATUS "")
 message(STATUS "<- ${CMAKE_CURRENT_SOURCE_DIR}")
 message(STATUS "---------------------------------------------------------------------------------------------")

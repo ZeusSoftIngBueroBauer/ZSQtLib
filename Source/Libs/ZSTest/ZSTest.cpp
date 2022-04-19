@@ -344,6 +344,8 @@ void CTest::start()
 
         setCurrentTestStep(nullptr);
 
+        emit testStarted();
+
         onTestStarted();
     }
 
@@ -568,6 +570,212 @@ SErrResultInfo CTest::readExpectedTestResults(
     return errResultInfo;
 
 } // readExpectedTestResults
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the test result.
+
+    @return Test result with one of the following CEnumTestResult enumerator value:
+        Undefined  .. if none of the tests has been exucuted
+        TestFailed .. if at least one test step failed
+        TestPassed .. if all test steps were successfull
+
+    @note The method may be time consuming as the whole test step tree will
+          be walked trough. This is something which could be improved by storing
+          the current results.
+*/
+CEnumTestResult CTest::getTestResult() const
+//------------------------------------------------------------------------------
+{
+    CEnumTestResult result = ETestResult::Undefined;
+
+    QVector<CIdxTreeEntry*> arTreeEntries = m_pIdxTree->treeEntriesVec();
+
+    for( const auto& pIdxTreeEntry : arTreeEntries )
+    {
+        if( pIdxTreeEntry->isLeave())
+        {
+            CTestStep* pTestStep = dynamic_cast<CTestStep*>(pIdxTreeEntry);
+
+            if( pTestStep->isEnabled() )
+            {
+                if( pTestStep->getTestResult() == ETestResult::TestFailed )
+                {
+                    result = ETestResult::TestFailed;
+                    break;
+                }
+                else if( pTestStep->getTestResult() == ETestResult::TestPassed )
+                {
+                    result = ETestResult::TestPassed;
+                }
+            }
+        }
+    }
+    return result;
+
+} // getTestResult
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the total test duration in seconds.
+
+    @return Test duration in seconds.
+
+    @note The method may be time consuming as the whole test step tree will
+          be walked trough. This is something which could be improved by storing
+          the current results.
+*/
+double CTest::getTestDurationInSecs() const
+//------------------------------------------------------------------------------
+{
+    CTestStepRoot* pRootEntry = dynamic_cast<CTestStepRoot*>(m_pIdxTree->root());
+    return pRootEntry->getTestDurationInSec();
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the total number of test steps.
+
+    This includes all configured test steps no matter if they have been executed,
+    disabled or not yet executed.
+
+    @return Total number of test steps.
+
+    @note The method may be time consuming as the whole test step tree will
+          be walked trough. This is something which could be improved by storing
+          the current results.
+*/
+int CTest::getTotalNumberOfTestSteps() const
+//------------------------------------------------------------------------------
+{
+    int iTotalNumberOfTestSteps = 0;
+
+    QVector<CIdxTreeEntry*> arTreeEntries = m_pIdxTree->treeEntriesVec();
+
+    for( const auto& pIdxTreeEntry : arTreeEntries )
+    {
+        if( pIdxTreeEntry->isLeave())
+        {
+            iTotalNumberOfTestSteps++;
+        }
+    }
+    return iTotalNumberOfTestSteps;
+
+} // getTotalNumberOfTestSteps
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the total number of failed test steps at the time the method
+           is called.
+
+    The test may have been paused and the overall test may still fail.
+
+    @return Total number of failed test steps.
+
+    @note The method may be time consuming as the whole test step tree will
+          be walked trough. This is something which could be improved by storing
+          the current results.
+*/
+int CTest::getNumberOfFailedTestSteps() const
+//------------------------------------------------------------------------------
+{
+    int iNumberOfFailedTestSteps = 0;
+
+    QVector<CIdxTreeEntry*> arTreeEntries = m_pIdxTree->treeEntriesVec();
+
+    for( const auto& pIdxTreeEntry : arTreeEntries )
+    {
+        if( pIdxTreeEntry->isLeave())
+        {
+            CTestStep* pTestStep = dynamic_cast<CTestStep*>(pIdxTreeEntry);
+
+            if( pTestStep->isEnabled() )
+            {
+                if( pTestStep->getTestResult() == ETestResult::TestFailed )
+                {
+                    iNumberOfFailedTestSteps++;
+                }
+            }
+        }
+    }
+    return iNumberOfFailedTestSteps;
+
+} // getNumberOfFailedTestSteps
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the total number of passed test steps at the time the method
+           is called.
+
+    The test may have been paused and the overall test may still fail.
+
+    @return Total number of passed test steps.
+
+    @note The method may be time consuming as the whole test step tree will
+          be walked trough. This is something which could be improved by storing
+          the current results.
+*/
+int CTest::getNumberOfPassedTestSteps() const
+//------------------------------------------------------------------------------
+{
+    int iNumberOfPassedTestSteps = 0;
+
+    QVector<CIdxTreeEntry*> arTreeEntries = m_pIdxTree->treeEntriesVec();
+
+    for( const auto& pIdxTreeEntry : arTreeEntries )
+    {
+        if( pIdxTreeEntry->isLeave())
+        {
+            CTestStep* pTestStep = dynamic_cast<CTestStep*>(pIdxTreeEntry);
+
+            if( pTestStep->isEnabled() )
+            {
+                if( pTestStep->getTestResult() == ETestResult::TestPassed )
+                {
+                    iNumberOfPassedTestSteps++;
+                }
+            }
+        }
+    }
+    return iNumberOfPassedTestSteps;
+
+} // getNumberOfPassedTestSteps
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the total number of disabled test steps at the time the method
+           is called.
+
+    @return Total number of disabled test steps.
+
+    @note The method may be time consuming as the whole test step tree will
+          be walked trough. This is something which could be improved by storing
+          the current results.
+*/
+int CTest::getNumberOfDisabledTestSteps() const
+//------------------------------------------------------------------------------
+{
+    int iNumberOfDisabledTestSteps = 0;
+
+    QVector<CIdxTreeEntry*> arTreeEntries = m_pIdxTree->treeEntriesVec();
+
+    for( const auto& pIdxTreeEntry : arTreeEntries )
+    {
+        if( pIdxTreeEntry->isLeave())
+        {
+            CTestStep* pTestStep = dynamic_cast<CTestStep*>(pIdxTreeEntry);
+
+            if( !pTestStep->isEnabled() )
+            {
+                iNumberOfDisabledTestSteps++;
+            }
+        }
+    }
+    return iNumberOfDisabledTestSteps;
+
+} // getNumberOfDisabledTestSteps
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
 
 //------------------------------------------------------------------------------
 /*! Saves the results of the test in a log file.
@@ -1349,6 +1557,10 @@ void CTest::triggerNextTestStep( int i_iInterval_ms )
             stop();
 
             onTestFinished();
+
+            CEnumTestResult testResult = getTestResult();
+            emit testFinished(testResult);
+
         }
     }
 } // triggerNextTestStep

@@ -68,9 +68,12 @@ public: // ctors and dtor
     ~CApplication();
 public: // instance methods
     CTest* getTest() { return m_pTest; }
+protected slots:
+    void onTestFinished( const ZS::Test::CEnumTestResult& i_result );
 private: // instance members
     CTest*       m_pTest;
     CMainWindow* m_pMainWindow;
+    bool         m_bAutoStartTest;
 
 }; // class CApplication
 

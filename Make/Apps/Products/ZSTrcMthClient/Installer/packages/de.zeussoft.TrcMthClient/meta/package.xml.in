@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Package>
+    <DisplayName>Trace Method Client</DisplayName>
+    <Description>Installation Trace Method Client</Description>
+    <Version>@ZSQTLIB_GIT_VERSION_INFO@</Version>
+    <ReleaseDate>@RELEASE_DATE_TIME@</ReleaseDate>
+    <Licenses>
+        <License name="ZeusSoft ZSQtLib Lizense" file="license.txt" />
+    </Licenses>
+    <Default>true</Default>
+    <Script>installscript.qs</Script>
+    <!-- <UserInterfaces> -->
+        <!-- <UserInterface>page.ui</UserInterface> -->
+    <!-- </UserInterfaces> -->
+</Package>

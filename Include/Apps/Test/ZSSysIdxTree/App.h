@@ -77,6 +77,8 @@ public: // instance methods
     void saveSettings();
 protected slots:
     void onLastWindowClosed();
+protected slots:
+    void onTestFinished( const ZS::Test::CEnumTestResult& i_result );
 private: // instance members
     QSettings*                    m_pSettingsFile;
     ZS::System::CErrLog*          m_pErrLog;
@@ -89,6 +91,7 @@ private: // instance members
     ZS::Trace::CIpcTrcServer*     m_pTrcServer;
     CTest*                        m_pTest;
     CMainWindow*                  m_pMainWindow;
+    bool                          m_bAutoStartTest;
 
 }; // class CApplication
 

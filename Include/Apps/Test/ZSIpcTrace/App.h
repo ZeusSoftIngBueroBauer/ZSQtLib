@@ -29,6 +29,7 @@ may result in using the software modules.
 
 #include <QtCore/qglobal.h>
 
+#include "ZSTest/ZSTestDllMain.h"
 #include "ZSSysGUI/ZSSysGUIApp.h"
 #include "ZSIpcTrace/ZSIpcTrcDllMain.h"
 #include "ZSIpcTrace/ZSIpcTrcClient.h"
@@ -79,6 +80,8 @@ public: // instance methods
     ZS::Trace::CIpcTrcClient* getTrcClient() { return m_pZSTrcClient; }
     int getTraceDetailLevelTrcServer() const { return m_iZSTrcServerTrcDetailLevel; }
     int getTraceDetailLevelTrcClient() const { return m_iZSTrcClientTrcDetailLevel; }
+protected slots:
+    void onTestFinished( const ZS::Test::CEnumTestResult& i_result );
 private: // instance members
     bool                          m_bReqExecTreeGarbageCollectorEnabled;
     double                        m_fReqExecTreeGarbageCollectorInterval_s;
@@ -91,6 +94,7 @@ private: // instance members
     ZS::Trace::CIpcTrcClient*     m_pZSTrcClient;
     CTest*                        m_pTest;
     CMainWindow*                  m_pMainWindow;
+    bool                          m_bAutoStartTest;
 
 }; // class CApplication
 

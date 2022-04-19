@@ -29,6 +29,7 @@ may result in using the software modules.
 
 #include <QtCore/qglobal.h>
 
+#include "ZSTest/ZSTestDllMain.h"
 #include "ZSSysGUI/ZSSysGUIApp.h"
 
 namespace ZS
@@ -67,9 +68,12 @@ public: // instance methods
     CTest* getTest() { return m_pTest; }
 protected slots:
     void onLastWindowClosed();
+protected slots:
+    void onTestFinished( const ZS::Test::CEnumTestResult& i_result );
 private: // instance members
     CTest*       m_pTest;
     CMainWindow* m_pMainWindow;
+    bool         m_bAutoStartTest;
 
 }; // class CApplication
 

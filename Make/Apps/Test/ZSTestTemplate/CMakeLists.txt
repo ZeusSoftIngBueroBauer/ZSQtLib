@@ -88,10 +88,10 @@ target_include_directories(${PROJECT_NAME}
 target_link_libraries(${PROJECT_NAME}
     PRIVATE ZSSys ZSSysGUI ZSTest ZSTestGUI ZSIpc ZSIpcGUI ZSIpcTrace ZSIpcTraceGUI)
 
-add_test(
-    NAME ZSTemplate
-    COMMAND $<TARGET_FILE:${PROJECT_NAME}>
-    COMMENT "Running ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${TargetOutputName}")
+enable_testing()
+include(CTest)
+include(Dart)
+add_test(ZSTemplate ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${TargetOutputName} "AutoStartTest")
 
 include(GNUInstallDirs)
 

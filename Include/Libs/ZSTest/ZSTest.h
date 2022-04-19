@@ -69,6 +69,8 @@ public: // ctors and dtor
         const QString& i_strTestResultsAbsFilePath = "" );
     ~CTest();
 signals:
+    void testStarted();
+    void testFinished( const ZS::Test::CEnumTestResult& i_result );
     void stateChanged( const ZS::Test::CEnumTestState& i_state );
     void runModeChanged( const ZS::System::CEnumRunMode& i_runMode );
     void currentTestStepChanged( ZS::Test::CTestStep* i_pTestStep );
@@ -95,10 +97,18 @@ public: // overridables
     virtual void abort();
     virtual void pause();
     virtual void resume();
-public: // instance methods
+public: // overridables
     virtual ZS::System::SErrResultInfo readExpectedTestResults(
         const QString& i_strAbsFilePath,
         QStringList&   o_strlstExpectedResults ) const;
+public: // instance methods
+    CEnumTestResult getTestResult() const;
+    double getTestDurationInSecs() const;
+    int getTotalNumberOfTestSteps() const;
+    int getNumberOfFailedTestSteps() const;
+    int getNumberOfPassedTestSteps() const;
+    int getNumberOfDisabledTestSteps() const;
+public: // instance methods
     QString getTestResultsAbsFilePath() const { return m_strTestResultsAbsFilePath; }
     virtual ZS::System::SErrResultInfo saveTestResults(
         const QString& i_strAbsFilePath = "",

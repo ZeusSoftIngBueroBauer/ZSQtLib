@@ -117,7 +117,8 @@ CApplication::CApplication(
     m_clientHostSettingsZSTrcClient("127.0.0.1", 24763, 5000),
     m_pZSTrcClient(nullptr),
     m_pTest(nullptr),
-    m_pMainWindow(nullptr)
+    m_pMainWindow(nullptr),
+    m_bAutoStartTest(false)
 {
     setObjectName("theApp");
 
@@ -169,7 +170,11 @@ CApplication::CApplication(
         strArg = strListArgsPar[idxArg];
         strVal = strListArgsVal[idxArg];
 
-        if( strArg == "ZSTrcServerTraceDetailLevel" )
+        if( strArg == "AutoStartTest" )
+        {
+            m_bAutoStartTest = true;
+        }
+        else if( strArg == "ZSTrcServerTraceDetailLevel" )
         {
             m_iZSTrcServerTrcDetailLevel = str2TraceDetailLevel(strVal);
         }
@@ -227,6 +232,23 @@ CApplication::CApplication(
 
     m_pMainWindow = new CMainWindow(i_strWindowTitle, m_pTest);
     m_pMainWindow->show();
+
+    // Start test automatically if desired
+    //------------------------------------
+
+    if( m_bAutoStartTest )
+    {
+        m_pTest->start();
+
+        if( !QObject::connect(
+            /* pObjSender   */ m_pTest,
+            /* szSignal     */ SIGNAL(testFinished(const ZS::Test::CEnumTestResult&)),
+            /* pObjReceiver */ this,
+            /* szSlot       */ SLOT(onTestFinished(const ZS::Test::CEnumTestResult&)) ) )
+        {
+            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
+        }
+    }
 
 } // ctor
 
@@ -294,6 +316,17 @@ CApplication::~CApplication()
     //m_strTestStepsFileAbsFilePath;
     m_pTest = nullptr;
     m_pMainWindow = nullptr;
+    m_bAutoStartTest = false;
 
 } // dtor
 
+/*==============================================================================
+protected slots:
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CApplication::onTestFinished( const ZS::Test::CEnumTestResult& i_result )
+//------------------------------------------------------------------------------
+{
+    exit(i_result == ZS::Test::ETestResult::TestPassed ? 0 : 1);
+}

@@ -83,7 +83,8 @@ CApplication::CApplication(
     m_trcServerSettings(),
     m_pTrcServer(nullptr),
     m_pTest(nullptr),
-    m_pMainWindow(nullptr)
+    m_pMainWindow(nullptr),
+    m_bAutoStartTest(false)
 {
     setObjectName("theApp");
 
@@ -118,6 +119,32 @@ CApplication::CApplication(
     ZS::Ipc::SServerHostSettings  trcServerHostSettingsDefault = m_trcServerHostSettings;
     ZS::Trace::STrcServerSettings trcServerSettingsDefault = m_trcServerSettings;
 
+    // Parse command arguments
+    //------------------------
+
+    int         idxArg;
+    QString     strArg;
+    QString     strVal;
+    QStringList strListArgsPar;
+    QStringList strListArgsVal;
+
+    parseAppArgs( i_argc, i_argv, strListArgsPar, strListArgsVal );
+
+    #if QT_VERSION >= QT_VERSION_CHECK(4, 5, 1)
+    for( idxArg = 0; idxArg < strListArgsPar.length() && idxArg < strListArgsVal.length(); idxArg++ )
+    #else
+    for( idxArg = 0; idxArg < strListArgsPar.size() && idxArg < strListArgsVal.size(); idxArg++ )
+    #endif
+    {
+        strArg = strListArgsPar[idxArg];
+        strVal = strListArgsVal[idxArg];
+
+        if( strArg == "AutoStartTest" )
+        {
+            m_bAutoStartTest = true;
+        }
+    }
+
     // Create error manager
     //------------------------
 
@@ -144,6 +171,22 @@ CApplication::CApplication(
     m_pMainWindow = new CMainWindow(i_strWindowTitle);
     m_pMainWindow->show();
 
+    // Start test automatically if desired
+    //------------------------------------
+
+    if( m_bAutoStartTest )
+    {
+        m_pTest->start();
+
+        if( !QObject::connect(
+            /* pObjSender   */ m_pTest,
+            /* szSignal     */ SIGNAL(testFinished(const ZS::Test::CEnumTestResult&)),
+            /* pObjReceiver */ this,
+            /* szSlot       */ SLOT(onTestFinished(const ZS::Test::CEnumTestResult&)) ) )
+        {
+            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
+        }
+    }
 } // ctor
 
 //------------------------------------------------------------------------------
@@ -186,6 +229,7 @@ CApplication::~CApplication()
 
     m_pTest = nullptr;
     m_pMainWindow = nullptr;
+    m_bAutoStartTest = false;
 
 } // dtor
 
@@ -197,5 +241,18 @@ public slots: // instance methods of system shutdown
 void CApplication::onLastWindowClosed()
 //------------------------------------------------------------------------------
 {
-    quit();
+    // The test template has one test step which always fails (as an example).
+    exit(m_pTest->getTestResult() == ZS::Test::ETestResult::TestFailed ? 0 : 1);
+}
+
+/*==============================================================================
+protected slots:
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CApplication::onTestFinished( const ZS::Test::CEnumTestResult& i_result )
+//------------------------------------------------------------------------------
+{
+    // The test template has one test step which always fails (as an example).
+    exit(i_result == ZS::Test::ETestResult::TestFailed ? 0 : 1);
 }

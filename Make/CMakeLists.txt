@@ -7,35 +7,35 @@
 #
 # For more detailled build instructions see "README.md".
 #
-# cd into root directory of repository (one level below this main CMakeList file).
+# Change working directory to where this CMakeList file is located ("<root of the repository>/Make").
 #
 # Generator: Visual Studio 16 (2019)
 #
 # - Release Build
 #
-#   cmake -G "Visual Studio 16 2019" -A x64 .\Make -B .\Build\msvc2019_x64_Release -DCMAKE_CONFIGURATION_TYPES="Release" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=".\Bin\msvc2019_x64"
-#   cmake --build .\Build\msvc2019_x64_Release --config=Release -j8
-#   cmake --install .\Build\msvc2019_x64_Release --config=Release
+#   cmake -G "Visual Studio 16 2019" -A x64 . -B ..\Build\msvc2019_x64_Release -DCMAKE_CONFIGURATION_TYPES="Release" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="..\Bin\msvc2019_x64"
+#   cmake --build ..\Build\msvc2019_x64_Release --config=Release -j8
+#   cmake --install ..\Build\msvc2019_x64_Release --config=Release
 #
 # - Debug Build
 #
-#   cmake -G "Visual Studio 16 2019" -A x64 .\Make -B .\Build\msvc2019_x64_Debug -DCMAKE_CONFIGURATION_TYPES="Debug" -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=".\Bin\msvc2019_x64"
-#   cmake --build .\Build\msvc2019_x64_Debug --config=Debug -j8
-#   cmake --install .\Build\msvc2019_x64_Debug --config=Debug
+#   cmake -G "Visual Studio 16 2019" -A x64 . -B ..\Build\msvc2019_x64_Debug -DCMAKE_CONFIGURATION_TYPES="Debug" -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX="..\Bin\msvc2019_x64"
+#   cmake --build ..\Build\msvc2019_x64_Debug --config=Debug -j8
+#   cmake --install ..\Build\msvc2019_x64_Debug --config=Debug
 #
 # Generator: MinGW Makefiles
 #
 # - Release Build
 #
-#   cmake -G "MinGW Makefiles" .\Make -B .\Build\mingw81_x64_Release -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=".\Bin\mingw81_x64"
-#   cmake --build .\Build\mingw81_x64_Release -j8
-#   cmake --install .\Build\mingw81_x64_Release
+#   cmake -G "MinGW Makefiles" . -B ..\Build\mingw81_x64_Release -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="..\Bin\mingw81_x64"
+#   cmake --build ..\Build\mingw81_x64_Release -j8
+#   cmake --install ..\Build\mingw81_x64_Release
 #
 # - Debug Build
 #
-#   cmake -G "MinGW Makefiles" .\Make -B .\Build\mingw81_x64_Debug -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=".\Bin\mingw81_x64"
-#   cmake --build .\Build\mingw81_x64_Debug -j8
-#   cmake --install .\Build\mingw81_x64_Debug
+#   cmake -G "MinGW Makefiles" . -B ..\Build\mingw81_x64_Debug -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX="..\Bin\mingw81_x64"
+#   cmake --build ..\Build\mingw81_x64_Debug -j8
+#   cmake --install ..Build\mingw81_x64_Debug
 #
 # SOURCE_DIR Variables
 # ====================
@@ -374,6 +374,10 @@ message(STATUS "----------------------------------------------------------------
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
+enable_testing()
+include(CTest)
+include(Dart)
+
 add_subdirectory(Libs/ZSSys)
 add_subdirectory(Libs/ZSSysGUI)
 add_subdirectory(Libs/ZSTest)
@@ -387,8 +391,6 @@ if(CREATE_PYTHON_BINDINGS)
 endif()
 
 add_subdirectory(Apps/Products/ZSTrcMthClient)
-
-enable_testing()
 
 #add_subdirectory(Apps/Test/ZSIpc) got to be revised
 add_subdirectory(Apps/Test/ZSIpcTrace)
