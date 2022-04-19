@@ -47,38 +47,30 @@ class CTrcServer;
 //******************************************************************************
 /*! @brief Instances of this class are used to filter method tracing.
 
-    To debug and profile applications method tracing is used.
-    Applikationen bestehen in der Regel aus einer Vielzahl von Module, Klassen
-    und Instanzen von Klassen. Damit das Log File nicht mit Eintraegen voll
-    geschrieben wird, die den Entwickler nicht interessieren, moechte man die
-    Ausgabe auf die Teile beschraenken, die fuer den aktuellen Entwicklungsprozess
-    bzw. die aktuelle Debug Sitzung von Interesse ist.
+To debug and profile applications method tracing is used.
 
-    Instanzen der Klasse CTrcAdminObj verwalten den Ausgabe Status einzelner
-    Module, Klassen und Instanzen von Klassen, fuer die Method Trace Ausgaben
-    definiert wurden.
+Applications usually consist of a large number of modules, classes and instances
+of classes. So that the log file is not filled up with entries that are not of
+interest to the developer, one would like to restrict the output to those parts
+that are of interest for the current development process or the current debug session.
 
-    Trace Admin Instanzen werden in einem hierarchischen Baum verwaltet und
-    erlaubt so die Sortierung nach Namespaces, Klassennamen und oder Instanznamen.
-    Eine Trace Admin Instanz entspricht einem Blatt innerhalb des Baums.
-    Der Einsatz einer Trace Admin Instanz macht nur in Verbindung eines solchen
-    Baumes Sinn. Der Baum wird durch die Klasse CIdxTree realisiert. Diese
-    Klasse erlaubt es, auf die Instanzen innerhalb des Baumes ueber einen
-    Index zuzugreifen. Dies ist insbesondere dann sinnvoll, wenn man die
-    Aenderungen an den Attributen eines Trace Admin Objekts von einer Applikation
-    zu einer einen uebertragen will. Fuer einen online Mitschnitt der Trace
-    Ausgaben aber auch um Embedded Geräte ohne oder nur mit sehr begrenztem
-    Bildschirm zu debuggen wurde ein auf TCP/IP basierter Trace Server
-    implementiert, der durch Verwendung von Indizes als Object Ids zum Einen
-    den notwendigen Datenstrom reduziert aber auch das Finden der Trace Admin
-    Objekte und somit den Online Mitschnitt der Trace Ausgaben beschleunigt.
+Instances of the CTrcAdminObj class manage the output status of individual modules,
+classes and instances of classes for which Method Trace outputs have been defined.
 
-    Zugriff auf den Trace Server erhaelt die Trace Admin Objekt Klasse ueber das
-    Parent Object des Trace Admin Object Index Trees. Das ermoeglicht der Klasse
-    CMethodTracer den methoden trace ueber den Trace Server auszugeben.
+Trace Admin instances are managed in a hierarchical tree, allowing sorting by
+namespaces, class names and/or instance names.
 
-    Fuer weitere Details zur Verwendung der Trace Admin Klasse siehe Klassen
-    CTrcServer und CIdxTreeTrcAdminObjs.
+A Trace Admin instance corresponds to a leaf within the tree. Using a Trace Admin
+instance only makes sense in connection with such a tree. The tree is realized by
+the CIdxTree class. This class allows to access the instances not just by a key but
+also by an index within the tree. This is particularly useful if you want to
+transfer changes to the attributes of a Trace Admin object from one application
+to another as this reduces the amount of data to be transferred and accessing
+the object via index is faster than a lookup by key.
+
+A TCP/IP-based trace server was implemented for an online recording of the trace
+outputs, but also for debugging embedded devices without or only with a very
+limited screen.
 */
 class ZSSYSDLL_API CTrcAdminObj : public QObject, public ZS::System::CIdxTreeEntry
 //******************************************************************************

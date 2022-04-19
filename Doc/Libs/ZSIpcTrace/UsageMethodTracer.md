@@ -6,7 +6,7 @@ we can turn to the actual task - generating trace output.
 First it is described which methods of the trace server are used to generate the trace
 output and how the indentation is done according to the call stack for the active threads.
 However, this is only intended as background information. The CMethodTracer class should
-be used for the trace outputs, as this ensures that the exit from a method is also logged
+be used for the trace outputs, as this ensures that the return from a method is also logged
 if the method is exited at an unexpected point - e.g. if an exception is thrown.
 
 Using Methods of the Trace Server directly
@@ -182,7 +182,7 @@ QString strMthOutArgs;
 
 if( mthTracer.isActive(ETraceDetailLevelMethodArgs) )
 {
-    strMthRet = convertResultToString(o_arg);
+    strMthRet = convertResultToString(result);
     strMthOutArgs  = "Arg1: " + convertArg1ToString(o_arg1);
     strMthOutArgs += ", Arg2: " + convertArg1ToString(o_arg2);
     mthTracer.setMethodReturn(strMthRet);
@@ -194,7 +194,7 @@ For convenience the method tracer class provides methods with different signatur
 to directly assign the return value for the most common data types like bool,
 int, EResult and SErrResultInfo.
 
-There are different constructors with a different set of arguments implement.
+There are different constructors with a different set of arguments implemented.
 Which constructor to use depends on the use case.
 Usually you will need only the two constructor with a trace admin object as the
 first input argument. When tracing class methods or tracing instance methods using

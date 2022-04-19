@@ -533,12 +533,8 @@ protected slots:
 void CMainWindow::onActEditFindTriggered()
 //------------------------------------------------------------------------------
 {
-    if( m_pWdgtCentral != nullptr )
-    {
-        m_pWdgtCentral->findText();
-    }
-
-} // onActEditFindTriggered
+    m_pWdgtCentral->findText();
+}
 
 /*==============================================================================
 protected slots:
@@ -563,7 +559,7 @@ void CMainWindow::onActSettingsTrcClientTriggered()
         pDlg->adjustSize();
         pDlg->show();
     }
-    else // if( pDlg != nullptr )
+    else
     {
         if( pDlg->isHidden() )
         {
@@ -571,9 +567,7 @@ void CMainWindow::onActSettingsTrcClientTriggered()
         }
         pDlg->raise();
         pDlg->activateWindow();
-
-    } // if( pDlg != nullptr )
-
+    }
 } // onActSettingsTrcClientTriggered
 
 //------------------------------------------------------------------------------
@@ -593,7 +587,7 @@ void CMainWindow::onActSettingsTrcAdminObjIdxTreeTriggered()
         pDlg->adjustSize();
         pDlg->show();
     }
-    else // if( pReqSeq != nullptr )
+    else
     {
         if( pDlg->isHidden() )
         {
@@ -601,9 +595,7 @@ void CMainWindow::onActSettingsTrcAdminObjIdxTreeTriggered()
         }
         pDlg->raise();
         pDlg->activateWindow();
-
-    } // if( pDlg != nullptr )
-
+    }
 } // onActSettingsTrcAdminObjIdxTreeTriggered
 
 /*==============================================================================
@@ -625,7 +617,7 @@ void CMainWindow::onActInfoErrLogTriggered()
         pDlg->adjustSize();
         pDlg->show();
     }
-    else // if( pReqSeq != nullptr )
+    else
     {
         if( pDlg->isHidden() )
         {
@@ -633,9 +625,7 @@ void CMainWindow::onActInfoErrLogTriggered()
         }
         pDlg->raise();
         pDlg->activateWindow();
-
-    } // if( pDlg != nullptr )
-
+    }
 } // onActInfoErrLogTriggered
 
 //------------------------------------------------------------------------------
@@ -653,7 +643,7 @@ void CMainWindow::onActInfoRequestExecTreeTriggered()
         pDlg->adjustSize();
         pDlg->show();
     }
-    else // if( pReqSeq != nullptr )
+    else
     {
         if( pDlg->isHidden() )
         {
@@ -661,9 +651,7 @@ void CMainWindow::onActInfoRequestExecTreeTriggered()
         }
         pDlg->raise();
         pDlg->activateWindow();
-
-    } // if( pDlg != nullptr )
-
+    }
 } // onActInfoRequestExecTreeTriggered
 
 /*==============================================================================
@@ -905,8 +893,7 @@ void CMainWindow::onTrcClientDestroyed( QObject* i_pTrcClient )
     {
         m_pTrcClient = nullptr;
     }
-
-} // onTrcClientDestroyed
+}
 
 /*==============================================================================
 protected slots:

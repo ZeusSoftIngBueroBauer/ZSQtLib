@@ -35,6 +35,7 @@ may result in using the software modules.
 #include "ZSSys/ZSSysErrResult.h"
 #include "ZSSys/ZSSysException.h"
 #include "ZSSys/ZSSysMutex.h"
+#include "ZSSys/ZSSysSleeperThread.h"
 #include "ZSSys/ZSSysTrcMethod.h"
 #include "ZSSys/ZSSysWaitCondition.h"
 
@@ -218,15 +219,10 @@ CMyClass2* CMyClass1::startClass2Thread(const QString& i_strMyClass2ObjName)
     {
         m_pMyClass2Thread = new CMyClass2Thread(i_strMyClass2ObjName, this);
 
-        if( !QObject::connect(
-            /* pObjSender   */ m_pMyClass2Thread,
-            /* szSignal     */ SIGNAL(running()),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onClass2ThreadRunning()),
-            /* cnctType     */ Qt::DirectConnection) )
-        {
-            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-        }
+        QObject::connect(
+            m_pMyClass2Thread, &CMyClass2Thread::running,
+            this, &CMyClass1::onClass2ThreadRunning,
+            Qt::DirectConnection);
     }
 
     if( !m_pMyClass2Thread->isRunning() )

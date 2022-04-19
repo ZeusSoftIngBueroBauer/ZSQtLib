@@ -36,36 +36,33 @@ namespace ZS
 namespace System
 {
 //******************************************************************************
-/*! The class is a wrapper around a C++ enumeration, verwaltet eine Liste
-    mit den definierten enum index entries und bietet nuetzliche Funktionen
-    fuer Enumerationen an, die eine normale Defintion von C enums nicht bietet.
+/*! The class is a wrapper around a C++ enumeration.
 
-    @ingroup _GRP_Libs_ZSSys_Enumerations
+The class manages a list with the defined enum index entries and offers useful
+functions for enums that a normal definition of C enums does not offer.
 
-    Enumerationen werden nicht nur dazu benoetigt, um symbolische Konstanten
-    fuer eine 1 aus M Auswahl zu definieren und so den Source Code lesbarer
-    zu machen. Haeufig ist es auch noetig, die enum value als lesbare strings
-    innnerhalb einer GUI anzuzeigen oder in Streams zu uebertragen.
+Enumerations are not only required to define symbolic constants for a 1 out of M
+selection and thus to make the source code more readable. It is also often necessary
+to display the enum value as a readable string within a GUI or to transmit it in streams.
 
-    Des weiteren dient ein enum Wert zur Auwahl aus einer Liste anderer Werte
-    mit einem anderen als einem Ganzzahl Datentypen. Moeglicherweise zur Auswahl
-    einer Frequenz aus einer Frequenzliste:
+Furthermore, an enum value is used to select from a list of other values with a
+non-integer data type. Possibly to select a frequency from a frequency list:
 
-        enum EUKWRadioFreqs {
-            EUKWRadioFreq_Bayern1,  // 92.4 MHz
-            EUKWRadioFreq_Bayern3,  // 99.2 MHz
-            ....
-        };
+    enum EUKWRadioFreqs {
+        EUKWRadioFreq_Bayern1,  // 92.4 MHz
+        EUKWRadioFreq_Bayern3,  // 99.2 MHz
+        ....
+    };
 
-    Damit auf eine Enumeration von beliebiger Stelle zugeriffen werden kann
-    werde alle Enumerationen in der Klasse ZS::System::CEnumerationIdxTree verwaltet.
-    Dafuer muss die Kombination aus NameSpace und Name der Enumeration innerhalb
-    einer Applikation eindeutig sein.
+Furthermore, an enum value is used to select from a list of other values with
+a non-integer data type. Possibly for selection So that an enumeration can be
+accessed from any position, all enumerations are managed in the
+ZS::System::CEnumerationIdxTree class. For this, the combination of NameSpace
+and name of the enumeration must be unique within an application.
 
-    Damit die Klasse auch innerhalb eines grafischen Tabellen Editors verwendet
-    werden kann werden Methoden angeboten, um enum entries dynamisch hinzufuegen
-    und auch wieder entfernt werden koennen. Allerdings koennen solche dynamisch
-    erzeugten enum Werte nicht in C Konstrukten wie switch cases verwendet werden.
+So that the class can also be used within a graphical table editor, methods are
+provided to dynamically add and remove enum entries. However, such dynamically
+generated enum values cannot be used in C constructs such as switch cases.
 */
 class ZSSYSDLL_API CEnumeration : public CIdxTreeEntry
 //******************************************************************************

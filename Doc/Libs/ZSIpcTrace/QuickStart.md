@@ -49,5 +49,5 @@ Instantiate the method tracer in the method to be traced passing the trace admin
 
 **Method Trace Client Application**
 
-Download the installer from <a href="https://www.zeussoft.de">ZeusSoft</a> or create the application following @ref _PAGE_Main_BuildInstructions.
+Create the installer following @ref _PAGE_Main_BuildInstructions.
 

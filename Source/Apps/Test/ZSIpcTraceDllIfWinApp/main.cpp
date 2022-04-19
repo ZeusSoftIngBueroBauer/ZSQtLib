@@ -42,9 +42,9 @@ using namespace ZS::Apps::Test::IpcTraceDllIfWinApp;
 Global Variables
 *******************************************************************************/
 
-static HINSTANCE s_hInst;                                // Aktuelle Instanz
-static WCHAR s_szTitle[MAX_LOADSTRING];                  // Titelleistentext
-static WCHAR s_szWindowClass[MAX_LOADSTRING];            // Der Klassenname des Hauptfensters.
+static HINSTANCE s_hInst;
+static WCHAR s_szTitle[MAX_LOADSTRING];
+static WCHAR s_szWindowClass[MAX_LOADSTRING];
 
 static bool s_bDllLoaded = false;
 static ZS::Trace::DllIf::CIpcTrcServer* s_pTrcServer = nullptr;
@@ -92,14 +92,10 @@ int APIENTRY wWinMain(
     UNREFERENCED_PARAMETER(i_hPrevInstance);
     UNREFERENCED_PARAMETER(i_lpCmdLine);
 
-    // TODO: Hier Code einfügen.
-
-    // Globale Zeichenfolgen initialisieren
     LoadStringW(i_hInstance, IDS_APP_TITLE, s_szTitle, MAX_LOADSTRING);
     LoadStringW(i_hInstance, IDC_ZSAPPTESTIPCTRACEDLLIF, s_szWindowClass, MAX_LOADSTRING);
     MyRegisterClass(i_hInstance);
 
-    // Anwendungsinitialisierung ausführen:
     if (!InitInstance(i_hInstance, i_nCmdShow) )
     {
         return FALSE;
@@ -109,7 +105,6 @@ int APIENTRY wWinMain(
 
     MSG msg;
 
-    // Hauptnachrichtenschleife:
     while (GetMessage(&msg, nullptr, 0, 0))
     {
         if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
@@ -141,7 +136,7 @@ ATOM MyRegisterClass( HINSTANCE i_hInstance )
     wcex.hbrBackground  = (HBRUSH)(COLOR_WINDOW+1);
     wcex.lpszMenuName   = MAKEINTRESOURCEW(IDC_ZSAPPTESTIPCTRACEDLLIF);
     wcex.lpszClassName  = s_szWindowClass;
-    wcex.hIconSm        = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
+    wcex.hIconSm        = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_ZSAPPTESTIPCTRACEDLLIF));
 
     return RegisterClassExW(&wcex);
 
@@ -668,8 +663,6 @@ void doTestStepCreateModule2( HMENU i_hMenu )
     strlstMthTraces.push_back(L"   <- <" + strNameSpace + L"::" + strClassName + L"> TestModule2.ctor()");
     strlstMthTraces.push_back(L"                                 <- <" + strNameSpace + L"::" + strClassName + L"> TestModule2.recursiveTraceMethod(): 10");
     strlstMthTraces.push_back(L"   <- <" + strNameSpace + L"::" + strClassName + L"> TestModule2.recursiveTraceMethod(): 0");
-    strlstMthTraces.push_back(L"   -> <" + strNameSpace + L"::" + strClassName + L"> TestModule2.event(Msg: ZS::Apps::Test::IpcTrace::ReqTest)");
-    strlstMthTraces.push_back(L"   <- <" + strNameSpace + L"::" + strClassName + L"> TestModule2.event(): 100");
 
     std::wstring strInfoText;
 

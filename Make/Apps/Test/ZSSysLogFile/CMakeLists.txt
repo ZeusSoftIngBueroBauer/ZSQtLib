@@ -29,8 +29,10 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 # _SourcePaths will be defined in the same way.
 set(_HeadersPath ${CMAKE_CURRENT_SOURCE_DIR}/../../../../Include/Apps/Test)
 set(_SourcesPath ${CMAKE_CURRENT_SOURCE_DIR}/../../../../Source/Apps/Test)
+set(_ResourcesPath ${CMAKE_CURRENT_SOURCE_DIR}/../../../../Resources/Apps/Test)
 
 list(APPEND _Headers
+    ${_HeadersPath}/../../Libs/ZSSys/ZSSysVersion.h
     ${_HeadersPath}/ZSSysLogFile/App.h
     ${_HeadersPath}/ZSSysLogFile/MainWindow.h
     ${_HeadersPath}/ZSSysLogFile/WidgetCentral.h
@@ -49,16 +51,21 @@ list(APPEND _Resources
 )
 
 if(WIN32)
+    set(_Headers ${_Headers}
+        ${_HeadersPath}/ZSSysLogFile/resource.h
+        ${_HeadersPath}/ZSSysLogFile/targetver.h)
     # Add version info as meta information to Dll.
-    set(_Resources ${_Resources} ${_SourcesPath}/../../Libs/ZSSys/ZSSysVersion.rc)
+    set(_Resources ${_Resources} ${_ResourcesPath}/../../Libs/ZSSys/ZSSysVersion.rc)
+    # Icons.
+    set(_Resources ${_Resources} ${_ResourcesPath}/ZSSysLogFile/${PROJECT_NAME}.rc)
 endif()
 
 # Got to create the following target name:
-# (ProjectName)[_d]
-# e.g.: "ZSAppTestSysLogFile_d"
+# (ProjectName)[d]
+# e.g.: "ZSAppTestSysLogFiled"
 set(TargetOutputName ${PROJECT_NAME})
 if(CMAKE_BUILD_TYPE MATCHES Debug)
-    set(TargetOutputName ${TargetOutputName}_d)
+    set(TargetOutputName ${TargetOutputName}d)
 endif()
 message(STATUS "TargetOutputName:         ${TargetOutputName}")
 
@@ -71,8 +78,9 @@ endif()
 set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME ${TargetOutputName})
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER Tests)
 
-source_group(TREE ${_HeadersPath}/ZSSysLogFile PREFIX "Header Files" FILES ${_Headers})
-source_group(TREE ${_SourcesPath}/ZSSysLogFile PREFIX "Source Files" FILES ${_Sources})
+source_group("Header Files" FILES ${_Headers})
+source_group("Source Files" FILES ${_Sources})
+source_group("Resource Files" FILES ${_Resources})
 
 target_include_directories(${PROJECT_NAME}
     PRIVATE ${CMAKE_SOURCE_DIR}/../Include/Apps/Test/ZSSysLogFile)

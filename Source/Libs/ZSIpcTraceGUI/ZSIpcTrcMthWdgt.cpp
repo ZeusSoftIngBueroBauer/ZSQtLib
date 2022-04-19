@@ -64,6 +64,7 @@ may result in using the software modules.
 #include "ZSIpcTrace/ZSIpcTrcClient.h"
 #include "ZSSysGUI/ZSSysFindTextDlg.h"
 #include "ZSSysGUI/ZSSysProgressBar.h"
+#include "ZSSysGUI/ZSSysTrcAdminObjIdxTreeDlg.h"
 #include "ZSSys/ZSSysApp.h"
 #include "ZSSys/ZSSysTrcAdminObj.h"
 #include "ZSSys/ZSSysTrcAdminObjIdxTree.h"
@@ -134,6 +135,7 @@ CWdgtTrcMthList::CWdgtTrcMthList(
     m_pBtnClear(nullptr),
     m_pLblServerTracingEnabled(nullptr),
     m_pChkServerTracingEnabled(nullptr),
+    m_pBtnTrcAdminObjIdxTree(nullptr),
     m_pBtnConnect(nullptr),
     m_pProgressBarCnct(nullptr)
 {
@@ -205,6 +207,23 @@ CWdgtTrcMthList::CWdgtTrcMthList(
 
     // Add space to button line
     pLytBtnListWidget->addSpacing(10);
+
+    // <Button> Trace Admin Objects Index Tree
+    //----------------------------------------
+
+    m_pBtnTrcAdminObjIdxTree = new QPushButton();
+    m_pBtnTrcAdminObjIdxTree->setText("Trace Admin Objects");
+    pLytBtnListWidget->addWidget(m_pBtnTrcAdminObjIdxTree);
+    m_pBtnTrcAdminObjIdxTree->setEnabled(m_pTrcClient->isConnected());
+
+    if( !QObject::connect(
+        /* pObjSender   */ m_pBtnTrcAdminObjIdxTree,
+        /* szSignal     */ SIGNAL(clicked(bool)),
+        /* pObjReceiver */ this,
+        /* szSlot       */ SLOT(onBtnTrcAdminObjIdxTreeClicked(bool)) ) )
+    {
+        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
+    }
 
     // <Button> Connect/Disconnect
     //----------------------------
@@ -299,6 +318,7 @@ CWdgtTrcMthList::~CWdgtTrcMthList()
     m_pBtnClear = nullptr;
     m_pLblServerTracingEnabled = nullptr;
     m_pChkServerTracingEnabled = nullptr;
+    m_pBtnTrcAdminObjIdxTree = nullptr;
     m_pBtnConnect = nullptr;
     m_pProgressBarCnct = nullptr;
 
@@ -610,15 +630,8 @@ void CWdgtTrcMthList::findText()
 bool CWdgtTrcMthList::find( const QString& i_strExp, QTextDocument::FindFlags i_findFlags )
 //------------------------------------------------------------------------------
 {
-    bool bExpFound = false;
-
-    if( m_pEdt != nullptr )
-    {
-        bExpFound = m_pEdt->find(i_strExp, i_findFlags);
-    }
-    return bExpFound;
-
-} // find
+    return m_pEdt->find(i_strExp, i_findFlags);
+}
 
 /*==============================================================================
 protected: // overridables of base class QObject
@@ -673,14 +686,10 @@ protected slots: // connected to the signals of my user controls
 void CWdgtTrcMthList::onBtnClearClicked( bool /*i_bChecked*/ )
 //------------------------------------------------------------------------------
 {
-    if( m_pEdt != nullptr )
-    {
-        m_pEdt->clear();
-        m_iEdtItems = 0;
-        m_bEdtFull = false;
-    }
-
-} // onBtnClearClicked
+    m_pEdt->clear();
+    m_iEdtItems = 0;
+    m_bEdtFull = false;
+}
 
 //------------------------------------------------------------------------------
 void CWdgtTrcMthList::onChkServerTracingEnabledToggled( bool i_bChecked )
@@ -693,6 +702,35 @@ void CWdgtTrcMthList::onChkServerTracingEnabledToggled( bool i_bChecked )
         m_pTrcClient->setTraceSettings(trcServerSettings);
     }
 }
+
+//------------------------------------------------------------------------------
+void CWdgtTrcMthList::onBtnTrcAdminObjIdxTreeClicked( bool /*i_bChecked*/ )
+//------------------------------------------------------------------------------
+{
+    QString strDlgTitle = getMainWindowTitle() + ": Trace Admin Objects";
+
+    CDlgIdxTreeTrcAdminObjs* pDlg = CDlgIdxTreeTrcAdminObjs::GetInstance(m_pTrcClient->getTraceAdminObjIdxTree()->objectName());
+
+    if( pDlg == nullptr )
+    {
+        pDlg = CDlgIdxTreeTrcAdminObjs::CreateInstance(
+            /* pTrcAdmIdxTree */ m_pTrcClient->getTraceAdminObjIdxTree(),
+            /* strDlgTitle    */ strDlgTitle );
+        pDlg->setAttribute(Qt::WA_DeleteOnClose, true);
+        pDlg->adjustSize();
+        pDlg->show();
+    }
+    else // if( pReqSeq != nullptr )
+    {
+        if( pDlg->isHidden() )
+        {
+            pDlg->show();
+        }
+        pDlg->raise();
+        pDlg->activateWindow();
+
+    } // if( pDlg != nullptr )
+} // onBtnTrcAdminObjIdxTreeClicked
 
 //------------------------------------------------------------------------------
 void CWdgtTrcMthList::onBtnConnectClicked( bool /*i_bChecked*/ )
@@ -712,16 +750,13 @@ void CWdgtTrcMthList::onBtnConnectClicked( bool /*i_bChecked*/ )
             {
                 m_pBtnConnect->setText(c_strBtnAbort);
 
-                if( m_pProgressBarCnct != nullptr )
-                {
-                    SClientHostSettings cnctSettings = m_pTrcClient->getHostSettings();
-                    QString strText = cnctSettings.getConnectionString() + " Connecting ...";
-                    m_pProgressBarCnct->setLabelText(strText);
-                    m_pProgressBarCnct->reset();
-                    m_pProgressBarCnct->setDurationInMs(cnctSettings.m_iConnectTimeout_ms);
-                    m_pProgressBarCnct->setIncrementInMs(200);
-                    m_pProgressBarCnct->start();
-                }
+                SClientHostSettings cnctSettings = m_pTrcClient->getHostSettings();
+                QString strText = cnctSettings.getConnectionString() + " Connecting ...";
+                m_pProgressBarCnct->setLabelText(strText);
+                m_pProgressBarCnct->reset();
+                m_pProgressBarCnct->setDurationInMs(cnctSettings.m_iConnectTimeout_ms);
+                m_pProgressBarCnct->setIncrementInMs(200);
+                m_pProgressBarCnct->start();
 
                 if( !QObject::connect(
                     /* pObjSender   */ m_pReqInProgress,
@@ -749,16 +784,13 @@ void CWdgtTrcMthList::onBtnConnectClicked( bool /*i_bChecked*/ )
             {
                 m_pBtnConnect->setText(c_strBtnAbort);
 
-                if( m_pProgressBarCnct != nullptr )
-                {
-                    SClientHostSettings cnctSettings = m_pTrcClient->getHostSettings();
-                    QString strText = cnctSettings.getConnectionString() + " Disconnecting ...";
-                    m_pProgressBarCnct->setLabelText(strText);
-                    m_pProgressBarCnct->reset();
-                    m_pProgressBarCnct->setDurationInMs(cnctSettings.m_iConnectTimeout_ms);
-                    m_pProgressBarCnct->setIncrementInMs(200);
-                    m_pProgressBarCnct->start();
-                }
+                SClientHostSettings cnctSettings = m_pTrcClient->getHostSettings();
+                QString strText = cnctSettings.getConnectionString() + " Disconnecting ...";
+                m_pProgressBarCnct->setLabelText(strText);
+                m_pProgressBarCnct->reset();
+                m_pProgressBarCnct->setDurationInMs(cnctSettings.m_iConnectTimeout_ms);
+                m_pProgressBarCnct->setIncrementInMs(200);
+                m_pProgressBarCnct->start();
 
                 if( !QObject::connect(
                     /* pObjSender   */ m_pReqInProgress,
@@ -789,14 +821,12 @@ void CWdgtTrcMthList::onBtnConnectClicked( bool /*i_bChecked*/ )
             m_pBtnConnect->setText(c_strBtnConnect);
         }
 
-        if( m_pProgressBarCnct != nullptr )
-        {
-            SClientHostSettings cnctSettings = m_pTrcClient->getHostSettings();
-            QString strText = cnctSettings.getConnectionString();
-            m_pProgressBarCnct->setLabelText(strText);
-            m_pProgressBarCnct->reset();
-            m_pProgressBarCnct->stop();
-        }
+        SClientHostSettings cnctSettings = m_pTrcClient->getHostSettings();
+        QString strText = cnctSettings.getConnectionString();
+        m_pProgressBarCnct->setLabelText(strText);
+        m_pProgressBarCnct->reset();
+        m_pProgressBarCnct->stop();
+
     } // if( m_pBtnConnect->text() == c_strBtnAbort )
 
 } // onBtnConnectClicked
@@ -819,18 +849,14 @@ void CWdgtTrcMthList::onIpcClientConnected( QObject* /*i_pClient*/ )
     loadThreadColors();
     #endif
 
-    if( m_pBtnConnect != nullptr )
-    {
-        m_pBtnConnect->setText(c_strBtnDisconnect);
-    }
-    if( m_pProgressBarCnct != nullptr )
-    {
-        SClientHostSettings cnctSettings = m_pTrcClient->getHostSettings();
-        QString strText = cnctSettings.getConnectionString();
-        m_pProgressBarCnct->setLabelText(strText);
-        m_pProgressBarCnct->reset();
-        m_pProgressBarCnct->stop();
-    }
+    m_pBtnTrcAdminObjIdxTree->setEnabled(true);
+    m_pBtnConnect->setText(c_strBtnDisconnect);
+
+    SClientHostSettings cnctSettings = m_pTrcClient->getHostSettings();
+    QString strText = cnctSettings.getConnectionString();
+    m_pProgressBarCnct->setLabelText(strText);
+    m_pProgressBarCnct->reset();
+    m_pProgressBarCnct->stop();
 
 } // onIpcClientConnected
 
@@ -849,18 +875,14 @@ void CWdgtTrcMthList::onIpcClientDisconnected( QObject* /*i_pClient*/ )
 
     m_hashThreads.clear();
 
-    if( m_pBtnConnect != nullptr )
-    {
-        m_pBtnConnect->setText(c_strBtnConnect);
-    }
-    if( m_pProgressBarCnct != nullptr )
-    {
-        SClientHostSettings cnctSettings = m_pTrcClient->getHostSettings();
-        QString strText = cnctSettings.getConnectionString();
-        m_pProgressBarCnct->setLabelText(strText);
-        m_pProgressBarCnct->reset();
-        m_pProgressBarCnct->stop();
-    }
+    m_pBtnTrcAdminObjIdxTree->setEnabled(false);
+    m_pBtnConnect->setText(c_strBtnConnect);
+
+    SClientHostSettings cnctSettings = m_pTrcClient->getHostSettings();
+    QString strText = cnctSettings.getConnectionString();
+    m_pProgressBarCnct->setLabelText(strText);
+    m_pProgressBarCnct->reset();
+    m_pProgressBarCnct->stop();
 
 } // onIpcClientDisconnected
 
@@ -888,12 +910,9 @@ void CWdgtTrcMthList::onIpcClientSettingsChanged( QObject* /*i_pClient*/ )
         #endif
     }
 
-    if( m_pProgressBarCnct != nullptr )
-    {
-        SClientHostSettings cnctSettings = m_pTrcClient->getHostSettings();
-        QString strText = cnctSettings.getConnectionString();
-        m_pProgressBarCnct->setLabelText(strText);
-    }
+    SClientHostSettings cnctSettings = m_pTrcClient->getHostSettings();
+    QString strText = cnctSettings.getConnectionString();
+    m_pProgressBarCnct->setLabelText(strText);
 
 } // onIpcClientSettingsChanged
 
@@ -948,25 +967,22 @@ void CWdgtTrcMthList::onIpcClientPendingRequestChanged( ZS::System::SRequestDscr
 
             if( m_pReqInProgress == nullptr )
             {
-                if( m_pBtnConnect != nullptr )
+                if( m_pTrcClient->isConnected() )
                 {
-                    if( m_pTrcClient->isConnected() )
-                    {
-                        m_pBtnConnect->setText(c_strBtnDisconnect);
-                    }
-                    else
-                    {
-                        m_pBtnConnect->setText(c_strBtnConnect);
-                    }
+                    m_pBtnTrcAdminObjIdxTree->setEnabled(true);
+                    m_pBtnConnect->setText(c_strBtnDisconnect);
                 }
-                if( m_pProgressBarCnct != nullptr )
+                else
                 {
-                    SClientHostSettings cnctSettings = m_pTrcClient->getHostSettings();
-                    QString strText = cnctSettings.getConnectionString();
-                    m_pProgressBarCnct->setLabelText(strText);
-                    m_pProgressBarCnct->stop();
-                    m_pProgressBarCnct->reset();
+                    m_pBtnTrcAdminObjIdxTree->setEnabled(false);
+                    m_pBtnConnect->setText(c_strBtnConnect);
                 }
+                SClientHostSettings cnctSettings = m_pTrcClient->getHostSettings();
+                QString strText = cnctSettings.getConnectionString();
+                m_pProgressBarCnct->setLabelText(strText);
+                m_pProgressBarCnct->stop();
+                m_pProgressBarCnct->reset();
+
             } // if( m_pReqInProgress == nullptr )
         } // if( m_requestQueue.isPendingRequest(pReqInProgress,i_reqDscr.m_iId) )
     } // if( pReqInProgress != nullptr )
@@ -981,12 +997,8 @@ protected slots: // connected to the signals of the trace client
 void CWdgtTrcMthList::onTraceSettingsChanged( QObject* /*i_pTrcClient*/ )
 //------------------------------------------------------------------------------
 {
-    if( m_pChkServerTracingEnabled != nullptr )
-    {
-        m_pChkServerTracingEnabled->setChecked( m_pTrcClient->getTraceSettings().m_bEnabled );
-    }
-
-} // onTraceSettingsChanged
+    m_pChkServerTracingEnabled->setChecked( m_pTrcClient->getTraceSettings().m_bEnabled );
+}
 
 //------------------------------------------------------------------------------
 void CWdgtTrcMthList::onTraceDataReceived( QObject* /*i_pObjSender*/, const QString& i_str )
@@ -1318,26 +1330,22 @@ protected: // instance methods
 void CWdgtTrcMthList::addEdtItem( const QString& i_strText, const QString& i_strHtmlClrCode )
 //------------------------------------------------------------------------------
 {
-    if( m_pEdt != nullptr )
+    if( m_iEdtItemsCountMax > 0 && m_iEdtItems >= m_iEdtItemsCountMax )
     {
-        if( m_iEdtItemsCountMax > 0 && m_iEdtItems >= m_iEdtItemsCountMax )
+        if( !m_bEdtFull )
         {
-            if( !m_bEdtFull )
-            {
-                QString strText = "---------- MAXIMUM NUMBER OF ENTRIES REACHED -----------";
-                m_bEdtFull = true;
-                m_pEdt->append(strText);
-                emit textItemAdded(strText);
-            }
-        }
-        else
-        {
-            m_pEdt->append("<FONT color=" + i_strHtmlClrCode + ">" + i_strText + "</FONT>");
-            m_iEdtItems++;
-            emit textItemAdded(i_strText);
+            QString strText = "---------- MAXIMUM NUMBER OF ENTRIES REACHED -----------";
+            m_bEdtFull = true;
+            m_pEdt->append(strText);
+            emit textItemAdded(strText);
         }
     }
-
+    else
+    {
+        m_pEdt->append("<FONT color=" + i_strHtmlClrCode + ">" + i_strText + "</FONT>");
+        m_iEdtItems++;
+        emit textItemAdded(i_strText);
+    }
 } // addEdtItem
 
 /*==============================================================================

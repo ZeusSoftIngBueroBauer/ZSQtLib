@@ -765,9 +765,7 @@ ZSIPCTRACEDLL_EXTERN_API DllIf::CTrcAdminObj* TrcServer_GetTraceAdminObj(
 } // TrcServer_GetTraceAdminObj
 
 //------------------------------------------------------------------------------
-ZSIPCTRACEDLL_EXTERN_API void TrcServer_ReleaseTraceAdminObj(
-    const char*          i_szServerName,
-    DllIf::CTrcAdminObj* i_pTrcAdminObj )
+ZSIPCTRACEDLL_EXTERN_API void TrcServer_ReleaseTraceAdminObj( DllIf::CTrcAdminObj* i_pTrcAdminObj )
 //------------------------------------------------------------------------------
 {
     #ifdef _WINDOWS
@@ -2059,7 +2057,7 @@ ZSIPCTRACEDLL_EXTERN_API DllIf::CIpcTrcServer* IpcTrcServer_CreateInstance( int 
     QString strAdminObjFileAbsFilePath;
     QString strLocalTrcFileAbsFilePath;
 
-    if( DllIf_IpcTrcServer_s_pTrcMthFile = nullptr )
+    if( DllIf_IpcTrcServer_s_pTrcMthFile == nullptr )
     {
         strAdminObjFileAbsFilePath = CTrcServer::GetDefaultAdminObjFileAbsoluteFilePath();
         strLocalTrcFileAbsFilePath = CTrcServer::GetDefaultLocalTrcFileAbsoluteFilePath();
@@ -2683,8 +2681,9 @@ protected: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-DllIf::CIpcTrcServer::CIpcTrcServer(int /*i_iTrcDetailLevel*/ )
+DllIf::CIpcTrcServer::CIpcTrcServer(int /*i_iTrcDetailLevel*/ ) :
 //------------------------------------------------------------------------------
+    CTrcServer()
 {
     CTrcMthFile* pTrcMthFile = DllIf_IpcTrcServer_s_pTrcMthFile;
     int          iTrcDetailLevel = DllIf_IpcTrcServer_s_iTrcMthDetailLevel;

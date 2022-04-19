@@ -8,8 +8,12 @@ The CIpcTrcClient is used in the trace method client application together with t
 trace output window. The ZSIpcTrace test application should test both - the server and
 the client site.
 
-But here we consider only the server site as this is what you need to integrate remote
-only tracing and logging into your application.
+But here we consider only the server site as this is what you need to integrate
+
+- online remote tracing and
+- logging into a local log file
+
+into your application.
 
 First of all a trace server has to be created. This must be done before starting the
 event loop of the application. A good place for this is the constructor of the application.
@@ -23,18 +27,16 @@ Please refer to ZS::Ipc::SServerHostSettings for futher details about the settin
 applied to the TCP server and refer to ZS::Trace::STrcServerSettings which settings can be applied
 for method tracing through the trace server.
 
-If you don't pass any arguments to CIpcTrcServer::CreateInstance a trace server named "ZSTrcServer"
-is created. Internally some ZSQtLib modules and classes are trying to access a trace server with this name.
-If you create one with this name those ZSQtLib modules and classes are using this trace server to trace
-their method calls.
+The trace server is a singleton class which has to be created by the static method
+CIpcTrcServer::CreateInstance which creates a trace server named 'ZSTrcServer'.
 
 As default the trace server will listen at port 24763 for incoming connections. If this port is
-already used or if you want to use more than just one trace server you need to change the port.
+already used you need to change the port.
 
 After the trace server has been created the previously used settings for the trace server got to be recalled.
 You may use the QSettings class to store the hostSettings and the traceSettings. But you only need to save
 those values which differ from the default values. How this can be accomplished is not shown in the code
-lines below but this should be simple enough to implement your own "readSettings" and "saveSettings" method
+lines below but this should be simple enough to implement your own 'readSettings' and 'saveSettings' methods
 and include the host and trace settings for the trace server.
 
 During runtime the trace admin objects will be changed concerning their enabled and detail level states.
@@ -64,7 +66,7 @@ trace admin objects should be saved so that they can be recalled when restarting
 
             try
             {
-                ZS::Trace::CTrcServer::ReleaseInstance(m_pZSTrcServer);
+                ZS::Trace::CTrcServer::ReleaseInstance();
             }
             catch(...)
             {
@@ -74,51 +76,7 @@ trace admin objects should be saved so that they can be recalled when restarting
         ...
     }
 
-In the ZSIpcTrace test application an additional trace server is created in test step doTestStepTestTraceCreateInstance.
-This test trace server must use a different port and the host settings will be changed as shown in the example below.
-Please note that setHostSettings just stores the new values but does not apply them. To apply the values you must
-call changeSettings. This pattern allows changing several settings one after another. The server will collect the
-changes and with changeSettings all changed settings will be applied at once.
-
-    void CTest::doTestStepTraceServerCreateInstance( ZS::Test::CTestStep* i_pTestStep )
-    {
-        ...
-        m_pTestTrcServer = ZS::Trace::CIpcTrcServer::GetInstance("TestTrcServer");
-        SServerHostSettings hostSettings(24764);
-        m_pTestTrcServer->setHostSettings(hostSettings);
-        m_pTestTrcServer->changeSettings();
-        ...
-    }
-
-In the test step doTestStepTraceServerReleaseInstance the test trace server will be deleted again as follows.
-
-    void CTest::doTestStepTraceServerReleaseInstance( ZS::Test::CTestStep* i_pTestStep )
-    {
-        ...
-        ZS::Trace::CIpcTrcServer::ReleaseInstance(m_pTestTrcServer);
-        m_pTestTrcServer = nullptr;
-        ...
-    }
-
-The settings of the trace admin objects (enabled/disable, trace detail level) are stored in an xml file.
-In the startup sequence the settings of the trace admin objects got to be recalled, during shutdown
-they have to be saved as shown below:
-
-    void CTest::doTestStepTraceServerRecallAdminObjs( ZS::Test::CTestStep* i_pTestStep )
-    {
-        ...
-        SErrResultInfo errResultInfo = pTrcServer->recallAdminObjs();
-        ...
-    }
-
-    void CTest::doTestStepTraceServerSaveAdminObjs( ZS::Test::CTestStep* i_pTestStep )
-    {
-        ...
-        SErrResultInfo errResultInfo = pTrcServer->saveAdminObjs();
-        ...
-    }
-
-The server got to be started.
+After creating the server it must be started using the 'startup' method.
 
 The QTcpServer is instantiated in a gateway thread and listens there for incoming connections.
 If data receives the data will be parsed and split into blocks depending on the defined block type.
@@ -162,7 +120,7 @@ As arguments you may pass
         ...
     }
 
-If the server is no longer need it should be shutdown.
+If the server is no longer needed it should be shutdown before it is destroyed.
 
 Shutting down the trace is also an asynchronous request as the gateway thread has to be stopped
 and destroyed afterwards.

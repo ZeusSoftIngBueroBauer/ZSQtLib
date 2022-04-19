@@ -31,10 +31,24 @@ The trace subsystem of the ZSQtLib should help here by providing an online debug
 as the Trace Method Client connected via TCP/IP to a trace server created within the master application
 to be logged and whose methods should be traced.
 
+Using the trace subsystem of the ZSQtLib helps you in different phases of coding:
+
+- During the implementation phase by investigating the trace output.<br/>
+  Are the methods called as intended?
+  Optimizing the code by detecting unnecessary calls?
+  Are there unneccessary recursions?
+  Detect concurrency problems in multithread applications.
+- Finding bugs in already implemented classes.
+- Getting to know insufficiently documented source code.
+- Getting an overview of the system by evaluation the tree of trace admin objects.
+
+NEXT
+
 - @subpage _PAGE_Libs_ZSIpcTrace_QuickStart
 - @subpage _PAGE_Libs_ZSIpcTrace_Overview
 - @subpage _PAGE_Libs_ZSIpcTrace_Usage_TrcServer
 - @subpage _PAGE_Libs_ZSIpcTrace_Usage_TrcAdminObjs
 - @subpage _PAGE_Libs_ZSIpcTrace_Usage_MethodTracer
+- @subpage _PAGE_Libs_ZSIpcTrace_UseCase_ReadingTraceOutput
 - @subpage _PAGE_Libs_ZSIpcTrace_DllInterface
 

@@ -713,6 +713,7 @@ SErrResultInfo CTest::saveTestResults( const QString& i_strAbsFilePath, bool i_b
                 while( !pTestStepGroup->parentBranch()->isRoot() )
                 {
                     strIndent += "  ";
+                    pTestStepGroup =  dynamic_cast<CTestStepGroup*>(pTestStepGroup->parentBranch());
                 }
                 strHeadLine = "Group: " + pTestStepGroup->name();
                 out << strIndent << strHeadLine << "\n";

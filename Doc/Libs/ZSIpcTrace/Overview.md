@@ -24,6 +24,10 @@ Filtering of modules, classes, instances of classes is realized through instance
 The trace admin objects are added to an index tree and are hierachically organized according to name spaces,
 class names and instance names. Logging may be activated, enabled or disabled through those trace admin objects.
 
+Logging may also be enabled or disabled during runtime for the whole trace server or for all trace admin objects
+belonging to a name space. This allows you to start the application without any tracing. If you reach the
+point of interest you can enable tracing.
+
 If the trace method client connects to to the trace tracer the tree of trace admin objects is queried by the
 client and sent as an XML data stream from the server to the client. The client will indicate the index tree
 of trace admin objects allowing the user to activate, enable or disable logging for each module, class or

@@ -272,10 +272,7 @@ void CTest::doTestStepLoadDll( ZS::Test::CTestStep* i_pTestStep )
     ZS::Trace::DllIf::EBuildConfiguration buildConfiguration = ZS::Trace::DllIf::EBuildConfigurationRelease;
     #endif
 
-    const char* szCompiler = COMPILERLIBINFIX;  // from "ZSSysDllMain.h"
-    const char* szPlatform = PLATFORMLIBINFIX;  // from "ZSSysDllMain.h"
-
-    bool bOk = ZS::Trace::DllIf::loadDll(szCompiler, szPlatform, buildConfiguration, QT_VERSION_MAJOR);
+    bool bOk = ZS::Trace::DllIf::loadDll(buildConfiguration, QT_VERSION_MAJOR);
 
     // Actual Values
     //---------------

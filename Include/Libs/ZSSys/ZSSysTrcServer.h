@@ -93,30 +93,22 @@ public: // struct members
 //******************************************************************************
 /*! @brief Über die Klasse CTrcServer sollten alle Trace Ausgaben erfolgen.
 
-    Die Klasse verwaltet einen Baum von Trace Objekten, über die das Tracing für
-    Module, Klassen und Instanzen aktiviert und deaktiviert als auch die Detail
-    Tiefe der Ausgaben festgelegt werden kann.
+The class manages a tree of trace objects, which can be used to activate and
+deactivate the tracing for modules, classes and instances and to specify the
+level of detail of the output.
 
-    Diese Trace Admin Objekte können befragt werden, ob eine Log Ausgabe erfolgen
-    soll und welche Log-Ausgaben zu erstellen sind.
+These Trace Admin objects can be asked whether a log output should take place
+and which log outputs should be created.
 
-    Normalerweise gibt es pro Applikation nur eine Trace Server Instanz die beim
-    Start der Applikation durch Aufruf der Klassenmethode "CreateInstance" angelegt
-    wird. Während der Programm-Ausführung kann über "GetInstance" eine Referenz auf
-    die Instanz erhalten und Parameter ändern oder Log-Ausgaben in das Trace Method
-    File vornehmen. Vor Beenden der Applikation ist die Trace Server Instanz mit
-    "ReleaseInstance" wieder zu löschen.
+There is only one Trace Server instance per application, which is created when
+the application is started by calling the "CreateInstance" class method.
 
-    Für den Fall, dass mehrere Trace Server verwendet werden sollen (verschiedene
-    Log Files), kann bei "CreateInstance" ein vom Default Wert "ZSTrcServer"
-    abweichender Name übergeben werden. Dieser Name ist bei Aufruf von "GetInstance"
-    und "ReleaseInstance" wieder zu verwenden.
+During program execution, a reference to the instance can be obtained via
+"GetInstance" and parameters can be changed or log outputs can be made in the
+trace method file.
 
-    Hat man keinen Einfluss auf den Programmstart, programmiert PlugIn Dlls und
-    weiss nicht, ob nicht auch an anderer Stelle der Trace Server verwendet wird,
-    muss der Zugriff auf die Trace Server über Referenzzähler kontrolliert werden.
-    Deshalb besteht die Möglichkeit bei Aufruf von "CreateInstance" das
-    Flag "CreateOnlyIfNotYetExisting" zu übergeben.
+Before exiting the application, the Trace Server instance must be deleted again
+with "ReleaseInstance".
 */
 class ZSSYSDLL_API CTrcServer : public QObject
 //******************************************************************************
@@ -289,7 +281,7 @@ protected: // class members
     static QHash<Qt::HANDLE, QString>  s_hshThreadNames; /*!< Hash with registered threads (key is thread id, value is name of thread). */
     static QHash<QString, Qt::HANDLE>  s_hshThreadIds;   /*!< Hash with registered threads (key name of thread, value is thread id). */
 protected: // instance members
-    mutable ZS::System::CMutex m_mtx;            /*!< Mutex to protect the instance members of the class for multithreaded access. */
+    mutable ZS::System::CMutex* m_pMtx;          /*!< Mutex to protect the instance members of the class for multithreaded access. */
     CIdxTreeTrcAdminObjs* m_pTrcAdminObjIdxTree; /*<! Index tree containg a hierarchically order tree of the trace admin objects. */
     STrcServerSettings    m_trcSettings;         /*<! Currently used trace settings. */
     CTrcMthFile*          m_pTrcMthFile;         /*<! Reference to local trace method file. */

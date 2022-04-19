@@ -29,8 +29,10 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 # _SourcePaths will be defined in the same way.
 set(_HeadersPath ${CMAKE_CURRENT_SOURCE_DIR}/../../../../Include/Apps/Test)
 set(_SourcesPath ${CMAKE_CURRENT_SOURCE_DIR}/../../../../Source/Apps/Test)
+set(_ResourcesPath ${CMAKE_CURRENT_SOURCE_DIR}/../../../../Resources/Apps/Test)
 
 list(APPEND _Headers
+    ${_HeadersPath}/../../Libs/ZSSys/ZSSysVersion.h
     ${_HeadersPath}/ZSIpc/App.h
     ${_HeadersPath}/ZSIpc/MainWindow.h
     ${_HeadersPath}/ZSIpc/WidgetCentral.h
@@ -45,31 +47,35 @@ list(APPEND _Sources
     ${_SourcesPath}/ZSIpc/Test.cpp
 )
 
+list(APPEND _Resources
+)
+
 if(WIN32)
     # Add version info as meta information to exe.
-    set(_Sources ${_Sources} ${CMAKE_CURRENT_BINARY_DIR}/../../../Libs/ZSSys/ZSSysVersion.rc)
+    set(_Resources ${_Resources} ${_ResourcesPath}/../../Libs/ZSSys/ZSSysVersion.rc)
 endif()
 
 # Got to create the following target name:
-# (ProjectName)[_d]
-# e.g.: "ZSAppTestIpc_d"
+# (ProjectName)[d]
+# e.g.: "ZSAppTestIpcd"
 set(TargetOutputName ${PROJECT_NAME})
 if(CMAKE_BUILD_TYPE MATCHES Debug)
-    set(TargetOutputName ${TargetOutputName}_d)
+    set(TargetOutputName ${TargetOutputName}d)
 endif()
 message(STATUS "TargetOutputName:         ${TargetOutputName}")
 
 if(WIN32)
-    add_executable(${PROJECT_NAME} WIN32 ${_Headers} ${_Sources})
+    add_executable(${PROJECT_NAME} WIN32 ${_Headers} ${_Sources} ${_Resources})
 else()
-    add_executable(${PROJECT_NAME} ${_Headers} ${_Sources})
+    add_executable(${PROJECT_NAME} ${_Headers} ${_Sources} ${_Resources})
 endif()
 
 set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME ${TargetOutputName})
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER Tests)
 
-source_group(TREE ${_HeadersPath}/${PROJECT_NAME} PREFIX "Header Files" FILES ${_Headers})
-source_group(TREE ${_SourcesPath}/${PROJECT_NAME} PREFIX "Source Files" FILES ${_Sources})
+source_group("Header Files" FILES ${_Headers})
+source_group("Source Files" FILES ${_Sources})
+source_group("Resource Files" FILES ${_Resources})
 
 target_include_directories(${PROJECT_NAME}
     PRIVATE ${CMAKE_SOURCE_DIR}/../Include/Apps/Test/ZSIpc)

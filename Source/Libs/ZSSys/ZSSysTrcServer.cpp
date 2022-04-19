@@ -525,7 +525,7 @@ protected: // ctors and dtor
 CTrcServer::CTrcServer( int i_iTrcDetailLevel ) :
 //------------------------------------------------------------------------------
     QObject(),
-    m_mtx(QMutex::Recursive, "ZS::Trace::CTrcServer", i_iTrcDetailLevel),
+    m_pMtx(nullptr),
     m_pTrcAdminObjIdxTree(nullptr),
     m_trcSettings(),
     m_pTrcMthFile(nullptr),
@@ -548,6 +548,8 @@ CTrcServer::CTrcServer( int i_iTrcDetailLevel ) :
         /* strObjName         */ objectName(),
         /* strMethod          */ "ctor",
         /* strMthInArgs       */ "" );
+
+    m_pMtx = new CMutex(QMutex::Recursive, "ZS::Trace::CTrcServer", i_iTrcDetailLevel),
 
     // Create index tree of trace admin objects. Pass the server as the parent object.
     // If the parent object is the trace server the index tree will not create a trace
@@ -592,8 +594,16 @@ CTrcServer::~CTrcServer()
         }
     } // CMethodTracer mthTracer(
 
-    // Delete the trace method file after the index tree as the
-    // index tree may use the trace method file for method tracing.
+    try
+    {
+        delete m_pMtx;
+    }
+    catch(...)
+    {
+    }
+
+    // Delete the trace method file after the index tree and after the mutex
+    // as both may use the trace method file for method tracing.
     if( m_pTrcMthFile != nullptr )
     {
         m_pTrcMthFile->close();
@@ -616,7 +626,7 @@ public: // instance methods
 CIdxTreeTrcAdminObjs* CTrcServer::getTraceAdminObjIdxTree()
 //------------------------------------------------------------------------------
 {
-    CMutexLocker mtxLocker(&m_mtx);
+    CMutexLocker mtxLocker(m_pMtx);
     return m_pTrcAdminObjIdxTree;
 }
 
@@ -651,7 +661,7 @@ CTrcAdminObj* CTrcServer::getTraceAdminObj(
         /* strMethod          */ "getTraceAdminObj",
         /* strMthInArgs       */ strMthInArgs );
 
-    CMutexLocker mtxLocker(&m_mtx);
+    CMutexLocker mtxLocker(m_pMtx);
 
     CTrcAdminObj* pTrcAdminObj = nullptr;
 
@@ -721,7 +731,7 @@ CTrcAdminObj* CTrcServer::getTraceAdminObj(
         /* strMethod          */ "getTraceAdminObj",
         /* strMthInArgs       */ strMthInArgs );
 
-    CMutexLocker mtxLocker(&m_mtx);
+    CMutexLocker mtxLocker(m_pMtx);
 
     CTrcAdminObj* pTrcAdminObj = nullptr;
 
@@ -799,7 +809,7 @@ void CTrcServer::releaseTraceAdminObj( CTrcAdminObj* i_pTrcAdminObj )
         /* strMethod          */ "releaseTraceAdminObj",
         /* strMthInArgs       */ strMthInArgs );
 
-    CMutexLocker mtxLocker(&m_mtx);
+    CMutexLocker mtxLocker(m_pMtx);
 
     if( i_pTrcAdminObj != nullptr )
     {
@@ -916,7 +926,7 @@ void CTrcServer::traceMethodEnter(
     const QString&      i_strMethodInArgs )
 //------------------------------------------------------------------------------
 {
-    CMutexLocker mtxLocker(&m_mtx);
+    CMutexLocker mtxLocker(m_pMtx);
 
     if( i_pTrcAdminObj != nullptr && (i_pTrcAdminObj->getTraceDetailLevel() > ETraceDetailLevelNone) && isEnabled() && isActive() )
     {
@@ -942,7 +952,7 @@ void CTrcServer::traceMethodEnter(
     const QString&      i_strMethodInArgs )
 //------------------------------------------------------------------------------
 {
-    CMutexLocker mtxLocker(&m_mtx);
+    CMutexLocker mtxLocker(m_pMtx);
 
     if( i_pTrcAdminObj != nullptr && (i_pTrcAdminObj->getTraceDetailLevel() > ETraceDetailLevelNone) && isEnabled() && isActive() )
     {
@@ -967,7 +977,7 @@ void CTrcServer::traceMethod(
     const QString&      i_strAddInfo )
 //------------------------------------------------------------------------------
 {
-    CMutexLocker mtxLocker(&m_mtx);
+    CMutexLocker mtxLocker(m_pMtx);
 
     if( i_pTrcAdminObj != nullptr && (i_pTrcAdminObj->getTraceDetailLevel() > ETraceDetailLevelNone) && isEnabled() && isActive() )
     {
@@ -993,7 +1003,7 @@ void CTrcServer::traceMethod(
     const QString&      i_strAddInfo )
 //------------------------------------------------------------------------------
 {
-    CMutexLocker mtxLocker(&m_mtx);
+    CMutexLocker mtxLocker(m_pMtx);
 
     if( i_pTrcAdminObj != nullptr && (i_pTrcAdminObj->getTraceDetailLevel() > ETraceDetailLevelNone) && isEnabled() && isActive() )
     {
@@ -1033,7 +1043,7 @@ void CTrcServer::traceMethodLeave(
     const QString&      i_strMethodOutArgs )
 //------------------------------------------------------------------------------
 {
-    CMutexLocker mtxLocker(&m_mtx);
+    CMutexLocker mtxLocker(m_pMtx);
 
     if( i_pTrcAdminObj != nullptr && (i_pTrcAdminObj->getTraceDetailLevel() > ETraceDetailLevelNone) && isEnabled() && isActive() )
     {
@@ -1061,7 +1071,7 @@ void CTrcServer::traceMethodLeave(
     const QString&      i_strMethodOutArgs )
 //------------------------------------------------------------------------------
 {
-    CMutexLocker mtxLocker(&m_mtx);
+    CMutexLocker mtxLocker(m_pMtx);
 
     if( i_pTrcAdminObj != nullptr && (i_pTrcAdminObj->getTraceDetailLevel() > ETraceDetailLevelNone) && isEnabled() && isActive() )
     {
@@ -1093,7 +1103,7 @@ void CTrcServer::traceMethodEnter(
     const QString& i_strMethodInArgs )
 //------------------------------------------------------------------------------
 {
-    CMutexLocker mtxLocker(&m_mtx);
+    CMutexLocker mtxLocker(m_pMtx);
 
     if( isEnabled() && isActive() )
     {
@@ -1120,7 +1130,7 @@ void CTrcServer::traceMethod(
     const QString& i_strAddInfo )
 //------------------------------------------------------------------------------
 {
-    CMutexLocker mtxLocker(&m_mtx);
+    CMutexLocker mtxLocker(m_pMtx);
 
     if( isEnabled() && isActive() )
     {
@@ -1148,7 +1158,7 @@ void CTrcServer::traceMethodLeave(
     const QString& i_strMethodOutArgs )
 //------------------------------------------------------------------------------
 {
-    CMutexLocker mtxLocker(&m_mtx);
+    CMutexLocker mtxLocker(m_pMtx);
 
     if( isEnabled() && isActive() )
     {
@@ -1175,7 +1185,7 @@ public: // overridables
 bool CTrcServer::isActive() const
 //------------------------------------------------------------------------------
 {
-    CMutexLocker mtxLocker(&m_mtx);
+    CMutexLocker mtxLocker(m_pMtx);
     return isLocalTrcFileActive();
 }
 
@@ -1187,7 +1197,7 @@ public: // overridables
 void CTrcServer::setEnabled( bool i_bEnabled )
 //------------------------------------------------------------------------------
 {
-    CMutexLocker mtxLocker(&m_mtx);
+    CMutexLocker mtxLocker(m_pMtx);
 
     if( i_bEnabled != m_trcSettings.m_bEnabled )
     {
@@ -1207,7 +1217,7 @@ void CTrcServer::setEnabled( bool i_bEnabled )
 bool CTrcServer::isEnabled() const
 //------------------------------------------------------------------------------
 {
-    CMutexLocker mtxLocker(&m_mtx);
+    CMutexLocker mtxLocker(m_pMtx);
     return m_trcSettings.m_bEnabled;
 }
 
@@ -1236,7 +1246,7 @@ void CTrcServer::setNewTrcAdminObjsEnabledAsDefault( bool i_bEnabled )
         /* strMethod          */ "setNewTrcAdminObjsEnabledAsDefault",
         /* strMthInArgs       */ strMthInArgs );
 
-    CMutexLocker mtxLocker(&m_mtx);
+    CMutexLocker mtxLocker(m_pMtx);
 
     if( m_trcSettings.m_bNewTrcAdminObjsEnabledAsDefault != i_bEnabled )
     {
@@ -1251,7 +1261,7 @@ void CTrcServer::setNewTrcAdminObjsEnabledAsDefault( bool i_bEnabled )
 bool CTrcServer::areNewTrcAdminObjsEnabledAsDefault() const
 //------------------------------------------------------------------------------
 {
-    CMutexLocker mtxLocker(&m_mtx);
+    CMutexLocker mtxLocker(m_pMtx);
     return m_trcSettings.m_bNewTrcAdminObjsEnabledAsDefault;
 }
 
@@ -1276,7 +1286,7 @@ void CTrcServer::setNewTrcAdminObjsDefaultDetailLevel( int i_iDetailLevel )
         /* strMethod          */ "setNewTrcAdminObjsDefaultDetailLevel",
         /* strMthInArgs       */ strMthInArgs );
 
-    CMutexLocker mtxLocker(&m_mtx);
+    CMutexLocker mtxLocker(m_pMtx);
 
     if( m_trcSettings.m_iNewTrcAdminObjsDefaultDetailLevel != i_iDetailLevel )
     {
@@ -1291,7 +1301,7 @@ void CTrcServer::setNewTrcAdminObjsDefaultDetailLevel( int i_iDetailLevel )
 int CTrcServer::getNewTrcAdminObjsDefaultDetailLevel() const
 //------------------------------------------------------------------------------
 {
-    CMutexLocker mtxLocker(&m_mtx);
+    CMutexLocker mtxLocker(m_pMtx);
     return m_trcSettings.m_iNewTrcAdminObjsDefaultDetailLevel;
 }
 
@@ -1303,7 +1313,7 @@ public: // overridables
 void CTrcServer::setAdminObjFileAbsoluteFilePath( const QString& i_strAbsFilePath )
 //------------------------------------------------------------------------------
 {
-    CMutexLocker mtxLocker(&m_mtx);
+    CMutexLocker mtxLocker(m_pMtx);
 
     if( m_trcSettings.m_strAdminObjFileAbsFilePath != i_strAbsFilePath )
     {
@@ -1318,7 +1328,7 @@ void CTrcServer::setAdminObjFileAbsoluteFilePath( const QString& i_strAbsFilePat
 QString CTrcServer::getAdminObjFileAbsoluteFilePath() const
 //------------------------------------------------------------------------------
 {
-    CMutexLocker mtxLocker(&m_mtx);
+    CMutexLocker mtxLocker(m_pMtx);
     return m_trcSettings.m_strAdminObjFileAbsFilePath;
 }
 
@@ -1343,7 +1353,7 @@ SErrResultInfo CTrcServer::recallAdminObjs( const QString& i_strAbsFilePath )
         /* strMethod          */ "recallAdminObjs",
         /* strMthInArgs       */ strMthInArgs );
 
-    CMutexLocker mtxLocker(&m_mtx);
+    CMutexLocker mtxLocker(m_pMtx);
 
     if( !i_strAbsFilePath.isEmpty() && m_trcSettings.m_strAdminObjFileAbsFilePath != i_strAbsFilePath )
     {
@@ -1384,7 +1394,7 @@ SErrResultInfo CTrcServer::saveAdminObjs( const QString& i_strAbsFilePath )
         /* strMethod          */ "recallAdminObjs",
         /* strMthInArgs       */ strMthInArgs );
 
-    CMutexLocker mtxLocker(&m_mtx);
+    CMutexLocker mtxLocker(m_pMtx);
 
     if( !i_strAbsFilePath.isEmpty() && m_trcSettings.m_strAdminObjFileAbsFilePath != i_strAbsFilePath )
     {
@@ -1411,7 +1421,7 @@ public: // overridables
 void CTrcServer::setUseLocalTrcFile( bool i_bUse )
 //------------------------------------------------------------------------------
 {
-    CMutexLocker mtxLocker(&m_mtx);
+    CMutexLocker mtxLocker(m_pMtx);
 
     if( m_trcSettings.m_bUseLocalTrcFile != i_bUse )
     {
@@ -1431,7 +1441,7 @@ void CTrcServer::setUseLocalTrcFile( bool i_bUse )
 bool CTrcServer::isLocalTrcFileUsed() const
 //------------------------------------------------------------------------------
 {
-    CMutexLocker mtxLocker(&m_mtx);
+    CMutexLocker mtxLocker(m_pMtx);
     return m_trcSettings.m_bUseLocalTrcFile;
 }
 
@@ -1439,7 +1449,7 @@ bool CTrcServer::isLocalTrcFileUsed() const
 void CTrcServer::setLocalTrcFileAbsoluteFilePath( const QString& i_strAbsFilePath )
 //------------------------------------------------------------------------------
 {
-    CMutexLocker mtxLocker(&m_mtx);
+    CMutexLocker mtxLocker(m_pMtx);
 
     if( m_trcSettings.m_strLocalTrcFileAbsFilePath != i_strAbsFilePath )
     {
@@ -1458,7 +1468,7 @@ void CTrcServer::setLocalTrcFileAbsoluteFilePath( const QString& i_strAbsFilePat
 QString CTrcServer::getLocalTrcFileAbsoluteFilePath() const
 //------------------------------------------------------------------------------
 {
-    CMutexLocker mtxLocker(&m_mtx);
+    CMutexLocker mtxLocker(m_pMtx);
     return m_trcSettings.m_strLocalTrcFileAbsFilePath;
 }
 
@@ -1466,7 +1476,7 @@ QString CTrcServer::getLocalTrcFileAbsoluteFilePath() const
 QString CTrcServer::getLocalTrcFileCompleteBaseName() const
 //------------------------------------------------------------------------------
 {
-    CMutexLocker mtxLocker(&m_mtx);
+    CMutexLocker mtxLocker(m_pMtx);
 
     QString strBaseName;
 
@@ -1482,7 +1492,7 @@ QString CTrcServer::getLocalTrcFileCompleteBaseName() const
 QString CTrcServer::getLocalTrcFileAbsolutePath() const
 //------------------------------------------------------------------------------
 {
-    CMutexLocker mtxLocker(&m_mtx);
+    CMutexLocker mtxLocker(m_pMtx);
 
     QString strAbsPath;
 
@@ -1498,7 +1508,7 @@ QString CTrcServer::getLocalTrcFileAbsolutePath() const
 bool CTrcServer::isLocalTrcFileActive() const
 //------------------------------------------------------------------------------
 {
-    CMutexLocker mtxLocker(&m_mtx);
+    CMutexLocker mtxLocker(m_pMtx);
     return (m_trcSettings.m_bUseLocalTrcFile && m_pTrcMthFile != nullptr);
 }
 
@@ -1506,7 +1516,7 @@ bool CTrcServer::isLocalTrcFileActive() const
 CTrcMthFile* CTrcServer::getLocalTrcFile()
 //------------------------------------------------------------------------------
 {
-    CMutexLocker mtxLocker(&m_mtx);
+    CMutexLocker mtxLocker(m_pMtx);
     return m_pTrcMthFile;
 }
 
@@ -1514,7 +1524,7 @@ CTrcMthFile* CTrcServer::getLocalTrcFile()
 void CTrcServer::setLocalTrcFileAutoSaveIntervalInMs( int i_iAutoSaveInterval_ms )
 //------------------------------------------------------------------------------
 {
-    CMutexLocker mtxLocker(&m_mtx);
+    CMutexLocker mtxLocker(m_pMtx);
 
     if( m_trcSettings.m_iLocalTrcFileAutoSaveInterval_ms != i_iAutoSaveInterval_ms )
     {
@@ -1533,7 +1543,7 @@ void CTrcServer::setLocalTrcFileAutoSaveIntervalInMs( int i_iAutoSaveInterval_ms
 int CTrcServer::getLocalTrcFileAutoSaveIntervalInMs() const
 //------------------------------------------------------------------------------
 {
-    CMutexLocker mtxLocker(&m_mtx);
+    CMutexLocker mtxLocker(m_pMtx);
     return m_trcSettings.m_iLocalTrcFileAutoSaveInterval_ms;
 }
 
@@ -1541,7 +1551,7 @@ int CTrcServer::getLocalTrcFileAutoSaveIntervalInMs() const
 void CTrcServer::setLocalTrcFileCloseFileAfterEachWrite( bool i_bCloseFile )
 //------------------------------------------------------------------------------
 {
-    CMutexLocker mtxLocker(&m_mtx);
+    CMutexLocker mtxLocker(m_pMtx);
 
     if( m_trcSettings.m_bLocalTrcFileCloseFileAfterEachWrite != i_bCloseFile )
     {
@@ -1564,7 +1574,7 @@ void CTrcServer::setLocalTrcFileCloseFileAfterEachWrite( bool i_bCloseFile )
 bool CTrcServer::getLocalTrcFileCloseFileAfterEachWrite() const
 //------------------------------------------------------------------------------
 {
-    CMutexLocker mtxLocker(&m_mtx);
+    CMutexLocker mtxLocker(m_pMtx);
     return m_trcSettings.m_bLocalTrcFileCloseFileAfterEachWrite;
 }
 
@@ -1576,7 +1586,7 @@ public: // overridables
 void CTrcServer::setLocalTrcFileSubFileCountMax( int i_iCountMax )
 //------------------------------------------------------------------------------
 {
-    CMutexLocker mtxLocker(&m_mtx);
+    CMutexLocker mtxLocker(m_pMtx);
 
     if( m_trcSettings.m_iLocalTrcFileSubFileCountMax != i_iCountMax )
     {
@@ -1595,7 +1605,7 @@ void CTrcServer::setLocalTrcFileSubFileCountMax( int i_iCountMax )
 int CTrcServer::getLocalTrcFileSubFileCountMax() const
 //------------------------------------------------------------------------------
 {
-    CMutexLocker mtxLocker(&m_mtx);
+    CMutexLocker mtxLocker(m_pMtx);
     return m_trcSettings.m_iLocalTrcFileSubFileCountMax;
 }
 
@@ -1603,7 +1613,7 @@ int CTrcServer::getLocalTrcFileSubFileCountMax() const
 void CTrcServer::setLocalTrcFileSubFileLineCountMax( int i_iCountMax )
 //------------------------------------------------------------------------------
 {
-    CMutexLocker mtxLocker(&m_mtx);
+    CMutexLocker mtxLocker(m_pMtx);
 
     if( m_trcSettings.m_iLocalTrcFileSubFileLineCountMax != i_iCountMax )
     {
@@ -1622,7 +1632,7 @@ void CTrcServer::setLocalTrcFileSubFileLineCountMax( int i_iCountMax )
 int CTrcServer::getLocalTrcFileSubFileLineCountMax() const
 //------------------------------------------------------------------------------
 {
-    CMutexLocker mtxLocker(&m_mtx);
+    CMutexLocker mtxLocker(m_pMtx);
     return m_trcSettings.m_iLocalTrcFileSubFileLineCountMax;
 }
 
@@ -1634,7 +1644,7 @@ public: // overridables
 void CTrcServer::setCacheTrcDataIfNotConnected( bool i_bCacheData )
 //------------------------------------------------------------------------------
 {
-    CMutexLocker mtxLocker(&m_mtx);
+    CMutexLocker mtxLocker(m_pMtx);
 
     if( m_trcSettings.m_bCacheDataIfNotConnected != i_bCacheData )
     {
@@ -1649,7 +1659,7 @@ void CTrcServer::setCacheTrcDataIfNotConnected( bool i_bCacheData )
 bool CTrcServer::getCacheTrcDataIfNotConnected() const
 //------------------------------------------------------------------------------
 {
-    CMutexLocker mtxLocker(&m_mtx);
+    CMutexLocker mtxLocker(m_pMtx);
     return m_trcSettings.m_bCacheDataIfNotConnected;
 }
 
@@ -1657,7 +1667,7 @@ bool CTrcServer::getCacheTrcDataIfNotConnected() const
 void CTrcServer::setCacheTrcDataMaxArrLen( int i_iMaxArrLen )
 //------------------------------------------------------------------------------
 {
-    CMutexLocker mtxLocker(&m_mtx);
+    CMutexLocker mtxLocker(m_pMtx);
 
     if( m_trcSettings.m_iCacheDataMaxArrLen != i_iMaxArrLen )
     {
@@ -1672,7 +1682,7 @@ void CTrcServer::setCacheTrcDataMaxArrLen( int i_iMaxArrLen )
 int CTrcServer::getCacheTrcDataMaxArrLen() const
 //------------------------------------------------------------------------------
 {
-    CMutexLocker mtxLocker(&m_mtx);
+    CMutexLocker mtxLocker(m_pMtx);
     return m_trcSettings.m_iCacheDataMaxArrLen;
 }
 
@@ -1684,7 +1694,7 @@ public: // instance methods (trace settings)
 void CTrcServer::setTraceSettings( const STrcServerSettings& i_settings )
 //------------------------------------------------------------------------------
 {
-    CMutexLocker mtxLocker(&m_mtx);
+    CMutexLocker mtxLocker(m_pMtx);
 
     if( m_trcSettings != i_settings )
     {
@@ -1779,7 +1789,7 @@ void CTrcServer::setTraceSettings( const STrcServerSettings& i_settings )
 STrcServerSettings CTrcServer::getTraceSettings() const
 //------------------------------------------------------------------------------
 {
-    CMutexLocker mtxLocker(&m_mtx);
+    CMutexLocker mtxLocker(m_pMtx);
     return m_trcSettings;
 }
 
@@ -1815,7 +1825,7 @@ void CTrcServer::addEntry(
     const QString&         i_strMethodOutArgs )
 //------------------------------------------------------------------------------
 {
-    CMutexLocker mtxLocker(&m_mtx);
+    CMutexLocker mtxLocker(m_pMtx);
 
     if( m_trcSettings.m_bUseLocalTrcFile && m_pTrcMthFile != nullptr )
     {

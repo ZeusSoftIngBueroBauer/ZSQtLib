@@ -3,7 +3,7 @@
 Trace admin objects control what is traced and how.
 
 A trace admin object can be associated with one or more modules, one or more
-classes, or one or more instances of a class.
+classes, or one or all instances of a class.
 
 **Class and Module Tracer**
 
@@ -16,10 +16,10 @@ Trace Server.
 You cannot instantiate the trace admin object as a member by value as the order
 in which static variables are initilized is undefined. And the trace admin object
 can only be registered with the trace server if the trace server already exists.
-This means that the trace admin object must created on the heap at runtime after
+This means that the trace admin object must be created on the heap at runtime after
 the trace server has been created.
 
-So cannot define a static class variable like this:
+So you cannot define a static class variable like this:
 
     class CMyClass1
     {
@@ -69,9 +69,6 @@ E.g. in the constructor the class trace admin object is created if not existing 
 the reference counter is incremented. In the destructor the reference counter
 is decremented and if the reference counter reaches 0 the trace server is informed
 that the trace admin object is no longer needed.
-
-Using a reference counter for the static trace admin object of the class
-implies the following:
 
 The two classes `CTrcAdminObjRefAnchor` and the guard class `CTrcAdminObjRefGuard`
 have been invented to help you realizing the reference counting.
@@ -179,13 +176,26 @@ To ensure that during shutdown no trace admin objects are accessed which have
 already been destroyed the trace server should be deleted after all classes
 have been destroyed referencing trace admin objects.
 
+Special care has to be taken when instantiating classes on the stack of the
+'main' routine. If those classes would use trace admin objects they would
+access the trace admin object after the trace server has been destroyed.
+And if the trace server is destroyed also all trace admin objects will be
+destroyed. So the class would access an already deleted object.
+
+The same applies if the trace server is created in the constructor of the
+class dervied from 'QCoreApplication'. Don't create members by value if they
+use trace admin objects. You need to create them on the heap and destroy
+those instances before the trace server is destroyed.
+
 **Instance Tracer**
 
 As already mentioned, a trace admin object can also be used to limit the output
-to individual instances of a class.
+to individual instances of a class. For this each instance should get a unique
+object name.
 
-However, this only makes sense if only a few instances of a class are created,
-as is the case for a server or client, for example.
+In order not to lose the overview if many instances of the class are created during
+runtime you may logically group the instances by their names. E.g. you may name an
+instance 'MainPath::SubPath::ObjectName' (e.g. 'Sound::Level::Max').
 
 To do this, an instance variable must be created and registered with the
 Trace Server.
@@ -241,16 +251,14 @@ You may combine several class tracers and instance tracers per class.
 If you want to trace not always all methods of a class because you have
 some interesting methods and others, which are invoked very often and just
 would produce too many noise, you could use several class tracers to filter
-the output for those methods. 'paint' methods of the QWidget class are methods
-which may produce too much noise if you would trace them always. But if you
-want to search for problems concerning the paint method you may wish to activate
-tracing for this method.
+the output for those methods. 'paint' or 'update' methods of the QWidget
+class are methods which may produce too much noise if you would trace them
+always. But if you want to search for problems concerning those noisy methods
+you may wish to activate tracing for those methods.
 
 But each trace admin objects must have a unique name and as only a namespace and
 the class name may be assigned to class tracers using the anchor and anchor guard
 class artificial names must be invented for subclasses.
-
-Like `CMyClass3::InterestingMethods` and `CMyClass3::DrawMethods`:
 
 Header File:
 
@@ -367,22 +375,22 @@ Usage:
 There may be classes whose trace output should be checked for each instance.
 However, since there will be many of these instances distributed throughout the system,
 it will be difficult to find unique object names for these instances.
-On the other hand, you don't want to control these instances on their own, but want to
-treat them as children of objects from other classes.
 
-A good use case for this would be e.g. Mutex and WaitConditions. The Trace Admin objects
-to control the trace output of the mutex or wait condition should appear below the classes
-using those mutex and wait conditions.
+A good use case for this would be e.g. Mutex and WaitConditions.
 
 The prerequisite is, of course, that the classes support method tracing. Within the ZSQtLib,
-in the NameSpace ZS::System wrappers were implemented around the classes QMutex, QMutexLocker
-and QWaitCondition, to whose constructors an instance of a Trace Admin object can be passed.
-This allows one to locate race conditions or deadlocks associated with these classes by
-inspecting the trace output.
+in the name space 'ZS::System' wrappers were implemented around the classes QMutex, QMutexLocker
+and QWaitCondition. This allows one to locate race conditions or deadlocks associated with
+these classes by inspecting the trace output.
 
-On the one hand, this makes it easier to find them in the Trace Admin object tree and,
-on the other hand, it is easier to find a unique name for these objects, since these
-names then only have to be unique within the higher-level classes.
+As a recommendation extend the object name of the mutexes and wait condition with the
+name space, class name and object of the class instance creating the mutex or wait condition
+and add their usages.
+
+Example:
+
+    m_pMtxWaitClass2ThreadRunning = new CMutex(ClassName() + "::" + i_strObjName + "::WaitClass2ThreadRunning");
+    m_pWaitClass2ThreadRunning = new CWaitCondition(ClassName() + "::" + i_strObjName + "::Class2ThreadRunning");
 
 Header File:
 
@@ -397,9 +405,6 @@ Header File:
         ZS::System::CMutex*         m_pMtxWaitClass3ThreadRunning;
         ZS::System::CWaitCondition* m_pWaitClass3ThreadRunning;
         ZS::Trace::CTrcAdminObj*    m_pTrcAdminObj;
-        ZS::Trace::CTrcAdminObj*    m_pTrcAdminObjMutexCounters;
-        ZS::Trace::CTrcAdminObj*    m_pTrcAdminObjMutexWaitClass3ThreadRunning;
-        ZS::Trace::CTrcAdminObj*    m_pTrcAdminObjWaitConditionClass3ThreadRunning;
     };
 
 Source File:
@@ -411,19 +416,13 @@ Source File:
 
         m_pTrcAdminObj =
             CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName());
-        m_pTrcAdminObjMutexCounters = CTrcServer::GetTraceAdminObj(
-            NameSpace(), ClassName(), objectName() + "::CMutex::Counters", getTraceServerName());
-        m_pTrcAdminObjMutexWaitClass3ThreadRunning = CTrcServer::GetTraceAdminObj(
-            NameSpace(), ClassName(), objectName() + "::CMutex::WaitClass3ThreadRunning", getTraceServerName());
-        m_pTrcAdminObjWaitConditionClass3ThreadRunning = CTrcServer::GetTraceAdminObj(
-            NameSpace(), ClassName(), objectName() + "::CWaitCondition::Class3ThreadRunning", getTraceServerName());
 
         m_pMtxCounters = new CMutex(
-            QMutex::Recursive, i_strObjName + "::CMutex::Counters", m_pTrcAdminObjMutexCounters);
+            QMutex::Recursive, ClassName() + "::" + i_strObjName + "::Counters");
         m_pMtxWaitClass3ThreadRunning = new CMutex(
-            i_strObjName + "::CMutex::WaitClass3ThreadRunning", m_pTrcAdminObjMutexWaitClass3ThreadRunning);
+            ClassName() + "::" + i_strObjName + "::WaitClass3ThreadRunning");
         m_pWaitClass3ThreadRunning = new CWaitCondition(
-            i_strObjName + "::CWaitCondition::Class3ThreadRunning", m_pTrcAdminObjWaitConditionClass3ThreadRunning);
+            ClassName() + "::" + i_strObjName + "::Class3ThreadRunning");
     }
 
 **Summary**
@@ -431,4 +430,10 @@ Source File:
 If you have created all trace admin objects as described in the examples above, you will get a tree with
 the following structure.
 
-![TraceAdminObjectsTree](ZSIpcTrace/TraceAdminObjectsTree.png)
+**Mutexes and Wait Conditions:**
+
+![Mutexes and Wait Conditions](ZSIpcTrace/TraceAdminObjectsTree-MutexAndWaitConditions.png)
+
+**Classes to be Investigated**
+
+![Classes to be investigated](ZSIpcTrace/TraceAdminObjectsTree-ClassesToBeInvestigated.png)

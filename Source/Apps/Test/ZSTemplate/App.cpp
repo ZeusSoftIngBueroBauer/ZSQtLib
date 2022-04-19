@@ -98,14 +98,20 @@ CApplication::CApplication(
 
     QIcon iconApp;
 
-    QPixmap pxmApp16x16(":/ZS/App/Zeus16x16.bmp");
-    QPixmap pxmApp32x32(":/ZS/App/Zeus32x32.bmp");
+    QPixmap pxmApp16x16(":/ZS/App/ZeusSoft_16x16.bmp");
+    QPixmap pxmApp32x32(":/ZS/App/ZeusSoft_32x32.bmp");
+    QPixmap pxmApp48x48(":/ZS/App/ZeusSoft_48x48.bmp");
+    QPixmap pxmApp64x64(":/ZS/App/ZeusSoft_64x64.bmp");
 
     pxmApp16x16.setMask(pxmApp16x16.createHeuristicMask());
     pxmApp32x32.setMask(pxmApp32x32.createHeuristicMask());
+    pxmApp48x48.setMask(pxmApp48x48.createHeuristicMask());
+    pxmApp64x64.setMask(pxmApp64x64.createHeuristicMask());
 
     iconApp.addPixmap(pxmApp16x16);
     iconApp.addPixmap(pxmApp32x32);
+    iconApp.addPixmap(pxmApp48x48);
+    iconApp.addPixmap(pxmApp64x64);
 
     QApplication::setWindowIcon(iconApp);
 

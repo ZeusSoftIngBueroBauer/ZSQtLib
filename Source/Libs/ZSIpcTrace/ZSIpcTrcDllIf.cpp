@@ -241,26 +241,6 @@ Exported methods
 
     @ingroup _GRP_Namespace_ZS_Trace_DllIf
 
-    @param i_szCompiler [in] Spezifies the used compiler.
-           Default: nullptr
-           For Visual Studio Compilers this parameter is automatically detected
-           and the macro COMPILERLIBINFIX is set via "ZSIpcTrcDllIf.h" to e.g.
-           "msvc2013" by evaluating the preprozessor define _MSC_VER.
-           If nullptr is passed  the automatically detected COMPILERLIBINFIX is used.
-           This parameter must correspond to the compilier lib-infix
-           as used when compiling and linking the ZSQtLib-Dlls and may also
-           be an empty string e.g. on linux machines.
-
-    @param i_szPlatform [in] Spezifies the used platform.
-           Default: nullptr
-           For Visual Studio Compilers this parameter is automatically detected
-           and the macro PLATFORMLIBINFIX is set via "ZSIpcTrcDllIf.h" to e.g.
-           "x64" or "Win32" by evaluating the preprozessor define _WIN64.
-           If nullptr is passed  the automatically detected PLATFORMLIBINFIX is used.
-           The parameter must correspond to the platform lib-infix
-           as used when compiling and linking the ZSQtLib-Dlls and may also
-           be an empty string e.g. on linux machines.
-
     @param i_configuration [in] Spezifies the build configuration.
            Default: EBuildConfigurationAutoDetect
            The parameter defines the lib infix for the ZSQtLib Dlls used by
@@ -285,36 +265,18 @@ Exported methods
             needed expertod method could be resolved.
             false, in case of an error.
 
-    @note Moegliche Ursachen dafuer, dass die Dlls nicht geladen werden konnten, sind:
-          - Dlls wurden nicht gefunden
-            - Ggf. PATH erweitern, so dass das Betriebssystem die Dlls finden koennen.
-            - Dateinamen sind nicht korrekt (alle Lib-Infixes pruefen).
-          - Incompatible Versionen (x64/Win32, Qt Version 4 statt 5, etc.).
-          - Qt Dlls konnten nicht geladen werden
-            - Wurden die Qt Dlls ggf. mit einem LibInfix compiliert?
-            - Kann das Betriebssystem die Qt-Dlls finden?
+    @note Possible reasons why the dlls could not be loaded are:
+          - Dlls were not found
+            - If necessary, expand PATH so that the operating system can find the Dlls.
+            - File names are not correct (check all lib infixes).
+          - Incompatible Versions (x64/Win32, Qt Version 4 statt 5, etc.).
+          - Qt dlls could not be loaded
+            - Were the Qt Dlls possibly compiled with a LibInfix?
+            - Can the operating system find the Qt dlls?
 */
-bool ZS::Trace::DllIf::loadDll(
-    const char* i_szCompiler,
-    const char* i_szPlatform,
-    EBuildConfiguration i_configuration,
-    int i_iQtVersionMajor )
+bool ZS::Trace::DllIf::loadDll( EBuildConfiguration i_configuration, int i_iQtVersionMajor )
 //------------------------------------------------------------------------------
 {
-    const char* szCompiler = COMPILERLIBINFIX;
-
-    if( i_szCompiler != nullptr )
-    {
-        szCompiler = i_szCompiler;
-    }
-
-    const char* szPlatform = PLATFORMLIBINFIX;
-
-    if( i_szPlatform != nullptr )
-    {
-        szPlatform = i_szPlatform;
-    }
-
     const char* szConfig = CONFIGLIBINFIX;
 
     if( i_configuration == EBuildConfigurationRelease )
@@ -337,9 +299,8 @@ bool ZS::Trace::DllIf::loadDll(
     char* szError = nullptr;
 
     /* Examples for library file names:
-     *  "ZSIpcTraceQt5_msvc2015_x64_d"
-     *  "ZSIpcTraceQt5_mingw81_x64_d"
-     *  "libZSIpcTraceQt5_mingw81_x64_d"
+     *  "ZSIpcTraceQt5d"
+     *  "libZSIpcTraceQt5d"
      * The GNU compiler (MinGW on Windows) are inserting "lib"
      * at the beginning of the file names (also on Windows machines).
      * We are going to try both versions of file names.
@@ -359,7 +320,7 @@ bool ZS::Trace::DllIf::loadDll(
         delete s_szTrcDllFileName;
         s_szTrcDllFileName = nullptr;
 
-        size_t iStrLenDllFileName = strlen(szZSDllName) + strlen(szQtVersionMajor) + 1 + strlen(szCompiler) + 1 + strlen(szPlatform) + 1 + strlen(szConfig) + 4;
+        size_t iStrLenDllFileName = strlen(szZSDllName) + strlen(szQtVersionMajor) + strlen(szConfig) + 4;
         s_szTrcDllFileName = new char[iStrLenDllFileName+1];
         memset(s_szTrcDllFileName, 0x00, iStrLenDllFileName+1);
 
@@ -368,19 +329,9 @@ bool ZS::Trace::DllIf::loadDll(
         iStrPos += strlen(szZSDllName);
         memcpy(&s_szTrcDllFileName[iStrPos], szQtVersionMajor, strlen(szQtVersionMajor)); // "ZSIpcTraceQt5"
         iStrPos += strlen(szQtVersionMajor);
-        memcpy(&s_szTrcDllFileName[iStrPos], "_", 1);                                     // "ZSIpcTraceQt5_"
-        iStrPos += 1;
-        memcpy(&s_szTrcDllFileName[iStrPos], szCompiler, strlen(szCompiler));             // "ZSIpcTraceQt5_msvc2015"
-        iStrPos += strlen(szCompiler);
-        memcpy(&s_szTrcDllFileName[iStrPos], "_", 1);                                     // "ZSIpcTraceQt5_msvc2015_"
-        iStrPos += 1;
-        memcpy(&s_szTrcDllFileName[iStrPos], szPlatform, strlen(szPlatform));             // "ZSIpcTraceQt5_msvc2015_x64"
-        iStrPos += strlen(szPlatform);
         if( strlen(szConfig) > 0 )
         {
-            memcpy(&s_szTrcDllFileName[iStrPos], "_", 1);                                 // "ZSIpcTraceQt5_msvc2015_x64_"
-            iStrPos += 1;
-            memcpy(&s_szTrcDllFileName[iStrPos], szConfig, strlen(szConfig));             // "ZSIpcTraceQt5_msvc2015_x64_d"
+            memcpy(&s_szTrcDllFileName[iStrPos], szConfig, strlen(szConfig));             // "ZSIpcTraceQt5d"
             iStrPos += strlen(szConfig);
         }
 
@@ -392,7 +343,7 @@ bool ZS::Trace::DllIf::loadDll(
         s_hndIpcTrcDllIf = LoadLibrary(s_szTrcDllFileName);
         #endif
         #else // !_WIN32
-        memcpy(&s_szTrcDllFileName[iStrPos], ".so", 3);                                 // "ZSIpcTraceQt5_msvc2015_x64_d.so"
+        memcpy(&s_szTrcDllFileName[iStrPos], ".so", 3);                                 // "ZSIpcTraceQt5d.so"
         s_hndIpcTrcDllIf = dlopen(s_szTrcDllFileName, RTLD_LAZY);
         if( s_hndIpcTrcDllIf == NULL )
         {

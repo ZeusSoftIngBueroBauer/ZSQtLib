@@ -116,6 +116,7 @@ public: // instance methods
 protected slots: // connected to the signals of my user controls
     void onBtnClearClicked( bool i_bChecked );
     void onChkServerTracingEnabledToggled( bool i_bChecked );
+    void onBtnTrcAdminObjIdxTreeClicked( bool i_bChecked );
     void onBtnConnectClicked( bool i_bChecked );
 protected slots: // connected to the signals of the IPC client
     void onIpcClientConnected( QObject* i_pClient );
@@ -141,6 +142,7 @@ private: // instance members
     QPushButton*                      m_pBtnClear;
     QLabel*                           m_pLblServerTracingEnabled;
     QCheckBox*                        m_pChkServerTracingEnabled;
+    QPushButton*                      m_pBtnTrcAdminObjIdxTree;
     QPushButton*                      m_pBtnConnect;
     ZS::System::GUI::CProgressBar*    m_pProgressBarCnct;
 

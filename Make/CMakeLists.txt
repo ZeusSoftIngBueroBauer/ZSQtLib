@@ -7,17 +7,19 @@
 #
 # For more detailled build instructions see "README.md".
 #
+# cd into root directory of repository (one level below this main CMakeList file).
+#
 # Generator: Visual Studio 16 (2019)
 #
 # - Release Build
 #
-#   cmake -G "Visual Studio 16 2019" -A x64 .\Make -B .\Build\msvc2019_x64_Release -DCMAKE_CONFIGURATION_TYPES="Release" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=C:\Projekte\ZeusSoft\ZSQtLib\Bin
+#   cmake -G "Visual Studio 16 2019" -A x64 .\Make -B .\Build\msvc2019_x64_Release -DCMAKE_CONFIGURATION_TYPES="Release" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=".\Bin\msvc2019_x64"
 #   cmake --build .\Build\msvc2019_x64_Release --config=Release -j8
 #   cmake --install .\Build\msvc2019_x64_Release --config=Release
 #
 # - Debug Build
 #
-#   cmake -G "Visual Studio 16 2019" -A x64 .\Make -B .\Build\msvc2019_x64_Debug -DCMAKE_CONFIGURATION_TYPES="Debug" -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=C:\Projekte\ZeusSoft\ZSQtLib\Bin
+#   cmake -G "Visual Studio 16 2019" -A x64 .\Make -B .\Build\msvc2019_x64_Debug -DCMAKE_CONFIGURATION_TYPES="Debug" -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=".\Bin\msvc2019_x64"
 #   cmake --build .\Build\msvc2019_x64_Debug --config=Debug -j8
 #   cmake --install .\Build\msvc2019_x64_Debug --config=Debug
 #
@@ -25,13 +27,13 @@
 #
 # - Release Build
 #
-#   cmake -G "MinGW Makefiles" .\Make -B .\Build\mingw81_x64_Release -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=C:\Projekte\ZeusSoft\ZSQtLib\Bin
+#   cmake -G "MinGW Makefiles" .\Make -B .\Build\mingw81_x64_Release -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=".\Bin\mingw81_x64"
 #   cmake --build .\Build\mingw81_x64_Release -j8
 #   cmake --install .\Build\mingw81_x64_Release
 #
 # - Debug Build
 #
-#   cmake -G "MinGW Makefiles" .\Make -B .\Build\mingw81_x64_Debug -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=C:\Projekte\ZeusSoft\ZSQtLib\Bin
+#   cmake -G "MinGW Makefiles" .\Make -B .\Build\mingw81_x64_Debug -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=".\Bin\mingw81_x64"
 #   cmake --build .\Build\mingw81_x64_Debug -j8
 #   cmake --install .\Build\mingw81_x64_Debug
 #
@@ -105,6 +107,8 @@ message(STATUS "----------------------------------------------------------------
 message(STATUS "Processing: ${CMAKE_CURRENT_SOURCE_DIR}")
 message(STATUS "---------------------------------------------------------------------------------------------")
 
+message(STATUS "CMAKE_PREFIX_PATH:        ${CMAKE_PREFIX_PATH}")
+message(STATUS "CMAKE_INSTALL_PREFIX:     ${CMAKE_INSTALL_PREFIX}")
 message(STATUS "CMAKE_PROJECT_NAME:       ${CMAKE_PROJECT_NAME}")
 message(STATUS "CMAKE_SOURCE_DIR:         ${CMAKE_SOURCE_DIR}")
 message(STATUS "CMAKE_CURRENT_SOURCE_DIR: ${CMAKE_CURRENT_SOURCE_DIR}")

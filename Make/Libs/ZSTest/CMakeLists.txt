@@ -29,8 +29,10 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 # _SourcePaths will be defined in the same way.
 set(_HeadersPath ${CMAKE_CURRENT_SOURCE_DIR}/../../../Include/Libs)
 set(_SourcesPath ${CMAKE_CURRENT_SOURCE_DIR}/../../../Source/Libs)
+set(_ResourcesPath ${CMAKE_CURRENT_SOURCE_DIR}/../../../Resources/Libs)
 
 list(APPEND _Headers
+    ${_HeadersPath}/ZSSys/ZSSysVersion.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSTest.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSTestDllMain.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSTestStep.h
@@ -55,15 +57,15 @@ list(APPEND _Resources
 
 if(WIN32)
     # Add version info as meta information to Dll.
-    set(_Resources ${_Resources} ${_SourcesPath}/ZSSys/ZSSysVersion.rc)
+    set(_Resources ${_Resources} ${_ResourcesPath}/ZSSys/ZSSysVersion.rc)
 endif()
 
 # Got to create the following target name:
-# (ProjectName)Qt$(QT_VERSION_MAJOR)_$(Compiler)_$(Platform)[_d]
-# e.g.: "ZSTestQt5_msvc2019_x64_d"
-set(TargetOutputName ${PROJECT_NAME}Qt${QT_VERSION_MAJOR}_${Compiler}_${Platform})
+# (ProjectName)Qt$(QT_VERSION_MAJOR)[d]
+# e.g.: "ZSTestQt5d"
+set(TargetOutputName ${PROJECT_NAME}Qt${QT_VERSION_MAJOR})
 if(CMAKE_BUILD_TYPE MATCHES Debug)
-    set(TargetOutputName ${TargetOutputName}_d)
+    set(TargetOutputName ${TargetOutputName}d)
 endif()
 message(STATUS "TargetOutputName:         ${TargetOutputName}")
 
@@ -72,8 +74,9 @@ add_library(${PROJECT_NAME} SHARED ${_Headers} ${_Sources} ${_Resources})
 set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME ${TargetOutputName})
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER Libs)
 
-source_group(TREE ${_HeadersPath}/${PROJECT_NAME} PREFIX "Header Files" FILES ${_Headers})
-source_group(TREE ${_SourcesPath}/${PROJECT_NAME} PREFIX "Source Files" FILES ${_Sources})
+source_group("Header Files" FILES ${_Headers})
+source_group("Source Files" FILES ${_Sources})
+source_group("Resource Files" FILES ${_Resources})
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE ZSTESTDLL_EXPORTS)
 

@@ -13,7 +13,7 @@ logical application or model layer without any GUI components (without any viewe
 Another Dll provides the viewer classes which may be used to control the application layer
 classes or indicate the content of the data model classes.
 
-![Packages_Overview](packages_overview.bmp)
+![Packages](Packages.png)
 
 - @subpage _PAGE_Main_BuildInstructions
 - @subpage _PAGE_Main_CodingGuidelines

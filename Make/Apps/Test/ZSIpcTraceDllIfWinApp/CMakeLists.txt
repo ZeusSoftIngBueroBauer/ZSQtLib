@@ -29,10 +29,12 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 # _SourcePaths will be defined in the same way.
 set(_HeadersPath ${CMAKE_CURRENT_SOURCE_DIR}/../../../../Include/Apps/Test)
 set(_SourcesPath ${CMAKE_CURRENT_SOURCE_DIR}/../../../../Source/Apps/Test)
+set(_ResourcesPath ${CMAKE_CURRENT_SOURCE_DIR}/../../../../Resources/Apps/Test)
 
 list(APPEND _Headers
-    ${_HeadersPath}/ZSIpcTraceDllIfWinApp/Resource.h
-    ${_HeadersPath}/ZSIpcTraceDllIfWinApp/ZSAppTestIpcTraceDllIfWinApp.rc
+    ${_HeadersPath}/../../Libs/ZSSys/ZSSysVersion.h
+    ${_HeadersPath}/ZSIpcTraceDllIfWinApp/resource.h
+    ${_HeadersPath}/ZSIpcTraceDllIfWinApp/targetver.h
     ${_HeadersPath}/ZSIpcTraceDllIfWinApp/stdafx.h
     ${_HeadersPath}/ZSIpcTraceDllIfWinApp/TestModule1.h
     ${_HeadersPath}/ZSIpcTraceDllIfWinApp/TestModule2.h
@@ -47,27 +49,27 @@ list(APPEND _Sources
 )
 
 list(APPEND _Interfaces
-    ../../../../Include/Libs/ZSIpcTrace/ZSIpcTrcDllIf.h
-    ../../../../Source/Libs/ZSIpcTrace/ZSIpcTrcDllIf.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../../../Include/Libs/ZSIpcTrace/ZSIpcTrcDllIf.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../../../Source/Libs/ZSIpcTrace/ZSIpcTrcDllIf.cpp
 )
 
 list(APPEND _Resources
-    ../../../../Include/Libs/ZSIpcTrace/ZSIpcTrcDllIf.h
-    ../../../../Source/Libs/ZSIpcTrace/ZSIpcTrcDllIf.cpp
 )
 
 if(WIN32)
     # Add version info as meta information to Dll.
-    set(_Resources ${_Resources} ${_SourcesPath}/../../Libs/ZSSys/ZSSysVersion.rc)
+    set(_Resources ${_Resources} ${_ResourcesPath}/../../Libs/ZSSys/ZSSysVersion.rc)
+    # Icons.
+    set(_Resources ${_Resources} ${_ResourcesPath}/ZSIpcTraceDllIfWinApp/${PROJECT_NAME}.rc)
 endif()
 
 # Got to create the following target name:
-# (ProjectName)[_d]
-# e.g.: "ZSAppTestIpcTraceDllIfWinApp_d"
+# (ProjectName)[d]
+# e.g.: "ZSAppTestIpcTraceDllIfWinAppd"
 
 set(TargetOutputName ${PROJECT_NAME})
 if(CMAKE_BUILD_TYPE MATCHES Debug)
-    set(TargetOutputName ${TargetOutputName}_d)
+    set(TargetOutputName ${TargetOutputName}d)
 endif()
 message(STATUS "TargetOutputName:         ${TargetOutputName}")
 
@@ -79,8 +81,9 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
     OUTPUT_NAME ${TargetOutputName})
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER Tests)
 
-source_group(TREE ${_HeadersPath}/ZSIpcTraceDllIfWinApp PREFIX "Header Files" FILES ${_Headers})
-source_group(TREE ${_SourcesPath}/ZSIpcTraceDllIfWinApp PREFIX "Source Files" FILES ${_Sources})
+source_group("Header Files" FILES ${_Headers})
+source_group("Source Files" FILES ${_Sources})
+source_group("Resource Files" FILES ${_Resources})
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
     target_compile_options(${PROJECT_NAME} PRIVATE "-Wno-cast-function-type")

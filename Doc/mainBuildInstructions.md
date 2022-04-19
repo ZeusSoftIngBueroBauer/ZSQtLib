@@ -4,10 +4,10 @@
 
 ## Create and Install ZSQtLib Libraries, Products and Test Applications
 
-> **Please verify that your compiler supports the desired architecture (platform).
+**Please verify that your compiler supports the desired architecture (platform).
 VS-2008 express edition for example does not support the X64 architecture.**
 
-> **Please ensure that the path to the repository and the build directory don't include
+**Please ensure that the path to the repository and the build directory don't include
 white spaces as this may break the build with MinGW.**
 
 To build the ZSQtLib the Qt Framework must have been installed in advance.
@@ -22,9 +22,9 @@ from the repository's git commit and written into `Include\Libs\ZSSys\ZSSysVersi
 
 **Recommended Install Directory**
 
-> **The CMake build process modifies the CMake OUTPUT_DIRECTORIES so that the linker input libraries
+The CMake build process modifies the CMake OUTPUT_DIRECTORIES so that the linker input libraries
 will be created in directory `./Lib/CompilerName_Platform` and the runtime binaries will be created
-in directory `./Bin/CompilerName_Platform`.**
+in directory `./Bin/CompilerName_Platform`.
 
 The main CMakeList file sets the following CMAKE variables for this:
 
@@ -33,13 +33,14 @@ The main CMakeList file sets the following CMAKE variables for this:
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/../Bin/${Compiler}_${Platform})
 
 This should simplify the development process and it is not necessary to install the binaries
-for this as all necessary dlls (also the Qt Dlls) will be copied to those directories. Meaning
-that you can simple start the applications from this bin directories.
+as all necessary dlls (also the Qt Dlls) will be copied to those directories. Meaning that
+you can simple start the applications from this bin directories.
 
 If you want to use the ZSQtLib libraries in your own applications you may desire to install
 the binaries and header files to a different location.
 
-As default the commands below would install the ZSQtLib libraries, products and test applications into:
+As default the commands below would install the ZSQtLib libraries, products and test
+applications into:
 
 - Windows Machines:
   > "C:\Program Files (x86)\ZSQtLib"
@@ -47,43 +48,45 @@ As default the commands below would install the ZSQtLib libraries, products and 
 - Linux Machines:
   > "\usr\bin" (or something else depending on linux distribution and version)
 
-This install directories may be providing the CMAKE_INSTALL_PREFIX to the CMake call when
+To change the install directory pass CMAKE_INSTALL_PREFIX to the CMake call when
 generating the build tree.
 
-You may choose the same install directory for different compilers and platforms as additional
-information about the used compiler, used platform (32 or 64 bit) and the used Qt framework is
-included in the name of the created libraries. Also a `d` is appended to all created binaries
-in Debug build. The same install folder may be used therefore for different build pipelines.
+On creating a debug build a `d` is appended to all created binaries. This way it is possible
+to use the same install directory for debug and release builds.
 
 **Generator: Visual Studio 16 (2019)
+
+First change working directory to the root directory of the repository (one level above the main CMakeList file).
 
 To generate, build and install a release build with x64 platform use the following commands:
 
 - Release Build
 
-      cmake -G "Visual Studio 16 2019" -A x64 .\Make -B .\Build\msvc2019_x64_Release -DCMAKE_CONFIGURATION_TYPES="Release" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=.\Bin
+      cmake -G "Visual Studio 16 2019" -A x64 .\Make -B .\Build\msvc2019_x64_Release -DCMAKE_CONFIGURATION_TYPES="Release" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=".\Bin\msvc2019_x64"
       cmake --build .\Build\msvc2019_x64_Release --config=Release -j8
       cmake --install .\Build\msvc2019_x61_Release --config=Release
 
 - Debug Build
 
-      cmake -G "Visual Studio 16 2019" -A x64 .\Make -B .\Build\msvc2019_x64_Debug -DCMAKE_CONFIGURATION_TYPES="Debug" -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=.\Bin
+      cmake -G "Visual Studio 16 2019" -A x64 .\Make -B .\Build\msvc2019_x64_Debug -DCMAKE_CONFIGURATION_TYPES="Debug" -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=".\Bin\msvc2019_x64"
       cmake --build .\Build\msvc2019_x64_Debug --config=Debug -j8
       cmake --install .\Build\msvc2019_x64_Debug --config=Debug
 
 **Generator: MinGW Makefiles**
 
+First change working directory to the root directory of the repository (one level above the main CMakeList file).
+
 To generate, build and install a release build use the following commands (x64 is used as default):
 
 - Release Build
 
-      cmake -G "MinGW Makefiles" .\Make -B .\Build\mingw81_x64_Release -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=.\Bin
+      cmake -G "MinGW Makefiles" .\Make -B .\Build\mingw81_x64_Release -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=".\Bin\mingw81_x64"
       cmake --build .\Build\mingw81_x64_Release -j8
       cmake --install .\Build\mingw81_x64_Release
 
 - Debug Build
 
-      cmake -G "MinGW Makefiles" .\Make -B .\Build\mingw81_x64_Debug -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=.\Bin
+      cmake -G "MinGW Makefiles" .\Make -B .\Build\mingw81_x64_Debug -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=".\Bin\mingw81_x64"
       cmake --build .\Build\mingw81_x64_Debug -j8
       cmake --install .\Build\mingw81_x64_Debug
 
