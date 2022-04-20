@@ -49,13 +49,15 @@ list(APPEND _Resources
 )
 
 if(WIN32)
-    set(_Headers ${_Headers}
-        ${_HeadersPath}/ZSTrcMthClient/resource.h
-        ${_HeadersPath}/ZSTrcMthClient/targetver.h)
     # Add version info as meta information to Dll.
     set(_Resources ${_Resources} ${_ResourcesPath}/../../Libs/ZSSys/ZSSysVersion.rc)
     # Icons.
-    set(_Resources ${_Resources} ${_ResourcesPath}/ZSTrcMthClient/${PROJECT_NAME}.rc)
+    if(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
+        set(_Headers ${_Headers}
+            ${_HeadersPath}/ZSTrcMthClient/resource.h
+            ${_HeadersPath}/ZSTrcMthClient/targetver.h)
+        set(_Resources ${_Resources} ${_ResourcesPath}/ZSTrcMthClient/${PROJECT_NAME}.rc)
+    endif()
 endif()
 
 # Got to create the following target name:
@@ -99,8 +101,9 @@ message(STATUS "RELEASE_DATE: ${RELEASE_DATE_TIME}")
 
 if(WIN32)
     set(ApplicationsDir "$ENV{ProgramFiles}")
-    string(REPLACE "\\" "/" ApplicationsDir ${ApplicationsDir})
     set(AppDataDir "$ENV{APPDATA}")
+    # Need to replace \ with /. Otherwise a very strange StartMenu path is created.
+    string(REPLACE "\\" "/" ApplicationsDir ${ApplicationsDir})
     string(REPLACE "\\" "/" AppDataDir ${AppDataDir})
     message(STATUS "ApplicationsDir: ${ApplicationsDir}")
     message(STATUS "AppDataDir:      ${AppDataDir}")

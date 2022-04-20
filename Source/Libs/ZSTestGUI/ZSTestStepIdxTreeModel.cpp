@@ -436,19 +436,14 @@ QVariant CModeldxTreeTestSteps::data( const QModelIndex& i_modelIdx, int i_iRole
     {
         CAbstractTestStepIdxTreeEntry* pTestStepEntry = dynamic_cast<CAbstractTestStepIdxTreeEntry*>(pIdxTreeEntry);
 
-        CTestStepRoot*  pTestStepRoot = nullptr;
         CTestStepGroup* pTestStepGroup = nullptr;
         CTestStep*      pTestStep = nullptr;
 
-        if( pTestStepEntry->isRoot() )
-        {
-            pTestStepRoot = dynamic_cast<CTestStepRoot*>(pTestStepEntry);
-        }
-        else if( pTestStepEntry->isGroup() )
+        if( pTestStepEntry->isGroup() )
         {
             pTestStepGroup = dynamic_cast<CTestStepGroup*>(pTestStepEntry);
         }
-        else
+        else if( pTestStepEntry->isLeave() )
         {
             pTestStep = dynamic_cast<CTestStep*>(pTestStepEntry);
         }

@@ -184,18 +184,13 @@ void CDelegateIdxTreeTestSteps::paint(
         i_pPainter->save();
 
         CAbstractTestStepIdxTreeEntry* pTestStepEntry = nullptr;
-        CTestStepGroup*                pTestStepGroup = nullptr;
         CTestStep*                     pTestStep = nullptr;
 
         if( !pIdxTreeEntry->isRoot() )
         {
             pTestStepEntry = dynamic_cast<CAbstractTestStepIdxTreeEntry*>(pIdxTreeEntry);
 
-            if( pTestStepEntry->isGroup() )
-            {
-                pTestStepGroup = dynamic_cast<CTestStepGroup*>(pTestStepEntry);
-            }
-            else
+            if( pTestStepEntry->isLeave() )
             {
                 pTestStep = dynamic_cast<CTestStep*>(pTestStepEntry);
             }

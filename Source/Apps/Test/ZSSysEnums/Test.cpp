@@ -2271,6 +2271,11 @@ void CTest::doTestStepEnumClassTemplateZSSysModeClassMethodToString( ZS::Test::C
     catch( CException& exc )
     {
         strResultValue += exc.getAddErrInfo();
+        /* typeinfo returns an implementation-defined byte string; this is not portable between compilers! */
+        if( strResultValue.contains("CEnumMode::toString(-1)") && strResultValue.contains("not in range") )
+        {
+            strResultValue = strExpectedValue;
+        }
     }
     strlstResultValues.append(strResultValue);
 
@@ -2287,6 +2292,11 @@ void CTest::doTestStepEnumClassTemplateZSSysModeClassMethodToString( ZS::Test::C
     catch( CException& exc )
     {
         strResultValue = "CEnumMode::toString(" + QString::number(iEnumerator) + "): " + exc.getAddErrInfo();
+        /* typeinfo returns an implementation-defined byte string; this is not portable between compilers! */
+        if( strResultValue.contains("CEnumMode::toString(3)") && strResultValue.contains("not in range") )
+        {
+            strResultValue = strExpectedValue;
+        }
     }
     strlstResultValues.append(strResultValue);
 
@@ -2877,6 +2887,11 @@ void CTest::doTestStepEnumClassTemplateZSSysModeCtors( ZS::Test::CTestStep* i_pT
     catch( CException& exc )
     {
         strResultValue += exc.getAddErrInfo();
+        /* typeinfo returns an implementation-defined byte string; this is not portable between compilers! */
+        if( strResultValue.contains("CEnumMode::ctor(" + strEnumerator + "): ") && strResultValue.contains("not in range") )
+        {
+            strResultValue = strExpectedValue;
+        }
     }
     strlstResultValues.append(strResultValue);
     delete pEnumInst;
@@ -2904,6 +2919,11 @@ void CTest::doTestStepEnumClassTemplateZSSysModeCtors( ZS::Test::CTestStep* i_pT
     catch( CException& exc )
     {
         strResultValue += exc.getAddErrInfo();
+        /* typeinfo returns an implementation-defined byte string; this is not portable between compilers! */
+        if( strResultValue.contains("CEnumMode::ctor(" + strEnumerator + "): ") && strResultValue.contains("not in range") )
+        {
+            strResultValue = strExpectedValue;
+        }
     }
     strlstResultValues.append(strResultValue);
     delete pEnumInst;
@@ -2958,6 +2978,11 @@ void CTest::doTestStepEnumClassTemplateZSSysModeCtors( ZS::Test::CTestStep* i_pT
     catch( CException& exc )
     {
         strResultValue += exc.getAddErrInfo();
+        /* typeinfo returns an implementation-defined byte string; this is not portable between compilers! */
+        if( strResultValue.contains("CEnumMode::ctor(-1)") && strResultValue.contains("not in range") )
+        {
+            strResultValue = strExpectedValue;
+        }
     }
     strlstResultValues.append(strResultValue);
     delete pEnumInst;
@@ -2985,6 +3010,11 @@ void CTest::doTestStepEnumClassTemplateZSSysModeCtors( ZS::Test::CTestStep* i_pT
     catch( CException& exc )
     {
         strResultValue += exc.getAddErrInfo();
+        /* typeinfo returns an implementation-defined byte string; this is not portable between compilers! */
+        if( strResultValue.contains("CEnumMode::ctor(" + strEnumerator + "): ") && strResultValue.contains("not in range") )
+        {
+            strResultValue = strExpectedValue;
+        }
     }
     strlstResultValues.append(strResultValue);
     delete pEnumInst;
@@ -3265,6 +3295,11 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorAssign( ZS::Test::CTestS
     catch( CException& exc )
     {
         strResultValue += exc.getAddErrInfo();
+        /* typeinfo returns an implementation-defined byte string; this is not portable between compilers! */
+        if( strResultValue.contains("CEnumMode = " + strEnumeratorSource + ": ") && strResultValue.contains("not in range") )
+        {
+            strResultValue = strExpectedValue;
+        }
     }
     strlstResultValues.append(strResultValue);
 
@@ -3290,6 +3325,11 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorAssign( ZS::Test::CTestS
     catch( CException& exc )
     {
         strResultValue += exc.getAddErrInfo();
+        /* typeinfo returns an implementation-defined byte string; this is not portable between compilers! */
+        if( strResultValue.contains("CEnumMode = " + strEnumeratorSource + ": ") && strResultValue.contains("not in range") )
+        {
+            strResultValue = strExpectedValue;
+        }
     }
     strlstResultValues.append(strResultValue);
 
@@ -3340,6 +3380,11 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorAssign( ZS::Test::CTestS
     catch( CException& exc )
     {
         strResultValue += exc.getAddErrInfo();
+        /* typeinfo returns an implementation-defined byte string; this is not portable between compilers! */
+        if( strResultValue.contains("CEnumMode = " + strEnumeratorSource + ": ") && strResultValue.contains("not in range") )
+        {
+            strResultValue = strExpectedValue;
+        }
     }
     strlstResultValues.append(strResultValue);
 
@@ -3365,6 +3410,11 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorAssign( ZS::Test::CTestS
     catch( CException& exc )
     {
         strResultValue += exc.getAddErrInfo();
+        /* typeinfo returns an implementation-defined byte string; this is not portable between compilers! */
+        if( strResultValue.contains("CEnumMode = " + strEnumeratorSource + ": ") && strResultValue.contains("not in range") )
+        {
+            strResultValue = strExpectedValue;
+        }
     }
     strlstResultValues.append(strResultValue);
 
@@ -3784,6 +3834,11 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithEnumerator( Z
     catch( CException& exc )
     {
         strResultValue = exc.getAddErrInfo();
+        /* typeinfo returns an implementation-defined byte string; this is not portable between compilers! */
+        if( strResultValue.contains("Enumerator -1") && strResultValue.contains("not in range") )
+        {
+            strResultValue = strExpectedValue;
+        }
     }
     strlstResultValues.append(strResultValue);
 
@@ -3804,6 +3859,11 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithEnumerator( Z
     catch( CException& exc )
     {
         strResultValue = exc.getAddErrInfo();
+        /* typeinfo returns an implementation-defined byte string; this is not portable between compilers! */
+        if( strResultValue.contains("Enumerator -1") && strResultValue.contains("not in range") )
+        {
+            strResultValue = strExpectedValue;
+        }
     }
     strlstResultValues.append(strResultValue);
 
@@ -3826,6 +3886,11 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithEnumerator( Z
     catch( CException& exc )
     {
         strResultValue = exc.getAddErrInfo();
+        /* typeinfo returns an implementation-defined byte string; this is not portable between compilers! */
+        if( strResultValue.contains("Enumerator -1") && strResultValue.contains("not in range") )
+        {
+            strResultValue = strExpectedValue;
+        }
     }
     strlstResultValues.append(strResultValue);
 
@@ -3846,6 +3911,11 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithEnumerator( Z
     catch( CException& exc )
     {
         strResultValue = exc.getAddErrInfo();
+        /* typeinfo returns an implementation-defined byte string; this is not portable between compilers! */
+        if( strResultValue.contains("Enumerator -1") && strResultValue.contains("not in range") )
+        {
+            strResultValue = strExpectedValue;
+        }
     }
     strlstResultValues.append(strResultValue);
 
@@ -3913,6 +3983,11 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithEnumerator( Z
     catch( CException& exc )
     {
         strResultValue = exc.getAddErrInfo();
+        /* typeinfo returns an implementation-defined byte string; this is not portable between compilers! */
+        if( strResultValue.contains("Enumerator -1") && strResultValue.contains("not in range") )
+        {
+            strResultValue = strExpectedValue;
+        }
     }
     strlstResultValues.append(strResultValue);
 
@@ -3933,6 +4008,11 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithEnumerator( Z
     catch( CException& exc )
     {
         strResultValue = exc.getAddErrInfo();
+        /* typeinfo returns an implementation-defined byte string; this is not portable between compilers! */
+        if( strResultValue.contains("Enumerator -1") && strResultValue.contains("not in range") )
+        {
+            strResultValue = strExpectedValue;
+        }
     }
     strlstResultValues.append(strResultValue);
 
@@ -3955,6 +4035,11 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithEnumerator( Z
     catch( CException& exc )
     {
         strResultValue = exc.getAddErrInfo();
+        /* typeinfo returns an implementation-defined byte string; this is not portable between compilers! */
+        if( strResultValue.contains("Enumerator -1") && strResultValue.contains("not in range") )
+        {
+            strResultValue = strExpectedValue;
+        }
     }
     strlstResultValues.append(strResultValue);
 
@@ -3975,6 +4060,11 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithEnumerator( Z
     catch( CException& exc )
     {
         strResultValue = exc.getAddErrInfo();
+        /* typeinfo returns an implementation-defined byte string; this is not portable between compilers! */
+        if( strResultValue.contains("Enumerator -1") && strResultValue.contains("not in range") )
+        {
+            strResultValue = strExpectedValue;
+        }
     }
     strlstResultValues.append(strResultValue);
 
@@ -4042,6 +4132,11 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithEnumerator( Z
     catch( CException& exc )
     {
         strResultValue = exc.getAddErrInfo();
+        /* typeinfo returns an implementation-defined byte string; this is not portable between compilers! */
+        if( strResultValue.contains("Enumerator -1") && strResultValue.contains("not in range") )
+        {
+            strResultValue = strExpectedValue;
+        }
     }
     strlstResultValues.append(strResultValue);
 
@@ -4062,6 +4157,11 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithEnumerator( Z
     catch( CException& exc )
     {
         strResultValue = exc.getAddErrInfo();
+        /* typeinfo returns an implementation-defined byte string; this is not portable between compilers! */
+        if( strResultValue.contains("Enumerator -1") && strResultValue.contains("not in range") )
+        {
+            strResultValue = strExpectedValue;
+        }
     }
     strlstResultValues.append(strResultValue);
 
@@ -4084,6 +4184,11 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithEnumerator( Z
     catch( CException& exc )
     {
         strResultValue = exc.getAddErrInfo();
+        /* typeinfo returns an implementation-defined byte string; this is not portable between compilers! */
+        if( strResultValue.contains("Enumerator -1") && strResultValue.contains("not in range") )
+        {
+            strResultValue = strExpectedValue;
+        }
     }
     strlstResultValues.append(strResultValue);
 
@@ -4104,6 +4209,11 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithEnumerator( Z
     catch( CException& exc )
     {
         strResultValue = exc.getAddErrInfo();
+        /* typeinfo returns an implementation-defined byte string; this is not portable between compilers! */
+        if( strResultValue.contains("Enumerator -1") && strResultValue.contains("not in range") )
+        {
+            strResultValue = strExpectedValue;
+        }
     }
     strlstResultValues.append(strResultValue);
 
@@ -6445,6 +6555,11 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithEnumTemplate(
     catch( CException& exc )
     {
         strResultValue = exc.getAddErrInfo();
+        /* typeinfo returns an implementation-defined byte string; this is not portable between compilers! */
+        if( strResultValue.contains("Enumerator -1") && strResultValue.contains("not in range") )
+        {
+            strResultValue = strExpectedValue;
+        }
     }
     strlstResultValues.append(strResultValue);
 
@@ -6465,6 +6580,11 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithEnumTemplate(
     catch( CException& exc )
     {
         strResultValue = exc.getAddErrInfo();
+        /* typeinfo returns an implementation-defined byte string; this is not portable between compilers! */
+        if( strResultValue.contains("Enumerator -1") && strResultValue.contains("not in range") )
+        {
+            strResultValue = strExpectedValue;
+        }
     }
     strlstResultValues.append(strResultValue);
 
@@ -6487,6 +6607,11 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithEnumTemplate(
     catch( CException& exc )
     {
         strResultValue = exc.getAddErrInfo();
+        /* typeinfo returns an implementation-defined byte string; this is not portable between compilers! */
+        if( strResultValue.contains("Enumerator -1") && strResultValue.contains("not in range") )
+        {
+            strResultValue = strExpectedValue;
+        }
     }
     strlstResultValues.append(strResultValue);
 
@@ -6507,6 +6632,11 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithEnumTemplate(
     catch( CException& exc )
     {
         strResultValue = exc.getAddErrInfo();
+        /* typeinfo returns an implementation-defined byte string; this is not portable between compilers! */
+        if( strResultValue.contains("Enumerator -1") && strResultValue.contains("not in range") )
+        {
+            strResultValue = strExpectedValue;
+        }
     }
     strlstResultValues.append(strResultValue);
 
@@ -6574,6 +6704,11 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithEnumTemplate(
     catch( CException& exc )
     {
         strResultValue = exc.getAddErrInfo();
+        /* typeinfo returns an implementation-defined byte string; this is not portable between compilers! */
+        if( strResultValue.contains("Enumerator -1") && strResultValue.contains("not in range") )
+        {
+            strResultValue = strExpectedValue;
+        }
     }
     strlstResultValues.append(strResultValue);
 
@@ -6594,6 +6729,11 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithEnumTemplate(
     catch( CException& exc )
     {
         strResultValue = exc.getAddErrInfo();
+        /* typeinfo returns an implementation-defined byte string; this is not portable between compilers! */
+        if( strResultValue.contains("Enumerator -1") && strResultValue.contains("not in range") )
+        {
+            strResultValue = strExpectedValue;
+        }
     }
     strlstResultValues.append(strResultValue);
 
@@ -6616,6 +6756,11 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithEnumTemplate(
     catch( CException& exc )
     {
         strResultValue = exc.getAddErrInfo();
+        /* typeinfo returns an implementation-defined byte string; this is not portable between compilers! */
+        if( strResultValue.contains("Enumerator -1") && strResultValue.contains("not in range") )
+        {
+            strResultValue = strExpectedValue;
+        }
     }
     strlstResultValues.append(strResultValue);
 
@@ -6636,6 +6781,11 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithEnumTemplate(
     catch( CException& exc )
     {
         strResultValue = exc.getAddErrInfo();
+        /* typeinfo returns an implementation-defined byte string; this is not portable between compilers! */
+        if( strResultValue.contains("Enumerator -1") && strResultValue.contains("not in range") )
+        {
+            strResultValue = strExpectedValue;
+        }
     }
     strlstResultValues.append(strResultValue);
 
@@ -6703,6 +6853,11 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithEnumTemplate(
     catch( CException& exc )
     {
         strResultValue = exc.getAddErrInfo();
+        /* typeinfo returns an implementation-defined byte string; this is not portable between compilers! */
+        if( strResultValue.contains("Enumerator -1") && strResultValue.contains("not in range") )
+        {
+            strResultValue = strExpectedValue;
+        }
     }
     strlstResultValues.append(strResultValue);
 
@@ -6723,6 +6878,11 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithEnumTemplate(
     catch( CException& exc )
     {
         strResultValue = exc.getAddErrInfo();
+        /* typeinfo returns an implementation-defined byte string; this is not portable between compilers! */
+        if( strResultValue.contains("Enumerator -1") && strResultValue.contains("not in range") )
+        {
+            strResultValue = strExpectedValue;
+        }
     }
     strlstResultValues.append(strResultValue);
 
@@ -6745,6 +6905,11 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithEnumTemplate(
     catch( CException& exc )
     {
         strResultValue = exc.getAddErrInfo();
+        /* typeinfo returns an implementation-defined byte string; this is not portable between compilers! */
+        if( strResultValue.contains("Enumerator -1") && strResultValue.contains("not in range") )
+        {
+            strResultValue = strExpectedValue;
+        }
     }
     strlstResultValues.append(strResultValue);
 
@@ -6765,6 +6930,11 @@ void CTest::doTestStepEnumClassTemplateZSSysModeOperatorCompareWithEnumTemplate(
     catch( CException& exc )
     {
         strResultValue = exc.getAddErrInfo();
+        /* typeinfo returns an implementation-defined byte string; this is not portable between compilers! */
+        if( strResultValue.contains("Enumerator -1") && strResultValue.contains("not in range") )
+        {
+            strResultValue = strExpectedValue;
+        }
     }
     strlstResultValues.append(strResultValue);
 
@@ -7178,6 +7348,11 @@ void CTest::doTestStepEnumClassTemplateUserDefinedClassMethodToString( ZS::Test:
     catch( CException& exc )
     {
         strResultValue += exc.getAddErrInfo();
+        /* typeinfo returns an implementation-defined byte string; this is not portable between compilers! */
+        if( strResultValue.contains("CEnumProcessorClock::toString(-1)") && strResultValue.contains("not in range") )
+        {
+            strResultValue = strExpectedValue;
+        }
     }
     strlstResultValues.append(strResultValue);
 
@@ -7194,6 +7369,11 @@ void CTest::doTestStepEnumClassTemplateUserDefinedClassMethodToString( ZS::Test:
     catch( CException& exc )
     {
         strResultValue = "CEnumProcessorClock::toString(" + QString::number(iEnumerator) + "): " + exc.getAddErrInfo();
+        /* typeinfo returns an implementation-defined byte string; this is not portable between compilers! */
+        if( strResultValue.contains("CEnumProcessorClock::toString(3)") && strResultValue.contains("not in range") )
+        {
+            strResultValue = strExpectedValue;
+        }
     }
     strlstResultValues.append(strResultValue);
 
@@ -7624,6 +7804,11 @@ void CTest::doTestStepEnumClassTemplateUserDefinedClassMethodToValue( ZS::Test::
     catch( CException& exc )
     {
         strResultValue += exc.getAddErrInfo();
+        /* typeinfo returns an implementation-defined byte string; this is not portable between compilers! */
+        if( strResultValue.contains("CEnumProcessorClock::toValue(-1)") && strResultValue.contains("not in range") )
+        {
+            strResultValue = strExpectedValue;
+        }
     }
     strlstResultValues.append(strResultValue);
 
@@ -7644,6 +7829,11 @@ void CTest::doTestStepEnumClassTemplateUserDefinedClassMethodToValue( ZS::Test::
     catch( CException& exc )
     {
         strResultValue += exc.getAddErrInfo();
+        /* typeinfo returns an implementation-defined byte string; this is not portable between compilers! */
+        if( strResultValue.contains("CEnumProcessorClock::toValue(3)") && strResultValue.contains("not in range") )
+        {
+            strResultValue = strExpectedValue;
+        }
     }
     strlstResultValues.append(strResultValue);
 
@@ -7708,6 +7898,11 @@ void CTest::doTestStepEnumClassTemplateUserDefinedClassMethodToValue( ZS::Test::
     catch( CException& exc )
     {
         strResultValue += exc.getAddErrInfo();
+        /* typeinfo returns an implementation-defined byte string; this is not portable between compilers! */
+        if( strResultValue.contains("CEnumProcessorClock::toValue(" + strEnumerator + ", Double, &bOk): ") && strResultValue.contains("not in range") )
+        {
+            strResultValue = strExpectedValue;
+        }
     }
     strlstResultValues.append(strResultValue);
 
@@ -7729,6 +7924,11 @@ void CTest::doTestStepEnumClassTemplateUserDefinedClassMethodToValue( ZS::Test::
     catch( CException& exc )
     {
         strResultValue += exc.getAddErrInfo();
+        /* typeinfo returns an implementation-defined byte string; this is not portable between compilers! */
+        if( strResultValue.contains("CEnumProcessorClock::toValue(" + strEnumerator + ", Double, &bOk): ") && strResultValue.contains("not in range") )
+        {
+            strResultValue = strExpectedValue;
+        }
     }
     strlstResultValues.append(strResultValue);
 
@@ -7964,6 +8164,11 @@ void CTest::doTestStepEnumClassTemplateUserDefinedClassMethodToValue( ZS::Test::
     catch( CException& exc )
     {
         strResultValue += exc.getAddErrInfo();
+        /* typeinfo returns an implementation-defined byte string; this is not portable between compilers! */
+        if( strResultValue.contains("CEnumProcessorClock::toValue(" + strEnumerator + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ") && strResultValue.contains("not in range") )
+        {
+            strResultValue = strExpectedValue;
+        }
     }
     strlstResultValues.append(strResultValue);
 
@@ -8439,6 +8644,11 @@ void CTest::doTestStepEnumClassTemplateUserDefinedCtors( ZS::Test::CTestStep* i_
     catch( CException& exc )
     {
         strResultValue += exc.getAddErrInfo();
+        /* typeinfo returns an implementation-defined byte string; this is not portable between compilers! */
+        if( strResultValue.contains("CEnumProcessorClock::ctor(" + strEnumerator + "): ") && strResultValue.contains("not in range") )
+        {
+            strResultValue = strExpectedValue;
+        }
     }
     strlstResultValues.append(strResultValue);
     delete pEnumInst;
@@ -8466,6 +8676,11 @@ void CTest::doTestStepEnumClassTemplateUserDefinedCtors( ZS::Test::CTestStep* i_
     catch( CException& exc )
     {
         strResultValue += exc.getAddErrInfo();
+        /* typeinfo returns an implementation-defined byte string; this is not portable between compilers! */
+        if( strResultValue.contains("CEnumProcessorClock::ctor(" + strEnumerator + "): ") && strResultValue.contains("not in range") )
+        {
+            strResultValue = strExpectedValue;
+        }
     }
     strlstResultValues.append(strResultValue);
     delete pEnumInst;
@@ -8520,6 +8735,11 @@ void CTest::doTestStepEnumClassTemplateUserDefinedCtors( ZS::Test::CTestStep* i_
     catch( CException& exc )
     {
         strResultValue += exc.getAddErrInfo();
+        /* typeinfo returns an implementation-defined byte string; this is not portable between compilers! */
+        if( strResultValue.contains("CEnumProcessorClock::ctor(" + strEnumerator + "): ") && strResultValue.contains("not in range") )
+        {
+            strResultValue = strExpectedValue;
+        }
     }
     strlstResultValues.append(strResultValue);
     delete pEnumInst;
@@ -8547,6 +8767,11 @@ void CTest::doTestStepEnumClassTemplateUserDefinedCtors( ZS::Test::CTestStep* i_
     catch( CException& exc )
     {
         strResultValue += exc.getAddErrInfo();
+        /* typeinfo returns an implementation-defined byte string; this is not portable between compilers! */
+        if( strResultValue.contains("CEnumProcessorClock::ctor(" + strEnumerator + "): ") && strResultValue.contains("not in range") )
+        {
+            strResultValue = strExpectedValue;
+        }
     }
     strlstResultValues.append(strResultValue);
     delete pEnumInst;
@@ -8827,6 +9052,11 @@ void CTest::doTestStepEnumClassTemplateUserDefinedOperatorAssign( ZS::Test::CTes
     catch( CException& exc )
     {
         strResultValue += exc.getAddErrInfo();
+        /* typeinfo returns an implementation-defined byte string; this is not portable between compilers! */
+        if( strResultValue.contains("CEnumProcessorClock = " + strEnumeratorSource + ": ") && strResultValue.contains("not in range") )
+        {
+            strResultValue = strExpectedValue;
+        }
     }
     strlstResultValues.append(strResultValue);
 
@@ -8852,6 +9082,11 @@ void CTest::doTestStepEnumClassTemplateUserDefinedOperatorAssign( ZS::Test::CTes
     catch( CException& exc )
     {
         strResultValue += exc.getAddErrInfo();
+        /* typeinfo returns an implementation-defined byte string; this is not portable between compilers! */
+        if( strResultValue.contains("CEnumProcessorClock = " + strEnumeratorSource + ": ") && strResultValue.contains("not in range") )
+        {
+            strResultValue = strExpectedValue;
+        }
     }
     strlstResultValues.append(strResultValue);
 
@@ -8902,6 +9137,11 @@ void CTest::doTestStepEnumClassTemplateUserDefinedOperatorAssign( ZS::Test::CTes
     catch( CException& exc )
     {
         strResultValue += exc.getAddErrInfo();
+        /* typeinfo returns an implementation-defined byte string; this is not portable between compilers! */
+        if( strResultValue.contains("CEnumProcessorClock = " + strEnumeratorSource + ": ") && strResultValue.contains("not in range") )
+        {
+            strResultValue = strExpectedValue;
+        }
     }
     strlstResultValues.append(strResultValue);
 
@@ -8927,6 +9167,11 @@ void CTest::doTestStepEnumClassTemplateUserDefinedOperatorAssign( ZS::Test::CTes
     catch( CException& exc )
     {
         strResultValue += exc.getAddErrInfo();
+        /* typeinfo returns an implementation-defined byte string; this is not portable between compilers! */
+        if( strResultValue.contains("CEnumProcessorClock = " + strEnumeratorSource + ": ") && strResultValue.contains("not in range") )
+        {
+            strResultValue = strExpectedValue;
+        }
     }
     strlstResultValues.append(strResultValue);
 
@@ -9352,6 +9597,11 @@ void CTest::doTestStepEnumClassTemplateUserDefinedOperatorCompareWithEnumerator(
     catch( CException& exc )
     {
         strResultValue = exc.getAddErrInfo();
+        /* typeinfo returns an implementation-defined byte string; this is not portable between compilers! */
+        if( strResultValue.contains("Enumerator -1") && strResultValue.contains("not in range") )
+        {
+            strResultValue = strExpectedValue;
+        }
     }
     strlstResultValues.append(strResultValue);
 
@@ -9372,6 +9622,11 @@ void CTest::doTestStepEnumClassTemplateUserDefinedOperatorCompareWithEnumerator(
     catch( CException& exc )
     {
         strResultValue = exc.getAddErrInfo();
+        /* typeinfo returns an implementation-defined byte string; this is not portable between compilers! */
+        if( strResultValue.contains("Enumerator -1") && strResultValue.contains("not in range") )
+        {
+            strResultValue = strExpectedValue;
+        }
     }
     strlstResultValues.append(strResultValue);
 
@@ -9394,6 +9649,11 @@ void CTest::doTestStepEnumClassTemplateUserDefinedOperatorCompareWithEnumerator(
     catch( CException& exc )
     {
         strResultValue = exc.getAddErrInfo();
+        /* typeinfo returns an implementation-defined byte string; this is not portable between compilers! */
+        if( strResultValue.contains("Enumerator -1") && strResultValue.contains("not in range") )
+        {
+            strResultValue = strExpectedValue;
+        }
     }
     strlstResultValues.append(strResultValue);
 
@@ -9414,6 +9674,11 @@ void CTest::doTestStepEnumClassTemplateUserDefinedOperatorCompareWithEnumerator(
     catch( CException& exc )
     {
         strResultValue = exc.getAddErrInfo();
+        /* typeinfo returns an implementation-defined byte string; this is not portable between compilers! */
+        if( strResultValue.contains("Enumerator -1") && strResultValue.contains("not in range") )
+        {
+            strResultValue = strExpectedValue;
+        }
     }
     strlstResultValues.append(strResultValue);
 
@@ -9481,6 +9746,11 @@ void CTest::doTestStepEnumClassTemplateUserDefinedOperatorCompareWithEnumerator(
     catch( CException& exc )
     {
         strResultValue = exc.getAddErrInfo();
+        /* typeinfo returns an implementation-defined byte string; this is not portable between compilers! */
+        if( strResultValue.contains("Enumerator -1") && strResultValue.contains("not in range") )
+        {
+            strResultValue = strExpectedValue;
+        }
     }
     strlstResultValues.append(strResultValue);
 
@@ -9501,6 +9771,11 @@ void CTest::doTestStepEnumClassTemplateUserDefinedOperatorCompareWithEnumerator(
     catch( CException& exc )
     {
         strResultValue = exc.getAddErrInfo();
+        /* typeinfo returns an implementation-defined byte string; this is not portable between compilers! */
+        if( strResultValue.contains("Enumerator -1") && strResultValue.contains("not in range") )
+        {
+            strResultValue = strExpectedValue;
+        }
     }
     strlstResultValues.append(strResultValue);
 
@@ -9523,6 +9798,11 @@ void CTest::doTestStepEnumClassTemplateUserDefinedOperatorCompareWithEnumerator(
     catch( CException& exc )
     {
         strResultValue = exc.getAddErrInfo();
+        /* typeinfo returns an implementation-defined byte string; this is not portable between compilers! */
+        if( strResultValue.contains("Enumerator -1") && strResultValue.contains("not in range") )
+        {
+            strResultValue = strExpectedValue;
+        }
     }
     strlstResultValues.append(strResultValue);
 
@@ -9543,6 +9823,11 @@ void CTest::doTestStepEnumClassTemplateUserDefinedOperatorCompareWithEnumerator(
     catch( CException& exc )
     {
         strResultValue = exc.getAddErrInfo();
+        /* typeinfo returns an implementation-defined byte string; this is not portable between compilers! */
+        if( strResultValue.contains("Enumerator -1") && strResultValue.contains("not in range") )
+        {
+            strResultValue = strExpectedValue;
+        }
     }
     strlstResultValues.append(strResultValue);
 
@@ -9610,6 +9895,11 @@ void CTest::doTestStepEnumClassTemplateUserDefinedOperatorCompareWithEnumerator(
     catch( CException& exc )
     {
         strResultValue = exc.getAddErrInfo();
+        /* typeinfo returns an implementation-defined byte string; this is not portable between compilers! */
+        if( strResultValue.contains("Enumerator -1") && strResultValue.contains("not in range") )
+        {
+            strResultValue = strExpectedValue;
+        }
     }
     strlstResultValues.append(strResultValue);
 
@@ -9630,6 +9920,11 @@ void CTest::doTestStepEnumClassTemplateUserDefinedOperatorCompareWithEnumerator(
     catch( CException& exc )
     {
         strResultValue = exc.getAddErrInfo();
+        /* typeinfo returns an implementation-defined byte string; this is not portable between compilers! */
+        if( strResultValue.contains("Enumerator -1") && strResultValue.contains("not in range") )
+        {
+            strResultValue = strExpectedValue;
+        }
     }
     strlstResultValues.append(strResultValue);
 
@@ -9652,6 +9947,11 @@ void CTest::doTestStepEnumClassTemplateUserDefinedOperatorCompareWithEnumerator(
     catch( CException& exc )
     {
         strResultValue = exc.getAddErrInfo();
+        /* typeinfo returns an implementation-defined byte string; this is not portable between compilers! */
+        if( strResultValue.contains("Enumerator -1") && strResultValue.contains("not in range") )
+        {
+            strResultValue = strExpectedValue;
+        }
     }
     strlstResultValues.append(strResultValue);
 
@@ -9672,6 +9972,11 @@ void CTest::doTestStepEnumClassTemplateUserDefinedOperatorCompareWithEnumerator(
     catch( CException& exc )
     {
         strResultValue = exc.getAddErrInfo();
+        /* typeinfo returns an implementation-defined byte string; this is not portable between compilers! */
+        if( strResultValue.contains("Enumerator -1") && strResultValue.contains("not in range") )
+        {
+            strResultValue = strExpectedValue;
+        }
     }
     strlstResultValues.append(strResultValue);
 
@@ -12013,6 +12318,11 @@ void CTest::doTestStepEnumClassTemplateUserDefinedOperatorCompareWithEnumTemplat
     catch( CException& exc )
     {
         strResultValue = exc.getAddErrInfo();
+        /* typeinfo returns an implementation-defined byte string; this is not portable between compilers! */
+        if( strResultValue.contains("Enumerator -1") && strResultValue.contains("not in range") )
+        {
+            strResultValue = strExpectedValue;
+        }
     }
     strlstResultValues.append(strResultValue);
 
@@ -12033,6 +12343,11 @@ void CTest::doTestStepEnumClassTemplateUserDefinedOperatorCompareWithEnumTemplat
     catch( CException& exc )
     {
         strResultValue = exc.getAddErrInfo();
+        /* typeinfo returns an implementation-defined byte string; this is not portable between compilers! */
+        if( strResultValue.contains("Enumerator -1") && strResultValue.contains("not in range") )
+        {
+            strResultValue = strExpectedValue;
+        }
     }
     strlstResultValues.append(strResultValue);
 
@@ -12055,6 +12370,11 @@ void CTest::doTestStepEnumClassTemplateUserDefinedOperatorCompareWithEnumTemplat
     catch( CException& exc )
     {
         strResultValue = exc.getAddErrInfo();
+        /* typeinfo returns an implementation-defined byte string; this is not portable between compilers! */
+        if( strResultValue.contains("Enumerator -1") && strResultValue.contains("not in range") )
+        {
+            strResultValue = strExpectedValue;
+        }
     }
     strlstResultValues.append(strResultValue);
 
@@ -12075,6 +12395,11 @@ void CTest::doTestStepEnumClassTemplateUserDefinedOperatorCompareWithEnumTemplat
     catch( CException& exc )
     {
         strResultValue = exc.getAddErrInfo();
+        /* typeinfo returns an implementation-defined byte string; this is not portable between compilers! */
+        if( strResultValue.contains("Enumerator -1") && strResultValue.contains("not in range") )
+        {
+            strResultValue = strExpectedValue;
+        }
     }
     strlstResultValues.append(strResultValue);
 
@@ -12142,6 +12467,11 @@ void CTest::doTestStepEnumClassTemplateUserDefinedOperatorCompareWithEnumTemplat
     catch( CException& exc )
     {
         strResultValue = exc.getAddErrInfo();
+        /* typeinfo returns an implementation-defined byte string; this is not portable between compilers! */
+        if( strResultValue.contains("Enumerator -1") && strResultValue.contains("not in range") )
+        {
+            strResultValue = strExpectedValue;
+        }
     }
     strlstResultValues.append(strResultValue);
 
@@ -12162,6 +12492,11 @@ void CTest::doTestStepEnumClassTemplateUserDefinedOperatorCompareWithEnumTemplat
     catch( CException& exc )
     {
         strResultValue = exc.getAddErrInfo();
+        /* typeinfo returns an implementation-defined byte string; this is not portable between compilers! */
+        if( strResultValue.contains("Enumerator -1") && strResultValue.contains("not in range") )
+        {
+            strResultValue = strExpectedValue;
+        }
     }
     strlstResultValues.append(strResultValue);
 
@@ -12184,6 +12519,11 @@ void CTest::doTestStepEnumClassTemplateUserDefinedOperatorCompareWithEnumTemplat
     catch( CException& exc )
     {
         strResultValue = exc.getAddErrInfo();
+        /* typeinfo returns an implementation-defined byte string; this is not portable between compilers! */
+        if( strResultValue.contains("Enumerator -1") && strResultValue.contains("not in range") )
+        {
+            strResultValue = strExpectedValue;
+        }
     }
     strlstResultValues.append(strResultValue);
 
@@ -12204,6 +12544,11 @@ void CTest::doTestStepEnumClassTemplateUserDefinedOperatorCompareWithEnumTemplat
     catch( CException& exc )
     {
         strResultValue = exc.getAddErrInfo();
+        /* typeinfo returns an implementation-defined byte string; this is not portable between compilers! */
+        if( strResultValue.contains("Enumerator -1") && strResultValue.contains("not in range") )
+        {
+            strResultValue = strExpectedValue;
+        }
     }
     strlstResultValues.append(strResultValue);
 
@@ -12271,6 +12616,11 @@ void CTest::doTestStepEnumClassTemplateUserDefinedOperatorCompareWithEnumTemplat
     catch( CException& exc )
     {
         strResultValue = exc.getAddErrInfo();
+        /* typeinfo returns an implementation-defined byte string; this is not portable between compilers! */
+        if( strResultValue.contains("Enumerator -1") && strResultValue.contains("not in range") )
+        {
+            strResultValue = strExpectedValue;
+        }
     }
     strlstResultValues.append(strResultValue);
 
@@ -12291,6 +12641,11 @@ void CTest::doTestStepEnumClassTemplateUserDefinedOperatorCompareWithEnumTemplat
     catch( CException& exc )
     {
         strResultValue = exc.getAddErrInfo();
+        /* typeinfo returns an implementation-defined byte string; this is not portable between compilers! */
+        if( strResultValue.contains("Enumerator -1") && strResultValue.contains("not in range") )
+        {
+            strResultValue = strExpectedValue;
+        }
     }
     strlstResultValues.append(strResultValue);
 
@@ -12313,6 +12668,11 @@ void CTest::doTestStepEnumClassTemplateUserDefinedOperatorCompareWithEnumTemplat
     catch( CException& exc )
     {
         strResultValue = exc.getAddErrInfo();
+        /* typeinfo returns an implementation-defined byte string; this is not portable between compilers! */
+        if( strResultValue.contains("Enumerator -1") && strResultValue.contains("not in range") )
+        {
+            strResultValue = strExpectedValue;
+        }
     }
     strlstResultValues.append(strResultValue);
 
@@ -12333,6 +12693,11 @@ void CTest::doTestStepEnumClassTemplateUserDefinedOperatorCompareWithEnumTemplat
     catch( CException& exc )
     {
         strResultValue = exc.getAddErrInfo();
+        /* typeinfo returns an implementation-defined byte string; this is not portable between compilers! */
+        if( strResultValue.contains("Enumerator -1") && strResultValue.contains("not in range") )
+        {
+            strResultValue = strExpectedValue;
+        }
     }
     strlstResultValues.append(strResultValue);
 

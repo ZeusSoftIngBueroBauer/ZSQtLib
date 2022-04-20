@@ -617,8 +617,6 @@ public: // instance methods
 int CMyClass3::recursiveTraceMethod()
 //------------------------------------------------------------------------------
 {
-    static int s_iCount = 0;
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
@@ -674,6 +672,15 @@ bool CMyClass3::event( QEvent* i_pEv )
 
     if( pMsg != nullptr )
     {
+        CMsgReqTest* pMsgReq = dynamic_cast<CMsgReqTest*>(i_pEv);
+
+        // Let the first call to the method sending the event return and unlock
+        // the Counter Mutex before continue to get the same trace output each time.
+        if( pMsgReq != nullptr && pMsgReq->getCommand() == "recursiveTraceMethod" )
+        {
+            CSleeperThread::msleep(10);
+        }
+
         QString strMthInArgs;
 
         if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
@@ -688,8 +695,6 @@ bool CMyClass3::event( QEvent* i_pEv )
             /* strMethodInArgs    */ strMthInArgs );
 
         bHandled = true;
-
-        CMsgReqTest* pMsgReq = dynamic_cast<CMsgReqTest*>(i_pEv);
 
         if( pMsgReq != nullptr )
         {

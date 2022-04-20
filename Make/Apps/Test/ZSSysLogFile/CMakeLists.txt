@@ -51,13 +51,15 @@ list(APPEND _Resources
 )
 
 if(WIN32)
-    set(_Headers ${_Headers}
-        ${_HeadersPath}/ZSSysLogFile/resource.h
-        ${_HeadersPath}/ZSSysLogFile/targetver.h)
     # Add version info as meta information to Dll.
     set(_Resources ${_Resources} ${_ResourcesPath}/../../Libs/ZSSys/ZSSysVersion.rc)
     # Icons.
-    set(_Resources ${_Resources} ${_ResourcesPath}/ZSSysLogFile/${PROJECT_NAME}.rc)
+    if(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
+        set(_Headers ${_Headers}
+            ${_HeadersPath}/ZSSysLogFile/resource.h
+            ${_HeadersPath}/ZSSysLogFile/targetver.h)
+        set(_Resources ${_Resources} ${_ResourcesPath}/ZSSysLogFile/${PROJECT_NAME}.rc)
+    endif()
 endif()
 
 # Got to create the following target name:

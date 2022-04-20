@@ -78,7 +78,7 @@ QIcon CModelIdxTreeTrcAdminObjs::GetIcon( EIdxTreeEntryType i_entryType )
 
     if( !s_bIconsCreated )
     {
-        #ifdef ZSSys_MemLeakDump_h
+        #ifdef _WINDOWS
         #pragma push_macro("_ZSSYS_DBGNEW_CLIENT_BLOCK_SUBTYPE")
         #pragma warning( disable : 4005 )
         #define _ZSSYS_DBGNEW_CLIENT_BLOCK_SUBTYPE 0
@@ -110,7 +110,7 @@ QIcon CModelIdxTreeTrcAdminObjs::GetIcon( EIdxTreeEntryType i_entryType )
         s_pIconLeave->addPixmap(*s_pPxmLeaveEntryNormalOff,   QIcon::Normal,   QIcon::On);
         s_pIconLeave->addPixmap(*s_pPxmLeaveEntrySelectedOff, QIcon::Selected, QIcon::On);
 
-        #ifdef ZSSys_MemLeakDump_h
+        #ifdef _WINDOWS
         #pragma warning( default : 4005 )
         #pragma pop_macro("_ZSSYS_DBGNEW_CLIENT_BLOCK_SUBTYPE")
         #endif

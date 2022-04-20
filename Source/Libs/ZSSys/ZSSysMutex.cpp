@@ -178,7 +178,7 @@ CMutex::CMutex( const QString& i_strObjName, int i_iTrcMthFileDetailLevel ) :
 //------------------------------------------------------------------------------
     QMutex(),
     m_strObjName(i_strObjName),
-    m_iTrcMthFileDetailLevel(ETraceDetailLevelNone),
+    m_iTrcMthFileDetailLevel(i_iTrcMthFileDetailLevel),
     m_pTrcMthFile(nullptr),
     m_pTrcAdminObj(nullptr)
 {

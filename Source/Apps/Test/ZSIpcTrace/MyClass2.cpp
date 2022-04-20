@@ -670,6 +670,9 @@ void CMyClass2::stopClass3Thread()
         if( m_pMyClass3Thread != nullptr && m_pMyClass3Thread->isRunning() )
         {
             m_pMyClass3Thread->quit();
+            // Let the thread quit the event loop (return from exec) before calling wait
+            // to get the same trace output each time.
+            CSleeperThread::msleep(50);
             m_pMyClass3Thread->wait();
         }
 
@@ -741,23 +744,23 @@ bool CMyClass2::event( QEvent* i_pEv )
     {
         CMsgReqTest* pMsgReq = dynamic_cast<CMsgReqTest*>(i_pEv);
 
-        if( pMsgReq != nullptr && pMsgReq->getCommand() == "startClass3Thread" )
+        // Let the first call to the method sending the event return and unlock
+        // the Counter Mutex before continue to get the same trace output each time.
+        if( pMsgReq != nullptr && pMsgReq->getCommand() == "recursiveTraceMethod" )
         {
-            // Let the first call to the method wait on the wait condition after posting
-            // the message to get the same trace output each time.
-            if( m_iRecursionCount == 0 )
-            {
-                CSleeperThread::msleep(10);
-            }
+            CSleeperThread::msleep(10);
         }
-        else if( pMsgReq != nullptr && pMsgReq->getCommand() == "recursiveTraceMethod" )
+        else if( pMsgReq != nullptr && pMsgReq->getCommand() == "startMessageTimer" )
         {
-            // Let the first call to the method sending the event return and unlock
-            // the Counter Mutex before continue to get the same trace output each time.
-            if( m_iRecursionCount == 0 )
-            {
-                CSleeperThread::msleep(10);
-            }
+            CSleeperThread::msleep(10);
+        }
+        else if( pMsgReq != nullptr && pMsgReq->getCommand() == "startClass3Thread" )
+        {
+            CSleeperThread::msleep(10);
+        }
+        else if( pMsgReq != nullptr && pMsgReq->getCommand() == "stopClass3Thread" )
+        {
+            CSleeperThread::msleep(10);
         }
 
         QString strMthInArgs;

@@ -227,18 +227,13 @@ void CTreeViewIdxTreeTestSteps::keyPressEvent(QKeyEvent* i_pEv)
         if( pIdxTreeEntry != nullptr )
         {
             CAbstractTestStepIdxTreeEntry* pTestStepEntry = nullptr;
-            CTestStepGroup*                pTestStepGroup = nullptr;
             CTestStep*                     pTestStep = nullptr;
 
             if( !pIdxTreeEntry->isRoot() )
             {
                 pTestStepEntry = dynamic_cast<CAbstractTestStepIdxTreeEntry*>(pIdxTreeEntry);
 
-                if( pTestStepEntry->isGroup() )
-                {
-                    pTestStepGroup = dynamic_cast<CTestStepGroup*>(pTestStepEntry);
-                }
-                else
+                if( pTestStepEntry->isLeave() )
                 {
                     pTestStep = dynamic_cast<CTestStep*>(pTestStepEntry);
                 }
@@ -407,18 +402,13 @@ void CTreeViewIdxTreeTestSteps::mouseReleaseEvent( QMouseEvent* i_pEv )
     if( pIdxTreeEntry != nullptr )
     {
         CAbstractTestStepIdxTreeEntry* pTestStepEntry = nullptr;
-        CTestStepGroup*                pTestStepGroup = nullptr;
         CTestStep*                     pTestStep = nullptr;
 
         if( !pIdxTreeEntry->isRoot() )
         {
             pTestStepEntry = dynamic_cast<CAbstractTestStepIdxTreeEntry*>(pIdxTreeEntry);
 
-            if( pTestStepEntry->isGroup() )
-            {
-                pTestStepGroup = dynamic_cast<CTestStepGroup*>(pTestStepEntry);
-            }
-            else
+            if( pTestStepEntry->isLeave() )
             {
                 pTestStep = dynamic_cast<CTestStep*>(pTestStepEntry);
             }

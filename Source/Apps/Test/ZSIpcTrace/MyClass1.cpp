@@ -271,6 +271,9 @@ void CMyClass1::stopClass2Thread()
     if( m_pMyClass2Thread != nullptr && m_pMyClass2Thread->isRunning() )
     {
         m_pMyClass2Thread->quit();
+        // Let the thread quit the event loop (return from exec) before calling wait
+        // to get the same trace output each time.
+        CSleeperThread::msleep(50);
         m_pMyClass2Thread->wait();
     }
 

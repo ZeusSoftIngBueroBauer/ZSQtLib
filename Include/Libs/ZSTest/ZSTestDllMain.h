@@ -58,11 +58,24 @@ enum class ETestResult {
     TestPassed = 2,
     Ignore     = 3
 };
+} // namespace Test
+} // namespace ZS
 
-template class ZSTESTDLL_API ZS::System::CEnum<ETestResult>;
-typedef ZS::System::CEnum<ETestResult> CEnumTestResult;
+// MinGW compile error: explicit instantiation of '<namespace>::<templated class>' must occur in namespace '<namespace>'
+// Workaround: close namespaces before defining template class and define it outside namespaces.
+template class ZSTESTDLL_API ZS::System::CEnum<ZS::Test::ETestResult>;
+namespace ZS
+{
+namespace Test
+{
+typedef ZS::System::CEnum<ZS::Test::ETestResult> CEnumTestResult;
+} // namespace Test
+} // namespace ZS
 
-
+namespace ZS
+{
+namespace Test
+{
 //==============================================================================
 /*! Possible states of a test.
 */
@@ -73,13 +86,18 @@ enum class ETestState
     Running = 1,  /*! Test is running. */
     Paused  = 2   /*! Test has been paused. */
 };
-
-template class ZSTESTDLL_API ZS::System::CEnum<ETestState>;
-typedef ZS::System::CEnum<ETestState> CEnumTestState;
-
-
 } // namespace Test
+} // namespace ZS
 
+// MinGW compile error: explicit instantiation of '<namespace>::<templated class>' must occur in namespace '<namespace>'
+// Workaround: close namespaces before defining template class and define it outside namespaces.
+template class ZSTESTDLL_API ZS::System::CEnum<ZS::Test::ETestState>;
+namespace ZS
+{
+namespace Test
+{
+typedef ZS::System::CEnum<ZS::Test::ETestState> CEnumTestState;
+} // namespace Test
 } // namespace ZS
 
 #endif // #ifndef ZSTest_DllMain_h

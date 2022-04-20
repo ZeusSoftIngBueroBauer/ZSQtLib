@@ -1,4 +1,8 @@
-param ($AppName=$null)
+Param (
+    $AppName=$null,
+    $Compiler=$null,
+    $ConfigType=$null
+)
 
 # You need to call this script from the visual studio command prompt.
 # The command prompt may be opened via:
@@ -8,10 +12,9 @@ param ($AppName=$null)
 # Set the execution policy to unrestricted for the current user in the command prompt with:
 # C:\Projekte\ZeusSoft\ZSQtLib\Make> Set-ExecutionPolicy Unrestricted -Scope CurrentUser
 
-if($AppName -eq $null) {
-    $AppName="All"
-}
-
+# If a second application got to be supported the function should be split into a build
+# and a create installer function. Only when building the tests have to be executed. And
+# the build of the libraries is not necessary each time when creating an installer.
 function buildAndInstall {
 
     Param (
@@ -55,7 +58,12 @@ function buildAndInstall {
                 $env:Path = $env:Path + ";C:\Qt\5.15.2\msvc2019_64\bin"
             }
         }
+
+        echo ""
+        echo "cmake -G $Generator . -A $Platform -B $BuildDir -DCMAKE_CONFIGURATION_TYPES=$ConfigType -DCMAKE_BUILD_TYPE=$ConfigType -DCMAKE_INSTALL_PREFIX=$BinDir"
+        cmake -G "$Generator" . -A "$Platform" -B "$BuildDir" -DCMAKE_CONFIGURATION_TYPES="$ConfigType" -DCMAKE_BUILD_TYPE="$ConfigType" -DCMAKE_INSTALL_PREFIX="$BinDir"
     }
+
     if($Generator -eq "MinGW Makefiles") {
         if(-Not $env:Path.Contains("C:\Qt\5.15.2\mingw81_64\bin")) {
             if($env:Path.Contains("C:\Qt\5.15.2\msvc2019_64\bin")) {
@@ -65,11 +73,12 @@ function buildAndInstall {
                 $env:Path = $env:Path + ";C:\Qt\5.15.2\mingw81_64\bin"
             }
         }
-    }
 
-    echo ""
-    echo "cmake -G $Generator -A $Platform -B $BuildDir -DCMAKE_CONFIGURATION_TYPES=$ConfigType -DCMAKE_BUILD_TYPE=$ConfigType -DCMAKE_INSTALL_PREFIX=$BinDir"
-    cmake -G "$Generator" -A "$Platform" -B "$BuildDir" -DCMAKE_CONFIGURATION_TYPES="$ConfigType" -DCMAKE_BUILD_TYPE="$ConfigType" -DCMAKE_INSTALL_PREFIX="$BinDir"
+        # Generator MinGW Makefiles does not support platform specification
+        echo ""
+        echo "cmake -G $Generator . -B $BuildDir -DCMAKE_BUILD_TYPE=$ConfigType -DCMAKE_INSTALL_PREFIX=$BinDir"
+        cmake -G "$Generator" . -B "$BuildDir" -DCMAKE_BUILD_TYPE="$ConfigType" -DCMAKE_INSTALL_PREFIX="$BinDir"
+    }
 
     echo ""
     echo "cmake --build $BuildDir --config=$ConfigType -j6"
@@ -87,16 +96,16 @@ function buildAndInstall {
         Exit 1;
     }
 
-    #echo ""
-    #echo "Run automated test..."
-    #cd $BuildDir
-    #ctest -T test
-    #if(!$?) {
-    #    echo "Error: Automated tests failed"
-    #    cd $PSScriptRoot
-    #    Exit 1;
-    #}
-    #cd $PSScriptRoot
+    echo ""
+    echo "Run automated test..."
+    cd $BuildDir
+    ctest -T test
+    if(!$?) {
+        echo "Error: Automated tests failed"
+        cd $PSScriptRoot
+        Exit 1;
+    }
+    cd $PSScriptRoot
 
     echo ""
     echo "PSScriptRoot:   $PSScriptRoot"
@@ -113,7 +122,9 @@ function buildAndInstall {
 
     if (Test-Path -path $DeployDir) {
         rm -r -Force $DeployDir\*
+        rmdir -Force $DeployDir
     }
+    mkdir -p $DeployDir
 
     echo "Copy apps and libs and resources to $DeployDir"
     if($ConfigType -eq "Debug") {
@@ -150,6 +161,23 @@ function buildAndInstall {
     rm -r -Force Apps\Products\ZS$AppName\Installer\packages\de.zeussoft.$AppName\data\*
 }
 
-buildAndInstall -AppName "TrcMthClient" -Generator "Visual Studio 16 2019" -Compiler "msvc2019" -Platform "x64" -ConfigType "Debug"
+if($AppName -eq $null -Or $AppName -eq "TrcMthClient") {
+    if($Compiler -eq $null -Or $Compiler -eq "msvc2019") {
+        if($ConfigType -eq $null -Or $ConfigType -eq "Debug") {
+            buildAndInstall -AppName "TrcMthClient" -Generator "Visual Studio 16 2019" -Compiler "msvc2019" -Platform "x64" -ConfigType "Debug"
+        }
+        if($ConfigType -eq $null -Or $ConfigType -eq "Release") {
+            buildAndInstall -AppName "TrcMthClient" -Generator "Visual Studio 16 2019" -Compiler "msvc2019" -Platform "x64" -ConfigType "Release"
+        }
+    }
+    if($Compiler -eq $null -Or $Compiler -eq "mingw81") {
+        if($ConfigType -eq $null -Or $ConfigType -eq "Debug") {
+            buildAndInstall -AppName "TrcMthClient" -Generator "MinGW Makefiles" -Compiler "mingw81" -Platform "x64" -ConfigType "Debug"
+        }
+        if($ConfigType -eq $null -Or $ConfigType -eq "Release") {
+            buildAndInstall -AppName "TrcMthClient" -Generator "MinGW Makefiles" -Compiler "mingw81" -Platform "x64" -ConfigType "Release"
+        }
+    }
+}
 
 Exit 0

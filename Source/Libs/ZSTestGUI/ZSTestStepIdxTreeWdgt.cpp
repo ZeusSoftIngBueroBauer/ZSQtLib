@@ -77,10 +77,10 @@ CWdgtIdxTreeTestSteps::CWdgtIdxTreeTestSteps(
     m_pBtnTreeViewResizeRowsAndColumnsToContents(nullptr),
     m_pBtnTreeViewExpandAll(nullptr),
     m_pBtnTreeViewCollapseAll(nullptr),
-    m_pLblTestStepCurr(nullptr),
-    m_pEdtTestStepCurr(nullptr),
     m_pLblTestStepIntervalInMs(nullptr),
     m_pEdtTestStepIntervalInMs(nullptr),
+    m_pLblTestStepCurr(nullptr),
+    m_pEdtTestStepCurr(nullptr),
     m_pTestStepsModel(nullptr),
     m_pTreeViewTestSteps(nullptr)
 {
@@ -450,10 +450,10 @@ CWdgtIdxTreeTestSteps::~CWdgtIdxTreeTestSteps()
     m_pBtnTreeViewResizeRowsAndColumnsToContents = nullptr;
     m_pBtnTreeViewExpandAll = nullptr;
     m_pBtnTreeViewCollapseAll = nullptr;
-    m_pLblTestStepCurr = nullptr;
-    m_pEdtTestStepCurr = nullptr;
     m_pLblTestStepIntervalInMs = nullptr;
     m_pEdtTestStepIntervalInMs = nullptr;
+    m_pLblTestStepCurr = nullptr;
+    m_pEdtTestStepCurr = nullptr;
     m_pTestStepsModel = nullptr;
     m_pTreeViewTestSteps = nullptr;
 

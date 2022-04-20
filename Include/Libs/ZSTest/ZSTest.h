@@ -108,6 +108,7 @@ public: // instance methods
     int getNumberOfFailedTestSteps() const;
     int getNumberOfPassedTestSteps() const;
     int getNumberOfDisabledTestSteps() const;
+    int getNumberOfTestRuns() const;
 public: // instance methods
     QString getTestResultsAbsFilePath() const { return m_strTestResultsAbsFilePath; }
     virtual ZS::System::SErrResultInfo saveTestResults(

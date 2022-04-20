@@ -773,6 +773,18 @@ int CTest::getNumberOfDisabledTestSteps() const
 
 } // getNumberOfDisabledTestSteps
 
+//------------------------------------------------------------------------------
+/*! @brief Returns the number of test runs (how many times the test has been started).
+
+    @return Number of test runs.
+*/
+int CTest::getNumberOfTestRuns() const
+//------------------------------------------------------------------------------
+{
+    return m_iNumberOfTestRuns;
+}
+
+
 /*==============================================================================
 public: // instance methods
 ==============================================================================*/
@@ -906,11 +918,9 @@ SErrResultInfo CTest::saveTestResults( const QString& i_strAbsFilePath, bool i_b
         out << "Number of disabled test steps: " << QString::number(iNumberOfDisabledTestSteps) << "\n";
         out << "\n\n";
 
-        CIdxTree::iterator itIdxTree = m_pIdxTree->begin();
-
         QString strIndent;
 
-        for( auto& itIdxTree = m_pIdxTree->begin(); itIdxTree != m_pIdxTree->end(); ++itIdxTree )
+        for( auto itIdxTree = m_pIdxTree->begin(); itIdxTree != m_pIdxTree->end(); ++itIdxTree )
         {
             CIdxTreeEntry* pTreeEntry = *itIdxTree;
 
@@ -1197,7 +1207,6 @@ void CTest::setState( const CEnumTestState& i_state )
 
     if( m_state != i_state )
     {
-        CEnumTestState statePrev = m_state;
         m_state = i_state;
         emit stateChanged(m_state);
     }
@@ -1230,7 +1239,6 @@ void CTest::setRunMode( const CEnumRunMode& i_runMode )
 
     if( m_runMode != i_runMode )
     {
-        CEnumRunMode runModePrev = m_runMode;
         m_runMode = i_runMode;
         emit runModeChanged(m_runMode);
     }
@@ -1560,7 +1568,6 @@ void CTest::triggerNextTestStep( int i_iInterval_ms )
 
             CEnumTestResult testResult = getTestResult();
             emit testFinished(testResult);
-
         }
     }
 } // triggerNextTestStep

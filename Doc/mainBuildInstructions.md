@@ -56,37 +56,37 @@ to use the same install directory for debug and release builds.
 
 **Generator: Visual Studio 16 (2019)
 
-First change working directory to the root directory of the repository (one level above the main CMakeList file).
+First change working directory to where this CMakeList file is located ("<root of the repository>/Make").
 
 To generate, build and install a release build with x64 platform use the following commands:
 
 - Release Build
 
-      cmake -G "Visual Studio 16 2019" -A x64 .\Make -B .\Build\msvc2019_x64_Release -DCMAKE_CONFIGURATION_TYPES="Release" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=".\Bin\msvc2019_x64"
+      cmake -G "Visual Studio 16 2019" -A x64 . -B ..\Build\msvc2019_x64_Release -DCMAKE_CONFIGURATION_TYPES="Release" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="..\Bin\msvc2019_x64"
       cmake --build .\Build\msvc2019_x64_Release --config=Release -j8
       cmake --install .\Build\msvc2019_x61_Release --config=Release
 
 - Debug Build
 
-      cmake -G "Visual Studio 16 2019" -A x64 .\Make -B .\Build\msvc2019_x64_Debug -DCMAKE_CONFIGURATION_TYPES="Debug" -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=".\Bin\msvc2019_x64"
+      cmake -G "Visual Studio 16 2019" -A x64 . -B ..\Build\msvc2019_x64_Debug -DCMAKE_CONFIGURATION_TYPES="Debug" -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX="..\Bin\msvc2019_x64"
       cmake --build .\Build\msvc2019_x64_Debug --config=Debug -j8
       cmake --install .\Build\msvc2019_x64_Debug --config=Debug
 
 **Generator: MinGW Makefiles**
 
-First change working directory to the root directory of the repository (one level above the main CMakeList file).
+First change working directory to where this CMakeList file is located ("<root of the repository>/Make").
 
 To generate, build and install a release build use the following commands (x64 is used as default):
 
 - Release Build
 
-      cmake -G "MinGW Makefiles" .\Make -B .\Build\mingw81_x64_Release -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=".\Bin\mingw81_x64"
+      cmake -G "MinGW Makefiles" . -B ..\Build\mingw81_x64_Release -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="..\Bin\mingw81_x64"
       cmake --build .\Build\mingw81_x64_Release -j8
       cmake --install .\Build\mingw81_x64_Release
 
 - Debug Build
 
-      cmake -G "MinGW Makefiles" .\Make -B .\Build\mingw81_x64_Debug -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=".\Bin\mingw81_x64"
+      cmake -G "MinGW Makefiles" . -B ..\Build\mingw81_x64_Debug -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX="..\Bin\mingw81_x64"
       cmake --build .\Build\mingw81_x64_Debug -j8
       cmake --install .\Build\mingw81_x64_Debug
 

@@ -33,8 +33,6 @@ set(_ResourcesPath ${CMAKE_CURRENT_SOURCE_DIR}/../../../../Resources/Apps/Test)
 
 list(APPEND _Headers
     ${_HeadersPath}/../../Libs/ZSSys/ZSSysVersion.h
-    ${_HeadersPath}/ZSIpcTraceDllIfWinApp/resource.h
-    ${_HeadersPath}/ZSIpcTraceDllIfWinApp/targetver.h
     ${_HeadersPath}/ZSIpcTraceDllIfWinApp/stdafx.h
     ${_HeadersPath}/ZSIpcTraceDllIfWinApp/TestModule1.h
     ${_HeadersPath}/ZSIpcTraceDllIfWinApp/TestModule2.h
@@ -60,7 +58,12 @@ if(WIN32)
     # Add version info as meta information to Dll.
     set(_Resources ${_Resources} ${_ResourcesPath}/../../Libs/ZSSys/ZSSysVersion.rc)
     # Icons.
-    set(_Resources ${_Resources} ${_ResourcesPath}/ZSIpcTraceDllIfWinApp/${PROJECT_NAME}.rc)
+    if(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
+        set(_Headers ${_Headers}
+            ${_HeadersPath}/ZSIpcTraceDllIfWinApp/resource.h
+            ${_HeadersPath}/ZSIpcTraceDllIfWinApp/targetver.h)
+        set(_Resources ${_Resources} ${_ResourcesPath}/ZSIpcTraceDllIfWinApp/${PROJECT_NAME}.rc)
+    endif()
 endif()
 
 # Got to create the following target name:
