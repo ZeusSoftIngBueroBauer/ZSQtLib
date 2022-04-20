@@ -16,9 +16,3 @@ classes or indicate the content of the data model classes.
 ![Packages](Doc/Packages.png)
 
 - [Build Instructions](Doc/mainBuildInstructions.md)
-- [Coding Guidelines](Doc/mainCodingGuidelines.md)
-- [Enumerations](Doc/mainEnumerations.md)
-- [Error Handling](Doc/mainErrorHandling.md)
-- [Index Tree](Doc/mainIndexTree.md)
-- [MemLeakDetection](Doc/mainMemLeakDetection.md)
-- [Method Tracing](Doc/mainMethodTracing.md)
