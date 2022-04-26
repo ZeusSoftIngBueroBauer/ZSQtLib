@@ -602,9 +602,7 @@ void CMainWindow::onActDebugZSTrcServerTriggered()
 
         if( pDlg == nullptr )
         {
-            pDlg = CDlgTrcServer::CreateInstance(
-                /* strObjName  */ pServer->objectName(),
-                /* strDlgTitle */ strDlgTitle);
+            pDlg = CDlgTrcServer::CreateInstance(strDlgTitle, pServer->objectName());
             pDlg->setServer(pServer);
             pDlg->setAttribute(Qt::WA_DeleteOnClose, true);
             pDlg->adjustSize();
@@ -637,8 +635,8 @@ void CMainWindow::onActDebugZSTrcServerAdminObjIdxTreeTriggered()
         if( pDlg == nullptr )
         {
             pDlg = CDlgIdxTreeTrcAdminObjs::CreateInstance(
-                /* pTrcAdmIdxTree  */ pServer->getTraceAdminObjIdxTree(),
                 /* strDlgTitle     */ strDlgTitle,
+                /* pTrcAdmIdxTree  */ pServer->getTraceAdminObjIdxTree(),
                 /* pWdgtParent     */ nullptr,
                 /* wFlags          */ Qt::WindowFlags(),
                 /* iTrcDetailLevel */ CApplication::GetInstance()->getTraceDetailLevelTrcServer() );
@@ -672,7 +670,7 @@ void CMainWindow::onActDebugZSTrcClientTriggered()
 
         if( pDlg == nullptr )
         {
-            pDlg = CDlgTrcClient::CreateInstance(pTrcClient->objectName(), strDlgTitle);
+            pDlg = CDlgTrcClient::CreateInstance(strDlgTitle, pTrcClient->objectName());
             pDlg->setClient(pTrcClient);
             pDlg->setAttribute(Qt::WA_DeleteOnClose, true);
             pDlg->adjustSize();
@@ -705,8 +703,8 @@ void CMainWindow::onActDebugZSTrcClientAdminObjIdxTreeTriggered()
         if( pDlg == nullptr )
         {
             pDlg = CDlgIdxTreeTrcAdminObjs::CreateInstance(
-                /* pTrcAdmObjPool  */ pTrcClient->getTraceAdminObjIdxTree(),
                 /* strDlgTitle     */ strDlgTitle,
+                /* pTrcAdmObjPool  */ pTrcClient->getTraceAdminObjIdxTree(),
                 /* pWdgtParent     */ nullptr,
                 /* wflags          */ Qt::WindowFlags(),
                 /* iTrcDetailLevel */ CApplication::GetInstance()->getTraceDetailLevelTrcServer() );
@@ -764,7 +762,7 @@ void CMainWindow::onActDebugRequestExecTreeTriggered()
 
     if( pDlg == nullptr )
     {
-        pDlg = CDlgRequestExecTree::CreateInstance("ReqExecTree", strDlgTitle);
+        pDlg = CDlgRequestExecTree::CreateInstance(strDlgTitle, "ReqExecTree");
         pDlg->setAttribute(Qt::WA_DeleteOnClose, true);
         pDlg->adjustSize();
         pDlg->show();

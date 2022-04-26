@@ -274,10 +274,13 @@ CTrcAdminObj* CIdxTreeTrcAdminObjs::getTraceAdminObj(
     The reference counter of the trace admin object will be incremented.
 
     @param i_idxInTree [in] Index of the trace admin object.
+    @param i_bIncrementRefCount [in]
+        true to increment the reference counter of the trace admin object.
+        false is used on clients side on receiving method trace data.
 
     @return Pointer to allocated trace admin objecct or nullptr on error.
 */
-CTrcAdminObj* CIdxTreeTrcAdminObjs::getTraceAdminObj( int i_idxInTree ) const
+CTrcAdminObj* CIdxTreeTrcAdminObjs::getTraceAdminObj( int i_idxInTree, bool i_bIncrementRefCount )
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(m_pMtx);
@@ -301,7 +304,7 @@ CTrcAdminObj* CIdxTreeTrcAdminObjs::getTraceAdminObj( int i_idxInTree ) const
 
     CTrcAdminObj* pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(getEntry(i_idxInTree));
 
-    if( pTrcAdminObj != nullptr )
+    if( pTrcAdminObj != nullptr && i_bIncrementRefCount )
     {
         pTrcAdminObj->incrementRefCount();
     }

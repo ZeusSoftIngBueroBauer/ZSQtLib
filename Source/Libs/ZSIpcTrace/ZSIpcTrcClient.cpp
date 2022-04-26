@@ -38,6 +38,7 @@ may result in using the software modules.
 #include "ZSSys/ZSSysErrLog.h"
 #include "ZSSys/ZSSysException.h"
 #include "ZSSys/ZSSysRequest.h"
+#include "ZSSys/ZSSysRequestExecTree.h"
 #include "ZSSys/ZSSysTime.h"
 #include "ZSSys/ZSSysTrcAdminObj.h"
 #include "ZSSys/ZSSysTrcAdminObjIdxTree.h"
@@ -194,6 +195,56 @@ CIpcTrcClient::~CIpcTrcClient()
 } // dtor
 
 /*==============================================================================
+public: // overridables of the remote connection
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+CRequest* CIpcTrcClient::connect_( int i_iTimeout_ms, bool i_bWait, qint64 i_iReqIdParent )
+//------------------------------------------------------------------------------
+{
+    QString strAddTrcInfo;
+
+    if( isMethodTraceActive(ETraceDetailLevelMethodArgs) )
+    {
+        strAddTrcInfo  = "Timeout: " + QString::number(i_iTimeout_ms) + " ms";
+        strAddTrcInfo += ", Wait: " + bool2Str(i_bWait);
+        strAddTrcInfo += ", ParentRequest {" + CRequestExecTree::GetAddTrcInfoStr(i_iReqIdParent) + "}";
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj          */ m_pTrcAdminObj,
+        /* pTrcMthFile        */ m_pTrcMthFile,
+        /* iTrcDetailLevel    */ m_iTrcMthFileDetailLevel,
+        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* strNameSpace       */ nameSpace(),
+        /* strClassName       */ className(),
+        /* strObjName         */ objectName(),
+        /* strMethod          */ "connect_",
+        /* strAddInfo         */ strAddTrcInfo );
+
+    // Before the index tree can be cleared the ref counters of the trace admin objects
+    // got to be reset to avoid an err log entry (object ref counter is not 0 in dtor).
+
+    m_strRemoteApplicationName = "";
+    m_strRemoteServerName = "";
+
+    // To avoid err log entry: The dtor is called even if the objects reference counter is not 0.
+    resetTrcAdminRefCounters(m_pTrcAdminObjIdxTree->root());
+
+    m_pTrcAdminObjIdxTree->clear();
+
+    CRequest* pReq = CClient::connect_(i_iTimeout_ms, i_bWait, i_iReqIdParent);
+
+    if( isMethodTraceActive(ETraceDetailLevelMethodArgs) )
+    {
+        strAddTrcInfo = QString( pReq == nullptr ? "SUCCESS" : pReq->getResultStr() );
+        mthTracer.setMethodReturn(strAddTrcInfo);
+    }
+
+    return pReq;
+}
+
+/*==============================================================================
 public: // instance methods to read remote application settings
 ==============================================================================*/
 
@@ -258,14 +309,6 @@ void CIpcTrcClient::setTraceSettings( const STrcServerSettings& i_settings )
             {
                 strMsg += " Enabled=\"" + bool2Str(i_settings.m_bEnabled) + "\"";
             }
-            if( m_trcServerSettings.m_bCacheDataIfNotConnected != i_settings.m_bCacheDataIfNotConnected )
-            {
-                strMsg += " CacheDataIfNotConnected=\"" + bool2Str(i_settings.m_bCacheDataIfNotConnected) + "\"";
-            }
-            if( m_trcServerSettings.m_iCacheDataMaxArrLen != i_settings.m_iCacheDataMaxArrLen )
-            {
-                strMsg += " CacheDataMaxArrLen =\"" + QString::number(i_settings.m_iCacheDataMaxArrLen) + "\"";
-            }
             if( m_trcServerSettings.m_bNewTrcAdminObjsEnabledAsDefault != i_settings.m_bNewTrcAdminObjsEnabledAsDefault )
             {
                 strMsg += " NewTrcAdminObjsEnabledAsDefault=\"" + bool2Str(i_settings.m_bNewTrcAdminObjsEnabledAsDefault) + "\"";
@@ -273,6 +316,18 @@ void CIpcTrcClient::setTraceSettings( const STrcServerSettings& i_settings )
             if( m_trcServerSettings.m_iNewTrcAdminObjsDefaultDetailLevel != i_settings.m_iNewTrcAdminObjsDefaultDetailLevel )
             {
                 strMsg += " NewTrcAdminObjsDefaultDetailLevel=\"" + QString::number(i_settings.m_iNewTrcAdminObjsDefaultDetailLevel) + "\"";
+            }
+            if( m_trcServerSettings.m_bUseIpcServer != i_settings.m_bUseIpcServer )
+            {
+                strMsg += " UseIpcServer=\"" + bool2Str(i_settings.m_bUseIpcServer) + "\"";
+            }
+            if( m_trcServerSettings.m_bCacheDataIfNotConnected != i_settings.m_bCacheDataIfNotConnected )
+            {
+                strMsg += " CacheDataIfNotConnected=\"" + bool2Str(i_settings.m_bCacheDataIfNotConnected) + "\"";
+            }
+            if( m_trcServerSettings.m_iCacheDataMaxArrLen != i_settings.m_iCacheDataMaxArrLen )
+            {
+                strMsg += " CacheDataMaxArrLen =\"" + QString::number(i_settings.m_iCacheDataMaxArrLen) + "\"";
             }
             if( m_trcServerSettings.m_bUseLocalTrcFile != i_settings.m_bUseLocalTrcFile )
             {
@@ -303,7 +358,7 @@ void CIpcTrcClient::setTraceSettings( const STrcServerSettings& i_settings )
             {
                 pReq = nullptr; // deleted later by request queue
             }
-        }
+        } // if( !m_bOnReceivedDataUpdateInProcess && isConnected() )
 
         m_trcServerSettings = i_settings;
 
@@ -313,7 +368,7 @@ void CIpcTrcClient::setTraceSettings( const STrcServerSettings& i_settings )
             emit traceSettingsChanged(this);
         }
     }
-}
+} // setTraceSettings
 
 /*==============================================================================
 protected: // instance methods to send admin objects to the connected server
@@ -445,8 +500,6 @@ void CIpcTrcClient::onReceivedData( const QByteArray& i_byteArr )
         /* strMethod          */ "onReceivedData",
         /* strMthInArgs       */ strMthInArgs );
 
-    m_bOnReceivedDataUpdateInProcess = true;
-
     QString                     str = byteArr2Str(i_byteArr);
     const QChar*                pcData = str.data();
     int                         iDataLen = str.size();
@@ -536,20 +589,6 @@ void CIpcTrcClient::onReceivedData( const QByteArray& i_byteArr )
                             if( bOk ) trcServerSettings.m_bEnabled = bVal;
                             else xmlStreamReader.raiseError("Attribute \"Enabled\" (" + strAttr + ") is out of range");
                         }
-                        if( xmlStreamReader.attributes().hasAttribute("CacheDataIfNotConnected") )
-                        {
-                            strAttr = xmlStreamReader.attributes().value("CacheDataIfNotConnected").toString();
-                            bVal = str2Bool(strAttr, &bOk);
-                            if( bOk ) trcServerSettings.m_bCacheDataIfNotConnected = bVal;
-                            else xmlStreamReader.raiseError("Attribute \"CacheDataIfNotConnected\" (" + strAttr + ") is out of range");
-                        }
-                        if( xmlStreamReader.attributes().hasAttribute("CacheDataMaxArrLen") )
-                        {
-                            strAttr = xmlStreamReader.attributes().value("CacheDataMaxArrLen").toString();
-                            iVal = strAttr.toInt(&bOk);
-                            if( bOk ) trcServerSettings.m_iCacheDataMaxArrLen = iVal;
-                            else xmlStreamReader.raiseError("Attribute \"CacheDataMaxArrLen\" (" + strAttr + ") is out of range");
-                        }
                         if( xmlStreamReader.attributes().hasAttribute("AdminObjFileAbsFilePath") )
                         {
                             strAttr = xmlStreamReader.attributes().value("AdminObjFileAbsFilePath").toString();
@@ -568,6 +607,27 @@ void CIpcTrcClient::onReceivedData( const QByteArray& i_byteArr )
                             iVal = strAttr.toInt(&bOk);
                             if( bOk ) trcServerSettings.m_iNewTrcAdminObjsDefaultDetailLevel = iVal;
                             else xmlStreamReader.raiseError("Attribute \"NewTrcAdminObjsDefaultDetailLevel\" (" + strAttr + ") is out of range");
+                        }
+                        if( xmlStreamReader.attributes().hasAttribute("UseIpcServer") )
+                        {
+                            strAttr = xmlStreamReader.attributes().value("UseIpcServer").toString();
+                            bVal = str2Bool(strAttr, &bOk);
+                            if( bOk ) trcServerSettings.m_bUseIpcServer = bVal;
+                            else xmlStreamReader.raiseError("Attribute \"UseIpcServer\" (" + strAttr + ") is out of range");
+                        }
+                        if( xmlStreamReader.attributes().hasAttribute("CacheDataIfNotConnected") )
+                        {
+                            strAttr = xmlStreamReader.attributes().value("CacheDataIfNotConnected").toString();
+                            bVal = str2Bool(strAttr, &bOk);
+                            if( bOk ) trcServerSettings.m_bCacheDataIfNotConnected = bVal;
+                            else xmlStreamReader.raiseError("Attribute \"CacheDataIfNotConnected\" (" + strAttr + ") is out of range");
+                        }
+                        if( xmlStreamReader.attributes().hasAttribute("CacheDataMaxArrLen") )
+                        {
+                            strAttr = xmlStreamReader.attributes().value("CacheDataMaxArrLen").toString();
+                            iVal = strAttr.toInt(&bOk);
+                            if( bOk ) trcServerSettings.m_iCacheDataMaxArrLen = iVal;
+                            else xmlStreamReader.raiseError("Attribute \"CacheDataMaxArrLen\" (" + strAttr + ") is out of range");
                         }
                         if( xmlStreamReader.attributes().hasAttribute("UseLocalTrcFile") )
                         {
@@ -618,7 +678,9 @@ void CIpcTrcClient::onReceivedData( const QByteArray& i_byteArr )
                         // here also and emit the signal.
                         if( bRemoteNameChanged || trcServerSettings != m_trcServerSettings )
                         {
+                            m_bOnReceivedDataUpdateInProcess = true;
                             setTraceSettings(trcServerSettings);
+                            m_bOnReceivedDataUpdateInProcess = false;
                             emit traceSettingsChanged(this);
                         }
                     } // if( strElemName == "ServerSettings" )
@@ -672,6 +734,8 @@ void CIpcTrcClient::onReceivedData( const QByteArray& i_byteArr )
 
                             if( !xmlStreamReader.hasError() )
                             {
+                                m_bOnReceivedDataUpdateInProcess = true;
+
                                 CIdxTreeEntry* pBranch = m_pTrcAdminObjIdxTree->getEntry(idxInTree);
 
                                 if( strBranchName.isEmpty() && pBranch == nullptr )
@@ -687,7 +751,8 @@ void CIpcTrcClient::onReceivedData( const QByteArray& i_byteArr )
                                     if( enabled != EEnabled::Undefined ) m_pTrcAdminObjIdxTree->setEnabled(pBranch, enabled);
                                     if( iDetailLevel >= 0 ) m_pTrcAdminObjIdxTree->setTraceDetailLevel(pBranch, iDetailLevel);
                                 }
-                            } // if( !xmlStreamReader.hasError() )
+                                m_bOnReceivedDataUpdateInProcess = false;
+                            }
                         } // if( idxInTree >= 0 )
                     } // if( strElemName == "Branch" )
 
@@ -763,7 +828,9 @@ void CIpcTrcClient::onReceivedData( const QByteArray& i_byteArr )
 
                             if( !xmlStreamReader.hasError() )
                             {
-                                CTrcAdminObj* pTrcAdminObj = m_pTrcAdminObjIdxTree->getTraceAdminObj(idxInTree);
+                                m_bOnReceivedDataUpdateInProcess = true;
+
+                                CTrcAdminObj* pTrcAdminObj = m_pTrcAdminObjIdxTree->getTraceAdminObj(idxInTree, false);
 
                                 if( pTrcAdminObj != nullptr )
                                 {
@@ -801,6 +868,8 @@ void CIpcTrcClient::onReceivedData( const QByteArray& i_byteArr )
                                         }
                                     }
                                 }
+                                m_bOnReceivedDataUpdateInProcess = false;
+
                             } // if( !xmlStreamReader.hasError() )
                         } // if( idxInTree >= 0 )
                     } // if( strTblName == "TrcAdminObj" )
@@ -827,8 +896,6 @@ void CIpcTrcClient::onReceivedData( const QByteArray& i_byteArr )
             }
         }
     } // if( systemMsgTypeOfData == MsgProtocol::ESystemMsgTypeCon || systemMsgTypeOfData == MsgProtocol::ESystemMsgTypeInd )
-
-    m_bOnReceivedDataUpdateInProcess = false;
 
 } // onReceivedData
 
@@ -857,6 +924,11 @@ void CIpcTrcClient::onIpcClientConnected( QObject* /*i_pClient*/ )
         /* strMthInArgs       */ strMthInArgs );
 
     // Request the trace admin objects from the server:
+    // Not necessary as the trace server must send the settings,
+    // the trace admin object tree and the cached trace data when
+    // the client connects.
+
+    #if 0
     QString strMsg;
 
     // Select (query) the settings of the trace server.
@@ -880,6 +952,7 @@ void CIpcTrcClient::onIpcClientConnected( QObject* /*i_pClient*/ )
     strMsg += "<TrcData/>";
 
     sendData( str2ByteArr(strMsg) );
+    #endif
 
 } // onIpcClientConnected
 
@@ -902,17 +975,6 @@ void CIpcTrcClient::onIpcClientDisconnected( QObject* /*i_pClient*/ )
         /* strObjName         */ objectName(),
         /* strMethod          */ "onIpcClientDisconnected",
         /* strMthInArgs       */ strMthInArgs );
-
-    // Before the index tree can be cleared the ref counters of the trace admin objects
-    // got to be reset to avoid an err log entry (object ref counter is not 0 in dtor).
-
-    m_strRemoteApplicationName = "";
-    m_strRemoteServerName = "";
-
-    // To avoid err log entry: The dtor is called even if the objects reference counter is not 0.
-    resetTrcAdminRefCounters(m_pTrcAdminObjIdxTree->root());
-
-    m_pTrcAdminObjIdxTree->clear();
 
 } // onIpcClientDisconnected
 

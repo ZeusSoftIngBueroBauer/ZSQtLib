@@ -91,16 +91,18 @@ CWdgtTrcSettings::CWdgtTrcSettings( const QString& i_strObjName, QWidget* i_pWdg
     m_pEdtServerName(nullptr),
     m_pLblTracingEnabled(nullptr),
     m_pChkTracingEnabled(nullptr),
-    m_pLblCacheDataIfNotConnected(nullptr),
-    m_pChkCacheDataIfNotConnected(nullptr),
-    m_pLblCacheDataMaxArrLen(nullptr),
-    m_pEdtCacheDataMaxArrLen(nullptr),
     m_pLblAdminObjFileAbsFilePath(nullptr),
     m_pEdtAdminObjFileAbsFilePath(nullptr),
     m_pLblNewTrcAdminObjsEnabledAsDefault(nullptr),
     m_pChkNewTrcAdminObjsEnabledAsDefault(nullptr),
     m_pLblNewTrcAdminObjsDefaultDetailLevel(nullptr),
     m_pEdtNewTrcAdminObjsDefaultDetailLevel(nullptr),
+    m_pLblUseIpcServer(nullptr),
+    m_pChkUseIpcServer(nullptr),
+    m_pLblCacheDataIfNotConnected(nullptr),
+    m_pChkCacheDataIfNotConnected(nullptr),
+    m_pLblCacheDataMaxArrLen(nullptr),
+    m_pEdtCacheDataMaxArrLen(nullptr),
     m_pLblUseLocalTrcFile(nullptr),
     m_pChkUseLocalTrcFile(nullptr),
     m_pLblLocalTrcFileAbsFilePath(nullptr),
@@ -168,26 +170,6 @@ CWdgtTrcSettings::CWdgtTrcSettings( const QString& i_strObjName, QWidget* i_pWdg
     m_pChkTracingEnabled->setChecked(trcSettings.m_bEnabled);
     m_pLytSettings->addRow(m_pLblTracingEnabled, m_pChkTracingEnabled);
 
-    // <CheckBox> Cache Data
-    //----------------------
-
-    m_pLblCacheDataIfNotConnected = new QLabel("Cache Data:");
-    m_pLblCacheDataIfNotConnected->setFixedWidth(iLblWidth);
-    m_pChkCacheDataIfNotConnected = new QCheckBox();
-    m_pChkCacheDataIfNotConnected->setChecked(trcSettings.m_bCacheDataIfNotConnected);
-    m_pLytSettings->addRow(m_pLblCacheDataIfNotConnected, m_pChkCacheDataIfNotConnected);
-
-    // <SpinBox> Cache Data MaxArrLen
-    //--------------------------------
-
-    m_pLblCacheDataMaxArrLen = new QLabel("MaxArrLen:");
-    m_pLblCacheDataMaxArrLen->setFixedWidth(iLblWidth);
-    m_pEdtCacheDataMaxArrLen = new QSpinBox();
-    m_pEdtCacheDataMaxArrLen->setMinimum(1);
-    m_pEdtCacheDataMaxArrLen->setMaximum(100000);
-    m_pEdtCacheDataMaxArrLen->setValue(trcSettings.m_iCacheDataMaxArrLen);
-    m_pLytSettings->addRow( m_pLblCacheDataMaxArrLen, m_pEdtCacheDataMaxArrLen );
-
     // <Separator>
     //-------------
 
@@ -227,6 +209,46 @@ CWdgtTrcSettings::CWdgtTrcSettings( const QString& i_strObjName, QWidget* i_pWdg
     m_pEdtNewTrcAdminObjsDefaultDetailLevel->setMaximum(10);
     m_pEdtNewTrcAdminObjsDefaultDetailLevel->setValue(trcSettings.m_iNewTrcAdminObjsDefaultDetailLevel);
     m_pLytSettings->addRow(m_pLblNewTrcAdminObjsDefaultDetailLevel, m_pEdtNewTrcAdminObjsDefaultDetailLevel);
+
+    // <Separator>
+    //-------------
+
+    pLine = new QFrame();
+    pLine->setFrameShape(QFrame::HLine);
+    pLine->setFrameShadow(QFrame::Sunken);
+    m_pLytSettings->addRow(pLine);
+
+    // Ipc Server
+    //===========
+
+    // <CheckBox> Use Ipc Server
+    //--------------------------
+
+    m_pLblUseIpcServer = new QLabel("Remote Tracing:");
+    m_pLblUseIpcServer->setFixedWidth(iLblWidth);
+    m_pChkUseIpcServer = new QCheckBox();
+    m_pChkUseIpcServer->setChecked(trcSettings.m_bUseIpcServer);
+    m_pLytSettings->addRow(m_pLblUseIpcServer, m_pChkUseIpcServer);
+
+    // <CheckBox> Cache Data
+    //----------------------
+
+    m_pLblCacheDataIfNotConnected = new QLabel("Cache Data:");
+    m_pLblCacheDataIfNotConnected->setFixedWidth(iLblWidth);
+    m_pChkCacheDataIfNotConnected = new QCheckBox();
+    m_pChkCacheDataIfNotConnected->setChecked(trcSettings.m_bCacheDataIfNotConnected);
+    m_pLytSettings->addRow(m_pLblCacheDataIfNotConnected, m_pChkCacheDataIfNotConnected);
+
+    // <SpinBox> Cache Data MaxArrLen
+    //--------------------------------
+
+    m_pLblCacheDataMaxArrLen = new QLabel("MaxArrLen:");
+    m_pLblCacheDataMaxArrLen->setFixedWidth(iLblWidth);
+    m_pEdtCacheDataMaxArrLen = new QSpinBox();
+    m_pEdtCacheDataMaxArrLen->setMinimum(1);
+    m_pEdtCacheDataMaxArrLen->setMaximum(100000);
+    m_pEdtCacheDataMaxArrLen->setValue(trcSettings.m_iCacheDataMaxArrLen);
+    m_pLytSettings->addRow( m_pLblCacheDataMaxArrLen, m_pEdtCacheDataMaxArrLen );
 
     // <Separator>
     //-------------
@@ -380,16 +402,18 @@ CWdgtTrcSettings::~CWdgtTrcSettings()
     m_pEdtServerName = nullptr;
     m_pLblTracingEnabled = nullptr;
     m_pChkTracingEnabled = nullptr;
-    m_pLblCacheDataIfNotConnected = nullptr;
-    m_pChkCacheDataIfNotConnected = nullptr;
-    m_pLblCacheDataMaxArrLen = nullptr;
-    m_pEdtCacheDataMaxArrLen = nullptr;
     m_pLblAdminObjFileAbsFilePath = nullptr;
     m_pEdtAdminObjFileAbsFilePath = nullptr;
     m_pLblNewTrcAdminObjsEnabledAsDefault = nullptr;
     m_pChkNewTrcAdminObjsEnabledAsDefault = nullptr;
     m_pLblNewTrcAdminObjsDefaultDetailLevel = nullptr;
     m_pEdtNewTrcAdminObjsDefaultDetailLevel = nullptr;
+    m_pLblUseIpcServer = nullptr;
+    m_pChkUseIpcServer = nullptr;
+    m_pLblCacheDataIfNotConnected = nullptr;
+    m_pChkCacheDataIfNotConnected = nullptr;
+    m_pLblCacheDataMaxArrLen = nullptr;
+    m_pEdtCacheDataMaxArrLen = nullptr;
     m_pLblUseLocalTrcFile = nullptr;
     m_pChkUseLocalTrcFile = nullptr;
     m_pLblLocalTrcFileAbsFilePath = nullptr;
@@ -554,6 +578,11 @@ void CWdgtTrcSettings::setClient( CIpcTrcClient* i_pTrcClient )
         }
 
         // GUI controls will be enabled if the trace client connects with the server.
+        if( m_pTrcClient->isConnected() )
+        {
+            connectGuiControlsOnValueChangedSignals();
+            enableGuiControls(true);
+        }
     }
 
 } // setClient
@@ -567,10 +596,11 @@ void CWdgtTrcSettings::enableGuiControls( bool i_bEnabled )
 //------------------------------------------------------------------------------
 {
     m_pChkTracingEnabled->setEnabled(i_bEnabled);
-    m_pChkCacheDataIfNotConnected->setEnabled(i_bEnabled);
-    m_pEdtCacheDataMaxArrLen->setEnabled(i_bEnabled);
     m_pChkNewTrcAdminObjsEnabledAsDefault->setEnabled(i_bEnabled);
     m_pEdtNewTrcAdminObjsDefaultDetailLevel->setEnabled(i_bEnabled);
+    m_pChkUseIpcServer->setEnabled(i_bEnabled);
+    m_pChkCacheDataIfNotConnected->setEnabled(i_bEnabled);
+    m_pEdtCacheDataMaxArrLen->setEnabled(i_bEnabled);
     m_pChkUseLocalTrcFile->setEnabled(i_bEnabled);
     m_pEdtLocalTrcFileAutoSaveInterval->setEnabled(i_bEnabled);
     m_pEdtLocalTrcFileSubFileCountMax->setEnabled(i_bEnabled);
@@ -596,22 +626,6 @@ void CWdgtTrcSettings::connectGuiControlsOnValueChangedSignals()
         throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
     }
     if( !QObject::connect(
-        /* pObjSender   */ m_pChkCacheDataIfNotConnected,
-        /* szSignal     */ SIGNAL(toggled(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onChkCacheDataIfNotConnectedToggled(bool)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-    if( !QObject::connect(
-        /* pObjSender   */ m_pEdtCacheDataMaxArrLen,
-        /* szSignal     */ SIGNAL(valueChanged(int)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onEdtCacheDataMaxArrLenValueChanged(int)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-    if( !QObject::connect(
         /* pObjSender   */ m_pChkNewTrcAdminObjsEnabledAsDefault,
         /* szSignal     */ SIGNAL(toggled(bool)),
         /* pObjReceiver */ this,
@@ -624,6 +638,30 @@ void CWdgtTrcSettings::connectGuiControlsOnValueChangedSignals()
         /* szSignal     */ SIGNAL(valueChanged(int)),
         /* pObjReceiver */ this,
         /* szSlot       */ SLOT(onEdtNewTrcAdminObjsDefaultDetailLevelValueChanged(int)) ) )
+    {
+        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
+    }
+    if( !QObject::connect(
+        /* pObjSender   */ m_pChkUseIpcServer,
+        /* szSignal     */ SIGNAL(toggled(bool)),
+        /* pObjReceiver */ this,
+        /* szSlot       */ SLOT(onChkUseIpcServerToggled(bool)) ) )
+    {
+        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
+    }
+    if( !QObject::connect(
+        /* pObjSender   */ m_pChkCacheDataIfNotConnected,
+        /* szSignal     */ SIGNAL(toggled(bool)),
+        /* pObjReceiver */ this,
+        /* szSlot       */ SLOT(onChkCacheDataIfNotConnectedToggled(bool)) ) )
+    {
+        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
+    }
+    if( !QObject::connect(
+        /* pObjSender   */ m_pEdtCacheDataMaxArrLen,
+        /* szSignal     */ SIGNAL(valueChanged(int)),
+        /* pObjReceiver */ this,
+        /* szSlot       */ SLOT(onEdtCacheDataMaxArrLenValueChanged(int)) ) )
     {
         throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
     }
@@ -711,16 +749,6 @@ void CWdgtTrcSettings::disconnectGuiControlsOnValueChangedSignals()
         /* pObjReceiver */ this,
         /* szSlot       */ SLOT(onChkTracingEnabledToggled(bool)) );
     QObject::disconnect(
-        /* pObjSender   */ m_pChkCacheDataIfNotConnected,
-        /* szSignal     */ SIGNAL(toggled(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onChkCacheDataIfNotConnectedToggled(bool)) );
-    QObject::disconnect(
-        /* pObjSender   */ m_pEdtCacheDataMaxArrLen,
-        /* szSignal     */ SIGNAL(valueChanged(int)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onEdtCacheDataMaxArrLenValueChanged(int)) );
-    QObject::disconnect(
         /* pObjSender   */ m_pChkNewTrcAdminObjsEnabledAsDefault,
         /* szSignal     */ SIGNAL(toggled(bool)),
         /* pObjReceiver */ this,
@@ -730,6 +758,21 @@ void CWdgtTrcSettings::disconnectGuiControlsOnValueChangedSignals()
         /* szSignal     */ SIGNAL(valueChanged(int)),
         /* pObjReceiver */ this,
         /* szSlot       */ SLOT(onEdtNewTrcAdminObjsDefaultDetailLevelValueChanged(int)) );
+    QObject::disconnect(
+        /* pObjSender   */ m_pChkUseIpcServer,
+        /* szSignal     */ SIGNAL(toggled(bool)),
+        /* pObjReceiver */ this,
+        /* szSlot       */ SLOT(onChkUseIpcServerToggled(bool)) );
+    QObject::disconnect(
+        /* pObjSender   */ m_pChkCacheDataIfNotConnected,
+        /* szSignal     */ SIGNAL(toggled(bool)),
+        /* pObjReceiver */ this,
+        /* szSlot       */ SLOT(onChkCacheDataIfNotConnectedToggled(bool)) );
+    QObject::disconnect(
+        /* pObjSender   */ m_pEdtCacheDataMaxArrLen,
+        /* szSignal     */ SIGNAL(valueChanged(int)),
+        /* pObjReceiver */ this,
+        /* szSlot       */ SLOT(onEdtCacheDataMaxArrLenValueChanged(int)) );
     QObject::disconnect(
         /* pObjSender   */ m_pChkUseLocalTrcFile,
         /* szSignal     */ SIGNAL(toggled(bool)),
@@ -801,6 +844,15 @@ void CWdgtTrcSettings::onChkNewTrcAdminObjsEnabledAsDefaultToggled( bool i_bChec
 
 //------------------------------------------------------------------------------
 void CWdgtTrcSettings::onEdtNewTrcAdminObjsDefaultDetailLevelValueChanged( int i_iDetailLevel )
+//------------------------------------------------------------------------------
+{
+    bool bHasChanges = hasChanges();
+    m_pBtnReset->setEnabled(bHasChanges);
+    m_pBtnApply->setEnabled(bHasChanges);
+}
+
+//------------------------------------------------------------------------------
+void CWdgtTrcSettings::onChkUseIpcServerToggled( bool i_bChecked )
 //------------------------------------------------------------------------------
 {
     bool bHasChanges = hasChanges();
@@ -894,11 +946,12 @@ void CWdgtTrcSettings::onTraceSettingsChanged( QObject* /*i_pServer*/ )
     }
 
     m_pChkTracingEnabled->setChecked(trcSettings.m_bEnabled);
-    m_pChkCacheDataIfNotConnected->setChecked(trcSettings.m_bCacheDataIfNotConnected);
-    m_pEdtCacheDataMaxArrLen->setValue(trcSettings.m_iCacheDataMaxArrLen);
     m_pEdtAdminObjFileAbsFilePath->setText(trcSettings.m_strAdminObjFileAbsFilePath);
     m_pChkNewTrcAdminObjsEnabledAsDefault->setChecked(trcSettings.m_bNewTrcAdminObjsEnabledAsDefault);
     m_pEdtNewTrcAdminObjsDefaultDetailLevel->setValue(trcSettings.m_iNewTrcAdminObjsDefaultDetailLevel);
+    m_pChkUseIpcServer->setChecked(trcSettings.m_bUseIpcServer);
+    m_pChkCacheDataIfNotConnected->setChecked(trcSettings.m_bCacheDataIfNotConnected);
+    m_pEdtCacheDataMaxArrLen->setValue(trcSettings.m_iCacheDataMaxArrLen);
     m_pChkUseLocalTrcFile->setChecked(trcSettings.m_bUseLocalTrcFile);
     m_pEdtLocalTrcFileAbsFilePath->setText(trcSettings.m_strLocalTrcFileAbsFilePath);
     m_pEdtLocalTrcFileAutoSaveInterval->setValue(trcSettings.m_iLocalTrcFileAutoSaveInterval_ms);
@@ -985,11 +1038,12 @@ STrcServerSettings CWdgtTrcSettings::getTraceSettings() const
     STrcServerSettings trcSettings;
 
     trcSettings.m_bEnabled = m_pChkTracingEnabled->isChecked();
-    trcSettings.m_bCacheDataIfNotConnected = m_pChkCacheDataIfNotConnected->isChecked();
-    trcSettings.m_iCacheDataMaxArrLen = m_pEdtCacheDataMaxArrLen->value();
     trcSettings.m_strAdminObjFileAbsFilePath = m_pEdtAdminObjFileAbsFilePath->text();
     trcSettings.m_bNewTrcAdminObjsEnabledAsDefault = m_pChkNewTrcAdminObjsEnabledAsDefault->isChecked();
     trcSettings.m_iNewTrcAdminObjsDefaultDetailLevel = m_pEdtNewTrcAdminObjsDefaultDetailLevel->value();
+    trcSettings.m_bUseIpcServer = m_pChkUseIpcServer->isChecked();
+    trcSettings.m_bCacheDataIfNotConnected = m_pChkCacheDataIfNotConnected->isChecked();
+    trcSettings.m_iCacheDataMaxArrLen = m_pEdtCacheDataMaxArrLen->value();
     trcSettings.m_bUseLocalTrcFile = m_pChkUseLocalTrcFile->isChecked();
     trcSettings.m_strLocalTrcFileAbsFilePath = m_pEdtLocalTrcFileAbsFilePath->text();
     trcSettings.m_iLocalTrcFileAutoSaveInterval_ms = m_pEdtLocalTrcFileAutoSaveInterval->value();

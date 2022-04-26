@@ -570,10 +570,7 @@ void CMainWindow::onActDebugTrcServerTriggered()
 
     if( pDlg == nullptr )
     {
-        pDlg = CDlgTrcServer::CreateInstance(
-            /* strObjName  */ "MethodTraceServer",
-            /* strDlgTitle */ strDlgTitle,
-            /* pWdgtParent */ nullptr );
+        pDlg = CDlgTrcServer::CreateInstance(strDlgTitle, "MethodTraceServer");
         pDlg->setAttribute(Qt::WA_DeleteOnClose, true);
         pDlg->adjustSize();
         pDlg->show();
@@ -600,9 +597,7 @@ void CMainWindow::onActDebugTrcAdminObjIdxTreeTriggered()
 
     if( pDlg == nullptr )
     {
-        pDlg = CDlgIdxTreeTrcAdminObjs::CreateInstance(
-            /* pTrcAdmIdxTree */ CTrcServer::GetTraceAdminObjIdxTree(),
-            /* strDlgTitle    */ strDlgTitle );
+        pDlg = CDlgIdxTreeTrcAdminObjs::CreateInstance(strDlgTitle, CTrcServer::GetTraceAdminObjIdxTree());
         pDlg->setAttribute(Qt::WA_DeleteOnClose, true);
         pDlg->adjustSize();
         pDlg->show();

@@ -60,8 +60,8 @@ public: // class methods
 
 //------------------------------------------------------------------------------
 CDlgIpcClient* CDlgIpcClient::CreateInstance(
-    const QString&  i_strObjName,
     const QString&  i_strDlgTitle,
+    const QString&  i_strObjName,
     QWidget*        i_pWdgtParent,
     Qt::WindowFlags i_wFlags )
 //------------------------------------------------------------------------------
@@ -73,8 +73,8 @@ CDlgIpcClient* CDlgIpcClient::CreateInstance(
     }
 
     return new CDlgIpcClient(
-        /* strObjName   */ i_strObjName,
         /* strDlgTitle  */ i_strDlgTitle,
+        /* strObjName   */ i_strObjName,
         /* pWdgtParent  */ i_pWdgtParent,
         /* wFlags       */ i_wFlags );
 
@@ -93,16 +93,16 @@ protected: // ctor
 
 //------------------------------------------------------------------------------
 CDlgIpcClient::CDlgIpcClient(
-    const QString&  i_strObjName,
     const QString&  i_strDlgTitle,
+    const QString&  i_strObjName,
     QWidget*        i_pWdgtParent,
     Qt::WindowFlags i_wFlags ) :
 //------------------------------------------------------------------------------
     CDialog(
+        /* strDlgTitle  */ i_strDlgTitle,
         /* strNameSpace */ NameSpace(),
         /* strClassName */ ClassName(),
         /* strObjName   */ i_strObjName,
-        /* strDlgTitle  */ i_strDlgTitle,
         /* pWdgtParent  */ i_pWdgtParent,
         /* wFlags       */ i_wFlags ),
     m_pLyt(nullptr),

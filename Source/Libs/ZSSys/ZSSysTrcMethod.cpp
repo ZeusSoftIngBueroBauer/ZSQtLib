@@ -386,8 +386,7 @@ CMethodTracer::CMethodTracer(
             strMth += "." + m_strMethod;
         }
         m_pTrcMthFile->traceMethodEnter(strMth, i_strMethodInArgs);
-
-    } // if( m_pTrcMthFile != nullptr && m_iTrcDetailLevel >= m_iEnterLeaveFilterDetailLevel )
+    }
 
 } // ctor
 
@@ -616,6 +615,20 @@ int CMethodTracer::getTraceDetailLevel() const
     return iDetailLevel;
 }
 
+//------------------------------------------------------------------------------
+/*! Returns the detail level which was passed to the constructor.
+
+    When leaving the method and the method tracer is destroyed the same detail
+    level must be used as when entering the method.
+
+    @return Detail level used for entering and leaving a method.
+*/
+int CMethodTracer::getEnterLeaveFilterDetailLevel() const
+//------------------------------------------------------------------------------
+{
+    return m_iEnterLeaveFilterDetailLevel;
+}
+
 /*==============================================================================
 public: // instance methods
 ==============================================================================*/
@@ -675,6 +688,17 @@ QString CMethodTracer::getObjectName() const
     return strObjName;
 
 } // getObjectName
+
+//------------------------------------------------------------------------------
+/*! Returns the method name to be traced as passed to the constructor.
+
+    @return Method name.
+*/
+QString CMethodTracer::getMethod() const
+//------------------------------------------------------------------------------
+{
+    return m_strMethod;
+}
 
 /*==============================================================================
 public: // instance methods
@@ -740,7 +764,7 @@ void CMethodTracer::setMethodReturn( const SErrResultInfo& i_errResultInfo )
     @param i_pReq [in] Return value of the method to be traced.
 */
 //------------------------------------------------------------------------------
-void CMethodTracer::setMethodReturn( CRequest* i_pReq )
+void CMethodTracer::setMethodReturn( ZS::System::CRequest* i_pReq )
 {
     m_strMethodReturn = i_pReq == nullptr ? "SUCCESS" : i_pReq->getAddTrcInfoStr();
 }
@@ -759,17 +783,41 @@ void CMethodTracer::setMethodReturn( const QString& i_str )
 }
 
 //------------------------------------------------------------------------------
+/*! Returns the string which should be used as the return value of the method
+    to be traced.
+
+    @return Return value string.
+*/
+QString CMethodTracer::getMethodReturn() const
+//------------------------------------------------------------------------------
+{
+    return m_strMethodReturn;
+}
+
+//------------------------------------------------------------------------------
 /*! If the destructor of the method tracer class is called leaving the method
     is traced. If the method returns values through arguments and those output
     arguments should appear in the trace output the output values may be set
     by invoking this method.
 
-    @param i_result [in] Return value of the method to be traced.
+    @param i_str [in] String describing the output arguments of the method to be traced.
 */
 void CMethodTracer::setMethodOutArgs( const QString& i_str )
 //------------------------------------------------------------------------------
 {
     m_strMethodOutArgs = i_str;
+}
+
+//------------------------------------------------------------------------------
+/*! Returns the string which should be used to indicate output arguments of the
+    method to be traced.
+
+    @return String descibing the output arguments.
+*/
+QString CMethodTracer::getMethodOutArgs() const
+//------------------------------------------------------------------------------
+{
+    return m_strMethodOutArgs;
 }
 
 /*==============================================================================
@@ -958,8 +1006,7 @@ void CMethodTracer::trace(
                 strMth += "." + m_strMethod;
             }
             m_pTrcMthFile->traceMethod(strMth, i_strAddInfo);
-
-        } // if( m_iTrcDetailLevel >= m_iEnterLeaveFilterDetailLevel )
+        }
     } // if( m_pTrcMthFile != nullptr )
 
 } // trace

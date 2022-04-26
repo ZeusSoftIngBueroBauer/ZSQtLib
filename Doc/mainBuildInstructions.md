@@ -37,7 +37,9 @@ as all necessary dlls (also the Qt Dlls) will be copied to those directories. Me
 you can simple start the applications from this bin directories.
 
 If you want to use the ZSQtLib libraries in your own applications you may desire to install
-the binaries and header files to a different location.
+the binaries and header files to a different location. Very likely the same directory into
+which the binaries of your application will be installed so that the dlls of the ZSQtLib
+can be found and loaded.
 
 As default the commands below would install the ZSQtLib libraries, products and test
 applications into:
@@ -48,47 +50,55 @@ applications into:
 - Linux Machines:
   > "\usr\bin" (or something else depending on linux distribution and version)
 
+This is not the standard installation directory for Windows Applications including the company name.<br/>
+Moreover installing to "Program Files" for development purposes may conflict with the installation of
+already installed packages and you also need to extend the PATH environment variable so that the Dlls can
+be found by the system.
+
 To change the install directory pass CMAKE_INSTALL_PREFIX to the CMake call when
 generating the build tree.
 
 On creating a debug build a `d` is appended to all created binaries. This way it is possible
 to use the same install directory for debug and release builds.
 
-**Generator: Visual Studio 16 (2019)
+> You need to build and install the ZSQtLib using the same build generator and compiler as
+you use for your application.
 
-First change working directory to where this CMakeList file is located ("<root of the repository>/Make").
+**Generator: Visual Studio 16 (2019)**
+
+First change working directory to where this CMakeList file is located ("./ZSQtLib/Make").
 
 To generate, build and install a release build with x64 platform use the following commands:
 
 - Release Build
 
       cmake -G "Visual Studio 16 2019" -A x64 . -B ..\Build\msvc2019_x64_Release -DCMAKE_CONFIGURATION_TYPES="Release" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="..\Bin\msvc2019_x64"
-      cmake --build .\Build\msvc2019_x64_Release --config=Release -j8
-      cmake --install .\Build\msvc2019_x61_Release --config=Release
+      cmake --build ..\Build\msvc2019_x64_Release --config=Release -j8
+      cmake --install ..\Build\msvc2019_x61_Release --config=Release
 
 - Debug Build
 
       cmake -G "Visual Studio 16 2019" -A x64 . -B ..\Build\msvc2019_x64_Debug -DCMAKE_CONFIGURATION_TYPES="Debug" -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX="..\Bin\msvc2019_x64"
-      cmake --build .\Build\msvc2019_x64_Debug --config=Debug -j8
-      cmake --install .\Build\msvc2019_x64_Debug --config=Debug
+      cmake --build ..\Build\msvc2019_x64_Debug --config=Debug -j8
+      cmake --install ..\Build\msvc2019_x64_Debug --config=Debug
 
 **Generator: MinGW Makefiles**
 
-First change working directory to where this CMakeList file is located ("<root of the repository>/Make").
+First change working directory to where this CMakeList file is located ("./ZSQtLib/Make").
 
 To generate, build and install a release build use the following commands (x64 is used as default):
 
 - Release Build
 
       cmake -G "MinGW Makefiles" . -B ..\Build\mingw81_x64_Release -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="..\Bin\mingw81_x64"
-      cmake --build .\Build\mingw81_x64_Release -j8
-      cmake --install .\Build\mingw81_x64_Release
+      cmake --build ..\Build\mingw81_x64_Release -j8
+      cmake --install ..\Build\mingw81_x64_Release
 
 - Debug Build
 
       cmake -G "MinGW Makefiles" . -B ..\Build\mingw81_x64_Debug -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX="..\Bin\mingw81_x64"
-      cmake --build .\Build\mingw81_x64_Debug -j8
-      cmake --install .\Build\mingw81_x64_Debug
+      cmake --build ..\Build\mingw81_x64_Debug -j8
+      cmake --install ..\Build\mingw81_x64_Debug
 
 ## Use ZSQtLib Libraries in other Packages
 
@@ -106,6 +116,28 @@ in `CMakeList.txt`.
 If you want to use the libraries in other packages you need to add a `find_package` call
 to the `CMakeList.txt` file of that package.
 
+CMake tries to find the package using the path variable of the environment. Either the PATH variable must be
+expanded to include the 'ZSQtLibs' installation directory, or the installation path of 'ZSQtLibs' must be added
+to CMAKE_PREFIX_PATH. Using CMAKE_PREFIX_PATH is the recommended way as this approach is more flexible and
+supports using different version of 'ZSQtLibs'.
+
+Add the INSTALL_PREFIX passed to CMake when generating the build tree of ZSQtLibs to the CMAKE_PREFIX_PATH
+when generating your package or application. Assuming the git repository of ZSQtLib is in directory
+'C:/Projects/ZeusSoft/ZSQtLibs' and you the install directory of your application should become
+'C:/Projects/MyCompanyName/MyProduct/Bin' generate the build tree for the 'ZSQtLibs' with the INSTALL_PREFIX
+pointing to your products bin directory.
+
+    cmake -G "Visual Studio 16 2019" -A x64 . -B ..\Build\msvc2019_x64_Debug -DCMAKE_CONFIGURATION_TYPES="Debug" -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX="C:\Projects\MyCompanyName\MyProduct\Bin\msvc2019_x64"
+
+Then - to generate the build tree and compile your product - you need to pass the following CMAKE_PREFIX_PATH
+to your CMake call (the CMAKE_INSTALL_PREFIX is equal to the CMAKE_PREFIX_PATH):
+
+    cmake -G "Visual Studio 16 2019" -A x64 . -B ..\Build\msvc2019_x64_Debug -DCMAKE_CONFIGURATION_TYPES="Debug" -DCMAKE_BUILD_TYPE=Debug -DCMAKE_PREFIX_PATH="C:\Projects\MyCompanyName\MyProduct\Bin\msvc2019_x64" -DCMAKE_INSTALL_PREFIX="C:\Projects\MyCompanyName\MyProduct\Bin\msvc2019_x64"
+
+If you need to pass several PREFIX_PATHs separate them with a ";". E.g.
+
+    cmake -G .... DCMAKE_PREFIX_PATH="C:\Projects\3rdPartyLibs\Bin\msvc2019_x64;C:\Projects\ZeusSoft\ZSQtLibs\Bin\msvc2019_x64"
+
 Add the following lines to the "CMakeList.txt" file of the package in which you want to integrate
 the libraries. Please note that if you want to use Dll interface modules also the path to the
 installed source files must become known (ZSQTLIBS_SOURCE_DIRS).
@@ -116,23 +148,6 @@ installed source files must become known (ZSQTLIBS_SOURCE_DIRS).
     else ()
         message(STATUS "ZSQtLibs not found")
     endif ()
-
-    # Workaround to set binary, include and source directory:
-    if(NOT ZSQTLIBS_BINARY_DIR)
-        get_target_property(ZSQtLibs_ZSSys_BinPath ZSQtLibs::ZSSys LOCATION)
-        message(STATUS "ZSQtLibs_ZSSys_BinPath:   ${ZSQtLibs_ZSSys_BinPath}")
-        get_filename_component(ZSQTLIBS_BINARY_DIR ${ZSQtLibs_ZSSys_BinPath} DIRECTORY)
-    endif()
-    if(NOT ZSQTLIBS_INCLUDE_DIRS)
-        set(ZSQTLIBS_INCLUDE_DIRS "${ZSQTLIBS_BINARY_DIR}/include")
-    endif()
-    if(NOT ZSQTLIBS_SOURCE_DIRS)
-        set(ZSQTLIBS_SOURCE_DIRS "${ZSQTLIBS_BINARY_DIR}/source")
-    endif()
-    message(STATUS "ZSQTLIBS_BINARY_DIR:      ${ZSQTLIBS_BINARY_DIR}")
-    message(STATUS "ZSQTLIBS_INCLUDE_DIRS:    ${ZSQTLIBS_INCLUDE_DIRS}")
-    message(STATUS "ZSQTLIBS_SOURCE_DIRS:     ${ZSQTLIBS_SOURCE_DIRS}")
-    message(STATUS "")
 
 Replace the required version numbers VERSION_MAJOR.VERSION_MINOR.VERSION_PATCH with the version
 numbers of the installed package.
@@ -148,15 +163,21 @@ the comments have been removed from the file):
 
     #include "QString"
 
+    #include "ZSSys/ZSSysDllMain.h"
+
     namespace ZS
     {
     namespace System
     {
-    const int ZSQTLIB_VERSION_MAJOR = 0;
-    const int ZSQTLIB_VERSION_MINOR = 01;
+    const QString ZSQTLIB_GIT_VERSION_INFO = "v1.0.0-32-gc71c17d";
+    const int ZSQTLIB_GIT_COMMITS_SINCE_TAG = 32;
+    const QString ZSQTLIB_GIT_COMMIT_HASH_HEX = "c71c17d";
+    const QString ZSQTLIB_GIT_COMMIT_HASH_INT = "208781693";
+    const int ZSQTLIB_VERSION_MAJOR = 1;
+    const int ZSQTLIB_VERSION_MINOR = 0;
     const long int ZSQTLIB_VERSION_PATCH = 2;
-
-    const QString ZSQTLIB_GIT_VERSION_INFO = "v0.01.2-42-g4728566";
+    const QString c_strSysVersionNr("1.0.0");
+    const QString c_strSysVersionNrDateTime = c_strSysVersionNr + ": " + __DATE__ + " " + __TIME__;
 
     } // namespace System
 
@@ -174,13 +195,13 @@ Please note that `find_package` will check for an exact version match also for P
 In this `ZSSysVersion.h` file beside the defined MAJOR, MINOR and PATCH version numbers
 you will find GIT_VERSION_INFO defined as follows:
 
-    const QString ZSQTLIB_GIT_VERSION_INFO = "v0.01.2-42-g4728566";
+    const QString ZSQTLIB_GIT_VERSION_INFO = "v1.0.0-32-gc71c17d";
 
-- `v0.01.2` corresponds to the most recent tag. VERSION_MAJOR, VERSION_MINOR and VERSION_PATCH is contained in this tag.
-- `42` defines the number of commits on top of the most recent tag. This information might be useful to find
+- `v1.0.0` corresponds to the most recent tag. VERSION_MAJOR, VERSION_MINOR and VERSION_PATCH is contained in this tag.
+- `32` defines the number of commits on top of the most recent tag. This information might be useful to find
   the corresponding git commit in the repository from which the libraries have been generated and build.
 - `g` is the object name of the most recent commit and can be ignored.
-- `4728566` specifies the abbreviated Git commit hash (usually the first seven digits of the git commit hash).
+- `c71c17d` specifies the abbreviated Git commit hash (usually the first seven digits of the git commit hash).
   This information can be used to find the corresponding git commit in the repository from which the libraries
   has been generated and build.
 
@@ -195,14 +216,20 @@ To link the libraries to the target package add a dependency in `target_link_lib
         PUBIC|PRIVATE|..
         OTHER_LIBS
         ...
-        ZSSys ZSIpc ZSTrace
+        ZSQtLibs::ZSSys ZSQtLibs::ZSIpc ZSQtLibs::ZSIpcTrace
     )
 
 ### target_include_libraries
 
 If you don't want to link to the libraries at compile time but instead want to use a Dll interface
 to load the libraries during runtime you need to add the path to the ZSQtLibs header files
-to "target_include_directories" in your `CMakeList.txt`.
+to "target_include_directories" and add the cpp files to the list of the source files in your `CMakeList.txt`.
+
+    set(_Sources
+        ....
+        ${ZSQTLIBS_SOURCE_DIRS}/ZSIpcTrace/ZSIpcTrcDllIf.cpp
+        ...
+    )
 
     target_include_directories(${MY_PROJECT_NAME}
         PUBIC|PRIVATE|..
@@ -211,7 +238,28 @@ to "target_include_directories" in your `CMakeList.txt`.
         ${ZSQTLIBS_INCLUDE_DIRS}
     )
 
-In addition you may need to set additional compiler preprocesser directives to include specific
+To be able to use the variables ${ZSQTLIBS_SOURCE_DIRS} and ${ZSQTLIBS_INCLUDE_DIRS} add the following
+lines after the find_package call:
+
+    **Workaround to set binary, include and source directory:**
+    if(NOT ZSQTLIBS_BINARY_DIR)
+        get_target_property(ZSQtLibs_ZSSys_BinPath ZSQtLibs::ZSSys LOCATION)
+        message(STATUS "ZSQtLibs_ZSSys_BinPath:   ${ZSQtLibs_ZSSys_BinPath}")
+        get_filename_component(ZSQTLIBS_BINARY_DIR ${ZSQtLibs_ZSSys_BinPath} DIRECTORY)
+    endif()
+    if(NOT ZSQTLIBS_INCLUDE_DIRS)
+        set(ZSQTLIBS_INCLUDE_DIRS "${ZSQTLIBS_BINARY_DIR}/include")
+    endif()
+    if(NOT ZSQTLIBS_SOURCE_DIRS)
+        set(ZSQTLIBS_SOURCE_DIRS "${ZSQTLIBS_BINARY_DIR}/source")
+    endif()
+    message(STATUS "ZSQTLIBS_BINARY_DIR:      ${ZSQTLIBS_BINARY_DIR}")
+    message(STATUS "ZSQTLIBS_INCLUDE_DIRS:    ${ZSQTLIBS_INCLUDE_DIRS}")
+    message(STATUS "ZSQTLIBS_SOURCE_DIRS:     ${ZSQTLIBS_SOURCE_DIRS}")
+    message(STATUS "")
+
+
+In addition you need to set additional compiler preprocesser directives to include specific
 code from the ZSQtLibs. E.g. to use the method tracing Dll interface you need to set the
 preprocessor directive USE_ZS_IPTRACE_DLL_IF.
 
@@ -254,19 +302,12 @@ number as defined in the main CMakeList file. The generated cmake file must be e
 ## Naming of the Generated Binaries
 
 For the libraries (so's on Linux Machines, dll's on Windows Machines) additional informations
-is included in the target names. This way it is possible to create a set of shared ZSQtLib
-libraries and install them on the target machine into the same target folder.
-When including the interface header file into your applications source code during compile
-time the used compiler, platform and build type is detected. This way it is possible to
-load the correct version of the library no matter by which compiler the application
-has been built with.
+is included in the target names.
 
 The following additional informations is included in the names of the libraries:
 
 - Main version number of the used Qt Framework.
-- Main and minor version number of ZSQtLib.
-- The used compiler name.
-- The platform for which the libraries have been created.
+- Config type (Debug or Release).
 
 For the products and test applications of the ZSQtLib those additional information is not included
 in the names of the applications.
@@ -277,22 +318,11 @@ target directory.
 
 **Example for a library**
 
-    ZSSysQt5_msvc2019_x64_d.dll
+    ZSSysQt5d.dll
 
 **Example for an application**
 
     ZSAppTrcMthClientd.exe
-
-Including the compiler name, the platform, the Qt major version and the build type into the
-libraries file names allows installing the ZSQtLib libraries into one location and using
-them by applications created by different compilers and platforms and built types.
-
-- If you have an application created with Visual Studio 2008 using Qt Version 4 and you want
-  to use the ZSIpcTraceDll Interface the dll `ZSIpcTraceQt5_msvc2008_win32.dll` has to be loaded.
-- If you have an application created with MinGW Version 8.1 using Qt Version 5 and you want to
-  use the ZSIpcTraceDll Interface the dll `ZSIpcTraceQt5_mingw81_x64.dll` has to be loaded.
-
-> Of course you need to build and install the ZSQtLib using the correct build generator in advance.
 
 ## Create and Install ZSQtLib Libraries, Products and Test Applications
 
@@ -318,8 +348,8 @@ After cloning the git repository into a path like
 
     C:\Projekte\ZeusSoft\ZSQtLib
 
-you will find in the projects root directory a `CMakeLists.txt` file which is used as input for CMake
-to build and install the library.
+you will find in the Make sub directory of the projects root directory a `CMakeLists.txt`
+file which is used as input for CMake to build and install the library.
 
 **Please ensure that the path to the repository does NOT contain any spaces**.
 
@@ -346,9 +376,9 @@ the build directory should become
 
     /Projects/ZeusSoft/ZSQtLib/Build/CompilerId_Platform_BuildType
 
-The relative path to the build directory is
+The relative path to the build directory from the Make directory is
 
-    ./Build/CompilerId_Platform_BuildType
+    ../Build/CompilerId_Platform_BuildType
 
 The default installation directory for the `ZSQtLib` binaries on Windows Machines is
 `C:\Program Files (x86)\ZSQtLib`.<br/>
@@ -409,17 +439,19 @@ the project binaries by using the `--config` flag.
 
 **Applying the `--config` flag is mandatory when building the sources using Visual Studio and the command line.**
 
+First change working directory to where this CMakeList file is located ("./ZSQtLib/Make").
+
 - Release Build
 
-      cmake -G "Visual Studio 16 2019" -A x64 .\Make -B .\Build\msvc2019_x64_Release -DCMAKE_CONFIGURATION_TYPES="Release" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=C:\Projekte\ZeusSoft\ZSQtLib\Bin
-      cmake --build .\Build\msvc2019_x64_Release --config=Release -j8
-      cmake --install .\Build\msvc2019_x64_Release --config=Release
+      cmake -G "Visual Studio 16 2019" -A x64 . -B ..\Build\msvc2019_x64_Release -DCMAKE_CONFIGURATION_TYPES="Release" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=..\Bin\msvc2019_x64
+      cmake --build ..\Build\msvc2019_x64_Release --config=Release -j8
+      cmake --install ..\Build\msvc2019_x64_Release --config=Release
 
 - Debug Build
 
-      cmake -G "Visual Studio 16 2019" -A x64 .\Make -B .\Build\msvc2019_x64_Debug -DCMAKE_CONFIGURATION_TYPES="Debug" -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=C:\Projekte\ZeusSoft\ZSQtLib\Bin
-      cmake --build .\Build\msvc2019_x64_Debug --config=Debug -j8
-      cmake --install .\Build\msvc2019_x64_Debug --config=Debug
+      cmake -G "Visual Studio 16 2019" -A x64 . -B ..\Build\msvc2019_x64_Debug -DCMAKE_CONFIGURATION_TYPES="Debug" -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=..\Bin\msvc2019_x64
+      cmake --build ..\Build\msvc2019_x64_Debug --config=Debug -j8
+      cmake --install ..\Build\msvc2019_x64_Debug --config=Debug
 
 ####### Visual Studio IDE
 
@@ -441,17 +473,19 @@ requires running CMake twice, which is a full reconfiguration of the project.
 
 The following example calls are creating the build tree, build the binaries and install the binaries.
 
+First change working directory to where this CMakeList file is located ("./ZSQtLib/Make").
+
 - Release Build
 
-      cmake -G "MinGW Makefiles" .\Make -B .\Build\mingw81_x64_Release -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=C:\Projekte\ZeusSoft\ZSQtLib\Bin
-      cmake --build .\Build\mingw81_x64_Release -j8
-      cmake --install .\Build\mingw81_x64_Release
+      cmake -G "MinGW Makefiles" . -B ..\Build\mingw81_x64_Release -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=..\Bin\mingw81_x64
+      cmake --build ..\Build\mingw81_x64_Release -j8
+      cmake --install ..\Build\mingw81_x64_Release
 
 - Debug Build
 
-      cmake -G "MinGW Makefiles" .\Make -B .\Build\mingw81_X64_Debug -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=C:\Projekte\ZeusSoft\ZSQtLib\Bin
-      cmake --build .\Build\mingw81_x64_Debug -j8
-      cmake --install .\Build\mingw81_x64_Debug
+      cmake -G "MinGW Makefiles" . -B ..\Build\mingw81_X64_Debug -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=..\Bin\mingw81_x64
+      cmake --build ..\Build\mingw81_x64_Debug -j8
+      cmake --install ..\Build\mingw81_x64_Debug
 
 #### Using (Referencing) the ZSQtLib Libraries in other Packages
 
@@ -498,7 +532,7 @@ you will find a define as following:
 
 To link a ZSQtLib library to the target package add a dependency in `target_link_libraries` as follows:
 
-    target_link_libraries(${PROJECT_NAME} OTHERLIBS ZSSys)
+    target_link_libraries(${PROJECT_NAME} OTHERLIBS ZSQtLibs::ZSSys)
 
 So that it is not necessary to adjust the PATH environment variable under Windows, the installation path of
 the library can be specified with
@@ -511,35 +545,35 @@ To generate the build tree for the target package using the ZSQtLib libraries op
 change to the root directory of the target package you want to build using the ZSQtLib libraries and invoke CMake
 similar as described below.
 
-The commands shown will install the target package to `C:\Projekte\MyCompanyName\MyProductName\Bin`.
+The commands shown will install the target package to `C:\Projekte\MyCompanyName\MyProductName\Bin\Compiler_Platform`.
 
 - Generator: Visual Studio 16 (2019)
 
   - Release Build
 
-        cmake -G "Visual Studio 16 2019" -A x64 .\Make -B .\Build\msvc2019_x64_Release -DCMAKE_CONFIGURATION_TYPES="Release" -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=C:\Projekte\ZeusSoft\ZSQtLib\Bin -DCMAKE_INSTALL_PREFIX=C:\Projekte\MyCompanyName\MyProductName\Bin
-        cmake --build .\Build\msvc2019_x64_Release --config=Release -j8
-        cmake --install .\Build\msvc2019_x64_Release --config=Release
+        cmake -G "Visual Studio 16 2019" -A x64 . -B ..\Build\msvc2019_x64_Release -DCMAKE_CONFIGURATION_TYPES="Release" -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=C:\Projekte\ZeusSoft\ZSQtLib\Bin\msvc2019_x64 -DCMAKE_INSTALL_PREFIX=C:\Projekte\MyCompanyName\MyProductName\Bin\msvc2019_x64
+        cmake --build ..\Build\msvc2019_x64_Release --config=Release -j8
+        cmake --install ..\Build\msvc2019_x64_Release --config=Release
 
   - Debug Build
 
-        cmake -G "Visual Studio 16 2019" -A x64 .\Make -B .\Build\msvc2019_x64_Debug -DCMAKE_CONFIGURATION_TYPES="Debug" -DCMAKE_BUILD_TYPE=Debug -DCMAKE_PREFIX_PATH=C:\Projekte\ZeusSoft\ZSQtLib\Bin -DCMAKE_INSTALL_PREFIX=C:\Projekte\MyCompanyName\MyProductName\Bin
-        cmake --build .\Build\msvc2019_x64_Debug --config=Debug -j8
-        cmake --install .\Build\msvc2019_x64_Debug --config=Debug
+        cmake -G "Visual Studio 16 2019" -A x64 . -B ..\Build\msvc2019_x64_Debug -DCMAKE_CONFIGURATION_TYPES="Debug" -DCMAKE_BUILD_TYPE=Debug -DCMAKE_PREFIX_PATH=C:\Projekte\ZeusSoft\ZSQtLib\Bin\msvc2019_x64 -DCMAKE_INSTALL_PREFIX=C:\Projekte\MyCompanyName\MyProductName\Bin\msvc2019_x64
+        cmake --build ..\Build\msvc2019_x64_Debug --config=Debug -j8
+        cmake --install ..\Build\msvc2019_x64_Debug --config=Debug
 
 - Generator: MinGW Makefiles
 
   - Release Build
 
-        cmake -G "MinGW Makefiles" .\Make -B .\Build\mingw81_x64_Release -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=C:\Projekte\ZeusSoft\ZSQtLib\Bin -DCMAKE_INSTALL_PREFIX=C:\Projekte\MyCompanyName\MyProductName\Bin
-        cmake --build .\Build\mingw81\Release -j8
-        cmake --install .\Build\mingw81\Release
+        cmake -G "MinGW Makefiles" . -B ..\Build\mingw81_x64_Release -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=C:\Projekte\ZeusSoft\ZSQtLib\Bin\mingw81_x64 -DCMAKE_INSTALL_PREFIX=C:\Projekte\MyCompanyName\MyProductName\Bin\mingw81_x64
+        cmake --build ..\Build\mingw81\Release -j8
+        cmake --install ..\Build\mingw81\Release
 
   - Debug Build
 
-        cmake -G "MinGW Makefiles" .\Make -B .\Build\mingw81_x64_Debug -DCMAKE_BUILD_TYPE=Debug -DCMAKE_PREFIX_PATH=C:\Projekte\ZeusSoft\ZSQtLib\Bin -DCMAKE_INSTALL_PREFIX=C:\Projekte\MyCompanyName\MyProductName\Bin
-        cmake --build .\Build\mingw81\Debug -j8
-        cmake --install .\Build\mingw81\Debug
+        cmake -G "MinGW Makefiles" . -B ..\Build\mingw81_x64_Debug -DCMAKE_BUILD_TYPE=Debug -DCMAKE_PREFIX_PATH=C:\Projekte\ZeusSoft\ZSQtLib\Bin\mingw81_x64 -DCMAKE_INSTALL_PREFIX=C:\Projekte\MyCompanyName\MyProductName\Bin\mingw81_x64
+        cmake --build ..\Build\mingw81\Debug -j8
+        cmake --install ..\Build\mingw81\Debug
 
 
 

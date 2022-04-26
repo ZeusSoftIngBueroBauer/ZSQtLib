@@ -64,6 +64,8 @@ signals: // on receiving trace data
     void traceAdminObjInserted( QObject* i_pTrcClient, const QString& i_strKeyInTree );
 public: // instance methods
     CIdxTreeTrcAdminObjs* getTraceAdminObjIdxTree() { return m_pTrcAdminObjIdxTree; }
+public: // overridables of the remote connection
+    virtual ZS::System::CRequest* connect_( int i_iTimeout_ms = 0, bool i_bWait = false, qint64 i_iReqIdParent = -1 ) override;
 public: // instance methods to read remote application settings
     QString getRemoteApplicationName() const;
     QString getRemoteServerName() const;

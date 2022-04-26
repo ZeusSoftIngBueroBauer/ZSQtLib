@@ -54,16 +54,16 @@ public: // class methods
     static QString ClassName() { return "CDlgIdxTreeTrcAdminObjs"; }
 public: // class CDlgTrcServer
     static CDlgIdxTreeTrcAdminObjs* CreateInstance(
-        CIdxTreeTrcAdminObjs* i_pIdxTree,
         const QString&        i_strDlgTitle,
+        CIdxTreeTrcAdminObjs* i_pIdxTree,
         QWidget*              i_pWdgtParent = nullptr,
         Qt::WindowFlags       i_wFlags = Qt::WindowFlags(),
         int                   i_iTrcDetailLevel = ZS::Trace::ETraceDetailLevelNone );
     static CDlgIdxTreeTrcAdminObjs* GetInstance( const QString& i_strObjName );
 protected: // ctor
     CDlgIdxTreeTrcAdminObjs(
-        CIdxTreeTrcAdminObjs* i_pIdxTree,
         const QString&        i_strDlgTitle,
+        CIdxTreeTrcAdminObjs* i_pIdxTree,
         QWidget*              i_pWdgtParent = nullptr,
         Qt::WindowFlags       i_wFlags = Qt::WindowFlags(),
         int                   i_iTrcDetailLevel = ZS::Trace::ETraceDetailLevelNone );

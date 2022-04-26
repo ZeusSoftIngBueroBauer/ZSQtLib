@@ -28,6 +28,7 @@ may result in using the software modules.
 #include <QtGui/qevent.h>
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+#include <QtGui/qfiledialog.h>
 #include <QtGui/qlabel.h>
 #include <QtGui/qlayout.h>
 #include <QtGui/qlineedit.h>
@@ -35,6 +36,7 @@ may result in using the software modules.
 #include <QtGui/qprogressbar.h>
 #include <QtGui/qstatusbar.h>
 #else
+#include <QtWidgets/qfiledialog.h>
 #include <QtWidgets/qlabel.h>
 #include <QtWidgets/qlayout.h>
 #include <QtWidgets/qlineedit.h>
@@ -48,11 +50,13 @@ may result in using the software modules.
 #include "WidgetCentral.h"
 
 #include "ZSIpcTraceGUI/ZSIpcTrcClientDlg.h"
+#include "ZSIpcTraceGUI/ZSIpcTrcMthWdgt.h"
 #include "ZSIpcTrace/ZSIpcTrcClient.h"
 #include "ZSSysGUI/ZSSysFindTextDlg.h"
 #include "ZSSysGUI/ZSSysErrLogDlg.h"
 #include "ZSSysGUI/ZSSysRequestExecTreeDlg.h"
 #include "ZSSysGUI/ZSSysTrcAdminObjIdxTreeDlg.h"
+#include "ZSSys/ZSSysApp.h"
 #include "ZSSys/ZSSysErrLog.h"
 #include "ZSSys/ZSSysErrResult.h"
 #include "ZSSys/ZSSysException.h"
@@ -105,6 +109,10 @@ CMainWindow::CMainWindow(
     m_pSettingsFile(nullptr),
     m_pTrcClient(i_pTrcClient),
     m_pMnuFile(nullptr),
+    m_pActFileRecallAdminObjs(nullptr),
+    m_pActFileSaveAdminObjs(nullptr),
+    m_pActFileReadTrcMthFile(nullptr),
+    m_pActFileWriteTrcMthFile(nullptr),
     m_pActFileQuit(nullptr),
     m_pMnuEdit(nullptr),
     m_pActEditFind(nullptr),
@@ -149,6 +157,22 @@ CMainWindow::CMainWindow(
     }
     if( !QObject::connect(
         /* pObjSender   */ m_pTrcClient,
+        /* szSignal     */ SIGNAL(connected(QObject*)),
+        /* pObjReceiver */ this,
+        /* szSlot       */ SLOT(onTrcClientConnected(QObject*)) ) )
+    {
+        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
+    }
+    if( !QObject::connect(
+        /* pObjSender   */ m_pTrcClient,
+        /* szSignal     */ SIGNAL(disconnected(QObject*)),
+        /* pObjReceiver */ this,
+        /* szSlot       */ SLOT(onTrcClientDisconnected(QObject*)) ) )
+    {
+        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
+    }
+    if( !QObject::connect(
+        /* pObjSender   */ m_pTrcClient,
         /* szSignal     */ SIGNAL(stateChanged(QObject*,int)),
         /* pObjReceiver */ this,
         /* szSlot       */ SLOT(onTrcClientStateChanged(QObject*,int)) ) )
@@ -161,10 +185,74 @@ CMainWindow::CMainWindow(
 
     m_pMnuFile = menuBar()->addMenu(tr("&File"));
 
+    // <MenuItem> File::Recall Trace Admin Objects
+    //---------------------------------------------
+
+    m_pActFileRecallAdminObjs = new QAction("Recall Trace Admin Objects", this);
+    m_pMnuFile->addAction(m_pActFileRecallAdminObjs);
+
+    if( !connect(
+        /* pObjSender   */ m_pActFileRecallAdminObjs,
+        /* szSignal     */ SIGNAL(triggered()),
+        /* pObjReceiver */ this,
+        /* szSlot       */ SLOT(onActFileRecallAdminObjsTriggered()) ) )
+    {
+        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
+    }
+
+    // <MenuItem> File::Save Trace Admin Objects
+    //------------------------------------------
+
+    m_pActFileSaveAdminObjs = new QAction("Save Trace Admin Objects", this);
+    m_pMnuFile->addAction(m_pActFileSaveAdminObjs);
+
+    if( !connect(
+        /* pObjSender   */ m_pActFileSaveAdminObjs,
+        /* szSignal     */ SIGNAL(triggered()),
+        /* pObjReceiver */ this,
+        /* szSlot       */ SLOT(onActFileSaveAdminObjsTriggered()) ) )
+    {
+        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
+    }
+
+    // <MenuItem> File::Read Trace Method File
+    //----------------------------------------
+
+    m_pMnuFile->addSeparator();
+
+    m_pActFileReadTrcMthFile = new QAction("Read Trace Method File", this);
+    m_pMnuFile->addAction(m_pActFileReadTrcMthFile);
+
+    if( !connect(
+        /* pObjSender   */ m_pActFileReadTrcMthFile,
+        /* szSignal     */ SIGNAL(triggered()),
+        /* pObjReceiver */ this,
+        /* szSlot       */ SLOT(onActFileReadTrcMthFileTriggered()) ) )
+    {
+        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
+    }
+
+    // <MenuItem> File::Write Trace Method File
+    //-----------------------------------------
+
+    m_pActFileWriteTrcMthFile = new QAction("Write Trace Method File", this);
+    m_pMnuFile->addAction(m_pActFileWriteTrcMthFile);
+
+    if( !connect(
+        /* pObjSender   */ m_pActFileWriteTrcMthFile,
+        /* szSignal     */ SIGNAL(triggered()),
+        /* pObjReceiver */ this,
+        /* szSlot       */ SLOT(onActFileWriteTrcMthFileTriggered()) ) )
+    {
+        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
+    }
+
     // <MenuItem> File::Quit
     //----------------------
 
-    m_pActFileQuit = new QAction("&Quit",this);
+    m_pMnuFile->addSeparator();
+
+    m_pActFileQuit = new QAction("&Quit", this);
     m_pMnuFile->addAction(m_pActFileQuit);
 
     if( !connect(
@@ -175,14 +263,6 @@ CMainWindow::CMainWindow(
     {
         throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
     }
-    //if( !connect(
-    //    /* pObjSender   */ m_pActFileQuit,
-    //    /* szSignal     */ SIGNAL(triggered()),
-    //    /* pObjReceiver */ CApplication::GetInstance(),
-    //    /* szSlot       */ SLOT(shutdown()) ) )
-    //{
-    //    throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-    //}
 
     // <Menu> Edit
     //============
@@ -448,6 +528,10 @@ CMainWindow::~CMainWindow()
     m_pSettingsFile = nullptr;
     m_pTrcClient = nullptr;
     m_pMnuFile = nullptr;
+    m_pActFileRecallAdminObjs = nullptr;
+    m_pActFileSaveAdminObjs = nullptr;
+    m_pActFileReadTrcMthFile = nullptr;
+    m_pActFileWriteTrcMthFile = nullptr;
     m_pActFileQuit = nullptr;
     m_pMnuEdit = nullptr;
     m_pActEditFind = nullptr;
@@ -530,6 +614,126 @@ protected slots:
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+void CMainWindow::onActFileRecallAdminObjsTriggered()
+//------------------------------------------------------------------------------
+{
+    QSettings settings;
+    QString   strAbsFilePath;
+
+    settings.beginGroup("FilePaths");
+    strAbsFilePath = settings.value("AdminObjs", getAppConfigDir("System")).toString();
+    settings.endGroup();
+
+    strAbsFilePath = QFileDialog::getOpenFileName(
+        /* parent             */ this,
+        /* strCaption         */ windowTitle() + ": Recall trace admin objects",
+        /* strDir             */ strAbsFilePath,
+        /* filter             */ "Trace Admin Objects (*.xml)",
+        /* pstrSelectedFilter */ nullptr,
+        /* options            */ QFileDialog::Options() );
+
+    if( !strAbsFilePath.isEmpty() )
+    {
+        settings.beginGroup("FilePaths");
+        settings.setValue("AdminObjs", strAbsFilePath);
+        settings.endGroup();
+
+        m_pTrcClient->getTraceAdminObjIdxTree()->recall(strAbsFilePath);
+    }
+} // onActFileRecallAdminObjsTriggered
+
+//------------------------------------------------------------------------------
+void CMainWindow::onActFileSaveAdminObjsTriggered()
+//------------------------------------------------------------------------------
+{
+    QSettings settings;
+    QString   strAbsFilePath;
+
+    settings.beginGroup("FilePaths");
+    strAbsFilePath = settings.value("AdminObjs", getAppConfigDir("System")).toString();
+    settings.endGroup();
+
+    strAbsFilePath = QFileDialog::getSaveFileName(
+        /* parent             */ this,
+        /* strCaption         */ windowTitle() + ": Recall trace admin objects",
+        /* strDir             */ strAbsFilePath,
+        /* filter             */ "Trace Admin Objects (*.xml)",
+        /* pstrSelectedFilter */ nullptr,
+        /* options            */ QFileDialog::Options() );
+
+    if( !strAbsFilePath.isEmpty() )
+    {
+        settings.beginGroup("FilePaths");
+        settings.setValue("AdminObjs", strAbsFilePath);
+        settings.endGroup();
+
+        m_pTrcClient->getTraceAdminObjIdxTree()->save(strAbsFilePath);
+    }
+} // onActFileSaveAdminObjsTriggered
+
+//------------------------------------------------------------------------------
+void CMainWindow::onActFileReadTrcMthFileTriggered()
+//------------------------------------------------------------------------------
+{
+    QSettings settings;
+    QString   strAbsFilePath;
+
+    settings.beginGroup("FilePaths");
+    strAbsFilePath = settings.value("TrcMthFile", getAppLogDir("System")).toString();
+    settings.endGroup();
+
+    strAbsFilePath = QFileDialog::getOpenFileName(
+        /* parent             */ this,
+        /* strCaption         */ windowTitle() + ": Read trace method log file",
+        /* strDir             */ strAbsFilePath,
+        /* filter             */ "Trace Method Log Files (*.log)",
+        /* pstrSelectedFilter */ nullptr,
+        /* options            */ QFileDialog::Options() );
+
+    if( !strAbsFilePath.isEmpty() )
+    {
+        settings.beginGroup("FilePaths");
+        settings.setValue("TrcMthFile", strAbsFilePath);
+        settings.endGroup();
+
+        m_pWdgtCentral->getTraceMethodListWidget()->readTraceMethodFile(strAbsFilePath);
+    }
+} // onActFileReadTrcMthFileTriggered
+
+//------------------------------------------------------------------------------
+void CMainWindow::onActFileWriteTrcMthFileTriggered()
+//------------------------------------------------------------------------------
+{
+    QSettings settings;
+    QString   strAbsFilePath;
+
+    settings.beginGroup("FilePaths");
+    strAbsFilePath = settings.value("TrcMthFile", getAppLogDir("System")).toString();
+    settings.endGroup();
+
+    strAbsFilePath = QFileDialog::getSaveFileName(
+        /* parent             */ this,
+        /* strCaption         */ windowTitle() + ": Write trace method log file",
+        /* strDir             */ strAbsFilePath,
+        /* filter             */ "Trace Method Log Files (*.log)",
+        /* pstrSelectedFilter */ nullptr,
+        /* options            */ QFileDialog::Options() );
+
+    if( !strAbsFilePath.isEmpty() )
+    {
+        settings.beginGroup("FilePaths");
+        settings.setValue("TrcMthFile", strAbsFilePath);
+        settings.endGroup();
+
+        m_pWdgtCentral->getTraceMethodListWidget()->writeTraceMethodFile(strAbsFilePath);
+    }
+} // onActFileWriteTrcMthFileTriggered
+
+/*==============================================================================
+protected slots:
+==============================================================================*/
+
+//------------------------------------------------------------------------------
 void CMainWindow::onActEditFindTriggered()
 //------------------------------------------------------------------------------
 {
@@ -551,8 +755,8 @@ void CMainWindow::onActSettingsTrcClientTriggered()
     if( pDlg == nullptr )
     {
         pDlg = CDlgTrcClient::CreateInstance(
-            /* strObjName  */ CApplication::GetInstance()->getTrcClient()->objectName(),
             /* strDlgTitle */ strDlgTitle,
+            /* strObjName  */ CApplication::GetInstance()->getTrcClient()->objectName(),
             /* pWdgtParent */ nullptr );
         pDlg->setClient(CApplication::GetInstance()->getTrcClient());
         pDlg->setAttribute(Qt::WA_DeleteOnClose, true);
@@ -581,8 +785,8 @@ void CMainWindow::onActSettingsTrcAdminObjIdxTreeTriggered()
     if( pDlg == nullptr )
     {
         pDlg = CDlgIdxTreeTrcAdminObjs::CreateInstance(
-            /* pTrcAdmIdxTree */ m_pTrcClient->getTraceAdminObjIdxTree(),
-            /* strDlgTitle    */ strDlgTitle );
+            /* strDlgTitle    */ strDlgTitle,
+            /* pTrcAdmIdxTree */ m_pTrcClient->getTraceAdminObjIdxTree() );
         pDlg->setAttribute(Qt::WA_DeleteOnClose, true);
         pDlg->adjustSize();
         pDlg->show();
@@ -638,7 +842,7 @@ void CMainWindow::onActInfoRequestExecTreeTriggered()
 
     if( pDlg == nullptr )
     {
-        pDlg = CDlgRequestExecTree::CreateInstance("ReqExecTree", strDlgTitle);
+        pDlg = CDlgRequestExecTree::CreateInstance(strDlgTitle, "ReqExecTree");
         pDlg->setAttribute(Qt::WA_DeleteOnClose, true);
         pDlg->adjustSize();
         pDlg->show();
@@ -848,6 +1052,32 @@ protected slots:
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+void CMainWindow::onTrcClientDestroyed( QObject* i_pTrcClient )
+//------------------------------------------------------------------------------
+{
+    if( i_pTrcClient == m_pTrcClient )
+    {
+        m_pTrcClient = nullptr;
+    }
+}
+
+//------------------------------------------------------------------------------
+void CMainWindow::onTrcClientConnected( QObject* i_pTrcClient )
+//------------------------------------------------------------------------------
+{
+    m_pActFileRecallAdminObjs->setEnabled(false);
+    m_pActFileReadTrcMthFile->setEnabled(false);
+}
+
+//------------------------------------------------------------------------------
+void CMainWindow::onTrcClientDisconnected( QObject* i_pTrcClient )
+//------------------------------------------------------------------------------
+{
+    m_pActFileRecallAdminObjs->setEnabled(true);
+    m_pActFileReadTrcMthFile->setEnabled(true);
+}
+
+//------------------------------------------------------------------------------
 void CMainWindow::onTrcClientStateChanged( QObject* /*i_pTrcClient*/, int /*i_iState*/ )
 //------------------------------------------------------------------------------
 {
@@ -884,16 +1114,6 @@ void CMainWindow::onTrcClientStateChanged( QObject* /*i_pTrcClient*/, int /*i_iS
     }
 
 } // onTrcClientStateChanged
-
-//------------------------------------------------------------------------------
-void CMainWindow::onTrcClientDestroyed( QObject* i_pTrcClient )
-//------------------------------------------------------------------------------
-{
-    if( i_pTrcClient == m_pTrcClient )
-    {
-        m_pTrcClient = nullptr;
-    }
-}
 
 /*==============================================================================
 protected slots:

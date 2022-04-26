@@ -3555,6 +3555,7 @@ QString ZS::System::encodeForHtml( const QString& i_str )
     if( str.contains(">") ) str.replace(">","&gt;");
     if( str.contains("\"") ) str.replace("\"", "&quot;");
     if( str.contains("'") ) str.replace("'", "&apos;");
+    if( str.contains("  ") ) str.replace("  ", "&nbsp;");
     return str;
 }
 
@@ -3569,6 +3570,7 @@ QString ZS::System::decodeFromHtml( const QString& i_str )
     if( str.contains("&quot;") ) str.replace("&quot;", "\"");
     if( str.contains("&apos;") ) str.replace("&apos;", "'");
     if( str.contains("&amp;") ) str.replace("&amp;", "&");
+    if( str.contains("&nbsp;") ) str.replace("&nbsp;", " ");
     return str;
 }
 
