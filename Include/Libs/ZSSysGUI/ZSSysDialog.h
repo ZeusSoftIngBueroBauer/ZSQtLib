@@ -57,10 +57,10 @@ public: // class methods
     static QString ClassName() { return "CDialog"; }
 public: // class methods (CreateInstance must be implemented by the derived class)
     //static CDialog* CreateInstance(
+    //    const QString&  i_strDlgTitle,
     //    const QString&  i_strNameSpace,
     //    const QString&  i_strClassName,
     //    const QString&  i_strObjName,
-    //    const QString&  i_strDlgTitle,
     //    QWidget*        i_pWdgtParent = nullptr,
     //    Qt::WindowFlags i_wFlags = Qt::WindowFlags() );
 public: // class methods
@@ -71,10 +71,10 @@ public: // class methods
     static void HideAllInstances();
 protected: // ctors
     CDialog(
+        const QString&  i_strDlgTitle,
         const QString&  i_strNameSpace,
         const QString&  i_strClassName,
         const QString&  i_strObjName,
-        const QString&  i_strDlgTitle,
         QWidget*        i_pWdgtParent = nullptr,
         Qt::WindowFlags i_wFlags = Qt::WindowFlags());
 public: // dtor

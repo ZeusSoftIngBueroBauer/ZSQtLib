@@ -52,9 +52,9 @@ class CTrcMthFile;
 class CTrcServer;
 
 //******************************************************************************
-/*! The CMethodTracer class is a convenience class that simplifies tracing entering
-    and leaving methods and should be created within a function when entering and
-    leaving the function should be traced.
+/*! @brief The CMethodTracer class is a convenience class that simplifies tracing
+           entering and leaving methods and should be created within a function
+           when entering and leaving the function should be traced.
 
     Tracing leaving methods in complex functions and statements or in exception
     handling code may be error-prone. CMethodTracer can be used in such situations
@@ -159,12 +159,12 @@ public: // instance methods
     void onAdminObjAboutToBeReleased();
 public: // instance methods
     int getTraceDetailLevel() const;
-    int getEnterLeaveFilterDetailLevel() const { return m_iEnterLeaveFilterDetailLevel; }
+    int getEnterLeaveFilterDetailLevel() const;
 public: // instance methods
     QString getNameSpace() const;
     QString getClassName() const;
     QString getObjectName() const;
-    QString getMethod() const { return m_strMethod; }
+    QString getMethod() const;
 public: // instance methods
     void setMethodReturn( bool i_bResult );
     void setMethodReturn( int i_iResult );
@@ -172,10 +172,10 @@ public: // instance methods
     void setMethodReturn( const ZS::System::SErrResultInfo& i_errResultInfo );
     void setMethodReturn( ZS::System::CRequest* i_pReq );
     void setMethodReturn( const QString& i_str );
-    QString getMethodReturn() const { return m_strMethodReturn; }
+    QString getMethodReturn() const;
 public: // instance methods
     void setMethodOutArgs( const QString& i_str );
-    QString getMethodOutArgs() const { return m_strMethodOutArgs; }
+    QString getMethodOutArgs() const;
 public: // instance methods
     bool isActive( int i_iFilterDetailLevel ) const;
 public: // instance methods

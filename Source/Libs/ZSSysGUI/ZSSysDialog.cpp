@@ -140,10 +140,10 @@ protected: // ctors
 
 //------------------------------------------------------------------------------
 CDialog::CDialog(
+    const QString&  i_strDlgTitle,
     const QString&  i_strNameSpace,
     const QString&  i_strClassName,
     const QString&  i_strObjName,
-    const QString&  i_strDlgTitle,
     QWidget*        i_pWdgtParent,
     Qt::WindowFlags i_wFlags ) :
 //------------------------------------------------------------------------------

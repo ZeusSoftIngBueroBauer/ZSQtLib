@@ -69,6 +69,8 @@ public: // ctors and dtor
 signals:
     void progressBarConnectDblClicked();
 public: // instance methods
+    ZS::Trace::GUI::CWdgtTrcMthList* getTraceMethodListWidget() { return m_pWdgtMthList; }
+public: // instance methods
     void findText();
 protected slots:
     void onProgressBarConnectDblClicked();

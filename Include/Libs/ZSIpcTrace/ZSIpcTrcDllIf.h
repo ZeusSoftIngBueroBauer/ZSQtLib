@@ -214,19 +214,20 @@ protected: // instance members
 struct STrcServerSettings
 //******************************************************************************
 {
-    bool  m_bEnabled;
-    bool  m_bNewTrcAdminObjsEnabledAsDefault;
-    int   m_iNewTrcAdminObjsDefaultDetailLevel;
-    bool  m_bCacheDataIfNotConnected;
-    int   m_iCacheDataMaxArrLen;
-    char* m_szAdminObjFileAbsFilePath;
-    bool  m_bUseLocalTrcFile;
-    char* m_szLocalTrcFileAbsFilePath;
-    int   m_iLocalTrcFileAutoSaveInterval_ms;
-    int   m_iLocalTrcFileSubFileCountMax;
-    int   m_iLocalTrcFileSubFileLineCountMax;
-    bool  m_bLocalTrcFileCloseFileAfterEachWrite;
-
+    bool  m_bEnabled;                               /*!< Tracing may be enabled or disabled for both writing to local trace file and sending data to remote client. */
+    char* m_szAdminObjFileAbsFilePath;              /*!< Absolute file path the tree of trace admin objects and their settings will be saved and recalled. */
+    bool  m_bNewTrcAdminObjsEnabledAsDefault;       /*!< Defines whether newly created trace admin objects should be enabled as default. */
+    int   m_iNewTrcAdminObjsDefaultDetailLevel;     /*!< Defines the trace detail level for newly created trace admin objects. */
+    bool  m_bUseIpcServer;                          /*!< Defines whether trace output should be send to remote client. */
+    bool  m_bCacheDataIfNotConnected;               /*!< If a trace client is not connect the flag defines whether trace data should be internally cached until a client connects. */
+    int   m_iCacheDataMaxArrLen;                    /*!< If caching is enabled defines the maximum number of trace entries which should be locally cached. */
+    bool  m_bUseLocalTrcFile;                       /*!< Defines whether trace output should be written to a local trace file. */
+    char* m_szLocalTrcFileAbsFilePath;              /*!< If a local log file is used defines the absolute file path for the log file. */
+    int   m_iLocalTrcFileAutoSaveInterval_ms;       /*!< Auto save interval for the local log file. */
+    int   m_iLocalTrcFileSubFileCountMax;           /*!< Number of sub files to be created for round robin. The oldest log file will be overwritten. */
+    int   m_iLocalTrcFileSubFileLineCountMax;       /*!< Number of lines which can be written to a log file before the file is closed and the next sub log file is created. */
+    bool  m_bLocalTrcFileCloseFileAfterEachWrite;   /*!< For hard to find errors the log file may be immediately closed after an entry has been written.
+                                                         Use with special care as enabling this feature extremely slows down the program. */
 }; // struct STrcServerSettings
 
 void STrcServerSettings_init( STrcServerSettings& i_trcSettings );
@@ -299,6 +300,8 @@ public: // instance methods
     void setLocalTrcFileSubFileLineCountMax( int i_iCountMax );
     int getLocalTrcFileSubFileLineCountMax() const;
 public: // instance methods
+    void setUseIpcServer( bool i_bUse );
+    bool isIpcServerUsed() const;
     void setCacheTrcDataIfNotConnected( bool i_bCacheData );
     bool getCacheTrcDataIfNotConnected() const;
     void setCacheTrcDataMaxArrLen( int i_iMaxArrLen );

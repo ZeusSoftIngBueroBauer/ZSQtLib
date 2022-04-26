@@ -4021,8 +4021,6 @@ bool CServer::event( QEvent* i_pMsg )
 
         if( pMsg != nullptr )
         {
-            CMutexLocker mtxLocker(m_pMtx);
-
             bEventHandled = true;
 
             SErrResultInfo errResultInfo = ErrResultInfoSuccess(pMsg->msgTypeToStr());
@@ -4048,6 +4046,8 @@ bool CServer::event( QEvent* i_pMsg )
 
                 else if( pMsg->getMsgType() == EBaseMsgTypeReqContinue )
                 {
+                    CMutexLocker mtxLocker(m_pMtx);
+
                     m_bMsgReqContinuePending = false;
 
                     if( !m_pRequestQueue->isRequestInProgress() && m_pRequestQueue->hasPostponedRequest() )
@@ -4100,6 +4100,8 @@ bool CServer::event( QEvent* i_pMsg )
             {
                 if( isMethodTraceActive(ETraceDetailLevelInternalStates) )
                 {
+                    CMutexLocker mtxLocker(m_pMtx);
+
                     int iAddTrcInfoDetailLevel = 0;
                     if( getMethodTraceDetailLevel() >= ETraceDetailLevelVerbose ) iAddTrcInfoDetailLevel = 2;
                     else if( getMethodTraceDetailLevel() >= ETraceDetailLevelRuntimeInfo ) iAddTrcInfoDetailLevel = 1;
@@ -4127,49 +4129,6 @@ bool CServer::event( QEvent* i_pMsg )
                     {
                         throw CException(__FILE__, __LINE__, EResultMessageTypeMismatch);
                     }
-
-                    //qint64   iReqIdParent = pMsgReq->getRequestId();
-                    //CMsgCon* pMsgCon = nullptr;
-
-                    //if( isAsynchronousRequest(pReq) )
-                    //{
-                    //    pReq->setConfirmationMessage(pMsgCon);
-                    //    pMsgCon = nullptr;
-                    //}
-                    //else // if( !isAsynchronousRequest(pReq) )
-                    //{
-                    //    bool bIsWaiting = false;
-
-                    //    if( iReqIdParent >= 0 )
-                    //    {
-                    //        bIsWaiting = CRequestExecTree::GetInstance()->isWaiting(iReqIdParent);
-                    //    }
-
-                    //    if( bIsWaiting != 0 )
-                    //    {
-                    //        CRequestExecTree::GetInstance()->wake(iReqIdParent);
-                    //    }
-                    //    else if( pMsgCon != nullptr )
-                    //    {
-                    //        if( pReq != nullptr )
-                    //        {
-                    //            errResultInfo = pReq->getErrResultInfo();
-                    //        }
-                    //        else if( errResultInfo.getResult() == EResultUndefined )
-                    //        {
-                    //            errResultInfo.setResult(EResultSuccess);
-                    //        }
-                    //        pMsgCon->setErrResultInfo(errResultInfo);
-                    //        pMsgCon->setProgress(100);
-
-                    //        POST_OR_DELETE_MESSAGE(pMsgCon, &mthTracer, ETraceDetailLevelRuntimeInfo);
-                    //        pMsgCon = nullptr;
-                    //    }
-                    //} // if( !isAsynchronousRequest(pReq) )
-
-                    //delete pMsgCon;
-                    //pMsgCon = nullptr;
-
                 } // if( pMsg->getSystemMsgType() == MsgProtocol::ESystemMsgTypeReq )
 
                 else if( pMsg->getSystemMsgType() == MsgProtocol::ESystemMsgTypeInd )
@@ -4207,34 +4166,49 @@ bool CServer::event( QEvent* i_pMsg )
                                 throw ZS::System::CException(__FILE__, __LINE__, EResultMessageTypeMismatch, "MsgIndConnected == nullptr! " + strAddTrcInfo);
                             }
 
-                            // Please note that the server could have been shutdown in the meantime .
-                            if( m_state != EStateIdle && requestInProgress() != ERequestShutdown )
-                            {
-                                int iSocketId = pMsgInd->getSocketId();
+                            bool bEmitConnected = false;
+                            SSocketDscr socketDscr(ESrvCltTypeServer);
 
-                                if( iSocketId >= m_arpSocketDscr.size() )
+                            {   // Before emitting signals the mutex must be free. Otherwise we may end up in a deadlock
+                                // as the receiver of the signal may currently be waiting to get a lock on the mutex
+                                // of this IpcServer to send data.
+                                CMutexLocker mtxLocker(m_pMtx);
+
+                                // Please note that the server could have been shutdown in the meantime .
+                                if( m_state != EStateIdle && requestInProgress() != ERequestShutdown )
                                 {
-                                    m_arpSocketDscr.resize(iSocketId+1);
+                                    int iSocketId = pMsgInd->getSocketId();
 
-                                    for( ; iSocketId < m_arpSocketDscr.size(); iSocketId++ )
+                                    if( iSocketId >= m_arpSocketDscr.size() )
                                     {
-                                        m_arpSocketDscr[iSocketId] = nullptr;
+                                        m_arpSocketDscr.resize(iSocketId+1);
+
+                                        for( ; iSocketId < m_arpSocketDscr.size(); iSocketId++ )
+                                        {
+                                            m_arpSocketDscr[iSocketId] = nullptr;
+                                        }
                                     }
-                                }
 
-                                iSocketId = pMsgInd->getSocketId(); // SocketId may have been modified if array has been resized.
+                                    iSocketId = pMsgInd->getSocketId(); // SocketId may have been modified if array has been resized.
 
-                                if( m_arpSocketDscr[iSocketId] != nullptr )
-                                {
-                                    QString strAddTrcInfo = "event( ";
-                                    strAddTrcInfo += "MsgIndConnected: SocketId = " + QString::number(iSocketId) + " already used )";
-                                    throw CException(__FILE__, __LINE__, EResultSocketIdAlreadyUsed, strAddTrcInfo);
-                                }
+                                    if( m_arpSocketDscr[iSocketId] != nullptr )
+                                    {
+                                        QString strAddTrcInfo = "event( ";
+                                        strAddTrcInfo += "MsgIndConnected: SocketId = " + QString::number(iSocketId) + " already used )";
+                                        throw CException(__FILE__, __LINE__, EResultSocketIdAlreadyUsed, strAddTrcInfo);
+                                    }
 
-                                m_arpSocketDscr[iSocketId] = new SSocketDscr( pMsgInd->getSocketDscr() );
-                                emit connected( this, getSocketDscr(iSocketId) );
+                                    bEmitConnected = true;
 
-                            } // if( m_state != EStateIdle && getRequestInProgress() != ERequestShutdown )
+                                    m_arpSocketDscr[iSocketId] = new SSocketDscr( pMsgInd->getSocketDscr() );
+                                    socketDscr = getSocketDscr(iSocketId);
+
+                                } // if( m_state != EStateIdle && getRequestInProgress() != ERequestShutdown )
+                            }
+                            if( bEmitConnected )
+                            {
+                                emit connected(this, socketDscr);
+                            }
                             break;
                         } // case EMsgTypeIndConnected
 
@@ -4249,37 +4223,50 @@ bool CServer::event( QEvent* i_pMsg )
                             }
 
                             // Please note that the server could have been shutdown in the meantime .
-                            if( m_state != EStateIdle && requestInProgress() != ERequestShutdown )
+
+                            bool bEmitDisconnected = false;
+                            SSocketDscr socketDscr(ESrvCltTypeServer);
+
+                            {   // Before emitting signals the mutex must be free. Otherwise we may end up in a deadlock
+                                // as the receiver of the signal may currently be waiting to get a lock on the mutex
+                                // of this IpcServer to send data.
+                                CMutexLocker mtxLocker(m_pMtx);
+
+                                if( m_state != EStateIdle && requestInProgress() != ERequestShutdown )
+                                {
+                                    int iSocketId = pMsgInd->getSocketId();
+
+                                    errResultInfo = checkSocket(iSocketId);
+
+                                    if( errResultInfo.getResult() != EResultSuccess )
+                                    {
+                                        if( m_pErrLog != nullptr )
+                                        {
+                                            m_pErrLog->addEntry(errResultInfo);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        socketDscr = *m_arpSocketDscr[iSocketId];
+                                        socketDscr.m_socketState = ESocketStateUnconnected;
+
+                                        bEmitDisconnected = true;
+
+                                        try
+                                        {
+                                            delete m_arpSocketDscr[iSocketId];
+                                        }
+                                        catch(...)
+                                        {
+                                        }
+                                        m_arpSocketDscr[iSocketId] = nullptr;
+                                    }
+                                } // if( m_state != EStateIdle && getRequestInProgress() != ERequestShutdown )
+                            }
+                            if( bEmitDisconnected )
                             {
-                                SSocketDscr socketDscr(ESrvCltTypeServer);
-                                int         iSocketId = pMsgInd->getSocketId();
-
-                                errResultInfo = checkSocket(iSocketId);
-
-                                if( errResultInfo.getResult() != EResultSuccess )
-                                {
-                                    if( m_pErrLog != nullptr )
-                                    {
-                                        m_pErrLog->addEntry(errResultInfo);
-                                    }
-                                }
-                                else
-                                {
-                                    socketDscr = *m_arpSocketDscr[iSocketId];
-                                    socketDscr.m_socketState = ESocketStateUnconnected;
-
-                                    try
-                                    {
-                                        delete m_arpSocketDscr[iSocketId];
-                                    }
-                                    catch(...)
-                                    {
-                                    }
-                                    m_arpSocketDscr[iSocketId] = nullptr;
-                                    emit disconnected(this,socketDscr);
-                                }
-
-                            } // if( m_state != EStateIdle && getRequestInProgress() != ERequestShutdown )
+                                emit disconnected(this, socketDscr);
+                            }
                             break;
                         } // case EMsgTypeIndDisconnected
 
@@ -4302,34 +4289,43 @@ bool CServer::event( QEvent* i_pMsg )
                             // may already be in Qt's event loop that will be dispatched to the server
                             // after he has been shutdown. So we ignore the indication messages if the
                             // server does no longer expect them and the socket id is no longer valid.
-                            if( pMsgInd == nullptr )
-                            {
-                                bValidMessage = false;
-                            }
-                            else if( m_state == EStateIdle )
-                            {
-                                bValidMessage = false;
-                            }
-                            else if( pMsgInd->getSender() != m_pGateway )
-                            {
-                                bValidMessage = false;
-                            }
-                            else if( iSocketId < 0 || iSocketId >= m_arpSocketDscr.size() )
-                            {
-                                bValidMessage = false;
-                            }
-                            else if( m_arpSocketDscr[iSocketId] == nullptr )
-                            {
-                                bValidMessage = false;
-                            }
-                            else if( m_arpSocketDscr[iSocketId]->m_iSocketId != iSocketId )
-                            {
-                                bValidMessage = false;
+
+                            {   // Before emitting signals the mutex must be free. Otherwise we may end up in a deadlock
+                                // as the receiver of the signal may currently be waiting to get a lock on the mutex
+                                // of this IpcServer to send data.
+                                CMutexLocker mtxLocker(m_pMtx);
+
+                                if( pMsgInd == nullptr )
+                                {
+                                    bValidMessage = false;
+                                }
+                                else if( m_state == EStateIdle )
+                                {
+                                    bValidMessage = false;
+                                }
+                                else if( pMsgInd->getSender() != m_pGateway )
+                                {
+                                    bValidMessage = false;
+                                }
+                                else if( iSocketId < 0 || iSocketId >= m_arpSocketDscr.size() )
+                                {
+                                    bValidMessage = false;
+                                }
+                                else if( m_arpSocketDscr[iSocketId] == nullptr )
+                                {
+                                    bValidMessage = false;
+                                }
+                                else if( m_arpSocketDscr[iSocketId]->m_iSocketId != iSocketId )
+                                {
+                                    bValidMessage = false;
+                                }
+                                if( bValidMessage )
+                                {
+                                    onReceivedData( iSocketId, pMsgInd->getByteArray() );
+                                }
                             }
                             if( bValidMessage )
                             {
-                                onReceivedData( iSocketId, pMsgInd->getByteArray() );
-
                                 emit receivedData( this, iSocketId, pMsgInd->getByteArray() );
                             }
                             break;
@@ -4358,6 +4354,8 @@ bool CServer::event( QEvent* i_pMsg )
 
                 else if( pMsg->getSystemMsgType() == MsgProtocol::ESystemMsgTypeCon )
                 {
+                    CMutexLocker mtxLocker(m_pMtx);
+
                     CMsgCon* pMsgCon = dynamic_cast<CMsgCon*>(pMsg);
                     if( pMsgCon == nullptr )
                     {
@@ -4402,6 +4400,8 @@ bool CServer::event( QEvent* i_pMsg )
 
                 if( isMethodTraceActive(ETraceDetailLevelInternalStates) )
                 {
+                    CMutexLocker mtxLocker(m_pMtx);
+
                     int iAddTrcInfoDetailLevel = 0;
                     if( getMethodTraceDetailLevel() >= ETraceDetailLevelVerbose ) iAddTrcInfoDetailLevel = 2;
                     else if( getMethodTraceDetailLevel() >= ETraceDetailLevelRuntimeInfo ) iAddTrcInfoDetailLevel = 1;
@@ -4413,7 +4413,7 @@ bool CServer::event( QEvent* i_pMsg )
 
                 if( statePrev != m_state )
                 {
-                    emit stateChanged(this,m_state);
+                    emit stateChanged(this, m_state);
                 }
             } // if( !pMsg->isBaseMsgType() )
         } // if( pMsg != nullptr )

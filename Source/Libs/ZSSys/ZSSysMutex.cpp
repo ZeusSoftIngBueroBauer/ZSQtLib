@@ -468,6 +468,14 @@ protected: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief Checks whether tracing for the given filter detail level is active.
+
+    If the given filter detail level is not None and greater or equal to the
+    trace detail level set at the trace admin object trace output is active.
+
+    @param i_iFilterDetailLevel [in] Filter detail level to be checked.
+    @return true if tracing is active, false otherwise
+*/
 bool CMutex::isMethodTraceActive( int i_iFilterDetailLevel ) const
 //------------------------------------------------------------------------------
 {
@@ -829,6 +837,14 @@ protected: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief Checks whether tracing for the given filter detail level is active.
+
+    If the given filter detail level is not None and greater or equal to the
+    trace detail level set at the trace admin object trace output is active.
+
+    @param i_iFilterDetailLevel [in] Filter detail level to be checked.
+    @return true if tracing is active, false otherwise
+*/
 bool CRecursiveMutex::isMethodTraceActive( int i_iFilterDetailLevel ) const
 //------------------------------------------------------------------------------
 {
@@ -1083,6 +1099,14 @@ protected: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief Checks whether tracing for the given filter detail level is active.
+
+    If the given filter detail level is not None and greater or equal to the
+    trace detail level set at the trace admin object trace output is active.
+
+    @param i_iFilterDetailLevel [in] Filter detail level to be checked.
+    @return true if tracing is active, false otherwise
+*/
 bool CMutexLocker::isMethodTraceActive( int i_iFilterDetailLevel ) const
 //------------------------------------------------------------------------------
 {

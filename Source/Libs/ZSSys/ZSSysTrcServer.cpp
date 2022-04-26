@@ -70,7 +70,7 @@ public: // ctor
 */
 STrcServerSettings::STrcServerSettings(
     bool i_bEnabled,
-    bool i_bNewTrcAdminObjsActivatedAsDefault,
+    bool i_bNewTrcAdminObjsEnabledAsDefault,
     int  i_iNewTrcAdminObjsDefaultDetailLevel,
     bool i_bCacheDataIfNotConnected,
     int  i_iCacheDataMaxArrLen,
@@ -82,7 +82,7 @@ STrcServerSettings::STrcServerSettings(
 //------------------------------------------------------------------------------
     m_bEnabled(i_bEnabled),
     m_strAdminObjFileAbsFilePath(),
-    m_bNewTrcAdminObjsEnabledAsDefault(i_bNewTrcAdminObjsActivatedAsDefault),
+    m_bNewTrcAdminObjsEnabledAsDefault(i_bNewTrcAdminObjsEnabledAsDefault),
     m_iNewTrcAdminObjsDefaultDetailLevel(i_iNewTrcAdminObjsDefaultDetailLevel),
     m_bCacheDataIfNotConnected(i_bCacheDataIfNotConnected),
     m_iCacheDataMaxArrLen(i_iCacheDataMaxArrLen),
@@ -121,6 +121,10 @@ bool STrcServerSettings::operator == ( const STrcServerSettings& i_settingsOther
     {
         bEqual = false;
     }
+    else if( m_bUseIpcServer != i_settingsOther.m_bUseIpcServer )
+    {
+        bEqual = false;
+    }
     else if( m_bCacheDataIfNotConnected != i_settingsOther.m_bCacheDataIfNotConnected )
     {
         bEqual = false;
@@ -129,15 +133,7 @@ bool STrcServerSettings::operator == ( const STrcServerSettings& i_settingsOther
     {
         bEqual = false;
     }
-    else if( m_strAdminObjFileAbsFilePath != i_settingsOther.m_strAdminObjFileAbsFilePath )
-    {
-        bEqual = false;
-    }
     else if( m_bUseLocalTrcFile != i_settingsOther.m_bUseLocalTrcFile )
-    {
-        bEqual = false;
-    }
-    else if( m_strLocalTrcFileAbsFilePath != i_settingsOther.m_strLocalTrcFileAbsFilePath )
     {
         bEqual = false;
     }
@@ -154,6 +150,14 @@ bool STrcServerSettings::operator == ( const STrcServerSettings& i_settingsOther
         bEqual = false;
     }
     else if( m_bLocalTrcFileCloseFileAfterEachWrite != i_settingsOther.m_bLocalTrcFileCloseFileAfterEachWrite )
+    {
+        bEqual = false;
+    }
+    else if( m_strAdminObjFileAbsFilePath != i_settingsOther.m_strAdminObjFileAbsFilePath )
+    {
+        bEqual = false;
+    }
+    else if( m_strLocalTrcFileAbsFilePath != i_settingsOther.m_strLocalTrcFileAbsFilePath )
     {
         bEqual = false;
     }
@@ -189,6 +193,7 @@ QString STrcServerSettings::toString() const
     str += ", AdmObjFile: " + m_strAdminObjFileAbsFilePath;
     str += ", AdmObjDefEnabled: " + bool2Str(m_bNewTrcAdminObjsEnabledAsDefault);
     str += ", AdmObjDefLevel: " + QString::number(m_iNewTrcAdminObjsDefaultDetailLevel);
+    str += ", UseIpcServer: " + bool2Str(m_bUseIpcServer);
     str += ", CacheData: " + bool2Str(m_bCacheDataIfNotConnected);
     str += ", CacheArrLen: " + QString::number(m_iCacheDataMaxArrLen);
     str += ", UseLocalFile: " + bool2Str(m_bUseLocalTrcFile);
@@ -316,6 +321,14 @@ public: // class methods to register thread names
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief Assigns the given thread name to the thread id of the current thread and
+           adds the thread name to the hash of known threads with the thread id as key.
+
+    This method may be used in none Qt applications if it is not possible to
+    assign a human readable descriptive object name to the thread instance.
+
+    @param i_strThreadName [in] Name of the thread
+*/
 void CTrcServer::RegisterCurrentThread( const QString& i_strThreadName )
 //------------------------------------------------------------------------------
 {
@@ -345,6 +358,11 @@ void CTrcServer::RegisterCurrentThread( const QString& i_strThreadName )
 } // RegisterCurrentThread
 
 //------------------------------------------------------------------------------
+/*! @brief Removes the current thread from the hash of known threads.
+
+    This method may be used in none Qt applications if it is not possible to
+    assign a human readable descriptive object name to the thread instance.
+*/
 void CTrcServer::UnregisterCurrentThread()
 //------------------------------------------------------------------------------
 {
@@ -368,20 +386,28 @@ void CTrcServer::UnregisterCurrentThread()
 } // UnregisterCurrentThread
 
 //------------------------------------------------------------------------------
+/*! @brief Returns the name assigned to the current thread. If no name is assigned
+           the thread id will be used.
+
+    @return Name of the thread which may be the thread id starting with "Thread".
+*/
 QString CTrcServer::GetCurrentThreadName()
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&s_mtx);
 
     return currentThreadName();
-
-} // UnregisterCurrentThread
+}
 
 /*==============================================================================
 public: // class methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief Returns the pointer to the index tree with trace admin objects.
+
+    @return Pointer to index tree with trace admin objects.
+*/
 CIdxTreeTrcAdminObjs* CTrcServer::GetTraceAdminObjIdxTree()
 //------------------------------------------------------------------------------
 {
@@ -522,6 +548,16 @@ protected: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief Creates the trace server.
+
+    The constructor is protected. The singleton class must be created via the
+    static method createInstance.
+
+    @param i_iTrcDetailLevel [in]
+        To trace the methods of the trace server itself a value greater than
+        None may be passed here. But of course trace output may only be written
+        to the local trace method file.
+*/
 CTrcServer::CTrcServer( int i_iTrcDetailLevel ) :
 //------------------------------------------------------------------------------
     QObject(),
@@ -562,6 +598,11 @@ CTrcServer::CTrcServer( int i_iTrcDetailLevel ) :
 } // ctor
 
 //------------------------------------------------------------------------------
+/*! @brief Destroys the trace server.
+
+    The destructor is protected. The singleton class must be destroyed via the
+    static method releaseInstance.
+*/
 CTrcServer::~CTrcServer()
 //------------------------------------------------------------------------------
 {
@@ -623,6 +664,10 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief Returns the index tree containing the trace admin objects.
+
+    @return Pointer to index tree with trace admin objects.
+*/
 CIdxTreeTrcAdminObjs* CTrcServer::getTraceAdminObjIdxTree()
 //------------------------------------------------------------------------------
 {
@@ -928,7 +973,7 @@ void CTrcServer::traceMethodEnter(
 {
     CMutexLocker mtxLocker(m_pMtx);
 
-    if( i_pTrcAdminObj != nullptr && (i_pTrcAdminObj->getTraceDetailLevel() > ETraceDetailLevelNone) && isEnabled() && isActive() )
+    if( i_pTrcAdminObj != nullptr && (i_pTrcAdminObj->getTraceDetailLevel() > ETraceDetailLevelNone) && isActive() )
     {
         addEntry(
             /* strThreadName */ currentThreadName(),
@@ -954,7 +999,7 @@ void CTrcServer::traceMethodEnter(
 {
     CMutexLocker mtxLocker(m_pMtx);
 
-    if( i_pTrcAdminObj != nullptr && (i_pTrcAdminObj->getTraceDetailLevel() > ETraceDetailLevelNone) && isEnabled() && isActive() )
+    if( i_pTrcAdminObj != nullptr && (i_pTrcAdminObj->getTraceDetailLevel() > ETraceDetailLevelNone) && isActive() )
     {
         addEntry(
             /* strThreadName */ currentThreadName(),
@@ -979,7 +1024,7 @@ void CTrcServer::traceMethod(
 {
     CMutexLocker mtxLocker(m_pMtx);
 
-    if( i_pTrcAdminObj != nullptr && (i_pTrcAdminObj->getTraceDetailLevel() > ETraceDetailLevelNone) && isEnabled() && isActive() )
+    if( i_pTrcAdminObj != nullptr && (i_pTrcAdminObj->getTraceDetailLevel() > ETraceDetailLevelNone) && isActive() )
     {
         addEntry(
             /* strThreadName */ currentThreadName(),
@@ -1005,7 +1050,7 @@ void CTrcServer::traceMethod(
 {
     CMutexLocker mtxLocker(m_pMtx);
 
-    if( i_pTrcAdminObj != nullptr && (i_pTrcAdminObj->getTraceDetailLevel() > ETraceDetailLevelNone) && isEnabled() && isActive() )
+    if( i_pTrcAdminObj != nullptr && (i_pTrcAdminObj->getTraceDetailLevel() > ETraceDetailLevelNone) && isActive() )
     {
         addEntry(
             /* strThreadName */ currentThreadName(),
@@ -1045,7 +1090,7 @@ void CTrcServer::traceMethodLeave(
 {
     CMutexLocker mtxLocker(m_pMtx);
 
-    if( i_pTrcAdminObj != nullptr && (i_pTrcAdminObj->getTraceDetailLevel() > ETraceDetailLevelNone) && isEnabled() && isActive() )
+    if( i_pTrcAdminObj != nullptr && (i_pTrcAdminObj->getTraceDetailLevel() > ETraceDetailLevelNone) && isActive() )
     {
         addEntry(
             /* strThreadName */ currentThreadName(),
@@ -1073,7 +1118,7 @@ void CTrcServer::traceMethodLeave(
 {
     CMutexLocker mtxLocker(m_pMtx);
 
-    if( i_pTrcAdminObj != nullptr && (i_pTrcAdminObj->getTraceDetailLevel() > ETraceDetailLevelNone) && isEnabled() && isActive() )
+    if( i_pTrcAdminObj != nullptr && (i_pTrcAdminObj->getTraceDetailLevel() > ETraceDetailLevelNone) && isActive() )
     {
         addEntry(
             /* strThreadName */ currentThreadName(),
@@ -1105,7 +1150,7 @@ void CTrcServer::traceMethodEnter(
 {
     CMutexLocker mtxLocker(m_pMtx);
 
-    if( isEnabled() && isActive() )
+    if( isActive() )
     {
         addEntry(
             /* strThreadName */ currentThreadName(),
@@ -1132,7 +1177,7 @@ void CTrcServer::traceMethod(
 {
     CMutexLocker mtxLocker(m_pMtx);
 
-    if( isEnabled() && isActive() )
+    if( isActive() )
     {
         addEntry(
             /* strThreadName */ currentThreadName(),
@@ -1160,7 +1205,7 @@ void CTrcServer::traceMethodLeave(
 {
     CMutexLocker mtxLocker(m_pMtx);
 
-    if( isEnabled() && isActive() )
+    if( isActive() )
     {
         addEntry(
             /* strThreadName */ currentThreadName(),
@@ -1182,11 +1227,23 @@ public: // overridables
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief Checks whether tracing is active.
+
+    Tracing is active if tracing is enabled at all (flag enabled of the
+    trace settings) and if the local trace file is used.
+
+    This method may be overridden to add additional checks.
+
+    The Ipc Trace Server overrides this method and also checks whether
+    remote tracing (output to remote client) is enabled.
+
+    @return true if tracing is active, false otherwise.
+*/
 bool CTrcServer::isActive() const
 //------------------------------------------------------------------------------
 {
     CMutexLocker mtxLocker(m_pMtx);
-    return isLocalTrcFileActive();
+    return isEnabled() && isLocalTrcFileActive();
 }
 
 /*==============================================================================
@@ -1641,6 +1698,27 @@ public: // overridables
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+void CTrcServer::setUseIpcServer( bool i_bUse )
+//------------------------------------------------------------------------------
+{
+    CMutexLocker mtxLocker(m_pMtx);
+
+    if( m_trcSettings.m_bUseIpcServer != i_bUse )
+    {
+        m_trcSettings.m_bUseIpcServer = i_bUse;
+        emit traceSettingsChanged(this);
+    }
+}
+
+//------------------------------------------------------------------------------
+bool CTrcServer::isIpcServerUsed() const
+//------------------------------------------------------------------------------
+{
+    CMutexLocker mtxLocker(m_pMtx);
+    return m_trcSettings.m_bUseIpcServer;
+}
+
+//------------------------------------------------------------------------------
 void CTrcServer::setCacheTrcDataIfNotConnected( bool i_bCacheData )
 //------------------------------------------------------------------------------
 {
@@ -1698,28 +1776,21 @@ void CTrcServer::setTraceSettings( const STrcServerSettings& i_settings )
 
     if( m_trcSettings != i_settings )
     {
-        if( m_trcSettings.m_bNewTrcAdminObjsEnabledAsDefault != i_settings.m_bNewTrcAdminObjsEnabledAsDefault )
-        {
-            m_trcSettings.m_bNewTrcAdminObjsEnabledAsDefault = i_settings.m_bNewTrcAdminObjsEnabledAsDefault;
-        }
-        if( m_trcSettings.m_iNewTrcAdminObjsDefaultDetailLevel != i_settings.m_iNewTrcAdminObjsDefaultDetailLevel )
-        {
-            m_trcSettings.m_iNewTrcAdminObjsDefaultDetailLevel = i_settings.m_iNewTrcAdminObjsDefaultDetailLevel;
-        }
-
-        if( m_trcSettings.m_bCacheDataIfNotConnected != i_settings.m_bCacheDataIfNotConnected )
-        {
-            m_trcSettings.m_bCacheDataIfNotConnected = i_settings.m_bCacheDataIfNotConnected;
-        }
-        if( m_trcSettings.m_iCacheDataMaxArrLen != i_settings.m_iCacheDataMaxArrLen )
-        {
-            m_trcSettings.m_iCacheDataMaxArrLen = i_settings.m_iCacheDataMaxArrLen;
-        }
+        m_trcSettings.m_bEnabled = i_settings.m_bEnabled;
 
         if( m_trcSettings.m_strAdminObjFileAbsFilePath != i_settings.m_strAdminObjFileAbsFilePath )
         {
             setAdminObjFileAbsoluteFilePath(i_settings.m_strAdminObjFileAbsFilePath);
         }
+
+        m_trcSettings.m_bNewTrcAdminObjsEnabledAsDefault = i_settings.m_bNewTrcAdminObjsEnabledAsDefault;
+        m_trcSettings.m_iNewTrcAdminObjsDefaultDetailLevel = i_settings.m_iNewTrcAdminObjsDefaultDetailLevel;
+
+        m_trcSettings.m_bUseIpcServer = i_settings.m_bUseIpcServer;
+        m_trcSettings.m_bCacheDataIfNotConnected = i_settings.m_bCacheDataIfNotConnected;
+        m_trcSettings.m_iCacheDataMaxArrLen = i_settings.m_iCacheDataMaxArrLen;
+
+        m_trcSettings.m_bUseLocalTrcFile = i_settings.m_bUseLocalTrcFile;
 
         if( m_trcSettings.m_strLocalTrcFileAbsFilePath != i_settings.m_strLocalTrcFileAbsFilePath || m_pTrcMthFile == nullptr )
         {
@@ -1735,11 +1806,6 @@ void CTrcServer::setTraceSettings( const STrcServerSettings& i_settings )
             {
                 m_pTrcMthFile->setAutoSaveInterval(m_trcSettings.m_iLocalTrcFileAutoSaveInterval_ms);
             }
-        }
-
-        if( m_trcSettings.m_bUseLocalTrcFile != i_settings.m_bUseLocalTrcFile )
-        {
-            m_trcSettings.m_bUseLocalTrcFile = i_settings.m_bUseLocalTrcFile;
         }
 
         if( m_trcSettings.m_iLocalTrcFileSubFileCountMax != i_settings.m_iLocalTrcFileSubFileCountMax )
@@ -1773,11 +1839,6 @@ void CTrcServer::setTraceSettings( const STrcServerSettings& i_settings )
                     m_pTrcMthFile->setCloseFileAfterEachWrite(m_trcSettings.m_bLocalTrcFileCloseFileAfterEachWrite);
                 }
             }
-        }
-
-        if( m_trcSettings.m_bEnabled != i_settings.m_bEnabled )
-        {
-            m_trcSettings.m_bEnabled = i_settings.m_bEnabled;
         }
 
         emit traceSettingsChanged(this);

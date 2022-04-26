@@ -498,10 +498,24 @@ public: // overridables of base class CTrcServer
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief Checks whether tracing is active.
+
+    Tracing is active if tracing is enabled at all (flag enabled of the
+    trace settings) and either
+
+    - if the local trace file is used or
+    - if output to remote client is activated.
+      Output to the rmeote client is activated if
+      - caching data is enabled or
+      - if the flag to use the IpcServer is enabled and if a client is
+        connected to the IpcServer.
+
+    @return true if tracing is active, false otherwise.
+*/
 bool CIpcTrcServer::isActive() const
 //------------------------------------------------------------------------------
 {
-    return isLocalTrcFileActive() || getCacheTrcDataIfNotConnected() || isConnected();
+    return isEnabled() && (isLocalTrcFileActive() || getCacheTrcDataIfNotConnected() || (isIpcServerUsed() && isConnected()));
 }
 
 /*==============================================================================
@@ -932,6 +946,47 @@ public: // instance methods (trace settings)
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+void CIpcTrcServer::setUseIpcServer( bool i_bUse )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+
+    if( m_pTrcMthFile != nullptr && m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
+    {
+        strMthInArgs = bool2Str(i_bUse);
+    }
+
+    CMethodTracer mthTracer(
+        /* pTrcMthFile        */ m_pTrcMthFile,
+        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
+        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* strNameSpace       */ nameSpace(),
+        /* strClassName       */ className(),
+        /* strObjName         */ objectName(),
+        /* strMethod          */ "setUseIpcServer",
+        /* strMthInArgs       */ strMthInArgs );
+
+    CMutexLocker mtxLocker(m_pMtx);
+
+    if( m_trcSettings.m_bUseIpcServer != i_bUse )
+    {
+        CTrcServer::setUseIpcServer(i_bUse);
+
+        if( !m_bOnReceivedDataUpdateInProcess && isConnected() )
+        {
+            QString strMsg;
+
+            strMsg += systemMsgType2Str(MsgProtocol::ESystemMsgTypeInd) + " ";
+            strMsg += command2Str(MsgProtocol::ECommandUpdate) + " ";
+            strMsg += "<ServerSettings UseIpcServer=\"" + bool2Str(m_trcSettings.m_bUseIpcServer) + "\"/>";
+
+            sendData( ESocketIdAllSockets, str2ByteArr(strMsg) );
+        }
+    }
+
+} // setUseIpcServer
+
+//------------------------------------------------------------------------------
 void CIpcTrcServer::setCacheTrcDataIfNotConnected( bool i_bCacheData )
 //------------------------------------------------------------------------------
 {
@@ -1037,6 +1092,8 @@ void CIpcTrcServer::setTraceSettings( const STrcServerSettings& i_settings )
         /* strMethod          */ "setTraceSettings",
         /* strMthInArgs       */ strMthInArgs );
 
+    CMutexLocker mtxLocker(m_pMtx);
+
     if( m_trcSettings != i_settings )
     {
         // If not called on receiving trace settings from the server and if the client is connected ..
@@ -1052,14 +1109,6 @@ void CIpcTrcServer::setTraceSettings( const STrcServerSettings& i_settings )
             {
                 strMsg += " Enabled=\"" + bool2Str(i_settings.m_bEnabled) + "\"";
             }
-            if( m_trcSettings.m_bCacheDataIfNotConnected != i_settings.m_bCacheDataIfNotConnected )
-            {
-                strMsg += " CacheDataIfNotConnected=\"" + bool2Str(i_settings.m_bCacheDataIfNotConnected) + "\"";
-            }
-            if( m_trcSettings.m_iCacheDataMaxArrLen != i_settings.m_iCacheDataMaxArrLen )
-            {
-                strMsg += " CacheDataMaxArrLen =\"" + QString::number(i_settings.m_iCacheDataMaxArrLen) + "\"";
-            }
             if( m_trcSettings.m_strAdminObjFileAbsFilePath != i_settings.m_strAdminObjFileAbsFilePath )
             {
                 strMsg += " AdminObjFileAbsFilePath=\"" + i_settings.m_strAdminObjFileAbsFilePath + "\"";
@@ -1071,6 +1120,18 @@ void CIpcTrcServer::setTraceSettings( const STrcServerSettings& i_settings )
             if( m_trcSettings.m_iNewTrcAdminObjsDefaultDetailLevel != i_settings.m_iNewTrcAdminObjsDefaultDetailLevel )
             {
                 strMsg += " NewTrcAdminObjsDefaultDetailLevel=\"" + QString::number(i_settings.m_iNewTrcAdminObjsDefaultDetailLevel) + "\"";
+            }
+            if( m_trcSettings.m_bUseIpcServer != i_settings.m_bUseIpcServer )
+            {
+                strMsg += " UseIpcServer=\"" + bool2Str(i_settings.m_bUseIpcServer) + "\"";
+            }
+            if( m_trcSettings.m_bCacheDataIfNotConnected != i_settings.m_bCacheDataIfNotConnected )
+            {
+                strMsg += " CacheDataIfNotConnected=\"" + bool2Str(i_settings.m_bCacheDataIfNotConnected) + "\"";
+            }
+            if( m_trcSettings.m_iCacheDataMaxArrLen != i_settings.m_iCacheDataMaxArrLen )
+            {
+                strMsg += " CacheDataMaxArrLen =\"" + QString::number(i_settings.m_iCacheDataMaxArrLen) + "\"";
             }
             if( m_trcSettings.m_bUseLocalTrcFile != i_settings.m_bUseLocalTrcFile )
             {
@@ -1175,7 +1236,7 @@ void CIpcTrcServer::traceMethodEnter(
 {
     CMutexLocker mtxLocker(m_pMtx);
 
-    if( i_pTrcAdminObj != nullptr && (i_pTrcAdminObj->getTraceDetailLevel() > ETraceDetailLevelNone) && isEnabled() && isActive() )
+    if( i_pTrcAdminObj != nullptr && (i_pTrcAdminObj->getTraceDetailLevel() > ETraceDetailLevelNone) && isActive() )
     {
         addEntry(
             /* strThreadName */ currentThreadName(),
@@ -1216,7 +1277,7 @@ void CIpcTrcServer::traceMethod(
 {
     CMutexLocker mtxLocker(m_pMtx);
 
-    if( i_pTrcAdminObj != nullptr && (i_pTrcAdminObj->getTraceDetailLevel() > ETraceDetailLevelNone) && isEnabled() && isActive() )
+    if( i_pTrcAdminObj != nullptr && (i_pTrcAdminObj->getTraceDetailLevel() > ETraceDetailLevelNone) && isActive() )
     {
         addEntry(
             /* strThreadName */ currentThreadName(),
@@ -1258,7 +1319,7 @@ void CIpcTrcServer::traceMethod(
 {
     CMutexLocker mtxLocker(m_pMtx);
 
-    if( i_pTrcAdminObj != nullptr && (i_pTrcAdminObj->getTraceDetailLevel() > ETraceDetailLevelNone) && isEnabled() && isActive() )
+    if( i_pTrcAdminObj != nullptr && (i_pTrcAdminObj->getTraceDetailLevel() > ETraceDetailLevelNone) && isActive() )
     {
         addEntry(
             /* strThreadName */ currentThreadName(),
@@ -1299,7 +1360,7 @@ void CIpcTrcServer::traceMethodLeave(
 {
     CMutexLocker mtxLocker(m_pMtx);
 
-    if( i_pTrcAdminObj != nullptr && (i_pTrcAdminObj->getTraceDetailLevel() > ETraceDetailLevelNone) && isEnabled() && isActive() )
+    if( i_pTrcAdminObj != nullptr && (i_pTrcAdminObj->getTraceDetailLevel() > ETraceDetailLevelNone) && isActive() )
     {
         addEntry(
             /* strThreadName */ currentThreadName(),
@@ -1343,7 +1404,7 @@ void CIpcTrcServer::traceMethodLeave(
 {
     CMutexLocker mtxLocker(m_pMtx);
 
-    if( i_pTrcAdminObj != nullptr && (i_pTrcAdminObj->getTraceDetailLevel() > ETraceDetailLevelNone) && isEnabled() && isActive() )
+    if( i_pTrcAdminObj != nullptr && (i_pTrcAdminObj->getTraceDetailLevel() > ETraceDetailLevelNone) && isActive() )
     {
         addEntry(
             /* strThreadName */ currentThreadName(),
@@ -1408,7 +1469,7 @@ void CIpcTrcServer::addEntry(
             // .. the trace data will be cached.
             bAdd2Cache = true;
         }
-    } // if( m_trcSettings.m_bCacheDataIfNotConnected && m_trcSettings.m_iCacheDataMaxArrLen > 0 )
+    }
 
     if( bAdd2Cache )
     {
@@ -1471,7 +1532,7 @@ void CIpcTrcServer::addEntry(
 
     } // if( bAdd2Cache )
 
-    else if( m_ariSocketIdsConnectedTrcClients.length() > 0 )
+    else if( m_ariSocketIdsConnectedTrcClients.length() > 0 && isIpcServerUsed() )
     {
         // Please note that the cached data should have already been sent to the first
         // conencted client and cleared afterwards. So the cache must be empty here.
@@ -1501,7 +1562,7 @@ void CIpcTrcServer::addEntry(
         {
             sendData(iSocketId, byteArrMsg);
         }
-    } // if( !bAdd2Cache && m_ariSocketIdsConnectedTrcClients.length() > 0 )
+    }
 
 } // addEntry
 
@@ -2061,11 +2122,12 @@ void CIpcTrcServer::sendServerSettings(int i_iSocketId)
     strDataSnd += " ApplicationName=\"" + QCoreApplication::applicationName() + "\"";
     strDataSnd += " ServerName=\"" + objectName() + "\"";
     strDataSnd += " Enabled=\"" + bool2Str(m_trcSettings.m_bEnabled) + "\"";
-    strDataSnd += " CacheDataIfNotConnected=\"" + bool2Str(m_trcSettings.m_bCacheDataIfNotConnected) + "\"";
-    strDataSnd += " CacheDataMaxArrLen=\"" + QString::number(m_trcSettings.m_iCacheDataMaxArrLen) + "\"";
     strDataSnd += " AdminObjFileAbsFilePath=\"" + m_trcSettings.m_strAdminObjFileAbsFilePath + "\"";
     strDataSnd += " NewTrcAdminObjsEnabledAsDefault=\"" + bool2Str(m_trcSettings.m_bNewTrcAdminObjsEnabledAsDefault) + "\"";
     strDataSnd += " NewTrcAdminObjsDefaultDetailLevel=\"" + QString::number(m_trcSettings.m_iNewTrcAdminObjsDefaultDetailLevel) + "\"";
+    strDataSnd += " UseIpcServer=\"" + bool2Str(m_trcSettings.m_bUseIpcServer) + "\"";
+    strDataSnd += " CacheDataIfNotConnected=\"" + bool2Str(m_trcSettings.m_bCacheDataIfNotConnected) + "\"";
+    strDataSnd += " CacheDataMaxArrLen=\"" + QString::number(m_trcSettings.m_iCacheDataMaxArrLen) + "\"";
     strDataSnd += " UseLocalTrcFile=\"" + bool2Str(m_trcSettings.m_bUseLocalTrcFile) + "\"";
     strDataSnd += " LocalTrcFileAbsFilePath=\"" + m_trcSettings.m_strLocalTrcFileAbsFilePath + "\"";
     strDataSnd += " LocalTrcFileAutoSaveInterval_ms=\"" + QString::number(m_trcSettings.m_iLocalTrcFileAutoSaveInterval_ms) + "\"";
@@ -2386,7 +2448,8 @@ void CIpcTrcServer::onIpcServerReceivedReqSelect( int i_iSocketId, const QString
         /* strMethod          */ "onIpcServerReceivedReqSelect",
         /* strMthInArgs       */ strMthInArgs );
 
-    CMutexLocker mtxLocker(m_pMtx);
+    // Already locked by onIpcServerReceivedData
+    //CMutexLocker mtxLocker(m_pMtx);
 
     // The trace admin object index tree will be locked so it will not be changed
     // when sending the whole content of the index tree to the client.
@@ -2487,7 +2550,8 @@ void CIpcTrcServer::onIpcServerReceivedReqUpdate( int i_iSocketId, const QString
         /* strMethod          */ "onIpcServerReceivedReqUpdate",
         /* strMthInArgs       */ strMthInArgs );
 
-    CMutexLocker mtxLocker(m_pMtx);
+    // Already locked by onIpcServerReceivedData
+    //CMutexLocker mtxLocker(m_pMtx);
 
     QString strMth = "onIpcServerReceivedReqUpdate";
 
@@ -2535,20 +2599,6 @@ void CIpcTrcServer::onIpcServerReceivedReqUpdate( int i_iSocketId, const QString
                         if( bOk ) trcServerSettings.m_bEnabled = bVal;
                         else xmlStreamReader.raiseError("Attribute \"Enabled\" (" + strAttr + ") is out of range");
                     }
-                    if( xmlStreamReader.attributes().hasAttribute("CacheDataIfNotConnected") )
-                    {
-                        strAttr = xmlStreamReader.attributes().value("CacheDataIfNotConnected").toString();
-                        bVal = str2Bool(strAttr, &bOk);
-                        if( bOk ) trcServerSettings.m_bCacheDataIfNotConnected = bVal;
-                        else xmlStreamReader.raiseError("Attribute \"CacheDataIfNotConnected\" (" + strAttr + ") is out of range");
-                    }
-                    if( xmlStreamReader.attributes().hasAttribute("CacheDataMaxArrLen") )
-                    {
-                        strAttr = xmlStreamReader.attributes().value("CacheDataMaxArrLen").toString();
-                        iVal = strAttr.toInt(&bOk);
-                        if( bOk ) trcServerSettings.m_iCacheDataMaxArrLen = iVal;
-                        else xmlStreamReader.raiseError("Attribute \"CacheDataMaxArrLen\" (" + strAttr + ") is out of range");
-                    }
                     if( xmlStreamReader.attributes().hasAttribute("AdminObjFileAbsFilePath") )
                     {
                         strAttr = xmlStreamReader.attributes().value("AdminObjFileAbsFilePath").toString();
@@ -2567,6 +2617,27 @@ void CIpcTrcServer::onIpcServerReceivedReqUpdate( int i_iSocketId, const QString
                         iVal = strAttr.toInt(&bOk);
                         if( bOk ) trcServerSettings.m_iNewTrcAdminObjsDefaultDetailLevel = iVal;
                         else xmlStreamReader.raiseError("Attribute \"NewTrcAdminObjsDefaultDetailLevel\" (" + strAttr + ") is out of range");
+                    }
+                    if( xmlStreamReader.attributes().hasAttribute("UseIpcServer") )
+                    {
+                        strAttr = xmlStreamReader.attributes().value("UseIpcServer").toString();
+                        bVal = str2Bool(strAttr, &bOk);
+                        if( bOk ) trcServerSettings.m_bUseIpcServer = bVal;
+                        else xmlStreamReader.raiseError("Attribute \"UseIpcServer\" (" + strAttr + ") is out of range");
+                    }
+                    if( xmlStreamReader.attributes().hasAttribute("CacheDataIfNotConnected") )
+                    {
+                        strAttr = xmlStreamReader.attributes().value("CacheDataIfNotConnected").toString();
+                        bVal = str2Bool(strAttr, &bOk);
+                        if( bOk ) trcServerSettings.m_bCacheDataIfNotConnected = bVal;
+                        else xmlStreamReader.raiseError("Attribute \"CacheDataIfNotConnected\" (" + strAttr + ") is out of range");
+                    }
+                    if( xmlStreamReader.attributes().hasAttribute("CacheDataMaxArrLen") )
+                    {
+                        strAttr = xmlStreamReader.attributes().value("CacheDataMaxArrLen").toString();
+                        iVal = strAttr.toInt(&bOk);
+                        if( bOk ) trcServerSettings.m_iCacheDataMaxArrLen = iVal;
+                        else xmlStreamReader.raiseError("Attribute \"CacheDataMaxArrLen\" (" + strAttr + ") is out of range");
                     }
                     if( xmlStreamReader.attributes().hasAttribute("UseLocalTrcFile") )
                     {

@@ -1771,8 +1771,8 @@ void CTest::onZSTraceClientTrcMthListWdgtTextItemAdded( const QString& i_strText
                 }
                 else
                 {
-                    QTextStream txtstrmLogFileAppDefault(&fileTrcMthFile);
-                    QString strTrcMthFile = txtstrmLogFileAppDefault.readAll();
+                    QTextStream txtstrmTrcMthFile(&fileTrcMthFile);
+                    QString strTrcMthFile = txtstrmTrcMthFile.readAll();
                     fileTrcMthFile.close();
 
                     for( auto& strLine : strlstExpectedValues )

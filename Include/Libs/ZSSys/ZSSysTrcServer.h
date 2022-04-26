@@ -73,13 +73,14 @@ public: // operators
 public: // struct methods
     QString toString() const;
 public: // struct members
-    bool    m_bEnabled;                             /*!< Tracing may be enabled or disabled for the whole server. */
+    bool    m_bEnabled;                             /*!< Tracing may be enabled or disabled for both writing to local trace file and sending data to remote client. */
     QString m_strAdminObjFileAbsFilePath;           /*!< Absolute file path the tree of trace admin objects and their settings will be saved and recalled. */
     bool    m_bNewTrcAdminObjsEnabledAsDefault;     /*!< Defines whether newly created trace admin objects should be enabled as default. */
     int     m_iNewTrcAdminObjsDefaultDetailLevel;   /*!< Defines the trace detail level for newly created trace admin objects. */
+    bool    m_bUseIpcServer;                        /*!< Defines whether trace output should be send to remote client. */
     bool    m_bCacheDataIfNotConnected;             /*!< If a trace client is not connect the flag defines whether trace data should be internally cached until a client connects. */
     int     m_iCacheDataMaxArrLen;                  /*!< If caching is enabled defines the maximum number of trace entries which should be locally cached. */
-    bool    m_bUseLocalTrcFile;                     /*!< Defines whether trace should also be output to a local log file. */
+    bool    m_bUseLocalTrcFile;                     /*!< Defines whether trace output should be written to a local trace file. */
     QString m_strLocalTrcFileAbsFilePath;           /*!< If a local log file is used defines the absolute file path for the log file. */
     int     m_iLocalTrcFileAutoSaveInterval_ms;     /*!< Auto save interval for the local log file. */
     int     m_iLocalTrcFileSubFileCountMax;         /*!< Number of sub files to be created for round robin. The oldest log file will be overwritten. */
@@ -91,7 +92,7 @@ public: // struct members
 
 
 //******************************************************************************
-/*! @brief Über die Klasse CTrcServer sollten alle Trace Ausgaben erfolgen.
+/*! @brief All trace outputs should be made via the CTrcServer class.
 
 The class manages a tree of trace objects, which can be used to activate and
 deactivate the tracing for modules, classes and instances and to specify the
@@ -115,8 +116,12 @@ class ZSSYSDLL_API CTrcServer : public QObject
 {
     Q_OBJECT
 public: // class methods
-    static QString NameSpace() { return "ZS::Trace"; }  // Please note that the static class functions name must be different from the non static virtual member function "nameSpace"
-    static QString ClassName() { return "CTrcServer"; } // Please note that the static class functions name must be different from the non static virtual member function "className"
+    /*! Returns the namespace of the class.
+        @note The static class functions name must be different from the virtual instance method "nameSpace". */
+    static QString NameSpace() { return "ZS::Trace"; }
+    /*! Returns the class name.
+        @note The static class functions name must be different from the virtual instance method "className". */
+    static QString ClassName() { return "CTrcServer"; }
 public: // class methods
     static CTrcServer* GetInstance();
     static CTrcServer* CreateInstance( int i_iTrcDetailLevel = ETraceDetailLevelNone );
@@ -146,9 +151,13 @@ protected: // ctors and dtor
     CTrcServer( int i_iTrcDetailLevel = ETraceDetailLevelNone );
     virtual ~CTrcServer();
 signals:
+    /*! Signal which is emitted if a trace setting has been changed.
+        @param i_pTrcServer [in] Pointer to object emitting the signal. */
     void traceSettingsChanged( QObject* i_pTrcServer );
 public: // instance methods
+    /*! Returns the namespace of the class. May be overriden to return the namespace of the derived class. */
     virtual QString nameSpace() const { return NameSpace(); }
+    /*! Returns the class name. May be overriden to return the class name of the derived class. */
     virtual QString className() const { return ClassName(); }
 public: // instance methods
     CIdxTreeTrcAdminObjs* getTraceAdminObjIdxTree();
@@ -248,6 +257,8 @@ public: // overridables
     virtual void setLocalTrcFileSubFileLineCountMax( int i_iCountMax );
     virtual int getLocalTrcFileSubFileLineCountMax() const;
 public: // overridables
+    virtual void setUseIpcServer( bool i_bUse );
+    virtual bool isIpcServerUsed() const;
     virtual void setCacheTrcDataIfNotConnected( bool i_bCacheData );
     virtual bool getCacheTrcDataIfNotConnected() const;
     virtual void setCacheTrcDataMaxArrLen( int i_iMaxArrLen );

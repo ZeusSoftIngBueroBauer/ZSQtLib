@@ -30,18 +30,15 @@ may result in using the software modules.
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 #include <QtGui/qlabel.h>
 #include <QtGui/qlayout.h>
-#include <QtGui/qlineedit.h>
 #include <QtGui/qpushbutton.h>
-#include <QtGui/qtextedit.h>
 #else
 #include <QtWidgets/qlabel.h>
 #include <QtWidgets/qlayout.h>
-#include <QtWidgets/qlineedit.h>
 #include <QtWidgets/qpushbutton.h>
-#include <QtWidgets/qtextedit.h>
 #endif
 
-#include "ZSSysGUI/ZSSysFindTextDlg.h"
+#include "ZSSysGUI/ZSSysEditIntValueDlg.h"
+#include "ZSSysGUI/ZSSysSepLine.h"
 #include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysErrResult.h"
 #include "ZSSys/ZSSysException.h"
@@ -54,7 +51,7 @@ using namespace ZS::System::GUI;
 
 
 /*******************************************************************************
-class CDlgFindText : public QDialog
+class CDlgEditIntValue : public QDialog
 *******************************************************************************/
 
 /*==============================================================================
@@ -62,7 +59,7 @@ public: // class methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CDlgFindText* CDlgFindText::CreateInstance(
+CDlgEditIntValue* CDlgEditIntValue::CreateInstance(
     const QString&  i_strDlgTitle,
     const QString&  i_strObjName,
     QWidget*        i_pWdgtParent,
@@ -75,7 +72,7 @@ CDlgFindText* CDlgFindText::CreateInstance(
         throw CException(__FILE__, __LINE__, EResultObjAlreadyInList, strKey);
     }
 
-    return new CDlgFindText(
+    return new CDlgEditIntValue(
         /* strDlgTitle  */ i_strDlgTitle,
         /* strObjName   */ i_strObjName,
         /* pWdgtParent  */ i_pWdgtParent,
@@ -84,10 +81,10 @@ CDlgFindText* CDlgFindText::CreateInstance(
 } // CreateInstance
 
 //------------------------------------------------------------------------------
-CDlgFindText* CDlgFindText::GetInstance( const QString& i_strObjName )
+CDlgEditIntValue* CDlgEditIntValue::GetInstance( const QString& i_strObjName )
 //------------------------------------------------------------------------------
 {
-    return dynamic_cast<CDlgFindText*>(CDialog::GetInstance(NameSpace(), ClassName(), i_strObjName));
+    return dynamic_cast<CDlgEditIntValue*>(CDialog::GetInstance(NameSpace(), ClassName(), i_strObjName));
 }
 
 /*==============================================================================
@@ -95,7 +92,7 @@ protected: // ctor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CDlgFindText::CDlgFindText(
+CDlgEditIntValue::CDlgEditIntValue(
     const QString&  i_strDlgTitle,
     const QString&  i_strObjName,
     QWidget*        i_pWdgtParent,
@@ -108,40 +105,68 @@ CDlgFindText::CDlgFindText(
         /* strObjName   */ i_strObjName,
         /* pWdgtParent  */ i_pWdgtParent,
         /* wFlags       */ i_wFlags ),
-    m_pEdt(nullptr),
     m_pLyt(nullptr),
-    m_pLytFindText(nullptr),
-    m_pEdtFindText(nullptr),
-    m_pBtnFindNext(nullptr),
-    m_pLytFindTextResult(nullptr),
-    m_pLblFindTextResult(nullptr)
+    m_pLytValue(nullptr),
+    m_pLblValue(nullptr),
+    m_pEdtValue(nullptr),
+    m_iValOrig(0),
+    m_pLytBtns(nullptr),
+    m_pBtnApply(nullptr),
+    m_pBtnOk(nullptr),
+    m_pBtnCancel(nullptr)
 {
     m_pLyt = new QVBoxLayout();
     setLayout(m_pLyt);
 
-    m_pLytFindText = new QHBoxLayout();
-    m_pLyt->addLayout(m_pLytFindText);
+    m_pLytValue = new QHBoxLayout();
+    m_pLyt->addLayout(m_pLytValue);
 
-    m_pEdtFindText = new QLineEdit();
-    m_pLytFindText->addWidget(m_pEdtFindText,1);
+    m_pLblValue = new QLabel("Value: ");
+    m_pLytValue->addWidget(m_pLblValue);
 
-    m_pBtnFindNext = new QPushButton("Next");
-    m_pLytFindText->addWidget(m_pBtnFindNext);
+    m_pEdtValue = new QSpinBox();
+    m_pLytValue->addWidget(m_pEdtValue, 1);
+
+    m_pLyt->addWidget(new CSepLine(5, this));
+
+    m_pLytBtns = new QHBoxLayout();
+    m_pLyt->addLayout(m_pLytBtns);
+
+    m_pBtnApply = new QPushButton("Apply");
+    m_pLytBtns->addWidget(m_pBtnApply);
 
     if( !QObject::connect(
-        /* pObjSender   */ m_pBtnFindNext,
+        /* pObjSender   */ m_pBtnApply,
         /* szSignal     */ SIGNAL(clicked(bool)),
         /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onBtnFindNextClicked(bool)) ) )
+        /* szSlot       */ SLOT(onBtnApplyClicked(bool)) ) )
     {
         throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
     }
 
-    m_pLytFindTextResult = new QHBoxLayout();
-    m_pLyt->addLayout(m_pLytFindTextResult);
+    m_pBtnOk = new QPushButton("Ok");
+    m_pLytBtns->addWidget(m_pBtnOk);
 
-    m_pLblFindTextResult = new QLabel();
-    m_pLytFindTextResult->addWidget(m_pLblFindTextResult,1);
+    if( !QObject::connect(
+        /* pObjSender   */ m_pBtnOk,
+        /* szSignal     */ SIGNAL(clicked(bool)),
+        /* pObjReceiver */ this,
+        /* szSlot       */ SLOT(onBtnOkClicked(bool)) ) )
+    {
+        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
+    }
+
+    m_pBtnCancel = new QPushButton("Cancel");
+    m_pLytBtns->addWidget(m_pBtnCancel);
+
+    if( !QObject::connect(
+        /* pObjSender   */ m_pBtnCancel,
+        /* szSignal     */ SIGNAL(clicked(bool)),
+        /* pObjReceiver */ this,
+        /* szSlot       */ SLOT(onBtnCancelClicked(bool)) ) )
+    {
+        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
+    }
 
 } // ctor
 
@@ -150,16 +175,18 @@ public: // dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CDlgFindText::~CDlgFindText()
+CDlgEditIntValue::~CDlgEditIntValue()
 //------------------------------------------------------------------------------
 {
-    m_pEdt = nullptr;
     m_pLyt = nullptr;
-    m_pLytFindText = nullptr;
-    m_pEdtFindText = nullptr;
-    m_pBtnFindNext = nullptr;
-    m_pLytFindTextResult = nullptr;
-    m_pLblFindTextResult = nullptr;
+    m_pLytValue = nullptr;
+    m_pLblValue = nullptr;
+    m_pEdtValue = nullptr;
+    m_iValOrig = 0;
+    m_pLytBtns = nullptr;
+    m_pBtnApply = nullptr;
+    m_pBtnOk = nullptr;
+    m_pBtnCancel = nullptr;
 
 } // dtor
 
@@ -168,59 +195,97 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CDlgFindText::setTextEdit( QTextEdit* i_pEdt )
+void CDlgEditIntValue::setValueName( const QString& i_strName )
 //------------------------------------------------------------------------------
 {
-    m_pEdt = i_pEdt;
+    m_pLblValue->setText(i_strName);
 }
 
-/*==============================================================================
-public: // instance methods
-==============================================================================*/
-
 //------------------------------------------------------------------------------
-void CDlgFindText::findNext()
+void CDlgEditIntValue::setValue( int i_iVal )
 //------------------------------------------------------------------------------
 {
-    if( m_pLblFindTextResult != nullptr )
-    {
-        m_pLblFindTextResult->setText("");
-    }
+    m_iValOrig = i_iVal;
+    m_pEdtValue->setValue(m_iValOrig);
+}
 
-    if( m_pEdtFindText != nullptr && m_pEdt != nullptr )
-    {
-        QString strExp = m_pEdtFindText->text();
+//------------------------------------------------------------------------------
+void CDlgEditIntValue::setUnit( const QString& i_strUnit )
+//------------------------------------------------------------------------------
+{
+    m_pEdtValue->setSuffix(" " + i_strUnit);
+}
 
-        QTextDocument::FindFlags findFlags;
+//------------------------------------------------------------------------------
+int CDlgEditIntValue::getValue() const
+//------------------------------------------------------------------------------
+{
+    return m_pEdtValue->value();
+}
 
-        //QTextDocument::FindBackward;
-        //QTextDocument::FindCaseSensitively;
-        //QTextDocument::FindWholeWords;
+//------------------------------------------------------------------------------
+void CDlgEditIntValue::setMinimum( int i_iMinimum )
+//------------------------------------------------------------------------------
+{
+    m_pEdtValue->setMinimum(i_iMinimum);
+}
 
-        bool bExpFound = m_pEdt->find(strExp,findFlags);
+//------------------------------------------------------------------------------
+int CDlgEditIntValue::getMinimum() const
+//------------------------------------------------------------------------------
+{
+    return m_pEdtValue->minimum();
+}
 
-        if( m_pLblFindTextResult != nullptr )
-        {
-            if( bExpFound )
-            {
-                m_pLblFindTextResult->setText("Text found");
-            }
-            else
-            {
-                m_pLblFindTextResult->setText("Text not found");
-            }
-        }
-    }
+//------------------------------------------------------------------------------
+void CDlgEditIntValue::setMaximum( int i_iMaximum )
+//------------------------------------------------------------------------------
+{
+    m_pEdtValue->setMaximum(i_iMaximum);
+}
 
-} // findNext
+//------------------------------------------------------------------------------
+int CDlgEditIntValue::getMaximum() const
+//------------------------------------------------------------------------------
+{
+    return m_pEdtValue->maximum();
+}
+
+//------------------------------------------------------------------------------
+void CDlgEditIntValue::setStepType( QAbstractSpinBox::StepType i_stepType )
+//------------------------------------------------------------------------------
+{
+    m_pEdtValue->setStepType(i_stepType);
+}
+
+//------------------------------------------------------------------------------
+QAbstractSpinBox::StepType CDlgEditIntValue::getStepType() const
+//------------------------------------------------------------------------------
+{
+    return m_pEdtValue->stepType();
+}
 
 /*==============================================================================
 protected slots:
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CDlgFindText::onBtnFindNextClicked( bool /*i_bChecked*/ )
+void CDlgEditIntValue::onBtnApplyClicked( bool /*i_bChecked*/ )
 //------------------------------------------------------------------------------
 {
-    findNext();
+    emit applied();
+}
+
+//------------------------------------------------------------------------------
+void CDlgEditIntValue::onBtnOkClicked( bool /*i_bChecked*/ )
+//------------------------------------------------------------------------------
+{
+    emit accepted();
+}
+
+//------------------------------------------------------------------------------
+void CDlgEditIntValue::onBtnCancelClicked( bool /*i_bChecked*/ )
+//------------------------------------------------------------------------------
+{
+    emit rejected();
 }

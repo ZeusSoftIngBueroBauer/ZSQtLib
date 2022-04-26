@@ -35,6 +35,7 @@ list(APPEND _Headers
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysApp.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysAux.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysCommon.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSSysDataRateCalculator.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysDllMain.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysEnumEntry.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysEnumeration.h
@@ -72,6 +73,7 @@ list(APPEND _Sources
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysApp.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysAux.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysCommon.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSSysDataRateCalculator.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysDllMain.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysEnumEntry.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysEnumeration.cpp

@@ -1736,6 +1736,66 @@ ZSIPCTRACEDLL_EXTERN_API int TrcServer_getLocalTrcFileSubFileLineCountMax( const
 } // TrcServer_getLocalTrcFileSubFileLineCountMax
 
 //------------------------------------------------------------------------------
+ZSIPCTRACEDLL_EXTERN_API void TrcServer_setUseIpcServer( const DllIf::CTrcServer* i_pTrcServer, bool i_bUseIpcServer )
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(&DllIf_s_mtx);
+
+    if( i_pTrcServer != nullptr )
+    {
+        CTrcMthFile* pTrcMthFile = DllIf_IpcTrcServer_s_pTrcMthFile;
+        int          iTrcDetailLevel = DllIf_IpcTrcServer_s_iTrcMthDetailLevel;
+
+        QString strMthInArgs;
+
+        if( iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
+        {
+            strMthInArgs = bool2Str(i_bUseIpcServer);
+        }
+
+        CMethodTracer mthTracer(
+            /* pTrcMthFile        */ pTrcMthFile,
+            /* iTrcDetailLevel    */ iTrcDetailLevel,
+            /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+            /* strNameSpace       */ c_strNameSpace,
+            /* strClassName       */ c_strClassName,
+            /* strObjName         */ "ZSTrcServer",
+            /* strMethod          */ "TrcServer_setUseIpcServer",
+            /* strMthInArgs       */ strMthInArgs );
+
+        CTrcServer* pTrcServer = CTrcServer::GetInstance();
+
+        if( pTrcServer != nullptr )
+        {
+            pTrcServer->setUseIpcServer(i_bUseIpcServer);
+        }
+    } // if( i_pTrcServer != nullptr )
+
+} // TrcServer_setUseIpcServer
+
+//------------------------------------------------------------------------------
+ZSIPCTRACEDLL_EXTERN_API bool TrcServer_isIpcServerUsed( const DllIf::CTrcServer* i_pTrcServer )
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(&DllIf_s_mtx);
+
+    bool bUseIpcServer = false;
+
+    if( i_pTrcServer != nullptr )
+    {
+        CTrcServer* pTrcServer = CTrcServer::GetInstance();
+
+        if( pTrcServer != nullptr )
+        {
+            bUseIpcServer = pTrcServer->isIpcServerUsed();
+        }
+    } // if( i_pTrcServer != nullptr )
+
+    return bUseIpcServer;
+
+} // TrcServer_isIpcServerUsed
+
+//------------------------------------------------------------------------------
 ZSIPCTRACEDLL_EXTERN_API void TrcServer_setCacheTrcDataIfNotConnected( const DllIf::CTrcServer* i_pTrcServer, bool i_bCacheData )
 //------------------------------------------------------------------------------
 {
@@ -1894,11 +1954,12 @@ ZSIPCTRACEDLL_EXTERN_API bool TrcServer_setTraceSettings(
             ZS::Trace::STrcServerSettings trcSettings;
 
             trcSettings.m_bEnabled                              = i_settings.m_bEnabled;
+            trcSettings.m_strAdminObjFileAbsFilePath            = i_settings.m_szAdminObjFileAbsFilePath;
             trcSettings.m_bNewTrcAdminObjsEnabledAsDefault      = i_settings.m_bNewTrcAdminObjsEnabledAsDefault;
             trcSettings.m_iNewTrcAdminObjsDefaultDetailLevel    = i_settings.m_iNewTrcAdminObjsDefaultDetailLevel;
+            trcSettings.m_bUseIpcServer                         = i_settings.m_bUseIpcServer;
             trcSettings.m_bCacheDataIfNotConnected              = i_settings.m_bCacheDataIfNotConnected;
             trcSettings.m_iCacheDataMaxArrLen                   = i_settings.m_iCacheDataMaxArrLen ;
-            trcSettings.m_strAdminObjFileAbsFilePath            = i_settings.m_szAdminObjFileAbsFilePath;
             trcSettings.m_bUseLocalTrcFile                      = i_settings.m_bUseLocalTrcFile;
             trcSettings.m_strLocalTrcFileAbsFilePath            = i_settings.m_szLocalTrcFileAbsFilePath;
             trcSettings.m_iLocalTrcFileAutoSaveInterval_ms      = i_settings.m_iLocalTrcFileAutoSaveInterval_ms;
@@ -1940,6 +2001,7 @@ ZSIPCTRACEDLL_EXTERN_API DllIf::STrcServerSettings TrcServer_getTraceSettings( c
             dllIfTrcSettings.m_bEnabled                              = trcSettings.m_bEnabled;
             dllIfTrcSettings.m_bNewTrcAdminObjsEnabledAsDefault      = trcSettings.m_bNewTrcAdminObjsEnabledAsDefault;
             dllIfTrcSettings.m_iNewTrcAdminObjsDefaultDetailLevel    = trcSettings.m_iNewTrcAdminObjsDefaultDetailLevel;
+            dllIfTrcSettings.m_bUseIpcServer                         = trcSettings.m_bUseIpcServer;
             dllIfTrcSettings.m_bCacheDataIfNotConnected              = trcSettings.m_bCacheDataIfNotConnected;
             dllIfTrcSettings.m_iCacheDataMaxArrLen                   = trcSettings.m_iCacheDataMaxArrLen ;
             dllIfTrcSettings.m_bUseLocalTrcFile                      = trcSettings.m_bUseLocalTrcFile;

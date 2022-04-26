@@ -100,6 +100,11 @@ protected: // overridables of base class QWidget
     virtual void closeEvent( QCloseEvent* i_pEv );
     virtual bool eventFilter( QObject* i_pObjWatched, QEvent* i_pEv );
 protected slots:
+    void onActFileRecallAdminObjsTriggered();
+    void onActFileSaveAdminObjsTriggered();
+    void onActFileReadTrcMthFileTriggered();
+    void onActFileWriteTrcMthFileTriggered();
+protected slots:
     void onActEditFindTriggered();
 protected slots:
     void onActSettingsTrcClientTriggered();
@@ -116,8 +121,10 @@ protected: // instance methods
 protected: // instance methods
     void updateReqInProgressStatus( const QString& i_strRequest, int i_iProgress_perCent );
 protected slots:
-    void onTrcClientStateChanged( QObject* i_pTrcClient, int i_iState );
     void onTrcClientDestroyed( QObject* i_pTrcClient );
+    void onTrcClientConnected( QObject* i_pTrcClient );
+    void onTrcClientDisconnected( QObject* i_pTrcClient );
+    void onTrcClientStateChanged( QObject* i_pTrcClient, int i_iState );
 protected slots:
     void onWidgetCentralProgressBarConnectDblClicked();
 private: // class members
@@ -126,6 +133,10 @@ protected: // instance members
     QSettings*                m_pSettingsFile;
     ZS::Trace::CIpcTrcClient* m_pTrcClient;
     QMenu*                    m_pMnuFile;
+    QAction*                  m_pActFileRecallAdminObjs;
+    QAction*                  m_pActFileSaveAdminObjs;
+    QAction*                  m_pActFileReadTrcMthFile;
+    QAction*                  m_pActFileWriteTrcMthFile;
     QAction*                  m_pActFileQuit;
     QMenu*                    m_pMnuEdit;
     QAction*                  m_pActEditFind;

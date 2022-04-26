@@ -41,13 +41,15 @@ may result in using the software modules.
 
 #include "ZSIpcTraceGUI/ZSIpcTrcGUIDllMain.h"
 #include "ZSSys/ZSSysAux.h"
+#include "ZSSys/ZSSysDataRateCalculator.h"
 #include "ZSSys/ZSSysRequest.h"
 
 class QCheckBox;
 class QLabel;
-class QListWidget;
+class QLineEdit;
 class QPushButton;
 class QTextEdit;
+class QTimer;
 
 namespace ZS
 {
@@ -55,6 +57,7 @@ namespace System
 {
 namespace GUI
 {
+class CDlgEditIntValue;
 class CProgressBar;
 }
 }
@@ -91,7 +94,7 @@ public: // class methods
 public: // ctors and dtor
     CWdgtTrcMthList(
         CIpcTrcClient* i_pTrcClient,
-        int            i_iItemsCountMax = 0,
+        int            i_iItemsCountMax = 100000,
         QWidget*       i_pWdgtParent = nullptr );
     virtual ~CWdgtTrcMthList();
 public: // instance methods
@@ -107,17 +110,25 @@ public: // instance methods
     void saveThreadColors( const QString& i_strAbsFilePath = "" );
     #endif
 public: // instance methods
+    ZS::System::SErrResultInfo readTraceMethodFile( const QString& i_strAbsFilePath );
+    ZS::System::SErrResultInfo writeTraceMethodFile( const QString& i_strAbsFilePath );
+public: // instance methods
     QTextEdit* getTextEdit() { return m_pEdt; }
-protected: // overridables of base class QObject
-    virtual bool eventFilter( QObject* i_pObjWatched, QEvent* i_pEv );
 public: // instance methods
     void findText();
     bool find( const QString& i_strExp, QTextDocument::FindFlags i_findFlags = QTextDocument::FindFlags() );
+protected: // overridables of base class QWidget
+    virtual bool eventFilter( QObject* i_pObjWatched, QEvent* i_pEv );
 protected slots: // connected to the signals of my user controls
     void onBtnClearClicked( bool i_bChecked );
     void onChkServerTracingEnabledToggled( bool i_bChecked );
+    void onChkServerUseIpcServerToggled( bool i_bChecked );
     void onBtnTrcAdminObjIdxTreeClicked( bool i_bChecked );
     void onBtnConnectClicked( bool i_bChecked );
+protected slots:
+    void onEditMaxDataRateApplied();
+    void onEditMaxDataRateAccepted();
+    void onEditMaxDataRateRejected();
 protected slots: // connected to the signals of the IPC client
     void onIpcClientConnected( QObject* i_pClient );
     void onIpcClientDisconnected( QObject* i_pClient );
@@ -126,25 +137,43 @@ protected slots: // connected to the signals of the IPC client
 protected slots: // connected to the signals of the trace client
     void onTraceSettingsChanged( QObject* i_pTrcClient );
     void onTraceDataReceived( QObject* i_pTrcClient, const QString& i_str );
+    void onTmrDataRateRefreshTimeout();
 protected: // instance methods
     void addEdtItem( const QString& i_strText, const QString& i_strHtmlClrCode );
 protected: // instance methods
     void normalize( QString& i_str ) const;
+    void showAndCheckDataRates();
+    void showEditMaxDataRateDialog();
 private: // instance members
-    CIpcTrcClient*                    m_pTrcClient;
-    ZS::System::CRequest*             m_pReqInProgress;
-    QString                           m_strThreadClrFileAbsFilePath;
-    int                               m_iEdtItemsCountMax;
-    int                               m_iEdtItems;
-    int                               m_bEdtFull;
-    QTextEdit*                        m_pEdt;
-    QHash<QString,STrcMthThreadEntry> m_hashThreads;
-    QPushButton*                      m_pBtnClear;
-    QLabel*                           m_pLblServerTracingEnabled;
-    QCheckBox*                        m_pChkServerTracingEnabled;
-    QPushButton*                      m_pBtnTrcAdminObjIdxTree;
-    QPushButton*                      m_pBtnConnect;
-    ZS::System::GUI::CProgressBar*    m_pProgressBarCnct;
+    CIpcTrcClient*                     m_pTrcClient;
+    ZS::System::CDataRateCalculator    m_dataRateCalculatorBytes;
+    ZS::System::CDataRateCalculator    m_dataRateCalculatorLines;
+    QVector<double>                    m_arfDataRateDiffsProcTime_s;
+    QVector<int>                       m_ariDataRateDiffs_linesPerSec;
+    ZS::System::CRequest*              m_pReqInProgress;
+    QString                            m_strThreadClrFileAbsFilePath;
+    int                                m_iEdtItemsCountMax;
+    int                                m_iEdtItems;
+    int                                m_bEdtFull;
+    QTextEdit*                         m_pEdt;
+    QHash<QString,STrcMthThreadEntry>  m_hashThreads;
+    QPushButton*                       m_pBtnClear;
+    QLabel*                            m_pLblServerTracingEnabled;
+    QCheckBox*                         m_pChkServerTracingEnabled;
+    QLabel*                            m_pLblServerUseIpcServer;
+    QCheckBox*                         m_pChkServerUseIpcServer;
+    QPushButton*                       m_pBtnTrcAdminObjIdxTree;
+    QPushButton*                       m_pBtnConnect;
+    ZS::System::GUI::CProgressBar*     m_pProgressBarCnct;
+    QTimer*                            m_pTmrDataRateRefresh;
+    int                                m_iMaxDataRateLinesPerSec;
+    QLabel*                            m_pLblMaxDataRate;
+    QLineEdit*                         m_pEdtMaxDataRateLinesPerSec;
+    ZS::System::GUI::CDlgEditIntValue* m_pDlgEditMaxDataRateLinesPerSec;
+    QLabel*                            m_pLblCurrentDataRatesClient;
+    QLineEdit*                         m_pEdtCurrentDataRatesClient;
+    QLabel*                            m_pLblCurrentDataRatesServer;
+    QLineEdit*                         m_pEdtCurrentDataRatesServer;
 
 }; // class CWdgtTrcMthList
 

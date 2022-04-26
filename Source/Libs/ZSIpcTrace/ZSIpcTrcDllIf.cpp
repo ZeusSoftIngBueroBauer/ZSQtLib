@@ -132,6 +132,8 @@ typedef void (*TFctTrcServer_setLocalTrcFileSubFileCountMax)( DllIf::CTrcServer*
 typedef int (*TFctTrcServer_getLocalTrcFileSubFileCountMax)( const DllIf::CTrcServer* i_pTrcServer );
 typedef void (*TFctTrcServer_setLocalTrcFileSubFileLineCountMax)( DllIf::CTrcServer* i_pTrcServer, int i_iCountMax );
 typedef int (*TFctTrcServer_getLocalTrcFileSubFileLineCountMax)( const DllIf::CTrcServer* i_pTrcServer );
+typedef void (*TFctTrcServer_setUseIpcServer)( DllIf::CTrcServer* i_pTrcServer, bool i_bUseIpcServer );
+typedef bool (*TFctTrcServer_isIpcServerUsed)( const DllIf::CTrcServer* i_pTrcServer );
 typedef void (*TFctTrcServer_setCacheTrcDataIfNotConnected)( DllIf::CTrcServer* i_pTrcServer, bool i_bCacheData );
 typedef bool (*TFctTrcServer_getCacheTrcDataIfNotConnected)( const DllIf::CTrcServer* i_pTrcServer );
 typedef void (*TFctTrcServer_setCacheTrcDataMaxArrLen)( DllIf::CTrcServer* i_pTrcServer, int i_iMaxArrLen );
@@ -213,6 +215,8 @@ TFctTrcServer_setLocalTrcFileSubFileCountMax         s_pFctTrcServer_setLocalTrc
 TFctTrcServer_getLocalTrcFileSubFileCountMax         s_pFctTrcServer_getLocalTrcFileSubFileCountMax         = NULL;
 TFctTrcServer_setLocalTrcFileSubFileLineCountMax     s_pFctTrcServer_setLocalTrcFileSubFileLineCountMax     = NULL;
 TFctTrcServer_getLocalTrcFileSubFileLineCountMax     s_pFctTrcServer_getLocalTrcFileSubFileLineCountMax     = NULL;
+TFctTrcServer_setUseIpcServer                        s_pFctTrcServer_setUseIpcServer                        = NULL;
+TFctTrcServer_isIpcServerUsed                        s_pFctTrcServer_isIpcServerUsed                        = NULL;
 TFctTrcServer_setCacheTrcDataIfNotConnected          s_pFctTrcServer_setCacheTrcDataIfNotConnected          = NULL;
 TFctTrcServer_getCacheTrcDataIfNotConnected          s_pFctTrcServer_getCacheTrcDataIfNotConnected          = NULL;
 TFctTrcServer_setCacheTrcDataMaxArrLen               s_pFctTrcServer_setCacheTrcDataMaxArrLen               = NULL;
@@ -528,6 +532,12 @@ bool ZS::Trace::DllIf::loadDll( EBuildConfiguration i_configuration, int i_iQtVe
         s_pFctTrcServer_getLocalTrcFileSubFileLineCountMax = (TFctTrcServer_getLocalTrcFileSubFileLineCountMax)GetProcAddress(s_hndIpcTrcDllIf, "TrcServer_getLocalTrcFileSubFileLineCountMax");
         if( s_pFctTrcServer_getLocalTrcFileSubFileLineCountMax == NULL ) bOk = false;
 
+        s_pFctTrcServer_setUseIpcServer = (TFctTrcServer_setUseIpcServer)GetProcAddress(s_hndIpcTrcDllIf, "TrcServer_setUseIpcServer");
+        if( s_pFctTrcServer_setUseIpcServer == NULL ) bOk = false;
+
+        s_pFctTrcServer_isIpcServerUsed = (TFctTrcServer_isIpcServerUsed)GetProcAddress(s_hndIpcTrcDllIf, "TrcServer_isIpcServerUsed");
+        if( s_pFctTrcServer_isIpcServerUsed == NULL ) bOk = false;
+
         s_pFctTrcServer_setCacheTrcDataIfNotConnected = (TFctTrcServer_setCacheTrcDataIfNotConnected)GetProcAddress(s_hndIpcTrcDllIf, "TrcServer_setCacheTrcDataIfNotConnected");
         if( s_pFctTrcServer_setCacheTrcDataIfNotConnected == NULL ) bOk = false;
 
@@ -673,6 +683,8 @@ bool ZS::Trace::DllIf::releaseDll()
         s_pFctTrcServer_getLocalTrcFileSubFileCountMax         = NULL;
         s_pFctTrcServer_setLocalTrcFileSubFileLineCountMax     = NULL;
         s_pFctTrcServer_getLocalTrcFileSubFileLineCountMax     = NULL;
+        s_pFctTrcServer_setUseIpcServer                        = NULL;
+        s_pFctTrcServer_isIpcServerUsed                        = NULL;
         s_pFctTrcServer_setCacheTrcDataIfNotConnected          = NULL;
         s_pFctTrcServer_getCacheTrcDataIfNotConnected          = NULL;
         s_pFctTrcServer_setCacheTrcDataMaxArrLen               = NULL;
@@ -1109,15 +1121,20 @@ public: // struct methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void DllIf::STrcServerSettings_init( DllIf::STrcServerSettings&i_trcSettings )
+/*! @brief Initializes the trace settings with default values.
+
+    @param i_trcSettings [in] Struct to be initialized.
+*/
+void DllIf::STrcServerSettings_init( DllIf::STrcServerSettings& i_trcSettings )
 //------------------------------------------------------------------------------
 {
     i_trcSettings.m_bEnabled = true;
+    i_trcSettings.m_szAdminObjFileAbsFilePath = NULL;
     i_trcSettings.m_bNewTrcAdminObjsEnabledAsDefault = false;
     i_trcSettings.m_iNewTrcAdminObjsDefaultDetailLevel = 0;
+    i_trcSettings.m_bUseIpcServer = true;
     i_trcSettings.m_bCacheDataIfNotConnected = false;
     i_trcSettings.m_iCacheDataMaxArrLen = 1000;
-    i_trcSettings.m_szAdminObjFileAbsFilePath = NULL;
     i_trcSettings.m_bUseLocalTrcFile = true;
     i_trcSettings.m_szLocalTrcFileAbsFilePath = NULL;
     i_trcSettings.m_iLocalTrcFileAutoSaveInterval_ms = 1000;
@@ -1128,16 +1145,22 @@ void DllIf::STrcServerSettings_init( DllIf::STrcServerSettings&i_trcSettings )
 } // STrcServerSettings_init
 
 //------------------------------------------------------------------------------
-void DllIf::STrcServerSettings_release( DllIf::STrcServerSettings&i_trcSettings )
+/*! @brief Resets the trace settings. The character buffers containing file names
+           will be freed.
+
+    @param i_trcSettings [in] Struct to be reset.
+*/
+void DllIf::STrcServerSettings_release( DllIf::STrcServerSettings& i_trcSettings )
 //------------------------------------------------------------------------------
 {
     i_trcSettings.m_bEnabled = false;
-    i_trcSettings.m_bNewTrcAdminObjsEnabledAsDefault = false;
-    i_trcSettings.m_iNewTrcAdminObjsDefaultDetailLevel = 0;
-    i_trcSettings.m_bCacheDataIfNotConnected = false;
-    i_trcSettings.m_iCacheDataMaxArrLen = 0;
     delete i_trcSettings.m_szAdminObjFileAbsFilePath;
     i_trcSettings.m_szAdminObjFileAbsFilePath = NULL;
+    i_trcSettings.m_bNewTrcAdminObjsEnabledAsDefault = false;
+    i_trcSettings.m_iNewTrcAdminObjsDefaultDetailLevel = 0;
+    i_trcSettings.m_bUseIpcServer = false;
+    i_trcSettings.m_bCacheDataIfNotConnected = false;
+    i_trcSettings.m_iCacheDataMaxArrLen = 0;
     i_trcSettings.m_bUseLocalTrcFile = false;
     delete i_trcSettings.m_szLocalTrcFileAbsFilePath;
     i_trcSettings.m_szLocalTrcFileAbsFilePath = NULL;
@@ -1676,22 +1699,45 @@ int DllIf::CTrcServer::getLocalTrcFileSubFileLineCountMax() const
         iCountMax = s_pFctTrcServer_getLocalTrcFileSubFileLineCountMax(this);
     }
     return iCountMax;
-
-} // getLocalTrcFileSubFileLineCountMax
+}
 
 /*==============================================================================
 public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-/*! Definiert, ob das Caching des Methoden Traces aktivert werden soll.
+void DllIf::CTrcServer::setUseIpcServer( bool i_bUse )
+//------------------------------------------------------------------------------
+{
+    if( s_hndIpcTrcDllIf != NULL && s_pFctTrcServer_setUseIpcServer != NULL )
+    {
+        s_pFctTrcServer_setUseIpcServer(this, i_bUse);
+    }
+}
 
-    Ist kein Trace Client verbunden, werden die Methoden Traces nicht an den
-    Client geschickt. Das Caching ermoeglicht es z.B. auch die Methoden Traces
-    zum Client zu schicken, nachdem sich dieser verbunden hat. Damit kann z.B.
-    auch der Startup der Applikation fuer den Client sichtbar gemacht werden.
+//------------------------------------------------------------------------------
+bool DllIf::CTrcServer::isIpcServerUsed() const
+//------------------------------------------------------------------------------
+{
+    bool bUsed = false;
 
-    @param i_bCacheData [In] true um das caching zu aktivieren.
+    if( s_hndIpcTrcDllIf != NULL && s_pFctTrcServer_isIpcServerUsed != NULL )
+    {
+        bUsed = s_pFctTrcServer_isIpcServerUsed(this);
+    }
+    return bUsed;
+}
+
+//------------------------------------------------------------------------------
+/*! Defines whether caching of the method trace should be activated.
+
+    If no trace client is connected, the trace ooutputs are not sent to the client.
+    If caching is enabled the trace outputs are locally stored in a cache.
+    If the client connect the cached trace outputs will be send to the client.
+    In this way, for example, the startup of the application can also be made visible
+    to the client if the clients connects later on.
+
+    @param i_bCacheData [In] true to activate caching.
 */
 void DllIf::CTrcServer::setCacheTrcDataIfNotConnected( bool i_bCacheData )
 //------------------------------------------------------------------------------
@@ -1700,7 +1746,7 @@ void DllIf::CTrcServer::setCacheTrcDataIfNotConnected( bool i_bCacheData )
     {
         s_pFctTrcServer_setCacheTrcDataIfNotConnected(this, i_bCacheData);
     }
-} // setCacheTrcDataIfNotConnected
+}
 
 //------------------------------------------------------------------------------
 bool DllIf::CTrcServer::getCacheTrcDataIfNotConnected() const

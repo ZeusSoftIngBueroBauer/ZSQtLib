@@ -64,7 +64,7 @@ public: // instance methods to get and release admin objects
         ZS::System::EEnabled i_bEnabledAsDefault,
         int                  i_iDefaultDetailLevel,
         bool                 i_bIncrementRefCount = true );
-    CTrcAdminObj* getTraceAdminObj( int i_idxInTree ) const;
+    CTrcAdminObj* getTraceAdminObj( int i_idxInTree, bool i_bIncrementRefCount = true );
     void releaseTraceAdminObj( CTrcAdminObj* i_pTrcAdminObj );
 public: // instance methods to insert branch nodes and admin objects
     ZS::System::CIdxTreeEntry* insertBranch(

@@ -24,71 +24,93 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#ifndef ZSIpcGUI_ServerDlg_h
-#define ZSIpcGUI_ServerDlg_h
+#ifndef ZSSysGUI_EditIntValueDlg_h
+#define ZSSysGUI_EditIntValueDlg_h
 
-#include "ZSIpcGUI/ZSIpcGUIDllMain.h"
 #include "ZSSysGUI/ZSSysDialog.h"
 
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+#include <QtGui/qspinbox.h>
+#else
+#include <QtWidgets/qspinbox.h>
+#endif
+
+class QHBoxLayout;
 class QVBoxLayout;
+class QLabel;
+class QPushButton;
+class QSpinBox;
 
 namespace ZS
 {
-namespace Ipc
+namespace System
 {
-class CServer;
-
 namespace GUI
 {
-class CWdgtIpcServer;
-
 //******************************************************************************
-class ZSIPCGUIDLL_API CDlgIpcServer : public ZS::System::GUI::CDialog
+class ZSSYSGUIDLL_API CDlgEditIntValue : public CDialog
 //******************************************************************************
 {
     Q_OBJECT
 public: // class methods
-    static QString NameSpace() { return "ZS::Ipc::GUI"; }
-    static QString ClassName() { return "CDlgIpcServer"; }
+    static QString NameSpace() { return "ZS::System::GUI"; }
+    static QString ClassName() { return "CDlgEditIntValue"; }
 public: // class methods
-    static CDlgIpcServer* CreateInstance(
+    static CDlgEditIntValue* CreateInstance(
         const QString&  i_strDlgTitle,
         const QString&  i_strObjName,
         QWidget*        i_pWdgtParent = nullptr,
         Qt::WindowFlags i_wFlags = Qt::WindowFlags() );
-    static CDlgIpcServer* GetInstance( const QString& i_strObjName );
+    static CDlgEditIntValue* GetInstance( const QString& i_strObjName );
 protected: // ctor
-    CDlgIpcServer(
+    CDlgEditIntValue(
         const QString&  i_strDlgTitle,
         const QString&  i_strObjName,
         QWidget*        i_pWdgtParent = nullptr,
         Qt::WindowFlags i_wFlags = Qt::WindowFlags());
+signals:
+    void applied();
+    //void accepted(); inherited from QDialog
+    //void rejected(); inherited from QDialog
 public: // dtor
-    virtual ~CDlgIpcServer();
+    virtual ~CDlgEditIntValue();
 public: // overridables of base class ZS::System::GUI::CDialog
     virtual QString nameSpace() override { return NameSpace(); }
     virtual QString className() override { return ClassName(); }
 public: // instance methods
-    void setServer( CServer* i_pServer );
-public: // instance methods
-    void setProtocolTypeImage( const QPixmap& i_pxm );
-    void setProtocolTypeImageVisible( bool i_bVisible );
-    bool isProtocolTypeImageVisible() const;
+    void setValueName( const QString& i_strName );
+    QString getValueName() const;
+    void setValue( int i_iVal );
+    int getValue() const;
+    void setUnit( const QString& i_strUnit );
+    QString getUnit() const;
+    void setMinimum( int i_iMinimum );
+    int getMinimum() const;
+    void setMaximum( int i_iMaximum );
+    int getMaximum() const;
+    void setStepType( QAbstractSpinBox::StepType i_stepType );
+    QAbstractSpinBox::StepType getStepType() const;
 protected slots:
-    void onSettingsAccepted();
-    void onSettingsRejected();
-protected slots:
-    void onWdgtIpcServerDetailsVisibilityChanged( bool i_bDetailsVisible );
+    void onBtnApplyClicked( bool i_bChecked );
+    void onBtnOkClicked( bool i_bChecked );
+    void onBtnCancelClicked( bool i_bChecked );
 protected: // instance members
-    QVBoxLayout*    m_pLyt;
-    CWdgtIpcServer* m_pWdgtIpcServer;
+    QVBoxLayout*   m_pLyt;
+    QHBoxLayout*   m_pLytValue;
+    QLabel*        m_pLblValue;
+    QSpinBox*      m_pEdtValue;
+    int            m_iValOrig;
+    QHBoxLayout*   m_pLytBtns;
+    QPushButton*   m_pBtnApply;
+    QPushButton*   m_pBtnOk;
+    QPushButton*   m_pBtnCancel;
 
-}; // class CDlgIpcServer
+}; // class CDlgEditIntValue
 
 } // namespace GUI
 
-} // namespace Ipc
+} // namespace System
 
 } // namespace ZS
 
-#endif // #ifndef ZSIpcGUI_ServerDlg_h
+#endif // #ifndef ZSSysGUI_EditIntValueDlg_h

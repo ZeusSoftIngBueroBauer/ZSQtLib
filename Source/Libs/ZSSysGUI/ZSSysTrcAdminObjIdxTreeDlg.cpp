@@ -59,8 +59,8 @@ public: // class methods
 
 //------------------------------------------------------------------------------
 CDlgIdxTreeTrcAdminObjs* CDlgIdxTreeTrcAdminObjs::CreateInstance(
-    CIdxTreeTrcAdminObjs* i_pIdxTree,
     const QString&        i_strDlgTitle,
+    CIdxTreeTrcAdminObjs* i_pIdxTree,
     QWidget*              i_pWdgtParent,
     Qt::WindowFlags       i_wFlags,
     int                   i_iTrcDetailLevel )
@@ -74,8 +74,8 @@ CDlgIdxTreeTrcAdminObjs* CDlgIdxTreeTrcAdminObjs::CreateInstance(
 
     // The ctor of base class CDialog adds the instance to the hash of dialogs.
     return new CDlgIdxTreeTrcAdminObjs(
-        /* pIdxTree        */ i_pIdxTree,
         /* strDlgTitle     */ i_strDlgTitle,
+        /* pIdxTree        */ i_pIdxTree,
         /* pWdgtParent     */ i_pWdgtParent,
         /* wFlags          */ i_wFlags,
         /* iTrcDetailLevel */ i_iTrcDetailLevel );
@@ -95,17 +95,17 @@ public: // ctors and dtor
 
 //------------------------------------------------------------------------------
 CDlgIdxTreeTrcAdminObjs::CDlgIdxTreeTrcAdminObjs(
-    CIdxTreeTrcAdminObjs* i_pIdxTree,
     const QString&        i_strDlgTitle,
+    CIdxTreeTrcAdminObjs* i_pIdxTree,
     QWidget*              i_pWdgtParent,
     Qt::WindowFlags       i_wFlags,
     int                   i_iTrcDetailLevel ) :
 //------------------------------------------------------------------------------
     CDialog(
+        /* strDlgTitle  */ i_strDlgTitle,
         /* strNameSpace */ NameSpace(),
         /* strClassName */ ClassName(),
         /* strObjName   */ i_pIdxTree->objectName(),
-        /* strDlgTitle  */ i_strDlgTitle,
         /* pWdgtParent  */ i_pWdgtParent,
         /* wFlags       */ i_wFlags ),
     m_pIdxTree(i_pIdxTree),

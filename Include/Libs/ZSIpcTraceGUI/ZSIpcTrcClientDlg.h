@@ -61,15 +61,15 @@ public: // class methods
     static QString ClassName() { return "CDlgTrcClient"; }
 public: // class methods
     static CDlgTrcClient* CreateInstance(
-        const QString&  i_strObjName,
         const QString&  i_strDlgTitle,
+        const QString&  i_strObjName,
         QWidget*        i_pWdgtParent = nullptr,
         Qt::WindowFlags i_wFlags = Qt::WindowFlags() );
     static CDlgTrcClient* GetInstance( const QString& i_strObjName );
 protected: // ctor
     CDlgTrcClient(
-        const QString&  i_strObjName,
         const QString&  i_strDlgTitle,
+        const QString&  i_strObjName,
         QWidget*        i_pWdgtParent = nullptr,
         Qt::WindowFlags i_wFlags = Qt::WindowFlags());
 public: // dtor
