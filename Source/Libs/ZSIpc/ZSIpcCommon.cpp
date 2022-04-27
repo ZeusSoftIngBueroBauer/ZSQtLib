@@ -1208,3 +1208,72 @@ QString STimerSettings::toString() const
     return str;
 
 } // toString;
+
+
+/*******************************************************************************
+converting common data types into strings and vice versa
+*******************************************************************************/
+
+//------------------------------------------------------------------------------
+QString ZS::Ipc::qNetworkInterfaceType2Str( QNetworkInterface::InterfaceType i_type )
+//------------------------------------------------------------------------------
+{
+    static QHash<QNetworkInterface::InterfaceType, QString> s_hshType2Str = {
+        { QNetworkInterface::Unknown, "Unknown" },
+        { QNetworkInterface::Loopback, "Loopback" },
+        { QNetworkInterface::Virtual, "Virtual" },
+        { QNetworkInterface::Ethernet, "Ethernet" },
+        { QNetworkInterface::Wifi, "Wifi" },
+        { QNetworkInterface::CanBus, "CanBus" },
+        { QNetworkInterface::Fddi, "Fddi" },
+        { QNetworkInterface::Ppp, "Ppp" },
+        { QNetworkInterface::Slip, "Slip" },
+        { QNetworkInterface::Phonet, "Phonet" },
+        { QNetworkInterface::Ieee802154, "Ieee802154" },
+        { QNetworkInterface::SixLoWPAN, "SixLoWPAN" },
+        { QNetworkInterface::Ieee80216, "Ieee80216" },
+        { QNetworkInterface::Ieee1394, "Ieee1394" }
+    };
+    return s_hshType2Str.value(i_type, "? (" + QString::number(i_type)+ ")");
+
+} // qNetworkInterfaceType2Str
+
+//------------------------------------------------------------------------------
+QString ZS::Ipc::qNetworkInterfaceFlags2Str( QNetworkInterface::InterfaceFlags i_flags )
+//------------------------------------------------------------------------------
+{
+    QString str;
+
+    if( i_flags & QNetworkInterface::IsUp )
+    {
+        if( !str.isEmpty() ) str += "&";
+        str += "IsUp";
+    }
+    if( i_flags & QNetworkInterface::IsRunning )
+    {
+        if( !str.isEmpty() ) str += "&";
+        str += "IsRunning";
+    }
+    if( i_flags & QNetworkInterface::CanBroadcast )
+    {
+        if( !str.isEmpty() ) str += "&";
+        str += "CanBroadcast";
+    }
+    if( i_flags & QNetworkInterface::IsLoopBack )
+    {
+        if( !str.isEmpty() ) str += "&";
+        str += "IsLoopBack";
+    }
+    if( i_flags & QNetworkInterface::IsPointToPoint )
+    {
+        if( !str.isEmpty() ) str += "&";
+        str += "IsPointToPoint";
+    }
+    if( i_flags & QNetworkInterface::CanMulticast )
+    {
+        if( !str.isEmpty() ) str += "&";
+        str += "CanMulticast";
+    }
+    return str;
+
+} // qNetworkInterfaceFlags2Str

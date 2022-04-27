@@ -29,6 +29,7 @@ may result in using the software modules.
 
 #include <QtCore/qstring.h>
 #include <QtNetwork/qhostaddress.h>
+#include <QtNetwork/qnetworkinterface.h>
 
 #include "ZSIpc/ZSIpcDllMain.h"
 #include "ZSSys/ZSSysCommon.h"
@@ -258,6 +259,13 @@ public: // struct members
 
 }; // struct STimerSettings
 
+
+/*******************************************************************************
+converting common data types into strings and vice versa
+*******************************************************************************/
+
+ZSIPCDLL_API QString qNetworkInterfaceType2Str( QNetworkInterface::InterfaceType i_type );
+ZSIPCDLL_API QString qNetworkInterfaceFlags2Str( QNetworkInterface::InterfaceFlags i_flags );
 
 } // namespace Ipc
 

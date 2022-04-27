@@ -348,6 +348,15 @@ CWdgtTrcSettings::CWdgtTrcSettings( const QString& i_strObjName, QWidget* i_pWdg
     m_pLytBtns->addWidget(m_pBtnOk);
     m_pLytBtns->addSpacing(cxBtnSpacing);
 
+    if( !QObject::connect(
+        /* pObjSender   */ m_pBtnOk,
+        /* szSignal     */ SIGNAL(clicked(bool)),
+        /* pObjReceiver */ this,
+        /* szSlot       */ SLOT(onBtnOkClicked(bool)) ) )
+    {
+        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
+    }
+
     // <Button> Cancel
     //----------------
 
@@ -355,6 +364,15 @@ CWdgtTrcSettings::CWdgtTrcSettings( const QString& i_strObjName, QWidget* i_pWdg
     m_pBtnCancel->setFixedWidth(cxBtnWidth);
     m_pLytBtns->addWidget(m_pBtnCancel);
     m_pLytBtns->addSpacing(cxBtnSpacing);
+
+    if( !QObject::connect(
+        /* pObjSender   */ m_pBtnCancel,
+        /* szSignal     */ SIGNAL(clicked(bool)),
+        /* pObjReceiver */ this,
+        /* szSlot       */ SLOT(onBtnCancelClicked(bool)) ) )
+    {
+        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
+    }
 
     // <Button> Reset
     //---------------
@@ -364,12 +382,30 @@ CWdgtTrcSettings::CWdgtTrcSettings( const QString& i_strObjName, QWidget* i_pWdg
     m_pLytBtns->addWidget(m_pBtnReset);
     m_pLytBtns->addSpacing(cxBtnSpacing);
 
+    if( !QObject::connect(
+        /* pObjSender   */ m_pBtnReset,
+        /* szSignal     */ SIGNAL(clicked(bool)),
+        /* pObjReceiver */ this,
+        /* szSlot       */ SLOT(onBtnResetClicked(bool)) ) )
+    {
+        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
+    }
+
     // <Button> Apply
     //---------------
 
     m_pBtnApply = new QPushButton("Apply");
     m_pBtnApply->setFixedWidth(cxBtnWidth);
     m_pLytBtns->addWidget(m_pBtnApply);
+
+    if( !QObject::connect(
+        /* pObjSender   */ m_pBtnApply,
+        /* szSignal     */ SIGNAL(clicked(bool)),
+        /* pObjReceiver */ this,
+        /* szSlot       */ SLOT(onBtnApplyClicked(bool)) ) )
+    {
+        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
+    }
 
     // <Stretch> at right side of buttons
     //-----------------------------------
@@ -606,8 +642,8 @@ void CWdgtTrcSettings::enableGuiControls( bool i_bEnabled )
     m_pEdtLocalTrcFileSubFileCountMax->setEnabled(i_bEnabled);
     m_pEdtLocalTrcFileSubFileLineCountMax->setEnabled(i_bEnabled);
     m_pChkLocalTrcFileCloseFileAfterEachWrite->setEnabled(i_bEnabled);
-    m_pBtnOk->setEnabled(i_bEnabled);
-    m_pBtnCancel->setEnabled(i_bEnabled);
+    //m_pBtnOk->setEnabled(i_bEnabled);
+    //m_pBtnCancel->setEnabled(i_bEnabled);
     bool bHasChanges = hasChanges();
     m_pBtnReset->setEnabled(i_bEnabled && bHasChanges);
     m_pBtnApply->setEnabled(i_bEnabled && bHasChanges);
@@ -705,38 +741,6 @@ void CWdgtTrcSettings::connectGuiControlsOnValueChangedSignals()
     {
         throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
     }
-    if( !QObject::connect(
-        /* pObjSender   */ m_pBtnOk,
-        /* szSignal     */ SIGNAL(clicked(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onBtnOkClicked(bool)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-    if( !QObject::connect(
-        /* pObjSender   */ m_pBtnCancel,
-        /* szSignal     */ SIGNAL(clicked(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onBtnCancelClicked(bool)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-    if( !QObject::connect(
-        /* pObjSender   */ m_pBtnReset,
-        /* szSignal     */ SIGNAL(clicked(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onBtnResetClicked(bool)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-    if( !QObject::connect(
-        /* pObjSender   */ m_pBtnApply,
-        /* szSignal     */ SIGNAL(clicked(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onBtnApplyClicked(bool)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
 }
 
 //------------------------------------------------------------------------------
@@ -798,26 +802,6 @@ void CWdgtTrcSettings::disconnectGuiControlsOnValueChangedSignals()
         /* szSignal     */ SIGNAL(toggled(bool)),
         /* pObjReceiver */ this,
         /* szSlot       */ SLOT(onChkLocalTrcFileCloseFileAfterEachWriteToggled(bool)) );
-    QObject::disconnect(
-        /* pObjSender   */ m_pBtnOk,
-        /* szSignal     */ SIGNAL(clicked(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onBtnOkClicked(bool)) );
-    QObject::disconnect(
-        /* pObjSender   */ m_pBtnCancel,
-        /* szSignal     */ SIGNAL(clicked(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onBtnCancelClicked(bool)) );
-    QObject::disconnect(
-        /* pObjSender   */ m_pBtnReset,
-        /* szSignal     */ SIGNAL(clicked(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onBtnResetClicked(bool)) );
-    QObject::disconnect(
-        /* pObjSender   */ m_pBtnApply,
-        /* szSignal     */ SIGNAL(clicked(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onBtnApplyClicked(bool)) );
 }
 
 /*==============================================================================
@@ -959,8 +943,10 @@ void CWdgtTrcSettings::onTraceSettingsChanged( QObject* /*i_pServer*/ )
     m_pEdtLocalTrcFileSubFileLineCountMax->setValue(trcSettings.m_iLocalTrcFileSubFileLineCountMax);
     m_pChkLocalTrcFileCloseFileAfterEachWrite->setChecked(trcSettings.m_bLocalTrcFileCloseFileAfterEachWrite);
 
-    m_pBtnReset->setEnabled(hasChanges());
-    m_pBtnApply->setEnabled(hasChanges());
+    bool bHasChanges = hasChanges();
+
+    m_pBtnReset->setEnabled(bHasChanges);
+    m_pBtnApply->setEnabled(bHasChanges);
 
 } // onTraceSettingsChanged
 
@@ -1061,19 +1047,17 @@ bool CWdgtTrcSettings::hasChanges() const
 {
     bool bHasChanges = false;
 
-    STrcServerSettings trcSettingsCltSrv;
-
     if( m_pTrcServer != nullptr )
     {
-        trcSettingsCltSrv = m_pTrcServer->getTraceSettings();
+        STrcServerSettings trcSettingsSrv = m_pTrcServer->getTraceSettings();
+        STrcServerSettings trcSettingsWdgt = getTraceSettings();
+        bHasChanges = trcSettingsSrv != trcSettingsWdgt;
     }
     else if( m_pTrcClient != nullptr )
     {
-        trcSettingsCltSrv = m_pTrcClient->getTraceSettings();
-    }
-    if( getTraceSettings() != trcSettingsCltSrv )
-    {
-        bHasChanges = true;
+        STrcServerSettings trcSettingsClt = m_pTrcClient->getTraceSettings();
+        STrcServerSettings trcSettingsWdgt = getTraceSettings();
+        bHasChanges = trcSettingsClt != trcSettingsWdgt;
     }
     return bHasChanges;
 }
@@ -1124,6 +1108,7 @@ void CWdgtTrcSettings::applyChanges()
     }
 
     bool bHasChanges = hasChanges();
+
     m_pBtnReset->setEnabled(bHasChanges);
     m_pBtnApply->setEnabled(bHasChanges);
 }

@@ -150,10 +150,10 @@ CWdgtTrcMthList::CWdgtTrcMthList(
     m_pBtnConnect(nullptr),
     m_pProgressBarCnct(nullptr),
     m_pTmrDataRateRefresh(nullptr),
-    m_iMaxDataRateLinesPerSec(200),
-    m_pLblMaxDataRate(nullptr),
-    m_pEdtMaxDataRateLinesPerSec(nullptr),
-    m_pDlgEditMaxDataRateLinesPerSec(nullptr),
+    m_iTimeSpanTooMuchData_s(10),
+    m_pLblTimeSpanTooMuchData(nullptr),
+    m_pEdtTimeSpanTooMuchData(nullptr),
+    m_pDlgEditTimeSpanTooMuchData(nullptr),
     m_pLblCurrentDataRatesClient(nullptr),
     m_pEdtCurrentDataRatesClient(nullptr),
     m_pLblCurrentDataRatesServer(nullptr),
@@ -303,7 +303,7 @@ CWdgtTrcMthList::CWdgtTrcMthList(
     //------------------
 
     settings.beginGroup(objectName());
-    m_iMaxDataRateLinesPerSec = settings.value("MaxDataRateLinesPerSec", m_iMaxDataRateLinesPerSec).toInt();
+    m_iTimeSpanTooMuchData_s = settings.value("TimeSpanDetectTooMuchData_s", m_iTimeSpanTooMuchData_s).toInt();
     settings.endGroup();
 
     m_pTmrDataRateRefresh = new QTimer(this);
@@ -318,13 +318,14 @@ CWdgtTrcMthList::CWdgtTrcMthList(
         throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
     }
 
-    m_pLblMaxDataRate = new QLabel("Data Rate Max:");
-    pLytBtnListWidget->addWidget(m_pLblMaxDataRate);
-    m_pEdtMaxDataRateLinesPerSec = new QLineEdit(QString::number(m_iMaxDataRateLinesPerSec) + " Lines/s");
-    m_pEdtMaxDataRateLinesPerSec->setEnabled(false);
-    m_pEdtMaxDataRateLinesPerSec->setFixedWidth(100);
-    m_pEdtMaxDataRateLinesPerSec->installEventFilter(this);
-    pLytBtnListWidget->addWidget(m_pEdtMaxDataRateLinesPerSec);
+    m_pLblTimeSpanTooMuchData = new QLabel("Time Span:");
+    m_pLblTimeSpanTooMuchData->setToolTip("Double click to edit the time span used to detect too much data");
+    pLytBtnListWidget->addWidget(m_pLblTimeSpanTooMuchData);
+    m_pEdtTimeSpanTooMuchData = new QLineEdit(QString::number(m_iTimeSpanTooMuchData_s) + " s");
+    m_pEdtTimeSpanTooMuchData->setEnabled(false);
+    m_pEdtTimeSpanTooMuchData->setFixedWidth(60);
+    m_pEdtTimeSpanTooMuchData->installEventFilter(this);
+    pLytBtnListWidget->addWidget(m_pEdtTimeSpanTooMuchData);
 
     m_pLblCurrentDataRatesClient = new QLabel("Client:");
     pLytBtnListWidget->addWidget(m_pLblCurrentDataRatesClient);
@@ -395,7 +396,7 @@ CWdgtTrcMthList::~CWdgtTrcMthList()
     QSettings settings;
 
     settings.beginGroup(objectName());
-    settings.setValue("MaxDataRateLinesPerSec", m_iMaxDataRateLinesPerSec);
+    settings.setValue("TimeSpanDetectTooMuchData_s", m_iTimeSpanTooMuchData_s);
     settings.endGroup();
 
     m_pTrcClient = nullptr;
@@ -414,10 +415,10 @@ CWdgtTrcMthList::~CWdgtTrcMthList()
     m_pBtnConnect = nullptr;
     m_pProgressBarCnct = nullptr;
     m_pTmrDataRateRefresh = nullptr;
-    m_iMaxDataRateLinesPerSec = 0;
-    m_pLblMaxDataRate = nullptr;
-    m_pEdtMaxDataRateLinesPerSec = nullptr;
-    m_pDlgEditMaxDataRateLinesPerSec = nullptr;
+    m_iTimeSpanTooMuchData_s = 0;
+    m_pLblTimeSpanTooMuchData = nullptr;
+    m_pEdtTimeSpanTooMuchData = nullptr;
+    m_pDlgEditTimeSpanTooMuchData = nullptr;
     m_pLblCurrentDataRatesClient = nullptr;
     m_pEdtCurrentDataRatesClient = nullptr;
     m_pLblCurrentDataRatesServer = nullptr;
@@ -953,7 +954,7 @@ bool CWdgtTrcMthList::eventFilter( QObject* i_pObjWatched, QEvent* i_pEv )
             }
         }
     }
-    else if( i_pObjWatched == m_pEdtMaxDataRateLinesPerSec )
+    else if( i_pObjWatched == m_pEdtTimeSpanTooMuchData )
     {
         if( i_pEv->type() == QEvent::MouseButtonDblClick )
         {
@@ -1138,27 +1139,27 @@ protected slots:
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CWdgtTrcMthList::onEditMaxDataRateApplied()
+void CWdgtTrcMthList::onDlgEditTimeSpanTooMuchDataApplied()
 //------------------------------------------------------------------------------
 {
-    m_iMaxDataRateLinesPerSec = m_pDlgEditMaxDataRateLinesPerSec->getValue();
-    m_pEdtMaxDataRateLinesPerSec->setText(QString::number(m_iMaxDataRateLinesPerSec) + " Lines/s");
+    m_iTimeSpanTooMuchData_s = m_pDlgEditTimeSpanTooMuchData->getValue();
+    m_pEdtTimeSpanTooMuchData->setText(QString::number(m_iTimeSpanTooMuchData_s) + " s");
 }
 
 //------------------------------------------------------------------------------
-void CWdgtTrcMthList::onEditMaxDataRateAccepted()
+void CWdgtTrcMthList::onDlgEditTimeSpanTooMuchDataAccepted()
 //------------------------------------------------------------------------------
 {
-    m_iMaxDataRateLinesPerSec = m_pDlgEditMaxDataRateLinesPerSec->getValue();
-    m_pEdtMaxDataRateLinesPerSec->setText(QString::number(m_iMaxDataRateLinesPerSec) + " Lines/s");
-    m_pDlgEditMaxDataRateLinesPerSec->hide();
+    m_iTimeSpanTooMuchData_s = m_pDlgEditTimeSpanTooMuchData->getValue();
+    m_pEdtTimeSpanTooMuchData->setText(QString::number(m_iTimeSpanTooMuchData_s) + " s");
+    m_pDlgEditTimeSpanTooMuchData->hide();
 }
 
 //------------------------------------------------------------------------------
-void CWdgtTrcMthList::onEditMaxDataRateRejected()
+void CWdgtTrcMthList::onDlgEditTimeSpanTooMuchDataRejected()
 //------------------------------------------------------------------------------
 {
-    m_pDlgEditMaxDataRateLinesPerSec->hide();
+    m_pDlgEditTimeSpanTooMuchData->hide();
 }
 
 /*==============================================================================
@@ -1816,57 +1817,66 @@ void CWdgtTrcMthList::showEditMaxDataRateDialog()
 {
     QString strDlgTitle = QCoreApplication::applicationName() + ": Edit Max Data Rate";
 
-    if( m_pDlgEditMaxDataRateLinesPerSec == nullptr )
+    if( m_pDlgEditTimeSpanTooMuchData == nullptr )
     {
-        m_pDlgEditMaxDataRateLinesPerSec = dynamic_cast<CDlgEditIntValue*>(CDlgEditIntValue::GetInstance("EditMaxDataRate"));
+        m_pDlgEditTimeSpanTooMuchData = dynamic_cast<CDlgEditIntValue*>(CDlgEditIntValue::GetInstance("EditMaxDataRate"));
     }
-    if( m_pDlgEditMaxDataRateLinesPerSec == nullptr )
+    if( m_pDlgEditTimeSpanTooMuchData == nullptr )
     {
-        m_pDlgEditMaxDataRateLinesPerSec = CDlgEditIntValue::CreateInstance(strDlgTitle, "EditMaxDataRate");
-        m_pDlgEditMaxDataRateLinesPerSec->setAttribute(Qt::WA_DeleteOnClose, true);
-        m_pDlgEditMaxDataRateLinesPerSec->adjustSize();
-        m_pDlgEditMaxDataRateLinesPerSec->show();
+        m_pDlgEditTimeSpanTooMuchData = CDlgEditIntValue::CreateInstance(strDlgTitle, "EditMaxDataRate");
+        m_pDlgEditTimeSpanTooMuchData->setAttribute(Qt::WA_DeleteOnClose, true);
+        m_pDlgEditTimeSpanTooMuchData->adjustSize();
+        m_pDlgEditTimeSpanTooMuchData->show();
 
         if( !QObject::connect(
-            /* pObjSender   */ m_pDlgEditMaxDataRateLinesPerSec,
+            /* pObjSender   */ m_pDlgEditTimeSpanTooMuchData,
             /* szSignal     */ SIGNAL(applied()),
             /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onEditMaxDataRateApplied()) ) )
+            /* szSlot       */ SLOT(onDlgEditTimeSpanTooMuchDataApplied()) ) )
         {
             throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
         }
         if( !QObject::connect(
-            /* pObjSender   */ m_pDlgEditMaxDataRateLinesPerSec,
+            /* pObjSender   */ m_pDlgEditTimeSpanTooMuchData,
             /* szSignal     */ SIGNAL(accepted()),
             /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onEditMaxDataRateAccepted()) ) )
+            /* szSlot       */ SLOT(onDlgEditTimeSpanTooMuchDataAccepted()) ) )
         {
             throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
         }
         if( !QObject::connect(
-            /* pObjSender   */ m_pDlgEditMaxDataRateLinesPerSec,
+            /* pObjSender   */ m_pDlgEditTimeSpanTooMuchData,
             /* szSignal     */ SIGNAL(rejected()),
             /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onEditMaxDataRateRejected()) ) )
+            /* szSlot       */ SLOT(onDlgEditTimeSpanTooMuchDataRejected()) ) )
         {
             throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
         }
     }
     else
     {
-        if( m_pDlgEditMaxDataRateLinesPerSec->isHidden() )
+        if( m_pDlgEditTimeSpanTooMuchData->isHidden() )
         {
-            m_pDlgEditMaxDataRateLinesPerSec->show();
+            m_pDlgEditTimeSpanTooMuchData->show();
         }
-        m_pDlgEditMaxDataRateLinesPerSec->raise();
-        m_pDlgEditMaxDataRateLinesPerSec->activateWindow();
+        m_pDlgEditTimeSpanTooMuchData->raise();
+        m_pDlgEditTimeSpanTooMuchData->activateWindow();
     }
 
-    m_pDlgEditMaxDataRateLinesPerSec->setMinimum(10);
-    m_pDlgEditMaxDataRateLinesPerSec->setMaximum(100000);
-    m_pDlgEditMaxDataRateLinesPerSec->setValueName("Max Data Rate");
-    m_pDlgEditMaxDataRateLinesPerSec->setStepType(QAbstractSpinBox::AdaptiveDecimalStepType);
-    m_pDlgEditMaxDataRateLinesPerSec->setUnit("Lines/s");
-    m_pDlgEditMaxDataRateLinesPerSec->setValue(m_iMaxDataRateLinesPerSec);
+    m_pDlgEditTimeSpanTooMuchData->setMinimum(1);
+    m_pDlgEditTimeSpanTooMuchData->setMaximum(60);
+    m_pDlgEditTimeSpanTooMuchData->setValueName("Time Span");
+    m_pDlgEditTimeSpanTooMuchData->setUnit("s");
+    m_pDlgEditTimeSpanTooMuchData->setValue(m_iTimeSpanTooMuchData_s);
+    m_pDlgEditTimeSpanTooMuchData->setDescription(
+        "The value determines the length of time in seconds the client uses to check "
+        "whether the server's data can be processed and indicated.\n"
+        "If the server sends the data faster than the client can display it, "
+        "the input buffer may overflow over time.\n"
+        "Furthermore, so much time would be spent processing the data that the GUI"
+        "is no longer able to display the data or respond to user inputs.\n"
+        "The client must be able to process and display all incoming data at least "
+        "once for one second within the time span.\n"
+        "If this is not the case, remote tracing is disabled.");
 
 } // showEditMaxDataRateDialog

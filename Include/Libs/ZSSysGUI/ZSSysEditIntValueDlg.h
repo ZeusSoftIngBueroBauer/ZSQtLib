@@ -90,6 +90,7 @@ public: // instance methods
     int getMaximum() const;
     void setStepType( QAbstractSpinBox::StepType i_stepType );
     QAbstractSpinBox::StepType getStepType() const;
+    void setDescription( const QString& i_strDescription );
 protected slots:
     void onBtnApplyClicked( bool i_bChecked );
     void onBtnOkClicked( bool i_bChecked );
@@ -100,6 +101,8 @@ protected: // instance members
     QLabel*        m_pLblValue;
     QSpinBox*      m_pEdtValue;
     int            m_iValOrig;
+    QVBoxLayout*   m_pLytDescription;
+    QLabel*        m_pLblDescription;
     QHBoxLayout*   m_pLytBtns;
     QPushButton*   m_pBtnApply;
     QPushButton*   m_pBtnOk;

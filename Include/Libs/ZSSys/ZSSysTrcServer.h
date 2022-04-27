@@ -60,6 +60,7 @@ public: // ctor
         bool i_bEnabled = true,
         bool i_bNewTrcAdminObjsEnabledAsDefault = true,
         int  i_iNewTrcAdminObjsDefaultDetailLevel = 0,
+        bool i_bUseIpcServer = true,
         bool i_bCacheDataIfNotConnected = false,
         int  i_iCacheDataMaxArrLen = 1000,
         bool i_bUseLocalTrcFile = true,

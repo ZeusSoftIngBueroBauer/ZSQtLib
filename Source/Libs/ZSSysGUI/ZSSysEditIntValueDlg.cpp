@@ -110,6 +110,8 @@ CDlgEditIntValue::CDlgEditIntValue(
     m_pLblValue(nullptr),
     m_pEdtValue(nullptr),
     m_iValOrig(0),
+    m_pLytDescription(nullptr),
+    m_pLblDescription(nullptr),
     m_pLytBtns(nullptr),
     m_pBtnApply(nullptr),
     m_pBtnOk(nullptr),
@@ -125,7 +127,16 @@ CDlgEditIntValue::CDlgEditIntValue(
     m_pLytValue->addWidget(m_pLblValue);
 
     m_pEdtValue = new QSpinBox();
-    m_pLytValue->addWidget(m_pEdtValue, 1);
+    m_pLytValue->addWidget(m_pEdtValue);
+    m_pLytValue->addStretch();
+
+    m_pLytDescription = new QVBoxLayout();
+    m_pLyt->addLayout(m_pLytDescription);
+
+    m_pLblDescription = new QLabel();
+    m_pLblDescription->setFrameStyle(QFrame::Panel | QFrame::Sunken);
+    m_pLytDescription->addWidget(m_pLblDescription);
+    m_pLblDescription->setVisible(false);
 
     m_pLyt->addWidget(new CSepLine(5, this));
 
@@ -183,6 +194,8 @@ CDlgEditIntValue::~CDlgEditIntValue()
     m_pLblValue = nullptr;
     m_pEdtValue = nullptr;
     m_iValOrig = 0;
+    m_pLytDescription = nullptr;
+    m_pLblDescription = nullptr;
     m_pLytBtns = nullptr;
     m_pBtnApply = nullptr;
     m_pBtnOk = nullptr;
@@ -198,7 +211,7 @@ public: // instance methods
 void CDlgEditIntValue::setValueName( const QString& i_strName )
 //------------------------------------------------------------------------------
 {
-    m_pLblValue->setText(i_strName);
+    m_pLblValue->setText(i_strName + ":");
 }
 
 //------------------------------------------------------------------------------
@@ -263,6 +276,14 @@ QAbstractSpinBox::StepType CDlgEditIntValue::getStepType() const
 //------------------------------------------------------------------------------
 {
     return m_pEdtValue->stepType();
+}
+
+//------------------------------------------------------------------------------
+void CDlgEditIntValue::setDescription( const QString& i_strDescription )
+//------------------------------------------------------------------------------
+{
+    m_pLblDescription->setText(i_strDescription);
+    m_pLblDescription->setVisible(!i_strDescription.isEmpty());
 }
 
 /*==============================================================================

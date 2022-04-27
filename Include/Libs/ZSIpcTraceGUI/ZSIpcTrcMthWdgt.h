@@ -126,9 +126,9 @@ protected slots: // connected to the signals of my user controls
     void onBtnTrcAdminObjIdxTreeClicked( bool i_bChecked );
     void onBtnConnectClicked( bool i_bChecked );
 protected slots:
-    void onEditMaxDataRateApplied();
-    void onEditMaxDataRateAccepted();
-    void onEditMaxDataRateRejected();
+    void onDlgEditTimeSpanTooMuchDataApplied();
+    void onDlgEditTimeSpanTooMuchDataAccepted();
+    void onDlgEditTimeSpanTooMuchDataRejected();
 protected slots: // connected to the signals of the IPC client
     void onIpcClientConnected( QObject* i_pClient );
     void onIpcClientDisconnected( QObject* i_pClient );
@@ -166,10 +166,10 @@ private: // instance members
     QPushButton*                       m_pBtnConnect;
     ZS::System::GUI::CProgressBar*     m_pProgressBarCnct;
     QTimer*                            m_pTmrDataRateRefresh;
-    int                                m_iMaxDataRateLinesPerSec;
-    QLabel*                            m_pLblMaxDataRate;
-    QLineEdit*                         m_pEdtMaxDataRateLinesPerSec;
-    ZS::System::GUI::CDlgEditIntValue* m_pDlgEditMaxDataRateLinesPerSec;
+    int                                m_iTimeSpanTooMuchData_s;
+    QLabel*                            m_pLblTimeSpanTooMuchData;
+    QLineEdit*                         m_pEdtTimeSpanTooMuchData;
+    ZS::System::GUI::CDlgEditIntValue* m_pDlgEditTimeSpanTooMuchData;
     QLabel*                            m_pLblCurrentDataRatesClient;
     QLineEdit*                         m_pEdtCurrentDataRatesClient;
     QLabel*                            m_pLblCurrentDataRatesServer;

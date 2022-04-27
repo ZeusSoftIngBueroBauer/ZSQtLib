@@ -80,9 +80,6 @@ public: // overridables of base class ZS::System::GUI::CDialog
 public: // instance methods
     void setClient( CIpcTrcClient* i_pTrcClient );
 protected slots:
-    void onSettingsAccepted();
-    void onSettingsRejected();
-protected slots:
     void onWdgtIpcClientDetailsVisibilityChanged( bool i_bDetailsVisible );
 protected: // instance members
     CIpcTrcClient*                m_pTrcClient;
