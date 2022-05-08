@@ -96,6 +96,7 @@ typedef void (*TFctTrcAdminObj_traceMethodLeave)( const DllIf::CTrcAdminObj* i_p
 typedef void (*TFctTrcAdminObj_traceMethod)( const DllIf::CTrcAdminObj* i_pTrcAdminObj, const char* i_szObjName, const char* i_szMethod, const char* i_szMethodAddInfo );
 
 typedef DllIf::CTrcAdminObj* (*TFctTrcServer_GetTraceAdminObj)( const char* i_szNameSpace, const char* i_szClassName, const char* i_szObjName, DllIf::EEnabled i_bEnabledAsDefault, int i_iDefaultDetailLevel );
+typedef void (*TFctTrcServer_RenameTraceAdminObj)( DllIf::CTrcAdminObj** io_ppTrcAdminObj, const char* i_szNewObjName );
 typedef void (*TFctTrcServer_ReleaseTraceAdminObj)( DllIf::CTrcAdminObj* i_pTrcAdminObj );
 typedef void (*TFctTrcServer_SetOrganizationName)( const char* i_szName );
 typedef char* (*TFctTrcServer_GetOrganizationName)();
@@ -179,6 +180,7 @@ TFctTrcAdminObj_traceMethodLeave                     s_pFctTrcAdminObj_traceMeth
 TFctTrcAdminObj_traceMethod                          s_pFctTrcAdminObj_traceMethod                          = NULL;
 
 TFctTrcServer_GetTraceAdminObj                       s_pFctTrcServer_GetTraceAdminObj                       = NULL;
+TFctTrcServer_RenameTraceAdminObj                    s_pFctTrcServer_RenameTraceAdminObj                    = NULL;
 TFctTrcServer_ReleaseTraceAdminObj                   s_pFctTrcServer_ReleaseTraceAdminObj                   = NULL;
 TFctTrcServer_SetOrganizationName                    s_pFctTrcServer_SetOrganizationName                    = NULL;
 TFctTrcServer_GetOrganizationName                    s_pFctTrcServer_GetOrganizationName                    = NULL;
@@ -424,6 +426,9 @@ bool ZS::Trace::DllIf::loadDll( EBuildConfiguration i_configuration, int i_iQtVe
         s_pFctTrcServer_GetTraceAdminObj = (TFctTrcServer_GetTraceAdminObj)GetProcAddress(s_hndIpcTrcDllIf, "TrcServer_GetTraceAdminObj");
         if( s_pFctTrcServer_GetTraceAdminObj == NULL ) bOk = false;
 
+        s_pFctTrcServer_RenameTraceAdminObj = (TFctTrcServer_RenameTraceAdminObj)GetProcAddress(s_hndIpcTrcDllIf, "TrcServer_RenameTraceAdminObj");
+        if( s_pFctTrcServer_RenameTraceAdminObj == NULL ) bOk = false;
+
         s_pFctTrcServer_ReleaseTraceAdminObj = (TFctTrcServer_ReleaseTraceAdminObj)GetProcAddress(s_hndIpcTrcDllIf, "TrcServer_ReleaseTraceAdminObj");
         if( s_pFctTrcServer_ReleaseTraceAdminObj == NULL ) bOk = false;
 
@@ -647,6 +652,7 @@ bool ZS::Trace::DllIf::releaseDll()
         s_pFctTrcAdminObj_traceMethod                          = NULL;
 
         s_pFctTrcServer_GetTraceAdminObj                       = NULL;
+        s_pFctTrcServer_RenameTraceAdminObj                    = NULL;
         s_pFctTrcServer_ReleaseTraceAdminObj                   = NULL;
         s_pFctTrcServer_SetOrganizationName                    = NULL;
         s_pFctTrcServer_GetOrganizationName                    = NULL;
@@ -1091,8 +1097,7 @@ bool DllIf::CMethodTracer::isActive( int i_iFilterDetailLevel ) const
         bIsActive = s_pFctTrcAdminObj_isActive(m_pTrcAdminObj, i_iFilterDetailLevel);
     }
     return bIsActive;
-
-} // isActive
+}
 
 /*==============================================================================
 public: // instance methods
@@ -1141,8 +1146,7 @@ void DllIf::STrcServerSettings_init( DllIf::STrcServerSettings& i_trcSettings )
     i_trcSettings.m_iLocalTrcFileSubFileCountMax = 5;
     i_trcSettings.m_iLocalTrcFileSubFileLineCountMax = 2000;
     i_trcSettings.m_bLocalTrcFileCloseFileAfterEachWrite = false;
-
-} // STrcServerSettings_init
+}
 
 //------------------------------------------------------------------------------
 /*! @brief Resets the trace settings. The character buffers containing file names
@@ -1168,8 +1172,7 @@ void DllIf::STrcServerSettings_release( DllIf::STrcServerSettings& i_trcSettings
     i_trcSettings.m_iLocalTrcFileSubFileCountMax = 0;
     i_trcSettings.m_iLocalTrcFileSubFileLineCountMax = 0;
     i_trcSettings.m_bLocalTrcFileCloseFileAfterEachWrite = false;
-
-} // STrcServerSettings_release
+}
 
 
 /*******************************************************************************
@@ -1212,8 +1215,19 @@ DllIf::CTrcAdminObj* DllIf::CTrcServer::GetTraceAdminObj(
     }
 
     return pTrcAdminObj;
+}
 
-} // GetTraceAdminObj
+//------------------------------------------------------------------------------
+void DllIf::CTrcServer::RenameTraceAdminObj(
+    CTrcAdminObj** io_ppTrcAdminObj,
+    const char*    i_szNewObjName )
+//------------------------------------------------------------------------------
+{
+    if( s_hndIpcTrcDllIf != NULL && s_pFctTrcServer_RenameTraceAdminObj != NULL )
+    {
+        s_pFctTrcServer_RenameTraceAdminObj(io_ppTrcAdminObj, i_szNewObjName);
+    }
+}
 
 //------------------------------------------------------------------------------
 void DllIf::CTrcServer::ReleaseTraceAdminObj( CTrcAdminObj* i_pTrcAdminObj )
@@ -1223,7 +1237,7 @@ void DllIf::CTrcServer::ReleaseTraceAdminObj( CTrcAdminObj* i_pTrcAdminObj )
     {
         s_pFctTrcServer_ReleaseTraceAdminObj(i_pTrcAdminObj);
     }
-} // ReleaseTraceAdminObj
+}
 
 /*==============================================================================
 public: // class method to save/recall admin objects file
@@ -1241,7 +1255,7 @@ void DllIf::CTrcServer::SetOrganizationName( const char* i_szName )
     {
         s_pFctTrcServer_SetOrganizationName(i_szName);
     }
-} // SetOrganizationName
+}
 
 //------------------------------------------------------------------------------
 /*! Returns the name of the organization.
@@ -1256,8 +1270,7 @@ char* DllIf::CTrcServer::GetOrganizationName()
         return s_pFctTrcServer_GetOrganizationName();
     }
     return NULL;
-
-} // GetOrganizationName
+}
 
 //------------------------------------------------------------------------------
 /*! Sets the name of the application.
@@ -1271,7 +1284,7 @@ void DllIf::CTrcServer::SetApplicationName( const char* i_szName )
     {
         s_pFctTrcServer_SetApplicationName(i_szName);
     }
-} // SetApplicationName
+}
 
 //------------------------------------------------------------------------------
 /*! Returns the name of the application.
@@ -1286,8 +1299,7 @@ char* DllIf::CTrcServer::GetApplicationName()
         return s_pFctTrcServer_GetApplicationName();
     }
     return NULL;
-
-} // GetApplicationName
+}
 
 //------------------------------------------------------------------------------
 /*! Returns the path information for the trace admin objects xml file
@@ -1336,8 +1348,7 @@ void DllIf::CTrcServer::RegisterCurrentThread( const char* i_szThreadName )
     {
         s_pFctTrcServer_RegisterCurrentThread(i_szThreadName);
     }
-
-} // RegisterCurrentThread
+}
 
 //------------------------------------------------------------------------------
 void DllIf::CTrcServer::UnregisterCurrentThread()
@@ -1347,8 +1358,7 @@ void DllIf::CTrcServer::UnregisterCurrentThread()
     {
         s_pFctTrcServer_UnregisterCurrentThread();
     }
-
-} // RegisterCurrentThread
+}
 
 //------------------------------------------------------------------------------
 char* DllIf::CTrcServer::GetCurrentThreadName()
@@ -1359,8 +1369,7 @@ char* DllIf::CTrcServer::GetCurrentThreadName()
         return s_pFctTrcServer_GetCurrentThreadName();
     }
     return NULL;
-
-} // GetCurrentThreadName
+}
 
 /*==============================================================================
 public: // instance methods
@@ -1377,8 +1386,7 @@ bool DllIf::CTrcServer::isActive() const
         bIsActive = s_pFctTrcServer_isActive(this);
     }
     return bIsActive;
-
-} // isActive
+}
 
 //------------------------------------------------------------------------------
 void DllIf::CTrcServer::setEnabled( bool i_bEnabled )
@@ -1388,7 +1396,7 @@ void DllIf::CTrcServer::setEnabled( bool i_bEnabled )
     {
         s_pFctTrcServer_setEnabled(this, i_bEnabled);
     }
-} // setEnabled
+}
 
 //------------------------------------------------------------------------------
 bool DllIf::CTrcServer::isEnabled() const
@@ -1401,8 +1409,7 @@ bool DllIf::CTrcServer::isEnabled() const
         bEnabled = s_pFctTrcServer_isEnabled(this);
     }
     return bEnabled;
-
-} // isEnabled
+}
 
 /*==============================================================================
 public: // instance methods
@@ -1416,7 +1423,7 @@ void DllIf::CTrcServer::setNewTrcAdminObjsEnabledAsDefault( bool i_bEnabled )
     {
         s_pFctTrcServer_setNewTrcAdminObjsEnabledAsDefault(this, i_bEnabled);
     }
-} // setNewTrcAdminObjsEnabledAsDefault
+}
 
 //------------------------------------------------------------------------------
 bool DllIf::CTrcServer::areNewTrcAdminObjsEnabledAsDefault() const
@@ -1429,8 +1436,7 @@ bool DllIf::CTrcServer::areNewTrcAdminObjsEnabledAsDefault() const
         bEnabled = s_pFctTrcServer_areNewTrcAdminObjsEnabledAsDefault(this);
     }
     return bEnabled;
-
-} // areNewTrcAdminObjsEnabledAsDefault
+}
 
 //------------------------------------------------------------------------------
 void DllIf::CTrcServer::setNewTrcAdminObjsDefaultDetailLevel( int i_iDetailLevel )
@@ -1440,7 +1446,7 @@ void DllIf::CTrcServer::setNewTrcAdminObjsDefaultDetailLevel( int i_iDetailLevel
     {
         s_pFctTrcServer_setNewTrcAdminObjsDefaultDetailLevel(this, i_iDetailLevel);
     }
-} // setNewTrcAdminObjsDefaultDetailLevel
+}
 
 //------------------------------------------------------------------------------
 int DllIf::CTrcServer::getNewTrcAdminObjsDefaultDetailLevel() const
@@ -1453,8 +1459,7 @@ int DllIf::CTrcServer::getNewTrcAdminObjsDefaultDetailLevel() const
         iDetailLevel = s_pFctTrcServer_getNewTrcAdminObjsDefaultDetailLevel(this);
     }
     return iDetailLevel;
-
-} // getNewTrcAdminObjsDefaultDetailLevel
+}
 
 /*==============================================================================
 public: // instance methods
@@ -1468,7 +1473,7 @@ void DllIf::CTrcServer::setAdminObjFileAbsoluteFilePath( const char* i_szAbsFile
     {
         s_pFctTrcServer_setAdminObjFileAbsoluteFilePath(this, i_szAbsFilePath);
     }
-} // setAdminObjFileAbsoluteFilePath
+}
 
 //------------------------------------------------------------------------------
 char* DllIf::CTrcServer::getAdminObjFileAbsoluteFilePath() const
@@ -1479,8 +1484,7 @@ char* DllIf::CTrcServer::getAdminObjFileAbsoluteFilePath() const
         return s_pFctTrcServer_getAdminObjFileAbsoluteFilePath(this);
     }
     return NULL;
-
-} // getAdminObjFileAbsoluteFilePath
+}
 
 /*==============================================================================
 public: // instance methods
@@ -1497,8 +1501,7 @@ bool DllIf::CTrcServer::recallAdminObjs()
         bOk = s_pFctTrcServer_recallAdminObjs(this);
     }
     return bOk;
-
-} // recallAdminObjs
+}
 
 //------------------------------------------------------------------------------
 bool DllIf::CTrcServer::saveAdminObjs()
@@ -1511,8 +1514,7 @@ bool DllIf::CTrcServer::saveAdminObjs()
         bOk = s_pFctTrcServer_saveAdminObjs(this);
     }
     return bOk;
-
-} // saveAdminObjs
+}
 
 /*==============================================================================
 public: // instance methods
@@ -1526,7 +1528,7 @@ void DllIf::CTrcServer::setUseLocalTrcFile( bool i_bUse )
     {
         s_pFctTrcServer_setUseLocalTrcFile(this, i_bUse);
     }
-} // setUseLocalTrcFile
+}
 
 //------------------------------------------------------------------------------
 bool DllIf::CTrcServer::isLocalTrcFileUsed() const
@@ -1539,8 +1541,7 @@ bool DllIf::CTrcServer::isLocalTrcFileUsed() const
         bUsed = s_pFctTrcServer_isLocalTrcFileUsed(this);
     }
     return bUsed;
-
-} // isLocalTrcFileUsed
+}
 
 //------------------------------------------------------------------------------
 void DllIf::CTrcServer::setLocalTrcFileAbsoluteFilePath( const char* i_szAbsFilePath )
@@ -1550,7 +1551,7 @@ void DllIf::CTrcServer::setLocalTrcFileAbsoluteFilePath( const char* i_szAbsFile
     {
         s_pFctTrcServer_setLocalTrcFileAbsoluteFilePath(this, i_szAbsFilePath);
     }
-} // setLocalTrcFileAbsoluteFilePath
+}
 
 //------------------------------------------------------------------------------
 char* DllIf::CTrcServer::getLocalTrcFileAbsoluteFilePath() const
@@ -1561,8 +1562,7 @@ char* DllIf::CTrcServer::getLocalTrcFileAbsoluteFilePath() const
         return s_pFctTrcServer_getLocalTrcFileAbsoluteFilePath(this);
     }
     return NULL;
-
-} // getLocalTrcFileAbsoluteFilePath
+}
 
 //------------------------------------------------------------------------------
 char* DllIf::CTrcServer::getLocalTrcFileCompleteBaseName() const
@@ -1573,8 +1573,7 @@ char* DllIf::CTrcServer::getLocalTrcFileCompleteBaseName() const
         return s_pFctTrcServer_getLocalTrcFileCompleteBaseName(this);
     }
     return NULL;
-
-} // getLocalTrcFileCompleteBaseName
+}
 
 //------------------------------------------------------------------------------
 char* DllIf::CTrcServer::getLocalTrcFileAbsolutePath() const
@@ -1585,8 +1584,7 @@ char* DllIf::CTrcServer::getLocalTrcFileAbsolutePath() const
         return s_pFctTrcServer_getLocalTrcFileAbsolutePath(this);
     }
     return NULL;
-
-} // getLocalTrcFileAbsolutePath
+}
 
 //------------------------------------------------------------------------------
 bool DllIf::CTrcServer::isLocalTrcFileActive() const
@@ -1599,8 +1597,7 @@ bool DllIf::CTrcServer::isLocalTrcFileActive() const
         bUsed = s_pFctTrcServer_isLocalTrcFileActive(this);
     }
     return bUsed;
-
-} // isLocalTrcFileActive
+}
 
 //------------------------------------------------------------------------------
 void DllIf::CTrcServer::setLocalTrcFileAutoSaveIntervalInMs( int i_iAutoSaveInterval_ms )
@@ -1610,7 +1607,7 @@ void DllIf::CTrcServer::setLocalTrcFileAutoSaveIntervalInMs( int i_iAutoSaveInte
     {
         s_pFctTrcServer_setLocalTrcFileAutoSaveIntervalInMs(this, i_iAutoSaveInterval_ms);
     }
-} // setLocalTrcFileAutoSaveInterval
+}
 
 //------------------------------------------------------------------------------
 int DllIf::CTrcServer::getLocalTrcFileAutoSaveIntervalInMs() const
@@ -1623,8 +1620,7 @@ int DllIf::CTrcServer::getLocalTrcFileAutoSaveIntervalInMs() const
         iAutoSaveInterval_ms = s_pFctTrcServer_getLocalTrcFileAutoSaveIntervalInMs(this);
     }
     return iAutoSaveInterval_ms;
-
-} // getLocalTrcFileAutoSaveInterval
+}
 
 //------------------------------------------------------------------------------
 void DllIf::CTrcServer::setLocalTrcFileCloseFileAfterEachWrite( bool i_bCloseFile )
@@ -1634,7 +1630,7 @@ void DllIf::CTrcServer::setLocalTrcFileCloseFileAfterEachWrite( bool i_bCloseFil
     {
         s_pFctTrcServer_setLocalTrcFileCloseFileAfterEachWrite(this, i_bCloseFile);
     }
-} // setLocalTrcFileCloseFileAfterEachWrite
+}
 
 //------------------------------------------------------------------------------
 bool DllIf::CTrcServer::getLocalTrcFileCloseFileAfterEachWrite() const
@@ -1647,8 +1643,7 @@ bool DllIf::CTrcServer::getLocalTrcFileCloseFileAfterEachWrite() const
         bClose = s_pFctTrcServer_getLocalTrcFileCloseFileAfterEachWrite(this);
     }
     return bClose;
-
-} // getLocalTrcFileCloseFileAfterEachWrite
+}
 
 /*==============================================================================
 public: // instance methods
@@ -1662,7 +1657,7 @@ void DllIf::CTrcServer::setLocalTrcFileSubFileCountMax( int i_iCountMax )
     {
         s_pFctTrcServer_setLocalTrcFileSubFileCountMax(this, i_iCountMax);
     }
-} // setLocalTrcFileSubFileCountMax
+}
 
 //------------------------------------------------------------------------------
 int DllIf::CTrcServer::getLocalTrcFileSubFileCountMax() const
@@ -1675,8 +1670,7 @@ int DllIf::CTrcServer::getLocalTrcFileSubFileCountMax() const
         iCountMax = s_pFctTrcServer_getLocalTrcFileSubFileCountMax(this);
     }
     return iCountMax;
-
-} // getLocalTrcFileSubFileCountMax
+}
 
 //------------------------------------------------------------------------------
 void DllIf::CTrcServer::setLocalTrcFileSubFileLineCountMax( int i_iCountMax )
@@ -1686,7 +1680,7 @@ void DllIf::CTrcServer::setLocalTrcFileSubFileLineCountMax( int i_iCountMax )
     {
         s_pFctTrcServer_setLocalTrcFileSubFileLineCountMax(this, i_iCountMax);
     }
-} // setLocalTrcFileSubFileLineCountMax
+}
 
 //------------------------------------------------------------------------------
 int DllIf::CTrcServer::getLocalTrcFileSubFileLineCountMax() const
@@ -1759,8 +1753,7 @@ bool DllIf::CTrcServer::getCacheTrcDataIfNotConnected() const
         bCacheData = s_pFctTrcServer_getCacheTrcDataIfNotConnected(this);
     }
     return bCacheData;
-
-} // getCacheTrcDataIfNotConnected
+}
 
 //------------------------------------------------------------------------------
 /*! Ist das Caching aktiviert wird hier die Anzahl der Zeilen definiert, die im
@@ -1776,7 +1769,7 @@ void DllIf::CTrcServer::setCacheTrcDataMaxArrLen( int i_iMaxArrLen )
     {
         s_pFctTrcServer_setCacheTrcDataMaxArrLen(this, i_iMaxArrLen);
     }
-} // setCacheTrcDataMaxArrLen
+}
 
 //------------------------------------------------------------------------------
 int DllIf::CTrcServer::getCacheTrcDataMaxArrLen() const
@@ -1789,8 +1782,7 @@ int DllIf::CTrcServer::getCacheTrcDataMaxArrLen() const
         iMaxArrLen = s_pFctTrcServer_getCacheTrcDataMaxArrLen(this);
     }
     return iMaxArrLen;
-
-} // getCacheTrcDataMaxArrLen
+}
 
 /*==============================================================================
 public: // instance methods
@@ -1807,8 +1799,7 @@ bool DllIf::CTrcServer::setTraceSettings( const DllIf::STrcServerSettings& i_set
         bOk = s_pFctTrcServer_setTraceSettings(this, i_settings);
     }
     return bOk;
-
-} // setTraceSettings
+}
 
 //------------------------------------------------------------------------------
 DllIf::STrcServerSettings DllIf::CTrcServer::getTraceSettings() const
@@ -1823,8 +1814,7 @@ DllIf::STrcServerSettings DllIf::CTrcServer::getTraceSettings() const
         settings = s_pFctTrcServer_getTraceSettings(this);
     }
     return settings;
-
-} // getTraceSettings
+}
 
 /*==============================================================================
 public: // instance methods
@@ -1838,7 +1828,7 @@ void DllIf::CTrcServer::clearLocalTrcFile()
     {
         s_pFctTrcServer_clearLocalTrcFile(this);
     }
-} // clearLocalTrcFile
+}
 
 /*==============================================================================
 public: // instance methods
@@ -1861,7 +1851,7 @@ void DllIf::CTrcServer::traceMethodEnter(
             }
         }
     }
-} // traceMethodEnter
+}
 
 //------------------------------------------------------------------------------
 void DllIf::CTrcServer::traceMethodEnter(
@@ -1881,7 +1871,7 @@ void DllIf::CTrcServer::traceMethodEnter(
             }
         }
     }
-} // traceMethodEnter
+}
 
 //------------------------------------------------------------------------------
 void DllIf::CTrcServer::traceMethod(
@@ -1897,7 +1887,7 @@ void DllIf::CTrcServer::traceMethod(
             s_pFctTrcAdminObj_traceMethod(i_pAdminObj, "", i_szMethod, i_szAddInfo);
         }
     }
-} // traceMethod
+}
 
 //------------------------------------------------------------------------------
 void DllIf::CTrcServer::traceMethod(
@@ -1914,7 +1904,7 @@ void DllIf::CTrcServer::traceMethod(
             s_pFctTrcAdminObj_traceMethod(i_pAdminObj, i_szObjName, i_szMethod, i_szAddInfo);
         }
     }
-} // traceMethod
+}
 
 //------------------------------------------------------------------------------
 void DllIf::CTrcServer::traceMethodLeave(
@@ -1934,7 +1924,7 @@ void DllIf::CTrcServer::traceMethodLeave(
             }
         }
     }
-} // traceMethodLeave
+}
 
 //------------------------------------------------------------------------------
 void DllIf::CTrcServer::traceMethodLeave(
@@ -1955,7 +1945,7 @@ void DllIf::CTrcServer::traceMethodLeave(
             }
         }
     }
-} // traceMethodLeave
+}
 
 
 /*******************************************************************************
@@ -1988,8 +1978,7 @@ DllIf::CIpcTrcServer* DllIf::CIpcTrcServer::GetInstance()
         pTrcServer = s_pFctIpcTrcServer_GetInstance();
     }
     return pTrcServer;
-
-} // GetInstance
+}
 
 //------------------------------------------------------------------------------
 /*! Creates a trace server with the given name if a trace server with the given
@@ -2016,8 +2005,7 @@ DllIf::CIpcTrcServer* DllIf::CIpcTrcServer::CreateInstance( int i_iTrcDetailLeve
         pTrcServer = s_pFctIpcTrcServer_CreateInstance(i_iTrcDetailLevel);
     }
     return pTrcServer;
-
-} // CreateInstance
+}
 
 //------------------------------------------------------------------------------
 /*! Releases the trace server by decrementing the reference counter. If the
@@ -2033,8 +2021,7 @@ void DllIf::CIpcTrcServer::ReleaseInstance( DllIf::CIpcTrcServer* i_pTrcServer )
     {
         s_pFctIpcTrcServer_ReleaseInstance(i_pTrcServer);
     }
-
-} // ReleaseInstance
+}
 
 /*==============================================================================
 public: // instance methods
@@ -2073,8 +2060,7 @@ bool DllIf::CIpcTrcServer::startup( int i_iTimeout_ms, bool /*i_bWait*/ )
         bOk = s_pFctIpcTrcServer_startup(this, i_iTimeout_ms, true);
     }
     return bOk;
-
-} // startupServer
+}
 
 //------------------------------------------------------------------------------
 /*! Stops the trace server.
@@ -2107,8 +2093,7 @@ bool DllIf::CIpcTrcServer::shutdown( int i_iTimeout_ms, bool /*i_bWait*/ )
         bOk = s_pFctIpcTrcServer_shutdown(this, i_iTimeout_ms, true);
     }
     return bOk;
-
-} // shutdown
+}
 
 /*==============================================================================
 public: // instance methods
@@ -2125,8 +2110,7 @@ bool DllIf::CIpcTrcServer::isListening() const
         bOk = s_pFctIpcTrcServer_isListening(this);
     }
     return bOk;
-
-} // isListening
+}
 
 //------------------------------------------------------------------------------
 bool DllIf::CIpcTrcServer::isConnected() const
@@ -2139,8 +2123,7 @@ bool DllIf::CIpcTrcServer::isConnected() const
         bOk = s_pFctIpcTrcServer_isConnected(this);
     }
     return bOk;
-
-} // isConnected
+}
 
 /*==============================================================================
 public: // instance methods
@@ -2157,8 +2140,7 @@ bool DllIf::CIpcTrcServer::setPort( unsigned short i_uPort, int i_iTimeout_ms, b
         bOk = s_pFctIpcTrcServer_setPort(this, i_uPort, i_iTimeout_ms, i_bWait);
     }
     return bOk;
-
-} // setPort
+}
 
 //------------------------------------------------------------------------------
 unsigned short DllIf::CIpcTrcServer::getPort() const
@@ -2171,7 +2153,6 @@ unsigned short DllIf::CIpcTrcServer::getPort() const
         uPort = s_pFctIpcTrcServer_getPort(this);
     }
     return uPort;
-
-} // getPort
+}
 
 #endif // #ifdef USE_ZS_IPTRACE_DLL_IF

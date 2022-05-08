@@ -48,6 +48,7 @@ may result in using the software modules.
 #include "ZSSys/ZSSysErrLog.h"
 #include "ZSSys/ZSSysErrResult.h"
 #include "ZSSys/ZSSysException.h"
+#include "ZSSys/ZSSysMutex.h"
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 

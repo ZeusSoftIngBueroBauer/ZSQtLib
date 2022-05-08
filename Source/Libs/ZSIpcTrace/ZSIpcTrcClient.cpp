@@ -65,6 +65,11 @@ public: // ctors and dtor
     @param i_iTrcMthFileDetailLevel [in]
         If the methods of the trace client itself should be logged a value
         greater than 0 (ETraceDetailLevelNone) could be passed here.
+    @param i_iTrcMthFileDetailLevelMutex [in]
+        If the locking and unlocking of the mutex of trace client
+        should be logged a value greater than 0 (ETraceDetailLevelNone)
+        could be passed here. But the value will be ignored if the detail
+        level for the client tracer is None.
     @param i_iTrcMthFileDetailLevelGateway [in]
         If the methods of the clients gateway should be logged a value greater
         than 0 (ETraceDetailLevelNone) could be passed here.
@@ -72,6 +77,7 @@ public: // ctors and dtor
 CIpcTrcClient::CIpcTrcClient(
     const QString& i_strName,
     int            i_iTrcMthFileDetailLevel,
+    int            i_iTrcMthFileDetailLevelMutex,
     int            i_iTrcMthFileDetailLevelGateway ) :
 //------------------------------------------------------------------------------
     CClient(
@@ -130,7 +136,6 @@ CIpcTrcClient::CIpcTrcClient(
         throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
     }
 
-    // On disconnecting the trace admin object pool got to be cleared.
     if( !QObject::connect(
         /* pObjSender   */ this,
         /* szSignal     */ SIGNAL( disconnected(QObject*) ),
@@ -173,6 +178,17 @@ CIpcTrcClient::~CIpcTrcClient()
         /* strObjName         */ objectName(),
         /* strMethod          */ "dtor",
         /* strMthInArgs       */ "" );
+
+        QObject::disconnect(
+            /* pObjSender   */ m_pTrcAdminObjIdxTree,
+            /* szSignal     */ SIGNAL( treeEntryChanged(ZS::System::CIdxTree*, ZS::System::CIdxTreeEntry*) ),
+            /* pObjReceiver */ this,
+            /* szSlot       */ SLOT( onTrcAdminObjIdxTreeEntryChanged(ZS::System::CIdxTree*, ZS::System::CIdxTreeEntry*) ) );
+
+        abortAllRequests(); // Deletes or at least invalidates the current request in progress.
+
+        // Disconnect client before destroying the trace admin object tree.
+        stopGatewayThread();
 
         // To avoid err log entry: The dtor is called even if the objects reference counter is not 0.
         resetTrcAdminRefCounters(m_pTrcAdminObjIdxTree->root());
@@ -740,13 +756,19 @@ void CIpcTrcClient::onReceivedData( const QByteArray& i_byteArr )
 
                                 if( strBranchName.isEmpty() && pBranch == nullptr )
                                 {
-                                    xmlStreamReader.raiseError("There is no branch at tree index " + QString::number(idxInTree));
+                                    xmlStreamReader.raiseError("No branch name provided and there is no branch at tree index " + QString::number(idxInTree));
                                 }
                                 else if( !strBranchName.isEmpty() && pBranch == nullptr )
                                 {
                                     pBranch = m_pTrcAdminObjIdxTree->insertBranch(iParentPranchIdxInTree, strBranchName, idxInTree);
                                 }
-                                if( pBranch != nullptr )
+
+                                if( cmd == MsgProtocol::ECommandDelete )
+                                {
+                                    delete pBranch;
+                                    pBranch = nullptr;
+                                }
+                                else if( pBranch != nullptr )
                                 {
                                     if( enabled != EEnabled::Undefined ) m_pTrcAdminObjIdxTree->setEnabled(pBranch, enabled);
                                     if( iDetailLevel >= 0 ) m_pTrcAdminObjIdxTree->setTraceDetailLevel(pBranch, iDetailLevel);
@@ -834,14 +856,22 @@ void CIpcTrcClient::onReceivedData( const QByteArray& i_byteArr )
 
                                 if( pTrcAdminObj != nullptr )
                                 {
-                                    bool bSignalsBlocked = pTrcAdminObj->blockTreeEntryChangedSignal(true);
+                                    if( cmd == MsgProtocol::ECommandDelete )
+                                    {
+                                        delete dynamic_cast<CIdxTreeEntry*>(pTrcAdminObj);
+                                        pTrcAdminObj = nullptr;
+                                    }
+                                    else
+                                    {
+                                        bool bSignalsBlocked = pTrcAdminObj->blockTreeEntryChangedSignal(true);
 
-                                    if( !strThreadName.isEmpty() ) pTrcAdminObj->setObjectThreadName(strThreadName);
-                                    if( enabled != EEnabled::Undefined ) pTrcAdminObj->setEnabled(enabled);
-                                    if( iDetailLevel >= 0 ) pTrcAdminObj->setTraceDetailLevel(iDetailLevel);
-                                    if( iRefCount >= 0 ) pTrcAdminObj->setRefCount(iRefCount);
+                                        if( !strThreadName.isEmpty() ) pTrcAdminObj->setObjectThreadName(strThreadName);
+                                        if( enabled != EEnabled::Undefined ) pTrcAdminObj->setEnabled(enabled);
+                                        if( iDetailLevel >= 0 ) pTrcAdminObj->setTraceDetailLevel(iDetailLevel);
+                                        if( iRefCount >= 0 ) pTrcAdminObj->setRefCount(iRefCount);
 
-                                    pTrcAdminObj->blockTreeEntryChangedSignal(bSignalsBlocked);
+                                        pTrcAdminObj->blockTreeEntryChangedSignal(bSignalsBlocked);
+                                    }
                                 }
                                 else // if( pTrcAdminObj == nullptr )
                                 {

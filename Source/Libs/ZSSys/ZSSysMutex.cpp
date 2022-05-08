@@ -239,6 +239,40 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief Renames the object.
+
+    @param i_strObjName [in] New object name.
+*/
+//------------------------------------------------------------------------------
+void CMutex::setObjectName(const QString& i_strObjName)
+{
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    {
+        strMthInArgs = i_strObjName;
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj          */ m_pTrcAdminObj,
+        /* pTrcMthFile        */ m_pTrcMthFile,
+        /* iTrcDetailLevel    */ m_iTrcMthFileDetailLevel,
+        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
+        /* strObjName         */ m_strObjName,
+        /* strMethod          */ "setObjectName",
+        /* strMthInArgs       */ strMthInArgs );
+
+    m_strObjName = i_strObjName;
+
+    if( m_pTrcAdminObj != nullptr )
+    {
+        CTrcServer::RenameTraceAdminObj(&m_pTrcAdminObj, objectName());
+    }
+}
+
+//------------------------------------------------------------------------------
 /*! @brief Returns the name of the mutex.
 
     @return Name of the object.
@@ -464,7 +498,7 @@ void CMutex::unlock()
 }
 
 /*==============================================================================
-protected: // instance methods
+public: // auxiliary methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
@@ -493,6 +527,26 @@ bool CMutex::isMethodTraceActive( int i_iFilterDetailLevel ) const
 
 } // isMethodTraceActive
 
+//------------------------------------------------------------------------------
+/*! @brief Returns the current active detail level.
+
+    @return Active method trace detail level.
+*/
+int CMutex::getMethodTraceDetailLevel() const
+//------------------------------------------------------------------------------
+{
+    int iDetailLevel = ETraceDetailLevelNone;
+
+    if( m_pTrcAdminObj != nullptr )
+    {
+        iDetailLevel = m_pTrcAdminObj->getTraceDetailLevel();
+    }
+    else if( m_pTrcMthFile != nullptr )
+    {
+        iDetailLevel = m_iTrcMthFileDetailLevel;
+    }
+    return iDetailLevel;
+}
 
 /*******************************************************************************
 class CRecursiveMutex : public QRecursiveMutex
@@ -606,6 +660,40 @@ CRecursiveMutex::~CRecursiveMutex()
 /*==============================================================================
 public: // instance methods
 ==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Renames the object.
+
+    @param i_strObjName [in] New object name.
+*/
+//------------------------------------------------------------------------------
+void CRecursiveMutex::setObjectName(const QString& i_strObjName)
+{
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    {
+        strMthInArgs = i_strObjName;
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj          */ m_pTrcAdminObj,
+        /* pTrcMthFile        */ m_pTrcMthFile,
+        /* iTrcDetailLevel    */ m_iTrcMthFileDetailLevel,
+        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
+        /* strObjName         */ m_strObjName,
+        /* strMethod          */ "setObjectName",
+        /* strMthInArgs       */ strMthInArgs );
+
+    m_strObjName = i_strObjName;
+
+    if( m_pTrcAdminObj != nullptr )
+    {
+        CTrcServer::RenameTraceAdminObj(&m_pTrcAdminObj, objectName());
+    }
+}
 
 //------------------------------------------------------------------------------
 /*! @brief Returns the name of the mutex.
@@ -833,7 +921,7 @@ void CRecursiveMutex::unlock()
 }
 
 /*==============================================================================
-protected: // instance methods
+public: // auxiliary methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
@@ -861,6 +949,27 @@ bool CRecursiveMutex::isMethodTraceActive( int i_iFilterDetailLevel ) const
     return bIsActive;
 
 } // isMethodTraceActive
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the current active detail level.
+
+    @return Active method trace detail level.
+*/
+int CRecursiveMutex::getMethodTraceDetailLevel() const
+//------------------------------------------------------------------------------
+{
+    int iDetailLevel = ETraceDetailLevelNone;
+
+    if( m_pTrcAdminObj != nullptr )
+    {
+        iDetailLevel = m_pTrcAdminObj->getTraceDetailLevel();
+    }
+    else if( m_pTrcMthFile != nullptr )
+    {
+        iDetailLevel = m_iTrcMthFileDetailLevel;
+    }
+    return iDetailLevel;
+}
 
 
 /*******************************************************************************
@@ -1095,7 +1204,7 @@ void CMutexLocker::unlock()
 }
 
 /*==============================================================================
-protected: // instance methods
+public: // auxiliary methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
@@ -1124,3 +1233,23 @@ bool CMutexLocker::isMethodTraceActive( int i_iFilterDetailLevel ) const
 
 } // isMethodTraceActive
 
+//------------------------------------------------------------------------------
+/*! @brief Returns the current active detail level.
+
+    @return Active method trace detail level.
+*/
+int CMutexLocker::getMethodTraceDetailLevel() const
+//------------------------------------------------------------------------------
+{
+    int iDetailLevel = ETraceDetailLevelNone;
+
+    if( m_pTrcAdminObj != nullptr )
+    {
+        iDetailLevel = m_pTrcAdminObj->getTraceDetailLevel();
+    }
+    else if( m_pTrcMthFile != nullptr )
+    {
+        iDetailLevel = m_iTrcMthFileDetailLevel;
+    }
+    return iDetailLevel;
+}

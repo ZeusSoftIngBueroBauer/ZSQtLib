@@ -56,6 +56,7 @@ public: // ctors and dtor
     CIpcTrcClient(
         const QString& i_strName,
         int            i_iTrcMthFileDetailLevel = ETraceDetailLevelNone,
+        int            i_iTrcMthFileDetailLevelMutex = ETraceDetailLevelNone,
         int            i_iTrcMthFileDetailLevelGateway = ZS::Trace::ETraceDetailLevelNone );
     virtual ~CIpcTrcClient();
 signals: // on receiving trace data

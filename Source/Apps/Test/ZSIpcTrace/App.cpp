@@ -213,7 +213,9 @@ CApplication::CApplication(
 
     m_pZSTrcServer = ZS::Trace::CIpcTrcServer::CreateInstance(
         /* iTrcDetailLevel                 */ m_iZSTrcServerTrcDetailLevel,
-        /* iTrcDetailLevelIpcServer        */ m_iZSTrcServerTrcDetailLevel,
+        /* iTrcDetailLevelMutex            */ ETraceDetailLevelNone,
+        /* iTrcDetailLevelIpcServer        */ ETraceDetailLevelNone,
+        /* iTrcDetailLevelIpcServerMutex   */ ETraceDetailLevelNone,
         /* iTrcDetailLevelIpcServerGateway */ ETraceDetailLevelNone );
     m_pZSTrcServer->recallAdminObjs();
 
@@ -223,6 +225,7 @@ CApplication::CApplication(
     m_pZSTrcClient = new CIpcTrcClient(
         /* strName                       */ "ZSTrcClient",
         /* iTrcMthFileDetailLevel        */ m_iZSTrcClientTrcDetailLevel,
+        /* iTrcMthFileDetailLevelMutex   */ ETraceDetailLevelNone,
         /* iTrcMthFileDetailLevelGateway */ ETraceDetailLevelNone );
     m_pZSTrcClient->setHostSettings(m_clientHostSettingsZSTrcClient);
     m_pZSTrcClient->changeSettings();
@@ -260,6 +263,13 @@ CApplication::~CApplication()
 
     // Destroy objects created and controlled by the application
     //----------------------------------------------------------
+
+    CIpcTrcServer* pTrcServer = ZS::Trace::CIpcTrcServer::GetInstance();
+
+    if( pTrcServer != nullptr )
+    {
+        pTrcServer->shutdown();
+    }
 
     try
     {

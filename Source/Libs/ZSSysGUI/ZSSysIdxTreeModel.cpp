@@ -31,6 +31,7 @@ may result in using the software modules.
 #include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysEnumEntry.h"
 #include "ZSSys/ZSSysException.h"
+#include "ZSSys/ZSSysMutex.h"
 #include "ZSSys/ZSSysTrcMethod.h"
 #include "ZSSys/ZSSysTrcServer.h"
 
@@ -421,8 +422,7 @@ CModelIdxTree::CModelIdxTree( CIdxTree* i_pIdxTree, QObject* i_pObjParent, int i
                 /* pObjSender   */ m_pTrcAdminObj,
                 /* szSignal     */ SIGNAL(changed(QObject*)),
                 /* pObjReceiver */ this,
-                /* szSlot       */ SLOT(onTrcAdminObjChanged(QObject*)),
-                /* cnctType     */ Qt::DirectConnection ) )
+                /* szSlot       */ SLOT(onTrcAdminObjChanged(QObject*)) ) )
             {
                 throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
             }

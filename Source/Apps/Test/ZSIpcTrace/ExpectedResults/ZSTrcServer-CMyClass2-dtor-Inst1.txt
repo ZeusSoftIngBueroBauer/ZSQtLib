@@ -1,4 +1,6 @@
 <GUIMain                 > -> <ZS::Apps::Test::IpcTrace::CMyClass2> Inst1.dtor()
+<GUIMain                 >    -> <ZS::Apps::Test::IpcTrace::CMyClass2> Inst1.stopClass3Thread()
+<GUIMain                 >    <- <ZS::Apps::Test::IpcTrace::CMyClass2> Inst1.stopClass3Thread()
 <GUIMain                 >    -> <ZS::System::CMutex> CMyClass2::Inst1::Counters.dtor()
 <GUIMain                 >    <- <ZS::System::CMutex> CMyClass2::Inst1::Counters.dtor()
 <GUIMain                 >    -> <ZS::System::CMutex> CMyClass2::Inst1::WaitClass3ThreadRunning.dtor()

@@ -11,7 +11,7 @@
 <CMyClass3ThreadInst1    >       <- <ZS::System::CMutex> CMyClass3::Inst1::Counters.dtor()
 <CMyClass3ThreadInst1    >    <- <ZS::Apps::Test::IpcTrace::CMyClass3> Inst1.dtor()
 <CMyClass3ThreadInst1    > <- <ZS::Apps::Test::IpcTrace::CMyClass3Thread> CMyClass3ThreadInst1.run()
-<CMyClass2ThreadInst1    >             -> <ZS::Apps::Test::IpcTrace::CMyClass3Thread> CMyClass3ThreadInst1.wait(Forever)
+<CMyClass2ThreadInst1    >             -> <ZS::Apps::Test::IpcTrace::CMyClass3Thread> CMyClass3ThreadInst1.wait(30000 ms)
 <CMyClass2ThreadInst1    >             <- <ZS::Apps::Test::IpcTrace::CMyClass3Thread> CMyClass3ThreadInst1.wait(): true
 <CMyClass2ThreadInst1    >             -> <ZS::Apps::Test::IpcTrace::CMyClass3Thread> CMyClass3ThreadInst1.dtor()
 <CMyClass2ThreadInst1    >             <- <ZS::Apps::Test::IpcTrace::CMyClass3Thread> CMyClass3ThreadInst1.dtor()

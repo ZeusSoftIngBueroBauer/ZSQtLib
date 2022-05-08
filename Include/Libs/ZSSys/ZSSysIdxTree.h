@@ -33,8 +33,6 @@ may result in using the software modules.
 #include "ZSSys/ZSSysDllMain.h"
 #include "ZSSys/ZSSysIdxTreeEntry.h"
 
-class QMutex;
-
 namespace ZS
 {
 namespace Trace
@@ -43,6 +41,8 @@ class CTrcAdminObj;
 }
 namespace System
 {
+class CMutex;
+
 //******************************************************************************
 /*! @brief Entries in the index tree are structured both in a tree structure
            and in an index-based vector.
@@ -146,7 +146,8 @@ public: // ctors and dtor
         const QString& i_strNodeSeparator = "/",
         bool           i_bCreateMutex = false,
         QObject*       i_pObjParent = nullptr,
-        int            i_iTrcDetailLevel = ZS::Trace::ETraceDetailLevelNone );
+        int            i_iTrcDetailLevel = ZS::Trace::ETraceDetailLevelNone,
+        int            i_iTrcDetailLevelMutex = ZS::Trace::ETraceDetailLevelNone );
     virtual ~CIdxTree();
 public: // instance methods
     void clear(); // keeps the root entry
@@ -233,7 +234,7 @@ public: // overridables
     virtual QString className() const { return ClassName(); }
 public: // instance methods
     /*! Returns a pointer to the mutex used to protect the index tree if access by different threads. */
-    QMutex* mutex() { return m_pMtx; }
+    CMutex* mutex() { return m_pMtx; }
     void lock();
     void unlock();
 public: // instance methods
@@ -344,7 +345,7 @@ protected slots:
     void onTrcAdminObjChanged( QObject* i_pTrcAdminObj );
 protected: // instance members
     QString                       m_strNodeSeparator;   /*!< String used to seperate the node names with an entries path. */
-    QMutex*                       m_pMtx;               /*!< Mutex to protect the instance if accessed by different threads. */
+    mutable ZS::System::CMutex*   m_pMtx;               /*!< Mutex to protect the instance if accessed by different threads. */
     QMap<QString, CIdxTreeEntry*> m_mappTreeEntries;    /*!< Map with pointers to all tree entries. */
     QVector<CIdxTreeEntry*>       m_arpTreeEntries;     /*!< Vector with pointers to all tree entries. */
     QMap<int, int>                m_mapFreeIdxs;        /*!< Map with free indices in the vector of entries. */

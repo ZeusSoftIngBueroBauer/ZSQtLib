@@ -229,10 +229,10 @@ CLogFile::CLogFile() :
     m_pFile(nullptr),
     m_iRefCount(0),
     m_bCloseFileAfterEachWrite(false),
-    m_iSubFileCountMax(2),
-    m_iSubFileLineCountMax(1000),
+    m_iSubFileCountMax(5),
+    m_iSubFileLineCountMax(2000),
     m_iSubFileLineCountCurr(0),
-    m_iAutoSaveInterval_ms(0),
+    m_iAutoSaveInterval_ms(1000),
     m_pTimerAutoSave(nullptr)
 {
     m_pFile = new QFile;

@@ -68,6 +68,11 @@ public: // ctors and dtor
     virtual ~CMyClass3Thread();
 signals:
     void running();
+public: // overridables
+    virtual QString nameSpace() { return NameSpace(); }
+    virtual QString className() { return ClassName(); }
+public: // instance methods (reimplementing methods of base class QObject)
+    void setObjectName(const QString& i_strObjName);
 public: // instance methods
     CMyClass3* getMyClass3() { return m_pMyClass3; }
 public: // instance methods
@@ -82,7 +87,7 @@ public: // replacing methods of base class QThread
 protected: // replacing methods of base class QThread
     int exec();
 protected slots:
-    void onClass3AboutToBeDestroyed(const QString& i_strObjName);
+    void onClass3AboutToBeDestroyed(QObject* i_pObj, const QString& i_strObjName);
 private: // instance members
     CMyClass2*               m_pMyClass2;
     QString                  m_strMyClass3ObjName;
@@ -107,7 +112,12 @@ public: // ctors and dtor
     CMyClass3( const QString& i_strObjName, CMyClass3Thread* i_pMyClass3Thread = nullptr );
     virtual ~CMyClass3();
 signals:
-    void aboutToBeDestroyed(const QString& i_strObjName);
+    void aboutToBeDestroyed(QObject* i_pObj, const QString& i_strObjName);
+public: // overridables
+    virtual QString nameSpace() { return NameSpace(); }
+    virtual QString className() { return ClassName(); }
+public: // instance methods (reimplementing methods of base class QObject)
+    void setObjectName(const QString& i_strObjName);
 public: // instance methods
      QString instMethod(const QString& i_strMthInArgs);
      QString noisyInstMethod(const QString& i_strMthInArgs);

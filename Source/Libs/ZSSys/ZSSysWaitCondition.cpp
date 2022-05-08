@@ -154,6 +154,40 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief Renames the object.
+
+    @param i_strObjName [in] New object name.
+*/
+//------------------------------------------------------------------------------
+void CWaitCondition::setObjectName(const QString& i_strObjName)
+{
+    QString strMthInArgs;
+
+    if( isMethodTraceActive(ETraceDetailLevelMethodArgs) )
+    {
+        strMthInArgs = i_strObjName;
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj          */ m_pTrcAdminObj,
+        /* pTrcMthFile        */ m_pTrcMthFile,
+        /* iTrcDetailLevel    */ m_iTrcMthFileDetailLevel,
+        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
+        /* strObjName         */ m_strObjName,
+        /* strMethod          */ "setObjectName",
+        /* strMthInArgs       */ strMthInArgs );
+
+    m_strObjName = i_strObjName;
+
+    if( m_pTrcAdminObj != nullptr )
+    {
+        CTrcServer::RenameTraceAdminObj(&m_pTrcAdminObj, objectName());
+    }
+}
+
+//------------------------------------------------------------------------------
 /*! @brief Returns the name of the wait condition object.
 
     @return Name of the object.
@@ -222,7 +256,7 @@ bool CWaitCondition::wait(CMutex* i_pMutexLocked, QDeadlineTimer i_deadline)
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( isMethodTraceActive(ETraceDetailLevelMethodArgs) )
     {
         strMthInArgs = QString(i_deadline.isForever() ? "Forever" : QString::number(i_deadline.deadline()));
     }
@@ -257,7 +291,7 @@ bool CWaitCondition::wait(CMutex* i_pMutexLocked, unsigned long i_uTime_ms)
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( isMethodTraceActive(ETraceDetailLevelMethodArgs) )
     {
         strMthInArgs = QString::number(i_uTime_ms) + " ms";
     }
@@ -292,7 +326,7 @@ bool CWaitCondition::wait(QReadWriteLock* i_pReadWriteLock, QDeadlineTimer i_dea
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( isMethodTraceActive(ETraceDetailLevelMethodArgs) )
     {
         strMthInArgs = QString(i_deadline.isForever() ? "Forever" : QString::number(i_deadline.deadline()));
     }
@@ -327,7 +361,7 @@ bool CWaitCondition::wait(QReadWriteLock* i_pReadWriteLock, unsigned long i_uTim
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( isMethodTraceActive(ETraceDetailLevelMethodArgs) )
     {
         strMthInArgs = QString::number(i_uTime_ms) + " ms";
     }
@@ -394,4 +428,55 @@ void CWaitCondition::wakeOne()
         /* strMthInArgs       */ "" );
 
     QWaitCondition::wakeOne();
+}
+
+/*==============================================================================
+public: // auxiliary methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Checks whether tracing for the given filter detail level is active.
+
+    If the given filter detail level is not None and greater or equal to the
+    trace detail level set at the trace admin object trace output is active.
+
+    @param i_iFilterDetailLevel [in] Filter detail level to be checked.
+    @return true if tracing is active, false otherwise
+*/
+bool CWaitCondition::isMethodTraceActive( int i_iFilterDetailLevel ) const
+//------------------------------------------------------------------------------
+{
+    bool bIsActive = false;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(i_iFilterDetailLevel) )
+    {
+        bIsActive = true;
+    }
+    else if( m_pTrcMthFile != nullptr && m_iTrcMthFileDetailLevel >= i_iFilterDetailLevel )
+    {
+        bIsActive = true;
+    }
+    return bIsActive;
+
+} // isMethodTraceActive
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the current active detail level.
+
+    @return Active method trace detail level.
+*/
+int CWaitCondition::getMethodTraceDetailLevel() const
+//------------------------------------------------------------------------------
+{
+    int iDetailLevel = ETraceDetailLevelNone;
+
+    if( m_pTrcAdminObj != nullptr )
+    {
+        iDetailLevel = m_pTrcAdminObj->getTraceDetailLevel();
+    }
+    else if( m_pTrcMthFile != nullptr )
+    {
+        iDetailLevel = m_iTrcMthFileDetailLevel;
+    }
+    return iDetailLevel;
 }

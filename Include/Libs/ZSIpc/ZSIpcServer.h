@@ -88,6 +88,7 @@ public: // ctors and dtor
         const QString& i_strObjName,
         bool           i_bMultiThreadedAccess = false,
         int            i_iTrcMthFileDetailLevel = ZS::Trace::ETraceDetailLevelNone,
+        int            i_iTrcMthFileDetailLevelMutex = ZS::Trace::ETraceDetailLevelNone,
         int            i_iTrcMthFileDetailLevelGateway = ZS::Trace::ETraceDetailLevelNone );
     virtual ~CServer();
 signals: // of the remote connection

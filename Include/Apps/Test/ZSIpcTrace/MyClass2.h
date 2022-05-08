@@ -69,6 +69,11 @@ public: // ctors and dtor
     virtual ~CMyClass2Thread();
 signals:
     void running();
+public: // overridables
+    virtual QString nameSpace() { return NameSpace(); }
+    virtual QString className() { return ClassName(); }
+public: // instance methods (reimplementing methods of base class QObject)
+    void setObjectName(const QString& i_strObjName);
 public: // instance methods
     CMyClass2* getMyClass2() { return m_pMyClass2; }
 public: // instance methods
@@ -83,7 +88,7 @@ public: // replacing methods of base class QThread
 protected: // replacing methods of base class QThread
     int exec();
 protected slots:
-    void onClass2AboutToBeDestroyed(const QString& i_strObjName);
+    void onClass2AboutToBeDestroyed(QObject* i_pObj, const QString& i_strObjName);
 private: // instance members
     CMyClass1*               m_pMyClass1;
     QString                  m_strMyClass2ObjName;
@@ -104,7 +109,12 @@ public: // ctors and dtor
     CMyClass2( const QString& i_strObjName, CMyClass2Thread* i_pMyClass2Thread = nullptr );
     virtual  ~CMyClass2();
 signals:
-    void aboutToBeDestroyed(const QString& i_strObjName);
+    void aboutToBeDestroyed(QObject* i_pObj, const QString& i_strObjName);
+public: // overridables
+    virtual QString nameSpace() { return NameSpace(); }
+    virtual QString className() { return ClassName(); }
+public: // instance methods (reimplementing methods of base class QObject)
+    void setObjectName(const QString& i_strObjName);
 public: // instance methods
     CMyClass3Thread* getMyClass3Thread() const { return m_pMyClass3Thread; }
     CMyClass3* getMyClass3() const { return m_pMyClass3; }

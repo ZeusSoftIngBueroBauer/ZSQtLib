@@ -197,6 +197,11 @@ In order not to lose the overview if many instances of the class are created dur
 runtime you may logically group the instances by their names. E.g. you may name an
 instance 'MainPath::SubPath::ObjectName' (e.g. 'Sound::Level::Max').
 
+If you use a different separator for the object path (e.g. "/") you need to replace
+this separator by the separator used by the trace admin object tree ("::") as the
+trace admin object tree uses the same node separator for name spaces, class names
+and object names.
+
 To do this, an instance variable must be created and registered with the
 Trace Server.
 
@@ -424,6 +429,72 @@ Source File:
         m_pWaitClass3ThreadRunning = new CWaitCondition(
             ClassName() + "::" + i_strObjName + "::Class3ThreadRunning");
     }
+
+**Renaming Objects**
+
+It often happens that instances are created with a default name such as "Undefined" or "Object-N".
+This name should then later be adjusted by the user.
+
+If instance tracers are used for the classes, you naturally also want this name change of the objects
+to be reflected in the trace output.
+
+In order for this to be accomplished, the new object name must also be passed to the trace admin object instances.
+
+If trace admin objects are renamed, the reference counter must be taken into account and either the same trace
+admin object, a newly created trace admin object or the reference to another, already existing trace admin object
+will be returned.
+
+- If the trace admin object is only referenced once or not at all the trace admin object may be simply renamed.
+  There is no need to create a new trace admin object.
+- If the trace admin object is referenced more than once (GetTraceAdminObj has been called with the same
+  name space, class name and object name several times) a new trace admin object has to be created and returned
+  to the code in which the renaming took place. All other modules must still refer to the unchanged trace admin
+  object - only the reference counter got to be decremented by one.
+- If already a trace admin object with the name space, class name and new object name is existing, a reference
+  to this already existing trace admin object got to be returned to the code in which the renaming took place.
+  The reference counter of the previously referenced trace admin object got to be decremented, the reference
+  counter of the newly referenced trace admin object got to be incremented.
+
+The following code snippet shows renaming of an object together with child objects and the trace admin object:
+
+    void CMyClass2::setObjectName(const QString& i_strObjName)
+    {
+        // Please note that the method will not be traced if called in the ctor.
+        // The method is called before the trace admin object is created.
+        // But if the method is called to rename an already existing object the
+        // method will be traced as the trace admin object is then existing.
+        QString strMthInArgs;
+        if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+        {
+            strMthInArgs = i_strObjName;
+        }
+        CMethodTracer mthTracer(
+            /* pAdminObj    */ m_pTrcAdminObj,
+            /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+            /* strMethod    */ "setObjectName",
+            /* strAddInfo   */ strMthInArgs );
+
+        QObject::setObjectName(i_strObjName);
+
+        if( m_pTrcAdminObj != nullptr )
+        {
+            m_pTrcAdminObj = CTrcServer::RenameTraceAdminObj(m_pTrcAdminObj, objectName());
+        }
+
+        if( m_pMtxCounters != nullptr )
+        {
+            m_pMtxCounters->setObjectName(ClassName() + "::" + objectName() + "::Counters");
+        }
+        if( m_pMtxWaitClass3ThreadRunning != nullptr )
+        {
+            m_pMtxWaitClass3ThreadRunning->setObjectName(ClassName() + "::" + objectName() + "::WaitClass3ThreadRunning");
+        }
+        if( m_pWaitClass3ThreadRunning != nullptr )
+        {
+            m_pWaitClass3ThreadRunning->setObjectName(ClassName() + "::" + objectName() + "::Class3ThreadRunning");
+        }
+    }
+
 
 **Summary**
 

@@ -90,8 +90,7 @@ CDelegateIdxTree::CDelegateIdxTree( QObject* i_pObjParent, int i_iTrcDetailLevel
                 /* pObjSender   */ m_pTrcAdminObj,
                 /* szSignal     */ SIGNAL(changed(QObject*)),
                 /* pObjReceiver */ this,
-                /* szSlot       */ SLOT(onTrcAdminObjChanged(QObject*)),
-                /* cnctType     */ Qt::DirectConnection ) )
+                /* szSlot       */ SLOT(onTrcAdminObjChanged(QObject*)) ) )
             {
                 throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
             }
@@ -445,8 +444,7 @@ CTreeViewIdxTree::CTreeViewIdxTree(
                     /* pObjSender   */ m_pTrcAdminObj,
                     /* szSignal     */ SIGNAL(changed(QObject*)),
                     /* pObjReceiver */ this,
-                    /* szSlot       */ SLOT(onTrcAdminObjChanged(QObject*)),
-                    /* cnctType     */ Qt::DirectConnection ) )
+                    /* szSlot       */ SLOT(onTrcAdminObjChanged(QObject*)) ) )
                 {
                     throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
                 }

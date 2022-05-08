@@ -81,9 +81,9 @@ CMethodTracer::CMethodTracer(
     {
         if( !QObject::connect(
             /* pObjSender   */ m_pTrcAdminObj,
-            /* szSignal     */ SIGNAL(destroyed(QObject*)),
+            /* szSignal     */ SIGNAL(aboutToBeDestroyed(ZS::Trace::CTrcAdminObj*)),
             /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onAdminObjDestroyed(QObject*)),
+            /* szSlot       */ SLOT(onAdminObjAboutToBeDestroyed(ZS::Trace::CTrcAdminObj*)),
             /* cnctType     */ Qt::DirectConnection ) )
         {
             throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
@@ -144,9 +144,9 @@ CMethodTracer::CMethodTracer(
     {
         if( !QObject::connect(
             /* pObjSender   */ m_pTrcAdminObj,
-            /* szSignal     */ SIGNAL(destroyed(QObject*)),
+            /* szSignal     */ SIGNAL(aboutToBeDestroyed(ZS::Trace::CTrcAdminObj*)),
             /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onAdminObjDestroyed(QObject*)),
+            /* szSlot       */ SLOT(onAdminObjAboutToBeDestroyed(ZS::Trace::CTrcAdminObj*)),
             /* cnctType     */ Qt::DirectConnection ) )
         {
             throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
@@ -229,9 +229,9 @@ CMethodTracer::CMethodTracer(
     {
         if( !QObject::connect(
             /* pObjSender   */ m_pTrcAdminObj,
-            /* szSignal     */ SIGNAL(destroyed(QObject*)),
+            /* szSignal     */ SIGNAL(aboutToBeDestroyed(ZS::Trace::CTrcAdminObj*)),
             /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onAdminObjDestroyed(QObject*)),
+            /* szSlot       */ SLOT(onAdminObjAboutToBeDestroyed(ZS::Trace::CTrcAdminObj*)),
             /* cnctType     */ Qt::DirectConnection ) )
         {
             throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
@@ -450,9 +450,9 @@ CMethodTracer::CMethodTracer(
     {
         if( !QObject::connect(
             /* pObjSender   */ m_pTrcAdminObj,
-            /* szSignal     */ SIGNAL(destroyed(QObject*)),
+            /* szSignal     */ SIGNAL(aboutToBeDestroyed(ZS::Trace::CTrcAdminObj*)),
             /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onAdminObjDestroyed(QObject*)),
+            /* szSlot       */ SLOT(onAdminObjAboutToBeDestroyed(ZS::Trace::CTrcAdminObj*)),
             /* cnctType     */ Qt::DirectConnection ) )
         {
             throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
@@ -568,9 +568,9 @@ void CMethodTracer::onAdminObjAboutToBeReleased()
     {
         QObject::disconnect(
             /* pObjSender   */ m_pTrcAdminObj,
-            /* szSignal     */ SIGNAL(destroyed(QObject*)),
+            /* szSignal     */ SIGNAL(aboutToBeDestroyed(ZS::Trace::CTrcAdminObj*)),
             /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onAdminObjDestroyed(QObject*)) );
+            /* szSlot       */ SLOT(onAdminObjAboutToBeDestroyed(ZS::Trace::CTrcAdminObj*)) );
 
         if( m_pTrcAdminObj->isActive(m_iEnterLeaveFilterDetailLevel) )
         {
@@ -1021,10 +1021,33 @@ protected slots:
     admin objects is still alive.
 
     To ensure that the method tracer does not acces the destroyed instance anymore
-    this slot method is connected to the destroyed signal of the trace admin object.
+    this slot method is connected to the aboutToBeDestroyed signal of the trace admin
+    object.
+
+    When renaming trace admin objects the trace admin objects will not be really
+    just renamed. What happens depends on the reference counter of the trace admin
+    object and whether a trace admin object with the new name is already existing.
+
+    The admin object may be moved, a new object may be created replacing the
+    current trace admin object for the instance using the trace admin object
+    and - if the "old" trace admin object is no longer reference - the trace
+    admin object may be destroyed.
+
+    The method tracer does not take care whether the trace admin object will be
+    replaced with a new one as this may only happen when renaming the instance
+    using the trace admin object (name spaces or classes cannot be renamed
+    during runtime). But the method tracer needs to update the thread calling
+    depth and will therefor log "traceMethodLeave".
+
+    If the method tracer is used again the new trace admin object will be passed
+    anyway to the ctor of the method tracer.
+
+    @see also CMethodTracer::onAdminObjAboutToBeReleased
+
+    @param i_pTrcAdminObj [in] Trace admin object which is going to be destroyed.
 */
-void CMethodTracer::onAdminObjDestroyed( QObject* /*i_pObj*/ )
+void CMethodTracer::onAdminObjAboutToBeDestroyed( ZS::Trace::CTrcAdminObj* i_pTrcAdminObj )
 //------------------------------------------------------------------------------
 {
-     m_pTrcAdminObj = nullptr;
+    onAdminObjAboutToBeReleased();
 }

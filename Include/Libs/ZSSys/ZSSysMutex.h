@@ -57,6 +57,7 @@ public: // ctors and dtor
     CMutex(const QString& i_strObjName, int i_iTrcMthFileDetailLevel);
     virtual ~CMutex();
 public: // instance methods
+    void setObjectName(const QString& i_strObjName);
     QString objectName() const;
     ZS::Trace::CTrcMthFile* traceMethodFile();
     int traceMethodFileDetailLevel() const;
@@ -69,8 +70,9 @@ public: // instance methods
     template <typename Clock, typename Duration>
     bool try_lock_until(std::chrono::time_point<Clock, Duration> i_timePoint);
     void unlock();
-protected: // auxiliary methods
+public: // auxiliary methods
     bool isMethodTraceActive( int i_iFilterDetailLevel ) const;
+    int getMethodTraceDetailLevel() const;
 private: // instance members
     /*!< Descriptive name of the mutex. */
     QString m_strObjName;
@@ -98,6 +100,7 @@ public: // ctors and dtor
     CRecursiveMutex( const QString& i_strObjName, int i_iTrcMthFileDetailLevel);
     virtual ~CRecursiveMutex();
 public: // instance methods
+    void setObjectName(const QString& i_strObjName);
     QString objectName() const;
     ZS::Trace::CTrcMthFile* traceMethodFile();
     int traceMethodFileDetailLevel() const;
@@ -110,8 +113,9 @@ public: // instance methods
     template <typename Clock, typename Duration>
     bool try_lock_until(std::chrono::time_point<Clock, Duration> i_timePoint);
     void unlock();
-protected: // auxiliary methods
+public: // auxiliary methods
     bool isMethodTraceActive( int i_iFilterDetailLevel ) const;
+    int getMethodTraceDetailLevel() const;
 private: // instance members
     /*!< Descriptive name of the mutex. */
     QString m_strObjName;
@@ -143,8 +147,9 @@ public: // instance methods
 public: // instance methods
     void relock();
     void unlock();
-protected: // auxiliary methods
+public: // auxiliary methods
     bool isMethodTraceActive( int i_iFilterDetailLevel ) const;
+    int getMethodTraceDetailLevel() const;
 private: // instance members
     /*!< Mutex to be locked and unlocked. */
     CMutex* m_pMtx;

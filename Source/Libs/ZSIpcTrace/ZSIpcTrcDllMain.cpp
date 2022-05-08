@@ -761,8 +761,74 @@ ZSIPCTRACEDLL_EXTERN_API DllIf::CTrcAdminObj* TrcServer_GetTraceAdminObj(
     } // if( pTrcServer != nullptr )
 
     return pDllIfTrcAdminObj;
+}
 
-} // TrcServer_GetTraceAdminObj
+//------------------------------------------------------------------------------
+ZSIPCTRACEDLL_EXTERN_API void TrcServer_RenameTraceAdminObj(
+    DllIf::CTrcAdminObj** io_ppTrcAdminObj,
+    const char*           i_szObjName )
+//------------------------------------------------------------------------------
+{
+    #ifdef _WINDOWS
+    if( s_iDLL_PROCESS_ATTACH <= 0 ) // Dll already unloaded
+    {
+        return;
+    }
+    #endif
+
+    QMutexLocker mtxLocker(&DllIf_s_mtx);
+
+    DllIf::CTrcAdminObj* pDllIfTrcAdminObj = nullptr;
+
+    QString strObjName = i_szObjName;
+
+    CTrcMthFile* pTrcMthFile = DllIf_IpcTrcServer_s_pTrcMthFile;
+    int          iTrcDetailLevel = DllIf_IpcTrcServer_s_iTrcMthDetailLevel;
+
+    QString strMthInArgs;
+
+    if( iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
+    {
+        strMthInArgs = QString(*io_ppTrcAdminObj == nullptr ? "null" : (*io_ppTrcAdminObj)->keyInTree());
+        strMthInArgs += ", ObjName: " + QString(i_szObjName);
+    }
+
+    CMethodTracer mthTracer(
+        /* pTrcMthFile        */ pTrcMthFile,
+        /* iTrcDetailLevel    */ iTrcDetailLevel,
+        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* strNameSpace       */ c_strNameSpace,
+        /* strClassName       */ c_strClassName,
+        /* strObjName         */ "ZSTrcServer",
+        /* strMethod          */ "TrcServer_RenameTraceAdminObj",
+        /* strMthInArgs       */ strMthInArgs );
+
+    if( *io_ppTrcAdminObj != nullptr )
+    {
+        QString strKeyInTree = (*io_ppTrcAdminObj)->keyInTree();
+
+        CTrcServer* pTrcServer = CTrcServer::GetInstance();
+
+        if( pTrcServer != nullptr )
+        {
+            CIdxTreeTrcAdminObjs* pIdxTree = pTrcServer->getTraceAdminObjIdxTree();
+
+            CIdxTreeEntry* pTreeEntry = pIdxTree->findEntry(strKeyInTree);
+
+            CTrcAdminObj* pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(pTreeEntry);
+
+            #pragma message(__TODO__ "RenameTraceAdminObj")
+            if( pTrcAdminObj != nullptr )
+            {
+                CTrcServer::RenameTraceAdminObj(&pTrcAdminObj, strObjName);
+            }
+        } // if( pTrcServer != nullptr )
+
+        *io_ppTrcAdminObj = pDllIfTrcAdminObj;
+
+    } // if( *io_ppTrcAdminObj != nullptr )
+
+} // TrcServer_RenameTraceAdminObj
 
 //------------------------------------------------------------------------------
 ZSIPCTRACEDLL_EXTERN_API void TrcServer_ReleaseTraceAdminObj( DllIf::CTrcAdminObj* i_pTrcAdminObj )

@@ -124,6 +124,11 @@ public: // ctors and dtor
         If trace outputs should not be forwarded to the trace server but directly
         to a trace method file allocated by the client, this detail level has to
         be to a value greater than None.
+    @param i_iTrcMthFileDetailLevelMutex [in]
+        If the locking and unlocking of the mutex of client
+        should be logged a value greater than 0 (ETraceDetailLevelNone)
+        could be passed here. But the value will be ignored if the detail
+        level for the client tracer is None.
     @param i_iTrcMthFileDetailLevelGateway [in]
         This is the trace method detail level forwarded to the gateway thread
         and to the gateway. This allows to enable/disable trace output for the
@@ -133,6 +138,7 @@ CClient::CClient(
     const QString& i_strObjName,
     bool           i_bMultiThreadedAccess,
     int            i_iTrcMthFileDetailLevel,
+    int            i_iTrcMthFileDetailLevelMutex,
     int            i_iTrcMthFileDetailLevelGateway ) :
 //------------------------------------------------------------------------------
     QObject(),
@@ -204,7 +210,7 @@ CClient::CClient(
     {
         if( m_pTrcMthFile != nullptr )
         {
-            m_pMtx = new CMutex(QMutex::Recursive, "ZS::Ipc::CClient::" + i_strObjName, m_iTrcMthFileDetailLevel);
+            m_pMtx = new CMutex(QMutex::Recursive, "ZS::Ipc::CClient::" + i_strObjName, i_iTrcMthFileDetailLevelMutex);
         }
         else
         {

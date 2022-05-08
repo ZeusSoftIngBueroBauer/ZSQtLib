@@ -30,7 +30,6 @@ may result in using the software modules.
 #include "ZSSys/ZSSysDllMain.h"
 #include "ZSSys/ZSSysCommon.h"
 #include "ZSSys/ZSSysErrResult.h"
-#include "ZSSys/ZSSysMutex.h"
 
 #include <QtCore/qobject.h>
 #include <QtCore/qstring.h>
@@ -41,6 +40,7 @@ namespace ZS
 namespace System
 {
 class CMsg;
+class CMutex;
 }
 
 namespace Trace
@@ -125,7 +125,11 @@ public: // class methods
     static QString ClassName() { return "CTrcServer"; }
 public: // class methods
     static CTrcServer* GetInstance();
-    static CTrcServer* CreateInstance( int i_iTrcDetailLevel = ETraceDetailLevelNone );
+    static CTrcServer* CreateInstance(
+        int i_iTrcDetailLevel = ETraceDetailLevelNone,
+        int i_iTrcDetailLevelMutex = ETraceDetailLevelNone,
+        int i_iTrcDetailLevelAdminObjIdxTree = ETraceDetailLevelNone,
+        int i_iTrcDetailLevelAdminObjIdxTreeMutex = ETraceDetailLevelNone );
     static void ReleaseInstance();
 public: // class methods to register thread names
     static void RegisterCurrentThread(const QString& i_strThreadName);
@@ -144,12 +148,17 @@ public: // class methods to add, remove and modify admin objects
         const QString&       i_strObjName,
         ZS::System::EEnabled i_bEnabledAsDefault,
         int                  i_iDefaultDetailLevel );
+    static void RenameTraceAdminObj( CTrcAdminObj** io_ppTrcAdminObj, const QString& i_strNewObjName );
     static void ReleaseTraceAdminObj( CTrcAdminObj* i_pTrcAdminObj );
 public: // class methods to get default file paths
     static QString GetDefaultAdminObjFileAbsoluteFilePath( const QString& i_strIniFileScope = "System" );
     static QString GetDefaultLocalTrcFileAbsoluteFilePath( const QString& i_strIniFileScope = "System" );
 protected: // ctors and dtor
-    CTrcServer( int i_iTrcDetailLevel = ETraceDetailLevelNone );
+    CTrcServer(
+        int i_iTrcDetailLevel = ETraceDetailLevelNone,
+        int i_iTrcDetailLevelMutex = ETraceDetailLevelNone,
+        int i_iTrcDetailLevelAdminObjIdxTree = ETraceDetailLevelNone,
+        int i_iTrcDetailLevelAdminObjIdxTreeMutex = ETraceDetailLevelNone );
     virtual ~CTrcServer();
 signals:
     /*! Signal which is emitted if a trace setting has been changed.
@@ -173,6 +182,7 @@ public: // overridables to add, remove and modify admin objects
         const QString&       i_strObjName,              // "Real" object name (e.g. "PvT" (Power versus Time))
         ZS::System::EEnabled i_bEnabledAsDefault,       // Undefined means use "trcServerSettings".
         int                  i_iDefaultDetailLevel );   // -1 means use "trcServerSettings".
+    virtual void renameTraceAdminObj( CTrcAdminObj** io_ppTrcAdminObj, const QString& i_strNewObjName );
     virtual void releaseTraceAdminObj( CTrcAdminObj* i_pTrcAdminObj );
 public: // overridables
     virtual void traceMethodEnter(

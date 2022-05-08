@@ -134,6 +134,41 @@ CMyClass3Thread::~CMyClass3Thread()
 } // dtor
 
 /*==============================================================================
+public: // instance methods (reimplementing methods of base class QObject)
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CMyClass3Thread::setObjectName(const QString& i_strObjName)
+//------------------------------------------------------------------------------
+{
+    // Please note that the method will not be traced if called in the ctor.
+    // The method is called before the trace admin object is created.
+    // But if the method is called to rename an already existing object the
+    // method will be traced as the trace admin object is then existing.
+
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    {
+        strMthInArgs = i_strObjName;
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* strMethod    */ "setObjectName",
+        /* strAddInfo   */ strMthInArgs );
+
+    QObject::setObjectName(i_strObjName);
+
+    if( m_pTrcAdminObj != nullptr )
+    {
+        CTrcServer::RenameTraceAdminObj(&m_pTrcAdminObj, objectName());
+    }
+
+} // setObjectName
+
+/*==============================================================================
 public: // instance methods
 ==============================================================================*/
 
@@ -166,9 +201,9 @@ void CMyClass3Thread::run()
 
     if( !QObject::connect(
         /* pObjSender   */ m_pMyClass3,
-        /* szSignal     */ SIGNAL(aboutToBeDestroyed(const QString&)),
+        /* szSignal     */ SIGNAL(aboutToBeDestroyed(QObject*, const QString&)),
         /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onClass3AboutToBeDestroyed(const QString&)),
+        /* szSlot       */ SLOT(onClass3AboutToBeDestroyed(QObject*, const QString&)),
         /* cnctType     */ Qt::DirectConnection) )
     {
         throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
@@ -183,6 +218,12 @@ void CMyClass3Thread::run()
     m_pMyClass3->recursiveTraceMethod();
 
     exec();
+
+    QObject::disconnect(
+        /* pObjSender   */ m_pMyClass3,
+        /* szSignal     */ SIGNAL(aboutToBeDestroyed(QObject*, const QString&)),
+        /* pObjReceiver */ this,
+        /* szSlot       */ SLOT(onClass3AboutToBeDestroyed(QObject*, const QString&)) );
 
     try
     {
@@ -308,7 +349,7 @@ int CMyClass3Thread::exec()
 }
 
 //------------------------------------------------------------------------------
-void CMyClass3Thread::onClass3AboutToBeDestroyed(const QString& i_strObjName)
+void CMyClass3Thread::onClass3AboutToBeDestroyed(QObject* i_pObj, const QString& i_strObjName)
 //------------------------------------------------------------------------------
 {
     m_pMyClass3 = nullptr;
@@ -473,7 +514,7 @@ CMyClass3::CMyClass3( const QString& i_strObjName, CMyClass3Thread* i_pMyClass3T
         /* strMethod    */ "ctor",
         /* strAddInfo   */ strMthInArgs );
 
-    m_pMtxCounters = new CMutex(QMutex::Recursive, ClassName() + "::" + i_strObjName + "::Counters");
+    m_pMtxCounters = new CMutex(QMutex::Recursive, ClassName() + "::" + objectName() + "::Counters");
 
 } // ctor
 
@@ -487,7 +528,7 @@ CMyClass3::~CMyClass3()
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
 
-    emit aboutToBeDestroyed(objectName());
+    emit aboutToBeDestroyed(this, objectName());
 
     try
     {
@@ -511,6 +552,48 @@ CMyClass3::~CMyClass3()
     m_pTrcAdminObjVeryNoisyMethods = nullptr;
 
 } // dtor
+
+/*==============================================================================
+public: // instance methods (reimplementing methods of base class QObject)
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CMyClass3::setObjectName(const QString& i_strObjName)
+//------------------------------------------------------------------------------
+{
+    // Please note that the method will not be traced if called in the ctor.
+    // The method is called before the trace admin object is created.
+    // But if the method is called to rename an already existing object the
+    // method will be traced as the trace admin object is then existing.
+
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    {
+        strMthInArgs = i_strObjName;
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* strMethod    */ "setObjectName",
+        /* strAddInfo   */ strMthInArgs );
+
+    QObject::setObjectName(i_strObjName);
+
+    if( m_pMtxCounters != nullptr )
+    {
+        m_pMtxCounters->setObjectName(ClassName() + "::" + objectName() + "::Counters");
+    }
+
+    // Should be the last so that the method tracer traces leave method
+    // not before the child objects have been renamed.
+    if( m_pTrcAdminObj != nullptr )
+    {
+        CTrcServer::RenameTraceAdminObj(&m_pTrcAdminObj, objectName());
+    }
+
+} // setObjectName
 
 /*==============================================================================
 public: // instance methods

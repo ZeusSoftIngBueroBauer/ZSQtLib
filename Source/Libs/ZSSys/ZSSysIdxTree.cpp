@@ -27,6 +27,7 @@ may result in using the software modules.
 #include "ZSSys/ZSSysIdxTree.h"
 #include "ZSSys/ZSSysErrLog.h"
 #include "ZSSys/ZSSysException.h"
+#include "ZSSys/ZSSysMutex.h"
 #include "ZSSys/ZSSysTrcMethod.h"
 #include "ZSSys/ZSSysTrcServer.h"
 
@@ -279,7 +280,8 @@ CIdxTree::CIdxTree(
     const QString& i_strNodeSeparator,
     bool           i_bCreateMutex,
     QObject*       i_pObjParent,
-    int            i_iTrcDetailLevel ) :
+    int            i_iTrcDetailLevel,
+    int            i_iTrcDetailLevelMutex ) :
 //------------------------------------------------------------------------------
     QObject(i_pObjParent),
     m_strNodeSeparator(i_strNodeSeparator),
@@ -293,8 +295,9 @@ CIdxTree::CIdxTree(
 {
     setObjectName(i_strObjName);
 
-    // If the tree's parent is the trace server the detail level of trace outputs may not be
-    // controlled by trace admin objects as they belong to the index tree of the trace server.
+    // If the tree's parent is the trace server or the trace client the
+    // detail level of trace outputs may not be controlled by trace admin
+    // objects as they belong to the index tree of the trace server or client.
     if( dynamic_cast<CTrcServer*>(i_pObjParent) == nullptr )
     {
         m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName());
@@ -337,7 +340,7 @@ CIdxTree::CIdxTree(
 
     if( i_bCreateMutex )
     {
-        m_pMtx = new QMutex(QMutex::Recursive);
+        m_pMtx = new CMutex(QMutex::Recursive, "ZS::System::CIdxTree::" + i_strObjName, i_iTrcDetailLevelMutex);
     }
 
     if( m_pRoot == nullptr )
@@ -715,7 +718,7 @@ QString CIdxTree::buildKeyInTreeStr( EIdxTreeEntryType i_entryType, const QStrin
 
     @param i_strPath [in] Path of the node, which can also contain the node type.
     @param o_pstrBranchPath [out] If not equal to nullptr, the path is returned here without the last substring.
-    @param o_pstrName [out] If not equal to null tpr the name of the node is returned here.
+    @param o_pstrName [out] If not equal to nullptpr the name of the node is returned here.
 
     @return Undefined or valid node type if the path contained the node type.
 */
@@ -788,8 +791,6 @@ public: // overridables (createBranch and createLeave must be overridden to crea
 CIdxTreeEntry* CIdxTree::createBranch( const QString& i_strName ) const
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(m_pMtx);
-
     QString strMthInArgs;
 
     if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
@@ -807,6 +808,8 @@ CIdxTreeEntry* CIdxTree::createBranch( const QString& i_strName ) const
         /* strObjName         */ objectName(),
         /* strMethod          */ "createBranch",
         /* strMethodInArgs    */ strMthInArgs );
+
+    CMutexLocker mtxLocker(m_pMtx);
 
     CIdxTreeEntry* pBranch = new CIdxTreeEntry(EIdxTreeEntryType::Branch, i_strName);
 
@@ -832,8 +835,6 @@ CIdxTreeEntry* CIdxTree::createBranch( const QString& i_strName ) const
 CIdxTreeEntry* CIdxTree::createLeave( const QString& i_strName ) const
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(m_pMtx);
-
     QString strMthInArgs;
 
     if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
@@ -851,6 +852,8 @@ CIdxTreeEntry* CIdxTree::createLeave( const QString& i_strName ) const
         /* strObjName         */ objectName(),
         /* strMethod          */ "createLeave",
         /* strMethodInArgs    */ strMthInArgs );
+
+    CMutexLocker mtxLocker(m_pMtx);
 
     CIdxTreeEntry* pLeave = new CIdxTreeEntry(EIdxTreeEntryType::Leave, i_strName);
 
@@ -879,8 +882,6 @@ CIdxTreeEntry* CIdxTree::createLeave( const QString& i_strName ) const
 CIdxTreeEntry* CIdxTree::createTreeEntry( EIdxTreeEntryType i_entryType, const QString& i_strName ) const
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(m_pMtx);
-
     QString strMthInArgs;
 
     if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
@@ -899,6 +900,8 @@ CIdxTreeEntry* CIdxTree::createTreeEntry( EIdxTreeEntryType i_entryType, const Q
         /* strObjName         */ objectName(),
         /* strMethod          */ "createTreeEntry",
         /* strMethodInArgs    */ strMthInArgs );
+
+    CMutexLocker mtxLocker(m_pMtx);
 
     CIdxTreeEntry* pTreeEntry = nullptr;
 
@@ -946,7 +949,20 @@ public: // instance methods
 int CIdxTree::treeEntriesVectorSize() const
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(m_pMtx);
+    // When the mutex creates trace output also this method should be traced.
+    int iTrcDetailLevel = m_pMtx == nullptr ? ETraceDetailLevelNone : m_pMtx->getMethodTraceDetailLevel();
+    CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* pTrcServer         */ CTrcServer::GetInstance(),
+        /* iTrcDetailLevel    */ iTrcDetailLevel,
+        /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
+        /* strObjName         */ objectName(),
+        /* strMethod          */ "treeEntriesVectorSize",
+        /* strMethodInArgs    */ "" );
+
+    CMutexLocker mtxLocker(m_pMtx);
     return m_arpTreeEntries.size();
 }
 
@@ -964,9 +980,22 @@ int CIdxTree::treeEntriesVectorSize() const
 CIdxTreeEntry* CIdxTree::getEntry( int i_idxObj ) const
 //------------------------------------------------------------------------------
 {
+    // When the mutex creates trace output also this method should be traced.
+    int iTrcDetailLevel = m_pMtx == nullptr ? ETraceDetailLevelNone : m_pMtx->getMethodTraceDetailLevel();
+    CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* pTrcServer         */ CTrcServer::GetInstance(),
+        /* iTrcDetailLevel    */ iTrcDetailLevel,
+        /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
+        /* strObjName         */ objectName(),
+        /* strMethod          */ "getEntry",
+        /* strMethodInArgs    */ "" );
+
     CIdxTreeEntry* pTreeEntry = nullptr;
 
-    QMutexLocker mtxLocker(m_pMtx);
+    CMutexLocker mtxLocker(m_pMtx);
 
     if( i_idxObj >= 0 && i_idxObj < m_arpTreeEntries.size() )
     {
@@ -993,6 +1022,19 @@ public: // instance methods
 CIdxTreeEntry* CIdxTree::findBranch( const QString& i_strPath ) const
 //------------------------------------------------------------------------------
 {
+    // When the mutex creates trace output also this method should be traced.
+    int iTrcDetailLevel = m_pMtx == nullptr ? ETraceDetailLevelNone : m_pMtx->getMethodTraceDetailLevel();
+    CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* pTrcServer         */ CTrcServer::GetInstance(),
+        /* iTrcDetailLevel    */ iTrcDetailLevel,
+        /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
+        /* strObjName         */ objectName(),
+        /* strMethod          */ "findBranch",
+        /* strMethodInArgs    */ "" );
+
     QString strEntryType = idxTreeEntryType2Str(EIdxTreeEntryType::Branch, EEnumEntryAliasStrSymbol);
     QString strKeyInTree = i_strPath;
 
@@ -1001,7 +1043,7 @@ CIdxTreeEntry* CIdxTree::findBranch( const QString& i_strPath ) const
         strKeyInTree.insert(0, strEntryType + ":");
     }
 
-    QMutexLocker mtxLocker(m_pMtx);
+    CMutexLocker mtxLocker(m_pMtx);
 
     return m_mappTreeEntries.value(strKeyInTree, nullptr);
 
@@ -1019,6 +1061,19 @@ CIdxTreeEntry* CIdxTree::findBranch( const QString& i_strPath ) const
 CIdxTreeEntry* CIdxTree::findBranch( const QString& i_strParentPath, const QString& i_strBranchName ) const
 //------------------------------------------------------------------------------
 {
+    // When the mutex creates trace output also this method should be traced.
+    int iTrcDetailLevel = m_pMtx == nullptr ? ETraceDetailLevelNone : m_pMtx->getMethodTraceDetailLevel();
+    CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* pTrcServer         */ CTrcServer::GetInstance(),
+        /* iTrcDetailLevel    */ iTrcDetailLevel,
+        /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
+        /* strObjName         */ objectName(),
+        /* strMethod          */ "findBranch",
+        /* strMethodInArgs    */ "" );
+
     QString strEntryType = idxTreeEntryType2Str(EIdxTreeEntryType::Branch, EEnumEntryAliasStrSymbol);
     QString strKeyInTree = i_strParentPath;
 
@@ -1035,7 +1090,7 @@ CIdxTreeEntry* CIdxTree::findBranch( const QString& i_strParentPath, const QStri
         strKeyInTree = strEntryType + ":" + i_strParentPath + m_strNodeSeparator + i_strBranchName;
     }
 
-    QMutexLocker mtxLocker(m_pMtx);
+    CMutexLocker mtxLocker(m_pMtx);
 
     return m_mappTreeEntries.value(strKeyInTree, nullptr);
 
@@ -1052,6 +1107,19 @@ CIdxTreeEntry* CIdxTree::findBranch( const QString& i_strParentPath, const QStri
 CIdxTreeEntry* CIdxTree::findLeave( const QString& i_strPath ) const
 //------------------------------------------------------------------------------
 {
+    // When the mutex creates trace output also this method should be traced.
+    int iTrcDetailLevel = m_pMtx == nullptr ? ETraceDetailLevelNone : m_pMtx->getMethodTraceDetailLevel();
+    CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* pTrcServer         */ CTrcServer::GetInstance(),
+        /* iTrcDetailLevel    */ iTrcDetailLevel,
+        /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
+        /* strObjName         */ objectName(),
+        /* strMethod          */ "findLeave",
+        /* strMethodInArgs    */ "" );
+
     QString strEntryType = idxTreeEntryType2Str(EIdxTreeEntryType::Leave, EEnumEntryAliasStrSymbol);
     QString strKeyInTree = i_strPath;
 
@@ -1060,7 +1128,7 @@ CIdxTreeEntry* CIdxTree::findLeave( const QString& i_strPath ) const
         strKeyInTree.insert(0, strEntryType + ":");
     }
 
-    QMutexLocker mtxLocker(m_pMtx);
+    CMutexLocker mtxLocker(m_pMtx);
 
     return m_mappTreeEntries.value(strKeyInTree, nullptr);
 
@@ -1078,6 +1146,19 @@ CIdxTreeEntry* CIdxTree::findLeave( const QString& i_strPath ) const
 CIdxTreeEntry* CIdxTree::findLeave( const QString& i_strParentPath, const QString& i_strLeaveName ) const
 //------------------------------------------------------------------------------
 {
+    // When the mutex creates trace output also this method should be traced.
+    int iTrcDetailLevel = m_pMtx == nullptr ? ETraceDetailLevelNone : m_pMtx->getMethodTraceDetailLevel();
+    CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* pTrcServer         */ CTrcServer::GetInstance(),
+        /* iTrcDetailLevel    */ iTrcDetailLevel,
+        /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
+        /* strObjName         */ objectName(),
+        /* strMethod          */ "findLeave",
+        /* strMethodInArgs    */ "" );
+
     QString strEntryType = idxTreeEntryType2Str(EIdxTreeEntryType::Leave, EEnumEntryAliasStrSymbol);
     QString strKeyInTree = i_strParentPath;
 
@@ -1094,7 +1175,7 @@ CIdxTreeEntry* CIdxTree::findLeave( const QString& i_strParentPath, const QStrin
         strKeyInTree = strEntryType + ":" + i_strParentPath + m_strNodeSeparator + i_strLeaveName;
     }
 
-    QMutexLocker mtxLocker(m_pMtx);
+    CMutexLocker mtxLocker(m_pMtx);
 
     return m_mappTreeEntries.value(strKeyInTree, nullptr);
 
@@ -1111,7 +1192,20 @@ CIdxTreeEntry* CIdxTree::findLeave( const QString& i_strParentPath, const QStrin
 CIdxTreeEntry* CIdxTree::findEntry( const QString& i_strKeyInTree ) const
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(m_pMtx);
+    // When the mutex creates trace output also this method should be traced.
+    int iTrcDetailLevel = m_pMtx == nullptr ? ETraceDetailLevelNone : m_pMtx->getMethodTraceDetailLevel();
+    CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* pTrcServer         */ CTrcServer::GetInstance(),
+        /* iTrcDetailLevel    */ iTrcDetailLevel,
+        /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
+        /* strObjName         */ objectName(),
+        /* strMethod          */ "findEntry",
+        /* strMethodInArgs    */ "" );
+
+    CMutexLocker mtxLocker(m_pMtx);
     return m_mappTreeEntries.value(i_strKeyInTree, nullptr);
 }
 
@@ -1163,7 +1257,7 @@ SErrResultInfo CIdxTree::canAdd( CIdxTreeEntry* i_pTreeEntry, const QString& i_s
 
     SErrResultInfo errResultInfo(nameSpace(), className(), objectName(), strMth);
 
-    QMutexLocker mtxLocker(m_pMtx);
+    CMutexLocker mtxLocker(m_pMtx);
 
     CIdxTreeEntry* pTargetBranch = m_pRoot;
 
@@ -1240,7 +1334,7 @@ SErrResultInfo CIdxTree::canAdd( CIdxTreeEntry* i_pTreeEntry, CIdxTreeEntry* i_p
 
     SErrResultInfo errResultInfo(nameSpace(), className(), objectName(), strMth);
 
-    QMutexLocker mtxLocker(m_pMtx);
+    CMutexLocker mtxLocker(m_pMtx);
 
     if( i_pTreeEntry == nullptr )
     {
@@ -1358,7 +1452,7 @@ int CIdxTree::add( CIdxTreeEntry* i_pTreeEntry, const QString& i_strTargetPath )
         /* strMethod          */ "add",
         /* strMethodInArgs    */ strMthInArgs );
 
-    QMutexLocker mtxLocker(m_pMtx);
+    CMutexLocker mtxLocker(m_pMtx);
 
     CIdxTreeEntry* pTargetBranch = m_pRoot;
 
@@ -1447,7 +1541,7 @@ int CIdxTree::add( CIdxTreeEntry* i_pTreeEntry, CIdxTreeEntry* i_pTargetBranch )
         /* strMethod          */ "add",
         /* strMethodInArgs    */ strMthInArgs );
 
-    QMutexLocker mtxLocker(m_pMtx);
+    CMutexLocker mtxLocker(m_pMtx);
 
     if( i_pTreeEntry == nullptr )
     {
@@ -1593,7 +1687,7 @@ SErrResultInfo CIdxTree::canInsert(
 
     SErrResultInfo errResultInfo(nameSpace(), className(), objectName(), strMth);
 
-    QMutexLocker mtxLocker(m_pMtx);
+    CMutexLocker mtxLocker(m_pMtx);
 
     if( i_pTreeEntry == nullptr )
     {
@@ -1710,7 +1804,7 @@ SErrResultInfo CIdxTree::canInsert(
         pTargetBranch = m_pRoot;
     }
 
-    QMutexLocker mtxLocker(m_pMtx);
+    CMutexLocker mtxLocker(m_pMtx);
 
     if( i_idxInTargetBranch >= 0 && i_idxInTargetBranch > pTargetBranch->count() )
     {
@@ -1850,7 +1944,7 @@ int CIdxTree::insert(
         /* strMethod          */ "insert",
         /* strMethodInArgs    */ strMthInArgs );
 
-    QMutexLocker mtxLocker(m_pMtx);
+    CMutexLocker mtxLocker(m_pMtx);
 
     CIdxTreeEntry* pTargetBranch = m_pRoot;
 
@@ -1952,7 +2046,7 @@ int CIdxTree::insert(
         /* strMethod          */ "insert",
         /* strMethodInArgs    */ strMthInArgs );
 
-    QMutexLocker mtxLocker(m_pMtx);
+    CMutexLocker mtxLocker(m_pMtx);
 
     if( i_pTreeEntry == nullptr )
     {
@@ -2128,7 +2222,7 @@ SErrResultInfo CIdxTree::canRemove( CIdxTreeEntry* i_pTreeEntry ) const
 
     SErrResultInfo errResultInfo(nameSpace(), className(), objectName(), strMth);
 
-    QMutexLocker mtxLocker(m_pMtx);
+    CMutexLocker mtxLocker(m_pMtx);
 
     QString strKeyInTree = i_pTreeEntry->keyInTree();
 
@@ -2195,7 +2289,7 @@ SErrResultInfo CIdxTree::canRemove( const QString& i_strKeyInTree ) const
 
     SErrResultInfo errResultInfo(nameSpace(), className(), objectName(), strMth);
 
-    QMutexLocker mtxLocker(m_pMtx);
+    CMutexLocker mtxLocker(m_pMtx);
 
     CIdxTreeEntry* pTreeEntry = findEntry(i_strKeyInTree);
 
@@ -2289,7 +2383,7 @@ void CIdxTree::remove( CIdxTreeEntry* i_pTreeEntry )
         throw CException(__FILE__, __LINE__, EResultInternalProgramError);
     }
 
-    QMutexLocker mtxLocker(m_pMtx);
+    CMutexLocker mtxLocker(m_pMtx);
 
     emit_treeEntryAboutToBeRemoved(this, i_pTreeEntry);
 
@@ -2424,7 +2518,7 @@ void CIdxTree::remove( const QString& i_strKeyInTree )
         /* strMethod          */ "remove",
         /* strMethodInArgs    */ strMthInArgs );
 
-    QMutexLocker mtxLocker(m_pMtx);
+    CMutexLocker mtxLocker(m_pMtx);
 
     CIdxTreeEntry* pTreeEntry = findEntry(i_strKeyInTree);
 
@@ -2471,8 +2565,6 @@ SErrResultInfo CIdxTree::canMove(
     int            i_idxInTargetBranch ) const
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(m_pMtx);
-
     QString strMthInArgs;
 
     if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
@@ -2492,6 +2584,8 @@ SErrResultInfo CIdxTree::canMove(
         /* strObjName         */ objectName(),
         /* strMethod          */ "canMove",
         /* strMethodInArgs    */ strMthInArgs );
+
+    CMutexLocker mtxLocker(m_pMtx);
 
     QString strMth = "move";
 
@@ -2585,8 +2679,6 @@ SErrResultInfo CIdxTree::canMove(
     int            i_idxInTargetBranch ) const
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(m_pMtx);
-
     QString strMthInArgs;
 
     if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
@@ -2606,6 +2698,8 @@ SErrResultInfo CIdxTree::canMove(
         /* strObjName         */ objectName(),
         /* strMethod          */ "canMove",
         /* strMethodInArgs    */ strMthInArgs );
+
+    CMutexLocker mtxLocker(m_pMtx);
 
     QString strMth = "move";
 
@@ -2734,7 +2828,7 @@ SErrResultInfo CIdxTree::canMove(
         pTargetBranch = m_pRoot;
     }
 
-    QMutexLocker mtxLocker(m_pMtx);
+    CMutexLocker mtxLocker(m_pMtx);
 
     CIdxTreeEntry* pTreeEntry = i_pTreeEntry;
 
@@ -2810,8 +2904,6 @@ void CIdxTree::move(
     int            i_idxInTargetBranch )
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(m_pMtx);
-
     QString strMthInArgs;
 
     if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
@@ -2831,6 +2923,8 @@ void CIdxTree::move(
         /* strObjName         */ objectName(),
         /* strMethod          */ "move",
         /* strMethodInArgs    */ strMthInArgs );
+
+    CMutexLocker mtxLocker(m_pMtx);
 
     CIdxTreeEntry* pTreeEntry = findEntry(i_strSourcePath);
 
@@ -2882,8 +2976,6 @@ void CIdxTree::move(
     int            i_idxInTargetBranch )
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(m_pMtx);
-
     QString strMthInArgs;
 
     if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
@@ -2903,6 +2995,8 @@ void CIdxTree::move(
         /* strObjName         */ objectName(),
         /* strMethod          */ "move",
         /* strMethodInArgs    */ strMthInArgs );
+
+    CMutexLocker mtxLocker(m_pMtx);
 
     CIdxTreeEntry* pTargetBranch = findBranch(i_strTargetPath);
 
@@ -2979,7 +3073,7 @@ void CIdxTree::move(
         pTargetBranch = m_pRoot;
     }
 
-    QMutexLocker mtxLocker(m_pMtx);
+    CMutexLocker mtxLocker(m_pMtx);
 
     QString strKeyInTreePrev = i_pTreeEntry->keyInTree();
 
@@ -3050,8 +3144,6 @@ SErrResultInfo CIdxTree::canCopy(
     int            i_idxInTree ) const
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(m_pMtx);
-
     QString strMthInArgs;
 
     if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
@@ -3072,6 +3164,8 @@ SErrResultInfo CIdxTree::canCopy(
         /* strObjName         */ objectName(),
         /* strMethod          */ "canCopy",
         /* strMethodInArgs    */ strMthInArgs );
+
+    CMutexLocker mtxLocker(m_pMtx);
 
     QString strMth = "copy";
 
@@ -3184,8 +3278,6 @@ SErrResultInfo CIdxTree::canCopy(
     int            i_idxInTree ) const
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(m_pMtx);
-
     QString strMthInArgs;
 
     if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
@@ -3206,6 +3298,8 @@ SErrResultInfo CIdxTree::canCopy(
         /* strObjName         */ objectName(),
         /* strMethod          */ "canCopy",
         /* strMethodInArgs    */ strMthInArgs );
+
+    CMutexLocker mtxLocker(m_pMtx);
 
     QString strMth = "copy";
 
@@ -3355,7 +3449,7 @@ SErrResultInfo CIdxTree::canCopy(
         pTargetBranch = m_pRoot;
     }
 
-    QMutexLocker mtxLocker(m_pMtx);
+    CMutexLocker mtxLocker(m_pMtx);
 
     CIdxTreeEntry* pTreeEntry = i_pTreeEntry;
 
@@ -3442,8 +3536,6 @@ int CIdxTree::copy(
     int            i_idxInTree )
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(m_pMtx);
-
     QString strMthInArgs;
 
     if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
@@ -3464,6 +3556,8 @@ int CIdxTree::copy(
         /* strObjName         */ objectName(),
         /* strMethod          */ "copy",
         /* strMethodInArgs    */ strMthInArgs );
+
+    CMutexLocker mtxLocker(m_pMtx);
 
     CIdxTreeEntry* pTreeEntry = findEntry(i_strSourcePath);
 
@@ -3519,8 +3613,6 @@ int CIdxTree::copy(
     int            i_idxInTree )
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(m_pMtx);
-
     QString strMthInArgs;
 
     if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
@@ -3541,6 +3633,8 @@ int CIdxTree::copy(
         /* strObjName         */ objectName(),
         /* strMethod          */ "copy",
         /* strMethodInArgs    */ strMthInArgs );
+
+    CMutexLocker mtxLocker(m_pMtx);
 
     CIdxTreeEntry* pTargetBranch = findBranch(i_strTargetPath);
 
@@ -3628,7 +3722,7 @@ int CIdxTree::copy(
         pTargetBranch = m_pRoot;
     }
 
-    QMutexLocker mtxLocker(m_pMtx);
+    CMutexLocker mtxLocker(m_pMtx);
 
     QString strName = i_pTreeEntry->name();
 
@@ -3706,8 +3800,6 @@ public: // instance methods
 SErrResultInfo CIdxTree::canRename( const QString& i_strSourcePath, const QString& i_strNameNew ) const
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(m_pMtx);
-
     QString strMthInArgs;
 
     if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
@@ -3726,6 +3818,8 @@ SErrResultInfo CIdxTree::canRename( const QString& i_strSourcePath, const QStrin
         /* strObjName         */ objectName(),
         /* strMethod          */ "canRename",
         /* strMethodInArgs    */ strMthInArgs );
+
+    CMutexLocker mtxLocker(m_pMtx);
 
     QString strMth = "rename";
 
@@ -3799,7 +3893,7 @@ SErrResultInfo CIdxTree::canRename( CIdxTreeEntry* i_pTreeEntry, const QString& 
         throw CException(__FILE__, __LINE__, EResultInternalProgramError);
     }
 
-    QMutexLocker mtxLocker(m_pMtx);
+    CMutexLocker mtxLocker(m_pMtx);
 
     QString strMth = "rename";
 
@@ -3856,8 +3950,6 @@ public: // instance methods
 void CIdxTree::rename( const QString& i_strSourcePath, const QString& i_strNameNew )
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(m_pMtx);
-
     QString strMthInArgs;
 
     if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
@@ -3876,6 +3968,8 @@ void CIdxTree::rename( const QString& i_strSourcePath, const QString& i_strNameN
         /* strObjName         */ objectName(),
         /* strMethod          */ "rename",
         /* strMethodInArgs    */ strMthInArgs );
+
+    CMutexLocker mtxLocker(m_pMtx);
 
     CIdxTreeEntry* pTreeEntry = findEntry(i_strSourcePath);
 
@@ -3937,7 +4031,7 @@ void CIdxTree::rename( CIdxTreeEntry* i_pTreeEntry, const QString& i_strNameNew 
         throw CException(__FILE__, __LINE__, EResultInternalProgramError);
     }
 
-    QMutexLocker mtxLocker(m_pMtx);
+    CMutexLocker mtxLocker(m_pMtx);
 
     QString strKeyInTreePrev = i_pTreeEntry->keyInTree();
     QString strNamePrev = i_pTreeEntry->name();
@@ -4115,7 +4209,20 @@ public: // iterator methods
 CIdxTree::iterator CIdxTree::begin( iterator::ETraversalOrder i_traversalOrder )
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(m_pMtx);
+    // When the mutex creates trace output also this method should be traced.
+    int iTrcDetailLevel = m_pMtx == nullptr ? ETraceDetailLevelNone : m_pMtx->getMethodTraceDetailLevel();
+    CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* pTrcServer         */ CTrcServer::GetInstance(),
+        /* iTrcDetailLevel    */ iTrcDetailLevel,
+        /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
+        /* strObjName         */ objectName(),
+        /* strMethod          */ "begin",
+        /* strMethodInArgs    */ "" );
+
+    CMutexLocker mtxLocker(m_pMtx);
 
     CIdxTree::iterator itIdxTree(this, i_traversalOrder);
     if( i_traversalOrder == iterator::ETraversalOrder::Index )
@@ -4145,7 +4252,20 @@ CIdxTree::iterator CIdxTree::begin( iterator::ETraversalOrder i_traversalOrder )
 CIdxTree::iterator CIdxTree::end()
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(m_pMtx);
+    // When the mutex creates trace output also this method should be traced.
+    int iTrcDetailLevel = m_pMtx == nullptr ? ETraceDetailLevelNone : m_pMtx->getMethodTraceDetailLevel();
+    CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* pTrcServer         */ CTrcServer::GetInstance(),
+        /* iTrcDetailLevel    */ iTrcDetailLevel,
+        /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
+        /* strObjName         */ objectName(),
+        /* strMethod          */ "end",
+        /* strMethodInArgs    */ "" );
+
+    CMutexLocker mtxLocker(m_pMtx);
 
     CIdxTree::iterator itIdxTree(this, iterator::ETraversalOrder::Undefined);
     itIdxTree.m_pTreeEntryCurr = nullptr;

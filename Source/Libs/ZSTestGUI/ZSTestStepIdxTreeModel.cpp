@@ -50,6 +50,7 @@ may result in using the software modules.
 #include "ZSSys/ZSSysEnumEntry.h"
 #include "ZSSys/ZSSysErrResult.h"
 #include "ZSSys/ZSSysException.h"
+#include "ZSSys/ZSSysMutex.h"
 #include "ZSSys/ZSSysTime.h"
 #include "ZSSys/ZSSysTrcAdminObj.h"
 #include "ZSSys/ZSSysTrcMethod.h"

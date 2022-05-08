@@ -104,11 +104,8 @@ CMyClass2Thread::~CMyClass2Thread()
         {
             if( CErrLog::GetInstance() != nullptr )
             {
-                SErrResultInfo errResultInfo(
-                    /* errSource     */ "ZS::Apps::Test::IpcTrace", "CMyClass2Thread", objectName(), "dtor",
-                    /* result        */ EResultTimeout,
-                    /* severity      */ EResultSeverityError,
-                    /* strAddErrInfo */ "Waiting for thread to quit timed out" );
+                SErrResultInfo errResultInfo = ErrResultInfoError(
+                    "dtor", EResultTimeout, "Waiting for thread to quit timed out");
                 CErrLog::GetInstance()->addEntry(errResultInfo);
              }
         }
@@ -132,6 +129,41 @@ CMyClass2Thread::~CMyClass2Thread()
     m_pTrcAdminObj = nullptr;
 
 } // dtor
+
+/*==============================================================================
+public: // instance methods (reimplementing methods of base class QObject)
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CMyClass2Thread::setObjectName(const QString& i_strObjName)
+//------------------------------------------------------------------------------
+{
+    // Please note that the method will not be traced if called in the ctor.
+    // The method is called before the trace admin object is created.
+    // But if the method is called to rename an already existing object the
+    // method will be traced as the trace admin object is then existing.
+
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    {
+        strMthInArgs = i_strObjName;
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* strMethod    */ "setObjectName",
+        /* strAddInfo   */ strMthInArgs );
+
+    QObject::setObjectName(i_strObjName);
+
+    if( m_pTrcAdminObj != nullptr )
+    {
+        CTrcServer::RenameTraceAdminObj(&m_pTrcAdminObj, objectName());
+    }
+
+} // setObjectName
 
 /*==============================================================================
 public: // instance methods
@@ -166,9 +198,9 @@ void CMyClass2Thread::run()
 
     if( !QObject::connect(
         /* pObjSender   */ m_pMyClass2,
-        /* szSignal     */ SIGNAL(aboutToBeDestroyed(const QString&)),
+        /* szSignal     */ SIGNAL(aboutToBeDestroyed(QObject*, const QString&)),
         /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onClass2AboutToBeDestroyed(const QString&)),
+        /* szSlot       */ SLOT(onClass2AboutToBeDestroyed(QObject*, const QString&)),
         /* cnctType     */ Qt::DirectConnection) )
     {
         throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
@@ -181,6 +213,12 @@ void CMyClass2Thread::run()
     CSleeperThread::msleep(5);
 
     exec();
+
+    QObject::disconnect(
+        /* pObjSender   */ m_pMyClass2,
+        /* szSignal     */ SIGNAL(aboutToBeDestroyed(QObject*, const QString&)),
+        /* pObjReceiver */ this,
+        /* szSlot       */ SLOT(onClass2AboutToBeDestroyed(QObject*, const QString&)) );
 
     try
     {
@@ -306,7 +344,7 @@ int CMyClass2Thread::exec()
 }
 
 //------------------------------------------------------------------------------
-void CMyClass2Thread::onClass2AboutToBeDestroyed(const QString& i_strObjName)
+void CMyClass2Thread::onClass2AboutToBeDestroyed(QObject* i_pObj, const QString& i_strObjName)
 //------------------------------------------------------------------------------
 {
     m_pMyClass2 = nullptr;
@@ -368,9 +406,9 @@ CMyClass2::CMyClass2( const QString& i_strObjName, CMyClass2Thread* i_pMyClass2T
         throw ZS::System::CException(__FILE__, __LINE__, EResultSignalSlotConnectionFailed);
     }
 
-    m_pMtxCounters = new CMutex(QMutex::Recursive, ClassName() + "::" + i_strObjName + "::Counters");
-    m_pMtxWaitClass3ThreadRunning = new CMutex(ClassName() + "::" + i_strObjName + "::WaitClass3ThreadRunning");
-    m_pWaitClass3ThreadRunning = new CWaitCondition(ClassName() + "::" + i_strObjName + "::Class3ThreadRunning");
+    m_pMtxCounters = new CMutex(QMutex::Recursive, ClassName() + "::" + objectName() + "::Counters");
+    m_pMtxWaitClass3ThreadRunning = new CMutex(ClassName() + "::" + objectName() + "::WaitClass3ThreadRunning");
+    m_pWaitClass3ThreadRunning = new CWaitCondition(ClassName() + "::" + objectName() + "::Class3ThreadRunning");
 
 } // ctor
 
@@ -384,27 +422,15 @@ CMyClass2::~CMyClass2()
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
 
-    emit aboutToBeDestroyed(objectName());
+    emit aboutToBeDestroyed(this, objectName());
 
-    if( m_pMyClass3Thread != nullptr && m_pMyClass3Thread->isRunning() )
-    {
-        m_pMyClass3Thread->quit();
-
-        if( !m_pMyClass3Thread->wait(1000) )
-        {
-            m_pMyClass3Thread->terminate();
-        }
-    }
-
-    try
-    {
-        delete m_pMyClass3Thread;
-    }
-    catch(...)
-    {
-    }
-    m_pMyClass3Thread = nullptr;
-    m_pMyClass3 = nullptr;
+    // If the dtor is called from within the context of another thread than the
+    // thread creating the class 2 instance (e.g. from the main thread if destroying
+    // class 1 instance) the class 3 thread cannot be deleted here. Otherwise the
+    // app may crash with "cannot send events to objects owned by a different thread".
+    // To avoid this crash a message must be sent to this instance so that the thread
+    // is destroyed in the context which created the thread.
+    stopClass3Thread();
 
     try
     {
@@ -444,6 +470,56 @@ CMyClass2::~CMyClass2()
     m_pTrcAdminObj = nullptr;
 
 } // dtor
+
+/*==============================================================================
+public: // instance methods (reimplementing methods of base class QObject)
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CMyClass2::setObjectName(const QString& i_strObjName)
+//------------------------------------------------------------------------------
+{
+    // Please note that the method will not be traced if called in the ctor.
+    // The method is called before the trace admin object is created.
+    // But if the method is called to rename an already existing object the
+    // method will be traced as the trace admin object is then existing.
+
+    QString strMthInArgs;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    {
+        strMthInArgs = i_strObjName;
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* strMethod    */ "setObjectName",
+        /* strAddInfo   */ strMthInArgs );
+
+    QObject::setObjectName(i_strObjName);
+
+    if( m_pMtxCounters != nullptr )
+    {
+        m_pMtxCounters->setObjectName(ClassName() + "::" + objectName() + "::Counters");
+    }
+    if( m_pMtxWaitClass3ThreadRunning != nullptr )
+    {
+        m_pMtxWaitClass3ThreadRunning->setObjectName(ClassName() + "::" + objectName() + "::WaitClass3ThreadRunning");
+    }
+    if( m_pWaitClass3ThreadRunning != nullptr )
+    {
+        m_pWaitClass3ThreadRunning->setObjectName(ClassName() + "::" + objectName() + "::Class3ThreadRunning");
+    }
+
+    // Should be the last so that the method tracer traces leave method
+    // not before the child objects have been renamed.
+    if( m_pTrcAdminObj != nullptr )
+    {
+        CTrcServer::RenameTraceAdminObj(&m_pTrcAdminObj, objectName());
+    }
+
+} // setObjectName
 
 /*==============================================================================
 public: // instance methods
@@ -591,6 +667,9 @@ CMyClass3* CMyClass2::startClass3Thread(const QString& i_strMyClass3ObjName)
 
     m_strMyClass3ObjName = i_strMyClass3ObjName;
 
+    // Class 3 Thread should be created in the context in which also the Class 2
+    // instance has been created. For this a message will be sent to this so that
+    // a thread context change is done.
     if( QThread::currentThread() != thread() )
     {
         CMsgReqTest* pMsgReq = new CMsgReqTest(this, this);
@@ -658,27 +737,40 @@ void CMyClass2::stopClass3Thread()
         /* strMethod    */ "stopClass3Thread",
         /* strAddInfo   */ strMthInArgs );
 
-    if( QThread::currentThread() != thread() )
+    if( m_pMyClass3Thread != nullptr && m_pMyClass3Thread->isRunning() )
     {
-        CMsgReqTest* pMsgReq = new CMsgReqTest(this, this);
-        pMsgReq->setCommand("stopClass3Thread");
-        POST_OR_DELETE_MESSAGE(pMsgReq, &mthTracer, ETraceDetailLevelRuntimeInfo);
-        pMsgReq = nullptr;
-    }
-    else // if( QThread::currentThread() == thread() )
-    {
-        if( m_pMyClass3Thread != nullptr && m_pMyClass3Thread->isRunning() )
+        // The thread must be destroyed from within the thread in which this
+        // thread has been created. To ensure this we send a message to myself
+        // so that the thread context changed is done and to avoid the crash
+        // with "cannot send events to objects owned by a different thread".
+        if( QThread::currentThread() != thread() )
+        {
+            CMsgReqTest* pMsgReq = new CMsgReqTest(this, this);
+            pMsgReq->setCommand("stopClass3Thread");
+            POST_OR_DELETE_MESSAGE(pMsgReq, &mthTracer, ETraceDetailLevelRuntimeInfo);
+            pMsgReq = nullptr;
+        }
+        else // if( QThread::currentThread() == thread() )
         {
             m_pMyClass3Thread->quit();
+
             // Let the thread quit the event loop (return from exec) before calling wait
             // to get the same trace output each time.
             CSleeperThread::msleep(50);
-            m_pMyClass3Thread->wait();
-        }
 
-        delete m_pMyClass3Thread;
-        m_pMyClass3Thread = nullptr;
-        m_pMyClass3 = nullptr;
+            int iTimeout_ms = 30000; // So the value can be modified during debugging session.
+            if( !m_pMyClass3Thread->wait(iTimeout_ms) )
+            {
+                SErrResultInfo errResultInfo = ErrResultInfoError(
+                    "stopClass3Thread", EResultTimeout, "Waiting for thread to quit timed out");
+                CErrLog::GetInstance()->addEntry(errResultInfo);
+                m_pMyClass3Thread->terminate();
+            }
+
+            delete m_pMyClass3Thread;
+            m_pMyClass3Thread = nullptr;
+            m_pMyClass3 = nullptr;
+        }
     }
 } // stopClass3Thread
 

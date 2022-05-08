@@ -187,7 +187,7 @@ public: // instance methods
         int            i_iTrcDetailLevel,
         int            i_iFilterDetailLevel ) const;
 protected slots:
-    void onAdminObjDestroyed( QObject* i_pObj );
+    void onAdminObjAboutToBeDestroyed( ZS::Trace::CTrcAdminObj* i_pTrcAdminObj );
 protected: // instance members
     CTrcAdminObj* m_pTrcAdminObj;                 /*!< = nullptr, if pTrcMthFile != nullptr or pTrcServer != nullptr. */
     CTrcServer*   m_pTrcServer;                   /*!< = nullptr, if pTrcAdminObj != nullptr or pTrcMthFile != nullptr. */

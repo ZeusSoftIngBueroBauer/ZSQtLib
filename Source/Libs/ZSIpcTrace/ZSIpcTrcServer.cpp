@@ -37,9 +37,11 @@ may result in using the software modules.
 #include "ZSSys/ZSSysErrLog.h"
 #include "ZSSys/ZSSysException.h"
 #include "ZSSys/ZSSysRequest.h"
+#include "ZSSys/ZSSysMutex.h"
 #include "ZSSys/ZSSysTrcAdminObj.h"
 #include "ZSSys/ZSSysTrcAdminObjIdxTree.h"
 #include "ZSSys/ZSSysTrcMthFile.h"
+
 #include "ZSSys/ZSSysMemLeakDump.h"
 
 using namespace ZS::System;
@@ -266,7 +268,9 @@ CIpcTrcServer* CIpcTrcServer::GetInstance()
 */
 CIpcTrcServer* CIpcTrcServer::CreateInstance(
     int i_iTrcDetailLevel,
+    int i_iTrcDetailLevelMutex,
     int i_iTrcDetailLevelIpcServer,
+    int i_iTrcDetailLevelIpcServerMutex,
     int i_iTrcDetailLevelIpcServerGateway )
 //------------------------------------------------------------------------------
 {
@@ -279,7 +283,9 @@ CIpcTrcServer* CIpcTrcServer::CreateInstance(
     if( pTrcServer == nullptr )
     {
         pIpcTrcServer = new CIpcTrcServer(
-            i_iTrcDetailLevel, i_iTrcDetailLevelIpcServer, i_iTrcDetailLevelIpcServerGateway);
+            i_iTrcDetailLevel, i_iTrcDetailLevelMutex,
+            i_iTrcDetailLevelIpcServer, i_iTrcDetailLevelIpcServerMutex,
+            i_iTrcDetailLevelIpcServerGateway);
     }
     else
     {
@@ -343,16 +349,23 @@ protected: // ctors and dtor
     @param i_iTrcDetailLevelIpcServer [in]
         If the methods of the trace server's Ipc Server should be logged
         a value greater than 0 (ETraceDetailLevelNone) could be passed here.
+    @param i_iTrcDetailLevelIpcServerMutex [in]
+        If the locking and unlocking of the mutex of ipc server
+        should be logged a value greater than 0 (ETraceDetailLevelNone)
+        could be passed here. But the value will be ignored if the detail
+        level for the server tracer is None.
     @param i_iTrcDetailLevelIpcServerGateway [in]
         If the methods of the trace server's gateway should be logged a value
         greater than 0 (ETraceDetailLevelNone) could be passed here.
 */
 CIpcTrcServer::CIpcTrcServer(
     int i_iTrcDetailLevel,
+    int i_iTrcDetailLevelMutex,
     int i_iTrcDetailLevelIpcServer,
+    int i_iTrcDetailLevelIpcServerMutex,
     int i_iTrcDetailLevelIpcServerGateway ) :
 //------------------------------------------------------------------------------
-    CTrcServer(i_iTrcDetailLevel),
+    CTrcServer(i_iTrcDetailLevel, i_iTrcDetailLevelMutex),
     m_pIpcServer(nullptr),
     m_bIsBeingDestroyed(false),
     m_ariSocketIdsConnectedTrcClients(),
@@ -386,6 +399,7 @@ CIpcTrcServer::CIpcTrcServer(
         /* strObjName                    */ objectName(),
         /* bMultiThreadedAccess          */ true,
         /* iTrcMthFileDetailLevel        */ i_iTrcDetailLevelIpcServer,
+        /* iTrcMthFileDetailLevelMutex   */ i_iTrcDetailLevelIpcServerMutex,
         /* iTrcMthFileDetailLevelGateway */ i_iTrcDetailLevelIpcServerGateway );
 
     m_pMtxListTrcDataCached = new QMutex(QMutex::Recursive);
@@ -395,6 +409,15 @@ CIpcTrcServer::CIpcTrcServer(
         /* szSignal     */ SIGNAL( treeEntryAdded(ZS::System::CIdxTree*, ZS::System::CIdxTreeEntry*) ),
         /* pObjReceiver */ this,
         /* szSlot       */ SLOT( onTrcAdminObjIdxTreeEntryAdded(ZS::System::CIdxTree*, ZS::System::CIdxTreeEntry*) ),
+        /* cnctType     */ Qt::DirectConnection ) )
+    {
+        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
+    }
+    if( !QObject::connect(
+        /* pObjSender   */ m_pTrcAdminObjIdxTree,
+        /* szSignal     */ SIGNAL( treeEntryAboutToBeRemoved(ZS::System::CIdxTree*, ZS::System::CIdxTreeEntry*) ),
+        /* pObjReceiver */ this,
+        /* szSlot       */ SLOT( onTrcAdminObjIdxTreeEntryAboutToBeRemoved(ZS::System::CIdxTree*, ZS::System::CIdxTreeEntry*) ),
         /* cnctType     */ Qt::DirectConnection ) )
     {
         throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
@@ -1999,10 +2022,14 @@ void CIpcTrcServer::sendAdminObj(
             strMsg += " ClassName=\"" + strClassName + "\"";
             strMsg += " ObjName=\"" + strObjName + "\"";
             strMsg += " IdxInTree=\"" + QString::number(i_pTrcAdminObj->indexInTree()) + "\"";
-            strMsg += " Thread=\"" + strThreadName + "\"";
-            strMsg += " Enabled=\"" + CEnumEnabled::toString(i_pTrcAdminObj->getEnabled()) + "\"";
-            strMsg += " DetailLevel=\"" + QString::number(i_pTrcAdminObj->getTraceDetailLevel()) + "\"";
-            strMsg += " RefCount=\"" + QString::number(i_pTrcAdminObj->getRefCount()) + "\"";
+
+            if( i_cmd != MsgProtocol::ECommandDelete )
+            {
+                strMsg += " Thread=\"" + strThreadName + "\"";
+                strMsg += " Enabled=\"" + CEnumEnabled::toString(i_pTrcAdminObj->getEnabled()) + "\"";
+                strMsg += " DetailLevel=\"" + QString::number(i_pTrcAdminObj->getTraceDetailLevel()) + "\"";
+                strMsg += " RefCount=\"" + QString::number(i_pTrcAdminObj->getRefCount()) + "\"";
+            }
             strMsg += "/>";
 
             sendData( i_iSocketId, str2ByteArr(strMsg) );
@@ -2011,80 +2038,6 @@ void CIpcTrcServer::sendAdminObj(
     } // if( isConnected() )
 
 } // sendAdminObj
-
-//------------------------------------------------------------------------------
-void CIpcTrcServer::sendBranch(
-    int                         i_iSocketId,
-    MsgProtocol::TSystemMsgType i_systemMsgType,
-    MsgProtocol::TCommand       i_cmd,
-    CIdxTreeEntry*              i_pBranch,
-    EEnabled                    i_enabled,
-    int                         i_iDetailLevel )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-
-    if( m_pTrcMthFile != nullptr && m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
-    {
-        strMthInArgs  = "SocketId: " + QString::number(i_iSocketId);
-        strMthInArgs += ", MsgType: " + systemMsgType2Str(i_systemMsgType);
-        strMthInArgs += ", Cmd: " + command2Str(i_cmd);
-        strMthInArgs += ", TrcAdminObj: " + QString(i_pBranch == nullptr ? "null" : i_pBranch->keyInTree());
-        strMthInArgs += ", Enabled: " + CEnumEnabled(i_enabled).toString();
-        strMthInArgs += ", DetailLevel: " + QString::number(i_iDetailLevel);
-    }
-
-    CMethodTracer mthTracer(
-        /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
-        /* strObjName         */ objectName(),
-        /* strMethod          */ "sendBranch",
-        /* strMthInArgs       */ strMthInArgs );
-
-    if( i_pBranch != nullptr && isConnected() )
-    {
-        QString strMsg;
-        QString strBranchName = i_pBranch->name();
-
-        if( strBranchName.contains('<') )
-        {
-            strBranchName.replace("<","&lt;");
-        }
-        if( strBranchName.contains('>') )
-        {
-            strBranchName.replace(">","&gt;");
-        }
-
-        strMsg += systemMsgType2Str(i_systemMsgType) + " ";
-        strMsg += command2Str(i_cmd) + " ";
-
-        strMsg += "<Branch ";
-
-        if( i_pBranch->parentBranch() != nullptr )
-        {
-            strMsg += " ParentBranchIdxInTree=" + QString::number(i_pBranch->parentBranch()->indexInTree());
-        }
-        strMsg += " Name=\"" + strBranchName + "\"";
-        strMsg += " IdxInTree=" + QString::number(i_pBranch->indexInTree());
-
-        if( static_cast<int>(i_enabled) >= 0 && static_cast<int>(i_enabled) < CEnumEnabled::count() )
-        {
-            strMsg += " Enabled=\"" + CEnumEnabled::toString(i_enabled) + "\"";
-        }
-        if( i_iDetailLevel >= 0 )
-        {
-            strMsg += " DetailLevel=" + QString::number(i_iDetailLevel);
-        }
-        strMsg += "/>";
-
-        sendData( i_iSocketId, str2ByteArr(strMsg) );
-
-    } // if( i_pBranch != nullptr && isConnected() )
-
-} // sendBranch
 
 /*==============================================================================
 protected: // auxiliary methods
@@ -2844,7 +2797,7 @@ void CIpcTrcServer::onTrcAdminObjIdxTreeEntryAdded(
 {
     // The trace admin object index tree will be locked so it will not be changed
     // when accessing it here.
-    QMutexLocker mutexLocker(m_pTrcAdminObjIdxTree->mutex());
+    CMutexLocker mutexLocker(m_pTrcAdminObjIdxTree->mutex());
 
     QString strMthInArgs;
 
@@ -2870,7 +2823,7 @@ void CIpcTrcServer::onTrcAdminObjIdxTreeEntryAdded(
         return;
     }
 
-    if( i_pTreeEntry != nullptr )
+    if( i_pTreeEntry != nullptr && isConnected() )
     {
         if( i_pTreeEntry->entryType() == EIdxTreeEntryType::Branch )
         {
@@ -2890,6 +2843,61 @@ void CIpcTrcServer::onTrcAdminObjIdxTreeEntryAdded(
         }
     }
 } // onTrcAdminObjIdxTreeEntryAdded
+
+//------------------------------------------------------------------------------
+void CIpcTrcServer::onTrcAdminObjIdxTreeEntryAboutToBeRemoved(
+    CIdxTree*      /*i_pIdxTree*/,
+    CIdxTreeEntry* i_pTreeEntry )
+//------------------------------------------------------------------------------
+{
+    // The trace admin object index tree will be locked so it will not be changed
+    // when accessing it here.
+    CMutexLocker mutexLocker(m_pTrcAdminObjIdxTree->mutex());
+
+    QString strMthInArgs;
+
+    if( m_pTrcMthFile != nullptr && m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
+    {
+        strMthInArgs = QString(i_pTreeEntry == nullptr ? "null" : i_pTreeEntry->keyInTree());
+    }
+
+    CMethodTracer mthTracer(
+        /* pTrcMthFile        */ m_pTrcMthFile,
+        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
+        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* strNameSpace       */ nameSpace(),
+        /* strClassName       */ className(),
+        /* strObjName         */ objectName(),
+        /* strMethod          */ "onTrcAdminObjIdxTreeEntryAboutToBeRemoved",
+        /* strMthInArgs       */ strMthInArgs );
+
+    CMutexLocker mtxLocker(m_pMtx);
+
+    if( m_bOnReceivedDataUpdateInProcess )
+    {
+        return;
+    }
+
+    if( i_pTreeEntry != nullptr && isConnected() )
+    {
+        if( i_pTreeEntry->entryType() == EIdxTreeEntryType::Branch )
+        {
+            sendBranch(
+                /* iSocketId     */ ESocketIdAllSockets,
+                /* systemMsgType */ MsgProtocol::ESystemMsgTypeInd,
+                /* cmd           */ MsgProtocol::ECommandDelete,
+                /* pBranch       */ i_pTreeEntry );
+        }
+        else if( i_pTreeEntry->entryType() == EIdxTreeEntryType::Leave )
+        {
+            sendAdminObj(
+                /* iSocketId     */ ESocketIdAllSockets,
+                /* systemMsgType */ MsgProtocol::ESystemMsgTypeInd,
+                /* cmd           */ MsgProtocol::ECommandDelete,
+                /* pTrcAdminObj  */ dynamic_cast<CTrcAdminObj*>(i_pTreeEntry) );
+        }
+    }
+} // onTrcAdminObjIdxTreeEntryAboutToBeRemoved
 
 //------------------------------------------------------------------------------
 void CIpcTrcServer::onTrcAdminObjIdxTreeEntryChanged(
@@ -2918,14 +2926,14 @@ void CIpcTrcServer::onTrcAdminObjIdxTreeEntryChanged(
 
     // The trace admin object index tree will be locked so it will not be changed
     // when accessing it here.
-    QMutexLocker mutexLocker(m_pTrcAdminObjIdxTree->mutex());
+    CMutexLocker mutexLocker(m_pTrcAdminObjIdxTree->mutex());
 
     if( m_bOnReceivedDataUpdateInProcess )
     {
         return;
     }
 
-    if( i_pTreeEntry != nullptr )
+    if( i_pTreeEntry != nullptr && isConnected() )
     {
         if( i_pTreeEntry->entryType() == EIdxTreeEntryType::Root || i_pTreeEntry->entryType() == EIdxTreeEntryType::Branch )
         {

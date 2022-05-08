@@ -60,7 +60,12 @@ public: // ctors and dtor
     CMyClass1( const QString& i_strObjName );
     virtual ~CMyClass1();
 signals:
-    void aboutToBeDestroyed(const QString& i_strObjName);
+    void aboutToBeDestroyed(QObject* i_pObj, const QString& i_strObjName);
+public: // overridables
+    virtual QString nameSpace() { return NameSpace(); }
+    virtual QString className() { return ClassName(); }
+public: // instance methods (reimplementing methods of base class QObject)
+    void setObjectName(const QString& i_strObjName);
 public: // instance methods
     CMyClass2Thread* getMyClass2Thread() const { return m_pMyClass2Thread; }
     CMyClass2* getMyClass2() const { return m_pMyClass2; }

@@ -3,6 +3,8 @@
 <GUIMain                 >    <- <ZS::Apps::Test::IpcTrace::CMyClass2Thread> CMyClass2ThreadInst1.quit()
 <CMyClass2ThreadInst1    >    <- <ZS::Apps::Test::IpcTrace::CMyClass2Thread> CMyClass2ThreadInst1.exec(): 0
 <CMyClass2ThreadInst1    >    -> <ZS::Apps::Test::IpcTrace::CMyClass2> Inst1.dtor()
+<CMyClass2ThreadInst1    >       -> <ZS::Apps::Test::IpcTrace::CMyClass2> Inst1.stopClass3Thread()
+<CMyClass2ThreadInst1    >       <- <ZS::Apps::Test::IpcTrace::CMyClass2> Inst1.stopClass3Thread()
 <CMyClass2ThreadInst1    >       -> <ZS::System::CMutex> CMyClass2::Inst1::Counters.dtor()
 <CMyClass2ThreadInst1    >       <- <ZS::System::CMutex> CMyClass2::Inst1::Counters.dtor()
 <CMyClass2ThreadInst1    >       -> <ZS::System::CMutex> CMyClass2::Inst1::WaitClass3ThreadRunning.dtor()
@@ -11,7 +13,7 @@
 <CMyClass2ThreadInst1    >       <- <ZS::System::CWaitCondition> CMyClass2::Inst1::Class3ThreadRunning.dtor()
 <CMyClass2ThreadInst1    >    <- <ZS::Apps::Test::IpcTrace::CMyClass2> Inst1.dtor()
 <CMyClass2ThreadInst1    > <- <ZS::Apps::Test::IpcTrace::CMyClass2Thread> CMyClass2ThreadInst1.run()
-<GUIMain                 >    -> <ZS::Apps::Test::IpcTrace::CMyClass2Thread> CMyClass2ThreadInst1.wait(Forever)
+<GUIMain                 >    -> <ZS::Apps::Test::IpcTrace::CMyClass2Thread> CMyClass2ThreadInst1.wait(30000 ms)
 <GUIMain                 >    <- <ZS::Apps::Test::IpcTrace::CMyClass2Thread> CMyClass2ThreadInst1.wait(): true
 <GUIMain                 >    -> <ZS::Apps::Test::IpcTrace::CMyClass2Thread> CMyClass2ThreadInst1.dtor()
 <GUIMain                 >    <- <ZS::Apps::Test::IpcTrace::CMyClass2Thread> CMyClass2ThreadInst1.dtor()

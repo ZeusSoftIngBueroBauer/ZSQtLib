@@ -42,6 +42,7 @@ may result in using the software modules.
 #include "ZSSys/ZSSysErrLog.h"
 #include "ZSSys/ZSSysErrResult.h"
 #include "ZSSys/ZSSysException.h"
+#include "ZSSys/ZSSysMutex.h"
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
@@ -61,15 +62,17 @@ public: // ctors and dtor
 CIdxTreeTrcAdminObjs::CIdxTreeTrcAdminObjs(
     const QString& i_strObjName,
     QObject*       i_pObjParent,
-    int            i_iTrcDetailLevel ) :
+    int            i_iTrcDetailLevel,
+    int            i_iTrcDetailLevelMutex ) :
 //------------------------------------------------------------------------------
     CIdxTree(
-        /* strIdxTreeName    */ i_strObjName,
-        /* pRootTreeEntry    */ nullptr,
-        /* strNodeSeparator  */ "::",
-        /* bCreateMutex      */ true,
-        /* pObjParent        */ i_pObjParent,
-        /* i_iTrcDetailLevel */ i_iTrcDetailLevel )
+        /* strIdxTreeName       */ i_strObjName,
+        /* pRootTreeEntry       */ nullptr,
+        /* strNodeSeparator     */ "::",
+        /* bCreateMutex         */ true,
+        /* pObjParent           */ i_pObjParent,
+        /* iTrcDetailLevel      */ i_iTrcDetailLevel,
+        /* iTrcDetailLevelMutex */ i_iTrcDetailLevelMutex )
 {
     QString strAddTrcInfo;
 
@@ -148,8 +151,6 @@ CTrcAdminObj* CIdxTreeTrcAdminObjs::getTraceAdminObj(
     bool                 i_bIncrementRefCount )
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(m_pMtx);
-
     QString strAddTrcInfo;
 
     if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
@@ -171,6 +172,8 @@ CTrcAdminObj* CIdxTreeTrcAdminObjs::getTraceAdminObj(
         /* strObjName         */ objectName(),
         /* strMethod          */ "getTraceAdminObj",
         /* strMethodInArgs    */ strAddTrcInfo );
+
+    CMutexLocker mtxLocker(m_pMtx);
 
     CTrcAdminObj* pTrcAdminObj = nullptr;
 
@@ -213,23 +216,23 @@ CTrcAdminObj* CIdxTreeTrcAdminObjs::getTraceAdminObj(
         else // if( pLeave == nullptr )
         {
             QStringList strlstBranchNames = strParentBranchPath.split(m_strNodeSeparator);
-            QString strParentPath;
-            QString strPath;
+            QString strParentPathTmp;
+            QString strPathTmp;
 
             CIdxTreeEntry* pBranch;
 
             for( auto& strBranchName : strlstBranchNames )
             {
-                strPath = buildPathStr(strPath, strBranchName);
+                strPathTmp = buildPathStr(strPathTmp, strBranchName);
 
-                pBranch = findBranch(strPath);
+                pBranch = findBranch(strPathTmp);
 
                 if( pBranch == nullptr )
                 {
                     pBranch = createBranch(strBranchName);
-                    add(pBranch, strParentPath);
+                    add(pBranch, strParentPathTmp);
                 }
-                strParentPath = buildPathStr(strParentPath, strBranchName);
+                strParentPathTmp = buildPathStr(strParentPathTmp, strBranchName);
             }
 
             pTrcAdminObj = new CTrcAdminObj(i_strNameSpace, i_strClassName, i_strObjName, strLeaveName);
@@ -283,8 +286,6 @@ CTrcAdminObj* CIdxTreeTrcAdminObjs::getTraceAdminObj(
 CTrcAdminObj* CIdxTreeTrcAdminObjs::getTraceAdminObj( int i_idxInTree, bool i_bIncrementRefCount )
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(m_pMtx);
-
     QString strAddTrcInfo;
 
     if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
@@ -301,6 +302,8 @@ CTrcAdminObj* CIdxTreeTrcAdminObjs::getTraceAdminObj( int i_idxInTree, bool i_bI
         /* strObjName         */ objectName(),
         /* strMethod          */ "getTraceAdminObj",
         /* strMethodInArgs    */ strAddTrcInfo );
+
+    CMutexLocker mtxLocker(m_pMtx);
 
     CTrcAdminObj* pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(getEntry(i_idxInTree));
 
@@ -319,6 +322,167 @@ CTrcAdminObj* CIdxTreeTrcAdminObjs::getTraceAdminObj( int i_idxInTree, bool i_bI
 } // getTraceAdminObj
 
 //------------------------------------------------------------------------------
+/*! @brief Renames the given trace admin object by replacing the given input
+           pointer with the address of the newly referenced trace admin object.
+
+    If the given trace admin object will no longer be referenced it will be destroyed.
+    If at the new position already a trace admin object is existing the reference
+    to this admin object will be returned.
+    If at the new position no trace admin object is existing a new object is
+    created and the address of the newly created object is returned.
+
+    @param io_ppTrcAdminObj [in, out]
+        In:  Pointer to admin object which should be renamed. The reference counter
+             of this object is decremented. If 0 the object will be destroyed.
+        Out: Pointer to trace admin object at the new position. This might either
+             be an already existing trace admin object whose reference counter is
+             increased or a newly created object.
+    @param i_strNewObjName [in] New object name.
+*/
+void CIdxTreeTrcAdminObjs::renameTraceAdminObj(
+    CTrcAdminObj** io_ppTrcAdminObj,
+    const QString& i_strNewObjName )
+//------------------------------------------------------------------------------
+{
+    QString strAddTrcInfo;
+
+    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
+    {
+        strAddTrcInfo = QString(*io_ppTrcAdminObj == nullptr ? "nullptr" : (*io_ppTrcAdminObj)->keyInTree());
+        strAddTrcInfo = ", NewObjName: " + i_strNewObjName;
+    }
+
+    CMethodTracer mthTracer(
+        /* pTrcServer         */ dynamic_cast<CTrcServer*>(parent()), // may be nullptr if the parent is not the trace server
+        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
+        /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
+        /* strObjName         */ objectName(),
+        /* strMethod          */ "renameTraceAdminObj",
+        /* strMethodInArgs    */ strAddTrcInfo );
+
+    CMutexLocker mtxLocker(m_pMtx);
+
+    CTrcAdminObj* pTrcAdminObj = *io_ppTrcAdminObj;
+
+    if( pTrcAdminObj == nullptr)
+    {
+        SErrResultInfo errResultInfo(
+            /* errSource     */ nameSpace(), className(), objectName(), "renameTraceAdminObj",
+            /* result        */ EResultArgOutOfRange,
+            /* severity      */ EResultSeverityError,
+            /* strAddErrInfo */ "No TraceAdminObj defined");
+
+        if( CErrLog::GetInstance() != nullptr )
+        {
+            CErrLog::GetInstance()->addEntry(errResultInfo);
+        }
+    }
+    else if( i_strNewObjName.isEmpty() )
+    {
+        SErrResultInfo errResultInfo(
+            /* errSource     */ nameSpace(), className(), objectName(), "renameTraceAdminObj",
+            /* result        */ EResultArgOutOfRange,
+            /* severity      */ EResultSeverityError,
+            /* strAddErrInfo */ "New ObjectName is empty");
+
+        if( CErrLog::GetInstance() != nullptr )
+        {
+            CErrLog::GetInstance()->addEntry(errResultInfo);
+        }
+    }
+    else if( pTrcAdminObj->getObjectName().isEmpty() )
+    {
+        SErrResultInfo errResultInfo(
+            /* errSource     */ nameSpace(), className(), objectName(), "renameTraceAdminObj",
+            /* result        */ EResultArgOutOfRange,
+            /* severity      */ EResultSeverityError,
+            /* strAddErrInfo */ "Cannot rename an object with an empty object name");
+
+        if( CErrLog::GetInstance() != nullptr )
+        {
+            CErrLog::GetInstance()->addEntry(errResultInfo);
+        }
+    }
+    else if( pTrcAdminObj->getRefCount() < 1 )
+    {
+        SErrResultInfo errResultInfo(
+            /* errSource     */ nameSpace(), className(), objectName(), "renameTraceAdminObj",
+            /* result        */ EResultArgOutOfRange,
+            /* severity      */ EResultSeverityError,
+            /* strAddErrInfo */ "Only instances referencing the trace admin object may rename the object");
+
+        if( CErrLog::GetInstance() != nullptr )
+        {
+            CErrLog::GetInstance()->addEntry(errResultInfo);
+        }
+    }
+    else if( pTrcAdminObj->getObjectName() != i_strNewObjName )
+    {
+        QString strNameSpace  = pTrcAdminObj->getNameSpace();
+        QString strClassName  = pTrcAdminObj->getClassName();
+        QString strOldObjName = pTrcAdminObj->getObjectName();
+        EEnabled bEnabled     = pTrcAdminObj->getEnabled();
+        int      iDetailLevel = pTrcAdminObj->getTraceDetailLevel();
+
+        // The reference counter of the previously referenced trace admin object is decremented.
+        pTrcAdminObj->decrementRefCount();
+
+        // If the trace admin objects reference counter is greater than 0
+        // all other modules must still refer to the unchanged trace admin object.
+
+        // If no longer referenced ...
+        if( pTrcAdminObj->getRefCount() == 0 )
+        {
+            // .. the object will be deleted and removed from the tree.
+            delete pTrcAdminObj;
+            pTrcAdminObj = nullptr;
+
+            QString strOldParentBranchPath;
+
+            QString strOldPath = buildPathStr(strNameSpace, strClassName, strOldObjName);
+            splitPathStr(strOldPath, &strOldParentBranchPath, nullptr);
+
+            removeEmptyBranches(strOldParentBranchPath);
+        }
+
+        QString strNewParentBranchPath;
+        QString strNewLeaveName;
+
+        QString strNewPath = buildPathStr(strNameSpace, strClassName, i_strNewObjName);
+        splitPathStr(strNewPath, &strNewParentBranchPath, &strNewLeaveName);
+
+        CIdxTreeEntry* pLeaveNew = findLeave(strNewParentBranchPath, strNewLeaveName);
+
+        // If already a trace admin object with the name space, class name and
+        // new object name is existing ..
+        if( pLeaveNew != nullptr )
+        {
+            pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(pLeaveNew);
+            pTrcAdminObj->incrementRefCount();
+        }
+        // If no trace admin object with the name space, class name and new object name is existing ..
+        else // if( pLeaveNew == nullptr )
+        {
+            // A new trace admin object has to be created and returned.
+            pTrcAdminObj = getTraceAdminObj(strNameSpace, strClassName, i_strNewObjName, bEnabled, iDetailLevel);
+        }
+
+        pTrcAdminObj->setObjectName(i_strNewObjName);
+
+    } // if( pTrcAdminObj != nullptr && !i_strNewObjName.isEmpty() )
+
+    if( mthTracer.isActive(ETraceDetailLevelMethodArgs) )
+    {
+        mthTracer.setMethodOutArgs(QString(pTrcAdminObj == nullptr ? "nullptr" : pTrcAdminObj->keyInTree()));
+    }
+
+    *io_ppTrcAdminObj = pTrcAdminObj;
+
+} // renameTraceAdminObj
+
+//------------------------------------------------------------------------------
 /*! @brief Releases the given trace admin object.
 
     Only the reference counter of the trace admin object will be decremented
@@ -330,8 +494,6 @@ CTrcAdminObj* CIdxTreeTrcAdminObjs::getTraceAdminObj( int i_idxInTree, bool i_bI
 void CIdxTreeTrcAdminObjs::releaseTraceAdminObj( CTrcAdminObj* i_pTrcAdminObj )
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(m_pMtx);
-
     QString strAddTrcInfo;
 
     if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
@@ -348,6 +510,8 @@ void CIdxTreeTrcAdminObjs::releaseTraceAdminObj( CTrcAdminObj* i_pTrcAdminObj )
         /* strObjName         */ objectName(),
         /* strMethod          */ "releaseTraceAdminObj",
         /* strMethodInArgs    */ strAddTrcInfo );
+
+    CMutexLocker mtxLocker(m_pMtx);
 
     if( i_pTrcAdminObj != nullptr )
     {
@@ -378,8 +542,6 @@ CIdxTreeEntry* CIdxTreeTrcAdminObjs::insertBranch(
     int            i_idxInTree )
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(m_pMtx);
-
     QString strAddTrcInfo;
 
     if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
@@ -398,6 +560,8 @@ CIdxTreeEntry* CIdxTreeTrcAdminObjs::insertBranch(
         /* strObjName         */ objectName(),
         /* strMethod          */ "insertBranch",
         /* strMethodInArgs    */ strAddTrcInfo );
+
+    CMutexLocker mtxLocker(m_pMtx);
 
     CIdxTreeEntry* pBranch = nullptr;
 
@@ -486,8 +650,6 @@ CTrcAdminObj* CIdxTreeTrcAdminObjs::insertTraceAdminObj(
     int            i_idxInTree )
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(m_pMtx);
-
     QString strAddTrcInfo;
 
     if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
@@ -508,6 +670,8 @@ CTrcAdminObj* CIdxTreeTrcAdminObjs::insertTraceAdminObj(
         /* strObjName         */ objectName(),
         /* strMethod          */ "insertTraceAdminObj",
         /* strMethodInArgs    */ strAddTrcInfo );
+
+    CMutexLocker mtxLocker(m_pMtx);
 
     CTrcAdminObj* pTrcAdminObj = nullptr;
 
@@ -574,8 +738,6 @@ public: // instance methods to recursively modify admin objects via object index
 void CIdxTreeTrcAdminObjs::setEnabled( int i_iObjId, EEnabled i_enabled )
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(m_pMtx);
-
     QString strAddTrcInfo;
 
     if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
@@ -593,6 +755,8 @@ void CIdxTreeTrcAdminObjs::setEnabled( int i_iObjId, EEnabled i_enabled )
         /* strObjName         */ objectName(),
         /* strMethod          */ "setEnabled",
         /* strMethodInArgs    */ strAddTrcInfo );
+
+    CMutexLocker mtxLocker(m_pMtx);
 
     CIdxTreeEntry* pTreeEntry = getEntry(i_iObjId);
 
@@ -619,8 +783,6 @@ void CIdxTreeTrcAdminObjs::setEnabled( int i_iObjId, EEnabled i_enabled )
 void CIdxTreeTrcAdminObjs::setTraceDetailLevel( int i_iObjId, int i_iDetailLevel )
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(m_pMtx);
-
     QString strAddTrcInfo;
 
     if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
@@ -638,6 +800,8 @@ void CIdxTreeTrcAdminObjs::setTraceDetailLevel( int i_iObjId, int i_iDetailLevel
         /* strObjName         */ objectName(),
         /* strMethod          */ "setTraceDetailLevel",
         /* strMethodInArgs    */ strAddTrcInfo );
+
+    CMutexLocker mtxLocker(m_pMtx);
 
     CIdxTreeEntry* pTreeEntry = getEntry(i_iObjId);
 
@@ -668,8 +832,6 @@ public: // instance methods to recursively modify admin objects via namespace no
 void CIdxTreeTrcAdminObjs::setEnabled( CIdxTreeEntry* i_pBranch, EEnabled i_enabled )
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(m_pMtx);
-
     QString strAddTrcInfo;
 
     if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
@@ -687,6 +849,8 @@ void CIdxTreeTrcAdminObjs::setEnabled( CIdxTreeEntry* i_pBranch, EEnabled i_enab
         /* strObjName         */ objectName(),
         /* strMethod          */ "setEnabled",
         /* strMethodInArgs    */ strAddTrcInfo );
+
+    CMutexLocker mtxLocker(m_pMtx);
 
     if( i_pBranch != nullptr )
     {
@@ -726,8 +890,6 @@ void CIdxTreeTrcAdminObjs::setEnabled( CIdxTreeEntry* i_pBranch, EEnabled i_enab
 void CIdxTreeTrcAdminObjs::setTraceDetailLevel( CIdxTreeEntry* i_pBranch, int i_iDetailLevel )
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(m_pMtx);
-
     QString strAddTrcInfo;
 
     if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
@@ -745,6 +907,8 @@ void CIdxTreeTrcAdminObjs::setTraceDetailLevel( CIdxTreeEntry* i_pBranch, int i_
         /* strObjName         */ objectName(),
         /* strMethod          */ "setTraceDetailLevel",
         /* strMethodInArgs    */ strAddTrcInfo );
+
+    CMutexLocker mtxLocker(m_pMtx);
 
     if( i_pBranch != nullptr )
     {
@@ -788,8 +952,6 @@ public: // overridables
 SErrResultInfo CIdxTreeTrcAdminObjs::save( const QString& i_strAbsFilePath ) const
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(m_pMtx);
-
     QString strAddTrcInfo;
 
     if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
@@ -806,6 +968,8 @@ SErrResultInfo CIdxTreeTrcAdminObjs::save( const QString& i_strAbsFilePath ) con
         /* strObjName         */ objectName(),
         /* strMethod          */ "save",
         /* strMethodInArgs    */ strAddTrcInfo );
+
+    CMutexLocker mtxLocker(m_pMtx);
 
     QString strMth = "save";
 
@@ -868,8 +1032,6 @@ SErrResultInfo CIdxTreeTrcAdminObjs::save( const QString& i_strAbsFilePath ) con
 SErrResultInfo CIdxTreeTrcAdminObjs::recall( const QString& i_strAbsFilePath )
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(m_pMtx);
-
     QString strAddTrcInfo;
 
     if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
@@ -886,6 +1048,8 @@ SErrResultInfo CIdxTreeTrcAdminObjs::recall( const QString& i_strAbsFilePath )
         /* strObjName         */ objectName(),
         /* strMethod          */ "recall",
         /* strMethodInArgs    */ strAddTrcInfo );
+
+    CMutexLocker mtxLocker(m_pMtx);
 
     QString strMth = "recall";
 
@@ -1078,3 +1242,26 @@ void CIdxTreeTrcAdminObjs::save(
     }
 
 } // save
+
+//------------------------------------------------------------------------------
+/*! @brief Removes all empty branches beginning with the passed branch name
+           walking the tree upwards in direction to root node.
+
+    A branch will be removed if the branch has no child anymore.
+
+    @param i_strBranchPath [in] Path of the branch to be checked whether it
+        or its parent branches can be removed.
+*/
+void CIdxTreeTrcAdminObjs::removeEmptyBranches( const QString& i_strBranchPath )
+//------------------------------------------------------------------------------
+{
+    CIdxTreeEntry* pBranch = findBranch(i_strBranchPath);
+
+    while( pBranch != nullptr && pBranch->count() == 0 )
+    {
+        CIdxTreeEntry* pBranchParent = pBranch->parentBranch();
+        remove(pBranch);
+        delete pBranch;
+        pBranch = pBranchParent;
+    }
+}

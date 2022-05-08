@@ -100,7 +100,9 @@ public: // instance methods
 public: // instance methods
     QString getNameSpace() const;
     QString getClassName() const;
-    QString getObjectName() const;  // starting with "get" to distinguish from QObject::objectName)
+public: // instance methods (reimplementing methods from base class QObject)
+    void setObjectName( const QString& i_strObjName );
+    QString getObjectName() const;
 public: // instance methods
     void setObjectThreadName( const QString& i_strThreadName );
     QString getObjectThreadName() const;
@@ -121,6 +123,8 @@ public: // instance methods
 public: // instance methods
     virtual bool blockTreeEntryChangedSignal( bool i_bBlock );
     virtual bool isTreeEntryChangedSignalBlocked() const;
+private: // Don't use QObject::objectName
+    QString objectName() const;
 protected: // instance members
     int                   m_iBlockTreeEntryChangedSignalCounter;    /*!< Counts the number of times the tree entry changed signal has been blocked. */
     QString               m_strNameSpace;       /*!< Namespace of the class. May be empty. */
@@ -140,6 +144,11 @@ protected: // instance members
     int                   m_iTrcDetailLevel;    /*!< Defines the current detail level of the method trace outputs for the
                                                      module, class or instance referencing this object. If set to
                                                      None method trace output is disabled. */
+    // TODO: Introduce second trace detail level for additional runtime info.
+    // First one for method calls with method args:
+    //   [None, EnterLeaveOnly, WithMethodArgsNormal, WithMethodArgsDetailed, WithMethodArgsVerbose]
+    // Second one for addtional runtime info (only effective if MethodCalls is not set to None):
+    //   [None, Normal, Detailed, Verbose]
 
 }; // class CTrcAdminObj
 
@@ -163,10 +172,12 @@ public: // instance methods
 private slots:
     void onTrcAdminObjDestroyed(QObject* i_pTrcAdminObj);
 private: // instance members
-    QString       m_strNameSpace;
-    QString       m_strClassName;
-    int           m_idxInTree;
-    CTrcAdminObj* m_pTrcAdminObj;
+    mutable QMutex m_mtx;           /*!< Mutex to protect the instance members. */
+    QString        m_strNameSpace;  /*!< Name space of the class to be traced. */
+    QString        m_strClassName;  /*!< Name of class to be traced. */
+    CTrcAdminObj*  m_pTrcAdminObj;  /*!< Pointer to trace admin object. */
+    int            m_idxInTree;     /*!< If once added the index in the tree is stored for faster access. */
+    int            m_iRefCount;     /*!< Counts how often the trace admin object is allocated but not released. */
 };
 
 //******************************************************************************
@@ -184,7 +195,7 @@ public: // instance methods
     void setTraceDetailLevel(int i_iTrcDetailLevel);
     bool isActive(int i_iFilterDetailLevel) const;
 private: // instance members
-    CTrcAdminObjRefAnchor* m_pRefAnchor;
+    CTrcAdminObjRefAnchor* m_pRefAnchor;    /*!< Pointer to reference anchor which should be guarded. */
 };
 
 } // namespace Trace

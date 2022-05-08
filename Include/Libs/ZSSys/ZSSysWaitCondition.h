@@ -57,6 +57,7 @@ public: // ctors and dtor
     CWaitCondition(const QString& i_strObjName, int i_iTrcMthFileDetailLevel);
     virtual ~CWaitCondition();
 public: // instance methods
+    void setObjectName(const QString& i_strObjName);
     QString objectName() const;
 public: // instance methods
     void notify_all();
@@ -67,6 +68,9 @@ public: // instance methods
     bool wait(QReadWriteLock* i_pReadWriteLock, unsigned long i_uTime_ms);
     void wakeAll();
     void wakeOne();
+public: // auxiliary methods
+    bool isMethodTraceActive( int i_iFilterDetailLevel ) const;
+    int getMethodTraceDetailLevel() const;
 private: // instance members
     /*!< Descriptive name of the wait condition object. */
     QString m_strObjName;

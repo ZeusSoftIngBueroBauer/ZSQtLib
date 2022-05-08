@@ -51,7 +51,8 @@ public: // ctors and dtor
     CIdxTreeTrcAdminObjs(
         const QString& i_strObjName,
         QObject*       i_pObjParent,
-        int            i_iTrcDetailLevel = ETraceDetailLevelNone );
+        int            i_iTrcDetailLevel = ETraceDetailLevelNone,
+        int            i_iTrcDetailLevelMutex = ETraceDetailLevelNone );
     virtual ~CIdxTreeTrcAdminObjs();
 public: // instance methods
     virtual QString nameSpace() const { return NameSpace(); }
@@ -65,6 +66,7 @@ public: // instance methods to get and release admin objects
         int                  i_iDefaultDetailLevel,
         bool                 i_bIncrementRefCount = true );
     CTrcAdminObj* getTraceAdminObj( int i_idxInTree, bool i_bIncrementRefCount = true );
+    void renameTraceAdminObj( CTrcAdminObj** io_ppTrcAdminObj, const QString& i_strNewObjName );
     void releaseTraceAdminObj( CTrcAdminObj* i_pTrcAdminObj );
 public: // instance methods to insert branch nodes and admin objects
     ZS::System::CIdxTreeEntry* insertBranch(
@@ -88,6 +90,7 @@ public: // overridables
     virtual ZS::System::SErrResultInfo recall( const QString& i_strAbsFilePath );
 protected: // auxiliary instance methods
     virtual void save( QXmlStreamWriter& xmlStreamWriter, ZS::System::CIdxTreeEntry* i_pTreeEntry ) const;
+    virtual void removeEmptyBranches( const QString& i_strBranchPath );
 
 }; // class CIdxTreeTrcAdminObjs
 

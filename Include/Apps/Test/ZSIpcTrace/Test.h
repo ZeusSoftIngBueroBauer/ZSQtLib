@@ -61,10 +61,6 @@ class CTest : public ZS::Test::CTest
 public: // ctors and dtor
     CTest();
     ~CTest();
-public: // instance methods
-    CMyClass1* getMyClass1Instance(const QString& i_strObjName) const { return m_hshpMyClass1InstancesByName.value(i_strObjName, nullptr); }
-    CMyClass2* getMyClass2Instance(const QString& i_strObjName) const { return m_hshpMyClass2InstancesByName.value(i_strObjName, nullptr); }
-    CMyClass3* getMyClass3Instance(const QString& i_strObjName) const { return m_hshpMyClass3InstancesByName.value(i_strObjName, nullptr); }
 public slots: // test step methods
     void doTestStepTraceServerStartup( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepTraceServerShutdown( ZS::Test::CTestStep* i_pTestStep );
@@ -76,9 +72,9 @@ private slots:
     void onZSTraceClientTraceAdminObjInserted( QObject* i_pTrcClient, const QString& i_strKeyInTree );
     void onZSTraceClientTrcMthListWdgtTextItemAdded( const QString& i_strText );
     void onTimerTestStepTimeout();
-    void onClass1AboutToBeDestroyed(const QString& i_strObjName);
-    void onClass2AboutToBeDestroyed(const QString& i_strObjName);
-    void onClass3AboutToBeDestroyed(const QString& i_strObjName);
+    void onClass1AboutToBeDestroyed(QObject* i_pObj, const QString& i_strObjName);
+    void onClass2AboutToBeDestroyed(QObject* i_pObj, const QString& i_strObjName);
+    void onClass3AboutToBeDestroyed(QObject* i_pObj, const QString& i_strObjName);
 private: // instance auxiliary methods
     void splitMethodCallOperation(
         const QString& i_strOperation,
@@ -94,6 +90,9 @@ private: // instance members
     QHash<QString, CMyClass1*>           m_hshpMyClass1InstancesByName;
     QHash<QString, CMyClass2*>           m_hshpMyClass2InstancesByName;
     QHash<QString, CMyClass3*>           m_hshpMyClass3InstancesByName;
+    QMultiHash<QString, CMyClass1*>      m_multihshpMyClass1InstancesByName;
+    QMultiHash<QString, CMyClass2*>      m_multihshpMyClass2InstancesByName;
+    QMultiHash<QString, CMyClass3*>      m_multihshpMyClass3InstancesByName;
 
 }; // class CTest
 
