@@ -82,7 +82,7 @@ CMyClass2Thread::CMyClass2Thread( const QString& i_strMyClass2ObjName, CMyClass1
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "ctor",
-        /* strAddInfo   */ strMthInArgs );
+        /* strMthInArgs */ strMthInArgs );
 
 } // ctor
 
@@ -94,7 +94,7 @@ CMyClass2Thread::~CMyClass2Thread()
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "dtor",
-        /* strAddInfo   */ "" );
+        /* strMthInArgs */ "" );
 
     if( isRunning() )
     {
@@ -154,7 +154,7 @@ void CMyClass2Thread::setObjectName(const QString& i_strObjName)
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "setObjectName",
-        /* strAddInfo   */ strMthInArgs );
+        /* strMthInArgs */ strMthInArgs );
 
     QObject::setObjectName(i_strObjName);
 
@@ -192,7 +192,7 @@ void CMyClass2Thread::run()
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "run",
-        /* strAddInfo   */ "" );
+        /* strMthInArgs */ "" );
 
     m_pMyClass2 = new CMyClass2(m_strMyClass2ObjName, this);
 
@@ -250,7 +250,7 @@ void CMyClass2Thread::start( QThread::Priority i_priority )
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "start",
-        /* strAddInfo   */ strMthInArgs );
+        /* strMthInArgs */ strMthInArgs );
 
     return QThread::start(i_priority);
 }
@@ -263,7 +263,7 @@ void CMyClass2Thread::quit()
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "quit",
-        /* strAddInfo   */ "" );
+        /* strMthInArgs */ "" );
 
     return QThread::quit();
 }
@@ -283,7 +283,7 @@ bool CMyClass2Thread::wait( QDeadlineTimer i_deadline )
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "wait",
-        /* strAddInfo   */ strMthInArgs );
+        /* strMthInArgs */ strMthInArgs );
 
     bool bResult = QThread::wait(i_deadline);
 
@@ -309,7 +309,7 @@ bool CMyClass2Thread::wait( unsigned long i_time_ms )
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "wait",
-        /* strAddInfo   */ strMthInArgs );
+        /* strMthInArgs */ strMthInArgs );
 
     bool bResult = QThread::wait(i_time_ms);
 
@@ -332,7 +332,7 @@ int CMyClass2Thread::exec()
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "exec",
-        /* strAddInfo   */ "" );
+        /* strMthInArgs */ "" );
 
     int iResult = QThread::exec();
 
@@ -393,7 +393,7 @@ CMyClass2::CMyClass2( const QString& i_strObjName, CMyClass2Thread* i_pMyClass2T
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "ctor",
-        /* strAddInfo   */ strMthInArgs );
+        /* strMthInArgs */ strMthInArgs );
 
     m_pTmrMessages = new QTimer(this);
 
@@ -420,7 +420,7 @@ CMyClass2::~CMyClass2()
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "dtor",
-        /* strAddInfo   */ "" );
+        /* strMthInArgs */ "" );
 
     emit aboutToBeDestroyed(this, objectName());
 
@@ -495,7 +495,7 @@ void CMyClass2::setObjectName(const QString& i_strObjName)
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "setObjectName",
-        /* strAddInfo   */ strMthInArgs );
+        /* strMthInArgs */ strMthInArgs );
 
     QObject::setObjectName(i_strObjName);
 
@@ -542,7 +542,7 @@ QString CMyClass2::instMethod(const QString& i_strMthInArgs)
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "instMethod",
-        /* strAddInfo   */ strMthInArgs );
+        /* strMthInArgs */ strMthInArgs );
 
     strResult = "Hello World";
 
@@ -568,7 +568,7 @@ int CMyClass2::recursiveTraceMethod()
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "recursiveTraceMethod",
-        /* strAddInfo   */ "" );
+        /* strMthInArgs */ "" );
 
     CMutexLocker mtxLocker(m_pMtxCounters);
 
@@ -617,7 +617,7 @@ void CMyClass2::startMessageTimer()
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "startMessageTimer",
-        /* strAddInfo   */ "" );
+        /* strMthInArgs */ "" );
 
     CMutexLocker mtxLocker(m_pMtxCounters);
 
@@ -663,7 +663,7 @@ CMyClass3* CMyClass2::startClass3Thread(const QString& i_strMyClass3ObjName)
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "startClass3Thread",
-        /* strAddInfo   */ strMthInArgs );
+        /* strMthInArgs */ strMthInArgs );
 
     m_strMyClass3ObjName = i_strMyClass3ObjName;
 
@@ -735,7 +735,7 @@ void CMyClass2::stopClass3Thread()
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "stopClass3Thread",
-        /* strAddInfo   */ strMthInArgs );
+        /* strMthInArgs */ strMthInArgs );
 
     if( m_pMyClass3Thread != nullptr && m_pMyClass3Thread->isRunning() )
     {
@@ -788,7 +788,7 @@ void CMyClass2::onClass3ThreadRunning()
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "onClass3ThreadRunning",
-        /* strAddInfo   */ strMthInArgs );
+        /* strMthInArgs */ strMthInArgs );
 
     m_pWaitClass3ThreadRunning->notify_all();
 }
@@ -801,7 +801,7 @@ void CMyClass2::onTmrMessagesTimeout()
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelRuntimeInfo,
         /* strMethod    */ "onTmrMessagesTimeout",
-        /* strAddInfo   */ "" );
+        /* strMthInArgs */ "" );
 
     CMutexLocker mtxLocker(m_pMtxCounters);
 

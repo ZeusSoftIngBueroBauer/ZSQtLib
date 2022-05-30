@@ -53,10 +53,10 @@ namespace Test
 */
 enum class ETestResult {
 //==============================================================================
-    Undefined  = 0,
-    TestFailed = 1,
-    TestPassed = 2,
-    Ignore     = 3
+    Undefined   = 0,
+    TestFailed  = 1,
+    TestPassed  = 2,
+    TestSkipped = 3
 };
 } // namespace Test
 } // namespace ZS

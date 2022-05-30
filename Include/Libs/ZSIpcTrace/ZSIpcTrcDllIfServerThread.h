@@ -56,7 +56,13 @@ public: // class methods
     static QString NameSpace() { return "ZS::Trace::DllIf"; }
     static QString ClassName() { return "CIpcTrcServerThread"; }
 public: // ctors and dtor
-    CIpcTrcServerThread( int i_iTrcDetailLevel = ZS::Trace::ETraceDetailLevelNone );
+    CIpcTrcServerThread(
+        int i_iTrcDetailLevelDllIf = ZS::Trace::ETraceDetailLevelNone,
+        int i_iTrcDetailLevelTrcServer = ZS::Trace::ETraceDetailLevelNone,
+        int i_iTrcDetailLevelTrcServerMutex = ZS::Trace::ETraceDetailLevelNone,
+        int i_iTrcDetailLevelTrcServerIpcServer = ZS::Trace::ETraceDetailLevelNone,
+        int i_iTrcDetailLevelTrcServerIpcServerMutex = ZS::Trace::ETraceDetailLevelNone,
+        int i_iTrcDetailLevelTrcServerIpcServerGateway = ZS::Trace::ETraceDetailLevelNone );
     virtual ~CIpcTrcServerThread();
 public: // instance methods
     bool isServerCreated();
@@ -65,7 +71,12 @@ public: // instance methods
 public: // overridables of base class QThread
     virtual void run() override;
 protected: // instance members
-    int          m_iTrcDetailLevel;
+    int m_iTrcDetailLevelDllIf;
+    int m_iTrcDetailLevelTrcServer;
+    int m_iTrcDetailLevelTrcServerMutex;
+    int m_iTrcDetailLevelTrcServerIpcServer;
+    int m_iTrcDetailLevelTrcServerIpcServerMutex;
+    int m_iTrcDetailLevelTrcServerIpcServerGateway;
     CTrcMthFile* m_pTrcMthFile;
 
 }; // class CIpcTrcServerThread

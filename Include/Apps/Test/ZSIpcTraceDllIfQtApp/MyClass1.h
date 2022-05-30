@@ -24,16 +24,21 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#ifndef ZSApps_TestIpcTraceDllIfQtApp_TestModule2_h
-#define ZSApps_TestIpcTraceDllIfQtApp_TestModule2_h
+#ifndef ZSApps_TestIpcTraceDllIfQtApp_TestModule1_h
+#define ZSApps_TestIpcTraceDllIfQtApp_TestModule1_h
 
+#include <QtCore/qobject.h>
 #include <QtCore/qstring.h>
-#include <QtCore/qthread.h>
 
-class QTimer;
+#include "ZSSys/ZSSysRequestQueue.h"
 
 namespace ZS
 {
+namespace System
+{
+class CMutex;
+class CWaitCondition;
+}
 namespace Trace
 {
 namespace DllIf
@@ -41,63 +46,54 @@ namespace DllIf
 class CTrcAdminObj;
 }
 }
-
 namespace Apps
 {
 namespace Test
 {
 namespace IpcTraceDllIfQtApp
 {
-class CTestModule1;
-class CTestModule2;
+class CMyClass2Thread;
+class CMyClass2;
 
 //******************************************************************************
-class CTestModule2Thread : public QThread
-//******************************************************************************
-{
-public: // class methods
-    static QString NameSpace() { return "ZS::Apps::Test::IpcTraceDllIfQtApp"; }
-    static QString ClassName() { return "CTestModule2Thread"; }
-public: // ctors and dtor
-    CTestModule2Thread( CTestModule1* i_pTestModule1, const QString& i_strObjNameTestModule2 );
-    virtual  ~CTestModule2Thread();
-public: // instance methods
-    CTestModule2* getTestModule2() { return m_pTestModule2; }
-public: // overridables of base class QThread
-    void run();
-private: // instance members
-    CTestModule1*                   m_pTestModule1;
-    CTestModule2*                   m_pTestModule2;
-    ZS::Trace::DllIf::CTrcAdminObj* m_pTrcAdminObj;
-
-}; // class CTestModule2Thread
-
-//******************************************************************************
-class CTestModule2 : public QObject
+class CMyClass1 : public QObject
 //******************************************************************************
 {
     Q_OBJECT
 public: // class methods
     static QString NameSpace() { return "ZS::Apps::Test::IpcTraceDllIfQtApp"; }
-    static QString ClassName() { return "CTestModule2"; }
+    static QString ClassName() { return "CMyClass1"; }
+public: // class methods
+    static QString classMethod(const QString& i_strMthInArgs);
 public: // ctors and dtor
-    CTestModule2( CTestModule2Thread* i_pTestModule2Thread, const QString& i_strObjName );
-    virtual  ~CTestModule2();
+    CMyClass1( const QString& i_strObjName );
+    virtual ~CMyClass1();
+signals:
+    void aboutToBeDestroyed(QObject* i_pObj, const QString& i_strObjName);
+public: // overridables
+    virtual QString nameSpace() { return NameSpace(); }
+    virtual QString className() { return ClassName(); }
+public: // instance methods (reimplementing methods of base class QObject)
+    void setObjectName(const QString& i_strObjName);
 public: // instance methods
-    int recursiveTraceMethod();
+    CMyClass2Thread* getMyClass2Thread() const { return m_pMyClass2Thread; }
+    CMyClass2* getMyClass2() const { return m_pMyClass2; }
 public: // instance methods
-    void startMessageTimer();
+    CMyClass2* startClass2Thread(const QString& i_strMyClass2ObjName);
+    void stopClass2Thread();
 protected slots:
-    void onTmrMessagesTimeout();
-protected: // overridables of base class QObject
-    virtual bool event( QEvent* i_pEv ) override;
+    void onClass2ThreadRunning();
+private: // class members
+    static ZS::Trace::DllIf::CTrcAdminObj* s_pTrcAdminObj;
+    static int s_iInstCount;
 private: // instance members
-    CTestModule2Thread*             m_pTestModule2Thread;
-    QTimer*                         m_pTmrMessages;
-    int                             m_iMsgCount;
-    ZS::Trace::DllIf::CTrcAdminObj* m_pTrcAdminObj;
+    QString                         m_strMyClass2ObjName;
+    CMyClass2Thread*                m_pMyClass2Thread;
+    CMyClass2*                      m_pMyClass2;
+    ZS::System::CMutex*             m_pMtxWaitClass2ThreadRunning;
+    ZS::System::CWaitCondition*     m_pWaitClass2ThreadRunning;
 
-}; // class CTestModule2
+}; // class CMyClass1
 
 } // namespace IpcTraceDllIfQtApp
 
@@ -107,4 +103,4 @@ private: // instance members
 
 } // namespace ZS
 
-#endif // #ifndef ZSApps_TestIpcTraceDllIfQtApp_TestModule2_h
+#endif // #ifndef ZSApps_TestIpcTraceDllIfQtApp_TestModule1_h

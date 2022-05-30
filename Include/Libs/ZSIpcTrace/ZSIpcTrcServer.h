@@ -204,7 +204,7 @@ protected: // instance methods to explicitely send the attributes of a trace adm
         int                                     i_iSocketId,
         ZS::System::MsgProtocol::TSystemMsgType i_systemMsgType,
         ZS::System::MsgProtocol::TCommand       i_cmd,
-        CTrcAdminObj*                           i_pTrcAdminObj );
+        ZS::System::CIdxTreeEntry*              i_pTrcAdminObj );
 protected: // auxiliary methods
     void sendServerSettings(int i_iSocketId);
     void sendCachedTrcData(int i_iSocketId);

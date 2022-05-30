@@ -565,303 +565,307 @@ void CIpcTrcClient::onReceivedData( const QByteArray& i_byteArr )
         }
         else // if( xmlStreamTokenType == QXmlStreamReader::StartDocument )
         {
+            bool bInTrcDataBlock = false;
+
             while( xmlStreamTokenType != QXmlStreamReader::EndElement && xmlStreamTokenType != QXmlStreamReader::Invalid )
             {
                 xmlStreamTokenType = xmlStreamReader.readNext();
 
-                if( xmlStreamReader.isStartElement() )
+                if( xmlStreamReader.isStartElement() || xmlStreamReader.isEndElement() )
                 {
                     strElemName = xmlStreamReader.name().toString();
 
-                    if( strElemName == "ServerSettings" )
+                    if( strElemName == "TrcData" )
                     {
-                        bool bRemoteNameChanged = false;
-
-                        if( xmlStreamReader.attributes().hasAttribute("ApplicationName") )
+                        if( xmlStreamReader.isStartElement() )
                         {
-                            strAttr = xmlStreamReader.attributes().value("ApplicationName").toString();
-                            if( m_strRemoteApplicationName != strAttr )
-                            {
-                                m_strRemoteApplicationName = strAttr;
-                                bRemoteNameChanged = true;
-                            }
+                            bInTrcDataBlock = true;
+                            emit traceDataReceived(this, strData);
                         }
-                        if( xmlStreamReader.attributes().hasAttribute("ServerName") )
+                        else if( xmlStreamReader.isEndElement() )
                         {
-                            strAttr = xmlStreamReader.attributes().value("ServerName").toString();
-                            if( m_strRemoteServerName != strAttr )
-                            {
-                                m_strRemoteServerName = strAttr;
-                                bRemoteNameChanged = true;
-                            }
+                            bInTrcDataBlock = false;
                         }
-
-                        STrcServerSettings trcServerSettings = m_trcServerSettings;
-
-                        if( xmlStreamReader.attributes().hasAttribute("Enabled") )
-                        {
-                            strAttr = xmlStreamReader.attributes().value("Enabled").toString();
-                            bVal = str2Bool(strAttr, &bOk);
-                            if( bOk ) trcServerSettings.m_bEnabled = bVal;
-                            else xmlStreamReader.raiseError("Attribute \"Enabled\" (" + strAttr + ") is out of range");
-                        }
-                        if( xmlStreamReader.attributes().hasAttribute("AdminObjFileAbsFilePath") )
-                        {
-                            strAttr = xmlStreamReader.attributes().value("AdminObjFileAbsFilePath").toString();
-                            trcServerSettings.m_strAdminObjFileAbsFilePath = strAttr;
-                        }
-                        if( xmlStreamReader.attributes().hasAttribute("NewTrcAdminObjsEnabledAsDefault") )
-                        {
-                            strAttr = xmlStreamReader.attributes().value("NewTrcAdminObjsEnabledAsDefault").toString();
-                            bVal = str2Bool(strAttr, &bOk);
-                            if( bOk ) trcServerSettings.m_bNewTrcAdminObjsEnabledAsDefault = bVal;
-                            else xmlStreamReader.raiseError("Attribute \"NewTrcAdminObjsEnabledAsDefault\" (" + strAttr + ") is out of range");
-                        }
-                        if( xmlStreamReader.attributes().hasAttribute("NewTrcAdminObjsDefaultDetailLevel") )
-                        {
-                            strAttr = xmlStreamReader.attributes().value("NewTrcAdminObjsDefaultDetailLevel").toString();
-                            iVal = strAttr.toInt(&bOk);
-                            if( bOk ) trcServerSettings.m_iNewTrcAdminObjsDefaultDetailLevel = iVal;
-                            else xmlStreamReader.raiseError("Attribute \"NewTrcAdminObjsDefaultDetailLevel\" (" + strAttr + ") is out of range");
-                        }
-                        if( xmlStreamReader.attributes().hasAttribute("UseIpcServer") )
-                        {
-                            strAttr = xmlStreamReader.attributes().value("UseIpcServer").toString();
-                            bVal = str2Bool(strAttr, &bOk);
-                            if( bOk ) trcServerSettings.m_bUseIpcServer = bVal;
-                            else xmlStreamReader.raiseError("Attribute \"UseIpcServer\" (" + strAttr + ") is out of range");
-                        }
-                        if( xmlStreamReader.attributes().hasAttribute("CacheDataIfNotConnected") )
-                        {
-                            strAttr = xmlStreamReader.attributes().value("CacheDataIfNotConnected").toString();
-                            bVal = str2Bool(strAttr, &bOk);
-                            if( bOk ) trcServerSettings.m_bCacheDataIfNotConnected = bVal;
-                            else xmlStreamReader.raiseError("Attribute \"CacheDataIfNotConnected\" (" + strAttr + ") is out of range");
-                        }
-                        if( xmlStreamReader.attributes().hasAttribute("CacheDataMaxArrLen") )
-                        {
-                            strAttr = xmlStreamReader.attributes().value("CacheDataMaxArrLen").toString();
-                            iVal = strAttr.toInt(&bOk);
-                            if( bOk ) trcServerSettings.m_iCacheDataMaxArrLen = iVal;
-                            else xmlStreamReader.raiseError("Attribute \"CacheDataMaxArrLen\" (" + strAttr + ") is out of range");
-                        }
-                        if( xmlStreamReader.attributes().hasAttribute("UseLocalTrcFile") )
-                        {
-                            strAttr = xmlStreamReader.attributes().value("UseLocalTrcFile").toString();
-                            bVal = str2Bool(strAttr, &bOk);
-                            if( bOk ) trcServerSettings.m_bUseLocalTrcFile = bVal;
-                            else xmlStreamReader.raiseError("Attribute \"UseLocalTrcFile\" (" + strAttr + ") is out of range");
-                        }
-                        if( xmlStreamReader.attributes().hasAttribute("LocalTrcFileAbsFilePath") )
-                        {
-                            strAttr = xmlStreamReader.attributes().value("LocalTrcFileAbsFilePath").toString();
-                            trcServerSettings.m_strLocalTrcFileAbsFilePath = strAttr;
-                        }
-                        if( xmlStreamReader.attributes().hasAttribute("LocalTrcFileAutoSaveInterval_ms") )
-                        {
-                            strAttr = xmlStreamReader.attributes().value("LocalTrcFileAutoSaveInterval_ms").toString();
-                            iVal = strAttr.toInt(&bOk);
-                            if( bOk ) trcServerSettings.m_iLocalTrcFileAutoSaveInterval_ms = iVal;
-                            else xmlStreamReader.raiseError("Attribute \"LocalTrcFileAutoSaveInterval_ms\" (" + strAttr + ") is out of range");
-                        }
-                        if( xmlStreamReader.attributes().hasAttribute("LocalTrcFileSubFileCountMax") )
-                        {
-                            strAttr = xmlStreamReader.attributes().value("LocalTrcFileSubFileCountMax").toString();
-                            iVal = strAttr.toInt(&bOk);
-                            if( bOk ) trcServerSettings.m_iLocalTrcFileSubFileCountMax = iVal;
-                            else xmlStreamReader.raiseError("Attribute \"LocalTrcFileSubFileCountMax\" (" + strAttr + ") is out of range");
-                        }
-                        if( xmlStreamReader.attributes().hasAttribute("LocalTrcFileSubFileLineCountMax") )
-                        {
-                            strAttr = xmlStreamReader.attributes().value("LocalTrcFileSubFileLineCountMax").toString();
-                            iVal = strAttr.toInt(&bOk);
-                            if( bOk ) trcServerSettings.m_iLocalTrcFileSubFileLineCountMax = iVal;
-                            else xmlStreamReader.raiseError("Attribute \"LocalTrcFileSubFileLineCountMax\" (" + strAttr + ") is out of range");
-                        }
-                        if( xmlStreamReader.attributes().hasAttribute("LocalTrcFileCloseAfterEachWrite") )
-                        {
-                            strAttr = xmlStreamReader.attributes().value("LocalTrcFileCloseAfterEachWrite").toString();
-                            bVal = str2Bool(strAttr, &bOk);
-                            if( bOk ) trcServerSettings.m_bLocalTrcFileCloseFileAfterEachWrite = bVal;
-                            else xmlStreamReader.raiseError("Attribute \"LocalTrcFileCloseAfterEachWrite\" (" + strAttr + ") is out of range");
-                        }
-
-                        // While receiving the trace settings emitting the traceSettingsChanged signal is blocked
-                        // by setting the flag m_bOnReceivedDataUpdateInProcess to true to accumulate all changes
-                        // and emit the signal just once. setTraceSettings will check if the settings have been
-                        // changed before taken them over. But setTraceSettings will not emit the settings changed
-                        // signal as the flag m_bOnReceivedDataUpdateInProcess is set. So we need to do this check
-                        // here also and emit the signal.
-                        if( bRemoteNameChanged || trcServerSettings != m_trcServerSettings )
-                        {
-                            m_bOnReceivedDataUpdateInProcess = true;
-                            setTraceSettings(trcServerSettings);
-                            m_bOnReceivedDataUpdateInProcess = false;
-                            emit traceSettingsChanged(this);
-                        }
-                    } // if( strElemName == "ServerSettings" )
+                    }
 
                     else if( strElemName == "Branch" )
                     {
-                        int      iParentPranchIdxInTree = -1;
-                        QString  strBranchName;
-                        int      idxInTree = -1;
-                        EEnabled enabled = EEnabled::Undefined;
-                        int      iDetailLevel = -1;
+                        if( !bInTrcDataBlock && xmlStreamReader.isStartElement() )
+                        {
+                            int      iParentPranchIdxInTree = -1;
+                            QString  strBranchName;
+                            int      idxInTree = -1;
+                            EEnabled enabled = EEnabled::Undefined;
+                            int      iDetailLevel = -1;
 
-                        if( !xmlStreamReader.attributes().hasAttribute("IdxInTree") )
-                        {
-                            xmlStreamReader.raiseError("Attribute \"IdxInTree\" is missing");
-                        }
-                        else // if( xmlStreamReader.attributes().hasAttribute("IdxInTree") )
-                        {
-                            strAttr = xmlStreamReader.attributes().value("IdxInTree").toString();
-                            iVal = strAttr.toInt(&bOk);
-                            if( bOk && iVal >= 0 ) idxInTree = iVal;
-                            else xmlStreamReader.raiseError("Attribute \"IdxInTree\" (" + strAttr + ") is out of range");
-                        }
-
-                        if( idxInTree >= 0 )
-                        {
-                            if( xmlStreamReader.attributes().hasAttribute("ParentBranchIdxInTree") )
+                            if( !xmlStreamReader.attributes().hasAttribute("IdxInTree") )
                             {
-                                strAttr = xmlStreamReader.attributes().value("ParentBranchIdxInTree").toString();
+                                xmlStreamReader.raiseError("Attribute \"IdxInTree\" is missing");
+                            }
+                            else // if( xmlStreamReader.attributes().hasAttribute("IdxInTree") )
+                            {
+                                strAttr = xmlStreamReader.attributes().value("IdxInTree").toString();
                                 iVal = strAttr.toInt(&bOk);
-                                if( bOk ) iParentPranchIdxInTree = iVal;
-                                else xmlStreamReader.raiseError("Attribute \"ParentBranchIdxInTree\" (" + strAttr + ") is out of range");
-                            }
-                            if( !xmlStreamReader.hasError() && xmlStreamReader.attributes().hasAttribute("Name") )
-                            {
-                                strBranchName = xmlStreamReader.attributes().value("Name").toString();
-                            }
-                            if( !xmlStreamReader.hasError() && xmlStreamReader.attributes().hasAttribute("Enabled") )
-                            {
-                                strAttr = xmlStreamReader.attributes().value("Enabled").toString();
-                                enabled = CEnumEnabled::toEnumerator(strAttr);
-                                if( enabled == EEnabled::Undefined ) xmlStreamReader.raiseError("Attribute \"Enabled\" (" + strAttr + ") is out of range");
-                            }
-                            if( !xmlStreamReader.hasError() && xmlStreamReader.attributes().hasAttribute("DetailLevel") )
-                            {
-                                strAttr = xmlStreamReader.attributes().value("DetailLevel").toString();
-                                iVal = strAttr.toInt(&bOk);
-                                if( bOk && iVal >= 0 ) iDetailLevel = iVal;
-                                else xmlStreamReader.raiseError("Attribute \"DetailLevel\" (" + strAttr + ") is out of range");
+                                if( bOk && iVal >= 0 ) idxInTree = iVal;
+                                else xmlStreamReader.raiseError("Attribute \"IdxInTree\" (" + strAttr + ") is out of range");
                             }
 
-                            if( !xmlStreamReader.hasError() )
+                            if( idxInTree >= 0 )
                             {
-                                m_bOnReceivedDataUpdateInProcess = true;
+                                if( xmlStreamReader.attributes().hasAttribute("ParentBranchIdxInTree") )
+                                {
+                                    strAttr = xmlStreamReader.attributes().value("ParentBranchIdxInTree").toString();
+                                    iVal = strAttr.toInt(&bOk);
+                                    if( bOk ) iParentPranchIdxInTree = iVal;
+                                    else xmlStreamReader.raiseError("Attribute \"ParentBranchIdxInTree\" (" + strAttr + ") is out of range");
+                                }
+                                if( !xmlStreamReader.hasError() && xmlStreamReader.attributes().hasAttribute("Name") )
+                                {
+                                    strBranchName = xmlStreamReader.attributes().value("Name").toString();
+                                }
+                                if( !xmlStreamReader.hasError() && xmlStreamReader.attributes().hasAttribute("Enabled") )
+                                {
+                                    strAttr = xmlStreamReader.attributes().value("Enabled").toString();
+                                    enabled = CEnumEnabled::toEnumerator(strAttr);
+                                    if( enabled == EEnabled::Undefined ) xmlStreamReader.raiseError("Attribute \"Enabled\" (" + strAttr + ") is out of range");
+                                }
+                                if( !xmlStreamReader.hasError() && xmlStreamReader.attributes().hasAttribute("DetailLevel") )
+                                {
+                                    strAttr = xmlStreamReader.attributes().value("DetailLevel").toString();
+                                    iVal = strAttr.toInt(&bOk);
+                                    if( bOk && iVal >= 0 ) iDetailLevel = iVal;
+                                    else xmlStreamReader.raiseError("Attribute \"DetailLevel\" (" + strAttr + ") is out of range");
+                                }
 
-                                CIdxTreeEntry* pBranch = m_pTrcAdminObjIdxTree->getEntry(idxInTree);
+                                if( !xmlStreamReader.hasError() )
+                                {
+                                    m_bOnReceivedDataUpdateInProcess = true;
 
-                                if( strBranchName.isEmpty() && pBranch == nullptr )
-                                {
-                                    xmlStreamReader.raiseError("No branch name provided and there is no branch at tree index " + QString::number(idxInTree));
-                                }
-                                else if( !strBranchName.isEmpty() && pBranch == nullptr )
-                                {
-                                    pBranch = m_pTrcAdminObjIdxTree->insertBranch(iParentPranchIdxInTree, strBranchName, idxInTree);
-                                }
+                                    CIdxTreeEntry* pBranch = m_pTrcAdminObjIdxTree->getEntry(idxInTree);
 
-                                if( cmd == MsgProtocol::ECommandDelete )
-                                {
-                                    delete pBranch;
-                                    pBranch = nullptr;
+                                    // Confirmation to select command.
+                                    if( cmd == MsgProtocol::ECommandSelect )
+                                    {
+                                        if( pBranch == nullptr )
+                                        {
+                                            if( strBranchName.isEmpty() )
+                                            {
+                                                xmlStreamReader.raiseError("No branch at tree index " + QString::number(idxInTree) + " and no branch name provided.");
+                                            }
+                                            else
+                                            {
+                                                pBranch = m_pTrcAdminObjIdxTree->insertBranch(iParentPranchIdxInTree, strBranchName, idxInTree);
+                                            }
+                                        }
+                                        else // if( pBranch != nullptr )
+                                        {
+                                            if( !strBranchName.isEmpty() && strBranchName.compare(pBranch->name(), Qt::CaseInsensitive) != 0 )
+                                            {
+                                                xmlStreamReader.raiseError("Update branch command received for tree index " + QString::number(idxInTree) +
+                                                    " but provided branch name " + strBranchName + " is different from existing name of branch " + pBranch->name());
+                                            }
+                                        }
+                                    }
+                                    // Indication that object has been changed.
+                                    else if( cmd == MsgProtocol::ECommandUpdate )
+                                    {
+                                        if( pBranch == nullptr )
+                                        {
+                                            xmlStreamReader.raiseError("Update branch command received but there is no branch at tree index " + QString::number(idxInTree));
+                                        }
+                                    }
+                                    // Indication that object has been inserted.
+                                    else if( cmd == MsgProtocol::ECommandInsert )
+                                    {
+                                        if( pBranch != nullptr )
+                                        {
+                                            xmlStreamReader.raiseError("Insert branch command received but there is already a branch at tree index " + QString::number(idxInTree));
+                                        }
+                                        else if( strBranchName.isEmpty() )
+                                        {
+                                            xmlStreamReader.raiseError("Insert branch command received but no branch name provided");
+                                        }
+                                        else // if( pBranch == nullptr && !strBranchName.isEmpty() )
+                                        {
+                                            pBranch = m_pTrcAdminObjIdxTree->insertBranch(iParentPranchIdxInTree, strBranchName, idxInTree);
+                                        }
+                                    }
+                                    // Indication that object has been deleted.
+                                    else if( cmd == MsgProtocol::ECommandDelete )
+                                    {
+                                        if( pBranch == nullptr )
+                                        {
+                                            xmlStreamReader.raiseError("Delete branch command received but there is no branch at tree index " + QString::number(idxInTree));
+                                        }
+                                        else
+                                        {
+                                            delete pBranch;
+                                            pBranch = nullptr;
+                                        }
+                                    }
+
+                                    if( !xmlStreamReader.hasError() && pBranch != nullptr )
+                                    {
+                                        if( enabled != EEnabled::Undefined ) m_pTrcAdminObjIdxTree->setEnabled(pBranch, enabled);
+                                        if( iDetailLevel >= 0 ) m_pTrcAdminObjIdxTree->setTraceDetailLevel(pBranch, iDetailLevel);
+                                    }
+                                    m_bOnReceivedDataUpdateInProcess = false;
                                 }
-                                else if( pBranch != nullptr )
-                                {
-                                    if( enabled != EEnabled::Undefined ) m_pTrcAdminObjIdxTree->setEnabled(pBranch, enabled);
-                                    if( iDetailLevel >= 0 ) m_pTrcAdminObjIdxTree->setTraceDetailLevel(pBranch, iDetailLevel);
-                                }
-                                m_bOnReceivedDataUpdateInProcess = false;
-                            }
-                        } // if( idxInTree >= 0 )
+                            } // if( idxInTree >= 0 )
+                        } // if( !bInTrcDataBlock && xmlStreamReader.isStartElement() )
                     } // if( strElemName == "Branch" )
 
                     else if( strElemName == "TrcAdminObj" )
                     {
-                        int      iParentPranchIdxInTree = -1;
-                        QString  strNameSpace;
-                        QString  strClassName;
-                        QString  strObjName;
-                        int      idxInTree = -1;
-                        QString  strThreadName;
-                        EEnabled enabled = EEnabled::Undefined;
-                        int      iDetailLevel = -1;
-                        int      iRefCount = -1;
-
-                        if( !xmlStreamReader.attributes().hasAttribute("IdxInTree") )
+                        if( !bInTrcDataBlock && xmlStreamReader.isStartElement() )
                         {
-                            xmlStreamReader.raiseError("Attribute \"IdxInTree\" is missing");
-                        }
-                        else // if( xmlStreamReader.attributes().hasAttribute("IdxInTree") )
-                        {
-                            strAttr = xmlStreamReader.attributes().value("IdxInTree").toString();
-                            iVal = strAttr.toInt(&bOk);
-                            if( bOk && iVal >= 0 ) idxInTree = iVal;
-                            else xmlStreamReader.raiseError("Attribute \"IdxInTree\" (" + strAttr + ") is out of range");
-                        }
+                            int      iParentPranchIdxInTree = -1;
+                            QString  strNameSpace;
+                            QString  strClassName;
+                            QString  strObjName;
+                            int      idxInTree = -1;
+                            QString  strThreadName;
+                            EEnabled enabled = EEnabled::Undefined;
+                            int      iDetailLevel = -1;
+                            int      iRefCount = -1;
 
-                        if( idxInTree >= 0 )
-                        {
-                            if( xmlStreamReader.attributes().hasAttribute("ParentBranchIdxInTree") )
+                            if( !xmlStreamReader.attributes().hasAttribute("IdxInTree") )
                             {
-                                strAttr = xmlStreamReader.attributes().value("ParentBranchIdxInTree").toString();
+                                xmlStreamReader.raiseError("Attribute \"IdxInTree\" is missing");
+                            }
+                            else // if( xmlStreamReader.attributes().hasAttribute("IdxInTree") )
+                            {
+                                strAttr = xmlStreamReader.attributes().value("IdxInTree").toString();
                                 iVal = strAttr.toInt(&bOk);
-                                if( bOk || iVal < 0 ) iParentPranchIdxInTree = iVal;
-                                else xmlStreamReader.raiseError("Attribute \"ParentBranchIdxInTree\" (" + strAttr + ") is out of range");
-                            }
-                            if( !xmlStreamReader.hasError() && xmlStreamReader.attributes().hasAttribute("NameSpace") )
-                            {
-                                strNameSpace = xmlStreamReader.attributes().value("NameSpace").toString();
-                            }
-                            if( !xmlStreamReader.hasError() && xmlStreamReader.attributes().hasAttribute("ClassName") )
-                            {
-                                strClassName = xmlStreamReader.attributes().value("ClassName").toString();
-                            }
-                            if( !xmlStreamReader.hasError() && xmlStreamReader.attributes().hasAttribute("ObjName") )
-                            {
-                                strObjName = xmlStreamReader.attributes().value("ObjName").toString();
-                            }
-                            if( !xmlStreamReader.hasError() && xmlStreamReader.attributes().hasAttribute("Thread") )
-                            {
-                                strThreadName = xmlStreamReader.attributes().value("Thread").toString();
-                            }
-                            if( !xmlStreamReader.hasError() && xmlStreamReader.attributes().hasAttribute("Enabled") )
-                            {
-                                strAttr = xmlStreamReader.attributes().value("Enabled").toString();
-                                enabled = CEnumEnabled::toEnumerator(strAttr);
-                                if( enabled == EEnabled::Undefined ) xmlStreamReader.raiseError("Attribute \"Enabled\" (" + strAttr + ") is out of range");
-                            }
-                            if( !xmlStreamReader.hasError() && xmlStreamReader.attributes().hasAttribute("DetailLevel") )
-                            {
-                                strAttr = xmlStreamReader.attributes().value("DetailLevel").toString();
-                                iVal = strAttr.toInt(&bOk);
-                                if( bOk && iVal >= 0 ) iDetailLevel = iVal;
-                                else xmlStreamReader.raiseError("Attribute \"DetailLevel\" (" + strAttr + ") is out of range");
-                            }
-                            if( !xmlStreamReader.hasError() && xmlStreamReader.attributes().hasAttribute("RefCount") )
-                            {
-                                strAttr = xmlStreamReader.attributes().value("RefCount").toString();
-                                iVal = strAttr.toInt(&bOk);
-                                if( bOk && iVal >= 0 ) iRefCount = iVal;
-                                else xmlStreamReader.raiseError("Attribute \"RefCount\" (" + strAttr + ") is out of range");
+                                if( bOk && iVal >= 0 ) idxInTree = iVal;
+                                else xmlStreamReader.raiseError("Attribute \"IdxInTree\" (" + strAttr + ") is out of range");
                             }
 
-                            if( !xmlStreamReader.hasError() )
+                            if( idxInTree >= 0 )
                             {
-                                m_bOnReceivedDataUpdateInProcess = true;
-
-                                CTrcAdminObj* pTrcAdminObj = m_pTrcAdminObjIdxTree->getTraceAdminObj(idxInTree, false);
-
-                                if( pTrcAdminObj != nullptr )
+                                if( xmlStreamReader.attributes().hasAttribute("ParentBranchIdxInTree") )
                                 {
-                                    if( cmd == MsgProtocol::ECommandDelete )
+                                    strAttr = xmlStreamReader.attributes().value("ParentBranchIdxInTree").toString();
+                                    iVal = strAttr.toInt(&bOk);
+                                    if( bOk || iVal < 0 ) iParentPranchIdxInTree = iVal;
+                                    else xmlStreamReader.raiseError("Attribute \"ParentBranchIdxInTree\" (" + strAttr + ") is out of range");
+                                }
+                                if( !xmlStreamReader.hasError() && xmlStreamReader.attributes().hasAttribute("NameSpace") )
+                                {
+                                    strNameSpace = xmlStreamReader.attributes().value("NameSpace").toString();
+                                }
+                                if( !xmlStreamReader.hasError() && xmlStreamReader.attributes().hasAttribute("ClassName") )
+                                {
+                                    strClassName = xmlStreamReader.attributes().value("ClassName").toString();
+                                }
+                                if( !xmlStreamReader.hasError() && xmlStreamReader.attributes().hasAttribute("ObjName") )
+                                {
+                                    strObjName = xmlStreamReader.attributes().value("ObjName").toString();
+                                }
+                                if( !xmlStreamReader.hasError() && xmlStreamReader.attributes().hasAttribute("Thread") )
+                                {
+                                    strThreadName = xmlStreamReader.attributes().value("Thread").toString();
+                                }
+                                if( !xmlStreamReader.hasError() && xmlStreamReader.attributes().hasAttribute("Enabled") )
+                                {
+                                    strAttr = xmlStreamReader.attributes().value("Enabled").toString();
+                                    enabled = CEnumEnabled::toEnumerator(strAttr);
+                                    if( enabled == EEnabled::Undefined ) xmlStreamReader.raiseError("Attribute \"Enabled\" (" + strAttr + ") is out of range");
+                                }
+                                if( !xmlStreamReader.hasError() && xmlStreamReader.attributes().hasAttribute("DetailLevel") )
+                                {
+                                    strAttr = xmlStreamReader.attributes().value("DetailLevel").toString();
+                                    iVal = strAttr.toInt(&bOk);
+                                    if( bOk && iVal >= 0 ) iDetailLevel = iVal;
+                                    else xmlStreamReader.raiseError("Attribute \"DetailLevel\" (" + strAttr + ") is out of range");
+                                }
+                                if( !xmlStreamReader.hasError() && xmlStreamReader.attributes().hasAttribute("RefCount") )
+                                {
+                                    strAttr = xmlStreamReader.attributes().value("RefCount").toString();
+                                    iVal = strAttr.toInt(&bOk);
+                                    if( bOk && iVal >= 0 ) iRefCount = iVal;
+                                    else xmlStreamReader.raiseError("Attribute \"RefCount\" (" + strAttr + ") is out of range");
+                                }
+
+                                if( !xmlStreamReader.hasError() )
+                                {
+                                    m_bOnReceivedDataUpdateInProcess = true;
+
+                                    CTrcAdminObj* pTrcAdminObj = m_pTrcAdminObjIdxTree->getTraceAdminObj(idxInTree, false);
+
+                                    bool bTrcAdminObjAlreadyExisting = (pTrcAdminObj != nullptr);
+
+                                    // Confirmation to select command.
+                                    if( cmd == MsgProtocol::ECommandSelect )
                                     {
-                                        delete dynamic_cast<CIdxTreeEntry*>(pTrcAdminObj);
-                                        pTrcAdminObj = nullptr;
+                                        if( pTrcAdminObj == nullptr )
+                                        {
+                                            if( strNameSpace.isEmpty() && strClassName.isEmpty() && strObjName.isEmpty() )
+                                            {
+                                                xmlStreamReader.raiseError("No trace admin object at tree index " + QString::number(idxInTree) + " but neither NameSpace nor ClassName nor ObjName provided.");
+                                            }
+                                            else
+                                            {
+                                                pTrcAdminObj = m_pTrcAdminObjIdxTree->insertTraceAdminObj(iParentPranchIdxInTree, strNameSpace, strClassName, strObjName, idxInTree);
+                                            }
+                                        }
+                                        else // if( pBranch != nullptr )
+                                        {
+                                            if( !strNameSpace.isEmpty() && strNameSpace.compare(pTrcAdminObj->getNameSpace(), Qt::CaseInsensitive) != 0 )
+                                            {
+                                                xmlStreamReader.raiseError("Update trace admin object command received for tree index " + QString::number(idxInTree) +
+                                                    " but provided name space " + strNameSpace + " is different from existing name space " + pTrcAdminObj->getNameSpace());
+                                            }
+                                            else if( !strClassName.isEmpty() && strClassName.compare(pTrcAdminObj->getClassName(), Qt::CaseInsensitive) != 0 )
+                                            {
+                                                xmlStreamReader.raiseError("Update trace admin object command received for tree index " + QString::number(idxInTree) +
+                                                    " but provided class name " + strClassName + " is different from existing class name " + pTrcAdminObj->getClassName());
+                                            }
+                                            else if( !strObjName.isEmpty() && strObjName.compare(pTrcAdminObj->getObjectName(), Qt::CaseInsensitive) != 0 )
+                                            {
+                                                xmlStreamReader.raiseError("Update trace admin object command received for tree index " + QString::number(idxInTree) +
+                                                    " but provided object name " + strObjName + " is different from existing object name " + pTrcAdminObj->getObjectName());
+                                            }
+                                        }
                                     }
-                                    else
+                                    else if( cmd == MsgProtocol::ECommandUpdate )
+                                    {
+                                        if( pTrcAdminObj == nullptr )
+                                        {
+                                            xmlStreamReader.raiseError("Update trace admin object command received but there is no object entry at tree index " + QString::number(idxInTree));
+                                        }
+                                    }
+                                    // Indication that object has been inserted.
+                                    else if( cmd == MsgProtocol::ECommandInsert )
+                                    {
+                                        if( pTrcAdminObj != nullptr )
+                                        {
+                                            xmlStreamReader.raiseError("Insert trace admin object command received but there is already an object entry at tree index " + QString::number(idxInTree));
+                                        }
+                                        else if( strNameSpace.isEmpty() && strClassName.isEmpty() && strObjName.isEmpty() )
+                                        {
+                                            xmlStreamReader.raiseError("Insert trace admin object command received but neither NameSpace nor ClassName nor ObjName provided");
+                                        }
+                                        else // if( pTrcAdminObj == nullptr && !(strNameSpace.isEmpty() || .. )
+                                        {
+                                            pTrcAdminObj = m_pTrcAdminObjIdxTree->insertTraceAdminObj(iParentPranchIdxInTree, strNameSpace, strClassName, strObjName, idxInTree);
+                                        }
+                                    }
+                                    // Indication that object has been deleted.
+                                    else if( cmd == MsgProtocol::ECommandDelete )
+                                    {
+                                        if( pTrcAdminObj == nullptr )
+                                        {
+                                            xmlStreamReader.raiseError("Delete trace admin object command received but there is no object entry at tree index " + QString::number(idxInTree));
+                                        }
+                                        else
+                                        {
+                                            delete dynamic_cast<CIdxTreeEntry*>(pTrcAdminObj);
+                                            pTrcAdminObj = nullptr;
+                                        }
+                                    }
+
+                                    if( !xmlStreamReader.hasError() && pTrcAdminObj != nullptr )
                                     {
                                         bool bSignalsBlocked = pTrcAdminObj->blockTreeEntryChangedSignal(true);
 
@@ -871,49 +875,155 @@ void CIpcTrcClient::onReceivedData( const QByteArray& i_byteArr )
                                         if( iRefCount >= 0 ) pTrcAdminObj->setRefCount(iRefCount);
 
                                         pTrcAdminObj->blockTreeEntryChangedSignal(bSignalsBlocked);
-                                    }
-                                }
-                                else // if( pTrcAdminObj == nullptr )
-                                {
-                                    if( strNameSpace.isEmpty() && strClassName.isEmpty() && strObjName.isEmpty() )
-                                    {
-                                        xmlStreamReader.raiseError("Neither NameSpace nor ClassName nor ObjName provided and there is no trace admin object at tree index " + QString::number(idxInTree));
-                                    }
-                                    else
-                                    {
-                                        pTrcAdminObj = m_pTrcAdminObjIdxTree->insertTraceAdminObj(iParentPranchIdxInTree, strNameSpace, strClassName, strObjName, idxInTree);
 
-                                        if( pTrcAdminObj != nullptr )
+                                        if( !bTrcAdminObjAlreadyExisting )
                                         {
-                                            bool bSignalsBlocked = pTrcAdminObj->blockTreeEntryChangedSignal(true);
-
-                                            if( !strThreadName.isEmpty() ) pTrcAdminObj->setObjectThreadName(strThreadName);
-                                            if( enabled != EEnabled::Undefined ) pTrcAdminObj->setEnabled(enabled);
-                                            if( iDetailLevel >= 0 ) pTrcAdminObj->setTraceDetailLevel(iDetailLevel);
-                                            if( iRefCount >= 0 ) pTrcAdminObj->setRefCount(iRefCount);
-
-                                            pTrcAdminObj->blockTreeEntryChangedSignal(bSignalsBlocked);
-
                                             emit traceAdminObjInserted(this, pTrcAdminObj->keyInTree());
                                         }
                                     }
-                                }
-                                m_bOnReceivedDataUpdateInProcess = false;
+                                    m_bOnReceivedDataUpdateInProcess = false;
 
-                            } // if( !xmlStreamReader.hasError() )
-                        } // if( idxInTree >= 0 )
-                    } // if( strTblName == "TrcAdminObj" )
+                                } // if( !xmlStreamReader.hasError() )
+                            } // if( idxInTree >= 0 )
+                        } // if( !bInTrcDataBlock && xmlStreamReader.isStartElement() )
+                    } // if( strElemName == "TrcAdminObj" )
 
-                    else if( strElemName == "TrcData" )
+                    else if( strElemName == "ServerSettings" )
                     {
-                        emit traceDataReceived(this, strData);
-                    }
+                        if( xmlStreamReader.isStartElement() )
+                        {
+                            bool bRemoteNameChanged = false;
+
+                            if( xmlStreamReader.attributes().hasAttribute("ApplicationName") )
+                            {
+                                strAttr = xmlStreamReader.attributes().value("ApplicationName").toString();
+                                if( m_strRemoteApplicationName != strAttr )
+                                {
+                                    m_strRemoteApplicationName = strAttr;
+                                    bRemoteNameChanged = true;
+                                }
+                            }
+                            if( xmlStreamReader.attributes().hasAttribute("ServerName") )
+                            {
+                                strAttr = xmlStreamReader.attributes().value("ServerName").toString();
+                                if( m_strRemoteServerName != strAttr )
+                                {
+                                    m_strRemoteServerName = strAttr;
+                                    bRemoteNameChanged = true;
+                                }
+                            }
+
+                            STrcServerSettings trcServerSettings = m_trcServerSettings;
+
+                            if( xmlStreamReader.attributes().hasAttribute("Enabled") )
+                            {
+                                strAttr = xmlStreamReader.attributes().value("Enabled").toString();
+                                bVal = str2Bool(strAttr, &bOk);
+                                if( bOk ) trcServerSettings.m_bEnabled = bVal;
+                                else xmlStreamReader.raiseError("Attribute \"Enabled\" (" + strAttr + ") is out of range");
+                            }
+                            if( xmlStreamReader.attributes().hasAttribute("AdminObjFileAbsFilePath") )
+                            {
+                                strAttr = xmlStreamReader.attributes().value("AdminObjFileAbsFilePath").toString();
+                                trcServerSettings.m_strAdminObjFileAbsFilePath = strAttr;
+                            }
+                            if( xmlStreamReader.attributes().hasAttribute("NewTrcAdminObjsEnabledAsDefault") )
+                            {
+                                strAttr = xmlStreamReader.attributes().value("NewTrcAdminObjsEnabledAsDefault").toString();
+                                bVal = str2Bool(strAttr, &bOk);
+                                if( bOk ) trcServerSettings.m_bNewTrcAdminObjsEnabledAsDefault = bVal;
+                                else xmlStreamReader.raiseError("Attribute \"NewTrcAdminObjsEnabledAsDefault\" (" + strAttr + ") is out of range");
+                            }
+                            if( xmlStreamReader.attributes().hasAttribute("NewTrcAdminObjsDefaultDetailLevel") )
+                            {
+                                strAttr = xmlStreamReader.attributes().value("NewTrcAdminObjsDefaultDetailLevel").toString();
+                                iVal = strAttr.toInt(&bOk);
+                                if( bOk ) trcServerSettings.m_iNewTrcAdminObjsDefaultDetailLevel = iVal;
+                                else xmlStreamReader.raiseError("Attribute \"NewTrcAdminObjsDefaultDetailLevel\" (" + strAttr + ") is out of range");
+                            }
+                            if( xmlStreamReader.attributes().hasAttribute("UseIpcServer") )
+                            {
+                                strAttr = xmlStreamReader.attributes().value("UseIpcServer").toString();
+                                bVal = str2Bool(strAttr, &bOk);
+                                if( bOk ) trcServerSettings.m_bUseIpcServer = bVal;
+                                else xmlStreamReader.raiseError("Attribute \"UseIpcServer\" (" + strAttr + ") is out of range");
+                            }
+                            if( xmlStreamReader.attributes().hasAttribute("CacheDataIfNotConnected") )
+                            {
+                                strAttr = xmlStreamReader.attributes().value("CacheDataIfNotConnected").toString();
+                                bVal = str2Bool(strAttr, &bOk);
+                                if( bOk ) trcServerSettings.m_bCacheDataIfNotConnected = bVal;
+                                else xmlStreamReader.raiseError("Attribute \"CacheDataIfNotConnected\" (" + strAttr + ") is out of range");
+                            }
+                            if( xmlStreamReader.attributes().hasAttribute("CacheDataMaxArrLen") )
+                            {
+                                strAttr = xmlStreamReader.attributes().value("CacheDataMaxArrLen").toString();
+                                iVal = strAttr.toInt(&bOk);
+                                if( bOk ) trcServerSettings.m_iCacheDataMaxArrLen = iVal;
+                                else xmlStreamReader.raiseError("Attribute \"CacheDataMaxArrLen\" (" + strAttr + ") is out of range");
+                            }
+                            if( xmlStreamReader.attributes().hasAttribute("UseLocalTrcFile") )
+                            {
+                                strAttr = xmlStreamReader.attributes().value("UseLocalTrcFile").toString();
+                                bVal = str2Bool(strAttr, &bOk);
+                                if( bOk ) trcServerSettings.m_bUseLocalTrcFile = bVal;
+                                else xmlStreamReader.raiseError("Attribute \"UseLocalTrcFile\" (" + strAttr + ") is out of range");
+                            }
+                            if( xmlStreamReader.attributes().hasAttribute("LocalTrcFileAbsFilePath") )
+                            {
+                                strAttr = xmlStreamReader.attributes().value("LocalTrcFileAbsFilePath").toString();
+                                trcServerSettings.m_strLocalTrcFileAbsFilePath = strAttr;
+                            }
+                            if( xmlStreamReader.attributes().hasAttribute("LocalTrcFileAutoSaveInterval_ms") )
+                            {
+                                strAttr = xmlStreamReader.attributes().value("LocalTrcFileAutoSaveInterval_ms").toString();
+                                iVal = strAttr.toInt(&bOk);
+                                if( bOk ) trcServerSettings.m_iLocalTrcFileAutoSaveInterval_ms = iVal;
+                                else xmlStreamReader.raiseError("Attribute \"LocalTrcFileAutoSaveInterval_ms\" (" + strAttr + ") is out of range");
+                            }
+                            if( xmlStreamReader.attributes().hasAttribute("LocalTrcFileSubFileCountMax") )
+                            {
+                                strAttr = xmlStreamReader.attributes().value("LocalTrcFileSubFileCountMax").toString();
+                                iVal = strAttr.toInt(&bOk);
+                                if( bOk ) trcServerSettings.m_iLocalTrcFileSubFileCountMax = iVal;
+                                else xmlStreamReader.raiseError("Attribute \"LocalTrcFileSubFileCountMax\" (" + strAttr + ") is out of range");
+                            }
+                            if( xmlStreamReader.attributes().hasAttribute("LocalTrcFileSubFileLineCountMax") )
+                            {
+                                strAttr = xmlStreamReader.attributes().value("LocalTrcFileSubFileLineCountMax").toString();
+                                iVal = strAttr.toInt(&bOk);
+                                if( bOk ) trcServerSettings.m_iLocalTrcFileSubFileLineCountMax = iVal;
+                                else xmlStreamReader.raiseError("Attribute \"LocalTrcFileSubFileLineCountMax\" (" + strAttr + ") is out of range");
+                            }
+                            if( xmlStreamReader.attributes().hasAttribute("LocalTrcFileCloseAfterEachWrite") )
+                            {
+                                strAttr = xmlStreamReader.attributes().value("LocalTrcFileCloseAfterEachWrite").toString();
+                                bVal = str2Bool(strAttr, &bOk);
+                                if( bOk ) trcServerSettings.m_bLocalTrcFileCloseFileAfterEachWrite = bVal;
+                                else xmlStreamReader.raiseError("Attribute \"LocalTrcFileCloseAfterEachWrite\" (" + strAttr + ") is out of range");
+                            }
+
+                            // While receiving the trace settings emitting the traceSettingsChanged signal is blocked
+                            // by setting the flag m_bOnReceivedDataUpdateInProcess to true to accumulate all changes
+                            // and emit the signal just once. setTraceSettings will check if the settings have been
+                            // changed before taken them over. But setTraceSettings will not emit the settings changed
+                            // signal as the flag m_bOnReceivedDataUpdateInProcess is set. So we need to do this check
+                            // here also and emit the signal.
+                            if( bRemoteNameChanged || trcServerSettings != m_trcServerSettings )
+                            {
+                                m_bOnReceivedDataUpdateInProcess = true;
+                                setTraceSettings(trcServerSettings);
+                                m_bOnReceivedDataUpdateInProcess = false;
+                                emit traceSettingsChanged(this);
+                            }
+                        } // if( xmlStreamReader.isStartElement() )
+                    } // if( strElemName == "ServerSettings" )
 
                     else
                     {
                         xmlStreamReader.raiseError("Invalid element name \"" + strElemName + "\" in received XML data");
                     }
-                } // if( xmlStreamReader.isStartElement() )
+                } // if( xmlStreamReader.isStartElement() || xmlStreamReader.isEndElement() )
             } // while( xmlStreamTokenType != QXmlStreamReader::EndElement && xmlStreamTokenType != QXmlStreamReader::Invalid )
         } // if( xmlStreamTokenType == QXmlStreamReader::StartDocument )
 

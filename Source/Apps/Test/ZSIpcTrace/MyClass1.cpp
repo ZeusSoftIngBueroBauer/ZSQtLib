@@ -81,7 +81,7 @@ QString CMyClass1::classMethod(const QString& i_strMthInArgs)
         /* pAdminObj    */ trcAdminObjGuard.trcAdminObj(),
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "classMethod",
-        /* strAddInfo   */ strMthInArgs );
+        /* strMthInArgs */ strMthInArgs );
 
     strResult = "Hello World";
 
@@ -119,7 +119,7 @@ CMyClass1::CMyClass1( const QString& i_strObjName ) :
 
     if( s_trcAdminObjRefAnchor.isActive(ETraceDetailLevelMethodArgs) )
     {
-        strMthInArgs  = i_strObjName;
+        strMthInArgs = i_strObjName;
     }
 
     CMethodTracer mthTracer(
@@ -127,7 +127,7 @@ CMyClass1::CMyClass1( const QString& i_strObjName ) :
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strObjName   */ i_strObjName,
         /* strMethod    */ "ctor",
-        /* strAddInfo   */ strMthInArgs );
+        /* strMthInArgs */ strMthInArgs );
 
     m_pMtxWaitClass2ThreadRunning = new CMutex(ClassName() + "::" + objectName() + "::WaitClass2ThreadRunning");
     m_pWaitClass2ThreadRunning = new CWaitCondition(ClassName() + "::" + objectName() + "::Class2ThreadRunning");
@@ -143,7 +143,7 @@ CMyClass1::~CMyClass1()
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strObjName   */ objectName(),
         /* strMethod    */ "dtor",
-        /* strAddInfo   */ "" );
+        /* strMthInArgs */ "" );
 
     emit aboutToBeDestroyed(this, objectName());
 
@@ -227,7 +227,7 @@ void CMyClass1::setObjectName(const QString& i_strObjName)
             /* iDetailLevel */ ETraceDetailLevelMethodCalls,
             /* strObjName   */ objectName(),
             /* strMethod    */ "setObjectName",
-            /* strAddInfo   */ strMthInArgs );
+            /* strMthInArgs */ strMthInArgs );
 
         QObject::setObjectName(i_strObjName);
 
@@ -250,7 +250,7 @@ CMyClass2* CMyClass1::startClass2Thread(const QString& i_strMyClass2ObjName)
 
     if( s_trcAdminObjRefAnchor.isActive(ETraceDetailLevelMethodArgs) )
     {
-        strMthInArgs  = i_strMyClass2ObjName;
+        strMthInArgs = i_strMyClass2ObjName;
     }
 
     CMethodTracer mthTracer(
@@ -258,7 +258,7 @@ CMyClass2* CMyClass1::startClass2Thread(const QString& i_strMyClass2ObjName)
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strObjName   */ objectName(),
         /* strMethod    */ "startClass2Thread",
-        /* strAddInfo   */ strMthInArgs );
+        /* strMthInArgs */ strMthInArgs );
 
     m_strMyClass2ObjName = i_strMyClass2ObjName;
 
@@ -313,7 +313,7 @@ void CMyClass1::stopClass2Thread()
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strObjName   */ objectName(),
         /* strMethod    */ "stopClass2Thread",
-        /* strAddInfo   */ strMthInArgs );
+        /* strMthInArgs */ strMthInArgs );
 
     if( m_pMyClass2Thread != nullptr && m_pMyClass2Thread->isRunning() )
     {
@@ -354,7 +354,7 @@ void CMyClass1::onClass2ThreadRunning()
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strObjName   */ objectName(),
         /* strMethod    */ "onClass2ThreadRunning",
-        /* strAddInfo   */ strMthInArgs );
+        /* strMthInArgs */ strMthInArgs );
 
     m_pWaitClass2ThreadRunning->notify_all();
 }

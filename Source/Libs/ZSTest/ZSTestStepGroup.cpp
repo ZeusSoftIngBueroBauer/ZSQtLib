@@ -27,6 +27,7 @@ may result in using the software modules.
 #include "ZSTest/ZSTestStepGroup.h"
 #include "ZSTest/ZSTest.h"
 #include "ZSTest/ZSTestStep.h"
+#include "ZSTest/ZSTestStepRoot.h"
 #include "ZSTest/ZSTestStepIdxTree.h"
 
 #include "ZSSys/ZSSysErrResult.h"
@@ -93,81 +94,6 @@ CTestStepGroup::CTestStepGroup(
     CAbstractTestStepIdxTreeEntry(i_pTest, i_entryType, i_strName, nullptr)
 {
 } // ctor
-
-/*==============================================================================
-public: // must overridables of base class CAbstractTestStepIdxTreeEntry
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-/*! Returns the test result of the group.
-
-    For a group the resulting test result is
-
-    Undefined .. if ANY of the childrens test result is Undefined
-    Failed ..... if NONE of the childrens test result is Undefined but at least
-                 on childrens test result is Failed
-    Passed ..... if NONE of the childrens test result is either Undefined or Failed.
-
-    @return Test result of the group.
-*/
-CEnumTestResult CTestStepGroup::getTestResult() const
-//------------------------------------------------------------------------------
-{
-    CEnumTestResult testResult = ETestResult::Undefined;
-
-    const CAbstractTestStepIdxTreeEntry* pTestStepEntry;
-
-    for( const auto& pIdxTreeEntry: m_arpTreeEntries )
-    {
-        pTestStepEntry = dynamic_cast<CAbstractTestStepIdxTreeEntry*>(pIdxTreeEntry);
-
-        CEnumTestResult testResultTmp = pTestStepEntry->getTestResult();
-
-        if( testResultTmp == ETestResult::Undefined )
-        {
-            testResult = ETestResult::Undefined;
-            break;
-        }
-        else if( testResultTmp == ETestResult::TestFailed )
-        {
-            testResult = ETestResult::TestFailed;
-        }
-        else if( testResultTmp == ETestResult::TestPassed )
-        {
-            if( testResult != ETestResult::TestFailed )
-            {
-                testResult = ETestResult::TestPassed;
-            }
-        }
-    }
-
-    return testResult;
-
-} // getTestResult
-
-//------------------------------------------------------------------------------
-/*! Returns the overall sum of the test duration in seconds for this group by
-    recursively summing up the test duration of all children.
-
-    @return Test duration of the group in seconds.
-*/
-double CTestStepGroup::getTestDurationInSec() const
-//------------------------------------------------------------------------------
-{
-    double fDuration_s = 0.0;
-
-    const CAbstractTestStepIdxTreeEntry* pTestStepEntry;
-
-    for( const auto& pIdxTreeEntry: m_arpTreeEntries )
-    {
-        pTestStepEntry = dynamic_cast<CAbstractTestStepIdxTreeEntry*>(pIdxTreeEntry);
-
-        fDuration_s += pTestStepEntry->getTestDurationInSec();
-    }
-
-    return fDuration_s;
-
-} // getTestDurationInSec
 
 /*==============================================================================
 public: // instance methods
@@ -252,10 +178,108 @@ void CTestStepGroup::onTestStepResultChanged(
                     }
                 }
             }
-
-            setTestResult(testResult);
-
         } // if( i_testResult == ETestResult::TestPassed )
+
+        if( m_testResult != i_testResult )
+        {
+            m_testResult = i_testResult;
+
+            if( m_pTree != nullptr )
+            {
+                m_pTree->onTreeEntryChanged(this);
+            }
+
+            CTestStepGroup* pParentGroup = getParentGroup();
+
+            if( pParentGroup != nullptr )
+            {
+                pParentGroup->onTestStepResultChanged(this, m_testResult);
+            }
+            else
+            {
+                CTestStepRoot* pRootEntry = dynamic_cast<CTestStepRoot*>(m_pTest->getTestStepIdxTree()->root());
+
+                if( pRootEntry != nullptr )
+                {
+                    pRootEntry->onTestStepResultChanged(this, m_testResult);
+                }
+            }
+        } // if( m_testResult != i_testResult )
     } // if( m_testResult != testResult )
 
 } // onTestStepResultChanged
+
+/*==============================================================================
+public: // must overridables of base class CAbstractTestStepIdxTreeEntry
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! Returns the test result of the group.
+
+    For a group the resulting test result is
+
+    Undefined .. if ANY of the childrens test result is Undefined
+    Failed ..... if NONE of the childrens test result is Undefined but at least
+                 on childrens test result is Failed
+    Passed ..... if NONE of the childrens test result is either Undefined or Failed.
+
+    @return Test result of the group.
+*/
+CEnumTestResult CTestStepGroup::getTestResult() const
+//------------------------------------------------------------------------------
+{
+    CEnumTestResult testResult = ETestResult::Undefined;
+
+    const CAbstractTestStepIdxTreeEntry* pTestStepEntry;
+
+    for( const auto& pIdxTreeEntry: m_arpTreeEntries )
+    {
+        pTestStepEntry = dynamic_cast<CAbstractTestStepIdxTreeEntry*>(pIdxTreeEntry);
+
+        CEnumTestResult testResultTmp = pTestStepEntry->getTestResult();
+
+        if( testResultTmp == ETestResult::TestFailed )
+        {
+            testResult = ETestResult::TestFailed;
+        }
+        else if( testResultTmp == ETestResult::TestPassed )
+        {
+            if( testResult != ETestResult::TestFailed )
+            {
+                testResult = ETestResult::TestPassed;
+            }
+        }
+        else // if( testResultTmp == ETestResult::Undefined || testResultTmp == ETestResult::Skipped )
+        {
+            testResult = ETestResult::Undefined;
+            break;
+        }
+    }
+
+    return testResult;
+
+} // getTestResult
+
+//------------------------------------------------------------------------------
+/*! Returns the overall sum of the test duration in seconds for this group by
+    recursively summing up the test duration of all children.
+
+    @return Test duration of the group in seconds.
+*/
+double CTestStepGroup::getTestDurationInSec() const
+//------------------------------------------------------------------------------
+{
+    double fDuration_s = 0.0;
+
+    const CAbstractTestStepIdxTreeEntry* pTestStepEntry;
+
+    for( const auto& pIdxTreeEntry: m_arpTreeEntries )
+    {
+        pTestStepEntry = dynamic_cast<CAbstractTestStepIdxTreeEntry*>(pIdxTreeEntry);
+
+        fDuration_s += pTestStepEntry->getTestDurationInSec();
+    }
+
+    return fDuration_s;
+
+} // getTestDurationInSec

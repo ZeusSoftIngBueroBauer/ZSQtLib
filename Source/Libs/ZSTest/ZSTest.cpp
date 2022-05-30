@@ -582,6 +582,7 @@ public: // instance methods
         Undefined  .. if none of the tests has been exucuted
         TestFailed .. if at least one test step failed
         TestPassed .. if all test steps were successfull
+        TestSkipped . if all test steps were skipped
 
     @note The method may be time consuming as the whole test step tree will
           be walked trough. This is something which could be improved by storing
@@ -862,6 +863,7 @@ SErrResultInfo CTest::saveTestResults( const QString& i_strAbsFilePath, bool i_b
         int iTotalNumberOfTestSteps = 0;
         int iNumberOfFailedTestSteps = 0;
         int iNumberOfPassedTestSteps = 0;
+        int iNumberOfSkippedTestSteps = 0;
         int iNumberOfDisabledTestSteps = 0;
 
         CTestStepRoot* pRootEntry = dynamic_cast<CTestStepRoot*>(m_pIdxTree->root());
@@ -889,8 +891,9 @@ SErrResultInfo CTest::saveTestResults( const QString& i_strAbsFilePath, bool i_b
                     {
                         iNumberOfPassedTestSteps++;
                     }
-                    else if( pTestStep->getTestResult() == ETestResult::Ignore )
+                    else if( pTestStep->getTestResult() == ETestResult::TestSkipped )
                     {
+                        iNumberOfSkippedTestSteps++;
                     }
                 }
                 else
@@ -915,6 +918,7 @@ SErrResultInfo CTest::saveTestResults( const QString& i_strAbsFilePath, bool i_b
         out << "Total number of test steps: " << QString::number(iTotalNumberOfTestSteps) << "\n";
         out << "Number of failed test steps: " << QString::number(iNumberOfFailedTestSteps) << "\n";
         out << "Number of passed test steps: " << QString::number(iNumberOfPassedTestSteps) << "\n";
+        out << "Number of skipped test steps: " << QString::number(iNumberOfSkippedTestSteps) << "\n";
         out << "Number of disabled test steps: " << QString::number(iNumberOfDisabledTestSteps) << "\n";
         out << "\n\n";
 

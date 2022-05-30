@@ -55,11 +55,11 @@ protected: // ctor for class CTestGroupRoot
 public: // overridables
     virtual QString nameSpace() const { return CTestStepGroup::NameSpace(); }
     virtual QString className() const { return CTestStepGroup::ClassName(); }
+public: // instance methods
+    void onTestStepResultChanged( CAbstractTestStepIdxTreeEntry* i_pTreeEntry, const CEnumTestResult& i_testResult );
 public: // must overridables of base class CAbstractTestStepIdxTreeEntry
     virtual CEnumTestResult getTestResult() const override;
     virtual double getTestDurationInSec() const override;
-public: // instance methods
-    void onTestStepResultChanged( CAbstractTestStepIdxTreeEntry* i_pTreeEntry, const CEnumTestResult& i_testResult );
 private: // default ctor not allowed
     CTestStepGroup();
 private: // copy ctor not allowed

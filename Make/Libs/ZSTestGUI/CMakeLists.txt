@@ -35,6 +35,7 @@ list(APPEND _Headers
     ${_HeadersPath}/ZSSys/ZSSysVersion.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSTestDlg.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSTestGUIDllMain.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSTestStepDlg.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSTestStepIdxTreeDelegate.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSTestStepIdxTreeModel.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSTestStepIdxTreeView.h
@@ -44,6 +45,7 @@ list(APPEND _Headers
 list(APPEND _Sources
     ${_SourcesPath}/${PROJECT_NAME}/ZSTestDlg.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSTestGUIDllMain.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSTestStepDlg.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSTestStepIdxTreeDelegate.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSTestStepIdxTreeModel.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSTestStepIdxTreeView.cpp

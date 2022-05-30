@@ -80,6 +80,7 @@ Makefile.*
 #Generated header and resource files
 /Include/Libs/ZSSys/ZSSysVersion.h
 /Include/Apps/Test/ZSIpcTrace/TestConfig.h
+/Include/Apps/Test/ZSIpcTraceDllIfQtApp/TestConfig.h
 /Resources/Libs/ZSSys/ZSSysVersion.rc
 /Make/Apps/Products/ZSTrcMthClient/Installer/config/config.xml
 /Make/Apps/Products/ZSTrcMthClient/Installer/packages/de.zeussoft.TrcMthClient/meta/installscript.qs

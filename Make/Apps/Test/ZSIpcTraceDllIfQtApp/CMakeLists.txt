@@ -38,9 +38,15 @@ list(APPEND _Headers
     ${_HeadersPath}/ZSIpcTraceDllIfQtApp/WidgetCentral.h
     ${_HeadersPath}/ZSIpcTraceDllIfQtApp/MsgTest.h
     ${_HeadersPath}/ZSIpcTraceDllIfQtApp/Test.h
-    ${_HeadersPath}/ZSIpcTraceDllIfQtApp/TestModule1.h
-    ${_HeadersPath}/ZSIpcTraceDllIfQtApp/TestModule2.h
+    ${_HeadersPath}/ZSIpcTraceDllIfQtApp/MyClass1.h
+    ${_HeadersPath}/ZSIpcTraceDllIfQtApp/MyClass2.h
+    ${_HeadersPath}/ZSIpcTraceDllIfQtApp/MyClass3.h
 )
+
+configure_file(
+    ${_HeadersPath}/ZSIpcTraceDllIfQtApp/TestConfig.h.in
+    ${_HeadersPath}/ZSIpcTraceDllIfQtApp/TestConfig.h)
+set(_Headers ${_Headers} ${_HeadersPath}/ZSIpcTraceDllIfQtApp/TestConfig.h)
 
 list(APPEND _Sources
     ${_SourcesPath}/ZSIpcTraceDllIfQtApp/Main.cpp
@@ -49,8 +55,9 @@ list(APPEND _Sources
     ${_SourcesPath}/ZSIpcTraceDllIfQtApp/WidgetCentral.cpp
     ${_SourcesPath}/ZSIpcTraceDllIfQtApp/MsgTest.cpp
     ${_SourcesPath}/ZSIpcTraceDllIfQtApp/Test.cpp
-    ${_SourcesPath}/ZSIpcTraceDllIfQtApp/TestModule1.cpp
-    ${_SourcesPath}/ZSIpcTraceDllIfQtApp/TestModule2.cpp
+    ${_SourcesPath}/ZSIpcTraceDllIfQtApp/MyClass1.cpp
+    ${_SourcesPath}/ZSIpcTraceDllIfQtApp/MyClass2.cpp
+    ${_SourcesPath}/ZSIpcTraceDllIfQtApp/MyClass3.cpp
 )
 
 list(APPEND _Interfaces

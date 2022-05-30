@@ -82,7 +82,7 @@ CMyClass3Thread::CMyClass3Thread( const QString& i_strMyClass3ObjName, CMyClass2
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "ctor",
-        /* strAddInfo   */ strMthInArgs );
+        /* strMthInArgs */ strMthInArgs );
 
 } // ctor
 
@@ -94,7 +94,7 @@ CMyClass3Thread::~CMyClass3Thread()
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "dtor",
-        /* strAddInfo   */ "" );
+        /* strMthInArgs */ "" );
 
     if( isRunning() )
     {
@@ -157,7 +157,7 @@ void CMyClass3Thread::setObjectName(const QString& i_strObjName)
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "setObjectName",
-        /* strAddInfo   */ strMthInArgs );
+        /* strMthInArgs */ strMthInArgs );
 
     QObject::setObjectName(i_strObjName);
 
@@ -195,7 +195,7 @@ void CMyClass3Thread::run()
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "run",
-        /* strAddInfo   */ "" );
+        /* strMthInArgs */ "" );
 
     m_pMyClass3 = new CMyClass3(m_strMyClass3ObjName, this);
 
@@ -255,7 +255,7 @@ void CMyClass3Thread::start( QThread::Priority i_priority )
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "start",
-        /* strAddInfo   */ strMthInArgs );
+        /* strMthInArgs */ strMthInArgs );
 
     return QThread::start(i_priority);
 }
@@ -268,7 +268,7 @@ void CMyClass3Thread::quit()
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "quit",
-        /* strAddInfo   */ "" );
+        /* strMthInArgs */ "" );
 
     return QThread::quit();
 }
@@ -288,7 +288,7 @@ bool CMyClass3Thread::wait( QDeadlineTimer i_deadline )
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "wait",
-        /* strAddInfo   */ strMthInArgs );
+        /* strMthInArgs */ strMthInArgs );
 
     bool bResult = QThread::wait(i_deadline);
 
@@ -314,7 +314,7 @@ bool CMyClass3Thread::wait( unsigned long i_time_ms )
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "wait",
-        /* strAddInfo   */ strMthInArgs );
+        /* strMthInArgs */ strMthInArgs );
 
     bool bResult = QThread::wait(i_time_ms);
 
@@ -337,7 +337,7 @@ int CMyClass3Thread::exec()
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "exec",
-        /* strAddInfo   */ "" );
+        /* strMthInArgs */ "" );
 
     int iResult = QThread::exec();
 
@@ -392,7 +392,7 @@ QString CMyClass3::classMethod(const QString& i_strMthInArgs)
         /* pAdminObj    */ trcAdminObjGuard.trcAdminObj(),
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "classMethod",
-        /* strAddInfo   */ strMthInArgs );
+        /* strMthInArgs */ strMthInArgs );
 
     strResult = "Hello World";
 
@@ -425,7 +425,7 @@ QString CMyClass3::noisyClassMethod(const QString& i_strMthInArgs)
         /* pAdminObj    */ trcAdminObjGuard.trcAdminObj(),
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "noisyClassMethod",
-        /* strAddInfo   */ strMthInArgs );
+        /* strMthInArgs */ strMthInArgs );
 
     strResult = "Hello World";
 
@@ -458,7 +458,7 @@ QString CMyClass3::veryNoisyClassMethod(const QString& i_strMthInArgs)
         /* pAdminObj    */ trcAdminObjGuard.trcAdminObj(),
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "veryNoisyClassMethod",
-        /* strAddInfo   */ strMthInArgs );
+        /* strMthInArgs */ strMthInArgs );
 
     strResult = "Hello World";
 
@@ -512,7 +512,7 @@ CMyClass3::CMyClass3( const QString& i_strObjName, CMyClass3Thread* i_pMyClass3T
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "ctor",
-        /* strAddInfo   */ strMthInArgs );
+        /* strMthInArgs */ strMthInArgs );
 
     m_pMtxCounters = new CMutex(QMutex::Recursive, ClassName() + "::" + objectName() + "::Counters");
 
@@ -526,7 +526,7 @@ CMyClass3::~CMyClass3()
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "dtor",
-        /* strAddInfo   */ "" );
+        /* strMthInArgs */ "" );
 
     emit aboutToBeDestroyed(this, objectName());
 
@@ -577,7 +577,7 @@ void CMyClass3::setObjectName(const QString& i_strObjName)
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "setObjectName",
-        /* strAddInfo   */ strMthInArgs );
+        /* strMthInArgs */ strMthInArgs );
 
     QObject::setObjectName(i_strObjName);
 
@@ -616,7 +616,7 @@ QString CMyClass3::instMethod(const QString& i_strMthInArgs)
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "instMethod",
-        /* strAddInfo   */ strMthInArgs );
+        /* strMthInArgs */ strMthInArgs );
 
     strResult = "Hello World";
 
@@ -647,7 +647,7 @@ QString CMyClass3::noisyInstMethod(const QString& i_strMthInArgs)
         /* pAdminObj    */ m_pTrcAdminObjNoisyMethods,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "noisyInstMethod",
-        /* strAddInfo   */ strMthInArgs );
+        /* strMthInArgs */ strMthInArgs );
 
     strResult = "Hello World";
 
@@ -678,7 +678,7 @@ QString CMyClass3::veryNoisyInstMethod(const QString& i_strMthInArgs)
         /* pAdminObj    */ m_pTrcAdminObjVeryNoisyMethods,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "veryNoisyInstMethod",
-        /* strAddInfo   */ strMthInArgs );
+        /* strMthInArgs */ strMthInArgs );
 
     strResult = "Hello World";
 
@@ -704,7 +704,7 @@ int CMyClass3::recursiveTraceMethod()
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "recursiveTraceMethod",
-        /* strAddInfo   */ "" );
+        /* strMthInArgs */ "" );
 
     CMutexLocker mtxLocker(m_pMtxCounters);
 

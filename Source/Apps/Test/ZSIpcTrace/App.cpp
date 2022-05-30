@@ -217,7 +217,7 @@ CApplication::CApplication(
         /* iTrcDetailLevelIpcServer        */ ETraceDetailLevelNone,
         /* iTrcDetailLevelIpcServerMutex   */ ETraceDetailLevelNone,
         /* iTrcDetailLevelIpcServerGateway */ ETraceDetailLevelNone );
-    m_pZSTrcServer->recallAdminObjs();
+    //m_pZSTrcServer->recallAdminObjs();
 
     // Trace client
     //-------------
@@ -259,8 +259,6 @@ CApplication::CApplication(
 CApplication::~CApplication()
 //------------------------------------------------------------------------------
 {
-    //saveSettings();
-
     // Destroy objects created and controlled by the application
     //----------------------------------------------------------
 
@@ -298,7 +296,7 @@ CApplication::~CApplication()
     // Destroy trace server
     if( m_pZSTrcServer != nullptr )
     {
-        m_pZSTrcServer->saveAdminObjs();
+        //m_pZSTrcServer->saveAdminObjs();
 
         try
         {

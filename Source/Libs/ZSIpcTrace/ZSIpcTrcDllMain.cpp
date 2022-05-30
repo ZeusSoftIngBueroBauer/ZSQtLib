@@ -32,6 +32,7 @@ may result in using the software modules.
 #include "ZSIpcTrace/ZSIpcTrcDllIfServerThread.h"
 #include "ZSIpcTrace/ZSIpcTrcServer.h"
 #include "ZSIpc/ZSIpcSrvCltMsg.h"
+#include "ZSSys/ZSSysErrLog.h"
 #include "ZSSys/ZSSysTrcAdminObjIdxTree.h"
 #include "ZSSys/ZSSysTrcMthFile.h"
 #include "ZSSys/ZSSysRequest.h"
@@ -889,18 +890,9 @@ ZSIPCTRACEDLL_EXTERN_API void TrcServer_ReleaseTraceAdminObj( DllIf::CTrcAdminOb
 
         DllIf_TrcServer_s_hshiTrcAdminObjsRefCounts[strKeyInTree] = iRefCount;
 
-        if( iRefCount <= 0 )
-        {
-            if( DllIf_TrcServer_s_hshpTrcAdminObjs.contains(strKeyInTree) )
-            {
-                DllIf_TrcServer_s_hshpTrcAdminObjs.remove(strKeyInTree);
-            }
+        // The trace admin object of the Dll interface will be kept as long as the trace server is alive.
+        // If the trace server is releases and its reference counter reaches 0 the admin objects are deleted.
 
-            delete i_pTrcAdminObj;
-            i_pTrcAdminObj = nullptr;
-
-            DllIf_TrcServer_s_hshiTrcAdminObjsRefCounts.remove(strKeyInTree);
-        }
     } // if( i_pTrcAdminObj != nullptr )
 
 } // TrcServer_ReleaseTraceAdminObj
@@ -2156,7 +2148,13 @@ ZSIPCTRACEDLL_EXTERN_API DllIf::CIpcTrcServer* IpcTrcServer_GetInstance()
 } // IpcTrcServer_GetInstance
 
 //------------------------------------------------------------------------------
-ZSIPCTRACEDLL_EXTERN_API DllIf::CIpcTrcServer* IpcTrcServer_CreateInstance( int i_iTrcDetailLevel )
+ZSIPCTRACEDLL_EXTERN_API DllIf::CIpcTrcServer* IpcTrcServer_CreateInstance(
+    int i_iTrcDetailLevelDllIf,
+    int i_iTrcDetailLevelTrcServer,
+    int i_iTrcDetailLevelTrcServerMutex,
+    int i_iTrcDetailLevelTrcServerIpcServer,
+    int i_iTrcDetailLevelTrcServerIpcServerMutex,
+    int i_iTrcDetailLevelTrcServerIpcServerGateway )
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&DllIf_s_mtx);
@@ -2191,7 +2189,7 @@ ZSIPCTRACEDLL_EXTERN_API DllIf::CIpcTrcServer* IpcTrcServer_CreateInstance( int 
         strLocalTrcFileAbsFilePath = CTrcServer::GetDefaultLocalTrcFileAbsoluteFilePath();
 
         DllIf_IpcTrcServer_s_pTrcMthFile = CTrcMthFile::Alloc(strLocalTrcFileAbsFilePath);
-        DllIf_IpcTrcServer_s_iTrcMthDetailLevel = i_iTrcDetailLevel;
+        DllIf_IpcTrcServer_s_iTrcMthDetailLevel = i_iTrcDetailLevelDllIf;
     }
 
     CTrcMthFile* pTrcMthFile = DllIf_IpcTrcServer_s_pTrcMthFile;
@@ -2225,12 +2223,18 @@ ZSIPCTRACEDLL_EXTERN_API DllIf::CIpcTrcServer* IpcTrcServer_CreateInstance( int 
         // or not the trace servers created via the Dll interface (via this main dll module)
         // will be created and later on started from a separate thread.
         // If the application uses Qt this ensures that the server is hosted in a QThread
-        // with an event loop. If the application does not use Qt it is anyway necessar
+        // with an event loop. If the application does not use Qt it is anyway necessary
         // to create the tracer server in a thread with an event loop.
         DllIf::CIpcTrcServerThread* pTrcServerThread = DllIf_s_pIpcTrcServerThread;
         if( pTrcServerThread == nullptr )
         {
-            DllIf_s_pIpcTrcServerThread = new DllIf::CIpcTrcServerThread(i_iTrcDetailLevel);
+            DllIf_s_pIpcTrcServerThread = new DllIf::CIpcTrcServerThread(
+                iTrcDetailLevel,
+                i_iTrcDetailLevelTrcServer,
+                i_iTrcDetailLevelTrcServerMutex,
+                i_iTrcDetailLevelTrcServerIpcServer,
+                i_iTrcDetailLevelTrcServerIpcServerMutex,
+                i_iTrcDetailLevelTrcServerIpcServerGateway);
         }
         pTrcServerThread = DllIf_s_pIpcTrcServerThread;
 
@@ -2263,8 +2267,7 @@ ZSIPCTRACEDLL_EXTERN_API DllIf::CIpcTrcServer* IpcTrcServer_CreateInstance( int 
         // Please note that the trace server has been created (or at least the reference
         // counter for an existing trace server has been incremented) in the thread.
         // Invoking "GetInstance" again here would increment the reference counter twice.
-
-        pDllIfTrcServer = new DllIf::CIpcTrcServer(i_iTrcDetailLevel);
+        pDllIfTrcServer = new DllIf::CIpcTrcServer();
         DllIf_IpcTrcServer_s_pTheInst = pDllIfTrcServer;
         DllIf_IpcTrcServer_s_iTrcServerRefCount = iRefCount;
 
@@ -2282,7 +2285,7 @@ ZSIPCTRACEDLL_EXTERN_API void IpcTrcServer_ReleaseInstance( DllIf::CIpcTrcServer
 
     if( i_pTrcServer != nullptr )
     {
-        int iRefCount = 0;
+        int iTrcServerRefCount = 0;
 
         {
             CTrcMthFile* pTrcMthFile = DllIf_IpcTrcServer_s_pTrcMthFile;
@@ -2300,17 +2303,51 @@ ZSIPCTRACEDLL_EXTERN_API void IpcTrcServer_ReleaseInstance( DllIf::CIpcTrcServer
                 /* strMethod          */ "IpcTrcServer_ReleaseInstance",
                 /* strMthInArgs       */ strMthInArgs );
 
-            iRefCount = DllIf_IpcTrcServer_s_iTrcServerRefCount - 1;
+            iTrcServerRefCount = DllIf_IpcTrcServer_s_iTrcServerRefCount - 1;
 
-            if( iRefCount > 0 /* && pDllIfTrcServer != nullptr */ ) // pDllIfTrcServer must not be nullptr. Otherwise ... crash.
+            if( iTrcServerRefCount > 0 /* && pDllIfTrcServer != nullptr */ ) // pDllIfTrcServer must not be nullptr. Otherwise ... crash.
             {
                 CIpcTrcServer::ReleaseInstance();
 
-                DllIf_IpcTrcServer_s_iTrcServerRefCount = iRefCount;
+                DllIf_IpcTrcServer_s_iTrcServerRefCount = iTrcServerRefCount;
             }
             // Trace server is no longer referenced ...
-            else // if( iRefCount == 0 )
+            else // if( iTrcServerRefCount == 0 )
             {
+                QStringList strlstKeysInTree = DllIf_TrcServer_s_hshpTrcAdminObjs.keys();
+
+                for( const QString& strKeyInTree : strlstKeysInTree )
+                {
+                    DllIf::CTrcAdminObj* pDllIfTrcAdminObj = DllIf_TrcServer_s_hshpTrcAdminObjs[strKeyInTree];
+                    int iTrcAdminObjRefCount = DllIf_TrcServer_s_hshiTrcAdminObjsRefCounts[strKeyInTree];
+
+                    if( iTrcAdminObjRefCount > 0 )
+                    {
+                        SErrResultInfo errResultInfo(
+                            /* errSource     */ "ZS::Trace::DllIf", "IpcTrcServer", strKeyInTree, "ReleaseInstance",
+                            /* result        */ EResultObjRefCounterIsNotZero,
+                            /* severity      */ EResultSeverityError,
+                            /* strAddErrInfo */ "The dtor is called even if the objects reference counter is not 0 but " + QString::number(iTrcAdminObjRefCount));
+
+                        if( CErrLog::GetInstance() != nullptr )
+                        {
+                            CErrLog::GetInstance()->addEntry(errResultInfo);
+                        }
+                    }
+
+                    DllIf_TrcServer_s_hshpTrcAdminObjs.remove(strKeyInTree);
+                    DllIf_TrcServer_s_hshiTrcAdminObjsRefCounts.remove(strKeyInTree);
+
+                    try
+                    {
+                        delete pDllIfTrcAdminObj;
+                    }
+                    catch(...)
+                    {
+                    }
+                    pDllIfTrcAdminObj = nullptr;
+                }
+
                 // The trace server was created and started from within a different thread context.
                 DllIf::CIpcTrcServerThread* pTrcServerThread = DllIf_s_pIpcTrcServerThread;
 
@@ -2339,13 +2376,13 @@ ZSIPCTRACEDLL_EXTERN_API void IpcTrcServer_ReleaseInstance( DllIf::CIpcTrcServer
                 delete i_pTrcServer;
                 i_pTrcServer = nullptr;
 
-            } // if( iRefCount == 0 )
+            } // if( iTrcServerRefCount == 0 )
 
             // dtor of mthTracer here which access the trace method file.
             // The trace method file got to be removed after this block.
         }
 
-        if( iRefCount == 0 )
+        if( iTrcServerRefCount == 0 )
         {
             if( DllIf_IpcTrcServer_s_pTrcMthFile != nullptr )
             {
@@ -2809,7 +2846,7 @@ protected: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-DllIf::CIpcTrcServer::CIpcTrcServer(int /*i_iTrcDetailLevel*/ ) :
+DllIf::CIpcTrcServer::CIpcTrcServer() :
 //------------------------------------------------------------------------------
     CTrcServer()
 {

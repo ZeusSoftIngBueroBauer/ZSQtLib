@@ -256,15 +256,21 @@ CIpcTrcServer* CIpcTrcServer::GetInstance()
     @param i_iTrcDetailLevel [in]
         If the methods of the trace server itself should be logged a value
         greater than 0 (ETraceDetailLevelNone) could be passed here.
+    @param i_iTrcDetailLevelMutex [in]
+        If locking and unlocking the mutex of the trace server should be
+        logged a value greater than 0 (ETraceDetailLevelNone) could be passed here.
     @param i_iTrcDetailLevelIpcServer [in]
         If the methods of the trace server's Ipc Server should be logged
         a value greater than 0 (ETraceDetailLevelNone) could be passed here.
+    @param i_iTrcDetailLevelIpcServerMutex [in]
+        If locking and unlocking the mutex of the trace server's Ipc Server should be
+        logged a value greater than 0 (ETraceDetailLevelNone) could be passed here.
     @param i_iTrcDetailLevelIpcServerGateway [in]
         If the methods of the trace server's Ipc Server's Gateway should
         be logged a value greater than 0 (ETraceDetailLevelNone) could be
         passed here.
 
-    \return Pointer to trace server instance.
+    @return Pointer to trace server instance.
 */
 CIpcTrcServer* CIpcTrcServer::CreateInstance(
     int i_iTrcDetailLevel,
@@ -1956,7 +1962,7 @@ void CIpcTrcServer::sendBranch(
                         /* iSocketId     */ i_iSocketId,
                         /* systemMsgType */ i_systemMsgType,
                         /* cmd           */ i_cmd,
-                        /* pTrcAdminObj  */ dynamic_cast<CTrcAdminObj*>(pTreeEntry) );
+                        /* pTrcAdminObj  */ pTreeEntry );
                 }
             }
         } // for( idxEntry = 0; idxEntry < i_pBranch->count(); ++idxEntry )
@@ -1973,7 +1979,7 @@ void CIpcTrcServer::sendAdminObj(
     int                         i_iSocketId,
     MsgProtocol::TSystemMsgType i_systemMsgType,
     MsgProtocol::TCommand       i_cmd,
-    CTrcAdminObj*               i_pTrcAdminObj )
+    CIdxTreeEntry*              i_pTrcAdminObj )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -1998,22 +2004,22 @@ void CIpcTrcServer::sendAdminObj(
 
     if( isConnected() )
     {
-        if( i_pTrcAdminObj != nullptr )
+        QString strMsg;
+
+        strMsg += systemMsgType2Str(i_systemMsgType) + " ";
+        strMsg += command2Str(i_cmd) + " ";
+        strMsg += "<TrcAdminObj";
+        strMsg += " IdxInTree=\"" + QString::number(i_pTrcAdminObj->indexInTree()) + "\"";
+
+        if( !i_pTrcAdminObj->isAboutToBeDestroyed() )
         {
-            QString strMsg;
-            QString strNameSpace = i_pTrcAdminObj->getNameSpace();
-            QString strClassName = i_pTrcAdminObj->getClassName();
-            QString strObjName = i_pTrcAdminObj->getObjectName();
-            QString strThreadName = i_pTrcAdminObj->getObjectThreadName();
+            CTrcAdminObj* pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(i_pTrcAdminObj);
 
-            strNameSpace = encodeForHtml(strNameSpace);
-            strClassName = encodeForHtml(strClassName);
-            strObjName = encodeForHtml(strObjName);
-            strThreadName = encodeForHtml(strThreadName);
+            QString strNameSpace = encodeForHtml(pTrcAdminObj->getNameSpace());
+            QString strClassName = encodeForHtml(pTrcAdminObj->getClassName());
+            QString strObjName = encodeForHtml(pTrcAdminObj->getObjectName());
+            QString strThreadName = encodeForHtml(pTrcAdminObj->getObjectThreadName());
 
-            strMsg += systemMsgType2Str(i_systemMsgType) + " ";
-            strMsg += command2Str(i_cmd) + " ";
-            strMsg += "<TrcAdminObj";
             if( i_pTrcAdminObj->parentBranch() != nullptr )
             {
                 strMsg += " ParentBranchIdxInTree=\"" + QString::number(i_pTrcAdminObj->parentBranch()->indexInTree()) + "\"";
@@ -2021,20 +2027,15 @@ void CIpcTrcServer::sendAdminObj(
             strMsg += " NameSpace=\"" + strNameSpace + "\"";
             strMsg += " ClassName=\"" + strClassName + "\"";
             strMsg += " ObjName=\"" + strObjName + "\"";
-            strMsg += " IdxInTree=\"" + QString::number(i_pTrcAdminObj->indexInTree()) + "\"";
+            strMsg += " Thread=\"" + strThreadName + "\"";
+            strMsg += " Enabled=\"" + CEnumEnabled::toString(pTrcAdminObj->getEnabled()) + "\"";
+            strMsg += " DetailLevel=\"" + QString::number(pTrcAdminObj->getTraceDetailLevel()) + "\"";
+            strMsg += " RefCount=\"" + QString::number(pTrcAdminObj->getRefCount()) + "\"";
+        }
+        strMsg += "/>";
 
-            if( i_cmd != MsgProtocol::ECommandDelete )
-            {
-                strMsg += " Thread=\"" + strThreadName + "\"";
-                strMsg += " Enabled=\"" + CEnumEnabled::toString(i_pTrcAdminObj->getEnabled()) + "\"";
-                strMsg += " DetailLevel=\"" + QString::number(i_pTrcAdminObj->getTraceDetailLevel()) + "\"";
-                strMsg += " RefCount=\"" + QString::number(i_pTrcAdminObj->getRefCount()) + "\"";
-            }
-            strMsg += "/>";
+        sendData( i_iSocketId, str2ByteArr(strMsg) );
 
-            sendData( i_iSocketId, str2ByteArr(strMsg) );
-
-        } // if( i_pTrcAdminObj != nullptr )
     } // if( isConnected() )
 
 } // sendAdminObj
@@ -2839,7 +2840,7 @@ void CIpcTrcServer::onTrcAdminObjIdxTreeEntryAdded(
                 /* iSocketId     */ ESocketIdAllSockets,
                 /* systemMsgType */ MsgProtocol::ESystemMsgTypeInd,
                 /* cmd           */ MsgProtocol::ECommandInsert,
-                /* pTrcAdminObj  */ dynamic_cast<CTrcAdminObj*>(i_pTreeEntry) );
+                /* pTrcAdminObj  */ i_pTreeEntry );
         }
     }
 } // onTrcAdminObjIdxTreeEntryAdded
@@ -2894,7 +2895,7 @@ void CIpcTrcServer::onTrcAdminObjIdxTreeEntryAboutToBeRemoved(
                 /* iSocketId     */ ESocketIdAllSockets,
                 /* systemMsgType */ MsgProtocol::ESystemMsgTypeInd,
                 /* cmd           */ MsgProtocol::ECommandDelete,
-                /* pTrcAdminObj  */ dynamic_cast<CTrcAdminObj*>(i_pTreeEntry) );
+                /* pTrcAdminObj  */ i_pTreeEntry );
         }
     }
 } // onTrcAdminObjIdxTreeEntryAboutToBeRemoved
@@ -2949,7 +2950,7 @@ void CIpcTrcServer::onTrcAdminObjIdxTreeEntryChanged(
                 /* iSocketId     */ ESocketIdAllSockets,
                 /* systemMsgType */ MsgProtocol::ESystemMsgTypeInd,
                 /* cmd           */ MsgProtocol::ECommandUpdate,
-                /* pTrcAdminObj  */ dynamic_cast<CTrcAdminObj*>(i_pTreeEntry) );
+                /* pTrcAdminObj  */ i_pTreeEntry );
         }
     } // if( i_pTreeEntry != nullptr )
 

@@ -107,7 +107,7 @@ public: // class methods
     static QString ClassName() { return "CMyClass2"; }
 public: // ctors and dtor
     CMyClass2( const QString& i_strObjName, CMyClass2Thread* i_pMyClass2Thread = nullptr );
-    virtual  ~CMyClass2();
+    virtual ~CMyClass2();
 signals:
     void aboutToBeDestroyed(QObject* i_pObj, const QString& i_strObjName);
 public: // overridables

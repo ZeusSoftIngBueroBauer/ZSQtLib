@@ -27,6 +27,7 @@ may result in using the software modules.
 #include "ZSTest/ZSTestStep.h"
 #include "ZSTest/ZSTest.h"
 #include "ZSTest/ZSTestStepGroup.h"
+#include "ZSTest/ZSTestStepRoot.h"
 #include "ZSTest/ZSTestStepIdxTree.h"
 
 #include "ZSSys/ZSSysErrResult.h"
@@ -89,6 +90,7 @@ CTestStep::CTestStep(
     m_strOperation(i_strOperation),
     m_strDescription(),
     m_hshConfigValues(),
+    m_strInstruction(),
     m_strlstExpectedValues(),
     m_strlstResultValues(),
     m_fTimeTestStart_s(0.0),
@@ -116,6 +118,7 @@ CTestStep::~CTestStep()
     //m_strOperation;
     //m_strDescription;
     //m_hshConfigValues;
+    //m_strInstruction;
     //m_strlstExpectedValues.clear();
     //m_strlstResultValues.clear();
     m_fTimeTestStart_s = 0.0;
@@ -160,7 +163,7 @@ void CTestStep::setOperation( const QString& i_strOperation )
             m_pTree->onTreeEntryChanged(this);
         }
     }
-} // setOperation
+}
 
 //------------------------------------------------------------------------------
 /*! @brief Sets the description of the test step.
@@ -186,8 +189,7 @@ void CTestStep::setDescription( const QString& i_strDescription )
             m_pTree->onTreeEntryChanged(this);
         }
     }
-
-} // setDescription
+}
 
 //------------------------------------------------------------------------------
 /*! @brief Return the config value for the given key.
@@ -234,6 +236,30 @@ void CTestStep::setConfigValue( const QString& i_strKey, const QVariant& i_val )
     if( m_pTree != nullptr )
     {
         m_pTree->onTreeEntryChanged(this);
+    }
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the instruction of the test step.
+
+    The instruction should describe what has to be done to execute the test step.
+
+    E.g. "Start the trace client.\n"
+         "Is the client connected?"
+
+    @param i_strInstruction [in] Instruction of the test step.
+*/
+void CTestStep::setInstruction( const QString& i_strInstruction )
+//------------------------------------------------------------------------------
+{
+    if( m_strInstruction != i_strInstruction )
+    {
+        m_strInstruction = i_strInstruction;
+
+        if( m_pTree != nullptr )
+        {
+            m_pTree->onTreeEntryChanged(this);
+        }
     }
 }
 
@@ -288,12 +314,28 @@ void CTestStep::setResultValues( const QStringList& i_strlstResultValues )
 {
     m_strlstResultValues = i_strlstResultValues;
 
+    CEnumTestResult result = ETestResult::TestPassed;
+
+    if( m_strlstExpectedValues.size() != m_strlstResultValues.size() )
+    {
+        result = ETestResult::TestFailed;
+    }
+    else
+    {
+        for( int idxVal = 0; idxVal < m_strlstExpectedValues.size(); idxVal++ )
+        {
+            if( m_strlstExpectedValues[idxVal] != m_strlstResultValues[idxVal] )
+            {
+                result = ETestResult::TestFailed;
+                break;
+            }
+        }
+    }
+
     // Not necessary here to inform the index tree that the content of the entry
-    // has been changed. Thats been done by "onTestStepFinished".
+    // has been changed. Thats been done by "setTestResult".
 
-    onTestStepFinished();
-
-    emit testStepFinished(this);
+    setTestResult(result);
 
 } // setResultValues
 
@@ -352,8 +394,7 @@ void CTestStep::setBreakpoint()
             m_pTree->onTreeEntryChanged(this);
         }
     }
-
-} // setBreakpoint
+}
 
 //------------------------------------------------------------------------------
 /*! Removes the breakpoint for the test step and informs the tree that the content of the
@@ -371,8 +412,7 @@ void CTestStep::removeBreakpoint()
             m_pTree->onTreeEntryChanged(this);
         }
     }
-
-} // removeBreakpoint
+}
 
 //------------------------------------------------------------------------------
 /*! Enables or disables the breakpoint and informs the tree that the content of the
@@ -392,8 +432,7 @@ void CTestStep::setBreakpointEnabled( EEnabled i_enabled )
             m_pTree->onTreeEntryChanged(this);
         }
     }
-
-} // setBreakpointEnabled
+}
 
 /*==============================================================================
 public: // instance methods
@@ -418,8 +457,56 @@ void CTestStep::reset()
     {
         m_pTree->onTreeEntryChanged(this);
     }
+}
 
-} // reset
+//------------------------------------------------------------------------------
+/*! Sets the test result of the test step and informs the tree that the content
+    of the entry has been changed and got to be updated.
+
+    If the test result has been changed and the entry has a parent group the parent
+    group will also be informed that the test result has been changed.
+
+    @param i_testResult [in]
+*/
+void CTestStep::setTestResult( const CEnumTestResult& i_testResult )
+//------------------------------------------------------------------------------
+{
+    m_fTimeTestEnd_s = ZS::System::Time::getProcTimeInSec();
+
+    CEnumTestResult testResultPrev = m_testResult;
+
+    m_testResult = i_testResult;
+
+    // The end time has been changed even if the result is the same.
+    if( m_pTree != nullptr )
+    {
+        m_pTree->onTreeEntryChanged(this);
+    }
+
+    // Inform parent groups only if the test result of the
+    // test step has really been changed.
+    if( testResultPrev != i_testResult )
+    {
+        CTestStepGroup* pParentGroup = getParentGroup();
+
+        if( pParentGroup != nullptr )
+        {
+            pParentGroup->onTestStepResultChanged(this, m_testResult);
+        }
+        else
+        {
+            CTestStepRoot* pRootEntry = dynamic_cast<CTestStepRoot*>(m_pTest->getTestStepIdxTree()->root());
+
+            if( pRootEntry != nullptr )
+            {
+                pRootEntry->onTestStepResultChanged(this, m_testResult);
+            }
+        }
+    } // if( testResultPrev != i_testResult )
+
+    emit testStepFinished(this);
+
+} // setTestResult
 
 /*==============================================================================
 public: // must overridables of base class CAbstractTestStepIdxTreeEntry
@@ -448,21 +535,6 @@ public: // overridables
 void CTestStep::doTestStep()
 //------------------------------------------------------------------------------
 {
-    onTestStepStarted();
-
-    emit doTestStep(this);
-}
-
-/*==============================================================================
-protected: // instance methods
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-/*! Internally called by "doTestStep".
-*/
-void CTestStep::onTestStepStarted()
-//------------------------------------------------------------------------------
-{
     m_fTimeTestStart_s = ZS::System::Time::getProcTimeInSec();
     m_fTimeTestEnd_s = -1.0;
 
@@ -471,37 +543,5 @@ void CTestStep::onTestStepStarted()
         m_pTree->onTreeEntryChanged(this);
     }
 
-} // onTestStepStarted
-
-//------------------------------------------------------------------------------
-/*! Internally called by "setResultValues".
-*/
-void CTestStep::onTestStepFinished()
-//------------------------------------------------------------------------------
-{
-    m_fTimeTestEnd_s = ZS::System::Time::getProcTimeInSec();
-
-    CEnumTestResult result = ETestResult::TestPassed;
-
-    if( m_strlstExpectedValues.size() != m_strlstResultValues.size() )
-    {
-        result = ETestResult::TestFailed;
-    }
-    else
-    {
-        for( int idxVal = 0; idxVal < m_strlstExpectedValues.size(); idxVal++ )
-        {
-            if( m_strlstExpectedValues[idxVal] != m_strlstResultValues[idxVal] )
-            {
-                result = ETestResult::TestFailed;
-                break;
-            }
-        }
-    }
-
-    // Not necessary here to inform the index tree that the content of the entry
-    // has been changed. Thats been done by "setTestResult".
-
-    setTestResult(result);
-
-} // onTestStepFinished
+    emit doTestStep(this);
+}

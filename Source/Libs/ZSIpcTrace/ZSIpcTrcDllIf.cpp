@@ -144,7 +144,13 @@ typedef DllIf::STrcServerSettings (*TFctTrcServer_getTraceSettings)( const DllIf
 typedef void (*TFctTrcServer_clearLocalTrcFile)( DllIf::CTrcServer* i_pTrcServer );
 
 typedef DllIf::CIpcTrcServer* (*TFctIpcTrcServer_GetInstance)();
-typedef DllIf::CIpcTrcServer* (*TFctIpcTrcServer_CreateInstance)( int i_iTrcDetailLevel );
+typedef DllIf::CIpcTrcServer* (*TFctIpcTrcServer_CreateInstance)(
+    int i_iTrcDetailLevelDllIf,
+    int i_iTrcDetailLevelTrcServer,
+    int i_iTrcDetailLevelTrcServerMutex,
+    int i_iTrcDetailLevelTrcServerIpcServer,
+    int i_iTrcDetailLevelTrcServerIpcServerMutex,
+    int i_iTrcDetailLevelTrcServerIpcServerGateway );
 typedef void (*TFctIpcTrcServer_ReleaseInstance)( DllIf::CIpcTrcServer* i_pTrcServer );
 typedef bool (*TFctIpcTrcServer_startup)( DllIf::CIpcTrcServer* i_pTrcServer, int i_iTimeout_ms, bool i_bWait );
 typedef bool (*TFctIpcTrcServer_shutdown)( DllIf::CIpcTrcServer* i_pTrcServer, int i_iTimeout_ms, bool i_bWait );
@@ -1987,22 +1993,50 @@ DllIf::CIpcTrcServer* DllIf::CIpcTrcServer::GetInstance()
     If a trace server with the given name is already existing the reference to
     the existing trace server is returned and a reference counter is incremented.
 
-    @param i_iTrcDetailLevel [in] For debugging purposes of the Dll interface
+    @param i_iTrcDetailLevelDllIf [in] For debugging purposes of the Dll interface
            the Dll interace methods may be traced itself by writing a log file.
            Default: ETraceDetailLevelNone
+    @param i_iTrcDetailLevelTrcServer [in]
+        If the methods of the trace server itself should be logged a value
+        greater than 0 (ETraceDetailLevelNone) could be passed here.
+    @param i_iTrcDetailLevelTrcServerMutex [in]
+        If locking and unlocking the mutex of the trace server should be
+        logged a value greater than 0 (ETraceDetailLevelNone) could be passed here.
+    @param i_iTrcDetailLevelTrcServerIpcServer [in]
+        If the methods of the trace server's Ipc Server should be logged
+        a value greater than 0 (ETraceDetailLevelNone) could be passed here.
+    @param i_iTrcDetailLevelTrcServerIpcServerMutex [in]
+        If locking and unlocking the mutex of the trace server's Ipc Server should be
+        logged a value greater than 0 (ETraceDetailLevelNone) could be passed here.
+    @param i_iTrcDetailLevelTrcServerIpcServerGateway [in]
+        If the methods of the trace server's Ipc Server's Gateway should
+        be logged a value greater than 0 (ETraceDetailLevelNone) could be
+        passed here.
 
     @return Reference to trace server or nullptr.
             nullptr is returned if i_bCreateIfNotExisting was set to false
             and a trace server with the given name is not existing.
 */
-DllIf::CIpcTrcServer* DllIf::CIpcTrcServer::CreateInstance( int i_iTrcDetailLevel )
+DllIf::CIpcTrcServer* DllIf::CIpcTrcServer::CreateInstance(
+    int i_iTrcDetailLevelDllIf,
+    int i_iTrcDetailLevelTrcServer,
+    int i_iTrcDetailLevelTrcServerMutex,
+    int i_iTrcDetailLevelTrcServerIpcServer,
+    int i_iTrcDetailLevelTrcServerIpcServerMutex,
+    int i_iTrcDetailLevelTrcServerIpcServerGateway )
 //------------------------------------------------------------------------------
 {
     DllIf::CIpcTrcServer* pTrcServer = NULL;
 
     if( s_hndIpcTrcDllIf != NULL && s_pFctIpcTrcServer_GetInstance != NULL )
     {
-        pTrcServer = s_pFctIpcTrcServer_CreateInstance(i_iTrcDetailLevel);
+        pTrcServer = s_pFctIpcTrcServer_CreateInstance(
+            i_iTrcDetailLevelDllIf,
+            i_iTrcDetailLevelTrcServer,
+            i_iTrcDetailLevelTrcServerMutex,
+            i_iTrcDetailLevelTrcServerIpcServer,
+            i_iTrcDetailLevelTrcServerIpcServerMutex,
+            i_iTrcDetailLevelTrcServerIpcServerGateway);
     }
     return pTrcServer;
 }

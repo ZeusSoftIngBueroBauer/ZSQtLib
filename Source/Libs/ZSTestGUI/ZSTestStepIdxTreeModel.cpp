@@ -534,7 +534,7 @@ QVariant CModeldxTreeTestSteps::data( const QModelIndex& i_modelIdx, int i_iRole
                     {
                         varData = QColor(Qt::darkGreen);
                     }
-                    else if( testResult == ETestResult::Ignore )
+                    else if( testResult == ETestResult::TestSkipped )
                     {
                         varData = QColor(Qt::darkGray);
                     }

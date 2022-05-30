@@ -359,7 +359,13 @@ class CIpcTrcServer : public CTrcServer
 {
 public: // class methods
     static CIpcTrcServer* GetInstance();
-    static CIpcTrcServer* CreateInstance( int i_iTrcDetailLevel = ETraceDetailLevelNone );
+    static CIpcTrcServer* CreateInstance(
+        int i_iTrcDetailLevelDllIf = ETraceDetailLevelNone,
+        int i_iTrcDetailLevelTrcServer = ETraceDetailLevelNone,
+        int i_iTrcDetailLevelTrcServerMutex = ETraceDetailLevelNone,
+        int i_iTrcDetailLevelTrcServerIpcServer = ETraceDetailLevelNone,
+        int i_iTrcDetailLevelTrcServerIpcServerMutex = ETraceDetailLevelNone,
+        int i_iTrcDetailLevelTrcServerIpcServerGateway = ETraceDetailLevelNone );
     static void ReleaseInstance( CIpcTrcServer* i_pTrcServer );
 public: // instance methods
     bool startup( int i_iTimeout_ms = 5000, bool i_bWait = true );
@@ -371,7 +377,7 @@ public: // instance methods changing and reading the host settings
     bool setPort( unsigned short i_uPort, int i_iTimeout_ms = 5000, bool i_bWait = true);
     unsigned short getPort() const;
 public: // ctors and dtor (declared public but for internal use only, implemented in ZSIpcTrace::ZSIpcTrcDllMain)
-    CIpcTrcServer( int i_iTrcDetailLevel = ETraceDetailLevelNone );
+    CIpcTrcServer();
     ~CIpcTrcServer();
 
 }; // class CIpcTrcServer

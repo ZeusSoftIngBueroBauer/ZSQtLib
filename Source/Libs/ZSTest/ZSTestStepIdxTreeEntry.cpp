@@ -172,53 +172,6 @@ public: // overridables
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-/*! Sets the test result of the entry and informs the tree that the content of the
-    entry has been changed and got to be updated.
-
-    If the test result has been changed and the entry has a parent group the parent
-    group will also be informed that the test result has been changed.
-
-    @param i_testResult [in]
-*/
-void CAbstractTestStepIdxTreeEntry::setTestResult( const CEnumTestResult& i_testResult )
-//------------------------------------------------------------------------------
-{
-    if( m_testResult != i_testResult )
-    {
-        m_testResult = i_testResult;
-
-        if( m_pTree != nullptr )
-        {
-            m_pTree->onTreeEntryChanged(this);
-        }
-
-        CTestStepGroup* pParentGroup = getParentGroup();
-
-        if( pParentGroup != nullptr )
-        {
-            if( pParentGroup != nullptr )
-            {
-                pParentGroup->onTestStepResultChanged(this, m_testResult);
-            }
-        }
-        else
-        {
-            CTestStepRoot* pRootEntry = dynamic_cast<CTestStepRoot*>(m_pTest->getTestStepIdxTree()->root());
-
-            if( pRootEntry != nullptr )
-            {
-                pRootEntry->onTestStepResultChanged(this, m_testResult);
-            }
-        }
-    } // if( m_testResult != i_testResult )
-
-} // setTestResult
-
-/*==============================================================================
-public: // overridables
-==============================================================================*/
-
-//------------------------------------------------------------------------------
 QString CAbstractTestStepIdxTreeEntry::testDuration2StrInBestUnit() const
 //------------------------------------------------------------------------------
 {

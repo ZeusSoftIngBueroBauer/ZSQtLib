@@ -68,6 +68,8 @@ public: // overridables
 public: // overridables
     virtual bool isGroup() const;
     virtual CTestStepGroup* getParentGroup();
+public: // instance methods
+    CTest* getTest() { return m_pTest; }
 public: // overridables
     virtual void setEnabled( ZS::System::EEnabled i_enabled );
     virtual ZS::System::EEnabled getEnabled() const { return m_enabled; }
@@ -75,10 +77,6 @@ public: // overridables
 public: // overridables
     virtual void setToolTip( const QString& i_strToolTip );
     virtual QString getToolTip() const { return m_strToolTip; }
-public: // overridables
-    virtual void setTestResult( const CEnumTestResult& i_result );
-public: // instance methods
-    //bool isTestRunning() const { return m_bTestRunning; }
 public: // must overridables
     virtual CEnumTestResult getTestResult() const = 0;
     virtual double getTestDurationInSec() const = 0;

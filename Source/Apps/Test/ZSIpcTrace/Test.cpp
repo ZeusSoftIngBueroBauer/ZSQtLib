@@ -45,8 +45,8 @@ may result in using the software modules.
 #include "MyClass3.h"
 
 #include "ZSTest/ZSTestStep.h"
-#include "ZSTest/ZSTestStepIdxTree.h"
 #include "ZSTest/ZSTestStepGroup.h"
+#include "ZSTest/ZSTestStepIdxTree.h"
 #include "ZSIpcTraceGUI/ZSIpcTrcMthWdgt.h"
 #include "ZSSys/ZSSysApp.h"
 #include "ZSSys/ZSSysTrcAdminObjIdxTree.h"
@@ -626,7 +626,7 @@ CTest::CTest() :
         /* szDoTestStepFct */ SLOT(doTestStepTraceServerShutdown(ZS::Test::CTestStep*)) );
 
     // Recall test step settings
-    //--------------------------
+    //==========================
 
     recallTestSteps();
 
@@ -793,6 +793,9 @@ CTest::~CTest()
     m_hshpMyClass1InstancesByName.clear();
     m_hshpMyClass2InstancesByName.clear();
     m_hshpMyClass3InstancesByName.clear();
+    m_multihshpMyClass1InstancesByName.clear();
+    m_multihshpMyClass2InstancesByName.clear();
+    m_multihshpMyClass3InstancesByName.clear();
 
 } // dtor
 

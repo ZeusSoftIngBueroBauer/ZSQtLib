@@ -68,6 +68,9 @@ public: // instance methods
     QVariant getConfigValue( const QString& i_strKey ) const;
     void setConfigValue( const QString& i_strKey, const QVariant& i_val );
 public: // instance methods
+    QString getInstruction() const { return m_strInstruction; }
+    void setInstruction( const QString& i_strInstruction );
+public: // instance methods
     QStringList getExpectedValues() const { return m_strlstExpectedValues; }
     void setExpectedValues( const QStringList& i_strlstExpectedValues = QStringList() );
     void setExpectedValue( const QString& i_strExpectedValue = QString() ); // Provided for convenience. Converted to String List.
@@ -86,14 +89,13 @@ public: // instance methods
     bool isBreakpointEnabled() const { return m_breakpointEnabled == ZS::System::EEnabled::Yes; }
 public: // instance methods
     void reset();
+public: // instance methods
+    void setTestResult( const CEnumTestResult& i_result );
 public: // must overridables of base class CAbstractTestStepIdxTreeEntry
     virtual CEnumTestResult getTestResult() const override { return m_testResult; }
     virtual double getTestDurationInSec() const override;
 public: // instance methods
     virtual void doTestStep();
-protected: // instance methods
-    void onTestStepStarted();
-    void onTestStepFinished();
 private: // default ctor not allowed
     CTestStep();
 private: // copy ctor not allowed
@@ -105,6 +107,8 @@ protected: // instance members
     QString                  m_strDescription;
     /*!< Hash with config values assigned to the test step. */
     QHash<QString, QVariant> m_hshConfigValues;
+    /*!< List with the expected result values. */
+    QString                  m_strInstruction;
     /*!< List with the expected result values. */
     QStringList              m_strlstExpectedValues;
     /*!< List with the result values. */
