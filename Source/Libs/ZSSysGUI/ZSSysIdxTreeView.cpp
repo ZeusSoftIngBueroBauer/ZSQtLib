@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -39,7 +39,7 @@ may result in using the software modules.
 #endif
 
 #include "ZSSysGUI/ZSSysIdxTreeView.h"
-#include "ZSSysGUI/ZSSysIdxTreeModelEntries.h"
+#include "ZSSysGUI/ZSSysIdxTreeModelEntry.h"
 #include "ZSSysGUI/ZSSysGUIAux.h"
 #include "ZSSysGUI/ZSSysErrDlg.h"
 #include "ZSSys/ZSSysAux.h"
@@ -70,9 +70,32 @@ CDelegateIdxTree::CDelegateIdxTree( QObject* i_pObjParent, int i_iTrcDetailLevel
     QStyledItemDelegate(i_pObjParent),
     m_pEdtName(nullptr),
     m_bEdtNameDestroyedSignalConnected(false),
-    m_iTrcDetailLevel(i_iTrcDetailLevel)
+    m_iTrcDetailLevel(i_iTrcDetailLevel),
+    m_pTrcAdminObj(nullptr)
 {
     setObjectName( QString(i_pObjParent == nullptr ? "IdxTree" : i_pObjParent->objectName()) );
+
+    // If the tree's parent is the trace server the detail level of trace outputs
+    // may not be controlled by trace admin objects as the belong to the index tree
+    // of the trace server.
+    if( dynamic_cast<CTrcServer*>(i_pObjParent->parent()) == nullptr )
+    {
+        m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName());
+
+        if( m_pTrcAdminObj != nullptr )
+        {
+            m_iTrcDetailLevel = m_pTrcAdminObj->getTraceDetailLevel();
+
+            if( !QObject::connect(
+                /* pObjSender   */ m_pTrcAdminObj,
+                /* szSignal     */ SIGNAL(changed(QObject*)),
+                /* pObjReceiver */ this,
+                /* szSlot       */ SLOT(onTrcAdminObjChanged(QObject*)) ) )
+            {
+                throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
+            }
+        }
+    }
 
     QString strMthInArgs;
 
@@ -82,6 +105,7 @@ CDelegateIdxTree::CDelegateIdxTree( QObject* i_pObjParent, int i_iTrcDetailLevel
     }
 
     CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* iTrcDetailLevel    */ m_iTrcDetailLevel,
         /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
@@ -100,6 +124,7 @@ CDelegateIdxTree::~CDelegateIdxTree()
     QString strMthInArgs;
 
     CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* iTrcDetailLevel    */ m_iTrcDetailLevel,
         /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
@@ -109,9 +134,17 @@ CDelegateIdxTree::~CDelegateIdxTree()
         /* strMethod          */ "dtor",
         /* strMethodInArgs    */ strMthInArgs );
 
+    if( m_pTrcAdminObj != nullptr )
+    {
+        mthTracer.onAdminObjAboutToBeReleased();
+
+        CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
+    }
+
     m_pEdtName = nullptr;
     m_bEdtNameDestroyedSignalConnected = false;
     m_iTrcDetailLevel = 0;
+    m_pTrcAdminObj = nullptr;
 
 } // dtor
 
@@ -145,6 +178,7 @@ QWidget* CDelegateIdxTree::createEditor(
     }
 
     CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* iTrcDetailLevel    */ m_iTrcDetailLevel,
         /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
@@ -192,8 +226,8 @@ QWidget* CDelegateIdxTree::createEditor(
 
 //------------------------------------------------------------------------------
 void CDelegateIdxTree::setEditorData(
-    QWidget*            i_pWdgtEditor,
-    const QModelIndex&  i_modelIdx ) const
+    QWidget*           i_pWdgtEditor,
+    const QModelIndex& i_modelIdx ) const
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -204,6 +238,7 @@ void CDelegateIdxTree::setEditorData(
     }
 
     CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* iTrcDetailLevel    */ m_iTrcDetailLevel,
         /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
@@ -233,6 +268,7 @@ void CDelegateIdxTree::setModelData(
     }
 
     CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* iTrcDetailLevel    */ m_iTrcDetailLevel,
         /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
@@ -291,6 +327,7 @@ void CDelegateIdxTree::updateEditorGeometry(
     }
 
     CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* iTrcDetailLevel    */ m_iTrcDetailLevel,
         /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
@@ -315,6 +352,7 @@ void CDelegateIdxTree::onEdtNameDestroyed( QObject* /*i_pWdgtEditor*/ )
     QString strMthInArgs;
 
     CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* iTrcDetailLevel    */ m_iTrcDetailLevel,
         /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
@@ -328,6 +366,22 @@ void CDelegateIdxTree::onEdtNameDestroyed( QObject* /*i_pWdgtEditor*/ )
     m_pEdtName = nullptr;
 
 } // onEdtNameDestroyed
+
+/*==============================================================================
+protected slots:
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CDelegateIdxTree::onTrcAdminObjChanged( QObject* i_pTrcAdminObj )
+//------------------------------------------------------------------------------
+{
+    CTrcAdminObj* pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(i_pTrcAdminObj);
+
+    if( pTrcAdminObj != nullptr && m_pTrcAdminObj == pTrcAdminObj )
+    {
+        m_iTrcDetailLevel = pTrcAdminObj->getTraceDetailLevel();
+    }
+}
 
 
 /*******************************************************************************
@@ -368,9 +422,35 @@ CTreeViewIdxTree::CTreeViewIdxTree(
     m_pasteMode(EPasteMode::Undefined),
     m_bSilentlyExecuteDeleteRequests(false),
     m_bSilentlyIgnoreInvalidCopyRequests(false),
-    m_iTrcDetailLevel(i_iTrcDetailLevel)
+    m_iTrcDetailLevel(i_iTrcDetailLevel),
+    m_pTrcAdminObj(nullptr)
 {
     setObjectName( QString(i_pModel == nullptr ? "IdxTree" : i_pModel->objectName()) );
+
+    // If the tree's parent is the trace server the detail level of trace outputs
+    // may not be controlled by trace admin objects as the belong to the index tree
+    // of the trace server.
+    if( i_pModel != nullptr && i_pModel->idxTree() != nullptr )
+    {
+        if( dynamic_cast<CTrcServer*>(i_pModel->idxTree()->parent()) == nullptr )
+        {
+            m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName());
+
+            if( m_pTrcAdminObj != nullptr )
+            {
+                m_iTrcDetailLevel = m_pTrcAdminObj->getTraceDetailLevel();
+
+                if( !QObject::connect(
+                    /* pObjSender   */ m_pTrcAdminObj,
+                    /* szSignal     */ SIGNAL(changed(QObject*)),
+                    /* pObjReceiver */ this,
+                    /* szSlot       */ SLOT(onTrcAdminObjChanged(QObject*)) ) )
+                {
+                    throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
+                }
+            }
+        }
+    }
 
     QString strMthInArgs;
 
@@ -380,6 +460,7 @@ CTreeViewIdxTree::CTreeViewIdxTree(
     }
 
     CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* iTrcDetailLevel    */ m_iTrcDetailLevel,
         /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
@@ -623,6 +704,7 @@ CTreeViewIdxTree::~CTreeViewIdxTree()
     QString strMthInArgs;
 
     CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* iTrcDetailLevel    */ m_iTrcDetailLevel,
         /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
@@ -631,6 +713,13 @@ CTreeViewIdxTree::~CTreeViewIdxTree()
         /* strObjName         */ objectName(),
         /* strMethod          */ "dtor",
         /* strMethodInArgs    */ strMthInArgs );
+
+    if( m_pTrcAdminObj != nullptr )
+    {
+        mthTracer.onAdminObjAboutToBeReleased();
+
+        CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
+    }
 
     m_pDelegate = nullptr;
     m_pMenuBranchContext = nullptr;
@@ -656,6 +745,7 @@ CTreeViewIdxTree::~CTreeViewIdxTree()
     m_bSilentlyExecuteDeleteRequests = false;
     m_bSilentlyIgnoreInvalidCopyRequests = false;
     m_iTrcDetailLevel = 0;
+    m_pTrcAdminObj = nullptr;
 
 } // dtor
 
@@ -675,6 +765,7 @@ void CTreeViewIdxTree::setSortOrder( EIdxTreeSortOrder i_sortOrder )
     }
 
     CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* iTrcDetailLevel    */ m_iTrcDetailLevel,
         /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
@@ -700,18 +791,18 @@ void CTreeViewIdxTree::setSortOrder( EIdxTreeSortOrder i_sortOrder )
     // expanded states of the nodes the exanded state of the model nodes
     // is saved. After the model has been sorted the expanded states are recalled.
 
-    QMap<QString, CModelAbstractTreeEntry*> mappTreeEntries = pModel->treeEntriesMap();
+    QMap<QString, CModelIdxTreeEntry*> mappTreeEntries = pModel->treeEntriesMap();
 
     QStringList strlstKeysOfExpandedModelEntries;
 
-    CModelBranchTreeEntry* pModelBranch;
+    CModelIdxTreeEntry* pModelBranch;
 
     for( auto pModelTreeEntry : mappTreeEntries )
     {
         if( pModelTreeEntry->entryType() == EIdxTreeEntryType::Root
          || pModelTreeEntry->entryType() == EIdxTreeEntryType::Branch )
         {
-            pModelBranch = dynamic_cast<CModelBranchTreeEntry*>(pModelTreeEntry);
+            pModelBranch = pModelTreeEntry;
 
             if( pModelBranch->isExpanded() && pModel->areAllParentBranchesExpanded(pModelBranch) )
             {
@@ -756,6 +847,7 @@ void CTreeViewIdxTree::setSilentlyExecuteDeleteRequests( bool i_bExecuteSilently
     }
 
     CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* iTrcDetailLevel    */ m_iTrcDetailLevel,
         /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
@@ -781,6 +873,7 @@ void CTreeViewIdxTree::setSilentlyIgnoreInvalidCopyRequests( bool i_bExecuteSile
     }
 
     CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* iTrcDetailLevel    */ m_iTrcDetailLevel,
         /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
@@ -805,6 +898,7 @@ void CTreeViewIdxTree::expandAll()
     QString strMthInArgs;
 
     CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* iTrcDetailLevel    */ m_iTrcDetailLevel,
         /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
@@ -831,6 +925,7 @@ void CTreeViewIdxTree::collapseAll()
     QString strMthInArgs;
 
     CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* iTrcDetailLevel    */ m_iTrcDetailLevel,
         /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
@@ -864,6 +959,7 @@ void CTreeViewIdxTree::expandRecursive( const QModelIndex& i_modelIdx )
     }
 
     CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* iTrcDetailLevel    */ m_iTrcDetailLevel,
         /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
@@ -873,7 +969,7 @@ void CTreeViewIdxTree::expandRecursive( const QModelIndex& i_modelIdx )
         /* strMethod          */ "expandRecursive",
         /* strMethodInArgs    */ strMthInArgs );
 
-    CModelAbstractTreeEntry* pModelTreeEntry = static_cast<CModelAbstractTreeEntry*>(i_modelIdx.internalPointer());
+    CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(i_modelIdx.internalPointer());
 
     if( pModelTreeEntry != nullptr )
     {
@@ -881,8 +977,8 @@ void CTreeViewIdxTree::expandRecursive( const QModelIndex& i_modelIdx )
         {
             expand(i_modelIdx);
 
-            CModelBranchTreeEntry*   pModelBranch = dynamic_cast<CModelBranchTreeEntry*>(pModelTreeEntry);
-            CModelAbstractTreeEntry* pModelTreeEntryChild;
+            CModelIdxTreeEntry* pModelBranch = pModelTreeEntry;
+            CModelIdxTreeEntry* pModelTreeEntryChild;
 
             QModelIndex modelIdxChild;
 
@@ -913,6 +1009,7 @@ void CTreeViewIdxTree::collapseRecursive( const QModelIndex& i_modelIdx )
     }
 
     CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* iTrcDetailLevel    */ m_iTrcDetailLevel,
         /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
@@ -922,13 +1019,13 @@ void CTreeViewIdxTree::collapseRecursive( const QModelIndex& i_modelIdx )
         /* strMethod          */ "collapseRecursive",
         /* strMethodInArgs    */ strMthInArgs );
 
-    CModelAbstractTreeEntry* pModelTreeEntry = static_cast<CModelAbstractTreeEntry*>(i_modelIdx.internalPointer());
+    CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(i_modelIdx.internalPointer());
 
     if( pModelTreeEntry != nullptr )
     {
         if( pModelTreeEntry->entryType() == EIdxTreeEntryType::Root || pModelTreeEntry->entryType() == EIdxTreeEntryType::Branch )
         {
-            CModelBranchTreeEntry* pModelBranch = dynamic_cast<CModelBranchTreeEntry*>(pModelTreeEntry);
+            CModelIdxTreeEntry* pModelBranch = pModelTreeEntry;
             QModelIndex modelIdx;
 
             for( int idxEntry = 0; idxEntry < pModelBranch->count(); ++idxEntry )
@@ -965,6 +1062,7 @@ void CTreeViewIdxTree::expand( const QModelIndex& i_modelIdx )
     }
 
     CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* iTrcDetailLevel    */ m_iTrcDetailLevel,
         /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
@@ -1000,6 +1098,7 @@ void CTreeViewIdxTree::collapse( const QModelIndex& i_modelIdx )
     }
 
     CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* iTrcDetailLevel    */ m_iTrcDetailLevel,
         /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
@@ -1039,6 +1138,7 @@ void CTreeViewIdxTree::onCollapsed( const QModelIndex& i_modelIdx )
     }
 
     CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* iTrcDetailLevel    */ m_iTrcDetailLevel,
         /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
@@ -1052,11 +1152,11 @@ void CTreeViewIdxTree::onCollapsed( const QModelIndex& i_modelIdx )
     {
         CModelIdxTree* pModelIdxTree = dynamic_cast<CModelIdxTree*>(model());
 
-        CModelAbstractTreeEntry* pModelTreeEntry = static_cast<CModelAbstractTreeEntry*>(i_modelIdx.internalPointer());
+        CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(i_modelIdx.internalPointer());
 
         if( pModelTreeEntry->entryType() == EIdxTreeEntryType::Root || pModelTreeEntry->entryType() == EIdxTreeEntryType::Branch )
         {
-            CModelBranchTreeEntry* pModelBranch = dynamic_cast<CModelBranchTreeEntry*>(pModelTreeEntry);
+            CModelIdxTreeEntry* pModelBranch = pModelTreeEntry;
             pModelIdxTree->setIsExpanded(pModelBranch, false);
         }
     } // if( i_modelIdx.isValid() )
@@ -1075,6 +1175,7 @@ void CTreeViewIdxTree::onExpanded( const QModelIndex& i_modelIdx )
     }
 
     CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* iTrcDetailLevel    */ m_iTrcDetailLevel,
         /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
@@ -1094,11 +1195,11 @@ void CTreeViewIdxTree::onExpanded( const QModelIndex& i_modelIdx )
 
         CModelIdxTree* pModelIdxTree = dynamic_cast<CModelIdxTree*>(model());
 
-        CModelAbstractTreeEntry* pModelTreeEntry = static_cast<CModelAbstractTreeEntry*>(i_modelIdx.internalPointer());
+        CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(i_modelIdx.internalPointer());
 
         if( pModelTreeEntry->entryType() == EIdxTreeEntryType::Root || pModelTreeEntry->entryType() == EIdxTreeEntryType::Branch )
         {
-            CModelBranchTreeEntry* pModelBranch = dynamic_cast<CModelBranchTreeEntry*>(pModelTreeEntry);
+            CModelIdxTreeEntry* pModelBranch = pModelTreeEntry;
             pModelIdxTree->setIsExpanded(pModelBranch, true);
         }
     } // if( i_modelIdx.isValid() )
@@ -1122,6 +1223,7 @@ bool CTreeViewIdxTree::event( QEvent* i_pEv )
     }
 
     CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* iTrcDetailLevel    */ m_iTrcDetailLevel,
         /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
@@ -1152,6 +1254,7 @@ void CTreeViewIdxTree::keyPressEvent( QKeyEvent* i_pEv )
     }
 
     CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* iTrcDetailLevel    */ m_iTrcDetailLevel,
         /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
@@ -1172,7 +1275,7 @@ void CTreeViewIdxTree::keyPressEvent( QKeyEvent* i_pEv )
         CModelIdxTree* pModelIdxTree = dynamic_cast<CModelIdxTree*>(model());
         CIdxTree*      pIdxTree = pModelIdxTree->idxTree();
 
-        CModelAbstractTreeEntry* pModelTreeEntry = static_cast<CModelAbstractTreeEntry*>(modelIdxSelected.internalPointer());
+        CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(modelIdxSelected.internalPointer());
 
         if( m_iTrcDetailLevel >= ETraceDetailLevelInternalStates )
         {
@@ -1210,7 +1313,7 @@ void CTreeViewIdxTree::keyPressEvent( QKeyEvent* i_pEv )
                     }
                     if( iRet == QMessageBox::Yes )
                     {
-                        CAbstractIdxTreeEntry* pTreeEntry = pModelTreeEntry->treeEntry();
+                        CIdxTreeEntry* pTreeEntry = pModelTreeEntry->treeEntry();
                         delete pTreeEntry;
                         pTreeEntry = nullptr;
                         pModelTreeEntry = nullptr;
@@ -1245,7 +1348,7 @@ void CTreeViewIdxTree::keyPressEvent( QKeyEvent* i_pEv )
                     {
                         if( m_modelIdxSelectedForPaste.isValid() )
                         {
-                            CModelBranchTreeEntry* pModelBranchTrg = nullptr;
+                            CModelIdxTreeEntry* pModelBranchTrg = nullptr;
 
                             if( pModelTreeEntry->entryType() != EIdxTreeEntryType::Root && pModelTreeEntry->entryType() != EIdxTreeEntryType::Branch )
                             {
@@ -1253,13 +1356,13 @@ void CTreeViewIdxTree::keyPressEvent( QKeyEvent* i_pEv )
                             }
                             else
                             {
-                                pModelBranchTrg = dynamic_cast<CModelBranchTreeEntry*>(pModelTreeEntry);
+                                pModelBranchTrg = pModelTreeEntry;
                             }
                             if( pModelBranchTrg != nullptr )
                             {
-                                CModelAbstractTreeEntry* pModelTreeEntrySrc = static_cast<CModelAbstractTreeEntry*>(m_modelIdxSelectedForPaste.internalPointer());
-                                CAbstractIdxTreeEntry*      pTreeEntrySrc = pModelTreeEntrySrc->treeEntry();
-                                CBranchIdxTreeEntry*        pBranchTrg    = dynamic_cast<CBranchIdxTreeEntry*>(pModelBranchTrg->treeEntry());
+                                CModelIdxTreeEntry* pModelTreeEntrySrc = static_cast<CModelIdxTreeEntry*>(m_modelIdxSelectedForPaste.internalPointer());
+                                CIdxTreeEntry*      pTreeEntrySrc = pModelTreeEntrySrc->treeEntry();
+                                CIdxTreeEntry*      pBranchTrg    = pModelBranchTrg->treeEntry();
 
                                 int idxInTargetBranch = -1;
 
@@ -1353,6 +1456,7 @@ void CTreeViewIdxTree::mousePressEvent( QMouseEvent* i_pEv )
     }
 
     CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* iTrcDetailLevel    */ m_iTrcDetailLevel,
         /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
@@ -1368,7 +1472,7 @@ void CTreeViewIdxTree::mousePressEvent( QMouseEvent* i_pEv )
 
     if( m_modelIdxSelectedOnMousePressEvent.isValid() )
     {
-        CModelAbstractTreeEntry* pModelTreeEntry = static_cast<CModelAbstractTreeEntry*>(m_modelIdxSelectedOnMousePressEvent.internalPointer());
+        CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(m_modelIdxSelectedOnMousePressEvent.internalPointer());
 
         if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
         {
@@ -1443,6 +1547,7 @@ void CTreeViewIdxTree::mouseReleaseEvent( QMouseEvent* i_pEv )
     }
 
     CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* iTrcDetailLevel    */ m_iTrcDetailLevel,
         /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
@@ -1458,7 +1563,7 @@ void CTreeViewIdxTree::mouseReleaseEvent( QMouseEvent* i_pEv )
 
     if( m_modelIdxSelectedOnMouseReleaseEvent.isValid() )
     {
-        CModelAbstractTreeEntry* pModelTreeEntry = static_cast<CModelAbstractTreeEntry*>(m_modelIdxSelectedOnMouseReleaseEvent.internalPointer());
+        CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(m_modelIdxSelectedOnMouseReleaseEvent.internalPointer());
 
         if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
         {
@@ -1494,6 +1599,7 @@ void CTreeViewIdxTree::mouseDoubleClickEvent( QMouseEvent* i_pEv )
     }
 
     CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* iTrcDetailLevel    */ m_iTrcDetailLevel,
         /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
@@ -1525,6 +1631,7 @@ void CTreeViewIdxTree::mouseMoveEvent( QMouseEvent* i_pEv )
     }
 
     CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* iTrcDetailLevel    */ m_iTrcDetailLevel,
         /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
@@ -1559,6 +1666,7 @@ void CTreeViewIdxTree::startDrag( Qt::DropActions i_supportedActions )
     }
 
     CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* iTrcDetailLevel    */ m_iTrcDetailLevel,
         /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
@@ -1659,6 +1767,7 @@ void CTreeViewIdxTree::dragEnterEvent( QDragEnterEvent* i_pEv )
     }
 
     CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* iTrcDetailLevel    */ m_iTrcDetailLevel,
         /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
@@ -1685,6 +1794,7 @@ void CTreeViewIdxTree::dragLeaveEvent( QDragLeaveEvent* i_pEv )
     }
 
     CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* iTrcDetailLevel    */ m_iTrcDetailLevel,
         /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
@@ -1711,6 +1821,7 @@ void CTreeViewIdxTree::dragMoveEvent( QDragMoveEvent* i_pEv )
     }
 
     CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* iTrcDetailLevel    */ m_iTrcDetailLevel,
         /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
@@ -1737,6 +1848,7 @@ void CTreeViewIdxTree::dropEvent( QDropEvent* i_pEv )
     }
 
     CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* iTrcDetailLevel    */ m_iTrcDetailLevel,
         /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
@@ -1766,6 +1878,7 @@ void CTreeViewIdxTree::onActionBranchExpandTriggered( bool i_bChecked )
     }
 
     CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* iTrcDetailLevel    */ m_iTrcDetailLevel,
         /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
@@ -1798,6 +1911,7 @@ void CTreeViewIdxTree::onActionBranchCollapseTriggered( bool i_bChecked )
     }
 
     CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* iTrcDetailLevel    */ m_iTrcDetailLevel,
         /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
@@ -1825,6 +1939,7 @@ void CTreeViewIdxTree::onActionBranchCreateNewBranchTriggered( bool i_bChecked )
     }
 
     CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* iTrcDetailLevel    */ m_iTrcDetailLevel,
         /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
@@ -1839,7 +1954,7 @@ void CTreeViewIdxTree::onActionBranchCreateNewBranchTriggered( bool i_bChecked )
         CModelIdxTree* pModelIdxTree = dynamic_cast<CModelIdxTree*>(model());
         CIdxTree*      pIdxTree = pModelIdxTree->idxTree();
 
-        CModelAbstractTreeEntry* pModelTreeEntry = static_cast<CModelAbstractTreeEntry*>(m_modelIdxSelectedOnMousePressEvent.internalPointer());
+        CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(m_modelIdxSelectedOnMousePressEvent.internalPointer());
 
         if( m_iTrcDetailLevel >= ETraceDetailLevelInternalStates )
         {
@@ -1847,11 +1962,11 @@ void CTreeViewIdxTree::onActionBranchCreateNewBranchTriggered( bool i_bChecked )
             mthTracer.trace(strMthInArgs);
         }
 
-        CModelBranchTreeEntry* pModelBranch = dynamic_cast<CModelBranchTreeEntry*>(pModelTreeEntry);
+        CModelIdxTreeEntry* pModelBranch = pModelTreeEntry;
 
         if( pIdxTree != nullptr && pModelBranch != nullptr )
         {
-            CBranchIdxTreeEntry* pBranch = dynamic_cast<CBranchIdxTreeEntry*>(pModelBranch->treeEntry());
+            CIdxTreeEntry* pBranch = pModelBranch->treeEntry();
 
             QString strName = "New Branch";
             QString strUniqueName = strName;
@@ -1863,7 +1978,7 @@ void CTreeViewIdxTree::onActionBranchCreateNewBranchTriggered( bool i_bChecked )
             }
             strName = strUniqueName;
 
-            CBranchIdxTreeEntry* pBranchNew = pIdxTree->createBranch(strName);
+            CIdxTreeEntry* pBranchNew = pIdxTree->createBranch(strName);
 
             pIdxTree->add(pBranchNew, pBranch);
 
@@ -1884,6 +1999,7 @@ void CTreeViewIdxTree::onActionBranchCreateNewLeaveTriggered( bool i_bChecked )
     }
 
     CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* iTrcDetailLevel    */ m_iTrcDetailLevel,
         /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
@@ -1898,7 +2014,7 @@ void CTreeViewIdxTree::onActionBranchCreateNewLeaveTriggered( bool i_bChecked )
         CModelIdxTree* pModelIdxTree = dynamic_cast<CModelIdxTree*>(model());
         CIdxTree*      pIdxTree = pModelIdxTree->idxTree();
 
-        CModelAbstractTreeEntry* pModelTreeEntry = static_cast<CModelAbstractTreeEntry*>(m_modelIdxSelectedOnMousePressEvent.internalPointer());
+        CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(m_modelIdxSelectedOnMousePressEvent.internalPointer());
 
         if( m_iTrcDetailLevel >= ETraceDetailLevelInternalStates )
         {
@@ -1906,11 +2022,11 @@ void CTreeViewIdxTree::onActionBranchCreateNewLeaveTriggered( bool i_bChecked )
             mthTracer.trace(strMthInArgs);
         }
 
-        CModelBranchTreeEntry* pModelBranch = dynamic_cast<CModelBranchTreeEntry*>(pModelTreeEntry);
+        CModelIdxTreeEntry* pModelBranch = pModelTreeEntry;
 
         if( pIdxTree != nullptr && pModelBranch != nullptr )
         {
-            CBranchIdxTreeEntry* pBranch = dynamic_cast<CBranchIdxTreeEntry*>(pModelBranch->treeEntry());
+            CIdxTreeEntry* pBranch = pModelBranch->treeEntry();
 
             QString strName = "New Leave";
             QString strUniqueName = strName;
@@ -1922,7 +2038,7 @@ void CTreeViewIdxTree::onActionBranchCreateNewLeaveTriggered( bool i_bChecked )
             }
             strName = strUniqueName;
 
-            CLeaveIdxTreeEntry* pLeaveNew = pIdxTree->createLeave(strName);
+            CIdxTreeEntry* pLeaveNew = pIdxTree->createLeave(strName);
 
             pIdxTree->add(pLeaveNew, pBranch);
 
@@ -1943,6 +2059,7 @@ void CTreeViewIdxTree::onActionBranchDeleteTriggered( bool i_bChecked )
     }
 
     CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* iTrcDetailLevel    */ m_iTrcDetailLevel,
         /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
@@ -1957,7 +2074,7 @@ void CTreeViewIdxTree::onActionBranchDeleteTriggered( bool i_bChecked )
         CModelIdxTree* pModelIdxTree = dynamic_cast<CModelIdxTree*>(model());
         CIdxTree*      pIdxTree = pModelIdxTree->idxTree();
 
-        CModelAbstractTreeEntry* pModelTreeEntry = static_cast<CModelAbstractTreeEntry*>(m_modelIdxSelectedOnMousePressEvent.internalPointer());
+        CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(m_modelIdxSelectedOnMousePressEvent.internalPointer());
 
         if( m_iTrcDetailLevel >= ETraceDetailLevelInternalStates )
         {
@@ -1965,11 +2082,11 @@ void CTreeViewIdxTree::onActionBranchDeleteTriggered( bool i_bChecked )
             mthTracer.trace(strMthInArgs);
         }
 
-        CModelBranchTreeEntry* pModelBranch = dynamic_cast<CModelBranchTreeEntry*>(pModelTreeEntry);
+        CModelIdxTreeEntry* pModelBranch = pModelTreeEntry;
 
         if( pIdxTree != nullptr && pModelBranch != nullptr )
         {
-            CBranchIdxTreeEntry* pBranch = dynamic_cast<CBranchIdxTreeEntry*>(pModelBranch->treeEntry());
+            CIdxTreeEntry* pBranch = pModelBranch->treeEntry();
 
             delete pBranch;
             pBranch = nullptr;
@@ -1991,6 +2108,7 @@ void CTreeViewIdxTree::onActionBranchCutTriggered( bool i_bChecked )
     }
 
     CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* iTrcDetailLevel    */ m_iTrcDetailLevel,
         /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
@@ -2026,6 +2144,7 @@ void CTreeViewIdxTree::onActionBranchCopyTriggered( bool i_bChecked )
     }
 
     CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* iTrcDetailLevel    */ m_iTrcDetailLevel,
         /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
@@ -2061,6 +2180,7 @@ void CTreeViewIdxTree::onActionBranchPasteTriggered( bool i_bChecked )
     }
 
     CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* iTrcDetailLevel    */ m_iTrcDetailLevel,
         /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
@@ -2082,9 +2202,9 @@ void CTreeViewIdxTree::onActionBranchPasteTriggered( bool i_bChecked )
         CModelIdxTree* pModelIdxTree = dynamic_cast<CModelIdxTree*>(model());
         CIdxTree*      pIdxTree = pModelIdxTree->idxTree();
 
-        CModelAbstractTreeEntry* pModelTreeEntrySrc = static_cast<CModelAbstractTreeEntry*>(m_modelIdxSelectedForPaste.internalPointer());
-        CModelAbstractTreeEntry* pModelTreeEntryTrg = static_cast<CModelAbstractTreeEntry*>(m_modelIdxSelectedOnMousePressEvent.internalPointer());
-        CModelBranchTreeEntry*   pModelBranchTrg    = nullptr;
+        CModelIdxTreeEntry* pModelTreeEntrySrc = static_cast<CModelIdxTreeEntry*>(m_modelIdxSelectedForPaste.internalPointer());
+        CModelIdxTreeEntry* pModelTreeEntryTrg = static_cast<CModelIdxTreeEntry*>(m_modelIdxSelectedOnMousePressEvent.internalPointer());
+        CModelIdxTreeEntry* pModelBranchTrg    = nullptr;
 
         if( pModelTreeEntryTrg->entryType() != EIdxTreeEntryType::Root && pModelTreeEntryTrg->entryType() != EIdxTreeEntryType::Branch )
         {
@@ -2092,13 +2212,13 @@ void CTreeViewIdxTree::onActionBranchPasteTriggered( bool i_bChecked )
         }
         else
         {
-            pModelBranchTrg = dynamic_cast<CModelBranchTreeEntry*>(pModelTreeEntryTrg);
+            pModelBranchTrg = pModelTreeEntryTrg;
         }
 
         if( pModelBranchTrg != nullptr )
         {
-            CAbstractIdxTreeEntry* pTreeEntrySrc = pModelTreeEntrySrc->treeEntry();
-            CBranchIdxTreeEntry*   pBranchTrg    = dynamic_cast<CBranchIdxTreeEntry*>(pModelBranchTrg->treeEntry());
+            CIdxTreeEntry* pTreeEntrySrc = pModelTreeEntrySrc->treeEntry();
+            CIdxTreeEntry* pBranchTrg    = pModelBranchTrg->treeEntry();
 
             if( m_pasteMode == EPasteMode::Copy )
             {
@@ -2131,6 +2251,7 @@ void CTreeViewIdxTree::onActionLeaveDeleteTriggered( bool i_bChecked )
     }
 
     CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* iTrcDetailLevel    */ m_iTrcDetailLevel,
         /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
@@ -2145,7 +2266,7 @@ void CTreeViewIdxTree::onActionLeaveDeleteTriggered( bool i_bChecked )
         CModelIdxTree* pModelIdxTree = dynamic_cast<CModelIdxTree*>(model());
         CIdxTree*      pIdxTree = pModelIdxTree->idxTree();
 
-        CModelAbstractTreeEntry* pModelTreeEntry = static_cast<CModelAbstractTreeEntry*>(m_modelIdxSelectedOnMousePressEvent.internalPointer());
+        CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(m_modelIdxSelectedOnMousePressEvent.internalPointer());
 
         if( m_iTrcDetailLevel >= ETraceDetailLevelInternalStates )
         {
@@ -2153,11 +2274,11 @@ void CTreeViewIdxTree::onActionLeaveDeleteTriggered( bool i_bChecked )
             mthTracer.trace(strMthInArgs);
         }
 
-        CModelLeaveTreeEntry* pModelLeave = dynamic_cast<CModelLeaveTreeEntry*>(pModelTreeEntry);
+        CModelIdxTreeEntry* pModelLeave = pModelTreeEntry;
 
         if( pIdxTree != nullptr && pModelLeave != nullptr )
         {
-            CLeaveIdxTreeEntry* pLeave = dynamic_cast<CLeaveIdxTreeEntry*>(pModelLeave->treeEntry());
+            CIdxTreeEntry* pLeave = pModelLeave->treeEntry();
 
             delete pLeave;
             pLeave = nullptr;
@@ -2179,6 +2300,7 @@ void CTreeViewIdxTree::onActionLeaveCutTriggered( bool i_bChecked )
     }
 
     CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* iTrcDetailLevel    */ m_iTrcDetailLevel,
         /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
@@ -2214,6 +2336,7 @@ void CTreeViewIdxTree::onActionLeaveCopyTriggered( bool i_bChecked )
     }
 
     CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* iTrcDetailLevel    */ m_iTrcDetailLevel,
         /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
@@ -2249,6 +2372,7 @@ void CTreeViewIdxTree::onActionLeavePasteTriggered( bool i_bChecked )
     }
 
     CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* iTrcDetailLevel    */ m_iTrcDetailLevel,
         /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
@@ -2270,9 +2394,9 @@ void CTreeViewIdxTree::onActionLeavePasteTriggered( bool i_bChecked )
         CModelIdxTree* pModelIdxTree = dynamic_cast<CModelIdxTree*>(model());
         CIdxTree*      pIdxTree = pModelIdxTree->idxTree();
 
-        CModelAbstractTreeEntry* pModelTreeEntrySrc = static_cast<CModelAbstractTreeEntry*>(m_modelIdxSelectedForPaste.internalPointer());
-        CModelAbstractTreeEntry* pModelTreeEntryTrg = static_cast<CModelAbstractTreeEntry*>(m_modelIdxSelectedOnMousePressEvent.internalPointer());
-        CModelBranchTreeEntry*   pModelBranchTrg    = nullptr;
+        CModelIdxTreeEntry* pModelTreeEntrySrc = static_cast<CModelIdxTreeEntry*>(m_modelIdxSelectedForPaste.internalPointer());
+        CModelIdxTreeEntry* pModelTreeEntryTrg = static_cast<CModelIdxTreeEntry*>(m_modelIdxSelectedOnMousePressEvent.internalPointer());
+        CModelIdxTreeEntry* pModelBranchTrg    = nullptr;
 
         if( pModelTreeEntryTrg->entryType() != EIdxTreeEntryType::Root && pModelTreeEntryTrg->entryType() != EIdxTreeEntryType::Branch )
         {
@@ -2280,13 +2404,13 @@ void CTreeViewIdxTree::onActionLeavePasteTriggered( bool i_bChecked )
         }
         else
         {
-            pModelBranchTrg = dynamic_cast<CModelBranchTreeEntry*>(pModelTreeEntryTrg);
+            pModelBranchTrg = pModelTreeEntryTrg;
         }
 
         if( pModelBranchTrg != nullptr )
         {
-            CAbstractIdxTreeEntry* pTreeEntrySrc = pModelTreeEntrySrc->treeEntry();
-            CBranchIdxTreeEntry*   pBranchTrg    = dynamic_cast<CBranchIdxTreeEntry*>(pModelBranchTrg->treeEntry());
+            CIdxTreeEntry* pTreeEntrySrc = pModelTreeEntrySrc->treeEntry();
+            CIdxTreeEntry* pBranchTrg    = pModelBranchTrg->treeEntry();
 
             if( m_pasteMode == EPasteMode::Copy )
             {
@@ -2302,3 +2426,19 @@ void CTreeViewIdxTree::onActionLeavePasteTriggered( bool i_bChecked )
     } // if( m_modelIdxSelectedOnMousePressEvent.isValid() )
 
 } // onActionLeavePasteTriggered
+
+/*==============================================================================
+protected slots:
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CTreeViewIdxTree::onTrcAdminObjChanged( QObject* i_pTrcAdminObj )
+//------------------------------------------------------------------------------
+{
+    CTrcAdminObj* pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(i_pTrcAdminObj);
+
+    if( pTrcAdminObj != nullptr && m_pTrcAdminObj == pTrcAdminObj )
+    {
+        m_iTrcDetailLevel = pTrcAdminObj->getTraceDetailLevel();
+    }
+}

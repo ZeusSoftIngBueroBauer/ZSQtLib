@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -28,9 +28,11 @@ may result in using the software modules.
 #define ZSSys_Aux_h
 
 #include <QtCore/qbytearray.h>
+#include <QtCore/qmargins.h>
 #include <QtCore/qmutex.h>
 #include <QtCore/qprocess.h>
 #include <QtCore/qstring.h>
+#include <QtCore/qthread.h>
 
 #include "ZSSys/ZSSysDllMain.h"
 #include "ZSSys/ZSSysCommon.h"
@@ -51,6 +53,7 @@ global type definitions and constants
 
 class QEvent;
 class QMimeData;
+class QModelIndex;
 class QPoint;
 class QStringList;
 class QVariant;
@@ -149,6 +152,8 @@ ZSSYSDLL_API QProcess::ExitStatus str2QProcessExitStatus( const QString& i_str, 
 ZSSYSDLL_API QString qProcessError2Str( int i_iVal, EEnumEntryAliasStr i_alias = EEnumEntryAliasStrName );
 ZSSYSDLL_API QProcess::ProcessError str2QProcessError( const QString& i_str, EEnumEntryAliasStr i_alias = EEnumEntryAliasStrName, bool* o_pbConverted = nullptr );
 
+ZSSYSDLL_API QString qThreadPriority2Str( QThread::Priority i_priority, EEnumEntryAliasStr i_alias = EEnumEntryAliasStrName );
+
 ZSSYSDLL_API QString qXmlStreamTokenType2Str( int i_iVal, EEnumEntryAliasStr i_alias = EEnumEntryAliasStrName );
 
 ZSSYSDLL_API QString qCheckState2Str( int i_iVal );
@@ -158,6 +163,7 @@ ZSSYSDLL_API QString qEvent2Str( QEvent* i_pEv, int i_iDetailLevel = 0 );
 ZSSYSDLL_API QString qEventType2Str( int i_iVal, bool i_bShort = true );
 ZSSYSDLL_API QString qItemDataRole2Str( int i_iVal );
 ZSSYSDLL_API QString qItemFlags2Str( quint32 i_flags );
+ZSSYSDLL_API QString qModelIndex2Str( const QModelIndex& i_modelIdx );
 
 ZSSYSDLL_API QString qKeyCode2Str( int i_iVal, EEnumEntryAliasStr i_alias = EEnumEntryAliasStrName );
 ZSSYSDLL_API int char2QKeyCode( const QChar& i_ch );    // e.g. "o", "1", "Z", " ", "?", ..
@@ -169,8 +175,11 @@ ZSSYSDLL_API QString qMouseButton2Str( int i_iBtn, bool i_bShort = true );
 ZSSYSDLL_API QString qMouseButtons2Str( int i_iBtns, bool i_bShort = true );
 ZSSYSDLL_API QString qPoint2Str( const QPoint& i_pt, bool i_bShort = true );
 ZSSYSDLL_API QString qRect2Str( const QRect& i_rct, bool i_bShort = true );
+ZSSYSDLL_API QString qMargins2Str( const QMargins& i_margins, bool i_bShort = true );
 ZSSYSDLL_API QString qMimeData2Str( const QMimeData* i_pMimeData, int i_iDetailLevel = 0 );
 ZSSYSDLL_API QString qVariantType2Str( int i_iVal );
+
+ZSSYSDLL_API QString qFocusReason2Str( int i_iVal );
 
 
 /*******************************************************************************
@@ -207,6 +216,9 @@ ZSSYSDLL_API QString truncateStringWithEllipsisInTheMiddle(
     const QString& i_str,
     int            i_iMaxLength,
     const QString& i_strEllipsis = ".." );
+
+ZSSYSDLL_API QString encodeForHtml( const QString& i_str );
+ZSSYSDLL_API QString decodeFromHtml( const QString& i_str );
 
 /*******************************************************************************
 Parsing strings

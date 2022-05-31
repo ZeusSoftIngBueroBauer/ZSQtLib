@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Installer>
+    <Name>Trace Method Client</Name>
+    <Version>@ZSQTLIB_GIT_VERSION_INFO@</Version>
+    <Title>Installation Trace Method Client</Title>
+    <Publisher>ZeusSoft, Ing. Buero Bauer</Publisher>
+    <StartMenuDir>ZeusSoft</StartMenuDir>
+    <TargetDir>@ApplicationsDir@/ZeusSoft/TraceMethodClient</TargetDir>
+</Installer>

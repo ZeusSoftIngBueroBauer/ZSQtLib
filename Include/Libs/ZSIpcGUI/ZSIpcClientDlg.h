@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -52,15 +52,15 @@ public: // class methods
     static QString ClassName() { return "CDlgIpcClient"; }
 public: // class methods
     static CDlgIpcClient* CreateInstance(
-        const QString&  i_strObjName,
         const QString&  i_strDlgTitle,
+        const QString&  i_strObjName,
         QWidget*        i_pWdgtParent = nullptr,
         Qt::WindowFlags i_wflags = Qt::WindowFlags());
     static CDlgIpcClient* GetInstance( const QString& i_strObjName );
 protected: // ctor
     CDlgIpcClient(
-        const QString&  i_strObjName,
         const QString&  i_strDlgTitle,
+        const QString&  i_strObjName,
         QWidget*        i_pWdgtParent = nullptr,
         Qt::WindowFlags i_wFlags = Qt::WindowFlags());
 public: // dtor
@@ -70,9 +70,6 @@ public: // overridables of base class ZS::System::GUI::CDialog
     virtual QString className() override { return ClassName(); }
 public: // instance methods
     void setClient( CClient* i_pClient );
-public: // instance methods
-    void setClientObjectNameVisible( bool i_bVisible );
-    bool isClientObjectNameVisible() const;
 public: // instance methods
     void setProtocolTypeImage( const QPixmap& i_pxm );
     void setProtocolTypeImageVisible( bool i_bVisible );

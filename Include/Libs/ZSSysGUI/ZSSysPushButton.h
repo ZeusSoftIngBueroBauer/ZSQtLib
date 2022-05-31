@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2012 by    ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -58,7 +58,7 @@ public: // instance methods
     void setText( const QString& i_strText );
     QString text() const;
     void setPixmap( const QPixmap& i_pxm );
-    const QPixmap* pixmap() const;
+    QPixmap pixmap() const;
     void setScaledContents ( bool i_bScaled );
     bool hasScaledContents () const;
 public: // overridables of base class QWidget

@@ -1,15 +1,11 @@
-# Call CMake from build directory (e.g. ./bin/msvc2019_x64) with:
-# - for VS-2017: cmake -G "Visual Studio 15 2017" -A x64 -DCMAKE_BUILD_TYPE=Debug ../Make/Libs/ZSSys
-# - for VS-2019: cmake -G "Visual Studio 16 2019" -A x64 -DCMAKE_BUILD_TYPE=Debug ../Make/Libs/ZSSys
-
 cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
 
 project(ZSAppTrcMthClient)
 
 message(STATUS "")
 message(STATUS "---------------------------------------------------------------------------------------------")
-message(STATUS "Processing: ${CMAKE_CURRENT_SOURCE_DIR}")
-message(STATUS "---------------------------------------------------------------------------------------------")
+message(STATUS "-> ${CMAKE_CURRENT_SOURCE_DIR}")
+message(STATUS "")
 
 message(STATUS "CMAKE_PROJECT_NAME:       ${CMAKE_PROJECT_NAME}")
 message(STATUS "PROJECT_NAME:             ${PROJECT_NAME}")
@@ -22,31 +18,107 @@ message(STATUS "CMAKE_BINARY_DIR:         ${CMAKE_BINARY_DIR}")
 message(STATUS "CMAKE_CURRENT_BINARY_DIR: ${CMAKE_CURRENT_BINARY_DIR}")
 message(STATUS "PROJECT_BINARY_DIR:       ${PROJECT_BINARY_DIR}")
 
-list(APPEND _Sources
-                                                                     ../../../../Source/Apps/Products/ZSTrcMthClient/Main.cpp
-    ../../../../Include/Apps/Products/ZSTrcMthClient/App.h           ../../../../Source/Apps/Products/ZSTrcMthClient/App.cpp
-    ../../../../Include/Apps/Products/ZSTrcMthClient/MainWindow.h    ../../../../Source/Apps/Products/ZSTrcMthClient/MainWindow.cpp
-    ../../../../Include/Apps/Products/ZSTrcMthClient/WidgetCentral.h ../../../../Source/Apps/Products/ZSTrcMthClient/WidgetCentral.cpp
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+
+# In source code the headers are included together with the ${PROJECT_NAME} as follows:
+# include "${PROJECT_NAME}/HeaderFileName.h"
+# e.g. #include "ZSSys/ZSSysIdxTree.h"
+# For "target_include_directories" the header path without ${PROJECT_NAME} must be
+# passed and therefore _HeadersPath will be defined without ${PROJECT_NAME} so that
+# this define can be used further one in this CMake list file.
+# _SourcePaths will be defined in the same way.
+set(_HeadersPath ${CMAKE_CURRENT_SOURCE_DIR}/../../../../Include/Apps/Products)
+set(_SourcesPath ${CMAKE_CURRENT_SOURCE_DIR}/../../../../Source/Apps/Products)
+set(_ResourcesPath ${CMAKE_CURRENT_SOURCE_DIR}/../../../../Resources/Apps/Products)
+
+list(APPEND _Headers
+    ${_HeadersPath}/../../Libs/ZSSys/ZSSysVersion.h
+    ${_HeadersPath}/ZSTrcMthClient/App.h
+    ${_HeadersPath}/ZSTrcMthClient/MainWindow.h
+    ${_HeadersPath}/ZSTrcMthClient/WidgetCentral.h
 )
 
-# Got to create the following target name:
-# (ProjectName)[_d]
-# e.g.: "ZSAppDraw_d"
+list(APPEND _Sources
+    ${_SourcesPath}/ZSTrcMthClient/Main.cpp
+    ${_SourcesPath}/ZSTrcMthClient/App.cpp
+    ${_SourcesPath}/ZSTrcMthClient/MainWindow.cpp
+    ${_SourcesPath}/ZSTrcMthClient/WidgetCentral.cpp
+)
 
-set(TargetOutputName ${PROJECT_NAME})
+list(APPEND _Resources
+)
 
-if(CMAKE_BUILD_TYPE MATCHES Debug)
-    set(TargetOutputName ${TargetOutputName}_d)
+if(WIN32)
+    # Add version info as meta information to Dll.
+    set(_Resources ${_Resources} ${_ResourcesPath}/../../Libs/ZSSys/ZSSysVersion.rc)
+    # Icons.
+    if(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
+        set(_Headers ${_Headers}
+            ${_HeadersPath}/ZSTrcMthClient/resource.h
+            ${_HeadersPath}/ZSTrcMthClient/targetver.h)
+        set(_Resources ${_Resources} ${_ResourcesPath}/ZSTrcMthClient/${PROJECT_NAME}.rc)
+    endif()
 endif()
 
-message(STATUS "TargetOutputName: ${TargetOutputName}")
+# Got to create the following target name:
+# (ProjectName)[d]
+# e.g.: "ZSAppTrcMthClientd"
+set(TargetOutputName ${PROJECT_NAME})
+if(CMAKE_BUILD_TYPE MATCHES Debug)
+    set(TargetOutputName ${TargetOutputName}d)
+endif()
+message(STATUS "TargetOutputName:         ${TargetOutputName}")
 
-add_executable(${PROJECT_NAME} ${_Sources})
+if(WIN32)
+    add_executable(${PROJECT_NAME} WIN32 ${_Headers} ${_Sources} ${_Resources})
+else()
+    add_executable(${PROJECT_NAME} ${_Headers} ${_Sources} ${_Resources})
+endif()
 
 set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME ${TargetOutputName})
+set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER Products)
+
+source_group("Header Files" FILES ${_Headers})
+source_group("Source Files" FILES ${_Sources})
+source_group("Resource Files" FILES ${_Resources})
 
 target_include_directories(${PROJECT_NAME}
     PRIVATE ${CMAKE_SOURCE_DIR}/../Include/Apps/Products/ZSTrcMthClient)
 
 target_link_libraries(${PROJECT_NAME}
     PRIVATE ZSSys ZSSysGUI ZSTest ZSTestGUI ZSIpc ZSIpcGUI ZSIpcTrace ZSIpcTraceGUI)
+
+include(GNUInstallDirs)
+
+install(TARGETS ${PROJECT_NAME} EXPORT ${CMAKE_PROJECT_NAME}Targets RUNTIME DESTINATION .)
+
+# Prepare installer files
+
+# Get Current Date Time
+string(TIMESTAMP RELEASE_DATE_YEAR "%Y" UTC)
+string(TIMESTAMP RELEASE_DATE_TIME "%Y-%m-%d %H:%m" UTC)
+message(STATUS "RELEASE_DATE: ${RELEASE_DATE_TIME}")
+
+if(WIN32)
+    set(ApplicationsDir "$ENV{ProgramFiles}")
+    set(AppDataDir "$ENV{APPDATA}")
+    # Need to replace \ with /. Otherwise a very strange StartMenu path is created.
+    string(REPLACE "\\" "/" ApplicationsDir ${ApplicationsDir})
+    string(REPLACE "\\" "/" AppDataDir ${AppDataDir})
+    message(STATUS "ApplicationsDir: ${ApplicationsDir}")
+    message(STATUS "AppDataDir:      ${AppDataDir}")
+
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Installer/config/config.xml.in
+                   ${CMAKE_CURRENT_SOURCE_DIR}/Installer/config/config.xml)
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Installer/packages/de.zeussoft.TrcMthClient/meta/license.txt.in
+                   ${CMAKE_CURRENT_SOURCE_DIR}/Installer/packages/de.zeussoft.TrcMthClient/meta/license.txt)
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Installer/packages/de.zeussoft.TrcMthClient/meta/package.xml.in
+                   ${CMAKE_CURRENT_SOURCE_DIR}/Installer/packages/de.zeussoft.TrcMthClient/meta/package.xml)
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Installer/packages/de.zeussoft.TrcMthClient/meta/installscript.qs.in
+                   ${CMAKE_CURRENT_SOURCE_DIR}/Installer/packages/de.zeussoft.TrcMthClient/meta/installscript.qs)
+endif()
+
+message(STATUS "")
+message(STATUS "<- ${CMAKE_CURRENT_SOURCE_DIR}")
+message(STATUS "---------------------------------------------------------------------------------------------")
+message(STATUS "")

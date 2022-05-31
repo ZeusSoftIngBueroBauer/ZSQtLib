@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer, Germany
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer, Germany
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -44,7 +44,7 @@ namespace Test
 {
 namespace GUI
 {
-class CWdgtTest;
+class CWdgtIdxTreeTestSteps;
 }
 }
 
@@ -68,8 +68,8 @@ public: // ctors and dtor
 protected: // class members
     static CWidgetCentral* s_pThis; // singleton class
 protected: // instance members
-    QVBoxLayout*              m_pLyt;
-    ZS::Test::GUI::CWdgtTest* m_pWdgtTest;
+    QVBoxLayout*                          m_pLyt;
+    ZS::Test::GUI::CWdgtIdxTreeTestSteps* m_pWdgtTest;
 
 }; // class CWidgetCentral
 

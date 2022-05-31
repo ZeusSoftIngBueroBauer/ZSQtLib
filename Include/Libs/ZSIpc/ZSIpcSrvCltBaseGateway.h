@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -65,8 +65,7 @@ public: // ctors and dtor
     CSrvCltBaseGatewayThread(
         const QString&       i_strObjNameGateway,
         ZS::System::CErrLog* i_pErrLog,
-        Trace::CTrcMthFile*  i_pTrcMthFile = nullptr,         // If != nullptr trace method file with detail level is used instead of trace admin object with Trace server.
-        int                  i_iTrcMthFileDetailLevel = Trace::ETraceDetailLevelMethodArgs );
+        int                  i_iTrcMthFileDetailLevel = ZS::Trace::ETraceDetailLevelNone );
     virtual ~CSrvCltBaseGatewayThread();
 public: // overridables
     virtual QString nameSpace() const { return NameSpace(); }
@@ -127,8 +126,7 @@ protected: // ctor
         QObject*                  i_pCltSrv,
         CSrvCltBaseGatewayThread* i_pThreadGateway,
         ZS::System::CErrLog*      i_pErrLog,
-        Trace::CTrcMthFile*       i_pTrcMthFile = nullptr,         // If != nullptr trace method file with detail level is used instead of trace admin object with Trace server.
-        int                       i_iTrcMthFileDetailLevel = Trace::ETraceDetailLevelMethodArgs );
+        int                       i_iTrcMthFileDetailLevel = ZS::Trace::ETraceDetailLevelNone );
 public: // dtor
     virtual ~CSrvCltBaseGateway();
 public: // instance methods

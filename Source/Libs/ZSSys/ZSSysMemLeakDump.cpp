@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -124,7 +124,7 @@ void __cdecl ZS::dumpClientHook( void* i_pvUserData, size_t i_nSizeInBytes )
     int iBlockType    = _BLOCK_TYPE(iRepType);
     int iBlockSubType = _BLOCK_SUBTYPE(iRepType);
 
-    if( iBlockType == _CLIENT_BLOCK && iBlockSubType == _SMSYSDBGNEW_CLIENT_BLOCK_SUBTYPE )
+    if( iBlockType == _CLIENT_BLOCK && iBlockSubType == _ZSSYS_DBGNEW_CLIENT_BLOCK_SUBTYPE )
     {
         _RPT4(_CRT_WARN,
               "LeakDumper found block at %p: type %d, subtype %d, size %d\n",
@@ -148,7 +148,7 @@ void __cdecl ZS::dumpClientHook( void* i_pvUserData, void* /*i_pvContext*/ )
     char*        szFileName;
     int          iLineNumber;
 
-    if( iBlockType == _CLIENT_BLOCK && iBlockSubType == _SMSYSDBGNEW_CLIENT_BLOCK_SUBTYPE )
+    if( iBlockType == _CLIENT_BLOCK && iBlockSubType == _ZSSYS_DBGNEW_CLIENT_BLOCK_SUBTYPE )
     {
         const _CrtMemBlockHeader* pHdr = static_cast<_CrtMemBlockHeader*>(i_pvUserData);
         pHdr--;

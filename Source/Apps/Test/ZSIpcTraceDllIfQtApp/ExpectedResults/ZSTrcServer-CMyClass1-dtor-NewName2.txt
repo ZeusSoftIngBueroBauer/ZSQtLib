@@ -1,0 +1,8 @@
+<GUIMain                 > -> <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass1> NewName2.dtor()
+<GUIMain                 >    -> <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass1> NewName2.stopClass2Thread()
+<GUIMain                 >    <- <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass1> NewName2.stopClass2Thread()
+<GUIMain                 >    -> <ZS::System::CWaitCondition> CMyClass1::NewName2::Class2ThreadRunning.dtor()
+<GUIMain                 >    <- <ZS::System::CWaitCondition> CMyClass1::NewName2::Class2ThreadRunning.dtor()
+<GUIMain                 >    -> <ZS::System::CMutex> CMyClass1::NewName2::WaitClass2ThreadRunning.dtor()
+<GUIMain                 >    <- <ZS::System::CMutex> CMyClass1::NewName2::WaitClass2ThreadRunning.dtor()
+<GUIMain                 > <- <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass1> NewName2.dtor()

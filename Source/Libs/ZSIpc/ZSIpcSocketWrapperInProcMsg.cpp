@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -72,7 +72,7 @@ CInProcMsgSocketThread::CInProcMsgSocketThread(
 {
     setObjectName(i_strObjName);
 
-    if( m_pTrcMthFile == nullptr )
+    if( m_pTrcMthFile == nullptr && !i_strObjName.contains("TrcServer") && !i_strObjName.contains("TrcClient") )
     {
         m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName());
     }
@@ -120,6 +120,8 @@ CInProcMsgSocketThread::~CInProcMsgSocketThread()
 
     if( m_pTrcAdminObj != nullptr )
     {
+        mthTracer.onAdminObjAboutToBeReleased();
+
         CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
         m_pTrcAdminObj = nullptr;
     }
@@ -201,7 +203,7 @@ CInProcMsgSocketWrapper::CInProcMsgSocketWrapper(
     m_pWaitCondReadyRead(nullptr)
 {
     // The derived classes must instantiate the trace admin object and trace the ctor.
-    if( m_pTrcMthFile == nullptr )
+    if( m_pTrcMthFile == nullptr && !i_strObjName.contains("TrcServer") && !i_strObjName.contains("TrcClient") )
     {
         m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName());
     }
@@ -486,6 +488,8 @@ CInProcMsgSocketWrapper::~CInProcMsgSocketWrapper()
 
     if( m_pTrcAdminObj != nullptr )
     {
+        mthTracer.onAdminObjAboutToBeReleased();
+
         CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
         m_pTrcAdminObj = nullptr;
     }

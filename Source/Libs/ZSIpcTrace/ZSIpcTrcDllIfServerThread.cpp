@@ -44,36 +44,37 @@ public: // ctors and dtor
 
 //------------------------------------------------------------------------------
 DllIf::CIpcTrcServerThread::CIpcTrcServerThread(
-    const QString& i_strServerName,
-    int            i_iTrcDetailLevel ) :
+    int i_iTrcDetailLevelDllIf,
+    int i_iTrcDetailLevelTrcServer,
+    int i_iTrcDetailLevelTrcServerMutex,
+    int i_iTrcDetailLevelTrcServerIpcServer,
+    int i_iTrcDetailLevelTrcServerIpcServerMutex,
+    int i_iTrcDetailLevelTrcServerIpcServerGateway ) :
 //------------------------------------------------------------------------------
     QThread(),
-    m_strServerName(i_strServerName),
-    m_iTrcDetailLevel(i_iTrcDetailLevel),
+    m_iTrcDetailLevelDllIf(i_iTrcDetailLevelDllIf),
+    m_iTrcDetailLevelTrcServer(i_iTrcDetailLevelTrcServer),
+    m_iTrcDetailLevelTrcServerMutex(i_iTrcDetailLevelTrcServerMutex),
+    m_iTrcDetailLevelTrcServerIpcServer(i_iTrcDetailLevelTrcServerIpcServer),
+    m_iTrcDetailLevelTrcServerIpcServerMutex(i_iTrcDetailLevelTrcServerIpcServerMutex),
+    m_iTrcDetailLevelTrcServerIpcServerGateway(i_iTrcDetailLevelTrcServerIpcServerGateway),
     m_pTrcMthFile(nullptr)
 {
-    setObjectName(i_strServerName + "DllIf");
+    setObjectName("ZSTrcServerDllIf");
 
-    #ifdef _TRACE_IPCTRACEPYDLL_METHODs
-
-    QString strAdminObjFileAbsFilePath;
-    QString strLocalTrcFileAbsFilePath;
-
-    CTrcServer::GetDefaultFilePaths(strAdminObjFileAbsFilePath, strLocalTrcFileAbsFilePath);
+    QString strLocalTrcFileAbsFilePath = CTrcServer::GetDefaultLocalTrcFileAbsoluteFilePath("System");
 
     m_pTrcMthFile = CTrcMthFile::Alloc(strLocalTrcFileAbsFilePath);
 
     CMethodTracer mthTracer(
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
+        /* iTrcDetailLevel    */ m_iTrcDetailLevelDllIf,
         /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "ctor",
         /* strMthInArgs       */ "" );
-
-    #endif // #ifdef _TRACE_IPCTRACEPYDLL_METHODs
 
 } // ctor
 
@@ -86,11 +87,9 @@ DllIf::CIpcTrcServerThread::~CIpcTrcServerThread()
     // As a workaround the method tracers scope is left before the trace method
     // file is closed and freed.
 
-    #ifdef _TRACE_IPCTRACEPYDLL_METHODs
-
     {   CMethodTracer mthTracer(
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
+        /* iTrcDetailLevel    */ m_iTrcDetailLevelDllIf,
         /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
@@ -105,27 +104,28 @@ DllIf::CIpcTrcServerThread::~CIpcTrcServerThread()
     if( m_pTrcMthFile != nullptr )
     {
         m_pTrcMthFile->close();
+        CTrcMthFile::Free(m_pTrcMthFile);
     }
-
-    CTrcMthFile::Free(m_pTrcMthFile);
-
-    #endif // #ifdef _TRACE_IPCTRACEPYDLL_METHODs
 
     // The trace server should have been released at the end of the run method.
     // If not (for whatever unexpected reason) the server will be released here.
-    if( CIpcTrcServer::GetInstance(m_strServerName) != nullptr )
+    if( CIpcTrcServer::GetInstance() != nullptr )
     {
         try
         {
-            CIpcTrcServer::ReleaseInstance(m_strServerName);
+            CIpcTrcServer::ReleaseInstance();
         }
         catch(...)
         {
         }
     }
 
-    //m_strServerName;
-    m_iTrcDetailLevel = 0;
+    m_iTrcDetailLevelDllIf = 0;
+    m_iTrcDetailLevelTrcServer = 0;
+    m_iTrcDetailLevelTrcServerMutex = 0;
+    m_iTrcDetailLevelTrcServerIpcServer = 0;
+    m_iTrcDetailLevelTrcServerIpcServerMutex = 0;
+    m_iTrcDetailLevelTrcServerIpcServerGateway = 0;
     m_pTrcMthFile = nullptr;
 
 } // dtor
@@ -138,7 +138,7 @@ public: // instance methods
 bool DllIf::CIpcTrcServerThread::isServerCreated()
 //------------------------------------------------------------------------------
 {
-    return (CIpcTrcServer::GetInstance(m_strServerName) != nullptr);
+    return (CIpcTrcServer::GetInstance() != nullptr);
 }
 
 //------------------------------------------------------------------------------
@@ -147,7 +147,7 @@ bool DllIf::CIpcTrcServerThread::isServerStarted()
 {
     bool bServerStarted = false;
 
-    CIpcTrcServer* pTrcServer = CIpcTrcServer::GetInstance(m_strServerName);
+    CIpcTrcServer* pTrcServer = CIpcTrcServer::GetInstance();
 
     if( pTrcServer != NULL )
     {
@@ -163,7 +163,7 @@ bool DllIf::CIpcTrcServerThread::isServerShutdown()
 {
     bool bServerShutdown = true;
 
-    CIpcTrcServer* pTrcServer = CIpcTrcServer::GetInstance(m_strServerName);
+    CIpcTrcServer* pTrcServer = CIpcTrcServer::GetInstance();
 
     if( pTrcServer != NULL )
     {
@@ -181,11 +181,9 @@ public: // overridables of base class QThread
 void DllIf::CIpcTrcServerThread::run()
 //------------------------------------------------------------------------------
 {
-    #ifdef _TRACE_IPCTRACEPYDLL_METHODs
-
     CMethodTracer mthTracer(
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
+        /* iTrcDetailLevel    */ m_iTrcDetailLevelDllIf,
         /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
@@ -193,12 +191,15 @@ void DllIf::CIpcTrcServerThread::run()
         /* strMethod          */ "run",
         /* strMthInArgs       */ "" );
 
-    #endif // #ifdef _TRACE_IPCTRACEPYDLL_METHODs
-
     // Create trace server
     //--------------------
 
-    CIpcTrcServer::CreateInstance(m_strServerName, m_iTrcDetailLevel);
+    CIpcTrcServer::CreateInstance(
+        m_iTrcDetailLevelTrcServer,
+        m_iTrcDetailLevelTrcServerMutex,
+        m_iTrcDetailLevelTrcServerIpcServer,
+        m_iTrcDetailLevelTrcServerIpcServerMutex,
+        m_iTrcDetailLevelTrcServerIpcServerGateway);
 
     try
     {
@@ -245,7 +246,7 @@ void DllIf::CIpcTrcServerThread::run()
 
     try
     {
-        CIpcTrcServer::ReleaseInstance(m_strServerName);
+        CIpcTrcServer::ReleaseInstance();
     }
     catch(...)
     {

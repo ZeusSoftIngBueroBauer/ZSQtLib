@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer, Germany
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer, Germany
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -42,10 +42,7 @@ namespace System
 {
 class CErrLog;
 }
-namespace Trace
-{
-class CIpcTrcServer;
-}
+
 namespace Apps
 {
 namespace Test
@@ -80,9 +77,10 @@ public: // instance methods
     void saveSettings();
 protected slots:
     void onLastWindowClosed();
+protected slots:
+    void onTestFinished( const ZS::Test::CEnumTestResult& i_result );
 private: // instance members
     QSettings*                    m_pSettingsFile;
-    QString                       m_strErrLogFileAbsFilePath;
     ZS::System::CErrLog*          m_pErrLog;
     bool                          m_bReqExecTreeGarbageCollectorEnabled;
     double                        m_fReqExecTreeGarbageCollectorInterval_s;
@@ -91,9 +89,9 @@ private: // instance members
     ZS::Ipc::SServerHostSettings  m_trcServerHostSettings;
     ZS::Trace::STrcServerSettings m_trcServerSettings;
     ZS::Trace::CIpcTrcServer*     m_pTrcServer;
-    QString                       m_strTestStepsFileAbsFilePath;
     CTest*                        m_pTest;
     CMainWindow*                  m_pMainWindow;
+    bool                          m_bAutoStartTest;
 
 }; // class CApplication
 

@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -57,8 +57,12 @@ public: // class methods
     static QString ClassName() { return "CIpcTrcServerThread"; }
 public: // ctors and dtor
     CIpcTrcServerThread(
-        const QString& i_strServerName,
-        int i_iTrcDetailLevel = ZS::Trace::ETraceDetailLevelNone );
+        int i_iTrcDetailLevelDllIf = ZS::Trace::ETraceDetailLevelNone,
+        int i_iTrcDetailLevelTrcServer = ZS::Trace::ETraceDetailLevelNone,
+        int i_iTrcDetailLevelTrcServerMutex = ZS::Trace::ETraceDetailLevelNone,
+        int i_iTrcDetailLevelTrcServerIpcServer = ZS::Trace::ETraceDetailLevelNone,
+        int i_iTrcDetailLevelTrcServerIpcServerMutex = ZS::Trace::ETraceDetailLevelNone,
+        int i_iTrcDetailLevelTrcServerIpcServerGateway = ZS::Trace::ETraceDetailLevelNone );
     virtual ~CIpcTrcServerThread();
 public: // instance methods
     bool isServerCreated();
@@ -67,8 +71,12 @@ public: // instance methods
 public: // overridables of base class QThread
     virtual void run() override;
 protected: // instance members
-    QString      m_strServerName;
-    int          m_iTrcDetailLevel;
+    int m_iTrcDetailLevelDllIf;
+    int m_iTrcDetailLevelTrcServer;
+    int m_iTrcDetailLevelTrcServerMutex;
+    int m_iTrcDetailLevelTrcServerIpcServer;
+    int m_iTrcDetailLevelTrcServerIpcServerMutex;
+    int m_iTrcDetailLevelTrcServerIpcServerGateway;
     CTrcMthFile* m_pTrcMthFile;
 
 }; // class CIpcTrcServerThread

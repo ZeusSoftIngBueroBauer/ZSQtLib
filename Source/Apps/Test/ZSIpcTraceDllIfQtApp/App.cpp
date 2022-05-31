@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer, Germany
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer, Germany
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -40,7 +40,7 @@ may result in using the software modules.
 #include "App.h"
 #include "MainWindow.h"
 
-#include "ZSTest/ZSTestStepAdminObjPool.h"
+#include "ZSTest/ZSTestStepIdxTree.h"
 #include "ZSSys/ZSSysApp.h"
 #include "ZSSys/ZSSysErrLog.h"
 #include "ZSSys/ZSSysErrResult.h"
@@ -52,6 +52,7 @@ may result in using the software modules.
 
 using namespace ZS::System;
 using namespace ZS::System::GUI;
+using namespace ZS::Trace;
 using namespace ZS::Apps::Test::IpcTraceDllIfQtApp;
 
 
@@ -84,10 +85,10 @@ CApplication::CApplication(
     const QString& i_strWindowTitle ) :
 //------------------------------------------------------------------------------
     CGUIApp(i_argc,i_argv),
-    m_strErrLogFileAbsFilePath(),
-    m_strTestStepsFileAbsFilePath(),
+    m_iZSTrcServerTrcDetailLevel(ETraceDetailLevelNone),
     m_pTest(nullptr),
-    m_pMainWindow(nullptr)
+    m_pMainWindow(nullptr),
+    m_bAutoStartTest(false)
 {
     setObjectName("theApp");
 
@@ -102,14 +103,20 @@ CApplication::CApplication(
 
     QIcon iconApp;
 
-    QPixmap pxmApp16x16(":/ZS/App/Zeus16x16.bmp");
-    QPixmap pxmApp32x32(":/ZS/App/Zeus32x32.bmp");
+    QPixmap pxmApp16x16(":/ZS/App/ZeusSoft_16x16.bmp");
+    QPixmap pxmApp32x32(":/ZS/App/ZeusSoft_32x32.bmp");
+    QPixmap pxmApp48x48(":/ZS/App/ZeusSoft_48x48.bmp");
+    QPixmap pxmApp64x64(":/ZS/App/ZeusSoft_64x64.bmp");
 
     pxmApp16x16.setMask(pxmApp16x16.createHeuristicMask());
     pxmApp32x32.setMask(pxmApp32x32.createHeuristicMask());
+    pxmApp48x48.setMask(pxmApp48x48.createHeuristicMask());
+    pxmApp64x64.setMask(pxmApp64x64.createHeuristicMask());
 
     iconApp.addPixmap(pxmApp16x16);
     iconApp.addPixmap(pxmApp32x32);
+    iconApp.addPixmap(pxmApp48x48);
+    iconApp.addPixmap(pxmApp64x64);
 
     QApplication::setWindowIcon(iconApp);
 
@@ -122,15 +129,6 @@ CApplication::CApplication(
     QStringList strListArgsPar;
     QStringList strListArgsVal;
 
-    // Range of IniFileScope: ["AppDir", "User", "System"]
-    #ifdef __linux__
-    // Using "System" on linux Mint ends up in directory "etc/xdg/<CompanyName>"
-    // where the application has no write access rights. Stupid ...
-    QString strIniFileScope = "User";
-    #else
-    QString strIniFileScope = "System"; // Default
-    #endif
-
     parseAppArgs( i_argc, i_argv, strListArgsPar, strListArgsVal );
 
     #if QT_VERSION >= QT_VERSION_CHECK(4, 5, 1)
@@ -142,49 +140,25 @@ CApplication::CApplication(
         strArg = strListArgsPar[idxArg];
         strVal = strListArgsVal[idxArg];
 
-        // Here only the command arguments concerning the location of the ini file are parsed.
-        // Other arguments (e.g. mode) are parsed further below.
-        if( strArg.compare("IniFileScope",Qt::CaseInsensitive) == 0 )
+        if( strArg == "AutoStartTest" )
         {
-            strIniFileScope = strVal;
+            m_bAutoStartTest = true;
+        }
+        else if( strArg == "ZSTrcServerTraceDetailLevel" )
+        {
+            m_iZSTrcServerTrcDetailLevel = str2TraceDetailLevel(strVal);
         }
     }
-
-    // Calculate default file paths
-    //-----------------------------
-
-    QString strAppNameNormalized = QCoreApplication::applicationName();
-
-    // The application name may contain characters which are invalid in file names:
-    strAppNameNormalized.remove(":");
-    strAppNameNormalized.remove(" ");
-    strAppNameNormalized.remove("\\");
-    strAppNameNormalized.remove("/");
-    strAppNameNormalized.remove("<");
-    strAppNameNormalized.remove(">");
-
-    QString strAppConfigDir = ZS::System::getAppConfigDir(strIniFileScope);
-    QString strAppLogDir = ZS::System::getAppLogDir(strIniFileScope);
-
-    QString strErrLogFileBaseName = strAppNameNormalized + "-Error";
-    QString strErrLogFileSuffix = "xml";
-
-    m_strErrLogFileAbsFilePath = strAppLogDir + "/" + strErrLogFileBaseName + "." + strErrLogFileSuffix;
-
-    QString strTestStepsFileBaseName = strAppNameNormalized + "-TestSteps";
-    QString strTestStepsFileSuffix = "xml";
-
-    m_strTestStepsFileAbsFilePath = strAppConfigDir + "/" + strTestStepsFileBaseName + "." + strTestStepsFileSuffix;
 
     // Create error manager
     //------------------------
 
-    CErrLog::CreateInstance(true, m_strErrLogFileAbsFilePath);
+    CErrLog::CreateInstance();
 
     // Test
-    //----------------------------
+    //-----
 
-    m_pTest = new CTest(m_strTestStepsFileAbsFilePath);
+    m_pTest = new CTest();
 
     // Main Window
     //------------
@@ -192,6 +166,22 @@ CApplication::CApplication(
     m_pMainWindow = new CMainWindow(i_strWindowTitle);
     m_pMainWindow->show();
 
+    // Start test automatically if desired
+    //------------------------------------
+
+    if( m_bAutoStartTest )
+    {
+        m_pTest->start();
+
+        if( !QObject::connect(
+            /* pObjSender   */ m_pTest,
+            /* szSignal     */ SIGNAL(testFinished(const ZS::Test::CEnumTestResult&)),
+            /* pObjReceiver */ this,
+            /* szSlot       */ SLOT(onTestFinished(const ZS::Test::CEnumTestResult&)) ) )
+        {
+            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
+        }
+    }
 } // ctor
 
 //------------------------------------------------------------------------------
@@ -216,9 +206,30 @@ CApplication::~CApplication()
 
     CErrLog::ReleaseInstance();
 
-    //m_strErrLogFileAbsFilePath;
-    //m_strTestStepsFileAbsFilePath;
+    m_iZSTrcServerTrcDetailLevel = 0;
     m_pTest = nullptr;
     m_pMainWindow = nullptr;
+    m_bAutoStartTest = false;
 
 } // dtor
+
+/*==============================================================================
+protected slots:
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CApplication::onTestFinished( const ZS::Test::CEnumTestResult& i_result )
+//------------------------------------------------------------------------------
+{
+    // This test is fragile concering the timing. Which thread is waken up at first
+    // if a wait condition is signalled etc.. We try the test several times before
+    // the test is reported as failed.
+    if( i_result == ZS::Test::ETestResult::TestFailed && m_pTest->getNumberOfTestRuns() < 3 )
+    {
+        m_pTest->start();
+    }
+    else
+    {
+        exit(i_result == ZS::Test::ETestResult::TestPassed ? 0 : 1);
+    }
+}

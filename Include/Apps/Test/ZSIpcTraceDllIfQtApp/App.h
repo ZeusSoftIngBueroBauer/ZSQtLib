@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer, Germany
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer, Germany
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -68,11 +68,13 @@ public: // ctors and dtor
     ~CApplication();
 public: // instance methods
     CTest* getTest() { return m_pTest; }
+protected slots:
+    void onTestFinished( const ZS::Test::CEnumTestResult& i_result );
 private: // instance members
-    QString      m_strErrLogFileAbsFilePath;
-    QString      m_strTestStepsFileAbsFilePath;
+    int          m_iZSTrcServerTrcDetailLevel;
     CTest*       m_pTest;
     CMainWindow* m_pMainWindow;
+    bool         m_bAutoStartTest;
 
 }; // class CApplication
 

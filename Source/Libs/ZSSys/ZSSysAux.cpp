@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -33,6 +33,7 @@ may result in using the software modules.
 #endif /* !INC_OLE1 */
 #endif
 
+#include <QtCore/qabstractitemmodel.h>
 #include <QtCore/qcoreapplication.h>
 #include <QtCore/qcoreevent.h>
 #include <QtCore/qdatastream.h>
@@ -98,6 +99,17 @@ QString ZS::System::createGUID()
 } // createGUID
 
 //------------------------------------------------------------------------------
+/*! @brief Converts the given string with unicode characters into a byte array.
+
+    Unicode characters have two bytes. Please note that for UTF8 characters
+    the second byte will be encoded as '\0' and the resulting byte array is no
+    longer a human readable character string. To convert the byte array back to
+    a unicode character string use 'byteArr2Str'.
+
+    @param i_str [in] String to be converted.
+
+    @return Byte array containing two bytes for each character of the input string.
+*/
 QByteArray ZS::System::str2ByteArr( const QString& i_str )
 //------------------------------------------------------------------------------
 {
@@ -109,6 +121,17 @@ QByteArray ZS::System::str2ByteArr( const QString& i_str )
 } // str2ByteArr
 
 //------------------------------------------------------------------------------
+/*! @brief Converts the given byte array containg unicode characters into a
+           unicode string.
+
+    Unicode characters have two bytes. Please note that for UTF8 characters
+    the second byte will be encoded as '\0'. This method reverts the conversion
+    done with 'str2ByteArr'.
+
+    @param i_byteArr [in] Byte array to be converted.
+
+    @return String with unicode characters.
+*/
 QString ZS::System::byteArr2Str( const QByteArray& i_byteArr )
 //------------------------------------------------------------------------------
 {
@@ -1337,7 +1360,29 @@ QProcess::ProcessError ZS::System::str2QProcessError( const QString& i_str, EEnu
 
 
 /*==============================================================================
-Enum QProcess::Error
+Enum QThread::Priority
+==============================================================================*/
+
+static const SEnumEntry s_arEnumStrQThreadPriorities[] = {
+    /*  0 */ SEnumEntry( QThread::IdlePriority,         "IdlePriority"         ),
+    /*  0 */ SEnumEntry( QThread::LowestPriority,       "LowestPriority"       ),
+    /*  0 */ SEnumEntry( QThread::LowPriority,          "LowPriority"          ),
+    /*  0 */ SEnumEntry( QThread::NormalPriority,       "NormalPriority"       ),
+    /*  0 */ SEnumEntry( QThread::HighPriority,         "HighPriority"         ),
+    /*  0 */ SEnumEntry( QThread::HighestPriority,      "HighestPriority"      ),
+    /*  0 */ SEnumEntry( QThread::TimeCriticalPriority, "TimeCriticalPriority" ),
+    /*  0 */ SEnumEntry( QThread::InheritPriority,      "InheritPriority"      )
+};
+
+//------------------------------------------------------------------------------
+QString ZS::System::qThreadPriority2Str( QThread::Priority i_priority, EEnumEntryAliasStr i_alias )
+//------------------------------------------------------------------------------
+{
+    return SEnumEntry::enumerator2Str(s_arEnumStrQThreadPriorities, _ZSArrLen(s_arEnumStrQThreadPriorities), i_priority, i_alias);
+}
+
+/*==============================================================================
+Enum QXmlStreamReader::TokenType
 ==============================================================================*/
 
 static const SEnumEntry s_arEnumStrQXmlStreamTokenTypes[] = {
@@ -1962,6 +2007,32 @@ QString ZS::System::qItemFlags2Str( quint32 i_flags )
     return str;
 
 } // qItemFlags2Str
+
+/*==============================================================================
+QModelIndex
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+QString ZS::System::qModelIndex2Str( const QModelIndex& i_modelIdx )
+//------------------------------------------------------------------------------
+{
+    QString str;
+    if( !i_modelIdx.isValid() )
+    {
+        str = "Invalid";
+    }
+    else
+    {
+        str = "Row: " + QString::number(i_modelIdx.row());
+        str += "Clm: " + QString::number(i_modelIdx.column());
+        if( i_modelIdx.data().canConvert(QVariant::String) )
+        {
+            str += "Data: " + i_modelIdx.data().toString();
+        }
+    }
+    return str;
+
+} // qModelIndex2Str
 
 /*==============================================================================
 Enum Qt::Key
@@ -3122,156 +3193,137 @@ QString ZS::System::qRect2Str( const QRect& i_rct, bool i_bShort )
 
 
 /*==============================================================================
+class QMargins
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+QString ZS::System::qMargins2Str( const QMargins& i_margins, bool i_bShort )
+//------------------------------------------------------------------------------
+{
+    QString str;
+
+    if( i_bShort )
+    {
+        str  = QString::number(i_margins.left()) + ", " + QString::number(i_margins.top());
+        str += ", " + QString::number(i_margins.right()) + ", " + QString::number(i_margins.bottom());
+    }
+    else
+    {
+        str  = "Left: " + QString::number(i_margins.left());
+        str += ", Top: " + QString::number(i_margins.top());
+        str += ", Right: " + QString::number(i_margins.right());
+        str += ", Bottom: " + QString::number(i_margins.bottom());
+    }
+    return str;
+
+} // qMargins2Str
+
+/*==============================================================================
 Enum QVariant::Type
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-static const ZS::System::SEnumEntry s_arEnumStrVariantTypes[] =
+static const QHash<int, QString> s_hshEnumStrVariantTypes =
 //------------------------------------------------------------------------------
 {
-    /*   0 */ SEnumEntry( static_cast<int>(QVariant::Invalid), "Invalid" ),
-    /*   1 */ SEnumEntry( static_cast<int>(QVariant::Bool), "Bool" ),
-    /*   2 */ SEnumEntry( static_cast<int>(QVariant::Int), "Int" ),
-    /*   3 */ SEnumEntry( static_cast<int>(QVariant::UInt), "UInt" ),
-    /*   4 */ SEnumEntry( static_cast<int>(QVariant::LongLong), "LongLong" ),
-    /*   5 */ SEnumEntry( static_cast<int>(QVariant::ULongLong), "ULongLong" ),
-    /*   6 */ SEnumEntry( static_cast<int>(QVariant::Double), "Double" ),
-    /*   7 */ SEnumEntry( static_cast<int>(QVariant::Char), "Char" ),
-    /*   8 */ SEnumEntry( static_cast<int>(QVariant::Map), "Map" ),
-    /*   9 */ SEnumEntry( static_cast<int>(QVariant::List), "List" ),
-    /*  10 */ SEnumEntry( static_cast<int>(QVariant::String), "String" ),
-    /*  11 */ SEnumEntry( static_cast<int>(QVariant::StringList), "StringList" ),
-    /*  12 */ SEnumEntry( static_cast<int>(QVariant::ByteArray), "ByteArray" ),
-    /*  13 */ SEnumEntry( static_cast<int>(QVariant::BitArray), "BitArray" ),
-    /*  14 */ SEnumEntry( static_cast<int>(QVariant::Date), "Date" ),
-    /*  15 */ SEnumEntry( static_cast<int>(QVariant::Time), "Time" ),
-    /*  16 */ SEnumEntry( static_cast<int>(QVariant::DateTime), "DateTime" ),
-    /*  17 */ SEnumEntry( static_cast<int>(QVariant::Url), "Url" ),
-    /*  18 */ SEnumEntry( static_cast<int>(QVariant::Locale), "Locale" ),
-    /*  19 */ SEnumEntry( static_cast<int>(QVariant::Rect), "Rect" ),
-    /*  20 */ SEnumEntry( static_cast<int>(QVariant::RectF), "RectF" ),
-    /*  21 */ SEnumEntry( static_cast<int>(QVariant::Size), "Size" ),
-    /*  22 */ SEnumEntry( static_cast<int>(QVariant::SizeF), "SizeF" ),
-    /*  23 */ SEnumEntry( static_cast<int>(QVariant::Line), "Line" ),
-    /*  24 */ SEnumEntry( static_cast<int>(QVariant::LineF), "LineF" ),
-    /*  25 */ SEnumEntry( static_cast<int>(QVariant::Point), "Point" ),
-    /*  26 */ SEnumEntry( static_cast<int>(QVariant::PointF), "PointF" ),
-    /*  27 */ SEnumEntry( static_cast<int>(QVariant::RegExp), "RegExp" ),
-    /*  28 */ SEnumEntry( static_cast<int>(QVariant::Hash), "Hash" ),
+    { QVariant::Invalid, "Invalid" },
+    { QVariant::Bool, "Bool" },
+    { QVariant::Int, "Int" },
+    { QVariant::UInt, "UInt" },
+    { QVariant::LongLong, "LongLong" },
+    { QVariant::ULongLong, "ULongLong" },
+    { QVariant::Double, "Double" },
+    { QVariant::Char, "Char" },
+    { QVariant::Map, "Map" },
+    { QVariant::List, "List" },
+    { QVariant::String, "String" },
+    { QVariant::StringList, "StringList" },
+    { QVariant::ByteArray, "ByteArray" },
+    { QVariant::BitArray, "BitArray" },
+    { QVariant::Date, "Date" },
+    { QVariant::Time, "Time" },
+    { QVariant::DateTime, "DateTime" },
+    { QVariant::Url, "Url" },
+    { QVariant::Locale, "Locale" },
+    { QVariant::Rect, "Rect" },
+    { QVariant::RectF, "RectF" },
+    { QVariant::Size, "Size" },
+    { QVariant::SizeF, "SizeF" },
+    { QVariant::Line, "Line" },
+    { QVariant::LineF, "LineF" },
+    { QVariant::Point, "Point" },
+    { QVariant::PointF, "PointF" },
+    { QVariant::RegExp, "RegExp" },
+    { QVariant::Hash, "Hash" },
     #if QT_VERSION >= QT_VERSION_CHECK(4, 7, 0)
-    /*  29 */ SEnumEntry( static_cast<int>(QVariant::EasingCurve), "EasingCurve" ), // LastCoreType
-    #else
-    /*  30 */ SEnumEntry( 29, "29" ),
+    { QVariant::EasingCurve, "EasingCurve" },
     #endif
-    /*  30 */ SEnumEntry( 30, "30" ),
-    /*  31 */ SEnumEntry( 31, "31" ),
-    /*  32 */ SEnumEntry( 32, "32" ),
-    /*  33 */ SEnumEntry( 33, "33" ),
-    /*  34 */ SEnumEntry( 34, "34" ),
-    /*  35 */ SEnumEntry( 35, "35" ),
-    /*  36 */ SEnumEntry( 36, "36" ),
-    /*  37 */ SEnumEntry( 37, "37" ),
-    /*  38 */ SEnumEntry( 38, "38" ),
-    /*  39 */ SEnumEntry( 39, "39" ),
-    /*  40 */ SEnumEntry( 40, "40" ),
-    /*  41 */ SEnumEntry( 41, "41" ),
-    /*  42 */ SEnumEntry( 42, "42" ),
-    /*  43 */ SEnumEntry( 43, "43" ),
-    /*  44 */ SEnumEntry( 44, "44" ),
-    /*  45 */ SEnumEntry( 45, "45" ),
-    /*  46 */ SEnumEntry( 46, "46" ),
-    /*  47 */ SEnumEntry( 47, "47" ),
-    /*  48 */ SEnumEntry( 48, "48" ),
-    /*  49 */ SEnumEntry( 49, "49" ),
-    /*  50 */ SEnumEntry( 50, "50" ),
-    /*  51 */ SEnumEntry( 51, "51" ),
-    /*  52 */ SEnumEntry( 52, "52" ),
-    /*  53 */ SEnumEntry( 53, "53" ),
-    /*  54 */ SEnumEntry( 54, "54" ),
-    /*  55 */ SEnumEntry( 55, "55" ),
-    /*  56 */ SEnumEntry( 56, "56" ),
-    /*  57 */ SEnumEntry( 57, "57" ),
-    /*  58 */ SEnumEntry( 58, "58" ),
-    /*  59 */ SEnumEntry( 59, "59" ),
-    /*  60 */ SEnumEntry( 60, "60" ),
-    /*  61 */ SEnumEntry( 61, "61" ),
-    /*  62 */ SEnumEntry( 62, "62" ), // value 62 is internally reserved
     #ifdef QT3_SUPPORT
-    /*  63 */ SEnumEntry( static_cast<int>(QVariant::ColorGroup, "ColorGroup" ),
-    #else
-    /*  63 */ SEnumEntry( 63, "63" ),
+    { QVariant::ColorGroup, "ColorGroup" },
     #endif
-    /*  64 */ SEnumEntry( static_cast<int>(QVariant::Font), "Font" ),
-    /*  65 */ SEnumEntry( static_cast<int>(QVariant::Pixmap), "Pixmap" ),
-    /*  66 */ SEnumEntry( static_cast<int>(QVariant::Brush), "Brush" ),
-    /*  67 */ SEnumEntry( static_cast<int>(QVariant::Color), "Color" ),
-    /*  68 */ SEnumEntry( static_cast<int>(QVariant::Palette), "Palette" ),
-    /*  69 */ SEnumEntry( static_cast<int>(QVariant::Icon), "Icon" ),
-    /*  70 */ SEnumEntry( static_cast<int>(QVariant::Image), "Image" ),
-    /*  71 */ SEnumEntry( static_cast<int>(QVariant::Polygon), "Polygon" ),
-    /*  72 */ SEnumEntry( static_cast<int>(QVariant::Region), "Region" ),
-    /*  73 */ SEnumEntry( static_cast<int>(QVariant::Bitmap), "Bitmap" ),
-    /*  74 */ SEnumEntry( static_cast<int>(QVariant::Cursor), "Cursor" ),
-    /*  75 */ SEnumEntry( static_cast<int>(QVariant::SizePolicy), "SizePolicy" ),
-    /*  76 */ SEnumEntry( static_cast<int>(QVariant::KeySequence), "KeySequence" ),
-    /*  77 */ SEnumEntry( static_cast<int>(QVariant::Pen), "Pen" ),
-    /*  78 */ SEnumEntry( static_cast<int>(QVariant::TextLength), "TextLength" ),
-    /*  79 */ SEnumEntry( static_cast<int>(QVariant::TextFormat), "TextFormat" ),
-    /*  80 */ SEnumEntry( static_cast<int>(QVariant::Matrix), "Matrix" ),
-    /*  81 */ SEnumEntry( static_cast<int>(QVariant::Transform), "Transform" ),
-    /*  82 */ SEnumEntry( static_cast<int>(QVariant::Matrix4x4), "Matrix4x4" ),
-    /*  83 */ SEnumEntry( static_cast<int>(QVariant::Vector2D), "Vector2D" ),
-    /*  84 */ SEnumEntry( static_cast<int>(QVariant::Vector3D), "Vector3D" ),
-    /*  85 */ SEnumEntry( static_cast<int>(QVariant::Vector4D), "Vector4D" ),
-    /*  86 */ SEnumEntry( static_cast<int>(QVariant::Quaternion), "Quaternion" ), // Quaternion, LastGuiType
-    /*  87 */ SEnumEntry(  87, "87" ),
-    /*  88 */ SEnumEntry(  88, "88" ),
-    /*  89 */ SEnumEntry(  89, "89" ),
-    /*  90 */ SEnumEntry(  90, "90" ),
-    /*  91 */ SEnumEntry(  91, "91" ),
-    /*  92 */ SEnumEntry(  92, "92" ),
-    /*  93 */ SEnumEntry(  93, "93" ),
-    /*  94 */ SEnumEntry(  94, "94" ),
-    /*  95 */ SEnumEntry(  95, "95" ),
-    /*  96 */ SEnumEntry(  96, "96" ),
-    /*  97 */ SEnumEntry(  97, "97" ),
-    /*  98 */ SEnumEntry(  98, "98" ),
-    /*  99 */ SEnumEntry(  99, "99" ),
-    /* 100 */ SEnumEntry( 100, "100" ),
-    /* 101 */ SEnumEntry( 101, "101" ),
-    /* 102 */ SEnumEntry( 102, "102" ),
-    /* 103 */ SEnumEntry( 103, "103" ),
-    /* 104 */ SEnumEntry( 104, "104" ),
-    /* 105 */ SEnumEntry( 105, "105" ),
-    /* 106 */ SEnumEntry( 106, "106" ),
-    /* 107 */ SEnumEntry( 107, "107" ),
-    /* 108 */ SEnumEntry( 108, "108" ),
-    /* 109 */ SEnumEntry( 109, "109" ),
-    /* 110 */ SEnumEntry( 110, "110" ),
-    /* 111 */ SEnumEntry( 111, "111" ),
-    /* 112 */ SEnumEntry( 112, "112" ),
-    /* 113 */ SEnumEntry( 113, "113" ),
-    /* 114 */ SEnumEntry( 114, "114" ),
-    /* 115 */ SEnumEntry( 115, "115" ),
-    /* 116 */ SEnumEntry( 116, "116" ),
-    /* 117 */ SEnumEntry( 117, "117" ),
-    /* 118 */ SEnumEntry( 118, "118" ),
-    /* 119 */ SEnumEntry( 119, "119" ),
-    /* 120 */ SEnumEntry( 120, "120" ),
-    /* 121 */ SEnumEntry( 121, "121" ),
-    /* 122 */ SEnumEntry( 122, "122" ),
-    /* 123 */ SEnumEntry( 123, "123" ),
-    /* 124 */ SEnumEntry( 124, "124" ),
-    /* 125 */ SEnumEntry( 125, "125" ),
-    /* 126 */ SEnumEntry( 126, "126" ),
-    /* 127 */ SEnumEntry( static_cast<int>(QVariant::UserType), "UserType" )
+    { QVariant::Font, "Font" },
+    { QVariant::Pixmap, "Pixmap" },
+    { QVariant::Brush, "Brush" },
+    { QVariant::Color, "Color" },
+    { QVariant::Palette, "Palette" },
+    { QVariant::Icon, "Icon" },
+    { QVariant::Image, "Image" },
+    { QVariant::Polygon, "Polygon" },
+    { QVariant::Region, "Region" },
+    { QVariant::Bitmap, "Bitmap" },
+    { QVariant::Cursor, "Cursor" },
+    { QVariant::SizePolicy, "SizePolicy" },
+    { QVariant::KeySequence, "KeySequence" },
+    { QVariant::Pen, "Pen" },
+    { QVariant::TextLength, "TextLength" },
+    { QVariant::TextFormat, "TextFormat" },
+    { QVariant::Matrix, "Matrix" },
+    { QVariant::Transform, "Transform" },
+    { QVariant::Matrix4x4, "Matrix4x4" },
+    { QVariant::Vector2D, "Vector2D" },
+    { QVariant::Vector3D, "Vector3D" },
+    { QVariant::Vector4D, "Vector4D" },
+    { QVariant::Quaternion, "Quaternion" },
+    { QVariant::UserType, "UserType" }
 };
 
 //------------------------------------------------------------------------------
 QString ZS::System::qVariantType2Str( int i_type )
 //------------------------------------------------------------------------------
 {
-    return SEnumEntry::enumerator2Str( s_arEnumStrVariantTypes, _ZSArrLen(s_arEnumStrVariantTypes), i_type );
+    QString str = s_hshEnumStrVariantTypes.value(i_type, "");
+    if( str.isEmpty() ) str = "? (=" + QString::number(i_type) + ")";
+    return str;
+}
+
+/*==============================================================================
+Enum Qt::FocusReasong
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+static const ZS::System::SEnumEntry s_arEnumStrFocusReasons[] =
+//------------------------------------------------------------------------------
+{
+    /* 0 */ SEnumEntry( static_cast<int>(Qt::MouseFocusReason), "MouseFocusReason" ),
+    /* 1 */ SEnumEntry( static_cast<int>(Qt::TabFocusReason), "TabFocusReason" ),
+    /* 2 */ SEnumEntry( static_cast<int>(Qt::BacktabFocusReason), "BacktabFocusReason" ),
+    /* 3 */ SEnumEntry( static_cast<int>(Qt::ActiveWindowFocusReason), "ActiveWindowFocusReason" ),
+    /* 4 */ SEnumEntry( static_cast<int>(Qt::PopupFocusReason), "PopupFocusReason" ),
+    /* 5 */ SEnumEntry( static_cast<int>(Qt::ShortcutFocusReason), "ShortcutFocusReason" ),
+    /* 6 */ SEnumEntry( static_cast<int>(Qt::MenuBarFocusReason), "MenuBarFocusReason" ),
+    /* 7 */ SEnumEntry( static_cast<int>(Qt::OtherFocusReason), "OtherFocusReason" ),
+    /* 8 */ SEnumEntry( static_cast<int>(Qt::NoFocusReason), "NoFocusReason" )
+};
+
+//------------------------------------------------------------------------------
+QString ZS::System::qFocusReason2Str( int i_iVal )
+//------------------------------------------------------------------------------
+{
+    if( i_iVal >= 0 && i_iVal < _ZSArrLen(s_arEnumStrFocusReasons) )
+    {
+        return SEnumEntry::enumerator2Str( s_arEnumStrFocusReasons, _ZSArrLen(s_arEnumStrFocusReasons), i_iVal );
+    }
+    return "? (" + QString::number(i_iVal) + ")";
 }
 
 /*==============================================================================
@@ -3491,6 +3543,36 @@ QString ZS::System::truncateStringWithEllipsisInTheMiddle(
     return str;
 
 } // truncateStringWithEllipsisInTheMiddle
+
+
+//------------------------------------------------------------------------------
+QString ZS::System::encodeForHtml( const QString& i_str )
+//------------------------------------------------------------------------------
+{
+    QString str = i_str;
+    if( str.contains("&") ) str.replace("&", "&amp;"); // this must be the first replacement
+    if( str.contains("<") ) str.replace("<","&lt;");
+    if( str.contains(">") ) str.replace(">","&gt;");
+    if( str.contains("\"") ) str.replace("\"", "&quot;");
+    if( str.contains("'") ) str.replace("'", "&apos;");
+    if( str.contains("  ") ) str.replace("  ", "&nbsp;");
+    return str;
+}
+
+//------------------------------------------------------------------------------
+QString ZS::System::decodeFromHtml( const QString& i_str )
+//------------------------------------------------------------------------------
+{
+    QString str = i_str;
+
+    if( str.contains("&lt;") ) str.replace("&lt;", "<");
+    if( str.contains("&gt;") ) str.replace("&gt;", ">");
+    if( str.contains("&quot;") ) str.replace("&quot;", "\"");
+    if( str.contains("&apos;") ) str.replace("&apos;", "'");
+    if( str.contains("&amp;") ) str.replace("&amp;", "&");
+    if( str.contains("&nbsp;") ) str.replace("&nbsp;", " ");
+    return str;
+}
 
 /*******************************************************************************
 Parsing strings

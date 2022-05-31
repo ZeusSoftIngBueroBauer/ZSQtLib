@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -60,8 +60,8 @@ public: // class methods
 
 //------------------------------------------------------------------------------
 CDlgIpcClient* CDlgIpcClient::CreateInstance(
-    const QString&  i_strObjName,
     const QString&  i_strDlgTitle,
+    const QString&  i_strObjName,
     QWidget*        i_pWdgtParent,
     Qt::WindowFlags i_wFlags )
 //------------------------------------------------------------------------------
@@ -73,8 +73,8 @@ CDlgIpcClient* CDlgIpcClient::CreateInstance(
     }
 
     return new CDlgIpcClient(
-        /* strObjName   */ i_strObjName,
         /* strDlgTitle  */ i_strDlgTitle,
+        /* strObjName   */ i_strObjName,
         /* pWdgtParent  */ i_pWdgtParent,
         /* wFlags       */ i_wFlags );
 
@@ -93,16 +93,16 @@ protected: // ctor
 
 //------------------------------------------------------------------------------
 CDlgIpcClient::CDlgIpcClient(
-    const QString&  i_strObjName,
     const QString&  i_strDlgTitle,
+    const QString&  i_strObjName,
     QWidget*        i_pWdgtParent,
     Qt::WindowFlags i_wFlags ) :
 //------------------------------------------------------------------------------
     CDialog(
+        /* strDlgTitle  */ i_strDlgTitle,
         /* strNameSpace */ NameSpace(),
         /* strClassName */ ClassName(),
         /* strObjName   */ i_strObjName,
-        /* strDlgTitle  */ i_strDlgTitle,
         /* pWdgtParent  */ i_pWdgtParent,
         /* wFlags       */ i_wFlags ),
     m_pLyt(nullptr),
@@ -194,38 +194,6 @@ void CDlgIpcClient::setClient( CClient* i_pClient )
     m_pWdgtIpcClient->setClient(i_pClient);
 
 } // setClient
-
-/*==============================================================================
-public: // instance methods
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-void CDlgIpcClient::setClientObjectNameVisible( bool i_bVisible )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
-    {
-        strMthInArgs = bool2Str(i_bVisible);
-    }
-
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strMethod    */ "setClientObjectNameVisible",
-        /* strAddInfo   */ strMthInArgs );
-
-    m_pWdgtIpcClient->setClientObjectNameVisible(i_bVisible);
-
-} // setClientObjectNameVisible
-
-//------------------------------------------------------------------------------
-bool CDlgIpcClient::isClientObjectNameVisible() const
-//------------------------------------------------------------------------------
-{
-    return m_pWdgtIpcClient->isClientObjectNameVisible();
-}
 
 /*==============================================================================
 public: // instance methods

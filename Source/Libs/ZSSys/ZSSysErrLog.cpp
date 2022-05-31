@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -352,38 +352,6 @@ void CErrLog::ReleaseInstance( CErrLog* i_pErrLog )
     i_pErrLog = nullptr;
 
 } // ReleaseInstance
-
-//------------------------------------------------------------------------------
-/*! Destroys all error log instances.
-
-    This method is only provided for convenience but should never been used.
-    Usually the one who created an error log instance with CErrLog::GetInstance
-    should also delete the error log instance if no longer needed.
-*/
-void CErrLog::DestroyAllInstances()
-//------------------------------------------------------------------------------
-{
-    QMutexLocker mtxLocker(&s_mtx);
-
-    CErrLog* pErrLog;
-    QString  strName;
-
-    QHash<QString, CErrLog*>::iterator itErrLog;
-
-    for( itErrLog = s_hshpInstances.begin(); itErrLog != s_hshpInstances.end(); itErrLog++ )
-    {
-        strName = itErrLog.key();
-        pErrLog = itErrLog.value();
-
-        s_hshpInstances[strName] = nullptr;
-
-        delete pErrLog;
-        pErrLog = nullptr;
-    }
-
-    s_hshpInstances.clear();
-
-} // DestroyAllInstances
 
 /*==============================================================================
 private: // class methods

@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer, Germany
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer, Germany
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -98,16 +98,21 @@ public: // ctors and dtor
     ~CMainWindow();
 protected: // overridables of base class QWidget
     virtual void closeEvent( QCloseEvent* i_pEv );
-protected: // overridables of base class QObject
     virtual bool eventFilter( QObject* i_pObjWatched, QEvent* i_pEv );
+protected slots:
+    void onActFileRecallAdminObjsTriggered();
+    void onActFileSaveAdminObjsTriggered();
+    void onActFileReadTrcMthFileTriggered();
+    void onActFileWriteTrcMthFileTriggered();
 protected slots:
     void onActEditFindTriggered();
 protected slots:
+    void onActSettingsWdgtTrcMthListTriggered();
     void onActSettingsTrcClientTriggered();
     void onActSettingsTrcAdminObjIdxTreeTriggered();
 protected slots:
-    void onActInfoErrLogTriggered();
-    void onActInfoRequestExecTreeTriggered();
+    void onActDebugErrLogTriggered();
+    void onActDebugRequestExecTreeTriggered();
 protected slots:
     void onErrLogEntryAdded( const ZS::System::SErrResultInfo& i_errResultInfo );
     void onErrLogEntryChanged( const ZS::System::SErrResultInfo& i_errResultInfo );
@@ -117,8 +122,10 @@ protected: // instance methods
 protected: // instance methods
     void updateReqInProgressStatus( const QString& i_strRequest, int i_iProgress_perCent );
 protected slots:
-    void onTrcClientStateChanged( QObject* i_pTrcClient, int i_iState );
     void onTrcClientDestroyed( QObject* i_pTrcClient );
+    void onTrcClientConnected( QObject* i_pTrcClient );
+    void onTrcClientDisconnected( QObject* i_pTrcClient );
+    void onTrcClientStateChanged( QObject* i_pTrcClient, int i_iState );
 protected slots:
     void onWidgetCentralProgressBarConnectDblClicked();
 private: // class members
@@ -127,17 +134,23 @@ protected: // instance members
     QSettings*                m_pSettingsFile;
     ZS::Trace::CIpcTrcClient* m_pTrcClient;
     QMenu*                    m_pMnuFile;
+    QAction*                  m_pActFileRecallAdminObjs;
+    QAction*                  m_pActFileSaveAdminObjs;
+    QAction*                  m_pActFileReadTrcMthFile;
+    QAction*                  m_pActFileWriteTrcMthFile;
     QAction*                  m_pActFileQuit;
     QMenu*                    m_pMnuEdit;
     QAction*                  m_pActEditFind;
     QMenu*                    m_pMnuSettings;
+    QAction*                  m_pActSettingsWdgtTrcMthList;
     QAction*                  m_pActSettingsTrcClient;
     QAction*                  m_pActSettingsTrcAdminObjIdxTree;
+    QMenu*                    m_pMnuDebug;
+    QAction*                  m_pActDebugErrLog;
+    QAction*                  m_pActDebugRequestExecTree;
     QMenu*                    m_pMnuInfo;
     QAction*                  m_pActInfoVersion;
     QAction*                  m_pActInfoSettingsFile;
-    QAction*                  m_pActInfoErrLog;
-    QAction*                  m_pActInfoRequestExecTree;
     QStatusBar*               m_pStatusBar;
     QLabel*                   m_pLblReqInProgress;
     QProgressBar*             m_pBarReqInProgress;

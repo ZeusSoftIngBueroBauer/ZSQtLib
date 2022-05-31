@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -28,7 +28,7 @@ may result in using the software modules.
 #define ZSApps_TestTemplate_Test_h
 
 #include "ZSTest/ZSTest.h"
-#include "ZSTest/ZSTestStepAdminObj.h"
+#include "ZSTest/ZSTestStepIdxTreeEntry.h"
 
 class QTimer;
 
@@ -45,13 +45,16 @@ class CTest : public ZS::Test::CTest
 //******************************************************************************
 {
     Q_OBJECT
-public: // type definitions and constants
 public: // ctors and dtor
-    CTest( const QString& i_strTestStepsFileName );
+    CTest();
     ~CTest();
-public slots: // test step methods (GrpTemplate)
-    void doTestStepGrpTemplateTestStep1( ZS::Test::CTestStep* i_pTestStep );
-protected: // instance members
+public slots:
+    void doTestStepGrp1Step1( ZS::Test::CTestStep* i_pTestStep );
+    void doTestStepGrp1Step2( ZS::Test::CTestStep* i_pTestStep );
+    void doTestStepGrp1Step3( ZS::Test::CTestStep* i_pTestStep );
+    void doTestStepGrp2Step1( ZS::Test::CTestStep* i_pTestStep );
+    void doTestStepGrp2Step2( ZS::Test::CTestStep* i_pTestStep );
+    void doTestStepGrp2Step3( ZS::Test::CTestStep* i_pTestStep );
 
 }; // class CTest
 

@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -62,8 +62,8 @@ public: // class methods
 
 //------------------------------------------------------------------------------
 CDlgTrcClient* CDlgTrcClient::CreateInstance(
-    const QString&  i_strObjName,
     const QString&  i_strDlgTitle,
+    const QString&  i_strObjName,
     QWidget*        i_pWdgtParent,
     Qt::WindowFlags i_wFlags )
 //------------------------------------------------------------------------------
@@ -75,8 +75,8 @@ CDlgTrcClient* CDlgTrcClient::CreateInstance(
     }
 
     return new CDlgTrcClient(
-        /* strObjName   */ i_strObjName,
         /* strDlgTitle  */ i_strDlgTitle,
+        /* strObjName   */ i_strObjName,
         /* pWdgtParent  */ i_pWdgtParent,
         /* wFlags       */ i_wFlags );
 
@@ -95,16 +95,16 @@ protected: // ctor
 
 //------------------------------------------------------------------------------
 CDlgTrcClient::CDlgTrcClient(
-    const QString&  i_strObjName,
     const QString&  i_strDlgTitle,
+    const QString&  i_strObjName,
     QWidget*        i_pWdgtParent,
     Qt::WindowFlags i_wFlags ) :
 //------------------------------------------------------------------------------
     CDialog(
+        /* strDlgTitle  */ i_strDlgTitle,
         /* strNameSpace */ NameSpace(),
         /* strClassName */ ClassName(),
         /* strObjName   */ i_strObjName,
-        /* strDlgTitle  */ i_strDlgTitle,
         /* pWdgtParent  */ i_pWdgtParent,
         /* wFlags       */ i_wFlags ),
     m_pTrcClient(nullptr),
@@ -132,7 +132,7 @@ CDlgTrcClient::CDlgTrcClient(
         /* pObjSender   */ m_pWdgtIpcClient,
         /* szSignal     */ SIGNAL(accepted()),
         /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onSettingsAccepted()) ) )
+        /* szSlot       */ SLOT(hide()) ) )
     {
         throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
     }
@@ -141,7 +141,7 @@ CDlgTrcClient::CDlgTrcClient(
         /* pObjSender   */ m_pWdgtIpcClient,
         /* szSignal     */ SIGNAL(rejected()),
         /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onSettingsRejected()) ) )
+        /* szSlot       */ SLOT(hide()) ) )
     {
         throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
     }
@@ -157,6 +157,24 @@ CDlgTrcClient::CDlgTrcClient(
 
     m_pWdgtTrcSettings = new CWdgtTrcSettings();
     m_pTabWidget->addTab( m_pWdgtTrcSettings, "Trace Settings" );
+
+    if( !QObject::connect(
+        /* pObjSender   */ m_pWdgtTrcSettings,
+        /* szSignal     */ SIGNAL(accepted()),
+        /* pObjReceiver */ this,
+        /* szSlot       */ SLOT(hide()) ) )
+    {
+        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
+    }
+
+    if( !QObject::connect(
+        /* pObjSender   */ m_pWdgtTrcSettings,
+        /* szSignal     */ SIGNAL(rejected()),
+        /* pObjReceiver */ this,
+        /* szSlot       */ SLOT(hide()) ) )
+    {
+        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
+    }
 
 } // ctor
 
@@ -203,38 +221,6 @@ void CDlgTrcClient::setClient( CIpcTrcClient* i_pTrcClient )
     m_pWdgtTrcSettings->setClient(i_pTrcClient);
 
 } // setClient
-
-/*==============================================================================
-protected slots:
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-void CDlgTrcClient::onSettingsAccepted()
-//------------------------------------------------------------------------------
-{
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strMethod    */ "onSettingsAccepted",
-        /* strAddInfo   */ "" );
-
-    hide();
-
-} // onSettingsAccepted
-
-//------------------------------------------------------------------------------
-void CDlgTrcClient::onSettingsRejected()
-//------------------------------------------------------------------------------
-{
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strMethod    */ "onSettingsRejected",
-        /* strAddInfo   */ "" );
-
-    hide();
-
-} // onSettingsRejected
 
 /*==============================================================================
 protected slots:

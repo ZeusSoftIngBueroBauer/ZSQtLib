@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -214,7 +214,6 @@ public: // class methods
     static CErrLog* CreateInstance( bool i_bInstallQtMsgHandler = true, const QString& i_strAbsFilePath = "", const QString& i_strName = "ZSErrLog" );
     static void ReleaseInstance( const QString& i_strName = "ZSErrLog" );
     static void ReleaseInstance( CErrLog* i_pErrLog );
-    static void DestroyAllInstances();
 private: // class methods
     static void InstallQtMsgHandler();
     static void RemoveQtMsgHandler();

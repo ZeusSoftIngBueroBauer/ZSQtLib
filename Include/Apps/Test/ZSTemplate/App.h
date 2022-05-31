@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer, Germany
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer, Germany
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -32,8 +32,7 @@ may result in using the software modules.
 #include "Test.h"
 
 #include "ZSSysGUI/ZSSysGUIApp.h"
-
-class QSettings;
+#include "ZSIpcTrace/ZSIpcTrcServer.h"
 
 namespace ZS
 {
@@ -67,19 +66,18 @@ public: // ctors and dtor
         const QString& i_strWindowTitle );
     ~CApplication();
 public: // instance methods
-    QSettings* getSettingsFile() const { return m_pSettingsFile; }
     CTest* getTest() { return m_pTest; }
-public: // instance methods
-    void readSettings();
-    void saveSettings();
 protected slots:
     void onLastWindowClosed();
+protected slots:
+    void onTestFinished( const ZS::Test::CEnumTestResult& i_result );
 private: // instance members
-    QSettings*   m_pSettingsFile;
-    QString      m_strErrLogFileAbsFilePath;
-    QString      m_strTestStepsFileAbsFilePath;
-    CTest*       m_pTest;
-    CMainWindow* m_pMainWindow;
+    ZS::Ipc::SServerHostSettings  m_trcServerHostSettings;
+    ZS::Trace::STrcServerSettings m_trcServerSettings;
+    ZS::Trace::CIpcTrcServer*     m_pTrcServer;
+    CTest*                        m_pTest;
+    CMainWindow*                  m_pMainWindow;
+    bool                          m_bAutoStartTest;
 
 }; // class CApplication
 

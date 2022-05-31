@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -53,8 +53,7 @@ namespace System
 enum EEnumEntryAliasStr
 //==============================================================================
 {
-    EEnumEntryAliasStrUndefined = -1,   /*!< Welcher String zu verwenden ist, ist nicht naeher spezifiert
-                                             und haengt von der aufgerufenen Konvertierungsroutine ab. */
+    EEnumEntryAliasStrUndefined = -1,   /*!< Which string is to be used is not specified and depends on the conversion routine called. */
     EEnumEntryAliasStrName      =  0,   /*!< Select name of enumerator (eg "Normal"). */
     EEnumEntryAliasStrSymbol    =  1,   /*!< Select symbol string of enum index (eg "N"). */
     EEnumEntryAliasStrText      =  2,   /*!< Select text string of enum index (eg "Normal range"). */

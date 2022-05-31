@@ -1,0 +1,18 @@
+<GUIMain                 > -> <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass2> Inst1.stopClass3Thread()
+<GUIMain                 > <- <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass2> Inst1.stopClass3Thread()
+<CMyClass2ThreadInst1    >       -> <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass2> Inst1.event({ZS::Apps::Test::IpcTraceDllIfQtApp::ReqTest, stopClass3Thread})
+<CMyClass2ThreadInst1    >          -> <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass2> Inst1.stopClass3Thread()
+<CMyClass2ThreadInst1    >             -> <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass3Thread> CMyClass3ThreadInst1.quit()
+<CMyClass2ThreadInst1    >             <- <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass3Thread> CMyClass3ThreadInst1.quit()
+<CMyClass3ThreadInst1    >    <- <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass3Thread> CMyClass3ThreadInst1.exec(): 0
+<CMyClass3ThreadInst1    >    -> <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass3> Inst1.dtor()
+<CMyClass3ThreadInst1    >       -> <ZS::System::CMutex> CMyClass3::Inst1::Counters.dtor()
+<CMyClass3ThreadInst1    >       <- <ZS::System::CMutex> CMyClass3::Inst1::Counters.dtor()
+<CMyClass3ThreadInst1    >    <- <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass3> Inst1.dtor()
+<CMyClass3ThreadInst1    > <- <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass3Thread> CMyClass3ThreadInst1.run()
+<CMyClass2ThreadInst1    >             -> <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass3Thread> CMyClass3ThreadInst1.wait(30000 ms)
+<CMyClass2ThreadInst1    >             <- <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass3Thread> CMyClass3ThreadInst1.wait(): true
+<CMyClass2ThreadInst1    >             -> <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass3Thread> CMyClass3ThreadInst1.dtor()
+<CMyClass2ThreadInst1    >             <- <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass3Thread> CMyClass3ThreadInst1.dtor()
+<CMyClass2ThreadInst1    >          <- <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass2> Inst1.stopClass3Thread()
+<CMyClass2ThreadInst1    >       <- <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass2> Inst1.event()

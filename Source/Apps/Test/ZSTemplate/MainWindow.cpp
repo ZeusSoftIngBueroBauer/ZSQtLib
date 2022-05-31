@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer, Germany
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer, Germany
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -47,10 +47,13 @@ may result in using the software modules.
 #include "App.h"
 #include "WidgetCentral.h"
 
-#include "ZSTest/ZSTestStepAdminObjPool.h"
+#include "ZSIpcTraceGUI/ZSIpcTrcServerDlg.h"
+#include "ZSTest/ZSTestStepIdxTree.h"
 #include "ZSSysGUI/ZSSysErrLogDlg.h"
+#include "ZSSysGUI/ZSSysTrcAdminObjIdxTreeDlg.h"
 #include "ZSSys/ZSSysErrLog.h"
 #include "ZSSys/ZSSysException.h"
+#include "ZSSys/ZSSysTrcAdminObjIdxTree.h"
 #include "ZSSys/ZSSysVersion.h"
 
 #include "ZSSys/ZSSysMemLeakDump.h"
@@ -58,6 +61,8 @@ may result in using the software modules.
 
 using namespace ZS::System;
 using namespace ZS::System::GUI;
+using namespace ZS::Trace;
+using namespace ZS::Trace::GUI;
 using namespace ZS::Test;
 using namespace ZS::Apps::Test::Template;
 
@@ -86,19 +91,18 @@ CMainWindow::CMainWindow(
     m_pSettingsFile(nullptr),
     m_pMnuFile(nullptr),
     m_pToolBarFile(nullptr),
-    m_pActFileNew(nullptr),
     m_pActFileOpen(nullptr),
     m_pActFileSave(nullptr),
     m_pActFileQuit(nullptr),
     m_pMnuDebug(nullptr),
     m_pActDebugErrLog(nullptr),
+    m_pActDebugTrcServer(nullptr),
+    m_pActDebugTrcAdminObjIdxTree(nullptr),
     m_pMnuInfo(nullptr),
     m_pActInfoVersion(nullptr),
-    m_pActInfoSettingsFile(nullptr),
     m_pStatusBar(nullptr),
     m_pLblErrors(nullptr),
-    m_pWdgtCentral(nullptr),
-    m_pDlgFile(nullptr)
+    m_pWdgtCentral(nullptr)
 {
     if( s_pThis != nullptr )
     {
@@ -118,34 +122,6 @@ CMainWindow::CMainWindow(
     m_pToolBarFile = addToolBar("File Operations");
     m_pToolBarFile->setObjectName("File Operations");
     m_pToolBarFile->setIconSize( QSize(16,16) );
-
-    // <MenuItem> File::New
-    //----------------------
-
-    QIcon iconFileNew;
-
-    QPixmap pxmFileNew16x16(":/ZS/Menu/MenuFileNew16x16.bmp");
-
-    pxmFileNew16x16.setMask(pxmFileNew16x16.createHeuristicMask());
-
-    iconFileNew.addPixmap(pxmFileNew16x16);
-
-    m_pActFileNew = new QAction(iconFileNew,"&New ...", this);
-    m_pActFileNew->setShortcuts(QKeySequence::New);
-    m_pActFileNew->setStatusTip(tr("Create a new test step settings file"));
-
-    m_pMnuFile->addAction(m_pActFileNew);
-
-    m_pToolBarFile->addAction(m_pActFileNew);
-
-    if( !QObject::connect(
-        /* pObjSender   */ m_pActFileNew,
-        /* szSignal     */ SIGNAL(triggered()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onActFileNewTriggered()) ) )
-    {
-        throw CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-    }
 
     // <MenuItem> File::Open
     //----------------------
@@ -256,6 +232,36 @@ CMainWindow::CMainWindow(
         throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
     }
 
+    // <MenuItem> Debug::TraceServer
+    //------------------------------
+
+    m_pActDebugTrcServer = new QAction("&Trace Server",this);
+    m_pMnuDebug->addAction(m_pActDebugTrcServer);
+
+    if( !connect(
+        /* pObjSender   */ m_pActDebugTrcServer,
+        /* szSignal     */ SIGNAL(triggered()),
+        /* pObjReceiver */ this,
+        /* szSlot       */ SLOT(onActDebugTrcServerTriggered()) ) )
+    {
+        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
+    }
+
+    // <MenuItem> Debug::TraceAdminIdxTree
+    //------------------------------------
+
+    m_pActDebugTrcAdminObjIdxTree = new QAction("&Trace Admin Objects",this);
+    m_pMnuDebug->addAction(m_pActDebugTrcAdminObjIdxTree);
+
+    if( !connect(
+        /* pObjSender   */ m_pActDebugTrcAdminObjIdxTree,
+        /* szSignal     */ SIGNAL(triggered()),
+        /* pObjReceiver */ this,
+        /* szSlot       */ SLOT(onActDebugTrcAdminObjIdxTreeTriggered()) ) )
+    {
+        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
+    }
+
     // <Menu> Info
     //============
 
@@ -272,24 +278,6 @@ CMainWindow::CMainWindow(
 
     m_pActInfoVersion = new QAction(strActionInfoVersion,this);
     m_pMnuInfo->addAction(m_pActInfoVersion);
-
-    // <MenuItem> Settings::Settings File Info
-    //----------------------------------------
-
-    m_pSettingsFile = CApplication::GetInstance()->getSettingsFile();
-
-    if( m_pSettingsFile != nullptr )
-    {
-        QString strActionSettingsFileInfo = "Settings File: " + m_pSettingsFile->fileName();
-
-        QIcon iconModeEdit;
-
-        iconModeEdit.addPixmap( mode2Pixmap(static_cast<int>(EMode::Edit),24) );
-
-        m_pActInfoSettingsFile = new QAction( iconModeEdit, strActionSettingsFileInfo, this );
-
-        m_pMnuInfo->addAction(m_pActInfoSettingsFile);
-    }
 
     // <StatusBar>
     //======================
@@ -371,32 +359,23 @@ CMainWindow::~CMainWindow()
     // <Clear>
     //======================
 
-    try
-    {
-        delete m_pDlgFile;
-    }
-    catch(...)
-    {
-    }
-
     CDialog::DestroyAllInstances();
 
     m_pSettingsFile = nullptr;
     m_pMnuFile = nullptr;
     m_pToolBarFile = nullptr;
-    m_pActFileNew = nullptr;
     m_pActFileOpen = nullptr;
     m_pActFileSave = nullptr;
     m_pActFileQuit = nullptr;
     m_pMnuDebug = nullptr;
     m_pActDebugErrLog = nullptr;
+    m_pActDebugTrcServer = nullptr;
+    m_pActDebugTrcAdminObjIdxTree = nullptr;
     m_pMnuInfo = nullptr;
     m_pActInfoVersion = nullptr;
-    m_pActInfoSettingsFile = nullptr;
     m_pStatusBar = nullptr;
     m_pLblErrors = nullptr;
     m_pWdgtCentral = nullptr;
-    m_pDlgFile = nullptr;
 
     s_pThis = nullptr;
 
@@ -412,18 +391,8 @@ void CMainWindow::closeEvent( QCloseEvent* i_pEv )
 {
     if( i_pEv->isAccepted() )
     {
-        try
-        {
-            delete m_pDlgFile;
-        }
-        catch(...)
-        {
-        }
-        m_pDlgFile = nullptr;
-
         CDialog::HideAllInstances();
-
-    } // if( i_pEv->isAccepted() )
+    }
 
     QMainWindow::closeEvent(i_pEv);
 
@@ -461,102 +430,51 @@ protected slots:
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CMainWindow::onActFileNewTriggered()
-//------------------------------------------------------------------------------
-{
-    if( CApplication::GetInstance()->getTest() != nullptr )
-    {
-        CTestStepAdminObjPool* pObjPool = CApplication::GetInstance()->getTest()->getAdminObjIdxTree();
-
-        if( pObjPool != nullptr )
-        {
-            pObjPool->clear();
-        }
-    }
-
-} // onActFileNewTriggered
-
-//------------------------------------------------------------------------------
 void CMainWindow::onActFileOpenTriggered()
 //------------------------------------------------------------------------------
 {
-    if( m_pDlgFile == nullptr )
-    {
-        m_pDlgFile = new QFileDialog(
-            /* pWdgtParent  */ nullptr,
-            /* strCaption   */ windowTitle() + ": File Dialog",
-            /* strDirectory */ "",
-            /* strFilter    */ "*.*" );
-    }
+    CTest* pTest = CApplication::GetInstance()->getTest();
 
-    CTestStepAdminObjPool* pObjPool = nullptr;
-
-    if( CApplication::GetInstance()->getTest() != nullptr )
+    if( pTest != nullptr )
     {
-        pObjPool = CApplication::GetInstance()->getTest()->getAdminObjIdxTree();
-    }
-
-    if( pObjPool != nullptr )
-    {
-        QString strFile = pObjPool->getFileName();
-        QString strDir;
+        QString strFile = pTest->getTestStepsAbsFilePath();
 
         if( !strFile.isEmpty() )
         {
             QFileInfo fileInfo(strFile);
-            QDir dir = fileInfo.absoluteDir();
-            strDir = dir.absoluteFilePath(strFile);
+            strFile = fileInfo.absoluteFilePath();
         }
 
-        m_pDlgFile->setWindowTitle( windowTitle() + ": Open Test Step Config File" );
-        m_pDlgFile->setAcceptMode(QFileDialog::AcceptOpen);
-        //m_pDlgFile->setOption(QFileDialog::DontConfirmOverwrite, false);
-        //m_pDlgFile->setConfirmOverwrite(true);
-        #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-        m_pDlgFile->setFilter("*.xml");
-        #else
-        m_pDlgFile->setNameFilter("*.xml");
-        #endif
-        m_pDlgFile->setDefaultSuffix("*.xml");
-        m_pDlgFile->setDirectory(strDir);
+        strFile = QFileDialog::getOpenFileName(
+            /* parent             */ this,
+            /* strCaption         */ windowTitle() + ": Recall test step settings",
+            /* strDir             */ strFile,
+            /* filter             */ "Test step setting files (*.xml)",
+            /* pstrSelectedFilter */ nullptr,
+            /* options            */ QFileDialog::Options() );
 
         if( !strFile.isEmpty() )
         {
-            m_pDlgFile->selectFile(strFile);
-        }
+            SErrResultInfo errResultInfo = pTest->recallTestSteps(strFile);
 
-        if( m_pDlgFile->exec() )
-        {
-            QStringList strlstFiles = m_pDlgFile->selectedFiles();
-
-            if( strlstFiles.size() > 0 )
+            if( errResultInfo.isErrorResult() )
             {
-                strFile = strlstFiles[0];
+                QString strText = "Reading test step config from file " + strFile + " failed.";
+                strText += "\n\nErrorCode: " + QString::number(errResultInfo.getResult()) + " (" + errResultInfo.getResultStr() + ")";
 
-                if( !strFile.isEmpty() )
+                if( !errResultInfo.getAddErrInfoDscr().isEmpty() )
                 {
-                    SErrResultInfo errResultInfo = pObjPool->recall(strFile);
+                    strText += "\n\n" + errResultInfo.getAddErrInfoDscr();
+                }
 
-                    if( errResultInfo.isErrorResult() )
-                    {
-                        QString strText = "Reading test step config from file " + strFile + " failed.";
-                        strText += "\n\nErrorCode: " + QString::number(errResultInfo.getResult()) + " (" + errResultInfo.getResultStr() + ")";
-
-                        if( !errResultInfo.getAddErrInfoDscr().isEmpty() )
-                        {
-                            strText += "\n\n" + errResultInfo.getAddErrInfoDscr();
-                        }
-
-                        QMessageBox::critical(
-                            /* pWdgtParent */ this,
-                            /* strTitle    */ windowTitle() + ": Error Message",
-                            /* strText     */ strText,
-                            /* buttons     */ QMessageBox::Ok );
-                    }
-                } // if( strFile.isEmpty() )
-            } // if( strlstFiles.size() > 0 )
-        } // if( m_pDlgFile->exec() )
-    } // if( pObjPool != nullptr )
+                QMessageBox::critical(
+                    /* pWdgtParent */ this,
+                    /* strTitle    */ windowTitle() + ": Error Message",
+                    /* strText     */ strText,
+                    /* buttons     */ QMessageBox::Ok );
+            }
+        } // if( strFile.isEmpty() )
+    } // if( pTest != nullptr )
 
 } // onActFileOpenTriggered
 
@@ -564,84 +482,49 @@ void CMainWindow::onActFileOpenTriggered()
 void CMainWindow::onActFileSaveTriggered()
 //------------------------------------------------------------------------------
 {
-    if( m_pDlgFile == nullptr )
-    {
-        m_pDlgFile = new QFileDialog(
-            /* pWdgtParent  */ nullptr,
-            /* strCaption   */ windowTitle() + ": File Dialog",
-            /* strDirectory */ "",
-            /* strFilter    */ "*.*" );
-    }
+    CTest* pTest = CApplication::GetInstance()->getTest();
 
-    CTestStepAdminObjPool* pObjPool = nullptr;
-
-    if( CApplication::GetInstance()->getTest() != nullptr )
+    if( pTest != nullptr )
     {
-        pObjPool = CApplication::GetInstance()->getTest()->getAdminObjIdxTree();
-    }
-
-    if( pObjPool != nullptr )
-    {
-        QString strFile = pObjPool->getFileName();
+        QString strFile = pTest->getTestStepsAbsFilePath();
         QString strDir;
 
         if( !strFile.isEmpty() )
         {
             QFileInfo fileInfo(strFile);
-            QDir dir = fileInfo.absoluteDir();
-            strDir = dir.absoluteFilePath(strFile);
+            strFile = fileInfo.absoluteFilePath();
         }
 
-        m_pDlgFile->setWindowTitle( windowTitle() + ": Save Test Step Config File" );
-        m_pDlgFile->setAcceptMode(QFileDialog::AcceptSave);
-        //m_pDlgFile->setOption(QFileDialog::DontConfirmOverwrite, false);
-        //m_pDlgFile->setConfirmOverwrite(true);
-        #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-        m_pDlgFile->setFilter("*.xml");
-        #else
-        m_pDlgFile->setNameFilter("*.xml");
-        #endif
-        m_pDlgFile->setDefaultSuffix("*.xml");
-        m_pDlgFile->setDirectory(strDir);
+        strFile = QFileDialog::getSaveFileName(
+            /* parent             */ this,
+            /* strCaption         */ windowTitle() + ": Save test step settings",
+            /* strDir             */ strFile,
+            /* filter             */ "Test step setting files (*.xml)",
+            /* pstrSelectedFilter */ nullptr,
+            /* options            */ QFileDialog::Options() );
 
         if( !strFile.isEmpty() )
         {
-            m_pDlgFile->selectFile(strFile);
-        }
+            SErrResultInfo errResultInfo = pTest->saveTestSteps(strFile);
 
-        if( m_pDlgFile->exec() )
-        {
-            QStringList strlstFiles = m_pDlgFile->selectedFiles();
-            QString     strFile;
-
-            if( strlstFiles.size() > 0 )
+            if( errResultInfo.isErrorResult() )
             {
-                strFile = strlstFiles[0];
+                QString strText = "Saving test step config in file " + strFile + " failed.";
+                strText += "\n\nErrorCode: " + QString::number(errResultInfo.getResult()) + " (" + errResultInfo.getResultStr() + ")";
 
-                if( !strFile.isEmpty() )
+                if( !errResultInfo.getAddErrInfoDscr().isEmpty() )
                 {
-                    SErrResultInfo errResultInfo = pObjPool->save(strFile);
+                    strText += "\n\n" + errResultInfo.getAddErrInfoDscr();
+                }
 
-                    if( errResultInfo.isErrorResult() )
-                    {
-                        QString strText = "Saving test step config in file " + strFile + " failed.";
-                        strText += "\n\nErrorCode: " + QString::number(errResultInfo.getResult()) + " (" + errResultInfo.getResultStr() + ")";
-
-                        if( !errResultInfo.getAddErrInfoDscr().isEmpty() )
-                        {
-                            strText += "\n\n" + errResultInfo.getAddErrInfoDscr();
-                        }
-
-                        QMessageBox::critical(
-                            /* pWdgtParent */ this,
-                            /* strTitle    */ windowTitle() + ": Error Message",
-                            /* strText     */ strText,
-                            /* buttons     */ QMessageBox::Ok );
-                    }
-                } // if( strFile.isEmpty() )
-            } // if( strlstFiles.size() > 0 )
-        } // if( m_pDlgFile->exec() )
-    } // if( pObjPool != nullptr )
+                QMessageBox::critical(
+                    /* pWdgtParent */ this,
+                    /* strTitle    */ windowTitle() + ": Error Message",
+                    /* strText     */ strText,
+                    /* buttons     */ QMessageBox::Ok );
+            }
+        } // if( strFile.isEmpty() )
+    } // if( pIdxTree != nullptr )
 
 } // onActFileSaveTriggered
 
@@ -653,13 +536,13 @@ protected slots:
 void CMainWindow::onActDebugErrLogTriggered()
 //------------------------------------------------------------------------------
 {
-    QString strDlgTitle = getMainWindowTitle() + ": Error Log";
+    QString strDlgTitle = QCoreApplication::applicationName() + ": Error Log";
 
-    CDlgErrLog* pDlg = dynamic_cast<CDlgErrLog*>(CDlgErrLog::GetInstance("ErrLog"));
+    CDlgErrLog* pDlg = dynamic_cast<CDlgErrLog*>(CDlgErrLog::GetInstance());
 
     if( pDlg == nullptr )
     {
-        pDlg = CDlgErrLog::CreateInstance("ErrLog", strDlgTitle);
+        pDlg = CDlgErrLog::CreateInstance(strDlgTitle);
         pDlg->setAttribute(Qt::WA_DeleteOnClose, true);
         pDlg->adjustSize();
         pDlg->show();
@@ -676,6 +559,61 @@ void CMainWindow::onActDebugErrLogTriggered()
     } // if( pDlg != nullptr )
 
 } // onActDebugErrLogTriggered
+
+//------------------------------------------------------------------------------
+void CMainWindow::onActDebugTrcServerTriggered()
+//------------------------------------------------------------------------------
+{
+    QString strDlgTitle = QCoreApplication::applicationName() + ": Method Trace Server";
+
+    CDlgTrcServer* pDlg = dynamic_cast<CDlgTrcServer*>(CDlgTrcServer::GetInstance(strDlgTitle));
+
+    if( pDlg == nullptr )
+    {
+        pDlg = CDlgTrcServer::CreateInstance(strDlgTitle, "MethodTraceServer");
+        pDlg->setAttribute(Qt::WA_DeleteOnClose, true);
+        pDlg->adjustSize();
+        pDlg->show();
+    }
+    else // if( pDlg != nullptr )
+    {
+        if( pDlg->isHidden() )
+        {
+            pDlg->show();
+        }
+        pDlg->raise();
+        pDlg->activateWindow();
+    }
+
+} // onActDebugTrcServerTriggered
+
+//------------------------------------------------------------------------------
+void CMainWindow::onActDebugTrcAdminObjIdxTreeTriggered()
+//------------------------------------------------------------------------------
+{
+    QString strDlgTitle = QCoreApplication::applicationName() + ": Method Trace Admin Objects";
+
+    CDlgIdxTreeTrcAdminObjs* pDlg = CDlgIdxTreeTrcAdminObjs::GetInstance(CTrcServer::GetTraceAdminObjIdxTree()->objectName());
+
+    if( pDlg == nullptr )
+    {
+        pDlg = CDlgIdxTreeTrcAdminObjs::CreateInstance(strDlgTitle, CTrcServer::GetTraceAdminObjIdxTree());
+        pDlg->setAttribute(Qt::WA_DeleteOnClose, true);
+        pDlg->adjustSize();
+        pDlg->show();
+    }
+    else // if( pReqSeq != nullptr )
+    {
+        if( pDlg->isHidden() )
+        {
+            pDlg->show();
+        }
+        pDlg->raise();
+        pDlg->activateWindow();
+
+    } // if( pDlg != nullptr )
+
+} // onActDebugTrcAdminObjIdxTreeTriggered
 
 /*==============================================================================
 protected slots:
@@ -831,4 +769,3 @@ void CMainWindow::updateErrorsStatus()
     }
 
 } // updateErrorsStatus
-

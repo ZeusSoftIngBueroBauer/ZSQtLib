@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -45,23 +45,22 @@ public: // class methods
 public: // class methods
     static CEnumerationIdxTree* GetInstance( const QString& i_strName = "ZS::System::EnumerationIdxTree" );
     static CEnumerationIdxTree* CreateInstance(
-        const QString&     i_strName = "ZS::System::EnumerationIdxTree",
-        CRootIdxTreeEntry* i_pRootTreeEntry = nullptr,      // if null an instance of CRootIdxTreeEntry is created
-        const QString&     i_strNodeSeparator = "::",
-        bool               i_bCreateMutex = true,           // if true each access to member variables will be protected by a mutex
-        QObject*           i_pObjParent = nullptr,
-        int                i_iTrcDetailLevel = ZS::Trace::ETraceDetailLevelNone );
+        const QString& i_strName = "ZS::System::EnumerationIdxTree",
+        CIdxTreeEntry* i_pRootTreeEntry = nullptr,      // if null a root entry is implicitely created
+        const QString& i_strNodeSeparator = "::",
+        bool           i_bCreateMutex = true,           // if true each access to member variables will be protected by a mutex
+        QObject*       i_pObjParent = nullptr,
+        int            i_iTrcDetailLevel = ZS::Trace::ETraceDetailLevelNone );
     static void DestroyInstance( const QString& i_strName = "ZS::System::EnumerationIdxTree" );
     static void DestroyInstance( CEnumerationIdxTree* i_pIdxTree );
-    static void DestroyAllInstances();
 protected: // ctors and dtor
     CEnumerationIdxTree(
-        const QString&     i_strName,
-        CRootIdxTreeEntry* i_pRootTreeEntry,
-        const QString&     i_strNodeSeparator,
-        bool               i_bCreateMutex,
-        QObject*           i_pObjParent,
-        int                i_iTrcDetailLevel );
+        const QString& i_strName,
+        CIdxTreeEntry* i_pRootTreeEntry,
+        const QString& i_strNodeSeparator,
+        bool           i_bCreateMutex,
+        QObject*       i_pObjParent,
+        int            i_iTrcDetailLevel );
     virtual ~CEnumerationIdxTree();
 public: // instance methods
     virtual QString nameSpace() const { return NameSpace(); }

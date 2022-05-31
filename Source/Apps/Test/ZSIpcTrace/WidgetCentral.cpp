@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer, Germany
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer, Germany
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -43,10 +43,9 @@ may result in using the software modules.
 #include "WidgetCentral.h"
 #include "App.h"
 #include "Test.h"
-#include "WdgtTestOutput.h"
 
 #include "ZSIpcTrace/ZSIpcTrcServer.h"
-#include "ZSTestGUI/ZSTestWdgt.h"
+#include "ZSTestGUI/ZSTestStepIdxTreeWdgt.h"
 #include "ZSIpcTraceGUI/ZSIpcTrcMthWdgt.h"
 #include "ZSSys/ZSSysException.h"
 
@@ -96,10 +95,9 @@ CWidgetCentral::CWidgetCentral(
     m_pTest(i_pTest),
     m_pLyt(nullptr),
     m_pSplitter(nullptr),
-    m_pGrpTestOutput(nullptr),
-    m_pLytGrpTestOutput(nullptr),
-    m_pWdgtTestOutput(nullptr),
-    m_pWdgtMthList(nullptr)
+    m_pWdgtTest(nullptr),
+    m_pTabWidgetTrcMthLists(nullptr),
+    m_pWdgtTrcMthList(nullptr)
 {
     if( s_pThis != nullptr )
     {
@@ -122,29 +120,19 @@ CWidgetCentral::CWidgetCentral(
     // <TestSteps>
     //----------------
 
-    m_pWdgtTest = new CWdgtTest( CApplication::GetInstance()->getTest() );
+    m_pWdgtTest = new CWdgtIdxTreeTestSteps( CApplication::GetInstance()->getTest() );
     m_pSplitter->addWidget(m_pWdgtTest);
-
-    // <GroupBox> Test
-    //---------------------------
-
-    m_pGrpTestOutput = new QGroupBox("Test");
-    m_pLytGrpTestOutput = new QVBoxLayout();
-    m_pGrpTestOutput->setLayout(m_pLytGrpTestOutput);
-    m_pSplitter->addWidget(m_pGrpTestOutput);
-
-    m_pWdgtTestOutput = new CWdgtTestOutput(m_pTest);
-    m_pLytGrpTestOutput->addWidget(m_pWdgtTestOutput);
 
     // <MethodTrace>
     //----------------
 
-    m_pWdgtMthList = new CWdgtTrcMthList(
-        /* pTrcClient                  */ CApplication::GetInstance()->getTrcClient(),
-        /* strThreadClrFileAbsFilePath */ CApplication::GetInstance()->getThreadColorFileAbsFilePath(),
-        /* iItemsCountMax              */ 0,
-        /* pWdgtParent                 */ nullptr );
-    m_pSplitter->addWidget(m_pWdgtMthList);
+    m_pTabWidgetTrcMthLists = new QTabWidget();
+    m_pSplitter->addWidget(m_pTabWidgetTrcMthLists);
+
+    CIpcTrcClient* pTrcClient = CApplication::GetInstance()->getTrcClient();
+    QString strCltName = pTrcClient->objectName();
+    m_pWdgtTrcMthList = new CWdgtTrcMthList(pTrcClient);
+    m_pTabWidgetTrcMthLists->addTab(m_pWdgtTrcMthList, strCltName);
 
     // Restore geometry of widget
     //---------------------------
@@ -194,11 +182,20 @@ CWidgetCentral::~CWidgetCentral()
     m_pLyt = nullptr;
     m_pSplitter = nullptr;
     m_pWdgtTest = nullptr;
-    m_pGrpTestOutput = nullptr;
-    m_pLytGrpTestOutput = nullptr;
-    m_pWdgtTestOutput = nullptr;
-    m_pWdgtMthList = nullptr;
+    m_pTabWidgetTrcMthLists = nullptr;
+    m_pWdgtTrcMthList = nullptr;
 
     s_pThis = nullptr;
 
 } // dtor
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+CWdgtTrcMthList* CWidgetCentral::getTrcMthListWdgt()
+//------------------------------------------------------------------------------
+{
+    return m_pWdgtTrcMthList;
+}

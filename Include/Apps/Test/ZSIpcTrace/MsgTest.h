@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer, Germany
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer, Germany
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -65,12 +65,18 @@ public: // ctors and dtor
         qint64   i_iParentReqId = -1,
         qint64   i_iMsgId = -1 );
     virtual ~CMsgReqTest();
+public: // instance methods
+    void setCommand(const QString& i_strCommand);
+    QString getCommand() const;
 public: // must overridables of base class CMsg
     virtual ZS::System::CMsg* clone( ZS::System::ECopyDepth i_copyDepth = ZS::System::ECopyDepth::FlatKeepOwnership );
+public: // must overridables of base class CMsgReq
     virtual ZS::System::CMsgCon* createConfirmationMessage( ZS::System::ECopyDepth i_copyDepth = ZS::System::ECopyDepth::FlatKeepOwnership ); // not used, throws exception
 public: // overridables of base class CMsg
     virtual QString msgTypeToStr() const;
     virtual QString getAddTrcInfoStr( int i_iDetailLevel = 0, ZS::System::EContentToStrFormat i_format = ZS::System::EContentToStrFormat::PlainText );
+protected: // instance methods
+    QString m_strCommand;
 
 }; // CMsgReqTest
 
@@ -87,10 +93,16 @@ public: // ctors and dtor
         const ZS::System::SErrResultInfo& i_errResultInfo,
         int                               i_iProgressInPerCent );
     virtual ~CMsgConTest();
-public: // overridables of base class CMsg
+public: // instance methods
+    void setCommand(const QString& i_strCommand);
+    QString getCommand() const;
+public: // must overridables of base class CMsg
     virtual ZS::System::CMsg* clone( ZS::System::ECopyDepth i_copyDepth = ZS::System::ECopyDepth::FlatKeepOwnership );
+public: // overridables of base class CMsg
     virtual QString msgTypeToStr() const;
     virtual QString getAddTrcInfoStr( int i_iDetailLevel = 0, ZS::System::EContentToStrFormat i_format = ZS::System::EContentToStrFormat::PlainText );
+protected: // instance methods
+    QString m_strCommand;
 
 }; // CMsgConTest
 

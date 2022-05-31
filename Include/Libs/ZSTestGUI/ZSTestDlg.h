@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -47,7 +47,7 @@ class CTest;
 
 namespace GUI
 {
-class CWdgtTest;
+class CWdgtIdxTreeTestSteps;
 
 //******************************************************************************
 class ZSTESTGUIDLL_API CDlgTest : public QDialog
@@ -67,9 +67,9 @@ public: // instance methods
 protected: // overridables of base class QDialog
     virtual void closeEvent( QCloseEvent* i_pEv );
 protected: // instance members
-    QString      m_strSettingsKey;
-    QVBoxLayout* m_pLytMain;
-    CWdgtTest*   m_pWdgtTest;
+    QString                m_strSettingsKey;
+    QVBoxLayout*           m_pLytMain;
+    CWdgtIdxTreeTestSteps* m_pWdgtTest;
 
 }; // class CDlgTest
 

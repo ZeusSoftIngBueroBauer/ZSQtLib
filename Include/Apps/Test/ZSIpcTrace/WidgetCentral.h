@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer, Germany
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer, Germany
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -47,11 +47,13 @@ namespace Test
 {
 namespace GUI
 {
-class CWdgtTest;
+class CWdgtIdxTreeTestSteps;
 }
 }
 namespace Trace
 {
+class CIpcTrcClient;
+
 namespace GUI
 {
 class CWdgtTrcMthList;
@@ -65,7 +67,6 @@ namespace Test
 namespace IpcTrace
 {
 class CTest;
-class CWdgtTestOutput;
 
 //******************************************************************************
 class CWidgetCentral : public QWidget
@@ -78,18 +79,16 @@ public: // ctors and dtor
     CWidgetCentral( CTest* i_pTest, QWidget* i_pWdgtParent = nullptr, Qt::WindowFlags i_wflags = Qt::WindowFlags() );
     ~CWidgetCentral();
 public: // instance methods
-    ZS::Trace::GUI::CWdgtTrcMthList* getTrcMthListWdgt() { return m_pWdgtMthList; }
+    ZS::Trace::GUI::CWdgtTrcMthList* getTrcMthListWdgt();
 private: // class members
-    static CWidgetCentral*   s_pThis; // singleton class
+    static CWidgetCentral* s_pThis; // singleton class
 protected: // instance members
-    CTest*                           m_pTest;
-    QVBoxLayout*                     m_pLyt;
-    QSplitter*                       m_pSplitter;
-    ZS::Test::GUI::CWdgtTest*        m_pWdgtTest;
-    QGroupBox*                       m_pGrpTestOutput;
-    QVBoxLayout*                     m_pLytGrpTestOutput;
-    CWdgtTestOutput*                 m_pWdgtTestOutput;
-    ZS::Trace::GUI::CWdgtTrcMthList* m_pWdgtMthList;
+    CTest*                                m_pTest;
+    QVBoxLayout*                          m_pLyt;
+    QSplitter*                            m_pSplitter;
+    ZS::Test::GUI::CWdgtIdxTreeTestSteps* m_pWdgtTest;
+    QTabWidget*                           m_pTabWidgetTrcMthLists;
+    ZS::Trace::GUI::CWdgtTrcMthList*      m_pWdgtTrcMthList;
 
 }; // class CWidgetCentral
 

@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -43,6 +43,7 @@ may result in using the software modules.
 #include "ZSSys/ZSSysTime.h"
 #include "ZSSys/ZSSysTrcAdminObj.h"
 #include "ZSSys/ZSSysTrcMethod.h"
+#include "ZSSys/ZSSysTrcMthFile.h"
 #include "ZSSys/ZSSysTrcServer.h"
 
 #include "ZSSys/ZSSysMemLeakDump.h"
@@ -66,14 +67,22 @@ CClientGatewayThread::CClientGatewayThread(
     const QString& i_strObjNameGateway,
     CClient*       i_pClient,
     CErrLog*       i_pErrLog,
-    CTrcMthFile*   i_pTrcMthFile,
     int            i_iTrcMthFileDetailLevel ) :
 //------------------------------------------------------------------------------
-    CSrvCltBaseGatewayThread(i_strObjNameGateway, i_pErrLog, i_pTrcMthFile, i_iTrcMthFileDetailLevel),
+    CSrvCltBaseGatewayThread(i_strObjNameGateway, i_pErrLog, i_iTrcMthFileDetailLevel),
     m_pClient(i_pClient)
 {
-    // The derived classes must instantiate the trace admin object and trace the ctor.
-    if( m_pTrcMthFile == nullptr )
+    // If this is the trace client (maybe used in a test) tracing through the trace server
+    // is not possible as that would lead to deadlocks and endless recursions. The Client
+    // may want to trace a method call and sends it through the trace server to itself
+    // whereupon a method should be trace (receiving data) which again should be traced
+    // through the trace server and so on ....
+    if( i_pClient->objectName().endsWith("TrcClient") )
+    {
+        QString strLocalTrcFileAbsFilePath = CTrcServer::GetDefaultLocalTrcFileAbsoluteFilePath("System");
+        m_pTrcMthFile = CTrcMthFile::Alloc(strLocalTrcFileAbsFilePath);
+    }
+    else
     {
         m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(nameSpace(), className(), objectName());
     }
@@ -106,8 +115,16 @@ CClientGatewayThread::~CClientGatewayThread()
         /* strMethod          */ "dtor",
         /* strAddInfo         */ "" );
 
+    if( m_pTrcMthFile != nullptr )
+    {
+        m_pTrcMthFile->close();
+        CTrcMthFile::Free(m_pTrcMthFile);
+    }
+
     if( m_pTrcAdminObj != nullptr )
     {
+        mthTracer.onAdminObjAboutToBeReleased();
+
         CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
         m_pTrcAdminObj = nullptr;
     }
@@ -144,7 +161,6 @@ void CClientGatewayThread::run()
         /* pClient                */ m_pClient,
         /* pThread                */ this,
         /* pModelErrLog           */ m_pErrLog,
-        /* pTrcMthFile            */ m_pTrcMthFile,
         /* iTrcMthFileDetailLevel */ m_iTrcMthFileDetailLevel );
 
     //--------------------------------------------------------------------------
@@ -290,7 +306,6 @@ CClientGateway::CClientGateway(
     CClient*              i_pClient,
     CClientGatewayThread* i_pThreadGateway,
     CErrLog*              i_pErrLog,
-    CTrcMthFile*          i_pTrcMthFile,
     int                   i_iTrcMthFileDetailLevel ) :
 //------------------------------------------------------------------------------
     CSrvCltBaseGateway(
@@ -299,7 +314,6 @@ CClientGateway::CClientGateway(
         /* pCltSrv                */ i_pClient,
         /* pThreadGateway         */ i_pThreadGateway,
         /* pModelErrLog           */ i_pErrLog,
-        /* pTrcMthFile            */ i_pTrcMthFile,
         /* iTrcMthFileDetailLevel */ i_iTrcMthFileDetailLevel ),
     m_socketDscr(ESrvCltTypeClient),
     m_pIpcSocketWrapper(nullptr),
@@ -308,9 +322,19 @@ CClientGateway::CClientGateway(
     m_pTimerWatchDog(nullptr)
 {
     // The derived classes must instantiate the trace admin object and trace the ctor.
-    if( m_pTrcMthFile == nullptr )
+    if( m_iTrcMthFileDetailLevel > ETraceDetailLevelNone )
     {
-        m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName());
+        QString strLocalTrcFileAbsFilePath = CTrcServer::GetDefaultLocalTrcFileAbsoluteFilePath("System");
+        m_pTrcMthFile = CTrcMthFile::Alloc(strLocalTrcFileAbsFilePath);
+    }
+    // If this is the trace client (maybe used in a test) tracing through the trace server
+    // is not possible as that would lead to deadlocks and endless recursions. The Client
+    // may want to trace a method call and sends it through the trace server to itself
+    // whereupon a method should be trace (receiving data) which again should be traced
+    // through the trace server and so on ....
+    else if( !i_pClient->objectName().endsWith("TrcClient") )
+    {
+        m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(nameSpace(), className(), objectName());
     }
 
     CMethodTracer mthTracer(
@@ -375,8 +399,16 @@ CClientGateway::~CClientGateway()
     {
     }
 
+    if( m_pTrcMthFile != nullptr )
+    {
+        m_pTrcMthFile->close();
+        CTrcMthFile::Free(m_pTrcMthFile);
+    }
+
     if( m_pTrcAdminObj != nullptr )
     {
+        mthTracer.onAdminObjAboutToBeReleased();
+
         CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
         m_pTrcAdminObj = nullptr;
     }

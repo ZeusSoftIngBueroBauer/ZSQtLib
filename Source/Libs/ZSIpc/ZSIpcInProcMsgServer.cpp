@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -83,11 +83,11 @@ CInProcMsgServersAdminObj::CInProcMsgServersAdminObj( bool i_bTracingEnabled ) :
     m_bTracingEnabled(i_bTracingEnabled),
     m_pTrcAdminObj(nullptr)
 {
-    #pragma push_macro("_SMSYSDBGNEW_CLIENT_BLOCK_SUBTYPE")
+    #pragma push_macro("_ZSSYS_DBGNEW_CLIENT_BLOCK_SUBTYPE")
     #ifdef _WINDOWS
     #pragma warning( disable : 4005 )
     #endif
-    #define _SMSYSDBGNEW_CLIENT_BLOCK_SUBTYPE 0
+    #define _ZSSYS_DBGNEW_CLIENT_BLOCK_SUBTYPE 0
 
     if( m_bTracingEnabled )
     {
@@ -105,7 +105,7 @@ CInProcMsgServersAdminObj::CInProcMsgServersAdminObj( bool i_bTracingEnabled ) :
     #ifdef _WINDOWS
     #pragma warning( default : 4005 )
     #endif
-    #pragma pop_macro("_SMSYSDBGNEW_CLIENT_BLOCK_SUBTYPE")
+    #pragma pop_macro("_ZSSYS_DBGNEW_CLIENT_BLOCK_SUBTYPE")
 
 } // ctor
 
@@ -156,6 +156,8 @@ CInProcMsgServersAdminObj::~CInProcMsgServersAdminObj()
     }
 
     m_pMutex = nullptr;
+
+    mthTracer.onAdminObjAboutToBeReleased();
 
     CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
     m_pTrcAdminObj = nullptr;
@@ -369,7 +371,7 @@ CInProcMsgServer::CInProcMsgServer( const QString& i_strObjName, bool i_bTracing
 {
     setObjectName(i_strObjName);
 
-    if( m_bTracingEnabled )
+    if( m_bTracingEnabled && !i_strObjName.contains("TrcServer") )
     {
         m_pTrcAdminObj = CTrcServer::GetTraceAdminObj("ZS::Ipc", "CInProcMsgServer", i_strObjName);
     }
@@ -380,11 +382,11 @@ CInProcMsgServer::CInProcMsgServer( const QString& i_strObjName, bool i_bTracing
         /* strMethod    */ "ctor",
         /* strAddInfo   */ "" );
 
-    #pragma push_macro("_SMSYSDBGNEW_CLIENT_BLOCK_SUBTYPE")
+    #pragma push_macro("_ZSSYS_DBGNEW_CLIENT_BLOCK_SUBTYPE")
     #ifdef _WINDOWS
     #pragma warning( disable : 4005 )
     #endif
-    #define _SMSYSDBGNEW_CLIENT_BLOCK_SUBTYPE 0
+    #define _ZSSYS_DBGNEW_CLIENT_BLOCK_SUBTYPE 0
 
     if( s_pInProcMsgServersAdminObj == nullptr )
     {
@@ -394,7 +396,7 @@ CInProcMsgServer::CInProcMsgServer( const QString& i_strObjName, bool i_bTracing
     #ifdef _WINDOWS
     #pragma warning( default : 4005 )
     #endif
-    #pragma pop_macro("_SMSYSDBGNEW_CLIENT_BLOCK_SUBTYPE")
+    #pragma pop_macro("_ZSSYS_DBGNEW_CLIENT_BLOCK_SUBTYPE")
 
     m_pMutex = new QMutex(QMutex::Recursive);
 
@@ -423,6 +425,8 @@ CInProcMsgServer::~CInProcMsgServer()
     }
 
     m_pMutex = nullptr;
+
+    mthTracer.onAdminObjAboutToBeReleased();
 
     CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
     m_pTrcAdminObj = nullptr;

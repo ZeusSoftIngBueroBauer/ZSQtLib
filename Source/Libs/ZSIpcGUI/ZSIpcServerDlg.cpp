@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -60,8 +60,8 @@ public: // class methods
 
 //------------------------------------------------------------------------------
 CDlgIpcServer* CDlgIpcServer::CreateInstance(
-    const QString&  i_strObjName,
     const QString&  i_strDlgTitle,
+    const QString&  i_strObjName,
     QWidget*        i_pWdgtParent,
     Qt::WindowFlags i_wFlags )
 //------------------------------------------------------------------------------
@@ -73,8 +73,8 @@ CDlgIpcServer* CDlgIpcServer::CreateInstance(
     }
 
     return new CDlgIpcServer(
-        /* strObjName   */ i_strObjName,
         /* strDlgTitle  */ i_strDlgTitle,
+        /* strObjName   */ i_strObjName,
         /* pWdgtParent  */ i_pWdgtParent,
         /* wFlags       */ i_wFlags );
 
@@ -93,16 +93,16 @@ protected: // ctor
 
 //------------------------------------------------------------------------------
 CDlgIpcServer::CDlgIpcServer(
-    const QString&  i_strObjName,
     const QString&  i_strDlgTitle,
+    const QString&  i_strObjName,
     QWidget*        i_pWdgtParent,
     Qt::WindowFlags i_wFlags ) :
 //------------------------------------------------------------------------------
     CDialog(
+        /* strDlgTitle  */ i_strDlgTitle,
         /* strNameSpace */ NameSpace(),
         /* strClassName */ ClassName(),
         /* strObjName   */ i_strObjName,
-        /* strDlgTitle  */ i_strDlgTitle,
         /* pWdgtParent  */ i_pWdgtParent,
         /* wFlags       */ i_wFlags ),
     m_pLyt(nullptr),
@@ -160,6 +160,8 @@ CDlgIpcServer::~CDlgIpcServer()
         /* iDetailLevel */ ETraceDetailLevelMethodCalls,
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
+
+    mthTracer.onAdminObjAboutToBeReleased();
 
     CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
 
@@ -225,38 +227,6 @@ void CDlgIpcServer::setServer( CServer* i_pServer )
     m_pWdgtIpcServer->setServer(i_pServer);
 
 } // setServer
-
-/*==============================================================================
-public: // instance methods
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-void CDlgIpcServer::setServerObjectNameVisible( bool i_bVisible )
-//------------------------------------------------------------------------------
-{
-    QString strAddTrcInfo;
-
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
-    {
-        strAddTrcInfo = bool2Str(i_bVisible);
-    }
-
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strMethod    */ "setServerObjectNameVisible",
-        /* strAddInfo   */ strAddTrcInfo );
-
-    m_pWdgtIpcServer->setServerObjectNameVisible(i_bVisible);
-
-} // setServerObjectNameVisible
-
-//------------------------------------------------------------------------------
-bool CDlgIpcServer::isServerObjectNameVisible() const
-//------------------------------------------------------------------------------
-{
-    return m_pWdgtIpcServer->isServerObjectNameVisible();
-}
 
 /*==============================================================================
 public: // instance methods

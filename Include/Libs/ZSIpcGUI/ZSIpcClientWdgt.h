@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -95,9 +95,6 @@ signals:
 public: // instance methods
     void setClient( CClient* i_pClient );
 public: // instance methods
-    void setClientObjectNameVisible( bool i_bVisible );
-    bool isClientObjectNameVisible() const { return m_bClientObjNameVisible; }
-public: // instance methods
     void setProtocolTypeImage( const QPixmap& i_pxm );
     void setProtocolTypeImageVisible( bool i_bVisible );
     bool isProtocolTypeImageVisible() const{ return m_bProtocolTypeImageVisible; }
@@ -142,7 +139,6 @@ protected: // instance methods
     void applySettings();
 protected: // instance members
     CClient*                        m_pClient;
-    bool                            m_bClientObjNameVisible;
     bool                            m_bProtocolTypeImageVisible;
     int                             m_iLblWidth;
     QVBoxLayout*                    m_pLyt;
@@ -156,7 +152,6 @@ protected: // instance members
     // Connection Settings
     SClientHostSettings             m_hostSettingsClient;
     SClientHostSettings             m_hostSettingsWidget;
-    QHBoxLayout*                    m_pLytLineDefault;
     QFormLayout*                    m_pLytCnct;
     QLabel*                         m_pLblSocketType;
     QComboBox*                      m_pCmbSocketType;

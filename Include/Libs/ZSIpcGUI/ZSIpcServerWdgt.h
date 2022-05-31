@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -90,7 +90,7 @@ public: // class methods
     static QString NameSpace() { return "ZS::Ipc::GUI"; }
     static QString ClassName() { return "CWdgtIpcServer"; }
 public: // ctors and dtor
-    CWdgtIpcServer( const QString& i_strObjName, QWidget* i_pWdgtParent = nullptr );
+    CWdgtIpcServer( const QString& i_strServerName = "IpcServer", QWidget* i_pWdgtParent = nullptr );
     virtual ~CWdgtIpcServer();
 signals:
     void accepted();
@@ -98,9 +98,6 @@ signals:
     void detailsVisibilityChanged( bool i_bDetailsVisible );
 public: // instance methods
     void setServer( CServer* i_pServer );
-public: // instance methods
-    void setServerObjectNameVisible( bool i_bVisible );
-    bool isServerObjectNameVisible() const { return m_bServerObjNameVisible; }
 public: // instance methods
     void setProtocolTypeImage( const QPixmap& i_pxm );
     void setProtocolTypeImageVisible( bool i_bVisible );
@@ -145,7 +142,6 @@ protected: // instance methods
     void applySettings();
 protected:
     CServer*                        m_pServer;
-    bool                            m_bServerObjNameVisible;
     bool                            m_bProtocolTypeImageVisible;
     int                             m_iLblWidth;
     QVBoxLayout*                    m_pLyt;
@@ -159,7 +155,6 @@ protected:
     // Connection Settings
     SServerHostSettings             m_hostSettingsServer;
     SServerHostSettings             m_hostSettingsWidget;
-    QHBoxLayout*                    m_pLytLineDefault;
     QFormLayout*                    m_pLytCnct;
     QLabel*                         m_pLblSocketType;
     QComboBox*                      m_pCmbSocketType;

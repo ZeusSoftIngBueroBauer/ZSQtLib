@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -40,6 +40,7 @@ namespace ZS
 namespace System
 {
 class CMsg;
+class CMutex;
 }
 
 namespace Trace
@@ -49,6 +50,8 @@ class CIdxTreeTrcAdminObjs;
 class CTrcMthFile;
 
 //******************************************************************************
+/*! struct STrcServerSettings
+*/
 struct ZSSYSDLL_API STrcServerSettings
 //******************************************************************************
 {
@@ -57,6 +60,7 @@ public: // ctor
         bool i_bEnabled = true,
         bool i_bNewTrcAdminObjsEnabledAsDefault = true,
         int  i_iNewTrcAdminObjsDefaultDetailLevel = 0,
+        bool i_bUseIpcServer = true,
         bool i_bCacheDataIfNotConnected = false,
         int  i_iCacheDataMaxArrLen = 1000,
         bool i_bUseLocalTrcFile = true,
@@ -67,105 +71,118 @@ public: // ctor
 public: // operators
     bool operator == ( const STrcServerSettings& i_settingsOther ) const;
     bool operator != ( const STrcServerSettings& i_settingsOther ) const;
+public: // struct methods
+    QString toString() const;
 public: // struct members
-    bool    m_bEnabled;
-    bool    m_bNewTrcAdminObjsEnabledAsDefault;
-    int     m_iNewTrcAdminObjsDefaultDetailLevel;
-    bool    m_bCacheDataIfNotConnected;
-    int     m_iCacheDataMaxArrLen;
-    QString m_strAdminObjFileAbsFilePath;
-    bool    m_bUseLocalTrcFile;
-    QString m_strLocalTrcFileAbsFilePath;
-    int     m_iLocalTrcFileAutoSaveInterval_ms;
-    int     m_iLocalTrcFileSubFileCountMax;
-    int     m_iLocalTrcFileSubFileLineCountMax;
-    bool    m_bLocalTrcFileCloseFileAfterEachWrite;
+    bool    m_bEnabled;                             /*!< Tracing may be enabled or disabled for both writing to local trace file and sending data to remote client. */
+    QString m_strAdminObjFileAbsFilePath;           /*!< Absolute file path the tree of trace admin objects and their settings will be saved and recalled. */
+    bool    m_bNewTrcAdminObjsEnabledAsDefault;     /*!< Defines whether newly created trace admin objects should be enabled as default. */
+    int     m_iNewTrcAdminObjsDefaultDetailLevel;   /*!< Defines the trace detail level for newly created trace admin objects. */
+    bool    m_bUseIpcServer;                        /*!< Defines whether trace output should be send to remote client. */
+    bool    m_bCacheDataIfNotConnected;             /*!< If a trace client is not connect the flag defines whether trace data should be internally cached until a client connects. */
+    int     m_iCacheDataMaxArrLen;                  /*!< If caching is enabled defines the maximum number of trace entries which should be locally cached. */
+    bool    m_bUseLocalTrcFile;                     /*!< Defines whether trace output should be written to a local trace file. */
+    QString m_strLocalTrcFileAbsFilePath;           /*!< If a local log file is used defines the absolute file path for the log file. */
+    int     m_iLocalTrcFileAutoSaveInterval_ms;     /*!< Auto save interval for the local log file. */
+    int     m_iLocalTrcFileSubFileCountMax;         /*!< Number of sub files to be created for round robin. The oldest log file will be overwritten. */
+    int     m_iLocalTrcFileSubFileLineCountMax;     /*!< Number of lines which can be written to a log file before the file is closed and the next sub log file is created. */
+    bool    m_bLocalTrcFileCloseFileAfterEachWrite; /*!< For hard to find errors the log file may be immediately closed after an entry has been written.
+                                                         Use with special care as enabling this feature extremely slows down the program. */
 
 }; // struct STrcServerSettings
 
 
 //******************************************************************************
-/*! @brief Über die Klasse CTrcServer sollten alle Trace Ausgaben erfolgen.
+/*! @brief All trace outputs should be made via the CTrcServer class.
 
-    Die Klasse verwaltet einen Baum von Trace Objekten, über die das Tracing für
-    Module, Klassen und Instanzen aktiviert und deaktiviert als auch die Detail
-    Tiefe der Ausgaben festgelegt werden kann.
+The class manages a tree of trace objects, which can be used to activate and
+deactivate the tracing for modules, classes and instances and to specify the
+level of detail of the output.
 
-    Diese Trace Admin Objekte können befragt werden, ob eine Log Ausgabe erfolgen
-    soll und welche Log-Ausgaben zu erstellen sind.
+These Trace Admin objects can be asked whether a log output should take place
+and which log outputs should be created.
 
-    Normalerweise gibt es pro Applikation nur eine Trace Server Instanz die beim
-    Start der Applikation durch Aufruf der Klassenmethode "CreateInstance" angelegt
-    wird. Während der Programm-Ausführung kann über "GetInstance" eine Referenz auf
-    die Instanz erhalten und Parameter ändern oder Log-Ausgaben in das Trace Method
-    File vornehmen. Vor Beenden der Applikation ist die Trace Server Instanz mit
-    "ReleaseInstance" wieder zu löschen.
+There is only one Trace Server instance per application, which is created when
+the application is started by calling the "CreateInstance" class method.
 
-    Für den Fall, dass mehrere Trace Server verwendet werden sollen (verschiedene
-    Log Files), kann bei "CreateInstance" ein vom Default Wert "ZSTrcServer"
-    abweichender Name übergeben werden. Dieser Name ist bei Aufruf von "GetInstance"
-    und "ReleaseInstance" wieder zu verwenden.
+During program execution, a reference to the instance can be obtained via
+"GetInstance" and parameters can be changed or log outputs can be made in the
+trace method file.
 
-    Hat man keinen Einfluss auf den Programmstart, programmiert PlugIn Dlls und
-    weiss nicht, ob nicht auch an anderer Stelle der Trace Server verwendet wird,
-    muss der Zugriff auf die Trace Server über Referenzzähler kontrolliert werden.
-    Deshalb besteht die Möglichkeit bei Aufruf von "CreateInstance" das
-    Flag "CreateOnlyIfNotYetExisting" zu übergeben.
+Before exiting the application, the Trace Server instance must be deleted again
+with "ReleaseInstance".
 */
 class ZSSYSDLL_API CTrcServer : public QObject
 //******************************************************************************
 {
     Q_OBJECT
 public: // class methods
-    static QString NameSpace() { return "ZS::Trace"; }  // Please note that the static class functions name must be different from the non static virtual member function "nameSpace"
-    static QString ClassName() { return "CTrcServer"; } // Please note that the static class functions name must be different from the non static virtual member function "className"
+    /*! Returns the namespace of the class.
+        @note The static class functions name must be different from the virtual instance method "nameSpace". */
+    static QString NameSpace() { return "ZS::Trace"; }
+    /*! Returns the class name.
+        @note The static class functions name must be different from the virtual instance method "className". */
+    static QString ClassName() { return "CTrcServer"; }
 public: // class methods
-    static CTrcServer* GetInstance( const QString& i_strName = "ZSTrcServer" );
+    static CTrcServer* GetInstance();
     static CTrcServer* CreateInstance(
-        const QString& i_strName = "ZSTrcServer",
-        int i_iTrcDetailLevel = ETraceDetailLevelNone );
-    static void ReleaseInstance( const QString& i_strName = "ZSTrcServer" );
-    static void ReleaseInstance( CTrcServer* i_pTrcServer );
-    static void DestroyAllInstances();
+        int i_iTrcDetailLevel = ETraceDetailLevelNone,
+        int i_iTrcDetailLevelMutex = ETraceDetailLevelNone,
+        int i_iTrcDetailLevelAdminObjIdxTree = ETraceDetailLevelNone,
+        int i_iTrcDetailLevelAdminObjIdxTreeMutex = ETraceDetailLevelNone );
+    static void ReleaseInstance();
 public: // class methods to register thread names
     static void RegisterCurrentThread(const QString& i_strThreadName);
     static void UnregisterCurrentThread();
     static QString GetCurrentThreadName();
 public: // class methods to add, remove and modify admin objects
-    static CIdxTreeTrcAdminObjs* GetTraceAdminObjIdxTree( const QString& i_strServerName = "ZSTrcServer" );
+    static CIdxTreeTrcAdminObjs* GetTraceAdminObjIdxTree();
+    static CTrcAdminObj* GetTraceAdminObj( int i_idxInTree );
     static CTrcAdminObj* GetTraceAdminObj(
         const QString& i_strNameSpace,
         const QString& i_strClassName,
-        const QString& i_strObjName,
-        const QString& i_strServerName = "ZSTrcServer" );
+        const QString& i_strObjName = "" );
     static CTrcAdminObj* GetTraceAdminObj(
         const QString&       i_strNameSpace,
         const QString&       i_strClassName,
         const QString&       i_strObjName,
         ZS::System::EEnabled i_bEnabledAsDefault,
-        int                  i_iDefaultDetailLevel,
-        const QString&       i_strServerName = "ZSTrcServer" );
-    static void ReleaseTraceAdminObj( CTrcAdminObj* i_pTrcAdminObj, const QString& i_strServerName = "ZSTrcServer" );
+        int                  i_iDefaultDetailLevel );
+    static void RenameTraceAdminObj( CTrcAdminObj** io_ppTrcAdminObj, const QString& i_strNewObjName );
+    static void ReleaseTraceAdminObj( CTrcAdminObj* i_pTrcAdminObj );
 public: // class methods to get default file paths
     static QString GetDefaultAdminObjFileAbsoluteFilePath( const QString& i_strIniFileScope = "System" );
     static QString GetDefaultLocalTrcFileAbsoluteFilePath( const QString& i_strIniFileScope = "System" );
 protected: // ctors and dtor
-    CTrcServer( const QString& i_strName, int i_iTrcDetailLevel = ETraceDetailLevelNone );
+    CTrcServer(
+        int i_iTrcDetailLevel = ETraceDetailLevelNone,
+        int i_iTrcDetailLevelMutex = ETraceDetailLevelNone,
+        int i_iTrcDetailLevelAdminObjIdxTree = ETraceDetailLevelNone,
+        int i_iTrcDetailLevelAdminObjIdxTreeMutex = ETraceDetailLevelNone );
     virtual ~CTrcServer();
 signals:
+    /*! Signal which is emitted if a trace setting has been changed.
+        @param i_pTrcServer [in] Pointer to object emitting the signal. */
     void traceSettingsChanged( QObject* i_pTrcServer );
 public: // instance methods
+    /*! Returns the namespace of the class. May be overriden to return the namespace of the derived class. */
     virtual QString nameSpace() const { return NameSpace(); }
+    /*! Returns the class name. May be overriden to return the class name of the derived class. */
     virtual QString className() const { return ClassName(); }
 public: // instance methods
     CIdxTreeTrcAdminObjs* getTraceAdminObjIdxTree();
 public: // overridables to add, remove and modify admin objects
+    virtual CTrcAdminObj* getTraceAdminObj(             // For each of the names an empty (or Null) string is allowed.
+        int                  i_idxInTree,
+        ZS::System::EEnabled i_bEnabledAsDefault,       // Undefined means use "trcServerSettings".
+        int                  i_iDefaultDetailLevel );   // -1 means use "trcServerSettings".
     virtual CTrcAdminObj* getTraceAdminObj(             // For each of the names an empty (or Null) string is allowed.
         const QString&       i_strNameSpace,            // Name space of the objects class (e.g. "ZS::Diagram")
         const QString&       i_strClassName,            // Class name of the object (e.g. "CWdgtDiagram")
         const QString&       i_strObjName,              // "Real" object name (e.g. "PvT" (Power versus Time))
         ZS::System::EEnabled i_bEnabledAsDefault,       // Undefined means use "trcServerSettings".
         int                  i_iDefaultDetailLevel );   // -1 means use "trcServerSettings".
+    virtual void renameTraceAdminObj( CTrcAdminObj** io_ppTrcAdminObj, const QString& i_strNewObjName );
     virtual void releaseTraceAdminObj( CTrcAdminObj* i_pTrcAdminObj );
 public: // overridables
     virtual void traceMethodEnter(
@@ -241,8 +258,8 @@ public: // overridables
     virtual QString getLocalTrcFileAbsolutePath() const;
     virtual bool isLocalTrcFileActive() const;
     virtual CTrcMthFile* getLocalTrcFile();
-    virtual void setLocalTrcFileAutoSaveInterval( int i_iAutoSaveInterval_ms );
-    virtual int getLocalTrcFileAutoSaveInterval() const;
+    virtual void setLocalTrcFileAutoSaveIntervalInMs( int i_iAutoSaveInterval_ms );
+    virtual int getLocalTrcFileAutoSaveIntervalInMs() const;
     virtual void setLocalTrcFileCloseFileAfterEachWrite( bool i_bCloseFile );
     virtual bool getLocalTrcFileCloseFileAfterEachWrite() const;
 public: // overridables
@@ -251,6 +268,8 @@ public: // overridables
     virtual void setLocalTrcFileSubFileLineCountMax( int i_iCountMax );
     virtual int getLocalTrcFileSubFileLineCountMax() const;
 public: // overridables
+    virtual void setUseIpcServer( bool i_bUse );
+    virtual bool isIpcServerUsed() const;
     virtual void setCacheTrcDataIfNotConnected( bool i_bCacheData );
     virtual bool getCacheTrcDataIfNotConnected() const;
     virtual void setCacheTrcDataMaxArrLen( int i_iMaxArrLen );
@@ -279,16 +298,17 @@ protected: // reference counter
     int incrementRefCount();
     int decrementRefCount();
 protected: // class members
-    static QMutex                      s_mtx;               /*!< Mutex to protect the class and instance methods of the class for multithreaded access. */
-    static QHash<QString, CTrcServer*> s_hshpInstances;     /*!< Hash with all created trace servers (key is name of instance). */
-    static QHash<Qt::HANDLE, QString>  s_hshThreadNames;    /*!< Hash with registered threads (key is thread id, value is name of thread). */
-    static QHash<QString, Qt::HANDLE>  s_hshThreadIds;      /*!< Hash with registered threads (key name of thread, value is thread id). */
+    static QMutex      s_mtx;       /*!< Mutex to protect the class members of the class for multithreaded access. */
+    static CTrcServer* s_pTheInst;  /*!< Pointer to singleton instance. */
+    static QHash<Qt::HANDLE, QString>  s_hshThreadNames; /*!< Hash with registered threads (key is thread id, value is name of thread). */
+    static QHash<QString, Qt::HANDLE>  s_hshThreadIds;   /*!< Hash with registered threads (key name of thread, value is thread id). */
 protected: // instance members
-    CIdxTreeTrcAdminObjs*              m_pTrcAdminObjIdxTree;
-    STrcServerSettings                 m_trcSettings;
-    CTrcMthFile*                       m_pTrcMthFile;
-    int                                m_iTrcDetailLevel;
-    int                                m_iRefCount;
+    mutable ZS::System::CMutex* m_pMtx;          /*!< Mutex to protect the instance members of the class for multithreaded access. */
+    CIdxTreeTrcAdminObjs* m_pTrcAdminObjIdxTree; /*<! Index tree containg a hierarchically order tree of the trace admin objects. */
+    STrcServerSettings    m_trcSettings;         /*<! Currently used trace settings. */
+    CTrcMthFile*          m_pTrcMthFile;         /*<! Reference to local trace method file. */
+    int                   m_iTrcDetailLevel;     /*<! If the trace server itself got to be logged. */
+    int                   m_iRefCount;           /*<! Reference counter for createInstance and releaseInstance. */
 
 }; // class CTrcServer
 

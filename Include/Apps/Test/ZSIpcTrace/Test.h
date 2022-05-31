@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer, Germany
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer, Germany
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -28,7 +28,7 @@ may result in using the software modules.
 #define ZSApps_TestIpcTrace_Test_h
 
 #include "ZSTest/ZSTest.h"
-#include "ZSTest/ZSTestStepAdminObj.h"
+#include "ZSTest/ZSTestStepIdxTreeEntry.h"
 #include "ZSIpc/ZSIpcDllMain.h"
 #include "ZSIpc/ZSIpcSrvCltMsg.h"
 #include "ZSSys/ZSSysRequest.h"
@@ -37,10 +37,10 @@ class QTimer;
 
 namespace ZS
 {
-namespace Ipc
+namespace Trace
 {
-class CClient;
-class CServer;
+class CIpcTrcClient;
+class CIpcTrcServer;
 }
 
 namespace Apps
@@ -49,8 +49,9 @@ namespace Test
 {
 namespace IpcTrace
 {
-class CTestModule1;
-class CTestModule2;
+class CMyClass1;
+class CMyClass2;
+class CMyClass3;
 
 //******************************************************************************
 class CTest : public ZS::Test::CTest
@@ -58,32 +59,40 @@ class CTest : public ZS::Test::CTest
 {
     Q_OBJECT
 public: // ctors and dtor
-    CTest( const QString& i_strTestStepsFileName );
+    CTest();
     ~CTest();
-public: // instance methods
-    CTestModule1* getTestModule1() const { return m_pTestModule1; }
-    CTestModule2* getTestModule2() const { return m_pTestModule2; }
 public slots: // test step methods
     void doTestStepTraceServerStartup( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepTraceServerShutdown( ZS::Test::CTestStep* i_pTestStep );
-    void doTestStepTraceServerRecallAdminObjs( ZS::Test::CTestStep* i_pTestStep );
-    void doTestStepTraceServerSaveAdminObjs( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepTraceClientConnect( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepTraceClientDisconnect( ZS::Test::CTestStep* i_pTestStep );
-    void doTestStepCreateModule1( ZS::Test::CTestStep* i_pTestStep );
-    void doTestStepDeleteModule1( ZS::Test::CTestStep* i_pTestStep );
-    void doTestStepCreateModule2( ZS::Test::CTestStep* i_pTestStep );
-    void doTestStepDeleteModule2( ZS::Test::CTestStep* i_pTestStep );
+    void doTestStepTraceMethodCall( ZS::Test::CTestStep* i_pTestStep );
 private slots:
     void onRequestChanged( ZS::System::SRequestDscr i_reqDscr );
-    void onTraceClientTraceAdminObjInserted( QObject* i_pTrcClient, const QString& i_strKeyInTree );
-    void onTraceClientTrcMthListWdgtTextItemAdded( const QString& i_strText );
+    void onZSTraceClientTraceAdminObjInserted( QObject* i_pTrcClient, const QString& i_strKeyInTree );
+    void onZSTraceClientTrcMthListWdgtTextItemAdded( const QString& i_strText );
     void onTimerTestStepTimeout();
+    void onClass1AboutToBeDestroyed(QObject* i_pObj, const QString& i_strObjName);
+    void onClass2AboutToBeDestroyed(QObject* i_pObj, const QString& i_strObjName);
+    void onClass3AboutToBeDestroyed(QObject* i_pObj, const QString& i_strObjName);
+private: // instance auxiliary methods
+    void splitMethodCallOperation(
+        const QString& i_strOperation,
+        QString& o_strClassName,
+        QString& o_strSubClassName,
+        QString& o_strObjName,
+        QString& o_strMth,
+        QStringList& o_strlstInArgs,
+        QString& o_strMthRet ) const;
 private: // instance members
     QTimer*                              m_pTmrTestStepTimeout;
     QHash<qint64, ZS::System::CRequest*> m_hshReqsInProgress;
-    CTestModule1*                        m_pTestModule1;
-    CTestModule2*                        m_pTestModule2;
+    QHash<QString, CMyClass1*>           m_hshpMyClass1InstancesByName;
+    QHash<QString, CMyClass2*>           m_hshpMyClass2InstancesByName;
+    QHash<QString, CMyClass3*>           m_hshpMyClass3InstancesByName;
+    QMultiHash<QString, CMyClass1*>      m_multihshpMyClass1InstancesByName;
+    QMultiHash<QString, CMyClass2*>      m_multihshpMyClass2InstancesByName;
+    QMultiHash<QString, CMyClass3*>      m_multihshpMyClass3InstancesByName;
 
 }; // class CTest
 

@@ -1,8 +1,41 @@
 #*******************************************************************************
-# ZSQtLib Main CMake File
+# ZSQtLibs Main CMake File
 #*******************************************************************************
 #
-# For build instructions see "Readme_BuildZSQtLib.md".
+# Quick Startup Usage
+# ===================
+#
+# For more detailled build instructions see "README.md".
+#
+# Change working directory to where this CMakeList file is located ("<root of the repository>/Make").
+#
+# Generator: Visual Studio 16 (2019)
+#
+# - Release Build
+#
+#   cmake -G "Visual Studio 16 2019" -A x64 . -B ..\Build\msvc2019_x64_Release -DCMAKE_CONFIGURATION_TYPES="Release" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="..\Bin\msvc2019_x64"
+#   cmake --build ..\Build\msvc2019_x64_Release --config=Release -j8
+#   cmake --install ..\Build\msvc2019_x64_Release --config=Release
+#
+# - Debug Build
+#
+#   cmake -G "Visual Studio 16 2019" -A x64 . -B ..\Build\msvc2019_x64_Debug -DCMAKE_CONFIGURATION_TYPES="Debug" -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX="..\Bin\msvc2019_x64"
+#   cmake --build ..\Build\msvc2019_x64_Debug --config=Debug -j8
+#   cmake --install ..\Build\msvc2019_x64_Debug --config=Debug
+#
+# Generator: MinGW Makefiles
+#
+# - Release Build
+#
+#   cmake -G "MinGW Makefiles" . -B ..\Build\mingw81_x64_Release -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="..\Bin\mingw81_x64"
+#   cmake --build ..\Build\mingw81_x64_Release -j8
+#   cmake --install ..\Build\mingw81_x64_Release
+#
+# - Debug Build
+#
+#   cmake -G "MinGW Makefiles" . -B ..\Build\mingw81_x64_Debug -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX="..\Bin\mingw81_x64"
+#   cmake --build ..\Build\mingw81_x64_Debug -j8
+#   cmake --install ..Build\mingw81_x64_Debug
 #
 # SOURCE_DIR Variables
 # ====================
@@ -23,8 +56,8 @@
 # PROJECT_SOURCE_DIR
 # ------------------
 # Top level source directory for the current project.
-# Not every CMakeLists.txt file defines a project–this is the directory that contains
-# the most recent CMakeLists.txt file that defined a project.
+# Not every CMakeLists.txt file defines a project.
+# This is the directory that contains the most recent CMakeLists.txt file that defined a project.
 #
 # projectName_SOURCE_DIR
 # ----------------------
@@ -74,10 +107,19 @@ message(STATUS "----------------------------------------------------------------
 message(STATUS "Processing: ${CMAKE_CURRENT_SOURCE_DIR}")
 message(STATUS "---------------------------------------------------------------------------------------------")
 
+message(STATUS "CMAKE_PREFIX_PATH:        ${CMAKE_PREFIX_PATH}")
+message(STATUS "CMAKE_INSTALL_PREFIX:     ${CMAKE_INSTALL_PREFIX}")
 message(STATUS "CMAKE_PROJECT_NAME:       ${CMAKE_PROJECT_NAME}")
 message(STATUS "CMAKE_SOURCE_DIR:         ${CMAKE_SOURCE_DIR}")
 message(STATUS "CMAKE_CURRENT_SOURCE_DIR: ${CMAKE_CURRENT_SOURCE_DIR}")
 message(STATUS "PROJECT_SOURCE_DIR:       ${PROJECT_SOURCE_DIR}")
+
+# Retrieve version information from current git commit.
+# The version numbers will be used
+# - to configure "ZSQtLibs-config-version.cmake" below and
+# - to configure "ZSSysVersion.h" and "ZSSysVersion.rc".
+# !! The version header and resource files are configured by the CMakeList file of subdirectory ZSSys. !!
+include(${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}GetGitVersionInfo.cmake)
 
 # Perform a Debug build by default
 if(NOT CMAKE_BUILD_TYPE)
@@ -91,6 +133,7 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
+message(STATUS "")
 message(STATUS "CMAKE_BINARY_DIR:         ${CMAKE_BINARY_DIR}")
 message(STATUS "CMAKE_CURRENT_BINARY_DIR: ${CMAKE_CURRENT_BINARY_DIR}")
 message(STATUS "CMAKE_PREFIX_PATH:        ${CMAKE_PREFIX_PATH}")
@@ -125,22 +168,35 @@ elseif(CMAKE_GENERATOR MATCHES "Visual Studio 15 2017")
     set(Compiler "msvc2017")
 elseif(CMAKE_GENERATOR MATCHES "Visual Studio 16 2019")
     set(Compiler "msvc2019")
+elseif(CMAKE_GENERATOR MATCHES "Unix Makefiles")
+    string(TOLOWER ${CMAKE_CXX_COMPILER_ID} Compiler)
+    string(REPLACE "." ";" CompilerVersionList ${CMAKE_CXX_COMPILER_VERSION})
+    list(LENGTH CompilerVersionList listLen)
+    if(listLen LESS 2)
+        message(FATAL_ERROR "Compiler Version Number ${CompilerVersion} with invalid format")
+    endif()
+    list(GET CompilerVersionList 0 CompilerVersionMajor)
+    list(GET CompilerVersionList 1 CompilerVersionMinor)
+    set(Compiler ${Compiler}${CompilerVersionMajor}${CompilerVersionMinor})
 elseif(CMAKE_GENERATOR MATCHES "MinGW Makefiles")
     set(Compiler "mingw81")
 else()
-    message(ERROR "Unsupported Generator")
+    message(FATAL_ERROR "Unsupported Generator ${CMAKE_GENERATOR}")
 endif()
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
     #add_compile_options(/W3 /WX)
     add_compile_options(/W3)
 else()
-    add_compile_options(-W -Wall -Werror)
+    add_compile_options(-W -Wall)
+    #add_compile_options(-Werror) not yet as long as Qt4 is supported
+    add_compile_options(-Wno-deprecated)
     add_compile_options(-Wextra -Wpedantic)
 endif()
 
 message(STATUS "")
 if(CMAKE_BUILD_TYPE MATCHES Debug)
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -D_DEBUG")
     message(STATUS "C Flags, Debug:            ${CMAKE_C_FLAGS_DEBUG}")
     message(STATUS "C++ Flags, Debug:          ${CMAKE_CXX_FLAGS_DEBUG}")
 elseif(CMAKE_BUILD_TYPE MATCHES Release)
@@ -176,8 +232,13 @@ message(STATUS "")
 message(STATUS "Platform: ${Platform}")
 message(STATUS "Compiler: ${Compiler}")
 
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/../Lib/${Compiler}_${Platform})
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/../Lib/${Compiler}_${Platform})
+if(WIN32)
+    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/../Lib/${Compiler}_${Platform})
+    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/../Lib/${Compiler}_${Platform})
+else()
+    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/../Bin/${Compiler}_${Platform})
+    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/../Bin/${Compiler}_${Platform})
+endif()
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/../Bin/${Compiler}_${Platform})
 
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_DEBUG ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY})
@@ -209,13 +270,13 @@ if(NOT QT_VERSION_MAJOR OR QT_VERSION_MAJOR GREATER_EQUAL 5)
     message(STATUS "---------------------------------------------------------------------------------------------")
     message(STATUS "Qt5_DIR: ${Qt5_DIR}")
     find_package(Qt5 COMPONENTS Core Xml Network Gui Widgets)
-    message("Qt5Core_FOUND: ${Qt5Core_FOUND}")
+    message(STATUS "Qt5Core_FOUND: ${Qt5Core_FOUND}")
     if(Qt5Core_FOUND)
         set(QT_FOUND 1)
     endif()
-    message("QT_FOUND: ${QT_FOUND}")
+    message(STATUS "QT_FOUND: ${QT_FOUND}")
 endif()
-message("QT_FOUND: ${QT_FOUND}")
+message(STATUS "QT_FOUND: ${QT_FOUND}")
 if(NOT QT_FOUND)
     message(STATUS "")
     message(STATUS "Trying to find Qt Version 4")
@@ -239,34 +300,34 @@ if(QT_FOUND)
                 set(QT_LIB "${Qt4Core_LIB_DIRS}/qt.lib")
             endif()
         endif()
-        message("Qt4Core_VERSION_STRING:             ${Qt4Core_VERSION_STRING}")
-        message("Qt4Core_Location:                   ${Qt4Core_Location}")
-        message("Qt4Core_INCLUDE_DIRS:               ${Qt4Core_INCLUDE_DIRS}")
-        message("Qt4Core_LIB_DIRS:                   ${Qt4Core_LIB_DIRS}")
-        message("Qt4Core_LIBRARIES:                  ${Qt4Core_LIBRARIES}")
-        message("Qt4Core_PRIVATE_INCLUDE_DIRS:       ${Qt4Core_PRIVATE_INCLUDE_DIRS}")
-        message("Qt4Core_COMPILE_DEFINITIONS:        ${Qt4Core_COMPILE_DEFINITIONS}")
-        message("Qt4Core_DEFINITIONS:                ${Qt4Core_DEFINITIONS}")
-        message("Qt4Core_EXECUTABLE_COMPILE_FLAGS:   ${Qt4Core_EXECUTABLE_COMPILE_FLAGS}")
-        message("Qt4_INCLUDE_DIRS:                   ${Qt4_INCLUDE_DIRS}")
+        message(STATUS "Qt4Core_VERSION_STRING:             ${Qt4Core_VERSION_STRING}")
+        message(STATUS "Qt4Core_Location:                   ${Qt4Core_Location}")
+        message(STATUS "Qt4Core_INCLUDE_DIRS:               ${Qt4Core_INCLUDE_DIRS}")
+        message(STATUS "Qt4Core_LIB_DIRS:                   ${Qt4Core_LIB_DIRS}")
+        message(STATUS "Qt4Core_LIBRARIES:                  ${Qt4Core_LIBRARIES}")
+        message(STATUS "Qt4Core_PRIVATE_INCLUDE_DIRS:       ${Qt4Core_PRIVATE_INCLUDE_DIRS}")
+        message(STATUS "Qt4Core_COMPILE_DEFINITIONS:        ${Qt4Core_COMPILE_DEFINITIONS}")
+        message(STATUS "Qt4Core_DEFINITIONS:                ${Qt4Core_DEFINITIONS}")
+        message(STATUS "Qt4Core_EXECUTABLE_COMPILE_FLAGS:   ${Qt4Core_EXECUTABLE_COMPILE_FLAGS}")
+        message(STATUS "Qt4_INCLUDE_DIRS:                   ${Qt4_INCLUDE_DIRS}")
         if(QT_LIB)
-            message("QT_LIB:                             ${QT_LIB}")
+            message(STATUS "QT_LIB:                             ${QT_LIB}")
         else()
-            message("QT_LIB:                             NOT EXISTING")
+            message(STATUS "QT_LIB:                             NOT EXISTING")
         endif()
         if(NOT QT_BINARY_DIR)
             get_filename_component(QT_BINARY_DIR ${Qt4Core_Location} DIRECTORY)
         endif()
     elseif(Qt5_FOUND)
         get_target_property(Qt5Core_Location Qt5::Core LOCATION)
-        message("Qt5Core_VERSION_STRING:             ${Qt5Core_VERSION_STRING}")
-        message("Qt5Core_Location:                   ${Qt5Core_Location}")
-        message("Qt5Core_INCLUDE_DIRS:               ${Qt5Core_INCLUDE_DIRS}")
-        message("Qt5Core_LIBRARIES:                  ${Qt5Core_LIBRARIES}")
-        message("Qt5Core_PRIVATE_INCLUDE_DIRS:       ${Qt5Core_PRIVATE_INCLUDE_DIRS}")
-        message("Qt5Core_COMPILE_DEFINITIONS:        ${Qt5Core_COMPILE_DEFINITIONS}")
-        message("Qt5Core_DEFINITIONS:                ${Qt5Core_DEFINITIONS}")
-        message("Qt5Core_EXECUTABLE_COMPILE_FLAGS:   ${Qt5Core_EXECUTABLE_COMPILE_FLAGS}")
+        message(STATUS "Qt5Core_VERSION_STRING:             ${Qt5Core_VERSION_STRING}")
+        message(STATUS "Qt5Core_Location:                   ${Qt5Core_Location}")
+        message(STATUS "Qt5Core_INCLUDE_DIRS:               ${Qt5Core_INCLUDE_DIRS}")
+        message(STATUS "Qt5Core_LIBRARIES:                  ${Qt5Core_LIBRARIES}")
+        message(STATUS "Qt5Core_PRIVATE_INCLUDE_DIRS:       ${Qt5Core_PRIVATE_INCLUDE_DIRS}")
+        message(STATUS "Qt5Core_COMPILE_DEFINITIONS:        ${Qt5Core_COMPILE_DEFINITIONS}")
+        message(STATUS "Qt5Core_DEFINITIONS:                ${Qt5Core_DEFINITIONS}")
+        message(STATUS "Qt5Core_EXECUTABLE_COMPILE_FLAGS:   ${Qt5Core_EXECUTABLE_COMPILE_FLAGS}")
         if(NOT QT_BINARY_DIR)
             get_filename_component(QT_BINARY_DIR ${Qt5Core_Location} DIRECTORY)
         endif()
@@ -274,18 +335,18 @@ if(QT_FOUND)
     if(NOT QT_VERSION_MAJOR AND QT_DEFAULT_MAJOR_VERSION)
         set(QT_VERSION_MAJOR ${QT_DEFAULT_MAJOR_VERSION})
     endif()
-    message("QT_DEFAULT_MAJOR_VERSION:           ${QT_DEFAULT_MAJOR_VERSION}")
-    message("QT_DEFAULT_MINOR_VERSION:           ${QT_DEFAULT_MINOR_VERSION}")
-    message("QT_DEFAULT_PATCH_VERSION:           ${QT_DEFAULT_PATCH_VERSION}")
-    message("QT_VERSION_MAJOR:                   ${QT_VERSION_MAJOR}")
-    message("QT_VERSION_MINOR:                   ${QT_VERSION_MINOR}")
-    message("QT_VERSION_PATCH:                   ${QT_VERSION_PATCH}")
-    message("QT_DEFAULT_MAJOR_VERSION:           ${QT_DEFAULT_MAJOR_VERSION}")
-    message("QT_BINARY_DIR:                      ${QT_BINARY_DIR}")
-    message("QT_LIBINFIX:                        ${QT_LIBINFIX}")
-    message("QT_NO_CREATE_VERSIONLESS_FUNCTIONS: ${QT_NO_CREATE_VERSIONLESS_FUNCTIONS}")
-    message("QT_NO_CREATE_VERSIONLESS_TARGETS:   ${QT_NO_CREATE_VERSIONLESS_TARGETS}")
-    message("QT_VISIBILITY_AVAILABLE:            ${QT_VISIBILITY_AVAILABLE}")
+    message(STATUS "QT_DEFAULT_MAJOR_VERSION:           ${QT_DEFAULT_MAJOR_VERSION}")
+    message(STATUS "QT_DEFAULT_MINOR_VERSION:           ${QT_DEFAULT_MINOR_VERSION}")
+    message(STATUS "QT_DEFAULT_PATCH_VERSION:           ${QT_DEFAULT_PATCH_VERSION}")
+    message(STATUS "QT_VERSION_MAJOR:                   ${QT_VERSION_MAJOR}")
+    message(STATUS "QT_VERSION_MINOR:                   ${QT_VERSION_MINOR}")
+    message(STATUS "QT_VERSION_PATCH:                   ${QT_VERSION_PATCH}")
+    message(STATUS "QT_DEFAULT_MAJOR_VERSION:           ${QT_DEFAULT_MAJOR_VERSION}")
+    message(STATUS "QT_BINARY_DIR:                      ${QT_BINARY_DIR}")
+    message(STATUS "QT_LIBINFIX:                        ${QT_LIBINFIX}")
+    message(STATUS "QT_NO_CREATE_VERSIONLESS_FUNCTIONS: ${QT_NO_CREATE_VERSIONLESS_FUNCTIONS}")
+    message(STATUS "QT_NO_CREATE_VERSIONLESS_TARGETS:   ${QT_NO_CREATE_VERSIONLESS_TARGETS}")
+    message(STATUS "QT_VISIBILITY_AVAILABLE:            ${QT_VISIBILITY_AVAILABLE}")
 endif()
 
 if(CREATE_PYTHON_BINDINGS)
@@ -295,34 +356,27 @@ if(CREATE_PYTHON_BINDINGS)
     message(STATUS "---------------------------------------------------------------------------------------------")
 
     find_package(Python3)
-    message("PYTHON_EXECUTABLE:     ${PYTHON_EXECUTABLE}")
-    message("PYTHON_VERSION_STRING: ${PYTHON_VERSION_STRING}")
-    message("PYTHON_VERSION_MAJOR:  ${PYTHON_VERSION_MAJOR}")
-    message("PYTHON_VERSION_MINOR:  ${PYTHON_VERSION_MINOR}")
-    message("PYTHON_VERSION_PATCH:  ${PYTHON_VERSION_PATCH}")
+    message(STATUS "PYTHON_EXECUTABLE:     ${PYTHON_EXECUTABLE}")
+    message(STATUS "PYTHON_VERSION_STRING: ${PYTHON_VERSION_STRING}")
+    message(STATUS "PYTHON_VERSION_MAJOR:  ${PYTHON_VERSION_MAJOR}")
+    message(STATUS "PYTHON_VERSION_MINOR:  ${PYTHON_VERSION_MINOR}")
+    message(STATUS "PYTHON_VERSION_PATCH:  ${PYTHON_VERSION_PATCH}")
 
     find_package(PythonLibs ${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR} EXACT REQUIRED)
-    message("PYTHON_INCLUDE_DIRS:   ${PYTHON_INCLUDE_DIRS}")
-    message("PYTHON_LIBRARIES:      ${PYTHON_LIBRARIES}")
+    message(STATUS "PYTHON_INCLUDE_DIRS:   ${PYTHON_INCLUDE_DIRS}")
+    message(STATUS "PYTHON_LIBRARIES:      ${PYTHON_LIBRARIES}")
 endif()
-
-# Retrieve VERSION_MAJOR, ~MINOR, ~PATCH from git repository.
-# The output variables will be used to configure "ZSQtLib-config-version.cmake" below and to
-# configure "ZSSysVersion.h" and "ZSSysVersion.rc" by the CMakeList file of subdirectory ZSSys.
-include(${CMAKE_CURRENT_SOURCE_DIR}./git_version_info.cmake)
-
-configure_file(
-    ${CMAKE_CURRENT_SOURCE_DIR}/ZSQtLib-config-version.cmake.in
-    ${CMAKE_CURRENT_BINARY_DIR}/ZSQtLib-config-version.cmake
-    @ONLY)
-
 
 message(STATUS "")
 message(STATUS "---------------------------------------------------------------------------------------------")
 message(STATUS "Processing sub directories")
 message(STATUS "---------------------------------------------------------------------------------------------")
 
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+
 enable_testing()
+include(CTest)
+include(Dart)
 
 add_subdirectory(Libs/ZSSys)
 add_subdirectory(Libs/ZSSysGUI)
@@ -335,11 +389,49 @@ add_subdirectory(Libs/ZSIpcTraceGUI)
 if(CREATE_PYTHON_BINDINGS)
     add_subdirectory(Libs/ZSIpcTracePy)
 endif()
+
 add_subdirectory(Apps/Products/ZSTrcMthClient)
+
+#add_subdirectory(Apps/Test/ZSIpc) got to be revised
 add_subdirectory(Apps/Test/ZSIpcTrace)
 add_subdirectory(Apps/Test/ZSIpcTraceDllIfQtApp)
+if(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
+    add_subdirectory(Apps/Test/ZSIpcTraceDllIfWinApp)
+endif()
 add_subdirectory(Apps/Test/ZSSysEnums)
 add_subdirectory(Apps/Test/ZSSysErrLog)
 add_subdirectory(Apps/Test/ZSSysIdxTree)
 add_subdirectory(Apps/Test/ZSSysLogFile)
 add_subdirectory(Apps/Test/ZSTestTemplate)
+
+include(GNUInstallDirs)
+include(CMakePackageConfigHelpers)
+
+# Generate the version file for the config file
+write_basic_package_version_file(
+    "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake"
+    VERSION ${ZSQTLIB_VERSION}
+    COMPATIBILITY AnyNewerVersion
+)
+
+# Create config file
+configure_package_config_file(
+    ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}Config.cmake.in
+    "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
+    INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
+)
+
+set(ConfigPackageLocation lib/cmake/${PROJECT_NAME})
+
+install(EXPORT ${PROJECT_NAME}Targets
+    NAMESPACE ZSQtLibs::
+    DESTINATION ${ConfigPackageLocation}
+)
+
+# Install config files
+install(
+    FILES
+        "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
+        "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake"
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
+)

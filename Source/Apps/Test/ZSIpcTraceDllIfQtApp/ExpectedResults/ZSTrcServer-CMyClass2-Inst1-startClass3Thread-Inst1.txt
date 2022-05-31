@@ -1,0 +1,109 @@
+<GUIMain                 > -> <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass2> Inst1.startClass3Thread(Inst1)
+<GUIMain                 >    -> <ZS::System::CMutex> CMyClass2::Inst1::WaitClass3ThreadRunning.tryLock(0 ms)
+<GUIMain                 >    <- <ZS::System::CMutex> CMyClass2::Inst1::WaitClass3ThreadRunning.tryLock(): true
+<GUIMain                 >    -> <ZS::System::CWaitCondition> CMyClass2::Inst1::Class3ThreadRunning.wait(100 ms)
+<CMyClass2ThreadInst1    >       -> <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass2> Inst1.event({ZS::Apps::Test::IpcTraceDllIfQtApp::ReqTest, startClass3Thread})
+<CMyClass2ThreadInst1    >          -> <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass2> Inst1.startClass3Thread(Inst1)
+<CMyClass2ThreadInst1    >             -> <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass3Thread> CMyClass3ThreadInst1.ctor(Inst1, Inst1)
+<CMyClass2ThreadInst1    >             <- <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass3Thread> CMyClass3ThreadInst1.ctor()
+<CMyClass2ThreadInst1    >             -> <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass3Thread> CMyClass3ThreadInst1.start(InheritPriority)
+<CMyClass2ThreadInst1    >             <- <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass3Thread> CMyClass3ThreadInst1.start()
+<CMyClass2ThreadInst1    >             -> <ZS::System::CMutex> CMyClass2::Inst1::WaitClass3ThreadRunning.tryLock(0 ms)
+<CMyClass2ThreadInst1    >             <- <ZS::System::CMutex> CMyClass2::Inst1::WaitClass3ThreadRunning.tryLock(): true
+<CMyClass2ThreadInst1    >             -> <ZS::System::CWaitCondition> CMyClass2::Inst1::Class3ThreadRunning.wait(100 ms)
+<CMyClass3ThreadInst1    > -> <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass3Thread> CMyClass3ThreadInst1.run()
+<CMyClass3ThreadInst1    >    -> <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass3> Inst1.ctor(Inst1, CMyClass3ThreadInst1)
+<CMyClass3ThreadInst1    >       -> <ZS::System::CMutex> CMyClass3::Inst1::Counters.ctor(Recursive)
+<CMyClass3ThreadInst1    >       <- <ZS::System::CMutex> CMyClass3::Inst1::Counters.ctor()
+<CMyClass3ThreadInst1    >    <- <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass3> Inst1.ctor()
+<CMyClass3ThreadInst1    >    -> <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass2> Inst1.onClass3ThreadRunning()
+<CMyClass3ThreadInst1    >       -> <ZS::System::CWaitCondition> CMyClass2::Inst1::Class3ThreadRunning.notify_all()
+<CMyClass3ThreadInst1    >       <- <ZS::System::CWaitCondition> CMyClass2::Inst1::Class3ThreadRunning.notify_all()
+<GUIMain                 >    <- <ZS::System::CWaitCondition> CMyClass2::Inst1::Class3ThreadRunning.wait(): true
+<GUIMain                 >    -> <ZS::System::CMutex> CMyClass2::Inst1::WaitClass3ThreadRunning.unlock()
+<GUIMain                 >    <- <ZS::System::CMutex> CMyClass2::Inst1::WaitClass3ThreadRunning.unlock()
+<CMyClass3ThreadInst1    >    <- <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass2> Inst1.onClass3ThreadRunning()
+<CMyClass2ThreadInst1    >             <- <ZS::System::CWaitCondition> CMyClass2::Inst1::Class3ThreadRunning.wait(): true
+<GUIMain                 > <- <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass2> Inst1.startClass3Thread(): Inst1
+<CMyClass2ThreadInst1    >             -> <ZS::System::CMutex> CMyClass2::Inst1::WaitClass3ThreadRunning.unlock()
+<CMyClass2ThreadInst1    >             <- <ZS::System::CMutex> CMyClass2::Inst1::WaitClass3ThreadRunning.unlock()
+<CMyClass2ThreadInst1    >          <- <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass2> Inst1.startClass3Thread(): Inst1
+<CMyClass2ThreadInst1    >       <- <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass2> Inst1.event()
+<CMyClass3ThreadInst1    >    -> <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass3> Inst1.recursiveTraceMethod()
+<CMyClass3ThreadInst1    >       -> <ZS::System::CMutex> CMyClass3::Inst1::Counters.lock()
+<CMyClass3ThreadInst1    >       <- <ZS::System::CMutex> CMyClass3::Inst1::Counters.lock()
+<CMyClass3ThreadInst1    >       <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass3> Inst1.recursiveTraceMethod: RecursionCount=0
+<CMyClass3ThreadInst1    >       -> <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass3> Inst1.recursiveTraceMethod()
+<CMyClass3ThreadInst1    >          -> <ZS::System::CMutex> CMyClass3::Inst1::Counters.lock()
+<CMyClass3ThreadInst1    >          <- <ZS::System::CMutex> CMyClass3::Inst1::Counters.lock()
+<CMyClass3ThreadInst1    >          <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass3> Inst1.recursiveTraceMethod: RecursionCount=1
+<CMyClass3ThreadInst1    >          -> <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass3> Inst1.recursiveTraceMethod()
+<CMyClass3ThreadInst1    >             -> <ZS::System::CMutex> CMyClass3::Inst1::Counters.lock()
+<CMyClass3ThreadInst1    >             <- <ZS::System::CMutex> CMyClass3::Inst1::Counters.lock()
+<CMyClass3ThreadInst1    >             <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass3> Inst1.recursiveTraceMethod: RecursionCount=2
+<CMyClass3ThreadInst1    >             -> <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass3> Inst1.recursiveTraceMethod()
+<CMyClass3ThreadInst1    >                -> <ZS::System::CMutex> CMyClass3::Inst1::Counters.lock()
+<CMyClass3ThreadInst1    >                <- <ZS::System::CMutex> CMyClass3::Inst1::Counters.lock()
+<CMyClass3ThreadInst1    >                <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass3> Inst1.recursiveTraceMethod: RecursionCount=3
+<CMyClass3ThreadInst1    >                -> <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass3> Inst1.recursiveTraceMethod()
+<CMyClass3ThreadInst1    >                   -> <ZS::System::CMutex> CMyClass3::Inst1::Counters.lock()
+<CMyClass3ThreadInst1    >                   <- <ZS::System::CMutex> CMyClass3::Inst1::Counters.lock()
+<CMyClass3ThreadInst1    >                   <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass3> Inst1.recursiveTraceMethod: RecursionCount=4
+<CMyClass3ThreadInst1    >                   -> <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass3> Inst1.recursiveTraceMethod()
+<CMyClass3ThreadInst1    >                      -> <ZS::System::CMutex> CMyClass3::Inst1::Counters.lock()
+<CMyClass3ThreadInst1    >                      <- <ZS::System::CMutex> CMyClass3::Inst1::Counters.lock()
+<CMyClass3ThreadInst1    >                      <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass3> Inst1.recursiveTraceMethod: RecursionCount=5
+<CMyClass3ThreadInst1    >                      -> <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass3> Inst1.recursiveTraceMethod()
+<CMyClass3ThreadInst1    >                         -> <ZS::System::CMutex> CMyClass3::Inst1::Counters.lock()
+<CMyClass3ThreadInst1    >                         <- <ZS::System::CMutex> CMyClass3::Inst1::Counters.lock()
+<CMyClass3ThreadInst1    >                         <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass3> Inst1.recursiveTraceMethod: RecursionCount=6
+<CMyClass3ThreadInst1    >                         -> <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass3> Inst1.recursiveTraceMethod()
+<CMyClass3ThreadInst1    >                            -> <ZS::System::CMutex> CMyClass3::Inst1::Counters.lock()
+<CMyClass3ThreadInst1    >                            <- <ZS::System::CMutex> CMyClass3::Inst1::Counters.lock()
+<CMyClass3ThreadInst1    >                            <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass3> Inst1.recursiveTraceMethod: RecursionCount=7
+<CMyClass3ThreadInst1    >                            -> <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass3> Inst1.recursiveTraceMethod()
+<CMyClass3ThreadInst1    >                               -> <ZS::System::CMutex> CMyClass3::Inst1::Counters.lock()
+<CMyClass3ThreadInst1    >                               <- <ZS::System::CMutex> CMyClass3::Inst1::Counters.lock()
+<CMyClass3ThreadInst1    >                               <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass3> Inst1.recursiveTraceMethod: RecursionCount=8
+<CMyClass3ThreadInst1    >                               -> <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass3> Inst1.recursiveTraceMethod()
+<CMyClass3ThreadInst1    >                                  -> <ZS::System::CMutex> CMyClass3::Inst1::Counters.lock()
+<CMyClass3ThreadInst1    >                                  <- <ZS::System::CMutex> CMyClass3::Inst1::Counters.lock()
+<CMyClass3ThreadInst1    >                                  <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass3> Inst1.recursiveTraceMethod: RecursionCount=9
+<CMyClass3ThreadInst1    >                                  -> <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass3> Inst1.recursiveTraceMethod()
+<CMyClass3ThreadInst1    >                                     -> <ZS::System::CMutex> CMyClass3::Inst1::Counters.lock()
+<CMyClass3ThreadInst1    >                                     <- <ZS::System::CMutex> CMyClass3::Inst1::Counters.lock()
+<CMyClass3ThreadInst1    >                                     <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass3> Inst1.recursiveTraceMethod: RecursionCount=10
+<CMyClass3ThreadInst1    >                                     -> <ZS::System::CMutex> CMyClass3::Inst1::Counters.unlock()
+<CMyClass3ThreadInst1    >                                     <- <ZS::System::CMutex> CMyClass3::Inst1::Counters.unlock()
+<CMyClass3ThreadInst1    >                                  <- <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass3> Inst1.recursiveTraceMethod(): 10
+<CMyClass3ThreadInst1    >                                  -> <ZS::System::CMutex> CMyClass3::Inst1::Counters.unlock()
+<CMyClass3ThreadInst1    >                                  <- <ZS::System::CMutex> CMyClass3::Inst1::Counters.unlock()
+<CMyClass3ThreadInst1    >                               <- <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass3> Inst1.recursiveTraceMethod(): 9
+<CMyClass3ThreadInst1    >                               -> <ZS::System::CMutex> CMyClass3::Inst1::Counters.unlock()
+<CMyClass3ThreadInst1    >                               <- <ZS::System::CMutex> CMyClass3::Inst1::Counters.unlock()
+<CMyClass3ThreadInst1    >                            <- <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass3> Inst1.recursiveTraceMethod(): 8
+<CMyClass3ThreadInst1    >                            -> <ZS::System::CMutex> CMyClass3::Inst1::Counters.unlock()
+<CMyClass3ThreadInst1    >                            <- <ZS::System::CMutex> CMyClass3::Inst1::Counters.unlock()
+<CMyClass3ThreadInst1    >                         <- <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass3> Inst1.recursiveTraceMethod(): 7
+<CMyClass3ThreadInst1    >                         -> <ZS::System::CMutex> CMyClass3::Inst1::Counters.unlock()
+<CMyClass3ThreadInst1    >                         <- <ZS::System::CMutex> CMyClass3::Inst1::Counters.unlock()
+<CMyClass3ThreadInst1    >                      <- <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass3> Inst1.recursiveTraceMethod(): 6
+<CMyClass3ThreadInst1    >                      -> <ZS::System::CMutex> CMyClass3::Inst1::Counters.unlock()
+<CMyClass3ThreadInst1    >                      <- <ZS::System::CMutex> CMyClass3::Inst1::Counters.unlock()
+<CMyClass3ThreadInst1    >                   <- <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass3> Inst1.recursiveTraceMethod(): 5
+<CMyClass3ThreadInst1    >                   -> <ZS::System::CMutex> CMyClass3::Inst1::Counters.unlock()
+<CMyClass3ThreadInst1    >                   <- <ZS::System::CMutex> CMyClass3::Inst1::Counters.unlock()
+<CMyClass3ThreadInst1    >                <- <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass3> Inst1.recursiveTraceMethod(): 4
+<CMyClass3ThreadInst1    >                -> <ZS::System::CMutex> CMyClass3::Inst1::Counters.unlock()
+<CMyClass3ThreadInst1    >                <- <ZS::System::CMutex> CMyClass3::Inst1::Counters.unlock()
+<CMyClass3ThreadInst1    >             <- <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass3> Inst1.recursiveTraceMethod(): 3
+<CMyClass3ThreadInst1    >             -> <ZS::System::CMutex> CMyClass3::Inst1::Counters.unlock()
+<CMyClass3ThreadInst1    >             <- <ZS::System::CMutex> CMyClass3::Inst1::Counters.unlock()
+<CMyClass3ThreadInst1    >          <- <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass3> Inst1.recursiveTraceMethod(): 2
+<CMyClass3ThreadInst1    >          -> <ZS::System::CMutex> CMyClass3::Inst1::Counters.unlock()
+<CMyClass3ThreadInst1    >          <- <ZS::System::CMutex> CMyClass3::Inst1::Counters.unlock()
+<CMyClass3ThreadInst1    >       <- <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass3> Inst1.recursiveTraceMethod(): 1
+<CMyClass3ThreadInst1    >       -> <ZS::System::CMutex> CMyClass3::Inst1::Counters.unlock()
+<CMyClass3ThreadInst1    >       <- <ZS::System::CMutex> CMyClass3::Inst1::Counters.unlock()
+<CMyClass3ThreadInst1    >    <- <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass3> Inst1.recursiveTraceMethod(): 0
+<CMyClass3ThreadInst1    >    -> <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass3Thread> CMyClass3ThreadInst1.exec()

@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -63,12 +63,12 @@ CEnumerationIdxTree* CEnumerationIdxTree::GetInstance( const QString& i_strName 
 
 //------------------------------------------------------------------------------
 CEnumerationIdxTree* CEnumerationIdxTree::CreateInstance(
-    const QString&     i_strName,
-    CRootIdxTreeEntry* i_pRootTreeEntry,
-    const QString&     i_strNodeSeparator,
-    bool               i_bCreateMutex,
-    QObject*           i_pObjParent,
-    int                i_iTrcDetailLevel )
+    const QString& i_strName,
+    CIdxTreeEntry* i_pRootTreeEntry,
+    const QString& i_strNodeSeparator,
+    bool           i_bCreateMutex,
+    QObject*       i_pObjParent,
+    int            i_iTrcDetailLevel )
 //------------------------------------------------------------------------------
 {
     // The class may be accessed from within different thread contexts and
@@ -138,46 +138,18 @@ void CEnumerationIdxTree::DestroyInstance( CEnumerationIdxTree* i_pIdxTree )
 
 } // DestroyInstance
 
-//------------------------------------------------------------------------------
-void CEnumerationIdxTree::DestroyAllInstances()
-//------------------------------------------------------------------------------
-{
-    // The class may be accessed from within different thread contexts and
-    // therefore accessing the class must be serialized using a mutex ..
-    QMutexLocker mtxLocker(&s_mtx);
-
-    CEnumerationIdxTree* pIdxTree;
-    QString              strName;
-
-    QHash<QString, CEnumerationIdxTree*>::iterator itIdxTree;
-
-    for( itIdxTree = s_hshpInstances.begin(); itIdxTree != s_hshpInstances.end(); itIdxTree++ )
-    {
-        strName  = itIdxTree.key();
-        pIdxTree = itIdxTree.value();
-
-        s_hshpInstances[strName] = nullptr;
-
-        delete pIdxTree;
-        pIdxTree = nullptr;
-    }
-
-    s_hshpInstances.clear();
-
-} // DestroyAllInstances
-
 /*==============================================================================
 protected: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
 CEnumerationIdxTree::CEnumerationIdxTree(
-    const QString&     i_strName,
-    CRootIdxTreeEntry* i_pRootTreeEntry,
-    const QString&     i_strNodeSeparator,
-    bool               i_bCreateMutex,
-    QObject*           i_pObjParent,
-    int                i_iTrcDetailLevel ) :
+    const QString& i_strName,
+    CIdxTreeEntry* i_pRootTreeEntry,
+    const QString& i_strNodeSeparator,
+    bool           i_bCreateMutex,
+    QObject*       i_pObjParent,
+    int            i_iTrcDetailLevel ) :
 //------------------------------------------------------------------------------
     CIdxTree(
         /* strIdxTreeName    */ i_strName,

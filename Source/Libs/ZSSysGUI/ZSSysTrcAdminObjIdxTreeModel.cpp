@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -32,12 +32,13 @@ may result in using the software modules.
 #include <QtGui/qicon.h>
 
 #include "ZSSysGUI/ZSSysTrcAdminObjIdxTreeModel.h"
-#include "ZSSysGUI/ZSSysIdxTreeModelEntries.h"
+#include "ZSSysGUI/ZSSysIdxTreeModelEntry.h"
 #include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysTrcAdminObjIdxTree.h"
 #include "ZSSys/ZSSysTrcAdminObj.h"
 #include "ZSSys/ZSSysErrResult.h"
 #include "ZSSys/ZSSysException.h"
+#include "ZSSys/ZSSysMutex.h"
 #include "ZSSys/ZSSysTrcMethod.h"
 #include "ZSSys/ZSSysTrcServer.h"
 
@@ -50,7 +51,7 @@ using namespace ZS::Trace::GUI;
 
 
 /*******************************************************************************
-class CModelIdxTreeTrcAdminObjs : public ZS::Trace::CModelObjPool
+class CModelIdxTreeTrcAdminObjs : public ZS::Trace::CModelIdxTree
 *******************************************************************************/
 
 /*==============================================================================
@@ -78,16 +79,22 @@ QIcon CModelIdxTreeTrcAdminObjs::GetIcon( EIdxTreeEntryType i_entryType )
 
     if( !s_bIconsCreated )
     {
-        s_pPxmBranchEntryNormalOff = new QPixmap(":/ZS/TreeView/IdxTreeTrcAdminObjsBranchEntryNormalOff.bmp");
+        #ifdef _WINDOWS
+        #pragma push_macro("_ZSSYS_DBGNEW_CLIENT_BLOCK_SUBTYPE")
+        #pragma warning( disable : 4005 )
+        #define _ZSSYS_DBGNEW_CLIENT_BLOCK_SUBTYPE 0
+        #endif
+
+        s_pPxmBranchEntryNormalOff = new QPixmap(":/ZS/TreeView/TrcAdminObjs/TreeViewTrcAdminObjsBranchEntryNormalOff.bmp");
         s_pPxmBranchEntryNormalOff->setMask(s_pPxmBranchEntryNormalOff->createHeuristicMask());
 
-        s_pPxmBranchEntrySelectedOff = new QPixmap(":/ZS/TreeView/IdxTreeTrcAdminObjsBranchEntrySelectedOff.bmp");
+        s_pPxmBranchEntrySelectedOff = new QPixmap(":/ZS/TreeView/TrcAdminObjs/TreeViewTrcAdminObjsBranchEntrySelectedOff.bmp");
         s_pPxmBranchEntrySelectedOff->setMask(s_pPxmBranchEntrySelectedOff->createHeuristicMask());
 
-        s_pPxmLeaveEntryNormalOff = new QPixmap(":/ZS/TreeView/IdxTreeTrcAdminObjsLeaveEntryNormalOff.bmp");
+        s_pPxmLeaveEntryNormalOff = new QPixmap(":/ZS/TreeView/TrcAdminObjs/TreeViewTrcAdminObjsLeaveEntryNormalOff.bmp");
         s_pPxmLeaveEntryNormalOff->setMask(s_pPxmLeaveEntryNormalOff->createHeuristicMask());
 
-        s_pPxmLeaveEntrySelectedOff = new QPixmap(":/ZS/TreeView/IdxTreeTrcAdminObjsLeaveEntrySelectedOff.bmp");
+        s_pPxmLeaveEntrySelectedOff = new QPixmap(":/ZS/TreeView/TrcAdminObjs/TreeViewTrcAdminObjsLeaveEntrySelectedOff.bmp");
         s_pPxmLeaveEntrySelectedOff->setMask(s_pPxmLeaveEntrySelectedOff->createHeuristicMask());
 
         s_pIconBranch = new QIcon();
@@ -103,6 +110,11 @@ QIcon CModelIdxTreeTrcAdminObjs::GetIcon( EIdxTreeEntryType i_entryType )
         s_pIconLeave->addPixmap(*s_pPxmLeaveEntrySelectedOff, QIcon::Selected, QIcon::Off);
         s_pIconLeave->addPixmap(*s_pPxmLeaveEntryNormalOff,   QIcon::Normal,   QIcon::On);
         s_pIconLeave->addPixmap(*s_pPxmLeaveEntrySelectedOff, QIcon::Selected, QIcon::On);
+
+        #ifdef _WINDOWS
+        #pragma warning( default : 4005 )
+        #pragma pop_macro("_ZSSYS_DBGNEW_CLIENT_BLOCK_SUBTYPE")
+        #endif
 
         s_bIconsCreated = true;
     }
@@ -147,7 +159,7 @@ CModelIdxTreeTrcAdminObjs::CModelIdxTreeTrcAdminObjs(
     int                   i_iTrcDetailLevel ) :
 //------------------------------------------------------------------------------
     CModelIdxTree(
-        /* pObjPool        */ i_pTrcAdminObjIdxTree,
+        /* pIdxTree        */ i_pTrcAdminObjIdxTree,
         /* pObjParent      */ i_pObjParent,
         /* iTrcDetailLevel */ i_iTrcDetailLevel )
 {
@@ -191,18 +203,18 @@ CModelIdxTreeTrcAdminObjs::~CModelIdxTreeTrcAdminObjs()
     if( s_iInstCount == 1 )
     {
         delete s_pIconBranch;
-        s_pIconBranch = NULL;
+        s_pIconBranch = nullptr;
         delete s_pIconLeave;
-        s_pIconLeave = NULL;
+        s_pIconLeave = nullptr;
 
         delete s_pPxmBranchEntryNormalOff;
-        s_pPxmBranchEntryNormalOff = NULL;
+        s_pPxmBranchEntryNormalOff = nullptr;
         delete s_pPxmBranchEntrySelectedOff;
-        s_pPxmBranchEntrySelectedOff = NULL;
+        s_pPxmBranchEntrySelectedOff = nullptr;
         delete s_pPxmLeaveEntryNormalOff;
-        s_pPxmLeaveEntryNormalOff = NULL;
+        s_pPxmLeaveEntryNormalOff = nullptr;
         delete s_pPxmLeaveEntrySelectedOff;
-        s_pPxmLeaveEntrySelectedOff = NULL;
+        s_pPxmLeaveEntrySelectedOff = nullptr;
 
         s_bIconsCreated = false;
     }
@@ -295,19 +307,27 @@ QVariant CModelIdxTreeTrcAdminObjs::headerData(
         {
             switch( i_iSection )
             {
-                case EColumnObjAddress:
-                {
-                    if( i_iRole == Qt::DisplayRole )
-                    {
-                        varData = "ObjAddress";
-                    }
-                    break;
-                }
                 case EColumnRefCount:
                 {
                     if( i_iRole == Qt::DisplayRole )
                     {
                         varData = "RefCount";
+                    }
+                    break;
+                }
+                case EColumnEnabled:
+                {
+                    if( i_iRole == Qt::DisplayRole )
+                    {
+                        varData = "Enabled";
+                    }
+                    break;
+                }
+                case EColumnDetailLevel:
+                {
+                    if( i_iRole == Qt::DisplayRole )
+                    {
+                        varData = "DetailLevel";
                     }
                     break;
                 }
@@ -343,19 +363,11 @@ QVariant CModelIdxTreeTrcAdminObjs::headerData(
                     }
                     break;
                 }
-                case EColumnEnabled:
+                case EColumnObjAddress:
                 {
                     if( i_iRole == Qt::DisplayRole )
                     {
-                        varData = "Enabled";
-                    }
-                    break;
-                }
-                case EColumnDetailLevel:
-                {
-                    if( i_iRole == Qt::DisplayRole )
-                    {
-                        varData = "DetailLevel";
+                        varData = "ObjAddress";
                     }
                     break;
                 }
@@ -413,7 +425,7 @@ Qt::ItemFlags CModelIdxTreeTrcAdminObjs::flags( const QModelIndex& i_modelIdx ) 
 
     if( i_modelIdx.isValid() && i_modelIdx.column() == EColumnDetailLevel )
     {
-        CModelAbstractTreeEntry* pModelTreeEntry = static_cast<CModelAbstractTreeEntry*>(i_modelIdx.internalPointer());
+        CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(i_modelIdx.internalPointer());
 
         CTrcAdminObj* pTrcAdminObj = nullptr;
 
@@ -465,27 +477,27 @@ QVariant CModelIdxTreeTrcAdminObjs::data( const QModelIndex& i_modelIdx, int i_i
 
     QVariant varData;
 
-    CModelAbstractTreeEntry* pModelTreeEntry = nullptr;
+    CModelIdxTreeEntry* pModelTreeEntry = nullptr;
 
     if( i_modelIdx.isValid() )
     {
-        pModelTreeEntry = static_cast<CModelAbstractTreeEntry*>(i_modelIdx.internalPointer());
+        pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(i_modelIdx.internalPointer());
     }
 
     if( pModelTreeEntry != nullptr )
     {
-        CModelBranchTreeEntry* pModelBranch = nullptr;
-        CModelLeaveTreeEntry*  pModelLeave  = nullptr;
+        CModelIdxTreeEntry* pModelBranch = nullptr;
+        CModelIdxTreeEntry* pModelLeave  = nullptr;
 
         CTrcAdminObj* pTrcAdminObj = nullptr;
 
         if( pModelTreeEntry->entryType() == EIdxTreeEntryType::Root || pModelTreeEntry->entryType() == EIdxTreeEntryType::Branch )
         {
-            pModelBranch = dynamic_cast<CModelBranchTreeEntry*>(pModelTreeEntry);
+            pModelBranch = pModelTreeEntry;
         }
         else if( pModelTreeEntry->entryType() == EIdxTreeEntryType::Leave )
         {
-            pModelLeave = dynamic_cast<CModelLeaveTreeEntry*>(pModelTreeEntry);
+            pModelLeave = pModelTreeEntry;
             pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(pModelLeave->treeEntry());
         }
 
@@ -595,30 +607,6 @@ QVariant CModelIdxTreeTrcAdminObjs::data( const QModelIndex& i_modelIdx, int i_i
                 }
                 break;
             }
-            case EColumnObjAddress:
-            {
-                if( i_iRole == Qt::DisplayRole )
-                {
-                    if( pTrcAdminObj != nullptr )
-                    {
-                        if( sizeof(pTrcAdminObj) == sizeof(quint32) ) // 32 bit machines
-                        {
-                            quint32 ulAddr;
-                            quint32* pulAddr = &ulAddr;
-                            memcpy( pulAddr, &pTrcAdminObj, sizeof(pTrcAdminObj) );
-                            varData = "0x" + QString::number(ulAddr,16);
-                        }
-                        else if( sizeof(pTrcAdminObj) == sizeof(quint64) ) // 64 bit machines
-                        {
-                            quint64 ulAddr;
-                            quint64* pulAddr = &ulAddr;
-                            memcpy( pulAddr, &pTrcAdminObj, sizeof(pTrcAdminObj) );
-                            varData = "0x" + QString::number(ulAddr,16);
-                        }
-                    }
-                }
-                break;
-            }
             case EColumnRefCount:
             {
                 if( i_iRole == Qt::DisplayRole)
@@ -626,6 +614,28 @@ QVariant CModelIdxTreeTrcAdminObjs::data( const QModelIndex& i_modelIdx, int i_i
                     if( pTrcAdminObj != nullptr )
                     {
                         varData = QString::number(pTrcAdminObj->getRefCount());
+                    }
+                }
+                break;
+            }
+            case EColumnEnabled:
+            {
+                if( i_iRole == Qt::DisplayRole || i_iRole == Qt::EditRole )
+                {
+                    if( pTrcAdminObj != nullptr )
+                    {
+                        varData = CEnumEnabled::toString(pTrcAdminObj->getEnabled());
+                    }
+                }
+                break;
+            }
+            case EColumnDetailLevel:
+            {
+                if( i_iRole == Qt::DisplayRole || i_iRole == Qt::EditRole )
+                {
+                    if( pTrcAdminObj != nullptr )
+                    {
+                        varData = pTrcAdminObj->getTraceDetailLevel();
                     }
                 }
                 break;
@@ -674,24 +684,26 @@ QVariant CModelIdxTreeTrcAdminObjs::data( const QModelIndex& i_modelIdx, int i_i
                 }
                 break;
             }
-            case EColumnEnabled:
+            case EColumnObjAddress:
             {
-                if( i_iRole == Qt::DisplayRole || i_iRole == Qt::EditRole )
+                if( i_iRole == Qt::DisplayRole )
                 {
                     if( pTrcAdminObj != nullptr )
                     {
-                        varData = CEnumEnabled::toString(pTrcAdminObj->getEnabled());
-                    }
-                }
-                break;
-            }
-            case EColumnDetailLevel:
-            {
-                if( i_iRole == Qt::DisplayRole || i_iRole == Qt::EditRole )
-                {
-                    if( pTrcAdminObj != nullptr )
-                    {
-                        varData = pTrcAdminObj->getTraceDetailLevel();
+                        if( sizeof(pTrcAdminObj) == sizeof(quint32) ) // 32 bit machines
+                        {
+                            quint32 ulAddr;
+                            quint32* pulAddr = &ulAddr;
+                            memcpy( pulAddr, &pTrcAdminObj, sizeof(pTrcAdminObj) );
+                            varData = "0x" + QString::number(ulAddr,16);
+                        }
+                        else if( sizeof(pTrcAdminObj) == sizeof(quint64) ) // 64 bit machines
+                        {
+                            quint64 ulAddr;
+                            quint64* pulAddr = &ulAddr;
+                            memcpy( pulAddr, &pTrcAdminObj, sizeof(pTrcAdminObj) );
+                            varData = "0x" + QString::number(ulAddr,16);
+                        }
                     }
                 }
                 break;
@@ -739,27 +751,27 @@ bool CModelIdxTreeTrcAdminObjs::setData( const QModelIndex& i_modelIdx, const QV
 
     if( i_iRole == Qt::EditRole && i_varData.isValid() && i_modelIdx.isValid() && i_modelIdx.column() == EColumnDetailLevel )
     {
-        CModelAbstractTreeEntry* pModelTreeEntry = nullptr;
+        CModelIdxTreeEntry* pModelTreeEntry = nullptr;
 
         if( i_modelIdx.isValid() )
         {
-            pModelTreeEntry = static_cast<CModelAbstractTreeEntry*>(i_modelIdx.internalPointer());
+            pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(i_modelIdx.internalPointer());
         }
 
         if( pModelTreeEntry != nullptr )
         {
-            //CModelBranchTreeEntry* pModelBranch = nullptr;
-            CModelLeaveTreeEntry*  pModelLeave  = nullptr;
+            //CModelIdxTreeEntry* pModelBranch = nullptr;
+            CModelIdxTreeEntry*   pModelLeave  = nullptr;
 
             CTrcAdminObj* pTrcAdminObj = nullptr;
 
             if( pModelTreeEntry->entryType() == EIdxTreeEntryType::Root || pModelTreeEntry->entryType() == EIdxTreeEntryType::Branch )
             {
-                //pModelBranch = dynamic_cast<CModelBranchTreeEntry*>(pModelTreeEntry);
+                //pModelBranch = pModelTreeEntry;
             }
             else if( pModelTreeEntry->entryType() == EIdxTreeEntryType::Leave )
             {
-                pModelLeave = dynamic_cast<CModelLeaveTreeEntry*>(pModelTreeEntry);
+                pModelLeave = pModelTreeEntry;
                 pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(pModelLeave->treeEntry());
             }
 

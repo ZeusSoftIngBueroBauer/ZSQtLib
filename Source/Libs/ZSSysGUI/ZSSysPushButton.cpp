@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2012 by    ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -127,10 +127,14 @@ void CPushButton::setPixmap( const QPixmap& i_pxm )
 } // setPixmap
 
 //------------------------------------------------------------------------------
-const QPixmap* CPushButton::pixmap() const
+QPixmap CPushButton::pixmap() const
 //------------------------------------------------------------------------------
 {
+    #if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
     return m_pLabel->pixmap();
+    #else
+    return m_pLabel->pixmap(Qt::ReturnByValue);
+    #endif
 }
 
 //------------------------------------------------------------------------------

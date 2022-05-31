@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -144,7 +144,7 @@ static const TVersion EVersionMax = 0xffff;
 // 0x0100 ... Message Protocol Version 1.0
 static const TVersion VERSION = 0x0100;
 
-// System Message types
+// System Message types (conversion routine systemMsgType2String in ZSSysMsg)
 //------------------------------------------------------------------------------
 
 static const TSystemMsgType ESystemMsgTypeUndefined = 0x00;
@@ -153,7 +153,7 @@ static const TSystemMsgType ESystemMsgTypeCon       = 0x02;  // Confirmation to 
 static const TSystemMsgType ESystemMsgTypeInd       = 0x03;  // Indication
 static const TSystemMsgType ESystemMsgTypeAck       = 0x04;  // Acknowledge to indication
 
-// Commands
+// Commands (conversion routine command2String in ZSSysMsg)
 //------------------------------------------------------------------------------
 
 static const TCommand ECommandUndefined = 0x00;

@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -54,16 +54,16 @@ public: // class methods
     static QString ClassName() { return "CDlgIdxTreeTrcAdminObjs"; }
 public: // class CDlgTrcServer
     static CDlgIdxTreeTrcAdminObjs* CreateInstance(
-        CIdxTreeTrcAdminObjs* i_pIdxTree,
         const QString&        i_strDlgTitle,
+        CIdxTreeTrcAdminObjs* i_pIdxTree,
         QWidget*              i_pWdgtParent = nullptr,
         Qt::WindowFlags       i_wFlags = Qt::WindowFlags(),
         int                   i_iTrcDetailLevel = ZS::Trace::ETraceDetailLevelNone );
     static CDlgIdxTreeTrcAdminObjs* GetInstance( const QString& i_strObjName );
 protected: // ctor
     CDlgIdxTreeTrcAdminObjs(
-        CIdxTreeTrcAdminObjs* i_pIdxTree,
         const QString&        i_strDlgTitle,
+        CIdxTreeTrcAdminObjs* i_pIdxTree,
         QWidget*              i_pWdgtParent = nullptr,
         Qt::WindowFlags       i_wFlags = Qt::WindowFlags(),
         int                   i_iTrcDetailLevel = ZS::Trace::ETraceDetailLevelNone );

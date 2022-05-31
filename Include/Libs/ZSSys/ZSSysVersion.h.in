@@ -36,54 +36,51 @@ namespace ZS
 namespace System
 {
 //==============================================================================
-/*! This file contains all the necessary version information to be able to determine the
-    associated git commit from which the installed package was created.
+/*! This file contains all the necessary version information to be able to determine
+    the associated git commit from which the installed package was created.
 
-    GIT_VERSION_INFO is created by the git command
-
-        git describe --always --tags --long
-
-    This command returns something like
-
-        v0.01-0-g835e9e5
-
-    - The substring before the first '-' corresponds to the defined tag.
-      In order to retrieve VERSION_MAJOR and VERSION_MINOR from the tag it must follow the
-      regular expression "[v]\d{1,}[.]\d{1,}".
-      - 0  should become VERSION_MAJOR
-      - 01 should become VERSION_MINOR
-    - The substring after the first '-' corresponds to the number of commits on top of the tag.
-      This value is not extracted from the GIT_VERSION_INFO string and is not saved in a separate variable.
-    - The substring after the second '-' corresponds to the abbreviated commit hash
-      (usually the first seven digits of the hash) preceded by the abbreviated object name 'g' for 'git'.
-      The 'g' will be removed and the abbreviated commit hash will be converted to an integer value
-      (CMake expects integer values for version numbers in decimal format).
-      This automatically generated integer value will be used as VERSION_PATCH.
+    The CMakeList file of the ZSSys sub module is responsible to configure this
+    header file according to the retrieved version info.
+    For further information see "ZSQtLibsGetGitVersionInfo.cmake".
 
 Version Number Format:
 ----------------------
 
-<MajorVersion>.<MinorVersion>.<ReleaseId>
+<VersionMajor>.<VersionMinor>.<VersionPatch>
 
-<MajorVersion> .. Major version number of the ZSQtLib. This version number
-                  will only be changed on radical changes concerning the whole
-                  library. On changing the QtMajorVersion the ZSQtLibMajorVersion
-                  will not be changed.
+<VersionMajor> .. Major version number of the ZSQtLib. This version number will only
+                  be changed on radical changes concerning the whole library.
 
-<MinorVersion> .. Minor version number of the ZSQtLib. This version number
+<VersionMinor> .. Minor version number of the ZSQtLib. This version number
                   will be changed if significant changes have been made within
                   already existing and released sub systems of the ZSQtLib
                   concerning the architecture, class design or interfaces.
-                  Will be reset to 1 if the ZSQtLibMajorVersion will be
-                  incremented or reset.
+                  Will be reset to 1 if the VersionMajor will be changed.
 
-<ReleaseId>       Will be incremented each time a new version of the library
+<VersionPatch> .. Will be incremented each time a new version of the library
                   will be released after bugfixes or improvements.
-                  Will be reset to 1 if the FeatureId will be incremented
-                  or reset.
-
+                  Will be reset to 1 if the VersionMinor will be changed.
 */
 //==============================================================================
+
+/*! GIT_VERSION_INFO contains the string which were returned by the 'git describe' command.
+*/
+const QString ZSQTLIB_GIT_VERSION_INFO = "${ZSQTLIB_GIT_VERSION_INFO}";
+
+/*! GIT_COMMITS_SINCE_TAG contains the number of commits on top of the most recent tag.
+
+    If 0 the commit matches a tag and the commit is an official release.
+    If greater than 0 the commit is a temporary development version.
+*/
+const int ZSQTLIB_GIT_COMMITS_SINCE_TAG = ${ZSQTLIB_GIT_COMMITS_SINCE_TAG};
+
+/*! GIT_COMMIT_HASH_HEX contains the abbreviated git commit hash (hexadecimal value as used by git).
+*/
+const QString ZSQTLIB_GIT_COMMIT_HASH_HEX = "${ZSQTLIB_GIT_COMMIT_HASH_HEX}";
+
+/*! GIT_COMMIT_HASH_INT contains the abbreviated git commit hash converted into integer value.
+*/
+const QString ZSQTLIB_GIT_COMMIT_HASH_INT = "${ZSQTLIB_GIT_COMMIT_HASH_INT}";
 
 /*! Major version number of the installed ZSQtLib.
 
@@ -105,13 +102,6 @@ const int ZSQTLIB_VERSION_MINOR = ${ZSQTLIB_VERSION_MINOR};
     at the time the build tree is generated via CMake.
 */
 const long int ZSQTLIB_VERSION_PATCH = ${ZSQTLIB_VERSION_PATCH};
-
-/*! GIT_VERSION_INFO contains the string which were returned by the 'git describe' command.
-
-    You may use the abbreviated git commit hash after the last '-' to verify from which git commit
-    the package was created (remove the starting 'g').
-*/
-const QString ZSQTLIB_GIT_VERSION_INFO = "${ZSQTLIB_GIT_VERSION_INFO}";
 
 const QString c_strSysVersionNr("${ZSQTLIB_VERSION_MAJOR}.${ZSQTLIB_VERSION_MINOR}.${ZSQTLIB_VERSION_PATCH}");
 

@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -43,7 +43,7 @@ public: // class methods
 void CSleeperThread::msleep( unsigned long i_iTime_ms )
 //------------------------------------------------------------------------------
 {
-    if( QThread::currentThread() != qApp->thread() )
+    //if( QThread::currentThread() != qApp->thread() )
     {
         QThread::msleep(i_iTime_ms);
     }

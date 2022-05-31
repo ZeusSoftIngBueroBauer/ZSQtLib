@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -29,7 +29,7 @@ may result in using the software modules.
 
 #include "ZSSys/ZSSysDllMain.h"
 #include "ZSSys/ZSSysCommon.h"
-#include "ZSSys/ZSSysIdxTreeEntries.h"
+#include "ZSSys/ZSSysIdxTreeEntry.h"
 
 #include <QtCore/qobject.h>
 
@@ -45,65 +45,64 @@ class CIdxTreeTrcAdminObjs;
 class CTrcServer;
 
 //******************************************************************************
-/*! Instances of this class are used to filter method tracing.
+/*! @brief Instances of this class are used to filter method tracing.
 
-    To debug and profile applications method tracing is used.
-    Applikationen bestehen in der Regel aus einer Vielzahl von Module, Klassen
-    und Instanzen von Klassen. Damit das Log File nicht mit Eintraegen voll
-    geschrieben wird, die den Entwickler nicht interessieren, moechte man die
-    Ausgabe auf die Teile beschraenken, die fuer den aktuellen Entwicklungsprozess
-    bzw. die aktuelle Debug Sitzung von Interesse ist.
+To debug and profile applications method tracing is used.
 
-    Instanzen der Klasse CTrcAdminObj verwalten den Ausgabe Status einzelner
-    Module, Klassen und Instanzen von Klassen, fuer die Method Trace Ausgaben
-    definiert wurden.
+Applications usually consist of a large number of modules, classes and instances
+of classes. So that the log file is not filled up with entries that are not of
+interest to the developer, one would like to restrict the output to those parts
+that are of interest for the current development process or the current debug session.
 
-    Trace Admin Instanzen werden in einem hierarchischen Baum verwaltet und
-    erlaubt so die Sortierung nach Namespaces, Klassennamen und oder Instanznamen.
-    Eine Trace Admin Instanz entspricht einem Blatt innerhalb des Baums.
-    Der Einsatz einer Trace Admin Instanz macht nur in Verbindung eines solchen
-    Baumes Sinn. Der Baum wird durch die Klasse CIdxTree realisiert. Diese
-    Klasse erlaubt es, auf die Instanzen innerhalb des Baumes ueber einen
-    Index zuzugreifen. Dies ist insbesondere dann sinnvoll, wenn man die
-    Aenderungen an den Attributen eines Trace Admin Objekts von einer Applikation
-    zu einer einen uebertragen will. Fuer einen online Mitschnitt der Trace
-    Ausgaben aber auch um Embedded Geräte ohne oder nur mit sehr begrenztem
-    Bildschirm zu debuggen wurde ein auf TCP/IP basierter Trace Server
-    implementiert, der durch Verwendung von Indizes als Object Ids zum Einen
-    den notwendigen Datenstrom reduziert aber auch das Finden der Trace Admin
-    Objekte und somit den Online Mitschnitt der Trace Ausgaben beschleunigt.
+Instances of the CTrcAdminObj class manage the output status of individual modules,
+classes and instances of classes for which Method Trace outputs have been defined.
 
-    Zugriff auf den Trace Server erhaelt die Trace Admin Objekt Klasse ueber das
-    Parent Object des Trace Admin Object Index Trees. Das ermoeglicht der Klasse
-    CMethodTracer den methoden trace ueber den Trace Server auszugeben.
+Trace Admin instances are managed in a hierarchical tree, allowing sorting by
+namespaces, class names and/or instance names.
 
-    Fuer weitere Details zur Verwendung der Trace Admin Klasse siehe Klassen
-    CTrcServer und CIdxTreeTrcAdminObjs.
+A Trace Admin instance corresponds to a leaf within the tree. Using a Trace Admin
+instance only makes sense in connection with such a tree. The tree is realized by
+the CIdxTree class. This class allows to access the instances not just by a key but
+also by an index within the tree. This is particularly useful if you want to
+transfer changes to the attributes of a Trace Admin object from one application
+to another as this reduces the amount of data to be transferred and accessing
+the object via index is faster than a lookup by key.
+
+A TCP/IP-based trace server was implemented for an online recording of the trace
+outputs, but also for debugging embedded devices without or only with a very
+limited screen.
 */
-class ZSSYSDLL_API CTrcAdminObj : public QObject, public ZS::System::CLeaveIdxTreeEntry
+class ZSSYSDLL_API CTrcAdminObj : public QObject, public ZS::System::CIdxTreeEntry
 //******************************************************************************
 {
 friend class CIdxTreeTrcAdminObjs;
     Q_OBJECT
 public: // class methods
+    /*! Returns the name space of the class. */
     static QString NameSpace() { return "ZS::Trace"; }
+    /*! Returns the class name of the class. */
     static QString ClassName() { return "CTrcAdminObj"; }
 protected: // ctors and dtor
-    CTrcAdminObj( const QString& i_strObjName, const QString& i_strObjThreadName = "" );
+    CTrcAdminObj(
+        const QString& i_strNameSpace,
+        const QString& i_strClassName,
+        const QString& i_strObjName,
+        const QString& i_strTreeEntryName );
     virtual ~CTrcAdminObj();
 signals:
-    void changed( QObject* i_pTrcAdminObj ); /*!< Emitted if ObjState, Enabled, StateOnOff or DetailLevel has been changed */
+    /*! @brief Emitted if ObjState, Enabled, StateOnOff or DetailLevel has been changed. */
+    void changed( QObject* i_pTrcAdminObj );
+    /*! @brief Emitted if the object is going to be destroyed. */
     void aboutToBeDestroyed( ZS::Trace::CTrcAdminObj* i_pTrcAdminObj );
-public: // instance methods
-    virtual QString nameSpace() const { return NameSpace(); }
-    virtual QString className() const { return ClassName(); }
 public: // instance methods
     CIdxTreeTrcAdminObjs* getTraceAdminObjIdxTree();
     CTrcServer* getTraceServer();
 public: // instance methods
-    QString getNameSpace() const;   // starting with "get" to distinguish from name space of CTrcAdminObj (ZS::Trace)
-    QString getClassName() const;   // starting with "get" to distinguish from class name "CTrcAdminObj"
-    QString getObjectName() const;  // starting with "get" to distinguish from QObject::objectName)
+    QString getNameSpace() const;
+    QString getClassName() const;
+public: // instance methods (reimplementing methods from base class QObject)
+    void setObjectName( const QString& i_strObjName );
+    QString getObjectName() const;
 public: // instance methods
     void setObjectThreadName( const QString& i_strThreadName );
     QString getObjectThreadName() const;
@@ -120,12 +119,17 @@ public: // instance methods
     void setTraceDetailLevel( int i_iTrcDetailLevel );
     int getTraceDetailLevel() const;
 public: // instance methods
-    bool isActive( int i_iDetailLevel ) const;
+    bool isActive( int i_iFilterDetailLevel ) const;
 public: // instance methods
     virtual bool blockTreeEntryChangedSignal( bool i_bBlock );
     virtual bool isTreeEntryChangedSignalBlocked() const;
+private: // Don't use QObject::objectName
+    QString objectName() const;
 protected: // instance members
     int                   m_iBlockTreeEntryChangedSignalCounter;    /*!< Counts the number of times the tree entry changed signal has been blocked. */
+    QString               m_strNameSpace;       /*!< Namespace of the class. May be empty. */
+    QString               m_strClassName;       /*!< Class or module name. */
+    QString               m_strObjName;         /*!< Object name. May be empty if this is a class tracer. */
     QString               m_strObjThreadName;   /*!< Name of the thread in which the object was created. */
     int                   m_iRefCount;          /*!< Usually trace admin objects are only referenced by one specific module,
                                                      class or instance of a class to control the detail level of method
@@ -140,8 +144,59 @@ protected: // instance members
     int                   m_iTrcDetailLevel;    /*!< Defines the current detail level of the method trace outputs for the
                                                      module, class or instance referencing this object. If set to
                                                      None method trace output is disabled. */
+    // TODO: Introduce second trace detail level for additional runtime info.
+    // First one for method calls with method args:
+    //   [None, EnterLeaveOnly, WithMethodArgsNormal, WithMethodArgsDetailed, WithMethodArgsVerbose]
+    // Second one for addtional runtime info (only effective if MethodCalls is not set to None):
+    //   [None, Normal, Detailed, Verbose]
 
 }; // class CTrcAdminObj
+
+//******************************************************************************
+/*! @brief Instances of this class are used in combination with class
+           CTrcAdminObjRefGuard to ensure that static class trace admin objects
+           are freed and released if needed.
+*******************************************************************************/
+class ZSSYSDLL_API CTrcAdminObjRefAnchor : public QObject
+{
+    Q_OBJECT
+public: // ctors and dtor
+    CTrcAdminObjRefAnchor(const QString& i_strNameSpace, const QString& i_strClassName);
+    virtual ~CTrcAdminObjRefAnchor();
+public: // instance methods
+    void allocTrcAdminObj();
+    void releaseTrcAdminObj();
+    CTrcAdminObj* trcAdminObj();
+    void setTraceDetailLevel(int i_iTrcDetailLevel);
+    bool isActive(int i_iFilterDetailLevel) const;
+private slots:
+    void onTrcAdminObjDestroyed(QObject* i_pTrcAdminObj);
+private: // instance members
+    mutable QMutex m_mtx;           /*!< Mutex to protect the instance members. */
+    QString        m_strNameSpace;  /*!< Name space of the class to be traced. */
+    QString        m_strClassName;  /*!< Name of class to be traced. */
+    CTrcAdminObj*  m_pTrcAdminObj;  /*!< Pointer to trace admin object. */
+    int            m_idxInTree;     /*!< If once added the index in the tree is stored for faster access. */
+    int            m_iRefCount;     /*!< Counts how often the trace admin object is allocated but not released. */
+};
+
+//******************************************************************************
+/*! @brief Instances of this class are used in combination with class
+           CTrcAdminObjRefGuard to ensure that static class trace admin objects
+           are freed and released if needed.
+*******************************************************************************/
+class ZSSYSDLL_API CTrcAdminObjRefGuard
+{
+public: // ctors and dtor
+    CTrcAdminObjRefGuard(CTrcAdminObjRefAnchor* i_pRefAnchor);
+    ~CTrcAdminObjRefGuard();
+public: // instance methods
+    CTrcAdminObj* trcAdminObj();
+    void setTraceDetailLevel(int i_iTrcDetailLevel);
+    bool isActive(int i_iFilterDetailLevel) const;
+private: // instance members
+    CTrcAdminObjRefAnchor* m_pRefAnchor;    /*!< Pointer to reference anchor which should be guarded. */
+};
 
 } // namespace Trace
 

@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer, Germany
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer, Germany
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -87,7 +87,6 @@ CApplication::CApplication(
 //------------------------------------------------------------------------------
     CGUIApp(i_argc,i_argv),
     m_pSettingsFile(nullptr),
-    m_strThreadClrFileAbsFilePath(),
     // State Machine
     m_bReqExecTreeGarbageCollectorEnabled(true),
     m_fReqExecTreeGarbageCollectorInterval_s(5.0),
@@ -115,14 +114,20 @@ CApplication::CApplication(
 
     QIcon iconApp;
 
-    QPixmap pxmApp16x16(":/ZS/App/Zeus16x16.bmp");
-    QPixmap pxmApp32x32(":/ZS/App/Zeus32x32.bmp");
+    QPixmap pxmApp16x16(":/ZS/App/ZeusSoft_16x16.bmp");
+    QPixmap pxmApp32x32(":/ZS/App/ZeusSoft_32x32.bmp");
+    QPixmap pxmApp48x48(":/ZS/App/ZeusSoft_48x48.bmp");
+    QPixmap pxmApp64x64(":/ZS/App/ZeusSoft_64x64.bmp");
 
     pxmApp16x16.setMask(pxmApp16x16.createHeuristicMask());
     pxmApp32x32.setMask(pxmApp32x32.createHeuristicMask());
+    pxmApp48x48.setMask(pxmApp48x48.createHeuristicMask());
+    pxmApp64x64.setMask(pxmApp64x64.createHeuristicMask());
 
     iconApp.addPixmap(pxmApp16x16);
     iconApp.addPixmap(pxmApp32x32);
+    iconApp.addPixmap(pxmApp48x48);
+    iconApp.addPixmap(pxmApp64x64);
 
     QApplication::setWindowIcon(iconApp);
 
@@ -188,17 +193,7 @@ CApplication::CApplication(
 
     QString strIniFileAbsFilePath = strAppConfigDir + "/" + strIniFileBaseName + "." + strIniFileSuffix;
 
-    m_pSettingsFile = new QSettings( strIniFileAbsFilePath, QSettings::IniFormat );
-
-    QString strErrLogFileBaseName = strAppNameNormalized + "-Error";
-    QString strErrLogFileSuffix = "xml";
-
-    m_strErrLogFileAbsFilePath = strAppLogDir + "/" + strErrLogFileBaseName + "." + strErrLogFileSuffix;
-
-    QString strThreadClrFileBaseName = strAppNameNormalized + "-ThreadColors";
-    QString strThreadClrFileSuffix = "xml";
-
-    m_strThreadClrFileAbsFilePath = strAppConfigDir + "/" + strThreadClrFileBaseName + "." + strThreadClrFileSuffix;
+    m_pSettingsFile = new QSettings(strIniFileAbsFilePath, QSettings::IniFormat);
 
     readSettings();
 
@@ -231,7 +226,7 @@ CApplication::CApplication(
     // Create error manager
     //------------------------
 
-    CErrLog::CreateInstance(true, m_strErrLogFileAbsFilePath);
+    CErrLog::CreateInstance();
 
     // Request Execution Tree
     //------------------------
@@ -245,7 +240,7 @@ CApplication::CApplication(
     // Trace client
     //-------------
 
-    m_pTrcClient = new CIpcTrcClient("TrcMthClient");
+    m_pTrcClient = new CIpcTrcClient("MthTrcClient");
 
     m_pTrcClient->setWatchDogTimerUsed(false);
     m_pTrcClient->setHostSettings(m_trcClientHostSettings);
@@ -305,8 +300,6 @@ CApplication::~CApplication()
     CErrLog::ReleaseInstance();
 
     m_pSettingsFile = nullptr;
-    //m_strThreadClrFileAbsFilePath;
-    //m_strErrLogFileAbsFilePath;
     m_bReqExecTreeGarbageCollectorEnabled = false;
     m_fReqExecTreeGarbageCollectorInterval_s = 0.0;
     m_fReqExecTreeGarbageCollectorElapsed_s = 0.0;
@@ -340,27 +333,6 @@ void CApplication::readSettings()
     {
         QString strSettingsKey;
         bool    bSyncSettings;
-
-        // Err Log
-        //------------------------
-
-        strSettingsKey = "ErrLog";
-        bSyncSettings  = false;
-
-        if( m_pSettingsFile->contains(strSettingsKey+"/FileName") )
-        {
-            m_strErrLogFileAbsFilePath = m_pSettingsFile->value(strSettingsKey+"/FileName",m_strErrLogFileAbsFilePath).toString();
-        }
-        else
-        {
-            m_pSettingsFile->setValue( strSettingsKey+"/FileName", m_strErrLogFileAbsFilePath );
-            bSyncSettings = true;
-        }
-
-        if( bSyncSettings )
-        {
-            m_pSettingsFile->sync();
-        }
 
         // Request Execution Tree
         //------------------------

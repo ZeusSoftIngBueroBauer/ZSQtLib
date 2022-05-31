@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -46,53 +46,54 @@ class CTrcAdminObj;
 struct SMthTrcData;
 
 //******************************************************************************
-/*! @brief Über die Klasse CIpcTrcServer sollten alle Trace Ausgaben erfolgen.
+/*! @brief All trace outputs should be made via the CIpcTrcServer class.
 
-    Die Klasse ist von der Klasse CTrcServer abgeleitet und erweitert die
-    Basisklasse um die Möglichkeit, die Trace Ausgaben nicht nur in ein Log-File
-    zu schreiben sondern auch über TCP/IP an einen Client zu versenden.
+The class is derived from the CTrcServer class and extends the base class with
+the option to send the trace output to a remote client via TCP/IP.
 
-    Auf diese Weise ist ein "Online" tracing möglich und die Zustände der
-    Trace Admin Objekte können über einen Treeview im Client über Mausklicks
-    verändert und angezeigt werden. Der über die ZSQtLib bereitgestellte
-    Trace Client ermöglicht es ferner, die Trace-Ausgaben je nach Thread
-    farblich voneinander zu trennen.
+In this way, "online" tracing is possible. The states of the Trace Admin objects
+can be changed and displayed via a tree view in the client with a mouse click.
 
-    Normalerweise gibt es pro Applikation nur eine Trace Server Instanz die beim
-    Start der Applikation durch Aufruf der Klassenmethode "CreateInstance" angelegt
-    wird. Während der Programm-Ausführung kann über "GetInstance" eine Referenz auf
-    die Instanz erhalten und Parameter ändern oder Log-Ausgaben in das Trace Method
-    File vornehmen und an angeschlossen Trace Clients zu verschicken. Vor Beenden
-    der Applikation ist die Trace Server Instanz mit "ReleaseInstance" wieder zu löschen.
+The Trace Client provided via the ZSQtLib also makes it possible to separate the
+trace outputs by color depending on the thread.
 
-    Für den Fall, dass mehrere Trace Server verwendet werden sollen (verschiedene
-    Log Files, verschiedene Listen-Ports), kann bei "CreateInstance" ein vom Default
-    Wert "ZSTrcServer" abweichender Name übergeben werden. Dieser Name ist bei Aufruf
-    von "GetInstance" und "ReleaseInstance" wieder zu verwenden.
+Normally there is only one Trace Server instance per application, which is created
+when the application is started by calling the "CreateInstance" class method.
+During program execution, a reference to the instance can be obtained via
+"GetInstance", parameters can be changed, log outputs can be made in the Trace
+Method File and sent to connected Trace Clients.
 
-    Hat man keinen Einfluss auf den Programmstart, programmiert PlugIn Dlls und
-    weiss nicht, ob nicht auch an anderer Stelle der Trace Server verwendet wird,
-    muss der Zugriff auf die Trace Server über Referenzzähler kontrolliert werden.
-    Deshalb besteht die Möglichkeit bei Aufruf von "CreateInstance" das
-    Flag "CreateOnlyIfNotYetExisting" zu übergeben.
+Before exiting the application, the Trace Server instance must be freed again
+with "ReleaseInstance".
+
+If several trace servers are to be used (different log files, different listen ports),
+a name that deviates from the default value "ZSTrcServer" can be transferred for
+"CreateInstance". This name is to be used again when calling "GetInstance" and
+"ReleaseInstance".
 */
 class ZSIPCTRACEDLL_API CIpcTrcServer : public ZS::Trace::CTrcServer
 //******************************************************************************
 {
     Q_OBJECT
 public: // class methods
-    static QString NameSpace() { return "ZS::Trace"; }      // Please note that the static class functions name must be different from the non static virtual member function "nameSpace"
-    static QString ClassName() { return "CIpcTrcServer"; }  // Please note that the static class functions name must be different from the non static virtual member function "className"
+    static QString NameSpace() { return "ZS::Trace"; }
+    static QString ClassName() { return "CIpcTrcServer"; }
 public: // class methods
-    static CIpcTrcServer* GetInstance( const QString& i_strName = "ZSTrcServer" );
+    static CIpcTrcServer* GetInstance();
     static CIpcTrcServer* CreateInstance(
-        const QString& i_strName = "ZSTrcServer",
-        int i_iTrcDetailLevel = ETraceDetailLevelNone );
-    static void ReleaseInstance( const QString& i_strName = "ZSTrcServer" );
-    static void ReleaseInstance( CIpcTrcServer* i_pTrcServer );
-    static void DestroyAllInstances();
+        int i_iTrcDetailLevel = ETraceDetailLevelNone,
+        int i_iTrcDetailLevelMutex = ETraceDetailLevelNone,
+        int i_iTrcDetailLevelIpcServer = ETraceDetailLevelNone,
+        int i_iTrcDetailLevelIpcServerMutex = ETraceDetailLevelNone,
+        int i_iTrcDetailLevelIpcServerGateway = ETraceDetailLevelNone );
+    static void ReleaseInstance();
 protected: // ctors and dtor
-    CIpcTrcServer( const QString& i_strName, int i_iTrcDetailLevel = ETraceDetailLevelNone );
+    CIpcTrcServer(
+        int i_iTrcDetailLevel = ETraceDetailLevelNone,
+        int i_iTrcDetailLevelMutex = ETraceDetailLevelNone,
+        int i_iTrcDetailLevelIpcServer = ETraceDetailLevelNone,
+        int i_iTrcDetailLevelIpcServerMutex = ETraceDetailLevelNone,
+        int i_iTrcDetailLevelIpcServerGateway = ETraceDetailLevelNone );
     virtual ~CIpcTrcServer();
 public: // overridables
     QString nameSpace() const { return CIpcTrcServer::NameSpace(); }
@@ -110,10 +111,16 @@ public: // overridables of base class CTrcServer
 public: // overridables of base class CTrcServer
     virtual void setUseLocalTrcFile( bool i_bUse ) override;
     virtual void setLocalTrcFileAbsoluteFilePath( const QString& i_strAbsFilePath ) override;
+    virtual void setLocalTrcFileAutoSaveIntervalInMs( int i_iAutoSaveInterval_ms ) override;
+    virtual void setLocalTrcFileSubFileCountMax( int i_iCountMax ) override;
+    virtual void setLocalTrcFileSubFileLineCountMax( int i_iCountMax ) override;
     virtual void setLocalTrcFileCloseFileAfterEachWrite( bool i_bCloseFile ) override;
 public: // overridables of base class CTrcServer
-    void setCacheTrcDataIfNotConnected( bool i_bCacheData ) override;
-    void setCacheTrcDataMaxArrLen( int i_iMaxArrLen ) override;
+    virtual void setUseIpcServer( bool i_bUse ) override;
+    virtual void setCacheTrcDataIfNotConnected( bool i_bCacheData ) override;
+    virtual void setCacheTrcDataMaxArrLen( int i_iMaxArrLen ) override;
+public: // overridables of base class CTrcServer
+    virtual void setTraceSettings( const STrcServerSettings& i_settings ) override;
 public: // overridables of base class CTrcServer
     virtual void traceMethodEnter(
         const CTrcAdminObj* i_pAdminObj,
@@ -191,21 +198,16 @@ protected: // instance methods to recursively send index tree entries to the con
         int                                     i_iSocketId,
         ZS::System::MsgProtocol::TSystemMsgType i_systemMsgType,
         ZS::System::MsgProtocol::TCommand       i_cmd,
-        ZS::System::CBranchIdxTreeEntry*        i_pBranch );
+        ZS::System::CIdxTreeEntry*              i_pBranch );
 protected: // instance methods to explicitely send the attributes of a trace admin object to the connected clients
     void sendAdminObj(
         int                                     i_iSocketId,
         ZS::System::MsgProtocol::TSystemMsgType i_systemMsgType,
         ZS::System::MsgProtocol::TCommand       i_cmd,
-        CTrcAdminObj*                           i_pTrcAdminObj );
-protected: // instance methods to explicitely send the changed attributes of a name space to the connected clients
-    void sendBranch(
-        int                                     i_iSocketId,
-        ZS::System::MsgProtocol::TSystemMsgType i_systemMsgType,
-        ZS::System::MsgProtocol::TCommand       i_cmd,
-        ZS::System::CBranchIdxTreeEntry*        i_pBranch,
-        ZS::System::EEnabled                    i_enabled,
-        int                                     i_iDetailLevel );
+        ZS::System::CIdxTreeEntry*              i_pTrcAdminObj );
+protected: // auxiliary methods
+    void sendServerSettings(int i_iSocketId);
+    void sendCachedTrcData(int i_iSocketId);
 protected: // instance methods of the remote connection
     ZS::System::CRequest* sendData( int i_iSocketId, const QByteArray& i_byteArr, qint64 i_iReqIdParent = -1 );
 protected slots: // connected to the signals of the Ipc Server
@@ -216,21 +218,28 @@ protected: // overridables to parse and execute the incoming data stream
     void onIpcServerReceivedReqSelect( int i_iSocketId, const QString& i_strData );
     void onIpcServerReceivedReqUpdate( int i_iSocketId, const QString& i_strData );
 protected slots: // connected to the signals of the trace admin object pool
-    void onTrcAdminObjIdxTreeEntryAdded( ZS::System::CIdxTree* i_pIdxTree, ZS::System::CAbstractIdxTreeEntry* i_pTreeEntry );
-    void onTrcAdminObjIdxTreeEntryChanged( ZS::System::CIdxTree* i_pIdxTree, ZS::System::CAbstractIdxTreeEntry* i_pTreeEntry );
+    void onTrcAdminObjIdxTreeEntryAdded( ZS::System::CIdxTree* i_pIdxTree, ZS::System::CIdxTreeEntry* i_pTreeEntry );
+    void onTrcAdminObjIdxTreeEntryAboutToBeRemoved( ZS::System::CIdxTree* i_pIdxTree, ZS::System::CIdxTreeEntry* i_pTreeEntry );
+    void onTrcAdminObjIdxTreeEntryChanged( ZS::System::CIdxTree* i_pIdxTree, ZS::System::CIdxTreeEntry* i_pTreeEntry );
 protected: // overridables of inherited class QObject
     virtual bool event( QEvent* i_pEv ) override;
 protected: // instance members
-    Ipc::CServer*         m_pIpcServer;
-    bool                  m_bIsBeingDestroyed;
-    QVector<int>          m_ariSocketIdsConnectedTrcClients;
-    QVector<int>          m_ariSocketIdsRegisteredTrcClients;
+    Ipc::CServer*         m_pIpcServer; /*!< The Ipc Server used to send and receice data via TCP/IP. */
+    bool                  m_bIsBeingDestroyed;  /*!< Flag to indicate the the instance is going to be destroyed. */
+    QVector<int>          m_ariSocketIdsConnectedTrcClients; /*!< List with socket ids of connected clients. */
+    /*!< This flag is set to true if the client receives data and onReceivedData is in progress updating
+         the servers data with the settings read from the remote client. If the settings are updated
+         the changed signals are not emitted before all settings have been applied. If this flag is set
+         the server knows that the settings are changed by receiving data from the client and data must
+         not be send back to the remote client. */
     bool                  m_bOnReceivedDataUpdateInProcess;
-    // Also the list of the temporarily stored trace data must be protected as the
-    // traced data may be added and removed from within different thread contexts
-    // (if the data should be temporarily stored).
+    /*!< Mutex to protect the list of the temporarily stored (cached) trace data. */
     QMutex*               m_pMtxListTrcDataCached;
+    /*!< To avoid reallocation (resizing) the cache for the trace data the cache is allocated
+         with the maximum number of elements. Unused elements are set to nullptr. But for this
+         the number of used entries must be counted seperately. */
     int                   m_iTrcDataCachedCount;
+    /*!< Cache for storing trace data as long as no client is connected. */
     QVector<SMthTrcData*> m_arpTrcDataCached;
 
 }; // class CIpcTrcServer

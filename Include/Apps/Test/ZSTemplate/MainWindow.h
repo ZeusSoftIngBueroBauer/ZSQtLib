@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer, Germany
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer, Germany
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -36,7 +36,6 @@ may result in using the software modules.
 #endif
 
 class QAction;
-class QFileDialog;
 class QLabel;
 class QMenu;
 class QSettings;
@@ -76,11 +75,12 @@ protected: // overridables of base class QWidget
 protected: // overridables of base class QObject
     virtual bool eventFilter( QObject* i_pObjWatched, QEvent* i_pEv );
 protected slots:
-    void onActFileNewTriggered();
     void onActFileOpenTriggered();
     void onActFileSaveTriggered();
 protected slots:
     void onActDebugErrLogTriggered();
+    void onActDebugTrcServerTriggered();
+    void onActDebugTrcAdminObjIdxTreeTriggered();
 protected slots:
     void onErrLogEntryAdded( const ZS::System::SErrResultInfo& i_errResultInfo );
     void onErrLogEntryChanged( const ZS::System::SErrResultInfo& i_errResultInfo );
@@ -93,19 +93,18 @@ protected: // instance members
     QSettings*      m_pSettingsFile;
     QMenu*          m_pMnuFile;
     QToolBar*       m_pToolBarFile;
-    QAction*        m_pActFileNew;
     QAction*        m_pActFileOpen;
     QAction*        m_pActFileSave;
     QAction*        m_pActFileQuit;
     QMenu*          m_pMnuDebug;
     QAction*        m_pActDebugErrLog;
+    QAction*        m_pActDebugTrcServer;
+    QAction*        m_pActDebugTrcAdminObjIdxTree;
     QMenu*          m_pMnuInfo;
     QAction*        m_pActInfoVersion;
-    QAction*        m_pActInfoSettingsFile;
     QStatusBar*     m_pStatusBar;
     QLabel*         m_pLblErrors;
     CWidgetCentral* m_pWdgtCentral;
-    QFileDialog*    m_pDlgFile;
 
 }; // class CMainWindow
 

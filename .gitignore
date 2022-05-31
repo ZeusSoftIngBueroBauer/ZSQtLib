@@ -24,7 +24,6 @@ Thumbs.db
 *.cache
 *.ilk
 *.log
-[Bb]in
 [Dd]ebug*/
 *.lib
 *.exp
@@ -47,20 +46,18 @@ qrc_*.cpp
 #Python Files
 *.pyc
 __pycache__*/
-[Bb]uild
-[Dd]ist
 *.egg-info*/
 
 #Include Setups
-!Dist
-Dist/*
-!Dist/msvc2019_x64/
-Dist/msvc2019_x64/*
-!Dist/msvc2019_x64/Release/
-Dist/msvc2019_x64/Release/*
-!Dist/msvc2019_x64/Release/ZSAppTrcMthClient/
-Dist/msvc2019_x64/Release/ZSAppTrcMthClient/*
-!Dist/msvc2019_x64/Release/ZSAppTrcMthClient/ZSAppTrcMthClient-Setup.exe
+#!Dist
+#Dist/*
+#!Dist/msvc2019_x64/
+#Dist/msvc2019_x64/*
+#!Dist/msvc2019_x64/Release/
+#Dist/msvc2019_x64/Release/*
+#!Dist/msvc2019_x64/Release/ZSAppTrcMthClient/
+#Dist/msvc2019_x64/Release/ZSAppTrcMthClient/*
+#!Dist/msvc2019_x64/Release/ZSAppTrcMthClient/ZSAppTrcMthClient-Setup.exe
 
 #Generated Make Files
 *.db
@@ -68,6 +65,10 @@ Makefile
 Makefile.*
 
 #Output Directories
+[Bb]in
+[Bb]uild
+[Dd]ist
+[Dd]eploy
 /Bin
 /Config
 /Lib
@@ -76,8 +77,16 @@ Makefile.*
 /Doc/html
 /Doc/latex
 
-#Generated header files
+#Generated header and resource files
 /Include/Libs/ZSSys/ZSSysVersion.h
+/Include/Apps/Test/ZSIpcTrace/TestConfig.h
+/Include/Apps/Test/ZSIpcTraceDllIfQtApp/TestConfig.h
+/Resources/Libs/ZSSys/ZSSysVersion.rc
+/Make/Apps/Products/ZSTrcMthClient/Installer/config/config.xml
+/Make/Apps/Products/ZSTrcMthClient/Installer/packages/de.zeussoft.TrcMthClient/meta/installscript.qs
+/Make/Apps/Products/ZSTrcMthClient/Installer/packages/de.zeussoft.TrcMthClient/meta/license.txt
+/Make/Apps/Products/ZSTrcMthClient/Installer/packages/de.zeussoft.TrcMthClient/meta/package.xml
+/Make/Apps/Products/ZSTrcMthClient/Installer/packages/de.zeussoft.TrcMthClient/data/*
 
 #Explizit
 #RemoteRepositories.txt

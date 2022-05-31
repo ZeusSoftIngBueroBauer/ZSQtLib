@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer, Germany
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer, Germany
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -40,7 +40,7 @@ may result in using the software modules.
 #include "App.h"
 #include "MainWindow.h"
 
-#include "ZSTest/ZSTestStepAdminObjPool.h"
+#include "ZSTest/ZSTestStepIdxTree.h"
 #include "ZSSys/ZSSysApp.h"
 #include "ZSSys/ZSSysErrLog.h"
 #include "ZSSys/ZSSysErrResult.h"
@@ -84,11 +84,9 @@ CApplication::CApplication(
     const QString& i_strWindowTitle ) :
 //------------------------------------------------------------------------------
     CGUIApp(i_argc,i_argv),
-    m_pSettingsFile(nullptr),
-    m_strErrLogFileAbsFilePath(),
-    m_strTestStepsFileAbsFilePath(),
     m_pTest(nullptr),
-    m_pMainWindow(nullptr)
+    m_pMainWindow(nullptr),
+    m_bAutoStartTest(false)
 {
     setObjectName("theApp");
 
@@ -103,34 +101,31 @@ CApplication::CApplication(
 
     QIcon iconApp;
 
-    QPixmap pxmApp16x16(":/ZS/App/Zeus16x16.bmp");
-    QPixmap pxmApp32x32(":/ZS/App/Zeus32x32.bmp");
+    QPixmap pxmApp16x16(":/ZS/App/ZeusSoft_16x16.bmp");
+    QPixmap pxmApp32x32(":/ZS/App/ZeusSoft_32x32.bmp");
+    QPixmap pxmApp48x48(":/ZS/App/ZeusSoft_48x48.bmp");
+    QPixmap pxmApp64x64(":/ZS/App/ZeusSoft_64x64.bmp");
 
     pxmApp16x16.setMask(pxmApp16x16.createHeuristicMask());
     pxmApp32x32.setMask(pxmApp32x32.createHeuristicMask());
+    pxmApp48x48.setMask(pxmApp48x48.createHeuristicMask());
+    pxmApp64x64.setMask(pxmApp64x64.createHeuristicMask());
 
     iconApp.addPixmap(pxmApp16x16);
     iconApp.addPixmap(pxmApp32x32);
+    iconApp.addPixmap(pxmApp48x48);
+    iconApp.addPixmap(pxmApp64x64);
 
     QApplication::setWindowIcon(iconApp);
 
-    // Parse command arguments (first part, IniFile)
-    //----------------------------------------------
+    // Parse command arguments
+    //------------------------
 
     int         idxArg;
     QString     strArg;
     QString     strVal;
     QStringList strListArgsPar;
     QStringList strListArgsVal;
-
-    // Range of IniFileScope: ["AppDir", "User", "System"]
-    #ifdef __linux__
-    // Using "System" on linux Mint ends up in directory "etc/xdg/<CompanyName>"
-    // where the application has not write access rights. Stupid ...
-    QString strIniFileScope = "User";
-    #else
-    QString strIniFileScope = "System"; // Default
-    #endif
 
     parseAppArgs( i_argc, i_argv, strListArgsPar, strListArgsVal );
 
@@ -143,71 +138,21 @@ CApplication::CApplication(
         strArg = strListArgsPar[idxArg];
         strVal = strListArgsVal[idxArg];
 
-        // Here only the command arguments concerning the location of the ini file are parsed.
-        // Other arguments (e.g. mode) are parsed further below.
-        if( strArg.compare("IniFileScope",Qt::CaseInsensitive) == 0 )
+        if( strArg == "AutoStartTest" )
         {
-            strIniFileScope = strVal;
+            m_bAutoStartTest = true;
         }
-    }
-
-    // Calculate default file paths and create ini file
-    //-------------------------------------------------
-
-    QString strAppNameNormalized = QCoreApplication::applicationName();
-
-    // The application name may contain characters which are invalid in file names:
-    strAppNameNormalized.remove(":");
-    strAppNameNormalized.remove(" ");
-    strAppNameNormalized.remove("\\");
-    strAppNameNormalized.remove("/");
-    strAppNameNormalized.remove("<");
-    strAppNameNormalized.remove(">");
-
-    QString strAppConfigDir = ZS::System::getAppConfigDir(strIniFileScope);
-    QString strAppLogDir = ZS::System::getAppLogDir(strIniFileScope);
-
-    QString strIniFileBaseName = strAppNameNormalized;
-    QString strIniFileSuffix = "ini";
-
-    QString strIniFileAbsFilePath = strAppConfigDir + "/" + strIniFileBaseName + "." + strIniFileSuffix;
-
-    m_pSettingsFile = new QSettings( strIniFileAbsFilePath, QSettings::IniFormat );
-
-    QString strErrLogFileBaseName = strAppNameNormalized + "-Error";
-    QString strErrLogFileSuffix = "xml";
-
-    m_strErrLogFileAbsFilePath = strAppLogDir + "/" + strErrLogFileBaseName + "." + strErrLogFileSuffix;
-
-    QString strTestStepsFileBaseName = strAppNameNormalized + "-TestSteps";
-    QString strTestStepsFileSuffix = "xml";
-
-    m_strTestStepsFileAbsFilePath = strAppConfigDir + "/" + strTestStepsFileBaseName + "." + strTestStepsFileSuffix;
-
-    readSettings();
-
-    // Parse command arguments (second part, overwriting IniFile settings)
-    //--------------------------------------------------------------------
-
-    #if QT_VERSION >= QT_VERSION_CHECK(4, 5, 1)
-    for( idxArg = 0; idxArg < strListArgsPar.length() && idxArg < strListArgsVal.length(); idxArg++ )
-    #else
-    for( idxArg = 0; idxArg < strListArgsPar.size() && idxArg < strListArgsVal.size(); idxArg++ )
-    #endif
-    {
-        strArg = strListArgsPar[idxArg];
-        strVal = strListArgsVal[idxArg];
     }
 
     // Create error manager
     //------------------------
 
-    CErrLog::CreateInstance(true, m_strErrLogFileAbsFilePath);
+    CErrLog::CreateInstance();
 
     // Test
     //----------------------------
 
-    m_pTest = new CTest(m_strTestStepsFileAbsFilePath);
+    m_pTest = new CTest();
 
     // Main Window
     //------------
@@ -215,18 +160,28 @@ CApplication::CApplication(
     m_pMainWindow = new CMainWindow(i_strWindowTitle);
     m_pMainWindow->show();
 
+    // Start test automatically if desired
+    //------------------------------------
+
+    if( m_bAutoStartTest )
+    {
+        m_pTest->start();
+
+        if( !QObject::connect(
+            /* pObjSender   */ m_pTest,
+            /* szSignal     */ SIGNAL(testFinished(const ZS::Test::CEnumTestResult&)),
+            /* pObjReceiver */ this,
+            /* szSlot       */ SLOT(onTestFinished(const ZS::Test::CEnumTestResult&)) ) )
+        {
+            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
+        }
+    }
 } // ctor
 
 //------------------------------------------------------------------------------
 CApplication::~CApplication()
 //------------------------------------------------------------------------------
 {
-    // Save settings of the application
-    //--------------------------------------
-
-    saveSettings();
-
-
     try
     {
         delete m_pMainWindow;
@@ -243,100 +198,13 @@ CApplication::~CApplication()
     {
     }
 
-    try
-    {
-        delete m_pSettingsFile;
-    }
-    catch(...)
-    {
-    }
-
     CErrLog::ReleaseInstance();
 
-    m_pSettingsFile = nullptr;
-    //m_strErrLogFileAbsFilePath;
-    //m_strTestStepsFileAbsFilePath;
     m_pTest = nullptr;
     m_pMainWindow = nullptr;
+    m_bAutoStartTest = false;
 
 } // dtor
-
-/*==============================================================================
-public: // instance methods
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-void CApplication::readSettings()
-//------------------------------------------------------------------------------
-{
-    if( m_pSettingsFile != nullptr )
-    {
-        QString strSettingsKey;
-        bool    bSyncSettings = false;
-
-        // Err Log
-        //------------------------
-
-        strSettingsKey = "ErrLog";
-
-        if( m_pSettingsFile->contains(strSettingsKey+"/FileName") )
-        {
-            m_strErrLogFileAbsFilePath = m_pSettingsFile->value(strSettingsKey+"/FileName",m_strErrLogFileAbsFilePath).toString();
-        }
-        else
-        {
-            m_pSettingsFile->setValue( strSettingsKey+"/FileName", m_strErrLogFileAbsFilePath );
-            bSyncSettings = true;
-        }
-
-        // Test Steps
-        //-------------
-
-        strSettingsKey = "TestSteps";
-        bSyncSettings  = false;
-
-        if( m_pSettingsFile->contains(strSettingsKey+"/FileName") )
-        {
-            m_strTestStepsFileAbsFilePath = m_pSettingsFile->value(strSettingsKey+"/FileName",m_strTestStepsFileAbsFilePath).toString();
-        }
-        else
-        {
-            m_pSettingsFile->setValue(strSettingsKey+"/FileName",m_strTestStepsFileAbsFilePath);
-            bSyncSettings = true;
-        }
-
-        if( bSyncSettings )
-        {
-            m_pSettingsFile->sync();
-        }
-
-    } // if( m_pSettingsFile != nullptr )
-
-} // readSettings
-
-//------------------------------------------------------------------------------
-void CApplication::saveSettings()
-//------------------------------------------------------------------------------
-{
-    if( m_pSettingsFile != nullptr )
-    {
-        QString strSettingsKey;
-
-        // Test Steps
-        //-------------
-
-        if( m_pTest != nullptr )
-        {
-            strSettingsKey = "TestSteps";
-
-            m_pSettingsFile->setValue( strSettingsKey+"/FileName", m_pTest->getAdminObjIdxTree()->getFileName() );
-
-            m_pSettingsFile->sync();
-
-        } // if( m_pTest != nullptr )
-    } // if( m_pSettingsFile != nullptr )
-
-} // saveSettings
 
 /*==============================================================================
 public slots: // instance methods of system shutdown
@@ -346,5 +214,16 @@ public slots: // instance methods of system shutdown
 void CApplication::onLastWindowClosed()
 //------------------------------------------------------------------------------
 {
-    quit();
+    exit(m_pTest->getTestResult() == ZS::Test::ETestResult::TestPassed ? 0 : 1);
+}
+
+/*==============================================================================
+protected slots:
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CApplication::onTestFinished( const ZS::Test::CEnumTestResult& i_result )
+//------------------------------------------------------------------------------
+{
+    exit(i_result == ZS::Test::ETestResult::TestPassed ? 0 : 1);
 }

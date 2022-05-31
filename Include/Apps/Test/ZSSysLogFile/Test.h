@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -28,7 +28,7 @@ may result in using the software modules.
 #define ZSApps_TestZSSysLogFile_Test_h
 
 #include "ZSTest/ZSTest.h"
-#include "ZSTest/ZSTestStepAdminObj.h"
+#include "ZSTest/ZSTestStepIdxTreeEntry.h"
 
 class QTimer;
 
@@ -45,9 +45,8 @@ class CTest : public ZS::Test::CTest
 //******************************************************************************
 {
     Q_OBJECT
-public: // type definitions and constants
 public: // ctors and dtor
-    CTest( const QString& i_strTestStepsFileName );
+    CTest();
     ~CTest();
 public slots: // test step methods (GrpZSSysLogFile)
     void doTestStepClearLogFileDir( ZS::Test::CTestStep* i_pTestStep );
@@ -55,6 +54,8 @@ public slots: // test step methods (GrpZSSysLogFile)
     void doTestStepRealloc( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepAddEntries( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepFree( ZS::Test::CTestStep* i_pTestStep );
+private: // instance members
+    int m_iInitialLogFilesCount;
 
 }; // class CTest
 

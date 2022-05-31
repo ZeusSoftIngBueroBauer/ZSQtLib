@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -25,7 +25,6 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include <QtCore/qcoreapplication.h>
-#include <QtCore/qmutex.h>
 #include <QtCore/qsettings.h>
 #include <QtCore/qtimer.h>
 #include <QtCore/qwaitcondition.h>
@@ -38,11 +37,13 @@ may result in using the software modules.
 #include "ZSSys/ZSSysEnumEntry.h"
 #include "ZSSys/ZSSysErrResult.h"
 #include "ZSSys/ZSSysException.h"
+#include "ZSSys/ZSSysMutex.h"
 #include "ZSSys/ZSSysRequestExecTree.h"
 #include "ZSSys/ZSSysRequestQueue.h"
 #include "ZSSys/ZSSysTrcAdminObj.h"
 #include "ZSSys/ZSSysTrcMethod.h"
 #include "ZSSys/ZSSysTrcServer.h"
+#include "ZSSys/ZSSysTrcMthFile.h"
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
@@ -113,11 +114,32 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief Creates the server.
+
+    @param i_strObjName [in] Name of the server.
+    @param i_bMultiThreadedAccess [in] Default: false
+        If true each access to member variables will be protected by a mutex
+        (and the class becomes thread safe).
+    @param i_iTrcMthFileDetailLevel [in]
+        If trace outputs should not be forwarded to the trace server but directly
+        to a trace method file allocated by the server, this detail level has to
+        be to a value greater than None.
+    @param i_iTrcMthFileDetailLevelMutex [in]
+        If the locking and unlocking of the mutex of server
+        should be logged a value greater than 0 (ETraceDetailLevelNone)
+        could be passed here. But the value will be ignored if the detail
+        level for the server tracer is None.
+    @param i_iTrcMthFileDetailLevelGateway [in]
+        This is the trace method detail level forwarded to the gateway thread
+        and to the gateway. This allows to enable/disable trace output for the
+        gateway separately from the anchor class.
+*/
 CServer::CServer(
     const QString& i_strObjName,
     bool           i_bMultiThreadedAccess,
-    CTrcMthFile*   i_pTrcMthFile,
-    int            i_iTrcMthFileDetailLevel ) :
+    int            i_iTrcMthFileDetailLevel,
+    int            i_iTrcMthFileDetailLevelMutex,
+    int            i_iTrcMthFileDetailLevelGateway ) :
 //------------------------------------------------------------------------------
     QObject(),
     m_pMtx(nullptr),
@@ -142,7 +164,8 @@ CServer::CServer(
     // Tracing
     m_arpTrcMsgLogObjects(),
     m_iTrcMthFileDetailLevel(i_iTrcMthFileDetailLevel),
-    m_pTrcMthFile(i_pTrcMthFile),
+    m_iTrcMthFileDetailLevelGateway(i_iTrcMthFileDetailLevelGateway),
+    m_pTrcMthFile(nullptr),
     m_pTrcAdminObj(nullptr)
 {
     if( m_strObjName.isEmpty() )
@@ -151,9 +174,16 @@ CServer::CServer(
     }
     setObjectName(m_strObjName);
 
-    if( m_pTrcMthFile == nullptr )
+    // If the parent is the trace server the detail level of trace outputs may not be
+    // controlled by trace admin objects as they belong to the trace server itself.
+    if( m_strObjName.endsWith("TrcServer") )
     {
-        m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(nameSpace(), className(), m_strObjName);
+        QString strLocalTrcFileAbsFilePath = CTrcServer::GetDefaultLocalTrcFileAbsoluteFilePath("System");
+        m_pTrcMthFile = CTrcMthFile::Alloc(strLocalTrcFileAbsFilePath);
+    }
+    else
+    {
+        m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(nameSpace(), className(), objectName());
     }
 
     CMethodTracer mthTracer(
@@ -169,7 +199,14 @@ CServer::CServer(
 
     if( i_bMultiThreadedAccess )
     {
-        m_pMtx = new QMutex(QMutex::Recursive);
+        if( m_pTrcMthFile != nullptr )
+        {
+            m_pMtx = new CMutex(QMutex::Recursive, "ZS::Ipc::CServer::" + i_strObjName, i_iTrcMthFileDetailLevelMutex);
+        }
+        else
+        {
+            m_pMtx = new CMutex(QMutex::Recursive, "ZS::Ipc::CServer::" + i_strObjName);
+        }
     }
 
     m_pErrLog = CErrLog::GetInstance();
@@ -297,6 +334,12 @@ CServer::~CServer()
     {
     }
 
+    if( m_pTrcMthFile != nullptr )
+    {
+        m_pTrcMthFile->close();
+        CTrcMthFile::Free(m_pTrcMthFile);
+    }
+
     // Don't emit any other signals than destroyed. The receiver of the
     // "disconnected" and "stateChanged" signals may not access the object
     // on receiving the signals if the object is being destroyed.
@@ -304,6 +347,8 @@ CServer::~CServer()
     //{
     //    emit stateChanged(this,m_state);
     //}
+
+    mthTracer.onAdminObjAboutToBeReleased();
 
     if( m_pTrcAdminObj != nullptr )
     {
@@ -350,8 +395,6 @@ public: // instance methods
 void CServer::setKeepReqDscrInExecTree( bool i_bKeep )
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(m_pMtx);
-
     QString strAddTrcInfo;
 
     if( isMethodTraceActive(ETraceDetailLevelMethodArgs) )
@@ -370,6 +413,8 @@ void CServer::setKeepReqDscrInExecTree( bool i_bKeep )
         /* strMethod          */ "setKeepReqDscrInExecTree",
         /* strAddInfo         */ strAddTrcInfo );
 
+    CMutexLocker mtxLocker(m_pMtx);
+
     if( m_pRequestQueue != nullptr )
     {
         m_pRequestQueue->setKeepReqDscrInExecTree(i_bKeep);
@@ -381,7 +426,7 @@ void CServer::setKeepReqDscrInExecTree( bool i_bKeep )
 bool CServer::keepReqDscrInExecTree() const
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(m_pMtx);
+    CMutexLocker mtxLocker(m_pMtx);
 
     bool bKeep = false;
 
@@ -404,8 +449,6 @@ CRequest* CServer::startup(
     qint64 i_iReqIdParent )
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(m_pMtx);
-
     QString strAddTrcInfo;
 
     if( isMethodTraceActive(ETraceDetailLevelMethodArgs) )
@@ -425,6 +468,8 @@ CRequest* CServer::startup(
         /* strObjName         */ objectName(),
         /* strMethod          */ "startup",
         /* strAddInfo         */ strAddTrcInfo );
+
+    CMutexLocker mtxLocker(m_pMtx);
 
     if( isMethodTraceActive(ETraceDetailLevelInternalStates) )
     {
@@ -563,8 +608,6 @@ CRequest* CServer::shutdown(
     qint64 i_iReqIdParent )
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(m_pMtx);
-
     QString strAddTrcInfo;
 
     if( isMethodTraceActive(ETraceDetailLevelMethodArgs) )
@@ -584,6 +627,8 @@ CRequest* CServer::shutdown(
         /* strObjName         */ objectName(),
         /* strMethod          */ "shutdown",
         /* strAddInfo         */ strAddTrcInfo );
+
+    CMutexLocker mtxLocker(m_pMtx);
 
     if( isMethodTraceActive(ETraceDetailLevelInternalStates) )
     {
@@ -723,8 +768,6 @@ public: // overridables of the remote connection
 CRequest* CServer::changeSettings( int i_iTimeout_ms, bool i_bWait, qint64 i_iReqIdParent )
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(m_pMtx);
-
     QString strAddTrcInfo;
 
     if( isMethodTraceActive(ETraceDetailLevelMethodArgs) )
@@ -744,6 +787,8 @@ CRequest* CServer::changeSettings( int i_iTimeout_ms, bool i_bWait, qint64 i_iRe
         /* strObjName         */ objectName(),
         /* strMethod          */ "changeSettings",
         /* strAddInfo         */ strAddTrcInfo );
+
+    CMutexLocker mtxLocker(m_pMtx);
 
     if( isMethodTraceActive(ETraceDetailLevelInternalStates) )
     {
@@ -888,28 +933,21 @@ ZS::System::CRequest* CServer::sendData(
     qint64            i_iReqIdParent )
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(m_pMtx);
-
     QString strAddTrcInfo;
 
     if( isMethodTraceActive(ETraceDetailLevelMethodArgs) )
     {
         strAddTrcInfo = "SocketId: " + socketId2Str(i_iSocketId);
-
         if( i_iSocketId >= 0 )
         {
             SSocketDscr socketDscr = getSocketDscr(i_iSocketId);
             strAddTrcInfo += " (" + socketDscr.m_strRemoteHostName + ":" + QString::number(socketDscr.m_uServerListenPort) + ":" + QString::number(socketDscr.m_uRemotePort) + ")";
         }
-
         strAddTrcInfo += ", ByteArr[" + QString::number(i_byteArr.size()) + "]";
-        if( getMethodTraceDetailLevel() < ETraceDetailLevelVerbose )
-        {
-            strAddTrcInfo += "(" + truncateStringWithEllipsisInTheMiddle(QString(i_byteArr), 20) + ")";
-        }
-        else // if( getMethodTraceDetailLevel() >= ETraceDetailLevelVerbose )
-        {
-            strAddTrcInfo += "(" + truncateStringWithEllipsisInTheMiddle(QString(i_byteArr), 50) + ")";
+        if( getMethodTraceDetailLevel() < ETraceDetailLevelVerbose ) {
+            strAddTrcInfo += "(" + truncateStringWithEllipsisInTheMiddle(byteArr2Str(i_byteArr), 30) + ")";
+        } else {
+            strAddTrcInfo += "(" + truncateStringWithEllipsisInTheMiddle(byteArr2Str(i_byteArr), 100) + ")";
         }
         strAddTrcInfo += ", Timeout: " + QString::number(i_iTimeout_ms) + " ms";
         strAddTrcInfo += ", Wait: " + bool2Str(i_bWait);
@@ -926,6 +964,8 @@ ZS::System::CRequest* CServer::sendData(
         /* strObjName         */ objectName(),
         /* strMethod          */ "sendData",
         /* strAddInfo         */ strAddTrcInfo );
+
+    CMutexLocker mtxLocker(m_pMtx);
 
     if( isMethodTraceActive(ETraceDetailLevelInternalStates) )
     {
@@ -1146,7 +1186,7 @@ public: // instance methods
 QList<ESocketType> CServer::getSocketTypes() const
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(m_pMtx);
+    CMutexLocker mtxLocker(m_pMtx);
     return m_arSocketTypes;
 }
 
@@ -1154,7 +1194,7 @@ QList<ESocketType> CServer::getSocketTypes() const
 int CServer::getSocketTypesCount() const
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(m_pMtx);
+    CMutexLocker mtxLocker(m_pMtx);
     return m_arSocketTypes.size();
 }
 
@@ -1162,7 +1202,7 @@ int CServer::getSocketTypesCount() const
 ESocketType CServer::getSocketType( int i_idx ) const
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(m_pMtx);
+    CMutexLocker mtxLocker(m_pMtx);
 
     ESocketType socketType = ESocketTypeUndefined;
 
@@ -1178,7 +1218,7 @@ ESocketType CServer::getSocketType( int i_idx ) const
 bool CServer::isSocketTypeChangeable() const
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(m_pMtx);
+    CMutexLocker mtxLocker(m_pMtx);
     return (m_arSocketTypes.size() > 1);
 }
 
@@ -1186,7 +1226,7 @@ bool CServer::isSocketTypeChangeable() const
 bool CServer::isSocketTypeSupported( ESocketType i_socketType ) const
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(m_pMtx);
+    CMutexLocker mtxLocker(m_pMtx);
 
     bool bIsSupported = false;
     int  idxSocketType;
@@ -1211,7 +1251,7 @@ public: // instance methods changing and reading the host settings
 SServerHostSettings CServer::getHostSettings() const
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(m_pMtx);
+    CMutexLocker mtxLocker(m_pMtx);
     return m_hostSettings;
 }
 
@@ -1219,8 +1259,6 @@ SServerHostSettings CServer::getHostSettings() const
 void CServer::setHostSettings( const SServerHostSettings& i_hostSettings )
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(m_pMtx);
-
     QString strAddTrcInfo;
 
     if( isMethodTraceActive(ETraceDetailLevelMethodArgs) )
@@ -1240,6 +1278,8 @@ void CServer::setHostSettings( const SServerHostSettings& i_hostSettings )
         /* strObjName         */ objectName(),
         /* strMethod          */ "setHostSettings",
         /* strAddInfo         */ strAddTrcInfo );
+
+    CMutexLocker mtxLocker(m_pMtx);
 
     if( isMethodTraceActive(ETraceDetailLevelInternalStates) )
     {
@@ -1291,8 +1331,6 @@ public: // instance methods of the remote connection
 void CServer::setBlkType( CBlkType* i_pBlkType )
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(m_pMtx);
-
     QString strAddTrcInfo;
 
     if( isMethodTraceActive(ETraceDetailLevelMethodArgs) )
@@ -1310,6 +1348,8 @@ void CServer::setBlkType( CBlkType* i_pBlkType )
         /* strObjName         */ objectName(),
         /* strMethod          */ "setBlkType",
         /* strAddInfo         */ strAddTrcInfo );
+
+    CMutexLocker mtxLocker(m_pMtx);
 
     if( isMethodTraceActive(ETraceDetailLevelInternalStates) )
     {
@@ -1336,7 +1376,7 @@ void CServer::setBlkType( CBlkType* i_pBlkType )
 CBlkType* CServer::getBlkType()
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(m_pMtx);
+    CMutexLocker mtxLocker(m_pMtx);
     return m_pBlkType;
 }
 
@@ -1348,7 +1388,7 @@ public: // instance methods of the remote connection
 int CServer::getSocketId( int i_idxSocket ) const
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(m_pMtx);
+    CMutexLocker mtxLocker(m_pMtx);
 
     int          iSocketId = -1;
     SSocketDscr* pSocketDscr;
@@ -1371,7 +1411,7 @@ int CServer::getSocketId( int i_idxSocket ) const
 SSocketDscr CServer::getSocketDscr( int i_iSocketId ) const
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(m_pMtx);
+    CMutexLocker mtxLocker(m_pMtx);
 
     SSocketDscr  socketDscr(ESrvCltTypeServer, m_hostSettings.m_socketType);
     SSocketDscr* pSocketDscr;
@@ -1396,7 +1436,7 @@ SSocketDscr CServer::findSocketDscr(
     unsigned int   i_uRemotePort ) const
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(m_pMtx);
+    CMutexLocker mtxLocker(m_pMtx);
 
     SSocketDscr  socketDscr(ESrvCltTypeServer, m_hostSettings.m_socketType);
     SSocketDscr* pSocketDscr;
@@ -1424,7 +1464,7 @@ SSocketDscr CServer::findSocketDscr(
 int CServer::getArrLenConnections() const
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(m_pMtx);
+    CMutexLocker mtxLocker(m_pMtx);
     return m_arpSocketDscr.size();
 }
 
@@ -1432,7 +1472,7 @@ int CServer::getArrLenConnections() const
 int CServer::getActiveConnections() const
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(m_pMtx);
+    CMutexLocker mtxLocker(m_pMtx);
 
     int iActiveConnections = 0;
 
@@ -1453,8 +1493,6 @@ int CServer::getActiveConnections() const
 void CServer::setSocketName( int i_iSocketId, const QString& i_strSocketName )
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(m_pMtx);
-
     QString strAddTrcInfo;
 
     if( isMethodTraceActive(ETraceDetailLevelMethodArgs) )
@@ -1473,6 +1511,8 @@ void CServer::setSocketName( int i_iSocketId, const QString& i_strSocketName )
         /* strObjName         */ objectName(),
         /* strMethod          */ "setSocketName",
         /* strAddInfo         */ strAddTrcInfo );
+
+    CMutexLocker mtxLocker(m_pMtx);
 
     if( isMethodTraceActive(ETraceDetailLevelInternalStates) )
     {
@@ -1513,7 +1553,7 @@ public: // instance methods (state machine)
 CServer::EState CServer::getState() const
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(m_pMtx);
+    CMutexLocker mtxLocker(m_pMtx);
     return m_state;
 }
 
@@ -1521,7 +1561,7 @@ CServer::EState CServer::getState() const
 QString CServer::state2Str() const
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(m_pMtx);
+    CMutexLocker mtxLocker(m_pMtx);
     return State2Str(m_state);
 }
 
@@ -1529,7 +1569,7 @@ QString CServer::state2Str() const
 bool CServer::isListening() const
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(m_pMtx);
+    CMutexLocker mtxLocker(m_pMtx);
     return (m_state == EStateListening);
 }
 
@@ -1537,7 +1577,7 @@ bool CServer::isListening() const
 bool CServer::isStartingUp() const
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(m_pMtx);
+    CMutexLocker mtxLocker(m_pMtx);
 
     bool bStartingUp = false;
 
@@ -1555,7 +1595,7 @@ bool CServer::isStartingUp() const
 bool CServer::isConnected( int i_iSocketId ) const
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(m_pMtx);
+    CMutexLocker mtxLocker(m_pMtx);
 
     bool         bIsConnected = false;
     int          iSocketId;
@@ -1625,7 +1665,7 @@ public: // instance methods (state machine)
 bool CServer::isBusy() const
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(m_pMtx);
+    CMutexLocker mtxLocker(m_pMtx);
     return !m_pRequestQueue->isIdle();
 }
 
@@ -1633,7 +1673,7 @@ bool CServer::isBusy() const
 CServer::ERequest CServer::requestInProgress() const
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(m_pMtx);
+    CMutexLocker mtxLocker(m_pMtx);
 
     ERequest  request = ERequestNone;
     CRequest* pReq    = m_pRequestQueue->getRequestInProgress();
@@ -1650,7 +1690,7 @@ CServer::ERequest CServer::requestInProgress() const
 QString CServer::requestInProgress2Str( bool /*i_bShort*/ ) const
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(m_pMtx);
+    CMutexLocker mtxLocker(m_pMtx);
     return Request2Str( requestInProgress() );
 }
 
@@ -1658,7 +1698,7 @@ QString CServer::requestInProgress2Str( bool /*i_bShort*/ ) const
 CRequest* CServer::getRequestInProgress() const
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(m_pMtx);
+    CMutexLocker mtxLocker(m_pMtx);
     return m_pRequestQueue->getRequestInProgress();
 }
 
@@ -1670,8 +1710,6 @@ public: // instance methods (aborting requests)
 void CServer::abortRequest( qint64 i_iRequestId )
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(m_pMtx);
-
     QString strAddTrcInfo;
 
     if( isMethodTraceActive(ETraceDetailLevelMethodArgs) )
@@ -1689,6 +1727,8 @@ void CServer::abortRequest( qint64 i_iRequestId )
         /* strObjName         */ objectName(),
         /* strMethod          */ "abortRequest",
         /* strAddInfo         */ strAddTrcInfo );
+
+    CMutexLocker mtxLocker(m_pMtx);
 
     if( isMethodTraceActive(ETraceDetailLevelInternalStates) )
     {
@@ -1734,8 +1774,6 @@ void CServer::abortRequest( qint64 i_iRequestId )
 void CServer::abortRequestInProgress()
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(m_pMtx);
-
     QString strAddTrcInfo;
 
     if( isMethodTraceActive(ETraceDetailLevelMethodArgs) )
@@ -1752,6 +1790,8 @@ void CServer::abortRequestInProgress()
         /* strObjName         */ objectName(),
         /* strMethod          */ "abortRequestInProgress",
         /* strAddInfo         */ strAddTrcInfo );
+
+    CMutexLocker mtxLocker(m_pMtx);
 
     if( isMethodTraceActive(ETraceDetailLevelInternalStates) )
     {
@@ -1788,8 +1828,6 @@ void CServer::abortRequestInProgress()
 void CServer::abortAllRequests()
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(m_pMtx);
-
     QString strAddTrcInfo;
 
     if( isMethodTraceActive(ETraceDetailLevelMethodArgs) )
@@ -1806,6 +1844,8 @@ void CServer::abortAllRequests()
         /* strObjName         */ objectName(),
         /* strMethod          */ "abortAllRequests",
         /* strAddInfo         */ strAddTrcInfo );
+
+    CMutexLocker mtxLocker(m_pMtx);
 
     if( isMethodTraceActive(ETraceDetailLevelInternalStates) )
     {
@@ -1853,7 +1893,7 @@ public: // instance methods
 void CServer::addTrcMsgLogObject( QObject* i_pObj )
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(m_pMtx);
+    CMutexLocker mtxLocker(m_pMtx);
 
     if( i_pObj == nullptr )
     {
@@ -1886,7 +1926,7 @@ void CServer::addTrcMsgLogObject( QObject* i_pObj )
 void CServer::removeTrcMsgLogObject( QObject* i_pObj )
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(m_pMtx);
+    CMutexLocker mtxLocker(m_pMtx);
 
     if( i_pObj == nullptr )
     {
@@ -1923,20 +1963,19 @@ protected: // overridables
 void CServer::onReceivedData( int i_iSocketId, const QByteArray& i_byteArr )
 //------------------------------------------------------------------------------
 {
-    // Not necessary as method only called internally if mutex is already locked:
-    //QMutexLocker mtxLocker(m_pMtx);
-
     QString strAddTrcInfo;
 
     if( isMethodTraceActive(ETraceDetailLevelMethodArgs) )
     {
         strAddTrcInfo += "SocketId: " + QString::number(i_iSocketId);
-
         SSocketDscr socketDscr = getSocketDscr(i_iSocketId);
-
         strAddTrcInfo += " (" + socketDscr.m_strRemoteHostName + ":" + QString::number(socketDscr.m_uServerListenPort) + ":" + QString::number(socketDscr.m_uRemotePort) + ")";
-
         strAddTrcInfo += ", ByteArr [" + QString::number(i_byteArr.size()) + "]";
+        if( getMethodTraceDetailLevel() < ETraceDetailLevelVerbose ) {
+            strAddTrcInfo += "(" + truncateStringWithEllipsisInTheMiddle(byteArr2Str(i_byteArr), 30) + ")";
+        } else {
+            strAddTrcInfo += "(" + truncateStringWithEllipsisInTheMiddle(byteArr2Str(i_byteArr), 100) + ")";
+        }
     }
 
     CMethodTracer mthTracer(
@@ -1949,6 +1988,9 @@ void CServer::onReceivedData( int i_iSocketId, const QByteArray& i_byteArr )
         /* strObjName         */ objectName(),
         /* strMethod          */ "onReceivedData",
         /* strAddInfo         */ strAddTrcInfo );
+
+    // Not necessary as method only called internally if mutex is already locked:
+    //CMutexLocker mtxLocker(m_pMtx);
 
     if( isMethodTraceActive(ETraceDetailLevelInternalStates) )
     {
@@ -1971,9 +2013,6 @@ protected: // instance methods (state machine)
 void CServer::executeNextPostponedRequest()
 //------------------------------------------------------------------------------
 {
-    // Not necessary as method only called internally if mutex is already locked:
-    //QMutexLocker mtxLocker(m_pMtx);
-
     QString strAddTrcInfo;
 
     if( isMethodTraceActive(ETraceDetailLevelMethodArgs) )
@@ -1990,6 +2029,9 @@ void CServer::executeNextPostponedRequest()
         /* strObjName         */ objectName(),
         /* strMethod          */ "executeNextPostponedRequest",
         /* strAddInfo         */ strAddTrcInfo );
+
+    // Not necessary as method only called internally if mutex is already locked:
+    //CMutexLocker mtxLocker(m_pMtx);
 
     if( isMethodTraceActive(ETraceDetailLevelInternalStates) )
     {
@@ -2027,9 +2069,6 @@ protected: // overridables
 void CServer::executeStartupRequest( CRequest* i_pReq )
 //------------------------------------------------------------------------------
 {
-    // Not necessary as method only called internally if mutex is already locked:
-    //QMutexLocker mtxLocker(m_pMtx);
-
     QString strAddTrcInfo;
 
     if( isMethodTraceActive(ETraceDetailLevelMethodArgs) )
@@ -2051,6 +2090,9 @@ void CServer::executeStartupRequest( CRequest* i_pReq )
         /* strObjName         */ objectName(),
         /* strMethod          */ "executeStartupRequest",
         /* strAddInfo         */ strAddTrcInfo );
+
+    // Not necessary as method only called internally if mutex is already locked:
+    //CMutexLocker mtxLocker(m_pMtx);
 
     if( isMethodTraceActive(ETraceDetailLevelInternalStates) )
     {
@@ -2192,9 +2234,6 @@ void CServer::executeStartupRequest( CRequest* i_pReq )
 void CServer::executeShutdownRequest( CRequest* i_pReq )
 //------------------------------------------------------------------------------
 {
-    // Not necessary as method only called internally if mutex is already locked:
-    //QMutexLocker mtxLocker(m_pMtx);
-
     QString strAddTrcInfo;
 
     if( isMethodTraceActive(ETraceDetailLevelMethodArgs) )
@@ -2216,6 +2255,9 @@ void CServer::executeShutdownRequest( CRequest* i_pReq )
         /* strObjName         */ objectName(),
         /* strMethod          */ "executeShutdownRequest",
         /* strAddInfo         */ strAddTrcInfo );
+
+    // Not necessary as method only called internally if mutex is already locked:
+    //CMutexLocker mtxLocker(m_pMtx);
 
     if( isMethodTraceActive(ETraceDetailLevelInternalStates) )
     {
@@ -2359,9 +2401,6 @@ void CServer::executeShutdownRequest( CRequest* i_pReq )
 void CServer::executeChangeSettingsRequest( CRequest* i_pReq )
 //------------------------------------------------------------------------------
 {
-    // Not necessary as method only called internally if mutex is already locked:
-    //QMutexLocker mtxLocker(m_pMtx);
-
     QString strAddTrcInfo;
 
     if( isMethodTraceActive(ETraceDetailLevelMethodArgs) )
@@ -2383,6 +2422,9 @@ void CServer::executeChangeSettingsRequest( CRequest* i_pReq )
         /* strObjName         */ objectName(),
         /* strMethod          */ "executeChangeSettingsRequest",
         /* strAddInfo         */ strAddTrcInfo );
+
+    // Not necessary as method only called internally if mutex is already locked:
+    //CMutexLocker mtxLocker(m_pMtx);
 
     if( isMethodTraceActive(ETraceDetailLevelInternalStates) )
     {
@@ -2466,7 +2508,19 @@ void CServer::executeChangeSettingsRequest( CRequest* i_pReq )
 
             if( i_pReq->isBlockingRequest() )
             {
-                if( !i_pReq->wait() )
+                if( i_pReq->wait() )
+                {
+                    CMsgCon* pMsgCon = i_pReq->getExecutionConfirmationMessage();
+                    if( pMsgCon != nullptr )
+                    {
+                        errResultInfo = pMsgCon->getErrResultInfo();
+                    }
+                    else
+                    {
+                        errResultInfo = i_pReq->getErrResultInfo();
+                    }
+                }
+                else // if( !i_pReq->wait() )
                 {
                     errResultInfo.setSeverity(EResultSeverityError);
                     errResultInfo.setResult(EResultTimeout);
@@ -2564,9 +2618,6 @@ void CServer::executeChangeSettingsRequest( CRequest* i_pReq )
 void CServer::executeSendDataRequest( CRequest* i_pReq )
 //------------------------------------------------------------------------------
 {
-    // Not necessary as method only called internally if mutex is already locked:
-    //QMutexLocker mtxLocker(m_pMtx);
-
     QString strAddTrcInfo;
 
     if( isMethodTraceActive(ETraceDetailLevelMethodArgs) )
@@ -2588,6 +2639,9 @@ void CServer::executeSendDataRequest( CRequest* i_pReq )
         /* strObjName         */ objectName(),
         /* strMethod          */ "executeSendDataRequest",
         /* strAddInfo         */ strAddTrcInfo );
+
+    // Not necessary as method only called internally if mutex is already locked:
+    //CMutexLocker mtxLocker(m_pMtx);
 
     if( isMethodTraceActive(ETraceDetailLevelInternalStates) )
     {
@@ -2764,9 +2818,6 @@ protected: // overridables (auxiliary methods)
 CSrvCltBaseGatewayThread* CServer::createGatewayThread()
 //------------------------------------------------------------------------------
 {
-    // Not necessary as method only called internally if mutex is already locked:
-    //QMutexLocker mtxLocker(m_pMtx);
-
     QString strAddTrcInfo;
 
     if( isMethodTraceActive(ETraceDetailLevelMethodArgs) )
@@ -2784,12 +2835,14 @@ CSrvCltBaseGatewayThread* CServer::createGatewayThread()
         /* strMethod          */ "createGatewayThread",
         /* strAddInfo         */ strAddTrcInfo );
 
+    // Not necessary as method only called internally if mutex is already locked:
+    //CMutexLocker mtxLocker(m_pMtx);
+
     return new CServerGatewayThread(
         /* szObjNameGateway       */ m_strObjName,
         /* pServer                */ this,
         /* pModelErrLog           */ m_pErrLog,
-        /* pTrcMthFile            */ m_pTrcMthFile,
-        /* iTrcMthFileDEtailLevel */ m_iTrcMthFileDetailLevel );
+        /* iTrcMthFileDetailLevel */ m_iTrcMthFileDetailLevelGateway );
 
 } // createGatewayThread
 
@@ -2797,9 +2850,6 @@ CSrvCltBaseGatewayThread* CServer::createGatewayThread()
 SErrResultInfo CServer::startGatewayThread( int i_iTimeout_ms, qint64 i_iReqIdParent )
 //------------------------------------------------------------------------------
 {
-    // Not necessary as method only called internally if mutex is already locked:
-    //QMutexLocker mtxLocker(m_pMtx);
-
     QString strAddTrcInfo;
 
     if( isMethodTraceActive(ETraceDetailLevelMethodArgs) )
@@ -2818,6 +2868,9 @@ SErrResultInfo CServer::startGatewayThread( int i_iTimeout_ms, qint64 i_iReqIdPa
         /* strObjName         */ objectName(),
         /* strMethod          */ "startGatewayThread",
         /* strAddInfo         */ strAddTrcInfo );
+
+    // Not necessary as method only called internally if mutex is already locked:
+    //CMutexLocker mtxLocker(m_pMtx);
 
     SErrResultInfo errResultInfo = ErrResultInfoSuccess("startGatewayThread");
 
@@ -2902,9 +2955,6 @@ SErrResultInfo CServer::startGatewayThread( int i_iTimeout_ms, qint64 i_iReqIdPa
 SErrResultInfo CServer::stopGatewayThread( int i_iTimeout_ms, qint64 i_iReqIdParent )
 //------------------------------------------------------------------------------
 {
-    // Not necessary as method only called internally if mutex is already locked:
-    //QMutexLocker mtxLocker(m_pMtx);
-
     QString strAddTrcInfo;
 
     if( isMethodTraceActive(ETraceDetailLevelMethodArgs) )
@@ -2923,6 +2973,9 @@ SErrResultInfo CServer::stopGatewayThread( int i_iTimeout_ms, qint64 i_iReqIdPar
         /* strObjName         */ objectName(),
         /* strMethod          */ "stopGatewayThread",
         /* strAddInfo         */ strAddTrcInfo );
+
+    // Not necessary as method only called internally if mutex is already locked:
+    //CMutexLocker mtxLocker(m_pMtx);
 
     SErrResultInfo errResultInfo = ErrResultInfoSuccess("stopGatewayThread");
 
@@ -3024,9 +3077,6 @@ protected: // overridables (auxiliary methods)
 CRequest* CServer::startupGateway( int i_iTimeout_ms, bool i_bWait, qint64 i_iReqIdParent )
 //------------------------------------------------------------------------------
 {
-    // Not necessary as method only called internally if mutex is already locked:
-    //QMutexLocker mtxLocker(m_pMtx);
-
     QString strAddTrcInfo;
 
     if( isMethodTraceActive(ETraceDetailLevelMethodArgs) )
@@ -3046,6 +3096,9 @@ CRequest* CServer::startupGateway( int i_iTimeout_ms, bool i_bWait, qint64 i_iRe
         /* strObjName         */ objectName(),
         /* strMethod          */ "startupGateway",
         /* strAddInfo         */ strAddTrcInfo );
+
+    // Not necessary as method only called internally if mutex is already locked:
+    //CMutexLocker mtxLocker(m_pMtx);
 
     if( isMethodTraceActive(ETraceDetailLevelInternalStates) )
     {
@@ -3128,6 +3181,15 @@ CRequest* CServer::startupGateway( int i_iTimeout_ms, bool i_bWait, qint64 i_iRe
 
         if( pReqStartupGateway->wait() )
         {
+            CMsgCon* pMsgCon = pReqStartupGateway->getExecutionConfirmationMessage();
+            if( pMsgCon != nullptr )
+            {
+                errResultInfo = pMsgCon->getErrResultInfo();
+            }
+            else
+            {
+                errResultInfo = pReqStartupGateway->getErrResultInfo();
+            }
             if( errResultInfo.getResult() == EResultUndefined )
             {
                 errResultInfo.setErrResult(ErrResultSuccess);
@@ -3207,9 +3269,6 @@ CRequest* CServer::startupGateway( int i_iTimeout_ms, bool i_bWait, qint64 i_iRe
 CRequest* CServer::shutdownGateway( int i_iTimeout_ms, bool i_bWait, qint64 i_iReqIdParent )
 //------------------------------------------------------------------------------
 {
-    // Not necessary as method only called internally if mutex is already locked:
-    //QMutexLocker mtxLocker(m_pMtx);
-
     QString strAddTrcInfo;
 
     if( isMethodTraceActive(ETraceDetailLevelMethodArgs) )
@@ -3229,6 +3288,9 @@ CRequest* CServer::shutdownGateway( int i_iTimeout_ms, bool i_bWait, qint64 i_iR
         /* strObjName         */ objectName(),
         /* strMethod          */ "shutdownGateway",
         /* strAddInfo         */ strAddTrcInfo );
+
+    // Not necessary as method only called internally if mutex is already locked:
+    //CMutexLocker mtxLocker(m_pMtx);
 
     if( isMethodTraceActive(ETraceDetailLevelInternalStates) )
     {
@@ -3318,6 +3380,15 @@ CRequest* CServer::shutdownGateway( int i_iTimeout_ms, bool i_bWait, qint64 i_iR
 
         if( pReqShutdownGateway->wait() )
         {
+            CMsgCon* pMsgCon = pReqShutdownGateway->getExecutionConfirmationMessage();
+            if( pMsgCon != nullptr )
+            {
+                errResultInfo = pMsgCon->getErrResultInfo();
+            }
+            else
+            {
+                errResultInfo = pReqShutdownGateway->getErrResultInfo();
+            }
             if( errResultInfo.getResult() == EResultUndefined )
             {
                 errResultInfo.setErrResult(ErrResultSuccess);
@@ -3405,8 +3476,6 @@ protected slots:
 void CServer::onRequestTimeout()
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(m_pMtx);
-
     QString strAddTrcInfo;
 
     if( isMethodTraceActive(ETraceDetailLevelMethodArgs) )
@@ -3423,6 +3492,8 @@ void CServer::onRequestTimeout()
         /* strObjName         */ objectName(),
         /* strMethod          */ "onRequestTimeout",
         /* strAddInfo         */ strAddTrcInfo );
+
+    CMutexLocker mtxLocker(m_pMtx);
 
     if( isMethodTraceActive(ETraceDetailLevelInternalStates) )
     {
@@ -3481,10 +3552,6 @@ protected slots:
 void CServer::onRequestChanged( ZS::System::SRequestDscr i_reqDscr )
 //------------------------------------------------------------------------------
 {
-    // Necessary as this slot may be called on updating requests from another thread
-    // (direct but not queued signal/slot connections).
-    QMutexLocker mtxLocker(m_pMtx);
-
     QString strAddTrcInfo;
 
     if( isMethodTraceActive(ETraceDetailLevelMethodArgs) )
@@ -3506,6 +3573,10 @@ void CServer::onRequestChanged( ZS::System::SRequestDscr i_reqDscr )
         /* strObjName         */ objectName(),
         /* strMethod          */ "onRequestChanged",
         /* strAddInfo         */ strAddTrcInfo );
+
+    // Necessary as this slot may be called on updating requests from another thread
+    // (direct but not queued signal/slot connections).
+    CMutexLocker mtxLocker(m_pMtx);
 
     if( isMethodTraceActive(ETraceDetailLevelInternalStates) )
     {
@@ -3956,8 +4027,6 @@ bool CServer::event( QEvent* i_pMsg )
 
         if( pMsg != nullptr )
         {
-            QMutexLocker mtxLocker(m_pMtx);
-
             bEventHandled = true;
 
             SErrResultInfo errResultInfo = ErrResultInfoSuccess(pMsg->msgTypeToStr());
@@ -3983,6 +4052,8 @@ bool CServer::event( QEvent* i_pMsg )
 
                 else if( pMsg->getMsgType() == EBaseMsgTypeReqContinue )
                 {
+                    CMutexLocker mtxLocker(m_pMtx);
+
                     m_bMsgReqContinuePending = false;
 
                     if( !m_pRequestQueue->isRequestInProgress() && m_pRequestQueue->hasPostponedRequest() )
@@ -4035,6 +4106,8 @@ bool CServer::event( QEvent* i_pMsg )
             {
                 if( isMethodTraceActive(ETraceDetailLevelInternalStates) )
                 {
+                    CMutexLocker mtxLocker(m_pMtx);
+
                     int iAddTrcInfoDetailLevel = 0;
                     if( getMethodTraceDetailLevel() >= ETraceDetailLevelVerbose ) iAddTrcInfoDetailLevel = 2;
                     else if( getMethodTraceDetailLevel() >= ETraceDetailLevelRuntimeInfo ) iAddTrcInfoDetailLevel = 1;
@@ -4062,49 +4135,6 @@ bool CServer::event( QEvent* i_pMsg )
                     {
                         throw CException(__FILE__, __LINE__, EResultMessageTypeMismatch);
                     }
-
-                    //qint64   iReqIdParent = pMsgReq->getRequestId();
-                    //CMsgCon* pMsgCon = nullptr;
-
-                    //if( isAsynchronousRequest(pReq) )
-                    //{
-                    //    pReq->setConfirmationMessage(pMsgCon);
-                    //    pMsgCon = nullptr;
-                    //}
-                    //else // if( !isAsynchronousRequest(pReq) )
-                    //{
-                    //    bool bIsWaiting = false;
-
-                    //    if( iReqIdParent >= 0 )
-                    //    {
-                    //        bIsWaiting = CRequestExecTree::GetInstance()->isWaiting(iReqIdParent);
-                    //    }
-
-                    //    if( bIsWaiting != 0 )
-                    //    {
-                    //        CRequestExecTree::GetInstance()->wake(iReqIdParent);
-                    //    }
-                    //    else if( pMsgCon != nullptr )
-                    //    {
-                    //        if( pReq != nullptr )
-                    //        {
-                    //            errResultInfo = pReq->getErrResultInfo();
-                    //        }
-                    //        else if( errResultInfo.getResult() == EResultUndefined )
-                    //        {
-                    //            errResultInfo.setResult(EResultSuccess);
-                    //        }
-                    //        pMsgCon->setErrResultInfo(errResultInfo);
-                    //        pMsgCon->setProgress(100);
-
-                    //        POST_OR_DELETE_MESSAGE(pMsgCon, &mthTracer, ETraceDetailLevelRuntimeInfo);
-                    //        pMsgCon = nullptr;
-                    //    }
-                    //} // if( !isAsynchronousRequest(pReq) )
-
-                    //delete pMsgCon;
-                    //pMsgCon = nullptr;
-
                 } // if( pMsg->getSystemMsgType() == MsgProtocol::ESystemMsgTypeReq )
 
                 else if( pMsg->getSystemMsgType() == MsgProtocol::ESystemMsgTypeInd )
@@ -4142,34 +4172,49 @@ bool CServer::event( QEvent* i_pMsg )
                                 throw ZS::System::CException(__FILE__, __LINE__, EResultMessageTypeMismatch, "MsgIndConnected == nullptr! " + strAddTrcInfo);
                             }
 
-                            // Please note that the server could have been shutdown in the meantime .
-                            if( m_state != EStateIdle && requestInProgress() != ERequestShutdown )
-                            {
-                                int iSocketId = pMsgInd->getSocketId();
+                            bool bEmitConnected = false;
+                            SSocketDscr socketDscr(ESrvCltTypeServer);
 
-                                if( iSocketId >= m_arpSocketDscr.size() )
+                            {   // Before emitting signals the mutex must be free. Otherwise we may end up in a deadlock
+                                // as the receiver of the signal may currently be waiting to get a lock on the mutex
+                                // of this IpcServer to send data.
+                                CMutexLocker mtxLocker(m_pMtx);
+
+                                // Please note that the server could have been shutdown in the meantime .
+                                if( m_state != EStateIdle && requestInProgress() != ERequestShutdown )
                                 {
-                                    m_arpSocketDscr.resize(iSocketId+1);
+                                    int iSocketId = pMsgInd->getSocketId();
 
-                                    for( ; iSocketId < m_arpSocketDscr.size(); iSocketId++ )
+                                    if( iSocketId >= m_arpSocketDscr.size() )
                                     {
-                                        m_arpSocketDscr[iSocketId] = nullptr;
+                                        m_arpSocketDscr.resize(iSocketId+1);
+
+                                        for( ; iSocketId < m_arpSocketDscr.size(); iSocketId++ )
+                                        {
+                                            m_arpSocketDscr[iSocketId] = nullptr;
+                                        }
                                     }
-                                }
 
-                                iSocketId = pMsgInd->getSocketId(); // SocketId may have been modified if array has been resized.
+                                    iSocketId = pMsgInd->getSocketId(); // SocketId may have been modified if array has been resized.
 
-                                if( m_arpSocketDscr[iSocketId] != nullptr )
-                                {
-                                    QString strAddTrcInfo = "event( ";
-                                    strAddTrcInfo += "MsgIndConnected: SocketId = " + QString::number(iSocketId) + " already used )";
-                                    throw CException(__FILE__, __LINE__, EResultSocketIdAlreadyUsed, strAddTrcInfo);
-                                }
+                                    if( m_arpSocketDscr[iSocketId] != nullptr )
+                                    {
+                                        QString strAddTrcInfo = "event( ";
+                                        strAddTrcInfo += "MsgIndConnected: SocketId = " + QString::number(iSocketId) + " already used )";
+                                        throw CException(__FILE__, __LINE__, EResultSocketIdAlreadyUsed, strAddTrcInfo);
+                                    }
 
-                                m_arpSocketDscr[iSocketId] = new SSocketDscr( pMsgInd->getSocketDscr() );
-                                emit connected( this, getSocketDscr(iSocketId) );
+                                    bEmitConnected = true;
 
-                            } // if( m_state != EStateIdle && getRequestInProgress() != ERequestShutdown )
+                                    m_arpSocketDscr[iSocketId] = new SSocketDscr( pMsgInd->getSocketDscr() );
+                                    socketDscr = getSocketDscr(iSocketId);
+
+                                } // if( m_state != EStateIdle && getRequestInProgress() != ERequestShutdown )
+                            }
+                            if( bEmitConnected )
+                            {
+                                emit connected(this, socketDscr);
+                            }
                             break;
                         } // case EMsgTypeIndConnected
 
@@ -4184,37 +4229,50 @@ bool CServer::event( QEvent* i_pMsg )
                             }
 
                             // Please note that the server could have been shutdown in the meantime .
-                            if( m_state != EStateIdle && requestInProgress() != ERequestShutdown )
+
+                            bool bEmitDisconnected = false;
+                            SSocketDscr socketDscr(ESrvCltTypeServer);
+
+                            {   // Before emitting signals the mutex must be free. Otherwise we may end up in a deadlock
+                                // as the receiver of the signal may currently be waiting to get a lock on the mutex
+                                // of this IpcServer to send data.
+                                CMutexLocker mtxLocker(m_pMtx);
+
+                                if( m_state != EStateIdle && requestInProgress() != ERequestShutdown )
+                                {
+                                    int iSocketId = pMsgInd->getSocketId();
+
+                                    errResultInfo = checkSocket(iSocketId);
+
+                                    if( errResultInfo.getResult() != EResultSuccess )
+                                    {
+                                        if( m_pErrLog != nullptr )
+                                        {
+                                            m_pErrLog->addEntry(errResultInfo);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        socketDscr = *m_arpSocketDscr[iSocketId];
+                                        socketDscr.m_socketState = ESocketStateUnconnected;
+
+                                        bEmitDisconnected = true;
+
+                                        try
+                                        {
+                                            delete m_arpSocketDscr[iSocketId];
+                                        }
+                                        catch(...)
+                                        {
+                                        }
+                                        m_arpSocketDscr[iSocketId] = nullptr;
+                                    }
+                                } // if( m_state != EStateIdle && getRequestInProgress() != ERequestShutdown )
+                            }
+                            if( bEmitDisconnected )
                             {
-                                SSocketDscr socketDscr(ESrvCltTypeServer);
-                                int         iSocketId = pMsgInd->getSocketId();
-
-                                errResultInfo = checkSocket(iSocketId);
-
-                                if( errResultInfo.getResult() != EResultSuccess )
-                                {
-                                    if( m_pErrLog != nullptr )
-                                    {
-                                        m_pErrLog->addEntry(errResultInfo);
-                                    }
-                                }
-                                else
-                                {
-                                    socketDscr = *m_arpSocketDscr[iSocketId];
-                                    socketDscr.m_socketState = ESocketStateUnconnected;
-
-                                    try
-                                    {
-                                        delete m_arpSocketDscr[iSocketId];
-                                    }
-                                    catch(...)
-                                    {
-                                    }
-                                    m_arpSocketDscr[iSocketId] = nullptr;
-                                    emit disconnected(this,socketDscr);
-                                }
-
-                            } // if( m_state != EStateIdle && getRequestInProgress() != ERequestShutdown )
+                                emit disconnected(this, socketDscr);
+                            }
                             break;
                         } // case EMsgTypeIndDisconnected
 
@@ -4237,34 +4295,43 @@ bool CServer::event( QEvent* i_pMsg )
                             // may already be in Qt's event loop that will be dispatched to the server
                             // after he has been shutdown. So we ignore the indication messages if the
                             // server does no longer expect them and the socket id is no longer valid.
-                            if( pMsgInd == nullptr )
-                            {
-                                bValidMessage = false;
-                            }
-                            else if( m_state == EStateIdle )
-                            {
-                                bValidMessage = false;
-                            }
-                            else if( pMsgInd->getSender() != m_pGateway )
-                            {
-                                bValidMessage = false;
-                            }
-                            else if( iSocketId < 0 || iSocketId >= m_arpSocketDscr.size() )
-                            {
-                                bValidMessage = false;
-                            }
-                            else if( m_arpSocketDscr[iSocketId] == nullptr )
-                            {
-                                bValidMessage = false;
-                            }
-                            else if( m_arpSocketDscr[iSocketId]->m_iSocketId != iSocketId )
-                            {
-                                bValidMessage = false;
+
+                            {   // Before emitting signals the mutex must be free. Otherwise we may end up in a deadlock
+                                // as the receiver of the signal may currently be waiting to get a lock on the mutex
+                                // of this IpcServer to send data.
+                                CMutexLocker mtxLocker(m_pMtx);
+
+                                if( pMsgInd == nullptr )
+                                {
+                                    bValidMessage = false;
+                                }
+                                else if( m_state == EStateIdle )
+                                {
+                                    bValidMessage = false;
+                                }
+                                else if( pMsgInd->getSender() != m_pGateway )
+                                {
+                                    bValidMessage = false;
+                                }
+                                else if( iSocketId < 0 || iSocketId >= m_arpSocketDscr.size() )
+                                {
+                                    bValidMessage = false;
+                                }
+                                else if( m_arpSocketDscr[iSocketId] == nullptr )
+                                {
+                                    bValidMessage = false;
+                                }
+                                else if( m_arpSocketDscr[iSocketId]->m_iSocketId != iSocketId )
+                                {
+                                    bValidMessage = false;
+                                }
+                                if( bValidMessage )
+                                {
+                                    onReceivedData( iSocketId, pMsgInd->getByteArray() );
+                                }
                             }
                             if( bValidMessage )
                             {
-                                onReceivedData( iSocketId, pMsgInd->getByteArray() );
-
                                 emit receivedData( this, iSocketId, pMsgInd->getByteArray() );
                             }
                             break;
@@ -4293,6 +4360,8 @@ bool CServer::event( QEvent* i_pMsg )
 
                 else if( pMsg->getSystemMsgType() == MsgProtocol::ESystemMsgTypeCon )
                 {
+                    CMutexLocker mtxLocker(m_pMtx);
+
                     CMsgCon* pMsgCon = dynamic_cast<CMsgCon*>(pMsg);
                     if( pMsgCon == nullptr )
                     {
@@ -4337,6 +4406,8 @@ bool CServer::event( QEvent* i_pMsg )
 
                 if( isMethodTraceActive(ETraceDetailLevelInternalStates) )
                 {
+                    CMutexLocker mtxLocker(m_pMtx);
+
                     int iAddTrcInfoDetailLevel = 0;
                     if( getMethodTraceDetailLevel() >= ETraceDetailLevelVerbose ) iAddTrcInfoDetailLevel = 2;
                     else if( getMethodTraceDetailLevel() >= ETraceDetailLevelRuntimeInfo ) iAddTrcInfoDetailLevel = 1;
@@ -4348,7 +4419,7 @@ bool CServer::event( QEvent* i_pMsg )
 
                 if( statePrev != m_state )
                 {
-                    emit stateChanged(this,m_state);
+                    emit stateChanged(this, m_state);
                 }
             } // if( !pMsg->isBaseMsgType() )
         } // if( pMsg != nullptr )
