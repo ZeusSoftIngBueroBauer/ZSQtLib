@@ -163,6 +163,13 @@ void CMyClass2Thread::setObjectName(const QString& i_strObjName)
 
     if( m_pTrcAdminObj != nullptr )
     {
+        // The Dll Interface is Qt free and there are no signals and slots.
+        // The method tracer will not be informed if the trace admin object is going
+        // to be deleted. To avoid a crash with accessing a deleted object invalidate
+        // the trace admin object at the method tracer before renaming the trace admin
+        // object (as this may delete the admin object of the Dll Interface).
+        mthTracer.onAdminObjAboutToBeReleased();
+
         CTrcServer::RenameTraceAdminObj(&m_pTrcAdminObj, objectName().toLatin1().data());
     }
 
@@ -428,6 +435,8 @@ CMyClass2::~CMyClass2()
         /* szMethod     */ "dtor",
         /* szMthInArgs  */ "" );
 
+    emit aboutToBeDestroyed(this, objectName());
+
     // If the dtor is called from within the context of another thread than the
     // thread creating the class 2 instance (e.g. from the main thread if destroying
     // class 1 instance) the class 3 thread cannot be deleted here. Otherwise the
@@ -520,6 +529,13 @@ void CMyClass2::setObjectName(const QString& i_strObjName)
     // not before the child objects have been renamed.
     if( m_pTrcAdminObj != nullptr )
     {
+        // The Dll Interface is Qt free and there are no signals and slots.
+        // The method tracer will not be informed if the trace admin object is going
+        // to be deleted. To avoid a crash with accessing a deleted object invalidate
+        // the trace admin object at the method tracer before renaming the trace admin
+        // object (as this may delete the admin object of the Dll Interface).
+        mthTracer.onAdminObjAboutToBeReleased();
+
         CTrcServer::RenameTraceAdminObj(&m_pTrcAdminObj, objectName().toLatin1().data());
     }
 
@@ -807,9 +823,20 @@ void CMyClass2::onTmrMessagesTimeout()
         /* szMethod     */ "onTmrMessagesTimeout",
         /* szMthInArgs  */ "" );
 
-    CMsgReqTest* pMsgReq = new CMsgReqTest(this, this);
-    POST_OR_DELETE_MESSAGE(pMsgReq);
-    pMsgReq = nullptr;
+    CMutexLocker mtxLocker(m_pMtxCounters);
+
+    ++m_iMsgCount;
+
+    if( mthTracer.isActive(ETraceDetailLevelRuntimeInfo) )
+    {
+        QString strTrcMsg = "MsgCount=" + QString::number(m_iMsgCount);
+        mthTracer.trace(strTrcMsg.toLatin1().data(), ETraceDetailLevelRuntimeInfo);
+    }
+
+    if( m_iMsgCount >= 10 && m_pTmrMessages->isActive() )
+    {
+        m_pTmrMessages->stop();
+    }
 
 } // onTmrMessagesTimeout
 
@@ -827,31 +854,59 @@ bool CMyClass2::event( QEvent* i_pEv )
 
     if( pMsg != nullptr )
     {
-        ++m_iMsgCount;
+        CMsgReqTest* pMsgReq = dynamic_cast<CMsgReqTest*>(i_pEv);
 
-        if( m_iMsgCount >= 100 && m_pTmrMessages->isActive() )
+        // Let the first call to the method sending the event return and unlock
+        // the Counter Mutex before continue to get the same trace output each time.
+        if( pMsgReq != nullptr && pMsgReq->getCommand() == "recursiveTraceMethod" )
         {
-            m_pTmrMessages->stop();
+            CSleeperThread::msleep(10);
+        }
+        else if( pMsgReq != nullptr && pMsgReq->getCommand() == "startMessageTimer" )
+        {
+            CSleeperThread::msleep(10);
+        }
+        else if( pMsgReq != nullptr && pMsgReq->getCommand() == "startClass3Thread" )
+        {
+            CSleeperThread::msleep(10);
+        }
+        else if( pMsgReq != nullptr && pMsgReq->getCommand() == "stopClass3Thread" )
+        {
+            CSleeperThread::msleep(10);
         }
 
         QString strMthInArgs;
 
-        if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->getTraceDetailLevel() >= ETraceDetailLevelMethodArgs )
+        if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
         {
-            strMthInArgs = "Msg: " + QString(pMsg == nullptr ? "null" : pMsg->msgTypeToStr());
+            strMthInArgs = "{" + QString(pMsg == nullptr ? "null" : pMsg->getAddTrcInfoStr(m_pTrcAdminObj->getTraceDetailLevel())) + "}";
         }
 
         CMethodTracer mthTracer(
             /* pTrcServer         */ m_pTrcAdminObj,
             /* iFilterDetailLevel */ ETraceDetailLevelRuntimeInfo,
-            /* szMethod          */ "event",
-            /* strMethodInArgs    */ strMthInArgs.toLatin1() );
+            /* szMethod           */ "event",
+            /* szMethodInArgs     */ strMthInArgs.toLatin1().data() );
 
-        bHandled = true;
-
-        if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->getTraceDetailLevel() >= ETraceDetailLevelMethodArgs )
+        if( pMsgReq != nullptr )
         {
-            mthTracer.setMethodReturn(m_iMsgCount);
+            if( pMsgReq->getCommand() == "recursiveTraceMethod" )
+            {
+                recursiveTraceMethod();
+            }
+            else if( pMsgReq->getCommand() == "startMessageTimer" )
+            {
+                startMessageTimer();
+            }
+            else if( pMsgReq->getCommand() == "startClass3Thread" )
+            {
+                startClass3Thread(m_strMyClass3ObjName);
+            }
+            else if( pMsgReq->getCommand() == "stopClass3Thread" )
+            {
+                stopClass3Thread();
+            }
+            bHandled = true;
         }
     }
 

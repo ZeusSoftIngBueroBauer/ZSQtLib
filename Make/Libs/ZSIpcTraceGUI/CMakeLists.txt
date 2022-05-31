@@ -35,6 +35,7 @@ list(APPEND _Headers
     ${_HeadersPath}/ZSSys/ZSSysVersion.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSIpcTrcClientDlg.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSIpcTrcGUIDllMain.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSIpcTrcMthListWdgtSettingsDlg.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSIpcTrcMthWdgt.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSIpcTrcServerDlg.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSIpcTrcSettingsWdgt.h
@@ -43,6 +44,7 @@ list(APPEND _Headers
 list(APPEND _Sources
     ${_SourcesPath}/${PROJECT_NAME}/ZSIpcTrcClientDlg.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSIpcTrcGUIDllMain.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSIpcTrcMthListWdgtSettingsDlg.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSIpcTrcMthWdgt.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSIpcTrcServerDlg.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSIpcTrcSettingsWdgt.cpp

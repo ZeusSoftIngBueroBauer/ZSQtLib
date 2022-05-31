@@ -29,12 +29,6 @@ may result in using the software modules.
 #include <QtCore/qfileinfo.h>
 #include <QtCore/qtimer.h>
 
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-#include <QtGui/qmessagebox.h>
-#else
-#include <QtWidgets/qmessagebox.h>
-#endif
-
 #include "Test.h"
 #include "TestConfig.h"
 #include "MyClass1.h"
@@ -106,8 +100,6 @@ CTest::CTest() :
 
     int idxGroup = 0;
     int idxStep = 0;
-
-#if 0
 
     pTestGroup = new ZS::Test::CTestStepGroup(
         /* pTest           */ this,
@@ -395,12 +387,9 @@ CTest::CTest() :
         /* strOperation    */ "DllIf::releaseDll",
         /* pTSGrpParent    */ pTestGroup,
         /* szDoTestStepFct */ SLOT(doTestStepReleaseDll(ZS::Test::CTestStep*)) );
-#endif
 
     // Test Step Group - Several Threads
     //==================================
-
-#if 0
 
     idxStep = 0;
 
@@ -552,8 +541,6 @@ CTest::CTest() :
         /* pTSGrpParent    */ pTestGroup,
         /* szDoTestStepFct */ SLOT(doTestStepReleaseDll(ZS::Test::CTestStep*)) );
 
-#endif
-
     // Test Step Group - RenameTraceAdminObj
     //======================================
 
@@ -604,8 +591,6 @@ CTest::CTest() :
 
     // Test Step Group - RenameTraceAdminObj - Several instances of class tracer
     //--------------------------------------------------------------------------
-
-#if 0
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
@@ -662,8 +647,6 @@ CTest::CTest() :
         /* pTSGrpParent    */ pTestGroup,
         /* szDoTestStepFct */ SLOT(doTestStepTraceMethodCall(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("ExpectedResultsFileName", "ZSTrcServer-CMyClass1-dtor-NewName2");
-
-#endif
 
     // Test Step Group - RenameTraceAdminObj - Several instances of instance tracer
     //-----------------------------------------------------------------------------
@@ -1309,7 +1292,12 @@ void CTest::doTestStepTraceClientConnect( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
     i_pTestStep->setDescription("Check whether client can connect.");
-    i_pTestStep->setInstruction("Start and connect the trace method client.");
+    i_pTestStep->setInstruction(
+        "Start and connect the trace method client.<br/>"
+        "Hide time info in trace method client to be able to compare the expected with the actual result values.<br/>"
+        "By hiding the time info you may copy and paste the trace method output from the trace client "
+        "to the result values edit widget of this dialog.<br/>"
+        "After copy and paste you may press the button 'Compare Expected With Result Values' below.");
     i_pTestStep->setExpectedValue("Method Trace Client Connected");
 
     m_pDlgTestStep = new CDlgTestStep(i_pTestStep);
@@ -1324,7 +1312,7 @@ void CTest::doTestStepTraceClientConnect( ZS::Test::CTestStep* i_pTestStep )
         {
             i_pTestStep->setResultValue("No Trace Server Created");
         }
-        else if(!m_pTrcServer->isConnected() )
+        else if( !m_pTrcServer->isConnected() )
         {
             i_pTestStep->setResultValue("Method Trace Client NOT Connected");
         }
@@ -1336,50 +1324,32 @@ void CTest::doTestStepTraceClientConnect( ZS::Test::CTestStep* i_pTestStep )
 void CTest::doTestStepTraceClientDisconnect( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
-    QString     strExpectedValue;
-    QStringList strlstExpectedValues;
-    QString     strResultValue;
-    QStringList strlstResultValues;
+    i_pTestStep->setDescription("Check whether client can connect.");
+    i_pTestStep->setInstruction(
+        "Start and connect the trace method client.<br/>"
+        "Hide time info in trace method client to be able to compare the expected with the actual result values.<br/>"
+        "By hiding the time info you may copy and paste the trace method output from the trace client "
+        "to the result values edit widget of this dialog.<br/>"
+        "After copy and paste you may press the button 'Compare Expected With Result Values' below.");
+    i_pTestStep->setExpectedValue("Method Trace Client Disconnected");
 
-    // Expected Values
-    //---------------
+    m_pDlgTestStep = new CDlgTestStep(i_pTestStep);
+    m_pDlgTestStep->exec();
+    delete m_pDlgTestStep;
+    m_pDlgTestStep = nullptr;
 
-    strExpectedValue = "Disconnected";
-
-    strlstExpectedValues.append(strExpectedValue);
-
-    i_pTestStep->setExpectedValues(strlstExpectedValues);
-
-    // Test Step
-    //----------
-
-    QMessageBox msgBox(CMainWindow::GetInstance());
-
-    msgBox.setText("Please disconnect the trace method client.");
-    msgBox.setInformativeText("Is the trace client disconnected?");
-    msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-    msgBox.setDefaultButton(QMessageBox::No);
-    msgBox.setMinimumWidth(200);
-    msgBox.setMinimumHeight(200);
-
-    int iRet = msgBox.exec();
-
-    // Result Values
-    //---------------
-
-    strResultValue = "Not disconnected";
-
-    if( iRet == QMessageBox::Yes )
+    // Check if really disconnected and correct test result if necessary.
+    if( i_pTestStep->getTestResult() == ZS::Test::ETestResult::TestPassed )
     {
-        if( m_pTrcServer != nullptr )
+        if( m_pTrcServer == nullptr )
         {
-            if( !m_pTrcServer->isConnected() ) strResultValue = "Disconnected";
+            i_pTestStep->setResultValue("No Trace Server Created");
+        }
+        else if( m_pTrcServer->isConnected() )
+        {
+            i_pTestStep->setResultValue("Method Trace Client NOT Disconnected");
         }
     }
-
-    strlstResultValues.append(strResultValue);
-
-    i_pTestStep->setResultValues(strlstResultValues);
 
 } // doTestStepTraceClientDisconnect
 

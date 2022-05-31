@@ -136,6 +136,7 @@ CWdgtTrcMthList::CWdgtTrcMthList(
     m_ariDataRateDiffs_linesPerSec(),
     m_pReqInProgress(nullptr),
     m_strThreadClrFileAbsFilePath(),
+    m_bShowTimeInfo(true),
     m_iEdtItemsCountMax(i_iItemsCountMax),
     m_iEdtItems(0),
     m_bEdtFull(false),
@@ -405,7 +406,13 @@ CWdgtTrcMthList::~CWdgtTrcMthList()
     //m_arfDataRateDiffsProcTime_s;
     //m_ariDataRateDiffs_linesPerSec;
     m_pReqInProgress = nullptr;
+    //m_strThreadClrFileAbsFilePath;
+    m_bShowTimeInfo = false;
+    m_iEdtItemsCountMax = 0;
+    m_iEdtItems = 0;
+    m_bEdtFull = false;
     m_pEdt = nullptr;
+    //m_hashThreads;
     m_pBtnClear = nullptr;
     m_pLblServerTracingEnabled = nullptr;
     m_pChkServerTracingEnabled = nullptr;
@@ -799,30 +806,36 @@ SErrResultInfo CWdgtTrcMthList::readTraceMethodFile( const QString& i_strAbsFile
             strTrace += strThread;
 
             // Date Time
-            idxBeg = idxPos;
-            idxEnd = strLine.indexOf(" (", idxPos);
-            if(idxBeg >= 0 && idxEnd >= 0 && idxEnd > idxBeg) {
-                strDateTime = strLine.mid(idxBeg, idxEnd-idxBeg);
+            if( m_bShowTimeInfo )
+            {
+                idxBeg = idxPos;
+                idxEnd = strLine.indexOf(" (", idxPos);
+                if(idxBeg >= 0 && idxEnd >= 0 && idxEnd > idxBeg) {
+                    strDateTime = strLine.mid(idxBeg, idxEnd-idxBeg);
+                }
+                idxPos = idxEnd+2;
+                strTrace += strDateTime;
             }
-            idxPos = idxEnd+2;
-            strTrace += strDateTime;
 
             // System Time
-            strTrace += " (";
-            idxBeg = idxPos;
-            idxEnd = strLine.indexOf("): ", idxPos);
-            if( idxBeg >= 0 && idxEnd >= 0 && idxEnd > idxBeg) {
-                strSysTime = strLine.mid(idxBeg, idxEnd-idxBeg);
-                strSysTime = strSysTime.trimmed();
-            }
-            idxPos = idxEnd+3;
-            iStrLen = strSysTime.length();
-            for( idx = 0; idx < CTrcMthFile::c_iStrLenSysTimeMax-iStrLen; idx++ )
+            if( m_bShowTimeInfo )
             {
-                strSysTime.insert(0,"&nbsp;");
+                strTrace += " (";
+                idxBeg = idxPos;
+                idxEnd = strLine.indexOf("): ", idxPos);
+                if( idxBeg >= 0 && idxEnd >= 0 && idxEnd > idxBeg) {
+                    strSysTime = strLine.mid(idxBeg, idxEnd-idxBeg);
+                    strSysTime = strSysTime.trimmed();
+                }
+                idxPos = idxEnd+3;
+                iStrLen = strSysTime.length();
+                for( idx = 0; idx < CTrcMthFile::c_iStrLenSysTimeMax-iStrLen; idx++ )
+                {
+                    strSysTime.insert(0,"&nbsp;");
+                }
+                strTrace += strSysTime;
+                strTrace += "):&nbsp;";
             }
-            strTrace += strSysTime;
-            strTrace += "):&nbsp;";
 
             idxBeg = idxPos;
             idxEnd = strLine.size();
@@ -916,6 +929,24 @@ bool CWdgtTrcMthList::find( const QString& i_strExp, QTextDocument::FindFlags i_
 //------------------------------------------------------------------------------
 {
     return m_pEdt->find(i_strExp, i_findFlags);
+}
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+bool CWdgtTrcMthList::getShowTimeInfo() const
+//------------------------------------------------------------------------------
+{
+    return m_bShowTimeInfo;
+}
+
+//------------------------------------------------------------------------------
+void CWdgtTrcMthList::setShowTimeInfo( bool i_bShow )
+//------------------------------------------------------------------------------
+{
+    m_bShowTimeInfo = i_bShow;
 }
 
 /*==============================================================================
@@ -1443,17 +1474,20 @@ void CWdgtTrcMthList::onTraceDataReceived( QObject* /*i_pObjSender*/, const QStr
                             strThread.append("&gt; ");
                             strTrace += strThread;
 
-                            strTrace += strDateTime;
-                            strTrace += " (";
-
-                            QString strSysTime = QString::number(fSysTime_s, 'f', 6);
-                            int iStrLen = strSysTime.length();
-                            for( int idx = 0; idx < CTrcMthFile::c_iStrLenSysTimeMax-iStrLen; idx++ )
+                            if( m_bShowTimeInfo )
                             {
-                                strSysTime.insert(0,"&nbsp;");
+                                strTrace += strDateTime;
+                                strTrace += " (";
+
+                                QString strSysTime = QString::number(fSysTime_s, 'f', 6);
+                                int iStrLen = strSysTime.length();
+                                for( int idx = 0; idx < CTrcMthFile::c_iStrLenSysTimeMax-iStrLen; idx++ )
+                                {
+                                    strSysTime.insert(0,"&nbsp;");
+                                }
+                                strTrace += strSysTime;
+                                strTrace += "):&nbsp;";
                             }
-                            strTrace += strSysTime;
-                            strTrace += "):&nbsp;";
 
                             if( mthDir == EMethodDir::Enter )
                             {

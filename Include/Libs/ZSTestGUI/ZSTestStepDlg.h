@@ -39,11 +39,13 @@ may result in using the software modules.
 
 class QAbstractButton;
 class QButtonGroup;
+class QCheckBox;
 class QGroupBox;
 class QLabel;
 class QLineEdit;
 class QPushButton;
 class QRadioButton;
+class QSplitter;
 class QHBoxLayout;
 class QVBoxLayout;
 
@@ -81,12 +83,16 @@ public: // instance methods
 protected: // overridables of base class QDialog
     virtual void closeEvent( QCloseEvent* i_pEv );
 protected slots:
+    void onBtnCompareExpectedWithResultValuesClicked(bool i_bChecked);
+    void onChkMarkFailedResultValuesToggled(bool i_bChecked);
     void onBtnGroupTestResultsButtonToggled(QAbstractButton* i_pBtn, bool i_bChecked);
     void onBtnRunClicked(bool i_bChecked);
     void onBtnStepClicked(bool i_bChecked);
+    void onBtnPauseClicked(bool i_bChecked);
     void onBtnStopClicked(bool i_bChecked);
 protected: // auxiliary methods
     void onBtnTestContinueClicked(QAbstractButton* i_pBtn, bool i_bChecked);
+    void compareExpectedWithResultValues();
 protected: // instance members
     QString                 m_strSettingsKey;
     CTestStep*              m_pTestStep;
@@ -103,16 +109,23 @@ protected: // instance members
     QHBoxLayout*            m_pLytGrpConfigValues;
     QGroupBox*              m_pGrpConfigValues;
     System::GUI::CTextEdit* m_pEdtConfigValues;
+    QSplitter*              m_pSplitterInstructionWithExpectedAndResultValues;
     QHBoxLayout*            m_pLytGrpInstruction;
     QGroupBox*              m_pGrpInstruction;
     System::GUI::CTextEdit* m_pEdtInstruction;
+    QWidget*                m_pWdgtGrpExpectedAndResultValues;
     QHBoxLayout*            m_pLytGrpExpectedAndResultValues;
-    QGroupBox*              m_pGrpExpectedAndResultValues;
+    QVBoxLayout*            m_pLytGrpExpectedValues;
+    QGroupBox*              m_pGrpExpectedValues;
     System::GUI::CTextEdit* m_pEdtExpectedValues;
+    QVBoxLayout*            m_pLytGrpResultValues;
+    QGroupBox*              m_pGrpResultValues;
     System::GUI::CTextEdit* m_pEdtResultValues;
-    QVBoxLayout*            m_pLytGroupTestResults;
-    QGroupBox*              m_pGroupTestResults;
-    QButtonGroup*           m_pBtnGroupTestResults;
+    QHBoxLayout*            m_pLytGrpTestResults;
+    QGroupBox*              m_pGrpTestResults;
+    QPushButton*            m_pBtnCompareExpectedWithResultValues;
+    QCheckBox*              m_pChkMarkFailedResultValues;
+    QButtonGroup*           m_pBtnGrpTestResults;
     QRadioButton*           m_pBtnTestResultUndefined;
     QRadioButton*           m_pBtnTestResultPassed;
     QRadioButton*           m_pBtnTestResultFailed;
@@ -120,6 +133,7 @@ protected: // instance members
     QHBoxLayout*            m_pLytLineButtons;
     QPushButton*            m_pBtnRun;
     QPushButton*            m_pBtnStep;
+    QPushButton*            m_pBtnPause;
     QPushButton*            m_pBtnStop;
 
 }; // class CDlgTestStep

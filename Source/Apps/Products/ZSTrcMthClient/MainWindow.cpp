@@ -51,6 +51,7 @@ may result in using the software modules.
 
 #include "ZSIpcTraceGUI/ZSIpcTrcClientDlg.h"
 #include "ZSIpcTraceGUI/ZSIpcTrcMthWdgt.h"
+#include "ZSIpcTraceGUI/ZSIpcTrcMthListWdgtSettingsDlg.h"
 #include "ZSIpcTrace/ZSIpcTrcClient.h"
 #include "ZSSysGUI/ZSSysFindTextDlg.h"
 #include "ZSSysGUI/ZSSysErrLogDlg.h"
@@ -117,13 +118,15 @@ CMainWindow::CMainWindow(
     m_pMnuEdit(nullptr),
     m_pActEditFind(nullptr),
     m_pMnuSettings(nullptr),
+    m_pActSettingsWdgtTrcMthList(nullptr),
     m_pActSettingsTrcClient(nullptr),
     m_pActSettingsTrcAdminObjIdxTree(nullptr),
+    m_pMnuDebug(nullptr),
+    m_pActDebugErrLog(nullptr),
+    m_pActDebugRequestExecTree(nullptr),
     m_pMnuInfo(nullptr),
     m_pActInfoVersion(nullptr),
     m_pActInfoSettingsFile(nullptr),
-    m_pActInfoErrLog(nullptr),
-    m_pActInfoRequestExecTree(nullptr),
     m_pStatusBar(nullptr),
     m_pLblReqInProgress(nullptr),
     m_pBarReqInProgress(nullptr),
@@ -269,8 +272,8 @@ CMainWindow::CMainWindow(
 
     m_pMnuEdit = menuBar()->addMenu(tr("&Edit"));
 
-    // <MenuItem> Trace Client
-    //------------------------
+    // <MenuItem> Find
+    //----------------
 
     m_pActEditFind = new QAction("&Find",this);
     m_pActEditFind->setShortcuts(QKeySequence::Find);
@@ -289,6 +292,21 @@ CMainWindow::CMainWindow(
     //================
 
     m_pMnuSettings = menuBar()->addMenu(tr("&Settings"));
+
+    // <MenuItem> Settings::WdgtTrcMthList
+    //------------------------------------
+
+    m_pActSettingsWdgtTrcMthList = new QAction("&Method Trace Widget",this);
+    m_pMnuSettings->addAction(m_pActSettingsWdgtTrcMthList);
+
+    if( !connect(
+        /* pObjSender   */ m_pActSettingsWdgtTrcMthList,
+        /* szSignal     */ SIGNAL(triggered()),
+        /* pObjReceiver */ this,
+        /* szSlot       */ SLOT(onActSettingsWdgtTrcMthListTriggered()) ) )
+    {
+        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
+    }
 
     // <MenuItem> Settings::TrcClient
     //----------------------------------
@@ -320,6 +338,63 @@ CMainWindow::CMainWindow(
         throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
     }
 
+    // <Menu> Debug
+    //=============
+
+    m_pMnuDebug = menuBar()->addMenu(tr("&Debug"));
+
+    // <MenuItem> Debug::Error Log
+    //----------------------------
+
+    QIcon iconErrorLog;
+
+    QPixmap pxmErrorLog16x16(":/ZS/App/Zeus16x16.bmp");
+
+    pxmErrorLog16x16.setMask(pxmErrorLog16x16.createHeuristicMask());
+
+    iconErrorLog.addPixmap(pxmErrorLog16x16);
+
+    m_pActDebugErrLog = new QAction( iconErrorLog, "Error Log", this );
+    m_pActDebugErrLog->setToolTip("Open error log dialog");
+    m_pActDebugErrLog->setEnabled(true);
+
+    m_pMnuDebug->addAction(m_pActDebugErrLog);
+
+    if( !QObject::connect(
+        /* pObjSender   */ m_pActDebugErrLog,
+        /* szSignal     */ SIGNAL(triggered()),
+        /* pObjReceiver */ this,
+        /* szSlot       */ SLOT(onActDebugErrLogTriggered()) ) )
+    {
+        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
+    }
+
+    // <MenuItem> Debug::Request Execution Tree
+    //-----------------------------------------
+
+    QIcon iconReqExecTree;
+
+    QPixmap pxmReqExecTree16x16(":/ZS/App/Zeus16x16.bmp");
+
+    pxmReqExecTree16x16.setMask(pxmReqExecTree16x16.createHeuristicMask());
+
+    iconReqExecTree.addPixmap(pxmReqExecTree16x16);
+
+    m_pActDebugRequestExecTree = new QAction( iconReqExecTree, "Request Tree", this );
+    m_pActDebugRequestExecTree->setToolTip("Open request execution tree dialog");
+    m_pActDebugRequestExecTree->setEnabled(true);
+
+    m_pMnuDebug->addAction(m_pActDebugRequestExecTree);
+
+    if( !QObject::connect(
+        /* pObjSender   */ m_pActDebugRequestExecTree,
+        /* szSignal     */ SIGNAL(triggered()),
+        /* pObjReceiver */ this,
+        /* szSlot       */ SLOT(onActDebugRequestExecTreeTriggered()) ) )
+    {
+        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
+    }
+
     // <Menu> Info
     //============
 
@@ -348,58 +423,6 @@ CMainWindow::CMainWindow(
 
         m_pActInfoSettingsFile = new QAction(strActionInfoSettingsFile,this);
         m_pMnuInfo->addAction(m_pActInfoSettingsFile);
-    }
-
-    // <MenuItem> Info::Error Log
-    //----------------------------
-
-    QIcon iconErrorLog;
-
-    QPixmap pxmErrorLog16x16(":/ZS/App/Zeus16x16.bmp");
-
-    pxmErrorLog16x16.setMask(pxmErrorLog16x16.createHeuristicMask());
-
-    iconErrorLog.addPixmap(pxmErrorLog16x16);
-
-    m_pActInfoErrLog = new QAction( iconErrorLog, "Error Log", this );
-    m_pActInfoErrLog->setToolTip("Open error log dialog");
-    m_pActInfoErrLog->setEnabled(true);
-
-    m_pMnuInfo->addAction(m_pActInfoErrLog);
-
-    if( !QObject::connect(
-        /* pObjSender   */ m_pActInfoErrLog,
-        /* szSignal     */ SIGNAL(triggered()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onActInfoErrLogTriggered()) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-
-    // <MenuItem> Info::Request Execution Tree
-    //-----------------------------------------
-
-    QIcon iconReqExecTree;
-
-    QPixmap pxmReqExecTree16x16(":/ZS/App/Zeus16x16.bmp");
-
-    pxmReqExecTree16x16.setMask(pxmReqExecTree16x16.createHeuristicMask());
-
-    iconReqExecTree.addPixmap(pxmReqExecTree16x16);
-
-    m_pActInfoRequestExecTree = new QAction( iconReqExecTree, "Request Tree", this );
-    m_pActInfoRequestExecTree->setToolTip("Open request execution tree dialog");
-    m_pActInfoRequestExecTree->setEnabled(true);
-
-    m_pMnuInfo->addAction(m_pActInfoRequestExecTree);
-
-    if( !QObject::connect(
-        /* pObjSender   */ m_pActInfoRequestExecTree,
-        /* szSignal     */ SIGNAL(triggered()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onActInfoRequestExecTreeTriggered()) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
     }
 
     // <StatusBar>
@@ -536,14 +559,15 @@ CMainWindow::~CMainWindow()
     m_pMnuEdit = nullptr;
     m_pActEditFind = nullptr;
     m_pMnuSettings = nullptr;
-    m_pMnuSettings = nullptr;
+    m_pActSettingsWdgtTrcMthList = nullptr;
     m_pActSettingsTrcClient = nullptr;
     m_pActSettingsTrcAdminObjIdxTree = nullptr;
+    m_pMnuDebug = nullptr;
+    m_pActDebugErrLog = nullptr;
+    m_pActDebugRequestExecTree = nullptr;
     m_pMnuInfo = nullptr;
     m_pActInfoVersion = nullptr;
     m_pActInfoSettingsFile = nullptr;
-    m_pActInfoErrLog = nullptr;
-    m_pActInfoRequestExecTree = nullptr;
     m_pStatusBar = nullptr;
     m_pLblReqInProgress = nullptr;
     m_pBarReqInProgress = nullptr;
@@ -580,7 +604,7 @@ bool CMainWindow::eventFilter( QObject* i_pObjWatched, QEvent* i_pEv )
     {
         if( i_pEv->type() == QEvent::MouseButtonDblClick )
         {
-            onActInfoRequestExecTreeTriggered();
+            onActDebugRequestExecTreeTriggered();
             bHandled = true;
         }
     }
@@ -588,7 +612,7 @@ bool CMainWindow::eventFilter( QObject* i_pObjWatched, QEvent* i_pEv )
     {
         if( i_pEv->type() == QEvent::MouseButtonDblClick )
         {
-            onActInfoErrLogTriggered();
+            onActDebugErrLogTriggered();
             bHandled = true;
         }
     }
@@ -745,6 +769,37 @@ protected slots:
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+void CMainWindow::onActSettingsWdgtTrcMthListTriggered()
+//------------------------------------------------------------------------------
+{
+    QString strDlgTitle = getMainWindowTitle() + ": Method Trace Widget Settings";
+
+    CDlgWdgtTrcMthListSettings* pDlg = CDlgWdgtTrcMthListSettings::GetInstance(
+        m_pWdgtCentral->getTraceMethodListWidget()->objectName());
+
+    if( pDlg == nullptr )
+    {
+        pDlg = CDlgWdgtTrcMthListSettings::CreateInstance(
+            /* strDlgTitle */ strDlgTitle,
+            /* strObjName  */ m_pWdgtCentral->getTraceMethodListWidget()->objectName(),
+            /* pWdgtParent */ nullptr );
+        pDlg->setTraceMethodListWidget(m_pWdgtCentral->getTraceMethodListWidget());
+        pDlg->setAttribute(Qt::WA_DeleteOnClose, true);
+        pDlg->adjustSize();
+        pDlg->show();
+    }
+    else
+    {
+        if( pDlg->isHidden() )
+        {
+            pDlg->show();
+        }
+        pDlg->raise();
+        pDlg->activateWindow();
+    }
+} // onActSettingsWdgtTrcMthListTriggered
+
+//------------------------------------------------------------------------------
 void CMainWindow::onActSettingsTrcClientTriggered()
 //------------------------------------------------------------------------------
 {
@@ -807,7 +862,7 @@ protected slots:
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CMainWindow::onActInfoErrLogTriggered()
+void CMainWindow::onActDebugErrLogTriggered()
 //------------------------------------------------------------------------------
 {
     QString strDlgTitle = QCoreApplication::applicationName() + ": Error Log";
@@ -830,10 +885,10 @@ void CMainWindow::onActInfoErrLogTriggered()
         pDlg->raise();
         pDlg->activateWindow();
     }
-} // onActInfoErrLogTriggered
+} // onActDebugErrLogTriggered
 
 //------------------------------------------------------------------------------
-void CMainWindow::onActInfoRequestExecTreeTriggered()
+void CMainWindow::onActDebugRequestExecTreeTriggered()
 //------------------------------------------------------------------------------
 {
     QString strDlgTitle = QCoreApplication::applicationName() + ": Requests Execution Tree";
@@ -856,7 +911,7 @@ void CMainWindow::onActInfoRequestExecTreeTriggered()
         pDlg->raise();
         pDlg->activateWindow();
     }
-} // onActInfoRequestExecTreeTriggered
+} // onActDebugRequestExecTreeTriggered
 
 /*==============================================================================
 protected slots:

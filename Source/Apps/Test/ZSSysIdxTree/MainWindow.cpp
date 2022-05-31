@@ -130,6 +130,7 @@ CMainWindow::CMainWindow(
     setObjectName("MainWindow");
 
     setWindowTitle(i_strWindowTitle);
+    setMinimumHeight(800);
 
     // <Menu> File
     //======================

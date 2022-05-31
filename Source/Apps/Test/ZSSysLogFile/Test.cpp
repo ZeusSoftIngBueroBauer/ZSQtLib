@@ -57,7 +57,8 @@ public: // ctors and dtor
 //------------------------------------------------------------------------------
 CTest::CTest() :
 //------------------------------------------------------------------------------
-    ZS::Test::CTest("ZS::System::LogFile")
+    ZS::Test::CTest("ZS::System::LogFile"),
+    m_iInitialLogFilesCount(0)
 {
     ZS::Test::CTestStep* pTestStep;
 
@@ -130,6 +131,8 @@ CTest::CTest() :
 
     // Recall test step settings
     //--------------------------
+
+    m_iInitialLogFilesCount = CLogFile::GetFilesCount();
 
     recallTestSteps();
 
@@ -725,7 +728,7 @@ void CTest::doTestStepFree( ZS::Test::CTestStep* i_pTestStep )
     // Expected Values
     //---------------
 
-    strExpectedValue = "LogFilesCount == 0";
+    strExpectedValue = "LogFilesCount == " + QString::number(m_iInitialLogFilesCount);
     strlstExpectedValues.append(strExpectedValue);
 
     i_pTestStep->setExpectedValues(strlstExpectedValues);
@@ -735,16 +738,8 @@ void CTest::doTestStepFree( ZS::Test::CTestStep* i_pTestStep )
 
     int iLogFilesCount = CLogFile::GetFilesCount();
 
-    if( iLogFilesCount == 0 )
-    {
-        strResultValue = "LogFilesCount == 0";
-        strlstResultValues.append(strResultValue);
-    }
-    else
-    {
-        strResultValue = "LogFilesCount != 0 (=" + QString::number(iLogFilesCount) + ")";
-        strlstResultValues.append(strResultValue);
-    }
+    strResultValue = "LogFilesCount == " + QString::number(iLogFilesCount);
+    strlstResultValues.append(strResultValue);
 
     // Please note that to finish a test step the list of result values may not be empty.
     if( strlstResultValues.size() == 0 )

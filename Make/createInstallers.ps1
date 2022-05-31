@@ -3,18 +3,76 @@ Param (
     $Compiler=$null,
     $ConfigType=$null
 )
-
+# @brief Creates an installer for the defined application using the specified compiler and config type.
+#
 # You need to call this script from the visual studio command prompt.
+#
 # The command prompt may be opened via:
-# - Apps/Visual Studio 2019/Developer PowerShell for VS 2019
+#     Apps/Visual Studio 2019/Developer PowerShell for VS 2019
+#
 # Change to the directory containing this power shell script. E.g.
-# > cd C:\Projekte\ZeusSoft\ZSQtLib\Make
+#     > cd C:\Projekte\ZeusSoft\ZSQtLib\Make
+#
 # Set the execution policy to unrestricted for the current user in the command prompt with:
-# C:\Projekte\ZeusSoft\ZSQtLib\Make> Set-ExecutionPolicy Unrestricted -Scope CurrentUser
+#     C:\Projekte\ZeusSoft\ZSQtLib\Make> Set-ExecutionPolicy Unrestricted -Scope CurrentUser
+#
+# @Examples
+#
+#     .\createInstallers.ps1
+#     .\createInstallers.ps1 -AppName TrcMthClient -Compiler msvc2019 -ConfigType Debug
+#
+# @Param AppName
+#     Range [, TrcMthClient]
+#     Name of the product application for which an installer should be created.
+#     If omitted installers for all product applications will be created.
+#
+# @Param Compiler
+#     Range [, msvc2019, mingw81]
+#     Defines the compiler to be used for building the libraries and applications.
+#     If omitted the libraries and applications are built for all supported compilers.
+#
+# @Param ConfigType
+#     Range [, Debug, Release]
+#     Config type to be used.
+#     If omitted the libraries and applications are built for both release and debug.
 
-# If a second application got to be supported the function should be split into a build
-# and a create installer function. Only when building the tests have to be executed. And
-# the build of the libraries is not necessary each time when creating an installer.
+
+
+# @brief The function buildAndInstall builds the libraries, the product applications,
+#        the test applications, runs the automated test applications and creates an installer
+#        for the defined product application.
+#
+# The test applications requiring user input got to be started separately.
+#
+# If a more than just one application got to be supported the function should be split into
+# separated functions as building the library and executing the test don't need to be called
+# for each application.
+#
+# @Param AppName
+#     Range [, TrcMthClient]
+#     Name of the product application for which an installer should be created.
+#     If omitted installers for all product applications will be created.
+#
+# @Param Generator
+#     Range ["Visual Studio 16 2019", "MinGW Makefiles""]
+#     Defines the generator passed to CMake to create the build tree.
+#     Depends on the compiler to be used.
+#
+# @Param Compiler
+#     Range [, msvc2019, mingw81]
+#     Defines the compiler to be used for building the libraries and applications.
+#     If omitted the libraries and applications are built for all supported compilers.
+#
+# @Param Platform
+#     Range [x64]
+#     Platform for which the libraries and applications should be built.
+#     Provided for future use if Win32 should also be supported.
+#
+# @Param ConfigType
+#     Range [, Debug, Release]
+#     Config type to be used.
+#     If omitted the libraries and applications are built for both release and debug.
+
 function buildAndInstall {
 
     Param (

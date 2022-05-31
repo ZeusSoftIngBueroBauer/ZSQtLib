@@ -266,9 +266,9 @@ void CTestStep::setInstruction( const QString& i_strInstruction )
 //------------------------------------------------------------------------------
 /*! Sets the expected result values of the test step.
 
-    @param i_strlstExpectedValues [in] List with strings defining the expected result
-                                     values of the test step. The list will be compared
-                                     with the result values.
+    @param i_strlstExpectedValues [in]
+        List with strings defining the expected result values of the test step.
+        The list will be compared with the result values.
 */
 void CTestStep::setExpectedValues( const QStringList& i_strlstExpectedValues )
 //------------------------------------------------------------------------------
@@ -284,9 +284,11 @@ void CTestStep::setExpectedValues( const QStringList& i_strlstExpectedValues )
 //------------------------------------------------------------------------------
 /*! Sets the expected result value of the test step.
 
-    @param i_strlstExpectedValue [in] String defining the expected result value
-                                      of the test step. The string will be compared
-                                      with the result value.
+    Provided for convenience. Converted to String List invoking "setExpectedValues".
+
+    @param i_strlstExpectedValue [in]
+        String defining the expected result value of the test step.
+        The string will be compared with the result value.
 */
 void CTestStep::setExpectedValue( const QString& i_strExpectedValue )
 //------------------------------------------------------------------------------
@@ -304,48 +306,33 @@ void CTestStep::setExpectedValue( const QString& i_strExpectedValue )
 /*! Sets the actual result values of the test step which finishes test step.
     The signal "testStepFinished" is emitted.
 
-    @param i_strlstResultValues [in] List with strings defining the actual result
-                                     values of the test step. The list will be compared
-                                     with the expected values. If equal the test result is
-                                     Passed, otherwise Failed.
+    @param i_strlstResultValues [in]
+        List with strings defining the actual result values of the test step.
+        The list will be compared with the expected values.
+        If equal the test result is Passed, otherwise Failed.
 */
 void CTestStep::setResultValues( const QStringList& i_strlstResultValues )
 //------------------------------------------------------------------------------
 {
     m_strlstResultValues = i_strlstResultValues;
 
-    CEnumTestResult result = ETestResult::TestPassed;
-
-    if( m_strlstExpectedValues.size() != m_strlstResultValues.size() )
-    {
-        result = ETestResult::TestFailed;
-    }
-    else
-    {
-        for( int idxVal = 0; idxVal < m_strlstExpectedValues.size(); idxVal++ )
-        {
-            if( m_strlstExpectedValues[idxVal] != m_strlstResultValues[idxVal] )
-            {
-                result = ETestResult::TestFailed;
-                break;
-            }
-        }
-    }
+    CEnumTestResult result = detectTestResult(m_strlstExpectedValues, m_strlstResultValues);
 
     // Not necessary here to inform the index tree that the content of the entry
     // has been changed. Thats been done by "setTestResult".
-
     setTestResult(result);
-
-} // setResultValues
+}
 
 //------------------------------------------------------------------------------
 /*! Sets the actual result value of the test step which finishes test step.
     The signal "testStepFinished" is emitted.
 
-    @param i_strResultValue [in] String defining the actual result value of the test step.
-                                     The value will be compared with the expected value.
-                                     If equal the test result is Passed, otherwise Failed.
+    Provided for convenience. Converted to String List invoking "setResultValues".
+
+    @param i_strResultValue [in]
+        String defining the actual result value of the test step.
+        The value will be compared with the expected value.
+        If equal the test result is Passed, otherwise Failed.
 */
 void CTestStep::setResultValue( const QString& i_strResultValue )
 //------------------------------------------------------------------------------
@@ -357,6 +344,81 @@ void CTestStep::setResultValue( const QString& i_strResultValue )
         strlstResultValues << i_strResultValue;
     }
     setResultValues(strlstResultValues);
+}
+
+/*==============================================================================
+public: // auxiliary instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! Compares the given result values with the expected values returning the
+    result of the comparison.
+
+    @param i_strlstExpectedValues [in]
+        List with strings defining the expected result values of the test step.
+        The list will be compared with the result values.
+    @param i_strlstResultValues [in]
+        List with strings defining the actual result values of the test step.
+        The list will be compared with the expected values.
+        If equal the test result is Passed, otherwise Failed.
+    @return Passed if the result values are equal to the expected values, otherwise false.
+*/
+CEnumTestResult CTestStep::detectTestResult(
+    const QStringList& i_strlstExpectedValues,
+    const QStringList& i_strlstResultValues )
+//------------------------------------------------------------------------------
+{
+    CEnumTestResult result = ETestResult::TestPassed;
+
+    if( i_strlstExpectedValues.size() != i_strlstResultValues.size() )
+    {
+        result = ETestResult::TestFailed;
+    }
+    else
+    {
+        for( int idxVal = 0; idxVal < i_strlstExpectedValues.size(); idxVal++ )
+        {
+            if( i_strlstExpectedValues[idxVal] != i_strlstResultValues[idxVal] )
+            {
+                result = ETestResult::TestFailed;
+                break;
+            }
+        }
+    }
+    return result;
+}
+
+//------------------------------------------------------------------------------
+/*! Compares the given result value with the expected value returning the
+    result of the comparison.
+
+    Provided for convenience. Converted to String List invoking "detectTestResult"
+    with string list as argument.
+
+    @param i_strResultValue [in]
+        String defining the actual result value of the test step.
+        The value will be compared with the expected value.
+        If equal the test result is Passed, otherwise Failed.
+    @return Passed if the result values are equal to the expected values, otherwise false.
+*/
+CEnumTestResult CTestStep::detectTestResult(
+    const QString& i_strExpectedValue,
+    const QString& i_strResultValue )
+//------------------------------------------------------------------------------
+{
+    QStringList strlstExpectedValues;
+    QStringList strlstResultValues;
+
+    if( !i_strExpectedValue.isEmpty() )
+    {
+        strlstExpectedValues << i_strExpectedValue;
+    }
+    if( !i_strResultValue.isEmpty() )
+    {
+        strlstResultValues << i_strResultValue;
+    }
+
+    return detectTestResult(strlstExpectedValues, strlstResultValues);
 }
 
 /*==============================================================================

@@ -103,7 +103,7 @@ class CMyClass3 : public QObject
 {
     Q_OBJECT
 public: // class methods
-    static QString NameSpace() { return "ZS::Apps::Test::IpcTrace"; }
+    static QString NameSpace() { return "ZS::Apps::Test::IpcTraceDllIfQtApp"; }
     static QString ClassName() { return "CMyClass3"; }
 public: // class methods
     static QString classMethod(const QString& i_strMthInArgs);

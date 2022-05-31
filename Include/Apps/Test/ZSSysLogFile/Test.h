@@ -54,6 +54,8 @@ public slots: // test step methods (GrpZSSysLogFile)
     void doTestStepRealloc( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepAddEntries( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepFree( ZS::Test::CTestStep* i_pTestStep );
+private: // instance members
+    int m_iInitialLogFilesCount;
 
 }; // class CTest
 

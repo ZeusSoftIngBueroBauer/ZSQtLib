@@ -1,4 +1,4 @@
-<GUIMain                 > -> <ZS::Apps::Test::IpcTrace::CMyClass3> Inst1.dtor()
+<GUIMain                 > -> <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass3> Inst1.dtor()
 <GUIMain                 >    -> <ZS::System::CMutex> CMyClass3::Inst1::Counters.dtor()
 <GUIMain                 >    <- <ZS::System::CMutex> CMyClass3::Inst1::Counters.dtor()
-<GUIMain                 > <- <ZS::Apps::Test::IpcTrace::CMyClass3> Inst1.dtor()
+<GUIMain                 > <- <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass3> Inst1.dtor()

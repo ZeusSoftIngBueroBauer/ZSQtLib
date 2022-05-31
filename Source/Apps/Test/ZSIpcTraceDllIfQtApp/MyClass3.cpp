@@ -166,6 +166,13 @@ void CMyClass3Thread::setObjectName(const QString& i_strObjName)
 
     if( m_pTrcAdminObj != nullptr )
     {
+        // The Dll Interface is Qt free and there are no signals and slots.
+        // The method tracer will not be informed if the trace admin object is going
+        // to be deleted. To avoid a crash with accessing a deleted object invalidate
+        // the trace admin object at the method tracer before renaming the trace admin
+        // object (as this may delete the admin object of the Dll Interface).
+        mthTracer.onAdminObjAboutToBeReleased();
+
         CTrcServer::RenameTraceAdminObj(&m_pTrcAdminObj, objectName().toLatin1().data());
     }
 
@@ -605,6 +612,13 @@ void CMyClass3::setObjectName(const QString& i_strObjName)
     // not before the child objects have been renamed.
     if( m_pTrcAdminObj != nullptr )
     {
+        // The Dll Interface is Qt free and there are no signals and slots.
+        // The method tracer will not be informed if the trace admin object is going
+        // to be deleted. To avoid a crash with accessing a deleted object invalidate
+        // the trace admin object at the method tracer before renaming the trace admin
+        // object (as this may delete the admin object of the Dll Interface).
+        mthTracer.onAdminObjAboutToBeReleased();
+
         CTrcServer::RenameTraceAdminObj(&m_pTrcAdminObj, objectName().toLatin1().data());
     }
 

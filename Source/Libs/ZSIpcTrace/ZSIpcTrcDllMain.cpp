@@ -767,7 +767,7 @@ ZSIPCTRACEDLL_EXTERN_API DllIf::CTrcAdminObj* TrcServer_GetTraceAdminObj(
 //------------------------------------------------------------------------------
 ZSIPCTRACEDLL_EXTERN_API void TrcServer_RenameTraceAdminObj(
     DllIf::CTrcAdminObj** io_ppTrcAdminObj,
-    const char*           i_szObjName )
+    const char*           i_szNewObjName )
 //------------------------------------------------------------------------------
 {
     #ifdef _WINDOWS
@@ -779,9 +779,9 @@ ZSIPCTRACEDLL_EXTERN_API void TrcServer_RenameTraceAdminObj(
 
     QMutexLocker mtxLocker(&DllIf_s_mtx);
 
-    DllIf::CTrcAdminObj* pDllIfTrcAdminObj = nullptr;
+    DllIf::CTrcAdminObj* pDllIfTrcAdminObj = *io_ppTrcAdminObj;
 
-    QString strObjName = i_szObjName;
+    QString strNewObjName = i_szNewObjName;
 
     CTrcMthFile* pTrcMthFile = DllIf_IpcTrcServer_s_pTrcMthFile;
     int          iTrcDetailLevel = DllIf_IpcTrcServer_s_iTrcMthDetailLevel;
@@ -790,8 +790,8 @@ ZSIPCTRACEDLL_EXTERN_API void TrcServer_RenameTraceAdminObj(
 
     if( iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
     {
-        strMthInArgs = QString(*io_ppTrcAdminObj == nullptr ? "null" : (*io_ppTrcAdminObj)->keyInTree());
-        strMthInArgs += ", ObjName: " + QString(i_szObjName);
+        strMthInArgs = QString(pDllIfTrcAdminObj == nullptr ? "null" : pDllIfTrcAdminObj->keyInTree());
+        strMthInArgs += ", NewObjName: " + strNewObjName;
     }
 
     CMethodTracer mthTracer(
@@ -806,7 +806,10 @@ ZSIPCTRACEDLL_EXTERN_API void TrcServer_RenameTraceAdminObj(
 
     if( *io_ppTrcAdminObj != nullptr )
     {
-        QString strKeyInTree = (*io_ppTrcAdminObj)->keyInTree();
+        QString strOldKeyInTree = (*io_ppTrcAdminObj)->keyInTree();
+        QString strNewKeyInTree = strOldKeyInTree;
+
+        int iRefCount = DllIf_TrcServer_s_hshiTrcAdminObjsRefCounts.value(strOldKeyInTree, 0);
 
         CTrcServer* pTrcServer = CTrcServer::GetInstance();
 
@@ -814,19 +817,48 @@ ZSIPCTRACEDLL_EXTERN_API void TrcServer_RenameTraceAdminObj(
         {
             CIdxTreeTrcAdminObjs* pIdxTree = pTrcServer->getTraceAdminObjIdxTree();
 
-            CIdxTreeEntry* pTreeEntry = pIdxTree->findEntry(strKeyInTree);
+            CIdxTreeEntry* pTreeEntry = pIdxTree->findEntry(strOldKeyInTree);
 
             CTrcAdminObj* pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(pTreeEntry);
 
-            #pragma message(__TODO__ "RenameTraceAdminObj")
             if( pTrcAdminObj != nullptr )
             {
-                CTrcServer::RenameTraceAdminObj(&pTrcAdminObj, strObjName);
+                CTrcServer::RenameTraceAdminObj(&pTrcAdminObj, strNewObjName);
+                strNewKeyInTree = pTrcAdminObj->keyInTree();
             }
         } // if( pTrcServer != nullptr )
 
-        *io_ppTrcAdminObj = pDllIfTrcAdminObj;
+        if( strNewKeyInTree != strOldKeyInTree )
+        {
+            --iRefCount;
 
+            DllIf_TrcServer_s_hshiTrcAdminObjsRefCounts[strOldKeyInTree] = iRefCount;
+
+            if( iRefCount == 0 )
+            {
+                DllIf_TrcServer_s_hshiTrcAdminObjsRefCounts.remove(strOldKeyInTree);
+                DllIf_TrcServer_s_hshpTrcAdminObjs.remove(strOldKeyInTree);
+
+                delete pDllIfTrcAdminObj;
+                pDllIfTrcAdminObj = nullptr;
+            }
+
+            pDllIfTrcAdminObj = DllIf_TrcServer_s_hshpTrcAdminObjs.value(strNewKeyInTree, nullptr);
+
+            iRefCount = DllIf_TrcServer_s_hshiTrcAdminObjsRefCounts.value(strNewKeyInTree, 0);
+
+            if( pDllIfTrcAdminObj == nullptr )
+            {
+                pDllIfTrcAdminObj = new DllIf::CTrcAdminObj(strNewKeyInTree.toUtf8());
+                DllIf_TrcServer_s_hshpTrcAdminObjs[strNewKeyInTree] = pDllIfTrcAdminObj;
+            }
+
+            ++iRefCount;
+
+            DllIf_TrcServer_s_hshiTrcAdminObjsRefCounts[strNewKeyInTree] = iRefCount;
+
+            *io_ppTrcAdminObj = pDllIfTrcAdminObj;
+        }
     } // if( *io_ppTrcAdminObj != nullptr )
 
 } // TrcServer_RenameTraceAdminObj
@@ -891,7 +923,7 @@ ZSIPCTRACEDLL_EXTERN_API void TrcServer_ReleaseTraceAdminObj( DllIf::CTrcAdminOb
         DllIf_TrcServer_s_hshiTrcAdminObjsRefCounts[strKeyInTree] = iRefCount;
 
         // The trace admin object of the Dll interface will be kept as long as the trace server is alive.
-        // If the trace server is releases and its reference counter reaches 0 the admin objects are deleted.
+        // If the trace server is released and its reference counter reaches 0 the admin objects are deleted.
 
     } // if( i_pTrcAdminObj != nullptr )
 

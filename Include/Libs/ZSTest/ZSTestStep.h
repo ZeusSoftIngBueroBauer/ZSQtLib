@@ -52,8 +52,10 @@ public: // ctors and dtor
         const char*     i_szDoTestStepSlotFct );
     virtual ~CTestStep();
 signals:
+    /*! @brief This signal is emitted to trigger the next step. */
     void doTestStep( ZS::Test::CTestStep* i_pTestStep );
-    void testStepFinished( ZS::Test::CTestStep* i_pTestStep ); // emitted if result values are set
+    /*! @brief This signal is emitted if result values are set. */
+    void testStepFinished( ZS::Test::CTestStep* i_pTestStep );
 public: // overridables
     virtual QString nameSpace() const { return CTestStep::NameSpace(); }
     virtual QString className() const { return CTestStep::ClassName(); }
@@ -73,11 +75,14 @@ public: // instance methods
 public: // instance methods
     QStringList getExpectedValues() const { return m_strlstExpectedValues; }
     void setExpectedValues( const QStringList& i_strlstExpectedValues = QStringList() );
-    void setExpectedValue( const QString& i_strExpectedValue = QString() ); // Provided for convenience. Converted to String List.
+    void setExpectedValue( const QString& i_strExpectedValue = QString() );
 public: // instance methods
     QStringList getResultValues() const { return m_strlstResultValues; }
-    void setResultValues( const QStringList& i_strlstResultValues = QStringList() ); // finishes the test step
-    void setResultValue( const QString& i_strResultValue = QString() ); // Provided for convenience. Converted to String List.
+    void setResultValues( const QStringList& i_strlstResultValues = QStringList() );
+    void setResultValue( const QString& i_strResultValue = QString() );
+public: // auxiliary instance methods
+    CEnumTestResult detectTestResult( const QStringList& i_strlstExpectedValues, const QStringList& i_strlstResultValues );
+    CEnumTestResult detectTestResult( const QString& i_strExpectedValue, const QString& i_strResultValue );
 public: // instance methods
     bool isFinished() const;
 public: // instance methods

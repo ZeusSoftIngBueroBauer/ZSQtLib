@@ -1077,15 +1077,16 @@ void CTest::doTestStep()
 
     if( m_pTestStepCurr != nullptr )
     {
-        //m_pTestStepCurr->testStarted();
-
         m_pTestStepCurr->doTestStep();
+    }
 
+    if( m_pTestStepCurr != nullptr )
+    {
         if( m_pTestStepCurr->isFinished() )
         {
             onCurrentTestStepFinished(m_pTestStepCurr);
         }
-        else if( !m_pTestStepCurr->isFinished() )
+        else // if( !m_pTestStepCurr->isFinished() )
         {
             if( !QObject::connect(
                 /* pObjSender   */ m_pTestStepCurr,

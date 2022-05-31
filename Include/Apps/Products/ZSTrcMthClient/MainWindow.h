@@ -107,11 +107,12 @@ protected slots:
 protected slots:
     void onActEditFindTriggered();
 protected slots:
+    void onActSettingsWdgtTrcMthListTriggered();
     void onActSettingsTrcClientTriggered();
     void onActSettingsTrcAdminObjIdxTreeTriggered();
 protected slots:
-    void onActInfoErrLogTriggered();
-    void onActInfoRequestExecTreeTriggered();
+    void onActDebugErrLogTriggered();
+    void onActDebugRequestExecTreeTriggered();
 protected slots:
     void onErrLogEntryAdded( const ZS::System::SErrResultInfo& i_errResultInfo );
     void onErrLogEntryChanged( const ZS::System::SErrResultInfo& i_errResultInfo );
@@ -141,13 +142,15 @@ protected: // instance members
     QMenu*                    m_pMnuEdit;
     QAction*                  m_pActEditFind;
     QMenu*                    m_pMnuSettings;
+    QAction*                  m_pActSettingsWdgtTrcMthList;
     QAction*                  m_pActSettingsTrcClient;
     QAction*                  m_pActSettingsTrcAdminObjIdxTree;
+    QMenu*                    m_pMnuDebug;
+    QAction*                  m_pActDebugErrLog;
+    QAction*                  m_pActDebugRequestExecTree;
     QMenu*                    m_pMnuInfo;
     QAction*                  m_pActInfoVersion;
     QAction*                  m_pActInfoSettingsFile;
-    QAction*                  m_pActInfoErrLog;
-    QAction*                  m_pActInfoRequestExecTree;
     QStatusBar*               m_pStatusBar;
     QLabel*                   m_pLblReqInProgress;
     QProgressBar*             m_pBarReqInProgress;
