@@ -228,14 +228,15 @@ if($AppName -eq $null -Or $AppName -eq "TrcMthClient") {
             buildAndInstall -AppName "TrcMthClient" -Generator "Visual Studio 16 2019" -Compiler "msvc2019" -Platform "x64" -ConfigType "Release"
         }
     }
-    if($Compiler -eq $null -Or $Compiler -eq "mingw81") {
-        if($ConfigType -eq $null -Or $ConfigType -eq "Debug") {
-            buildAndInstall -AppName "TrcMthClient" -Generator "MinGW Makefiles" -Compiler "mingw81" -Platform "x64" -ConfigType "Debug"
-        }
-        if($ConfigType -eq $null -Or $ConfigType -eq "Release") {
-            buildAndInstall -AppName "TrcMthClient" -Generator "MinGW Makefiles" -Compiler "mingw81" -Platform "x64" -ConfigType "Release"
-        }
-    }
+    # Not yet supported (TODO: libQt.. missing in installer packages)
+    #if($Compiler -eq $null -Or $Compiler -eq "mingw81") {
+    #    if($ConfigType -eq $null -Or $ConfigType -eq "Debug") {
+    #        buildAndInstall -AppName "TrcMthClient" -Generator "MinGW Makefiles" -Compiler "mingw81" -Platform "x64" -ConfigType "Debug"
+    #    }
+    #    if($ConfigType -eq $null -Or $ConfigType -eq "Release") {
+    #        buildAndInstall -AppName "TrcMthClient" -Generator "MinGW Makefiles" -Compiler "mingw81" -Platform "x64" -ConfigType "Release"
+    #    }
+    #}
 }
 
 Exit 0
