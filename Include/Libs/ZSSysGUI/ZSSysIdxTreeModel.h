@@ -128,7 +128,7 @@ public: // ctors and dtor
     CModelIdxTree(
         CIdxTree* i_pIdxTree = nullptr,
         QObject*  i_pObjParent = nullptr,
-        int       i_iTrcDetailLevel = ZS::Trace::ETraceDetailLevelNone );
+        ZS::Trace::ETraceDetailLevelMethodCalls i_eTrcDetailLevel = ZS::Trace::ETraceDetailLevelMethodCalls::None );
     virtual ~CModelIdxTree();
 public: // overridables
     virtual QString nameSpace() const { return NameSpace(); }
@@ -237,13 +237,16 @@ protected: // instance members
     CIdxTree*                          m_pIdxTree;
     EIdxTreeEntryType                  m_entryTypeFilter;
     EIdxTreeSortOrder                  m_sortOrder;
-    QMap<QString, CModelIdxTreeEntry*> m_mappModelTreeEntries;   // Key is: <EntryTypeSymbol>:<ParentPath>/<Name> (e.g. "L:ZS::Data::CDataTable::FDAC::RF1In")
+    /*!< Key is: <EntryTypeSymbol>:<ParentPath>/<Name> (e.g. "L:ZS::Data::CDataTable::FDAC::RF1In") */
+    QMap<QString, CModelIdxTreeEntry*> m_mappModelTreeEntries;
     CModelIdxTreeEntry*                m_pModelRoot;
-    int                                m_iTrcDetailLevel;    /*!< Trace detail level for method tracing.
-                                                                  Trace output may not be controlled by trace admin objects
-                                                                  if the index tree belongs the trace server. */
-    ZS::Trace::CTrcAdminObj*           m_pTrcAdminObj;       /*!< Trace admin object to control trace outputs of the class.
-                                                                  The object will not be created if the index tree's belongs to the trace server. */
+    /*!< Trace detail level for method tracing.
+         Trace output may not be controlled by trace admin objects
+         if the index tree belongs the trace server. */
+    ZS::Trace::ETraceDetailLevelMethodCalls m_eTrcDetailLevel;
+    /*!< Trace admin object to control trace outputs of the class.
+         The object will not be created if the index tree's belongs to the trace server. */
+    ZS::Trace::CTrcAdminObj* m_pTrcAdminObj;
 
 }; // class CModelIdxTree
 

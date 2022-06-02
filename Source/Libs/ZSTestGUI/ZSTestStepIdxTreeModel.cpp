@@ -113,14 +113,14 @@ CModeldxTreeTestSteps::CModeldxTreeTestSteps(
 
     QString strMthInArgs;
 
-    if(m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs))
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(ETraceDetailLevelMethodCalls::ArgsNormal) )
     {
         strMthInArgs = "IdxTree: " + QString(i_pTestStepIdxTree == nullptr ? "nullptr" : i_pTestStepIdxTree->objectName());
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iFilterLevel */ ETraceDetailLevelMethodCalls,
+        /* iFilterLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strMethod    */ "ctor",
         /* strAddInfo   */ strMthInArgs );
 
@@ -141,7 +141,7 @@ CModeldxTreeTestSteps::~CModeldxTreeTestSteps()
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* eDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
 
@@ -178,14 +178,14 @@ void CModeldxTreeTestSteps::setShowExpectedAndResultValuesOnlyIfTestStepFailed( 
 {
     QString strMthInArgs;
 
-    if(m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs))
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(ETraceDetailLevelMethodCalls::ArgsNormal) )
     {
         strMthInArgs = bool2Str(i_bSet);
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iFilterLevel */ ETraceDetailLevelMethodCalls,
+        /* iFilterLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strMethod    */ "setShowExpectedAndResultValuesOnlyIfTestStepFailed",
         /* strAddInfo   */ strMthInArgs );
 
@@ -221,14 +221,14 @@ void CModeldxTreeTestSteps::onTestCurrentTestStepChanged( ZS::Test::CTestStep* i
 {
     QString strMthInArgs;
 
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
+    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
     {
         strMthInArgs = "TestStep: " + QString(i_pTestStep == nullptr ? "nullptr" : i_pTestStep->path());
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iFilterLevel */ ETraceDetailLevelMethodCalls,
+        /* iFilterLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strMethod    */ "onTestCurrentTestStepChanged",
         /* strMthInArgs */ strMthInArgs );
 
@@ -266,18 +266,18 @@ int CModeldxTreeTestSteps::columnCount( const QModelIndex& i_modelIdxParent ) co
 {
     QString strMthInArgs;
 
-    if(m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelVerbose))
+    if(m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(ETraceDetailLevelMethodCalls::ArgsVerbose))
     {
         strMthInArgs = "ModelIdxParent {" + ModelIdx2Str(i_modelIdxParent) + "}";
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iFilterLevel */ ETraceDetailLevelVerbose,
+        /* iFilterLevel */ ETraceDetailLevelMethodCalls::ArgsVerbose,
         /* strMethod    */ "columnCount",
         /* strAddInfo   */ strMthInArgs );
 
-    if( mthTracer.isActive(ETraceDetailLevelVerbose) )
+    if( mthTracer.areMethodCallsActive(ETraceDetailLevelMethodCalls::ArgsVerbose) )
     {
         mthTracer.setMethodReturn(EColumnCount);
     }
@@ -295,7 +295,7 @@ QVariant CModeldxTreeTestSteps::headerData(
 {
     QString strMthInArgs;
 
-    if(m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelVerbose))
+    if(m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(ETraceDetailLevelMethodCalls::ArgsVerbose))
     {
         strMthInArgs = "Section: " + QString::number(i_iSection);
         strMthInArgs += ", Orientation: " + qOrientation2Str(i_orientation);
@@ -304,7 +304,7 @@ QVariant CModeldxTreeTestSteps::headerData(
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iFilterLevel */ ETraceDetailLevelVerbose,
+        /* iFilterLevel */ ETraceDetailLevelMethodCalls::ArgsVerbose,
         /* strMethod    */ "headerData",
         /* strAddInfo   */ strMthInArgs );
 
@@ -325,7 +325,7 @@ QVariant CModeldxTreeTestSteps::headerData(
         }
     }
 
-    if( mthTracer.isActive(ETraceDetailLevelVerbose) )
+    if( mthTracer.areMethodCallsActive(ETraceDetailLevelMethodCalls::ArgsVerbose) )
     {
         mthTracer.setMethodReturn(varData.toString());
     }
@@ -340,14 +340,14 @@ Qt::ItemFlags CModeldxTreeTestSteps::flags( const QModelIndex& i_modelIdx ) cons
 {
     QString strMthInArgs;
 
-    if(m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelVerbose))
+    if(m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(ETraceDetailLevelMethodCalls::ArgsVerbose))
     {
         strMthInArgs = "ModelIdx {" + ModelIdx2Str(i_modelIdx) + "}";
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iFilterLevel */ ETraceDetailLevelVerbose,
+        /* iFilterLevel */ ETraceDetailLevelMethodCalls::ArgsVerbose,
         /* strMethod    */ "flags",
         /* strAddInfo   */ strMthInArgs );
 
@@ -390,7 +390,7 @@ Qt::ItemFlags CModeldxTreeTestSteps::flags( const QModelIndex& i_modelIdx ) cons
         //}
     }
 
-    if( mthTracer.isActive(ETraceDetailLevelVerbose) )
+    if( mthTracer.areMethodCallsActive(ETraceDetailLevelMethodCalls::ArgsVerbose) )
     {
         mthTracer.setMethodReturn(qItemFlags2Str(uFlags));
     }
@@ -405,7 +405,7 @@ QVariant CModeldxTreeTestSteps::data( const QModelIndex& i_modelIdx, int i_iRole
 {
     QString strMthInArgs;
 
-    if(m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelVerbose))
+    if(m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(ETraceDetailLevelMethodCalls::ArgsVerbose))
     {
         strMthInArgs = "ModelIdx {" + ModelIdx2Str(i_modelIdx) + "}";
         strMthInArgs += ", Role: " + qItemDataRole2Str(i_iRole);
@@ -413,7 +413,7 @@ QVariant CModeldxTreeTestSteps::data( const QModelIndex& i_modelIdx, int i_iRole
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iFilterLevel */ ETraceDetailLevelVerbose,
+        /* iFilterLevel */ ETraceDetailLevelMethodCalls::ArgsVerbose,
         /* strMethod    */ "data",
         /* strAddInfo   */ strMthInArgs );
 
@@ -679,7 +679,7 @@ QVariant CModeldxTreeTestSteps::data( const QModelIndex& i_modelIdx, int i_iRole
         } // switch( i_modelIdx.column() )
     } // if( pIdxTreeEntry != nullptr )
 
-    if(mthTracer.isActive(ETraceDetailLevelVerbose))
+    if(mthTracer.areMethodCallsActive(ETraceDetailLevelMethodCalls::ArgsVerbose))
     {
         mthTracer.setMethodReturn(varData.toString());
     }

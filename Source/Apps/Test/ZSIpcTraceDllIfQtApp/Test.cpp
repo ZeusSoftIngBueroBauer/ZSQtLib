@@ -69,7 +69,7 @@ CTest::CTest() :
     m_pTmrTestStepTimeout(nullptr),
     m_trcSettings(),
     m_uTrcServerPort(24763),
-    //m_iTrcDetailLevelTrcServer(ZS::Trace::ETraceDetailLevelNone),
+    //m_iTrcDetailLevelTrcServer(ZS::Trace::ETraceDetailLevelMethodCalls::None),
     m_pTrcServer(nullptr),
     m_hshpMyClass1InstancesByName(),
     m_hshpMyClass2InstancesByName(),
@@ -1036,12 +1036,12 @@ void CTest::doTestStepTraceServerCreateInstance( ZS::Test::CTestStep* i_pTestSte
     //----------
 
     m_pTrcServer = ZS::Trace::DllIf::CIpcTrcServer::CreateInstance(
-        /* iTrcDetailLevelDllIf                     */ ZS::Trace::DllIf::ETraceDetailLevelMethodArgs,
-        /* iTrcDetailLevelTrcServer                 */ ZS::Trace::DllIf::ETraceDetailLevelMethodArgs,
-        /* iTrcDetailLevelTrcServerMutex            */ ZS::Trace::DllIf::ETraceDetailLevelNone,
-        /* iTrcDetailLevelTrcServerIpcServer        */ ZS::Trace::DllIf::ETraceDetailLevelNone,
-        /* iTrcDetailLevelTrcServerIpcServerMutex   */ ZS::Trace::DllIf::ETraceDetailLevelNone,
-        /* iTrcDetailLevelTrcServerIpcServerGateway */ ZS::Trace::DllIf::ETraceDetailLevelNone );
+        /* eTrcDetailLevelDllIf                     */ ZS::Trace::DllIf::ETraceDetailLevelMethodCallsArgsNormal,
+        /* eTrcDetailLevelTrcServer                 */ ZS::Trace::DllIf::ETraceDetailLevelMethodCallsArgsNormal,
+        /* eTrcDetailLevelTrcServerMutex            */ ZS::Trace::DllIf::ETraceDetailLevelMethodCallsNone,
+        /* eTrcDetailLevelTrcServerIpcServer        */ ZS::Trace::DllIf::ETraceDetailLevelMethodCallsNone,
+        /* eTrcDetailLevelTrcServerIpcServerMutex   */ ZS::Trace::DllIf::ETraceDetailLevelMethodCallsNone,
+        /* eTrcDetailLevelTrcServerIpcServerGateway */ ZS::Trace::DllIf::ETraceDetailLevelMethodCallsNone );
 
     // Result Values
     //---------------
@@ -1402,7 +1402,7 @@ void CTest::doTestStepTraceMethodCall( ZS::Test::CTestStep* i_pTestStep )
     }
     else
     {
-        m_pTrcServer->setNewTrcAdminObjsDefaultDetailLevel(ETraceDetailLevelMethodArgs);
+        m_pTrcServer->setNewTrcAdminObjsDefaultDetailLevel(DllIf::ETraceDetailLevelMethodCallsArgsNormal);
         // The trace output may have been disabled to close (flush buffer) the file
         // so that its content can be evaluated by onZSTraceClientTrcMthListWdgtTextItemAdded.
         // We need to enable the trace output again.
@@ -2075,7 +2075,7 @@ void CTest::doTestStepTraceMethodCall( ZS::Test::CTestStep* i_pTestStep )
 
     if( m_pTrcServer != nullptr )
     {
-        m_pTrcServer->setNewTrcAdminObjsDefaultDetailLevel(ETraceDetailLevelNone);
+        m_pTrcServer->setNewTrcAdminObjsDefaultDetailLevel(DllIf::ETraceDetailLevelMethodCallsNone);
     }
 
     if( !bValidTestStep )

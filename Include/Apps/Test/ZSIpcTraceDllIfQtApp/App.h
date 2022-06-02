@@ -71,7 +71,6 @@ public: // instance methods
 protected slots:
     void onTestFinished( const ZS::Test::CEnumTestResult& i_result );
 private: // instance members
-    int          m_iZSTrcServerTrcDetailLevel;
     CTest*       m_pTest;
     CMainWindow* m_pMainWindow;
     bool         m_bAutoStartTest;

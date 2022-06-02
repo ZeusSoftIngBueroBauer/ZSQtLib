@@ -285,7 +285,7 @@ void doTestStepTraceServerCreateInstance( HMENU i_hMenu )
     ZS::Trace::DllIf::CIpcTrcServer::SetOrganizationName("ZeusSoft");
     ZS::Trace::DllIf::CIpcTrcServer::SetApplicationName("ZSAppTestIpcTraceDllIfWinApp");
 
-    s_pTrcServer = ZS::Trace::DllIf::CIpcTrcServer::CreateInstance(ZS::Trace::DllIf::ETraceDetailLevelVerbose);
+    s_pTrcServer = ZS::Trace::DllIf::CIpcTrcServer::CreateInstance();
 
     if( s_pTrcServer != nullptr )
     {

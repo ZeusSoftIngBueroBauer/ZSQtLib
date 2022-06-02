@@ -65,7 +65,7 @@ public: // ctors and dtor
     CSrvCltBaseGatewayThread(
         const QString&       i_strObjNameGateway,
         ZS::System::CErrLog* i_pErrLog,
-        int                  i_iTrcMthFileDetailLevel = ZS::Trace::ETraceDetailLevelNone );
+        ZS::Trace::ETraceDetailLevelMethodCalls i_eTrcMthFileDetailLevel = ZS::Trace::ETraceDetailLevelMethodCalls::None );
     virtual ~CSrvCltBaseGatewayThread();
 public: // overridables
     virtual QString nameSpace() const { return NameSpace(); }
@@ -83,15 +83,17 @@ protected: // hiding public method of base class QThread
 protected: // overridables of base class QThread
     //virtual void run(); // !! Template which MUST be overwritten !!
 protected: // instance methods
-    bool isMethodTraceActive( int i_iFilterDetailLevel ) const;
-    int getMethodTraceDetailLevel() const;
+    bool areTraceMethodCallsActive( ZS::Trace::ETraceDetailLevelMethodCalls i_eFilterDetailLevel ) const;
+    ZS::Trace::ETraceDetailLevelMethodCalls getMethodCallsTraceDetailLevel() const;
+    bool isTraceRuntimeInfoActive( ZS::Trace::ETraceDetailLevelRuntimeInfo i_eFilterDetailLevel ) const;
+    ZS::Trace::ETraceDetailLevelRuntimeInfo getRuntimeInfoTraceDetailLevel() const;
 protected: // instance members
     QString              m_strObjNameGateway;
     QObject*             m_pGateway;
     ZS::System::CErrLog* m_pErrLog;
     qint64               m_iReqIdStartThread;
     QWaitCondition*      m_pWaitCondition;
-    int                  m_iTrcMthFileDetailLevel;
+    ZS::Trace::ETraceDetailLevelMethodCalls m_eTrcMthFileDetailLevel;
     Trace::CTrcMthFile*  m_pTrcMthFile;   // Either trace method file with detail level is used or
     Trace::CTrcAdminObj* m_pTrcAdminObj;  // trace admin object with IpcTrace server.
 
@@ -126,7 +128,7 @@ protected: // ctor
         QObject*                  i_pCltSrv,
         CSrvCltBaseGatewayThread* i_pThreadGateway,
         ZS::System::CErrLog*      i_pErrLog,
-        int                       i_iTrcMthFileDetailLevel = ZS::Trace::ETraceDetailLevelNone );
+        ZS::Trace::ETraceDetailLevelMethodCalls i_eTrcMthFileDetailLevel = ZS::Trace::ETraceDetailLevelMethodCalls::None );
 public: // dtor
     virtual ~CSrvCltBaseGateway();
 public: // instance methods
@@ -140,8 +142,10 @@ public: // instance methods
     void addTrcMsgLogObject( QObject* i_pObj );
     void removeTrcMsgLogObject( QObject* i_pObj );
 protected: // instance methods
-    bool isMethodTraceActive( int i_iFilterDetailLevel ) const;
-    int getMethodTraceDetailLevel() const;
+    bool areTraceMethodCallsActive( ZS::Trace::ETraceDetailLevelMethodCalls i_eFilterDetailLevel ) const;
+    ZS::Trace::ETraceDetailLevelMethodCalls getMethodCallsTraceDetailLevel() const;
+    bool isTraceRuntimeInfoActive( ZS::Trace::ETraceDetailLevelRuntimeInfo i_eFilterDetailLevel ) const;
+    ZS::Trace::ETraceDetailLevelRuntimeInfo getRuntimeInfoTraceDetailLevel() const;
 protected: // instance members
     ZS::System::CErrLog*      m_pErrLog;
     ESrvCltType               m_srvCltType;
@@ -154,7 +158,7 @@ protected: // instance members
     qint64                    m_iMsgIdReqInProgress;
     ZS::System::CMsgCon*      m_pMsgCon;
     QList<QObject*>           m_arpTrcMsgLogObjects;
-    int                       m_iTrcMthFileDetailLevel;
+    ZS::Trace::ETraceDetailLevelMethodCalls m_eTrcMthFileDetailLevel;
     Trace::CTrcMthFile*       m_pTrcMthFile;   // Either trace method file with detail level is used or
     Trace::CTrcAdminObj*      m_pTrcAdminObj;  // trace admin object with IpcTrace server.
 

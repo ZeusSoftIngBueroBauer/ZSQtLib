@@ -177,15 +177,15 @@ virtual ZS::System::CIdxTreeEntry* createBranch( const QString& i_strName ) cons
 {
     QString strAddTrcInfo;
 
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
+    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
     {
         strAddTrcInfo = "Name: " + i_strName;
     }
 
     CMethodTracer mthTracer(
         /* pTrcAdmObj   */ CTrcServer::GetInstance(),
-        /* iTraceLevel  */ m_iTrcDetailLevel,
-        /* iFilterLevel */ ETraceDetailLevelMethodCalls,
+        /* iTraceLevel  */ m_eTrcDetailLevel,
+        /* iFilterLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace */ "ZS::Apps::Test::IdxTree",
         /* strClassName */ "CTrcAdmObjIdxTree",
         /* strObjName   */ objectName(),
@@ -194,7 +194,7 @@ virtual ZS::System::CIdxTreeEntry* createBranch( const QString& i_strName ) cons
 
     CIdxTreeEntry* pBranch = new CTrcAdmObjBranch(i_strName);
 
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
+    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
     {
         mthTracer.setMethodReturn(pBranch == nullptr ? "null" : pBranch->name());
     }
@@ -209,15 +209,15 @@ virtual ZS::System::CIdxTreeEntry* createLeave( const QString& i_strName ) const
 {
     QString strAddTrcInfo;
 
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
+    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
     {
         strAddTrcInfo = "Name: " + i_strName;
     }
 
     CMethodTracer mthTracer(
         /* pTrcAdmObj   */ CTrcServer::GetInstance(),
-        /* iTraceLevel  */ m_iTrcDetailLevel,
-        /* iFilterLevel */ ETraceDetailLevelMethodCalls,
+        /* iTraceLevel  */ m_eTrcDetailLevel,
+        /* iFilterLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace */ "ZS::Apps::Test::IdxTree",
         /* strClassName */ "CTrcAdmObjIdxTree",
         /* strObjName   */ objectName(),
@@ -226,7 +226,7 @@ virtual ZS::System::CIdxTreeEntry* createLeave( const QString& i_strName ) const
 
     CIdxTreeEntry* pLeave = new ZS::Apps::Test::IdxTree::CTrcAdmObj(i_strName);
 
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
+    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
     {
         mthTracer.setMethodReturn(pLeave == nullptr ? "null" : pLeave->name());
     }

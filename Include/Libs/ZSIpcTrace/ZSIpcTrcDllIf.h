@@ -93,31 +93,60 @@ enum EEnabled
 };
 
 //==============================================================================
-/*! Predefined trace detail levels.
+/*! Trace detail levels for tracing method calls.
 
     @ingroup _GRP_Libs_ZSSys_MethodTracing
 
     Higher detail levels include lower detail levels.
-    Please note that this enum is only a suggestion for trace detail levels
-    which can be used. The detail level of the trace admin object is an integer
-    type and user defined values can be used if necessary.
-    To avoid type casts requested by the compiler this enum is not a class enum definition.
 
     @see ZS::System::SEnumEntry
     @see ZS::System::CEnum
     @see _GRP_BasicConcepts_Enumerations
 */
-enum ETraceDetailLevel
+enum ETraceDetailLevelMethodCalls
 //==============================================================================
 {
-    ETraceDetailLevelUndefined      = -1,    /*!< Used e.g. to indicate that the trace level should not be used but the predefined detail level should be used. */
-    ETraceDetailLevelNone           =  0,    /*!< Trace output is disabled. */
-    ETraceDetailLevelMethodCalls    =  1,    /*!< Tracing method entries and leaves without tracing input and output arguments and without method return value. */
-    ETraceDetailLevelMethodArgs     =  2,    /*!< Tracing method entries and leaves together with input and output arguemnts and method return value. */
-    ETraceDetailLevelInternalStates =  3,    /*!< Tracing everything above and internal states (e.g. current state, current request in progress etc.. */
-    ETraceDetailLevelRuntimeInfo    =  4,    /*!< Tracing everything above and additional runtime info (e.g. what is going to be done, what has been executed and how). */
-    ETraceDetailLevelVerbose        =  5,    /*!< Tracing everything above and even more. */
-    ETraceDetailLevelCount
+    ETraceDetailLevelMethodCallsNone         = 0, /*!< Trace output is disabled. */
+    ETraceDetailLevelMethodCallsEnterLeave   = 1, /*!< Tracing method entries and leaves only
+                            (without tracing input and output arguments and without method return value). */
+    ETraceDetailLevelMethodCallsArgsNormal   = 2, /*!< Tracing method entries and leaves together with
+                            input and output arguemnts and method return value. */
+    ETraceDetailLevelMethodCallsArgsDetailed = 3, /*!< Tracing method entries and leaves together with
+                            input and output arguements and method return value
+                            with more details than normal (content of arrays). */
+    ETraceDetailLevelMethodCallsArgsVerbose  = 4, /*!< Tracing method entries and leaves together with
+                            input and output arguemnts and method return value
+                            in a very detailed level (content of arrays). */
+    ETraceDetailLevelMethodCallsUndefined    = 5,  /*!< Used e.g. to indicate that the trace level should not be used but the predefined detail level should be used. */
+    ETraceDetailLevelMethodCallsCount
+};
+
+//==============================================================================
+/*! Trace detail levels for tracing runtime info.
+
+    @ingroup _GRP_Libs_ZSSys_MethodTracing
+
+    Higher detail levels include lower detail levels.
+
+    @see ZS::System::SEnumEntry
+    @see ZS::System::CEnum
+    @see _GRP_BasicConcepts_Enumerations
+*/
+enum ETraceDetailLevelRuntimeInfo
+//==============================================================================
+{
+    ETraceDetailLevelRuntimeInfoNone          =  0, /*!< Trace output of runtime info is disabled. */
+    ETraceDetailLevelRuntimeInfoCritical      =  1, /*!< Log critical runtime info (critical errors, critical exceptions). */
+    ETraceDetailLevelRuntimeInfoError         =  2, /*!< Log error runtime info (errors, exceptions). */
+    ETraceDetailLevelRuntimeInfoWarning       =  3, /*!< Log warning runtime info. */
+    ETraceDetailLevelRuntimeInfoInfoNormal    =  4, /*!< Log runtime info. */
+    ETraceDetailLevelRuntimeInfoInfoDetailed  =  5, /*!< Log detailed runtime info. */
+    ETraceDetailLevelRuntimeInfoInfoVerbose   =  6, /*!< Log very detailed runtime info. */
+    ETraceDetailLevelRuntimeInfoDebugNormal   =  7, /*!< Output debug runtime info. */
+    ETraceDetailLevelRuntimeInfoDebugDetailed =  8, /*!< Output detailed debug runtime info. */
+    ETraceDetailLevelRuntimeInfoDebugVerbose  =  9, /*!< Output very detailed debug runtime info. */
+    ETraceDetailLevelRuntimeInfoUndefined     = 10, /*!< Used e.g. to indicate that the trace level should not be used but the predefined detail level should be used. */
+    ETraceDetailLevelRuntimeInfoCount
 };
 
 //******************************************************************************
@@ -141,10 +170,12 @@ public: // instance methods
     void setEnabled( bool i_bEnabled );
     bool isEnabled() const;
 public: // instance methods
-    void setTraceDetailLevel( int i_iTrcDetailLevel );
-    int getTraceDetailLevel() const;
-public: // instance methods
-    bool isActive( int i_iFilterDetailLevel ) const;
+    void setMethodCallsTraceDetailLevel( ETraceDetailLevelMethodCalls i_eTrcDetailLevel );
+    ETraceDetailLevelMethodCalls getMethodCallsTraceDetailLevel() const;
+    bool areMethodCallsActive( ETraceDetailLevelMethodCalls i_eFilterDetailLevel ) const;
+    void setRuntimeInfoTraceDetailLevel( ETraceDetailLevelRuntimeInfo i_eTrcDetailLevel );
+    ETraceDetailLevelRuntimeInfo getRuntimeInfoTraceDetailLevel() const;
+    bool isRuntimeInfoActive( ETraceDetailLevelRuntimeInfo i_eFilterDetailLevel ) const;
 public: // ctors and dtor (declared public but for internal use only, implemented in ZSIpcTrace::ZSIpcTrcDllMain)
     CTrcAdminObj( const char* i_szKeyInTree );
     ~CTrcAdminObj();
@@ -165,21 +196,24 @@ class CMethodTracer
 public: // ctors and dtor
     CMethodTracer(  // instance tracer (name space, class and object name set at trace admin object)
         CTrcAdminObj* i_pTrcAdminObj,
-        int           i_iFilterDetailLevel,    // Entering and leaving the method is traced if the admin objects detail level is greater or equal than the filter setting than the detail level.
-        const char*   i_szMethod,
-        const char*   i_szMethodInArgs );
+        ETraceDetailLevelMethodCalls i_eFilterDetailLevel,    // Entering and leaving the method is traced if the admin objects detail level is greater or equal than the filter setting than the detail level.
+        const char* i_szMethod,
+        const char* i_szMethodInArgs );
     CMethodTracer(  // class tracer (name space and class name (but not object name) set at trace admin object)
         CTrcAdminObj* i_pTrcAdminObj,
-        int           i_iFilterDetailLevel,    // Entering and leaving the method is traced if the admin objects detail level is greater or equal than the filter setting than the detail level.
-        const char*   i_szObjName,
-        const char*   i_szMethod,
-        const char*   i_szMethodInArgs );
+        ETraceDetailLevelMethodCalls i_eFilterDetailLevel,    // Entering and leaving the method is traced if the admin objects detail level is greater or equal than the filter setting than the detail level.
+        const char* i_szObjName,
+        const char* i_szMethod,
+        const char* i_szMethodInArgs );
     ~CMethodTracer();
 public: // instance methods
     void onAdminObjAboutToBeReleased( bool i_bTraceMethodLeave = true );
 public: // instance methods
-    int getTraceDetailLevel() const;
-    int getEnterLeaveFilterDetailLevel() const { return m_iEnterLeaveFilterDetailLevel; }
+    ETraceDetailLevelMethodCalls getMethodCallsTraceDetailLevel() const;
+    bool areMethodCallsActive( ETraceDetailLevelMethodCalls i_eFilterDetailLevel ) const;
+    ETraceDetailLevelMethodCalls getEnterLeaveFilterDetailLevel() const { return m_eEnterLeaveFilterDetailLevel; }
+    ETraceDetailLevelRuntimeInfo getRuntimeInfoTraceDetailLevel() const;
+    bool isRuntimeInfoActive( ETraceDetailLevelRuntimeInfo i_eFilterDetailLevel ) const;
 public: // instance methods
     const char* getObjectName() const { return m_szObjName; } // This is NOT the object name of the trace admin object
     const char* getMethod() const { return m_szMethod; }
@@ -192,16 +226,15 @@ public: // instance methods
     void setMethodOutArgs( const char* i_sz );
     char* getMethodOutArgs() const { return m_szMethodOutArgs; }
 public: // instance methods
-    bool isActive( int i_iFilterDetailLevel ) const;
-public: // instance methods
-    void trace( const char* i_szAddInfo, int i_iFilterDetailLevel = ETraceDetailLevelInternalStates ) const;
+    void trace( const char* i_szAddInfo, ETraceDetailLevelRuntimeInfo i_eFilterDetailLevel = ETraceDetailLevelRuntimeInfo::ETraceDetailLevelRuntimeInfoCritical ) const;
 protected: // instance members
     CTrcAdminObj* m_pTrcAdminObj;
-    int           m_iEnterLeaveFilterDetailLevel;
-    char*         m_szObjName;
-    char*         m_szMethod;
-    char*         m_szMethodReturn;
-    char*         m_szMethodOutArgs;
+    ETraceDetailLevelMethodCalls m_eEnterLeaveFilterDetailLevel;
+    bool m_bEnterTraced;
+    char* m_szObjName;
+    char* m_szMethod;
+    char* m_szMethodReturn;
+    char* m_szMethodOutArgs;
 
 }; // class CMethodTracer
 
@@ -248,7 +281,7 @@ public: // class methods to add, remove and modify admin objects
         const char* i_szClassName,
         const char* i_szObjName = "",
         EEnabled    i_bEnabledAsDefault = EEnabledUndefined,
-        int         i_iDefaultDetailLevel = ETraceDetailLevelUndefined );
+        ETraceDetailLevelMethodCalls i_eDefaultDetailLevel = ETraceDetailLevelMethodCallsUndefined );
     static void RenameTraceAdminObj( CTrcAdminObj** io_ppTrcAdminObj, const char* i_szNewObjName );
     static void ReleaseTraceAdminObj( CTrcAdminObj* i_pTrcAdminObj );
 public: // class method to save/recall admin objects file
@@ -275,8 +308,8 @@ public: // instance methods
 public: // instance methods
     void setNewTrcAdminObjsEnabledAsDefault( bool i_bEnabled );
     bool areNewTrcAdminObjsEnabledAsDefault() const;
-    void setNewTrcAdminObjsDefaultDetailLevel( int i_iDetailLevel );
-    int getNewTrcAdminObjsDefaultDetailLevel() const;
+    void setNewTrcAdminObjsDefaultDetailLevel( ETraceDetailLevelMethodCalls i_eDetailLevel );
+    ETraceDetailLevelMethodCalls getNewTrcAdminObjsDefaultDetailLevel() const;
 public: // instance methods
     void setAdminObjFileAbsoluteFilePath( const char* i_szAbsFilePath );
     char* getAdminObjFileAbsoluteFilePath() const; // returned string must be freed by caller
@@ -360,12 +393,12 @@ class CIpcTrcServer : public CTrcServer
 public: // class methods
     static CIpcTrcServer* GetInstance();
     static CIpcTrcServer* CreateInstance(
-        int i_iTrcDetailLevelDllIf = ETraceDetailLevelNone,
-        int i_iTrcDetailLevelTrcServer = ETraceDetailLevelNone,
-        int i_iTrcDetailLevelTrcServerMutex = ETraceDetailLevelNone,
-        int i_iTrcDetailLevelTrcServerIpcServer = ETraceDetailLevelNone,
-        int i_iTrcDetailLevelTrcServerIpcServerMutex = ETraceDetailLevelNone,
-        int i_iTrcDetailLevelTrcServerIpcServerGateway = ETraceDetailLevelNone );
+        ETraceDetailLevelMethodCalls i_eTrcDetailLevelDllIf = ETraceDetailLevelMethodCallsNone,
+        ETraceDetailLevelMethodCalls i_eTrcDetailLevelTrcServer = ETraceDetailLevelMethodCallsNone,
+        ETraceDetailLevelMethodCalls i_eTrcDetailLevelTrcServerMutex = ETraceDetailLevelMethodCallsNone,
+        ETraceDetailLevelMethodCalls i_eTrcDetailLevelTrcServerIpcServer = ETraceDetailLevelMethodCallsNone,
+        ETraceDetailLevelMethodCalls i_eTrcDetailLevelTrcServerIpcServerMutex = ETraceDetailLevelMethodCallsNone,
+        ETraceDetailLevelMethodCalls i_eTrcDetailLevelTrcServerIpcServerGateway = ETraceDetailLevelMethodCallsNone );
     static void ReleaseInstance( CIpcTrcServer* i_pTrcServer );
 public: // instance methods
     bool startup( int i_iTimeout_ms = 5000, bool i_bWait = true );

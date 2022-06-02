@@ -79,13 +79,11 @@ public: // class methods
     static QString ClassName() { return "CWdgtIdxTree"; }
 public: // ctors and dtor
     CWdgtIdxTree(
-        CModelIdxTree*  i_pModel,
-        QWidget*        i_pWdgtParent = nullptr,
+        CModelIdxTree* i_pModel,
+        QWidget* i_pWdgtParent = nullptr,
         Qt::WindowFlags i_wflags = Qt::WindowFlags(),
-        int             i_iTrcDetailLevel = ZS::Trace::ETraceDetailLevelNone );
+        ZS::Trace::ETraceDetailLevelMethodCalls i_eTrcDetailLevel = ZS::Trace::ETraceDetailLevelMethodCalls::None );
     virtual ~CWdgtIdxTree();
-signals:
-    void traceMethodDetailLevelIdxTreeChanged( ZS::Trace::ETraceDetailLevel i_mthTrcDetailLevel );
 public: // overridables
     virtual QString nameSpace() const { return NameSpace(); }
     virtual QString className() const { return ClassName(); }
@@ -122,11 +120,13 @@ protected: // instance members
     QSplitter*                      m_pSplitter;
     CTreeViewIdxTree*               m_pTreeView;
     CTableViewIdxTreeBranchContent* m_pTableViewBranchContent;
-    int                             m_iTrcDetailLevel;    /*!< Trace detail level for method tracing.
-                                                               Trace output may not be controlled by trace admin objects
-                                                               if the index tree belongs the trace server. */
-    ZS::Trace::CTrcAdminObj*        m_pTrcAdminObj;       /*!< Trace admin object to control trace outputs of the class.
-                                                               The object will not be created if the index tree's belongs to the trace server. */
+    /*!< Trace detail level for method tracing.
+         Trace output may not be controlled by trace admin objects
+         if the index tree belongs the trace server. */
+    ZS::Trace::ETraceDetailLevelMethodCalls m_eTrcDetailLevel;
+    /*!< Trace admin object to control trace outputs of the class.
+         The object will not be created if the index tree's belongs to the trace server. */
+    ZS::Trace::CTrcAdminObj* m_pTrcAdminObj;
 
 }; // class CWdgtIdxTree
 

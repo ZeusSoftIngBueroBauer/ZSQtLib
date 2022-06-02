@@ -56,10 +56,10 @@ public: // class methods
     static QString ClassName() { return "CInProcMsgSocketThread"; }
 public: // ctors and dtor
     CInProcMsgSocketThread(
-        const QString&      i_strObjName,
-        ESrvCltType         i_srvCltType,
+        const QString& i_strObjName,
+        ESrvCltType i_srvCltType,
         Trace::CTrcMthFile* i_pTrcMthFile = nullptr,         // If != nullptr trace method file with detail level is used instead of trace admin object with Trace server.
-        int                 i_iTrcMthFileDetailLevel = Trace::ETraceDetailLevelMethodArgs );
+        ZS::Trace::ETraceDetailLevelMethodCalls i_eTrcMthFileDetailLevel = ZS::Trace::ETraceDetailLevelMethodCalls::None );
     virtual ~CInProcMsgSocketThread();
 signals:
     void socketCreated( QObject* i_pThread, QObject* i_pSocket );
@@ -70,7 +70,7 @@ public: // overridables of base class QThread
 protected: // instance members
     ESrvCltType          m_srvCltType;         // Defines on which side of the connection the socket is existing
     CInProcMsgSocket*    m_pInProcMsgSocket;   // "Peer" to which this socket is connected (socket on the other side of the connection).
-    int                  m_iTrcMthFileDetailLevel;
+    ZS::Trace::ETraceDetailLevelMethodCalls m_eTrcMthFileDetailLevel;
     Trace::CTrcMthFile*  m_pTrcMthFile;   // Either trace method file with detail level is used or
     Trace::CTrcAdminObj* m_pTrcAdminObj;  // trace admin object with IpcTrace server.
 
@@ -91,7 +91,7 @@ public: // ctors and dtor
         int                 i_iSocketId = ZS::Ipc::ESocketIdUndefined,
         CInProcMsgSocket*   i_pInProcMsgSocket = nullptr,
         Trace::CTrcMthFile* i_pTrcMthFile = nullptr,         // If != nullptr trace method file with detail level is used instead of trace admin object with Trace server.
-        int                 i_iTrcMthFileDetailLevel = Trace::ETraceDetailLevelMethodArgs );
+        ZS::Trace::ETraceDetailLevelMethodCalls i_eTrcMthFileDetailLevel = Trace::ETraceDetailLevelMethodCalls::None );
     virtual ~CInProcMsgSocketWrapper();
 public: // overridables of base class CIpcSocketWrapper
     virtual QString nameSpace() const override { return NameSpace(); }

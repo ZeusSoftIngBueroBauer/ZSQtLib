@@ -116,39 +116,43 @@ public: // instance methods
     ZS::System::EEnabled getEnabled() const;
     bool isEnabled() const;
 public: // instance methods
-    void setTraceDetailLevel( int i_iTrcDetailLevel );
-    int getTraceDetailLevel() const;
-public: // instance methods
-    bool isActive( int i_iFilterDetailLevel ) const;
+    void setMethodCallsTraceDetailLevel( ETraceDetailLevelMethodCalls i_eTrcDetailLevel );
+    ETraceDetailLevelMethodCalls getMethodCallsTraceDetailLevel() const;
+    bool areMethodCallsActive( ETraceDetailLevelMethodCalls i_eFilterDetailLevel ) const;
+    void setRuntimeInfoTraceDetailLevel( ETraceDetailLevelRuntimeInfo i_eTrcDetailLevel );
+    ETraceDetailLevelRuntimeInfo getRuntimeInfoTraceDetailLevel() const;
+    bool isRuntimeInfoActive( ETraceDetailLevelRuntimeInfo i_eFilterDetailLevel ) const;
 public: // instance methods
     virtual bool blockTreeEntryChangedSignal( bool i_bBlock );
     virtual bool isTreeEntryChangedSignalBlocked() const;
 private: // Don't use QObject::objectName
     QString objectName() const;
 protected: // instance members
-    int                   m_iBlockTreeEntryChangedSignalCounter;    /*!< Counts the number of times the tree entry changed signal has been blocked. */
-    QString               m_strNameSpace;       /*!< Namespace of the class. May be empty. */
-    QString               m_strClassName;       /*!< Class or module name. */
-    QString               m_strObjName;         /*!< Object name. May be empty if this is a class tracer. */
-    QString               m_strObjThreadName;   /*!< Name of the thread in which the object was created. */
-    int                   m_iRefCount;          /*!< Usually trace admin objects are only referenced by one specific module,
-                                                     class or instance of a class to control the detail level of method
-                                                     trace outputs. In certain circumstances or in case of a copy and paste
-                                                     error the same trace admin object may be referenced by several modules,
-                                                     classes or instances of classes. If so the reference counter may become
-                                                     greater than 1. */
-    ZS::System::EEnabled  m_enabled;            /*!< Tracing cannot only be controlled via the detail level but tracing can
-                                                     also be enabled or disabled by this flag. This is useful if a group of
-                                                     objects belonging to a namespace should be temporarily disabled and enabled
-                                                     later on restoring the previous detail level. */
-    int                   m_iTrcDetailLevel;    /*!< Defines the current detail level of the method trace outputs for the
-                                                     module, class or instance referencing this object. If set to
-                                                     None method trace output is disabled. */
-    // TODO: Introduce second trace detail level for additional runtime info.
-    // First one for method calls with method args:
-    //   [None, EnterLeaveOnly, WithMethodArgsNormal, WithMethodArgsDetailed, WithMethodArgsVerbose]
-    // Second one for addtional runtime info (only effective if MethodCalls is not set to None):
-    //   [None, Normal, Detailed, Verbose]
+    int     m_iBlockTreeEntryChangedSignalCounter; /*!< Counts the number of times the tree entry changed signal has been blocked. */
+    QString m_strNameSpace;     /*!< Namespace of the class. May be empty. */
+    QString m_strClassName;     /*!< Class or module name. */
+    QString m_strObjName;       /*!< Object name. May be empty if this is a class tracer. */
+    QString m_strObjThreadName; /*!< Name of the thread in which the object was created. */
+    /*!< Usually trace admin objects are only referenced by one specific module,
+         class or instance of a class to control the detail level of method
+         trace outputs. In certain circumstances or in case of a copy and paste
+         error the same trace admin object may be referenced by several modules,
+         classes or instances of classes. If so the reference counter may become
+         greater than 1. */
+    int m_iRefCount;
+    /*!< Tracing cannot only be controlled via the detail level but tracing can
+         also be enabled or disabled by this flag. This is useful if a group of
+         objects belonging to a namespace should be temporarily disabled and enabled
+         later on restoring the previous detail level. */
+    ZS::System::EEnabled  m_enabled;
+    /*!< Defines the current detail level of the method trace outputs for the
+         module, class or instance referencing this object. If set to
+         None method trace output is disabled. */
+    ETraceDetailLevelMethodCalls m_eTrcDetailLevelMethodCalls;
+    /*!< Defines the current detail level of the runtime info trace outputs for the
+         module, class or instance referencing this object. If set to
+         None method trace output is disabled. */
+    ETraceDetailLevelRuntimeInfo m_eTrcDetailLevelRuntimeInfo;
 
 }; // class CTrcAdminObj
 
@@ -167,8 +171,10 @@ public: // instance methods
     void allocTrcAdminObj();
     void releaseTrcAdminObj();
     CTrcAdminObj* trcAdminObj();
-    void setTraceDetailLevel(int i_iTrcDetailLevel);
-    bool isActive(int i_iFilterDetailLevel) const;
+    void setMethodCallsTraceDetailLevel(ETraceDetailLevelMethodCalls i_eTrcDetailLevel);
+    bool areMethodCallsActive(ETraceDetailLevelMethodCalls i_eFilterDetailLevel) const;
+    void setRuntimeInfoTraceDetailLevel(ETraceDetailLevelRuntimeInfo i_eTrcDetailLevel);
+    bool isRuntimeInfoActive(ETraceDetailLevelRuntimeInfo i_eFilterDetailLevel) const;
 private slots:
     void onTrcAdminObjDestroyed(QObject* i_pTrcAdminObj);
 private: // instance members
@@ -192,8 +198,10 @@ public: // ctors and dtor
     ~CTrcAdminObjRefGuard();
 public: // instance methods
     CTrcAdminObj* trcAdminObj();
-    void setTraceDetailLevel(int i_iTrcDetailLevel);
-    bool isActive(int i_iFilterDetailLevel) const;
+    void setMethodCallsTraceDetailLevel(ETraceDetailLevelMethodCalls i_eTrcDetailLevel);
+    bool areMethodCallsActive(ETraceDetailLevelMethodCalls i_eFilterDetailLevel) const;
+    void setRuntimeInfoTraceDetailLevel(ETraceDetailLevelRuntimeInfo i_eTrcDetailLevel);
+    bool isRuntimeInfoActive(ETraceDetailLevelRuntimeInfo i_eFilterDetailLevel) const;
 private: // instance members
     CTrcAdminObjRefAnchor* m_pRefAnchor;    /*!< Pointer to reference anchor which should be guarded. */
 };

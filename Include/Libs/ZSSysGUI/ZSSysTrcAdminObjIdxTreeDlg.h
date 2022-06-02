@@ -54,29 +54,29 @@ public: // class methods
     static QString ClassName() { return "CDlgIdxTreeTrcAdminObjs"; }
 public: // class CDlgTrcServer
     static CDlgIdxTreeTrcAdminObjs* CreateInstance(
-        const QString&        i_strDlgTitle,
+        const QString& i_strDlgTitle,
         CIdxTreeTrcAdminObjs* i_pIdxTree,
-        QWidget*              i_pWdgtParent = nullptr,
-        Qt::WindowFlags       i_wFlags = Qt::WindowFlags(),
-        int                   i_iTrcDetailLevel = ZS::Trace::ETraceDetailLevelNone );
+        QWidget* i_pWdgtParent = nullptr,
+        Qt::WindowFlags i_wFlags = Qt::WindowFlags(),
+        ZS::Trace::ETraceDetailLevelMethodCalls i_eTrcDetailLevel = ZS::Trace::ETraceDetailLevelMethodCalls::None );
     static CDlgIdxTreeTrcAdminObjs* GetInstance( const QString& i_strObjName );
 protected: // ctor
     CDlgIdxTreeTrcAdminObjs(
-        const QString&        i_strDlgTitle,
+        const QString& i_strDlgTitle,
         CIdxTreeTrcAdminObjs* i_pIdxTree,
-        QWidget*              i_pWdgtParent = nullptr,
-        Qt::WindowFlags       i_wFlags = Qt::WindowFlags(),
-        int                   i_iTrcDetailLevel = ZS::Trace::ETraceDetailLevelNone );
+        QWidget* i_pWdgtParent = nullptr,
+        Qt::WindowFlags i_wFlags = Qt::WindowFlags(),
+        ZS::Trace::ETraceDetailLevelMethodCalls i_eTrcDetailLevel = ZS::Trace::ETraceDetailLevelMethodCalls::None );
 public: // dtor
     virtual ~CDlgIdxTreeTrcAdminObjs();
 public: // overridables of base class ZS::System::GUI::CDialog
     virtual QString nameSpace() override { return NameSpace(); }
     virtual QString className() override { return ClassName(); }
 protected: // instance members
-    CIdxTreeTrcAdminObjs*     m_pIdxTree;
-    QVBoxLayout*              m_pLyt;
+    CIdxTreeTrcAdminObjs* m_pIdxTree;
+    QVBoxLayout* m_pLyt;
     CWdgtIdxTreeTrcAdminObjs* m_pWdgtIdxTree;
-    int                       m_iTrcDetailLevel;
+    ZS::Trace::ETraceDetailLevelMethodCalls m_eTrcDetailLevel;
 
 }; // class CDlgIdxTreeTrcAdminObjs
 

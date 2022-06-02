@@ -64,8 +64,8 @@ public: // class methods
 public: // ctors and dtor
     CModelIdxTreeTrcAdminObjs(
         CIdxTreeTrcAdminObjs* i_pIdxTree = nullptr,
-        QObject*              i_pObjParent = nullptr,
-        int                   i_iTrcDetailLevel = ZS::Trace::ETraceDetailLevelNone );
+        QObject* i_pObjParent = nullptr,
+        ZS::Trace::ETraceDetailLevelMethodCalls i_eTrcDetailLevel = ZS::Trace::ETraceDetailLevelMethodCalls::None );
     virtual ~CModelIdxTreeTrcAdminObjs();
 public: // overridables
     virtual QString nameSpace() const { return NameSpace(); }

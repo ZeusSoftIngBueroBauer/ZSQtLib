@@ -64,7 +64,7 @@ public: // ctors and dtor
     CModelIdxTreeBranchContent(
         CIdxTree* i_pIdxTree,
         QObject*  i_pObjParent = nullptr,
-        int       i_iTrcDetailLevel = ZS::Trace::ETraceDetailLevelNone );
+        ZS::Trace::ETraceDetailLevelMethodCalls i_eTrcDetailLevel = ZS::Trace::ETraceDetailLevelMethodCalls::None );
     virtual ~CModelIdxTreeBranchContent();
 public: // overridables
     virtual QString nameSpace() const { return CModelIdxTreeBranchContent::NameSpace(); }
@@ -116,7 +116,7 @@ protected: // instance members
     // of the model branch of idx tree model. The branch node of the index tree model may not contain
     // leaves whereas the root branch (the clone) of the content model may.
     CModelIdxTreeEntry* m_pModelBranch;
-    int                 m_iTrcDetailLevel;
+    ZS::Trace::ETraceDetailLevelMethodCalls m_eTrcDetailLevel;
 
 }; // class CModelIdxTreeBranchContent
 

@@ -121,7 +121,8 @@ CTrcAdminObj::CTrcAdminObj(
     m_strObjThreadName(),
     m_iRefCount(0),
     m_enabled(EEnabled::Yes),
-    m_iTrcDetailLevel(ETraceDetailLevelNone)
+    m_eTrcDetailLevelMethodCalls(ETraceDetailLevelMethodCalls::None),
+    m_eTrcDetailLevelRuntimeInfo(ETraceDetailLevelRuntimeInfo::None)
 {
     m_pMtx = new QMutex(QMutex::Recursive);
 
@@ -200,7 +201,8 @@ CTrcAdminObj::~CTrcAdminObj()
     //m_strObjThreadName;
     m_iRefCount = 0;
     m_enabled = static_cast<EEnabled>(0);
-    m_iTrcDetailLevel = 0;
+    m_eTrcDetailLevelMethodCalls = static_cast<ETraceDetailLevelMethodCalls>(0);
+    m_eTrcDetailLevelRuntimeInfo = static_cast<ETraceDetailLevelRuntimeInfo>(0);
 
 } // dtor
 
@@ -571,47 +573,35 @@ public: // instance methods
     If set to None method trace outputs are disabled.
     Higher detail levels include lower detail levels.
 
-    There are predefined trace detail levels (see ETraceDetailLevel).
-
-    Please note that this enum is only a suggestion for trace detail levels
-    which can be used. The detail level of the trace admin object is an integer
-    type and user defined values can be used if necessary. To avoid type casts
-    requested by the compiler this enum is not a class enum definition.
-
-    @param i_iDetailLevel [in] Integer value specifying the detail level.
+    @param i_eDetailLevel [in] Detail level.
 */
-void CTrcAdminObj::setTraceDetailLevel( int i_iDetailLevel )
+void CTrcAdminObj::setMethodCallsTraceDetailLevel( ETraceDetailLevelMethodCalls i_eDetailLevel )
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(m_pMtx);
 
-    if( m_iTrcDetailLevel != i_iDetailLevel )
+    if( m_eTrcDetailLevelMethodCalls != i_eDetailLevel )
     {
-        m_iTrcDetailLevel = i_iDetailLevel;
+        m_eTrcDetailLevelMethodCalls = i_eDetailLevel;
 
         if( m_pTree != nullptr )
         {
             if( !isTreeEntryChangedSignalBlocked() ) m_pTree->onTreeEntryChanged(this);
         }
     }
-
-} // setDetailLevel
+}
 
 //------------------------------------------------------------------------------
 /*! @brief Returns the detail level of trace output for this object.
 
-    @return Integer value specifying the detail level.
+    @return Detail level.
 */
-int CTrcAdminObj::getTraceDetailLevel() const
+ETraceDetailLevelMethodCalls CTrcAdminObj::getMethodCallsTraceDetailLevel() const
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(m_pMtx);
-    return m_iTrcDetailLevel;
+    return m_eTrcDetailLevelMethodCalls;
 }
-
-/*==============================================================================
-public: // instance methods
-==============================================================================*/
 
 //------------------------------------------------------------------------------
 /*! @brief Returns whether tracing is activated or disactived.
@@ -633,36 +623,119 @@ public: // instance methods
         bool bTracingActive;
 
         pTrcAdminObj->setEnabled(EEnabledOn);
-        pTrcAdminObj->setDetailLevel(ETraceDetailLevelMethodCalls);
+        pTrcAdminObj->setMethodCallsTraceDetailLevel(ETraceDetailLevelMethodCalls::EnterLeave);
 
-        bTracingActive = pTrcAdminObj->isActive(ETraceDetailLevelMethodCalls); .. returns true
-        bTracingActive = pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs);  .. returns false
+        bTracingActive = pTrcAdminObj->areMethodCallsActive(ETraceDetailLevelMethodCalls::EnterLeave); .. returns true
+        bTracingActive = pTrcAdminObj->areMethodCallsActive(ETraceDetailLevelMethodCalls::MethodArgs); .. returns false
 
-    @param i_iFilterDetailLevel [in]
+    @param i_eFilterDetailLevel [in]
         Trace outputs should be generated if the given filter detail level
         is greater or equal than the current detail level set at the trace
         admin object or at the method tracer itself.
 
     @return Flag indicating whether method trace output is active or not.
 */
-bool CTrcAdminObj::isActive( int i_iFilterDetailLevel ) const
+bool CTrcAdminObj::areMethodCallsActive( ETraceDetailLevelMethodCalls i_eFilterDetailLevel ) const
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(m_pMtx);
 
     bool bActive = false;
 
-    if( i_iFilterDetailLevel > ETraceDetailLevelNone )
+    if( i_eFilterDetailLevel > ETraceDetailLevelMethodCalls::None )
     {
-        if( m_enabled == EEnabled::Yes && m_iTrcDetailLevel >= i_iFilterDetailLevel )
+        if( m_enabled == EEnabled::Yes && m_eTrcDetailLevelMethodCalls >= i_eFilterDetailLevel )
         {
             bActive = true;
         }
-    } // if( i_iDetailLevel > ETraceDetailLevelNone )
-
+    }
     return bActive;
+}
 
-} // isActive
+//------------------------------------------------------------------------------
+/*! @brief Sets the detail level of trace output for this object.
+
+    If set to None method trace outputs are disabled.
+    Higher detail levels include lower detail levels.
+
+    @param i_eDetailLevel [in] Detail level.
+*/
+void CTrcAdminObj::setRuntimeInfoTraceDetailLevel( ETraceDetailLevelRuntimeInfo i_eDetailLevel )
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(m_pMtx);
+
+    if( m_eTrcDetailLevelRuntimeInfo != i_eDetailLevel )
+    {
+        m_eTrcDetailLevelRuntimeInfo = i_eDetailLevel;
+
+        if( m_pTree != nullptr )
+        {
+            if( !isTreeEntryChangedSignalBlocked() ) m_pTree->onTreeEntryChanged(this);
+        }
+    }
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the detail level of trace output for this object.
+
+    @return Detail level.
+*/
+ETraceDetailLevelRuntimeInfo CTrcAdminObj::getRuntimeInfoTraceDetailLevel() const
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(m_pMtx);
+    return m_eTrcDetailLevelRuntimeInfo;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns whether tracing is activated or disactived.
+
+    The method checks both the enabled flag and compares the detail level passed
+    as argument to the method with the current detail level set at the trace
+    admin object.
+
+    Tracing is active if
+    - tracing is enabled and
+    - if the passed detail level is equal or greater than the trace admin
+      objects current detail level and
+    - if the current trace detail level is not 0 (None).
+
+    Example:
+
+        CTrcAdminObj* pTrcAdminObj = CTrcServer::GetTraceAdminObj("ZS::Diagram", "CWdgtDiagram", "Analyzer");
+
+        bool bTracingActive;
+
+        pTrcAdminObj->setEnabled(EEnabledOn);
+        pTrcAdminObj->setDetailLevel(ETraceDetailLevelRuntimeInfo::DebugNormal);
+
+        bTracingActive = pTrcAdminObj->isActive(ETraceDetailLevelRuntimeInfo::InfoVerbose); .. returns true
+        bTracingActive = pTrcAdminObj->isActive(ETraceDetailLevelRuntimeInfo::DebugDetailed);  .. returns false
+
+    @param i_eFilterDetailLevel [in]
+        Trace outputs should be generated if the given filter detail level
+        is greater or equal than the current detail level set at the trace
+        admin object or at the method tracer itself.
+
+    @return Flag indicating whether method trace output is active or not.
+*/
+bool CTrcAdminObj::isRuntimeInfoActive( ETraceDetailLevelRuntimeInfo i_eFilterDetailLevel ) const
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(m_pMtx);
+
+    bool bActive = false;
+
+    if( i_eFilterDetailLevel > ETraceDetailLevelRuntimeInfo::None )
+    {
+        if( m_enabled == EEnabled::Yes && m_eTrcDetailLevelRuntimeInfo >= i_eFilterDetailLevel )
+        {
+            bActive = true;
+        }
+    }
+    return bActive;
+}
 
 /*==============================================================================
 public: // instance methods
@@ -904,30 +977,30 @@ CTrcAdminObj* CTrcAdminObjRefAnchor::trcAdminObj()
 
     This method has no effect if the trace admin object has not yet been allocated.
 
-    @param i_iTrcDetailLevel [in] Trace detail level.
+    @param i_eTrcDetailLevel [in] Trace detail level.
 */
-void CTrcAdminObjRefAnchor::setTraceDetailLevel( int i_iTrcDetailLevel )
+void CTrcAdminObjRefAnchor::setMethodCallsTraceDetailLevel( ETraceDetailLevelMethodCalls i_eTrcDetailLevel )
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&m_mtx);
 
     if( m_pTrcAdminObj != nullptr )
     {
-        m_pTrcAdminObj->setTraceDetailLevel(i_iTrcDetailLevel);
+        m_pTrcAdminObj->setMethodCallsTraceDetailLevel(i_eTrcDetailLevel);
     }
 }
 
 //------------------------------------------------------------------------------
 /*! @brief Checks whether tracing is active for the given filter detail level.
 
-    @param i_iFilterDetailLevel [in]
+    @param i_eFilterDetailLevel [in]
         Trace detail level which should be checked. If the trace admin objects
         detail level is not 0 (None) and is greater or equal the filter level
         tracing is active.
 
     @return true if tracing is active, false otherwise.
 */
-bool CTrcAdminObjRefAnchor::isActive( int i_iFilterDetailLevel ) const
+bool CTrcAdminObjRefAnchor::areMethodCallsActive( ETraceDetailLevelMethodCalls i_eFilterDetailLevel ) const
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&m_mtx);
@@ -935,7 +1008,48 @@ bool CTrcAdminObjRefAnchor::isActive( int i_iFilterDetailLevel ) const
     bool bActive = false;
     if( m_pTrcAdminObj != nullptr )
     {
-        bActive = m_pTrcAdminObj->isActive(i_iFilterDetailLevel);
+        bActive = m_pTrcAdminObj->areMethodCallsActive(i_eFilterDetailLevel);
+    }
+    return bActive;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the trace detail level.
+
+    This method has no effect if the trace admin object has not yet been allocated.
+
+    @param i_eTrcDetailLevel [in] Trace detail level.
+*/
+void CTrcAdminObjRefAnchor::setRuntimeInfoTraceDetailLevel( ETraceDetailLevelRuntimeInfo i_eTrcDetailLevel )
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(&m_mtx);
+
+    if( m_pTrcAdminObj != nullptr )
+    {
+        m_pTrcAdminObj->setRuntimeInfoTraceDetailLevel(i_eTrcDetailLevel);
+    }
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Checks whether tracing is active for the given filter detail level.
+
+    @param i_eFilterDetailLevel [in]
+        Trace detail level which should be checked. If the trace admin objects
+        detail level is not 0 (None) and is greater or equal the filter level
+        tracing is active.
+
+    @return true if tracing is active, false otherwise.
+*/
+bool CTrcAdminObjRefAnchor::isRuntimeInfoActive( ETraceDetailLevelRuntimeInfo i_eFilterDetailLevel ) const
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(&m_mtx);
+
+    bool bActive = false;
+    if( m_pTrcAdminObj != nullptr )
+    {
+        bActive = m_pTrcAdminObj->isRuntimeInfoActive(i_eFilterDetailLevel);
     }
     return bActive;
 }
@@ -1021,32 +1135,69 @@ CTrcAdminObj* CTrcAdminObjRefGuard::trcAdminObj()
 
     @param i_iTrcDetailLevel [in] Trace detail level.
 */
-void CTrcAdminObjRefGuard::setTraceDetailLevel(int i_iTrcDetailLevel)
+void CTrcAdminObjRefGuard::setMethodCallsTraceDetailLevel(ETraceDetailLevelMethodCalls i_eTrcDetailLevel)
 //------------------------------------------------------------------------------
 {
     if( m_pRefAnchor != nullptr )
     {
-        m_pRefAnchor->setTraceDetailLevel(i_iTrcDetailLevel);
+        m_pRefAnchor->setMethodCallsTraceDetailLevel(i_eTrcDetailLevel);
     }
 }
 
 //------------------------------------------------------------------------------
 /*! @brief Checks whether tracing is active for the given filter detail level.
 
-    @param i_iFilterDetailLevel [in]
+    @param i_eFilterDetailLevel [in]
         Trace detail level which should be checked. If the trace admin objects
         detail level is not 0 (None) and is greater or equal the filter level
         tracing is active.
 
     @return true if tracing is active, false otherwise.
 */
-bool CTrcAdminObjRefGuard::isActive(int i_iFilterDetailLevel) const
+bool CTrcAdminObjRefGuard::areMethodCallsActive(ETraceDetailLevelMethodCalls i_eFilterDetailLevel) const
 //------------------------------------------------------------------------------
 {
     bool bActive = false;
     if( m_pRefAnchor != nullptr )
     {
-        bActive = m_pRefAnchor->isActive(i_iFilterDetailLevel);
+        bActive = m_pRefAnchor->areMethodCallsActive(i_eFilterDetailLevel);
+    }
+    return bActive;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the trace detail level of the trace admin object.
+
+    This method has no effect if the trace admin object has not yet been allocated.
+
+    @param i_eTrcDetailLevel [in] Trace detail level.
+*/
+void CTrcAdminObjRefGuard::setRuntimeInfoTraceDetailLevel(ETraceDetailLevelRuntimeInfo i_eTrcDetailLevel)
+//------------------------------------------------------------------------------
+{
+    if( m_pRefAnchor != nullptr )
+    {
+        m_pRefAnchor->setRuntimeInfoTraceDetailLevel(i_eTrcDetailLevel);
+    }
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Checks whether tracing is active for the given filter detail level.
+
+    @param i_eFilterDetailLevel [in]
+        Trace detail level which should be checked. If the trace admin objects
+        detail level is not 0 (None) and is greater or equal the filter level
+        tracing is active.
+
+    @return true if tracing is active, false otherwise.
+*/
+bool CTrcAdminObjRefGuard::isRuntimeInfoActive(ETraceDetailLevelRuntimeInfo i_eFilterDetailLevel) const
+//------------------------------------------------------------------------------
+{
+    bool bActive = false;
+    if( m_pRefAnchor != nullptr )
+    {
+        bActive = m_pRefAnchor->isRuntimeInfoActive(i_eFilterDetailLevel);
     }
     return bActive;
 }

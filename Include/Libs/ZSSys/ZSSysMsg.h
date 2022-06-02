@@ -103,7 +103,7 @@ QObject's and the member elements receiver and sender will be set to nullptr if 
 objects are destroyed. The macro checks whether both the sender and receiver are
 still alive before posting the message. Otherwise the message is deleted.
 ------------------------------------------------------------------------------*/
-ZSSYSDLL_API void POST_OR_DELETE_MESSAGE( QEvent* i_pMsg, ZS::Trace::CMethodTracer* i_pMethodTracer = nullptr, int i_iFilterDetailLevel = ZS::Trace::ETraceDetailLevelRuntimeInfo );
+ZSSYSDLL_API void POST_OR_DELETE_MESSAGE( QEvent* i_pMsg, ZS::Trace::CMethodTracer* i_pMethodTracer = nullptr, ZS::Trace::ETraceDetailLevelRuntimeInfo i_eFilterDetailLevel = ZS::Trace::ETraceDetailLevelRuntimeInfo::None );
 
 /*------------------------------------------------------------------------------
 For debugging purposes (which was especially necessary to create python bindings)

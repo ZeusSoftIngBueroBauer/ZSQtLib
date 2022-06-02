@@ -49,22 +49,23 @@ public: // class methods
     static QString ClassName() { return "CIdxTreeTrcAdminObjs"; }
 public: // ctors and dtor
     CIdxTreeTrcAdminObjs(
-        const QString& i_strObjName,
-        QObject*       i_pObjParent,
-        int            i_iTrcDetailLevel = ETraceDetailLevelNone,
-        int            i_iTrcDetailLevelMutex = ETraceDetailLevelNone );
+        const QString&               i_strObjName,
+        QObject*                     i_pObjParent,
+        ETraceDetailLevelMethodCalls i_eTrcDetailLevel = ETraceDetailLevelMethodCalls::None,
+        ETraceDetailLevelMethodCalls i_eTrcDetailLevelMutex = ETraceDetailLevelMethodCalls::None );
     virtual ~CIdxTreeTrcAdminObjs();
 public: // instance methods
     virtual QString nameSpace() const { return NameSpace(); }
     virtual QString className() const { return ClassName(); }
 public: // instance methods to get and release admin objects
     CTrcAdminObj* getTraceAdminObj(
-        const QString&       i_strNameSpace,
-        const QString&       i_strClassName,
-        const QString&       i_strObjName,
-        ZS::System::EEnabled i_bEnabledAsDefault,
-        int                  i_iDefaultDetailLevel,
-        bool                 i_bIncrementRefCount = true );
+        const QString&               i_strNameSpace,
+        const QString&               i_strClassName,
+        const QString&               i_strObjName,
+        ZS::System::EEnabled         i_bEnabledAsDefault,
+        ETraceDetailLevelMethodCalls i_eDefaultDetailLevelMethodCalls,
+        ETraceDetailLevelRuntimeInfo i_eDefaultDetailLevelRuntimeInfo,
+        bool                         i_bIncrementRefCount = true );
     CTrcAdminObj* getTraceAdminObj( int i_idxInTree, bool i_bIncrementRefCount = true );
     void renameTraceAdminObj( CTrcAdminObj** io_ppTrcAdminObj, const QString& i_strNewObjName );
     void releaseTraceAdminObj( CTrcAdminObj* i_pTrcAdminObj );
@@ -81,10 +82,12 @@ public: // instance methods to insert branch nodes and admin objects
         int            i_idxInTree );
 public: // instance methods to recursively modify admin objects via object index of node entries
     void setEnabled( int i_idxInTree, ZS::System::EEnabled i_enabled );
-    void setTraceDetailLevel( int i_idxInTree, int i_iDetailLevel = -1 );
+    void setMethodCallsTraceDetailLevel( int i_idxInTree, ETraceDetailLevelMethodCalls i_eDetailLevel = ETraceDetailLevelMethodCalls::None );
+    void setRuntimeInfoTraceDetailLevel( int i_idxInTree, ETraceDetailLevelRuntimeInfo i_eDetailLevel = ETraceDetailLevelRuntimeInfo::None );
 public: // instance methods to recursively modify admin objects via namespace node entries
     void setEnabled( ZS::System::CIdxTreeEntry* i_pBranch, ZS::System::EEnabled i_enabled );
-    void setTraceDetailLevel( ZS::System::CIdxTreeEntry* i_pBranch, int i_iDetailLevel = -1 );
+    void setMethodCallsTraceDetailLevel( ZS::System::CIdxTreeEntry* i_pBranch, ETraceDetailLevelMethodCalls i_eDetailLevel = ETraceDetailLevelMethodCalls::None );
+    void setRuntimeInfoTraceDetailLevel( ZS::System::CIdxTreeEntry* i_pBranch, ETraceDetailLevelRuntimeInfo i_eDetailLevel = ETraceDetailLevelRuntimeInfo::None );
 public: // overridables
     virtual ZS::System::SErrResultInfo save( const QString& i_strAbsFilePath ) const;
     virtual ZS::System::SErrResultInfo recall( const QString& i_strAbsFilePath );

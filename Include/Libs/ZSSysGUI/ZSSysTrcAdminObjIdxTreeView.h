@@ -57,7 +57,9 @@ public: // class methods
     static QString NameSpace() { return "ZS::Trace::GUI"; }
     static QString ClassName() { return "CDelegateIdxTreeTrcAdminObjs"; }
 public: // ctors and dtor
-    CDelegateIdxTreeTrcAdminObjs( QObject* i_pObjParent = nullptr, int i_iTrcDetailLevel = ZS::Trace::ETraceDetailLevelNone );
+    CDelegateIdxTreeTrcAdminObjs(
+        QObject* i_pObjParent = nullptr,
+        ZS::Trace::ETraceDetailLevelMethodCalls i_eTrcDetailLevel = ZS::Trace::ETraceDetailLevelMethodCalls::None );
     virtual ~CDelegateIdxTreeTrcAdminObjs();
 public: // overridables
     virtual QString nameSpace() const { return NameSpace(); }
@@ -78,7 +80,7 @@ private: // assignment operator not implemented
     CDelegateIdxTreeTrcAdminObjs& operator = ( const CDelegateIdxTreeTrcAdminObjs& );
 protected: // instance members
     mutable QRect m_rectChkBoxTraceEnabled;
-    int           m_iTrcDetailLevel;
+    ZS::Trace::ETraceDetailLevelMethodCalls m_eTrcDetailLevel;
 
 }; // class CDelegateIdxTreeTrcAdminObjs
 
@@ -94,8 +96,8 @@ public: // class methods
 public: // ctors and dtor
     CTreeViewIdxTreeTrcAdminObjs(
         CModelIdxTreeTrcAdminObjs* i_pModel,
-        QWidget*                   i_pWdgtParent = nullptr,
-        int                        i_iTrcDetailLevel = ZS::Trace::ETraceDetailLevelNone );
+        QWidget* i_pWdgtParent = nullptr,
+        ZS::Trace::ETraceDetailLevelMethodCalls i_eTrcDetailLevel = ZS::Trace::ETraceDetailLevelMethodCalls::None );
     virtual ~CTreeViewIdxTreeTrcAdminObjs();
 public: // overridables
     virtual QString nameSpace() const { return NameSpace(); }
@@ -124,16 +126,16 @@ protected slots:
     void onActionNameSpaceSetDetailLevelAdmObjectsTriggered( bool i_bChecked );
 protected: // instance members
     CDelegateIdxTreeTrcAdminObjs* m_pDelegate;
-    QMenu*                        m_pMenuNameSpaceContext;
-    QAction*                      m_pActionNameSpaceTitle;
-    QAction*                      m_pActionNameSpaceExpand;
-    QAction*                      m_pActionNameSpaceCollapse;
-    QAction*                      m_pActionNameSpaceEnableAdmObjects;
-    QAction*                      m_pActionNameSpaceDisableAdmObjects;
-    QAction*                      m_pActionNameSpaceSetDetailLevelAdmObjects;
-    QModelIndex                   m_modelIdxSelectedOnMousePressEvent;
-    QModelIndex                   m_modelIdxSelectedOnMouseReleaseEvent;
-    int                           m_iTrcDetailLevel;
+    QMenu*      m_pMenuNameSpaceContext;
+    QAction*    m_pActionNameSpaceTitle;
+    QAction*    m_pActionNameSpaceExpand;
+    QAction*    m_pActionNameSpaceCollapse;
+    QAction*    m_pActionNameSpaceEnableAdmObjects;
+    QAction*    m_pActionNameSpaceDisableAdmObjects;
+    QAction*    m_pActionNameSpaceSetDetailLevelAdmObjects;
+    QModelIndex m_modelIdxSelectedOnMousePressEvent;
+    QModelIndex m_modelIdxSelectedOnMouseReleaseEvent;
+    ZS::Trace::ETraceDetailLevelMethodCalls m_eTrcDetailLevel;
 
 }; // class CTreeViewIdxTreeTrcAdminObjs
 

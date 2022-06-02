@@ -112,7 +112,6 @@ CMainWindow::CMainWindow(
     m_pActDebugTrcAdminObjIdxTree(nullptr),
     m_pMnuInfo(nullptr),
     m_pActInfoVersion(nullptr),
-    m_pActInfoSettingsFile(nullptr),
     m_pStatusBar(nullptr),
     m_pLblErrors(nullptr),
     m_pWdgtCentral(nullptr),
@@ -334,24 +333,6 @@ CMainWindow::CMainWindow(
     m_pActInfoVersion = new QAction(strActionInfoVersion,this);
     m_pMnuInfo->addAction(m_pActInfoVersion);
 
-    // <MenuItem> Info::Settings File
-    //-------------------------------
-
-    m_pSettingsFile = CApplication::GetInstance()->getSettingsFile();
-
-    if( m_pSettingsFile != nullptr )
-    {
-        QString strActionInfoSettingsFile = "Settings File: " + m_pSettingsFile->fileName();
-
-        QIcon iconModeEdit;
-
-        iconModeEdit.addPixmap( mode2Pixmap(static_cast<int>(EMode::Edit),24) );
-
-        m_pActInfoSettingsFile = new QAction( iconModeEdit, strActionInfoSettingsFile, this );
-
-        m_pMnuInfo->addAction(m_pActInfoSettingsFile);
-    }
-
     // <StatusBar>
     //======================
 
@@ -458,7 +439,6 @@ CMainWindow::~CMainWindow()
     m_pActDebugTrcAdminObjIdxTree = nullptr;
     m_pMnuInfo = nullptr;
     m_pActInfoVersion = nullptr;
-    m_pActInfoSettingsFile = nullptr;
     m_pStatusBar = nullptr;
     m_pLblErrors = nullptr;
     m_pWdgtCentral = nullptr;

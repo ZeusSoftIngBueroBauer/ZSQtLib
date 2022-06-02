@@ -59,7 +59,7 @@ public: // ctor
 
     @param i_bEnabled [in] Default: true
     @param i_bNewTrcAdminObjsEnabledAsDefault [in] Default: true
-    @param i_iNewTrcAdminObjsDefaultDetailLevel [in] Default: 0
+    @param i_eNewTrcAdminObjsDefaultDetailLevel [in] Default: 0
     @param i_bCacheDataIfNotConnected [in] Default: false
     @param i_iCacheDataMaxArrLen [in] Default: 1000
     @param i_bUseLocalTrcFile [in] Default: true
@@ -75,7 +75,7 @@ public: // ctor
 STrcServerSettings::STrcServerSettings(
     bool i_bEnabled,
     bool i_bNewTrcAdminObjsEnabledAsDefault,
-    int  i_iNewTrcAdminObjsDefaultDetailLevel,
+    ETraceDetailLevelMethodCalls i_eNewTrcAdminObjsDefaultDetailLevel,
     bool i_bUseIpcServer,
     bool i_bCacheDataIfNotConnected,
     int  i_iCacheDataMaxArrLen,
@@ -88,7 +88,7 @@ STrcServerSettings::STrcServerSettings(
     m_bEnabled(i_bEnabled),
     m_strAdminObjFileAbsFilePath(),
     m_bNewTrcAdminObjsEnabledAsDefault(i_bNewTrcAdminObjsEnabledAsDefault),
-    m_iNewTrcAdminObjsDefaultDetailLevel(i_iNewTrcAdminObjsDefaultDetailLevel),
+    m_eNewTrcAdminObjsDefaultDetailLevel(i_eNewTrcAdminObjsDefaultDetailLevel),
     m_bUseIpcServer(i_bUseIpcServer),
     m_bCacheDataIfNotConnected(i_bCacheDataIfNotConnected),
     m_iCacheDataMaxArrLen(i_iCacheDataMaxArrLen),
@@ -123,7 +123,7 @@ bool STrcServerSettings::operator == ( const STrcServerSettings& i_settingsOther
     {
         bEqual = false;
     }
-    else if( m_iNewTrcAdminObjsDefaultDetailLevel != i_settingsOther.m_iNewTrcAdminObjsDefaultDetailLevel )
+    else if( m_eNewTrcAdminObjsDefaultDetailLevel != i_settingsOther.m_eNewTrcAdminObjsDefaultDetailLevel )
     {
         bEqual = false;
     }
@@ -198,7 +198,7 @@ QString STrcServerSettings::toString() const
     str += "Enabled: " + bool2Str(m_bEnabled);
     str += ", AdmObjFile: " + m_strAdminObjFileAbsFilePath;
     str += ", AdmObjDefEnabled: " + bool2Str(m_bNewTrcAdminObjsEnabledAsDefault);
-    str += ", AdmObjDefLevel: " + QString::number(m_iNewTrcAdminObjsDefaultDetailLevel);
+    str += ", AdmObjDefLevel: " + CEnum<ETraceDetailLevelMethodCalls>(m_eNewTrcAdminObjsDefaultDetailLevel).toString();
     str += ", UseIpcServer: " + bool2Str(m_bUseIpcServer);
     str += ", CacheData: " + bool2Str(m_bCacheDataIfNotConnected);
     str += ", CacheArrLen: " + QString::number(m_iCacheDataMaxArrLen);
@@ -253,37 +253,37 @@ CTrcServer* CTrcServer::GetInstance()
 }
 
 //------------------------------------------------------------------------------
-/*! Creates the trace server if the trace server is not already existing.
+/*! @brief Creates the trace server if the trace server is not already existing.
 
     If the trace server is already existing the reference to the existing
     trace server is returned and a reference counter is incremented.
 
-    \param i_iTrcDetailLevel [in]
+    @param i_eTrcDetailLevel [in]
         If the methods of the trace server itself should be logged a value
-        greater than 0 (ETraceDetailLevelNone) could be passed here.
+        greater than 0 (ETraceDetailLevelMethodCalls::None) could be passed here.
         But of course trace output may only be written to the local trace
         method file.
-    \param i_iTrcDetailLevelMutex [in]
+    @param i_eTrcDetailLevelMutex [in]
         If the locking and unlocking of the mutex of trace server
-        should be logged a value greater than 0 (ETraceDetailLevelNone)
+        should be logged a value greater than 0 (ETraceDetailLevelMethodCalls::None)
         could be passed here. But the value will be ignored if the detail
         level for the tracer is None.
-    \param i_iTrcDetailLevel [in]
+    @param i_eTrcDetailLevel [in]
         If the methods of the admin object index tree should be logged a value
-        greater than 0 (ETraceDetailLevelNone) could be passed here.
-    \param i_iTrcDetailLevelMutex [in]
+        greater than 0 (ETraceDetailLevelMethodCalls::None) could be passed here.
+    @param i_eTrcDetailLevelMutex [in]
         If the locking and unlocking of the mutex of admin object index tree
-        should be logged a value greater than 0 (ETraceDetailLevelNone)
+        should be logged a value greater than 0 (ETraceDetailLevelMethodCalls::None)
         could be passed here. But the value will be ignored if the detail
         level for the admin object index tree is None.
 
-    \return Pointer to trace server instance.
+    @return Pointer to trace server instance.
 */
 CTrcServer* CTrcServer::CreateInstance(
-    int i_iTrcDetailLevel,
-    int i_iTrcDetailLevelMutex,
-    int i_iTrcDetailLevelAdminObjIdxTree,
-    int i_iTrcDetailLevelAdminObjIdxTreeMutex )
+    ETraceDetailLevelMethodCalls i_eTrcDetailLevel,
+    ETraceDetailLevelMethodCalls i_eTrcDetailLevelMutex,
+    ETraceDetailLevelMethodCalls i_eTrcDetailLevelAdminObjIdxTree,
+    ETraceDetailLevelMethodCalls i_eTrcDetailLevelAdminObjIdxTreeMutex )
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&s_mtx);
@@ -297,10 +297,10 @@ CTrcServer* CTrcServer::CreateInstance(
         // But of course this requires special caution as within the ctor it must
         // be assured that recursively accessed instance members are already valid.
         new CTrcServer(
-            i_iTrcDetailLevel,
-            i_iTrcDetailLevelMutex,
-            i_iTrcDetailLevelAdminObjIdxTree,
-            i_iTrcDetailLevelAdminObjIdxTreeMutex);
+            i_eTrcDetailLevel,
+            i_eTrcDetailLevelMutex,
+            i_eTrcDetailLevelAdminObjIdxTree,
+            i_eTrcDetailLevelAdminObjIdxTreeMutex);
     }
 
     s_pTheInst->incrementRefCount();
@@ -463,10 +463,7 @@ CTrcAdminObj* CTrcServer::GetTraceAdminObj( int i_idxInTree )
 
     if( pTrcServer != nullptr )
     {
-        pTrcAdminObj = pTrcServer->getTraceAdminObj(
-            /* idxInTree           */ i_idxInTree,
-            /* bEnabledAsDefault   */ EEnabled::Undefined,
-            /* iDefaultDetailLevel */ -1 );
+        pTrcAdminObj = pTrcServer->getTraceAdminObj(i_idxInTree);
     }
     return pTrcAdminObj;
 }
@@ -491,18 +488,18 @@ CTrcAdminObj* CTrcServer::GetTraceAdminObj(
             /* strClassName        */ i_strClassName,
             /* strObjName          */ i_strObjName,
             /* bEnabledAsDefault   */ EEnabled::Undefined,
-            /* iDefaultDetailLevel */ -1 );
+            /* eDefaultDetailLevel */ ETraceDetailLevelMethodCalls::Undefined );
     }
     return pTrcAdminObj;
 }
 
 //------------------------------------------------------------------------------
 CTrcAdminObj* CTrcServer::GetTraceAdminObj(
-    const QString&       i_strNameSpace,
-    const QString&       i_strClassName,
-    const QString&       i_strObjName,
-    ZS::System::EEnabled i_bEnabledAsDefault,
-    int                  i_iDefaultDetailLevel )
+    const QString&               i_strNameSpace,
+    const QString&               i_strClassName,
+    const QString&               i_strObjName,
+    ZS::System::EEnabled         i_bEnabledAsDefault,
+    ETraceDetailLevelMethodCalls i_eDefaultDetailLevel )
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&s_mtx);
@@ -518,7 +515,7 @@ CTrcAdminObj* CTrcServer::GetTraceAdminObj(
             /* strClassName        */ i_strClassName,
             /* strObjName          */ i_strObjName,
             /* bEnabledAsDefault   */ i_bEnabledAsDefault,
-            /* iDefaultDetailLevel */ i_iDefaultDetailLevel );
+            /* eDefaultDetailLevel */ i_eDefaultDetailLevel );
     }
     return pTrcAdminObj;
 }
@@ -608,39 +605,39 @@ protected: // ctors and dtor
     The constructor is protected. The singleton class must be created via the
     static method createInstance.
 
-    @param i_iTrcDetailLevel [in]
+    @param i_eTrcDetailLevel [in]
         To trace the methods of the trace server itself a value greater than
         None may be passed here. But of course trace output may only be written
         to the local trace method file.
-    \param i_iTrcDetailLevel [in]
+    @param i_eTrcDetailLevel [in]
         If the methods of the trace server itself should be logged a value
-        greater than 0 (ETraceDetailLevelNone) could be passed here.
-    \param i_iTrcDetailLevelMutex [in]
+        greater than 0 (ETraceDetailLevelMethodCalls::None) could be passed here.
+    @param i_eTrcDetailLevelMutex [in]
         If the locking and unlocking of the mutex of trace server
-        should be logged a value greater than 0 (ETraceDetailLevelNone)
+        should be logged a value greater than 0 (ETraceDetailLevelMethodCalls::None)
         could be passed here. But the value will be ignored if the detail
         level for the tracer is None.
-    \param i_iTrcDetailLevel [in]
+    @param i_eTrcDetailLevel [in]
         If the methods of the admin object index tree should be logged a value
-        greater than 0 (ETraceDetailLevelNone) could be passed here.
-    \param i_iTrcDetailLevelMutex [in]
+        greater than 0 (ETraceDetailLevelMethodCalls::None) could be passed here.
+    @param i_eTrcDetailLevelMutex [in]
         If the locking and unlocking of the mutex of admin object index tree
-        should be logged a value greater than 0 (ETraceDetailLevelNone)
+        should be logged a value greater than 0 (ETraceDetailLevelMethodCalls::None)
         could be passed here. But the value will be ignored if the detail
         level for the admin object index tree is None.
 */
 CTrcServer::CTrcServer(
-    int i_iTrcDetailLevel,
-    int i_iTrcDetailLevelMutex,
-    int i_iTrcDetailLevelAdminObjIdxTree,
-    int i_iTrcDetailLevelAdminObjIdxTreeMutex ) :
+    ETraceDetailLevelMethodCalls i_eTrcDetailLevel,
+    ETraceDetailLevelMethodCalls i_eTrcDetailLevelMutex,
+    ETraceDetailLevelMethodCalls i_eTrcDetailLevelAdminObjIdxTree,
+    ETraceDetailLevelMethodCalls i_eTrcDetailLevelAdminObjIdxTreeMutex ) :
 //------------------------------------------------------------------------------
     QObject(),
     m_pMtx(nullptr),
     m_pTrcAdminObjIdxTree(nullptr),
     m_trcSettings(),
     m_pTrcMthFile(nullptr),
-    m_iTrcDetailLevel(i_iTrcDetailLevel),
+    m_eTrcDetailLevel(i_eTrcDetailLevel),
     m_iRefCount(0)
 {
     setObjectName("ZSTrcServer");
@@ -652,22 +649,22 @@ CTrcServer::CTrcServer(
 
     CMethodTracer mthTracer(
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* eTrcDetailLevel    */ m_eTrcDetailLevel,
+        /* eFilterDetailLavel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "ctor",
         /* strMthInArgs       */ "" );
 
-    m_pMtx = new CMutex(QMutex::Recursive, "ZS::Trace::CTrcServer", i_iTrcDetailLevelMutex);
+    m_pMtx = new CMutex(QMutex::Recursive, "ZS::Trace::CTrcServer", i_eTrcDetailLevelMutex);
 
     // Create index tree of trace admin objects. Pass the server as the parent object.
     // If the parent object is the trace server the index tree will not create a trace
     // admin object to trace the method calls.
     m_pTrcAdminObjIdxTree = new CIdxTreeTrcAdminObjs(
         "ZSTrcServer", this,
-        i_iTrcDetailLevelAdminObjIdxTree, i_iTrcDetailLevelAdminObjIdxTreeMutex);
+        i_eTrcDetailLevelAdminObjIdxTree, i_eTrcDetailLevelAdminObjIdxTreeMutex);
 
     // See comment in "CreateInstance" above.
     s_pTheInst = this;
@@ -689,14 +686,14 @@ CTrcServer::~CTrcServer()
     // file is closed and freed.
 
     {   CMethodTracer mthTracer(
-        /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
-        /* strObjName         */ objectName(),
-        /* strMethod          */ "dtor",
-        /* strMthInArgs       */ "" );
+            /* pTrcMthFile        */ m_pTrcMthFile,
+            /* eTrcDetailLevel    */ m_eTrcDetailLevel,
+            /* eFilterDetailLavel */ ETraceDetailLevelMethodCalls::EnterLeave,
+            /* strNameSpace       */ nameSpace(),
+            /* strClassName       */ className(),
+            /* strObjName         */ objectName(),
+            /* strMethod          */ "dtor",
+            /* strMthInArgs       */ "" );
 
         if( !m_trcSettings.m_strAdminObjFileAbsFilePath.isEmpty() )
         {
@@ -731,7 +728,7 @@ CTrcServer::~CTrcServer()
     m_pTrcAdminObjIdxTree = nullptr;
     //m_trcSettings;
     m_pTrcMthFile = nullptr;
-    m_iTrcDetailLevel = 0;
+    m_eTrcDetailLevel = static_cast<ETraceDetailLevelMethodCalls>(0);
     m_iRefCount = 0;
 
 } // dtor
@@ -749,11 +746,11 @@ CIdxTreeTrcAdminObjs* CTrcServer::getTraceAdminObjIdxTree()
 //------------------------------------------------------------------------------
 {
     // When the mutex creates trace output also this method should be traced.
-    int iTrcDetailLevel = m_pMtx == nullptr ? ETraceDetailLevelNone : m_pMtx->getMethodTraceDetailLevel();
+    ETraceDetailLevelMethodCalls eTrcDetailLevel = m_pMtx == nullptr ? ETraceDetailLevelMethodCalls::None : m_pMtx->getMethodTraceDetailLevel();
     CMethodTracer mthTracer(
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ iTrcDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* eTrcDetailLevel    */ eTrcDetailLevel,
+        /* eFilterDetailLavel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
@@ -769,26 +766,29 @@ public: // instance methods to add, remove and modify admin objects
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CTrcAdminObj* CTrcServer::getTraceAdminObj(
-    int      i_idxInTree,
-    EEnabled i_bEnabledAsDefault,
-    int      i_iDefaultDetailLevel )
+/*! @brief Returns the trace admin object at the given tree index.
+
+    @param i_idxInTree [in]
+        Index in tree of trace admin objects.
+
+    @return Pointer trace admin object or nullptr, if no trace admin object
+            is existing at the given tree index.
+*/
+CTrcAdminObj* CTrcServer::getTraceAdminObj( int i_idxInTree )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     QString strMthRet;
 
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
+    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
     {
-        strMthInArgs  = "IdxInTree: " + QString::number(i_idxInTree);
-        strMthInArgs += ", EnabledAsDefault: " + CEnumEnabled::toString(i_bEnabledAsDefault);
-        strMthInArgs += ", DefaultDetailLevel: " + QString::number(i_iDefaultDetailLevel);
+        strMthInArgs = "IdxInTree: " + QString::number(i_idxInTree);
     }
 
     CMethodTracer mthTracer(
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* eTrcDetailLevel    */ m_eTrcDetailLevel,
+        /* eFilterDetailLavel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
@@ -812,11 +812,11 @@ CTrcAdminObj* CTrcServer::getTraceAdminObj(
             CErrLog::GetInstance()->addEntry(errResultInfo);
         }
     }
-    else // if( !i_strObjName.isEmpty() || !i_strClassName.isEmpty() || !i_strNameSpace.isEmpty() )
+    else
     {
         pTrcAdminObj = m_pTrcAdminObjIdxTree->getTraceAdminObj(i_idxInTree);
 
-        if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
+        if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
         {
             if( pTrcAdminObj != nullptr )
             {
@@ -828,37 +828,53 @@ CTrcAdminObj* CTrcServer::getTraceAdminObj(
             }
             mthTracer.setMethodReturn(strMthRet);
         }
-    } // if( !i_strObjName.isEmpty() || !i_strClassName.isEmpty() || !i_strNameSpace.isEmpty() )
+    }
 
     return pTrcAdminObj;
 
 } // getTraceAdminObj
 
 //------------------------------------------------------------------------------
+/*! @brief Returns a trace admin object with the given name space, class and
+           object name.
+
+    If not trace admin object is yet existing with the given name space, class
+    and object name a new trace admin object is created.
+    If already existing a reference counter is incremented and the pointer to
+    the already existing object is returned.
+
+    @param i_strNameSpace [in] Name space of the objects class (e.g. "ZS::Diagram")
+    @param i_strClassName [in] Class name of the object (e.g. "CWdgtDiagram")
+    @param i_strObjName [in] "Real" object name (e.g. "PvT" (Power versus Time))
+    @param i_bEnabledAsDefault [in] Undefined means use "trcServerSettings".
+    @param i_eDefaultDetailLevel [in] Undefined means use "trcServerSettings".
+
+   @return Pointer to trace admin object.
+*/
 CTrcAdminObj* CTrcServer::getTraceAdminObj(
-    const QString& i_strNameSpace,
-    const QString& i_strClassName,
-    const QString& i_strObjName,
-    EEnabled       i_bEnabledAsDefault,
-    int            i_iDefaultDetailLevel )
+    const QString&               i_strNameSpace,
+    const QString&               i_strClassName,
+    const QString&               i_strObjName,
+    EEnabled                     i_bEnabledAsDefault,
+    ETraceDetailLevelMethodCalls i_eDefaultDetailLevel )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     QString strMthRet;
 
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
+    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
     {
         strMthInArgs  = "NameSpace: " + i_strNameSpace;
         strMthInArgs += ", ClassName: " + i_strClassName;
         strMthInArgs += ", ObjName: " + i_strObjName;
         strMthInArgs += ", EnabledAsDefault: " + CEnumEnabled::toString(i_bEnabledAsDefault);
-        strMthInArgs += ", DefaultDetailLevel: " + QString::number(i_iDefaultDetailLevel);
+        strMthInArgs += ", DefaultDetailLevel: " + CEnumTraceDetailLevelMethodCalls(i_eDefaultDetailLevel).toString();
     }
 
     CMethodTracer mthTracer(
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* eTrcDetailLevel    */ m_eTrcDetailLevel,
+        /* eFilterDetailLavel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
@@ -884,27 +900,28 @@ CTrcAdminObj* CTrcServer::getTraceAdminObj(
     }
     else // if( !i_strObjName.isEmpty() || !i_strClassName.isEmpty() || !i_strNameSpace.isEmpty() )
     {
-        EEnabled bEnabled     = m_trcSettings.m_bNewTrcAdminObjsEnabledAsDefault ? EEnabled::Yes : EEnabled::No;
-        int      iDetailLevel = m_trcSettings.m_iNewTrcAdminObjsDefaultDetailLevel;
+        EEnabled bEnabled = m_trcSettings.m_bNewTrcAdminObjsEnabledAsDefault ? EEnabled::Yes : EEnabled::No;
+        ETraceDetailLevelMethodCalls eDetailLevel = m_trcSettings.m_eNewTrcAdminObjsDefaultDetailLevel;
 
         if( i_bEnabledAsDefault != EEnabled::Undefined )
         {
             bEnabled = i_bEnabledAsDefault;
         }
-        if( i_iDefaultDetailLevel >= 0 )
+        if( i_eDefaultDetailLevel >= ETraceDetailLevelMethodCalls::None )
         {
-            iDetailLevel = i_iDefaultDetailLevel;
+            eDetailLevel = i_eDefaultDetailLevel;
         }
 
         pTrcAdminObj = m_pTrcAdminObjIdxTree->getTraceAdminObj(
-            /* strNameSpace        */ i_strNameSpace,
-            /* strClassName        */ i_strClassName,
-            /* strObjName          */ i_strObjName,
-            /* bEnabledAsDefault   */ bEnabled,
-            /* iDefaultDetailLevel */ iDetailLevel,
-            /* bIncrementRefCount  */ true );
+            /* strNameSpace                   */ i_strNameSpace,
+            /* strClassName                   */ i_strClassName,
+            /* strObjName                     */ i_strObjName,
+            /* bEnabledAsDefault              */ bEnabled,
+            /* eDefaultDetailLevelMethodCalls */ eDetailLevel,
+            /* eDefaultDetailLevelRuntimeInfo */ ETraceDetailLevelRuntimeInfo::None,
+            /* bIncrementRefCount             */ true );
 
-        if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
+        if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
         {
             if( pTrcAdminObj != nullptr )
             {
@@ -947,7 +964,7 @@ void CTrcServer::renameTraceAdminObj(
 {
     QString strMthInArgs;
 
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
+    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
     {
         strMthInArgs = QString(*io_ppTrcAdminObj == nullptr ? "nullptr" : (*io_ppTrcAdminObj)->getCalculatedKeyInTree());
         strMthInArgs += ", NewObjName: " + i_strNewObjName;
@@ -955,8 +972,8 @@ void CTrcServer::renameTraceAdminObj(
 
     CMethodTracer mthTracer(
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* eTrcDetailLevel    */ m_eTrcDetailLevel,
+        /* eFilterDetailLavel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
@@ -970,20 +987,27 @@ void CTrcServer::renameTraceAdminObj(
 } // renameTraceAdminObj
 
 //------------------------------------------------------------------------------
+/*! @brief Releases the trace admin object.
+
+    The trace admin object will not be destroyed. Only the reference counter
+    will be decremented.
+
+    @param i_pTrcAdminObj [in] Pointer to trace admin object to be released.
+*/
 void CTrcServer::releaseTraceAdminObj( CTrcAdminObj* i_pTrcAdminObj )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
 
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
+    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
     {
         strMthInArgs = i_pTrcAdminObj == nullptr ? "nullptr" : i_pTrcAdminObj->getCalculatedKeyInTree();
     }
 
     CMethodTracer mthTracer(
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* eTrcDetailLevel    */ m_eTrcDetailLevel,
+        /* eFilterDetailLavel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
@@ -1108,7 +1132,7 @@ void CTrcServer::traceMethodEnter(
 {
     CMutexLocker mtxLocker(m_pMtx);
 
-    if( i_pTrcAdminObj != nullptr && (i_pTrcAdminObj->getTraceDetailLevel() > ETraceDetailLevelNone) && isActive() )
+    if( areMethodCallsActive(i_pTrcAdminObj) )
     {
         addEntry(
             /* strThreadName */ currentThreadName(),
@@ -1133,7 +1157,7 @@ void CTrcServer::traceMethodEnter(
 {
     CMutexLocker mtxLocker(m_pMtx);
 
-    if( i_pTrcAdminObj != nullptr && (i_pTrcAdminObj->getTraceDetailLevel() > ETraceDetailLevelNone) && isActive() )
+    if( areMethodCallsActive(i_pTrcAdminObj) )
     {
         addEntry(
             /* strThreadName */ currentThreadName(),
@@ -1157,7 +1181,7 @@ void CTrcServer::traceMethod(
 {
     CMutexLocker mtxLocker(m_pMtx);
 
-    if( i_pTrcAdminObj != nullptr && (i_pTrcAdminObj->getTraceDetailLevel() > ETraceDetailLevelNone) && isActive() )
+    if( isRuntimeInfoActive(i_pTrcAdminObj) )
     {
         addEntry(
             /* strThreadName */ currentThreadName(),
@@ -1182,7 +1206,7 @@ void CTrcServer::traceMethod(
 {
     CMutexLocker mtxLocker(m_pMtx);
 
-    if( i_pTrcAdminObj != nullptr && (i_pTrcAdminObj->getTraceDetailLevel() > ETraceDetailLevelNone) && isActive() )
+    if( isRuntimeInfoActive(i_pTrcAdminObj) )
     {
         addEntry(
             /* strThreadName */ currentThreadName(),
@@ -1221,7 +1245,7 @@ void CTrcServer::traceMethodLeave(
 {
     CMutexLocker mtxLocker(m_pMtx);
 
-    if( i_pTrcAdminObj != nullptr && (i_pTrcAdminObj->getTraceDetailLevel() > ETraceDetailLevelNone) && isActive() )
+    if( areMethodCallsActive(i_pTrcAdminObj) )
     {
         addEntry(
             /* strThreadName */ currentThreadName(),
@@ -1248,7 +1272,7 @@ void CTrcServer::traceMethodLeave(
 {
     CMutexLocker mtxLocker(m_pMtx);
 
-    if( i_pTrcAdminObj != nullptr && (i_pTrcAdminObj->getTraceDetailLevel() > ETraceDetailLevelNone) && isActive() )
+    if( areMethodCallsActive(i_pTrcAdminObj) )
     {
         addEntry(
             /* strThreadName */ currentThreadName(),
@@ -1372,6 +1396,56 @@ bool CTrcServer::isActive() const
     return isEnabled() && isLocalTrcFileActive();
 }
 
+//------------------------------------------------------------------------------
+/*! @brief Checks whether tracing is active.
+
+    Tracing is active if tracing is enabled at all (flag enabled of the
+    trace settings) and if the local trace file is used.
+
+    This method may be overridden to add additional checks.
+
+    The Ipc Trace Server overrides this method and also checks whether
+    remote tracing (output to remote client) is enabled.
+
+    @return true if tracing is active, false otherwise.
+*/
+bool CTrcServer::areMethodCallsActive( const CTrcAdminObj* i_pTrcAdminObj ) const
+//------------------------------------------------------------------------------
+{
+    CMutexLocker mtxLocker(m_pMtx);
+    bool bIsActive = false;
+    if( i_pTrcAdminObj != nullptr && i_pTrcAdminObj->areMethodCallsActive(ETraceDetailLevelMethodCalls::EnterLeave) )
+    {
+        bIsActive = isActive();
+    }
+    return bIsActive;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Checks whether tracing is active.
+
+    Tracing is active if tracing is enabled at all (flag enabled of the
+    trace settings) and if the local trace file is used.
+
+    This method may be overridden to add additional checks.
+
+    The Ipc Trace Server overrides this method and also checks whether
+    remote tracing (output to remote client) is enabled.
+
+    @return true if tracing is active, false otherwise.
+*/
+bool CTrcServer::isRuntimeInfoActive( const CTrcAdminObj* i_pTrcAdminObj ) const
+//------------------------------------------------------------------------------
+{
+    CMutexLocker mtxLocker(m_pMtx);
+    bool bIsActive = false;
+    if( i_pTrcAdminObj != nullptr && i_pTrcAdminObj->isRuntimeInfoActive(ETraceDetailLevelRuntimeInfo::Critical) )
+    {
+        bIsActive = isActive();
+    }
+    return bIsActive;
+}
+
 /*==============================================================================
 public: // overridables
 ==============================================================================*/
@@ -1381,11 +1455,11 @@ void CTrcServer::setEnabled( bool i_bEnabled )
 //------------------------------------------------------------------------------
 {
     // When the mutex creates trace output also this method should be traced.
-    int iTrcDetailLevel = m_pMtx == nullptr ? ETraceDetailLevelNone : m_pMtx->getMethodTraceDetailLevel();
+    ETraceDetailLevelMethodCalls eTrcDetailLevel = m_pMtx == nullptr ? ETraceDetailLevelMethodCalls::None : m_pMtx->getMethodTraceDetailLevel();
     CMethodTracer mthTracer(
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ iTrcDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* eTrcDetailLevel    */ eTrcDetailLevel,
+        /* eFilterDetailLavel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
@@ -1412,11 +1486,11 @@ bool CTrcServer::isEnabled() const
 //------------------------------------------------------------------------------
 {
     // When the mutex creates trace output also this method should be traced.
-    int iTrcDetailLevel = m_pMtx == nullptr ? ETraceDetailLevelNone : m_pMtx->getMethodTraceDetailLevel();
+    ETraceDetailLevelMethodCalls eTrcDetailLevel = m_pMtx == nullptr ? ETraceDetailLevelMethodCalls::None : m_pMtx->getMethodTraceDetailLevel();
     CMethodTracer mthTracer(
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ iTrcDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* eTrcDetailLevel    */ eTrcDetailLevel,
+        /* eFilterDetailLavel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
@@ -1437,15 +1511,15 @@ void CTrcServer::setNewTrcAdminObjsEnabledAsDefault( bool i_bEnabled )
 {
     QString strMthInArgs;
 
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
+    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
     {
         strMthInArgs = bool2Str(i_bEnabled);
     }
 
     CMethodTracer mthTracer(
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* eTrcDetailLevel    */ m_eTrcDetailLevel,
+        /* eFilterDetailLavel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
@@ -1467,11 +1541,11 @@ bool CTrcServer::areNewTrcAdminObjsEnabledAsDefault() const
 //------------------------------------------------------------------------------
 {
     // When the mutex creates trace output also this method should be traced.
-    int iTrcDetailLevel = m_pMtx == nullptr ? ETraceDetailLevelNone : m_pMtx->getMethodTraceDetailLevel();
+    ETraceDetailLevelMethodCalls eTrcDetailLevel = m_pMtx == nullptr ? ETraceDetailLevelMethodCalls::None : m_pMtx->getMethodTraceDetailLevel();
     CMethodTracer mthTracer(
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ iTrcDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* eTrcDetailLevel    */ eTrcDetailLevel,
+        /* eFilterDetailLavel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
@@ -1483,20 +1557,20 @@ bool CTrcServer::areNewTrcAdminObjsEnabledAsDefault() const
 }
 
 //------------------------------------------------------------------------------
-void CTrcServer::setNewTrcAdminObjsDefaultDetailLevel( int i_iDetailLevel )
+void CTrcServer::setNewTrcAdminObjsDefaultDetailLevel( ETraceDetailLevelMethodCalls i_eDetailLevel )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
 
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
+    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
     {
-        strMthInArgs = QString::number(i_iDetailLevel);
+        strMthInArgs = CEnumTraceDetailLevelMethodCalls(i_eDetailLevel).toString();
     }
 
     CMethodTracer mthTracer(
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* eTrcDetailLevel    */ m_eTrcDetailLevel,
+        /* eFilterDetailLavel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
@@ -1505,24 +1579,24 @@ void CTrcServer::setNewTrcAdminObjsDefaultDetailLevel( int i_iDetailLevel )
 
     CMutexLocker mtxLocker(m_pMtx);
 
-    if( m_trcSettings.m_iNewTrcAdminObjsDefaultDetailLevel != i_iDetailLevel )
+    if( m_trcSettings.m_eNewTrcAdminObjsDefaultDetailLevel != i_eDetailLevel )
     {
-        m_trcSettings.m_iNewTrcAdminObjsDefaultDetailLevel = i_iDetailLevel;
+        m_trcSettings.m_eNewTrcAdminObjsDefaultDetailLevel = i_eDetailLevel;
 
         emit traceSettingsChanged(this);
     }
 } // setNewTrcAdminObjsDefaultDetailLevel
 
 //------------------------------------------------------------------------------
-int CTrcServer::getNewTrcAdminObjsDefaultDetailLevel() const
+ETraceDetailLevelMethodCalls CTrcServer::getNewTrcAdminObjsDefaultDetailLevel() const
 //------------------------------------------------------------------------------
 {
     // When the mutex creates trace output also this method should be traced.
-    int iTrcDetailLevel = m_pMtx == nullptr ? ETraceDetailLevelNone : m_pMtx->getMethodTraceDetailLevel();
+    ETraceDetailLevelMethodCalls eTrcDetailLevel = m_pMtx == nullptr ? ETraceDetailLevelMethodCalls::None : m_pMtx->getMethodTraceDetailLevel();
     CMethodTracer mthTracer(
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ iTrcDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* eTrcDetailLevel    */ eTrcDetailLevel,
+        /* eFilterDetailLavel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
@@ -1530,7 +1604,7 @@ int CTrcServer::getNewTrcAdminObjsDefaultDetailLevel() const
         /* strMthInArgs       */ "" );
 
     CMutexLocker mtxLocker(m_pMtx);
-    return m_trcSettings.m_iNewTrcAdminObjsDefaultDetailLevel;
+    return m_trcSettings.m_eNewTrcAdminObjsDefaultDetailLevel;
 }
 
 /*==============================================================================
@@ -1542,11 +1616,11 @@ void CTrcServer::setAdminObjFileAbsoluteFilePath( const QString& i_strAbsFilePat
 //------------------------------------------------------------------------------
 {
     // When the mutex creates trace output also this method should be traced.
-    int iTrcDetailLevel = m_pMtx == nullptr ? ETraceDetailLevelNone : m_pMtx->getMethodTraceDetailLevel();
+    ETraceDetailLevelMethodCalls eTrcDetailLevel = m_pMtx == nullptr ? ETraceDetailLevelMethodCalls::None : m_pMtx->getMethodTraceDetailLevel();
     CMethodTracer mthTracer(
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ iTrcDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* eTrcDetailLevel    */ eTrcDetailLevel,
+        /* eFilterDetailLavel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
@@ -1568,11 +1642,11 @@ QString CTrcServer::getAdminObjFileAbsoluteFilePath() const
 //------------------------------------------------------------------------------
 {
     // When the mutex creates trace output also this method should be traced.
-    int iTrcDetailLevel = m_pMtx == nullptr ? ETraceDetailLevelNone : m_pMtx->getMethodTraceDetailLevel();
+    ETraceDetailLevelMethodCalls eTrcDetailLevel = m_pMtx == nullptr ? ETraceDetailLevelMethodCalls::None : m_pMtx->getMethodTraceDetailLevel();
     CMethodTracer mthTracer(
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ iTrcDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* eTrcDetailLevel    */ eTrcDetailLevel,
+        /* eFilterDetailLavel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
@@ -1589,15 +1663,15 @@ SErrResultInfo CTrcServer::recallAdminObjs( const QString& i_strAbsFilePath )
 {
     QString strMthInArgs;
 
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
+    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
     {
         strMthInArgs = "AbsFilePath: " + i_strAbsFilePath;
     }
 
     CMethodTracer mthTracer(
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* eTrcDetailLevel    */ m_eTrcDetailLevel,
+        /* eFilterDetailLavel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
@@ -1615,7 +1689,7 @@ SErrResultInfo CTrcServer::recallAdminObjs( const QString& i_strAbsFilePath )
 
     SErrResultInfo errResultInfo = m_pTrcAdminObjIdxTree->recall(m_trcSettings.m_strAdminObjFileAbsFilePath);
 
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
+    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
     {
         mthTracer.setMethodReturn(errResultInfo);
     }
@@ -1628,15 +1702,15 @@ SErrResultInfo CTrcServer::saveAdminObjs( const QString& i_strAbsFilePath )
 {
     QString strMthInArgs;
 
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
+    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
     {
         strMthInArgs = "AbsFilePath: " + i_strAbsFilePath;
     }
 
     CMethodTracer mthTracer(
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* eTrcDetailLevel    */ m_eTrcDetailLevel,
+        /* eFilterDetailLavel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
@@ -1653,7 +1727,7 @@ SErrResultInfo CTrcServer::saveAdminObjs( const QString& i_strAbsFilePath )
 
     SErrResultInfo errResultInfo = m_pTrcAdminObjIdxTree->save(m_trcSettings.m_strAdminObjFileAbsFilePath);
 
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
+    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
     {
         mthTracer.setMethodReturn(errResultInfo);
     }
@@ -1669,11 +1743,11 @@ void CTrcServer::setUseLocalTrcFile( bool i_bUse )
 //------------------------------------------------------------------------------
 {
     // When the mutex creates trace output also this method should be traced.
-    int iTrcDetailLevel = m_pMtx == nullptr ? ETraceDetailLevelNone : m_pMtx->getMethodTraceDetailLevel();
+    ETraceDetailLevelMethodCalls eTrcDetailLevel = m_pMtx == nullptr ? ETraceDetailLevelMethodCalls::None : m_pMtx->getMethodTraceDetailLevel();
     CMethodTracer mthTracer(
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ iTrcDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* eTrcDetailLevel    */ eTrcDetailLevel,
+        /* eFilterDetailLavel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
@@ -1700,11 +1774,11 @@ bool CTrcServer::isLocalTrcFileUsed() const
 //------------------------------------------------------------------------------
 {
     // When the mutex creates trace output also this method should be traced.
-    int iTrcDetailLevel = m_pMtx == nullptr ? ETraceDetailLevelNone : m_pMtx->getMethodTraceDetailLevel();
+    ETraceDetailLevelMethodCalls eTrcDetailLevel = m_pMtx == nullptr ? ETraceDetailLevelMethodCalls::None : m_pMtx->getMethodTraceDetailLevel();
     CMethodTracer mthTracer(
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ iTrcDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* eTrcDetailLevel    */ eTrcDetailLevel,
+        /* eFilterDetailLavel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
@@ -1720,11 +1794,11 @@ void CTrcServer::setLocalTrcFileAbsoluteFilePath( const QString& i_strAbsFilePat
 //------------------------------------------------------------------------------
 {
     // When the mutex creates trace output also this method should be traced.
-    int iTrcDetailLevel = m_pMtx == nullptr ? ETraceDetailLevelNone : m_pMtx->getMethodTraceDetailLevel();
+    ETraceDetailLevelMethodCalls eTrcDetailLevel = m_pMtx == nullptr ? ETraceDetailLevelMethodCalls::None : m_pMtx->getMethodTraceDetailLevel();
     CMethodTracer mthTracer(
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ iTrcDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* eTrcDetailLevel    */ eTrcDetailLevel,
+        /* eFilterDetailLavel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
@@ -1751,11 +1825,11 @@ QString CTrcServer::getLocalTrcFileAbsoluteFilePath() const
 //------------------------------------------------------------------------------
 {
     // When the mutex creates trace output also this method should be traced.
-    int iTrcDetailLevel = m_pMtx == nullptr ? ETraceDetailLevelNone : m_pMtx->getMethodTraceDetailLevel();
+    ETraceDetailLevelMethodCalls eTrcDetailLevel = m_pMtx == nullptr ? ETraceDetailLevelMethodCalls::None : m_pMtx->getMethodTraceDetailLevel();
     CMethodTracer mthTracer(
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ iTrcDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* eTrcDetailLevel    */ eTrcDetailLevel,
+        /* eFilterDetailLavel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
@@ -1771,11 +1845,11 @@ QString CTrcServer::getLocalTrcFileCompleteBaseName() const
 //------------------------------------------------------------------------------
 {
     // When the mutex creates trace output also this method should be traced.
-    int iTrcDetailLevel = m_pMtx == nullptr ? ETraceDetailLevelNone : m_pMtx->getMethodTraceDetailLevel();
+    ETraceDetailLevelMethodCalls eTrcDetailLevel = m_pMtx == nullptr ? ETraceDetailLevelMethodCalls::None : m_pMtx->getMethodTraceDetailLevel();
     CMethodTracer mthTracer(
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ iTrcDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* eTrcDetailLevel    */ eTrcDetailLevel,
+        /* eFilterDetailLavel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
@@ -1798,11 +1872,11 @@ QString CTrcServer::getLocalTrcFileAbsolutePath() const
 //------------------------------------------------------------------------------
 {
     // When the mutex creates trace output also this method should be traced.
-    int iTrcDetailLevel = m_pMtx == nullptr ? ETraceDetailLevelNone : m_pMtx->getMethodTraceDetailLevel();
+    ETraceDetailLevelMethodCalls eTrcDetailLevel = m_pMtx == nullptr ? ETraceDetailLevelMethodCalls::None : m_pMtx->getMethodTraceDetailLevel();
     CMethodTracer mthTracer(
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ iTrcDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* eTrcDetailLevel    */ eTrcDetailLevel,
+        /* eFilterDetailLavel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
@@ -1825,11 +1899,11 @@ bool CTrcServer::isLocalTrcFileActive() const
 //------------------------------------------------------------------------------
 {
     // When the mutex creates trace output also this method should be traced.
-    int iTrcDetailLevel = m_pMtx == nullptr ? ETraceDetailLevelNone : m_pMtx->getMethodTraceDetailLevel();
+    ETraceDetailLevelMethodCalls eTrcDetailLevel = m_pMtx == nullptr ? ETraceDetailLevelMethodCalls::None : m_pMtx->getMethodTraceDetailLevel();
     CMethodTracer mthTracer(
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ iTrcDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* eTrcDetailLevel    */ eTrcDetailLevel,
+        /* eFilterDetailLavel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
@@ -1845,11 +1919,11 @@ CTrcMthFile* CTrcServer::getLocalTrcFile()
 //------------------------------------------------------------------------------
 {
     // When the mutex creates trace output also this method should be traced.
-    int iTrcDetailLevel = m_pMtx == nullptr ? ETraceDetailLevelNone : m_pMtx->getMethodTraceDetailLevel();
+    ETraceDetailLevelMethodCalls eTrcDetailLevel = m_pMtx == nullptr ? ETraceDetailLevelMethodCalls::None : m_pMtx->getMethodTraceDetailLevel();
     CMethodTracer mthTracer(
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ iTrcDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* eTrcDetailLevel    */ eTrcDetailLevel,
+        /* eFilterDetailLavel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
@@ -1865,11 +1939,11 @@ void CTrcServer::setLocalTrcFileAutoSaveIntervalInMs( int i_iAutoSaveInterval_ms
 //------------------------------------------------------------------------------
 {
     // When the mutex creates trace output also this method should be traced.
-    int iTrcDetailLevel = m_pMtx == nullptr ? ETraceDetailLevelNone : m_pMtx->getMethodTraceDetailLevel();
+    ETraceDetailLevelMethodCalls eTrcDetailLevel = m_pMtx == nullptr ? ETraceDetailLevelMethodCalls::None : m_pMtx->getMethodTraceDetailLevel();
     CMethodTracer mthTracer(
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ iTrcDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* eTrcDetailLevel    */ eTrcDetailLevel,
+        /* eFilterDetailLavel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
@@ -1895,11 +1969,11 @@ int CTrcServer::getLocalTrcFileAutoSaveIntervalInMs() const
 //------------------------------------------------------------------------------
 {
     // When the mutex creates trace output also this method should be traced.
-    int iTrcDetailLevel = m_pMtx == nullptr ? ETraceDetailLevelNone : m_pMtx->getMethodTraceDetailLevel();
+    ETraceDetailLevelMethodCalls eTrcDetailLevel = m_pMtx == nullptr ? ETraceDetailLevelMethodCalls::None : m_pMtx->getMethodTraceDetailLevel();
     CMethodTracer mthTracer(
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ iTrcDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* eTrcDetailLevel    */ eTrcDetailLevel,
+        /* eFilterDetailLavel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
@@ -1915,11 +1989,11 @@ void CTrcServer::setLocalTrcFileCloseFileAfterEachWrite( bool i_bCloseFile )
 //------------------------------------------------------------------------------
 {
     // When the mutex creates trace output also this method should be traced.
-    int iTrcDetailLevel = m_pMtx == nullptr ? ETraceDetailLevelNone : m_pMtx->getMethodTraceDetailLevel();
+    ETraceDetailLevelMethodCalls eTrcDetailLevel = m_pMtx == nullptr ? ETraceDetailLevelMethodCalls::None : m_pMtx->getMethodTraceDetailLevel();
     CMethodTracer mthTracer(
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ iTrcDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* eTrcDetailLevel    */ eTrcDetailLevel,
+        /* eFilterDetailLavel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
@@ -1949,11 +2023,11 @@ bool CTrcServer::getLocalTrcFileCloseFileAfterEachWrite() const
 //------------------------------------------------------------------------------
 {
     // When the mutex creates trace output also this method should be traced.
-    int iTrcDetailLevel = m_pMtx == nullptr ? ETraceDetailLevelNone : m_pMtx->getMethodTraceDetailLevel();
+    ETraceDetailLevelMethodCalls eTrcDetailLevel = m_pMtx == nullptr ? ETraceDetailLevelMethodCalls::None : m_pMtx->getMethodTraceDetailLevel();
     CMethodTracer mthTracer(
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ iTrcDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* eTrcDetailLevel    */ eTrcDetailLevel,
+        /* eFilterDetailLavel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
@@ -1973,11 +2047,11 @@ void CTrcServer::setLocalTrcFileSubFileCountMax( int i_iCountMax )
 //------------------------------------------------------------------------------
 {
     // When the mutex creates trace output also this method should be traced.
-    int iTrcDetailLevel = m_pMtx == nullptr ? ETraceDetailLevelNone : m_pMtx->getMethodTraceDetailLevel();
+    ETraceDetailLevelMethodCalls eTrcDetailLevel = m_pMtx == nullptr ? ETraceDetailLevelMethodCalls::None : m_pMtx->getMethodTraceDetailLevel();
     CMethodTracer mthTracer(
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ iTrcDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* eTrcDetailLevel    */ eTrcDetailLevel,
+        /* eFilterDetailLavel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
@@ -2003,11 +2077,11 @@ int CTrcServer::getLocalTrcFileSubFileCountMax() const
 //------------------------------------------------------------------------------
 {
     // When the mutex creates trace output also this method should be traced.
-    int iTrcDetailLevel = m_pMtx == nullptr ? ETraceDetailLevelNone : m_pMtx->getMethodTraceDetailLevel();
+    ETraceDetailLevelMethodCalls eTrcDetailLevel = m_pMtx == nullptr ? ETraceDetailLevelMethodCalls::None : m_pMtx->getMethodTraceDetailLevel();
     CMethodTracer mthTracer(
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ iTrcDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* eTrcDetailLevel    */ eTrcDetailLevel,
+        /* eFilterDetailLavel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
@@ -2023,11 +2097,11 @@ void CTrcServer::setLocalTrcFileSubFileLineCountMax( int i_iCountMax )
 //------------------------------------------------------------------------------
 {
     // When the mutex creates trace output also this method should be traced.
-    int iTrcDetailLevel = m_pMtx == nullptr ? ETraceDetailLevelNone : m_pMtx->getMethodTraceDetailLevel();
+    ETraceDetailLevelMethodCalls eTrcDetailLevel = m_pMtx == nullptr ? ETraceDetailLevelMethodCalls::None : m_pMtx->getMethodTraceDetailLevel();
     CMethodTracer mthTracer(
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ iTrcDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* eTrcDetailLevel    */ eTrcDetailLevel,
+        /* eFilterDetailLavel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
@@ -2053,11 +2127,11 @@ int CTrcServer::getLocalTrcFileSubFileLineCountMax() const
 //------------------------------------------------------------------------------
 {
     // When the mutex creates trace output also this method should be traced.
-    int iTrcDetailLevel = m_pMtx == nullptr ? ETraceDetailLevelNone : m_pMtx->getMethodTraceDetailLevel();
+    ETraceDetailLevelMethodCalls eTrcDetailLevel = m_pMtx == nullptr ? ETraceDetailLevelMethodCalls::None : m_pMtx->getMethodTraceDetailLevel();
     CMethodTracer mthTracer(
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ iTrcDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* eTrcDetailLevel    */ eTrcDetailLevel,
+        /* eFilterDetailLavel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
@@ -2077,11 +2151,11 @@ void CTrcServer::setUseIpcServer( bool i_bUse )
 //------------------------------------------------------------------------------
 {
     // When the mutex creates trace output also this method should be traced.
-    int iTrcDetailLevel = m_pMtx == nullptr ? ETraceDetailLevelNone : m_pMtx->getMethodTraceDetailLevel();
+    ETraceDetailLevelMethodCalls eTrcDetailLevel = m_pMtx == nullptr ? ETraceDetailLevelMethodCalls::None : m_pMtx->getMethodTraceDetailLevel();
     CMethodTracer mthTracer(
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ iTrcDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* eTrcDetailLevel    */ eTrcDetailLevel,
+        /* eFilterDetailLavel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
@@ -2102,11 +2176,11 @@ bool CTrcServer::isIpcServerUsed() const
 //------------------------------------------------------------------------------
 {
     // When the mutex creates trace output also this method should be traced.
-    int iTrcDetailLevel = m_pMtx == nullptr ? ETraceDetailLevelNone : m_pMtx->getMethodTraceDetailLevel();
+    ETraceDetailLevelMethodCalls eTrcDetailLevel = m_pMtx == nullptr ? ETraceDetailLevelMethodCalls::None : m_pMtx->getMethodTraceDetailLevel();
     CMethodTracer mthTracer(
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ iTrcDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* eTrcDetailLevel    */ eTrcDetailLevel,
+        /* eFilterDetailLavel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
@@ -2122,11 +2196,11 @@ void CTrcServer::setCacheTrcDataIfNotConnected( bool i_bCacheData )
 //------------------------------------------------------------------------------
 {
     // When the mutex creates trace output also this method should be traced.
-    int iTrcDetailLevel = m_pMtx == nullptr ? ETraceDetailLevelNone : m_pMtx->getMethodTraceDetailLevel();
+    ETraceDetailLevelMethodCalls eTrcDetailLevel = m_pMtx == nullptr ? ETraceDetailLevelMethodCalls::None : m_pMtx->getMethodTraceDetailLevel();
     CMethodTracer mthTracer(
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ iTrcDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* eTrcDetailLevel    */ eTrcDetailLevel,
+        /* eFilterDetailLavel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
@@ -2148,11 +2222,11 @@ bool CTrcServer::getCacheTrcDataIfNotConnected() const
 //------------------------------------------------------------------------------
 {
     // When the mutex creates trace output also this method should be traced.
-    int iTrcDetailLevel = m_pMtx == nullptr ? ETraceDetailLevelNone : m_pMtx->getMethodTraceDetailLevel();
+    ETraceDetailLevelMethodCalls eTrcDetailLevel = m_pMtx == nullptr ? ETraceDetailLevelMethodCalls::None : m_pMtx->getMethodTraceDetailLevel();
     CMethodTracer mthTracer(
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ iTrcDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* eTrcDetailLevel    */ eTrcDetailLevel,
+        /* eFilterDetailLavel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
@@ -2168,11 +2242,11 @@ void CTrcServer::setCacheTrcDataMaxArrLen( int i_iMaxArrLen )
 //------------------------------------------------------------------------------
 {
     // When the mutex creates trace output also this method should be traced.
-    int iTrcDetailLevel = m_pMtx == nullptr ? ETraceDetailLevelNone : m_pMtx->getMethodTraceDetailLevel();
+    ETraceDetailLevelMethodCalls eTrcDetailLevel = m_pMtx == nullptr ? ETraceDetailLevelMethodCalls::None : m_pMtx->getMethodTraceDetailLevel();
     CMethodTracer mthTracer(
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ iTrcDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* eTrcDetailLevel    */ eTrcDetailLevel,
+        /* eFilterDetailLavel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
@@ -2194,11 +2268,11 @@ int CTrcServer::getCacheTrcDataMaxArrLen() const
 //------------------------------------------------------------------------------
 {
     // When the mutex creates trace output also this method should be traced.
-    int iTrcDetailLevel = m_pMtx == nullptr ? ETraceDetailLevelNone : m_pMtx->getMethodTraceDetailLevel();
+    ETraceDetailLevelMethodCalls eTrcDetailLevel = m_pMtx == nullptr ? ETraceDetailLevelMethodCalls::None : m_pMtx->getMethodTraceDetailLevel();
     CMethodTracer mthTracer(
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ iTrcDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* eTrcDetailLevel    */ eTrcDetailLevel,
+        /* eFilterDetailLavel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
@@ -2218,11 +2292,11 @@ void CTrcServer::setTraceSettings( const STrcServerSettings& i_settings )
 //------------------------------------------------------------------------------
 {
     // When the mutex creates trace output also this method should be traced.
-    int iTrcDetailLevel = m_pMtx == nullptr ? ETraceDetailLevelNone : m_pMtx->getMethodTraceDetailLevel();
+    ETraceDetailLevelMethodCalls eTrcDetailLevel = m_pMtx == nullptr ? ETraceDetailLevelMethodCalls::None : m_pMtx->getMethodTraceDetailLevel();
     CMethodTracer mthTracer(
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ iTrcDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* eTrcDetailLevel    */ eTrcDetailLevel,
+        /* eFilterDetailLavel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
@@ -2241,7 +2315,7 @@ void CTrcServer::setTraceSettings( const STrcServerSettings& i_settings )
         }
 
         m_trcSettings.m_bNewTrcAdminObjsEnabledAsDefault = i_settings.m_bNewTrcAdminObjsEnabledAsDefault;
-        m_trcSettings.m_iNewTrcAdminObjsDefaultDetailLevel = i_settings.m_iNewTrcAdminObjsDefaultDetailLevel;
+        m_trcSettings.m_eNewTrcAdminObjsDefaultDetailLevel = i_settings.m_eNewTrcAdminObjsDefaultDetailLevel;
 
         m_trcSettings.m_bUseIpcServer = i_settings.m_bUseIpcServer;
         m_trcSettings.m_bCacheDataIfNotConnected = i_settings.m_bCacheDataIfNotConnected;
@@ -2307,11 +2381,11 @@ STrcServerSettings CTrcServer::getTraceSettings() const
 //------------------------------------------------------------------------------
 {
     // When the mutex creates trace output also this method should be traced.
-    int iTrcDetailLevel = m_pMtx == nullptr ? ETraceDetailLevelNone : m_pMtx->getMethodTraceDetailLevel();
+    ETraceDetailLevelMethodCalls eTrcDetailLevel = m_pMtx == nullptr ? ETraceDetailLevelMethodCalls::None : m_pMtx->getMethodTraceDetailLevel();
     CMethodTracer mthTracer(
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ iTrcDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* eTrcDetailLevel    */ eTrcDetailLevel,
+        /* eFilterDetailLavel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
@@ -2331,11 +2405,11 @@ void CTrcServer::clearLocalTrcFile()
 //------------------------------------------------------------------------------
 {
     // When the mutex creates trace output also this method should be traced.
-    int iTrcDetailLevel = m_pMtx == nullptr ? ETraceDetailLevelNone : m_pMtx->getMethodTraceDetailLevel();
+    ETraceDetailLevelMethodCalls eTrcDetailLevel = m_pMtx == nullptr ? ETraceDetailLevelMethodCalls::None : m_pMtx->getMethodTraceDetailLevel();
     CMethodTracer mthTracer(
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ iTrcDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* eTrcDetailLevel    */ eTrcDetailLevel,
+        /* eFilterDetailLavel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),

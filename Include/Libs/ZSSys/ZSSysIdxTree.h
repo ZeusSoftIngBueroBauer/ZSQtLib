@@ -146,8 +146,8 @@ public: // ctors and dtor
         const QString& i_strNodeSeparator = "/",
         bool           i_bCreateMutex = false,
         QObject*       i_pObjParent = nullptr,
-        int            i_iTrcDetailLevel = ZS::Trace::ETraceDetailLevelNone,
-        int            i_iTrcDetailLevelMutex = ZS::Trace::ETraceDetailLevelNone );
+        ZS::Trace::ETraceDetailLevelMethodCalls i_eTrcDetailLevel = ZS::Trace::ETraceDetailLevelMethodCalls::None,
+        ZS::Trace::ETraceDetailLevelMethodCalls i_eTrcDetailLevelMutex = ZS::Trace::ETraceDetailLevelMethodCalls::None );
     virtual ~CIdxTree();
 public: // instance methods
     void clear(); // keeps the root entry
@@ -350,11 +350,13 @@ protected: // instance members
     QVector<CIdxTreeEntry*>       m_arpTreeEntries;     /*!< Vector with pointers to all tree entries. */
     QMap<int, int>                m_mapFreeIdxs;        /*!< Map with free indices in the vector of entries. */
     CIdxTreeEntry*                m_pRoot;              /*!< Pointer to root entry. */
-    int                           m_iTrcDetailLevel;    /*!< Trace detail level for method tracing.
-                                                             Trace output may not be controlled by trace admin objects
-                                                             if the index tree belongs the trace server. */
-    ZS::Trace::CTrcAdminObj*      m_pTrcAdminObj;       /*!< Trace admin object to control trace outputs of the class.
-                                                             The object will not be created if the index tree's belongs to the trace server. */
+    /*!< Trace detail level for method tracing.
+         Trace output may not be controlled by trace admin objects
+         if the index tree belongs the trace server. */
+    ZS::Trace::ETraceDetailLevelMethodCalls m_eTrcDetailLevel;
+    /*!< Trace admin object to control trace outputs of the class.
+         The object will not be created if the index tree's belongs to the trace server. */
+    ZS::Trace::CTrcAdminObj* m_pTrcAdminObj;
 
 }; // class CIdxTree
 

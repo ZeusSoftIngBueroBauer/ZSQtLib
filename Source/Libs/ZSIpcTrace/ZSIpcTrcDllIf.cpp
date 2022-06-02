@@ -88,14 +88,17 @@ typedef void (*TFctTrcAdminObj_setObjectThreadName)( DllIf::CTrcAdminObj* i_pTrc
 typedef char* (*TFctTrcAdminObj_getObjectThreadName)( const DllIf::CTrcAdminObj* i_pTrcAdminObj );
 typedef void (*TFctTrcAdminObj_setEnabled)( DllIf::CTrcAdminObj* i_pTrcAdminObj, bool i_bEnabled );
 typedef bool (*TFctTrcAdminObj_isEnabled)( const DllIf::CTrcAdminObj* i_pTrcAdminObj );
-typedef void (*TFctTrcAdminObj_setTraceDetailLevel)( DllIf::CTrcAdminObj* i_pTrcAdminObj, int i_iDetailLevel );
-typedef int (*TFctTrcAdminObj_getTraceDetailLevel)( const DllIf::CTrcAdminObj* i_pTrcAdminObj );
-typedef bool (*TFctTrcAdminObj_isActive)( const DllIf::CTrcAdminObj* i_pTrcAdminObj, int i_iDetailLevel );
+typedef void (*TFctTrcAdminObj_setMethodCallsTraceDetailLevel)( DllIf::CTrcAdminObj* i_pTrcAdminObj, DllIf::ETraceDetailLevelMethodCalls i_eDetailLevel );
+typedef DllIf::ETraceDetailLevelMethodCalls (*TFctTrcAdminObj_getMethodCallsTraceDetailLevel)( const DllIf::CTrcAdminObj* i_pTrcAdminObj );
+typedef bool (*TFctTrcAdminObj_areMethodCallsActive)( const DllIf::CTrcAdminObj* i_pTrcAdminObj, DllIf::ETraceDetailLevelMethodCalls i_eDetailLevel );
+typedef void (*TFctTrcAdminObj_setRuntimeInfoTraceDetailLevel)( DllIf::CTrcAdminObj* i_pTrcAdminObj, DllIf::ETraceDetailLevelRuntimeInfo i_eDetailLevel );
+typedef DllIf::ETraceDetailLevelRuntimeInfo (*TFctTrcAdminObj_getRuntimeInfoTraceDetailLevel)( const DllIf::CTrcAdminObj* i_pTrcAdminObj );
+typedef bool (*TFctTrcAdminObj_isRuntimeInfoActive)( const DllIf::CTrcAdminObj* i_pTrcAdminObj, DllIf::ETraceDetailLevelRuntimeInfo i_eDetailLevel );
 typedef void (*TFctTrcAdminObj_traceMethodEnter)( const DllIf::CTrcAdminObj* i_pTrcAdminObj, const char* i_szObjName, const char* i_szMethod, const char* i_szMethodInArgs );
 typedef void (*TFctTrcAdminObj_traceMethodLeave)( const DllIf::CTrcAdminObj* i_pTrcAdminObj, const char* i_szObjName, const char* i_szMethod, const char* i_szMethodReturn, const char* i_szMethodOutArgs );
 typedef void (*TFctTrcAdminObj_traceMethod)( const DllIf::CTrcAdminObj* i_pTrcAdminObj, const char* i_szObjName, const char* i_szMethod, const char* i_szMethodAddInfo );
 
-typedef DllIf::CTrcAdminObj* (*TFctTrcServer_GetTraceAdminObj)( const char* i_szNameSpace, const char* i_szClassName, const char* i_szObjName, DllIf::EEnabled i_bEnabledAsDefault, int i_iDefaultDetailLevel );
+typedef DllIf::CTrcAdminObj* (*TFctTrcServer_GetTraceAdminObj)( const char* i_szNameSpace, const char* i_szClassName, const char* i_szObjName, DllIf::EEnabled i_bEnabledAsDefault, DllIf::ETraceDetailLevelMethodCalls i_eDefaultDetailLevel );
 typedef void (*TFctTrcServer_RenameTraceAdminObj)( DllIf::CTrcAdminObj** io_ppTrcAdminObj, const char* i_szNewObjName );
 typedef void (*TFctTrcServer_ReleaseTraceAdminObj)( DllIf::CTrcAdminObj* i_pTrcAdminObj );
 typedef void (*TFctTrcServer_SetOrganizationName)( const char* i_szName );
@@ -112,8 +115,8 @@ typedef void (*TFctTrcServer_setEnabled)( DllIf::CTrcServer* i_pTrcServer, bool 
 typedef bool (*TFctTrcServer_isEnabled)( const DllIf::CTrcServer* i_pTrcServer );
 typedef void (*TFctTrcServer_setNewTrcAdminObjsEnabledAsDefault)( DllIf::CTrcServer* i_pTrcServer, bool i_bEnabled );
 typedef bool (*TFctTrcServer_areNewTrcAdminObjsEnabledAsDefault)( const DllIf::CTrcServer* i_pTrcServer );
-typedef void (*TFctTrcServer_setNewTrcAdminObjsDefaultDetailLevel)( DllIf::CTrcServer* i_pTrcServer, int i_iDetailLevel );
-typedef int (*TFctTrcServer_getNewTrcAdminObjsDefaultDetailLevel)( const DllIf::CTrcServer* i_pTrcServer );
+typedef void (*TFctTrcServer_setNewTrcAdminObjsDefaultDetailLevel)( DllIf::CTrcServer* i_pTrcServer, DllIf::ETraceDetailLevelMethodCalls i_eDetailLevel );
+typedef DllIf::ETraceDetailLevelMethodCalls (*TFctTrcServer_getNewTrcAdminObjsDefaultDetailLevel)( const DllIf::CTrcServer* i_pTrcServer );
 typedef void (*TFctTrcServer_setAdminObjFileAbsoluteFilePath)( DllIf::CTrcServer* i_pTrcServer, const char* i_szAbsFilePath );
 typedef char* (*TFctTrcServer_getAdminObjFileAbsoluteFilePath)( const DllIf::CTrcServer* i_pTrcServer );
 typedef bool (*TFctTrcServer_recallAdminObjs)( DllIf::CTrcServer* i_pTrcServer );
@@ -145,12 +148,12 @@ typedef void (*TFctTrcServer_clearLocalTrcFile)( DllIf::CTrcServer* i_pTrcServer
 
 typedef DllIf::CIpcTrcServer* (*TFctIpcTrcServer_GetInstance)();
 typedef DllIf::CIpcTrcServer* (*TFctIpcTrcServer_CreateInstance)(
-    int i_iTrcDetailLevelDllIf,
-    int i_iTrcDetailLevelTrcServer,
-    int i_iTrcDetailLevelTrcServerMutex,
-    int i_iTrcDetailLevelTrcServerIpcServer,
-    int i_iTrcDetailLevelTrcServerIpcServerMutex,
-    int i_iTrcDetailLevelTrcServerIpcServerGateway );
+    DllIf::ETraceDetailLevelMethodCalls i_eTrcDetailLevelDllIf,
+    DllIf::ETraceDetailLevelMethodCalls i_eTrcDetailLevelTrcServer,
+    DllIf::ETraceDetailLevelMethodCalls i_eTrcDetailLevelTrcServerMutex,
+    DllIf::ETraceDetailLevelMethodCalls i_eTrcDetailLevelTrcServerIpcServer,
+    DllIf::ETraceDetailLevelMethodCalls i_eTrcDetailLevelTrcServerIpcServerMutex,
+    DllIf::ETraceDetailLevelMethodCalls i_eTrcDetailLevelTrcServerIpcServerGateway );
 typedef void (*TFctIpcTrcServer_ReleaseInstance)( DllIf::CIpcTrcServer* i_pTrcServer );
 typedef bool (*TFctIpcTrcServer_startup)( DllIf::CIpcTrcServer* i_pTrcServer, int i_iTimeout_ms, bool i_bWait );
 typedef bool (*TFctIpcTrcServer_shutdown)( DllIf::CIpcTrcServer* i_pTrcServer, int i_iTimeout_ms, bool i_bWait );
@@ -178,9 +181,12 @@ TFctTrcAdminObj_setObjectThreadName                  s_pFctTrcAdminObj_setObject
 TFctTrcAdminObj_getObjectThreadName                  s_pFctTrcAdminObj_getObjectThreadName                  = NULL;
 TFctTrcAdminObj_setEnabled                           s_pFctTrcAdminObj_setEnabled                           = NULL;
 TFctTrcAdminObj_isEnabled                            s_pFctTrcAdminObj_isEnabled                            = NULL;
-TFctTrcAdminObj_setTraceDetailLevel                  s_pFctTrcAdminObj_setTraceDetailLevel                  = NULL;
-TFctTrcAdminObj_getTraceDetailLevel                  s_pFctTrcAdminObj_getTraceDetailLevel                  = NULL;
-TFctTrcAdminObj_isActive                             s_pFctTrcAdminObj_isActive                             = NULL;
+TFctTrcAdminObj_setMethodCallsTraceDetailLevel       s_pFctTrcAdminObj_setMethodCallsTraceDetailLevel       = NULL;
+TFctTrcAdminObj_getMethodCallsTraceDetailLevel       s_pFctTrcAdminObj_getMethodCallsTraceDetailLevel       = NULL;
+TFctTrcAdminObj_areMethodCallsActive                 s_pFctTrcAdminObj_areMethodCallsActive                 = NULL;
+TFctTrcAdminObj_setRuntimeInfoTraceDetailLevel       s_pFctTrcAdminObj_setRuntimeInfoTraceDetailLevel       = NULL;
+TFctTrcAdminObj_getRuntimeInfoTraceDetailLevel       s_pFctTrcAdminObj_getRuntimeInfoTraceDetailLevel       = NULL;
+TFctTrcAdminObj_isRuntimeInfoActive                  s_pFctTrcAdminObj_isRuntimeInfoActive                  = NULL;
 TFctTrcAdminObj_traceMethodEnter                     s_pFctTrcAdminObj_traceMethodEnter                     = NULL;
 TFctTrcAdminObj_traceMethodLeave                     s_pFctTrcAdminObj_traceMethodLeave                     = NULL;
 TFctTrcAdminObj_traceMethod                          s_pFctTrcAdminObj_traceMethod                          = NULL;
@@ -408,14 +414,23 @@ bool ZS::Trace::DllIf::loadDll( EBuildConfiguration i_configuration, int i_iQtVe
         s_pFctTrcAdminObj_isEnabled = (TFctTrcAdminObj_isEnabled)GetProcAddress(s_hndIpcTrcDllIf, "TrcAdminObj_isEnabled");
         if( s_pFctTrcAdminObj_isEnabled == NULL ) bOk = false;
 
-        s_pFctTrcAdminObj_setTraceDetailLevel = (TFctTrcAdminObj_setTraceDetailLevel)GetProcAddress(s_hndIpcTrcDllIf, "TrcAdminObj_setTraceDetailLevel");
-        if( s_pFctTrcAdminObj_setTraceDetailLevel == NULL ) bOk = false;
+        s_pFctTrcAdminObj_setMethodCallsTraceDetailLevel = (TFctTrcAdminObj_setMethodCallsTraceDetailLevel)GetProcAddress(s_hndIpcTrcDllIf, "TrcAdminObj_setMethodCallsTraceDetailLevel");
+        if( s_pFctTrcAdminObj_setMethodCallsTraceDetailLevel == NULL ) bOk = false;
 
-        s_pFctTrcAdminObj_getTraceDetailLevel = (TFctTrcAdminObj_getTraceDetailLevel)GetProcAddress(s_hndIpcTrcDllIf, "TrcAdminObj_getTraceDetailLevel");
-        if( s_pFctTrcAdminObj_getTraceDetailLevel == NULL ) bOk = false;
+        s_pFctTrcAdminObj_getMethodCallsTraceDetailLevel = (TFctTrcAdminObj_getMethodCallsTraceDetailLevel)GetProcAddress(s_hndIpcTrcDllIf, "TrcAdminObj_getMethodCallsTraceDetailLevel");
+        if( s_pFctTrcAdminObj_getMethodCallsTraceDetailLevel == NULL ) bOk = false;
 
-        s_pFctTrcAdminObj_isActive = (TFctTrcAdminObj_isActive)GetProcAddress(s_hndIpcTrcDllIf, "TrcAdminObj_isActive");
-        if( s_pFctTrcAdminObj_isActive == NULL ) bOk = false;
+        s_pFctTrcAdminObj_areMethodCallsActive = (TFctTrcAdminObj_areMethodCallsActive)GetProcAddress(s_hndIpcTrcDllIf, "TrcAdminObj_areMethodCallsActive");
+        if( s_pFctTrcAdminObj_areMethodCallsActive == NULL ) bOk = false;
+
+        s_pFctTrcAdminObj_setRuntimeInfoTraceDetailLevel = (TFctTrcAdminObj_setRuntimeInfoTraceDetailLevel)GetProcAddress(s_hndIpcTrcDllIf, "TrcAdminObj_setRuntimeInfoTraceDetailLevel");
+        if( s_pFctTrcAdminObj_setRuntimeInfoTraceDetailLevel == NULL ) bOk = false;
+
+        s_pFctTrcAdminObj_getRuntimeInfoTraceDetailLevel = (TFctTrcAdminObj_getRuntimeInfoTraceDetailLevel)GetProcAddress(s_hndIpcTrcDllIf, "TrcAdminObj_getRuntimeInfoTraceDetailLevel");
+        if( s_pFctTrcAdminObj_getRuntimeInfoTraceDetailLevel == NULL ) bOk = false;
+
+        s_pFctTrcAdminObj_isRuntimeInfoActive = (TFctTrcAdminObj_isRuntimeInfoActive)GetProcAddress(s_hndIpcTrcDllIf, "TrcAdminObj_isRuntimeInfoActive");
+        if( s_pFctTrcAdminObj_isRuntimeInfoActive == NULL ) bOk = false;
 
         s_pFctTrcAdminObj_traceMethodEnter = (TFctTrcAdminObj_traceMethodEnter)GetProcAddress(s_hndIpcTrcDllIf, "TrcAdminObj_traceMethodEnter");
         if( s_pFctTrcAdminObj_traceMethodEnter == NULL ) bOk = false;
@@ -651,8 +666,12 @@ bool ZS::Trace::DllIf::releaseDll()
         s_pFctTrcAdminObj_getObjectThreadName                  = NULL;
         s_pFctTrcAdminObj_setEnabled                           = NULL;
         s_pFctTrcAdminObj_isEnabled                            = NULL;
-        s_pFctTrcAdminObj_setTraceDetailLevel                  = NULL;
-        s_pFctTrcAdminObj_isActive                             = NULL;
+        s_pFctTrcAdminObj_setMethodCallsTraceDetailLevel       = NULL;
+        s_pFctTrcAdminObj_setMethodCallsTraceDetailLevel       = NULL;
+        s_pFctTrcAdminObj_areMethodCallsActive                 = NULL;
+        s_pFctTrcAdminObj_setRuntimeInfoTraceDetailLevel       = NULL;
+        s_pFctTrcAdminObj_setRuntimeInfoTraceDetailLevel       = NULL;
+        s_pFctTrcAdminObj_isRuntimeInfoActive                  = NULL;
         s_pFctTrcAdminObj_traceMethodEnter                     = NULL;
         s_pFctTrcAdminObj_traceMethodLeave                     = NULL;
         s_pFctTrcAdminObj_traceMethod                          = NULL;
@@ -738,8 +757,7 @@ char* DllIf::CTrcAdminObj::getNameSpace() const
         return s_pFctTrcAdminObj_getNameSpace(this);
     }
     return NULL;
-
-} // getNameSpace
+}
 
 //------------------------------------------------------------------------------
 char* DllIf::CTrcAdminObj::getClassName() const
@@ -750,8 +768,7 @@ char* DllIf::CTrcAdminObj::getClassName() const
         return s_pFctTrcAdminObj_getClassName(this);
     }
     return NULL;
-
-} // getClassName
+}
 
 //------------------------------------------------------------------------------
 char* DllIf::CTrcAdminObj::getObjectName() const
@@ -762,8 +779,7 @@ char* DllIf::CTrcAdminObj::getObjectName() const
         return s_pFctTrcAdminObj_getObjectName(this);
     }
     return NULL;
-
-} // getObjectName
+}
 
 /*==============================================================================
 public: // instance methods
@@ -777,7 +793,7 @@ void DllIf::CTrcAdminObj::setObjectThreadName( const char* i_szThreadName )
     {
         s_pFctTrcAdminObj_setObjectThreadName(this, i_szThreadName);
     }
-} // setObjectThreadName
+}
 
 //------------------------------------------------------------------------------
 char* DllIf::CTrcAdminObj::getObjectThreadName() const
@@ -788,8 +804,7 @@ char* DllIf::CTrcAdminObj::getObjectThreadName() const
         return s_pFctTrcAdminObj_getObjectThreadName(this);
     }
     return NULL;
-
-} // getObjectThreadName
+}
 
 /*==============================================================================
 public: // instance methods
@@ -803,7 +818,7 @@ void DllIf::CTrcAdminObj::setEnabled( bool i_bEnabled )
     {
         s_pFctTrcAdminObj_setEnabled(this, i_bEnabled);
     }
-} // setEnabled
+}
 
 //------------------------------------------------------------------------------
 bool DllIf::CTrcAdminObj::isEnabled() const
@@ -816,50 +831,83 @@ bool DllIf::CTrcAdminObj::isEnabled() const
         bEnabled = s_pFctTrcAdminObj_isEnabled(this);
     }
     return bEnabled;
-
-} // getEnabled
+}
 
 /*==============================================================================
 public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void DllIf::CTrcAdminObj::setTraceDetailLevel( int i_iDetailLevel )
+void DllIf::CTrcAdminObj::setMethodCallsTraceDetailLevel( ETraceDetailLevelMethodCalls i_eDetailLevel )
 //------------------------------------------------------------------------------
 {
-    if( s_hndIpcTrcDllIf != NULL && s_pFctTrcAdminObj_setTraceDetailLevel != NULL )
+    if( s_hndIpcTrcDllIf != NULL && s_pFctTrcAdminObj_setMethodCallsTraceDetailLevel != NULL )
     {
-        s_pFctTrcAdminObj_setTraceDetailLevel(this, i_iDetailLevel);
+        s_pFctTrcAdminObj_setMethodCallsTraceDetailLevel(this, i_eDetailLevel);
     }
-} // setTraceDetailLevel
+}
 
 //------------------------------------------------------------------------------
-int DllIf::CTrcAdminObj::getTraceDetailLevel() const
+ DllIf::ETraceDetailLevelMethodCalls DllIf::CTrcAdminObj::getMethodCallsTraceDetailLevel() const
 //------------------------------------------------------------------------------
 {
-    int iDetailLevel = ETraceDetailLevelNone;
+    ETraceDetailLevelMethodCalls eDetailLevel = ETraceDetailLevelMethodCallsNone;
 
-    if( s_hndIpcTrcDllIf != NULL && s_pFctTrcAdminObj_getTraceDetailLevel != NULL )
+    if( s_hndIpcTrcDllIf != NULL && s_pFctTrcAdminObj_getMethodCallsTraceDetailLevel != NULL )
     {
-        iDetailLevel = s_pFctTrcAdminObj_getTraceDetailLevel(this);
+        eDetailLevel = s_pFctTrcAdminObj_getMethodCallsTraceDetailLevel(this);
     }
-    return iDetailLevel;
-
-} // getTraceDetailLevel
+    return eDetailLevel;
+}
 
 //------------------------------------------------------------------------------
-bool DllIf::CTrcAdminObj::isActive( int i_iFilterDetailLevel ) const
+bool DllIf::CTrcAdminObj::areMethodCallsActive( ETraceDetailLevelMethodCalls i_eFilterDetailLevel ) const
 //------------------------------------------------------------------------------
 {
     bool bIsActive = false;
 
-    if( s_hndIpcTrcDllIf != NULL && s_pFctTrcAdminObj_isActive != NULL )
+    if( s_hndIpcTrcDllIf != NULL && s_pFctTrcAdminObj_areMethodCallsActive != NULL )
     {
-        bIsActive = s_pFctTrcAdminObj_isActive(this, i_iFilterDetailLevel);
+        bIsActive = s_pFctTrcAdminObj_areMethodCallsActive(this, i_eFilterDetailLevel);
     }
     return bIsActive;
+}
 
-} // isActive
+//------------------------------------------------------------------------------
+void DllIf::CTrcAdminObj::setRuntimeInfoTraceDetailLevel( ETraceDetailLevelRuntimeInfo i_eDetailLevel )
+//------------------------------------------------------------------------------
+{
+    if( s_hndIpcTrcDllIf != NULL && s_pFctTrcAdminObj_setRuntimeInfoTraceDetailLevel != NULL )
+    {
+        s_pFctTrcAdminObj_setRuntimeInfoTraceDetailLevel(this, i_eDetailLevel);
+    }
+}
+
+//------------------------------------------------------------------------------
+ DllIf::ETraceDetailLevelRuntimeInfo DllIf::CTrcAdminObj::getRuntimeInfoTraceDetailLevel() const
+//------------------------------------------------------------------------------
+{
+    ETraceDetailLevelRuntimeInfo eDetailLevel = ETraceDetailLevelRuntimeInfoNone;
+
+    if( s_hndIpcTrcDllIf != NULL && s_pFctTrcAdminObj_getRuntimeInfoTraceDetailLevel != NULL )
+    {
+        eDetailLevel = s_pFctTrcAdminObj_getRuntimeInfoTraceDetailLevel(this);
+    }
+    return eDetailLevel;
+}
+
+//------------------------------------------------------------------------------
+bool DllIf::CTrcAdminObj::isRuntimeInfoActive( ETraceDetailLevelRuntimeInfo i_eFilterDetailLevel ) const
+//------------------------------------------------------------------------------
+{
+    bool bIsActive = false;
+
+    if( s_hndIpcTrcDllIf != NULL && s_pFctTrcAdminObj_isRuntimeInfoActive != NULL )
+    {
+        bIsActive = s_pFctTrcAdminObj_isRuntimeInfoActive(this, i_eFilterDetailLevel);
+    }
+    return bIsActive;
+}
 
 
 /*******************************************************************************
@@ -873,12 +921,12 @@ public: // ctors and dtor
 //------------------------------------------------------------------------------
 DllIf::CMethodTracer::CMethodTracer(
     CTrcAdminObj* i_pTrcAdminObj,
-    int           i_iFilterDetailLevel,
+    ETraceDetailLevelMethodCalls i_eFilterDetailLevel,
     const char*   i_szMethod,
     const char*   i_szMethodInArgs ) :
 //------------------------------------------------------------------------------
     m_pTrcAdminObj(i_pTrcAdminObj),
-    m_iEnterLeaveFilterDetailLevel(i_iFilterDetailLevel),
+    m_eEnterLeaveFilterDetailLevel(i_eFilterDetailLevel),
     m_szObjName(NULL),
     m_szMethod(NULL),
     m_szMethodReturn(NULL),
@@ -889,11 +937,11 @@ DllIf::CMethodTracer::CMethodTracer(
     memset(m_szMethod, 0x00, iStrLen+1);
     memcpy(m_szMethod, i_szMethod, iStrLen);
 
-    if( s_hndIpcTrcDllIf != NULL && s_pFctTrcAdminObj_isActive != NULL && s_pFctTrcAdminObj_traceMethodEnter != NULL )
+    if( s_hndIpcTrcDllIf != NULL && s_pFctTrcAdminObj_areMethodCallsActive != NULL && s_pFctTrcAdminObj_traceMethodEnter != NULL )
     {
         if( m_pTrcAdminObj != NULL )
         {
-            if( s_pFctTrcAdminObj_isActive(m_pTrcAdminObj, m_iEnterLeaveFilterDetailLevel) )
+            if( s_pFctTrcAdminObj_areMethodCallsActive(m_pTrcAdminObj, m_eEnterLeaveFilterDetailLevel) )
             {
                 s_pFctTrcAdminObj_traceMethodEnter(m_pTrcAdminObj, m_szObjName, m_szMethod, i_szMethodInArgs);
             }
@@ -904,13 +952,14 @@ DllIf::CMethodTracer::CMethodTracer(
 //------------------------------------------------------------------------------
 DllIf::CMethodTracer::CMethodTracer(
     CTrcAdminObj* i_pTrcAdminObj,
-    int           i_iFilterDetailLevel,
+    ETraceDetailLevelMethodCalls i_eFilterDetailLevel,
     const char*   i_szObjName,
     const char*   i_szMethod,
     const char*   i_szMethodInArgs ) :
 //------------------------------------------------------------------------------
     m_pTrcAdminObj(i_pTrcAdminObj),
-    m_iEnterLeaveFilterDetailLevel(i_iFilterDetailLevel),
+    m_eEnterLeaveFilterDetailLevel(i_eFilterDetailLevel),
+    m_bEnterTraced(false),
     m_szObjName(NULL),
     m_szMethod(NULL),
     m_szMethodReturn(NULL),
@@ -926,13 +975,14 @@ DllIf::CMethodTracer::CMethodTracer(
     memset(m_szMethod, 0x00, iStrLen+1);
     memcpy(m_szMethod, i_szMethod, iStrLen);
 
-    if( s_hndIpcTrcDllIf != NULL && s_pFctTrcAdminObj_isActive != NULL && s_pFctTrcAdminObj_traceMethodEnter != NULL )
+    if( s_hndIpcTrcDllIf != NULL && s_pFctTrcAdminObj_areMethodCallsActive != NULL && s_pFctTrcAdminObj_traceMethodEnter != NULL )
     {
         if( m_pTrcAdminObj != NULL )
         {
-            if( s_pFctTrcAdminObj_isActive(m_pTrcAdminObj, m_iEnterLeaveFilterDetailLevel) )
+            if( s_pFctTrcAdminObj_areMethodCallsActive(m_pTrcAdminObj, m_eEnterLeaveFilterDetailLevel) )
             {
                 s_pFctTrcAdminObj_traceMethodEnter(m_pTrcAdminObj, m_szObjName, m_szMethod, i_szMethodInArgs);
+                m_bEnterTraced = true;
             }
         }
     }
@@ -942,15 +992,9 @@ DllIf::CMethodTracer::CMethodTracer(
 DllIf::CMethodTracer::~CMethodTracer()
 //------------------------------------------------------------------------------
 {
-    if( s_hndIpcTrcDllIf != NULL && s_pFctTrcAdminObj_isActive != NULL && s_pFctTrcAdminObj_traceMethodLeave != NULL )
+    if( s_hndIpcTrcDllIf != NULL && s_pFctTrcAdminObj_traceMethodLeave != NULL && m_bEnterTraced )
     {
-        if( m_pTrcAdminObj != NULL )
-        {
-            if( s_pFctTrcAdminObj_isActive(m_pTrcAdminObj, m_iEnterLeaveFilterDetailLevel) )
-            {
-                s_pFctTrcAdminObj_traceMethodLeave(m_pTrcAdminObj, m_szObjName, m_szMethod, m_szMethodReturn, m_szMethodOutArgs);
-            }
-        }
+        s_pFctTrcAdminObj_traceMethodLeave(m_pTrcAdminObj, m_szObjName, m_szMethod, m_szMethodReturn, m_szMethodOutArgs);
     }
 
     delete m_szObjName;
@@ -959,7 +1003,8 @@ DllIf::CMethodTracer::~CMethodTracer()
     delete m_szMethodOutArgs;
 
     m_pTrcAdminObj = NULL;
-    m_iEnterLeaveFilterDetailLevel = 0;
+    m_eEnterLeaveFilterDetailLevel = static_cast<ETraceDetailLevelMethodCalls>(0);
+    m_bEnterTraced = false;
     m_szObjName = NULL;
     m_szMethod = NULL;
     m_szMethodReturn = NULL;
@@ -975,33 +1020,71 @@ public: // instance methods
 void DllIf::CMethodTracer::onAdminObjAboutToBeReleased( bool i_bTraceMethodLeave )
 //------------------------------------------------------------------------------
 {
-    if( m_pTrcAdminObj != NULL && s_pFctTrcAdminObj_isActive != NULL && s_pFctTrcAdminObj_traceMethodLeave != NULL )
+    if( i_bTraceMethodLeave )
     {
-        if( i_bTraceMethodLeave && s_pFctTrcAdminObj_isActive(m_pTrcAdminObj, m_iEnterLeaveFilterDetailLevel) )
+        if( m_pTrcAdminObj != NULL && s_pFctTrcAdminObj_traceMethodLeave != NULL && m_bEnterTraced )
         {
             s_pFctTrcAdminObj_traceMethodLeave(m_pTrcAdminObj, m_szObjName, m_szMethod, m_szMethodReturn, m_szMethodOutArgs);
         }
         m_pTrcAdminObj = NULL;
     }
-} // onAdminObjAboutToBeReleased
+}
 
 /*==============================================================================
 public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-int DllIf::CMethodTracer::getTraceDetailLevel() const
+DllIf::ETraceDetailLevelMethodCalls DllIf::CMethodTracer::getMethodCallsTraceDetailLevel() const
 //------------------------------------------------------------------------------
 {
-    int iDetailLevel = ETraceDetailLevelNone;
+    ETraceDetailLevelMethodCalls eDetailLevel = ETraceDetailLevelMethodCallsNone;
 
-    if( m_pTrcAdminObj != NULL && s_pFctTrcAdminObj_getTraceDetailLevel != NULL )
+    if( m_pTrcAdminObj != NULL && s_pFctTrcAdminObj_getMethodCallsTraceDetailLevel != NULL )
     {
-        iDetailLevel = s_pFctTrcAdminObj_getTraceDetailLevel(m_pTrcAdminObj);
+        eDetailLevel = s_pFctTrcAdminObj_getMethodCallsTraceDetailLevel(m_pTrcAdminObj);
     }
-    return iDetailLevel;
+    return eDetailLevel;
+}
 
-} // getTraceDetailLevel
+//------------------------------------------------------------------------------
+bool DllIf::CMethodTracer::areMethodCallsActive( ETraceDetailLevelMethodCalls i_eFilterDetailLevel ) const
+//------------------------------------------------------------------------------
+{
+    bool bIsActive = false;
+
+    if( m_pTrcAdminObj != NULL && s_pFctTrcAdminObj_areMethodCallsActive != NULL )
+    {
+        bIsActive = s_pFctTrcAdminObj_areMethodCallsActive(m_pTrcAdminObj, i_eFilterDetailLevel);
+    }
+    return bIsActive;
+}
+
+//------------------------------------------------------------------------------
+DllIf::ETraceDetailLevelRuntimeInfo DllIf::CMethodTracer::getRuntimeInfoTraceDetailLevel() const
+//------------------------------------------------------------------------------
+{
+    ETraceDetailLevelRuntimeInfo eDetailLevel = ETraceDetailLevelRuntimeInfoNone;
+
+    if( m_pTrcAdminObj != NULL && s_pFctTrcAdminObj_getRuntimeInfoTraceDetailLevel != NULL )
+    {
+        eDetailLevel = s_pFctTrcAdminObj_getRuntimeInfoTraceDetailLevel(m_pTrcAdminObj);
+    }
+    return eDetailLevel;
+}
+
+//------------------------------------------------------------------------------
+bool DllIf::CMethodTracer::isRuntimeInfoActive( ETraceDetailLevelRuntimeInfo i_eFilterDetailLevel ) const
+//------------------------------------------------------------------------------
+{
+    bool bIsActive = false;
+
+    if( m_pTrcAdminObj != NULL && s_pFctTrcAdminObj_isRuntimeInfoActive != NULL )
+    {
+        bIsActive = s_pFctTrcAdminObj_isRuntimeInfoActive(m_pTrcAdminObj, i_eFilterDetailLevel);
+    }
+    return bIsActive;
+}
 
 /*==============================================================================
 public: // instance methods
@@ -1093,29 +1176,12 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-bool DllIf::CMethodTracer::isActive( int i_iFilterDetailLevel ) const
+void DllIf::CMethodTracer::trace( const char* i_szAddInfo, ETraceDetailLevelRuntimeInfo i_eFilterDetailLevel ) const
 //------------------------------------------------------------------------------
 {
-    bool bIsActive = false;
-
-    if( m_pTrcAdminObj != NULL && s_pFctTrcAdminObj_isActive != NULL )
+    if( m_pTrcAdminObj != NULL && s_pFctTrcAdminObj_isRuntimeInfoActive != NULL && s_pFctTrcAdminObj_traceMethod != NULL )
     {
-        bIsActive = s_pFctTrcAdminObj_isActive(m_pTrcAdminObj, i_iFilterDetailLevel);
-    }
-    return bIsActive;
-}
-
-/*==============================================================================
-public: // instance methods
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-void DllIf::CMethodTracer::trace( const char* i_szAddInfo, int i_iFilterDetailLevel ) const
-//------------------------------------------------------------------------------
-{
-    if( m_pTrcAdminObj != NULL && s_pFctTrcAdminObj_isActive != NULL && s_pFctTrcAdminObj_traceMethod != NULL )
-    {
-        if( s_pFctTrcAdminObj_isActive(m_pTrcAdminObj, i_iFilterDetailLevel) )
+        if( s_pFctTrcAdminObj_isRuntimeInfoActive(m_pTrcAdminObj, i_eFilterDetailLevel) )
         {
             s_pFctTrcAdminObj_traceMethod(m_pTrcAdminObj, m_szObjName, m_szMethod, i_szAddInfo);
         }
@@ -1210,16 +1276,15 @@ DllIf::CTrcAdminObj* DllIf::CTrcServer::GetTraceAdminObj(
     const char* i_szClassName,
     const char* i_szObjName,
     EEnabled    i_bEnabledAsDefault,
-    int         i_iDefaultDetailLevel )
+    ETraceDetailLevelMethodCalls i_eDefaultDetailLevel )
 //------------------------------------------------------------------------------
 {
     DllIf::CTrcAdminObj* pTrcAdminObj = NULL;
 
     if( s_hndIpcTrcDllIf != NULL && s_pFctTrcServer_GetTraceAdminObj != NULL )
     {
-        pTrcAdminObj = s_pFctTrcServer_GetTraceAdminObj(i_szNameSpace, i_szClassName, i_szObjName, i_bEnabledAsDefault, i_iDefaultDetailLevel);
+        pTrcAdminObj = s_pFctTrcServer_GetTraceAdminObj(i_szNameSpace, i_szClassName, i_szObjName, i_bEnabledAsDefault, i_eDefaultDetailLevel);
     }
-
     return pTrcAdminObj;
 }
 
@@ -1445,26 +1510,26 @@ bool DllIf::CTrcServer::areNewTrcAdminObjsEnabledAsDefault() const
 }
 
 //------------------------------------------------------------------------------
-void DllIf::CTrcServer::setNewTrcAdminObjsDefaultDetailLevel( int i_iDetailLevel )
+void DllIf::CTrcServer::setNewTrcAdminObjsDefaultDetailLevel( ETraceDetailLevelMethodCalls i_eDetailLevel )
 //------------------------------------------------------------------------------
 {
     if( s_hndIpcTrcDllIf != NULL && s_pFctTrcServer_setNewTrcAdminObjsDefaultDetailLevel != NULL )
     {
-        s_pFctTrcServer_setNewTrcAdminObjsDefaultDetailLevel(this, i_iDetailLevel);
+        s_pFctTrcServer_setNewTrcAdminObjsDefaultDetailLevel(this, i_eDetailLevel);
     }
 }
 
 //------------------------------------------------------------------------------
-int DllIf::CTrcServer::getNewTrcAdminObjsDefaultDetailLevel() const
+DllIf::ETraceDetailLevelMethodCalls DllIf::CTrcServer::getNewTrcAdminObjsDefaultDetailLevel() const
 //------------------------------------------------------------------------------
 {
-    int iDetailLevel = ETraceDetailLevelNone;
+    ETraceDetailLevelMethodCalls eDetailLevel = ETraceDetailLevelMethodCallsNone;
 
     if( s_hndIpcTrcDllIf != NULL && s_pFctTrcServer_getNewTrcAdminObjsDefaultDetailLevel != NULL )
     {
-        iDetailLevel = s_pFctTrcServer_getNewTrcAdminObjsDefaultDetailLevel(this);
+        eDetailLevel = s_pFctTrcServer_getNewTrcAdminObjsDefaultDetailLevel(this);
     }
-    return iDetailLevel;
+    return eDetailLevel;
 }
 
 /*==============================================================================
@@ -1669,7 +1734,7 @@ void DllIf::CTrcServer::setLocalTrcFileSubFileCountMax( int i_iCountMax )
 int DllIf::CTrcServer::getLocalTrcFileSubFileCountMax() const
 //------------------------------------------------------------------------------
 {
-    int iCountMax = ETraceDetailLevelNone;
+    int iCountMax = 0;
 
     if( s_hndIpcTrcDllIf != NULL && s_pFctTrcServer_getLocalTrcFileSubFileCountMax != NULL )
     {
@@ -1692,7 +1757,7 @@ void DllIf::CTrcServer::setLocalTrcFileSubFileLineCountMax( int i_iCountMax )
 int DllIf::CTrcServer::getLocalTrcFileSubFileLineCountMax() const
 //------------------------------------------------------------------------------
 {
-    int iCountMax = ETraceDetailLevelNone;
+    int iCountMax = 0;
 
     if( s_hndIpcTrcDllIf != NULL && s_pFctTrcServer_getLocalTrcFileSubFileLineCountMax != NULL )
     {
@@ -1847,11 +1912,11 @@ void DllIf::CTrcServer::traceMethodEnter(
     const char*         i_szMethodInArgs )
 //------------------------------------------------------------------------------
 {
-    if( s_hndIpcTrcDllIf != NULL && s_pFctTrcAdminObj_isActive != NULL && s_pFctTrcAdminObj_traceMethodEnter != NULL )
+    if( s_hndIpcTrcDllIf != NULL && s_pFctTrcAdminObj_areMethodCallsActive != NULL && s_pFctTrcAdminObj_traceMethodEnter != NULL )
     {
         if( i_pAdminObj != NULL )
         {
-            if( s_pFctTrcAdminObj_isActive(i_pAdminObj, ETraceDetailLevelMethodCalls) )
+            if( s_pFctTrcAdminObj_areMethodCallsActive(i_pAdminObj, ETraceDetailLevelMethodCallsEnterLeave) )
             {
                 s_pFctTrcAdminObj_traceMethodEnter(i_pAdminObj, "", i_szMethod, i_szMethodInArgs);
             }
@@ -1867,11 +1932,11 @@ void DllIf::CTrcServer::traceMethodEnter(
     const char*         i_szMethodInArgs )
 //------------------------------------------------------------------------------
 {
-    if( s_hndIpcTrcDllIf != NULL && s_pFctTrcAdminObj_isActive != NULL && s_pFctTrcAdminObj_traceMethodEnter != NULL )
+    if( s_hndIpcTrcDllIf != NULL && s_pFctTrcAdminObj_areMethodCallsActive != NULL && s_pFctTrcAdminObj_traceMethodEnter != NULL )
     {
         if( i_pAdminObj != NULL )
         {
-            if( s_pFctTrcAdminObj_isActive(i_pAdminObj, ETraceDetailLevelMethodCalls) )
+            if( s_pFctTrcAdminObj_areMethodCallsActive(i_pAdminObj, ETraceDetailLevelMethodCallsEnterLeave) )
             {
                 s_pFctTrcAdminObj_traceMethodEnter(i_pAdminObj, i_szObjName, i_szMethod, i_szMethodInArgs);
             }
@@ -1886,9 +1951,9 @@ void DllIf::CTrcServer::traceMethod(
     const char*         i_szAddInfo )
 //------------------------------------------------------------------------------
 {
-    if( i_pAdminObj != NULL && s_pFctTrcAdminObj_isActive != NULL && s_pFctTrcAdminObj_traceMethod != NULL )
+    if( i_pAdminObj != NULL && s_pFctTrcAdminObj_isRuntimeInfoActive != NULL && s_pFctTrcAdminObj_traceMethod != NULL )
     {
-        if( s_pFctTrcAdminObj_isActive(i_pAdminObj, ETraceDetailLevelMethodCalls) )
+        if( s_pFctTrcAdminObj_isRuntimeInfoActive(i_pAdminObj, ETraceDetailLevelRuntimeInfoCritical) )
         {
             s_pFctTrcAdminObj_traceMethod(i_pAdminObj, "", i_szMethod, i_szAddInfo);
         }
@@ -1903,9 +1968,9 @@ void DllIf::CTrcServer::traceMethod(
     const char*         i_szAddInfo )
 //------------------------------------------------------------------------------
 {
-    if( i_pAdminObj != NULL && s_pFctTrcAdminObj_isActive != NULL && s_pFctTrcAdminObj_traceMethod != NULL )
+    if( i_pAdminObj != NULL && s_pFctTrcAdminObj_isRuntimeInfoActive != NULL && s_pFctTrcAdminObj_traceMethod != NULL )
     {
-        if( s_pFctTrcAdminObj_isActive(i_pAdminObj, ETraceDetailLevelMethodCalls) )
+        if( s_pFctTrcAdminObj_isRuntimeInfoActive(i_pAdminObj, ETraceDetailLevelRuntimeInfoCritical) )
         {
             s_pFctTrcAdminObj_traceMethod(i_pAdminObj, i_szObjName, i_szMethod, i_szAddInfo);
         }
@@ -1920,11 +1985,11 @@ void DllIf::CTrcServer::traceMethodLeave(
     const char*         i_szMethodOutArgs )
 //------------------------------------------------------------------------------
 {
-    if( s_hndIpcTrcDllIf != NULL && s_pFctTrcAdminObj_isActive != NULL && s_pFctTrcAdminObj_traceMethodLeave != NULL )
+    if( s_hndIpcTrcDllIf != NULL && s_pFctTrcAdminObj_areMethodCallsActive != NULL && s_pFctTrcAdminObj_traceMethodLeave != NULL )
     {
         if( i_pAdminObj != NULL )
         {
-            if( s_pFctTrcAdminObj_isActive(i_pAdminObj, ETraceDetailLevelMethodCalls) )
+            if( s_pFctTrcAdminObj_areMethodCallsActive(i_pAdminObj, ETraceDetailLevelMethodCallsEnterLeave) )
             {
                 s_pFctTrcAdminObj_traceMethodLeave(i_pAdminObj, "", i_szMethod, i_szMethodReturn, i_szMethodOutArgs);
             }
@@ -1941,11 +2006,11 @@ void DllIf::CTrcServer::traceMethodLeave(
     const char*         i_szMethodOutArgs )
 //------------------------------------------------------------------------------
 {
-    if( s_hndIpcTrcDllIf != NULL && s_pFctTrcAdminObj_isActive != NULL && s_pFctTrcAdminObj_traceMethodLeave != NULL )
+    if( s_hndIpcTrcDllIf != NULL && s_pFctTrcAdminObj_areMethodCallsActive != NULL && s_pFctTrcAdminObj_traceMethodLeave != NULL )
     {
         if( i_pAdminObj != NULL )
         {
-            if( s_pFctTrcAdminObj_isActive(i_pAdminObj, ETraceDetailLevelMethodCalls) )
+            if( s_pFctTrcAdminObj_areMethodCallsActive(i_pAdminObj, ETraceDetailLevelMethodCallsEnterLeave) )
             {
                 s_pFctTrcAdminObj_traceMethodLeave(i_pAdminObj, i_szObjName, i_szMethod, i_szMethodReturn, i_szMethodOutArgs);
             }
@@ -1993,22 +2058,22 @@ DllIf::CIpcTrcServer* DllIf::CIpcTrcServer::GetInstance()
     If a trace server with the given name is already existing the reference to
     the existing trace server is returned and a reference counter is incremented.
 
-    @param i_iTrcDetailLevelDllIf [in] For debugging purposes of the Dll interface
+    @param i_eTrcDetailLevelDllIf [in] For debugging purposes of the Dll interface
            the Dll interace methods may be traced itself by writing a log file.
            Default: ETraceDetailLevelNone
-    @param i_iTrcDetailLevelTrcServer [in]
+    @param i_eTrcDetailLevelTrcServer [in]
         If the methods of the trace server itself should be logged a value
         greater than 0 (ETraceDetailLevelNone) could be passed here.
-    @param i_iTrcDetailLevelTrcServerMutex [in]
+    @param i_eTrcDetailLevelTrcServerMutex [in]
         If locking and unlocking the mutex of the trace server should be
         logged a value greater than 0 (ETraceDetailLevelNone) could be passed here.
-    @param i_iTrcDetailLevelTrcServerIpcServer [in]
+    @param i_eTrcDetailLevelTrcServerIpcServer [in]
         If the methods of the trace server's Ipc Server should be logged
         a value greater than 0 (ETraceDetailLevelNone) could be passed here.
-    @param i_iTrcDetailLevelTrcServerIpcServerMutex [in]
+    @param i_eTrcDetailLevelTrcServerIpcServerMutex [in]
         If locking and unlocking the mutex of the trace server's Ipc Server should be
         logged a value greater than 0 (ETraceDetailLevelNone) could be passed here.
-    @param i_iTrcDetailLevelTrcServerIpcServerGateway [in]
+    @param i_eTrcDetailLevelTrcServerIpcServerGateway [in]
         If the methods of the trace server's Ipc Server's Gateway should
         be logged a value greater than 0 (ETraceDetailLevelNone) could be
         passed here.
@@ -2018,12 +2083,12 @@ DllIf::CIpcTrcServer* DllIf::CIpcTrcServer::GetInstance()
             and a trace server with the given name is not existing.
 */
 DllIf::CIpcTrcServer* DllIf::CIpcTrcServer::CreateInstance(
-    int i_iTrcDetailLevelDllIf,
-    int i_iTrcDetailLevelTrcServer,
-    int i_iTrcDetailLevelTrcServerMutex,
-    int i_iTrcDetailLevelTrcServerIpcServer,
-    int i_iTrcDetailLevelTrcServerIpcServerMutex,
-    int i_iTrcDetailLevelTrcServerIpcServerGateway )
+    DllIf::ETraceDetailLevelMethodCalls i_eTrcDetailLevelDllIf,
+    DllIf::ETraceDetailLevelMethodCalls i_eTrcDetailLevelTrcServer,
+    DllIf::ETraceDetailLevelMethodCalls i_eTrcDetailLevelTrcServerMutex,
+    DllIf::ETraceDetailLevelMethodCalls i_eTrcDetailLevelTrcServerIpcServer,
+    DllIf::ETraceDetailLevelMethodCalls i_eTrcDetailLevelTrcServerIpcServerMutex,
+    DllIf::ETraceDetailLevelMethodCalls i_eTrcDetailLevelTrcServerIpcServerGateway )
 //------------------------------------------------------------------------------
 {
     DllIf::CIpcTrcServer* pTrcServer = NULL;
@@ -2031,12 +2096,12 @@ DllIf::CIpcTrcServer* DllIf::CIpcTrcServer::CreateInstance(
     if( s_hndIpcTrcDllIf != NULL && s_pFctIpcTrcServer_GetInstance != NULL )
     {
         pTrcServer = s_pFctIpcTrcServer_CreateInstance(
-            i_iTrcDetailLevelDllIf,
-            i_iTrcDetailLevelTrcServer,
-            i_iTrcDetailLevelTrcServerMutex,
-            i_iTrcDetailLevelTrcServerIpcServer,
-            i_iTrcDetailLevelTrcServerIpcServerMutex,
-            i_iTrcDetailLevelTrcServerIpcServerGateway);
+            i_eTrcDetailLevelDllIf,
+            i_eTrcDetailLevelTrcServer,
+            i_eTrcDetailLevelTrcServerMutex,
+            i_eTrcDetailLevelTrcServerIpcServer,
+            i_eTrcDetailLevelTrcServerIpcServerMutex,
+            i_eTrcDetailLevelTrcServerIpcServerGateway);
     }
     return pTrcServer;
 }

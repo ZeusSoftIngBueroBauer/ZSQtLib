@@ -71,11 +71,11 @@ CMyClass2Thread::CMyClass2Thread( const QString& i_strMyClass2ObjName, CMyClass1
         ClassName().toLatin1().data(),
         objectName().toLatin1().data());
 
-    m_pTrcAdminObj->setTraceDetailLevel(ETraceDetailLevelMethodArgs);
+    m_pTrcAdminObj->setMethodCallsTraceDetailLevel(ETraceDetailLevelMethodCallsArgsNormal);
 
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->getTraceDetailLevel() >= ETraceDetailLevelMethodArgs )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->getMethodCallsTraceDetailLevel() >= ETraceDetailLevelMethodCallsArgsNormal )
     {
         strMthInArgs = i_strMyClass2ObjName;
         strMthInArgs += ", " + QString(i_pMyClass1 == nullptr ? "nullptr" : i_pMyClass1->objectName());
@@ -83,7 +83,7 @@ CMyClass2Thread::CMyClass2Thread( const QString& i_strMyClass2ObjName, CMyClass1
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* eDetailLevel */ ETraceDetailLevelMethodCallsEnterLeave,
         /* szMethod     */ "ctor",
         /* szMthInArgs  */ strMthInArgs.toLatin1().data() );
 
@@ -95,7 +95,7 @@ CMyClass2Thread::~CMyClass2Thread()
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* eDetailLevel */ ETraceDetailLevelMethodCallsEnterLeave,
         /* szMethod s   */ "dtor",
         /* szMthInArgs  */ "" );
 
@@ -148,14 +148,14 @@ void CMyClass2Thread::setObjectName(const QString& i_strObjName)
 
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(ETraceDetailLevelMethodCallsArgsNormal) )
     {
         strMthInArgs = i_strObjName;
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* eDetailLevel */ ETraceDetailLevelMethodCallsEnterLeave,
         /* szMethod     */ "setObjectName",
         /* szMthInArgs  */ strMthInArgs.toLatin1().data() );
 
@@ -200,7 +200,7 @@ void CMyClass2Thread::run()
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* eDetailLevel */ ETraceDetailLevelMethodCallsEnterLeave,
         /* szMethod     */ "run",
         /* szMthInArgs  */ "" );
 
@@ -251,14 +251,14 @@ void CMyClass2Thread::start( QThread::Priority i_priority )
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(ETraceDetailLevelMethodCallsArgsNormal) )
     {
         strMthInArgs = qThreadPriority2Str(i_priority);
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* eDetailLevel */ ETraceDetailLevelMethodCallsEnterLeave,
         /* szMethod     */ "start",
         /* szMthInArgs  */ strMthInArgs.toLatin1().data() );
 
@@ -271,7 +271,7 @@ void CMyClass2Thread::quit()
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* eDetailLevel */ ETraceDetailLevelMethodCallsEnterLeave,
         /* szMethod     */ "quit",
         /* szMthInArgs  */ "" );
 
@@ -284,20 +284,20 @@ bool CMyClass2Thread::wait( QDeadlineTimer i_deadline )
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(ETraceDetailLevelMethodCallsArgsNormal) )
     {
         strMthInArgs = QString(i_deadline.isForever() ? "Forever" : QString::number(i_deadline.deadline()));
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* eDetailLevel */ ETraceDetailLevelMethodCallsEnterLeave,
         /* szMethod     */ "wait",
         /* szMthInArgs  */ strMthInArgs.toLatin1().data() );
 
     bool bResult = QThread::wait(i_deadline);
 
-    if( mthTracer.isActive(ETraceDetailLevelMethodArgs) )
+    if( mthTracer.areMethodCallsActive(ETraceDetailLevelMethodCallsArgsNormal) )
     {
         mthTracer.setMethodReturn(bResult);
     }
@@ -310,20 +310,20 @@ bool CMyClass2Thread::wait( unsigned long i_time_ms )
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(ETraceDetailLevelMethodCallsArgsNormal) )
     {
         strMthInArgs = QString::number(i_time_ms) + " ms";
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* eDetailLevel */ ETraceDetailLevelMethodCallsEnterLeave,
         /* szMethod     */ "wait",
         /* szMthInArgs  */ strMthInArgs.toLatin1().data() );
 
     bool bResult = QThread::wait(i_time_ms);
 
-    if( mthTracer.isActive(ETraceDetailLevelMethodArgs) )
+    if( mthTracer.areMethodCallsActive(ETraceDetailLevelMethodCallsArgsNormal) )
     {
         mthTracer.setMethodReturn(bResult);
     }
@@ -340,13 +340,13 @@ int CMyClass2Thread::exec()
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* eDetailLevel */ ETraceDetailLevelMethodCallsEnterLeave,
         /* szMethod     */ "exec",
         /* szMthInArgs  */ "" );
 
     int iResult = QThread::exec();
 
-    if( mthTracer.isActive(ETraceDetailLevelMethodArgs) )
+    if( mthTracer.areMethodCallsActive(ETraceDetailLevelMethodCallsArgsNormal) )
     {
         mthTracer.setMethodReturn(iResult);
     }
@@ -392,11 +392,11 @@ CMyClass2::CMyClass2( const QString& i_strObjName, CMyClass2Thread* i_pMyClass2T
         ClassName().toLatin1().data(),
         objectName().toLatin1().data());
 
-    m_pTrcAdminObj->setTraceDetailLevel(ETraceDetailLevelRuntimeInfo);
+    m_pTrcAdminObj->setMethodCallsTraceDetailLevel(ETraceDetailLevelMethodCallsArgsNormal);
 
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->getTraceDetailLevel() >= ETraceDetailLevelMethodArgs )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->getMethodCallsTraceDetailLevel() >= ETraceDetailLevelMethodCallsArgsNormal )
     {
         strMthInArgs = i_strObjName;
         strMthInArgs += ", " + QString(i_pMyClass2Thread == nullptr ? "nullptr" : i_pMyClass2Thread->objectName());
@@ -404,7 +404,7 @@ CMyClass2::CMyClass2( const QString& i_strObjName, CMyClass2Thread* i_pMyClass2T
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* eDetailLevel */ ETraceDetailLevelMethodCallsEnterLeave,
         /* szMethod     */ "ctor",
         /* szMthInArgs  */ strMthInArgs.toLatin1().data() );
 
@@ -431,7 +431,7 @@ CMyClass2::~CMyClass2()
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* eDetailLevel */ ETraceDetailLevelMethodCallsEnterLeave,
         /* szMethod     */ "dtor",
         /* szMthInArgs  */ "" );
 
@@ -499,14 +499,14 @@ void CMyClass2::setObjectName(const QString& i_strObjName)
 
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(ETraceDetailLevelMethodCallsArgsNormal) )
     {
         strMthInArgs = i_strObjName;
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* eDetailLevel */ ETraceDetailLevelMethodCallsEnterLeave,
         /* szMethod     */ "setObjectName",
         /* szMthInArgs  */ strMthInArgs.toLatin1().data() );
 
@@ -553,20 +553,20 @@ QString CMyClass2::instMethod(const QString& i_strMthInArgs)
     QString strMthInArgs;
     QString strMthRet;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(ETraceDetailLevelMethodCallsArgsNormal) )
     {
         strMthInArgs = i_strMthInArgs;
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* eDetailLevel */ ETraceDetailLevelMethodCallsEnterLeave,
         /* szMethod     */ "instMethod",
         /* szMthInArgs  */ strMthInArgs.toLatin1().data() );
 
     strResult = "Hello World";
 
-    if( mthTracer.isActive(ETraceDetailLevelMethodArgs) )
+    if( mthTracer.areMethodCallsActive(ETraceDetailLevelMethodCallsArgsNormal) )
     {
         strMthRet = strResult;
         mthTracer.setMethodReturn(strMthRet.toLatin1().data());
@@ -586,7 +586,7 @@ int CMyClass2::recursiveTraceMethod()
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* eDetailLevel */ ETraceDetailLevelMethodCallsEnterLeave,
         /* szMethod     */ "recursiveTraceMethod",
         /* szMthInArgs  */ "" );
 
@@ -601,10 +601,10 @@ int CMyClass2::recursiveTraceMethod()
     }
     else // if( QThread::currentThread() == thread() )
     {
-        if( mthTracer.isActive(ETraceDetailLevelRuntimeInfo) )
+        if( mthTracer.isRuntimeInfoActive(ETraceDetailLevelRuntimeInfoDebugNormal) )
         {
             QString strTrcMsg = "RecursionCount=" + QString::number(m_iRecursionCount);
-            mthTracer.trace(strTrcMsg.toLatin1().data(), ETraceDetailLevelRuntimeInfo);
+            mthTracer.trace(strTrcMsg.toLatin1().data());
         }
 
         ++m_iRecursionCount;
@@ -616,7 +616,7 @@ int CMyClass2::recursiveTraceMethod()
         --m_iRecursionCount;
     }
 
-    if( mthTracer.isActive(ETraceDetailLevelMethodArgs) )
+    if( mthTracer.areMethodCallsActive(ETraceDetailLevelMethodCallsArgsNormal) )
     {
         mthTracer.setMethodReturn(m_iRecursionCount);
     }
@@ -635,7 +635,7 @@ void CMyClass2::startMessageTimer()
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* eDetailLevel */ ETraceDetailLevelMethodCallsEnterLeave,
         /* szMethod     */ "startMessageTimer",
         /* szMthInArgs  */ "" );
 
@@ -650,9 +650,9 @@ void CMyClass2::startMessageTimer()
     }
     else // if( QThread::currentThread() == thread() )
     {
-        if( mthTracer.isActive(ETraceDetailLevelRuntimeInfo) )
+        if( mthTracer.isRuntimeInfoActive(ETraceDetailLevelRuntimeInfoDebugNormal) )
         {
-            mthTracer.trace("m_pTmrMessages->start(100)", ETraceDetailLevelRuntimeInfo);
+            mthTracer.trace("m_pTmrMessages->start(100)");
         }
 
         if( !m_pTmrMessages->isActive() )
@@ -674,14 +674,14 @@ CMyClass3* CMyClass2::startClass3Thread(const QString& i_strMyClass3ObjName)
     QString strMthInArgs;
     QString strMthRet;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(ETraceDetailLevelMethodCallsArgsNormal) )
     {
         strMthInArgs = i_strMyClass3ObjName;
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* eDetailLevel */ ETraceDetailLevelMethodCallsEnterLeave,
         /* szMethod     */ "startClass3Thread",
         /* szMthInArgs  */ strMthInArgs.toLatin1().data() );
 
@@ -735,7 +735,7 @@ CMyClass3* CMyClass2::startClass3Thread(const QString& i_strMyClass3ObjName)
         m_pMyClass3 = m_pMyClass3Thread->getMyClass3();
     }
 
-    if( mthTracer.isActive(ETraceDetailLevelMethodArgs) )
+    if( mthTracer.areMethodCallsActive(ETraceDetailLevelMethodCallsArgsNormal) )
     {
         strMthRet = QString(m_pMyClass3 == nullptr ? "null" : m_pMyClass3->objectName());
         mthTracer.setMethodReturn(strMthRet.toLatin1().data());
@@ -753,7 +753,7 @@ void CMyClass2::stopClass3Thread()
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* eDetailLevel */ ETraceDetailLevelMethodCallsEnterLeave,
         /* szMethod     */ "stopClass3Thread",
         /* szMthInArgs  */ strMthInArgs.toLatin1().data() );
 
@@ -806,7 +806,7 @@ void CMyClass2::onClass3ThreadRunning()
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* eDetailLevel */ ETraceDetailLevelMethodCallsEnterLeave,
         /* szMethod     */ "onClass3ThreadRunning",
         /* szMthInArgs  */ strMthInArgs.toLatin1().data() );
 
@@ -819,7 +819,7 @@ void CMyClass2::onTmrMessagesTimeout()
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelRuntimeInfo,
+        /* iDetailLevel */ ETraceDetailLevelMethodCallsEnterLeave,
         /* szMethod     */ "onTmrMessagesTimeout",
         /* szMthInArgs  */ "" );
 
@@ -827,10 +827,10 @@ void CMyClass2::onTmrMessagesTimeout()
 
     ++m_iMsgCount;
 
-    if( mthTracer.isActive(ETraceDetailLevelRuntimeInfo) )
+    if( mthTracer.isRuntimeInfoActive(ETraceDetailLevelRuntimeInfoDebugNormal) )
     {
         QString strTrcMsg = "MsgCount=" + QString::number(m_iMsgCount);
-        mthTracer.trace(strTrcMsg.toLatin1().data(), ETraceDetailLevelRuntimeInfo);
+        mthTracer.trace(strTrcMsg.toLatin1().data());
     }
 
     if( m_iMsgCount >= 10 && m_pTmrMessages->isActive() )
@@ -877,14 +877,14 @@ bool CMyClass2::event( QEvent* i_pEv )
 
         QString strMthInArgs;
 
-        if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+        if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(ETraceDetailLevelMethodCallsArgsNormal) )
         {
-            strMthInArgs = "{" + QString(pMsg == nullptr ? "null" : pMsg->getAddTrcInfoStr(m_pTrcAdminObj->getTraceDetailLevel())) + "}";
+            strMthInArgs = "{" + QString(pMsg == nullptr ? "null" : pMsg->getAddTrcInfoStr(m_pTrcAdminObj->getMethodCallsTraceDetailLevel())) + "}";
         }
 
         CMethodTracer mthTracer(
             /* pTrcServer         */ m_pTrcAdminObj,
-            /* iFilterDetailLevel */ ETraceDetailLevelRuntimeInfo,
+            /* iFilterDetailLevel */ ETraceDetailLevelMethodCallsEnterLeave,
             /* szMethod           */ "event",
             /* szMethodInArgs     */ strMthInArgs.toLatin1().data() );
 

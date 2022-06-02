@@ -976,7 +976,8 @@ void CTest::doTestStepTraceClientConnect( ZS::Test::CTestStep* i_pTestStep )
                     strExpectedValue = pTrcAdminObj->keyInTree() + ": ";
                     strExpectedValue += "RefCount: " + QString::number(pTrcAdminObj->getRefCount());
                     strExpectedValue += ", Enabled: " + CEnumEnabled(pTrcAdminObj->getEnabled()).toString();
-                    strExpectedValue += ", DetailLevel: " + QString::number(pTrcAdminObj->getTraceDetailLevel());
+                    strExpectedValue += ", DetailLevelMethodCalls: " + CEnumTraceDetailLevelMethodCalls(pTrcAdminObj->getMethodCallsTraceDetailLevel()).toString();
+                    strExpectedValue += ", DetailLevelRuntimeInfo: " + CEnumTraceDetailLevelRuntimeInfo(pTrcAdminObj->getRuntimeInfoTraceDetailLevel()).toString();
                     strlstExpectedValues.append(strExpectedValue);
                 }
             }
@@ -1153,7 +1154,7 @@ void CTest::doTestStepTraceMethodCall( ZS::Test::CTestStep* i_pTestStep )
     }
     else
     {
-        pTrcServer->setNewTrcAdminObjsDefaultDetailLevel(ETraceDetailLevelMethodArgs);
+        pTrcServer->setNewTrcAdminObjsDefaultDetailLevel(ETraceDetailLevelMethodCalls::ArgsNormal);
         // The trace output may have been disabled to close (flush buffer) the file
         // so that its content can be evaluated by onZSTraceClientTrcMthListWdgtTextItemAdded.
         // We need to enable the trace output again.
@@ -1826,7 +1827,7 @@ void CTest::doTestStepTraceMethodCall( ZS::Test::CTestStep* i_pTestStep )
 
     if( pTrcServer != nullptr )
     {
-        pTrcServer->setNewTrcAdminObjsDefaultDetailLevel(ETraceDetailLevelNone);
+        pTrcServer->setNewTrcAdminObjsDefaultDetailLevel(ETraceDetailLevelMethodCalls::None);
     }
 
     if( !bValidTestStep )
@@ -2094,7 +2095,8 @@ void CTest::onZSTraceClientTraceAdminObjInserted( QObject* /*i_pTrcClient*/, con
                                 strResultValue = pTrcAdminObj->keyInTree() + ": ";
                                 strResultValue += "RefCount: " + QString::number(pTrcAdminObj->getRefCount());
                                 strResultValue += ", Enabled: " + CEnumEnabled(pTrcAdminObj->getEnabled()).toString();
-                                strResultValue += ", DetailLevel: " + QString::number(pTrcAdminObj->getTraceDetailLevel());
+                                strResultValue += ", DetailLevelMethodCalls: " + CEnumTraceDetailLevelMethodCalls(pTrcAdminObj->getMethodCallsTraceDetailLevel()).toString();
+                                strResultValue += ", DetailLevelRuntimeInfo: " + CEnumTraceDetailLevelRuntimeInfo(pTrcAdminObj->getRuntimeInfoTraceDetailLevel()).toString();
                                 strlstResultValues.append(strResultValue);
                             }
                         }

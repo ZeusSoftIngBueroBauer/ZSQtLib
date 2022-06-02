@@ -158,7 +158,7 @@ CDialog::CDialog(
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* eDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strMethod    */ "ctor",
         /* strAddInfo   */ "" );
 
@@ -191,7 +191,7 @@ CDialog::~CDialog()
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* eDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
 
@@ -226,7 +226,7 @@ void CDialog::show()
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* eDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strMethod    */ "show",
         /* strAddInfo   */ "" );
 
@@ -252,7 +252,7 @@ void CDialog::hide()
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* eDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strMethod    */ "hide",
         /* strAddInfo   */ "" );
 
@@ -282,7 +282,7 @@ void CDialog::closeEvent( QCloseEvent* i_pEv )
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* eDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strMethod    */ "closeEvent",
         /* strAddInfo   */ "" );
 

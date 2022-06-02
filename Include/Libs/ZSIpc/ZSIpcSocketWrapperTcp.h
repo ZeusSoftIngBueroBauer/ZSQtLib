@@ -53,13 +53,13 @@ public: // ctors and dtor
         int                 i_iSocketId = ZS::Ipc::ESocketIdUndefined,
         QTcpSocket*         i_pTcpSocket = nullptr,
         Trace::CTrcMthFile* i_pTrcMthFile = nullptr,         // If != nullptr trace method file with detail level is used instead of trace admin object with Trace server.
-        int                 i_iTrcMthFileDetailLevel = Trace::ETraceDetailLevelMethodArgs );
+        ZS::Trace::ETraceDetailLevelMethodCalls i_eTrcMthFileDetailLevel = Trace::ETraceDetailLevelMethodCalls::None );
     CTcpSocketWrapper(
         const QString&      i_strObjName,
         const SSocketDscr&  i_socketDscr,
         QTcpSocket*         i_pTcpSocket,
         Trace::CTrcMthFile* i_pTrcMthFile = nullptr,         // If != nullptr trace method file with detail level is used instead of trace admin object with Trace server.
-        int                 i_iTrcMthFileDetailLevel = Trace::ETraceDetailLevelMethodArgs );
+        ZS::Trace::ETraceDetailLevelMethodCalls i_eTrcMthFileDetailLevel = Trace::ETraceDetailLevelMethodCalls::None );
     virtual ~CTcpSocketWrapper();
 public: // overridables of base class CIpcSocketWrapper
     virtual QString nameSpace() const override { return NameSpace(); }

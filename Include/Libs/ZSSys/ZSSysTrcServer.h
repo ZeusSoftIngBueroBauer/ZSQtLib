@@ -59,7 +59,7 @@ public: // ctor
     STrcServerSettings(
         bool i_bEnabled = true,
         bool i_bNewTrcAdminObjsEnabledAsDefault = true,
-        int  i_iNewTrcAdminObjsDefaultDetailLevel = 0,
+        ETraceDetailLevelMethodCalls i_eNewTrcAdminObjsDefaultDetailLevel = ETraceDetailLevelMethodCalls::None,
         bool i_bUseIpcServer = true,
         bool i_bCacheDataIfNotConnected = false,
         int  i_iCacheDataMaxArrLen = 1000,
@@ -77,7 +77,7 @@ public: // struct members
     bool    m_bEnabled;                             /*!< Tracing may be enabled or disabled for both writing to local trace file and sending data to remote client. */
     QString m_strAdminObjFileAbsFilePath;           /*!< Absolute file path the tree of trace admin objects and their settings will be saved and recalled. */
     bool    m_bNewTrcAdminObjsEnabledAsDefault;     /*!< Defines whether newly created trace admin objects should be enabled as default. */
-    int     m_iNewTrcAdminObjsDefaultDetailLevel;   /*!< Defines the trace detail level for newly created trace admin objects. */
+    ETraceDetailLevelMethodCalls m_eNewTrcAdminObjsDefaultDetailLevel;   /*!< Defines the trace detail level for newly created trace admin objects. */
     bool    m_bUseIpcServer;                        /*!< Defines whether trace output should be send to remote client. */
     bool    m_bCacheDataIfNotConnected;             /*!< If a trace client is not connect the flag defines whether trace data should be internally cached until a client connects. */
     int     m_iCacheDataMaxArrLen;                  /*!< If caching is enabled defines the maximum number of trace entries which should be locally cached. */
@@ -126,10 +126,10 @@ public: // class methods
 public: // class methods
     static CTrcServer* GetInstance();
     static CTrcServer* CreateInstance(
-        int i_iTrcDetailLevel = ETraceDetailLevelNone,
-        int i_iTrcDetailLevelMutex = ETraceDetailLevelNone,
-        int i_iTrcDetailLevelAdminObjIdxTree = ETraceDetailLevelNone,
-        int i_iTrcDetailLevelAdminObjIdxTreeMutex = ETraceDetailLevelNone );
+        ETraceDetailLevelMethodCalls i_eTrcDetailLevel = ETraceDetailLevelMethodCalls::None,
+        ETraceDetailLevelMethodCalls i_eTrcDetailLevelMutex = ETraceDetailLevelMethodCalls::None,
+        ETraceDetailLevelMethodCalls i_eTrcDetailLevelAdminObjIdxTree = ETraceDetailLevelMethodCalls::None,
+        ETraceDetailLevelMethodCalls i_eTrcDetailLevelAdminObjIdxTreeMutex = ETraceDetailLevelMethodCalls::None );
     static void ReleaseInstance();
 public: // class methods to register thread names
     static void RegisterCurrentThread(const QString& i_strThreadName);
@@ -143,11 +143,11 @@ public: // class methods to add, remove and modify admin objects
         const QString& i_strClassName,
         const QString& i_strObjName = "" );
     static CTrcAdminObj* GetTraceAdminObj(
-        const QString&       i_strNameSpace,
-        const QString&       i_strClassName,
-        const QString&       i_strObjName,
-        ZS::System::EEnabled i_bEnabledAsDefault,
-        int                  i_iDefaultDetailLevel );
+        const QString&               i_strNameSpace,
+        const QString&               i_strClassName,
+        const QString&               i_strObjName,
+        ZS::System::EEnabled         i_bEnabledAsDefault,
+        ETraceDetailLevelMethodCalls i_eDefaultDetailLevel );
     static void RenameTraceAdminObj( CTrcAdminObj** io_ppTrcAdminObj, const QString& i_strNewObjName );
     static void ReleaseTraceAdminObj( CTrcAdminObj* i_pTrcAdminObj );
 public: // class methods to get default file paths
@@ -155,10 +155,10 @@ public: // class methods to get default file paths
     static QString GetDefaultLocalTrcFileAbsoluteFilePath( const QString& i_strIniFileScope = "System" );
 protected: // ctors and dtor
     CTrcServer(
-        int i_iTrcDetailLevel = ETraceDetailLevelNone,
-        int i_iTrcDetailLevelMutex = ETraceDetailLevelNone,
-        int i_iTrcDetailLevelAdminObjIdxTree = ETraceDetailLevelNone,
-        int i_iTrcDetailLevelAdminObjIdxTreeMutex = ETraceDetailLevelNone );
+        ETraceDetailLevelMethodCalls i_eTrcDetailLevel = ETraceDetailLevelMethodCalls::None,
+        ETraceDetailLevelMethodCalls i_eTrcDetailLevelMutex = ETraceDetailLevelMethodCalls::None,
+        ETraceDetailLevelMethodCalls i_eTrcDetailLevelAdminObjIdxTree = ETraceDetailLevelMethodCalls::None,
+        ETraceDetailLevelMethodCalls i_eTrcDetailLevelAdminObjIdxTreeMutex = ETraceDetailLevelMethodCalls::None );
     virtual ~CTrcServer();
 signals:
     /*! Signal which is emitted if a trace setting has been changed.
@@ -172,16 +172,13 @@ public: // instance methods
 public: // instance methods
     CIdxTreeTrcAdminObjs* getTraceAdminObjIdxTree();
 public: // overridables to add, remove and modify admin objects
-    virtual CTrcAdminObj* getTraceAdminObj(             // For each of the names an empty (or Null) string is allowed.
-        int                  i_idxInTree,
-        ZS::System::EEnabled i_bEnabledAsDefault,       // Undefined means use "trcServerSettings".
-        int                  i_iDefaultDetailLevel );   // -1 means use "trcServerSettings".
-    virtual CTrcAdminObj* getTraceAdminObj(             // For each of the names an empty (or Null) string is allowed.
-        const QString&       i_strNameSpace,            // Name space of the objects class (e.g. "ZS::Diagram")
-        const QString&       i_strClassName,            // Class name of the object (e.g. "CWdgtDiagram")
-        const QString&       i_strObjName,              // "Real" object name (e.g. "PvT" (Power versus Time))
-        ZS::System::EEnabled i_bEnabledAsDefault,       // Undefined means use "trcServerSettings".
-        int                  i_iDefaultDetailLevel );   // -1 means use "trcServerSettings".
+    virtual CTrcAdminObj* getTraceAdminObj( int i_idxInTree );
+    virtual CTrcAdminObj* getTraceAdminObj(
+        const QString&               i_strNameSpace,
+        const QString&               i_strClassName,
+        const QString&               i_strObjName,
+        ZS::System::EEnabled         i_bEnabledAsDefault,
+        ETraceDetailLevelMethodCalls i_eDefaultDetailLevel );
     virtual void renameTraceAdminObj( CTrcAdminObj** io_ppTrcAdminObj, const QString& i_strNewObjName );
     virtual void releaseTraceAdminObj( CTrcAdminObj* i_pTrcAdminObj );
 public: // overridables
@@ -236,14 +233,16 @@ public: // overridables
         const QString& i_strMethodOutArgs );
 public: // overridables
     virtual bool isActive() const;
+    virtual bool areMethodCallsActive( const CTrcAdminObj* i_pTrcAdminObj ) const;
+    virtual bool isRuntimeInfoActive( const CTrcAdminObj* i_pTrcAdminObj ) const;
 public: // overridables
     virtual void setEnabled( bool i_bEnabled );
     virtual bool isEnabled() const;
 public: // overridables
     virtual void setNewTrcAdminObjsEnabledAsDefault( bool i_bEnabled );
     virtual bool areNewTrcAdminObjsEnabledAsDefault() const;
-    virtual void setNewTrcAdminObjsDefaultDetailLevel( int i_iDetailLevel );
-    virtual int getNewTrcAdminObjsDefaultDetailLevel() const;
+    virtual void setNewTrcAdminObjsDefaultDetailLevel( ETraceDetailLevelMethodCalls i_eDetailLevel );
+    virtual ETraceDetailLevelMethodCalls getNewTrcAdminObjsDefaultDetailLevel() const;
 public: // overridables
     virtual void setAdminObjFileAbsoluteFilePath( const QString& i_strAbsFilePath );
     virtual QString getAdminObjFileAbsoluteFilePath() const;
@@ -303,12 +302,12 @@ protected: // class members
     static QHash<Qt::HANDLE, QString>  s_hshThreadNames; /*!< Hash with registered threads (key is thread id, value is name of thread). */
     static QHash<QString, Qt::HANDLE>  s_hshThreadIds;   /*!< Hash with registered threads (key name of thread, value is thread id). */
 protected: // instance members
-    mutable ZS::System::CMutex* m_pMtx;          /*!< Mutex to protect the instance members of the class for multithreaded access. */
-    CIdxTreeTrcAdminObjs* m_pTrcAdminObjIdxTree; /*<! Index tree containg a hierarchically order tree of the trace admin objects. */
-    STrcServerSettings    m_trcSettings;         /*<! Currently used trace settings. */
-    CTrcMthFile*          m_pTrcMthFile;         /*<! Reference to local trace method file. */
-    int                   m_iTrcDetailLevel;     /*<! If the trace server itself got to be logged. */
-    int                   m_iRefCount;           /*<! Reference counter for createInstance and releaseInstance. */
+    mutable ZS::System::CMutex*  m_pMtx;                /*!< Mutex to protect the instance members of the class for multithreaded access. */
+    CIdxTreeTrcAdminObjs*        m_pTrcAdminObjIdxTree; /*<! Index tree containg a hierarchically order tree of the trace admin objects. */
+    STrcServerSettings           m_trcSettings;         /*<! Currently used trace settings. */
+    CTrcMthFile*                 m_pTrcMthFile;         /*<! Reference to local trace method file. */
+    ETraceDetailLevelMethodCalls m_eTrcDetailLevel;     /*<! If the trace server itself got to be traced. */
+    int                          m_iRefCount;           /*<! Reference counter for createInstance and releaseInstance. */
 
 }; // class CTrcServer
 

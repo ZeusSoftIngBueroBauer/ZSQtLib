@@ -149,8 +149,6 @@ message(STATUS "Compiler-Version:         ${CMAKE_CXX_COMPILER_VERSION}")
 message(STATUS "Compiler-Architecture:    ${CMAKE_CXX_COMPILER_ARCHITECTURE_ID}")
 message(STATUS "CXX-Standard:             ${CMAKE_CXX_STANDARD}")
 
-add_compile_options(-DDONT_USE_PRAGMA_COMMENT_LIB_INCLUDE_IN_MAIN_MODULES)
-
 if(CMAKE_GENERATOR MATCHES "Visual Studio 9 2008")
     set(Compiler "msvc2008")
     add_compile_options(/Gm /Zi)

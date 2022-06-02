@@ -68,19 +68,14 @@ public: // ctors and dtor
         const QString& i_strWindowTitle );
     ~CApplication();
 public: // instance methods
-    QSettings* getSettingsFile() const { return m_pSettingsFile; }
     CTest* getTest() { return m_pTest; }
     ZS::Trace::CTrcServer* getTraceServer() { return m_pTrcServer; }
     CMainWindow* getMainWindow() { return m_pMainWindow; }
-public: // instance methods
-    void readSettings();
-    void saveSettings();
 protected slots:
     void onLastWindowClosed();
 protected slots:
     void onTestFinished( const ZS::Test::CEnumTestResult& i_result );
 private: // instance members
-    QSettings*                    m_pSettingsFile;
     ZS::System::CErrLog*          m_pErrLog;
     bool                          m_bReqExecTreeGarbageCollectorEnabled;
     double                        m_fReqExecTreeGarbageCollectorInterval_s;

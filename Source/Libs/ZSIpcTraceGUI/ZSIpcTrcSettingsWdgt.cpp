@@ -207,7 +207,7 @@ CWdgtTrcSettings::CWdgtTrcSettings( const QString& i_strObjName, QWidget* i_pWdg
     m_pEdtNewTrcAdminObjsDefaultDetailLevel = new QSpinBox();
     m_pEdtNewTrcAdminObjsDefaultDetailLevel->setMinimum(0);
     m_pEdtNewTrcAdminObjsDefaultDetailLevel->setMaximum(10);
-    m_pEdtNewTrcAdminObjsDefaultDetailLevel->setValue(trcSettings.m_iNewTrcAdminObjsDefaultDetailLevel);
+    m_pEdtNewTrcAdminObjsDefaultDetailLevel->setValue(static_cast<int>(trcSettings.m_eNewTrcAdminObjsDefaultDetailLevel));
     m_pLytSettings->addRow(m_pLblNewTrcAdminObjsDefaultDetailLevel, m_pEdtNewTrcAdminObjsDefaultDetailLevel);
 
     // <Separator>
@@ -932,7 +932,7 @@ void CWdgtTrcSettings::onTraceSettingsChanged( QObject* /*i_pServer*/ )
     m_pChkTracingEnabled->setChecked(trcSettings.m_bEnabled);
     m_pEdtAdminObjFileAbsFilePath->setText(trcSettings.m_strAdminObjFileAbsFilePath);
     m_pChkNewTrcAdminObjsEnabledAsDefault->setChecked(trcSettings.m_bNewTrcAdminObjsEnabledAsDefault);
-    m_pEdtNewTrcAdminObjsDefaultDetailLevel->setValue(trcSettings.m_iNewTrcAdminObjsDefaultDetailLevel);
+    m_pEdtNewTrcAdminObjsDefaultDetailLevel->setValue(static_cast<int>(trcSettings.m_eNewTrcAdminObjsDefaultDetailLevel));
     m_pChkUseIpcServer->setChecked(trcSettings.m_bUseIpcServer);
     m_pChkCacheDataIfNotConnected->setChecked(trcSettings.m_bCacheDataIfNotConnected);
     m_pEdtCacheDataMaxArrLen->setValue(trcSettings.m_iCacheDataMaxArrLen);
@@ -1026,7 +1026,7 @@ STrcServerSettings CWdgtTrcSettings::getTraceSettings() const
     trcSettings.m_bEnabled = m_pChkTracingEnabled->isChecked();
     trcSettings.m_strAdminObjFileAbsFilePath = m_pEdtAdminObjFileAbsFilePath->text();
     trcSettings.m_bNewTrcAdminObjsEnabledAsDefault = m_pChkNewTrcAdminObjsEnabledAsDefault->isChecked();
-    trcSettings.m_iNewTrcAdminObjsDefaultDetailLevel = m_pEdtNewTrcAdminObjsDefaultDetailLevel->value();
+    trcSettings.m_eNewTrcAdminObjsDefaultDetailLevel = static_cast<ETraceDetailLevelMethodCalls>(m_pEdtNewTrcAdminObjsDefaultDetailLevel->value());
     trcSettings.m_bUseIpcServer = m_pChkUseIpcServer->isChecked();
     trcSettings.m_bCacheDataIfNotConnected = m_pChkCacheDataIfNotConnected->isChecked();
     trcSettings.m_iCacheDataMaxArrLen = m_pEdtCacheDataMaxArrLen->value();

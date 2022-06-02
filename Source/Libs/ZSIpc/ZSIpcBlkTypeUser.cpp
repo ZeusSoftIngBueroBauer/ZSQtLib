@@ -122,14 +122,14 @@ QList<QByteArray> CBlkTypeUser::receiveDataBlocks(
     QString strMthInArgs;
     QString strMthRet;
 
-    if( i_pMthTracer != nullptr )
+    if( i_pMthTracer != nullptr && i_pMthTracer->areMethodCallsActive(ETraceDetailLevelMethodCalls::EnterLeave) )
     {
-        if( i_pMthTracer->isActive(ETraceDetailLevelMethodArgs) )
+        if( i_pMthTracer->areMethodCallsActive(ETraceDetailLevelMethodCalls::ArgsNormal) )
         {
             SSocketDscr socketDscr = i_pSocketWrapper->getSocketDscr();
             strMthInArgs = socketDscr.getConnectionString();
         }
-        i_pMthTracer->trace("-> receiveDataBlocks(" + strMthInArgs + ")", ETraceDetailLevelMethodCalls);
+        i_pMthTracer->trace("-> receiveDataBlocks(" + strMthInArgs + ")");
     }
 
     QList<QByteArray> arByteArrs;
@@ -147,9 +147,9 @@ QList<QByteArray> CBlkTypeUser::receiveDataBlocks(
             /* arpTrcMsgLogObjects */ i_arpTrcMsgLogObjects );
     }
 
-    if( i_pMthTracer != nullptr )
+    if( i_pMthTracer != nullptr && i_pMthTracer->areMethodCallsActive(ETraceDetailLevelMethodCalls::EnterLeave) )
     {
-        if( i_pMthTracer->isActive(ETraceDetailLevelMethodArgs) )
+        if( i_pMthTracer->areMethodCallsActive(ETraceDetailLevelMethodCalls::ArgsNormal) )
         {
             strMthRet = "Blocks [" + QString::number(arByteArrs.size()) + "]";
             if( arByteArrs.size() > 0 )
@@ -159,7 +159,7 @@ QList<QByteArray> CBlkTypeUser::receiveDataBlocks(
                 {
                     strMthRet += "Block [Size=" + QString::number(arByteArrs[idxBlk].size()) + "]";
 
-                    if( i_pMthTracer->isActive(ETraceDetailLevelInternalStates) )
+                    if( i_pMthTracer->isRuntimeInfoActive(ETraceDetailLevelRuntimeInfo::DebugNormal) )
                     {
                         strMthRet += "(";
                         if( arByteArrs[idxBlk].size() > 0 )
@@ -172,7 +172,7 @@ QList<QByteArray> CBlkTypeUser::receiveDataBlocks(
                 strMthRet += ")";
             }
         }
-        i_pMthTracer->trace("<- receiveDataBlocks(): " + strMthRet, ETraceDetailLevelMethodCalls);
+        i_pMthTracer->trace("<- receiveDataBlocks(): " + strMthRet);
     }
 
     return arByteArrs;
@@ -194,9 +194,9 @@ bool CBlkTypeUser::writeDataBlock(
     QString strMthInArgs;
     QString strMthRet;
 
-    if( i_pMthTracer != nullptr )
+    if( i_pMthTracer != nullptr && i_pMthTracer->areMethodCallsActive(ETraceDetailLevelMethodCalls::EnterLeave) )
     {
-        if( i_pMthTracer->isActive(ETraceDetailLevelMethodArgs) )
+        if( i_pMthTracer->areMethodCallsActive(ETraceDetailLevelMethodCalls::ArgsNormal) )
         {
             SSocketDscr socketDscr = i_pSocketWrapper->getSocketDscr();
             strMthInArgs  = socketDscr.getConnectionString();
@@ -221,9 +221,9 @@ bool CBlkTypeUser::writeDataBlock(
             /* arpTrcMsgLogObjects */ i_arpTrcMsgLogObjects );
     }
 
-    if( i_pMthTracer != nullptr )
+    if( i_pMthTracer != nullptr && i_pMthTracer->areMethodCallsActive(ETraceDetailLevelMethodCalls::EnterLeave) )
     {
-        if( i_pMthTracer->isActive(ETraceDetailLevelMethodArgs) )
+        if( i_pMthTracer->areMethodCallsActive(ETraceDetailLevelMethodCalls::ArgsNormal) )
         {
             strMthRet = bool2Str(bOk);
         }
