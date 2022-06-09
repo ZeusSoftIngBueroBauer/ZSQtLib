@@ -329,9 +329,15 @@ void CIpcTrcClient::setTraceSettings( const STrcServerSettings& i_settings )
             {
                 strMsg += " NewTrcAdminObjsEnabledAsDefault=\"" + bool2Str(i_settings.m_bNewTrcAdminObjsEnabledAsDefault) + "\"";
             }
-            if( m_trcServerSettings.m_eNewTrcAdminObjsDefaultDetailLevel != i_settings.m_eNewTrcAdminObjsDefaultDetailLevel )
+            if( m_trcServerSettings.m_eNewTrcAdminObjsMethodCallsDefaultDetailLevel != i_settings.m_eNewTrcAdminObjsMethodCallsDefaultDetailLevel )
             {
-                strMsg += " NewTrcAdminObjsDefaultDetailLevel=\"" + CEnumTraceDetailLevelMethodCalls(i_settings.m_eNewTrcAdminObjsDefaultDetailLevel).toString() + "\"";
+                strMsg += " NewTrcAdminObjsMethodCallsDefaultDetailLevel=\""
+                       + CEnumTraceDetailLevelMethodCalls(i_settings.m_eNewTrcAdminObjsMethodCallsDefaultDetailLevel).toString() + "\"";
+            }
+            if( m_trcServerSettings.m_eNewTrcAdminObjsRuntimeInfoDefaultDetailLevel != i_settings.m_eNewTrcAdminObjsRuntimeInfoDefaultDetailLevel )
+            {
+                strMsg += " NewTrcAdminObjsRuntimeInfoDefaultDetailLevel=\""
+                       + CEnumTraceDetailLevelRuntimeInfo(i_settings.m_eNewTrcAdminObjsRuntimeInfoDefaultDetailLevel).toString() + "\"";
             }
             if( m_trcServerSettings.m_bUseIpcServer != i_settings.m_bUseIpcServer )
             {
@@ -985,12 +991,19 @@ void CIpcTrcClient::onReceivedData( const QByteArray& i_byteArr )
                                 if( bOk ) trcServerSettings.m_bNewTrcAdminObjsEnabledAsDefault = bVal;
                                 else xmlStreamReader.raiseError("Attribute \"NewTrcAdminObjsEnabledAsDefault\" (" + strAttr + ") is out of range");
                             }
-                            if( xmlStreamReader.attributes().hasAttribute("NewTrcAdminObjsDefaultDetailLevel") )
+                            if( xmlStreamReader.attributes().hasAttribute("NewTrcAdminObjsMethodCallsDefaultDetailLevel") )
                             {
-                                strAttr = xmlStreamReader.attributes().value("NewTrcAdminObjsDefaultDetailLevel").toString();
+                                strAttr = xmlStreamReader.attributes().value("NewTrcAdminObjsMethodCallsDefaultDetailLevel").toString();
                                 CEnumTraceDetailLevelMethodCalls eDetailLevel = CEnumTraceDetailLevelMethodCalls::fromString(strAttr);
-                                if( eDetailLevel.enumerator() != ETraceDetailLevelMethodCalls::Undefined ) trcServerSettings.m_eNewTrcAdminObjsDefaultDetailLevel = eDetailLevel.enumerator();
-                                else xmlStreamReader.raiseError("Attribute \"NewTrcAdminObjsDefaultDetailLevel\" (" + strAttr + ") is out of range");
+                                if( eDetailLevel.enumerator() != ETraceDetailLevelMethodCalls::Undefined ) trcServerSettings.m_eNewTrcAdminObjsMethodCallsDefaultDetailLevel = eDetailLevel.enumerator();
+                                else xmlStreamReader.raiseError("Attribute \"NewTrcAdminObjsMethodCallsDefaultDetailLevel\" (" + strAttr + ") is out of range");
+                            }
+                            if( xmlStreamReader.attributes().hasAttribute("NewTrcAdminObjsRuntimeInfoDefaultDetailLevel") )
+                            {
+                                strAttr = xmlStreamReader.attributes().value("NewTrcAdminObjsRuntimeInfoDefaultDetailLevel").toString();
+                                CEnumTraceDetailLevelRuntimeInfo eDetailLevel = CEnumTraceDetailLevelRuntimeInfo::fromString(strAttr);
+                                if( eDetailLevel.enumerator() != ETraceDetailLevelRuntimeInfo::Undefined ) trcServerSettings.m_eNewTrcAdminObjsRuntimeInfoDefaultDetailLevel = eDetailLevel.enumerator();
+                                else xmlStreamReader.raiseError("Attribute \"NewTrcAdminObjsRuntimeInfoDefaultDetailLevel\" (" + strAttr + ") is out of range");
                             }
                             if( xmlStreamReader.attributes().hasAttribute("UseIpcServer") )
                             {

@@ -49,14 +49,15 @@ public: // class methods
     static QString ClassName() { return "CModelIdxTreeTrcAdminObjs"; }
 public: // type definitions and constants
     enum EColumn {
-        EColumnRefCount      = CModelIdxTree::EColumnCount + 0,
-        EColumnEnabled       = CModelIdxTree::EColumnCount + 1,
-        EColumnDetailLevel   = CModelIdxTree::EColumnCount + 2,
-        EColumnNameSpace     = CModelIdxTree::EColumnCount + 3,
-        EColumnClassName     = CModelIdxTree::EColumnCount + 4,
-        EColumnObjName       = CModelIdxTree::EColumnCount + 5,
-        EColumnObjThreadName = CModelIdxTree::EColumnCount + 6,
-        EColumnObjAddress    = CModelIdxTree::EColumnCount + 7,
+        EColumnRefCount               = CModelIdxTree::EColumnCount + 0,
+        EColumnEnabled                = CModelIdxTree::EColumnCount + 1,
+        EColumnMethodCallsDetailLevel = CModelIdxTree::EColumnCount + 2,
+        EColumnRuntimeInfoDetailLevel = CModelIdxTree::EColumnCount + 3,
+        EColumnNameSpace              = CModelIdxTree::EColumnCount + 4,
+        EColumnClassName              = CModelIdxTree::EColumnCount + 5,
+        EColumnObjName                = CModelIdxTree::EColumnCount + 6,
+        EColumnObjThreadName          = CModelIdxTree::EColumnCount + 7,
+        EColumnObjAddress             = CModelIdxTree::EColumnCount + 8,
         EColumnCount
     };
 public: // class methods
@@ -65,7 +66,8 @@ public: // ctors and dtor
     CModelIdxTreeTrcAdminObjs(
         CIdxTreeTrcAdminObjs* i_pIdxTree = nullptr,
         QObject* i_pObjParent = nullptr,
-        ZS::Trace::ETraceDetailLevelMethodCalls i_eTrcDetailLevel = ZS::Trace::ETraceDetailLevelMethodCalls::None );
+        ZS::Trace::ETraceDetailLevelMethodCalls i_eTrcDetailLevel = ZS::Trace::ETraceDetailLevelMethodCalls::None,
+        ZS::Trace::ETraceDetailLevelMethodCalls i_eTrcDetailLevelNoisyMethods = ZS::Trace::ETraceDetailLevelMethodCalls::None );
     virtual ~CModelIdxTreeTrcAdminObjs();
 public: // overridables
     virtual QString nameSpace() const { return NameSpace(); }

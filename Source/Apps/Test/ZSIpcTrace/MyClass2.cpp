@@ -807,7 +807,7 @@ void CMyClass2::onTmrMessagesTimeout()
 
     ++m_iMsgCount;
 
-    if( mthTracer.isRuntimeInfoActive(ETraceDetailLevelRuntimeInfo::DebugDetailed) )
+    if( mthTracer.isRuntimeInfoActive(ETraceDetailLevelRuntimeInfo::DebugNormal) )
     {
         QString strTrcMsg = "MsgCount=" + QString::number(m_iMsgCount);
         mthTracer.trace(strTrcMsg);

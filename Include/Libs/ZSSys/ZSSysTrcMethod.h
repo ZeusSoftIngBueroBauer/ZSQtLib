@@ -182,7 +182,7 @@ public: // instance methods
 public: // instance methods
     void trace(
         const QString&               i_strAddInfo,
-        ETraceDetailLevelRuntimeInfo i_eFilterDetailLevel = ETraceDetailLevelRuntimeInfo::Critical ) const;
+        ETraceDetailLevelRuntimeInfo i_eFilterDetailLevel = ETraceDetailLevelRuntimeInfo::CriticalError ) const;
     void trace(
         const QString& i_strAddInfo,
         ETraceDetailLevelRuntimeInfo i_eTrcDetailLevel,

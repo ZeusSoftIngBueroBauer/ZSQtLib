@@ -65,7 +65,8 @@ public: // ctors and dtor
     CWdgtIdxTreeTrcAdminObjs(
         CIdxTreeTrcAdminObjs* i_pIdxTree,
         QWidget* i_pWdgtParent = nullptr,
-        ZS::Trace::ETraceDetailLevelMethodCalls i_eTrcDetailLevel = ZS::Trace::ETraceDetailLevelMethodCalls::None );
+        ZS::Trace::ETraceDetailLevelMethodCalls i_eTrcDetailLevel = ZS::Trace::ETraceDetailLevelMethodCalls::None,
+        ZS::Trace::ETraceDetailLevelMethodCalls i_eTrcDetailLevelNoisyMethods = ZS::Trace::ETraceDetailLevelMethodCalls::None );
     virtual ~CWdgtIdxTreeTrcAdminObjs();
 public: // overridables
     virtual QString nameSpace() const { return NameSpace(); }
@@ -87,6 +88,7 @@ protected: // instance members
     QAbstractItemModel*   m_pModel;
     QTreeView*            m_pTreeView;
     ZS::Trace::ETraceDetailLevelMethodCalls m_eTrcDetailLevel;
+    ZS::Trace::ETraceDetailLevelMethodCalls m_eTrcDetailLevelNoisyMethods;
 
 }; // class CWdgtIdxTreeTrcAdminObjs
 

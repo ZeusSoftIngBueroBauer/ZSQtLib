@@ -62,7 +62,8 @@ public: // ctors and dtor
 CWdgtIdxTreeTrcAdminObjs::CWdgtIdxTreeTrcAdminObjs(
     CIdxTreeTrcAdminObjs* i_pIdxTree,
     QWidget* i_pWdgtParent,
-    ETraceDetailLevelMethodCalls i_eTrcDetailLevel ) :
+    ETraceDetailLevelMethodCalls i_eTrcDetailLevel,
+    ETraceDetailLevelMethodCalls i_eTrcDetailLevelNoisyMethods ) :
 //------------------------------------------------------------------------------
     QWidget(i_pWdgtParent),
     m_szBtns(24, 24),
@@ -74,7 +75,8 @@ CWdgtIdxTreeTrcAdminObjs::CWdgtIdxTreeTrcAdminObjs(
     m_pIdxTree(i_pIdxTree),
     m_pModel(nullptr),
     m_pTreeView(nullptr),
-    m_eTrcDetailLevel(i_eTrcDetailLevel)
+    m_eTrcDetailLevel(i_eTrcDetailLevel),
+    m_eTrcDetailLevelNoisyMethods(i_eTrcDetailLevelNoisyMethods)
 {
     setObjectName( i_pIdxTree == nullptr ? "IdxTreeTrcAdminObjs" : i_pIdxTree->objectName() );
 
@@ -178,9 +180,12 @@ CWdgtIdxTreeTrcAdminObjs::CWdgtIdxTreeTrcAdminObjs(
     // <TreeView> Trace Admin Objects
     //===============================
 
-    m_pModel = new CModelIdxTreeTrcAdminObjs(m_pIdxTree, nullptr, i_eTrcDetailLevel);
+    m_pModel = new CModelIdxTreeTrcAdminObjs(
+        m_pIdxTree, nullptr, m_eTrcDetailLevel, m_eTrcDetailLevelNoisyMethods);
 
-    m_pTreeView = new CTreeViewIdxTreeTrcAdminObjs(dynamic_cast<CModelIdxTreeTrcAdminObjs*>(m_pModel), nullptr, i_eTrcDetailLevel);
+    m_pTreeView = new CTreeViewIdxTreeTrcAdminObjs(
+        dynamic_cast<CModelIdxTreeTrcAdminObjs*>(m_pModel), nullptr,
+        m_eTrcDetailLevel, m_eTrcDetailLevelNoisyMethods);
 
     m_pLytMain->addWidget(m_pTreeView, 1);
 
@@ -243,6 +248,7 @@ CWdgtIdxTreeTrcAdminObjs::~CWdgtIdxTreeTrcAdminObjs()
     m_pModel = nullptr;
     m_pTreeView = nullptr;
     m_eTrcDetailLevel = static_cast<ETraceDetailLevelMethodCalls>(0);
+    m_eTrcDetailLevelNoisyMethods = static_cast<ETraceDetailLevelMethodCalls>(0);
 
 } // dtor
 

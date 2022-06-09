@@ -78,8 +78,9 @@ public: // instance methods
     CTest* getTest() { return m_pTest; }
     ZS::Trace::CIpcTrcServer* getTrcServer() { return m_pZSTrcServer; }
     ZS::Trace::CIpcTrcClient* getTrcClient() { return m_pZSTrcClient; }
-    ZS::Trace::ETraceDetailLevelMethodCalls getTraceDetailLevelTrcServer() const { return m_eZSTrcServerTrcDetailLevel; }
-    ZS::Trace::ETraceDetailLevelMethodCalls getTraceDetailLevelTrcClient() const { return m_eZSTrcClientTrcDetailLevel; }
+    ZS::Trace::ETraceDetailLevelMethodCalls getTraceServerTraceDetailLevel() const { return m_eZSTrcServerTrcDetailLevel; }
+    ZS::Trace::ETraceDetailLevelMethodCalls getTraceServerTraceDetailLevelNoisyMethods() const { return m_eZSTrcServerTrcDetailLevelNoisyMethods; }
+    ZS::Trace::ETraceDetailLevelMethodCalls getTraceClientTraceDetailLevel() const { return m_eZSTrcClientTrcDetailLevel; }
 protected slots:
     void onTestFinished( const ZS::Test::CEnumTestResult& i_result );
 private: // instance members
@@ -88,6 +89,7 @@ private: // instance members
     double                                  m_fReqExecTreeGarbageCollectorElapsed_s;
     ZS::System::CRequestExecTree*           m_pReqExecTree;
     ZS::Trace::ETraceDetailLevelMethodCalls m_eZSTrcServerTrcDetailLevel;
+    ZS::Trace::ETraceDetailLevelMethodCalls m_eZSTrcServerTrcDetailLevelNoisyMethods;
     ZS::Trace::ETraceDetailLevelMethodCalls m_eZSTrcClientTrcDetailLevel;
     ZS::Trace::CIpcTrcServer*               m_pZSTrcServer;
     ZS::Ipc::SClientHostSettings            m_clientHostSettingsZSTrcClient;

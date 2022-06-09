@@ -163,7 +163,7 @@ CTrcAdminObj::~CTrcAdminObj()
     if( m_iRefCount != 0 )
     {
         SErrResultInfo errResultInfo(
-            /* errSource     */ nameSpace(), className(), keyInTree(), "dtor",
+            /* errSource     */ NameSpace(), ClassName(), keyInTree(), "dtor",
             /* result        */ EResultObjRefCounterIsNotZero,
             /* severity      */ EResultSeverityError,
             /* strAddErrInfo */ "The dtor is called even if the objects reference counter is not 0 but " + QString::number(m_iRefCount));
@@ -177,7 +177,7 @@ CTrcAdminObj::~CTrcAdminObj()
     if( m_iBlockTreeEntryChangedSignalCounter != 0 )
     {
         SErrResultInfo errResultInfo(
-            /* errSource         */ nameSpace(), className(), keyInTree(), "dtor",
+            /* errSource         */ NameSpace(), ClassName(), keyInTree(), "dtor",
             /* result            */ EResultObjRefCounterIsNotZero,
             /* severity          */ EResultSeverityError,
             /* strAddErrInfoDscr */ "The dtor is called even if the treeEntryChangedBlocked counter is not 0 but " + QString::number(m_iBlockTreeEntryChangedSignalCounter));

@@ -34,6 +34,7 @@ set(_ResourcesPath ${CMAKE_CURRENT_SOURCE_DIR}/../../../Resources/Libs)
 list(APPEND _Headers
     ${_HeadersPath}/ZSSys/ZSSysVersion.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysDialog.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSSysEditEnumValueDlg.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysEditIntValueDlg.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysErrDlg.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysErrLogDlg.h
@@ -68,6 +69,7 @@ list(APPEND _Headers
 
 list(APPEND _Sources
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysDialog.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSSysEditEnumValueDlg.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysEditIntValueDlg.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysErrDlg.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysErrLogDlg.cpp

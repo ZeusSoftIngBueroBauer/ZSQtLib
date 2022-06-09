@@ -24,22 +24,16 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#ifndef ZSSysGUI_EditIntValueDlg_h
-#define ZSSysGUI_EditIntValueDlg_h
+#ifndef ZSSysGUI_EditEnumValueDlg_h
+#define ZSSysGUI_EditEnumValueDlg_h
 
 #include "ZSSysGUI/ZSSysDialog.h"
 
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-#include <QtGui/qspinbox.h>
-#else
-#include <QtWidgets/qspinbox.h>
-#endif
-
+class QComboBox;
 class QHBoxLayout;
 class QVBoxLayout;
 class QLabel;
 class QPushButton;
-class QSpinBox;
 
 namespace ZS
 {
@@ -48,22 +42,22 @@ namespace System
 namespace GUI
 {
 //******************************************************************************
-class ZSSYSGUIDLL_API CDlgEditIntValue : public CDialog
+class ZSSYSGUIDLL_API CDlgEditEnumValue : public CDialog
 //******************************************************************************
 {
     Q_OBJECT
 public: // class methods
     static QString NameSpace() { return "ZS::System::GUI"; }
-    static QString ClassName() { return "CDlgEditIntValue"; }
+    static QString ClassName() { return "CDlgEditEnumValue"; }
 public: // class methods
-    static CDlgEditIntValue* CreateInstance(
+    static CDlgEditEnumValue* CreateInstance(
         const QString&  i_strDlgTitle,
         const QString&  i_strObjName,
         QWidget*        i_pWdgtParent = nullptr,
         Qt::WindowFlags i_wFlags = Qt::WindowFlags() );
-    static CDlgEditIntValue* GetInstance( const QString& i_strObjName );
+    static CDlgEditEnumValue* GetInstance( const QString& i_strObjName );
 protected: // ctor
-    CDlgEditIntValue(
+    CDlgEditEnumValue(
         const QString&  i_strDlgTitle,
         const QString&  i_strObjName,
         QWidget*        i_pWdgtParent = nullptr,
@@ -73,7 +67,7 @@ signals:
     //void accepted(); inherited from QDialog
     //void rejected(); inherited from QDialog
 public: // dtor
-    virtual ~CDlgEditIntValue();
+    virtual ~CDlgEditEnumValue();
 public: // overridables of base class ZS::System::GUI::CDialog
     virtual QString nameSpace() override { return NameSpace(); }
     virtual QString className() override { return ClassName(); }
@@ -82,35 +76,31 @@ public: // overridables of base class QDialog
 public: // instance methods
     void setValueName( const QString& i_strName );
     QString getValueName() const;
-    void setValue( int i_iVal );
-    int getValue() const;
-    void setUnit( const QString& i_strUnit );
-    QString getUnit() const;
-    void setMinimum( int i_iMinimum );
-    int getMinimum() const;
-    void setMaximum( int i_iMaximum );
-    int getMaximum() const;
-    void setStepType( QAbstractSpinBox::StepType i_stepType );
-    QAbstractSpinBox::StepType getStepType() const;
+    void setComboItems( const QVector<SEnumEntry>& i_arEnumEntries, int i_idxAliasToBeIndicated = EEnumEntryAliasStrName );
+    void setEnumerator( int i_iEnumerator );
+    void setEnumerator( const QString& i_strEnumerator );
+    int getEnumerator() const;
+    QString getEnumeratorName( int i_idxAlias = EEnumEntryAliasStrName ) const;
     void setDescription( const QString& i_strDescription );
 protected slots:
     void onBtnApplyClicked( bool i_bChecked );
     void onBtnOkClicked( bool i_bChecked );
     void onBtnCancelClicked( bool i_bChecked );
 protected: // instance members
-    QVBoxLayout*   m_pLyt;
-    QHBoxLayout*   m_pLytValue;
-    QLabel*        m_pLblValue;
-    QSpinBox*      m_pEdtValue;
-    int            m_iValOrig;
-    QVBoxLayout*   m_pLytDescription;
-    QLabel*        m_pLblDescription;
-    QHBoxLayout*   m_pLytBtns;
-    QPushButton*   m_pBtnApply;
-    QPushButton*   m_pBtnOk;
-    QPushButton*   m_pBtnCancel;
+    QVBoxLayout*        m_pLyt;
+    QHBoxLayout*        m_pLytValue;
+    QLabel*             m_pLblValue;
+    QVector<SEnumEntry> m_arEnumEntries;
+    QComboBox*          m_pCmbValue;
+    int                 m_iValOrig;
+    QVBoxLayout*        m_pLytDescription;
+    QLabel*             m_pLblDescription;
+    QHBoxLayout*        m_pLytBtns;
+    QPushButton*        m_pBtnApply;
+    QPushButton*        m_pBtnOk;
+    QPushButton*        m_pBtnCancel;
 
-}; // class CDlgEditIntValue
+}; // class CDlgEditEnumValue
 
 } // namespace GUI
 
@@ -118,4 +108,4 @@ protected: // instance members
 
 } // namespace ZS
 
-#endif // #ifndef ZSSysGUI_EditIntValueDlg_h
+#endif // #ifndef ZSSysGUI_EditEnumValueDlg_h

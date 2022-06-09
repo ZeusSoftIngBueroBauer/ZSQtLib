@@ -1219,7 +1219,7 @@ public: // ctor
     //------------------------------------------------------------------------------() {
         QVector<SEnumEntry>* pVEnumEntries = const_cast<QVector<SEnumEntry>*>(&ZS::System::<ZS::Trace::ETraceDetailLevelRuntimeInfo>::s_arEnumEntries);
         pVEnumEntries->append( /*  0 */ SEnumEntry( static_cast<int>(ZS::Trace::ETraceDetailLevelRuntimeInfo::None),          "None",          "-",   "None",           "NONE", "NONE"      ),
-        pVEnumEntries->append( /*  1 */ SEnumEntry( static_cast<int>(ZS::Trace::ETraceDetailLevelRuntimeInfo::Critical),      "Critical",      "C",   "Critical",       "CRIT", "CRITical"  ),
+        pVEnumEntries->append( /*  1 */ SEnumEntry( static_cast<int>(ZS::Trace::ETraceDetailLevelRuntimeInfo::CriticalError),      "Critical",      "C",   "Critical",       "CRIT", "CRITical"  ),
         pVEnumEntries->append( /*  2 */ SEnumEntry( static_cast<int>(ZS::Trace::ETraceDetailLevelRuntimeInfo::Error),         "Error",         "E",   "Error",          "ERR",  "ERRor"     ),
         pVEnumEntries->append( /*  3 */ SEnumEntry( static_cast<int>(ZS::Trace::ETraceDetailLevelRuntimeInfo::Warning),       "Warning",       "W",   "Warning",        "WARN", "WARNing"   ),
         pVEnumEntries->append( /*  4 */ SEnumEntry( static_cast<int>(ZS::Trace::ETraceDetailLevelRuntimeInfo::InfoNormal),    "InfoNormal",    "IN",  "Info Normal",    "INOR", "INORmal"   ),
@@ -1238,7 +1238,7 @@ template<> const QVector<SEnumEntry> ZS::System::CEnum<ZS::Trace::ETraceDetailLe
 //------------------------------------------------------------------------------
 {
     /*  0 */ SEnumEntry( static_cast<int>(ZS::Trace::ETraceDetailLevelRuntimeInfo::None),          "None",          "-",   "None",           "NONE", "NONE"      ),
-    /*  1 */ SEnumEntry( static_cast<int>(ZS::Trace::ETraceDetailLevelRuntimeInfo::Critical),      "Critical",      "C",   "Critical",       "CRIT", "CRITical"  ),
+    /*  1 */ SEnumEntry( static_cast<int>(ZS::Trace::ETraceDetailLevelRuntimeInfo::CriticalError), "CriticalError", "C",   "Critical",       "CERR", "CError"    ),
     /*  2 */ SEnumEntry( static_cast<int>(ZS::Trace::ETraceDetailLevelRuntimeInfo::Error),         "Error",         "E",   "Error",          "ERR",  "ERRor"     ),
     /*  3 */ SEnumEntry( static_cast<int>(ZS::Trace::ETraceDetailLevelRuntimeInfo::Warning),       "Warning",       "W",   "Warning",        "WARN", "WARNing"   ),
     /*  4 */ SEnumEntry( static_cast<int>(ZS::Trace::ETraceDetailLevelRuntimeInfo::InfoNormal),    "InfoNormal",    "IN",  "Info Normal",    "INOR", "INORmal"   ),

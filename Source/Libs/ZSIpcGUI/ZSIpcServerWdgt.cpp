@@ -813,6 +813,45 @@ void CWdgtIpcServer::setProtocolTypeImageVisible( bool i_bVisible )
 } // setProtocolTypeImageVisible
 
 /*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CWdgtIpcServer::applySettings()
+//------------------------------------------------------------------------------
+{
+    QString strAddTrcInfo;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(ETraceDetailLevelMethodCalls::ArgsNormal) )
+    {
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* eDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* strMethod    */ "applySettings",
+        /* strAddInfo   */ strAddTrcInfo );
+
+    if( m_pServer != nullptr )
+    {
+        bool bHasChanges = false;
+
+        if( m_hostSettingsWidget != m_hostSettingsServer )
+        {
+            bHasChanges = true;
+            m_pServer->setHostSettings(m_hostSettingsWidget);
+        }
+
+        // In order for the changed settings to take affect:
+        if( bHasChanges )
+        {
+            m_pServer->changeSettings();
+        }
+    } // if( m_pServer != nullptr )
+
+} // applySettings
+
+/*==============================================================================
 protected: // instance methods
 ==============================================================================*/
 
@@ -2754,42 +2793,3 @@ void CWdgtIpcServer::fillDetailControls()
     } // if( m_pEdtDetailsState != nullptr )
 
 } // fillDetailControls
-
-/*==============================================================================
-protected: // overridables
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-void CWdgtIpcServer::applySettings()
-//------------------------------------------------------------------------------
-{
-    QString strAddTrcInfo;
-
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(ETraceDetailLevelMethodCalls::ArgsNormal) )
-    {
-    }
-
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* eDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
-        /* strMethod    */ "applySettings",
-        /* strAddInfo   */ strAddTrcInfo );
-
-    if( m_pServer != nullptr )
-    {
-        bool bHasChanges = false;
-
-        if( m_hostSettingsWidget != m_hostSettingsServer )
-        {
-            bHasChanges = true;
-            m_pServer->setHostSettings(m_hostSettingsWidget);
-        }
-
-        // In order for the changed settings to take affect:
-        if( bHasChanges )
-        {
-            m_pServer->changeSettings();
-        }
-    } // if( m_pServer != nullptr )
-
-} // applySettings

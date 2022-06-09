@@ -250,7 +250,8 @@ struct STrcServerSettings
     bool  m_bEnabled;                               /*!< Tracing may be enabled or disabled for both writing to local trace file and sending data to remote client. */
     char* m_szAdminObjFileAbsFilePath;              /*!< Absolute file path the tree of trace admin objects and their settings will be saved and recalled. */
     bool  m_bNewTrcAdminObjsEnabledAsDefault;       /*!< Defines whether newly created trace admin objects should be enabled as default. */
-    int   m_iNewTrcAdminObjsDefaultDetailLevel;     /*!< Defines the trace detail level for newly created trace admin objects. */
+    int   m_iNewTrcAdminObjsMethodCallsDefaultDetailLevel;     /*!< Defines the trace detail level for method calls of newly created trace admin objects. */
+    int   m_iNewTrcAdminObjsRuntimeInfoDefaultDetailLevel;     /*!< Defines the trace detail level for runtime info of newly created trace admin objects. */
     bool  m_bUseIpcServer;                          /*!< Defines whether trace output should be send to remote client. */
     bool  m_bCacheDataIfNotConnected;               /*!< If a trace client is not connect the flag defines whether trace data should be internally cached until a client connects. */
     int   m_iCacheDataMaxArrLen;                    /*!< If caching is enabled defines the maximum number of trace entries which should be locally cached. */
@@ -281,7 +282,8 @@ public: // class methods to add, remove and modify admin objects
         const char* i_szClassName,
         const char* i_szObjName = "",
         EEnabled    i_bEnabledAsDefault = EEnabledUndefined,
-        ETraceDetailLevelMethodCalls i_eDefaultDetailLevel = ETraceDetailLevelMethodCallsUndefined );
+        ETraceDetailLevelMethodCalls i_eMethodCallsDefaultDetailLevel = ETraceDetailLevelMethodCallsUndefined,
+        ETraceDetailLevelRuntimeInfo i_eRuntimeInfoDefaultDetailLevel = ETraceDetailLevelRuntimeInfoUndefined );
     static void RenameTraceAdminObj( CTrcAdminObj** io_ppTrcAdminObj, const char* i_szNewObjName );
     static void ReleaseTraceAdminObj( CTrcAdminObj* i_pTrcAdminObj );
 public: // class method to save/recall admin objects file
@@ -308,8 +310,10 @@ public: // instance methods
 public: // instance methods
     void setNewTrcAdminObjsEnabledAsDefault( bool i_bEnabled );
     bool areNewTrcAdminObjsEnabledAsDefault() const;
-    void setNewTrcAdminObjsDefaultDetailLevel( ETraceDetailLevelMethodCalls i_eDetailLevel );
-    ETraceDetailLevelMethodCalls getNewTrcAdminObjsDefaultDetailLevel() const;
+    void setNewTrcAdminObjsMethodCallsDefaultDetailLevel( ETraceDetailLevelMethodCalls i_eDetailLevel );
+    ETraceDetailLevelMethodCalls getNewTrcAdminObjsMethodCallsDefaultDetailLevel() const;
+    void setNewTrcAdminObjsRuntimeInfoDefaultDetailLevel( ETraceDetailLevelRuntimeInfo i_eDetailLevel );
+    ETraceDetailLevelRuntimeInfo getNewTrcAdminObjsRuntimeInfoDefaultDetailLevel() const;
 public: // instance methods
     void setAdminObjFileAbsoluteFilePath( const char* i_szAbsFilePath );
     char* getAdminObjFileAbsoluteFilePath() const; // returned string must be freed by caller

@@ -59,7 +59,8 @@ public: // ctor
     STrcServerSettings(
         bool i_bEnabled = true,
         bool i_bNewTrcAdminObjsEnabledAsDefault = true,
-        ETraceDetailLevelMethodCalls i_eNewTrcAdminObjsDefaultDetailLevel = ETraceDetailLevelMethodCalls::None,
+        ETraceDetailLevelMethodCalls i_eNewTrcAdminObjsDefaultMethodCallsDetailLevel = ETraceDetailLevelMethodCalls::None,
+        ETraceDetailLevelRuntimeInfo i_eNewTrcAdminObjsDefaultRuntimeInfoDetailLevel = ETraceDetailLevelRuntimeInfo::None,
         bool i_bUseIpcServer = true,
         bool i_bCacheDataIfNotConnected = false,
         int  i_iCacheDataMaxArrLen = 1000,
@@ -77,7 +78,8 @@ public: // struct members
     bool    m_bEnabled;                             /*!< Tracing may be enabled or disabled for both writing to local trace file and sending data to remote client. */
     QString m_strAdminObjFileAbsFilePath;           /*!< Absolute file path the tree of trace admin objects and their settings will be saved and recalled. */
     bool    m_bNewTrcAdminObjsEnabledAsDefault;     /*!< Defines whether newly created trace admin objects should be enabled as default. */
-    ETraceDetailLevelMethodCalls m_eNewTrcAdminObjsDefaultDetailLevel;   /*!< Defines the trace detail level for newly created trace admin objects. */
+    ETraceDetailLevelMethodCalls m_eNewTrcAdminObjsMethodCallsDefaultDetailLevel;   /*!< Defines the trace detail level for method calls of newly created trace admin objects. */
+    ETraceDetailLevelRuntimeInfo m_eNewTrcAdminObjsRuntimeInfoDefaultDetailLevel;   /*!< Defines the trace detail level for runtime info of newly created trace admin objects. */
     bool    m_bUseIpcServer;                        /*!< Defines whether trace output should be send to remote client. */
     bool    m_bCacheDataIfNotConnected;             /*!< If a trace client is not connect the flag defines whether trace data should be internally cached until a client connects. */
     int     m_iCacheDataMaxArrLen;                  /*!< If caching is enabled defines the maximum number of trace entries which should be locally cached. */
@@ -147,7 +149,8 @@ public: // class methods to add, remove and modify admin objects
         const QString&               i_strClassName,
         const QString&               i_strObjName,
         ZS::System::EEnabled         i_bEnabledAsDefault,
-        ETraceDetailLevelMethodCalls i_eDefaultDetailLevel );
+        ETraceDetailLevelMethodCalls i_eMethodCallsDefaultDetailLevel,
+        ETraceDetailLevelRuntimeInfo i_eRuntimeInfoDefaultDetailLevel );
     static void RenameTraceAdminObj( CTrcAdminObj** io_ppTrcAdminObj, const QString& i_strNewObjName );
     static void ReleaseTraceAdminObj( CTrcAdminObj* i_pTrcAdminObj );
 public: // class methods to get default file paths
@@ -178,7 +181,8 @@ public: // overridables to add, remove and modify admin objects
         const QString&               i_strClassName,
         const QString&               i_strObjName,
         ZS::System::EEnabled         i_bEnabledAsDefault,
-        ETraceDetailLevelMethodCalls i_eDefaultDetailLevel );
+        ETraceDetailLevelMethodCalls i_eMethodCallsDefaultDetailLevel,
+        ETraceDetailLevelRuntimeInfo i_eRuntimeInfoDefaultDetailLevel );
     virtual void renameTraceAdminObj( CTrcAdminObj** io_ppTrcAdminObj, const QString& i_strNewObjName );
     virtual void releaseTraceAdminObj( CTrcAdminObj* i_pTrcAdminObj );
 public: // overridables
@@ -241,8 +245,10 @@ public: // overridables
 public: // overridables
     virtual void setNewTrcAdminObjsEnabledAsDefault( bool i_bEnabled );
     virtual bool areNewTrcAdminObjsEnabledAsDefault() const;
-    virtual void setNewTrcAdminObjsDefaultDetailLevel( ETraceDetailLevelMethodCalls i_eDetailLevel );
-    virtual ETraceDetailLevelMethodCalls getNewTrcAdminObjsDefaultDetailLevel() const;
+    virtual void setNewTrcAdminObjsMethodCallsDefaultDetailLevel( ETraceDetailLevelMethodCalls i_eDetailLevel );
+    virtual ETraceDetailLevelMethodCalls getNewTrcAdminObjsMethodCallsDefaultDetailLevel() const;
+    virtual void setNewTrcAdminObjsRuntimeInfoDefaultDetailLevel( ETraceDetailLevelRuntimeInfo i_eDetailLevel );
+    virtual ETraceDetailLevelRuntimeInfo getNewTrcAdminObjsRuntimeInfoDefaultDetailLevel() const;
 public: // overridables
     virtual void setAdminObjFileAbsoluteFilePath( const QString& i_strAbsFilePath );
     virtual QString getAdminObjFileAbsoluteFilePath() const;

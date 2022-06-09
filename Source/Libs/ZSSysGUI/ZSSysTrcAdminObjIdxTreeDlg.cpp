@@ -63,7 +63,8 @@ CDlgIdxTreeTrcAdminObjs* CDlgIdxTreeTrcAdminObjs::CreateInstance(
     CIdxTreeTrcAdminObjs* i_pIdxTree,
     QWidget* i_pWdgtParent,
     Qt::WindowFlags i_wFlags,
-    ETraceDetailLevelMethodCalls i_eTrcDetailLevel )
+    ETraceDetailLevelMethodCalls i_eTrcDetailLevel,
+    ETraceDetailLevelMethodCalls i_eTrcDetailLevelNoisyMethods )
 //------------------------------------------------------------------------------
 {
     if( CDialog::GetInstance(NameSpace(), ClassName(), i_pIdxTree->objectName()) != nullptr )
@@ -74,11 +75,12 @@ CDlgIdxTreeTrcAdminObjs* CDlgIdxTreeTrcAdminObjs::CreateInstance(
 
     // The ctor of base class CDialog adds the instance to the hash of dialogs.
     return new CDlgIdxTreeTrcAdminObjs(
-        /* strDlgTitle     */ i_strDlgTitle,
-        /* pIdxTree        */ i_pIdxTree,
-        /* pWdgtParent     */ i_pWdgtParent,
-        /* wFlags          */ i_wFlags,
-        /* eTrcDetailLevel */ i_eTrcDetailLevel );
+        /* strDlgTitle                 */ i_strDlgTitle,
+        /* pIdxTree                    */ i_pIdxTree,
+        /* pWdgtParent                 */ i_pWdgtParent,
+        /* wFlags                      */ i_wFlags,
+        /* eTrcDetailLevel             */ i_eTrcDetailLevel,
+        /* eTrcDetailLevelNoisyMethods */ i_eTrcDetailLevelNoisyMethods );
 
 } // CreateInstance
 
@@ -99,7 +101,8 @@ CDlgIdxTreeTrcAdminObjs::CDlgIdxTreeTrcAdminObjs(
     CIdxTreeTrcAdminObjs* i_pIdxTree,
     QWidget* i_pWdgtParent,
     Qt::WindowFlags i_wFlags,
-    ETraceDetailLevelMethodCalls i_eTrcDetailLevel ) :
+    ETraceDetailLevelMethodCalls i_eTrcDetailLevel,
+    ETraceDetailLevelMethodCalls i_eTrcDetailLevelNoisyMethods ) :
 //------------------------------------------------------------------------------
     CDialog(
         /* strDlgTitle  */ i_strDlgTitle,
@@ -111,7 +114,8 @@ CDlgIdxTreeTrcAdminObjs::CDlgIdxTreeTrcAdminObjs(
     m_pIdxTree(i_pIdxTree),
     m_pLyt(nullptr),
     m_pWdgtIdxTree(nullptr),
-    m_eTrcDetailLevel(i_eTrcDetailLevel)
+    m_eTrcDetailLevel(i_eTrcDetailLevel),
+    m_eTrcDetailLevelNoisyMethods(i_eTrcDetailLevelNoisyMethods)
 {
     QString strMthInArgs;
 
@@ -133,7 +137,8 @@ CDlgIdxTreeTrcAdminObjs::CDlgIdxTreeTrcAdminObjs(
     m_pLyt = new QVBoxLayout();
     setLayout(m_pLyt);
 
-    m_pWdgtIdxTree = new CWdgtIdxTreeTrcAdminObjs(m_pIdxTree, nullptr, i_eTrcDetailLevel);
+    m_pWdgtIdxTree = new CWdgtIdxTreeTrcAdminObjs(
+        m_pIdxTree, nullptr, i_eTrcDetailLevel, i_eTrcDetailLevelNoisyMethods);
 
     m_pLyt->addWidget(m_pWdgtIdxTree);
 
@@ -159,5 +164,6 @@ CDlgIdxTreeTrcAdminObjs::~CDlgIdxTreeTrcAdminObjs()
     m_pLyt = nullptr;
     m_pWdgtIdxTree = nullptr;
     m_eTrcDetailLevel = static_cast<ETraceDetailLevelMethodCalls>(0);
+    m_eTrcDetailLevelNoisyMethods = static_cast<ETraceDetailLevelMethodCalls>(0);
 
 } // dtor

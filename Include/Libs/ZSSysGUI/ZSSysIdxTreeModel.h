@@ -121,14 +121,15 @@ public: // type definitions and constants
     };
 public: // class methods
     static QIcon GetIcon( EIdxTreeEntryType i_entryType );
-    static QString ModelIdx2Str( const QModelIndex& i_modelIdx );
+    static QString ModelIdx2Str( const QModelIndex& i_modelIdx, bool i_bIncludeId = false );
 protected: // class methods
     static bool AreIconsCreated();
 public: // ctors and dtor
     CModelIdxTree(
         CIdxTree* i_pIdxTree = nullptr,
         QObject*  i_pObjParent = nullptr,
-        ZS::Trace::ETraceDetailLevelMethodCalls i_eTrcDetailLevel = ZS::Trace::ETraceDetailLevelMethodCalls::None );
+        ZS::Trace::ETraceDetailLevelMethodCalls i_eTrcDetailLevel = ZS::Trace::ETraceDetailLevelMethodCalls::None,
+        ZS::Trace::ETraceDetailLevelMethodCalls i_eTrcDetailLevelNoisyMethods = ZS::Trace::ETraceDetailLevelMethodCalls::None );
     virtual ~CModelIdxTree();
 public: // overridables
     virtual QString nameSpace() const { return NameSpace(); }
@@ -224,6 +225,7 @@ protected: // reimplemented to trace emitting signals for debugging purposes
     void _endResetModel();
 protected slots:
     void onTrcAdminObjChanged( QObject* i_pTrcAdminObj );
+    void onTrcAdminObjNoisyMethodsChanged( QObject* i_pTrcAdminObj );
 protected: // class members
     static int      s_iInstCount;
     static bool     s_bIconsCreated;
@@ -244,9 +246,18 @@ protected: // instance members
          Trace output may not be controlled by trace admin objects
          if the index tree belongs the trace server. */
     ZS::Trace::ETraceDetailLevelMethodCalls m_eTrcDetailLevel;
+    /*!< Trace detail level for method tracing.
+         This detail level is used by very often called methods like "data".
+         Trace output may not be controlled by trace admin objects
+         if the index tree belongs the trace server. */
+    ZS::Trace::ETraceDetailLevelMethodCalls m_eTrcDetailLevelNoisyMethods;
     /*!< Trace admin object to control trace outputs of the class.
          The object will not be created if the index tree's belongs to the trace server. */
     ZS::Trace::CTrcAdminObj* m_pTrcAdminObj;
+    /*!< Trace admin object to control trace outputs of the class.
+         This trace admin object is used by very often called methods like "data".
+         The object will not be created if the index tree's belongs to the trace server. */
+    ZS::Trace::CTrcAdminObj* m_pTrcAdminObjNoisyMethods;
 
 }; // class CModelIdxTree
 

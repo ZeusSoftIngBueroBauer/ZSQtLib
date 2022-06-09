@@ -597,7 +597,7 @@ enum class ETraceDetailLevelRuntimeInfo
 //==============================================================================
 {
     None          =  0, /*!< Trace output of runtime info is disabled. */
-    Critical      =  1, /*!< Log critical runtime info (critical errors, critical exceptions). */
+    CriticalError =  1, /*!< Log critical errors runtime info (critical errors, critical exceptions). */
     Error         =  2, /*!< Log error runtime info (errors, exceptions). */
     Warning       =  3, /*!< Log warning runtime info. */
     InfoNormal    =  4, /*!< Log runtime info. */

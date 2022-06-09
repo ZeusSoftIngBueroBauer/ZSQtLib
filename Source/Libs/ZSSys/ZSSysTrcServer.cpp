@@ -59,7 +59,8 @@ public: // ctor
 
     @param i_bEnabled [in] Default: true
     @param i_bNewTrcAdminObjsEnabledAsDefault [in] Default: true
-    @param i_eNewTrcAdminObjsDefaultDetailLevel [in] Default: 0
+    @param i_eNewTrcAdminObjsMethodCallsDefaultDetailLevel [in] Default: None
+    @param i_eNewTrcAdminObjsRuntimeInfoDefaultDetailLevel [in] Default: None
     @param i_bCacheDataIfNotConnected [in] Default: false
     @param i_iCacheDataMaxArrLen [in] Default: 1000
     @param i_bUseLocalTrcFile [in] Default: true
@@ -75,7 +76,8 @@ public: // ctor
 STrcServerSettings::STrcServerSettings(
     bool i_bEnabled,
     bool i_bNewTrcAdminObjsEnabledAsDefault,
-    ETraceDetailLevelMethodCalls i_eNewTrcAdminObjsDefaultDetailLevel,
+    ETraceDetailLevelMethodCalls i_eNewTrcAdminObjsDefaultMethodCallsDetailLevel,
+    ETraceDetailLevelRuntimeInfo i_eNewTrcAdminObjsDefaultRuntimeInfoDetailLevel,
     bool i_bUseIpcServer,
     bool i_bCacheDataIfNotConnected,
     int  i_iCacheDataMaxArrLen,
@@ -88,7 +90,8 @@ STrcServerSettings::STrcServerSettings(
     m_bEnabled(i_bEnabled),
     m_strAdminObjFileAbsFilePath(),
     m_bNewTrcAdminObjsEnabledAsDefault(i_bNewTrcAdminObjsEnabledAsDefault),
-    m_eNewTrcAdminObjsDefaultDetailLevel(i_eNewTrcAdminObjsDefaultDetailLevel),
+    m_eNewTrcAdminObjsMethodCallsDefaultDetailLevel(i_eNewTrcAdminObjsDefaultMethodCallsDetailLevel),
+    m_eNewTrcAdminObjsRuntimeInfoDefaultDetailLevel(i_eNewTrcAdminObjsDefaultRuntimeInfoDetailLevel),
     m_bUseIpcServer(i_bUseIpcServer),
     m_bCacheDataIfNotConnected(i_bCacheDataIfNotConnected),
     m_iCacheDataMaxArrLen(i_iCacheDataMaxArrLen),
@@ -123,7 +126,11 @@ bool STrcServerSettings::operator == ( const STrcServerSettings& i_settingsOther
     {
         bEqual = false;
     }
-    else if( m_eNewTrcAdminObjsDefaultDetailLevel != i_settingsOther.m_eNewTrcAdminObjsDefaultDetailLevel )
+    else if( m_eNewTrcAdminObjsMethodCallsDefaultDetailLevel != i_settingsOther.m_eNewTrcAdminObjsMethodCallsDefaultDetailLevel )
+    {
+        bEqual = false;
+    }
+    else if( m_eNewTrcAdminObjsRuntimeInfoDefaultDetailLevel != i_settingsOther.m_eNewTrcAdminObjsRuntimeInfoDefaultDetailLevel )
     {
         bEqual = false;
     }
@@ -198,7 +205,8 @@ QString STrcServerSettings::toString() const
     str += "Enabled: " + bool2Str(m_bEnabled);
     str += ", AdmObjFile: " + m_strAdminObjFileAbsFilePath;
     str += ", AdmObjDefEnabled: " + bool2Str(m_bNewTrcAdminObjsEnabledAsDefault);
-    str += ", AdmObjDefLevel: " + CEnum<ETraceDetailLevelMethodCalls>(m_eNewTrcAdminObjsDefaultDetailLevel).toString();
+    str += ", AdmObjMthCallsDefLevel: " + CEnum<ETraceDetailLevelMethodCalls>(m_eNewTrcAdminObjsMethodCallsDefaultDetailLevel).toString();
+    str += ", AdmObjRunInfoDefLevel: " + CEnum<ETraceDetailLevelRuntimeInfo>(m_eNewTrcAdminObjsRuntimeInfoDefaultDetailLevel).toString();
     str += ", UseIpcServer: " + bool2Str(m_bUseIpcServer);
     str += ", CacheData: " + bool2Str(m_bCacheDataIfNotConnected);
     str += ", CacheArrLen: " + QString::number(m_iCacheDataMaxArrLen);
@@ -484,11 +492,12 @@ CTrcAdminObj* CTrcServer::GetTraceAdminObj(
     if( pTrcServer != nullptr )
     {
         pTrcAdminObj = pTrcServer->getTraceAdminObj(
-            /* strNameSpace        */ i_strNameSpace,
-            /* strClassName        */ i_strClassName,
-            /* strObjName          */ i_strObjName,
-            /* bEnabledAsDefault   */ EEnabled::Undefined,
-            /* eDefaultDetailLevel */ ETraceDetailLevelMethodCalls::Undefined );
+            /* strNameSpace             */ i_strNameSpace,
+            /* strClassName             */ i_strClassName,
+            /* strObjName               */ i_strObjName,
+            /* bEnabledAsDefault        */ EEnabled::Undefined,
+            /* eMethodCallsDefaultLevel */ ETraceDetailLevelMethodCalls::Undefined,
+            /* eRuntimeInfoDefaultLevel */ ETraceDetailLevelRuntimeInfo::Undefined );
     }
     return pTrcAdminObj;
 }
@@ -499,7 +508,8 @@ CTrcAdminObj* CTrcServer::GetTraceAdminObj(
     const QString&               i_strClassName,
     const QString&               i_strObjName,
     ZS::System::EEnabled         i_bEnabledAsDefault,
-    ETraceDetailLevelMethodCalls i_eDefaultDetailLevel )
+    ETraceDetailLevelMethodCalls i_eMethodCallsDefaultDetailLevel,
+    ETraceDetailLevelRuntimeInfo i_eRuntimeInfoDefaultDetailLevel )
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&s_mtx);
@@ -511,11 +521,12 @@ CTrcAdminObj* CTrcServer::GetTraceAdminObj(
     if( pTrcServer != nullptr )
     {
         pTrcAdminObj = pTrcServer->getTraceAdminObj(
-            /* strNameSpace        */ i_strNameSpace,
-            /* strClassName        */ i_strClassName,
-            /* strObjName          */ i_strObjName,
-            /* bEnabledAsDefault   */ i_bEnabledAsDefault,
-            /* eDefaultDetailLevel */ i_eDefaultDetailLevel );
+            /* strNameSpace             */ i_strNameSpace,
+            /* strClassName             */ i_strClassName,
+            /* strObjName               */ i_strObjName,
+            /* bEnabledAsDefault        */ i_bEnabledAsDefault,
+            /* eMethodCallsDefaultLevel */ i_eMethodCallsDefaultDetailLevel,
+            /* eRuntimeInfoDefaultLevel */ i_eRuntimeInfoDefaultDetailLevel);
     }
     return pTrcAdminObj;
 }
@@ -856,7 +867,8 @@ CTrcAdminObj* CTrcServer::getTraceAdminObj(
     const QString&               i_strClassName,
     const QString&               i_strObjName,
     EEnabled                     i_bEnabledAsDefault,
-    ETraceDetailLevelMethodCalls i_eDefaultDetailLevel )
+    ETraceDetailLevelMethodCalls i_eMethodCallsDefaultDetailLevel,
+    ETraceDetailLevelRuntimeInfo i_eRuntimeInfoDefaultDetailLevel )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -868,7 +880,8 @@ CTrcAdminObj* CTrcServer::getTraceAdminObj(
         strMthInArgs += ", ClassName: " + i_strClassName;
         strMthInArgs += ", ObjName: " + i_strObjName;
         strMthInArgs += ", EnabledAsDefault: " + CEnumEnabled::toString(i_bEnabledAsDefault);
-        strMthInArgs += ", DefaultDetailLevel: " + CEnumTraceDetailLevelMethodCalls(i_eDefaultDetailLevel).toString();
+        strMthInArgs += ", MethodCallsDefault: " + CEnumTraceDetailLevelMethodCalls(i_eMethodCallsDefaultDetailLevel).toString();
+        strMthInArgs += ", RuntimeInfoDefault: " + CEnumTraceDetailLevelRuntimeInfo(i_eRuntimeInfoDefaultDetailLevel).toString();
     }
 
     CMethodTracer mthTracer(
@@ -901,15 +914,20 @@ CTrcAdminObj* CTrcServer::getTraceAdminObj(
     else // if( !i_strObjName.isEmpty() || !i_strClassName.isEmpty() || !i_strNameSpace.isEmpty() )
     {
         EEnabled bEnabled = m_trcSettings.m_bNewTrcAdminObjsEnabledAsDefault ? EEnabled::Yes : EEnabled::No;
-        ETraceDetailLevelMethodCalls eDetailLevel = m_trcSettings.m_eNewTrcAdminObjsDefaultDetailLevel;
+        ETraceDetailLevelMethodCalls eDetailLevelMethodCalls = m_trcSettings.m_eNewTrcAdminObjsMethodCallsDefaultDetailLevel;
+        ETraceDetailLevelRuntimeInfo eDetailLevelRuntimeInfo = m_trcSettings.m_eNewTrcAdminObjsRuntimeInfoDefaultDetailLevel;
 
         if( i_bEnabledAsDefault != EEnabled::Undefined )
         {
             bEnabled = i_bEnabledAsDefault;
         }
-        if( i_eDefaultDetailLevel >= ETraceDetailLevelMethodCalls::None )
+        if( i_eMethodCallsDefaultDetailLevel != ETraceDetailLevelMethodCalls::Undefined )
         {
-            eDetailLevel = i_eDefaultDetailLevel;
+            eDetailLevelMethodCalls = i_eMethodCallsDefaultDetailLevel;
+        }
+        if( i_eRuntimeInfoDefaultDetailLevel != ETraceDetailLevelRuntimeInfo::Undefined )
+        {
+            eDetailLevelRuntimeInfo = i_eRuntimeInfoDefaultDetailLevel;
         }
 
         pTrcAdminObj = m_pTrcAdminObjIdxTree->getTraceAdminObj(
@@ -917,8 +935,8 @@ CTrcAdminObj* CTrcServer::getTraceAdminObj(
             /* strClassName                   */ i_strClassName,
             /* strObjName                     */ i_strObjName,
             /* bEnabledAsDefault              */ bEnabled,
-            /* eDefaultDetailLevelMethodCalls */ eDetailLevel,
-            /* eDefaultDetailLevelRuntimeInfo */ ETraceDetailLevelRuntimeInfo::None,
+            /* eDefaultDetailLevelMethodCalls */ eDetailLevelMethodCalls,
+            /* eDefaultDetailLevelRuntimeInfo */ eDetailLevelRuntimeInfo,
             /* bIncrementRefCount             */ true );
 
         if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
@@ -1439,7 +1457,7 @@ bool CTrcServer::isRuntimeInfoActive( const CTrcAdminObj* i_pTrcAdminObj ) const
 {
     CMutexLocker mtxLocker(m_pMtx);
     bool bIsActive = false;
-    if( i_pTrcAdminObj != nullptr && i_pTrcAdminObj->isRuntimeInfoActive(ETraceDetailLevelRuntimeInfo::Critical) )
+    if( i_pTrcAdminObj != nullptr && i_pTrcAdminObj->isRuntimeInfoActive(ETraceDetailLevelRuntimeInfo::CriticalError) )
     {
         bIsActive = isActive();
     }
@@ -1557,7 +1575,7 @@ bool CTrcServer::areNewTrcAdminObjsEnabledAsDefault() const
 }
 
 //------------------------------------------------------------------------------
-void CTrcServer::setNewTrcAdminObjsDefaultDetailLevel( ETraceDetailLevelMethodCalls i_eDetailLevel )
+void CTrcServer::setNewTrcAdminObjsMethodCallsDefaultDetailLevel( ETraceDetailLevelMethodCalls i_eDetailLevel )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -1574,21 +1592,21 @@ void CTrcServer::setNewTrcAdminObjsDefaultDetailLevel( ETraceDetailLevelMethodCa
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
-        /* strMethod          */ "setNewTrcAdminObjsDefaultDetailLevel",
+        /* strMethod          */ "setNewTrcAdminObjsMethodCallsDefaultDetailLevel",
         /* strMthInArgs       */ strMthInArgs );
 
     CMutexLocker mtxLocker(m_pMtx);
 
-    if( m_trcSettings.m_eNewTrcAdminObjsDefaultDetailLevel != i_eDetailLevel )
+    if( m_trcSettings.m_eNewTrcAdminObjsMethodCallsDefaultDetailLevel != i_eDetailLevel )
     {
-        m_trcSettings.m_eNewTrcAdminObjsDefaultDetailLevel = i_eDetailLevel;
+        m_trcSettings.m_eNewTrcAdminObjsMethodCallsDefaultDetailLevel = i_eDetailLevel;
 
         emit traceSettingsChanged(this);
     }
-} // setNewTrcAdminObjsDefaultDetailLevel
+} // setNewTrcAdminObjsMethodCallsDefaultDetailLevel
 
 //------------------------------------------------------------------------------
-ETraceDetailLevelMethodCalls CTrcServer::getNewTrcAdminObjsDefaultDetailLevel() const
+ETraceDetailLevelMethodCalls CTrcServer::getNewTrcAdminObjsMethodCallsDefaultDetailLevel() const
 //------------------------------------------------------------------------------
 {
     // When the mutex creates trace output also this method should be traced.
@@ -1600,11 +1618,62 @@ ETraceDetailLevelMethodCalls CTrcServer::getNewTrcAdminObjsDefaultDetailLevel() 
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
-        /* strMethod          */ "getNewTrcAdminObjsDefaultDetailLevel",
+        /* strMethod          */ "getNewTrcAdminObjsMethodCallsDefaultDetailLevel",
         /* strMthInArgs       */ "" );
 
     CMutexLocker mtxLocker(m_pMtx);
-    return m_trcSettings.m_eNewTrcAdminObjsDefaultDetailLevel;
+    return m_trcSettings.m_eNewTrcAdminObjsMethodCallsDefaultDetailLevel;
+}
+
+//------------------------------------------------------------------------------
+void CTrcServer::setNewTrcAdminObjsRuntimeInfoDefaultDetailLevel( ETraceDetailLevelRuntimeInfo i_eDetailLevel )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+
+    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    {
+        strMthInArgs = CEnumTraceDetailLevelRuntimeInfo(i_eDetailLevel).toString();
+    }
+
+    CMethodTracer mthTracer(
+        /* pTrcMthFile        */ m_pTrcMthFile,
+        /* eTrcDetailLevel    */ m_eTrcDetailLevel,
+        /* eFilterDetailLavel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* strNameSpace       */ nameSpace(),
+        /* strClassName       */ className(),
+        /* strObjName         */ objectName(),
+        /* strMethod          */ "setNewTrcAdminObjsRuntimeInfoDefaultDetailLevel",
+        /* strMthInArgs       */ strMthInArgs );
+
+    CMutexLocker mtxLocker(m_pMtx);
+
+    if( m_trcSettings.m_eNewTrcAdminObjsRuntimeInfoDefaultDetailLevel != i_eDetailLevel )
+    {
+        m_trcSettings.m_eNewTrcAdminObjsRuntimeInfoDefaultDetailLevel = i_eDetailLevel;
+
+        emit traceSettingsChanged(this);
+    }
+} // setNewTrcAdminObjsRuntimeInfoDefaultDetailLevel
+
+//------------------------------------------------------------------------------
+ETraceDetailLevelRuntimeInfo CTrcServer::getNewTrcAdminObjsRuntimeInfoDefaultDetailLevel() const
+//------------------------------------------------------------------------------
+{
+    // When the mutex creates trace output also this method should be traced.
+    ETraceDetailLevelMethodCalls eTrcDetailLevel = m_pMtx == nullptr ? ETraceDetailLevelMethodCalls::None : m_pMtx->getMethodTraceDetailLevel();
+    CMethodTracer mthTracer(
+        /* pTrcMthFile        */ m_pTrcMthFile,
+        /* eTrcDetailLevel    */ eTrcDetailLevel,
+        /* eFilterDetailLavel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* strNameSpace       */ nameSpace(),
+        /* strClassName       */ className(),
+        /* strObjName         */ objectName(),
+        /* strMethod          */ "getNewTrcAdminObjsRuntimeInfoDefaultDetailLevel",
+        /* strMthInArgs       */ "" );
+
+    CMutexLocker mtxLocker(m_pMtx);
+    return m_trcSettings.m_eNewTrcAdminObjsRuntimeInfoDefaultDetailLevel;
 }
 
 /*==============================================================================
@@ -2315,7 +2384,8 @@ void CTrcServer::setTraceSettings( const STrcServerSettings& i_settings )
         }
 
         m_trcSettings.m_bNewTrcAdminObjsEnabledAsDefault = i_settings.m_bNewTrcAdminObjsEnabledAsDefault;
-        m_trcSettings.m_eNewTrcAdminObjsDefaultDetailLevel = i_settings.m_eNewTrcAdminObjsDefaultDetailLevel;
+        m_trcSettings.m_eNewTrcAdminObjsMethodCallsDefaultDetailLevel = i_settings.m_eNewTrcAdminObjsMethodCallsDefaultDetailLevel;
+        m_trcSettings.m_eNewTrcAdminObjsRuntimeInfoDefaultDetailLevel = i_settings.m_eNewTrcAdminObjsRuntimeInfoDefaultDetailLevel;
 
         m_trcSettings.m_bUseIpcServer = i_settings.m_bUseIpcServer;
         m_trcSettings.m_bCacheDataIfNotConnected = i_settings.m_bCacheDataIfNotConnected;

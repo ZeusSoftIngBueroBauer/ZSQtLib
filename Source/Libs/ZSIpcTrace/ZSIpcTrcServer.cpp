@@ -634,7 +634,7 @@ void CIpcTrcServer::setNewTrcAdminObjsEnabledAsDefault( bool i_bEnabled )
 } // setNewTrcAdminObjsEnabledAsDefault
 
 //------------------------------------------------------------------------------
-void CIpcTrcServer::setNewTrcAdminObjsDefaultDetailLevel( ETraceDetailLevelMethodCalls i_eDetailLevel )
+void CIpcTrcServer::setNewTrcAdminObjsMethodCallsDefaultDetailLevel( ETraceDetailLevelMethodCalls i_eDetailLevel )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -651,14 +651,14 @@ void CIpcTrcServer::setNewTrcAdminObjsDefaultDetailLevel( ETraceDetailLevelMetho
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
-        /* strMethod          */ "setNewTrcAdminObjsDefaultDetailLevel",
+        /* strMethod          */ "setNewTrcAdminObjsMethodCallsDefaultDetailLevel",
         /* strMthInArgs       */ strMthInArgs );
 
     CMutexLocker mtxLocker(m_pMtx);
 
-    if( m_trcSettings.m_eNewTrcAdminObjsDefaultDetailLevel != i_eDetailLevel )
+    if( m_trcSettings.m_eNewTrcAdminObjsMethodCallsDefaultDetailLevel != i_eDetailLevel )
     {
-        CTrcServer::setNewTrcAdminObjsDefaultDetailLevel(i_eDetailLevel);
+        CTrcServer::setNewTrcAdminObjsMethodCallsDefaultDetailLevel(i_eDetailLevel);
 
         if( !m_bOnReceivedDataUpdateInProcess && isConnected() )
         {
@@ -666,13 +666,56 @@ void CIpcTrcServer::setNewTrcAdminObjsDefaultDetailLevel( ETraceDetailLevelMetho
 
             strMsg += systemMsgType2Str(MsgProtocol::ESystemMsgTypeInd) + " ";
             strMsg += command2Str(MsgProtocol::ECommandUpdate) + " ";
-            strMsg += "<ServerSettings NewTrcAdminObjsDefaultDetailLevel=\"" + CEnumTraceDetailLevelMethodCalls(m_trcSettings.m_eNewTrcAdminObjsDefaultDetailLevel).toString() + "\"/>";
+            strMsg += "<ServerSettings NewTrcAdminObjsMethodCallsDefaultDetailLevel=\""
+                   + CEnumTraceDetailLevelMethodCalls(m_trcSettings.m_eNewTrcAdminObjsMethodCallsDefaultDetailLevel).toString() + "\"/>";
 
             sendData( ESocketIdAllSockets, str2ByteArr(strMsg) );
         }
     }
 
-} // setNewTrcAdminObjsDefaultDetailLevel
+} // setNewTrcAdminObjsMethodCallsDefaultDetailLevel
+
+//------------------------------------------------------------------------------
+void CIpcTrcServer::setNewTrcAdminObjsRuntimeInfoDefaultDetailLevel( ETraceDetailLevelRuntimeInfo i_eDetailLevel )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+
+    if( m_pTrcMthFile != nullptr && m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    {
+        strMthInArgs = CEnumTraceDetailLevelRuntimeInfo(i_eDetailLevel).toString();
+    }
+
+    CMethodTracer mthTracer(
+        /* pTrcMthFile        */ m_pTrcMthFile,
+        /* eTrcDetailLevel    */ m_eTrcDetailLevel,
+        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* strNameSpace       */ nameSpace(),
+        /* strClassName       */ className(),
+        /* strObjName         */ objectName(),
+        /* strMethod          */ "setNewTrcAdminObjsRuntimeInfoDefaultDetailLevel",
+        /* strMthInArgs       */ strMthInArgs );
+
+    CMutexLocker mtxLocker(m_pMtx);
+
+    if( m_trcSettings.m_eNewTrcAdminObjsRuntimeInfoDefaultDetailLevel != i_eDetailLevel )
+    {
+        CTrcServer::setNewTrcAdminObjsRuntimeInfoDefaultDetailLevel(i_eDetailLevel);
+
+        if( !m_bOnReceivedDataUpdateInProcess && isConnected() )
+        {
+            QString strMsg;
+
+            strMsg += systemMsgType2Str(MsgProtocol::ESystemMsgTypeInd) + " ";
+            strMsg += command2Str(MsgProtocol::ECommandUpdate) + " ";
+            strMsg += "<ServerSettings NewTrcAdminObjsRuntimeInfoDefaultDetailLevel=\""
+                   + CEnumTraceDetailLevelRuntimeInfo(m_trcSettings.m_eNewTrcAdminObjsRuntimeInfoDefaultDetailLevel).toString() + "\"/>";
+
+            sendData( ESocketIdAllSockets, str2ByteArr(strMsg) );
+        }
+    }
+
+} // setNewTrcAdminObjsRuntimeInfoDefaultDetailLevel
 
 /*==============================================================================
 public: // overridables of base class CTrcServer
@@ -1146,9 +1189,15 @@ void CIpcTrcServer::setTraceSettings( const STrcServerSettings& i_settings )
             {
                 strMsg += " NewTrcAdminObjsEnabledAsDefault=\"" + bool2Str(i_settings.m_bNewTrcAdminObjsEnabledAsDefault) + "\"";
             }
-            if( m_trcSettings.m_eNewTrcAdminObjsDefaultDetailLevel != i_settings.m_eNewTrcAdminObjsDefaultDetailLevel )
+            if( m_trcSettings.m_eNewTrcAdminObjsMethodCallsDefaultDetailLevel != i_settings.m_eNewTrcAdminObjsMethodCallsDefaultDetailLevel )
             {
-                strMsg += " NewTrcAdminObjsDefaultDetailLevel=\"" + CEnumTraceDetailLevelMethodCalls(i_settings.m_eNewTrcAdminObjsDefaultDetailLevel).toString() + "\"";
+                strMsg += " NewTrcAdminObjsMethodCallsDefaultDetailLevel=\""
+                       + CEnumTraceDetailLevelMethodCalls(i_settings.m_eNewTrcAdminObjsMethodCallsDefaultDetailLevel).toString() + "\"";
+            }
+            if( m_trcSettings.m_eNewTrcAdminObjsRuntimeInfoDefaultDetailLevel != i_settings.m_eNewTrcAdminObjsRuntimeInfoDefaultDetailLevel )
+            {
+                strMsg += " NewTrcAdminObjsRuntimeInfoDefaultDetailLevel=\""
+                       + CEnumTraceDetailLevelRuntimeInfo(i_settings.m_eNewTrcAdminObjsRuntimeInfoDefaultDetailLevel).toString() + "\"";
             }
             if( m_trcSettings.m_bUseIpcServer != i_settings.m_bUseIpcServer )
             {
@@ -2079,7 +2128,10 @@ void CIpcTrcServer::sendServerSettings(int i_iSocketId)
     strDataSnd += " Enabled=\"" + bool2Str(m_trcSettings.m_bEnabled) + "\"";
     strDataSnd += " AdminObjFileAbsFilePath=\"" + m_trcSettings.m_strAdminObjFileAbsFilePath + "\"";
     strDataSnd += " NewTrcAdminObjsEnabledAsDefault=\"" + bool2Str(m_trcSettings.m_bNewTrcAdminObjsEnabledAsDefault) + "\"";
-    strDataSnd += " NewTrcAdminObjsDefaultDetailLevel=\"" + CEnumTraceDetailLevelMethodCalls(m_trcSettings.m_eNewTrcAdminObjsDefaultDetailLevel).toString() + "\"";
+    strDataSnd += " NewTrcAdminObjsMethodCallsDefaultDetailLevel=\""
+               + CEnumTraceDetailLevelMethodCalls(m_trcSettings.m_eNewTrcAdminObjsMethodCallsDefaultDetailLevel).toString() + "\"";
+    strDataSnd += " NewTrcAdminObjsRuntimeInfoDefaultDetailLevel=\""
+               + CEnumTraceDetailLevelRuntimeInfo(m_trcSettings.m_eNewTrcAdminObjsRuntimeInfoDefaultDetailLevel).toString() + "\"";
     strDataSnd += " UseIpcServer=\"" + bool2Str(m_trcSettings.m_bUseIpcServer) + "\"";
     strDataSnd += " CacheDataIfNotConnected=\"" + bool2Str(m_trcSettings.m_bCacheDataIfNotConnected) + "\"";
     strDataSnd += " CacheDataMaxArrLen=\"" + QString::number(m_trcSettings.m_iCacheDataMaxArrLen) + "\"";
@@ -2568,12 +2620,19 @@ void CIpcTrcServer::onIpcServerReceivedReqUpdate( int i_iSocketId, const QString
                         if( bOk ) trcServerSettings.m_bNewTrcAdminObjsEnabledAsDefault = bVal;
                         else xmlStreamReader.raiseError("Attribute \"NewTrcAdminObjsEnabledAsDefault\" (" + strAttr + ") is out of range");
                     }
-                    if( xmlStreamReader.attributes().hasAttribute("NewTrcAdminObjsDefaultDetailLevel") )
+                    if( xmlStreamReader.attributes().hasAttribute("NewTrcAdminObjsMethodCallsDefaultDetailLevel") )
                     {
-                        strAttr = xmlStreamReader.attributes().value("NewTrcAdminObjsDefaultDetailLevel").toString();
+                        strAttr = xmlStreamReader.attributes().value("NewTrcAdminObjsMethodCallsDefaultDetailLevel").toString();
                         CEnumTraceDetailLevelMethodCalls eDetailLevel = CEnumTraceDetailLevelMethodCalls::fromString(strAttr);
-                        if( eDetailLevel != ETraceDetailLevelMethodCalls::Undefined ) trcServerSettings.m_eNewTrcAdminObjsDefaultDetailLevel = eDetailLevel.enumerator();
-                        else xmlStreamReader.raiseError("Attribute \"NewTrcAdminObjsDefaultDetailLevel\" (" + strAttr + ") is out of range");
+                        if( eDetailLevel != ETraceDetailLevelMethodCalls::Undefined ) trcServerSettings.m_eNewTrcAdminObjsMethodCallsDefaultDetailLevel = eDetailLevel.enumerator();
+                        else xmlStreamReader.raiseError("Attribute \"NewTrcAdminObjsMethodCallsDefaultDetailLevel\" (" + strAttr + ") is out of range");
+                    }
+                    if( xmlStreamReader.attributes().hasAttribute("NewTrcAdminObjsRuntimeInfoDefaultDetailLevel") )
+                    {
+                        strAttr = xmlStreamReader.attributes().value("NewTrcAdminObjsRuntimeInfoDefaultDetailLevel").toString();
+                        CEnumTraceDetailLevelRuntimeInfo eDetailLevel = CEnumTraceDetailLevelRuntimeInfo::fromString(strAttr);
+                        if( eDetailLevel != ETraceDetailLevelRuntimeInfo::Undefined ) trcServerSettings.m_eNewTrcAdminObjsRuntimeInfoDefaultDetailLevel = eDetailLevel.enumerator();
+                        else xmlStreamReader.raiseError("Attribute \"NewTrcAdminObjsRuntimeInfoDefaultDetailLevel\" (" + strAttr + ") is out of range");
                     }
                     if( xmlStreamReader.attributes().hasAttribute("UseIpcServer") )
                     {
@@ -2700,7 +2759,7 @@ void CIpcTrcServer::onIpcServerReceivedReqUpdate( int i_iSocketId, const QString
                     }
                     else // if( iObjId >= 0 && iObjId < m_pTrcAdminObjIdxTree->treeEntriesVectorSize() )
                     {
-                        CTrcAdminObj* pTrcAdminObj = m_pTrcAdminObjIdxTree->getTraceAdminObj(iObjId);
+                        CTrcAdminObj* pTrcAdminObj = m_pTrcAdminObjIdxTree->getTraceAdminObj(iObjId, false);
 
                         if( pTrcAdminObj == nullptr )
                         {

@@ -883,6 +883,50 @@ void CWdgtIpcClient::setProtocolTypeImageVisible( bool i_bVisible )
 } // setProtocolTypeImageVisible
 
 /*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CWdgtIpcClient::applySettings()
+//------------------------------------------------------------------------------
+{
+    QString strAddTrcInfo;
+
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(ETraceDetailLevelMethodCalls::ArgsNormal) )
+    {
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* eDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* strMethod    */ "applySettings",
+        /* strAddInfo   */ strAddTrcInfo );
+
+    if( m_pClient != nullptr )
+    {
+        bool bHasChanges = false;
+
+        if( m_hostSettingsWidget != m_hostSettingsClient )
+        {
+            bHasChanges = true;
+            m_pClient->setHostSettings(m_hostSettingsWidget);
+        }
+        if( m_watchDogSettingsWidget != m_watchDogSettingsClient )
+        {
+            bHasChanges = true;
+            m_pClient->setWatchDogSettings(m_watchDogSettingsWidget);
+        }
+
+        // In order for the changed settings to take affect:
+        if( bHasChanges )
+        {
+            m_pClient->changeSettings();
+        }
+    } // if( m_pClient != nullptr )
+
+} // applySettings
+
+/*==============================================================================
 protected: // instance methods
 ==============================================================================*/
 
@@ -3140,47 +3184,3 @@ void CWdgtIpcClient::fillDetailControls()
     }
 
 } // fillDetailControls
-
-/*==============================================================================
-protected: // instance methods
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-void CWdgtIpcClient::applySettings()
-//------------------------------------------------------------------------------
-{
-    QString strAddTrcInfo;
-
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(ETraceDetailLevelMethodCalls::ArgsNormal) )
-    {
-    }
-
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* eDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
-        /* strMethod    */ "applySettings",
-        /* strAddInfo   */ strAddTrcInfo );
-
-    if( m_pClient != nullptr )
-    {
-        bool bHasChanges = false;
-
-        if( m_hostSettingsWidget != m_hostSettingsClient )
-        {
-            bHasChanges = true;
-            m_pClient->setHostSettings(m_hostSettingsWidget);
-        }
-        if( m_watchDogSettingsWidget != m_watchDogSettingsClient )
-        {
-            bHasChanges = true;
-            m_pClient->setWatchDogSettings(m_watchDogSettingsWidget);
-        }
-
-        // In order for the changed settings to take affect:
-        if( bHasChanges )
-        {
-            m_pClient->changeSettings();
-        }
-    } // if( m_pClient != nullptr )
-
-} // applySettings

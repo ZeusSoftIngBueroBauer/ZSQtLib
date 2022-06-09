@@ -105,7 +105,8 @@ public: // overridables of base class CTrcServer
 public: // overridables of base class CTrcServer
     virtual void setEnabled( bool i_bEnabled ) override;
     virtual void setNewTrcAdminObjsEnabledAsDefault( bool i_bEnabled ) override;
-    virtual void setNewTrcAdminObjsDefaultDetailLevel( ETraceDetailLevelMethodCalls i_eDetailLevel );
+    virtual void setNewTrcAdminObjsMethodCallsDefaultDetailLevel( ETraceDetailLevelMethodCalls i_eDetailLevel );
+    virtual void setNewTrcAdminObjsRuntimeInfoDefaultDetailLevel( ETraceDetailLevelRuntimeInfo i_eDetailLevel );
 public: // overridables of base class CTrcServer
     virtual void setAdminObjFileAbsoluteFilePath( const QString& i_strAbsFilePath ) override;
 public: // overridables of base class CTrcServer

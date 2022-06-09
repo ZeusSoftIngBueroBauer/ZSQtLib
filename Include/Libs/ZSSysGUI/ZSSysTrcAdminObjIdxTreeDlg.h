@@ -58,7 +58,8 @@ public: // class CDlgTrcServer
         CIdxTreeTrcAdminObjs* i_pIdxTree,
         QWidget* i_pWdgtParent = nullptr,
         Qt::WindowFlags i_wFlags = Qt::WindowFlags(),
-        ZS::Trace::ETraceDetailLevelMethodCalls i_eTrcDetailLevel = ZS::Trace::ETraceDetailLevelMethodCalls::None );
+        ZS::Trace::ETraceDetailLevelMethodCalls i_eTrcDetailLevel = ZS::Trace::ETraceDetailLevelMethodCalls::None,
+        ZS::Trace::ETraceDetailLevelMethodCalls i_eTrcDetailLevelNoisyMethods = ZS::Trace::ETraceDetailLevelMethodCalls::None );
     static CDlgIdxTreeTrcAdminObjs* GetInstance( const QString& i_strObjName );
 protected: // ctor
     CDlgIdxTreeTrcAdminObjs(
@@ -66,7 +67,8 @@ protected: // ctor
         CIdxTreeTrcAdminObjs* i_pIdxTree,
         QWidget* i_pWdgtParent = nullptr,
         Qt::WindowFlags i_wFlags = Qt::WindowFlags(),
-        ZS::Trace::ETraceDetailLevelMethodCalls i_eTrcDetailLevel = ZS::Trace::ETraceDetailLevelMethodCalls::None );
+        ZS::Trace::ETraceDetailLevelMethodCalls i_eTrcDetailLevel = ZS::Trace::ETraceDetailLevelMethodCalls::None,
+        ZS::Trace::ETraceDetailLevelMethodCalls i_eTrcDetailLevelNoisyMethods = ZS::Trace::ETraceDetailLevelMethodCalls::None );
 public: // dtor
     virtual ~CDlgIdxTreeTrcAdminObjs();
 public: // overridables of base class ZS::System::GUI::CDialog
@@ -77,6 +79,7 @@ protected: // instance members
     QVBoxLayout* m_pLyt;
     CWdgtIdxTreeTrcAdminObjs* m_pWdgtIdxTree;
     ZS::Trace::ETraceDetailLevelMethodCalls m_eTrcDetailLevel;
+    ZS::Trace::ETraceDetailLevelMethodCalls m_eTrcDetailLevelNoisyMethods;
 
 }; // class CDlgIdxTreeTrcAdminObjs
 
