@@ -267,6 +267,12 @@ If you don't want to link to the libraries at compile time but instead want to u
 to load the libraries during runtime you need to add the path to the ZSQtLibs header files
 to "target_include_directories" and add the cpp files to the list of the source files in your `CMakeList.txt`.
 
+    set(_Headers
+        ....
+        ${ZSQTLIBS_INCLUDE_DIRS}/ZSIpcTrace/ZSIpcTrcDllIf.h
+        ...
+    )
+
     set(_Sources
         ....
         ${ZSQTLIBS_SOURCE_DIRS}/ZSIpcTrace/ZSIpcTrcDllIf.cpp
@@ -306,7 +312,7 @@ In addition you need to set additional compiler preprocesser directives to inclu
 code from the ZSQtLibs. E.g. to use the method tracing Dll interface you need to set the
 preprocessor directive USE_ZS_IPTRACE_DLL_IF.
 
-    target_compile_definitions(${MY_PROJECT_NAME} PUBIC|PRIVATE|.. USE_ZS_IPTRACE_DLL_IF)
+    target_compile_definitions(${MY_PROJECT_NAME} PUBLIC|PRIVATE|.. USE_ZS_IPTRACE_DLL_IF)
 
 
 ***
