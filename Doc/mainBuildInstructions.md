@@ -1,6 +1,7 @@
 @page _PAGE_Main_BuildInstructions Build Instructions
 
-[TOC]
+[QuickStartup](#quick-startup)
+- [Create and Install ZSQtLib Libraries, Products and Test Applications](#create-and-install-zsqtlib-libraries-products-and-test-applications)
 
 # Quick Startup
 
