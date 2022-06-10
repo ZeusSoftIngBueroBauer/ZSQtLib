@@ -1,11 +1,34 @@
 @page _PAGE_Main_BuildInstructions Build Instructions
 
-[QuickStartup](#quick-startup)
-- [Create and Install ZSQtLib Libraries, Products and Test Applications](#create-and-install-zsqtlib-libraries-products-and-test-applications)
+- [QuickStartup](#quick-startup)
+  - [Create and Install ZSQtLib Libraries, Products and Tests](#create-and-install-zsqtlib-libraries-products-and-tests)
+  - [Use ZSQtLib Libraries in other Packages](#use-zsqtlib-libraries-in-other-packages)
+    - [find_package](#find_package)
+    - [target_link_libraries](#target_link_libraries)
+    - [target_include_libraries(#target_include_libraries)
+- [Additional Informations](#additional-informations)
+  - [Repository Content](#repository-content)
+    - [ZSSysVersion.h](#zssysversion.h)
+    - [CMake Version Config](#cmake-version-config)
+  - [Naming of the Generated Binaries](#naming-of-the-generated-binaries)
+  - [Create and Install ZSQtLib Libraries, Products and Test Applications](#create-and-install-zsqtlib-libraries-products-and-test-applications)
+    - [What need to be installed to use the libraries by other packages](#what-need-to-be-installed-to-use-the-libraries-by-other-packages)
+    - [CMake](#cmake)
+      - [Building the ZSQtLib](#building-the-zsqtlib)
+        - [Generate make files, build and install project](#generate-make-files-build-and-install-project)
+          - [Generator: Visual Studio 16 (2019)](#generator-visual-studio-16-2019)
+          - [Generator: MinGW Makefiles](#generator-mingw-makefiles)
+      - [Using (Referencing) the ZSQtLib Libraries in other Packages](#using-referencing-the-zsqtlib-libraries-in-other-packages)
+        - [C++ Internals](#c-internals)
+        - [CMake Usage](#cmake-usage)
+- [Appendix](#appendix)
+  - [Using Qt](#using-qt)
+  - [Linux Setup](#linux-setup)
+  - [Install Visual Studio](#install-visual-studio)
 
 # Quick Startup
 
-## Create and Install ZSQtLib Libraries, Products and Test Applications
+## Create and Install ZSQtLib Libraries, Products and Tests
 
 **Please verify that your compiler supports the desired architecture (platform).
 VS-2008 express edition for example does not support the X64 architecture.**
@@ -272,9 +295,9 @@ preprocessor directive USE_ZS_IPTRACE_DLL_IF.
 ***
 
 
-# Additional Informations
-
 ## Repository Content
+
+# Additional Informations
 
 ### ZSSysVersion.h
 
@@ -456,7 +479,7 @@ First change working directory to where this CMakeList file is located ("./ZSQtL
       cmake --build ..\Build\msvc2019_x64_Debug --config=Debug -j8
       cmake --install ..\Build\msvc2019_x64_Debug --config=Debug
 
-####### Visual Studio IDE
+**Visual Studio IDE**
 
 If you want to proceed with Visual Studio to build the project instead of the command line you could open the
 solution `ZSQtLib.sln` located in `.\Build\msvc2019_x64_Debug|Release`.
