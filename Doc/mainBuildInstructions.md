@@ -1,5 +1,7 @@
 @page _PAGE_Main_BuildInstructions Build Instructions
 
+[TOC]
+
 # Quick Startup
 
 ## Create and Install ZSQtLib Libraries, Products and Test Applications
