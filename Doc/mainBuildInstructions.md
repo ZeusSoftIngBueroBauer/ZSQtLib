@@ -5,7 +5,7 @@
   - [Use ZSQtLib Libraries in other Packages](#use-zsqtlib-libraries-in-other-packages)
     - [find_package](#find_package)
     - [target_link_libraries](#target_link_libraries)
-    - [target_include_libraries(#target_include_libraries)
+    - [target_include_libraries](#target_include_libraries)
 - [Additional Informations](#additional-informations)
   - [Repository Content](#repository-content)
     - [ZSSysVersion.h](#zssysversion.h)
@@ -58,14 +58,15 @@ The main CMakeList file sets the following CMAKE variables for this:
     set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/../Lib/${Compiler}_${Platform})
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/../Bin/${Compiler}_${Platform})
 
-This should simplify the development process and it is not necessary to install the binaries
-as all necessary dlls (also the Qt Dlls) will be copied to those directories. Meaning that
-you can simple start the applications from this bin directories.
+This should simplify your development process and it is not necessary to explicitely install
+the binaries via CMake. All necessary libs and dlls (also the Qt Dlls) will be copied to
+either the Lib or Bin directory. Meaning that you can simple start the applications from the
+Bin directory.
 
 If you want to use the ZSQtLib libraries in your own applications you may desire to install
-the binaries and header files to a different location. Very likely the same directory into
-which the binaries of your application will be installed so that the dlls of the ZSQtLib
-can be found and loaded.
+the binaries and header files to a different location. This location will very likely be
+the same directory into which the binaries of your application will be installed so that
+the dlls of the ZSQtLib can be found and loaded when starting your application.
 
 As default the commands below would install the ZSQtLib libraries, products and test
 applications into:
@@ -92,7 +93,7 @@ you use for your application.
 
 **Generator: Visual Studio 16 (2019)**
 
-First change working directory to where this CMakeList file is located ("./ZSQtLib/Make").
+First change the working directory to where this CMakeList file is located ("./ZSQtLib/Make").
 
 To generate, build and install a release build with x64 platform use the following commands:
 
@@ -137,6 +138,15 @@ If you don't want to link to the libraries at compile time but instead want to u
 to load the libraries during runtime you need to add the ZS package to the "target_include_directories"
 in `CMakeList.txt`.
 
+### Optionally use ZSQtLib
+
+If you want to make the usage of the ZSQtLib an option which is only used when passing an argument
+to the CMake call define the option similary as follows in your CMakeList file:
+
+    option(USE_ZS_QTLIBS "USE_ZS_QTLIBS" OFF)
+
+By passing -DUSE_ZS_QTLIBS=ON the option will be enabled.
+
 ### find_package
 
 If you want to use the libraries in other packages you need to add a `find_package` call
@@ -166,14 +176,20 @@ If you need to pass several PREFIX_PATHs separate them with a ";". E.g.
 
 Add the following lines to the "CMakeList.txt" file of the package in which you want to integrate
 the libraries. Please note that if you want to use Dll interface modules also the path to the
-installed source files must become known (ZSQTLIBS_SOURCE_DIRS).
+installed source and header files must become known (ZSQTLIBS_SOURCE_DIRS, ZSQTLIBS_INCLUDE_DIRS).
+See [Workaround to set binary, include and source directory](#workaround-to-detect-install-directory) for more
+informations on how you can do this.
 
-    find_package(ZSQtLibs VERSION_MAJOR.VERSION_MINOR.VERSION_PATCH CONFIG REQUIRED ZSSys ZSIpc ZSIpcTrace)
-    if (ZSQtLibs_FOUND)
-        message(STATUS "ZSQtLibs found")
-    else ()
-        message(STATUS "ZSQtLibs not found")
-    endif ()
+The following find_package example assumes that using ZSQtLibs depends on the option USE_ZS_QTLIBS.
+
+    if(USE_ZS_QTLIBS)
+        find_package(ZSQtLibs VERSION_MAJOR.VERSION_MINOR.VERSION_PATCH CONFIG REQUIRED ZSSys ZSIpc ZSIpcTrace)
+        if (ZSQtLibs_FOUND)
+            message(STATUS "ZSQtLibs found")
+        else ()
+            message(STATUS "ZSQtLibs not found")
+        endif ()
+    endif()
 
 Replace the required version numbers VERSION_MAJOR.VERSION_MINOR.VERSION_PATCH with the version
 numbers of the installed package.
@@ -264,10 +280,11 @@ to "target_include_directories" and add the cpp files to the list of the source 
         ${ZSQTLIBS_INCLUDE_DIRS}
     )
 
-To be able to use the variables ${ZSQTLIBS_SOURCE_DIRS} and ${ZSQTLIBS_INCLUDE_DIRS} add the following
+<a name="workaround-to-detect-install-directory">**Workaround to set binary, include and source directory:**</a>
+
+To be able to use the variables ZSQTLIBS_SOURCE_DIRS and ZSQTLIBS_INCLUDE_DIRS add the following
 lines after the find_package call:
 
-    **Workaround to set binary, include and source directory:**
     if(NOT ZSQTLIBS_BINARY_DIR)
         get_target_property(ZSQtLibs_ZSSys_BinPath ZSQtLibs::ZSSys LOCATION)
         message(STATUS "ZSQtLibs_ZSSys_BinPath:   ${ZSQtLibs_ZSSys_BinPath}")
