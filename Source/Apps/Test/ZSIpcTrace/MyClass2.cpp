@@ -59,12 +59,14 @@ public: // ctors and dtor
 CMyClass2Thread::CMyClass2Thread( const QString& i_strMyClass2ObjName, CMyClass1* i_pMyClass1 ) :
 //------------------------------------------------------------------------------
     QThread(i_pMyClass1),
+    m_pMtxWaitForClass2Created(nullptr),
+    m_pWaitConditionClass2Created(nullptr),
     m_pMyClass1(i_pMyClass1),
     m_strMyClass2ObjName(i_strMyClass2ObjName),
     m_pMyClass2(nullptr),
     m_pTrcAdminObj(nullptr)
 {
-    setObjectName(ClassName() + m_strMyClass2ObjName);
+    setObjectName("MyClass2Thread" + m_strMyClass2ObjName);
 
     m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName());
 
@@ -84,6 +86,9 @@ CMyClass2Thread::CMyClass2Thread( const QString& i_strMyClass2ObjName, CMyClass1
         /* strMethod    */ "ctor",
         /* strMthInArgs */ strMthInArgs );
 
+    m_pMtxWaitForClass2Created = new CMutex(ClassName() + "::" + objectName() + "::WaitClass2Created");
+    m_pWaitConditionClass2Created = new CWaitCondition(ClassName() + "::" + objectName() + "::WaitClass2Created");
+
 } // ctor
 
 //------------------------------------------------------------------------------
@@ -95,6 +100,8 @@ CMyClass2Thread::~CMyClass2Thread()
         /* eDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strMethod    */ "dtor",
         /* strMthInArgs */ "" );
+
+    emit aboutToBeDestroyed(this, objectName());
 
     if( isRunning() )
     {
@@ -122,6 +129,24 @@ CMyClass2Thread::~CMyClass2Thread()
         }
         m_pMyClass2 = nullptr;
     }
+
+    try
+    {
+        delete m_pMtxWaitForClass2Created;
+    }
+    catch(...)
+    {
+    }
+    m_pMtxWaitForClass2Created = nullptr;
+
+    try
+    {
+        delete m_pWaitConditionClass2Created;
+    }
+    catch(...)
+    {
+    }
+    m_pWaitConditionClass2Created = nullptr;
 
     mthTracer.onAdminObjAboutToBeReleased();
 
@@ -158,12 +183,59 @@ void CMyClass2Thread::setObjectName(const QString& i_strObjName)
 
     QObject::setObjectName(i_strObjName);
 
+    if( m_pMtxWaitForClass2Created != nullptr )
+    {
+        m_pMtxWaitForClass2Created->setObjectName(ClassName() + "::" + objectName() + "::WaitClass2Created");
+    }
+    if( m_pWaitConditionClass2Created != nullptr )
+    {
+        m_pWaitConditionClass2Created->setObjectName(ClassName() + "::" + objectName() + "::WaitClass2Created");
+    }
+
+    // Should be the last so that the method tracer traces leave method
+    // not before the child objects have been renamed.
     if( m_pTrcAdminObj != nullptr )
     {
         CTrcServer::RenameTraceAdminObj(&m_pTrcAdminObj, objectName());
     }
 
 } // setObjectName
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+CMyClass2* CMyClass2Thread::waitForMyClass2Created()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* eDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* strMethod    */ "waitForMyClass2Created",
+        /* strMthInArgs */ "" );
+
+    // It is not sufficient just to wait for the wait condition to be signalled.
+    // The thread may already have been started, created the Class3 instance and invoked
+    // the "onClass3ThreadRunning" slot which signalled the wait condition. A wait here
+    // without a timeout may therefore result in a deadlock. And in addition before and
+    // after calling "wait" it will be checked whether the Class3 instance has been created.
+    if( m_pMtxWaitForClass2Created->tryLock() )
+    {
+        while( m_pMyClass2 == nullptr )
+        {
+            m_pWaitConditionClass2Created->wait(m_pMtxWaitForClass2Created, 100);
+        }
+        m_pMtxWaitForClass2Created->unlock();
+    }
+
+    if (mthTracer.areMethodCallsActive(ETraceDetailLevelMethodCalls::ArgsNormal))
+    {
+        mthTracer.setMethodReturn(m_pMyClass2 == nullptr ? "nullptr" : m_pMyClass2->objectName());
+    }
+
+    return m_pMyClass2;
+}
 
 /*==============================================================================
 public: // instance methods
@@ -205,8 +277,6 @@ void CMyClass2Thread::run()
     {
         throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
     }
-
-    emit running();
 
     // To always get the same trace output. Sleep a bit to let the thread starting
     // instance wait on the wait condition.
@@ -544,7 +614,19 @@ QString CMyClass2::instMethod(const QString& i_strMthInArgs)
         /* strMethod    */ "instMethod",
         /* strMthInArgs */ strMthInArgs );
 
-    strResult = "Hello World";
+    if( QThread::currentThread() != thread() )
+    {
+        CMsgReqTest* pMsgReq = new CMsgReqTest(this, this);
+        pMsgReq->setCommand("instMethod");
+        pMsgReq->setCommandArg(i_strMthInArgs);
+        POST_OR_DELETE_MESSAGE(pMsgReq, &mthTracer, ETraceDetailLevelRuntimeInfo::DebugNormal);
+        pMsgReq = nullptr;
+        strResult = "You here from me later ...";
+    }
+    else // if( QThread::currentThread() == thread() )
+    {
+        strResult = "Hello World";
+    }
 
     if( mthTracer.areMethodCallsActive(ETraceDetailLevelMethodCalls::ArgsNormal) )
     {
@@ -683,7 +765,7 @@ CMyClass3* CMyClass2::startClass3Thread(const QString& i_strMyClass3ObjName)
         {
             m_pMyClass3Thread = new CMyClass3Thread(i_strMyClass3ObjName, this);
 
-            if( !QObject::connect(
+           if( !QObject::connect(
                 /* pObjSender   */ m_pMyClass3Thread,
                 /* szSignal     */ SIGNAL(running()),
                 /* pObjReceiver */ this,
@@ -838,7 +920,11 @@ bool CMyClass2::event( QEvent* i_pEv )
 
         // Let the first call to the method sending the event return and unlock
         // the Counter Mutex before continue to get the same trace output each time.
-        if( pMsgReq != nullptr && pMsgReq->getCommand() == "recursiveTraceMethod" )
+        if( pMsgReq != nullptr && pMsgReq->getCommand() == "instMethod" )
+        {
+            CSleeperThread::msleep(10);
+        }
+        else if( pMsgReq != nullptr && pMsgReq->getCommand() == "recursiveTraceMethod" )
         {
             CSleeperThread::msleep(10);
         }
@@ -870,7 +956,11 @@ bool CMyClass2::event( QEvent* i_pEv )
 
         if( pMsgReq != nullptr )
         {
-            if( pMsgReq->getCommand() == "recursiveTraceMethod" )
+            if( pMsgReq->getCommand() == "instMethod" )
+            {
+                instMethod(pMsgReq->getCommandArg());
+            }
+            else if( pMsgReq->getCommand() == "recursiveTraceMethod" )
             {
                 recursiveTraceMethod();
             }

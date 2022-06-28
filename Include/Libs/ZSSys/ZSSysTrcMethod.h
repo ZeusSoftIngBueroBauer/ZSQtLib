@@ -163,6 +163,7 @@ public: // instance methods
     ETraceDetailLevelMethodCalls getEnterLeaveFilterDetailLevel() const;
     ETraceDetailLevelRuntimeInfo getRuntimeInfoTraceDetailLevel() const;
     bool isRuntimeInfoActive( ETraceDetailLevelRuntimeInfo i_eFilterDetailLevel ) const;
+    bool isTraceDataSuppressedByFilter( const QString& i_strTraceData ) const;
 public: // instance methods
     QString getNameSpace() const;
     QString getClassName() const;

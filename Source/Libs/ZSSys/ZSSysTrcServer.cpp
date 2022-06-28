@@ -565,7 +565,7 @@ void CTrcServer::RenameTraceAdminObj(
 }
 
 //------------------------------------------------------------------------------
-void CTrcServer::ReleaseTraceAdminObj( CTrcAdminObj*  i_pTrcAdminObj )
+void CTrcServer::ReleaseTraceAdminObj( CTrcAdminObj* i_pTrcAdminObj )
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&s_mtx);

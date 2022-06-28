@@ -1,0 +1,7 @@
+<GUIMain                 > -> <ZS::Apps::Test::IpcTrace::CMyClass3::NoisyMethods> Inst1.noisyInstMethod(Hello Instance)
+<GUIMain                 >    <ZS::Apps::Test::IpcTrace::CMyClass3::NoisyMethods> Inst1.noisyInstMethod: postEvent( {ZS::Apps::Test::IpcTrace::ReqTest, noisyInstMethod} )
+<GUIMain                 > <- <ZS::Apps::Test::IpcTrace::CMyClass3::NoisyMethods> Inst1.noisyInstMethod(): You here from me later ...
+<MyClass3ThreadInst1     >       -> <ZS::Apps::Test::IpcTrace::CMyClass3> Inst1.event({ZS::Apps::Test::IpcTrace::ReqTest, noisyInstMethod})
+<MyClass3ThreadInst1     >          -> <ZS::Apps::Test::IpcTrace::CMyClass3::NoisyMethods> Inst1.noisyInstMethod(Hello Instance)
+<MyClass3ThreadInst1     >          <- <ZS::Apps::Test::IpcTrace::CMyClass3::NoisyMethods> Inst1.noisyInstMethod(): Hello World
+<MyClass3ThreadInst1     >       <- <ZS::Apps::Test::IpcTrace::CMyClass3> Inst1.event()

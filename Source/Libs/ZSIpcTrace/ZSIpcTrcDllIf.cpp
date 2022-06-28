@@ -504,7 +504,7 @@ bool ZS::Trace::DllIf::loadDll( EBuildConfiguration i_configuration, int i_iQtVe
         s_pFctTrcServer_setNewTrcAdminObjsMethodCallsDefaultDetailLevel = (TFctTrcServer_setNewTrcAdminObjsMethodCallsDefaultDetailLevel)GetProcAddress(s_hndIpcTrcDllIf, "TrcServer_setNewTrcAdminObjsMethodCallsDefaultDetailLevel");
         if( s_pFctTrcServer_setNewTrcAdminObjsMethodCallsDefaultDetailLevel == NULL ) bOk = false;
 
-        s_pFctTrcServer_getNewTrcAdminObjsMethodCallsDefaultDetailLevel = (TFctTrcServer_getNewTrcAdminObjsMethodCallsDefaultDetailLevel)GetProcAddress(s_hndIpcTrcDllIf, "TrcServer_getNewTrcAdminObjMethodCallssDefaultDetailLevel");
+        s_pFctTrcServer_getNewTrcAdminObjsMethodCallsDefaultDetailLevel = (TFctTrcServer_getNewTrcAdminObjsMethodCallsDefaultDetailLevel)GetProcAddress(s_hndIpcTrcDllIf, "TrcServer_getNewTrcAdminObjsMethodCallsDefaultDetailLevel");
         if( s_pFctTrcServer_getNewTrcAdminObjsMethodCallsDefaultDetailLevel == NULL ) bOk = false;
 
         s_pFctTrcServer_getNewTrcAdminObjsRuntimeInfoDefaultDetailLevel = (TFctTrcServer_getNewTrcAdminObjsRuntimeInfoDefaultDetailLevel)GetProcAddress(s_hndIpcTrcDllIf, "TrcServer_getNewTrcAdminObjsRuntimeInfoDefaultDetailLevel");
@@ -941,6 +941,7 @@ DllIf::CMethodTracer::CMethodTracer(
 //------------------------------------------------------------------------------
     m_pTrcAdminObj(i_pTrcAdminObj),
     m_eEnterLeaveFilterDetailLevel(i_eFilterDetailLevel),
+    m_bEnterTraced(false),
     m_szObjName(NULL),
     m_szMethod(NULL),
     m_szMethodReturn(NULL),
@@ -958,6 +959,7 @@ DllIf::CMethodTracer::CMethodTracer(
             if( s_pFctTrcAdminObj_areMethodCallsActive(m_pTrcAdminObj, m_eEnterLeaveFilterDetailLevel) )
             {
                 s_pFctTrcAdminObj_traceMethodEnter(m_pTrcAdminObj, m_szObjName, m_szMethod, i_szMethodInArgs);
+                m_bEnterTraced = true;
             }
         }
     }
@@ -1042,6 +1044,29 @@ void DllIf::CMethodTracer::onAdminObjAboutToBeReleased( bool i_bTraceMethodLeave
         }
         m_pTrcAdminObj = NULL;
     }
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Updates the reference to the trace admin object.
+
+    If the method tracer is on the call stack and the trace admin object will
+    be deleted while the method tracer is alive the reference to the trace
+    admin object must be updated.
+
+    Trace admin objects may be deleted if they are renamed and the reference
+    counter becomes 0.
+
+    @note This method must be explicitly called when using the Dll Interface.
+          When linking to the C++ library the method tracer is informed via the
+          destroyed signal that the trace admin object is no longer existing.
+
+    @param i_pTrcAdminObj [in]
+        Reference to trace admin object which should be used further on.
+*/
+void DllIf::CMethodTracer::updateAdminObjReference( CTrcAdminObj* i_pTrcAdminObj )
+//------------------------------------------------------------------------------
+{
+    m_pTrcAdminObj = i_pTrcAdminObj;
 }
 
 /*==============================================================================

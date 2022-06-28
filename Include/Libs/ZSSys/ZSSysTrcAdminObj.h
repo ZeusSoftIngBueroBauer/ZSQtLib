@@ -107,6 +107,13 @@ public: // instance methods
     void setObjectThreadName( const QString& i_strThreadName );
     QString getObjectThreadName() const;
 public: // instance methods
+    int lock();
+    int unlock();
+    bool isLocked() const;
+    int getLockCount() const;
+    void setDeleteOnUnlock( bool i_bDelete );
+    bool deleteOnUnlock() const;
+public: // instance methods
     int incrementRefCount();
     int decrementRefCount();
     void setRefCount( int i_iRefCount );
@@ -123,6 +130,10 @@ public: // instance methods
     ETraceDetailLevelRuntimeInfo getRuntimeInfoTraceDetailLevel() const;
     bool isRuntimeInfoActive( ETraceDetailLevelRuntimeInfo i_eFilterDetailLevel ) const;
 public: // instance methods
+    void setTraceDataFilter( const QString& i_strFilter );
+    QString getTraceDataFilter() const;
+    bool isTraceDataSuppressedByFilter( const QString& i_strTraceData ) const;
+public: // instance methods
     virtual bool blockTreeEntryChangedSignal( bool i_bBlock );
     virtual bool isTreeEntryChangedSignalBlocked() const;
 private: // Don't use QObject::objectName
@@ -133,6 +144,16 @@ protected: // instance members
     QString m_strClassName;     /*!< Class or module name. */
     QString m_strObjName;       /*!< Object name. May be empty if this is a class tracer. */
     QString m_strObjThreadName; /*!< Name of the thread in which the object was created. */
+    /*!< The trace admin object may be locked so that it will not be deleted
+         after e.g. renaming the object. The method tracer will do so so that
+         the object is not deleted as long as the method tracer is living.
+         Otherwise the method tracer will trace MethodLeave before the method
+         is really left. If it is a long living method (e.g. exec of an event loop)
+         this would be really not good. */
+    int m_iLockCount;
+    /*!< Flag to indicate that the trace admin object is no longer needed and
+         should be deleted if it gets unlocked. */
+    bool m_bDeleteOnUnlock;
     /*!< Usually trace admin objects are only referenced by one specific module,
          class or instance of a class to control the detail level of method
          trace outputs. In certain circumstances or in case of a copy and paste
@@ -153,6 +174,12 @@ protected: // instance members
          module, class or instance referencing this object. If set to
          None method trace output is disabled. */
     ETraceDetailLevelRuntimeInfo m_eTrcDetailLevelRuntimeInfo;
+    /*!< Trace data may also be suppressed by applying a filter.
+         This filter is a regular expression which allows to define a positive
+         pattern where only the data will be traced which mets the expression
+         or a negative pattern which supporessed the trace output if the
+         filter does not match. */
+    QString m_strDataFilter;
 
 }; // class CTrcAdminObj
 

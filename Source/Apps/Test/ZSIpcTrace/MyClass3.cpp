@@ -64,7 +64,7 @@ CMyClass3Thread::CMyClass3Thread( const QString& i_strMyClass3ObjName, CMyClass2
     m_pMyClass3(nullptr),
     m_pTrcAdminObj(nullptr)
 {
-    setObjectName(ClassName() + m_strMyClass3ObjName);
+    setObjectName("MyClass3Thread" + m_strMyClass3ObjName);
 
     m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName());
 
@@ -95,6 +95,8 @@ CMyClass3Thread::~CMyClass3Thread()
         /* eDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strMethod    */ "dtor",
         /* strMthInArgs */ "" );
+
+    emit aboutToBeDestroyed(this, objectName());
 
     if( isRunning() )
     {
@@ -618,7 +620,19 @@ QString CMyClass3::instMethod(const QString& i_strMthInArgs)
         /* strMethod    */ "instMethod",
         /* strMthInArgs */ strMthInArgs );
 
-    strResult = "Hello World";
+    if( QThread::currentThread() != thread() )
+    {
+        CMsgReqTest* pMsgReq = new CMsgReqTest(this, this);
+        pMsgReq->setCommand("instMethod");
+        pMsgReq->setCommandArg(i_strMthInArgs);
+        POST_OR_DELETE_MESSAGE(pMsgReq, &mthTracer, ETraceDetailLevelRuntimeInfo::DebugNormal);
+        pMsgReq = nullptr;
+        strResult = "You here from me later ...";
+    }
+    else // if( QThread::currentThread() == thread() )
+    {
+        strResult = "Hello World";
+    }
 
     if( mthTracer.areMethodCallsActive(ETraceDetailLevelMethodCalls::ArgsNormal) )
     {
@@ -649,7 +663,19 @@ QString CMyClass3::noisyInstMethod(const QString& i_strMthInArgs)
         /* strMethod    */ "noisyInstMethod",
         /* strMthInArgs */ strMthInArgs );
 
-    strResult = "Hello World";
+    if( QThread::currentThread() != thread() )
+    {
+        CMsgReqTest* pMsgReq = new CMsgReqTest(this, this);
+        pMsgReq->setCommand("noisyInstMethod");
+        pMsgReq->setCommandArg(i_strMthInArgs);
+        POST_OR_DELETE_MESSAGE(pMsgReq, &mthTracer, ETraceDetailLevelRuntimeInfo::DebugNormal);
+        pMsgReq = nullptr;
+        strResult = "You here from me later ...";
+    }
+    else // if( QThread::currentThread() == thread() )
+    {
+        strResult = "Hello World";
+    }
 
     if( mthTracer.areMethodCallsActive(ETraceDetailLevelMethodCalls::ArgsNormal) )
     {
@@ -680,7 +706,19 @@ QString CMyClass3::veryNoisyInstMethod(const QString& i_strMthInArgs)
         /* strMethod    */ "veryNoisyInstMethod",
         /* strMthInArgs */ strMthInArgs );
 
-    strResult = "Hello World";
+    if( QThread::currentThread() != thread() )
+    {
+        CMsgReqTest* pMsgReq = new CMsgReqTest(this, this);
+        pMsgReq->setCommand("veryNoisyInstMethod");
+        pMsgReq->setCommandArg(i_strMthInArgs);
+        POST_OR_DELETE_MESSAGE(pMsgReq, &mthTracer, ETraceDetailLevelRuntimeInfo::DebugNormal);
+        pMsgReq = nullptr;
+        strResult = "You here from me later ...";
+    }
+    else // if( QThread::currentThread() == thread() )
+    {
+        strResult = "Hello World";
+    }
 
     if( mthTracer.areMethodCallsActive(ETraceDetailLevelMethodCalls::ArgsNormal) )
     {
@@ -759,7 +797,19 @@ bool CMyClass3::event( QEvent* i_pEv )
 
         // Let the first call to the method sending the event return and unlock
         // the Counter Mutex before continue to get the same trace output each time.
-        if( pMsgReq != nullptr && pMsgReq->getCommand() == "recursiveTraceMethod" )
+        if( pMsgReq != nullptr && pMsgReq->getCommand() == "instMethod" )
+        {
+            CSleeperThread::msleep(10);
+        }
+        else if( pMsgReq != nullptr && pMsgReq->getCommand() == "noisyInstMethod" )
+        {
+            CSleeperThread::msleep(10);
+        }
+        else if( pMsgReq != nullptr && pMsgReq->getCommand() == "veryNoisyInstMethod" )
+        {
+            CSleeperThread::msleep(10);
+        }
+        else if( pMsgReq != nullptr && pMsgReq->getCommand() == "recursiveTraceMethod" )
         {
             CSleeperThread::msleep(10);
         }
@@ -781,7 +831,19 @@ bool CMyClass3::event( QEvent* i_pEv )
 
         if( pMsgReq != nullptr )
         {
-            if( pMsgReq->getCommand() == "recursiveTraceMethod" )
+            if( pMsgReq->getCommand() == "instMethod" )
+            {
+                instMethod(pMsgReq->getCommandArg());
+            }
+            else if( pMsgReq->getCommand() == "noisyInstMethod" )
+            {
+                noisyInstMethod(pMsgReq->getCommandArg());
+            }
+            else if( pMsgReq->getCommand() == "veryNoisyInstMethod" )
+            {
+                veryNoisyInstMethod(pMsgReq->getCommandArg());
+            }
+            else if( pMsgReq->getCommand() == "recursiveTraceMethod" )
             {
                 recursiveTraceMethod();
             }

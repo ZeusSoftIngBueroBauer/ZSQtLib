@@ -89,7 +89,6 @@ CMethodTracer::CMethodTracer(
         {
             throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
         }
-
         if( m_pTrcAdminObj->areMethodCallsActive(m_eEnterLeaveFilterDetailLevel) )
         {
             CTrcServer* pTrcServer = m_pTrcAdminObj->getTraceServer();
@@ -103,6 +102,7 @@ CMethodTracer::CMethodTracer(
                 m_bEnterTraced = true;
             }
         }
+        m_pTrcAdminObj->lock();
     }
 } // ctor
 
@@ -153,7 +153,6 @@ CMethodTracer::CMethodTracer(
         {
             throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
         }
-
         if( m_pTrcAdminObj->areMethodCallsActive(m_eEnterLeaveFilterDetailLevel) )
         {
             CTrcServer* pTrcServer = m_pTrcAdminObj->getTraceServer();
@@ -168,7 +167,8 @@ CMethodTracer::CMethodTracer(
                 m_bEnterTraced = true;
             }
         }
-    } // if( m_pTrcAdminObj != nullptr )
+        m_pTrcAdminObj->lock();
+    }
 } // ctor
 
 //------------------------------------------------------------------------------
@@ -254,8 +254,8 @@ CMethodTracer::CMethodTracer(
                 m_bEnterTraced = true;
             }
         }
-    } // if( m_pTrcAdminObj != nullptr )
-
+        m_pTrcAdminObj->lock();
+    }
     else if( m_pTrcServer != nullptr && m_eMethodCallsTrcDetailLevel >= m_eEnterLeaveFilterDetailLevel )
     {
         m_pTrcServer->traceMethodEnter(
@@ -464,7 +464,6 @@ CMethodTracer::CMethodTracer(
         {
             throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
         }
-
         if( m_pTrcAdminObj->areMethodCallsActive(m_eEnterLeaveFilterDetailLevel) )
         {
             CTrcServer* pTrcServer = m_pTrcAdminObj->getTraceServer();
@@ -479,8 +478,8 @@ CMethodTracer::CMethodTracer(
                 m_bEnterTraced = true;
             }
         }
-    } // if( m_pTrcAdminObj != nullptr )
-
+        m_pTrcAdminObj->lock();
+    }
     else if( m_pTrcMthFile != nullptr )
     {
         if( m_eMethodCallsTrcDetailLevel >= m_eEnterLeaveFilterDetailLevel )
@@ -494,7 +493,7 @@ CMethodTracer::CMethodTracer(
             m_pTrcMthFile->traceMethodEnter(strMth, i_strMethodInArgs);
             m_bEnterTraced = true;
         }
-    } // if( m_pTrcMthFile != nullptr )
+    }
 } // ctor
 
 //------------------------------------------------------------------------------
@@ -516,7 +515,7 @@ CMethodTracer::~CMethodTracer()
 {
     if( m_pTrcAdminObj != nullptr )
     {
-        onAdminObjAboutToBeReleased();
+        onAdminObjAboutToBeReleased(); // Sets m_pTrcAdminObj to nullptr
     }
     else if( m_pTrcServer != nullptr )
     {
@@ -595,12 +594,14 @@ void CMethodTracer::onAdminObjAboutToBeReleased()
                     /* strMthOutArgs */ m_strMethodOutArgs );
             }
         }
-
+        m_pTrcAdminObj->unlock();
+        if( m_pTrcAdminObj->deleteOnUnlock() )
+        {
+            CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
+        }
         m_pTrcAdminObj = nullptr;
-
-    } // if( m_pTrcAdminObj != nullptr )
-
-} // onAdminObjAboutToBeReleased
+    }
+}
 
 /*==============================================================================
 public: // instance methods
@@ -620,6 +621,10 @@ ETraceDetailLevelMethodCalls CMethodTracer::getMethodCallsTraceDetailLevel() con
     if( m_pTrcAdminObj != nullptr )
     {
         eDetailLevel = m_pTrcAdminObj->getMethodCallsTraceDetailLevel();
+    }
+    else
+    {
+        eDetailLevel = m_eMethodCallsTrcDetailLevel;
     }
     return eDetailLevel;
 }
@@ -653,8 +658,7 @@ bool CMethodTracer::areMethodCallsActive( ETraceDetailLevelMethodCalls i_eFilter
         bActive = (m_eMethodCallsTrcDetailLevel >= i_eFilterDetailLevel);
     }
     return bActive;
-
-} // areMethodCallsActive
+}
 
 //------------------------------------------------------------------------------
 /*! Returns the detail level which was passed to the constructor.
@@ -712,8 +716,34 @@ bool CMethodTracer::isRuntimeInfoActive( ETraceDetailLevelRuntimeInfo i_eFilterD
         bActive = m_pTrcAdminObj->isRuntimeInfoActive(i_eFilterDetailLevel);
     }
     return bActive;
+}
 
-} // isActive
+//------------------------------------------------------------------------------
+/*! @brief Returns whether given trace data should be suppressed by the data filter.
+
+    Example
+
+        if( !m_pTrcAdminObj->isTraceDataSuppressedByFilter("bla bla bla") )
+        {
+            strTrcOutData = "bla bla bla";
+        }
+
+    @param i_strTraceData [in]
+        Trace data to be checked against the filter string.
+
+    @return true if the passed trace data should be suppressed, false otherwise.
+*/
+bool CMethodTracer::isTraceDataSuppressedByFilter( const QString& i_strTraceData ) const
+//------------------------------------------------------------------------------
+{
+    bool bSuppressed = false;
+
+    if( m_pTrcAdminObj != nullptr )
+    {
+        bSuppressed = m_pTrcAdminObj->isTraceDataSuppressedByFilter(i_strTraceData);
+    }
+    return bSuppressed;
+}
 
 /*==============================================================================
 public: // instance methods

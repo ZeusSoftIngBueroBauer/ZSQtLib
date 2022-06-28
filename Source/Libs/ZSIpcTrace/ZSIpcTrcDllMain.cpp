@@ -2394,7 +2394,7 @@ ZSIPCTRACEDLL_EXTERN_API DllIf::CIpcTrcServer* IpcTrcServer_CreateInstance(
     {
         if( pApp != nullptr && pApp->thread() == QThread::currentThread() )
         {
-            QThread::currentThread()->setObjectName("QtAppThread");
+            QThread::currentThread()->setObjectName("GuiMain");
         }
     }
 

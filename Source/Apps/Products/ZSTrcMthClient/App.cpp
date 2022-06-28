@@ -108,10 +108,6 @@ CApplication::CApplication(
         thread()->setObjectName("GUIMain");
     }
 
-    QCoreApplication::setOrganizationName(i_strOrganizationName);
-    QCoreApplication::setOrganizationDomain(i_strOrganizationDomain);
-    QCoreApplication::setApplicationName(i_strAppName);
-
     QIcon iconApp;
 
     QPixmap pxmApp16x16(":/ZS/App/ZeusSoft_16x16.bmp");
@@ -143,6 +139,9 @@ CApplication::CApplication(
     bool        bConverted;
     QStringList strListArgsPar;
     QStringList strListArgsVal;
+    QString     strAppName = i_strAppName;
+    QString     strWindowTitle = i_strWindowTitle;
+    QString     strRemoteAppName;
 
     // Range of IniFileScope: ["AppDir", "User", "System"]
     #ifdef __linux__
@@ -170,7 +169,21 @@ CApplication::CApplication(
         {
             strIniFileScope = strVal;
         }
+        else if( strArg.compare("RemoteAppName",Qt::CaseInsensitive) == 0 )
+        {
+            strRemoteAppName = strVal;
+        }
     }
+
+    if( !strRemoteAppName.isEmpty() )
+    {
+        strAppName += "-" + strRemoteAppName;
+        strWindowTitle += " / " + strRemoteAppName;
+    }
+
+    QCoreApplication::setOrganizationName(i_strOrganizationName);
+    QCoreApplication::setOrganizationDomain(i_strOrganizationDomain);
+    QCoreApplication::setApplicationName(strAppName);
 
     // Calculate default file paths and create ini file
     //-------------------------------------------------
@@ -260,7 +273,7 @@ CApplication::CApplication(
     //    throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
     //}
 
-    m_pMainWindow = new CMainWindow(i_strWindowTitle, m_pTrcClient);
+    m_pMainWindow = new CMainWindow(strWindowTitle, m_pTrcClient);
     m_pMainWindow->show();
 
 } // ctor

@@ -72,16 +72,13 @@ public: // instance methods
 public: // instance methods
     CMyClass2* startClass2Thread(const QString& i_strMyClass2ObjName);
     void stopClass2Thread();
-protected slots:
-    void onClass2ThreadRunning();
 private: // class members
     static ZS::Trace::CTrcAdminObjRefAnchor s_trcAdminObjRefAnchor;
 private: // instance members
-    QString                     m_strMyClass2ObjName;
-    CMyClass2Thread*            m_pMyClass2Thread;
-    CMyClass2*                  m_pMyClass2;
-    ZS::System::CMutex*         m_pMtxWaitClass2ThreadRunning;
-    ZS::System::CWaitCondition* m_pWaitClass2ThreadRunning;
+    bool             m_bCtorReady;
+    QString          m_strMyClass2ObjName;
+    CMyClass2Thread* m_pMyClass2Thread;
+    CMyClass2*       m_pMyClass2;
 
 }; // class CMyClass1
 

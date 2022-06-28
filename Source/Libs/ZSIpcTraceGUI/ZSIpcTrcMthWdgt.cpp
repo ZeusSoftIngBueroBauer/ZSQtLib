@@ -400,6 +400,13 @@ CWdgtTrcMthList::~CWdgtTrcMthList()
     settings.setValue("TimeSpanDetectTooMuchData_s", m_iTimeSpanTooMuchData_s);
     settings.endGroup();
 
+    #if QT_VERSION >= QT_VERSION_CHECK(4, 5, 1)
+    if( !m_strThreadClrFileAbsFilePath.isEmpty() )
+    {
+        saveThreadColors();
+    }
+    #endif
+
     m_pTrcClient = nullptr;
     //m_dataRateCalculatorBytes;
     //m_dataRateCalculatorLines;
@@ -1205,12 +1212,6 @@ void CWdgtTrcMthList::onIpcClientConnected( QObject* /*i_pClient*/ )
 
     m_hashThreads.clear();
 
-    m_strThreadClrFileAbsFilePath = getDefaultThreadColorsFilePath();
-
-    #if QT_VERSION >= QT_VERSION_CHECK(4, 5, 1)
-    loadThreadColors();
-    #endif
-
     m_pBtnConnect->setText(c_strBtnDisconnect);
 
     SClientHostSettings cnctSettings = m_pTrcClient->getHostSettings();
@@ -1250,31 +1251,10 @@ void CWdgtTrcMthList::onIpcClientDisconnected( QObject* /*i_pClient*/ )
 void CWdgtTrcMthList::onIpcClientSettingsChanged( QObject* /*i_pClient*/ )
 //------------------------------------------------------------------------------
 {
-    // If the remote application name or the remote server name has been
-    // initially received the default file path of the thread colors file
-    // will be corrected and the thread colors got to be newly read.
-    // If the client has been newly connected thread colors have been read
-    // from "MyAppName-ThreadColors.xml" (e.g. "ZSAppTrcMthClient-ThreadColors.xml")
-    // to have some colors. But as the number of threads and their names depend
-    // on the remote application they will be read for each remote application
-    // and remote server within this application separately.
-
-    QString strThreadClrFileAbsFilePath = getDefaultThreadColorsFilePath();
-
-    if( strThreadClrFileAbsFilePath != m_strThreadClrFileAbsFilePath )
-    {
-        m_strThreadClrFileAbsFilePath = strThreadClrFileAbsFilePath;
-
-        #if QT_VERSION >= QT_VERSION_CHECK(4, 5, 1)
-        loadThreadColors();
-        #endif
-    }
-
     SClientHostSettings cnctSettings = m_pTrcClient->getHostSettings();
     QString strText = cnctSettings.getConnectionString();
     m_pProgressBarCnct->setLabelText(strText);
-
-} // onIpcClientSettingsChanged
+}
 
 //------------------------------------------------------------------------------
 void CWdgtTrcMthList::onIpcClientPendingRequestChanged( ZS::System::SRequestDscr i_reqDscr )
@@ -1355,6 +1335,26 @@ protected slots: // connected to the signals of the trace client
 void CWdgtTrcMthList::onTraceSettingsChanged( QObject* /*i_pTrcClient*/ )
 //------------------------------------------------------------------------------
 {
+    // If the remote application name or the remote server name has been
+    // initially received the default file path of the thread colors file
+    // will be corrected and the thread colors got to be newly read.
+    // If the client has been newly connected thread colors have been read
+    // from "MyAppName-ThreadColors.xml" (e.g. "ZSAppTrcMthClient-ThreadColors.xml")
+    // to have some colors. But as the number of threads and their names depend
+    // on the remote application they will be read for each remote application
+    // and remote server within this application separately.
+
+    QString strThreadClrFileAbsFilePath = getDefaultThreadColorsFilePath();
+
+    if( strThreadClrFileAbsFilePath != m_strThreadClrFileAbsFilePath )
+    {
+        m_strThreadClrFileAbsFilePath = strThreadClrFileAbsFilePath;
+
+        #if QT_VERSION >= QT_VERSION_CHECK(4, 5, 1)
+        loadThreadColors();
+        #endif
+    }
+
     m_pChkServerTracingEnabled->setChecked( m_pTrcClient->getTraceSettings().m_bEnabled );
 }
 

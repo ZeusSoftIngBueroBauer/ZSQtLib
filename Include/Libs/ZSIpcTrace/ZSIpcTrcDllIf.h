@@ -208,6 +208,7 @@ public: // ctors and dtor
     ~CMethodTracer();
 public: // instance methods
     void onAdminObjAboutToBeReleased( bool i_bTraceMethodLeave = true );
+    void updateAdminObjReference( CTrcAdminObj* i_pTrcAdminObj );
 public: // instance methods
     ETraceDetailLevelMethodCalls getMethodCallsTraceDetailLevel() const;
     bool areMethodCallsActive( ETraceDetailLevelMethodCalls i_eFilterDetailLevel ) const;

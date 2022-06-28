@@ -106,8 +106,7 @@ CMyClass1::CMyClass1( const QString& i_strObjName ) :
     m_strMyClass2ObjName(),
     m_pMyClass2Thread(nullptr),
     m_pMyClass2(nullptr),
-    m_pMtxWaitClass2ThreadRunning(nullptr),
-    m_pWaitClass2ThreadRunning(nullptr)
+    m_bCtorReady(false)
 {
     setObjectName(i_strObjName);
 
@@ -129,8 +128,7 @@ CMyClass1::CMyClass1( const QString& i_strObjName ) :
         /* strMethod    */ "ctor",
         /* strMthInArgs */ strMthInArgs );
 
-    m_pMtxWaitClass2ThreadRunning = new CMutex(ClassName() + "::" + objectName() + "::WaitClass2ThreadRunning");
-    m_pWaitClass2ThreadRunning = new CWaitCondition(ClassName() + "::" + objectName() + "::Class2ThreadRunning");
+    m_bCtorReady = true;
 
 } // ctor
 
@@ -159,23 +157,7 @@ CMyClass1::~CMyClass1()
     m_pMyClass2Thread = nullptr;
     m_pMyClass2 = nullptr;
 
-    try
-    {
-        delete m_pWaitClass2ThreadRunning;
-    }
-    catch(...)
-    {
-    }
-    m_pWaitClass2ThreadRunning = nullptr;
-
-    try
-    {
-        delete m_pMtxWaitClass2ThreadRunning;
-    }
-    catch(...)
-    {
-    }
-    m_pMtxWaitClass2ThreadRunning = nullptr;
+    m_bCtorReady = false;
 
     mthTracer.onAdminObjAboutToBeReleased();
 
@@ -207,12 +189,12 @@ void CMyClass1::setObjectName(const QString& i_strObjName)
     // If called in the ctor the current object name is empty.
     // But an empty object name may be also a valid object name.
     // As a flag to indicate whether the method is called by the ctor an instance
-    // member is used which will be created after calling "setObjectName".
-    if( m_pMtxWaitClass2ThreadRunning == nullptr )
+    // member is used which will be set after calling "setObjectName".
+    if( !m_bCtorReady )
     {
         QObject::setObjectName(i_strObjName);
     }
-    // If an already existing object has to be renamed the mutex is created.
+    // If an existing object has to be renamed the ctor ready flag is set.
     else
     {
         QString strMthInArgs;
@@ -230,9 +212,6 @@ void CMyClass1::setObjectName(const QString& i_strObjName)
             /* strMthInArgs */ strMthInArgs );
 
         QObject::setObjectName(i_strObjName);
-
-        m_pMtxWaitClass2ThreadRunning->setObjectName(ClassName() + "::" + objectName() + "::WaitClass2ThreadRunning");
-        m_pWaitClass2ThreadRunning->setObjectName(ClassName() + "::" + objectName() + "::Class2ThreadRunning");
     }
 
 } // setObjectName
@@ -265,31 +244,12 @@ CMyClass2* CMyClass1::startClass2Thread(const QString& i_strMyClass2ObjName)
     if( m_pMyClass2Thread == nullptr )
     {
         m_pMyClass2Thread = new CMyClass2Thread(i_strMyClass2ObjName, this);
-
-        QObject::connect(
-            m_pMyClass2Thread, &CMyClass2Thread::running,
-            this, &CMyClass1::onClass2ThreadRunning,
-            Qt::DirectConnection);
     }
 
     if( !m_pMyClass2Thread->isRunning() )
     {
         m_pMyClass2Thread->start();
-
-        // It is not sufficient just to wait for the wait condition to be signalled.
-        // The thread may already have been started, created the Class3 instance and invoked
-        // the "onClass3ThreadRunning" slot which signalled the wait condition. A wait here
-        // without a timeout may therefore result in a deadlock. And in addition before and
-        // after calling "wait" it will be checked whether the Class3 instance has been created.
-        if( m_pMtxWaitClass2ThreadRunning->tryLock() )
-        {
-            while( m_pMyClass2Thread->getMyClass2() == nullptr )
-            {
-                m_pWaitClass2ThreadRunning->wait(m_pMtxWaitClass2ThreadRunning, 100);
-            }
-            m_pMtxWaitClass2ThreadRunning->unlock();
-            m_pMyClass2 = m_pMyClass2Thread->getMyClass2();
-        }
+        m_pMyClass2 = m_pMyClass2Thread->waitForMyClass2Created();
     }
 
     if( mthTracer.areMethodCallsActive(ETraceDetailLevelMethodCalls::ArgsNormal) )
@@ -338,23 +298,3 @@ void CMyClass1::stopClass2Thread()
     m_pMyClass2 = nullptr;
 
 } // stopClass2Thread
-
-/*==============================================================================
-protected slots:
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-void CMyClass1::onClass2ThreadRunning()
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ s_trcAdminObjRefAnchor.trcAdminObj(),
-        /* eDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
-        /* strObjName   */ objectName(),
-        /* strMethod    */ "onClass2ThreadRunning",
-        /* strMthInArgs */ strMthInArgs );
-
-    m_pWaitClass2ThreadRunning->notify_all();
-}

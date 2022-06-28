@@ -447,8 +447,15 @@ void CIdxTreeTrcAdminObjs::renameTraceAdminObj(
         if( pTrcAdminObj->getRefCount() == 0 )
         {
             // .. the object will be deleted and removed from the tree.
-            delete pTrcAdminObj;
-            pTrcAdminObj = nullptr;
+            if( pTrcAdminObj->isLocked() )
+            {
+                pTrcAdminObj->setDeleteOnUnlock(true);
+            }
+            else
+            {
+                delete pTrcAdminObj;
+                pTrcAdminObj = nullptr;
+            }
 
             QString strOldParentBranchPath;
 
@@ -528,9 +535,17 @@ void CIdxTreeTrcAdminObjs::releaseTraceAdminObj( CTrcAdminObj* i_pTrcAdminObj )
 
     if( i_pTrcAdminObj != nullptr )
     {
-        i_pTrcAdminObj->decrementRefCount();
+        if( i_pTrcAdminObj->deleteOnUnlock() )
+        {
+            i_pTrcAdminObj->setDeleteOnUnlock(false); // to avoid an entry into the error log
+            delete i_pTrcAdminObj;
+            i_pTrcAdminObj = nullptr;
+        }
+        else
+        {
+            i_pTrcAdminObj->decrementRefCount();
+        }
     }
-
 } // releaseTraceAdminObj
 
 /*==============================================================================

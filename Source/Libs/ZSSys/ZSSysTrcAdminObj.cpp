@@ -119,10 +119,13 @@ CTrcAdminObj::CTrcAdminObj(
     m_strClassName(i_strClassName),
     m_strObjName(i_strObjName),
     m_strObjThreadName(),
+    m_iLockCount(0),
+    m_bDeleteOnUnlock(false),
     m_iRefCount(0),
     m_enabled(EEnabled::Yes),
     m_eTrcDetailLevelMethodCalls(ETraceDetailLevelMethodCalls::None),
-    m_eTrcDetailLevelRuntimeInfo(ETraceDetailLevelRuntimeInfo::None)
+    m_eTrcDetailLevelRuntimeInfo(ETraceDetailLevelRuntimeInfo::None),
+    m_strDataFilter()
 {
     m_pMtx = new QMutex(QMutex::Recursive);
 
@@ -159,6 +162,34 @@ CTrcAdminObj::~CTrcAdminObj()
 //------------------------------------------------------------------------------
 {
     emit aboutToBeDestroyed(this);
+
+    if( m_bDeleteOnUnlock )
+    {
+        SErrResultInfo errResultInfo(
+            /* errSource     */ NameSpace(), ClassName(), keyInTree(), "dtor",
+            /* result        */ EResultObjRefCounterIsNotZero,
+            /* severity      */ EResultSeverityError,
+            /* strAddErrInfo */ "The dtor is called even if the object should have already been removed by unlocking it");
+
+        if( CErrLog::GetInstance() != nullptr )
+        {
+            CErrLog::GetInstance()->addEntry(errResultInfo);
+        }
+    }
+
+    if( m_iLockCount != 0 )
+    {
+        SErrResultInfo errResultInfo(
+            /* errSource     */ NameSpace(), ClassName(), keyInTree(), "dtor",
+            /* result        */ EResultObjRefCounterIsNotZero,
+            /* severity      */ EResultSeverityError,
+            /* strAddErrInfo */ "The dtor is called even if the objects lock counter is not 0 but " + QString::number(m_iLockCount));
+
+        if( CErrLog::GetInstance() != nullptr )
+        {
+            CErrLog::GetInstance()->addEntry(errResultInfo);
+        }
+    }
 
     if( m_iRefCount != 0 )
     {
@@ -198,11 +229,17 @@ CTrcAdminObj::~CTrcAdminObj()
     m_pMtx = nullptr;
 
     m_iBlockTreeEntryChangedSignalCounter = 0;
+    //m_strNameSpace;
+    //m_strClassName;
+    //m_strObjName;
     //m_strObjThreadName;
+    m_iLockCount = 0;
+    m_bDeleteOnUnlock = false;
     m_iRefCount = 0;
     m_enabled = static_cast<EEnabled>(0);
     m_eTrcDetailLevelMethodCalls = static_cast<ETraceDetailLevelMethodCalls>(0);
     m_eTrcDetailLevelRuntimeInfo = static_cast<ETraceDetailLevelRuntimeInfo>(0);
+    //m_strDataFilter;
 
 } // dtor
 
@@ -387,7 +424,7 @@ void CTrcAdminObj::setObjectThreadName( const QString& i_strThreadName )
             if( !isTreeEntryChangedSignalBlocked() ) m_pTree->onTreeEntryChanged(this);
         }
     }
-} // setObjectThreadName
+}
 
 //------------------------------------------------------------------------------
 /*! @brief Returns the name of the thread in which context the trace admin object is created.
@@ -406,6 +443,125 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief Locks the trace admin object by incrementing the lock count.
+
+    The method tracer uses this method so that the trace admin object will not
+    be deleted as long as the method tracer is alive.
+
+    return Current lock count.
+*/
+int CTrcAdminObj::lock()
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(m_pMtx);
+
+    ++m_iLockCount;
+
+    if( m_pTree != nullptr )
+    {
+        // Takes too much time as too often called.
+        //if( !isTreeEntryChangedSignalBlocked() ) m_pTree->onTreeEntryChanged(this);
+    }
+    return m_iLockCount;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Unlocks the object by decrementing the lock counter.
+
+    Only if the lock counter reaches 0 the admin object is really unlocked.
+
+    @note When unlocking the admin object the "deleteOnUnlock" flag must be
+          checked. If true and the reference counter is 0 the trace admin
+          object should be deleted to reduce the number of no longer used trace
+          admin objects (as the object referencing the object has been renamed).
+          To delete the object release the instance by invoking
+          CTrcServer::ReleaseTraceAdminObj.
+
+    @return Current lock count.
+*/
+int CTrcAdminObj::unlock()
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(m_pMtx);
+
+    --m_iLockCount;
+
+    if( m_pTree != nullptr )
+    {
+        // Takes too much time as too often called.
+        //if( !isTreeEntryChangedSignalBlocked() ) m_pTree->onTreeEntryChanged(this);
+    }
+    return m_iLockCount;
+}
+
+//------------------------------------------------------------------------------
+/*! Returns whether the admin object is locked.
+
+    @return true if the object is locked, false otherwise.
+*/
+bool CTrcAdminObj::isLocked() const
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(m_pMtx);
+    return (m_iLockCount > 0);
+}
+
+//------------------------------------------------------------------------------
+/*! Returns the current lock count.
+
+    @return Current lock count.
+*/
+int CTrcAdminObj::getLockCount() const
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(m_pMtx);
+    return m_iLockCount;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the flag that the admin object is no longer need if unlocked.
+
+    On renaming the object and if the reference counter reaches 0 the
+    trace admin object should be deleted. But it cannot be deleted if the
+    method tracer is active and still uses it. If unlocked the trace admin
+    object will be marked as to be deleted as it is no longer used.
+
+    @param i_bDelete [in]
+        Flag to indicate whether the object can be deleted if unlocked
+        (and the reference counter is still 0).
+*/
+void CTrcAdminObj::setDeleteOnUnlock( bool i_bDelete )
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(m_pMtx);
+
+    if( m_bDeleteOnUnlock != i_bDelete )
+    {
+        m_bDeleteOnUnlock = i_bDelete;
+
+        if( m_pTree != nullptr )
+        {
+            //if( !isTreeEntryChangedSignalBlocked() ) m_pTree->onTreeEntryChanged(this);
+        }
+    }
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the flag whether the admin object may be deleted if
+           unlocked and no longer used.
+
+    To delete the trace admin object 
+
+    @return true if the flag is set, false otherwise.
+*/
+bool CTrcAdminObj::deleteOnUnlock() const
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(m_pMtx);
+    return (m_iLockCount <= 0) && (m_iRefCount <= 0) && m_bDeleteOnUnlock;
+}
+
+//------------------------------------------------------------------------------
 /*! @brief Increments the reference counter.
 
     Normally it should never be necessary to call this method directly.
@@ -418,7 +574,7 @@ public: // instance methods
     classes or instances of classes. If so the reference counter may become
     greater than 1.
 
-    return Current reference counter.
+    @return Current reference counter.
 */
 int CTrcAdminObj::incrementRefCount()
 //------------------------------------------------------------------------------
@@ -735,6 +891,75 @@ bool CTrcAdminObj::isRuntimeInfoActive( ETraceDetailLevelRuntimeInfo i_eFilterDe
         }
     }
     return bActive;
+}
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the trace data filter as a regular expression.
+
+    The filter is a regular expression which allows to define a positive
+    pattern where only the data will be traced which mets the expression
+    or a negative pattern which supporessed the trace output if the
+    filter does not match.
+
+    Examples
+
+    @param i_strFilter [in] Filter as regular expression.
+*/
+void CTrcAdminObj::setTraceDataFilter( const QString& i_strFilter )
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(m_pMtx);
+
+    if( m_strDataFilter != i_strFilter )
+    {
+        m_strDataFilter = i_strFilter;
+
+        if( m_pTree != nullptr )
+        {
+            if( !isTreeEntryChangedSignalBlocked() ) m_pTree->onTreeEntryChanged(this);
+        }
+    }
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the trace data filter.
+
+    @return Trace data filter (string containing a regular expression).
+*/
+QString CTrcAdminObj::getTraceDataFilter() const
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(m_pMtx);
+    return m_strDataFilter;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns whether given trace data should be suppressed by the data filter.
+
+    Example
+
+        if( !m_pTrcAdminObj->isTraceDataSuppressedByFilter("bla bla bla") )
+        {
+            strTrcOutData = "bla bla bla";
+        }
+
+    @param i_strTraceData [in]
+        Trace data to be checked against the filter string.
+
+    @return true if the passed trace data should be suppressed, false otherwise.
+*/
+bool CTrcAdminObj::isTraceDataSuppressedByFilter( const QString& i_strTraceData ) const
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(m_pMtx);
+
+    bool bSuppressed = false;
+
+    return bSuppressed;
 }
 
 /*==============================================================================

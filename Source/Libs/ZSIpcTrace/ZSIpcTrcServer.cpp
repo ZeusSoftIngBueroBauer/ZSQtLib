@@ -1559,7 +1559,7 @@ void CIpcTrcServer::addEntry(
         if( m_iTrcDataCachedCount == m_arpTrcDataCached.size() )
         {
             const int ciMaxArrLen   = m_trcSettings.m_iCacheDataMaxArrLen;
-            const int ciRemoveCount = 200;
+            const int ciRemoveCount = (ciMaxArrLen / 5) + 1; // 20 % (but at least one)
 
             // To save memory not more than MaxArrLen entries will be temporarily stored:
             if( m_iTrcDataCachedCount < ciMaxArrLen )
