@@ -341,6 +341,14 @@ QVariant CModelIdxTreeTrcAdminObjs::headerData(
                     }
                     break;
                 }
+                case EColumnDataFilter:
+                {
+                    if( i_iRole == Qt::DisplayRole )
+                    {
+                        varData = "DataFilter";
+                    }
+                    break;
+                }
                 case EColumnNameSpace:
                 {
                     if( i_iRole == Qt::DisplayRole )
@@ -463,6 +471,14 @@ Qt::ItemFlags CModelIdxTreeTrcAdminObjs::flags( const QModelIndex& i_modelIdx ) 
                 break;
             }
             case EColumnRuntimeInfoDetailLevel:
+            {
+                if( pTrcAdminObj != nullptr )
+                {
+                    uFlags |= Qt::ItemIsEditable;
+                }
+                break;
+            }
+            case EColumnDataFilter:
             {
                 if( pTrcAdminObj != nullptr )
                 {
@@ -688,6 +704,17 @@ QVariant CModelIdxTreeTrcAdminObjs::data( const QModelIndex& i_modelIdx, int i_i
                 }
                 break;
             }
+            case EColumnDataFilter:
+            {
+                if( i_iRole == Qt::DisplayRole || i_iRole == Qt::EditRole )
+                {
+                    if( pTrcAdminObj != nullptr )
+                    {
+                        varData = pTrcAdminObj->getTraceDataFilter();
+                    }
+                }
+                break;
+            }
             case EColumnNameSpace:
             {
                 if( i_iRole == Qt::DisplayRole )
@@ -897,6 +924,17 @@ bool CModelIdxTreeTrcAdminObjs::setData( const QModelIndex& i_modelIdx, const QV
                             catch(CException&)
                             {
                             }
+                        }
+                    }
+                    break;
+                }
+                case EColumnDataFilter:
+                {
+                    if( pTrcAdminObj != nullptr )
+                    {
+                        if( i_varData.type() == QVariant::String )
+                        {
+                            pTrcAdminObj->setTraceDataFilter(i_varData.toString());
                         }
                     }
                     break;

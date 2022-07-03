@@ -433,6 +433,7 @@ void CIpcTrcClient::sendAdminObj(
         strMsg += " Enabled=\"" + CEnumEnabled::toString(i_pTrcAdminObj->getEnabled()) + "\"";
         strMsg += " MethodCallsDetailLevel=\"" + CEnumTraceDetailLevelMethodCalls(i_pTrcAdminObj->getMethodCallsTraceDetailLevel()).toString() + "\"";
         strMsg += " RuntimeInfoDetailLevel=\"" + CEnumTraceDetailLevelRuntimeInfo(i_pTrcAdminObj->getRuntimeInfoTraceDetailLevel()).toString() + "\"";
+        strMsg += " DataFilter=\"" + i_pTrcAdminObj->getTraceDataFilter() + "\"";
         strMsg += "/>";
 
         sendData( str2ByteArr(strMsg) );
@@ -760,6 +761,8 @@ void CIpcTrcClient::onReceivedData( const QByteArray& i_byteArr )
                             QString  strThreadName;
                             EEnabled enabled = EEnabled::Undefined;
                             int      iRefCount = -1;
+                            bool     bSetDataFilter = false;
+                            QString  strDataFilter;
 
                             ETraceDetailLevelMethodCalls eDetailLevelMethodCalls = ETraceDetailLevelMethodCalls::Undefined;
                             ETraceDetailLevelRuntimeInfo eDetailLevelRuntimeInfo = ETraceDetailLevelRuntimeInfo::Undefined;
@@ -824,6 +827,11 @@ void CIpcTrcClient::onReceivedData( const QByteArray& i_byteArr )
                                     {
                                         xmlStreamReader.raiseError("Attribute \"RuntimeInfoDetailLevel\" (" + strAttr + ") is out of range");
                                     }
+                                }
+                                if( !xmlStreamReader.hasError() && xmlStreamReader.attributes().hasAttribute("DataFilter") )
+                                {
+                                    strDataFilter = xmlStreamReader.attributes().value("DataFilter").toString();
+                                    bSetDataFilter = true;
                                 }
                                 if( !xmlStreamReader.hasError() && xmlStreamReader.attributes().hasAttribute("RefCount") )
                                 {
@@ -926,6 +934,9 @@ void CIpcTrcClient::onReceivedData( const QByteArray& i_byteArr )
                                         }
                                         if( eDetailLevelRuntimeInfo != ETraceDetailLevelRuntimeInfo::Undefined ) {
                                             pTrcAdminObj->setRuntimeInfoTraceDetailLevel(eDetailLevelRuntimeInfo);
+                                        }
+                                        if( bSetDataFilter ) {
+                                            pTrcAdminObj->setTraceDataFilter(strDataFilter);
                                         }
                                         if( iRefCount >= 0 ) {
                                             pTrcAdminObj->setRefCount(iRefCount);

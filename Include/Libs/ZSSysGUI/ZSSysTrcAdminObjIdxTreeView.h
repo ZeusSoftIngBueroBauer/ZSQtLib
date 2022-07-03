@@ -81,6 +81,7 @@ public: // overridables of base class QItemDelegate
     void updateEditorGeometry( QWidget* i_pWdgtEditor, const QStyleOptionViewItem& i_styleOption, const QModelIndex& i_modelIdx ) const;
 protected slots:
     void onComboDetailLevelActivated( int i_idx );
+    void onEdtDataFilterEditingFinished();
 private: // copy ctor not implemented
     CDelegateIdxTreeTrcAdminObjs( const CDelegateIdxTreeTrcAdminObjs& );
 private: // assignment operator not implemented

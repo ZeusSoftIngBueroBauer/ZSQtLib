@@ -79,7 +79,7 @@ CServerGatewayThread::CServerGatewayThread(
     // controlled by trace admin objects as they belong to the trace server itself.
     if( i_pServer->objectName().endsWith("TrcServer") )
     {
-        QString strLocalTrcFileAbsFilePath = CTrcServer::GetDefaultLocalTrcFileAbsoluteFilePath("System");
+        QString strLocalTrcFileAbsFilePath = CTrcServer::GetLocalTrcFileAbsoluteFilePath();
         m_pTrcMthFile = CTrcMthFile::Alloc(strLocalTrcFileAbsFilePath);
     }
     else
@@ -322,7 +322,7 @@ CServerGateway::CServerGateway(
     // The derived classes must instantiate the trace admin object and trace the ctor.
     if( m_eTrcMthFileDetailLevel > ETraceDetailLevelMethodCalls::None )
     {
-        QString strLocalTrcFileAbsFilePath = CTrcServer::GetDefaultLocalTrcFileAbsoluteFilePath("System");
+        QString strLocalTrcFileAbsFilePath = CTrcServer::GetLocalTrcFileAbsoluteFilePath();
         m_pTrcMthFile = CTrcMthFile::Alloc(strLocalTrcFileAbsFilePath);
     }
     // If the parent is the trace server the detail level of trace outputs may not be

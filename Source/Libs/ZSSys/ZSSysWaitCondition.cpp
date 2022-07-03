@@ -97,7 +97,7 @@ CWaitCondition::CWaitCondition( const QString& i_strObjName, ETraceDetailLevelMe
     m_pTrcAdminObj(nullptr)
 {
     QString strLocalTrcFileAbsFilePath =
-        CTrcServer::GetDefaultLocalTrcFileAbsoluteFilePath("System");
+        CTrcServer::GetLocalTrcFileAbsoluteFilePath();
     m_pTrcMthFile = CTrcMthFile::Alloc(strLocalTrcFileAbsFilePath);
 
     CMethodTracer mthTracer(

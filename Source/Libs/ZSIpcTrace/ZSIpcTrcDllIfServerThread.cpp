@@ -62,7 +62,7 @@ DllIf::CIpcTrcServerThread::CIpcTrcServerThread(
 {
     setObjectName("ZSTrcServerDllIf");
 
-    QString strLocalTrcFileAbsFilePath = CTrcServer::GetDefaultLocalTrcFileAbsoluteFilePath("System");
+    QString strLocalTrcFileAbsFilePath = CTrcServer::GetLocalTrcFileAbsoluteFilePath();
 
     m_pTrcMthFile = CTrcMthFile::Alloc(strLocalTrcFileAbsFilePath);
 

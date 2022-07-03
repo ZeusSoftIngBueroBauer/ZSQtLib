@@ -381,17 +381,30 @@ QWidget* CDelegateIdxTreeTrcAdminObjs::createEditor(
                 }
                 break;
             }
+            case CModelIdxTreeTrcAdminObjs::EColumnDataFilter:
+            {
+                if( pTrcAdminObj != nullptr )
+                {
+                    QLineEdit* pEdt = new QLineEdit(i_pWdgtParent);
+                    pEdt->setObjectName(pTrcAdminObj->keyInTree() + ".DataFilter");
+                    pWdgtEditor = pEdt;
+                    if( !QObject::connect(
+                        /* pObjSender   */ pEdt,
+                        /* szSignal     */ SIGNAL( editingFinished() ),
+                        /* pObjReceiver */ this,
+                        /* szSlot       */ SLOT( onEdtDataFilterEditingFinished() ) ) )
+                    {
+                        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
+                    }
+                }
+                break;
+            }
             default:
             {
                 break;
             }
         } // switch( i_modelIdx.column() )
     } // if( i_modelIdx.isValid() )
-
-    //if( pWdgtEditor == nullptr )
-    //{
-    //    pWdgtEditor = QStyledItemDelegate::createEditor(i_pWdgtParent, i_styleOption, i_modelIdx);
-    //}
 
     if( mthTracer.areMethodCallsActive(ETraceDetailLevelMethodCalls::ArgsNormal) )
     {
@@ -465,6 +478,20 @@ void CDelegateIdxTreeTrcAdminObjs::setEditorData(
                             pWdgtEditor->setCurrentIndex(idx);
                         }
                         pWdgtEditor->showPopup();
+                        bHandled = true;
+                    }
+                }
+                break;
+            }
+            case CModelIdxTreeTrcAdminObjs::EColumnDataFilter:
+            {
+                if( pTrcAdminObj != nullptr )
+                {
+                    QLineEdit* pWdgtEditor = dynamic_cast<QLineEdit*>(i_pWdgtEditor);
+                    if( pWdgtEditor != nullptr )
+                    {
+                        QString strVal = i_modelIdx.data(Qt::EditRole).toString();
+                        pWdgtEditor->setText(strVal);
                         bHandled = true;
                     }
                 }
@@ -549,6 +576,19 @@ void CDelegateIdxTreeTrcAdminObjs::setModelData(
                 }
                 break;
             }
+            case CModelIdxTreeTrcAdminObjs::EColumnDataFilter:
+            {
+                if( pTrcAdminObj != nullptr )
+                {
+                    QLineEdit* pWdgtEditor = dynamic_cast<QLineEdit*>(i_pWdgtEditor);
+                    if( pWdgtEditor != nullptr )
+                    {
+                        i_pModel->setData(i_modelIdx, pWdgtEditor->text(), Qt::EditRole);
+                        bHandled = true;
+                    }
+                }
+                break;
+            }
             default:
             {
                 break;
@@ -628,6 +668,13 @@ void CDelegateIdxTreeTrcAdminObjs::updateEditorGeometry(
                 }
                 break;
             }
+            case CModelIdxTreeTrcAdminObjs::EColumnDataFilter:
+            {
+                if( pTrcAdminObj != nullptr )
+                {
+                }
+                break;
+            }
             default:
             {
                 break;
@@ -676,6 +723,32 @@ void CDelegateIdxTreeTrcAdminObjs::onComboDetailLevelActivated( int i_idx )
         emit closeEditor(pCmb);
     }
 }
+
+//------------------------------------------------------------------------------
+void CDelegateIdxTreeTrcAdminObjs::onEdtDataFilterEditingFinished()
+//------------------------------------------------------------------------------
+{
+    QLineEdit* pEdt = dynamic_cast<QLineEdit*>(sender());
+
+    QString strMthInArgs;
+
+    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    {
+        strMthInArgs = pEdt == nullptr ? "null" : pEdt->objectName();
+        strMthInArgs += ", " + QString(pEdt == nullptr ? "" : pEdt->text());
+    }
+
+    CMethodTracer mthTracer(
+        /* pTrcServer         */ CTrcServer::GetInstance(),
+        /* eTrcDetailLevel    */ m_eTrcDetailLevel,
+        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
+        /* strObjName         */ objectName(),
+        /* strMethod          */ "onEdtDataFilterEditingFinished",
+        /* strMethodInArgs    */ strMthInArgs );
+}
+
 
 /*******************************************************************************
 class CTreeViewIdxTreeTrcAdminObjs : public QTreeView

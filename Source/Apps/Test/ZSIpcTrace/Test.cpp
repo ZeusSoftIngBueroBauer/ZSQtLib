@@ -120,14 +120,14 @@ CTest::CTest() :
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " ZSTrcServer::startup",
+        /* strName         */ "Step " + QString::number(++idxStep) + " Trace Server Startup",
         /* strOperation    */ "ZSTrcServer::startup",
         /* pTSGrpParent    */ pTestGroupOneThread,
         /* szDoTestStepFct */ SLOT(doTestStepTraceServerStartup(ZS::Test::CTestStep*)) );
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " ZSTrcClient::connect",
+        /* strName         */ "Step " + QString::number(++idxStep) + " Trace Client Connect",
         /* strOperation    */ "ZSTrcClient::connect",
         /* pTSGrpParent    */ pTestGroupOneThread,
         /* szDoTestStepFct */ SLOT(doTestStepTraceClientConnect(ZS::Test::CTestStep*)) );
@@ -338,19 +338,30 @@ CTest::CTest() :
         /* szDoTestStepFct */ SLOT(doTestStepTraceMethodCall(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("ExpectedResultsFileName", "ZSTrcServer-CMyClass3-dtor-Inst2");
 
+    // Test Step Group - One Thread - Method Tracing - Data Filter
+    //------------------------------------------------------------
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " DataFilter",
+        /* strOperation    */ "CMyClass2::Inst1.TrcAdminObj.setTraceDataFilters()",
+        /* pTSGrpParent    */ pTestGroupOneThread,
+        /* szDoTestStepFct */ SLOT(doTestStepTraceDataFilter(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("ExpectedResultsFileName", "ZSTrcServer-CMyClass2-Inst1-TrcAdminObj-setTraceDataFilters");
+
     // Test Step Group - One Thread - Shutdown
     //----------------------------------------------
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " ZSTrcClient::disconnect",
+        /* strName         */ "Step " + QString::number(++idxStep) + " Trace Client Disconnect",
         /* strOperation    */ "ZSTrcClient::disconnect",
         /* pTSGrpParent    */ pTestGroupOneThread,
         /* szDoTestStepFct */ SLOT(doTestStepTraceClientDisconnect(ZS::Test::CTestStep*)) );
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " ZSTrcServer::shutdown",
+        /* strName         */ "Step " + QString::number(++idxStep) + " Trace Server Shutdown",
         /* strOperation    */ "ZSTrcServer::shutdown",
         /* pTSGrpParent    */ pTestGroupOneThread,
         /* szDoTestStepFct */ SLOT(doTestStepTraceServerShutdown(ZS::Test::CTestStep*)) );
@@ -370,14 +381,14 @@ CTest::CTest() :
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " ZSTrcServer::startup",
+        /* strName         */ "Step " + QString::number(++idxStep) + " Trace Server Startup",
         /* strOperation    */ "ZSTrcServer::startup",
         /* pTSGrpParent    */ pTestGroupSeveralThreads,
         /* szDoTestStepFct */ SLOT(doTestStepTraceServerStartup(ZS::Test::CTestStep*)) );
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " ZSTrcClient::connect",
+        /* strName         */ "Step " + QString::number(++idxStep) + " Trace Client Connect",
         /* strOperation    */ "ZSTrcClient::connect",
         /* pTSGrpParent    */ pTestGroupSeveralThreads,
         /* szDoTestStepFct */ SLOT(doTestStepTraceClientConnect(ZS::Test::CTestStep*)) );
@@ -454,14 +465,14 @@ CTest::CTest() :
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " ZSTrcClient::disconnect",
+        /* strName         */ "Step " + QString::number(++idxStep) + " Trace Client Disconnect",
         /* strOperation    */ "ZSTrcClient::disconnect",
         /* pTSGrpParent    */ pTestGroupSeveralThreads,
         /* szDoTestStepFct */ SLOT(doTestStepTraceClientDisconnect(ZS::Test::CTestStep*)) );
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " ZSTrcServer::shutdown",
+        /* strName         */ "Step " + QString::number(++idxStep) + " Trace Server Shutdown",
         /* strOperation    */ "ZSTrcServer::shutdown",
         /* pTSGrpParent    */ pTestGroupSeveralThreads,
         /* szDoTestStepFct */ SLOT(doTestStepTraceServerShutdown(ZS::Test::CTestStep*)) );
@@ -489,14 +500,14 @@ CTest::CTest() :
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " ZSTrcServer::startup",
+        /* strName         */ "Step " + QString::number(++idxStep) + " Trace Server Startup",
         /* strOperation    */ "ZSTrcServer::startup",
         /* pTSGrpParent    */ pTestGroupRenameTraceAdminObjOneThread,
         /* szDoTestStepFct */ SLOT(doTestStepTraceServerStartup(ZS::Test::CTestStep*)) );
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " ZSTrcClient::connect",
+        /* strName         */ "Step " + QString::number(++idxStep) + " Trace Client Connect",
         /* strOperation    */ "ZSTrcClient::connect",
         /* pTSGrpParent    */ pTestGroupRenameTraceAdminObjOneThread,
         /* szDoTestStepFct */ SLOT(doTestStepTraceClientConnect(ZS::Test::CTestStep*)) );
@@ -624,14 +635,14 @@ CTest::CTest() :
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " ZSTrcClient::disconnect",
+        /* strName         */ "Step " + QString::number(++idxStep) + " Trace Client Disconnect",
         /* strOperation    */ "ZSTrcClient::disconnect",
         /* pTSGrpParent    */ pTestGroupRenameTraceAdminObjOneThread,
         /* szDoTestStepFct */ SLOT(doTestStepTraceClientDisconnect(ZS::Test::CTestStep*)) );
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " ZSTrcServer::shutdown",
+        /* strName         */ "Step " + QString::number(++idxStep) + " Trace Server Shutdown",
         /* strOperation    */ "ZSTrcServer::shutdown",
         /* pTSGrpParent    */ pTestGroupRenameTraceAdminObjOneThread,
         /* szDoTestStepFct */ SLOT(doTestStepTraceServerShutdown(ZS::Test::CTestStep*)) );
@@ -651,14 +662,14 @@ CTest::CTest() :
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " ZSTrcServer::startup",
+        /* strName         */ "Step " + QString::number(++idxStep) + " Trace Server Startup",
         /* strOperation    */ "ZSTrcServer::startup",
         /* pTSGrpParent    */ pTestGroupRenameTraceAdminObjSeveralThreads,
         /* szDoTestStepFct */ SLOT(doTestStepTraceServerStartup(ZS::Test::CTestStep*)) );
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " ZSTrcClient::connect",
+        /* strName         */ "Step " + QString::number(++idxStep) + " Trace Client Connect",
         /* strOperation    */ "ZSTrcClient::connect",
         /* pTSGrpParent    */ pTestGroupRenameTraceAdminObjSeveralThreads,
         /* szDoTestStepFct */ SLOT(doTestStepTraceClientConnect(ZS::Test::CTestStep*)) );
@@ -799,14 +810,14 @@ CTest::CTest() :
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " ZSTrcClient::disconnect",
+        /* strName         */ "Step " + QString::number(++idxStep) + " Trace Client Disconnect",
         /* strOperation    */ "ZSTrcClient::disconnect",
         /* pTSGrpParent    */ pTestGroupRenameTraceAdminObjSeveralThreads,
         /* szDoTestStepFct */ SLOT(doTestStepTraceClientDisconnect(ZS::Test::CTestStep*)) );
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " ZSTrcServer::shutdown",
+        /* strName         */ "Step " + QString::number(++idxStep) + " Trace Server Shutdown",
         /* strOperation    */ "ZSTrcServer::shutdown",
         /* pTSGrpParent    */ pTestGroupRenameTraceAdminObjSeveralThreads,
         /* szDoTestStepFct */ SLOT(doTestStepTraceServerShutdown(ZS::Test::CTestStep*)) );
@@ -1430,10 +1441,6 @@ void CTest::doTestStepTraceMethodCall( ZS::Test::CTestStep* i_pTestStep )
     {
         pTrcServer->setNewTrcAdminObjsMethodCallsDefaultDetailLevel(ETraceDetailLevelMethodCalls::ArgsNormal);
         pTrcServer->setNewTrcAdminObjsRuntimeInfoDefaultDetailLevel(ETraceDetailLevelRuntimeInfo::DebugNormal);
-        // The trace output may have been disabled to close (flush buffer) the file
-        // so that its content can be evaluated by onZSTraceClientTrcMthListWdgtTextItemAdded.
-        // We need to enable the trace output again.
-        pTrcServer->setEnabled(true);
 
         QString strTrcMethodEnter = "<GUIMain                 > -> <" + strNameSpace + "::" + strClassName;
         QString strTrcMethodLeave = "<GUIMain                 > <- <" + strNameSpace + "::" + strClassName;
@@ -2255,11 +2262,11 @@ void CTest::doTestStepTraceMethodCall( ZS::Test::CTestStep* i_pTestStep )
             {
                 strResultValue = "Invalid test step: ObjName not defined";
             }
-            else if( !strTestGroupPath.contains("RenameTraceAdminObj") && !m_hshpMyClass2InstancesByName.contains(strObjName) )
+            else if( !strTestGroupPath.contains("RenameTraceAdminObj") && !m_hshpMyClass3InstancesByName.contains(strObjName) )
             {
                 strResultValue = "CMyClass3::" + strObjName + " is not existing";
             }
-            else if( strTestGroupPath.contains("RenameTraceAdminObj") && !m_multihshpMyClass2InstancesByName.contains(strObjName) )
+            else if( strTestGroupPath.contains("RenameTraceAdminObj") && !m_multihshpMyClass3InstancesByName.contains(strObjName) )
             {
                 strResultValue = "CMyClass3::" + strObjName + " is not existing";
             }
@@ -2424,6 +2431,108 @@ void CTest::doTestStepTraceMethodCall( ZS::Test::CTestStep* i_pTestStep )
     }
 
 } // doTestStepTraceMethodCall
+
+//------------------------------------------------------------------------------
+void CTest::doTestStepTraceDataFilter( ZS::Test::CTestStep* i_pTestStep )
+//------------------------------------------------------------------------------
+{
+    int iTestStepTimeout_ms = 5000;
+
+    // Expected Values
+    //----------------
+
+    QStringList strlstExpectedValues;
+
+    QString strExpectedResultsAbsFilePath;
+    QVariant val = i_pTestStep->getConfigValue("ExpectedResultsFileName");
+    if( val.isValid() && val.canConvert(QVariant::String) )
+    {
+        strExpectedResultsAbsFilePath = c_strExpectedResultsAbsDirPath + QDir::separator() + val.toString() + ".txt";
+    }
+
+    if( strExpectedResultsAbsFilePath.isEmpty() )
+    {
+        strlstExpectedValues.append("Missing ExpectedResultsFileName");
+    }
+    else
+    {
+        readExpectedTestResults(strExpectedResultsAbsFilePath, strlstExpectedValues);
+    }
+
+    i_pTestStep->setExpectedValues(strlstExpectedValues);
+
+    // Test Step
+    //----------
+
+    QString strObjName = "Inst1";
+
+    CMyClass2* pObj = new CMyClass2(strObjName);
+
+    m_hshpMyClass2InstancesByName[strObjName] = pObj;
+
+    if( !QObject::connect(
+        /* pObjSender   */ pObj,
+        /* szSignal     */ SIGNAL(aboutToBeDestroyed(QObject*, const QString&)),
+        /* pObjReceiver */ this,
+        /* szSlot       */ SLOT(onClass2AboutToBeDestroyed(QObject*, const QString&)),
+        /* cnctType     */ Qt::DirectConnection ) )
+    {
+        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
+    }
+
+    pObj->getTrcAdminObj()->setTraceDataFilter("");
+    pObj->instMethod("No Filter Set");
+
+    // Check if the string "abc" is contained:
+    pObj->getTrcAdminObj()->setTraceDataFilter("abc");
+    pObj->instMethod("1 abc bca cab"); // must occur in log output
+    pObj->instMethod("2 xyz yzx zxy"); // must be suppressed in log output
+
+    // Check if the strings "def" or "uvw" are contained:
+    pObj->getTrcAdminObj()->setTraceDataFilter("def|uvw");
+    pObj->instMethod("3 def efd fde"); // must occur in log output
+    pObj->instMethod("4 uvw vwu wuv"); // must occur in log output
+
+    // Check if the string "ghi" is NOT contained:
+    pObj->getTrcAdminObj()->setTraceDataFilter("^((?!ghi).)*$");
+    pObj->instMethod("5 ghi hig igh"); // must be suppressed in log output
+    pObj->instMethod("6 rst str trs"); // must occur in log output
+
+    pObj->getTrcAdminObj()->setTraceDataFilter("");
+    pObj->instMethod("No Filter Set");
+
+    // Remove filter so that the dtor is traced.
+    pObj->getTrcAdminObj()->setTraceDataFilter("");
+    delete pObj;
+    pObj = nullptr;
+
+    // Result Values
+    //--------------
+
+    CWidgetCentral* pWdgtCentral = CWidgetCentral::GetInstance();
+
+    CWdgtTrcMthList* pWdgtTrcMthList = pWdgtCentral->getTrcMthListWdgt();
+
+    if( pWdgtTrcMthList != nullptr )
+    {
+        pWdgtTrcMthList->getTextEdit()->clear();
+
+        if( !QObject::connect(
+            /* pObjSender   */ pWdgtTrcMthList,
+            /* szSignal     */ SIGNAL(textItemAdded(const QString&)),
+            /* pObjReceiver */ this,
+            /* szSlot       */ SLOT(onZSTraceClientTrcMthListWdgtTextItemAdded(const QString&)) ) )
+        {
+            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
+        }
+        m_pTmrTestStepTimeout->start(iTestStepTimeout_ms);
+    }
+    else
+    {
+        i_pTestStep->setResultValue("No trace method list widget");
+    }
+
+} // doTestStepTraceDataFilter
 
 /*==============================================================================
 protected: // slots
@@ -2750,6 +2859,7 @@ void CTest::onZSTraceClientTrcMthListWdgtTextItemAdded( const QString& i_strText
                 if( pTrcServer != nullptr )
                 {
                     pTrcServer->setEnabled(false);
+                    pTrcServer->setEnabled(true);
                 }
 
                 if( !fileTrcMthFile.open(QIODevice::ReadOnly|QIODevice::Text) )

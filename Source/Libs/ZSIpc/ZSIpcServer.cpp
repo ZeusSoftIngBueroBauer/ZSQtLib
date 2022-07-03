@@ -178,7 +178,7 @@ CServer::CServer(
     // controlled by trace admin objects as they belong to the trace server itself.
     if( m_strObjName.endsWith("TrcServer") )
     {
-        QString strLocalTrcFileAbsFilePath = CTrcServer::GetDefaultLocalTrcFileAbsoluteFilePath("System");
+        QString strLocalTrcFileAbsFilePath = CTrcServer::GetLocalTrcFileAbsoluteFilePath();
         m_pTrcMthFile = CTrcMthFile::Alloc(strLocalTrcFileAbsFilePath);
     }
     else

@@ -158,7 +158,7 @@ class CTrcAdminObj
 //******************************************************************************
 {
 public: // instance methods
-    const char* keyInTree() const { return m_szKeyInTree; }
+    virtual const char* keyInTree() const = 0;
 public: // instance methods
     char* getNameSpace() const;     // returned character string must be freed by caller
     char* getClassName() const;     // returned character string must be freed by caller
@@ -166,6 +166,18 @@ public: // instance methods
 public: // instance methods
     void setObjectThreadName( const char* i_szThreadName );
     char* getObjectThreadName() const;  // returned character string must be freed by caller
+public: // instance methods
+    virtual int lock() = 0;
+    virtual int unlock() = 0;
+    virtual bool isLocked() const = 0;
+    virtual int getLockCount() const = 0;
+    virtual void setDeleteOnUnlock( bool i_bDelete ) = 0;
+    virtual bool deleteOnUnlock() const = 0;
+public: // instance methods
+    virtual int incrementRefCount() = 0;
+    virtual int decrementRefCount() = 0;
+    virtual void setRefCount( int i_iRefCount ) = 0;
+    virtual int getRefCount() const = 0;
 public: // instance methods
     void setEnabled( bool i_bEnabled );
     bool isEnabled() const;
@@ -176,11 +188,13 @@ public: // instance methods
     void setRuntimeInfoTraceDetailLevel( ETraceDetailLevelRuntimeInfo i_eTrcDetailLevel );
     ETraceDetailLevelRuntimeInfo getRuntimeInfoTraceDetailLevel() const;
     bool isRuntimeInfoActive( ETraceDetailLevelRuntimeInfo i_eFilterDetailLevel ) const;
-public: // ctors and dtor (declared public but for internal use only, implemented in ZSIpcTrace::ZSIpcTrcDllMain)
-    CTrcAdminObj( const char* i_szKeyInTree );
+public: // instance methods
+    void setTraceDataFilter( const char* i_szFilter );
+    char* getTraceDataFilter() const;  // returned character string must be freed by caller
+    bool isTraceDataSuppressedByFilter( const char* i_szTraceData ) const;
+protected: // ctors and dtor
+    CTrcAdminObj();
     ~CTrcAdminObj();
-protected: // instance members
-    char* m_szKeyInTree;
 
 }; // class CTrcAdminObj
 
@@ -207,8 +221,8 @@ public: // ctors and dtor
         const char* i_szMethodInArgs );
     ~CMethodTracer();
 public: // instance methods
-    void onAdminObjAboutToBeReleased( bool i_bTraceMethodLeave = true );
-    void updateAdminObjReference( CTrcAdminObj* i_pTrcAdminObj );
+    void onAdminObjAboutToBeReleased();
+    bool isTraceDataSuppressedByFilter( const char* i_szTraceData ) const;
 public: // instance methods
     ETraceDetailLevelMethodCalls getMethodCallsTraceDetailLevel() const;
     bool areMethodCallsActive( ETraceDetailLevelMethodCalls i_eFilterDetailLevel ) const;
@@ -295,8 +309,14 @@ public: // class method to save/recall admin objects file
     static char* GetOrganizationName(); // returned string must be freed by caller
     static void SetApplicationName( const char* i_szName );
     static char* GetApplicationName();  // returned string must be freed by caller
-    static char* GetDefaultAdminObjFileAbsoluteFilePath( const char* i_szIniFileScope = "System" );
-    static char* GetDefaultLocalTrcFileAbsoluteFilePath( const char* i_szIniFileScope = "System" );
+    static void SetAdminObjFileAbsoluteFilePath( const char* i_szAbsFilePath );
+    static char* GetAdminObjFileAbsoluteFilePath();
+    static char* GetAdminObjFileCompleteBaseName();
+    static char* GetAdminObjFileAbsolutePath();
+    static void SetLocalTrcFileAbsoluteFilePath( const char* i_szAbsFilePath );
+    static char* GetLocalTrcFileAbsoluteFilePath();
+    static char* GetLocalTrcFileCompleteBaseName();
+    static char* GetLocalTrcFileAbsolutePath();
 public: // class methods
     static void RegisterCurrentThread( const char* i_szThreadName );
     static void UnregisterCurrentThread();
@@ -316,18 +336,11 @@ public: // instance methods
     void setNewTrcAdminObjsRuntimeInfoDefaultDetailLevel( ETraceDetailLevelRuntimeInfo i_eDetailLevel );
     ETraceDetailLevelRuntimeInfo getNewTrcAdminObjsRuntimeInfoDefaultDetailLevel() const;
 public: // instance methods
-    void setAdminObjFileAbsoluteFilePath( const char* i_szAbsFilePath );
-    char* getAdminObjFileAbsoluteFilePath() const; // returned string must be freed by caller
-public: // instance methods
     bool recallAdminObjs();
     bool saveAdminObjs();
 public: // instance methods
     void setUseLocalTrcFile( bool i_bUse );
     bool isLocalTrcFileUsed() const;
-    void setLocalTrcFileAbsoluteFilePath( const char* i_szAbsFilePath );
-    char* getLocalTrcFileAbsoluteFilePath() const;  // returned string must be freed by caller
-    char* getLocalTrcFileCompleteBaseName() const;  // returned string must be freed by caller
-    char* getLocalTrcFileAbsolutePath() const;      // returned string must be freed by caller
     bool isLocalTrcFileActive() const;
     void setLocalTrcFileAutoSaveIntervalInMs( int i_iAutoSaveInterval_ms );
     int getLocalTrcFileAutoSaveIntervalInMs() const;

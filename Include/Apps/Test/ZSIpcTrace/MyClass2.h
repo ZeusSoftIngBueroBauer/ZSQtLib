@@ -121,6 +121,7 @@ public: // instance methods (reimplementing methods of base class QObject)
 public: // instance methods
     CMyClass3Thread* getMyClass3Thread() const { return m_pMyClass3Thread; }
     CMyClass3* getMyClass3() const { return m_pMyClass3; }
+    ZS::Trace::CTrcAdminObj* getTrcAdminObj() { return m_pTrcAdminObj; }
 public: // instance methods
     QString instMethod(const QString& i_strMthInArgs);
 public: // instance methods

@@ -120,10 +120,10 @@ class ZSSYSDLL_API CTrcServer : public QObject
     Q_OBJECT
 public: // class methods
     /*! Returns the namespace of the class.
-        @note The static class functions name must be different from the virtual instance method "nameSpace". */
+        @note The static class functions name must be different from the instance method "nameSpace". */
     static QString NameSpace() { return "ZS::Trace"; }
     /*! Returns the class name.
-        @note The static class functions name must be different from the virtual instance method "className". */
+        @note The static class functions name must be different from the instance method "className". */
     static QString ClassName() { return "CTrcServer"; }
 public: // class methods
     static CTrcServer* GetInstance();
@@ -154,8 +154,14 @@ public: // class methods to add, remove and modify admin objects
     static void RenameTraceAdminObj( CTrcAdminObj** io_ppTrcAdminObj, const QString& i_strNewObjName );
     static void ReleaseTraceAdminObj( CTrcAdminObj* i_pTrcAdminObj );
 public: // class methods to get default file paths
-    static QString GetDefaultAdminObjFileAbsoluteFilePath( const QString& i_strIniFileScope = "System" );
-    static QString GetDefaultLocalTrcFileAbsoluteFilePath( const QString& i_strIniFileScope = "System" );
+    static void SetAdminObjFileAbsoluteFilePath( const QString& i_strAbsFilePath );
+    static QString GetAdminObjFileAbsoluteFilePath();
+    static QString GetAdminObjFileCompleteBaseName();
+    static QString GetAdminObjFileAbsolutePath();
+    static void SetLocalTrcFileAbsoluteFilePath( const QString& i_strAbsFilePath );
+    static QString GetLocalTrcFileAbsoluteFilePath();
+    static QString GetLocalTrcFileCompleteBaseName();
+    static QString GetLocalTrcFileAbsolutePath();
 protected: // ctors and dtor
     CTrcServer(
         ETraceDetailLevelMethodCalls i_eTrcDetailLevel = ETraceDetailLevelMethodCalls::None,
@@ -169,12 +175,12 @@ signals:
     void traceSettingsChanged( QObject* i_pTrcServer );
 public: // instance methods
     /*! Returns the namespace of the class. May be overriden to return the namespace of the derived class. */
-    virtual QString nameSpace() const { return NameSpace(); }
+    QString nameSpace() const { return NameSpace(); }
     /*! Returns the class name. May be overriden to return the class name of the derived class. */
-    virtual QString className() const { return ClassName(); }
+    QString className() const { return ClassName(); }
 public: // instance methods
     CIdxTreeTrcAdminObjs* getTraceAdminObjIdxTree();
-public: // overridables to add, remove and modify admin objects
+public: // instance methods to add, remove and modify admin objects
     virtual CTrcAdminObj* getTraceAdminObj( int i_idxInTree );
     virtual CTrcAdminObj* getTraceAdminObj(
         const QString&               i_strNameSpace,
@@ -185,7 +191,7 @@ public: // overridables to add, remove and modify admin objects
         ETraceDetailLevelRuntimeInfo i_eRuntimeInfoDefaultDetailLevel );
     virtual void renameTraceAdminObj( CTrcAdminObj** io_ppTrcAdminObj, const QString& i_strNewObjName );
     virtual void releaseTraceAdminObj( CTrcAdminObj* i_pTrcAdminObj );
-public: // overridables
+public: // instance methods
     virtual void traceMethodEnter(
         const CTrcAdminObj* i_pAdminObj,
         const QString&      i_strMethod,
@@ -215,7 +221,7 @@ public: // overridables
         const QString&      i_strMethod,
         const QString&      i_strMethodReturn,
         const QString&      i_strMethodOutArgs );
-public: // overridables
+public: // instance methods
     virtual void traceMethodEnter(
         const QString& i_strNameSpace,
         const QString& i_strClassName,
@@ -235,56 +241,58 @@ public: // overridables
         const QString& i_strMethod,
         const QString& i_strMethodReturn,
         const QString& i_strMethodOutArgs );
-public: // overridables
+public: // instance methods
     virtual bool isActive() const;
     virtual bool areMethodCallsActive( const CTrcAdminObj* i_pTrcAdminObj ) const;
     virtual bool isRuntimeInfoActive( const CTrcAdminObj* i_pTrcAdminObj ) const;
-public: // overridables
+public: // instance methods
     virtual void setEnabled( bool i_bEnabled );
     virtual bool isEnabled() const;
-public: // overridables
+public: // instance methods
     virtual void setNewTrcAdminObjsEnabledAsDefault( bool i_bEnabled );
     virtual bool areNewTrcAdminObjsEnabledAsDefault() const;
     virtual void setNewTrcAdminObjsMethodCallsDefaultDetailLevel( ETraceDetailLevelMethodCalls i_eDetailLevel );
     virtual ETraceDetailLevelMethodCalls getNewTrcAdminObjsMethodCallsDefaultDetailLevel() const;
     virtual void setNewTrcAdminObjsRuntimeInfoDefaultDetailLevel( ETraceDetailLevelRuntimeInfo i_eDetailLevel );
     virtual ETraceDetailLevelRuntimeInfo getNewTrcAdminObjsRuntimeInfoDefaultDetailLevel() const;
-public: // overridables
+protected: // instance methods
     virtual void setAdminObjFileAbsoluteFilePath( const QString& i_strAbsFilePath );
-    virtual QString getAdminObjFileAbsoluteFilePath() const;
+    virtual QString getAdminObjFileCompleteBaseName() const;
+    virtual QString getAdminObjFileAbsolutePath() const;
+public: // instance methods
     virtual ZS::System::SErrResultInfo recallAdminObjs( const QString& i_strAbsFilePath = QString() );
     virtual ZS::System::SErrResultInfo saveAdminObjs( const QString& i_strAbsFilePath = QString() );
-public: // overridables
-    virtual void setUseLocalTrcFile( bool i_bUse );
-    virtual bool isLocalTrcFileUsed() const;
+protected: // instance methods
     virtual void setLocalTrcFileAbsoluteFilePath( const QString& i_strAbsFilePath );
-    virtual QString getLocalTrcFileAbsoluteFilePath() const;
     virtual QString getLocalTrcFileCompleteBaseName() const;
     virtual QString getLocalTrcFileAbsolutePath() const;
+public: // instance methods
+    virtual void setUseLocalTrcFile( bool i_bUse );
+    virtual bool isLocalTrcFileUsed() const;
     virtual bool isLocalTrcFileActive() const;
     virtual CTrcMthFile* getLocalTrcFile();
     virtual void setLocalTrcFileAutoSaveIntervalInMs( int i_iAutoSaveInterval_ms );
     virtual int getLocalTrcFileAutoSaveIntervalInMs() const;
     virtual void setLocalTrcFileCloseFileAfterEachWrite( bool i_bCloseFile );
     virtual bool getLocalTrcFileCloseFileAfterEachWrite() const;
-public: // overridables
+public: // instance methods
     virtual void setLocalTrcFileSubFileCountMax( int i_iCountMax );
     virtual int getLocalTrcFileSubFileCountMax() const;
     virtual void setLocalTrcFileSubFileLineCountMax( int i_iCountMax );
     virtual int getLocalTrcFileSubFileLineCountMax() const;
-public: // overridables
+public: // instance methods
     virtual void setUseIpcServer( bool i_bUse );
     virtual bool isIpcServerUsed() const;
     virtual void setCacheTrcDataIfNotConnected( bool i_bCacheData );
     virtual bool getCacheTrcDataIfNotConnected() const;
     virtual void setCacheTrcDataMaxArrLen( int i_iMaxArrLen );
     virtual int getCacheTrcDataMaxArrLen() const;
-public: // overridables
+public: // instance methods
     virtual void setTraceSettings( const STrcServerSettings& i_settings );
     virtual STrcServerSettings getTraceSettings() const;
-public: // overridables
+public: // instance methods
     virtual void clearLocalTrcFile();
-protected: // overridables
+protected: // instance methods
     virtual void addEntry(
         const QString&         i_strThreadName,
         const QDateTime&       i_dt,
@@ -303,12 +311,13 @@ protected: // reference counter
     int incrementRefCount();
     int decrementRefCount();
 protected: // class members
-    static QMutex      s_mtx;       /*!< Mutex to protect the class members of the class for multithreaded access. */
+    static QMutex      s_mtx;       /*!< Mutex to protect the class and instance members of the class for multithreaded access. */
     static CTrcServer* s_pTheInst;  /*!< Pointer to singleton instance. */
     static QHash<Qt::HANDLE, QString>  s_hshThreadNames; /*!< Hash with registered threads (key is thread id, value is name of thread). */
     static QHash<QString, Qt::HANDLE>  s_hshThreadIds;   /*!< Hash with registered threads (key name of thread, value is thread id). */
+    static QString s_strAdminObjFileAbsFilePath;         /*!< Absolute file path the tree of trace admin objects and their settings will be saved and recalled. */
+    static QString s_strLocalTrcFileAbsFilePath;         /*!< If a local log file is used defines the absolute file path for the log file. */
 protected: // instance members
-    mutable ZS::System::CMutex*  m_pMtx;                /*!< Mutex to protect the instance members of the class for multithreaded access. */
     CIdxTreeTrcAdminObjs*        m_pTrcAdminObjIdxTree; /*<! Index tree containg a hierarchically order tree of the trace admin objects. */
     STrcServerSettings           m_trcSettings;         /*<! Currently used trace settings. */
     CTrcMthFile*                 m_pTrcMthFile;         /*<! Reference to local trace method file. */

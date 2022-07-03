@@ -32,11 +32,6 @@ may result in using the software modules.
 
 namespace ZS
 {
-namespace System
-{
-class CMutex;
-class CWaitCondition;
-}
 namespace Apps
 {
 namespace Test

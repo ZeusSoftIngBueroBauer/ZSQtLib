@@ -448,7 +448,7 @@ public: // instance methods
     The method tracer uses this method so that the trace admin object will not
     be deleted as long as the method tracer is alive.
 
-    return Current lock count.
+    @return Current lock count.
 */
 int CTrcAdminObj::lock()
 //------------------------------------------------------------------------------
@@ -550,7 +550,7 @@ void CTrcAdminObj::setDeleteOnUnlock( bool i_bDelete )
 /*! @brief Returns the flag whether the admin object may be deleted if
            unlocked and no longer used.
 
-    To delete the trace admin object 
+    To delete the trace admin object call CTrcServer::ReleaseTraceAdminObj.
 
     @return true if the flag is set, false otherwise.
 */
@@ -905,9 +905,41 @@ public: // instance methods
     or a negative pattern which supporessed the trace output if the
     filter does not match.
 
-    Examples
+    Please see the description of QRegExp class for more details on how
+    to define regular expressions. Here are just a view (but often used)
+    simple examples.
+
+    Simple Examples (output trace if string contains sub string):
+
+    - Check if the string "abc" is contained:
+
+          m_pTrcAdminObj->setTraceDataFilter("abc");
+          m_pTrcAdminObj->isTraceDataSuppressedByFilter("1 abc bca cab") // returns false
+          m_pTrcAdminObj->isTraceDataSuppressedByFilter("2 xyz yzx zxy") // returns true
+
+    - Check if the strings "def" or "uvw" are contained:
+
+          m_pTrcAdminObj->setTraceDataFilter("def|uvw");
+          m_pTrcAdminObj->isTraceDataSuppressedByFilter("3 def efd fde") // returns true
+          m_pTrcAdminObj->isTraceDataSuppressedByFilter("4 uvw vwu wuv") // returns true
+
+    More Complex Examples (output trace if string does not contain sub string):
+
+    - Check if the string "ghi" is NOT contained:
+
+      Suppressing a string if a string does not contain a substring is supposed
+      to be seldom used. Its complicated to setup a regular expression for this.
+      The following is an example on how this could be done.
+
+          m_pTrcAdminObj->setTraceDataFilter("^((?!ghi).)*$");
+          m_pTrcAdminObj->isTraceDataSuppressedByFilter("5 ghi hig igh") // returns true
+          m_pTrcAdminObj->isTraceDataSuppressedByFilter("6 rst str trs") // returns false
 
     @param i_strFilter [in] Filter as regular expression.
+
+    @note If a string should be suppressed if it does not contain a substring
+          more simple to apply this would be an additional method or provide
+          a flag like match or dontMatch.
 */
 void CTrcAdminObj::setTraceDataFilter( const QString& i_strFilter )
 //------------------------------------------------------------------------------
@@ -940,13 +972,6 @@ QString CTrcAdminObj::getTraceDataFilter() const
 //------------------------------------------------------------------------------
 /*! @brief Returns whether given trace data should be suppressed by the data filter.
 
-    Example
-
-        if( !m_pTrcAdminObj->isTraceDataSuppressedByFilter("bla bla bla") )
-        {
-            strTrcOutData = "bla bla bla";
-        }
-
     @param i_strTraceData [in]
         Trace data to be checked against the filter string.
 
@@ -959,6 +984,15 @@ bool CTrcAdminObj::isTraceDataSuppressedByFilter( const QString& i_strTraceData 
 
     bool bSuppressed = false;
 
+    if( !m_strDataFilter.isEmpty() )
+    {
+        QRegExp rx(m_strDataFilter);
+
+        if( rx.indexIn(i_strTraceData) < 0 )
+        {
+            bSuppressed = true;
+        }
+    }
     return bSuppressed;
 }
 

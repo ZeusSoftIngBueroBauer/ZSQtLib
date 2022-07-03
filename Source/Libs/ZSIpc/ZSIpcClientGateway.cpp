@@ -79,7 +79,7 @@ CClientGatewayThread::CClientGatewayThread(
     // through the trace server and so on ....
     if( i_pClient->objectName().endsWith("TrcClient") )
     {
-        QString strLocalTrcFileAbsFilePath = CTrcServer::GetDefaultLocalTrcFileAbsoluteFilePath("System");
+        QString strLocalTrcFileAbsFilePath = CTrcServer::GetLocalTrcFileAbsoluteFilePath();
         m_pTrcMthFile = CTrcMthFile::Alloc(strLocalTrcFileAbsFilePath);
     }
     else
@@ -324,7 +324,7 @@ CClientGateway::CClientGateway(
     // The derived classes must instantiate the trace admin object and trace the ctor.
     if( m_eTrcMthFileDetailLevel > ETraceDetailLevelMethodCalls::None )
     {
-        QString strLocalTrcFileAbsFilePath = CTrcServer::GetDefaultLocalTrcFileAbsoluteFilePath("System");
+        QString strLocalTrcFileAbsFilePath = CTrcServer::GetLocalTrcFileAbsoluteFilePath();
         m_pTrcMthFile = CTrcMthFile::Alloc(strLocalTrcFileAbsFilePath);
     }
     // If this is the trace client (maybe used in a test) tracing through the trace server

@@ -187,7 +187,7 @@ CClient::CClient(
     // through the trace server and so on ....
     if( m_strObjName.endsWith("TrcClient") )
     {
-        QString strLocalTrcFileAbsFilePath = CTrcServer::GetDefaultLocalTrcFileAbsoluteFilePath("System");
+        QString strLocalTrcFileAbsFilePath = CTrcServer::GetLocalTrcFileAbsoluteFilePath();
         m_pTrcMthFile = CTrcMthFile::Alloc(strLocalTrcFileAbsFilePath);
     }
     else
@@ -1912,7 +1912,7 @@ void CClient::setMethodTraceDetailLevel( ETraceDetailLevelMethodCalls i_eTrcDeta
 
         if( m_eTrcMthFileDetailLevel > ETraceDetailLevelMethodCalls::None && m_pTrcMthFile == nullptr )
         {
-            QString strLocalTrcFileAbsFilePath = CTrcServer::GetDefaultLocalTrcFileAbsoluteFilePath("System");
+            QString strLocalTrcFileAbsFilePath = CTrcServer::GetLocalTrcFileAbsoluteFilePath();
             m_pTrcMthFile = CTrcMthFile::Alloc(strLocalTrcFileAbsFilePath);
         }
         else if( m_pTrcMthFile != nullptr )

@@ -89,7 +89,8 @@ CMethodTracer::CMethodTracer(
         {
             throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
         }
-        if( m_pTrcAdminObj->areMethodCallsActive(m_eEnterLeaveFilterDetailLevel) )
+        if( m_pTrcAdminObj->areMethodCallsActive(m_eEnterLeaveFilterDetailLevel)
+         && !m_pTrcAdminObj->isTraceDataSuppressedByFilter(i_strMethodInArgs) )
         {
             CTrcServer* pTrcServer = m_pTrcAdminObj->getTraceServer();
 
@@ -153,7 +154,8 @@ CMethodTracer::CMethodTracer(
         {
             throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
         }
-        if( m_pTrcAdminObj->areMethodCallsActive(m_eEnterLeaveFilterDetailLevel) )
+        if( m_pTrcAdminObj->areMethodCallsActive(m_eEnterLeaveFilterDetailLevel)
+         && !m_pTrcAdminObj->isTraceDataSuppressedByFilter(i_strMethodInArgs) )
         {
             CTrcServer* pTrcServer = m_pTrcAdminObj->getTraceServer();
 
@@ -240,7 +242,8 @@ CMethodTracer::CMethodTracer(
             throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
         }
 
-        if( m_pTrcAdminObj->areMethodCallsActive(m_eEnterLeaveFilterDetailLevel) )
+        if( m_pTrcAdminObj->areMethodCallsActive(m_eEnterLeaveFilterDetailLevel)
+         && !m_pTrcAdminObj->isTraceDataSuppressedByFilter(i_strMethodInArgs) )
         {
             CTrcServer* pTrcServer = m_pTrcAdminObj->getTraceServer();
 
@@ -464,7 +467,8 @@ CMethodTracer::CMethodTracer(
         {
             throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
         }
-        if( m_pTrcAdminObj->areMethodCallsActive(m_eEnterLeaveFilterDetailLevel) )
+        if( m_pTrcAdminObj->areMethodCallsActive(m_eEnterLeaveFilterDetailLevel)
+         && !m_pTrcAdminObj->isTraceDataSuppressedByFilter(i_strMethodInArgs) )
         {
             CTrcServer* pTrcServer = m_pTrcAdminObj->getTraceServer();
 
@@ -501,14 +505,13 @@ CMethodTracer::CMethodTracer(
 
     @note If the CMethodTracer is used in the destructor of a class and a trace
           admin object is used the trace admin object is usually released in this
-          destructor. In this case leaving the destructor cannot be traced if the
-          CMethodTracer class as the trace admin object is no longer accessible
-          if the destructor of the CMethodTracer class is called.
-          So when using CMethodTracer in destructors the CMethodTracer got to be
-          informed that the trace adming object will be released to trace leaving
-          the method before the trace admin object is released. For this the method
-          "onAdminObjAboutToBeReleased" has to be applied at the method tracer instance
-          as this method will trace leaving the current method.
+          destructor. If the trace admin object would be destroyed when releasing
+          the instance leaving the destructor may not be traced and the program
+          may crash as the method tracer would access a dead instance.
+          This should usually not happen as the trace server together with the
+          tree of admin objects should be destroyed at the end of the program.
+          But to be on safe side you can call "onAdminObjAboutToBeReleased"
+          before releasing the trace admin object.
 */
 CMethodTracer::~CMethodTracer()
 //------------------------------------------------------------------------------
@@ -564,8 +567,10 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-/*! This method has to be called if the CMethodTracer is used in the destructor
+/*! This method may be called if the CMethodTracer is used in the destructor
     of a class right before the trace admin object is released.
+
+    @see ~CMethodTracer for more details.
 
     "onAdminObjAboutToBeReleased" will trace leaving the destructor.
 */
@@ -959,7 +964,8 @@ void CMethodTracer::trace(
 {
     if( m_pTrcAdminObj != nullptr )
     {
-        if( m_pTrcAdminObj->isRuntimeInfoActive(i_eFilterDetailLevel) )
+        if( m_pTrcAdminObj->isRuntimeInfoActive(i_eFilterDetailLevel)
+         && !m_pTrcAdminObj->isTraceDataSuppressedByFilter(i_strAddInfo) )
         {
             CTrcServer* pTrcServer = m_pTrcAdminObj->getTraceServer();
 

@@ -92,7 +92,6 @@ CTest::CTest() :
         throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
     }
 
-    ZS::Test::CTestStepGroup* pTestGroup = nullptr;
     ZS::Test::CTestStep* pTestStep = nullptr;
 
     // Test Step Group - One Thread
@@ -101,7 +100,7 @@ CTest::CTest() :
     int idxGroup = 0;
     int idxStep = 0;
 
-    pTestGroup = new ZS::Test::CTestStepGroup(
+    ZS::Test::CTestStepGroup* pTestGroupOneThread = new ZS::Test::CTestStepGroup(
         /* pTest           */ this,
         /* strName         */ "Group " + QString::number(++idxGroup) + " One Thread",
         /* pTSGrpParent    */ nullptr );
@@ -113,35 +112,35 @@ CTest::CTest() :
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " Load ZSIpcTrace Dll",
         /* strOperation    */ "DllIf::loadDll",
-        /* pTSGrpParent    */ pTestGroup,
+        /* pTSGrpParent    */ pTestGroupOneThread,
         /* szDoTestStepFct */ SLOT(doTestStepLoadDll(ZS::Test::CTestStep*)) );
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " Trace Server Create Instance",
         /* strOperation    */ "DllIf::CIpcTrcServer::CreateInstance",
-        /* pTSGrpParent    */ pTestGroup,
+        /* pTSGrpParent    */ pTestGroupOneThread,
         /* szDoTestStepFct */ SLOT(doTestStepTraceServerCreateInstance(ZS::Test::CTestStep*)) );
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " Trace Server Startup",
         /* strOperation    */ "DllIf::CIpcTrcServer::startup",
-        /* pTSGrpParent    */ pTestGroup,
+        /* pTSGrpParent    */ pTestGroupOneThread,
         /* szDoTestStepFct */ SLOT(doTestStepTraceServerStartup(ZS::Test::CTestStep*)) );
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " Trace Server Recall Admin Objects",
         /* strOperation    */ "DllIf::CIpcTrcServer::recallAdminObjs",
-        /* pTSGrpParent    */ pTestGroup,
+        /* pTSGrpParent    */ pTestGroupOneThread,
         /* szDoTestStepFct */ SLOT(doTestStepTraceServerRecallAdminObjs(ZS::Test::CTestStep*)) );
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " Trace Client Connect",
         /* strOperation    */ "CIpcTrcClient::connect",
-        /* pTSGrpParent    */ pTestGroup,
+        /* pTSGrpParent    */ pTestGroupOneThread,
         /* szDoTestStepFct */ SLOT(doTestStepTraceClientConnect(ZS::Test::CTestStep*)) );
 
     // Test Step Group - One Thread - Method Tracing - Class 1
@@ -151,7 +150,7 @@ CTest::CTest() :
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " CMyClass1::classMethod",
         /* strOperation    */ "CMyClass1::classMethod(Hello Class): Hello World",
-        /* pTSGrpParent    */ pTestGroup,
+        /* pTSGrpParent    */ pTestGroupOneThread,
         /* szDoTestStepFct */ SLOT(doTestStepTraceMethodCall(ZS::Test::CTestStep*)) );
 
     // Test Step Group - One Thread - Method Tracing - Class 2
@@ -161,7 +160,7 @@ CTest::CTest() :
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " CMyClass2::ctor(Inst1, nullptr)",
         /* strOperation    */ "CMyClass2::ctor(Inst1, nullptr)",
-        /* pTSGrpParent    */ pTestGroup,
+        /* pTSGrpParent    */ pTestGroupOneThread,
         /* szDoTestStepFct */ SLOT(doTestStepTraceMethodCall(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("ExpectedResultsFileName", "ZSTrcServer-CMyClass2-ctor-Inst1");
 
@@ -169,7 +168,7 @@ CTest::CTest() :
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " CMyClass2::ctor(Inst2, nullptr)",
         /* strOperation    */ "CMyClass2::ctor(Inst2, nullptr)",
-        /* pTSGrpParent    */ pTestGroup,
+        /* pTSGrpParent    */ pTestGroupOneThread,
         /* szDoTestStepFct */ SLOT(doTestStepTraceMethodCall(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("ExpectedResultsFileName", "ZSTrcServer-CMyClass2-ctor-Inst2");
 
@@ -177,21 +176,21 @@ CTest::CTest() :
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " CMyClass2::Inst1.instMethod",
         /* strOperation    */ "CMyClass2::Inst1.instMethod(Hello Instance): Hello World",
-        /* pTSGrpParent    */ pTestGroup,
+        /* pTSGrpParent    */ pTestGroupOneThread,
         /* szDoTestStepFct */ SLOT(doTestStepTraceMethodCall(ZS::Test::CTestStep*)) );
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " CMyClass2::Inst2.instMethod",
         /* strOperation    */ "CMyClass2::Inst2.instMethod(Hello Instance): Hello World",
-        /* pTSGrpParent    */ pTestGroup,
+        /* pTSGrpParent    */ pTestGroupOneThread,
         /* szDoTestStepFct */ SLOT(doTestStepTraceMethodCall(ZS::Test::CTestStep*)) );
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " CMyClass2::dtor(Inst1)",
         /* strOperation    */ "CMyClass2::dtor(Inst1)",
-        /* pTSGrpParent    */ pTestGroup,
+        /* pTSGrpParent    */ pTestGroupOneThread,
         /* szDoTestStepFct */ SLOT(doTestStepTraceMethodCall(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("ExpectedResultsFileName", "ZSTrcServer-CMyClass2-dtor-Inst1");
 
@@ -199,7 +198,7 @@ CTest::CTest() :
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " CMyClass2::dtor(Inst2)",
         /* strOperation    */ "CMyClass2::dtor(Inst2)",
-        /* pTSGrpParent    */ pTestGroup,
+        /* pTSGrpParent    */ pTestGroupOneThread,
         /* szDoTestStepFct */ SLOT(doTestStepTraceMethodCall(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("ExpectedResultsFileName", "ZSTrcServer-CMyClass2-dtor-Inst2");
 
@@ -210,7 +209,7 @@ CTest::CTest() :
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " CMyClass2::ctor(SoundCard-PowerLevel, nullptr)",
         /* strOperation    */ "CMyClass2::ctor(SoundCard-PowerLevel, nullptr)",
-        /* pTSGrpParent    */ pTestGroup,
+        /* pTSGrpParent    */ pTestGroupOneThread,
         /* szDoTestStepFct */ SLOT(doTestStepTraceMethodCall(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("ExpectedResultsFileName", "ZSTrcServer-CMyClass2-ctor-SoundCard-PowerLevel");
 
@@ -218,7 +217,7 @@ CTest::CTest() :
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " CMyClass2::ctor(Equalizer-PowerLevel, nullptr)",
         /* strOperation    */ "CMyClass2::ctor(Equalizer-PowerLevel, nullptr)",
-        /* pTSGrpParent    */ pTestGroup,
+        /* pTSGrpParent    */ pTestGroupOneThread,
         /* szDoTestStepFct */ SLOT(doTestStepTraceMethodCall(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("ExpectedResultsFileName", "ZSTrcServer-CMyClass2-ctor-Equalizer-PowerLevel");
 
@@ -226,21 +225,21 @@ CTest::CTest() :
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " CMyClass2::SoundCard-PowerLevel.instMethod",
         /* strOperation    */ "CMyClass2::SoundCard-PowerLevel.instMethod(Hello Instance): Hello World",
-        /* pTSGrpParent    */ pTestGroup,
+        /* pTSGrpParent    */ pTestGroupOneThread,
         /* szDoTestStepFct */ SLOT(doTestStepTraceMethodCall(ZS::Test::CTestStep*)) );
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " CMyClass2::Equalizer-PowerLevel.instMethod",
         /* strOperation    */ "CMyClass2::Equalizer-PowerLevel.instMethod(Hello Instance): Hello World",
-        /* pTSGrpParent    */ pTestGroup,
+        /* pTSGrpParent    */ pTestGroupOneThread,
         /* szDoTestStepFct */ SLOT(doTestStepTraceMethodCall(ZS::Test::CTestStep*)) );
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " CMyClass2::dtor(SoundCard-PowerLevel)",
         /* strOperation    */ "CMyClass2::dtor(SoundCard-PowerLevel)",
-        /* pTSGrpParent    */ pTestGroup,
+        /* pTSGrpParent    */ pTestGroupOneThread,
         /* szDoTestStepFct */ SLOT(doTestStepTraceMethodCall(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("ExpectedResultsFileName", "ZSTrcServer-CMyClass2-dtor-SoundCard-PowerLevel");
 
@@ -248,7 +247,7 @@ CTest::CTest() :
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " CMyClass2::dtor(Equalizer-PowerLevel)",
         /* strOperation    */ "CMyClass2::dtor(Equalizer-PowerLevel)",
-        /* pTSGrpParent    */ pTestGroup,
+        /* pTSGrpParent    */ pTestGroupOneThread,
         /* szDoTestStepFct */ SLOT(doTestStepTraceMethodCall(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("ExpectedResultsFileName", "ZSTrcServer-CMyClass2-dtor-Equalizer-PowerLevel");
 
@@ -259,28 +258,28 @@ CTest::CTest() :
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " CMyClass3::classMethod",
         /* strOperation    */ "CMyClass3::classMethod(Hello Class): Hello World",
-        /* pTSGrpParent    */ pTestGroup,
+        /* pTSGrpParent    */ pTestGroupOneThread,
         /* szDoTestStepFct */ SLOT(doTestStepTraceMethodCall(ZS::Test::CTestStep*)) );
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " CMyClass3::noisyClassMethod",
         /* strOperation    */ "CMyClass3::NoisyMethods::noisyClassMethod(Hello Class): Hello World",
-        /* pTSGrpParent    */ pTestGroup,
+        /* pTSGrpParent    */ pTestGroupOneThread,
         /* szDoTestStepFct */ SLOT(doTestStepTraceMethodCall(ZS::Test::CTestStep*)) );
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " CMyClass3::veryNoisyClassMethod",
         /* strOperation    */ "CMyClass3::VeryNoisyMethods::veryNoisyClassMethod(Hello Class): Hello World",
-        /* pTSGrpParent    */ pTestGroup,
+        /* pTSGrpParent    */ pTestGroupOneThread,
         /* szDoTestStepFct */ SLOT(doTestStepTraceMethodCall(ZS::Test::CTestStep*)) );
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " CMyClass3::ctor(Inst1, nullptr)",
         /* strOperation    */ "CMyClass3::ctor(Inst1, nullptr)",
-        /* pTSGrpParent    */ pTestGroup,
+        /* pTSGrpParent    */ pTestGroupOneThread,
         /* szDoTestStepFct */ SLOT(doTestStepTraceMethodCall(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("ExpectedResultsFileName", "ZSTrcServer-CMyClass3-ctor-Inst1");
 
@@ -288,7 +287,7 @@ CTest::CTest() :
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " CMyClass3::ctor(Inst2, nullptr)",
         /* strOperation    */ "CMyClass3::ctor(Inst2, nullptr)",
-        /* pTSGrpParent    */ pTestGroup,
+        /* pTSGrpParent    */ pTestGroupOneThread,
         /* szDoTestStepFct */ SLOT(doTestStepTraceMethodCall(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("ExpectedResultsFileName", "ZSTrcServer-CMyClass3-ctor-Inst2");
 
@@ -296,49 +295,49 @@ CTest::CTest() :
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " CMyClass3::Inst1.instMethod",
         /* strOperation    */ "CMyClass3::Inst1.instMethod(Hello Instance): Hello World",
-        /* pTSGrpParent    */ pTestGroup,
+        /* pTSGrpParent    */ pTestGroupOneThread,
         /* szDoTestStepFct */ SLOT(doTestStepTraceMethodCall(ZS::Test::CTestStep*)) );
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " CMyClass3::Inst2.instMethod",
         /* strOperation    */ "CMyClass3::Inst2.instMethod(Hello Instance): Hello World",
-        /* pTSGrpParent    */ pTestGroup,
+        /* pTSGrpParent    */ pTestGroupOneThread,
         /* szDoTestStepFct */ SLOT(doTestStepTraceMethodCall(ZS::Test::CTestStep*)) );
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " CMyClass3::Inst1.noisyInstMethod",
         /* strOperation    */ "CMyClass3::NoisyMethods::Inst1.noisyInstMethod(Hello Instance): Hello World",
-        /* pTSGrpParent    */ pTestGroup,
+        /* pTSGrpParent    */ pTestGroupOneThread,
         /* szDoTestStepFct */ SLOT(doTestStepTraceMethodCall(ZS::Test::CTestStep*)) );
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " CMyClass3::Inst2.noisyInstMethod",
         /* strOperation    */ "CMyClass3::NoisyMethods::Inst2.noisyInstMethod(Hello Instance): Hello World",
-        /* pTSGrpParent    */ pTestGroup,
+        /* pTSGrpParent    */ pTestGroupOneThread,
         /* szDoTestStepFct */ SLOT(doTestStepTraceMethodCall(ZS::Test::CTestStep*)) );
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " CMyClass3::Inst1.veryNoisyInstMethod",
         /* strOperation    */ "CMyClass3::VeryNoisyMethods::Inst1.veryNoisyInstMethod(Hello Instance): Hello World",
-        /* pTSGrpParent    */ pTestGroup,
+        /* pTSGrpParent    */ pTestGroupOneThread,
         /* szDoTestStepFct */ SLOT(doTestStepTraceMethodCall(ZS::Test::CTestStep*)) );
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " CMyClass3::Inst2.veryNoisyInstMethod",
         /* strOperation    */ "CMyClass3::VeryNoisyMethods::Inst2.veryNoisyInstMethod(Hello Instance): Hello World",
-        /* pTSGrpParent    */ pTestGroup,
+        /* pTSGrpParent    */ pTestGroupOneThread,
         /* szDoTestStepFct */ SLOT(doTestStepTraceMethodCall(ZS::Test::CTestStep*)) );
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " CMyClass3::dtor(Inst1)",
         /* strOperation    */ "CMyClass3::dtor(Inst1)",
-        /* pTSGrpParent    */ pTestGroup,
+        /* pTSGrpParent    */ pTestGroupOneThread,
         /* szDoTestStepFct */ SLOT(doTestStepTraceMethodCall(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("ExpectedResultsFileName", "ZSTrcServer-CMyClass3-dtor-Inst1");
 
@@ -346,7 +345,7 @@ CTest::CTest() :
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " CMyClass3::dtor(Inst2)",
         /* strOperation    */ "CMyClass3::dtor(Inst2)",
-        /* pTSGrpParent    */ pTestGroup,
+        /* pTSGrpParent    */ pTestGroupOneThread,
         /* szDoTestStepFct */ SLOT(doTestStepTraceMethodCall(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("ExpectedResultsFileName", "ZSTrcServer-CMyClass3-dtor-Inst2");
 
@@ -357,35 +356,35 @@ CTest::CTest() :
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " Trace Client Disconnect",
         /* strOperation    */ "CIpcTrcClient::disconnect",
-        /* pTSGrpParent    */ pTestGroup,
+        /* pTSGrpParent    */ pTestGroupOneThread,
         /* szDoTestStepFct */ SLOT(doTestStepTraceClientDisconnect(ZS::Test::CTestStep*)) );
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " Trace Server Save Admin Objects",
         /* strOperation    */ "DllIf::CIpcTrcServer::saveAdminObjs",
-        /* pTSGrpParent    */ pTestGroup,
+        /* pTSGrpParent    */ pTestGroupOneThread,
         /* szDoTestStepFct */ SLOT(doTestStepTraceServerSaveAdminObjs(ZS::Test::CTestStep*)) );
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " Trace Server Shutdown",
         /* strOperation    */ "DllIf::CIpcTrcServer::shutdown",
-        /* pTSGrpParent    */ pTestGroup,
+        /* pTSGrpParent    */ pTestGroupOneThread,
         /* szDoTestStepFct */ SLOT(doTestStepTraceServerShutdown(ZS::Test::CTestStep*)) );
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " Trace Server Release Instance",
         /* strOperation    */ "DllIf::CIpcTrcServer::ReleaseInstance",
-        /* pTSGrpParent    */ pTestGroup,
+        /* pTSGrpParent    */ pTestGroupOneThread,
         /* szDoTestStepFct */ SLOT(doTestStepTraceServerReleaseInstance(ZS::Test::CTestStep*)) );
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " Release ZSIpcTrace Dll",
         /* strOperation    */ "DllIf::releaseDll",
-        /* pTSGrpParent    */ pTestGroup,
+        /* pTSGrpParent    */ pTestGroupOneThread,
         /* szDoTestStepFct */ SLOT(doTestStepReleaseDll(ZS::Test::CTestStep*)) );
 
     // Test Step Group - Several Threads
@@ -393,7 +392,7 @@ CTest::CTest() :
 
     idxStep = 0;
 
-    pTestGroup = new ZS::Test::CTestStepGroup(
+    ZS::Test::CTestStepGroup* pTestGroupSeveralThreads = new ZS::Test::CTestStepGroup(
         /* pTest           */ this,
         /* strName         */ "Group " + QString::number(++idxGroup) + " Several Threads",
         /* pTSGrpParent    */ nullptr );
@@ -405,35 +404,35 @@ CTest::CTest() :
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " Load ZSIpcTrace Dll",
         /* strOperation    */ "DllIf::loadDll",
-        /* pTSGrpParent    */ pTestGroup,
+        /* pTSGrpParent    */ pTestGroupSeveralThreads,
         /* szDoTestStepFct */ SLOT(doTestStepLoadDll(ZS::Test::CTestStep*)) );
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " Trace Server Create Instance",
         /* strOperation    */ "DllIf::CIpcTrcServer::CreateInstance",
-        /* pTSGrpParent    */ pTestGroup,
+        /* pTSGrpParent    */ pTestGroupSeveralThreads,
         /* szDoTestStepFct */ SLOT(doTestStepTraceServerCreateInstance(ZS::Test::CTestStep*)) );
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " Trace Server Startup",
         /* strOperation    */ "DllIf::CIpcTrcServer::startup",
-        /* pTSGrpParent    */ pTestGroup,
+        /* pTSGrpParent    */ pTestGroupSeveralThreads,
         /* szDoTestStepFct */ SLOT(doTestStepTraceServerStartup(ZS::Test::CTestStep*)) );
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " Trace Server Recall Admin Objects",
         /* strOperation    */ "DllIf::CIpcTrcServer::recallAdminObjs",
-        /* pTSGrpParent    */ pTestGroup,
+        /* pTSGrpParent    */ pTestGroupSeveralThreads,
         /* szDoTestStepFct */ SLOT(doTestStepTraceServerRecallAdminObjs(ZS::Test::CTestStep*)) );
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " Trace Client Connect",
         /* strOperation    */ "CIpcTrcClient::connect",
-        /* pTSGrpParent    */ pTestGroup,
+        /* pTSGrpParent    */ pTestGroupSeveralThreads,
         /* szDoTestStepFct */ SLOT(doTestStepTraceClientConnect(ZS::Test::CTestStep*)) );
 
     // Test Step Group - Several Threads - Method Tracing - Class 1 - StartClass2Thread
@@ -443,7 +442,7 @@ CTest::CTest() :
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " CMyClass1::ctor(Inst1)",
         /* strOperation    */ "CMyClass1::ctor(Inst1)",
-        /* pTSGrpParent    */ pTestGroup,
+        /* pTSGrpParent    */ pTestGroupSeveralThreads,
         /* szDoTestStepFct */ SLOT(doTestStepTraceMethodCall(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("ExpectedResultsFileName", "ZSTrcServer-CMyClass1-ctor-Inst1");
 
@@ -451,7 +450,7 @@ CTest::CTest() :
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " CMyClass1::Inst1.startClass2Thread(Inst1)",
         /* strOperation    */ "CMyClass1::Inst1.startClass2Thread(Inst1): Inst1",
-        /* pTSGrpParent    */ pTestGroup,
+        /* pTSGrpParent    */ pTestGroupSeveralThreads,
         /* szDoTestStepFct */ SLOT(doTestStepTraceMethodCall(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("ExpectedResultsFileName", "ZSTrcServer-CMyClass1-Inst1-startClass2Thread-Inst1");
 
@@ -459,7 +458,7 @@ CTest::CTest() :
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " CMyClass2::Inst1.recursiveTraceMethod()",
         /* strOperation    */ "CMyClass2::Inst1.recursiveTraceMethod(): 0",
-        /* pTSGrpParent    */ pTestGroup,
+        /* pTSGrpParent    */ pTestGroupSeveralThreads,
         /* szDoTestStepFct */ SLOT(doTestStepTraceMethodCall(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("ExpectedResultsFileName", "ZSTrcServer-CMyClass2-Inst1-recursiveTraceMethod");
 
@@ -467,7 +466,7 @@ CTest::CTest() :
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " CMyClass2::Inst1.startMessageTimer()",
         /* strOperation    */ "CMyClass2::Inst1.startMessageTimer()",
-        /* pTSGrpParent    */ pTestGroup,
+        /* pTSGrpParent    */ pTestGroupSeveralThreads,
         /* szDoTestStepFct */ SLOT(doTestStepTraceMethodCall(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("ExpectedResultsFileName", "ZSTrcServer-CMyClass2-Inst1-startMessageTimer");
 
@@ -475,7 +474,7 @@ CTest::CTest() :
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " CMyClass2::Inst1.startClass3Thread(Inst1)",
         /* strOperation    */ "CMyClass2::Inst1.startClass3Thread(Inst1): Inst1",
-        /* pTSGrpParent    */ pTestGroup,
+        /* pTSGrpParent    */ pTestGroupSeveralThreads,
         /* szDoTestStepFct */ SLOT(doTestStepTraceMethodCall(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("ExpectedResultsFileName", "ZSTrcServer-CMyClass2-Inst1-startClass3Thread-Inst1");
 
@@ -483,7 +482,7 @@ CTest::CTest() :
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " CMyClass2::Inst1.stopClass3Thread()",
         /* strOperation    */ "CMyClass2::Inst1.stopClass3Thread()",
-        /* pTSGrpParent    */ pTestGroup,
+        /* pTSGrpParent    */ pTestGroupSeveralThreads,
         /* szDoTestStepFct */ SLOT(doTestStepTraceMethodCall(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("ExpectedResultsFileName", "ZSTrcServer-CMyClass2-Inst1-stopClass3Thread");
 
@@ -491,7 +490,7 @@ CTest::CTest() :
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " CMyClass1::Inst1.stopClass2Thread()",
         /* strOperation    */ "CMyClass1::Inst1.stopClass2Thread()",
-        /* pTSGrpParent    */ pTestGroup,
+        /* pTSGrpParent    */ pTestGroupSeveralThreads,
         /* szDoTestStepFct */ SLOT(doTestStepTraceMethodCall(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("ExpectedResultsFileName", "ZSTrcServer-CMyClass1-Inst1-stopClass2Thread");
 
@@ -499,7 +498,7 @@ CTest::CTest() :
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " ZSTrcServer/CMyClass1::dtor(Inst1)",
         /* strOperation    */ "CMyClass1::dtor(Inst1)",
-        /* pTSGrpParent    */ pTestGroup,
+        /* pTSGrpParent    */ pTestGroupSeveralThreads,
         /* szDoTestStepFct */ SLOT(doTestStepTraceMethodCall(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("ExpectedResultsFileName", "ZSTrcServer-CMyClass1-dtor-Inst1");
 
@@ -510,93 +509,102 @@ CTest::CTest() :
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " Trace Client Disconnect",
         /* strOperation    */ "CIpcTrcClient::disconnect",
-        /* pTSGrpParent    */ pTestGroup,
+        /* pTSGrpParent    */ pTestGroupSeveralThreads,
         /* szDoTestStepFct */ SLOT(doTestStepTraceClientDisconnect(ZS::Test::CTestStep*)) );
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " Trace Server Save Admin Objects",
         /* strOperation    */ "DllIf::CIpcTrcServer::saveAdminObjs",
-        /* pTSGrpParent    */ pTestGroup,
+        /* pTSGrpParent    */ pTestGroupSeveralThreads,
         /* szDoTestStepFct */ SLOT(doTestStepTraceServerSaveAdminObjs(ZS::Test::CTestStep*)) );
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " Trace Server Shutdown",
         /* strOperation    */ "DllIf::CIpcTrcServer::shutdown",
-        /* pTSGrpParent    */ pTestGroup,
+        /* pTSGrpParent    */ pTestGroupSeveralThreads,
         /* szDoTestStepFct */ SLOT(doTestStepTraceServerShutdown(ZS::Test::CTestStep*)) );
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " Trace Server Release Instance",
         /* strOperation    */ "DllIf::CIpcTrcServer::ReleaseInstance",
-        /* pTSGrpParent    */ pTestGroup,
+        /* pTSGrpParent    */ pTestGroupSeveralThreads,
         /* szDoTestStepFct */ SLOT(doTestStepTraceServerReleaseInstance(ZS::Test::CTestStep*)) );
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " Release ZSIpcTrace Dll",
         /* strOperation    */ "DllIf::releaseDll",
-        /* pTSGrpParent    */ pTestGroup,
+        /* pTSGrpParent    */ pTestGroupSeveralThreads,
         /* szDoTestStepFct */ SLOT(doTestStepReleaseDll(ZS::Test::CTestStep*)) );
 
     // Test Step Group - RenameTraceAdminObj
     //======================================
 
-    idxStep = 0;
-
-    pTestGroup = new ZS::Test::CTestStepGroup(
+    ZS::Test::CTestStepGroup* pTestGroupRenameTraceAdminObj = new ZS::Test::CTestStepGroup(
         /* pTest           */ this,
         /* strName         */ "Group " + QString::number(++idxGroup) + " RenameTraceAdminObj",
         /* pTSGrpParent    */ nullptr );
 
-    // Test Step Group - RenameTraceAdminObj - Startup
-    //------------------------------------------------
+    // Test Step Group - RenameTraceAdminObj - One Thread
+    //===================================================
+
+    idxStep = 0;
+
+    ZS::Test::CTestStepGroup* pTestGroupRenameTraceAdminObjOneThread = new ZS::Test::CTestStepGroup(
+        /* pTest           */ this,
+        /* strName         */ "Group " + QString::number(++idxGroup) + " One Thread",
+        /* pTSGrpParent    */ pTestGroupRenameTraceAdminObj );
+
+
+    // Test Step Group - RenameTraceAdminObj - One Thread - Startup
+    //-------------------------------------------------------------
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " Load ZSIpcTrace Dll",
         /* strOperation    */ "DllIf::loadDll",
-        /* pTSGrpParent    */ pTestGroup,
+        /* pTSGrpParent    */ pTestGroupRenameTraceAdminObjOneThread,
         /* szDoTestStepFct */ SLOT(doTestStepLoadDll(ZS::Test::CTestStep*)) );
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " Trace Server Create Instance",
         /* strOperation    */ "DllIf::CIpcTrcServer::CreateInstance",
-        /* pTSGrpParent    */ pTestGroup,
+        /* pTSGrpParent    */ pTestGroupRenameTraceAdminObjOneThread,
         /* szDoTestStepFct */ SLOT(doTestStepTraceServerCreateInstance(ZS::Test::CTestStep*)) );
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " Trace Server Startup",
         /* strOperation    */ "DllIf::CIpcTrcServer::startup",
-        /* pTSGrpParent    */ pTestGroup,
+        /* pTSGrpParent    */ pTestGroupRenameTraceAdminObjOneThread,
         /* szDoTestStepFct */ SLOT(doTestStepTraceServerStartup(ZS::Test::CTestStep*)) );
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " Trace Server Recall Admin Objects",
         /* strOperation    */ "DllIf::CIpcTrcServer::recallAdminObjs",
-        /* pTSGrpParent    */ pTestGroup,
+        /* pTSGrpParent    */ pTestGroupRenameTraceAdminObjOneThread,
         /* szDoTestStepFct */ SLOT(doTestStepTraceServerRecallAdminObjs(ZS::Test::CTestStep*)) );
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " Trace Client Connect",
         /* strOperation    */ "CIpcTrcClient::connect",
-        /* pTSGrpParent    */ pTestGroup,
+        /* pTSGrpParent    */ pTestGroupRenameTraceAdminObjOneThread,
         /* szDoTestStepFct */ SLOT(doTestStepTraceClientConnect(ZS::Test::CTestStep*)) );
 
-    // Test Step Group - RenameTraceAdminObj - Several instances of class tracer
-    //--------------------------------------------------------------------------
+    // Test Step Group - RenameTraceAdminObj - One Thread - Several instances of class tracer
+    //---------------------------------------------------------------------------------------
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " CMyClass1::ctor(Inst1)",
         /* strOperation    */ "CMyClass1::ctor(Inst1)",
-        /* pTSGrpParent    */ pTestGroup,
+        /* pTSGrpParent    */ pTestGroupRenameTraceAdminObjOneThread,
         /* szDoTestStepFct */ SLOT(doTestStepTraceMethodCall(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("ExpectedResultsFileName", "ZSTrcServer-CMyClass1-ctor-Inst1");
 
@@ -604,7 +612,7 @@ CTest::CTest() :
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " CMyClass1::ctor(Inst1)",
         /* strOperation    */ "CMyClass1::ctor(Inst1)",
-        /* pTSGrpParent    */ pTestGroup,
+        /* pTSGrpParent    */ pTestGroupRenameTraceAdminObjOneThread,
         /* szDoTestStepFct */ SLOT(doTestStepTraceMethodCall(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("ExpectedResultsFileName", "ZSTrcServer-CMyClass1-ctor-Inst1");
 
@@ -612,7 +620,7 @@ CTest::CTest() :
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " CMyClass1::Inst1.setObjectName(NewName1)",
         /* strOperation    */ "CMyClass1::Inst1.setObjectName(NewName1)",
-        /* pTSGrpParent    */ pTestGroup,
+        /* pTSGrpParent    */ pTestGroupRenameTraceAdminObjOneThread,
         /* szDoTestStepFct */ SLOT(doTestStepTraceMethodCall(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("ExpectedResultsFileName", "ZSTrcServer-CMyClass1-Inst1-setObjectName-NewName1");
 
@@ -620,7 +628,7 @@ CTest::CTest() :
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " CMyClass1::Inst1.setObjectName(NewName2)",
         /* strOperation    */ "CMyClass1::Inst1.setObjectName(NewName2)",
-        /* pTSGrpParent    */ pTestGroup,
+        /* pTSGrpParent    */ pTestGroupRenameTraceAdminObjOneThread,
         /* szDoTestStepFct */ SLOT(doTestStepTraceMethodCall(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("ExpectedResultsFileName", "ZSTrcServer-CMyClass1-Inst1-setObjectName-NewName2");
 
@@ -628,7 +636,7 @@ CTest::CTest() :
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " CMyClass1::NewName1.setObjectName(NewName2)",
         /* strOperation    */ "CMyClass1::NewName1.setObjectName(NewName2)",
-        /* pTSGrpParent    */ pTestGroup,
+        /* pTSGrpParent    */ pTestGroupRenameTraceAdminObjOneThread,
         /* szDoTestStepFct */ SLOT(doTestStepTraceMethodCall(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("ExpectedResultsFileName", "ZSTrcServer-CMyClass1-NewName1-setObjectName-NewName2");
 
@@ -636,7 +644,7 @@ CTest::CTest() :
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " ZSTrcServer/CMyClass1::dtor(NewName2)",
         /* strOperation    */ "CMyClass1::dtor(NewName2)",
-        /* pTSGrpParent    */ pTestGroup,
+        /* pTSGrpParent    */ pTestGroupRenameTraceAdminObjOneThread,
         /* szDoTestStepFct */ SLOT(doTestStepTraceMethodCall(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("ExpectedResultsFileName", "ZSTrcServer-CMyClass1-dtor-NewName2");
 
@@ -644,18 +652,18 @@ CTest::CTest() :
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " ZSTrcServer/CMyClass1::dtor(NewName2)",
         /* strOperation    */ "CMyClass1::dtor(NewName2)",
-        /* pTSGrpParent    */ pTestGroup,
+        /* pTSGrpParent    */ pTestGroupRenameTraceAdminObjOneThread,
         /* szDoTestStepFct */ SLOT(doTestStepTraceMethodCall(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("ExpectedResultsFileName", "ZSTrcServer-CMyClass1-dtor-NewName2");
 
-    // Test Step Group - RenameTraceAdminObj - Several instances of instance tracer
-    //-----------------------------------------------------------------------------
+    // Test Step Group - RenameTraceAdminObj - One Thread - Several instances of instance tracer
+    //------------------------------------------------------------------------------------------
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " CMyClass2::ctor(Inst1)",
         /* strOperation    */ "CMyClass2::ctor(Inst1)",
-        /* pTSGrpParent    */ pTestGroup,
+        /* pTSGrpParent    */ pTestGroupRenameTraceAdminObjOneThread,
         /* szDoTestStepFct */ SLOT(doTestStepTraceMethodCall(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("ExpectedResultsFileName", "ZSTrcServer-CMyClass2-ctor-Inst1");
 
@@ -663,7 +671,7 @@ CTest::CTest() :
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " CMyClass2::ctor(Inst1)",
         /* strOperation    */ "CMyClass2::ctor(Inst1)",
-        /* pTSGrpParent    */ pTestGroup,
+        /* pTSGrpParent    */ pTestGroupRenameTraceAdminObjOneThread,
         /* szDoTestStepFct */ SLOT(doTestStepTraceMethodCall(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("ExpectedResultsFileName", "ZSTrcServer-CMyClass2-ctor-Inst1");
 
@@ -671,7 +679,7 @@ CTest::CTest() :
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " CMyClass2::Inst1.setObjectName(NewName1)",
         /* strOperation    */ "CMyClass2::Inst1.setObjectName(NewName1)",
-        /* pTSGrpParent    */ pTestGroup,
+        /* pTSGrpParent    */ pTestGroupRenameTraceAdminObjOneThread,
         /* szDoTestStepFct */ SLOT(doTestStepTraceMethodCall(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("ExpectedResultsFileName", "ZSTrcServer-CMyClass2-Inst1-setObjectName-NewName1");
 
@@ -679,7 +687,7 @@ CTest::CTest() :
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " CMyClass2::Inst1.setObjectName(NewName2)",
         /* strOperation    */ "CMyClass2::Inst1.setObjectName(NewName2)",
-        /* pTSGrpParent    */ pTestGroup,
+        /* pTSGrpParent    */ pTestGroupRenameTraceAdminObjOneThread,
         /* szDoTestStepFct */ SLOT(doTestStepTraceMethodCall(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("ExpectedResultsFileName", "ZSTrcServer-CMyClass2-Inst1-setObjectName-NewName2");
 
@@ -687,7 +695,7 @@ CTest::CTest() :
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " CMyClass2::NewName1.setObjectName(NewName2)",
         /* strOperation    */ "CMyClass2::NewName1.setObjectName(NewName2)",
-        /* pTSGrpParent    */ pTestGroup,
+        /* pTSGrpParent    */ pTestGroupRenameTraceAdminObjOneThread,
         /* szDoTestStepFct */ SLOT(doTestStepTraceMethodCall(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("ExpectedResultsFileName", "ZSTrcServer-CMyClass2-NewName1-setObjectName-NewName2");
 
@@ -695,7 +703,7 @@ CTest::CTest() :
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " ZSTrcServer/CMyClass2::dtor(NewName2)",
         /* strOperation    */ "CMyClass2::dtor(NewName2)",
-        /* pTSGrpParent    */ pTestGroup,
+        /* pTSGrpParent    */ pTestGroupRenameTraceAdminObjOneThread,
         /* szDoTestStepFct */ SLOT(doTestStepTraceMethodCall(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("ExpectedResultsFileName", "ZSTrcServer-CMyClass2-dtor-NewName2");
 
@@ -703,46 +711,263 @@ CTest::CTest() :
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " ZSTrcServer/CMyClass2::dtor(NewName2)",
         /* strOperation    */ "CMyClass2::dtor(NewName2)",
-        /* pTSGrpParent    */ pTestGroup,
+        /* pTSGrpParent    */ pTestGroupRenameTraceAdminObjOneThread,
         /* szDoTestStepFct */ SLOT(doTestStepTraceMethodCall(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("ExpectedResultsFileName", "ZSTrcServer-CMyClass2-dtor-NewName2");
 
-    // Test Step Group - RenameTraceAdminObj - Shutdown
-    //--------------------------------------------------
+    // Test Step Group - RenameTraceAdminObj - One Thread - Shutdown
+    //--------------------------------------------------------------
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " Trace Client Disconnect",
         /* strOperation    */ "CIpcTrcClient::disconnect",
-        /* pTSGrpParent    */ pTestGroup,
+        /* pTSGrpParent    */ pTestGroupRenameTraceAdminObjOneThread,
         /* szDoTestStepFct */ SLOT(doTestStepTraceClientDisconnect(ZS::Test::CTestStep*)) );
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " Trace Server Save Admin Objects",
         /* strOperation    */ "DllIf::CIpcTrcServer::saveAdminObjs",
-        /* pTSGrpParent    */ pTestGroup,
+        /* pTSGrpParent    */ pTestGroupRenameTraceAdminObjOneThread,
         /* szDoTestStepFct */ SLOT(doTestStepTraceServerSaveAdminObjs(ZS::Test::CTestStep*)) );
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " Trace Server Shutdown",
         /* strOperation    */ "DllIf::CIpcTrcServer::shutdown",
-        /* pTSGrpParent    */ pTestGroup,
+        /* pTSGrpParent    */ pTestGroupRenameTraceAdminObjOneThread,
         /* szDoTestStepFct */ SLOT(doTestStepTraceServerShutdown(ZS::Test::CTestStep*)) );
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " Trace Server Release Instance",
         /* strOperation    */ "DllIf::CIpcTrcServer::ReleaseInstance",
-        /* pTSGrpParent    */ pTestGroup,
+        /* pTSGrpParent    */ pTestGroupRenameTraceAdminObjOneThread,
         /* szDoTestStepFct */ SLOT(doTestStepTraceServerReleaseInstance(ZS::Test::CTestStep*)) );
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " Release ZSIpcTrace Dll",
         /* strOperation    */ "DllIf::releaseDll",
-        /* pTSGrpParent    */ pTestGroup,
+        /* pTSGrpParent    */ pTestGroupRenameTraceAdminObjOneThread,
+        /* szDoTestStepFct */ SLOT(doTestStepReleaseDll(ZS::Test::CTestStep*)) );
+
+    // Test Step Group - RenameTraceAdminObj - Several Threads
+    //========================================================
+
+    idxStep = 0;
+
+    ZS::Test::CTestStepGroup* pTestGroupRenameTraceAdminObjSeveralThreads = new ZS::Test::CTestStepGroup(
+        /* pTest           */ this,
+        /* strName         */ "Group " + QString::number(++idxGroup) + " Several Threads",
+        /* pTSGrpParent    */ pTestGroupRenameTraceAdminObj );
+
+    // Test Step Group - RenameTraceAdminObj - Several Threads - Startup
+    //------------------------------------------------------------------
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " Load ZSIpcTrace Dll",
+        /* strOperation    */ "DllIf::loadDll",
+        /* pTSGrpParent    */ pTestGroupRenameTraceAdminObjSeveralThreads,
+        /* szDoTestStepFct */ SLOT(doTestStepLoadDll(ZS::Test::CTestStep*)) );
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " Trace Server Create Instance",
+        /* strOperation    */ "DllIf::CIpcTrcServer::CreateInstance",
+        /* pTSGrpParent    */ pTestGroupRenameTraceAdminObjSeveralThreads,
+        /* szDoTestStepFct */ SLOT(doTestStepTraceServerCreateInstance(ZS::Test::CTestStep*)) );
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " Trace Server Startup",
+        /* strOperation    */ "DllIf::CIpcTrcServer::startup",
+        /* pTSGrpParent    */ pTestGroupRenameTraceAdminObjSeveralThreads,
+        /* szDoTestStepFct */ SLOT(doTestStepTraceServerStartup(ZS::Test::CTestStep*)) );
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " Trace Server Recall Admin Objects",
+        /* strOperation    */ "DllIf::CIpcTrcServer::recallAdminObjs",
+        /* pTSGrpParent    */ pTestGroupRenameTraceAdminObjSeveralThreads,
+        /* szDoTestStepFct */ SLOT(doTestStepTraceServerRecallAdminObjs(ZS::Test::CTestStep*)) );
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " Trace Client Connect",
+        /* strOperation    */ "CIpcTrcClient::connect",
+        /* pTSGrpParent    */ pTestGroupRenameTraceAdminObjSeveralThreads,
+        /* szDoTestStepFct */ SLOT(doTestStepTraceClientConnect(ZS::Test::CTestStep*)) );
+
+    // Test Step Group - RenameTraceAdminObj - Several Threads - Several instances of class tracer
+    //--------------------------------------------------------------------------------------------
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " CMyClass1::ctor(Inst1)",
+        /* strOperation    */ "CMyClass1::ctor(Inst1)",
+        /* pTSGrpParent    */ pTestGroupRenameTraceAdminObjSeveralThreads,
+        /* szDoTestStepFct */ SLOT(doTestStepTraceMethodCall(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("ExpectedResultsFileName", "ZSTrcServer-CMyClass1-ctor-Inst1");
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " CMyClass1::Inst1.startClass2Thread(Inst1)",
+        /* strOperation    */ "CMyClass1::Inst1.startClass2Thread(Inst1): Inst1",
+        /* pTSGrpParent    */ pTestGroupRenameTraceAdminObjSeveralThreads,
+        /* szDoTestStepFct */ SLOT(doTestStepTraceMethodCall(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("ExpectedResultsFileName", "ZSTrcServer-CMyClass1-Inst1-startClass2Thread-Inst1");
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " CMyClass2::Inst1.startClass3Thread(Inst1)",
+        /* strOperation    */ "CMyClass2::Inst1.startClass3Thread(Inst1): Inst1",
+        /* pTSGrpParent    */ pTestGroupRenameTraceAdminObjSeveralThreads,
+        /* szDoTestStepFct */ SLOT(doTestStepTraceMethodCall(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("ExpectedResultsFileName", "ZSTrcServer-CMyClass2-Inst1-startClass3Thread-Inst1");
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " CMyClass2::Inst1.instMethod",
+        /* strOperation    */ "CMyClass2::Inst1.instMethod(Hello Instance): Hello World",
+        /* pTSGrpParent    */ pTestGroupRenameTraceAdminObjSeveralThreads,
+        /* szDoTestStepFct */ SLOT(doTestStepTraceMethodCall(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("ExpectedResultsFileName", "ZSTrcServer-CMyClass2-Inst1-instMethod-queued");
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " CMyClass3::Inst1.noisyInstMethod",
+        /* strOperation    */ "CMyClass3::NoisyMethods::Inst1.noisyInstMethod(Hello Instance): Hello World",
+        /* pTSGrpParent    */ pTestGroupRenameTraceAdminObjSeveralThreads,
+        /* szDoTestStepFct */ SLOT(doTestStepTraceMethodCall(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("ExpectedResultsFileName", "ZSTrcServer-CMyClass3-Inst1-noisyInstMethod-queued");
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " CMyClass3::Inst1.veryNoisyInstMethod",
+        /* strOperation    */ "CMyClass3::VeryNoisyMethods::Inst1.veryNoisyInstMethod(Hello Instance): Hello World",
+        /* pTSGrpParent    */ pTestGroupRenameTraceAdminObjSeveralThreads,
+        /* szDoTestStepFct */ SLOT(doTestStepTraceMethodCall(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("ExpectedResultsFileName", "ZSTrcServer-CMyClass3-Inst1-veryNoisyInstMethod-queued");
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " CMyClass2Thread::Inst1.setObjectName(NewName1)",
+        /* strOperation    */ "CMyClass2Thread::MyClass2ThreadInst1.setObjectName(MyClass2ThreadNewName1)",
+        /* pTSGrpParent    */ pTestGroupRenameTraceAdminObjSeveralThreads,
+        /* szDoTestStepFct */ SLOT(doTestStepTraceMethodCall(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("ExpectedResultsFileName", "ZSTrcServer-CMyClass2Thread-Inst1-setObjectName-NewName1");
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " CMyClass2::Inst1.setObjectName(NewName1)",
+        /* strOperation    */ "CMyClass2::Inst1.setObjectName(NewName1)",
+        /* pTSGrpParent    */ pTestGroupRenameTraceAdminObjSeveralThreads,
+        /* szDoTestStepFct */ SLOT(doTestStepTraceMethodCall(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("ExpectedResultsFileName", "ZSTrcServer-CMyClass2-Inst1-setObjectName-NewName1");
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " CMyClass3Thread::Inst1.setObjectName(NewName1)",
+        /* strOperation    */ "CMyClass3Thread::MyClass3ThreadInst1.setObjectName(MyClass3ThreadNewName1)",
+        /* pTSGrpParent    */ pTestGroupRenameTraceAdminObjSeveralThreads,
+        /* szDoTestStepFct */ SLOT(doTestStepTraceMethodCall(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("ExpectedResultsFileName", "ZSTrcServer-CMyClass3Thread-Inst1-setObjectName-NewName1");
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " CMyClass3::Inst1.setObjectName(NewName1)",
+        /* strOperation    */ "CMyClass3::Inst1.setObjectName(NewName1)",
+        /* pTSGrpParent    */ pTestGroupRenameTraceAdminObjSeveralThreads,
+        /* szDoTestStepFct */ SLOT(doTestStepTraceMethodCall(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("ExpectedResultsFileName", "ZSTrcServer-CMyClass3-Inst1-setObjectName-NewName1");
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " CMyClass2::NewName1.instMethod",
+        /* strOperation    */ "CMyClass2::NewName1.instMethod(Hello Instance): Hello World",
+        /* pTSGrpParent    */ pTestGroupRenameTraceAdminObjSeveralThreads,
+        /* szDoTestStepFct */ SLOT(doTestStepTraceMethodCall(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("ExpectedResultsFileName", "ZSTrcServer-CMyClass2-NewName1-instMethod-queued");
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " CMyClass3::NewName1.noisyInstMethod",
+        /* strOperation    */ "CMyClass3::NoisyMethods::NewName1.noisyInstMethod(Hello Instance): Hello World",
+        /* pTSGrpParent    */ pTestGroupRenameTraceAdminObjSeveralThreads,
+        /* szDoTestStepFct */ SLOT(doTestStepTraceMethodCall(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("ExpectedResultsFileName", "ZSTrcServer-CMyClass2-NewName1-noisyInstMethod-queued");
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " CMyClass3::NewName1.veryNoisyInstMethod",
+        /* strOperation    */ "CMyClass3::VeryNoisyMethods::NewName1.veryNoisyInstMethod(Hello Instance): Hello World",
+        /* pTSGrpParent    */ pTestGroupRenameTraceAdminObjSeveralThreads,
+        /* szDoTestStepFct */ SLOT(doTestStepTraceMethodCall(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("ExpectedResultsFileName", "ZSTrcServer-CMyClass2-NewName1-veryNoisyInstMethod-queued");
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " CMyClass2::NewName1.stopClass3Thread()",
+        /* strOperation    */ "CMyClass2::NewName1.stopClass3Thread()",
+        /* pTSGrpParent    */ pTestGroupRenameTraceAdminObjSeveralThreads,
+        /* szDoTestStepFct */ SLOT(doTestStepTraceMethodCall(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("ExpectedResultsFileName", "ZSTrcServer-CMyClass2-NewName1-stopClass3Thread");
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " CMyClass1::Inst1.stopClass2Thread()",
+        /* strOperation    */ "CMyClass1::Inst1.stopClass2Thread()",
+        /* pTSGrpParent    */ pTestGroupRenameTraceAdminObjSeveralThreads,
+        /* szDoTestStepFct */ SLOT(doTestStepTraceMethodCall(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("ExpectedResultsFileName", "ZSTrcServer-CMyClass1-Inst1-stopClass2Thread-NewName1");
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " CMyClass1::dtor(Inst1)",
+        /* strOperation    */ "CMyClass1::dtor(Inst1)",
+        /* pTSGrpParent    */ pTestGroupRenameTraceAdminObjSeveralThreads,
+        /* szDoTestStepFct */ SLOT(doTestStepTraceMethodCall(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("ExpectedResultsFileName", "ZSTrcServer-CMyClass1-dtor-Inst1");
+
+    // Test Step Group - RenameTraceAdminObj - Several Threads - Shutdown
+    //-------------------------------------------------------------------
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " Trace Client Disconnect",
+        /* strOperation    */ "CIpcTrcClient::disconnect",
+        /* pTSGrpParent    */ pTestGroupRenameTraceAdminObjSeveralThreads,
+        /* szDoTestStepFct */ SLOT(doTestStepTraceClientDisconnect(ZS::Test::CTestStep*)) );
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " Trace Server Save Admin Objects",
+        /* strOperation    */ "DllIf::CIpcTrcServer::saveAdminObjs",
+        /* pTSGrpParent    */ pTestGroupRenameTraceAdminObjSeveralThreads,
+        /* szDoTestStepFct */ SLOT(doTestStepTraceServerSaveAdminObjs(ZS::Test::CTestStep*)) );
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " Trace Server Shutdown",
+        /* strOperation    */ "DllIf::CIpcTrcServer::shutdown",
+        /* pTSGrpParent    */ pTestGroupRenameTraceAdminObjSeveralThreads,
+        /* szDoTestStepFct */ SLOT(doTestStepTraceServerShutdown(ZS::Test::CTestStep*)) );
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " Trace Server Release Instance",
+        /* strOperation    */ "DllIf::CIpcTrcServer::ReleaseInstance",
+        /* pTSGrpParent    */ pTestGroupRenameTraceAdminObjSeveralThreads,
+        /* szDoTestStepFct */ SLOT(doTestStepTraceServerReleaseInstance(ZS::Test::CTestStep*)) );
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " Release ZSIpcTrace Dll",
+        /* strOperation    */ "DllIf::releaseDll",
+        /* pTSGrpParent    */ pTestGroupRenameTraceAdminObjSeveralThreads,
         /* szDoTestStepFct */ SLOT(doTestStepReleaseDll(ZS::Test::CTestStep*)) );
 
     // Recall test step settings

@@ -136,6 +136,8 @@ public: // instance methods to get and release admin objects
         If not Undefined the detail level will be set at the trace admin object.
     @param i_eDefaultDetailLevelRuntimeInfo [in]
         If not Undefined the detail level will be set at the trace admin object.
+    @param i_strDefaultDataFilter [in]
+        If not null (QString()) the data filter will be set at the trace admin object.
     @param i_bIncrementRefCount [in]
         true to increment the reference counter of the trace admin object.
         false is only used if the admin objects are recalled from file as
@@ -151,6 +153,7 @@ CTrcAdminObj* CIdxTreeTrcAdminObjs::getTraceAdminObj(
     ZS::System::EEnabled         i_bEnabledAsDefault,
     ETraceDetailLevelMethodCalls i_eDefaultDetailLevelMethodCalls,
     ETraceDetailLevelRuntimeInfo i_eDefaultDetailLevelRuntimeInfo,
+    const QString&               i_strDefaultDataFilter,
     bool                         i_bIncrementRefCount )
 //------------------------------------------------------------------------------
 {
@@ -164,6 +167,7 @@ CTrcAdminObj* CIdxTreeTrcAdminObjs::getTraceAdminObj(
         strAddTrcInfo += ", EnabledAsDefault: " + CEnumEnabled::toString(i_bEnabledAsDefault);
         strAddTrcInfo += ", DefaultDetailLevelMethodCalls: " + CEnumTraceDetailLevelMethodCalls(i_eDefaultDetailLevelMethodCalls).toString();
         strAddTrcInfo += ", DefaultDetailLevelRuntimeInfo: " + CEnumTraceDetailLevelRuntimeInfo(i_eDefaultDetailLevelRuntimeInfo).toString();
+        strAddTrcInfo += ", DefaultDataFilter: " + i_strDefaultDataFilter;
         strAddTrcInfo += ", IncrementRefCount: " + bool2Str(i_bIncrementRefCount);
     }
 
@@ -244,6 +248,7 @@ CTrcAdminObj* CIdxTreeTrcAdminObjs::getTraceAdminObj(
             EEnabled bEnabled = EEnabled::Yes;
             ETraceDetailLevelMethodCalls eDetailLevelMethodCalls = ETraceDetailLevelMethodCalls::None;
             ETraceDetailLevelRuntimeInfo eDetailLevelRuntimeInfo = ETraceDetailLevelRuntimeInfo::None;
+            QString strDataFilter = "";
 
             if( i_bEnabledAsDefault != EEnabled::Undefined )
             {
@@ -257,10 +262,15 @@ CTrcAdminObj* CIdxTreeTrcAdminObjs::getTraceAdminObj(
             {
                 eDetailLevelRuntimeInfo = i_eDefaultDetailLevelRuntimeInfo;
             }
+            if( !i_strDefaultDataFilter.isNull() )
+            {
+                strDataFilter = i_strDefaultDataFilter;
+            }
 
             pTrcAdminObj->setEnabled(bEnabled);
             pTrcAdminObj->setMethodCallsTraceDetailLevel(eDetailLevelMethodCalls);
             pTrcAdminObj->setRuntimeInfoTraceDetailLevel(eDetailLevelRuntimeInfo);
+            pTrcAdminObj->setTraceDataFilter(strDataFilter);
 
             add(pTrcAdminObj, strParentBranchPath);
 
@@ -436,6 +446,7 @@ void CIdxTreeTrcAdminObjs::renameTraceAdminObj(
         EEnabled bEnabled     = pTrcAdminObj->getEnabled();
         ETraceDetailLevelMethodCalls eDetailLevelMethodCalls = pTrcAdminObj->getMethodCallsTraceDetailLevel();
         ETraceDetailLevelRuntimeInfo eDetailLevelRuntimeInfo = pTrcAdminObj->getRuntimeInfoTraceDetailLevel();
+        QString strDataFilter = pTrcAdminObj->getTraceDataFilter();
 
         // The reference counter of the previously referenced trace admin object is decremented.
         pTrcAdminObj->decrementRefCount();
@@ -485,8 +496,8 @@ void CIdxTreeTrcAdminObjs::renameTraceAdminObj(
         {
             // A new trace admin object has to be created and returned.
             pTrcAdminObj = getTraceAdminObj(
-                strNameSpace, strClassName, i_strNewObjName,
-                bEnabled, eDetailLevelMethodCalls, eDetailLevelRuntimeInfo);
+                strNameSpace, strClassName, i_strNewObjName, bEnabled,
+                eDetailLevelMethodCalls, eDetailLevelRuntimeInfo, strDataFilter);
         }
 
         pTrcAdminObj->setObjectName(i_strNewObjName);
@@ -1225,6 +1236,7 @@ SErrResultInfo CIdxTreeTrcAdminObjs::recall( const QString& i_strAbsFilePath )
         QString  strObjName;
         QString  strThread;
         EEnabled enabled;
+        QString  strDataFilter;
 
         ETraceDetailLevelMethodCalls eDetailLevelMethodCalls;
         ETraceDetailLevelRuntimeInfo eDetailLevelRuntimeInfo;
@@ -1267,6 +1279,7 @@ SErrResultInfo CIdxTreeTrcAdminObjs::recall( const QString& i_strAbsFilePath )
                             enabled = EEnabled::Yes;
                             eDetailLevelMethodCalls = ETraceDetailLevelMethodCalls::None;
                             eDetailLevelRuntimeInfo = ETraceDetailLevelRuntimeInfo::None;
+                            strDataFilter = "";
 
                             if( xmlStreamReader.attributes().hasAttribute("NameSpace") )
                             {
@@ -1319,10 +1332,14 @@ SErrResultInfo CIdxTreeTrcAdminObjs::recall( const QString& i_strAbsFilePath )
                                         xmlStreamReader.raiseError("Attribute \"RuntimeInfoDetailLevel\" (" + strAttr + ") for \"" + strPath + "\" is out of range");
                                     }
                                 }
+                                if( xmlStreamReader.attributes().hasAttribute("DataFilter") )
+                                {
+                                    strDataFilter = xmlStreamReader.attributes().value("DataFilter").toString();
+                                }
 
                                 CTrcAdminObj* pTrcAdminObj = getTraceAdminObj(
-                                    strNameSpace, strClassName, strObjName,
-                                    enabled, eDetailLevelMethodCalls, eDetailLevelRuntimeInfo, false);
+                                    strNameSpace, strClassName, strObjName, enabled,
+                                    eDetailLevelMethodCalls, eDetailLevelRuntimeInfo, strDataFilter, false);
 
                                 pTrcAdminObj->setObjectThreadName(strThread);
 
@@ -1378,6 +1395,7 @@ void CIdxTreeTrcAdminObjs::save(
         i_xmlStreamWriter.writeAttribute( "Enabled", CEnumEnabled::toString(pTrcAdminObj->getEnabled()) );
         i_xmlStreamWriter.writeAttribute( "MethodCallsDetailLevel", CEnumTraceDetailLevelMethodCalls::toString(pTrcAdminObj->getMethodCallsTraceDetailLevel()) );
         i_xmlStreamWriter.writeAttribute( "RuntimeInfoDetailLevel", CEnumTraceDetailLevelRuntimeInfo::toString(pTrcAdminObj->getRuntimeInfoTraceDetailLevel()) );
+        i_xmlStreamWriter.writeAttribute( "DataFilter", pTrcAdminObj->getTraceDataFilter() );
         i_xmlStreamWriter.writeEndElement(/*"TrcAdminObj"*/);
     }
     else // if( pTreeEntry->entryType() == EIdxTreeEntryType::Root || Branch )

@@ -94,8 +94,150 @@ const QString c_strNameSpace = "ZS::Trace::DllIf";
 const QString c_strClassName = "DllMain";
 
 /*==============================================================================
+DllMain::CTrcAdminObj
+==============================================================================*/
+
+namespace ZS
+{
+namespace Trace
+{
+namespace DllIf
+{
+namespace DllMain
+{
+class CTrcAdminObj : public DllIf::CTrcAdminObj
+{
+public: // ctors and dtor
+    CTrcAdminObj( const char* i_szKeyInTree ) :
+        DllIf::CTrcAdminObj(),
+        m_szKeyInTree(nullptr),
+        m_iLockCount(0),
+        m_bDeleteOnUnlock(false),
+        m_iRefCount(0)
+    {
+        CTrcMthFile* pTrcMthFile = DllIf_IpcTrcServer_s_pTrcMthFile;
+        ZS::Trace::ETraceDetailLevelMethodCalls eTrcDetailLevel = DllIf_IpcTrcServer_s_eTrcMthDetailLevel;
+
+        Trace::CMethodTracer mthTracer(
+            /* pTrcMthFile        */ pTrcMthFile,
+            /* eTrcDetailLevel    */ eTrcDetailLevel,
+            /* eFilterDetailLevel */ ZS::Trace::ETraceDetailLevelMethodCalls::EnterLeave,
+            /* strNameSpace       */ c_strNameSpace,
+            /* strClassName       */ "CTrcAdminObj",
+            /* strObjName         */ i_szKeyInTree,
+            /* strMethod          */ "ctor",
+            /* strMthInArgs       */ "" );
+
+        m_pMtx = new QMutex(QMutex::Recursive);
+
+        size_t iStrLen = strlen(i_szKeyInTree);
+        m_szKeyInTree = new char[iStrLen+1];
+        memset(m_szKeyInTree, 0x00, iStrLen+1);
+        memcpy(m_szKeyInTree, i_szKeyInTree, iStrLen);
+    }
+    virtual ~CTrcAdminObj()
+    {
+        CTrcMthFile* pTrcMthFile = DllIf_IpcTrcServer_s_pTrcMthFile;
+        ZS::Trace::ETraceDetailLevelMethodCalls eTrcDetailLevel = DllIf_IpcTrcServer_s_eTrcMthDetailLevel;
+
+        Trace::CMethodTracer mthTracer(
+            /* pTrcMthFile        */ pTrcMthFile,
+            /* eTrcDetailLevel    */ eTrcDetailLevel,
+            /* eFilterDetailLevel */ ZS::Trace::ETraceDetailLevelMethodCalls::EnterLeave,
+            /* strNameSpace       */ c_strNameSpace,
+            /* strClassName       */ "CTrcAdminObj",
+            /* strObjName         */ m_szKeyInTree,
+            /* strMethod          */ "dtor",
+            /* strMthInArgs       */ "" );
+
+        delete m_pMtx;
+        m_pMtx = nullptr;
+        delete m_szKeyInTree;
+        m_szKeyInTree = nullptr;
+        m_iLockCount = 0;
+        m_bDeleteOnUnlock = false;
+        m_iRefCount = 0;
+    }
+public: // instance methods
+    virtual const char* keyInTree() const override
+    {
+        QMutexLocker mtxLocker(m_pMtx);
+        return m_szKeyInTree;
+    }
+public: // instance methods
+    virtual int lock() override
+    {
+        QMutexLocker mtxLocker(m_pMtx);
+        ++m_iLockCount;
+        return m_iLockCount;
+    }
+    virtual int unlock() override
+    {
+        QMutexLocker mtxLocker(m_pMtx);
+        --m_iLockCount;
+        return m_iLockCount;
+    }
+    virtual bool isLocked() const override
+    {
+        QMutexLocker mtxLocker(m_pMtx);
+        return (m_iLockCount > 0);
+    }
+    virtual int getLockCount() const override
+    {
+        QMutexLocker mtxLocker(m_pMtx);
+        return m_iLockCount;
+    }
+    virtual void setDeleteOnUnlock( bool i_bDelete ) override
+    {
+        QMutexLocker mtxLocker(m_pMtx);
+        m_bDeleteOnUnlock = i_bDelete;
+    }
+    virtual bool deleteOnUnlock() const override
+    {
+        QMutexLocker mtxLocker(m_pMtx);
+        return (m_iLockCount <= 0) && (m_iRefCount <= 0) && m_bDeleteOnUnlock;
+    }
+public: // instance methods
+    virtual int incrementRefCount() override
+    {
+        QMutexLocker mtxLocker(m_pMtx);
+        ++m_iRefCount;
+        return m_iRefCount;
+    }
+    virtual int decrementRefCount() override
+    {
+        QMutexLocker mtxLocker(m_pMtx);
+        --m_iRefCount;
+        return m_iRefCount;
+    }
+    virtual void setRefCount( int i_iRefCount ) override
+    {
+        QMutexLocker mtxLocker(m_pMtx);
+        m_iRefCount = i_iRefCount;
+    }
+    virtual int getRefCount() const override
+    {
+        QMutexLocker mtxLocker(m_pMtx);
+        return m_iRefCount;
+    }
+private: // instance members
+    QMutex* m_pMtx;
+    char*   m_szKeyInTree;
+    int     m_iLockCount;
+    bool    m_bDeleteOnUnlock;
+    int     m_iRefCount;
+};
+} // namespace DllMain
+} // namespace DllIf
+} // namespace Trace
+} // namespace ZS
+
+
+/*==============================================================================
 DllIf::CTrcAdminObj
 ==============================================================================*/
+
+static QHash<QString, DllIf::DllMain::CTrcAdminObj*> DllIf_TrcServer_s_hshpTrcAdminObjs;
 
 //------------------------------------------------------------------------------
 ZSIPCTRACEDLL_EXTERN_API char* TrcAdminObj_getNameSpace( const DllIf::CTrcAdminObj* i_pTrcAdminObj )
@@ -122,7 +264,7 @@ ZSIPCTRACEDLL_EXTERN_API char* TrcAdminObj_getNameSpace( const DllIf::CTrcAdminO
             if( pTrcAdminObj != nullptr )
             {
                 std::string stdstrName = pTrcAdminObj->getNameSpace().toStdString();
-                char* szName = new char[stdstrName.size() + 1];
+                szName = new char[stdstrName.size() + 1];
                 memcpy(szName, stdstrName.c_str(), stdstrName.size());
                 szName[stdstrName.size()] = 0x00;
             }
@@ -158,7 +300,7 @@ ZSIPCTRACEDLL_EXTERN_API char* TrcAdminObj_getClassName( const DllIf::CTrcAdminO
             if( pTrcAdminObj != nullptr )
             {
                 std::string stdstrName = pTrcAdminObj->getClassName().toStdString();
-                char* szName = new char[stdstrName.size() + 1];
+                szName = new char[stdstrName.size() + 1];
                 memcpy(szName, stdstrName.c_str(), stdstrName.size());
                 szName[stdstrName.size()] = 0x00;
             }
@@ -194,7 +336,7 @@ ZSIPCTRACEDLL_EXTERN_API char* TrcAdminObj_getObjectName( const DllIf::CTrcAdmin
             if( pTrcAdminObj != nullptr )
             {
                 std::string stdstrName = pTrcAdminObj->getObjectName().toStdString();
-                char* szName = new char[stdstrName.size() + 1];
+                szName = new char[stdstrName.size() + 1];
                 memcpy(szName, stdstrName.c_str(), stdstrName.size());
                 szName[stdstrName.size()] = 0x00;
             }
@@ -281,7 +423,7 @@ ZSIPCTRACEDLL_EXTERN_API char* TrcAdminObj_getObjectThreadName( const DllIf::CTr
             if( pTrcAdminObj != nullptr )
             {
                 std::string stdstrName = pTrcAdminObj->getObjectThreadName().toStdString();
-                char* szName = new char[stdstrName.size() + 1];
+                szName = new char[stdstrName.size() + 1];
                 memcpy(szName, stdstrName.c_str(), stdstrName.size());
                 szName[stdstrName.size()] = 0x00;
             }
@@ -291,6 +433,329 @@ ZSIPCTRACEDLL_EXTERN_API char* TrcAdminObj_getObjectThreadName( const DllIf::CTr
     return szName;
 
 } // TrcAdminObj_getObjectThreadName
+
+//------------------------------------------------------------------------------
+ZSIPCTRACEDLL_EXTERN_API int TrcAdminObj_lock( DllIf::CTrcAdminObj* i_pTrcAdminObj )
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(&DllIf_s_mtx);
+
+    int iLockCount = 0;
+
+    if( i_pTrcAdminObj != nullptr )
+    {
+        QString strKeyInTree = i_pTrcAdminObj->keyInTree();
+
+        CTrcMthFile* pTrcMthFile = DllIf_IpcTrcServer_s_pTrcMthFile;
+        ETraceDetailLevelMethodCalls eTrcDetailLevel = DllIf_IpcTrcServer_s_eTrcMthDetailLevel;
+
+        QString strMthInArgs;
+
+        CMethodTracer mthTracer(
+            /* pTrcMthFile        */ pTrcMthFile,
+            /* eTrcDetailLevel    */ eTrcDetailLevel,
+            /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+            /* strNameSpace       */ c_strNameSpace,
+            /* strClassName       */ c_strClassName,
+            /* strObjName         */ strKeyInTree,
+            /* strMethod          */ "TrcAdminObj_lock",
+            /* strMthInArgs       */ strMthInArgs );
+
+        CTrcServer* pTrcServer = CTrcServer::GetInstance();
+
+        if( pTrcServer != nullptr )
+        {
+            CIdxTreeTrcAdminObjs* pIdxTree = pTrcServer->getTraceAdminObjIdxTree();
+
+            CIdxTreeEntry* pTreeEntry = pIdxTree->findEntry(strKeyInTree);
+
+            CTrcAdminObj* pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(pTreeEntry);
+
+            if( pTrcAdminObj != nullptr )
+            {
+                iLockCount = pTrcAdminObj->lock();
+            }
+        } // if( pTrcServer != nullptr )
+
+        if( eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+        {
+            mthTracer.setMethodReturn(iLockCount);
+        }
+    } // if( i_pTrcAdminObj != nullptr )
+
+    return iLockCount;
+
+} // TrcAdminObj_lock
+
+//------------------------------------------------------------------------------
+ZSIPCTRACEDLL_EXTERN_API int TrcAdminObj_unlock( DllIf::CTrcAdminObj* i_pTrcAdminObj )
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(&DllIf_s_mtx);
+
+    int iLockCount = 0;
+
+    if( i_pTrcAdminObj != nullptr )
+    {
+        QString strKeyInTree = i_pTrcAdminObj->keyInTree();
+
+        CTrcMthFile* pTrcMthFile = DllIf_IpcTrcServer_s_pTrcMthFile;
+        ETraceDetailLevelMethodCalls eTrcDetailLevel = DllIf_IpcTrcServer_s_eTrcMthDetailLevel;
+
+        QString strMthInArgs;
+
+        CMethodTracer mthTracer(
+            /* pTrcMthFile        */ pTrcMthFile,
+            /* eTrcDetailLevel    */ eTrcDetailLevel,
+            /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+            /* strNameSpace       */ c_strNameSpace,
+            /* strClassName       */ c_strClassName,
+            /* strObjName         */ strKeyInTree,
+            /* strMethod          */ "TrcAdminObj_unlock",
+            /* strMthInArgs       */ strMthInArgs );
+
+        CTrcServer* pTrcServer = CTrcServer::GetInstance();
+
+        if( pTrcServer != nullptr )
+        {
+            CIdxTreeTrcAdminObjs* pIdxTree = pTrcServer->getTraceAdminObjIdxTree();
+
+            CIdxTreeEntry* pTreeEntry = pIdxTree->findEntry(strKeyInTree);
+
+            CTrcAdminObj* pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(pTreeEntry);
+
+            if( pTrcAdminObj != nullptr )
+            {
+                iLockCount = pTrcAdminObj->unlock();
+            }
+        } // if( pTrcServer != nullptr )
+
+        if( eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+        {
+            mthTracer.setMethodReturn(iLockCount);
+        }
+    } // if( i_pTrcAdminObj != nullptr )
+
+    return iLockCount;
+
+} // TrcAdminObj_unlock
+
+//------------------------------------------------------------------------------
+ZSIPCTRACEDLL_EXTERN_API bool TrcAdminObj_isLocked( DllIf::CTrcAdminObj* i_pTrcAdminObj )
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(&DllIf_s_mtx);
+
+    bool bIsLocked = false;
+
+    if( i_pTrcAdminObj != nullptr )
+    {
+        QString strKeyInTree = i_pTrcAdminObj->keyInTree();
+
+        CTrcMthFile* pTrcMthFile = DllIf_IpcTrcServer_s_pTrcMthFile;
+        ETraceDetailLevelMethodCalls eTrcDetailLevel = DllIf_IpcTrcServer_s_eTrcMthDetailLevel;
+
+        QString strMthInArgs;
+
+        CMethodTracer mthTracer(
+            /* pTrcMthFile        */ pTrcMthFile,
+            /* eTrcDetailLevel    */ eTrcDetailLevel,
+            /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+            /* strNameSpace       */ c_strNameSpace,
+            /* strClassName       */ c_strClassName,
+            /* strObjName         */ strKeyInTree,
+            /* strMethod          */ "TrcAdminObj_isLocked",
+            /* strMthInArgs       */ strMthInArgs );
+
+        CTrcServer* pTrcServer = CTrcServer::GetInstance();
+
+        if( pTrcServer != nullptr )
+        {
+            CIdxTreeTrcAdminObjs* pIdxTree = pTrcServer->getTraceAdminObjIdxTree();
+
+            CIdxTreeEntry* pTreeEntry = pIdxTree->findEntry(strKeyInTree);
+
+            CTrcAdminObj* pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(pTreeEntry);
+
+            if( pTrcAdminObj != nullptr )
+            {
+                bIsLocked = pTrcAdminObj->isLocked();
+            }
+        } // if( pTrcServer != nullptr )
+
+        if( eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+        {
+            mthTracer.setMethodReturn(bIsLocked);
+        }
+    } // if( i_pTrcAdminObj != nullptr )
+
+    return bIsLocked;
+
+} // TrcAdminObj_isLocked
+
+//------------------------------------------------------------------------------
+ZSIPCTRACEDLL_EXTERN_API int TrcAdminObj_getLockCount( DllIf::CTrcAdminObj* i_pTrcAdminObj )
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(&DllIf_s_mtx);
+
+    int iLockCount = 0;
+
+    if( i_pTrcAdminObj != nullptr )
+    {
+        QString strKeyInTree = i_pTrcAdminObj->keyInTree();
+
+        CTrcMthFile* pTrcMthFile = DllIf_IpcTrcServer_s_pTrcMthFile;
+        ETraceDetailLevelMethodCalls eTrcDetailLevel = DllIf_IpcTrcServer_s_eTrcMthDetailLevel;
+
+        QString strMthInArgs;
+
+        CMethodTracer mthTracer(
+            /* pTrcMthFile        */ pTrcMthFile,
+            /* eTrcDetailLevel    */ eTrcDetailLevel,
+            /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+            /* strNameSpace       */ c_strNameSpace,
+            /* strClassName       */ c_strClassName,
+            /* strObjName         */ strKeyInTree,
+            /* strMethod          */ "TrcAdminObj_getLockCount",
+            /* strMthInArgs       */ strMthInArgs );
+
+        CTrcServer* pTrcServer = CTrcServer::GetInstance();
+
+        if( pTrcServer != nullptr )
+        {
+            CIdxTreeTrcAdminObjs* pIdxTree = pTrcServer->getTraceAdminObjIdxTree();
+
+            CIdxTreeEntry* pTreeEntry = pIdxTree->findEntry(strKeyInTree);
+
+            CTrcAdminObj* pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(pTreeEntry);
+
+            if( pTrcAdminObj != nullptr )
+            {
+                iLockCount = pTrcAdminObj->getLockCount();
+            }
+        } // if( pTrcServer != nullptr )
+
+        if( eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+        {
+            mthTracer.setMethodReturn(iLockCount);
+        }
+    } // if( i_pTrcAdminObj != nullptr )
+
+    return iLockCount;
+
+} // TrcAdminObj_getLockCount
+
+//------------------------------------------------------------------------------
+ZSIPCTRACEDLL_EXTERN_API void TrcAdminObj_setDeleteOnUnlock(
+    DllIf::CTrcAdminObj* i_pTrcAdminObj,
+    bool                 i_bDelete )
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(&DllIf_s_mtx);
+
+    if( i_pTrcAdminObj != nullptr )
+    {
+        QString strKeyInTree = i_pTrcAdminObj->keyInTree();
+
+        CTrcMthFile* pTrcMthFile = DllIf_IpcTrcServer_s_pTrcMthFile;
+        ETraceDetailLevelMethodCalls eTrcDetailLevel = DllIf_IpcTrcServer_s_eTrcMthDetailLevel;
+
+        QString strMthInArgs;
+
+        if( eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+        {
+            strMthInArgs = bool2Str(i_bDelete);
+        }
+
+        CMethodTracer mthTracer(
+            /* pTrcMthFile        */ pTrcMthFile,
+            /* eTrcDetailLevel    */ eTrcDetailLevel,
+            /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+            /* strNameSpace       */ c_strNameSpace,
+            /* strClassName       */ c_strClassName,
+            /* strObjName         */ strKeyInTree,
+            /* strMethod          */ "TrcAdminObj_setDeleteOnUnlock",
+            /* strMthInArgs       */ strMthInArgs );
+
+        CTrcServer* pTrcServer = CTrcServer::GetInstance();
+
+        if( pTrcServer != nullptr )
+        {
+            CIdxTreeTrcAdminObjs* pIdxTree = pTrcServer->getTraceAdminObjIdxTree();
+
+            CIdxTreeEntry* pTreeEntry = pIdxTree->findEntry(strKeyInTree);
+
+            CTrcAdminObj* pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(pTreeEntry);
+
+            if( pTrcAdminObj != nullptr )
+            {
+                pTrcAdminObj->setDeleteOnUnlock(i_bDelete);
+            }
+        } // if( pTrcServer != nullptr )
+    } // if( i_pTrcAdminObj != nullptr )
+
+} // TrcAdminObj_setDeleteOnUnlock
+
+//------------------------------------------------------------------------------
+ZSIPCTRACEDLL_EXTERN_API bool TrcAdminObj_deleteOnUnlock(
+    DllIf::CTrcAdminObj* i_pTrcAdminObj,
+    bool                 i_bEnabled )
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(&DllIf_s_mtx);
+
+    bool bDelete = false;
+
+    if( i_pTrcAdminObj != nullptr )
+    {
+        QString strKeyInTree = i_pTrcAdminObj->keyInTree();
+
+        CTrcMthFile* pTrcMthFile = DllIf_IpcTrcServer_s_pTrcMthFile;
+        ETraceDetailLevelMethodCalls eTrcDetailLevel = DllIf_IpcTrcServer_s_eTrcMthDetailLevel;
+
+        QString strMthInArgs;
+
+        if( eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+        {
+            strMthInArgs = bool2Str(i_bEnabled);
+        }
+
+        CMethodTracer mthTracer(
+            /* pTrcMthFile        */ pTrcMthFile,
+            /* eTrcDetailLevel    */ eTrcDetailLevel,
+            /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+            /* strNameSpace       */ c_strNameSpace,
+            /* strClassName       */ c_strClassName,
+            /* strObjName         */ strKeyInTree,
+            /* strMethod          */ "TrcAdminObj_deleteOnUnlock",
+            /* strMthInArgs       */ strMthInArgs );
+
+        CTrcServer* pTrcServer = CTrcServer::GetInstance();
+
+        if( pTrcServer != nullptr )
+        {
+            CIdxTreeTrcAdminObjs* pIdxTree = pTrcServer->getTraceAdminObjIdxTree();
+
+            CIdxTreeEntry* pTreeEntry = pIdxTree->findEntry(strKeyInTree);
+
+            CTrcAdminObj* pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(pTreeEntry);
+
+            if( pTrcAdminObj != nullptr )
+            {
+                bDelete = pTrcAdminObj->deleteOnUnlock();
+            }
+        } // if( pTrcServer != nullptr )
+
+        if( eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+        {
+            mthTracer.setMethodReturn(bDelete);
+        }
+    } // if( i_pTrcAdminObj != nullptr )
+
+    return bDelete;
+
+} // TrcAdminObj_deleteOnUnlock
 
 //------------------------------------------------------------------------------
 ZSIPCTRACEDLL_EXTERN_API void TrcAdminObj_setEnabled(
@@ -615,6 +1080,128 @@ ZSIPCTRACEDLL_EXTERN_API bool TrcAdminObj_isRuntimeInfoActive(
 } // TrcAdminObj_isRuntimeInfoActive
 
 //------------------------------------------------------------------------------
+ZSIPCTRACEDLL_EXTERN_API void TrcAdminObj_setTraceDataFilter(
+    DllIf::CTrcAdminObj* i_pTrcAdminObj,
+    const char*          i_szFilter )
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(&DllIf_s_mtx);
+
+    if( i_pTrcAdminObj != nullptr )
+    {
+        QString strKeyInTree = i_pTrcAdminObj->keyInTree();
+
+        CTrcMthFile* pTrcMthFile = DllIf_IpcTrcServer_s_pTrcMthFile;
+        ETraceDetailLevelMethodCalls eTrcDetailLevel = DllIf_IpcTrcServer_s_eTrcMthDetailLevel;
+
+        QString strMthInArgs;
+
+        if( eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+        {
+            strMthInArgs = i_szFilter;
+        }
+
+        CMethodTracer mthTracer(
+            /* pTrcMthFile        */ pTrcMthFile,
+            /* eTrcDetailLevel    */ eTrcDetailLevel,
+            /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+            /* strNameSpace       */ c_strNameSpace,
+            /* strClassName       */ c_strClassName,
+            /* strObjName         */ strKeyInTree,
+            /* strMethod          */ "TrcAdminObj_setTraceDataFilter",
+            /* strMthInArgs       */ strMthInArgs );
+
+        CTrcServer* pTrcServer = CTrcServer::GetInstance();
+
+        if( pTrcServer != nullptr )
+        {
+            CIdxTreeTrcAdminObjs* pIdxTree = pTrcServer->getTraceAdminObjIdxTree();
+
+            CIdxTreeEntry* pTreeEntry = pIdxTree->findEntry(strKeyInTree);
+
+            CTrcAdminObj* pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(pTreeEntry);
+
+            if( pTrcAdminObj != nullptr )
+            {
+                pTrcAdminObj->setTraceDataFilter(i_szFilter);
+            }
+        } // if( pTrcServer != nullptr )
+    } // if( i_pTrcAdminObj != nullptr )
+
+} // TrcAdminObj_setTraceDataFilter
+
+//------------------------------------------------------------------------------
+ZSIPCTRACEDLL_EXTERN_API char* TrcAdminObj_getTraceDataFilter( const DllIf::CTrcAdminObj* i_pTrcAdminObj )
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(&DllIf_s_mtx);
+
+    char* szFilter = nullptr;
+
+    if( i_pTrcAdminObj != nullptr )
+    {
+        QString strKeyInTree = i_pTrcAdminObj->keyInTree();
+
+        CTrcServer* pTrcServer = CTrcServer::GetInstance();
+
+        if( pTrcServer != nullptr )
+        {
+            CIdxTreeTrcAdminObjs* pIdxTree = pTrcServer->getTraceAdminObjIdxTree();
+
+            CIdxTreeEntry* pTreeEntry = pIdxTree->findEntry(strKeyInTree);
+
+            CTrcAdminObj* pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(pTreeEntry);
+
+            if( pTrcAdminObj != nullptr )
+            {
+                std::string stdstrFilter = pTrcAdminObj->getTraceDataFilter().toStdString();
+                szFilter = new char[stdstrFilter.size() + 1];
+                memcpy(szFilter, stdstrFilter.c_str(), stdstrFilter.size());
+                szFilter[stdstrFilter.size()] = 0x00;
+            }
+        } // if( pTrcServer != nullptr )
+    } // if( i_pTrcAdminObj != nullptr )
+
+    return szFilter;
+
+} // TrcAdminObj_getTraceDataFilter
+
+//------------------------------------------------------------------------------
+ZSIPCTRACEDLL_EXTERN_API bool TrcAdminObj_isTraceDataSuppressedByFilter(
+    DllIf::CTrcAdminObj* i_pTrcAdminObj,
+    const char*          i_szTraceData )
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(&DllIf_s_mtx);
+
+    bool bIsSuppressed = false;
+
+    if( i_pTrcAdminObj != nullptr )
+    {
+        QString strKeyInTree = i_pTrcAdminObj->keyInTree();
+
+        CTrcServer* pTrcServer = CTrcServer::GetInstance();
+
+        if( pTrcServer != nullptr )
+        {
+            CIdxTreeTrcAdminObjs* pIdxTree = pTrcServer->getTraceAdminObjIdxTree();
+
+            CIdxTreeEntry* pTreeEntry = pIdxTree->findEntry(strKeyInTree);
+
+            CTrcAdminObj* pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(pTreeEntry);
+
+            if( pTrcAdminObj != nullptr )
+            {
+                bIsSuppressed = pTrcAdminObj->isTraceDataSuppressedByFilter(i_szTraceData);
+            }
+        } // if( pTrcServer != nullptr )
+    } // if( i_pTrcAdminObj != nullptr )
+
+    return bIsSuppressed;
+
+} // TrcAdminObj
+
+//------------------------------------------------------------------------------
 ZSIPCTRACEDLL_EXTERN_API void TrcAdminObj_traceMethodEnter(
     DllIf::CTrcAdminObj* i_pTrcAdminObj,
     const char*          i_szObjName,
@@ -798,9 +1385,6 @@ ZSIPCTRACEDLL_EXTERN_API void TrcAdminObj_traceMethod(
 DllIf::CTrcServer
 ==============================================================================*/
 
-static QHash<QString, DllIf::CTrcAdminObj*> DllIf_TrcServer_s_hshpTrcAdminObjs;
-static QHash<QString, int> DllIf_TrcServer_s_hshiTrcAdminObjsRefCounts;
-
 //------------------------------------------------------------------------------
 ZSIPCTRACEDLL_EXTERN_API DllIf::CTrcAdminObj* TrcServer_GetTraceAdminObj(
     const char* i_szNameSpace,
@@ -820,7 +1404,7 @@ ZSIPCTRACEDLL_EXTERN_API DllIf::CTrcAdminObj* TrcServer_GetTraceAdminObj(
 
     QMutexLocker mtxLocker(&DllIf_s_mtx);
 
-    DllIf::CTrcAdminObj* pDllIfTrcAdminObj = nullptr;
+    DllIf::DllMain::CTrcAdminObj* pDllIfTrcAdminObj = nullptr;
 
     QString strNameSpace  = i_szNameSpace;
     QString strClassName  = i_szClassName;
@@ -869,17 +1453,13 @@ ZSIPCTRACEDLL_EXTERN_API DllIf::CTrcAdminObj* TrcServer_GetTraceAdminObj(
 
             pDllIfTrcAdminObj = DllIf_TrcServer_s_hshpTrcAdminObjs.value(strKeyInTree, nullptr);
 
-            int iRefCount = DllIf_TrcServer_s_hshiTrcAdminObjsRefCounts.value(strKeyInTree, 0);
-
             if( pDllIfTrcAdminObj == nullptr )
             {
-                pDllIfTrcAdminObj = new DllIf::CTrcAdminObj(strKeyInTree.toUtf8());
+                pDllIfTrcAdminObj = new DllIf::DllMain::CTrcAdminObj(strKeyInTree.toUtf8());
                 DllIf_TrcServer_s_hshpTrcAdminObjs[strKeyInTree] = pDllIfTrcAdminObj;
             }
 
-            ++iRefCount;
-
-            DllIf_TrcServer_s_hshiTrcAdminObjsRefCounts[strKeyInTree] = iRefCount;
+            pDllIfTrcAdminObj->incrementRefCount();
         }
     } // if( pTrcServer != nullptr )
 
@@ -901,7 +1481,8 @@ ZSIPCTRACEDLL_EXTERN_API void TrcServer_RenameTraceAdminObj(
 
     QMutexLocker mtxLocker(&DllIf_s_mtx);
 
-    DllIf::CTrcAdminObj* pDllIfTrcAdminObj = *io_ppTrcAdminObj;
+    DllIf::DllMain::CTrcAdminObj* pDllIfTrcAdminObj =
+        dynamic_cast<DllIf::DllMain::CTrcAdminObj*>(*io_ppTrcAdminObj);
 
     QString strNewObjName = i_szNewObjName;
 
@@ -926,12 +1507,12 @@ ZSIPCTRACEDLL_EXTERN_API void TrcServer_RenameTraceAdminObj(
         /* strMethod          */ "TrcServer_RenameTraceAdminObj",
         /* strMthInArgs       */ strMthInArgs );
 
-    if( *io_ppTrcAdminObj != nullptr )
+    if( pDllIfTrcAdminObj != nullptr )
     {
         QString strOldKeyInTree = (*io_ppTrcAdminObj)->keyInTree();
         QString strNewKeyInTree = strOldKeyInTree;
 
-        int iRefCount = DllIf_TrcServer_s_hshiTrcAdminObjsRefCounts.value(strOldKeyInTree, 0);
+        int iRefCount = pDllIfTrcAdminObj->getRefCount();
 
         CTrcServer* pTrcServer = CTrcServer::GetInstance();
 
@@ -952,36 +1533,35 @@ ZSIPCTRACEDLL_EXTERN_API void TrcServer_RenameTraceAdminObj(
 
         if( strNewKeyInTree != strOldKeyInTree )
         {
-            --iRefCount;
-
-            DllIf_TrcServer_s_hshiTrcAdminObjsRefCounts[strOldKeyInTree] = iRefCount;
+            int iRefCount = pDllIfTrcAdminObj->decrementRefCount();
 
             if( iRefCount == 0 )
             {
-                DllIf_TrcServer_s_hshiTrcAdminObjsRefCounts.remove(strOldKeyInTree);
-                DllIf_TrcServer_s_hshpTrcAdminObjs.remove(strOldKeyInTree);
-
-                delete pDllIfTrcAdminObj;
-                pDllIfTrcAdminObj = nullptr;
+                if( pDllIfTrcAdminObj->isLocked() )
+                {
+                    pDllIfTrcAdminObj->setDeleteOnUnlock(true);
+                }
+                else
+                {
+                    DllIf_TrcServer_s_hshpTrcAdminObjs.remove(strOldKeyInTree);
+                    delete pDllIfTrcAdminObj;
+                    pDllIfTrcAdminObj = nullptr;
+                }
             }
 
             pDllIfTrcAdminObj = DllIf_TrcServer_s_hshpTrcAdminObjs.value(strNewKeyInTree, nullptr);
 
-            iRefCount = DllIf_TrcServer_s_hshiTrcAdminObjsRefCounts.value(strNewKeyInTree, 0);
-
             if( pDllIfTrcAdminObj == nullptr )
             {
-                pDllIfTrcAdminObj = new DllIf::CTrcAdminObj(strNewKeyInTree.toUtf8());
+                pDllIfTrcAdminObj = new DllIf::DllMain::CTrcAdminObj(strNewKeyInTree.toUtf8());
                 DllIf_TrcServer_s_hshpTrcAdminObjs[strNewKeyInTree] = pDllIfTrcAdminObj;
             }
 
-            ++iRefCount;
-
-            DllIf_TrcServer_s_hshiTrcAdminObjsRefCounts[strNewKeyInTree] = iRefCount;
+            pDllIfTrcAdminObj->incrementRefCount();
 
             *io_ppTrcAdminObj = pDllIfTrcAdminObj;
         }
-    } // if( *io_ppTrcAdminObj != nullptr )
+    } // if( pDllIfTrcAdminObj != nullptr )
 
 } // TrcServer_RenameTraceAdminObj
 
@@ -997,6 +1577,9 @@ ZSIPCTRACEDLL_EXTERN_API void TrcServer_ReleaseTraceAdminObj( DllIf::CTrcAdminOb
     #endif
 
     QMutexLocker mtxLocker(&DllIf_s_mtx);
+
+    DllIf::DllMain::CTrcAdminObj* pDllIfTrcAdminObj =
+        dynamic_cast<DllIf::DllMain::CTrcAdminObj*>(i_pTrcAdminObj);
 
     CTrcMthFile* pTrcMthFile = DllIf_IpcTrcServer_s_pTrcMthFile;
     ETraceDetailLevelMethodCalls eTrcDetailLevel = DllIf_IpcTrcServer_s_eTrcMthDetailLevel;
@@ -1018,7 +1601,7 @@ ZSIPCTRACEDLL_EXTERN_API void TrcServer_ReleaseTraceAdminObj( DllIf::CTrcAdminOb
         /* strMethod          */ "TrcServer_ReleaseTraceAdminObj",
         /* strMthInArgs       */ strMthInArgs );
 
-    if( i_pTrcAdminObj != nullptr )
+    if( pDllIfTrcAdminObj != nullptr )
     {
         QString strKeyInTree = i_pTrcAdminObj->keyInTree();
 
@@ -1038,16 +1621,22 @@ ZSIPCTRACEDLL_EXTERN_API void TrcServer_ReleaseTraceAdminObj( DllIf::CTrcAdminOb
             }
         } // if( pTrcServer != nullptr )
 
-        int iRefCount = DllIf_TrcServer_s_hshiTrcAdminObjsRefCounts.value(strKeyInTree, 0);
-
-        --iRefCount;
-
-        DllIf_TrcServer_s_hshiTrcAdminObjsRefCounts[strKeyInTree] = iRefCount;
+        if( pDllIfTrcAdminObj->deleteOnUnlock() )
+        {
+            pDllIfTrcAdminObj->setDeleteOnUnlock(false);
+            DllIf_TrcServer_s_hshpTrcAdminObjs.remove(strKeyInTree);
+            delete pDllIfTrcAdminObj;
+            pDllIfTrcAdminObj = nullptr;
+        }
+        else
+        {
+            pDllIfTrcAdminObj->decrementRefCount();
+        }
 
         // The trace admin object of the Dll interface will be kept as long as the trace server is alive.
         // If the trace server is released and its reference counter reaches 0 the admin objects are deleted.
 
-    } // if( i_pTrcAdminObj != nullptr )
+    } // if( pDllIfTrcAdminObj != nullptr )
 
 } // TrcServer_ReleaseTraceAdminObj
 
@@ -1057,8 +1646,7 @@ ZSIPCTRACEDLL_EXTERN_API void TrcServer_SetOrganizationName( const char* i_szNam
 {
     QMutexLocker mtxLocker(&DllIf_s_mtx);
     QCoreApplication::setOrganizationName(i_szName);
-
-} // TrcServer_SetOrganizationName
+}
 
 //------------------------------------------------------------------------------
 ZSIPCTRACEDLL_EXTERN_API char* TrcServer_GetOrganizationName()
@@ -1070,8 +1658,7 @@ ZSIPCTRACEDLL_EXTERN_API char* TrcServer_GetOrganizationName()
     memcpy(szName, stdstrName.c_str(), stdstrName.size());
     szName[stdstrName.size()] = 0x00;
     return szName;
-
-} // TrcServer_GetOrganizationName
+}
 
 //------------------------------------------------------------------------------
 ZSIPCTRACEDLL_EXTERN_API void TrcServer_SetApplicationName( const char* i_szName )
@@ -1079,8 +1666,7 @@ ZSIPCTRACEDLL_EXTERN_API void TrcServer_SetApplicationName( const char* i_szName
 {
     QMutexLocker mtxLocker(&DllIf_s_mtx);
     QCoreApplication::setApplicationName(i_szName);
-
-} // TrcServer_SetApplicationName
+}
 
 //------------------------------------------------------------------------------
 ZSIPCTRACEDLL_EXTERN_API char* TrcServer_GetApplicationName()
@@ -1092,58 +1678,111 @@ ZSIPCTRACEDLL_EXTERN_API char* TrcServer_GetApplicationName()
     memcpy(szName, stdstrName.c_str(), stdstrName.size());
     szName[stdstrName.size()] = 0x00;
     return szName;
-
-} // TrcServer_GetApplicationName
+}
 
 //------------------------------------------------------------------------------
-ZSIPCTRACEDLL_EXTERN_API char* TrcServer_GetDefaultAdminObjFileAbsoluteFilePath( const char* i_szIniFileScope )
+ZSIPCTRACEDLL_EXTERN_API void TrcServer_SetAdminObjFileAbsoluteFilePath( const char* i_szAbsFilePath )
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&DllIf_s_mtx);
+    CTrcServer::SetAdminObjFileAbsoluteFilePath(i_szAbsFilePath);
+}
 
-    QString strIniFileScope = i_szIniFileScope;
-    std::string stdstrAbsFilePath = CTrcServer::GetDefaultAdminObjFileAbsoluteFilePath(strIniFileScope).toStdString();
+//------------------------------------------------------------------------------
+ZSIPCTRACEDLL_EXTERN_API char* TrcServer_GetAdminObjFileAbsoluteFilePath()
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(&DllIf_s_mtx);
+    std::string stdstrAbsFilePath = CTrcServer::GetAdminObjFileAbsoluteFilePath().toStdString();
     char* szAbsFilePath = new char[stdstrAbsFilePath.size() + 1];
     memcpy(szAbsFilePath, stdstrAbsFilePath.c_str(), stdstrAbsFilePath.size());
     szAbsFilePath[stdstrAbsFilePath.size()] = 0x00;
     return szAbsFilePath;
-
-} // TrcServer_GetDefaultAdminObjFileAbsoluteFilePath
+}
 
 //------------------------------------------------------------------------------
-ZSIPCTRACEDLL_EXTERN_API char* TrcServer_GetDefaultLocalTrcFileAbsoluteFilePath( const char* i_szIniFileScope )
+ZSIPCTRACEDLL_EXTERN_API char* TrcServer_GetAdminObjFileCompleteBaseName()
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&DllIf_s_mtx);
+    std::string stdstrBaseName = CTrcServer::GetAdminObjFileCompleteBaseName().toStdString();
+    char* szBaseName = new char[stdstrBaseName.size() + 1];
+    memcpy(szBaseName, stdstrBaseName.c_str(), stdstrBaseName.size());
+    szBaseName[stdstrBaseName.size()] = 0x00;
+    return szBaseName;
+}
 
-    QString strIniFileScope = i_szIniFileScope;
-    std::string stdstrAbsFilePath = CTrcServer::GetDefaultLocalTrcFileAbsoluteFilePath(strIniFileScope).toStdString();
+//------------------------------------------------------------------------------
+ZSIPCTRACEDLL_EXTERN_API char* TrcServer_GetAdminObjFileAbsolutePath()
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(&DllIf_s_mtx);
+    std::string stdstrAbsPath = CTrcServer::GetAdminObjFileAbsolutePath().toStdString();
+    char* szAbsPath = new char[stdstrAbsPath.size() + 1];
+    memcpy(szAbsPath, stdstrAbsPath.c_str(), stdstrAbsPath.size());
+    szAbsPath[stdstrAbsPath.size()] = 0x00;
+    return szAbsPath;
+}
+
+//------------------------------------------------------------------------------
+ZSIPCTRACEDLL_EXTERN_API void TrcServer_SetLocalTrcFileAbsoluteFilePath( const char* i_szAbsFilePath )
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(&DllIf_s_mtx);
+    CTrcServer::SetLocalTrcFileAbsoluteFilePath(i_szAbsFilePath);
+}
+
+//------------------------------------------------------------------------------
+ZSIPCTRACEDLL_EXTERN_API char* TrcServer_GetLocalTrcFileAbsoluteFilePath()
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(&DllIf_s_mtx);
+    std::string stdstrAbsFilePath = CTrcServer::GetLocalTrcFileAbsoluteFilePath().toStdString();
     char* szAbsFilePath = new char[stdstrAbsFilePath.size() + 1];
     memcpy(szAbsFilePath, stdstrAbsFilePath.c_str(), stdstrAbsFilePath.size());
     szAbsFilePath[stdstrAbsFilePath.size()] = 0x00;
     return szAbsFilePath;
+}
 
-} // TrcServer_GetDefaultLocalTrcFileAbsoluteFilePath
+//------------------------------------------------------------------------------
+ZSIPCTRACEDLL_EXTERN_API char* TrcServer_GetLocalTrcFileCompleteBaseName()
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(&DllIf_s_mtx);
+    std::string stdstrBaseName = CTrcServer::GetLocalTrcFileCompleteBaseName().toStdString();
+    char* szBaseName = new char[stdstrBaseName.size() + 1];
+    memcpy(szBaseName, stdstrBaseName.c_str(), stdstrBaseName.size());
+    szBaseName[stdstrBaseName.size()] = 0x00;
+    return szBaseName;
+}
+
+//------------------------------------------------------------------------------
+ZSIPCTRACEDLL_EXTERN_API char* TrcServer_GetLocalTrcFileAbsolutePath()
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(&DllIf_s_mtx);
+    std::string stdstrAbsPath = CTrcServer::GetLocalTrcFileAbsolutePath().toStdString();
+    char* szAbsPath = new char[stdstrAbsPath.size() + 1];
+    memcpy(szAbsPath, stdstrAbsPath.c_str(), stdstrAbsPath.size());
+    szAbsPath[stdstrAbsPath.size()] = 0x00;
+    return szAbsPath;
+}
 
 //------------------------------------------------------------------------------
 ZSIPCTRACEDLL_EXTERN_API void TrcServer_RegisterCurrentThread( const char* i_szThreadName )
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&DllIf_s_mtx);
-
     CTrcServer::RegisterCurrentThread(i_szThreadName);
-
-} // TrcServer_RegisterCurrentThread
+}
 
 //------------------------------------------------------------------------------
 ZSIPCTRACEDLL_EXTERN_API void TrcServer_UnregisterCurrentThread()
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&DllIf_s_mtx);
-
     CTrcServer::UnregisterCurrentThread();
-
-} // TrcServer_UnregisterCurrentThread
+}
 
 //------------------------------------------------------------------------------
 ZSIPCTRACEDLL_EXTERN_API char* TrcServer_GetCurrentThreadName()
@@ -1156,8 +1795,7 @@ ZSIPCTRACEDLL_EXTERN_API char* TrcServer_GetCurrentThreadName()
     memcpy(szName, stdstrName.c_str(), stdstrName.size());
     szName[stdstrName.size()] = 0x00;
     return szName;
-
-} // TrcServer_GetCurrentThreadName
+}
 
 //------------------------------------------------------------------------------
 ZSIPCTRACEDLL_EXTERN_API bool TrcServer_isActive( const DllIf::CTrcServer* i_pTrcServer )
@@ -1178,8 +1816,7 @@ ZSIPCTRACEDLL_EXTERN_API bool TrcServer_isActive( const DllIf::CTrcServer* i_pTr
     } // if( i_pTrcServer != nullptr )
 
     return bIsActive;
-
-} // TrcServer_isActive
+}
 
 //------------------------------------------------------------------------------
 ZSIPCTRACEDLL_EXTERN_API void TrcServer_setEnabled( const DllIf::CTrcServer* i_pTrcServer, bool i_bEnabled )
@@ -1216,8 +1853,7 @@ ZSIPCTRACEDLL_EXTERN_API void TrcServer_setEnabled( const DllIf::CTrcServer* i_p
             pTrcServer->setEnabled(i_bEnabled);
         }
     } // if( i_pTrcServer != nullptr )
-
-} // TrcServer_setEnabled
+}
 
 //------------------------------------------------------------------------------
 ZSIPCTRACEDLL_EXTERN_API bool TrcServer_isEnabled( const DllIf::CTrcServer* i_pTrcServer )
@@ -1238,8 +1874,7 @@ ZSIPCTRACEDLL_EXTERN_API bool TrcServer_isEnabled( const DllIf::CTrcServer* i_pT
     } // if( i_pTrcServer != nullptr )
 
     return bEnabled;
-
-} // TrcServer_isEnabled
+}
 
 //------------------------------------------------------------------------------
 ZSIPCTRACEDLL_EXTERN_API void TrcServer_setNewTrcAdminObjsEnabledAsDefault( const DllIf::CTrcServer* i_pTrcServer, bool i_bEnabled )
@@ -1298,8 +1933,7 @@ ZSIPCTRACEDLL_EXTERN_API bool TrcServer_areNewTrcAdminObjsEnabledAsDefault( cons
     } // if( i_pTrcServer != nullptr )
 
     return bEnabled;
-
-} // TrcServer_areNewTrcAdminObjsEnabledAsDefault
+}
 
 //------------------------------------------------------------------------------
 ZSIPCTRACEDLL_EXTERN_API void TrcServer_setNewTrcAdminObjsMethodCallsDefaultDetailLevel(
@@ -1376,7 +2010,7 @@ ZSIPCTRACEDLL_EXTERN_API void TrcServer_setNewTrcAdminObjsRuntimeInfoDefaultDeta
 
         if( eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
         {
-            strMthInArgs = CEnumTraceDetailLevelMethodCalls(i_eDetailLevel).toString();
+            strMthInArgs = CEnumTraceDetailLevelRuntimeInfo(i_eDetailLevel).toString();
         }
 
         CMethodTracer mthTracer(
@@ -1420,69 +2054,6 @@ ZSIPCTRACEDLL_EXTERN_API DllIf::ETraceDetailLevelRuntimeInfo TrcServer_getNewTrc
 }
 
 //------------------------------------------------------------------------------
-ZSIPCTRACEDLL_EXTERN_API void TrcServer_setAdminObjFileAbsoluteFilePath( const DllIf::CTrcServer* i_pTrcServer, const char* i_szAbsFilePath )
-//------------------------------------------------------------------------------
-{
-    QMutexLocker mtxLocker(&DllIf_s_mtx);
-
-    if( i_pTrcServer != nullptr )
-    {
-        CTrcMthFile* pTrcMthFile = DllIf_IpcTrcServer_s_pTrcMthFile;
-        ETraceDetailLevelMethodCalls eTrcDetailLevel = DllIf_IpcTrcServer_s_eTrcMthDetailLevel;
-
-        QString strMthInArgs;
-
-        if( eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
-        {
-            strMthInArgs = i_szAbsFilePath;
-        }
-
-        CMethodTracer mthTracer(
-            /* pTrcMthFile        */ pTrcMthFile,
-            /* eTrcDetailLevel    */ eTrcDetailLevel,
-            /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
-            /* strNameSpace       */ c_strNameSpace,
-            /* strClassName       */ c_strClassName,
-            /* strObjName         */ "ZSTrcServer",
-            /* strMethod          */ "TrcServer_setAdminObjFileAbsoluteFilePath",
-            /* strMthInArgs       */ strMthInArgs );
-
-        CTrcServer* pTrcServer = CTrcServer::GetInstance();
-
-        if( pTrcServer != nullptr )
-        {
-            pTrcServer->setAdminObjFileAbsoluteFilePath(i_szAbsFilePath);
-        }
-    } // if( i_pTrcServer != nullptr )
-
-} // TrcServer_setAdminObjFileAbsoluteFilePath
-
-//------------------------------------------------------------------------------
-ZSIPCTRACEDLL_EXTERN_API char* TrcServer_getAdminObjFileAbsoluteFilePath( const DllIf::CTrcServer* i_pTrcServer )
-//------------------------------------------------------------------------------
-{
-    QMutexLocker mtxLocker(&DllIf_s_mtx);
-
-    char* szAbsFilePath = nullptr;
-
-    if( i_pTrcServer != nullptr )
-    {
-        CTrcServer* pTrcServer = CTrcServer::GetInstance();
-
-        if( pTrcServer != nullptr )
-        {
-            std::string stdstrAbsFilePath = pTrcServer->getAdminObjFileAbsoluteFilePath().toStdString();
-            szAbsFilePath = new char[stdstrAbsFilePath.size() + 1];
-            memcpy(szAbsFilePath, stdstrAbsFilePath.c_str(), stdstrAbsFilePath.size());
-            szAbsFilePath[stdstrAbsFilePath.size()] = 0x00;
-        }
-    } // if( i_pTrcServer != nullptr )
-
-    return szAbsFilePath;
-
-} // TrcServer_getAdminObjFileAbsoluteFilePath
-
-//------------------------------------------------------------------------------
 ZSIPCTRACEDLL_EXTERN_API bool TrcServer_recallAdminObjs( DllIf::CTrcServer* i_pTrcServer )
 //------------------------------------------------------------------------------
 {
@@ -1523,8 +2094,7 @@ ZSIPCTRACEDLL_EXTERN_API bool TrcServer_recallAdminObjs( DllIf::CTrcServer* i_pT
     } // if( i_pTrcServer != nullptr )
 
     return bOk;
-
-} // TrcServer_recallAdminObjs
+}
 
 //------------------------------------------------------------------------------
 ZSIPCTRACEDLL_EXTERN_API bool TrcServer_saveAdminObjs( DllIf::CTrcServer* i_pTrcServer )
@@ -1567,8 +2137,7 @@ ZSIPCTRACEDLL_EXTERN_API bool TrcServer_saveAdminObjs( DllIf::CTrcServer* i_pTrc
     } // if( i_pTrcServer != nullptr )
 
     return bOk;
-
-} // TrcServer_saveAdminObjs
+}
 
 //------------------------------------------------------------------------------
 ZSIPCTRACEDLL_EXTERN_API void TrcServer_setUseLocalTrcFile( const DllIf::CTrcServer* i_pTrcServer, bool i_bUse )
@@ -1605,8 +2174,7 @@ ZSIPCTRACEDLL_EXTERN_API void TrcServer_setUseLocalTrcFile( const DllIf::CTrcSer
             pTrcServer->setUseLocalTrcFile(i_bUse);
         }
     } // if( i_pTrcServer != nullptr )
-
-} // TrcServer_setUseLocalTrcFile
+}
 
 //------------------------------------------------------------------------------
 ZSIPCTRACEDLL_EXTERN_API bool TrcServer_isLocalTrcFileUsed( const DllIf::CTrcServer* i_pTrcServer )
@@ -1627,121 +2195,7 @@ ZSIPCTRACEDLL_EXTERN_API bool TrcServer_isLocalTrcFileUsed( const DllIf::CTrcSer
     } // if( i_pTrcServer != nullptr )
 
     return bUsed;
-
-} // TrcServer_isLocalTrcFileUsed
-
-//------------------------------------------------------------------------------
-ZSIPCTRACEDLL_EXTERN_API void TrcServer_setLocalTrcFileAbsoluteFilePath( const DllIf::CTrcServer* i_pTrcServer, const char* i_szAbsFilePath )
-//------------------------------------------------------------------------------
-{
-    QMutexLocker mtxLocker(&DllIf_s_mtx);
-
-    if( i_pTrcServer != nullptr )
-    {
-        CTrcMthFile* pTrcMthFile = DllIf_IpcTrcServer_s_pTrcMthFile;
-        ETraceDetailLevelMethodCalls eTrcDetailLevel = DllIf_IpcTrcServer_s_eTrcMthDetailLevel;
-
-        QString strMthInArgs;
-
-        if( eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
-        {
-            strMthInArgs = i_szAbsFilePath;
-        }
-
-        CMethodTracer mthTracer(
-            /* pTrcMthFile        */ pTrcMthFile,
-            /* eTrcDetailLevel    */ eTrcDetailLevel,
-            /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
-            /* strNameSpace       */ c_strNameSpace,
-            /* strClassName       */ c_strClassName,
-            /* strObjName         */ "ZSTrcServer",
-            /* strMethod          */ "TrcServer_setLocalTrcFileAbsoluteFilePath",
-            /* strMthInArgs       */ strMthInArgs );
-
-        CTrcServer* pTrcServer = CTrcServer::GetInstance();
-
-        if( pTrcServer != nullptr )
-        {
-            pTrcServer->setLocalTrcFileAbsoluteFilePath(i_szAbsFilePath);
-        }
-    } // if( i_pTrcServer != nullptr )
-
-} // TrcServer_setLocalTrcFileAbsoluteFilePath
-
-//------------------------------------------------------------------------------
-ZSIPCTRACEDLL_EXTERN_API char* TrcServer_getLocalTrcFileAbsoluteFilePath( const DllIf::CTrcServer* i_pTrcServer )
-//------------------------------------------------------------------------------
-{
-    QMutexLocker mtxLocker(&DllIf_s_mtx);
-
-    char* szAbsFilePath = nullptr;
-
-    if( i_pTrcServer != nullptr )
-    {
-        CTrcServer* pTrcServer = CTrcServer::GetInstance();
-
-        if( pTrcServer != nullptr )
-        {
-            std::string stdstrAbsFilePath = pTrcServer->getLocalTrcFileAbsoluteFilePath().toStdString();
-            szAbsFilePath = new char[stdstrAbsFilePath.size() + 1];
-            memcpy(szAbsFilePath, stdstrAbsFilePath.c_str(), stdstrAbsFilePath.size());
-            szAbsFilePath[stdstrAbsFilePath.size()] = 0x00;
-        }
-    } // if( i_pTrcServer != nullptr )
-
-    return szAbsFilePath;
-
-} // TrcServer_getLocalTrcFileAbsoluteFilePath
-
-//------------------------------------------------------------------------------
-ZSIPCTRACEDLL_EXTERN_API char* TrcServer_getLocalTrcFileCompleteBaseName( const DllIf::CTrcServer* i_pTrcServer )
-//------------------------------------------------------------------------------
-{
-    QMutexLocker mtxLocker(&DllIf_s_mtx);
-
-    char* szName = nullptr;
-
-    if( i_pTrcServer != nullptr )
-    {
-        CTrcServer* pTrcServer = CTrcServer::GetInstance();
-
-        if( pTrcServer != nullptr )
-        {
-            std::string stdstrName = pTrcServer->getLocalTrcFileCompleteBaseName().toStdString();
-            szName = new char[stdstrName.size() + 1];
-            memcpy(szName, stdstrName.c_str(), stdstrName.size());
-            szName[stdstrName.size()] = 0x00;
-        }
-    } // if( i_pTrcServer != nullptr )
-
-    return szName;
-
-} // TrcServer_getLocalTrcFileCompleteBaseName
-
-//------------------------------------------------------------------------------
-ZSIPCTRACEDLL_EXTERN_API char* TrcServer_getLocalTrcFileAbsolutePath( const DllIf::CTrcServer* i_pTrcServer )
-//------------------------------------------------------------------------------
-{
-    QMutexLocker mtxLocker(&DllIf_s_mtx);
-
-    char* szAbsFilePath = nullptr;
-
-    if( i_pTrcServer != nullptr )
-    {
-        CTrcServer* pTrcServer = CTrcServer::GetInstance();
-
-        if( pTrcServer != nullptr )
-        {
-            std::string stdstrAbsFilePath = pTrcServer->getLocalTrcFileAbsolutePath().toStdString();
-            szAbsFilePath = new char[stdstrAbsFilePath.size() + 1];
-            memcpy(szAbsFilePath, stdstrAbsFilePath.c_str(), stdstrAbsFilePath.size());
-            szAbsFilePath[stdstrAbsFilePath.size()] = 0x00;
-        }
-    } // if( i_pTrcServer != nullptr )
-
-    return szAbsFilePath;
-
-} // TrcServer_getLocalTrcFileAbsolutePath
+}
 
 //------------------------------------------------------------------------------
 ZSIPCTRACEDLL_EXTERN_API int TrcServer_isLocalTrcFileActive( const DllIf::CTrcServer* i_pTrcServer )
@@ -1762,8 +2216,7 @@ ZSIPCTRACEDLL_EXTERN_API int TrcServer_isLocalTrcFileActive( const DllIf::CTrcSe
     } // if( i_pTrcServer != nullptr )
 
     return bActive;
-
-} // TrcServer_isLocalTrcFileActive
+}
 
 //------------------------------------------------------------------------------
 ZSIPCTRACEDLL_EXTERN_API void TrcServer_setLocalTrcFileAutoSaveIntervalInMs( const DllIf::CTrcServer* i_pTrcServer, int i_iAutoSaveInterval_ms )
@@ -1800,8 +2253,7 @@ ZSIPCTRACEDLL_EXTERN_API void TrcServer_setLocalTrcFileAutoSaveIntervalInMs( con
             pTrcServer->setLocalTrcFileAutoSaveIntervalInMs(i_iAutoSaveInterval_ms);
         }
     } // if( i_pTrcServer != nullptr )
-
-} // TrcServer_setLocalTrcFileAutoSaveIntervalInMs
+}
 
 //------------------------------------------------------------------------------
 ZSIPCTRACEDLL_EXTERN_API int TrcServer_getLocalTrcFileAutoSaveIntervalInMs( const DllIf::CTrcServer* i_pTrcServer )
@@ -1822,8 +2274,7 @@ ZSIPCTRACEDLL_EXTERN_API int TrcServer_getLocalTrcFileAutoSaveIntervalInMs( cons
     } // if( i_pTrcServer != nullptr )
 
     return iAutoSaveInterval_ms;
-
-} // TrcServer_getLocalTrcFileAutoSaveIntervalInMs
+}
 
 //------------------------------------------------------------------------------
 ZSIPCTRACEDLL_EXTERN_API void TrcServer_setLocalTrcFileCloseFileAfterEachWrite( const DllIf::CTrcServer* i_pTrcServer, bool i_bCloseFile )
@@ -1860,8 +2311,7 @@ ZSIPCTRACEDLL_EXTERN_API void TrcServer_setLocalTrcFileCloseFileAfterEachWrite( 
             pTrcServer->setLocalTrcFileCloseFileAfterEachWrite(i_bCloseFile);
         }
     } // if( i_pTrcServer != nullptr )
-
-} // TrcServer_setLocalTrcFileCloseFileAfterEachWrite
+}
 
 //------------------------------------------------------------------------------
 ZSIPCTRACEDLL_EXTERN_API bool TrcServer_getLocalTrcFileCloseFileAfterEachWrite( const DllIf::CTrcServer* i_pTrcServer )
@@ -1882,8 +2332,7 @@ ZSIPCTRACEDLL_EXTERN_API bool TrcServer_getLocalTrcFileCloseFileAfterEachWrite( 
     } // if( i_pTrcServer != nullptr )
 
     return bCloseFile;
-
-} // TrcServer_getLocalTrcFileCloseFileAfterEachWrite
+}
 
 //------------------------------------------------------------------------------
 ZSIPCTRACEDLL_EXTERN_API void TrcServer_setLocalTrcFileSubFileCountMax( const DllIf::CTrcServer* i_pTrcServer, bool i_iCountMax )
@@ -1920,8 +2369,7 @@ ZSIPCTRACEDLL_EXTERN_API void TrcServer_setLocalTrcFileSubFileCountMax( const Dl
             pTrcServer->setLocalTrcFileSubFileCountMax(i_iCountMax);
         }
     } // if( i_pTrcServer != nullptr )
-
-} // TrcServer_setLocalTrcFileSubFileCountMax
+}
 
 //------------------------------------------------------------------------------
 ZSIPCTRACEDLL_EXTERN_API int TrcServer_getLocalTrcFileSubFileCountMax( const DllIf::CTrcServer* i_pTrcServer )
@@ -1942,8 +2390,7 @@ ZSIPCTRACEDLL_EXTERN_API int TrcServer_getLocalTrcFileSubFileCountMax( const Dll
     } // if( i_pTrcServer != nullptr )
 
     return iCountMax;
-
-} // TrcServer_getLocalTrcFileSubFileCountMax
+}
 
 //------------------------------------------------------------------------------
 ZSIPCTRACEDLL_EXTERN_API void TrcServer_setLocalTrcFileSubFileLineCountMax( const DllIf::CTrcServer* i_pTrcServer, int i_iCountMax )
@@ -1980,8 +2427,7 @@ ZSIPCTRACEDLL_EXTERN_API void TrcServer_setLocalTrcFileSubFileLineCountMax( cons
             pTrcServer->setLocalTrcFileSubFileLineCountMax(i_iCountMax);
         }
     } // if( i_pTrcServer != nullptr )
-
-} // TrcServer_setLocalTrcFileSubFileLineCountMax
+}
 
 //------------------------------------------------------------------------------
 ZSIPCTRACEDLL_EXTERN_API int TrcServer_getLocalTrcFileSubFileLineCountMax( const DllIf::CTrcServer* i_pTrcServer )
@@ -2002,8 +2448,7 @@ ZSIPCTRACEDLL_EXTERN_API int TrcServer_getLocalTrcFileSubFileLineCountMax( const
     } // if( i_pTrcServer != nullptr )
 
     return iCountMax;
-
-} // TrcServer_getLocalTrcFileSubFileLineCountMax
+}
 
 //------------------------------------------------------------------------------
 ZSIPCTRACEDLL_EXTERN_API void TrcServer_setUseIpcServer( const DllIf::CTrcServer* i_pTrcServer, bool i_bUseIpcServer )
@@ -2040,8 +2485,7 @@ ZSIPCTRACEDLL_EXTERN_API void TrcServer_setUseIpcServer( const DllIf::CTrcServer
             pTrcServer->setUseIpcServer(i_bUseIpcServer);
         }
     } // if( i_pTrcServer != nullptr )
-
-} // TrcServer_setUseIpcServer
+}
 
 //------------------------------------------------------------------------------
 ZSIPCTRACEDLL_EXTERN_API bool TrcServer_isIpcServerUsed( const DllIf::CTrcServer* i_pTrcServer )
@@ -2062,8 +2506,7 @@ ZSIPCTRACEDLL_EXTERN_API bool TrcServer_isIpcServerUsed( const DllIf::CTrcServer
     } // if( i_pTrcServer != nullptr )
 
     return bUseIpcServer;
-
-} // TrcServer_isIpcServerUsed
+}
 
 //------------------------------------------------------------------------------
 ZSIPCTRACEDLL_EXTERN_API void TrcServer_setCacheTrcDataIfNotConnected( const DllIf::CTrcServer* i_pTrcServer, bool i_bCacheData )
@@ -2100,8 +2543,7 @@ ZSIPCTRACEDLL_EXTERN_API void TrcServer_setCacheTrcDataIfNotConnected( const Dll
             pTrcServer->setCacheTrcDataIfNotConnected(i_bCacheData);
         }
     } // if( i_pTrcServer != nullptr )
-
-} // TrcServer_setCacheTrcDataIfNotConnected
+}
 
 //------------------------------------------------------------------------------
 ZSIPCTRACEDLL_EXTERN_API bool TrcServer_getCacheTrcDataIfNotConnected( const DllIf::CTrcServer* i_pTrcServer )
@@ -2122,8 +2564,7 @@ ZSIPCTRACEDLL_EXTERN_API bool TrcServer_getCacheTrcDataIfNotConnected( const Dll
     } // if( i_pTrcServer != nullptr )
 
     return bCacheData;
-
-} // TrcServer_getCacheTrcDataIfNotConnected
+}
 
 //------------------------------------------------------------------------------
 ZSIPCTRACEDLL_EXTERN_API void TrcServer_setCacheTrcDataMaxArrLen( const DllIf::CTrcServer* i_pTrcServer, int i_iMaxArrLen )
@@ -2160,8 +2601,7 @@ ZSIPCTRACEDLL_EXTERN_API void TrcServer_setCacheTrcDataMaxArrLen( const DllIf::C
             pTrcServer->setCacheTrcDataMaxArrLen(i_iMaxArrLen);
         }
     } // if( i_pTrcServer != nullptr )
-
-} // TrcServer_setCacheTrcDataMaxArrLen
+}
 
 //------------------------------------------------------------------------------
 ZSIPCTRACEDLL_EXTERN_API int TrcServer_getCacheTrcDataMaxArrLen( const DllIf::CTrcServer* i_pTrcServer )
@@ -2182,8 +2622,7 @@ ZSIPCTRACEDLL_EXTERN_API int TrcServer_getCacheTrcDataMaxArrLen( const DllIf::CT
     } // if( i_pTrcServer != nullptr )
 
     return iMaxArrLen;
-
-} // TrcServer_getCacheTrcDataMaxArrLen
+}
 
 //------------------------------------------------------------------------------
 ZSIPCTRACEDLL_EXTERN_API bool TrcServer_setTraceSettings(
@@ -2333,8 +2772,7 @@ ZSIPCTRACEDLL_EXTERN_API void TrcServer_clearLocalTrcFile( const DllIf::CTrcServ
             pTrcServer->clearLocalTrcFile();
         }
     } // if( i_pTrcServer != nullptr )
-
-} // TrcServer_clearLocalTrcFile
+}
 
 /*==============================================================================
 DllIf::CIpcTrcServer
@@ -2362,8 +2800,7 @@ ZSIPCTRACEDLL_EXTERN_API DllIf::CIpcTrcServer* IpcTrcServer_GetInstance()
         /* strMthInArgs       */ strMthInArgs );
 
     return DllIf_IpcTrcServer_s_pTheInst;
-
-} // IpcTrcServer_GetInstance
+}
 
 //------------------------------------------------------------------------------
 ZSIPCTRACEDLL_EXTERN_API DllIf::CIpcTrcServer* IpcTrcServer_CreateInstance(
@@ -2403,8 +2840,8 @@ ZSIPCTRACEDLL_EXTERN_API DllIf::CIpcTrcServer* IpcTrcServer_CreateInstance(
 
     if( DllIf_IpcTrcServer_s_pTrcMthFile == nullptr )
     {
-        strAdminObjFileAbsFilePath = CTrcServer::GetDefaultAdminObjFileAbsoluteFilePath();
-        strLocalTrcFileAbsFilePath = CTrcServer::GetDefaultLocalTrcFileAbsoluteFilePath();
+        strAdminObjFileAbsFilePath = CTrcServer::GetAdminObjFileAbsoluteFilePath();
+        strLocalTrcFileAbsFilePath = CTrcServer::GetLocalTrcFileAbsoluteFilePath();
 
         DllIf_IpcTrcServer_s_pTrcMthFile = CTrcMthFile::Alloc(strLocalTrcFileAbsFilePath);
         DllIf_IpcTrcServer_s_eTrcMthDetailLevel = static_cast<ETraceDetailLevelMethodCalls>(i_eTrcDetailLevelDllIf);
@@ -2536,8 +2973,8 @@ ZSIPCTRACEDLL_EXTERN_API void IpcTrcServer_ReleaseInstance( DllIf::CIpcTrcServer
 
                 for( const QString& strKeyInTree : strlstKeysInTree )
                 {
-                    DllIf::CTrcAdminObj* pDllIfTrcAdminObj = DllIf_TrcServer_s_hshpTrcAdminObjs[strKeyInTree];
-                    int iTrcAdminObjRefCount = DllIf_TrcServer_s_hshiTrcAdminObjsRefCounts[strKeyInTree];
+                    DllIf::DllMain::CTrcAdminObj* pDllIfTrcAdminObj = DllIf_TrcServer_s_hshpTrcAdminObjs[strKeyInTree];
+                    int iTrcAdminObjRefCount = pDllIfTrcAdminObj->getRefCount();
 
                     if( iTrcAdminObjRefCount > 0 )
                     {
@@ -2554,7 +2991,6 @@ ZSIPCTRACEDLL_EXTERN_API void IpcTrcServer_ReleaseInstance( DllIf::CIpcTrcServer
                     }
 
                     DllIf_TrcServer_s_hshpTrcAdminObjs.remove(strKeyInTree);
-                    DllIf_TrcServer_s_hshiTrcAdminObjsRefCounts.remove(strKeyInTree);
 
                     try
                     {
@@ -2808,8 +3244,7 @@ ZSIPCTRACEDLL_EXTERN_API bool IpcTrcServer_isListening( DllIf::CIpcTrcServer* i_
     } // if( i_pTrcServer != nullptr )
 
     return bIsListening;
-
-} // IpcTrcServer_isListening
+}
 
 //------------------------------------------------------------------------------
 ZSIPCTRACEDLL_EXTERN_API bool IpcTrcServer_isConnected( DllIf::CIpcTrcServer* i_pTrcServer )
@@ -2830,8 +3265,7 @@ ZSIPCTRACEDLL_EXTERN_API bool IpcTrcServer_isConnected( DllIf::CIpcTrcServer* i_
     } // if( i_pTrcServer != nullptr )
 
     return bIsConnected;
-
-} // IpcTrcServer_isConnected
+}
 
 //------------------------------------------------------------------------------
 ZSIPCTRACEDLL_EXTERN_API bool IpcTrcServer_setPort(
@@ -2948,8 +3382,7 @@ ZSIPCTRACEDLL_EXTERN_API unsigned short IpcTrcServer_getPort( const DllIf::CIpcT
     } // if( i_pTrcServer != nullptr )
 
     return uPort;
-
-} // IpcTrcServer_getPort
+}
 
 
 /*******************************************************************************
@@ -2961,50 +3394,15 @@ public: // ctors and dtor (declared public but for internal use only, implemente
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-DllIf::CTrcAdminObj::CTrcAdminObj( const char* i_szKeyInTree ) :
+DllIf::CTrcAdminObj::CTrcAdminObj()
 //------------------------------------------------------------------------------
-    m_szKeyInTree(nullptr)
 {
-    CTrcMthFile* pTrcMthFile = DllIf_IpcTrcServer_s_pTrcMthFile;
-    ZS::Trace::ETraceDetailLevelMethodCalls eTrcDetailLevel = DllIf_IpcTrcServer_s_eTrcMthDetailLevel;
-
-    Trace::CMethodTracer mthTracer(
-        /* pTrcMthFile        */ pTrcMthFile,
-        /* eTrcDetailLevel    */ eTrcDetailLevel,
-        /* eFilterDetailLevel */ ZS::Trace::ETraceDetailLevelMethodCalls::EnterLeave,
-        /* strNameSpace       */ c_strNameSpace,
-        /* strClassName       */ "CTrcAdminObj",
-        /* strObjName         */ i_szKeyInTree,
-        /* strMethod          */ "ctor",
-        /* strMthInArgs       */ "" );
-
-    size_t iStrLen = strlen(i_szKeyInTree);
-    m_szKeyInTree = new char[iStrLen+1];
-    memset(m_szKeyInTree, 0x00, iStrLen+1);
-    memcpy(m_szKeyInTree, i_szKeyInTree, iStrLen);
-
 } // ctor
 
 //------------------------------------------------------------------------------
 DllIf::CTrcAdminObj::~CTrcAdminObj()
 //------------------------------------------------------------------------------
 {
-    CTrcMthFile* pTrcMthFile = DllIf_IpcTrcServer_s_pTrcMthFile;
-    ZS::Trace::ETraceDetailLevelMethodCalls eTrcDetailLevel = DllIf_IpcTrcServer_s_eTrcMthDetailLevel;
-
-    Trace::CMethodTracer mthTracer(
-        /* pTrcMthFile        */ pTrcMthFile,
-        /* eTrcDetailLevel    */ eTrcDetailLevel,
-        /* eFilterDetailLevel */ ZS::Trace::ETraceDetailLevelMethodCalls::EnterLeave,
-        /* strNameSpace       */ c_strNameSpace,
-        /* strClassName       */ "CTrcAdminObj",
-        /* strObjName         */ m_szKeyInTree,
-        /* strMethod          */ "dtor",
-        /* strMthInArgs       */ "" );
-
-    delete m_szKeyInTree;
-    m_szKeyInTree = nullptr;
-
 } // dtor
 
 

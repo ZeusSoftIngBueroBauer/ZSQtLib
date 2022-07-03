@@ -53,11 +53,12 @@ public: // type definitions and constants
         EColumnEnabled                = CModelIdxTree::EColumnCount + 1,
         EColumnMethodCallsDetailLevel = CModelIdxTree::EColumnCount + 2,
         EColumnRuntimeInfoDetailLevel = CModelIdxTree::EColumnCount + 3,
-        EColumnNameSpace              = CModelIdxTree::EColumnCount + 4,
-        EColumnClassName              = CModelIdxTree::EColumnCount + 5,
-        EColumnObjName                = CModelIdxTree::EColumnCount + 6,
-        EColumnObjThreadName          = CModelIdxTree::EColumnCount + 7,
-        EColumnObjAddress             = CModelIdxTree::EColumnCount + 8,
+        EColumnDataFilter             = CModelIdxTree::EColumnCount + 4,
+        EColumnNameSpace              = CModelIdxTree::EColumnCount + 5,
+        EColumnClassName              = CModelIdxTree::EColumnCount + 6,
+        EColumnObjName                = CModelIdxTree::EColumnCount + 7,
+        EColumnObjThreadName          = CModelIdxTree::EColumnCount + 8,
+        EColumnObjAddress             = CModelIdxTree::EColumnCount + 9,
         EColumnCount
     };
 public: // class methods

@@ -65,6 +65,7 @@ public: // instance methods to get and release admin objects
         ZS::System::EEnabled         i_bEnabledAsDefault,
         ETraceDetailLevelMethodCalls i_eDefaultDetailLevelMethodCalls,
         ETraceDetailLevelRuntimeInfo i_eDefaultDetailLevelRuntimeInfo,
+        const QString&               i_strDefaultDataFilter, // Use QString() (null) to ignore
         bool                         i_bIncrementRefCount = true );
     CTrcAdminObj* getTraceAdminObj( int i_idxInTree, bool i_bIncrementRefCount = true );
     void renameTraceAdminObj( CTrcAdminObj** io_ppTrcAdminObj, const QString& i_strNewObjName );

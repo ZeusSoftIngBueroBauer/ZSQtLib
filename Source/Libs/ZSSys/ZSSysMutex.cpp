@@ -141,7 +141,7 @@ CMutex::CMutex(
     m_pTrcMthFile(nullptr),
     m_pTrcAdminObj(nullptr)
 {
-    QString strLocalTrcFileAbsFilePath = CTrcServer::GetDefaultLocalTrcFileAbsoluteFilePath("System");
+    QString strLocalTrcFileAbsFilePath = CTrcServer::GetLocalTrcFileAbsoluteFilePath();
     m_pTrcMthFile = CTrcMthFile::Alloc(strLocalTrcFileAbsFilePath);
 
     QString strMthInArgs;
@@ -182,7 +182,7 @@ CMutex::CMutex( const QString& i_strObjName, ETraceDetailLevelMethodCalls i_eTrc
     m_pTrcMthFile(nullptr),
     m_pTrcAdminObj(nullptr)
 {
-    QString strLocalTrcFileAbsFilePath = CTrcServer::GetDefaultLocalTrcFileAbsoluteFilePath("System");
+    QString strLocalTrcFileAbsFilePath = CTrcServer::GetLocalTrcFileAbsoluteFilePath();
     m_pTrcMthFile = CTrcMthFile::Alloc(strLocalTrcFileAbsFilePath);
 
     CMethodTracer mthTracer(
@@ -604,7 +604,7 @@ CRecursiveMutex::CRecursiveMutex( const QString& i_strObjName, ETraceDetailLevel
     m_pTrcMthFile(nullptr),
     m_pTrcAdminObj(nullptr)
 {
-    QString strLocalTrcFileAbsFilePath = CTrcServer::GetDefaultLocalTrcFileAbsoluteFilePath("System");
+    QString strLocalTrcFileAbsFilePath = CTrcServer::GetLocalTrcFileAbsoluteFilePath();
     m_pTrcMthFile = CTrcMthFile::Alloc(strLocalTrcFileAbsFilePath);
 
     CMethodTracer mthTracer(

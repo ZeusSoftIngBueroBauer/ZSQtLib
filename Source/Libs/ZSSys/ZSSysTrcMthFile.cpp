@@ -90,7 +90,7 @@ CTrcMthFile* CTrcMthFile::Alloc( const QString& i_strAbsFilePath )
     // If the file name is already used ..
     if( pTrcMthFile != nullptr )
     {
-        pTrcMthFile->incrementRefCount();;
+        pTrcMthFile->incrementRefCount();
     }
     // If the file name is not yet used ..
     else
@@ -353,7 +353,19 @@ void CTrcMthFile::setAbsoluteFilePath(const QString& i_strAbsFilePath)
 
     if( m_pLogFile != nullptr )
     {
+        QString strAbsFilePath = m_pLogFile->absoluteFilePath();
+
+        if( s_mapTrcMthFiles.contains(strAbsFilePath) )
+        {
+            s_mapTrcMthFiles.remove(strAbsFilePath);
+        }
+
         m_pLogFile->setAbsoluteFilePath(i_strAbsFilePath);
+
+        if( !i_strAbsFilePath.isEmpty() )
+        {
+            s_mapTrcMthFiles[i_strAbsFilePath] = this;
+        }
     }
 }
 

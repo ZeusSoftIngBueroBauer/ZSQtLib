@@ -31,14 +31,9 @@ may result in using the software modules.
 #include "App.h"
 
 #include "ZSIpcTrace/ZSIpcTrcServer.h"
-#include "ZSSys/ZSSysEnumEntry.h"
 #include "ZSSys/ZSSysErrLog.h"
-#include "ZSSys/ZSSysErrResult.h"
-#include "ZSSys/ZSSysException.h"
-#include "ZSSys/ZSSysMutex.h"
 #include "ZSSys/ZSSysSleeperThread.h"
 #include "ZSSys/ZSSysTrcMethod.h"
-#include "ZSSys/ZSSysWaitCondition.h"
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
@@ -213,7 +208,6 @@ void CMyClass1::setObjectName(const QString& i_strObjName)
 
         QObject::setObjectName(i_strObjName);
     }
-
 } // setObjectName
 
 /*==============================================================================
