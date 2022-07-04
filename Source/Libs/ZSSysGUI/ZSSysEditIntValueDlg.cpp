@@ -204,6 +204,28 @@ CDlgEditIntValue::~CDlgEditIntValue()
 } // dtor
 
 /*==============================================================================
+public: // overridables of base class QDialog
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Opens the dialog as a modal dialg. The apply button will be hidden.
+
+    When pressing either Ok or Cancel the dialog will be closed and either
+    Rejected or Accepted is returned.
+
+    @return 0: QDialog::Rejected
+            1: QDialog::Accepted
+*/
+int CDlgEditIntValue::exec()
+//------------------------------------------------------------------------------
+{
+    m_pBtnApply->hide();
+    int iResult = QDialog::exec();
+    m_pBtnApply->show();
+    return iResult;
+}
+
+/*==============================================================================
 public: // instance methods
 ==============================================================================*/
 
@@ -215,11 +237,25 @@ void CDlgEditIntValue::setValueName( const QString& i_strName )
 }
 
 //------------------------------------------------------------------------------
+QString CDlgEditIntValue::getValueName() const
+//------------------------------------------------------------------------------
+{
+    return m_pLblValue->text().remove(":");
+}
+
+//------------------------------------------------------------------------------
 void CDlgEditIntValue::setValue( int i_iVal )
 //------------------------------------------------------------------------------
 {
     m_iValOrig = i_iVal;
     m_pEdtValue->setValue(m_iValOrig);
+}
+
+//------------------------------------------------------------------------------
+int CDlgEditIntValue::getValue() const
+//------------------------------------------------------------------------------
+{
+    return m_pEdtValue->value();
 }
 
 //------------------------------------------------------------------------------
@@ -230,10 +266,10 @@ void CDlgEditIntValue::setUnit( const QString& i_strUnit )
 }
 
 //------------------------------------------------------------------------------
-int CDlgEditIntValue::getValue() const
+QString CDlgEditIntValue::getUnit() const
 //------------------------------------------------------------------------------
 {
-    return m_pEdtValue->value();
+    return m_pEdtValue->suffix().trimmed();
 }
 
 //------------------------------------------------------------------------------

@@ -60,7 +60,8 @@ CMsgReqTest::CMsgReqTest(
         /* bMustBeConfirmed */ i_bMustBeConfirmed,
         /* iReqId           */ i_iParentReqId,
         /* iMsgIdReq        */ i_iMsgId ),
-    m_strCommand()
+    m_strCommand(),
+    m_strlstCommandArgs()
 {
 } // ctor
 
@@ -88,6 +89,35 @@ QString CMsgReqTest::getCommand() const
     return m_strCommand;
 }
 
+//------------------------------------------------------------------------------
+void CMsgReqTest::setCommandArg( const QString& i_strArg )
+//------------------------------------------------------------------------------
+{
+    m_strlstCommandArgs.clear();
+    m_strlstCommandArgs.append(i_strArg);
+}
+
+//------------------------------------------------------------------------------
+void CMsgReqTest::setCommandArgs( const QStringList& i_strlstArgs )
+//------------------------------------------------------------------------------
+{
+    m_strlstCommandArgs = i_strlstArgs;
+}
+
+//------------------------------------------------------------------------------
+QString CMsgReqTest::getCommandArg() const
+//------------------------------------------------------------------------------
+{
+    return m_strlstCommandArgs.size() == 0 ? "" : m_strlstCommandArgs[0];
+}
+
+//------------------------------------------------------------------------------
+QStringList CMsgReqTest::getCommandArgs() const
+//------------------------------------------------------------------------------
+{
+    return m_strlstCommandArgs;
+}
+
 /*==============================================================================
 public: // must overridables of base class CMsg
 ==============================================================================*/
@@ -105,6 +135,7 @@ CMsg* CMsgReqTest::clone( ECopyDepth /*i_copyDepth*/ )
     pMsgCloned->setSenderId(m_iSenderId);
     pMsgCloned->setReceiverId(m_iReceiverId);
     pMsgCloned->setCommand(m_strCommand);
+    pMsgCloned->setCommandArgs(m_strlstCommandArgs);
     return pMsgCloned;
 }
 

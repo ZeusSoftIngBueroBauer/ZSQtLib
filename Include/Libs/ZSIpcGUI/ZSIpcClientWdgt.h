@@ -98,6 +98,8 @@ public: // instance methods
     void setProtocolTypeImage( const QPixmap& i_pxm );
     void setProtocolTypeImageVisible( bool i_bVisible );
     bool isProtocolTypeImageVisible() const{ return m_bProtocolTypeImageVisible; }
+public: // instance methods
+    void applySettings();
 protected: // instance methods
     void readSettings();
     void saveSettings();
@@ -135,8 +137,6 @@ protected: // instance methods
     void fillCnctControls( const SClientHostSettings& i_hostSettings, const STimerSettings& i_watchDogSettings );
     void resetDetailControls();
     void fillDetailControls();
-protected: // instance methods
-    void applySettings();
 protected: // instance members
     CClient*                        m_pClient;
     bool                            m_bProtocolTypeImageVisible;

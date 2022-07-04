@@ -425,6 +425,11 @@ void CLogFile::setAbsoluteFilePath( const QString& i_strAbsFilePath )
         backup();
     }
 
+    if( s_mapLogFiles.contains(m_strAbsFilePath) )
+    {
+        s_mapLogFiles.remove(m_strAbsFilePath);
+    }
+
     m_iSubFileLineCountCurr = 0;
     m_strAbsPath = "";
     m_strCompleteBaseName = "";
@@ -435,6 +440,8 @@ void CLogFile::setAbsoluteFilePath( const QString& i_strAbsFilePath )
 
     if( !m_strAbsFilePath.isEmpty() )
     {
+        s_mapLogFiles[m_strAbsFilePath] = this;
+
         QFileInfo fileInfoFile(m_strAbsFilePath);
         QString   strFileUdx;
 

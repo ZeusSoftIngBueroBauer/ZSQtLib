@@ -68,13 +68,14 @@ public: // ctors and dtor
     CMyClass2Thread( const QString& i_strMyClass2ObjName, CMyClass1* i_pMyClass1 = nullptr );
     virtual ~CMyClass2Thread();
 signals:
-    void running();
+    void aboutToBeDestroyed(QObject* i_pObj, const QString& i_strObjName);
 public: // overridables
     virtual QString nameSpace() { return NameSpace(); }
     virtual QString className() { return ClassName(); }
 public: // instance methods (reimplementing methods of base class QObject)
     void setObjectName(const QString& i_strObjName);
 public: // instance methods
+    CMyClass2* waitForMyClass2Created();
     CMyClass2* getMyClass2() { return m_pMyClass2; }
 public: // instance methods
     void sleep( unsigned long i_uTime_s );
@@ -90,10 +91,12 @@ protected: // replacing methods of base class QThread
 protected slots:
     void onClass2AboutToBeDestroyed(QObject* i_pObj, const QString& i_strObjName);
 private: // instance members
-    CMyClass1*               m_pMyClass1;
-    QString                  m_strMyClass2ObjName;
-    CMyClass2*               m_pMyClass2;
-    ZS::Trace::CTrcAdminObj* m_pTrcAdminObj;
+    ZS::System::CMutex*         m_pMtxWaitForClass2Created;
+    ZS::System::CWaitCondition* m_pWaitConditionClass2Created;
+    CMyClass1*                  m_pMyClass1;
+    QString                     m_strMyClass2ObjName;
+    CMyClass2*                  m_pMyClass2;
+    ZS::Trace::CTrcAdminObj*    m_pTrcAdminObj;
 
 }; // class CMyClass2Thread
 
@@ -118,6 +121,7 @@ public: // instance methods (reimplementing methods of base class QObject)
 public: // instance methods
     CMyClass3Thread* getMyClass3Thread() const { return m_pMyClass3Thread; }
     CMyClass3* getMyClass3() const { return m_pMyClass3; }
+    ZS::Trace::CTrcAdminObj* getTrcAdminObj() { return m_pTrcAdminObj; }
 public: // instance methods
     QString instMethod(const QString& i_strMthInArgs);
 public: // instance methods

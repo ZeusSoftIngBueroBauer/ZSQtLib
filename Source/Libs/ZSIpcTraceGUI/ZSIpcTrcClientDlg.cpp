@@ -115,7 +115,7 @@ CDlgTrcClient::CDlgTrcClient(
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* eDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strMethod    */ "ctor",
         /* strAddInfo   */ "" );
 
@@ -132,7 +132,7 @@ CDlgTrcClient::CDlgTrcClient(
         /* pObjSender   */ m_pWdgtIpcClient,
         /* szSignal     */ SIGNAL(accepted()),
         /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(hide()) ) )
+        /* szSlot       */ SLOT(onIpcClientSettingsAccepted()) ) )
     {
         throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
     }
@@ -141,7 +141,7 @@ CDlgTrcClient::CDlgTrcClient(
         /* pObjSender   */ m_pWdgtIpcClient,
         /* szSignal     */ SIGNAL(rejected()),
         /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(hide()) ) )
+        /* szSlot       */ SLOT(onIpcClientSettingsRejected()) ) )
     {
         throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
     }
@@ -162,7 +162,7 @@ CDlgTrcClient::CDlgTrcClient(
         /* pObjSender   */ m_pWdgtTrcSettings,
         /* szSignal     */ SIGNAL(accepted()),
         /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(hide()) ) )
+        /* szSlot       */ SLOT(onTrcSettingsAccepted()) ) )
     {
         throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
     }
@@ -171,7 +171,7 @@ CDlgTrcClient::CDlgTrcClient(
         /* pObjSender   */ m_pWdgtTrcSettings,
         /* szSignal     */ SIGNAL(rejected()),
         /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(hide()) ) )
+        /* szSlot       */ SLOT(onTrcSettingsRejected()) ) )
     {
         throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
     }
@@ -184,7 +184,7 @@ CDlgTrcClient::~CDlgTrcClient()
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* eDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
 
@@ -206,14 +206,14 @@ void CDlgTrcClient::setClient( CIpcTrcClient* i_pTrcClient )
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(ETraceDetailLevelMethodCalls::ArgsNormal) )
     {
         strMthInArgs = "Client: " + QString( i_pTrcClient == nullptr ? "nullptr" : i_pTrcClient->objectName() );
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* eDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strMethod    */ "setClient",
         /* strAddInfo   */ strMthInArgs );
 
@@ -227,19 +227,81 @@ protected slots:
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+void CDlgTrcClient::onIpcClientSettingsAccepted()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* eDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* strMethod    */ "onIpcClientSettingsAccepted",
+        /* strAddInfo   */ "" );
+
+    if( m_pWdgtTrcSettings->hasChanges() )
+    {
+        m_pWdgtTrcSettings->applyChanges();
+    }
+    hide();
+}
+
+//------------------------------------------------------------------------------
+void CDlgTrcClient::onIpcClientSettingsRejected()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* eDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* strMethod    */ "onIpcClientSettingsRejected",
+        /* strAddInfo   */ "" );
+
+    hide();
+}
+
+//------------------------------------------------------------------------------
+void CDlgTrcClient::onTrcSettingsAccepted()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* eDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* strMethod    */ "onTrcSettingsAccepted",
+        /* strAddInfo   */ "" );
+
+    m_pWdgtIpcClient->applySettings();
+
+    hide();
+}
+
+//------------------------------------------------------------------------------
+void CDlgTrcClient::onTrcSettingsRejected()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* eDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* strMethod    */ "onTrcSettingsRejected",
+        /* strAddInfo   */ "" );
+
+    hide();
+}
+
+/*==============================================================================
+protected slots:
+==============================================================================*/
+
+//------------------------------------------------------------------------------
 void CDlgTrcClient::onWdgtIpcClientDetailsVisibilityChanged( bool i_bDetailsVisible )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(ETraceDetailLevelMethodCalls::ArgsNormal) )
     {
         strMthInArgs = bool2Str(i_bDetailsVisible);
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* eDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strMethod    */ "onWdgtIpcClientDetailsVisibilityChanged",
         /* strAddInfo   */ strMthInArgs );
 

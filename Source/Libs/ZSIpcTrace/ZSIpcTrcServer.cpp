@@ -253,31 +253,31 @@ CIpcTrcServer* CIpcTrcServer::GetInstance()
     If the trace server is already existing the reference to the existing
     trace server is returned and a reference counter is incremented.
 
-    @param i_iTrcDetailLevel [in]
+    @param i_eTrcDetailLevel [in]
         If the methods of the trace server itself should be logged a value
-        greater than 0 (ETraceDetailLevelNone) could be passed here.
-    @param i_iTrcDetailLevelMutex [in]
+        greater than 0 (ETraceDetailLevelMethodCalls::None) could be passed here.
+    @param i_eTrcDetailLevelMutex [in]
         If locking and unlocking the mutex of the trace server should be
-        logged a value greater than 0 (ETraceDetailLevelNone) could be passed here.
-    @param i_iTrcDetailLevelIpcServer [in]
+        logged a value greater than 0 (ETraceDetailLevelMethodCalls::None) could be passed here.
+    @param i_eTrcDetailLevelIpcServer [in]
         If the methods of the trace server's Ipc Server should be logged
-        a value greater than 0 (ETraceDetailLevelNone) could be passed here.
-    @param i_iTrcDetailLevelIpcServerMutex [in]
+        a value greater than 0 (ETraceDetailLevelMethodCalls::None) could be passed here.
+    @param i_eTrcDetailLevelIpcServerMutex [in]
         If locking and unlocking the mutex of the trace server's Ipc Server should be
-        logged a value greater than 0 (ETraceDetailLevelNone) could be passed here.
-    @param i_iTrcDetailLevelIpcServerGateway [in]
+        logged a value greater than 0 (ETraceDetailLevelMethodCalls::None) could be passed here.
+    @param i_eTrcDetailLevelIpcServerGateway [in]
         If the methods of the trace server's Ipc Server's Gateway should
-        be logged a value greater than 0 (ETraceDetailLevelNone) could be
+        be logged a value greater than 0 (ETraceDetailLevelMethodCalls::None) could be
         passed here.
 
     @return Pointer to trace server instance.
 */
 CIpcTrcServer* CIpcTrcServer::CreateInstance(
-    int i_iTrcDetailLevel,
-    int i_iTrcDetailLevelMutex,
-    int i_iTrcDetailLevelIpcServer,
-    int i_iTrcDetailLevelIpcServerMutex,
-    int i_iTrcDetailLevelIpcServerGateway )
+    ETraceDetailLevelMethodCalls i_eTrcDetailLevel,
+    ETraceDetailLevelMethodCalls i_eTrcDetailLevelMutex,
+    ETraceDetailLevelMethodCalls i_eTrcDetailLevelIpcServer,
+    ETraceDetailLevelMethodCalls i_eTrcDetailLevelIpcServerMutex,
+    ETraceDetailLevelMethodCalls i_eTrcDetailLevelIpcServerGateway )
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&s_mtx);
@@ -289,9 +289,9 @@ CIpcTrcServer* CIpcTrcServer::CreateInstance(
     if( pTrcServer == nullptr )
     {
         pIpcTrcServer = new CIpcTrcServer(
-            i_iTrcDetailLevel, i_iTrcDetailLevelMutex,
-            i_iTrcDetailLevelIpcServer, i_iTrcDetailLevelIpcServerMutex,
-            i_iTrcDetailLevelIpcServerGateway);
+            i_eTrcDetailLevel, i_eTrcDetailLevelMutex,
+            i_eTrcDetailLevelIpcServer, i_eTrcDetailLevelIpcServerMutex,
+            i_eTrcDetailLevelIpcServerGateway);
     }
     else
     {
@@ -351,27 +351,27 @@ protected: // ctors and dtor
 
     @param i_iTrcDetailLevel [in]
         If the methods of the trace server itself should be logged a value
-        greater than 0 (ETraceDetailLevelNone) could be passed here.
+        greater than 0 (ETraceDetailLevelMethodCalls::None) could be passed here.
     @param i_iTrcDetailLevelIpcServer [in]
         If the methods of the trace server's Ipc Server should be logged
-        a value greater than 0 (ETraceDetailLevelNone) could be passed here.
+        a value greater than 0 (ETraceDetailLevelMethodCalls::None) could be passed here.
     @param i_iTrcDetailLevelIpcServerMutex [in]
         If the locking and unlocking of the mutex of ipc server
-        should be logged a value greater than 0 (ETraceDetailLevelNone)
+        should be logged a value greater than 0 (ETraceDetailLevelMethodCalls::None)
         could be passed here. But the value will be ignored if the detail
         level for the server tracer is None.
     @param i_iTrcDetailLevelIpcServerGateway [in]
         If the methods of the trace server's gateway should be logged a value
-        greater than 0 (ETraceDetailLevelNone) could be passed here.
+        greater than 0 (ETraceDetailLevelMethodCalls::None) could be passed here.
 */
 CIpcTrcServer::CIpcTrcServer(
-    int i_iTrcDetailLevel,
-    int i_iTrcDetailLevelMutex,
-    int i_iTrcDetailLevelIpcServer,
-    int i_iTrcDetailLevelIpcServerMutex,
-    int i_iTrcDetailLevelIpcServerGateway ) :
+    ETraceDetailLevelMethodCalls i_eTrcDetailLevel,
+    ETraceDetailLevelMethodCalls i_eTrcDetailLevelMutex,
+    ETraceDetailLevelMethodCalls i_eTrcDetailLevelIpcServer,
+    ETraceDetailLevelMethodCalls i_eTrcDetailLevelIpcServerMutex,
+    ETraceDetailLevelMethodCalls i_eTrcDetailLevelIpcServerGateway ) :
 //------------------------------------------------------------------------------
-    CTrcServer(i_iTrcDetailLevel, i_iTrcDetailLevelMutex),
+    CTrcServer(i_eTrcDetailLevel, i_eTrcDetailLevelMutex),
     m_pIpcServer(nullptr),
     m_bIsBeingDestroyed(false),
     m_ariSocketIdsConnectedTrcClients(),
@@ -382,8 +382,8 @@ CIpcTrcServer::CIpcTrcServer(
 {
     CMethodTracer mthTracer(
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* eTrcDetailLevel    */ m_eTrcDetailLevel,
+        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
@@ -404,9 +404,9 @@ CIpcTrcServer::CIpcTrcServer(
     m_pIpcServer = new CServer(
         /* strObjName                    */ objectName(),
         /* bMultiThreadedAccess          */ true,
-        /* iTrcMthFileDetailLevel        */ i_iTrcDetailLevelIpcServer,
-        /* iTrcMthFileDetailLevelMutex   */ i_iTrcDetailLevelIpcServerMutex,
-        /* iTrcMthFileDetailLevelGateway */ i_iTrcDetailLevelIpcServerGateway );
+        /* iTrcMthFileDetailLevel        */ i_eTrcDetailLevelIpcServer,
+        /* iTrcMthFileDetailLevelMutex   */ i_eTrcDetailLevelIpcServerMutex,
+        /* iTrcMthFileDetailLevelGateway */ i_eTrcDetailLevelIpcServerGateway );
 
     m_pMtxListTrcDataCached = new QMutex(QMutex::Recursive);
 
@@ -471,8 +471,8 @@ CIpcTrcServer::~CIpcTrcServer()
 {
     CMethodTracer mthTracer(
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* eTrcDetailLevel    */ m_eTrcDetailLevel,
+        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
@@ -557,22 +557,22 @@ void CIpcTrcServer::setEnabled( bool i_bEnabled )
 {
     QString strMthInArgs;
 
-    if( m_pTrcMthFile != nullptr && m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
+    if( m_pTrcMthFile != nullptr && m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
     {
         strMthInArgs = bool2Str(i_bEnabled);
     }
 
     CMethodTracer mthTracer(
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* eTrcDetailLevel    */ m_eTrcDetailLevel,
+        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "setEnabled",
         /* strMthInArgs       */ strMthInArgs );
 
-    CMutexLocker mtxLocker(m_pMtx);
+    QMutexLocker mtxLocker(&s_mtx);
 
     if( i_bEnabled != m_trcSettings.m_bEnabled )
     {
@@ -598,22 +598,22 @@ void CIpcTrcServer::setNewTrcAdminObjsEnabledAsDefault( bool i_bEnabled )
 {
     QString strMthInArgs;
 
-    if( m_pTrcMthFile != nullptr && m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
+    if( m_pTrcMthFile != nullptr && m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
     {
         strMthInArgs = bool2Str(i_bEnabled);
     }
 
     CMethodTracer mthTracer(
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* eTrcDetailLevel    */ m_eTrcDetailLevel,
+        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "setNewTrcAdminObjsEnabledAsDefault",
         /* strMthInArgs       */ strMthInArgs );
 
-    CMutexLocker mtxLocker(m_pMtx);
+    QMutexLocker mtxLocker(&s_mtx);
 
     if( m_trcSettings.m_bNewTrcAdminObjsEnabledAsDefault != i_bEnabled )
     {
@@ -634,31 +634,31 @@ void CIpcTrcServer::setNewTrcAdminObjsEnabledAsDefault( bool i_bEnabled )
 } // setNewTrcAdminObjsEnabledAsDefault
 
 //------------------------------------------------------------------------------
-void CIpcTrcServer::setNewTrcAdminObjsDefaultDetailLevel( int i_iDetailLevel )
+void CIpcTrcServer::setNewTrcAdminObjsMethodCallsDefaultDetailLevel( ETraceDetailLevelMethodCalls i_eDetailLevel )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
 
-    if( m_pTrcMthFile != nullptr && m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
+    if( m_pTrcMthFile != nullptr && m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
     {
-        strMthInArgs = QString::number(i_iDetailLevel);
+        strMthInArgs = CEnumTraceDetailLevelMethodCalls(i_eDetailLevel).toString();
     }
 
     CMethodTracer mthTracer(
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* eTrcDetailLevel    */ m_eTrcDetailLevel,
+        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
-        /* strMethod          */ "setNewTrcAdminObjsDefaultDetailLevel",
+        /* strMethod          */ "setNewTrcAdminObjsMethodCallsDefaultDetailLevel",
         /* strMthInArgs       */ strMthInArgs );
 
-    CMutexLocker mtxLocker(m_pMtx);
+    QMutexLocker mtxLocker(&s_mtx);
 
-    if( m_trcSettings.m_iNewTrcAdminObjsDefaultDetailLevel != i_iDetailLevel )
+    if( m_trcSettings.m_eNewTrcAdminObjsMethodCallsDefaultDetailLevel != i_eDetailLevel )
     {
-        CTrcServer::setNewTrcAdminObjsDefaultDetailLevel(i_iDetailLevel);
+        CTrcServer::setNewTrcAdminObjsMethodCallsDefaultDetailLevel(i_eDetailLevel);
 
         if( !m_bOnReceivedDataUpdateInProcess && isConnected() )
         {
@@ -666,13 +666,56 @@ void CIpcTrcServer::setNewTrcAdminObjsDefaultDetailLevel( int i_iDetailLevel )
 
             strMsg += systemMsgType2Str(MsgProtocol::ESystemMsgTypeInd) + " ";
             strMsg += command2Str(MsgProtocol::ECommandUpdate) + " ";
-            strMsg += "<ServerSettings NewTrcAdminObjsDefaultDetailLevel=\"" + QString::number(m_trcSettings.m_iNewTrcAdminObjsDefaultDetailLevel) + "\"/>";
+            strMsg += "<ServerSettings NewTrcAdminObjsMethodCallsDefaultDetailLevel=\""
+                   + CEnumTraceDetailLevelMethodCalls(m_trcSettings.m_eNewTrcAdminObjsMethodCallsDefaultDetailLevel).toString() + "\"/>";
 
             sendData( ESocketIdAllSockets, str2ByteArr(strMsg) );
         }
     }
 
-} // setNewTrcAdminObjsDefaultDetailLevel
+} // setNewTrcAdminObjsMethodCallsDefaultDetailLevel
+
+//------------------------------------------------------------------------------
+void CIpcTrcServer::setNewTrcAdminObjsRuntimeInfoDefaultDetailLevel( ETraceDetailLevelRuntimeInfo i_eDetailLevel )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+
+    if( m_pTrcMthFile != nullptr && m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    {
+        strMthInArgs = CEnumTraceDetailLevelRuntimeInfo(i_eDetailLevel).toString();
+    }
+
+    CMethodTracer mthTracer(
+        /* pTrcMthFile        */ m_pTrcMthFile,
+        /* eTrcDetailLevel    */ m_eTrcDetailLevel,
+        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* strNameSpace       */ nameSpace(),
+        /* strClassName       */ className(),
+        /* strObjName         */ objectName(),
+        /* strMethod          */ "setNewTrcAdminObjsRuntimeInfoDefaultDetailLevel",
+        /* strMthInArgs       */ strMthInArgs );
+
+    QMutexLocker mtxLocker(&s_mtx);
+
+    if( m_trcSettings.m_eNewTrcAdminObjsRuntimeInfoDefaultDetailLevel != i_eDetailLevel )
+    {
+        CTrcServer::setNewTrcAdminObjsRuntimeInfoDefaultDetailLevel(i_eDetailLevel);
+
+        if( !m_bOnReceivedDataUpdateInProcess && isConnected() )
+        {
+            QString strMsg;
+
+            strMsg += systemMsgType2Str(MsgProtocol::ESystemMsgTypeInd) + " ";
+            strMsg += command2Str(MsgProtocol::ECommandUpdate) + " ";
+            strMsg += "<ServerSettings NewTrcAdminObjsRuntimeInfoDefaultDetailLevel=\""
+                   + CEnumTraceDetailLevelRuntimeInfo(m_trcSettings.m_eNewTrcAdminObjsRuntimeInfoDefaultDetailLevel).toString() + "\"/>";
+
+            sendData( ESocketIdAllSockets, str2ByteArr(strMsg) );
+        }
+    }
+
+} // setNewTrcAdminObjsRuntimeInfoDefaultDetailLevel
 
 /*==============================================================================
 public: // overridables of base class CTrcServer
@@ -684,22 +727,22 @@ void CIpcTrcServer::setAdminObjFileAbsoluteFilePath( const QString& i_strAbsFile
 {
     QString strMthInArgs;
 
-    if( m_pTrcMthFile != nullptr && m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
+    if( m_pTrcMthFile != nullptr && m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
     {
         strMthInArgs = i_strAbsFilePath;
     }
 
     CMethodTracer mthTracer(
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* eTrcDetailLevel    */ m_eTrcDetailLevel,
+        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "setAdminObjFileAbsoluteFilePath",
         /* strMthInArgs       */ strMthInArgs );
 
-    CMutexLocker mtxLocker(m_pMtx);
+    QMutexLocker mtxLocker(&s_mtx);
 
     if( m_trcSettings.m_strAdminObjFileAbsFilePath != i_strAbsFilePath )
     {
@@ -729,22 +772,22 @@ void CIpcTrcServer::setUseLocalTrcFile( bool i_bUse )
 {
     QString strMthInArgs;
 
-    if( m_pTrcMthFile != nullptr && m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
+    if( m_pTrcMthFile != nullptr && m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
     {
         strMthInArgs = bool2Str(i_bUse);
     }
 
     CMethodTracer mthTracer(
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* eTrcDetailLevel    */ m_eTrcDetailLevel,
+        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "setUseLocalTrcFile",
         /* strMthInArgs       */ strMthInArgs );
 
-    CMutexLocker mtxLocker(m_pMtx);
+    QMutexLocker mtxLocker(&s_mtx);
 
     if( m_trcSettings.m_bUseLocalTrcFile != i_bUse )
     {
@@ -770,22 +813,22 @@ void CIpcTrcServer::setLocalTrcFileAbsoluteFilePath( const QString& i_strAbsFile
 {
     QString strMthInArgs;
 
-    if( m_pTrcMthFile != nullptr && m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
+    if( m_pTrcMthFile != nullptr && m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
     {
         strMthInArgs = i_strAbsFilePath;
     }
 
     CMethodTracer mthTracer(
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* eTrcDetailLevel    */ m_eTrcDetailLevel,
+        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "setLocalTrcFileAbsoluteFilePath",
         /* strMthInArgs       */ strMthInArgs );
 
-    CMutexLocker mtxLocker(m_pMtx);
+    QMutexLocker mtxLocker(&s_mtx);
 
     if( (m_trcSettings.m_strLocalTrcFileAbsFilePath != i_strAbsFilePath)
      || (m_pTrcMthFile == nullptr && !m_trcSettings.m_strLocalTrcFileAbsFilePath.isEmpty()) )
@@ -812,22 +855,22 @@ void CIpcTrcServer::setLocalTrcFileAutoSaveIntervalInMs( int i_iAutoSaveInterval
 {
     QString strMthInArgs;
 
-    if( m_pTrcMthFile != nullptr && m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
+    if( m_pTrcMthFile != nullptr && m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
     {
         strMthInArgs = QString::number(i_iAutoSaveInterval_ms);
     }
 
     CMethodTracer mthTracer(
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* eTrcDetailLevel    */ m_eTrcDetailLevel,
+        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "setLocalTrcFileAutoSaveIntervalInMs",
         /* strMthInArgs       */ strMthInArgs );
 
-    CMutexLocker mtxLocker(m_pMtx);
+    QMutexLocker mtxLocker(&s_mtx);
 
     if( m_trcSettings.m_iLocalTrcFileAutoSaveInterval_ms != i_iAutoSaveInterval_ms )
     {
@@ -853,22 +896,22 @@ void CIpcTrcServer::setLocalTrcFileSubFileCountMax( int i_iCountMax )
 {
     QString strMthInArgs;
 
-    if( m_pTrcMthFile != nullptr && m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
+    if( m_pTrcMthFile != nullptr && m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
     {
         strMthInArgs = QString::number(i_iCountMax);
     }
 
     CMethodTracer mthTracer(
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* eTrcDetailLevel    */ m_eTrcDetailLevel,
+        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "setLocalTrcFileSubFileCountMax",
         /* strMthInArgs       */ strMthInArgs );
 
-    CMutexLocker mtxLocker(m_pMtx);
+    QMutexLocker mtxLocker(&s_mtx);
 
     if( m_trcSettings.m_iLocalTrcFileSubFileCountMax != i_iCountMax )
     {
@@ -894,22 +937,22 @@ void CIpcTrcServer::setLocalTrcFileSubFileLineCountMax( int i_iCountMax )
 {
     QString strMthInArgs;
 
-    if( m_pTrcMthFile != nullptr && m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
+    if( m_pTrcMthFile != nullptr && m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
     {
         strMthInArgs = QString::number(i_iCountMax);
     }
 
     CMethodTracer mthTracer(
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* eTrcDetailLevel    */ m_eTrcDetailLevel,
+        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "setLocalTrcFileSubFileLineCountMax",
         /* strMthInArgs       */ strMthInArgs );
 
-    CMutexLocker mtxLocker(m_pMtx);
+    QMutexLocker mtxLocker(&s_mtx);
 
     if( m_trcSettings.m_iLocalTrcFileSubFileLineCountMax != i_iCountMax )
     {
@@ -935,22 +978,22 @@ void CIpcTrcServer::setLocalTrcFileCloseFileAfterEachWrite( bool i_bCloseFile )
 {
     QString strMthInArgs;
 
-    if( m_pTrcMthFile != nullptr && m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
+    if( m_pTrcMthFile != nullptr && m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
     {
         strMthInArgs = bool2Str(i_bCloseFile);
     }
 
     CMethodTracer mthTracer(
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* eTrcDetailLevel    */ m_eTrcDetailLevel,
+        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "setLocalTrcFileCloseFileAfterEachWrite",
         /* strMthInArgs       */ strMthInArgs );
 
-    CMutexLocker mtxLocker(m_pMtx);
+    QMutexLocker mtxLocker(&s_mtx);
 
     if( m_trcSettings.m_bLocalTrcFileCloseFileAfterEachWrite != i_bCloseFile )
     {
@@ -980,22 +1023,22 @@ void CIpcTrcServer::setUseIpcServer( bool i_bUse )
 {
     QString strMthInArgs;
 
-    if( m_pTrcMthFile != nullptr && m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
+    if( m_pTrcMthFile != nullptr && m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
     {
         strMthInArgs = bool2Str(i_bUse);
     }
 
     CMethodTracer mthTracer(
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* eTrcDetailLevel    */ m_eTrcDetailLevel,
+        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "setUseIpcServer",
         /* strMthInArgs       */ strMthInArgs );
 
-    CMutexLocker mtxLocker(m_pMtx);
+    QMutexLocker mtxLocker(&s_mtx);
 
     if( m_trcSettings.m_bUseIpcServer != i_bUse )
     {
@@ -1021,22 +1064,22 @@ void CIpcTrcServer::setCacheTrcDataIfNotConnected( bool i_bCacheData )
 {
     QString strMthInArgs;
 
-    if( m_pTrcMthFile != nullptr && m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
+    if( m_pTrcMthFile != nullptr && m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
     {
         strMthInArgs = bool2Str(i_bCacheData);
     }
 
     CMethodTracer mthTracer(
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* eTrcDetailLevel    */ m_eTrcDetailLevel,
+        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "setCacheTrcDataIfNotConnected",
         /* strMthInArgs       */ strMthInArgs );
 
-    CMutexLocker mtxLocker(m_pMtx);
+    QMutexLocker mtxLocker(&s_mtx);
 
     if( m_trcSettings.m_bCacheDataIfNotConnected != i_bCacheData )
     {
@@ -1062,22 +1105,22 @@ void CIpcTrcServer::setCacheTrcDataMaxArrLen( int i_iMaxArrLen )
 {
     QString strMthInArgs;
 
-    if( m_pTrcMthFile != nullptr && m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
+    if( m_pTrcMthFile != nullptr && m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
     {
         strMthInArgs = QString::number(i_iMaxArrLen);
     }
 
     CMethodTracer mthTracer(
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* eTrcDetailLevel    */ m_eTrcDetailLevel,
+        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "setCacheTrcDataMaxArrLen",
         /* strMthInArgs       */ strMthInArgs );
 
-    CMutexLocker mtxLocker(m_pMtx);
+    QMutexLocker mtxLocker(&s_mtx);
 
     if( m_trcSettings.m_iCacheDataMaxArrLen != i_iMaxArrLen )
     {
@@ -1107,21 +1150,21 @@ void CIpcTrcServer::setTraceSettings( const STrcServerSettings& i_settings )
 {
     QString strMthInArgs;
 
-    if( m_pTrcMthFile != nullptr && m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
+    if( m_pTrcMthFile != nullptr && m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
     {
     }
 
     CMethodTracer mthTracer(
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* eTrcDetailLevel    */ m_eTrcDetailLevel,
+        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "setTraceSettings",
         /* strMthInArgs       */ strMthInArgs );
 
-    CMutexLocker mtxLocker(m_pMtx);
+    QMutexLocker mtxLocker(&s_mtx);
 
     if( m_trcSettings != i_settings )
     {
@@ -1146,9 +1189,15 @@ void CIpcTrcServer::setTraceSettings( const STrcServerSettings& i_settings )
             {
                 strMsg += " NewTrcAdminObjsEnabledAsDefault=\"" + bool2Str(i_settings.m_bNewTrcAdminObjsEnabledAsDefault) + "\"";
             }
-            if( m_trcSettings.m_iNewTrcAdminObjsDefaultDetailLevel != i_settings.m_iNewTrcAdminObjsDefaultDetailLevel )
+            if( m_trcSettings.m_eNewTrcAdminObjsMethodCallsDefaultDetailLevel != i_settings.m_eNewTrcAdminObjsMethodCallsDefaultDetailLevel )
             {
-                strMsg += " NewTrcAdminObjsDefaultDetailLevel=\"" + QString::number(i_settings.m_iNewTrcAdminObjsDefaultDetailLevel) + "\"";
+                strMsg += " NewTrcAdminObjsMethodCallsDefaultDetailLevel=\""
+                       + CEnumTraceDetailLevelMethodCalls(i_settings.m_eNewTrcAdminObjsMethodCallsDefaultDetailLevel).toString() + "\"";
+            }
+            if( m_trcSettings.m_eNewTrcAdminObjsRuntimeInfoDefaultDetailLevel != i_settings.m_eNewTrcAdminObjsRuntimeInfoDefaultDetailLevel )
+            {
+                strMsg += " NewTrcAdminObjsRuntimeInfoDefaultDetailLevel=\""
+                       + CEnumTraceDetailLevelRuntimeInfo(i_settings.m_eNewTrcAdminObjsRuntimeInfoDefaultDetailLevel).toString() + "\"";
             }
             if( m_trcSettings.m_bUseIpcServer != i_settings.m_bUseIpcServer )
             {
@@ -1222,9 +1271,9 @@ void CIpcTrcServer::traceMethodEnter(
     const QString&      i_strMethodInArgs )
 //------------------------------------------------------------------------------
 {
-    CMutexLocker mtxLocker(m_pMtx);
+    QMutexLocker mtxLocker(&s_mtx);
 
-    if( i_pTrcAdminObj != nullptr && (i_pTrcAdminObj->getTraceDetailLevel() > ETraceDetailLevelNone) && isEnabled() && isActive() )
+    if( i_pTrcAdminObj != nullptr && i_pTrcAdminObj->areMethodCallsActive(ETraceDetailLevelMethodCalls::EnterLeave) && isActive() )
     {
         addEntry(
             /* strThreadName */ currentThreadName(),
@@ -1263,9 +1312,9 @@ void CIpcTrcServer::traceMethodEnter(
     const QString&      i_strMethodInArgs )
 //------------------------------------------------------------------------------
 {
-    CMutexLocker mtxLocker(m_pMtx);
+    QMutexLocker mtxLocker(&s_mtx);
 
-    if( i_pTrcAdminObj != nullptr && (i_pTrcAdminObj->getTraceDetailLevel() > ETraceDetailLevelNone) && isActive() )
+    if( i_pTrcAdminObj != nullptr && i_pTrcAdminObj->areMethodCallsActive(ETraceDetailLevelMethodCalls::EnterLeave) && isActive() )
     {
         addEntry(
             /* strThreadName */ currentThreadName(),
@@ -1304,9 +1353,9 @@ void CIpcTrcServer::traceMethod(
     const QString&      i_strAddInfo )
 //------------------------------------------------------------------------------
 {
-    CMutexLocker mtxLocker(m_pMtx);
+    QMutexLocker mtxLocker(&s_mtx);
 
-    if( i_pTrcAdminObj != nullptr && (i_pTrcAdminObj->getTraceDetailLevel() > ETraceDetailLevelNone) && isActive() )
+    if( i_pTrcAdminObj != nullptr && i_pTrcAdminObj->areMethodCallsActive(ETraceDetailLevelMethodCalls::EnterLeave) && isActive() )
     {
         addEntry(
             /* strThreadName */ currentThreadName(),
@@ -1346,9 +1395,9 @@ void CIpcTrcServer::traceMethod(
     const QString&      i_strAddInfo )
 //------------------------------------------------------------------------------
 {
-    CMutexLocker mtxLocker(m_pMtx);
+    QMutexLocker mtxLocker(&s_mtx);
 
-    if( i_pTrcAdminObj != nullptr && (i_pTrcAdminObj->getTraceDetailLevel() > ETraceDetailLevelNone) && isActive() )
+    if( i_pTrcAdminObj != nullptr && i_pTrcAdminObj->areMethodCallsActive(ETraceDetailLevelMethodCalls::EnterLeave) && isActive() )
     {
         addEntry(
             /* strThreadName */ currentThreadName(),
@@ -1387,9 +1436,9 @@ void CIpcTrcServer::traceMethodLeave(
     const QString&      i_strMethodOutArgs )
 //------------------------------------------------------------------------------
 {
-    CMutexLocker mtxLocker(m_pMtx);
+    QMutexLocker mtxLocker(&s_mtx);
 
-    if( i_pTrcAdminObj != nullptr && (i_pTrcAdminObj->getTraceDetailLevel() > ETraceDetailLevelNone) && isActive() )
+    if( i_pTrcAdminObj != nullptr && i_pTrcAdminObj->areMethodCallsActive(ETraceDetailLevelMethodCalls::EnterLeave) && isActive() )
     {
         addEntry(
             /* strThreadName */ currentThreadName(),
@@ -1431,9 +1480,9 @@ void CIpcTrcServer::traceMethodLeave(
     const QString&      i_strMethodOutArgs )
 //------------------------------------------------------------------------------
 {
-    CMutexLocker mtxLocker(m_pMtx);
+    QMutexLocker mtxLocker(&s_mtx);
 
-    if( i_pTrcAdminObj != nullptr && (i_pTrcAdminObj->getTraceDetailLevel() > ETraceDetailLevelNone) && isActive() )
+    if( i_pTrcAdminObj != nullptr && i_pTrcAdminObj->areMethodCallsActive(ETraceDetailLevelMethodCalls::EnterLeave) && isActive() )
     {
         addEntry(
             /* strThreadName */ currentThreadName(),
@@ -1510,7 +1559,7 @@ void CIpcTrcServer::addEntry(
         if( m_iTrcDataCachedCount == m_arpTrcDataCached.size() )
         {
             const int ciMaxArrLen   = m_trcSettings.m_iCacheDataMaxArrLen;
-            const int ciRemoveCount = 200;
+            const int ciRemoveCount = (ciMaxArrLen / 5) + 1; // 20 % (but at least one)
 
             // To save memory not more than MaxArrLen entries will be temporarily stored:
             if( m_iTrcDataCachedCount < ciMaxArrLen )
@@ -1605,7 +1654,7 @@ CRequest* CIpcTrcServer::startup( int i_iTimeout_ms, bool i_bWait, qint64 i_iReq
 {
     QString strMthInArgs;
 
-    if( m_pTrcMthFile != nullptr && m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
+    if( m_pTrcMthFile != nullptr && m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
     {
         strMthInArgs  = "Timeout: " + QString::number(i_iTimeout_ms) + " ms";
         strMthInArgs += ", Wait: " + bool2Str(i_bWait);
@@ -1614,8 +1663,8 @@ CRequest* CIpcTrcServer::startup( int i_iTimeout_ms, bool i_bWait, qint64 i_iReq
 
     CMethodTracer mthTracer(
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* eTrcDetailLevel    */ m_eTrcDetailLevel,
+        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
@@ -1632,7 +1681,7 @@ CRequest* CIpcTrcServer::shutdown( int i_iTimeout_ms, bool i_bWait, qint64 i_iRe
 {
     QString strMthInArgs;
 
-    if( m_pTrcMthFile != nullptr && m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
+    if( m_pTrcMthFile != nullptr && m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
     {
         strMthInArgs  = "Timeout: " + QString::number(i_iTimeout_ms) + " ms";
         strMthInArgs += ", Wait: " + bool2Str(i_bWait);
@@ -1641,8 +1690,8 @@ CRequest* CIpcTrcServer::shutdown( int i_iTimeout_ms, bool i_bWait, qint64 i_iRe
 
     CMethodTracer mthTracer(
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* eTrcDetailLevel    */ m_eTrcDetailLevel,
+        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
@@ -1812,15 +1861,15 @@ void CIpcTrcServer::abortRequest( qint64 i_iRequestId )
 {
     QString strMthInArgs;
 
-    if( m_pTrcMthFile != nullptr && m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
+    if( m_pTrcMthFile != nullptr && m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
     {
         strMthInArgs = "ReqId: " + QString::number(i_iRequestId);
     }
 
     CMethodTracer mthTracer(
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* eTrcDetailLevel    */ m_eTrcDetailLevel,
+        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
@@ -1837,14 +1886,14 @@ void CIpcTrcServer::abortRequestInProgress()
 {
     QString strMthInArgs;
 
-    if( m_pTrcMthFile != nullptr && m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
+    if( m_pTrcMthFile != nullptr && m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
     {
     }
 
     CMethodTracer mthTracer(
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* eTrcDetailLevel    */ m_eTrcDetailLevel,
+        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
@@ -1861,14 +1910,14 @@ void CIpcTrcServer::abortAllRequests()
 {
     QString strMthInArgs;
 
-    if( m_pTrcMthFile != nullptr && m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
+    if( m_pTrcMthFile != nullptr && m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
     {
     }
 
     CMethodTracer mthTracer(
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* eTrcDetailLevel    */ m_eTrcDetailLevel,
+        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
@@ -1893,7 +1942,7 @@ void CIpcTrcServer::sendBranch(
 {
     QString strMthInArgs;
 
-    if( m_pTrcMthFile != nullptr && m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
+    if( m_pTrcMthFile != nullptr && m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
     {
         strMthInArgs  = "SocketId: " + QString::number(i_iSocketId);
         strMthInArgs += ", MsgType: " + systemMsgType2Str(i_systemMsgType);
@@ -1903,8 +1952,8 @@ void CIpcTrcServer::sendBranch(
 
     CMethodTracer mthTracer(
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* eTrcDetailLevel    */ m_eTrcDetailLevel,
+        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
@@ -1984,7 +2033,7 @@ void CIpcTrcServer::sendAdminObj(
 {
     QString strMthInArgs;
 
-    if( m_pTrcMthFile != nullptr && m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
+    if( m_pTrcMthFile != nullptr && m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
     {
         strMthInArgs  = "SocketId: " + QString::number(i_iSocketId);
         strMthInArgs += ", MsgType: " + systemMsgType2Str(i_systemMsgType);
@@ -1994,8 +2043,8 @@ void CIpcTrcServer::sendAdminObj(
 
     CMethodTracer mthTracer(
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* eTrcDetailLevel    */ m_eTrcDetailLevel,
+        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
@@ -2029,7 +2078,9 @@ void CIpcTrcServer::sendAdminObj(
             strMsg += " ObjName=\"" + strObjName + "\"";
             strMsg += " Thread=\"" + strThreadName + "\"";
             strMsg += " Enabled=\"" + CEnumEnabled::toString(pTrcAdminObj->getEnabled()) + "\"";
-            strMsg += " DetailLevel=\"" + QString::number(pTrcAdminObj->getTraceDetailLevel()) + "\"";
+            strMsg += " MethodCallsDetailLevel=\"" + CEnumTraceDetailLevelMethodCalls(pTrcAdminObj->getMethodCallsTraceDetailLevel()).toString() + "\"";
+            strMsg += " RuntimeInfoDetailLevel=\"" + CEnumTraceDetailLevelRuntimeInfo(pTrcAdminObj->getRuntimeInfoTraceDetailLevel()).toString() + "\"";
+            strMsg += " DataFilter=\"" + pTrcAdminObj->getTraceDataFilter() + "\"";
             strMsg += " RefCount=\"" + QString::number(pTrcAdminObj->getRefCount()) + "\"";
         }
         strMsg += "/>";
@@ -2055,14 +2106,14 @@ void CIpcTrcServer::sendServerSettings(int i_iSocketId)
 {
     QString strMthInArgs;
 
-    if( m_pTrcMthFile != nullptr && m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
+    if( m_pTrcMthFile != nullptr && m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
     {
     }
 
     CMethodTracer mthTracer(
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* eTrcDetailLevel    */ m_eTrcDetailLevel,
+        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
@@ -2078,7 +2129,10 @@ void CIpcTrcServer::sendServerSettings(int i_iSocketId)
     strDataSnd += " Enabled=\"" + bool2Str(m_trcSettings.m_bEnabled) + "\"";
     strDataSnd += " AdminObjFileAbsFilePath=\"" + m_trcSettings.m_strAdminObjFileAbsFilePath + "\"";
     strDataSnd += " NewTrcAdminObjsEnabledAsDefault=\"" + bool2Str(m_trcSettings.m_bNewTrcAdminObjsEnabledAsDefault) + "\"";
-    strDataSnd += " NewTrcAdminObjsDefaultDetailLevel=\"" + QString::number(m_trcSettings.m_iNewTrcAdminObjsDefaultDetailLevel) + "\"";
+    strDataSnd += " NewTrcAdminObjsMethodCallsDefaultDetailLevel=\""
+               + CEnumTraceDetailLevelMethodCalls(m_trcSettings.m_eNewTrcAdminObjsMethodCallsDefaultDetailLevel).toString() + "\"";
+    strDataSnd += " NewTrcAdminObjsRuntimeInfoDefaultDetailLevel=\""
+               + CEnumTraceDetailLevelRuntimeInfo(m_trcSettings.m_eNewTrcAdminObjsRuntimeInfoDefaultDetailLevel).toString() + "\"";
     strDataSnd += " UseIpcServer=\"" + bool2Str(m_trcSettings.m_bUseIpcServer) + "\"";
     strDataSnd += " CacheDataIfNotConnected=\"" + bool2Str(m_trcSettings.m_bCacheDataIfNotConnected) + "\"";
     strDataSnd += " CacheDataMaxArrLen=\"" + QString::number(m_trcSettings.m_iCacheDataMaxArrLen) + "\"";
@@ -2104,14 +2158,14 @@ void CIpcTrcServer::sendCachedTrcData(int i_iSocketId)
 {
     QString strMthInArgs;
 
-    if( m_pTrcMthFile != nullptr && m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
+    if( m_pTrcMthFile != nullptr && m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
     {
     }
 
     CMethodTracer mthTracer(
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* eTrcDetailLevel    */ m_eTrcDetailLevel,
+        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
@@ -2160,11 +2214,11 @@ CRequest* CIpcTrcServer::sendData( int i_iSocketId, const QByteArray& i_byteArr,
 {
     QString strMthInArgs;
 
-    if( m_pTrcMthFile != nullptr && m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
+    if( m_pTrcMthFile != nullptr && m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
     {
         strMthInArgs  = "SocketId: " + QString::number(i_iSocketId);
         strMthInArgs += ", ByteArr[" + QString::number(i_byteArr.size()) + "]";
-        if( m_iTrcDetailLevel < ETraceDetailLevelVerbose ) {
+        if( m_eTrcDetailLevel < ETraceDetailLevelMethodCalls::ArgsVerbose ) {
             strMthInArgs += "(" + truncateStringWithEllipsisInTheMiddle(byteArr2Str(i_byteArr), 30) + ")";
         } else {
             strMthInArgs += "(" + truncateStringWithEllipsisInTheMiddle(byteArr2Str(i_byteArr), 100) + ")";
@@ -2173,8 +2227,8 @@ CRequest* CIpcTrcServer::sendData( int i_iSocketId, const QByteArray& i_byteArr,
 
     CMethodTracer mthTracer(
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* eTrcDetailLevel    */ m_eTrcDetailLevel,
+        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
@@ -2201,22 +2255,22 @@ void CIpcTrcServer::onIpcServerConnected( QObject* /*i_pServer*/, const SSocketD
 {
     QString strMthInArgs;
 
-    if( m_pTrcMthFile != nullptr && m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
+    if( m_pTrcMthFile != nullptr && m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
     {
         strMthInArgs = "{" + i_socketDscr.getConnectionString() + "}";
     }
 
     CMethodTracer mthTracer(
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* eTrcDetailLevel    */ m_eTrcDetailLevel,
+        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "onIpcServerConnected",
         /* strMthInArgs       */ strMthInArgs );
 
-    CMutexLocker mtxLocker(m_pMtx);
+    QMutexLocker mtxLocker(&s_mtx);
 
     if( !m_ariSocketIdsConnectedTrcClients.contains(i_socketDscr.m_iSocketId) )
     {
@@ -2251,22 +2305,22 @@ void CIpcTrcServer::onIpcServerDisconnected( QObject* /*i_pServer*/, const SSock
 {
     QString strMthInArgs;
 
-    if( m_pTrcMthFile != nullptr && m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
+    if( m_pTrcMthFile != nullptr && m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
     {
         strMthInArgs = "{" + i_socketDscr.getConnectionString() + "}";
     }
 
     CMethodTracer mthTracer(
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* eTrcDetailLevel    */ m_eTrcDetailLevel,
+        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "onIpcServerDisconnected",
         /* strMthInArgs       */ strMthInArgs );
 
-    CMutexLocker mtxLocker(m_pMtx);
+    QMutexLocker mtxLocker(&s_mtx);
 
     if( m_ariSocketIdsConnectedTrcClients.contains(i_socketDscr.m_iSocketId) )
     {
@@ -2288,11 +2342,11 @@ void CIpcTrcServer::onIpcServerReceivedData(
 {
     QString strMthInArgs;
 
-    if( m_pTrcMthFile != nullptr && m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
+    if( m_pTrcMthFile != nullptr && m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
     {
         strMthInArgs  = "SocketId: " + QString::number(i_iSocketId);
         strMthInArgs += ", ByteArr[" + QString::number(i_byteArr.size()) + "]";
-        if( m_iTrcDetailLevel < ETraceDetailLevelVerbose ) {
+        if( m_eTrcDetailLevel < ETraceDetailLevelMethodCalls::ArgsVerbose ) {
             strMthInArgs += "(" + truncateStringWithEllipsisInTheMiddle(byteArr2Str(i_byteArr), 30) + ")";
         } else {
             strMthInArgs += "(" + truncateStringWithEllipsisInTheMiddle(byteArr2Str(i_byteArr), 100) + ")";
@@ -2301,15 +2355,15 @@ void CIpcTrcServer::onIpcServerReceivedData(
 
     CMethodTracer mthTracer(
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* eTrcDetailLevel    */ m_eTrcDetailLevel,
+        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "onIpcServerReceivedData",
         /* strMthInArgs       */ strMthInArgs );
 
-    CMutexLocker mtxLocker(m_pMtx);
+    QMutexLocker mtxLocker(&s_mtx);
 
     QString                     str = byteArr2Str(i_byteArr);
     const QChar*                pcData = str.data();
@@ -2386,7 +2440,7 @@ void CIpcTrcServer::onIpcServerReceivedReqSelect( int i_iSocketId, const QString
 {
     QString strMthInArgs;
 
-    if( m_pTrcMthFile != nullptr && m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
+    if( m_pTrcMthFile != nullptr && m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
     {
         strMthInArgs  = "SocketId: " + QString::number(i_iSocketId);
         strMthInArgs += ", Data: " + i_strData.left(20);
@@ -2394,8 +2448,8 @@ void CIpcTrcServer::onIpcServerReceivedReqSelect( int i_iSocketId, const QString
 
     CMethodTracer mthTracer(
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* eTrcDetailLevel    */ m_eTrcDetailLevel,
+        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
@@ -2403,7 +2457,7 @@ void CIpcTrcServer::onIpcServerReceivedReqSelect( int i_iSocketId, const QString
         /* strMthInArgs       */ strMthInArgs );
 
     // Already locked by onIpcServerReceivedData
-    //CMutexLocker mtxLocker(m_pMtx);
+    //QMutexLocker mtxLocker(&s_mtx);
 
     // The trace admin object index tree will be locked so it will not be changed
     // when sending the whole content of the index tree to the client.
@@ -2488,7 +2542,7 @@ void CIpcTrcServer::onIpcServerReceivedReqUpdate( int i_iSocketId, const QString
 
     QString strMthInArgs;
 
-    if( m_pTrcMthFile != nullptr && m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
+    if( m_pTrcMthFile != nullptr && m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
     {
         strMthInArgs  = "SocketId: " + QString::number(i_iSocketId);
         strMthInArgs += ", Data: " + i_strData.left(20);
@@ -2496,8 +2550,8 @@ void CIpcTrcServer::onIpcServerReceivedReqUpdate( int i_iSocketId, const QString
 
     CMethodTracer mthTracer(
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* eTrcDetailLevel    */ m_eTrcDetailLevel,
+        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
@@ -2505,7 +2559,7 @@ void CIpcTrcServer::onIpcServerReceivedReqUpdate( int i_iSocketId, const QString
         /* strMthInArgs       */ strMthInArgs );
 
     // Already locked by onIpcServerReceivedData
-    //CMutexLocker mtxLocker(m_pMtx);
+    //QMutexLocker mtxLocker(&s_mtx);
 
     QString strMth = "onIpcServerReceivedReqUpdate";
 
@@ -2521,8 +2575,10 @@ void CIpcTrcServer::onIpcServerReceivedReqUpdate( int i_iSocketId, const QString
     int      iVal;
     int      iObjId;
     EEnabled enabled;
-    int      iDetailLevel;
     bool     bOk;
+
+    ETraceDetailLevelMethodCalls eDetailLevelMethodCalls;
+    ETraceDetailLevelRuntimeInfo eDetailLevelRuntimeInfo;
 
     xmlStreamTokenType = xmlStreamReader.readNext();
 
@@ -2565,12 +2621,19 @@ void CIpcTrcServer::onIpcServerReceivedReqUpdate( int i_iSocketId, const QString
                         if( bOk ) trcServerSettings.m_bNewTrcAdminObjsEnabledAsDefault = bVal;
                         else xmlStreamReader.raiseError("Attribute \"NewTrcAdminObjsEnabledAsDefault\" (" + strAttr + ") is out of range");
                     }
-                    if( xmlStreamReader.attributes().hasAttribute("NewTrcAdminObjsDefaultDetailLevel") )
+                    if( xmlStreamReader.attributes().hasAttribute("NewTrcAdminObjsMethodCallsDefaultDetailLevel") )
                     {
-                        strAttr = xmlStreamReader.attributes().value("NewTrcAdminObjsDefaultDetailLevel").toString();
-                        iVal = strAttr.toInt(&bOk);
-                        if( bOk ) trcServerSettings.m_iNewTrcAdminObjsDefaultDetailLevel = iVal;
-                        else xmlStreamReader.raiseError("Attribute \"NewTrcAdminObjsDefaultDetailLevel\" (" + strAttr + ") is out of range");
+                        strAttr = xmlStreamReader.attributes().value("NewTrcAdminObjsMethodCallsDefaultDetailLevel").toString();
+                        CEnumTraceDetailLevelMethodCalls eDetailLevel = CEnumTraceDetailLevelMethodCalls::fromString(strAttr);
+                        if( eDetailLevel != ETraceDetailLevelMethodCalls::Undefined ) trcServerSettings.m_eNewTrcAdminObjsMethodCallsDefaultDetailLevel = eDetailLevel.enumerator();
+                        else xmlStreamReader.raiseError("Attribute \"NewTrcAdminObjsMethodCallsDefaultDetailLevel\" (" + strAttr + ") is out of range");
+                    }
+                    if( xmlStreamReader.attributes().hasAttribute("NewTrcAdminObjsRuntimeInfoDefaultDetailLevel") )
+                    {
+                        strAttr = xmlStreamReader.attributes().value("NewTrcAdminObjsRuntimeInfoDefaultDetailLevel").toString();
+                        CEnumTraceDetailLevelRuntimeInfo eDetailLevel = CEnumTraceDetailLevelRuntimeInfo::fromString(strAttr);
+                        if( eDetailLevel != ETraceDetailLevelRuntimeInfo::Undefined ) trcServerSettings.m_eNewTrcAdminObjsRuntimeInfoDefaultDetailLevel = eDetailLevel.enumerator();
+                        else xmlStreamReader.raiseError("Attribute \"NewTrcAdminObjsRuntimeInfoDefaultDetailLevel\" (" + strAttr + ") is out of range");
                     }
                     if( xmlStreamReader.attributes().hasAttribute("UseIpcServer") )
                     {
@@ -2651,7 +2714,8 @@ void CIpcTrcServer::onIpcServerReceivedReqUpdate( int i_iSocketId, const QString
                 {
                     iObjId = -1;
                     enabled = EEnabled::Undefined;
-                    iDetailLevel = -1;
+                    eDetailLevelMethodCalls = ETraceDetailLevelMethodCalls::None;
+                    eDetailLevelRuntimeInfo = ETraceDetailLevelRuntimeInfo::None;
 
                     if( xmlStreamReader.attributes().hasAttribute("ObjId") )
                     {
@@ -2671,13 +2735,22 @@ void CIpcTrcServer::onIpcServerReceivedReqUpdate( int i_iSocketId, const QString
                             xmlStreamReader.raiseError("Attribute \"Enabled\" (" + strAttr + ") for \"" + strElemName + "\" is out of range");
                         }
                     }
-                    if( xmlStreamReader.attributes().hasAttribute("DetailLevel") )
+                    if( xmlStreamReader.attributes().hasAttribute("MethodCallsDetailLevel") )
                     {
-                        strAttr = xmlStreamReader.attributes().value("DetailLevel").toString();
-                        iDetailLevel = strAttr.toInt(&bOk);
-                        if( !bOk )
+                        strAttr = xmlStreamReader.attributes().value("MethodCallsDetailLevel").toString();
+                        eDetailLevelMethodCalls = CEnumTraceDetailLevelMethodCalls::toEnumerator(strAttr);
+                        if( eDetailLevelMethodCalls == ETraceDetailLevelMethodCalls::Undefined )
                         {
-                            xmlStreamReader.raiseError("Attribute \"DetailLevel\" (" + strAttr + ") for \"" + strElemName + "\" is out of range");
+                            xmlStreamReader.raiseError("Attribute \"MethodCallsDetailLevel\" (" + strAttr + ") for \"" + strElemName + "\" is out of range");
+                        }
+                    }
+                    if( xmlStreamReader.attributes().hasAttribute("RuntimeInfoDetailLevel") )
+                    {
+                        strAttr = xmlStreamReader.attributes().value("RuntimeInfoDetailLevel").toString();
+                        eDetailLevelRuntimeInfo = CEnumTraceDetailLevelRuntimeInfo::toEnumerator(strAttr);
+                        if( eDetailLevelRuntimeInfo == ETraceDetailLevelRuntimeInfo::Undefined )
+                        {
+                            xmlStreamReader.raiseError("Attribute \"RuntimeInfoDetailLevel\" (" + strAttr + ") for \"" + strElemName + "\" is out of range");
                         }
                     }
 
@@ -2687,7 +2760,7 @@ void CIpcTrcServer::onIpcServerReceivedReqUpdate( int i_iSocketId, const QString
                     }
                     else // if( iObjId >= 0 && iObjId < m_pTrcAdminObjIdxTree->treeEntriesVectorSize() )
                     {
-                        CTrcAdminObj* pTrcAdminObj = m_pTrcAdminObjIdxTree->getTraceAdminObj(iObjId);
+                        CTrcAdminObj* pTrcAdminObj = m_pTrcAdminObjIdxTree->getTraceAdminObj(iObjId, false);
 
                         if( pTrcAdminObj == nullptr )
                         {
@@ -2696,7 +2769,8 @@ void CIpcTrcServer::onIpcServerReceivedReqUpdate( int i_iSocketId, const QString
                         else
                         {
                             pTrcAdminObj->setEnabled(enabled);
-                            pTrcAdminObj->setTraceDetailLevel(iDetailLevel);
+                            pTrcAdminObj->setMethodCallsTraceDetailLevel(eDetailLevelMethodCalls);
+                            pTrcAdminObj->setRuntimeInfoTraceDetailLevel(eDetailLevelRuntimeInfo);
                         }
                     } // if( iObjId >= 0 && iObjId < m_pTrcAdminObjIdxTree->treeEntriesVectorSize() )
                 } // if( strElemName == "TrcAdminObj" )
@@ -2705,7 +2779,8 @@ void CIpcTrcServer::onIpcServerReceivedReqUpdate( int i_iSocketId, const QString
                 {
                     iObjId = -1;
                     enabled = EEnabled::Undefined;
-                    iDetailLevel = -1;
+                    eDetailLevelMethodCalls = ETraceDetailLevelMethodCalls::None;
+                    eDetailLevelRuntimeInfo = ETraceDetailLevelRuntimeInfo::None;
 
                     if( xmlStreamReader.attributes().hasAttribute("ObjId") )
                     {
@@ -2725,13 +2800,22 @@ void CIpcTrcServer::onIpcServerReceivedReqUpdate( int i_iSocketId, const QString
                             xmlStreamReader.raiseError("Attribute \"Enabled\" (" + strAttr + ") for \"" + strElemName + "\" is out of range");
                         }
                     }
-                    if( xmlStreamReader.attributes().hasAttribute("DetailLevel") )
+                    if( xmlStreamReader.attributes().hasAttribute("MethodCallsDetailLevel") )
                     {
-                        strAttr = xmlStreamReader.attributes().value("DetailLevel").toString();
-                        iDetailLevel = strAttr.toInt(&bOk);
-                        if( !bOk )
+                        strAttr = xmlStreamReader.attributes().value("MethodCallsDetailLevel").toString();
+                        eDetailLevelMethodCalls = CEnumTraceDetailLevelMethodCalls::toEnumerator(strAttr);
+                        if( eDetailLevelMethodCalls == ETraceDetailLevelMethodCalls::Undefined )
                         {
-                            xmlStreamReader.raiseError("Attribute \"DetailLevel\" (" + strAttr + ") for \"" + strElemName + "\" is out of range");
+                            xmlStreamReader.raiseError("Attribute \"MethodCallsDetailLevel\" (" + strAttr + ") for \"" + strElemName + "\" is out of range");
+                        }
+                    }
+                    if( xmlStreamReader.attributes().hasAttribute("RuntimeInfoDetailLevel") )
+                    {
+                        strAttr = xmlStreamReader.attributes().value("RuntimeInfoDetailLevel").toString();
+                        eDetailLevelRuntimeInfo = CEnumTraceDetailLevelRuntimeInfo::toEnumerator(strAttr);
+                        if( eDetailLevelRuntimeInfo == ETraceDetailLevelRuntimeInfo::Undefined )
+                        {
+                            xmlStreamReader.raiseError("Attribute \"RuntimeInfoDetailLevel\" (" + strAttr + ") for \"" + strElemName + "\" is out of range");
                         }
                     }
 
@@ -2755,7 +2839,8 @@ void CIpcTrcServer::onIpcServerReceivedReqUpdate( int i_iSocketId, const QString
                         else // if( pTreeEntry->entryType() == EIdxTreeEntryType::Root || Branch )
                         {
                             m_pTrcAdminObjIdxTree->setEnabled(iObjId, enabled);
-                            m_pTrcAdminObjIdxTree->setTraceDetailLevel(iObjId, iDetailLevel);
+                            m_pTrcAdminObjIdxTree->setMethodCallsTraceDetailLevel(iObjId, eDetailLevelMethodCalls);
+                            m_pTrcAdminObjIdxTree->setRuntimeInfoTraceDetailLevel(iObjId, eDetailLevelRuntimeInfo);
                         }
                     } // if( iObjId >= 0 && iObjId < m_pTrcAdminObjIdxTree->treeEntriesVectorSize() )
                 } // if( strElemName == "NameSpace" )
@@ -2802,22 +2887,22 @@ void CIpcTrcServer::onTrcAdminObjIdxTreeEntryAdded(
 
     QString strMthInArgs;
 
-    if( m_pTrcMthFile != nullptr && m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
+    if( m_pTrcMthFile != nullptr && m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
     {
         strMthInArgs = QString(i_pTreeEntry == nullptr ? "null" : i_pTreeEntry->keyInTree());
     }
 
     CMethodTracer mthTracer(
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* eTrcDetailLevel    */ m_eTrcDetailLevel,
+        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "onTrcAdminObjIdxTreeEntryAdded",
         /* strMthInArgs       */ strMthInArgs );
 
-    CMutexLocker mtxLocker(m_pMtx);
+    QMutexLocker mtxLocker(&s_mtx);
 
     if( m_bOnReceivedDataUpdateInProcess )
     {
@@ -2857,22 +2942,22 @@ void CIpcTrcServer::onTrcAdminObjIdxTreeEntryAboutToBeRemoved(
 
     QString strMthInArgs;
 
-    if( m_pTrcMthFile != nullptr && m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
+    if( m_pTrcMthFile != nullptr && m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
     {
         strMthInArgs = QString(i_pTreeEntry == nullptr ? "null" : i_pTreeEntry->keyInTree());
     }
 
     CMethodTracer mthTracer(
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* eTrcDetailLevel    */ m_eTrcDetailLevel,
+        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "onTrcAdminObjIdxTreeEntryAboutToBeRemoved",
         /* strMthInArgs       */ strMthInArgs );
 
-    CMutexLocker mtxLocker(m_pMtx);
+    QMutexLocker mtxLocker(&s_mtx);
 
     if( m_bOnReceivedDataUpdateInProcess )
     {
@@ -2908,22 +2993,22 @@ void CIpcTrcServer::onTrcAdminObjIdxTreeEntryChanged(
 {
     QString strMthInArgs;
 
-    if( m_pTrcMthFile != nullptr && m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
+    if( m_pTrcMthFile != nullptr && m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
     {
         strMthInArgs = QString(i_pTreeEntry == nullptr ? "null" : i_pTreeEntry->keyInTree());
     }
 
     CMethodTracer mthTracer(
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* eTrcDetailLevel    */ m_eTrcDetailLevel,
+        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "onTrcAdminObjIdxTreeEntryChanged",
         /* strMthInArgs       */ strMthInArgs );
 
-    CMutexLocker mtxLocker(m_pMtx);
+    QMutexLocker mtxLocker(&s_mtx);
 
     // The trace admin object index tree will be locked so it will not be changed
     // when accessing it here.
@@ -2982,19 +3067,19 @@ bool CIpcTrcServer::event( QEvent* i_pMsg )
             pMsg = nullptr;
         }
 
-        if( m_pTrcMthFile != nullptr && m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
+        if( m_pTrcMthFile != nullptr && m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
         {
             int iAddTrcInfoDetailLevel = 0;
-            if( m_iTrcDetailLevel >= ETraceDetailLevelVerbose ) iAddTrcInfoDetailLevel = 2;
-            else if( m_iTrcDetailLevel >= ETraceDetailLevelRuntimeInfo ) iAddTrcInfoDetailLevel = 1;
+            if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
+            else if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsDetailed ) iAddTrcInfoDetailLevel = 1;
 
             strAddTrcInfo = "Msg {" + QString( pMsg == nullptr ? "nullptr" : pMsg->getAddTrcInfoStr(iAddTrcInfoDetailLevel) ) + "}";
         }
 
         CMethodTracer mthTracer(
             /* pTrcMthFile        */ m_pTrcMthFile,
-            /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-            /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+            /* eTrcDetailLevel    */ m_eTrcDetailLevel,
+            /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
             /* strNameSpace       */ nameSpace(),
             /* strClassName       */ className(),
             /* strObjName         */ objectName(),
@@ -3003,7 +3088,7 @@ bool CIpcTrcServer::event( QEvent* i_pMsg )
 
         if( pMsg != nullptr )
         {
-            CMutexLocker mtxLocker(m_pMtx);
+            QMutexLocker mtxLocker(&s_mtx);
 
             bEventHandled = true;
 

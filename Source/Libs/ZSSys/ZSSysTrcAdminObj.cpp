@@ -119,9 +119,13 @@ CTrcAdminObj::CTrcAdminObj(
     m_strClassName(i_strClassName),
     m_strObjName(i_strObjName),
     m_strObjThreadName(),
+    m_iLockCount(0),
+    m_bDeleteOnUnlock(false),
     m_iRefCount(0),
     m_enabled(EEnabled::Yes),
-    m_iTrcDetailLevel(ETraceDetailLevelNone)
+    m_eTrcDetailLevelMethodCalls(ETraceDetailLevelMethodCalls::None),
+    m_eTrcDetailLevelRuntimeInfo(ETraceDetailLevelRuntimeInfo::None),
+    m_strDataFilter()
 {
     m_pMtx = new QMutex(QMutex::Recursive);
 
@@ -159,10 +163,38 @@ CTrcAdminObj::~CTrcAdminObj()
 {
     emit aboutToBeDestroyed(this);
 
+    if( m_bDeleteOnUnlock )
+    {
+        SErrResultInfo errResultInfo(
+            /* errSource     */ NameSpace(), ClassName(), keyInTree(), "dtor",
+            /* result        */ EResultObjRefCounterIsNotZero,
+            /* severity      */ EResultSeverityError,
+            /* strAddErrInfo */ "The dtor is called even if the object should have already been removed by unlocking it");
+
+        if( CErrLog::GetInstance() != nullptr )
+        {
+            CErrLog::GetInstance()->addEntry(errResultInfo);
+        }
+    }
+
+    if( m_iLockCount != 0 )
+    {
+        SErrResultInfo errResultInfo(
+            /* errSource     */ NameSpace(), ClassName(), keyInTree(), "dtor",
+            /* result        */ EResultObjRefCounterIsNotZero,
+            /* severity      */ EResultSeverityError,
+            /* strAddErrInfo */ "The dtor is called even if the objects lock counter is not 0 but " + QString::number(m_iLockCount));
+
+        if( CErrLog::GetInstance() != nullptr )
+        {
+            CErrLog::GetInstance()->addEntry(errResultInfo);
+        }
+    }
+
     if( m_iRefCount != 0 )
     {
         SErrResultInfo errResultInfo(
-            /* errSource     */ nameSpace(), className(), keyInTree(), "dtor",
+            /* errSource     */ NameSpace(), ClassName(), keyInTree(), "dtor",
             /* result        */ EResultObjRefCounterIsNotZero,
             /* severity      */ EResultSeverityError,
             /* strAddErrInfo */ "The dtor is called even if the objects reference counter is not 0 but " + QString::number(m_iRefCount));
@@ -176,7 +208,7 @@ CTrcAdminObj::~CTrcAdminObj()
     if( m_iBlockTreeEntryChangedSignalCounter != 0 )
     {
         SErrResultInfo errResultInfo(
-            /* errSource         */ nameSpace(), className(), keyInTree(), "dtor",
+            /* errSource         */ NameSpace(), ClassName(), keyInTree(), "dtor",
             /* result            */ EResultObjRefCounterIsNotZero,
             /* severity          */ EResultSeverityError,
             /* strAddErrInfoDscr */ "The dtor is called even if the treeEntryChangedBlocked counter is not 0 but " + QString::number(m_iBlockTreeEntryChangedSignalCounter));
@@ -197,10 +229,17 @@ CTrcAdminObj::~CTrcAdminObj()
     m_pMtx = nullptr;
 
     m_iBlockTreeEntryChangedSignalCounter = 0;
+    //m_strNameSpace;
+    //m_strClassName;
+    //m_strObjName;
     //m_strObjThreadName;
+    m_iLockCount = 0;
+    m_bDeleteOnUnlock = false;
     m_iRefCount = 0;
     m_enabled = static_cast<EEnabled>(0);
-    m_iTrcDetailLevel = 0;
+    m_eTrcDetailLevelMethodCalls = static_cast<ETraceDetailLevelMethodCalls>(0);
+    m_eTrcDetailLevelRuntimeInfo = static_cast<ETraceDetailLevelRuntimeInfo>(0);
+    //m_strDataFilter;
 
 } // dtor
 
@@ -385,7 +424,7 @@ void CTrcAdminObj::setObjectThreadName( const QString& i_strThreadName )
             if( !isTreeEntryChangedSignalBlocked() ) m_pTree->onTreeEntryChanged(this);
         }
     }
-} // setObjectThreadName
+}
 
 //------------------------------------------------------------------------------
 /*! @brief Returns the name of the thread in which context the trace admin object is created.
@@ -404,6 +443,125 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief Locks the trace admin object by incrementing the lock count.
+
+    The method tracer uses this method so that the trace admin object will not
+    be deleted as long as the method tracer is alive.
+
+    @return Current lock count.
+*/
+int CTrcAdminObj::lock()
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(m_pMtx);
+
+    ++m_iLockCount;
+
+    if( m_pTree != nullptr )
+    {
+        // Takes too much time as too often called.
+        //if( !isTreeEntryChangedSignalBlocked() ) m_pTree->onTreeEntryChanged(this);
+    }
+    return m_iLockCount;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Unlocks the object by decrementing the lock counter.
+
+    Only if the lock counter reaches 0 the admin object is really unlocked.
+
+    @note When unlocking the admin object the "deleteOnUnlock" flag must be
+          checked. If true and the reference counter is 0 the trace admin
+          object should be deleted to reduce the number of no longer used trace
+          admin objects (as the object referencing the object has been renamed).
+          To delete the object release the instance by invoking
+          CTrcServer::ReleaseTraceAdminObj.
+
+    @return Current lock count.
+*/
+int CTrcAdminObj::unlock()
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(m_pMtx);
+
+    --m_iLockCount;
+
+    if( m_pTree != nullptr )
+    {
+        // Takes too much time as too often called.
+        //if( !isTreeEntryChangedSignalBlocked() ) m_pTree->onTreeEntryChanged(this);
+    }
+    return m_iLockCount;
+}
+
+//------------------------------------------------------------------------------
+/*! Returns whether the admin object is locked.
+
+    @return true if the object is locked, false otherwise.
+*/
+bool CTrcAdminObj::isLocked() const
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(m_pMtx);
+    return (m_iLockCount > 0);
+}
+
+//------------------------------------------------------------------------------
+/*! Returns the current lock count.
+
+    @return Current lock count.
+*/
+int CTrcAdminObj::getLockCount() const
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(m_pMtx);
+    return m_iLockCount;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the flag that the admin object is no longer need if unlocked.
+
+    On renaming the object and if the reference counter reaches 0 the
+    trace admin object should be deleted. But it cannot be deleted if the
+    method tracer is active and still uses it. If unlocked the trace admin
+    object will be marked as to be deleted as it is no longer used.
+
+    @param i_bDelete [in]
+        Flag to indicate whether the object can be deleted if unlocked
+        (and the reference counter is still 0).
+*/
+void CTrcAdminObj::setDeleteOnUnlock( bool i_bDelete )
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(m_pMtx);
+
+    if( m_bDeleteOnUnlock != i_bDelete )
+    {
+        m_bDeleteOnUnlock = i_bDelete;
+
+        if( m_pTree != nullptr )
+        {
+            //if( !isTreeEntryChangedSignalBlocked() ) m_pTree->onTreeEntryChanged(this);
+        }
+    }
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the flag whether the admin object may be deleted if
+           unlocked and no longer used.
+
+    To delete the trace admin object call CTrcServer::ReleaseTraceAdminObj.
+
+    @return true if the flag is set, false otherwise.
+*/
+bool CTrcAdminObj::deleteOnUnlock() const
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(m_pMtx);
+    return (m_iLockCount <= 0) && (m_iRefCount <= 0) && m_bDeleteOnUnlock;
+}
+
+//------------------------------------------------------------------------------
 /*! @brief Increments the reference counter.
 
     Normally it should never be necessary to call this method directly.
@@ -416,7 +574,7 @@ public: // instance methods
     classes or instances of classes. If so the reference counter may become
     greater than 1.
 
-    return Current reference counter.
+    @return Current reference counter.
 */
 int CTrcAdminObj::incrementRefCount()
 //------------------------------------------------------------------------------
@@ -571,47 +729,35 @@ public: // instance methods
     If set to None method trace outputs are disabled.
     Higher detail levels include lower detail levels.
 
-    There are predefined trace detail levels (see ETraceDetailLevel).
-
-    Please note that this enum is only a suggestion for trace detail levels
-    which can be used. The detail level of the trace admin object is an integer
-    type and user defined values can be used if necessary. To avoid type casts
-    requested by the compiler this enum is not a class enum definition.
-
-    @param i_iDetailLevel [in] Integer value specifying the detail level.
+    @param i_eDetailLevel [in] Detail level.
 */
-void CTrcAdminObj::setTraceDetailLevel( int i_iDetailLevel )
+void CTrcAdminObj::setMethodCallsTraceDetailLevel( ETraceDetailLevelMethodCalls i_eDetailLevel )
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(m_pMtx);
 
-    if( m_iTrcDetailLevel != i_iDetailLevel )
+    if( m_eTrcDetailLevelMethodCalls != i_eDetailLevel )
     {
-        m_iTrcDetailLevel = i_iDetailLevel;
+        m_eTrcDetailLevelMethodCalls = i_eDetailLevel;
 
         if( m_pTree != nullptr )
         {
             if( !isTreeEntryChangedSignalBlocked() ) m_pTree->onTreeEntryChanged(this);
         }
     }
-
-} // setDetailLevel
+}
 
 //------------------------------------------------------------------------------
 /*! @brief Returns the detail level of trace output for this object.
 
-    @return Integer value specifying the detail level.
+    @return Detail level.
 */
-int CTrcAdminObj::getTraceDetailLevel() const
+ETraceDetailLevelMethodCalls CTrcAdminObj::getMethodCallsTraceDetailLevel() const
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(m_pMtx);
-    return m_iTrcDetailLevel;
+    return m_eTrcDetailLevelMethodCalls;
 }
-
-/*==============================================================================
-public: // instance methods
-==============================================================================*/
 
 //------------------------------------------------------------------------------
 /*! @brief Returns whether tracing is activated or disactived.
@@ -633,36 +779,222 @@ public: // instance methods
         bool bTracingActive;
 
         pTrcAdminObj->setEnabled(EEnabledOn);
-        pTrcAdminObj->setDetailLevel(ETraceDetailLevelMethodCalls);
+        pTrcAdminObj->setMethodCallsTraceDetailLevel(ETraceDetailLevelMethodCalls::EnterLeave);
 
-        bTracingActive = pTrcAdminObj->isActive(ETraceDetailLevelMethodCalls); .. returns true
-        bTracingActive = pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs);  .. returns false
+        bTracingActive = pTrcAdminObj->areMethodCallsActive(ETraceDetailLevelMethodCalls::EnterLeave); .. returns true
+        bTracingActive = pTrcAdminObj->areMethodCallsActive(ETraceDetailLevelMethodCalls::MethodArgs); .. returns false
 
-    @param i_iFilterDetailLevel [in]
+    @param i_eFilterDetailLevel [in]
         Trace outputs should be generated if the given filter detail level
         is greater or equal than the current detail level set at the trace
         admin object or at the method tracer itself.
 
     @return Flag indicating whether method trace output is active or not.
 */
-bool CTrcAdminObj::isActive( int i_iFilterDetailLevel ) const
+bool CTrcAdminObj::areMethodCallsActive( ETraceDetailLevelMethodCalls i_eFilterDetailLevel ) const
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(m_pMtx);
 
     bool bActive = false;
 
-    if( i_iFilterDetailLevel > ETraceDetailLevelNone )
+    if( i_eFilterDetailLevel > ETraceDetailLevelMethodCalls::None )
     {
-        if( m_enabled == EEnabled::Yes && m_iTrcDetailLevel >= i_iFilterDetailLevel )
+        if( m_enabled == EEnabled::Yes && m_eTrcDetailLevelMethodCalls >= i_eFilterDetailLevel )
         {
             bActive = true;
         }
-    } // if( i_iDetailLevel > ETraceDetailLevelNone )
-
+    }
     return bActive;
+}
 
-} // isActive
+//------------------------------------------------------------------------------
+/*! @brief Sets the detail level of trace output for this object.
+
+    If set to None method trace outputs are disabled.
+    Higher detail levels include lower detail levels.
+
+    @param i_eDetailLevel [in] Detail level.
+*/
+void CTrcAdminObj::setRuntimeInfoTraceDetailLevel( ETraceDetailLevelRuntimeInfo i_eDetailLevel )
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(m_pMtx);
+
+    if( m_eTrcDetailLevelRuntimeInfo != i_eDetailLevel )
+    {
+        m_eTrcDetailLevelRuntimeInfo = i_eDetailLevel;
+
+        if( m_pTree != nullptr )
+        {
+            if( !isTreeEntryChangedSignalBlocked() ) m_pTree->onTreeEntryChanged(this);
+        }
+    }
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the detail level of trace output for this object.
+
+    @return Detail level.
+*/
+ETraceDetailLevelRuntimeInfo CTrcAdminObj::getRuntimeInfoTraceDetailLevel() const
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(m_pMtx);
+    return m_eTrcDetailLevelRuntimeInfo;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns whether tracing is activated or disactived.
+
+    The method checks both the enabled flag and compares the detail level passed
+    as argument to the method with the current detail level set at the trace
+    admin object.
+
+    Tracing is active if
+    - tracing is enabled and
+    - if the passed detail level is equal or greater than the trace admin
+      objects current detail level and
+    - if the current trace detail level is not 0 (None).
+
+    Example:
+
+        CTrcAdminObj* pTrcAdminObj = CTrcServer::GetTraceAdminObj("ZS::Diagram", "CWdgtDiagram", "Analyzer");
+
+        bool bTracingActive;
+
+        pTrcAdminObj->setEnabled(EEnabledOn);
+        pTrcAdminObj->setDetailLevel(ETraceDetailLevelRuntimeInfo::DebugNormal);
+
+        bTracingActive = pTrcAdminObj->isActive(ETraceDetailLevelRuntimeInfo::InfoVerbose); .. returns true
+        bTracingActive = pTrcAdminObj->isActive(ETraceDetailLevelRuntimeInfo::DebugDetailed);  .. returns false
+
+    @param i_eFilterDetailLevel [in]
+        Trace outputs should be generated if the given filter detail level
+        is greater or equal than the current detail level set at the trace
+        admin object or at the method tracer itself.
+
+    @return Flag indicating whether method trace output is active or not.
+*/
+bool CTrcAdminObj::isRuntimeInfoActive( ETraceDetailLevelRuntimeInfo i_eFilterDetailLevel ) const
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(m_pMtx);
+
+    bool bActive = false;
+
+    if( i_eFilterDetailLevel > ETraceDetailLevelRuntimeInfo::None )
+    {
+        if( m_enabled == EEnabled::Yes && m_eTrcDetailLevelRuntimeInfo >= i_eFilterDetailLevel )
+        {
+            bActive = true;
+        }
+    }
+    return bActive;
+}
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the trace data filter as a regular expression.
+
+    The filter is a regular expression which allows to define a positive
+    pattern where only the data will be traced which mets the expression
+    or a negative pattern which supporessed the trace output if the
+    filter does not match.
+
+    Please see the description of QRegExp class for more details on how
+    to define regular expressions. Here are just a view (but often used)
+    simple examples.
+
+    Simple Examples (output trace if string contains sub string):
+
+    - Check if the string "abc" is contained:
+
+          m_pTrcAdminObj->setTraceDataFilter("abc");
+          m_pTrcAdminObj->isTraceDataSuppressedByFilter("1 abc bca cab") // returns false
+          m_pTrcAdminObj->isTraceDataSuppressedByFilter("2 xyz yzx zxy") // returns true
+
+    - Check if the strings "def" or "uvw" are contained:
+
+          m_pTrcAdminObj->setTraceDataFilter("def|uvw");
+          m_pTrcAdminObj->isTraceDataSuppressedByFilter("3 def efd fde") // returns true
+          m_pTrcAdminObj->isTraceDataSuppressedByFilter("4 uvw vwu wuv") // returns true
+
+    More Complex Examples (output trace if string does not contain sub string):
+
+    - Check if the string "ghi" is NOT contained:
+
+      Suppressing a string if a string does not contain a substring is supposed
+      to be seldom used. Its complicated to setup a regular expression for this.
+      The following is an example on how this could be done.
+
+          m_pTrcAdminObj->setTraceDataFilter("^((?!ghi).)*$");
+          m_pTrcAdminObj->isTraceDataSuppressedByFilter("5 ghi hig igh") // returns true
+          m_pTrcAdminObj->isTraceDataSuppressedByFilter("6 rst str trs") // returns false
+
+    @param i_strFilter [in] Filter as regular expression.
+
+    @note If a string should be suppressed if it does not contain a substring
+          more simple to apply this would be an additional method or provide
+          a flag like match or dontMatch.
+*/
+void CTrcAdminObj::setTraceDataFilter( const QString& i_strFilter )
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(m_pMtx);
+
+    if( m_strDataFilter != i_strFilter )
+    {
+        m_strDataFilter = i_strFilter;
+
+        if( m_pTree != nullptr )
+        {
+            if( !isTreeEntryChangedSignalBlocked() ) m_pTree->onTreeEntryChanged(this);
+        }
+    }
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the trace data filter.
+
+    @return Trace data filter (string containing a regular expression).
+*/
+QString CTrcAdminObj::getTraceDataFilter() const
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(m_pMtx);
+    return m_strDataFilter;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns whether given trace data should be suppressed by the data filter.
+
+    @param i_strTraceData [in]
+        Trace data to be checked against the filter string.
+
+    @return true if the passed trace data should be suppressed, false otherwise.
+*/
+bool CTrcAdminObj::isTraceDataSuppressedByFilter( const QString& i_strTraceData ) const
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(m_pMtx);
+
+    bool bSuppressed = false;
+
+    if( !m_strDataFilter.isEmpty() )
+    {
+        QRegExp rx(m_strDataFilter);
+
+        if( rx.indexIn(i_strTraceData) < 0 )
+        {
+            bSuppressed = true;
+        }
+    }
+    return bSuppressed;
+}
 
 /*==============================================================================
 public: // instance methods
@@ -904,30 +1236,30 @@ CTrcAdminObj* CTrcAdminObjRefAnchor::trcAdminObj()
 
     This method has no effect if the trace admin object has not yet been allocated.
 
-    @param i_iTrcDetailLevel [in] Trace detail level.
+    @param i_eTrcDetailLevel [in] Trace detail level.
 */
-void CTrcAdminObjRefAnchor::setTraceDetailLevel( int i_iTrcDetailLevel )
+void CTrcAdminObjRefAnchor::setMethodCallsTraceDetailLevel( ETraceDetailLevelMethodCalls i_eTrcDetailLevel )
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&m_mtx);
 
     if( m_pTrcAdminObj != nullptr )
     {
-        m_pTrcAdminObj->setTraceDetailLevel(i_iTrcDetailLevel);
+        m_pTrcAdminObj->setMethodCallsTraceDetailLevel(i_eTrcDetailLevel);
     }
 }
 
 //------------------------------------------------------------------------------
 /*! @brief Checks whether tracing is active for the given filter detail level.
 
-    @param i_iFilterDetailLevel [in]
+    @param i_eFilterDetailLevel [in]
         Trace detail level which should be checked. If the trace admin objects
         detail level is not 0 (None) and is greater or equal the filter level
         tracing is active.
 
     @return true if tracing is active, false otherwise.
 */
-bool CTrcAdminObjRefAnchor::isActive( int i_iFilterDetailLevel ) const
+bool CTrcAdminObjRefAnchor::areMethodCallsActive( ETraceDetailLevelMethodCalls i_eFilterDetailLevel ) const
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&m_mtx);
@@ -935,7 +1267,48 @@ bool CTrcAdminObjRefAnchor::isActive( int i_iFilterDetailLevel ) const
     bool bActive = false;
     if( m_pTrcAdminObj != nullptr )
     {
-        bActive = m_pTrcAdminObj->isActive(i_iFilterDetailLevel);
+        bActive = m_pTrcAdminObj->areMethodCallsActive(i_eFilterDetailLevel);
+    }
+    return bActive;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the trace detail level.
+
+    This method has no effect if the trace admin object has not yet been allocated.
+
+    @param i_eTrcDetailLevel [in] Trace detail level.
+*/
+void CTrcAdminObjRefAnchor::setRuntimeInfoTraceDetailLevel( ETraceDetailLevelRuntimeInfo i_eTrcDetailLevel )
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(&m_mtx);
+
+    if( m_pTrcAdminObj != nullptr )
+    {
+        m_pTrcAdminObj->setRuntimeInfoTraceDetailLevel(i_eTrcDetailLevel);
+    }
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Checks whether tracing is active for the given filter detail level.
+
+    @param i_eFilterDetailLevel [in]
+        Trace detail level which should be checked. If the trace admin objects
+        detail level is not 0 (None) and is greater or equal the filter level
+        tracing is active.
+
+    @return true if tracing is active, false otherwise.
+*/
+bool CTrcAdminObjRefAnchor::isRuntimeInfoActive( ETraceDetailLevelRuntimeInfo i_eFilterDetailLevel ) const
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(&m_mtx);
+
+    bool bActive = false;
+    if( m_pTrcAdminObj != nullptr )
+    {
+        bActive = m_pTrcAdminObj->isRuntimeInfoActive(i_eFilterDetailLevel);
     }
     return bActive;
 }
@@ -1021,32 +1394,69 @@ CTrcAdminObj* CTrcAdminObjRefGuard::trcAdminObj()
 
     @param i_iTrcDetailLevel [in] Trace detail level.
 */
-void CTrcAdminObjRefGuard::setTraceDetailLevel(int i_iTrcDetailLevel)
+void CTrcAdminObjRefGuard::setMethodCallsTraceDetailLevel(ETraceDetailLevelMethodCalls i_eTrcDetailLevel)
 //------------------------------------------------------------------------------
 {
     if( m_pRefAnchor != nullptr )
     {
-        m_pRefAnchor->setTraceDetailLevel(i_iTrcDetailLevel);
+        m_pRefAnchor->setMethodCallsTraceDetailLevel(i_eTrcDetailLevel);
     }
 }
 
 //------------------------------------------------------------------------------
 /*! @brief Checks whether tracing is active for the given filter detail level.
 
-    @param i_iFilterDetailLevel [in]
+    @param i_eFilterDetailLevel [in]
         Trace detail level which should be checked. If the trace admin objects
         detail level is not 0 (None) and is greater or equal the filter level
         tracing is active.
 
     @return true if tracing is active, false otherwise.
 */
-bool CTrcAdminObjRefGuard::isActive(int i_iFilterDetailLevel) const
+bool CTrcAdminObjRefGuard::areMethodCallsActive(ETraceDetailLevelMethodCalls i_eFilterDetailLevel) const
 //------------------------------------------------------------------------------
 {
     bool bActive = false;
     if( m_pRefAnchor != nullptr )
     {
-        bActive = m_pRefAnchor->isActive(i_iFilterDetailLevel);
+        bActive = m_pRefAnchor->areMethodCallsActive(i_eFilterDetailLevel);
+    }
+    return bActive;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the trace detail level of the trace admin object.
+
+    This method has no effect if the trace admin object has not yet been allocated.
+
+    @param i_eTrcDetailLevel [in] Trace detail level.
+*/
+void CTrcAdminObjRefGuard::setRuntimeInfoTraceDetailLevel(ETraceDetailLevelRuntimeInfo i_eTrcDetailLevel)
+//------------------------------------------------------------------------------
+{
+    if( m_pRefAnchor != nullptr )
+    {
+        m_pRefAnchor->setRuntimeInfoTraceDetailLevel(i_eTrcDetailLevel);
+    }
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Checks whether tracing is active for the given filter detail level.
+
+    @param i_eFilterDetailLevel [in]
+        Trace detail level which should be checked. If the trace admin objects
+        detail level is not 0 (None) and is greater or equal the filter level
+        tracing is active.
+
+    @return true if tracing is active, false otherwise.
+*/
+bool CTrcAdminObjRefGuard::isRuntimeInfoActive(ETraceDetailLevelRuntimeInfo i_eFilterDetailLevel) const
+//------------------------------------------------------------------------------
+{
+    bool bActive = false;
+    if( m_pRefAnchor != nullptr )
+    {
+        bActive = m_pRefAnchor->isRuntimeInfoActive(i_eFilterDetailLevel);
     }
     return bActive;
 }

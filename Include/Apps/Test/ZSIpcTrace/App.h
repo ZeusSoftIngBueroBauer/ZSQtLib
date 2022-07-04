@@ -78,23 +78,25 @@ public: // instance methods
     CTest* getTest() { return m_pTest; }
     ZS::Trace::CIpcTrcServer* getTrcServer() { return m_pZSTrcServer; }
     ZS::Trace::CIpcTrcClient* getTrcClient() { return m_pZSTrcClient; }
-    int getTraceDetailLevelTrcServer() const { return m_iZSTrcServerTrcDetailLevel; }
-    int getTraceDetailLevelTrcClient() const { return m_iZSTrcClientTrcDetailLevel; }
+    ZS::Trace::ETraceDetailLevelMethodCalls getTraceServerTraceDetailLevel() const { return m_eZSTrcServerTrcDetailLevel; }
+    ZS::Trace::ETraceDetailLevelMethodCalls getTraceServerTraceDetailLevelNoisyMethods() const { return m_eZSTrcServerTrcDetailLevelNoisyMethods; }
+    ZS::Trace::ETraceDetailLevelMethodCalls getTraceClientTraceDetailLevel() const { return m_eZSTrcClientTrcDetailLevel; }
 protected slots:
     void onTestFinished( const ZS::Test::CEnumTestResult& i_result );
 private: // instance members
-    bool                          m_bReqExecTreeGarbageCollectorEnabled;
-    double                        m_fReqExecTreeGarbageCollectorInterval_s;
-    double                        m_fReqExecTreeGarbageCollectorElapsed_s;
-    ZS::System::CRequestExecTree* m_pReqExecTree;
-    int                           m_iZSTrcServerTrcDetailLevel;
-    int                           m_iZSTrcClientTrcDetailLevel;
-    ZS::Trace::CIpcTrcServer*     m_pZSTrcServer;
-    ZS::Ipc::SClientHostSettings  m_clientHostSettingsZSTrcClient;
-    ZS::Trace::CIpcTrcClient*     m_pZSTrcClient;
-    CTest*                        m_pTest;
-    CMainWindow*                  m_pMainWindow;
-    bool                          m_bAutoStartTest;
+    bool                                    m_bReqExecTreeGarbageCollectorEnabled;
+    double                                  m_fReqExecTreeGarbageCollectorInterval_s;
+    double                                  m_fReqExecTreeGarbageCollectorElapsed_s;
+    ZS::System::CRequestExecTree*           m_pReqExecTree;
+    ZS::Trace::ETraceDetailLevelMethodCalls m_eZSTrcServerTrcDetailLevel;
+    ZS::Trace::ETraceDetailLevelMethodCalls m_eZSTrcServerTrcDetailLevelNoisyMethods;
+    ZS::Trace::ETraceDetailLevelMethodCalls m_eZSTrcClientTrcDetailLevel;
+    ZS::Trace::CIpcTrcServer*               m_pZSTrcServer;
+    ZS::Ipc::SClientHostSettings            m_clientHostSettingsZSTrcClient;
+    ZS::Trace::CIpcTrcClient*               m_pZSTrcClient;
+    CTest*                                  m_pTest;
+    CMainWindow*                            m_pMainWindow;
+    bool                                    m_bAutoStartTest;
 
 }; // class CApplication
 

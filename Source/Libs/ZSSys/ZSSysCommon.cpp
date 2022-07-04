@@ -1159,132 +1159,95 @@ void ZS::System::getMinCountArrayRange(
 
 
 /*==============================================================================
-Enum ETraceDetailLevel
+Enum ETraceDetailLevelMethodCalls
 ==============================================================================*/
 
+/*! @cond */
+template<> QMutex ZS::System::CEnum<ZS::Trace::ETraceDetailLevelMethodCalls>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
+template<> QVector<QHash<QString, int>> ZS::System::CEnum<ZS::Trace::ETraceDetailLevelMethodCalls>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
+
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 //------------------------------------------------------------------------------
-static const SEnumEntry s_arEnumStrTrcDetailLevel[] =
+const QVector<SEnumEntry> ZS::System::CEnum<ZS::Trace::ETraceDetailLevelMethodCalls>::s_arEnumEntries;
 //------------------------------------------------------------------------------
+class CInitEnumTraceDetailLevelMethodCalls
 {
-                         // Enumerator,                              Name,            Symbol, Text,           SCPIShort, SCPILong
-    /*  0 */ SEnumEntry( ZS::Trace::ETraceDetailLevelNone,           "None",           "-",    "None",            "NONE", "NONE"        ),
-    /*  1 */ SEnumEntry( ZS::Trace::ETraceDetailLevelMethodCalls,    "MethodCalls",    "Mth",  "Method Calls",    "METH", "METHodcalls" ),
-    /*  2 */ SEnumEntry( ZS::Trace::ETraceDetailLevelMethodArgs,     "MethodArgs",     "Args", "Method Args",     "ARG",  "ARGuments"   ),
-    /*  3 */ SEnumEntry( ZS::Trace::ETraceDetailLevelInternalStates, "InternalStates", "Int",  "Internal States", "STAT", "STATes"      ),
-    /*  4 */ SEnumEntry( ZS::Trace::ETraceDetailLevelRuntimeInfo,    "RuntimeInfo",    "Inf",  "Runtime Info",    "INFO", "INFO"        ),
-    /*  5 */ SEnumEntry( ZS::Trace::ETraceDetailLevelVerbose,        "Verbose",        "Vbs",  "Verbose",         "VERB", "VERBose"     ),
-    /*  6 */ SEnumEntry( ZS::Trace::ETraceDetailLevelCount,          "Count",          "Cnt",  "Count",           "COUN", "COUNt"       )
+public: // ctor
+    CInitEnumDimensionType() {
+    //------------------------------------------------------------------------------() {
+        QVector<SEnumEntry>* pVEnumEntries = const_cast<QVector<SEnumEntry>*>(&ZS::System::<ZS::Trace::ETraceDetailLevelMethodCalls>::s_arEnumEntries);
+        pVEnumEntries->append( /* 0 */ SEnumEntry( static_cast<int>(ZS::Trace::ETraceDetailLevelMethodCalls::None),         "None",         "-",    "None",               "NONE", "NONE"      ),
+        pVEnumEntries->append( /* 1 */ SEnumEntry( static_cast<int>(ZS::Trace::ETraceDetailLevelMethodCalls::EnterLeave),   "EnterLeave",   "EL",   "Enter Leave",        "ELEA", "ELEAve"    ),
+        pVEnumEntries->append( /* 2 */ SEnumEntry( static_cast<int>(ZS::Trace::ETraceDetailLevelMethodCalls::ArgsNormal),   "ArgsNormal",   "Args", "Arguments Normal",   "ANOR", "ANORmal"   ),
+        pVEnumEntries->append( /* 3 */ SEnumEntry( static_cast<int>(ZS::Trace::ETraceDetailLevelMethodCalls::ArgsDetailed), "ArgsDetailed", "Int",  "Arguments Detailed", "ADET", "ADETailed" ),
+        pVEnumEntries->append( /* 4 */ SEnumEntry( static_cast<int>(ZS::Trace::ETraceDetailLevelMethodCalls::ArgsVerbose),  "ArgsVerbose",  "Inf",  "Arguments Verbose",  "AVER", "AVERbose"  ),
+        pVEnumEntries->append( /* 5 */ SEnumEntry( static_cast<int>(ZS::Trace::ETraceDetailLevelMethodCalls::Undefined),    "Undefined",    "?",    "Undefined",          "UND",  "UNDefined" )
+    }
 };
-
+static CInitEnumTraceDetailLevelMethodCalls s_initEnumTraceDetailLevelMethodCalls;
+#else // #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 //------------------------------------------------------------------------------
-/*! Converts the given enumerator into a string.
-
-    @ingroup _GRP_Namespace_ZS_System_Enumerations_Enumerations
-
-    @param i_iDetailLevel [in] Detail level to be converted.
-    @param i_alias [in] Range [IdxName, Symbol, Text, SCPIShort, SCPILong].
-                        Selects one of the available strings.
-
-    @return String representation of the given enumerator.
-*/
-QString ZS::Trace::traceDetailLevel2Str( int i_iDetailLevel, EEnumEntryAliasStr i_alias )
+template<> const QVector<SEnumEntry> ZS::System::CEnum<ZS::Trace::ETraceDetailLevelMethodCalls>::s_arEnumEntries =
 //------------------------------------------------------------------------------
 {
-    QString str;
+    /* 0 */ SEnumEntry( static_cast<int>(ZS::Trace::ETraceDetailLevelMethodCalls::None),         "None",         "-",    "None",               "NONE", "NONE"      ),
+    /* 1 */ SEnumEntry( static_cast<int>(ZS::Trace::ETraceDetailLevelMethodCalls::EnterLeave),   "EnterLeave",   "EL",   "Enter Leave",        "ELEA", "ELEAve"    ),
+    /* 2 */ SEnumEntry( static_cast<int>(ZS::Trace::ETraceDetailLevelMethodCalls::ArgsNormal),   "ArgsNormal",   "Args", "Arguments Normal",   "ANOR", "ANORmal"   ),
+    /* 3 */ SEnumEntry( static_cast<int>(ZS::Trace::ETraceDetailLevelMethodCalls::ArgsDetailed), "ArgsDetailed", "Int",  "Arguments Detailed", "ADET", "ADETailed" ),
+    /* 4 */ SEnumEntry( static_cast<int>(ZS::Trace::ETraceDetailLevelMethodCalls::ArgsVerbose),  "ArgsVerbose",  "Inf",  "Arguments Verbose",  "AVER", "AVERbose"  ),
+    /* 5 */ SEnumEntry( static_cast<int>(ZS::Trace::ETraceDetailLevelMethodCalls::Undefined),    "Undefined",    "?",    "Undefined",          "UND",  "UNDefined" )
+};
+#endif // #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+/*! @endcond */
 
-    if( i_iDetailLevel == ETraceDetailLevelUndefined )
-    {
-        if( i_alias == EEnumEntryAliasStrSymbol )
-        {
-            str = "?";
-        }
-        else if( i_alias == EEnumEntryAliasStrText )
-        {
-            str = "Undefined";
-        }
-        else if( i_alias == EEnumEntryAliasStrSCPIShort )
-        {
-            str = "UND";
-        }
-        else if( i_alias == EEnumEntryAliasStrSCPILong )
-        {
-            str = "UNDefined";
-        }
-        else // if( i_alias == EEnumEntryAliasStrName )
-        {
-            str = "Undefined";
-        }
-    }
-    else if( i_iDetailLevel >= 0 && i_iDetailLevel < _ZSArrLen(s_arEnumStrTrcDetailLevel) )
-    {
-        str = SEnumEntry::enumerator2Str(s_arEnumStrTrcDetailLevel, _ZSArrLen(s_arEnumStrTrcDetailLevel), i_iDetailLevel, i_alias);
-    }
-    else
-    {
-        str = QString::number(i_iDetailLevel);
-    }
-    return str;
+/*==============================================================================
+Enum ETraceDetailLevelRuntimeInfo
+==============================================================================*/
 
-} // traceDetailLevel2Str
+/*! @cond */
+template<> QMutex ZS::System::CEnum<ZS::Trace::ETraceDetailLevelRuntimeInfo>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
+template<> QVector<QHash<QString, int>> ZS::System::CEnum<ZS::Trace::ETraceDetailLevelRuntimeInfo>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
 
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 //------------------------------------------------------------------------------
-/*! Converts the string into the corresponding enumerator.
-
-    @ingroup _GRP_Namespace_ZS_System_Enumerations_Enumerations
-
-    @param i_str [in] String to be converted into the enumerator.
-    @param i_alias [in] Range [IdxName, Symbol, Text, SCPIShort, SCPILong, Undefined].
-                        Selects one of the available strings.
-                        If Undefined is used the string will be compared with all possible strings.
-                        If a valid index is used the passed string will only be compared with this alias string only.
-
-    @return Enumerator corresponding to the given string. Undefined if the conversion failed.
-*/
-int ZS::Trace::str2TraceDetailLevel( const QString& i_str, EEnumEntryAliasStr i_alias )
+const QVector<SEnumEntry> ZS::System::CEnum<ZS::Trace::ETraceDetailLevelRuntimeInfo>::s_arEnumEntries;
+//------------------------------------------------------------------------------
+class CInitEnumTraceDetailLevelMethodCalls
+{
+public: // ctor
+    CInitEnumDimensionType() {
+    //------------------------------------------------------------------------------() {
+        QVector<SEnumEntry>* pVEnumEntries = const_cast<QVector<SEnumEntry>*>(&ZS::System::<ZS::Trace::ETraceDetailLevelRuntimeInfo>::s_arEnumEntries);
+        pVEnumEntries->append( /*  0 */ SEnumEntry( static_cast<int>(ZS::Trace::ETraceDetailLevelRuntimeInfo::None),          "None",          "-",   "None",           "NONE", "NONE"      ),
+        pVEnumEntries->append( /*  1 */ SEnumEntry( static_cast<int>(ZS::Trace::ETraceDetailLevelRuntimeInfo::CriticalError),      "Critical",      "C",   "Critical",       "CRIT", "CRITical"  ),
+        pVEnumEntries->append( /*  2 */ SEnumEntry( static_cast<int>(ZS::Trace::ETraceDetailLevelRuntimeInfo::Error),         "Error",         "E",   "Error",          "ERR",  "ERRor"     ),
+        pVEnumEntries->append( /*  3 */ SEnumEntry( static_cast<int>(ZS::Trace::ETraceDetailLevelRuntimeInfo::Warning),       "Warning",       "W",   "Warning",        "WARN", "WARNing"   ),
+        pVEnumEntries->append( /*  4 */ SEnumEntry( static_cast<int>(ZS::Trace::ETraceDetailLevelRuntimeInfo::InfoNormal),    "InfoNormal",    "IN",  "Info Normal",    "INOR", "INORmal"   ),
+        pVEnumEntries->append( /*  5 */ SEnumEntry( static_cast<int>(ZS::Trace::ETraceDetailLevelRuntimeInfo::InfoDetailed),  "InfoDetailed",  "ID",  "Info Detailed",  "IDET", "IDETailed" ),
+        pVEnumEntries->append( /*  6 */ SEnumEntry( static_cast<int>(ZS::Trace::ETraceDetailLevelRuntimeInfo::InfoVerbose),   "InfoVerbose",   "IV",  "Info Verbose",   "IVER", "IVERbose"  ),
+        pVEnumEntries->append( /*  7 */ SEnumEntry( static_cast<int>(ZS::Trace::ETraceDetailLevelRuntimeInfo::DebugNormal),   "DebugNormal",   "DN",  "Debug Normal",   "DNOR", "DNORmal"   ),
+        pVEnumEntries->append( /*  8 */ SEnumEntry( static_cast<int>(ZS::Trace::ETraceDetailLevelRuntimeInfo::DebugDetailed), "DebugDetailed", "DD",  "Debug Detailed", "DDET", "DDETailed" ),
+        pVEnumEntries->append( /*  9 */ SEnumEntry( static_cast<int>(ZS::Trace::ETraceDetailLevelRuntimeInfo::DebugVerbose),  "DebugVerbose",  "DV",  "Debug Verbose",  "DVER", "DVERbose"  ),
+        pVEnumEntries->append( /* 10 */ SEnumEntry( static_cast<int>(ZS::Trace::ETraceDetailLevelRuntimeInfo::Undefined),     "Undefined",     "?",   "Undefined",      "UND",  "UNDefined" )
+    }
+};
+static CInitEnumTraceDetailLevelMethodCalls s_initEnumTraceDetailLevelMethodCalls;
+#else // #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+//------------------------------------------------------------------------------
+template<> const QVector<SEnumEntry> ZS::System::CEnum<ZS::Trace::ETraceDetailLevelRuntimeInfo>::s_arEnumEntries =
 //------------------------------------------------------------------------------
 {
-    bool bConverted = false;
-
-    int iDetailLevel = i_str.toInt(&bConverted);
-
-    if( !bConverted )
-    {
-        iDetailLevel = ETraceDetailLevelUndefined;
-
-        if( i_str.isEmpty() )
-        {
-            iDetailLevel = ETraceDetailLevelNone;
-        }
-        else if( i_str.compare("-", Qt::CaseInsensitive) == 0 )
-        {
-            iDetailLevel = ETraceDetailLevelNone;
-        }
-
-        if( iDetailLevel == ETraceDetailLevelUndefined )
-        {
-            if( i_str.compare("?", Qt::CaseInsensitive) == 0 )
-            {
-                iDetailLevel = ETraceDetailLevelUndefined;
-            }
-            else if( i_str.compare("Und", Qt::CaseInsensitive) == 0 )
-            {
-                iDetailLevel = ETraceDetailLevelUndefined;
-            }
-            else if( i_str.compare("Undefined", Qt::CaseInsensitive) == 0 )
-            {
-                iDetailLevel = ETraceDetailLevelUndefined;
-            }
-            else
-            {
-                iDetailLevel = SEnumEntry::str2Enumerator(s_arEnumStrTrcDetailLevel, _ZSArrLen(s_arEnumStrTrcDetailLevel), i_str, i_alias, Qt::CaseInsensitive);
-                if( iDetailLevel < 0 || iDetailLevel >= ETraceDetailLevelCount )
-                {
-                    iDetailLevel = ETraceDetailLevelUndefined;
-                }
-            }
-        }
-    } // if( !bConverted )
-
-    return iDetailLevel;
-
-} // str2TraceDetailLevel
+    /*  0 */ SEnumEntry( static_cast<int>(ZS::Trace::ETraceDetailLevelRuntimeInfo::None),          "None",          "-",   "None",           "NONE", "NONE"      ),
+    /*  1 */ SEnumEntry( static_cast<int>(ZS::Trace::ETraceDetailLevelRuntimeInfo::CriticalError), "CriticalError", "C",   "Critical",       "CERR", "CError"    ),
+    /*  2 */ SEnumEntry( static_cast<int>(ZS::Trace::ETraceDetailLevelRuntimeInfo::Error),         "Error",         "E",   "Error",          "ERR",  "ERRor"     ),
+    /*  3 */ SEnumEntry( static_cast<int>(ZS::Trace::ETraceDetailLevelRuntimeInfo::Warning),       "Warning",       "W",   "Warning",        "WARN", "WARNing"   ),
+    /*  4 */ SEnumEntry( static_cast<int>(ZS::Trace::ETraceDetailLevelRuntimeInfo::InfoNormal),    "InfoNormal",    "IN",  "Info Normal",    "INOR", "INORmal"   ),
+    /*  5 */ SEnumEntry( static_cast<int>(ZS::Trace::ETraceDetailLevelRuntimeInfo::InfoDetailed),  "InfoDetailed",  "ID",  "Info Detailed",  "IDET", "IDETailed" ),
+    /*  6 */ SEnumEntry( static_cast<int>(ZS::Trace::ETraceDetailLevelRuntimeInfo::InfoVerbose),   "InfoVerbose",   "IV",  "Info Verbose",   "IVER", "IVERbose"  ),
+    /*  7 */ SEnumEntry( static_cast<int>(ZS::Trace::ETraceDetailLevelRuntimeInfo::DebugNormal),   "DebugNormal",   "DN",  "Debug Normal",   "DNOR", "DNORmal"   ),
+    /*  8 */ SEnumEntry( static_cast<int>(ZS::Trace::ETraceDetailLevelRuntimeInfo::DebugDetailed), "DebugDetailed", "DD",  "Debug Detailed", "DDET", "DDETailed" ),
+    /*  9 */ SEnumEntry( static_cast<int>(ZS::Trace::ETraceDetailLevelRuntimeInfo::DebugVerbose),  "DebugVerbose",  "DV",  "Debug Verbose",  "DVER", "DVERbose"  ),
+    /* 10 */ SEnumEntry( static_cast<int>(ZS::Trace::ETraceDetailLevelRuntimeInfo::Undefined),     "Undefined",     "?",   "Undefined",      "UND",  "UNDefined" )
+};
+#endif // #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+/*! @endcond */

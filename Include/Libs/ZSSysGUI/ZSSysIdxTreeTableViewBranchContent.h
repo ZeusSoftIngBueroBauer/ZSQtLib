@@ -60,8 +60,8 @@ public: // class methods
 public: // ctors and dtor
     CTableViewIdxTreeBranchContent(
         CModelIdxTree* i_pModelIdxTree,
-        QWidget*       i_pWdgtParent = nullptr,
-        int            i_iTrcDetailLevel = ZS::Trace::ETraceDetailLevelNone );
+        QWidget* i_pWdgtParent = nullptr,
+        ZS::Trace::ETraceDetailLevelMethodCalls i_eTrcDetailLevel = ZS::Trace::ETraceDetailLevelMethodCalls::None );
     virtual ~CTableViewIdxTreeBranchContent();
 public: // overridables
     virtual QString nameSpace() const { return CTableViewIdxTreeBranchContent::NameSpace(); }
@@ -89,26 +89,26 @@ protected slots:
     void onActionLeaveCopyTriggered( bool i_bChecked );
     void onActionLeavePasteTriggered( bool i_bChecked );
 protected: // instance members
-    CModelIdxTreeBranchContent* m_pModel;
-    CIdxTreeEntry*              m_pBranch;
-    EIdxTreeSortOrder           m_sortOrder;
-    QMenu*                      m_pMenuBranchContext;
-    QAction*                    m_pActionBranchTitle;
-    QAction*                    m_pActionBranchCreateNewBranch;
-    QAction*                    m_pActionBranchCreateNewLeave;
-    QAction*                    m_pActionBranchDelete;
-    QAction*                    m_pActionBranchCut;
-    QAction*                    m_pActionBranchCopy;
-    QAction*                    m_pActionBranchPaste;
-    QMenu*                      m_pMenuLeaveContext;
-    QAction*                    m_pActionLeaveTitle;
-    QAction*                    m_pActionLeaveDelete;
-    QAction*                    m_pActionLeaveCut;
-    QAction*                    m_pActionLeaveCopy;
-    QAction*                    m_pActionLeavePaste;
-    QModelIndex                 m_modelIdxSelectedOnMousePressEvent;
-    QModelIndex                 m_modelIdxSelectedOnMouseReleaseEvent;
-    int                         m_iTrcDetailLevel;
+    CModelIdxTreeBranchContent*  m_pModel;
+    CIdxTreeEntry*    m_pBranch;
+    EIdxTreeSortOrder m_sortOrder;
+    QMenu*   m_pMenuBranchContext;
+    QAction* m_pActionBranchTitle;
+    QAction* m_pActionBranchCreateNewBranch;
+    QAction* m_pActionBranchCreateNewLeave;
+    QAction* m_pActionBranchDelete;
+    QAction* m_pActionBranchCut;
+    QAction* m_pActionBranchCopy;
+    QAction* m_pActionBranchPaste;
+    QMenu*   m_pMenuLeaveContext;
+    QAction* m_pActionLeaveTitle;
+    QAction* m_pActionLeaveDelete;
+    QAction* m_pActionLeaveCut;
+    QAction* m_pActionLeaveCopy;
+    QAction* m_pActionLeavePaste;
+    QModelIndex m_modelIdxSelectedOnMousePressEvent;
+    QModelIndex m_modelIdxSelectedOnMouseReleaseEvent;
+    ZS::Trace::ETraceDetailLevelMethodCalls m_eTrcDetailLevel;
 
 }; // class CTableViewIdxTreeBranchContent
 

@@ -55,9 +55,9 @@ class ZSIPCTRACEDLL_API CIpcTrcClient : public ZS::Ipc::CClient
 public: // ctors and dtor
     CIpcTrcClient(
         const QString& i_strName,
-        int            i_iTrcMthFileDetailLevel = ETraceDetailLevelNone,
-        int            i_iTrcMthFileDetailLevelMutex = ETraceDetailLevelNone,
-        int            i_iTrcMthFileDetailLevelGateway = ZS::Trace::ETraceDetailLevelNone );
+        ETraceDetailLevelMethodCalls i_eTrcMthFileDetailLevel = ETraceDetailLevelMethodCalls::None,
+        ETraceDetailLevelMethodCalls i_eTrcMthFileDetailLevelMutex = ETraceDetailLevelMethodCalls::None,
+        ETraceDetailLevelMethodCalls i_eTrcMthFileDetailLevelGateway = ZS::Trace::ETraceDetailLevelMethodCalls::None );
     virtual ~CIpcTrcClient();
 signals: // on receiving trace data
     void traceSettingsChanged( QObject* i_pTrcClient );
@@ -83,7 +83,8 @@ protected: // instance methods to send admin objects to the connected server
         ZS::System::MsgProtocol::TCommand       i_cmd,
         ZS::System::CIdxTreeEntry*              i_pBranch,
         ZS::System::EEnabled                    i_enabled,
-        int                                     i_iDetailLevel );
+        ETraceDetailLevelMethodCalls            i_eDetailLevelMethodCalls,
+        ETraceDetailLevelRuntimeInfo            i_eDetailLevelRuntimeInfo );
 protected: // overridables of base class CClient
     virtual void onReceivedData( const QByteArray& i_byteArr ) override;
 protected slots: // connected to the signals of the IPC client

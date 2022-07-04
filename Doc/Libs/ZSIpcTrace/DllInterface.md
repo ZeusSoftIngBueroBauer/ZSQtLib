@@ -1,8 +1,11 @@
 @page _PAGE_Libs_ZSIpcTrace_DllInterface Using the ZSIpcTrace Dll Interface
 
-If you want to use method tracing by a none Qt application or if for any reason you cannot
-or don't want to link to the ZSQtLib libraries you can integrate the method tracing into
-your application through the Dll interface.
+If
+
+- you want to use method tracing by a none Qt application
+- or if for any reason you cannot or don't want to link to the ZSQtLib libraries
+
+you can integrate the method tracing into your application through the Dll interface.
 
 Using the Dll interface the ZSQtLib libraries are loaded during runtime.
 
@@ -112,6 +115,11 @@ In addition you need to set the compiler preprocesser directive USE_ZS_IPTRACE_D
         either in constructor of the class derived from QApplication (or QCoreApplication) or in the main module of
         the application. If you cannot load the Dlls from those main entry points but instead can only use method
         tracing in one or more plug-in dlls, select the appropriate main module of the plug-in dll.
+
+        **When using the Dll Interface from within an Qt application and loading the Dlls dynamically you must
+        first instantiate the QCoreApplication. When loading the Dlls via the Dll interface it will be checked
+        whether a QCoreApplication is available. If not a QCoreApplication will be created. If later on you
+        also create a QCoreApplication you would have two instance of a singleton class. Bad .... **
 
         The Remote Method Tracing Dlls are loaded via the following call:
 

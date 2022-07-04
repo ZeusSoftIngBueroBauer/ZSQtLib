@@ -30,10 +30,10 @@ may result in using the software modules.
 #include <QtCore/qglobal.h>
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-#include <QtGui/qitemdelegate.h>
+#include <QtGui/qstyleditemdelegate.h>
 #include <QtGui/qtreeview.h>
 #else
-#include <QtWidgets/qitemdelegate.h>
+#include <QtWidgets/qstyleditemdelegate.h>
 #include <QtWidgets/qtreeview.h>
 #endif
 
@@ -49,7 +49,7 @@ namespace GUI
 class CModelIdxTreeTrcAdminObjs;
 
 //******************************************************************************
-class ZSSYSGUIDLL_API CDelegateIdxTreeTrcAdminObjs : public QItemDelegate
+class ZSSYSGUIDLL_API CDelegateIdxTreeTrcAdminObjs : public QStyledItemDelegate
 //******************************************************************************
 {
     Q_OBJECT
@@ -57,7 +57,10 @@ public: // class methods
     static QString NameSpace() { return "ZS::Trace::GUI"; }
     static QString ClassName() { return "CDelegateIdxTreeTrcAdminObjs"; }
 public: // ctors and dtor
-    CDelegateIdxTreeTrcAdminObjs( QObject* i_pObjParent = nullptr, int i_iTrcDetailLevel = ZS::Trace::ETraceDetailLevelNone );
+    CDelegateIdxTreeTrcAdminObjs(
+        QObject* i_pObjParent = nullptr,
+        ZS::Trace::ETraceDetailLevelMethodCalls i_eTrcDetailLevel = ZS::Trace::ETraceDetailLevelMethodCalls::None,
+        ZS::Trace::ETraceDetailLevelMethodCalls i_eTrcDetailLevelNoisyMethods = ZS::Trace::ETraceDetailLevelMethodCalls::None );
     virtual ~CDelegateIdxTreeTrcAdminObjs();
 public: // overridables
     virtual QString nameSpace() const { return NameSpace(); }
@@ -72,16 +75,23 @@ public: // overridables of base class QItemDelegate
         QPainter*                   i_pPainter,
         const QStyleOptionViewItem& i_styleOption,
         const QModelIndex&          i_modelIdx ) const;
+    QWidget* createEditor( QWidget* i_pWdgtParent, const QStyleOptionViewItem& i_styleOption, const QModelIndex& i_modelIdx ) const;
+    void setEditorData( QWidget* i_pWdgtEditor, const QModelIndex& i_modelIdx ) const;
+    void setModelData(QWidget* i_pWdgtEditor, QAbstractItemModel* i_pModel, const QModelIndex& i_modelIdx ) const;
+    void updateEditorGeometry( QWidget* i_pWdgtEditor, const QStyleOptionViewItem& i_styleOption, const QModelIndex& i_modelIdx ) const;
+protected slots:
+    void onComboDetailLevelActivated( int i_idx );
+    void onEdtDataFilterEditingFinished();
 private: // copy ctor not implemented
     CDelegateIdxTreeTrcAdminObjs( const CDelegateIdxTreeTrcAdminObjs& );
 private: // assignment operator not implemented
     CDelegateIdxTreeTrcAdminObjs& operator = ( const CDelegateIdxTreeTrcAdminObjs& );
 protected: // instance members
     mutable QRect m_rectChkBoxTraceEnabled;
-    int           m_iTrcDetailLevel;
+    ZS::Trace::ETraceDetailLevelMethodCalls m_eTrcDetailLevel;
+    ZS::Trace::ETraceDetailLevelMethodCalls m_eTrcDetailLevelNoisyMethods;
 
 }; // class CDelegateIdxTreeTrcAdminObjs
-
 
 //******************************************************************************
 class ZSSYSGUIDLL_API CTreeViewIdxTreeTrcAdminObjs : public QTreeView
@@ -94,8 +104,9 @@ public: // class methods
 public: // ctors and dtor
     CTreeViewIdxTreeTrcAdminObjs(
         CModelIdxTreeTrcAdminObjs* i_pModel,
-        QWidget*                   i_pWdgtParent = nullptr,
-        int                        i_iTrcDetailLevel = ZS::Trace::ETraceDetailLevelNone );
+        QWidget* i_pWdgtParent = nullptr,
+        ZS::Trace::ETraceDetailLevelMethodCalls i_eTrcDetailLevel = ZS::Trace::ETraceDetailLevelMethodCalls::None,
+        ZS::Trace::ETraceDetailLevelMethodCalls i_eTrcDetailLevelNoisyMethods = ZS::Trace::ETraceDetailLevelMethodCalls::None );
     virtual ~CTreeViewIdxTreeTrcAdminObjs();
 public: // overridables
     virtual QString nameSpace() const { return NameSpace(); }
@@ -119,21 +130,24 @@ protected: // overridables of base class QTreeView
 protected slots:
     void onActionNameSpaceExpandTriggered( bool i_bChecked );
     void onActionNameSpaceCollapseTriggered( bool i_bChecked );
-    void onActionNameSpaceEnableAdmObjectsTriggered( bool i_bChecked );
-    void onActionNameSpaceDisableAdmObjectsTriggered( bool i_bChecked );
-    void onActionNameSpaceSetDetailLevelAdmObjectsTriggered( bool i_bChecked );
+    void onActionNameSpaceEnableAdminObjsTriggered( bool i_bChecked );
+    void onActionNameSpaceDisableAdminObjsTriggered( bool i_bChecked );
+    void onActionNameSpaceSetAdminObjsMethodCallsDetailLevelTriggered( bool i_bChecked );
+    void onActionNameSpaceSetAdminObjsRuntimeInfoDetailLevelTriggered( bool i_bChecked );
 protected: // instance members
     CDelegateIdxTreeTrcAdminObjs* m_pDelegate;
-    QMenu*                        m_pMenuNameSpaceContext;
-    QAction*                      m_pActionNameSpaceTitle;
-    QAction*                      m_pActionNameSpaceExpand;
-    QAction*                      m_pActionNameSpaceCollapse;
-    QAction*                      m_pActionNameSpaceEnableAdmObjects;
-    QAction*                      m_pActionNameSpaceDisableAdmObjects;
-    QAction*                      m_pActionNameSpaceSetDetailLevelAdmObjects;
-    QModelIndex                   m_modelIdxSelectedOnMousePressEvent;
-    QModelIndex                   m_modelIdxSelectedOnMouseReleaseEvent;
-    int                           m_iTrcDetailLevel;
+    QMenu*      m_pMenuNameSpaceContext;
+    QAction*    m_pActionNameSpaceTitle;
+    QAction*    m_pActionNameSpaceExpand;
+    QAction*    m_pActionNameSpaceCollapse;
+    QAction*    m_pActionNameSpaceEnableAdminObjs;
+    QAction*    m_pActionNameSpaceDisableAdminObjs;
+    QAction*    m_pActionNameSpaceSetAdminObjsMethodCallsDetailLevel;
+    QAction*    m_pActionNameSpaceSetAdminObjsRuntimeInfoDetailLevel;
+    QModelIndex m_modelIdxSelectedOnMousePressEvent;
+    QModelIndex m_modelIdxSelectedOnMouseReleaseEvent;
+    ZS::Trace::ETraceDetailLevelMethodCalls m_eTrcDetailLevel;
+    ZS::Trace::ETraceDetailLevelMethodCalls m_eTrcDetailLevelNoisyMethods;
 
 }; // class CTreeViewIdxTreeTrcAdminObjs
 

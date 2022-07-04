@@ -55,10 +55,10 @@ public: // class methods
     static QString ClassName() { return "CIpcServerWrapper"; }
 protected: // ctor
     CIpcServerWrapper(
-        const QString&      i_strObjName,
-        ESocketType         i_socketType,
+        const QString& i_strObjName,
+        ESocketType i_socketType,
         Trace::CTrcMthFile* i_pTrcMthFile = nullptr,         // If != nullptr trace method file with detail level is used instead of trace admin object with Trace server.
-        int                 i_iTrcMthFileDetailLevel = Trace::ETraceDetailLevelMethodArgs );
+        ZS::Trace::ETraceDetailLevelMethodCalls i_eTrcMthFileDetailLevel = ZS::Trace::ETraceDetailLevelMethodCalls::None );
 public: // dtor
     virtual ~CIpcServerWrapper();
 signals:
@@ -86,15 +86,17 @@ public: // must overridables
     virtual QString errorString() const = 0;
     virtual ZS::System::SErrResultInfo errResultInfo() const = 0;
 protected: // instance methods
-    bool isMethodTraceActive( int i_iFilterDetailLevel ) const;
-    int getMethodTraceDetailLevel() const;
+    bool areTraceMethodCallsActive( ZS::Trace::ETraceDetailLevelMethodCalls i_eFilterDetailLevel ) const;
+    ZS::Trace::ETraceDetailLevelMethodCalls getMethodCallsTraceDetailLevel() const;
+    bool isTraceRuntimeInfoActive( ZS::Trace::ETraceDetailLevelRuntimeInfo i_eFilterDetailLevel ) const;
+    ZS::Trace::ETraceDetailLevelRuntimeInfo getRuntimeInfoTraceDetailLevel() const;
 protected: // instance members
     ESocketType          m_socketType;
     QString              m_strLocalHostName;
     QHostAddress         m_hostAddrLocal;
     unsigned int         m_uLocalPort;
     QObject*             m_pServer;
-    int                  m_iTrcMthFileDetailLevel;
+    ZS::Trace::ETraceDetailLevelMethodCalls m_eTrcMthFileDetailLevel;
     Trace::CTrcMthFile*  m_pTrcMthFile;   // Either trace method file with detail level is used or
     Trace::CTrcAdminObj* m_pTrcAdminObj;  // trace admin object with IpcTrace server.
 

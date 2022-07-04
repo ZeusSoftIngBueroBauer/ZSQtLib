@@ -62,13 +62,20 @@ CEnumerationIdxTree* CEnumerationIdxTree::GetInstance( const QString& i_strName 
 }
 
 //------------------------------------------------------------------------------
+/*! @brief
+
+    @param i_pRootTreeEntry [in]
+        If null a root entry is implicitely created.
+    @param i_pObjParent [in]
+        If true each access to member variables will be protected by a mutex.
+*/
 CEnumerationIdxTree* CEnumerationIdxTree::CreateInstance(
-    const QString& i_strName,
-    CIdxTreeEntry* i_pRootTreeEntry,
-    const QString& i_strNodeSeparator,
-    bool           i_bCreateMutex,
-    QObject*       i_pObjParent,
-    int            i_iTrcDetailLevel )
+    const QString&               i_strName,
+    CIdxTreeEntry*               i_pRootTreeEntry,
+    const QString&               i_strNodeSeparator,
+    bool                         i_bCreateMutex,
+    QObject*                     i_pObjParent,
+    ETraceDetailLevelMethodCalls i_eTrcDetailLevel )
 //------------------------------------------------------------------------------
 {
     // The class may be accessed from within different thread contexts and
@@ -86,7 +93,7 @@ CEnumerationIdxTree* CEnumerationIdxTree::CreateInstance(
         /* strNodeSeparator */ i_strNodeSeparator,
         /* bCreateMutex     */ i_bCreateMutex,
         /* pObjParent       */ i_pObjParent,
-        /* iTrcDetailLevel  */ i_iTrcDetailLevel );
+        /* eTrcDetailLevel  */ i_eTrcDetailLevel );
 
     s_hshpInstances[i_strName] = pIdxTree;
 
@@ -144,27 +151,27 @@ protected: // ctors and dtor
 
 //------------------------------------------------------------------------------
 CEnumerationIdxTree::CEnumerationIdxTree(
-    const QString& i_strName,
-    CIdxTreeEntry* i_pRootTreeEntry,
-    const QString& i_strNodeSeparator,
-    bool           i_bCreateMutex,
-    QObject*       i_pObjParent,
-    int            i_iTrcDetailLevel ) :
+    const QString&               i_strName,
+    CIdxTreeEntry*               i_pRootTreeEntry,
+    const QString&               i_strNodeSeparator,
+    bool                         i_bCreateMutex,
+    QObject*                     i_pObjParent,
+    ETraceDetailLevelMethodCalls i_eTrcDetailLevel ) :
 //------------------------------------------------------------------------------
     CIdxTree(
-        /* strIdxTreeName    */ i_strName,
-        /* pRootTreeEntry    */ i_pRootTreeEntry,
-        /* strNodeSeparator  */ i_strNodeSeparator,
-        /* bCreateMutex      */ i_bCreateMutex,
-        /* pObjParent        */ i_pObjParent,
-        /* i_iTrcDetailLevel */ i_iTrcDetailLevel )
+        /* strIdxTreeName   */ i_strName,
+        /* pRootTreeEntry   */ i_pRootTreeEntry,
+        /* strNodeSeparator */ i_strNodeSeparator,
+        /* bCreateMutex     */ i_bCreateMutex,
+        /* pObjParent       */ i_pObjParent,
+        /* eTrcDetailLevel  */ i_eTrcDetailLevel )
 {
     QString strAddTrcInfo;
 
     CMethodTracer mthTracer(
         /* pTrcServer         */ dynamic_cast<CTrcServer*>(parent()), // may be nullptr if the parent is not the trace server
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* eTrcDetailLevel    */ m_eTrcDetailLevel,
+        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -181,8 +188,8 @@ CEnumerationIdxTree::~CEnumerationIdxTree()
 
     CMethodTracer mthTracer(
         /* pTrcServer         */ dynamic_cast<CTrcServer*>(parent()), // may be nullptr if the parent is not the trace server
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* eTrcDetailLevel    */ m_eTrcDetailLevel,
+        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),

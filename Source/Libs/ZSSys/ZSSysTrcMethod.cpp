@@ -50,7 +50,7 @@ public: // ctors and dtor
 
     @param i_pTrcAdminObj [in]
         Trace admin object used to control the output detail level of the method trace.
-    @param i_iFilterDetailLevel [in]
+    @param i_eFilterDetailLevel [in]
         Entering and leaving the method is traced if the admin objects detail level
         is greater or equal than the filter setting than the detail level.
     @param i_strMethod [in]
@@ -59,17 +59,18 @@ public: // ctors and dtor
         String describing the input arguments passed to the method to be traced.
 */
 CMethodTracer::CMethodTracer(
-    CTrcAdminObj*  i_pTrcAdminObj,
-    int            i_iFilterDetailLevel,
-    const QString& i_strMethod,
-    const QString& i_strMethodInArgs ) :
+    CTrcAdminObj*                i_pTrcAdminObj,
+    ETraceDetailLevelMethodCalls i_eFilterDetailLevel,
+    const QString&               i_strMethod,
+    const QString&               i_strMethodInArgs ) :
 //------------------------------------------------------------------------------
     QObject(),
     m_pTrcAdminObj(i_pTrcAdminObj),
     m_pTrcServer(nullptr),
     m_pTrcMthFile(nullptr),
-    m_iTrcDetailLevel(ETraceDetailLevelUndefined),
-    m_iEnterLeaveFilterDetailLevel(i_iFilterDetailLevel),
+    m_eMethodCallsTrcDetailLevel(ETraceDetailLevelMethodCalls::Undefined),
+    m_eEnterLeaveFilterDetailLevel(i_eFilterDetailLevel),
+    m_bEnterTraced(false),
     m_strNameSpace(),
     m_strClassName(),
     m_strObjName(),
@@ -88,8 +89,8 @@ CMethodTracer::CMethodTracer(
         {
             throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
         }
-
-        if( m_pTrcAdminObj->isActive(m_iEnterLeaveFilterDetailLevel) )
+        if( m_pTrcAdminObj->areMethodCallsActive(m_eEnterLeaveFilterDetailLevel)
+         && !m_pTrcAdminObj->isTraceDataSuppressedByFilter(i_strMethodInArgs) )
         {
             CTrcServer* pTrcServer = m_pTrcAdminObj->getTraceServer();
 
@@ -99,10 +100,11 @@ CMethodTracer::CMethodTracer(
                     /* pAdminObj    */ m_pTrcAdminObj,
                     /* strMethod    */ m_strMethod,
                     /* strMthInArgs */ i_strMethodInArgs );
+                m_bEnterTraced = true;
             }
         }
+        m_pTrcAdminObj->lock();
     }
-
 } // ctor
 
 //------------------------------------------------------------------------------
@@ -110,7 +112,7 @@ CMethodTracer::CMethodTracer(
 
     @param i_pTrcAdminObj [in]
         Trace admin object used to control the output detail level of the method trace.
-    @param i_iFilterDetailLevel [in]
+    @param i_eFilterDetailLevel [in]
         Entering and leaving the method is traced if the admin objects detail level
         is greater or equal than the filter setting than the detail level.
     @param i_strObjName [in]
@@ -121,18 +123,19 @@ CMethodTracer::CMethodTracer(
         String describing the input arguments passed to the method to be traced.
 */
 CMethodTracer::CMethodTracer(
-    CTrcAdminObj*  i_pTrcAdminObj,
-    int            i_iFilterDetailLevel,
-    const QString& i_strObjName,
-    const QString& i_strMethod,
-    const QString& i_strMethodInArgs ) :
+    CTrcAdminObj*                i_pTrcAdminObj,
+    ETraceDetailLevelMethodCalls i_eFilterDetailLevel,
+    const QString&               i_strObjName,
+    const QString&               i_strMethod,
+    const QString&               i_strMethodInArgs ) :
 //------------------------------------------------------------------------------
     QObject(),
     m_pTrcAdminObj(i_pTrcAdminObj),
     m_pTrcServer(nullptr),
     m_pTrcMthFile(nullptr),
-    m_iTrcDetailLevel(ETraceDetailLevelUndefined),
-    m_iEnterLeaveFilterDetailLevel(i_iFilterDetailLevel),
+    m_eMethodCallsTrcDetailLevel(ETraceDetailLevelMethodCalls::Undefined),
+    m_eEnterLeaveFilterDetailLevel(i_eFilterDetailLevel),
+    m_bEnterTraced(false),
     m_strNameSpace(),
     m_strClassName(),
     m_strObjName(i_strObjName),
@@ -151,8 +154,8 @@ CMethodTracer::CMethodTracer(
         {
             throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
         }
-
-        if( m_pTrcAdminObj->isActive(m_iEnterLeaveFilterDetailLevel) )
+        if( m_pTrcAdminObj->areMethodCallsActive(m_eEnterLeaveFilterDetailLevel)
+         && !m_pTrcAdminObj->isTraceDataSuppressedByFilter(i_strMethodInArgs) )
         {
             CTrcServer* pTrcServer = m_pTrcAdminObj->getTraceServer();
 
@@ -163,10 +166,11 @@ CMethodTracer::CMethodTracer(
                     /* strObjName   */ m_strObjName,
                     /* strMethod    */ m_strMethod,
                     /* strMthInArgs */ i_strMethodInArgs );
+                m_bEnterTraced = true;
             }
         }
-    } // if( m_pTrcAdminObj != nullptr )
-
+        m_pTrcAdminObj->lock();
+    }
 } // ctor
 
 //------------------------------------------------------------------------------
@@ -178,14 +182,14 @@ CMethodTracer::CMethodTracer(
 
     @param i_pTrcAdminObj [in]
         Trace admin object used to control the output detail level of the method trace.
-        If != nullptr arguments i_pTrcServer and TrcDetailLevel are i_iTrcDetailLevel.
+        If != nullptr arguments i_pTrcServer and TrcDetailLevel are i_eTrcDetailLevel.
     @param i_pTrcServer [in]
-        If i_pTrcAdminObj == nullptr i_pTrcServer must not be nullptr and i_iTrcDetailLevel
+        If i_pTrcAdminObj == nullptr i_pTrcServer must not be nullptr and i_eTrcDetailLevel
         is used to control the detail level of the trace output.
-    @param i_iTrcDetailLevel [in]
+    @param i_eTrcDetailLevel [in]
         Entering and leaving the method is traced if the method trace detail level is
         greater or equal than the filter setting than the detail level.
-    @param i_iFilterDetailLevel [in]
+    @param i_eFilterDetailLevel [in]
         Entering and leaving the method is traced if the admin objects detail level
         is greater or equal than the filter setting than the detail level.
     @param i_strNameSpace [in]
@@ -202,22 +206,23 @@ CMethodTracer::CMethodTracer(
         String describing the input arguments passed to the method to be traced.
 */
 CMethodTracer::CMethodTracer(
-    CTrcAdminObj*  i_pTrcAdminObj,
-    CTrcServer*    i_pTrcServer,
-    int            i_iTrcDetailLevel,
-    int            i_iFilterDetailLevel,
-    const QString& i_strNameSpace,
-    const QString& i_strClassName,
-    const QString& i_strObjName,
-    const QString& i_strMethod,
-    const QString& i_strMethodInArgs ) :
+    CTrcAdminObj*                i_pTrcAdminObj,
+    CTrcServer*                  i_pTrcServer,
+    ETraceDetailLevelMethodCalls i_eTrcDetailLevel,
+    ETraceDetailLevelMethodCalls i_eFilterDetailLevel,
+    const QString&               i_strNameSpace,
+    const QString&               i_strClassName,
+    const QString&               i_strObjName,
+    const QString&               i_strMethod,
+    const QString&               i_strMethodInArgs ) :
 //------------------------------------------------------------------------------
     QObject(),
     m_pTrcAdminObj(i_pTrcAdminObj),
     m_pTrcServer(i_pTrcServer),
     m_pTrcMthFile(nullptr),
-    m_iTrcDetailLevel(i_iTrcDetailLevel),
-    m_iEnterLeaveFilterDetailLevel(i_iFilterDetailLevel),
+    m_eMethodCallsTrcDetailLevel(i_eTrcDetailLevel),
+    m_eEnterLeaveFilterDetailLevel(i_eFilterDetailLevel),
+    m_bEnterTraced(false),
     m_strNameSpace(i_strNameSpace),
     m_strClassName(i_strClassName),
     m_strObjName(i_strObjName),
@@ -237,7 +242,8 @@ CMethodTracer::CMethodTracer(
             throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
         }
 
-        if( m_pTrcAdminObj->isActive(m_iEnterLeaveFilterDetailLevel) )
+        if( m_pTrcAdminObj->areMethodCallsActive(m_eEnterLeaveFilterDetailLevel)
+         && !m_pTrcAdminObj->isTraceDataSuppressedByFilter(i_strMethodInArgs) )
         {
             CTrcServer* pTrcServer = m_pTrcAdminObj->getTraceServer();
 
@@ -248,11 +254,12 @@ CMethodTracer::CMethodTracer(
                     /* strObjName   */ m_strObjName,
                     /* strMethod    */ m_strMethod,
                     /* strMthInArgs */ i_strMethodInArgs );
+                m_bEnterTraced = true;
             }
         }
-    } // if( m_pTrcAdminObj != nullptr )
-
-    else if( m_pTrcServer != nullptr && m_iTrcDetailLevel >= m_iEnterLeaveFilterDetailLevel )
+        m_pTrcAdminObj->lock();
+    }
+    else if( m_pTrcServer != nullptr && m_eMethodCallsTrcDetailLevel >= m_eEnterLeaveFilterDetailLevel )
     {
         m_pTrcServer->traceMethodEnter(
             /* strNameSpace */ m_strNameSpace,
@@ -260,8 +267,8 @@ CMethodTracer::CMethodTracer(
             /* strObjName   */ m_strObjName,
             /* strMethod    */ m_strMethod,
             /* strMthInArgs */ i_strMethodInArgs );
+        m_bEnterTraced = true;
     }
-
 } // ctor
 
 //------------------------------------------------------------------------------
@@ -272,10 +279,10 @@ CMethodTracer::CMethodTracer(
 
     @param i_pTrcServer [in]
         Pointer to trace server hosting the trace method file.
-    @param i_iTrcDetailLevel [in]
+    @param i_eTrcDetailLevel [in]
         Entering and leaving the method is traced if the method trace detail level is
         greater or equal than the filter setting than the detail level.
-    @param i_iFilterDetailLevel [in]
+    @param i_eFilterDetailLevel [in]
         Entering and leaving the method is traced if the admin objects detail level
         is greater or equal than the filter setting than the detail level.
     @param i_strNameSpace [in]
@@ -292,21 +299,22 @@ CMethodTracer::CMethodTracer(
         String describing the input arguments passed to the method to be traced.
 */
 CMethodTracer::CMethodTracer(
-    CTrcServer*    i_pTrcServer,
-    int            i_iTrcDetailLevel,
-    int            i_iFilterDetailLevel,
-    const QString& i_strNameSpace,
-    const QString& i_strClassName,
-    const QString& i_strObjName,
-    const QString& i_strMethod,
-    const QString& i_strMethodInArgs ) :
+    CTrcServer*                  i_pTrcServer,
+    ETraceDetailLevelMethodCalls i_eTrcDetailLevel,
+    ETraceDetailLevelMethodCalls i_eFilterDetailLevel,
+    const QString&               i_strNameSpace,
+    const QString&               i_strClassName,
+    const QString&               i_strObjName,
+    const QString&               i_strMethod,
+    const QString&               i_strMethodInArgs ) :
 //------------------------------------------------------------------------------
     QObject(),
     m_pTrcAdminObj(nullptr),
     m_pTrcServer(i_pTrcServer),
     m_pTrcMthFile(nullptr),
-    m_iTrcDetailLevel(i_iTrcDetailLevel),
-    m_iEnterLeaveFilterDetailLevel(i_iFilterDetailLevel),
+    m_eMethodCallsTrcDetailLevel(i_eTrcDetailLevel),
+    m_eEnterLeaveFilterDetailLevel(i_eFilterDetailLevel),
+    m_bEnterTraced(false),
     m_strNameSpace(i_strNameSpace),
     m_strClassName(i_strClassName),
     m_strObjName(i_strObjName),
@@ -314,7 +322,7 @@ CMethodTracer::CMethodTracer(
     m_strMethodReturn(),
     m_strMethodOutArgs()
 {
-    if( m_pTrcServer != nullptr && m_iTrcDetailLevel >= m_iEnterLeaveFilterDetailLevel )
+    if( m_pTrcServer != nullptr && m_eMethodCallsTrcDetailLevel >= m_eEnterLeaveFilterDetailLevel )
     {
         m_pTrcServer->traceMethodEnter(
             /* strNameSpace */ m_strNameSpace,
@@ -322,8 +330,8 @@ CMethodTracer::CMethodTracer(
             /* strObjName   */ m_strObjName,
             /* strMethod    */ m_strMethod,
             /* strMthInArgs */ i_strMethodInArgs );
+        m_bEnterTraced = true;
     }
-
 } // ctor
 
 //------------------------------------------------------------------------------
@@ -335,10 +343,10 @@ CMethodTracer::CMethodTracer(
 
     @param i_pTrcMthFile [in]
         Pointer to trace method file used to write the trace outputs.
-    @param i_iTrcDetailLevel [in]
+    @param i_eTrcDetailLevel [in]
         Entering and leaving the method is traced if the method trace detail level is
         greater or equal than the filter setting than the detail level.
-    @param i_iFilterDetailLevel [in]
+    @param i_eFilterDetailLevel [in]
         Entering and leaving the method is traced if the admin objects detail level
         is greater or equal than the filter setting than the detail level.
     @param i_strNameSpace [in]
@@ -355,21 +363,22 @@ CMethodTracer::CMethodTracer(
         String describing the input arguments passed to the method to be traced.
 */
 CMethodTracer::CMethodTracer(
-    CTrcMthFile*   i_pTrcMthFile,
-    int            i_iTrcDetailLevel,
-    int            i_iFilterDetailLevel,
-    const QString& i_strNameSpace,
-    const QString& i_strClassName,
-    const QString& i_strObjName,
-    const QString& i_strMethod,
-    const QString& i_strMethodInArgs ) :
+    CTrcMthFile*                 i_pTrcMthFile,
+    ETraceDetailLevelMethodCalls i_eTrcDetailLevel,
+    ETraceDetailLevelMethodCalls i_eFilterDetailLevel,
+    const QString&               i_strNameSpace,
+    const QString&               i_strClassName,
+    const QString&               i_strObjName,
+    const QString&               i_strMethod,
+    const QString&               i_strMethodInArgs ) :
 //------------------------------------------------------------------------------
     QObject(),
     m_pTrcAdminObj(nullptr),
     m_pTrcServer(nullptr),
     m_pTrcMthFile(i_pTrcMthFile),
-    m_iTrcDetailLevel(i_iTrcDetailLevel),
-    m_iEnterLeaveFilterDetailLevel(i_iFilterDetailLevel),
+    m_eMethodCallsTrcDetailLevel(i_eTrcDetailLevel),
+    m_eEnterLeaveFilterDetailLevel(i_eFilterDetailLevel),
+    m_bEnterTraced(false),
     m_strNameSpace(i_strNameSpace),
     m_strClassName(i_strClassName),
     m_strObjName(i_strObjName),
@@ -377,7 +386,7 @@ CMethodTracer::CMethodTracer(
     m_strMethodReturn(),
     m_strMethodOutArgs()
 {
-    if( m_pTrcMthFile != nullptr && m_iTrcDetailLevel >= m_iEnterLeaveFilterDetailLevel )
+    if( m_pTrcMthFile != nullptr && m_eMethodCallsTrcDetailLevel >= m_eEnterLeaveFilterDetailLevel )
     {
         QString strMth = buildPathStr("::", m_strNameSpace, m_strClassName, m_strObjName);
 
@@ -386,8 +395,8 @@ CMethodTracer::CMethodTracer(
             strMth += "." + m_strMethod;
         }
         m_pTrcMthFile->traceMethodEnter(strMth, i_strMethodInArgs);
+        m_bEnterTraced = true;
     }
-
 } // ctor
 
 //------------------------------------------------------------------------------
@@ -399,14 +408,14 @@ CMethodTracer::CMethodTracer(
 
     @param i_pTrcAdminObj [in]
         Trace admin object used to control the output detail level of the method trace.
-        If != nullptr arguments i_pTrcServer and TrcDetailLevel are i_iTrcDetailLevel.
+        If != nullptr arguments i_pTrcServer and TrcDetailLevel are i_eTrcDetailLevel.
     @param i_pTrcMthFile [in]
-        If i_pTrcAdminObj == nullptr i_pTrcMthFile must not be nullptr and i_iTrcDetailLevel
+        If i_pTrcAdminObj == nullptr i_pTrcMthFile must not be nullptr and i_eTrcDetailLevel
         is used to control the detail level of the trace output.
-    @param i_iTrcDetailLevel [in]
+    @param i_eTrcDetailLevel [in]
         Entering and leaving the method is traced if the method trace detail level is
         greater or equal than the filter setting than the detail level.
-    @param i_iFilterDetailLevel [in]
+    @param i_eFilterDetailLevel [in]
         Entering and leaving the method is traced if the admin objects detail level
         is greater or equal than the filter setting than the detail level.
     @param i_strNameSpace [in]
@@ -423,22 +432,23 @@ CMethodTracer::CMethodTracer(
         String describing the input arguments passed to the method to be traced.
 */
 CMethodTracer::CMethodTracer(
-    CTrcAdminObj*  i_pTrcAdminObj,
-    CTrcMthFile*   i_pTrcMthFile,
-    int            i_iTrcDetailLevel,
-    int            i_iFilterDetailLevel,
-    const QString& i_strNameSpace,
-    const QString& i_strClassName,
-    const QString& i_strObjName,
-    const QString& i_strMethod,
-    const QString& i_strMethodInArgs ) :
+    CTrcAdminObj*                i_pTrcAdminObj,
+    CTrcMthFile*                 i_pTrcMthFile,
+    ETraceDetailLevelMethodCalls i_eTrcDetailLevel,
+    ETraceDetailLevelMethodCalls i_eFilterDetailLevel,
+    const QString&               i_strNameSpace,
+    const QString&               i_strClassName,
+    const QString&               i_strObjName,
+    const QString&               i_strMethod,
+    const QString&               i_strMethodInArgs ) :
 //------------------------------------------------------------------------------
     QObject(),
     m_pTrcAdminObj(i_pTrcAdminObj),
     m_pTrcServer(nullptr),
     m_pTrcMthFile(i_pTrcMthFile),
-    m_iTrcDetailLevel(i_iTrcDetailLevel),
-    m_iEnterLeaveFilterDetailLevel(i_iFilterDetailLevel),
+    m_eMethodCallsTrcDetailLevel(i_eTrcDetailLevel),
+    m_eEnterLeaveFilterDetailLevel(i_eFilterDetailLevel),
+    m_bEnterTraced(false),
     m_strNameSpace(i_strNameSpace),
     m_strClassName(i_strClassName),
     m_strObjName(i_strObjName),
@@ -457,8 +467,8 @@ CMethodTracer::CMethodTracer(
         {
             throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
         }
-
-        if( m_pTrcAdminObj->isActive(m_iEnterLeaveFilterDetailLevel) )
+        if( m_pTrcAdminObj->areMethodCallsActive(m_eEnterLeaveFilterDetailLevel)
+         && !m_pTrcAdminObj->isTraceDataSuppressedByFilter(i_strMethodInArgs) )
         {
             CTrcServer* pTrcServer = m_pTrcAdminObj->getTraceServer();
 
@@ -469,13 +479,14 @@ CMethodTracer::CMethodTracer(
                     /* strObjName   */ m_strObjName.isEmpty() ? m_pTrcAdminObj->getObjectName() : m_strObjName,
                     /* strMethod    */ m_strMethod,
                     /* strMthInArgs */ i_strMethodInArgs );
+                m_bEnterTraced = true;
             }
         }
-    } // if( m_pTrcAdminObj != nullptr )
-
+        m_pTrcAdminObj->lock();
+    }
     else if( m_pTrcMthFile != nullptr )
     {
-        if( m_iTrcDetailLevel >= m_iEnterLeaveFilterDetailLevel )
+        if( m_eMethodCallsTrcDetailLevel >= m_eEnterLeaveFilterDetailLevel )
         {
             QString strMth = buildPathStr("::", m_strNameSpace, m_strClassName, m_strObjName);
 
@@ -484,9 +495,9 @@ CMethodTracer::CMethodTracer(
                 strMth += "." + m_strMethod;
             }
             m_pTrcMthFile->traceMethodEnter(strMth, i_strMethodInArgs);
+            m_bEnterTraced = true;
         }
-    } // if( m_pTrcMthFile != nullptr )
-
+    }
 } // ctor
 
 //------------------------------------------------------------------------------
@@ -494,25 +505,24 @@ CMethodTracer::CMethodTracer(
 
     @note If the CMethodTracer is used in the destructor of a class and a trace
           admin object is used the trace admin object is usually released in this
-          destructor. In this case leaving the destructor cannot be traced if the
-          CMethodTracer class as the trace admin object is no longer accessible
-          if the destructor of the CMethodTracer class is called.
-          So when using CMethodTracer in destructors the CMethodTracer got to be
-          informed that the trace adming object will be released to trace leaving
-          the method before the trace admin object is released. For this the method
-          "onAdminObjAboutToBeReleased" has to be applied at the method tracer instance
-          as this method will trace leaving the current method.
+          destructor. If the trace admin object would be destroyed when releasing
+          the instance leaving the destructor may not be traced and the program
+          may crash as the method tracer would access a dead instance.
+          This should usually not happen as the trace server together with the
+          tree of admin objects should be destroyed at the end of the program.
+          But to be on safe side you can call "onAdminObjAboutToBeReleased"
+          before releasing the trace admin object.
 */
 CMethodTracer::~CMethodTracer()
 //------------------------------------------------------------------------------
 {
     if( m_pTrcAdminObj != nullptr )
     {
-        onAdminObjAboutToBeReleased();
+        onAdminObjAboutToBeReleased(); // Sets m_pTrcAdminObj to nullptr
     }
     else if( m_pTrcServer != nullptr )
     {
-        if( m_iTrcDetailLevel >= m_iEnterLeaveFilterDetailLevel )
+        if( m_bEnterTraced )
         {
             m_pTrcServer->traceMethodLeave(
                 /* strNameSpace  */ m_strNameSpace,
@@ -525,7 +535,7 @@ CMethodTracer::~CMethodTracer()
     }
     else if( m_pTrcMthFile != nullptr )
     {
-        if( m_iTrcDetailLevel >= m_iEnterLeaveFilterDetailLevel )
+        if( m_bEnterTraced )
         {
             QString strMth = buildPathStr("::", m_strNameSpace, m_strClassName, m_strObjName);
 
@@ -540,8 +550,9 @@ CMethodTracer::~CMethodTracer()
     m_pTrcAdminObj = nullptr;
     m_pTrcServer = nullptr;
     m_pTrcMthFile = nullptr;
-    m_iTrcDetailLevel = 0;
-    m_iEnterLeaveFilterDetailLevel = 0;
+    m_eMethodCallsTrcDetailLevel = static_cast<ETraceDetailLevelMethodCalls>(0);
+    m_eEnterLeaveFilterDetailLevel = static_cast<ETraceDetailLevelMethodCalls>(0);
+    m_bEnterTraced = false;
     //m_strNameSpace;
     //m_strClassName;
     //m_strObjName;
@@ -556,8 +567,10 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-/*! This method has to be called if the CMethodTracer is used in the destructor
+/*! This method may be called if the CMethodTracer is used in the destructor
     of a class right before the trace admin object is released.
+
+    @see ~CMethodTracer for more details.
 
     "onAdminObjAboutToBeReleased" will trace leaving the destructor.
 */
@@ -572,7 +585,7 @@ void CMethodTracer::onAdminObjAboutToBeReleased()
             /* pObjReceiver */ this,
             /* szSlot       */ SLOT(onAdminObjAboutToBeDestroyed(ZS::Trace::CTrcAdminObj*)) );
 
-        if( m_pTrcAdminObj->isActive(m_iEnterLeaveFilterDetailLevel) )
+        if( m_bEnterTraced )
         {
             CTrcServer* pTrcServer = m_pTrcAdminObj->getTraceServer();
 
@@ -586,12 +599,14 @@ void CMethodTracer::onAdminObjAboutToBeReleased()
                     /* strMthOutArgs */ m_strMethodOutArgs );
             }
         }
-
+        m_pTrcAdminObj->unlock();
+        if( m_pTrcAdminObj->deleteOnUnlock() )
+        {
+            CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
+        }
         m_pTrcAdminObj = nullptr;
-
-    } // if( m_pTrcAdminObj != nullptr )
-
-} // onAdminObjAboutToBeReleased
+    }
+}
 
 /*==============================================================================
 public: // instance methods
@@ -603,16 +618,51 @@ public: // instance methods
 
     @return Current trace detail level.
 */
-int CMethodTracer::getTraceDetailLevel() const
+ETraceDetailLevelMethodCalls CMethodTracer::getMethodCallsTraceDetailLevel() const
 //------------------------------------------------------------------------------
 {
-    int iDetailLevel = m_iTrcDetailLevel;
+    ETraceDetailLevelMethodCalls eDetailLevel = m_eMethodCallsTrcDetailLevel;
 
     if( m_pTrcAdminObj != nullptr )
     {
-        iDetailLevel = m_pTrcAdminObj->getTraceDetailLevel();
+        eDetailLevel = m_pTrcAdminObj->getMethodCallsTraceDetailLevel();
     }
-    return iDetailLevel;
+    else
+    {
+        eDetailLevel = m_eMethodCallsTrcDetailLevel;
+    }
+    return eDetailLevel;
+}
+
+//------------------------------------------------------------------------------
+/*! Returns whether tracing is active for the given filter detail level.
+
+    E.g. if or the trace admin object the detail level MethodArgs is set and
+    "areMethodCallsActive" will return false for detail levels greater than MethodArgs.
+
+    @param i_eFilterDetailLevel [in]
+        Trace outputs should be generated if the given filter detail level
+        is greater or equal than the current detail level set at the trace
+        admin object or at the method tracer itself.
+
+    @return true if tracing is active for the given filter detail level.
+            false otherwise.
+*/
+bool CMethodTracer::areMethodCallsActive( ETraceDetailLevelMethodCalls i_eFilterDetailLevel ) const
+//------------------------------------------------------------------------------
+{
+    bool bActive = false;
+
+    if( m_pTrcAdminObj != nullptr )
+    {
+        bActive = m_pTrcAdminObj->areMethodCallsActive(i_eFilterDetailLevel);
+    }
+    else
+    {
+        // Without trace admin object the caller must decide whether tracing is active.
+        bActive = (m_eMethodCallsTrcDetailLevel >= i_eFilterDetailLevel);
+    }
+    return bActive;
 }
 
 //------------------------------------------------------------------------------
@@ -623,10 +673,81 @@ int CMethodTracer::getTraceDetailLevel() const
 
     @return Detail level used for entering and leaving a method.
 */
-int CMethodTracer::getEnterLeaveFilterDetailLevel() const
+ETraceDetailLevelMethodCalls CMethodTracer::getEnterLeaveFilterDetailLevel() const
 //------------------------------------------------------------------------------
 {
-    return m_iEnterLeaveFilterDetailLevel;
+    return m_eEnterLeaveFilterDetailLevel;
+}
+
+//------------------------------------------------------------------------------
+/*! Returns the current detail level either set at the trace admin object or
+    at the method tracer itself.
+
+    @return Current trace detail level.
+*/
+ETraceDetailLevelRuntimeInfo CMethodTracer::getRuntimeInfoTraceDetailLevel() const
+//------------------------------------------------------------------------------
+{
+    ETraceDetailLevelRuntimeInfo eDetailLevel = ETraceDetailLevelRuntimeInfo::None;
+
+    if( m_pTrcAdminObj != nullptr )
+    {
+        eDetailLevel = m_pTrcAdminObj->getRuntimeInfoTraceDetailLevel();
+    }
+    return eDetailLevel;
+}
+
+//------------------------------------------------------------------------------
+/*! Returns whether tracing is active for the given filter detail level.
+
+    E.g. if or the trace admin object the detail level MethodArgs is set and
+    "isActive" will return false for detail levels greater than MethodArgs.
+
+    @param i_eFilterDetailLevel [in]
+        Trace outputs should be generated if the given filter detail level
+        is greater or equal than the current detail level set at the trace
+        admin object or at the method tracer itself.
+
+    @return true if tracing is active for the given filter detail level.
+            false otherwise.
+*/
+bool CMethodTracer::isRuntimeInfoActive( ETraceDetailLevelRuntimeInfo i_eFilterDetailLevel ) const
+//------------------------------------------------------------------------------
+{
+    bool bActive = false;
+
+    if( m_pTrcAdminObj != nullptr )
+    {
+        bActive = m_pTrcAdminObj->isRuntimeInfoActive(i_eFilterDetailLevel);
+    }
+    return bActive;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns whether given trace data should be suppressed by the data filter.
+
+    Example
+
+        if( !m_pTrcAdminObj->isTraceDataSuppressedByFilter("bla bla bla") )
+        {
+            strTrcOutData = "bla bla bla";
+        }
+
+    @param i_strTraceData [in]
+        Trace data to be checked against the filter string.
+
+    @return true if the passed trace data should be suppressed, false otherwise.
+*/
+bool CMethodTracer::isTraceDataSuppressedByFilter( const QString& i_strTraceData ) const
+//------------------------------------------------------------------------------
+{
+    bool bSuppressed = false;
+
+    if( m_pTrcAdminObj != nullptr )
+    {
+        bSuppressed = m_pTrcAdminObj->isTraceDataSuppressedByFilter(i_strTraceData);
+    }
+    return bSuppressed;
 }
 
 /*==============================================================================
@@ -825,61 +946,26 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-/*! Returns whether tracing is active for the given filter detail level.
-
-    E.g. if or the trace admin object the detail level MethodArgs is set and
-    "isActive" will return false for detail levels greater than MethodArgs.
-
-    @param i_iFilterDetailLevel [in]
-        Trace outputs should be generated if the given filter detail level
-        is greater or equal than the current detail level set at the trace
-        admin object or at the method tracer itself.
-
-    @return true if tracing is active for the given filter detail level.
-            false otherwise.
-*/
-bool CMethodTracer::isActive( int i_iFilterDetailLevel ) const
-//------------------------------------------------------------------------------
-{
-    bool bActive = false;
-
-    if( m_pTrcAdminObj != nullptr )
-    {
-        bActive = m_pTrcAdminObj->isActive(i_iFilterDetailLevel);
-    }
-    else
-    {
-        // Without trace admin object the caller must decide whether tracing is active.
-        bActive = (m_iTrcDetailLevel >= i_iFilterDetailLevel);
-    }
-    return bActive;
-
-} // isActive
-
-/*==============================================================================
-public: // instance methods
-==============================================================================*/
-
-//------------------------------------------------------------------------------
 /*! Adds a trace output string.
 
     This method is used to add additional runtime information to the trace output.
 
     @param i_strAddInfo [in]
         Additional runtime information to be output.
-    @param i_iFilterDetailLevel [in]
+    @param i_eFilterDetailLevel [in]
         Trace outputs should be generated if the given filter detail level
         is greater or equal than the current detail level set at the trace
         admin object or at the method tracer itself.
 */
 void CMethodTracer::trace(
-    const QString& i_strAddInfo,
-    int            i_iFilterDetailLevel ) const
+    const QString&               i_strAddInfo,
+    ETraceDetailLevelRuntimeInfo i_eFilterDetailLevel ) const
 //------------------------------------------------------------------------------
 {
     if( m_pTrcAdminObj != nullptr )
     {
-        if( m_pTrcAdminObj->isActive(i_iFilterDetailLevel) )
+        if( m_pTrcAdminObj->isRuntimeInfoActive(i_eFilterDetailLevel)
+         && !m_pTrcAdminObj->isTraceDataSuppressedByFilter(i_strAddInfo) )
         {
             CTrcServer* pTrcServer = m_pTrcAdminObj->getTraceServer();
 
@@ -893,34 +979,6 @@ void CMethodTracer::trace(
             }
         }
     } // if( m_pTrcAdminObj != nullptr )
-
-    else if( m_pTrcServer != nullptr )
-    {
-        if( m_iTrcDetailLevel >= i_iFilterDetailLevel )
-        {
-            m_pTrcServer->traceMethod(
-                /* strNameSpace */ m_strNameSpace,
-                /* strClassName */ m_strClassName,
-                /* strObjName   */ m_strObjName,
-                /* strMethod    */ m_strMethod,
-                /* strAddInfo   */ i_strAddInfo );
-        }
-    } // if( m_pTrcMthFile != nullptr )
-
-    else if( m_pTrcMthFile != nullptr )
-    {
-        if( m_iTrcDetailLevel >= i_iFilterDetailLevel )
-        {
-            QString strMth = buildPathStr("::", m_strNameSpace, m_strClassName, m_strObjName);
-
-            if( !strMth.isEmpty() && !m_strMethod.isEmpty() )
-            {
-                strMth += "." + m_strMethod;
-            }
-            m_pTrcMthFile->traceMethod(strMth, i_strAddInfo);
-        }
-    } // if( m_pTrcMthFile != nullptr )
-
 } // trace
 
 //------------------------------------------------------------------------------
@@ -931,29 +989,29 @@ void CMethodTracer::trace(
 
     @param i_strAddInfo [in]
         Additional runtime information to be output.
-    @param i_iTrcDetailLevel [in]
+    @param i_eTrcDetailLevel [in]
         Current trace detail level to be compared against the filter detail level.
-    @param i_iFilterDetailLevel [in]
+    @param i_eFilterDetailLevel [in]
         Trace outputs should be generated if the given filter detail level
         is greater or equal than the current detail level set at the trace
         admin object or at the method tracer itself.
 */
 void CMethodTracer::trace(
-    const QString& i_strAddInfo,
-    int            i_iTrcDetailLevel,
-    int            i_iFilterDetailLevel ) const
+    const QString&               i_strAddInfo,
+    ETraceDetailLevelRuntimeInfo i_eTrcDetailLevel,
+    ETraceDetailLevelRuntimeInfo i_eFilterDetailLevel ) const
 //------------------------------------------------------------------------------
 {
     if( m_pTrcAdminObj != nullptr )
     {
-        int iTrcDetailLevel = i_iTrcDetailLevel;
+        ETraceDetailLevelRuntimeInfo eTrcDetailLevel = i_eTrcDetailLevel;
 
-        if( iTrcDetailLevel == ETraceDetailLevelUndefined )
+        if( i_eTrcDetailLevel == ETraceDetailLevelRuntimeInfo::Undefined )
         {
-            iTrcDetailLevel = m_pTrcAdminObj->getTraceDetailLevel();
+            eTrcDetailLevel = m_pTrcAdminObj->getRuntimeInfoTraceDetailLevel();
         }
 
-        if( m_pTrcAdminObj->isEnabled() && iTrcDetailLevel >= i_iFilterDetailLevel )
+        if( m_pTrcAdminObj->isEnabled() && eTrcDetailLevel >= i_eFilterDetailLevel )
         {
             CTrcServer* pTrcServer = m_pTrcAdminObj->getTraceServer();
 
@@ -967,48 +1025,6 @@ void CMethodTracer::trace(
             }
         }
     } // if( m_pTrcAdminObj != nullptr )
-
-    else if( m_pTrcServer != nullptr )
-    {
-        int iTrcDetailLevel = i_iTrcDetailLevel;
-
-        if( iTrcDetailLevel == ETraceDetailLevelUndefined )
-        {
-            iTrcDetailLevel = m_iTrcDetailLevel;
-        }
-
-        if( iTrcDetailLevel >= i_iFilterDetailLevel )
-        {
-            m_pTrcServer->traceMethod(
-                /* strNameSpace */ m_strNameSpace,
-                /* strClassName */ m_strClassName,
-                /* strObjName   */ m_strObjName,
-                /* strMethod    */ m_strMethod,
-                /* strAddInfo   */ i_strAddInfo );
-        }
-    } // if( m_pTrcMthFile != nullptr )
-
-    else if( m_pTrcMthFile != nullptr )
-    {
-        int iTrcDetailLevel = i_iTrcDetailLevel;
-
-        if( iTrcDetailLevel == ETraceDetailLevelUndefined )
-        {
-            iTrcDetailLevel = m_iTrcDetailLevel;
-        }
-
-        if( iTrcDetailLevel >= i_iFilterDetailLevel )
-        {
-            QString strMth = buildPathStr("::", m_strNameSpace, m_strClassName, m_strObjName);
-
-            if( !strMth.isEmpty() && !m_strMethod.isEmpty() )
-            {
-                strMth += "." + m_strMethod;
-            }
-            m_pTrcMthFile->traceMethod(strMth, i_strAddInfo);
-        }
-    } // if( m_pTrcMthFile != nullptr )
-
 } // trace
 
 /*==============================================================================

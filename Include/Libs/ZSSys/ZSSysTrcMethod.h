@@ -81,7 +81,7 @@ class CTrcServer;
             CMethodTracer mthTracer(
                 ** pTrcAdminObj       ** m_pTrcAdminObj,
                 ** pTrcServer         ** CTrcServer::GetInstance(),
-                ** iTrcDetailLevel    ** m_iTrcDetailLevel,
+                ** iTrcDetailLevel    ** m_eTrcDetailLevel,
                 ** iFilterDetailLevel ** ETraceDetailLevelMethodCalls,
                 ** strNameSpace       ** NameSpace(),
                 ** strClassName       ** ClassName(),
@@ -106,60 +106,64 @@ class ZSSYSDLL_API CMethodTracer : public QObject
     Q_OBJECT
 public: // ctors and dtor
     CMethodTracer(
-        CTrcAdminObj*  i_pTrcAdminObj,
-        int            i_iFilterDetailLevel,
-        const QString& i_strMethod,
-        const QString& i_strMethodInArgs );
+        CTrcAdminObj*                i_pTrcAdminObj,
+        ETraceDetailLevelMethodCalls i_eFilterDetailLevel,
+        const QString&               i_strMethod,
+        const QString&               i_strMethodInArgs );
     CMethodTracer(
-        CTrcAdminObj*  i_pTrcAdminObj,
-        int            i_iFilterDetailLevel,
-        const QString& i_strObjName,
-        const QString& i_strMethod,
-        const QString& i_strMethodInArgs );
+        CTrcAdminObj*                i_pTrcAdminObj,
+        ETraceDetailLevelMethodCalls i_eFilterDetailLevel,
+        const QString&               i_strObjName,
+        const QString&               i_strMethod,
+        const QString&               i_strMethodInArgs );
     CMethodTracer(
-        CTrcAdminObj*  i_pTrcAdminObj,
-        CTrcServer*    i_pTrcServer,
-        int            i_iTrcDetailLevel,
-        int            i_iFilterDetailLevel,
-        const QString& i_strNameSpace,
-        const QString& i_strClassName,
-        const QString& i_strObjName,
-        const QString& i_strMethod,
-        const QString& i_strMethodInArgs = "" );
+        CTrcAdminObj*                i_pTrcAdminObj,
+        CTrcServer*                  i_pTrcServer,
+        ETraceDetailLevelMethodCalls i_eTrcDetailLevel,
+        ETraceDetailLevelMethodCalls i_eFilterDetailLevel,
+        const QString&               i_strNameSpace,
+        const QString&               i_strClassName,
+        const QString&               i_strObjName,
+        const QString&               i_strMethod,
+        const QString&               i_strMethodInArgs = "" );
     CMethodTracer(
-        CTrcServer*    i_pTrcServer,
-        int            i_iTrcDetailLevel,
-        int            i_iFilterDetailLevel,
-        const QString& i_strNameSpace,
-        const QString& i_strClassName,
-        const QString& i_strObjName,
-        const QString& i_strMethod,
-        const QString& i_strMethodInArgs = "" );
+        CTrcServer*                  i_pTrcServer,
+        ETraceDetailLevelMethodCalls i_eTrcDetailLevel,
+        ETraceDetailLevelMethodCalls i_eFilterDetailLevel,
+        const QString&               i_strNameSpace,
+        const QString&               i_strClassName,
+        const QString&               i_strObjName,
+        const QString&               i_strMethod,
+        const QString&               i_strMethodInArgs = "" );
     CMethodTracer(
-        CTrcMthFile*   i_pTrcMthFile,
-        int            i_iTrcDetailLevel,
-        int            i_iFilterDetailLevel,
-        const QString& i_strNameSpace,
-        const QString& i_strClassName,
-        const QString& i_strObjName,
-        const QString& i_strMethod,
-        const QString& i_strMethodInArgs = "" );
+        CTrcMthFile*                 i_pTrcMthFile,
+        ETraceDetailLevelMethodCalls i_eTrcDetailLevel,
+        ETraceDetailLevelMethodCalls i_eFilterDetailLevel,
+        const QString&               i_strNameSpace,
+        const QString&               i_strClassName,
+        const QString&               i_strObjName,
+        const QString&               i_strMethod,
+        const QString&               i_strMethodInArgs = "" );
     CMethodTracer(
-        CTrcAdminObj*  i_pTrcAdminObj,
-        CTrcMthFile*   i_pTrcMthFile,
-        int            i_iTrcDetailLevel,
-        int            i_iFilterDetailLevel,
-        const QString& i_strNameSpace,
-        const QString& i_strClassName,
-        const QString& i_strObjName,
-        const QString& i_strMethod,
-        const QString& i_strMethodInArgs = "" );
+        CTrcAdminObj*                i_pTrcAdminObj,
+        CTrcMthFile*                 i_pTrcMthFile,
+        ETraceDetailLevelMethodCalls i_eTrcDetailLevel,
+        ETraceDetailLevelMethodCalls i_eFilterDetailLevel,
+        const QString&               i_strNameSpace,
+        const QString&               i_strClassName,
+        const QString&               i_strObjName,
+        const QString&               i_strMethod,
+        const QString&               i_strMethodInArgs = "" );
     ~CMethodTracer();
 public: // instance methods
     void onAdminObjAboutToBeReleased();
 public: // instance methods
-    int getTraceDetailLevel() const;
-    int getEnterLeaveFilterDetailLevel() const;
+    ETraceDetailLevelMethodCalls getMethodCallsTraceDetailLevel() const;
+    bool areMethodCallsActive( ETraceDetailLevelMethodCalls i_eFilterDetailLevel ) const;
+    ETraceDetailLevelMethodCalls getEnterLeaveFilterDetailLevel() const;
+    ETraceDetailLevelRuntimeInfo getRuntimeInfoTraceDetailLevel() const;
+    bool isRuntimeInfoActive( ETraceDetailLevelRuntimeInfo i_eFilterDetailLevel ) const;
+    bool isTraceDataSuppressedByFilter( const QString& i_strTraceData ) const;
 public: // instance methods
     QString getNameSpace() const;
     QString getClassName() const;
@@ -177,31 +181,34 @@ public: // instance methods
     void setMethodOutArgs( const QString& i_str );
     QString getMethodOutArgs() const;
 public: // instance methods
-    bool isActive( int i_iFilterDetailLevel ) const;
-public: // instance methods
-    void trace( // Trace detail level defined by trace admin object or by ctor of method tracer
+    void trace(
+        const QString&               i_strAddInfo,
+        ETraceDetailLevelRuntimeInfo i_eFilterDetailLevel = ETraceDetailLevelRuntimeInfo::CriticalError ) const;
+    void trace(
         const QString& i_strAddInfo,
-        int            i_iFilterDetailLevel = ETraceDetailLevelMethodCalls ) const;
-    void trace( // Trace detail level defined by calling module, class or class instance
-        const QString& i_strAddInfo,
-        int            i_iTrcDetailLevel,
-        int            i_iFilterDetailLevel ) const;
+        ETraceDetailLevelRuntimeInfo i_eTrcDetailLevel,
+        ETraceDetailLevelRuntimeInfo i_eFilterDetailLevel ) const;
 protected slots:
     void onAdminObjAboutToBeDestroyed( ZS::Trace::CTrcAdminObj* i_pTrcAdminObj );
 protected: // instance members
-    CTrcAdminObj* m_pTrcAdminObj;                 /*!< = nullptr, if pTrcMthFile != nullptr or pTrcServer != nullptr. */
-    CTrcServer*   m_pTrcServer;                   /*!< = nullptr, if pTrcAdminObj != nullptr or pTrcMthFile != nullptr. */
-    CTrcMthFile*  m_pTrcMthFile;                  /*!< = nullptr, if pTrcAdminObj != nullptr or pTrcServer != nullptr. */
-    int           m_iTrcDetailLevel;              /*!< = Undefined, if pTrcAdminObj != nullptr. */
-    int           m_iEnterLeaveFilterDetailLevel; /*!< Filter setting for the detail level of the module or class creating the method tracer.
-                                                       Entering and leaving the method is traced if this DbgOut level is greater or equal
-                                                       the admin objects detail level. */
-    QString       m_strNameSpace;                 /*!< Without a trace admin object the name space (if there is any) should be set at the method tracer. */
-    QString       m_strClassName;                 /*!< Without a trace admin object the class name (if there is any) should be set at the method tracer. */
-    QString       m_strObjName;                   /*!< If the object name is not set at the trace admin object. */
-    QString       m_strMethod;                    /*!< Name of method to be traced. */
-    QString       m_strMethodReturn;              /*!< The dtor will trace the method return value which has to be set therefore before the method tracer is destroyed. */
-    QString       m_strMethodOutArgs;             /*!< The dtor will trace the method output arguments which have to be set therefore before the method tracer is destroyed. */
+    CTrcAdminObj*                m_pTrcAdminObj;    /*!< = nullptr, if pTrcMthFile != nullptr or pTrcServer != nullptr. */
+    CTrcServer*                  m_pTrcServer;      /*!< = nullptr, if pTrcAdminObj != nullptr or pTrcMthFile != nullptr. */
+    CTrcMthFile*                 m_pTrcMthFile;     /*!< = nullptr, if pTrcAdminObj != nullptr or pTrcServer != nullptr. */
+    ETraceDetailLevelMethodCalls m_eMethodCallsTrcDetailLevel; /*!< = Undefined, if pTrcAdminObj != nullptr. */
+    /*!< Filter setting for the detail level of the module or class creating the method tracer.
+         Entering and leaving the method is traced if this trace level is greater or equal
+         the admin objects detail level. */
+    ETraceDetailLevelMethodCalls m_eEnterLeaveFilterDetailLevel;
+    /*!< After entering a method the detail level of the trace admin object may be changed
+         (multi threaded access). If entering the method has been traced leaving must also be traced
+         even if the detail level has been set to None after entering the method.*/
+    bool m_bEnterTraced;
+    QString m_strNameSpace;     /*!< Without a trace admin object the name space (if there is any) should be set at the method tracer. */
+    QString m_strClassName;     /*!< Without a trace admin object the class name (if there is any) should be set at the method tracer. */
+    QString m_strObjName;       /*!< If the object name is not set at the trace admin object. */
+    QString m_strMethod;        /*!< Name of method to be traced. */
+    QString m_strMethodReturn;  /*!< The dtor will trace the method return value which has to be set therefore before the method tracer is destroyed. */
+    QString m_strMethodOutArgs; /*!< The dtor will trace the method output arguments which have to be set therefore before the method tracer is destroyed. */
 
 }; // class CMethodTracer
 

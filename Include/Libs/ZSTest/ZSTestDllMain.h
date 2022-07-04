@@ -44,6 +44,16 @@ may result in using the software modules.
 interface description of exported methods
 *******************************************************************************/
 
+// The static arrays "CEnum<>::s_arEnumEntries" are defined in the cpp file.
+#ifdef _WINDOWS
+#pragma warning( push )
+#pragma warning( disable : 4661 )
+#elif defined __linux__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-result"
+#pragma GCC diagnostic pop
+#endif
+
 namespace ZS
 {
 namespace Test
@@ -99,5 +109,9 @@ namespace Test
 typedef ZS::System::CEnum<ZS::Test::ETestState> CEnumTestState;
 } // namespace Test
 } // namespace ZS
+
+#ifdef _WINDOWS
+#pragma warning( pop )
+#endif
 
 #endif // #ifndef ZSTest_DllMain_h

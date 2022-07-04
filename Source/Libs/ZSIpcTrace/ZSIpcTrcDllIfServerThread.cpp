@@ -44,32 +44,32 @@ public: // ctors and dtor
 
 //------------------------------------------------------------------------------
 DllIf::CIpcTrcServerThread::CIpcTrcServerThread(
-    int i_iTrcDetailLevelDllIf,
-    int i_iTrcDetailLevelTrcServer,
-    int i_iTrcDetailLevelTrcServerMutex,
-    int i_iTrcDetailLevelTrcServerIpcServer,
-    int i_iTrcDetailLevelTrcServerIpcServerMutex,
-    int i_iTrcDetailLevelTrcServerIpcServerGateway ) :
+    ETraceDetailLevelMethodCalls i_eTrcDetailLevelDllIf,
+    ETraceDetailLevelMethodCalls i_eTrcDetailLevelTrcServer,
+    ETraceDetailLevelMethodCalls i_eTrcDetailLevelTrcServerMutex,
+    ETraceDetailLevelMethodCalls i_eTrcDetailLevelTrcServerIpcServer,
+    ETraceDetailLevelMethodCalls i_eTrcDetailLevelTrcServerIpcServerMutex,
+    ETraceDetailLevelMethodCalls i_eTrcDetailLevelTrcServerIpcServerGateway ) :
 //------------------------------------------------------------------------------
     QThread(),
-    m_iTrcDetailLevelDllIf(i_iTrcDetailLevelDllIf),
-    m_iTrcDetailLevelTrcServer(i_iTrcDetailLevelTrcServer),
-    m_iTrcDetailLevelTrcServerMutex(i_iTrcDetailLevelTrcServerMutex),
-    m_iTrcDetailLevelTrcServerIpcServer(i_iTrcDetailLevelTrcServerIpcServer),
-    m_iTrcDetailLevelTrcServerIpcServerMutex(i_iTrcDetailLevelTrcServerIpcServerMutex),
-    m_iTrcDetailLevelTrcServerIpcServerGateway(i_iTrcDetailLevelTrcServerIpcServerGateway),
+    m_eTrcDetailLevelDllIf(i_eTrcDetailLevelDllIf),
+    m_eTrcDetailLevelTrcServer(i_eTrcDetailLevelTrcServer),
+    m_eTrcDetailLevelTrcServerMutex(i_eTrcDetailLevelTrcServerMutex),
+    m_eTrcDetailLevelTrcServerIpcServer(i_eTrcDetailLevelTrcServerIpcServer),
+    m_eTrcDetailLevelTrcServerIpcServerMutex(i_eTrcDetailLevelTrcServerIpcServerMutex),
+    m_eTrcDetailLevelTrcServerIpcServerGateway(i_eTrcDetailLevelTrcServerIpcServerGateway),
     m_pTrcMthFile(nullptr)
 {
     setObjectName("ZSTrcServerDllIf");
 
-    QString strLocalTrcFileAbsFilePath = CTrcServer::GetDefaultLocalTrcFileAbsoluteFilePath("System");
+    QString strLocalTrcFileAbsFilePath = CTrcServer::GetLocalTrcFileAbsoluteFilePath();
 
     m_pTrcMthFile = CTrcMthFile::Alloc(strLocalTrcFileAbsFilePath);
 
     CMethodTracer mthTracer(
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcDetailLevelDllIf,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* iTrcDetailLevel    */ m_eTrcDetailLevelDllIf,
+        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -89,8 +89,8 @@ DllIf::CIpcTrcServerThread::~CIpcTrcServerThread()
 
     {   CMethodTracer mthTracer(
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcDetailLevelDllIf,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* iTrcDetailLevel    */ m_eTrcDetailLevelDllIf,
+        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -120,12 +120,12 @@ DllIf::CIpcTrcServerThread::~CIpcTrcServerThread()
         }
     }
 
-    m_iTrcDetailLevelDllIf = 0;
-    m_iTrcDetailLevelTrcServer = 0;
-    m_iTrcDetailLevelTrcServerMutex = 0;
-    m_iTrcDetailLevelTrcServerIpcServer = 0;
-    m_iTrcDetailLevelTrcServerIpcServerMutex = 0;
-    m_iTrcDetailLevelTrcServerIpcServerGateway = 0;
+    m_eTrcDetailLevelDllIf = static_cast<ETraceDetailLevelMethodCalls>(0);
+    m_eTrcDetailLevelTrcServer = static_cast<ETraceDetailLevelMethodCalls>(0);
+    m_eTrcDetailLevelTrcServerMutex = static_cast<ETraceDetailLevelMethodCalls>(0);
+    m_eTrcDetailLevelTrcServerIpcServer = static_cast<ETraceDetailLevelMethodCalls>(0);
+    m_eTrcDetailLevelTrcServerIpcServerMutex = static_cast<ETraceDetailLevelMethodCalls>(0);
+    m_eTrcDetailLevelTrcServerIpcServerGateway = static_cast<ETraceDetailLevelMethodCalls>(0);
     m_pTrcMthFile = nullptr;
 
 } // dtor
@@ -183,8 +183,8 @@ void DllIf::CIpcTrcServerThread::run()
 {
     CMethodTracer mthTracer(
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcDetailLevelDllIf,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* iTrcDetailLevel    */ m_eTrcDetailLevelDllIf,
+        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -195,11 +195,11 @@ void DllIf::CIpcTrcServerThread::run()
     //--------------------
 
     CIpcTrcServer::CreateInstance(
-        m_iTrcDetailLevelTrcServer,
-        m_iTrcDetailLevelTrcServerMutex,
-        m_iTrcDetailLevelTrcServerIpcServer,
-        m_iTrcDetailLevelTrcServerIpcServerMutex,
-        m_iTrcDetailLevelTrcServerIpcServerGateway);
+        m_eTrcDetailLevelTrcServer,
+        m_eTrcDetailLevelTrcServerMutex,
+        m_eTrcDetailLevelTrcServerIpcServer,
+        m_eTrcDetailLevelTrcServerIpcServerMutex,
+        m_eTrcDetailLevelTrcServerIpcServerGateway);
 
     try
     {

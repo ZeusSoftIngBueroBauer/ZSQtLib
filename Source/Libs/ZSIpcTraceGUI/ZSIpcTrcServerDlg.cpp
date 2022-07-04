@@ -114,7 +114,7 @@ CDlgTrcServer::CDlgTrcServer(
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* eDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strMethod    */ "ctor",
         /* strAddInfo   */ "" );
 
@@ -130,14 +130,13 @@ CDlgTrcServer::CDlgTrcServer(
     //------------------------
 
     m_pWdgtIpcServer = new ZS::Ipc::GUI::CWdgtIpcServer(i_strObjName);
-
     m_pTabWidget->addTab(m_pWdgtIpcServer, "Connection Settings");
 
     if( !QObject::connect(
         /* pObjSender   */ m_pWdgtIpcServer,
         /* szSignal     */ SIGNAL(accepted()),
         /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onSettingsAccepted()) ) )
+        /* szSlot       */ SLOT(onIpcServerSettingsAccepted()) ) )
     {
         throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
     }
@@ -146,7 +145,7 @@ CDlgTrcServer::CDlgTrcServer(
         /* pObjSender   */ m_pWdgtIpcServer,
         /* szSignal     */ SIGNAL(rejected()),
         /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onSettingsRejected()) ) )
+        /* szSlot       */ SLOT(onIpcServerSettingsRejected()) ) )
     {
         throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
     }
@@ -165,6 +164,24 @@ CDlgTrcServer::CDlgTrcServer(
 
     m_pWdgtTrcSettings = new CWdgtTrcSettings();
     m_pTabWidget->addTab(m_pWdgtTrcSettings, "Trace Settings");
+
+    if( !QObject::connect(
+        /* pObjSender   */ m_pWdgtTrcSettings,
+        /* szSignal     */ SIGNAL(accepted()),
+        /* pObjReceiver */ this,
+        /* szSlot       */ SLOT(onTrcSettingsAccepted()) ) )
+    {
+        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
+    }
+
+    if( !QObject::connect(
+        /* pObjSender   */ m_pWdgtTrcSettings,
+        /* szSignal     */ SIGNAL(rejected()),
+        /* pObjReceiver */ this,
+        /* szSlot       */ SLOT(onTrcSettingsRejected()) ) )
+    {
+        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
+    }
 
     // Assign server to widgets if there is one already defined.
     //----------------------------------------------------------
@@ -187,7 +204,7 @@ CDlgTrcServer::~CDlgTrcServer()
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* eDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
 
@@ -209,14 +226,14 @@ void CDlgTrcServer::setServer( CIpcTrcServer* i_pTrcServer )
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(ETraceDetailLevelMethodCalls::ArgsNormal) )
     {
         strMthInArgs = "Server: " + QString( i_pTrcServer == nullptr ? "nullptr" : i_pTrcServer->objectName() );
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* eDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strMethod    */ "setServer",
         /* strAddInfo   */ strMthInArgs );
 
@@ -230,32 +247,62 @@ protected slots:
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CDlgTrcServer::onSettingsAccepted()
+void CDlgTrcServer::onIpcServerSettingsAccepted()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strMethod    */ "onSettingsRejected",
+        /* eDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* strMethod    */ "onIpcServerSettingsAccepted",
         /* strAddInfo   */ "" );
 
+    if( m_pWdgtTrcSettings->hasChanges() )
+    {
+        m_pWdgtTrcSettings->applyChanges();
+    }
     hide();
-
-} // onSettingsAccepted
+}
 
 //------------------------------------------------------------------------------
-void CDlgTrcServer::onSettingsRejected()
+void CDlgTrcServer::onIpcServerSettingsRejected()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* strMethod    */ "onSettingsRejected",
+        /* eDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* strMethod    */ "onIpcServerSettingsRejected",
         /* strAddInfo   */ "" );
 
     hide();
+}
 
-} // onSettingsRejected
+//------------------------------------------------------------------------------
+void CDlgTrcServer::onTrcSettingsAccepted()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* eDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* strMethod    */ "onTrcSettingsAccepted",
+        /* strAddInfo   */ "" );
+
+    m_pWdgtIpcServer->applySettings();
+
+    hide();
+}
+
+//------------------------------------------------------------------------------
+void CDlgTrcServer::onTrcSettingsRejected()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* eDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* strMethod    */ "onTrcSettingsRejected",
+        /* strAddInfo   */ "" );
+
+    hide();
+}
 
 /*==============================================================================
 protected slots:
@@ -267,14 +314,14 @@ void CDlgTrcServer::onWdgtIpcServerDetailsVisibilityChanged( bool i_bDetailsVisi
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(ETraceDetailLevelMethodCalls::ArgsNormal) )
     {
         strMthInArgs = bool2Str(i_bDetailsVisible);
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* eDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strMethod    */ "onWdgtIpcClientDetailsVisibilityChanged",
         /* strAddInfo   */ strMthInArgs );
 

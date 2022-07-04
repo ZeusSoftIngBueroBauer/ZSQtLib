@@ -60,10 +60,10 @@ public: // ctors and dtor
 
 //------------------------------------------------------------------------------
 CIdxTreeTrcAdminObjs::CIdxTreeTrcAdminObjs(
-    const QString& i_strObjName,
-    QObject*       i_pObjParent,
-    int            i_iTrcDetailLevel,
-    int            i_iTrcDetailLevelMutex ) :
+    const QString&               i_strObjName,
+    QObject*                     i_pObjParent,
+    ETraceDetailLevelMethodCalls i_eTrcDetailLevel,
+    ETraceDetailLevelMethodCalls i_eTrcDetailLevelMutex ) :
 //------------------------------------------------------------------------------
     CIdxTree(
         /* strIdxTreeName       */ i_strObjName,
@@ -71,15 +71,15 @@ CIdxTreeTrcAdminObjs::CIdxTreeTrcAdminObjs(
         /* strNodeSeparator     */ "::",
         /* bCreateMutex         */ true,
         /* pObjParent           */ i_pObjParent,
-        /* iTrcDetailLevel      */ i_iTrcDetailLevel,
-        /* iTrcDetailLevelMutex */ i_iTrcDetailLevelMutex )
+        /* eTrcDetailLevel      */ i_eTrcDetailLevel,
+        /* eTrcDetailLevelMutex */ i_eTrcDetailLevelMutex )
 {
     QString strAddTrcInfo;
 
     CMethodTracer mthTracer(
         /* pTrcServer         */ dynamic_cast<CTrcServer*>(parent()), // may be nullptr if the parent is not the trace server
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* eTrcDetailLevel    */ m_eTrcDetailLevel,
+        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -96,8 +96,8 @@ CIdxTreeTrcAdminObjs::~CIdxTreeTrcAdminObjs()
 
     CMethodTracer mthTracer(
         /* pTrcServer         */ dynamic_cast<CTrcServer*>(parent()), // may be nullptr if the parent is not the trace server
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* eTrcDetailLevel    */ m_eTrcDetailLevel,
+        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -132,8 +132,12 @@ public: // instance methods to get and release admin objects
         If not empty the object name becomes the name of the leave entry.
     @param i_bEnabledAsDefault [in] Range [Yes, No, Undefined]
         If not Undefined the enabled flag will be set as the trace admin object.
-    @param i_iDefaultDetailLevel [in] Range [-1, 0, ..]
-        If not -1 the detail  level will be set as the trace admin object.
+    @param i_eDefaultDetailLevelMethodCalls [in]
+        If not Undefined the detail level will be set at the trace admin object.
+    @param i_eDefaultDetailLevelRuntimeInfo [in]
+        If not Undefined the detail level will be set at the trace admin object.
+    @param i_strDefaultDataFilter [in]
+        If not null (QString()) the data filter will be set at the trace admin object.
     @param i_bIncrementRefCount [in]
         true to increment the reference counter of the trace admin object.
         false is only used if the admin objects are recalled from file as
@@ -143,30 +147,34 @@ public: // instance methods to get and release admin objects
     @return Pointer to allocated trace admin objecct or nullptr on error.
 */
 CTrcAdminObj* CIdxTreeTrcAdminObjs::getTraceAdminObj(
-    const QString&       i_strNameSpace,
-    const QString&       i_strClassName,
-    const QString&       i_strObjName,
-    ZS::System::EEnabled i_bEnabledAsDefault,
-    int                  i_iDefaultDetailLevel,
-    bool                 i_bIncrementRefCount )
+    const QString&               i_strNameSpace,
+    const QString&               i_strClassName,
+    const QString&               i_strObjName,
+    ZS::System::EEnabled         i_bEnabledAsDefault,
+    ETraceDetailLevelMethodCalls i_eDefaultDetailLevelMethodCalls,
+    ETraceDetailLevelRuntimeInfo i_eDefaultDetailLevelRuntimeInfo,
+    const QString&               i_strDefaultDataFilter,
+    bool                         i_bIncrementRefCount )
 //------------------------------------------------------------------------------
 {
     QString strAddTrcInfo;
 
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
+    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
     {
         strAddTrcInfo  = "NameSpace: " + i_strNameSpace;
         strAddTrcInfo += ", ClassName: " + i_strClassName;
         strAddTrcInfo += ", ObjName: " + i_strObjName;
         strAddTrcInfo += ", EnabledAsDefault: " + CEnumEnabled::toString(i_bEnabledAsDefault);
-        strAddTrcInfo += ", DefaultDetailLevel: " + QString::number(i_iDefaultDetailLevel);
+        strAddTrcInfo += ", DefaultDetailLevelMethodCalls: " + CEnumTraceDetailLevelMethodCalls(i_eDefaultDetailLevelMethodCalls).toString();
+        strAddTrcInfo += ", DefaultDetailLevelRuntimeInfo: " + CEnumTraceDetailLevelRuntimeInfo(i_eDefaultDetailLevelRuntimeInfo).toString();
+        strAddTrcInfo += ", DefaultDataFilter: " + i_strDefaultDataFilter;
         strAddTrcInfo += ", IncrementRefCount: " + bool2Str(i_bIncrementRefCount);
     }
 
     CMethodTracer mthTracer(
         /* pTrcServer         */ dynamic_cast<CTrcServer*>(parent()), // may be nullptr if the parent is not the trace server
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* eTrcDetailLevel    */ m_eTrcDetailLevel,
+        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -237,20 +245,32 @@ CTrcAdminObj* CIdxTreeTrcAdminObjs::getTraceAdminObj(
 
             pTrcAdminObj = new CTrcAdminObj(i_strNameSpace, i_strClassName, i_strObjName, strLeaveName);
 
-            EEnabled bEnabled     = EEnabled::Yes;
-            int      iDetailLevel = ETraceDetailLevelNone;
+            EEnabled bEnabled = EEnabled::Yes;
+            ETraceDetailLevelMethodCalls eDetailLevelMethodCalls = ETraceDetailLevelMethodCalls::None;
+            ETraceDetailLevelRuntimeInfo eDetailLevelRuntimeInfo = ETraceDetailLevelRuntimeInfo::None;
+            QString strDataFilter = "";
 
             if( i_bEnabledAsDefault != EEnabled::Undefined )
             {
                 bEnabled = i_bEnabledAsDefault;
             }
-            if( i_iDefaultDetailLevel >= 0 )
+            if( i_eDefaultDetailLevelMethodCalls != ETraceDetailLevelMethodCalls::Undefined )
             {
-                iDetailLevel = i_iDefaultDetailLevel;
+                eDetailLevelMethodCalls = i_eDefaultDetailLevelMethodCalls;
+            }
+            if( i_eDefaultDetailLevelRuntimeInfo != ETraceDetailLevelRuntimeInfo::Undefined )
+            {
+                eDetailLevelRuntimeInfo = i_eDefaultDetailLevelRuntimeInfo;
+            }
+            if( !i_strDefaultDataFilter.isNull() )
+            {
+                strDataFilter = i_strDefaultDataFilter;
             }
 
             pTrcAdminObj->setEnabled(bEnabled);
-            pTrcAdminObj->setTraceDetailLevel(iDetailLevel);
+            pTrcAdminObj->setMethodCallsTraceDetailLevel(eDetailLevelMethodCalls);
+            pTrcAdminObj->setRuntimeInfoTraceDetailLevel(eDetailLevelRuntimeInfo);
+            pTrcAdminObj->setTraceDataFilter(strDataFilter);
 
             add(pTrcAdminObj, strParentBranchPath);
 
@@ -262,7 +282,7 @@ CTrcAdminObj* CIdxTreeTrcAdminObjs::getTraceAdminObj(
         }
     } // if( !i_strObjName.isEmpty() || !i_strClassName.isEmpty() || !i_strNameSpace.isEmpty() )
 
-    if( mthTracer.isActive(ETraceDetailLevelMethodArgs) )
+    if( mthTracer.areMethodCallsActive(ETraceDetailLevelMethodCalls::ArgsNormal) )
     {
         mthTracer.setMethodReturn(QString(pTrcAdminObj == nullptr ? "nullptr" : pTrcAdminObj->keyInTree()));
     }
@@ -288,15 +308,15 @@ CTrcAdminObj* CIdxTreeTrcAdminObjs::getTraceAdminObj( int i_idxInTree, bool i_bI
 {
     QString strAddTrcInfo;
 
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
+    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
     {
         strAddTrcInfo = "IdxInTree: " + QString::number(i_idxInTree);
     }
 
     CMethodTracer mthTracer(
         /* pTrcServer         */ dynamic_cast<CTrcServer*>(parent()), // may be nullptr if the parent is not the trace server
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* eTrcDetailLevel    */ m_eTrcDetailLevel,
+        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -312,7 +332,7 @@ CTrcAdminObj* CIdxTreeTrcAdminObjs::getTraceAdminObj( int i_idxInTree, bool i_bI
         pTrcAdminObj->incrementRefCount();
     }
 
-    if( mthTracer.isActive(ETraceDetailLevelMethodArgs) )
+    if( mthTracer.areMethodCallsActive(ETraceDetailLevelMethodCalls::ArgsNormal) )
     {
         mthTracer.setMethodReturn(QString(pTrcAdminObj == nullptr ? "nullptr" : pTrcAdminObj->keyInTree()));
     }
@@ -346,7 +366,7 @@ void CIdxTreeTrcAdminObjs::renameTraceAdminObj(
 {
     QString strAddTrcInfo;
 
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
+    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
     {
         strAddTrcInfo = QString(*io_ppTrcAdminObj == nullptr ? "nullptr" : (*io_ppTrcAdminObj)->keyInTree());
         strAddTrcInfo = ", NewObjName: " + i_strNewObjName;
@@ -354,8 +374,8 @@ void CIdxTreeTrcAdminObjs::renameTraceAdminObj(
 
     CMethodTracer mthTracer(
         /* pTrcServer         */ dynamic_cast<CTrcServer*>(parent()), // may be nullptr if the parent is not the trace server
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* eTrcDetailLevel    */ m_eTrcDetailLevel,
+        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -424,7 +444,9 @@ void CIdxTreeTrcAdminObjs::renameTraceAdminObj(
         QString strClassName  = pTrcAdminObj->getClassName();
         QString strOldObjName = pTrcAdminObj->getObjectName();
         EEnabled bEnabled     = pTrcAdminObj->getEnabled();
-        int      iDetailLevel = pTrcAdminObj->getTraceDetailLevel();
+        ETraceDetailLevelMethodCalls eDetailLevelMethodCalls = pTrcAdminObj->getMethodCallsTraceDetailLevel();
+        ETraceDetailLevelRuntimeInfo eDetailLevelRuntimeInfo = pTrcAdminObj->getRuntimeInfoTraceDetailLevel();
+        QString strDataFilter = pTrcAdminObj->getTraceDataFilter();
 
         // The reference counter of the previously referenced trace admin object is decremented.
         pTrcAdminObj->decrementRefCount();
@@ -436,8 +458,15 @@ void CIdxTreeTrcAdminObjs::renameTraceAdminObj(
         if( pTrcAdminObj->getRefCount() == 0 )
         {
             // .. the object will be deleted and removed from the tree.
-            delete pTrcAdminObj;
-            pTrcAdminObj = nullptr;
+            if( pTrcAdminObj->isLocked() )
+            {
+                pTrcAdminObj->setDeleteOnUnlock(true);
+            }
+            else
+            {
+                delete pTrcAdminObj;
+                pTrcAdminObj = nullptr;
+            }
 
             QString strOldParentBranchPath;
 
@@ -466,14 +495,16 @@ void CIdxTreeTrcAdminObjs::renameTraceAdminObj(
         else // if( pLeaveNew == nullptr )
         {
             // A new trace admin object has to be created and returned.
-            pTrcAdminObj = getTraceAdminObj(strNameSpace, strClassName, i_strNewObjName, bEnabled, iDetailLevel);
+            pTrcAdminObj = getTraceAdminObj(
+                strNameSpace, strClassName, i_strNewObjName, bEnabled,
+                eDetailLevelMethodCalls, eDetailLevelRuntimeInfo, strDataFilter);
         }
 
         pTrcAdminObj->setObjectName(i_strNewObjName);
 
     } // if( pTrcAdminObj != nullptr && !i_strNewObjName.isEmpty() )
 
-    if( mthTracer.isActive(ETraceDetailLevelMethodArgs) )
+    if( mthTracer.areMethodCallsActive(ETraceDetailLevelMethodCalls::ArgsNormal) )
     {
         mthTracer.setMethodOutArgs(QString(pTrcAdminObj == nullptr ? "nullptr" : pTrcAdminObj->keyInTree()));
     }
@@ -496,15 +527,15 @@ void CIdxTreeTrcAdminObjs::releaseTraceAdminObj( CTrcAdminObj* i_pTrcAdminObj )
 {
     QString strAddTrcInfo;
 
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
+    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
     {
         strAddTrcInfo = "TrcAdminObj: " + QString(i_pTrcAdminObj == nullptr ? "nullptr" : i_pTrcAdminObj->path());
     }
 
     CMethodTracer mthTracer(
         /* pTrcServer         */ dynamic_cast<CTrcServer*>(parent()), // may be nullptr if the parent is not the trace server
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* eTrcDetailLevel    */ m_eTrcDetailLevel,
+        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -515,9 +546,17 @@ void CIdxTreeTrcAdminObjs::releaseTraceAdminObj( CTrcAdminObj* i_pTrcAdminObj )
 
     if( i_pTrcAdminObj != nullptr )
     {
-        i_pTrcAdminObj->decrementRefCount();
+        if( i_pTrcAdminObj->deleteOnUnlock() )
+        {
+            i_pTrcAdminObj->setDeleteOnUnlock(false); // to avoid an entry into the error log
+            delete i_pTrcAdminObj;
+            i_pTrcAdminObj = nullptr;
+        }
+        else
+        {
+            i_pTrcAdminObj->decrementRefCount();
+        }
     }
-
 } // releaseTraceAdminObj
 
 /*==============================================================================
@@ -544,7 +583,7 @@ CIdxTreeEntry* CIdxTreeTrcAdminObjs::insertBranch(
 {
     QString strAddTrcInfo;
 
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
+    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
     {
         strAddTrcInfo  = "ParentBranchIdxInTree: " + QString::number(i_iParentBranchIdxInTree);
         strAddTrcInfo += ", Name: " + i_strBranchName;
@@ -553,8 +592,8 @@ CIdxTreeEntry* CIdxTreeTrcAdminObjs::insertBranch(
 
     CMethodTracer mthTracer(
         /* pTrcServer         */ dynamic_cast<CTrcServer*>(parent()), // may be nullptr if the parent is not the trace server
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* eTrcDetailLevel    */ m_eTrcDetailLevel,
+        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -652,7 +691,7 @@ CTrcAdminObj* CIdxTreeTrcAdminObjs::insertTraceAdminObj(
 {
     QString strAddTrcInfo;
 
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
+    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
     {
         strAddTrcInfo  = "ParentBranchIdxInTree: " + QString::number(i_iParentBranchIdxInTree);
         strAddTrcInfo += ", NameSpace: " + i_strNameSpace;
@@ -663,8 +702,8 @@ CTrcAdminObj* CIdxTreeTrcAdminObjs::insertTraceAdminObj(
 
     CMethodTracer mthTracer(
         /* pTrcServer         */ dynamic_cast<CTrcServer*>(parent()), // may be nullptr if the parent is not the trace server
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* eTrcDetailLevel    */ m_eTrcDetailLevel,
+        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -740,7 +779,7 @@ void CIdxTreeTrcAdminObjs::setEnabled( int i_iObjId, EEnabled i_enabled )
 {
     QString strAddTrcInfo;
 
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
+    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
     {
         strAddTrcInfo  = "ObjId: " + QString::number(i_iObjId);
         strAddTrcInfo += ", Enabled: " + CEnumEnabled::toString(i_enabled);
@@ -748,8 +787,8 @@ void CIdxTreeTrcAdminObjs::setEnabled( int i_iObjId, EEnabled i_enabled )
 
     CMethodTracer mthTracer(
         /* pTrcServer         */ dynamic_cast<CTrcServer*>(parent()), // may be nullptr if the parent is not the trace server
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* eTrcDetailLevel    */ m_eTrcDetailLevel,
+        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -780,25 +819,26 @@ void CIdxTreeTrcAdminObjs::setEnabled( int i_iObjId, EEnabled i_enabled )
 } // setEnabled
 
 //------------------------------------------------------------------------------
-void CIdxTreeTrcAdminObjs::setTraceDetailLevel( int i_iObjId, int i_iDetailLevel )
+void CIdxTreeTrcAdminObjs::setMethodCallsTraceDetailLevel(
+    int i_iObjId, ETraceDetailLevelMethodCalls i_eDetailLevel )
 //------------------------------------------------------------------------------
 {
     QString strAddTrcInfo;
 
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
+    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
     {
         strAddTrcInfo  = "ObjId: " + QString::number(i_iObjId);
-        strAddTrcInfo += ", DetailLevel: " + QString::number(i_iDetailLevel);
+        strAddTrcInfo += ", DetailLevel: " + CEnumTraceDetailLevelMethodCalls(i_eDetailLevel).toString();
     }
 
     CMethodTracer mthTracer(
         /* pTrcServer         */ dynamic_cast<CTrcServer*>(parent()), // may be nullptr if the parent is not the trace server
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* eTrcDetailLevel    */ m_eTrcDetailLevel,
+        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
-        /* strMethod          */ "setTraceDetailLevel",
+        /* strMethod          */ "setMethodCallsTraceDetailLevel",
         /* strMethodInArgs    */ strAddTrcInfo );
 
     CMutexLocker mtxLocker(m_pMtx);
@@ -809,7 +849,7 @@ void CIdxTreeTrcAdminObjs::setTraceDetailLevel( int i_iObjId, int i_iDetailLevel
     {
         if( pTreeEntry->entryType() == EIdxTreeEntryType::Root || pTreeEntry->entryType() == EIdxTreeEntryType::Branch )
         {
-            setTraceDetailLevel(pTreeEntry, i_iDetailLevel);
+            setMethodCallsTraceDetailLevel(pTreeEntry, i_eDetailLevel);
         }
         else if( pTreeEntry->entryType() == EIdxTreeEntryType::Leave )
         {
@@ -817,12 +857,58 @@ void CIdxTreeTrcAdminObjs::setTraceDetailLevel( int i_iObjId, int i_iDetailLevel
 
             if( pTrcAdminObj != nullptr )
             {
-                pTrcAdminObj->setTraceDetailLevel(i_iDetailLevel);
+                pTrcAdminObj->setMethodCallsTraceDetailLevel(i_eDetailLevel);
             }
         }
     }
 
-} // setTraceDetailLevel
+} // setMethodCallsTraceDetailLevel
+
+//------------------------------------------------------------------------------
+void CIdxTreeTrcAdminObjs::setRuntimeInfoTraceDetailLevel(
+    int i_iObjId, ETraceDetailLevelRuntimeInfo i_eDetailLevel )
+//------------------------------------------------------------------------------
+{
+    QString strAddTrcInfo;
+
+    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    {
+        strAddTrcInfo  = "ObjId: " + QString::number(i_iObjId);
+        strAddTrcInfo += ", DetailLevel: " + CEnumTraceDetailLevelRuntimeInfo(i_eDetailLevel).toString();
+    }
+
+    CMethodTracer mthTracer(
+        /* pTrcServer         */ dynamic_cast<CTrcServer*>(parent()), // may be nullptr if the parent is not the trace server
+        /* eTrcDetailLevel    */ m_eTrcDetailLevel,
+        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
+        /* strObjName         */ objectName(),
+        /* strMethod          */ "setRuntimeInfoTraceDetailLevel",
+        /* strMethodInArgs    */ strAddTrcInfo );
+
+    CMutexLocker mtxLocker(m_pMtx);
+
+    CIdxTreeEntry* pTreeEntry = getEntry(i_iObjId);
+
+    if( pTreeEntry != nullptr )
+    {
+        if( pTreeEntry->entryType() == EIdxTreeEntryType::Root || pTreeEntry->entryType() == EIdxTreeEntryType::Branch )
+        {
+            setRuntimeInfoTraceDetailLevel(pTreeEntry, i_eDetailLevel);
+        }
+        else if( pTreeEntry->entryType() == EIdxTreeEntryType::Leave )
+        {
+            CTrcAdminObj* pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(pTreeEntry);
+
+            if( pTrcAdminObj != nullptr )
+            {
+                pTrcAdminObj->setRuntimeInfoTraceDetailLevel(i_eDetailLevel);
+            }
+        }
+    }
+
+} // setRuntimeInfoTraceDetailLevel
 
 /*==============================================================================
 public: // instance methods to recursively modify admin objects via namespace node entries
@@ -834,7 +920,7 @@ void CIdxTreeTrcAdminObjs::setEnabled( CIdxTreeEntry* i_pBranch, EEnabled i_enab
 {
     QString strAddTrcInfo;
 
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
+    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
     {
         strAddTrcInfo  = "Branch: " + QString(i_pBranch == nullptr ? "nullptr" : i_pBranch->path());
         strAddTrcInfo += ", Enabled: " + CEnumEnabled::toString(i_enabled);
@@ -842,8 +928,8 @@ void CIdxTreeTrcAdminObjs::setEnabled( CIdxTreeEntry* i_pBranch, EEnabled i_enab
 
     CMethodTracer mthTracer(
         /* pTrcServer         */ dynamic_cast<CTrcServer*>(parent()), // may be nullptr if the parent is not the trace server
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* eTrcDetailLevel    */ m_eTrcDetailLevel,
+        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -887,25 +973,26 @@ void CIdxTreeTrcAdminObjs::setEnabled( CIdxTreeEntry* i_pBranch, EEnabled i_enab
 } // setEnabled
 
 //------------------------------------------------------------------------------
-void CIdxTreeTrcAdminObjs::setTraceDetailLevel( CIdxTreeEntry* i_pBranch, int i_iDetailLevel )
+void CIdxTreeTrcAdminObjs::setMethodCallsTraceDetailLevel(
+    CIdxTreeEntry* i_pBranch, ETraceDetailLevelMethodCalls i_eDetailLevel )
 //------------------------------------------------------------------------------
 {
     QString strAddTrcInfo;
 
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
+    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
     {
         strAddTrcInfo  = "Branch: " + QString(i_pBranch == nullptr ? "nullptr" : i_pBranch->path());
-        strAddTrcInfo += ", DetailLevel: " + QString::number(i_iDetailLevel);
+        strAddTrcInfo += ", DetailLevel: " + CEnumTraceDetailLevelMethodCalls(i_eDetailLevel).toString();
     }
 
     CMethodTracer mthTracer(
         /* pTrcServer         */ dynamic_cast<CTrcServer*>(parent()), // may be nullptr if the parent is not the trace server
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* eTrcDetailLevel    */ m_eTrcDetailLevel,
+        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
-        /* strMethod          */ "setTraceDetailLevel",
+        /* strMethod          */ "setMethodCallsTraceDetailLevel",
         /* strMethodInArgs    */ strAddTrcInfo );
 
     CMutexLocker mtxLocker(m_pMtx);
@@ -928,21 +1015,80 @@ void CIdxTreeTrcAdminObjs::setTraceDetailLevel( CIdxTreeEntry* i_pBranch, int i_
 
                     if( pTrcAdminObj != nullptr )
                     {
-                        if( pTrcAdminObj->getTraceDetailLevel() != i_iDetailLevel )
+                        if( pTrcAdminObj->getMethodCallsTraceDetailLevel() != i_eDetailLevel )
                         {
-                            pTrcAdminObj->setTraceDetailLevel(i_iDetailLevel);
+                            pTrcAdminObj->setMethodCallsTraceDetailLevel(i_eDetailLevel);
                         }
                     }
                 }
                 else // if( pTreeEntry->entryType() == EIdxTreeEntryType::Root || Branch )
                 {
-                    setTraceDetailLevel(pTreeEntry, i_iDetailLevel );
+                    setMethodCallsTraceDetailLevel(pTreeEntry, i_eDetailLevel);
                 }
             }
         } // for( idxEntry = 0; idxEntry < i_pBranch->count(); ++idxEntry )
     } // if( i_pBranch != nullptr )
 
-} // setTraceDetailLevel
+} // setMethodCallsTraceDetailLevel
+
+//------------------------------------------------------------------------------
+void CIdxTreeTrcAdminObjs::setRuntimeInfoTraceDetailLevel(
+    CIdxTreeEntry* i_pBranch, ETraceDetailLevelRuntimeInfo i_eDetailLevel )
+//------------------------------------------------------------------------------
+{
+    QString strAddTrcInfo;
+
+    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    {
+        strAddTrcInfo  = "Branch: " + QString(i_pBranch == nullptr ? "nullptr" : i_pBranch->path());
+        strAddTrcInfo += ", DetailLevel: " + CEnumTraceDetailLevelRuntimeInfo(i_eDetailLevel).toString();
+    }
+
+    CMethodTracer mthTracer(
+        /* pTrcServer         */ dynamic_cast<CTrcServer*>(parent()), // may be nullptr if the parent is not the trace server
+        /* eTrcDetailLevel    */ m_eTrcDetailLevel,
+        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
+        /* strObjName         */ objectName(),
+        /* strMethod          */ "setRuntimeInfoTraceDetailLevel",
+        /* strMethodInArgs    */ strAddTrcInfo );
+
+    CMutexLocker mtxLocker(m_pMtx);
+
+    if( i_pBranch != nullptr )
+    {
+        CIdxTreeEntry* pTreeEntry;
+        CTrcAdminObj*  pTrcAdminObj;
+        int            idxEntry;
+
+        for( idxEntry = 0; idxEntry < i_pBranch->count(); ++idxEntry )
+        {
+            pTreeEntry = i_pBranch->at(idxEntry);
+
+            if( pTreeEntry != nullptr )
+            {
+                if( pTreeEntry->entryType() == EIdxTreeEntryType::Leave )
+                {
+                    pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(pTreeEntry);
+
+                    if( pTrcAdminObj != nullptr )
+                    {
+                        if( pTrcAdminObj->getRuntimeInfoTraceDetailLevel() != i_eDetailLevel )
+                        {
+                            pTrcAdminObj->setRuntimeInfoTraceDetailLevel(i_eDetailLevel);
+                        }
+                    }
+                }
+                else // if( pTreeEntry->entryType() == EIdxTreeEntryType::Root || Branch )
+                {
+                    setRuntimeInfoTraceDetailLevel(pTreeEntry, i_eDetailLevel);
+                }
+            }
+        } // for( idxEntry = 0; idxEntry < i_pBranch->count(); ++idxEntry )
+    } // if( i_pBranch != nullptr )
+
+} // setRuntimeInfoTraceDetailLevel
 
 /*==============================================================================
 public: // overridables
@@ -954,15 +1100,15 @@ SErrResultInfo CIdxTreeTrcAdminObjs::save( const QString& i_strAbsFilePath ) con
 {
     QString strAddTrcInfo;
 
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
+    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
     {
         strAddTrcInfo = i_strAbsFilePath;
     }
 
     CMethodTracer mthTracer(
         /* pTrcServer         */ dynamic_cast<CTrcServer*>(parent()), // may be nullptr if the parent is not the trace server
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* eTrcDetailLevel    */ m_eTrcDetailLevel,
+        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -1034,15 +1180,15 @@ SErrResultInfo CIdxTreeTrcAdminObjs::recall( const QString& i_strAbsFilePath )
 {
     QString strAddTrcInfo;
 
-    if( m_iTrcDetailLevel >= ETraceDetailLevelMethodArgs )
+    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
     {
         strAddTrcInfo = i_strAbsFilePath;
     }
 
     CMethodTracer mthTracer(
         /* pTrcServer         */ dynamic_cast<CTrcServer*>(parent()), // may be nullptr if the parent is not the trace server
-        /* iTrcDetailLevel    */ m_iTrcDetailLevel,
-        /* iFilterDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* eTrcDetailLevel    */ m_eTrcDetailLevel,
+        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -1078,17 +1224,22 @@ SErrResultInfo CIdxTreeTrcAdminObjs::recall( const QString& i_strAbsFilePath )
 
     if( !errResultInfo.isErrorResult() )
     {
-        QXmlStreamReader            xmlStreamReader(&file);
+        QXmlStreamReader xmlStreamReader(&file);
+
         QXmlStreamReader::TokenType xmlStreamTokenType;
-        QString                     strElemName;
-        QString                     strAttr;
-        QString                     strPath;
-        QString                     strNameSpace;
-        QString                     strClassName;
-        QString                     strObjName;
-        QString                     strThread;
-        EEnabled                    enabled;
-        int                         iDetailLevel;
+
+        QString  strElemName;
+        QString  strAttr;
+        QString  strPath;
+        QString  strNameSpace;
+        QString  strClassName;
+        QString  strObjName;
+        QString  strThread;
+        EEnabled enabled;
+        QString  strDataFilter;
+
+        ETraceDetailLevelMethodCalls eDetailLevelMethodCalls;
+        ETraceDetailLevelRuntimeInfo eDetailLevelRuntimeInfo;
 
         xmlStreamTokenType = xmlStreamReader.readNext();
 
@@ -1126,7 +1277,9 @@ SErrResultInfo CIdxTreeTrcAdminObjs::recall( const QString& i_strAbsFilePath )
                             strObjName = "";
                             strThread = "";
                             enabled = EEnabled::Yes;
-                            iDetailLevel = ETraceDetailLevelNone;
+                            eDetailLevelMethodCalls = ETraceDetailLevelMethodCalls::None;
+                            eDetailLevelRuntimeInfo = ETraceDetailLevelRuntimeInfo::None;
+                            strDataFilter = "";
 
                             if( xmlStreamReader.attributes().hasAttribute("NameSpace") )
                             {
@@ -1161,17 +1314,32 @@ SErrResultInfo CIdxTreeTrcAdminObjs::recall( const QString& i_strAbsFilePath )
                                         xmlStreamReader.raiseError("Attribute \"Enabled\" (" + strAttr + ") for \"" + strPath + "\" is out of range");
                                     }
                                 }
-                                if( xmlStreamReader.attributes().hasAttribute("DetailLevel") )
+                                if( xmlStreamReader.attributes().hasAttribute("MethodCallsDetailLevel") )
                                 {
-                                    strAttr = xmlStreamReader.attributes().value("DetailLevel").toString();
-                                    iDetailLevel = str2TraceDetailLevel(strAttr);
-                                    if( iDetailLevel == ETraceDetailLevelUndefined )
+                                    strAttr = xmlStreamReader.attributes().value("MethodCallsDetailLevel").toString();
+                                    eDetailLevelMethodCalls = CEnumTraceDetailLevelMethodCalls::toEnumerator(strAttr);
+                                    if( eDetailLevelMethodCalls == ETraceDetailLevelMethodCalls::Undefined )
                                     {
-                                        xmlStreamReader.raiseError("Attribute \"DetailLevel\" (" + strAttr + ") for \"" + strPath + "\" is out of range");
+                                        xmlStreamReader.raiseError("Attribute \"MethodCallsDetailLevel\" (" + strAttr + ") for \"" + strPath + "\" is out of range");
                                     }
                                 }
+                                if( xmlStreamReader.attributes().hasAttribute("RuntimeInfoDetailLevel") )
+                                {
+                                    strAttr = xmlStreamReader.attributes().value("RuntimeInfoDetailLevel").toString();
+                                    eDetailLevelRuntimeInfo = CEnumTraceDetailLevelRuntimeInfo::toEnumerator(strAttr);
+                                    if( eDetailLevelRuntimeInfo == ETraceDetailLevelRuntimeInfo::Undefined )
+                                    {
+                                        xmlStreamReader.raiseError("Attribute \"RuntimeInfoDetailLevel\" (" + strAttr + ") for \"" + strPath + "\" is out of range");
+                                    }
+                                }
+                                if( xmlStreamReader.attributes().hasAttribute("DataFilter") )
+                                {
+                                    strDataFilter = xmlStreamReader.attributes().value("DataFilter").toString();
+                                }
 
-                                CTrcAdminObj* pTrcAdminObj = getTraceAdminObj(strNameSpace, strClassName, strObjName, enabled, iDetailLevel, false);
+                                CTrcAdminObj* pTrcAdminObj = getTraceAdminObj(
+                                    strNameSpace, strClassName, strObjName, enabled,
+                                    eDetailLevelMethodCalls, eDetailLevelRuntimeInfo, strDataFilter, false);
 
                                 pTrcAdminObj->setObjectThreadName(strThread);
 
@@ -1225,7 +1393,9 @@ void CIdxTreeTrcAdminObjs::save(
         i_xmlStreamWriter.writeAttribute( "ObjName", pTrcAdminObj->getObjectName() );
         i_xmlStreamWriter.writeAttribute( "Thread", pTrcAdminObj->getObjectThreadName() );
         i_xmlStreamWriter.writeAttribute( "Enabled", CEnumEnabled::toString(pTrcAdminObj->getEnabled()) );
-        i_xmlStreamWriter.writeAttribute( "DetailLevel", traceDetailLevel2Str(pTrcAdminObj->getTraceDetailLevel()) );
+        i_xmlStreamWriter.writeAttribute( "MethodCallsDetailLevel", CEnumTraceDetailLevelMethodCalls::toString(pTrcAdminObj->getMethodCallsTraceDetailLevel()) );
+        i_xmlStreamWriter.writeAttribute( "RuntimeInfoDetailLevel", CEnumTraceDetailLevelRuntimeInfo::toString(pTrcAdminObj->getRuntimeInfoTraceDetailLevel()) );
+        i_xmlStreamWriter.writeAttribute( "DataFilter", pTrcAdminObj->getTraceDataFilter() );
         i_xmlStreamWriter.writeEndElement(/*"TrcAdminObj"*/);
     }
     else // if( pTreeEntry->entryType() == EIdxTreeEntryType::Root || Branch )

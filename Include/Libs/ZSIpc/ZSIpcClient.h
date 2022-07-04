@@ -86,10 +86,10 @@ public: // type definitions and constants
 public: // ctors and dtor
     CClient(
         const QString& i_strObjName,
-        bool           i_bMultiThreadedAccess = false,
-        int            i_iTrcMthFileDetailLevel = ZS::Trace::ETraceDetailLevelNone,
-        int            i_iTrcMthFileDetailLevelMutex = ZS::Trace::ETraceDetailLevelNone,
-        int            i_iTrcMthFileDetailLevelGateway = ZS::Trace::ETraceDetailLevelNone );
+        bool i_bMultiThreadedAccess = false,
+        ZS::Trace::ETraceDetailLevelMethodCalls i_eTrcMthFileDetailLevel = ZS::Trace::ETraceDetailLevelMethodCalls::None,
+        ZS::Trace::ETraceDetailLevelMethodCalls i_eTrcMthFileDetailLevelMutex = ZS::Trace::ETraceDetailLevelMethodCalls::None,
+        ZS::Trace::ETraceDetailLevelMethodCalls i_eTrcMthFileDetailLevelGateway = ZS::Trace::ETraceDetailLevelMethodCalls::None );
     virtual ~CClient();
 signals: // of the remote connection
     void connected( QObject* i_pClient );
@@ -158,7 +158,7 @@ public: // instance methods to trace methods calls
     virtual void addTrcMsgLogObject( QObject* i_pObj );
     virtual void removeTrcMsgLogObject( QObject* i_pObj );
 public: // instance methods to trace methods calls
-    void setMethodTraceDetailLevel( int i_iTrcDetailLevel );
+    void setMethodTraceDetailLevel( ZS::Trace::ETraceDetailLevelMethodCalls i_eTrcDetailLevel );
 protected: // overridables of the remote connection
     virtual void onReceivedData( const QByteArray& i_byteArr );
 protected: // instance methods
@@ -180,8 +180,10 @@ protected slots:
 protected slots:
     virtual void onRequestChanged( ZS::System::SRequestDscr i_reqDscr );
 protected: // instance methods
-    bool isMethodTraceActive( int i_iFilterDetailLevel ) const;
-    int getMethodTraceDetailLevel() const;
+    bool areTraceMethodCallsActive( ZS::Trace::ETraceDetailLevelMethodCalls i_eFilterDetailLevel ) const;
+    ZS::Trace::ETraceDetailLevelMethodCalls getMethodCallsTraceDetailLevel() const;
+    bool isTraceRuntimeInfoActive( ZS::Trace::ETraceDetailLevelRuntimeInfo i_eFilterDetailLevel ) const;
+    ZS::Trace::ETraceDetailLevelRuntimeInfo getRuntimeInfoTraceDetailLevel() const;
 protected: // overridables of inherited class QObject (state machine)
     virtual bool event( QEvent* i_pEv ) override;
 protected: // instance members
@@ -213,17 +215,17 @@ protected: // instance members
          to the local trace file as that may just confuse the software developer.
          For this the "tracing enabled" flag and methods have been introduced for
          the Ipc server class and its gateway. */
-    QList<QObject*>            m_arpTrcMsgLogObjects;
+    QList<QObject*> m_arpTrcMsgLogObjects;
     /*<! Trace detail level used if the method trace of the client got to be output
          directly to a trace method file and not through the trace server. */
-    int                        m_iTrcMthFileDetailLevel;
+    ZS::Trace::ETraceDetailLevelMethodCalls m_eTrcMthFileDetailLevel;
     /*<! Trace detail level used if the method trace of the client's gateway got to be output
          directly to a trace method file and not through the trace server. */
-    int                        m_iTrcMthFileDetailLevelGateway;
+    ZS::Trace::ETraceDetailLevelMethodCalls m_eTrcMthFileDetailLevelGateway;
     /*<! Reference to local trace method file. Used if the trace client itself got to be logged. */
-    ZS::Trace::CTrcMthFile*    m_pTrcMthFile;
+    ZS::Trace::CTrcMthFile* m_pTrcMthFile;
     /*!< Trace admin object with trace server. */
-    ZS::Trace::CTrcAdminObj*   m_pTrcAdminObj;
+    ZS::Trace::CTrcAdminObj* m_pTrcAdminObj;
 
 }; // class CClient
 

@@ -31,6 +31,7 @@ may result in using the software modules.
 #include <QtCore/qwaitcondition.h>
 
 #include "ZSSys/ZSSysDllMain.h"
+#include "ZSSys/ZSSysCommon.h"
 
 namespace ZS
 {
@@ -54,7 +55,7 @@ class ZSSYSDLL_API CWaitCondition : public QWaitCondition
     static QString ClassName() { return "CWaitCondition"; }
 public: // ctors and dtor
     CWaitCondition(const QString& i_strObjName);
-    CWaitCondition(const QString& i_strObjName, int i_iTrcMthFileDetailLevel);
+    CWaitCondition(const QString& i_strObjName, ZS::Trace::ETraceDetailLevelMethodCalls i_eTrcMthFileDetailLevel);
     virtual ~CWaitCondition();
 public: // instance methods
     void setObjectName(const QString& i_strObjName);
@@ -69,14 +70,14 @@ public: // instance methods
     void wakeAll();
     void wakeOne();
 public: // auxiliary methods
-    bool isMethodTraceActive( int i_iFilterDetailLevel ) const;
-    int getMethodTraceDetailLevel() const;
+    bool isMethodTraceActive( ZS::Trace::ETraceDetailLevelMethodCalls i_eFilterDetailLevel ) const;
+    ZS::Trace::ETraceDetailLevelMethodCalls getMethodTraceDetailLevel() const;
 private: // instance members
     /*!< Descriptive name of the wait condition object. */
     QString m_strObjName;
     /*<! Trace detail level used if the method trace of the client got to be output
          directly to a trace method file and not through the trace server. */
-    int m_iTrcMthFileDetailLevel;
+    ZS::Trace::ETraceDetailLevelMethodCalls m_eTrcMthFileDetailLevel;
     /*<! Reference to local trace method file. Used if the Mutex belongs to
          the trace server itself and tracing through trace server cannot be used. */
     ZS::Trace::CTrcMthFile* m_pTrcMthFile;

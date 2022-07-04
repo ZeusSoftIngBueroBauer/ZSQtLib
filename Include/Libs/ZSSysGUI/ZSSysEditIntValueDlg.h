@@ -77,6 +77,8 @@ public: // dtor
 public: // overridables of base class ZS::System::GUI::CDialog
     virtual QString nameSpace() override { return NameSpace(); }
     virtual QString className() override { return ClassName(); }
+public: // overridables of base class QDialog
+   virtual int exec() override;
 public: // instance methods
     void setValueName( const QString& i_strName );
     QString getValueName() const;

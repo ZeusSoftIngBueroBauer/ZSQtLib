@@ -49,14 +49,16 @@ public: // class methods
     static QString ClassName() { return "CModelIdxTreeTrcAdminObjs"; }
 public: // type definitions and constants
     enum EColumn {
-        EColumnRefCount      = CModelIdxTree::EColumnCount + 0,
-        EColumnEnabled       = CModelIdxTree::EColumnCount + 1,
-        EColumnDetailLevel   = CModelIdxTree::EColumnCount + 2,
-        EColumnNameSpace     = CModelIdxTree::EColumnCount + 3,
-        EColumnClassName     = CModelIdxTree::EColumnCount + 4,
-        EColumnObjName       = CModelIdxTree::EColumnCount + 5,
-        EColumnObjThreadName = CModelIdxTree::EColumnCount + 6,
-        EColumnObjAddress    = CModelIdxTree::EColumnCount + 7,
+        EColumnRefCount               = CModelIdxTree::EColumnCount + 0,
+        EColumnEnabled                = CModelIdxTree::EColumnCount + 1,
+        EColumnMethodCallsDetailLevel = CModelIdxTree::EColumnCount + 2,
+        EColumnRuntimeInfoDetailLevel = CModelIdxTree::EColumnCount + 3,
+        EColumnDataFilter             = CModelIdxTree::EColumnCount + 4,
+        EColumnNameSpace              = CModelIdxTree::EColumnCount + 5,
+        EColumnClassName              = CModelIdxTree::EColumnCount + 6,
+        EColumnObjName                = CModelIdxTree::EColumnCount + 7,
+        EColumnObjThreadName          = CModelIdxTree::EColumnCount + 8,
+        EColumnObjAddress             = CModelIdxTree::EColumnCount + 9,
         EColumnCount
     };
 public: // class methods
@@ -64,8 +66,9 @@ public: // class methods
 public: // ctors and dtor
     CModelIdxTreeTrcAdminObjs(
         CIdxTreeTrcAdminObjs* i_pIdxTree = nullptr,
-        QObject*              i_pObjParent = nullptr,
-        int                   i_iTrcDetailLevel = ZS::Trace::ETraceDetailLevelNone );
+        QObject* i_pObjParent = nullptr,
+        ZS::Trace::ETraceDetailLevelMethodCalls i_eTrcDetailLevel = ZS::Trace::ETraceDetailLevelMethodCalls::None,
+        ZS::Trace::ETraceDetailLevelMethodCalls i_eTrcDetailLevelNoisyMethods = ZS::Trace::ETraceDetailLevelMethodCalls::None );
     virtual ~CModelIdxTreeTrcAdminObjs();
 public: // overridables
     virtual QString nameSpace() const { return NameSpace(); }

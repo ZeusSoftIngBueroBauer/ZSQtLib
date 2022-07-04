@@ -1,6 +1,2 @@
 <GUIMain                 > -> <ZS::Apps::Test::IpcTrace::CMyClass1> Inst1.setObjectName(NewName1)
-<GUIMain                 >    -> <ZS::System::CMutex> CMyClass1::Inst1::WaitClass2ThreadRunning.setObjectName(CMyClass1::NewName1::WaitClass2ThreadRunning)
-<GUIMain                 >    <- <ZS::System::CMutex> CMyClass1::Inst1::WaitClass2ThreadRunning.setObjectName()
-<GUIMain                 >    -> <ZS::System::CWaitCondition> CMyClass1::Inst1::Class2ThreadRunning.setObjectName(CMyClass1::NewName1::Class2ThreadRunning)
-<GUIMain                 >    <- <ZS::System::CWaitCondition> CMyClass1::Inst1::Class2ThreadRunning.setObjectName()
 <GUIMain                 > <- <ZS::Apps::Test::IpcTrace::CMyClass1> Inst1.setObjectName()

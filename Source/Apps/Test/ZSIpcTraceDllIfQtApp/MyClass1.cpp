@@ -32,9 +32,7 @@ may result in using the software modules.
 #include "ZSIpcTrace/ZSIpcTrcDllIf.h"
 
 #include "ZSSys/ZSSysErrLog.h"
-#include "ZSSys/ZSSysMutex.h"
 #include "ZSSys/ZSSysSleeperThread.h"
-#include "ZSSys/ZSSysWaitCondition.h"
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
@@ -69,20 +67,20 @@ QString CMyClass1::classMethod(const QString& i_strMthInArgs)
     CTrcAdminObj* pTrcAdminObj = CTrcServer::GetTraceAdminObj(
         NameSpace().toLatin1().data(), ClassName().toLatin1().data());
 
-    if( pTrcAdminObj != nullptr && pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( pTrcAdminObj != nullptr && pTrcAdminObj->areMethodCallsActive(ETraceDetailLevelMethodCallsArgsNormal) )
     {
         strMthInArgs = i_strMthInArgs;
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* eDetailLevel */ ETraceDetailLevelMethodCallsEnterLeave,
         /* szMethod     */ "classMethod",
         /* szMthInArgs  */ strMthInArgs.toLatin1().data() );
 
     strResult = "Hello World";
 
-    if( mthTracer.isActive(ETraceDetailLevelMethodArgs) )
+    if( mthTracer.areMethodCallsActive(ETraceDetailLevelMethodCallsArgsNormal) )
     {
         strMthRet = strResult;
         mthTracer.setMethodReturn(strMthRet.toLatin1().data());
@@ -106,8 +104,7 @@ CMyClass1::CMyClass1( const QString& i_strObjName ) :
     m_strMyClass2ObjName(),
     m_pMyClass2Thread(nullptr),
     m_pMyClass2(nullptr),
-    m_pMtxWaitClass2ThreadRunning(nullptr),
-    m_pWaitClass2ThreadRunning(nullptr)
+    m_bCtorReady(false)
 {
     setObjectName(i_strObjName);
 
@@ -117,7 +114,7 @@ CMyClass1::CMyClass1( const QString& i_strObjName ) :
             NameSpace().toLatin1().data(), ClassName().toLatin1().data());
         if( s_pTrcAdminObj != nullptr )
         {
-            s_pTrcAdminObj->setTraceDetailLevel(ETraceDetailLevelMethodArgs);
+            s_pTrcAdminObj->setMethodCallsTraceDetailLevel(ETraceDetailLevelMethodCallsArgsNormal);
         }
     }
 
@@ -125,20 +122,19 @@ CMyClass1::CMyClass1( const QString& i_strObjName ) :
 
     QString strMthInArgs;
 
-    if( s_pTrcAdminObj != nullptr && s_pTrcAdminObj->getTraceDetailLevel() >= ETraceDetailLevelMethodArgs )
+    if( s_pTrcAdminObj != nullptr && s_pTrcAdminObj->getMethodCallsTraceDetailLevel() >= ETraceDetailLevelMethodCallsArgsNormal )
     {
         strMthInArgs = i_strObjName;
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ s_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* eDetailLevel */ ETraceDetailLevelMethodCallsEnterLeave,
         /* szObjName    */ objectName().toLatin1().data(),
         /* szMethod     */ "ctor",
         /* szMthInArgs  */ strMthInArgs.toLatin1().data() );
 
-    m_pMtxWaitClass2ThreadRunning = new CMutex(ClassName() + "::" + objectName() + "::WaitClass2ThreadRunning");
-    m_pWaitClass2ThreadRunning = new CWaitCondition(ClassName() + "::" + objectName() + "::Class2ThreadRunning");
+    m_bCtorReady = true;
 
 } // ctor
 
@@ -148,7 +144,7 @@ CMyClass1::~CMyClass1()
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ s_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* eDetailLevel */ ETraceDetailLevelMethodCallsEnterLeave,
         /* szObjName    */ objectName().toLatin1().data(),
         /* szMethod     */ "dtor",
         /* szMthInArgs  */ "" );
@@ -167,23 +163,7 @@ CMyClass1::~CMyClass1()
     m_pMyClass2Thread = nullptr;
     m_pMyClass2 = nullptr;
 
-    try
-    {
-        delete m_pWaitClass2ThreadRunning;
-    }
-    catch(...)
-    {
-    }
-    m_pWaitClass2ThreadRunning = nullptr;
-
-    try
-    {
-        delete m_pMtxWaitClass2ThreadRunning;
-    }
-    catch(...)
-    {
-    }
-    m_pMtxWaitClass2ThreadRunning = nullptr;
+    m_bCtorReady = false;
 
     mthTracer.onAdminObjAboutToBeReleased();
 
@@ -221,34 +201,30 @@ void CMyClass1::setObjectName(const QString& i_strObjName)
     // If called in the ctor the current object name is empty.
     // But an empty object name may be also a valid object name.
     // As a flag to indicate whether the method is called by the ctor an instance
-    // member is used which will be created after calling "setObjectName".
-    if( m_pMtxWaitClass2ThreadRunning == nullptr )
+    // member is used which will be set after calling "setObjectName".
+    if( !m_bCtorReady )
     {
         QObject::setObjectName(i_strObjName);
     }
-    // If an already existing object has to be renamed the mutex is created.
+    // If an existing object has to be renamed the ctor ready flag is set.
     else
     {
         QString strMthInArgs;
 
-        if( s_pTrcAdminObj != nullptr && s_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+        if( s_pTrcAdminObj != nullptr && s_pTrcAdminObj->areMethodCallsActive(ETraceDetailLevelMethodCallsArgsNormal) )
         {
             strMthInArgs = i_strObjName;
         }
 
         CMethodTracer mthTracer(
             /* pAdminObj    */ s_pTrcAdminObj,
-            /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+            /* eDetailLevel */ ETraceDetailLevelMethodCallsEnterLeave,
             /* szObjName    */ objectName().toLatin1().data(),
             /* szMethod     */ "setObjectName",
             /* szMthInArgs  */ strMthInArgs.toLatin1().data() );
 
         QObject::setObjectName(i_strObjName);
-
-        m_pMtxWaitClass2ThreadRunning->setObjectName(ClassName() + "::" + objectName() + "::WaitClass2ThreadRunning");
-        m_pWaitClass2ThreadRunning->setObjectName(ClassName() + "::" + objectName() + "::Class2ThreadRunning");
     }
-
 } // setObjectName
 
 /*==============================================================================
@@ -262,14 +238,14 @@ CMyClass2* CMyClass1::startClass2Thread(const QString& i_strMyClass2ObjName)
     QString strMthInArgs;
     QString strMthRet;
 
-    if( s_pTrcAdminObj != nullptr && s_pTrcAdminObj->isActive(ETraceDetailLevelMethodArgs) )
+    if( s_pTrcAdminObj != nullptr && s_pTrcAdminObj->areMethodCallsActive(ETraceDetailLevelMethodCallsArgsNormal) )
     {
         strMthInArgs = i_strMyClass2ObjName;
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ s_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* eDetailLevel */ ETraceDetailLevelMethodCallsEnterLeave,
         /* szObjName    */ objectName().toLatin1().data(),
         /* szMethod     */ "startClass2Thread",
         /* szMthInArgs  */ strMthInArgs.toLatin1().data() );
@@ -279,34 +255,15 @@ CMyClass2* CMyClass1::startClass2Thread(const QString& i_strMyClass2ObjName)
     if( m_pMyClass2Thread == nullptr )
     {
         m_pMyClass2Thread = new CMyClass2Thread(i_strMyClass2ObjName, this);
-
-        QObject::connect(
-            m_pMyClass2Thread, &CMyClass2Thread::running,
-            this, &CMyClass1::onClass2ThreadRunning,
-            Qt::DirectConnection);
     }
 
     if( !m_pMyClass2Thread->isRunning() )
     {
         m_pMyClass2Thread->start();
-
-        // It is not sufficient just to wait for the wait condition to be signalled.
-        // The thread may already have been started, created the Class3 instance and invoked
-        // the "onClass3ThreadRunning" slot which signalled the wait condition. A wait here
-        // without a timeout may therefore result in a deadlock. And in addition before and
-        // after calling "wait" it will be checked whether the Class3 instance has been created.
-        if( m_pMtxWaitClass2ThreadRunning->tryLock() )
-        {
-            while( m_pMyClass2Thread->getMyClass2() == nullptr )
-            {
-                m_pWaitClass2ThreadRunning->wait(m_pMtxWaitClass2ThreadRunning, 100);
-            }
-            m_pMtxWaitClass2ThreadRunning->unlock();
-            m_pMyClass2 = m_pMyClass2Thread->getMyClass2();
-        }
+        m_pMyClass2 = m_pMyClass2Thread->waitForMyClass2Created();
     }
 
-    if( mthTracer.isActive(ETraceDetailLevelMethodArgs) )
+    if( mthTracer.areMethodCallsActive(ETraceDetailLevelMethodCallsArgsNormal) )
     {
         strMthRet = QString(m_pMyClass2 == nullptr ? "null" : m_pMyClass2->objectName());
         mthTracer.setMethodReturn(strMthRet.toLatin1().data());
@@ -324,7 +281,7 @@ void CMyClass1::stopClass2Thread()
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ s_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
+        /* eDetailLevel */ ETraceDetailLevelMethodCallsEnterLeave,
         /* strObjName   */ objectName().toLatin1().data(),
         /* szMethod     */ "stopClass2Thread",
         /* szMthInArgs  */ strMthInArgs.toLatin1().data() );
@@ -352,23 +309,3 @@ void CMyClass1::stopClass2Thread()
     m_pMyClass2 = nullptr;
 
 } // stopClass2Thread
-
-/*==============================================================================
-protected slots:
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-void CMyClass1::onClass2ThreadRunning()
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ s_pTrcAdminObj,
-        /* iDetailLevel */ ETraceDetailLevelMethodCalls,
-        /* szObjName    */ objectName().toLatin1().data(),
-        /* szMethod     */ "onClass2ThreadRunning",
-        /* szMthInArgs  */ strMthInArgs.toLatin1().data() );
-
-    m_pWaitClass2ThreadRunning->notify_all();
-}

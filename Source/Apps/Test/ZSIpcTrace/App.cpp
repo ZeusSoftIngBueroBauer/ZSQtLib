@@ -111,8 +111,9 @@ CApplication::CApplication(
     m_fReqExecTreeGarbageCollectorInterval_s(5.0),
     m_fReqExecTreeGarbageCollectorElapsed_s(60.0),
     m_pReqExecTree(nullptr),
-    m_iZSTrcServerTrcDetailLevel(ETraceDetailLevelNone),
-    m_iZSTrcClientTrcDetailLevel(ETraceDetailLevelNone),
+    m_eZSTrcServerTrcDetailLevel(ETraceDetailLevelMethodCalls::None),
+    m_eZSTrcServerTrcDetailLevelNoisyMethods(ETraceDetailLevelMethodCalls::None),
+    m_eZSTrcClientTrcDetailLevel(ETraceDetailLevelMethodCalls::None),
     m_pZSTrcServer(nullptr),
     m_clientHostSettingsZSTrcClient("127.0.0.1", 24763, 5000),
     m_pZSTrcClient(nullptr),
@@ -176,11 +177,15 @@ CApplication::CApplication(
         }
         else if( strArg == "ZSTrcServerTraceDetailLevel" )
         {
-            m_iZSTrcServerTrcDetailLevel = str2TraceDetailLevel(strVal);
+            m_eZSTrcServerTrcDetailLevel = CEnumTraceDetailLevelMethodCalls::fromString(strVal).enumerator();
+        }
+        else if( strArg == "ZSTrcServerTraceDetailLevelNoisyMethods" )
+        {
+            m_eZSTrcServerTrcDetailLevelNoisyMethods = CEnumTraceDetailLevelMethodCalls::fromString(strVal).enumerator();
         }
         else if( strArg == "ZSTrcClientTraceDetailLevel" )
         {
-            m_iZSTrcClientTrcDetailLevel = str2TraceDetailLevel(strVal);
+            m_eZSTrcClientTrcDetailLevel = CEnumTraceDetailLevelMethodCalls::fromString(strVal).enumerator();
         }
     }
 
@@ -212,11 +217,13 @@ CApplication::CApplication(
     // to the stateChanged signal of the trace server.
 
     m_pZSTrcServer = ZS::Trace::CIpcTrcServer::CreateInstance(
-        /* iTrcDetailLevel                 */ m_iZSTrcServerTrcDetailLevel,
-        /* iTrcDetailLevelMutex            */ ETraceDetailLevelNone,
-        /* iTrcDetailLevelIpcServer        */ ETraceDetailLevelNone,
-        /* iTrcDetailLevelIpcServerMutex   */ ETraceDetailLevelNone,
-        /* iTrcDetailLevelIpcServerGateway */ ETraceDetailLevelNone );
+        /* iTrcDetailLevel                 */ m_eZSTrcServerTrcDetailLevel,
+        /* iTrcDetailLevelMutex            */ ETraceDetailLevelMethodCalls::None,
+        /* iTrcDetailLevelIpcServer        */ ETraceDetailLevelMethodCalls::None,
+        /* iTrcDetailLevelIpcServerMutex   */ ETraceDetailLevelMethodCalls::None,
+        /* iTrcDetailLevelIpcServerGateway */ ETraceDetailLevelMethodCalls::None );
+    m_pZSTrcServer->setLocalTrcFileSubFileLineCountMax(10000);
+
     //m_pZSTrcServer->recallAdminObjs();
 
     // Trace client
@@ -224,9 +231,9 @@ CApplication::CApplication(
 
     m_pZSTrcClient = new CIpcTrcClient(
         /* strName                       */ "ZSTrcClient",
-        /* iTrcMthFileDetailLevel        */ m_iZSTrcClientTrcDetailLevel,
-        /* iTrcMthFileDetailLevelMutex   */ ETraceDetailLevelNone,
-        /* iTrcMthFileDetailLevelGateway */ ETraceDetailLevelNone );
+        /* iTrcMthFileDetailLevel        */ m_eZSTrcClientTrcDetailLevel,
+        /* iTrcMthFileDetailLevelMutex   */ ETraceDetailLevelMethodCalls::None,
+        /* iTrcMthFileDetailLevelGateway */ ETraceDetailLevelMethodCalls::None );
     m_pZSTrcClient->setHostSettings(m_clientHostSettingsZSTrcClient);
     m_pZSTrcClient->changeSettings();
 
@@ -316,8 +323,9 @@ CApplication::~CApplication()
     m_fReqExecTreeGarbageCollectorInterval_s = 0.0;
     m_fReqExecTreeGarbageCollectorElapsed_s = 0.0;
     m_pReqExecTree = nullptr;
-    m_iZSTrcServerTrcDetailLevel = 0;
-    m_iZSTrcClientTrcDetailLevel = 0;
+    m_eZSTrcServerTrcDetailLevel = static_cast<ETraceDetailLevelMethodCalls>(0);
+    m_eZSTrcServerTrcDetailLevelNoisyMethods = static_cast<ETraceDetailLevelMethodCalls>(0);
+    m_eZSTrcClientTrcDetailLevel = static_cast<ETraceDetailLevelMethodCalls>(0);
     m_pZSTrcServer = nullptr;
     //m_clientHostSettingsZSTrcClient;
     m_pZSTrcClient = nullptr;

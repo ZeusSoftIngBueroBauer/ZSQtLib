@@ -51,7 +51,7 @@ public: // ctors and dtor
     CShmServerWrapper(
         const QString&      i_strObjName,
         Trace::CTrcMthFile* i_pTrcMthFile = nullptr,         // If != nullptr trace method file with detail level is used instead of trace admin object with Trace server.
-        int                 i_iTrcMthFileDetailLevel = Trace::ETraceDetailLevelMethodArgs );
+        ZS::Trace::ETraceDetailLevelMethodCalls i_eTrcMthFileDetailLevel = ZS::Trace::ETraceDetailLevelMethodCalls::None );
     virtual ~CShmServerWrapper();
 public: // overridables of base class CIpcServerWrapper
     virtual QString nameSpace() const override { return NameSpace(); }

@@ -31,6 +31,7 @@ may result in using the software modules.
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 #include <QtGui/qapplication.h>
 #include <QtGui/qcheckbox.h>
+#include <QtGui/qcombobox.h>
 #include <QtGui/qformlayout.h>
 #include <QtGui/qlabel.h>
 #include <QtGui/qlayout.h>
@@ -42,6 +43,7 @@ may result in using the software modules.
 #else
 #include <QtWidgets/qapplication.h>
 #include <QtWidgets/qcheckbox.h>
+#include <QtWidgets/qcombobox.h>
 #include <QtWidgets/qformlayout.h>
 #include <QtWidgets/qlabel.h>
 #include <QtWidgets/qlayout.h>
@@ -95,8 +97,10 @@ CWdgtTrcSettings::CWdgtTrcSettings( const QString& i_strObjName, QWidget* i_pWdg
     m_pEdtAdminObjFileAbsFilePath(nullptr),
     m_pLblNewTrcAdminObjsEnabledAsDefault(nullptr),
     m_pChkNewTrcAdminObjsEnabledAsDefault(nullptr),
-    m_pLblNewTrcAdminObjsDefaultDetailLevel(nullptr),
-    m_pEdtNewTrcAdminObjsDefaultDetailLevel(nullptr),
+    m_pLblNewTrcAdminObjsMethodCallsDefaultDetailLevel(nullptr),
+    m_pCmbNewTrcAdminObjsMethodCallsDefaultDetailLevel(nullptr),
+    m_pLblNewTrcAdminObjsRuntimeInfoDefaultDetailLevel(nullptr),
+    m_pCmbNewTrcAdminObjsRuntimeInfoDefaultDetailLevel(nullptr),
     m_pLblUseIpcServer(nullptr),
     m_pChkUseIpcServer(nullptr),
     m_pLblCacheDataIfNotConnected(nullptr),
@@ -199,16 +203,35 @@ CWdgtTrcSettings::CWdgtTrcSettings( const QString& i_strObjName, QWidget* i_pWdg
     m_pChkNewTrcAdminObjsEnabledAsDefault->setChecked(trcSettings.m_bNewTrcAdminObjsEnabledAsDefault);
     m_pLytSettings->addRow(m_pLblNewTrcAdminObjsEnabledAsDefault, m_pChkNewTrcAdminObjsEnabledAsDefault);
 
-    // <SpinBox> New Trace Admin Objects Default Detail Level
-    //-------------------------------------------------------
+    // <SpinBox> New Trace Admin Objects Default Detail Level for Method Calls
+    //------------------------------------------------------------------------
 
-    m_pLblNewTrcAdminObjsDefaultDetailLevel = new QLabel("New Admin Objects Default Detail Level:");
-    m_pLblNewTrcAdminObjsDefaultDetailLevel->setFixedWidth(iLblWidth);
-    m_pEdtNewTrcAdminObjsDefaultDetailLevel = new QSpinBox();
-    m_pEdtNewTrcAdminObjsDefaultDetailLevel->setMinimum(0);
-    m_pEdtNewTrcAdminObjsDefaultDetailLevel->setMaximum(10);
-    m_pEdtNewTrcAdminObjsDefaultDetailLevel->setValue(trcSettings.m_iNewTrcAdminObjsDefaultDetailLevel);
-    m_pLytSettings->addRow(m_pLblNewTrcAdminObjsDefaultDetailLevel, m_pEdtNewTrcAdminObjsDefaultDetailLevel);
+    m_pLblNewTrcAdminObjsMethodCallsDefaultDetailLevel = new QLabel("Default Detail Level for Method Calls:");
+    m_pLblNewTrcAdminObjsMethodCallsDefaultDetailLevel->setFixedWidth(iLblWidth);
+    m_pCmbNewTrcAdminObjsMethodCallsDefaultDetailLevel = new QComboBox();
+    CEnumTraceDetailLevelMethodCalls eDetailLevelMethodCalls;
+    for( eDetailLevelMethodCalls = 0; eDetailLevelMethodCalls < CEnumTraceDetailLevelMethodCalls::count(); ++eDetailLevelMethodCalls )
+    {
+        m_pCmbNewTrcAdminObjsMethodCallsDefaultDetailLevel->addItem(eDetailLevelMethodCalls.toString());
+    }
+    m_pCmbNewTrcAdminObjsMethodCallsDefaultDetailLevel->setCurrentIndex(static_cast<int>(trcSettings.m_eNewTrcAdminObjsMethodCallsDefaultDetailLevel));
+    m_pCmbNewTrcAdminObjsMethodCallsDefaultDetailLevel->setEnabled(true);
+    m_pLytSettings->addRow(m_pLblNewTrcAdminObjsMethodCallsDefaultDetailLevel, m_pCmbNewTrcAdminObjsMethodCallsDefaultDetailLevel);
+
+    // <SpinBox> New Trace Admin Objects Default Detail Level for Runtime Info
+    //------------------------------------------------------------------------
+
+    m_pLblNewTrcAdminObjsRuntimeInfoDefaultDetailLevel = new QLabel("Default Detail Level for Runtime Info:");
+    m_pLblNewTrcAdminObjsRuntimeInfoDefaultDetailLevel->setFixedWidth(iLblWidth);
+    m_pCmbNewTrcAdminObjsRuntimeInfoDefaultDetailLevel = new QComboBox();
+    CEnumTraceDetailLevelRuntimeInfo eDetailLevelRuntimeInfo;
+    for( eDetailLevelRuntimeInfo = 0; eDetailLevelRuntimeInfo < CEnumTraceDetailLevelMethodCalls::count(); ++eDetailLevelRuntimeInfo )
+    {
+        m_pCmbNewTrcAdminObjsRuntimeInfoDefaultDetailLevel->addItem(eDetailLevelRuntimeInfo.toString());
+    }
+    m_pCmbNewTrcAdminObjsRuntimeInfoDefaultDetailLevel->setCurrentIndex(static_cast<int>(trcSettings.m_eNewTrcAdminObjsRuntimeInfoDefaultDetailLevel));
+    m_pCmbNewTrcAdminObjsRuntimeInfoDefaultDetailLevel->setEnabled(true);
+    m_pLytSettings->addRow(m_pLblNewTrcAdminObjsRuntimeInfoDefaultDetailLevel, m_pCmbNewTrcAdminObjsRuntimeInfoDefaultDetailLevel);
 
     // <Separator>
     //-------------
@@ -442,8 +465,10 @@ CWdgtTrcSettings::~CWdgtTrcSettings()
     m_pEdtAdminObjFileAbsFilePath = nullptr;
     m_pLblNewTrcAdminObjsEnabledAsDefault = nullptr;
     m_pChkNewTrcAdminObjsEnabledAsDefault = nullptr;
-    m_pLblNewTrcAdminObjsDefaultDetailLevel = nullptr;
-    m_pEdtNewTrcAdminObjsDefaultDetailLevel = nullptr;
+    m_pLblNewTrcAdminObjsMethodCallsDefaultDetailLevel = nullptr;
+    m_pCmbNewTrcAdminObjsMethodCallsDefaultDetailLevel = nullptr;
+    m_pLblNewTrcAdminObjsRuntimeInfoDefaultDetailLevel = nullptr;
+    m_pCmbNewTrcAdminObjsRuntimeInfoDefaultDetailLevel = nullptr;
     m_pLblUseIpcServer = nullptr;
     m_pChkUseIpcServer = nullptr;
     m_pLblCacheDataIfNotConnected = nullptr;
@@ -624,6 +649,109 @@ void CWdgtTrcSettings::setClient( CIpcTrcClient* i_pTrcClient )
 } // setClient
 
 /*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+STrcServerSettings CWdgtTrcSettings::getTraceSettings() const
+//------------------------------------------------------------------------------
+{
+    STrcServerSettings trcSettings;
+
+    trcSettings.m_bEnabled = m_pChkTracingEnabled->isChecked();
+    trcSettings.m_strAdminObjFileAbsFilePath = m_pEdtAdminObjFileAbsFilePath->text();
+    trcSettings.m_bNewTrcAdminObjsEnabledAsDefault = m_pChkNewTrcAdminObjsEnabledAsDefault->isChecked();
+    trcSettings.m_eNewTrcAdminObjsMethodCallsDefaultDetailLevel =
+        static_cast<ETraceDetailLevelMethodCalls>(m_pCmbNewTrcAdminObjsMethodCallsDefaultDetailLevel->currentIndex());
+    trcSettings.m_eNewTrcAdminObjsRuntimeInfoDefaultDetailLevel =
+        static_cast<ETraceDetailLevelRuntimeInfo>(m_pCmbNewTrcAdminObjsRuntimeInfoDefaultDetailLevel->currentIndex());
+    trcSettings.m_bUseIpcServer = m_pChkUseIpcServer->isChecked();
+    trcSettings.m_bCacheDataIfNotConnected = m_pChkCacheDataIfNotConnected->isChecked();
+    trcSettings.m_iCacheDataMaxArrLen = m_pEdtCacheDataMaxArrLen->value();
+    trcSettings.m_bUseLocalTrcFile = m_pChkUseLocalTrcFile->isChecked();
+    trcSettings.m_strLocalTrcFileAbsFilePath = m_pEdtLocalTrcFileAbsFilePath->text();
+    trcSettings.m_iLocalTrcFileAutoSaveInterval_ms = m_pEdtLocalTrcFileAutoSaveInterval->value();
+    trcSettings.m_iLocalTrcFileSubFileCountMax = m_pEdtLocalTrcFileSubFileCountMax->value();
+    trcSettings.m_iLocalTrcFileSubFileLineCountMax = m_pEdtLocalTrcFileSubFileLineCountMax->value();
+    trcSettings.m_bLocalTrcFileCloseFileAfterEachWrite = m_pChkLocalTrcFileCloseFileAfterEachWrite->isChecked();
+
+    return trcSettings;
+
+} // getTraceSettings
+
+//------------------------------------------------------------------------------
+bool CWdgtTrcSettings::hasChanges() const
+//------------------------------------------------------------------------------
+{
+    bool bHasChanges = false;
+
+    if( m_pTrcServer != nullptr )
+    {
+        STrcServerSettings trcSettingsSrv = m_pTrcServer->getTraceSettings();
+        STrcServerSettings trcSettingsWdgt = getTraceSettings();
+        bHasChanges = trcSettingsSrv != trcSettingsWdgt;
+    }
+    else if( m_pTrcClient != nullptr )
+    {
+        STrcServerSettings trcSettingsClt = m_pTrcClient->getTraceSettings();
+        STrcServerSettings trcSettingsWdgt = getTraceSettings();
+        bHasChanges = trcSettingsClt != trcSettingsWdgt;
+    }
+    return bHasChanges;
+}
+
+//------------------------------------------------------------------------------
+void CWdgtTrcSettings::applyChanges()
+//------------------------------------------------------------------------------
+{
+    STrcServerSettings trcSettings = getTraceSettings();
+
+    if( m_pTrcServer != nullptr )
+    {
+        QObject::disconnect(
+            /* pObjSender   */ m_pTrcServer,
+            /* szSignal     */ SIGNAL(traceSettingsChanged(QObject*)),
+            /* pObjReceiver */ this,
+            /* szSlot       */ SLOT(onTraceSettingsChanged(QObject*)) );
+
+        m_pTrcServer->setTraceSettings(trcSettings);
+
+        if( !QObject::connect(
+            /* pObjSender   */ m_pTrcServer,
+            /* szSignal     */ SIGNAL(traceSettingsChanged(QObject*)),
+            /* pObjReceiver */ this,
+            /* szSlot       */ SLOT(onTraceSettingsChanged(QObject*)) ) )
+        {
+            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
+        }
+    }
+    else if( m_pTrcClient != nullptr )
+    {
+        QObject::disconnect(
+            /* pObjSender   */ m_pTrcClient,
+            /* szSignal     */ SIGNAL(traceSettingsChanged(QObject*)),
+            /* pObjReceiver */ this,
+            /* szSlot       */ SLOT(onTraceSettingsChanged(QObject*)) );
+
+        m_pTrcClient->setTraceSettings(trcSettings);
+
+        if( !QObject::connect(
+            /* pObjSender   */ m_pTrcClient,
+            /* szSignal     */ SIGNAL(traceSettingsChanged(QObject*)),
+            /* pObjReceiver */ this,
+            /* szSlot       */ SLOT(onTraceSettingsChanged(QObject*)) ) )
+        {
+            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
+        }
+    }
+
+    bool bHasChanges = hasChanges();
+
+    m_pBtnReset->setEnabled(bHasChanges);
+    m_pBtnApply->setEnabled(bHasChanges);
+}
+
+/*==============================================================================
 protected: // instance methods
 ==============================================================================*/
 
@@ -633,7 +761,8 @@ void CWdgtTrcSettings::enableGuiControls( bool i_bEnabled )
 {
     m_pChkTracingEnabled->setEnabled(i_bEnabled);
     m_pChkNewTrcAdminObjsEnabledAsDefault->setEnabled(i_bEnabled);
-    m_pEdtNewTrcAdminObjsDefaultDetailLevel->setEnabled(i_bEnabled);
+    m_pCmbNewTrcAdminObjsMethodCallsDefaultDetailLevel->setEnabled(i_bEnabled);
+    m_pCmbNewTrcAdminObjsRuntimeInfoDefaultDetailLevel->setEnabled(i_bEnabled);
     m_pChkUseIpcServer->setEnabled(i_bEnabled);
     m_pChkCacheDataIfNotConnected->setEnabled(i_bEnabled);
     m_pEdtCacheDataMaxArrLen->setEnabled(i_bEnabled);
@@ -670,10 +799,18 @@ void CWdgtTrcSettings::connectGuiControlsOnValueChangedSignals()
         throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
     }
     if( !QObject::connect(
-        /* pObjSender   */ m_pEdtNewTrcAdminObjsDefaultDetailLevel,
-        /* szSignal     */ SIGNAL(valueChanged(int)),
+        /* pObjSender   */ m_pCmbNewTrcAdminObjsMethodCallsDefaultDetailLevel,
+        /* szSignal     */ SIGNAL(currentIndexChanged(int)),
         /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onEdtNewTrcAdminObjsDefaultDetailLevelValueChanged(int)) ) )
+        /* szSlot       */ SLOT(onCmbNewTrcAdminObjsMethodCallsDefaultDetailLevelCurrentIndexChanged(int)) ) )
+    {
+        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
+    }
+    if( !QObject::connect(
+        /* pObjSender   */ m_pCmbNewTrcAdminObjsRuntimeInfoDefaultDetailLevel,
+        /* szSignal     */ SIGNAL(currentIndexChanged(int)),
+        /* pObjReceiver */ this,
+        /* szSlot       */ SLOT(onCmbNewTrcAdminObjsRuntimeInfoDefaultDetailLevelCurrentIndexChanged(int)) ) )
     {
         throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
     }
@@ -758,10 +895,15 @@ void CWdgtTrcSettings::disconnectGuiControlsOnValueChangedSignals()
         /* pObjReceiver */ this,
         /* szSlot       */ SLOT(onChkNewTrcAdminObjsEnabledAsDefaultToggled(bool)) );
     QObject::disconnect(
-        /* pObjSender   */ m_pEdtNewTrcAdminObjsDefaultDetailLevel,
-        /* szSignal     */ SIGNAL(valueChanged(int)),
+        /* pObjSender   */ m_pCmbNewTrcAdminObjsMethodCallsDefaultDetailLevel,
+        /* szSignal     */ SIGNAL(currentIndexChanged(int)),
         /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onEdtNewTrcAdminObjsDefaultDetailLevelValueChanged(int)) );
+        /* szSlot       */ SLOT(onCmbNewTrcAdminObjsDefaultMethodCallsDetailLevelCurrentIndexChanged(int)) );
+    QObject::disconnect(
+        /* pObjSender   */ m_pCmbNewTrcAdminObjsRuntimeInfoDefaultDetailLevel,
+        /* szSignal     */ SIGNAL(currentIndexChanged(int)),
+        /* pObjReceiver */ this,
+        /* szSlot       */ SLOT(onCmbNewTrcAdminObjsRuntimeInfoDefaultDetailLevelCurrentIndexChanged(int)) );
     QObject::disconnect(
         /* pObjSender   */ m_pChkUseIpcServer,
         /* szSignal     */ SIGNAL(toggled(bool)),
@@ -827,7 +969,16 @@ void CWdgtTrcSettings::onChkNewTrcAdminObjsEnabledAsDefaultToggled( bool i_bChec
 }
 
 //------------------------------------------------------------------------------
-void CWdgtTrcSettings::onEdtNewTrcAdminObjsDefaultDetailLevelValueChanged( int i_iDetailLevel )
+void CWdgtTrcSettings::onCmbNewTrcAdminObjsMethodCallsDefaultDetailLevelCurrentIndexChanged( int /*i_iDetailLevel*/ )
+//------------------------------------------------------------------------------
+{
+    bool bHasChanges = hasChanges();
+    m_pBtnReset->setEnabled(bHasChanges);
+    m_pBtnApply->setEnabled(bHasChanges);
+}
+
+//------------------------------------------------------------------------------
+void CWdgtTrcSettings::onCmbNewTrcAdminObjsRuntimeInfoDefaultDetailLevelCurrentIndexChanged( int /*i_iDetailLevel*/ )
 //------------------------------------------------------------------------------
 {
     bool bHasChanges = hasChanges();
@@ -932,7 +1083,10 @@ void CWdgtTrcSettings::onTraceSettingsChanged( QObject* /*i_pServer*/ )
     m_pChkTracingEnabled->setChecked(trcSettings.m_bEnabled);
     m_pEdtAdminObjFileAbsFilePath->setText(trcSettings.m_strAdminObjFileAbsFilePath);
     m_pChkNewTrcAdminObjsEnabledAsDefault->setChecked(trcSettings.m_bNewTrcAdminObjsEnabledAsDefault);
-    m_pEdtNewTrcAdminObjsDefaultDetailLevel->setValue(trcSettings.m_iNewTrcAdminObjsDefaultDetailLevel);
+    m_pCmbNewTrcAdminObjsMethodCallsDefaultDetailLevel->setCurrentIndex(
+        static_cast<int>(trcSettings.m_eNewTrcAdminObjsMethodCallsDefaultDetailLevel));
+    m_pCmbNewTrcAdminObjsRuntimeInfoDefaultDetailLevel->setCurrentIndex(
+        static_cast<int>(trcSettings.m_eNewTrcAdminObjsRuntimeInfoDefaultDetailLevel));
     m_pChkUseIpcServer->setChecked(trcSettings.m_bUseIpcServer);
     m_pChkCacheDataIfNotConnected->setChecked(trcSettings.m_bCacheDataIfNotConnected);
     m_pEdtCacheDataMaxArrLen->setValue(trcSettings.m_iCacheDataMaxArrLen);
@@ -1011,104 +1165,4 @@ void CWdgtTrcSettings::onBtnApplyClicked( bool /*i_bChecked*/ )
 //------------------------------------------------------------------------------
 {
     applyChanges();
-}
-
-/*==============================================================================
-protected: // instance methods
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-STrcServerSettings CWdgtTrcSettings::getTraceSettings() const
-//------------------------------------------------------------------------------
-{
-    STrcServerSettings trcSettings;
-
-    trcSettings.m_bEnabled = m_pChkTracingEnabled->isChecked();
-    trcSettings.m_strAdminObjFileAbsFilePath = m_pEdtAdminObjFileAbsFilePath->text();
-    trcSettings.m_bNewTrcAdminObjsEnabledAsDefault = m_pChkNewTrcAdminObjsEnabledAsDefault->isChecked();
-    trcSettings.m_iNewTrcAdminObjsDefaultDetailLevel = m_pEdtNewTrcAdminObjsDefaultDetailLevel->value();
-    trcSettings.m_bUseIpcServer = m_pChkUseIpcServer->isChecked();
-    trcSettings.m_bCacheDataIfNotConnected = m_pChkCacheDataIfNotConnected->isChecked();
-    trcSettings.m_iCacheDataMaxArrLen = m_pEdtCacheDataMaxArrLen->value();
-    trcSettings.m_bUseLocalTrcFile = m_pChkUseLocalTrcFile->isChecked();
-    trcSettings.m_strLocalTrcFileAbsFilePath = m_pEdtLocalTrcFileAbsFilePath->text();
-    trcSettings.m_iLocalTrcFileAutoSaveInterval_ms = m_pEdtLocalTrcFileAutoSaveInterval->value();
-    trcSettings.m_iLocalTrcFileSubFileCountMax = m_pEdtLocalTrcFileSubFileCountMax->value();
-    trcSettings.m_iLocalTrcFileSubFileLineCountMax = m_pEdtLocalTrcFileSubFileLineCountMax->value();
-    trcSettings.m_bLocalTrcFileCloseFileAfterEachWrite = m_pChkLocalTrcFileCloseFileAfterEachWrite->isChecked();
-
-    return trcSettings;
-
-} // getTraceSettings
-
-//------------------------------------------------------------------------------
-bool CWdgtTrcSettings::hasChanges() const
-//------------------------------------------------------------------------------
-{
-    bool bHasChanges = false;
-
-    if( m_pTrcServer != nullptr )
-    {
-        STrcServerSettings trcSettingsSrv = m_pTrcServer->getTraceSettings();
-        STrcServerSettings trcSettingsWdgt = getTraceSettings();
-        bHasChanges = trcSettingsSrv != trcSettingsWdgt;
-    }
-    else if( m_pTrcClient != nullptr )
-    {
-        STrcServerSettings trcSettingsClt = m_pTrcClient->getTraceSettings();
-        STrcServerSettings trcSettingsWdgt = getTraceSettings();
-        bHasChanges = trcSettingsClt != trcSettingsWdgt;
-    }
-    return bHasChanges;
-}
-
-//------------------------------------------------------------------------------
-void CWdgtTrcSettings::applyChanges()
-//------------------------------------------------------------------------------
-{
-    STrcServerSettings trcSettings = getTraceSettings();
-
-    if( m_pTrcServer != nullptr )
-    {
-        QObject::disconnect(
-            /* pObjSender   */ m_pTrcServer,
-            /* szSignal     */ SIGNAL(traceSettingsChanged(QObject*)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onTraceSettingsChanged(QObject*)) );
-
-        m_pTrcServer->setTraceSettings(trcSettings);
-
-        if( !QObject::connect(
-            /* pObjSender   */ m_pTrcServer,
-            /* szSignal     */ SIGNAL(traceSettingsChanged(QObject*)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onTraceSettingsChanged(QObject*)) ) )
-        {
-            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-        }
-    }
-    else if( m_pTrcClient != nullptr )
-    {
-        QObject::disconnect(
-            /* pObjSender   */ m_pTrcClient,
-            /* szSignal     */ SIGNAL(traceSettingsChanged(QObject*)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onTraceSettingsChanged(QObject*)) );
-
-        m_pTrcClient->setTraceSettings(trcSettings);
-
-        if( !QObject::connect(
-            /* pObjSender   */ m_pTrcClient,
-            /* szSignal     */ SIGNAL(traceSettingsChanged(QObject*)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onTraceSettingsChanged(QObject*)) ) )
-        {
-            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-        }
-    }
-
-    bool bHasChanges = hasChanges();
-
-    m_pBtnReset->setEnabled(bHasChanges);
-    m_pBtnApply->setEnabled(bHasChanges);
 }

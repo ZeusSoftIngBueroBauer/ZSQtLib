@@ -68,18 +68,18 @@ public: // ctors and dtor
 //------------------------------------------------------------------------------
 CServerGatewayThread::CServerGatewayThread(
     const QString& i_strObjNameGateway,
-    CServer*       i_pServer,
-    CErrLog*       i_pErrLog,
-    int            i_iTrcMthFileDetailLevel ) :
+    CServer* i_pServer,
+    CErrLog* i_pErrLog,
+    ETraceDetailLevelMethodCalls i_eTrcMthFileDetailLevel ) :
 //------------------------------------------------------------------------------
-    CSrvCltBaseGatewayThread(i_strObjNameGateway, i_pErrLog, i_iTrcMthFileDetailLevel),
+    CSrvCltBaseGatewayThread(i_strObjNameGateway, i_pErrLog, i_eTrcMthFileDetailLevel),
     m_pServer(i_pServer)
 {
     // If the parent is the trace server the detail level of trace outputs may not be
     // controlled by trace admin objects as they belong to the trace server itself.
     if( i_pServer->objectName().endsWith("TrcServer") )
     {
-        QString strLocalTrcFileAbsFilePath = CTrcServer::GetDefaultLocalTrcFileAbsoluteFilePath("System");
+        QString strLocalTrcFileAbsFilePath = CTrcServer::GetLocalTrcFileAbsoluteFilePath();
         m_pTrcMthFile = CTrcMthFile::Alloc(strLocalTrcFileAbsFilePath);
     }
     else
@@ -90,8 +90,8 @@ CServerGatewayThread::CServerGatewayThread(
     CMethodTracer mthTracer(
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcMthFileDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
+        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
@@ -107,8 +107,8 @@ CServerGatewayThread::~CServerGatewayThread()
     CMethodTracer mthTracer(
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcMthFileDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
+        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
@@ -146,8 +146,8 @@ void CServerGatewayThread::run()
     CMethodTracer mthTracer(
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcMthFileDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
+        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
@@ -161,7 +161,7 @@ void CServerGatewayThread::run()
         /* pServer                */ m_pServer,
         /* pThread                */ this,
         /* pModelErrLog           */ m_pErrLog,
-        /* iTrcMthFileDetailLevel */ m_iTrcMthFileDetailLevel );
+        /* iTrcMthFileDetailLevel */ m_eTrcMthFileDetailLevel );
 
     //--------------------------------------------------------------------------
     // Please see comment at template run method of base class CSrvCltBaseGatewayThread.
@@ -174,14 +174,14 @@ void CServerGatewayThread::run()
         // this we force this thread to sleep for a moment ...
         msleep(10);
 
-        if( isMethodTraceActive(ETraceDetailLevelInternalStates) )
+        if( isTraceRuntimeInfoActive(ETraceDetailLevelRuntimeInfo::DebugNormal) )
         {
             mthTracer.trace( "-+ WaitCondition.wakeAll()" );
         }
 
         m_pWaitCondition->wakeAll();
 
-        if( isMethodTraceActive(ETraceDetailLevelInternalStates) )
+        if( isTraceRuntimeInfoActive(ETraceDetailLevelRuntimeInfo::DebugNormal) )
         {
             mthTracer.trace( "+- WaitCondition.wakeAll()" );
         }
@@ -209,7 +209,7 @@ void CServerGatewayThread::run()
                 }
             }
 
-            if( isMethodTraceActive(ETraceDetailLevelInternalStates) )
+            if( isTraceRuntimeInfoActive(ETraceDetailLevelRuntimeInfo::DebugNormal) )
             {
                 mthTracer.trace( "-+ ReqStartThread.WaitCondition.wakeAll()" );
             }
@@ -226,7 +226,7 @@ void CServerGatewayThread::run()
                 }
             }
 
-            if( isMethodTraceActive(ETraceDetailLevelInternalStates) )
+            if( isTraceRuntimeInfoActive(ETraceDetailLevelRuntimeInfo::DebugNormal) )
             {
                 mthTracer.trace( "+- ReqStartThread.WaitCondition.wakeAll(): " + errResultInfo.getResultStr() );
             }
@@ -241,21 +241,21 @@ void CServerGatewayThread::run()
                 /* iMsgIdReq         */ -1,
                 /* errResultInfo     */ errResultInfo,
                 /* iProgress_perCent */ 100 );
-            POST_OR_DELETE_MESSAGE(pMsgConStartup, &mthTracer, ETraceDetailLevelRuntimeInfo);
+            POST_OR_DELETE_MESSAGE(pMsgConStartup, &mthTracer, ETraceDetailLevelRuntimeInfo::DebugNormal);
             pMsgConStartup = nullptr;
         }
     } // if( m_iReqIdStartThread >= 0 )
 
     try
     {
-        if( isMethodTraceActive(ETraceDetailLevelInternalStates) )
+        if( isTraceRuntimeInfoActive(ETraceDetailLevelRuntimeInfo::DebugNormal) )
         {
             mthTracer.trace( "-+ QThread::exec()" );
         }
 
         exec();
 
-        if( isMethodTraceActive(ETraceDetailLevelInternalStates) )
+        if( isTraceRuntimeInfoActive(ETraceDetailLevelRuntimeInfo::DebugNormal) )
         {
             mthTracer.trace( "+- QThread::exec()" );
         }
@@ -302,11 +302,11 @@ public: // ctors and dtor
 
 //------------------------------------------------------------------------------
 CServerGateway::CServerGateway(
-    const QString&        i_strObjName,
-    CServer*              i_pServer,
+    const QString& i_strObjName,
+    CServer* i_pServer,
     CServerGatewayThread* i_pThreadGateway,
-    CErrLog*              i_pErrLog,
-    int                   i_iTrcMthFileDetailLevel ) :
+    CErrLog* i_pErrLog,
+    ETraceDetailLevelMethodCalls i_eTrcMthFileDetailLevel ) :
 //------------------------------------------------------------------------------
     CSrvCltBaseGateway(
         /* szObjName              */ i_strObjName,
@@ -314,15 +314,15 @@ CServerGateway::CServerGateway(
         /* pCltSrv                */ i_pServer,
         /* pThreadGateway         */ i_pThreadGateway,
         /* pModelErrLog           */ i_pErrLog,
-        /* iTrcMthFileDetailLevel */ i_iTrcMthFileDetailLevel ),
+        /* iTrcMthFileDetailLevel */ i_eTrcMthFileDetailLevel ),
     m_hostSettings(),
     m_pIpcServerWrapper(nullptr),
     m_arpIpcSocketWrapper()
 {
     // The derived classes must instantiate the trace admin object and trace the ctor.
-    if( m_iTrcMthFileDetailLevel > ETraceDetailLevelNone )
+    if( m_eTrcMthFileDetailLevel > ETraceDetailLevelMethodCalls::None )
     {
-        QString strLocalTrcFileAbsFilePath = CTrcServer::GetDefaultLocalTrcFileAbsoluteFilePath("System");
+        QString strLocalTrcFileAbsFilePath = CTrcServer::GetLocalTrcFileAbsoluteFilePath();
         m_pTrcMthFile = CTrcMthFile::Alloc(strLocalTrcFileAbsFilePath);
     }
     // If the parent is the trace server the detail level of trace outputs may not be
@@ -341,8 +341,8 @@ CServerGateway::CServerGateway(
     CMethodTracer mthTracer(
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcMthFileDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
+        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
@@ -358,8 +358,8 @@ CServerGateway::~CServerGateway()
     CMethodTracer mthTracer(
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcMthFileDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
+        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
@@ -426,7 +426,7 @@ void CServerGateway::onNewConnectionPending( QObject* /*i_pServerWrapper*/ )
 {
     QString strAddTrcInfo;
 
-    if( isMethodTraceActive(ETraceDetailLevelMethodArgs) )
+    if( areTraceMethodCallsActive(ETraceDetailLevelMethodCalls::ArgsNormal) )
     {
         strAddTrcInfo = "RequestInProgress: " + request2Str(m_requestInProgress);
     }
@@ -434,8 +434,8 @@ void CServerGateway::onNewConnectionPending( QObject* /*i_pServerWrapper*/ )
     CMethodTracer mthTracer(
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcMthFileDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
+        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
@@ -501,7 +501,7 @@ void CServerGateway::onNewConnectionPending( QObject* /*i_pServerWrapper*/ )
         /* pObjSender   */ this,
         /* pObjReceiver */ m_pSrvClt,
         /* socketDscr   */ pIpcSocketWrapper->getSocketDscr() );
-    POST_OR_DELETE_MESSAGE(pMsgInd, &mthTracer, ETraceDetailLevelRuntimeInfo);
+    POST_OR_DELETE_MESSAGE(pMsgInd, &mthTracer, ETraceDetailLevelRuntimeInfo::DebugNormal);
     pMsgInd = nullptr;
 
     //if( m_pBlkType->hasConnectionGreetingBlock(m_srvCltType) )
@@ -535,7 +535,7 @@ void CServerGateway::onDisconnected( QObject* i_pSocketWrapper )
 {
     QString strAddTrcInfo;
 
-    if( isMethodTraceActive(ETraceDetailLevelMethodArgs) )
+    if( areTraceMethodCallsActive(ETraceDetailLevelMethodCalls::ArgsNormal) )
     {
         strAddTrcInfo = "RequestInProgress: " + request2Str(m_requestInProgress);
     }
@@ -543,8 +543,8 @@ void CServerGateway::onDisconnected( QObject* i_pSocketWrapper )
     CMethodTracer mthTracer(
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcMthFileDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
+        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
@@ -622,7 +622,7 @@ void CServerGateway::onDisconnected( QObject* i_pSocketWrapper )
                 /* pObjSender   */ this,
                 /* pObjReceiver */ m_pSrvClt,
                 /* socketDscr   */ socketDscr );
-            POST_OR_DELETE_MESSAGE(pMsgInd, &mthTracer, ETraceDetailLevelRuntimeInfo);
+            POST_OR_DELETE_MESSAGE(pMsgInd, &mthTracer, ETraceDetailLevelRuntimeInfo::DebugNormal);
             pMsgInd = nullptr;
             break;
         }
@@ -652,7 +652,7 @@ void CServerGateway::onReadyRead( QObject* i_pSocketWrapper )
 {
     QString strAddTrcInfo;
 
-    if( isMethodTraceActive(ETraceDetailLevelMethodArgs) )
+    if( areTraceMethodCallsActive(ETraceDetailLevelMethodCalls::ArgsNormal) )
     {
         strAddTrcInfo = "RequestInProgress: " + request2Str(m_requestInProgress);
     }
@@ -660,8 +660,8 @@ void CServerGateway::onReadyRead( QObject* i_pSocketWrapper )
     CMethodTracer mthTracer(
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcMthFileDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
+        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
@@ -682,7 +682,7 @@ void CServerGateway::onReadyRead( QObject* i_pSocketWrapper )
         /* iSocketId        */ pIpcSocketWrapper->getSocketId(),
         /* bMustBeConfirmed */ false,
         /* iReqId           */ -1 );
-    POST_OR_DELETE_MESSAGE(pMsgReq, &mthTracer, ETraceDetailLevelRuntimeInfo);
+    POST_OR_DELETE_MESSAGE(pMsgReq, &mthTracer, ETraceDetailLevelRuntimeInfo::DebugNormal);
     pMsgReq = nullptr;
 
 } // onReadyRead
@@ -693,7 +693,7 @@ void CServerGateway::onError( QObject* i_pSocketWrapper, ZS::System::SErrResultI
 {
     QString strAddTrcInfo;
 
-    if( isMethodTraceActive(ETraceDetailLevelMethodArgs) )
+    if( areTraceMethodCallsActive(ETraceDetailLevelMethodCalls::ArgsNormal) )
     {
         strAddTrcInfo  =  i_errResultInfo.getResultStr();
         strAddTrcInfo += ", RequestInProgress: " + request2Str(m_requestInProgress);
@@ -702,8 +702,8 @@ void CServerGateway::onError( QObject* i_pSocketWrapper, ZS::System::SErrResultI
     CMethodTracer mthTracer(
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_iTrcMthFileDetailLevel,
-        /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+        /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
+        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
@@ -795,7 +795,7 @@ void CServerGateway::onError( QObject* i_pSocketWrapper, ZS::System::SErrResultI
             /* pObjSender    */ this,
             /* pObjReceiver  */ m_pSrvClt,
             /* errResultInfo */ errResultInfo );
-        POST_OR_DELETE_MESSAGE(pMsgErr, &mthTracer, ETraceDetailLevelRuntimeInfo);
+        POST_OR_DELETE_MESSAGE(pMsgErr, &mthTracer, ETraceDetailLevelRuntimeInfo::DebugNormal);
         pMsgErr = nullptr;
     }
 
@@ -827,7 +827,7 @@ bool CServerGateway::event( QEvent* i_pMsg )
             pMsg = nullptr;
         }
 
-        if( isMethodTraceActive(ETraceDetailLevelMethodArgs) )
+        if( areTraceMethodCallsActive(ETraceDetailLevelMethodCalls::ArgsNormal) )
         {
             strAddTrcInfo = "Addr: 0x" + QString::number(reinterpret_cast<qint64>(i_pMsg),16);
 
@@ -845,8 +845,8 @@ bool CServerGateway::event( QEvent* i_pMsg )
         CMethodTracer mthTracer(
             /* pAdminObj          */ m_pTrcAdminObj,
             /* pTrcMthFile        */ m_pTrcMthFile,
-            /* iTrcDetailLevel    */ m_iTrcMthFileDetailLevel,
-            /* iFilterDetailLavel */ ETraceDetailLevelMethodCalls,
+            /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
+            /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
             /* strNameSpace       */ nameSpace(),
             /* strClassName       */ className(),
             /* strObjName         */ objectName(),
@@ -958,17 +958,17 @@ bool CServerGateway::event( QEvent* i_pMsg )
                         {
                             case ESocketTypeTcp:
                             {
-                                m_pIpcServerWrapper = new CTcpServerWrapper(objectName(), m_pTrcMthFile, m_iTrcMthFileDetailLevel);
+                                m_pIpcServerWrapper = new CTcpServerWrapper(objectName(), m_pTrcMthFile, m_eTrcMthFileDetailLevel);
                                 break;
                             }
                             case ESocketTypeShm:
                             {
-                                m_pIpcServerWrapper = new CShmServerWrapper(objectName(), m_pTrcMthFile, m_iTrcMthFileDetailLevel);
+                                m_pIpcServerWrapper = new CShmServerWrapper(objectName(), m_pTrcMthFile, m_eTrcMthFileDetailLevel);
                                 break;
                             }
                             case ESocketTypeInProcMsg:
                             {
-                                m_pIpcServerWrapper = new CInProcMsgServerWrapper(objectName(), m_pTrcMthFile, m_iTrcMthFileDetailLevel);
+                                m_pIpcServerWrapper = new CInProcMsgServerWrapper(objectName(), m_pTrcMthFile, m_eTrcMthFileDetailLevel);
                                 break;
                             }
                             default:
@@ -1026,7 +1026,7 @@ bool CServerGateway::event( QEvent* i_pMsg )
                             pReqExecTree->setExecutionConfirmationMessage(m_iReqIdInProgress, m_pMsgCon);
                             m_pMsgCon = nullptr;
 
-                            if( isMethodTraceActive(ETraceDetailLevelInternalStates) )
+                            if( isTraceRuntimeInfoActive(ETraceDetailLevelRuntimeInfo::DebugNormal) )
                             {
                                 mthTracer.trace( "-+ ReqStartup.WaitCondition.wakeAll()" );
                             }
@@ -1043,7 +1043,7 @@ bool CServerGateway::event( QEvent* i_pMsg )
                                 }
                             }
 
-                            if( isMethodTraceActive(ETraceDetailLevelInternalStates) )
+                            if( isTraceRuntimeInfoActive(ETraceDetailLevelRuntimeInfo::DebugNormal) )
                             {
                                 mthTracer.trace( "+- ReqStartup.WaitCondition.wakeAll(): " + errResultInfo.getResultStr() );
                             }
@@ -1051,7 +1051,7 @@ bool CServerGateway::event( QEvent* i_pMsg )
 
                         else if( m_pMsgCon != nullptr )
                         {
-                            POST_OR_DELETE_MESSAGE(m_pMsgCon, &mthTracer, ETraceDetailLevelRuntimeInfo);
+                            POST_OR_DELETE_MESSAGE(m_pMsgCon, &mthTracer, ETraceDetailLevelRuntimeInfo::DebugNormal);
                             m_pMsgCon = nullptr;
                         }
                         else if( errResultInfo.isErrorResult() )
@@ -1180,7 +1180,7 @@ bool CServerGateway::event( QEvent* i_pMsg )
                             pReqExecTree->setExecutionConfirmationMessage(m_iReqIdInProgress, m_pMsgCon);
                             m_pMsgCon = nullptr;
 
-                            if( isMethodTraceActive(ETraceDetailLevelInternalStates) )
+                            if( isTraceRuntimeInfoActive(ETraceDetailLevelRuntimeInfo::DebugNormal) )
                             {
                                 mthTracer.trace( "-+ ReqShutdown.WaitCondition.wakeAll()" );
                             }
@@ -1197,7 +1197,7 @@ bool CServerGateway::event( QEvent* i_pMsg )
                                 }
                             }
 
-                            if( isMethodTraceActive(ETraceDetailLevelInternalStates) )
+                            if( isTraceRuntimeInfoActive(ETraceDetailLevelRuntimeInfo::DebugNormal) )
                             {
                                 mthTracer.trace( "+- ReqShudown.WaitCondition.wakeAll(): " + errResultInfo.getResultStr() );
                             }
@@ -1205,7 +1205,7 @@ bool CServerGateway::event( QEvent* i_pMsg )
 
                         else if( m_pMsgCon != nullptr )
                         {
-                            POST_OR_DELETE_MESSAGE(m_pMsgCon, &mthTracer, ETraceDetailLevelRuntimeInfo);
+                            POST_OR_DELETE_MESSAGE(m_pMsgCon, &mthTracer, ETraceDetailLevelRuntimeInfo::DebugNormal);
                             m_pMsgCon = nullptr;
                         }
                         else if( errResultInfo.isErrorResult() )
@@ -1440,7 +1440,7 @@ bool CServerGateway::event( QEvent* i_pMsg )
                             pReqExecTree->setExecutionConfirmationMessage(m_iReqIdInProgress, m_pMsgCon);
                             m_pMsgCon = nullptr;
 
-                            if( isMethodTraceActive(ETraceDetailLevelInternalStates) )
+                            if( isTraceRuntimeInfoActive(ETraceDetailLevelRuntimeInfo::DebugNormal) )
                             {
                                 mthTracer.trace( "-+ ReqChangeSettings.WaitCondition.wakeAll()" );
                             }
@@ -1457,7 +1457,7 @@ bool CServerGateway::event( QEvent* i_pMsg )
                                 }
                             }
 
-                            if( isMethodTraceActive(ETraceDetailLevelInternalStates) )
+                            if( isTraceRuntimeInfoActive(ETraceDetailLevelRuntimeInfo::DebugNormal) )
                             {
                                 mthTracer.trace( "+- ReqChangeSettings.WaitCondition.wakeAll(): " + errResultInfo.getResultStr() );
                             }
@@ -1465,7 +1465,7 @@ bool CServerGateway::event( QEvent* i_pMsg )
 
                         else if( m_pMsgCon != nullptr )
                         {
-                            POST_OR_DELETE_MESSAGE(m_pMsgCon, &mthTracer, ETraceDetailLevelRuntimeInfo);
+                            POST_OR_DELETE_MESSAGE(m_pMsgCon, &mthTracer, ETraceDetailLevelRuntimeInfo::DebugNormal);
                             m_pMsgCon = nullptr;
                         }
                         else if( errResultInfo.isErrorResult() )
@@ -1631,7 +1631,7 @@ bool CServerGateway::event( QEvent* i_pMsg )
                                         /* pObjReceiver */ m_pSrvClt,
                                         /* iSocketId    */ pIpcSocketWrapper->getSocketId(),
                                         /* byteArr      */ arByteArrs[idxBlk] );
-                                    POST_OR_DELETE_MESSAGE(pMsgInd, &mthTracer, ETraceDetailLevelRuntimeInfo);
+                                    POST_OR_DELETE_MESSAGE(pMsgInd, &mthTracer, ETraceDetailLevelRuntimeInfo::DebugNormal);
                                     pMsgInd = nullptr;
                                 }
                             } // if( m_pBlkType != nullptr )
@@ -1654,7 +1654,7 @@ bool CServerGateway::event( QEvent* i_pMsg )
                                     /* iSocketId        */ pIpcSocketWrapper->getSocketId(),
                                     /* bMustBeConfirmed */ false,
                                     /* iReqId           */ -1 );
-                                POST_OR_DELETE_MESSAGE(pMsgReq, &mthTracer, ETraceDetailLevelRuntimeInfo);
+                                POST_OR_DELETE_MESSAGE(pMsgReq, &mthTracer, ETraceDetailLevelRuntimeInfo::DebugNormal);
                                 pMsgReq = nullptr;
                             }
                         } // if( pIpcSocketWrapper->socketState() == ESocketStateConnected )

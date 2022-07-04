@@ -81,19 +81,19 @@ public: // class methods
 public: // class methods
     static CIpcTrcServer* GetInstance();
     static CIpcTrcServer* CreateInstance(
-        int i_iTrcDetailLevel = ETraceDetailLevelNone,
-        int i_iTrcDetailLevelMutex = ETraceDetailLevelNone,
-        int i_iTrcDetailLevelIpcServer = ETraceDetailLevelNone,
-        int i_iTrcDetailLevelIpcServerMutex = ETraceDetailLevelNone,
-        int i_iTrcDetailLevelIpcServerGateway = ETraceDetailLevelNone );
+        ETraceDetailLevelMethodCalls i_eTrcDetailLevel = ETraceDetailLevelMethodCalls::None,
+        ETraceDetailLevelMethodCalls i_eTrcDetailLevelMutex = ETraceDetailLevelMethodCalls::None,
+        ETraceDetailLevelMethodCalls i_eTrcDetailLevelIpcServer = ETraceDetailLevelMethodCalls::None,
+        ETraceDetailLevelMethodCalls i_eTrcDetailLevelIpcServerMutex = ETraceDetailLevelMethodCalls::None,
+        ETraceDetailLevelMethodCalls i_eTrcDetailLevelIpcServerGateway = ETraceDetailLevelMethodCalls::None );
     static void ReleaseInstance();
 protected: // ctors and dtor
     CIpcTrcServer(
-        int i_iTrcDetailLevel = ETraceDetailLevelNone,
-        int i_iTrcDetailLevelMutex = ETraceDetailLevelNone,
-        int i_iTrcDetailLevelIpcServer = ETraceDetailLevelNone,
-        int i_iTrcDetailLevelIpcServerMutex = ETraceDetailLevelNone,
-        int i_iTrcDetailLevelIpcServerGateway = ETraceDetailLevelNone );
+        ETraceDetailLevelMethodCalls i_eTrcDetailLevel = ETraceDetailLevelMethodCalls::None,
+        ETraceDetailLevelMethodCalls i_eTrcDetailLevelMutex = ETraceDetailLevelMethodCalls::None,
+        ETraceDetailLevelMethodCalls i_eTrcDetailLevelIpcServer = ETraceDetailLevelMethodCalls::None,
+        ETraceDetailLevelMethodCalls i_eTrcDetailLevelIpcServerMutex = ETraceDetailLevelMethodCalls::None,
+        ETraceDetailLevelMethodCalls i_eTrcDetailLevelIpcServerGateway = ETraceDetailLevelMethodCalls::None );
     virtual ~CIpcTrcServer();
 public: // overridables
     QString nameSpace() const { return CIpcTrcServer::NameSpace(); }
@@ -105,7 +105,8 @@ public: // overridables of base class CTrcServer
 public: // overridables of base class CTrcServer
     virtual void setEnabled( bool i_bEnabled ) override;
     virtual void setNewTrcAdminObjsEnabledAsDefault( bool i_bEnabled ) override;
-    virtual void setNewTrcAdminObjsDefaultDetailLevel( int i_iDetailLevel ) override;
+    virtual void setNewTrcAdminObjsMethodCallsDefaultDetailLevel( ETraceDetailLevelMethodCalls i_eDetailLevel );
+    virtual void setNewTrcAdminObjsRuntimeInfoDefaultDetailLevel( ETraceDetailLevelRuntimeInfo i_eDetailLevel );
 public: // overridables of base class CTrcServer
     virtual void setAdminObjFileAbsoluteFilePath( const QString& i_strAbsFilePath ) override;
 public: // overridables of base class CTrcServer

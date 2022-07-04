@@ -40,6 +40,7 @@ may result in using the software modules.
 #include "ZSIpcTrace/ZSIpcTrcServer.h"
 
 class QCheckBox;
+class QComboBox;
 class QGroupBox;
 class QLabel;
 class QLineEdit;
@@ -72,6 +73,10 @@ signals:
 public: // instance methods
     void setServer( CIpcTrcServer* i_pTrcServer );
     void setClient( CIpcTrcClient* i_pTrcClient );
+public: // instance methods
+    STrcServerSettings getTraceSettings() const;
+    bool hasChanges() const;
+    void applyChanges();
 protected: // instance methods
     void enableGuiControls( bool i_bEnabled );
     void connectGuiControlsOnValueChangedSignals();
@@ -79,7 +84,8 @@ protected: // instance methods
 protected slots: // connected to the signals of my user controls
     void onChkTracingEnabledToggled( bool i_bChecked );
     void onChkNewTrcAdminObjsEnabledAsDefaultToggled( bool i_bChecked );
-    void onEdtNewTrcAdminObjsDefaultDetailLevelValueChanged( int i_iDetailLevel );
+    void onCmbNewTrcAdminObjsMethodCallsDefaultDetailLevelCurrentIndexChanged( int i_iDetailLevel );
+    void onCmbNewTrcAdminObjsRuntimeInfoDefaultDetailLevelCurrentIndexChanged( int i_iDetailLevel );
     void onChkUseIpcServerToggled( bool i_bChecked );
     void onChkCacheDataIfNotConnectedToggled( bool i_bChecked );
     void onEdtCacheDataMaxArrLenValueChanged( int i_iMaxArrLen );
@@ -97,10 +103,6 @@ protected slots:
     void onBtnCancelClicked( bool i_bChecked );
     void onBtnResetClicked( bool i_bChecked );
     void onBtnApplyClicked( bool i_bChecked );
-protected: // instance methods
-    STrcServerSettings getTraceSettings() const;
-    bool hasChanges() const;
-    void applyChanges();
 protected: // instance members
     CIpcTrcServer* m_pTrcServer;
     CIpcTrcClient* m_pTrcClient;
@@ -116,8 +118,10 @@ protected: // instance members
     QLineEdit*     m_pEdtAdminObjFileAbsFilePath;
     QLabel*        m_pLblNewTrcAdminObjsEnabledAsDefault;
     QCheckBox*     m_pChkNewTrcAdminObjsEnabledAsDefault;
-    QLabel*        m_pLblNewTrcAdminObjsDefaultDetailLevel;
-    QSpinBox*      m_pEdtNewTrcAdminObjsDefaultDetailLevel;
+    QLabel*        m_pLblNewTrcAdminObjsMethodCallsDefaultDetailLevel;
+    QComboBox*     m_pCmbNewTrcAdminObjsMethodCallsDefaultDetailLevel;
+    QLabel*        m_pLblNewTrcAdminObjsRuntimeInfoDefaultDetailLevel;
+    QComboBox*     m_pCmbNewTrcAdminObjsRuntimeInfoDefaultDetailLevel;
     QLabel*        m_pLblUseIpcServer;
     QCheckBox*     m_pChkUseIpcServer;
     QLabel*        m_pLblCacheDataIfNotConnected;

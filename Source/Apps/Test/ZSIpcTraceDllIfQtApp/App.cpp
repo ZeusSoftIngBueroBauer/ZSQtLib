@@ -85,7 +85,6 @@ CApplication::CApplication(
     const QString& i_strWindowTitle ) :
 //------------------------------------------------------------------------------
     CGUIApp(i_argc,i_argv),
-    m_iZSTrcServerTrcDetailLevel(ETraceDetailLevelNone),
     m_pTest(nullptr),
     m_pMainWindow(nullptr),
     m_bAutoStartTest(false)
@@ -143,10 +142,6 @@ CApplication::CApplication(
         if( strArg == "AutoStartTest" )
         {
             m_bAutoStartTest = true;
-        }
-        else if( strArg == "ZSTrcServerTraceDetailLevel" )
-        {
-            m_iZSTrcServerTrcDetailLevel = str2TraceDetailLevel(strVal);
         }
     }
 
@@ -206,7 +201,6 @@ CApplication::~CApplication()
 
     CErrLog::ReleaseInstance();
 
-    m_iZSTrcServerTrcDetailLevel = 0;
     m_pTest = nullptr;
     m_pMainWindow = nullptr;
     m_bAutoStartTest = false;

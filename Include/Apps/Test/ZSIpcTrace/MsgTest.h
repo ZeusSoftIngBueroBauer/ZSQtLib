@@ -68,6 +68,10 @@ public: // ctors and dtor
 public: // instance methods
     void setCommand(const QString& i_strCommand);
     QString getCommand() const;
+    void setCommandArg(const QString& i_strArg);
+    void setCommandArgs(const QStringList& i_strlstArgs);
+    QString getCommandArg() const;
+    QStringList getCommandArgs() const;
 public: // must overridables of base class CMsg
     virtual ZS::System::CMsg* clone( ZS::System::ECopyDepth i_copyDepth = ZS::System::ECopyDepth::FlatKeepOwnership );
 public: // must overridables of base class CMsgReq
@@ -76,7 +80,8 @@ public: // overridables of base class CMsg
     virtual QString msgTypeToStr() const;
     virtual QString getAddTrcInfoStr( int i_iDetailLevel = 0, ZS::System::EContentToStrFormat i_format = ZS::System::EContentToStrFormat::PlainText );
 protected: // instance methods
-    QString m_strCommand;
+    QString     m_strCommand;
+    QStringList m_strlstCommandArgs;
 
 }; // CMsgReqTest
 
