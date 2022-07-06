@@ -205,7 +205,8 @@ protected: // instance methods to explicitely send the attributes of a trace adm
         int                                     i_iSocketId,
         ZS::System::MsgProtocol::TSystemMsgType i_systemMsgType,
         ZS::System::MsgProtocol::TCommand       i_cmd,
-        ZS::System::CIdxTreeEntry*              i_pTrcAdminObj );
+        const QString&                          i_strKeyInTree,
+        int                                     i_idxInTree );
 protected: // auxiliary methods
     void sendServerSettings(int i_iSocketId);
     void sendCachedTrcData(int i_iSocketId);
@@ -220,7 +221,7 @@ protected: // overridables to parse and execute the incoming data stream
     void onIpcServerReceivedReqUpdate( int i_iSocketId, const QString& i_strData );
 protected slots: // connected to the signals of the trace admin object pool
     void onTrcAdminObjIdxTreeEntryAdded( ZS::System::CIdxTree* i_pIdxTree, ZS::System::CIdxTreeEntry* i_pTreeEntry );
-    void onTrcAdminObjIdxTreeEntryAboutToBeRemoved( ZS::System::CIdxTree* i_pIdxTree, ZS::System::CIdxTreeEntry* i_pTreeEntry );
+    void onTrcAdminObjIdxTreeEntryAboutToBeRemoved( ZS::System::CIdxTree* i_pIdxTree, ZS::System::EIdxTreeEntryType i_entryType, const QString& i_strKeyInTree, int i_idxInTree );
     void onTrcAdminObjIdxTreeEntryChanged( ZS::System::CIdxTree* i_pIdxTree, ZS::System::CIdxTreeEntry* i_pTreeEntry );
 protected: // overridables of inherited class QObject
     virtual bool event( QEvent* i_pEv ) override;

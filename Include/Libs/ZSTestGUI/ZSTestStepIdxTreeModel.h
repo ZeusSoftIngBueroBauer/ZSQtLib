@@ -34,10 +34,12 @@ class QDomNode;
 
 namespace ZS
 {
+#ifdef ZS_TRACE_GUI_MODELS
 namespace Trace
 {
 class CTrcAdminObj;
 }
+#endif
 
 namespace Test
 {
@@ -94,10 +96,12 @@ private: // copy ctor not allowed
 private: // assignment operator not allowed
     CModeldxTreeTestSteps& operator = ( const CModeldxTreeTestSteps& );
 protected: // instance members
-    CTest*                   m_pTest;
-    CTestStep*               m_pTestStepCurr;
-    bool                     m_bShowExpectedAndResultValuesOnlyIfTestStepFailed;
+    CTest*     m_pTest;
+    CTestStep* m_pTestStepCurr;
+    bool       m_bShowExpectedAndResultValuesOnlyIfTestStepFailed;
+    #ifdef ZS_TRACE_GUI_MODELS
     ZS::Trace::CTrcAdminObj* m_pTrcAdminObj;
+    #endif
 
 }; // class CModeldxTreeTestSteps
 

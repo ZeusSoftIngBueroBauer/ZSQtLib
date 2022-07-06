@@ -84,7 +84,8 @@ protected: // instance methods to send admin objects to the connected server
         ZS::System::CIdxTreeEntry*              i_pBranch,
         ZS::System::EEnabled                    i_enabled,
         ETraceDetailLevelMethodCalls            i_eDetailLevelMethodCalls,
-        ETraceDetailLevelRuntimeInfo            i_eDetailLevelRuntimeInfo );
+        ETraceDetailLevelRuntimeInfo            i_eDetailLevelRuntimeInfo,
+        const QString&                          i_strDataFilter );
 protected: // overridables of base class CClient
     virtual void onReceivedData( const QByteArray& i_byteArr ) override;
 protected slots: // connected to the signals of the IPC client

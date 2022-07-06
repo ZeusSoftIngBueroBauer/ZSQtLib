@@ -35,11 +35,14 @@ may result in using the software modules.
 
 namespace ZS
 {
+#ifdef ZS_TRACE_MUTEXES
 namespace Trace
 {
 class CTrcAdminObj;
 class CTrcMthFile;
 }
+#endif
+
 namespace System
 {
 //******************************************************************************
@@ -60,8 +63,10 @@ public: // ctors and dtor
 public: // instance methods
     void setObjectName(const QString& i_strObjName);
     QString objectName() const;
+    #ifdef ZS_TRACE_MUTEXES
     ZS::Trace::CTrcMthFile* traceMethodFile();
     ZS::Trace::ETraceDetailLevelMethodCalls traceMethodFileDetailLevel() const;
+    #endif
 public: // instance methods
     void lock();
     bool tryLock(int i_timeout_ms = 0);
@@ -77,6 +82,7 @@ public: // auxiliary methods
 private: // instance members
     /*!< Descriptive name of the mutex. */
     QString m_strObjName;
+    #ifdef ZS_TRACE_MUTEXES
     /*<! Trace detail level used if the method trace of the client got to be output
          directly to a trace method file and not through the trace server. */
     ZS::Trace::ETraceDetailLevelMethodCalls m_eTrcMthFileDetailLevel;
@@ -85,6 +91,7 @@ private: // instance members
     ZS::Trace::CTrcMthFile* m_pTrcMthFile;
      /*!< Trace admin object to control the method trace if used by trace server. */
     ZS::Trace::CTrcAdminObj* m_pTrcAdminObj;
+    #endif
 };
 
 //******************************************************************************
@@ -103,8 +110,10 @@ public: // ctors and dtor
 public: // instance methods
     void setObjectName(const QString& i_strObjName);
     QString objectName() const;
+    #ifdef ZS_TRACE_MUTEXES
     ZS::Trace::CTrcMthFile* traceMethodFile();
     ZS::Trace::ETraceDetailLevelMethodCalls traceMethodFileDetailLevel() const;
+    #endif
 public: // instance methods
     void lock();
     bool tryLock(int i_timeout_ms = 0);
@@ -120,6 +129,7 @@ public: // auxiliary methods
 private: // instance members
     /*!< Descriptive name of the mutex. */
     QString m_strObjName;
+    #ifdef ZS_TRACE_MUTEXES
     /*<! Trace detail level used if the method trace of the client got to be output
          directly to a trace method file and not through the trace server. */
     ZS::Trace::ETraceDetailLevelMethodCalls m_eTrcMthFileDetailLevel;
@@ -128,6 +138,7 @@ private: // instance members
     ZS::Trace::CTrcMthFile* m_pTrcMthFile;
      /*!< Trace admin object to control the method trace if used by trace server. */
     ZS::Trace::CTrcAdminObj* m_pTrcAdminObj;
+    #endif
 };
 
 //******************************************************************************
@@ -156,6 +167,7 @@ private: // instance members
     CMutex* m_pMtx;
     /*!< Recursive mutex to be locked and unlocked. */
     CRecursiveMutex* m_pRecursiveMtx;
+    #ifdef ZS_TRACE_MUTEXES
     /*<! Trace detail level used if the method trace of the client got to be output
          directly to a trace method file and not through the trace server. */
     ZS::Trace::ETraceDetailLevelMethodCalls m_eTrcMthFileDetailLevel;
@@ -164,6 +176,7 @@ private: // instance members
     ZS::Trace::CTrcMthFile* m_pTrcMthFile;
      /*!< Trace admin object to control the method trace if used by trace server. */
     ZS::Trace::CTrcAdminObj* m_pTrcAdminObj;
+    #endif
 };
 
 } // namespace System

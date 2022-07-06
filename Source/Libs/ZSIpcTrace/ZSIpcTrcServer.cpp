@@ -421,9 +421,9 @@ CIpcTrcServer::CIpcTrcServer(
     }
     if( !QObject::connect(
         /* pObjSender   */ m_pTrcAdminObjIdxTree,
-        /* szSignal     */ SIGNAL( treeEntryAboutToBeRemoved(ZS::System::CIdxTree*, ZS::System::CIdxTreeEntry*) ),
+        /* szSignal     */ SIGNAL( treeEntryAboutToBeRemoved(ZS::System::CIdxTree*, ZS::System::EIdxTreeEntryType, const QString&, int) ),
         /* pObjReceiver */ this,
-        /* szSlot       */ SLOT( onTrcAdminObjIdxTreeEntryAboutToBeRemoved(ZS::System::CIdxTree*, ZS::System::CIdxTreeEntry*) ),
+        /* szSlot       */ SLOT( onTrcAdminObjIdxTreeEntryAboutToBeRemoved(ZS::System::CIdxTree*, ZS::System::EIdxTreeEntryType, const QString&, int) ),
         /* cnctType     */ Qt::DirectConnection ) )
     {
         throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
@@ -2011,7 +2011,8 @@ void CIpcTrcServer::sendBranch(
                         /* iSocketId     */ i_iSocketId,
                         /* systemMsgType */ i_systemMsgType,
                         /* cmd           */ i_cmd,
-                        /* pTrcAdminObj  */ pTreeEntry );
+                        /* strKeyInTree  */ pTreeEntry->keyInTree(),
+                        /* idxInTree     */ pTreeEntry->indexInTree() );
                 }
             }
         } // for( idxEntry = 0; idxEntry < i_pBranch->count(); ++idxEntry )
@@ -2028,7 +2029,8 @@ void CIpcTrcServer::sendAdminObj(
     int                         i_iSocketId,
     MsgProtocol::TSystemMsgType i_systemMsgType,
     MsgProtocol::TCommand       i_cmd,
-    CIdxTreeEntry*              i_pTrcAdminObj )
+    const QString&              i_strKeyInTree,
+    int                         i_idxInTree )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -2038,7 +2040,8 @@ void CIpcTrcServer::sendAdminObj(
         strMthInArgs  = "SocketId: " + QString::number(i_iSocketId);
         strMthInArgs += ", MsgType: " + systemMsgType2Str(i_systemMsgType);
         strMthInArgs += ", Cmd: " + command2Str(i_cmd);
-        strMthInArgs += ", TrcAdminObj: " + QString(i_pTrcAdminObj == nullptr ? "null" : i_pTrcAdminObj->keyInTree());
+        strMthInArgs += ", TrcAdminObj: " + i_strKeyInTree;
+        strMthInArgs += ", IdxInTree: " + QString::number(i_idxInTree);
     }
 
     CMethodTracer mthTracer(
@@ -2058,25 +2061,27 @@ void CIpcTrcServer::sendAdminObj(
         strMsg += systemMsgType2Str(i_systemMsgType) + " ";
         strMsg += command2Str(i_cmd) + " ";
         strMsg += "<TrcAdminObj";
-        strMsg += " IdxInTree=\"" + QString::number(i_pTrcAdminObj->indexInTree()) + "\"";
+        strMsg += " IdxInTree=\"" + QString::number(i_idxInTree) + "\"";
 
-        if( !i_pTrcAdminObj->isAboutToBeDestroyed() )
+        CTrcAdminObj* pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(m_pTrcAdminObjIdxTree->findLeave(i_strKeyInTree));
+
+        // If removed the command is deleted. It is sufficient to send the IdxInTree which was deleted.
+        if( pTrcAdminObj != nullptr && !pTrcAdminObj->isAboutToBeDestroyed() )
         {
-            CTrcAdminObj* pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(i_pTrcAdminObj);
-
             QString strNameSpace = encodeForHtml(pTrcAdminObj->getNameSpace());
             QString strClassName = encodeForHtml(pTrcAdminObj->getClassName());
             QString strObjName = encodeForHtml(pTrcAdminObj->getObjectName());
             QString strThreadName = encodeForHtml(pTrcAdminObj->getObjectThreadName());
 
-            if( i_pTrcAdminObj->parentBranch() != nullptr )
-            {
-                strMsg += " ParentBranchIdxInTree=\"" + QString::number(i_pTrcAdminObj->parentBranch()->indexInTree()) + "\"";
-            }
             strMsg += " NameSpace=\"" + strNameSpace + "\"";
             strMsg += " ClassName=\"" + strClassName + "\"";
             strMsg += " ObjName=\"" + strObjName + "\"";
             strMsg += " Thread=\"" + strThreadName + "\"";
+
+            if( pTrcAdminObj->parentBranch() != nullptr )
+            {
+                strMsg += " ParentBranchIdxInTree=\"" + QString::number(pTrcAdminObj->parentBranch()->indexInTree()) + "\"";
+            }
             strMsg += " Enabled=\"" + CEnumEnabled::toString(pTrcAdminObj->getEnabled()) + "\"";
             strMsg += " MethodCallsDetailLevel=\"" + CEnumTraceDetailLevelMethodCalls(pTrcAdminObj->getMethodCallsTraceDetailLevel()).toString() + "\"";
             strMsg += " RuntimeInfoDetailLevel=\"" + CEnumTraceDetailLevelRuntimeInfo(pTrcAdminObj->getRuntimeInfoTraceDetailLevel()).toString() + "\"";
@@ -2575,6 +2580,8 @@ void CIpcTrcServer::onIpcServerReceivedReqUpdate( int i_iSocketId, const QString
     int      iVal;
     int      iObjId;
     EEnabled enabled;
+    bool     bSetDataFilter;
+    QString  strDataFilter;
     bool     bOk;
 
     ETraceDetailLevelMethodCalls eDetailLevelMethodCalls;
@@ -2602,94 +2609,94 @@ void CIpcTrcServer::onIpcServerReceivedReqUpdate( int i_iSocketId, const QString
                 {
                     STrcServerSettings trcServerSettings = m_trcSettings;
 
-                    if( xmlStreamReader.attributes().hasAttribute("Enabled") )
+                    if( !xmlStreamReader.hasError() && xmlStreamReader.attributes().hasAttribute("Enabled") )
                     {
                         strAttr = xmlStreamReader.attributes().value("Enabled").toString();
                         bVal = str2Bool(strAttr, &bOk);
                         if( bOk ) trcServerSettings.m_bEnabled = bVal;
                         else xmlStreamReader.raiseError("Attribute \"Enabled\" (" + strAttr + ") is out of range");
                     }
-                    if( xmlStreamReader.attributes().hasAttribute("AdminObjFileAbsFilePath") )
+                    if( !xmlStreamReader.hasError() && xmlStreamReader.attributes().hasAttribute("AdminObjFileAbsFilePath") )
                     {
                         strAttr = xmlStreamReader.attributes().value("AdminObjFileAbsFilePath").toString();
                         trcServerSettings.m_strAdminObjFileAbsFilePath = strAttr;
                     }
-                    if( xmlStreamReader.attributes().hasAttribute("NewTrcAdminObjsEnabledAsDefault") )
+                    if( !xmlStreamReader.hasError() && xmlStreamReader.attributes().hasAttribute("NewTrcAdminObjsEnabledAsDefault") )
                     {
                         strAttr = xmlStreamReader.attributes().value("NewTrcAdminObjsEnabledAsDefault").toString();
                         bVal = str2Bool(strAttr, &bOk);
                         if( bOk ) trcServerSettings.m_bNewTrcAdminObjsEnabledAsDefault = bVal;
                         else xmlStreamReader.raiseError("Attribute \"NewTrcAdminObjsEnabledAsDefault\" (" + strAttr + ") is out of range");
                     }
-                    if( xmlStreamReader.attributes().hasAttribute("NewTrcAdminObjsMethodCallsDefaultDetailLevel") )
+                    if( !xmlStreamReader.hasError() && xmlStreamReader.attributes().hasAttribute("NewTrcAdminObjsMethodCallsDefaultDetailLevel") )
                     {
                         strAttr = xmlStreamReader.attributes().value("NewTrcAdminObjsMethodCallsDefaultDetailLevel").toString();
                         CEnumTraceDetailLevelMethodCalls eDetailLevel = CEnumTraceDetailLevelMethodCalls::fromString(strAttr);
                         if( eDetailLevel != ETraceDetailLevelMethodCalls::Undefined ) trcServerSettings.m_eNewTrcAdminObjsMethodCallsDefaultDetailLevel = eDetailLevel.enumerator();
                         else xmlStreamReader.raiseError("Attribute \"NewTrcAdminObjsMethodCallsDefaultDetailLevel\" (" + strAttr + ") is out of range");
                     }
-                    if( xmlStreamReader.attributes().hasAttribute("NewTrcAdminObjsRuntimeInfoDefaultDetailLevel") )
+                    if( !xmlStreamReader.hasError() && xmlStreamReader.attributes().hasAttribute("NewTrcAdminObjsRuntimeInfoDefaultDetailLevel") )
                     {
                         strAttr = xmlStreamReader.attributes().value("NewTrcAdminObjsRuntimeInfoDefaultDetailLevel").toString();
                         CEnumTraceDetailLevelRuntimeInfo eDetailLevel = CEnumTraceDetailLevelRuntimeInfo::fromString(strAttr);
                         if( eDetailLevel != ETraceDetailLevelRuntimeInfo::Undefined ) trcServerSettings.m_eNewTrcAdminObjsRuntimeInfoDefaultDetailLevel = eDetailLevel.enumerator();
                         else xmlStreamReader.raiseError("Attribute \"NewTrcAdminObjsRuntimeInfoDefaultDetailLevel\" (" + strAttr + ") is out of range");
                     }
-                    if( xmlStreamReader.attributes().hasAttribute("UseIpcServer") )
+                    if( !xmlStreamReader.hasError() && xmlStreamReader.attributes().hasAttribute("UseIpcServer") )
                     {
                         strAttr = xmlStreamReader.attributes().value("UseIpcServer").toString();
                         bVal = str2Bool(strAttr, &bOk);
                         if( bOk ) trcServerSettings.m_bUseIpcServer = bVal;
                         else xmlStreamReader.raiseError("Attribute \"UseIpcServer\" (" + strAttr + ") is out of range");
                     }
-                    if( xmlStreamReader.attributes().hasAttribute("CacheDataIfNotConnected") )
+                    if( !xmlStreamReader.hasError() && xmlStreamReader.attributes().hasAttribute("CacheDataIfNotConnected") )
                     {
                         strAttr = xmlStreamReader.attributes().value("CacheDataIfNotConnected").toString();
                         bVal = str2Bool(strAttr, &bOk);
                         if( bOk ) trcServerSettings.m_bCacheDataIfNotConnected = bVal;
                         else xmlStreamReader.raiseError("Attribute \"CacheDataIfNotConnected\" (" + strAttr + ") is out of range");
                     }
-                    if( xmlStreamReader.attributes().hasAttribute("CacheDataMaxArrLen") )
+                    if( !xmlStreamReader.hasError() && xmlStreamReader.attributes().hasAttribute("CacheDataMaxArrLen") )
                     {
                         strAttr = xmlStreamReader.attributes().value("CacheDataMaxArrLen").toString();
                         iVal = strAttr.toInt(&bOk);
                         if( bOk ) trcServerSettings.m_iCacheDataMaxArrLen = iVal;
                         else xmlStreamReader.raiseError("Attribute \"CacheDataMaxArrLen\" (" + strAttr + ") is out of range");
                     }
-                    if( xmlStreamReader.attributes().hasAttribute("UseLocalTrcFile") )
+                    if( !xmlStreamReader.hasError() && xmlStreamReader.attributes().hasAttribute("UseLocalTrcFile") )
                     {
                         strAttr = xmlStreamReader.attributes().value("UseLocalTrcFile").toString();
                         bVal = str2Bool(strAttr, &bOk);
                         if( bOk ) trcServerSettings.m_bUseLocalTrcFile = bVal;
                         else xmlStreamReader.raiseError("Attribute \"UseLocalTrcFile\" (" + strAttr + ") is out of range");
                     }
-                    if( xmlStreamReader.attributes().hasAttribute("LocalTrcFileAbsFilePath") )
+                    if( !xmlStreamReader.hasError() && xmlStreamReader.attributes().hasAttribute("LocalTrcFileAbsFilePath") )
                     {
                         strAttr = xmlStreamReader.attributes().value("LocalTrcFileAbsFilePath").toString();
                         trcServerSettings.m_strLocalTrcFileAbsFilePath = strAttr;
                     }
-                    if( xmlStreamReader.attributes().hasAttribute("LocalTrcFileAutoSaveInterval_ms") )
+                    if( !xmlStreamReader.hasError() && xmlStreamReader.attributes().hasAttribute("LocalTrcFileAutoSaveInterval_ms") )
                     {
                         strAttr = xmlStreamReader.attributes().value("LocalTrcFileAutoSaveInterval_ms").toString();
                         iVal = strAttr.toInt(&bOk);
                         if( bOk ) trcServerSettings.m_iLocalTrcFileAutoSaveInterval_ms = iVal;
                         else xmlStreamReader.raiseError("Attribute \"LocalTrcFileAutoSaveInterval_ms\" (" + strAttr + ") is out of range");
                     }
-                    if( xmlStreamReader.attributes().hasAttribute("LocalTrcFileSubFileCountMax") )
+                    if( !xmlStreamReader.hasError() && xmlStreamReader.attributes().hasAttribute("LocalTrcFileSubFileCountMax") )
                     {
                         strAttr = xmlStreamReader.attributes().value("LocalTrcFileSubFileCountMax").toString();
                         iVal = strAttr.toInt(&bOk);
                         if( bOk ) trcServerSettings.m_iLocalTrcFileSubFileCountMax = iVal;
                         else xmlStreamReader.raiseError("Attribute \"LocalTrcFileSubFileCountMax\" (" + strAttr + ") is out of range");
                     }
-                    if( xmlStreamReader.attributes().hasAttribute("LocalTrcFileSubFileLineCountMax") )
+                    if( !xmlStreamReader.hasError() && xmlStreamReader.attributes().hasAttribute("LocalTrcFileSubFileLineCountMax") )
                     {
                         strAttr = xmlStreamReader.attributes().value("LocalTrcFileSubFileLineCountMax").toString();
                         iVal = strAttr.toInt(&bOk);
                         if( bOk ) trcServerSettings.m_iLocalTrcFileSubFileLineCountMax = iVal;
                         else xmlStreamReader.raiseError("Attribute \"LocalTrcFileSubFileLineCountMax\" (" + strAttr + ") is out of range");
                     }
-                    if( xmlStreamReader.attributes().hasAttribute("LocalTrcFileCloseAfterEachWrite") )
+                    if( !xmlStreamReader.hasError() && xmlStreamReader.attributes().hasAttribute("LocalTrcFileCloseAfterEachWrite") )
                     {
                         strAttr = xmlStreamReader.attributes().value("LocalTrcFileCloseAfterEachWrite").toString();
                         bVal = str2Bool(strAttr, &bOk);
@@ -2710,14 +2717,16 @@ void CIpcTrcServer::onIpcServerReceivedReqUpdate( int i_iSocketId, const QString
                     }
                 } // if( strElemName == "ServerSettings" )
 
-                if( strElemName == "TrcAdminObj" )
+                else if( strElemName == "TrcAdminObj" )
                 {
                     iObjId = -1;
                     enabled = EEnabled::Undefined;
+                    bSetDataFilter = false;
+                    strDataFilter = "";
                     eDetailLevelMethodCalls = ETraceDetailLevelMethodCalls::None;
                     eDetailLevelRuntimeInfo = ETraceDetailLevelRuntimeInfo::None;
 
-                    if( xmlStreamReader.attributes().hasAttribute("ObjId") )
+                    if( !xmlStreamReader.hasError() && xmlStreamReader.attributes().hasAttribute("ObjId") )
                     {
                         strAttr = xmlStreamReader.attributes().value("ObjId").toString();
                         iObjId = strAttr.toInt(&bOk);
@@ -2726,7 +2735,7 @@ void CIpcTrcServer::onIpcServerReceivedReqUpdate( int i_iSocketId, const QString
                             xmlStreamReader.raiseError("Attribute \"ObjId\" (" + strAttr + ") for \"" + strElemName + "\" is out of range");
                         }
                     }
-                    if( xmlStreamReader.attributes().hasAttribute("Enabled") )
+                    if( !xmlStreamReader.hasError() && xmlStreamReader.attributes().hasAttribute("Enabled") )
                     {
                         strAttr = xmlStreamReader.attributes().value("Enabled").toString();
                         enabled = CEnumEnabled::toEnumerator(strAttr);
@@ -2735,7 +2744,7 @@ void CIpcTrcServer::onIpcServerReceivedReqUpdate( int i_iSocketId, const QString
                             xmlStreamReader.raiseError("Attribute \"Enabled\" (" + strAttr + ") for \"" + strElemName + "\" is out of range");
                         }
                     }
-                    if( xmlStreamReader.attributes().hasAttribute("MethodCallsDetailLevel") )
+                    if( !xmlStreamReader.hasError() && xmlStreamReader.attributes().hasAttribute("MethodCallsDetailLevel") )
                     {
                         strAttr = xmlStreamReader.attributes().value("MethodCallsDetailLevel").toString();
                         eDetailLevelMethodCalls = CEnumTraceDetailLevelMethodCalls::toEnumerator(strAttr);
@@ -2744,7 +2753,7 @@ void CIpcTrcServer::onIpcServerReceivedReqUpdate( int i_iSocketId, const QString
                             xmlStreamReader.raiseError("Attribute \"MethodCallsDetailLevel\" (" + strAttr + ") for \"" + strElemName + "\" is out of range");
                         }
                     }
-                    if( xmlStreamReader.attributes().hasAttribute("RuntimeInfoDetailLevel") )
+                    if( !xmlStreamReader.hasError() && xmlStreamReader.attributes().hasAttribute("RuntimeInfoDetailLevel") )
                     {
                         strAttr = xmlStreamReader.attributes().value("RuntimeInfoDetailLevel").toString();
                         eDetailLevelRuntimeInfo = CEnumTraceDetailLevelRuntimeInfo::toEnumerator(strAttr);
@@ -2752,6 +2761,11 @@ void CIpcTrcServer::onIpcServerReceivedReqUpdate( int i_iSocketId, const QString
                         {
                             xmlStreamReader.raiseError("Attribute \"RuntimeInfoDetailLevel\" (" + strAttr + ") for \"" + strElemName + "\" is out of range");
                         }
+                    }
+                    if( !xmlStreamReader.hasError() && xmlStreamReader.attributes().hasAttribute("DataFilter") )
+                    {
+                        strDataFilter = xmlStreamReader.attributes().value("DataFilter").toString();
+                        bSetDataFilter = true;
                     }
 
                     if( iObjId < 0 || iObjId >= m_pTrcAdminObjIdxTree->treeEntriesVectorSize() )
@@ -2771,18 +2785,23 @@ void CIpcTrcServer::onIpcServerReceivedReqUpdate( int i_iSocketId, const QString
                             pTrcAdminObj->setEnabled(enabled);
                             pTrcAdminObj->setMethodCallsTraceDetailLevel(eDetailLevelMethodCalls);
                             pTrcAdminObj->setRuntimeInfoTraceDetailLevel(eDetailLevelRuntimeInfo);
+                            if( bSetDataFilter ) {
+                                pTrcAdminObj->setTraceDataFilter(strDataFilter);
+                            }
                         }
                     } // if( iObjId >= 0 && iObjId < m_pTrcAdminObjIdxTree->treeEntriesVectorSize() )
                 } // if( strElemName == "TrcAdminObj" )
 
-                if( strElemName == "NameSpace" )
+                else if( strElemName == "NameSpace" )
                 {
                     iObjId = -1;
                     enabled = EEnabled::Undefined;
+                    bSetDataFilter = false;
+                    strDataFilter = "";
                     eDetailLevelMethodCalls = ETraceDetailLevelMethodCalls::None;
                     eDetailLevelRuntimeInfo = ETraceDetailLevelRuntimeInfo::None;
 
-                    if( xmlStreamReader.attributes().hasAttribute("ObjId") )
+                    if( !xmlStreamReader.hasError() && xmlStreamReader.attributes().hasAttribute("ObjId") )
                     {
                         strAttr = xmlStreamReader.attributes().value("ObjId").toString();
                         iObjId = strAttr.toInt(&bOk);
@@ -2791,7 +2810,7 @@ void CIpcTrcServer::onIpcServerReceivedReqUpdate( int i_iSocketId, const QString
                             xmlStreamReader.raiseError("Attribute \"ObjId\" (" + strAttr + ") for \"" + strElemName + "\" is out of range");
                         }
                     }
-                    if( xmlStreamReader.attributes().hasAttribute("Enabled") )
+                    if( !xmlStreamReader.hasError() && xmlStreamReader.attributes().hasAttribute("Enabled") )
                     {
                         strAttr = xmlStreamReader.attributes().value("Enabled").toString();
                         enabled = CEnumEnabled::toEnumerator(strAttr);
@@ -2800,7 +2819,7 @@ void CIpcTrcServer::onIpcServerReceivedReqUpdate( int i_iSocketId, const QString
                             xmlStreamReader.raiseError("Attribute \"Enabled\" (" + strAttr + ") for \"" + strElemName + "\" is out of range");
                         }
                     }
-                    if( xmlStreamReader.attributes().hasAttribute("MethodCallsDetailLevel") )
+                    if( !xmlStreamReader.hasError() && xmlStreamReader.attributes().hasAttribute("MethodCallsDetailLevel") )
                     {
                         strAttr = xmlStreamReader.attributes().value("MethodCallsDetailLevel").toString();
                         eDetailLevelMethodCalls = CEnumTraceDetailLevelMethodCalls::toEnumerator(strAttr);
@@ -2809,7 +2828,7 @@ void CIpcTrcServer::onIpcServerReceivedReqUpdate( int i_iSocketId, const QString
                             xmlStreamReader.raiseError("Attribute \"MethodCallsDetailLevel\" (" + strAttr + ") for \"" + strElemName + "\" is out of range");
                         }
                     }
-                    if( xmlStreamReader.attributes().hasAttribute("RuntimeInfoDetailLevel") )
+                    if( !xmlStreamReader.hasError() && xmlStreamReader.attributes().hasAttribute("RuntimeInfoDetailLevel") )
                     {
                         strAttr = xmlStreamReader.attributes().value("RuntimeInfoDetailLevel").toString();
                         eDetailLevelRuntimeInfo = CEnumTraceDetailLevelRuntimeInfo::toEnumerator(strAttr);
@@ -2817,6 +2836,11 @@ void CIpcTrcServer::onIpcServerReceivedReqUpdate( int i_iSocketId, const QString
                         {
                             xmlStreamReader.raiseError("Attribute \"RuntimeInfoDetailLevel\" (" + strAttr + ") for \"" + strElemName + "\" is out of range");
                         }
+                    }
+                    if( !xmlStreamReader.hasError() && xmlStreamReader.attributes().hasAttribute("DataFilter") )
+                    {
+                        strDataFilter = xmlStreamReader.attributes().value("DataFilter").toString();
+                        bSetDataFilter = true;
                     }
 
                     if( iObjId < 0 || iObjId >= m_pTrcAdminObjIdxTree->treeEntriesVectorSize() )
@@ -2841,6 +2865,9 @@ void CIpcTrcServer::onIpcServerReceivedReqUpdate( int i_iSocketId, const QString
                             m_pTrcAdminObjIdxTree->setEnabled(iObjId, enabled);
                             m_pTrcAdminObjIdxTree->setMethodCallsTraceDetailLevel(iObjId, eDetailLevelMethodCalls);
                             m_pTrcAdminObjIdxTree->setRuntimeInfoTraceDetailLevel(iObjId, eDetailLevelRuntimeInfo);
+                            if( bSetDataFilter ) {
+                                m_pTrcAdminObjIdxTree->setTraceDataFilter(iObjId, strDataFilter);
+                            }
                         }
                     } // if( iObjId >= 0 && iObjId < m_pTrcAdminObjIdxTree->treeEntriesVectorSize() )
                 } // if( strElemName == "NameSpace" )
@@ -2925,15 +2952,18 @@ void CIpcTrcServer::onTrcAdminObjIdxTreeEntryAdded(
                 /* iSocketId     */ ESocketIdAllSockets,
                 /* systemMsgType */ MsgProtocol::ESystemMsgTypeInd,
                 /* cmd           */ MsgProtocol::ECommandInsert,
-                /* pTrcAdminObj  */ i_pTreeEntry );
+                /* strKeyInTree  */ i_pTreeEntry->keyInTree(),
+                /* idxInTree     */ i_pTreeEntry->indexInTree() );
         }
     }
 } // onTrcAdminObjIdxTreeEntryAdded
 
 //------------------------------------------------------------------------------
 void CIpcTrcServer::onTrcAdminObjIdxTreeEntryAboutToBeRemoved(
-    CIdxTree*      /*i_pIdxTree*/,
-    CIdxTreeEntry* i_pTreeEntry )
+    CIdxTree*         /*i_pIdxTree*/,
+    EIdxTreeEntryType i_entryType,
+    const QString&    i_strKeyInTree,
+    int               i_idxInTree )
 //------------------------------------------------------------------------------
 {
     // The trace admin object index tree will be locked so it will not be changed
@@ -2944,7 +2974,9 @@ void CIpcTrcServer::onTrcAdminObjIdxTreeEntryAboutToBeRemoved(
 
     if( m_pTrcMthFile != nullptr && m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
     {
-        strMthInArgs = QString(i_pTreeEntry == nullptr ? "null" : i_pTreeEntry->keyInTree());
+        strMthInArgs  = "EntryType: " + idxTreeEntryType2Str(i_entryType);
+        strMthInArgs += ", TreeEntry: " + i_strKeyInTree;
+        strMthInArgs += ", TreeEntryIdx: " + QString::number(i_idxInTree);
     }
 
     CMethodTracer mthTracer(
@@ -2964,23 +2996,30 @@ void CIpcTrcServer::onTrcAdminObjIdxTreeEntryAboutToBeRemoved(
         return;
     }
 
-    if( i_pTreeEntry != nullptr && isConnected() )
+    if( isConnected() )
     {
-        if( i_pTreeEntry->entryType() == EIdxTreeEntryType::Branch )
+        // Could have already been removed and may no longer exist.
+        CIdxTreeEntry* pTreeEntry = m_pTrcAdminObjIdxTree->findEntry(i_strKeyInTree);
+
+        if( i_entryType == EIdxTreeEntryType::Branch )
         {
-            sendBranch(
-                /* iSocketId     */ ESocketIdAllSockets,
-                /* systemMsgType */ MsgProtocol::ESystemMsgTypeInd,
-                /* cmd           */ MsgProtocol::ECommandDelete,
-                /* pBranch       */ i_pTreeEntry );
+            if( pTreeEntry != nullptr )
+            {
+                sendBranch(
+                    /* iSocketId     */ ESocketIdAllSockets,
+                    /* systemMsgType */ MsgProtocol::ESystemMsgTypeInd,
+                    /* cmd           */ MsgProtocol::ECommandDelete,
+                    /* pBranch       */ pTreeEntry );
+            }
         }
-        else if( i_pTreeEntry->entryType() == EIdxTreeEntryType::Leave )
+        else if( i_entryType == EIdxTreeEntryType::Leave )
         {
             sendAdminObj(
                 /* iSocketId     */ ESocketIdAllSockets,
                 /* systemMsgType */ MsgProtocol::ESystemMsgTypeInd,
                 /* cmd           */ MsgProtocol::ECommandDelete,
-                /* pTrcAdminObj  */ i_pTreeEntry );
+                /* strKeyInTree  */ i_strKeyInTree,
+                /* idxInTree     */ i_idxInTree );
         }
     }
 } // onTrcAdminObjIdxTreeEntryAboutToBeRemoved
@@ -3035,7 +3074,8 @@ void CIpcTrcServer::onTrcAdminObjIdxTreeEntryChanged(
                 /* iSocketId     */ ESocketIdAllSockets,
                 /* systemMsgType */ MsgProtocol::ESystemMsgTypeInd,
                 /* cmd           */ MsgProtocol::ECommandUpdate,
-                /* pTrcAdminObj  */ i_pTreeEntry );
+                /* strKeyInTree  */ i_pTreeEntry->keyInTree(),
+                /* idxInTree     */ i_pTreeEntry->indexInTree() );
         }
     } // if( i_pTreeEntry != nullptr )
 

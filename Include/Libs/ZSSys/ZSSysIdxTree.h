@@ -171,17 +171,17 @@ signals:
         If this signal is emitted the entry still belongs to the index tree and the keys and indices a returned
         by the entry are still valid.
         @param i_pIdxTree [in] Pointer to index tree.
-        @param i_pTreeEntry [in] Pointer to tree entry which is going to be removed. */
-    void treeEntryAboutToBeRemoved( ZS::System::CIdxTree* i_pIdxTree, ZS::System::CIdxTreeEntry* i_pTreeEntry );
+        @param i_strKeyInTree [in] Unique key of the entry which will be removed from the tree.
+        @param i_idxInTree [in] Index of the entry which will be removed from the tree. */
+    void treeEntryAboutToBeRemoved( ZS::System::CIdxTree* i_pIdxTree, ZS::System::EIdxTreeEntryType i_entryType, const QString& i_strKeyInTree, int i_idxInTree );
     /*! Signal which will be emitted if a tree entry has been removed from the index tree.
         If this signal is emitted the entry no longer belongs to the index tree and the keys and indices returned
         by the entry are invalid. For this the unique key and the index of the entry in the index valid before
         removing the entry from the index tree are provided as arguments with the signal.
         @param i_pIdxTree [in] Pointer to index tree.
-        @param i_pTreeEntry [in] Pointer to tree entry which has been removed.
         @param i_strKeyInTree [in] Unique key of the entry valid before the entry was removed from the tree.
         @param i_idxInTree [in] Index of the entry valid before the entry was removed from the tree. */
-    void treeEntryRemoved( ZS::System::CIdxTree* i_pIdxTree, ZS::System::CIdxTreeEntry* i_pTreeEntry, const QString& i_strKeyInTree, int i_idxInTree );
+    void treeEntryRemoved( ZS::System::CIdxTree* i_pIdxTree, ZS::System::EIdxTreeEntryType i_entryType, const QString& i_strKeyInTree, int i_idxInTree );
     /*! Signal which will be emitted if a tree entry is going to be moved within the index tree.
         If this signal is emitted the entry is still a child of it's current branch and does not belong yet
         to the target parent branch.
@@ -335,7 +335,7 @@ protected: // instance methods (tracing of signals)
     void emit_treeEntryAdded( CIdxTree* i_pIdxTree, CIdxTreeEntry* i_pTreeEntry );
     void emit_treeEntryChanged( CIdxTree* i_pIdxTree, CIdxTreeEntry* i_pTreeEntry );
     void emit_treeEntryAboutToBeRemoved( CIdxTree* i_pIdxTree, CIdxTreeEntry* i_pTreeEntry );
-    void emit_treeEntryRemoved( CIdxTree* i_pIdxTree,CIdxTreeEntry* i_pTreeEntry, const QString& i_strKeyInTree, int i_idxInTree );
+    void emit_treeEntryRemoved( CIdxTree* i_pIdxTree,CIdxTreeEntry* i_pTreeEntry );
     void emit_treeEntryAboutToBeMoved( CIdxTree* i_pIdxTree, CIdxTreeEntry* i_pTreeEntry, CIdxTreeEntry* i_pTargetBranch );
     void emit_treeEntryMoved( CIdxTree* i_pIdxTree, CIdxTreeEntry* i_pTreeEntry, const QString& i_strKeyInTreePrev, CIdxTreeEntry* i_pTargetBranch );
     void emit_treeEntryAboutToBeRenamed( CIdxTree* i_pIdxTree, CIdxTreeEntry* i_pTreeEntry, const QString& i_strNameNew );

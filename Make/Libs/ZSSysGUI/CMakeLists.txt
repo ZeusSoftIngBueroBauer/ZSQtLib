@@ -36,6 +36,7 @@ list(APPEND _Headers
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysDialog.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysEditEnumValueDlg.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysEditIntValueDlg.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSSysEditStringValueDlg.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysErrDlg.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysErrLogDlg.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysErrLogModel.h
@@ -71,6 +72,7 @@ list(APPEND _Sources
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysDialog.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysEditEnumValueDlg.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysEditIntValueDlg.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSSysEditStringValueDlg.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysErrDlg.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysErrLogDlg.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysErrLogModel.cpp

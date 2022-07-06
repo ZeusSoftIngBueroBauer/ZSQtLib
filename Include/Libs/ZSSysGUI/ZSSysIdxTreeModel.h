@@ -34,10 +34,13 @@ may result in using the software modules.
 
 namespace ZS
 {
+#ifdef ZS_TRACE_GUI_MODELS
 namespace Trace
 {
 class CTrcAdminObj;
 }
+#endif
+
 namespace System
 {
 namespace GUI
@@ -158,6 +161,7 @@ public: // instance methods
     void setIsSelected( CModelIdxTreeEntry* i_pModelTreeEntry, bool i_bIsSelected, bool i_bRecursive = false );
 public: // instance methods
     CModelIdxTreeEntry* findModelEntry( CIdxTreeEntry* i_pTreeEntry );
+    CModelIdxTreeEntry* findModelEntry( const QString& i_strKeyInTree );
 public: // instance methods
     QModelIndex index( const QString& i_strKeyInTree, int i_iClm ) const;
 public: // iterator methods
@@ -168,12 +172,13 @@ protected slots:
 protected slots: // overridables
     virtual void onIdxTreeEntryAdded( ZS::System::CIdxTree* i_pIdxTree, ZS::System::CIdxTreeEntry* i_pTreeEntry );
     virtual void onIdxTreeEntryChanged( ZS::System::CIdxTree* i_pIdxTree, ZS::System::CIdxTreeEntry* i_pTreeEntry );
-    virtual void onIdxTreeEntryAboutToBeRemoved( ZS::System::CIdxTree* i_pIdxTree, ZS::System::CIdxTreeEntry* i_pTreeEntry );
+    virtual void onIdxTreeEntryAboutToBeRemoved( ZS::System::CIdxTree* i_pIdxTree, ZS::System::EIdxTreeEntryType i_entryType, const QString& i_strKeyInTree, int i_idxInTree );
     virtual void onIdxTreeEntryMoved( ZS::System::CIdxTree* i_pIdxTree, ZS::System::CIdxTreeEntry* i_pTreeEntry, const QString& i_strKeyInTreePrev, ZS::System::CIdxTreeEntry* i_pTargetBranch );
     virtual void onIdxTreeEntryKeyInTreeChanged( ZS::System::CIdxTree* i_pIdxTree, ZS::System::CIdxTreeEntry* i_pTreeEntry, const QString& i_strKeyInTreePrev );
 protected: // instance methods
     void clear( CModelIdxTreeEntry* i_pModelBranch, bool i_bDestroyTreeEntries = true );
     void remove( CModelIdxTreeEntry* i_pModelTreeEntry );
+    //void updateKeyInTree( CModelIdxTreeEntry* i_pModelTreeEntry );
 public: // overridables of base class QAbstractItemModel
     virtual int rowCount( const QModelIndex& i_modelIdxParent = QModelIndex() ) const override;
     virtual int columnCount( const QModelIndex& i_modelIdxParent = QModelIndex() ) const override;
@@ -242,6 +247,7 @@ protected: // instance members
     /*!< Key is: <EntryTypeSymbol>:<ParentPath>/<Name> (e.g. "L:ZS::Data::CDataTable::FDAC::RF1In") */
     QMap<QString, CModelIdxTreeEntry*> m_mappModelTreeEntries;
     CModelIdxTreeEntry*                m_pModelRoot;
+    #ifdef ZS_TRACE_GUI_MODELS
     /*!< Trace detail level for method tracing.
          Trace output may not be controlled by trace admin objects
          if the index tree belongs the trace server. */
@@ -258,6 +264,7 @@ protected: // instance members
          This trace admin object is used by very often called methods like "data".
          The object will not be created if the index tree's belongs to the trace server. */
     ZS::Trace::CTrcAdminObj* m_pTrcAdminObjNoisyMethods;
+    #endif
 
 }; // class CModelIdxTree
 
