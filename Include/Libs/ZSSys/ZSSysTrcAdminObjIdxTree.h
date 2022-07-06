@@ -85,10 +85,12 @@ public: // instance methods to recursively modify admin objects via object index
     void setEnabled( int i_idxInTree, ZS::System::EEnabled i_enabled );
     void setMethodCallsTraceDetailLevel( int i_idxInTree, ETraceDetailLevelMethodCalls i_eDetailLevel = ETraceDetailLevelMethodCalls::None );
     void setRuntimeInfoTraceDetailLevel( int i_idxInTree, ETraceDetailLevelRuntimeInfo i_eDetailLevel = ETraceDetailLevelRuntimeInfo::None );
+    void setTraceDataFilter( int i_idxInTree, const QString& i_strDataFilter );
 public: // instance methods to recursively modify admin objects via namespace node entries
     void setEnabled( ZS::System::CIdxTreeEntry* i_pBranch, ZS::System::EEnabled i_enabled );
     void setMethodCallsTraceDetailLevel( ZS::System::CIdxTreeEntry* i_pBranch, ETraceDetailLevelMethodCalls i_eDetailLevel = ETraceDetailLevelMethodCalls::None );
     void setRuntimeInfoTraceDetailLevel( ZS::System::CIdxTreeEntry* i_pBranch, ETraceDetailLevelRuntimeInfo i_eDetailLevel = ETraceDetailLevelRuntimeInfo::None );
+    void setTraceDataFilter( ZS::System::CIdxTreeEntry* i_pBranch, const QString& i_strDataFilter );
 public: // overridables
     virtual ZS::System::SErrResultInfo save( const QString& i_strAbsFilePath ) const;
     virtual ZS::System::SErrResultInfo recall( const QString& i_strAbsFilePath );

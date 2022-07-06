@@ -114,6 +114,14 @@ message(STATUS "CMAKE_SOURCE_DIR:         ${CMAKE_SOURCE_DIR}")
 message(STATUS "CMAKE_CURRENT_SOURCE_DIR: ${CMAKE_CURRENT_SOURCE_DIR}")
 message(STATUS "PROJECT_SOURCE_DIR:       ${PROJECT_SOURCE_DIR}")
 
+option(TRACE_MUTEXES "TRACE_MUTEXES" ON)
+option(TRACE_GUI_MODELS "TRACE_GUI_MODELS" ON)
+
+message(STATUS "")
+message(STATUS "TRACE_MUTEXES:            ${TRACE_MUTEXES}")
+message(STATUS "TRACE_GUI_MODELS:         ${TRACE_GUI_MODELS}")
+message(STATUS "")
+
 # Retrieve version information from current git commit.
 # The version numbers will be used
 # - to configure "ZSQtLibs-config-version.cmake" below and
@@ -190,6 +198,13 @@ else()
     #add_compile_options(-Werror) not yet as long as Qt4 is supported
     add_compile_options(-Wno-deprecated)
     add_compile_options(-Wextra -Wpedantic)
+endif()
+
+if (TRACE_MUTEXES)
+    add_compile_options(-DZS_TRACE_MUTEXES)
+endif()
+if (TRACE_GUI_MODELS)
+    add_compile_options(-DZS_TRACE_GUI_MODELS)
 endif()
 
 message(STATUS "")

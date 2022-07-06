@@ -75,21 +75,39 @@ public: // operators
 public: // struct methods
     QString toString() const;
 public: // struct members
-    bool    m_bEnabled;                             /*!< Tracing may be enabled or disabled for both writing to local trace file and sending data to remote client. */
-    QString m_strAdminObjFileAbsFilePath;           /*!< Absolute file path the tree of trace admin objects and their settings will be saved and recalled. */
-    bool    m_bNewTrcAdminObjsEnabledAsDefault;     /*!< Defines whether newly created trace admin objects should be enabled as default. */
-    ETraceDetailLevelMethodCalls m_eNewTrcAdminObjsMethodCallsDefaultDetailLevel;   /*!< Defines the trace detail level for method calls of newly created trace admin objects. */
-    ETraceDetailLevelRuntimeInfo m_eNewTrcAdminObjsRuntimeInfoDefaultDetailLevel;   /*!< Defines the trace detail level for runtime info of newly created trace admin objects. */
-    bool    m_bUseIpcServer;                        /*!< Defines whether trace output should be send to remote client. */
-    bool    m_bCacheDataIfNotConnected;             /*!< If a trace client is not connect the flag defines whether trace data should be internally cached until a client connects. */
-    int     m_iCacheDataMaxArrLen;                  /*!< If caching is enabled defines the maximum number of trace entries which should be locally cached. */
-    bool    m_bUseLocalTrcFile;                     /*!< Defines whether trace output should be written to a local trace file. */
-    QString m_strLocalTrcFileAbsFilePath;           /*!< If a local log file is used defines the absolute file path for the log file. */
-    int     m_iLocalTrcFileAutoSaveInterval_ms;     /*!< Auto save interval for the local log file. */
-    int     m_iLocalTrcFileSubFileCountMax;         /*!< Number of sub files to be created for round robin. The oldest log file will be overwritten. */
-    int     m_iLocalTrcFileSubFileLineCountMax;     /*!< Number of lines which can be written to a log file before the file is closed and the next sub log file is created. */
-    bool    m_bLocalTrcFileCloseFileAfterEachWrite; /*!< For hard to find errors the log file may be immediately closed after an entry has been written.
-                                                         Use with special care as enabling this feature extremely slows down the program. */
+    /*!< Tracing may be enabled or disabled for both writing to local trace file and sending data to remote client. */
+    bool m_bEnabled;
+    /*!< Absolute file path the tree of trace admin objects and their settings will be saved and recalled.
+         May be initialized by CTrcServer::GetAdminObjFileAbsoluteFilePath after the applications
+         organization and application name have been set. */
+    QString m_strAdminObjFileAbsFilePath;
+    /*!< Defines whether newly created trace admin objects should be enabled as default. */
+    bool m_bNewTrcAdminObjsEnabledAsDefault;
+    /*!< Defines the trace detail level for method calls of newly created trace admin objects. */
+    ETraceDetailLevelMethodCalls m_eNewTrcAdminObjsMethodCallsDefaultDetailLevel;   
+    /*!< Defines the trace detail level for runtime info of newly created trace admin objects. */
+    ETraceDetailLevelRuntimeInfo m_eNewTrcAdminObjsRuntimeInfoDefaultDetailLevel;   
+    /*!< Defines whether trace output should be send to remote client. */
+    bool m_bUseIpcServer;
+    /*!< If a trace client is not connect the flag defines whether trace data should be internally cached until a client connects. */
+    bool m_bCacheDataIfNotConnected;
+    /*!< If caching is enabled defines the maximum number of trace entries which should be locally cached. */
+    int m_iCacheDataMaxArrLen;
+    /*!< Defines whether trace output should be written to a local trace file. */
+    bool m_bUseLocalTrcFile;
+    /*!< If a local log file is used defines the absolute file path for the log file.
+         May be initialized by CTrcServer::GetLocalTrcFileAbsoluteFilePath after the applications
+         organization and application name have been set. */
+    QString m_strLocalTrcFileAbsFilePath;
+    /*!< Auto save interval for the local log file. */
+    int m_iLocalTrcFileAutoSaveInterval_ms;
+    /*!< Number of sub files to be created for round robin. The oldest log file will be overwritten. */
+    int m_iLocalTrcFileSubFileCountMax;
+    /*!< Number of lines which can be written to a log file before the file is closed and the next sub log file is created. */
+    int m_iLocalTrcFileSubFileLineCountMax;
+    /*!< For hard to find errors the log file may be immediately closed after an entry has been written.
+         Use with special care as enabling this feature extremely slows down the program. */
+    bool m_bLocalTrcFileCloseFileAfterEachWrite;
 
 }; // struct STrcServerSettings
 

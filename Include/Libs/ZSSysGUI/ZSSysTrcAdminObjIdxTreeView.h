@@ -134,6 +134,7 @@ protected slots:
     void onActionNameSpaceDisableAdminObjsTriggered( bool i_bChecked );
     void onActionNameSpaceSetAdminObjsMethodCallsDetailLevelTriggered( bool i_bChecked );
     void onActionNameSpaceSetAdminObjsRuntimeInfoDetailLevelTriggered( bool i_bChecked );
+    void onActionNameSpaceSetAdminObjsTraceDataFilterTriggered( bool i_bChecked );
 protected: // instance members
     CDelegateIdxTreeTrcAdminObjs* m_pDelegate;
     QMenu*      m_pMenuNameSpaceContext;
@@ -144,6 +145,7 @@ protected: // instance members
     QAction*    m_pActionNameSpaceDisableAdminObjs;
     QAction*    m_pActionNameSpaceSetAdminObjsMethodCallsDetailLevel;
     QAction*    m_pActionNameSpaceSetAdminObjsRuntimeInfoDetailLevel;
+    QAction*    m_pActionNameSpaceSetAdminObjsTraceDataFilter;
     QModelIndex m_modelIdxSelectedOnMousePressEvent;
     QModelIndex m_modelIdxSelectedOnMouseReleaseEvent;
     ZS::Trace::ETraceDetailLevelMethodCalls m_eTrcDetailLevel;

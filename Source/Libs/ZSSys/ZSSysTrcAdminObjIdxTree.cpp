@@ -774,14 +774,14 @@ public: // instance methods to recursively modify admin objects via object index
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CIdxTreeTrcAdminObjs::setEnabled( int i_iObjId, EEnabled i_enabled )
+void CIdxTreeTrcAdminObjs::setEnabled( int i_iIdxInTree, EEnabled i_enabled )
 //------------------------------------------------------------------------------
 {
     QString strAddTrcInfo;
 
     if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
     {
-        strAddTrcInfo  = "ObjId: " + QString::number(i_iObjId);
+        strAddTrcInfo  = "IdxInTree: " + QString::number(i_iIdxInTree);
         strAddTrcInfo += ", Enabled: " + CEnumEnabled::toString(i_enabled);
     }
 
@@ -797,7 +797,7 @@ void CIdxTreeTrcAdminObjs::setEnabled( int i_iObjId, EEnabled i_enabled )
 
     CMutexLocker mtxLocker(m_pMtx);
 
-    CIdxTreeEntry* pTreeEntry = getEntry(i_iObjId);
+    CIdxTreeEntry* pTreeEntry = getEntry(i_iIdxInTree);
 
     if( pTreeEntry != nullptr )
     {
@@ -815,19 +815,18 @@ void CIdxTreeTrcAdminObjs::setEnabled( int i_iObjId, EEnabled i_enabled )
             }
         }
     }
-
 } // setEnabled
 
 //------------------------------------------------------------------------------
 void CIdxTreeTrcAdminObjs::setMethodCallsTraceDetailLevel(
-    int i_iObjId, ETraceDetailLevelMethodCalls i_eDetailLevel )
+    int i_iIdxInTree, ETraceDetailLevelMethodCalls i_eDetailLevel )
 //------------------------------------------------------------------------------
 {
     QString strAddTrcInfo;
 
     if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
     {
-        strAddTrcInfo  = "ObjId: " + QString::number(i_iObjId);
+        strAddTrcInfo  = "IdxInTree: " + QString::number(i_iIdxInTree);
         strAddTrcInfo += ", DetailLevel: " + CEnumTraceDetailLevelMethodCalls(i_eDetailLevel).toString();
     }
 
@@ -843,7 +842,7 @@ void CIdxTreeTrcAdminObjs::setMethodCallsTraceDetailLevel(
 
     CMutexLocker mtxLocker(m_pMtx);
 
-    CIdxTreeEntry* pTreeEntry = getEntry(i_iObjId);
+    CIdxTreeEntry* pTreeEntry = getEntry(i_iIdxInTree);
 
     if( pTreeEntry != nullptr )
     {
@@ -861,19 +860,18 @@ void CIdxTreeTrcAdminObjs::setMethodCallsTraceDetailLevel(
             }
         }
     }
-
 } // setMethodCallsTraceDetailLevel
 
 //------------------------------------------------------------------------------
 void CIdxTreeTrcAdminObjs::setRuntimeInfoTraceDetailLevel(
-    int i_iObjId, ETraceDetailLevelRuntimeInfo i_eDetailLevel )
+    int i_iIdxInTree, ETraceDetailLevelRuntimeInfo i_eDetailLevel )
 //------------------------------------------------------------------------------
 {
     QString strAddTrcInfo;
 
     if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
     {
-        strAddTrcInfo  = "ObjId: " + QString::number(i_iObjId);
+        strAddTrcInfo  = "IdxInTree: " + QString::number(i_iIdxInTree);
         strAddTrcInfo += ", DetailLevel: " + CEnumTraceDetailLevelRuntimeInfo(i_eDetailLevel).toString();
     }
 
@@ -889,7 +887,7 @@ void CIdxTreeTrcAdminObjs::setRuntimeInfoTraceDetailLevel(
 
     CMutexLocker mtxLocker(m_pMtx);
 
-    CIdxTreeEntry* pTreeEntry = getEntry(i_iObjId);
+    CIdxTreeEntry* pTreeEntry = getEntry(i_iIdxInTree);
 
     if( pTreeEntry != nullptr )
     {
@@ -907,8 +905,52 @@ void CIdxTreeTrcAdminObjs::setRuntimeInfoTraceDetailLevel(
             }
         }
     }
-
 } // setRuntimeInfoTraceDetailLevel
+
+//------------------------------------------------------------------------------
+void CIdxTreeTrcAdminObjs::setTraceDataFilter(
+    int i_iIdxInTree, const QString& i_strDataFilter )
+//------------------------------------------------------------------------------
+{
+    QString strAddTrcInfo;
+
+    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    {
+        strAddTrcInfo  = "IdxInTree: " + QString::number(i_iIdxInTree);
+        strAddTrcInfo += ", Filter: " + i_strDataFilter;
+    }
+
+    CMethodTracer mthTracer(
+        /* pTrcServer         */ dynamic_cast<CTrcServer*>(parent()), // may be nullptr if the parent is not the trace server
+        /* eTrcDetailLevel    */ m_eTrcDetailLevel,
+        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
+        /* strObjName         */ objectName(),
+        /* strMethod          */ "setTraceDataFilter",
+        /* strMethodInArgs    */ strAddTrcInfo );
+
+    CMutexLocker mtxLocker(m_pMtx);
+
+    CIdxTreeEntry* pTreeEntry = getEntry(i_iIdxInTree);
+
+    if( pTreeEntry != nullptr )
+    {
+        if( pTreeEntry->entryType() == EIdxTreeEntryType::Root || pTreeEntry->entryType() == EIdxTreeEntryType::Branch )
+        {
+            setTraceDataFilter(pTreeEntry, i_strDataFilter);
+        }
+        else if( pTreeEntry->entryType() == EIdxTreeEntryType::Leave )
+        {
+            CTrcAdminObj* pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(pTreeEntry);
+
+            if( pTrcAdminObj != nullptr )
+            {
+                pTrcAdminObj->setTraceDataFilter(i_strDataFilter);
+            }
+        }
+    }
+} // setTraceDataFilter
 
 /*==============================================================================
 public: // instance methods to recursively modify admin objects via namespace node entries
@@ -969,7 +1011,6 @@ void CIdxTreeTrcAdminObjs::setEnabled( CIdxTreeEntry* i_pBranch, EEnabled i_enab
             }
         } // for( idxEntry = 0; idxEntry < i_pBranch->count(); ++idxEntry )
     } // if( i_pBranch != nullptr )
-
 } // setEnabled
 
 //------------------------------------------------------------------------------
@@ -1028,7 +1069,6 @@ void CIdxTreeTrcAdminObjs::setMethodCallsTraceDetailLevel(
             }
         } // for( idxEntry = 0; idxEntry < i_pBranch->count(); ++idxEntry )
     } // if( i_pBranch != nullptr )
-
 } // setMethodCallsTraceDetailLevel
 
 //------------------------------------------------------------------------------
@@ -1087,8 +1127,65 @@ void CIdxTreeTrcAdminObjs::setRuntimeInfoTraceDetailLevel(
             }
         } // for( idxEntry = 0; idxEntry < i_pBranch->count(); ++idxEntry )
     } // if( i_pBranch != nullptr )
-
 } // setRuntimeInfoTraceDetailLevel
+
+//------------------------------------------------------------------------------
+void CIdxTreeTrcAdminObjs::setTraceDataFilter(
+    CIdxTreeEntry* i_pBranch, const QString& i_strDataFilter )
+//------------------------------------------------------------------------------
+{
+    QString strAddTrcInfo;
+
+    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    {
+        strAddTrcInfo  = "Branch: " + QString(i_pBranch == nullptr ? "nullptr" : i_pBranch->path());
+        strAddTrcInfo += ", Filter: " + i_strDataFilter;
+    }
+
+    CMethodTracer mthTracer(
+        /* pTrcServer         */ dynamic_cast<CTrcServer*>(parent()), // may be nullptr if the parent is not the trace server
+        /* eTrcDetailLevel    */ m_eTrcDetailLevel,
+        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
+        /* strObjName         */ objectName(),
+        /* strMethod          */ "setTraceDataFilter",
+        /* strMethodInArgs    */ strAddTrcInfo );
+
+    CMutexLocker mtxLocker(m_pMtx);
+
+    if( i_pBranch != nullptr )
+    {
+        CIdxTreeEntry* pTreeEntry;
+        CTrcAdminObj*  pTrcAdminObj;
+        int            idxEntry;
+
+        for( idxEntry = 0; idxEntry < i_pBranch->count(); ++idxEntry )
+        {
+            pTreeEntry = i_pBranch->at(idxEntry);
+
+            if( pTreeEntry != nullptr )
+            {
+                if( pTreeEntry->entryType() == EIdxTreeEntryType::Leave )
+                {
+                    pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(pTreeEntry);
+
+                    if( pTrcAdminObj != nullptr )
+                    {
+                        if( pTrcAdminObj->getTraceDataFilter() != i_strDataFilter )
+                        {
+                            pTrcAdminObj->setTraceDataFilter(i_strDataFilter);
+                        }
+                    }
+                }
+                else // if( pTreeEntry->entryType() == EIdxTreeEntryType::Root || Branch )
+                {
+                    setTraceDataFilter(pTreeEntry, i_strDataFilter);
+                }
+            }
+        } // for( idxEntry = 0; idxEntry < i_pBranch->count(); ++idxEntry )
+    } // if( i_pBranch != nullptr )
+} // setTraceDataFilter
 
 /*==============================================================================
 public: // overridables

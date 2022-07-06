@@ -351,7 +351,7 @@ void CTrcMthFile::setAbsoluteFilePath(const QString& i_strAbsFilePath)
 {
     QMutexLocker mtxLocker(&s_mtx);
 
-    if( m_pLogFile != nullptr )
+    if( m_pLogFile != nullptr && !i_strAbsFilePath.isEmpty() )
     {
         QString strAbsFilePath = m_pLogFile->absoluteFilePath();
 

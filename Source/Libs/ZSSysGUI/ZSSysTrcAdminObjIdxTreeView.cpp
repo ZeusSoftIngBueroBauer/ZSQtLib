@@ -43,6 +43,7 @@ may result in using the software modules.
 #include "ZSSysGUI/ZSSysTrcAdminObjIdxTreeModel.h"
 #include "ZSSysGUI/ZSSysIdxTreeModelEntry.h"
 #include "ZSSysGUI/ZSSysEditEnumValueDlg.h"
+#include "ZSSysGUI/ZSSysEditStringValueDlg.h"
 #include "ZSSysGUI/ZSSysGUIAux.h"
 #include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysException.h"
@@ -775,6 +776,7 @@ CTreeViewIdxTreeTrcAdminObjs::CTreeViewIdxTreeTrcAdminObjs(
     m_pActionNameSpaceDisableAdminObjs(nullptr),
     m_pActionNameSpaceSetAdminObjsMethodCallsDetailLevel(nullptr),
     m_pActionNameSpaceSetAdminObjsRuntimeInfoDetailLevel(nullptr),
+    m_pActionNameSpaceSetAdminObjsTraceDataFilter(nullptr),
     m_modelIdxSelectedOnMousePressEvent(),
     m_modelIdxSelectedOnMouseReleaseEvent(),
     m_eTrcDetailLevel(i_eTrcDetailLevel),
@@ -920,6 +922,18 @@ CTreeViewIdxTreeTrcAdminObjs::CTreeViewIdxTreeTrcAdminObjs(
         throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
     }
 
+    m_pActionNameSpaceSetAdminObjsTraceDataFilter = new QAction("Recursively Set Data Filter of Admin Objects",this);
+    m_pMenuNameSpaceContext->addAction(m_pActionNameSpaceSetAdminObjsTraceDataFilter);
+
+    if( !QObject::connect(
+        /* pObjSender   */ m_pActionNameSpaceSetAdminObjsTraceDataFilter,
+        /* szSignal     */ SIGNAL( triggered(bool) ),
+        /* pObjReceiver */ this,
+        /* szSlot       */ SLOT( onActionNameSpaceSetAdminObjsTraceDataFilterTriggered(bool) ) ) )
+    {
+        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
+    }
+
 } // ctor
 
 //------------------------------------------------------------------------------
@@ -947,6 +961,7 @@ CTreeViewIdxTreeTrcAdminObjs::~CTreeViewIdxTreeTrcAdminObjs()
     m_pActionNameSpaceDisableAdminObjs = nullptr;
     m_pActionNameSpaceSetAdminObjsMethodCallsDetailLevel = nullptr;
     m_pActionNameSpaceSetAdminObjsRuntimeInfoDetailLevel = nullptr;
+    m_pActionNameSpaceSetAdminObjsTraceDataFilter = nullptr;
     //m_modelIdxSelectedOnMousePressEvent;
     //m_modelIdxSelectedOnMouseReleaseEvent;
     m_eTrcDetailLevel = static_cast<ETraceDetailLevelMethodCalls>(0);
@@ -1624,7 +1639,6 @@ void CTreeViewIdxTreeTrcAdminObjs::onActionNameSpaceEnableAdminObjsTriggered( bo
             }
         }
     }
-
 } // onActionNameSpaceEnableAdminObjsTriggered
 
 //------------------------------------------------------------------------------
@@ -1668,7 +1682,6 @@ void CTreeViewIdxTreeTrcAdminObjs::onActionNameSpaceDisableAdminObjsTriggered( b
             }
         }
     }
-
 } // onActionNameSpaceDisableAdminObjsTriggered
 
 //------------------------------------------------------------------------------
@@ -1733,7 +1746,6 @@ void CTreeViewIdxTreeTrcAdminObjs::onActionNameSpaceSetAdminObjsMethodCallsDetai
             }
         }
     }
-
 } // onActionNameSpaceSetAdminObjsMethodCallsDetailLevelTriggered
 
 //------------------------------------------------------------------------------
@@ -1798,5 +1810,66 @@ void CTreeViewIdxTreeTrcAdminObjs::onActionNameSpaceSetAdminObjsRuntimeInfoDetai
             }
         }
     }
-
 } // onActionNameSpaceSetAdminObjsRuntimeInfoDetailLevelTriggered
+
+//------------------------------------------------------------------------------
+void CTreeViewIdxTreeTrcAdminObjs::onActionNameSpaceSetAdminObjsTraceDataFilterTriggered( bool i_bChecked )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+
+    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    {
+        strMthInArgs = "Checked: " + bool2Str(i_bChecked);
+    }
+
+    CMethodTracer mthTracer(
+        /* pTrcServer         */ CTrcServer::GetInstance(),
+        /* eTrcDetailLevel    */ m_eTrcDetailLevel,
+        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
+        /* strObjName         */ objectName(),
+        /* strMethod          */ "onActionNameSpaceSetAdminObjsTraceDataFilterTriggered",
+        /* strMethodInArgs    */ strMthInArgs );
+
+    if( m_modelIdxSelectedOnMousePressEvent.isValid() )
+    {
+        CModelIdxTreeTrcAdminObjs* pModelIdxTree = dynamic_cast<CModelIdxTreeTrcAdminObjs*>(model());
+
+        if( pModelIdxTree != nullptr )
+        {
+            CIdxTreeTrcAdminObjs* pIdxTree = pModelIdxTree->idxTree();
+
+            CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(m_modelIdxSelectedOnMouseReleaseEvent.internalPointer());
+
+            CModelIdxTreeEntry* pModelBranch = pModelTreeEntry;
+
+            if( pIdxTree != nullptr && pModelBranch != nullptr )
+            {
+                CIdxTreeEntry* pBranch = pModelBranch->treeEntry();
+
+                CDlgEditStringValue* pDlg = CDlgEditStringValue::CreateInstance(
+                    /* strTitle    */ QCoreApplication::applicationName(),
+                    /* strObjName  */ "TraceDataFilter",
+                    /* pWdgtParent */ this );
+                pDlg->setValueName("DataFilter");
+                pDlg->setValue("");
+
+                if( pDlg->exec() == QDialog::Accepted )
+                {
+                    try
+                    {
+                        QString strDataFilter = pDlg->getValue();
+                        pIdxTree->setTraceDataFilter(pBranch, strDataFilter);
+                    }
+                    catch(CException&)
+                    {
+                    }
+                }
+                CDlgEditEnumValue::DestroyInstance(pDlg);
+                pDlg = nullptr;
+            }
+        }
+    }
+} // onActionNameSpaceSetAdminObjsTraceDataFilterTriggered
