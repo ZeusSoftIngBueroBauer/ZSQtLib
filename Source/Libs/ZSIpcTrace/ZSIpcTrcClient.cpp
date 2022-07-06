@@ -449,7 +449,8 @@ void CIpcTrcClient::sendNameSpace(
     CIdxTreeEntry*               i_pBranch,
     EEnabled                     i_enabled,
     ETraceDetailLevelMethodCalls i_eDetailLevelMethodCalls,
-    ETraceDetailLevelRuntimeInfo i_eDetailLevelRuntimeInfo )
+    ETraceDetailLevelRuntimeInfo i_eDetailLevelRuntimeInfo,
+    const QString&               i_strDataFilter )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -462,6 +463,7 @@ void CIpcTrcClient::sendNameSpace(
         strMthInArgs += ", Enabled: " + CEnumEnabled(i_enabled).toString();
         strMthInArgs += ", DetailLevelMethodCalls: " + CEnumTraceDetailLevelMethodCalls(i_eDetailLevelMethodCalls).toString();
         strMthInArgs += ", DetailLevelRuntimeInfo: " + CEnumTraceDetailLevelRuntimeInfo(i_eDetailLevelRuntimeInfo).toString();
+        strMthInArgs += ", DataFilter: " + i_strDataFilter;
     }
 
     CMethodTracer mthTracer(
@@ -495,6 +497,10 @@ void CIpcTrcClient::sendNameSpace(
         if( i_eDetailLevelRuntimeInfo != ETraceDetailLevelRuntimeInfo::Undefined )
         {
             strMsg += " MethodCallsDetailLevel=\"" + CEnumTraceDetailLevelRuntimeInfo(i_eDetailLevelRuntimeInfo).toString() + "\"";
+        }
+        if( !i_strDataFilter.isNull() )
+        {
+            strMsg += " DataFilter=\"" + i_strDataFilter + "\"";
         }
         strMsg += "/>";
 
@@ -611,6 +617,8 @@ void CIpcTrcClient::onReceivedData( const QByteArray& i_byteArr )
                             QString  strBranchName;
                             int      idxInTree = -1;
                             EEnabled enabled = EEnabled::Undefined;
+                            bool     bSetDataFilter = false;
+                            QString  strDataFilter;
                             ETraceDetailLevelMethodCalls eDetailLevelMethodCalls = ETraceDetailLevelMethodCalls::Undefined;
                             ETraceDetailLevelRuntimeInfo eDetailLevelRuntimeInfo = ETraceDetailLevelRuntimeInfo::Undefined;
 
@@ -662,6 +670,11 @@ void CIpcTrcClient::onReceivedData( const QByteArray& i_byteArr )
                                     {
                                         xmlStreamReader.raiseError("Attribute \"RuntimeInfoDetailLevel\" (" + strAttr + ") is out of range");
                                     }
+                                }
+                                if( !xmlStreamReader.hasError() && xmlStreamReader.attributes().hasAttribute("DataFilter") )
+                                {
+                                    strDataFilter = xmlStreamReader.attributes().value("DataFilter").toString();
+                                    bSetDataFilter = true;
                                 }
 
                                 if( !xmlStreamReader.hasError() )
@@ -741,6 +754,9 @@ void CIpcTrcClient::onReceivedData( const QByteArray& i_byteArr )
                                         }
                                         if( eDetailLevelRuntimeInfo != ETraceDetailLevelRuntimeInfo::Undefined ) {
                                             m_pTrcAdminObjIdxTree->setRuntimeInfoTraceDetailLevel(pBranch, eDetailLevelRuntimeInfo);
+                                        }
+                                        if( bSetDataFilter ) {
+                                            m_pTrcAdminObjIdxTree->setTraceDataFilter(pBranch, strDataFilter);
                                         }
                                     }
                                     m_bOnReceivedDataUpdateInProcess = false;

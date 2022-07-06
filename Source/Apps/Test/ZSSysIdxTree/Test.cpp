@@ -850,19 +850,6 @@ CTest::CTest() :
 
     new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " Press Up",
-        /* strOperation    */ "TreeViewIdxTree.keyEvent(Press Up)",
-        /* pTSGrpParent    */ pGrpTreeViewKeyboardInputsCopyLA0B2o4toA0B2C3,
-        /* szDoTestStepFct */ SLOT(doTestStepKeyboardInputs(ZS::Test::CTestStep*)) );
-    new ZS::Test::CTestStep(
-        /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " Release Up",
-        /* strOperation    */ "TreeViewIdxTree.keyEvent(Release Up)",
-        /* pTSGrpParent    */ pGrpTreeViewKeyboardInputsCopyLA0B2o4toA0B2C3,
-        /* szDoTestStepFct */ SLOT(doTestStepKeyboardInputs(ZS::Test::CTestStep*)) );
-
-    new ZS::Test::CTestStep(
-        /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " Press Ctrl-c",
         /* strOperation    */ "TreeViewIdxTree.keyEvent(Press Ctrl-c)",
         /* pTSGrpParent    */ pGrpTreeViewKeyboardInputsCopyLA0B2o4toA0B2C3,

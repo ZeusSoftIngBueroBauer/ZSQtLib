@@ -57,6 +57,20 @@ public: // ctor
 //------------------------------------------------------------------------------
 /*! @brief Creates a server settings structure.
 
+    Please note that the members m_strAdminObjFileAbsFilePath and
+    m_strLocalTrcFileAbsFilePath only could be initialized automatically after
+    the applications organizsation and application name habe been set.
+    As thats not always the case they must be set "manually" at the right time.
+    E.g. right after setting the applications organization and application name
+    during startup as follows:
+
+        QCoreApplication::setOrganizationName("MyOrganization");
+        QCoreApplication::setOrganizationDomain("www.MyOrganization.com");
+        QCoreApplication::setApplicationName("MyAppName");
+
+        m_trcServerSettings.m_strAdminObjFileAbsFilePath = CTrcServer::GetAdminObjFileAbsoluteFilePath();
+        m_trcServerSettings.m_strLocalTrcFileAbsFilePath = CTrcServer::GetLocalTrcFileAbsoluteFilePath();
+
     @param i_bEnabled [in] Default: true
     @param i_bNewTrcAdminObjsEnabledAsDefault [in] Default: true
     @param i_eNewTrcAdminObjsMethodCallsDefaultDetailLevel [in] Default: None

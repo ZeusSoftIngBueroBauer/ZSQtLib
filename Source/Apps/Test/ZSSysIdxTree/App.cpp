@@ -87,7 +87,7 @@ CApplication::CApplication(
     const QString& i_strAppName,
     const QString& i_strWindowTitle ) :
 //------------------------------------------------------------------------------
-    CGUIApp(i_argc,i_argv),
+    CGUIApp(i_argc, i_argv),
     m_bReqExecTreeGarbageCollectorEnabled(true),
     m_fReqExecTreeGarbageCollectorInterval_s(5.0),
     m_fReqExecTreeGarbageCollectorElapsed_s(60.0),
@@ -109,6 +109,9 @@ CApplication::CApplication(
     QCoreApplication::setOrganizationName(i_strOrganizationName);
     QCoreApplication::setOrganizationDomain(i_strOrganizationDomain);
     QCoreApplication::setApplicationName(i_strAppName);
+
+    m_trcServerSettings.m_strAdminObjFileAbsFilePath = CTrcServer::GetAdminObjFileAbsoluteFilePath();
+    m_trcServerSettings.m_strLocalTrcFileAbsFilePath = CTrcServer::GetLocalTrcFileAbsoluteFilePath();
 
     QIcon iconApp;
 

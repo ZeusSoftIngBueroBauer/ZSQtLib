@@ -1208,7 +1208,12 @@ CIdxTreeEntry* CIdxTree::findEntry( const QString& i_strKeyInTree ) const
         /* strMethodInArgs    */ "" );
 
     CMutexLocker mtxLocker(m_pMtx);
-    return m_mappTreeEntries.value(i_strKeyInTree, nullptr);
+    CIdxTreeEntry* pTreeEntry = m_mappTreeEntries.value(i_strKeyInTree, nullptr);
+    if( pTreeEntry == nullptr && m_pRoot != nullptr && m_pRoot->keyInTree() == i_strKeyInTree )
+    {
+        pTreeEntry = m_pRoot;
+    }
+    return pTreeEntry;
 }
 
 /*==============================================================================
@@ -2463,7 +2468,7 @@ void CIdxTree::remove( CIdxTreeEntry* i_pTreeEntry )
 
     } // if( i_pTreeEntry != m_pRoot )
 
-    emit_treeEntryRemoved(this, i_pTreeEntry, strKeyInTree, idxInTree);
+    emit_treeEntryRemoved(this, i_pTreeEntry);
 
 } // remove
 
@@ -4413,7 +4418,7 @@ void CIdxTree::emit_treeEntryAboutToBeRemoved( CIdxTree* i_pIdxTree, CIdxTreeEnt
         /* strMethod          */ "emit_treeEntryAboutToBeRemoved",
         /* strMethodInArgs    */ strMthInArgs );
 
-    emit treeEntryAboutToBeRemoved(i_pIdxTree, i_pTreeEntry);
+    emit treeEntryAboutToBeRemoved(i_pIdxTree, i_pTreeEntry->entryType(), i_pTreeEntry->keyInTree(), i_pTreeEntry->indexInTree());
 
 } // emit_treeEntryAboutToBeRemoved
 
@@ -4427,10 +4432,8 @@ void CIdxTree::emit_treeEntryAboutToBeRemoved( CIdxTree* i_pIdxTree, CIdxTreeEnt
     @param i_idxInTree [in] Index of the entry valid before the entry was removed from the tree.
 */
 void CIdxTree::emit_treeEntryRemoved(
-    CIdxTree*              i_pIdxTree,
-    CIdxTreeEntry* i_pTreeEntry,
-    const QString&         i_strKeyInTree,
-    int                    i_idxInTree )
+    CIdxTree*      i_pIdxTree,
+    CIdxTreeEntry* i_pTreeEntry )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -4439,8 +4442,6 @@ void CIdxTree::emit_treeEntryRemoved(
     {
         strMthInArgs = "IdxTree: " + QString(i_pIdxTree == nullptr ? "nullptr" : i_pIdxTree->objectName());
         strMthInArgs += ", TreeEntry: " + QString(i_pTreeEntry == nullptr ? "nullptr" : i_pTreeEntry->name());
-        strMthInArgs += ", KeyInTree: " + i_strKeyInTree;
-        strMthInArgs += ", IdxInTree: " + QString::number(i_idxInTree);
     }
 
     CMethodTracer mthTracer(
@@ -4454,7 +4455,7 @@ void CIdxTree::emit_treeEntryRemoved(
         /* strMethod          */ "emit_treeEntryRemoved",
         /* strMethodInArgs    */ strMthInArgs );
 
-    emit treeEntryRemoved(i_pIdxTree, i_pTreeEntry, i_strKeyInTree, i_idxInTree);
+    emit treeEntryRemoved(i_pIdxTree, i_pTreeEntry->entryType(), i_pTreeEntry->keyInTree(), i_pTreeEntry->indexInTree());
 
 } // emit_treeEntryRemoved
 

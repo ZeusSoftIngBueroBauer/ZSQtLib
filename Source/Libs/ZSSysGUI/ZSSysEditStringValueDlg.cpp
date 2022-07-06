@@ -30,14 +30,16 @@ may result in using the software modules.
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 #include <QtGui/qlabel.h>
 #include <QtGui/qlayout.h>
+#include <QtGui/qlineedit.h>
 #include <QtGui/qpushbutton.h>
 #else
 #include <QtWidgets/qlabel.h>
 #include <QtWidgets/qlayout.h>
+#include <QtWidgets/qlineedit.h>
 #include <QtWidgets/qpushbutton.h>
 #endif
 
-#include "ZSSysGUI/ZSSysEditIntValueDlg.h"
+#include "ZSSysGUI/ZSSysEditStringValueDlg.h"
 #include "ZSSysGUI/ZSSysSepLine.h"
 #include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysErrResult.h"
@@ -51,7 +53,7 @@ using namespace ZS::System::GUI;
 
 
 /*******************************************************************************
-class CDlgEditIntValue : public QDialog
+class CDlgEditStringValue : public QDialog
 *******************************************************************************/
 
 /*==============================================================================
@@ -59,7 +61,7 @@ public: // class methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CDlgEditIntValue* CDlgEditIntValue::CreateInstance(
+CDlgEditStringValue* CDlgEditStringValue::CreateInstance(
     const QString&  i_strDlgTitle,
     const QString&  i_strObjName,
     QWidget*        i_pWdgtParent,
@@ -72,7 +74,7 @@ CDlgEditIntValue* CDlgEditIntValue::CreateInstance(
         throw CException(__FILE__, __LINE__, EResultObjAlreadyInList, strKey);
     }
 
-    return new CDlgEditIntValue(
+    return new CDlgEditStringValue(
         /* strDlgTitle  */ i_strDlgTitle,
         /* strObjName   */ i_strObjName,
         /* pWdgtParent  */ i_pWdgtParent,
@@ -81,10 +83,10 @@ CDlgEditIntValue* CDlgEditIntValue::CreateInstance(
 } // CreateInstance
 
 //------------------------------------------------------------------------------
-CDlgEditIntValue* CDlgEditIntValue::GetInstance( const QString& i_strObjName )
+CDlgEditStringValue* CDlgEditStringValue::GetInstance( const QString& i_strObjName )
 //------------------------------------------------------------------------------
 {
-    return dynamic_cast<CDlgEditIntValue*>(CDialog::GetInstance(NameSpace(), ClassName(), i_strObjName));
+    return dynamic_cast<CDlgEditStringValue*>(CDialog::GetInstance(NameSpace(), ClassName(), i_strObjName));
 }
 
 /*==============================================================================
@@ -92,7 +94,7 @@ protected: // ctor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CDlgEditIntValue::CDlgEditIntValue(
+CDlgEditStringValue::CDlgEditStringValue(
     const QString&  i_strDlgTitle,
     const QString&  i_strObjName,
     QWidget*        i_pWdgtParent,
@@ -109,7 +111,7 @@ CDlgEditIntValue::CDlgEditIntValue(
     m_pLytValue(nullptr),
     m_pLblValue(nullptr),
     m_pEdtValue(nullptr),
-    m_iValOrig(0),
+    m_strValOrig(),
     m_pLytDescription(nullptr),
     m_pLblDescription(nullptr),
     m_pLytBtns(nullptr),
@@ -126,7 +128,7 @@ CDlgEditIntValue::CDlgEditIntValue(
     m_pLblValue = new QLabel("Value: ");
     m_pLytValue->addWidget(m_pLblValue);
 
-    m_pEdtValue = new QSpinBox();
+    m_pEdtValue = new QLineEdit();
     m_pLytValue->addWidget(m_pEdtValue);
     m_pLytValue->addStretch();
 
@@ -186,14 +188,14 @@ public: // dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CDlgEditIntValue::~CDlgEditIntValue()
+CDlgEditStringValue::~CDlgEditStringValue()
 //------------------------------------------------------------------------------
 {
     m_pLyt = nullptr;
     m_pLytValue = nullptr;
     m_pLblValue = nullptr;
     m_pEdtValue = nullptr;
-    m_iValOrig = 0;
+    //m_strValOrig;
     m_pLytDescription = nullptr;
     m_pLblDescription = nullptr;
     m_pLytBtns = nullptr;
@@ -216,7 +218,7 @@ public: // overridables of base class QDialog
     @return 0: QDialog::Rejected
             1: QDialog::Accepted
 */
-int CDlgEditIntValue::exec()
+int CDlgEditStringValue::exec()
 //------------------------------------------------------------------------------
 {
     m_pBtnApply->hide();
@@ -230,92 +232,36 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CDlgEditIntValue::setValueName( const QString& i_strName )
+void CDlgEditStringValue::setValueName( const QString& i_strName )
 //------------------------------------------------------------------------------
 {
     m_pLblValue->setText(i_strName + ":");
 }
 
 //------------------------------------------------------------------------------
-QString CDlgEditIntValue::getValueName() const
+QString CDlgEditStringValue::getValueName() const
 //------------------------------------------------------------------------------
 {
     return m_pLblValue->text().remove(":");
 }
 
 //------------------------------------------------------------------------------
-void CDlgEditIntValue::setValue( int i_iVal )
+void CDlgEditStringValue::setValue( const QString& i_strVal )
 //------------------------------------------------------------------------------
 {
-    m_iValOrig = i_iVal;
-    m_pEdtValue->setValue(m_iValOrig);
+    m_strValOrig = i_strVal;
+    m_pEdtValue->setText(m_strValOrig);
 }
 
 //------------------------------------------------------------------------------
-int CDlgEditIntValue::getValue() const
+QString CDlgEditStringValue::getValue() const
 //------------------------------------------------------------------------------
 {
-    return m_pEdtValue->value();
+    return m_pEdtValue->text();
 }
 
 //------------------------------------------------------------------------------
-void CDlgEditIntValue::setUnit( const QString& i_strUnit )
-//------------------------------------------------------------------------------
-{
-    m_pEdtValue->setSuffix(" " + i_strUnit);
-}
-
-//------------------------------------------------------------------------------
-QString CDlgEditIntValue::getUnit() const
-//------------------------------------------------------------------------------
-{
-    return m_pEdtValue->suffix().trimmed();
-}
-
-//------------------------------------------------------------------------------
-void CDlgEditIntValue::setMinimum( int i_iMinimum )
-//------------------------------------------------------------------------------
-{
-    m_pEdtValue->setMinimum(i_iMinimum);
-}
-
-//------------------------------------------------------------------------------
-int CDlgEditIntValue::getMinimum() const
-//------------------------------------------------------------------------------
-{
-    return m_pEdtValue->minimum();
-}
-
-//------------------------------------------------------------------------------
-void CDlgEditIntValue::setMaximum( int i_iMaximum )
-//------------------------------------------------------------------------------
-{
-    m_pEdtValue->setMaximum(i_iMaximum);
-}
-
-//------------------------------------------------------------------------------
-int CDlgEditIntValue::getMaximum() const
-//------------------------------------------------------------------------------
-{
-    return m_pEdtValue->maximum();
-}
-
-//------------------------------------------------------------------------------
-void CDlgEditIntValue::setStepType( QAbstractSpinBox::StepType i_stepType )
-//------------------------------------------------------------------------------
-{
-    m_pEdtValue->setStepType(i_stepType);
-}
-
-//------------------------------------------------------------------------------
-QAbstractSpinBox::StepType CDlgEditIntValue::getStepType() const
-//------------------------------------------------------------------------------
-{
-    return m_pEdtValue->stepType();
-}
-
-//------------------------------------------------------------------------------
-void CDlgEditIntValue::setDescription( const QString& i_strDescription )
+void CDlgEditStringValue::setDescription( const QString& i_strDescription )
 //------------------------------------------------------------------------------
 {
     m_pLblDescription->setText(i_strDescription);
@@ -327,14 +273,14 @@ protected slots:
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CDlgEditIntValue::onBtnApplyClicked( bool /*i_bChecked*/ )
+void CDlgEditStringValue::onBtnApplyClicked( bool /*i_bChecked*/ )
 //------------------------------------------------------------------------------
 {
     emit applied();
 }
 
 //------------------------------------------------------------------------------
-void CDlgEditIntValue::onBtnOkClicked( bool /*i_bChecked*/ )
+void CDlgEditStringValue::onBtnOkClicked( bool /*i_bChecked*/ )
 //------------------------------------------------------------------------------
 {
     if( isModal() )
@@ -348,7 +294,7 @@ void CDlgEditIntValue::onBtnOkClicked( bool /*i_bChecked*/ )
 }
 
 //------------------------------------------------------------------------------
-void CDlgEditIntValue::onBtnCancelClicked( bool /*i_bChecked*/ )
+void CDlgEditStringValue::onBtnCancelClicked( bool /*i_bChecked*/ )
 //------------------------------------------------------------------------------
 {
     if( isModal() )

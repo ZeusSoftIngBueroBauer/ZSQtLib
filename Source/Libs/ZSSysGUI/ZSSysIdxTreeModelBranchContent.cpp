@@ -154,10 +154,6 @@ void CModelIdxTreeBranchContent::setBranch( CIdxTreeEntry* i_pBranch )
 
     if( m_pBranch != nullptr )
     {
-        // The list of objects must be protected as adding and removing
-        // objects might be called from within different thread contexts.
-        QMutexLocker mtxLocker(m_pIdxTree->mutex());
-
         QObject::disconnect(
             /* pObjSender   */ m_pIdxTree,
             /* szSignal     */ SIGNAL(aboutToBeDestroyed(QObject*)),
@@ -165,19 +161,19 @@ void CModelIdxTreeBranchContent::setBranch( CIdxTreeEntry* i_pBranch )
             /* szSlot       */ SLOT(onIdxTreeAboutToBeDestroyed(QObject*)) );
         QObject::disconnect(
             /* pObjSender   */ m_pIdxTree,
-            /* szSignal     */ SIGNAL(treeEntryAdded(ZS::System::CIdxTree*,ZS::System::CIdxTreeEntry*)),
+            /* szSignal     */ SIGNAL(treeEntryAdded(ZS::System::CIdxTree*, ZS::System::CIdxTreeEntry*)),
             /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onIdxTreeEntryAdded(ZS::System::CIdxTree*,ZS::System::CIdxTreeEntry*)) );
+            /* szSlot       */ SLOT(onIdxTreeEntryAdded(ZS::System::CIdxTree*, ZS::System::CIdxTreeEntry*)) );
         QObject::disconnect(
             /* pObjSender   */ m_pIdxTree,
-            /* szSignal     */ SIGNAL(treeEntryChanged(ZS::System::CIdxTree*,ZS::System::CIdxTreeEntry*)),
+            /* szSignal     */ SIGNAL(treeEntryChanged(ZS::System::CIdxTree*, ZS::System::CIdxTreeEntry*)),
             /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onIdxTreeEntryChanged(ZS::System::CIdxTree*,ZS::System::CIdxTreeEntry*)) );
+            /* szSlot       */ SLOT(onIdxTreeEntryChanged(ZS::System::CIdxTree*, ZS::System::CIdxTreeEntry*)) );
         QObject::disconnect(
             /* pObjSender   */ m_pIdxTree,
-            /* szSignal     */ SIGNAL(treeEntryAboutToBeRemoved(ZS::System::CIdxTree*,ZS::System::CIdxTreeEntry*)),
+            /* szSignal     */ SIGNAL(treeEntryAboutToBeRemoved(ZS::System::CIdxTree*, ZS::System::EIdxTreeEntryType, const QString&, int)),
             /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onIdxTreeEntryAboutToBeRemoved(ZS::System::CIdxTree*,ZS::System::CIdxTreeEntry*)) );
+            /* szSlot       */ SLOT(onIdxTreeEntryAboutToBeRemoved(ZS::System::CIdxTree*, ZS::System::EIdxTreeEntryType, const QString&, int)) );
         QObject::disconnect(
             /* pObjSender   */ m_pIdxTree,
             /* szSignal     */ SIGNAL(treeEntryMoved(ZS::System::CIdxTree*, ZS::System::CIdxTreeEntry*, const QString&, ZS::System::CIdxTreeEntry*)),
@@ -222,10 +218,6 @@ void CModelIdxTreeBranchContent::setBranch( CIdxTreeEntry* i_pBranch )
     {
         m_pIdxTree = m_pBranch->tree();
 
-        // The list of objects must be protected as adding and removing
-        // objects might be called from within different thread contexts.
-        QMutexLocker mtxLocker(m_pIdxTree->mutex());
-
         if( !QObject::connect(
             /* pObjSender   */ m_pIdxTree,
             /* szSignal     */ SIGNAL(aboutToBeDestroyed(QObject*)),
@@ -236,25 +228,25 @@ void CModelIdxTreeBranchContent::setBranch( CIdxTreeEntry* i_pBranch )
         }
         if( !QObject::connect(
             /* pObjSender   */ m_pIdxTree,
-            /* szSignal     */ SIGNAL(treeEntryAdded(ZS::System::CIdxTree*,ZS::System::CIdxTreeEntry*)),
+            /* szSignal     */ SIGNAL(treeEntryAdded(ZS::System::CIdxTree*, ZS::System::CIdxTreeEntry*)),
             /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onIdxTreeEntryAdded(ZS::System::CIdxTree*,ZS::System::CIdxTreeEntry*)) ) )
+            /* szSlot       */ SLOT(onIdxTreeEntryAdded(ZS::System::CIdxTree*, ZS::System::CIdxTreeEntry*)) ) )
         {
             throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
         }
         if( !QObject::connect(
             /* pObjSender   */ m_pIdxTree,
-            /* szSignal     */ SIGNAL(treeEntryChanged(ZS::System::CIdxTree*,ZS::System::CIdxTreeEntry*)),
+            /* szSignal     */ SIGNAL(treeEntryChanged(ZS::System::CIdxTree*, ZS::System::CIdxTreeEntry*)),
             /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onIdxTreeEntryChanged(ZS::System::CIdxTree*,ZS::System::CIdxTreeEntry*)) ) )
+            /* szSlot       */ SLOT(onIdxTreeEntryChanged(ZS::System::CIdxTree*, ZS::System::CIdxTreeEntry*)) ) )
         {
             throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
         }
         if( !QObject::connect(
             /* pObjSender   */ m_pIdxTree,
-            /* szSignal     */ SIGNAL(treeEntryAboutToBeRemoved(ZS::System::CIdxTree*,ZS::System::CIdxTreeEntry*)),
+            /* szSignal     */ SIGNAL(treeEntryAboutToBeRemoved(ZS::System::CIdxTree*, ZS::System::EIdxTreeEntryType, const QString&, int)),
             /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onIdxTreeEntryAboutToBeRemoved(ZS::System::CIdxTree*,ZS::System::CIdxTreeEntry*)) ) )
+            /* szSlot       */ SLOT(onIdxTreeEntryAboutToBeRemoved(ZS::System::CIdxTree*, ZS::System::EIdxTreeEntryType, const QString&, int)) ) )
         {
             throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
         }
@@ -380,7 +372,6 @@ public: // instance methods
 CModelIdxTreeEntry* CModelIdxTreeBranchContent::findModelEntry( CIdxTreeEntry* i_pTreeEntry )
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(m_pIdxTree == nullptr ? nullptr : m_pIdxTree->mutex());
     QString strName = i_pTreeEntry->name();
     EIdxTreeEntryType entryType = i_pTreeEntry->entryType();
     CModelIdxTreeEntry* pModelEntry = nullptr;
@@ -389,8 +380,7 @@ CModelIdxTreeEntry* CModelIdxTreeBranchContent::findModelEntry( CIdxTreeEntry* i
         pModelEntry = m_pModelBranch->findModelEntry(entryType, strName);
     }
     return pModelEntry;
-
-} // findModelEntry
+}
 
 /*==============================================================================
 public: // instance methods
@@ -501,10 +491,6 @@ void CModelIdxTreeBranchContent::onIdxTreeEntryAdded(
         throw CException(__FILE__, __LINE__, EResultArgOutOfRange, "i_pTreeEntry == nullptr");
     }
 
-    // The list of objects must be protected as adding and removing
-    // objects might be called from within different thread contexts.
-    QMutexLocker mtxLocker(m_pIdxTree == nullptr ? nullptr : m_pIdxTree->mutex());
-
     CModelIdxTreeEntry* pModelTreeEntry = findModelEntry(i_pTreeEntry);
 
     if( pModelTreeEntry == nullptr )
@@ -562,10 +548,6 @@ void CModelIdxTreeBranchContent::onIdxTreeEntryChanged(
         /* strMethod          */ "onIdxTreeEntryChanged",
         /* strMethodInArgs    */ strMthInArgs );
 
-    // The list of objects must be protected as adding and removing
-    // objects might be called from within different thread contexts.
-    QMutexLocker mtxLocker(m_pIdxTree == nullptr ? nullptr : m_pIdxTree->mutex());
-
     //QModelIndex modelIdxTopLeft = createIndex(i_pTreeEntry->index(), 0, i_pTreeEntry);
     //QModelIndex modelIdxBottomRight = createIndex(i_pTreeEntry->index(), EColumnCount, i_pTreeEntry);
 
@@ -575,8 +557,10 @@ void CModelIdxTreeBranchContent::onIdxTreeEntryChanged(
 
 //------------------------------------------------------------------------------
 void CModelIdxTreeBranchContent::onIdxTreeEntryAboutToBeRemoved(
-    CIdxTree*      i_pIdxTree,
-    CIdxTreeEntry* i_pTreeEntry )
+    CIdxTree*         i_pIdxTree,
+    EIdxTreeEntryType i_entryType,
+    const QString&    i_strKeyInTree,
+    int               i_idxInTree )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -584,7 +568,9 @@ void CModelIdxTreeBranchContent::onIdxTreeEntryAboutToBeRemoved(
     if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
     {
         strMthInArgs  = "IdxTree: " + QString(i_pIdxTree == nullptr ? "nullptr" : i_pIdxTree->objectName());
-        strMthInArgs += ", TreeEntry: " + QString(i_pTreeEntry == nullptr ? "nullptr" : i_pTreeEntry->keyInTree());
+        strMthInArgs += ", EntryType: " + idxTreeEntryType2Str(i_entryType);
+        strMthInArgs += ", TreeEntry: " + i_strKeyInTree;
+        strMthInArgs += ", TreeEntryIdx: " + QString::number(i_idxInTree);
     }
 
     CMethodTracer mthTracer(
@@ -597,11 +583,12 @@ void CModelIdxTreeBranchContent::onIdxTreeEntryAboutToBeRemoved(
         /* strMethod          */ "onIdxTreeEntryAboutToBeRemoved",
         /* strMethodInArgs    */ strMthInArgs );
 
-    // The list of objects must be protected as adding and removing
-    // objects might be called from within different thread contexts.
-    QMutexLocker mtxLocker(m_pIdxTree == nullptr ? nullptr : m_pIdxTree->mutex());
+    QString strBranchPath;
+    QString strName;
 
-    CModelIdxTreeEntry* pModelTreeEntry = findModelEntry(i_pTreeEntry);
+    m_pIdxTree->splitPathStr(i_strKeyInTree, &strBranchPath, &strName);
+
+    CModelIdxTreeEntry* pModelTreeEntry = m_pModelBranch->findModelEntry(i_entryType, strName);
 
     if( pModelTreeEntry != nullptr )
     {
@@ -645,10 +632,6 @@ void CModelIdxTreeBranchContent::onIdxTreeEntryMoved(
         /* strObjName         */ objectName(),
         /* strMethod          */ "onIdxTreeEntryMoved",
         /* strMethodInArgs    */ strMthInArgs );
-
-    // The list of objects must be protected as adding and removing
-    // objects might be called from within different thread contexts.
-    QMutexLocker mtxLocker(m_pIdxTree == nullptr ? nullptr : m_pIdxTree->mutex());
 
     // Please note that before the index tree emits the "treeEntryMoved" signal
     // and this slot is executed the "treeEntryKeyInTreeChanged" signal has been
@@ -716,10 +699,6 @@ void CModelIdxTreeBranchContent::onIdxTreeEntryKeyInTreeChanged(
         /* strObjName         */ objectName(),
         /* strMethod          */ "onIdxTreeEntryKeyInTreeChanged",
         /* strMethodInArgs    */ strMthInArgs );
-
-    // The list of objects must be protected as adding and removing
-    // objects might be called from within different thread contexts.
-    QMutexLocker mtxLocker(m_pIdxTree == nullptr ? nullptr : m_pIdxTree->mutex());
 
 #if 0
     CModelIdxTreeEntry* pModelTreeEntry = m_mappModelTreeEntries.value(i_strKeyInTreePrev, nullptr);
@@ -1224,10 +1203,6 @@ QVariant CModelIdxTreeBranchContent::data( const QModelIndex& i_modelIdx, int i_
 
     CModelIdxTreeEntry* pModelTreeEntry = nullptr;
 
-    // The list of objects must be protected as adding and removing
-    // objects might be called from within different thread contexts.
-    QMutexLocker mtxLocker(m_pIdxTree == nullptr ? nullptr : m_pIdxTree->mutex());
-
     if( i_modelIdx.isValid() && m_pModelBranch != nullptr )
     {
         if( i_modelIdx.row() >= 0 && i_modelIdx.row() < m_pModelBranch->count() )
@@ -1257,26 +1232,15 @@ QVariant CModelIdxTreeBranchContent::data( const QModelIndex& i_modelIdx, int i_
                 if( i_iRole == Qt::DisplayRole || i_iRole == Qt::EditRole || i_iRole == Qt::ToolTipRole || i_iRole == Qt::ForegroundRole)
                 {
                     QString strKeyInTree = pModelTreeEntry->keyInTree();
-                    QString strCalculatedKeyInTree  = pModelTreeEntry->getCalculatedKeyInTree();
-                    QString strCalculatedKeyInModel = pModelTreeEntry->getCalculatedKeyInModel();
 
                     if( i_iRole == Qt::DisplayRole || i_iRole == Qt::EditRole )
                     {
-                        if( strCalculatedKeyInModel != strCalculatedKeyInTree || strCalculatedKeyInModel != strKeyInTree )
-                        {
-                            varData = "!" + pModelTreeEntry->name();
-                        }
-                        else
-                        {
-                            varData = pModelTreeEntry->name();
-                        }
+                        varData = pModelTreeEntry->name();
                     }
                     else if( i_iRole == Qt::ToolTipRole )
                     {
                         QString strData;
                         strData  = "KeyInTree: " + strKeyInTree;
-                        strData += "\nCalculatedKeyInTree: " + strCalculatedKeyInTree;
-                        strData += "\nCalculatedKeyInModel: " + strCalculatedKeyInModel;
                         strData += "\nKeyInParentBranch: " + pModelTreeEntry->keyInParentBranch();
                         strData += "\nIdxInTree: " + QString::number(pModelTreeEntry->indexInTree());
                         strData += "\nIdxInParentBranch: " + QString::number(pModelTreeEntry->indexInParentBranch());
@@ -1286,13 +1250,6 @@ QVariant CModelIdxTreeBranchContent::data( const QModelIndex& i_modelIdx, int i_
                             strData += "\nExpanded: " + bool2Str(pModelBranch->isExpanded());
                         }
                         varData = strData;
-                    }
-                    else if( i_iRole == Qt::ForegroundRole)
-                    {
-                        if( strCalculatedKeyInModel != strCalculatedKeyInTree || strCalculatedKeyInModel != strKeyInTree )
-                        {
-                            varData = QColor(Qt::red);
-                        }
                     }
                 }
                 else if( i_iRole == Qt::DecorationRole )
@@ -1400,10 +1357,6 @@ bool CModelIdxTreeBranchContent::setData(
     bool bOk = false;
 
     CModelIdxTreeEntry* pModelTreeEntry = nullptr;
-
-    // The list of objects must be protected as adding and removing
-    // objects might be called from within different thread contexts.
-    QMutexLocker mtxLocker(m_pIdxTree == nullptr ? nullptr : m_pIdxTree->mutex());
 
     if( i_modelIdx.isValid() && m_pModelBranch != nullptr )
     {
@@ -1540,10 +1493,6 @@ SErrResultInfo CModelIdxTreeBranchContent::canSetData(
     SErrResultInfo errResultInfo = ErrResultInfoError(strMth, EResultInvalidMethodCall, "Value cannot be changed");
 
     CModelIdxTreeEntry* pModelTreeEntry = nullptr;
-
-    // The list of objects must be protected as adding and removing
-    // objects might be called from within different thread contexts.
-    QMutexLocker mtxLocker(m_pIdxTree == nullptr ? nullptr : m_pIdxTree->mutex());
 
     if( i_modelIdx.isValid() && m_pModelBranch != nullptr )
     {

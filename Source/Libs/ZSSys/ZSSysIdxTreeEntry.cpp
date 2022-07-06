@@ -35,6 +35,24 @@ may result in using the software modules.
 using namespace ZS::System;
 
 
+/******************************************************************************/
+class CInitModuleSysIdxTreeEntry
+/* Please note:
+   The class name should be unique for the whole system. Otherwise the compiler
+   may be confused and using a CInitModule class from other modules to create
+   the static InitModule instance.
+*******************************************************************************/
+{
+public: // ctor
+    CInitModuleSysIdxTreeEntry()
+    {
+        qRegisterMetaType<EIdxTreeEntryType>("EIdxTreeEntryType");
+        qRegisterMetaType<ZS::System::EIdxTreeEntryType>("ZS::System::EIdxTreeEntryType");
+    }
+};
+
+static CInitModuleSysIdxTreeEntry s_initModule;
+
 /*******************************************************************************
 Type definitions and constants
 *******************************************************************************/
