@@ -24,7 +24,7 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#ifdef USE_ZS_IPTRACE_DLL_IF
+#ifdef USE_ZS_IPCTRACE_DLL_IF
 
 #ifndef ZSIpcTrace_DllIf_h
 #define ZSIpcTrace_DllIf_h
@@ -461,4 +461,4 @@ bool releaseDll();
 
 #endif // #ifndef ZSIpcTrace_DllIf_h
 
-#endif // #ifdef USE_ZS_IPTRACE_DLL_IF
+#endif // #ifdef USE_ZS_IPCTRACE_DLL_IF

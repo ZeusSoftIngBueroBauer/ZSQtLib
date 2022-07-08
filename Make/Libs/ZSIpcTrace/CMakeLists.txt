@@ -79,7 +79,7 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
 endif()
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE ZSIPCTRACEDLL_EXPORTS)
-target_compile_definitions(${PROJECT_NAME} PRIVATE USE_ZS_IPTRACE_DLL_IF)
+target_compile_definitions(${PROJECT_NAME} PRIVATE USE_ZS_IPCTRACE_DLL_IF)
 
 target_link_libraries(${PROJECT_NAME} PUBLIC ZSSys ZSIpc)
 if(UNIX)

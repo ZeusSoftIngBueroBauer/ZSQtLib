@@ -24,7 +24,7 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#ifdef USE_ZS_IPTRACE_DLL_IF
+#ifdef USE_ZS_IPCTRACE_DLL_IF
 
 #include "ZSIpcTrace/ZSIpcTrcDllIf.h"
 
@@ -2808,4 +2808,4 @@ unsigned short DllIf::CIpcTrcServer::getPort() const
     return uPort;
 }
 
-#endif // #ifdef USE_ZS_IPTRACE_DLL_IF
+#endif // #ifdef USE_ZS_IPCTRACE_DLL_IF
