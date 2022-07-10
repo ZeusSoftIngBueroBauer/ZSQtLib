@@ -209,8 +209,8 @@ CWdgtTrcSettings::CWdgtTrcSettings( const QString& i_strObjName, QWidget* i_pWdg
     m_pLblNewTrcAdminObjsMethodCallsDefaultDetailLevel = new QLabel("Default Detail Level for Method Calls:");
     m_pLblNewTrcAdminObjsMethodCallsDefaultDetailLevel->setFixedWidth(iLblWidth);
     m_pCmbNewTrcAdminObjsMethodCallsDefaultDetailLevel = new QComboBox();
-    CEnumTraceDetailLevelMethodCalls eDetailLevelMethodCalls;
-    for( eDetailLevelMethodCalls = 0; eDetailLevelMethodCalls < CEnumTraceDetailLevelMethodCalls::count(); ++eDetailLevelMethodCalls )
+    CEnumMethodTraceDetailLevel eDetailLevelMethodCalls;
+    for( eDetailLevelMethodCalls = 0; eDetailLevelMethodCalls < CEnumMethodTraceDetailLevel::count(); ++eDetailLevelMethodCalls )
     {
         m_pCmbNewTrcAdminObjsMethodCallsDefaultDetailLevel->addItem(eDetailLevelMethodCalls.toString());
     }
@@ -224,8 +224,8 @@ CWdgtTrcSettings::CWdgtTrcSettings( const QString& i_strObjName, QWidget* i_pWdg
     m_pLblNewTrcAdminObjsRuntimeInfoDefaultDetailLevel = new QLabel("Default Detail Level for Runtime Info:");
     m_pLblNewTrcAdminObjsRuntimeInfoDefaultDetailLevel->setFixedWidth(iLblWidth);
     m_pCmbNewTrcAdminObjsRuntimeInfoDefaultDetailLevel = new QComboBox();
-    CEnumTraceDetailLevelRuntimeInfo eDetailLevelRuntimeInfo;
-    for( eDetailLevelRuntimeInfo = 0; eDetailLevelRuntimeInfo < CEnumTraceDetailLevelMethodCalls::count(); ++eDetailLevelRuntimeInfo )
+    CEnumLogDetailLevel eDetailLevelRuntimeInfo;
+    for( eDetailLevelRuntimeInfo = 0; eDetailLevelRuntimeInfo < CEnumMethodTraceDetailLevel::count(); ++eDetailLevelRuntimeInfo )
     {
         m_pCmbNewTrcAdminObjsRuntimeInfoDefaultDetailLevel->addItem(eDetailLevelRuntimeInfo.toString());
     }
@@ -662,9 +662,9 @@ STrcServerSettings CWdgtTrcSettings::getTraceSettings() const
     trcSettings.m_strAdminObjFileAbsFilePath = m_pEdtAdminObjFileAbsFilePath->text();
     trcSettings.m_bNewTrcAdminObjsEnabledAsDefault = m_pChkNewTrcAdminObjsEnabledAsDefault->isChecked();
     trcSettings.m_eNewTrcAdminObjsMethodCallsDefaultDetailLevel =
-        static_cast<ETraceDetailLevelMethodCalls>(m_pCmbNewTrcAdminObjsMethodCallsDefaultDetailLevel->currentIndex());
+        static_cast<EMethodTraceDetailLevel>(m_pCmbNewTrcAdminObjsMethodCallsDefaultDetailLevel->currentIndex());
     trcSettings.m_eNewTrcAdminObjsRuntimeInfoDefaultDetailLevel =
-        static_cast<ETraceDetailLevelRuntimeInfo>(m_pCmbNewTrcAdminObjsRuntimeInfoDefaultDetailLevel->currentIndex());
+        static_cast<ELogDetailLevel>(m_pCmbNewTrcAdminObjsRuntimeInfoDefaultDetailLevel->currentIndex());
     trcSettings.m_bUseIpcServer = m_pChkUseIpcServer->isChecked();
     trcSettings.m_bCacheDataIfNotConnected = m_pChkCacheDataIfNotConnected->isChecked();
     trcSettings.m_iCacheDataMaxArrLen = m_pEdtCacheDataMaxArrLen->value();

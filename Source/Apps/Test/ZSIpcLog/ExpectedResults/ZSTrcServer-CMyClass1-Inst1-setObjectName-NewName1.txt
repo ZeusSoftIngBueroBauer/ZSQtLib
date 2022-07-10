@@ -1,0 +1,2 @@
+<GUIMain                 > -> <ZS::Apps::Test::IpcTrace::CMyClass1> Inst1.setObjectName(NewName1)
+<GUIMain                 > <- <ZS::Apps::Test::IpcTrace::CMyClass1> Inst1.setObjectName()

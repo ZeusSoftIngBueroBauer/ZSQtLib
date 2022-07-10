@@ -47,7 +47,7 @@ class QVBoxLayout;
 
 namespace ZS
 {
-namespace Trace
+namespace System
 {
 class CIdxTreeTrcAdminObjs;
 
@@ -59,14 +59,14 @@ class ZSSYSGUIDLL_API CWdgtIdxTreeTrcAdminObjs : public QWidget
 {
     Q_OBJECT
 public: // class methods
-    static QString NameSpace() { return "ZS::Trace::GUI"; }
+    static QString NameSpace() { return "ZS::System::GUI"; }
     static QString ClassName() { return "CWdgtIdxTreeTrcAdminObjs"; }
 public: // ctors and dtor
     CWdgtIdxTreeTrcAdminObjs(
         CIdxTreeTrcAdminObjs* i_pIdxTree,
         QWidget* i_pWdgtParent = nullptr,
-        ZS::Trace::ETraceDetailLevelMethodCalls i_eTrcDetailLevel = ZS::Trace::ETraceDetailLevelMethodCalls::None,
-        ZS::Trace::ETraceDetailLevelMethodCalls i_eTrcDetailLevelNoisyMethods = ZS::Trace::ETraceDetailLevelMethodCalls::None );
+        ZS::System::EMethodTraceDetailLevel i_eTrcDetailLevel = ZS::System::EMethodTraceDetailLevel::None,
+        ZS::System::EMethodTraceDetailLevel i_eTrcDetailLevelNoisyMethods = ZS::System::EMethodTraceDetailLevel::None );
     virtual ~CWdgtIdxTreeTrcAdminObjs();
 public: // overridables
     virtual QString nameSpace() const { return NameSpace(); }
@@ -87,14 +87,14 @@ protected: // instance members
     CIdxTreeTrcAdminObjs* m_pIdxTree;
     QAbstractItemModel*   m_pModel;
     QTreeView*            m_pTreeView;
-    ZS::Trace::ETraceDetailLevelMethodCalls m_eTrcDetailLevel;
-    ZS::Trace::ETraceDetailLevelMethodCalls m_eTrcDetailLevelNoisyMethods;
+    ZS::System::EMethodTraceDetailLevel m_eTrcDetailLevel;
+    ZS::System::EMethodTraceDetailLevel m_eTrcDetailLevelNoisyMethods;
 
 }; // class CWdgtIdxTreeTrcAdminObjs
 
 } // namespace GUI
 
-} // namespace Trace
+} // namespace System
 
 } // namespace ZS
 

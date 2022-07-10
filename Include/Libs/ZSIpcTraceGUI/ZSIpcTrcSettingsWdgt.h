@@ -74,7 +74,7 @@ public: // instance methods
     void setServer( CIpcTrcServer* i_pTrcServer );
     void setClient( CIpcTrcClient* i_pTrcClient );
 public: // instance methods
-    STrcServerSettings getTraceSettings() const;
+    ZS::System::STrcServerSettings getTraceSettings() const;
     bool hasChanges() const;
     void applyChanges();
 protected: // instance methods

@@ -50,6 +50,9 @@ list(APPEND _Headers
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysIdxTree.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysIdxTreeEntry.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysLogFile.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSSysLogger.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSSysLoggerIdxTree.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSSysLogServer.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysMath.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysMemLeakDump.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysMsg.h
@@ -87,6 +90,9 @@ list(APPEND _Sources
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysIdxTree.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysIdxTreeEntry.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysLogFile.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSSysLogger.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSSysLoggerIdxTree.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSSysLogServer.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysMath.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysMemLeakDump.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysMsg.cpp

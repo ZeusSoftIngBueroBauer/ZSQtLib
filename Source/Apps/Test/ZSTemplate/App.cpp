@@ -117,7 +117,7 @@ CApplication::CApplication(
     QApplication::setWindowIcon(iconApp);
 
     ZS::Ipc::SServerHostSettings  trcServerHostSettingsDefault = m_trcServerHostSettings;
-    ZS::Trace::STrcServerSettings trcServerSettingsDefault = m_trcServerSettings;
+    ZS::System::STrcServerSettings trcServerSettingsDefault = m_trcServerSettings;
 
     // Parse command arguments
     //------------------------
@@ -219,7 +219,7 @@ CApplication::~CApplication()
 
     try
     {
-        ZS::Trace::CTrcServer::ReleaseInstance();
+        ZS::System::CTrcServer::ReleaseInstance();
     }
     catch(...)
     {

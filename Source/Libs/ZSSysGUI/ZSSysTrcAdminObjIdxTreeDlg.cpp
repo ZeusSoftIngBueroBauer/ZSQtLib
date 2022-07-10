@@ -45,8 +45,7 @@ may result in using the software modules.
 
 
 using namespace ZS::System;
-using namespace ZS::Trace;
-using namespace ZS::Trace::GUI;
+using namespace ZS::System::GUI;
 
 
 /*******************************************************************************
@@ -63,8 +62,8 @@ CDlgIdxTreeTrcAdminObjs* CDlgIdxTreeTrcAdminObjs::CreateInstance(
     CIdxTreeTrcAdminObjs* i_pIdxTree,
     QWidget* i_pWdgtParent,
     Qt::WindowFlags i_wFlags,
-    ETraceDetailLevelMethodCalls i_eTrcDetailLevel,
-    ETraceDetailLevelMethodCalls i_eTrcDetailLevelNoisyMethods )
+    EMethodTraceDetailLevel i_eTrcDetailLevel,
+    EMethodTraceDetailLevel i_eTrcDetailLevelNoisyMethods )
 //------------------------------------------------------------------------------
 {
     if( CDialog::GetInstance(NameSpace(), ClassName(), i_pIdxTree->objectName()) != nullptr )
@@ -101,8 +100,8 @@ CDlgIdxTreeTrcAdminObjs::CDlgIdxTreeTrcAdminObjs(
     CIdxTreeTrcAdminObjs* i_pIdxTree,
     QWidget* i_pWdgtParent,
     Qt::WindowFlags i_wFlags,
-    ETraceDetailLevelMethodCalls i_eTrcDetailLevel,
-    ETraceDetailLevelMethodCalls i_eTrcDetailLevelNoisyMethods ) :
+    EMethodTraceDetailLevel i_eTrcDetailLevel,
+    EMethodTraceDetailLevel i_eTrcDetailLevelNoisyMethods ) :
 //------------------------------------------------------------------------------
     CDialog(
         /* strDlgTitle  */ i_strDlgTitle,
@@ -119,7 +118,7 @@ CDlgIdxTreeTrcAdminObjs::CDlgIdxTreeTrcAdminObjs(
 {
     QString strMthInArgs;
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strMthInArgs = "IdxTree: " + QString(i_pIdxTree == nullptr ? "nullptr" : i_pIdxTree->objectName());
     }
@@ -127,7 +126,7 @@ CDlgIdxTreeTrcAdminObjs::CDlgIdxTreeTrcAdminObjs(
     CMethodTracer mthTracer(
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -153,7 +152,7 @@ CDlgIdxTreeTrcAdminObjs::~CDlgIdxTreeTrcAdminObjs()
     CMethodTracer mthTracer(
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -163,7 +162,7 @@ CDlgIdxTreeTrcAdminObjs::~CDlgIdxTreeTrcAdminObjs()
     m_pIdxTree = nullptr;
     m_pLyt = nullptr;
     m_pWdgtIdxTree = nullptr;
-    m_eTrcDetailLevel = static_cast<ETraceDetailLevelMethodCalls>(0);
-    m_eTrcDetailLevelNoisyMethods = static_cast<ETraceDetailLevelMethodCalls>(0);
+    m_eTrcDetailLevel = static_cast<EMethodTraceDetailLevel>(0);
+    m_eTrcDetailLevelNoisyMethods = static_cast<EMethodTraceDetailLevel>(0);
 
 } // dtor

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Package>
+    <DisplayName>Log Client</DisplayName>
+    <Description>Installation Log Client</Description>
+    <Version>v1.0.0-9-g8248c96</Version>
+    <ReleaseDate>2022-07-10 18:07</ReleaseDate>
+    <Licenses>
+        <License name="ZeusSoft ZSQtLib Lizense" file="license.txt" />
+    </Licenses>
+    <Default>true</Default>
+    <Script>installscript.qs</Script>
+    <!-- <UserInterfaces> -->
+        <!-- <UserInterface>page.ui</UserInterface> -->
+    <!-- </UserInterfaces> -->
+</Package>

@@ -22,3 +22,4 @@ classes or indicate the content of the data model classes.
 - @subpage _PAGE_Main_IndexTree
 - @subpage _PAGE_Main_MemLeakDetection
 - @subpage _PAGE_Main_MethodTracing
+- @subpage _PAGE_Main_Logging

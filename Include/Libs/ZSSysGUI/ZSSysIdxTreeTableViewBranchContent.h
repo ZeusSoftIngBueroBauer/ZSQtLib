@@ -40,9 +40,6 @@ may result in using the software modules.
 
 namespace ZS
 {
-namespace Trace
-{
-}
 namespace System
 {
 namespace GUI
@@ -61,7 +58,7 @@ public: // ctors and dtor
     CTableViewIdxTreeBranchContent(
         CModelIdxTree* i_pModelIdxTree,
         QWidget* i_pWdgtParent = nullptr,
-        ZS::Trace::ETraceDetailLevelMethodCalls i_eTrcDetailLevel = ZS::Trace::ETraceDetailLevelMethodCalls::None );
+        EMethodTraceDetailLevel i_eTrcDetailLevel = EMethodTraceDetailLevel::None );
     virtual ~CTableViewIdxTreeBranchContent();
 public: // overridables
     virtual QString nameSpace() const { return CTableViewIdxTreeBranchContent::NameSpace(); }
@@ -108,7 +105,7 @@ protected: // instance members
     QAction* m_pActionLeavePaste;
     QModelIndex m_modelIdxSelectedOnMousePressEvent;
     QModelIndex m_modelIdxSelectedOnMouseReleaseEvent;
-    ZS::Trace::ETraceDetailLevelMethodCalls m_eTrcDetailLevel;
+    EMethodTraceDetailLevel m_eTrcDetailLevel;
 
 }; // class CTableViewIdxTreeBranchContent
 

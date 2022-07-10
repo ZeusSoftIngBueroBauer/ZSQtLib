@@ -68,7 +68,7 @@ public: // instance methods
     CMyClass2* startClass2Thread(const QString& i_strMyClass2ObjName);
     void stopClass2Thread();
 private: // class members
-    static ZS::Trace::CTrcAdminObjRefAnchor s_trcAdminObjRefAnchor;
+    static ZS::System::CTrcAdminObjRefAnchor s_trcAdminObjRefAnchor;
 private: // instance members
     bool             m_bCtorReady;
     QString          m_strMyClass2ObjName;

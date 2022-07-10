@@ -37,9 +37,6 @@ namespace ZS
 namespace System
 {
 class CIdxTreeEntry;
-}
-namespace Trace
-{
 class CTrcAdminObj;
 }
 
@@ -135,16 +132,16 @@ protected: // overridables
 protected: // overridables of inherited class QObject (state machine)
     virtual bool event( QEvent* i_pMsg );
 protected: // instance members
-    CTestStepIdxTree*        m_pIdxTree; /*!< Index tree containing the test steps. */
-    QString                  m_strTestStepsAbsFilePath; /*!< Absolute path of the file from which the settings of the test steps are saved and recalled. */
-    QString                  m_strTestResultsAbsFilePath; /*!< Absolute path of the file in which the test step results are saved.*/
-    CTestStep*               m_pTestStepCurr;   /*!< Pointer to current test step to be executed. */
-    int                      m_iTestStepInterval_ms;    /*!< Time interval between two test steps. */
-    int                      m_iNumberOfTestRuns; /*!< Number of times the test is executed. */
-    CEnumTestState           m_state;   /*!< Current state of the test. */
-    ZS::System::CEnumRunMode m_runMode; /*!< Run mode the test is executed with. */
-    bool                     m_bDoTestStepPending;  /*!< true if a test step is started. */
-    ZS::Trace::CTrcAdminObj* m_pTrcAdminObj;    /*!< Pointer to trace admin object. */
+    CTestStepIdxTree*         m_pIdxTree; /*!< Index tree containing the test steps. */
+    QString                   m_strTestStepsAbsFilePath; /*!< Absolute path of the file from which the settings of the test steps are saved and recalled. */
+    QString                   m_strTestResultsAbsFilePath; /*!< Absolute path of the file in which the test step results are saved.*/
+    CTestStep*                m_pTestStepCurr;   /*!< Pointer to current test step to be executed. */
+    int                       m_iTestStepInterval_ms;    /*!< Time interval between two test steps. */
+    int                       m_iNumberOfTestRuns; /*!< Number of times the test is executed. */
+    CEnumTestState            m_state;   /*!< Current state of the test. */
+    ZS::System::CEnumRunMode  m_runMode; /*!< Run mode the test is executed with. */
+    bool                      m_bDoTestStepPending;  /*!< true if a test step is started. */
+    ZS::System::CTrcAdminObj* m_pTrcAdminObj;    /*!< Pointer to trace admin object. */
 
 }; // class CTest
 

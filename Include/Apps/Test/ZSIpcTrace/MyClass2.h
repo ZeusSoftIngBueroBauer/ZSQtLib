@@ -39,9 +39,6 @@ namespace System
 {
 class CMutex;
 class CWaitCondition;
-}
-namespace Trace
-{
 class CTrcAdminObj;
 }
 
@@ -96,7 +93,7 @@ private: // instance members
     CMyClass1*                  m_pMyClass1;
     QString                     m_strMyClass2ObjName;
     CMyClass2*                  m_pMyClass2;
-    ZS::Trace::CTrcAdminObj*    m_pTrcAdminObj;
+    ZS::System::CTrcAdminObj*   m_pTrcAdminObj;
 
 }; // class CMyClass2Thread
 
@@ -121,7 +118,7 @@ public: // instance methods (reimplementing methods of base class QObject)
 public: // instance methods
     CMyClass3Thread* getMyClass3Thread() const { return m_pMyClass3Thread; }
     CMyClass3* getMyClass3() const { return m_pMyClass3; }
-    ZS::Trace::CTrcAdminObj* getTrcAdminObj() { return m_pTrcAdminObj; }
+    ZS::System::CTrcAdminObj* getTrcAdminObj() { return m_pTrcAdminObj; }
 public: // instance methods
     QString instMethod(const QString& i_strMthInArgs);
 public: // instance methods
@@ -147,7 +144,7 @@ private: // instance members
     CMyClass3*                  m_pMyClass3;
     ZS::System::CMutex*         m_pMtxWaitClass3ThreadRunning;
     ZS::System::CWaitCondition* m_pWaitClass3ThreadRunning;
-    ZS::Trace::CTrcAdminObj*    m_pTrcAdminObj;
+    ZS::System::CTrcAdminObj*   m_pTrcAdminObj;
 
 }; // class CMyClass2
 

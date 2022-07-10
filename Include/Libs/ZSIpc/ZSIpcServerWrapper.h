@@ -35,7 +35,7 @@ may result in using the software modules.
 
 namespace ZS
 {
-namespace Trace
+namespace System
 {
 class CTrcAdminObj;
 class CTrcMthFile;
@@ -57,8 +57,8 @@ protected: // ctor
     CIpcServerWrapper(
         const QString& i_strObjName,
         ESocketType i_socketType,
-        Trace::CTrcMthFile* i_pTrcMthFile = nullptr,         // If != nullptr trace method file with detail level is used instead of trace admin object with Trace server.
-        ZS::Trace::ETraceDetailLevelMethodCalls i_eTrcMthFileDetailLevel = ZS::Trace::ETraceDetailLevelMethodCalls::None );
+        ZS::System::CTrcMthFile* i_pTrcMthFile = nullptr,         // If != nullptr trace method file with detail level is used instead of trace admin object with Trace server.
+        ZS::System::EMethodTraceDetailLevel i_eTrcMthFileDetailLevel = ZS::System::EMethodTraceDetailLevel::None );
 public: // dtor
     virtual ~CIpcServerWrapper();
 signals:
@@ -86,19 +86,19 @@ public: // must overridables
     virtual QString errorString() const = 0;
     virtual ZS::System::SErrResultInfo errResultInfo() const = 0;
 protected: // instance methods
-    bool areTraceMethodCallsActive( ZS::Trace::ETraceDetailLevelMethodCalls i_eFilterDetailLevel ) const;
-    ZS::Trace::ETraceDetailLevelMethodCalls getMethodCallsTraceDetailLevel() const;
-    bool isTraceRuntimeInfoActive( ZS::Trace::ETraceDetailLevelRuntimeInfo i_eFilterDetailLevel ) const;
-    ZS::Trace::ETraceDetailLevelRuntimeInfo getRuntimeInfoTraceDetailLevel() const;
+    bool areTraceMethodCallsActive( ZS::System::EMethodTraceDetailLevel i_eFilterDetailLevel ) const;
+    ZS::System::EMethodTraceDetailLevel getMethodCallsTraceDetailLevel() const;
+    bool isTraceRuntimeInfoActive( ZS::System::ELogDetailLevel i_eFilterDetailLevel ) const;
+    ZS::System::ELogDetailLevel getRuntimeInfoTraceDetailLevel() const;
 protected: // instance members
     ESocketType          m_socketType;
     QString              m_strLocalHostName;
     QHostAddress         m_hostAddrLocal;
     unsigned int         m_uLocalPort;
     QObject*             m_pServer;
-    ZS::Trace::ETraceDetailLevelMethodCalls m_eTrcMthFileDetailLevel;
-    Trace::CTrcMthFile*  m_pTrcMthFile;   // Either trace method file with detail level is used or
-    Trace::CTrcAdminObj* m_pTrcAdminObj;  // trace admin object with IpcTrace server.
+    ZS::System::EMethodTraceDetailLevel m_eTrcMthFileDetailLevel;
+    ZS::System::CTrcMthFile*  m_pTrcMthFile;   // Either trace method file with detail level is used or
+    ZS::System::CTrcAdminObj* m_pTrcAdminObj;  // trace admin object with IpcTrace server.
 
 }; // class CIpcServerWrapper
 

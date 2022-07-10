@@ -531,14 +531,6 @@ ZSSYSDLL_API void getMinMaxArrayRange( int i_idxStart, int i_iIdxCount, int i_iA
 ZSSYSDLL_API void getMinCountArrayRange( int i_idxStart, int i_iArrLen, int* o_pIdxMin, int* o_piIdxCount );
 ZSSYSDLL_API void getMinCountArrayRange( int i_idxStart, int i_iIdxCount, int i_iArrLen, int* o_pIdxMin, int* o_pIdxCount );
 
-} // namespace System
-
-} // namespace ZS
-
-namespace ZS
-{
-namespace Trace
-{
 //==============================================================================
 /*! Predefined trace detail levels for method calls.
 
@@ -550,38 +542,28 @@ namespace Trace
     @see ZS::System::CEnum
     @see _GRP_BasicConcepts_Enumerations
 */
-enum class ETraceDetailLevelMethodCalls
+enum class EMethodTraceDetailLevel
 //==============================================================================
 {
-    None         = 0, /*!< Trace output is disabled. */
-    EnterLeave   = 1, /*!< Tracing method entries and leaves only
-                            (without tracing input and output arguments and without method return value). */
-    ArgsNormal   = 2, /*!< Tracing method entries and leaves together with
-                            input and output arguemnts and method return value. */
-    ArgsDetailed = 3, /*!< Tracing method entries and leaves together with
-                            input and output arguements and method return value
-                            with more details than normal (content of arrays). */
-    ArgsVerbose  = 4, /*!< Tracing method entries and leaves together with
-                            input and output arguemnts and method return value
-                            in a very detailed level (content of arrays). */
-    Undefined    = 5  /*!< Used e.g. to indicate that the trace level should not be used but the predefined detail level should be used. */
+    None         = 0, /*!< Method trace output is disabled. */
+    EnterLeave   = 1, /*!< Tracing entering and leaving methods only
+                           (without tracing input and output arguments and
+                           without method return value). */
+    ArgsNormal   = 2, /*!< Tracing entering and leaving methods together with
+                           input and output arguemnts and method return value. */
+    ArgsDetailed = 3, /*!< Tracing entering and leaving methods together with
+                           input and output arguements and method return value
+                           with more details than normal (content of arrays). */
+    ArgsVerbose  = 4, /*!< Tracing entering and leaving methods together with
+                           input and output arguemnts and method return value
+                           in a very detailed level (content of arrays). */
+    Undefined    = 5  /*!< Used e.g. to indicate that the trace level should not be used
+                           but the predefined detail level should be used. */
 };
-} // namespace Trace
-} // namespace ZS
 
-template class ZSSYSDLL_API ZS::System::CEnum<ZS::Trace::ETraceDetailLevelMethodCalls>;
-namespace ZS
-{
-namespace Trace
-{
-typedef ZS::System::CEnum<ZS::Trace::ETraceDetailLevelMethodCalls> CEnumTraceDetailLevelMethodCalls;
-} // namespace Trace
-} // namespace ZS
+template class ZSSYSDLL_API CEnum<EMethodTraceDetailLevel>;
+typedef CEnum<EMethodTraceDetailLevel> CEnumMethodTraceDetailLevel;
 
-namespace ZS
-{
-namespace Trace
-{
 //==============================================================================
 /*! Predefined detail levels to trace runtime info.
 
@@ -593,31 +575,28 @@ namespace Trace
     @see ZS::System::CEnum
     @see _GRP_BasicConcepts_Enumerations
 */
-enum class ETraceDetailLevelRuntimeInfo
+enum class ELogDetailLevel
 //==============================================================================
 {
-    None          =  0, /*!< Trace output of runtime info is disabled. */
-    CriticalError =  1, /*!< Log critical errors runtime info (critical errors, critical exceptions). */
-    Error         =  2, /*!< Log error runtime info (errors, exceptions). */
-    Warning       =  3, /*!< Log warning runtime info. */
-    InfoNormal    =  4, /*!< Log runtime info. */
-    InfoDetailed  =  5, /*!< Log detailed runtime info. */
-    InfoVerbose   =  6, /*!< Log very detailed runtime info. */
-    DebugNormal   =  7, /*!< Output debug runtime info. */
-    DebugDetailed =  8, /*!< Output detailed debug runtime info. */
-    DebugVerbose  =  9, /*!< Output very detailed debug runtime info. */
-    Undefined     = 10  /*!< Used e.g. to indicate that the trace level should not be used but the predefined detail level should be used. */
+    None          =  0, /*!< Log output of runtime info is disabled. */
+    CriticalError =  1, /*!< Log critical errors (critical errors, critical exceptions). */
+    Error         =  2, /*!< Log errors (errors, exceptions). */
+    Warning       =  3, /*!< Log warnings. */
+    InfoNormal    =  4, /*!< Log info. */
+    InfoDetailed  =  5, /*!< Log detailed info. */
+    InfoVerbose   =  6, /*!< Log very detailed info. */
+    DebugNormal   =  7, /*!< Output debug info. */
+    DebugDetailed =  8, /*!< Output detailed debug info. */
+    DebugVerbose  =  9, /*!< Output very detailed debug info. */
+    Undefined     = 10  /*!< Used e.g. to indicate that the trace level should not be used
+                             but the predefined detail level should be used. */
 };
-} // namespace Trace
-} // namespace ZS
 
-template class ZSSYSDLL_API ZS::System::CEnum<ZS::Trace::ETraceDetailLevelRuntimeInfo>;
-namespace ZS
-{
-namespace Trace
-{
-typedef ZS::System::CEnum<ZS::Trace::ETraceDetailLevelRuntimeInfo> CEnumTraceDetailLevelRuntimeInfo;
-} // namespace Trace
+template class ZSSYSDLL_API CEnum<ELogDetailLevel>;
+typedef CEnum<ELogDetailLevel> CEnumLogDetailLevel;
+
+} // namespace System
+
 } // namespace ZS
 
 #ifdef _WINDOWS

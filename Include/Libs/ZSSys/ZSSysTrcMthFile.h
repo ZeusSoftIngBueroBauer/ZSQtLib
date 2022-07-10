@@ -40,7 +40,7 @@ class QTextStream;
 
 namespace ZS
 {
-namespace Trace
+namespace System
 {
 //******************************************************************************
 /*! @brief The class CTrcMthFile offers multithreaded applications the ability to write
@@ -244,7 +244,7 @@ protected: // instance methods
 
 }; // class CTrcMthFile
 
-} // namespace Trace
+} // namespace System
 
 } // namespace ZS
 

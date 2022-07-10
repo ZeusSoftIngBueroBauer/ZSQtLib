@@ -37,7 +37,6 @@ may result in using the software modules.
 #include "ZSSys/ZSSysMemLeakDump.h"
 
 using namespace ZS::System;
-using namespace ZS::Trace;
 
 
 /*******************************************************************************
@@ -64,7 +63,7 @@ CMutex::CMutex(QMutex::RecursionMode i_mode, const QString& i_strObjName) :
     QMutex(i_mode),
     m_strObjName(i_strObjName)
     #ifdef ZS_TRACE_MUTEXES
-    ,m_eTrcMthFileDetailLevel(ETraceDetailLevelMethodCalls::None),
+    ,m_eTrcMthFileDetailLevel(EMethodTraceDetailLevel::None),
     m_pTrcMthFile(nullptr),
     m_pTrcAdminObj(nullptr)
     #endif
@@ -72,7 +71,7 @@ CMutex::CMutex(QMutex::RecursionMode i_mode, const QString& i_strObjName) :
     #ifdef ZS_TRACE_MUTEXES
     m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), i_strObjName);
     QString strMthInArgs;
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(ETraceDetailLevelMethodCalls::ArgsNormal) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = qMutexRecursionMode2Str(i_mode);
     }
@@ -80,7 +79,7 @@ CMutex::CMutex(QMutex::RecursionMode i_mode, const QString& i_strObjName) :
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ m_strObjName,
@@ -101,7 +100,7 @@ CMutex::CMutex(const QString& i_strObjName) :
     QMutex(),
     m_strObjName(i_strObjName)
     #ifdef ZS_TRACE_MUTEXES
-    ,m_eTrcMthFileDetailLevel(ETraceDetailLevelMethodCalls::None),
+    ,m_eTrcMthFileDetailLevel(EMethodTraceDetailLevel::None),
     m_pTrcMthFile(nullptr),
     m_pTrcAdminObj(nullptr)
     #endif
@@ -112,7 +111,7 @@ CMutex::CMutex(const QString& i_strObjName) :
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ m_strObjName,
@@ -139,7 +138,7 @@ CMutex::CMutex(const QString& i_strObjName) :
 CMutex::CMutex(
     QMutex::RecursionMode        i_mode,
     const QString&               i_strObjName,
-    ETraceDetailLevelMethodCalls i_eTrcMthFileDetailLevel ) :
+    EMethodTraceDetailLevel i_eTrcMthFileDetailLevel ) :
 //------------------------------------------------------------------------------
     QMutex(i_mode),
     m_strObjName(i_strObjName)
@@ -153,7 +152,7 @@ CMutex::CMutex(
     QString strLocalTrcFileAbsFilePath = CTrcServer::GetLocalTrcFileAbsoluteFilePath();
     m_pTrcMthFile = CTrcMthFile::Alloc(strLocalTrcFileAbsFilePath);
     QString strMthInArgs;
-    if( m_eTrcMthFileDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strMthInArgs = qMutexRecursionMode2Str(i_mode);
     }
@@ -161,7 +160,7 @@ CMutex::CMutex(
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ m_strObjName,
@@ -181,7 +180,7 @@ CMutex::CMutex(
         to a trace method file allocated by the server, this detail level has to
         be to a value greater than None.
 */
-CMutex::CMutex( const QString& i_strObjName, ETraceDetailLevelMethodCalls i_eTrcMthFileDetailLevel ) :
+CMutex::CMutex( const QString& i_strObjName, EMethodTraceDetailLevel i_eTrcMthFileDetailLevel ) :
 //------------------------------------------------------------------------------
     QMutex(),
     m_strObjName(i_strObjName)
@@ -198,7 +197,7 @@ CMutex::CMutex( const QString& i_strObjName, ETraceDetailLevelMethodCalls i_eTrc
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ m_strObjName,
@@ -220,7 +219,7 @@ CMutex::~CMutex()
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ m_strObjName,
@@ -253,7 +252,7 @@ void CMutex::setObjectName(const QString& i_strObjName)
 {
     #ifdef ZS_TRACE_MUTEXES
     QString strMthInArgs;
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(ETraceDetailLevelMethodCalls::ArgsNormal) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = i_strObjName;
     }
@@ -261,7 +260,7 @@ void CMutex::setObjectName(const QString& i_strObjName)
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ m_strObjName,
@@ -318,7 +317,7 @@ CTrcMthFile* CMutex::traceMethodFile()
 
     @return Trace detail level. None if the trace server is used.
 */
-ETraceDetailLevelMethodCalls CMutex::traceMethodFileDetailLevel() const
+EMethodTraceDetailLevel CMutex::traceMethodFileDetailLevel() const
 //------------------------------------------------------------------------------
 {
     return m_eTrcMthFileDetailLevel;
@@ -342,7 +341,7 @@ void CMutex::lock()
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ m_strObjName,
@@ -363,7 +362,7 @@ bool CMutex::tryLock(int i_timeout_ms)
 {
     #ifdef ZS_TRACE_MUTEXES
     QString strMthInArgs;
-    if( isMethodTraceActive(ETraceDetailLevelMethodCalls::ArgsNormal) )
+    if( isMethodTraceActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = QString::number(i_timeout_ms) + " ms";
     }
@@ -371,7 +370,7 @@ bool CMutex::tryLock(int i_timeout_ms)
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ m_strObjName,
@@ -382,7 +381,7 @@ bool CMutex::tryLock(int i_timeout_ms)
     bool bOk = QMutex::tryLock(i_timeout_ms);
 
     #ifdef ZS_TRACE_MUTEXES
-    if( mthTracer.areMethodCallsActive(ETraceDetailLevelMethodCalls::ArgsNormal) )
+    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         mthTracer.setMethodReturn(bOk);
     }
@@ -404,7 +403,7 @@ bool CMutex::try_lock()
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ m_strObjName,
@@ -415,7 +414,7 @@ bool CMutex::try_lock()
     bool bOk = QMutex::try_lock();
 
     #ifdef ZS_TRACE_MUTEXES
-    if( mthTracer.areMethodCallsActive(ETraceDetailLevelMethodCalls::ArgsNormal) )
+    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         mthTracer.setMethodReturn(bOk);
     }
@@ -435,7 +434,7 @@ bool CMutex::try_lock_for(std::chrono::duration<Rep, Period> i_duration)
 {
     #ifdef ZS_TRACE_MUTEXES
     QString strMthInArgs;
-    if( isMethodTraceActive(ETraceDetailLevelMethodCalls::ArgsNormal) )
+    if( isMethodTraceActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = QString::number(i_duration.count());
     }
@@ -443,7 +442,7 @@ bool CMutex::try_lock_for(std::chrono::duration<Rep, Period> i_duration)
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ m_strObjName,
@@ -454,7 +453,7 @@ bool CMutex::try_lock_for(std::chrono::duration<Rep, Period> i_duration)
     bool bOk = QMutex::try_lock_for(i_duration);
 
     #ifdef ZS_TRACE_MUTEXES
-    if( mthTracer.areMethodCallsActive(ETraceDetailLevelMethodCalls::ArgsNormal) )
+    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         mthTracer.setMethodReturn(bOk);
     }
@@ -474,7 +473,7 @@ bool CMutex::try_lock_until(std::chrono::time_point<Clock, Duration> i_timePoint
 {
     #ifdef ZS_TRACE_MUTEXES
     QString strMthInArgs;
-    if( isMethodTraceActive(ETraceDetailLevelMethodCalls::ArgsNormal) )
+    if( isMethodTraceActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = QString::number(i_timePoint.time_since_epoch());
     }
@@ -482,7 +481,7 @@ bool CMutex::try_lock_until(std::chrono::time_point<Clock, Duration> i_timePoint
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ m_strObjName,
@@ -493,7 +492,7 @@ bool CMutex::try_lock_until(std::chrono::time_point<Clock, Duration> i_timePoint
     bool bOk = QMutex::try_lock_until(i_timePoint);
 
     #ifdef ZS_TRACE_MUTEXES
-    if( mthTracer.areMethodCallsActive(ETraceDetailLevelMethodCalls::ArgsNormal) )
+    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         mthTracer.setMethodReturn(bOk);
     }
@@ -515,7 +514,7 @@ void CMutex::unlock()
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ m_strObjName,
@@ -539,7 +538,7 @@ public: // auxiliary methods
     @param i_eFilterDetailLevel [in] Filter detail level to be checked.
     @return true if tracing is active, false otherwise
 */
-bool CMutex::isMethodTraceActive( ETraceDetailLevelMethodCalls i_eFilterDetailLevel ) const
+bool CMutex::isMethodTraceActive( EMethodTraceDetailLevel i_eFilterDetailLevel ) const
 //------------------------------------------------------------------------------
 {
     bool bIsActive = false;
@@ -563,10 +562,10 @@ bool CMutex::isMethodTraceActive( ETraceDetailLevelMethodCalls i_eFilterDetailLe
 
     @return Active method trace detail level.
 */
-ETraceDetailLevelMethodCalls CMutex::getMethodTraceDetailLevel() const
+EMethodTraceDetailLevel CMutex::getMethodTraceDetailLevel() const
 //------------------------------------------------------------------------------
 {
-    ETraceDetailLevelMethodCalls eDetailLevel = ETraceDetailLevelMethodCalls::None;
+    EMethodTraceDetailLevel eDetailLevel = EMethodTraceDetailLevel::None;
 
     #ifdef ZS_TRACE_MUTEXES
     if( m_pTrcAdminObj != nullptr )
@@ -603,7 +602,7 @@ CRecursiveMutex::CRecursiveMutex(const QString& i_strObjName) :
     QRecursiveMutex(),
     m_strObjName(i_strObjName)
     #ifdef ZS_TRACE_MUTEXES
-    ,m_eTrcMthFileDetailLevel(ETraceDetailLevelMethodCalls::None),
+    ,m_eTrcMthFileDetailLevel(EMethodTraceDetailLevel::None),
     m_pTrcMthFile(nullptr),
     m_pTrcAdminObj(nullptr)
     #endif
@@ -614,7 +613,7 @@ CRecursiveMutex::CRecursiveMutex(const QString& i_strObjName) :
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ m_strObjName,
@@ -634,7 +633,7 @@ CRecursiveMutex::CRecursiveMutex(const QString& i_strObjName) :
         to a trace method file allocated by the server, this detail level has to
         be to a value greater than None.
 */
-CRecursiveMutex::CRecursiveMutex( const QString& i_strObjName, ETraceDetailLevelMethodCalls i_eTrcMthFileDetailLevel ) :
+CRecursiveMutex::CRecursiveMutex( const QString& i_strObjName, EMethodTraceDetailLevel i_eTrcMthFileDetailLevel ) :
 //------------------------------------------------------------------------------
     QRecursiveMutex(),
     m_strObjName(i_strObjName)
@@ -651,7 +650,7 @@ CRecursiveMutex::CRecursiveMutex( const QString& i_strObjName, ETraceDetailLevel
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ m_strObjName,
@@ -673,7 +672,7 @@ CRecursiveMutex::~CRecursiveMutex()
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ m_strObjName,
@@ -689,7 +688,7 @@ CRecursiveMutex::~CRecursiveMutex()
         m_pTrcMthFile->close();
         CTrcMthFile::Free(m_pTrcMthFile);
     }
-    m_eTrcMthFileDetailLevel = static_cast<ETraceDetailLevelMethodCalls>(0);
+    m_eTrcMthFileDetailLevel = static_cast<EMethodTraceDetailLevel>(0);
     m_pTrcMthFile = nullptr;
     m_pTrcAdminObj = nullptr;
     #endif
@@ -709,7 +708,7 @@ void CRecursiveMutex::setObjectName(const QString& i_strObjName)
 {
     #ifdef ZS_TRACE_MUTEXES
     QString strMthInArgs;
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(ETraceDetailLevelMethodCalls::ArgsNormal) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = i_strObjName;
     }
@@ -717,7 +716,7 @@ void CRecursiveMutex::setObjectName(const QString& i_strObjName)
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ m_strObjName,
@@ -774,7 +773,7 @@ CTrcMthFile* CRecursiveMutex::traceMethodFile()
 
     @return Trace detail level. None if the trace server is used.
 */
-ETraceDetailLevelMethodCalls CRecursiveMutex::traceMethodFileDetailLevel() const
+EMethodTraceDetailLevel CRecursiveMutex::traceMethodFileDetailLevel() const
 //------------------------------------------------------------------------------
 {
     return m_eTrcMthFileDetailLevel;
@@ -798,7 +797,7 @@ void CRecursiveMutex::lock()
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ m_strObjName,
@@ -819,7 +818,7 @@ bool CRecursiveMutex::tryLock(int i_timeout_ms)
 {
     #ifdef ZS_TRACE_MUTEXES
     QString strMthInArgs;
-    if( isMethodTraceActive(ETraceDetailLevelMethodCalls::ArgsNormal) )
+    if( isMethodTraceActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = QString::number(i_timeout_ms) + " ms";
     }
@@ -827,7 +826,7 @@ bool CRecursiveMutex::tryLock(int i_timeout_ms)
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ m_strObjName,
@@ -838,7 +837,7 @@ bool CRecursiveMutex::tryLock(int i_timeout_ms)
     bool bOk = QRecursiveMutex::tryLock(i_timeout_ms);
 
     #ifdef ZS_TRACE_MUTEXES
-    if( mthTracer.areMethodCallsActive(ETraceDetailLevelMethodCalls::ArgsNormal) )
+    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         mthTracer.setMethodReturn(bOk);
     }
@@ -860,7 +859,7 @@ bool CRecursiveMutex::try_lock()
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ m_strObjName,
@@ -871,7 +870,7 @@ bool CRecursiveMutex::try_lock()
     bool bOk = QRecursiveMutex::try_lock();
 
     #ifdef ZS_TRACE_MUTEXES
-    if( mthTracer.areMethodCallsActive(ETraceDetailLevelMethodCalls::ArgsNormal) )
+    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         mthTracer.setMethodReturn(bOk);
     }
@@ -891,7 +890,7 @@ bool CRecursiveMutex::try_lock_for(std::chrono::duration<Rep, Period> i_duration
 {
     #ifdef ZS_TRACE_MUTEXES
     QString strMthInArgs;
-    if( isMethodTraceActive(ETraceDetailLevelMethodCalls::ArgsNormal) )
+    if( isMethodTraceActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = QString::number(i_duration.count());
     }
@@ -899,7 +898,7 @@ bool CRecursiveMutex::try_lock_for(std::chrono::duration<Rep, Period> i_duration
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ m_strObjName,
@@ -910,7 +909,7 @@ bool CRecursiveMutex::try_lock_for(std::chrono::duration<Rep, Period> i_duration
     bool bOk = QRecursiveMutex::try_lock_for(i_duration);
 
     #ifdef ZS_TRACE_MUTEXES
-    if( mthTracer.areMethodCallsActive(ETraceDetailLevelMethodCalls::ArgsNormal) )
+    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         mthTracer.setMethodReturn(bOk);
     }
@@ -930,7 +929,7 @@ bool CRecursiveMutex::try_lock_until(std::chrono::time_point<Clock, Duration> i_
 {
     #ifdef ZS_TRACE_MUTEXES
     QString strMthInArgs;
-    if( isMethodTraceActive(ETraceDetailLevelMethodCalls::ArgsNormal) )
+    if( isMethodTraceActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = QString::number(i_timePoint.time_since_epoch());
     }
@@ -938,7 +937,7 @@ bool CRecursiveMutex::try_lock_until(std::chrono::time_point<Clock, Duration> i_
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ m_strObjName,
@@ -949,7 +948,7 @@ bool CRecursiveMutex::try_lock_until(std::chrono::time_point<Clock, Duration> i_
     bool bOk = QRecursiveMutex::try_lock_until(i_timePoint);
 
     #ifdef ZS_TRACE_MUTEXES
-    if( mthTracer.areMethodCallsActive(ETraceDetailLevelMethodCalls::ArgsNormal) )
+    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         mthTracer.setMethodReturn(bOk);
     }
@@ -971,7 +970,7 @@ void CRecursiveMutex::unlock()
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ m_strObjName,
@@ -995,7 +994,7 @@ public: // auxiliary methods
     @param i_eFilterDetailLevel [in] Filter detail level to be checked.
     @return true if tracing is active, false otherwise
 */
-bool CRecursiveMutex::isMethodTraceActive( ETraceDetailLevelMethodCalls i_eFilterDetailLevel ) const
+bool CRecursiveMutex::isMethodTraceActive( EMethodTraceDetailLevel i_eFilterDetailLevel ) const
 //------------------------------------------------------------------------------
 {
     bool bIsActive = false;
@@ -1019,10 +1018,10 @@ bool CRecursiveMutex::isMethodTraceActive( ETraceDetailLevelMethodCalls i_eFilte
 
     @return Active method trace detail level.
 */
-ETraceDetailLevelMethodCalls CRecursiveMutex::getMethodTraceDetailLevel() const
+EMethodTraceDetailLevel CRecursiveMutex::getMethodTraceDetailLevel() const
 //------------------------------------------------------------------------------
 {
-    ETraceDetailLevelMethodCalls eDetailLevel = ETraceDetailLevelMethodCalls::None;
+    EMethodTraceDetailLevel eDetailLevel = EMethodTraceDetailLevel::None;
 
     #ifdef ZS_TRACE_MUTEXES
     if( m_pTrcAdminObj != nullptr )
@@ -1065,7 +1064,7 @@ CMutexLocker::CMutexLocker(CMutex* i_pMutex) :
     m_pMtx(i_pMutex),
     m_pRecursiveMtx(nullptr)
     #ifdef ZS_TRACE_MUTEXES
-    ,m_eTrcMthFileDetailLevel(ETraceDetailLevelMethodCalls::None),
+    ,m_eTrcMthFileDetailLevel(EMethodTraceDetailLevel::None),
     m_pTrcMthFile(nullptr),
     m_pTrcAdminObj(nullptr)
     #endif
@@ -1083,7 +1082,7 @@ CMutexLocker::CMutexLocker(CMutex* i_pMutex) :
             /* pAdminObj          */ m_pTrcAdminObj,
             /* pTrcMthFile        */ m_pTrcMthFile,
             /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
-            /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+            /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
             /* strNameSpace       */ NameSpace(),
             /* strClassName       */ ClassName(),
             /* strObjName         */ objectName(),
@@ -1113,7 +1112,7 @@ CMutexLocker::CMutexLocker(CRecursiveMutex* i_pMutex) :
     m_pMtx(nullptr),
     m_pRecursiveMtx(i_pMutex)
     #ifdef ZS_TRACE_MUTEXES
-    ,m_eTrcMthFileDetailLevel(ETraceDetailLevelMethodCalls::None),
+    ,m_eTrcMthFileDetailLevel(EMethodTraceDetailLevel::None),
     m_pTrcMthFile(nullptr),
     m_pTrcAdminObj(nullptr)
     #endif
@@ -1131,7 +1130,7 @@ CMutexLocker::CMutexLocker(CRecursiveMutex* i_pMutex) :
             /* pAdminObj          */ m_pTrcAdminObj,
             /* pTrcMthFile        */ m_pTrcMthFile,
             /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
-            /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+            /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
             /* strNameSpace       */ NameSpace(),
             /* strClassName       */ ClassName(),
             /* strObjName         */ objectName(),
@@ -1158,7 +1157,7 @@ CMutexLocker::~CMutexLocker()
             /* pAdminObj          */ m_pTrcAdminObj,
             /* pTrcMthFile        */ m_pTrcMthFile,
             /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
-            /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+            /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
             /* strNameSpace       */ NameSpace(),
             /* strClassName       */ ClassName(),
             /* strObjName         */ objectName(),
@@ -1181,7 +1180,7 @@ CMutexLocker::~CMutexLocker()
             mthTracer.onAdminObjAboutToBeReleased();
             CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
         }
-        m_eTrcMthFileDetailLevel = static_cast<ETraceDetailLevelMethodCalls>(0);
+        m_eTrcMthFileDetailLevel = static_cast<EMethodTraceDetailLevel>(0);
         m_pTrcMthFile = nullptr;
         m_pTrcAdminObj = nullptr;
         #endif
@@ -1233,7 +1232,7 @@ void CMutexLocker::relock()
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ m_pMtx->objectName(),
@@ -1264,7 +1263,7 @@ void CMutexLocker::unlock()
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ m_pMtx->objectName(),
@@ -1295,7 +1294,7 @@ public: // auxiliary methods
     @param i_iFilterDetailLevel [in] Filter detail level to be checked.
     @return true if tracing is active, false otherwise
 */
-bool CMutexLocker::isMethodTraceActive( ETraceDetailLevelMethodCalls i_eFilterDetailLevel ) const
+bool CMutexLocker::isMethodTraceActive( EMethodTraceDetailLevel i_eFilterDetailLevel ) const
 //------------------------------------------------------------------------------
 {
     bool bIsActive = false;
@@ -1319,10 +1318,10 @@ bool CMutexLocker::isMethodTraceActive( ETraceDetailLevelMethodCalls i_eFilterDe
 
     @return Active method trace detail level.
 */
-ETraceDetailLevelMethodCalls CMutexLocker::getMethodTraceDetailLevel() const
+EMethodTraceDetailLevel CMutexLocker::getMethodTraceDetailLevel() const
 //------------------------------------------------------------------------------
 {
-    ETraceDetailLevelMethodCalls eDetailLevel = ETraceDetailLevelMethodCalls::None;
+    EMethodTraceDetailLevel eDetailLevel = EMethodTraceDetailLevel::None;
 
     #ifdef ZS_TRACE_MUTEXES
     if( m_pTrcAdminObj != nullptr )

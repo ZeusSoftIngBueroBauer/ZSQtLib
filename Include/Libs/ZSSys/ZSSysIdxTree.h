@@ -35,13 +35,10 @@ may result in using the software modules.
 
 namespace ZS
 {
-namespace Trace
-{
-class CTrcAdminObj;
-}
 namespace System
 {
 class CMutex;
+class CTrcAdminObj;
 
 //******************************************************************************
 /*! @brief Entries in the index tree are structured both in a tree structure
@@ -146,8 +143,8 @@ public: // ctors and dtor
         const QString& i_strNodeSeparator = "/",
         bool           i_bCreateMutex = false,
         QObject*       i_pObjParent = nullptr,
-        ZS::Trace::ETraceDetailLevelMethodCalls i_eTrcDetailLevel = ZS::Trace::ETraceDetailLevelMethodCalls::None,
-        ZS::Trace::ETraceDetailLevelMethodCalls i_eTrcDetailLevelMutex = ZS::Trace::ETraceDetailLevelMethodCalls::None );
+        EMethodTraceDetailLevel i_eTrcDetailLevel = EMethodTraceDetailLevel::None,
+        EMethodTraceDetailLevel i_eTrcDetailLevelMutex = EMethodTraceDetailLevel::None );
     virtual ~CIdxTree();
 public: // instance methods
     void clear(); // keeps the root entry
@@ -353,10 +350,10 @@ protected: // instance members
     /*!< Trace detail level for method tracing.
          Trace output may not be controlled by trace admin objects
          if the index tree belongs the trace server. */
-    ZS::Trace::ETraceDetailLevelMethodCalls m_eTrcDetailLevel;
+    EMethodTraceDetailLevel m_eTrcDetailLevel;
     /*!< Trace admin object to control trace outputs of the class.
          The object will not be created if the index tree's belongs to the trace server. */
-    ZS::Trace::CTrcAdminObj* m_pTrcAdminObj;
+    CTrcAdminObj* m_pTrcAdminObj;
 
 }; // class CIdxTree
 

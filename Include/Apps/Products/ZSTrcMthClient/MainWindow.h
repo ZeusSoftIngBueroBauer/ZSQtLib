@@ -53,6 +53,7 @@ namespace GUI
 {
 class CDlgErrLog;
 class CDlgRequestExecTree;
+class CDlgIdxTreeTrcAdminObjs;
 }
 }
 namespace Ipc
@@ -70,7 +71,6 @@ class CIpcTrcClient;
 namespace GUI
 {
 class CDlgTrcClient;
-class CDlgIdxTreeTrcAdminObjs;
 }
 }
 

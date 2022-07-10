@@ -43,9 +43,6 @@ class CErrLog;
 class CMutex;
 class CRequest;
 class CRequestQueue;
-}
-namespace Trace
-{
 class CTrcAdminObj;
 class CTrcMthFile;
 }
@@ -87,9 +84,9 @@ public: // ctors and dtor
     CServer(
         const QString& i_strObjName,
         bool i_bMultiThreadedAccess = false,
-        ZS::Trace::ETraceDetailLevelMethodCalls i_eTrcMthFileDetailLevel = ZS::Trace::ETraceDetailLevelMethodCalls::None,
-        ZS::Trace::ETraceDetailLevelMethodCalls i_eTrcMthFileDetailLevelMutex = ZS::Trace::ETraceDetailLevelMethodCalls::None,
-        ZS::Trace::ETraceDetailLevelMethodCalls i_eTrcMthFileDetailLevelGateway = ZS::Trace::ETraceDetailLevelMethodCalls::None );
+        ZS::System::EMethodTraceDetailLevel i_eTrcMthFileDetailLevel = ZS::System::EMethodTraceDetailLevel::None,
+        ZS::System::EMethodTraceDetailLevel i_eTrcMthFileDetailLevelMutex = ZS::System::EMethodTraceDetailLevel::None,
+        ZS::System::EMethodTraceDetailLevel i_eTrcMthFileDetailLevelGateway = ZS::System::EMethodTraceDetailLevel::None );
     virtual ~CServer();
 signals: // of the remote connection
     void connected( QObject* i_pServer, const ZS::Ipc::SSocketDscr& i_socketDscr );
@@ -176,10 +173,10 @@ protected slots:
 protected: // instance methods
     ZS::System::SErrResultInfo checkSocket( int i_iSocketId ) const;
 protected: // instance methods
-    bool areTraceMethodCallsActive( ZS::Trace::ETraceDetailLevelMethodCalls i_eFilterDetailLevel ) const;
-    ZS::Trace::ETraceDetailLevelMethodCalls getMethodCallsTraceDetailLevel() const;
-    bool isTraceRuntimeInfoActive( ZS::Trace::ETraceDetailLevelRuntimeInfo i_eFilterDetailLevel ) const;
-    ZS::Trace::ETraceDetailLevelRuntimeInfo getRuntimeInfoTraceDetailLevel() const;
+    bool areTraceMethodCallsActive( ZS::System::EMethodTraceDetailLevel i_eFilterDetailLevel ) const;
+    ZS::System::EMethodTraceDetailLevel getMethodCallsTraceDetailLevel() const;
+    bool isTraceRuntimeInfoActive( ZS::System::ELogDetailLevel i_eFilterDetailLevel ) const;
+    ZS::System::ELogDetailLevel getRuntimeInfoTraceDetailLevel() const;
 protected: // overridables of inherited class QObject (state machine)
     virtual bool event( QEvent* i_pEv ) override;
 protected: // instance members
@@ -211,15 +208,15 @@ protected: // instance members
     QList<QObject*> m_arpTrcMsgLogObjects;
     /*<! Trace detail level used if the method trace of the client got to be output
          directly to a trace method file and not through the trace server. */
-    ZS::Trace::ETraceDetailLevelMethodCalls m_eTrcMthFileDetailLevel;
+    ZS::System::EMethodTraceDetailLevel m_eTrcMthFileDetailLevel;
     /*<! Trace detail level used if the method trace of the client's gateway got to be output
          directly to a trace method file and not through the trace server. */
-    ZS::Trace::ETraceDetailLevelMethodCalls m_eTrcMthFileDetailLevelGateway;
+    ZS::System::EMethodTraceDetailLevel m_eTrcMthFileDetailLevelGateway;
     /*<! Reference to local trace method file. Used if the Ipc Server belongs to
          the trace server itself and tracing through trace server cannot be used. */
-    ZS::Trace::CTrcMthFile* m_pTrcMthFile;
+    ZS::System::CTrcMthFile* m_pTrcMthFile;
     /*!< Trace admin object with trace server. */
-    ZS::Trace::CTrcAdminObj* m_pTrcAdminObj;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObj;
 
 }; // class CServer
 

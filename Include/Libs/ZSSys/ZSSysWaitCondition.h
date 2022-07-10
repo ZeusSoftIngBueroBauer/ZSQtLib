@@ -35,14 +35,11 @@ may result in using the software modules.
 
 namespace ZS
 {
-namespace Trace
-{
-class CTrcAdminObj;
-class CTrcMthFile;
-}
 namespace System
 {
 class CMutex;
+class CTrcAdminObj;
+class CTrcMthFile;
 
 //******************************************************************************
 /*! @brief Wrapper around the QWaitCondition class with the possibility to trace
@@ -55,7 +52,7 @@ class ZSSYSDLL_API CWaitCondition : public QWaitCondition
     static QString ClassName() { return "CWaitCondition"; }
 public: // ctors and dtor
     CWaitCondition(const QString& i_strObjName);
-    CWaitCondition(const QString& i_strObjName, ZS::Trace::ETraceDetailLevelMethodCalls i_eTrcMthFileDetailLevel);
+    CWaitCondition(const QString& i_strObjName, EMethodTraceDetailLevel i_eTrcMthFileDetailLevel);
     virtual ~CWaitCondition();
 public: // instance methods
     void setObjectName(const QString& i_strObjName);
@@ -70,19 +67,19 @@ public: // instance methods
     void wakeAll();
     void wakeOne();
 public: // auxiliary methods
-    bool isMethodTraceActive( ZS::Trace::ETraceDetailLevelMethodCalls i_eFilterDetailLevel ) const;
-    ZS::Trace::ETraceDetailLevelMethodCalls getMethodTraceDetailLevel() const;
+    bool isMethodTraceActive( EMethodTraceDetailLevel i_eFilterDetailLevel ) const;
+    EMethodTraceDetailLevel getMethodTraceDetailLevel() const;
 private: // instance members
     /*!< Descriptive name of the wait condition object. */
     QString m_strObjName;
     /*<! Trace detail level used if the method trace of the client got to be output
          directly to a trace method file and not through the trace server. */
-    ZS::Trace::ETraceDetailLevelMethodCalls m_eTrcMthFileDetailLevel;
+    EMethodTraceDetailLevel m_eTrcMthFileDetailLevel;
     /*<! Reference to local trace method file. Used if the Mutex belongs to
          the trace server itself and tracing through trace server cannot be used. */
-    ZS::Trace::CTrcMthFile* m_pTrcMthFile;
+    CTrcMthFile* m_pTrcMthFile;
      /*!< Trace admin object to control the method trace if used by trace server. */
-    ZS::Trace::CTrcAdminObj* m_pTrcAdminObj;
+    CTrcAdminObj* m_pTrcAdminObj;
 };
 
 } // namespace System

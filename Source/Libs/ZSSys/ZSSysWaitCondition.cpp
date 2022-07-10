@@ -37,8 +37,6 @@ may result in using the software modules.
 
 using namespace ZS::System;
 
-using namespace ZS::Trace;
-
 
 /*******************************************************************************
 class CWaitCondition : public QWaitCondition
@@ -59,7 +57,7 @@ CWaitCondition::CWaitCondition(const QString& i_strObjName) :
 //------------------------------------------------------------------------------
     QWaitCondition(),
     m_strObjName(i_strObjName),
-    m_eTrcMthFileDetailLevel(ETraceDetailLevelMethodCalls::None),
+    m_eTrcMthFileDetailLevel(EMethodTraceDetailLevel::None),
     m_pTrcMthFile(nullptr),
     m_pTrcAdminObj(nullptr)
 {
@@ -69,7 +67,7 @@ CWaitCondition::CWaitCondition(const QString& i_strObjName) :
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ m_strObjName,
@@ -88,7 +86,7 @@ CWaitCondition::CWaitCondition(const QString& i_strObjName) :
         to a trace method file allocated by the server, this detail level has to
         be to a value greater than None.
 */
-CWaitCondition::CWaitCondition( const QString& i_strObjName, ETraceDetailLevelMethodCalls i_eTrcMthFileDetailLevel ) :
+CWaitCondition::CWaitCondition( const QString& i_strObjName, EMethodTraceDetailLevel i_eTrcMthFileDetailLevel ) :
 //------------------------------------------------------------------------------
     QWaitCondition(),
     m_strObjName(i_strObjName),
@@ -104,7 +102,7 @@ CWaitCondition::CWaitCondition( const QString& i_strObjName, ETraceDetailLevelMe
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ m_strObjName,
@@ -124,7 +122,7 @@ CWaitCondition::~CWaitCondition()
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ m_strObjName,
@@ -144,7 +142,7 @@ CWaitCondition::~CWaitCondition()
     }
 
     //m_strObjName;
-    m_eTrcMthFileDetailLevel = static_cast<ETraceDetailLevelMethodCalls>(0);
+    m_eTrcMthFileDetailLevel = static_cast<EMethodTraceDetailLevel>(0);
     m_pTrcMthFile = nullptr;
     m_pTrcAdminObj = nullptr;
 }
@@ -163,7 +161,7 @@ void CWaitCondition::setObjectName(const QString& i_strObjName)
 {
     QString strMthInArgs;
 
-    if( isMethodTraceActive(ETraceDetailLevelMethodCalls::ArgsNormal) )
+    if( isMethodTraceActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = i_strObjName;
     }
@@ -172,7 +170,7 @@ void CWaitCondition::setObjectName(const QString& i_strObjName)
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ m_strObjName,
@@ -214,7 +212,7 @@ void CWaitCondition::notify_all()
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ m_strObjName,
@@ -236,7 +234,7 @@ void CWaitCondition::notify_one()
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ m_strObjName,
@@ -256,7 +254,7 @@ bool CWaitCondition::wait(CMutex* i_pMutexLocked, QDeadlineTimer i_deadline)
 {
     QString strMthInArgs;
 
-    if( isMethodTraceActive(ETraceDetailLevelMethodCalls::ArgsNormal) )
+    if( isMethodTraceActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = QString(i_deadline.isForever() ? "Forever" : QString::number(i_deadline.deadline()));
     }
@@ -265,7 +263,7 @@ bool CWaitCondition::wait(CMutex* i_pMutexLocked, QDeadlineTimer i_deadline)
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ m_strObjName,
@@ -274,7 +272,7 @@ bool CWaitCondition::wait(CMutex* i_pMutexLocked, QDeadlineTimer i_deadline)
 
     bool bOk = QWaitCondition::wait(i_pMutexLocked, i_deadline);
 
-    if( mthTracer.areMethodCallsActive(ETraceDetailLevelMethodCalls::ArgsNormal) )
+    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         mthTracer.setMethodReturn(bOk);
     }
@@ -291,7 +289,7 @@ bool CWaitCondition::wait(CMutex* i_pMutexLocked, unsigned long i_uTime_ms)
 {
     QString strMthInArgs;
 
-    if( isMethodTraceActive(ETraceDetailLevelMethodCalls::ArgsNormal) )
+    if( isMethodTraceActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = QString::number(i_uTime_ms) + " ms";
     }
@@ -300,7 +298,7 @@ bool CWaitCondition::wait(CMutex* i_pMutexLocked, unsigned long i_uTime_ms)
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ m_strObjName,
@@ -309,7 +307,7 @@ bool CWaitCondition::wait(CMutex* i_pMutexLocked, unsigned long i_uTime_ms)
 
     bool bOk = QWaitCondition::wait(i_pMutexLocked, i_uTime_ms);
 
-    if( mthTracer.areMethodCallsActive(ETraceDetailLevelMethodCalls::ArgsNormal) )
+    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         mthTracer.setMethodReturn(bOk);
     }
@@ -326,7 +324,7 @@ bool CWaitCondition::wait(QReadWriteLock* i_pReadWriteLock, QDeadlineTimer i_dea
 {
     QString strMthInArgs;
 
-    if( isMethodTraceActive(ETraceDetailLevelMethodCalls::ArgsNormal) )
+    if( isMethodTraceActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = QString(i_deadline.isForever() ? "Forever" : QString::number(i_deadline.deadline()));
     }
@@ -335,7 +333,7 @@ bool CWaitCondition::wait(QReadWriteLock* i_pReadWriteLock, QDeadlineTimer i_dea
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ m_strObjName,
@@ -344,7 +342,7 @@ bool CWaitCondition::wait(QReadWriteLock* i_pReadWriteLock, QDeadlineTimer i_dea
 
     bool bOk = QWaitCondition::wait(i_pReadWriteLock, i_deadline);
 
-    if( mthTracer.areMethodCallsActive(ETraceDetailLevelMethodCalls::ArgsNormal) )
+    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         mthTracer.setMethodReturn(bOk);
     }
@@ -361,7 +359,7 @@ bool CWaitCondition::wait(QReadWriteLock* i_pReadWriteLock, unsigned long i_uTim
 {
     QString strMthInArgs;
 
-    if( isMethodTraceActive(ETraceDetailLevelMethodCalls::ArgsNormal) )
+    if( isMethodTraceActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = QString::number(i_uTime_ms) + " ms";
     }
@@ -370,7 +368,7 @@ bool CWaitCondition::wait(QReadWriteLock* i_pReadWriteLock, unsigned long i_uTim
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ m_strObjName,
@@ -379,7 +377,7 @@ bool CWaitCondition::wait(QReadWriteLock* i_pReadWriteLock, unsigned long i_uTim
 
     bool bOk = QWaitCondition::wait(i_pReadWriteLock, i_uTime_ms);
 
-    if( mthTracer.areMethodCallsActive(ETraceDetailLevelMethodCalls::ArgsNormal) )
+    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         mthTracer.setMethodReturn(bOk);
     }
@@ -398,7 +396,7 @@ void CWaitCondition::wakeAll()
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ m_strObjName,
@@ -420,7 +418,7 @@ void CWaitCondition::wakeOne()
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ m_strObjName,
@@ -443,7 +441,7 @@ public: // auxiliary methods
     @param i_iFilterDetailLevel [in] Filter detail level to be checked.
     @return true if tracing is active, false otherwise
 */
-bool CWaitCondition::isMethodTraceActive( ETraceDetailLevelMethodCalls i_eFilterDetailLevel ) const
+bool CWaitCondition::isMethodTraceActive( EMethodTraceDetailLevel i_eFilterDetailLevel ) const
 //------------------------------------------------------------------------------
 {
     bool bIsActive = false;
@@ -465,10 +463,10 @@ bool CWaitCondition::isMethodTraceActive( ETraceDetailLevelMethodCalls i_eFilter
 
     @return Active method trace detail level.
 */
-ETraceDetailLevelMethodCalls CWaitCondition::getMethodTraceDetailLevel() const
+EMethodTraceDetailLevel CWaitCondition::getMethodTraceDetailLevel() const
 //------------------------------------------------------------------------------
 {
-    ETraceDetailLevelMethodCalls eDetailLevel = ETraceDetailLevelMethodCalls::None;
+    EMethodTraceDetailLevel eDetailLevel = EMethodTraceDetailLevel::None;
 
     if( m_pTrcAdminObj != nullptr )
     {
