@@ -62,11 +62,11 @@ CTestModule2Thread::CTestModule2Thread(
 {
     m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace().c_str(), ClassName().c_str(), objectName().c_str());
 
-    m_pTrcAdminObj->setMethodCallsTraceDetailLevel(ETraceDetailLevelMethodCallsArgsNormal);
+    m_pTrcAdminObj->setMethodCallsTraceDetailLevel(EMethodTraceDetailLevelArgsNormal);
 
     std::string strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->getMethodCallsTraceDetailLevel() >= ETraceDetailLevelMethodCallsArgsNormal )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevelArgsNormal )
     {
         strMthInArgs  = "TestModule1: " + std::string(i_pTestModule1 == nullptr ? "null" : i_pTestModule1->objectName());
         strMthInArgs += ", TestModule2ObjName: " + i_strTestModule2ObjName;
@@ -74,7 +74,7 @@ CTestModule2Thread::CTestModule2Thread(
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* eDetailLevel */ ETraceDetailLevelMethodCallsEnterLeave,
+        /* eDetailLevel */ EMethodTraceDetailLevelEnterLeave,
         /* strMethod    */ "ctor",
         /* strAddInfo   */ strMthInArgs.c_str() );
 
@@ -88,7 +88,7 @@ CTestModule2Thread::~CTestModule2Thread()
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* eDetailLevel */ ETraceDetailLevelMethodCallsEnterLeave,
+        /* eDetailLevel */ EMethodTraceDetailLevelEnterLeave,
         /* szMethod     */ "dtor",
         /* szAddInfo    */ "" );
 
@@ -149,11 +149,11 @@ CTestModule2* CTestModule2Thread::getTestModule2()
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* eDetailLevel */ ETraceDetailLevelMethodCallsEnterLeave,
+        /* eDetailLevel */ EMethodTraceDetailLevelEnterLeave,
         /* strMethod    */ "getTestModule2",
         /* strAddInfo   */ "" );
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->getMethodCallsTraceDetailLevel() >= ETraceDetailLevelMethodCallsArgsNormal )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevelArgsNormal )
     {
         strMthRet = m_pTestModule2 == nullptr ? "null" : m_pTestModule2->objectName();
         mthTracer.setMethodReturn(strMthRet.c_str());
@@ -175,13 +175,13 @@ bool CTestModule2Thread::isRunning() const
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* eDetailLevel */ ETraceDetailLevelMethodCallsEnterLeave,
+        /* eDetailLevel */ EMethodTraceDetailLevelEnterLeave,
         /* strMethod    */ "isRunning",
         /* strAddInfo   */ "" );
 
     std::lock_guard<std::recursive_mutex> mtxLocker(*m_pMtx);
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->getMethodCallsTraceDetailLevel() >= ETraceDetailLevelMethodCallsArgsNormal )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevelArgsNormal )
     {
         mthTracer.setMethodReturn(m_bRunning);
     }
@@ -197,19 +197,19 @@ void CTestModule2Thread::start()
     std::string strMthRet;
     std::string strMthAddInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->getMethodCallsTraceDetailLevel() >= ETraceDetailLevelMethodCallsArgsNormal )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevelArgsNormal )
     {
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* eDetailLevel */ ETraceDetailLevelMethodCallsEnterLeave,
+        /* eDetailLevel */ EMethodTraceDetailLevelEnterLeave,
         /* strMethod    */ "start",
         /* strAddInfo   */ "" );
 
     if( m_pThread == nullptr )
     {
-        if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->getRuntimeInfoTraceDetailLevel() >= ETraceDetailLevelRuntimeInfoDebugNormal )
+        if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->getRuntimeInfoTraceDetailLevel() >= ELogDetailLevelDebugNormal )
         {
             strMthAddInfo = " -+ new std::thread()";
             mthTracer.trace(strMthAddInfo.c_str());
@@ -217,13 +217,13 @@ void CTestModule2Thread::start()
 
         m_pThread = new std::thread(&CTestModule2Thread::run, this);
 
-        if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->getRuntimeInfoTraceDetailLevel() >= ETraceDetailLevelRuntimeInfoDebugNormal )
+        if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->getRuntimeInfoTraceDetailLevel() >= ELogDetailLevelDebugNormal )
         {
             strMthAddInfo = " +- new std::thread()";
             mthTracer.trace(strMthAddInfo.c_str());
         }
 
-        if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->getRuntimeInfoTraceDetailLevel() >= ETraceDetailLevelRuntimeInfoDebugNormal )
+        if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->getRuntimeInfoTraceDetailLevel() >= ELogDetailLevelDebugNormal )
         {
             strMthAddInfo = " -+ std::thread->detach()";
             mthTracer.trace(strMthAddInfo.c_str());
@@ -231,7 +231,7 @@ void CTestModule2Thread::start()
 
         m_pThread->detach();
 
-        if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->getRuntimeInfoTraceDetailLevel() >= ETraceDetailLevelRuntimeInfoDebugNormal )
+        if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->getRuntimeInfoTraceDetailLevel() >= ELogDetailLevelDebugNormal )
         {
             strMthAddInfo = " +- std::thread->detach()";
             mthTracer.trace(strMthAddInfo.c_str());
@@ -246,13 +246,13 @@ void CTestModule2Thread::quit()
 {
     std::string strMthRet;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->getMethodCallsTraceDetailLevel() >= ETraceDetailLevelMethodCallsArgsNormal )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevelArgsNormal )
     {
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* eDetailLevel */ ETraceDetailLevelMethodCallsEnterLeave,
+        /* eDetailLevel */ EMethodTraceDetailLevelEnterLeave,
         /* strMethod    */ "quit",
         /* strAddInfo   */ "" );
 
@@ -269,14 +269,14 @@ bool CTestModule2Thread::wait( unsigned long i_uTime_ms )
     std::string strMthInArgs;
     std::string strMthRet;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->getMethodCallsTraceDetailLevel() >= ETraceDetailLevelMethodCallsArgsNormal )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevelArgsNormal )
     {
         strMthInArgs = "Time: " + std::to_string(i_uTime_ms) + " ms";
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* eDetailLevel */ ETraceDetailLevelMethodCallsEnterLeave,
+        /* eDetailLevel */ EMethodTraceDetailLevelEnterLeave,
         /* strMethod    */ "wait",
         /* strAddInfo   */ strMthInArgs.c_str() );
 
@@ -299,7 +299,7 @@ bool CTestModule2Thread::wait( unsigned long i_uTime_ms )
         }
     }
 
-    if( mthTracer.areMethodCallsActive(ETraceDetailLevelMethodCallsArgsNormal) )
+    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevelArgsNormal) )
     {
         mthTracer.setMethodReturn(!m_bRunning);
     }
@@ -316,13 +316,13 @@ int CTestModule2Thread::exec()
 
     std::string strMthRet;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->getMethodCallsTraceDetailLevel() >= ETraceDetailLevelMethodCallsArgsNormal )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevelArgsNormal )
     {
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* eDetailLevel */ ETraceDetailLevelMethodCallsEnterLeave,
+        /* eDetailLevel */ EMethodTraceDetailLevelEnterLeave,
         /* strMethod    */ "exec",
         /* strAddInfo   */ "" );
 
@@ -333,7 +333,7 @@ int CTestModule2Thread::exec()
     {
         Sleep(1000);
 
-        if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->getRuntimeInfoTraceDetailLevel() >= ETraceDetailLevelRuntimeInfoDebugNormal )
+        if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->getRuntimeInfoTraceDetailLevel() >= ELogDetailLevelDebugNormal )
         {
             timeCurr = std::chrono::steady_clock::now();
             auto timeDuration = timeCurr - timeStart;
@@ -343,7 +343,7 @@ int CTestModule2Thread::exec()
         }
     }
 
-    if( mthTracer.areMethodCallsActive(ETraceDetailLevelMethodCallsArgsNormal) )
+    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevelArgsNormal) )
     {
         mthTracer.setMethodReturn(iResult);
     }
@@ -362,7 +362,7 @@ void CTestModule2Thread::run()
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* eDetailLevel */ ETraceDetailLevelMethodCallsEnterLeave,
+        /* eDetailLevel */ EMethodTraceDetailLevelEnterLeave,
         /* szMethod     */ "run",
         /* szAddInfo    */ "" );
 
@@ -411,11 +411,11 @@ CTestModule2::CTestModule2(
 {
     m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace().c_str(), ClassName().c_str(), objectName().c_str());
 
-    m_pTrcAdminObj->setMethodCallsTraceDetailLevel(ETraceDetailLevelMethodCallsArgsNormal);
+    m_pTrcAdminObj->setMethodCallsTraceDetailLevel(EMethodTraceDetailLevelArgsNormal);
 
     std::string strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->getMethodCallsTraceDetailLevel() >= ETraceDetailLevelMethodCallsArgsNormal )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevelArgsNormal )
     {
         strMthInArgs  = "TestModule2Thread: " + std::string(i_pTestModule2Thread == nullptr ? "null" : i_pTestModule2Thread->objectName());
         strMthInArgs += ", ObjName: " + i_strObjName;
@@ -423,7 +423,7 @@ CTestModule2::CTestModule2(
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* eDetailLevel */ ETraceDetailLevelMethodCallsEnterLeave,
+        /* eDetailLevel */ EMethodTraceDetailLevelEnterLeave,
         /* strMethod    */ "ctor",
         /* strAddInfo   */ strMthInArgs.c_str() );
 
@@ -435,7 +435,7 @@ CTestModule2::~CTestModule2()
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* eDetailLevel */ ETraceDetailLevelMethodCallsEnterLeave,
+        /* eDetailLevel */ EMethodTraceDetailLevelEnterLeave,
         /* szMethod     */ "dtor",
         /* szAddInfo    */ "" );
 
@@ -460,13 +460,13 @@ int CTestModule2::recursiveTraceMethod()
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* eDetailLevel */ ETraceDetailLevelMethodCallsEnterLeave,
+        /* eDetailLevel */ EMethodTraceDetailLevelEnterLeave,
         /* szMethod     */ "recursiveTraceMethod",
         /* szAddInfo    */ "" );
 
     ++s_iCount;
 
-    if( mthTracer.isRuntimeInfoActive(ETraceDetailLevelRuntimeInfoDebugNormal) )
+    if( mthTracer.isRuntimeInfoActive(ELogDetailLevelDebugNormal) )
     {
         std::string strTrcMsg = "Count=" + std::to_string(s_iCount);
         mthTracer.trace(strTrcMsg.c_str());
@@ -481,7 +481,7 @@ int CTestModule2::recursiveTraceMethod()
 
     --s_iCount;
 
-    if( mthTracer.areMethodCallsActive(ETraceDetailLevelMethodCallsArgsNormal) )
+    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevelArgsNormal) )
     {
         mthTracer.setMethodReturn(s_iCount);
     }

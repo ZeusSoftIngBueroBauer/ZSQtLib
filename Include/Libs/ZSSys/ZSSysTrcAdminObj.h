@@ -39,7 +39,7 @@ class QMutex;
 
 namespace ZS
 {
-namespace Trace
+namespace System
 {
 class CIdxTreeTrcAdminObjs;
 class CTrcServer;
@@ -79,7 +79,7 @@ friend class CIdxTreeTrcAdminObjs;
     Q_OBJECT
 public: // class methods
     /*! Returns the name space of the class. */
-    static QString NameSpace() { return "ZS::Trace"; }
+    static QString NameSpace() { return "ZS::System"; }
     /*! Returns the class name of the class. */
     static QString ClassName() { return "CTrcAdminObj"; }
 protected: // ctors and dtor
@@ -93,7 +93,7 @@ signals:
     /*! @brief Emitted if ObjState, Enabled, StateOnOff or DetailLevel has been changed. */
     void changed( QObject* i_pTrcAdminObj );
     /*! @brief Emitted if the object is going to be destroyed. */
-    void aboutToBeDestroyed( ZS::Trace::CTrcAdminObj* i_pTrcAdminObj );
+    void aboutToBeDestroyed( QObject* i_pTrcAdminObj );
 public: // instance methods
     CIdxTreeTrcAdminObjs* getTraceAdminObjIdxTree();
     CTrcServer* getTraceServer();
@@ -123,12 +123,12 @@ public: // instance methods
     ZS::System::EEnabled getEnabled() const;
     bool isEnabled() const;
 public: // instance methods
-    void setMethodCallsTraceDetailLevel( ETraceDetailLevelMethodCalls i_eTrcDetailLevel );
-    ETraceDetailLevelMethodCalls getMethodCallsTraceDetailLevel() const;
-    bool areMethodCallsActive( ETraceDetailLevelMethodCalls i_eFilterDetailLevel ) const;
-    void setRuntimeInfoTraceDetailLevel( ETraceDetailLevelRuntimeInfo i_eTrcDetailLevel );
-    ETraceDetailLevelRuntimeInfo getRuntimeInfoTraceDetailLevel() const;
-    bool isRuntimeInfoActive( ETraceDetailLevelRuntimeInfo i_eFilterDetailLevel ) const;
+    void setMethodCallsTraceDetailLevel( ZS::System::EMethodTraceDetailLevel i_eTrcDetailLevel );
+    ZS::System::EMethodTraceDetailLevel getMethodCallsTraceDetailLevel() const;
+    bool areMethodCallsActive( ZS::System::EMethodTraceDetailLevel i_eFilterDetailLevel ) const;
+    void setRuntimeInfoTraceDetailLevel( ZS::System::ELogDetailLevel i_eTrcDetailLevel );
+    ZS::System::ELogDetailLevel getRuntimeInfoTraceDetailLevel() const;
+    bool isRuntimeInfoActive( ZS::System::ELogDetailLevel i_eFilterDetailLevel ) const;
 public: // instance methods
     void setTraceDataFilter( const QString& i_strFilter );
     QString getTraceDataFilter() const;
@@ -169,11 +169,11 @@ protected: // instance members
     /*!< Defines the current detail level of the method trace outputs for the
          module, class or instance referencing this object. If set to
          None method trace output is disabled. */
-    ETraceDetailLevelMethodCalls m_eTrcDetailLevelMethodCalls;
+    ZS::System::EMethodTraceDetailLevel m_eTrcDetailLevelMethodCalls;
     /*!< Defines the current detail level of the runtime info trace outputs for the
          module, class or instance referencing this object. If set to
          None method trace output is disabled. */
-    ETraceDetailLevelRuntimeInfo m_eTrcDetailLevelRuntimeInfo;
+    ZS::System::ELogDetailLevel m_eTrcDetailLevelRuntimeInfo;
     /*!< Trace data may also be suppressed by applying a filter.
          This filter is a regular expression which allows to define a positive
          pattern where only the data will be traced which mets the expression
@@ -198,10 +198,10 @@ public: // instance methods
     void allocTrcAdminObj();
     void releaseTrcAdminObj();
     CTrcAdminObj* trcAdminObj();
-    void setMethodCallsTraceDetailLevel(ETraceDetailLevelMethodCalls i_eTrcDetailLevel);
-    bool areMethodCallsActive(ETraceDetailLevelMethodCalls i_eFilterDetailLevel) const;
-    void setRuntimeInfoTraceDetailLevel(ETraceDetailLevelRuntimeInfo i_eTrcDetailLevel);
-    bool isRuntimeInfoActive(ETraceDetailLevelRuntimeInfo i_eFilterDetailLevel) const;
+    void setMethodCallsTraceDetailLevel(ZS::System::EMethodTraceDetailLevel i_eTrcDetailLevel);
+    bool areMethodCallsActive(ZS::System::EMethodTraceDetailLevel i_eFilterDetailLevel) const;
+    void setRuntimeInfoTraceDetailLevel(ZS::System::ELogDetailLevel i_eTrcDetailLevel);
+    bool isRuntimeInfoActive(ZS::System::ELogDetailLevel i_eFilterDetailLevel) const;
 private slots:
     void onTrcAdminObjDestroyed(QObject* i_pTrcAdminObj);
 private: // instance members
@@ -225,15 +225,15 @@ public: // ctors and dtor
     ~CTrcAdminObjRefGuard();
 public: // instance methods
     CTrcAdminObj* trcAdminObj();
-    void setMethodCallsTraceDetailLevel(ETraceDetailLevelMethodCalls i_eTrcDetailLevel);
-    bool areMethodCallsActive(ETraceDetailLevelMethodCalls i_eFilterDetailLevel) const;
-    void setRuntimeInfoTraceDetailLevel(ETraceDetailLevelRuntimeInfo i_eTrcDetailLevel);
-    bool isRuntimeInfoActive(ETraceDetailLevelRuntimeInfo i_eFilterDetailLevel) const;
+    void setMethodCallsTraceDetailLevel(ZS::System::EMethodTraceDetailLevel i_eTrcDetailLevel);
+    bool areMethodCallsActive(ZS::System::EMethodTraceDetailLevel i_eFilterDetailLevel) const;
+    void setRuntimeInfoTraceDetailLevel(ZS::System::ELogDetailLevel i_eTrcDetailLevel);
+    bool isRuntimeInfoActive(ZS::System::ELogDetailLevel i_eFilterDetailLevel) const;
 private: // instance members
     CTrcAdminObjRefAnchor* m_pRefAnchor;    /*!< Pointer to reference anchor which should be guarded. */
 };
 
-} // namespace Trace
+} // namespace System
 
 } // namespace ZS
 

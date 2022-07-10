@@ -43,10 +43,6 @@ namespace System
 {
 class CMsg;
 class CRequest;
-}
-
-namespace Trace
-{
 class CTrcAdminObj;
 class CTrcMthFile;
 class CTrcServer;
@@ -82,7 +78,7 @@ class CTrcServer;
                 ** pTrcAdminObj       ** m_pTrcAdminObj,
                 ** pTrcServer         ** CTrcServer::GetInstance(),
                 ** iTrcDetailLevel    ** m_eTrcDetailLevel,
-                ** iFilterDetailLevel ** ETraceDetailLevelMethodCalls,
+                ** iFilterDetailLevel ** EMethodTraceDetailLevel,
                 ** strNameSpace       ** NameSpace(),
                 ** strClassName       ** ClassName(),
                 ** strObjName         ** objectName(),
@@ -106,63 +102,63 @@ class ZSSYSDLL_API CMethodTracer : public QObject
     Q_OBJECT
 public: // ctors and dtor
     CMethodTracer(
-        CTrcAdminObj*                i_pTrcAdminObj,
-        ETraceDetailLevelMethodCalls i_eFilterDetailLevel,
-        const QString&               i_strMethod,
-        const QString&               i_strMethodInArgs );
+        CTrcAdminObj* i_pTrcAdminObj,
+        ZS::System::EMethodTraceDetailLevel i_eFilterDetailLevel,
+        const QString& i_strMethod,
+        const QString& i_strMethodInArgs );
     CMethodTracer(
-        CTrcAdminObj*                i_pTrcAdminObj,
-        ETraceDetailLevelMethodCalls i_eFilterDetailLevel,
-        const QString&               i_strObjName,
-        const QString&               i_strMethod,
-        const QString&               i_strMethodInArgs );
+        CTrcAdminObj* i_pTrcAdminObj,
+        ZS::System::EMethodTraceDetailLevel i_eFilterDetailLevel,
+        const QString& i_strObjName,
+        const QString& i_strMethod,
+        const QString& i_strMethodInArgs );
     CMethodTracer(
-        CTrcAdminObj*                i_pTrcAdminObj,
-        CTrcServer*                  i_pTrcServer,
-        ETraceDetailLevelMethodCalls i_eTrcDetailLevel,
-        ETraceDetailLevelMethodCalls i_eFilterDetailLevel,
-        const QString&               i_strNameSpace,
-        const QString&               i_strClassName,
-        const QString&               i_strObjName,
-        const QString&               i_strMethod,
-        const QString&               i_strMethodInArgs = "" );
+        CTrcAdminObj* i_pTrcAdminObj,
+        CTrcServer*   i_pTrcServer,
+        ZS::System::EMethodTraceDetailLevel i_eTrcDetailLevel,
+        ZS::System::EMethodTraceDetailLevel i_eFilterDetailLevel,
+        const QString& i_strNameSpace,
+        const QString& i_strClassName,
+        const QString& i_strObjName,
+        const QString& i_strMethod,
+        const QString& i_strMethodInArgs = "" );
     CMethodTracer(
-        CTrcServer*                  i_pTrcServer,
-        ETraceDetailLevelMethodCalls i_eTrcDetailLevel,
-        ETraceDetailLevelMethodCalls i_eFilterDetailLevel,
-        const QString&               i_strNameSpace,
-        const QString&               i_strClassName,
-        const QString&               i_strObjName,
-        const QString&               i_strMethod,
-        const QString&               i_strMethodInArgs = "" );
+        CTrcServer* i_pTrcServer,
+        ZS::System::EMethodTraceDetailLevel i_eTrcDetailLevel,
+        ZS::System::EMethodTraceDetailLevel i_eFilterDetailLevel,
+        const QString& i_strNameSpace,
+        const QString& i_strClassName,
+        const QString& i_strObjName,
+        const QString& i_strMethod,
+        const QString& i_strMethodInArgs = "" );
     CMethodTracer(
-        CTrcMthFile*                 i_pTrcMthFile,
-        ETraceDetailLevelMethodCalls i_eTrcDetailLevel,
-        ETraceDetailLevelMethodCalls i_eFilterDetailLevel,
-        const QString&               i_strNameSpace,
-        const QString&               i_strClassName,
-        const QString&               i_strObjName,
-        const QString&               i_strMethod,
-        const QString&               i_strMethodInArgs = "" );
+        CTrcMthFile* i_pTrcMthFile,
+        ZS::System::EMethodTraceDetailLevel i_eTrcDetailLevel,
+        ZS::System::EMethodTraceDetailLevel i_eFilterDetailLevel,
+        const QString& i_strNameSpace,
+        const QString& i_strClassName,
+        const QString& i_strObjName,
+        const QString& i_strMethod,
+        const QString& i_strMethodInArgs = "" );
     CMethodTracer(
-        CTrcAdminObj*                i_pTrcAdminObj,
-        CTrcMthFile*                 i_pTrcMthFile,
-        ETraceDetailLevelMethodCalls i_eTrcDetailLevel,
-        ETraceDetailLevelMethodCalls i_eFilterDetailLevel,
-        const QString&               i_strNameSpace,
-        const QString&               i_strClassName,
-        const QString&               i_strObjName,
-        const QString&               i_strMethod,
-        const QString&               i_strMethodInArgs = "" );
+        CTrcAdminObj* i_pTrcAdminObj,
+        CTrcMthFile*  i_pTrcMthFile,
+        ZS::System::EMethodTraceDetailLevel i_eTrcDetailLevel,
+        ZS::System::EMethodTraceDetailLevel i_eFilterDetailLevel,
+        const QString& i_strNameSpace,
+        const QString& i_strClassName,
+        const QString& i_strObjName,
+        const QString& i_strMethod,
+        const QString& i_strMethodInArgs = "" );
     ~CMethodTracer();
 public: // instance methods
     void onAdminObjAboutToBeReleased();
 public: // instance methods
-    ETraceDetailLevelMethodCalls getMethodCallsTraceDetailLevel() const;
-    bool areMethodCallsActive( ETraceDetailLevelMethodCalls i_eFilterDetailLevel ) const;
-    ETraceDetailLevelMethodCalls getEnterLeaveFilterDetailLevel() const;
-    ETraceDetailLevelRuntimeInfo getRuntimeInfoTraceDetailLevel() const;
-    bool isRuntimeInfoActive( ETraceDetailLevelRuntimeInfo i_eFilterDetailLevel ) const;
+    ZS::System::EMethodTraceDetailLevel getMethodCallsTraceDetailLevel() const;
+    bool areMethodCallsActive( ZS::System::EMethodTraceDetailLevel i_eFilterDetailLevel ) const;
+    ZS::System::EMethodTraceDetailLevel getEnterLeaveFilterDetailLevel() const;
+    ZS::System::ELogDetailLevel getRuntimeInfoTraceDetailLevel() const;
+    bool isRuntimeInfoActive( ZS::System::ELogDetailLevel i_eFilterDetailLevel ) const;
     bool isTraceDataSuppressedByFilter( const QString& i_strTraceData ) const;
 public: // instance methods
     QString getNameSpace() const;
@@ -182,23 +178,23 @@ public: // instance methods
     QString getMethodOutArgs() const;
 public: // instance methods
     void trace(
-        const QString&               i_strAddInfo,
-        ETraceDetailLevelRuntimeInfo i_eFilterDetailLevel = ETraceDetailLevelRuntimeInfo::CriticalError ) const;
+        const QString& i_strAddInfo,
+        ZS::System::ELogDetailLevel i_eFilterDetailLevel = ZS::System::ELogDetailLevel::CriticalError ) const;
     void trace(
         const QString& i_strAddInfo,
-        ETraceDetailLevelRuntimeInfo i_eTrcDetailLevel,
-        ETraceDetailLevelRuntimeInfo i_eFilterDetailLevel ) const;
+        ZS::System::ELogDetailLevel i_eTrcDetailLevel,
+        ZS::System::ELogDetailLevel i_eFilterDetailLevel ) const;
 protected slots:
-    void onAdminObjAboutToBeDestroyed( ZS::Trace::CTrcAdminObj* i_pTrcAdminObj );
+    void onAdminObjAboutToBeDestroyed( QObject* i_pTrcAdminObj );
 protected: // instance members
-    CTrcAdminObj*                m_pTrcAdminObj;    /*!< = nullptr, if pTrcMthFile != nullptr or pTrcServer != nullptr. */
-    CTrcServer*                  m_pTrcServer;      /*!< = nullptr, if pTrcAdminObj != nullptr or pTrcMthFile != nullptr. */
-    CTrcMthFile*                 m_pTrcMthFile;     /*!< = nullptr, if pTrcAdminObj != nullptr or pTrcServer != nullptr. */
-    ETraceDetailLevelMethodCalls m_eMethodCallsTrcDetailLevel; /*!< = Undefined, if pTrcAdminObj != nullptr. */
+    CTrcAdminObj*m_pTrcAdminObj;    /*!< = nullptr, if pTrcMthFile != nullptr or pTrcServer != nullptr. */
+    CTrcServer*  m_pTrcServer;      /*!< = nullptr, if pTrcAdminObj != nullptr or pTrcMthFile != nullptr. */
+    CTrcMthFile* m_pTrcMthFile;     /*!< = nullptr, if pTrcAdminObj != nullptr or pTrcServer != nullptr. */
+    ZS::System::EMethodTraceDetailLevel m_eMethodCallsTrcDetailLevel; /*!< = Undefined, if pTrcAdminObj != nullptr. */
     /*!< Filter setting for the detail level of the module or class creating the method tracer.
          Entering and leaving the method is traced if this trace level is greater or equal
          the admin objects detail level. */
-    ETraceDetailLevelMethodCalls m_eEnterLeaveFilterDetailLevel;
+    ZS::System::EMethodTraceDetailLevel m_eEnterLeaveFilterDetailLevel;
     /*!< After entering a method the detail level of the trace admin object may be changed
          (multi threaded access). If entering the method has been traced leaving must also be traced
          even if the detail level has been set to None after entering the method.*/
@@ -212,7 +208,7 @@ protected: // instance members
 
 }; // class CMethodTracer
 
-} // namespace Trace
+} // namespace System
 
 } // namespace ZS
 

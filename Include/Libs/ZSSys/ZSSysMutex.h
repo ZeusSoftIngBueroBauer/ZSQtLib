@@ -35,16 +35,13 @@ may result in using the software modules.
 
 namespace ZS
 {
-#ifdef ZS_TRACE_MUTEXES
-namespace Trace
-{
-class CTrcAdminObj;
-class CTrcMthFile;
-}
-#endif
-
 namespace System
 {
+#ifdef ZS_TRACE_MUTEXES
+class CTrcAdminObj;
+class CTrcMthFile;
+#endif
+
 //******************************************************************************
 /*! @brief Wrapper around the QMutex class with the possibility to trace
            the method class using the ZSTrcServer.
@@ -57,15 +54,15 @@ class ZSSYSDLL_API CMutex : public QMutex
 public: // ctors and dtor
     CMutex(QMutex::RecursionMode i_mode, const QString& i_strObjName);
     CMutex(const QString& i_strObjName);
-    CMutex(QMutex::RecursionMode i_mode, const QString& i_strObjName, ZS::Trace::ETraceDetailLevelMethodCalls i_eTrcMthFileDetailLevel);
-    CMutex(const QString& i_strObjName, ZS::Trace::ETraceDetailLevelMethodCalls i_eTrcMthFileDetailLevel);
+    CMutex(QMutex::RecursionMode i_mode, const QString& i_strObjName, EMethodTraceDetailLevel i_eTrcMthFileDetailLevel);
+    CMutex(const QString& i_strObjName, EMethodTraceDetailLevel i_eTrcMthFileDetailLevel);
     virtual ~CMutex();
 public: // instance methods
     void setObjectName(const QString& i_strObjName);
     QString objectName() const;
     #ifdef ZS_TRACE_MUTEXES
-    ZS::Trace::CTrcMthFile* traceMethodFile();
-    ZS::Trace::ETraceDetailLevelMethodCalls traceMethodFileDetailLevel() const;
+    CTrcMthFile* traceMethodFile();
+    EMethodTraceDetailLevel traceMethodFileDetailLevel() const;
     #endif
 public: // instance methods
     void lock();
@@ -77,20 +74,20 @@ public: // instance methods
     bool try_lock_until(std::chrono::time_point<Clock, Duration> i_timePoint);
     void unlock();
 public: // auxiliary methods
-    bool isMethodTraceActive( ZS::Trace::ETraceDetailLevelMethodCalls i_eFilterDetailLevel ) const;
-    ZS::Trace::ETraceDetailLevelMethodCalls getMethodTraceDetailLevel() const;
+    bool isMethodTraceActive( EMethodTraceDetailLevel i_eFilterDetailLevel ) const;
+    EMethodTraceDetailLevel getMethodTraceDetailLevel() const;
 private: // instance members
     /*!< Descriptive name of the mutex. */
     QString m_strObjName;
     #ifdef ZS_TRACE_MUTEXES
     /*<! Trace detail level used if the method trace of the client got to be output
          directly to a trace method file and not through the trace server. */
-    ZS::Trace::ETraceDetailLevelMethodCalls m_eTrcMthFileDetailLevel;
+    EMethodTraceDetailLevel m_eTrcMthFileDetailLevel;
     /*<! Reference to local trace method file. Used if the Mutex belongs to
          the trace server itself and tracing through trace server cannot be used. */
-    ZS::Trace::CTrcMthFile* m_pTrcMthFile;
+    CTrcMthFile* m_pTrcMthFile;
      /*!< Trace admin object to control the method trace if used by trace server. */
-    ZS::Trace::CTrcAdminObj* m_pTrcAdminObj;
+    CTrcAdminObj* m_pTrcAdminObj;
     #endif
 };
 
@@ -105,14 +102,14 @@ class ZSSYSDLL_API CRecursiveMutex : public QRecursiveMutex
     static QString ClassName() { return "CRecursiveMutex"; }
 public: // ctors and dtor
     CRecursiveMutex(const QString& i_strObjName);
-    CRecursiveMutex( const QString& i_strObjName, ZS::Trace::ETraceDetailLevelMethodCalls i_eTrcMthFileDetailLevel);
+    CRecursiveMutex( const QString& i_strObjName, EMethodTraceDetailLevel i_eTrcMthFileDetailLevel);
     virtual ~CRecursiveMutex();
 public: // instance methods
     void setObjectName(const QString& i_strObjName);
     QString objectName() const;
     #ifdef ZS_TRACE_MUTEXES
-    ZS::Trace::CTrcMthFile* traceMethodFile();
-    ZS::Trace::ETraceDetailLevelMethodCalls traceMethodFileDetailLevel() const;
+    CTrcMthFile* traceMethodFile();
+    EMethodTraceDetailLevel traceMethodFileDetailLevel() const;
     #endif
 public: // instance methods
     void lock();
@@ -124,20 +121,20 @@ public: // instance methods
     bool try_lock_until(std::chrono::time_point<Clock, Duration> i_timePoint);
     void unlock();
 public: // auxiliary methods
-    bool isMethodTraceActive( ZS::Trace::ETraceDetailLevelMethodCalls i_eFilterDetailLevel ) const;
-    ZS::Trace::ETraceDetailLevelMethodCalls getMethodTraceDetailLevel() const;
+    bool isMethodTraceActive( EMethodTraceDetailLevel i_eFilterDetailLevel ) const;
+    EMethodTraceDetailLevel getMethodTraceDetailLevel() const;
 private: // instance members
     /*!< Descriptive name of the mutex. */
     QString m_strObjName;
     #ifdef ZS_TRACE_MUTEXES
     /*<! Trace detail level used if the method trace of the client got to be output
          directly to a trace method file and not through the trace server. */
-    ZS::Trace::ETraceDetailLevelMethodCalls m_eTrcMthFileDetailLevel;
+    EMethodTraceDetailLevel m_eTrcMthFileDetailLevel;
     /*<! Reference to local trace method file. Used if the Mutex belongs to
          the trace server itself and tracing through trace server cannot be used. */
-    ZS::Trace::CTrcMthFile* m_pTrcMthFile;
+    CTrcMthFile* m_pTrcMthFile;
      /*!< Trace admin object to control the method trace if used by trace server. */
-    ZS::Trace::CTrcAdminObj* m_pTrcAdminObj;
+    CTrcAdminObj* m_pTrcAdminObj;
     #endif
 };
 
@@ -160,8 +157,8 @@ public: // instance methods
     void relock();
     void unlock();
 public: // auxiliary methods
-    bool isMethodTraceActive( ZS::Trace::ETraceDetailLevelMethodCalls i_eFilterDetailLevel ) const;
-    ZS::Trace::ETraceDetailLevelMethodCalls getMethodTraceDetailLevel() const;
+    bool isMethodTraceActive( EMethodTraceDetailLevel i_eFilterDetailLevel ) const;
+    EMethodTraceDetailLevel getMethodTraceDetailLevel() const;
 private: // instance members
     /*!< Mutex to be locked and unlocked. */
     CMutex* m_pMtx;
@@ -170,12 +167,12 @@ private: // instance members
     #ifdef ZS_TRACE_MUTEXES
     /*<! Trace detail level used if the method trace of the client got to be output
          directly to a trace method file and not through the trace server. */
-    ZS::Trace::ETraceDetailLevelMethodCalls m_eTrcMthFileDetailLevel;
+    EMethodTraceDetailLevel m_eTrcMthFileDetailLevel;
     /*<! Reference to local trace method file. Used if the Mutex belongs to
          the trace server itself and tracing through trace server cannot be used. */
-    ZS::Trace::CTrcMthFile* m_pTrcMthFile;
+    CTrcMthFile* m_pTrcMthFile;
      /*!< Trace admin object to control the method trace if used by trace server. */
-    ZS::Trace::CTrcAdminObj* m_pTrcAdminObj;
+    CTrcAdminObj* m_pTrcAdminObj;
     #endif
 };
 

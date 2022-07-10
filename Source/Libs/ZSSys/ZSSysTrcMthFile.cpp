@@ -42,7 +42,6 @@ may result in using the software modules.
 #include "ZSSys/ZSSysMemLeakDump.h"
 
 using namespace ZS::System;
-using namespace ZS::Trace;
 
 
 /*******************************************************************************

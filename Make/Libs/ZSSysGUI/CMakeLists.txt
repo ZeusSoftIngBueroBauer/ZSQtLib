@@ -51,6 +51,10 @@ list(APPEND _Headers
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysIdxTreeTableViewBranchContent.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysIdxTreeView.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysIdxTreeWdgt.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSSysLoggerIdxTreeDlg.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSSysLoggerIdxTreeModel.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSSysLoggerIdxTreeView.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSSysLoggerIdxTreeWdgt.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysProgressBar.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysPushButton.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysPushButtonCloseWidget.h
@@ -87,6 +91,10 @@ list(APPEND _Sources
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysIdxTreeTableViewBranchContent.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysIdxTreeView.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysIdxTreeWdgt.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSSysLoggerIdxTreeDlg.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSSysLoggerIdxTreeModel.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSSysLoggerIdxTreeView.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSSysLoggerIdxTreeWdgt.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysProgressBar.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysPushButton.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysPushButtonCloseWidget.cpp

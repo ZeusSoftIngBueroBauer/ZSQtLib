@@ -34,7 +34,6 @@ may result in using the software modules.
 
 
 using namespace ZS::System;
-using namespace ZS::Trace;
 
 
 /*******************************************************************************
@@ -60,7 +59,7 @@ public: // ctors and dtor
 */
 CMethodTracer::CMethodTracer(
     CTrcAdminObj*                i_pTrcAdminObj,
-    ETraceDetailLevelMethodCalls i_eFilterDetailLevel,
+    EMethodTraceDetailLevel i_eFilterDetailLevel,
     const QString&               i_strMethod,
     const QString&               i_strMethodInArgs ) :
 //------------------------------------------------------------------------------
@@ -68,7 +67,7 @@ CMethodTracer::CMethodTracer(
     m_pTrcAdminObj(i_pTrcAdminObj),
     m_pTrcServer(nullptr),
     m_pTrcMthFile(nullptr),
-    m_eMethodCallsTrcDetailLevel(ETraceDetailLevelMethodCalls::Undefined),
+    m_eMethodCallsTrcDetailLevel(EMethodTraceDetailLevel::Undefined),
     m_eEnterLeaveFilterDetailLevel(i_eFilterDetailLevel),
     m_bEnterTraced(false),
     m_strNameSpace(),
@@ -82,9 +81,9 @@ CMethodTracer::CMethodTracer(
     {
         if( !QObject::connect(
             /* pObjSender   */ m_pTrcAdminObj,
-            /* szSignal     */ SIGNAL(aboutToBeDestroyed(ZS::Trace::CTrcAdminObj*)),
+            /* szSignal     */ SIGNAL(aboutToBeDestroyed(QObject*)),
             /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onAdminObjAboutToBeDestroyed(ZS::Trace::CTrcAdminObj*)),
+            /* szSlot       */ SLOT(onAdminObjAboutToBeDestroyed(QObject*)),
             /* cnctType     */ Qt::DirectConnection ) )
         {
             throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
@@ -124,7 +123,7 @@ CMethodTracer::CMethodTracer(
 */
 CMethodTracer::CMethodTracer(
     CTrcAdminObj*                i_pTrcAdminObj,
-    ETraceDetailLevelMethodCalls i_eFilterDetailLevel,
+    EMethodTraceDetailLevel i_eFilterDetailLevel,
     const QString&               i_strObjName,
     const QString&               i_strMethod,
     const QString&               i_strMethodInArgs ) :
@@ -133,7 +132,7 @@ CMethodTracer::CMethodTracer(
     m_pTrcAdminObj(i_pTrcAdminObj),
     m_pTrcServer(nullptr),
     m_pTrcMthFile(nullptr),
-    m_eMethodCallsTrcDetailLevel(ETraceDetailLevelMethodCalls::Undefined),
+    m_eMethodCallsTrcDetailLevel(EMethodTraceDetailLevel::Undefined),
     m_eEnterLeaveFilterDetailLevel(i_eFilterDetailLevel),
     m_bEnterTraced(false),
     m_strNameSpace(),
@@ -147,9 +146,9 @@ CMethodTracer::CMethodTracer(
     {
         if( !QObject::connect(
             /* pObjSender   */ m_pTrcAdminObj,
-            /* szSignal     */ SIGNAL(aboutToBeDestroyed(ZS::Trace::CTrcAdminObj*)),
+            /* szSignal     */ SIGNAL(aboutToBeDestroyed(QObject*)),
             /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onAdminObjAboutToBeDestroyed(ZS::Trace::CTrcAdminObj*)),
+            /* szSlot       */ SLOT(onAdminObjAboutToBeDestroyed(QObject*)),
             /* cnctType     */ Qt::DirectConnection ) )
         {
             throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
@@ -208,8 +207,8 @@ CMethodTracer::CMethodTracer(
 CMethodTracer::CMethodTracer(
     CTrcAdminObj*                i_pTrcAdminObj,
     CTrcServer*                  i_pTrcServer,
-    ETraceDetailLevelMethodCalls i_eTrcDetailLevel,
-    ETraceDetailLevelMethodCalls i_eFilterDetailLevel,
+    EMethodTraceDetailLevel i_eTrcDetailLevel,
+    EMethodTraceDetailLevel i_eFilterDetailLevel,
     const QString&               i_strNameSpace,
     const QString&               i_strClassName,
     const QString&               i_strObjName,
@@ -234,9 +233,9 @@ CMethodTracer::CMethodTracer(
     {
         if( !QObject::connect(
             /* pObjSender   */ m_pTrcAdminObj,
-            /* szSignal     */ SIGNAL(aboutToBeDestroyed(ZS::Trace::CTrcAdminObj*)),
+            /* szSignal     */ SIGNAL(aboutToBeDestroyed(QObject*)),
             /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onAdminObjAboutToBeDestroyed(ZS::Trace::CTrcAdminObj*)),
+            /* szSlot       */ SLOT(onAdminObjAboutToBeDestroyed(QObject*)),
             /* cnctType     */ Qt::DirectConnection ) )
         {
             throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
@@ -300,8 +299,8 @@ CMethodTracer::CMethodTracer(
 */
 CMethodTracer::CMethodTracer(
     CTrcServer*                  i_pTrcServer,
-    ETraceDetailLevelMethodCalls i_eTrcDetailLevel,
-    ETraceDetailLevelMethodCalls i_eFilterDetailLevel,
+    EMethodTraceDetailLevel i_eTrcDetailLevel,
+    EMethodTraceDetailLevel i_eFilterDetailLevel,
     const QString&               i_strNameSpace,
     const QString&               i_strClassName,
     const QString&               i_strObjName,
@@ -364,8 +363,8 @@ CMethodTracer::CMethodTracer(
 */
 CMethodTracer::CMethodTracer(
     CTrcMthFile*                 i_pTrcMthFile,
-    ETraceDetailLevelMethodCalls i_eTrcDetailLevel,
-    ETraceDetailLevelMethodCalls i_eFilterDetailLevel,
+    EMethodTraceDetailLevel i_eTrcDetailLevel,
+    EMethodTraceDetailLevel i_eFilterDetailLevel,
     const QString&               i_strNameSpace,
     const QString&               i_strClassName,
     const QString&               i_strObjName,
@@ -434,8 +433,8 @@ CMethodTracer::CMethodTracer(
 CMethodTracer::CMethodTracer(
     CTrcAdminObj*                i_pTrcAdminObj,
     CTrcMthFile*                 i_pTrcMthFile,
-    ETraceDetailLevelMethodCalls i_eTrcDetailLevel,
-    ETraceDetailLevelMethodCalls i_eFilterDetailLevel,
+    EMethodTraceDetailLevel i_eTrcDetailLevel,
+    EMethodTraceDetailLevel i_eFilterDetailLevel,
     const QString&               i_strNameSpace,
     const QString&               i_strClassName,
     const QString&               i_strObjName,
@@ -460,9 +459,9 @@ CMethodTracer::CMethodTracer(
     {
         if( !QObject::connect(
             /* pObjSender   */ m_pTrcAdminObj,
-            /* szSignal     */ SIGNAL(aboutToBeDestroyed(ZS::Trace::CTrcAdminObj*)),
+            /* szSignal     */ SIGNAL(aboutToBeDestroyed(QObject*)),
             /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onAdminObjAboutToBeDestroyed(ZS::Trace::CTrcAdminObj*)),
+            /* szSlot       */ SLOT(onAdminObjAboutToBeDestroyed(QObject*)),
             /* cnctType     */ Qt::DirectConnection ) )
         {
             throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
@@ -550,8 +549,8 @@ CMethodTracer::~CMethodTracer()
     m_pTrcAdminObj = nullptr;
     m_pTrcServer = nullptr;
     m_pTrcMthFile = nullptr;
-    m_eMethodCallsTrcDetailLevel = static_cast<ETraceDetailLevelMethodCalls>(0);
-    m_eEnterLeaveFilterDetailLevel = static_cast<ETraceDetailLevelMethodCalls>(0);
+    m_eMethodCallsTrcDetailLevel = static_cast<EMethodTraceDetailLevel>(0);
+    m_eEnterLeaveFilterDetailLevel = static_cast<EMethodTraceDetailLevel>(0);
     m_bEnterTraced = false;
     //m_strNameSpace;
     //m_strClassName;
@@ -581,9 +580,9 @@ void CMethodTracer::onAdminObjAboutToBeReleased()
     {
         QObject::disconnect(
             /* pObjSender   */ m_pTrcAdminObj,
-            /* szSignal     */ SIGNAL(aboutToBeDestroyed(ZS::Trace::CTrcAdminObj*)),
+            /* szSignal     */ SIGNAL(aboutToBeDestroyed(QObject*)),
             /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onAdminObjAboutToBeDestroyed(ZS::Trace::CTrcAdminObj*)) );
+            /* szSlot       */ SLOT(onAdminObjAboutToBeDestroyed(QObject*)) );
 
         if( m_bEnterTraced )
         {
@@ -618,10 +617,10 @@ public: // instance methods
 
     @return Current trace detail level.
 */
-ETraceDetailLevelMethodCalls CMethodTracer::getMethodCallsTraceDetailLevel() const
+EMethodTraceDetailLevel CMethodTracer::getMethodCallsTraceDetailLevel() const
 //------------------------------------------------------------------------------
 {
-    ETraceDetailLevelMethodCalls eDetailLevel = m_eMethodCallsTrcDetailLevel;
+    EMethodTraceDetailLevel eDetailLevel = m_eMethodCallsTrcDetailLevel;
 
     if( m_pTrcAdminObj != nullptr )
     {
@@ -648,7 +647,7 @@ ETraceDetailLevelMethodCalls CMethodTracer::getMethodCallsTraceDetailLevel() con
     @return true if tracing is active for the given filter detail level.
             false otherwise.
 */
-bool CMethodTracer::areMethodCallsActive( ETraceDetailLevelMethodCalls i_eFilterDetailLevel ) const
+bool CMethodTracer::areMethodCallsActive( EMethodTraceDetailLevel i_eFilterDetailLevel ) const
 //------------------------------------------------------------------------------
 {
     bool bActive = false;
@@ -673,7 +672,7 @@ bool CMethodTracer::areMethodCallsActive( ETraceDetailLevelMethodCalls i_eFilter
 
     @return Detail level used for entering and leaving a method.
 */
-ETraceDetailLevelMethodCalls CMethodTracer::getEnterLeaveFilterDetailLevel() const
+EMethodTraceDetailLevel CMethodTracer::getEnterLeaveFilterDetailLevel() const
 //------------------------------------------------------------------------------
 {
     return m_eEnterLeaveFilterDetailLevel;
@@ -685,10 +684,10 @@ ETraceDetailLevelMethodCalls CMethodTracer::getEnterLeaveFilterDetailLevel() con
 
     @return Current trace detail level.
 */
-ETraceDetailLevelRuntimeInfo CMethodTracer::getRuntimeInfoTraceDetailLevel() const
+ELogDetailLevel CMethodTracer::getRuntimeInfoTraceDetailLevel() const
 //------------------------------------------------------------------------------
 {
-    ETraceDetailLevelRuntimeInfo eDetailLevel = ETraceDetailLevelRuntimeInfo::None;
+    ELogDetailLevel eDetailLevel = ELogDetailLevel::None;
 
     if( m_pTrcAdminObj != nullptr )
     {
@@ -711,7 +710,7 @@ ETraceDetailLevelRuntimeInfo CMethodTracer::getRuntimeInfoTraceDetailLevel() con
     @return true if tracing is active for the given filter detail level.
             false otherwise.
 */
-bool CMethodTracer::isRuntimeInfoActive( ETraceDetailLevelRuntimeInfo i_eFilterDetailLevel ) const
+bool CMethodTracer::isRuntimeInfoActive( ELogDetailLevel i_eFilterDetailLevel ) const
 //------------------------------------------------------------------------------
 {
     bool bActive = false;
@@ -959,7 +958,7 @@ public: // instance methods
 */
 void CMethodTracer::trace(
     const QString&               i_strAddInfo,
-    ETraceDetailLevelRuntimeInfo i_eFilterDetailLevel ) const
+    ELogDetailLevel i_eFilterDetailLevel ) const
 //------------------------------------------------------------------------------
 {
     if( m_pTrcAdminObj != nullptr )
@@ -998,15 +997,15 @@ void CMethodTracer::trace(
 */
 void CMethodTracer::trace(
     const QString&               i_strAddInfo,
-    ETraceDetailLevelRuntimeInfo i_eTrcDetailLevel,
-    ETraceDetailLevelRuntimeInfo i_eFilterDetailLevel ) const
+    ELogDetailLevel i_eTrcDetailLevel,
+    ELogDetailLevel i_eFilterDetailLevel ) const
 //------------------------------------------------------------------------------
 {
     if( m_pTrcAdminObj != nullptr )
     {
-        ETraceDetailLevelRuntimeInfo eTrcDetailLevel = i_eTrcDetailLevel;
+        ELogDetailLevel eTrcDetailLevel = i_eTrcDetailLevel;
 
-        if( i_eTrcDetailLevel == ETraceDetailLevelRuntimeInfo::Undefined )
+        if( i_eTrcDetailLevel == ELogDetailLevel::Undefined )
         {
             eTrcDetailLevel = m_pTrcAdminObj->getRuntimeInfoTraceDetailLevel();
         }
@@ -1062,7 +1061,7 @@ protected slots:
 
     @param i_pTrcAdminObj [in] Trace admin object which is going to be destroyed.
 */
-void CMethodTracer::onAdminObjAboutToBeDestroyed( ZS::Trace::CTrcAdminObj* i_pTrcAdminObj )
+void CMethodTracer::onAdminObjAboutToBeDestroyed( QObject* i_pTrcAdminObj )
 //------------------------------------------------------------------------------
 {
     onAdminObjAboutToBeReleased();

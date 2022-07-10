@@ -56,8 +56,6 @@ may result in using the software modules.
 
 using namespace ZS::System;
 using namespace ZS::System::GUI;
-using namespace ZS::Trace;
-using namespace ZS::Trace::GUI;
 
 
 /*******************************************************************************
@@ -71,8 +69,8 @@ public: // ctors and dtor
 //------------------------------------------------------------------------------
 CDelegateIdxTreeTrcAdminObjs::CDelegateIdxTreeTrcAdminObjs(
     QObject* i_pObjParent,
-    ETraceDetailLevelMethodCalls i_eTrcDetailLevel,
-    ETraceDetailLevelMethodCalls i_eTrcDetailLevelNoisyMethods ) :
+    EMethodTraceDetailLevel i_eTrcDetailLevel,
+    EMethodTraceDetailLevel i_eTrcDetailLevelNoisyMethods ) :
 //------------------------------------------------------------------------------
     QStyledItemDelegate(i_pObjParent),
     m_rectChkBoxTraceEnabled(0, 0, 10, 10),
@@ -81,7 +79,7 @@ CDelegateIdxTreeTrcAdminObjs::CDelegateIdxTreeTrcAdminObjs(
 {
     QString strMthInArgs;
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strMthInArgs = "Parent: " + QString(i_pObjParent == nullptr ? "nullptr" : i_pObjParent->objectName());
     }
@@ -89,7 +87,7 @@ CDelegateIdxTreeTrcAdminObjs::CDelegateIdxTreeTrcAdminObjs(
     CMethodTracer mthTracer(
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -107,7 +105,7 @@ CDelegateIdxTreeTrcAdminObjs::~CDelegateIdxTreeTrcAdminObjs()
     CMethodTracer mthTracer(
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -115,8 +113,8 @@ CDelegateIdxTreeTrcAdminObjs::~CDelegateIdxTreeTrcAdminObjs()
         /* strMethodInArgs    */ strMthInArgs );
 
     m_rectChkBoxTraceEnabled = QRect(0, 0, 0, 0);
-    m_eTrcDetailLevel = static_cast<ETraceDetailLevelMethodCalls>(0);
-    m_eTrcDetailLevelNoisyMethods = static_cast<ETraceDetailLevelMethodCalls>(0);
+    m_eTrcDetailLevel = static_cast<EMethodTraceDetailLevel>(0);
+    m_eTrcDetailLevelNoisyMethods = static_cast<EMethodTraceDetailLevel>(0);
 
 } // dtor
 
@@ -133,7 +131,7 @@ bool CDelegateIdxTreeTrcAdminObjs::isCheckBoxEnabledHit(
 {
     QString strMthInArgs;
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strMthInArgs = "RectVisual: " + qRect2Str(i_rectVisual);
         strMthInArgs += ", Pos: " + qPoint2Str(i_ptPos);
@@ -143,7 +141,7 @@ bool CDelegateIdxTreeTrcAdminObjs::isCheckBoxEnabledHit(
     CMethodTracer mthTracer(
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -179,7 +177,7 @@ bool CDelegateIdxTreeTrcAdminObjs::isCheckBoxEnabledHit(
             bIsHit = true;
         }
     }
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsVerbose )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsVerbose )
     {
         mthTracer.setMethodReturn(bIsHit);
     }
@@ -201,7 +199,7 @@ void CDelegateIdxTreeTrcAdminObjs::paint(
 {
     QString strMthInArgs;
 
-    if( m_eTrcDetailLevelNoisyMethods >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevelNoisyMethods >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strMthInArgs = "ModelIdx {" + CModelIdxTreeTrcAdminObjs::ModelIdx2Str(i_modelIdx) + "}";
     }
@@ -209,7 +207,7 @@ void CDelegateIdxTreeTrcAdminObjs::paint(
     CMethodTracer mthTracer(
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevelNoisyMethods,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -291,7 +289,7 @@ QWidget* CDelegateIdxTreeTrcAdminObjs::createEditor(
     QString strMthInArgs;
     QString strMthReturn;
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strMthInArgs = "ModelIdx {" + CModelIdxTreeTrcAdminObjs::ModelIdx2Str(i_modelIdx) + "}";
     }
@@ -299,7 +297,7 @@ QWidget* CDelegateIdxTreeTrcAdminObjs::createEditor(
     CMethodTracer mthTracer(
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -342,8 +340,8 @@ QWidget* CDelegateIdxTreeTrcAdminObjs::createEditor(
                     pCmb->setObjectName(pTrcAdminObj->keyInTree() + ".MethodCalls");
                     pWdgtEditor = pCmb;
 
-                    CEnumTraceDetailLevelMethodCalls eDetailLevel;
-                    for( eDetailLevel = 0; eDetailLevel < CEnumTraceDetailLevelMethodCalls::count(); ++eDetailLevel )
+                    CEnumMethodTraceDetailLevel eDetailLevel;
+                    for( eDetailLevel = 0; eDetailLevel < CEnumMethodTraceDetailLevel::count(); ++eDetailLevel )
                     {
                         pCmb->addItem(eDetailLevel.toString());
                     }
@@ -366,8 +364,8 @@ QWidget* CDelegateIdxTreeTrcAdminObjs::createEditor(
                     pCmb->setObjectName(pTrcAdminObj->keyInTree() + ".RuntimeInfo");
                     pWdgtEditor = pCmb;
 
-                    CEnumTraceDetailLevelRuntimeInfo eDetailLevel;
-                    for( eDetailLevel = 0; eDetailLevel < CEnumTraceDetailLevelRuntimeInfo::count(); ++eDetailLevel )
+                    CEnumLogDetailLevel eDetailLevel;
+                    for( eDetailLevel = 0; eDetailLevel < CEnumLogDetailLevel::count(); ++eDetailLevel )
                     {
                         pCmb->addItem(eDetailLevel.toString());
                     }
@@ -407,7 +405,7 @@ QWidget* CDelegateIdxTreeTrcAdminObjs::createEditor(
         } // switch( i_modelIdx.column() )
     } // if( i_modelIdx.isValid() )
 
-    if( mthTracer.areMethodCallsActive(ETraceDetailLevelMethodCalls::ArgsNormal) )
+    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthReturn = pWdgtEditor == nullptr ? "nullptr" : pWdgtEditor->objectName();
         mthTracer.setMethodReturn(strMthReturn);
@@ -423,7 +421,7 @@ void CDelegateIdxTreeTrcAdminObjs::setEditorData(
 {
     QString strMthInArgs;
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strMthInArgs = "ModelIdx {" + CModelIdxTreeTrcAdminObjs::ModelIdx2Str(i_modelIdx) + "}";
     }
@@ -431,7 +429,7 @@ void CDelegateIdxTreeTrcAdminObjs::setEditorData(
     CMethodTracer mthTracer(
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -521,7 +519,7 @@ void CDelegateIdxTreeTrcAdminObjs::setModelData(
 {
     QString strMthInArgs;
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strMthInArgs = "ModelIdx {" + CModelIdxTreeTrcAdminObjs::ModelIdx2Str(i_modelIdx) + "}";
     }
@@ -529,7 +527,7 @@ void CDelegateIdxTreeTrcAdminObjs::setModelData(
     CMethodTracer mthTracer(
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -613,7 +611,7 @@ void CDelegateIdxTreeTrcAdminObjs::updateEditorGeometry(
 {
     QString strMthInArgs;
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strMthInArgs = "ModelIdx {" + CModelIdxTreeTrcAdminObjs::ModelIdx2Str(i_modelIdx) + "}";
     }
@@ -621,7 +619,7 @@ void CDelegateIdxTreeTrcAdminObjs::updateEditorGeometry(
     CMethodTracer mthTracer(
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -702,7 +700,7 @@ void CDelegateIdxTreeTrcAdminObjs::onComboDetailLevelActivated( int i_idx )
 
     QString strMthInArgs;
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strMthInArgs = pCmb == nullptr ? "null" : pCmb->objectName();
         strMthInArgs += ", " + QString(pCmb == nullptr ? QString::number(i_idx) : pCmb->currentText());
@@ -711,7 +709,7 @@ void CDelegateIdxTreeTrcAdminObjs::onComboDetailLevelActivated( int i_idx )
     CMethodTracer mthTracer(
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -733,7 +731,7 @@ void CDelegateIdxTreeTrcAdminObjs::onEdtDataFilterEditingFinished()
 
     QString strMthInArgs;
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strMthInArgs = pEdt == nullptr ? "null" : pEdt->objectName();
         strMthInArgs += ", " + QString(pEdt == nullptr ? "" : pEdt->text());
@@ -742,7 +740,7 @@ void CDelegateIdxTreeTrcAdminObjs::onEdtDataFilterEditingFinished()
     CMethodTracer mthTracer(
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -763,8 +761,8 @@ public: // ctors and dtor
 CTreeViewIdxTreeTrcAdminObjs::CTreeViewIdxTreeTrcAdminObjs(
     CModelIdxTreeTrcAdminObjs* i_pModel,
     QWidget* i_pWdgtParent,
-    ETraceDetailLevelMethodCalls i_eTrcDetailLevel,
-    ETraceDetailLevelMethodCalls i_eTrcDetailLevelNoisyMethods ) :
+    EMethodTraceDetailLevel i_eTrcDetailLevel,
+    EMethodTraceDetailLevel i_eTrcDetailLevelNoisyMethods ) :
 //------------------------------------------------------------------------------
     QTreeView(i_pWdgtParent),
     m_pDelegate(nullptr),
@@ -784,7 +782,7 @@ CTreeViewIdxTreeTrcAdminObjs::CTreeViewIdxTreeTrcAdminObjs(
 {
     QString strMthInArgs;
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strMthInArgs = "Model: " + QString(i_pModel == nullptr ? "nullptr" : i_pModel->objectName());
     }
@@ -792,7 +790,7 @@ CTreeViewIdxTreeTrcAdminObjs::CTreeViewIdxTreeTrcAdminObjs(
     CMethodTracer mthTracer(
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -945,7 +943,7 @@ CTreeViewIdxTreeTrcAdminObjs::~CTreeViewIdxTreeTrcAdminObjs()
     CMethodTracer mthTracer(
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -964,8 +962,8 @@ CTreeViewIdxTreeTrcAdminObjs::~CTreeViewIdxTreeTrcAdminObjs()
     m_pActionNameSpaceSetAdminObjsTraceDataFilter = nullptr;
     //m_modelIdxSelectedOnMousePressEvent;
     //m_modelIdxSelectedOnMouseReleaseEvent;
-    m_eTrcDetailLevel = static_cast<ETraceDetailLevelMethodCalls>(0);
-    m_eTrcDetailLevelNoisyMethods = static_cast<ETraceDetailLevelMethodCalls>(0);
+    m_eTrcDetailLevel = static_cast<EMethodTraceDetailLevel>(0);
+    m_eTrcDetailLevelNoisyMethods = static_cast<EMethodTraceDetailLevel>(0);
 
 } // dtor
 
@@ -982,7 +980,7 @@ void CTreeViewIdxTreeTrcAdminObjs::expandAll()
     CMethodTracer mthTracer(
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -1006,7 +1004,7 @@ void CTreeViewIdxTreeTrcAdminObjs::collapseAll()
     CMethodTracer mthTracer(
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -1031,7 +1029,7 @@ void CTreeViewIdxTreeTrcAdminObjs::expandRecursive( const QModelIndex& i_modelId
 {
     QString strMthInArgs;
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strMthInArgs = "ModelIdx {" + CModelIdxTreeTrcAdminObjs::ModelIdx2Str(i_modelIdx) + "}";
     }
@@ -1039,7 +1037,7 @@ void CTreeViewIdxTreeTrcAdminObjs::expandRecursive( const QModelIndex& i_modelId
     CMethodTracer mthTracer(
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -1080,7 +1078,7 @@ void CTreeViewIdxTreeTrcAdminObjs::collapseRecursive( const QModelIndex& i_model
 {
     QString strMthInArgs;
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strMthInArgs = "ModelIdx {" + CModelIdxTreeTrcAdminObjs::ModelIdx2Str(i_modelIdx) + "}";
     }
@@ -1088,7 +1086,7 @@ void CTreeViewIdxTreeTrcAdminObjs::collapseRecursive( const QModelIndex& i_model
     CMethodTracer mthTracer(
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -1132,7 +1130,7 @@ void CTreeViewIdxTreeTrcAdminObjs::expand( const QModelIndex& i_modelIdx )
 {
     QString strMthInArgs;
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strMthInArgs = "ModelIdx {" + CModelIdxTreeTrcAdminObjs::ModelIdx2Str(i_modelIdx) + "}";
     }
@@ -1140,7 +1138,7 @@ void CTreeViewIdxTreeTrcAdminObjs::expand( const QModelIndex& i_modelIdx )
     CMethodTracer mthTracer(
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -1167,7 +1165,7 @@ void CTreeViewIdxTreeTrcAdminObjs::collapse( const QModelIndex& i_modelIdx )
 {
     QString strMthInArgs;
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strMthInArgs = "ModelIdx {" + CModelIdxTreeTrcAdminObjs::ModelIdx2Str(i_modelIdx) + "}";
     }
@@ -1175,7 +1173,7 @@ void CTreeViewIdxTreeTrcAdminObjs::collapse( const QModelIndex& i_modelIdx )
     CMethodTracer mthTracer(
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -1206,7 +1204,7 @@ void CTreeViewIdxTreeTrcAdminObjs::onCollapsed( const QModelIndex& i_modelIdx )
 {
     QString strMthInArgs;
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strMthInArgs = "ModelIdx {" + CModelIdxTreeTrcAdminObjs::ModelIdx2Str(i_modelIdx) + "}";
     }
@@ -1214,7 +1212,7 @@ void CTreeViewIdxTreeTrcAdminObjs::onCollapsed( const QModelIndex& i_modelIdx )
     CMethodTracer mthTracer(
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -1242,7 +1240,7 @@ void CTreeViewIdxTreeTrcAdminObjs::onExpanded( const QModelIndex& i_modelIdx )
 {
     QString strMthInArgs;
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strMthInArgs = "ModelIdx {" + CModelIdxTreeTrcAdminObjs::ModelIdx2Str(i_modelIdx) + "}";
     }
@@ -1250,7 +1248,7 @@ void CTreeViewIdxTreeTrcAdminObjs::onExpanded( const QModelIndex& i_modelIdx )
     CMethodTracer mthTracer(
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -1288,7 +1286,7 @@ void CTreeViewIdxTreeTrcAdminObjs::keyPressEvent( QKeyEvent* i_pEv )
 {
     QString strMthInArgs;
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strMthInArgs = qKeyEvent2Str(i_pEv);
     }
@@ -1296,7 +1294,7 @@ void CTreeViewIdxTreeTrcAdminObjs::keyPressEvent( QKeyEvent* i_pEv )
     CMethodTracer mthTracer(
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -1385,7 +1383,7 @@ void CTreeViewIdxTreeTrcAdminObjs::mousePressEvent( QMouseEvent* i_pEv )
 {
     QString strMthInArgs;
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strMthInArgs = qMouseEvent2Str(i_pEv);
     }
@@ -1393,7 +1391,7 @@ void CTreeViewIdxTreeTrcAdminObjs::mousePressEvent( QMouseEvent* i_pEv )
     CMethodTracer mthTracer(
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -1461,7 +1459,7 @@ void CTreeViewIdxTreeTrcAdminObjs::mouseReleaseEvent( QMouseEvent* i_pEv )
 {
     QString strMthInArgs;
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strMthInArgs = qMouseEvent2Str(i_pEv);
     }
@@ -1469,7 +1467,7 @@ void CTreeViewIdxTreeTrcAdminObjs::mouseReleaseEvent( QMouseEvent* i_pEv )
     CMethodTracer mthTracer(
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -1545,7 +1543,7 @@ void CTreeViewIdxTreeTrcAdminObjs::onActionNameSpaceExpandTriggered( bool i_bChe
 {
     QString strMthInArgs;
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strMthInArgs = "Checked: " + bool2Str(i_bChecked);
     }
@@ -1553,7 +1551,7 @@ void CTreeViewIdxTreeTrcAdminObjs::onActionNameSpaceExpandTriggered( bool i_bChe
     CMethodTracer mthTracer(
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -1577,7 +1575,7 @@ void CTreeViewIdxTreeTrcAdminObjs::onActionNameSpaceCollapseTriggered( bool i_bC
 {
     QString strMthInArgs;
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strMthInArgs = "Checked: " + bool2Str(i_bChecked);
     }
@@ -1585,7 +1583,7 @@ void CTreeViewIdxTreeTrcAdminObjs::onActionNameSpaceCollapseTriggered( bool i_bC
     CMethodTracer mthTracer(
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -1604,7 +1602,7 @@ void CTreeViewIdxTreeTrcAdminObjs::onActionNameSpaceEnableAdminObjsTriggered( bo
 {
     QString strMthInArgs;
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strMthInArgs = "Checked: " + bool2Str(i_bChecked);
     }
@@ -1612,7 +1610,7 @@ void CTreeViewIdxTreeTrcAdminObjs::onActionNameSpaceEnableAdminObjsTriggered( bo
     CMethodTracer mthTracer(
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -1647,7 +1645,7 @@ void CTreeViewIdxTreeTrcAdminObjs::onActionNameSpaceDisableAdminObjsTriggered( b
 {
     QString strMthInArgs;
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strMthInArgs = "Checked: " + bool2Str(i_bChecked);
     }
@@ -1655,7 +1653,7 @@ void CTreeViewIdxTreeTrcAdminObjs::onActionNameSpaceDisableAdminObjsTriggered( b
     CMethodTracer mthTracer(
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -1690,7 +1688,7 @@ void CTreeViewIdxTreeTrcAdminObjs::onActionNameSpaceSetAdminObjsMethodCallsDetai
 {
     QString strMthInArgs;
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strMthInArgs = "Checked: " + bool2Str(i_bChecked);
     }
@@ -1698,7 +1696,7 @@ void CTreeViewIdxTreeTrcAdminObjs::onActionNameSpaceSetAdminObjsMethodCallsDetai
     CMethodTracer mthTracer(
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -1726,7 +1724,7 @@ void CTreeViewIdxTreeTrcAdminObjs::onActionNameSpaceSetAdminObjsMethodCallsDetai
                     /* strObjName  */ "MethodCallsDetailLevel",
                     /* pWdgtParent */ this );
                 pDlg->setValueName("MethodCalls");
-                pDlg->setComboItems(CEnumTraceDetailLevelMethodCalls::s_arEnumEntries);
+                pDlg->setComboItems(CEnumMethodTraceDetailLevel::s_arEnumEntries);
                 pDlg->setEnumerator(0);
 
                 if( pDlg->exec() == QDialog::Accepted )
@@ -1734,7 +1732,7 @@ void CTreeViewIdxTreeTrcAdminObjs::onActionNameSpaceSetAdminObjsMethodCallsDetai
                     try
                     {
                         int iDetailLevel = pDlg->getEnumerator();
-                        CEnumTraceDetailLevelMethodCalls eDetailLevel(iDetailLevel);
+                        CEnumMethodTraceDetailLevel eDetailLevel(iDetailLevel);
                         pIdxTree->setMethodCallsTraceDetailLevel(pBranch, eDetailLevel.enumerator());
                     }
                     catch(CException&)
@@ -1754,7 +1752,7 @@ void CTreeViewIdxTreeTrcAdminObjs::onActionNameSpaceSetAdminObjsRuntimeInfoDetai
 {
     QString strMthInArgs;
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strMthInArgs = "Checked: " + bool2Str(i_bChecked);
     }
@@ -1762,7 +1760,7 @@ void CTreeViewIdxTreeTrcAdminObjs::onActionNameSpaceSetAdminObjsRuntimeInfoDetai
     CMethodTracer mthTracer(
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -1790,7 +1788,7 @@ void CTreeViewIdxTreeTrcAdminObjs::onActionNameSpaceSetAdminObjsRuntimeInfoDetai
                     /* strObjName  */ "RuntimeInfoDetailLevel",
                     /* pWdgtParent */ this );
                 pDlg->setValueName("RuntimeInfo");
-                pDlg->setComboItems(CEnumTraceDetailLevelRuntimeInfo::s_arEnumEntries);
+                pDlg->setComboItems(CEnumLogDetailLevel::s_arEnumEntries);
                 pDlg->setEnumerator(0);
 
                 if( pDlg->exec() == QDialog::Accepted )
@@ -1798,7 +1796,7 @@ void CTreeViewIdxTreeTrcAdminObjs::onActionNameSpaceSetAdminObjsRuntimeInfoDetai
                     try
                     {
                         int iDetailLevel = pDlg->getEnumerator();
-                        CEnumTraceDetailLevelRuntimeInfo eDetailLevel(iDetailLevel);
+                        CEnumLogDetailLevel eDetailLevel(iDetailLevel);
                         pIdxTree->setRuntimeInfoTraceDetailLevel(pBranch, eDetailLevel.enumerator());
                     }
                     catch(CException&)
@@ -1818,7 +1816,7 @@ void CTreeViewIdxTreeTrcAdminObjs::onActionNameSpaceSetAdminObjsTraceDataFilterT
 {
     QString strMthInArgs;
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strMthInArgs = "Checked: " + bool2Str(i_bChecked);
     }
@@ -1826,7 +1824,7 @@ void CTreeViewIdxTreeTrcAdminObjs::onActionNameSpaceSetAdminObjsTraceDataFilterT
     CMethodTracer mthTracer(
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),

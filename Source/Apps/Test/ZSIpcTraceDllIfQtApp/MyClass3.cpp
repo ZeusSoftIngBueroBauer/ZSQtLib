@@ -66,24 +66,24 @@ CMyClass3Thread::CMyClass3Thread( const QString& i_strMyClass3ObjName, CMyClass2
 {
     setObjectName(ClassName() + m_strMyClass3ObjName);
 
-    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(
+    m_pTrcAdminObj = Trace::DllIf::CTrcServer::GetTraceAdminObj(
         NameSpace().toLatin1().data(),
         ClassName().toLatin1().data(),
         objectName().toLatin1().data());
 
-    m_pTrcAdminObj->setMethodCallsTraceDetailLevel(ETraceDetailLevelMethodCallsArgsNormal);
+    m_pTrcAdminObj->setMethodCallsTraceDetailLevel(EMethodTraceDetailLevelArgsNormal);
 
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->getMethodCallsTraceDetailLevel() >= ETraceDetailLevelMethodCallsArgsNormal )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevelArgsNormal )
     {
         strMthInArgs = i_strMyClass3ObjName;
         strMthInArgs += ", " + QString(i_pMyClass2 == nullptr ? "nullptr" : i_pMyClass2->objectName());
     }
 
-    CMethodTracer mthTracer(
+    Trace::DllIf::CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* eDetailLevel */ ETraceDetailLevelMethodCallsEnterLeave,
+        /* eDetailLevel */ EMethodTraceDetailLevelEnterLeave,
         /* szMethod     */ "ctor",
         /* szMthInArgs  */ strMthInArgs.toLatin1().data() );
 
@@ -93,9 +93,9 @@ CMyClass3Thread::CMyClass3Thread( const QString& i_strMyClass3ObjName, CMyClass2
 CMyClass3Thread::~CMyClass3Thread()
 //------------------------------------------------------------------------------
 {
-    CMethodTracer mthTracer(
+    Trace::DllIf::CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* eDetailLevel */ ETraceDetailLevelMethodCallsEnterLeave,
+        /* eDetailLevel */ EMethodTraceDetailLevelEnterLeave,
         /* szMethod     */ "dtor",
         /* szMthInArgs  */ "" );
 
@@ -131,7 +131,7 @@ CMyClass3Thread::~CMyClass3Thread()
 
     mthTracer.onAdminObjAboutToBeReleased();
 
-    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
+    Trace::DllIf::CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
     m_pTrcAdminObj = nullptr;
 
 } // dtor
@@ -151,14 +151,14 @@ void CMyClass3Thread::setObjectName(const QString& i_strObjName)
 
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(ETraceDetailLevelMethodCallsArgsNormal) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevelArgsNormal) )
     {
         strMthInArgs = i_strObjName;
     }
 
-    CMethodTracer mthTracer(
+    Trace::DllIf::CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* eDetailLevel */ ETraceDetailLevelMethodCallsEnterLeave,
+        /* eDetailLevel */ EMethodTraceDetailLevelEnterLeave,
         /* szMethod     */ "setObjectName",
         /* szMthInArgs  */ strMthInArgs.toLatin1().data() );
 
@@ -173,7 +173,7 @@ void CMyClass3Thread::setObjectName(const QString& i_strObjName)
         // object (as this may delete the admin object of the Dll Interface).
         mthTracer.onAdminObjAboutToBeReleased();
 
-        CTrcServer::RenameTraceAdminObj(&m_pTrcAdminObj, objectName().toLatin1().data());
+        Trace::DllIf::CTrcServer::RenameTraceAdminObj(&m_pTrcAdminObj, objectName().toLatin1().data());
     }
 
 } // setObjectName
@@ -201,9 +201,9 @@ void CMyClass3Thread::run()
     // instance wait on the wait condition.
     CSleeperThread::msleep(5);
 
-    CMethodTracer mthTracer(
+    Trace::DllIf::CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* eDetailLevel */ ETraceDetailLevelMethodCallsEnterLeave,
+        /* eDetailLevel */ EMethodTraceDetailLevelEnterLeave,
         /* szMethod     */ "run",
         /* szMthInArgs  */ "" );
 
@@ -256,14 +256,14 @@ void CMyClass3Thread::start( QThread::Priority i_priority )
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(ETraceDetailLevelMethodCallsArgsNormal) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevelArgsNormal) )
     {
         strMthInArgs = qThreadPriority2Str(i_priority);
     }
 
-    CMethodTracer mthTracer(
+    Trace::DllIf::CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* eDetailLevel */ ETraceDetailLevelMethodCallsEnterLeave,
+        /* eDetailLevel */ EMethodTraceDetailLevelEnterLeave,
         /* szMethod     */ "start",
         /* szMthInArgs  */ strMthInArgs.toLatin1().data() );
 
@@ -274,9 +274,9 @@ void CMyClass3Thread::start( QThread::Priority i_priority )
 void CMyClass3Thread::quit()
 //------------------------------------------------------------------------------
 {
-    CMethodTracer mthTracer(
+    Trace::DllIf::CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* eDetailLevel */ ETraceDetailLevelMethodCallsEnterLeave,
+        /* eDetailLevel */ EMethodTraceDetailLevelEnterLeave,
         /* szMethod     */ "quit",
         /* szMthInArgs  */ "" );
 
@@ -289,20 +289,20 @@ bool CMyClass3Thread::wait( QDeadlineTimer i_deadline )
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(ETraceDetailLevelMethodCallsArgsNormal) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevelArgsNormal) )
     {
         strMthInArgs = QString(i_deadline.isForever() ? "Forever" : QString::number(i_deadline.deadline()));
     }
 
-    CMethodTracer mthTracer(
+    Trace::DllIf::CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* eDetailLevel */ ETraceDetailLevelMethodCallsEnterLeave,
+        /* eDetailLevel */ EMethodTraceDetailLevelEnterLeave,
         /* szMethod     */ "wait",
         /* szMthInArgs  */ strMthInArgs.toLatin1().data() );
 
     bool bResult = QThread::wait(i_deadline);
 
-    if( mthTracer.areMethodCallsActive(ETraceDetailLevelMethodCallsArgsNormal) )
+    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevelArgsNormal) )
     {
         mthTracer.setMethodReturn(bResult);
     }
@@ -315,20 +315,20 @@ bool CMyClass3Thread::wait( unsigned long i_time_ms )
 {
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(ETraceDetailLevelMethodCallsArgsNormal) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevelArgsNormal) )
     {
         strMthInArgs = QString::number(i_time_ms) + " ms";
     }
 
-    CMethodTracer mthTracer(
+    Trace::DllIf::CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* eDetailLevel */ ETraceDetailLevelMethodCallsEnterLeave,
+        /* eDetailLevel */ EMethodTraceDetailLevelEnterLeave,
         /* szMethod     */ "wait",
         /* szMthInArgs  */ strMthInArgs.toLatin1().data() );
 
     bool bResult = QThread::wait(i_time_ms);
 
-    if( mthTracer.areMethodCallsActive(ETraceDetailLevelMethodCallsArgsNormal) )
+    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevelArgsNormal) )
     {
         mthTracer.setMethodReturn(bResult);
     }
@@ -343,15 +343,15 @@ protected: // replacing method of base class QThread
 int CMyClass3Thread::exec()
 //------------------------------------------------------------------------------
 {
-    CMethodTracer mthTracer(
+    Trace::DllIf::CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* eDetailLevel */ ETraceDetailLevelMethodCallsEnterLeave,
+        /* eDetailLevel */ EMethodTraceDetailLevelEnterLeave,
         /* szMethod     */ "exec",
         /* szMthInArgs  */ "" );
 
     int iResult = QThread::exec();
 
-    if( mthTracer.areMethodCallsActive(ETraceDetailLevelMethodCallsArgsNormal) )
+    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevelArgsNormal) )
     {
         mthTracer.setMethodReturn(iResult);
     }
@@ -382,30 +382,30 @@ QString CMyClass3::classMethod(const QString& i_strMthInArgs)
     QString strMthInArgs;
     QString strMthRet;
 
-    CTrcAdminObj* pTrcAdminObj = CTrcServer::GetTraceAdminObj(
+    Trace::DllIf::CTrcAdminObj* pTrcAdminObj = Trace::DllIf::CTrcServer::GetTraceAdminObj(
         NameSpace().toLatin1().data(),
         ClassName().toLatin1().data());
 
-    if( pTrcAdminObj != nullptr && pTrcAdminObj->areMethodCallsActive(ETraceDetailLevelMethodCallsArgsNormal) )
+    if( pTrcAdminObj != nullptr && pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevelArgsNormal) )
     {
         strMthInArgs = i_strMthInArgs;
     }
 
-    CMethodTracer mthTracer(
+    Trace::DllIf::CMethodTracer mthTracer(
         /* pAdminObj    */ pTrcAdminObj,
-        /* eDetailLevel */ ETraceDetailLevelMethodCallsEnterLeave,
+        /* eDetailLevel */ EMethodTraceDetailLevelEnterLeave,
         /* szMethod     */ "classMethod",
         /* szMthInArgs  */ strMthInArgs.toLatin1().data() );
 
     strResult = "Hello World";
 
-    if( mthTracer.areMethodCallsActive(ETraceDetailLevelMethodCallsArgsNormal) )
+    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevelArgsNormal) )
     {
         strMthRet = strResult;
         mthTracer.setMethodReturn(strMthRet.toLatin1().data());
     }
 
-    CTrcServer::ReleaseTraceAdminObj(pTrcAdminObj);
+    Trace::DllIf::CTrcServer::ReleaseTraceAdminObj(pTrcAdminObj);
     pTrcAdminObj = nullptr;
 
     return strResult;
@@ -420,30 +420,30 @@ QString CMyClass3::noisyClassMethod(const QString& i_strMthInArgs)
     QString strMthInArgs;
     QString strMthRet;
 
-    CTrcAdminObj* pTrcAdminObj = CTrcServer::GetTraceAdminObj(
+    Trace::DllIf::CTrcAdminObj* pTrcAdminObj = Trace::DllIf::CTrcServer::GetTraceAdminObj(
         NameSpace().toLatin1().data(),
         QString(ClassName() + + "::NoisyMethods").toLatin1().data());
 
-    if( pTrcAdminObj != nullptr && pTrcAdminObj->areMethodCallsActive(ETraceDetailLevelMethodCallsArgsNormal) )
+    if( pTrcAdminObj != nullptr && pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevelArgsNormal) )
     {
         strMthInArgs = i_strMthInArgs;
     }
 
-    CMethodTracer mthTracer(
+    Trace::DllIf::CMethodTracer mthTracer(
         /* pAdminObj    */ pTrcAdminObj,
-        /* eDetailLevel */ ETraceDetailLevelMethodCallsEnterLeave,
+        /* eDetailLevel */ EMethodTraceDetailLevelEnterLeave,
         /* szMethod     */ "noisyClassMethod",
         /* szMthInArgs  */ strMthInArgs.toLatin1().data() );
 
     strResult = "Hello World";
 
-    if( mthTracer.areMethodCallsActive(ETraceDetailLevelMethodCallsArgsNormal) )
+    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevelArgsNormal) )
     {
         strMthRet = strResult;
         mthTracer.setMethodReturn(strMthRet.toLatin1().data());
     }
 
-    CTrcServer::ReleaseTraceAdminObj(pTrcAdminObj);
+    Trace::DllIf::CTrcServer::ReleaseTraceAdminObj(pTrcAdminObj);
     pTrcAdminObj = nullptr;
 
     return strResult;
@@ -458,30 +458,30 @@ QString CMyClass3::veryNoisyClassMethod(const QString& i_strMthInArgs)
     QString strMthInArgs;
     QString strMthRet;
 
-    CTrcAdminObj* pTrcAdminObj = CTrcServer::GetTraceAdminObj(
+    Trace::DllIf::CTrcAdminObj* pTrcAdminObj = Trace::DllIf::CTrcServer::GetTraceAdminObj(
         NameSpace().toLatin1().data(),
         QString(ClassName() + + "::VeryNoisyMethods").toLatin1().data());
 
-    if( pTrcAdminObj != nullptr && pTrcAdminObj->areMethodCallsActive(ETraceDetailLevelMethodCallsArgsNormal) )
+    if( pTrcAdminObj != nullptr && pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevelArgsNormal) )
     {
         strMthInArgs = i_strMthInArgs;
     }
 
-    CMethodTracer mthTracer(
+    Trace::DllIf::CMethodTracer mthTracer(
         /* pAdminObj    */ pTrcAdminObj,
-        /* eDetailLevel */ ETraceDetailLevelMethodCallsEnterLeave,
+        /* eDetailLevel */ EMethodTraceDetailLevelEnterLeave,
         /* szMethod     */ "veryNoisyClassMethod",
         /* szMthInArgs  */ strMthInArgs.toLatin1().data() );
 
     strResult = "Hello World";
 
-    if( mthTracer.areMethodCallsActive(ETraceDetailLevelMethodCallsArgsNormal) )
+    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevelArgsNormal) )
     {
         strMthRet = strResult;
         mthTracer.setMethodReturn(strMthRet.toLatin1().data());
     }
 
-    CTrcServer::ReleaseTraceAdminObj(pTrcAdminObj);
+    Trace::DllIf::CTrcServer::ReleaseTraceAdminObj(pTrcAdminObj);
     pTrcAdminObj = nullptr;
 
     return strResult;
@@ -505,34 +505,34 @@ CMyClass3::CMyClass3( const QString& i_strObjName, CMyClass3Thread* i_pMyClass3T
 {
     setObjectName(i_strObjName);
 
-    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(
+    m_pTrcAdminObj = Trace::DllIf::CTrcServer::GetTraceAdminObj(
         NameSpace().toLatin1().data(),
         ClassName().toLatin1().data(),
         objectName().toLatin1().data());
-    m_pTrcAdminObjNoisyMethods = CTrcServer::GetTraceAdminObj(
+    m_pTrcAdminObjNoisyMethods = Trace::DllIf::CTrcServer::GetTraceAdminObj(
         NameSpace().toLatin1().data(),
         QString(ClassName() + "::NoisyMethods").toLatin1().data(),
         objectName().toLatin1().data());
-    m_pTrcAdminObjVeryNoisyMethods = CTrcServer::GetTraceAdminObj(
+    m_pTrcAdminObjVeryNoisyMethods = Trace::DllIf::CTrcServer::GetTraceAdminObj(
         NameSpace().toLatin1().data(),
         QString(ClassName() + "::VeryNoisyMethods").toLatin1().data(),
         objectName().toLatin1().data());
 
-    m_pTrcAdminObj->setMethodCallsTraceDetailLevel(ETraceDetailLevelMethodCallsArgsNormal);
-    m_pTrcAdminObjNoisyMethods->setMethodCallsTraceDetailLevel(ETraceDetailLevelMethodCallsArgsNormal);
-    m_pTrcAdminObjVeryNoisyMethods->setMethodCallsTraceDetailLevel(ETraceDetailLevelMethodCallsArgsNormal);
+    m_pTrcAdminObj->setMethodCallsTraceDetailLevel(EMethodTraceDetailLevelArgsNormal);
+    m_pTrcAdminObjNoisyMethods->setMethodCallsTraceDetailLevel(EMethodTraceDetailLevelArgsNormal);
+    m_pTrcAdminObjVeryNoisyMethods->setMethodCallsTraceDetailLevel(EMethodTraceDetailLevelArgsNormal);
 
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(ETraceDetailLevelMethodCallsArgsNormal) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevelArgsNormal) )
     {
         strMthInArgs = i_strObjName;
         strMthInArgs += ", " + QString(i_pMyClass3Thread == nullptr ? "nullptr" : i_pMyClass3Thread->objectName());
     }
 
-    CMethodTracer mthTracer(
+    Trace::DllIf::CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* eDetailLevel */ ETraceDetailLevelMethodCallsEnterLeave,
+        /* eDetailLevel */ EMethodTraceDetailLevelEnterLeave,
         /* szMethod     */ "ctor",
         /* szMthInArgs  */ strMthInArgs.toLatin1().data() );
 
@@ -544,9 +544,9 @@ CMyClass3::CMyClass3( const QString& i_strObjName, CMyClass3Thread* i_pMyClass3T
 CMyClass3::~CMyClass3()
 //------------------------------------------------------------------------------
 {
-    CMethodTracer mthTracer(
+    Trace::DllIf::CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* eDetailLevel */ ETraceDetailLevelMethodCallsEnterLeave,
+        /* eDetailLevel */ EMethodTraceDetailLevelEnterLeave,
         /* szMethod     */ "dtor",
         /* szMthInArgs  */ "" );
 
@@ -563,9 +563,9 @@ CMyClass3::~CMyClass3()
 
     mthTracer.onAdminObjAboutToBeReleased();
 
-    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
-    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjNoisyMethods);
-    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjVeryNoisyMethods);
+    Trace::DllIf::CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
+    Trace::DllIf::CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjNoisyMethods);
+    Trace::DllIf::CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjVeryNoisyMethods);
 
     m_pMyClass3Thread = nullptr;
     m_iRecursionCount = 0;
@@ -590,14 +590,14 @@ void CMyClass3::setObjectName(const QString& i_strObjName)
 
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(ETraceDetailLevelMethodCallsArgsNormal) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevelArgsNormal) )
     {
         strMthInArgs = i_strObjName;
     }
 
-    CMethodTracer mthTracer(
+    Trace::DllIf::CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* eDetailLevel */ ETraceDetailLevelMethodCallsEnterLeave,
+        /* eDetailLevel */ EMethodTraceDetailLevelEnterLeave,
         /* szMethod     */ "setObjectName",
         /* szMthInArgs  */ strMthInArgs.toLatin1().data() );
 
@@ -619,7 +619,7 @@ void CMyClass3::setObjectName(const QString& i_strObjName)
         // object (as this may delete the admin object of the Dll Interface).
         mthTracer.onAdminObjAboutToBeReleased();
 
-        CTrcServer::RenameTraceAdminObj(&m_pTrcAdminObj, objectName().toLatin1().data());
+        Trace::DllIf::CTrcServer::RenameTraceAdminObj(&m_pTrcAdminObj, objectName().toLatin1().data());
     }
 
 } // setObjectName
@@ -636,20 +636,20 @@ QString CMyClass3::instMethod(const QString& i_strMthInArgs)
     QString strMthInArgs;
     QString strMthRet;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(ETraceDetailLevelMethodCallsArgsNormal) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevelArgsNormal) )
     {
         strMthInArgs = i_strMthInArgs;
     }
 
-    CMethodTracer mthTracer(
+    Trace::DllIf::CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* eDetailLevel */ ETraceDetailLevelMethodCallsEnterLeave,
+        /* eDetailLevel */ EMethodTraceDetailLevelEnterLeave,
         /* szMethod     */ "instMethod",
         /* szMthInArgs  */ strMthInArgs.toLatin1().data() );
 
     strResult = "Hello World";
 
-    if( mthTracer.areMethodCallsActive(ETraceDetailLevelMethodCallsArgsNormal) )
+    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevelArgsNormal) )
     {
         strMthRet = strResult;
         mthTracer.setMethodReturn(strMthRet.toLatin1().data());
@@ -667,20 +667,20 @@ QString CMyClass3::noisyInstMethod(const QString& i_strMthInArgs)
     QString strMthInArgs;
     QString strMthRet;
 
-    if( m_pTrcAdminObjNoisyMethods != nullptr && m_pTrcAdminObjNoisyMethods->areMethodCallsActive(ETraceDetailLevelMethodCallsArgsNormal) )
+    if( m_pTrcAdminObjNoisyMethods != nullptr && m_pTrcAdminObjNoisyMethods->areMethodCallsActive(EMethodTraceDetailLevelArgsNormal) )
     {
         strMthInArgs = i_strMthInArgs;
     }
 
-    CMethodTracer mthTracer(
+    Trace::DllIf::CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjNoisyMethods,
-        /* eDetailLevel */ ETraceDetailLevelMethodCallsEnterLeave,
+        /* eDetailLevel */ EMethodTraceDetailLevelEnterLeave,
         /* szMethod     */ "noisyInstMethod",
         /* szMthInArgs  */ strMthInArgs.toLatin1().data() );
 
     strResult = "Hello World";
 
-    if( mthTracer.areMethodCallsActive(ETraceDetailLevelMethodCallsArgsNormal) )
+    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevelArgsNormal) )
     {
         strMthRet = strResult;
         mthTracer.setMethodReturn(strMthRet.toLatin1().data());
@@ -698,20 +698,20 @@ QString CMyClass3::veryNoisyInstMethod(const QString& i_strMthInArgs)
     QString strMthInArgs;
     QString strMthRet;
 
-    if( m_pTrcAdminObjVeryNoisyMethods != nullptr && m_pTrcAdminObjVeryNoisyMethods->areMethodCallsActive(ETraceDetailLevelMethodCallsArgsNormal) )
+    if( m_pTrcAdminObjVeryNoisyMethods != nullptr && m_pTrcAdminObjVeryNoisyMethods->areMethodCallsActive(EMethodTraceDetailLevelArgsNormal) )
     {
         strMthInArgs = i_strMthInArgs;
     }
 
-    CMethodTracer mthTracer(
+    Trace::DllIf::CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjVeryNoisyMethods,
-        /* eDetailLevel */ ETraceDetailLevelMethodCallsEnterLeave,
+        /* eDetailLevel */ EMethodTraceDetailLevelEnterLeave,
         /* szMethod     */ "veryNoisyInstMethod",
         /* szMthInArgs  */ strMthInArgs.toLatin1().data() );
 
     strResult = "Hello World";
 
-    if( mthTracer.areMethodCallsActive(ETraceDetailLevelMethodCallsArgsNormal) )
+    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevelArgsNormal) )
     {
         strMthRet = strResult;
         mthTracer.setMethodReturn(strMthRet.toLatin1().data());
@@ -729,9 +729,9 @@ public: // instance methods
 int CMyClass3::recursiveTraceMethod()
 //------------------------------------------------------------------------------
 {
-    CMethodTracer mthTracer(
+    Trace::DllIf::CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* eDetailLevel */ ETraceDetailLevelMethodCallsEnterLeave,
+        /* eDetailLevel */ EMethodTraceDetailLevelEnterLeave,
         /* szMethod     */ "recursiveTraceMethod",
         /* szMthInArgs  */ "" );
 
@@ -746,7 +746,7 @@ int CMyClass3::recursiveTraceMethod()
     }
     else // if( QThread::currentThread() == thread() )
     {
-        if( mthTracer.isRuntimeInfoActive(ETraceDetailLevelRuntimeInfoDebugNormal) )
+        if( mthTracer.isRuntimeInfoActive(ELogDetailLevelDebugNormal) )
         {
             QString strTrcMsg = "RecursionCount=" + QString::number(m_iRecursionCount);
             mthTracer.trace(strTrcMsg.toLatin1().data());
@@ -761,7 +761,7 @@ int CMyClass3::recursiveTraceMethod()
         --m_iRecursionCount;
     }
 
-    if( mthTracer.areMethodCallsActive(ETraceDetailLevelMethodCallsArgsNormal) )
+    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevelArgsNormal) )
     {
         mthTracer.setMethodReturn(m_iRecursionCount);
     }
@@ -795,14 +795,14 @@ bool CMyClass3::event( QEvent* i_pEv )
 
         QString strMthInArgs;
 
-        if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(ETraceDetailLevelMethodCallsArgsNormal) )
+        if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevelArgsNormal) )
         {
             strMthInArgs = "{" + QString(pMsg == nullptr ? "null" : pMsg->getAddTrcInfoStr(m_pTrcAdminObj->getMethodCallsTraceDetailLevel())) + "}";
         }
 
-        CMethodTracer mthTracer(
+        Trace::DllIf::CMethodTracer mthTracer(
             /* pTrcServer         */ m_pTrcAdminObj,
-            /* iFilterDetailLevel */ ETraceDetailLevelMethodCallsEnterLeave,
+            /* iFilterDetailLevel */ EMethodTraceDetailLevelEnterLeave,
             /* strMethod          */ "event",
             /* strMethodInArgs    */ strMthInArgs.toLatin1().data() );
 

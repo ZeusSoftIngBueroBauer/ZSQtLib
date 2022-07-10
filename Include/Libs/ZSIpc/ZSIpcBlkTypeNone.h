@@ -49,22 +49,22 @@ public: // must overridables of base class CBlkType
     virtual QByteArray* createWatchDogBlock() const override;
 public: // must overridables of base class CBlkType
     virtual QList<QByteArray> receiveDataBlocks(
-        ESrvCltType            i_srvCltType,
-        QObject*               i_pObjGtw,
-        QObject*               i_pObjSrvClt,
-        CIpcSocketWrapper*     i_pSocketWrapper,
-        QByteArray*            i_pByteArrWatchDog = nullptr,
-        Trace::CMethodTracer*  i_pMethodTracer = nullptr,
-        const QList<QObject*>& i_arpTrcMsgLogObjects = QList<QObject*>() ) const override;
+        ESrvCltType                i_srvCltType,
+        QObject*                   i_pObjGtw,
+        QObject*                   i_pObjSrvClt,
+        CIpcSocketWrapper*         i_pSocketWrapper,
+        QByteArray*                i_pByteArrWatchDog = nullptr,
+        ZS::System::CMethodTracer* i_pMethodTracer = nullptr,
+        const QList<QObject*>&     i_arpTrcMsgLogObjects = QList<QObject*>() ) const override;
     virtual bool writeDataBlock(
-        ESrvCltType            i_srvCltType,
-        QObject*               i_pObjGtw,
-        QObject*               i_pObjSrvClt,
-        CIpcSocketWrapper*     i_pSocketWrapper,
-        const QByteArray&      i_byteArr,
-        bool                   i_bIsWatchDogBlock = false,
-        Trace::CMethodTracer*  i_pMethodTracer = nullptr,
-        const QList<QObject*>& i_arpTrcMsgLogObjects = QList<QObject*>() ) const override;
+        ESrvCltType                i_srvCltType,
+        QObject*                   i_pObjGtw,
+        QObject*                   i_pObjSrvClt,
+        CIpcSocketWrapper*         i_pSocketWrapper,
+        const QByteArray&          i_byteArr,
+        bool                       i_bIsWatchDogBlock = false,
+        ZS::System::CMethodTracer* i_pMethodTracer = nullptr,
+        const QList<QObject*>&     i_arpTrcMsgLogObjects = QList<QObject*>() ) const override;
 
 }; // class CBlkTypeNone
 

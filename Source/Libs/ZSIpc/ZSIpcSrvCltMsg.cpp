@@ -36,7 +36,6 @@ may result in using the software modules.
 
 using namespace ZS::System;
 using namespace ZS::Ipc;
-using namespace ZS::Trace;
 
 
 /*******************************************************************************

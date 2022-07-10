@@ -40,7 +40,6 @@ may result in using the software modules.
 
 using namespace ZS::System;
 using namespace ZS::System::GUI;
-using namespace ZS::Trace;
 
 
 /*******************************************************************************
@@ -158,7 +157,7 @@ CDialog::CDialog(
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* eDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "ctor",
         /* strAddInfo   */ "" );
 
@@ -191,7 +190,7 @@ CDialog::~CDialog()
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* eDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
 
@@ -226,7 +225,7 @@ void CDialog::show()
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* eDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "show",
         /* strAddInfo   */ "" );
 
@@ -252,7 +251,7 @@ void CDialog::hide()
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* eDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "hide",
         /* strAddInfo   */ "" );
 
@@ -282,7 +281,7 @@ void CDialog::closeEvent( QCloseEvent* i_pEv )
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* eDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "closeEvent",
         /* strAddInfo   */ "" );
 

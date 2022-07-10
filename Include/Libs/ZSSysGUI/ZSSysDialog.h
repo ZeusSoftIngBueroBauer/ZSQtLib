@@ -39,13 +39,10 @@ may result in using the software modules.
 
 namespace ZS
 {
-namespace Trace
-{
-class CTrcAdminObj;
-}
-
 namespace System
 {
+class CTrcAdminObj;
+
 namespace GUI
 {
 //******************************************************************************
@@ -90,9 +87,9 @@ protected: // overridables of base class QWidget
 protected: // class members
     static QHash<QString,CDialog*> s_hshpDlgs; // Key is string concatenated by NameSpace::ClassName::ObjName
 protected: // instance members
-    QString              m_strNameSpace;
-    QString              m_strClassName;
-    Trace::CTrcAdminObj* m_pTrcAdminObj;
+    QString m_strNameSpace;
+    QString m_strClassName;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObj;
 
 }; // class CDialog
 

@@ -35,6 +35,10 @@ class QMutex;
 
 namespace ZS
 {
+namespace System
+{
+class CTrcAdminObj;
+}
 namespace Ipc
 {
 struct SServerHostSettings;
@@ -42,7 +46,6 @@ struct SServerHostSettings;
 
 namespace Trace
 {
-class CTrcAdminObj;
 struct SMthTrcData;
 
 //******************************************************************************
@@ -57,21 +60,16 @@ can be changed and displayed via a tree view in the client with a mouse click.
 The Trace Client provided via the ZSQtLib also makes it possible to separate the
 trace outputs by color depending on the thread.
 
-Normally there is only one Trace Server instance per application, which is created
-when the application is started by calling the "CreateInstance" class method.
+Trace Server is a singleton which is usually created when the application is
+started by calling the "CreateInstance" class method.
 During program execution, a reference to the instance can be obtained via
 "GetInstance", parameters can be changed, log outputs can be made in the Trace
 Method File and sent to connected Trace Clients.
 
 Before exiting the application, the Trace Server instance must be freed again
 with "ReleaseInstance".
-
-If several trace servers are to be used (different log files, different listen ports),
-a name that deviates from the default value "ZSTrcServer" can be transferred for
-"CreateInstance". This name is to be used again when calling "GetInstance" and
-"ReleaseInstance".
 */
-class ZSIPCTRACEDLL_API CIpcTrcServer : public ZS::Trace::CTrcServer
+class ZSIPCTRACEDLL_API CIpcTrcServer : public ZS::System::CTrcServer
 //******************************************************************************
 {
     Q_OBJECT
@@ -81,19 +79,19 @@ public: // class methods
 public: // class methods
     static CIpcTrcServer* GetInstance();
     static CIpcTrcServer* CreateInstance(
-        ETraceDetailLevelMethodCalls i_eTrcDetailLevel = ETraceDetailLevelMethodCalls::None,
-        ETraceDetailLevelMethodCalls i_eTrcDetailLevelMutex = ETraceDetailLevelMethodCalls::None,
-        ETraceDetailLevelMethodCalls i_eTrcDetailLevelIpcServer = ETraceDetailLevelMethodCalls::None,
-        ETraceDetailLevelMethodCalls i_eTrcDetailLevelIpcServerMutex = ETraceDetailLevelMethodCalls::None,
-        ETraceDetailLevelMethodCalls i_eTrcDetailLevelIpcServerGateway = ETraceDetailLevelMethodCalls::None );
+        ZS::System::EMethodTraceDetailLevel i_eTrcDetailLevel = ZS::System::EMethodTraceDetailLevel::None,
+        ZS::System::EMethodTraceDetailLevel i_eTrcDetailLevelMutex = ZS::System::EMethodTraceDetailLevel::None,
+        ZS::System::EMethodTraceDetailLevel i_eTrcDetailLevelIpcServer = ZS::System::EMethodTraceDetailLevel::None,
+        ZS::System::EMethodTraceDetailLevel i_eTrcDetailLevelIpcServerMutex = ZS::System::EMethodTraceDetailLevel::None,
+        ZS::System::EMethodTraceDetailLevel i_eTrcDetailLevelIpcServerGateway = ZS::System::EMethodTraceDetailLevel::None );
     static void ReleaseInstance();
 protected: // ctors and dtor
     CIpcTrcServer(
-        ETraceDetailLevelMethodCalls i_eTrcDetailLevel = ETraceDetailLevelMethodCalls::None,
-        ETraceDetailLevelMethodCalls i_eTrcDetailLevelMutex = ETraceDetailLevelMethodCalls::None,
-        ETraceDetailLevelMethodCalls i_eTrcDetailLevelIpcServer = ETraceDetailLevelMethodCalls::None,
-        ETraceDetailLevelMethodCalls i_eTrcDetailLevelIpcServerMutex = ETraceDetailLevelMethodCalls::None,
-        ETraceDetailLevelMethodCalls i_eTrcDetailLevelIpcServerGateway = ETraceDetailLevelMethodCalls::None );
+        ZS::System::EMethodTraceDetailLevel i_eTrcDetailLevel = ZS::System::EMethodTraceDetailLevel::None,
+        ZS::System::EMethodTraceDetailLevel i_eTrcDetailLevelMutex = ZS::System::EMethodTraceDetailLevel::None,
+        ZS::System::EMethodTraceDetailLevel i_eTrcDetailLevelIpcServer = ZS::System::EMethodTraceDetailLevel::None,
+        ZS::System::EMethodTraceDetailLevel i_eTrcDetailLevelIpcServerMutex = ZS::System::EMethodTraceDetailLevel::None,
+        ZS::System::EMethodTraceDetailLevel i_eTrcDetailLevelIpcServerGateway = ZS::System::EMethodTraceDetailLevel::None );
     virtual ~CIpcTrcServer();
 public: // overridables
     QString nameSpace() const { return CIpcTrcServer::NameSpace(); }
@@ -105,8 +103,8 @@ public: // overridables of base class CTrcServer
 public: // overridables of base class CTrcServer
     virtual void setEnabled( bool i_bEnabled ) override;
     virtual void setNewTrcAdminObjsEnabledAsDefault( bool i_bEnabled ) override;
-    virtual void setNewTrcAdminObjsMethodCallsDefaultDetailLevel( ETraceDetailLevelMethodCalls i_eDetailLevel );
-    virtual void setNewTrcAdminObjsRuntimeInfoDefaultDetailLevel( ETraceDetailLevelRuntimeInfo i_eDetailLevel );
+    virtual void setNewTrcAdminObjsMethodCallsDefaultDetailLevel( ZS::System::EMethodTraceDetailLevel i_eDetailLevel );
+    virtual void setNewTrcAdminObjsRuntimeInfoDefaultDetailLevel( ZS::System::ELogDetailLevel i_eDetailLevel );
 public: // overridables of base class CTrcServer
     virtual void setAdminObjFileAbsoluteFilePath( const QString& i_strAbsFilePath ) override;
 public: // overridables of base class CTrcServer
@@ -121,48 +119,48 @@ public: // overridables of base class CTrcServer
     virtual void setCacheTrcDataIfNotConnected( bool i_bCacheData ) override;
     virtual void setCacheTrcDataMaxArrLen( int i_iMaxArrLen ) override;
 public: // overridables of base class CTrcServer
-    virtual void setTraceSettings( const STrcServerSettings& i_settings ) override;
+    virtual void setTraceSettings( const ZS::System::STrcServerSettings& i_settings ) override;
 public: // overridables of base class CTrcServer
     virtual void traceMethodEnter(
-        const CTrcAdminObj* i_pAdminObj,
-        const QString&      i_strMethod,
-        const QString&      i_strMethodInArgs ) override;
+        const ZS::System::CTrcAdminObj* i_pAdminObj,
+        const QString& i_strMethod,
+        const QString& i_strMethodInArgs ) override;
     virtual void traceMethodEnter(
-        const CTrcAdminObj* i_pAdminObj,
-        const QString&      i_strObjName,
-        const QString&      i_strMethod,
-        const QString&      i_strMethodInArgs ) override;
+        const ZS::System::CTrcAdminObj* i_pAdminObj,
+        const QString& i_strObjName,
+        const QString& i_strMethod,
+        const QString& i_strMethodInArgs ) override;
     virtual void traceMethod(
-        const CTrcAdminObj* i_pAdminObj,
-        const QString&      i_strMethod,
-        const QString&      i_strAddInfo ) override;
+        const ZS::System::CTrcAdminObj* i_pAdminObj,
+        const QString& i_strMethod,
+        const QString& i_strAddInfo ) override;
     virtual void traceMethod(
-        const CTrcAdminObj* i_pAdminObj,
-        const QString&      i_strObjName,
-        const QString&      i_strMethod,
-        const QString&      i_strAddInfo ) override;
+        const ZS::System::CTrcAdminObj* i_pAdminObj,
+        const QString& i_strObjName,
+        const QString& i_strMethod,
+        const QString& i_strAddInfo ) override;
     virtual void traceMethodLeave(
-        const CTrcAdminObj* i_pAdminObj,
-        const QString&      i_strMethod,
-        const QString&      i_strMethodReturn,
-        const QString&      i_strMethodOutArgs ) override;
+        const ZS::System::CTrcAdminObj* i_pAdminObj,
+        const QString& i_strMethod,
+        const QString& i_strMethodReturn,
+        const QString& i_strMethodOutArgs ) override;
     virtual void traceMethodLeave(
-        const CTrcAdminObj* i_pAdminObj,
-        const QString&      i_strObjName,
-        const QString&      i_strMethod,
-        const QString&      i_strMethodReturn,
-        const QString&      i_strMethodOutArgs ) override;
+        const ZS::System::CTrcAdminObj* i_pAdminObj,
+        const QString& i_strObjName,
+        const QString& i_strMethod,
+        const QString& i_strMethodReturn,
+        const QString& i_strMethodOutArgs ) override;
 protected: // auxiliary methods
     void addEntry(
-        const QString&         i_strThreadName,
-        const QDateTime&       i_dt,
-        double                 i_fSysTimeInSec,
-        ZS::System::EMethodDir i_mthDir,
-        const CTrcAdminObj*    i_pTrcAdminObj,
-        const QString&         i_strObjName,
-        const QString&         i_strMethod,
-        const QString&         i_strAddInfo = "",
-        const QString&         i_strMethodOutArgs = "" );
+        const QString&                  i_strThreadName,
+        const QDateTime&                i_dt,
+        double                          i_fSysTimeInSec,
+        ZS::System::EMethodDir          i_mthDir,
+        const ZS::System::CTrcAdminObj* i_pTrcAdminObj,
+        const QString&                  i_strObjName,
+        const QString&                  i_strMethod,
+        const QString&                  i_strAddInfo = "",
+        const QString&                  i_strMethodOutArgs = "" );
 public: // instance methods of the remote connection
     ZS::System::CRequest* startup( int i_iTimeout_ms = 5000, bool i_bWait = true, qint64 i_iReqIdParent = -1 );
     ZS::System::CRequest* shutdown( int i_iTimeout_ms = 5000, bool i_bWait = true, qint64 i_iReqIdParent = -1 );
@@ -219,28 +217,31 @@ protected slots: // connected to the signals of the Ipc Server
 protected: // overridables to parse and execute the incoming data stream
     void onIpcServerReceivedReqSelect( int i_iSocketId, const QString& i_strData );
     void onIpcServerReceivedReqUpdate( int i_iSocketId, const QString& i_strData );
-protected slots: // connected to the signals of the trace admin object pool
+protected slots: // connected to the signals of the index tree
     void onTrcAdminObjIdxTreeEntryAdded( ZS::System::CIdxTree* i_pIdxTree, ZS::System::CIdxTreeEntry* i_pTreeEntry );
     void onTrcAdminObjIdxTreeEntryAboutToBeRemoved( ZS::System::CIdxTree* i_pIdxTree, ZS::System::EIdxTreeEntryType i_entryType, const QString& i_strKeyInTree, int i_idxInTree );
     void onTrcAdminObjIdxTreeEntryChanged( ZS::System::CIdxTree* i_pIdxTree, ZS::System::CIdxTreeEntry* i_pTreeEntry );
 protected: // overridables of inherited class QObject
     virtual bool event( QEvent* i_pEv ) override;
 protected: // instance members
-    Ipc::CServer*         m_pIpcServer; /*!< The Ipc Server used to send and receice data via TCP/IP. */
-    bool                  m_bIsBeingDestroyed;  /*!< Flag to indicate the the instance is going to be destroyed. */
-    QVector<int>          m_ariSocketIdsConnectedTrcClients; /*!< List with socket ids of connected clients. */
+    /*!< The Ipc Server used to send and receice data via TCP/IP. */
+    ZS::Ipc::CServer* m_pIpcServer;
+    /*!< Flag to indicate the the instance is going to be destroyed. */
+    bool m_bIsBeingDestroyed;
+    /*!< List with socket ids of connected clients. */
+    QVector<int> m_ariSocketIdsConnectedTrcClients;
     /*!< This flag is set to true if the client receives data and onReceivedData is in progress updating
          the servers data with the settings read from the remote client. If the settings are updated
          the changed signals are not emitted before all settings have been applied. If this flag is set
          the server knows that the settings are changed by receiving data from the client and data must
          not be send back to the remote client. */
-    bool                  m_bOnReceivedDataUpdateInProcess;
+    bool m_bOnReceivedDataUpdateInProcess;
     /*!< Mutex to protect the list of the temporarily stored (cached) trace data. */
-    QMutex*               m_pMtxListTrcDataCached;
+    QMutex* m_pMtxListTrcDataCached;
     /*!< To avoid reallocation (resizing) the cache for the trace data the cache is allocated
          with the maximum number of elements. Unused elements are set to nullptr. But for this
          the number of used entries must be counted seperately. */
-    int                   m_iTrcDataCachedCount;
+    int m_iTrcDataCachedCount;
     /*!< Cache for storing trace data as long as no client is connected. */
     QVector<SMthTrcData*> m_arpTrcDataCached;
 

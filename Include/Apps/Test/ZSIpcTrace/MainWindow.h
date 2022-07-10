@@ -52,6 +52,7 @@ struct SErrResultInfo;
 namespace GUI
 {
 class CDlgErrLog;
+class CDlgIdxTreeTrcAdminObjs;
 class CDlgRequestExecTree;
 }
 }
@@ -63,7 +64,6 @@ class CIpcTrcServer;
 namespace GUI
 {
 class CDlgTrcServer;
-class CDlgIdxTreeTrcAdminObjs;
 }
 }
 

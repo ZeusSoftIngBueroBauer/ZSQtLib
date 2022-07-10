@@ -1261,8 +1261,8 @@ void CTest::doTestStepTraceClientConnect( ZS::Test::CTestStep* i_pTestStep )
                     strExpectedValue = pTrcAdminObj->keyInTree() + ": ";
                     strExpectedValue += "RefCount: " + QString::number(pTrcAdminObj->getRefCount());
                     strExpectedValue += ", Enabled: " + CEnumEnabled(pTrcAdminObj->getEnabled()).toString();
-                    strExpectedValue += ", DetailLevelMethodCalls: " + CEnumTraceDetailLevelMethodCalls(pTrcAdminObj->getMethodCallsTraceDetailLevel()).toString();
-                    strExpectedValue += ", DetailLevelRuntimeInfo: " + CEnumTraceDetailLevelRuntimeInfo(pTrcAdminObj->getRuntimeInfoTraceDetailLevel()).toString();
+                    strExpectedValue += ", DetailLevelMethodCalls: " + CEnumMethodTraceDetailLevel(pTrcAdminObj->getMethodCallsTraceDetailLevel()).toString();
+                    strExpectedValue += ", DetailLevelRuntimeInfo: " + CEnumLogDetailLevel(pTrcAdminObj->getRuntimeInfoTraceDetailLevel()).toString();
                     strlstExpectedValues.append(strExpectedValue);
                 }
             }
@@ -1439,8 +1439,8 @@ void CTest::doTestStepTraceMethodCall( ZS::Test::CTestStep* i_pTestStep )
     }
     else
     {
-        pTrcServer->setNewTrcAdminObjsMethodCallsDefaultDetailLevel(ETraceDetailLevelMethodCalls::ArgsNormal);
-        pTrcServer->setNewTrcAdminObjsRuntimeInfoDefaultDetailLevel(ETraceDetailLevelRuntimeInfo::DebugNormal);
+        pTrcServer->setNewTrcAdminObjsMethodCallsDefaultDetailLevel(EMethodTraceDetailLevel::ArgsNormal);
+        pTrcServer->setNewTrcAdminObjsRuntimeInfoDefaultDetailLevel(ELogDetailLevel::DebugNormal);
 
         QString strTrcMethodEnter = "<GUIMain                 > -> <" + strNameSpace + "::" + strClassName;
         QString strTrcMethodLeave = "<GUIMain                 > <- <" + strNameSpace + "::" + strClassName;
@@ -2382,8 +2382,8 @@ void CTest::doTestStepTraceMethodCall( ZS::Test::CTestStep* i_pTestStep )
 
     if( pTrcServer != nullptr )
     {
-        pTrcServer->setNewTrcAdminObjsMethodCallsDefaultDetailLevel(ETraceDetailLevelMethodCalls::None);
-        pTrcServer->setNewTrcAdminObjsRuntimeInfoDefaultDetailLevel(ETraceDetailLevelRuntimeInfo::None);
+        pTrcServer->setNewTrcAdminObjsMethodCallsDefaultDetailLevel(EMethodTraceDetailLevel::None);
+        pTrcServer->setNewTrcAdminObjsRuntimeInfoDefaultDetailLevel(ELogDetailLevel::None);
     }
 
     if( !bValidTestStep )
@@ -2753,8 +2753,8 @@ void CTest::onZSTraceClientTraceAdminObjInserted( QObject* /*i_pTrcClient*/, con
                                 strResultValue = pTrcAdminObj->keyInTree() + ": ";
                                 strResultValue += "RefCount: " + QString::number(pTrcAdminObj->getRefCount());
                                 strResultValue += ", Enabled: " + CEnumEnabled(pTrcAdminObj->getEnabled()).toString();
-                                strResultValue += ", DetailLevelMethodCalls: " + CEnumTraceDetailLevelMethodCalls(pTrcAdminObj->getMethodCallsTraceDetailLevel()).toString();
-                                strResultValue += ", DetailLevelRuntimeInfo: " + CEnumTraceDetailLevelRuntimeInfo(pTrcAdminObj->getRuntimeInfoTraceDetailLevel()).toString();
+                                strResultValue += ", DetailLevelMethodCalls: " + CEnumMethodTraceDetailLevel(pTrcAdminObj->getMethodCallsTraceDetailLevel()).toString();
+                                strResultValue += ", DetailLevelRuntimeInfo: " + CEnumLogDetailLevel(pTrcAdminObj->getRuntimeInfoTraceDetailLevel()).toString();
                                 strlstResultValues.append(strResultValue);
                             }
                         }

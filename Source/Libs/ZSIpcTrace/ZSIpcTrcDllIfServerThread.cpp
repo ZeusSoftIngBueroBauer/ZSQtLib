@@ -44,12 +44,12 @@ public: // ctors and dtor
 
 //------------------------------------------------------------------------------
 DllIf::CIpcTrcServerThread::CIpcTrcServerThread(
-    ETraceDetailLevelMethodCalls i_eTrcDetailLevelDllIf,
-    ETraceDetailLevelMethodCalls i_eTrcDetailLevelTrcServer,
-    ETraceDetailLevelMethodCalls i_eTrcDetailLevelTrcServerMutex,
-    ETraceDetailLevelMethodCalls i_eTrcDetailLevelTrcServerIpcServer,
-    ETraceDetailLevelMethodCalls i_eTrcDetailLevelTrcServerIpcServerMutex,
-    ETraceDetailLevelMethodCalls i_eTrcDetailLevelTrcServerIpcServerGateway ) :
+    EMethodTraceDetailLevel i_eTrcDetailLevelDllIf,
+    EMethodTraceDetailLevel i_eTrcDetailLevelTrcServer,
+    EMethodTraceDetailLevel i_eTrcDetailLevelTrcServerMutex,
+    EMethodTraceDetailLevel i_eTrcDetailLevelTrcServerIpcServer,
+    EMethodTraceDetailLevel i_eTrcDetailLevelTrcServerIpcServerMutex,
+    EMethodTraceDetailLevel i_eTrcDetailLevelTrcServerIpcServerGateway ) :
 //------------------------------------------------------------------------------
     QThread(),
     m_eTrcDetailLevelDllIf(i_eTrcDetailLevelDllIf),
@@ -69,7 +69,7 @@ DllIf::CIpcTrcServerThread::CIpcTrcServerThread(
     CMethodTracer mthTracer(
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcDetailLevelDllIf,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -90,7 +90,7 @@ DllIf::CIpcTrcServerThread::~CIpcTrcServerThread()
     {   CMethodTracer mthTracer(
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcDetailLevelDllIf,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -120,12 +120,12 @@ DllIf::CIpcTrcServerThread::~CIpcTrcServerThread()
         }
     }
 
-    m_eTrcDetailLevelDllIf = static_cast<ETraceDetailLevelMethodCalls>(0);
-    m_eTrcDetailLevelTrcServer = static_cast<ETraceDetailLevelMethodCalls>(0);
-    m_eTrcDetailLevelTrcServerMutex = static_cast<ETraceDetailLevelMethodCalls>(0);
-    m_eTrcDetailLevelTrcServerIpcServer = static_cast<ETraceDetailLevelMethodCalls>(0);
-    m_eTrcDetailLevelTrcServerIpcServerMutex = static_cast<ETraceDetailLevelMethodCalls>(0);
-    m_eTrcDetailLevelTrcServerIpcServerGateway = static_cast<ETraceDetailLevelMethodCalls>(0);
+    m_eTrcDetailLevelDllIf = static_cast<EMethodTraceDetailLevel>(0);
+    m_eTrcDetailLevelTrcServer = static_cast<EMethodTraceDetailLevel>(0);
+    m_eTrcDetailLevelTrcServerMutex = static_cast<EMethodTraceDetailLevel>(0);
+    m_eTrcDetailLevelTrcServerIpcServer = static_cast<EMethodTraceDetailLevel>(0);
+    m_eTrcDetailLevelTrcServerIpcServerMutex = static_cast<EMethodTraceDetailLevel>(0);
+    m_eTrcDetailLevelTrcServerIpcServerGateway = static_cast<EMethodTraceDetailLevel>(0);
     m_pTrcMthFile = nullptr;
 
 } // dtor
@@ -184,7 +184,7 @@ void DllIf::CIpcTrcServerThread::run()
     CMethodTracer mthTracer(
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcDetailLevelDllIf,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),

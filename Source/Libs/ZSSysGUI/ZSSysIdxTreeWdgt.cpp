@@ -55,7 +55,6 @@ may result in using the software modules.
 
 using namespace ZS::System;
 using namespace ZS::System::GUI;
-using namespace ZS::Trace;
 
 
 /*******************************************************************************
@@ -100,7 +99,7 @@ CWdgtIdxTree::CWdgtIdxTree(
     CModelIdxTree* i_pModel,
     QWidget* i_pWdgtParent,
     Qt::WindowFlags i_wflags,
-    ETraceDetailLevelMethodCalls i_eTrcDetailLevel ) :
+    EMethodTraceDetailLevel i_eTrcDetailLevel ) :
 //------------------------------------------------------------------------------
     QWidget(i_pWdgtParent,i_wflags),
     m_viewMode(EViewMode::NavPanelOnly),
@@ -150,7 +149,7 @@ CWdgtIdxTree::CWdgtIdxTree(
         }
     }
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strMthInArgs = "Model: " + QString(i_pModel == nullptr ? "nullptr" : i_pModel->objectName());
     }
@@ -159,7 +158,7 @@ CWdgtIdxTree::CWdgtIdxTree(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -331,7 +330,7 @@ CWdgtIdxTree::~CWdgtIdxTree()
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -360,7 +359,7 @@ CWdgtIdxTree::~CWdgtIdxTree()
     m_pSplitter = nullptr;
     m_pTreeView = nullptr;
     m_pTableViewBranchContent = nullptr;
-    m_eTrcDetailLevel = static_cast<ETraceDetailLevelMethodCalls>(0);
+    m_eTrcDetailLevel = static_cast<EMethodTraceDetailLevel>(0);
     m_pTrcAdminObj = nullptr;
 
 } // dtor
@@ -375,7 +374,7 @@ void CWdgtIdxTree::setViewMode( EViewMode i_viewMode )
 {
     QString strMthInArgs;
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strMthInArgs = "ViewMode: " + viewMode2Str(i_viewMode);
     }
@@ -384,7 +383,7 @@ void CWdgtIdxTree::setViewMode( EViewMode i_viewMode )
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -464,7 +463,7 @@ void CWdgtIdxTree::onBtnViewModeClicked( bool i_bChecked )
 {
     QString strMthInArgs;
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strMthInArgs = "Checked: " + bool2Str(i_bChecked);
     }
@@ -473,7 +472,7 @@ void CWdgtIdxTree::onBtnViewModeClicked( bool i_bChecked )
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -501,7 +500,7 @@ void CWdgtIdxTree::onBtnTreeViewResizeRowsAndColumnsToContentsClicked( bool i_bC
 {
     QString strMthInArgs;
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strMthInArgs = "Checked: " + bool2Str(i_bChecked);
     }
@@ -510,7 +509,7 @@ void CWdgtIdxTree::onBtnTreeViewResizeRowsAndColumnsToContentsClicked( bool i_bC
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -533,7 +532,7 @@ void CWdgtIdxTree::onBtnTreeViewExpandAllClicked( bool i_bChecked )
 {
     QString strMthInArgs;
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strMthInArgs = "Checked: " + bool2Str(i_bChecked);
     }
@@ -542,7 +541,7 @@ void CWdgtIdxTree::onBtnTreeViewExpandAllClicked( bool i_bChecked )
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -567,7 +566,7 @@ void CWdgtIdxTree::onBtnTreeViewCollapseAllClicked( bool i_bChecked )
 {
     QString strMthInArgs;
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strMthInArgs = "Checked: " + bool2Str(i_bChecked);
     }
@@ -576,7 +575,7 @@ void CWdgtIdxTree::onBtnTreeViewCollapseAllClicked( bool i_bChecked )
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -596,7 +595,7 @@ void CWdgtIdxTree::onBtnSortOrderClicked( bool i_bChecked )
 {
     QString strMthInArgs;
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strMthInArgs = "Checked: " + bool2Str(i_bChecked);
     }
@@ -605,7 +604,7 @@ void CWdgtIdxTree::onBtnSortOrderClicked( bool i_bChecked )
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -653,7 +652,7 @@ void CWdgtIdxTree::onTreeViewSelectionModelCurrentRowChanged(
 {
     QString strMthInArgs;
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strMthInArgs  = "Curr {" + CModelIdxTree::ModelIdx2Str(i_modelIdxCurr) + "}";
         strMthInArgs += ", Prev {" + CModelIdxTree::ModelIdx2Str(i_modelIdxPrev) + "}";
@@ -663,7 +662,7 @@ void CWdgtIdxTree::onTreeViewSelectionModelCurrentRowChanged(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),

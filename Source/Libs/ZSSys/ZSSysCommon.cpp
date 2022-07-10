@@ -1159,95 +1159,95 @@ void ZS::System::getMinCountArrayRange(
 
 
 /*==============================================================================
-Enum ETraceDetailLevelMethodCalls
+Enum EMethodTraceDetailLevel
 ==============================================================================*/
 
 /*! @cond */
-template<> QMutex ZS::System::CEnum<ZS::Trace::ETraceDetailLevelMethodCalls>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
-template<> QVector<QHash<QString, int>> ZS::System::CEnum<ZS::Trace::ETraceDetailLevelMethodCalls>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
+template<> QMutex ZS::System::CEnum<EMethodTraceDetailLevel>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
+template<> QVector<QHash<QString, int>> ZS::System::CEnum<EMethodTraceDetailLevel>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 //------------------------------------------------------------------------------
-const QVector<SEnumEntry> ZS::System::CEnum<ZS::Trace::ETraceDetailLevelMethodCalls>::s_arEnumEntries;
+const QVector<SEnumEntry> ZS::System::CEnum<EMethodTraceDetailLevel>::s_arEnumEntries;
 //------------------------------------------------------------------------------
 class CInitEnumTraceDetailLevelMethodCalls
 {
 public: // ctor
     CInitEnumDimensionType() {
     //------------------------------------------------------------------------------() {
-        QVector<SEnumEntry>* pVEnumEntries = const_cast<QVector<SEnumEntry>*>(&ZS::System::<ZS::Trace::ETraceDetailLevelMethodCalls>::s_arEnumEntries);
-        pVEnumEntries->append( /* 0 */ SEnumEntry( static_cast<int>(ZS::Trace::ETraceDetailLevelMethodCalls::None),         "None",         "-",    "None",               "NONE", "NONE"      ),
-        pVEnumEntries->append( /* 1 */ SEnumEntry( static_cast<int>(ZS::Trace::ETraceDetailLevelMethodCalls::EnterLeave),   "EnterLeave",   "EL",   "Enter Leave",        "ELEA", "ELEAve"    ),
-        pVEnumEntries->append( /* 2 */ SEnumEntry( static_cast<int>(ZS::Trace::ETraceDetailLevelMethodCalls::ArgsNormal),   "ArgsNormal",   "Args", "Arguments Normal",   "ANOR", "ANORmal"   ),
-        pVEnumEntries->append( /* 3 */ SEnumEntry( static_cast<int>(ZS::Trace::ETraceDetailLevelMethodCalls::ArgsDetailed), "ArgsDetailed", "Int",  "Arguments Detailed", "ADET", "ADETailed" ),
-        pVEnumEntries->append( /* 4 */ SEnumEntry( static_cast<int>(ZS::Trace::ETraceDetailLevelMethodCalls::ArgsVerbose),  "ArgsVerbose",  "Inf",  "Arguments Verbose",  "AVER", "AVERbose"  ),
-        pVEnumEntries->append( /* 5 */ SEnumEntry( static_cast<int>(ZS::Trace::ETraceDetailLevelMethodCalls::Undefined),    "Undefined",    "?",    "Undefined",          "UND",  "UNDefined" )
+        QVector<SEnumEntry>* pVEnumEntries = const_cast<QVector<SEnumEntry>*>(&ZS::System::<EMethodTraceDetailLevel>::s_arEnumEntries);
+        pVEnumEntries->append( /* 0 */ SEnumEntry( static_cast<int>(EMethodTraceDetailLevel::None),         "None",         "-",    "None",               "NONE", "NONE"      ),
+        pVEnumEntries->append( /* 1 */ SEnumEntry( static_cast<int>(EMethodTraceDetailLevel::EnterLeave),   "EnterLeave",   "EL",   "Enter Leave",        "ELEA", "ELEAve"    ),
+        pVEnumEntries->append( /* 2 */ SEnumEntry( static_cast<int>(EMethodTraceDetailLevel::ArgsNormal),   "ArgsNormal",   "Args", "Arguments Normal",   "ANOR", "ANORmal"   ),
+        pVEnumEntries->append( /* 3 */ SEnumEntry( static_cast<int>(EMethodTraceDetailLevel::ArgsDetailed), "ArgsDetailed", "Int",  "Arguments Detailed", "ADET", "ADETailed" ),
+        pVEnumEntries->append( /* 4 */ SEnumEntry( static_cast<int>(EMethodTraceDetailLevel::ArgsVerbose),  "ArgsVerbose",  "Inf",  "Arguments Verbose",  "AVER", "AVERbose"  ),
+        pVEnumEntries->append( /* 5 */ SEnumEntry( static_cast<int>(EMethodTraceDetailLevel::Undefined),    "Undefined",    "?",    "Undefined",          "UND",  "UNDefined" )
     }
 };
 static CInitEnumTraceDetailLevelMethodCalls s_initEnumTraceDetailLevelMethodCalls;
 #else // #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 //------------------------------------------------------------------------------
-template<> const QVector<SEnumEntry> ZS::System::CEnum<ZS::Trace::ETraceDetailLevelMethodCalls>::s_arEnumEntries =
+template<> const QVector<SEnumEntry> ZS::System::CEnum<EMethodTraceDetailLevel>::s_arEnumEntries =
 //------------------------------------------------------------------------------
 {
-    /* 0 */ SEnumEntry( static_cast<int>(ZS::Trace::ETraceDetailLevelMethodCalls::None),         "None",         "-",    "None",               "NONE", "NONE"      ),
-    /* 1 */ SEnumEntry( static_cast<int>(ZS::Trace::ETraceDetailLevelMethodCalls::EnterLeave),   "EnterLeave",   "EL",   "Enter Leave",        "ELEA", "ELEAve"    ),
-    /* 2 */ SEnumEntry( static_cast<int>(ZS::Trace::ETraceDetailLevelMethodCalls::ArgsNormal),   "ArgsNormal",   "Args", "Arguments Normal",   "ANOR", "ANORmal"   ),
-    /* 3 */ SEnumEntry( static_cast<int>(ZS::Trace::ETraceDetailLevelMethodCalls::ArgsDetailed), "ArgsDetailed", "Int",  "Arguments Detailed", "ADET", "ADETailed" ),
-    /* 4 */ SEnumEntry( static_cast<int>(ZS::Trace::ETraceDetailLevelMethodCalls::ArgsVerbose),  "ArgsVerbose",  "Inf",  "Arguments Verbose",  "AVER", "AVERbose"  ),
-    /* 5 */ SEnumEntry( static_cast<int>(ZS::Trace::ETraceDetailLevelMethodCalls::Undefined),    "Undefined",    "?",    "Undefined",          "UND",  "UNDefined" )
+    /* 0 */ SEnumEntry( static_cast<int>(EMethodTraceDetailLevel::None),         "None",         "-",    "None",               "NONE", "NONE"      ),
+    /* 1 */ SEnumEntry( static_cast<int>(EMethodTraceDetailLevel::EnterLeave),   "EnterLeave",   "EL",   "Enter Leave",        "ELEA", "ELEAve"    ),
+    /* 2 */ SEnumEntry( static_cast<int>(EMethodTraceDetailLevel::ArgsNormal),   "ArgsNormal",   "Args", "Arguments Normal",   "ANOR", "ANORmal"   ),
+    /* 3 */ SEnumEntry( static_cast<int>(EMethodTraceDetailLevel::ArgsDetailed), "ArgsDetailed", "Int",  "Arguments Detailed", "ADET", "ADETailed" ),
+    /* 4 */ SEnumEntry( static_cast<int>(EMethodTraceDetailLevel::ArgsVerbose),  "ArgsVerbose",  "Inf",  "Arguments Verbose",  "AVER", "AVERbose"  ),
+    /* 5 */ SEnumEntry( static_cast<int>(EMethodTraceDetailLevel::Undefined),    "Undefined",    "?",    "Undefined",          "UND",  "UNDefined" )
 };
 #endif // #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 /*! @endcond */
 
 /*==============================================================================
-Enum ETraceDetailLevelRuntimeInfo
+Enum ELogDetailLevel
 ==============================================================================*/
 
 /*! @cond */
-template<> QMutex ZS::System::CEnum<ZS::Trace::ETraceDetailLevelRuntimeInfo>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
-template<> QVector<QHash<QString, int>> ZS::System::CEnum<ZS::Trace::ETraceDetailLevelRuntimeInfo>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
+template<> QMutex ZS::System::CEnum<ELogDetailLevel>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
+template<> QVector<QHash<QString, int>> ZS::System::CEnum<ELogDetailLevel>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 //------------------------------------------------------------------------------
-const QVector<SEnumEntry> ZS::System::CEnum<ZS::Trace::ETraceDetailLevelRuntimeInfo>::s_arEnumEntries;
+const QVector<SEnumEntry> ZS::System::CEnum<ELogDetailLevel>::s_arEnumEntries;
 //------------------------------------------------------------------------------
 class CInitEnumTraceDetailLevelMethodCalls
 {
 public: // ctor
     CInitEnumDimensionType() {
     //------------------------------------------------------------------------------() {
-        QVector<SEnumEntry>* pVEnumEntries = const_cast<QVector<SEnumEntry>*>(&ZS::System::<ZS::Trace::ETraceDetailLevelRuntimeInfo>::s_arEnumEntries);
-        pVEnumEntries->append( /*  0 */ SEnumEntry( static_cast<int>(ZS::Trace::ETraceDetailLevelRuntimeInfo::None),          "None",          "-",   "None",           "NONE", "NONE"      ),
-        pVEnumEntries->append( /*  1 */ SEnumEntry( static_cast<int>(ZS::Trace::ETraceDetailLevelRuntimeInfo::CriticalError),      "Critical",      "C",   "Critical",       "CRIT", "CRITical"  ),
-        pVEnumEntries->append( /*  2 */ SEnumEntry( static_cast<int>(ZS::Trace::ETraceDetailLevelRuntimeInfo::Error),         "Error",         "E",   "Error",          "ERR",  "ERRor"     ),
-        pVEnumEntries->append( /*  3 */ SEnumEntry( static_cast<int>(ZS::Trace::ETraceDetailLevelRuntimeInfo::Warning),       "Warning",       "W",   "Warning",        "WARN", "WARNing"   ),
-        pVEnumEntries->append( /*  4 */ SEnumEntry( static_cast<int>(ZS::Trace::ETraceDetailLevelRuntimeInfo::InfoNormal),    "InfoNormal",    "IN",  "Info Normal",    "INOR", "INORmal"   ),
-        pVEnumEntries->append( /*  5 */ SEnumEntry( static_cast<int>(ZS::Trace::ETraceDetailLevelRuntimeInfo::InfoDetailed),  "InfoDetailed",  "ID",  "Info Detailed",  "IDET", "IDETailed" ),
-        pVEnumEntries->append( /*  6 */ SEnumEntry( static_cast<int>(ZS::Trace::ETraceDetailLevelRuntimeInfo::InfoVerbose),   "InfoVerbose",   "IV",  "Info Verbose",   "IVER", "IVERbose"  ),
-        pVEnumEntries->append( /*  7 */ SEnumEntry( static_cast<int>(ZS::Trace::ETraceDetailLevelRuntimeInfo::DebugNormal),   "DebugNormal",   "DN",  "Debug Normal",   "DNOR", "DNORmal"   ),
-        pVEnumEntries->append( /*  8 */ SEnumEntry( static_cast<int>(ZS::Trace::ETraceDetailLevelRuntimeInfo::DebugDetailed), "DebugDetailed", "DD",  "Debug Detailed", "DDET", "DDETailed" ),
-        pVEnumEntries->append( /*  9 */ SEnumEntry( static_cast<int>(ZS::Trace::ETraceDetailLevelRuntimeInfo::DebugVerbose),  "DebugVerbose",  "DV",  "Debug Verbose",  "DVER", "DVERbose"  ),
-        pVEnumEntries->append( /* 10 */ SEnumEntry( static_cast<int>(ZS::Trace::ETraceDetailLevelRuntimeInfo::Undefined),     "Undefined",     "?",   "Undefined",      "UND",  "UNDefined" )
+        QVector<SEnumEntry>* pVEnumEntries = const_cast<QVector<SEnumEntry>*>(&ZS::System::<ELogDetailLevel>::s_arEnumEntries);
+        pVEnumEntries->append( /*  0 */ SEnumEntry( static_cast<int>(ELogDetailLevel::None),          "None",          "-",   "None",           "NONE", "NONE"      ),
+        pVEnumEntries->append( /*  1 */ SEnumEntry( static_cast<int>(ELogDetailLevel::CriticalError), "Critical",      "C",   "Critical",       "CRIT", "CRITical"  ),
+        pVEnumEntries->append( /*  2 */ SEnumEntry( static_cast<int>(ELogDetailLevel::Error),         "Error",         "E",   "Error",          "ERR",  "ERRor"     ),
+        pVEnumEntries->append( /*  3 */ SEnumEntry( static_cast<int>(ELogDetailLevel::Warning),       "Warning",       "W",   "Warning",        "WARN", "WARNing"   ),
+        pVEnumEntries->append( /*  4 */ SEnumEntry( static_cast<int>(ELogDetailLevel::InfoNormal),    "InfoNormal",    "IN",  "Info Normal",    "INOR", "INORmal"   ),
+        pVEnumEntries->append( /*  5 */ SEnumEntry( static_cast<int>(ELogDetailLevel::InfoDetailed),  "InfoDetailed",  "ID",  "Info Detailed",  "IDET", "IDETailed" ),
+        pVEnumEntries->append( /*  6 */ SEnumEntry( static_cast<int>(ELogDetailLevel::InfoVerbose),   "InfoVerbose",   "IV",  "Info Verbose",   "IVER", "IVERbose"  ),
+        pVEnumEntries->append( /*  7 */ SEnumEntry( static_cast<int>(ELogDetailLevel::DebugNormal),   "DebugNormal",   "DN",  "Debug Normal",   "DNOR", "DNORmal"   ),
+        pVEnumEntries->append( /*  8 */ SEnumEntry( static_cast<int>(ELogDetailLevel::DebugDetailed), "DebugDetailed", "DD",  "Debug Detailed", "DDET", "DDETailed" ),
+        pVEnumEntries->append( /*  9 */ SEnumEntry( static_cast<int>(ELogDetailLevel::DebugVerbose),  "DebugVerbose",  "DV",  "Debug Verbose",  "DVER", "DVERbose"  ),
+        pVEnumEntries->append( /* 10 */ SEnumEntry( static_cast<int>(ELogDetailLevel::Undefined),     "Undefined",     "?",   "Undefined",      "UND",  "UNDefined" )
     }
 };
 static CInitEnumTraceDetailLevelMethodCalls s_initEnumTraceDetailLevelMethodCalls;
 #else // #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 //------------------------------------------------------------------------------
-template<> const QVector<SEnumEntry> ZS::System::CEnum<ZS::Trace::ETraceDetailLevelRuntimeInfo>::s_arEnumEntries =
+template<> const QVector<SEnumEntry> ZS::System::CEnum<ELogDetailLevel>::s_arEnumEntries =
 //------------------------------------------------------------------------------
 {
-    /*  0 */ SEnumEntry( static_cast<int>(ZS::Trace::ETraceDetailLevelRuntimeInfo::None),          "None",          "-",   "None",           "NONE", "NONE"      ),
-    /*  1 */ SEnumEntry( static_cast<int>(ZS::Trace::ETraceDetailLevelRuntimeInfo::CriticalError), "CriticalError", "C",   "Critical",       "CERR", "CError"    ),
-    /*  2 */ SEnumEntry( static_cast<int>(ZS::Trace::ETraceDetailLevelRuntimeInfo::Error),         "Error",         "E",   "Error",          "ERR",  "ERRor"     ),
-    /*  3 */ SEnumEntry( static_cast<int>(ZS::Trace::ETraceDetailLevelRuntimeInfo::Warning),       "Warning",       "W",   "Warning",        "WARN", "WARNing"   ),
-    /*  4 */ SEnumEntry( static_cast<int>(ZS::Trace::ETraceDetailLevelRuntimeInfo::InfoNormal),    "InfoNormal",    "IN",  "Info Normal",    "INOR", "INORmal"   ),
-    /*  5 */ SEnumEntry( static_cast<int>(ZS::Trace::ETraceDetailLevelRuntimeInfo::InfoDetailed),  "InfoDetailed",  "ID",  "Info Detailed",  "IDET", "IDETailed" ),
-    /*  6 */ SEnumEntry( static_cast<int>(ZS::Trace::ETraceDetailLevelRuntimeInfo::InfoVerbose),   "InfoVerbose",   "IV",  "Info Verbose",   "IVER", "IVERbose"  ),
-    /*  7 */ SEnumEntry( static_cast<int>(ZS::Trace::ETraceDetailLevelRuntimeInfo::DebugNormal),   "DebugNormal",   "DN",  "Debug Normal",   "DNOR", "DNORmal"   ),
-    /*  8 */ SEnumEntry( static_cast<int>(ZS::Trace::ETraceDetailLevelRuntimeInfo::DebugDetailed), "DebugDetailed", "DD",  "Debug Detailed", "DDET", "DDETailed" ),
-    /*  9 */ SEnumEntry( static_cast<int>(ZS::Trace::ETraceDetailLevelRuntimeInfo::DebugVerbose),  "DebugVerbose",  "DV",  "Debug Verbose",  "DVER", "DVERbose"  ),
-    /* 10 */ SEnumEntry( static_cast<int>(ZS::Trace::ETraceDetailLevelRuntimeInfo::Undefined),     "Undefined",     "?",   "Undefined",      "UND",  "UNDefined" )
+    /*  0 */ SEnumEntry( static_cast<int>(ELogDetailLevel::None),          "None",          "-",   "None",           "NONE", "NONE"      ),
+    /*  1 */ SEnumEntry( static_cast<int>(ELogDetailLevel::CriticalError), "CriticalError", "C",   "Critical",       "CERR", "CError"    ),
+    /*  2 */ SEnumEntry( static_cast<int>(ELogDetailLevel::Error),         "Error",         "E",   "Error",          "ERR",  "ERRor"     ),
+    /*  3 */ SEnumEntry( static_cast<int>(ELogDetailLevel::Warning),       "Warning",       "W",   "Warning",        "WARN", "WARNing"   ),
+    /*  4 */ SEnumEntry( static_cast<int>(ELogDetailLevel::InfoNormal),    "InfoNormal",    "IN",  "Info Normal",    "INOR", "INORmal"   ),
+    /*  5 */ SEnumEntry( static_cast<int>(ELogDetailLevel::InfoDetailed),  "InfoDetailed",  "ID",  "Info Detailed",  "IDET", "IDETailed" ),
+    /*  6 */ SEnumEntry( static_cast<int>(ELogDetailLevel::InfoVerbose),   "InfoVerbose",   "IV",  "Info Verbose",   "IVER", "IVERbose"  ),
+    /*  7 */ SEnumEntry( static_cast<int>(ELogDetailLevel::DebugNormal),   "DebugNormal",   "DN",  "Debug Normal",   "DNOR", "DNORmal"   ),
+    /*  8 */ SEnumEntry( static_cast<int>(ELogDetailLevel::DebugDetailed), "DebugDetailed", "DD",  "Debug Detailed", "DDET", "DDETailed" ),
+    /*  9 */ SEnumEntry( static_cast<int>(ELogDetailLevel::DebugVerbose),  "DebugVerbose",  "DV",  "Debug Verbose",  "DVER", "DVERbose"  ),
+    /* 10 */ SEnumEntry( static_cast<int>(ELogDetailLevel::Undefined),     "Undefined",     "?",   "Undefined",      "UND",  "UNDefined" )
 };
 #endif // #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 /*! @endcond */

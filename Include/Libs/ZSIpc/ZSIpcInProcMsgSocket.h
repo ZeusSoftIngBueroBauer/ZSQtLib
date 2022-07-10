@@ -40,9 +40,6 @@ namespace ZS
 namespace System
 {
 class CMsg;
-}
-namespace Trace
-{
 class CTrcAdminObj;
 }
 
@@ -73,7 +70,7 @@ protected: // instance members
     QMap<unsigned int,CInProcMsgSocket*> m_mapSockets; // Map with created sockets (the key corresponds to the port)
     bool                                 m_bDestroying;
     bool                                 m_bTracingEnabled;
-    Trace::CTrcAdminObj*                 m_pTrcAdminObj;
+    ZS::System::CTrcAdminObj*            m_pTrcAdminObj;
 
 }; // class CInProcMsgSocketsAdminObj
 
@@ -172,7 +169,7 @@ protected: // instance methods
     ZS::System::ECopyDepth     m_copyDepthMsgReadBuff;
     QList<ZS::System::CMsg*>   m_arpMsgReadBuff;
     bool                       m_bTracingEnabled;
-    Trace::CTrcAdminObj*       m_pTrcAdminObj;
+    ZS::System::CTrcAdminObj*  m_pTrcAdminObj;
 
 }; // class CInProcMsgSocket
 

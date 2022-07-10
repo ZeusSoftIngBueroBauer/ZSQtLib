@@ -177,7 +177,7 @@ virtual ZS::System::CIdxTreeEntry* createBranch( const QString& i_strName ) cons
 {
     QString strAddTrcInfo;
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strAddTrcInfo = "Name: " + i_strName;
     }
@@ -185,7 +185,7 @@ virtual ZS::System::CIdxTreeEntry* createBranch( const QString& i_strName ) cons
     CMethodTracer mthTracer(
         /* pTrcAdmObj   */ CTrcServer::GetInstance(),
         /* iTraceLevel  */ m_eTrcDetailLevel,
-        /* iFilterLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* iFilterLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace */ "ZS::Apps::Test::IdxTree",
         /* strClassName */ "CTrcAdmObjIdxTree",
         /* strObjName   */ objectName(),
@@ -194,7 +194,7 @@ virtual ZS::System::CIdxTreeEntry* createBranch( const QString& i_strName ) cons
 
     CIdxTreeEntry* pBranch = new CTrcAdmObjBranch(i_strName);
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         mthTracer.setMethodReturn(pBranch == nullptr ? "null" : pBranch->name());
     }
@@ -209,7 +209,7 @@ virtual ZS::System::CIdxTreeEntry* createLeave( const QString& i_strName ) const
 {
     QString strAddTrcInfo;
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strAddTrcInfo = "Name: " + i_strName;
     }
@@ -217,7 +217,7 @@ virtual ZS::System::CIdxTreeEntry* createLeave( const QString& i_strName ) const
     CMethodTracer mthTracer(
         /* pTrcAdmObj   */ CTrcServer::GetInstance(),
         /* iTraceLevel  */ m_eTrcDetailLevel,
-        /* iFilterLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* iFilterLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace */ "ZS::Apps::Test::IdxTree",
         /* strClassName */ "CTrcAdmObjIdxTree",
         /* strObjName   */ objectName(),
@@ -226,7 +226,7 @@ virtual ZS::System::CIdxTreeEntry* createLeave( const QString& i_strName ) const
 
     CIdxTreeEntry* pLeave = new ZS::Apps::Test::IdxTree::CTrcAdmObj(i_strName);
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         mthTracer.setMethodReturn(pLeave == nullptr ? "null" : pLeave->name());
     }

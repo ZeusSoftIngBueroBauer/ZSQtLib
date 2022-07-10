@@ -40,25 +40,25 @@ namespace ZS
 namespace Ipc
 {
 typedef QList<QByteArray> (*TFctReceiveDataBlocks)(
-    const CBlkType*        i_pBlkType,
-    ESrvCltType            i_srvCltType,
-    QObject*               i_pObjGtw,
-    QObject*               i_pObjSrvClt,
-    CIpcSocketWrapper*     i_pSocketWrapper,
-    QByteArray*            i_pByteArrWatchDog,
-    Trace::CMethodTracer*  i_pMethodTracer,
-    const QList<QObject*>& i_arpTrcMsgLogObjects );
+    const CBlkType*            i_pBlkType,
+    ESrvCltType                i_srvCltType,
+    QObject*                   i_pObjGtw,
+    QObject*                   i_pObjSrvClt,
+    CIpcSocketWrapper*         i_pSocketWrapper,
+    QByteArray*                i_pByteArrWatchDog,
+    ZS::System::CMethodTracer* i_pMethodTracer,
+    const QList<QObject*>&     i_arpTrcMsgLogObjects );
 
 typedef bool (*TFctWriteDataBlock)(
-    const CBlkType*        i_pBlkType,
-    ESrvCltType            i_srvCltType,
-    QObject*               i_pObjGtw,
-    QObject*               i_pObjSrvClt,
-    CIpcSocketWrapper*     i_pSocketWrapper,
-    const QByteArray&      i_byteArr,
-    bool                   i_bIsWatchDogBlock,
-    Trace::CMethodTracer*  i_pMethodTracer,
-    const QList<QObject*>& i_arpTrcMsgLogObjects );
+    const CBlkType*            i_pBlkType,
+    ESrvCltType                i_srvCltType,
+    QObject*                   i_pObjGtw,
+    QObject*                   i_pObjSrvClt,
+    CIpcSocketWrapper*         i_pSocketWrapper,
+    const QByteArray&          i_byteArr,
+    bool                       i_bIsWatchDogBlock,
+    ZS::System::CMethodTracer* i_pMethodTracer,
+    const QList<QObject*>&     i_arpTrcMsgLogObjects );
 
 typedef QByteArray* (*TFctCreateWatchDogBlock)( const CBlkType* i_pBlkType );
 
@@ -79,22 +79,22 @@ public: // must overridables of base class CBlkType
     virtual QByteArray* createWatchDogBlock() const override;
 public: // must overridables of base class CBlkType
     virtual QList<QByteArray> receiveDataBlocks(
-        ESrvCltType            i_srvCltType,
-        QObject*               i_pObjGtw,
-        QObject*               i_pObjSrvClt,
-        CIpcSocketWrapper*     i_pSocketWrapper,
-        QByteArray*            i_pByteArrWatchDog = nullptr,
-        Trace::CMethodTracer*  i_pMethodTracer = nullptr,
-        const QList<QObject*>& i_arpTrcMsgLogObjects = QList<QObject*>() ) const override;
+        ESrvCltType                i_srvCltType,
+        QObject*                   i_pObjGtw,
+        QObject*                   i_pObjSrvClt,
+        CIpcSocketWrapper*         i_pSocketWrapper,
+        QByteArray*                i_pByteArrWatchDog = nullptr,
+        ZS::System::CMethodTracer* i_pMethodTracer = nullptr,
+        const QList<QObject*>&     i_arpTrcMsgLogObjects = QList<QObject*>() ) const override;
     virtual bool writeDataBlock(
-        ESrvCltType            i_srvCltType,
-        QObject*               i_pObjGtw,
-        QObject*               i_pObjSrvClt,
-        CIpcSocketWrapper*     i_pSocketWrapper,
-        const QByteArray&      i_byteArr,
-        bool                   i_bIsWatchDogBlock = false,
-        Trace::CMethodTracer*  i_pMethodTracer = nullptr,
-        const QList<QObject*>& i_arpTrcMsgLogObjects = QList<QObject*>() ) const override;
+        ESrvCltType                i_srvCltType,
+        QObject*                   i_pObjGtw,
+        QObject*                   i_pObjSrvClt,
+        CIpcSocketWrapper*         i_pSocketWrapper,
+        const QByteArray&          i_byteArr,
+        bool                       i_bIsWatchDogBlock = false,
+        ZS::System::CMethodTracer* i_pMethodTracer = nullptr,
+        const QList<QObject*>&     i_arpTrcMsgLogObjects = QList<QObject*>() ) const override;
 protected: // instance members
     TFctReceiveDataBlocks   m_fctReceiveDataBlocks;
     TFctWriteDataBlock      m_fctWriteDataBlock;

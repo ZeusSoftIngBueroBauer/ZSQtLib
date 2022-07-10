@@ -36,7 +36,6 @@ may result in using the software modules.
 
 using namespace ZS::System;
 using namespace ZS::Ipc;
-using namespace ZS::Trace;
 
 
 /*******************************************************************************
@@ -55,7 +54,7 @@ CIpcSocketWrapper::CIpcSocketWrapper(
     int            i_iSocketId,
     QObject*       i_pSocket,
     CTrcMthFile*   i_pTrcMthFile,
-    ETraceDetailLevelMethodCalls i_eTrcMthFileDetailLevel ) :
+    EMethodTraceDetailLevel i_eTrcMthFileDetailLevel ) :
 //------------------------------------------------------------------------------
     QObject(),
     m_socketDscr(i_srvCltType, i_socketType),
@@ -77,7 +76,7 @@ CIpcSocketWrapper::CIpcSocketWrapper(
     //    /* pAdminObj          */ m_pTrcAdminObj,
     //    /* pTrcMthFile        */ m_pTrcMthFile,
     //    /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
-    //    /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+    //    /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
     //    /* strNameSpace       */ NameSpace(),
     //    /* strClassName       */ ClassName(),
     //    /* strObjName         */ objectName(),
@@ -94,7 +93,7 @@ CIpcSocketWrapper::CIpcSocketWrapper(
     const SSocketDscr& i_socketDscr,
     QObject*           i_pSocket,
     CTrcMthFile*       i_pTrcMthFile,
-    ETraceDetailLevelMethodCalls i_eTrcMthFileDetailLevel ) :
+    EMethodTraceDetailLevel i_eTrcMthFileDetailLevel ) :
 //------------------------------------------------------------------------------
     QObject(),
     m_socketDscr(i_socketDscr),
@@ -116,7 +115,7 @@ CIpcSocketWrapper::CIpcSocketWrapper(
     //    /* pAdminObj          */ m_pTrcAdminObj,
     //    /* pTrcMthFile        */ m_pTrcMthFile,
     //    /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
-    //    /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+    //    /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
     //    /* strNameSpace       */ NameSpace(),
     //    /* strClassName       */ ClassName(),
     //    /* strObjName         */ objectName(),
@@ -138,7 +137,7 @@ CIpcSocketWrapper::~CIpcSocketWrapper()
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -156,7 +155,7 @@ CIpcSocketWrapper::~CIpcSocketWrapper()
     //m_socketDscr;
     m_fLastTimeDataBlockReceived_ms = 0.0;
     m_pSocket = nullptr;
-    m_eTrcMthFileDetailLevel = static_cast<ETraceDetailLevelMethodCalls>(0);
+    m_eTrcMthFileDetailLevel = static_cast<EMethodTraceDetailLevel>(0);
     m_pTrcMthFile = nullptr;
     m_pTrcAdminObj = nullptr;
 
@@ -172,7 +171,7 @@ void CIpcSocketWrapper::setSocketId( int i_iId )
 {
     QString strAddTrcInfo;
 
-    if( areTraceMethodCallsActive(ETraceDetailLevelMethodCalls::ArgsNormal) )
+    if( areTraceMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strAddTrcInfo = QString::number(i_iId);
     }
@@ -181,7 +180,7 @@ void CIpcSocketWrapper::setSocketId( int i_iId )
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
@@ -203,7 +202,7 @@ void CIpcSocketWrapper::setServerListenPort( unsigned int i_uPort )
 {
     QString strAddTrcInfo;
 
-    if( areTraceMethodCallsActive(ETraceDetailLevelMethodCalls::ArgsNormal) )
+    if( areTraceMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strAddTrcInfo = QString::number(i_uPort);
     }
@@ -212,7 +211,7 @@ void CIpcSocketWrapper::setServerListenPort( unsigned int i_uPort )
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
@@ -233,7 +232,7 @@ void CIpcSocketWrapper::setLocalHostName( const QString& i_strName )
 {
     QString strAddTrcInfo;
 
-    if( areTraceMethodCallsActive(ETraceDetailLevelMethodCalls::ArgsNormal) )
+    if( areTraceMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strAddTrcInfo = i_strName;
     }
@@ -242,7 +241,7 @@ void CIpcSocketWrapper::setLocalHostName( const QString& i_strName )
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
@@ -259,7 +258,7 @@ void CIpcSocketWrapper::setLocalHostAddress( const QHostAddress& i_hostAddr )
 {
     QString strAddTrcInfo;
 
-    if( areTraceMethodCallsActive(ETraceDetailLevelMethodCalls::ArgsNormal) )
+    if( areTraceMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strAddTrcInfo = i_hostAddr.toString();
     }
@@ -268,7 +267,7 @@ void CIpcSocketWrapper::setLocalHostAddress( const QHostAddress& i_hostAddr )
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
@@ -285,7 +284,7 @@ void CIpcSocketWrapper::setLocalPort( unsigned int i_uPort )
 {
     QString strAddTrcInfo;
 
-    if( areTraceMethodCallsActive(ETraceDetailLevelMethodCalls::ArgsNormal) )
+    if( areTraceMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strAddTrcInfo = QString::number(i_uPort);
     }
@@ -294,7 +293,7 @@ void CIpcSocketWrapper::setLocalPort( unsigned int i_uPort )
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
@@ -315,7 +314,7 @@ void CIpcSocketWrapper::setRemoteHostName( const QString& i_strName )
 {
     QString strAddTrcInfo;
 
-    if( areTraceMethodCallsActive(ETraceDetailLevelMethodCalls::ArgsNormal) )
+    if( areTraceMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strAddTrcInfo = i_strName;
     }
@@ -324,7 +323,7 @@ void CIpcSocketWrapper::setRemoteHostName( const QString& i_strName )
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
@@ -341,7 +340,7 @@ void CIpcSocketWrapper::setRemoteHostAddress( const QHostAddress& i_hostAddr )
 {
     QString strAddTrcInfo;
 
-    if( areTraceMethodCallsActive(ETraceDetailLevelMethodCalls::ArgsNormal) )
+    if( areTraceMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strAddTrcInfo = i_hostAddr.toString();
     }
@@ -350,7 +349,7 @@ void CIpcSocketWrapper::setRemoteHostAddress( const QHostAddress& i_hostAddr )
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
@@ -367,7 +366,7 @@ void CIpcSocketWrapper::setRemotePort( unsigned int i_uPort )
 {
     QString strAddTrcInfo;
 
-    if( areTraceMethodCallsActive(ETraceDetailLevelMethodCalls::ArgsNormal) )
+    if( areTraceMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strAddTrcInfo = QString::number(i_uPort);
     }
@@ -376,7 +375,7 @@ void CIpcSocketWrapper::setRemotePort( unsigned int i_uPort )
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
@@ -393,7 +392,7 @@ void CIpcSocketWrapper::setBufferSize( unsigned int i_uBufferSize )
 {
     QString strAddTrcInfo;
 
-    if( areTraceMethodCallsActive(ETraceDetailLevelMethodCalls::ArgsNormal) )
+    if( areTraceMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strAddTrcInfo = QString::number(i_uBufferSize);
     }
@@ -402,7 +401,7 @@ void CIpcSocketWrapper::setBufferSize( unsigned int i_uBufferSize )
         /* pAdminObj          */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ nameSpace(),
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
@@ -425,7 +424,7 @@ protected: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-bool CIpcSocketWrapper::areTraceMethodCallsActive( ETraceDetailLevelMethodCalls i_eFilterDetailLevel ) const
+bool CIpcSocketWrapper::areTraceMethodCallsActive( EMethodTraceDetailLevel i_eFilterDetailLevel ) const
 //------------------------------------------------------------------------------
 {
     bool bIsActive = false;
@@ -442,10 +441,10 @@ bool CIpcSocketWrapper::areTraceMethodCallsActive( ETraceDetailLevelMethodCalls 
 }
 
 //------------------------------------------------------------------------------
-ETraceDetailLevelMethodCalls CIpcSocketWrapper::getMethodCallsTraceDetailLevel() const
+EMethodTraceDetailLevel CIpcSocketWrapper::getMethodCallsTraceDetailLevel() const
 //------------------------------------------------------------------------------
 {
-    ETraceDetailLevelMethodCalls eDetailLevel = ETraceDetailLevelMethodCalls::None;
+    EMethodTraceDetailLevel eDetailLevel = EMethodTraceDetailLevel::None;
 
     if( m_pTrcAdminObj != nullptr )
     {
@@ -459,7 +458,7 @@ ETraceDetailLevelMethodCalls CIpcSocketWrapper::getMethodCallsTraceDetailLevel()
 }
 
 //------------------------------------------------------------------------------
-bool CIpcSocketWrapper::isTraceRuntimeInfoActive( ETraceDetailLevelRuntimeInfo i_eFilterDetailLevel ) const
+bool CIpcSocketWrapper::isTraceRuntimeInfoActive( ELogDetailLevel i_eFilterDetailLevel ) const
 //------------------------------------------------------------------------------
 {
     bool bIsActive = false;
@@ -472,10 +471,10 @@ bool CIpcSocketWrapper::isTraceRuntimeInfoActive( ETraceDetailLevelRuntimeInfo i
 }
 
 //------------------------------------------------------------------------------
-ETraceDetailLevelRuntimeInfo CIpcSocketWrapper::getRuntimeInfoTraceDetailLevel() const
+ELogDetailLevel CIpcSocketWrapper::getRuntimeInfoTraceDetailLevel() const
 //------------------------------------------------------------------------------
 {
-    ETraceDetailLevelRuntimeInfo eDetailLevel = ETraceDetailLevelRuntimeInfo::None;
+    ELogDetailLevel eDetailLevel = ELogDetailLevel::None;
 
     if( m_pTrcAdminObj != nullptr )
     {

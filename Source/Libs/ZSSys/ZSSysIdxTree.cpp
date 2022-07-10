@@ -34,7 +34,6 @@ may result in using the software modules.
 #include "ZSSys/ZSSysMemLeakDump.h"
 
 using namespace ZS::System;
-using namespace ZS::Trace;
 
 
 /*******************************************************************************
@@ -270,10 +269,10 @@ public: // ctors and dtor
            the index tree is destroyed along with its parent object.
            The trace server passes itself as the parent object. If the parent object is the
            trace server the index tree will not create a trace admin object to trace the method calls.
-    @param i_eTrcDetailLevel [in] If greater than 0 (ETraceDetailLevelMethodCalls::None), method tracing for
+    @param i_eTrcDetailLevel [in] If greater than 0 (EMethodTraceDetailLevel::None), method tracing for
            the index tree is activated. As trace admin objects itself are leaves of an index tree
            trace admin objects cannot be used for controlling the trace detail level of the index tree.
-    @param i_eTrcDetailLevelMutex [in] If greater than 0 (ETraceDetailLevelMethodCalls::None), method tracing for
+    @param i_eTrcDetailLevelMutex [in] If greater than 0 (EMethodTraceDetailLevel::None), method tracing for
            the mutex protecting the index tree is activated.
 */
 CIdxTree::CIdxTree(
@@ -282,8 +281,8 @@ CIdxTree::CIdxTree(
     const QString& i_strNodeSeparator,
     bool           i_bCreateMutex,
     QObject*       i_pObjParent,
-    ETraceDetailLevelMethodCalls i_eTrcDetailLevel,
-    ETraceDetailLevelMethodCalls i_eTrcDetailLevelMutex ) :
+    EMethodTraceDetailLevel i_eTrcDetailLevel,
+    EMethodTraceDetailLevel i_eTrcDetailLevelMutex ) :
 //------------------------------------------------------------------------------
     QObject(i_pObjParent),
     m_strNodeSeparator(i_strNodeSeparator),
@@ -322,7 +321,7 @@ CIdxTree::CIdxTree(
 
     QString strMthInArgs;
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strMthInArgs  = i_strObjName;
         strMthInArgs += ", RootTreeEntry: " + QString(i_pRootTreeEntry == nullptr ? "nullptr" : i_pRootTreeEntry->name());
@@ -333,7 +332,7 @@ CIdxTree::CIdxTree(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -369,7 +368,7 @@ CIdxTree::~CIdxTree()
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -424,7 +423,7 @@ CIdxTree::~CIdxTree()
     m_arpTreeEntries.clear();
     m_mapFreeIdxs.clear();
     m_pRoot = nullptr;
-    m_eTrcDetailLevel = static_cast<ETraceDetailLevelMethodCalls>(0);
+    m_eTrcDetailLevel = static_cast<EMethodTraceDetailLevel>(0);
     m_pTrcAdminObj = nullptr;
 
 } // dtor
@@ -442,7 +441,7 @@ void CIdxTree::clear()
 {
     QString strMthInArgs;
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
     }
 
@@ -450,7 +449,7 @@ void CIdxTree::clear()
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -479,7 +478,7 @@ void CIdxTree::lock()
 {
     QString strMthInArgs;
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
     }
 
@@ -487,7 +486,7 @@ void CIdxTree::lock()
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -509,7 +508,7 @@ void CIdxTree::unlock()
 {
     QString strMthInArgs;
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
     }
 
@@ -517,7 +516,7 @@ void CIdxTree::unlock()
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -795,7 +794,7 @@ CIdxTreeEntry* CIdxTree::createBranch( const QString& i_strName ) const
 {
     QString strMthInArgs;
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strMthInArgs = i_strName;
     }
@@ -804,7 +803,7 @@ CIdxTreeEntry* CIdxTree::createBranch( const QString& i_strName ) const
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -815,7 +814,7 @@ CIdxTreeEntry* CIdxTree::createBranch( const QString& i_strName ) const
 
     CIdxTreeEntry* pBranch = new CIdxTreeEntry(EIdxTreeEntryType::Branch, i_strName);
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         mthTracer.setMethodReturn(pBranch == nullptr ? "null" : pBranch->name());
     }
@@ -839,7 +838,7 @@ CIdxTreeEntry* CIdxTree::createLeave( const QString& i_strName ) const
 {
     QString strMthInArgs;
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strMthInArgs = i_strName;
     }
@@ -848,7 +847,7 @@ CIdxTreeEntry* CIdxTree::createLeave( const QString& i_strName ) const
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -859,7 +858,7 @@ CIdxTreeEntry* CIdxTree::createLeave( const QString& i_strName ) const
 
     CIdxTreeEntry* pLeave = new CIdxTreeEntry(EIdxTreeEntryType::Leave, i_strName);
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         mthTracer.setMethodReturn(pLeave == nullptr ? "null" : pLeave->name());
     }
@@ -886,7 +885,7 @@ CIdxTreeEntry* CIdxTree::createTreeEntry( EIdxTreeEntryType i_entryType, const Q
 {
     QString strMthInArgs;
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strMthInArgs  = "Type: " + idxTreeEntryType2Str(i_entryType);
         strMthInArgs += ", Name: " + i_strName;
@@ -896,7 +895,7 @@ CIdxTreeEntry* CIdxTree::createTreeEntry( EIdxTreeEntryType i_entryType, const Q
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -927,7 +926,7 @@ CIdxTreeEntry* CIdxTree::createTreeEntry( EIdxTreeEntryType i_entryType, const Q
         pTreeEntry = createLeave(i_strName);
     }
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         mthTracer.setMethodReturn(pTreeEntry == nullptr ? "null" : pTreeEntry->name());
     }
@@ -952,12 +951,12 @@ int CIdxTree::treeEntriesVectorSize() const
 //------------------------------------------------------------------------------
 {
     // When the mutex creates trace output also this method should be traced.
-    ETraceDetailLevelMethodCalls eTrcDetailLevel = m_pMtx == nullptr ? ETraceDetailLevelMethodCalls::None : m_pMtx->getMethodTraceDetailLevel();
+    EMethodTraceDetailLevel eTrcDetailLevel = m_pMtx == nullptr ? EMethodTraceDetailLevel::None : m_pMtx->getMethodTraceDetailLevel();
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -983,12 +982,12 @@ CIdxTreeEntry* CIdxTree::getEntry( int i_idxObj ) const
 //------------------------------------------------------------------------------
 {
     // When the mutex creates trace output also this method should be traced.
-    ETraceDetailLevelMethodCalls eTrcDetailLevel = m_pMtx == nullptr ? ETraceDetailLevelMethodCalls::None : m_pMtx->getMethodTraceDetailLevel();
+    EMethodTraceDetailLevel eTrcDetailLevel = m_pMtx == nullptr ? EMethodTraceDetailLevel::None : m_pMtx->getMethodTraceDetailLevel();
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -1025,12 +1024,12 @@ CIdxTreeEntry* CIdxTree::findBranch( const QString& i_strPath ) const
 //------------------------------------------------------------------------------
 {
     // When the mutex creates trace output also this method should be traced.
-    ETraceDetailLevelMethodCalls eTrcDetailLevel = m_pMtx == nullptr ? ETraceDetailLevelMethodCalls::None : m_pMtx->getMethodTraceDetailLevel();
+    EMethodTraceDetailLevel eTrcDetailLevel = m_pMtx == nullptr ? EMethodTraceDetailLevel::None : m_pMtx->getMethodTraceDetailLevel();
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -1064,12 +1063,12 @@ CIdxTreeEntry* CIdxTree::findBranch( const QString& i_strParentPath, const QStri
 //------------------------------------------------------------------------------
 {
     // When the mutex creates trace output also this method should be traced.
-    ETraceDetailLevelMethodCalls eTrcDetailLevel = m_pMtx == nullptr ? ETraceDetailLevelMethodCalls::None : m_pMtx->getMethodTraceDetailLevel();
+    EMethodTraceDetailLevel eTrcDetailLevel = m_pMtx == nullptr ? EMethodTraceDetailLevel::None : m_pMtx->getMethodTraceDetailLevel();
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -1110,12 +1109,12 @@ CIdxTreeEntry* CIdxTree::findLeave( const QString& i_strPath ) const
 //------------------------------------------------------------------------------
 {
     // When the mutex creates trace output also this method should be traced.
-    ETraceDetailLevelMethodCalls eTrcDetailLevel = m_pMtx == nullptr ? ETraceDetailLevelMethodCalls::None : m_pMtx->getMethodTraceDetailLevel();
+    EMethodTraceDetailLevel eTrcDetailLevel = m_pMtx == nullptr ? EMethodTraceDetailLevel::None : m_pMtx->getMethodTraceDetailLevel();
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -1149,12 +1148,12 @@ CIdxTreeEntry* CIdxTree::findLeave( const QString& i_strParentPath, const QStrin
 //------------------------------------------------------------------------------
 {
     // When the mutex creates trace output also this method should be traced.
-    ETraceDetailLevelMethodCalls eTrcDetailLevel = m_pMtx == nullptr ? ETraceDetailLevelMethodCalls::None : m_pMtx->getMethodTraceDetailLevel();
+    EMethodTraceDetailLevel eTrcDetailLevel = m_pMtx == nullptr ? EMethodTraceDetailLevel::None : m_pMtx->getMethodTraceDetailLevel();
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -1195,12 +1194,12 @@ CIdxTreeEntry* CIdxTree::findEntry( const QString& i_strKeyInTree ) const
 //------------------------------------------------------------------------------
 {
     // When the mutex creates trace output also this method should be traced.
-    ETraceDetailLevelMethodCalls eTrcDetailLevel = m_pMtx == nullptr ? ETraceDetailLevelMethodCalls::None : m_pMtx->getMethodTraceDetailLevel();
+    EMethodTraceDetailLevel eTrcDetailLevel = m_pMtx == nullptr ? EMethodTraceDetailLevel::None : m_pMtx->getMethodTraceDetailLevel();
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -1243,7 +1242,7 @@ SErrResultInfo CIdxTree::canAdd( CIdxTreeEntry* i_pTreeEntry, const QString& i_s
 {
     QString strMthInArgs;
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strMthInArgs  = "TreeEntry: " + QString(i_pTreeEntry == nullptr ? "nullptr" : i_pTreeEntry->name());
         strMthInArgs += ", TargetPath: " + i_strTargetPath;
@@ -1253,7 +1252,7 @@ SErrResultInfo CIdxTree::canAdd( CIdxTreeEntry* i_pTreeEntry, const QString& i_s
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -1285,11 +1284,11 @@ SErrResultInfo CIdxTree::canAdd( CIdxTreeEntry* i_pTreeEntry, const QString& i_s
         errResultInfo = canAdd(i_pTreeEntry, pTargetBranch);
     }
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         int iErrResultInfoDetailLevel = 0;
-        if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsVerbose ) iErrResultInfoDetailLevel = 2;
-        else if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsDetailed ) iErrResultInfoDetailLevel = 1;
+        if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsVerbose ) iErrResultInfoDetailLevel = 2;
+        else if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsDetailed ) iErrResultInfoDetailLevel = 1;
         mthTracer.setMethodReturn(errResultInfo.toString(iErrResultInfoDetailLevel));
     }
 
@@ -1320,7 +1319,7 @@ SErrResultInfo CIdxTree::canAdd( CIdxTreeEntry* i_pTreeEntry, CIdxTreeEntry* i_p
 {
     QString strMthInArgs;
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strMthInArgs  = "TreeEntry: " + QString(i_pTreeEntry == nullptr ? "nullptr" : i_pTreeEntry->name());
         strMthInArgs += ", TargetBranch: " + QString(i_pTargetBranch == nullptr ? "nullptr" : i_pTargetBranch->keyInTree());
@@ -1330,7 +1329,7 @@ SErrResultInfo CIdxTree::canAdd( CIdxTreeEntry* i_pTreeEntry, CIdxTreeEntry* i_p
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -1397,11 +1396,11 @@ SErrResultInfo CIdxTree::canAdd( CIdxTreeEntry* i_pTreeEntry, CIdxTreeEntry* i_p
         }
     } // if( idxInTargetBranch < 0 )
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         int iErrResultInfoDetailLevel = 0;
-        if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsVerbose ) iErrResultInfoDetailLevel = 2;
-        else if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsDetailed ) iErrResultInfoDetailLevel = 1;
+        if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsVerbose ) iErrResultInfoDetailLevel = 2;
+        else if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsDetailed ) iErrResultInfoDetailLevel = 1;
         mthTracer.setMethodReturn(errResultInfo.toString(iErrResultInfoDetailLevel));
     }
 
@@ -1442,7 +1441,7 @@ int CIdxTree::add( CIdxTreeEntry* i_pTreeEntry, const QString& i_strTargetPath )
 {
     QString strMthInArgs;
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strMthInArgs  = "TreeEntry: " + QString(i_pTreeEntry == nullptr ? "nullptr" : i_pTreeEntry->name());
         strMthInArgs += ", TargetPath: " + i_strTargetPath;
@@ -1452,7 +1451,7 @@ int CIdxTree::add( CIdxTreeEntry* i_pTreeEntry, const QString& i_strTargetPath )
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -1493,7 +1492,7 @@ int CIdxTree::add( CIdxTreeEntry* i_pTreeEntry, const QString& i_strTargetPath )
 
     int idxInTree = add(i_pTreeEntry, pTargetBranch);
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         mthTracer.setMethodReturn(QString::number(idxInTree));
     }
@@ -1531,7 +1530,7 @@ int CIdxTree::add( CIdxTreeEntry* i_pTreeEntry, CIdxTreeEntry* i_pTargetBranch )
 {
     QString strMthInArgs;
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strMthInArgs  = "TreeEntry: " + QString(i_pTreeEntry == nullptr ? "nullptr" : i_pTreeEntry->name());
         strMthInArgs += ", TargetBranch: " + QString(i_pTargetBranch == nullptr ? "nullptr" : i_pTargetBranch->keyInTree());
@@ -1541,7 +1540,7 @@ int CIdxTree::add( CIdxTreeEntry* i_pTreeEntry, CIdxTreeEntry* i_pTargetBranch )
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -1620,7 +1619,7 @@ int CIdxTree::add( CIdxTreeEntry* i_pTreeEntry, CIdxTreeEntry* i_pTargetBranch )
 
     } // if( idxInTargetBranch >= 0 )
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         mthTracer.setMethodReturn(QString::number(idxInTree));
     }
@@ -1671,7 +1670,7 @@ SErrResultInfo CIdxTree::canInsert(
 {
     QString strMthInArgs;
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strMthInArgs  = "TreeEntry: " + QString(i_pTreeEntry == nullptr ? "nullptr" : i_pTreeEntry->name());
         strMthInArgs += ", TargetPath: " + i_strTargetPath;
@@ -1683,7 +1682,7 @@ SErrResultInfo CIdxTree::canInsert(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -1723,11 +1722,11 @@ SErrResultInfo CIdxTree::canInsert(
         errResultInfo = canInsert(i_pTreeEntry, pTargetBranch, i_idxInTargetBranch, i_idxInTree);
     }
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         int iErrResultInfoDetailLevel = 0;
-        if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsVerbose ) iErrResultInfoDetailLevel = 2;
-        else if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsDetailed ) iErrResultInfoDetailLevel = 1;
+        if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsVerbose ) iErrResultInfoDetailLevel = 2;
+        else if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsDetailed ) iErrResultInfoDetailLevel = 1;
         mthTracer.setMethodReturn(errResultInfo.toString(iErrResultInfoDetailLevel));
     }
 
@@ -1773,7 +1772,7 @@ SErrResultInfo CIdxTree::canInsert(
 {
     QString strMthInArgs;
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strMthInArgs  = "TreeEntry: " + QString(i_pTreeEntry == nullptr ? "nullptr" : i_pTreeEntry->name());
         strMthInArgs += ", TargetBranch: " + QString(i_pTargetBranch == nullptr ? "nullptr" : i_pTargetBranch->keyInTree());
@@ -1785,7 +1784,7 @@ SErrResultInfo CIdxTree::canInsert(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -1876,11 +1875,11 @@ SErrResultInfo CIdxTree::canInsert(
         }
     } // if( !errResultInfo.isErrorResult() && i_idxInTree >= 0 )
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         int iErrResultInfoDetailLevel = 0;
-        if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsVerbose ) iErrResultInfoDetailLevel = 2;
-        else if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsDetailed ) iErrResultInfoDetailLevel = 1;
+        if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsVerbose ) iErrResultInfoDetailLevel = 2;
+        else if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsDetailed ) iErrResultInfoDetailLevel = 1;
         mthTracer.setMethodReturn(errResultInfo.toString(iErrResultInfoDetailLevel));
     }
 
@@ -1932,7 +1931,7 @@ int CIdxTree::insert(
 {
     QString strMthInArgs;
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strMthInArgs  = "TreeEntry: " + QString(i_pTreeEntry == nullptr ? "nullptr" : i_pTreeEntry->name());
         strMthInArgs += ", TargetPath: " + i_strTargetPath;
@@ -1944,7 +1943,7 @@ int CIdxTree::insert(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -1984,7 +1983,7 @@ int CIdxTree::insert(
 
     int idxInTree = insert(i_pTreeEntry, pTargetBranch, i_idxInTargetBranch, i_idxInTree);
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         mthTracer.setMethodReturn(QString::number(idxInTree));
     }
@@ -2034,7 +2033,7 @@ int CIdxTree::insert(
 {
     QString strMthInArgs;
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strMthInArgs  = "TreeEntry: " + QString(i_pTreeEntry == nullptr ? "nullptr" : i_pTreeEntry->name());
         strMthInArgs += ", TargetBranch: " + QString(i_pTargetBranch == nullptr ? "nullptr" : i_pTargetBranch->keyInTree());
@@ -2046,7 +2045,7 @@ int CIdxTree::insert(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -2173,7 +2172,7 @@ int CIdxTree::insert(
 
     } // if( idxInTargetBranch >= 0 )
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         mthTracer.setMethodReturn(QString::number(idxInTree));
     }
@@ -2204,7 +2203,7 @@ SErrResultInfo CIdxTree::canRemove( CIdxTreeEntry* i_pTreeEntry ) const
 {
     QString strMthInArgs;
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strMthInArgs = "TreeEntry: " + QString(i_pTreeEntry == nullptr ? "nullptr" : i_pTreeEntry->keyInTree());
     }
@@ -2213,7 +2212,7 @@ SErrResultInfo CIdxTree::canRemove( CIdxTreeEntry* i_pTreeEntry ) const
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -2246,11 +2245,11 @@ SErrResultInfo CIdxTree::canRemove( CIdxTreeEntry* i_pTreeEntry ) const
         errResultInfo.setAddErrInfoDscr(strKeyInTree);
     }
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         int iErrResultInfoDetailLevel = 0;
-        if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsVerbose ) iErrResultInfoDetailLevel = 2;
-        else if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsDetailed ) iErrResultInfoDetailLevel = 1;
+        if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsVerbose ) iErrResultInfoDetailLevel = 2;
+        else if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsDetailed ) iErrResultInfoDetailLevel = 1;
         mthTracer.setMethodReturn(errResultInfo.toString(iErrResultInfoDetailLevel));
     }
 
@@ -2276,7 +2275,7 @@ SErrResultInfo CIdxTree::canRemove( const QString& i_strKeyInTree ) const
 {
     QString strMthInArgs;
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strMthInArgs = i_strKeyInTree;
     }
@@ -2285,7 +2284,7 @@ SErrResultInfo CIdxTree::canRemove( const QString& i_strKeyInTree ) const
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -2312,11 +2311,11 @@ SErrResultInfo CIdxTree::canRemove( const QString& i_strKeyInTree ) const
         errResultInfo = canRemove(pTreeEntry);
     }
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         int iErrResultInfoDetailLevel = 0;
-        if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsVerbose ) iErrResultInfoDetailLevel = 2;
-        else if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsDetailed ) iErrResultInfoDetailLevel = 1;
+        if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsVerbose ) iErrResultInfoDetailLevel = 2;
+        else if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsDetailed ) iErrResultInfoDetailLevel = 1;
         mthTracer.setMethodReturn(errResultInfo.toString(iErrResultInfoDetailLevel));
     }
 
@@ -2369,7 +2368,7 @@ void CIdxTree::remove( CIdxTreeEntry* i_pTreeEntry )
 {
     QString strMthInArgs;
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strMthInArgs = "TreeEntry: " + QString(i_pTreeEntry == nullptr ? "nullptr" : i_pTreeEntry->keyInTree());
     }
@@ -2378,7 +2377,7 @@ void CIdxTree::remove( CIdxTreeEntry* i_pTreeEntry )
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -2509,7 +2508,7 @@ void CIdxTree::remove( const QString& i_strKeyInTree )
 {
     QString strMthInArgs;
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strMthInArgs = i_strKeyInTree;
     }
@@ -2518,7 +2517,7 @@ void CIdxTree::remove( const QString& i_strKeyInTree )
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -2574,7 +2573,7 @@ SErrResultInfo CIdxTree::canMove(
 {
     QString strMthInArgs;
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strMthInArgs  = "SourcePath: " + i_strSourcePath;
         strMthInArgs += ", TargetPath: " + i_strTargetPath;
@@ -2585,7 +2584,7 @@ SErrResultInfo CIdxTree::canMove(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -2644,11 +2643,11 @@ SErrResultInfo CIdxTree::canMove(
         } // if( pTargetBranch != nullptr )
     } // if( pTreeEntry != nullptr )
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         int iErrResultInfoDetailLevel = 0;
-        if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsVerbose ) iErrResultInfoDetailLevel = 2;
-        else if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsDetailed ) iErrResultInfoDetailLevel = 1;
+        if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsVerbose ) iErrResultInfoDetailLevel = 2;
+        else if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsDetailed ) iErrResultInfoDetailLevel = 1;
         mthTracer.setMethodReturn(errResultInfo.toString(iErrResultInfoDetailLevel));
     }
 
@@ -2688,7 +2687,7 @@ SErrResultInfo CIdxTree::canMove(
 {
     QString strMthInArgs;
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strMthInArgs  = "TreeEntry: " + QString(i_pTreeEntry == nullptr ? "nullptr" : i_pTreeEntry->keyInTree());
         strMthInArgs += ", TargetPath: " + i_strTargetPath;
@@ -2699,7 +2698,7 @@ SErrResultInfo CIdxTree::canMove(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -2755,11 +2754,11 @@ SErrResultInfo CIdxTree::canMove(
         } // if( i_idxInTargetBranch < 0 || i_idxInTargetBranch <= pTargetBranch->count() )
     } // if( pTargetBranch != nullptr )
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         int iErrResultInfoDetailLevel = 0;
-        if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsVerbose ) iErrResultInfoDetailLevel = 2;
-        else if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsDetailed ) iErrResultInfoDetailLevel = 1;
+        if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsVerbose ) iErrResultInfoDetailLevel = 2;
+        else if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsDetailed ) iErrResultInfoDetailLevel = 1;
         mthTracer.setMethodReturn(errResultInfo.toString(iErrResultInfoDetailLevel));
     }
 
@@ -2798,7 +2797,7 @@ SErrResultInfo CIdxTree::canMove(
 {
     QString strMthInArgs;
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strMthInArgs  = "TreeEntry: " + QString(i_pTreeEntry == nullptr ? "nullptr" : i_pTreeEntry->keyInTree());
         strMthInArgs += ", TargetBranch: " + QString(i_pTargetBranch == nullptr ? "nullptr" : i_pTargetBranch->keyInTree());
@@ -2809,7 +2808,7 @@ SErrResultInfo CIdxTree::canMove(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -2863,11 +2862,11 @@ SErrResultInfo CIdxTree::canMove(
         }
     } // if( i_idxInTargetBranch < 0 || i_idxInTargetBranch <= pTargetBranch->count() )
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         int iErrResultInfoDetailLevel = 0;
-        if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsVerbose ) iErrResultInfoDetailLevel = 2;
-        else if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsDetailed ) iErrResultInfoDetailLevel = 1;
+        if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsVerbose ) iErrResultInfoDetailLevel = 2;
+        else if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsDetailed ) iErrResultInfoDetailLevel = 1;
         mthTracer.setMethodReturn(errResultInfo.toString(iErrResultInfoDetailLevel));
     }
 
@@ -2913,7 +2912,7 @@ void CIdxTree::move(
 {
     QString strMthInArgs;
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strMthInArgs  = "SourcePath: " + i_strSourcePath;
         strMthInArgs += ", TargetPath: " + i_strTargetPath;
@@ -2924,7 +2923,7 @@ void CIdxTree::move(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -2985,7 +2984,7 @@ void CIdxTree::move(
 {
     QString strMthInArgs;
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strMthInArgs  = "Branch: " + QString(i_pTreeEntry == nullptr ? "nullptr" : i_pTreeEntry->keyInTree());
         strMthInArgs += ", TargetPath: " + i_strTargetPath;
@@ -2996,7 +2995,7 @@ void CIdxTree::move(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -3050,7 +3049,7 @@ void CIdxTree::move(
 {
     QString strMthInArgs;
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strMthInArgs  = "TreeEntry: " + QString(i_pTreeEntry == nullptr ? "nullptr" : i_pTreeEntry->keyInTree());
         strMthInArgs += ", TargetBranch: " + QString(i_pTargetBranch == nullptr ? "nullptr" : i_pTargetBranch->keyInTree());
@@ -3061,7 +3060,7 @@ void CIdxTree::move(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -3153,7 +3152,7 @@ SErrResultInfo CIdxTree::canCopy(
 {
     QString strMthInArgs;
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strMthInArgs  = "SourcePath: " + i_strSourcePath;
         strMthInArgs += ", TargetPath: " + i_strTargetPath;
@@ -3165,7 +3164,7 @@ SErrResultInfo CIdxTree::canCopy(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -3236,11 +3235,11 @@ SErrResultInfo CIdxTree::canCopy(
         } // if( pTargetBranch != nullptr )
     } // if( pTreeEntry != nullptr )
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         int iErrResultInfoDetailLevel = 0;
-        if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsVerbose ) iErrResultInfoDetailLevel = 2;
-        else if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsDetailed ) iErrResultInfoDetailLevel = 1;
+        if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsVerbose ) iErrResultInfoDetailLevel = 2;
+        else if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsDetailed ) iErrResultInfoDetailLevel = 1;
         mthTracer.setMethodReturn(errResultInfo.toString(iErrResultInfoDetailLevel));
     }
 
@@ -3287,7 +3286,7 @@ SErrResultInfo CIdxTree::canCopy(
 {
     QString strMthInArgs;
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strMthInArgs  = "TreeEntry: " + QString(i_pTreeEntry == nullptr ? "nullptr" : i_pTreeEntry->keyInTree());
         strMthInArgs += ", TargetPath: " + i_strTargetPath;
@@ -3299,7 +3298,7 @@ SErrResultInfo CIdxTree::canCopy(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -3367,11 +3366,11 @@ SErrResultInfo CIdxTree::canCopy(
         } // if( !errResultInfo.isErrorResult() && i_idxInTree >= 0 )
     } // if( pTargetBranch != nullptr )
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         int iErrResultInfoDetailLevel = 0;
-        if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsVerbose ) iErrResultInfoDetailLevel = 2;
-        else if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsDetailed ) iErrResultInfoDetailLevel = 1;
+        if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsVerbose ) iErrResultInfoDetailLevel = 2;
+        else if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsDetailed ) iErrResultInfoDetailLevel = 1;
         mthTracer.setMethodReturn(errResultInfo.toString(iErrResultInfoDetailLevel));
     }
 
@@ -3418,7 +3417,7 @@ SErrResultInfo CIdxTree::canCopy(
 {
     QString strMthInArgs;
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strMthInArgs  = "TreeEntry: " + QString(i_pTreeEntry == nullptr ? "nullptr" : i_pTreeEntry->keyInTree());
         strMthInArgs += ", TargetBranch: " + QString(i_pTargetBranch == nullptr ? "nullptr" : i_pTargetBranch->keyInTree());
@@ -3430,7 +3429,7 @@ SErrResultInfo CIdxTree::canCopy(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -3496,11 +3495,11 @@ SErrResultInfo CIdxTree::canCopy(
         }
     } // if( !errResultInfo.isErrorResult() && i_idxInTree >= 0 )
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         int iErrResultInfoDetailLevel = 0;
-        if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsVerbose ) iErrResultInfoDetailLevel = 2;
-        else if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsDetailed ) iErrResultInfoDetailLevel = 1;
+        if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsVerbose ) iErrResultInfoDetailLevel = 2;
+        else if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsDetailed ) iErrResultInfoDetailLevel = 1;
         mthTracer.setMethodReturn(errResultInfo.toString(iErrResultInfoDetailLevel));
     }
 
@@ -3545,7 +3544,7 @@ int CIdxTree::copy(
 {
     QString strMthInArgs;
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strMthInArgs  = "SourcePath: " + i_strSourcePath;
         strMthInArgs += ", TargetPath: " + i_strTargetPath;
@@ -3557,7 +3556,7 @@ int CIdxTree::copy(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -3582,7 +3581,7 @@ int CIdxTree::copy(
 
     int idxInTree = copy(pTreeEntry, pTargetBranch, i_idxInTargetBranch, i_idxInTree);
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         mthTracer.setMethodReturn(QString::number(idxInTree));
     }
@@ -3622,7 +3621,7 @@ int CIdxTree::copy(
 {
     QString strMthInArgs;
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strMthInArgs  = "TreeEntry: " + QString(i_pTreeEntry == nullptr ? "nullptr" : i_pTreeEntry->keyInTree());
         strMthInArgs += ", TargetPath: " + i_strTargetPath;
@@ -3634,7 +3633,7 @@ int CIdxTree::copy(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -3652,7 +3651,7 @@ int CIdxTree::copy(
 
     int idxInTree = copy(i_pTreeEntry, pTargetBranch, i_idxInTargetBranch, i_idxInTree);
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         mthTracer.setMethodReturn(QString::number(idxInTree));
     }
@@ -3698,7 +3697,7 @@ int CIdxTree::copy(
 {
     QString strMthInArgs;
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strMthInArgs  = "TreeEntry: " + QString(i_pTreeEntry == nullptr ? "nullptr" : i_pTreeEntry->keyInTree());
         strMthInArgs += ", TargetBranch: " + QString(i_pTargetBranch == nullptr ? "nullptr" : i_pTargetBranch->keyInTree());
@@ -3710,7 +3709,7 @@ int CIdxTree::copy(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -3772,7 +3771,7 @@ int CIdxTree::copy(
         }
     }
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         mthTracer.setMethodReturn(QString::number(idxInTree));
     }
@@ -3809,7 +3808,7 @@ SErrResultInfo CIdxTree::canRename( const QString& i_strSourcePath, const QStrin
 {
     QString strMthInArgs;
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strMthInArgs  = "SourcePath: " + i_strSourcePath;
         strMthInArgs += ", NameNew: " + i_strNameNew;
@@ -3819,7 +3818,7 @@ SErrResultInfo CIdxTree::canRename( const QString& i_strSourcePath, const QStrin
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -3845,11 +3844,11 @@ SErrResultInfo CIdxTree::canRename( const QString& i_strSourcePath, const QStrin
         errResultInfo = canRename(pTreeEntry, i_strNameNew);
     }
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         int iErrResultInfoDetailLevel = 0;
-        if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsVerbose ) iErrResultInfoDetailLevel = 2;
-        else if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsDetailed ) iErrResultInfoDetailLevel = 1;
+        if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsVerbose ) iErrResultInfoDetailLevel = 2;
+        else if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsDetailed ) iErrResultInfoDetailLevel = 1;
         mthTracer.setMethodReturn(errResultInfo.toString(iErrResultInfoDetailLevel));
     }
     return errResultInfo;
@@ -3878,7 +3877,7 @@ SErrResultInfo CIdxTree::canRename( CIdxTreeEntry* i_pTreeEntry, const QString& 
 {
     QString strMthInArgs;
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strMthInArgs  = "TreeEntry: " + QString(i_pTreeEntry == nullptr ? "nullptr" : i_pTreeEntry->keyInTree());
         strMthInArgs += ", NameNew: " + i_strNameNew;
@@ -3888,7 +3887,7 @@ SErrResultInfo CIdxTree::canRename( CIdxTreeEntry* i_pTreeEntry, const QString& 
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -3959,7 +3958,7 @@ void CIdxTree::rename( const QString& i_strSourcePath, const QString& i_strNameN
 {
     QString strMthInArgs;
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strMthInArgs  = "SourcePath: " + i_strSourcePath;
         strMthInArgs += ", NameNew: " + i_strNameNew;
@@ -3969,7 +3968,7 @@ void CIdxTree::rename( const QString& i_strSourcePath, const QString& i_strNameN
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -4016,7 +4015,7 @@ void CIdxTree::rename( CIdxTreeEntry* i_pTreeEntry, const QString& i_strNameNew 
 {
     QString strMthInArgs;
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strMthInArgs  = "TreeEntry: " + QString(i_pTreeEntry == nullptr ? "nullptr" : i_pTreeEntry->keyInTree());
         strMthInArgs += ", NameNew: " + i_strNameNew;
@@ -4026,7 +4025,7 @@ void CIdxTree::rename( CIdxTreeEntry* i_pTreeEntry, const QString& i_strNameNew 
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -4071,7 +4070,7 @@ void CIdxTree::updateKeyInTree( CIdxTreeEntry* i_pTreeEntry )
 {
     QString strMthInArgs;
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strMthInArgs = "TreeEntry: " + QString(i_pTreeEntry == nullptr ? "nullptr" : i_pTreeEntry->keyInTree());
     }
@@ -4080,7 +4079,7 @@ void CIdxTree::updateKeyInTree( CIdxTreeEntry* i_pTreeEntry )
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -4161,7 +4160,7 @@ void CIdxTree::clear( CIdxTreeEntry* i_pBranch )
 {
     QString strMthInArgs;
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strMthInArgs = "Branch: " + QString(i_pBranch == nullptr ? "nullptr" : i_pBranch->keyInTree());
     }
@@ -4170,7 +4169,7 @@ void CIdxTree::clear( CIdxTreeEntry* i_pBranch )
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -4217,12 +4216,12 @@ CIdxTree::iterator CIdxTree::begin( iterator::ETraversalOrder i_traversalOrder )
 //------------------------------------------------------------------------------
 {
     // When the mutex creates trace output also this method should be traced.
-    ETraceDetailLevelMethodCalls eTrcDetailLevel = m_pMtx == nullptr ? ETraceDetailLevelMethodCalls::None : m_pMtx->getMethodTraceDetailLevel();
+    EMethodTraceDetailLevel eTrcDetailLevel = m_pMtx == nullptr ? EMethodTraceDetailLevel::None : m_pMtx->getMethodTraceDetailLevel();
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -4260,12 +4259,12 @@ CIdxTree::iterator CIdxTree::end()
 //------------------------------------------------------------------------------
 {
     // When the mutex creates trace output also this method should be traced.
-    ETraceDetailLevelMethodCalls eTrcDetailLevel = m_pMtx == nullptr ? ETraceDetailLevelMethodCalls::None : m_pMtx->getMethodTraceDetailLevel();
+    EMethodTraceDetailLevel eTrcDetailLevel = m_pMtx == nullptr ? EMethodTraceDetailLevel::None : m_pMtx->getMethodTraceDetailLevel();
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -4299,7 +4298,7 @@ void CIdxTree::onTreeEntryChanged( CIdxTreeEntry* i_pTreeEntry )
 {
     QString strMthInArgs;
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strMthInArgs = "TreeEntry: " + QString(i_pTreeEntry == nullptr ? "nullptr" : i_pTreeEntry->keyInTree());
     }
@@ -4308,7 +4307,7 @@ void CIdxTree::onTreeEntryChanged( CIdxTreeEntry* i_pTreeEntry )
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -4335,7 +4334,7 @@ void CIdxTree::emit_treeEntryAdded( CIdxTree* i_pIdxTree, CIdxTreeEntry* i_pTree
 {
     QString strMthInArgs;
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strMthInArgs = "IdxTree: " + QString(i_pIdxTree == nullptr ? "nullptr" : i_pIdxTree->objectName());
         strMthInArgs += ", TreeEntry: " + QString(i_pTreeEntry == nullptr ? "nullptr" : i_pTreeEntry->keyInTree());
@@ -4345,7 +4344,7 @@ void CIdxTree::emit_treeEntryAdded( CIdxTree* i_pIdxTree, CIdxTreeEntry* i_pTree
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -4368,7 +4367,7 @@ void CIdxTree::emit_treeEntryChanged( CIdxTree* i_pIdxTree, CIdxTreeEntry* i_pTr
 {
     QString strMthInArgs;
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strMthInArgs = "IdxTree: " + QString(i_pIdxTree == nullptr ? "nullptr" : i_pIdxTree->objectName());
         strMthInArgs += ", TreeEntry: " + QString(i_pTreeEntry == nullptr ? "nullptr" : i_pTreeEntry->keyInTree());
@@ -4378,7 +4377,7 @@ void CIdxTree::emit_treeEntryChanged( CIdxTree* i_pIdxTree, CIdxTreeEntry* i_pTr
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -4401,7 +4400,7 @@ void CIdxTree::emit_treeEntryAboutToBeRemoved( CIdxTree* i_pIdxTree, CIdxTreeEnt
 {
     QString strMthInArgs;
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strMthInArgs = "IdxTree: " + QString(i_pIdxTree == nullptr ? "nullptr" : i_pIdxTree->objectName());
         strMthInArgs += ", TreeEntry: " + QString(i_pTreeEntry == nullptr ? "nullptr" : i_pTreeEntry->keyInTree());
@@ -4411,7 +4410,7 @@ void CIdxTree::emit_treeEntryAboutToBeRemoved( CIdxTree* i_pIdxTree, CIdxTreeEnt
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -4438,7 +4437,7 @@ void CIdxTree::emit_treeEntryRemoved(
 {
     QString strMthInArgs;
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strMthInArgs = "IdxTree: " + QString(i_pIdxTree == nullptr ? "nullptr" : i_pIdxTree->objectName());
         strMthInArgs += ", TreeEntry: " + QString(i_pTreeEntry == nullptr ? "nullptr" : i_pTreeEntry->name());
@@ -4448,7 +4447,7 @@ void CIdxTree::emit_treeEntryRemoved(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -4475,7 +4474,7 @@ void CIdxTree::emit_treeEntryAboutToBeMoved(
 {
     QString strMthInArgs;
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strMthInArgs = "IdxTree: " + QString(i_pIdxTree == nullptr ? "nullptr" : i_pIdxTree->objectName());
         strMthInArgs += ", TreeEntry: " + QString(i_pTreeEntry == nullptr ? "nullptr" : i_pTreeEntry->keyInTree());
@@ -4486,7 +4485,7 @@ void CIdxTree::emit_treeEntryAboutToBeMoved(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -4516,7 +4515,7 @@ void CIdxTree::emit_treeEntryMoved(
 {
     QString strMthInArgs;
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strMthInArgs = "IdxTree: " + QString(i_pIdxTree == nullptr ? "nullptr" : i_pIdxTree->objectName());
         strMthInArgs += ", TreeEntry: " + QString(i_pTreeEntry == nullptr ? "nullptr" : i_pTreeEntry->keyInTree());
@@ -4528,7 +4527,7 @@ void CIdxTree::emit_treeEntryMoved(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -4555,7 +4554,7 @@ void CIdxTree::emit_treeEntryAboutToBeRenamed(
 {
     QString strMthInArgs;
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strMthInArgs = "IdxTree: " + QString(i_pIdxTree == nullptr ? "nullptr" : i_pIdxTree->objectName());
         strMthInArgs += ", TreeEntry: " + QString(i_pTreeEntry == nullptr ? "nullptr" : i_pTreeEntry->keyInTree());
@@ -4566,7 +4565,7 @@ void CIdxTree::emit_treeEntryAboutToBeRenamed(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -4595,7 +4594,7 @@ void CIdxTree::emit_treeEntryRenamed(
 {
     QString strMthInArgs;
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strMthInArgs = "IdxTree: " + QString(i_pIdxTree == nullptr ? "nullptr" : i_pIdxTree->objectName());
         strMthInArgs += ", TreeEntry: " + QString(i_pTreeEntry == nullptr ? "nullptr" : i_pTreeEntry->keyInTree());
@@ -4607,7 +4606,7 @@ void CIdxTree::emit_treeEntryRenamed(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -4635,7 +4634,7 @@ void CIdxTree::emit_treeEntryKeyInTreeChanged(
 {
     QString strMthInArgs;
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strMthInArgs = "IdxTree: " + QString(i_pIdxTree == nullptr ? "nullptr" : i_pIdxTree->objectName());
         strMthInArgs += ", TreeEntry: " + QString(i_pTreeEntry == nullptr ? "nullptr" : i_pTreeEntry->keyInTree());
@@ -4646,7 +4645,7 @@ void CIdxTree::emit_treeEntryKeyInTreeChanged(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),

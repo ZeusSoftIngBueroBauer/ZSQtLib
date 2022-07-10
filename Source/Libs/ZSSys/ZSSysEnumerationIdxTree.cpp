@@ -33,7 +33,6 @@ may result in using the software modules.
 #include "ZSSys/ZSSysMemLeakDump.h"
 
 using namespace ZS::System;
-using namespace ZS::Trace;
 
 
 /*******************************************************************************
@@ -75,7 +74,7 @@ CEnumerationIdxTree* CEnumerationIdxTree::CreateInstance(
     const QString&               i_strNodeSeparator,
     bool                         i_bCreateMutex,
     QObject*                     i_pObjParent,
-    ETraceDetailLevelMethodCalls i_eTrcDetailLevel )
+    EMethodTraceDetailLevel i_eTrcDetailLevel )
 //------------------------------------------------------------------------------
 {
     // The class may be accessed from within different thread contexts and
@@ -156,7 +155,7 @@ CEnumerationIdxTree::CEnumerationIdxTree(
     const QString&               i_strNodeSeparator,
     bool                         i_bCreateMutex,
     QObject*                     i_pObjParent,
-    ETraceDetailLevelMethodCalls i_eTrcDetailLevel ) :
+    EMethodTraceDetailLevel i_eTrcDetailLevel ) :
 //------------------------------------------------------------------------------
     CIdxTree(
         /* strIdxTreeName   */ i_strName,
@@ -171,7 +170,7 @@ CEnumerationIdxTree::CEnumerationIdxTree(
     CMethodTracer mthTracer(
         /* pTrcServer         */ dynamic_cast<CTrcServer*>(parent()), // may be nullptr if the parent is not the trace server
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -189,7 +188,7 @@ CEnumerationIdxTree::~CEnumerationIdxTree()
     CMethodTracer mthTracer(
         /* pTrcServer         */ dynamic_cast<CTrcServer*>(parent()), // may be nullptr if the parent is not the trace server
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
