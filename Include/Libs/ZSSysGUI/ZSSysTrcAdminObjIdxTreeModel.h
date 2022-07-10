@@ -32,7 +32,7 @@ may result in using the software modules.
 
 namespace ZS
 {
-namespace Trace
+namespace System
 {
 class CTrcAdminObj;
 class CIdxTreeTrcAdminObjs;
@@ -45,7 +45,7 @@ class ZSSYSGUIDLL_API CModelIdxTreeTrcAdminObjs : public ZS::System::GUI::CModel
 {
     Q_OBJECT
 public: // class methods
-    static QString NameSpace() { return "ZS::Trace::GUI"; }
+    static QString NameSpace() { return "ZS::System::GUI"; }
     static QString ClassName() { return "CModelIdxTreeTrcAdminObjs"; }
 public: // type definitions and constants
     enum EColumn {
@@ -67,8 +67,8 @@ public: // ctors and dtor
     CModelIdxTreeTrcAdminObjs(
         CIdxTreeTrcAdminObjs* i_pIdxTree = nullptr,
         QObject* i_pObjParent = nullptr,
-        ZS::Trace::ETraceDetailLevelMethodCalls i_eTrcDetailLevel = ZS::Trace::ETraceDetailLevelMethodCalls::None,
-        ZS::Trace::ETraceDetailLevelMethodCalls i_eTrcDetailLevelNoisyMethods = ZS::Trace::ETraceDetailLevelMethodCalls::None );
+        ZS::System::EMethodTraceDetailLevel i_eTrcDetailLevel = ZS::System::EMethodTraceDetailLevel::None,
+        ZS::System::EMethodTraceDetailLevel i_eTrcDetailLevelNoisyMethods = ZS::System::EMethodTraceDetailLevel::None );
     virtual ~CModelIdxTreeTrcAdminObjs();
 public: // overridables
     virtual QString nameSpace() const { return NameSpace(); }
@@ -96,7 +96,7 @@ protected: // class members (hiding class members of base class CModelIdxTree)
 
 } // namespace GUI
 
-} // namespace Trace
+} // namespace System
 
 } // namespace ZS
 

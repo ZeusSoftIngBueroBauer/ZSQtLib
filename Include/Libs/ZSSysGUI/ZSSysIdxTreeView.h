@@ -44,12 +44,10 @@ class QLineEdit;
 
 namespace ZS
 {
-namespace Trace
-{
-class CTrcAdminObj;
-}
 namespace System
 {
+class CTrcAdminObj;
+
 namespace GUI
 {
 //******************************************************************************
@@ -63,7 +61,7 @@ public: // class methods
 public: // ctors and dtor
     CDelegateIdxTree(
         QObject* i_pObjParent = nullptr,
-        ZS::Trace::ETraceDetailLevelMethodCalls i_iTrcDetailLevel = ZS::Trace::ETraceDetailLevelMethodCalls::None );
+        EMethodTraceDetailLevel i_iTrcDetailLevel = EMethodTraceDetailLevel::None );
     virtual ~CDelegateIdxTree();
 public: // overridables
     virtual QString nameSpace() const { return NameSpace(); }
@@ -102,10 +100,10 @@ private: // instance members
     /*!< Trace detail level for method tracing.
          Trace output may not be controlled by trace admin objects
          if the index tree belongs the trace server. */
-    ZS::Trace::ETraceDetailLevelMethodCalls m_eTrcDetailLevel;
+    EMethodTraceDetailLevel m_eTrcDetailLevel;
     /*!< Trace admin object to control trace outputs of the class.
          The object will not be created if the index tree's belongs to the trace server. */
-    ZS::Trace::CTrcAdminObj* m_pTrcAdminObj;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObj;
 
 }; // class CDelegateIdxTree
 
@@ -129,7 +127,7 @@ public: // ctors and dtor
     CTreeViewIdxTree(
         CModelIdxTree* i_pModel,
         QWidget* i_pWdgtParent = nullptr,
-        ZS::Trace::ETraceDetailLevelMethodCalls i_eTrcDetailLevel = ZS::Trace::ETraceDetailLevelMethodCalls::None );
+        EMethodTraceDetailLevel i_eTrcDetailLevel = EMethodTraceDetailLevel::None );
     virtual ~CTreeViewIdxTree();
 public: // overridables
     virtual QString nameSpace() const { return NameSpace(); }
@@ -215,10 +213,10 @@ protected: // instance members
     /*!< Trace detail level for method tracing.
          Trace output may not be controlled by trace admin objects
          if the index tree belongs the trace server. */
-    ZS::Trace::ETraceDetailLevelMethodCalls m_eTrcDetailLevel;
+    EMethodTraceDetailLevel m_eTrcDetailLevel;
     /*!< Trace admin object to control trace outputs of the class.
          The object will not be created if the index tree's belongs to the trace server. */
-    ZS::Trace::CTrcAdminObj* m_pTrcAdminObj;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObj;
 
 }; // class CTreeViewIdxTree
 

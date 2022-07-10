@@ -36,7 +36,6 @@ may result in using the software modules.
 
 
 using namespace ZS::System;
-using namespace ZS::Trace;
 using namespace ZS::Ipc;
 
 
@@ -109,9 +108,9 @@ QList<QByteArray> CBlkTypeNone::receiveDataBlocks(
     QString strMthRet;
     QString strMthAddInfo;
 
-    if( i_pMthTracer != nullptr && i_pMthTracer->areMethodCallsActive(ETraceDetailLevelMethodCalls::EnterLeave) )
+    if( i_pMthTracer != nullptr && i_pMthTracer->areMethodCallsActive(EMethodTraceDetailLevel::EnterLeave) )
     {
-        if( i_pMthTracer->areMethodCallsActive(ETraceDetailLevelMethodCalls::ArgsNormal) )
+        if( i_pMthTracer->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
         {
             SSocketDscr socketDscr = i_pSocketWrapper->getSocketDscr();
             strMthInArgs  = socketDscr.getConnectionString();
@@ -146,7 +145,7 @@ QList<QByteArray> CBlkTypeNone::receiveDataBlocks(
                     /* transmitDir  */ ETransmitDir::Receive,
                     /* bBold        */ false,
                     /* strMsg       */ strMthAddInfo );
-                POST_OR_DELETE_MESSAGE(pMsgLogItem, i_pMthTracer, ETraceDetailLevelRuntimeInfo::DebugNormal);
+                POST_OR_DELETE_MESSAGE(pMsgLogItem, i_pMthTracer, ELogDetailLevel::DebugNormal);
                 pMsgLogItem = nullptr;
             }
         }
@@ -159,9 +158,9 @@ QList<QByteArray> CBlkTypeNone::receiveDataBlocks(
 
     } // while( (iBlkSize = i_pSocketWrapper->bytesAvailable()) > 0 )
 
-    if( i_pMthTracer != nullptr && i_pMthTracer->areMethodCallsActive(ETraceDetailLevelMethodCalls::EnterLeave) )
+    if( i_pMthTracer != nullptr && i_pMthTracer->areMethodCallsActive(EMethodTraceDetailLevel::EnterLeave) )
     {
-        if( i_pMthTracer->areMethodCallsActive(ETraceDetailLevelMethodCalls::ArgsNormal) )
+        if( i_pMthTracer->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
         {
             strMthRet = "Blocks [" + QString::number(arByteArrs.size()) + "]";
             if( arByteArrs.size() > 0 )
@@ -171,7 +170,7 @@ QList<QByteArray> CBlkTypeNone::receiveDataBlocks(
                 {
                     strMthRet += "Block [Size=" + QString::number(arByteArrs[idxBlk].size()) + "]";
 
-                    if( i_pMthTracer->isRuntimeInfoActive(ETraceDetailLevelRuntimeInfo::DebugNormal) )
+                    if( i_pMthTracer->isRuntimeInfoActive(ELogDetailLevel::DebugNormal) )
                     {
                         strMthRet += "(";
                         if( arByteArrs[idxBlk].size() > 0 )
@@ -207,9 +206,9 @@ bool CBlkTypeNone::writeDataBlock(
     QString strMthRet;
     QString strMthAddInfo;
 
-    if( i_pMthTracer != nullptr && i_pMthTracer->areMethodCallsActive(ETraceDetailLevelMethodCalls::EnterLeave) )
+    if( i_pMthTracer != nullptr && i_pMthTracer->areMethodCallsActive(EMethodTraceDetailLevel::EnterLeave) )
     {
-        if( i_pMthTracer->areMethodCallsActive(ETraceDetailLevelMethodCalls::ArgsNormal) )
+        if( i_pMthTracer->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
         {
             SSocketDscr socketDscr = i_pSocketWrapper->getSocketDscr();
             strMthInArgs  = socketDscr.getConnectionString();
@@ -232,16 +231,16 @@ bool CBlkTypeNone::writeDataBlock(
                 /* transmitDir  */ ETransmitDir::Send,
                 /* bBold        */ false,
                 /* strMsg       */ strMthAddInfo );
-            POST_OR_DELETE_MESSAGE(pMsgLogItem, i_pMthTracer, ETraceDetailLevelRuntimeInfo::DebugNormal);
+            POST_OR_DELETE_MESSAGE(pMsgLogItem, i_pMthTracer, ELogDetailLevel::DebugNormal);
             pMsgLogItem = nullptr;
         }
     }
 
     bOk = ( i_pSocketWrapper->write(i_byteArr) == i_byteArr.size() );
 
-    if( i_pMthTracer != nullptr && i_pMthTracer->areMethodCallsActive(ETraceDetailLevelMethodCalls::EnterLeave) )
+    if( i_pMthTracer != nullptr && i_pMthTracer->areMethodCallsActive(EMethodTraceDetailLevel::EnterLeave) )
     {
-        if( i_pMthTracer->areMethodCallsActive(ETraceDetailLevelMethodCalls::ArgsNormal) )
+        if( i_pMthTracer->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
         {
             strMthRet = bool2Str(bOk);
         }

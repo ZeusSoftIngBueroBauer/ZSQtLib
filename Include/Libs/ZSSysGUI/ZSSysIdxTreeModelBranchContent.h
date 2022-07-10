@@ -34,9 +34,6 @@ may result in using the software modules.
 
 namespace ZS
 {
-namespace Trace
-{
-}
 namespace System
 {
 namespace GUI
@@ -64,7 +61,7 @@ public: // ctors and dtor
     CModelIdxTreeBranchContent(
         CIdxTree* i_pIdxTree,
         QObject*  i_pObjParent = nullptr,
-        ZS::Trace::ETraceDetailLevelMethodCalls i_eTrcDetailLevel = ZS::Trace::ETraceDetailLevelMethodCalls::None );
+        EMethodTraceDetailLevel i_eTrcDetailLevel = EMethodTraceDetailLevel::None );
     virtual ~CModelIdxTreeBranchContent();
 public: // overridables
     virtual QString nameSpace() const { return CModelIdxTreeBranchContent::NameSpace(); }
@@ -116,7 +113,7 @@ protected: // instance members
     // of the model branch of idx tree model. The branch node of the index tree model may not contain
     // leaves whereas the root branch (the clone) of the content model may.
     CModelIdxTreeEntry* m_pModelBranch;
-    ZS::Trace::ETraceDetailLevelMethodCalls m_eTrcDetailLevel;
+    EMethodTraceDetailLevel m_eTrcDetailLevel;
 
 }; // class CModelIdxTreeBranchContent
 

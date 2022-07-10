@@ -35,7 +35,7 @@ class QXmlStreamWriter;
 
 namespace ZS
 {
-namespace Trace
+namespace System
 {
 class CTrcAdminObj;
 }
@@ -82,8 +82,8 @@ private: // copy ctor not allowed
 private: // assignment operator not allowed
     CTestStepIdxTree& operator = ( const CTestStepIdxTree& );
 protected: // instance members
-    CTest*                   m_pTest;
-    ZS::Trace::CTrcAdminObj* m_pTrcAdminObj;
+    CTest*                    m_pTest;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObj;
 
 }; // class CTestStepIdxTree
 

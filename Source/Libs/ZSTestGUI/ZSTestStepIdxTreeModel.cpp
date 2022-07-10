@@ -65,7 +65,6 @@ using namespace ZS::System;
 using namespace ZS::System::GUI;
 using namespace ZS::Test;
 using namespace ZS::Test::GUI;
-using namespace ZS::Trace;
 
 
 /*******************************************************************************
@@ -116,13 +115,13 @@ CModeldxTreeTestSteps::CModeldxTreeTestSteps(
     #ifdef ZS_TRACE_GUI_MODELS
     m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName());
     QString strMthInArgs;
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(ETraceDetailLevelMethodCalls::ArgsNormal) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = "IdxTree: " + QString(i_pTestStepIdxTree == nullptr ? "nullptr" : i_pTestStepIdxTree->objectName());
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iFilterLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* iFilterLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "ctor",
         /* strAddInfo   */ strMthInArgs );
     #endif
@@ -145,7 +144,7 @@ CModeldxTreeTestSteps::~CModeldxTreeTestSteps()
     #ifdef ZS_TRACE_GUI_MODELS
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* eDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
     mthTracer.onAdminObjAboutToBeReleased();
@@ -180,13 +179,13 @@ void CModeldxTreeTestSteps::setShowExpectedAndResultValuesOnlyIfTestStepFailed( 
 {
     #ifdef ZS_TRACE_GUI_MODELS
     QString strMthInArgs;
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(ETraceDetailLevelMethodCalls::ArgsNormal) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = bool2Str(i_bSet);
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iFilterLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* iFilterLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "setShowExpectedAndResultValuesOnlyIfTestStepFailed",
         /* strAddInfo   */ strMthInArgs );
     #endif
@@ -222,13 +221,13 @@ void CModeldxTreeTestSteps::onTestCurrentTestStepChanged( ZS::Test::CTestStep* i
 {
     #ifdef ZS_TRACE_GUI_MODELS
     QString strMthInArgs;
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(ETraceDetailLevelMethodCalls::ArgsNormal) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = "TestStep: " + QString(i_pTestStep == nullptr ? "nullptr" : i_pTestStep->path());
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iFilterLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* iFilterLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onTestCurrentTestStepChanged",
         /* strMthInArgs */ strMthInArgs );
     #endif
@@ -262,16 +261,16 @@ int CModeldxTreeTestSteps::columnCount( const QModelIndex& i_modelIdxParent ) co
 {
     #ifdef ZS_TRACE_GUI_MODELS
     QString strMthInArgs;
-    if(m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(ETraceDetailLevelMethodCalls::ArgsVerbose))
+    if(m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsVerbose))
     {
         strMthInArgs = "ModelIdxParent {" + ModelIdx2Str(i_modelIdxParent) + "}";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iFilterLevel */ ETraceDetailLevelMethodCalls::ArgsVerbose,
+        /* iFilterLevel */ EMethodTraceDetailLevel::ArgsVerbose,
         /* strMethod    */ "columnCount",
         /* strAddInfo   */ strMthInArgs );
-    if( mthTracer.areMethodCallsActive(ETraceDetailLevelMethodCalls::ArgsVerbose) )
+    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsVerbose) )
     {
         mthTracer.setMethodReturn(EColumnCount);
     }
@@ -289,7 +288,7 @@ QVariant CModeldxTreeTestSteps::headerData(
 {
     #ifdef ZS_TRACE_GUI_MODELS
     QString strMthInArgs;
-    if(m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(ETraceDetailLevelMethodCalls::ArgsVerbose))
+    if(m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsVerbose))
     {
         strMthInArgs = "Section: " + QString::number(i_iSection);
         strMthInArgs += ", Orientation: " + qOrientation2Str(i_orientation);
@@ -297,7 +296,7 @@ QVariant CModeldxTreeTestSteps::headerData(
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iFilterLevel */ ETraceDetailLevelMethodCalls::ArgsVerbose,
+        /* iFilterLevel */ EMethodTraceDetailLevel::ArgsVerbose,
         /* strMethod    */ "headerData",
         /* strAddInfo   */ strMthInArgs );
     #endif
@@ -320,7 +319,7 @@ QVariant CModeldxTreeTestSteps::headerData(
     }
 
     #ifdef ZS_TRACE_GUI_MODELS
-    if( mthTracer.areMethodCallsActive(ETraceDetailLevelMethodCalls::ArgsVerbose) )
+    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsVerbose) )
     {
         mthTracer.setMethodReturn(varData.toString());
     }
@@ -335,13 +334,13 @@ Qt::ItemFlags CModeldxTreeTestSteps::flags( const QModelIndex& i_modelIdx ) cons
 {
     #ifdef ZS_TRACE_GUI_MODELS
     QString strMthInArgs;
-    if(m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(ETraceDetailLevelMethodCalls::ArgsVerbose))
+    if(m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsVerbose))
     {
         strMthInArgs = "ModelIdx {" + ModelIdx2Str(i_modelIdx) + "}";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iFilterLevel */ ETraceDetailLevelMethodCalls::ArgsVerbose,
+        /* iFilterLevel */ EMethodTraceDetailLevel::ArgsVerbose,
         /* strMethod    */ "flags",
         /* strAddInfo   */ strMthInArgs );
     #endif
@@ -386,7 +385,7 @@ Qt::ItemFlags CModeldxTreeTestSteps::flags( const QModelIndex& i_modelIdx ) cons
     }
 
     #ifdef ZS_TRACE_GUI_MODELS
-    if( mthTracer.areMethodCallsActive(ETraceDetailLevelMethodCalls::ArgsVerbose) )
+    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsVerbose) )
     {
         mthTracer.setMethodReturn(qItemFlags2Str(uFlags));
     }
@@ -401,14 +400,14 @@ QVariant CModeldxTreeTestSteps::data( const QModelIndex& i_modelIdx, int i_iRole
 {
     #ifdef ZS_TRACE_GUI_MODELS
     QString strMthInArgs;
-    if(m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(ETraceDetailLevelMethodCalls::ArgsVerbose))
+    if(m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsVerbose))
     {
         strMthInArgs = "ModelIdx {" + ModelIdx2Str(i_modelIdx) + "}";
         strMthInArgs += ", Role: " + qItemDataRole2Str(i_iRole);
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iFilterLevel */ ETraceDetailLevelMethodCalls::ArgsVerbose,
+        /* iFilterLevel */ EMethodTraceDetailLevel::ArgsVerbose,
         /* strMethod    */ "data",
         /* strAddInfo   */ strMthInArgs );
     #endif
@@ -677,7 +676,7 @@ QVariant CModeldxTreeTestSteps::data( const QModelIndex& i_modelIdx, int i_iRole
 
 
     #ifdef ZS_TRACE_GUI_MODELS
-    if(mthTracer.areMethodCallsActive(ETraceDetailLevelMethodCalls::ArgsVerbose))
+    if(mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsVerbose))
     {
         mthTracer.setMethodReturn(varData.toString());
     }

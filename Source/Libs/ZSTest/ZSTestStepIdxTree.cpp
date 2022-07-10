@@ -54,7 +54,6 @@ may result in using the software modules.
 
 
 using namespace ZS::System;
-using namespace ZS::Trace;
 using namespace ZS::Test;
 
 
@@ -86,7 +85,7 @@ CTestStepIdxTree::CTestStepIdxTree( CTest* i_pTest ) :
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iFilterLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* iFilterLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "ctor",
         /* strMthArgs   */ strAddTrcInfo);
 
@@ -100,7 +99,7 @@ CTestStepIdxTree::~CTestStepIdxTree()
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iFilterLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* iFilterLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "dtor",
         /* strMthArgs   */ strAddTrcInfo);
 
@@ -247,14 +246,14 @@ SErrResultInfo CTestStepIdxTree::save( const QString& i_strAbsFilePath ) const
 
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(ETraceDetailLevelMethodCalls::ArgsNormal) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = "AbsFilePath: " + i_strAbsFilePath;
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iFilterLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* iFilterLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "save",
         /* strMthInArgs */ strMthInArgs );
 
@@ -312,7 +311,7 @@ SErrResultInfo CTestStepIdxTree::save( const QString& i_strAbsFilePath ) const
         }
     } // if( !errResultInfo.isErrorResult() )
 
-    if( mthTracer.areMethodCallsActive(ETraceDetailLevelMethodCalls::ArgsNormal) )
+    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         mthTracer.setMethodReturn(errResultInfo);
     }
@@ -340,14 +339,14 @@ SErrResultInfo CTestStepIdxTree::recall( const QString& i_strAbsFilePath )
 
     QString strMthInArgs;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(ETraceDetailLevelMethodCalls::ArgsNormal) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strMthInArgs = "AbsFilePath: " + i_strAbsFilePath;
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* iFilterLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* iFilterLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod       */ "recall",
         /* strMthInArgs    */ strMthInArgs );
 
@@ -601,7 +600,7 @@ SErrResultInfo CTestStepIdxTree::recall( const QString& i_strAbsFilePath )
         }
     } // if( !errResultInfo.isErrorResult() )
 
-    if( mthTracer.areMethodCallsActive(ETraceDetailLevelMethodCalls::ArgsNormal) )
+    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         mthTracer.setMethodReturn(errResultInfo);
     }

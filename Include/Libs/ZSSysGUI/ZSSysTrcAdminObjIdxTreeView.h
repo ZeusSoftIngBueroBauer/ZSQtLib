@@ -42,7 +42,7 @@ may result in using the software modules.
 
 namespace ZS
 {
-namespace Trace
+namespace System
 {
 namespace GUI
 {
@@ -54,13 +54,13 @@ class ZSSYSGUIDLL_API CDelegateIdxTreeTrcAdminObjs : public QStyledItemDelegate
 {
     Q_OBJECT
 public: // class methods
-    static QString NameSpace() { return "ZS::Trace::GUI"; }
+    static QString NameSpace() { return "ZS::System::GUI"; }
     static QString ClassName() { return "CDelegateIdxTreeTrcAdminObjs"; }
 public: // ctors and dtor
     CDelegateIdxTreeTrcAdminObjs(
         QObject* i_pObjParent = nullptr,
-        ZS::Trace::ETraceDetailLevelMethodCalls i_eTrcDetailLevel = ZS::Trace::ETraceDetailLevelMethodCalls::None,
-        ZS::Trace::ETraceDetailLevelMethodCalls i_eTrcDetailLevelNoisyMethods = ZS::Trace::ETraceDetailLevelMethodCalls::None );
+        ZS::System::EMethodTraceDetailLevel i_eTrcDetailLevel = ZS::System::EMethodTraceDetailLevel::None,
+        ZS::System::EMethodTraceDetailLevel i_eTrcDetailLevelNoisyMethods = ZS::System::EMethodTraceDetailLevel::None );
     virtual ~CDelegateIdxTreeTrcAdminObjs();
 public: // overridables
     virtual QString nameSpace() const { return NameSpace(); }
@@ -88,8 +88,8 @@ private: // assignment operator not implemented
     CDelegateIdxTreeTrcAdminObjs& operator = ( const CDelegateIdxTreeTrcAdminObjs& );
 protected: // instance members
     mutable QRect m_rectChkBoxTraceEnabled;
-    ZS::Trace::ETraceDetailLevelMethodCalls m_eTrcDetailLevel;
-    ZS::Trace::ETraceDetailLevelMethodCalls m_eTrcDetailLevelNoisyMethods;
+    ZS::System::EMethodTraceDetailLevel m_eTrcDetailLevel;
+    ZS::System::EMethodTraceDetailLevel m_eTrcDetailLevelNoisyMethods;
 
 }; // class CDelegateIdxTreeTrcAdminObjs
 
@@ -99,14 +99,14 @@ class ZSSYSGUIDLL_API CTreeViewIdxTreeTrcAdminObjs : public QTreeView
 {
     Q_OBJECT
 public: // class methods
-    static QString NameSpace() { return "ZS::Trace::GUI"; }
+    static QString NameSpace() { return "ZS::System::GUI"; }
     static QString ClassName() { return "CTreeViewIdxTreeTrcAdminObjs"; }
 public: // ctors and dtor
     CTreeViewIdxTreeTrcAdminObjs(
         CModelIdxTreeTrcAdminObjs* i_pModel,
         QWidget* i_pWdgtParent = nullptr,
-        ZS::Trace::ETraceDetailLevelMethodCalls i_eTrcDetailLevel = ZS::Trace::ETraceDetailLevelMethodCalls::None,
-        ZS::Trace::ETraceDetailLevelMethodCalls i_eTrcDetailLevelNoisyMethods = ZS::Trace::ETraceDetailLevelMethodCalls::None );
+        ZS::System::EMethodTraceDetailLevel i_eTrcDetailLevel = ZS::System::EMethodTraceDetailLevel::None,
+        ZS::System::EMethodTraceDetailLevel i_eTrcDetailLevelNoisyMethods = ZS::System::EMethodTraceDetailLevel::None );
     virtual ~CTreeViewIdxTreeTrcAdminObjs();
 public: // overridables
     virtual QString nameSpace() const { return NameSpace(); }
@@ -148,14 +148,14 @@ protected: // instance members
     QAction*    m_pActionNameSpaceSetAdminObjsTraceDataFilter;
     QModelIndex m_modelIdxSelectedOnMousePressEvent;
     QModelIndex m_modelIdxSelectedOnMouseReleaseEvent;
-    ZS::Trace::ETraceDetailLevelMethodCalls m_eTrcDetailLevel;
-    ZS::Trace::ETraceDetailLevelMethodCalls m_eTrcDetailLevelNoisyMethods;
+    ZS::System::EMethodTraceDetailLevel m_eTrcDetailLevel;
+    ZS::System::EMethodTraceDetailLevel m_eTrcDetailLevelNoisyMethods;
 
 }; // class CTreeViewIdxTreeTrcAdminObjs
 
 } // namespace GUI
 
-} // namespace Trace
+} // namespace System
 
 } // namespace ZS
 

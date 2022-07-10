@@ -46,20 +46,16 @@ global type definitions and constants
 
 namespace ZS
 {
-namespace Trace
-{
-class CMethodTracer;
-class CTrcAdminObj;
-}
-
 namespace System
 {
 class CException;
+class CMethodTracer;
 class CMsg;
 class CMsgReq;
 class CMsgCon;
 class CMsgInd;
 class CMsgAck;
+class CTrcAdminObj;
 
 ZSSYSDLL_API QString systemMsgType2Str( int i_iMsgType, EEnumEntryAliasStr i_alias = EEnumEntryAliasStrSymbol );
 ZSSYSDLL_API MsgProtocol::TSystemMsgType str2SystemMsgType( const QString& i_str, EEnumEntryAliasStr i_alias = EEnumEntryAliasStrSymbol );
@@ -103,7 +99,7 @@ QObject's and the member elements receiver and sender will be set to nullptr if 
 objects are destroyed. The macro checks whether both the sender and receiver are
 still alive before posting the message. Otherwise the message is deleted.
 ------------------------------------------------------------------------------*/
-ZSSYSDLL_API void POST_OR_DELETE_MESSAGE( QEvent* i_pMsg, ZS::Trace::CMethodTracer* i_pMethodTracer = nullptr, ZS::Trace::ETraceDetailLevelRuntimeInfo i_eFilterDetailLevel = ZS::Trace::ETraceDetailLevelRuntimeInfo::None );
+ZSSYSDLL_API void POST_OR_DELETE_MESSAGE( QEvent* i_pMsg, CMethodTracer* i_pMethodTracer = nullptr, ELogDetailLevel i_eFilterDetailLevel = ELogDetailLevel::None );
 
 /*------------------------------------------------------------------------------
 For debugging purposes (which was especially necessary to create python bindings)
@@ -124,7 +120,7 @@ runtime the applications destructor may add log entries in the trace file for
 each not destroyed message object. This method may also be called if tracing
 of message objects is not enabled.
 ------------------------------------------------------------------------------*/
-ZSSYSDLL_API void TRACE_LIVING_MESSAGE_OBJECTS( ZS::Trace::CMethodTracer* i_pMethodTracer );
+ZSSYSDLL_API void TRACE_LIVING_MESSAGE_OBJECTS( CMethodTracer* i_pMethodTracer );
 
 
 //******************************************************************************

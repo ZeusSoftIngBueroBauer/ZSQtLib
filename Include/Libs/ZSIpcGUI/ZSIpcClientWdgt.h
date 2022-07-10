@@ -58,14 +58,12 @@ namespace ZS
 {
 namespace System
 {
+class CTrcAdminObj;
+
 namespace GUI
 {
 class CProgressBar;
 }
-}
-namespace Trace
-{
-class CTrcAdminObj;
 }
 
 namespace Ipc
@@ -212,7 +210,7 @@ protected: // instance members
     QLabel*                         m_pLblMsgLog;
     STrcMsgLogSettings              m_trcMsgLogSettings;
     CWdgtTrcMsgLog*                 m_pWdgtTrcMsgLog;
-    Trace::CTrcAdminObj*            m_pTrcAdminObj;
+    ZS::System::CTrcAdminObj*       m_pTrcAdminObj;
 
 }; // class CWdgtIpcClient
 

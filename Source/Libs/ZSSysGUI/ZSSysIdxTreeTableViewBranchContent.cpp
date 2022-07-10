@@ -48,7 +48,6 @@ may result in using the software modules.
 
 using namespace ZS::System;
 using namespace ZS::System::GUI;
-using namespace ZS::Trace;
 
 
 /*******************************************************************************
@@ -63,7 +62,7 @@ public: // ctors and dtor
 CTableViewIdxTreeBranchContent::CTableViewIdxTreeBranchContent(
     CModelIdxTree* i_pModelIdxTree,
     QWidget* i_pWdgtParent,
-    ETraceDetailLevelMethodCalls i_eTrcDetailLevel ) :
+    EMethodTraceDetailLevel i_eTrcDetailLevel ) :
 //------------------------------------------------------------------------------
     QTableView(i_pWdgtParent),
     m_pModel(nullptr),
@@ -91,7 +90,7 @@ CTableViewIdxTreeBranchContent::CTableViewIdxTreeBranchContent(
 
     QString strMthInArgs;
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strMthInArgs = "ModelIdxTree: " + QString(i_pModelIdxTree == nullptr ? "nullptr" : i_pModelIdxTree->objectName());
     }
@@ -99,7 +98,7 @@ CTableViewIdxTreeBranchContent::CTableViewIdxTreeBranchContent(
     CMethodTracer mthTracer(
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -274,7 +273,7 @@ CTableViewIdxTreeBranchContent::~CTableViewIdxTreeBranchContent()
     CMethodTracer mthTracer(
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -308,7 +307,7 @@ CTableViewIdxTreeBranchContent::~CTableViewIdxTreeBranchContent()
     m_pActionLeavePaste = nullptr;
     //m_modelIdxSelectedOnMousePressEvent;
     //m_modelIdxSelectedOnMouseReleaseEvent;
-    m_eTrcDetailLevel = static_cast<ETraceDetailLevelMethodCalls>(0);
+    m_eTrcDetailLevel = static_cast<EMethodTraceDetailLevel>(0);
 
 } // dtor
 
@@ -322,7 +321,7 @@ void CTableViewIdxTreeBranchContent::setBranch( CIdxTreeEntry* i_pBranch )
 {
     QString strMthInArgs;
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strMthInArgs = "Branch: " + QString(i_pBranch == nullptr ? "nullptr" : i_pBranch->keyInTree());
     }
@@ -330,7 +329,7 @@ void CTableViewIdxTreeBranchContent::setBranch( CIdxTreeEntry* i_pBranch )
     CMethodTracer mthTracer(
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -357,7 +356,7 @@ void CTableViewIdxTreeBranchContent::setSortOrder( EIdxTreeSortOrder i_sortOrder
 {
     QString strMthInArgs;
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strMthInArgs = "SortOrder: " + idxTreeSortOrder2Str(i_sortOrder);
     }
@@ -365,7 +364,7 @@ void CTableViewIdxTreeBranchContent::setSortOrder( EIdxTreeSortOrder i_sortOrder
     CMethodTracer mthTracer(
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -392,16 +391,16 @@ void CTableViewIdxTreeBranchContent::keyPressEvent( QKeyEvent* i_pEv )
 {
     QString strMthInArgs;
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
-        int iEventDetails = m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsDetailed ? 1 : 0;
+        int iEventDetails = m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsDetailed ? 1 : 0;
         strMthInArgs = "Event {" + qKeyEvent2Str(i_pEv, iEventDetails) + "}";
     }
 
     CMethodTracer mthTracer(
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -423,16 +422,16 @@ void CTableViewIdxTreeBranchContent::mousePressEvent( QMouseEvent* i_pEv )
 {
     QString strMthInArgs;
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
-        int iEventDetails = m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsDetailed ? 1 : 0;
+        int iEventDetails = m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsDetailed ? 1 : 0;
         strMthInArgs = "Event {" + qMouseEvent2Str(i_pEv, iEventDetails) + "}";
     }
 
     CMethodTracer mthTracer(
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -447,7 +446,7 @@ void CTableViewIdxTreeBranchContent::mousePressEvent( QMouseEvent* i_pEv )
     {
         CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(m_modelIdxSelectedOnMousePressEvent.internalPointer());
 
-        if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+        if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
         {
             strMthInArgs = "ModelIdxPressed {" + CModelIdxTree::ModelIdx2Str(m_modelIdxSelectedOnMousePressEvent) + "}";
             mthTracer.trace(strMthInArgs);
@@ -495,16 +494,16 @@ void CTableViewIdxTreeBranchContent::mouseReleaseEvent( QMouseEvent* i_pEv )
 {
     QString strMthInArgs;
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
-        int iEventDetails = m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsDetailed ? 1 : 0;
+        int iEventDetails = m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsDetailed ? 1 : 0;
         strMthInArgs = "Event {" + qMouseEvent2Str(i_pEv, iEventDetails) + "}";
     }
 
     CMethodTracer mthTracer(
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -519,7 +518,7 @@ void CTableViewIdxTreeBranchContent::mouseReleaseEvent( QMouseEvent* i_pEv )
     {
         CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(m_modelIdxSelectedOnMouseReleaseEvent.internalPointer());
 
-        if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+        if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
         {
             strMthInArgs = "ModelIdxReleased {" + CModelIdxTree::ModelIdx2Str(m_modelIdxSelectedOnMouseReleaseEvent) + "}";
             mthTracer.trace(strMthInArgs);
@@ -550,7 +549,7 @@ void CTableViewIdxTreeBranchContent::onActionBranchCreateNewBranchTriggered( boo
 {
     QString strMthInArgs;
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strMthInArgs = "Checked: " + bool2Str(i_bChecked);
     }
@@ -558,7 +557,7 @@ void CTableViewIdxTreeBranchContent::onActionBranchCreateNewBranchTriggered( boo
     CMethodTracer mthTracer(
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -577,7 +576,7 @@ void CTableViewIdxTreeBranchContent::onActionBranchCreateNewLeaveTriggered( bool
 {
     QString strMthInArgs;
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strMthInArgs = "Checked: " + bool2Str(i_bChecked);
     }
@@ -585,7 +584,7 @@ void CTableViewIdxTreeBranchContent::onActionBranchCreateNewLeaveTriggered( bool
     CMethodTracer mthTracer(
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -604,7 +603,7 @@ void CTableViewIdxTreeBranchContent::onActionBranchDeleteTriggered( bool i_bChec
 {
     QString strMthInArgs;
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strMthInArgs = "Checked: " + bool2Str(i_bChecked);
     }
@@ -612,7 +611,7 @@ void CTableViewIdxTreeBranchContent::onActionBranchDeleteTriggered( bool i_bChec
     CMethodTracer mthTracer(
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -631,7 +630,7 @@ void CTableViewIdxTreeBranchContent::onActionBranchCutTriggered( bool i_bChecked
 {
     QString strMthInArgs;
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strMthInArgs = "Checked: " + bool2Str(i_bChecked);
     }
@@ -639,7 +638,7 @@ void CTableViewIdxTreeBranchContent::onActionBranchCutTriggered( bool i_bChecked
     CMethodTracer mthTracer(
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -658,7 +657,7 @@ void CTableViewIdxTreeBranchContent::onActionBranchCopyTriggered( bool i_bChecke
 {
     QString strMthInArgs;
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strMthInArgs = "Checked: " + bool2Str(i_bChecked);
     }
@@ -666,7 +665,7 @@ void CTableViewIdxTreeBranchContent::onActionBranchCopyTriggered( bool i_bChecke
     CMethodTracer mthTracer(
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -685,7 +684,7 @@ void CTableViewIdxTreeBranchContent::onActionBranchPasteTriggered( bool i_bCheck
 {
     QString strMthInArgs;
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strMthInArgs = "Checked: " + bool2Str(i_bChecked);
     }
@@ -693,7 +692,7 @@ void CTableViewIdxTreeBranchContent::onActionBranchPasteTriggered( bool i_bCheck
     CMethodTracer mthTracer(
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -716,7 +715,7 @@ void CTableViewIdxTreeBranchContent::onActionLeaveDeleteTriggered( bool i_bCheck
 {
     QString strMthInArgs;
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strMthInArgs = "Checked: " + bool2Str(i_bChecked);
     }
@@ -724,7 +723,7 @@ void CTableViewIdxTreeBranchContent::onActionLeaveDeleteTriggered( bool i_bCheck
     CMethodTracer mthTracer(
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -743,7 +742,7 @@ void CTableViewIdxTreeBranchContent::onActionLeaveCutTriggered( bool i_bChecked 
 {
     QString strMthInArgs;
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strMthInArgs = "Checked: " + bool2Str(i_bChecked);
     }
@@ -751,7 +750,7 @@ void CTableViewIdxTreeBranchContent::onActionLeaveCutTriggered( bool i_bChecked 
     CMethodTracer mthTracer(
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -770,7 +769,7 @@ void CTableViewIdxTreeBranchContent::onActionLeaveCopyTriggered( bool i_bChecked
 {
     QString strMthInArgs;
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strMthInArgs = "Checked: " + bool2Str(i_bChecked);
     }
@@ -778,7 +777,7 @@ void CTableViewIdxTreeBranchContent::onActionLeaveCopyTriggered( bool i_bChecked
     CMethodTracer mthTracer(
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
@@ -797,7 +796,7 @@ void CTableViewIdxTreeBranchContent::onActionLeavePasteTriggered( bool i_bChecke
 {
     QString strMthInArgs;
 
-    if( m_eTrcDetailLevel >= ETraceDetailLevelMethodCalls::ArgsNormal )
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strMthInArgs = "Checked: " + bool2Str(i_bChecked);
     }
@@ -805,7 +804,7 @@ void CTableViewIdxTreeBranchContent::onActionLeavePasteTriggered( bool i_bChecke
     CMethodTracer mthTracer(
         /* pTrcServer         */ CTrcServer::GetInstance(),
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
-        /* eFilterDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),

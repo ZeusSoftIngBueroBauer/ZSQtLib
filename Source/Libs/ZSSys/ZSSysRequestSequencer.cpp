@@ -38,7 +38,6 @@ may result in using the software modules.
 #include "ZSSys/ZSSysMemLeakDump.h"
 
 using namespace ZS::System;
-using namespace ZS::Trace;
 
 
 /*******************************************************************************
@@ -161,7 +160,7 @@ CRequestSequencer::CRequestSequencer(
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* eDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "ctor",
         /* strAddInfo   */ "" );
 
@@ -181,7 +180,7 @@ CRequestSequencer::~CRequestSequencer()
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* eDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
 
@@ -254,7 +253,7 @@ qint64 CRequestSequencer::addGroup(
 
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(ETraceDetailLevelMethodCalls::ArgsNormal) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strAddTrcInfo  = "Request: " + i_strRequest + " (" + QString::number(i_request) + ")";
         strAddTrcInfo += ", Creator: " + buildPathStr("::", i_strCreatorNameSpace, i_strCreatorClassName, QString(i_pObjCreator == nullptr ? "nullptr" : i_pObjCreator->objectName()) );
@@ -264,7 +263,7 @@ qint64 CRequestSequencer::addGroup(
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* eDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "addGroup",
         /* strAddInfo   */ strAddTrcInfo );
 
@@ -317,7 +316,7 @@ qint64 CRequestSequencer::addRequest(
 
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(ETraceDetailLevelMethodCalls::ArgsNormal) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strAddTrcInfo  = "Request: " + i_strRequest + " (" + QString::number(i_request) + ")";
         strAddTrcInfo += ", Creator: " + buildPathStr("::", i_strCreatorNameSpace, i_strCreatorClassName, QString(i_pObjCreator == nullptr ? "nullptr" : i_pObjCreator->objectName()) );
@@ -332,7 +331,7 @@ qint64 CRequestSequencer::addRequest(
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* eDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "addRequest",
         /* strAddInfo   */ strAddTrcInfo );
 
@@ -386,7 +385,7 @@ qint64 CRequestSequencer::addRequest(
 
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(ETraceDetailLevelMethodCalls::ArgsNormal) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         strAddTrcInfo  = "Request: " + i_strRequest + " (" + QString::number(i_request) + ")";
         strAddTrcInfo += ", Creator: " + buildPathStr("::", i_strCreatorNameSpace, i_strCreatorClassName, QString(i_pObjCreator == nullptr ? "nullptr" : i_pObjCreator->objectName()) );
@@ -401,7 +400,7 @@ qint64 CRequestSequencer::addRequest(
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* eDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "addRequest",
         /* strAddInfo   */ strAddTrcInfo );
 
@@ -450,11 +449,11 @@ void CRequestSequencer::removeRequest( qint64 i_iReqId )
 
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(ETraceDetailLevelMethodCalls::ArgsNormal) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         int iAddTrcInfoDetailLevel = 0;
-        if( m_pTrcAdminObj->getMethodCallsTraceDetailLevel() >= ETraceDetailLevelMethodCalls::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
-        else if( m_pTrcAdminObj->getMethodCallsTraceDetailLevel() >= ETraceDetailLevelMethodCalls::ArgsDetailed ) iAddTrcInfoDetailLevel = 1;
+        if( m_pTrcAdminObj->getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
+        else if( m_pTrcAdminObj->getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsDetailed ) iAddTrcInfoDetailLevel = 1;
 
         strAddTrcInfo  = "Request {";
         strAddTrcInfo += "Id: " + QString::number(i_iReqId);
@@ -464,7 +463,7 @@ void CRequestSequencer::removeRequest( qint64 i_iReqId )
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* eDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "removeRequest",
         /* strAddInfo   */ strAddTrcInfo );
 
@@ -523,18 +522,18 @@ void CRequestSequencer::start( CRequest* i_pReqParent )
 
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(ETraceDetailLevelMethodCalls::ArgsNormal) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         int iAddTrcInfoDetailLevel = 0;
-        if( m_pTrcAdminObj->getMethodCallsTraceDetailLevel() >= ETraceDetailLevelMethodCalls::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
-        else if( m_pTrcAdminObj->getMethodCallsTraceDetailLevel() >= ETraceDetailLevelMethodCalls::ArgsDetailed ) iAddTrcInfoDetailLevel = 1;
+        if( m_pTrcAdminObj->getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
+        else if( m_pTrcAdminObj->getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsDetailed ) iAddTrcInfoDetailLevel = 1;
 
         strAddTrcInfo = "ReqParent {" + QString( i_pReqParent == nullptr ? "nullptr" : i_pReqParent->getAddTrcInfoStr(iAddTrcInfoDetailLevel) ) + "}";
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* eDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "start",
         /* strAddInfo   */ strAddTrcInfo );
 
@@ -786,7 +785,7 @@ void CRequestSequencer::clear()
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* eDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "clear",
         /* strAddInfo   */ "" );
 
@@ -933,22 +932,22 @@ SRequestDscr CRequestSequencer::add( SRequestSeqEntry* i_pReqSeqEntry )
 
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(ETraceDetailLevelMethodCalls::ArgsNormal) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         int iAddTrcInfoDetailLevel = 0;
-        if( m_pTrcAdminObj->getMethodCallsTraceDetailLevel() >= ETraceDetailLevelMethodCalls::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
-        else if( m_pTrcAdminObj->getMethodCallsTraceDetailLevel() >= ETraceDetailLevelMethodCalls::ArgsDetailed ) iAddTrcInfoDetailLevel = 1;
+        if( m_pTrcAdminObj->getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
+        else if( m_pTrcAdminObj->getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsDetailed ) iAddTrcInfoDetailLevel = 1;
 
         strAddTrcInfo = "ReqSeqEntry: " + i_pReqSeqEntry->m_reqDscr.getAddTrcInfoStr(iAddTrcInfoDetailLevel);
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* eDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "add",
         /* strAddInfo   */ strAddTrcInfo );
 
-    if( mthTracer.isRuntimeInfoActive(ETraceDetailLevelRuntimeInfo::DebugDetailed) )
+    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed) )
     {
         if( pReqSeqEntryParent == nullptr )
         {
@@ -1097,11 +1096,11 @@ CRequest* CRequestSequencer::startRequest(
 
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(ETraceDetailLevelMethodCalls::ArgsNormal) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         int iAddTrcInfoDetailLevel = 0;
-        if( m_pTrcAdminObj->getMethodCallsTraceDetailLevel() >= ETraceDetailLevelMethodCalls::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
-        else if( m_pTrcAdminObj->getMethodCallsTraceDetailLevel() >= ETraceDetailLevelMethodCalls::ArgsDetailed ) iAddTrcInfoDetailLevel = 1;
+        if( m_pTrcAdminObj->getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
+        else if( m_pTrcAdminObj->getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsDetailed ) iAddTrcInfoDetailLevel = 1;
 
         strAddTrcInfo  = "Request {";
         strAddTrcInfo += "Id: " + QString::number(i_iReqId);
@@ -1114,7 +1113,7 @@ CRequest* CRequestSequencer::startRequest(
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* eDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "startRequest",
         /* strAddInfo   */ strAddTrcInfo );
 
@@ -1486,11 +1485,11 @@ CRequest* CRequestSequencer::startRequest(
         }
     }
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(ETraceDetailLevelMethodCalls::ArgsNormal) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         int iAddTrcInfoDetailLevel = 0;
-        if( m_pTrcAdminObj->getMethodCallsTraceDetailLevel() >= ETraceDetailLevelMethodCalls::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
-        else if( m_pTrcAdminObj->getMethodCallsTraceDetailLevel() >= ETraceDetailLevelMethodCalls::ArgsDetailed ) iAddTrcInfoDetailLevel = 1;
+        if( m_pTrcAdminObj->getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
+        else if( m_pTrcAdminObj->getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsDetailed ) iAddTrcInfoDetailLevel = 1;
 
         strAddTrcInfo = QString( pReq == nullptr ? "SUCCESS" : "{" + pReq->getAddTrcInfoStr(iAddTrcInfoDetailLevel) + "}" );
         mthTracer.setMethodReturn(strAddTrcInfo);
@@ -1506,11 +1505,11 @@ void CRequestSequencer::clear( SRequestSeqEntry* i_pReqSeqEntry )
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(ETraceDetailLevelMethodCalls::ArgsNormal) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         int iAddTrcInfoDetailLevel = 0;
-        if( m_pTrcAdminObj->getMethodCallsTraceDetailLevel() >= ETraceDetailLevelMethodCalls::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
-        else if( m_pTrcAdminObj->getMethodCallsTraceDetailLevel() >= ETraceDetailLevelMethodCalls::ArgsDetailed ) iAddTrcInfoDetailLevel = 1;
+        if( m_pTrcAdminObj->getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
+        else if( m_pTrcAdminObj->getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsDetailed ) iAddTrcInfoDetailLevel = 1;
 
         strAddTrcInfo  = "Request {";
         strAddTrcInfo += i_pReqSeqEntry == nullptr ? "nullptr" : i_pReqSeqEntry->m_reqDscr.getAddTrcInfoStr(iAddTrcInfoDetailLevel);
@@ -1521,7 +1520,7 @@ void CRequestSequencer::clear( SRequestSeqEntry* i_pReqSeqEntry )
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* eDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ strMth,
         /* strAddInfo   */ strAddTrcInfo );
 
@@ -1593,11 +1592,11 @@ void CRequestSequencer::reset( SRequestSeqEntry* i_pReqSeqEntry, bool i_bRecursi
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(ETraceDetailLevelMethodCalls::ArgsNormal) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         int iAddTrcInfoDetailLevel = 0;
-        if( m_pTrcAdminObj->getMethodCallsTraceDetailLevel() >= ETraceDetailLevelMethodCalls::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
-        else if( m_pTrcAdminObj->getMethodCallsTraceDetailLevel() >= ETraceDetailLevelMethodCalls::ArgsDetailed ) iAddTrcInfoDetailLevel = 1;
+        if( m_pTrcAdminObj->getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
+        else if( m_pTrcAdminObj->getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsDetailed ) iAddTrcInfoDetailLevel = 1;
 
         strAddTrcInfo  = "Request {";
         strAddTrcInfo += i_pReqSeqEntry == nullptr ? "nullptr" : i_pReqSeqEntry->m_reqDscr.getAddTrcInfoStr(iAddTrcInfoDetailLevel);
@@ -1607,7 +1606,7 @@ void CRequestSequencer::reset( SRequestSeqEntry* i_pReqSeqEntry, bool i_bRecursi
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* eDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "reset",
         /* strAddInfo   */ strAddTrcInfo );
 
@@ -1689,11 +1688,11 @@ void CRequestSequencer::updateParentRequest( SRequestSeqEntry* i_pReqSeqEntry )
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(ETraceDetailLevelMethodCalls::ArgsNormal) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         int iAddTrcInfoDetailLevel = 0;
-        if( m_pTrcAdminObj->getMethodCallsTraceDetailLevel() >= ETraceDetailLevelMethodCalls::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
-        else if( m_pTrcAdminObj->getMethodCallsTraceDetailLevel() >= ETraceDetailLevelMethodCalls::ArgsDetailed ) iAddTrcInfoDetailLevel = 1;
+        if( m_pTrcAdminObj->getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
+        else if( m_pTrcAdminObj->getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsDetailed ) iAddTrcInfoDetailLevel = 1;
 
         strAddTrcInfo  = "Request {";
         strAddTrcInfo += i_pReqSeqEntry == nullptr ? "nullptr" : i_pReqSeqEntry->m_reqDscr.getAddTrcInfoStr(iAddTrcInfoDetailLevel);
@@ -1702,18 +1701,18 @@ void CRequestSequencer::updateParentRequest( SRequestSeqEntry* i_pReqSeqEntry )
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* eDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "updateParentRequest",
         /* strAddInfo   */ strAddTrcInfo );
 
     // Root entry ..
     if( i_pReqSeqEntry->m_reqDscr.m_iParentId == m_iReqIdParent && m_pReqParent != nullptr )
     {
-        if( mthTracer.isRuntimeInfoActive(ETraceDetailLevelRuntimeInfo::DebugDetailed) )
+        if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed) )
         {
             int iAddTrcInfoDetailLevel = 0;
-            if( m_pTrcAdminObj->getMethodCallsTraceDetailLevel() >= ETraceDetailLevelMethodCalls::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
-            else if( m_pTrcAdminObj->getMethodCallsTraceDetailLevel() >= ETraceDetailLevelMethodCalls::ArgsDetailed ) iAddTrcInfoDetailLevel = 1;
+            if( m_pTrcAdminObj->getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
+            else if( m_pTrcAdminObj->getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsDetailed ) iAddTrcInfoDetailLevel = 1;
 
             strAddTrcInfo  = "ParentRequest {";
             strAddTrcInfo += m_pReqParent == nullptr ? "nullptr" : m_pReqParent->getAddTrcInfoStr(iAddTrcInfoDetailLevel);
@@ -1773,11 +1772,11 @@ void CRequestSequencer::updateParentRequest( SRequestSeqEntry* i_pReqSeqEntry )
         m_pReqParent->setProgressInPerCent(iProgress_perCent);
         m_pReqParent->update();
 
-        if( mthTracer.isRuntimeInfoActive(ETraceDetailLevelRuntimeInfo::DebugDetailed) )
+        if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed) )
         {
             int iAddTrcInfoDetailLevel = 0;
-            if( m_pTrcAdminObj->getMethodCallsTraceDetailLevel() >= ETraceDetailLevelMethodCalls::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
-            else if( m_pTrcAdminObj->getMethodCallsTraceDetailLevel() >= ETraceDetailLevelMethodCalls::ArgsDetailed ) iAddTrcInfoDetailLevel = 1;
+            if( m_pTrcAdminObj->getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
+            else if( m_pTrcAdminObj->getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsDetailed ) iAddTrcInfoDetailLevel = 1;
 
             strAddTrcInfo  = "ParentRequest {";
             strAddTrcInfo += m_pReqParent == nullptr ? "nullptr" : m_pReqParent->getAddTrcInfoStr(iAddTrcInfoDetailLevel);
@@ -1791,11 +1790,11 @@ void CRequestSequencer::updateParentRequest( SRequestSeqEntry* i_pReqSeqEntry )
     {
         SRequestSeqEntry* pReqSeqEntryParent = m_hshReqSeqs[i_pReqSeqEntry->m_reqDscr.m_iParentId];
 
-        if( mthTracer.isRuntimeInfoActive(ETraceDetailLevelRuntimeInfo::DebugDetailed) )
+        if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed) )
         {
             int iAddTrcInfoDetailLevel = 0;
-            if( m_pTrcAdminObj->getMethodCallsTraceDetailLevel() >= ETraceDetailLevelMethodCalls::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
-            else if( m_pTrcAdminObj->getMethodCallsTraceDetailLevel() >= ETraceDetailLevelMethodCalls::ArgsDetailed ) iAddTrcInfoDetailLevel = 1;
+            if( m_pTrcAdminObj->getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
+            else if( m_pTrcAdminObj->getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsDetailed ) iAddTrcInfoDetailLevel = 1;
 
             strAddTrcInfo  = "ParentRequest {";
             strAddTrcInfo += pReqSeqEntryParent == nullptr ? "nullptr" : pReqSeqEntryParent->m_reqDscr.getAddTrcInfoStr(iAddTrcInfoDetailLevel);
@@ -1868,11 +1867,11 @@ void CRequestSequencer::updateParentRequest( SRequestSeqEntry* i_pReqSeqEntry )
             }
         } // if( pReqSeqEntryParent != nullptr )
 
-        if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isRuntimeInfoActive(ETraceDetailLevelRuntimeInfo::DebugNormal) )
+        if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isRuntimeInfoActive(ELogDetailLevel::DebugNormal) )
         {
             int iAddTrcInfoDetailLevel = 0;
-            if( m_pTrcAdminObj->getRuntimeInfoTraceDetailLevel() >= ETraceDetailLevelRuntimeInfo::DebugVerbose ) iAddTrcInfoDetailLevel = 2;
-            else if( m_pTrcAdminObj->getRuntimeInfoTraceDetailLevel() >= ETraceDetailLevelRuntimeInfo::DebugDetailed ) iAddTrcInfoDetailLevel = 1;
+            if( m_pTrcAdminObj->getRuntimeInfoTraceDetailLevel() >= ELogDetailLevel::DebugVerbose ) iAddTrcInfoDetailLevel = 2;
+            else if( m_pTrcAdminObj->getRuntimeInfoTraceDetailLevel() >= ELogDetailLevel::DebugDetailed ) iAddTrcInfoDetailLevel = 1;
 
             strAddTrcInfo  = "ParentRequest {";
             strAddTrcInfo += pReqSeqEntryParent == nullptr ? "nullptr" : pReqSeqEntryParent->m_reqDscr.getAddTrcInfoStr(iAddTrcInfoDetailLevel);
@@ -1893,13 +1892,13 @@ void CRequestSequencer::onParentRequestDestroyed( QObject* /*i_pReqParent*/ )
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(ETraceDetailLevelMethodCalls::ArgsNormal) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* eDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onParentRequestDestroyed",
         /* strAddInfo   */ strAddTrcInfo );
 
@@ -1938,11 +1937,11 @@ void CRequestSequencer::onParentRequestDestroyed( SRequestSeqEntry* i_pReqSeqEnt
 {
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(ETraceDetailLevelMethodCalls::ArgsNormal) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         int iAddTrcInfoDetailLevel = 0;
-        if( m_pTrcAdminObj->getMethodCallsTraceDetailLevel() >= ETraceDetailLevelMethodCalls::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
-        else if( m_pTrcAdminObj->getMethodCallsTraceDetailLevel() >= ETraceDetailLevelMethodCalls::ArgsDetailed ) iAddTrcInfoDetailLevel = 1;
+        if( m_pTrcAdminObj->getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
+        else if( m_pTrcAdminObj->getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsDetailed ) iAddTrcInfoDetailLevel = 1;
 
         strAddTrcInfo  = "Request {";
         strAddTrcInfo += i_pReqSeqEntry == nullptr ? "nullptr" : i_pReqSeqEntry->m_reqDscr.getAddTrcInfoStr(iAddTrcInfoDetailLevel);
@@ -1951,7 +1950,7 @@ void CRequestSequencer::onParentRequestDestroyed( SRequestSeqEntry* i_pReqSeqEnt
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* eDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onParentRequestDestroyed",
         /* strAddInfo   */ strAddTrcInfo );
 
@@ -2016,18 +2015,18 @@ void CRequestSequencer::onRequestChanged( ZS::System::SRequestDscr i_reqDscr )
 
     QString strAddTrcInfo;
 
-    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(ETraceDetailLevelMethodCalls::ArgsNormal) )
+    if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         int iAddTrcInfoDetailLevel = 0;
-        if( m_pTrcAdminObj->getMethodCallsTraceDetailLevel() >= ETraceDetailLevelMethodCalls::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
-        else if( m_pTrcAdminObj->getMethodCallsTraceDetailLevel() >= ETraceDetailLevelMethodCalls::ArgsDetailed ) iAddTrcInfoDetailLevel = 1;
+        if( m_pTrcAdminObj->getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
+        else if( m_pTrcAdminObj->getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsDetailed ) iAddTrcInfoDetailLevel = 1;
 
         strAddTrcInfo = "Request {" + i_reqDscr.getAddTrcInfoStr(iAddTrcInfoDetailLevel) + "}";
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
-        /* eDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+        /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onRequestChanged",
         /* strAddInfo   */ strAddTrcInfo );
 
@@ -2115,7 +2114,7 @@ void CRequestSequencer::onRequestChanged( ZS::System::SRequestDscr i_reqDscr )
                             /* bMustBeConfirmed */ false,
                             /* iReqId           */ -1,
                             /* iMsgId           */ -1 );
-                        POST_OR_DELETE_MESSAGE(pMsgReq, &mthTracer, ETraceDetailLevelRuntimeInfo::DebugDetailed);
+                        POST_OR_DELETE_MESSAGE(pMsgReq, &mthTracer, ELogDetailLevel::DebugDetailed);
                     }
                 }
                 else // if( !m_bInProgress )
@@ -2144,18 +2143,18 @@ bool CRequestSequencer::event( QEvent* i_pEv )
     {
         QString strAddTrcInfo;
 
-        if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(ETraceDetailLevelMethodCalls::ArgsNormal) )
+        if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
         {
             int iMsgTrcInfoDetailLevel = 0;
-            if( m_pTrcAdminObj->getMethodCallsTraceDetailLevel() >= ETraceDetailLevelMethodCalls::ArgsVerbose ) iMsgTrcInfoDetailLevel = 2;
-            else if( m_pTrcAdminObj->getMethodCallsTraceDetailLevel() >= ETraceDetailLevelMethodCalls::ArgsDetailed ) iMsgTrcInfoDetailLevel = 1;
+            if( m_pTrcAdminObj->getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsVerbose ) iMsgTrcInfoDetailLevel = 2;
+            else if( m_pTrcAdminObj->getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsDetailed ) iMsgTrcInfoDetailLevel = 1;
 
             strAddTrcInfo = pMsg->getAddTrcInfoStr(iMsgTrcInfoDetailLevel);
         }
 
         CMethodTracer mthTracer(
             /* pAdminObj    */ m_pTrcAdminObj,
-            /* eDetailLevel */ ETraceDetailLevelMethodCalls::EnterLeave,
+            /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
             /* strMethod    */ "event",
             /* strAddInfo   */ strAddTrcInfo );
 

@@ -52,7 +52,7 @@ public: // ctors and dtor
         const QString& i_strObjNameGateway,
         CClient* i_pClient,
         ZS::System::CErrLog* i_pErrLog,
-        ZS::Trace::ETraceDetailLevelMethodCalls i_eTrcMthFileDetailLevel = ZS::Trace::ETraceDetailLevelMethodCalls::None );
+        ZS::System::EMethodTraceDetailLevel i_eTrcMthFileDetailLevel = ZS::System::EMethodTraceDetailLevel::None );
     virtual ~CClientGatewayThread();
 public: // overridables of base class CSrvCltBaseGatewayThread
     virtual QString nameSpace() const override { return NameSpace(); }
@@ -79,7 +79,7 @@ public: // ctors and dtor
         CClient* i_pClient,
         CClientGatewayThread* i_pThreadGateway,
         ZS::System::CErrLog* i_pErrLog,
-        ZS::Trace::ETraceDetailLevelMethodCalls i_eTrcMthFileDetailLevel = ZS::Trace::ETraceDetailLevelMethodCalls::None );
+        ZS::System::EMethodTraceDetailLevel i_eTrcMthFileDetailLevel = ZS::System::EMethodTraceDetailLevel::None );
     virtual ~CClientGateway();
 public: // overridables of base class CSrvCltBaseGateway
     virtual QString nameSpace() const override { return NameSpace(); }

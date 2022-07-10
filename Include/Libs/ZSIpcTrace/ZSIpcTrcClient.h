@@ -35,6 +35,12 @@ class QMutex;
 
 namespace ZS
 {
+namespace System
+{
+class CIdxTreeTrcAdminObjs;
+class CTrcAdminObj;
+class CTrcMthFile;
+}
 namespace Ipc
 {
 struct SSocketDscr;
@@ -42,11 +48,6 @@ struct SSocketDscr;
 
 namespace Trace
 {
-class CIdxTreeTrcAdminObjs;
-class CTrcAdminObj;
-class CTrcMthFile;
-
-
 //******************************************************************************
 class ZSIPCTRACEDLL_API CIpcTrcClient : public ZS::Ipc::CClient
 //******************************************************************************
@@ -55,37 +56,37 @@ class ZSIPCTRACEDLL_API CIpcTrcClient : public ZS::Ipc::CClient
 public: // ctors and dtor
     CIpcTrcClient(
         const QString& i_strName,
-        ETraceDetailLevelMethodCalls i_eTrcMthFileDetailLevel = ETraceDetailLevelMethodCalls::None,
-        ETraceDetailLevelMethodCalls i_eTrcMthFileDetailLevelMutex = ETraceDetailLevelMethodCalls::None,
-        ETraceDetailLevelMethodCalls i_eTrcMthFileDetailLevelGateway = ZS::Trace::ETraceDetailLevelMethodCalls::None );
+        ZS::System::EMethodTraceDetailLevel i_eTrcMthFileDetailLevel = ZS::System::EMethodTraceDetailLevel::None,
+        ZS::System::EMethodTraceDetailLevel i_eTrcMthFileDetailLevelMutex = ZS::System::EMethodTraceDetailLevel::None,
+        ZS::System::EMethodTraceDetailLevel i_eTrcMthFileDetailLevelGateway = ZS::System::EMethodTraceDetailLevel::None );
     virtual ~CIpcTrcClient();
 signals: // on receiving trace data
     void traceSettingsChanged( QObject* i_pTrcClient );
     void traceDataReceived( QObject* i_pTrcClient, const QString& i_str );
     void traceAdminObjInserted( QObject* i_pTrcClient, const QString& i_strKeyInTree );
 public: // instance methods
-    CIdxTreeTrcAdminObjs* getTraceAdminObjIdxTree() { return m_pTrcAdminObjIdxTree; }
+    ZS::System::CIdxTreeTrcAdminObjs* getTraceAdminObjIdxTree() { return m_pTrcAdminObjIdxTree; }
 public: // overridables of the remote connection
     virtual ZS::System::CRequest* connect_( int i_iTimeout_ms = 0, bool i_bWait = false, qint64 i_iReqIdParent = -1 ) override;
 public: // instance methods to read remote application settings
     QString getRemoteApplicationName() const;
     QString getRemoteServerName() const;
 public: // instance methods to set and read trace settings of the server
-    STrcServerSettings getTraceSettings() const;
-    void setTraceSettings( const STrcServerSettings& i_settings );
+    ZS::System::STrcServerSettings getTraceSettings() const;
+    void setTraceSettings( const ZS::System::STrcServerSettings& i_settings );
 protected: // instance methods to send admin objects to the connected server
     void sendAdminObj(
         ZS::System::MsgProtocol::TSystemMsgType i_systemMsgType,
         ZS::System::MsgProtocol::TCommand       i_cmd,
-        CTrcAdminObj*                           i_pTrcAdminObj );
+        ZS::System::CTrcAdminObj*               i_pTrcAdminObj );
     void sendNameSpace(
-        ZS::System::MsgProtocol::TSystemMsgType i_systemMsgType,
-        ZS::System::MsgProtocol::TCommand       i_cmd,
-        ZS::System::CIdxTreeEntry*              i_pBranch,
-        ZS::System::EEnabled                    i_enabled,
-        ETraceDetailLevelMethodCalls            i_eDetailLevelMethodCalls,
-        ETraceDetailLevelRuntimeInfo            i_eDetailLevelRuntimeInfo,
-        const QString&                          i_strDataFilter );
+        ZS::System::MsgProtocol::TSystemMsgType  i_systemMsgType,
+        ZS::System::MsgProtocol::TCommand        i_cmd,
+        ZS::System::CIdxTreeEntry*               i_pBranch,
+        ZS::System::EEnabled                     i_enabled,
+        ZS::System::EMethodTraceDetailLevel i_eDetailLevelMethodCalls,
+        ZS::System::ELogDetailLevel i_eDetailLevelRuntimeInfo,
+        const QString&                           i_strDataFilter );
 protected: // overridables of base class CClient
     virtual void onReceivedData( const QByteArray& i_byteArr ) override;
 protected slots: // connected to the signals of the IPC client
@@ -102,11 +103,11 @@ protected: // instance members
     /*!< When connecting to the trace server the name of the trace server is
          sent together with other settings by the trace server to the client. */
     QString m_strRemoteServerName;
-    /*!< When connecting to the trace server the settings are queried by the client
-         from the trace server. The response is stored in this member. */
-    STrcServerSettings m_trcServerSettings;
+    /*!< When connecting to the trace server the settings are sent by the server
+         to the client. */
+    ZS::System::STrcServerSettings m_trcServerSettings;
     /*!< The received trace admin objects are inserted into this index tree. */
-    CIdxTreeTrcAdminObjs* m_pTrcAdminObjIdxTree;
+    ZS::System::CIdxTreeTrcAdminObjs* m_pTrcAdminObjIdxTree;
     /*!< This flag is set to true if the client receives data and onReceivedData is in progress updating
          the clients data with the settings read from the remote application. If the settings are updated
          the signal traceSettingsReceived is not emitted before all settings have been applied. If this
