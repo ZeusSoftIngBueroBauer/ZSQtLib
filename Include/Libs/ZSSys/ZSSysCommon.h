@@ -578,18 +578,21 @@ typedef CEnum<EMethodTraceDetailLevel> CEnumMethodTraceDetailLevel;
 enum class ELogDetailLevel
 //==============================================================================
 {
-    None          =  0, /*!< Log output of runtime info is disabled. */
-    CriticalError =  1, /*!< Log critical errors (critical errors, critical exceptions). */
-    Error         =  2, /*!< Log errors (errors, exceptions). */
-    Warning       =  3, /*!< Log warnings. */
-    InfoNormal    =  4, /*!< Log info. */
-    InfoDetailed  =  5, /*!< Log detailed info. */
-    InfoVerbose   =  6, /*!< Log very detailed info. */
-    DebugNormal   =  7, /*!< Output debug info. */
-    DebugDetailed =  8, /*!< Output detailed debug info. */
-    DebugVerbose  =  9, /*!< Output very detailed debug info. */
-    Undefined     = 10  /*!< Used e.g. to indicate that the trace level should not be used
-                             but the predefined detail level should be used. */
+    None          = 0, /*!< Log output of runtime info is disabled. */
+    Fatal         = 1, /*!< Log fatal errors (critical errors, critical exceptions). */
+    Error         = 2, /*!< At this level all error conditions should be logged. */
+    Warning       = 3, /*!< At the Warning level all events that could potentially
+                            become an error should be logged. */
+    Notice        = 4, /*!< At this level all events should be logged which are
+                            considered to be notable but are not an error. */
+    Info          = 5, /*!< The Info level is usually used to log all actions that
+                            are user-driven or system specific. */
+    Debug         = 6, /*!< The Debug level is usually used to log anything that
+                            happens in the program for debugging purposes. */
+    DebugDetailed = 7, /*!< Output detailed debug info. */
+    DebugVerbose  = 8, /*!< Output very detailed debug info. */
+    Undefined     = 9  /*!< Used e.g. to indicate that the log level should not be used
+                            but the predefined detail level should be used. */
 };
 
 template class ZSSYSDLL_API CEnum<ELogDetailLevel>;

@@ -1628,7 +1628,7 @@ void CTest::doTestStepTraceMethodCall( ZS::Test::CTestStep* i_pTestStep )
     else
     {
         m_pTrcServer->setNewTrcAdminObjsMethodCallsDefaultDetailLevel(DllIf::EMethodTraceDetailLevelArgsNormal);
-        m_pTrcServer->setNewTrcAdminObjsRuntimeInfoDefaultDetailLevel(DllIf::ELogDetailLevelDebugNormal);
+        m_pTrcServer->setNewTrcAdminObjsRuntimeInfoDefaultDetailLevel(DllIf::ELogDetailLevelDebug);
         // The trace output may have been disabled to close (flush buffer) the file
         // so that its content can be evaluated by onZSTraceClientTrcMthListWdgtTextItemAdded.
         // We need to enable the trace output again.

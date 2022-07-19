@@ -796,7 +796,7 @@ bool CInProcMsgServer::event( QEvent* i_pMsg )
                             /* iMsgIdReq          */ pMsgReq->getMsgId(),
                             /* errResultInfo      */ errResultInfo,
                             /* iProgressInPerCent */ 100 );
-                        POST_OR_DELETE_MESSAGE(pMsgCon, &mthTracer, ELogDetailLevel::DebugNormal);
+                        POST_OR_DELETE_MESSAGE(pMsgCon, &mthTracer, ELogDetailLevel::Debug);
                         pMsgCon = nullptr;
 
                     } // if( pInProcMsgSocketClient != nullptr )
@@ -868,7 +868,7 @@ bool CInProcMsgServer::event( QEvent* i_pMsg )
                             /* iMsgIdReq          */ pMsgReq->getMsgId(),
                             /* errResultInfo      */ errResultInfo,
                             /* iProgressInPerCent */ 100 );
-                        POST_OR_DELETE_MESSAGE(pMsgCon, &mthTracer, ELogDetailLevel::DebugNormal);
+                        POST_OR_DELETE_MESSAGE(pMsgCon, &mthTracer, ELogDetailLevel::Debug);
                         pMsgCon = nullptr;
 
                     } // if( pInProcMsgSocketClient != nullptr )

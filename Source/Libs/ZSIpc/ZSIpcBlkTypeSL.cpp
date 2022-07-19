@@ -338,7 +338,7 @@ QList<QByteArray> CBlkTypeSL::receiveDataBlocks(
                     /* pObjSender    */ i_pObjGtw,
                     /* pObjReceiver  */ i_pObjSrvClt,
                     /* errResultInfo */ errResultInfo );
-                POST_OR_DELETE_MESSAGE(pMsgErr, i_pMthTracer, ELogDetailLevel::DebugNormal);
+                POST_OR_DELETE_MESSAGE(pMsgErr, i_pMthTracer, ELogDetailLevel::Debug);
                 break;
             }
         } // while( i_pSocketWrapper->bytesAvailable() < uStartBlockSize )
@@ -359,7 +359,7 @@ QList<QByteArray> CBlkTypeSL::receiveDataBlocks(
                     /* pObjSender    */ i_pObjGtw,
                     /* pObjReceiver  */ i_pObjSrvClt,
                     /* errResultInfo */ errResultInfo );
-                POST_OR_DELETE_MESSAGE(pMsgErr, i_pMthTracer, ELogDetailLevel::DebugNormal);
+                POST_OR_DELETE_MESSAGE(pMsgErr, i_pMthTracer, ELogDetailLevel::Debug);
             }
         } // if( pMsgErr == nullptr ) If the number of bytes of the start block are available ..
 
@@ -389,7 +389,7 @@ QList<QByteArray> CBlkTypeSL::receiveDataBlocks(
                         /* pObjSender    */ i_pObjGtw,
                         /* pObjReceiver  */ i_pObjSrvClt,
                         /* errResultInfo */ errResultInfo );
-                    POST_OR_DELETE_MESSAGE(pMsgErr, i_pMthTracer, ELogDetailLevel::DebugNormal);
+                    POST_OR_DELETE_MESSAGE(pMsgErr, i_pMthTracer, ELogDetailLevel::Debug);
                     break;
                 }
             } // while( i_pSocketWrapper->bytesAvailable() < uBlockLenSize )
@@ -429,7 +429,7 @@ QList<QByteArray> CBlkTypeSL::receiveDataBlocks(
                     /* pObjSender    */ i_pObjGtw,
                     /* pObjReceiver  */ i_pObjSrvClt,
                     /* errResultInfo */ errResultInfo );
-                POST_OR_DELETE_MESSAGE(pMsgErr, i_pMthTracer, ELogDetailLevel::DebugNormal);
+                POST_OR_DELETE_MESSAGE(pMsgErr, i_pMthTracer, ELogDetailLevel::Debug);
             }
         } // if( pMsgErr == nullptr ) If the length of the data block has been received ..
 
@@ -462,13 +462,13 @@ QList<QByteArray> CBlkTypeSL::receiveDataBlocks(
                         /* byteArr          */ *i_pByteArrWatchDog,
                         /* bMustBeConfirmed */ false,
                         /* iReqId           */ -1 );
-                    POST_OR_DELETE_MESSAGE(pMsgReq, i_pMthTracer, ELogDetailLevel::DebugNormal);
+                    POST_OR_DELETE_MESSAGE(pMsgReq, i_pMthTracer, ELogDetailLevel::Debug);
                     pMsgReq = nullptr;
                 }
 
                 i_pSocketWrapper->setLastTimeDataBlockReceivedInMs( ZS::System::Time::getProcTimeInMilliSec() );
 
-                if( i_pMthTracer != nullptr && i_pMthTracer->isRuntimeInfoActive(ELogDetailLevel::DebugNormal) )
+                if( i_pMthTracer != nullptr && i_pMthTracer->isRuntimeInfoActive(ELogDetailLevel::Debug) )
                 {
                     strMthAddInfo = "Received WatchDogBlock";
                     i_pMthTracer->trace(strMthAddInfo);
@@ -524,7 +524,7 @@ QList<QByteArray> CBlkTypeSL::receiveDataBlocks(
                         /* pObjSender    */ i_pObjGtw,
                         /* pObjReceiver  */ i_pObjSrvClt,
                         /* errResultInfo */ errResultInfo );
-                    POST_OR_DELETE_MESSAGE(pMsgErr, i_pMthTracer, ELogDetailLevel::DebugNormal);
+                    POST_OR_DELETE_MESSAGE(pMsgErr, i_pMthTracer, ELogDetailLevel::Debug);
                     break;
                 }
             } // while( i_pSocketWrapper->bytesAvailable() < static_cast<int>(uBlockSize) )
@@ -539,7 +539,7 @@ QList<QByteArray> CBlkTypeSL::receiveDataBlocks(
 
                 i_pSocketWrapper->setLastTimeDataBlockReceivedInMs( ZS::System::Time::getProcTimeInMilliSec() );
 
-                if( i_pMthTracer != nullptr && i_pMthTracer->isRuntimeInfoActive(ELogDetailLevel::DebugNormal) )
+                if( i_pMthTracer != nullptr && i_pMthTracer->isRuntimeInfoActive(ELogDetailLevel::Debug) )
                 {
                     strMthAddInfo = "Received block data: DataLen=" + QString::number(uBlockSize);
                     i_pMthTracer->trace(strMthAddInfo);
@@ -557,7 +557,7 @@ QList<QByteArray> CBlkTypeSL::receiveDataBlocks(
                             /* transmitDir  */ ETransmitDir::Receive,
                             /* bBold        */ false,
                             /* strMsg       */ strMthAddInfo );
-                        POST_OR_DELETE_MESSAGE(pMsgLogItem, i_pMthTracer, ELogDetailLevel::DebugNormal);
+                        POST_OR_DELETE_MESSAGE(pMsgLogItem, i_pMthTracer, ELogDetailLevel::Debug);
                         pMsgLogItem = nullptr;
                     }
                 }
@@ -591,7 +591,7 @@ QList<QByteArray> CBlkTypeSL::receiveDataBlocks(
                 {
                     strMthRet += "Block [Size=" + QString::number(arByteArrs[idxBlk].size()) + "]";
 
-                    if( i_pMthTracer->isRuntimeInfoActive(ELogDetailLevel::DebugNormal) )
+                    if( i_pMthTracer->isRuntimeInfoActive(ELogDetailLevel::Debug) )
                     {
                         strMthRet += "(";
                         if( arByteArrs[idxBlk].size() > 0 )
@@ -676,7 +676,7 @@ bool CBlkTypeSL::writeDataBlock(
                 /* pObjSender    */ i_pObjGtw,
                 /* pObjReceiver  */ i_pObjSrvClt,
                 /* errResultInfo */ errResultInfo );
-            POST_OR_DELETE_MESSAGE(pMsgErr, i_pMthTracer, ELogDetailLevel::DebugNormal);
+            POST_OR_DELETE_MESSAGE(pMsgErr, i_pMthTracer, ELogDetailLevel::Debug);
             pMsgErr = nullptr;
             return false;
         }
@@ -821,7 +821,7 @@ bool CBlkTypeSL::writeDataBlock(
 
     if( !i_bIsWatchDogBlock )
     {
-        if( i_pMthTracer != nullptr && i_pMthTracer->isRuntimeInfoActive(ELogDetailLevel::DebugNormal) )
+        if( i_pMthTracer != nullptr && i_pMthTracer->isRuntimeInfoActive(ELogDetailLevel::Debug) )
         {
             strMthAddInfo = "Sending " + QString::number(pByteArr->size()) + " bytes of data";
             i_pMthTracer->trace(strMthAddInfo);
@@ -842,7 +842,7 @@ bool CBlkTypeSL::writeDataBlock(
                     /* transmitDir  */ ETransmitDir::Send,
                     /* bBold        */ false,
                     /* strMsg       */ strMthAddInfo );
-                POST_OR_DELETE_MESSAGE(pMsgLogItem, i_pMthTracer, ELogDetailLevel::DebugNormal);
+                POST_OR_DELETE_MESSAGE(pMsgLogItem, i_pMthTracer, ELogDetailLevel::Debug);
                 pMsgLogItem = nullptr;
             }
         }

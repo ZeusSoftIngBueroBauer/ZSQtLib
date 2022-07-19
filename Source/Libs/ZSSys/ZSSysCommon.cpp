@@ -1218,17 +1218,16 @@ public: // ctor
     CInitEnumDimensionType() {
     //------------------------------------------------------------------------------() {
         QVector<SEnumEntry>* pVEnumEntries = const_cast<QVector<SEnumEntry>*>(&ZS::System::<ELogDetailLevel>::s_arEnumEntries);
-        pVEnumEntries->append( /*  0 */ SEnumEntry( static_cast<int>(ELogDetailLevel::None),          "None",          "-",   "None",           "NONE", "NONE"      ),
-        pVEnumEntries->append( /*  1 */ SEnumEntry( static_cast<int>(ELogDetailLevel::CriticalError), "Critical",      "C",   "Critical",       "CRIT", "CRITical"  ),
-        pVEnumEntries->append( /*  2 */ SEnumEntry( static_cast<int>(ELogDetailLevel::Error),         "Error",         "E",   "Error",          "ERR",  "ERRor"     ),
-        pVEnumEntries->append( /*  3 */ SEnumEntry( static_cast<int>(ELogDetailLevel::Warning),       "Warning",       "W",   "Warning",        "WARN", "WARNing"   ),
-        pVEnumEntries->append( /*  4 */ SEnumEntry( static_cast<int>(ELogDetailLevel::InfoNormal),    "InfoNormal",    "IN",  "Info Normal",    "INOR", "INORmal"   ),
-        pVEnumEntries->append( /*  5 */ SEnumEntry( static_cast<int>(ELogDetailLevel::InfoDetailed),  "InfoDetailed",  "ID",  "Info Detailed",  "IDET", "IDETailed" ),
-        pVEnumEntries->append( /*  6 */ SEnumEntry( static_cast<int>(ELogDetailLevel::InfoVerbose),   "InfoVerbose",   "IV",  "Info Verbose",   "IVER", "IVERbose"  ),
-        pVEnumEntries->append( /*  7 */ SEnumEntry( static_cast<int>(ELogDetailLevel::DebugNormal),   "DebugNormal",   "DN",  "Debug Normal",   "DNOR", "DNORmal"   ),
-        pVEnumEntries->append( /*  8 */ SEnumEntry( static_cast<int>(ELogDetailLevel::DebugDetailed), "DebugDetailed", "DD",  "Debug Detailed", "DDET", "DDETailed" ),
-        pVEnumEntries->append( /*  9 */ SEnumEntry( static_cast<int>(ELogDetailLevel::DebugVerbose),  "DebugVerbose",  "DV",  "Debug Verbose",  "DVER", "DVERbose"  ),
-        pVEnumEntries->append( /* 10 */ SEnumEntry( static_cast<int>(ELogDetailLevel::Undefined),     "Undefined",     "?",   "Undefined",      "UND",  "UNDefined" )
+        pVEnumEntries->append( /* 0 */ SEnumEntry( static_cast<int>(ELogDetailLevel::None),           "None",           "-",   "None",            "NONE", "NONE"      ),
+        pVEnumEntries->append( /* 1 */ SEnumEntry( static_cast<int>(ELogDetailLevel::Fatal),          "Fatal",          "F",   "Fatal",           "FAT",  "FATal"     ),
+        pVEnumEntries->append( /* 2 */ SEnumEntry( static_cast<int>(ELogDetailLevel::Error),          "Error",          "E",   "Error",           "ERR",  "ERRor"     ),
+        pVEnumEntries->append( /* 3 */ SEnumEntry( static_cast<int>(ELogDetailLevel::Warning),        "Warning",        "W",   "Warning",         "WARN", "WARNing"   ),
+        pVEnumEntries->append( /* 4 */ SEnumEntry( static_cast<int>(ELogDetailLevel::Notice),         "Notice",         "N",   "Notice",          "NOT",  "NOTice"    ),
+        pVEnumEntries->append( /* 5 */ SEnumEntry( static_cast<int>(ELogDetailLevel::Info),           "Info",           "I",   "Info",            "INFO", "INFO"      ),
+        pVEnumEntries->append( /* 6 */ SEnumEntry( static_cast<int>(ELogDetailLevel::Debug),          "Debug",          "D",   "Debug",           "DEB",  "DEBug"     ),
+        pVEnumEntries->append( /* 7 */ SEnumEntry( static_cast<int>(ELogDetailLevel::DebugDetailed),  "DebugDetailed",  "DD",  "Debug Detailed",  "DDET", "DDETailed" ),
+        pVEnumEntries->append( /* 8 */ SEnumEntry( static_cast<int>(ELogDetailLevel::DebugVerbose),   "DebugVerbose",   "DV",  "Debug Verbose",   "DVER", "DVERbose"  ),
+        pVEnumEntries->append( /* 9 */ SEnumEntry( static_cast<int>(ELogDetailLevel::Undefined),      "Undefined",      "?",   "Undefined",       "UND",  "UNDefined" )
     }
 };
 static CInitEnumTraceDetailLevelMethodCalls s_initEnumTraceDetailLevelMethodCalls;
@@ -1237,17 +1236,16 @@ static CInitEnumTraceDetailLevelMethodCalls s_initEnumTraceDetailLevelMethodCall
 template<> const QVector<SEnumEntry> ZS::System::CEnum<ELogDetailLevel>::s_arEnumEntries =
 //------------------------------------------------------------------------------
 {
-    /*  0 */ SEnumEntry( static_cast<int>(ELogDetailLevel::None),          "None",          "-",   "None",           "NONE", "NONE"      ),
-    /*  1 */ SEnumEntry( static_cast<int>(ELogDetailLevel::CriticalError), "CriticalError", "C",   "Critical",       "CERR", "CError"    ),
-    /*  2 */ SEnumEntry( static_cast<int>(ELogDetailLevel::Error),         "Error",         "E",   "Error",          "ERR",  "ERRor"     ),
-    /*  3 */ SEnumEntry( static_cast<int>(ELogDetailLevel::Warning),       "Warning",       "W",   "Warning",        "WARN", "WARNing"   ),
-    /*  4 */ SEnumEntry( static_cast<int>(ELogDetailLevel::InfoNormal),    "InfoNormal",    "IN",  "Info Normal",    "INOR", "INORmal"   ),
-    /*  5 */ SEnumEntry( static_cast<int>(ELogDetailLevel::InfoDetailed),  "InfoDetailed",  "ID",  "Info Detailed",  "IDET", "IDETailed" ),
-    /*  6 */ SEnumEntry( static_cast<int>(ELogDetailLevel::InfoVerbose),   "InfoVerbose",   "IV",  "Info Verbose",   "IVER", "IVERbose"  ),
-    /*  7 */ SEnumEntry( static_cast<int>(ELogDetailLevel::DebugNormal),   "DebugNormal",   "DN",  "Debug Normal",   "DNOR", "DNORmal"   ),
-    /*  8 */ SEnumEntry( static_cast<int>(ELogDetailLevel::DebugDetailed), "DebugDetailed", "DD",  "Debug Detailed", "DDET", "DDETailed" ),
-    /*  9 */ SEnumEntry( static_cast<int>(ELogDetailLevel::DebugVerbose),  "DebugVerbose",  "DV",  "Debug Verbose",  "DVER", "DVERbose"  ),
-    /* 10 */ SEnumEntry( static_cast<int>(ELogDetailLevel::Undefined),     "Undefined",     "?",   "Undefined",      "UND",  "UNDefined" )
+    /* 0 */ SEnumEntry( static_cast<int>(ELogDetailLevel::None),           "None",           "-",   "None",            "NONE", "NONE"      ),
+    /* 1 */ SEnumEntry( static_cast<int>(ELogDetailLevel::Fatal),          "Fatal",          "F",   "Fatal",           "FAT",  "FATal"     ),
+    /* 2 */ SEnumEntry( static_cast<int>(ELogDetailLevel::Error),          "Error",          "E",   "Error",           "ERR",  "ERRor"     ),
+    /* 3 */ SEnumEntry( static_cast<int>(ELogDetailLevel::Warning),        "Warning",        "W",   "Warning",         "WARN", "WARNing"   ),
+    /* 4 */ SEnumEntry( static_cast<int>(ELogDetailLevel::Notice),         "Notice",         "N",   "Notice",          "NOT",  "NOTice"    ),
+    /* 5 */ SEnumEntry( static_cast<int>(ELogDetailLevel::Info),           "Info",           "I",   "Info",            "INFO", "INFO"      ),
+    /* 6 */ SEnumEntry( static_cast<int>(ELogDetailLevel::Debug),          "Debug",          "D",   "Debug",           "DEB",  "DEBug"     ),
+    /* 7 */ SEnumEntry( static_cast<int>(ELogDetailLevel::DebugDetailed),  "DebugDetailed",  "DD",  "Debug Detailed",  "DDET", "DDETailed" ),
+    /* 8 */ SEnumEntry( static_cast<int>(ELogDetailLevel::DebugVerbose),   "DebugVerbose",   "DV",  "Debug Verbose",   "DVER", "DVERbose"  ),
+    /* 9 */ SEnumEntry( static_cast<int>(ELogDetailLevel::Undefined),      "Undefined",      "?",   "Undefined",       "UND",  "UNDefined" )
 };
 #endif // #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 /*! @endcond */

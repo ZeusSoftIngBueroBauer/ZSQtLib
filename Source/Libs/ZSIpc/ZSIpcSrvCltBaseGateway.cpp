@@ -429,7 +429,7 @@ void CSrvCltBaseGatewayThread::run()
                 /* iMsgIdReq         */ -1,
                 /* errResultInfo     */ errResultInfo,
                 /* iProgress_perCent */ 100 );
-            POST_OR_DELETE_MESSAGE(pMsgConStartup, &mthTracer, ELogDetailLevel::DebugNormal);
+            POST_OR_DELETE_MESSAGE(pMsgConStartup, &mthTracer, ELogDetailLevel::Debug);
         }
     } // if( m_iReqIdStartThread >= 0 )
 

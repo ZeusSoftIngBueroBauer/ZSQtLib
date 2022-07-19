@@ -619,7 +619,7 @@ QString CMyClass2::instMethod(const QString& i_strMthInArgs)
         CMsgReqTest* pMsgReq = new CMsgReqTest(this, this);
         pMsgReq->setCommand("instMethod");
         pMsgReq->setCommandArg(i_strMthInArgs);
-        POST_OR_DELETE_MESSAGE(pMsgReq, &mthTracer, ELogDetailLevel::DebugNormal);
+        POST_OR_DELETE_MESSAGE(pMsgReq, &mthTracer, ELogDetailLevel::Debug);
         pMsgReq = nullptr;
         strResult = "You here from me later ...";
     }
@@ -658,12 +658,12 @@ int CMyClass2::recursiveTraceMethod()
     {
         CMsgReqTest* pMsgReq = new CMsgReqTest(this, this);
         pMsgReq->setCommand("recursiveTraceMethod");
-        POST_OR_DELETE_MESSAGE(pMsgReq, &mthTracer, ELogDetailLevel::DebugNormal);
+        POST_OR_DELETE_MESSAGE(pMsgReq, &mthTracer, ELogDetailLevel::Debug);
         pMsgReq = nullptr;
     }
     else // if( QThread::currentThread() == thread() )
     {
-        if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugNormal) )
+        if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
         {
             QString strTrcMsg = "RecursionCount=" + QString::number(m_iRecursionCount);
             mthTracer.trace(strTrcMsg);
@@ -707,12 +707,12 @@ void CMyClass2::startMessageTimer()
     {
         CMsgReqTest* pMsgReq = new CMsgReqTest(this, this);
         pMsgReq->setCommand("startMessageTimer");
-        POST_OR_DELETE_MESSAGE(pMsgReq, &mthTracer, ELogDetailLevel::DebugNormal);
+        POST_OR_DELETE_MESSAGE(pMsgReq, &mthTracer, ELogDetailLevel::Debug);
         pMsgReq = nullptr;
     }
     else // if( QThread::currentThread() == thread() )
     {
-        if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugNormal) )
+        if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
         {
             mthTracer.trace("m_pTmrMessages->start(100)");
         }
@@ -756,7 +756,7 @@ CMyClass3* CMyClass2::startClass3Thread(const QString& i_strMyClass3ObjName)
     {
         CMsgReqTest* pMsgReq = new CMsgReqTest(this, this);
         pMsgReq->setCommand("startClass3Thread");
-        POST_OR_DELETE_MESSAGE(pMsgReq, &mthTracer, ELogDetailLevel::DebugNormal);
+        POST_OR_DELETE_MESSAGE(pMsgReq, &mthTracer, ELogDetailLevel::Debug);
         pMsgReq = nullptr;
     }
     else // if( QThread::currentThread() == thread() )
@@ -829,7 +829,7 @@ void CMyClass2::stopClass3Thread()
         {
             CMsgReqTest* pMsgReq = new CMsgReqTest(this, this);
             pMsgReq->setCommand("stopClass3Thread");
-            POST_OR_DELETE_MESSAGE(pMsgReq, &mthTracer, ELogDetailLevel::DebugNormal);
+            POST_OR_DELETE_MESSAGE(pMsgReq, &mthTracer, ELogDetailLevel::Debug);
             pMsgReq = nullptr;
         }
         else // if( QThread::currentThread() == thread() )
@@ -889,7 +889,7 @@ void CMyClass2::onTmrMessagesTimeout()
 
     ++m_iMsgCount;
 
-    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugNormal) )
+    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         QString strTrcMsg = "MsgCount=" + QString::number(m_iMsgCount);
         mthTracer.trace(strTrcMsg);

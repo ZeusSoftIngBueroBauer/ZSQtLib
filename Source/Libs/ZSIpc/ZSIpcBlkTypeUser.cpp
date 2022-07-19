@@ -158,7 +158,7 @@ QList<QByteArray> CBlkTypeUser::receiveDataBlocks(
                 {
                     strMthRet += "Block [Size=" + QString::number(arByteArrs[idxBlk].size()) + "]";
 
-                    if( i_pMthTracer->isRuntimeInfoActive(ELogDetailLevel::DebugNormal) )
+                    if( i_pMthTracer->isRuntimeInfoActive(ELogDetailLevel::Debug) )
                     {
                         strMthRet += "(";
                         if( arByteArrs[idxBlk].size() > 0 )

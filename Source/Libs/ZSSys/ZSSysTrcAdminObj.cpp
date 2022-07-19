@@ -862,7 +862,7 @@ ELogDetailLevel CTrcAdminObj::getRuntimeInfoTraceDetailLevel() const
         bool bTracingActive;
 
         pTrcAdminObj->setEnabled(EEnabledOn);
-        pTrcAdminObj->setDetailLevel(ELogDetailLevel::DebugNormal);
+        pTrcAdminObj->setDetailLevel(ELogDetailLevel::Debug);
 
         bTracingActive = pTrcAdminObj->isActive(ELogDetailLevel::InfoVerbose); .. returns true
         bTracingActive = pTrcAdminObj->isActive(ELogDetailLevel::DebugDetailed);  .. returns false

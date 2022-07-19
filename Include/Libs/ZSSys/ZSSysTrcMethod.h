@@ -179,7 +179,7 @@ public: // instance methods
 public: // instance methods
     void trace(
         const QString& i_strAddInfo,
-        ZS::System::ELogDetailLevel i_eFilterDetailLevel = ZS::System::ELogDetailLevel::CriticalError ) const;
+        ZS::System::ELogDetailLevel i_eFilterDetailLevel = ZS::System::ELogDetailLevel::Fatal ) const;
     void trace(
         const QString& i_strAddInfo,
         ZS::System::ELogDetailLevel i_eTrcDetailLevel,

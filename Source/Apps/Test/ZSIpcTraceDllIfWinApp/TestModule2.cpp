@@ -209,7 +209,7 @@ void CTestModule2Thread::start()
 
     if( m_pThread == nullptr )
     {
-        if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->getRuntimeInfoTraceDetailLevel() >= ELogDetailLevelDebugNormal )
+        if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->getRuntimeInfoTraceDetailLevel() >= ELogDetailLevelDebug )
         {
             strMthAddInfo = " -+ new std::thread()";
             mthTracer.trace(strMthAddInfo.c_str());
@@ -217,13 +217,13 @@ void CTestModule2Thread::start()
 
         m_pThread = new std::thread(&CTestModule2Thread::run, this);
 
-        if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->getRuntimeInfoTraceDetailLevel() >= ELogDetailLevelDebugNormal )
+        if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->getRuntimeInfoTraceDetailLevel() >= ELogDetailLevelDebug )
         {
             strMthAddInfo = " +- new std::thread()";
             mthTracer.trace(strMthAddInfo.c_str());
         }
 
-        if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->getRuntimeInfoTraceDetailLevel() >= ELogDetailLevelDebugNormal )
+        if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->getRuntimeInfoTraceDetailLevel() >= ELogDetailLevelDebug )
         {
             strMthAddInfo = " -+ std::thread->detach()";
             mthTracer.trace(strMthAddInfo.c_str());
@@ -231,7 +231,7 @@ void CTestModule2Thread::start()
 
         m_pThread->detach();
 
-        if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->getRuntimeInfoTraceDetailLevel() >= ELogDetailLevelDebugNormal )
+        if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->getRuntimeInfoTraceDetailLevel() >= ELogDetailLevelDebug )
         {
             strMthAddInfo = " +- std::thread->detach()";
             mthTracer.trace(strMthAddInfo.c_str());
@@ -333,7 +333,7 @@ int CTestModule2Thread::exec()
     {
         Sleep(1000);
 
-        if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->getRuntimeInfoTraceDetailLevel() >= ELogDetailLevelDebugNormal )
+        if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->getRuntimeInfoTraceDetailLevel() >= ELogDetailLevelDebug )
         {
             timeCurr = std::chrono::steady_clock::now();
             auto timeDuration = timeCurr - timeStart;
@@ -466,7 +466,7 @@ int CTestModule2::recursiveTraceMethod()
 
     ++s_iCount;
 
-    if( mthTracer.isRuntimeInfoActive(ELogDetailLevelDebugNormal) )
+    if( mthTracer.isRuntimeInfoActive(ELogDetailLevelDebug) )
     {
         std::string strTrcMsg = "Count=" + std::to_string(s_iCount);
         mthTracer.trace(strTrcMsg.c_str());

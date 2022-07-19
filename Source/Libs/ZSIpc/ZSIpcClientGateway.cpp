@@ -173,14 +173,14 @@ void CClientGatewayThread::run()
         // this we force this thread to sleep for a moment ...
         msleep(10);
 
-        if( isTraceRuntimeInfoActive(ELogDetailLevel::DebugNormal) )
+        if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
         {
             mthTracer.trace( "-+ WaitCondition.wakeAll()" );
         }
 
         m_pWaitCondition->wakeAll();
 
-        if( isTraceRuntimeInfoActive(ELogDetailLevel::DebugNormal) )
+        if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
         {
             mthTracer.trace( "-+ WaitCondition.wakeAll()" );
         }
@@ -208,7 +208,7 @@ void CClientGatewayThread::run()
                 }
             }
 
-            if( isTraceRuntimeInfoActive(ELogDetailLevel::DebugNormal) )
+            if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
             {
                 mthTracer.trace( "-+ ReqStartThread.WaitCondition.wakeAll()" );
             }
@@ -225,7 +225,7 @@ void CClientGatewayThread::run()
                 }
             }
 
-            if( isTraceRuntimeInfoActive(ELogDetailLevel::DebugNormal) )
+            if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
             {
                 mthTracer.trace( "+- ReqStartThread.WaitCondition.wakeAll(): " + errResultInfo.getResultStr() );
             }
@@ -240,21 +240,21 @@ void CClientGatewayThread::run()
                 /* iMsgIdReq         */ -1,
                 /* errResultInfo     */ errResultInfo,
                 /* iProgress_perCent */ 100 );
-            POST_OR_DELETE_MESSAGE(pMsgConStartup, &mthTracer, ELogDetailLevel::DebugNormal);
+            POST_OR_DELETE_MESSAGE(pMsgConStartup, &mthTracer, ELogDetailLevel::Debug);
             pMsgConStartup = nullptr;
         }
     } // if( m_iReqIdStartThread >= 0 )
 
     try
     {
-        if( isTraceRuntimeInfoActive(ELogDetailLevel::DebugNormal) )
+        if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
         {
             mthTracer.trace( "-+ QThread::exec()" );
         }
 
         exec();
 
-        if( isTraceRuntimeInfoActive(ELogDetailLevel::DebugNormal) )
+        if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
         {
             mthTracer.trace( "+- QThread::exec()" );
         }
@@ -480,7 +480,7 @@ void CClientGateway::onConnected( QObject* /*i_pSocketWrapper*/ )
                     /* transmitDir  */ ETransmitDir::Undefined,
                     /* bBold        */ false,
                     /* strMsg       */ strAddTrcInfo );
-                POST_OR_DELETE_MESSAGE(pMsgLogItem, &mthTracer, ELogDetailLevel::DebugNormal);
+                POST_OR_DELETE_MESSAGE(pMsgLogItem, &mthTracer, ELogDetailLevel::Debug);
                 pMsgLogItem = nullptr;
             }
         }
@@ -523,7 +523,7 @@ void CClientGateway::onConnected( QObject* /*i_pSocketWrapper*/ )
             pReqExecTree->setExecutionConfirmationMessage(m_iReqIdInProgress, m_pMsgCon);
             m_pMsgCon = nullptr;
 
-            if( isTraceRuntimeInfoActive(ELogDetailLevel::DebugNormal) )
+            if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
             {
                 mthTracer.trace( "-+ ReqConnect.WaitCondition.wakeAll()" );
             }
@@ -540,7 +540,7 @@ void CClientGateway::onConnected( QObject* /*i_pSocketWrapper*/ )
                 }
             }
 
-            if( isTraceRuntimeInfoActive(ELogDetailLevel::DebugNormal) )
+            if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
             {
                 mthTracer.trace( "+- ReqConnect.WaitCondition.wakeAll(): " + errResultInfo.getResultStr() );
             }
@@ -548,7 +548,7 @@ void CClientGateway::onConnected( QObject* /*i_pSocketWrapper*/ )
 
         else if( m_pMsgCon != nullptr )
         {
-            POST_OR_DELETE_MESSAGE(m_pMsgCon, &mthTracer, ELogDetailLevel::DebugNormal);
+            POST_OR_DELETE_MESSAGE(m_pMsgCon, &mthTracer, ELogDetailLevel::Debug);
             m_pMsgCon = nullptr;
         }
         else if( errResultInfo.isErrorResult() )
@@ -578,7 +578,7 @@ void CClientGateway::onConnected( QObject* /*i_pSocketWrapper*/ )
             /* pObjSender   */ this,
             /* pObjReceiver */ m_pSrvClt,
             /* socketDscr   */ m_socketDscr );
-        POST_OR_DELETE_MESSAGE(pMsgInd, &mthTracer, ELogDetailLevel::DebugNormal);
+        POST_OR_DELETE_MESSAGE(pMsgInd, &mthTracer, ELogDetailLevel::Debug);
         pMsgInd = nullptr;
     }
 
@@ -643,7 +643,7 @@ void CClientGateway::onTimeoutConnect()
                     /* transmitDir  */ ETransmitDir::Undefined,
                     /* bBold        */ false,
                     /* strMsg       */ strAddTrcInfo );
-                POST_OR_DELETE_MESSAGE(pMsgLogItem, &mthTracer, ELogDetailLevel::DebugNormal);
+                POST_OR_DELETE_MESSAGE(pMsgLogItem, &mthTracer, ELogDetailLevel::Debug);
                 pMsgLogItem = nullptr;
             }
         }
@@ -686,7 +686,7 @@ void CClientGateway::onTimeoutConnect()
             pReqExecTree->setExecutionConfirmationMessage(m_iReqIdInProgress, m_pMsgCon);
             m_pMsgCon = nullptr;
 
-            if( isTraceRuntimeInfoActive(ELogDetailLevel::DebugNormal) )
+            if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
             {
                 mthTracer.trace( "-+ ReqConnect.WaitCondition.wakeAll()" );
             }
@@ -703,7 +703,7 @@ void CClientGateway::onTimeoutConnect()
                 }
             }
 
-            if( isTraceRuntimeInfoActive(ELogDetailLevel::DebugNormal) )
+            if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
             {
                 mthTracer.trace( "+- ReqConnect.WaitCondition.wakeAll(): " + errResultInfo.getResultStr() );
             }
@@ -711,7 +711,7 @@ void CClientGateway::onTimeoutConnect()
 
         else if( m_pMsgCon != nullptr )
         {
-            POST_OR_DELETE_MESSAGE(m_pMsgCon, &mthTracer, ELogDetailLevel::DebugNormal);
+            POST_OR_DELETE_MESSAGE(m_pMsgCon, &mthTracer, ELogDetailLevel::Debug);
             m_pMsgCon = nullptr;
         }
         else if( errResultInfo.isErrorResult() )
@@ -765,7 +765,7 @@ void CClientGateway::onTimeoutWatchDog()
 
                 if( fTimeDiff_ms > static_cast<double>(m_watchDogSettings.m_iTimeout_ms) )
                 {
-                    if( isTraceRuntimeInfoActive(ELogDetailLevel::DebugNormal) )
+                    if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
                     {
                         mthTracer.trace( "TIMEOUT: disconnecting from host " + m_pIpcSocketWrapper->getRemoteHostName() + ":" + QString::number(m_pIpcSocketWrapper->getServerListenPort()) + ":" + QString::number(m_pIpcSocketWrapper->getRemotePort()) );
                     }
@@ -791,7 +791,7 @@ void CClientGateway::onTimeoutWatchDog()
                                 /* transmitDir  */ ETransmitDir::Undefined,
                                 /* bBold        */ false,
                                 /* strMsg       */ strAddTrcInfo );
-                            POST_OR_DELETE_MESSAGE(pMsgLogItem, &mthTracer, ELogDetailLevel::DebugNormal);
+                            POST_OR_DELETE_MESSAGE(pMsgLogItem, &mthTracer, ELogDetailLevel::Debug);
                             pMsgLogItem = nullptr;
                         }
                     }
@@ -811,7 +811,7 @@ void CClientGateway::onTimeoutWatchDog()
                                 /* transmitDir  */ ETransmitDir::Undefined,
                                 /* bBold        */ false,
                                 /* strMsg       */ strAddTrcInfo );
-                            POST_OR_DELETE_MESSAGE(pMsgLogItem, &mthTracer, ELogDetailLevel::DebugNormal);
+                            POST_OR_DELETE_MESSAGE(pMsgLogItem, &mthTracer, ELogDetailLevel::Debug);
                             pMsgLogItem = nullptr;
                         }
                     }
@@ -884,7 +884,7 @@ void CClientGateway::onDisconnected( QObject* /*i_pSocketWrapper*/ )
                 /* transmitDir  */ ETransmitDir::Undefined,
                 /* bBold        */ false,
                 /* strMsg       */ strAddTrcInfo );
-            POST_OR_DELETE_MESSAGE(pMsgLogItem, &mthTracer, ELogDetailLevel::DebugNormal);
+            POST_OR_DELETE_MESSAGE(pMsgLogItem, &mthTracer, ELogDetailLevel::Debug);
             pMsgLogItem = nullptr;
         }
     }
@@ -941,7 +941,7 @@ void CClientGateway::onDisconnected( QObject* /*i_pSocketWrapper*/ )
                 pReqExecTree->setExecutionConfirmationMessage(m_iReqIdInProgress, m_pMsgCon);
                 m_pMsgCon = nullptr;
 
-                if( isTraceRuntimeInfoActive(ELogDetailLevel::DebugNormal) )
+                if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
                 {
                     mthTracer.trace( "-+ ReqConnect.WaitCondition.wakeAll()" );
                 }
@@ -958,7 +958,7 @@ void CClientGateway::onDisconnected( QObject* /*i_pSocketWrapper*/ )
                     }
                 }
 
-                if( isTraceRuntimeInfoActive(ELogDetailLevel::DebugNormal) )
+                if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
                 {
                     mthTracer.trace( "+- ReqConnect.WaitCondition.wakeAll(): " + errResultInfo.getResultStr() );
                 }
@@ -966,7 +966,7 @@ void CClientGateway::onDisconnected( QObject* /*i_pSocketWrapper*/ )
 
             else if( m_pMsgCon != nullptr )
             {
-                POST_OR_DELETE_MESSAGE(m_pMsgCon, &mthTracer, ELogDetailLevel::DebugNormal);
+                POST_OR_DELETE_MESSAGE(m_pMsgCon, &mthTracer, ELogDetailLevel::Debug);
                 m_pMsgCon = nullptr;
             }
             else if( errResultInfo.isErrorResult() )
@@ -1028,7 +1028,7 @@ void CClientGateway::onDisconnected( QObject* /*i_pSocketWrapper*/ )
                 pReqExecTree->setExecutionConfirmationMessage(m_iReqIdInProgress, m_pMsgCon);
                 m_pMsgCon = nullptr;
 
-                if( isTraceRuntimeInfoActive(ELogDetailLevel::DebugNormal) )
+                if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
                 {
                     mthTracer.trace( "-+ ReqDisconnect.WaitCondition.wakeAll()" );
                 }
@@ -1045,7 +1045,7 @@ void CClientGateway::onDisconnected( QObject* /*i_pSocketWrapper*/ )
                     }
                 }
 
-                if( isTraceRuntimeInfoActive(ELogDetailLevel::DebugNormal) )
+                if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
                 {
                     mthTracer.trace( "+- ReqDisconnect.WaitCondition.wakeAll(): " + errResultInfo.getResultStr() );
                 }
@@ -1053,7 +1053,7 @@ void CClientGateway::onDisconnected( QObject* /*i_pSocketWrapper*/ )
 
             else if( m_pMsgCon != nullptr )
             {
-                POST_OR_DELETE_MESSAGE(m_pMsgCon, &mthTracer, ELogDetailLevel::DebugNormal);
+                POST_OR_DELETE_MESSAGE(m_pMsgCon, &mthTracer, ELogDetailLevel::Debug);
                 m_pMsgCon = nullptr;
             }
             else if( errResultInfo.isErrorResult() )
@@ -1096,7 +1096,7 @@ void CClientGateway::onDisconnected( QObject* /*i_pSocketWrapper*/ )
                 /* pObjSender   */ this,
                 /* pObjReceiver */ m_pSrvClt,
                 /* socketDscr   */ m_socketDscr ); // Socket Id for clients is always 0
-            POST_OR_DELETE_MESSAGE(pMsgInd, &mthTracer, ELogDetailLevel::DebugNormal);
+            POST_OR_DELETE_MESSAGE(pMsgInd, &mthTracer, ELogDetailLevel::Debug);
             pMsgInd = nullptr;
             break;
         } // case ERequestNone
@@ -1139,7 +1139,7 @@ void CClientGateway::onReadyRead( QObject* i_pSocketWrapper )
         /* iSocketId        */ m_pIpcSocketWrapper->getSocketId(),
         /* bMustBeConfirmed */ false,
         /* iReqId           */ -1 );
-    POST_OR_DELETE_MESSAGE(pMsgReq, &mthTracer, ELogDetailLevel::DebugNormal);
+    POST_OR_DELETE_MESSAGE(pMsgReq, &mthTracer, ELogDetailLevel::Debug);
     pMsgReq = nullptr;
 
 } // onReadyRead
@@ -1228,7 +1228,7 @@ void CClientGateway::onError( QObject* /*i_pSocketWrapper*/, ZS::System::SErrRes
                     /* pBlkType         */ m_pBlkType,
                     /* bMustBeConfirmed */ false,
                     /* iReqId           */ -1 );
-                POST_OR_DELETE_MESSAGE(pMsgReq, &mthTracer, ELogDetailLevel::DebugNormal);
+                POST_OR_DELETE_MESSAGE(pMsgReq, &mthTracer, ELogDetailLevel::Debug);
                 pMsgReq = nullptr;
             }
             else // if( m_socketDscr.m_iConnectTimeout_ms <= 0 )
@@ -1257,7 +1257,7 @@ void CClientGateway::onError( QObject* /*i_pSocketWrapper*/, ZS::System::SErrRes
                             /* transmitDir  */ ETransmitDir::Undefined,
                             /* bBold        */ false,
                             /* strMsg       */ strAddTrcInfo );
-                        POST_OR_DELETE_MESSAGE(pMsgLogItem, &mthTracer, ELogDetailLevel::DebugNormal);
+                        POST_OR_DELETE_MESSAGE(pMsgLogItem, &mthTracer, ELogDetailLevel::Debug);
                         pMsgLogItem = nullptr;
                     }
                 }
@@ -1300,7 +1300,7 @@ void CClientGateway::onError( QObject* /*i_pSocketWrapper*/, ZS::System::SErrRes
                     pReqExecTree->setExecutionConfirmationMessage(m_iReqIdInProgress, m_pMsgCon);
                     m_pMsgCon = nullptr;
 
-                    if( isTraceRuntimeInfoActive(ELogDetailLevel::DebugNormal) )
+                    if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
                     {
                         mthTracer.trace( "-+ ReqConnect.WaitCondition.wakeAll()" );
                     }
@@ -1317,7 +1317,7 @@ void CClientGateway::onError( QObject* /*i_pSocketWrapper*/, ZS::System::SErrRes
                         }
                     }
 
-                    if( isTraceRuntimeInfoActive(ELogDetailLevel::DebugNormal) )
+                    if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
                     {
                         mthTracer.trace( "+- ReqConnect.WaitCondition.wakeAll(): " + errResultInfo.getResultStr() );
                     }
@@ -1325,7 +1325,7 @@ void CClientGateway::onError( QObject* /*i_pSocketWrapper*/, ZS::System::SErrRes
 
                 else if( m_pMsgCon != nullptr )
                 {
-                    POST_OR_DELETE_MESSAGE(m_pMsgCon, &mthTracer, ELogDetailLevel::DebugNormal);
+                    POST_OR_DELETE_MESSAGE(m_pMsgCon, &mthTracer, ELogDetailLevel::Debug);
                     m_pMsgCon = nullptr;
                 }
                 else if( errResultInfo.isErrorResult() )
@@ -1393,7 +1393,7 @@ void CClientGateway::onError( QObject* /*i_pSocketWrapper*/, ZS::System::SErrRes
             /* pObjSender    */ this,
             /* pObjReceiver  */ m_pSrvClt,
             /* errResultInfo */ errResultInfo );
-        POST_OR_DELETE_MESSAGE(pMsgErr, &mthTracer, ELogDetailLevel::DebugNormal);
+        POST_OR_DELETE_MESSAGE(pMsgErr, &mthTracer, ELogDetailLevel::Debug);
         pMsgErr = nullptr;
     }
 
@@ -1526,7 +1526,7 @@ bool CClientGateway::event( QEvent* i_pMsg )
                                         /* transmitDir  */ ETransmitDir::Undefined,
                                         /* bBold        */ false,
                                         /* strMsg       */ strAddTrcInfo );
-                                    POST_OR_DELETE_MESSAGE(pMsgLogItem, &mthTracer, ELogDetailLevel::DebugNormal);
+                                    POST_OR_DELETE_MESSAGE(pMsgLogItem, &mthTracer, ELogDetailLevel::Debug);
                                     pMsgLogItem = nullptr;
                                 }
                             }
@@ -1545,7 +1545,7 @@ bool CClientGateway::event( QEvent* i_pMsg )
                                         /* transmitDir  */ ETransmitDir::Undefined,
                                         /* bBold        */ false,
                                         /* strMsg       */ strAddTrcInfo );
-                                    POST_OR_DELETE_MESSAGE(pMsgLogItem, &mthTracer, ELogDetailLevel::DebugNormal);
+                                    POST_OR_DELETE_MESSAGE(pMsgLogItem, &mthTracer, ELogDetailLevel::Debug);
                                     pMsgLogItem = nullptr;
                                 }
                             }
@@ -1593,7 +1593,7 @@ bool CClientGateway::event( QEvent* i_pMsg )
                         pReqExecTree->setExecutionConfirmationMessage(m_iReqIdInProgress, m_pMsgCon);
                         m_pMsgCon = nullptr;
 
-                        if( isTraceRuntimeInfoActive(ELogDetailLevel::DebugNormal) )
+                        if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
                         {
                             mthTracer.trace( "-+ ReqShutdown.WaitCondition.wakeAll()" );
                         }
@@ -1610,7 +1610,7 @@ bool CClientGateway::event( QEvent* i_pMsg )
                             }
                         }
 
-                        if( isTraceRuntimeInfoActive(ELogDetailLevel::DebugNormal) )
+                        if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
                         {
                             mthTracer.trace( "+- ReqShutdown.WaitCondition.wakeAll(): " + errResultInfo.getResultStr() );
                         }
@@ -1618,7 +1618,7 @@ bool CClientGateway::event( QEvent* i_pMsg )
 
                     else if( m_pMsgCon != nullptr )
                     {
-                        POST_OR_DELETE_MESSAGE(m_pMsgCon, &mthTracer, ELogDetailLevel::DebugNormal);
+                        POST_OR_DELETE_MESSAGE(m_pMsgCon, &mthTracer, ELogDetailLevel::Debug);
                         m_pMsgCon = nullptr;
                     }
                     else if( errResultInfo.isErrorResult() )
@@ -1720,7 +1720,7 @@ bool CClientGateway::event( QEvent* i_pMsg )
                                                     /* transmitDir  */ ETransmitDir::Undefined,
                                                     /* bBold        */ false,
                                                     /* strMsg       */ strAddTrcInfo );
-                                                POST_OR_DELETE_MESSAGE(pMsgLogItem, &mthTracer, ELogDetailLevel::DebugNormal);
+                                                POST_OR_DELETE_MESSAGE(pMsgLogItem, &mthTracer, ELogDetailLevel::Debug);
                                                 pMsgLogItem = nullptr;
                                             }
                                         }
@@ -1739,7 +1739,7 @@ bool CClientGateway::event( QEvent* i_pMsg )
                                                     /* transmitDir  */ ETransmitDir::Undefined,
                                                     /* bBold        */ false,
                                                     /* strMsg       */ strAddTrcInfo );
-                                                POST_OR_DELETE_MESSAGE(pMsgLogItem, &mthTracer, ELogDetailLevel::DebugNormal);
+                                                POST_OR_DELETE_MESSAGE(pMsgLogItem, &mthTracer, ELogDetailLevel::Debug);
                                                 pMsgLogItem = nullptr;
                                             }
                                         }
@@ -1891,7 +1891,7 @@ bool CClientGateway::event( QEvent* i_pMsg )
                                             /* transmitDir  */ ETransmitDir::Undefined,
                                             /* bBold        */ false,
                                             /* strMsg       */ strAddTrcInfo );
-                                        POST_OR_DELETE_MESSAGE(pMsgLogItem, &mthTracer, ELogDetailLevel::DebugNormal);
+                                        POST_OR_DELETE_MESSAGE(pMsgLogItem, &mthTracer, ELogDetailLevel::Debug);
                                         pMsgLogItem = nullptr;
                                     }
                                 }
@@ -1913,7 +1913,7 @@ bool CClientGateway::event( QEvent* i_pMsg )
                                             /* transmitDir  */ ETransmitDir::Undefined,
                                             /* bBold        */ false,
                                             /* strMsg       */ strAddTrcInfo );
-                                        POST_OR_DELETE_MESSAGE(pMsgLogItem, &mthTracer, ELogDetailLevel::DebugNormal);
+                                        POST_OR_DELETE_MESSAGE(pMsgLogItem, &mthTracer, ELogDetailLevel::Debug);
                                         pMsgLogItem = nullptr;
                                     }
                                 }
@@ -1965,7 +1965,7 @@ bool CClientGateway::event( QEvent* i_pMsg )
                             pReqExecTree->setExecutionConfirmationMessage(m_iReqIdInProgress, m_pMsgCon);
                             m_pMsgCon = nullptr;
 
-                            if( isTraceRuntimeInfoActive(ELogDetailLevel::DebugNormal) )
+                            if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
                             {
                                 mthTracer.trace( "-+ ReqConnect.WaitCondition.wakeAll()" );
                             }
@@ -1982,7 +1982,7 @@ bool CClientGateway::event( QEvent* i_pMsg )
                                 }
                             }
 
-                            if( isTraceRuntimeInfoActive(ELogDetailLevel::DebugNormal) )
+                            if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
                             {
                                 mthTracer.trace( "+- ReqConnect.WaitCondition.wakeAll(): " + errResultInfo.getResultStr() );
                             }
@@ -1990,7 +1990,7 @@ bool CClientGateway::event( QEvent* i_pMsg )
 
                         else if( m_pMsgCon != nullptr )
                         {
-                            POST_OR_DELETE_MESSAGE(m_pMsgCon, &mthTracer, ELogDetailLevel::DebugNormal);
+                            POST_OR_DELETE_MESSAGE(m_pMsgCon, &mthTracer, ELogDetailLevel::Debug);
                             m_pMsgCon = nullptr;
                         }
                         else if( errResultInfo.isErrorResult() )
@@ -2080,7 +2080,7 @@ bool CClientGateway::event( QEvent* i_pMsg )
                                         /* transmitDir  */ ETransmitDir::Undefined,
                                         /* bBold        */ false,
                                         /* strMsg       */ strAddTrcInfo );
-                                    POST_OR_DELETE_MESSAGE(pMsgLogItem, &mthTracer, ELogDetailLevel::DebugNormal);
+                                    POST_OR_DELETE_MESSAGE(pMsgLogItem, &mthTracer, ELogDetailLevel::Debug);
                                     pMsgLogItem = nullptr;
                                 }
                             }
@@ -2102,7 +2102,7 @@ bool CClientGateway::event( QEvent* i_pMsg )
                                         /* transmitDir  */ ETransmitDir::Undefined,
                                         /* bBold        */ false,
                                         /* strMsg       */ strAddTrcInfo );
-                                    POST_OR_DELETE_MESSAGE(pMsgLogItem, &mthTracer, ELogDetailLevel::DebugNormal);
+                                    POST_OR_DELETE_MESSAGE(pMsgLogItem, &mthTracer, ELogDetailLevel::Debug);
                                     pMsgLogItem = nullptr;
                                 }
                             }
@@ -2122,7 +2122,7 @@ bool CClientGateway::event( QEvent* i_pMsg )
                                         /* transmitDir  */ ETransmitDir::Undefined,
                                         /* bBold        */ false,
                                         /* strMsg       */ strAddTrcInfo );
-                                    POST_OR_DELETE_MESSAGE(pMsgLogItem, &mthTracer, ELogDetailLevel::DebugNormal);
+                                    POST_OR_DELETE_MESSAGE(pMsgLogItem, &mthTracer, ELogDetailLevel::Debug);
                                     pMsgLogItem = nullptr;
                                 }
                             }
@@ -2141,7 +2141,7 @@ bool CClientGateway::event( QEvent* i_pMsg )
                                         /* transmitDir  */ ETransmitDir::Undefined,
                                         /* bBold        */ false,
                                         /* strMsg       */ strAddTrcInfo );
-                                    POST_OR_DELETE_MESSAGE(pMsgLogItem, &mthTracer, ELogDetailLevel::DebugNormal);
+                                    POST_OR_DELETE_MESSAGE(pMsgLogItem, &mthTracer, ELogDetailLevel::Debug);
                                     pMsgLogItem = nullptr;
                                 }
                             }
@@ -2184,7 +2184,7 @@ bool CClientGateway::event( QEvent* i_pMsg )
                             pReqExecTree->setExecutionConfirmationMessage(m_iReqIdInProgress, m_pMsgCon);
                             m_pMsgCon = nullptr;
 
-                            if( isTraceRuntimeInfoActive(ELogDetailLevel::DebugNormal) )
+                            if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
                             {
                                 mthTracer.trace( "-+ ReqDisconnect.WaitCondition.wakeAll()" );
                             }
@@ -2201,7 +2201,7 @@ bool CClientGateway::event( QEvent* i_pMsg )
                                 }
                             }
 
-                            if( isTraceRuntimeInfoActive(ELogDetailLevel::DebugNormal) )
+                            if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
                             {
                                 mthTracer.trace( "+- ReqDisconnect.WaitCondition.wakeAll(): " + errResultInfo.getResultStr() );
                             }
@@ -2209,7 +2209,7 @@ bool CClientGateway::event( QEvent* i_pMsg )
 
                         else if( m_pMsgCon != nullptr )
                         {
-                            POST_OR_DELETE_MESSAGE(m_pMsgCon, &mthTracer, ELogDetailLevel::DebugNormal);
+                            POST_OR_DELETE_MESSAGE(m_pMsgCon, &mthTracer, ELogDetailLevel::Debug);
                             m_pMsgCon = nullptr;
                         }
                         else if( errResultInfo.isErrorResult() )
@@ -2375,7 +2375,7 @@ bool CClientGateway::event( QEvent* i_pMsg )
                                                     /* transmitDir  */ ETransmitDir::Undefined,
                                                     /* bBold        */ false,
                                                     /* strMsg       */ strAddTrcInfo );
-                                                POST_OR_DELETE_MESSAGE(pMsgLogItem, &mthTracer, ELogDetailLevel::DebugNormal);
+                                                POST_OR_DELETE_MESSAGE(pMsgLogItem, &mthTracer, ELogDetailLevel::Debug);
                                                 pMsgLogItem = nullptr;
                                             }
                                         }
@@ -2394,7 +2394,7 @@ bool CClientGateway::event( QEvent* i_pMsg )
                                                     /* transmitDir  */ ETransmitDir::Undefined,
                                                     /* bBold        */ false,
                                                     /* strMsg       */ strAddTrcInfo );
-                                                POST_OR_DELETE_MESSAGE(pMsgLogItem, &mthTracer, ELogDetailLevel::DebugNormal);
+                                                POST_OR_DELETE_MESSAGE(pMsgLogItem, &mthTracer, ELogDetailLevel::Debug);
                                                 pMsgLogItem = nullptr;
                                             }
                                         }
@@ -2431,7 +2431,7 @@ bool CClientGateway::event( QEvent* i_pMsg )
                                                         /* transmitDir  */ ETransmitDir::Undefined,
                                                         /* bBold        */ false,
                                                         /* strMsg       */ strAddTrcInfo );
-                                                    POST_OR_DELETE_MESSAGE(pMsgLogItem, &mthTracer, ELogDetailLevel::DebugNormal);
+                                                    POST_OR_DELETE_MESSAGE(pMsgLogItem, &mthTracer, ELogDetailLevel::Debug);
                                                     pMsgLogItem = nullptr;
                                                 }
                                             }
@@ -2450,7 +2450,7 @@ bool CClientGateway::event( QEvent* i_pMsg )
                                                         /* transmitDir  */ ETransmitDir::Undefined,
                                                         /* bBold        */ false,
                                                         /* strMsg       */ strAddTrcInfo );
-                                                    POST_OR_DELETE_MESSAGE(pMsgLogItem, &mthTracer, ELogDetailLevel::DebugNormal);
+                                                    POST_OR_DELETE_MESSAGE(pMsgLogItem, &mthTracer, ELogDetailLevel::Debug);
                                                     pMsgLogItem = nullptr;
                                                 }
                                             }
@@ -2470,7 +2470,7 @@ bool CClientGateway::event( QEvent* i_pMsg )
                                                         /* transmitDir  */ ETransmitDir::Undefined,
                                                         /* bBold        */ false,
                                                         /* strMsg       */ strAddTrcInfo );
-                                                    POST_OR_DELETE_MESSAGE(pMsgLogItem, &mthTracer, ELogDetailLevel::DebugNormal);
+                                                    POST_OR_DELETE_MESSAGE(pMsgLogItem, &mthTracer, ELogDetailLevel::Debug);
                                                     pMsgLogItem = nullptr;
                                                 }
                                             }
@@ -2489,7 +2489,7 @@ bool CClientGateway::event( QEvent* i_pMsg )
                                                         /* transmitDir  */ ETransmitDir::Undefined,
                                                         /* bBold        */ false,
                                                         /* strMsg       */ strAddTrcInfo );
-                                                    POST_OR_DELETE_MESSAGE(pMsgLogItem, &mthTracer, ELogDetailLevel::DebugNormal);
+                                                    POST_OR_DELETE_MESSAGE(pMsgLogItem, &mthTracer, ELogDetailLevel::Debug);
                                                     pMsgLogItem = nullptr;
                                                 }
                                             }
@@ -2601,7 +2601,7 @@ bool CClientGateway::event( QEvent* i_pMsg )
                             pReqExecTree->setExecutionConfirmationMessage(m_iReqIdInProgress, m_pMsgCon);
                             m_pMsgCon = nullptr;
 
-                            if( isTraceRuntimeInfoActive(ELogDetailLevel::DebugNormal) )
+                            if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
                             {
                                 mthTracer.trace( "-+ ReqChangeSettings.WaitCondition.wakeAll()" );
                             }
@@ -2618,7 +2618,7 @@ bool CClientGateway::event( QEvent* i_pMsg )
                                 }
                             }
 
-                            if( isTraceRuntimeInfoActive(ELogDetailLevel::DebugNormal) )
+                            if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
                             {
                                 mthTracer.trace( "+- ReqChangeSettings.WaitCondition.wakeAll(): " + errResultInfo.getResultStr() );
                             }
@@ -2626,7 +2626,7 @@ bool CClientGateway::event( QEvent* i_pMsg )
 
                         else if( m_pMsgCon != nullptr )
                         {
-                            POST_OR_DELETE_MESSAGE(m_pMsgCon, &mthTracer, ELogDetailLevel::DebugNormal);
+                            POST_OR_DELETE_MESSAGE(m_pMsgCon, &mthTracer, ELogDetailLevel::Debug);
                             m_pMsgCon = nullptr;
                         }
                         else if( errResultInfo.isErrorResult() )
@@ -2729,7 +2729,7 @@ bool CClientGateway::event( QEvent* i_pMsg )
                                     /* pObjReceiver */ m_pSrvClt,
                                     /* iSocketId    */ m_pIpcSocketWrapper->getSocketId(),
                                     /* byteArr      */ arByteArrs[idxBlk] );
-                                POST_OR_DELETE_MESSAGE(pMsgInd, &mthTracer, ELogDetailLevel::DebugNormal);
+                                POST_OR_DELETE_MESSAGE(pMsgInd, &mthTracer, ELogDetailLevel::Debug);
                                 pMsgInd = nullptr;
                             }
                         } // if( m_pBlkType != nullptr )
@@ -2752,7 +2752,7 @@ bool CClientGateway::event( QEvent* i_pMsg )
                                 /* iSocketId        */ m_pIpcSocketWrapper->getSocketId(),
                                 /* bMustBeConfirmed */ false,
                                 /* iReqId           */ -1 );
-                            POST_OR_DELETE_MESSAGE(pMsgReq, &mthTracer, ELogDetailLevel::DebugNormal);
+                            POST_OR_DELETE_MESSAGE(pMsgReq, &mthTracer, ELogDetailLevel::Debug);
                             pMsgReq = nullptr;
                         }
                     } // if( m_pIpcSocketWrapper->socketState() == ESocketStateConnected )

@@ -1440,7 +1440,7 @@ void CTest::doTestStepTraceMethodCall( ZS::Test::CTestStep* i_pTestStep )
     else
     {
         pTrcServer->setNewTrcAdminObjsMethodCallsDefaultDetailLevel(EMethodTraceDetailLevel::ArgsNormal);
-        pTrcServer->setNewTrcAdminObjsRuntimeInfoDefaultDetailLevel(ELogDetailLevel::DebugNormal);
+        pTrcServer->setNewTrcAdminObjsRuntimeInfoDefaultDetailLevel(ELogDetailLevel::Debug);
 
         QString strTrcMethodEnter = "<GUIMain                 > -> <" + strNameSpace + "::" + strClassName;
         QString strTrcMethodLeave = "<GUIMain                 > <- <" + strNameSpace + "::" + strClassName;
