@@ -137,18 +137,21 @@ enum EMethodTraceDetailLevel
 enum ELogDetailLevel
 //==============================================================================
 {
-    ELogDetailLevelNone          =  0, /*!< Log output of runtime info is disabled. */
-    ELogDetailLevelCritical      =  1, /*!< Log critical errors (critical errors, critical exceptions). */
-    ELogDetailLevelError         =  2, /*!< Log error (errors, exceptions). */
-    ELogDetailLevelWarning       =  3, /*!< Log warnings. */
-    ELogDetailLevelInfoNormal    =  4, /*!< Log info. */
-    ELogDetailLevelInfoDetailed  =  5, /*!< Log detailed info. */
-    ELogDetailLevelInfoVerbose   =  6, /*!< Log very detailed info. */
-    ELogDetailLevelDebugNormal   =  7, /*!< Output debug info. */
-    ELogDetailLevelDebugDetailed =  8, /*!< Output detailed debug info. */
-    ELogDetailLevelDebugVerbose  =  9, /*!< Output very detailed debug info. */
-    ELogDetailLevelUndefined     = 10, /*!< Used e.g. to indicate that the detail level should not be used
-                                            but the predefined detail level should be used. */
+    ELogDetailLevelNone          = 0, /*!< Log outputs are disabled. */
+    ELogDetailLevelFatal         = 1, /*!< Log fatal errors (critical errors, critical exceptions). */
+    ELogDetailLevelError         = 2, /*!< At this level all error conditions should be logged. */
+    ELogDetailLevelWarning       = 3, /*!< At the Warning level all events that could potentially
+                                           become an error should be logged. */
+    ELogDetailLevelNotice        = 4, /*!< At this level all events should be logged which are
+                                           considered to be notable but are not an error. */
+    ELogDetailLevelInfo          = 5, /*!< The Info level is usually used to log all actions that
+                                           are user-driven or system specific. */
+    ELogDetailLevelDebug         = 6, /*!< The Debug level is usually used to log anything that
+                                           happens in the program for debugging purposes. */
+    ELogDetailLevelDebugDetailed = 7, /*!< Output detailed debug runtime info. */
+    ELogDetailLevelDebugVerbose  = 8, /*!< Output very detailed debug runtime info. */
+    ELogDetailLevelUndefined     = 9, /*!< Used e.g. to indicate that the log level should not be used
+                                           but the predefined detail level should be used. */
     ELogDetailLevelCount
 };
 
@@ -244,7 +247,7 @@ public: // instance methods
     void setMethodOutArgs( const char* i_sz );
     char* getMethodOutArgs() const { return m_szMethodOutArgs; }
 public: // instance methods
-    void trace( const char* i_szAddInfo, ELogDetailLevel i_eFilterDetailLevel = ELogDetailLevel::ELogDetailLevelCritical ) const;
+    void trace( const char* i_szAddInfo, ELogDetailLevel i_eFilterDetailLevel = ELogDetailLevelFatal ) const;
 protected: // instance members
     CTrcAdminObj* m_pTrcAdminObj;
     EMethodTraceDetailLevel m_eEnterLeaveFilterDetailLevel;

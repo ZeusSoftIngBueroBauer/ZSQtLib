@@ -68,7 +68,10 @@ public: // ctors and dtor
 CDelegateIdxTreeLoggers::CDelegateIdxTreeLoggers(QObject* i_pObjParent) :
 //------------------------------------------------------------------------------
     QStyledItemDelegate(i_pObjParent),
-    m_rectChkBoxEnabled(0, 0, 10, 10)
+    m_rectChkBoxEnabled(0, 0, 10, 10),
+    m_rectChkBoxAddThreadName(0, 0, 10, 10),
+    m_rectChkBoxAddDateTime(0, 0, 10, 10),
+    m_rectChkBoxAddSystemTime(0, 0, 10, 10)
 {
 }
 
@@ -77,6 +80,9 @@ CDelegateIdxTreeLoggers::~CDelegateIdxTreeLoggers()
 //------------------------------------------------------------------------------
 {
     m_rectChkBoxEnabled = QRect(0, 0, 0, 0);
+    m_rectChkBoxAddThreadName = QRect(0, 0, 0, 0);
+    m_rectChkBoxAddDateTime = QRect(0, 0, 0, 0);
+    m_rectChkBoxAddSystemTime = QRect(0, 0, 0, 0);
 }
 
 /*==============================================================================
@@ -122,6 +128,123 @@ bool CDelegateIdxTreeLoggers::isCheckBoxEnabledHit(
     return bIsHit;
 }
 
+//------------------------------------------------------------------------------
+bool CDelegateIdxTreeLoggers::isCheckBoxAddThreadNameHit(
+    const QRect&       i_rectVisual,
+    const QPoint&      i_ptPos,
+    const QModelIndex& i_modelIdx )
+//------------------------------------------------------------------------------
+{
+    bool bIsHit = false;
+
+    // If the check box is bigger than the visual rect ..
+    if( i_rectVisual.width() <= m_rectChkBoxAddThreadName.width()
+     && i_rectVisual.height() <= m_rectChkBoxAddThreadName.height() )
+    {
+        bIsHit = true;
+    }
+    // If the check box is smaller than the visual rect ..
+    else
+    {
+        QRect rectCheckBox = m_rectChkBoxAddThreadName;
+
+        rectCheckBox.moveLeft(i_rectVisual.left());
+        rectCheckBox.moveTop(i_rectVisual.top());
+
+        if( i_rectVisual.width() > m_rectChkBoxAddThreadName.width() )
+        {
+            rectCheckBox.moveLeft(i_rectVisual.left()+(i_rectVisual.width()-m_rectChkBoxAddThreadName.width())/2);
+        }
+        if( i_rectVisual.height() > m_rectChkBoxAddThreadName.height() )
+        {
+            rectCheckBox.moveTop(i_rectVisual.top()+(i_rectVisual.height()-m_rectChkBoxAddThreadName.height())/2);
+        }
+        if( rectCheckBox.contains(i_ptPos) )
+        {
+            bIsHit = true;
+        }
+    }
+    return bIsHit;
+}
+
+//------------------------------------------------------------------------------
+bool CDelegateIdxTreeLoggers::isCheckBoxAddDateTimeHit(
+    const QRect&       i_rectVisual,
+    const QPoint&      i_ptPos,
+    const QModelIndex& i_modelIdx )
+//------------------------------------------------------------------------------
+{
+    bool bIsHit = false;
+
+    // If the check box is bigger than the visual rect ..
+    if( i_rectVisual.width() <= m_rectChkBoxAddDateTime.width()
+     && i_rectVisual.height() <= m_rectChkBoxAddDateTime.height() )
+    {
+        bIsHit = true;
+    }
+    // If the check box is smaller than the visual rect ..
+    else
+    {
+        QRect rectCheckBox = m_rectChkBoxAddDateTime;
+
+        rectCheckBox.moveLeft(i_rectVisual.left());
+        rectCheckBox.moveTop(i_rectVisual.top());
+
+        if( i_rectVisual.width() > m_rectChkBoxAddDateTime.width() )
+        {
+            rectCheckBox.moveLeft(i_rectVisual.left()+(i_rectVisual.width()-m_rectChkBoxAddDateTime.width())/2);
+        }
+        if( i_rectVisual.height() > m_rectChkBoxAddDateTime.height() )
+        {
+            rectCheckBox.moveTop(i_rectVisual.top()+(i_rectVisual.height()-m_rectChkBoxAddDateTime.height())/2);
+        }
+        if( rectCheckBox.contains(i_ptPos) )
+        {
+            bIsHit = true;
+        }
+    }
+    return bIsHit;
+}
+
+//------------------------------------------------------------------------------
+bool CDelegateIdxTreeLoggers::isCheckBoxAddSystemTimeHit(
+    const QRect&       i_rectVisual,
+    const QPoint&      i_ptPos,
+    const QModelIndex& i_modelIdx )
+//------------------------------------------------------------------------------
+{
+    bool bIsHit = false;
+
+    // If the check box is bigger than the visual rect ..
+    if( i_rectVisual.width() <= m_rectChkBoxAddSystemTime.width()
+     && i_rectVisual.height() <= m_rectChkBoxAddSystemTime.height() )
+    {
+        bIsHit = true;
+    }
+    // If the check box is smaller than the visual rect ..
+    else
+    {
+        QRect rectCheckBox = m_rectChkBoxAddSystemTime;
+
+        rectCheckBox.moveLeft(i_rectVisual.left());
+        rectCheckBox.moveTop(i_rectVisual.top());
+
+        if( i_rectVisual.width() > m_rectChkBoxAddSystemTime.width() )
+        {
+            rectCheckBox.moveLeft(i_rectVisual.left()+(i_rectVisual.width()-m_rectChkBoxAddSystemTime.width())/2);
+        }
+        if( i_rectVisual.height() > m_rectChkBoxAddSystemTime.height() )
+        {
+            rectCheckBox.moveTop(i_rectVisual.top()+(i_rectVisual.height()-m_rectChkBoxAddSystemTime.height())/2);
+        }
+        if( rectCheckBox.contains(i_ptPos) )
+        {
+            bIsHit = true;
+        }
+    }
+    return bIsHit;
+}
+
 /*==============================================================================
 public: // overridables of base class QItemDelegate
 ==============================================================================*/
@@ -151,6 +274,9 @@ void CDelegateIdxTreeLoggers::paint(
         switch( i_modelIdx.column() )
         {
             case CModelIdxTreeLoggers::EColumnEnabled:
+            case CModelIdxTreeLoggers::EColumnAddThreadName:
+            case CModelIdxTreeLoggers::EColumnAddDateTime:
+            case CModelIdxTreeLoggers::EColumnAddSystemTime:
             {
                 if( pLogger != nullptr )
                 {
@@ -167,13 +293,6 @@ void CDelegateIdxTreeLoggers::paint(
                     }
                     QApplication::style()->drawControl(QStyle::CE_CheckBox, &styleOption, i_pPainter);
                     bHandled = true;
-                }
-                break;
-            }
-            case CModelIdxTreeLoggers::EColumnDetailLevel:
-            {
-                if( pLogger != nullptr )
-                {
                 }
                 break;
             }
@@ -215,6 +334,9 @@ QWidget* CDelegateIdxTreeLoggers::createEditor(
         switch( i_modelIdx.column() )
         {
             case CModelIdxTreeLoggers::EColumnEnabled:
+            case CModelIdxTreeLoggers::EColumnAddThreadName:
+            case CModelIdxTreeLoggers::EColumnAddDateTime:
+            case CModelIdxTreeLoggers::EColumnAddSystemTime:
             {
                 if( pLogger != nullptr )
                 {
@@ -226,12 +348,12 @@ QWidget* CDelegateIdxTreeLoggers::createEditor(
                 }
                 break;
             }
-            case CModelIdxTreeLoggers::EColumnDetailLevel:
+            case CModelIdxTreeLoggers::EColumnLogLevel:
             {
                 if( pLogger != nullptr )
                 {
                     QComboBox* pCmb = new QComboBox(i_pWdgtParent);
-                    pCmb->setObjectName(pLogger->keyInTree() + ".DetailLevel");
+                    pCmb->setObjectName(pLogger->keyInTree() + ".LogLevel");
                     pWdgtEditor = pCmb;
 
                     CEnumLogDetailLevel eDetailLevel;
@@ -300,6 +422,9 @@ void CDelegateIdxTreeLoggers::setEditorData(
         switch( i_modelIdx.column() )
         {
             case CModelIdxTreeLoggers::EColumnEnabled:
+            case CModelIdxTreeLoggers::EColumnAddThreadName:
+            case CModelIdxTreeLoggers::EColumnAddDateTime:
+            case CModelIdxTreeLoggers::EColumnAddSystemTime:
             {
                 if( pLogger != nullptr )
                 {
@@ -310,7 +435,7 @@ void CDelegateIdxTreeLoggers::setEditorData(
                 }
                 break;
             }
-            case CModelIdxTreeLoggers::EColumnDetailLevel:
+            case CModelIdxTreeLoggers::EColumnLogLevel:
             {
                 if( pLogger != nullptr )
                 {
@@ -380,6 +505,9 @@ void CDelegateIdxTreeLoggers::setModelData(
         switch( i_modelIdx.column() )
         {
             case CModelIdxTreeLoggers::EColumnEnabled:
+            case CModelIdxTreeLoggers::EColumnAddThreadName:
+            case CModelIdxTreeLoggers::EColumnAddDateTime:
+            case CModelIdxTreeLoggers::EColumnAddSystemTime:
             {
                 if( pLogger != nullptr )
                 {
@@ -390,7 +518,7 @@ void CDelegateIdxTreeLoggers::setModelData(
                 }
                 break;
             }
-            case CModelIdxTreeLoggers::EColumnDetailLevel:
+            case CModelIdxTreeLoggers::EColumnLogLevel:
             {
                 if( pLogger != nullptr )
                 {
@@ -454,6 +582,9 @@ void CDelegateIdxTreeLoggers::updateEditorGeometry(
         switch( i_modelIdx.column() )
         {
             case CModelIdxTreeLoggers::EColumnEnabled:
+            case CModelIdxTreeLoggers::EColumnAddThreadName:
+            case CModelIdxTreeLoggers::EColumnAddDateTime:
+            case CModelIdxTreeLoggers::EColumnAddSystemTime:
             {
                 if( pLogger != nullptr )
                 {
@@ -461,20 +592,6 @@ void CDelegateIdxTreeLoggers::updateEditorGeometry(
                     // would need to click twice on the cell in order to toggle the value.
                     // Changing the enabled value is realized by the TreeViewWidget's method
                     // "mouseReleaseEvent" if the enabled check box has been hit.
-                }
-                break;
-            }
-            case CModelIdxTreeLoggers::EColumnDetailLevel:
-            {
-                if( pLogger != nullptr )
-                {
-                }
-                break;
-            }
-            case CModelIdxTreeLoggers::EColumnDataFilter:
-            {
-                if( pLogger != nullptr )
-                {
                 }
                 break;
             }
@@ -559,13 +676,12 @@ CTreeViewIdxTreeLoggers::CTreeViewIdxTreeLoggers(
     hideColumn(CModelIdxTree::EColumnIdxInParentBranch);
     hideColumn(CModelIdxTree::EColumnKeyInTree);
     hideColumn(CModelIdxTree::EColumnKeyInParentBranch);
-    //hideColumn(CModelIdxTreeLoggers::EColumnRefCount);
     //hideColumn(CModelIdxTreeLoggers::EColumnEnabled);
     //hideColumn(CModelIdxTreeLoggers::EColumnDetailLevel);
+    //hideColumn(CModelIdxTreeLoggers::EColumnDataFilter);
     //hideColumn(CModelIdxTreeLoggers::EColumnNameSpace);
     //hideColumn(CModelIdxTreeLoggers::EColumnClassName);
     //hideColumn(CModelIdxTreeLoggers::EColumnObjName);
-    //hideColumn(CModelIdxTreeLoggers::EColumnObjThreadName);
     hideColumn(CModelIdxTreeLoggers::EColumnObjAddress);
 
     setItemDelegate(m_pDelegate);
@@ -971,7 +1087,6 @@ void CTreeViewIdxTreeLoggers::mousePressEvent( QMouseEvent* i_pEv )
                                 bEventHandled = true;
                                 break;
                             }
-                            case CModelIdxTreeLoggers::EColumnRefCount:
                             case CModelIdxTreeLoggers::EColumnNameSpace:
                             case CModelIdxTreeLoggers::EColumnClassName:
                             case CModelIdxTreeLoggers::EColumnObjName:
@@ -1036,6 +1151,60 @@ void CTreeViewIdxTreeLoggers::mouseReleaseEvent( QMouseEvent* i_pEv )
                             else
                             {
                                 pLogger->setEnabled(EEnabled::Yes);
+                            }
+                            bEventHandled = true;
+                        }
+                        break;
+                    }
+                    case CModelIdxTreeLoggers::EColumnAddThreadName:
+                    {
+                        QRect rectVisual = visualRect(m_modelIdxSelectedOnMouseReleaseEvent);
+
+                        if( pDelegate != nullptr && pDelegate->isCheckBoxAddThreadNameHit(rectVisual,i_pEv->pos(),m_modelIdxSelectedOnMouseReleaseEvent) )
+                        {
+                            if( pLogger->addThreadName() )
+                            {
+                                pLogger->setAddThreadName(false);
+                            }
+                            else
+                            {
+                                pLogger->setAddThreadName(true);
+                            }
+                            bEventHandled = true;
+                        }
+                        break;
+                    }
+                    case CModelIdxTreeLoggers::EColumnAddDateTime:
+                    {
+                        QRect rectVisual = visualRect(m_modelIdxSelectedOnMouseReleaseEvent);
+
+                        if( pDelegate != nullptr && pDelegate->isCheckBoxAddDateTimeHit(rectVisual,i_pEv->pos(),m_modelIdxSelectedOnMouseReleaseEvent) )
+                        {
+                            if( pLogger->addDateTime() )
+                            {
+                                pLogger->setAddDateTime(false);
+                            }
+                            else
+                            {
+                                pLogger->setAddDateTime(true);
+                            }
+                            bEventHandled = true;
+                        }
+                        break;
+                    }
+                    case CModelIdxTreeLoggers::EColumnAddSystemTime:
+                    {
+                        QRect rectVisual = visualRect(m_modelIdxSelectedOnMouseReleaseEvent);
+
+                        if( pDelegate != nullptr && pDelegate->isCheckBoxAddSystemTimeHit(rectVisual,i_pEv->pos(),m_modelIdxSelectedOnMouseReleaseEvent) )
+                        {
+                            if( pLogger->addSystemTime() )
+                            {
+                                pLogger->setAddSystemTime(false);
+                            }
+                            else
+                            {
+                                pLogger->setAddSystemTime(true);
                             }
                             bEventHandled = true;
                         }
@@ -1160,9 +1329,9 @@ void CTreeViewIdxTreeLoggers::onActionNameSpaceSetLoggersDetailLevelTriggered( b
 
                 CDlgEditEnumValue* pDlg = CDlgEditEnumValue::CreateInstance(
                     /* strTitle    */ QCoreApplication::applicationName(),
-                    /* strObjName  */ "DetailLevel",
+                    /* strObjName  */ "LogLevel",
                     /* pWdgtParent */ this );
-                pDlg->setValueName("DetailLevel");
+                pDlg->setValueName("LogLevel");
                 pDlg->setComboItems(CEnumLogDetailLevel::s_arEnumEntries);
                 pDlg->setEnumerator(0);
 

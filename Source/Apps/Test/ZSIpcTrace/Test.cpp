@@ -78,6 +78,7 @@ CTest::CTest() :
 //------------------------------------------------------------------------------
     ZS::Test::CTest("ZS::IpcTrace"),
     m_pTmrTestStepTimeout(nullptr),
+    m_pTmrTestStepTrcMthListWdgtTimeout(nullptr),
     m_hshReqsInProgress(),
     m_hshpMyClass1InstancesByName(),
     m_hshpMyClass2InstancesByName(),
@@ -98,6 +99,18 @@ CTest::CTest() :
         /* szSignal     */ SIGNAL(timeout()),
         /* pObjReceiver */ this,
         /* szSlot       */ SLOT(onTimerTestStepTimeout()) ) )
+    {
+        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
+    }
+
+    m_pTmrTestStepTrcMthListWdgtTimeout = new QTimer();
+    m_pTmrTestStepTrcMthListWdgtTimeout->setSingleShot(true);
+
+    if( !QObject::connect(
+        /* pObjSender   */ m_pTmrTestStepTrcMthListWdgtTimeout,
+        /* szSignal     */ SIGNAL(timeout()),
+        /* pObjReceiver */ this,
+        /* szSlot       */ SLOT(onTimerTestStepTrcMthListWdgtTimeout()) ) )
     {
         throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
     }
@@ -1073,7 +1086,16 @@ CTest::~CTest()
     {
     }
 
+    try
+    {
+        delete m_pTmrTestStepTrcMthListWdgtTimeout;
+    }
+    catch(...)
+    {
+    }
+
     m_pTmrTestStepTimeout = nullptr;
+    m_pTmrTestStepTrcMthListWdgtTimeout = nullptr;
     m_hshReqsInProgress.clear();
     m_hshpMyClass1InstancesByName.clear();
     m_hshpMyClass2InstancesByName.clear();
@@ -1440,7 +1462,7 @@ void CTest::doTestStepTraceMethodCall( ZS::Test::CTestStep* i_pTestStep )
     else
     {
         pTrcServer->setNewTrcAdminObjsMethodCallsDefaultDetailLevel(EMethodTraceDetailLevel::ArgsNormal);
-        pTrcServer->setNewTrcAdminObjsRuntimeInfoDefaultDetailLevel(ELogDetailLevel::DebugNormal);
+        pTrcServer->setNewTrcAdminObjsRuntimeInfoDefaultDetailLevel(ELogDetailLevel::Debug);
 
         QString strTrcMethodEnter = "<GUIMain                 > -> <" + strNameSpace + "::" + strClassName;
         QString strTrcMethodLeave = "<GUIMain                 > <- <" + strNameSpace + "::" + strClassName;
@@ -2386,6 +2408,9 @@ void CTest::doTestStepTraceMethodCall( ZS::Test::CTestStep* i_pTestStep )
         pTrcServer->setNewTrcAdminObjsRuntimeInfoDefaultDetailLevel(ELogDetailLevel::None);
     }
 
+    // Result Values
+    //--------------
+
     if( !bValidTestStep )
     {
         if( !strResultValue.isEmpty() )
@@ -2422,7 +2447,7 @@ void CTest::doTestStepTraceMethodCall( ZS::Test::CTestStep* i_pTestStep )
             {
                 throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
             }
-            m_pTmrTestStepTimeout->start(iTestStepTimeout_ms);
+            m_pTmrTestStepTrcMthListWdgtTimeout->start(iTestStepTimeout_ms);
         }
         else
         {
@@ -2484,25 +2509,23 @@ void CTest::doTestStepTraceDataFilter( ZS::Test::CTestStep* i_pTestStep )
     pObj->instMethod("No Filter Set");
 
     // Check if the string "abc" is contained:
-    pObj->getTrcAdminObj()->setTraceDataFilter("abc");
+    pObj->getTrcAdminObj()->setTraceDataFilter("$I{abc}I$");
     pObj->instMethod("1 abc bca cab"); // must occur in log output
     pObj->instMethod("2 xyz yzx zxy"); // must be suppressed in log output
 
     // Check if the strings "def" or "uvw" are contained:
-    pObj->getTrcAdminObj()->setTraceDataFilter("def|uvw");
+    pObj->getTrcAdminObj()->setTraceDataFilter("$I{def}I$$I{uvw}I$");
     pObj->instMethod("3 def efd fde"); // must occur in log output
     pObj->instMethod("4 uvw vwu wuv"); // must occur in log output
 
     // Check if the string "ghi" is NOT contained:
-    pObj->getTrcAdminObj()->setTraceDataFilter("^((?!ghi).)*$");
+    pObj->getTrcAdminObj()->setTraceDataFilter("$!I{ghi}I!$");
     pObj->instMethod("5 ghi hig igh"); // must be suppressed in log output
     pObj->instMethod("6 rst str trs"); // must occur in log output
 
     pObj->getTrcAdminObj()->setTraceDataFilter("");
     pObj->instMethod("No Filter Set");
 
-    // Remove filter so that the dtor is traced.
-    pObj->getTrcAdminObj()->setTraceDataFilter("");
     delete pObj;
     pObj = nullptr;
 
@@ -2525,7 +2548,7 @@ void CTest::doTestStepTraceDataFilter( ZS::Test::CTestStep* i_pTestStep )
         {
             throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
         }
-        m_pTmrTestStepTimeout->start(iTestStepTimeout_ms);
+        m_pTmrTestStepTrcMthListWdgtTimeout->start(iTestStepTimeout_ms);
     }
     else
     {
@@ -2719,6 +2742,10 @@ void CTest::onZSTraceClientTraceAdminObjInserted( QObject* /*i_pTrcClient*/, con
                     {
                         m_pTmrTestStepTimeout->stop();
                     }
+                    if( m_pTmrTestStepTrcMthListWdgtTimeout->isActive() )
+                    {
+                        m_pTmrTestStepTrcMthListWdgtTimeout->stop();
+                    }
 
                     QObject::disconnect(
                         /* pObjSender   */ pTrcClient,
@@ -2777,64 +2804,46 @@ void CTest::onZSTraceClientTrcMthListWdgtTextItemAdded( const QString& i_strText
 
     if( pTestStep != nullptr )
     {
-        QString strOperation = pTestStep->getOperation();
-
-        QString strNameSpace;
-        QString strClassName;
-        QString strSubClassName;
-        QString strObjName;
-        QString strMth;
-        QStringList strlstInArgs;
-        QString strMthRet;
-
-        splitMethodCallOperation(strOperation, strClassName, strSubClassName, strObjName, strMth, strlstInArgs, strMthRet);
-
         CTrcServer* pTrcServer = CTrcServer::GetInstance();
         CWidgetCentral* pWdgtCentral = CWidgetCentral::GetInstance();
         CWdgtTrcMthList* pWdgtTrcMthList = pWdgtCentral->getTrcMthListWdgt();
 
         if( pWdgtTrcMthList != nullptr )
         {
-            QString     strResultValue;
-            QStringList strlstResultValues;
             QStringList strlstExpectedValues = pTestStep->getExpectedValues();
 
-            QTextEdit* pEdtTrcMthList = pWdgtTrcMthList->getTextEdit();
+            QTextEdit*  pEdtTrcMthList = pWdgtTrcMthList->getTextEdit();
             QTextDocument* pDocTrcMthList = pEdtTrcMthList->document();
 
             int iDocTrcMthListLineCount = pDocTrcMthList->lineCount();
 
-            if( iDocTrcMthListLineCount == strlstExpectedValues.size() )
+            bool bTestStepFinished = (iDocTrcMthListLineCount >= strlstExpectedValues.size());
+
+            if( bTestStepFinished )
             {
+                // Test step finished (only one entry expected).
+                if( m_pTmrTestStepTimeout->isActive() )
+                {
+                    m_pTmrTestStepTimeout->stop();
+                }
+                if( m_pTmrTestStepTrcMthListWdgtTimeout->isActive() )
+                {
+                    m_pTmrTestStepTrcMthListWdgtTimeout->stop();
+                }
+
+                QObject::disconnect(
+                    /* pObjSender   */ pWdgtTrcMthList,
+                    /* szSignal     */ SIGNAL(textItemAdded(const QString&)),
+                    /* pObjReceiver */ this,
+                    /* szSlot       */ SLOT(onZSTraceClientTrcMthListWdgtTextItemAdded(const QString&)) );
+
                 // Retrieve result values from trace method list widget
                 //-----------------------------------------------------
 
-                // The list widget must be cleared on starting a new test step.
-                QString strAllLines = pEdtTrcMthList->toPlainText();
-                QTextStream txtStream(&strAllLines, QIODevice::ReadOnly);
-                while (!txtStream.atEnd())
-                {
-                    QString strLine = txtStream.readLine();
-                    // Remove time information.
-                    int idxEOfThread = strLine.indexOf("> ");
-                    int idxMthTrc = strLine.indexOf("): ");
-                    if( idxMthTrc >= 0 ) {
-                        idxMthTrc += 3;
-                    }
-                    if( idxMthTrc < 0 ) {
-                        idxMthTrc = strLine.indexOf("->");
-                    }
-                    if( idxMthTrc < 0 ) {
-                        idxMthTrc = strLine.indexOf("<-");
-                    }
-                    if( idxEOfThread >= 0 && idxMthTrc >= 0 ) {
-                        strLine = strLine.remove(idxEOfThread + 2, idxMthTrc - idxEOfThread - 2);
-                    }
-                    strlstResultValues << strLine;
-                }
+                QStringList strlstResultValues = getResultValuesFromTrcMthListWdgt();
 
-                // Check if entry added to log file.
-                //----------------------------------
+                // Check if entries added to log file.
+                //------------------------------------
 
                 // Range of IniFileScope: ["AppDir", "User", "System"]
                 #ifdef __linux__
@@ -2887,33 +2896,11 @@ void CTest::onZSTraceClientTrcMthListWdgtTextItemAdded( const QString& i_strText
                     }
                 }
 
-                if( !strlstResultValues.isEmpty() || !strResultValue.isEmpty() )
-                {
-                    // Test step finished (only one entry expected).
-                    if( m_pTmrTestStepTimeout->isActive() )
-                    {
-                        m_pTmrTestStepTimeout->stop();
-                    }
+                pTestStep->setResultValues(strlstResultValues);
 
-                    QObject::disconnect(
-                        /* pObjSender   */ pWdgtTrcMthList,
-                        /* szSignal     */ SIGNAL(textItemAdded(const QString&)),
-                        /* pObjReceiver */ this,
-                        /* szSlot       */ SLOT(onZSTraceClientTrcMthListWdgtTextItemAdded(const QString&)) );
-                }
-
-                if( !strlstResultValues.isEmpty() )
-                {
-                    pTestStep->setResultValues(strlstResultValues);
-                }
-                else if( !strResultValue.isEmpty() )
-                {
-                    pTestStep->setResultValue(strResultValue);
-                }
-            } // if( iDocTrcMthListLineCount == strlstExpectedValues.size() )
+            } // if( bTestStepFinished )
         } // if( pWdgtTrcMthList != nullptr )
     } // if( pTestStep != nullptr )
-
 } // onZSTraceClientTrcMthListWdgtTextItemAdded
 
 //------------------------------------------------------------------------------
@@ -2924,11 +2911,9 @@ void CTest::onTimerTestStepTimeout()
 
     if( pTestStep != nullptr )
     {
-        QString     strResultValue;
-        QStringList strlstResultValues;
+        QStringList strlstResultValues = pTestStep->getResultValues();
 
-        strResultValue = "Test step not finished in time";
-        strlstResultValues.append(strResultValue);
+        strlstResultValues.append("Test step not finished in time");
 
         pTestStep->setResultValues(strlstResultValues);
 
@@ -2942,9 +2927,36 @@ void CTest::onTimerTestStepTimeout()
                 /* pObjReceiver */ this,
                 /* szSlot       */ SLOT(onZSTraceClientTraceAdminObjInserted(QObject*, const QString&)) );
         }
-    } // if( pTestStep != nullptr )
+    }
+}
 
-} // onTimerTestStepTimeout()
+//------------------------------------------------------------------------------
+void CTest::onTimerTestStepTrcMthListWdgtTimeout()
+//------------------------------------------------------------------------------
+{
+    ZS::Test::CTestStep* pTestStep = getCurrentTestStep();
+
+    if( pTestStep != nullptr )
+    {
+        CWidgetCentral* pWdgtCentral = CWidgetCentral::GetInstance();
+        CWdgtTrcMthList* pWdgtTrcMthList = pWdgtCentral->getTrcMthListWdgt();
+
+        if( pWdgtTrcMthList != nullptr )
+        {
+            QObject::disconnect(
+                /* pObjSender   */ pWdgtTrcMthList,
+                /* szSignal     */ SIGNAL(textItemAdded(const QString&)),
+                /* pObjReceiver */ this,
+                /* szSlot       */ SLOT(onZSTraceClientTrcMthListWdgtTextItemAdded(const QString&)) );
+
+            QStringList strlstResultValues = getResultValuesFromTrcMthListWdgt();
+
+            strlstResultValues.append("Test step not finished in time");
+
+            pTestStep->setResultValues(strlstResultValues);
+        }
+    }
+}
 
 //------------------------------------------------------------------------------
 void CTest::onClass1AboutToBeDestroyed(QObject* i_pObj, const QString& i_strObjName)
@@ -3189,3 +3201,43 @@ void CTest::splitMethodCallOperation(
         }
     }
 } // splitMethodCallOperation
+
+//------------------------------------------------------------------------------
+QStringList CTest::getResultValuesFromTrcMthListWdgt() const
+//------------------------------------------------------------------------------
+{
+    QStringList strlstResultValues;
+
+    CWidgetCentral* pWdgtCentral = CWidgetCentral::GetInstance();
+    CWdgtTrcMthList* pWdgtTrcMthList = pWdgtCentral->getTrcMthListWdgt();
+
+    if( pWdgtTrcMthList != nullptr )
+    {
+        QTextEdit* pEdtTrcMthList = pWdgtTrcMthList->getTextEdit();
+
+        // The list widget must be cleared on starting a new test step.
+        QString strAllLines = pEdtTrcMthList->toPlainText();
+        QTextStream txtStream(&strAllLines, QIODevice::ReadOnly);
+        while (!txtStream.atEnd())
+        {
+            QString strLine = txtStream.readLine();
+            // Remove time information.
+            int idxEOfThread = strLine.indexOf("> ");
+            int idxMthTrc = strLine.indexOf("): ");
+            if( idxMthTrc >= 0 ) {
+                idxMthTrc += 3;
+            }
+            if( idxMthTrc < 0 ) {
+                idxMthTrc = strLine.indexOf("->");
+            }
+            if( idxMthTrc < 0 ) {
+                idxMthTrc = strLine.indexOf("<-");
+            }
+            if( idxEOfThread >= 0 && idxMthTrc >= 0 ) {
+                strLine = strLine.remove(idxEOfThread + 2, idxMthTrc - idxEOfThread - 2);
+            }
+            strlstResultValues << strLine;
+        }
+    }
+    return strlstResultValues;
+}

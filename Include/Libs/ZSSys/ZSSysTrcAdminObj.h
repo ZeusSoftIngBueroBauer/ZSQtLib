@@ -72,7 +72,7 @@ A TCP/IP-based trace server was implemented for an online recording of the trace
 outputs, but also for debugging embedded devices without or only with a very
 limited screen.
 */
-class ZSSYSDLL_API CTrcAdminObj : public QObject, public ZS::System::CIdxTreeEntry
+class ZSSYSDLL_API CTrcAdminObj : public QObject, public CIdxTreeEntry
 //******************************************************************************
 {
 friend class CIdxTreeTrcAdminObjs;
@@ -119,20 +119,20 @@ public: // instance methods
     void setRefCount( int i_iRefCount );
     int getRefCount() const;
 public: // instance methods
-    void setEnabled( ZS::System::EEnabled i_enabled );
-    ZS::System::EEnabled getEnabled() const;
+    void setEnabled( EEnabled i_enabled );
+    EEnabled getEnabled() const;
     bool isEnabled() const;
 public: // instance methods
-    void setMethodCallsTraceDetailLevel( ZS::System::EMethodTraceDetailLevel i_eTrcDetailLevel );
-    ZS::System::EMethodTraceDetailLevel getMethodCallsTraceDetailLevel() const;
-    bool areMethodCallsActive( ZS::System::EMethodTraceDetailLevel i_eFilterDetailLevel ) const;
-    void setRuntimeInfoTraceDetailLevel( ZS::System::ELogDetailLevel i_eTrcDetailLevel );
-    ZS::System::ELogDetailLevel getRuntimeInfoTraceDetailLevel() const;
-    bool isRuntimeInfoActive( ZS::System::ELogDetailLevel i_eFilterDetailLevel ) const;
+    void setMethodCallsTraceDetailLevel( EMethodTraceDetailLevel i_eTrcDetailLevel );
+    EMethodTraceDetailLevel getMethodCallsTraceDetailLevel() const;
+    bool areMethodCallsActive( EMethodTraceDetailLevel i_eFilterDetailLevel ) const;
+    void setRuntimeInfoTraceDetailLevel( ELogDetailLevel i_eTrcDetailLevel );
+    ELogDetailLevel getRuntimeInfoTraceDetailLevel() const;
+    bool isRuntimeInfoActive( ELogDetailLevel i_eFilterDetailLevel ) const;
 public: // instance methods
-    void setTraceDataFilter( const QString& i_strFilter );
+    void setTraceDataFilter( const QString& i_strFilter = "" );
     QString getTraceDataFilter() const;
-    bool isTraceDataSuppressedByFilter( const QString& i_strTraceData ) const;
+    bool isTraceDataSuppressedByFilter( const QString& i_strData ) const;
 public: // instance methods
     virtual bool blockTreeEntryChangedSignal( bool i_bBlock );
     virtual bool isTreeEntryChangedSignalBlocked() const;
@@ -165,21 +165,29 @@ protected: // instance members
          also be enabled or disabled by this flag. This is useful if a group of
          objects belonging to a namespace should be temporarily disabled and enabled
          later on restoring the previous detail level. */
-    ZS::System::EEnabled  m_enabled;
+    EEnabled  m_enabled;
     /*!< Defines the current detail level of the method trace outputs for the
          module, class or instance referencing this object. If set to
          None method trace output is disabled. */
-    ZS::System::EMethodTraceDetailLevel m_eTrcDetailLevelMethodCalls;
+    EMethodTraceDetailLevel m_eTrcDetailLevelMethodCalls;
     /*!< Defines the current detail level of the runtime info trace outputs for the
          module, class or instance referencing this object. If set to
          None method trace output is disabled. */
-    ZS::System::ELogDetailLevel m_eTrcDetailLevelRuntimeInfo;
-    /*!< Trace data may also be suppressed by applying a filter.
-         This filter is a regular expression which allows to define a positive
-         pattern where only the data will be traced which mets the expression
-         or a negative pattern which supporessed the trace output if the
-         filter does not match. */
+    ELogDetailLevel m_eTrcDetailLevelRuntimeInfo;
+    /*!< Data may also be suppressed by applying a filter.
+         Filtering can be done in two ways:
+         - Strings may be defined which must occur in the log entry.
+         - Strings may be defined which may not occur in the log entry.
+    */
     QString m_strDataFilter;
+    /*!< When applying the data filter the data filter will be split into
+         strings which must be included or excluded. The "Must Include"
+         strings are stored in this string list. */
+    QStringList m_strlstDataFilterInclude;
+    /*!< When applying the data filter the data filter will be split into
+         strings which must be included or excluded. The "Must Not Include"
+         strings are stored in this string list. */
+    QStringList m_strlstDataFilterExclude;
 
 }; // class CTrcAdminObj
 
@@ -198,10 +206,10 @@ public: // instance methods
     void allocTrcAdminObj();
     void releaseTrcAdminObj();
     CTrcAdminObj* trcAdminObj();
-    void setMethodCallsTraceDetailLevel(ZS::System::EMethodTraceDetailLevel i_eTrcDetailLevel);
-    bool areMethodCallsActive(ZS::System::EMethodTraceDetailLevel i_eFilterDetailLevel) const;
-    void setRuntimeInfoTraceDetailLevel(ZS::System::ELogDetailLevel i_eTrcDetailLevel);
-    bool isRuntimeInfoActive(ZS::System::ELogDetailLevel i_eFilterDetailLevel) const;
+    void setMethodCallsTraceDetailLevel(EMethodTraceDetailLevel i_eTrcDetailLevel);
+    bool areMethodCallsActive(EMethodTraceDetailLevel i_eFilterDetailLevel) const;
+    void setRuntimeInfoTraceDetailLevel(ELogDetailLevel i_eTrcDetailLevel);
+    bool isRuntimeInfoActive(ELogDetailLevel i_eFilterDetailLevel) const;
 private slots:
     void onTrcAdminObjDestroyed(QObject* i_pTrcAdminObj);
 private: // instance members
@@ -225,10 +233,10 @@ public: // ctors and dtor
     ~CTrcAdminObjRefGuard();
 public: // instance methods
     CTrcAdminObj* trcAdminObj();
-    void setMethodCallsTraceDetailLevel(ZS::System::EMethodTraceDetailLevel i_eTrcDetailLevel);
-    bool areMethodCallsActive(ZS::System::EMethodTraceDetailLevel i_eFilterDetailLevel) const;
-    void setRuntimeInfoTraceDetailLevel(ZS::System::ELogDetailLevel i_eTrcDetailLevel);
-    bool isRuntimeInfoActive(ZS::System::ELogDetailLevel i_eFilterDetailLevel) const;
+    void setMethodCallsTraceDetailLevel(EMethodTraceDetailLevel i_eTrcDetailLevel);
+    bool areMethodCallsActive(EMethodTraceDetailLevel i_eFilterDetailLevel) const;
+    void setRuntimeInfoTraceDetailLevel(ELogDetailLevel i_eTrcDetailLevel);
+    bool isRuntimeInfoActive(ELogDetailLevel i_eFilterDetailLevel) const;
 private: // instance members
     CTrcAdminObjRefAnchor* m_pRefAnchor;    /*!< Pointer to reference anchor which should be guarded. */
 };

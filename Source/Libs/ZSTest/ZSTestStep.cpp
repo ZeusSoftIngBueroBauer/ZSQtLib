@@ -157,11 +157,7 @@ void CTestStep::setOperation( const QString& i_strOperation )
     if( m_strOperation != i_strOperation )
     {
         m_strOperation = i_strOperation;
-
-        if( m_pTree != nullptr )
-        {
-            m_pTree->onTreeEntryChanged(this);
-        }
+        emit_changed();
     }
 }
 
@@ -183,11 +179,7 @@ void CTestStep::setDescription( const QString& i_strDescription )
     if( m_strDescription != i_strDescription )
     {
         m_strDescription = i_strDescription;
-
-        if( m_pTree != nullptr )
-        {
-            m_pTree->onTreeEntryChanged(this);
-        }
+        emit_changed();
     }
 }
 
@@ -232,11 +224,7 @@ void CTestStep::setConfigValue( const QString& i_strKey, const QVariant& i_val )
 //------------------------------------------------------------------------------
 {
     m_hshConfigValues[i_strKey] = i_val;
-
-    if( m_pTree != nullptr )
-    {
-        m_pTree->onTreeEntryChanged(this);
-    }
+    emit_changed();
 }
 
 //------------------------------------------------------------------------------
@@ -255,11 +243,7 @@ void CTestStep::setInstruction( const QString& i_strInstruction )
     if( m_strInstruction != i_strInstruction )
     {
         m_strInstruction = i_strInstruction;
-
-        if( m_pTree != nullptr )
-        {
-            m_pTree->onTreeEntryChanged(this);
-        }
+        emit_changed();
     }
 }
 
@@ -273,11 +257,10 @@ void CTestStep::setInstruction( const QString& i_strInstruction )
 void CTestStep::setExpectedValues( const QStringList& i_strlstExpectedValues )
 //------------------------------------------------------------------------------
 {
-    m_strlstExpectedValues = i_strlstExpectedValues;
-
-    if( m_pTree != nullptr )
+    if( m_strlstExpectedValues != i_strlstExpectedValues )
     {
-        m_pTree->onTreeEntryChanged(this);
+        m_strlstExpectedValues = i_strlstExpectedValues;
+        emit_changed();
     }
 }
 
@@ -303,8 +286,9 @@ void CTestStep::setExpectedValue( const QString& i_strExpectedValue )
 }
 
 //------------------------------------------------------------------------------
-/*! Sets the actual result values of the test step which finishes test step.
-    The signal "testStepFinished" is emitted.
+/*! Sets the actual result values of the test step and finishes the test step.
+
+    The test result is evaluated and the signal "testStepFinished" is emitted.
 
     @param i_strlstResultValues [in]
         List with strings defining the actual result values of the test step.
@@ -324,8 +308,9 @@ void CTestStep::setResultValues( const QStringList& i_strlstResultValues )
 }
 
 //------------------------------------------------------------------------------
-/*! Sets the actual result value of the test step which finishes test step.
-    The signal "testStepFinished" is emitted.
+/*! Sets the actual result value of the test step and finished the test step.
+
+    The test result is evaluated and the signal "testStepFinished" is emitted.
 
     Provided for convenience. Converted to String List invoking "setResultValues".
 
@@ -450,11 +435,7 @@ void CTestStep::setBreakpoint()
     if( !m_bBreakpoint )
     {
         m_bBreakpoint = true;
-
-        if( m_pTree != nullptr )
-        {
-            m_pTree->onTreeEntryChanged(this);
-        }
+        emit_changed();
     }
 }
 
@@ -468,11 +449,7 @@ void CTestStep::removeBreakpoint()
     if( m_bBreakpoint )
     {
         m_bBreakpoint = false;
-
-        if( m_pTree != nullptr )
-        {
-            m_pTree->onTreeEntryChanged(this);
-        }
+        emit_changed();
     }
 }
 
@@ -488,11 +465,7 @@ void CTestStep::setBreakpointEnabled( EEnabled i_enabled )
     if( m_breakpointEnabled != i_enabled )
     {
         m_breakpointEnabled = i_enabled;
-
-        if( m_pTree != nullptr )
-        {
-            m_pTree->onTreeEntryChanged(this);
-        }
+        emit_changed();
     }
 }
 
@@ -515,10 +488,7 @@ void CTestStep::reset()
     m_fTimeTestStart_s = 0.0;
     m_fTimeTestEnd_s = 0.0;
 
-    if( m_pTree != nullptr )
-    {
-        m_pTree->onTreeEntryChanged(this);
-    }
+    emit_changed();
 }
 
 //------------------------------------------------------------------------------
@@ -540,10 +510,7 @@ void CTestStep::setTestResult( const CEnumTestResult& i_testResult )
     m_testResult = i_testResult;
 
     // The end time has been changed even if the result is the same.
-    if( m_pTree != nullptr )
-    {
-        m_pTree->onTreeEntryChanged(this);
-    }
+    emit_changed();
 
     // Inform parent groups only if the test result of the
     // test step has really been changed.
@@ -600,10 +567,7 @@ void CTestStep::doTestStep()
     m_fTimeTestStart_s = ZS::System::Time::getProcTimeInSec();
     m_fTimeTestEnd_s = -1.0;
 
-    if( m_pTree != nullptr )
-    {
-        m_pTree->onTreeEntryChanged(this);
-    }
+    emit_changed();
 
     emit doTestStep(this);
 }

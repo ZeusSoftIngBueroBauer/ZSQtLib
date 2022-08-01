@@ -59,6 +59,7 @@ signals: // on receiving log data
     void logSettingsChanged( QObject* i_pTrcClient );
     void logDataReceived( QObject* i_pTrcClient, const QString& i_str );
     void loggerInserted( QObject* i_pTrcClient, const QString& i_strKeyInTree );
+    void loggerChanged( QObject* i_pTrcClient, const QString& i_strKeyInTree );
 public: // instance methods
     ZS::System::CIdxTreeLoggers* getLoggersIdxTree() { return m_pLoggersIdxTree; }
 public: // overridables of the remote connection
@@ -69,18 +70,18 @@ public: // instance methods to read remote application settings
 public: // instance methods to set and read log settings of the server
     ZS::System::SLogServerSettings getLogSettings() const;
     void setLogSettings( const ZS::System::SLogServerSettings& i_settings );
-protected: // instance methods to send logger objects to the connected server
-    void sendLogger(
-        ZS::System::MsgProtocol::TSystemMsgType i_systemMsgType,
-        ZS::System::MsgProtocol::TCommand       i_cmd,
-        ZS::System::CLogger*                    i_pLogger );
-    void sendNameSpace(
+protected: // instance methods to send index tree entries to the connected server
+    void sendBranch(
         ZS::System::MsgProtocol::TSystemMsgType  i_systemMsgType,
         ZS::System::MsgProtocol::TCommand        i_cmd,
         ZS::System::CIdxTreeEntry*               i_pBranch,
         ZS::System::EEnabled                     i_enabled,
-        ZS::System::ELogDetailLevel i_eDetailLevel,
+        ZS::System::ELogDetailLevel              i_eDetailLevel,
         const QString&                           i_strDataFilter );
+    void sendLeave(
+        ZS::System::MsgProtocol::TSystemMsgType i_systemMsgType,
+        ZS::System::MsgProtocol::TCommand       i_cmd,
+        ZS::System::CLogger*                    i_pLogger );
 protected: // overridables of base class CClient
     virtual void onReceivedData( const QByteArray& i_byteArr ) override;
 protected slots: // connected to the signals of the IPC client
@@ -88,8 +89,6 @@ protected slots: // connected to the signals of the IPC client
     void onIpcClientDisconnected( QObject* i_pClient );
 protected slots: // connected to the slots of the loggers idx tree
     void onLoggersIdxTreeEntryChanged( ZS::System::CIdxTree* i_pIdxTree, ZS::System::CIdxTreeEntry* i_pTreeEntry );
-protected: // instance methods
-    void resetLoggersRefCounters( ZS::System::CIdxTreeEntry* i_pBranch );
 protected: // instance members
     /*!< When connecting to the log server the name of the application is
          sent together with other settings by the log server to the client. */

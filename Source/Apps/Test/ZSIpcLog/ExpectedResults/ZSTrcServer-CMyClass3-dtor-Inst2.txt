@@ -1,4 +1,0 @@
-<GUIMain                 > -> <ZS::Apps::Test::IpcTrace::CMyClass3> Inst2.dtor()
-<GUIMain                 >    -> <ZS::System::CMutex> CMyClass3::Inst2::Counters.dtor()
-<GUIMain                 >    <- <ZS::System::CMutex> CMyClass3::Inst2::Counters.dtor()
-<GUIMain                 > <- <ZS::Apps::Test::IpcTrace::CMyClass3> Inst2.dtor()

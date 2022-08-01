@@ -192,8 +192,8 @@ CWdgtLogSettings::CWdgtLogSettings( const QString& i_strObjName, QWidget* i_pWdg
     m_pEdtLoggersFileAbsFilePath->setEnabled(false);
     m_pLytSettings->addRow(m_pLblLoggersFileAbsFilePath, m_pEdtLoggersFileAbsFilePath);
 
-    // <CheckBox> New Trace Admin Objects Default Enabled
-    //---------------------------------------------------
+    // <CheckBox> New Loggers Default Enabled
+    //---------------------------------------
 
     m_pLblNewLoggersEnabledAsDefault = new QLabel("New Loggers Enabled as Default:");
     m_pLblNewLoggersEnabledAsDefault->setFixedWidth(iLblWidth);

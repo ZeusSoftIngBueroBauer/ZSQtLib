@@ -42,8 +42,6 @@ struct SServerHostSettings;
 
 namespace Log
 {
-struct SLogData;
-
 //******************************************************************************
 /*! @brief All log outputs should be made via the CIpcLogServer class.
 
@@ -85,9 +83,12 @@ public: // overridables
 public: // instance methods
     Ipc::CServer* getIpcServer() { return m_pIpcServer; }
 public: // overridables of base class CLogServer
+    virtual void setEnabled( bool i_bEnabled ) override;
     virtual bool isActive() const override;
 public: // overridables of base class CLogServer
-    virtual void setEnabled( bool i_bEnabled ) override;
+    virtual void log( ZS::System::ELogDetailLevel i_eFilterDetailLevel, const QString& i_strLogEntry ) override;
+    virtual void log( ZS::System::CLogger* i_pLogger, ZS::System::ELogDetailLevel i_eFilterDetailLevel, const QString& i_strLogEntry ) override;
+public: // overridables of base class CLogServer
     virtual void setNewLoggersEnabledAsDefault( bool i_bEnabled ) override;
     virtual void setNewLoggersDefaultDetailLevel( ZS::System::ELogDetailLevel i_eDetailLevel );
 public: // overridables of base class CLogServer
@@ -105,25 +106,6 @@ public: // overridables of base class CLogServer
     virtual void setCacheLogDataMaxArrLen( int i_iMaxArrLen ) override;
 public: // overridables of base class CLogServer
     virtual void setLogSettings( const ZS::System::SLogServerSettings& i_settings ) override;
-public: // overridables of base class CLogServer
-    virtual void log(
-        const ZS::System::CLogger* i_pLogger,
-        const QString& i_strMethod,
-        const QString& i_strAddInfo ) override;
-    virtual void log(
-        const ZS::System::CLogger* i_pLogger,
-        const QString& i_strObjName,
-        const QString& i_strMethod,
-        const QString& i_strAddInfo ) override;
-protected: // auxiliary methods
-    void addEntry(
-        const QString&             i_strThreadName,
-        const QDateTime&           i_dt,
-        double                     i_fSysTimeInSec,
-        const ZS::System::CLogger* i_pLogger,
-        const QString&             i_strObjName,
-        const QString&             i_strMethod,
-        const QString&             i_strAddInfo = "" );
 public: // instance methods of the remote connection
     ZS::System::CRequest* startup( int i_iTimeout_ms = 5000, bool i_bWait = true, qint64 i_iReqIdParent = -1 );
     ZS::System::CRequest* shutdown( int i_iTimeout_ms = 5000, bool i_bWait = true, qint64 i_iReqIdParent = -1 );
@@ -155,14 +137,13 @@ public: // instance methods (aborting requests)
     void abortRequest( qint64 i_iRequestId ); // immediately aborts the request if in progress or removes the request from the list of pending requests
     void abortRequestInProgress();            // immediately aborts the request in progress
     void abortAllRequests();                  // immediately aborts all requests in progress
-protected: // instance methods to recursively send index tree entries to the connected clients
+protected: // instance methods to send index tree entries to the connected clients
     void sendBranch(
         int                                     i_iSocketId,
         ZS::System::MsgProtocol::TSystemMsgType i_systemMsgType,
         ZS::System::MsgProtocol::TCommand       i_cmd,
         ZS::System::CIdxTreeEntry*              i_pBranch );
-protected: // instance methods to explicitely send the attributes of a logger to the connected clients
-    void sendLogger(
+    void sendLeave(
         int                                     i_iSocketId,
         ZS::System::MsgProtocol::TSystemMsgType i_systemMsgType,
         ZS::System::MsgProtocol::TCommand       i_cmd,
@@ -198,15 +179,15 @@ protected: // instance members
          the changed signals are not emitted before all settings have been applied. If this flag is set
          the server knows that the settings are changed by receiving data from the client and data must
          not be send back to the remote client. */
-    bool                  m_bOnReceivedDataUpdateInProcess;
+    bool m_bOnReceivedDataUpdateInProcess;
     /*!< Mutex to protect the list of the temporarily stored (cached) data. */
-    QMutex*               m_pMtxListLogDataCached;
+    QMutex* m_pMtxListLogDataCached;
     /*!< To avoid reallocation (resizing) the cache for the data the cache is allocated
          with the maximum number of elements. Unused elements are set to nullptr. But for this
          the number of used entries must be counted seperately. */
-    int                   m_iLogDataCachedCount;
+    int m_iLogDataCachedCount;
     /*!< Cache for storing data as long as no client is connected. */
-    QVector<SLogData*>    m_arpLogDataCached;
+    QVector<ZS::System::SLogData*> m_arpLogDataCached;
 
 }; // class CIpcLogServer
 

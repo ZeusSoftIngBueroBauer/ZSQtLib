@@ -36,7 +36,7 @@ namespace ZS
 namespace System
 {
 //******************************************************************************
-class ZSSYSDLL_API CEnumerationIdxTree : public ZS::System::CIdxTree
+class ZSSYSDLL_API CEnumerationIdxTree : public CIdxTree
 //******************************************************************************
 {
 public: // class methods

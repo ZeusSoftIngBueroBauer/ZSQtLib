@@ -112,7 +112,7 @@ CApplication::CApplication(
     m_fReqExecTreeGarbageCollectorElapsed_s(60.0),
     m_pReqExecTree(nullptr),
     m_pLogServer(nullptr),
-    m_clientHostSettingsLogClient("127.0.0.1", 24763, 5000),
+    m_clientHostSettingsLogClient("127.0.0.1", 24762, 5000),
     m_pLogClient(nullptr),
     m_pTest(nullptr),
     m_pMainWindow(nullptr),
@@ -193,21 +193,19 @@ CApplication::CApplication(
 
     m_pTest = new CTest();
 
-    // Trace Server
-    //-------------
+    // Log Server
+    //-----------
 
-    // Create trace server after test instance so that the test instance does not find
-    // the trace server and does not create a trace admin object instance.
-    // But create trace server before the main window so that the main window can connect
-    // to the stateChanged signal of the trace server.
+    // Create log server before the main window so that the main window can connect
+    // to the stateChanged signal of the log server.
 
     m_pLogServer = ZS::Log::CIpcLogServer::CreateInstance();
     m_pLogServer->setLocalLogFileSubFileLineCountMax(10000);
 
     //m_pLogServer->recallAdminObjs();
 
-    // Trace client
-    //-------------
+    // Log client
+    //-----------
 
     m_pLogClient = new CIpcLogClient("LogClient");
     m_pLogClient->setHostSettings(m_clientHostSettingsLogClient);

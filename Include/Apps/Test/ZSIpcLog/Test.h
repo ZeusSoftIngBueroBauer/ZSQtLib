@@ -49,12 +49,6 @@ namespace Test
 {
 namespace IpcLog
 {
-class CMyClass1;
-class CMyClass2;
-class CMyClass2Thread;
-class CMyClass3;
-class CMyClass3Thread;
-
 //******************************************************************************
 class CTest : public ZS::Test::CTest
 //******************************************************************************
@@ -68,18 +62,20 @@ public slots: // test step methods
     void doTestStepLogServerShutdown( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepLogClientConnect( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepLogClientDisconnect( ZS::Test::CTestStep* i_pTestStep );
-    void doTestStepLog( ZS::Test::CTestStep* i_pTestStep );
-    void doTestStepDataFilter( ZS::Test::CTestStep* i_pTestStep );
+    void doTestStepLogServerGetLogger( ZS::Test::CTestStep* i_pTestStep );
+    void doTestStepModifyLogger( ZS::Test::CTestStep* i_pTestStep );
+    void doTestStepModifyLogServer( ZS::Test::CTestStep* i_pTestStep );
+    void doTestStepLoggerAddLogEntry( ZS::Test::CTestStep* i_pTestStep );
+    void doTestStepLoggerAddLogEntryMyThread( ZS::Test::CTestStep* i_pTestStep );
+    void doTestStepLogServerAddLogEntry( ZS::Test::CTestStep* i_pTestStep );
 private slots:
     void onRequestChanged( ZS::System::SRequestDscr i_reqDscr );
     void onLogClientLoggerInserted( QObject* i_pLogClient, const QString& i_strKeyInTree );
+    void onLogClientLoggerChanged( QObject* i_pLogClient, const QString& i_strKeyInTree );
     void onLogClientLogWdgtTextItemAdded( const QString& i_strText );
+    void onLogClientLogSettingsChanged( QObject* i_pLogClient );
     void onTimerTestStepTimeout();
-    void onClass1AboutToBeDestroyed(QObject* i_pObj, const QString& i_strObjName);
-    void onClass2AboutToBeDestroyed(QObject* i_pObj, const QString& i_strObjName);
-    void onClass2ThreadAboutToBeDestroyed(QObject* i_pObj, const QString& i_strObjName);
-    void onClass3AboutToBeDestroyed(QObject* i_pObj, const QString& i_strObjName);
-    void onClass3ThreadAboutToBeDestroyed(QObject* i_pObj, const QString& i_strObjName);
+    void onTimerCheckLogClientLogWdgtIsEmptyTimeout();
 private: // instance auxiliary methods
     void splitMethodCallOperation(
         const QString& i_strOperation,
@@ -90,18 +86,9 @@ private: // instance auxiliary methods
         QStringList& o_strlstInArgs,
         QString& o_strMthRet ) const;
 private: // instance members
-    QTimer*                               m_pTmrTestStepTimeout;
-    QHash<qint64, ZS::System::CRequest*>  m_hshReqsInProgress;
-    QHash<QString, CMyClass1*>            m_hshpMyClass1InstancesByName;
-    QHash<QString, CMyClass2*>            m_hshpMyClass2InstancesByName;
-    QHash<QString, CMyClass2Thread*>      m_hshpMyClass2ThreadInstancesByName;
-    QHash<QString, CMyClass3*>            m_hshpMyClass3InstancesByName;
-    QHash<QString, CMyClass3Thread*>      m_hshpMyClass3ThreadInstancesByName;
-    QMultiHash<QString, CMyClass1*>       m_multihshpMyClass1InstancesByName;
-    QMultiHash<QString, CMyClass2*>       m_multihshpMyClass2InstancesByName;
-    QMultiHash<QString, CMyClass2Thread*> m_multihshpMyClass2ThreadInstancesByName;
-    QMultiHash<QString, CMyClass3*>       m_multihshpMyClass3InstancesByName;
-    QMultiHash<QString, CMyClass3Thread*> m_multihshpMyClass3ThreadInstancesByName;
+    QTimer*                              m_pTmrTestStepTimeout;
+    QTimer*                              m_pTmrCheckLogClientLogWdgtIsEmpty;
+    QHash<qint64, ZS::System::CRequest*> m_hshReqsInProgress;
 
 }; // class CTest
 

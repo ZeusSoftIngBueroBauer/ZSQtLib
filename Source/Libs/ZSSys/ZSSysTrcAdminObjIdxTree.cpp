@@ -146,14 +146,14 @@ public: // instance methods to get and release admin objects
     @return Pointer to allocated trace admin objecct or nullptr on error.
 */
 CTrcAdminObj* CIdxTreeTrcAdminObjs::getTraceAdminObj(
-    const QString&               i_strNameSpace,
-    const QString&               i_strClassName,
-    const QString&               i_strObjName,
-    ZS::System::EEnabled         i_bEnabledAsDefault,
+    const QString&          i_strNameSpace,
+    const QString&          i_strClassName,
+    const QString&          i_strObjName,
+    ZS::System::EEnabled    i_bEnabledAsDefault,
     EMethodTraceDetailLevel i_eDefaultDetailLevelMethodCalls,
-    ELogDetailLevel i_eDefaultDetailLevelRuntimeInfo,
-    const QString&               i_strDefaultDataFilter,
-    bool                         i_bIncrementRefCount )
+    ELogDetailLevel         i_eDefaultDetailLevelRuntimeInfo,
+    const QString&          i_strDefaultDataFilter,
+    bool                    i_bIncrementRefCount )
 //------------------------------------------------------------------------------
 {
     QString strAddTrcInfo;

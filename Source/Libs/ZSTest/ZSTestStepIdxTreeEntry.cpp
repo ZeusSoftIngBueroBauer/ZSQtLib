@@ -133,14 +133,9 @@ void CAbstractTestStepIdxTreeEntry::setEnabled( EEnabled i_enabled )
     if( m_enabled != i_enabled )
     {
         m_enabled = i_enabled;
-
-        if( m_pTree != nullptr )
-        {
-            m_pTree->onTreeEntryChanged(this);
-        }
+        emit_changed();
     }
-
-} // setEnabled
+}
 
 /*==============================================================================
 public: // overridables
@@ -158,14 +153,9 @@ void CAbstractTestStepIdxTreeEntry::setToolTip( const QString& i_strToolTip )
     if( m_strToolTip != i_strToolTip )
     {
         m_strToolTip = i_strToolTip;
-
-        if( m_pTree != nullptr )
-        {
-            m_pTree->onTreeEntryChanged(this);
-        }
+        emit_changed();
     }
-
-} // setToolTip
+}
 
 /*==============================================================================
 public: // overridables
@@ -203,3 +193,19 @@ QString CAbstractTestStepIdxTreeEntry::testDuration2StrInBestUnit() const
     return strDuration;
 
 } // testDuration2StrInBestUnit
+
+/*==============================================================================
+protected: // overridables
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CAbstractTestStepIdxTreeEntry::emit_changed()
+//------------------------------------------------------------------------------
+{
+    emit changed(this);
+
+    if( m_pTree != nullptr )
+    {
+        m_pTree->onTreeEntryChanged(this);
+    }
+}

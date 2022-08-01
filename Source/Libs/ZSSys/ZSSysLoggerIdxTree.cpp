@@ -87,72 +87,48 @@ public: // instance methods to get and release admin objects
     existing a reference counter will be incremented and the already existing
     logger is returned.
 
-    @param i_strNameSpace [in] Name space (may be empty).
-        The namespace will used to build the path to the tree entry.
-        If both the object and class names are empty the namespace
-        becomes the name of the leave entry.
-    @param i_strClassName [in] Class name (may be empty).
-        The class name will used to build the path to the tree entry.
-        If the object name is empty the class name becomes the name of the leave entry.
-    @param i_strObjName [in] Object name (may be empty).
-        If not empty the object name becomes the name of the leave entry.
+    @param i_strName [in] Name of the logger.
+        The name may contain node separators and will be used to build the path
+        to the tree entry. The last section of the name becomes the name of the
+        leave entry.
     @param i_bEnabledAsDefault [in] Range [Yes, No, Undefined]
         If not Undefined the enabled flag will be set as the logger.
     @param i_eDefaultDetailLevel [in]
         If not Undefined the detail level will be set at the logger.
     @param i_strDefaultDataFilter [in]
         If not null (QString()) the data filter will be set at the logger.
-    @param i_bIncrementRefCount [in]
-        true to increment the reference counter of the logger.
-        false is only used if the loggers are recalled from file as
-        at that point only the tree entries are existing as place holders
-        but the loggers are not yet referenced.
 
     @return Pointer to allocated logger or nullptr on error.
 */
 CLogger* CIdxTreeLoggers::getLogger(
-    const QString&               i_strNameSpace,
-    const QString&               i_strClassName,
-    const QString&               i_strObjName,
-    ZS::System::EEnabled         i_bEnabledAsDefault,
+    const QString&  i_strName,
+    EEnabled        i_bEnabledAsDefault,
     ELogDetailLevel i_eDefaultDetailLevel,
-    const QString&               i_strDefaultDataFilter,
-    bool                         i_bIncrementRefCount )
+    const QString&  i_strDefaultDataFilter )
 //------------------------------------------------------------------------------
 {
     CMutexLocker mtxLocker(m_pMtx);
 
     CLogger* pLogger = nullptr;
 
-    if( i_strObjName.isEmpty() && i_strClassName.isEmpty() && i_strNameSpace.isEmpty() )
+    if( i_strName.isEmpty() )
     {
         SErrResultInfo errResultInfo(
             /* errSource     */ nameSpace(), className(), objectName(), "getLogger",
             /* result        */ EResultArgOutOfRange,
             /* severity      */ EResultSeverityError,
-            /* strAddErrInfo */ "Neither NameSpace nor ClassName nor ObjectName defined");
-
+            /* strAddErrInfo */ "No name defined");
         if( CErrLog::GetInstance() != nullptr )
         {
             CErrLog::GetInstance()->addEntry(errResultInfo);
         }
     }
-    else // if( !i_strObjName.isEmpty() || !i_strClassName.isEmpty() || !i_strNameSpace.isEmpty() )
+    else
     {
         QString strParentBranchPath;
         QString strLeaveName;
 
-        // ClassName and ObjName may contain node separators.
-        // For ClassName to define group of methods which can separately controlled.
-        // For ObjName to define logically grouped objects.
-        // The name of the leave got to be determined which may be either the last
-        // section of the class name or - if the object name is not empty - the last
-        // section of the object name.
-        // All three passed names will be sent to the branch names list.
-        // The last branch name will be removed afterwards and taken as the leave name.
-
-        QString strPath = buildPathStr(i_strNameSpace, i_strClassName, i_strObjName);
-        splitPathStr(strPath, &strParentBranchPath, &strLeaveName);
+        splitPathStr(i_strName, &strParentBranchPath, &strLeaveName);
 
         CIdxTreeEntry* pLeave = findLeave(strParentBranchPath, strLeaveName);
 
@@ -162,27 +138,30 @@ CLogger* CIdxTreeLoggers::getLogger(
         }
         else // if( pLeave == nullptr )
         {
-            QStringList strlstBranchNames = strParentBranchPath.split(m_strNodeSeparator);
-            QString strParentPathTmp;
-            QString strPathTmp;
-
-            CIdxTreeEntry* pBranch;
-
-            for( auto& strBranchName : strlstBranchNames )
+            if( !strParentBranchPath.isEmpty() )
             {
-                strPathTmp = buildPathStr(strPathTmp, strBranchName);
+                QStringList strlstBranchNames = strParentBranchPath.split(m_strNodeSeparator);
+                QString strParentPathTmp;
+                QString strPathTmp;
 
-                pBranch = findBranch(strPathTmp);
+                CIdxTreeEntry* pBranch;
 
-                if( pBranch == nullptr )
+                for( auto& strBranchName : strlstBranchNames )
                 {
-                    pBranch = createBranch(strBranchName);
-                    add(pBranch, strParentPathTmp);
+                    strPathTmp = buildPathStr(strPathTmp, strBranchName);
+
+                    pBranch = findBranch(strPathTmp);
+
+                    if( pBranch == nullptr )
+                    {
+                        pBranch = createBranch(strBranchName);
+                        add(pBranch, strParentPathTmp);
+                    }
+                    strParentPathTmp = buildPathStr(strParentPathTmp, strBranchName);
                 }
-                strParentPathTmp = buildPathStr(strParentPathTmp, strBranchName);
             }
 
-            pLogger = new CLogger(i_strNameSpace, i_strClassName, i_strObjName, strLeaveName);
+            pLogger = new CLogger(strLeaveName);
 
             EEnabled bEnabled = EEnabled::Yes;
             ELogDetailLevel eDetailLevel = ELogDetailLevel::None;
@@ -202,17 +181,12 @@ CLogger* CIdxTreeLoggers::getLogger(
             }
 
             pLogger->setEnabled(bEnabled);
-            pLogger->setDetailLevel(eDetailLevel);
+            pLogger->setLogLevel(eDetailLevel);
             pLogger->setDataFilter(strDataFilter);
 
             add(pLogger, strParentBranchPath);
 
         } // if( pLeave == nullptr )
-
-        if( i_bIncrementRefCount )
-        {
-            pLogger->incrementRefCount();
-        }
     } // if( !i_strObjName.isEmpty() || !i_strClassName.isEmpty() || !i_strNameSpace.isEmpty() )
 
     return pLogger;
@@ -223,208 +197,18 @@ CLogger* CIdxTreeLoggers::getLogger(
 /*! @brief Returns the logger at the given tree index.
 
     @param i_idxInTree [in] Index of the logger.
-    @param i_bIncrementRefCount [in]
-        true to increment the reference counter of the logger.
-        false is used on clients side on receiving data.
 
     @return Pointer to allocated logger or nullptr on error.
 */
-CLogger* CIdxTreeLoggers::getLogger( int i_idxInTree, bool i_bIncrementRefCount )
+CLogger* CIdxTreeLoggers::getLogger( int i_idxInTree )
 //------------------------------------------------------------------------------
 {
     CMutexLocker mtxLocker(m_pMtx);
-
-    CLogger* pLogger = dynamic_cast<CLogger*>(getEntry(i_idxInTree));
-
-    if( pLogger != nullptr && i_bIncrementRefCount )
-    {
-        pLogger->incrementRefCount();
-    }
-    return pLogger;
-}
-
-//------------------------------------------------------------------------------
-/*! @brief Renames the given logger by replacing the given input pointer with
-           the address of the newly referenced logger.
-
-    If the given logger will no longer be referenced it will be destroyed
-    (unless locked).
-
-    If at the new position already a logger object is existing the reference
-    to this logger will be returned.
-
-    If at the new position no logger is existing a new object is created and
-    the address of the newly created object is returned.
-
-    @param io_ppLogger [in, out]
-        In:  Pointer to logger which should be renamed. The reference counter
-             of this object is decremented. If 0 and if the logger is not locked
-             the object will be destroyed.
-        Out: Pointer to logger at the new position. This might either be an
-             already existing logger whose reference counter is increased or a
-             newly created object.
-    @param i_strNewObjName [in] New object name.
-*/
-void CIdxTreeLoggers::renameLogger(
-    CLogger**      io_ppLogger,
-    const QString& i_strNewObjName )
-//------------------------------------------------------------------------------
-{
-    CMutexLocker mtxLocker(m_pMtx);
-
-    CLogger* pLogger = *io_ppLogger;
-
-    if( pLogger == nullptr)
-    {
-        SErrResultInfo errResultInfo(
-            /* errSource     */ nameSpace(), className(), objectName(), "renameLogger",
-            /* result        */ EResultArgOutOfRange,
-            /* severity      */ EResultSeverityError,
-            /* strAddErrInfo */ "No Logger defined");
-
-        if( CErrLog::GetInstance() != nullptr )
-        {
-            CErrLog::GetInstance()->addEntry(errResultInfo);
-        }
-    }
-    else if( i_strNewObjName.isEmpty() )
-    {
-        SErrResultInfo errResultInfo(
-            /* errSource     */ nameSpace(), className(), objectName(), "renameLogger",
-            /* result        */ EResultArgOutOfRange,
-            /* severity      */ EResultSeverityError,
-            /* strAddErrInfo */ "New ObjectName is empty");
-
-        if( CErrLog::GetInstance() != nullptr )
-        {
-            CErrLog::GetInstance()->addEntry(errResultInfo);
-        }
-    }
-    else if( pLogger->getObjectName().isEmpty() )
-    {
-        SErrResultInfo errResultInfo(
-            /* errSource     */ nameSpace(), className(), objectName(), "renameLogger",
-            /* result        */ EResultArgOutOfRange,
-            /* severity      */ EResultSeverityError,
-            /* strAddErrInfo */ "Cannot rename an object with an empty object name");
-
-        if( CErrLog::GetInstance() != nullptr )
-        {
-            CErrLog::GetInstance()->addEntry(errResultInfo);
-        }
-    }
-    else if( pLogger->getRefCount() < 1 )
-    {
-        SErrResultInfo errResultInfo(
-            /* errSource     */ nameSpace(), className(), objectName(), "renameLogger",
-            /* result        */ EResultArgOutOfRange,
-            /* severity      */ EResultSeverityError,
-            /* strAddErrInfo */ "Only instances referencing the logger may rename the object");
-
-        if( CErrLog::GetInstance() != nullptr )
-        {
-            CErrLog::GetInstance()->addEntry(errResultInfo);
-        }
-    }
-    else if( pLogger->getObjectName() != i_strNewObjName )
-    {
-        QString strNameSpace  = pLogger->getNameSpace();
-        QString strClassName  = pLogger->getClassName();
-        QString strOldObjName = pLogger->getObjectName();
-        EEnabled bEnabled     = pLogger->getEnabled();
-        ELogDetailLevel eDetailLevel = pLogger->getDetailLevel();
-        QString strDataFilter = pLogger->getDataFilter();
-
-        // The reference counter of the previously referenced object is decremented.
-        pLogger->decrementRefCount();
-
-        // If the objects reference counter is greater than 0 all other modules must
-        // still refer to the unchanged logger.
-
-        // If no longer referenced ...
-        if( pLogger->getRefCount() == 0 )
-        {
-            // .. the object will be deleted and removed from the tree.
-            if( pLogger->isLocked() )
-            {
-                pLogger->setDeleteOnUnlock(true);
-            }
-            else
-            {
-                delete pLogger;
-                pLogger = nullptr;
-            }
-
-            QString strOldParentBranchPath;
-
-            QString strOldPath = buildPathStr(strNameSpace, strClassName, strOldObjName);
-            splitPathStr(strOldPath, &strOldParentBranchPath, nullptr);
-
-            removeEmptyBranches(strOldParentBranchPath);
-        }
-
-        QString strNewParentBranchPath;
-        QString strNewLeaveName;
-
-        QString strNewPath = buildPathStr(strNameSpace, strClassName, i_strNewObjName);
-        splitPathStr(strNewPath, &strNewParentBranchPath, &strNewLeaveName);
-
-        CIdxTreeEntry* pLeaveNew = findLeave(strNewParentBranchPath, strNewLeaveName);
-
-        // If already a logger with the name space, class name and new object name is existing ..
-        if( pLeaveNew != nullptr )
-        {
-            pLogger = dynamic_cast<CLogger*>(pLeaveNew);
-            pLogger->incrementRefCount();
-        }
-        // If no logger with the name space, class name and new object name is existing ..
-        else // if( pLeaveNew == nullptr )
-        {
-            // A new logger has to be created and returned.
-            pLogger = getLogger(
-                strNameSpace, strClassName, i_strNewObjName, bEnabled,
-                eDetailLevel, strDataFilter);
-        }
-
-        pLogger->setObjectName(i_strNewObjName);
-
-    } // if( pLogger != nullptr && !i_strNewObjName.isEmpty() )
-
-    *io_ppLogger = pLogger;
-
-} // renameLogger
-
-//------------------------------------------------------------------------------
-/*! @brief Releases the given logger.
-
-    If not marked as to be deleted on releasing only the reference counter of
-    the logger will be decremented and the logger will neither be removed from
-    the tree nor destroyed.
-
-    @param i_pLogger [in] Pointer to logger to be released.
-*/
-void CIdxTreeLoggers::releaseLogger( CLogger* i_pLogger )
-//------------------------------------------------------------------------------
-{
-    CMutexLocker mtxLocker(m_pMtx);
-
-    if( i_pLogger != nullptr )
-    {
-        if( i_pLogger->deleteOnUnlock() )
-        {
-            i_pLogger->setDeleteOnUnlock(false); // to avoid an entry into the error log
-            delete i_pLogger;
-            i_pLogger = nullptr;
-        }
-        else
-        {
-            i_pLogger->decrementRefCount();
-        }
-    }
+    return dynamic_cast<CLogger*>(getEntry(i_idxInTree));
 }
 
 /*==============================================================================
-public: // instance methods to insert branch nodes and admin objects
+public: // instance methods to insert branch nodes and logger leaves
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
@@ -519,18 +303,13 @@ CIdxTreeEntry* CIdxTreeLoggers::insertBranch(
     i_iParentBranchIdxInTree.
 
     @param i_iParentBranchIdxInTree [in] Tree entry index of the parent entry.
-    @param i_strNameSpace [in] Name space of the logger.
-    @param i_strClassName [in] Class name of the logger.
-    @param i_strObjName [in] Object name of the logger.
-    @param i_idxInTree [in] Tree entry index at which the new object will be inserted.
+    @param i_strLeaveName [in] Leave name of the logger.
 
     @return Pointer to allocated logger or nullptr on error.
 */
 CLogger* CIdxTreeLoggers::insertLogger(
     int            i_iParentBranchIdxInTree,
-    const QString& i_strNameSpace,
-    const QString& i_strClassName,
-    const QString& i_strObjName,
+    const QString& i_strLeaveName,
     int            i_idxInTree )
 //------------------------------------------------------------------------------
 {
@@ -551,7 +330,7 @@ CLogger* CIdxTreeLoggers::insertLogger(
         {
             if( CErrLog::GetInstance() != nullptr )
             {
-                strAddErrInfo = "Cannot add logger " + i_strObjName + " with tree index " + QString::number(i_idxInTree);
+                strAddErrInfo = "Cannot add logger " + i_strLeaveName + " with tree index " + QString::number(i_idxInTree);
                 strAddErrInfo += " as there is no parent branch at the specified parent branch tree index " + QString::number(i_iParentBranchIdxInTree);
                 SErrResultInfo errResultInfo = ErrResultInfoError(strMth, EResultObjNotInList, strAddErrInfo);
                 CErrLog::GetInstance()->addEntry(errResultInfo);
@@ -572,7 +351,7 @@ CLogger* CIdxTreeLoggers::insertLogger(
         {
             if( CErrLog::GetInstance() != nullptr )
             {
-                strAddErrInfo = "Cannot add logger " + i_strObjName + " with tree index " + QString::number(i_idxInTree);
+                strAddErrInfo = "Cannot add logger " + i_strLeaveName + " with tree index " + QString::number(i_idxInTree);
                 strAddErrInfo += " as the tree index is already occupied by " + pTreeEntry->keyInTree();
                 SErrResultInfo errResultInfo = ErrResultInfoError(strMth, EResultObjAlreadyInList, strAddErrInfo);
                 CErrLog::GetInstance()->addEntry(errResultInfo);
@@ -581,20 +360,17 @@ CLogger* CIdxTreeLoggers::insertLogger(
         // If there is no tree entry at the given index ..
         else // if( pTreeEntry == nullptr )
         {
-            QString strLeaveName;
-            QString strPath = buildPathStr(m_strNodeSeparator, i_strNameSpace, i_strClassName, i_strObjName);
-            splitPathStr(strPath, nullptr, &strLeaveName);
-            pLogger = new CLogger(i_strNameSpace, i_strClassName, i_strObjName, strLeaveName);
+            pLogger = new CLogger(i_strLeaveName);
             insert(pLogger, pBranchParent, -1, i_idxInTree);
         }
     } // if( i_idxInTree >= 0 )
 
     return pLogger;
 
-} // insertTraceAdminObj
+} // insertLogger
 
 /*==============================================================================
-public: // instance methods to recursively modify admin objects via object index of node entries
+public: // instance methods to recursively modify loggers via index of node entries
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
@@ -644,7 +420,7 @@ void CIdxTreeLoggers::setDetailLevel(
 
             if( pLogger != nullptr )
             {
-                pLogger->setDetailLevel(i_eDetailLevel);
+                pLogger->setLogLevel(i_eDetailLevel);
             }
         }
     }
@@ -678,7 +454,7 @@ void CIdxTreeLoggers::setDataFilter(
 }
 
 /*==============================================================================
-public: // instance methods to recursively modify objects via namespace node entries
+public: // instance methods to recursively modify loggers via namespace node entries
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
@@ -745,9 +521,9 @@ void CIdxTreeLoggers::setDetailLevel(
 
                     if( pLogger != nullptr )
                     {
-                        if( pLogger->getDetailLevel() != i_eDetailLevel )
+                        if( pLogger->getLogLevel() != i_eDetailLevel )
                         {
-                            pLogger->setDetailLevel(i_eDetailLevel);
+                            pLogger->setLogLevel(i_eDetailLevel);
                         }
                     }
                 }
@@ -854,7 +630,7 @@ SErrResultInfo CIdxTreeLoggers::save( const QString& i_strAbsFilePath ) const
 
         save(xmlStreamWriter, m_pRoot);
 
-        xmlStreamWriter.writeEndElement();  // Method Trace Admin Objects
+        xmlStreamWriter.writeEndElement();  // Loggers
         xmlStreamWriter.writeEndDocument();
 
         if( !errResultInfo.isErrorResult() )
@@ -905,14 +681,17 @@ SErrResultInfo CIdxTreeLoggers::recall( const QString& i_strAbsFilePath )
 
         QString  strElemName;
         QString  strAttr;
-        QString  strPath;
+        bool     bVal;
+        bool     bOk;
+        QString  strName;
+        EEnabled enabled;
+        QString  strDataFilter;
+        bool     bAddThreadName;
+        bool     bAddDateTime;
+        bool     bAddSystemTime;
         QString  strNameSpace;
         QString  strClassName;
         QString  strObjName;
-        QString  strThread;
-        EEnabled enabled;
-        QString  strDataFilter;
-
         ELogDetailLevel eDetailLevel;
 
         xmlStreamTokenType = xmlStreamReader.readNext();
@@ -946,66 +725,113 @@ SErrResultInfo CIdxTreeLoggers::recall( const QString& i_strAbsFilePath )
                     {
                         if( xmlStreamReader.isStartElement() )
                         {
-                            strNameSpace = "";
-                            strClassName = "";
-                            strObjName = "";
-                            strThread = "";
+                            strName = "";
                             enabled = EEnabled::Yes;
                             eDetailLevel = ELogDetailLevel::None;
                             strDataFilter = "";
+                            bAddThreadName = false;
+                            bAddDateTime = false;
+                            bAddSystemTime = false;
+                            strNameSpace = "";
+                            strClassName = "";
+                            strObjName = "";
 
-                            if( xmlStreamReader.attributes().hasAttribute("NameSpace") )
+                            if( xmlStreamReader.attributes().hasAttribute("Name") )
                             {
-                                strNameSpace = xmlStreamReader.attributes().value("NameSpace").toString();
+                                strName = xmlStreamReader.attributes().value("Name").toString();
                             }
-                            if( xmlStreamReader.attributes().hasAttribute("ClassName") )
+                            if( strName.isEmpty() )
                             {
-                                strClassName = xmlStreamReader.attributes().value("ClassName").toString();
+                                xmlStreamReader.raiseError("Name not defined");
                             }
-                            if( xmlStreamReader.attributes().hasAttribute("ObjName") )
+                            else
                             {
-                                strObjName = xmlStreamReader.attributes().value("ObjName").toString();
-                            }
-                            if( strNameSpace.isEmpty() && strClassName.isEmpty() && strObjName.isEmpty() )
-                            {
-                                xmlStreamReader.raiseError("Neither NameSpace nor ClassName nor ObjName defined");
-                            }
-                            else // if( !strNameSpace.isEmpty() || !strClassName.isEmpty() || !strObjName.isEmpty() )
-                            {
-                                strPath = buildPathStr(strNameSpace, strClassName, strObjName);
-
-                                if( xmlStreamReader.attributes().hasAttribute("Thread") )
-                                {
-                                    strThread = xmlStreamReader.attributes().value("Thread").toString();
-                                }
                                 if( xmlStreamReader.attributes().hasAttribute("Enabled") )
                                 {
                                     strAttr = xmlStreamReader.attributes().value("Enabled").toString();
                                     enabled = CEnumEnabled::toEnumerator(strAttr);
                                     if( enabled == EEnabled::Undefined )
                                     {
-                                        xmlStreamReader.raiseError("Attribute \"Enabled\" (" + strAttr + ") for \"" + strPath + "\" is out of range");
+                                        xmlStreamReader.raiseError(
+                                            "Attribute \"Enabled\" (" + strAttr + ") for \"" +
+                                            strName + "\" is out of range");
                                     }
                                 }
-                                if( xmlStreamReader.attributes().hasAttribute("DetailLevel") )
+                                if( xmlStreamReader.attributes().hasAttribute("LogLevel") )
                                 {
-                                    strAttr = xmlStreamReader.attributes().value("DetailLevel").toString();
+                                    strAttr = xmlStreamReader.attributes().value("LogLevel").toString();
                                     eDetailLevel = CEnumLogDetailLevel::toEnumerator(strAttr);
                                     if( eDetailLevel == ELogDetailLevel::Undefined )
                                     {
-                                        xmlStreamReader.raiseError("Attribute \"DetailLevel\" (" + strAttr + ") for \"" + strPath + "\" is out of range");
+                                        xmlStreamReader.raiseError(
+                                            "Attribute \"LogLevel\" (" + strAttr + ") for \"" +
+                                            strName + "\" is out of range");
                                     }
                                 }
                                 if( xmlStreamReader.attributes().hasAttribute("DataFilter") )
                                 {
                                     strDataFilter = xmlStreamReader.attributes().value("DataFilter").toString();
                                 }
+                                if( xmlStreamReader.attributes().hasAttribute("AddThreadName") )
+                                {
+                                    strAttr = xmlStreamReader.attributes().value("AddThreadName").toString();
+                                    bVal = str2Bool(strAttr, &bOk);
+                                    if( bOk ) {
+                                        bAddThreadName = bVal;
+                                    }
+                                    else {
+                                        xmlStreamReader.raiseError(
+                                            "Attribute \"AddThreadName\" (" + strAttr + ") for \""
+                                            + strName + "\" is out of range");
+                                    }
+                                }
+                                if( xmlStreamReader.attributes().hasAttribute("AddDateTime") )
+                                {
+                                    strAttr = xmlStreamReader.attributes().value("AddDateTime").toString();
+                                    bVal = str2Bool(strAttr, &bOk);
+                                    if( bOk ) {
+                                        bAddDateTime = bVal;
+                                    }
+                                    else {
+                                        xmlStreamReader.raiseError(
+                                            "Attribute \"AddDateTime\" (" + strAttr + ") for \"" +
+                                            strName + "\" is out of range");
+                                    }
+                                }
+                                if( xmlStreamReader.attributes().hasAttribute("AddSystemTime") )
+                                {
+                                    strAttr = xmlStreamReader.attributes().value("AddSystemTime").toString();
+                                    bVal = str2Bool(strAttr, &bOk);
+                                    if( bOk ) {
+                                        bAddSystemTime = bVal;
+                                    }
+                                    else {
+                                        xmlStreamReader.raiseError(
+                                            "Attribute \"AddSystemTime\" (" + strAttr + ") for \"" +
+                                            strName + "\" is out of range");
+                                    }
+                                }
+                                if( xmlStreamReader.attributes().hasAttribute("NameSpace") )
+                                {
+                                    strNameSpace = xmlStreamReader.attributes().value("NameSpace").toString();
+                                }
+                                if( xmlStreamReader.attributes().hasAttribute("ClassName") )
+                                {
+                                    strClassName = xmlStreamReader.attributes().value("ClassName").toString();
+                                }
+                                if( xmlStreamReader.attributes().hasAttribute("ObjName") )
+                                {
+                                    strObjName = xmlStreamReader.attributes().value("ObjName").toString();
+                                }
 
-                                CLogger* pLogger = getLogger(
-                                    strNameSpace, strClassName, strObjName, enabled,
-                                    eDetailLevel, strDataFilter, false);
+                                CLogger* pLogger = getLogger(strObjName, enabled, eDetailLevel, strDataFilter);
 
-                                pLogger->setObjectThreadName(strThread);
+                                pLogger->setAddThreadName(bAddThreadName);
+                                pLogger->setAddDateTime(bAddDateTime);
+                                pLogger->setAddSystemTime(bAddSystemTime);
+                                pLogger->setNameSpace(strNameSpace);
+                                pLogger->setClassName(strClassName);
+                                pLogger->setObjectName(strObjName);
 
                             } // else // if( !strNameSpace.isEmpty() || !strClassName.isEmpty() || !strObjName.isEmpty() )
                         } // if( xmlStreamReader.isStartElement() )
@@ -1044,7 +870,7 @@ void CIdxTreeLoggers::save(
     // methods. The mutex to protect the list and tree has already been locked.
 
     CIdxTreeEntry* pTreeEntry;
-    CLogger*  pLogger;
+    CLogger*       pLogger;
     int            idxEntry;
 
     if( i_pTreeEntry->entryType() == EIdxTreeEntryType::Leave )
@@ -1052,13 +878,16 @@ void CIdxTreeLoggers::save(
         pLogger = dynamic_cast<CLogger*>(i_pTreeEntry);
 
         i_xmlStreamWriter.writeStartElement("Logger");
+        i_xmlStreamWriter.writeAttribute( "Name", pLogger->name() );
+        i_xmlStreamWriter.writeAttribute( "Enabled", CEnumEnabled::toString(pLogger->getEnabled()) );
+        i_xmlStreamWriter.writeAttribute( "LogLevel", CEnumLogDetailLevel::toString(pLogger->getLogLevel()) );
+        i_xmlStreamWriter.writeAttribute( "DataFilter", pLogger->getDataFilter() );
+        i_xmlStreamWriter.writeAttribute( "AddThreadName", bool2Str(pLogger->addThreadName()) );
+        i_xmlStreamWriter.writeAttribute( "AddDateTime", bool2Str(pLogger->addDateTime()) );
+        i_xmlStreamWriter.writeAttribute( "AddSystemTime", bool2Str(pLogger->addSystemTime()) );
         i_xmlStreamWriter.writeAttribute( "NameSpace", pLogger->getNameSpace() );
         i_xmlStreamWriter.writeAttribute( "ClassName", pLogger->getClassName() );
         i_xmlStreamWriter.writeAttribute( "ObjName", pLogger->getObjectName() );
-        i_xmlStreamWriter.writeAttribute( "Thread", pLogger->getObjectThreadName() );
-        i_xmlStreamWriter.writeAttribute( "Enabled", CEnumEnabled::toString(pLogger->getEnabled()) );
-        i_xmlStreamWriter.writeAttribute( "DetailLevel", CEnumLogDetailLevel::toString(pLogger->getDetailLevel()) );
-        i_xmlStreamWriter.writeAttribute( "DataFilter", pLogger->getDataFilter() );
         i_xmlStreamWriter.writeEndElement(/*"Logger"*/);
     }
     else // if( pTreeEntry->entryType() == EIdxTreeEntryType::Root || Branch )

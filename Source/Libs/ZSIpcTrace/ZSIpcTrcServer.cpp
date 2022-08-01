@@ -57,19 +57,32 @@ struct ZS::Trace::SMthTrcData
 public: // struct members
 //==============================================================================
 
-QString                m_strMthThreadName;          // Name of the thread in which context the method was called from.
-QDateTime              m_dt;                        // Current date time of the method call.
-double                 m_fSysTimeInSec;             // Time in seconds since start of the program at which the method was called.
-ZS::System::EMethodDir m_mthDir;                    // Methods may be entered and left.
-int                    m_iTrcAdminObjId;
-QString                m_strNameSpace;
-QString                m_strClassName;
-QString                m_strObjName;                // Name of the object for which the method was applied.
-QString                m_strMthName;                // Name of the method to be traced.
-QString                m_strMthInArgs;              // Only valid if mthDir == Enter
-QString                m_strMthOutArgs;             // Only valid if mthDir == Leave
-QString                m_strMthRet;                 // Only valid if mthDir == Leave
-QString                m_strMthAddInfo;             // Only valid if mthDir == None
+/*!< Name of the thread in which context the method was called from. */
+QString m_strMthThreadName;
+/*!< Current date time of the method call. */
+QDateTime m_dt;
+/*!< Time in seconds since start of the program the method was called. */
+double m_fSysTime_s;
+/*!< Methods may be entered and left. */
+ZS::System::EMethodDir m_mthDir;
+/*!< Index of trace admin object in index tree. */
+int m_iTrcAdminObjId;
+/*!< Name space of the methods class. */
+QString m_strNameSpace;
+/*!< Name of the class the method belongs to. */
+QString m_strClassName;
+/*!< Name of the object for which the method was applied. */
+QString m_strObjName;
+/*!< Name of the method to be traced. */
+QString m_strMthName;
+/*!< Only valid if mthDir == Enter */
+QString m_strMthInArgs;
+/*!< Only valid if mthDir == Leave */
+QString m_strMthOutArgs;
+/*!< Only valid if mthDir == Leave */
+QString m_strMthRet;
+/*!< Only valid if mthDir == None */
+QString m_strMthAddInfo;
 
 //==============================================================================
 public: // ctors and dtor
@@ -80,7 +93,7 @@ SMthTrcData() :
 //------------------------------------------------------------------------------
     m_strMthThreadName(),
     m_dt(),
-    m_fSysTimeInSec(0.0),
+    m_fSysTime_s(0.0),
     m_mthDir(EMethodDir::None),
     m_iTrcAdminObjId(-1),
     m_strNameSpace(),
@@ -110,7 +123,7 @@ SMthTrcData(
 //------------------------------------------------------------------------------
     m_strMthThreadName(i_strMthThreadName),
     m_dt(i_dt),
-    m_fSysTimeInSec(i_fSysTimeInSec),
+    m_fSysTime_s(i_fSysTimeInSec),
     m_mthDir(i_mthDir),
     m_iTrcAdminObjId(i_iTrcAdminObjId),
     m_strNameSpace(i_strNameSpace),
@@ -143,7 +156,7 @@ SMthTrcData(
 {
     //m_strMthThreadName;
     //m_dt;
-    //m_fSysTimeInSec;
+    //m_fSysTime_s;
     m_mthDir = static_cast<EMethodDir>(0);
     m_iTrcAdminObjId = 0;
     //m_strNameSpace;
@@ -178,7 +191,7 @@ QString toXmlString() const
     /*    20 */ str += "Thread=\"" + m_strMthThreadName + "\" ";
     /*    11 */ str += "Dir=\"" + CEnumMethodDir::toString(m_mthDir) + "\" ";
     /*    23 */ str += "DateTime=\"" + m_dt.toString("yyyy-MM-dd hh:mm:ss:zzz") + "\" ";
-    /*    23 */ str += "SysTime=\"" + QString::number(m_fSysTimeInSec,'f',6) + "\" ";
+    /*    23 */ str += "SysTime=\"" + QString::number(m_fSysTime_s,'f',6) + "\" ";
     if( m_mthDir == EMethodDir::Enter )
     {
         QString strMthInArgs = encodeForHtml(m_strMthInArgs);
@@ -481,9 +494,7 @@ CIpcTrcServer::~CIpcTrcServer()
 
     m_bIsBeingDestroyed = true;
 
-    int idx;
-
-    for( idx = 0; idx < m_iTrcDataCachedCount; idx++ )
+    for( int idx = 0; idx < m_iTrcDataCachedCount; idx++ )
     {
         try
         {

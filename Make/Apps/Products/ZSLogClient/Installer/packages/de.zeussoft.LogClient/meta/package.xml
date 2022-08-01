@@ -2,8 +2,8 @@
 <Package>
     <DisplayName>Log Client</DisplayName>
     <Description>Installation Log Client</Description>
-    <Version>v1.0.0-9-g8248c96</Version>
-    <ReleaseDate>2022-07-10 18:07</ReleaseDate>
+    <Version>v1.0.0-10-g2b734d2</Version>
+    <ReleaseDate>2022-07-31 12:07</ReleaseDate>
     <Licenses>
         <License name="ZeusSoft ZSQtLib Lizense" file="license.txt" />
     </Licenses>

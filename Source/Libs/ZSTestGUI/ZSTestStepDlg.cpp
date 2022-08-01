@@ -24,8 +24,13 @@ may result in using the software modules.
 
 *******************************************************************************/
 
+#include "ZSTestGUI/ZSTestStepDlg.h"
+#include "ZSTestGUI/ZSTestStepWdgt.h"
+#include "ZSTest/ZSTest.h"
+#include "ZSTest/ZSTestStep.h"
+#include "ZSSysGUI/ZSSysTextEdit.h"
+
 #include <QtCore/qsettings.h>
-#include <QtCore/qtextstream.h>
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 #include <QtGui/qapplication.h>
@@ -50,11 +55,6 @@ may result in using the software modules.
 #include <QtWidgets/qradiobutton.h>
 #include <QtWidgets/qsplitter.h>
 #endif
-
-#include "ZSTestGUI/ZSTestStepDlg.h"
-#include "ZSTest/ZSTest.h"
-#include "ZSTest/ZSTestStep.h"
-#include "ZSSysGUI/ZSSysTextEdit.h"
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
@@ -82,34 +82,10 @@ CDlgTestStep::CDlgTestStep(
     m_strSettingsKey("DlgTestStep"),
     m_pTestStep(i_pTestStep),
     m_pLytMain(nullptr),
-    m_pLytLineTestStep(nullptr),
-    m_pLblTestStep(nullptr),
-    m_pEdtTestStep(nullptr),
-    m_pLytLineOperation(nullptr),
-    m_pLblOperation(nullptr),
-    m_pEdtOperation(nullptr),
-    m_pLytLineDescription(nullptr),
-    m_pLblDescription(nullptr),
-    m_pEdtDescription(nullptr),
-    m_pLytGrpConfigValues(nullptr),
-    m_pGrpConfigValues(nullptr),
-    m_pEdtConfigValues(nullptr),
-    m_pSplitterInstructionWithExpectedAndResultValues(nullptr),
-    m_pLytGrpInstruction(nullptr),
-    m_pGrpInstruction(nullptr),
-    m_pEdtInstruction(nullptr),
-    m_pWdgtGrpExpectedAndResultValues(nullptr),
-    m_pLytGrpExpectedAndResultValues(nullptr),
-    m_pLytGrpExpectedValues(nullptr),
-    m_pGrpExpectedValues(nullptr),
-    m_pEdtExpectedValues(nullptr),
-    m_pLytGrpResultValues(nullptr),
-    m_pGrpResultValues(nullptr),
-    m_pEdtResultValues(nullptr),
+    m_pWdgtTestStep(nullptr),
     m_pLytGrpTestResults(nullptr),
     m_pGrpTestResults(nullptr),
     m_pBtnCompareExpectedWithResultValues(nullptr),
-    m_pChkMarkFailedResultValues(nullptr),
     m_pBtnGrpTestResults(nullptr),
     m_pBtnTestResultUndefined(nullptr),
     m_pBtnTestResultPassed(nullptr),
@@ -130,113 +106,9 @@ CDlgTestStep::CDlgTestStep(
 
     int cxLblWidth = 100;
 
-    m_pLytLineTestStep = new QHBoxLayout();
-    m_pLytMain->addLayout(m_pLytLineTestStep);
-    m_pLblTestStep = new QLabel("TestStep:");
-    m_pLblTestStep->setFixedWidth(cxLblWidth);
-    m_pLytLineTestStep->addWidget(m_pLblTestStep);
-    m_pEdtTestStep = new QLineEdit(m_pTestStep->path());
-    m_pEdtTestStep->setReadOnly(true);
-    m_pLytLineTestStep->addWidget(m_pEdtTestStep);
-
-    if( !m_pTestStep->getOperation().isEmpty() )
-    {
-        m_pLytLineOperation = new QHBoxLayout();
-        m_pLytMain->addLayout(m_pLytLineOperation);
-        m_pLblOperation = new QLabel("Operation:");
-        m_pLblOperation->setFixedWidth(cxLblWidth);
-        m_pLytLineOperation->addWidget(m_pLblOperation);
-        m_pEdtOperation = new QLineEdit(m_pTestStep->getOperation());
-        m_pEdtOperation->setReadOnly(true);
-        m_pLytLineOperation->addWidget(m_pEdtOperation);
-    }
-
-    if( !m_pTestStep->getDescription().isEmpty() )
-    {
-        m_pLytLineDescription = new QHBoxLayout();
-        m_pLytMain->addLayout(m_pLytLineDescription);
-        m_pLblDescription = new QLabel("Description:");
-        m_pLblDescription->setFixedWidth(cxLblWidth);
-        m_pLytLineDescription->addWidget(m_pLblDescription);
-        m_pEdtDescription = new QLineEdit(m_pTestStep->getDescription());
-        m_pEdtDescription->setReadOnly(true);
-        m_pLytLineDescription->addWidget(m_pEdtDescription);
-    }
-
-    if( !m_pTestStep->getConfigValueKeys().isEmpty() )
-    {
-        m_pGrpConfigValues = new QGroupBox("Configuration Values:");
-        m_pLytMain->addWidget(m_pGrpConfigValues);
-        m_pLytGrpConfigValues = new QHBoxLayout();
-        m_pEdtConfigValues = new CTextEdit();
-        m_pLytGrpConfigValues->addWidget(m_pEdtConfigValues);
-        QStringList strlstConfigValues;
-        for( int iRow = 0; iRow < m_pTestStep->getConfigValueKeys().size(); ++iRow )
-        {
-            QString key = m_pTestStep->getConfigValueKeys().at(iRow);
-            QVariant val = m_pTestStep->getConfigValue(key);
-            QString str = key + ":\t" + val.toString();
-            strlstConfigValues << str;
-        }
-        m_pEdtConfigValues->setText(strlstConfigValues.join("<br/>"));
-        m_pGrpConfigValues->setLayout(m_pLytGrpConfigValues);
-    }
-
-    m_pSplitterInstructionWithExpectedAndResultValues = nullptr;
-
-    if( !m_pTestStep->getInstruction().isEmpty() )
-    {
-        m_pSplitterInstructionWithExpectedAndResultValues = new QSplitter(Qt::Vertical);
-        m_pLytMain->addWidget(m_pSplitterInstructionWithExpectedAndResultValues, 1);
-
-        m_pGrpInstruction = new QGroupBox("Instruction:");
-        m_pSplitterInstructionWithExpectedAndResultValues->addWidget(m_pGrpInstruction);
-        m_pLytGrpInstruction = new QHBoxLayout();
-        m_pEdtInstruction = new CTextEdit(m_pTestStep->getInstruction());
-        m_pEdtInstruction->setReadOnly(true);
-        m_pEdtInstruction->setAcceptRichText(true);
-        m_pLytGrpInstruction->addWidget(m_pEdtInstruction);
-        m_pGrpInstruction->setLayout(m_pLytGrpInstruction);
-    }
-
-    m_pWdgtGrpExpectedAndResultValues = new QWidget();
-    m_pLytGrpExpectedAndResultValues = new QHBoxLayout();
-    m_pLytGrpExpectedAndResultValues->setContentsMargins(0, 0, 0, 0);
-    m_pWdgtGrpExpectedAndResultValues->setLayout(m_pLytGrpExpectedAndResultValues);
-    // Without setMaximumHeight the text edit widget are resized to a very high value
-    // if a lot of text lines are inserted. Strange ....
-    m_pWdgtGrpExpectedAndResultValues->setMaximumHeight(640);
-
-    if( m_pSplitterInstructionWithExpectedAndResultValues != nullptr )
-    {
-        m_pSplitterInstructionWithExpectedAndResultValues->addWidget(m_pWdgtGrpExpectedAndResultValues);
-    }
-    else
-    {
-        m_pLytMain->addWidget(m_pWdgtGrpExpectedAndResultValues, 1);
-    }
-
-    m_pGrpExpectedValues = new QGroupBox("Expected Values:");
-    m_pLytGrpExpectedAndResultValues->addWidget(m_pGrpExpectedValues);
-    m_pLytGrpExpectedValues = new QVBoxLayout();
-    m_pEdtExpectedValues = new CTextEdit();
-    //m_pEdtExpectedValues->setReadOnly(false);
-    m_pEdtExpectedValues->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-    m_pEdtExpectedValues->setSizeAdjustPolicy(QAbstractScrollArea::AdjustIgnored);
-    m_pEdtExpectedValues->setPlainText(m_pTestStep->getExpectedValues().join("\n"));
-    m_pLytGrpExpectedValues->addWidget(m_pEdtExpectedValues);
-    m_pGrpExpectedValues->setLayout(m_pLytGrpExpectedValues);
-
-    m_pGrpExpectedValues = new QGroupBox("Result Values:");
-    m_pLytGrpExpectedAndResultValues->addWidget(m_pGrpExpectedValues);
-    m_pLytGrpResultValues = new QVBoxLayout();
-    m_pEdtResultValues = new CTextEdit(m_pTestStep->getResultValues().join("\n"));
-    //m_pEdtResultValues->setReadOnly(false);
-    m_pEdtResultValues->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-    m_pEdtResultValues->setSizeAdjustPolicy(QAbstractScrollArea::AdjustIgnored);
-    m_pEdtResultValues->setPlainText(m_pTestStep->getResultValues().join("\n"));
-    m_pLytGrpResultValues->addWidget(m_pEdtResultValues);
-    m_pGrpExpectedValues->setLayout(m_pLytGrpResultValues);
+    m_pWdgtTestStep = new CWdgtTestStep();
+    m_pWdgtTestStep->setTestStep(m_pTestStep);
+    m_pLytMain->addWidget(m_pWdgtTestStep);
 
     m_pGrpTestResults = new QGroupBox("Test Result:");
     m_pLytMain->addWidget(m_pGrpTestResults);
@@ -244,10 +116,6 @@ CDlgTestStep::CDlgTestStep(
 
     m_pBtnCompareExpectedWithResultValues = new QPushButton("Compare Expected With Result Values");
     m_pLytGrpTestResults->addWidget(m_pBtnCompareExpectedWithResultValues);
-    m_pLytGrpTestResults->addSpacing(20);
-
-    m_pChkMarkFailedResultValues = new QCheckBox("Mark Failed Result Values");
-    m_pLytGrpTestResults->addWidget(m_pChkMarkFailedResultValues);
     m_pLytGrpTestResults->addSpacing(20);
 
     m_pBtnGrpTestResults = new QButtonGroup(this);
@@ -349,38 +217,11 @@ CDlgTestStep::CDlgTestStep(
 
     restoreGeometry( settings.value(m_strSettingsKey+"/Geometry").toByteArray() );
 
-    if( m_pSplitterInstructionWithExpectedAndResultValues != nullptr )
-    {
-        QList<int> listSizes;
-        int        idx;
-
-        listSizes = m_pSplitterInstructionWithExpectedAndResultValues->sizes();
-
-        for( idx = 0; idx < listSizes.count(); idx++ )
-        {
-            listSizes[idx] = settings.value(
-                m_strSettingsKey + "/Geometry/Splitter/Wdgt" + QString::number(idx) + "Height", 50 ).toInt();
-        }
-        m_pSplitterInstructionWithExpectedAndResultValues->setSizes(listSizes);
-    }
-
-    m_pChkMarkFailedResultValues->setChecked(
-        settings.value(m_strSettingsKey+"/MarkFailedResultValues", true).toBool() );
-
     if( !QObject::connect(
         /* pObjSender   */ m_pBtnCompareExpectedWithResultValues,
         /* szSignal     */ SIGNAL(clicked(bool)),
         /* pObjReceiver */ this,
         /* szSlot       */ SLOT(onBtnCompareExpectedWithResultValuesClicked(bool))) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-
-    if( !QObject::connect(
-        /* pObjSender   */ m_pChkMarkFailedResultValues,
-        /* szSignal     */ SIGNAL(toggled(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onChkMarkFailedResultValuesToggled(bool))) )
     {
         throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
     }
@@ -394,52 +235,12 @@ CDlgTestStep::~CDlgTestStep()
     QSettings settings;
     settings.setValue( m_strSettingsKey+"/Geometry", saveGeometry() );
 
-    if( m_pSplitterInstructionWithExpectedAndResultValues != nullptr )
-    {
-        QList<int> listSizes;
-        int        idx;
-
-        listSizes = m_pSplitterInstructionWithExpectedAndResultValues->sizes();
-
-        for( idx = 0; idx < listSizes.count(); idx++ )
-        {
-            settings.setValue(m_strSettingsKey + "/Geometry/Splitter/Wdgt" + QString::number(idx) + "Height", listSizes[idx]);
-        }
-    }
-
-    settings.setValue(m_strSettingsKey+"/MarkFailedResultValues", m_pChkMarkFailedResultValues->isChecked());
-
     //m_strSettingsKey;
     m_pTestStep = nullptr;
     m_pLytMain = nullptr;
-    m_pLytLineTestStep = nullptr;
-    m_pLblTestStep = nullptr;
-    m_pEdtTestStep = nullptr;
-    m_pLytLineOperation = nullptr;
-    m_pLblOperation = nullptr;
-    m_pEdtOperation = nullptr;
-    m_pLytLineDescription = nullptr;
-    m_pLblDescription = nullptr;
-    m_pEdtDescription = nullptr;
-    m_pLytGrpConfigValues = nullptr;
-    m_pGrpConfigValues = nullptr;
-    m_pEdtConfigValues = nullptr;
-    m_pSplitterInstructionWithExpectedAndResultValues = nullptr;
-    m_pLytGrpInstruction = nullptr;
-    m_pGrpInstruction = nullptr;
-    m_pEdtInstruction = nullptr;
-    m_pWdgtGrpExpectedAndResultValues = nullptr;
-    m_pLytGrpExpectedAndResultValues = nullptr;
-    m_pLytGrpExpectedValues = nullptr;
-    m_pGrpExpectedValues = nullptr;
-    m_pEdtExpectedValues = nullptr;
-    m_pLytGrpResultValues = nullptr;
-    m_pGrpResultValues = nullptr;
-    m_pEdtResultValues = nullptr;
     m_pLytGrpTestResults = nullptr;
     m_pGrpTestResults = nullptr;
     m_pBtnCompareExpectedWithResultValues = nullptr;
-    m_pChkMarkFailedResultValues = nullptr;
     m_pBtnGrpTestResults = nullptr;
     m_pBtnTestResultUndefined = nullptr;
     m_pBtnTestResultPassed = nullptr;
@@ -499,35 +300,6 @@ protected slots:
 void CDlgTestStep::onBtnCompareExpectedWithResultValuesClicked(bool /*i_bChecked*/)
 //------------------------------------------------------------------------------
 {
-    compareExpectedWithResultValues();
-}
-
-//------------------------------------------------------------------------------
-void CDlgTestStep::onChkMarkFailedResultValuesToggled(bool /*i_bChecked*/)
-//------------------------------------------------------------------------------
-{
-    if( !m_pChkMarkFailedResultValues->isChecked() )
-    {
-        QStringList strlstResultValues;
-        QString strResultValue = m_pEdtResultValues->toPlainText();
-        QTextStream txtStreamEdtResultValues(&strResultValue, QIODevice::ReadOnly);
-        while (!txtStreamEdtResultValues.atEnd())
-        {
-            QString strTmp = txtStreamEdtResultValues.readLine();
-            if( strTmp.startsWith("!! ") )
-            {
-                strTmp.remove(0, 3);
-            }
-            if( strTmp.endsWith(" !!") )
-            {
-                strTmp.remove(strTmp.size()-3, 3);
-            }
-            strlstResultValues << strTmp;
-        }
-        m_pEdtResultValues->clear();
-        m_pEdtResultValues->setPlainText(strlstResultValues.join("\n"));
-    }
-
     compareExpectedWithResultValues();
 }
 
@@ -628,78 +400,12 @@ void CDlgTestStep::onBtnTestContinueClicked(QAbstractButton* i_pBtn, bool /*i_bC
 void CDlgTestStep::compareExpectedWithResultValues()
 //------------------------------------------------------------------------------
 {
-    QStringList strlstExpectedValues;
+    QStringList strlstExpectedValues = m_pTestStep->getExpectedValues();
+    QStringList strlstResultValues = m_pWdgtTestStep->getResultValues();
 
-    QString strExpectedValue = m_pEdtExpectedValues->toPlainText();
-    QTextStream txtStreamEdtExpectedValues(&strExpectedValue, QIODevice::ReadOnly);
-    while (!txtStreamEdtExpectedValues.atEnd())
-    {
-        strlstExpectedValues << txtStreamEdtExpectedValues.readLine();
-    }
+    m_pTestStep->setResultValues(strlstResultValues);
 
-    QStringList strlstResultValues;
-
-    QString strResultValue = m_pEdtResultValues->toPlainText();
-    QTextStream txtStreamEdtResultValues(&strResultValue, QIODevice::ReadOnly);
-    while (!txtStreamEdtResultValues.atEnd())
-    {
-        QString strTmp = txtStreamEdtResultValues.readLine();
-        if( m_pChkMarkFailedResultValues->isChecked() )
-        {
-            if( strTmp.startsWith("!! ") )
-            {
-                strTmp.remove(0, 3);
-            }
-            if( strTmp.endsWith(" !!") )
-            {
-                strTmp.remove(strTmp.size()-3, 3);
-            }
-        }
-        strlstResultValues << strTmp;
-    }
-
-    CEnumTestResult testResult = ETestResult::TestPassed;
-
-    if( m_pChkMarkFailedResultValues->isChecked() )
-    {
-        int idxVal;
-
-        for( idxVal = 0; idxVal < strlstExpectedValues.size(); idxVal++ )
-        {
-            strExpectedValue = strlstExpectedValues[idxVal];
-
-            if( idxVal < strlstResultValues.size() )
-            {
-                strResultValue = strlstResultValues[idxVal];
-
-                if( strExpectedValue.compare(strResultValue, Qt::CaseSensitive) != 0 )
-                {
-                    testResult = ETestResult::TestFailed;
-                    strlstResultValues[idxVal] = "!! " + strResultValue + " !!";
-                }
-            }
-            else
-            {
-                testResult = ETestResult::TestFailed;
-                strlstResultValues << "!!  !!";
-            }
-        }
-        for( ; idxVal < strlstResultValues.size(); idxVal++ )
-        {
-            strResultValue = strlstResultValues[idxVal];
-            strlstResultValues[idxVal] = "!! " + strResultValue + " !!";
-        }
-
-        if( testResult == ETestResult::TestFailed )
-        {
-            m_pEdtResultValues->clear();
-            m_pEdtResultValues->setPlainText(strlstResultValues.join("\n"));
-        }
-    }
-    else
-    {
-        testResult = m_pTestStep->detectTestResult(strlstExpectedValues, strlstResultValues);
-    }
+    CEnumTestResult testResult = m_pTestStep->getTestResult();
 
     if( testResult == ETestResult::TestPassed )
     {

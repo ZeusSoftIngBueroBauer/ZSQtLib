@@ -1,4 +1,4 @@
-@page _PAGE_Libs_ZSIpcTrace_Usage_MethodTracer Generating Method Trace Outputs
+@page _PAGE_Libs_ZSIpcLog_Usage_Logger Generating Log Outputs
 
 Now that we know how to create a trace server and how to create trace admin objects,
 we can turn to the actual task - generating trace output.

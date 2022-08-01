@@ -184,10 +184,7 @@ void CTestStepGroup::onTestStepResultChanged(
         {
             m_testResult = i_testResult;
 
-            if( m_pTree != nullptr )
-            {
-                m_pTree->onTreeEntryChanged(this);
-            }
+            emit_changed();
 
             CTestStepGroup* pParentGroup = getParentGroup();
 

@@ -55,7 +55,7 @@ public: // ctor
     SLogServerSettings(
         bool i_bEnabled = true,
         bool i_bNewLoggersEnabledAsDefault = true,
-        ZS::System::ELogDetailLevel i_eNewLoggersDefaultDetailLevel = ZS::System::ELogDetailLevel::None,
+        ELogDetailLevel i_eNewLoggersDefaultDetailLevel = ELogDetailLevel::None,
         bool i_bUseIpcServer = true,
         bool i_bCacheDataIfNotConnected = false,
         int  i_iCacheDataMaxArrLen = 1000,
@@ -79,7 +79,7 @@ public: // struct members
     /*!< Defines whether newly created loggers should be enabled as default. */
     bool m_bNewLoggersEnabledAsDefault;
     /*!< Defines the log detail level for newly created loggers. */
-    ZS::System::ELogDetailLevel m_eNewLoggersDefaultDetailLevel;
+    ELogDetailLevel m_eNewLoggersDefaultDetailLevel;
     /*!< Defines whether log output should be send to remote client. */
     bool m_bUseIpcServer;
     /*!< If a log client is not connected the flag defines whether log data should be internally cached until a client connects. */
@@ -103,6 +103,51 @@ public: // struct members
     bool m_bLocalLogFileCloseFileAfterEachWrite;
 
 }; // struct SLogServerSettings
+
+
+//******************************************************************************
+/*! struct SLogData
+*/
+struct ZSSYSDLL_API SLogData
+//******************************************************************************
+{
+public: // ctors
+    SLogData();
+    SLogData(
+        const QString& i_strThreadName,
+        const QString& i_strDateTime,
+        double         i_fSysTimeInSec,
+        const QString& i_strNameSpace,
+        const QString& i_strClassName,
+        const QString& i_strObjName,
+        const QString& i_strEntry );
+public: // struct methods
+    QString toPlainString() const;
+    QString toHtmlString() const;
+    QString toXmlString() const;
+public: // struct members
+    /*!< Name of the thread in which context the log entry was created.
+         An empty string if the thread name should not be logged. */
+    QString m_strThreadName;
+    /*!< Current date time the log entry has been created.
+         An empty string if the date time should not be logged. */
+    QString m_strDateTime;
+    /*!< Time in seconds since start of the program the log entry was created.
+         Less than or equal to zero if the process time should not be logged. */
+    double m_fSysTime_s;
+    /*!< Name space of the class for which the log entry was created.
+         An empty string if the name space should not be logged. */
+    QString m_strNameSpace;
+    /*!< Name of the class for which the log entry was created.
+         An empty string if the class name should not be logged. */
+    QString m_strClassName;
+    /*!< Name of the object for which the log entry was created.
+         An empty string if the object name should not be logged. */
+    QString m_strObjName;
+    /*!< Log entry string. */
+    QString m_strEntry;
+
+}; // struct SLogData
 
 
 //******************************************************************************
@@ -136,7 +181,7 @@ public: // type definitions and constants
 public: // class methods
     /*! Returns the namespace of the class.
         @note The static class functions name must be different from the instance method "nameSpace". */
-    static QString NameSpace() { return "ZS::Log"; }
+    static QString NameSpace() { return "ZS::System"; }
     /*! Returns the class name.
         @note The static class functions name must be different from the instance method "className". */
     static QString ClassName() { return "CLogServer"; }
@@ -148,21 +193,14 @@ public: // class methods to register thread names
     static void RegisterCurrentThread(const QString& i_strThreadName);
     static void UnregisterCurrentThread();
     static QString GetCurrentThreadName();
-public: // class methods to add, remove and modify admin objects
+public: // class methods to add, remove and modify loggers
     static CIdxTreeLoggers* GetLoggersIdxTree();
+    static CLogger* GetLogger();
     static CLogger* GetLogger( int i_idxInTree );
     static CLogger* GetLogger(
-        const QString& i_strNameSpace,
-        const QString& i_strClassName,
-        const QString& i_strObjName = "" );
-    static CLogger* GetLogger(
-        const QString& i_strNameSpace,
-        const QString& i_strClassName,
-        const QString& i_strObjName,
-        ZS::System::EEnabled i_bEnabledAsDefault,
-        ZS::System::ELogDetailLevel i_eDefaultDetailLevel );
-    static void RenameLogger( CLogger** io_ppLogger, const QString& i_strNewObjName );
-    static void ReleaseLogger( CLogger* i_pLogger );
+        const QString& i_strName,
+        EEnabled i_bEnabledAsDefault = EEnabled::Undefined,
+        ELogDetailLevel i_eDefaultDetailLevel = ELogDetailLevel::Undefined );
 public: // class methods to get default file paths
     static void SetLoggerFileAbsoluteFilePath( const QString& i_strAbsFilePath );
     static QString GetLoggerFileAbsoluteFilePath();
@@ -185,51 +223,33 @@ public: // instance methods
     /*! Returns the class name. May be overriden to return the class name of the derived class. */
     QString className() const { return ClassName(); }
 public: // instance methods
-    CIdxTreeLoggers* getLoggersIdxTree();
-public: // instance methods to add, remove and modify admin objects
-    virtual CLogger* getLogger( int i_idxInTree );
-    virtual CLogger* getLogger(
-        const QString& i_strNameSpace,
-        const QString& i_strClassName,
-        const QString& i_strObjName,
-        ZS::System::EEnabled i_bEnabledAsDefault,
-        ZS::System::ELogDetailLevel i_eDefaultDetailLevel );
-    virtual void renameLogger( CLogger** io_ppLogger, const QString& i_strNewObjName );
-    virtual void releaseLogger( CLogger* i_pLogger );
-public: // instance methods
-    virtual void log(
-        const CLogger* i_pLogger,
-        const QString& i_strMethod,
-        const QString& i_strAddInfo );
-    virtual void log(
-        const CLogger* i_pLogger,
-        const QString& i_strObjName,
-        const QString& i_strMethod,
-        const QString& i_strAddInfo );
-    virtual void log(
-        const QString& i_strNameSpace,
-        const QString& i_strClassName,
-        const QString& i_strObjName,
-        const QString& i_strMethod,
-        const QString& i_strAddInfo );
-public: // instance methods
-    virtual bool isActive() const;
-    virtual bool isActive( const CLogger* i_pLogger ) const;
-public: // instance methods
     virtual void setEnabled( bool i_bEnabled );
     virtual bool isEnabled() const;
+    virtual bool isActive() const;
+public: // instance methods
+    CIdxTreeLoggers* getLoggersIdxTree();
+public: // instance methods to add, remove and modify loggers
+    virtual CLogger* getLogger();
+    virtual CLogger* getLogger( int i_idxInTree );
+    virtual CLogger* getLogger(
+        const QString& i_strName,
+        EEnabled i_bEnabledAsDefault = EEnabled::Undefined,
+        ELogDetailLevel i_eDefaultDetailLevel = ELogDetailLevel::Undefined );
+public: // instance methods
+    virtual void log( ELogDetailLevel i_eFilterDetailLevel, const QString& i_strLogEntry );
+    virtual void log( CLogger* i_pLogger, ELogDetailLevel i_eFilterDetailLevel, const QString& i_strLogEntry );
 public: // instance methods
     virtual void setNewLoggersEnabledAsDefault( bool i_bEnabled );
     virtual bool areNewLoggersEnabledAsDefault() const;
-    virtual void setNewLoggersDefaultDetailLevel( ZS::System::ELogDetailLevel i_eDetailLevel );
-    virtual ZS::System::ELogDetailLevel getNewLoggersDefaultDetailLevel() const;
+    virtual void setNewLoggersDefaultDetailLevel( ELogDetailLevel i_eDetailLevel );
+    virtual ELogDetailLevel getNewLoggersDefaultDetailLevel() const;
 protected: // instance methods
     virtual void setLoggerFileAbsoluteFilePath( const QString& i_strAbsFilePath );
     virtual QString getLoggerFileCompleteBaseName() const;
     virtual QString getLoggerFileAbsolutePath() const;
 public: // instance methods
-    virtual ZS::System::SErrResultInfo recallLoggers( const QString& i_strAbsFilePath = QString() );
-    virtual ZS::System::SErrResultInfo saveLoggers( const QString& i_strAbsFilePath = QString() );
+    virtual SErrResultInfo recallLoggers( const QString& i_strAbsFilePath = QString() );
+    virtual SErrResultInfo saveLoggers( const QString& i_strAbsFilePath = QString() );
 protected: // instance methods
     virtual void setLocalLogFileAbsoluteFilePath( const QString& i_strAbsFilePath );
     virtual QString getLocalLogFileCompleteBaseName() const;
@@ -260,16 +280,6 @@ public: // instance methods
     virtual SLogServerSettings getLogSettings() const;
 public: // instance methods
     virtual void clearLocalLogFile();
-protected: // instance methods
-    virtual void addEntry(
-        const QString&   i_strThreadName,
-        const QDateTime& i_dt,
-        double           i_fSysTimeInSec,
-        const QString&   i_strNameSpace,
-        const QString&   i_strClassName,
-        const QString&   i_strObjName,
-        const QString&   i_strMethod,
-        const QString&   i_strAddInfo = "" );
 protected: // auxiliary instance methods
     static QString currentThreadName();
 protected: // reference counter
@@ -277,15 +287,23 @@ protected: // reference counter
     int incrementRefCount();
     int decrementRefCount();
 protected: // class members
-    static QMutex      s_mtx;       /*!< Mutex to protect the class and instance members of the class for multithreaded access. */
-    static CLogServer* s_pTheInst;  /*!< Pointer to singleton instance. */
-    static QHash<Qt::HANDLE, QString>  s_hshThreadNames; /*!< Hash with registered threads (key is thread id, value is name of thread). */
-    static QHash<QString, Qt::HANDLE>  s_hshThreadIds;   /*!< Hash with registered threads (key name of thread, value is thread id). */
-    static QString s_strLoggerFileAbsFilePath;         /*!< Absolute file path the tree of loggers and their settings will be saved and recalled. */
-    static QString s_strLocalLogFileAbsFilePath;         /*!< If a local log file is used defines the absolute file path for the log file. */
+    /*!< Mutex to protect the class and instance members of the class for multithreaded access. */
+    static QMutex s_mtx;
+    /*!< Pointer to singleton instance. */
+    static CLogServer* s_pTheInst;
+    /*!< Hash with registered threads (key is thread id, value is name of thread). */
+    static QHash<Qt::HANDLE, QString> s_hshThreadNames;
+    /*!< Hash with registered threads (key name of thread, value is thread id). */
+    static QHash<QString, Qt::HANDLE> s_hshThreadIds;
+    /*!< Absolute file path the tree of loggers and their settings will be saved and recalled. */
+    static QString s_strLoggerFileAbsFilePath;
+    /*!< If a local log file is used defines the absolute file path for the log file. */
+    static QString s_strLocalLogFileAbsFilePath;
 protected: // instance members
     /*<! Index tree containg a hierarchically ordered tree of the logger objects. */
     CIdxTreeLoggers* m_pLoggersIdxTree;
+    /*<! Default logger. */
+    CLogger* m_pLogger;
     /*<! Currently used log settings. */
     SLogServerSettings m_logSettings;
     /*<! Reference to local log file. */

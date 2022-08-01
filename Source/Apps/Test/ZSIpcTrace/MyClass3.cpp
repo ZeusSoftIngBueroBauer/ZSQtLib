@@ -625,7 +625,7 @@ QString CMyClass3::instMethod(const QString& i_strMthInArgs)
         CMsgReqTest* pMsgReq = new CMsgReqTest(this, this);
         pMsgReq->setCommand("instMethod");
         pMsgReq->setCommandArg(i_strMthInArgs);
-        POST_OR_DELETE_MESSAGE(pMsgReq, &mthTracer, ELogDetailLevel::DebugNormal);
+        POST_OR_DELETE_MESSAGE(pMsgReq, &mthTracer, ELogDetailLevel::Debug);
         pMsgReq = nullptr;
         strResult = "You here from me later ...";
     }
@@ -668,7 +668,7 @@ QString CMyClass3::noisyInstMethod(const QString& i_strMthInArgs)
         CMsgReqTest* pMsgReq = new CMsgReqTest(this, this);
         pMsgReq->setCommand("noisyInstMethod");
         pMsgReq->setCommandArg(i_strMthInArgs);
-        POST_OR_DELETE_MESSAGE(pMsgReq, &mthTracer, ELogDetailLevel::DebugNormal);
+        POST_OR_DELETE_MESSAGE(pMsgReq, &mthTracer, ELogDetailLevel::Debug);
         pMsgReq = nullptr;
         strResult = "You here from me later ...";
     }
@@ -711,7 +711,7 @@ QString CMyClass3::veryNoisyInstMethod(const QString& i_strMthInArgs)
         CMsgReqTest* pMsgReq = new CMsgReqTest(this, this);
         pMsgReq->setCommand("veryNoisyInstMethod");
         pMsgReq->setCommandArg(i_strMthInArgs);
-        POST_OR_DELETE_MESSAGE(pMsgReq, &mthTracer, ELogDetailLevel::DebugNormal);
+        POST_OR_DELETE_MESSAGE(pMsgReq, &mthTracer, ELogDetailLevel::Debug);
         pMsgReq = nullptr;
         strResult = "You here from me later ...";
     }
@@ -750,12 +750,12 @@ int CMyClass3::recursiveTraceMethod()
     {
         CMsgReqTest* pMsgReq = new CMsgReqTest(this, this);
         pMsgReq->setCommand("recursiveTraceMethod");
-        POST_OR_DELETE_MESSAGE(pMsgReq, &mthTracer, ELogDetailLevel::DebugNormal);
+        POST_OR_DELETE_MESSAGE(pMsgReq, &mthTracer, ELogDetailLevel::Debug);
         pMsgReq = nullptr;
     }
     else // if( QThread::currentThread() == thread() )
     {
-        if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugNormal) )
+        if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
         {
             QString strTrcMsg = "RecursionCount=" + QString::number(m_iRecursionCount);
             mthTracer.trace(strTrcMsg);

@@ -36,10 +36,11 @@ may result in using the software modules.
 #include "ZSIpcLog/ZSIpcLogServer.h"
 #include "ZSSys/ZSSysErrLog.h"
 #include "ZSSys/ZSSysException.h"
-#include "ZSSys/ZSSysRequest.h"
-#include "ZSSys/ZSSysMutex.h"
+#include "ZSSys/ZSSysLogFile.h"
 #include "ZSSys/ZSSysLogger.h"
 #include "ZSSys/ZSSysLoggerIdxTree.h"
+#include "ZSSys/ZSSysMutex.h"
+#include "ZSSys/ZSSysRequest.h"
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
@@ -48,125 +49,8 @@ using namespace ZS::Ipc;
 using namespace ZS::Log;
 
 
-//******************************************************************************
-struct ZS::Log::SLogData
-//******************************************************************************
-{
-//==============================================================================
-public: // struct members
-//==============================================================================
-
-/*!< Name of the thread in which context the method was called. */
-QString   m_strThreadName;
-/*!< Current date time at which the log entry was created. */
-QDateTime m_dt;
-/*!< Time in seconds since start of the program at which the logger was called. */
-double    m_fSysTimeInSec;
-int       m_iLoggerId;
-QString   m_strNameSpace;
-QString   m_strClassName;
-/*!< Name of the object for which the log entry was output. */
-QString   m_strObjName;
-/*!< Name of the method to be logged. */
-QString   m_strMthName;
-/*!< Additional info to be logged. */
-QString   m_strAddInfo;
-
-//==============================================================================
-public: // ctors and dtor
-//==============================================================================
-
-//------------------------------------------------------------------------------
-SLogData() :
-//------------------------------------------------------------------------------
-    m_strThreadName(),
-    m_dt(),
-    m_fSysTimeInSec(0.0),
-    m_iLoggerId(-1),
-    m_strNameSpace(),
-    m_strClassName(),
-    m_strObjName(),
-    m_strMthName(),
-    m_strAddInfo()
-{
-}
-
-//------------------------------------------------------------------------------
-SLogData(
-    const QString&   i_strThreadName,
-    const QDateTime& i_dt,
-    double           i_fSysTimeInSec,
-    int              i_iLoggerId,
-    const QString&   i_strNameSpace,
-    const QString&   i_strClassName,
-    const QString&   i_strObjName,
-    const QString&   i_strMthName,
-    const QString&   i_strAddInfo ) :
-//------------------------------------------------------------------------------
-    m_strThreadName(i_strThreadName),
-    m_dt(i_dt),
-    m_fSysTimeInSec(i_fSysTimeInSec),
-    m_iLoggerId(i_iLoggerId),
-    m_strNameSpace(i_strNameSpace),
-    m_strClassName(i_strClassName),
-    m_strObjName(i_strObjName),
-    m_strMthName(i_strMthName),
-    m_strAddInfo(i_strAddInfo)
-{
-}
-
-//------------------------------------------------------------------------------
-~SLogData()
-//------------------------------------------------------------------------------
-{
-    //m_strThreadName;
-    //m_dt;
-    m_fSysTimeInSec = 0.0;
-    m_iLoggerId = 0;
-    //m_strNameSpace;
-    //m_strClassName;
-    //m_strObjName;
-    //m_strMthName;
-    //m_strAddInfo;
-
-} // dtor
-
-//==============================================================================
-public: // struct methods
-//==============================================================================
-
-//------------------------------------------------------------------------------
-QString toXmlString() const
-//------------------------------------------------------------------------------
-{
-    QString str;
-
-    str.reserve(240);
-
-    /*   Len */
-    /*    12 */ str += "<LogData>";
-    /*    25 */ str += "<Logger IdxInTree=\"" + QString::number(m_iLoggerId) + "\"/>";
-    /*     8 */ str += "<LogEntry ";
-    /*    40 */ str += "ObjName=\"" + m_strObjName + "\" ";
-    /*    20 */ str += "Name=\"" + m_strMthName + "\" ";
-    /*    20 */ str += "Thread=\"" + m_strThreadName + "\" ";
-    /*    23 */ str += "DateTime=\"" + m_dt.toString("yyyy-MM-dd hh:mm:ss:zzz") + "\" ";
-    /*    23 */ str += "SysTime=\"" + QString::number(m_fSysTimeInSec,'f',6) + "\" ";
-    /*    10 */ str += "AddInfo=\"" + m_strAddInfo + "\" ";
-    /*     3 */ str += "/>";
-    /*    13 */ str += "</LogData>";
-    /*-------*/
-    /* = 207 ... estimated value */
-
-    return str;
-
-} // toXmlString
-
-}; // struct SLogData
-
-
 /*******************************************************************************
-class CIpcLogServer : public ZS::Trace::CLogServer
+class CIpcLogServer : public ZS::System::CLogServer
 *******************************************************************************/
 
 /*==============================================================================
@@ -293,6 +177,9 @@ CIpcLogServer::CIpcLogServer() :
 {
     // The log server must aggregate the IpcServer to avoid multiple inheritance of QObject.
     m_pIpcServer = new CServer(objectName(), true);
+    SServerHostSettings hostSettings = m_pIpcServer->getHostSettings();
+    hostSettings.m_uLocalPort = 24762; // Default listen port for IpcLogServer
+    m_pIpcServer->setHostSettings(hostSettings);
 
     m_pMtxListLogDataCached = new QMutex(QMutex::Recursive);
 
@@ -357,9 +244,7 @@ CIpcLogServer::~CIpcLogServer()
 {
     m_bIsBeingDestroyed = true;
 
-    int idx;
-
-    for( idx = 0; idx < m_iLogDataCachedCount; idx++ )
+    for( int idx = 0; idx < m_iLogDataCachedCount; idx++ )
     {
         try
         {
@@ -403,6 +288,29 @@ public: // overridables of base class CLogServer
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+void CIpcLogServer::setEnabled( bool i_bEnabled )
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(&s_mtx);
+
+    if( i_bEnabled != m_logSettings.m_bEnabled )
+    {
+        CLogServer::setEnabled(i_bEnabled);
+
+        if( !m_bOnReceivedDataUpdateInProcess && isConnected() )
+        {
+            QString strMsg;
+
+            strMsg += systemMsgType2Str(MsgProtocol::ESystemMsgTypeInd) + " ";
+            strMsg += command2Str(MsgProtocol::ECommandUpdate) + " ";
+            strMsg += "<ServerSettings Enabled=\"" + bool2Str(m_logSettings.m_bEnabled) + "\"/>";
+
+            sendData(ESocketIdAllSockets, str2ByteArr(strMsg));
+        }
+    }
+}
+
+//------------------------------------------------------------------------------
 /*! @brief Checks whether logging is active.
 
     Logging is active if logging is enabled at all (flag enabled of the
@@ -426,29 +334,6 @@ bool CIpcLogServer::isActive() const
 /*==============================================================================
 public: // overridables of base class CLogServer
 ==============================================================================*/
-
-//------------------------------------------------------------------------------
-void CIpcLogServer::setEnabled( bool i_bEnabled )
-//------------------------------------------------------------------------------
-{
-    QMutexLocker mtxLocker(&s_mtx);
-
-    if( i_bEnabled != m_logSettings.m_bEnabled )
-    {
-        CLogServer::setEnabled(i_bEnabled);
-
-        if( !m_bOnReceivedDataUpdateInProcess && isConnected() )
-        {
-            QString strMsg;
-
-            strMsg += systemMsgType2Str(MsgProtocol::ESystemMsgTypeInd) + " ";
-            strMsg += command2Str(MsgProtocol::ECommandUpdate) + " ";
-            strMsg += "<ServerSettings Enabled=\"" + bool2Str(m_logSettings.m_bEnabled) + "\"/>";
-
-            sendData(ESocketIdAllSockets, str2ByteArr(strMsg));
-        }
-    }
-}
 
 //------------------------------------------------------------------------------
 void CIpcLogServer::setNewLoggersEnabledAsDefault( bool i_bEnabled )
@@ -828,82 +713,48 @@ public: // overridables of base class CLogServer
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-/*! @brief Creates a log entry.
+/*! @brief Creates a log entry for the given log level.
 
-    @param i_pLogger [in] Pointer to logger.
-        In addition to the detail level the name space, the class name
-        and - in case of an instance logger - the instance name is taken from
-        the logger.
-    @param i_strMethod [in] Name of the entered method.
-    @param i_strAddInfo [in] String containing the additional info to be output
-        during the method call.
+    This method overrides the base implementation of class ZS::System::CLogServer.
+    In addition to write to a local log file the log entry will also be sent to
+    a connected Log client.
+
+    @see ZS::System::CLogServer::log
+
+    @param i_eFilterDetailLevel [in]
+        If the given filter detail level is not None and is equal or greater
+        than the current detail level of the log server the log entry will
+        be added the log file.
+    @param i_strLogEntry [in] String to be logged.
 */
-void CIpcLogServer::log(
-    const CLogger* i_pLogger,
-    const QString& i_strMethod,
-    const QString& i_strAddInfo )
+void CIpcLogServer::log( ELogDetailLevel i_eFilterDetailLevel, const QString& i_strLogEntry )
 //------------------------------------------------------------------------------
 {
-    QMutexLocker mtxLocker(&s_mtx);
-
-    if( i_pLogger != nullptr && i_pLogger->isActive(ELogDetailLevel::CriticalError) && isActive() )
-    {
-        addEntry(
-            /* strThreadName */ currentThreadName(),
-            /* dt            */ QDateTime::currentDateTime(),
-            /* fSysTimeInSec */ Time::getProcTimeInSec(),
-            /* pLogger       */ i_pLogger,
-            /* strObjName    */ i_pLogger->getObjectName(),
-            /* strMethod     */ i_strMethod,
-            /* strAddInfo    */ i_strAddInfo );
-    }
+    CIpcLogServer::log(m_pLogger, i_eFilterDetailLevel, i_strLogEntry);
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Creates a log entry.
+/*! @brief Creates a log entry for the given log level.
 
-    @param i_pLogger [in] Pointer to logger.
-        In addition to the detail level the name space, the class name and - in
-        case of an instance logger - the instance name is taken from the logger.
-    @param i_strObjName [in] Object name of the instance to be logged.
-    @param i_strMethod [in] Name of the entered method.
-    @param i_strAddInfo [in] String containing the additional info to be output.
+    This method overrides the base implementation of class ZS::System::CLogServer.
+    In addition to write to a local log file the log entry will also be sent to
+    a connected Log client.
+
+    @see ZS::System::CLogServer::log
+
+
+    @param i_pLogger [in]
+        Logger to be used for formatting the log entry.
+    @param i_eFilterDetailLevel [in]
+        If the given filter detail level is not None and is equal or greater
+        than the current detail level of the log server the log entry will
+        be added the log file.
+    @param i_strLogEntry [in] String to be logged.
 */
 void CIpcLogServer::log(
-    const CLogger* i_pLogger,
-    const QString& i_strObjName,
-    const QString& i_strMethod,
-    const QString& i_strAddInfo )
-//------------------------------------------------------------------------------
-{
-    QMutexLocker mtxLocker(&s_mtx);
-
-    if( i_pLogger != nullptr && i_pLogger->isActive(ELogDetailLevel::CriticalError) && isActive() )
-    {
-        addEntry(
-            /* strThreadName */ currentThreadName(),
-            /* dt            */ QDateTime::currentDateTime(),
-            /* fSysTimeInSec */ Time::getProcTimeInSec(),
-            /* pLogger       */ i_pLogger,
-            /* strObjName    */ i_strObjName,
-            /* strMethod     */ i_strMethod,
-            /* strAddInfo    */ i_strAddInfo );
-    }
-}
-
-/*==============================================================================
-protected: // auxiliary methods
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-void CIpcLogServer::addEntry(
-    const QString&   i_strThreadName,
-    const QDateTime& i_dt,
-    double           i_fSysTimeInSec,
-    const CLogger*   i_pLogger,
-    const QString&   i_strObjName,
-    const QString&   i_strMethod,
-    const QString&   i_strAddInfo )
+    CLogger*        i_pLogger,
+    ELogDetailLevel i_eFilterDetailLevel,
+    const QString&  i_strLogEntry )
 //------------------------------------------------------------------------------
 {
     if( m_bIsBeingDestroyed )
@@ -911,121 +762,111 @@ void CIpcLogServer::addEntry(
         return;
     }
 
-    if( m_logSettings.m_bUseLocalLogFile && m_pLogFile != nullptr )
+    QMutexLocker mtxLocker(&s_mtx);
+
+    if( isActive() && i_pLogger->isActive(i_eFilterDetailLevel)
+     && !i_pLogger->isSuppressedByDataFilter(i_strLogEntry) )
     {
-        CLogServer::addEntry(
-            /* strThreadName */ i_strThreadName,
-            /* dt            */ i_dt,
-            /* fSysTimeInSec */ i_fSysTimeInSec,
-            /* strNameSpace  */ i_pLogger->getNameSpace(),
-            /* strClassName  */ i_pLogger->getClassName(),
-            /* strObjName    */ i_strObjName,
-            /* strMethod     */ i_strMethod,
-            /* strAddInfo    */ i_strAddInfo );
-    }
-
-    bool bAdd2Cache = false;
-
-    if( m_logSettings.m_bCacheDataIfNotConnected && m_logSettings.m_iCacheDataMaxArrLen > 0 )
-    {
-        // Please note that only the first connected client will receive the cached data.
-
-        // If no client is connected ..
-        if( m_ariSocketIdsConnectedClients.length() == 0 )
-        {
-            // .. the data will be cached.
-            bAdd2Cache = true;
-        }
-    }
-
-    if( bAdd2Cache )
-    {
-        // ... temporarily store the log message until a client connects to the log server.
-        QMutexLocker mutexLocker(m_pMtxListLogDataCached);
-
-        int idx;
-
-        if( m_iLogDataCachedCount == m_arpLogDataCached.size() )
-        {
-            const int ciMaxArrLen   = m_logSettings.m_iCacheDataMaxArrLen;
-            const int ciRemoveCount = (ciMaxArrLen / 5) + 1; // 20 % (but at least one)
-
-            // To save memory not more than MaxArrLen entries will be temporarily stored:
-            if( m_iLogDataCachedCount < ciMaxArrLen )
-            {
-                m_arpLogDataCached.resize(ciMaxArrLen);
-
-                for( idx = m_iLogDataCachedCount; idx < m_arpLogDataCached.size(); idx++ )
-                {
-                    m_arpLogDataCached[idx] = nullptr;
-                }
-            }
-            // If MaxArrLen or more entries have already been stored ...
-            else
-            {
-                // .. the oldest entries will be removed.
-                for( idx = 0; idx < ciRemoveCount; idx++ )
-                {
-                    delete m_arpLogDataCached[idx];
-                    m_arpLogDataCached[idx] = nullptr;
-                }
-                for( idx = 0; idx < m_iLogDataCachedCount-ciRemoveCount; idx++ )
-                {
-                    m_arpLogDataCached[idx] = m_arpLogDataCached[idx+ciRemoveCount];
-                }
-                for( ; idx < m_arpLogDataCached.size(); idx++ )
-                {
-                    m_arpLogDataCached[idx] = nullptr;
-                }
-                m_iLogDataCachedCount -= ciRemoveCount;
-            }
-        }
-
-        // Add the entry to the list:
         SLogData* pLogData = new SLogData(
-            /* strThreadName */ i_strThreadName,
-            /* dt            */ i_dt,
-            /* fSysTimeInSec */ i_fSysTimeInSec,
-            /* iLoggerId     */ i_pLogger->indexInTree(),
+            /* strThreadName */ i_pLogger->addThreadName() ? GetCurrentThreadName() : "",
+            /* strDateTime   */ i_pLogger->addDateTime() ? QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss:zzz") : "",
+            /* fSysTimeInSec */ i_pLogger->addSystemTime() ? Time::getProcTimeInSec() : -1.0,
             /* strNameSpace  */ i_pLogger->getNameSpace(),
             /* strClassName  */ i_pLogger->getClassName(),
-            /* strObjName    */ i_strObjName,
-            /* strMthName    */ i_strMethod,
-            /* strAddInfo    */ i_strAddInfo );
-        m_arpLogDataCached[m_iLogDataCachedCount] = pLogData;
-        m_iLogDataCachedCount++;
+            /* strObjName    */ i_pLogger->getObjectName(),
+            /* strEntry      */ i_strLogEntry );
 
-    } // if( bAdd2Cache )
-
-    else if( m_ariSocketIdsConnectedClients.length() > 0 && isIpcServerUsed() )
-    {
-        // Please note that the cached data should have already been sent to the first
-        // conencted client and cleared afterwards. So the cache must be empty here.
-
-        QString strMsg;
-
-        strMsg += systemMsgType2Str(MsgProtocol::ESystemMsgTypeInd) + " ";
-        strMsg += command2Str(MsgProtocol::ECommandInsert) + " ";
-
-        SLogData logData(
-            /* strThreadName */ i_strThreadName,
-            /* dt            */ i_dt,
-            /* fSysTimeInSec */ i_fSysTimeInSec,
-            /* iLoggerId     */ i_pLogger->indexInTree(),
-            /* strNameSpace  */ i_pLogger->getNameSpace(),
-            /* strClassName  */ i_pLogger->getClassName(),
-            /* strObjName    */ i_strObjName,
-            /* strMthName    */ i_strMethod,
-            /* strAddInfo    */ i_strAddInfo );
-        strMsg += logData.toXmlString();
-
-        QByteArray byteArrMsg = str2ByteArr(strMsg);
-        for( auto& iSocketId : m_ariSocketIdsConnectedClients )
+        if( m_logSettings.m_bUseLocalLogFile && m_pLogFile != nullptr )
         {
-            sendData(iSocketId, byteArrMsg);
+            m_pLogFile->addEntry(pLogData->toPlainString());
+        }
+
+        bool bAdd2Cache = false;
+
+        if( m_logSettings.m_bCacheDataIfNotConnected && m_logSettings.m_iCacheDataMaxArrLen > 0 )
+        {
+            // Please note that only the first connected client will receive the cached data.
+
+            // If no client is connected ..
+            if( m_ariSocketIdsConnectedClients.length() == 0 )
+            {
+                // .. the data will be cached.
+                bAdd2Cache = true;
+            }
+        }
+
+        if( bAdd2Cache )
+        {
+            // ... temporarily store the log message until a client connects to the log server.
+            QMutexLocker mutexLocker(m_pMtxListLogDataCached);
+
+            int idx;
+
+            if( m_iLogDataCachedCount == m_arpLogDataCached.size() )
+            {
+                const int ciMaxArrLen   = m_logSettings.m_iCacheDataMaxArrLen;
+                const int ciRemoveCount = (ciMaxArrLen / 5) + 1; // 20 % (but at least one)
+
+                // To save memory not more than MaxArrLen entries will be temporarily stored:
+                if( m_iLogDataCachedCount < ciMaxArrLen )
+                {
+                    m_arpLogDataCached.reserve(ciMaxArrLen);
+
+                    for( idx = m_iLogDataCachedCount; idx < m_arpLogDataCached.size(); idx++ )
+                    {
+                        m_arpLogDataCached[idx] = nullptr;
+                    }
+                }
+                // If MaxArrLen or more entries have already been stored ...
+                else
+                {
+                    // .. the oldest entries will be removed.
+                    for( idx = 0; idx < ciRemoveCount; idx++ )
+                    {
+                        delete m_arpLogDataCached[idx];
+                        m_arpLogDataCached[idx] = nullptr;
+                    }
+                    for( idx = 0; idx < m_iLogDataCachedCount-ciRemoveCount; idx++ )
+                    {
+                        m_arpLogDataCached[idx] = m_arpLogDataCached[idx+ciRemoveCount];
+                    }
+                    for( ; idx < m_arpLogDataCached.size(); idx++ )
+                    {
+                        m_arpLogDataCached[idx] = nullptr;
+                    }
+                    m_iLogDataCachedCount -= ciRemoveCount;
+                }
+            }
+
+            // Add the entry to the list:
+            m_arpLogDataCached[m_iLogDataCachedCount] = pLogData;
+            pLogData = nullptr;
+            m_iLogDataCachedCount++;
+
+        } // if( bAdd2Cache )
+
+        else if( m_ariSocketIdsConnectedClients.length() > 0 && isIpcServerUsed() )
+        {
+            // Please note that the cached data should have already been sent to the first
+            // conencted client and cleared afterwards. So the cache must be empty here.
+
+            QString strMsg;
+
+            strMsg += systemMsgType2Str(MsgProtocol::ESystemMsgTypeInd) + " ";
+            strMsg += command2Str(MsgProtocol::ECommandInsert) + " ";
+            strMsg += pLogData->toXmlString();
+
+            QByteArray byteArrMsg = str2ByteArr(strMsg);
+            for( auto& iSocketId : m_ariSocketIdsConnectedClients )
+            {
+                sendData(iSocketId, byteArrMsg);
+            }
+
+            delete pLogData;
+            pLogData = nullptr;
         }
     }
-} // addEntry
+} // log
 
 /*==============================================================================
 public: // overridables of the remote connection
@@ -1219,7 +1060,7 @@ void CIpcLogServer::abortAllRequests()
 }
 
 /*==============================================================================
-protected: // instance methods to recursively send index tree entries to the connected clients
+protected: // instance methods to send index tree entries to the connected clients
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
@@ -1275,7 +1116,7 @@ void CIpcLogServer::sendBranch(
                 }
                 else if( pTreeEntry->entryType() == EIdxTreeEntryType::Leave )
                 {
-                    sendLogger(
+                    sendLeave(
                         /* iSocketId     */ i_iSocketId,
                         /* systemMsgType */ i_systemMsgType,
                         /* cmd           */ i_cmd,
@@ -1287,12 +1128,8 @@ void CIpcLogServer::sendBranch(
     } // if( isConnected() && i_pBranch != nullptr )
 } // sendBranch
 
-/*==============================================================================
-protected: // instance methods to send admin objects to the connected clients
-==============================================================================*/
-
 //------------------------------------------------------------------------------
-void CIpcLogServer::sendLogger(
+void CIpcLogServer::sendLeave(
     int                         i_iSocketId,
     MsgProtocol::TSystemMsgType i_systemMsgType,
     MsgProtocol::TCommand       i_cmd,
@@ -1314,32 +1151,32 @@ void CIpcLogServer::sendLogger(
         // If removed the command is deleted. It is sufficient to send the IdxInTree which was deleted.
         if( pLogger != nullptr && !pLogger->isAboutToBeDestroyed() )
         {
+            QString strName = encodeForHtml(pLogger->name());
             QString strNameSpace = encodeForHtml(pLogger->getNameSpace());
             QString strClassName = encodeForHtml(pLogger->getClassName());
             QString strObjName = encodeForHtml(pLogger->getObjectName());
-            QString strThreadName = encodeForHtml(pLogger->getObjectThreadName());
 
-            strMsg += " NameSpace=\"" + strNameSpace + "\"";
-            strMsg += " ClassName=\"" + strClassName + "\"";
-            strMsg += " ObjName=\"" + strObjName + "\"";
-            strMsg += " Thread=\"" + strThreadName + "\"";
+            strMsg += " Name=\"" + strName + "\"";
 
             if( pLogger->parentBranch() != nullptr )
             {
                 strMsg += " ParentBranchIdxInTree=\"" + QString::number(pLogger->parentBranch()->indexInTree()) + "\"";
             }
             strMsg += " Enabled=\"" + CEnumEnabled::toString(pLogger->getEnabled()) + "\"";
-            strMsg += " DetailLevel=\"" + CEnumLogDetailLevel(pLogger->getDetailLevel()).toString() + "\"";
+            strMsg += " LogLevel=\"" + CEnumLogDetailLevel(pLogger->getLogLevel()).toString() + "\"";
             strMsg += " DataFilter=\"" + pLogger->getDataFilter() + "\"";
-            strMsg += " RefCount=\"" + QString::number(pLogger->getRefCount()) + "\"";
+            strMsg += " AddThreadName=\"" + bool2Str(pLogger->addThreadName()) + "\"";
+            strMsg += " AddDateTime=\"" + bool2Str(pLogger->addDateTime()) + "\"";
+            strMsg += " AddSystemTime=\"" + bool2Str(pLogger->addSystemTime()) + "\"";
+            strMsg += " NameSpace=\"" + strNameSpace + "\"";
+            strMsg += " ClassName=\"" + strClassName + "\"";
+            strMsg += " ObjName=\"" + strObjName + "\"";
         }
         strMsg += "/>";
 
         sendData( i_iSocketId, str2ByteArr(strMsg) );
-
-    } // if( isConnected() )
-
-} // sendLogger
+    }
+}
 
 /*==============================================================================
 protected: // auxiliary methods
@@ -1390,9 +1227,9 @@ void CIpcLogServer::sendCachedLogData(int i_iSocketId)
     // If data has been temporarily stored ...
     if( m_iLogDataCachedCount > 0 )
     {
-        QString      strDataSnd;
+        QString   strDataSnd;
         SLogData* pLogData;
-        int          idx;
+        int       idx;
 
         QMutexLocker mutexLocker(m_pMtxListLogDataCached);
 
@@ -1672,6 +1509,12 @@ void CIpcLogServer::onIpcServerReceivedReqUpdate( int i_iSocketId, const QString
     EEnabled enabled;
     bool     bSetDataFilter;
     QString  strDataFilter;
+    bool     bSetAddThreadName;
+    bool     bAddThreadName;
+    bool     bSetAddDateTime;
+    bool     bAddDateTime;
+    bool     bSetAddSystemTime;
+    bool     bAddSystemTime;
     bool     bOk;
 
     ELogDetailLevel eDetailLevel;
@@ -1806,6 +1649,12 @@ void CIpcLogServer::onIpcServerReceivedReqUpdate( int i_iSocketId, const QString
                     bSetDataFilter = false;
                     strDataFilter = "";
                     eDetailLevel = ELogDetailLevel::None;
+                    bAddThreadName = false;
+                    bSetAddThreadName = false;
+                    bAddDateTime = false;
+                    bSetAddDateTime = false;
+                    bAddSystemTime = false;
+                    bSetAddSystemTime = false;
 
                     if( !xmlStreamReader.hasError() && xmlStreamReader.attributes().hasAttribute("ObjId") )
                     {
@@ -1825,19 +1674,55 @@ void CIpcLogServer::onIpcServerReceivedReqUpdate( int i_iSocketId, const QString
                             xmlStreamReader.raiseError("Attribute \"Enabled\" (" + strAttr + ") for \"" + strElemName + "\" is out of range");
                         }
                     }
-                    if( !xmlStreamReader.hasError() && xmlStreamReader.attributes().hasAttribute("DetailLevel") )
+                    if( !xmlStreamReader.hasError() && xmlStreamReader.attributes().hasAttribute("LogLevel") )
                     {
-                        strAttr = xmlStreamReader.attributes().value("DetailLevel").toString();
+                        strAttr = xmlStreamReader.attributes().value("LogLevel").toString();
                         eDetailLevel = CEnumLogDetailLevel::toEnumerator(strAttr);
                         if( eDetailLevel == ELogDetailLevel::Undefined )
                         {
-                            xmlStreamReader.raiseError("Attribute \"DetailLevel\" (" + strAttr + ") for \"" + strElemName + "\" is out of range");
+                            xmlStreamReader.raiseError("Attribute \"LogLevel\" (" + strAttr + ") for \"" + strElemName + "\" is out of range");
                         }
                     }
                     if( !xmlStreamReader.hasError() && xmlStreamReader.attributes().hasAttribute("DataFilter") )
                     {
                         strDataFilter = xmlStreamReader.attributes().value("DataFilter").toString();
                         bSetDataFilter = true;
+                    }
+                    if( !xmlStreamReader.hasError() && xmlStreamReader.attributes().hasAttribute("AddThreadName") )
+                    {
+                        strAttr = xmlStreamReader.attributes().value("AddThreadName").toString();
+                        bVal = str2Bool(strAttr, &bOk);
+                        if( !bOk ) {
+                            xmlStreamReader.raiseError("Attribute \"AddThreadName\" (" + strAttr + ") is out of range");
+                        }
+                        else {
+                            bAddThreadName = bVal;
+                            bSetAddThreadName = true;
+                        }
+                    }
+                    if( !xmlStreamReader.hasError() && xmlStreamReader.attributes().hasAttribute("AddDateTime") )
+                    {
+                        strAttr = xmlStreamReader.attributes().value("AddDateTime").toString();
+                        bVal = str2Bool(strAttr, &bOk);
+                        if( !bOk ) {
+                            xmlStreamReader.raiseError("Attribute \"AddDateTime\" (" + strAttr + ") is out of range");
+                        }
+                        else {
+                            bAddDateTime = bVal;
+                            bSetAddDateTime = true;
+                        }
+                    }
+                    if( !xmlStreamReader.hasError() && xmlStreamReader.attributes().hasAttribute("AddSystemTime") )
+                    {
+                        strAttr = xmlStreamReader.attributes().value("AddSystemTime").toString();
+                        bVal = str2Bool(strAttr, &bOk);
+                        if( !bOk ) {
+                            xmlStreamReader.raiseError("Attribute \"AddSystemTime\" (" + strAttr + ") is out of range");
+                        }
+                        else {
+                            bAddSystemTime = bVal;
+                            bSetAddSystemTime = true;
+                        }
                     }
 
                     if( iObjId < 0 || iObjId >= m_pLoggersIdxTree->treeEntriesVectorSize() )
@@ -1846,7 +1731,7 @@ void CIpcLogServer::onIpcServerReceivedReqUpdate( int i_iSocketId, const QString
                     }
                     else // if( iObjId >= 0 && iObjId < m_pLoggersIdxTree->treeEntriesVectorSize() )
                     {
-                        CLogger* pLogger = m_pLoggersIdxTree->getLogger(iObjId, false);
+                        CLogger* pLogger = m_pLoggersIdxTree->getLogger(iObjId);
 
                         if( pLogger == nullptr )
                         {
@@ -1855,9 +1740,18 @@ void CIpcLogServer::onIpcServerReceivedReqUpdate( int i_iSocketId, const QString
                         else
                         {
                             pLogger->setEnabled(enabled);
-                            pLogger->setDetailLevel(eDetailLevel);
+                            pLogger->setLogLevel(eDetailLevel);
                             if( bSetDataFilter ) {
                                 pLogger->setDataFilter(strDataFilter);
+                            }
+                            if( bSetAddThreadName ) {
+                                pLogger->setAddThreadName(bAddThreadName);
+                            }
+                            if( bSetAddDateTime ) {
+                                pLogger->setAddDateTime(bAddDateTime);
+                            }
+                            if( bSetAddSystemTime ) {
+                                pLogger->setAddSystemTime(bAddSystemTime);
                             }
                         }
                     } // if( iObjId >= 0 && iObjId < m_pLoggersIdxTree->treeEntriesVectorSize() )
@@ -1889,13 +1783,13 @@ void CIpcLogServer::onIpcServerReceivedReqUpdate( int i_iSocketId, const QString
                             xmlStreamReader.raiseError("Attribute \"Enabled\" (" + strAttr + ") for \"" + strElemName + "\" is out of range");
                         }
                     }
-                    if( !xmlStreamReader.hasError() && xmlStreamReader.attributes().hasAttribute("DetailLevel") )
+                    if( !xmlStreamReader.hasError() && xmlStreamReader.attributes().hasAttribute("LogLevel") )
                     {
-                        strAttr = xmlStreamReader.attributes().value("DetailLevel").toString();
+                        strAttr = xmlStreamReader.attributes().value("LogLevel").toString();
                         eDetailLevel = CEnumLogDetailLevel::toEnumerator(strAttr);
                         if( eDetailLevel == ELogDetailLevel::Undefined )
                         {
-                            xmlStreamReader.raiseError("Attribute \"DetailLevel\" (" + strAttr + ") for \"" + strElemName + "\" is out of range");
+                            xmlStreamReader.raiseError("Attribute \"LogLevel\" (" + strAttr + ") for \"" + strElemName + "\" is out of range");
                         }
                     }
                     if( !xmlStreamReader.hasError() && xmlStreamReader.attributes().hasAttribute("DataFilter") )
@@ -1990,7 +1884,7 @@ void CIpcLogServer::onLoggersIdxTreeEntryAdded(
         }
         else if( i_pTreeEntry->entryType() == EIdxTreeEntryType::Leave )
         {
-            sendLogger(
+            sendLeave(
                 /* iSocketId     */ ESocketIdAllSockets,
                 /* systemMsgType */ MsgProtocol::ESystemMsgTypeInd,
                 /* cmd           */ MsgProtocol::ECommandInsert,
@@ -1998,7 +1892,7 @@ void CIpcLogServer::onLoggersIdxTreeEntryAdded(
                 /* idxInTree     */ i_pTreeEntry->indexInTree() );
         }
     }
-} // onLoggersIdxTreeEntryAdded
+}
 
 //------------------------------------------------------------------------------
 void CIpcLogServer::onLoggersIdxTreeEntryAboutToBeRemoved(
@@ -2036,7 +1930,7 @@ void CIpcLogServer::onLoggersIdxTreeEntryAboutToBeRemoved(
         }
         else if( i_entryType == EIdxTreeEntryType::Leave )
         {
-            sendLogger(
+            sendLeave(
                 /* iSocketId     */ ESocketIdAllSockets,
                 /* systemMsgType */ MsgProtocol::ESystemMsgTypeInd,
                 /* cmd           */ MsgProtocol::ECommandDelete,
@@ -2044,7 +1938,7 @@ void CIpcLogServer::onLoggersIdxTreeEntryAboutToBeRemoved(
                 /* idxInTree     */ i_idxInTree );
         }
     }
-} // onLoggersIdxTreeEntryAboutToBeRemoved
+}
 
 //------------------------------------------------------------------------------
 void CIpcLogServer::onLoggersIdxTreeEntryChanged(
@@ -2074,15 +1968,15 @@ void CIpcLogServer::onLoggersIdxTreeEntryChanged(
         }
         else if( i_pTreeEntry->entryType() == EIdxTreeEntryType::Leave )
         {
-            sendLogger(
+            sendLeave(
                 /* iSocketId     */ ESocketIdAllSockets,
                 /* systemMsgType */ MsgProtocol::ESystemMsgTypeInd,
                 /* cmd           */ MsgProtocol::ECommandUpdate,
                 /* strKeyInTree  */ i_pTreeEntry->keyInTree(),
                 /* idxInTree     */ i_pTreeEntry->indexInTree() );
         }
-    } // if( i_pTreeEntry != nullptr )
-} // onLoggersIdxTreeEntryChanged
+    }
+}
 
 /*==============================================================================
 protected: // overridables of inherited class QObject (state machine)

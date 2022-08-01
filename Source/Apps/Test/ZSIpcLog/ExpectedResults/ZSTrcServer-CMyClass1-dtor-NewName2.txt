@@ -1,4 +1,0 @@
-<GUIMain                 > -> <ZS::Apps::Test::IpcTrace::CMyClass1> NewName2.dtor()
-<GUIMain                 >    -> <ZS::Apps::Test::IpcTrace::CMyClass1> NewName2.stopClass2Thread()
-<GUIMain                 >    <- <ZS::Apps::Test::IpcTrace::CMyClass1> NewName2.stopClass2Thread()
-<GUIMain                 > <- <ZS::Apps::Test::IpcTrace::CMyClass1> NewName2.dtor()

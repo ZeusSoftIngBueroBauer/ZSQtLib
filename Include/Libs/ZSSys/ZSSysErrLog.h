@@ -251,8 +251,8 @@ public: // instance methods
         polymorphic base type the method returns the name of the derived class. */
     virtual QString className() const { return ClassName(); }
 public: // instance methods
-    void setEntriesCountMax( int i_iCount, EResultSeverity i_severity = ZS::System::EResultSeverityUndefined ); // Use Undefined (or Count) to set maximum numbers for all severities at once.
-    int getEntriesCountMax( EResultSeverity i_severity = ZS::System::EResultSeverityUndefined ) const;          // Use Undefined (or Count) to get the sum of all maximum numbers for all severities.
+    void setEntriesCountMax( int i_iCount, EResultSeverity i_severity = EResultSeverityUndefined ); // Use Undefined (or Count) to set maximum numbers for all severities at once.
+    int getEntriesCountMax( EResultSeverity i_severity = EResultSeverityUndefined ) const;          // Use Undefined (or Count) to get the sum of all maximum numbers for all severities.
 public: // instance methods
     QString getAbsFilePath() const;
 public: // instance methods
@@ -272,18 +272,18 @@ public: // instance methods
         const QString&        i_strProposal = "" );
     void removeEntry( const SErrResultInfo& i_errResultInfo );
 public: // instance methods
-    void clear( EResultSeverity i_severity = ZS::System::EResultSeverityUndefined );            // Use Undefined (or Count) to clear all errors for all severities.
+    void clear( EResultSeverity i_severity = EResultSeverityUndefined );            // Use Undefined (or Count) to clear all errors for all severities.
 public: // instance methods
     void lock();     // !! Before "looping" through the list you need to lock the list !!
     void unlock();   // !! Don't forget to unlock the list after "looping" through the list !!
 public: // instance methods
-    int getEntryCount( EResultSeverity i_severity = ZS::System::EResultSeverityUndefined );     // Use Undefined (or Count) to get the sum of all errors for all severities.
+    int getEntryCount( EResultSeverity i_severity = EResultSeverityUndefined );     // Use Undefined (or Count) to get the sum of all errors for all severities.
     // Use Undefined (or Count) to count through all severities. In this case counting rows starts at highest severity (Critical).
-    SErrLogEntry* getEntry( int i_iRowIdx, EResultSeverity i_severity = ZS::System::EResultSeverityUndefined );
-    void removeEntry( int i_iRowIdx, EResultSeverity i_severity = ZS::System::EResultSeverityUndefined );
-    SErrLogEntry takeEntry( int i_iRowIdx, EResultSeverity i_severity = ZS::System::EResultSeverityUndefined );
-    SErrLogEntry takeFirstEntry( EResultSeverity i_severity = ZS::System::EResultSeverityUndefined );
-    SErrLogEntry takeLastEntry( EResultSeverity i_severity = ZS::System::EResultSeverityUndefined );
+    SErrLogEntry* getEntry( int i_iRowIdx, EResultSeverity i_severity = EResultSeverityUndefined );
+    void removeEntry( int i_iRowIdx, EResultSeverity i_severity = EResultSeverityUndefined );
+    SErrLogEntry takeEntry( int i_iRowIdx, EResultSeverity i_severity = EResultSeverityUndefined );
+    SErrLogEntry takeFirstEntry( EResultSeverity i_severity = EResultSeverityUndefined );
+    SErrLogEntry takeLastEntry( EResultSeverity i_severity = EResultSeverityUndefined );
 protected: // instance methods
     void recall();
     void save();
@@ -302,7 +302,7 @@ protected: // instance methods
         const QDateTime&  i_dateTime = QDateTime(),
         bool              i_bModifyProposal = false,
         const QString&    i_strProposal = "" );
-    void removeEntry_( int i_iRowIdx, EResultSeverity i_severity = ZS::System::EResultSeverityUndefined );
+    void removeEntry_( int i_iRowIdx, EResultSeverity i_severity = EResultSeverityUndefined );
 private: // copy ctor not allowed
     CErrLog( const CErrLog& );
 private: // assignment operator not allowed

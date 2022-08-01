@@ -994,18 +994,15 @@ void CMainWindow::onLogServerStateChanged( QObject* i_pServer, int /*i_iState*/ 
         pxmStatus = QPixmap(":/ZS/CnctState/LedCircleRed.png");
     }
 
-    if( pIpcServer->objectName() == "LogServer")
+    if( m_pLblLogServerStatusIcon != nullptr )
     {
-        if( m_pLblLogServerStatusIcon != nullptr )
-        {
-            m_pLblLogServerStatusIcon->setPixmap(pxmStatus);
-            m_pLblLogServerStatusIcon->setToolTip(strToolTip);
-        }
-        if( m_pLblLogServerStatusText != nullptr )
-        {
-            m_pLblLogServerStatusText->setText(strStatus);
-            m_pLblLogServerStatusText->setToolTip(strToolTip);
-        }
+        m_pLblLogServerStatusIcon->setPixmap(pxmStatus);
+        m_pLblLogServerStatusIcon->setToolTip(strToolTip);
+    }
+    if( m_pLblLogServerStatusText != nullptr )
+    {
+        m_pLblLogServerStatusText->setText(strStatus);
+        m_pLblLogServerStatusText->setToolTip(strToolTip);
     }
 } // onLogServerStateChanged
 
@@ -1036,17 +1033,14 @@ void CMainWindow::onLogClientStateChanged( QObject* i_pClient, int /*i_iState*/ 
         pxmStatus = QPixmap(":/ZS/CnctState/LedCircleRed.png");
     }
 
-    if( pIpcClient->objectName() == "LogClient")
+    if( m_pLblLogClientStatusIcon != nullptr )
     {
-        if( m_pLblLogClientStatusIcon != nullptr )
-        {
-            m_pLblLogClientStatusIcon->setPixmap(pxmStatus);
-            m_pLblLogClientStatusIcon->setToolTip(strToolTip);
-        }
-        if( m_pLblLogClientStatusText != nullptr )
-        {
-            m_pLblLogClientStatusText->setText(strStatus);
-            m_pLblLogClientStatusText->setToolTip(strToolTip);
-        }
+        m_pLblLogClientStatusIcon->setPixmap(pxmStatus);
+        m_pLblLogClientStatusIcon->setToolTip(strToolTip);
+    }
+    if( m_pLblLogClientStatusText != nullptr )
+    {
+        m_pLblLogClientStatusText->setText(strStatus);
+        m_pLblLogClientStatusText->setToolTip(strToolTip);
     }
 } // onLogClientStateChanged

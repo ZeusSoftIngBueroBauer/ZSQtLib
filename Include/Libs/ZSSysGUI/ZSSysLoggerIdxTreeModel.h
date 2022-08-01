@@ -49,14 +49,15 @@ public: // class methods
     static QString ClassName() { return "CModelIdxTreeLoggers"; }
 public: // type definitions and constants
     enum EColumn {
-        EColumnRefCount      = CModelIdxTree::EColumnCount + 0,
-        EColumnEnabled       = CModelIdxTree::EColumnCount + 1,
-        EColumnDetailLevel   = CModelIdxTree::EColumnCount + 3,
-        EColumnDataFilter    = CModelIdxTree::EColumnCount + 4,
-        EColumnNameSpace     = CModelIdxTree::EColumnCount + 5,
-        EColumnClassName     = CModelIdxTree::EColumnCount + 6,
-        EColumnObjName       = CModelIdxTree::EColumnCount + 7,
-        EColumnObjThreadName = CModelIdxTree::EColumnCount + 8,
+        EColumnEnabled       = CModelIdxTree::EColumnCount + 0,
+        EColumnLogLevel      = CModelIdxTree::EColumnCount + 1,
+        EColumnDataFilter    = CModelIdxTree::EColumnCount + 2,
+        EColumnAddThreadName = CModelIdxTree::EColumnCount + 3,
+        EColumnAddDateTime   = CModelIdxTree::EColumnCount + 4,
+        EColumnAddSystemTime = CModelIdxTree::EColumnCount + 5,
+        EColumnNameSpace     = CModelIdxTree::EColumnCount + 6,
+        EColumnClassName     = CModelIdxTree::EColumnCount + 7,
+        EColumnObjName       = CModelIdxTree::EColumnCount + 8,
         EColumnObjAddress    = CModelIdxTree::EColumnCount + 9,
         EColumnCount
     };

@@ -131,9 +131,6 @@ CIpcLogClient::~CIpcLogClient()
     // Disconnect client before destroying the index tree.
     stopGatewayThread();
 
-    // To avoid err log entry: The dtor is called even if the objects reference counter is not 0.
-    resetLoggersRefCounters(m_pLoggersIdxTree->root());
-
     try
     {
         delete m_pLoggersIdxTree;
@@ -160,10 +157,6 @@ CRequest* CIpcLogClient::connect_( int i_iTimeout_ms, bool i_bWait, qint64 i_iRe
 {
     m_strRemoteApplicationName = "";
     m_strRemoteServerName = "";
-
-    // Before the index tree can be cleared the ref counters of the loggers
-    // got to be reset to avoid an err log entry (object ref counter is not 0 in dtor).
-    resetLoggersRefCounters(m_pLoggersIdxTree->root());
 
     m_pLoggersIdxTree->clear();
 
@@ -285,39 +278,13 @@ protected: // instance methods to send admin objects to the connected server
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CIpcLogClient::sendLogger(
+void CIpcLogClient::sendBranch(
     MsgProtocol::TSystemMsgType i_systemMsgType,
     MsgProtocol::TCommand       i_cmd,
-    CLogger*                    i_pLogger )
-//------------------------------------------------------------------------------
-{
-    if( i_pLogger != nullptr && isConnected() )
-    {
-        QString strMsg;
-
-        strMsg += systemMsgType2Str(i_systemMsgType) + " ";
-        strMsg += command2Str(i_cmd) + " ";
-        strMsg += "<Logger ";
-        strMsg += " ObjId=\"" + QString::number(i_pLogger->indexInTree()) + "\"";
-        strMsg += " Enabled=\"" + CEnumEnabled::toString(i_pLogger->getEnabled()) + "\"";
-        strMsg += " DetailLevel=\"" + CEnumLogDetailLevel(i_pLogger->getDetailLevel()).toString() + "\"";
-        strMsg += " DataFilter=\"" + i_pLogger->getDataFilter() + "\"";
-        strMsg += "/>";
-
-        sendData( str2ByteArr(strMsg) );
-
-    } // if( i_pLogger != nullptr && isConnected() )
-
-} // sendLogger
-
-//------------------------------------------------------------------------------
-void CIpcLogClient::sendNameSpace(
-    MsgProtocol::TSystemMsgType  i_systemMsgType,
-    MsgProtocol::TCommand        i_cmd,
-    CIdxTreeEntry*               i_pBranch,
-    EEnabled                     i_enabled,
-    ELogDetailLevel i_eDetailLevel,
-    const QString&               i_strDataFilter )
+    CIdxTreeEntry*              i_pBranch,
+    EEnabled                    i_enabled,
+    ELogDetailLevel             i_eDetailLevel,
+    const QString&              i_strDataFilter )
 //------------------------------------------------------------------------------
 {
     if( i_pBranch != nullptr && isConnected() )
@@ -345,10 +312,35 @@ void CIpcLogClient::sendNameSpace(
         strMsg += "/>";
 
         sendData( str2ByteArr(strMsg) );
+    }
+}
 
-    } // if( i_pBranch != nullptr && isConnected() )
+//------------------------------------------------------------------------------
+void CIpcLogClient::sendLeave(
+    MsgProtocol::TSystemMsgType i_systemMsgType,
+    MsgProtocol::TCommand       i_cmd,
+    CLogger*                    i_pLogger )
+//------------------------------------------------------------------------------
+{
+    if( i_pLogger != nullptr && isConnected() )
+    {
+        QString strMsg;
 
-} // sendNameSpace
+        strMsg += systemMsgType2Str(i_systemMsgType) + " ";
+        strMsg += command2Str(i_cmd) + " ";
+        strMsg += "<Logger ";
+        strMsg += " ObjId=\"" + QString::number(i_pLogger->indexInTree()) + "\"";
+        strMsg += " Enabled=\"" + CEnumEnabled::toString(i_pLogger->getEnabled()) + "\"";
+        strMsg += " LogLevel=\"" + CEnumLogDetailLevel(i_pLogger->getLogLevel()).toString() + "\"";
+        strMsg += " DataFilter=\"" + i_pLogger->getDataFilter() + "\"";
+        strMsg += " AddThreadName=\"" + bool2Str(i_pLogger->addThreadName()) + "\"";
+        strMsg += " AddDateTime=\"" + bool2Str(i_pLogger->addDateTime()) + "\"";
+        strMsg += " AddSystemTime=\"" + bool2Str(i_pLogger->addSystemTime()) + "\"";
+        strMsg += "/>";
+
+        sendData( str2ByteArr(strMsg) );
+    }
+}
 
 //------------------------------------------------------------------------------
 void CIpcLogClient::onReceivedData( const QByteArray& i_byteArr )
@@ -470,13 +462,13 @@ void CIpcLogClient::onReceivedData( const QByteArray& i_byteArr )
                                     enabled = CEnumEnabled::toEnumerator(strAttr);
                                     if( enabled == EEnabled::Undefined ) xmlStreamReader.raiseError("Attribute \"Enabled\" (" + strAttr + ") is out of range");
                                 }
-                                if( !xmlStreamReader.hasError() && xmlStreamReader.attributes().hasAttribute("DetailLevel") )
+                                if( !xmlStreamReader.hasError() && xmlStreamReader.attributes().hasAttribute("LogLevel") )
                                 {
-                                    strAttr = xmlStreamReader.attributes().value("DetailLevel").toString();
+                                    strAttr = xmlStreamReader.attributes().value("LogLevel").toString();
                                     eDetailLevel = CEnumLogDetailLevel::toEnumerator(strAttr);
                                     if( eDetailLevel == ELogDetailLevel::Undefined )
                                     {
-                                        xmlStreamReader.raiseError("Attribute \"DetailLevel\" (" + strAttr + ") is out of range");
+                                        xmlStreamReader.raiseError("Attribute \"LogLevel\" (" + strAttr + ") is out of range");
                                     }
                                 }
                                 if( !xmlStreamReader.hasError() && xmlStreamReader.attributes().hasAttribute("DataFilter") )
@@ -575,15 +567,20 @@ void CIpcLogClient::onReceivedData( const QByteArray& i_byteArr )
                         if( !bInLogDataBlock && xmlStreamReader.isStartElement() )
                         {
                             int      iParentPranchIdxInTree = -1;
+                            QString  strName;
                             QString  strNameSpace;
                             QString  strClassName;
                             QString  strObjName;
                             int      idxInTree = -1;
-                            QString  strThreadName;
                             EEnabled enabled = EEnabled::Undefined;
-                            int      iRefCount = -1;
                             bool     bSetDataFilter = false;
                             QString  strDataFilter;
+                            bool     bSetAddThreadName = false;
+                            bool     bAddThreadName = false;
+                            bool     bSetAddDateTime = false;
+                            bool     bAddDateTime = false;
+                            bool     bSetAddSystemTime = false;
+                            bool     bAddSystemTime = false;
 
                             ELogDetailLevel eDetailLevel = ELogDetailLevel::Undefined;
 
@@ -608,6 +605,66 @@ void CIpcLogClient::onReceivedData( const QByteArray& i_byteArr )
                                     if( bOk || iVal < 0 ) iParentPranchIdxInTree = iVal;
                                     else xmlStreamReader.raiseError("Attribute \"ParentBranchIdxInTree\" (" + strAttr + ") is out of range");
                                 }
+                                if( !xmlStreamReader.hasError() && xmlStreamReader.attributes().hasAttribute("Name") )
+                                {
+                                    strName = xmlStreamReader.attributes().value("Name").toString();
+                                }
+                                if( !xmlStreamReader.hasError() && xmlStreamReader.attributes().hasAttribute("Enabled") )
+                                {
+                                    strAttr = xmlStreamReader.attributes().value("Enabled").toString();
+                                    enabled = CEnumEnabled::toEnumerator(strAttr);
+                                    if( enabled == EEnabled::Undefined ) xmlStreamReader.raiseError("Attribute \"Enabled\" (" + strAttr + ") is out of range");
+                                }
+                                if( !xmlStreamReader.hasError() && xmlStreamReader.attributes().hasAttribute("LogLevel") )
+                                {
+                                    strAttr = xmlStreamReader.attributes().value("LogLevel").toString();
+                                    eDetailLevel = CEnumLogDetailLevel::toEnumerator(strAttr);
+                                    if( eDetailLevel == ELogDetailLevel::Undefined )
+                                    {
+                                        xmlStreamReader.raiseError("Attribute \"LogLevel\" (" + strAttr + ") is out of range");
+                                    }
+                                }
+                                if( !xmlStreamReader.hasError() && xmlStreamReader.attributes().hasAttribute("DataFilter") )
+                                {
+                                    strDataFilter = xmlStreamReader.attributes().value("DataFilter").toString();
+                                    bSetDataFilter = true;
+                                }
+                                if( !xmlStreamReader.hasError() && xmlStreamReader.attributes().hasAttribute("AddThreadName") )
+                                {
+                                    strAttr = xmlStreamReader.attributes().value("AddThreadName").toString();
+                                    bVal = str2Bool(strAttr, &bOk);
+                                    if( !bOk ) {
+                                        xmlStreamReader.raiseError("Attribute \"AddThreadName\" (" + strAttr + ") is out of range");
+                                    }
+                                    else {
+                                        bAddThreadName = bVal;
+                                        bSetAddThreadName = true;
+                                    }
+                                }
+                                if( !xmlStreamReader.hasError() && xmlStreamReader.attributes().hasAttribute("AddDateTime") )
+                                {
+                                    strAttr = xmlStreamReader.attributes().value("AddDateTime").toString();
+                                    bVal = str2Bool(strAttr, &bOk);
+                                    if( !bOk ) {
+                                        xmlStreamReader.raiseError("Attribute \"AddDateTime\" (" + strAttr + ") is out of range");
+                                    }
+                                    else {
+                                        bAddDateTime = bVal;
+                                        bSetAddDateTime = true;
+                                    }
+                                }
+                                if( !xmlStreamReader.hasError() && xmlStreamReader.attributes().hasAttribute("AddSystemTime") )
+                                {
+                                    strAttr = xmlStreamReader.attributes().value("AddSystemTime").toString();
+                                    bVal = str2Bool(strAttr, &bOk);
+                                    if( !bOk ) {
+                                        xmlStreamReader.raiseError("Attribute \"AddSystemTime\" (" + strAttr + ") is out of range");
+                                    }
+                                    else {
+                                        bAddSystemTime = bVal;
+                                        bSetAddSystemTime = true;
+                                    }
+                                }
                                 if( !xmlStreamReader.hasError() && xmlStreamReader.attributes().hasAttribute("NameSpace") )
                                 {
                                     strNameSpace = xmlStreamReader.attributes().value("NameSpace").toString();
@@ -620,43 +677,12 @@ void CIpcLogClient::onReceivedData( const QByteArray& i_byteArr )
                                 {
                                     strObjName = xmlStreamReader.attributes().value("ObjName").toString();
                                 }
-                                if( !xmlStreamReader.hasError() && xmlStreamReader.attributes().hasAttribute("Thread") )
-                                {
-                                    strThreadName = xmlStreamReader.attributes().value("Thread").toString();
-                                }
-                                if( !xmlStreamReader.hasError() && xmlStreamReader.attributes().hasAttribute("Enabled") )
-                                {
-                                    strAttr = xmlStreamReader.attributes().value("Enabled").toString();
-                                    enabled = CEnumEnabled::toEnumerator(strAttr);
-                                    if( enabled == EEnabled::Undefined ) xmlStreamReader.raiseError("Attribute \"Enabled\" (" + strAttr + ") is out of range");
-                                }
-                                if( !xmlStreamReader.hasError() && xmlStreamReader.attributes().hasAttribute("DetailLevel") )
-                                {
-                                    strAttr = xmlStreamReader.attributes().value("DetailLevel").toString();
-                                    eDetailLevel = CEnumLogDetailLevel::toEnumerator(strAttr);
-                                    if( eDetailLevel == ELogDetailLevel::Undefined )
-                                    {
-                                        xmlStreamReader.raiseError("Attribute \"DetailLevel\" (" + strAttr + ") is out of range");
-                                    }
-                                }
-                                if( !xmlStreamReader.hasError() && xmlStreamReader.attributes().hasAttribute("DataFilter") )
-                                {
-                                    strDataFilter = xmlStreamReader.attributes().value("DataFilter").toString();
-                                    bSetDataFilter = true;
-                                }
-                                if( !xmlStreamReader.hasError() && xmlStreamReader.attributes().hasAttribute("RefCount") )
-                                {
-                                    strAttr = xmlStreamReader.attributes().value("RefCount").toString();
-                                    iVal = strAttr.toInt(&bOk);
-                                    if( bOk && iVal >= 0 ) iRefCount = iVal;
-                                    else xmlStreamReader.raiseError("Attribute \"RefCount\" (" + strAttr + ") is out of range");
-                                }
 
                                 if( !xmlStreamReader.hasError() )
                                 {
                                     m_bOnReceivedDataUpdateInProcess = true;
 
-                                    CLogger* pLogger = m_pLoggersIdxTree->getLogger(idxInTree, false);
+                                    CLogger* pLogger = m_pLoggersIdxTree->getLogger(idxInTree);
 
                                     bool bLoggerAlreadyExisting = (pLogger != nullptr);
 
@@ -665,13 +691,13 @@ void CIpcLogClient::onReceivedData( const QByteArray& i_byteArr )
                                     {
                                         if( pLogger == nullptr )
                                         {
-                                            if( strNameSpace.isEmpty() && strClassName.isEmpty() && strObjName.isEmpty() )
+                                            if( strName.isEmpty() )
                                             {
-                                                xmlStreamReader.raiseError("No logger at tree index " + QString::number(idxInTree) + " but neither NameSpace nor ClassName nor ObjName provided.");
+                                                xmlStreamReader.raiseError("No logger at tree index " + QString::number(idxInTree) + " but no logger name provided.");
                                             }
                                             else
                                             {
-                                                pLogger = m_pLoggersIdxTree->insertLogger(iParentPranchIdxInTree, strNameSpace, strClassName, strObjName, idxInTree);
+                                                pLogger = m_pLoggersIdxTree->insertLogger(iParentPranchIdxInTree, strName, idxInTree);
                                             }
                                         }
                                         else // if( pBranch != nullptr )
@@ -707,13 +733,13 @@ void CIpcLogClient::onReceivedData( const QByteArray& i_byteArr )
                                         {
                                             xmlStreamReader.raiseError("Insert logger command received but there is already an object entry at tree index " + QString::number(idxInTree));
                                         }
-                                        else if( strNameSpace.isEmpty() && strClassName.isEmpty() && strObjName.isEmpty() )
+                                        else if( strName.isEmpty() )
                                         {
-                                            xmlStreamReader.raiseError("Insert logger command received but neither NameSpace nor ClassName nor ObjName provided");
+                                            xmlStreamReader.raiseError("Insert logger command received but no logger name provided");
                                         }
                                         else // if( pLogger == nullptr && !(strNameSpace.isEmpty() || .. )
                                         {
-                                            pLogger = m_pLoggersIdxTree->insertLogger(iParentPranchIdxInTree, strNameSpace, strClassName, strObjName, idxInTree);
+                                            pLogger = m_pLoggersIdxTree->insertLogger(iParentPranchIdxInTree, strName, idxInTree);
                                         }
                                     }
                                     // Indication that object has been deleted.
@@ -734,20 +760,32 @@ void CIpcLogClient::onReceivedData( const QByteArray& i_byteArr )
                                     {
                                         bool bSignalsBlocked = pLogger->blockTreeEntryChangedSignal(true);
 
-                                        if( !strThreadName.isEmpty() ) {
-                                            pLogger->setObjectThreadName(strThreadName);
-                                        }
                                         if( enabled != EEnabled::Undefined ) {
                                             pLogger->setEnabled(enabled);
                                         }
                                         if( eDetailLevel != ELogDetailLevel::Undefined ) {
-                                            pLogger->setDetailLevel(eDetailLevel);
+                                            pLogger->setLogLevel(eDetailLevel);
                                         }
                                         if( bSetDataFilter ) {
                                             pLogger->setDataFilter(strDataFilter);
                                         }
-                                        if( iRefCount >= 0 ) {
-                                            pLogger->setRefCount(iRefCount);
+                                        if( bSetAddThreadName ) {
+                                            pLogger->setAddThreadName(bAddThreadName);
+                                        }
+                                        if( bSetAddDateTime ) {
+                                            pLogger->setAddDateTime(bAddDateTime);
+                                        }
+                                        if( bSetAddSystemTime ) {
+                                            pLogger->setAddSystemTime(bAddSystemTime);
+                                        }
+                                        if( !strNameSpace.isNull() ) {
+                                            pLogger->setNameSpace(strNameSpace);
+                                        }
+                                        if( !strClassName.isNull() ) {
+                                            pLogger->setClassName(strClassName);
+                                        }
+                                        if( !strObjName.isNull() ) {
+                                            pLogger->setObjectName(strObjName);
                                         }
 
                                         pLogger->blockTreeEntryChangedSignal(bSignalsBlocked);
@@ -755,6 +793,10 @@ void CIpcLogClient::onReceivedData( const QByteArray& i_byteArr )
                                         if( !bLoggerAlreadyExisting )
                                         {
                                             emit loggerInserted(this, pLogger->keyInTree());
+                                        }
+                                        else
+                                        {
+                                            emit loggerChanged(this, pLogger->keyInTree());
                                         }
                                     }
                                     m_bOnReceivedDataUpdateInProcess = false;
@@ -980,56 +1022,10 @@ void CIpcLogClient::onLoggersIdxTreeEntryChanged(
     {
         if( i_pTreeEntry->entryType() == EIdxTreeEntryType::Leave )
         {
-            //if( m_pLoggersIdxTree->getUpdateNameSpaceCallDepth() == 0 )
-            {
-                sendLogger(
-                    /* systemMsgType */ MsgProtocol::ESystemMsgTypeReq,
-                    /* cmd           */ MsgProtocol::ECommandUpdate,
-                    /* pLogger       */ dynamic_cast<CLogger*>(i_pTreeEntry) );
-            }
-        }
-        else // if( i_pTreeEntry->entryType() == EIdxTreeEntryType::Root || Branch )
-        {
-            //sendNameSpace(
-            //    /* systemMsgType */ MsgProtocol::ESystemMsgTypeReq,
-            //    /* cmd           */ ECommandUpdate,
-            //    /* pTreeEntry    */ i_pTreeEntry,
-            //    /* enabled       */ enabled,
-            //    /* iDetailLevel  */ i_iDetailLevel );
-        }
-    } // if( i_pTreeEntry != nullptr )
-}
-
-/*==============================================================================
-protected: // instance methods
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-void CIpcLogClient::resetLoggersRefCounters( ZS::System::CIdxTreeEntry* i_pBranch )
-//------------------------------------------------------------------------------
-{
-    CIdxTreeEntry* pTreeEntry;
-    int            idxEntry;
-
-    for( idxEntry = i_pBranch->count()-1; idxEntry >= 0; --idxEntry )
-    {
-        pTreeEntry = i_pBranch->at(idxEntry);
-
-        if( pTreeEntry != nullptr )
-        {
-            if( pTreeEntry->entryType() == EIdxTreeEntryType::Branch )
-            {
-                resetLoggersRefCounters(pTreeEntry);
-            }
-            else if( pTreeEntry->entryType() == EIdxTreeEntryType::Leave )
-            {
-                CLogger* pLogger = dynamic_cast<CLogger*>(pTreeEntry);
-
-                if( pLogger != nullptr )
-                {
-                    pLogger->setRefCount(0);
-                }
-            }
+            sendLeave(
+                /* systemMsgType */ MsgProtocol::ESystemMsgTypeReq,
+                /* cmd           */ MsgProtocol::ECommandUpdate,
+                /* pLogger       */ dynamic_cast<CLogger*>(i_pTreeEntry) );
         }
     }
-} // resetLoggersRefCounters
+}

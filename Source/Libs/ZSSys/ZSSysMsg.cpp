@@ -408,7 +408,7 @@ void ZS::System::TRACE_LIVING_MESSAGE_OBJECTS( CMethodTracer* i_pMethodTracer )
                 strAddTrcInfo += "{" + QString::number(it.key()) + ":" + it.value() + "}";
             }
             strAddTrcInfo += "]";
-            i_pMethodTracer->trace(strAddTrcInfo, ELogDetailLevel::DebugNormal);
+            i_pMethodTracer->trace(strAddTrcInfo, ELogDetailLevel::Debug);
 
         } // if( !s_hshMsgIdsLiveTrcInfo.isEmpty() )
 
@@ -493,7 +493,7 @@ CMsg::CMsg(
     // is created which again produces trace outputs whereupon again an instance of CMsgReqSendDAta
     // is created which again ....
     // To break this endless message creation recursion the static flag "inMsgCtor" is used.
-    if( !s_bTracing && s_pTrcAdminObj != nullptr && s_pTrcAdminObj->isRuntimeInfoActive(ELogDetailLevel::DebugNormal) )
+    if( !s_bTracing && s_pTrcAdminObj != nullptr && s_pTrcAdminObj->isRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         s_bTracing = true;
 
@@ -529,7 +529,7 @@ CMsg::CMsg(
     // the sender and/or receiver may have already been destroyed.
     m_pSndRcvDestroyedHandler = new CMsgSndRcvDestroyedHandler(this);
 
-    if( !s_bTracing && s_pTrcAdminObj != nullptr && s_pTrcAdminObj->isRuntimeInfoActive(ELogDetailLevel::DebugNormal) )
+    if( !s_bTracing && s_pTrcAdminObj != nullptr && s_pTrcAdminObj->isRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         s_bTracing = true;
 
@@ -590,7 +590,7 @@ CMsg::CMsg( const MsgProtocol::SMsgHeader* i_pMsgHdr ) :
     // To break this endless message creation recursion the static flag "tracing" is used.
     // But messages may be created by different threads and therefore this flag would have to be
     // protected by a mutex slowing down the application.
-    if( !s_bTracing && s_pTrcAdminObj != nullptr && s_pTrcAdminObj->isRuntimeInfoActive(ELogDetailLevel::DebugNormal) )
+    if( !s_bTracing && s_pTrcAdminObj != nullptr && s_pTrcAdminObj->isRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         s_bTracing = true;
 
@@ -626,7 +626,7 @@ CMsg::CMsg( const MsgProtocol::SMsgHeader* i_pMsgHdr ) :
     // the sender and/or receiver may have already been destroyed.
     m_pSndRcvDestroyedHandler = new CMsgSndRcvDestroyedHandler(this);
 
-    if( !s_bTracing && s_pTrcAdminObj != nullptr && s_pTrcAdminObj->isRuntimeInfoActive(ELogDetailLevel::DebugNormal) )
+    if( !s_bTracing && s_pTrcAdminObj != nullptr && s_pTrcAdminObj->isRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         s_bTracing = true;
 
@@ -659,7 +659,7 @@ CMsg::~CMsg()
     // a system shutdown if a thread with an event loop cannot be terminated.
     bool bMtxLocked = s_mtxMsgIdsLiveCounter.tryLock(1000); // milliseconds
 
-    if( !s_bTracing && s_pTrcAdminObj != nullptr && s_pTrcAdminObj->isRuntimeInfoActive(ELogDetailLevel::DebugNormal) )
+    if( !s_bTracing && s_pTrcAdminObj != nullptr && s_pTrcAdminObj->isRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         s_bTracing = true;
 
@@ -710,7 +710,7 @@ CMsg::~CMsg()
         s_iMsgObjLiveCounter--;
     }
 
-    if( !s_bTracing && s_pTrcAdminObj != nullptr && s_pTrcAdminObj->isRuntimeInfoActive(ELogDetailLevel::DebugNormal) )
+    if( !s_bTracing && s_pTrcAdminObj != nullptr && s_pTrcAdminObj->isRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         s_bTracing = true;
 

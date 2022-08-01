@@ -36,11 +36,8 @@ list(APPEND _Headers
     ${_HeadersPath}/ZSIpcLog/App.h
     ${_HeadersPath}/ZSIpcLog/MainWindow.h
     ${_HeadersPath}/ZSIpcLog/WidgetCentral.h
-    ${_HeadersPath}/ZSIpcLog/MsgTest.h
+    ${_HeadersPath}/ZSIpcLog/MyThread.h
     ${_HeadersPath}/ZSIpcLog/Test.h
-    ${_HeadersPath}/ZSIpcLog/MyClass1.h
-    ${_HeadersPath}/ZSIpcLog/MyClass2.h
-    ${_HeadersPath}/ZSIpcLog/MyClass3.h
 )
 
 configure_file(
@@ -53,11 +50,8 @@ list(APPEND _Sources
     ${_SourcesPath}/ZSIpcLog/App.cpp
     ${_SourcesPath}/ZSIpcLog/MainWindow.cpp
     ${_SourcesPath}/ZSIpcLog/WidgetCentral.cpp
-    ${_SourcesPath}/ZSIpcLog/MsgTest.cpp
+    ${_SourcesPath}/ZSIpcLog/MyThread.cpp
     ${_SourcesPath}/ZSIpcLog/Test.cpp
-    ${_SourcesPath}/ZSIpcLog/MyClass1.cpp
-    ${_SourcesPath}/ZSIpcLog/MyClass2.cpp
-    ${_SourcesPath}/ZSIpcLog/MyClass3.cpp
 )
 
 list(APPEND _Resources

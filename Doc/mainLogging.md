@@ -1,54 +1,51 @@
-@page _PAGE_Main_MethodTracing Method Tracing / Logging
+@page _PAGE_Main_Logging Logging
 
-Since debugging code is often not sufficient to detect errors in a program or is not possible at all because
-the error only occurs in the release version of the software, for example, log outputs are usually used.
+To capture the flow of software execution persistently, the flow of the software execution may be logged
+into a file. Reading log files could be very helpful to detect problems during the implementation phase
+but also after releasing the software to the customer.
 
-When troubleshooting concurrency problems in multi-threaded applications, reading log output is often the
-only way to track down the cause of the error.
+But as a requirement not also the software execution flow but also some important events migth have to
+be logged. For example it might be necessary to log who changed what and when.
 
-Logging can also to be used to uncover weak points and to optimize the runtime of the application.
+This is where a logger comes into place.
 
-These log outputs are often output via "printf" instructions either on the screen or in a file.
-However, especially in embedded software development, these "printf" outputs are not sufficient if,
-for example, the devices do not have a screen or a suitable storage medium. As a rule, the devices
-only have a USB, parallel, serial, TCP/IP or another type of interface.
+A logger should have the following features:
 
-In addition, there is often a lack of the ability to specify what exactly should be loogged.
-Debug output consoles often offer the option of using a filter so that the log output is not only filled
-with information that is irrelevant for the current troubleshooting and you can no longer see the forest
-because there ar so many trees.
+- Support different levels of logging
+  - Debug
+    This level is used to log almost anything that happens in the program. This is mostly used during
+    debugging and should be suppressed before entering the production stage. But it should be possible
+    to activate them again for troubleshooting.
+  - Info
+    This level is used to log all actions that are user-driven, or system specific like regularly
+    scheduled operations.
+  - Warning
+    At this level all events that could potentially become an error should be logged.
+  - Error
+    At this level all error conditions should be logged.
+  - CriticalError
+    Use this level to log critical errors like unhandled exceptions.
+- It should be possible to change the logging level during runtime without the need of restarting the
+  application. Changing the logging level should be as intuitive and simple as possible without the
+  need of changing entries in hard to read ini files or in the registry.
+- Online logging should be possible where the log outputs are not just written to a file but to a
+  viewer which immediately shows what is currently being logged.
+- It should be possible to define several categories of logging events. For example you may want to
+  define categories like "DatabaseAccess", "TCP/IP Events", "UserLogin", etc.
+- Ideally a logger should have no effect on performance in the released product.
+  In addition it should be possible to filter the log outputs. For performance reasons this filtering
+  should already take place within the appliation and not at the debug output console so that logging
+  output strings are not created if not needed.
 
-However, this type of filtering is usually implemented in an inconvenient manner and is often anything
-but intuitive to use.
-
-An additional weak point with applying the filter to the debug output console is that the generation of
-unnecessary and irrelevant debug outputs is not prevented if the filter is only applied afterwards and
-processor time is unnecessary wasted to generate the debug outputs.
-
-It is better to apply the filter before generating the debug outputs.
-
-The trace subsystem of the ZSQtLib should help here by providing an online debug output console realised
-as the Trace Method Client connected via TCP/IP to a trace server created within the master application
-to be logged and whose methods should be traced.
-
-Using the trace subsystem of the ZSQtLib helps you in different phases of coding:
-
-- During the implementation phase by investigating the trace output.<br/>
-  Are the methods called as intended?
-  Optimizing the code by detecting unnecessary calls?
-  Are there unneccessary recursions?
-  Detect concurrency problems in multithread applications.
-- Finding bugs in already implemented classes.
-- Getting to know insufficiently documented source code.
-- Getting an overview of the system by evaluation the tree of trace admin objects.
+The logging subsystem of the ZSQtLib should help here by providing an online debug output console realised
+as the Log Client connected via TCP/IP to a thread save log server created within the master application
+to be logged.
 
 NEXT
 
-- @subpage _PAGE_Libs_ZSIpcTrace_QuickStart
-- @subpage _PAGE_Libs_ZSIpcTrace_Overview
-- @subpage _PAGE_Libs_ZSIpcTrace_Usage_TrcServer
-- @subpage _PAGE_Libs_ZSIpcTrace_Usage_TrcAdminObjs
-- @subpage _PAGE_Libs_ZSIpcTrace_Usage_MethodTracer
-- @subpage _PAGE_Libs_ZSIpcTrace_UseCase_ReadingTraceOutput
-- @subpage _PAGE_Libs_ZSIpcTrace_DllInterface
+- @subpage _PAGE_Libs_ZSIpcLog_QuickStart
+- @subpage _PAGE_Libs_ZSIpcLog_Overview
+- @subpage _PAGE_Libs_ZSIpcLog_Usage_LogServer
+- @subpage _PAGE_Libs_ZSIpcLog_Usage_Loggers
+- @subpage _PAGE_Libs_ZSIpcLog_DllInterface
 

@@ -1,8 +1,0 @@
-<GUIMain                 > -> <ZS::Apps::Test::IpcTrace::CMyClass2> NewName1.dtor()
-<GUIMain                 >    -> <ZS::System::CMutex> CMyClass2::NewName1::Counters.dtor()
-<GUIMain                 >    <- <ZS::System::CMutex> CMyClass2::NewName1::Counters.dtor()
-<GUIMain                 >    -> <ZS::System::CMutex> CMyClass2::NewName1::WaitClass3ThreadRunning.dtor()
-<GUIMain                 >    <- <ZS::System::CMutex> CMyClass2::NewName1::WaitClass3ThreadRunning.dtor()
-<GUIMain                 >    -> <ZS::System::CWaitCondition> CMyClass2::NewName1::Class3ThreadRunning.dtor()
-<GUIMain                 >    <- <ZS::System::CWaitCondition> CMyClass2::NewName1::Class3ThreadRunning.dtor()
-<GUIMain                 > <- <ZS::Apps::Test::IpcTrace::CMyClass2> NewName1.dtor()

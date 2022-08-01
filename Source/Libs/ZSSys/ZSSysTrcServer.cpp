@@ -1559,7 +1559,7 @@ bool CTrcServer::isRuntimeInfoActive( const CTrcAdminObj* i_pTrcAdminObj ) const
 {
     QMutexLocker mtxLocker(&s_mtx);
     bool bIsActive = false;
-    if( i_pTrcAdminObj != nullptr && i_pTrcAdminObj->isRuntimeInfoActive(ELogDetailLevel::CriticalError) )
+    if( i_pTrcAdminObj != nullptr && i_pTrcAdminObj->isRuntimeInfoActive(ELogDetailLevel::Fatal) )
     {
         bIsActive = isActive();
     }

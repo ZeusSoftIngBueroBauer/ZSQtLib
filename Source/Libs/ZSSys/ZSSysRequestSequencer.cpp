@@ -1867,7 +1867,7 @@ void CRequestSequencer::updateParentRequest( SRequestSeqEntry* i_pReqSeqEntry )
             }
         } // if( pReqSeqEntryParent != nullptr )
 
-        if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isRuntimeInfoActive(ELogDetailLevel::DebugNormal) )
+        if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->isRuntimeInfoActive(ELogDetailLevel::Debug) )
         {
             int iAddTrcInfoDetailLevel = 0;
             if( m_pTrcAdminObj->getRuntimeInfoTraceDetailLevel() >= ELogDetailLevel::DebugVerbose ) iAddTrcInfoDetailLevel = 2;

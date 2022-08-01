@@ -1,4 +1,4 @@
-@page _PAGE_Libs_ZSIpcTrace_DllInterface Using the ZSIpcTrace Dll Interface
+@page _PAGE_Libs_ZSIpcLog_DllInterface Using the ZSIpcLog Dll Interface
 
 If
 

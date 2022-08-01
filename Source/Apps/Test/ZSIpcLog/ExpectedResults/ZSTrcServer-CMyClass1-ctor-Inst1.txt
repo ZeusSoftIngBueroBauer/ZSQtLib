@@ -1,2 +1,0 @@
-<GUIMain                 > -> <ZS::Apps::Test::IpcTrace::CMyClass1> Inst1.ctor(Inst1)
-<GUIMain                 > <- <ZS::Apps::Test::IpcTrace::CMyClass1> Inst1.ctor()

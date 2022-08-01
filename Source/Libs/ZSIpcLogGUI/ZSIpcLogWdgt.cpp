@@ -248,11 +248,11 @@ CWdgtLog::CWdgtLog(
         throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
     }
 
-    // <Button> Trace Admin Objects Index Tree
-    //----------------------------------------
+    // <Button> Loggers Index Tree
+    //----------------------------
 
     m_pBtnLoggerIdxTree = new QPushButton();
-    m_pBtnLoggerIdxTree->setText("Trace Admin Objects");
+    m_pBtnLoggerIdxTree->setText("Loggers");
     pLytBtnListWidget->addWidget(m_pBtnLoggerIdxTree);
     pLytBtnListWidget->addSpacing(10);
 
@@ -1048,7 +1048,7 @@ void CWdgtLog::onChkServerUseIpcServerToggled( bool i_bChecked )
 void CWdgtLog::onBtnLoggerIdxTreeClicked( bool /*i_bChecked*/ )
 //------------------------------------------------------------------------------
 {
-    QString strDlgTitle = getMainWindowTitle() + ": Trace Admin Objects";
+    QString strDlgTitle = getMainWindowTitle() + ": Loggers";
 
     CDlgIdxTreeLoggers* pDlg = CDlgIdxTreeLoggers::GetInstance(m_pLogClient->getLoggersIdxTree()->objectName());
 
@@ -1382,16 +1382,15 @@ void CWdgtLog::onLogDataReceived( QObject* /*i_pObjSender*/, const QString& i_st
         CIdxTreeLoggers* pIdxTree = m_pLogClient->getLoggersIdxTree();
 
         CLogger* pLogger = nullptr;
-        QString  strNameSpace;
-        QString  strClassName;
-        QString  strObjName;
-        QString  strMthName;
         QString  strThreadName;
         QString  strThreadHtmlClrCode;
         QString  strDateTime;
         double   fSysTime_s = -1.0;
-        QString  strAddInfo;
-        QString  strLog;
+        QString  strNameSpace;
+        QString  strClassName;
+        QString  strObjName;
+        QString  strEntry;
+        QString  strLogData;
 
         xmlStreamTokenType = xmlStreamReader.readNext();
 
@@ -1410,110 +1409,93 @@ void CWdgtLog::onLogDataReceived( QObject* /*i_pObjSender*/, const QString& i_st
                         if( xmlStreamReader.isStartElement() )
                         {
                             pLogger = nullptr;
+                            strThreadName = "";
+                            strThreadHtmlClrCode = "#000000";
+                            strDateTime = "";
+                            fSysTime_s = -1.0;
                             strNameSpace = "";
                             strClassName = "";
                             strObjName = "";
-                            strMthName = "";
-                            strThreadName = "";
-                            strThreadHtmlClrCode = "";
-                            strDateTime = "";
-                            fSysTime_s = -1.0;
-                            strAddInfo = "";
-                            strLog = "";
-                        }
-                        else if( xmlStreamReader.isEndElement() )
-                        {
-                            if( m_hashThreadColors.contains(strThreadName) )
+                            strEntry = "";
+                            strLogData = "";
+
+                            if( !xmlStreamReader.hasError() && xmlStreamReader.attributes().hasAttribute("Thread") )
                             {
-                                strThreadHtmlClrCode = m_hashThreadColors.value(strThreadName);
-                            }
-                            else
-                            {
-                                if( !strThreadName.contains("GUIMain",Qt::CaseInsensitive) )
+                                strThreadName = xmlStreamReader.attributes().value("Thread").toString();
+
+                                if( !strThreadName.isEmpty() )
                                 {
-                                    strThreadHtmlClrCode = s_arstrThreadHtmlClrCodes[s_idxThreadHtmlColorCodes];
-
-                                    s_idxThreadHtmlColorCodes++;
-
-                                    if( s_idxThreadHtmlColorCodes >= _ZSArrLen(s_arstrThreadHtmlClrCodes) )
+                                    if( m_hashThreadColors.contains(strThreadName) )
                                     {
-                                        s_idxThreadHtmlColorCodes = 0;
+                                        strThreadHtmlClrCode = m_hashThreadColors.value(strThreadName);
+                                    }
+                                    else
+                                    {
+                                        if( !strThreadName.contains("GUIMain",Qt::CaseInsensitive) )
+                                        {
+                                            strThreadHtmlClrCode = s_arstrThreadHtmlClrCodes[s_idxThreadHtmlColorCodes];
+
+                                            s_idxThreadHtmlColorCodes++;
+
+                                            if( s_idxThreadHtmlColorCodes >= _ZSArrLen(s_arstrThreadHtmlClrCodes) )
+                                            {
+                                                s_idxThreadHtmlColorCodes = 0;
+                                            }
+                                        }
+                                        m_hashThreadColors.insert(strThreadName, strThreadHtmlClrCode);
                                     }
                                 }
-                                m_hashThreadColors.insert(strThreadName, strThreadHtmlClrCode);
                             }
-
-                            QString strThread = "&lt;";
-
-                            if( strThreadName.length() > CLogServer::c_iStrLenThreadMax )
+                            if( !xmlStreamReader.hasError() && xmlStreamReader.attributes().hasAttribute("DateTime") )
                             {
-                                strThread += strThreadName.left(CLogServer::c_iStrLenThreadMax);
-                            }
-                            else
-                            {
-                                strThread += strThreadName;
-
-                                for( int idx = strThreadName.length(); idx < CLogServer::c_iStrLenThreadMax; idx++ )
+                                if( m_bShowTimeInfo )
                                 {
-                                    strThread.append("&nbsp;");
+                                    strDateTime = xmlStreamReader.attributes().value("DateTime").toString();
                                 }
                             }
-
-                            strThread.append("&gt; ");
-                            strLog += strThread;
-
-                            if( m_bShowTimeInfo )
+                            if( !xmlStreamReader.hasError() && xmlStreamReader.attributes().hasAttribute("SysTime") )
                             {
-                                strLog += strDateTime;
-                                strLog += " (";
-
-                                QString strSysTime = QString::number(fSysTime_s, 'f', 6);
-                                int iStrLen = strSysTime.length();
-                                for( int idx = 0; idx < CLogServer::c_iStrLenSysTimeMax-iStrLen; idx++ )
+                                strAttr = xmlStreamReader.attributes().value("SysTime").toString();
+                                fVal = strAttr.toDouble(&bOk);
+                                if( bOk && fVal >= 0.0 )
                                 {
-                                    strSysTime.insert(0,"&nbsp;");
-                                }
-                                strLog += strSysTime;
-                                strLog += "):&nbsp;";
-                            }
+                                    fSysTime_s = fVal;
 
-                            if( pLogger != nullptr )
-                            {
-                                strNameSpace = pLogger->getNameSpace();
-                                strClassName = pLogger->getClassName();
+                                    m_dataRateCalculatorBytes.addMeasurement(fSysTime_s, 2 * static_cast<qint64>(i_str.size()));
+                                    m_dataRateCalculatorLines.addMeasurement(fSysTime_s, 1);
 
-                                // When using class (module) trace admin objects the object name must be
-                                // passed to the method tracer when tracing instance methods.
-                                // When using instance trace admin objects the object name should not be
-                                // provided to the method tracer when tracing instance methods.
-                                // But if the object name is passed to the method tracer use this object name.
-                                if( strObjName.isEmpty() )
-                                {
-                                    strObjName = pLogger->getObjectName();
+                                    showAndCheckDataRates();
+
+                                    if( !m_bShowTimeInfo ) fSysTime_s = -1.0;
                                 }
                             }
-
-                            QString strObjPath = pIdxTree->buildPathStr(strNameSpace, strClassName);
-
-                            if( !strObjPath.isEmpty() )
+                            if( !xmlStreamReader.hasError() && xmlStreamReader.attributes().hasAttribute("NameSpace") )
                             {
-                                strLog += "&lt;" + strObjPath + "&gt;&nbsp;";
+                                strNameSpace = xmlStreamReader.attributes().value("NameSpace").toString();
+                            }
+                            if( !xmlStreamReader.hasError() && xmlStreamReader.attributes().hasAttribute("ClassName") )
+                            {
+                                strClassName = xmlStreamReader.attributes().value("ClassName").toString();
+                            }
+                            if( !xmlStreamReader.hasError() && xmlStreamReader.attributes().hasAttribute("ObjName") )
+                            {
+                                strObjName = xmlStreamReader.attributes().value("ObjName").toString();
+                            }
+                            if( !xmlStreamReader.hasError() && xmlStreamReader.attributes().hasAttribute("Entry") )
+                            {
+                                strEntry = xmlStreamReader.attributes().value("Entry").toString();
                             }
 
-                            if( !strObjName.isEmpty() )
-                            {
-                                strLog += strObjName;
-                                strLog += ".";
-                            }
+                            SLogData logData(
+                                /* strThreadName */ strThreadName,
+                                /* strDateTime   */ strDateTime,
+                                /* fSysTimeInSec */ fSysTime_s,
+                                /* strNameSpace  */ strNameSpace,
+                                /* strClassName  */ strClassName,
+                                /* strObjName    */ strObjName,
+                                /* strEntry      */ strEntry );
 
-                            strLog += strMthName;
-
-                            normalize(strAddInfo);
-
-                            strLog += ":&nbsp;";
-                            strLog += strAddInfo;
-
-                            addEdtItem(strLog, strThreadHtmlClrCode);
+                            addEdtItem(logData.toHtmlString(), strThreadHtmlClrCode);
 
                         } // if( xmlStreamReader.isEndElement() )
                     } // if( strElemName == "LogData" )
@@ -1532,7 +1514,7 @@ void CWdgtLog::onLogDataReceived( QObject* /*i_pObjSender*/, const QString& i_st
                                 iVal = strAttr.toInt(&bOk);
                                 if( bOk && iVal >= 0 )
                                 {
-                                    pLogger = pIdxTree->getLogger(iVal, false);
+                                    pLogger = pIdxTree->getLogger(iVal);
 
                                     if( pLogger == nullptr )
                                     {
@@ -1546,44 +1528,6 @@ void CWdgtLog::onLogDataReceived( QObject* /*i_pObjSender*/, const QString& i_st
                             }
                         } // if( xmlStreamReader.isStartElement() )
                     } // if( strElemName == "Logger" )
-
-                    else if( strElemName == "Method" )
-                    {
-                        if( xmlStreamReader.isStartElement() )
-                        {
-                            if( xmlStreamReader.attributes().hasAttribute("ObjName") )
-                            {
-                                strObjName = xmlStreamReader.attributes().value("ObjName").toString();
-                            }
-                            if( xmlStreamReader.attributes().hasAttribute("Name") )
-                            {
-                                strMthName = xmlStreamReader.attributes().value("Name").toString();
-                            }
-                            if( xmlStreamReader.attributes().hasAttribute("Name") )
-                            {
-                                strThreadName = xmlStreamReader.attributes().value("Thread").toString();
-                            }
-                            if( xmlStreamReader.attributes().hasAttribute("DateTime") )
-                            {
-                                strDateTime = xmlStreamReader.attributes().value("DateTime").toString();
-                            }
-                            if( xmlStreamReader.attributes().hasAttribute("SysTime") )
-                            {
-                                strAttr = xmlStreamReader.attributes().value("SysTime").toString();
-                                fVal = strAttr.toDouble(&bOk);
-                                if( bOk && fVal >= 0.0 ) fSysTime_s = fVal;
-
-                                m_dataRateCalculatorBytes.addMeasurement(fSysTime_s, 2 * static_cast<qint64>(i_str.size()));
-                                m_dataRateCalculatorLines.addMeasurement(fSysTime_s, 1);
-
-                                showAndCheckDataRates();
-                            }
-                            if( xmlStreamReader.attributes().hasAttribute("AddInfo") )
-                            {
-                                strAddInfo = xmlStreamReader.attributes().value("AddInfo").toString();
-                            }
-                        } // if( xmlStreamReader.isStartElement() )
-                    } // if( strElemName == "Method" )
                 } // if( xmlStreamReader.isStartElement() || xmlStreamReader.isEndElement() )
             } // while( !xmlStreamReader.atEnd() )
 

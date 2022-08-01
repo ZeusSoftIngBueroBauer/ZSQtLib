@@ -145,7 +145,7 @@ QList<QByteArray> CBlkTypeNone::receiveDataBlocks(
                     /* transmitDir  */ ETransmitDir::Receive,
                     /* bBold        */ false,
                     /* strMsg       */ strMthAddInfo );
-                POST_OR_DELETE_MESSAGE(pMsgLogItem, i_pMthTracer, ELogDetailLevel::DebugNormal);
+                POST_OR_DELETE_MESSAGE(pMsgLogItem, i_pMthTracer, ELogDetailLevel::Debug);
                 pMsgLogItem = nullptr;
             }
         }
@@ -170,7 +170,7 @@ QList<QByteArray> CBlkTypeNone::receiveDataBlocks(
                 {
                     strMthRet += "Block [Size=" + QString::number(arByteArrs[idxBlk].size()) + "]";
 
-                    if( i_pMthTracer->isRuntimeInfoActive(ELogDetailLevel::DebugNormal) )
+                    if( i_pMthTracer->isRuntimeInfoActive(ELogDetailLevel::Debug) )
                     {
                         strMthRet += "(";
                         if( arByteArrs[idxBlk].size() > 0 )
@@ -231,7 +231,7 @@ bool CBlkTypeNone::writeDataBlock(
                 /* transmitDir  */ ETransmitDir::Send,
                 /* bBold        */ false,
                 /* strMsg       */ strMthAddInfo );
-            POST_OR_DELETE_MESSAGE(pMsgLogItem, i_pMthTracer, ELogDetailLevel::DebugNormal);
+            POST_OR_DELETE_MESSAGE(pMsgLogItem, i_pMthTracer, ELogDetailLevel::Debug);
             pMsgLogItem = nullptr;
         }
     }

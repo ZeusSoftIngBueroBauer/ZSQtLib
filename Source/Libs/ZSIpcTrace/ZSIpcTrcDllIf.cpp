@@ -2500,7 +2500,7 @@ void DllIf::CTrcServer::traceMethod(
 {
     if( i_pAdminObj != NULL && s_pFctTrcAdminObj_isRuntimeInfoActive != NULL && s_pFctTrcAdminObj_traceMethod != NULL )
     {
-        if( s_pFctTrcAdminObj_isRuntimeInfoActive(i_pAdminObj, ELogDetailLevelCritical) )
+        if( s_pFctTrcAdminObj_isRuntimeInfoActive(i_pAdminObj, ELogDetailLevelFatal) )
         {
             s_pFctTrcAdminObj_traceMethod(i_pAdminObj, "", i_szMethod, i_szAddInfo);
         }
@@ -2517,7 +2517,7 @@ void DllIf::CTrcServer::traceMethod(
 {
     if( i_pAdminObj != NULL && s_pFctTrcAdminObj_isRuntimeInfoActive != NULL && s_pFctTrcAdminObj_traceMethod != NULL )
     {
-        if( s_pFctTrcAdminObj_isRuntimeInfoActive(i_pAdminObj, ELogDetailLevelCritical) )
+        if( s_pFctTrcAdminObj_isRuntimeInfoActive(i_pAdminObj, ELogDetailLevelFatal) )
         {
             s_pFctTrcAdminObj_traceMethod(i_pAdminObj, i_szObjName, i_szMethod, i_szAddInfo);
         }

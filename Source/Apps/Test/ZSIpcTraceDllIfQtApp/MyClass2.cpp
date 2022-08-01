@@ -669,7 +669,7 @@ int CMyClass2::recursiveTraceMethod()
     }
     else // if( QThread::currentThread() == thread() )
     {
-        if( mthTracer.isRuntimeInfoActive(ELogDetailLevelDebugNormal) )
+        if( mthTracer.isRuntimeInfoActive(ELogDetailLevelDebug) )
         {
             QString strTrcMsg = "RecursionCount=" + QString::number(m_iRecursionCount);
             mthTracer.trace(strTrcMsg.toLatin1().data());
@@ -718,7 +718,7 @@ void CMyClass2::startMessageTimer()
     }
     else // if( QThread::currentThread() == thread() )
     {
-        if( mthTracer.isRuntimeInfoActive(ELogDetailLevelDebugNormal) )
+        if( mthTracer.isRuntimeInfoActive(ELogDetailLevelDebug) )
         {
             mthTracer.trace("m_pTmrMessages->start(100)");
         }
@@ -895,7 +895,7 @@ void CMyClass2::onTmrMessagesTimeout()
 
     ++m_iMsgCount;
 
-    if( mthTracer.isRuntimeInfoActive(ELogDetailLevelDebugNormal) )
+    if( mthTracer.isRuntimeInfoActive(ELogDetailLevelDebug) )
     {
         QString strTrcMsg = "MsgCount=" + QString::number(m_iMsgCount);
         mthTracer.trace(strTrcMsg.toLatin1().data());

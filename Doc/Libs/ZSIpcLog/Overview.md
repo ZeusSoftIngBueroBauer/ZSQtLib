@@ -1,4 +1,4 @@
-@page _PAGE_Libs_ZSIpcTrace_Overview Overview
+@page _PAGE_Libs_ZSIpcLog_Overview Overview
 
 ![Overview](ZSIpcTrace/Overview.png)
 

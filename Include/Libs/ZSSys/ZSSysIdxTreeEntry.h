@@ -50,9 +50,9 @@ enum class EIdxTreeEntryType
     Count,
     Undefined
 };
-ZSSYSDLL_API QString idxTreeEntryType2Str( EIdxTreeEntryType i_eVal, int i_alias = ZS::System::EEnumEntryAliasStrName );
-ZSSYSDLL_API QString idxTreeEntryType2Str( int i_iVal, int i_alias = ZS::System::EEnumEntryAliasStrName );
-ZSSYSDLL_API EIdxTreeEntryType str2IdxTreeEntryType( const QString& i_str, int i_alias = ZS::System::EEnumEntryAliasStrName );
+ZSSYSDLL_API QString idxTreeEntryType2Str( EIdxTreeEntryType i_eVal, int i_alias = EEnumEntryAliasStrName );
+ZSSYSDLL_API QString idxTreeEntryType2Str( int i_iVal, int i_alias = EEnumEntryAliasStrName );
+ZSSYSDLL_API EIdxTreeEntryType str2IdxTreeEntryType( const QString& i_str, int i_alias = EEnumEntryAliasStrName );
 
 
 //******************************************************************************
@@ -110,7 +110,7 @@ public: // instance methods
     bool isLeave() const { return (m_entryType == EIdxTreeEntryType::Leave); }
     QString entryTypeSymbol() const;
     /*! Returns the entry type's string representation. */
-    QString entryType2Str( int i_alias = ZS::System::EEnumEntryAliasStrName ) const;
+    QString entryType2Str( int i_alias = EEnumEntryAliasStrName ) const;
     /*! Returns the name of the index tree entry (e.g. "Volt". */
     QString name() const { return m_strName; }
     QString path() const;

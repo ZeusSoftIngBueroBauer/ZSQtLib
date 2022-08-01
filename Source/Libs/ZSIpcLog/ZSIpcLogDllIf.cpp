@@ -1114,7 +1114,7 @@ char* DllIf::CLogger::getDataFilter() const
 
     @return true if the passed log data should be suppressed, false otherwise.
 */
-bool DllIf::CLogger::isDataSuppressedByFilter( const char* i_szTraceData ) const
+bool DllIf::CLogger::isSuppressedByDataFilter( const char* i_szTraceData ) const
 //------------------------------------------------------------------------------
 {
     if( s_hndDllIf != NULL && s_pFctLogger_isDataSuppressedByFilter != NULL )
@@ -1883,7 +1883,7 @@ void DllIf::CLogServer::log(
 {
     if( i_pLogger != NULL && s_pFctLogger_isActive != NULL && s_pFctLogger_log != NULL )
     {
-        if( s_pFctLogger_isActive(i_pLogger, ELogDetailLevelCritical) )
+        if( s_pFctLogger_isActive(i_pLogger, ELogDetailLevelFatal) )
         {
             s_pFctLogger_log(i_pLogger, "", i_szMethod, i_szAddInfo);
         }
@@ -1900,7 +1900,7 @@ void DllIf::CLogServer::log(
 {
     if( i_pLogger != NULL && s_pFctLogger_isActive != NULL && s_pFctLogger_log != NULL )
     {
-        if( s_pFctLogger_isActive(i_pLogger, ELogDetailLevelCritical) )
+        if( s_pFctLogger_isActive(i_pLogger, ELogDetailLevelFatal) )
         {
             s_pFctLogger_log(i_pLogger, i_szObjName, i_szMethod, i_szAddInfo);
         }

@@ -226,6 +226,267 @@ QString SLogServerSettings::toString() const
 
 
 /*******************************************************************************
+struct ZS::Log::SLogData
+*******************************************************************************/
+
+/*==============================================================================
+public: // ctors and dtor
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+SLogData::SLogData() :
+//------------------------------------------------------------------------------
+    m_strThreadName(),
+    m_strDateTime(),
+    m_fSysTime_s(0.0),
+    m_strNameSpace(),
+    m_strClassName(),
+    m_strObjName(),
+    m_strEntry()
+{
+} // ctor
+
+//------------------------------------------------------------------------------
+SLogData::SLogData(
+    const QString& i_strThreadName,
+    const QString& i_strDateTime,
+    double         i_fSysTimeInSec,
+    const QString& i_strNameSpace,
+    const QString& i_strClassName,
+    const QString& i_strObjName,
+    const QString& i_strEntry ) :
+//------------------------------------------------------------------------------
+    m_strThreadName(i_strThreadName),
+    m_strDateTime(i_strDateTime),
+    m_fSysTime_s(i_fSysTimeInSec),
+    m_strNameSpace(i_strNameSpace),
+    m_strClassName(i_strClassName),
+    m_strObjName(i_strObjName),
+    m_strEntry(i_strEntry)
+{
+}
+
+/*==============================================================================
+public: // struct methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+QString SLogData::toPlainString() const
+//------------------------------------------------------------------------------
+{
+    QString str;
+
+    if( !m_strThreadName.isEmpty() )
+    {
+        QString strThread = "<";
+        if( m_strThreadName.length() > CLogServer::c_iStrLenThreadMax )
+        {
+            strThread += m_strThreadName.left(CLogServer::c_iStrLenThreadMax);
+        }
+        else
+        {
+            strThread += m_strThreadName;
+            for( int idx = m_strThreadName.length(); idx < CLogServer::c_iStrLenThreadMax; idx++ )
+            {
+                strThread.append(" ");
+            }
+        }
+        strThread.append("> ");
+        str += strThread;
+    }
+    if( !m_strDateTime.isEmpty() )
+    {
+        str += m_strDateTime + " ";
+    }
+    if( m_fSysTime_s > 0.0 )
+    {
+        QString strSysTime = QString::number(m_fSysTime_s,'f',6);
+        str += "(";
+        int iStrLen = strSysTime.length();
+        for( int idx = 0; idx < CLogServer::c_iStrLenSysTimeMax-iStrLen; idx++ )
+        {
+            strSysTime.insert(0," ");
+        }
+        str += strSysTime;
+        str += ") ";
+    }
+    if( !m_strNameSpace.isEmpty() )
+    {
+        str += m_strNameSpace;
+        if( !m_strClassName.isEmpty() || !m_strObjName.isEmpty() ) {
+            str += "::";
+        }
+        else {
+            str += " ";
+        }
+    }
+    if( !m_strClassName.isEmpty() )
+    {
+        str += m_strClassName;
+        if( !m_strObjName.isEmpty() ) {
+            str += "::";
+        }
+        else {
+            str += " ";
+        }
+    }
+    if( !m_strObjName.isEmpty() )
+    {
+        str += m_strObjName;
+        str += " ";
+    }
+
+    str += m_strEntry;
+
+    return str;
+
+} // toPlainString
+
+//------------------------------------------------------------------------------
+QString SLogData::toHtmlString() const
+//------------------------------------------------------------------------------
+{
+    QString str;
+
+    if( !m_strThreadName.isEmpty() )
+    {
+        QString strThread = "&lt;";
+
+        if( m_strThreadName.length() > CLogServer::c_iStrLenThreadMax )
+        {
+            strThread += m_strThreadName.left(CLogServer::c_iStrLenThreadMax);
+        }
+        else
+        {
+            strThread += m_strThreadName;
+            for( int idx = m_strThreadName.length(); idx < CLogServer::c_iStrLenThreadMax; idx++ )
+            {
+                strThread.append("&nbsp;");
+            }
+        }
+        strThread.append("&gt; ");
+        str += strThread;
+    }
+    if( !m_strDateTime.isEmpty() )
+    {
+        str += m_strDateTime + " ";
+    }
+    if( m_fSysTime_s > 0.0 )
+    {
+        QString strSysTime = QString::number(m_fSysTime_s, 'f', 6);
+        str += "(";
+        int iStrLen = strSysTime.length();
+        for( int idx = 0; idx < CLogServer::c_iStrLenSysTimeMax-iStrLen; idx++ )
+        {
+            strSysTime.insert(0,"&nbsp;");
+        }
+        str += strSysTime;
+        str += ")&nbsp;";
+    }
+    if( !m_strNameSpace.isEmpty() )
+    {
+        str += m_strNameSpace;
+        if( !m_strClassName.isEmpty() || !m_strObjName.isEmpty() ) {
+            str += "::";
+        }
+        else {
+            str += "&nbsp;";
+        }
+    }
+    if( !m_strClassName.isEmpty() )
+    {
+        str += m_strClassName;
+        if( !m_strObjName.isEmpty() ) {
+            str += "::";
+        }
+        else {
+            str += "&nbsp;";
+        }
+    }
+    if( !m_strObjName.isEmpty() )
+    {
+        str += m_strObjName;
+        str += "&nbsp;";
+    }
+
+    str += m_strEntry;
+
+    return str;
+
+} // toHtmlString
+
+//------------------------------------------------------------------------------
+QString SLogData::toXmlString() const
+//------------------------------------------------------------------------------
+{
+    QString str;
+
+    QString strThreadName;
+    QString strDateTime;
+    QString strSysTime;
+    QString strNameSpace;
+    QString strClassName;
+    QString strObjName;
+    QString strEntry;
+    int iStrLen = 11; // '<LogData />'
+
+    if( !m_strThreadName.isEmpty() ) {
+        strThreadName = encodeForHtml(m_strThreadName);
+        iStrLen += strThreadName.length() + 10; // + 'Thread="" '
+    }
+    if( !m_strDateTime.isEmpty() ) {
+        strDateTime = m_strDateTime;
+        iStrLen += strDateTime.length() + 12; // + 'DateTime="" '
+    }
+    if( m_fSysTime_s >= 0.0 ) {
+        strSysTime = QString::number(m_fSysTime_s,'f',6);
+        iStrLen += strSysTime.length() + 11; // + 'SysTime="" '
+    }
+    if( !m_strNameSpace.isEmpty() ) {
+        strNameSpace = encodeForHtml(m_strNameSpace);
+        iStrLen += strNameSpace.length() + 13; // + 'NameSpace="" '
+    }
+    if( !m_strClassName.isEmpty() ) {
+        strClassName = encodeForHtml(m_strClassName);
+        iStrLen += strClassName.length() + 13; // + 'ClassName="" '
+    }
+    if( !m_strObjName.isEmpty() ) {
+        strObjName = encodeForHtml(m_strObjName);
+        iStrLen += strObjName.length() + 11; // + 'ObjName="" '
+    }
+    strEntry = encodeForHtml(m_strEntry);
+    iStrLen += strEntry.length() + 9; // + 'Entry="" '
+
+    str.reserve(iStrLen);
+
+    str += "<LogData ";
+    if( !strThreadName.isEmpty() ) {
+        str += "Thread=\"" + strThreadName + "\" ";
+    }
+    if( !strDateTime.isEmpty() ) {
+        str += "DateTime=\"" + strDateTime + "\" ";
+    }
+    if( !strSysTime.isEmpty() ) {
+        str += "SysTime=\"" + strSysTime + "\" ";
+    }
+    if( !strNameSpace.isEmpty() ) {
+        str += "NameSpace=\"" + strNameSpace + "\" ";
+    }
+    if( !strClassName.isEmpty() ) {
+        str += "ClassName=\"" + strClassName + "\" ";
+    }
+    if( !strObjName.isEmpty() ) {
+        str += "ObjName=\"" + strObjName + "\" ";
+    }
+    str += "Entry=\"" + m_strEntry + "\"";
+    str += "/>";
+
+    return str;
+
+} // toXmlString
+
+
+/*******************************************************************************
 class CLogServer : public QObject
 *******************************************************************************/
 
@@ -440,6 +701,23 @@ CIdxTreeLoggers* CLogServer::GetLoggersIdxTree()
 }
 
 //------------------------------------------------------------------------------
+CLogger* CLogServer::GetLogger()
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(&s_mtx);
+
+    CLogger* pLogger = nullptr;
+
+    CLogServer* pLogServer = GetInstance();
+
+    if( pLogServer != nullptr )
+    {
+        pLogger = pLogServer->getLogger();
+    }
+    return pLogger;
+}
+
+//------------------------------------------------------------------------------
 CLogger* CLogServer::GetLogger( int i_idxInTree )
 //------------------------------------------------------------------------------
 {
@@ -458,35 +736,8 @@ CLogger* CLogServer::GetLogger( int i_idxInTree )
 
 //------------------------------------------------------------------------------
 CLogger* CLogServer::GetLogger(
-    const QString& i_strNameSpace,
-    const QString& i_strClassName,
-    const QString& i_strObjName )
-//------------------------------------------------------------------------------
-{
-    QMutexLocker mtxLocker(&s_mtx);
-
-    CLogger* pLogger = nullptr;
-
-    CLogServer* pLogServer = GetInstance();
-
-    if( pLogServer != nullptr )
-    {
-        pLogger = pLogServer->getLogger(
-            /* strNameSpace      */ i_strNameSpace,
-            /* strClassName      */ i_strClassName,
-            /* strObjName        */ i_strObjName,
-            /* bEnabledAsDefault */ EEnabled::Undefined,
-            /* eDefaultLevel     */ ELogDetailLevel::Undefined );
-    }
-    return pLogger;
-}
-
-//------------------------------------------------------------------------------
-CLogger* CLogServer::GetLogger(
-    const QString&               i_strNameSpace,
-    const QString&               i_strClassName,
-    const QString&               i_strObjName,
-    ZS::System::EEnabled         i_bEnabledAsDefault,
+    const QString&  i_strName,
+    EEnabled        i_bEnabledAsDefault,
     ELogDetailLevel i_eDefaultDetailLevel )
 //------------------------------------------------------------------------------
 {
@@ -498,61 +749,9 @@ CLogger* CLogServer::GetLogger(
 
     if( pLogServer != nullptr )
     {
-        pLogger = pLogServer->getLogger(
-            /* strNameSpace      */ i_strNameSpace,
-            /* strClassName      */ i_strClassName,
-            /* strObjName        */ i_strObjName,
-            /* bEnabledAsDefault */ i_bEnabledAsDefault,
-            /* eDefaultLevel     */ i_eDefaultDetailLevel);
+        pLogger = pLogServer->getLogger(i_strName, i_bEnabledAsDefault, i_eDefaultDetailLevel);
     }
     return pLogger;
-}
-
-//------------------------------------------------------------------------------
-/*! @brief Renames the given logger by replacing the given input pointer with
-           the address of the newly referenced logger.
-
-    If the given logger will no longer be referenced it will be destroyed.
-    If at the new position already a logger is existing the reference
-    to this logger will be returned.
-    If at the new position no logger is existing a new object is
-    created and the address of the newly created object is returned.
-
-    @param io_ppLogger [in, out]
-        In:  Pointer to logger object which should be renamed. The reference counter
-             of this object is decremented. If 0 the object will be destroyed.
-        Out: Pointer to logger object at the new position. This might either
-             be an already existing logger object whose reference counter is
-             increased or a newly created object.
-    @param i_strNewObjName [in] New object name.
-*/
-void CLogServer::RenameLogger(
-    CLogger**      io_ppLogger,
-    const QString& i_strNewObjName )
-//------------------------------------------------------------------------------
-{
-    QMutexLocker mtxLocker(&s_mtx);
-
-    CLogServer* pLogServer = GetInstance();
-
-    if( pLogServer != nullptr )
-    {
-        pLogServer->renameLogger(io_ppLogger, i_strNewObjName);
-    }
-}
-
-//------------------------------------------------------------------------------
-void CLogServer::ReleaseLogger( CLogger* i_pLogger )
-//------------------------------------------------------------------------------
-{
-    QMutexLocker mtxLocker(&s_mtx);
-
-    CLogServer* pLogServer = GetInstance();
-
-    if( pLogServer != nullptr )
-    {
-        pLogServer->releaseLogger(i_pLogger);
-    }
 }
 
 /*==============================================================================
@@ -595,7 +794,7 @@ QString CLogServer::GetLoggerFileAbsoluteFilePath()
     {
         QString strAppConfigDir = ZS::System::getAppConfigDir("System");
         QString strLoggerFileSuffix = "xml";
-        QString strLoggerFileBaseName = "ZSLogServer-TrcMthAdmObj";
+        QString strLoggerFileBaseName = "ZSLogServer-Loggers";
         s_strLoggerFileAbsFilePath = strAppConfigDir + "/" + strLoggerFileBaseName + "." + strLoggerFileSuffix;
     }
     return s_strLoggerFileAbsFilePath;
@@ -662,7 +861,7 @@ QString CLogServer::GetLocalLogFileAbsoluteFilePath()
     {
         QString strAppLogDir = ZS::System::getAppLogDir("System");
         QString strTrcLogFileSuffix = "log";
-        QString strTrcLogFileBaseName = "ZSLogServer-TrcMth";
+        QString strTrcLogFileBaseName = "ZSLogServer";
         s_strLocalLogFileAbsFilePath = strAppLogDir + "/" + strTrcLogFileBaseName + "." + strTrcLogFileSuffix;
     }
     return s_strLocalLogFileAbsFilePath;
@@ -710,11 +909,12 @@ CLogServer::CLogServer() :
 //------------------------------------------------------------------------------
     QObject(),
     m_pLoggersIdxTree(nullptr),
+    m_pLogger(nullptr),
     m_logSettings(),
     m_pLogFile(nullptr),
     m_iRefCount(0)
 {
-    setObjectName("ZSLogServer");
+    setObjectName("theInst");
 
     m_logSettings.m_strLoggerFileAbsFilePath = GetLoggerFileAbsoluteFilePath();
     m_logSettings.m_strLocalLogFileAbsFilePath = GetLocalLogFileAbsoluteFilePath();
@@ -722,6 +922,8 @@ CLogServer::CLogServer() :
     m_pLogFile = CLogFile::Alloc(m_logSettings.m_strLocalLogFileAbsFilePath);
 
     m_pLoggersIdxTree = new CIdxTreeLoggers("ZSLogServer", this);
+
+    m_pLogger = m_pLoggersIdxTree->getLogger(objectName());
 
     // See comment in "CreateInstance" above.
     s_pTheInst = this;
@@ -757,11 +959,61 @@ CLogServer::~CLogServer()
     }
 
     m_pLoggersIdxTree = nullptr;
+    m_pLogger = nullptr;
     //m_logSettings;
     m_pLogFile = nullptr;
     m_iRefCount = 0;
 
 } // dtor
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CLogServer::setEnabled( bool i_bEnabled )
+//------------------------------------------------------------------------------
+{
+    if( i_bEnabled != m_logSettings.m_bEnabled )
+    {
+        m_logSettings.m_bEnabled = i_bEnabled;
+
+        // Close (flush buffer) of log file so it can be read by editors.
+        if( m_pLogFile != nullptr )
+        {
+            m_pLogFile->close();
+        }
+        emit logSettingsChanged(this);
+    }
+}
+
+//------------------------------------------------------------------------------
+bool CLogServer::isEnabled() const
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(&s_mtx);
+    return m_logSettings.m_bEnabled;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Checks whether logging is active.
+
+    Logging is active if logging is enabled at all (flag enabled of the
+    log settings) and if the local log file is used.
+
+    This method may be overridden to add additional checks.
+
+    The Ipc Log Server overrides this method and also checks whether
+    remote logging (output to remote client) is enabled.
+
+    @return true if logging is active, false otherwise.
+*/
+bool CLogServer::isActive() const
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(&s_mtx);
+    return isEnabled() && isLocalLogFileActive();
+}
 
 /*==============================================================================
 public: // instance methods
@@ -780,8 +1032,20 @@ CIdxTreeLoggers* CLogServer::getLoggersIdxTree()
 }
 
 /*==============================================================================
-public: // instance methods to add, remove and modify admin objects
+public: // instance methods to add, remove and modify loggers
 ==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the root logger of the server.
+
+    @return Pointer to root logger of the server.
+*/
+CLogger* CLogServer::getLogger()
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(&s_mtx);
+    return m_pLogger;
+}
 
 //------------------------------------------------------------------------------
 /*! @brief Returns the logger object at the given tree index.
@@ -802,7 +1066,7 @@ CLogger* CLogServer::getLogger( int i_idxInTree )
     if( i_idxInTree < 0 )
     {
         SErrResultInfo errResultInfo(
-            /* errSource     */ nameSpace(), className(), objectName(), "getTraceLogger",
+            /* errSource     */ nameSpace(), className(), objectName(), "getLogger",
             /* result        */ EResultArgOutOfRange,
             /* severity      */ EResultSeverityError,
             /* strAddErrInfo */ "Idx In Tree (=" + QString::number(i_idxInTree) + ") is out of range");
@@ -837,10 +1101,8 @@ CLogger* CLogServer::getLogger( int i_idxInTree )
    @return Pointer to logger.
 */
 CLogger* CLogServer::getLogger(
-    const QString&               i_strNameSpace,
-    const QString&               i_strClassName,
-    const QString&               i_strObjName,
-    EEnabled                     i_bEnabledAsDefault,
+    const QString&  i_strName,
+    EEnabled        i_bEnabledAsDefault,
     ELogDetailLevel i_eDefaultDetailLevel )
 //------------------------------------------------------------------------------
 {
@@ -848,14 +1110,13 @@ CLogger* CLogServer::getLogger(
 
     CLogger* pLogger = nullptr;
 
-    if( i_strObjName.isEmpty() && i_strClassName.isEmpty() && i_strNameSpace.isEmpty() )
+    if( i_strName.isEmpty() )
     {
         SErrResultInfo errResultInfo(
-            /* errSource     */ nameSpace(), className(), objectName(), "getTraceLogger",
+            /* errSource     */ nameSpace(), className(), objectName(), "getLogger",
             /* result        */ EResultArgOutOfRange,
             /* severity      */ EResultSeverityError,
-            /* strAddErrInfo */ "Neither NameSpace nor ClassName nor ObjectName defined");
-
+            /* strAddErrInfo */ "No Name defined");
         if( CErrLog::GetInstance() != nullptr )
         {
             CErrLog::GetInstance()->addEntry(errResultInfo);
@@ -874,217 +1135,132 @@ CLogger* CLogServer::getLogger(
         {
             eDetailLevel = i_eDefaultDetailLevel;
         }
-
-        pLogger = m_pLoggersIdxTree->getLogger(
-            /* strNameSpace         */ i_strNameSpace,
-            /* strClassName         */ i_strClassName,
-            /* strObjName           */ i_strObjName,
-            /* bEnabledAsDefault    */ bEnabled,
-            /* eDefaultDetailLevel  */ eDetailLevel,
-            /* strDefaultDataFilter */ QString(),
-            /* bIncrementRefCount   */ true );
+        pLogger = m_pLoggersIdxTree->getLogger(i_strName, bEnabled, eDetailLevel, QString());
     }
     return pLogger;
 }
 
-//------------------------------------------------------------------------------
-/*! @brief Renames the given loggerby replacing the given input
-           pointer with the address of the newly referenced logger.
-
-    If the given logger will no longer be referenced it will be destroyed.
-    If at the new position already a logger is existing the reference
-    to this logger will be returned.
-    If at the new position no logger is existing a new object is
-    created and the address of the newly created object is returned.
-
-    @param io_ppLogger [in, out]
-        In:  Pointer to admin object which should be renamed. The reference counter
-             of this object is decremented. If 0 the object will be destroyed.
-        Out: Pointer to logger at the new position. This might either
-             be an already existing logger whose reference counter is
-             increased or a newly created object.
-    @param i_strNewObjName [in] New object name.
-*/
-void CLogServer::renameLogger(
-    CLogger**      io_ppLogger,
-    const QString& i_strNewObjName )
-//------------------------------------------------------------------------------
-{
-    QMutexLocker mtxLocker(&s_mtx);
-    m_pLoggersIdxTree->renameLogger(io_ppLogger, i_strNewObjName);
-}
-
-//------------------------------------------------------------------------------
-/*! @brief Releases the logger.
-
-    The logger will not be destroyed. Only the reference counter
-    will be decremented.
-
-    @param i_pLogger [in] Pointer to logger to be released.
-*/
-void CLogServer::releaseLogger( CLogger* i_pLogger )
-//------------------------------------------------------------------------------
-{
-    QMutexLocker mtxLocker(&s_mtx);
-
-    if( i_pLogger != nullptr )
-    {
-        m_pLoggersIdxTree->releaseLogger(i_pLogger);
-    }
-}
-
 /*==============================================================================
 public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CLogServer::log(
-    const CLogger* i_pLogger,
-    const QString& i_strMethod,
-    const QString& i_strAddInfo )
-//------------------------------------------------------------------------------
-{
-    QMutexLocker mtxLocker(&s_mtx);
+/*! @brief Creates a log entry for the given log level.
 
-    if( isActive(i_pLogger) )
-    {
-        addEntry(
-            /* strThreadName */ currentThreadName(),
-            /* dt            */ QDateTime::currentDateTime(),
-            /* fSysTimeInSec */ Time::getProcTimeInSec(),
-            /* strNameSpace  */ i_pLogger->getNameSpace(),
-            /* strClassName  */ i_pLogger->getClassName(),
-            /* strObjName    */ i_pLogger->getObjectName(),
-            /* strMethod     */ i_strMethod,
-            /* strAddInfo    */ i_strAddInfo );
-    }
-}
+    A log entry will only be created if the passed filter detail level is not
+    None and is equal or greater than the current log level of the server's
+    main logger (named "theInst").
 
-//------------------------------------------------------------------------------
-void CLogServer::log(
-    const CLogger* i_pLogger,
-    const QString& i_strObjName,
-    const QString& i_strMethod,
-    const QString& i_strAddInfo )
-//------------------------------------------------------------------------------
-{
-    QMutexLocker mtxLocker(&s_mtx);
+    Internally this log method will access the server's main logger to get
+    the detail level and additional formatting instructions.
 
-    if( isActive(i_pLogger) )
-    {
-        addEntry(
-            /* strThreadName */ currentThreadName(),
-            /* dt            */ QDateTime::currentDateTime(),
-            /* fSysTimeInSec */ Time::getProcTimeInSec(),
-            /* strNameSpace  */ i_pLogger->getNameSpace(),
-            /* strClassName  */ i_pLogger->getClassName(),
-            /* strObjName    */ i_strObjName,
-            /* strMethod     */ i_strMethod,
-            /* strAddInfo    */ i_strAddInfo );
-    }
-}
+    This method has been provided for convenience if you just use the main
+    logger and no user defined loggers. Calling this method is the same as:
 
-//------------------------------------------------------------------------------
-void CLogServer::log(
-    const QString& i_strNameSpace,
-    const QString& i_strClassName,
-    const QString& i_strObjName,
-    const QString& i_strMethod,
-    const QString& i_strAddInfo )
-//------------------------------------------------------------------------------
-{
-    QMutexLocker mtxLocker(&s_mtx);
+        CLogger* pLogger = LogServer::GetLogger();
+        pLogger->log(logLevel, i_strLogEntry);
 
-    if( isActive() )
-    {
-        addEntry(
-            /* strThreadName */ currentThreadName(),
-            /* dt            */ QDateTime::currentDateTime(),
-            /* fSysTimeInSec */ Time::getProcTimeInSec(),
-            /* strNameSpace  */ i_strNameSpace,
-            /* strClassName  */ i_strClassName,
-            /* strObjName    */ i_strObjName,
-            /* strMethod     */ i_strMethod,
-            /* strAddInfo    */ i_strAddInfo );
-    }
-}
+    @Examples
 
-/*==============================================================================
-public: // instance methods
-==============================================================================*/
+        // The log server should be used to just show info messages.
+        // For this we need to access the main logger of the log server
+        // and set the log level at the main logger.
+        CLogger* pLogger = LogServer::GetLogger();
+        pLogger->setLogLevel(ELogDetailLevel::Info);
 
-//------------------------------------------------------------------------------
-/*! @brief Checks whether logging is active.
+        // The following call will not create a log entry:
+        pLogServer->log(ELogDetailLevel::Debug, "Debug Message");
 
-    Logging is active if logging is enabled at all (flag enabled of the
-    log settings) and if the local log file is used.
+        // The following calls will create log entries:
+        pLogServer->log(ELogDetailLevel::Info, "Info Message");
+        pLogServer->log(ELogDetailLevel::Notice, "Notification Message");
 
-    This method may be overridden to add additional checks.
+    In addition before writing a log entry you may check how detailed the string
+    to be added to the log entry should be:
 
-    The Ipc Log Server overrides this method and also checks whether
-    remote logging (output to remote client) is enabled.
+        // The log server should be used to output detailed debug messages.
+        CLogger* pLogger = LogServer::GetLogger();
+        pLogger->setLogLevel(ELogDetailLevel::DebugDetailed);
 
-    @return true if logging is active, false otherwise.
-*/
-bool CLogServer::isActive() const
-//------------------------------------------------------------------------------
-{
-    QMutexLocker mtxLocker(&s_mtx);
-    return isEnabled() && isLocalLogFileActive();
-}
-
-//------------------------------------------------------------------------------
-/*! @brief Checks whether logging is active.
-
-    Logging is active if logging is enabled at all (flag enabled of the
-    log settings) and if the local log file is used.
-
-    This method may be overridden to add additional checks.
-
-    The Ipc Log Server overrides this method and also checks whether
-    remote logging (output to remote client) is enabled.
-
-    @return true if logging is active, false otherwise.
-*/
-bool CLogServer::isActive( const CLogger* i_pLogger ) const
-//------------------------------------------------------------------------------
-{
-    QMutexLocker mtxLocker(&s_mtx);
-    bool bIsActive = false;
-    if( i_pLogger != nullptr && i_pLogger->isActive(ELogDetailLevel::CriticalError) )
-    {
-        bIsActive = isActive();
-    }
-    return bIsActive;
-}
-
-/*==============================================================================
-public: // instance methods
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-void CLogServer::setEnabled( bool i_bEnabled )
-//------------------------------------------------------------------------------
-{
-    if( i_bEnabled != m_logSettings.m_bEnabled )
-    {
-        m_logSettings.m_bEnabled = i_bEnabled;
-
-        // Close (flush buffer) of log file so it can be read by editors.
-        if( m_pLogFile != nullptr )
-        {
-            m_pLogFile->close();
+        QString strLogEntry;
+        if( pLogger->getLogLevel() >= ELogDetailLevel::DebugVerbose ) { // false
+            strLogEntry = "Verbose debug message containing many details";
         }
-        emit logSettingsChanged(this);
-    }
-}
+        else if( pLogger->getLogLevel() >= ELogDetailLevel::DebugDetailed ) { // true
+            strLogEntry = "Detailed debug message containing some details";
+        }
+        else if( pLogger->getLogLevel() >= ELogDetailLevel::Debug ) {
+            strLogEntry = "Debug message";
+        }
+        // Output of Detailed debug message:
+        pLogServer->log(ELogDetailLevel::Debug, strLogEntry);
 
-//------------------------------------------------------------------------------
-bool CLogServer::isEnabled() const
+    @param i_eFilterDetailLevel [in]
+        If the given filter detail level is not None and is equal or greater
+        than the current detail level of the log server the log entry will
+        be added the log file.
+    @param i_strLogEntry [in] String to be logged.
+*/
+void CLogServer::log( ELogDetailLevel i_eFilterDetailLevel, const QString& i_strLogEntry )
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&s_mtx);
-    return m_logSettings.m_bEnabled;
+    log(m_pLogger, i_eFilterDetailLevel, i_strLogEntry);
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Creates a log entry for the given log level.
+
+    A log entry will only be created if the passed filter detail level is not
+    None and is equal or greater than the current log level of the passed
+    logger instance.
+
+    @Examples
+
+        // The log server should be used to just show info messages.
+        // For this we need to access the main logger of the log server
+        // and set the log level at the main logger.
+        CLogger* pLogger = LogServer::GetLogger("MyLogger");
+        pLogger->setLogLevel(ELogDetailLevel::Info);
+
+        // The following call will not create a log entry:
+        pLogServer->log(pLogger, ELogDetailLevel::Debug, "Debug Message");
+
+        // The following calls will create log entries:
+        pLogServer->log(pLogger, ELogDetailLevel::Info, "Info Message");
+        pLogServer->log(pLogger, ELogDetailLevel::Notice, "Notification Message");
+
+    @param i_pLogger [in]
+        Logger to be used for formatting the log entry.
+    @param i_eFilterDetailLevel [in]
+        If the given filter detail level is not None and is equal or greater
+        than the current detail level of the log server the log entry will
+        be added the log file.
+    @param i_strLogEntry [in] String to be logged.
+*/
+void CLogServer::log(
+    CLogger*        i_pLogger,
+    ELogDetailLevel i_eFilterDetailLevel,
+    const QString&  i_strLogEntry )
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(&s_mtx);
+
+    if( i_pLogger->isActive(i_eFilterDetailLevel) && !i_pLogger->isSuppressedByDataFilter(i_strLogEntry) )
+    {
+        if( m_logSettings.m_bUseLocalLogFile && m_pLogFile != nullptr )
+        {
+            SLogData logData(
+                /* strThreadName */ i_pLogger->addThreadName() ? GetCurrentThreadName() : "",
+                /* dt            */ i_pLogger->addDateTime() ? QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss:zzz") : "",
+                /* fSysTimeInSec */ i_pLogger->addSystemTime() ? Time::getProcTimeInSec() : -1.0,
+                /* strNameSpace  */ i_pLogger->getNameSpace(),
+                /* strClassName  */ i_pLogger->getClassName(),
+                /* strObjName    */ i_pLogger->getObjectName(),
+                /* strEntry      */ i_strLogEntry );
+            m_pLogFile->addEntry(logData.toPlainString());
+        }
+    }
 }
 
 /*==============================================================================
@@ -1558,7 +1734,7 @@ void CLogServer::setLogSettings( const SLogServerSettings& i_settings )
 
         emit logSettingsChanged(this);
     }
-} // setTraceSettings
+} // setSettings
 
 //------------------------------------------------------------------------------
 SLogServerSettings CLogServer::getLogSettings() const
@@ -1587,52 +1763,6 @@ void CLogServer::clearLocalLogFile()
 /*==============================================================================
 protected: // instance methods
 ==============================================================================*/
-
-//------------------------------------------------------------------------------
-void CLogServer::addEntry(
-    const QString&   i_strThreadName,
-    const QDateTime& i_dt,
-    double           i_fSysTimeInSec,
-    const QString&   i_strNameSpace,
-    const QString&   i_strClassName,
-    const QString&   i_strObjName,
-    const QString&   i_strMethod,
-    const QString&   i_strAddInfo )
-//------------------------------------------------------------------------------
-{
-    QMutexLocker mtxLocker(&s_mtx);
-
-    if( m_logSettings.m_bUseLocalLogFile && m_pLogFile != nullptr )
-    {
-        QString strLogEntry;
-
-        strLogEntry += i_dt.toString("yyyy-MM-dd hh:mm:ss:zzz");
-        strLogEntry += " (" + QString::number(i_fSysTimeInSec, 'f', 6) + ")";
-
-        if( m_pLoggersIdxTree != nullptr )
-        {
-            strLogEntry = "<" + m_pLoggersIdxTree->buildPathStr(i_strNameSpace, i_strClassName) + "> ";
-        }
-        else
-        {
-            strLogEntry = "<" + buildPathStr("::", i_strNameSpace, i_strClassName) + "> ";
-        }
-        if( i_strObjName.isEmpty() )
-        {
-            strLogEntry += i_strMethod;
-        }
-        else
-        {
-            strLogEntry += i_strObjName + "." + i_strMethod;
-        }
-        if( !i_strAddInfo.isEmpty() )
-        {
-            strLogEntry += "(" + i_strAddInfo + ")";
-        }
-
-        m_pLogFile->addEntry(strLogEntry);
-    }
-} // addEntry
 
 //------------------------------------------------------------------------------
 /*! Evaluates the name of the current thread.

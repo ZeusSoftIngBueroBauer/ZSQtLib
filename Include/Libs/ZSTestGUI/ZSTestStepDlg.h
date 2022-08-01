@@ -64,7 +64,7 @@ class CTestStep;
 
 namespace GUI
 {
-class CWdgtIdxTreeTestSteps;
+class CWdgtTestStep;
 
 //******************************************************************************
 class ZSTESTGUIDLL_API CDlgTestStep : public QDialog
@@ -76,7 +76,7 @@ public: // ctors and dtor
         CTestStep*      i_pTestStep,
         QWidget*        i_pWdgtParent = nullptr,
         Qt::WindowFlags i_wflags = Qt::WindowFlags(Qt::Window | Qt::WindowTitleHint | Qt::CustomizeWindowHint));
-    ~CDlgTestStep();
+    virtual ~CDlgTestStep();
 public: // instance methods
     void show();
     void hide();
@@ -84,7 +84,6 @@ protected: // overridables of base class QDialog
     virtual void closeEvent( QCloseEvent* i_pEv );
 protected slots:
     void onBtnCompareExpectedWithResultValuesClicked(bool i_bChecked);
-    void onChkMarkFailedResultValuesToggled(bool i_bChecked);
     void onBtnGroupTestResultsButtonToggled(QAbstractButton* i_pBtn, bool i_bChecked);
     void onBtnRunClicked(bool i_bChecked);
     void onBtnStepClicked(bool i_bChecked);
@@ -94,47 +93,23 @@ protected: // auxiliary methods
     void onBtnTestContinueClicked(QAbstractButton* i_pBtn, bool i_bChecked);
     void compareExpectedWithResultValues();
 protected: // instance members
-    QString                 m_strSettingsKey;
-    CTestStep*              m_pTestStep;
-    QVBoxLayout*            m_pLytMain;
-    QHBoxLayout*            m_pLytLineTestStep;
-    QLabel*                 m_pLblTestStep;
-    QLineEdit*              m_pEdtTestStep;
-    QHBoxLayout*            m_pLytLineOperation;
-    QLabel*                 m_pLblOperation;
-    QLineEdit*              m_pEdtOperation;
-    QHBoxLayout*            m_pLytLineDescription;
-    QLabel*                 m_pLblDescription;
-    QLineEdit*              m_pEdtDescription;
-    QHBoxLayout*            m_pLytGrpConfigValues;
-    QGroupBox*              m_pGrpConfigValues;
-    System::GUI::CTextEdit* m_pEdtConfigValues;
-    QSplitter*              m_pSplitterInstructionWithExpectedAndResultValues;
-    QHBoxLayout*            m_pLytGrpInstruction;
-    QGroupBox*              m_pGrpInstruction;
-    System::GUI::CTextEdit* m_pEdtInstruction;
-    QWidget*                m_pWdgtGrpExpectedAndResultValues;
-    QHBoxLayout*            m_pLytGrpExpectedAndResultValues;
-    QVBoxLayout*            m_pLytGrpExpectedValues;
-    QGroupBox*              m_pGrpExpectedValues;
-    System::GUI::CTextEdit* m_pEdtExpectedValues;
-    QVBoxLayout*            m_pLytGrpResultValues;
-    QGroupBox*              m_pGrpResultValues;
-    System::GUI::CTextEdit* m_pEdtResultValues;
-    QHBoxLayout*            m_pLytGrpTestResults;
-    QGroupBox*              m_pGrpTestResults;
-    QPushButton*            m_pBtnCompareExpectedWithResultValues;
-    QCheckBox*              m_pChkMarkFailedResultValues;
-    QButtonGroup*           m_pBtnGrpTestResults;
-    QRadioButton*           m_pBtnTestResultUndefined;
-    QRadioButton*           m_pBtnTestResultPassed;
-    QRadioButton*           m_pBtnTestResultFailed;
-    QRadioButton*           m_pBtnTestResultSkip;
-    QHBoxLayout*            m_pLytLineButtons;
-    QPushButton*            m_pBtnRun;
-    QPushButton*            m_pBtnStep;
-    QPushButton*            m_pBtnPause;
-    QPushButton*            m_pBtnStop;
+    QString        m_strSettingsKey;
+    CTestStep*     m_pTestStep;
+    QVBoxLayout*   m_pLytMain;
+    CWdgtTestStep* m_pWdgtTestStep;
+    QHBoxLayout*   m_pLytGrpTestResults;
+    QGroupBox*     m_pGrpTestResults;
+    QPushButton*   m_pBtnCompareExpectedWithResultValues;
+    QButtonGroup*  m_pBtnGrpTestResults;
+    QRadioButton*  m_pBtnTestResultUndefined;
+    QRadioButton*  m_pBtnTestResultPassed;
+    QRadioButton*  m_pBtnTestResultFailed;
+    QRadioButton*  m_pBtnTestResultSkip;
+    QHBoxLayout*   m_pLytLineButtons;
+    QPushButton*   m_pBtnRun;
+    QPushButton*   m_pBtnStep;
+    QPushButton*   m_pBtnPause;
+    QPushButton*   m_pBtnStop;
 
 }; // class CDlgTestStep
 

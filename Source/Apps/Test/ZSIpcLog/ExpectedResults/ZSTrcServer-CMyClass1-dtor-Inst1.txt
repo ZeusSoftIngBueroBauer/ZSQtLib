@@ -1,4 +1,0 @@
-<GUIMain                 > -> <ZS::Apps::Test::IpcTrace::CMyClass1> Inst1.dtor()
-<GUIMain                 >    -> <ZS::Apps::Test::IpcTrace::CMyClass1> Inst1.stopClass2Thread()
-<GUIMain                 >    <- <ZS::Apps::Test::IpcTrace::CMyClass1> Inst1.stopClass2Thread()
-<GUIMain                 > <- <ZS::Apps::Test::IpcTrace::CMyClass1> Inst1.dtor()

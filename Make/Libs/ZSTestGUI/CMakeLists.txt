@@ -40,6 +40,7 @@ list(APPEND _Headers
     ${_HeadersPath}/${PROJECT_NAME}/ZSTestStepIdxTreeModel.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSTestStepIdxTreeView.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSTestStepIdxTreeWdgt.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSTestStepWdgt.h
 )
 
 list(APPEND _Sources
@@ -50,6 +51,7 @@ list(APPEND _Sources
     ${_SourcesPath}/${PROJECT_NAME}/ZSTestStepIdxTreeModel.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSTestStepIdxTreeView.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSTestStepIdxTreeWdgt.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSTestStepWdgt.cpp
 )
 
 list(APPEND _Resources

@@ -173,14 +173,14 @@ void CServerGatewayThread::run()
         // this we force this thread to sleep for a moment ...
         msleep(10);
 
-        if( isTraceRuntimeInfoActive(ELogDetailLevel::DebugNormal) )
+        if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
         {
             mthTracer.trace( "-+ WaitCondition.wakeAll()" );
         }
 
         m_pWaitCondition->wakeAll();
 
-        if( isTraceRuntimeInfoActive(ELogDetailLevel::DebugNormal) )
+        if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
         {
             mthTracer.trace( "+- WaitCondition.wakeAll()" );
         }
@@ -208,7 +208,7 @@ void CServerGatewayThread::run()
                 }
             }
 
-            if( isTraceRuntimeInfoActive(ELogDetailLevel::DebugNormal) )
+            if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
             {
                 mthTracer.trace( "-+ ReqStartThread.WaitCondition.wakeAll()" );
             }
@@ -225,7 +225,7 @@ void CServerGatewayThread::run()
                 }
             }
 
-            if( isTraceRuntimeInfoActive(ELogDetailLevel::DebugNormal) )
+            if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
             {
                 mthTracer.trace( "+- ReqStartThread.WaitCondition.wakeAll(): " + errResultInfo.getResultStr() );
             }
@@ -240,21 +240,21 @@ void CServerGatewayThread::run()
                 /* iMsgIdReq         */ -1,
                 /* errResultInfo     */ errResultInfo,
                 /* iProgress_perCent */ 100 );
-            POST_OR_DELETE_MESSAGE(pMsgConStartup, &mthTracer, ELogDetailLevel::DebugNormal);
+            POST_OR_DELETE_MESSAGE(pMsgConStartup, &mthTracer, ELogDetailLevel::Debug);
             pMsgConStartup = nullptr;
         }
     } // if( m_iReqIdStartThread >= 0 )
 
     try
     {
-        if( isTraceRuntimeInfoActive(ELogDetailLevel::DebugNormal) )
+        if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
         {
             mthTracer.trace( "-+ QThread::exec()" );
         }
 
         exec();
 
-        if( isTraceRuntimeInfoActive(ELogDetailLevel::DebugNormal) )
+        if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
         {
             mthTracer.trace( "+- QThread::exec()" );
         }
@@ -500,7 +500,7 @@ void CServerGateway::onNewConnectionPending( QObject* /*i_pServerWrapper*/ )
         /* pObjSender   */ this,
         /* pObjReceiver */ m_pSrvClt,
         /* socketDscr   */ pIpcSocketWrapper->getSocketDscr() );
-    POST_OR_DELETE_MESSAGE(pMsgInd, &mthTracer, ELogDetailLevel::DebugNormal);
+    POST_OR_DELETE_MESSAGE(pMsgInd, &mthTracer, ELogDetailLevel::Debug);
     pMsgInd = nullptr;
 
     //if( m_pBlkType->hasConnectionGreetingBlock(m_srvCltType) )
@@ -621,7 +621,7 @@ void CServerGateway::onDisconnected( QObject* i_pSocketWrapper )
                 /* pObjSender   */ this,
                 /* pObjReceiver */ m_pSrvClt,
                 /* socketDscr   */ socketDscr );
-            POST_OR_DELETE_MESSAGE(pMsgInd, &mthTracer, ELogDetailLevel::DebugNormal);
+            POST_OR_DELETE_MESSAGE(pMsgInd, &mthTracer, ELogDetailLevel::Debug);
             pMsgInd = nullptr;
             break;
         }
@@ -681,7 +681,7 @@ void CServerGateway::onReadyRead( QObject* i_pSocketWrapper )
         /* iSocketId        */ pIpcSocketWrapper->getSocketId(),
         /* bMustBeConfirmed */ false,
         /* iReqId           */ -1 );
-    POST_OR_DELETE_MESSAGE(pMsgReq, &mthTracer, ELogDetailLevel::DebugNormal);
+    POST_OR_DELETE_MESSAGE(pMsgReq, &mthTracer, ELogDetailLevel::Debug);
     pMsgReq = nullptr;
 
 } // onReadyRead
@@ -794,7 +794,7 @@ void CServerGateway::onError( QObject* i_pSocketWrapper, ZS::System::SErrResultI
             /* pObjSender    */ this,
             /* pObjReceiver  */ m_pSrvClt,
             /* errResultInfo */ errResultInfo );
-        POST_OR_DELETE_MESSAGE(pMsgErr, &mthTracer, ELogDetailLevel::DebugNormal);
+        POST_OR_DELETE_MESSAGE(pMsgErr, &mthTracer, ELogDetailLevel::Debug);
         pMsgErr = nullptr;
     }
 
@@ -1025,7 +1025,7 @@ bool CServerGateway::event( QEvent* i_pMsg )
                             pReqExecTree->setExecutionConfirmationMessage(m_iReqIdInProgress, m_pMsgCon);
                             m_pMsgCon = nullptr;
 
-                            if( isTraceRuntimeInfoActive(ELogDetailLevel::DebugNormal) )
+                            if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
                             {
                                 mthTracer.trace( "-+ ReqStartup.WaitCondition.wakeAll()" );
                             }
@@ -1042,7 +1042,7 @@ bool CServerGateway::event( QEvent* i_pMsg )
                                 }
                             }
 
-                            if( isTraceRuntimeInfoActive(ELogDetailLevel::DebugNormal) )
+                            if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
                             {
                                 mthTracer.trace( "+- ReqStartup.WaitCondition.wakeAll(): " + errResultInfo.getResultStr() );
                             }
@@ -1050,7 +1050,7 @@ bool CServerGateway::event( QEvent* i_pMsg )
 
                         else if( m_pMsgCon != nullptr )
                         {
-                            POST_OR_DELETE_MESSAGE(m_pMsgCon, &mthTracer, ELogDetailLevel::DebugNormal);
+                            POST_OR_DELETE_MESSAGE(m_pMsgCon, &mthTracer, ELogDetailLevel::Debug);
                             m_pMsgCon = nullptr;
                         }
                         else if( errResultInfo.isErrorResult() )
@@ -1179,7 +1179,7 @@ bool CServerGateway::event( QEvent* i_pMsg )
                             pReqExecTree->setExecutionConfirmationMessage(m_iReqIdInProgress, m_pMsgCon);
                             m_pMsgCon = nullptr;
 
-                            if( isTraceRuntimeInfoActive(ELogDetailLevel::DebugNormal) )
+                            if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
                             {
                                 mthTracer.trace( "-+ ReqShutdown.WaitCondition.wakeAll()" );
                             }
@@ -1196,7 +1196,7 @@ bool CServerGateway::event( QEvent* i_pMsg )
                                 }
                             }
 
-                            if( isTraceRuntimeInfoActive(ELogDetailLevel::DebugNormal) )
+                            if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
                             {
                                 mthTracer.trace( "+- ReqShudown.WaitCondition.wakeAll(): " + errResultInfo.getResultStr() );
                             }
@@ -1204,7 +1204,7 @@ bool CServerGateway::event( QEvent* i_pMsg )
 
                         else if( m_pMsgCon != nullptr )
                         {
-                            POST_OR_DELETE_MESSAGE(m_pMsgCon, &mthTracer, ELogDetailLevel::DebugNormal);
+                            POST_OR_DELETE_MESSAGE(m_pMsgCon, &mthTracer, ELogDetailLevel::Debug);
                             m_pMsgCon = nullptr;
                         }
                         else if( errResultInfo.isErrorResult() )
@@ -1439,7 +1439,7 @@ bool CServerGateway::event( QEvent* i_pMsg )
                             pReqExecTree->setExecutionConfirmationMessage(m_iReqIdInProgress, m_pMsgCon);
                             m_pMsgCon = nullptr;
 
-                            if( isTraceRuntimeInfoActive(ELogDetailLevel::DebugNormal) )
+                            if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
                             {
                                 mthTracer.trace( "-+ ReqChangeSettings.WaitCondition.wakeAll()" );
                             }
@@ -1456,7 +1456,7 @@ bool CServerGateway::event( QEvent* i_pMsg )
                                 }
                             }
 
-                            if( isTraceRuntimeInfoActive(ELogDetailLevel::DebugNormal) )
+                            if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
                             {
                                 mthTracer.trace( "+- ReqChangeSettings.WaitCondition.wakeAll(): " + errResultInfo.getResultStr() );
                             }
@@ -1464,7 +1464,7 @@ bool CServerGateway::event( QEvent* i_pMsg )
 
                         else if( m_pMsgCon != nullptr )
                         {
-                            POST_OR_DELETE_MESSAGE(m_pMsgCon, &mthTracer, ELogDetailLevel::DebugNormal);
+                            POST_OR_DELETE_MESSAGE(m_pMsgCon, &mthTracer, ELogDetailLevel::Debug);
                             m_pMsgCon = nullptr;
                         }
                         else if( errResultInfo.isErrorResult() )
@@ -1630,7 +1630,7 @@ bool CServerGateway::event( QEvent* i_pMsg )
                                         /* pObjReceiver */ m_pSrvClt,
                                         /* iSocketId    */ pIpcSocketWrapper->getSocketId(),
                                         /* byteArr      */ arByteArrs[idxBlk] );
-                                    POST_OR_DELETE_MESSAGE(pMsgInd, &mthTracer, ELogDetailLevel::DebugNormal);
+                                    POST_OR_DELETE_MESSAGE(pMsgInd, &mthTracer, ELogDetailLevel::Debug);
                                     pMsgInd = nullptr;
                                 }
                             } // if( m_pBlkType != nullptr )
@@ -1653,7 +1653,7 @@ bool CServerGateway::event( QEvent* i_pMsg )
                                     /* iSocketId        */ pIpcSocketWrapper->getSocketId(),
                                     /* bMustBeConfirmed */ false,
                                     /* iReqId           */ -1 );
-                                POST_OR_DELETE_MESSAGE(pMsgReq, &mthTracer, ELogDetailLevel::DebugNormal);
+                                POST_OR_DELETE_MESSAGE(pMsgReq, &mthTracer, ELogDetailLevel::Debug);
                                 pMsgReq = nullptr;
                             }
                         } // if( pIpcSocketWrapper->socketState() == ESocketStateConnected )

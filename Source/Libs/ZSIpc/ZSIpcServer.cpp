@@ -471,7 +471,7 @@ CRequest* CServer::startup(
 
     CMutexLocker mtxLocker(m_pMtx);
 
-    if( isTraceRuntimeInfoActive(ELogDetailLevel::DebugNormal) )
+    if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         int iAddTrcInfoDetailLevel = 0;
         if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
@@ -580,7 +580,7 @@ CRequest* CServer::startup(
         emit stateChanged(this,m_state);
     }
 
-    if( isTraceRuntimeInfoActive(ELogDetailLevel::DebugNormal) )
+    if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         int iAddTrcInfoDetailLevel = 0;
         if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
@@ -630,7 +630,7 @@ CRequest* CServer::shutdown(
 
     CMutexLocker mtxLocker(m_pMtx);
 
-    if( isTraceRuntimeInfoActive(ELogDetailLevel::DebugNormal) )
+    if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         int iAddTrcInfoDetailLevel = 0;
         if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
@@ -739,7 +739,7 @@ CRequest* CServer::shutdown(
         emit stateChanged(this,m_state);
     }
 
-    if( isTraceRuntimeInfoActive(ELogDetailLevel::DebugNormal) )
+    if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         int iAddTrcInfoDetailLevel = 0;
         if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
@@ -790,7 +790,7 @@ CRequest* CServer::changeSettings( int i_iTimeout_ms, bool i_bWait, qint64 i_iRe
 
     CMutexLocker mtxLocker(m_pMtx);
 
-    if( isTraceRuntimeInfoActive(ELogDetailLevel::DebugNormal) )
+    if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         int iAddTrcInfoDetailLevel = 0;
         if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
@@ -899,7 +899,7 @@ CRequest* CServer::changeSettings( int i_iTimeout_ms, bool i_bWait, qint64 i_iRe
         emit stateChanged(this,m_state);
     }
 
-    if( isTraceRuntimeInfoActive(ELogDetailLevel::DebugNormal) )
+    if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         int iAddTrcInfoDetailLevel = 0;
         if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
@@ -967,7 +967,7 @@ ZS::System::CRequest* CServer::sendData(
 
     CMutexLocker mtxLocker(m_pMtx);
 
-    if( isTraceRuntimeInfoActive(ELogDetailLevel::DebugNormal) )
+    if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         int iAddTrcInfoDetailLevel = 0;
         if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
@@ -1157,7 +1157,7 @@ ZS::System::CRequest* CServer::sendData(
         }
     } // if( !errResultInfo.isErrorResult() )
 
-    if( isTraceRuntimeInfoActive(ELogDetailLevel::DebugNormal) )
+    if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         int iAddTrcInfoDetailLevel = 0;
         if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
@@ -1281,7 +1281,7 @@ void CServer::setHostSettings( const SServerHostSettings& i_hostSettings )
 
     CMutexLocker mtxLocker(m_pMtx);
 
-    if( isTraceRuntimeInfoActive(ELogDetailLevel::DebugNormal) )
+    if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         int iAddTrcInfoDetailLevel = 0;
         if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
@@ -1351,7 +1351,7 @@ void CServer::setBlkType( CBlkType* i_pBlkType )
 
     CMutexLocker mtxLocker(m_pMtx);
 
-    if( isTraceRuntimeInfoActive(ELogDetailLevel::DebugNormal) )
+    if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         int iAddTrcInfoDetailLevel = 0;
         if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
@@ -1514,7 +1514,7 @@ void CServer::setSocketName( int i_iSocketId, const QString& i_strSocketName )
 
     CMutexLocker mtxLocker(m_pMtx);
 
-    if( isTraceRuntimeInfoActive(ELogDetailLevel::DebugNormal) )
+    if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         int iAddTrcInfoDetailLevel = 0;
         if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
@@ -1730,7 +1730,7 @@ void CServer::abortRequest( qint64 i_iRequestId )
 
     CMutexLocker mtxLocker(m_pMtx);
 
-    if( isTraceRuntimeInfoActive(ELogDetailLevel::DebugNormal) )
+    if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         int iAddTrcInfoDetailLevel = 0;
         if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
@@ -1757,7 +1757,7 @@ void CServer::abortRequest( qint64 i_iRequestId )
 
     } // if( pReq != nullptr }
 
-    if( isTraceRuntimeInfoActive(ELogDetailLevel::DebugNormal) )
+    if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         int iAddTrcInfoDetailLevel = 0;
         if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
@@ -1793,7 +1793,7 @@ void CServer::abortRequestInProgress()
 
     CMutexLocker mtxLocker(m_pMtx);
 
-    if( isTraceRuntimeInfoActive(ELogDetailLevel::DebugNormal) )
+    if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         int iAddTrcInfoDetailLevel = 0;
         if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
@@ -1811,7 +1811,7 @@ void CServer::abortRequestInProgress()
         abortRequest( pReq->getId() );
     }
 
-    if( isTraceRuntimeInfoActive(ELogDetailLevel::DebugNormal) )
+    if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         int iAddTrcInfoDetailLevel = 0;
         if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
@@ -1847,7 +1847,7 @@ void CServer::abortAllRequests()
 
     CMutexLocker mtxLocker(m_pMtx);
 
-    if( isTraceRuntimeInfoActive(ELogDetailLevel::DebugNormal) )
+    if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         int iAddTrcInfoDetailLevel = 0;
         if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
@@ -1872,7 +1872,7 @@ void CServer::abortAllRequests()
         abortRequestInProgress();
     }
 
-    if( isTraceRuntimeInfoActive(ELogDetailLevel::DebugNormal) )
+    if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         int iAddTrcInfoDetailLevel = 0;
         if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
@@ -1992,7 +1992,7 @@ void CServer::onReceivedData( int i_iSocketId, const QByteArray& i_byteArr )
     // Not necessary as method only called internally if mutex is already locked:
     //CMutexLocker mtxLocker(m_pMtx);
 
-    if( isTraceRuntimeInfoActive(ELogDetailLevel::DebugNormal) )
+    if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         int iAddTrcInfoDetailLevel = 0;
         if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
@@ -2033,7 +2033,7 @@ void CServer::executeNextPostponedRequest()
     // Not necessary as method only called internally if mutex is already locked:
     //CMutexLocker mtxLocker(m_pMtx);
 
-    if( isTraceRuntimeInfoActive(ELogDetailLevel::DebugNormal) )
+    if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         int iAddTrcInfoDetailLevel = 0;
         if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
@@ -2055,7 +2055,7 @@ void CServer::executeNextPostponedRequest()
                 /* bMustBeConfirmed */ false,
                 /* iReqId           */ -1,
                 /* iMsgId           */ -1 );
-            POST_OR_DELETE_MESSAGE(pMsgReq, &mthTracer, ELogDetailLevel::DebugNormal);
+            POST_OR_DELETE_MESSAGE(pMsgReq, &mthTracer, ELogDetailLevel::Debug);
         }
     } // if( !m_pRequestQueue->isRequestInProgress() && m_pRequestQueue->hasPostponedRequest() )
 
@@ -2094,7 +2094,7 @@ void CServer::executeStartupRequest( CRequest* i_pReq )
     // Not necessary as method only called internally if mutex is already locked:
     //CMutexLocker mtxLocker(m_pMtx);
 
-    if( isTraceRuntimeInfoActive(ELogDetailLevel::DebugNormal) )
+    if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         int iAddTrcInfoDetailLevel = 0;
         if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
@@ -2202,7 +2202,7 @@ void CServer::executeStartupRequest( CRequest* i_pReq )
 
     i_pReq->unlock();
 
-    if( isTraceRuntimeInfoActive(ELogDetailLevel::DebugNormal) )
+    if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         int iAddTrcInfoDetailLevel = 0;
         if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
@@ -2259,7 +2259,7 @@ void CServer::executeShutdownRequest( CRequest* i_pReq )
     // Not necessary as method only called internally if mutex is already locked:
     //CMutexLocker mtxLocker(m_pMtx);
 
-    if( isTraceRuntimeInfoActive(ELogDetailLevel::DebugNormal) )
+    if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         int iAddTrcInfoDetailLevel = 0;
         if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
@@ -2369,7 +2369,7 @@ void CServer::executeShutdownRequest( CRequest* i_pReq )
 
     i_pReq->unlock();
 
-    if( isTraceRuntimeInfoActive(ELogDetailLevel::DebugNormal) )
+    if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         int iAddTrcInfoDetailLevel = 0;
         if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
@@ -2426,7 +2426,7 @@ void CServer::executeChangeSettingsRequest( CRequest* i_pReq )
     // Not necessary as method only called internally if mutex is already locked:
     //CMutexLocker mtxLocker(m_pMtx);
 
-    if( isTraceRuntimeInfoActive(ELogDetailLevel::DebugNormal) )
+    if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         int iAddTrcInfoDetailLevel = 0;
         if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
@@ -2503,7 +2503,7 @@ void CServer::executeChangeSettingsRequest( CRequest* i_pReq )
                 /* iReqId           */ i_pReq->getId() );
             pMsgReq->setBlkType(m_pBlkType); // The block will be cloned.
 
-            POST_OR_DELETE_MESSAGE(pMsgReq, &mthTracer, ELogDetailLevel::DebugNormal);
+            POST_OR_DELETE_MESSAGE(pMsgReq, &mthTracer, ELogDetailLevel::Debug);
             pMsgReq = nullptr;
 
             if( i_pReq->isBlockingRequest() )
@@ -2586,7 +2586,7 @@ void CServer::executeChangeSettingsRequest( CRequest* i_pReq )
 
     i_pReq->unlock();
 
-    if( isTraceRuntimeInfoActive(ELogDetailLevel::DebugNormal) )
+    if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         int iAddTrcInfoDetailLevel = 0;
         if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
@@ -2643,7 +2643,7 @@ void CServer::executeSendDataRequest( CRequest* i_pReq )
     // Not necessary as method only called internally if mutex is already locked:
     //CMutexLocker mtxLocker(m_pMtx);
 
-    if( isTraceRuntimeInfoActive(ELogDetailLevel::DebugNormal) )
+    if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         int iAddTrcInfoDetailLevel = 0;
         if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
@@ -2694,7 +2694,7 @@ void CServer::executeSendDataRequest( CRequest* i_pReq )
                 pMsgReq->setReceiver(m_pGateway);
                 pMsgReq->setRequestId(i_pReq->getId());
 
-                POST_OR_DELETE_MESSAGE(pMsgReq, &mthTracer, ELogDetailLevel::DebugNormal);
+                POST_OR_DELETE_MESSAGE(pMsgReq, &mthTracer, ELogDetailLevel::Debug);
                 pMsgReq = nullptr;
             }
 
@@ -2782,7 +2782,7 @@ void CServer::executeSendDataRequest( CRequest* i_pReq )
 
     i_pReq->unlock();
 
-    if( isTraceRuntimeInfoActive(ELogDetailLevel::DebugNormal) )
+    if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         int iAddTrcInfoDetailLevel = 0;
         if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
@@ -2888,7 +2888,7 @@ SErrResultInfo CServer::startGatewayThread( int i_iTimeout_ms, qint64 i_iReqIdPa
     // on synchronizing with the thread using startup confirmation messages.
     m_pGatewayThread->start( pReqStartThread->getId() );
 
-    if( isTraceRuntimeInfoActive(ELogDetailLevel::DebugNormal) )
+    if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         mthTracer.trace( "-+ ReqStartThread.wait()" );
     }
@@ -2929,7 +2929,7 @@ SErrResultInfo CServer::startGatewayThread( int i_iTimeout_ms, qint64 i_iReqIdPa
         errResultInfo.setErrResult(ErrResultSuccess);
     }
 
-    if( isTraceRuntimeInfoActive(ELogDetailLevel::DebugNormal) )
+    if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         mthTracer.trace( "+- ReqStartThread.wait(): " + errResultInfo.getAddErrInfoDscr() );
     }
@@ -3100,7 +3100,7 @@ CRequest* CServer::startupGateway( int i_iTimeout_ms, bool i_bWait, qint64 i_iRe
     // Not necessary as method only called internally if mutex is already locked:
     //CMutexLocker mtxLocker(m_pMtx);
 
-    if( isTraceRuntimeInfoActive(ELogDetailLevel::DebugNormal) )
+    if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         int iAddTrcInfoDetailLevel = 0;
         if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
@@ -3168,13 +3168,13 @@ CRequest* CServer::startupGateway( int i_iTimeout_ms, bool i_bWait, qint64 i_iRe
 
         m_pRequestQueue->addRequestInProgress(pReqStartupGateway);
 
-        POST_OR_DELETE_MESSAGE(pMsgReq, &mthTracer, ELogDetailLevel::DebugNormal);
+        POST_OR_DELETE_MESSAGE(pMsgReq, &mthTracer, ELogDetailLevel::Debug);
 
     } // if( m_pGateway != nullptr )
 
     if( pReqStartupGateway->isBlockingRequest() )
     {
-        if( isTraceRuntimeInfoActive(ELogDetailLevel::DebugNormal) )
+        if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
         {
             mthTracer.trace( "-+ ReqStartupGateway.wait()" );
         }
@@ -3207,7 +3207,7 @@ CRequest* CServer::startupGateway( int i_iTimeout_ms, bool i_bWait, qint64 i_iRe
             }
         }
 
-        if( isTraceRuntimeInfoActive(ELogDetailLevel::DebugNormal) )
+        if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
         {
             mthTracer.trace( "+- ReqStartupGateway.wait(): " + errResultInfo.getAddErrInfoDscr() );
         }
@@ -3244,7 +3244,7 @@ CRequest* CServer::startupGateway( int i_iTimeout_ms, bool i_bWait, qint64 i_iRe
         m_pRequestQueue->setSyncRequestToBeDeletedLater(pReqStartupGateway);
     }
 
-    if( isTraceRuntimeInfoActive(ELogDetailLevel::DebugNormal) )
+    if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         int iAddTrcInfoDetailLevel = 0;
         if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
@@ -3292,7 +3292,7 @@ CRequest* CServer::shutdownGateway( int i_iTimeout_ms, bool i_bWait, qint64 i_iR
     // Not necessary as method only called internally if mutex is already locked:
     //CMutexLocker mtxLocker(m_pMtx);
 
-    if( isTraceRuntimeInfoActive(ELogDetailLevel::DebugNormal) )
+    if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         int iAddTrcInfoDetailLevel = 0;
         if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
@@ -3367,13 +3367,13 @@ CRequest* CServer::shutdownGateway( int i_iTimeout_ms, bool i_bWait, qint64 i_iR
 
         m_pRequestQueue->addRequestInProgress(pReqShutdownGateway);
 
-        POST_OR_DELETE_MESSAGE(pMsgReq, &mthTracer, ELogDetailLevel::DebugNormal);
+        POST_OR_DELETE_MESSAGE(pMsgReq, &mthTracer, ELogDetailLevel::Debug);
 
     } // if( m_pGateway != nullptr )
 
     if( pReqShutdownGateway->isBlockingRequest() )
     {
-        if( isTraceRuntimeInfoActive(ELogDetailLevel::DebugNormal) )
+        if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
         {
             mthTracer.trace( "-+ ReqShutdownGateway.wait()" );
         }
@@ -3406,7 +3406,7 @@ CRequest* CServer::shutdownGateway( int i_iTimeout_ms, bool i_bWait, qint64 i_iR
             }
         }
 
-        if( isTraceRuntimeInfoActive(ELogDetailLevel::DebugNormal) )
+        if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
         {
             mthTracer.trace( "+- ReqShutdownGateway.wait(): " + errResultInfo.getAddErrInfoDscr() );
         }
@@ -3447,7 +3447,7 @@ CRequest* CServer::shutdownGateway( int i_iTimeout_ms, bool i_bWait, qint64 i_iR
         m_pRequestQueue->setSyncRequestToBeDeletedLater(pReqShutdownGateway);
     }
 
-    if( isTraceRuntimeInfoActive(ELogDetailLevel::DebugNormal) )
+    if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         int iAddTrcInfoDetailLevel = 0;
         if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
@@ -3495,7 +3495,7 @@ void CServer::onRequestTimeout()
 
     CMutexLocker mtxLocker(m_pMtx);
 
-    if( isTraceRuntimeInfoActive(ELogDetailLevel::DebugNormal) )
+    if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         int iAddTrcInfoDetailLevel = 0;
         if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
@@ -3531,7 +3531,7 @@ void CServer::onRequestTimeout()
         }
     } // if( pReq != nullptr )
 
-    if( isTraceRuntimeInfoActive(ELogDetailLevel::DebugNormal) )
+    if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         int iAddTrcInfoDetailLevel = 0;
         if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
@@ -3578,7 +3578,7 @@ void CServer::onRequestChanged( ZS::System::SRequestDscr i_reqDscr )
     // (direct but not queued signal/slot connections).
     CMutexLocker mtxLocker(m_pMtx);
 
-    if( isTraceRuntimeInfoActive(ELogDetailLevel::DebugNormal) )
+    if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         int iAddTrcInfoDetailLevel = 0;
         if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
@@ -3882,7 +3882,7 @@ void CServer::onRequestChanged( ZS::System::SRequestDscr i_reqDscr )
         }
     } // if( !errResultInfo.isErrorResult() )
 
-    if( isTraceRuntimeInfoActive(ELogDetailLevel::DebugNormal) )
+    if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
         int iAddTrcInfoDetailLevel = 0;
         if( getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
@@ -4128,7 +4128,7 @@ bool CServer::event( QEvent* i_pMsg )
 
             else // if( !pMsg->isBaseMsgType() )
             {
-                if( isTraceRuntimeInfoActive(ELogDetailLevel::DebugNormal) )
+                if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
                 {
                     CMutexLocker mtxLocker(m_pMtx);
 
@@ -4428,7 +4428,7 @@ bool CServer::event( QEvent* i_pMsg )
                     } // if( pReq != nullptr )
                 } // if( pMsg->getSystemMsgType() == MsgProtocol::ESystemMsgTypeCon )
 
-                if( isTraceRuntimeInfoActive(ELogDetailLevel::DebugNormal) )
+                if( isTraceRuntimeInfoActive(ELogDetailLevel::Debug) )
                 {
                     CMutexLocker mtxLocker(m_pMtx);
 

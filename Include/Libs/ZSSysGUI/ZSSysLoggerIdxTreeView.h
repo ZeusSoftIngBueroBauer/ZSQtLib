@@ -67,6 +67,18 @@ public: // instance methods
         const QRect&       i_rectVisual,
         const QPoint&      i_ptPos,
         const QModelIndex& i_modelIdx );
+    bool isCheckBoxAddThreadNameHit(
+        const QRect&       i_rectVisual,
+        const QPoint&      i_ptPos,
+        const QModelIndex& i_modelIdx );
+    bool isCheckBoxAddDateTimeHit(
+        const QRect&       i_rectVisual,
+        const QPoint&      i_ptPos,
+        const QModelIndex& i_modelIdx );
+    bool isCheckBoxAddSystemTimeHit(
+        const QRect&       i_rectVisual,
+        const QPoint&      i_ptPos,
+        const QModelIndex& i_modelIdx );
 public: // overridables of base class QItemDelegate
     virtual void paint(
         QPainter*                   i_pPainter,
@@ -85,6 +97,9 @@ private: // assignment operator not implemented
     CDelegateIdxTreeLoggers& operator = ( const CDelegateIdxTreeLoggers& );
 protected: // instance members
     mutable QRect m_rectChkBoxEnabled;
+    mutable QRect m_rectChkBoxAddThreadName;
+    mutable QRect m_rectChkBoxAddDateTime;
+    mutable QRect m_rectChkBoxAddSystemTime;
 
 }; // class CDelegateIdxTreeLoggers
 

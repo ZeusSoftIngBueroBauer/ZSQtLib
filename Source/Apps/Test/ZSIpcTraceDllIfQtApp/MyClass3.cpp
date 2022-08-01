@@ -746,7 +746,7 @@ int CMyClass3::recursiveTraceMethod()
     }
     else // if( QThread::currentThread() == thread() )
     {
-        if( mthTracer.isRuntimeInfoActive(ELogDetailLevelDebugNormal) )
+        if( mthTracer.isRuntimeInfoActive(ELogDetailLevelDebug) )
         {
             QString strTrcMsg = "RecursionCount=" + QString::number(m_iRecursionCount);
             mthTracer.trace(strTrcMsg.toLatin1().data());

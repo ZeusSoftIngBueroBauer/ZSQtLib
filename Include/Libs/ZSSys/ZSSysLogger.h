@@ -48,151 +48,99 @@ class CLogServer;
 /*! @brief Instances of this class are used to filter logging.
 
 */
-class ZSSYSDLL_API CLogger : public QObject, public ZS::System::CIdxTreeEntry
+class ZSSYSDLL_API CLogger : public QObject, public CIdxTreeEntry
 //******************************************************************************
 {
 friend class CIdxTreeLoggers;
     Q_OBJECT
 public: // class methods
     /*! Returns the name space of the class. */
-    static QString NameSpace() { return "ZS::Log"; }
+    static QString NameSpace() { return "ZS::System"; }
     /*! Returns the class name of the class. */
     static QString ClassName() { return "CLogger"; }
 protected: // ctors and dtor
-    CLogger(
-        const QString& i_strNameSpace,
-        const QString& i_strClassName,
-        const QString& i_strObjName,
-        const QString& i_strTreeEntryName );
+    CLogger( const QString& i_strLeaveName );
     virtual ~CLogger();
 signals:
     /*! @brief Emitted if ObjState, Enabled, StateOnOff or DetailLevel has been changed. */
     void changed( QObject* i_pLogger );
     /*! @brief Emitted if the object is going to be destroyed. */
-    void aboutToBeDestroyed( ZS::System::CLogger* i_pLogger );
+    void aboutToBeDestroyed( QObject* i_pLogger );
 public: // instance methods
     CIdxTreeLoggers* getLoggersIdxTree();
     CLogServer* getLogServer();
 public: // instance methods
-    QString getNameSpace() const;
-    QString getClassName() const;
-public: // instance methods (reimplementing methods from base class QObject)
-    void setObjectName( const QString& i_strObjName );
-    QString getObjectName() const;
+    void log( ELogDetailLevel i_eFilterDetailLevel, const QString& i_strLogEntry );
 public: // instance methods
-    void setObjectThreadName( const QString& i_strThreadName );
-    QString getObjectThreadName() const;
-public: // instance methods
-    int lock();
-    int unlock();
-    bool isLocked() const;
-    int getLockCount() const;
-    void setDeleteOnUnlock( bool i_bDelete );
-    bool deleteOnUnlock() const;
-public: // instance methods
-    int incrementRefCount();
-    int decrementRefCount();
-    void setRefCount( int i_iRefCount );
-    int getRefCount() const;
-public: // instance methods
-    void setEnabled( ZS::System::EEnabled i_enabled );
-    ZS::System::EEnabled getEnabled() const;
+    void setEnabled( EEnabled i_enabled );
+    EEnabled getEnabled() const;
     bool isEnabled() const;
 public: // instance methods
-    void setDetailLevel( ZS::System::ELogDetailLevel i_eTrcDetailLevel );
-    ZS::System::ELogDetailLevel getDetailLevel() const;
-    bool isActive( ZS::System::ELogDetailLevel i_eFilterDetailLevel ) const;
+    void setLogLevel( ELogDetailLevel i_eTrcDetailLevel );
+    ELogDetailLevel getLogLevel() const;
+    bool isActive( ELogDetailLevel i_eFilterDetailLevel ) const;
 public: // instance methods
-    void setDataFilter( const QString& i_strFilter );
+    void setDataFilter( const QString& i_strFilter = "" );
     QString getDataFilter() const;
-    bool isDataSuppressedByFilter( const QString& i_strData ) const;
+    bool isSuppressedByDataFilter( const QString& i_strData ) const;
+public: // instance methods
+    void setAddThreadName( bool i_bAdd );
+    bool addThreadName() const;
+    void setAddDateTime( bool i_bAdd );
+    bool addDateTime() const;
+    void setAddSystemTime( bool i_bAdd );
+    bool addSystemTime() const;
+    void setNameSpace( const QString& i_strNameSpace = "" );
+    QString getNameSpace() const;
+    void setClassName( const QString& i_strClassName = "" );
+    QString getClassName() const;
+    void setObjectName( const QString& i_strObjName = "" );
+    QString getObjectName() const;
 public: // instance methods
     virtual bool blockTreeEntryChangedSignal( bool i_bBlock );
     virtual bool isTreeEntryChangedSignalBlocked() const;
 private: // Don't use QObject::objectName
     QString objectName() const;
 protected: // instance members
-    int     m_iBlockTreeEntryChangedSignalCounter; /*!< Counts the number of times the tree entry changed signal has been blocked. */
-    QString m_strNameSpace;     /*!< Namespace of the class. May be empty. */
-    QString m_strClassName;     /*!< Class or module name. */
-    QString m_strObjName;       /*!< Object name. May be empty if this is a class tracer. */
-    QString m_strObjThreadName; /*!< Name of the thread in which the object was created. */
-    /*!< The logger may be locked so that it will not be deleted
-         after e.g. renaming the object. */
-    int m_iLockCount;
-    /*!< Flag to indicate that the logger is no longer needed and
-         should be deleted if it gets unlocked. */
-    bool m_bDeleteOnUnlock;
-    /*!< Usually loggers are only referenced by one specific module, class
-         or instance of a class to control the detail level of log outputs.
-         In certain circumstances or in case of a copy and paste error the
-         same logger may be referenced by several modules, classes or
-         instances of classes. If so the reference counter may become
-         greater than 1. */
-    int m_iRefCount;
+    /*!< Counts the number of times the tree entry changed signal has been blocked. */
+    int m_iBlockTreeEntryChangedSignalCounter;
+    /*!< Flag to indicate whether the current thread name should be added to the log entry. */
+    bool m_bAddThreadName;
+    /*!< Flag to indicate whether the current date time should be added to the log entry. */
+    bool m_bAddDateTime;
+    /*!< Flag to indicate whether the current process time should be added to the log entry. */
+    bool m_bAddSystemTime;
+    /*!< Namespace of the class. May be empty. */
+    QString m_strNameSpace;
+    /*!< Class or module name. May be empty. */
+    QString m_strClassName;
+    /*!< Object name. May be empty. */
+    QString m_strObjName;
     /*!< Logging cannot only be controlled via the detail level but logging can
          also be enabled or disabled by this flag. This is useful if a group of
          objects belonging to a namespace should be temporarily disabled and enabled
          later on restoring the previous detail level. */
-    ZS::System::EEnabled  m_enabled;
+    EEnabled m_enabled;
     /*!< Defines the current detail level of the log outputs for the
          module, class or instance referencing this object. If set to
          None log output is disabled. */
-    ZS::System::ELogDetailLevel m_eDetailLevel;
+    ELogDetailLevel m_eDetailLevel;
     /*!< Data may also be suppressed by applying a filter.
-         This filter is a regular expression which allows to define a positive
-         pattern where only the data will be logged which mets the expression
-         or a negative pattern which supporessed the log output if the
-         filter does not match. */
+         Filtering can be done in two ways:
+         - Strings may be defined which must occur in the log entry.
+         - Strings may be defined which may not occur in the log entry.
+    */
     QString m_strDataFilter;
+    /*!< When applying the data filter the data filter will be split into
+         strings which must be included or excluded. The "Must Include"
+         strings are stored in this string list. */
+    QStringList m_strlstDataFilterInclude;
+    /*!< When applying the data filter the data filter will be split into
+         strings which must be included or excluded. The "Must Not Include"
+         strings are stored in this string list. */
+    QStringList m_strlstDataFilterExclude;
 
 }; // class CLogger
-
-//******************************************************************************
-/*! @brief Instances of this class are used in combination with class
-           CLoggerRefGuard to ensure that static class loggers
-           are freed and released if needed.
-*******************************************************************************/
-class ZSSYSDLL_API CLoggerRefAnchor : public QObject
-{
-    Q_OBJECT
-public: // ctors and dtor
-    CLoggerRefAnchor(const QString& i_strNameSpace, const QString& i_strClassName);
-    virtual ~CLoggerRefAnchor();
-public: // instance methods
-    void allocLogger();
-    void releaseLogger();
-    CLogger* logger();
-    void setDetailLevel(ZS::System::ELogDetailLevel i_eTrcDetailLevel);
-    bool isActive(ZS::System::ELogDetailLevel i_eFilterDetailLevel) const;
-private slots:
-    void onLoggerDestroyed(QObject* i_pLogger);
-private: // instance members
-    mutable QMutex m_mtx;           /*!< Mutex to protect the instance members. */
-    QString        m_strNameSpace;  /*!< Name space of the class to be logged. */
-    QString        m_strClassName;  /*!< Name of class to be logged. */
-    CLogger*       m_pLogger;       /*!< Pointer to logger. */
-    int            m_idxInTree;     /*!< If once added the index in the tree is stored for faster access. */
-    int            m_iRefCount;     /*!< Counts how often the logger is allocated but not released. */
-};
-
-//******************************************************************************
-/*! @brief Instances of this class are used in combination with class
-           CLoggerRefGuard to ensure that static class loggers
-           are freed and released if needed.
-*******************************************************************************/
-class ZSSYSDLL_API CLoggerRefGuard
-{
-public: // ctors and dtor
-    CLoggerRefGuard(CLoggerRefAnchor* i_pRefAnchor);
-    ~CLoggerRefGuard();
-public: // instance methods
-    CLogger* logger();
-    void setDetailLevel(ZS::System::ELogDetailLevel i_eTrcDetailLevel);
-    bool isActive(ZS::System::ELogDetailLevel i_eFilterDetailLevel) const;
-private: // instance members
-    CLoggerRefAnchor* m_pRefAnchor;    /*!< Pointer to reference anchor which should be guarded. */
-};
 
 } // namespace System
 

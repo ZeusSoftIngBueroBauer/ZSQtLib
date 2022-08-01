@@ -521,7 +521,7 @@ public: // instance methods
     void setKeepReqDscrInExecTree( bool i_bKeep );
     bool getKeepReqDscrInExecTree() const { return m_bKeepReqDscrInExecTree; }
 public: // instance methods
-    bool isAsynchronousRequest() const { return (m_dscr.m_errResultInfo.getResult() == ZS::System::EResultUndefined); }
+    bool isAsynchronousRequest() const { return (m_dscr.m_errResultInfo.getResult() == EResultUndefined); }
 public: // instance methods
     // If a request is processed completely the one calling "update" usually must
     // delete the request. But when using blocking method calls where sub requests
@@ -695,7 +695,7 @@ ZSSYSDLL_API bool deleteResultConfirmationMessage( CRequest* i_pReq, QObject* i_
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-ZSSYSDLL_API bool isAsynchronousRequest( ZS::System::CRequest* i_pReq );
+ZSSYSDLL_API bool isAsynchronousRequest( CRequest* i_pReq );
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------

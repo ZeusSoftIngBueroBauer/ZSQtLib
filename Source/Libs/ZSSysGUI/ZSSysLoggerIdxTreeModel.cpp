@@ -228,14 +228,6 @@ QVariant CModelIdxTreeLoggers::headerData(
         {
             switch( i_iSection )
             {
-                case EColumnRefCount:
-                {
-                    if( i_iRole == Qt::DisplayRole )
-                    {
-                        varData = "RefCount";
-                    }
-                    break;
-                }
                 case EColumnEnabled:
                 {
                     if( i_iRole == Qt::DisplayRole )
@@ -244,11 +236,11 @@ QVariant CModelIdxTreeLoggers::headerData(
                     }
                     break;
                 }
-                case EColumnDetailLevel:
+                case EColumnLogLevel:
                 {
                     if( i_iRole == Qt::DisplayRole )
                     {
-                        varData = "DetailLevel";
+                        varData = "LogLevel";
                     }
                     break;
                 }
@@ -257,6 +249,30 @@ QVariant CModelIdxTreeLoggers::headerData(
                     if( i_iRole == Qt::DisplayRole )
                     {
                         varData = "DataFilter";
+                    }
+                    break;
+                }
+                case EColumnAddThreadName:
+                {
+                    if( i_iRole == Qt::DisplayRole )
+                    {
+                        varData = "AddThreadName";
+                    }
+                    break;
+                }
+                case EColumnAddDateTime:
+                {
+                    if( i_iRole == Qt::DisplayRole )
+                    {
+                        varData = "AddDateTime";
+                    }
+                    break;
+                }
+                case EColumnAddSystemTime:
+                {
+                    if( i_iRole == Qt::DisplayRole )
+                    {
+                        varData = "AddSystemTime";
                     }
                     break;
                 }
@@ -281,14 +297,6 @@ QVariant CModelIdxTreeLoggers::headerData(
                     if( i_iRole == Qt::DisplayRole )
                     {
                         varData = "ObjName";
-                    }
-                    break;
-                }
-                case EColumnObjThreadName:
-                {
-                    if( i_iRole == Qt::DisplayRole )
-                    {
-                        varData = "Thread";
                     }
                     break;
                 }
@@ -344,22 +352,11 @@ Qt::ItemFlags CModelIdxTreeLoggers::flags( const QModelIndex& i_modelIdx ) const
         switch( i_modelIdx.column() )
         {
             case EColumnEnabled:
-            {
-                if( pLogger != nullptr )
-                {
-                    uFlags |= Qt::ItemIsEditable;
-                }
-                break;
-            }
-            case EColumnDetailLevel:
-            {
-                if( pLogger != nullptr )
-                {
-                    uFlags |= Qt::ItemIsEditable;
-                }
-                break;
-            }
+            case EColumnLogLevel:
             case EColumnDataFilter:
+            case EColumnAddThreadName:
+            case EColumnAddDateTime:
+            case EColumnAddSystemTime:
             {
                 if( pLogger != nullptr )
                 {
@@ -489,17 +486,6 @@ QVariant CModelIdxTreeLoggers::data( const QModelIndex& i_modelIdx, int i_iRole 
                 }
                 break;
             }
-            case EColumnRefCount:
-            {
-                if( i_iRole == Qt::DisplayRole)
-                {
-                    if( pLogger != nullptr )
-                    {
-                        varData = QString::number(pLogger->getRefCount());
-                    }
-                }
-                break;
-            }
             case EColumnEnabled:
             {
                 if( i_iRole == Qt::DisplayRole || i_iRole == Qt::EditRole )
@@ -511,13 +497,13 @@ QVariant CModelIdxTreeLoggers::data( const QModelIndex& i_modelIdx, int i_iRole 
                 }
                 break;
             }
-            case EColumnDetailLevel:
+            case EColumnLogLevel:
             {
                 if( i_iRole == Qt::DisplayRole || i_iRole == Qt::EditRole )
                 {
                     if( pLogger != nullptr )
                     {
-                        varData = CEnumLogDetailLevel(pLogger->getDetailLevel()).toString();
+                        varData = CEnumLogDetailLevel(pLogger->getLogLevel()).toString();
                     }
                 }
                 break;
@@ -529,6 +515,39 @@ QVariant CModelIdxTreeLoggers::data( const QModelIndex& i_modelIdx, int i_iRole 
                     if( pLogger != nullptr )
                     {
                         varData = pLogger->getDataFilter();
+                    }
+                }
+                break;
+            }
+            case EColumnAddThreadName:
+            {
+                if( i_iRole == Qt::DisplayRole || i_iRole == Qt::EditRole )
+                {
+                    if( pLogger != nullptr )
+                    {
+                        varData = pLogger->addThreadName();
+                    }
+                }
+                break;
+            }
+            case EColumnAddDateTime:
+            {
+                if( i_iRole == Qt::DisplayRole || i_iRole == Qt::EditRole )
+                {
+                    if( pLogger != nullptr )
+                    {
+                        varData = pLogger->addDateTime();
+                    }
+                }
+                break;
+            }
+            case EColumnAddSystemTime:
+            {
+                if( i_iRole == Qt::DisplayRole || i_iRole == Qt::EditRole )
+                {
+                    if( pLogger != nullptr )
+                    {
+                        varData = pLogger->addSystemTime();
                     }
                 }
                 break;
@@ -562,17 +581,6 @@ QVariant CModelIdxTreeLoggers::data( const QModelIndex& i_modelIdx, int i_iRole 
                     if( pLogger != nullptr )
                     {
                         varData = pLogger->getObjectName();
-                    }
-                }
-                break;
-            }
-            case EColumnObjThreadName:
-            {
-                if( i_iRole == Qt::DisplayRole )
-                {
-                    if( pLogger != nullptr )
-                    {
-                        varData = pLogger->getObjectThreadName();
                     }
                 }
                 break;
@@ -664,7 +672,7 @@ bool CModelIdxTreeLoggers::setData( const QModelIndex& i_modelIdx, const QVarian
                     }
                     break;
                 }
-                case EColumnDetailLevel:
+                case EColumnLogLevel:
                 {
                     if( pLogger != nullptr )
                     {
@@ -673,7 +681,7 @@ bool CModelIdxTreeLoggers::setData( const QModelIndex& i_modelIdx, const QVarian
                             try
                             {
                                 CEnumLogDetailLevel eDetailLevel(i_varData.toInt());
-                                pLogger->setDetailLevel(eDetailLevel.enumerator());
+                                pLogger->setLogLevel(eDetailLevel.enumerator());
                             }
                             catch(CException&)
                             {
@@ -684,7 +692,7 @@ bool CModelIdxTreeLoggers::setData( const QModelIndex& i_modelIdx, const QVarian
                             try
                             {
                                 CEnumLogDetailLevel eDetailLevel(i_varData.toString());
-                                pLogger->setDetailLevel(eDetailLevel.enumerator());
+                                pLogger->setLogLevel(eDetailLevel.enumerator());
                             }
                             catch(CException&)
                             {
@@ -700,6 +708,39 @@ bool CModelIdxTreeLoggers::setData( const QModelIndex& i_modelIdx, const QVarian
                         if( i_varData.type() == QVariant::String )
                         {
                             pLogger->setDataFilter(i_varData.toString());
+                        }
+                    }
+                    break;
+                }
+                case EColumnAddThreadName:
+                {
+                    if( pLogger != nullptr )
+                    {
+                        if( i_varData.canConvert(QVariant::Bool) )
+                        {
+                            pLogger->setAddThreadName(i_varData.toBool());
+                        }
+                    }
+                    break;
+                }
+                case EColumnAddDateTime:
+                {
+                    if( pLogger != nullptr )
+                    {
+                        if( i_varData.canConvert(QVariant::Bool) )
+                        {
+                            pLogger->setAddDateTime(i_varData.toBool());
+                        }
+                    }
+                    break;
+                }
+                case EColumnAddSystemTime:
+                {
+                    if( pLogger != nullptr )
+                    {
+                        if( i_varData.canConvert(QVariant::Bool) )
+                        {
+                            pLogger->setAddSystemTime(i_varData.toBool());
                         }
                     }
                     break;

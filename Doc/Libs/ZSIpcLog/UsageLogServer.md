@@ -1,4 +1,4 @@
-@page _PAGE_Libs_ZSIpcTrace_Usage_TrcServer Instantiating and starting the Trace Server
+@page _PAGE_Libs_ZSIpcLog_Usage_LogServer Instantiating and starting the Trace Server
 
 The following code examples are taken from the test application ZSIpcTrace.
 

@@ -1,8 +1,0 @@
-<GUIMain                 > -> <ZS::Apps::Test::IpcTrace::CMyClass2> Inst1.ctor(Inst1, nullptr)
-<GUIMain                 >    -> <ZS::System::CMutex> CMyClass2::Inst1::Counters.ctor(Recursive)
-<GUIMain                 >    <- <ZS::System::CMutex> CMyClass2::Inst1::Counters.ctor()
-<GUIMain                 >    -> <ZS::System::CMutex> CMyClass2::Inst1::WaitClass3ThreadRunning.ctor()
-<GUIMain                 >    <- <ZS::System::CMutex> CMyClass2::Inst1::WaitClass3ThreadRunning.ctor()
-<GUIMain                 >    -> <ZS::System::CWaitCondition> CMyClass2::Inst1::Class3ThreadRunning.ctor()
-<GUIMain                 >    <- <ZS::System::CWaitCondition> CMyClass2::Inst1::Class3ThreadRunning.ctor()
-<GUIMain                 > <- <ZS::Apps::Test::IpcTrace::CMyClass2> Inst1.ctor()

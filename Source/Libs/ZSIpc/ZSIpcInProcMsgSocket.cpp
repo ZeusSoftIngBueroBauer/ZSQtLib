@@ -788,7 +788,7 @@ void CInProcMsgSocket::connectToServer(
                 /* bMustBeConfirmed */ true,
                 /* iReqId           */ -1 );
             m_iReqMsgId = pMsgReq->getMsgId();
-            POST_OR_DELETE_MESSAGE(pMsgReq, &mthTracer, ELogDetailLevel::DebugNormal);
+            POST_OR_DELETE_MESSAGE(pMsgReq, &mthTracer, ELogDetailLevel::Debug);
             pMsgReq = nullptr;
 
         } // if( m_pInProcMsgServer != nullptr )
@@ -801,7 +801,7 @@ void CInProcMsgSocket::connectToServer(
             /* iTimerId     */ -1,
             /* bSingleShot  */ false,
             /* iInterval_ms */ -1 );
-        POST_OR_DELETE_MESSAGE(pMsgReqStartTimer, &mthTracer, ELogDetailLevel::DebugNormal);
+        POST_OR_DELETE_MESSAGE(pMsgReqStartTimer, &mthTracer, ELogDetailLevel::Debug);
         pMsgReqStartTimer = nullptr;
 
     } // if( !errResultInfo.isErrorResult() )
@@ -881,7 +881,7 @@ void CInProcMsgSocket::disconnectFromServer( int i_iTimeout_ms )
             /* bMustBeConfirmed */ true,
             /* iReqId           */ -1 );
         m_iReqMsgId = pMsgReq->getMsgId();
-        POST_OR_DELETE_MESSAGE(pMsgReq, &mthTracer, ELogDetailLevel::DebugNormal);
+        POST_OR_DELETE_MESSAGE(pMsgReq, &mthTracer, ELogDetailLevel::Debug);
         pMsgReq = nullptr;
 
         // As timers cannot be started from another thread and
@@ -892,7 +892,7 @@ void CInProcMsgSocket::disconnectFromServer( int i_iTimeout_ms )
             /* iTimerId     */ -1,
             /* bSingleShot  */ false,
             /* iInterval_ms */ -1 );
-        POST_OR_DELETE_MESSAGE(pMsgReqStartTimer, &mthTracer, ELogDetailLevel::DebugNormal);
+        POST_OR_DELETE_MESSAGE(pMsgReqStartTimer, &mthTracer, ELogDetailLevel::Debug);
         pMsgReqStartTimer = nullptr;
 
     } // if( !errResultInfo.isErrorResult() )
@@ -942,7 +942,7 @@ void CInProcMsgSocket::abort()
             /* pObjSender   */ this,
             /* pObjReceiver */ this,
             /* iTimerId     */ -1 );
-        POST_OR_DELETE_MESSAGE(pMsgReqStopTimer, &mthTracer, ELogDetailLevel::DebugNormal);
+        POST_OR_DELETE_MESSAGE(pMsgReqStopTimer, &mthTracer, ELogDetailLevel::Debug);
         pMsgReqStopTimer = nullptr;
     }
 
@@ -1001,7 +1001,7 @@ void CInProcMsgSocket::writeMessage( CMsg* i_pMsg )
     {
         i_pMsg->setReceiver(m_pInProcMsgSocketPeer);
 
-        POST_OR_DELETE_MESSAGE(i_pMsg, &mthTracer, ELogDetailLevel::DebugNormal);
+        POST_OR_DELETE_MESSAGE(i_pMsg, &mthTracer, ELogDetailLevel::Debug);
     }
     else
     {
@@ -1173,7 +1173,7 @@ bool CInProcMsgSocket::event( QEvent* i_pMsg )
                             /* iTimerId      */ pMsgReq->getTimerId(),
                             /* iMsgIdReq     */ pMsgReq->getMsgId(),
                             /* errResultInfo */ SErrResultInfo() );
-                        POST_OR_DELETE_MESSAGE(pMsgCon, &mthTracer, ELogDetailLevel::DebugNormal);
+                        POST_OR_DELETE_MESSAGE(pMsgCon, &mthTracer, ELogDetailLevel::Debug);
                         pMsgCon = nullptr;
                     }
                     break;
@@ -1208,7 +1208,7 @@ bool CInProcMsgSocket::event( QEvent* i_pMsg )
                             /* iTimerId      */ pMsgReq->getTimerId(),
                             /* iMsgIdReq     */ pMsgReq->getMsgId(),
                             /* errResultInfo */ SErrResultInfo() );
-                        POST_OR_DELETE_MESSAGE(pMsgCon, &mthTracer, ELogDetailLevel::DebugNormal);
+                        POST_OR_DELETE_MESSAGE(pMsgCon, &mthTracer, ELogDetailLevel::Debug);
                         pMsgCon = nullptr;
                     }
                     break;
@@ -1467,7 +1467,7 @@ void CInProcMsgSocket::onTimerTimeout()
                             /* pBlkType         */ nullptr,
                             /* bMustBeConfirmed */ true,
                             /* iReqId           */ -1 );
-                        POST_OR_DELETE_MESSAGE(pMsgReq, &mthTracer, ELogDetailLevel::DebugNormal);
+                        POST_OR_DELETE_MESSAGE(pMsgReq, &mthTracer, ELogDetailLevel::Debug);
                         pMsgReq = nullptr;
 
                     } // if( m_pInProcMsgServer != nullptr )

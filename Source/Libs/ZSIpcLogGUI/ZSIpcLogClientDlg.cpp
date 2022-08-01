@@ -150,7 +150,7 @@ CDlgLogClient::CDlgLogClient(
     }
 
     m_pWdgtLogSettings = new CWdgtLogSettings();
-    m_pTabWidget->addTab( m_pWdgtLogSettings, "Trace Settings" );
+    m_pTabWidget->addTab( m_pWdgtLogSettings, "Log Settings" );
 
     if( !QObject::connect(
         /* pObjSender   */ m_pWdgtLogSettings,

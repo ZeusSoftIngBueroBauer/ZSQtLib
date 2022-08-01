@@ -398,15 +398,16 @@ void CWdgtIdxTree::setViewMode( EViewMode i_viewMode )
         {
             if( m_pSplitter != nullptr )
             {
+                // Reparent tree view. This will remove the tree view
+                // from the splitter but does not destroy the tree view.
                 m_pLytMain->addWidget(m_pTreeView);
 
                 delete m_pSplitter;
                 m_pSplitter = nullptr;
                 m_pTableViewBranchContent = nullptr;
             }
-            m_pLytMain->addWidget(m_pTreeView);
 
-            m_pLytHeadLine->removeWidget(m_pEdtBranch);
+            //m_pLytHeadLine->removeWidget(m_pEdtBranch);
             delete m_pEdtBranch;
             m_pEdtBranch = nullptr;
 
@@ -419,7 +420,7 @@ void CWdgtIdxTree::setViewMode( EViewMode i_viewMode )
 
         else if( m_viewMode == EViewMode::NavPanelAndBranchContent )
         {
-            m_pLytHeadLine->removeItem(m_pSpcHeadLine);
+            //m_pLytHeadLine->removeItem(m_pSpcHeadLine);
             delete m_pSpcHeadLine;
             m_pSpcHeadLine = nullptr;
 
@@ -428,6 +429,8 @@ void CWdgtIdxTree::setViewMode( EViewMode i_viewMode )
 
             if( m_pSplitter == nullptr )
             {
+                m_pLytMain->removeWidget(m_pTreeView);
+
                 m_pSplitter = new QSplitter(Qt::Horizontal);
                 m_pLytMain->addWidget(m_pSplitter, 1);
 

@@ -203,8 +203,8 @@ public: // ctors and dtor
         const QString&  i_strClassName,
         const QString&  i_strObjName,
         const QString&  i_strMthName,
-        EResult         i_result = ZS::System::EResultSuccess,
-        EResultSeverity i_severity = ZS::System::EResultSeveritySuccess,
+        EResult         i_result = EResultSuccess,
+        EResultSeverity i_severity = EResultSeveritySuccess,
         const QString&  i_strAddErrInfoDscr = "" );
     SErrResultInfo(
         const QString&    i_strNameSpace,
@@ -216,8 +216,8 @@ public: // ctors and dtor
     SErrResultInfo(
         const QString&  i_strFilePath,
         int             i_iLineNr,
-        EResult         i_result = ZS::System::EResultSuccess,
-        EResultSeverity i_severity = ZS::System::EResultSeveritySuccess,
+        EResult         i_result = EResultSuccess,
+        EResultSeverity i_severity = EResultSeveritySuccess,
         const QString&  i_strAddErrInfoDscr = "" );
     SErrResultInfo(
         const QString&    i_strFilePath,
@@ -231,8 +231,8 @@ public: // ctors and dtor
         const QString&  i_strMthName,
         const QString&  i_strFilePath,
         int             i_iLineNr,
-        EResult         i_result = ZS::System::EResultSuccess,
-        EResultSeverity i_severity = ZS::System::EResultSeveritySuccess,
+        EResult         i_result = EResultSuccess,
+        EResultSeverity i_severity = EResultSeveritySuccess,
         const QString&  i_strAddErrInfoDscr = "" );
     SErrResultInfo(
         const QString&    i_strNameSpace,
@@ -245,8 +245,8 @@ public: // ctors and dtor
         const QString&    i_strAddErrInfoDscr = "" );
     SErrResultInfo(
         const SErrSource& i_errSource,
-        EResult           i_result = ZS::System::EResultSuccess,
-        EResultSeverity   i_severity = ZS::System::EResultSeveritySuccess,
+        EResult           i_result = EResultSuccess,
+        EResultSeverity   i_severity = EResultSeveritySuccess,
         const QString&    i_strAddErrInfoDscr = "" );
     SErrResultInfo(
         const SErrSource& i_errSource,

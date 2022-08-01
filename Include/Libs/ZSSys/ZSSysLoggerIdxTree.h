@@ -40,12 +40,12 @@ class CLogger;
 class CLogServer;
 
 //******************************************************************************
-class ZSSYSDLL_API CIdxTreeLoggers : public ZS::System::CIdxTree
+class ZSSYSDLL_API CIdxTreeLoggers : public CIdxTree
 //******************************************************************************
 {
     Q_OBJECT
 public: // class methods
-    static QString NameSpace() { return "ZS::Log"; }
+    static QString NameSpace() { return "ZS::System"; }
     static QString ClassName() { return "CIdxTreeLoggers"; }
 public: // ctors and dtor
     CIdxTreeLoggers( const QString& i_strObjName, QObject* i_pObjParent = nullptr );
@@ -55,40 +55,33 @@ public: // instance methods
     virtual QString className() const { return ClassName(); }
 public: // instance methods to get and release admin objects
     CLogger* getLogger(
-        const QString& i_strNameSpace,
-        const QString& i_strClassName,
-        const QString& i_strObjName,
-        ZS::System::EEnabled i_bEnabledAsDefault,
-        ZS::System::ELogDetailLevel i_eDefaultDetailLevel,
-        const QString& i_strDefaultDataFilter, // Use QString() (null) to ignore
-        bool i_bIncrementRefCount = true );
-    CLogger* getLogger( int i_idxInTree, bool i_bIncrementRefCount = true );
-    void renameLogger( CLogger** io_ppLogger, const QString& i_strNewObjName );
-    void releaseLogger( CLogger* i_pLogger );
-public: // instance methods to insert branch nodes and admin objects
-    ZS::System::CIdxTreeEntry* insertBranch(
+        const QString& i_strName, // Use node separator "::" to include name space, class name etc.
+        EEnabled i_bEnabledAsDefault = EEnabled::Undefined,
+        ELogDetailLevel i_eDefaultDetailLevel = ELogDetailLevel::Undefined,
+        const QString& i_strDefaultDataFilter = QString() ); // Use QString() (null) to ignore
+    CLogger* getLogger( int i_idxInTree );
+public: // instance methods to insert branch nodes and logger leaves
+    CIdxTreeEntry* insertBranch(
         int            i_iParentBranchIdxInTree,
         const QString& i_strBranchName,
         int            i_idxInTree );
     CLogger* insertLogger(
         int            i_iParentBranchIdxInTree,
-        const QString& i_strNameSpace,
-        const QString& i_strClassName,
-        const QString& i_strObjName,
+        const QString& i_strLeaveName,
         int            i_idxInTree );
-public: // instance methods to recursively modify objects via object index of node entries
-    void setEnabled( int i_idxInTree, ZS::System::EEnabled i_enabled );
-    void setDetailLevel( int i_idxInTree, ZS::System::ELogDetailLevel i_eDetailLevel = ZS::System::ELogDetailLevel::None );
+public: // instance methods to recursively modify loggers via index of node entries
+    void setEnabled( int i_idxInTree, EEnabled i_enabled );
+    void setDetailLevel( int i_idxInTree, ELogDetailLevel i_eDetailLevel = ELogDetailLevel::None );
     void setDataFilter( int i_idxInTree, const QString& i_strDataFilter );
-public: // instance methods to recursively modify objects via namespace node entries
-    void setEnabled( ZS::System::CIdxTreeEntry* i_pBranch, ZS::System::EEnabled i_enabled );
-    void setDetailLevel( ZS::System::CIdxTreeEntry* i_pBranch, ZS::System::ELogDetailLevel i_eDetailLevel = ZS::System::ELogDetailLevel::None );
-    void setDataFilter( ZS::System::CIdxTreeEntry* i_pBranch, const QString& i_strDataFilter );
+public: // instance methods to recursively modify loggers via branch node entries
+    void setEnabled( CIdxTreeEntry* i_pBranch, EEnabled i_enabled );
+    void setDetailLevel( CIdxTreeEntry* i_pBranch, ELogDetailLevel i_eDetailLevel = ELogDetailLevel::None );
+    void setDataFilter( CIdxTreeEntry* i_pBranch, const QString& i_strDataFilter );
 public: // overridables
-    virtual ZS::System::SErrResultInfo save( const QString& i_strAbsFilePath ) const;
-    virtual ZS::System::SErrResultInfo recall( const QString& i_strAbsFilePath );
+    virtual SErrResultInfo save( const QString& i_strAbsFilePath ) const;
+    virtual SErrResultInfo recall( const QString& i_strAbsFilePath );
 protected: // auxiliary instance methods
-    virtual void save( QXmlStreamWriter& xmlStreamWriter, ZS::System::CIdxTreeEntry* i_pTreeEntry ) const;
+    virtual void save( QXmlStreamWriter& xmlStreamWriter, CIdxTreeEntry* i_pTreeEntry ) const;
     virtual void removeEmptyBranches( const QString& i_strBranchPath );
 
 }; // class CIdxTreeLoggers
