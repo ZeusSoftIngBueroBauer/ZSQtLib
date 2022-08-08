@@ -90,7 +90,7 @@ public: // overridables of base class CLogServer
     virtual void log( ZS::System::CLogger* i_pLogger, ZS::System::ELogDetailLevel i_eFilterDetailLevel, const QString& i_strLogEntry ) override;
 public: // overridables of base class CLogServer
     virtual void setNewLoggersEnabledAsDefault( bool i_bEnabled ) override;
-    virtual void setNewLoggersDefaultDetailLevel( ZS::System::ELogDetailLevel i_eDetailLevel );
+    virtual void setNewLoggersDefaultDetailLevel( ZS::System::ELogDetailLevel i_eDetailLevel ) override;
 public: // overridables of base class CLogServer
     virtual void setLoggerFileAbsoluteFilePath( const QString& i_strAbsFilePath ) override;
 public: // overridables of base class CLogServer

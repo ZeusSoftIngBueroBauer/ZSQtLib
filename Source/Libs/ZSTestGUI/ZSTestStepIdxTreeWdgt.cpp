@@ -34,12 +34,14 @@ may result in using the software modules.
 #include <QtCore/qsettings.h>
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+#include <QtGui/qgroupbox.h>
 #include <QtGui/qlabel.h>
 #include <QtGui/qlayout.h>
 #include <QtGui/qlineedit.h>
 #include <QtGui/qpushbutton.h>
 #include <QtGui/qsplitter.h>
 #else
+#include <QtWidgets/qgroupbox.h>
 #include <QtWidgets/qlabel.h>
 #include <QtWidgets/qlayout.h>
 #include <QtWidgets/qlineedit.h>
@@ -121,6 +123,8 @@ CWdgtIdxTreeTestSteps::CWdgtIdxTreeTestSteps(
     m_pTestStepsModel(nullptr),
     m_pSplitter(nullptr),
     m_pTreeViewTestSteps(nullptr),
+    m_pGrpWdgtTestStep(nullptr),
+    m_pLytGrpWdgtTestStep(nullptr),
     m_pWdgtTestStep(nullptr)
 {
     setObjectName( "WdgtTest" + m_pTest->objectName() );
@@ -337,7 +341,9 @@ CWdgtIdxTreeTestSteps::CWdgtIdxTreeTestSteps(
     //------------------------------------
 
     m_pLblTestStepCurr = new QLabel("Current Test Step:");
+    m_pLblTestStepCurr->setStyleSheet("font-weight: bold");
     m_pEdtTestStepCurr = new QLineEdit("---",this);
+    m_pEdtTestStepCurr->setStyleSheet("font-weight: bold");
     m_pEdtTestStepCurr->setEnabled(false);
     m_pLytHeadLine->addWidget(m_pLblTestStepCurr);
     m_pLytHeadLine->addWidget(m_pEdtTestStepCurr);
@@ -420,6 +426,8 @@ CWdgtIdxTreeTestSteps::CWdgtIdxTreeTestSteps(
 
     // <TreeView> Test Steps
     //======================
+
+    m_pLytMain->addSpacing(5);
 
     m_pTestStepsModel = new CModeldxTreeTestSteps( m_pTest->getTestStepIdxTree() );
 
@@ -523,8 +531,10 @@ CWdgtIdxTreeTestSteps::~CWdgtIdxTreeTestSteps()
     m_pEdtTestStepCurr = nullptr;
     m_pTestStepsModel = nullptr;
     m_pSplitter = nullptr;
-    m_pWdgtTestStep = nullptr;
     m_pTreeViewTestSteps = nullptr;
+    m_pGrpWdgtTestStep = nullptr;
+    m_pLytGrpWdgtTestStep = nullptr;
+    m_pWdgtTestStep = nullptr;
 
 } // dtor
 
@@ -564,6 +574,8 @@ void CWdgtIdxTreeTestSteps::setViewMode( EViewMode i_viewMode )
 
                 delete m_pSplitter;
                 m_pSplitter = nullptr;
+                m_pGrpWdgtTestStep = nullptr;
+                m_pLytGrpWdgtTestStep = nullptr;
                 m_pWdgtTestStep = nullptr;
             }
         } // if( m_viewMode == EViewMode::NavPanelOnly )
@@ -582,13 +594,18 @@ void CWdgtIdxTreeTestSteps::setViewMode( EViewMode i_viewMode )
 
                 m_pSplitter->addWidget(m_pTreeViewTestSteps);
 
-                if( m_pWdgtTestStep == nullptr )
+                if( m_pGrpWdgtTestStep == nullptr )
                 {
+                    m_pGrpWdgtTestStep = new QGroupBox("Selected Test Step Details");
+                    m_pLytGrpWdgtTestStep = new QVBoxLayout();
+                    m_pGrpWdgtTestStep->setLayout(m_pLytGrpWdgtTestStep);
                     m_pWdgtTestStep = new CWdgtTestStep();
+                    m_pLytGrpWdgtTestStep->addWidget(m_pWdgtTestStep);
+
                     CTestStep* pTestStep = getSelectedTestStep();
                     m_pWdgtTestStep->setTestStep(pTestStep);
                 }
-                m_pSplitter->addWidget(m_pWdgtTestStep);
+                m_pSplitter->addWidget(m_pGrpWdgtTestStep);
             }
 
             QSettings settings;

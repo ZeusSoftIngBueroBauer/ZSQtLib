@@ -561,11 +561,13 @@ bool CLogger::isSuppressedByDataFilter( const QString& i_strData ) const
 
     if( !m_strlstDataFilterInclude.isEmpty() )
     {
+        bSuppressed = true;
+
         for( const QString& strFilter : m_strlstDataFilterInclude )
         {
-            if( !i_strData.contains(strFilter) )
+            if( i_strData.contains(strFilter) )
             {
-                bSuppressed = true;
+                bSuppressed = false;
                 break;
             }
         }

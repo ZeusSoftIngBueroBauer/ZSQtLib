@@ -132,7 +132,7 @@ bool SLogServerSettings::operator == ( const SLogServerSettings& i_settingsOther
     {
         bEqual = false;
     }
-    else if( m_eNewLoggersDefaultDetailLevel != i_settingsOther.m_eNewLoggersDefaultDetailLevel )
+    else if( m_bNewLoggersEnabledAsDefault != i_settingsOther.m_bNewLoggersEnabledAsDefault )
     {
         bEqual = false;
     }
@@ -216,11 +216,11 @@ QString SLogServerSettings::toString() const
     str += ", CacheData: " + bool2Str(m_bCacheDataIfNotConnected);
     str += ", CacheArrLen: " + QString::number(m_iCacheDataMaxArrLen);
     str += ", UseLocalFile: " + bool2Str(m_bUseLocalLogFile);
-    str += ", TrcFile: " + m_strLocalLogFileAbsFilePath;
-    str += ", TrcFileSave: " + QString::number(m_iLocalLogFileAutoSaveInterval_ms) + " ms";
-    str += ", TrcFileSubFiles: " + QString::number(m_iLocalLogFileSubFileCountMax);
-    str += ", TrcFileLines: " + QString::number(m_iLocalLogFileSubFileLineCountMax);
-    str += ", TrcFileClose: " + bool2Str(m_bLocalLogFileCloseFileAfterEachWrite);
+    str += ", LogFile: " + m_strLocalLogFileAbsFilePath;
+    str += ", LogFileSave: " + QString::number(m_iLocalLogFileAutoSaveInterval_ms) + " ms";
+    str += ", LogFileSubFiles: " + QString::number(m_iLocalLogFileSubFileCountMax);
+    str += ", LogFileLines: " + QString::number(m_iLocalLogFileSubFileLineCountMax);
+    str += ", LogFileClose: " + bool2Str(m_bLocalLogFileCloseFileAfterEachWrite);
     return str;
 }
 

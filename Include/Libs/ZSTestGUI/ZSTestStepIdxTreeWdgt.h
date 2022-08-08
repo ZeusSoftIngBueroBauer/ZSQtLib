@@ -38,6 +38,7 @@ may result in using the software modules.
 #include "ZSTestGUI/ZSTestGUIDllMain.h"
 #include "ZSTest/ZSTest.h"
 
+class QGroupBox;
 class QLabel;
 class QLineEdit;
 class QPushButton;
@@ -130,6 +131,8 @@ protected: // instance members
     CModeldxTreeTestSteps* m_pTestStepsModel;
     QSplitter*             m_pSplitter;
     QTreeView*             m_pTreeViewTestSteps;
+    QGroupBox*             m_pGrpWdgtTestStep;
+    QVBoxLayout*           m_pLytGrpWdgtTestStep;
     CWdgtTestStep*         m_pWdgtTestStep;
 
 }; // class CWgdtTest

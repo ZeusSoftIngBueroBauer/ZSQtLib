@@ -351,7 +351,8 @@ void CIpcLogServer::setNewLoggersEnabledAsDefault( bool i_bEnabled )
 
             strMsg += systemMsgType2Str(MsgProtocol::ESystemMsgTypeInd) + " ";
             strMsg += command2Str(MsgProtocol::ECommandUpdate) + " ";
-            strMsg += "<ServerSettings NewLoggersEnabledAsDefault=\"" + bool2Str(m_logSettings.m_bNewLoggersEnabledAsDefault) + "\"/>";
+            strMsg += "<ServerSettings NewLoggersEnabledAsDefault=\""
+                   + bool2Str(m_logSettings.m_bNewLoggersEnabledAsDefault) + "\"/>";
 
             sendData( ESocketIdAllSockets, str2ByteArr(strMsg) );
         }
@@ -402,7 +403,8 @@ void CIpcLogServer::setLoggerFileAbsoluteFilePath( const QString& i_strAbsFilePa
 
             strMsg += systemMsgType2Str(MsgProtocol::ESystemMsgTypeInd) + " ";
             strMsg += command2Str(MsgProtocol::ECommandUpdate) + " ";
-            strMsg += "<ServerSettings LoggerFileAbsFilePath=\"" + m_logSettings.m_strLoggerFileAbsFilePath + "\"/>";
+            strMsg += "<ServerSettings LoggerFileAbsFilePath=\""
+                   + m_logSettings.m_strLoggerFileAbsFilePath + "\"/>";
 
             sendData( ESocketIdAllSockets, str2ByteArr(strMsg) );
         }
@@ -453,7 +455,8 @@ void CIpcLogServer::setLocalLogFileAbsoluteFilePath( const QString& i_strAbsFile
 
             strMsg += systemMsgType2Str(MsgProtocol::ESystemMsgTypeInd) + " ";
             strMsg += command2Str(MsgProtocol::ECommandUpdate) + " ";
-            strMsg += "<ServerSettings LocalLogFileAbsFilePath=\"" + m_logSettings.m_strLocalLogFileAbsFilePath + "\"/>";
+            strMsg += "<ServerSettings LocalLogFileAbsFilePath=\""
+                   + m_logSettings.m_strLocalLogFileAbsFilePath + "\"/>";
 
             sendData( ESocketIdAllSockets, str2ByteArr(strMsg) );
         }
@@ -476,7 +479,8 @@ void CIpcLogServer::setLocalLogFileAutoSaveIntervalInMs( int i_iAutoSaveInterval
 
             strMsg += systemMsgType2Str(MsgProtocol::ESystemMsgTypeInd) + " ";
             strMsg += command2Str(MsgProtocol::ECommandUpdate) + " ";
-            strMsg += "<ServerSettings LocalLogFileAutoSaveInterval_ms=\"" + QString::number(m_logSettings.m_iLocalLogFileAutoSaveInterval_ms) + "\"/>";
+            strMsg += "<ServerSettings LocalLogFileAutoSaveInterval_ms=\""
+                   + QString::number(m_logSettings.m_iLocalLogFileAutoSaveInterval_ms) + "\"/>";
 
             sendData( ESocketIdAllSockets, str2ByteArr(strMsg) );
         }
@@ -499,7 +503,8 @@ void CIpcLogServer::setLocalLogFileSubFileCountMax( int i_iCountMax )
 
             strMsg += systemMsgType2Str(MsgProtocol::ESystemMsgTypeInd) + " ";
             strMsg += command2Str(MsgProtocol::ECommandUpdate) + " ";
-            strMsg += "<ServerSettings LocalLogFileSubFileCountMax=\"" + QString::number(m_logSettings.m_iLocalLogFileSubFileCountMax) + "\"/>";
+            strMsg += "<ServerSettings LocalLogFileSubFileCountMax=\""
+                   + QString::number(m_logSettings.m_iLocalLogFileSubFileCountMax) + "\"/>";
 
             sendData( ESocketIdAllSockets, str2ByteArr(strMsg) );
         }
@@ -522,7 +527,8 @@ void CIpcLogServer::setLocalLogFileSubFileLineCountMax( int i_iCountMax )
 
             strMsg += systemMsgType2Str(MsgProtocol::ESystemMsgTypeInd) + " ";
             strMsg += command2Str(MsgProtocol::ECommandUpdate) + " ";
-            strMsg += "<ServerSettings LocalLogFileSubFileLineCountMax=\"" + QString::number(m_logSettings.m_iLocalLogFileSubFileLineCountMax) + "\"/>";
+            strMsg += "<ServerSettings LocalLogFileSubFileLineCountMax=\""
+                   + QString::number(m_logSettings.m_iLocalLogFileSubFileLineCountMax) + "\"/>";
 
             sendData( ESocketIdAllSockets, str2ByteArr(strMsg) );
         }
@@ -545,7 +551,8 @@ void CIpcLogServer::setLocalLogFileCloseFileAfterEachWrite( bool i_bCloseFile )
 
             strMsg += systemMsgType2Str(MsgProtocol::ESystemMsgTypeInd) + " ";
             strMsg += command2Str(MsgProtocol::ECommandUpdate) + " ";
-            strMsg += "<ServerSettings LocalLogFileCloseAfterEachWrite=\"" + bool2Str(m_logSettings.m_bLocalLogFileCloseFileAfterEachWrite) + "\"/>";
+            strMsg += "<ServerSettings LocalLogFileCloseAfterEachWrite=\""
+                   + bool2Str(m_logSettings.m_bLocalLogFileCloseFileAfterEachWrite) + "\"/>";
 
             sendData( ESocketIdAllSockets, str2ByteArr(strMsg) );
         }
@@ -595,7 +602,8 @@ void CIpcLogServer::setCacheLogDataIfNotConnected( bool i_bCacheData )
 
             strMsg += systemMsgType2Str(MsgProtocol::ESystemMsgTypeInd) + " ";
             strMsg += command2Str(MsgProtocol::ECommandUpdate) + " ";
-            strMsg += "<ServerSettings CacheDataIfNotConnected=\"" + bool2Str(m_logSettings.m_bCacheDataIfNotConnected) + "\"/>";
+            strMsg += "<ServerSettings CacheDataIfNotConnected=\""
+                   + bool2Str(m_logSettings.m_bCacheDataIfNotConnected) + "\"/>";
 
             sendData( ESocketIdAllSockets, str2ByteArr(strMsg) );
         }
@@ -618,7 +626,8 @@ void CIpcLogServer::setCacheLogDataMaxArrLen( int i_iMaxArrLen )
 
             strMsg += systemMsgType2Str(MsgProtocol::ESystemMsgTypeInd) + " ";
             strMsg += command2Str(MsgProtocol::ECommandUpdate) + " ";
-            strMsg += "<ServerSettings CacheDataMaxArrLen=" + QString::number(m_logSettings.m_iCacheDataMaxArrLen) + "/>";
+            strMsg += "<ServerSettings CacheDataMaxArrLen="
+                   + QString::number(m_logSettings.m_iCacheDataMaxArrLen) + "/>";
 
             sendData( ESocketIdAllSockets, str2ByteArr(strMsg) );
         }

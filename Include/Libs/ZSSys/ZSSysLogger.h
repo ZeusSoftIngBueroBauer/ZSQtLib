@@ -76,7 +76,7 @@ public: // instance methods
     EEnabled getEnabled() const;
     bool isEnabled() const;
 public: // instance methods
-    void setLogLevel( ELogDetailLevel i_eTrcDetailLevel );
+    void setLogLevel( ELogDetailLevel i_eDetailLevel );
     ELogDetailLevel getLogLevel() const;
     bool isActive( ELogDetailLevel i_eFilterDetailLevel ) const;
 public: // instance methods
@@ -128,8 +128,7 @@ protected: // instance members
     /*!< Data may also be suppressed by applying a filter.
          Filtering can be done in two ways:
          - Strings may be defined which must occur in the log entry.
-         - Strings may be defined which may not occur in the log entry.
-    */
+         - Strings may be defined which may not occur in the log entry. */
     QString m_strDataFilter;
     /*!< When applying the data filter the data filter will be split into
          strings which must be included or excluded. The "Must Include"

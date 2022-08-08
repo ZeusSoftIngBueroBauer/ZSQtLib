@@ -119,14 +119,14 @@ CTest::CTest() :
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " server.startup",
+        /* strName         */ "Step " + QString::number(++idxStep) + " Log Server Startup",
         /* strOperation    */ "LogServer::startup",
         /* pTSGrpParent    */ pTestGroupStartup,
         /* szDoTestStepFct */ SLOT(doTestStepLogServerStartup(ZS::Test::CTestStep*)) );
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " client.connect",
+        /* strName         */ "Step " + QString::number(++idxStep) + " Log Client Connect",
         /* strOperation    */ "LogClient::connect",
         /* pTSGrpParent    */ pTestGroupStartup,
         /* szDoTestStepFct */ SLOT(doTestStepLogClientConnect(ZS::Test::CTestStep*)) );
@@ -1115,6 +1115,102 @@ CTest::CTest() :
         /* pTSGrpParent    */ pTestGroupModifyLogServerSetEnabled,
         /* szDoTestStepFct */ SLOT(doTestStepModifyLogger(ZS::Test::CTestStep*)) );
 
+    // Test Step Group - LogServer - NewLoggersDefaultSettings
+    //--------------------------------------------------------
+
+    ZS::Test::CTestStepGroup* pTestGroupModifyLogServerNewLoggersDefaultSettings = new ZS::Test::CTestStepGroup(
+        /* pTest           */ this,
+        /* strName         */ "Group " + QString::number(++idxGroup) + " NewLoggersDefaultSettings",
+        /* pTSGrpParent    */ pTestGroupModifyLogServer );
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " LogServer::theInst.setNewLoggersEnabledAsDefault(false)",
+        /* strOperation    */ "LogServer::theInst.setNewLoggersEnabledAsDefault(false)",
+        /* pTSGrpParent    */ pTestGroupModifyLogServerNewLoggersDefaultSettings,
+        /* szDoTestStepFct */ SLOT(doTestStepModifyLogServer(ZS::Test::CTestStep*)) );
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " LogServer::GetLogger(NewLoggerDisabledAsDefault)",
+        /* strOperation    */ "LogServer::GetLogger(NewLoggerDisabledAsDefault)",
+        /* pTSGrpParent    */ pTestGroupModifyLogServerNewLoggersDefaultSettings,
+        /* szDoTestStepFct */ SLOT(doTestStepLogServerGetLogger(ZS::Test::CTestStep*)) );
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " LogServer::theInst.setNewLoggersEnabledAsDefault(true)",
+        /* strOperation    */ "LogServer::theInst.setNewLoggersEnabledAsDefault(true)",
+        /* pTSGrpParent    */ pTestGroupModifyLogServerNewLoggersDefaultSettings,
+        /* szDoTestStepFct */ SLOT(doTestStepModifyLogServer(ZS::Test::CTestStep*)) );
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " LogServer::GetLogger(NewLoggerEnabledAsDefault)",
+        /* strOperation    */ "LogServer::GetLogger(NewLoggerEnabledAsDefault)",
+        /* pTSGrpParent    */ pTestGroupModifyLogServerNewLoggersDefaultSettings,
+        /* szDoTestStepFct */ SLOT(doTestStepLogServerGetLogger(ZS::Test::CTestStep*)) );
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " LogServer::theInst.setNewLoggersDefaultDetailLevel(Debug)",
+        /* strOperation    */ "LogServer::theInst.setNewLoggersDefaultDetailLevel(Debug)",
+        /* pTSGrpParent    */ pTestGroupModifyLogServerNewLoggersDefaultSettings,
+        /* szDoTestStepFct */ SLOT(doTestStepModifyLogServer(ZS::Test::CTestStep*)) );
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " LogServer::GetLogger(NewLoggerDefaultDetailLevelDebug)",
+        /* strOperation    */ "LogServer::GetLogger(NewLoggerDefaultDetailLevelDebug)",
+        /* pTSGrpParent    */ pTestGroupModifyLogServerNewLoggersDefaultSettings,
+        /* szDoTestStepFct */ SLOT(doTestStepLogServerGetLogger(ZS::Test::CTestStep*)) );
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " LogServer::theInst.setNewLoggersDefaultDetailLevel(None)",
+        /* strOperation    */ "LogServer::theInst.setNewLoggersDefaultDetailLevel(None)",
+        /* pTSGrpParent    */ pTestGroupModifyLogServerNewLoggersDefaultSettings,
+        /* szDoTestStepFct */ SLOT(doTestStepModifyLogServer(ZS::Test::CTestStep*)) );
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " LogServer::GetLogger(NewLoggerDefaultDetailLevelNone)",
+        /* strOperation    */ "LogServer::GetLogger(NewLoggerDefaultDetailLevelNone)",
+        /* pTSGrpParent    */ pTestGroupModifyLogServerNewLoggersDefaultSettings,
+        /* szDoTestStepFct */ SLOT(doTestStepLogServerGetLogger(ZS::Test::CTestStep*)) );
+
+    // Test Step Group - LogServer - LoggerFile
+    //-----------------------------------------
+
+    ZS::Test::CTestStepGroup* pTestGroupModifyLogServerLoggerFile = new ZS::Test::CTestStepGroup(
+        /* pTest           */ this,
+        /* strName         */ "Group " + QString::number(++idxGroup) + " LoggerFile",
+        /* pTSGrpParent    */ pTestGroupModifyLogServer );
+
+    // Test Step Group - LogServer - LocalLogFile
+    //-------------------------------------------
+
+    ZS::Test::CTestStepGroup* pTestGroupModifyLogServerLocalLogFile = new ZS::Test::CTestStepGroup(
+        /* pTest           */ this,
+        /* strName         */ "Group " + QString::number(++idxGroup) + " LocalLogFile",
+        /* pTSGrpParent    */ pTestGroupModifyLogServer );
+
+    // Test Step Group - LogServer - IpcServer
+    //-----------------------------------------
+
+    ZS::Test::CTestStepGroup* pTestGroupModifyLogServerIpcServer = new ZS::Test::CTestStepGroup(
+        /* pTest           */ this,
+        /* strName         */ "Group " + QString::number(++idxGroup) + " IpcServer",
+        /* pTSGrpParent    */ pTestGroupModifyLogServer );
+
+    // Test Step Group - LogServer - LogSettings
+    //------------------------------------------
+
+    ZS::Test::CTestStepGroup* pTestGroupModifyLogServerLogSettings = new ZS::Test::CTestStepGroup(
+        /* pTest           */ this,
+        /* strName         */ "Group " + QString::number(++idxGroup) + " LogSettings",
+        /* pTSGrpParent    */ pTestGroupModifyLogServer );
+
     // Test Step Group - Shutdown
     //---------------------------
 
@@ -1492,6 +1588,7 @@ void CTest::doTestStepLogServerGetLogger( ZS::Test::CTestStep* i_pTestStep )
 
     CLogger* pLoggerServer = nullptr;
     CLogger* pLoggerClient = nullptr;
+    QString  strLoggerName;
 
     if( strMth.compare("getLogger", Qt::CaseInsensitive) == 0 )
     {
@@ -1501,7 +1598,7 @@ void CTest::doTestStepLogServerGetLogger( ZS::Test::CTestStep* i_pTestStep )
         }
         else if( strlstInArgs.size() == 1 )
         {
-            QString strLoggerName = strlstInArgs[0].replace("-", "::");
+            strLoggerName = strlstInArgs[0].replace("-", "::");
             pLoggerServer = CLogServer::GetLogger(strLoggerName);
         }
     }
@@ -1519,8 +1616,31 @@ void CTest::doTestStepLogServerGetLogger( ZS::Test::CTestStep* i_pTestStep )
         pLoggerClient = dynamic_cast<CLogger*>(pIdxTreeClient->findEntry(pLoggerServer->keyInTree()));
 
         strExpectedValue = pLoggerServer->keyInTree() + ": ";
-        strExpectedValue += ", Enabled: " + CEnumEnabled(pLoggerServer->getEnabled()).toString();
-        strExpectedValue += ", LogLevel: " + CEnumLogDetailLevel(pLoggerServer->getLogLevel()).toString();
+        if( strLoggerName == "NewLoggerDisabledAsDefault" ) {
+            strExpectedValue += "Enabled: " + CEnumEnabled(EEnabled::No).toString();
+        }
+        else if( strLoggerName == "NewLoggerDisabledAsDefault" ) {
+            strExpectedValue += "Enabled: " + CEnumEnabled(EEnabled::Yes).toString();
+        }
+        else {
+            strExpectedValue += "Enabled: " + CEnumEnabled(pLoggerServer->getEnabled()).toString();
+        }
+        if( strLoggerName == "NewLoggerDefaultDetailLevelDebug" ) {
+            strExpectedValue += ", LogLevel: " + CEnumLogDetailLevel(ELogDetailLevel::Debug).toString();
+        }
+        else if( strLoggerName == "NewLoggerDefaultDetailLevelNone" ) {
+            strExpectedValue += ", LogLevel: " + CEnumLogDetailLevel(ELogDetailLevel::None).toString();
+        }
+        else {
+            strExpectedValue += ", LogLevel: " + CEnumLogDetailLevel(pLoggerServer->getLogLevel()).toString();
+        }
+        strExpectedValue += ", DataFilter: " + pLoggerServer->getDataFilter();
+        strExpectedValue += ", AddThreadName: " + bool2Str(pLoggerServer->addThreadName());
+        strExpectedValue += ", AddDateTime: " + bool2Str(pLoggerServer->addDateTime());
+        strExpectedValue += ", AddSystemTime: " + bool2Str(pLoggerServer->addSystemTime());
+        strExpectedValue += ", NameSpace: " + pLoggerServer->getNameSpace();
+        strExpectedValue += ", ClassName: " + pLoggerServer->getClassName();
+        strExpectedValue += ", ObjName: " + pLoggerServer->getObjectName();
         strlstExpectedValues.append(strExpectedValue);
 
         i_pTestStep->setExpectedValues(strlstExpectedValues);
@@ -1550,8 +1670,15 @@ void CTest::doTestStepLogServerGetLogger( ZS::Test::CTestStep* i_pTestStep )
             QStringList strlstResultValues;
 
             strResultValue = pLoggerClient->keyInTree() + ": ";
-            strResultValue += ", Enabled: " + CEnumEnabled(pLoggerClient->getEnabled()).toString();
+            strResultValue += "Enabled: " + CEnumEnabled(pLoggerClient->getEnabled()).toString();
             strResultValue += ", LogLevel: " + CEnumLogDetailLevel(pLoggerClient->getLogLevel()).toString();
+            strResultValue += ", DataFilter: " + pLoggerClient->getDataFilter();
+            strResultValue += ", AddThreadName: " + bool2Str(pLoggerClient->addThreadName());
+            strResultValue += ", AddDateTime: " + bool2Str(pLoggerClient->addDateTime());
+            strResultValue += ", AddSystemTime: " + bool2Str(pLoggerClient->addSystemTime());
+            strResultValue += ", NameSpace: " + pLoggerClient->getNameSpace();
+            strResultValue += ", ClassName: " + pLoggerClient->getClassName();
+            strResultValue += ", ObjName: " + pLoggerClient->getObjectName();
             strlstResultValues.append(strResultValue);
 
             i_pTestStep->setResultValues(strlstResultValues);
@@ -1713,7 +1840,7 @@ void CTest::doTestStepModifyLogger( ZS::Test::CTestStep* i_pTestStep )
                 CLogger* pLogger = dynamic_cast<CLogger*>(pTreeEntry);
 
                 strExpectedValue = pLogger->keyInTree() + ": ";
-                strExpectedValue += ", Enabled: " + CEnumEnabled(pLogger->getEnabled()).toString();
+                strExpectedValue += "Enabled: " + CEnumEnabled(pLogger->getEnabled()).toString();
                 strExpectedValue += ", LogLevel: " + CEnumLogDetailLevel(pLogger->getLogLevel()).toString();
                 strExpectedValue += ", DataFilter: " + pLogger->getDataFilter();
                 strExpectedValue += ", AddThreadName: " + bool2Str(pLogger->addThreadName());
@@ -1778,24 +1905,66 @@ void CTest::doTestStepModifyLogServer( ZS::Test::CTestStep* i_pTestStep )
 
     splitMethodCallOperation(strOperation, strClassName, strSubClassName, strObjName, strMth, strlstInArgs, strMthRet);
 
-    if( strMth == "setEnabled" )
-    {
-        if( strlstInArgs.size() != 1 )
-        {
+    if( strMth == "setEnabled" ) {
+        if( strlstInArgs.size() != 1 ) {
             i_pTestStep->setExpectedValue("Invalid test step operation");
         }
-        else
-        {
+        else {
             bool bConverted = false;
             bool bEnabled = str2Bool(strlstInArgs[0], &bConverted);
-            if( !bConverted )
-            {
+            if( !bConverted ) {
                 i_pTestStep->setExpectedValue("Invalid test step operation");
             }
-            else
-            {
+            else {
                 pLogServer->setEnabled(bEnabled);
-                i_pTestStep->setExpectedValue("Enabled: " + bool2Str(bEnabled));
+                if( pLogServer->isEnabled() != bEnabled ) {
+                    i_pTestStep->setExpectedValue("isEnabled != " + bool2Str(bEnabled));
+                }
+                else {
+                    i_pTestStep->setExpectedValue("Enabled: " + bool2Str(bEnabled));
+                }
+            }
+        }
+    }
+    else if( strMth == "setNewLoggersEnabledAsDefault" ) {
+        if( strlstInArgs.size() != 1 ) {
+            i_pTestStep->setExpectedValue("Invalid test step operation");
+        }
+        else {
+            bool bConverted = false;
+            bool bEnabled = str2Bool(strlstInArgs[0], &bConverted);
+            if( !bConverted ) {
+                i_pTestStep->setExpectedValue("Invalid test step operation");
+            }
+            else {
+                pLogServer->setNewLoggersEnabledAsDefault(bEnabled);
+                if( pLogServer->areNewLoggersEnabledAsDefault() != bEnabled ) {
+                    i_pTestStep->setExpectedValue("areNewLoggersEnabledAsDefault != " + bool2Str(bEnabled));
+                }
+                else {
+                    i_pTestStep->setExpectedValue("NewLoggersEnabledAsDefault: " + bool2Str(bEnabled));
+                }
+            }
+        }
+    }
+    else if( strMth == "setNewLoggersDefaultDetailLevel" ) {
+        if( strlstInArgs.size() != 1 ) {
+            i_pTestStep->setExpectedValue("Invalid test step operation");
+        }
+        else {
+            bool bConverted = false;
+            CEnumLogDetailLevel eDetailLevel = CEnumLogDetailLevel::fromString(strlstInArgs[0], &bConverted);
+            if( !bConverted ) {
+                i_pTestStep->setExpectedValue("Invalid test step operation");
+            }
+            else {
+                pLogServer->setNewLoggersDefaultDetailLevel(eDetailLevel.enumerator());
+                if( pLogServer->getNewLoggersDefaultDetailLevel() != eDetailLevel.enumerator() ) {
+                    i_pTestStep->setExpectedValue("getNewLoggersDefaultDetailLevel != " + eDetailLevel.toString());
+                }
+                else {
+                    i_pTestStep->setExpectedValue("NewLoggersDefaultDetailLevel: " + eDetailLevel.toString());
+                }
             }
         }
     }
@@ -2396,8 +2565,15 @@ void CTest::onLogClientLoggerInserted( QObject* /*i_pLogClient*/, const QString&
                 else
                 {
                     strResultValue = pLogger->keyInTree() + ": ";
-                    strResultValue += ", Enabled: " + CEnumEnabled(pLogger->getEnabled()).toString();
+                    strResultValue += "Enabled: " + CEnumEnabled(pLogger->getEnabled()).toString();
                     strResultValue += ", LogLevel: " + CEnumLogDetailLevel(pLogger->getLogLevel()).toString();
+                    strResultValue += ", DataFilter: " + pLogger->getDataFilter();
+                    strResultValue += ", AddThreadName: " + bool2Str(pLogger->addThreadName());
+                    strResultValue += ", AddDateTime: " + bool2Str(pLogger->addDateTime());
+                    strResultValue += ", AddSystemTime: " + bool2Str(pLogger->addSystemTime());
+                    strResultValue += ", NameSpace: " + pLogger->getNameSpace();
+                    strResultValue += ", ClassName: " + pLogger->getClassName();
+                    strResultValue += ", ObjName: " + pLogger->getObjectName();
                     strlstResultValues.append(strResultValue);
                 }
 
@@ -2455,7 +2631,7 @@ void CTest::onLogClientLoggerChanged( QObject* /*i_pLogClient*/, const QString& 
                     CLogger* pLogger = dynamic_cast<CLogger*>(pTreeEntry);
 
                     strResultValue = pLogger->keyInTree() + ": ";
-                    strResultValue += ", Enabled: " + CEnumEnabled(pLogger->getEnabled()).toString();
+                    strResultValue += "Enabled: " + CEnumEnabled(pLogger->getEnabled()).toString();
                     strResultValue += ", LogLevel: " + CEnumLogDetailLevel(pLogger->getLogLevel()).toString();
                     strResultValue += ", DataFilter: " + pLogger->getDataFilter();
                     strResultValue += ", AddThreadName: " + bool2Str(pLogger->addThreadName());
@@ -2692,11 +2868,62 @@ void CTest::onLogClientLogSettingsChanged( QObject* /*i_pLogClient*/ )
 
         SLogServerSettings logSettings = pLogClient->getLogSettings();
 
+        QStringList strlstExpectedValues = pTestStep->getExpectedValues();
+
         QString     strResultValue;
         QStringList strlstResultValues;
 
-        strResultValue = "Enabled: " + bool2Str(logSettings.m_bEnabled);
-        strlstResultValues.append(strResultValue);
+        for( const QString& strExpectedValue : strlstExpectedValues )
+        {
+            if( strExpectedValue.startsWith("Enabled:") ) {
+                strResultValue = "Enabled: " + bool2Str(logSettings.m_bEnabled);
+                strlstResultValues.append(strResultValue);
+            }
+            else if( strExpectedValue.startsWith("NewLoggersEnabledAsDefault:") ) {
+                strResultValue = "NewLoggersEnabledAsDefault: " + bool2Str(logSettings.m_bNewLoggersEnabledAsDefault);
+                strlstResultValues.append(strResultValue);
+            }
+            else if( strExpectedValue.startsWith("NewLoggersDefaultDetailLevel:") ) {
+                strResultValue = "NewLoggersDefaultDetailLevel: " + CEnumLogDetailLevel(logSettings.m_eNewLoggersDefaultDetailLevel).toString();
+                strlstResultValues.append(strResultValue);
+            }
+            else if( strExpectedValue.startsWith("LoggerFileAbsFilePath:") ) {
+                strResultValue = "LoggerFileAbsFilePath: " + logSettings.m_strLoggerFileAbsFilePath;
+                strlstResultValues.append(strResultValue);
+            }
+            else if( strExpectedValue.startsWith("UseLocalLogFile:") ) {
+                strResultValue = "UseLocalLogFile: " + bool2Str(logSettings.m_bUseLocalLogFile);
+                strlstResultValues.append(strResultValue);
+            }
+            else if( strExpectedValue.startsWith("LocalLogFileAbsFilePath:") ) {
+                strResultValue = "LocalLogFileAbsFilePath: " + logSettings.m_strLocalLogFileAbsFilePath;
+                strlstResultValues.append(strResultValue);
+            }
+            else if( strExpectedValue.startsWith("LocalLogFileAutoSaveInterval_ms:") ) {
+                strResultValue = "LocalLogFileAutoSaveInterval_ms: " + QString::number(logSettings.m_iLocalLogFileAutoSaveInterval_ms);
+                strlstResultValues.append(strResultValue);
+            }
+            else if( strExpectedValue.startsWith("LocalLogFileSubFileCountMax:") ) {
+                strResultValue = "LocalLogFileSubFileCountMax: " + QString::number(logSettings.m_iLocalLogFileSubFileCountMax);
+                strlstResultValues.append(strResultValue);
+            }
+            else if( strExpectedValue.startsWith("LocalLogFileSubFileLineCountMax:") ) {
+                strResultValue = "LocalLogFileSubFileLineCountMax: " + QString::number(logSettings.m_iLocalLogFileSubFileLineCountMax);
+                strlstResultValues.append(strResultValue);
+            }
+            else if( strExpectedValue.startsWith("LocalLogFileCloseAfterEachWrite:") ) {
+                strResultValue = "LocalLogFileCloseAfterEachWrite: " + bool2Str(logSettings.m_bLocalLogFileCloseFileAfterEachWrite);
+                strlstResultValues.append(strResultValue);
+            }
+            else if( strExpectedValue.startsWith("CacheDataIfNotConnected:") ) {
+                strResultValue = "CacheDataIfNotConnected: " + bool2Str(logSettings.m_bCacheDataIfNotConnected);
+                strlstResultValues.append(strResultValue);
+            }
+            else if( strExpectedValue.startsWith("CacheDataMaxArrLen:") ) {
+                strResultValue = "CacheDataMaxArrLen: " + QString::number(logSettings.m_iCacheDataMaxArrLen);
+                strlstResultValues.append(strResultValue);
+            }
+        }
 
         pTestStep->setResultValues(strlstResultValues);
 
