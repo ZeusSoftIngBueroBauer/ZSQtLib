@@ -25,6 +25,7 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include <QtCore/qcoreapplication.h>
+#include <QtCore/qdir.h>
 #include <QtCore/qfile.h>
 #include <QtCore/qfileinfo.h>
 #include <QtCore/qthread.h>
@@ -672,7 +673,37 @@ QString CLogServer::GetCurrentThreadName()
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&s_mtx);
-    return currentThreadName();
+
+    QString strThreadName = "Undefined";
+
+    try
+    {
+        QThread* pThread = QThread::currentThread();
+
+        if( pThread != nullptr )
+        {
+            strThreadName = pThread->objectName();
+
+            if( strThreadName.length() == 0 )
+            {
+                Qt::HANDLE threadId = QThread::currentThreadId();
+
+                if( s_hshThreadNames.contains(threadId) )
+                {
+                    strThreadName = s_hshThreadNames[threadId];
+                }
+                else
+                {
+                    strThreadName = QString("Thread") + threadId2Str(threadId);
+                }
+            }
+        }
+    }
+    catch(...)
+    {
+    }
+
+    return strThreadName;
 }
 
 /*==============================================================================
@@ -768,11 +799,8 @@ public: // class methods to get default file paths
 void CLogServer::SetLoggerFileAbsoluteFilePath( const QString& i_strAbsFilePath )
 {
     QMutexLocker mtxLocker(&s_mtx);
-
     s_strLoggerFileAbsFilePath = i_strAbsFilePath;
-
     CLogServer* pLogServer = GetInstance();
-
     if( pLogServer != nullptr )
     {
         pLogServer->setLoggerFileAbsoluteFilePath(s_strLoggerFileAbsFilePath);
@@ -795,7 +823,8 @@ QString CLogServer::GetLoggerFileAbsoluteFilePath()
         QString strAppConfigDir = ZS::System::getAppConfigDir("System");
         QString strLoggerFileSuffix = "xml";
         QString strLoggerFileBaseName = "ZSLogServer-Loggers";
-        s_strLoggerFileAbsFilePath = strAppConfigDir + "/" + strLoggerFileBaseName + "." + strLoggerFileSuffix;
+        SetLoggerFileAbsoluteFilePath(
+            strAppConfigDir + QDir::separator() + strLoggerFileBaseName + "." + strLoggerFileSuffix);
     }
     return s_strLoggerFileAbsFilePath;
 }
@@ -805,13 +834,8 @@ QString CLogServer::GetLoggerFileCompleteBaseName()
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&s_mtx);
-    QString strBaseName;
-    CLogServer* pLogServer = GetInstance();
-    if( pLogServer != nullptr )
-    {
-        strBaseName = pLogServer->getLoggerFileCompleteBaseName();
-    }
-    return strBaseName;
+    QFileInfo fileInfoFile(s_strLoggerFileAbsFilePath);
+    return fileInfoFile.completeBaseName();
 }
 
 //------------------------------------------------------------------------------
@@ -819,13 +843,8 @@ QString CLogServer::GetLoggerFileAbsolutePath()
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&s_mtx);
-    QString strAbsPath;
-    CLogServer* pLogServer = GetInstance();
-    if( pLogServer != nullptr )
-    {
-        strAbsPath = pLogServer->getLoggerFileAbsolutePath();
-    }
-    return strAbsPath;
+    QFileInfo fileInfoFile(s_strLoggerFileAbsFilePath);
+    return fileInfoFile.absolutePath();
 }
 
 //------------------------------------------------------------------------------
@@ -834,8 +853,8 @@ QString CLogServer::GetLoggerFileAbsolutePath()
     Class method as setting the path got to be called before creating
     the log server instance.
 */
-//------------------------------------------------------------------------------
 void CLogServer::SetLocalLogFileAbsoluteFilePath( const QString& i_strAbsFilePath )
+//------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&s_mtx);
     s_strLocalLogFileAbsFilePath = i_strAbsFilePath;
@@ -862,7 +881,8 @@ QString CLogServer::GetLocalLogFileAbsoluteFilePath()
         QString strAppLogDir = ZS::System::getAppLogDir("System");
         QString strTrcLogFileSuffix = "log";
         QString strTrcLogFileBaseName = "ZSLogServer";
-        s_strLocalLogFileAbsFilePath = strAppLogDir + "/" + strTrcLogFileBaseName + "." + strTrcLogFileSuffix;
+        SetLocalLogFileAbsoluteFilePath(
+            strAppLogDir + QDir::separator() + strTrcLogFileBaseName + "." + strTrcLogFileSuffix);
     }
     return s_strLocalLogFileAbsFilePath;
 }
@@ -872,13 +892,8 @@ QString CLogServer::GetLocalLogFileCompleteBaseName()
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&s_mtx);
-    QString strBaseName;
-    CLogServer* pLogServer = GetInstance();
-    if( pLogServer != nullptr )
-    {
-        strBaseName = pLogServer->getLocalLogFileCompleteBaseName();
-    }
-    return strBaseName;
+    QFileInfo fileInfoFile(s_strLocalLogFileAbsFilePath);
+    return fileInfoFile.completeBaseName();
 }
 
 //------------------------------------------------------------------------------
@@ -886,13 +901,8 @@ QString CLogServer::GetLocalLogFileAbsolutePath()
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&s_mtx);
-    QString strAbsPath;
-    CLogServer* pLogServer = GetInstance();
-    if( pLogServer != nullptr )
-    {
-        strAbsPath = pLogServer->getLocalLogFileAbsolutePath();
-    }
-    return strAbsPath;
+    QFileInfo fileInfoFile(s_strLocalLogFileAbsFilePath);
+    return fileInfoFile.absolutePath();
 }
 
 /*==============================================================================
@@ -922,8 +932,6 @@ CLogServer::CLogServer() :
     m_pLogFile = CLogFile::Alloc(m_logSettings.m_strLocalLogFileAbsFilePath);
 
     m_pLoggersIdxTree = new CIdxTreeLoggers("ZSLogServer", this);
-
-    m_pLogger = m_pLoggersIdxTree->getLogger(objectName());
 
     // See comment in "CreateInstance" above.
     s_pTheInst = this;
@@ -1044,7 +1052,7 @@ CLogger* CLogServer::getLogger()
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&s_mtx);
-    return m_pLogger;
+    return getDefaultLogger();
 }
 
 //------------------------------------------------------------------------------
@@ -1205,7 +1213,7 @@ void CLogServer::log( ELogDetailLevel i_eFilterDetailLevel, const QString& i_str
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&s_mtx);
-    log(m_pLogger, i_eFilterDetailLevel, i_strLogEntry);
+    log(getDefaultLogger(), i_eFilterDetailLevel, i_strLogEntry);
 }
 
 //------------------------------------------------------------------------------
@@ -1322,8 +1330,17 @@ void CLogServer::setLoggerFileAbsoluteFilePath( const QString& i_strAbsFilePath 
     if( m_logSettings.m_strLoggerFileAbsFilePath != i_strAbsFilePath )
     {
         m_logSettings.m_strLoggerFileAbsFilePath = i_strAbsFilePath;
+        s_strLoggerFileAbsFilePath = i_strAbsFilePath;
         emit logSettingsChanged(this);
     }
+}
+
+//------------------------------------------------------------------------------
+QString CLogServer::getLoggerFileAbsoluteFilePath() const
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(&s_mtx);
+    return s_strLoggerFileAbsFilePath;
 }
 
 //------------------------------------------------------------------------------
@@ -1353,14 +1370,10 @@ SErrResultInfo CLogServer::recallLoggers( const QString& i_strAbsFilePath )
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&s_mtx);
-
     if( !i_strAbsFilePath.isEmpty() && m_logSettings.m_strLoggerFileAbsFilePath != i_strAbsFilePath )
     {
-        m_logSettings.m_strLoggerFileAbsFilePath = i_strAbsFilePath;
-
-        emit logSettingsChanged(this);
+        setLoggerFileAbsoluteFilePath(i_strAbsFilePath);
     }
-
     return m_pLoggersIdxTree->recall(m_logSettings.m_strLoggerFileAbsFilePath);
 }
 
@@ -1369,13 +1382,10 @@ SErrResultInfo CLogServer::saveLoggers( const QString& i_strAbsFilePath )
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&s_mtx);
-
     if( !i_strAbsFilePath.isEmpty() && m_logSettings.m_strLoggerFileAbsFilePath != i_strAbsFilePath )
     {
-        m_logSettings.m_strLoggerFileAbsFilePath = i_strAbsFilePath;
-        emit logSettingsChanged(this);
+        setLoggerFileAbsoluteFilePath(i_strAbsFilePath);
     }
-
     return m_pLoggersIdxTree->save(m_logSettings.m_strLoggerFileAbsFilePath);
 }
 
@@ -1392,7 +1402,7 @@ void CLogServer::setLocalLogFileAbsoluteFilePath( const QString& i_strAbsFilePat
     if( m_logSettings.m_strLocalLogFileAbsFilePath != i_strAbsFilePath )
     {
         m_logSettings.m_strLocalLogFileAbsFilePath = i_strAbsFilePath;
-
+        s_strLocalLogFileAbsFilePath = i_strAbsFilePath;
         if( m_pLogFile != nullptr )
         {
             m_pLogFile->setAbsoluteFilePath(i_strAbsFilePath);
@@ -1402,18 +1412,20 @@ void CLogServer::setLocalLogFileAbsoluteFilePath( const QString& i_strAbsFilePat
 }
 
 //------------------------------------------------------------------------------
+QString CLogServer::getLocalLogFileAbsoluteFilePath() const
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(&s_mtx);
+    return s_strLocalLogFileAbsFilePath;
+}
+
+//------------------------------------------------------------------------------
 QString CLogServer::getLocalLogFileCompleteBaseName() const
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&s_mtx);
-
-    QString strBaseName;
-
-    if( m_pLogFile != nullptr )
-    {
-        strBaseName = m_pLogFile->completeBaseName();
-    }
-    return strBaseName;
+    QFileInfo fileInfoFile(s_strLocalLogFileAbsFilePath);
+    return fileInfoFile.completeBaseName();
 }
 
 //------------------------------------------------------------------------------
@@ -1421,14 +1433,8 @@ QString CLogServer::getLocalLogFileAbsolutePath() const
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&s_mtx);
-
-    QString strAbsPath;
-
-    if( m_pLogFile != nullptr )
-    {
-        strAbsPath = m_pLogFile->absolutePath();
-    }
-    return strAbsPath;
+    QFileInfo fileInfoFile(s_strLocalLogFileAbsFilePath);
+    return fileInfoFile.absolutePath();
 }
 
 /*==============================================================================
@@ -1761,49 +1767,44 @@ void CLogServer::clearLocalLogFile()
 }
 
 /*==============================================================================
-protected: // instance methods
+protected: // auxiliary instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-/*! Evaluates the name of the current thread.
-
-    /return Name of the current thread.
-*/
+CLogger* CLogServer::getDefaultLogger()
 //------------------------------------------------------------------------------
-QString CLogServer::currentThreadName()
 {
-    QString strThreadName = "Undefined";
-
-    try
+    if( m_pLogger == nullptr )
     {
-        QThread* pThread = QThread::currentThread();
+        m_pLogger = m_pLoggersIdxTree->getLogger(objectName());
 
-        if( pThread != nullptr )
+        if( !QObject::connect(
+            /* pObjSender   */ m_pLogger,
+            /* szSignal     */ SIGNAL( aboutToBeDestroyed(QObject*) ),
+            /* pObjReceiver */ this,
+            /* szSlot       */ SLOT( onDefaultLoggerAboutToBeDestroyed(QObject*) ),
+            /* cnctType     */ Qt::DirectConnection ) )
         {
-            strThreadName = pThread->objectName();
-
-            if( strThreadName.length() == 0 )
-            {
-                Qt::HANDLE threadId = QThread::currentThreadId();
-
-                if( s_hshThreadNames.contains(threadId) )
-                {
-                    strThreadName = s_hshThreadNames[threadId];
-                }
-                else
-                {
-                    strThreadName = QString("Thread") + threadId2Str(threadId);
-                }
-            }
+            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
         }
     }
-    catch(...)
-    {
-    }
+    return m_pLogger;
+}
 
-    return strThreadName;
+/*==============================================================================
+protected slots:
+==============================================================================*/
 
-} // currentThreadName
+//------------------------------------------------------------------------------
+void CLogServer::onDefaultLoggerAboutToBeDestroyed(QObject* i_pLogger)
+//------------------------------------------------------------------------------
+{
+    m_pLogger = nullptr;
+}
+
+/*==============================================================================
+protected: // instance methods
+==============================================================================*/
 
 //------------------------------------------------------------------------------
 /*! Returns the number of active references to this instance.

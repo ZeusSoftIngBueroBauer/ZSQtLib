@@ -65,6 +65,8 @@ public slots: // test step methods
     void doTestStepLogServerGetLogger( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepModifyLogger( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepModifyLogServer( ZS::Test::CTestStep* i_pTestStep );
+    void doTestStepModifyLogServerLoggerFile( ZS::Test::CTestStep* i_pTestStep );
+    void doTestStepModifyLogServerLocalLogFile( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepLoggerAddLogEntry( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepLoggerAddLogEntryMyThread( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepLogServerAddLogEntry( ZS::Test::CTestStep* i_pTestStep );

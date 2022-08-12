@@ -824,18 +824,20 @@ SErrResultInfo CIdxTreeLoggers::recall( const QString& i_strAbsFilePath )
                                     strObjName = xmlStreamReader.attributes().value("ObjName").toString();
                                 }
 
-                                CLogger* pLogger = getLogger(strObjName, enabled, eDetailLevel, strDataFilter);
+                                CLogger* pLogger = getLogger(strName, enabled, eDetailLevel, strDataFilter);
 
-                                pLogger->setAddThreadName(bAddThreadName);
-                                pLogger->setAddDateTime(bAddDateTime);
-                                pLogger->setAddSystemTime(bAddSystemTime);
-                                pLogger->setNameSpace(strNameSpace);
-                                pLogger->setClassName(strClassName);
-                                pLogger->setObjectName(strObjName);
-
-                            } // else // if( !strNameSpace.isEmpty() || !strClassName.isEmpty() || !strObjName.isEmpty() )
+                                if( pLogger != nullptr )
+                                {
+                                    pLogger->setAddThreadName(bAddThreadName);
+                                    pLogger->setAddDateTime(bAddDateTime);
+                                    pLogger->setAddSystemTime(bAddSystemTime);
+                                    pLogger->setNameSpace(strNameSpace);
+                                    pLogger->setClassName(strClassName);
+                                    pLogger->setObjectName(strObjName);
+                                }
+                            }
                         } // if( xmlStreamReader.isStartElement() )
-                    } // if( strElemName == "TrcAdminObj" )
+                    } // if( strElemName == "Logger" )
                 } // if( xmlStreamReader.isStartElement() || xmlStreamReader.isEndElement() )
             } // while( !xmlStreamReader.atEnd() )
         } // if( !xmlStreamReader.hasError() )
@@ -878,7 +880,7 @@ void CIdxTreeLoggers::save(
         pLogger = dynamic_cast<CLogger*>(i_pTreeEntry);
 
         i_xmlStreamWriter.writeStartElement("Logger");
-        i_xmlStreamWriter.writeAttribute( "Name", pLogger->name() );
+        i_xmlStreamWriter.writeAttribute( "Name", pLogger->path() );
         i_xmlStreamWriter.writeAttribute( "Enabled", CEnumEnabled::toString(pLogger->getEnabled()) );
         i_xmlStreamWriter.writeAttribute( "LogLevel", CEnumLogDetailLevel::toString(pLogger->getLogLevel()) );
         i_xmlStreamWriter.writeAttribute( "DataFilter", pLogger->getDataFilter() );
@@ -903,27 +905,3 @@ void CIdxTreeLoggers::save(
         }
     }
 } // save
-
-//------------------------------------------------------------------------------
-/*! @brief Removes all empty branches beginning with the passed branch name
-           walking the tree upwards in direction to root node.
-
-    A branch will be removed if the branch has no child anymore.
-
-    @param i_strBranchPath [in]
-        Path of the branch to be checked whether it or its parent branches
-        can be removed.
-*/
-void CIdxTreeLoggers::removeEmptyBranches( const QString& i_strBranchPath )
-//------------------------------------------------------------------------------
-{
-    CIdxTreeEntry* pBranch = findBranch(i_strBranchPath);
-
-    while( pBranch != nullptr && pBranch->count() == 0 )
-    {
-        CIdxTreeEntry* pBranchParent = pBranch->parentBranch();
-        remove(pBranch);
-        delete pBranch;
-        pBranch = pBranchParent;
-    }
-}

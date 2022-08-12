@@ -82,7 +82,6 @@ public: // overridables
     virtual SErrResultInfo recall( const QString& i_strAbsFilePath );
 protected: // auxiliary instance methods
     virtual void save( QXmlStreamWriter& xmlStreamWriter, CIdxTreeEntry* i_pTreeEntry ) const;
-    virtual void removeEmptyBranches( const QString& i_strBranchPath );
 
 }; // class CIdxTreeLoggers
 

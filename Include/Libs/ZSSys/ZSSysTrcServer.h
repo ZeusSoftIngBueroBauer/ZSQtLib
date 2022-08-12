@@ -271,6 +271,7 @@ public: // instance methods
     virtual ELogDetailLevel getNewTrcAdminObjsRuntimeInfoDefaultDetailLevel() const;
 protected: // instance methods
     virtual void setAdminObjFileAbsoluteFilePath( const QString& i_strAbsFilePath );
+    virtual QString getAdminObjFileAbsoluteFilePath() const;
     virtual QString getAdminObjFileCompleteBaseName() const;
     virtual QString getAdminObjFileAbsolutePath() const;
 public: // instance methods
@@ -278,6 +279,7 @@ public: // instance methods
     virtual SErrResultInfo saveAdminObjs( const QString& i_strAbsFilePath = QString() );
 protected: // instance methods
     virtual void setLocalTrcFileAbsoluteFilePath( const QString& i_strAbsFilePath );
+    virtual QString getLocalTrcFileAbsoluteFilePath() const;
     virtual QString getLocalTrcFileCompleteBaseName() const;
     virtual QString getLocalTrcFileAbsolutePath() const;
 public: // instance methods

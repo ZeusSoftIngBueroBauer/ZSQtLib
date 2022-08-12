@@ -245,6 +245,7 @@ public: // instance methods
     virtual ELogDetailLevel getNewLoggersDefaultDetailLevel() const;
 protected: // instance methods
     virtual void setLoggerFileAbsoluteFilePath( const QString& i_strAbsFilePath );
+    virtual QString getLoggerFileAbsoluteFilePath() const;
     virtual QString getLoggerFileCompleteBaseName() const;
     virtual QString getLoggerFileAbsolutePath() const;
 public: // instance methods
@@ -252,6 +253,7 @@ public: // instance methods
     virtual SErrResultInfo saveLoggers( const QString& i_strAbsFilePath = QString() );
 protected: // instance methods
     virtual void setLocalLogFileAbsoluteFilePath( const QString& i_strAbsFilePath );
+    virtual QString getLocalLogFileAbsoluteFilePath() const;
     virtual QString getLocalLogFileCompleteBaseName() const;
     virtual QString getLocalLogFileAbsolutePath() const;
 public: // instance methods
@@ -281,7 +283,9 @@ public: // instance methods
 public: // instance methods
     virtual void clearLocalLogFile();
 protected: // auxiliary instance methods
-    static QString currentThreadName();
+    CLogger* getDefaultLogger();
+protected slots:
+    void onDefaultLoggerAboutToBeDestroyed(QObject* i_pLogger);
 protected: // reference counter
     int getRefCount() const;
     int incrementRefCount();

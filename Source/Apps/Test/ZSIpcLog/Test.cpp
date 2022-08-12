@@ -1187,6 +1187,13 @@ CTest::CTest() :
         /* strName         */ "Group " + QString::number(++idxGroup) + " LoggerFile",
         /* pTSGrpParent    */ pTestGroupModifyLogServer );
 
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " LogServer::theInst.LoggerFileMethods",
+        /* strOperation    */ "LogServer::theInst.LoggerFileMethods",
+        /* pTSGrpParent    */ pTestGroupModifyLogServerLoggerFile,
+        /* szDoTestStepFct */ SLOT(doTestStepModifyLogServerLoggerFile(ZS::Test::CTestStep*)) );
+
     // Test Step Group - LogServer - LocalLogFile
     //-------------------------------------------
 
@@ -1195,21 +1202,12 @@ CTest::CTest() :
         /* strName         */ "Group " + QString::number(++idxGroup) + " LocalLogFile",
         /* pTSGrpParent    */ pTestGroupModifyLogServer );
 
-    // Test Step Group - LogServer - IpcServer
-    //-----------------------------------------
-
-    ZS::Test::CTestStepGroup* pTestGroupModifyLogServerIpcServer = new ZS::Test::CTestStepGroup(
+    pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Group " + QString::number(++idxGroup) + " IpcServer",
-        /* pTSGrpParent    */ pTestGroupModifyLogServer );
-
-    // Test Step Group - LogServer - LogSettings
-    //------------------------------------------
-
-    ZS::Test::CTestStepGroup* pTestGroupModifyLogServerLogSettings = new ZS::Test::CTestStepGroup(
-        /* pTest           */ this,
-        /* strName         */ "Group " + QString::number(++idxGroup) + " LogSettings",
-        /* pTSGrpParent    */ pTestGroupModifyLogServer );
+        /* strName         */ "Step " + QString::number(++idxStep) + " LogServer::theInst.LocalLogFileMethods",
+        /* strOperation    */ "LogServer::theInst.LocalLogFileMethods",
+        /* pTSGrpParent    */ pTestGroupModifyLogServerLocalLogFile,
+        /* szDoTestStepFct */ SLOT(doTestStepModifyLogServerLocalLogFile(ZS::Test::CTestStep*)) );
 
     // Test Step Group - Shutdown
     //---------------------------
@@ -1429,7 +1427,7 @@ void CTest::doTestStepLogClientConnect( ZS::Test::CTestStep* i_pTestStep )
                 CLogger* pLogger = dynamic_cast<CLogger*>(pTreeEntry);
 
                 strExpectedValue = pLogger->keyInTree() + ": ";
-                strExpectedValue += ", Enabled: " + CEnumEnabled(pLogger->getEnabled()).toString();
+                strExpectedValue += "Enabled: " + CEnumEnabled(pLogger->getEnabled()).toString();
                 strExpectedValue += ", LogLevel: " + CEnumLogDetailLevel(pLogger->getLogLevel()).toString();
                 strlstExpectedValues.append(strExpectedValue);
             }
@@ -1972,21 +1970,191 @@ void CTest::doTestStepModifyLogServer( ZS::Test::CTestStep* i_pTestStep )
     // Result Values
     //--------------
 
-    if( pLogServer != nullptr && pLogClient != nullptr )
-    {
-        m_pTmrTestStepTimeout->start(1000);
+    m_pTmrTestStepTimeout->start(1000);
 
-        if( !QObject::connect(
-            /* pObjSender   */ pLogClient,
-            /* szSignal     */ SIGNAL(logSettingsChanged(QObject*)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onLogClientLogSettingsChanged(QObject*)) ) )
-        {
-            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-        }
+    if( !QObject::connect(
+        /* pObjSender   */ pLogClient,
+        /* szSignal     */ SIGNAL(logSettingsChanged(QObject*)),
+        /* pObjReceiver */ this,
+        /* szSlot       */ SLOT(onLogClientLogSettingsChanged(QObject*)) ) )
+    {
+        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
     }
 
 } // doTestStepModifyLogServer
+
+//------------------------------------------------------------------------------
+void CTest::doTestStepModifyLogServerLoggerFile( ZS::Test::CTestStep* i_pTestStep )
+//------------------------------------------------------------------------------
+{
+    ZS::Test::CTestStepGroup* pTestGroup = i_pTestStep->getParentGroup();
+
+    QString strTestGroupPath = pTestGroup == nullptr ? "" : pTestGroup->path();
+
+    CIpcLogServer* pLogServer = ZS::Log::CIpcLogServer::GetInstance();
+    CIpcLogClient* pLogClient = CApplication::GetInstance()->getLogClient();
+
+    if( pLogServer == nullptr || pLogClient == nullptr )
+    {
+        i_pTestStep->setExpectedValue("Log server or log client not existing");
+    }
+
+    // Test Step
+    //----------
+
+    QStringList strlstExpectedValues;
+    QStringList strlstResultValues;
+    QString strExpectedValue;
+    QString strResultValue;
+
+    QString strAbsFilePathPrev = CLogServer::GetLoggerFileAbsoluteFilePath();
+
+    QString strAbsFilePathNew = "C:/Temp/ZSLogServer-Loggers.xml";
+
+    QFileInfo fileInfoFile(strAbsFilePathNew);
+
+    if( fileInfoFile.exists() )
+    {
+        QFile file(fileInfoFile.absoluteFilePath());
+        file.remove();
+    }
+
+    strlstExpectedValues.append("LoggerFileAbsoluteFilePath: " + strAbsFilePathNew);
+    strlstExpectedValues.append("LoggerFileCompleteBaseName: " + fileInfoFile.completeBaseName());
+    strlstExpectedValues.append("LoggerFileAbsolutePath: " + fileInfoFile.absolutePath());
+    strlstExpectedValues.append("LoggerFileExists: true");
+
+    CLogServer::SetLoggerFileAbsoluteFilePath(strAbsFilePathNew);
+
+    CIdxTreeLoggers* pIdxTreeServer = pLogServer->getLoggersIdxTree();
+
+    QVector<CIdxTreeEntry*> arpTreeEntriesServerSaved = pIdxTreeServer->treeEntriesVec();
+
+    for( auto& pTreeEntry : arpTreeEntriesServerSaved )
+    {
+        if( pTreeEntry != nullptr && pTreeEntry->entryType() == EIdxTreeEntryType::Leave)
+        {
+            CLogger* pLogger = dynamic_cast<CLogger*>(pTreeEntry);
+            strExpectedValue = pLogger->keyInTree() + ": ";
+            strExpectedValue += "Enabled: " + CEnumEnabled(pLogger->getEnabled()).toString();
+            strExpectedValue += ", LogLevel: " + CEnumLogDetailLevel(pLogger->getLogLevel()).toString();
+            strlstExpectedValues.append(strExpectedValue);
+        }
+    }
+
+    pLogServer->saveLoggers(strAbsFilePathNew);
+
+    strlstResultValues.append("LoggerFileAbsoluteFilePath: " + CLogServer::GetLoggerFileAbsoluteFilePath());
+    strlstResultValues.append("LoggerFileCompleteBaseName: " + CLogServer::GetLoggerFileCompleteBaseName());
+    strlstResultValues.append("LoggerFileAbsolutePath: " + CLogServer::GetLoggerFileAbsolutePath());
+    strlstResultValues.append("LoggerFileExists: " + bool2Str(fileInfoFile.exists(strAbsFilePathNew)));
+
+    pIdxTreeServer->clear();
+
+    int iClearedIdxTreeEntries = pIdxTreeServer->treeEntriesVec().size();
+
+    pLogServer->recallLoggers(strAbsFilePathNew);
+
+    QVector<CIdxTreeEntry*> arpTreeEntriesServerRecalled = pIdxTreeServer->treeEntriesVec();
+
+    for( auto& pTreeEntry : arpTreeEntriesServerRecalled )
+    {
+        if( pTreeEntry != nullptr && pTreeEntry->entryType() == EIdxTreeEntryType::Leave)
+        {
+            CLogger* pLogger = dynamic_cast<CLogger*>(pTreeEntry);
+            strResultValue = pLogger->keyInTree() + ": ";
+            strResultValue += "Enabled: " + CEnumEnabled(pLogger->getEnabled()).toString();
+            strResultValue += ", LogLevel: " + CEnumLogDetailLevel(pLogger->getLogLevel()).toString();
+            strlstResultValues.append(strResultValue);
+        }
+    }
+
+    strlstExpectedValues.append("ClearedIdxTreeEntries: 0");
+    strlstResultValues.append("ClearedIdxTreeEntries: " + QString::number(iClearedIdxTreeEntries));
+
+    i_pTestStep->setExpectedValues(strlstExpectedValues);
+    i_pTestStep->setResultValues(strlstResultValues);
+
+    CLogServer::SetLoggerFileAbsoluteFilePath(strAbsFilePathPrev);
+
+} // doTestStepModifyLogServerLoggerFile
+
+//------------------------------------------------------------------------------
+void CTest::doTestStepModifyLogServerLocalLogFile( ZS::Test::CTestStep* i_pTestStep )
+//------------------------------------------------------------------------------
+{
+    ZS::Test::CTestStepGroup* pTestGroup = i_pTestStep->getParentGroup();
+
+    QString strTestGroupPath = pTestGroup == nullptr ? "" : pTestGroup->path();
+
+    CIpcLogServer* pLogServer = ZS::Log::CIpcLogServer::GetInstance();
+    CIpcLogClient* pLogClient = CApplication::GetInstance()->getLogClient();
+
+    if( pLogServer == nullptr || pLogClient == nullptr )
+    {
+        i_pTestStep->setExpectedValue("Log server or log client not existing");
+    }
+
+    // Test Step
+    //----------
+
+    QStringList strlstExpectedValues;
+    QStringList strlstResultValues;
+    QString strExpectedValue;
+    QString strResultValue;
+
+    QString strAbsFilePathPrev = CLogServer::GetLocalLogFileAbsoluteFilePath();
+
+    QString strAbsPathNew = "C:/Temp";
+    QString strCompleteBaseName = "ZSLogServer";
+    QString strAbsFilePathNew = strAbsPathNew + QDir::separator() + strCompleteBaseName + ".log";
+
+    QFileInfo fileInfoLogFile(strAbsPathNew + QDir::separator() + strCompleteBaseName + "00.log");
+
+    if( fileInfoLogFile.exists() )
+    {
+        QFile logFile(fileInfoLogFile.absoluteFilePath());
+        logFile.remove();
+    }
+
+    strlstExpectedValues.append("LocalLogFileAbsoluteFilePath: " + strAbsFilePathNew);
+    strlstExpectedValues.append("LocalLogFileCompleteBaseName: " + strCompleteBaseName);
+    strlstExpectedValues.append("LocalLogFileAbsolutePath: " + fileInfoLogFile.absolutePath());
+    strlstExpectedValues.append("LocalLogFileExists: true");
+    strlstExpectedValues.append("LocalLogFileLines: Debug Message");
+
+    CLogServer::SetLocalLogFileAbsoluteFilePath(strAbsFilePathNew);
+
+    CLogger* pLogger = pLogServer->getLogger();
+    ELogDetailLevel logLevelPrev = pLogger->getLogLevel();
+    pLogger->setLogLevel(ELogDetailLevel::Debug);
+
+    pLogServer->setLocalLogFileCloseFileAfterEachWrite(true);
+    pLogServer->log(ELogDetailLevel::Debug, "Debug Message");
+    pLogServer->setLocalLogFileCloseFileAfterEachWrite(false);
+
+    QFile logFile(fileInfoLogFile.absoluteFilePath());
+    QString strLogFileLines;
+
+    if( logFile.open(QFile::ReadOnly) )
+    {
+        QTextStream txtStreamLogFile(&logFile);
+        strLogFileLines = txtStreamLogFile.readAll().simplified();
+    }
+
+    strlstResultValues.append("LocalLogFileAbsoluteFilePath: " + CLogServer::GetLocalLogFileAbsoluteFilePath());
+    strlstResultValues.append("LocalLogFileCompleteBaseName: " + CLogServer::GetLocalLogFileCompleteBaseName());
+    strlstResultValues.append("LocalLogFileAbsolutePath: " + CLogServer::GetLocalLogFileAbsolutePath());
+    strlstResultValues.append("LocalLogFileExists: " + bool2Str(fileInfoLogFile.exists()));
+    strlstResultValues.append("LocalLogFileLines: " + strLogFileLines);
+
+    i_pTestStep->setExpectedValues(strlstExpectedValues);
+    i_pTestStep->setResultValues(strlstResultValues);
+
+    CLogServer::SetLocalLogFileAbsoluteFilePath(strAbsFilePathPrev);
+    pLogger->setLogLevel(logLevelPrev);
+
+} // doTestStepModifyLogServerLocalLogFile
 
 //------------------------------------------------------------------------------
 void CTest::doTestStepLoggerAddLogEntry( ZS::Test::CTestStep* i_pTestStep )
@@ -2520,7 +2688,7 @@ void CTest::onLogClientLoggerInserted( QObject* /*i_pLogClient*/, const QString&
                             CLogger* pLogger = dynamic_cast<CLogger*>(pTreeEntry);
 
                             strResultValue = pLogger->keyInTree() + ": ";
-                            strResultValue += ", Enabled: " + CEnumEnabled(pLogger->getEnabled()).toString();
+                            strResultValue += "Enabled: " + CEnumEnabled(pLogger->getEnabled()).toString();
                             strResultValue += ", LogLevel: " + CEnumLogDetailLevel(pLogger->getLogLevel()).toString();
                             strlstResultValues.append(strResultValue);
                         }
