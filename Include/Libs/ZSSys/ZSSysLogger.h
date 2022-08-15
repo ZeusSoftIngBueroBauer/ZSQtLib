@@ -82,7 +82,7 @@ public: // instance methods
 public: // instance methods
     void setDataFilter( const QString& i_strFilter = "" );
     QString getDataFilter() const;
-    bool isSuppressedByDataFilter( const QString& i_strData ) const;
+    bool isSuppressedByDataFilter( const QString& i_strLogEntry ) const;
 public: // instance methods
     void setAddThreadName( bool i_bAdd );
     bool addThreadName() const;

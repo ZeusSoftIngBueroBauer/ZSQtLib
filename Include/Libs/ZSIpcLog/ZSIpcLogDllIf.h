@@ -125,37 +125,35 @@ class CLogger
 //******************************************************************************
 {
 public: // instance methods
-    virtual const char* keyInTree() const = 0;
-public: // instance methods
-    char* getNameSpace() const;     // returned character string must be freed by caller
-    char* getClassName() const;     // returned character string must be freed by caller
-    char* getObjectName() const;    // returned character string must be freed by caller
-public: // instance methods
-    void setObjectThreadName( const char* i_szThreadName );
-    char* getObjectThreadName() const;  // returned character string must be freed by caller
-public: // instance methods
-    virtual int lock() = 0;
-    virtual int unlock() = 0;
-    virtual bool isLocked() const = 0;
-    virtual int getLockCount() const = 0;
-    virtual void setDeleteOnUnlock( bool i_bDelete ) = 0;
-    virtual bool deleteOnUnlock() const = 0;
-public: // instance methods
-    virtual int incrementRefCount() = 0;
-    virtual int decrementRefCount() = 0;
-    virtual void setRefCount( int i_iRefCount ) = 0;
-    virtual int getRefCount() const = 0;
+    void log( ELogDetailLevel i_eFilterDetailLevel, const char* i_szLogEntry );
 public: // instance methods
     void setEnabled( bool i_bEnabled );
     bool isEnabled() const;
 public: // instance methods
-    void setDetailLevel( ELogDetailLevel i_eTrcDetailLevel );
-    ELogDetailLevel getDetailLevel() const;
+    void setLogLevel( ELogDetailLevel i_eDetailLevel );
+    ELogDetailLevel getLogLevel() const;
     bool isActive( ELogDetailLevel i_eFilterDetailLevel ) const;
 public: // instance methods
     void setDataFilter( const char* i_szFilter );
     char* getDataFilter() const;  // returned character string must be freed by caller
-    bool isSuppressedByDataFilter( const char* i_szTraceData ) const;
+    bool isSuppressedByDataFilter( const char* i_szLogEntry ) const;
+public: // instance methods
+    void setAddThreadName( bool i_bAdd );
+    bool addThreadName() const;
+    void setAddDateTime( bool i_bAdd );
+    bool addDateTime() const;
+    void setAddSystemTime( bool i_bAdd );
+    bool addSystemTime() const;
+    void setNameSpace( const char* i_szNameSpace = "" );
+    char* getNameSpace() const;     // returned character string must be freed by caller
+    void setClassName( const char* i_szClassName = "" );
+    char* getClassName() const;     // returned character string must be freed by caller
+    void setObjectName( const char* i_szObjectName = "" );
+    char* getObjectName() const;    // returned character string must be freed by caller
+public: // instance methods
+    char* name() const;
+public: // instance methods
+    virtual const char* keyInTree() const = 0;
 protected: // ctors and dtor
     CLogger();
     ~CLogger();
@@ -204,8 +202,54 @@ struct SLogServerSettings
     bool m_bLocalLogFileCloseFileAfterEachWrite;
 };
 
-void SLogServerSettings_init( SLogServerSettings& i_logSettings );
-void SLogServerSettings_release( SLogServerSettings& i_logSettings );
+//------------------------------------------------------------------------------
+/*! @brief Initializes the log settings with default values.
+
+    @param i_logSettings [in] Struct to be initialized.
+*/
+static void SLogServerSettings_init( DllIf::SLogServerSettings& i_logSettings )
+//------------------------------------------------------------------------------
+{
+    i_logSettings.m_bEnabled = true;
+    i_logSettings.m_szLoggerFileAbsFilePath = 0;
+    i_logSettings.m_bNewLoggersEnabledAsDefault = false;
+    i_logSettings.m_eNewLoggersDefaultDetailLevel = static_cast<ELogDetailLevel>(0);
+    i_logSettings.m_bUseIpcServer = true;
+    i_logSettings.m_bCacheDataIfNotConnected = false;
+    i_logSettings.m_iCacheDataMaxArrLen = 1000;
+    i_logSettings.m_bUseLocalLogFile = true;
+    i_logSettings.m_szLocalLogFileAbsFilePath = 0;
+    i_logSettings.m_iLocalLogFileAutoSaveInterval_ms = 1000;
+    i_logSettings.m_iLocalLogFileSubFileCountMax = 5;
+    i_logSettings.m_iLocalLogFileSubFileLineCountMax = 2000;
+    i_logSettings.m_bLocalLogFileCloseFileAfterEachWrite = false;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Resets the log settings. The character buffers containing file names
+           will be freed.
+
+    @param i_logSettings [in] Struct to be reset.
+*/
+static void SLogServerSettings_release( DllIf::SLogServerSettings& i_logSettings )
+//------------------------------------------------------------------------------
+{
+    i_logSettings.m_bEnabled = false;
+    delete i_logSettings.m_szLoggerFileAbsFilePath;
+    i_logSettings.m_szLoggerFileAbsFilePath = 0;
+    i_logSettings.m_bNewLoggersEnabledAsDefault = false;
+    i_logSettings.m_eNewLoggersDefaultDetailLevel = static_cast<ELogDetailLevel>(0);
+    i_logSettings.m_bUseIpcServer = false;
+    i_logSettings.m_bCacheDataIfNotConnected = false;
+    i_logSettings.m_iCacheDataMaxArrLen = 0;
+    i_logSettings.m_bUseLocalLogFile = false;
+    delete i_logSettings.m_szLocalLogFileAbsFilePath;
+    i_logSettings.m_szLocalLogFileAbsFilePath = 0;
+    i_logSettings.m_iLocalLogFileAutoSaveInterval_ms = 0;
+    i_logSettings.m_iLocalLogFileSubFileCountMax = 0;
+    i_logSettings.m_iLocalLogFileSubFileLineCountMax = 0;
+    i_logSettings.m_bLocalLogFileCloseFileAfterEachWrite = false;
+}
 
 
 //******************************************************************************
@@ -216,15 +260,6 @@ void SLogServerSettings_release( SLogServerSettings& i_logSettings );
 class CLogServer
 //******************************************************************************
 {
-public: // class methods to add, remove and modify logger
-    static CLogger* GetLogger(
-        const char* i_szNameSpace,
-        const char* i_szClassName,
-        const char* i_szObjName = "",
-        EEnabled    i_bEnabledAsDefault = EEnabledUndefined,
-        ELogDetailLevel i_eDefaultDetailLevel = ELogDetailLevelUndefined );
-    static void RenameLogger( CLogger** io_ppLogger, const char* i_szNewObjName );
-    static void ReleaseLogger( CLogger* i_pLogger );
 public: // class method to save/recall loggers file
     // Set organization and application if the log server is used in a none Qt Application.
     // Only if the organization and application name is set the default file paths for the
@@ -245,13 +280,25 @@ public: // class methods
     static void RegisterCurrentThread( const char* i_szThreadName );
     static void UnregisterCurrentThread();
     static char* GetCurrentThreadName();    // returned string must be freed by caller
-public: // instance methods
-    const char* name() const { return "ZSLogServer"; }
-public: // instance methods
-    bool isActive() const;
+public: // class methods to add, remove and modify logger
+    static CLogger* GetLogger();
+    static CLogger* GetLogger(
+        const char*     i_szName,
+        EEnabled        i_bEnabledAsDefault = EEnabledUndefined,
+        ELogDetailLevel i_eDefaultDetailLevel = ELogDetailLevelUndefined );
 public: // instance methods
     void setEnabled( bool i_bEnabled );
     bool isEnabled() const;
+    bool isActive() const;
+public: // instance methods to add, remove and modify loggers
+    CLogger* getLogger();
+    CLogger* getLogger(
+        const char*     i_szName,
+        EEnabled        i_bEnabledAsDefault = EEnabledUndefined,
+        ELogDetailLevel i_eDefaultDetailLevel = ELogDetailLevelUndefined );
+public: // instance methods
+    void log( ELogDetailLevel i_eFilterDetailLevel, const char* i_szLogEntry );
+    void log( const CLogger* i_pLogger, ELogDetailLevel i_eFilterDetailLevel, const char* i_szLogEntry );
 public: // instance methods
     void setNewLoggersEnabledAsDefault( bool i_bEnabled );
     bool areNewLoggersEnabledAsDefault() const;
@@ -285,16 +332,6 @@ public: // instance methods
     SLogServerSettings getLogSettings() const;  // !! char pointers returned in the struct must be freed by caller !!
 public: // instance methods
     void clearLocalLogFile();
-public: // instance methods
-    void log(
-        const CLogger* i_pLogger,
-        const char*    i_szMethod,
-        const char*    i_szAddInfo );
-    void log(
-        const CLogger* i_pLogger,
-        const char*    i_szObjName,
-        const char*    i_szMethod,
-        const char*    i_szAddInfo );
 public: // ctors and dtor (declared public but for internal use only, implemented in ZSIpcLog::ZSIpcLogDllMain)
     CLogServer();
     ~CLogServer();

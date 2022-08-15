@@ -24,56 +24,53 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#ifndef ZSApps_TestIpcTraceDllIfQtApp_WidgetCentral_h
-#define ZSApps_TestIpcTraceDllIfQtApp_WidgetCentral_h
+#ifndef ZSApps_TestIpcLogDllIfQtApp_MyThread_h
+#define ZSApps_TestIpcLogDllIfQtApp_MyThread_h
 
-#include "ZSSys/ZSSysDllMain.h"
+#include "ZSSys/ZSSysCommon.h"
 
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-#include <QtGui/qwidget.h>
-#else
-#include <QtWidgets/qwidget.h>
-#endif
+#include <QtCore/qthread.h>
 
-class QHBoxLayout;
-class QVBoxLayout;
+class QMutex;
+class QWaitCondition;
 
 namespace ZS
 {
-namespace Test
-{
-namespace GUI
-{
-class CWdgtIdxTreeTestSteps;
-}
-}
-
 namespace Apps
 {
 namespace Test
 {
-namespace IpcTraceDllIfQtApp
+namespace IpcLogDllIfQtApp
 {
 //******************************************************************************
-class CWidgetCentral : public QWidget
+class CMyThread : public QThread
 //******************************************************************************
 {
+    Q_OBJECT
 public: // class methods
-    static CWidgetCentral* GetInstance() { return s_pThis; } // singleton class
+    static QString NameSpace() { return "ZS::Apps::Test::IpcLog"; }
+    static QString ClassName() { return "CMyThread"; }
 public: // ctors and dtor
-    CWidgetCentral(
-        QWidget*        i_pWdgtParent = nullptr,
-        Qt::WindowFlags i_wflags = Qt::WindowFlags());
-    ~CWidgetCentral();
-protected: // class members
-    static CWidgetCentral* s_pThis; // singleton class
-protected: // instance members
-    QVBoxLayout*                          m_pLyt;
-    ZS::Test::GUI::CWdgtIdxTreeTestSteps* m_pWdgtTest;
+    CMyThread(
+        const QString&              i_strLoggerName,
+        ZS::System::ELogDetailLevel i_logLevel,
+        const QString&              i_strLogEntry );
+    virtual ~CMyThread();
+public: // instance methods
+    bool waitForWorkDone();
+public: // overridables of base class QThread
+    void run();
+private: // instance members
+    QString                     m_strLoggerName;
+    ZS::System::ELogDetailLevel m_logLevel;
+    QString                     m_strLogEntry;
+    QMutex*                     m_pMtxWaitWorkDone;
+    QWaitCondition*             m_pWaitConditionWorkDone;
+    bool                        m_bWorkDone;
 
-}; // class CWidgetCentral
+}; // class CMyThread
 
-} // namespace IpcTraceDllIfQtApp
+} // namespace IpcLogDllIfQtApp
 
 } // namespace Test
 
@@ -81,4 +78,4 @@ protected: // instance members
 
 } // namespace ZS
 
-#endif // #ifndef ZSApps_TestIpcTraceDllIfQtApp_WidgetCentral_h
+#endif // #ifndef ZSApps_TestIpcLogDllIfQtApp_MyThread_h

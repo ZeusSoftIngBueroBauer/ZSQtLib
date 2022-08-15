@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
 
-project(ZSAppTestIpcLog)
+project(ZSAppTestIpcLogDllIfQtApp)
 
 message(STATUS "")
 message(STATUS "---------------------------------------------------------------------------------------------")
@@ -33,25 +33,30 @@ set(_ResourcesPath ${CMAKE_CURRENT_SOURCE_DIR}/../../../../Resources/Apps/Test)
 
 list(APPEND _Headers
     ${_HeadersPath}/../../Libs/ZSSys/ZSSysVersion.h
-    ${_HeadersPath}/ZSIpcLog/App.h
-    ${_HeadersPath}/ZSIpcLog/MainWindow.h
-    ${_HeadersPath}/ZSIpcLog/WidgetCentral.h
-    ${_HeadersPath}/ZSIpcLog/MyThread.h
-    ${_HeadersPath}/ZSIpcLog/Test.h
+    ${_HeadersPath}/ZSIpcLogDllIfQtApp/App.h
+    ${_HeadersPath}/ZSIpcLogDllIfQtApp/MainWindow.h
+    ${_HeadersPath}/ZSIpcLogDllIfQtApp/WidgetCentral.h
+    ${_HeadersPath}/ZSIpcLogDllIfQtApp/MyThread.h
+    ${_HeadersPath}/ZSIpcLogDllIfQtApp/Test.h
 )
 
 configure_file(
-    ${_HeadersPath}/ZSIpcLog/TestConfig.h.in
-    ${_HeadersPath}/ZSIpcLog/TestConfig.h)
-set(_Headers ${_Headers} ${_HeadersPath}/ZSIpcLog/TestConfig.h)
+    ${_HeadersPath}/ZSIpcLogDllIfQtApp/TestConfig.h.in
+    ${_HeadersPath}/ZSIpcLogDllIfQtApp/TestConfig.h)
+set(_Headers ${_Headers} ${_HeadersPath}/ZSIpcLogDllIfQtApp/TestConfig.h)
 
 list(APPEND _Sources
-    ${_SourcesPath}/ZSIpcLog/Main.cpp
-    ${_SourcesPath}/ZSIpcLog/App.cpp
-    ${_SourcesPath}/ZSIpcLog/MainWindow.cpp
-    ${_SourcesPath}/ZSIpcLog/WidgetCentral.cpp
-    ${_SourcesPath}/ZSIpcLog/MyThread.cpp
-    ${_SourcesPath}/ZSIpcLog/Test.cpp
+    ${_SourcesPath}/ZSIpcLogDllIfQtApp/Main.cpp
+    ${_SourcesPath}/ZSIpcLogDllIfQtApp/App.cpp
+    ${_SourcesPath}/ZSIpcLogDllIfQtApp/MainWindow.cpp
+    ${_SourcesPath}/ZSIpcLogDllIfQtApp/WidgetCentral.cpp
+    ${_SourcesPath}/ZSIpcLogDllIfQtApp/MyThread.cpp
+    ${_SourcesPath}/ZSIpcLogDllIfQtApp/Test.cpp
+)
+
+list(APPEND _Interfaces
+    ../../../../Include/Libs/ZSIpcLog/ZSIpcLogDllIf.h
+    ../../../../Source/Libs/ZSIpcLog/ZSIpcLogDllIf.cpp
 )
 
 list(APPEND _Resources
@@ -63,9 +68,9 @@ if(WIN32)
     # Icons.
     if(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
         set(_Headers ${_Headers}
-            ${_HeadersPath}/ZSIpcLog/resource.h
-            ${_HeadersPath}/ZSIpcLog/targetver.h)
-        set(_Resources ${_Resources} ${_ResourcesPath}/ZSIpcLog/${PROJECT_NAME}.rc)
+            ${_HeadersPath}/ZSIpcLogDllIfQtApp/resource.h
+            ${_HeadersPath}/ZSIpcLogDllIfQtApp/targetver.h)
+        set(_Resources ${_Resources} ${_ResourcesPath}/ZSIpcLogDllIfQtApp/${PROJECT_NAME}.rc)
     endif()
 endif()
 
@@ -79,9 +84,9 @@ endif()
 message(STATUS "TargetOutputName:         ${TargetOutputName}")
 
 if(WIN32)
-    add_executable(${PROJECT_NAME} WIN32 ${_Headers} ${_Sources} ${_Resources})
+    add_executable(${PROJECT_NAME} WIN32 ${_Headers} ${_Sources} ${_Interfaces} ${_Resources})
 else()
-    add_executable(${PROJECT_NAME} ${_Headers} ${_Sources} ${_Resources})
+    add_executable(${PROJECT_NAME} ${_Headers} ${_Sources} ${_Interfaces} ${_Resources})
 endif()
 
 set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME ${TargetOutputName})
@@ -91,16 +96,23 @@ source_group("Header Files" FILES ${_Headers})
 source_group("Source Files" FILES ${_Sources})
 source_group("Resource Files" FILES ${_Resources})
 
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+    target_compile_options(${PROJECT_NAME} PRIVATE "-Wno-cast-function-type")
+endif()
+
+target_compile_definitions(${PROJECT_NAME} PRIVATE USE_ZS_IPCLOG_DLL_IF)
+
 target_include_directories(${PROJECT_NAME}
-    PRIVATE ${CMAKE_SOURCE_DIR}/../Include/Apps/Test/ZSIpcLog)
+    PRIVATE ${CMAKE_SOURCE_DIR}/../Include/Apps/Test/ZSIpcLogDllIfQtApp)
 
 target_link_libraries(${PROJECT_NAME}
-    PRIVATE ZSSys ZSSysGUI ZSTest ZSTestGUI ZSIpc ZSIpcGUI ZSIpcLog ZSIpcLogGUI)
+    PRIVATE ZSSys ZSSysGUI ZSTest ZSTestGUI ZSIpc ZSIpcGUI)
 
-enable_testing()
-include(CTest)
-include(Dart)
-add_test(ZSIpcLog ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${TargetOutputName} "AutoStartTest")
+# The test application needs user interaction and cannot be executed automatically.
+#enable_testing()
+#include(CTest)
+#include(Dart)
+#add_test(ZSIpcLogDllIfQtApp ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${TargetOutputName} "AutoStartTest")
 
 include(GNUInstallDirs)
 

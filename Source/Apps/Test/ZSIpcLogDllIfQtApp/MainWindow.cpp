@@ -58,7 +58,7 @@ may result in using the software modules.
 
 using namespace ZS::System;
 using namespace ZS::System::GUI;
-using namespace ZS::Apps::Test::IpcTraceDllIfQtApp;
+using namespace ZS::Apps::Test::IpcLogDllIfQtApp;
 
 
 /*******************************************************************************
@@ -66,10 +66,21 @@ class CMainWindow : public QMainWindow
 *******************************************************************************/
 
 /*==============================================================================
-protected: // class members
+private: // class members
 ==============================================================================*/
 
 CMainWindow* CMainWindow::s_pThis = nullptr; // singleton class
+
+/*==============================================================================
+public: // class methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+CMainWindow* CMainWindow::GetInstance()
+//------------------------------------------------------------------------------
+{
+    return s_pThis;
+}
 
 /*==============================================================================
 public: // ctors and dtor
@@ -108,9 +119,9 @@ CMainWindow::CMainWindow(
     setWindowTitle(i_strWindowTitle);
 
     // <Menu> File
-    //======================
+    //=============
 
-    m_pMnuFile = menuBar()->addMenu(tr("File"));
+    m_pMnuFile = menuBar()->addMenu(tr("&File"));
 
     m_pToolBarFile = addToolBar("File Operations");
     m_pToolBarFile->setObjectName("File Operations");
@@ -180,18 +191,16 @@ CMainWindow::CMainWindow(
     // <MenuItem> File::Quit
     //----------------------
 
-    m_pActFileQuit = new QAction("Quit", this);
-    m_pActFileQuit->setShortcut(Qt::Key_F4 + Qt::ALT);
-
+    m_pActFileQuit = new QAction("&Quit",this);
     m_pMnuFile->addAction(m_pActFileQuit);
 
-    if( !QObject::connect(
+    if( !connect(
         /* pObjSender   */ m_pActFileQuit,
         /* szSignal     */ SIGNAL(triggered()),
-        /* pObjReceiver */ qApp,
+        /* pObjReceiver */ CApplication::GetInstance(),
         /* szSlot       */ SLOT(quit()) ) )
     {
-        throw CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
+        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
     }
 
     // <Menu> Debug
@@ -200,17 +209,17 @@ CMainWindow::CMainWindow(
     m_pMnuDebug = menuBar()->addMenu(tr("&Debug"));
 
     // <MenuItem> Debug::Error Log
-    //----------------------------
+    //-----------------------------
 
-    QIcon iconDebugErrorLog;
+    QIcon iconErrorLog;
 
-    QPixmap pxmDebugErrorLog16x16(":/ZS/App/Zeus16x16.bmp");
+    QPixmap pxmErrorLog16x16(":/ZS/App/Zeus16x16.bmp");
 
-    pxmDebugErrorLog16x16.setMask(pxmDebugErrorLog16x16.createHeuristicMask());
+    pxmErrorLog16x16.setMask(pxmErrorLog16x16.createHeuristicMask());
 
-    iconDebugErrorLog.addPixmap(pxmDebugErrorLog16x16);
+    iconErrorLog.addPixmap(pxmErrorLog16x16);
 
-    m_pActDebugErrLog = new QAction( iconDebugErrorLog, "Error Log", this );
+    m_pActDebugErrLog = new QAction( iconErrorLog, "Error Log", this );
     m_pActDebugErrLog->setToolTip("Open error log dialog");
     m_pActDebugErrLog->setEnabled(true);
 
@@ -226,12 +235,12 @@ CMainWindow::CMainWindow(
     }
 
     // <Menu> Info
-    //============
+    //=============
 
     m_pMnuInfo = menuBar()->addMenu(tr("&Info"));
 
     // <MenuItem> Info::Version
-    //--------------------------
+    //-------------------------
 
     QString strActionInfoVersion = "Version: " + ZS::System::c_strSysVersionNr;
 
@@ -247,9 +256,9 @@ CMainWindow::CMainWindow(
 
     QString strStyleSheet = "QStatusBar { " \
         "background: qlineargradient( " \
-        "x1: 0, y1: 0, x2: 0, y2: 1, " \
-        "stop: 0 #E1E1E1, stop: 0.4 #DDDDDD, " \
-        "stop: 0.5 #D8D8D8, stop: 1.0 #D3D3D3); } ";
+            "x1: 0, y1: 0, x2: 0, y2: 1, " \
+            "stop: 0 #E1E1E1, stop: 0.4 #DDDDDD, " \
+            "stop: 0.5 #D8D8D8, stop: 1.0 #D3D3D3); } ";
 
     m_pStatusBar = new QStatusBar;
     m_pStatusBar->setStyleSheet(strStyleSheet);
@@ -292,17 +301,17 @@ CMainWindow::CMainWindow(
         }
     } // if( CErrLog::GetInstance() != nullptr )
 
-    // <CentralWidget>
-    //======================
+    // Central Widget
+    //===============
 
     m_pWdgtCentral = new CWidgetCentral(this);
     setCentralWidget(m_pWdgtCentral);
 
-    // <Geometry>
-    //======================
+    // Restore geometry of widget
+    //===========================
 
     QSettings settings;
-    restoreGeometry( settings.value("MainWindow/Geometry").toByteArray() );
+    restoreGeometry( settings.value(objectName()+"/Geometry").toByteArray() );
 
 } // ctor
 
@@ -312,7 +321,7 @@ CMainWindow::~CMainWindow()
 {
     QSettings settings;
 
-    settings.setValue( "MainWindow/Geometry", saveGeometry() );
+    settings.setValue( objectName()+"/Geometry", saveGeometry() );
     settings.setValue( "MainWindow/WindowState", saveState() );
 
     try
@@ -352,6 +361,8 @@ protected: // overridables of base class QWidget
 void CMainWindow::closeEvent( QCloseEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
+    CDialog::HideAllInstances();
+
     if( i_pEv->isAccepted() )
     {
         try
@@ -535,21 +546,21 @@ protected slots:
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CMainWindow::onErrLogEntryAdded( const ZS::System::SErrResultInfo& )
+void CMainWindow::onErrLogEntryAdded( const ZS::System::SErrResultInfo& /*i_errResultInfo*/ )
 //------------------------------------------------------------------------------
 {
     updateErrorsStatus();
 }
 
 //------------------------------------------------------------------------------
-void CMainWindow::onErrLogEntryChanged( const ZS::System::SErrResultInfo& )
+void CMainWindow::onErrLogEntryChanged( const ZS::System::SErrResultInfo& /*i_errResultInfo*/ )
 //------------------------------------------------------------------------------
 {
     updateErrorsStatus();
 }
 
 //------------------------------------------------------------------------------
-void CMainWindow::onErrLogEntryRemoved( const ZS::System::SErrResultInfo& )
+void CMainWindow::onErrLogEntryRemoved( const ZS::System::SErrResultInfo& /*i_errResultInfo*/ )
 //------------------------------------------------------------------------------
 {
     updateErrorsStatus();
@@ -602,7 +613,6 @@ void CMainWindow::updateErrorsStatus()
         if( iErrorsCount == 0 )
         {
             strToolTip = "There is no Info, no Warning, no Error and no Critical Error message pending";
-            m_pLblErrors->hide();
         }
         else if( iErrorsCount > 0 )
         {
@@ -669,8 +679,6 @@ void CMainWindow::updateErrorsStatus()
                     }
                 }
             }
-            m_pLblErrors->show();
-
         } // if( iErrorsCount > 0 )
 
         strToolTip += ".";

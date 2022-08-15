@@ -42,7 +42,6 @@ list(APPEND _Headers
 
 list(APPEND _Sources
     ${_SourcesPath}/${PROJECT_NAME}/ZSIpcLogClient.cpp
-    ${_SourcesPath}/${PROJECT_NAME}/ZSIpcLogDllIf.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSIpcLogDllIfServerThread.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSIpcLogDllMain.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSIpcLogServer.cpp

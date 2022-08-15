@@ -42,7 +42,6 @@ may result in using the software modules.
 #include "ZSTestGUI/ZSTestStepDlg.h"
 #include "ZSSys/ZSSysApp.h"
 #include "ZSSys/ZSSysErrLog.h"
-#include "ZSSys/ZSSysVersion.h"
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
@@ -69,7 +68,6 @@ CTest::CTest() :
     m_pTmrTestStepTimeout(nullptr),
     m_trcSettings(),
     m_uTrcServerPort(24763),
-    //m_iTrcDetailLevelTrcServer(ZS::System::EMethodTraceDetailLevel::None),
     m_pTrcServer(nullptr),
     m_hshpMyClass1InstancesByName(),
     m_hshpMyClass2InstancesByName(),
@@ -78,9 +76,7 @@ CTest::CTest() :
     m_multihshpMyClass2InstancesByName(),
     m_multihshpMyClass3InstancesByName()
 {
-    //ZS::Trace::DllIf::STrcServerSettings_init(m_trcSettings);
-
-    m_pTmrTestStepTimeout = new QTimer();
+    m_pTmrTestStepTimeout = new QTimer(this);
     m_pTmrTestStepTimeout->setSingleShot(true);
 
     if( !QObject::connect(
@@ -1133,14 +1129,6 @@ CTest::~CTest()
         }
     }
 
-    try
-    {
-        delete m_pTmrTestStepTimeout;
-    }
-    catch(...)
-    {
-    }
-
     if( m_pTrcServer != nullptr )
     {
         ZS::Trace::DllIf::CIpcTrcServer::ReleaseInstance(m_pTrcServer);
@@ -1150,7 +1138,6 @@ CTest::~CTest()
     m_pTmrTestStepTimeout = nullptr;
     ZS::Trace::DllIf::STrcServerSettings_release(m_trcSettings);
     m_uTrcServerPort = 0;
-    //m_iTrcDetailLevelTrcServer = 0;
     m_pTrcServer = nullptr;
     m_hshpMyClass1InstancesByName.clear();
     m_hshpMyClass2InstancesByName.clear();
@@ -1542,20 +1529,14 @@ void CTest::doTestStepTraceClientConnect( ZS::Test::CTestStep* i_pTestStep )
             i_pTestStep->setResultValue("Method Trace Client NOT Connected");
         }
     }
-
 } // doTestStepTraceClientConnect
 
 //------------------------------------------------------------------------------
 void CTest::doTestStepTraceClientDisconnect( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
-    i_pTestStep->setDescription("Check whether client can connect.");
-    i_pTestStep->setInstruction(
-        "Start and connect the trace method client.<br/>"
-        "Hide time info in trace method client to be able to compare the expected with the actual result values.<br/>"
-        "By hiding the time info you may copy and paste the trace method output from the trace client "
-        "to the result values edit widget of this dialog.<br/>"
-        "After copy and paste you may press the button 'Compare Expected With Result Values' below.");
+    i_pTestStep->setDescription("Check whether client can disconnect.");
+    i_pTestStep->setInstruction("Disconnect the trace method client.");
     i_pTestStep->setExpectedValue("Method Trace Client Disconnected");
 
     m_pDlgTestStep = new CDlgTestStep(i_pTestStep);
@@ -1575,7 +1556,6 @@ void CTest::doTestStepTraceClientDisconnect( ZS::Test::CTestStep* i_pTestStep )
             i_pTestStep->setResultValue("Method Trace Client NOT Disconnected");
         }
     }
-
 } // doTestStepTraceClientDisconnect
 
 //------------------------------------------------------------------------------
@@ -2354,9 +2334,7 @@ void CTest::onTimerTestStepTimeout()
         strlstResultValues.append(strResultValue);
 
         pTestStep->setResultValues(strlstResultValues);
-
-    } // if( pTestStep != nullptr )
-
+    }
 } // onTimerTestStepTimeout()
 
 //------------------------------------------------------------------------------

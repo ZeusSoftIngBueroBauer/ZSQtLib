@@ -39,6 +39,7 @@ may result in using the software modules.
 
 #include "App.h"
 #include "MainWindow.h"
+#include "Test.h"
 
 #include "ZSTest/ZSTestStepIdxTree.h"
 #include "ZSSys/ZSSysApp.h"
@@ -49,10 +50,8 @@ may result in using the software modules.
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
-
 using namespace ZS::System;
-using namespace ZS::Trace;
-using namespace ZS::Apps::Test::IpcTraceDllIfQtApp;
+using namespace ZS::Apps::Test::IpcLogDllIfQtApp;
 
 
 /*******************************************************************************
@@ -145,12 +144,12 @@ CApplication::CApplication(
     }
 
     // Create error manager
-    //------------------------
+    //---------------------
 
     CErrLog::CreateInstance();
 
     // Test
-    //-----
+    //----------------
 
     m_pTest = new CTest();
 

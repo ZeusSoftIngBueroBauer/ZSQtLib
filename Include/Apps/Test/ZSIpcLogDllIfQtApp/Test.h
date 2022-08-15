@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2022 by ZeusSoft, Ing. Buero Bauer, Germany
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -24,12 +24,12 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#ifndef ZSApps_TestIpcTraceDllIfQtApp_Test_h
-#define ZSApps_TestIpcTraceDllIfQtApp_Test_h
+#ifndef ZSApps_TestIpcLogDllIfQtApp_Test_h
+#define ZSApps_TestIpcLogDllIfQtApp_Test_h
 
 #include "ZSTest/ZSTest.h"
 #include "ZSTest/ZSTestStepIdxTreeEntry.h"
-#include "ZSIpcTrace/ZSIpcTrcDllIf.h"
+#include "ZSIpcLog/ZSIpcLogDllIf.h"
 
 class QTimer;
 
@@ -42,16 +42,13 @@ namespace GUI
 class CDlgTestStep;
 }
 }
+
 namespace Apps
 {
 namespace Test
 {
-namespace IpcTraceDllIfQtApp
+namespace IpcLogDllIfQtApp
 {
-class CMyClass1;
-class CMyClass2;
-class CMyClass3;
-
 //******************************************************************************
 class CTest : public ZS::Test::CTest
 //******************************************************************************
@@ -63,20 +60,22 @@ public: // ctors and dtor
 public slots: // test step methods
     void doTestStepLoadDll( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepReleaseDll( ZS::Test::CTestStep* i_pTestStep );
-    void doTestStepTraceServerCreateInstance( ZS::Test::CTestStep* i_pTestStep );
-    void doTestStepTraceServerReleaseInstance( ZS::Test::CTestStep* i_pTestStep );
-    void doTestStepTraceServerStartup( ZS::Test::CTestStep* i_pTestStep );
-    void doTestStepTraceServerShutdown( ZS::Test::CTestStep* i_pTestStep );
-    void doTestStepTraceServerRecallAdminObjs( ZS::Test::CTestStep* i_pTestStep );
-    void doTestStepTraceServerSaveAdminObjs( ZS::Test::CTestStep* i_pTestStep );
-    void doTestStepTraceClientConnect( ZS::Test::CTestStep* i_pTestStep );
-    void doTestStepTraceClientDisconnect( ZS::Test::CTestStep* i_pTestStep );
-    void doTestStepTraceMethodCall( ZS::Test::CTestStep* i_pTestStep );
-public slots: // test step methods
+    void doTestStepLogServerCreateInstance( ZS::Test::CTestStep* i_pTestStep );
+    void doTestStepLogServerReleaseInstance( ZS::Test::CTestStep* i_pTestStep );
+    void doTestStepLogServerStartup( ZS::Test::CTestStep* i_pTestStep );
+    void doTestStepLogServerShutdown( ZS::Test::CTestStep* i_pTestStep );
+    void doTestStepLogClientConnect( ZS::Test::CTestStep* i_pTestStep );
+    void doTestStepLogClientDisconnect( ZS::Test::CTestStep* i_pTestStep );
+    void doTestStepLogServerGetLogger( ZS::Test::CTestStep* i_pTestStep );
+    void doTestStepModifyLogger( ZS::Test::CTestStep* i_pTestStep );
+    void doTestStepModifyLogServer( ZS::Test::CTestStep* i_pTestStep );
+    void doTestStepModifyLogServerLoggerFile( ZS::Test::CTestStep* i_pTestStep );
+    void doTestStepModifyLogServerLocalLogFile( ZS::Test::CTestStep* i_pTestStep );
+    void doTestStepLoggerAddLogEntry( ZS::Test::CTestStep* i_pTestStep );
+    void doTestStepLoggerAddLogEntryMyThread( ZS::Test::CTestStep* i_pTestStep );
+    void doTestStepLogServerAddLogEntry( ZS::Test::CTestStep* i_pTestStep );
+private slots:
     void onTimerTestStepTimeout();
-    void onClass1AboutToBeDestroyed(QObject* i_pObj, const QString& i_strObjName);
-    void onClass2AboutToBeDestroyed(QObject* i_pObj, const QString& i_strObjName);
-    void onClass3AboutToBeDestroyed(QObject* i_pObj, const QString& i_strObjName);
 private: // instance auxiliary methods
     void splitMethodCallOperation(
         const QString& i_strOperation,
@@ -86,22 +85,15 @@ private: // instance auxiliary methods
         QString& o_strMth,
         QStringList& o_strlstInArgs,
         QString& o_strMthRet ) const;
-protected: // instance members
-    ZS::Test::GUI::CDlgTestStep*         m_pDlgTestStep;
-    QTimer*                              m_pTmrTestStepTimeout;
-    ZS::Trace::DllIf::STrcServerSettings m_trcSettings;
-    unsigned short                       m_uTrcServerPort;
-    ZS::Trace::DllIf::CIpcTrcServer*     m_pTrcServer;
-    QHash<QString, CMyClass1*>           m_hshpMyClass1InstancesByName;
-    QHash<QString, CMyClass2*>           m_hshpMyClass2InstancesByName;
-    QHash<QString, CMyClass3*>           m_hshpMyClass3InstancesByName;
-    QMultiHash<QString, CMyClass1*>      m_multihshpMyClass1InstancesByName;
-    QMultiHash<QString, CMyClass2*>      m_multihshpMyClass2InstancesByName;
-    QMultiHash<QString, CMyClass3*>      m_multihshpMyClass3InstancesByName;
+private: // instance members
+    ZS::Test::GUI::CDlgTestStep*       m_pDlgTestStep;
+    QTimer*                            m_pTmrTestStepTimeout;
+    ZS::Log::DllIf::SLogServerSettings m_logSettings;
+    unsigned short                     m_uLogServerPort;
 
 }; // class CTest
 
-} // namespace IpcTraceDllIfQtApp
+} // namespace IpcLogDllIfQtApp
 
 } // namespace Test
 
@@ -109,4 +101,4 @@ protected: // instance members
 
 } // namespace ZS
 
-#endif // #ifndef ZSApps_TestIpcTraceDllIfQtApp_Test_h
+#endif // #ifndef ZSApps_TestIpcLogDllIfQtApp_Test_h

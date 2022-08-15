@@ -285,8 +285,56 @@ struct STrcServerSettings
                                                          Use with special care as enabling this feature extremely slows down the program. */
 }; // struct STrcServerSettings
 
-void STrcServerSettings_init( STrcServerSettings& i_trcSettings );
-void STrcServerSettings_release( STrcServerSettings& i_trcSettings );
+//------------------------------------------------------------------------------
+/*! @brief Initializes the trace settings with default values.
+
+    @param i_trcSettings [in] Struct to be initialized.
+*/
+static void STrcServerSettings_init( DllIf::STrcServerSettings& i_trcSettings )
+//------------------------------------------------------------------------------
+{
+    i_trcSettings.m_bEnabled = true;
+    i_trcSettings.m_szAdminObjFileAbsFilePath = 0;
+    i_trcSettings.m_bNewTrcAdminObjsEnabledAsDefault = false;
+    i_trcSettings.m_iNewTrcAdminObjsMethodCallsDefaultDetailLevel = 0;
+    i_trcSettings.m_iNewTrcAdminObjsRuntimeInfoDefaultDetailLevel = 0;
+    i_trcSettings.m_bUseIpcServer = true;
+    i_trcSettings.m_bCacheDataIfNotConnected = false;
+    i_trcSettings.m_iCacheDataMaxArrLen = 1000;
+    i_trcSettings.m_bUseLocalTrcFile = true;
+    i_trcSettings.m_szLocalTrcFileAbsFilePath = 0;
+    i_trcSettings.m_iLocalTrcFileAutoSaveInterval_ms = 1000;
+    i_trcSettings.m_iLocalTrcFileSubFileCountMax = 5;
+    i_trcSettings.m_iLocalTrcFileSubFileLineCountMax = 2000;
+    i_trcSettings.m_bLocalTrcFileCloseFileAfterEachWrite = false;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Resets the trace settings. The character buffers containing file names
+           will be freed.
+
+    @param i_trcSettings [in] Struct to be reset.
+*/
+static void STrcServerSettings_release( DllIf::STrcServerSettings& i_trcSettings )
+//------------------------------------------------------------------------------
+{
+    i_trcSettings.m_bEnabled = false;
+    delete i_trcSettings.m_szAdminObjFileAbsFilePath;
+    i_trcSettings.m_szAdminObjFileAbsFilePath = 0;
+    i_trcSettings.m_bNewTrcAdminObjsEnabledAsDefault = false;
+    i_trcSettings.m_iNewTrcAdminObjsMethodCallsDefaultDetailLevel = 0;
+    i_trcSettings.m_iNewTrcAdminObjsRuntimeInfoDefaultDetailLevel = 1;
+    i_trcSettings.m_bUseIpcServer = false;
+    i_trcSettings.m_bCacheDataIfNotConnected = false;
+    i_trcSettings.m_iCacheDataMaxArrLen = 0;
+    i_trcSettings.m_bUseLocalTrcFile = false;
+    delete i_trcSettings.m_szLocalTrcFileAbsFilePath;
+    i_trcSettings.m_szLocalTrcFileAbsFilePath = 0;
+    i_trcSettings.m_iLocalTrcFileAutoSaveInterval_ms = 0;
+    i_trcSettings.m_iLocalTrcFileSubFileCountMax = 0;
+    i_trcSettings.m_iLocalTrcFileSubFileLineCountMax = 0;
+    i_trcSettings.m_bLocalTrcFileCloseFileAfterEachWrite = false;
+}
 
 
 //******************************************************************************

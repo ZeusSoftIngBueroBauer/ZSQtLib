@@ -41,11 +41,13 @@ may result in using the software modules.
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
-
 using namespace ZS::System;
 using namespace ZS::System::GUI;
 using namespace ZS::Test::GUI;
-using namespace ZS::Apps::Test::IpcTraceDllIfQtApp;
+//using namespace ZS::Ipc;
+//using namespace ZS::Log;
+//using namespace ZS::Log::GUI;
+using namespace ZS::Apps::Test::IpcLogDllIfQtApp;
 
 
 /*******************************************************************************
@@ -53,10 +55,21 @@ class CWidgetCentral : public QWidget
 *******************************************************************************/
 
 /*==============================================================================
-protected: // class members
+private: // class members
 ==============================================================================*/
 
 CWidgetCentral* CWidgetCentral::s_pThis = nullptr; // singleton class
+
+/*==============================================================================
+public: // class methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+CWidgetCentral* CWidgetCentral::GetInstance()
+//------------------------------------------------------------------------------
+{
+    return s_pThis;
+}
 
 /*==============================================================================
 public: // ctors and dtor
@@ -78,11 +91,6 @@ CWidgetCentral::CWidgetCentral(
     s_pThis = this;
 
     setObjectName("CentralWidget");
-
-    //QPalette paletteWdgtCentral;
-    //paletteWdgtCentral.setColor(QPalette::Window,Qt::lightGray);
-    //setPalette(paletteWdgtCentral);
-    //setAutoFillBackground(true);
 
     m_pLyt = new QVBoxLayout();
     setLayout(m_pLyt);

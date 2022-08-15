@@ -31,9 +31,11 @@ may result in using the software modules.
 #include <QtCore/qmutex.h>
 #include <QtCore/qtextstream.h>
 #include <QtCore/qtimer.h>
+
 #include "ZSSys/ZSSysLogFile.h"
 #include "ZSSys/ZSSysErrResult.h"
 #include "ZSSys/ZSSysException.h"
+#include "ZSSys/ZSSysMsg.h"
 #include "ZSSys/ZSSysTime.h"
 #include "ZSSys/ZSSysMemLeakDump.h"
 
@@ -324,11 +326,6 @@ void CLogFile::clear()
         m_pFile->close();
     }
 
-    if( m_pTimerAutoSave->isActive() )
-    {
-        m_pTimerAutoSave->stop();
-    }
-
     // Remove all log files.
     //----------------------
 
@@ -383,11 +380,6 @@ void CLogFile::clear()
             m_pFile->setFileName(m_strAbsFilePathSubFile00);
         }
     }
-
-    if( m_iAutoSaveInterval_ms > 0 )
-    {
-        m_pTimerAutoSave->start(m_iAutoSaveInterval_ms);
-    }
 }
 
 /*==============================================================================
@@ -413,11 +405,6 @@ void CLogFile::setAbsoluteFilePath( const QString& i_strAbsFilePath )
     if( m_pFile != nullptr && m_pFile->isOpen() )
     {
         m_pFile->close();
-    }
-
-    if( m_pTimerAutoSave->isActive() )
-    {
-        m_pTimerAutoSave->stop();
     }
 
     if( !i_strAbsFilePath.isEmpty() && !m_strAbsFilePath.isEmpty() )
@@ -476,11 +463,6 @@ void CLogFile::setAbsoluteFilePath( const QString& i_strAbsFilePath )
             }
         }
     } // if( !m_strAbsFilePath.isEmpty() )
-
-    if( m_iAutoSaveInterval_ms > 0 )
-    {
-        m_pTimerAutoSave->start(m_iAutoSaveInterval_ms);
-    }
 
 } // setAbsoluteFilePath
 
@@ -564,13 +546,33 @@ void CLogFile::setAutoSaveInterval( int i_iInterval_ms )
     {
         m_iAutoSaveInterval_ms = i_iInterval_ms;
 
-        if( m_pTimerAutoSave->isActive() )
+        if( m_pTimerAutoSave->thread() == QThread::currentThread() )
         {
-            m_pTimerAutoSave->stop();
+            if( m_pTimerAutoSave->isActive() )
+            {
+                m_pTimerAutoSave->stop();
+            }
+            if( m_iAutoSaveInterval_ms > 0 )
+            {
+                m_pTimerAutoSave->start(m_iAutoSaveInterval_ms);
+            }
         }
-        if( m_iAutoSaveInterval_ms > 0 )
+        else
         {
-            m_pTimerAutoSave->start(m_iAutoSaveInterval_ms);
+            CMsgReqStopTimer* pMsgReqStopTimer = new CMsgReqStopTimer(
+                /* pObjSender   */ this,
+                /* pObjReceiver */ this,
+                /* iTimerId     */ -1 );
+            QCoreApplication::postEvent(this, pMsgReqStopTimer);
+            pMsgReqStopTimer = NULL;
+            CMsgReqStartTimer* pMsgReqStartTimer = new CMsgReqStartTimer(
+                /* pObjSender   */ this,
+                /* pObjReceiver */ this,
+                /* iTimerId     */ -1,
+                /* bSingleShot  */ false,
+                /* iInterval_ms */ m_iAutoSaveInterval_ms );
+            QCoreApplication::postEvent(this, pMsgReqStartTimer);
+            pMsgReqStartTimer = NULL;
         }
     }
 } // setAutoSaveInterval
@@ -610,20 +612,46 @@ void CLogFile::setCloseFileAfterEachWrite( bool i_bCloseFile )
 
         if( m_bCloseFileAfterEachWrite )
         {
-            if( m_pTimerAutoSave->isActive() )
-            {
-                m_pTimerAutoSave->stop();
-            }
             if( m_pFile != nullptr && m_pFile->isOpen() )
             {
                 m_pFile->close();
+            }
+            if( m_pTimerAutoSave->thread() == QThread::currentThread() )
+            {
+                if( m_pTimerAutoSave->isActive() )
+                {
+                    m_pTimerAutoSave->stop();
+                }
+            }
+            else
+            {
+                CMsgReqStopTimer* pMsgReqStopTimer = new CMsgReqStopTimer(
+                    /* pObjSender   */ this,
+                    /* pObjReceiver */ this,
+                    /* iTimerId     */ -1 );
+                QCoreApplication::postEvent(this, pMsgReqStopTimer);
+                pMsgReqStopTimer = NULL;
             }
         }
         else
         {
             if( m_iAutoSaveInterval_ms > 0 && !m_pTimerAutoSave->isActive() )
             {
-                m_pTimerAutoSave->start(m_iAutoSaveInterval_ms);
+                if( m_pTimerAutoSave->thread() == QThread::currentThread() )
+                {
+                    m_pTimerAutoSave->start(m_iAutoSaveInterval_ms);
+                }
+                else
+                {
+                    CMsgReqStartTimer* pMsgReqStartTimer = new CMsgReqStartTimer(
+                        /* pObjSender   */ this,
+                        /* pObjReceiver */ this,
+                        /* iTimerId     */ -1,
+                        /* bSingleShot  */ false,
+                        /* iInterval_ms */ m_iAutoSaveInterval_ms );
+                    QCoreApplication::postEvent(this, pMsgReqStartTimer);
+                    pMsgReqStartTimer = NULL;
+                }
             }
         }
     }
@@ -881,6 +909,62 @@ void CLogFile::addEntry( const QString& i_strEntry )
 } // addEntry
 
 /*==============================================================================
+public: // overridables of base class QObject
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+bool CLogFile::event( QEvent* i_pMsg )
+//------------------------------------------------------------------------------
+{
+    bool bEventHandled = false;
+
+    // Timers cannot be started and stopped from another thread.
+    if( i_pMsg->type() >= QEvent::User )
+    {
+        QString strAddTrcInfo;
+        QString strAddErrInfo;
+
+        CMsg* pMsg = nullptr;
+
+        try
+        {
+            pMsg = dynamic_cast<CMsg*>(i_pMsg);
+        }
+        catch(...)
+        {
+            pMsg = nullptr;
+        }
+
+        if( pMsg != nullptr )
+        {
+            bEventHandled = true;
+
+            QMutexLocker mtxLocker(&s_mtx);
+
+            if( pMsg->getMsgType() == EBaseMsgTypeReqStartTimer )
+            {
+                if( m_iAutoSaveInterval_ms > 0 )
+                {
+                    m_pTimerAutoSave->start(m_iAutoSaveInterval_ms);
+                }
+            }
+            else if( pMsg->getMsgType() == EBaseMsgTypeReqStopTimer )
+            {
+                if( m_pTimerAutoSave->isActive() )
+                {
+                    m_pTimerAutoSave->stop();
+                }
+            }
+        }
+    }
+    if( !bEventHandled )
+    {
+        bEventHandled = QObject::event(i_pMsg);
+    }
+    return bEventHandled;
+}
+
+/*==============================================================================
 protected: // instance methods
 ==============================================================================*/
 
@@ -1028,5 +1112,4 @@ void CLogFile::onTimeoutAutoSaveFile()
     {
         m_pFile->close();
     }
-
-} // onTimeoutAutoSaveFile
+}

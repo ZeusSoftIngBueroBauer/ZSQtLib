@@ -107,10 +107,7 @@ class CLogger : public DllIf::CLogger
 public: // ctors and dtor
     CLogger( const char* i_szKeyInTree ) :
         DllIf::CLogger(),
-        m_szKeyInTree(nullptr),
-        m_iLockCount(0),
-        m_bDeleteOnUnlock(false),
-        m_iRefCount(0)
+        m_szKeyInTree(nullptr)
     {
         m_pMtx = new QMutex(QMutex::Recursive);
 
@@ -125,9 +122,6 @@ public: // ctors and dtor
         m_pMtx = nullptr;
         delete m_szKeyInTree;
         m_szKeyInTree = nullptr;
-        m_iLockCount = 0;
-        m_bDeleteOnUnlock = false;
-        m_iRefCount = 0;
     }
 public: // instance methods
     virtual const char* keyInTree() const override
@@ -135,68 +129,9 @@ public: // instance methods
         QMutexLocker mtxLocker(m_pMtx);
         return m_szKeyInTree;
     }
-public: // instance methods
-    virtual int lock() override
-    {
-        QMutexLocker mtxLocker(m_pMtx);
-        ++m_iLockCount;
-        return m_iLockCount;
-    }
-    virtual int unlock() override
-    {
-        QMutexLocker mtxLocker(m_pMtx);
-        --m_iLockCount;
-        return m_iLockCount;
-    }
-    virtual bool isLocked() const override
-    {
-        QMutexLocker mtxLocker(m_pMtx);
-        return (m_iLockCount > 0);
-    }
-    virtual int getLockCount() const override
-    {
-        QMutexLocker mtxLocker(m_pMtx);
-        return m_iLockCount;
-    }
-    virtual void setDeleteOnUnlock( bool i_bDelete ) override
-    {
-        QMutexLocker mtxLocker(m_pMtx);
-        m_bDeleteOnUnlock = i_bDelete;
-    }
-    virtual bool deleteOnUnlock() const override
-    {
-        QMutexLocker mtxLocker(m_pMtx);
-        return (m_iLockCount <= 0) && (m_iRefCount <= 0) && m_bDeleteOnUnlock;
-    }
-public: // instance methods
-    virtual int incrementRefCount() override
-    {
-        QMutexLocker mtxLocker(m_pMtx);
-        ++m_iRefCount;
-        return m_iRefCount;
-    }
-    virtual int decrementRefCount() override
-    {
-        QMutexLocker mtxLocker(m_pMtx);
-        --m_iRefCount;
-        return m_iRefCount;
-    }
-    virtual void setRefCount( int i_iRefCount ) override
-    {
-        QMutexLocker mtxLocker(m_pMtx);
-        m_iRefCount = i_iRefCount;
-    }
-    virtual int getRefCount() const override
-    {
-        QMutexLocker mtxLocker(m_pMtx);
-        return m_iRefCount;
-    }
 private: // instance members
     QMutex* m_pMtx;
     char*   m_szKeyInTree;
-    int     m_iLockCount;
-    bool    m_bDeleteOnUnlock;
-    int     m_iRefCount;
 };
 } // namespace DllMain
 } // namespace DllIf
@@ -211,112 +146,29 @@ DllIf::CLogger
 static QHash<QString, DllIf::DllMain::CLogger*> DllIf_LogServer_s_hshpLoggers;
 
 //------------------------------------------------------------------------------
-ZSIPCLOGDLL_EXTERN_API char* Logger_getNameSpace( const DllIf::CLogger* i_pLogger )
+ZSIPCLOGDLL_EXTERN_API void Logger_log(
+    DllIf::CLogger* i_pLogger,
+    ELogDetailLevel i_eFilterDetailLevel,
+    const char*     i_szLogEntry )
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&DllIf_s_mtx);
-
-    char* szName = nullptr;
-
     if( i_pLogger != nullptr )
     {
         QString strKeyInTree = i_pLogger->keyInTree();
-
         CLogServer* pLogServer = CLogServer::GetInstance();
-
         if( pLogServer != nullptr )
         {
             CIdxTreeLoggers* pIdxTree = pLogServer->getLoggersIdxTree();
-
             CIdxTreeEntry* pTreeEntry = pIdxTree->findEntry(strKeyInTree);
-
             CLogger* pLogger = dynamic_cast<CLogger*>(pTreeEntry);
-
             if( pLogger != nullptr )
             {
-                std::string stdstrName = pLogger->getNameSpace().toStdString();
-                szName = new char[stdstrName.size() + 1];
-                memcpy(szName, stdstrName.c_str(), stdstrName.size());
-                szName[stdstrName.size()] = 0x00;
+                pLogger->log(i_eFilterDetailLevel, i_szLogEntry);
             }
-        } // if( pLogServer != nullptr )
-    } // if( i_pLogger != nullptr )
-
-    return szName;
-
-} // Logger_getNameSpace
-
-//------------------------------------------------------------------------------
-ZSIPCLOGDLL_EXTERN_API char* Logger_getClassName( const DllIf::CLogger* i_pLogger )
-//------------------------------------------------------------------------------
-{
-    QMutexLocker mtxLocker(&DllIf_s_mtx);
-
-    char* szName = nullptr;
-
-    if( i_pLogger != nullptr )
-    {
-        QString strKeyInTree = i_pLogger->keyInTree();
-
-        CLogServer* pLogServer = CLogServer::GetInstance();
-
-        if( pLogServer != nullptr )
-        {
-            CIdxTreeLoggers* pIdxTree = pLogServer->getLoggersIdxTree();
-
-            CIdxTreeEntry* pTreeEntry = pIdxTree->findEntry(strKeyInTree);
-
-            CLogger* pLogger = dynamic_cast<CLogger*>(pTreeEntry);
-
-            if( pLogger != nullptr )
-            {
-                std::string stdstrName = pLogger->getClassName().toStdString();
-                szName = new char[stdstrName.size() + 1];
-                memcpy(szName, stdstrName.c_str(), stdstrName.size());
-                szName[stdstrName.size()] = 0x00;
-            }
-        } // if( pLogServer != nullptr )
-    } // if( i_pLogger != nullptr )
-
-    return szName;
-
-} // Logger_getClassName
-
-//------------------------------------------------------------------------------
-ZSIPCLOGDLL_EXTERN_API char* Logger_getObjectName( const DllIf::CLogger* i_pLogger )
-//------------------------------------------------------------------------------
-{
-    QMutexLocker mtxLocker(&DllIf_s_mtx);
-
-    char* szName = nullptr;
-
-    if( i_pLogger != nullptr )
-    {
-        QString strKeyInTree = i_pLogger->keyInTree();
-
-        CLogServer* pLogServer = CLogServer::GetInstance();
-
-        if( pLogServer != nullptr )
-        {
-            CIdxTreeLoggers* pIdxTree = pLogServer->getLoggersIdxTree();
-
-            CIdxTreeEntry* pTreeEntry = pIdxTree->findEntry(strKeyInTree);
-
-            CLogger* pLogger = dynamic_cast<CLogger*>(pTreeEntry);
-
-            if( pLogger != nullptr )
-            {
-                std::string stdstrName = pLogger->getObjectName().toStdString();
-                szName = new char[stdstrName.size() + 1];
-                memcpy(szName, stdstrName.c_str(), stdstrName.size());
-                szName[stdstrName.size()] = 0x00;
-            }
-        } // if( pLogServer != nullptr )
-    } // if( i_pLogger != nullptr )
-
-    return szName;
-
-} // Logger_getObjectName
+        }
+    }
+}
 
 //------------------------------------------------------------------------------
 ZSIPCLOGDLL_EXTERN_API void Logger_setEnabled(
@@ -325,21 +177,15 @@ ZSIPCLOGDLL_EXTERN_API void Logger_setEnabled(
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&DllIf_s_mtx);
-
     if( i_pLogger != nullptr )
     {
         QString strKeyInTree = i_pLogger->keyInTree();
-
         CLogServer* pLogServer = CLogServer::GetInstance();
-
         if( pLogServer != nullptr )
         {
             CIdxTreeLoggers* pIdxTree = pLogServer->getLoggersIdxTree();
-
             CIdxTreeEntry* pTreeEntry = pIdxTree->findEntry(strKeyInTree);
-
             CLogger* pLogger = dynamic_cast<CLogger*>(pTreeEntry);
-
             if( pLogger != nullptr )
             {
                 pLogger->setEnabled(i_bEnabled ? EEnabled::Yes : EEnabled::No);
@@ -353,23 +199,16 @@ ZSIPCLOGDLL_EXTERN_API bool Logger_isEnabled( const DllIf::CLogger* i_pLogger )
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&DllIf_s_mtx);
-
     bool bEnabled = false;
-
     if( i_pLogger != nullptr )
     {
         QString strKeyInTree = i_pLogger->keyInTree();
-
         CLogServer* pLogServer = CLogServer::GetInstance();
-
         if( pLogServer != nullptr )
         {
             CIdxTreeLoggers* pIdxTree = pLogServer->getLoggersIdxTree();
-
             CIdxTreeEntry* pTreeEntry = pIdxTree->findEntry(strKeyInTree);
-
             CLogger* pLogger = dynamic_cast<CLogger*>(pTreeEntry);
-
             if( pLogger != nullptr )
             {
                 bEnabled = pLogger->isEnabled();
@@ -386,21 +225,15 @@ ZSIPCLOGDLL_EXTERN_API void Logger_setLogLevel(
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&DllIf_s_mtx);
-
     if( i_pLogger != nullptr )
     {
         QString strKeyInTree = i_pLogger->keyInTree();
-
         CLogServer* pLogServer = CLogServer::GetInstance();
-
         if( pLogServer != nullptr )
         {
             CIdxTreeLoggers* pIdxTree = pLogServer->getLoggersIdxTree();
-
             CIdxTreeEntry* pTreeEntry = pIdxTree->findEntry(strKeyInTree);
-
             CLogger* pLogger = dynamic_cast<CLogger*>(pTreeEntry);
-
             if( pLogger != nullptr )
             {
                 pLogger->setLogLevel(static_cast<ELogDetailLevel>(i_eDetailLevel));
@@ -414,23 +247,16 @@ ZSIPCLOGDLL_EXTERN_API DllIf::ELogDetailLevel Logger_getLogLevel( const DllIf::C
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&DllIf_s_mtx);
-
     DllIf::ELogDetailLevel eDetailLevel = DllIf::ELogDetailLevelNone;
-
     if( i_pLogger != nullptr )
     {
         QString strKeyInTree = i_pLogger->keyInTree();
-
         CLogServer* pLogServer = CLogServer::GetInstance();
-
         if( pLogServer != nullptr )
         {
             CIdxTreeLoggers* pIdxTree = pLogServer->getLoggersIdxTree();
-
             CIdxTreeEntry* pTreeEntry = pIdxTree->findEntry(strKeyInTree);
-
             CLogger* pLogger = dynamic_cast<CLogger*>(pTreeEntry);
-
             if( pLogger != nullptr )
             {
                 eDetailLevel = static_cast<DllIf::ELogDetailLevel>(pLogger->getLogLevel());
@@ -447,23 +273,16 @@ ZSIPCLOGDLL_EXTERN_API bool Logger_isActive(
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&DllIf_s_mtx);
-
     bool bIsActive = false;
-
     if( i_pLogger != nullptr )
     {
         QString strKeyInTree = i_pLogger->keyInTree();
-
         CLogServer* pLogServer = CLogServer::GetInstance();
-
         if( pLogServer != nullptr )
         {
             CIdxTreeLoggers* pIdxTree = pLogServer->getLoggersIdxTree();
-
             CIdxTreeEntry* pTreeEntry = pIdxTree->findEntry(strKeyInTree);
-
             CLogger* pLogger = dynamic_cast<CLogger*>(pTreeEntry);
-
             if( pLogger != nullptr )
             {
                 bIsActive = pLogger->isActive(static_cast<ELogDetailLevel>(i_eDetailLevel));
@@ -480,21 +299,15 @@ ZSIPCLOGDLL_EXTERN_API void Logger_setDataFilter(
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&DllIf_s_mtx);
-
     if( i_pLogger != nullptr )
     {
         QString strKeyInTree = i_pLogger->keyInTree();
-
         CLogServer* pLogServer = CLogServer::GetInstance();
-
         if( pLogServer != nullptr )
         {
             CIdxTreeLoggers* pIdxTree = pLogServer->getLoggersIdxTree();
-
             CIdxTreeEntry* pTreeEntry = pIdxTree->findEntry(strKeyInTree);
-
             CLogger* pLogger = dynamic_cast<CLogger*>(pTreeEntry);
-
             if( pLogger != nullptr )
             {
                 pLogger->setDataFilter(i_szFilter);
@@ -508,23 +321,16 @@ ZSIPCLOGDLL_EXTERN_API char* Logger_getDataFilter( const DllIf::CLogger* i_pLogg
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&DllIf_s_mtx);
-
     char* szFilter = nullptr;
-
     if( i_pLogger != nullptr )
     {
         QString strKeyInTree = i_pLogger->keyInTree();
-
         CLogServer* pLogServer = CLogServer::GetInstance();
-
         if( pLogServer != nullptr )
         {
             CIdxTreeLoggers* pIdxTree = pLogServer->getLoggersIdxTree();
-
             CIdxTreeEntry* pTreeEntry = pIdxTree->findEntry(strKeyInTree);
-
             CLogger* pLogger = dynamic_cast<CLogger*>(pTreeEntry);
-
             if( pLogger != nullptr )
             {
                 std::string stdstrFilter = pLogger->getDataFilter().toStdString();
@@ -538,32 +344,25 @@ ZSIPCLOGDLL_EXTERN_API char* Logger_getDataFilter( const DllIf::CLogger* i_pLogg
 }
 
 //------------------------------------------------------------------------------
-ZSIPCLOGDLL_EXTERN_API bool Logger_isDataSuppressedByFilter(
+ZSIPCLOGDLL_EXTERN_API bool Logger_isSuppressedByDataFilter(
     DllIf::CLogger* i_pLogger,
-    const char*     i_szTraceData )
+    const char*     i_szLogEntry )
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&DllIf_s_mtx);
-
     bool bIsSuppressed = false;
-
     if( i_pLogger != nullptr )
     {
         QString strKeyInTree = i_pLogger->keyInTree();
-
         CLogServer* pLogServer = CLogServer::GetInstance();
-
         if( pLogServer != nullptr )
         {
             CIdxTreeLoggers* pIdxTree = pLogServer->getLoggersIdxTree();
-
             CIdxTreeEntry* pTreeEntry = pIdxTree->findEntry(strKeyInTree);
-
             CLogger* pLogger = dynamic_cast<CLogger*>(pTreeEntry);
-
             if( pLogger != nullptr )
             {
-                bIsSuppressed = pLogger->isSuppressedByDataFilter(i_szTraceData);
+                bIsSuppressed = pLogger->isSuppressedByDataFilter(i_szLogEntry);
             }
         }
     }
@@ -571,91 +370,326 @@ ZSIPCLOGDLL_EXTERN_API bool Logger_isDataSuppressedByFilter(
 }
 
 //------------------------------------------------------------------------------
-ZSIPCLOGDLL_EXTERN_API void Logger_log(
-    DllIf::CLogger* i_pLogger,
-    const char*     i_szObjName,
-    const char*     i_szMethod,
-    const char*     i_szMethodAddInfo )
+ZSIPCLOGDLL_EXTERN_API void Logger_setAddThreadName( const DllIf::CLogger* i_pLogger, bool i_bAdd )
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&DllIf_s_mtx);
-
     if( i_pLogger != nullptr )
     {
         QString strKeyInTree = i_pLogger->keyInTree();
-
         CLogServer* pLogServer = CLogServer::GetInstance();
-
         if( pLogServer != nullptr )
         {
             CIdxTreeLoggers* pIdxTree = pLogServer->getLoggersIdxTree();
-
             CIdxTreeEntry* pTreeEntry = pIdxTree->findEntry(strKeyInTree);
-
             CLogger* pLogger = dynamic_cast<CLogger*>(pTreeEntry);
-
             if( pLogger != nullptr )
             {
-                #pragma message(__TODO__"This is nonsense")
-                pLogServer->log(ELogDetailLevel::None, i_szMethodAddInfo);
+                pLogger->setAddThreadName(i_bAdd);
             }
         }
     }
+}
+
+//------------------------------------------------------------------------------
+ZSIPCLOGDLL_EXTERN_API bool Logger_addThreadName( const DllIf::CLogger* i_pLogger )
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(&DllIf_s_mtx);
+    bool bAdd = false;
+    if( i_pLogger != nullptr )
+    {
+        QString strKeyInTree = i_pLogger->keyInTree();
+        CLogServer* pLogServer = CLogServer::GetInstance();
+        if( pLogServer != nullptr )
+        {
+            CIdxTreeLoggers* pIdxTree = pLogServer->getLoggersIdxTree();
+            CIdxTreeEntry* pTreeEntry = pIdxTree->findEntry(strKeyInTree);
+            CLogger* pLogger = dynamic_cast<CLogger*>(pTreeEntry);
+            if( pLogger != nullptr )
+            {
+                bAdd = pLogger->addThreadName();
+            }
+        }
+    }
+    return bAdd;
+}
+
+//------------------------------------------------------------------------------
+ZSIPCLOGDLL_EXTERN_API void Logger_setAddDateTime( const DllIf::CLogger* i_pLogger, bool i_bAdd )
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(&DllIf_s_mtx);
+    if( i_pLogger != nullptr )
+    {
+        QString strKeyInTree = i_pLogger->keyInTree();
+        CLogServer* pLogServer = CLogServer::GetInstance();
+        if( pLogServer != nullptr )
+        {
+            CIdxTreeLoggers* pIdxTree = pLogServer->getLoggersIdxTree();
+            CIdxTreeEntry* pTreeEntry = pIdxTree->findEntry(strKeyInTree);
+            CLogger* pLogger = dynamic_cast<CLogger*>(pTreeEntry);
+            if( pLogger != nullptr )
+            {
+                pLogger->setAddDateTime(i_bAdd);
+            }
+        }
+    }
+}
+
+//------------------------------------------------------------------------------
+ZSIPCLOGDLL_EXTERN_API bool Logger_addDateTime( const DllIf::CLogger* i_pLogger )
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(&DllIf_s_mtx);
+    bool bAdd = false;
+    if( i_pLogger != nullptr )
+    {
+        QString strKeyInTree = i_pLogger->keyInTree();
+        CLogServer* pLogServer = CLogServer::GetInstance();
+        if( pLogServer != nullptr )
+        {
+            CIdxTreeLoggers* pIdxTree = pLogServer->getLoggersIdxTree();
+            CIdxTreeEntry* pTreeEntry = pIdxTree->findEntry(strKeyInTree);
+            CLogger* pLogger = dynamic_cast<CLogger*>(pTreeEntry);
+            if( pLogger != nullptr )
+            {
+                bAdd = pLogger->addDateTime();
+            }
+        }
+    }
+    return bAdd;
+}
+
+//------------------------------------------------------------------------------
+ZSIPCLOGDLL_EXTERN_API void Logger_setAddSystemTime( const DllIf::CLogger* i_pLogger, bool i_bAdd )
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(&DllIf_s_mtx);
+    if( i_pLogger != nullptr )
+    {
+        QString strKeyInTree = i_pLogger->keyInTree();
+        CLogServer* pLogServer = CLogServer::GetInstance();
+        if( pLogServer != nullptr )
+        {
+            CIdxTreeLoggers* pIdxTree = pLogServer->getLoggersIdxTree();
+            CIdxTreeEntry* pTreeEntry = pIdxTree->findEntry(strKeyInTree);
+            CLogger* pLogger = dynamic_cast<CLogger*>(pTreeEntry);
+            if( pLogger != nullptr )
+            {
+                pLogger->setAddSystemTime(i_bAdd);
+            }
+        }
+    }
+}
+
+//------------------------------------------------------------------------------
+ZSIPCLOGDLL_EXTERN_API bool Logger_addSystemTime( const DllIf::CLogger* i_pLogger )
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(&DllIf_s_mtx);
+    bool bAdd = false;
+    if( i_pLogger != nullptr )
+    {
+        QString strKeyInTree = i_pLogger->keyInTree();
+        CLogServer* pLogServer = CLogServer::GetInstance();
+        if( pLogServer != nullptr )
+        {
+            CIdxTreeLoggers* pIdxTree = pLogServer->getLoggersIdxTree();
+            CIdxTreeEntry* pTreeEntry = pIdxTree->findEntry(strKeyInTree);
+            CLogger* pLogger = dynamic_cast<CLogger*>(pTreeEntry);
+            if( pLogger != nullptr )
+            {
+                bAdd = pLogger->addSystemTime();
+            }
+        }
+    }
+    return bAdd;
+}
+
+//------------------------------------------------------------------------------
+ZSIPCLOGDLL_EXTERN_API void Logger_setNameSpace(
+    const DllIf::CLogger* i_pLogger,
+    const char*           i_szName )
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(&DllIf_s_mtx);
+    if( i_pLogger != nullptr )
+    {
+        QString strKeyInTree = i_pLogger->keyInTree();
+        CLogServer* pLogServer = CLogServer::GetInstance();
+        if( pLogServer != nullptr )
+        {
+            CIdxTreeLoggers* pIdxTree = pLogServer->getLoggersIdxTree();
+            CIdxTreeEntry* pTreeEntry = pIdxTree->findEntry(strKeyInTree);
+            CLogger* pLogger = dynamic_cast<CLogger*>(pTreeEntry);
+            if( pLogger != nullptr )
+            {
+                pLogger->setNameSpace(i_szName);
+            }
+        }
+    }
+}
+
+//------------------------------------------------------------------------------
+ZSIPCLOGDLL_EXTERN_API char* Logger_getNameSpace( const DllIf::CLogger* i_pLogger )
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(&DllIf_s_mtx);
+    char* szName = nullptr;
+    if( i_pLogger != nullptr )
+    {
+        QString strKeyInTree = i_pLogger->keyInTree();
+        CLogServer* pLogServer = CLogServer::GetInstance();
+        if( pLogServer != nullptr )
+        {
+            CIdxTreeLoggers* pIdxTree = pLogServer->getLoggersIdxTree();
+            CIdxTreeEntry* pTreeEntry = pIdxTree->findEntry(strKeyInTree);
+            CLogger* pLogger = dynamic_cast<CLogger*>(pTreeEntry);
+            if( pLogger != nullptr )
+            {
+                std::string stdstrName = pLogger->getNameSpace().toStdString();
+                szName = new char[stdstrName.size() + 1];
+                memcpy(szName, stdstrName.c_str(), stdstrName.size());
+                szName[stdstrName.size()] = 0x00;
+            }
+        }
+    }
+    return szName;
+}
+
+//------------------------------------------------------------------------------
+ZSIPCLOGDLL_EXTERN_API void Logger_setClassName(
+    const DllIf::CLogger* i_pLogger,
+    const char*           i_szName )
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(&DllIf_s_mtx);
+    if( i_pLogger != nullptr )
+    {
+        QString strKeyInTree = i_pLogger->keyInTree();
+        CLogServer* pLogServer = CLogServer::GetInstance();
+        if( pLogServer != nullptr )
+        {
+            CIdxTreeLoggers* pIdxTree = pLogServer->getLoggersIdxTree();
+            CIdxTreeEntry* pTreeEntry = pIdxTree->findEntry(strKeyInTree);
+            CLogger* pLogger = dynamic_cast<CLogger*>(pTreeEntry);
+            if( pLogger != nullptr )
+            {
+                pLogger->setClassName(i_szName);
+            }
+        }
+    }
+}
+
+//------------------------------------------------------------------------------
+ZSIPCLOGDLL_EXTERN_API char* Logger_getClassName( const DllIf::CLogger* i_pLogger )
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(&DllIf_s_mtx);
+    char* szName = nullptr;
+    if( i_pLogger != nullptr )
+    {
+        QString strKeyInTree = i_pLogger->keyInTree();
+        CLogServer* pLogServer = CLogServer::GetInstance();
+        if( pLogServer != nullptr )
+        {
+            CIdxTreeLoggers* pIdxTree = pLogServer->getLoggersIdxTree();
+            CIdxTreeEntry* pTreeEntry = pIdxTree->findEntry(strKeyInTree);
+            CLogger* pLogger = dynamic_cast<CLogger*>(pTreeEntry);
+            if( pLogger != nullptr )
+            {
+                std::string stdstrName = pLogger->getClassName().toStdString();
+                szName = new char[stdstrName.size() + 1];
+                memcpy(szName, stdstrName.c_str(), stdstrName.size());
+                szName[stdstrName.size()] = 0x00;
+            }
+        }
+    }
+    return szName;
+}
+
+//------------------------------------------------------------------------------
+ZSIPCLOGDLL_EXTERN_API void Logger_setObjectName(
+    const DllIf::CLogger* i_pLogger,
+    const char*           i_szName )
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(&DllIf_s_mtx);
+    if( i_pLogger != nullptr )
+    {
+        QString strKeyInTree = i_pLogger->keyInTree();
+        CLogServer* pLogServer = CLogServer::GetInstance();
+        if( pLogServer != nullptr )
+        {
+            CIdxTreeLoggers* pIdxTree = pLogServer->getLoggersIdxTree();
+            CIdxTreeEntry* pTreeEntry = pIdxTree->findEntry(strKeyInTree);
+            CLogger* pLogger = dynamic_cast<CLogger*>(pTreeEntry);
+            if( pLogger != nullptr )
+            {
+                pLogger->setObjectName(i_szName);
+            }
+        }
+    }
+}
+
+//------------------------------------------------------------------------------
+ZSIPCLOGDLL_EXTERN_API char* Logger_getObjectName( const DllIf::CLogger* i_pLogger )
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(&DllIf_s_mtx);
+    char* szName = nullptr;
+    if( i_pLogger != nullptr )
+    {
+        QString strKeyInTree = i_pLogger->keyInTree();
+        CLogServer* pLogServer = CLogServer::GetInstance();
+        if( pLogServer != nullptr )
+        {
+            CIdxTreeLoggers* pIdxTree = pLogServer->getLoggersIdxTree();
+            CIdxTreeEntry* pTreeEntry = pIdxTree->findEntry(strKeyInTree);
+            CLogger* pLogger = dynamic_cast<CLogger*>(pTreeEntry);
+            if( pLogger != nullptr )
+            {
+                std::string stdstrName = pLogger->getObjectName().toStdString();
+                szName = new char[stdstrName.size() + 1];
+                memcpy(szName, stdstrName.c_str(), stdstrName.size());
+                szName[stdstrName.size()] = 0x00;
+            }
+        }
+    }
+    return szName;
+}
+
+//------------------------------------------------------------------------------
+ZSIPCLOGDLL_EXTERN_API char* Logger_name( const DllIf::CLogger* i_pLogger )
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(&DllIf_s_mtx);
+    char* szName = nullptr;
+    if( i_pLogger != nullptr )
+    {
+        QString strKeyInTree = i_pLogger->keyInTree();
+        CLogServer* pLogServer = CLogServer::GetInstance();
+        if( pLogServer != nullptr )
+        {
+            CIdxTreeLoggers* pIdxTree = pLogServer->getLoggersIdxTree();
+            CIdxTreeEntry* pTreeEntry = pIdxTree->findEntry(strKeyInTree);
+            CLogger* pLogger = dynamic_cast<CLogger*>(pTreeEntry);
+            if( pLogger != nullptr )
+            {
+                std::string stdstrName = pLogger->path().toStdString();
+                szName = new char[stdstrName.size() + 1];
+                memcpy(szName, stdstrName.c_str(), stdstrName.size());
+                szName[stdstrName.size()] = 0x00;
+            }
+        }
+    }
+    return szName;
 }
 
 /*==============================================================================
 DllIf::CLogServer
 ==============================================================================*/
-
-//------------------------------------------------------------------------------
-ZSIPCLOGDLL_EXTERN_API DllIf::CLogger* LogServer_GetLogger(
-    const char* i_szNameSpace,
-    const char* i_szClassName,
-    const char* i_szObjName,
-    EEnabled i_bEnabledAsDefault,
-    DllIf::ELogDetailLevel i_eDefaultDetailLevel )
-//------------------------------------------------------------------------------
-{
-    #ifdef _WINDOWS
-    if( s_iDLL_PROCESS_ATTACH <= 0 ) // Dll already unloaded
-    {
-        return NULL;
-    }
-    #endif
-
-    QMutexLocker mtxLocker(&DllIf_s_mtx);
-
-    DllIf::DllMain::CLogger* pDllIfLogger = nullptr;
-
-    QString strNameSpace  = i_szNameSpace;
-    QString strClassName  = i_szClassName;
-    QString strObjName    = i_szObjName;
-
-    CLogServer* pLogServer = CLogServer::GetInstance();
-
-    if( pLogServer != nullptr )
-    {
-        CLogger* pLogger = CLogServer::GetLogger(
-            strObjName, i_bEnabledAsDefault,
-            static_cast<ELogDetailLevel>(i_eDefaultDetailLevel) );
-
-        if( pLogger != nullptr )
-        {
-            QString strKeyInTree = pLogger->keyInTree();
-
-            pDllIfLogger = DllIf_LogServer_s_hshpLoggers.value(strKeyInTree, nullptr);
-
-            if( pDllIfLogger == nullptr )
-            {
-                pDllIfLogger = new DllIf::DllMain::CLogger(strKeyInTree.toUtf8());
-                DllIf_LogServer_s_hshpLoggers[strKeyInTree] = pDllIfLogger;
-            }
-
-            pDllIfLogger->incrementRefCount();
-        }
-    }
-    return pDllIfLogger;
-}
 
 //------------------------------------------------------------------------------
 ZSIPCLOGDLL_EXTERN_API void LogServer_SetOrganizationName( const char* i_szName )
@@ -815,546 +849,195 @@ ZSIPCLOGDLL_EXTERN_API char* LogServer_GetCurrentThreadName()
 }
 
 //------------------------------------------------------------------------------
-ZSIPCLOGDLL_EXTERN_API bool LogServer_isActive( const DllIf::CLogServer* i_pLogServer )
+ZSIPCLOGDLL_EXTERN_API DllIf::CLogger* LogServer_GetLogger(
+    const char*            i_szName,
+    EEnabled               i_bEnabledAsDefault,
+    DllIf::ELogDetailLevel i_eDefaultDetailLevel )
+//------------------------------------------------------------------------------
+{
+    #ifdef _WINDOWS
+    if( s_iDLL_PROCESS_ATTACH <= 0 ) // Dll already unloaded
+    {
+        return NULL;
+    }
+    #endif
+
+    QMutexLocker mtxLocker(&DllIf_s_mtx);
+
+    DllIf::DllMain::CLogger* pDllIfLogger = nullptr;
+
+    QString strName = i_szName;
+
+    CLogServer* pLogServer = CLogServer::GetInstance();
+
+    if( pLogServer != nullptr )
+    {
+        CLogger* pLogger = nullptr;
+
+        if( strName.isEmpty() )
+        {
+            pLogger = CLogServer::GetLogger();
+        }
+        else
+        {
+            pLogger = CLogServer::GetLogger(
+                strName, i_bEnabledAsDefault,
+                static_cast<ELogDetailLevel>(i_eDefaultDetailLevel) );
+        }
+        if( pLogger != nullptr )
+        {
+            QString strKeyInTree = pLogger->keyInTree();
+
+            pDllIfLogger = DllIf_LogServer_s_hshpLoggers.value(strKeyInTree, nullptr);
+
+            if( pDllIfLogger == nullptr )
+            {
+                pDllIfLogger = new DllIf::DllMain::CLogger(strKeyInTree.toUtf8());
+                DllIf_LogServer_s_hshpLoggers[strKeyInTree] = pDllIfLogger;
+            }
+        }
+    }
+    return pDllIfLogger;
+}
+
+//------------------------------------------------------------------------------
+ZSIPCLOGDLL_EXTERN_API void LogServer_log(
+    const DllIf::CLogger* i_pLogger,
+    ELogDetailLevel       i_eFilterDetailLevel,
+    const char*           i_szLogEntry )
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&DllIf_s_mtx);
-
-    bool bIsActive = false;
-
-    if( i_pLogServer != nullptr )
+    CLogServer* pLogServer = CLogServer::GetInstance();
+    if( pLogServer != nullptr )
     {
-        CLogServer* pLogServer = CLogServer::GetInstance();
-
-        if( pLogServer != nullptr )
+        CLogger* pLogger = nullptr;
+        if( i_pLogger != nullptr )
         {
-            bIsActive = pLogServer->isActive();
+            QString strKeyInTree = i_pLogger->keyInTree();
+            CIdxTreeLoggers* pIdxTree = pLogServer->getLoggersIdxTree();
+            CIdxTreeEntry* pTreeEntry = pIdxTree->findEntry(strKeyInTree);
+            pLogger = dynamic_cast<CLogger*>(pTreeEntry);
         }
+        if( pLogger != nullptr )
+        {
+            pLogServer->log(pLogger, i_eFilterDetailLevel, i_szLogEntry);
+        }
+        else
+        {
+            pLogServer->log(i_eFilterDetailLevel, i_szLogEntry);
+        }
+    }
+}
+
+//------------------------------------------------------------------------------
+ZSIPCLOGDLL_EXTERN_API bool LogServer_isActive()
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(&DllIf_s_mtx);
+    bool bIsActive = false;
+    CLogServer* pLogServer = CLogServer::GetInstance();
+    if( pLogServer != nullptr )
+    {
+        bIsActive = pLogServer->isActive();
     }
     return bIsActive;
 }
 
 //------------------------------------------------------------------------------
-ZSIPCLOGDLL_EXTERN_API void LogServer_setEnabled( const DllIf::CLogServer* i_pLogServer, bool i_bEnabled )
+ZSIPCLOGDLL_EXTERN_API void LogServer_setEnabled( bool i_bEnabled )
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&DllIf_s_mtx);
-
-    if( i_pLogServer != nullptr )
+    CLogServer* pLogServer = CLogServer::GetInstance();
+    if( pLogServer != nullptr )
     {
-        CLogServer* pLogServer = CLogServer::GetInstance();
-
-        if( pLogServer != nullptr )
-        {
-            pLogServer->setEnabled(i_bEnabled);
-        }
+        pLogServer->setEnabled(i_bEnabled);
     }
 }
 
 //------------------------------------------------------------------------------
-ZSIPCLOGDLL_EXTERN_API bool LogServer_isEnabled( const DllIf::CLogServer* i_pLogServer )
+ZSIPCLOGDLL_EXTERN_API bool LogServer_isEnabled()
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&DllIf_s_mtx);
-
     bool bEnabled = false;
-
-    if( i_pLogServer != nullptr )
+    CLogServer* pLogServer = CLogServer::GetInstance();
+    if( pLogServer != nullptr )
     {
-        CLogServer* pLogServer = CLogServer::GetInstance();
-
-        if( pLogServer != nullptr )
-        {
-            bEnabled = pLogServer->isEnabled();
-        }
+        bEnabled = pLogServer->isEnabled();
     }
     return bEnabled;
 }
 
 //------------------------------------------------------------------------------
-ZSIPCLOGDLL_EXTERN_API void LogServer_setNewLoggersEnabledAsDefault( const DllIf::CLogServer* i_pLogServer, bool i_bEnabled )
+ZSIPCLOGDLL_EXTERN_API void LogServer_setNewLoggersEnabledAsDefault( bool i_bEnabled )
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&DllIf_s_mtx);
-
-    if( i_pLogServer != nullptr )
+    CLogServer* pLogServer = CLogServer::GetInstance();
+    if( pLogServer != nullptr )
     {
-        CLogServer* pLogServer = CLogServer::GetInstance();
-
-        if( pLogServer != nullptr )
-        {
-            pLogServer->setNewLoggersEnabledAsDefault(i_bEnabled);
-        }
+        pLogServer->setNewLoggersEnabledAsDefault(i_bEnabled);
     }
 }
 
 //------------------------------------------------------------------------------
-ZSIPCLOGDLL_EXTERN_API bool LogServer_areNewLoggersEnabledAsDefault( const DllIf::CLogServer* i_pLogServer )
+ZSIPCLOGDLL_EXTERN_API bool LogServer_areNewLoggersEnabledAsDefault()
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&DllIf_s_mtx);
-
     bool bEnabled = false;
-
-    if( i_pLogServer != nullptr )
+    CLogServer* pLogServer = CLogServer::GetInstance();
+    if( pLogServer != nullptr )
     {
-        CLogServer* pLogServer = CLogServer::GetInstance();
-
-        if( pLogServer != nullptr )
-        {
-            bEnabled = pLogServer->areNewLoggersEnabledAsDefault();
-        }
+        bEnabled = pLogServer->areNewLoggersEnabledAsDefault();
     }
     return bEnabled;
 }
 
 //------------------------------------------------------------------------------
-ZSIPCLOGDLL_EXTERN_API void LogServer_setNewLoggersDefaultDetailLevel(
-    const DllIf::CLogServer* i_pLogServer, DllIf::ELogDetailLevel i_eDetailLevel )
+ZSIPCLOGDLL_EXTERN_API void LogServer_setNewLoggersDefaultDetailLevel( DllIf::ELogDetailLevel i_eDetailLevel )
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&DllIf_s_mtx);
-
-    if( i_pLogServer != nullptr )
+    CLogServer* pLogServer = CLogServer::GetInstance();
+    if( pLogServer != nullptr )
     {
-        CLogServer* pLogServer = CLogServer::GetInstance();
-
-        if( pLogServer != nullptr )
-        {
-            pLogServer->setNewLoggersDefaultDetailLevel(static_cast<ELogDetailLevel>(i_eDetailLevel));
-        }
+        pLogServer->setNewLoggersDefaultDetailLevel(static_cast<ELogDetailLevel>(i_eDetailLevel));
     }
 }
 
 //------------------------------------------------------------------------------
-ZSIPCLOGDLL_EXTERN_API DllIf::ELogDetailLevel LogServer_getNewLoggersDefaultDetailLevel( const DllIf::CLogServer* i_pLogServer )
+ZSIPCLOGDLL_EXTERN_API DllIf::ELogDetailLevel LogServer_getNewLoggersDefaultDetailLevel()
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&DllIf_s_mtx);
-
     DllIf::ELogDetailLevel eDetailLevel = DllIf::ELogDetailLevelNone;
-
-    if( i_pLogServer != nullptr )
+    CLogServer* pLogServer = CLogServer::GetInstance();
+    if( pLogServer != nullptr )
     {
-        CLogServer* pLogServer = CLogServer::GetInstance();
-
-        if( pLogServer != nullptr )
-        {
-            eDetailLevel = static_cast<DllIf::ELogDetailLevel>(pLogServer->getNewLoggersDefaultDetailLevel());
-        }
+        eDetailLevel = static_cast<DllIf::ELogDetailLevel>(pLogServer->getNewLoggersDefaultDetailLevel());
     }
     return eDetailLevel;
 }
 
 //------------------------------------------------------------------------------
-ZSIPCLOGDLL_EXTERN_API bool LogServer_recallLoggers( DllIf::CLogServer* i_pLogServer )
+ZSIPCLOGDLL_EXTERN_API bool LogServer_recallLoggers()
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&DllIf_s_mtx);
-
     bool bOk = false;
-
-    if( i_pLogServer != nullptr )
+    CLogServer* pLogServer = CLogServer::GetInstance();
+    if( pLogServer != nullptr )
     {
-        CLogServer* pLogServer = CLogServer::GetInstance();
-
-        if( pLogServer != nullptr )
+        SErrResultInfo errResultInfo = pLogServer->recallLoggers();
+        if( errResultInfo.isErrorResult() )
         {
-            SErrResultInfo errResultInfo = pLogServer->recallLoggers();
-
-            if( errResultInfo.isErrorResult() )
-            {
-                bOk = false;
-            }
-            else
-            {
-                bOk = true;
-            }
+            bOk = false;
         }
-    }
-    return bOk;
-}
-
-//------------------------------------------------------------------------------
-ZSIPCLOGDLL_EXTERN_API bool LogServer_saveLoggers( DllIf::CLogServer* i_pLogServer )
-//------------------------------------------------------------------------------
-{
-    QMutexLocker mtxLocker(&DllIf_s_mtx);
-
-    bool bOk = false;
-
-    if( i_pLogServer != nullptr )
-    {
-        CLogServer* pLogServer = CLogServer::GetInstance();
-
-        if( pLogServer != nullptr )
+        else
         {
-            SErrResultInfo errResultInfo = pLogServer->saveLoggers();
-
-            if( errResultInfo.isErrorResult() )
-            {
-                bOk = false;
-            }
-            else
-            {
-                bOk = true;
-            }
-        }
-    }
-    return bOk;
-}
-
-//------------------------------------------------------------------------------
-ZSIPCLOGDLL_EXTERN_API void LogServer_setUseLocalLogFile( const DllIf::CLogServer* i_pLogServer, bool i_bUse )
-//------------------------------------------------------------------------------
-{
-    QMutexLocker mtxLocker(&DllIf_s_mtx);
-
-    if( i_pLogServer != nullptr )
-    {
-        CLogServer* pLogServer = CLogServer::GetInstance();
-
-        if( pLogServer != nullptr )
-        {
-            pLogServer->setUseLocalLogFile(i_bUse);
-        }
-    }
-}
-
-//------------------------------------------------------------------------------
-ZSIPCLOGDLL_EXTERN_API bool LogServer_isLocalLogFileUsed( const DllIf::CLogServer* i_pLogServer )
-//------------------------------------------------------------------------------
-{
-    QMutexLocker mtxLocker(&DllIf_s_mtx);
-
-    bool bUsed = false;
-
-    if( i_pLogServer != nullptr )
-    {
-        CLogServer* pLogServer = CLogServer::GetInstance();
-
-        if( pLogServer != nullptr )
-        {
-            bUsed = pLogServer->isLocalLogFileUsed();
-        }
-    }
-    return bUsed;
-}
-
-//------------------------------------------------------------------------------
-ZSIPCLOGDLL_EXTERN_API int LogServer_isLocalLogFileActive( const DllIf::CLogServer* i_pLogServer )
-//------------------------------------------------------------------------------
-{
-    QMutexLocker mtxLocker(&DllIf_s_mtx);
-
-    bool bActive = false;
-
-    if( i_pLogServer != nullptr )
-    {
-        CLogServer* pLogServer = CLogServer::GetInstance();
-
-        if( pLogServer != nullptr )
-        {
-            bActive = pLogServer->isLocalLogFileActive();
-        }
-    }
-    return bActive;
-}
-
-//------------------------------------------------------------------------------
-ZSIPCLOGDLL_EXTERN_API void LogServer_setLocalLogFileAutoSaveIntervalInMs( const DllIf::CLogServer* i_pLogServer, int i_iAutoSaveInterval_ms )
-//------------------------------------------------------------------------------
-{
-    QMutexLocker mtxLocker(&DllIf_s_mtx);
-
-    if( i_pLogServer != nullptr )
-    {
-        CLogServer* pLogServer = CLogServer::GetInstance();
-
-        if( pLogServer != nullptr )
-        {
-            pLogServer->setLocalLogFileAutoSaveIntervalInMs(i_iAutoSaveInterval_ms);
-        }
-    }
-}
-
-//------------------------------------------------------------------------------
-ZSIPCLOGDLL_EXTERN_API int LogServer_getLocalLogFileAutoSaveIntervalInMs( const DllIf::CLogServer* i_pLogServer )
-//------------------------------------------------------------------------------
-{
-    QMutexLocker mtxLocker(&DllIf_s_mtx);
-
-    int iAutoSaveInterval_ms = 0;
-
-    if( i_pLogServer != nullptr )
-    {
-        CLogServer* pLogServer = CLogServer::GetInstance();
-
-        if( pLogServer != nullptr )
-        {
-            iAutoSaveInterval_ms = pLogServer->getLocalLogFileAutoSaveIntervalInMs();
-        }
-    }
-    return iAutoSaveInterval_ms;
-}
-
-//------------------------------------------------------------------------------
-ZSIPCLOGDLL_EXTERN_API void LogServer_setLocalLogFileCloseFileAfterEachWrite( const DllIf::CLogServer* i_pLogServer, bool i_bCloseFile )
-//------------------------------------------------------------------------------
-{
-    QMutexLocker mtxLocker(&DllIf_s_mtx);
-
-    if( i_pLogServer != nullptr )
-    {
-        CLogServer* pLogServer = CLogServer::GetInstance();
-
-        if( pLogServer != nullptr )
-        {
-            pLogServer->setLocalLogFileCloseFileAfterEachWrite(i_bCloseFile);
-        }
-    }
-}
-
-//------------------------------------------------------------------------------
-ZSIPCLOGDLL_EXTERN_API bool LogServer_getLocalLogFileCloseFileAfterEachWrite( const DllIf::CLogServer* i_pLogServer )
-//------------------------------------------------------------------------------
-{
-    QMutexLocker mtxLocker(&DllIf_s_mtx);
-
-    bool bCloseFile = false;
-
-    if( i_pLogServer != nullptr )
-    {
-        CLogServer* pLogServer = CLogServer::GetInstance();
-
-        if( pLogServer != nullptr )
-        {
-            bCloseFile = pLogServer->getLocalLogFileCloseFileAfterEachWrite();
-        }
-    }
-    return bCloseFile;
-}
-
-//------------------------------------------------------------------------------
-ZSIPCLOGDLL_EXTERN_API void LogServer_setLocalLogFileSubFileCountMax( const DllIf::CLogServer* i_pLogServer, bool i_iCountMax )
-//------------------------------------------------------------------------------
-{
-    QMutexLocker mtxLocker(&DllIf_s_mtx);
-
-    if( i_pLogServer != nullptr )
-    {
-        CLogServer* pLogServer = CLogServer::GetInstance();
-
-        if( pLogServer != nullptr )
-        {
-            pLogServer->setLocalLogFileSubFileCountMax(i_iCountMax);
-        }
-    }
-}
-
-//------------------------------------------------------------------------------
-ZSIPCLOGDLL_EXTERN_API int LogServer_getLocalLogFileSubFileCountMax( const DllIf::CLogServer* i_pLogServer )
-//------------------------------------------------------------------------------
-{
-    QMutexLocker mtxLocker(&DllIf_s_mtx);
-
-    int iCountMax = 0;
-
-    if( i_pLogServer != nullptr )
-    {
-        CLogServer* pLogServer = CLogServer::GetInstance();
-
-        if( pLogServer != nullptr )
-        {
-            iCountMax = pLogServer->getLocalLogFileSubFileCountMax();
-        }
-    }
-    return iCountMax;
-}
-
-//------------------------------------------------------------------------------
-ZSIPCLOGDLL_EXTERN_API void LogServer_setLocalLogFileSubFileLineCountMax( const DllIf::CLogServer* i_pLogServer, int i_iCountMax )
-//------------------------------------------------------------------------------
-{
-    QMutexLocker mtxLocker(&DllIf_s_mtx);
-
-    if( i_pLogServer != nullptr )
-    {
-        CLogServer* pLogServer = CLogServer::GetInstance();
-
-        if( pLogServer != nullptr )
-        {
-            pLogServer->setLocalLogFileSubFileLineCountMax(i_iCountMax);
-        }
-    }
-}
-
-//------------------------------------------------------------------------------
-ZSIPCLOGDLL_EXTERN_API int LogServer_getLocalLogFileSubFileLineCountMax( const DllIf::CLogServer* i_pLogServer )
-//------------------------------------------------------------------------------
-{
-    QMutexLocker mtxLocker(&DllIf_s_mtx);
-
-    int iCountMax = 0;
-
-    if( i_pLogServer != nullptr )
-    {
-        CLogServer* pLogServer = CLogServer::GetInstance();
-
-        if( pLogServer != nullptr )
-        {
-            iCountMax = pLogServer->getLocalLogFileSubFileLineCountMax();
-        }
-    }
-    return iCountMax;
-}
-
-//------------------------------------------------------------------------------
-ZSIPCLOGDLL_EXTERN_API void LogServer_setUseIpcServer( const DllIf::CLogServer* i_pLogServer, bool i_bUseIpcServer )
-//------------------------------------------------------------------------------
-{
-    QMutexLocker mtxLocker(&DllIf_s_mtx);
-
-    if( i_pLogServer != nullptr )
-    {
-        CLogServer* pLogServer = CLogServer::GetInstance();
-
-        if( pLogServer != nullptr )
-        {
-            pLogServer->setUseIpcServer(i_bUseIpcServer);
-        }
-    }
-}
-
-//------------------------------------------------------------------------------
-ZSIPCLOGDLL_EXTERN_API bool LogServer_isIpcServerUsed( const DllIf::CLogServer* i_pLogServer )
-//------------------------------------------------------------------------------
-{
-    QMutexLocker mtxLocker(&DllIf_s_mtx);
-
-    bool bUseIpcServer = false;
-
-    if( i_pLogServer != nullptr )
-    {
-        CLogServer* pLogServer = CLogServer::GetInstance();
-
-        if( pLogServer != nullptr )
-        {
-            bUseIpcServer = pLogServer->isIpcServerUsed();
-        }
-    }
-    return bUseIpcServer;
-}
-
-//------------------------------------------------------------------------------
-ZSIPCLOGDLL_EXTERN_API void LogServer_setCacheLogDataIfNotConnected( const DllIf::CLogServer* i_pLogServer, bool i_bCacheData )
-//------------------------------------------------------------------------------
-{
-    QMutexLocker mtxLocker(&DllIf_s_mtx);
-
-    if( i_pLogServer != nullptr )
-    {
-        CLogServer* pLogServer = CLogServer::GetInstance();
-
-        if( pLogServer != nullptr )
-        {
-            pLogServer->setCacheLogDataIfNotConnected(i_bCacheData);
-        }
-    }
-}
-
-//------------------------------------------------------------------------------
-ZSIPCLOGDLL_EXTERN_API bool LogServer_getCacheLogDataIfNotConnected( const DllIf::CLogServer* i_pLogServer )
-//------------------------------------------------------------------------------
-{
-    QMutexLocker mtxLocker(&DllIf_s_mtx);
-
-    bool bCacheData = false;
-
-    if( i_pLogServer != nullptr )
-    {
-        CLogServer* pLogServer = CLogServer::GetInstance();
-
-        if( pLogServer != nullptr )
-        {
-            bCacheData = pLogServer->getCacheLogDataIfNotConnected();
-        }
-    }
-    return bCacheData;
-}
-
-//------------------------------------------------------------------------------
-ZSIPCLOGDLL_EXTERN_API void LogServer_setCacheLogDataMaxArrLen( const DllIf::CLogServer* i_pLogServer, int i_iMaxArrLen )
-//------------------------------------------------------------------------------
-{
-    QMutexLocker mtxLocker(&DllIf_s_mtx);
-
-    if( i_pLogServer != nullptr )
-    {
-        CLogServer* pLogServer = CLogServer::GetInstance();
-
-        if( pLogServer != nullptr )
-        {
-            pLogServer->setCacheLogDataMaxArrLen(i_iMaxArrLen);
-        }
-    }
-}
-
-//------------------------------------------------------------------------------
-ZSIPCLOGDLL_EXTERN_API int LogServer_getCacheLogDataMaxArrLen( const DllIf::CLogServer* i_pLogServer )
-//------------------------------------------------------------------------------
-{
-    QMutexLocker mtxLocker(&DllIf_s_mtx);
-
-    int iMaxArrLen = 0;
-
-    if( i_pLogServer != nullptr )
-    {
-        CLogServer* pLogServer = CLogServer::GetInstance();
-
-        if( pLogServer != nullptr )
-        {
-            iMaxArrLen = pLogServer->getCacheLogDataMaxArrLen();
-        }
-    }
-    return iMaxArrLen;
-}
-
-//------------------------------------------------------------------------------
-ZSIPCLOGDLL_EXTERN_API bool LogServer_setLogSettings(
-    DllIf::CLogServer*               i_pLogServer,
-    const DllIf::SLogServerSettings& i_settings )
-//------------------------------------------------------------------------------
-{
-    QMutexLocker mtxLocker(&DllIf_s_mtx);
-
-    bool bOk = false;
-
-    if( i_pLogServer != nullptr )
-    {
-        CLogServer* pLogServer = CLogServer::GetInstance();
-
-        if( pLogServer != nullptr )
-        {
-            ZS::System::SLogServerSettings logSettings;
-
-            logSettings.m_bEnabled                              = i_settings.m_bEnabled;
-            logSettings.m_strLoggerFileAbsFilePath              = i_settings.m_szLoggerFileAbsFilePath;
-            logSettings.m_bNewLoggersEnabledAsDefault           = i_settings.m_bNewLoggersEnabledAsDefault;
-            logSettings.m_eNewLoggersDefaultDetailLevel =
-                static_cast<ELogDetailLevel>(i_settings.m_eNewLoggersDefaultDetailLevel);
-            logSettings.m_bUseIpcServer                         = i_settings.m_bUseIpcServer;
-            logSettings.m_bCacheDataIfNotConnected              = i_settings.m_bCacheDataIfNotConnected;
-            logSettings.m_iCacheDataMaxArrLen                   = i_settings.m_iCacheDataMaxArrLen ;
-            logSettings.m_bUseLocalLogFile                      = i_settings.m_bUseLocalLogFile;
-            logSettings.m_strLocalLogFileAbsFilePath            = i_settings.m_szLocalLogFileAbsFilePath;
-            logSettings.m_iLocalLogFileAutoSaveInterval_ms      = i_settings.m_iLocalLogFileAutoSaveInterval_ms;
-            logSettings.m_iLocalLogFileSubFileCountMax          = i_settings.m_iLocalLogFileSubFileCountMax;
-            logSettings.m_iLocalLogFileSubFileLineCountMax      = i_settings.m_iLocalLogFileSubFileLineCountMax;
-            logSettings.m_bLocalLogFileCloseFileAfterEachWrite  = i_settings.m_bLocalLogFileCloseFileAfterEachWrite;
-
-            pLogServer->setLogSettings(logSettings);
-
             bOk = true;
         }
     }
@@ -1362,65 +1045,332 @@ ZSIPCLOGDLL_EXTERN_API bool LogServer_setLogSettings(
 }
 
 //------------------------------------------------------------------------------
-ZSIPCLOGDLL_EXTERN_API DllIf::SLogServerSettings LogServer_getLogSettings( const DllIf::CLogServer* i_pLogServer )
+ZSIPCLOGDLL_EXTERN_API bool LogServer_saveLoggers()
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&DllIf_s_mtx);
-
-    DllIf::SLogServerSettings dllIfTrcSettings;
-
-    DllIf::SLogServerSettings_init(dllIfTrcSettings);
-
-    if( i_pLogServer != nullptr )
+    bool bOk = false;
+    CLogServer* pLogServer = CLogServer::GetInstance();
+    if( pLogServer != nullptr )
     {
-        CLogServer* pLogServer = CLogServer::GetInstance();
+        SErrResultInfo errResultInfo = pLogServer->saveLoggers();
 
-        if( pLogServer != nullptr )
+        if( errResultInfo.isErrorResult() )
         {
-            int iStrLen;
-
-            ZS::System::SLogServerSettings logSettings = pLogServer->getLogSettings();
-
-            dllIfTrcSettings.m_bEnabled                              = logSettings.m_bEnabled;
-            dllIfTrcSettings.m_bNewLoggersEnabledAsDefault           = logSettings.m_bNewLoggersEnabledAsDefault;
-            dllIfTrcSettings.m_eNewLoggersDefaultDetailLevel         = static_cast<DllIf::ELogDetailLevel>(logSettings.m_eNewLoggersDefaultDetailLevel);
-            dllIfTrcSettings.m_bUseIpcServer                         = logSettings.m_bUseIpcServer;
-            dllIfTrcSettings.m_bCacheDataIfNotConnected              = logSettings.m_bCacheDataIfNotConnected;
-            dllIfTrcSettings.m_iCacheDataMaxArrLen                   = logSettings.m_iCacheDataMaxArrLen;
-            dllIfTrcSettings.m_bUseLocalLogFile                      = logSettings.m_bUseLocalLogFile;
-            dllIfTrcSettings.m_iLocalLogFileAutoSaveInterval_ms      = logSettings.m_iLocalLogFileAutoSaveInterval_ms;
-            dllIfTrcSettings.m_iLocalLogFileSubFileCountMax          = logSettings.m_iLocalLogFileSubFileCountMax;
-            dllIfTrcSettings.m_iLocalLogFileSubFileLineCountMax      = logSettings.m_iLocalLogFileSubFileLineCountMax;
-            dllIfTrcSettings.m_bLocalLogFileCloseFileAfterEachWrite  = logSettings.m_bLocalLogFileCloseFileAfterEachWrite;
-
-            iStrLen = logSettings.m_strLoggerFileAbsFilePath.length();
-            dllIfTrcSettings.m_szLoggerFileAbsFilePath = new char[iStrLen+1];
-            memset(dllIfTrcSettings.m_szLoggerFileAbsFilePath, 0x00, iStrLen+1);
-            memcpy(dllIfTrcSettings.m_szLoggerFileAbsFilePath, logSettings.m_strLoggerFileAbsFilePath.toUtf8().data(), iStrLen);
-
-            iStrLen = logSettings.m_strLocalLogFileAbsFilePath.length();
-            dllIfTrcSettings.m_szLocalLogFileAbsFilePath = new char[iStrLen+1];
-            memset(dllIfTrcSettings.m_szLocalLogFileAbsFilePath, 0x00, iStrLen+1);
-            memcpy(dllIfTrcSettings.m_szLocalLogFileAbsFilePath, logSettings.m_strLocalLogFileAbsFilePath.toUtf8().data(), iStrLen);
+            bOk = false;
         }
+        else
+        {
+            bOk = true;
+        }
+    }
+    return bOk;
+}
+
+//------------------------------------------------------------------------------
+ZSIPCLOGDLL_EXTERN_API void LogServer_setUseLocalLogFile( bool i_bUse )
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(&DllIf_s_mtx);
+    CLogServer* pLogServer = CLogServer::GetInstance();
+    if( pLogServer != nullptr )
+    {
+        pLogServer->setUseLocalLogFile(i_bUse);
+    }
+}
+
+//------------------------------------------------------------------------------
+ZSIPCLOGDLL_EXTERN_API bool LogServer_isLocalLogFileUsed()
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(&DllIf_s_mtx);
+    bool bUsed = false;
+    CLogServer* pLogServer = CLogServer::GetInstance();
+    if( pLogServer != nullptr )
+    {
+        bUsed = pLogServer->isLocalLogFileUsed();
+    }
+    return bUsed;
+}
+
+//------------------------------------------------------------------------------
+ZSIPCLOGDLL_EXTERN_API int LogServer_isLocalLogFileActive()
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(&DllIf_s_mtx);
+    bool bActive = false;
+    CLogServer* pLogServer = CLogServer::GetInstance();
+    if( pLogServer != nullptr )
+    {
+        bActive = pLogServer->isLocalLogFileActive();
+    }
+    return bActive;
+}
+
+//------------------------------------------------------------------------------
+ZSIPCLOGDLL_EXTERN_API void LogServer_setLocalLogFileAutoSaveIntervalInMs( int i_iAutoSaveInterval_ms )
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(&DllIf_s_mtx);
+    CLogServer* pLogServer = CLogServer::GetInstance();
+    if( pLogServer != nullptr )
+    {
+        pLogServer->setLocalLogFileAutoSaveIntervalInMs(i_iAutoSaveInterval_ms);
+    }
+}
+
+//------------------------------------------------------------------------------
+ZSIPCLOGDLL_EXTERN_API int LogServer_getLocalLogFileAutoSaveIntervalInMs()
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(&DllIf_s_mtx);
+    int iAutoSaveInterval_ms = 0;
+    CLogServer* pLogServer = CLogServer::GetInstance();
+    if( pLogServer != nullptr )
+    {
+        iAutoSaveInterval_ms = pLogServer->getLocalLogFileAutoSaveIntervalInMs();
+    }
+    return iAutoSaveInterval_ms;
+}
+
+//------------------------------------------------------------------------------
+ZSIPCLOGDLL_EXTERN_API void LogServer_setLocalLogFileCloseFileAfterEachWrite( bool i_bCloseFile )
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(&DllIf_s_mtx);
+    CLogServer* pLogServer = CLogServer::GetInstance();
+    if( pLogServer != nullptr )
+    {
+        pLogServer->setLocalLogFileCloseFileAfterEachWrite(i_bCloseFile);
+    }
+}
+
+//------------------------------------------------------------------------------
+ZSIPCLOGDLL_EXTERN_API bool LogServer_getLocalLogFileCloseFileAfterEachWrite()
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(&DllIf_s_mtx);
+    bool bCloseFile = false;
+    CLogServer* pLogServer = CLogServer::GetInstance();
+    if( pLogServer != nullptr )
+    {
+        bCloseFile = pLogServer->getLocalLogFileCloseFileAfterEachWrite();
+    }
+    return bCloseFile;
+}
+
+//------------------------------------------------------------------------------
+ZSIPCLOGDLL_EXTERN_API void LogServer_setLocalLogFileSubFileCountMax( bool i_iCountMax )
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(&DllIf_s_mtx);
+    CLogServer* pLogServer = CLogServer::GetInstance();
+    if( pLogServer != nullptr )
+    {
+        pLogServer->setLocalLogFileSubFileCountMax(i_iCountMax);
+    }
+}
+
+//------------------------------------------------------------------------------
+ZSIPCLOGDLL_EXTERN_API int LogServer_getLocalLogFileSubFileCountMax()
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(&DllIf_s_mtx);
+    int iCountMax = 0;
+    CLogServer* pLogServer = CLogServer::GetInstance();
+    if( pLogServer != nullptr )
+    {
+        iCountMax = pLogServer->getLocalLogFileSubFileCountMax();
+    }
+    return iCountMax;
+}
+
+//------------------------------------------------------------------------------
+ZSIPCLOGDLL_EXTERN_API void LogServer_setLocalLogFileSubFileLineCountMax( int i_iCountMax )
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(&DllIf_s_mtx);
+    CLogServer* pLogServer = CLogServer::GetInstance();
+    if( pLogServer != nullptr )
+    {
+        pLogServer->setLocalLogFileSubFileLineCountMax(i_iCountMax);
+    }
+}
+
+//------------------------------------------------------------------------------
+ZSIPCLOGDLL_EXTERN_API int LogServer_getLocalLogFileSubFileLineCountMax()
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(&DllIf_s_mtx);
+    int iCountMax = 0;
+    CLogServer* pLogServer = CLogServer::GetInstance();
+    if( pLogServer != nullptr )
+    {
+        iCountMax = pLogServer->getLocalLogFileSubFileLineCountMax();
+    }
+    return iCountMax;
+}
+
+//------------------------------------------------------------------------------
+ZSIPCLOGDLL_EXTERN_API void LogServer_setUseIpcServer( bool i_bUseIpcServer )
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(&DllIf_s_mtx);
+    CLogServer* pLogServer = CLogServer::GetInstance();
+    if( pLogServer != nullptr )
+    {
+        pLogServer->setUseIpcServer(i_bUseIpcServer);
+    }
+}
+
+//------------------------------------------------------------------------------
+ZSIPCLOGDLL_EXTERN_API bool LogServer_isIpcServerUsed()
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(&DllIf_s_mtx);
+    bool bUseIpcServer = false;
+    CLogServer* pLogServer = CLogServer::GetInstance();
+    if( pLogServer != nullptr )
+    {
+        bUseIpcServer = pLogServer->isIpcServerUsed();
+    }
+    return bUseIpcServer;
+}
+
+//------------------------------------------------------------------------------
+ZSIPCLOGDLL_EXTERN_API void LogServer_setCacheLogDataIfNotConnected( bool i_bCacheData )
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(&DllIf_s_mtx);
+    CLogServer* pLogServer = CLogServer::GetInstance();
+    if( pLogServer != nullptr )
+    {
+        pLogServer->setCacheLogDataIfNotConnected(i_bCacheData);
+    }
+}
+
+//------------------------------------------------------------------------------
+ZSIPCLOGDLL_EXTERN_API bool LogServer_getCacheLogDataIfNotConnected()
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(&DllIf_s_mtx);
+    bool bCacheData = false;
+    CLogServer* pLogServer = CLogServer::GetInstance();
+    if( pLogServer != nullptr )
+    {
+        bCacheData = pLogServer->getCacheLogDataIfNotConnected();
+    }
+    return bCacheData;
+}
+
+//------------------------------------------------------------------------------
+ZSIPCLOGDLL_EXTERN_API void LogServer_setCacheLogDataMaxArrLen( int i_iMaxArrLen )
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(&DllIf_s_mtx);
+    CLogServer* pLogServer = CLogServer::GetInstance();
+    if( pLogServer != nullptr )
+    {
+        pLogServer->setCacheLogDataMaxArrLen(i_iMaxArrLen);
+    }
+}
+
+//------------------------------------------------------------------------------
+ZSIPCLOGDLL_EXTERN_API int LogServer_getCacheLogDataMaxArrLen()
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(&DllIf_s_mtx);
+    int iMaxArrLen = 0;
+    CLogServer* pLogServer = CLogServer::GetInstance();
+    if( pLogServer != nullptr )
+    {
+        iMaxArrLen = pLogServer->getCacheLogDataMaxArrLen();
+    }
+    return iMaxArrLen;
+}
+
+//------------------------------------------------------------------------------
+ZSIPCLOGDLL_EXTERN_API bool LogServer_setLogSettings( const DllIf::SLogServerSettings& i_settings )
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(&DllIf_s_mtx);
+    bool bOk = false;
+    CLogServer* pLogServer = CLogServer::GetInstance();
+    if( pLogServer != nullptr )
+    {
+        ZS::System::SLogServerSettings logSettings;
+
+        logSettings.m_bEnabled                              = i_settings.m_bEnabled;
+        logSettings.m_strLoggerFileAbsFilePath              = i_settings.m_szLoggerFileAbsFilePath;
+        logSettings.m_bNewLoggersEnabledAsDefault           = i_settings.m_bNewLoggersEnabledAsDefault;
+        logSettings.m_eNewLoggersDefaultDetailLevel =
+            static_cast<ELogDetailLevel>(i_settings.m_eNewLoggersDefaultDetailLevel);
+        logSettings.m_bUseIpcServer                         = i_settings.m_bUseIpcServer;
+        logSettings.m_bCacheDataIfNotConnected              = i_settings.m_bCacheDataIfNotConnected;
+        logSettings.m_iCacheDataMaxArrLen                   = i_settings.m_iCacheDataMaxArrLen ;
+        logSettings.m_bUseLocalLogFile                      = i_settings.m_bUseLocalLogFile;
+        logSettings.m_strLocalLogFileAbsFilePath            = i_settings.m_szLocalLogFileAbsFilePath;
+        logSettings.m_iLocalLogFileAutoSaveInterval_ms      = i_settings.m_iLocalLogFileAutoSaveInterval_ms;
+        logSettings.m_iLocalLogFileSubFileCountMax          = i_settings.m_iLocalLogFileSubFileCountMax;
+        logSettings.m_iLocalLogFileSubFileLineCountMax      = i_settings.m_iLocalLogFileSubFileLineCountMax;
+        logSettings.m_bLocalLogFileCloseFileAfterEachWrite  = i_settings.m_bLocalLogFileCloseFileAfterEachWrite;
+
+        pLogServer->setLogSettings(logSettings);
+
+        bOk = true;
+    }
+    return bOk;
+}
+
+//------------------------------------------------------------------------------
+ZSIPCLOGDLL_EXTERN_API DllIf::SLogServerSettings LogServer_getLogSettings()
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(&DllIf_s_mtx);
+    DllIf::SLogServerSettings dllIfTrcSettings;
+    DllIf::SLogServerSettings_init(dllIfTrcSettings);
+    CLogServer* pLogServer = CLogServer::GetInstance();
+
+    if( pLogServer != nullptr )
+    {
+        int iStrLen;
+
+        ZS::System::SLogServerSettings logSettings = pLogServer->getLogSettings();
+
+        dllIfTrcSettings.m_bEnabled                              = logSettings.m_bEnabled;
+        dllIfTrcSettings.m_bNewLoggersEnabledAsDefault           = logSettings.m_bNewLoggersEnabledAsDefault;
+        dllIfTrcSettings.m_eNewLoggersDefaultDetailLevel         = static_cast<DllIf::ELogDetailLevel>(logSettings.m_eNewLoggersDefaultDetailLevel);
+        dllIfTrcSettings.m_bUseIpcServer                         = logSettings.m_bUseIpcServer;
+        dllIfTrcSettings.m_bCacheDataIfNotConnected              = logSettings.m_bCacheDataIfNotConnected;
+        dllIfTrcSettings.m_iCacheDataMaxArrLen                   = logSettings.m_iCacheDataMaxArrLen;
+        dllIfTrcSettings.m_bUseLocalLogFile                      = logSettings.m_bUseLocalLogFile;
+        dllIfTrcSettings.m_iLocalLogFileAutoSaveInterval_ms      = logSettings.m_iLocalLogFileAutoSaveInterval_ms;
+        dllIfTrcSettings.m_iLocalLogFileSubFileCountMax          = logSettings.m_iLocalLogFileSubFileCountMax;
+        dllIfTrcSettings.m_iLocalLogFileSubFileLineCountMax      = logSettings.m_iLocalLogFileSubFileLineCountMax;
+        dllIfTrcSettings.m_bLocalLogFileCloseFileAfterEachWrite  = logSettings.m_bLocalLogFileCloseFileAfterEachWrite;
+
+        iStrLen = logSettings.m_strLoggerFileAbsFilePath.length();
+        dllIfTrcSettings.m_szLoggerFileAbsFilePath = new char[iStrLen+1];
+        memset(dllIfTrcSettings.m_szLoggerFileAbsFilePath, 0x00, iStrLen+1);
+        memcpy(dllIfTrcSettings.m_szLoggerFileAbsFilePath, logSettings.m_strLoggerFileAbsFilePath.toUtf8().data(), iStrLen);
+
+        iStrLen = logSettings.m_strLocalLogFileAbsFilePath.length();
+        dllIfTrcSettings.m_szLocalLogFileAbsFilePath = new char[iStrLen+1];
+        memset(dllIfTrcSettings.m_szLocalLogFileAbsFilePath, 0x00, iStrLen+1);
+        memcpy(dllIfTrcSettings.m_szLocalLogFileAbsFilePath, logSettings.m_strLocalLogFileAbsFilePath.toUtf8().data(), iStrLen);
     }
     return dllIfTrcSettings;
 }
 
 //------------------------------------------------------------------------------
-ZSIPCLOGDLL_EXTERN_API void LogServer_clearLocalLogFile( const DllIf::CLogServer* i_pLogServer)
+ZSIPCLOGDLL_EXTERN_API void LogServer_clearLocalLogFile()
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&DllIf_s_mtx);
-
-    if( i_pLogServer != nullptr )
+    CLogServer* pLogServer = CLogServer::GetInstance();
+    if( pLogServer != nullptr )
     {
-        CLogServer* pLogServer = CLogServer::GetInstance();
-
-        if( pLogServer != nullptr )
-        {
-            pLogServer->clearLocalLogFile();
-        }
+        pLogServer->clearLocalLogFile();
     }
 }
 
@@ -1551,24 +1501,7 @@ ZSIPCLOGDLL_EXTERN_API void IpcLogServer_ReleaseInstance( DllIf::CIpcLogServer* 
             for( const QString& strKeyInTree : strlstKeysInTree )
             {
                 DllIf::DllMain::CLogger* pDllIfLogger = DllIf_LogServer_s_hshpLoggers[strKeyInTree];
-                int iLoggerRefCount = pDllIfLogger->getRefCount();
-
-                if( iLoggerRefCount > 0 )
-                {
-                    SErrResultInfo errResultInfo(
-                        /* errSource     */ "ZS::Log::DllIf", "IpcLogServer", strKeyInTree, "ReleaseInstance",
-                        /* result        */ EResultObjRefCounterIsNotZero,
-                        /* severity      */ EResultSeverityError,
-                        /* strAddErrInfo */ "The dtor is called even if the objects reference counter is not 0 but " + QString::number(iLoggerRefCount));
-
-                    if( CErrLog::GetInstance() != nullptr )
-                    {
-                        CErrLog::GetInstance()->addEntry(errResultInfo);
-                    }
-                }
-
                 DllIf_LogServer_s_hshpLoggers.remove(strKeyInTree);
-
                 try
                 {
                     delete pDllIfLogger;
@@ -1852,8 +1785,7 @@ ZSIPCLOGDLL_EXTERN_API bool IpcLogServer_setPort(
                     /* iMsgId           */ -1 );
                 QCoreApplication::postEvent(pLogServer, pMsg);
                 pMsg = NULL;
-
-            } // if( DllIf_s_pQtAppCreatedByDllIf != nullptr )
+            }
         } // if( pLogServer != nullptr )
     } // if( i_pLogServer != nullptr )
 

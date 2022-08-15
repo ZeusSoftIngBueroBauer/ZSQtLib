@@ -24,56 +24,58 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#ifndef ZSApps_TestIpcTraceDllIfQtApp_WidgetCentral_h
-#define ZSApps_TestIpcTraceDllIfQtApp_WidgetCentral_h
+#ifndef ZSApps_TestIpcLogDllIfQtApp_App_h
+#define ZSApps_TestIpcLogDllIfQtApp_App_h
 
-#include "ZSSys/ZSSysDllMain.h"
+#include <QtCore/qglobal.h>
 
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-#include <QtGui/qwidget.h>
-#else
-#include <QtWidgets/qwidget.h>
-#endif
+#include "Test.h"
 
-class QHBoxLayout;
-class QVBoxLayout;
+#include "ZSSysGUI/ZSSysGUIApp.h"
 
 namespace ZS
 {
-namespace Test
+namespace System
 {
-namespace GUI
-{
-class CWdgtIdxTreeTestSteps;
-}
+class CErrLog;
 }
 
 namespace Apps
 {
 namespace Test
 {
-namespace IpcTraceDllIfQtApp
+namespace IpcLogDllIfQtApp
 {
+class CMainWindow;
+
 //******************************************************************************
-class CWidgetCentral : public QWidget
+class CApplication : public ZS::System::GUI::CGUIApp
 //******************************************************************************
 {
+    Q_OBJECT
 public: // class methods
-    static CWidgetCentral* GetInstance() { return s_pThis; } // singleton class
+    static CApplication* GetInstance();
 public: // ctors and dtor
-    CWidgetCentral(
-        QWidget*        i_pWdgtParent = nullptr,
-        Qt::WindowFlags i_wflags = Qt::WindowFlags());
-    ~CWidgetCentral();
-protected: // class members
-    static CWidgetCentral* s_pThis; // singleton class
-protected: // instance members
-    QVBoxLayout*                          m_pLyt;
-    ZS::Test::GUI::CWdgtIdxTreeTestSteps* m_pWdgtTest;
+    CApplication(
+        int            i_argc,
+        char*          i_argv[],
+        const QString& i_strOrganizationName,
+        const QString& i_strOrganizationDomain,
+        const QString& i_strAppName,
+        const QString& i_strWindowTitle );
+    ~CApplication();
+public: // instance methods
+    CTest* getTest() { return m_pTest; }
+protected slots:
+    void onTestFinished( const ZS::Test::CEnumTestResult& i_result );
+private: // instance members
+    CTest*       m_pTest;
+    CMainWindow* m_pMainWindow;
+    bool         m_bAutoStartTest;
 
-}; // class CWidgetCentral
+}; // class CApplication
 
-} // namespace IpcTraceDllIfQtApp
+} // namespace IpcLogDllIfQtApp
 
 } // namespace Test
 
@@ -81,4 +83,4 @@ protected: // instance members
 
 } // namespace ZS
 
-#endif // #ifndef ZSApps_TestIpcTraceDllIfQtApp_WidgetCentral_h
+#endif // #ifndef ZSApps_TestIpcLogDllIfQtApp_App_h

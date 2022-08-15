@@ -547,12 +547,12 @@ QString CLogger::getDataFilter() const
 //------------------------------------------------------------------------------
 /*! @brief Returns whether given data should be suppressed by the data filter.
 
-    @param i_strData [in]
+    @param i_strLogEntry [in]
         String to be checked against the filter string.
 
     @return true if the passed string should be suppressed, false otherwise.
 */
-bool CLogger::isSuppressedByDataFilter( const QString& i_strData ) const
+bool CLogger::isSuppressedByDataFilter( const QString& i_strLogEntry ) const
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(m_pMtx);
@@ -565,7 +565,7 @@ bool CLogger::isSuppressedByDataFilter( const QString& i_strData ) const
 
         for( const QString& strFilter : m_strlstDataFilterInclude )
         {
-            if( i_strData.contains(strFilter) )
+            if( i_strLogEntry.contains(strFilter) )
             {
                 bSuppressed = false;
                 break;
@@ -576,7 +576,7 @@ bool CLogger::isSuppressedByDataFilter( const QString& i_strData ) const
     {
         for( const QString& strFilter : m_strlstDataFilterExclude )
         {
-            if( i_strData.contains(strFilter) )
+            if( i_strLogEntry.contains(strFilter) )
             {
                 bSuppressed = true;
                 break;

@@ -82,32 +82,29 @@ namespace ZS::Log::Dll
 type definitions and constants
 ==============================================================================*/
 
-typedef char* (*TFctLogger_getNameSpace)( const DllIf::CLogger* i_pLogger );
-typedef char* (*TFctLogger_getClassName)( const DllIf::CLogger* i_pLogger );
-typedef char* (*TFctLogger_getObjectName)( const DllIf::CLogger* i_pLogger );
-typedef void (*TFctLogger_setObjectThreadName)( DllIf::CLogger* i_pLogger, const char* i_szThreadName );
-typedef char* (*TFctLogger_getObjectThreadName)( const DllIf::CLogger* i_pLogger );
-typedef int (*TFctLogger_lock)( DllIf::CLogger* i_pLogger );
-typedef int (*TFctLogger_unlock)( DllIf::CLogger* i_pLogger );
-typedef bool (*TFctLogger_isLocked)( const DllIf::CLogger* i_pLogger );
-typedef int (*TFctLogger_getLockCount)( const DllIf::CLogger* i_pLogger );
-typedef void (*TFctLogger_setDeleteOnUnlock)( DllIf::CLogger* i_pLogger, bool i_bDelete );
-typedef bool (*TFctLogger_deleteOnUnlock)( const DllIf::CLogger* i_pLogger );
+typedef void (*TFctLogger_log)( const DllIf::CLogger* i_pLogger, DllIf::ELogDetailLevel i_eFilterDetailLevel, const char* i_szLogEntry );
 typedef void (*TFctLogger_setEnabled)( DllIf::CLogger* i_pLogger, bool i_bEnabled );
 typedef bool (*TFctLogger_isEnabled)( const DllIf::CLogger* i_pLogger );
-typedef void (*TFctLogger_setDetailLevel)( DllIf::CLogger* i_pLogger, DllIf::ELogDetailLevel i_eDetailLevel );
-typedef DllIf::ELogDetailLevel (*TFctLogger_getDetailLevel)( const DllIf::CLogger* i_pLogger );
-typedef bool (*TFctLogger_isActive)( const DllIf::CLogger* i_pLogger, DllIf::ELogDetailLevel i_eDetailLevel );
+typedef void (*TFctLogger_setLogLevel)( DllIf::CLogger* i_pLogger, DllIf::ELogDetailLevel i_eDetailLevel );
+typedef DllIf::ELogDetailLevel (*TFctLogger_getLogLevel)( const DllIf::CLogger* i_pLogger );
+typedef bool (*TFctLogger_isActive)( const DllIf::CLogger* i_pLogger, DllIf::ELogDetailLevel i_eFilterDetailLevel );
 typedef void (*TFctLogger_setDataFilter)( DllIf::CLogger* i_pLogger, const char* i_szFilter );
 typedef char* (*TFctLogger_getDataFilter)( const DllIf::CLogger* i_pLogger );
-typedef bool (*TFctLogger_isDataSuppressedByFilter)( const DllIf::CLogger* i_pLogger, const char* i_szData );
-typedef void (*TFctLogger_log)( const DllIf::CLogger* i_pLogger, const char* i_szObjName, const char* i_szMethod, const char* i_szAddInfo );
+typedef bool (*TFctLogger_isSuppressedByDataFilter)( const DllIf::CLogger* i_pLogger, const char* i_szLogEntry );
+typedef void (*TFctLogger_setAddThreadName)( const DllIf::CLogger* i_pLogger, bool i_bAdd );
+typedef bool (*TFctLogger_addThreadName)( const DllIf::CLogger* i_pLogger );
+typedef void (*TFctLogger_setAddDateTime)( const DllIf::CLogger* i_pLogger, bool i_bAdd );
+typedef bool (*TFctLogger_addDateTime)( const DllIf::CLogger* i_pLogger );
+typedef void (*TFctLogger_setAddSystemTime)( const DllIf::CLogger* i_pLogger, bool i_bAdd );
+typedef bool (*TFctLogger_addSystemTime)( const DllIf::CLogger* i_pLogger );
+typedef void (*TFctLogger_setNameSpace)( const DllIf::CLogger* i_pLogger, const char* i_szNameSpace );
+typedef char* (*TFctLogger_getNameSpace)( const DllIf::CLogger* i_pLogger );
+typedef void (*TFctLogger_setClassName)( const DllIf::CLogger* i_pLogger, const char* i_szClassName );
+typedef char* (*TFctLogger_getClassName)( const DllIf::CLogger* i_pLogger );
+typedef void (*TFctLogger_setObjectName)( const DllIf::CLogger* i_pLogger, const char* i_szObjectName );
+typedef char* (*TFctLogger_getObjectName)( const DllIf::CLogger* i_pLogger );
+typedef char* (*TFctLogger_name)( const DllIf::CLogger* i_pLogger );
 
-typedef DllIf::CLogger* (*TFctLogServer_GetLogger)(
-    const char* i_szNameSpace, const char* i_szClassName, const char* i_szObjName,
-    DllIf::EEnabled i_bEnabledAsDefault, DllIf::ELogDetailLevel i_eDefaultDetailLevel );
-typedef void (*TFctLogServer_RenameLogger)( DllIf::CLogger** io_ppLogger, const char* i_szNewObjName );
-typedef void (*TFctLogServer_ReleaseLogger)( DllIf::CLogger* i_pLogger );
 typedef void (*TFctLogServer_SetOrganizationName)( const char* i_szName );
 typedef char* (*TFctLogServer_GetOrganizationName)();
 typedef void (*TFctLogServer_SetApplicationName)( const char* i_szName );
@@ -123,35 +120,37 @@ typedef char* (*TFctLogServer_GetLocalLogFileAbsolutePath)();
 typedef void (*TFctLogServer_RegisterCurrentThread)( const char* i_szThreadName );
 typedef void (*TFctLogServer_UnregisterCurrentThread)();
 typedef char* (*TFctLogServer_GetCurrentThreadName)();
-typedef bool (*TFctLogServer_isActive)( const DllIf::CLogServer* i_pLogServer );
-typedef void (*TFctLogServer_setEnabled)( DllIf::CLogServer* i_pLogServer, bool i_bEnabled );
-typedef bool (*TFctLogServer_isEnabled)( const DllIf::CLogServer* i_pLogServer );
-typedef void (*TFctLogServer_setNewLoggersEnabledAsDefault)( DllIf::CLogServer* i_pLogServer, bool i_bEnabled );
-typedef bool (*TFctLogServer_areNewLoggersEnabledAsDefault)( const DllIf::CLogServer* i_pLogServer );
-typedef void (*TFctLogServer_setNewLoggersDefaultDetailLevel)( DllIf::CLogServer* i_pLogServer, DllIf::ELogDetailLevel i_eDetailLevel );
-typedef DllIf::ELogDetailLevel (*TFctLogServer_getNewLoggersDefaultDetailLevel)( const DllIf::CLogServer* i_pLogServer );
-typedef bool (*TFctLogServer_recallLoggers)( DllIf::CLogServer* i_pLogServer );
-typedef bool (*TFctLogServer_saveLoggers)( DllIf::CLogServer* i_pLogServer );
-typedef void (*TFctLogServer_setUseLocalLogFile)( DllIf::CLogServer* i_pLogServer, bool i_bUse );
-typedef bool (*TFctLogServer_isLocalLogFileUsed)( const DllIf::CLogServer* i_pLogServer );
-typedef bool (*TFctLogServer_isLocalLogFileActive)( const DllIf::CLogServer* i_pLogServer );
-typedef void (*TFctLogServer_setLocalLogFileAutoSaveIntervalInMs)( DllIf::CLogServer* i_pLogServer, int i_iAutoSaveInterval_ms );
-typedef int (*TFctLogServer_getLocalLogFileAutoSaveIntervalInMs)( const DllIf::CLogServer* i_pLogServer );
-typedef void (*TFctLogServer_setLocalLogFileCloseFileAfterEachWrite)( DllIf::CLogServer* i_pLogServer, bool i_bCloseFile );
-typedef bool (*TFctLogServer_getLocalLogFileCloseFileAfterEachWrite)( const DllIf::CLogServer* i_pLogServer );
-typedef void (*TFctLogServer_setLocalLogFileSubFileCountMax)( DllIf::CLogServer* i_pLogServer, int i_iCountMax );
-typedef int (*TFctLogServer_getLocalLogFileSubFileCountMax)( const DllIf::CLogServer* i_pLogServer );
-typedef void (*TFctLogServer_setLocalLogFileSubFileLineCountMax)( DllIf::CLogServer* i_pLogServer, int i_iCountMax );
-typedef int (*TFctLogServer_getLocalLogFileSubFileLineCountMax)( const DllIf::CLogServer* i_pLogServer );
-typedef void (*TFctLogServer_setUseIpcServer)( DllIf::CLogServer* i_pLogServer, bool i_bUseIpcServer );
-typedef bool (*TFctLogServer_isIpcServerUsed)( const DllIf::CLogServer* i_pLogServer );
-typedef void (*TFctLogServer_setCacheLogDataIfNotConnected)( DllIf::CLogServer* i_pLogServer, bool i_bCacheData );
-typedef bool (*TFctLogServer_getCacheLogDataIfNotConnected)( const DllIf::CLogServer* i_pLogServer );
-typedef void (*TFctLogServer_setCacheLogDataMaxArrLen)( DllIf::CLogServer* i_pLogServer, int i_iMaxArrLen );
-typedef int (*TFctLogServer_getCacheLogDataMaxArrLen)( const DllIf::CLogServer* i_pLogServer );
-typedef bool (*TFctLogServer_setLogSettings)( DllIf::CLogServer* i_pLogServer, const DllIf::SLogServerSettings& i_settings );
-typedef DllIf::SLogServerSettings (*TFctLogServer_getLogSettings)( const DllIf::CLogServer* i_pLogServer );
-typedef void (*TFctLogServer_clearLocalLogFile)( DllIf::CLogServer* i_pLogServer );
+typedef DllIf::CLogger* (*TFctLogServer_GetLogger)( const char* i_szName, DllIf::EEnabled i_bEnabledAsDefault, DllIf::ELogDetailLevel i_eDefaultDetailLevel );
+typedef void (*TFctLogServer_setEnabled)( bool i_bEnabled );
+typedef bool (*TFctLogServer_isEnabled)();
+typedef bool (*TFctLogServer_isActive)();
+typedef void (*TFctLogServer_log)( const DllIf::CLogger* i_pLogger, DllIf::ELogDetailLevel i_eFilterDetailLevel, const char* i_szLogEntry);
+typedef void (*TFctLogServer_setNewLoggersEnabledAsDefault)( bool i_bEnabled );
+typedef bool (*TFctLogServer_areNewLoggersEnabledAsDefault)();
+typedef void (*TFctLogServer_setNewLoggersDefaultDetailLevel)( DllIf::ELogDetailLevel i_eDetailLevel );
+typedef DllIf::ELogDetailLevel (*TFctLogServer_getNewLoggersDefaultDetailLevel)();
+typedef bool (*TFctLogServer_recallLoggers)();
+typedef bool (*TFctLogServer_saveLoggers)();
+typedef void (*TFctLogServer_setUseLocalLogFile)( bool i_bUse );
+typedef bool (*TFctLogServer_isLocalLogFileUsed)();
+typedef bool (*TFctLogServer_isLocalLogFileActive)();
+typedef void (*TFctLogServer_setLocalLogFileAutoSaveIntervalInMs)( int i_iAutoSaveInterval_ms );
+typedef int (*TFctLogServer_getLocalLogFileAutoSaveIntervalInMs)();
+typedef void (*TFctLogServer_setLocalLogFileCloseFileAfterEachWrite)( bool i_bCloseFile );
+typedef bool (*TFctLogServer_getLocalLogFileCloseFileAfterEachWrite)();
+typedef void (*TFctLogServer_setLocalLogFileSubFileCountMax)( int i_iCountMax );
+typedef int (*TFctLogServer_getLocalLogFileSubFileCountMax)();
+typedef void (*TFctLogServer_setLocalLogFileSubFileLineCountMax)( int i_iCountMax );
+typedef int (*TFctLogServer_getLocalLogFileSubFileLineCountMax)();
+typedef void (*TFctLogServer_setUseIpcServer)( bool i_bUseIpcServer );
+typedef bool (*TFctLogServer_isIpcServerUsed)();
+typedef void (*TFctLogServer_setCacheLogDataIfNotConnected)( bool i_bCacheData );
+typedef bool (*TFctLogServer_getCacheLogDataIfNotConnected)();
+typedef void (*TFctLogServer_setCacheLogDataMaxArrLen)( int i_iMaxArrLen );
+typedef int (*TFctLogServer_getCacheLogDataMaxArrLen)();
+typedef bool (*TFctLogServer_setLogSettings)( const DllIf::SLogServerSettings& i_settings );
+typedef DllIf::SLogServerSettings (*TFctLogServer_getLogSettings)();
+typedef void (*TFctLogServer_clearLocalLogFile)();
 
 typedef DllIf::CIpcLogServer* (*TFctIpcLogServer_GetInstance)();
 typedef DllIf::CIpcLogServer* (*TFctIpcLogServer_CreateInstance)();
@@ -175,30 +174,29 @@ static HMODULE s_hndDllIf = NULL;
 static void* s_hndDllIf = NULL;
 #endif
 
-TFctLogger_getNameSpace                              s_pFctLogger_getNameSpace                              = NULL;
-TFctLogger_getClassName                              s_pFctLogger_getClassName                              = NULL;
-TFctLogger_getObjectName                             s_pFctLogger_getObjectName                             = NULL;
-TFctLogger_setObjectThreadName                       s_pFctLogger_setObjectThreadName                       = NULL;
-TFctLogger_getObjectThreadName                       s_pFctLogger_getObjectThreadName                       = NULL;
-TFctLogger_lock                                      s_pFctLogger_lock                                      = NULL;
-TFctLogger_unlock                                    s_pFctLogger_unlock                                    = NULL;
-TFctLogger_isLocked                                  s_pFctLogger_isLocked                                  = NULL;
-TFctLogger_getLockCount                              s_pFctLogger_getLockCount                              = NULL;
-TFctLogger_setDeleteOnUnlock                         s_pFctLogger_setDeleteOnUnlock                         = NULL;
-TFctLogger_deleteOnUnlock                            s_pFctLogger_deleteOnUnlock                            = NULL;
-TFctLogger_setEnabled                                s_pFctLogger_setEnabled                                = NULL;
-TFctLogger_isEnabled                                 s_pFctLogger_isEnabled                                 = NULL;
-TFctLogger_setDetailLevel                            s_pFctLogger_setDetailLevel                            = NULL;
-TFctLogger_getDetailLevel                            s_pFctLogger_getDetailLevel                            = NULL;
-TFctLogger_isActive                                  s_pFctLogger_isActive                                  = NULL;
-TFctLogger_setDataFilter                             s_pFctLogger_setDataFilter                             = NULL;
-TFctLogger_getDataFilter                             s_pFctLogger_getDataFilter                             = NULL;
-TFctLogger_isDataSuppressedByFilter                  s_pFctLogger_isDataSuppressedByFilter                  = NULL;
-TFctLogger_log                                       s_pFctLogger_log                                       = NULL;
+TFctLogger_log                      s_pFctLogger_log                      = NULL;
+TFctLogger_setEnabled               s_pFctLogger_setEnabled               = NULL;
+TFctLogger_isEnabled                s_pFctLogger_isEnabled                = NULL;
+TFctLogger_setLogLevel              s_pFctLogger_setLogLevel              = NULL;
+TFctLogger_getLogLevel              s_pFctLogger_getLogLevel              = NULL;
+TFctLogger_isActive                 s_pFctLogger_isActive                 = NULL;
+TFctLogger_setDataFilter            s_pFctLogger_setDataFilter            = NULL;
+TFctLogger_getDataFilter            s_pFctLogger_getDataFilter            = NULL;
+TFctLogger_isSuppressedByDataFilter s_pFctLogger_isSuppressedByDataFilter = NULL;
+TFctLogger_setAddThreadName         s_pFctLogger_setAddThreadName         = NULL;
+TFctLogger_addThreadName            s_pFctLogger_addThreadName            = NULL;
+TFctLogger_setAddDateTime           s_pFctLogger_setAddDateTime           = NULL;
+TFctLogger_addDateTime              s_pFctLogger_addDateTime              = NULL;
+TFctLogger_setAddSystemTime         s_pFctLogger_setAddSystemTime         = NULL;
+TFctLogger_addSystemTime            s_pFctLogger_addSystemTime            = NULL;
+TFctLogger_setNameSpace             s_pFctLogger_setNameSpace             = NULL;
+TFctLogger_getNameSpace             s_pFctLogger_getNameSpace             = NULL;
+TFctLogger_setClassName             s_pFctLogger_setClassName             = NULL;
+TFctLogger_getClassName             s_pFctLogger_getClassName             = NULL;
+TFctLogger_setObjectName            s_pFctLogger_setObjectName            = NULL;
+TFctLogger_getObjectName            s_pFctLogger_getObjectName            = NULL;
+TFctLogger_name                     s_pFctLogger_name                     = NULL;
 
-TFctLogServer_GetLogger                              s_pFctLogServer_GetLogger                              = NULL;
-TFctLogServer_RenameLogger                           s_pFctLogServer_RenameLogger                           = NULL;
-TFctLogServer_ReleaseLogger                          s_pFctLogServer_ReleaseLogger                          = NULL;
 TFctLogServer_SetOrganizationName                    s_pFctLogServer_SetOrganizationName                    = NULL;
 TFctLogServer_GetOrganizationName                    s_pFctLogServer_GetOrganizationName                    = NULL;
 TFctLogServer_SetApplicationName                     s_pFctLogServer_SetApplicationName                     = NULL;
@@ -214,9 +212,11 @@ TFctLogServer_GetLocalLogFileAbsolutePath            s_pFctLogServer_GetLocalLog
 TFctLogServer_RegisterCurrentThread                  s_pFctLogServer_RegisterCurrentThread                  = NULL;
 TFctLogServer_UnregisterCurrentThread                s_pFctLogServer_UnregisterCurrentThread                = NULL;
 TFctLogServer_GetCurrentThreadName                   s_pFctLogServer_GetCurrentThreadName                   = NULL;
-TFctLogServer_isActive                               s_pFctLogServer_isActive                               = NULL;
+TFctLogServer_GetLogger                              s_pFctLogServer_GetLogger                              = NULL;
 TFctLogServer_setEnabled                             s_pFctLogServer_setEnabled                             = NULL;
 TFctLogServer_isEnabled                              s_pFctLogServer_isEnabled                              = NULL;
+TFctLogServer_isActive                               s_pFctLogServer_isActive                               = NULL;
+TFctLogServer_log                                    s_pFctLogServer_log                                    = NULL;
 TFctLogServer_setNewLoggersEnabledAsDefault          s_pFctLogServer_setNewLoggersEnabledAsDefault          = NULL;
 TFctLogServer_areNewLoggersEnabledAsDefault          s_pFctLogServer_areNewLoggersEnabledAsDefault          = NULL;
 TFctLogServer_setNewLoggersDefaultDetailLevel        s_pFctLogServer_setNewLoggersDefaultDetailLevel        = NULL;
@@ -398,38 +398,8 @@ bool ZS::Log::DllIf::loadDll( EBuildConfiguration i_configuration, int i_iQtVers
         // Logger
         //------------
 
-        s_pFctLogger_getNameSpace = (TFctLogger_getNameSpace)GetProcAddress(s_hndDllIf, "Logger_getNameSpace");
-        if( s_pFctLogger_getNameSpace == NULL ) bOk = false;
-
-        s_pFctLogger_getClassName = (TFctLogger_getClassName)GetProcAddress(s_hndDllIf, "Logger_getClassName");
-        if( s_pFctLogger_getClassName == NULL ) bOk = false;
-
-        s_pFctLogger_getObjectName = (TFctLogger_getObjectName)GetProcAddress(s_hndDllIf, "Logger_getObjectName");
-        if( s_pFctLogger_getObjectName == NULL ) bOk = false;
-
-        s_pFctLogger_setObjectThreadName = (TFctLogger_setObjectThreadName)GetProcAddress(s_hndDllIf, "Logger_setObjectThreadName");
-        if( s_pFctLogger_setObjectThreadName == NULL ) bOk = false;
-
-        s_pFctLogger_getObjectThreadName = (TFctLogger_getObjectThreadName)GetProcAddress(s_hndDllIf, "Logger_getObjectThreadName");
-        if( s_pFctLogger_getObjectThreadName == NULL ) bOk = false;
-
-        s_pFctLogger_lock = (TFctLogger_lock)GetProcAddress(s_hndDllIf, "Logger_lock");
-        if( s_pFctLogger_lock == NULL ) bOk = false;
-
-        s_pFctLogger_unlock = (TFctLogger_unlock)GetProcAddress(s_hndDllIf, "Logger_unlock");
-        if( s_pFctLogger_unlock == NULL ) bOk = false;
-
-        s_pFctLogger_isLocked = (TFctLogger_isLocked)GetProcAddress(s_hndDllIf, "Logger_isLocked");
-        if( s_pFctLogger_isLocked == NULL ) bOk = false;
-
-        s_pFctLogger_getLockCount = (TFctLogger_getLockCount)GetProcAddress(s_hndDllIf, "Logger_getLockCount");
-        if( s_pFctLogger_getLockCount == NULL ) bOk = false;
-
-        s_pFctLogger_setDeleteOnUnlock = (TFctLogger_setDeleteOnUnlock)GetProcAddress(s_hndDllIf, "Logger_setDeleteOnUnlock");
-        if( s_pFctLogger_setDeleteOnUnlock == NULL ) bOk = false;
-
-        s_pFctLogger_deleteOnUnlock = (TFctLogger_deleteOnUnlock)GetProcAddress(s_hndDllIf, "Logger_deleteOnUnlock");
-        if( s_pFctLogger_deleteOnUnlock == NULL ) bOk = false;
+        s_pFctLogger_log = (TFctLogger_log)GetProcAddress(s_hndDllIf, "Logger_log");
+        if( s_pFctLogger_log == NULL ) bOk = false;
 
         s_pFctLogger_setEnabled = (TFctLogger_setEnabled)GetProcAddress(s_hndDllIf, "Logger_setEnabled");
         if( s_pFctLogger_setEnabled == NULL ) bOk = false;
@@ -437,11 +407,11 @@ bool ZS::Log::DllIf::loadDll( EBuildConfiguration i_configuration, int i_iQtVers
         s_pFctLogger_isEnabled = (TFctLogger_isEnabled)GetProcAddress(s_hndDllIf, "Logger_isEnabled");
         if( s_pFctLogger_isEnabled == NULL ) bOk = false;
 
-        s_pFctLogger_setDetailLevel = (TFctLogger_setDetailLevel)GetProcAddress(s_hndDllIf, "Logger_setDetailLevel");
-        if( s_pFctLogger_setDetailLevel == NULL ) bOk = false;
+        s_pFctLogger_setLogLevel = (TFctLogger_setLogLevel)GetProcAddress(s_hndDllIf, "Logger_setLogLevel");
+        if( s_pFctLogger_setLogLevel == NULL ) bOk = false;
 
-        s_pFctLogger_getDetailLevel = (TFctLogger_getDetailLevel)GetProcAddress(s_hndDllIf, "Logger_getDetailLevel");
-        if( s_pFctLogger_getDetailLevel == NULL ) bOk = false;
+        s_pFctLogger_getLogLevel = (TFctLogger_getLogLevel)GetProcAddress(s_hndDllIf, "Logger_getLogLevel");
+        if( s_pFctLogger_getLogLevel == NULL ) bOk = false;
 
         s_pFctLogger_isActive = (TFctLogger_isActive)GetProcAddress(s_hndDllIf, "Logger_isActive");
         if( s_pFctLogger_isActive == NULL ) bOk = false;
@@ -452,23 +422,50 @@ bool ZS::Log::DllIf::loadDll( EBuildConfiguration i_configuration, int i_iQtVers
         s_pFctLogger_getDataFilter = (TFctLogger_getDataFilter)GetProcAddress(s_hndDllIf, "Logger_getDataFilter");
         if( s_pFctLogger_getDataFilter == NULL ) bOk = false;
 
-        s_pFctLogger_isDataSuppressedByFilter = (TFctLogger_isDataSuppressedByFilter)GetProcAddress(s_hndDllIf, "Logger_isDataSuppressedByFilter");
-        if( s_pFctLogger_isDataSuppressedByFilter == NULL ) bOk = false;
+        s_pFctLogger_isSuppressedByDataFilter = (TFctLogger_isSuppressedByDataFilter)GetProcAddress(s_hndDllIf, "Logger_isSuppressedByDataFilter");
+        if( s_pFctLogger_isSuppressedByDataFilter == NULL ) bOk = false;
 
-        s_pFctLogger_log = (TFctLogger_log)GetProcAddress(s_hndDllIf, "Logger_log");
-        if( s_pFctLogger_log == NULL ) bOk = false;
+        s_pFctLogger_setAddThreadName = (TFctLogger_setAddThreadName)GetProcAddress(s_hndDllIf, "Logger_setAddThreadName");
+        if( s_pFctLogger_setAddThreadName == NULL ) bOk = false;
+
+        s_pFctLogger_addThreadName = (TFctLogger_addThreadName)GetProcAddress(s_hndDllIf, "Logger_addThreadName");
+        if( s_pFctLogger_addThreadName == NULL ) bOk = false;
+
+        s_pFctLogger_setAddDateTime = (TFctLogger_setAddDateTime)GetProcAddress(s_hndDllIf, "Logger_setAddDateTime");
+        if( s_pFctLogger_setAddDateTime == NULL ) bOk = false;
+
+        s_pFctLogger_addDateTime = (TFctLogger_addDateTime)GetProcAddress(s_hndDllIf, "Logger_addDateTime");
+        if( s_pFctLogger_addDateTime == NULL ) bOk = false;
+
+        s_pFctLogger_setAddSystemTime = (TFctLogger_setAddSystemTime)GetProcAddress(s_hndDllIf, "Logger_setAddSystemTime");
+        if( s_pFctLogger_setAddSystemTime == NULL ) bOk = false;
+
+        s_pFctLogger_addSystemTime = (TFctLogger_addSystemTime)GetProcAddress(s_hndDllIf, "Logger_addSystemTime");
+        if( s_pFctLogger_addSystemTime == NULL ) bOk = false;
+
+        s_pFctLogger_setNameSpace = (TFctLogger_setNameSpace)GetProcAddress(s_hndDllIf, "Logger_setNameSpace");
+        if( s_pFctLogger_setNameSpace == NULL ) bOk = false;
+
+        s_pFctLogger_getNameSpace = (TFctLogger_getNameSpace)GetProcAddress(s_hndDllIf, "Logger_getNameSpace");
+        if( s_pFctLogger_getNameSpace == NULL ) bOk = false;
+
+        s_pFctLogger_setClassName = (TFctLogger_setClassName)GetProcAddress(s_hndDllIf, "Logger_setClassName");
+        if( s_pFctLogger_setClassName == NULL ) bOk = false;
+
+        s_pFctLogger_getClassName = (TFctLogger_getClassName)GetProcAddress(s_hndDllIf, "Logger_getClassName");
+        if( s_pFctLogger_getClassName == NULL ) bOk = false;
+
+        s_pFctLogger_setObjectName = (TFctLogger_setObjectName)GetProcAddress(s_hndDllIf, "Logger_setObjectName");
+        if( s_pFctLogger_setObjectName == NULL ) bOk = false;
+
+        s_pFctLogger_getObjectName = (TFctLogger_getObjectName)GetProcAddress(s_hndDllIf, "Logger_getObjectName");
+        if( s_pFctLogger_getObjectName == NULL ) bOk = false;
+
+        s_pFctLogger_name = (TFctLogger_name)GetProcAddress(s_hndDllIf, "Logger_name");
+        if( s_pFctLogger_name == NULL ) bOk = false;
 
         // LogServer
         //------------
-
-        s_pFctLogServer_GetLogger = (TFctLogServer_GetLogger)GetProcAddress(s_hndDllIf, "LogServer_GetLogger");
-        if( s_pFctLogServer_GetLogger == NULL ) bOk = false;
-
-        s_pFctLogServer_RenameLogger = (TFctLogServer_RenameLogger)GetProcAddress(s_hndDllIf, "LogServer_RenameLogger");
-        if( s_pFctLogServer_RenameLogger == NULL ) bOk = false;
-
-        s_pFctLogServer_ReleaseLogger = (TFctLogServer_ReleaseLogger)GetProcAddress(s_hndDllIf, "LogServer_ReleaseLogger");
-        if( s_pFctLogServer_ReleaseLogger == NULL ) bOk = false;
 
         s_pFctLogServer_SetOrganizationName = (TFctLogServer_SetOrganizationName)GetProcAddress(s_hndDllIf, "LogServer_SetOrganizationName");
         if( s_pFctLogServer_SetOrganizationName == NULL ) bOk = false;
@@ -515,14 +512,17 @@ bool ZS::Log::DllIf::loadDll( EBuildConfiguration i_configuration, int i_iQtVers
         s_pFctLogServer_GetCurrentThreadName = (TFctLogServer_GetCurrentThreadName)GetProcAddress(s_hndDllIf, "LogServer_GetCurrentThreadName");
         if( s_pFctLogServer_GetCurrentThreadName == NULL ) bOk = false;
 
-        s_pFctLogServer_isActive = (TFctLogServer_isActive)GetProcAddress(s_hndDllIf, "LogServer_isActive");
-        if( s_pFctLogServer_isActive == NULL ) bOk = false;
+        s_pFctLogServer_GetLogger = (TFctLogServer_GetLogger)GetProcAddress(s_hndDllIf, "LogServer_GetLogger");
+        if( s_pFctLogServer_GetLogger == NULL ) bOk = false;
 
         s_pFctLogServer_setEnabled = (TFctLogServer_setEnabled)GetProcAddress(s_hndDllIf, "LogServer_setEnabled");
         if( s_pFctLogServer_setEnabled == NULL ) bOk = false;
 
         s_pFctLogServer_isEnabled = (TFctLogServer_isEnabled)GetProcAddress(s_hndDllIf, "LogServer_isEnabled");
         if( s_pFctLogServer_isEnabled == NULL ) bOk = false;
+
+        s_pFctLogServer_isActive = (TFctLogServer_isActive)GetProcAddress(s_hndDllIf, "LogServer_isActive");
+        if( s_pFctLogServer_isActive == NULL ) bOk = false;
 
         s_pFctLogServer_setNewLoggersEnabledAsDefault = (TFctLogServer_setNewLoggersEnabledAsDefault)GetProcAddress(s_hndDllIf, "LogServer_setNewLoggersEnabledAsDefault");
         if( s_pFctLogServer_setNewLoggersEnabledAsDefault == NULL ) bOk = false;
@@ -676,30 +676,29 @@ bool ZS::Log::DllIf::releaseDll()
         #endif
         s_hndDllIf = NULL;
 
-        s_pFctLogger_getNameSpace             = NULL;
-        s_pFctLogger_getClassName             = NULL;
-        s_pFctLogger_getObjectName            = NULL;
-        s_pFctLogger_setObjectThreadName      = NULL;
-        s_pFctLogger_getObjectThreadName      = NULL;
-        s_pFctLogger_lock                     = NULL;
-        s_pFctLogger_unlock                   = NULL;
-        s_pFctLogger_isLocked                 = NULL;
-        s_pFctLogger_getLockCount             = NULL;
-        s_pFctLogger_setDeleteOnUnlock        = NULL;
-        s_pFctLogger_deleteOnUnlock           = NULL;
+        s_pFctLogger_log                      = NULL;
         s_pFctLogger_setEnabled               = NULL;
         s_pFctLogger_isEnabled                = NULL;
-        s_pFctLogger_setDetailLevel           = NULL;
-        s_pFctLogger_getDetailLevel           = NULL;
+        s_pFctLogger_setLogLevel              = NULL;
+        s_pFctLogger_getLogLevel              = NULL;
         s_pFctLogger_isActive                 = NULL;
         s_pFctLogger_setDataFilter            = NULL;
         s_pFctLogger_getDataFilter            = NULL;
-        s_pFctLogger_isDataSuppressedByFilter = NULL;
-        s_pFctLogger_log                      = NULL;
+        s_pFctLogger_isSuppressedByDataFilter = NULL;
+        s_pFctLogger_setAddThreadName         = NULL;
+        s_pFctLogger_addThreadName            = NULL;
+        s_pFctLogger_setAddDateTime           = NULL;
+        s_pFctLogger_addDateTime              = NULL;
+        s_pFctLogger_setAddSystemTime         = NULL;
+        s_pFctLogger_addSystemTime            = NULL;
+        s_pFctLogger_setNameSpace             = NULL;
+        s_pFctLogger_getNameSpace             = NULL;
+        s_pFctLogger_setClassName             = NULL;
+        s_pFctLogger_getClassName             = NULL;
+        s_pFctLogger_setObjectName            = NULL;
+        s_pFctLogger_getObjectName            = NULL;
+        s_pFctLogger_name                     = NULL;
 
-        s_pFctLogServer_GetLogger                              = NULL;
-        s_pFctLogServer_RenameLogger                           = NULL;
-        s_pFctLogServer_ReleaseLogger                          = NULL;
         s_pFctLogServer_SetOrganizationName                    = NULL;
         s_pFctLogServer_GetOrganizationName                    = NULL;
         s_pFctLogServer_SetApplicationName                     = NULL;
@@ -715,9 +714,11 @@ bool ZS::Log::DllIf::releaseDll()
         s_pFctLogServer_RegisterCurrentThread                  = NULL;
         s_pFctLogServer_UnregisterCurrentThread                = NULL;
         s_pFctLogServer_GetCurrentThreadName                   = NULL;
-        s_pFctLogServer_isActive                               = NULL;
+        s_pFctLogServer_GetLogger                              = NULL;
         s_pFctLogServer_setEnabled                             = NULL;
         s_pFctLogServer_isEnabled                              = NULL;
+        s_pFctLogServer_isActive                               = NULL;
+        s_pFctLogServer_log                                    = NULL;
         s_pFctLogServer_setNewLoggersEnabledAsDefault          = NULL;
         s_pFctLogServer_areNewLoggersEnabledAsDefault          = NULL;
         s_pFctLogServer_setNewLoggersDefaultDetailLevel        = NULL;
@@ -770,208 +771,24 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-/*! @brief Returns the name space of the module, class or instance referencing the
-           logger.
+/*! @brief Creates a log entry for the given log level.
 
-    See CLogger::getNameSpace for more details.
+    See CLogger::log for more details.
 
-    @return Character string pointing to the name space.
-            The ownership is passed to the caller so it must be free by the caller.
+    @param i_eFilterDetailLevel [in]
+        If the given filter detail level is not None and is equal or greater
+        than the current detail level of the log server the log entry will
+        be added the log file.
+    @param i_szLogEntry [in] String to be logged.
 */
-char* DllIf::CLogger::getNameSpace() const
+void DllIf::CLogger::log( ELogDetailLevel i_eFilterDetailLevel, const char* i_szLogEntry )
 //------------------------------------------------------------------------------
 {
-    if( s_hndDllIf != NULL && s_pFctLogger_getNameSpace != NULL )
+    if( s_hndDllIf != NULL && s_pFctLogger_log != NULL )
     {
-        return s_pFctLogger_getNameSpace(this);
-    }
-    return NULL;
-}
-
-//------------------------------------------------------------------------------
-/*! @brief Returns the class name of the module, class or instance referencing the
-           logger.
-
-    See CLogger::getClassName for more details.
-
-    @return Character string pointing to the class name.
-            The ownership is passed to the caller so it must be free by the caller.
-*/
-char* DllIf::CLogger::getClassName() const
-//------------------------------------------------------------------------------
-{
-    if( s_hndDllIf != NULL && s_pFctLogger_getClassName != NULL )
-    {
-        return s_pFctLogger_getClassName(this);
-    }
-    return NULL;
-}
-
-//------------------------------------------------------------------------------
-/*! @brief Returns the object name of the instance creating this logger.
-
-    See CLogger::getObjectName for more details.
-
-    @return Character string pointing to the object name.
-            The ownership is passed to the caller so it must be free by the caller.
-*/
-char* DllIf::CLogger::getObjectName() const
-//------------------------------------------------------------------------------
-{
-    if( s_hndDllIf != NULL && s_pFctLogger_getObjectName != NULL )
-    {
-        return s_pFctLogger_getObjectName(this);
-    }
-    return NULL;
-}
-
-/*==============================================================================
-public: // instance methods
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-/*! @brief Sets the name of the thread in which context the logger is created.
-
-    See CLogger::setObjectThreadName for more details.
-
-    @param i_szThreadName [in]
-        Name of the thread in which context the logger was created.
-        The logger does not take ownership of the character string
-        but will make a deep copy of the passed string.
-*/
-void DllIf::CLogger::setObjectThreadName( const char* i_szThreadName )
-//------------------------------------------------------------------------------
-{
-    if( s_hndDllIf != NULL && s_pFctLogger_setObjectThreadName != NULL )
-    {
-        s_pFctLogger_setObjectThreadName(this, i_szThreadName);
+        s_pFctLogger_log(this, i_eFilterDetailLevel, i_szLogEntry);
     }
 }
-
-//------------------------------------------------------------------------------
-/*! @brief Returns the name of the thread in which context the logger was created.
-
-    See CLogger::getObjectThreadName for more details.
-
-    @return Character string pointing to the thread name.
-            The ownership is passed to the caller so it must be free by the caller.
-*/
-char* DllIf::CLogger::getObjectThreadName() const
-//------------------------------------------------------------------------------
-{
-    if( s_hndDllIf != NULL && s_pFctLogger_getObjectThreadName != NULL )
-    {
-        return s_pFctLogger_getObjectThreadName(this);
-    }
-    return NULL;
-}
-
-//------------------------------------------------------------------------------
-/*! @brief Locks the logger by incrementing the lock count.
-
-    See CLogger::lock for more details.
-
-    @return Current lock count.
-*/
-int DllIf::CLogger::lock()
-//------------------------------------------------------------------------------
-{
-    if( s_hndDllIf != NULL && s_pFctLogger_lock != NULL )
-    {
-        return s_pFctLogger_lock(this);
-    }
-    return 0;
-}
-
-//------------------------------------------------------------------------------
-/*! @brief Unlocks the object by decrementing the lock counter.
-
-    See CLogger::unlock for more details.
-
-    @return Current lock count.
-*/
-int DllIf::CLogger::unlock()
-//------------------------------------------------------------------------------
-{
-    if( s_hndDllIf != NULL && s_pFctLogger_unlock != NULL )
-    {
-        return s_pFctLogger_unlock(this);
-    }
-    return 0;
-}
-
-//------------------------------------------------------------------------------
-/*! Returns whether the admin object is locked.
-
-    See CLogger::isLocked for more details.
-
-    @return true if the object is locked, false otherwise.
-*/
-bool DllIf::CLogger::isLocked() const
-//------------------------------------------------------------------------------
-{
-    if( s_hndDllIf != NULL && s_pFctLogger_isLocked != NULL )
-    {
-        return s_pFctLogger_isLocked(this);
-    }
-    return false;
-}
-
-//------------------------------------------------------------------------------
-/*! Returns the current lock count.
-
-    @return Current lock count.
-*/
-int DllIf::CLogger::getLockCount() const
-//------------------------------------------------------------------------------
-{
-    if( s_hndDllIf != NULL && s_pFctLogger_getLockCount != NULL )
-    {
-        return s_pFctLogger_getLockCount(this);
-    }
-    return 0;
-}
-
-//------------------------------------------------------------------------------
-/*! @brief Sets the flag that the admin object is no longer need if unlocked.
-
-    See CLogger::setDeleteOnUnlock for more details.
-
-    @param i_bDelete [in]
-        Flag to indicate whether the object can be deleted if unlocked
-        (and the reference counter is still 0).
-*/
-void DllIf::CLogger::setDeleteOnUnlock( bool i_bDelete )
-//------------------------------------------------------------------------------
-{
-    if( s_hndDllIf != NULL && s_pFctLogger_setDeleteOnUnlock != NULL )
-    {
-        return s_pFctLogger_setDeleteOnUnlock(this, i_bDelete);
-    }
-    return ;
-}
-
-//------------------------------------------------------------------------------
-/*! @brief Returns the flag whether the admin object may be deleted if
-           unlocked and no longer used.
-
-    See CLogger::deleteOnUnlock for more details.
-
-    @return true if the flag is set, false otherwise.
-*/
-bool DllIf::CLogger::deleteOnUnlock() const
-//------------------------------------------------------------------------------
-{
-    if( s_hndDllIf != NULL && s_pFctLogger_deleteOnUnlock != NULL )
-    {
-        return s_pFctLogger_deleteOnUnlock(this);
-    }
-    return false;
-}
-
-/*==============================================================================
-public: // instance methods
-==============================================================================*/
 
 //------------------------------------------------------------------------------
 /*! @brief Enables log output for this object.
@@ -1019,12 +836,12 @@ public: // instance methods
 
     @param i_eDetailLevel [in] Detail level.
 */
-void DllIf::CLogger::setDetailLevel( ELogDetailLevel i_eDetailLevel )
+void DllIf::CLogger::setLogLevel( ELogDetailLevel i_eDetailLevel )
 //------------------------------------------------------------------------------
 {
-    if( s_hndDllIf != NULL && s_pFctLogger_setDetailLevel != NULL )
+    if( s_hndDllIf != NULL && s_pFctLogger_setLogLevel != NULL )
     {
-        s_pFctLogger_setDetailLevel(this, i_eDetailLevel);
+        s_pFctLogger_setLogLevel(this, i_eDetailLevel);
     }
 }
 
@@ -1033,14 +850,14 @@ void DllIf::CLogger::setDetailLevel( ELogDetailLevel i_eDetailLevel )
 
     @return Detail level.
 */
- DllIf::ELogDetailLevel DllIf::CLogger::getDetailLevel() const
+ DllIf::ELogDetailLevel DllIf::CLogger::getLogLevel() const
 //------------------------------------------------------------------------------
 {
     ELogDetailLevel eDetailLevel = ELogDetailLevelNone;
 
-    if( s_hndDllIf != NULL && s_pFctLogger_getDetailLevel != NULL )
+    if( s_hndDllIf != NULL && s_pFctLogger_getLogLevel != NULL )
     {
-        eDetailLevel = s_pFctLogger_getDetailLevel(this);
+        eDetailLevel = s_pFctLogger_getLogLevel(this);
     }
     return eDetailLevel;
 }
@@ -1109,77 +926,256 @@ char* DllIf::CLogger::getDataFilter() const
 //------------------------------------------------------------------------------
 /*! @brief Returns whether given log data should be suppressed by the data filter.
 
-    @param i_szTraceData [in]
-        Trace data to be checked against the filter string.
+    @param i_szLogEntry [in]
+        Log entry to be checked against the filter string.
 
-    @return true if the passed log data should be suppressed, false otherwise.
+    @return true if the passed log entry should be suppressed, false otherwise.
 */
-bool DllIf::CLogger::isSuppressedByDataFilter( const char* i_szTraceData ) const
+bool DllIf::CLogger::isSuppressedByDataFilter( const char* i_szLogEntry ) const
 //------------------------------------------------------------------------------
 {
-    if( s_hndDllIf != NULL && s_pFctLogger_isDataSuppressedByFilter != NULL )
+    if( s_hndDllIf != NULL && s_pFctLogger_isSuppressedByDataFilter != NULL )
     {
-        return s_pFctLogger_isDataSuppressedByFilter(this, i_szTraceData);
+        return s_pFctLogger_isSuppressedByDataFilter(this, i_szLogEntry);
     }
     return false;
 }
 
-
-/*******************************************************************************
-struct SLogServerSettings
-*******************************************************************************/
-
-/*==============================================================================
-public: // struct methods
-==============================================================================*/
-
 //------------------------------------------------------------------------------
-/*! @brief Initializes the log settings with default values.
+/*! @brief Sets the flag which indicates whether the current thread name
+           should be added to the log entry.
 
-    @param i_logSettings [in] Struct to be initialized.
+    See CLogger::setAddThreadName for more details.
+
+    @param i_bAdd [in]
+        true if the current thread name should be added, false otherwise.
 */
-void DllIf::SLogServerSettings_init( DllIf::SLogServerSettings& i_logSettings )
+void DllIf::CLogger::setAddThreadName( bool i_bAdd )
 //------------------------------------------------------------------------------
 {
-    i_logSettings.m_bEnabled = true;
-    i_logSettings.m_szLoggerFileAbsFilePath = NULL;
-    i_logSettings.m_bNewLoggersEnabledAsDefault = false;
-    i_logSettings.m_eNewLoggersDefaultDetailLevel = static_cast<ELogDetailLevel>(0);
-    i_logSettings.m_bUseIpcServer = true;
-    i_logSettings.m_bCacheDataIfNotConnected = false;
-    i_logSettings.m_iCacheDataMaxArrLen = 1000;
-    i_logSettings.m_bUseLocalLogFile = true;
-    i_logSettings.m_szLocalLogFileAbsFilePath = NULL;
-    i_logSettings.m_iLocalLogFileAutoSaveInterval_ms = 1000;
-    i_logSettings.m_iLocalLogFileSubFileCountMax = 5;
-    i_logSettings.m_iLocalLogFileSubFileLineCountMax = 2000;
-    i_logSettings.m_bLocalLogFileCloseFileAfterEachWrite = false;
+    if( s_hndDllIf != NULL && s_pFctLogger_setAddThreadName != NULL )
+    {
+        s_pFctLogger_setAddThreadName(this, i_bAdd);
+    }
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Resets the log settings. The character buffers containing file names
-           will be freed.
+/*! @brief Returns the flag indicating whether the current thread name should be
+           added to the log entry.
 
-    @param i_logSettings [in] Struct to be reset.
+    See CLogger::addThreadName for more details.
+
+    @return true if the current thread name should be added, false otherwise.
 */
-void DllIf::SLogServerSettings_release( DllIf::SLogServerSettings& i_logSettings )
+bool DllIf::CLogger::addThreadName() const
 //------------------------------------------------------------------------------
 {
-    i_logSettings.m_bEnabled = false;
-    delete i_logSettings.m_szLoggerFileAbsFilePath;
-    i_logSettings.m_szLoggerFileAbsFilePath = NULL;
-    i_logSettings.m_bNewLoggersEnabledAsDefault = false;
-    i_logSettings.m_eNewLoggersDefaultDetailLevel = static_cast<ELogDetailLevel>(0);
-    i_logSettings.m_bUseIpcServer = false;
-    i_logSettings.m_bCacheDataIfNotConnected = false;
-    i_logSettings.m_iCacheDataMaxArrLen = 0;
-    i_logSettings.m_bUseLocalLogFile = false;
-    delete i_logSettings.m_szLocalLogFileAbsFilePath;
-    i_logSettings.m_szLocalLogFileAbsFilePath = NULL;
-    i_logSettings.m_iLocalLogFileAutoSaveInterval_ms = 0;
-    i_logSettings.m_iLocalLogFileSubFileCountMax = 0;
-    i_logSettings.m_iLocalLogFileSubFileLineCountMax = 0;
-    i_logSettings.m_bLocalLogFileCloseFileAfterEachWrite = false;
+    if( s_hndDllIf != NULL && s_pFctLogger_addThreadName != NULL )
+    {
+        return s_pFctLogger_addThreadName(this);
+    }
+    return NULL;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the flag which indicates whether the current date time
+           should be added to the log entry.
+
+    See CLogger::setAddDateTime for more details.
+
+    @param i_bAdd [in]
+        true if the current date time should be added, false otherwise.
+*/
+void DllIf::CLogger::setAddDateTime( bool i_bAdd )
+//------------------------------------------------------------------------------
+{
+    if( s_hndDllIf != NULL && s_pFctLogger_setAddDateTime != NULL )
+    {
+        s_pFctLogger_setAddDateTime(this, i_bAdd);
+    }
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the flag indicating whether the current date time should be
+           added to the log entry.
+
+    See CLogger::addDateTime for more details.
+
+    @return true if the current date time should be added, false otherwise.
+*/
+bool DllIf::CLogger::addDateTime() const
+//------------------------------------------------------------------------------
+{
+    if( s_hndDllIf != NULL && s_pFctLogger_addDateTime != NULL )
+    {
+        return s_pFctLogger_addDateTime(this);
+    }
+    return NULL;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the flag which indicates whether the current system time
+           should be added to the log entry.
+
+    See CLogger::setAddSystemTime for more details.
+
+    @param i_bAdd [in]
+        true if the current system time should be added, false otherwise.
+*/
+void DllIf::CLogger::setAddSystemTime( bool i_bAdd )
+//------------------------------------------------------------------------------
+{
+    if( s_hndDllIf != NULL && s_pFctLogger_setAddSystemTime != NULL )
+    {
+        s_pFctLogger_setAddSystemTime(this, i_bAdd);
+    }
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the flag indicating whether the current system time should be
+           added to the log entry.
+
+    See CLogger::addSystemTime for more details.
+
+    @return true if the current system time should be added, false otherwise.
+*/
+bool DllIf::CLogger::addSystemTime() const
+//------------------------------------------------------------------------------
+{
+    if( s_hndDllIf != NULL && s_pFctLogger_addSystemTime != NULL )
+    {
+        return s_pFctLogger_addSystemTime(this);
+    }
+    return NULL;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the name space of the logger.
+
+    See CLogger::setNameSpace for more details.
+
+    @param i_szNameSpace [in]
+        Name space used by the logger to format the log entry string.
+        Use empty string to remove the name space.
+*/
+void DllIf::CLogger::setNameSpace( const char* i_szNameSpace )
+//------------------------------------------------------------------------------
+{
+    if( s_hndDllIf != NULL && s_pFctLogger_setNameSpace != NULL )
+    {
+        s_pFctLogger_setNameSpace(this, i_szNameSpace);
+    }
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the name space of the logger.
+
+    See CLogger::getNameSpace for more details.
+
+    @return Character string pointing to the name space.
+            The ownership is passed to the caller so it must be free by the caller.
+*/
+char* DllIf::CLogger::getNameSpace() const
+//------------------------------------------------------------------------------
+{
+    if( s_hndDllIf != NULL && s_pFctLogger_getNameSpace != NULL )
+    {
+        return s_pFctLogger_getNameSpace(this);
+    }
+    return NULL;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the class name of the logger.
+
+    See CLogger::setClassName for more details.
+
+    @param i_szClassName [in]
+        Class name used by the logger to format the log entry string.
+        Use empty string to remove the class name.
+*/
+void DllIf::CLogger::setClassName( const char* i_szClassName )
+//------------------------------------------------------------------------------
+{
+    if( s_hndDllIf != NULL && s_pFctLogger_setClassName != NULL )
+    {
+        s_pFctLogger_setClassName(this, i_szClassName);
+    }
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the class name of the logger.
+
+    See CLogger::getClassName for more details.
+
+    @return Character string pointing to the class name.
+            The ownership is passed to the caller so it must be free by the caller.
+*/
+char* DllIf::CLogger::getClassName() const
+//------------------------------------------------------------------------------
+{
+    if( s_hndDllIf != NULL && s_pFctLogger_getClassName != NULL )
+    {
+        return s_pFctLogger_getClassName(this);
+    }
+    return NULL;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the object name of the logger.
+
+    See CLogger::setObjectName for more details.
+
+    @param i_szObjectName [in]
+        Object name used by the logger to format the log entry string.
+        Use empty string to remove the object name.
+*/
+void DllIf::CLogger::setObjectName( const char* i_szObjectName )
+//------------------------------------------------------------------------------
+{
+    if( s_hndDllIf != NULL && s_pFctLogger_setObjectName != NULL )
+    {
+        s_pFctLogger_setObjectName(this, i_szObjectName);
+    }
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the object name of the logger.
+
+    See CLogger::getObjectName for more details.
+
+    @return Character string pointing to the object name.
+            The ownership is passed to the caller so it must be free by the caller.
+*/
+char* DllIf::CLogger::getObjectName() const
+//------------------------------------------------------------------------------
+{
+    if( s_hndDllIf != NULL && s_pFctLogger_getObjectName != NULL )
+    {
+        return s_pFctLogger_getObjectName(this);
+    }
+    return NULL;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the name of the logger.
+
+    The name of the logger corresponds to the path of the logger leave entry
+    in the index tree.
+
+    See CLogger::path for more details.
+
+    @return Character string pointing to the name.
+            The ownership is passed to the caller so it must be free by the caller.
+*/
+char* DllIf::CLogger::name() const
+//------------------------------------------------------------------------------
+{
+    if( s_hndDllIf != NULL && s_pFctLogger_name != NULL )
+    {
+        return s_pFctLogger_name(this);
+    }
+    return NULL;
 }
 
 
@@ -1188,68 +1184,7 @@ class CLogServer
 *******************************************************************************/
 
 /*==============================================================================
-public: // class methods to add, remove and modify admin objects
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-/*!
-    @param i_szNameSpace [in]
-           An empty string or nullptr is not a good choice.
-
-    @param i_szClassName [in]
-           An empty string or nullptr is not a good choice.
-
-    @param i_szObjName [in]
-           An empty string or nullptr is not a good choice.
-           For admin objects which are class members the class name may be passed
-           instead of an empty string.
-
-    @param i_bEnabledAsDefault [in]
-    @param i_iDefaultDetailLevel [in]
-*/
-DllIf::CLogger* DllIf::CLogServer::GetLogger(
-    const char*     i_szNameSpace,
-    const char*     i_szClassName,
-    const char*     i_szObjName,
-    EEnabled        i_bEnabledAsDefault,
-    ELogDetailLevel i_eDefaultDetailLevel )
-//------------------------------------------------------------------------------
-{
-    DllIf::CLogger* pLogger = NULL;
-
-    if( s_hndDllIf != NULL && s_pFctLogServer_GetLogger != NULL )
-    {
-        pLogger = s_pFctLogServer_GetLogger(
-            i_szNameSpace, i_szClassName, i_szObjName,
-            i_bEnabledAsDefault, i_eDefaultDetailLevel);
-    }
-    return pLogger;
-}
-
-//------------------------------------------------------------------------------
-void DllIf::CLogServer::RenameLogger(
-    CLogger**   io_ppLogger,
-    const char* i_szNewObjName )
-//------------------------------------------------------------------------------
-{
-    if( s_hndDllIf != NULL && s_pFctLogServer_RenameLogger != NULL )
-    {
-        s_pFctLogServer_RenameLogger(io_ppLogger, i_szNewObjName);
-    }
-}
-
-//------------------------------------------------------------------------------
-void DllIf::CLogServer::ReleaseLogger( CLogger* i_pLogger )
-//------------------------------------------------------------------------------
-{
-    if( s_hndDllIf != NULL && s_pFctLogServer_ReleaseLogger != NULL )
-    {
-        s_pFctLogServer_ReleaseLogger(i_pLogger);
-    }
-}
-
-/*==============================================================================
-public: // class method to save/recall admin objects file
+public: // class method to save/recall loggers file
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
@@ -1480,21 +1415,48 @@ char* DllIf::CLogServer::GetCurrentThreadName()
 }
 
 /*==============================================================================
-public: // instance methods
+public: // class methods to add, remove and modify loggers
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-bool DllIf::CLogServer::isActive() const
+/*!
+*/
+DllIf::CLogger* DllIf::CLogServer::GetLogger()
 //------------------------------------------------------------------------------
 {
-    bool bIsActive = false;
+    DllIf::CLogger* pLogger = NULL;
 
-    if( s_hndDllIf != NULL && s_pFctLogServer_isActive != NULL )
+    if( s_hndDllIf != NULL && s_pFctLogServer_GetLogger != NULL )
     {
-        bIsActive = s_pFctLogServer_isActive(this);
+        pLogger = s_pFctLogServer_GetLogger("", DllIf::EEnabledUndefined, DllIf::ELogDetailLevelUndefined);
     }
-    return bIsActive;
+    return pLogger;
 }
+
+//------------------------------------------------------------------------------
+/*!
+    @param i_szName [in]
+    @param i_bEnabledAsDefault [in]
+    @param i_iDefaultDetailLevel [in]
+*/
+DllIf::CLogger* DllIf::CLogServer::GetLogger(
+    const char*     i_szName,
+    EEnabled        i_bEnabledAsDefault,
+    ELogDetailLevel i_eDefaultDetailLevel )
+//------------------------------------------------------------------------------
+{
+    DllIf::CLogger* pLogger = NULL;
+
+    if( s_hndDllIf != NULL && s_pFctLogServer_GetLogger != NULL )
+    {
+        pLogger = s_pFctLogServer_GetLogger(i_szName, i_bEnabledAsDefault, i_eDefaultDetailLevel);
+    }
+    return pLogger;
+}
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
 
 //------------------------------------------------------------------------------
 void DllIf::CLogServer::setEnabled( bool i_bEnabled )
@@ -1502,7 +1464,7 @@ void DllIf::CLogServer::setEnabled( bool i_bEnabled )
 {
     if( s_hndDllIf != NULL && s_pFctLogServer_setEnabled != NULL )
     {
-        s_pFctLogServer_setEnabled(this, i_bEnabled);
+        s_pFctLogServer_setEnabled(i_bEnabled);
     }
 }
 
@@ -1514,9 +1476,85 @@ bool DllIf::CLogServer::isEnabled() const
 
     if( s_hndDllIf != NULL && s_pFctLogServer_isEnabled != NULL )
     {
-        bEnabled = s_pFctLogServer_isEnabled(this);
+        bEnabled = s_pFctLogServer_isEnabled();
     }
     return bEnabled;
+}
+
+//------------------------------------------------------------------------------
+bool DllIf::CLogServer::isActive() const
+//------------------------------------------------------------------------------
+{
+    bool bIsActive = false;
+
+    if( s_hndDllIf != NULL && s_pFctLogServer_isActive != NULL )
+    {
+        bIsActive = s_pFctLogServer_isActive();
+    }
+    return bIsActive;
+}
+
+//------------------------------------------------------------------------------
+/*!
+*/
+DllIf::CLogger* DllIf::CLogServer::getLogger()
+//------------------------------------------------------------------------------
+{
+    DllIf::CLogger* pLogger = NULL;
+
+    if( s_hndDllIf != NULL && s_pFctLogServer_GetLogger != NULL )
+    {
+        pLogger = s_pFctLogServer_GetLogger("", DllIf::EEnabledUndefined, DllIf::ELogDetailLevelUndefined);
+    }
+    return pLogger;
+}
+
+//------------------------------------------------------------------------------
+/*!
+    @param i_szName [in]
+    @param i_bEnabledAsDefault [in]
+    @param i_iDefaultDetailLevel [in]
+*/
+DllIf::CLogger* DllIf::CLogServer::getLogger(
+    const char*     i_szName,
+    EEnabled        i_bEnabledAsDefault,
+    ELogDetailLevel i_eDefaultDetailLevel )
+//------------------------------------------------------------------------------
+{
+    DllIf::CLogger* pLogger = NULL;
+
+    if( s_hndDllIf != NULL && s_pFctLogServer_GetLogger != NULL )
+    {
+        pLogger = s_pFctLogServer_GetLogger(i_szName, i_bEnabledAsDefault, i_eDefaultDetailLevel);
+    }
+    return pLogger;
+}
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void DllIf::CLogServer::log( ELogDetailLevel i_eFilterDetailLevel, const char* i_szLogEntry)
+//------------------------------------------------------------------------------
+{
+    if( s_hndDllIf != NULL && s_pFctLogServer_log != NULL )
+    {
+        s_pFctLogServer_log(nullptr, i_eFilterDetailLevel, i_szLogEntry);
+    }
+}
+
+//------------------------------------------------------------------------------
+void DllIf::CLogServer::log(
+    const CLogger*  i_pLogger,
+    ELogDetailLevel i_eFilterDetailLevel,
+    const char*     i_szLogEntry)
+//------------------------------------------------------------------------------
+{
+    if( s_hndDllIf != NULL && s_pFctLogServer_log != NULL )
+    {
+        s_pFctLogServer_log(i_pLogger, i_eFilterDetailLevel, i_szLogEntry);
+    }
 }
 
 /*==============================================================================
@@ -1529,7 +1567,7 @@ void DllIf::CLogServer::setNewLoggersEnabledAsDefault( bool i_bEnabled )
 {
     if( s_hndDllIf != NULL && s_pFctLogServer_setNewLoggersEnabledAsDefault != NULL )
     {
-        s_pFctLogServer_setNewLoggersEnabledAsDefault(this, i_bEnabled);
+        s_pFctLogServer_setNewLoggersEnabledAsDefault(i_bEnabled);
     }
 }
 
@@ -1541,7 +1579,7 @@ bool DllIf::CLogServer::areNewLoggersEnabledAsDefault() const
 
     if( s_hndDllIf != NULL && s_pFctLogServer_areNewLoggersEnabledAsDefault != NULL )
     {
-        bEnabled = s_pFctLogServer_areNewLoggersEnabledAsDefault(this);
+        bEnabled = s_pFctLogServer_areNewLoggersEnabledAsDefault();
     }
     return bEnabled;
 }
@@ -1552,7 +1590,7 @@ void DllIf::CLogServer::setNewLoggersDefaultDetailLevel( ELogDetailLevel i_eDeta
 {
     if( s_hndDllIf != NULL && s_pFctLogServer_setNewLoggersDefaultDetailLevel != NULL )
     {
-        s_pFctLogServer_setNewLoggersDefaultDetailLevel(this, i_eDetailLevel);
+        s_pFctLogServer_setNewLoggersDefaultDetailLevel(i_eDetailLevel);
     }
 }
 
@@ -1564,7 +1602,7 @@ DllIf::ELogDetailLevel DllIf::CLogServer::getNewLoggersDefaultDetailLevel() cons
 
     if( s_hndDllIf != NULL && s_pFctLogServer_getNewLoggersDefaultDetailLevel != NULL )
     {
-        eDetailLevel = s_pFctLogServer_getNewLoggersDefaultDetailLevel(this);
+        eDetailLevel = s_pFctLogServer_getNewLoggersDefaultDetailLevel();
     }
     return eDetailLevel;
 }
@@ -1581,7 +1619,7 @@ bool DllIf::CLogServer::recallLoggers()
 
     if( s_hndDllIf != NULL && s_pFctLogServer_recallLoggers != NULL )
     {
-        bOk = s_pFctLogServer_recallLoggers(this);
+        bOk = s_pFctLogServer_recallLoggers();
     }
     return bOk;
 }
@@ -1594,7 +1632,7 @@ bool DllIf::CLogServer::saveLoggers()
 
     if( s_hndDllIf != NULL && s_pFctLogServer_saveLoggers != NULL )
     {
-        bOk = s_pFctLogServer_saveLoggers(this);
+        bOk = s_pFctLogServer_saveLoggers();
     }
     return bOk;
 }
@@ -1609,7 +1647,7 @@ void DllIf::CLogServer::setUseLocalLogFile( bool i_bUse )
 {
     if( s_hndDllIf != NULL && s_pFctLogServer_setUseLocalLogFile != NULL )
     {
-        s_pFctLogServer_setUseLocalLogFile(this, i_bUse);
+        s_pFctLogServer_setUseLocalLogFile(i_bUse);
     }
 }
 
@@ -1621,7 +1659,7 @@ bool DllIf::CLogServer::isLocalLogFileUsed() const
 
     if( s_hndDllIf != NULL && s_pFctLogServer_isLocalLogFileUsed != NULL )
     {
-        bUsed = s_pFctLogServer_isLocalLogFileUsed(this);
+        bUsed = s_pFctLogServer_isLocalLogFileUsed();
     }
     return bUsed;
 }
@@ -1634,7 +1672,7 @@ bool DllIf::CLogServer::isLocalLogFileActive() const
 
     if( s_hndDllIf != NULL && s_pFctLogServer_isLocalLogFileActive != NULL )
     {
-        bUsed = s_pFctLogServer_isLocalLogFileActive(this);
+        bUsed = s_pFctLogServer_isLocalLogFileActive();
     }
     return bUsed;
 }
@@ -1645,7 +1683,7 @@ void DllIf::CLogServer::setLocalLogFileAutoSaveIntervalInMs( int i_iAutoSaveInte
 {
     if( s_hndDllIf != NULL && s_pFctLogServer_setLocalLogFileAutoSaveIntervalInMs != NULL )
     {
-        s_pFctLogServer_setLocalLogFileAutoSaveIntervalInMs(this, i_iAutoSaveInterval_ms);
+        s_pFctLogServer_setLocalLogFileAutoSaveIntervalInMs(i_iAutoSaveInterval_ms);
     }
 }
 
@@ -1657,7 +1695,7 @@ int DllIf::CLogServer::getLocalLogFileAutoSaveIntervalInMs() const
 
     if( s_hndDllIf != NULL && s_pFctLogServer_getLocalLogFileAutoSaveIntervalInMs != NULL )
     {
-        iAutoSaveInterval_ms = s_pFctLogServer_getLocalLogFileAutoSaveIntervalInMs(this);
+        iAutoSaveInterval_ms = s_pFctLogServer_getLocalLogFileAutoSaveIntervalInMs();
     }
     return iAutoSaveInterval_ms;
 }
@@ -1668,7 +1706,7 @@ void DllIf::CLogServer::setLocalLogFileCloseFileAfterEachWrite( bool i_bCloseFil
 {
     if( s_hndDllIf != NULL && s_pFctLogServer_setLocalLogFileCloseFileAfterEachWrite != NULL )
     {
-        s_pFctLogServer_setLocalLogFileCloseFileAfterEachWrite(this, i_bCloseFile);
+        s_pFctLogServer_setLocalLogFileCloseFileAfterEachWrite(i_bCloseFile);
     }
 }
 
@@ -1680,7 +1718,7 @@ bool DllIf::CLogServer::getLocalLogFileCloseFileAfterEachWrite() const
 
     if( s_hndDllIf != NULL && s_pFctLogServer_getLocalLogFileCloseFileAfterEachWrite != NULL )
     {
-        bClose = s_pFctLogServer_getLocalLogFileCloseFileAfterEachWrite(this);
+        bClose = s_pFctLogServer_getLocalLogFileCloseFileAfterEachWrite();
     }
     return bClose;
 }
@@ -1695,7 +1733,7 @@ void DllIf::CLogServer::setLocalLogFileSubFileCountMax( int i_iCountMax )
 {
     if( s_hndDllIf != NULL && s_pFctLogServer_setLocalLogFileSubFileCountMax != NULL )
     {
-        s_pFctLogServer_setLocalLogFileSubFileCountMax(this, i_iCountMax);
+        s_pFctLogServer_setLocalLogFileSubFileCountMax(i_iCountMax);
     }
 }
 
@@ -1707,7 +1745,7 @@ int DllIf::CLogServer::getLocalLogFileSubFileCountMax() const
 
     if( s_hndDllIf != NULL && s_pFctLogServer_getLocalLogFileSubFileCountMax != NULL )
     {
-        iCountMax = s_pFctLogServer_getLocalLogFileSubFileCountMax(this);
+        iCountMax = s_pFctLogServer_getLocalLogFileSubFileCountMax();
     }
     return iCountMax;
 }
@@ -1718,7 +1756,7 @@ void DllIf::CLogServer::setLocalLogFileSubFileLineCountMax( int i_iCountMax )
 {
     if( s_hndDllIf != NULL && s_pFctLogServer_setLocalLogFileSubFileLineCountMax != NULL )
     {
-        s_pFctLogServer_setLocalLogFileSubFileLineCountMax(this, i_iCountMax);
+        s_pFctLogServer_setLocalLogFileSubFileLineCountMax(i_iCountMax);
     }
 }
 
@@ -1730,7 +1768,7 @@ int DllIf::CLogServer::getLocalLogFileSubFileLineCountMax() const
 
     if( s_hndDllIf != NULL && s_pFctLogServer_getLocalLogFileSubFileLineCountMax != NULL )
     {
-        iCountMax = s_pFctLogServer_getLocalLogFileSubFileLineCountMax(this);
+        iCountMax = s_pFctLogServer_getLocalLogFileSubFileLineCountMax();
     }
     return iCountMax;
 }
@@ -1745,7 +1783,7 @@ void DllIf::CLogServer::setUseIpcServer( bool i_bUse )
 {
     if( s_hndDllIf != NULL && s_pFctLogServer_setUseIpcServer != NULL )
     {
-        s_pFctLogServer_setUseIpcServer(this, i_bUse);
+        s_pFctLogServer_setUseIpcServer(i_bUse);
     }
 }
 
@@ -1757,7 +1795,7 @@ bool DllIf::CLogServer::isIpcServerUsed() const
 
     if( s_hndDllIf != NULL && s_pFctLogServer_isIpcServerUsed != NULL )
     {
-        bUsed = s_pFctLogServer_isIpcServerUsed(this);
+        bUsed = s_pFctLogServer_isIpcServerUsed();
     }
     return bUsed;
 }
@@ -1778,7 +1816,7 @@ void DllIf::CLogServer::setCacheLogDataIfNotConnected( bool i_bCacheData )
 {
     if( s_hndDllIf != NULL && s_pFctLogServer_setCacheLogDataIfNotConnected != NULL )
     {
-        s_pFctLogServer_setCacheLogDataIfNotConnected(this, i_bCacheData);
+        s_pFctLogServer_setCacheLogDataIfNotConnected(i_bCacheData);
     }
 }
 
@@ -1790,7 +1828,7 @@ bool DllIf::CLogServer::getCacheLogDataIfNotConnected() const
 
     if( s_hndDllIf != NULL && s_pFctLogServer_getCacheLogDataIfNotConnected != NULL )
     {
-        bCacheData = s_pFctLogServer_getCacheLogDataIfNotConnected(this);
+        bCacheData = s_pFctLogServer_getCacheLogDataIfNotConnected();
     }
     return bCacheData;
 }
@@ -1807,7 +1845,7 @@ void DllIf::CLogServer::setCacheLogDataMaxArrLen( int i_iMaxArrLen )
 {
     if( s_hndDllIf != NULL && s_pFctLogServer_setCacheLogDataMaxArrLen != NULL )
     {
-        s_pFctLogServer_setCacheLogDataMaxArrLen(this, i_iMaxArrLen);
+        s_pFctLogServer_setCacheLogDataMaxArrLen(i_iMaxArrLen);
     }
 }
 
@@ -1819,7 +1857,7 @@ int DllIf::CLogServer::getCacheLogDataMaxArrLen() const
 
     if( s_hndDllIf != NULL && s_pFctLogServer_getCacheLogDataMaxArrLen != NULL )
     {
-        iMaxArrLen = s_pFctLogServer_getCacheLogDataMaxArrLen(this);
+        iMaxArrLen = s_pFctLogServer_getCacheLogDataMaxArrLen();
     }
     return iMaxArrLen;
 }
@@ -1836,7 +1874,7 @@ bool DllIf::CLogServer::setLogSettings( const DllIf::SLogServerSettings& i_setti
 
     if( s_hndDllIf != NULL && s_pFctLogServer_setLogSettings != NULL )
     {
-        bOk = s_pFctLogServer_setLogSettings(this, i_settings);
+        bOk = s_pFctLogServer_setLogSettings(i_settings);
     }
     return bOk;
 }
@@ -1851,7 +1889,7 @@ DllIf::SLogServerSettings DllIf::CLogServer::getLogSettings() const
 
     if( s_hndDllIf != NULL && s_pFctLogServer_getLogSettings != NULL )
     {
-        settings = s_pFctLogServer_getLogSettings(this);
+        settings = s_pFctLogServer_getLogSettings();
     }
     return settings;
 }
@@ -1866,44 +1904,7 @@ void DllIf::CLogServer::clearLocalLogFile()
 {
     if( s_hndDllIf != NULL && s_pFctLogServer_clearLocalLogFile != NULL )
     {
-        s_pFctLogServer_clearLocalLogFile(this);
-    }
-}
-
-/*==============================================================================
-public: // instance methods
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-void DllIf::CLogServer::log(
-    const CLogger* i_pLogger,
-    const char*    i_szMethod,
-    const char*    i_szAddInfo )
-//------------------------------------------------------------------------------
-{
-    if( i_pLogger != NULL && s_pFctLogger_isActive != NULL && s_pFctLogger_log != NULL )
-    {
-        if( s_pFctLogger_isActive(i_pLogger, ELogDetailLevelFatal) )
-        {
-            s_pFctLogger_log(i_pLogger, "", i_szMethod, i_szAddInfo);
-        }
-    }
-}
-
-//------------------------------------------------------------------------------
-void DllIf::CLogServer::log(
-    const CLogger* i_pLogger,
-    const char*    i_szObjName,
-    const char*    i_szMethod,
-    const char*    i_szAddInfo )
-//------------------------------------------------------------------------------
-{
-    if( i_pLogger != NULL && s_pFctLogger_isActive != NULL && s_pFctLogger_log != NULL )
-    {
-        if( s_pFctLogger_isActive(i_pLogger, ELogDetailLevelFatal) )
-        {
-            s_pFctLogger_log(i_pLogger, i_szObjName, i_szMethod, i_szAddInfo);
-        }
+        s_pFctLogServer_clearLocalLogFile();
     }
 }
 
@@ -2107,4 +2108,4 @@ unsigned short DllIf::CIpcLogServer::getPort() const
     return uPort;
 }
 
-#endif // #ifdef USE_ZS_IPCTRACE_DLL_IF
+#endif // #ifdef USE_ZS_IPCLOG_DLL_IF

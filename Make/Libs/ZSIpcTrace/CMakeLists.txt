@@ -42,7 +42,6 @@ list(APPEND _Headers
 
 list(APPEND _Sources
     ${_SourcesPath}/${PROJECT_NAME}/ZSIpcTrcClient.cpp
-    ${_SourcesPath}/${PROJECT_NAME}/ZSIpcTrcDllIf.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSIpcTrcDllIfServerThread.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSIpcTrcDllMain.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSIpcTrcServer.cpp

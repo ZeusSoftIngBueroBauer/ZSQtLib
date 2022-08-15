@@ -211,6 +211,8 @@ public: // instance methods
     int getSubFileLineCountMax() const;
 public: // instance methods
     void addEntry( const QString& i_strEntry );
+public: // overridables of base class QObject
+    virtual bool event( QEvent* i_pMsg );
 protected: // instance methods
     void backup();
 protected: // instance methods

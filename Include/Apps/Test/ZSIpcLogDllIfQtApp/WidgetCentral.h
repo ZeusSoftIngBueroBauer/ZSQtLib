@@ -24,8 +24,8 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#ifndef ZSApps_TestIpcTraceDllIfQtApp_WidgetCentral_h
-#define ZSApps_TestIpcTraceDllIfQtApp_WidgetCentral_h
+#ifndef ZSApps_TestIpcLogDllIfQtApp_WidgetCentral_h
+#define ZSApps_TestIpcLogDllIfQtApp_WidgetCentral_h
 
 #include "ZSSys/ZSSysDllMain.h"
 
@@ -52,20 +52,21 @@ namespace Apps
 {
 namespace Test
 {
-namespace IpcTraceDllIfQtApp
+namespace IpcLogDllIfQtApp
 {
+
 //******************************************************************************
 class CWidgetCentral : public QWidget
 //******************************************************************************
 {
 public: // class methods
-    static CWidgetCentral* GetInstance() { return s_pThis; } // singleton class
+    static CWidgetCentral* GetInstance(); // singleton class
 public: // ctors and dtor
     CWidgetCentral(
         QWidget*        i_pWdgtParent = nullptr,
-        Qt::WindowFlags i_wflags = Qt::WindowFlags());
+        Qt::WindowFlags i_wflags = Qt::WindowFlags() );
     ~CWidgetCentral();
-protected: // class members
+private: // class members
     static CWidgetCentral* s_pThis; // singleton class
 protected: // instance members
     QVBoxLayout*                          m_pLyt;
@@ -73,7 +74,7 @@ protected: // instance members
 
 }; // class CWidgetCentral
 
-} // namespace IpcTraceDllIfQtApp
+} // namespace IpcLogDllIfQtApp
 
 } // namespace Test
 
@@ -81,4 +82,4 @@ protected: // instance members
 
 } // namespace ZS
 
-#endif // #ifndef ZSApps_TestIpcTraceDllIfQtApp_WidgetCentral_h
+#endif // #ifndef ZSApps_TestIpcLogDllIfQtApp_WidgetCentral_h

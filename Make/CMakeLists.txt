@@ -410,6 +410,7 @@ add_subdirectory(Apps/Products/ZSTrcMthClient)
 
 #add_subdirectory(Apps/Test/ZSIpc) got to be revised
 add_subdirectory(Apps/Test/ZSIpcLog)
+add_subdirectory(Apps/Test/ZSIpcLogDllIfQtApp)
 add_subdirectory(Apps/Test/ZSIpcTrace)
 add_subdirectory(Apps/Test/ZSIpcTraceDllIfQtApp)
 if(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")

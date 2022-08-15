@@ -24,8 +24,6 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#include <QtCore/qglobal.h>
-
 #include "App.h"
 
 #include "ZSSys/ZSSysVersion.h"

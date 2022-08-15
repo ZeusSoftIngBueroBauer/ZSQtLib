@@ -31,7 +31,7 @@ may result in using the software modules.
 #include "ZSSys/ZSSysMemLeakDump.h"
 
 
-using namespace ZS::Apps::Test::IpcTraceDllIfQtApp;
+using namespace ZS::Apps::Test::IpcLogDllIfQtApp;
 
 
 /*******************************************************************************
@@ -49,23 +49,23 @@ int main( int argc, char* argv[] )
         /* argv                  */ argv,
         /* strOrganizationName   */ "ZeusSoft",
         /* strOrganizationDomain */ "ZeusSoft.de",
-        /* strAppName            */ "ZSAppTestIpcTraceDllIfQtApp",
-        /* strAppNameWindowTitle */ "ZSApp-Test-TestIpcTraceDllIfQtApp (" + ZS::System::c_strSysVersionNr + ")" );
+        /* strAppName            */ "ZSAppTestIpcLogDllIfQtApp",
+        /* strAppNameWindowTitle */ "ZSApp-Test-IpcLogDllIfQtApp (" + ZS::System::c_strSysVersionNr + ")" );
 
     iAppResult = pApp->exec();
 
-    delete pApp;
-    pApp = nullptr;
-
-    #ifdef _WINDOWS
-    #ifdef _DEBUG
     try
     {
-        _CrtDoForAllClientObjects( ZS::dumpClientHook, nullptr );
+        delete pApp;
     }
     catch(...)
     {
     }
+    pApp = nullptr;
+
+    #ifdef _WINDOWS
+    #ifdef _DEBUG
+    _CrtDoForAllClientObjects( ZS::dumpClientHook, nullptr );
     #endif
     #endif
 
