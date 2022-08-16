@@ -27,14 +27,13 @@ may result in using the software modules.
 #include "MyThread.h"
 
 #include "ZSSys/ZSSysErrLog.h"
-#include "ZSSys/ZSSysLogger.h"
-#include "ZSSys/ZSSysLogServer.h"
 
 #include <QtCore/qwaitcondition.h>
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
 using namespace ZS::System;
+using namespace ZS::Log;
 using namespace ZS::Apps::Test::IpcLogDllIfQtApp;
 
 
@@ -48,9 +47,9 @@ public: // ctors and dtor
 
 //------------------------------------------------------------------------------
 CMyThread::CMyThread(
-    const QString&              i_strLoggerName,
-    ZS::System::ELogDetailLevel i_logLevel,
-    const QString&              i_strLogEntry ) :
+    const QString&         i_strLoggerName,
+    DllIf::ELogDetailLevel i_logLevel,
+    const QString&         i_strLogEntry ) :
 //------------------------------------------------------------------------------
     QThread(),
     m_strLoggerName(i_strLoggerName),
@@ -105,7 +104,7 @@ CMyThread::~CMyThread()
     }
 
     //m_strLoggerName;
-    m_logLevel = static_cast<ELogDetailLevel>(0);
+    m_logLevel = static_cast<DllIf::ELogDetailLevel>(0);
     //m_strLogEntry;
     m_pMtxWaitWorkDone = nullptr;
     m_pWaitConditionWorkDone = nullptr;
@@ -140,9 +139,9 @@ public: // overridables of base class QThread
 void CMyThread::run()
 //------------------------------------------------------------------------------
 {
-    CLogger* pLogger = CLogServer::GetLogger(m_strLoggerName);
+    DllIf::CLogger* pLogger = DllIf::CLogServer::GetLogger(m_strLoggerName.toStdString().c_str());
 
-    pLogger->log(m_logLevel, m_strLogEntry);
+    pLogger->log(m_logLevel, m_strLogEntry.toStdString().c_str());
 
     m_bWorkDone = true;
 }

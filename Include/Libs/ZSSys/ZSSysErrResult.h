@@ -439,4 +439,4 @@ protected: // instance members
 
 } // namespace ZS
 
-#endif // SMSysErrResult_h
+#endif // ZSSys_ErrResult_h

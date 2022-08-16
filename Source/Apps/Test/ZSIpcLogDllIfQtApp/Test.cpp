@@ -45,7 +45,7 @@ may result in using the software modules.
 
 
 using namespace ZS::System;
-using namespace ZS::Log::DllIf;
+using namespace ZS::Log;
 using namespace ZS::Test::GUI;
 using namespace ZS::Apps::Test::IpcLogDllIfQtApp;
 
@@ -170,7 +170,7 @@ CTest::CTest() :
 
     // Test Step Group - ModifyLoggers
     //--------------------------------
-#if 0
+
     ZS::Test::CTestStepGroup* pTestGroupModifyLoggers = new ZS::Test::CTestStepGroup(
         /* pTest           */ this,
         /* strName         */ "Group " + QString::number(++idxGroup) + " ModifyLoggers",
@@ -1035,7 +1035,7 @@ CTest::CTest() :
         /* strOperation    */ "Logger::" + strLoggerDatabaseAccesses + ".setLogLevel(None)",
         /* pTSGrpParent    */ pTestGroupModifyLoggersSetEverything,
         /* szDoTestStepFct */ SLOT(doTestStepModifyLogger(ZS::Test::CTestStep*)) );
-#endif // #if 0
+
     // Test Step Group - ModifyLogServer
     //----------------------------------
 #if 0
@@ -1264,11 +1264,11 @@ CTest::~CTest()
     {
     }
 
-    CIpcLogServer* pLogServer = CIpcLogServer::GetInstance();
+    DllIf::CIpcLogServer* pLogServer = DllIf::CIpcLogServer::GetInstance();
 
     if( pLogServer != nullptr )
     {
-        CIpcLogServer::ReleaseInstance(pLogServer);
+        DllIf::CIpcLogServer::ReleaseInstance(pLogServer);
     }
 
     m_pDlgTestStep = nullptr;
@@ -1304,12 +1304,12 @@ void CTest::doTestStepLoadDll( ZS::Test::CTestStep* i_pTestStep )
     //----------
 
     #ifdef _DEBUG
-    EBuildConfiguration buildConfiguration = EBuildConfigurationDebug;
+    DllIf::EBuildConfiguration buildConfiguration = DllIf::EBuildConfigurationDebug;
     #else
-    EBuildConfiguration buildConfiguration = EBuildConfigurationRelease;
+    DllIf::EBuildConfiguration buildConfiguration = DllIf::EBuildConfigurationRelease;
     #endif
 
-    bool bOk = loadDll(buildConfiguration, QT_VERSION_MAJOR);
+    bool bOk = DllIf::loadDll(buildConfiguration, QT_VERSION_MAJOR);
 
     // Result Values
     //---------------
@@ -1343,7 +1343,7 @@ void CTest::doTestStepReleaseDll( ZS::Test::CTestStep* i_pTestStep )
     // Test Step
     //----------
 
-    bool bOk = releaseDll();
+    bool bOk = DllIf::releaseDll();
 
     // Result Values
     //---------------
@@ -1377,7 +1377,7 @@ void CTest::doTestStepLogServerCreateInstance( ZS::Test::CTestStep* i_pTestStep 
     // Test Step
     //----------
 
-    CIpcLogServer* pLogServer = CIpcLogServer::CreateInstance();
+    DllIf::CIpcLogServer* pLogServer = DllIf::CIpcLogServer::CreateInstance();
 
     // Result Values
     //---------------
@@ -1412,9 +1412,9 @@ void CTest::doTestStepLogServerReleaseInstance( ZS::Test::CTestStep* i_pTestStep
     // Test Step
     //----------
 
-    CIpcLogServer* pLogServer = CIpcLogServer::GetInstance();
-    CIpcLogServer::ReleaseInstance(pLogServer);
-    pLogServer = CIpcLogServer::GetInstance();
+    DllIf::CIpcLogServer* pLogServer = DllIf::CIpcLogServer::GetInstance();
+    DllIf::CIpcLogServer::ReleaseInstance(pLogServer);
+    pLogServer = DllIf::CIpcLogServer::GetInstance();
 
     // Result Values
     //---------------
@@ -1451,11 +1451,11 @@ void CTest::doTestStepLogServerStartup( ZS::Test::CTestStep* i_pTestStep )
 
     bool bOk = false;
 
-    CIpcLogServer* pLogServer = CIpcLogServer::GetInstance();
+    DllIf::CIpcLogServer* pLogServer = DllIf::CIpcLogServer::GetInstance();
 
     if( pLogServer != nullptr )
     {
-        SLogServerSettings_release(m_logSettings);
+        DllIf::SLogServerSettings_release(m_logSettings);
         m_logSettings = pLogServer->getLogSettings();
         m_logSettings.m_bLocalLogFileCloseFileAfterEachWrite = true;
 
@@ -1502,7 +1502,7 @@ void CTest::doTestStepLogServerShutdown( ZS::Test::CTestStep* i_pTestStep )
     // Test Step
     //----------
 
-    CIpcLogServer* pLogServer = CIpcLogServer::GetInstance();
+    DllIf::CIpcLogServer* pLogServer = DllIf::CIpcLogServer::GetInstance();
 
     if( pLogServer != nullptr )
     {
@@ -1543,7 +1543,7 @@ void CTest::doTestStepLogClientConnect( ZS::Test::CTestStep* i_pTestStep )
     delete m_pDlgTestStep;
     m_pDlgTestStep = nullptr;
 
-    CIpcLogServer* pLogServer = CIpcLogServer::GetInstance();
+    DllIf::CIpcLogServer* pLogServer = DllIf::CIpcLogServer::GetInstance();
 
     // Check if really connected and correct test result if necessary.
     if( i_pTestStep->getTestResult() == ZS::Test::ETestResult::TestPassed )
@@ -1572,7 +1572,7 @@ void CTest::doTestStepLogClientDisconnect( ZS::Test::CTestStep* i_pTestStep )
     delete m_pDlgTestStep;
     m_pDlgTestStep = nullptr;
 
-    CIpcLogServer* pLogServer = CIpcLogServer::GetInstance();
+    DllIf::CIpcLogServer* pLogServer = DllIf::CIpcLogServer::GetInstance();
 
     // Check if really disconnected and correct test result if necessary.
     if( i_pTestStep->getTestResult() == ZS::Test::ETestResult::TestPassed )
@@ -1596,7 +1596,7 @@ void CTest::doTestStepLogServerGetLogger( ZS::Test::CTestStep* i_pTestStep )
 
     QString strTestGroupPath = pTestGroup == nullptr ? "" : pTestGroup->path();
 
-    CIpcLogServer* pLogServer = CIpcLogServer::GetInstance();
+    DllIf::CIpcLogServer* pLogServer = DllIf::CIpcLogServer::GetInstance();
 
     if( pLogServer == nullptr )
     {
@@ -1618,72 +1618,28 @@ void CTest::doTestStepLogServerGetLogger( ZS::Test::CTestStep* i_pTestStep )
 
     splitMethodCallOperation(strOperation, strClassName, strSubClassName, strObjName, strMth, strlstInArgs, strMthRet);
 
-    CLogger* pLoggerServer = nullptr;
+    DllIf::CLogger* pLogger = nullptr;
     QString  strLoggerName;
 
     if( strMth.compare("getLogger", Qt::CaseInsensitive) == 0 )
     {
         if( strlstInArgs.size() == 0 )
         {
-            pLoggerServer = pLogServer->getLogger();
+            pLogger = pLogServer->getLogger();
         }
         else if( strlstInArgs.size() == 1 )
         {
             strLoggerName = strlstInArgs[0].replace("-", "::");
-            pLoggerServer = CLogServer::GetLogger(strLoggerName.toStdString().c_str());
+            pLogger = DllIf::CLogServer::GetLogger(strLoggerName.toStdString().c_str());
         }
     }
 
     // Expected Values
     //----------------
 
-    if( pLoggerServer != nullptr && i_pTestStep->getExpectedValues().isEmpty() )
+    if( pLogger != nullptr && i_pTestStep->getExpectedValues().isEmpty() )
     {
-        QStringList strlstExpectedValues;
-
-        char* szName = pLoggerServer->name();
-        strlstExpectedValues += "Name: " + QString(szName);
-        delete szName; szName = nullptr;
-
-        if( strLoggerName == "NewLoggerDisabledAsDefault" ) {
-            strlstExpectedValues += "Enabled: " + CEnumEnabled(EEnabledNo).toString();
-        }
-        else if( strLoggerName == "NewLoggerDisabledAsDefault" ) {
-            strlstExpectedValues += "Enabled: " + CEnumEnabled(EEnabledYes).toString();
-        }
-        else {
-            strlstExpectedValues += "Enabled: " + CEnumEnabled(pLoggerServer->isEnabled()).toString();
-        }
-        if( strLoggerName == "NewLoggerDefaultDetailLevelDebug" ) {
-            strlstExpectedValues += "LogLevel: " + CEnumLogDetailLevel(ELogDetailLevelDebug).toString();
-        }
-        else if( strLoggerName == "NewLoggerDefaultDetailLevelNone" ) {
-            strlstExpectedValues += "LogLevel: " + CEnumLogDetailLevel(ELogDetailLevelNone).toString();
-        }
-        else {
-            strlstExpectedValues += "LogLevel: " + CEnumLogDetailLevel(pLoggerServer->getLogLevel()).toString();
-        }
-
-        szName = pLoggerServer->getDataFilter();
-        strlstExpectedValues += "DataFilter: " + QString(szName);
-        delete szName; szName = nullptr;
-
-        strlstExpectedValues += "AddThreadName: " + bool2Str(pLoggerServer->addThreadName());
-        strlstExpectedValues += "AddDateTime: " + bool2Str(pLoggerServer->addDateTime());
-        strlstExpectedValues += "AddSystemTime: " + bool2Str(pLoggerServer->addSystemTime());
-
-        szName = pLoggerServer->getNameSpace();
-        strlstExpectedValues += "NameSpace: " + QString(szName);
-        delete szName; szName = nullptr;
-
-        szName = pLoggerServer->getClassName();
-        strlstExpectedValues += "ClassName: " + QString(szName);
-        delete szName; szName = nullptr;
-
-        szName = pLoggerServer->getObjectName();
-        strlstExpectedValues += "ObjName: " + QString(szName);
-        delete szName; szName = nullptr;
-
+        QStringList strlstExpectedValues = getExpectedValues(pLogger);
         i_pTestStep->setExpectedValues(strlstExpectedValues);
     }
 
@@ -1707,7 +1663,7 @@ void CTest::doTestStepModifyLogger( ZS::Test::CTestStep* i_pTestStep )
 
     QString strTestGroupPath = pTestGroup == nullptr ? "" : pTestGroup->path();
 
-    CIpcLogServer* pLogServer = CIpcLogServer::GetInstance();
+    DllIf::CIpcLogServer* pLogServer = DllIf::CIpcLogServer::GetInstance();
 
     if( pLogServer == nullptr )
     {
@@ -1729,10 +1685,7 @@ void CTest::doTestStepModifyLogger( ZS::Test::CTestStep* i_pTestStep )
 
     splitMethodCallOperation(strOperation, strClassName, strSubClassName, strObjName, strMth, strlstInArgs, strMthRet);
 
-#if 0
-    //QString strLoggerName = strObjName.replace("-", "::");
-    CLogger* pLoggerServer = CLogServer::GetLogger(strObjName);
-    CLogger* pLoggerClient = nullptr;
+    DllIf::CLogger* pLogger = DllIf::CLogServer::GetLogger(strObjName.toStdString().c_str());
 
     if( strMth == "setLogLevel" ) {
         if( strlstInArgs.size() != 1 ) {
@@ -1741,7 +1694,7 @@ void CTest::doTestStepModifyLogger( ZS::Test::CTestStep* i_pTestStep )
         else {
             try {
                 CEnumLogDetailLevel eDetailLevel = strlstInArgs[0];
-                pLoggerServer->setLogLevel(eDetailLevel.enumerator());
+                pLogger->setLogLevel(static_cast<DllIf::ELogDetailLevel>(eDetailLevel.enumerator()));
             }
             catch(CException&) {
                 i_pTestStep->setExpectedValue("Invalid test step operation");
@@ -1755,7 +1708,7 @@ void CTest::doTestStepModifyLogger( ZS::Test::CTestStep* i_pTestStep )
         else {
             try {
                 CEnumEnabled eEnabled = strlstInArgs[0];
-                pLoggerServer->setEnabled(eEnabled.enumerator());
+                pLogger->setEnabled(eEnabled == EEnabled::Yes ? true : false);
             }
             catch(CException&) {
                 i_pTestStep->setExpectedValue("Invalid test step operation");
@@ -1764,10 +1717,10 @@ void CTest::doTestStepModifyLogger( ZS::Test::CTestStep* i_pTestStep )
     }
     else if( strMth == "setDataFilter" ) {
         if( strlstInArgs.size() == 0 ) {
-            pLoggerServer->setDataFilter();
+            pLogger->setDataFilter();
         }
         else if( strlstInArgs.size() == 1 ) {
-            pLoggerServer->setDataFilter(strlstInArgs[0]);
+            pLogger->setDataFilter(strlstInArgs[0].toStdString().c_str());
         }
         else {
             i_pTestStep->setExpectedValue("Invalid test step operation");
@@ -1776,7 +1729,7 @@ void CTest::doTestStepModifyLogger( ZS::Test::CTestStep* i_pTestStep )
     else if( strMth == "setAddThreadName" ) {
         if( strlstInArgs.size() == 1 ) {
             bool bAdd = str2Bool(strlstInArgs[0]);
-            pLoggerServer->setAddThreadName(bAdd);
+            pLogger->setAddThreadName(bAdd);
         }
         else {
             i_pTestStep->setExpectedValue("Invalid test step operation");
@@ -1785,7 +1738,7 @@ void CTest::doTestStepModifyLogger( ZS::Test::CTestStep* i_pTestStep )
     else if( strMth == "setAddDateTime" ) {
         if( strlstInArgs.size() == 1 ) {
             bool bAdd = str2Bool(strlstInArgs[0]);
-            pLoggerServer->setAddDateTime(bAdd);
+            pLogger->setAddDateTime(bAdd);
         }
         else {
             i_pTestStep->setExpectedValue("Invalid test step operation");
@@ -1794,7 +1747,7 @@ void CTest::doTestStepModifyLogger( ZS::Test::CTestStep* i_pTestStep )
     else if( strMth == "setAddSystemTime" ) {
         if( strlstInArgs.size() == 1 ) {
             bool bAdd = str2Bool(strlstInArgs[0]);
-            pLoggerServer->setAddSystemTime(bAdd);
+            pLogger->setAddSystemTime(bAdd);
         }
         else {
             i_pTestStep->setExpectedValue("Invalid test step operation");
@@ -1802,10 +1755,10 @@ void CTest::doTestStepModifyLogger( ZS::Test::CTestStep* i_pTestStep )
     }
     else if( strMth == "setNameSpace" ) {
         if( strlstInArgs.size() == 0 ) {
-            pLoggerServer->setNameSpace();
+            pLogger->setNameSpace();
         }
         else if( strlstInArgs.size() == 1 ) {
-            pLoggerServer->setNameSpace(strlstInArgs[0]);
+            pLogger->setNameSpace(strlstInArgs[0].toStdString().c_str());
         }
         else {
             i_pTestStep->setExpectedValue("Invalid test step operation");
@@ -1813,10 +1766,10 @@ void CTest::doTestStepModifyLogger( ZS::Test::CTestStep* i_pTestStep )
     }
     else if( strMth == "setClassName" ) {
         if( strlstInArgs.size() == 0 ) {
-            pLoggerServer->setClassName();
+            pLogger->setClassName();
         }
         else if( strlstInArgs.size() == 1 ) {
-            pLoggerServer->setClassName(strlstInArgs[0]);
+            pLogger->setClassName(strlstInArgs[0].toStdString().c_str());
         }
         else {
             i_pTestStep->setExpectedValue("Invalid test step operation");
@@ -1824,10 +1777,10 @@ void CTest::doTestStepModifyLogger( ZS::Test::CTestStep* i_pTestStep )
     }
     else if( strMth == "setObjectName" ) {
         if( strlstInArgs.size() == 0 ) {
-            pLoggerServer->setObjectName();
+            pLogger->setObjectName();
         }
         else if( strlstInArgs.size() == 1 ) {
-            pLoggerServer->setObjectName(strlstInArgs[0]);
+            pLogger->setObjectName(strlstInArgs[0].toStdString().c_str());
         }
         else {
             i_pTestStep->setExpectedValue("Invalid test step operation");
@@ -1837,53 +1790,22 @@ void CTest::doTestStepModifyLogger( ZS::Test::CTestStep* i_pTestStep )
     // Expected Values
     //----------------
 
-    if( pLogServer != nullptr && i_pTestStep->getExpectedValues().isEmpty() )
+    if( pLogger != nullptr && i_pTestStep->getExpectedValues().isEmpty() )
     {
-        CIdxTreeLoggers* pIdxTreeServer = pLogServer->GetLoggersIdxTree();
-        QVector<CIdxTreeEntry*> arpTreeEntriesServer = pIdxTreeServer->treeEntriesVec();
-
-        QString     strExpectedValue;
-        QStringList strlstExpectedValues;
-
-        for( auto& pTreeEntry : arpTreeEntriesServer )
-        {
-            if( pTreeEntry != nullptr && pTreeEntry->entryType() == EIdxTreeEntryType::Leave)
-            {
-                CLogger* pLogger = dynamic_cast<CLogger*>(pTreeEntry);
-
-                strExpectedValue = pLogger->keyInTree() + ": ";
-                strExpectedValue += "Enabled: " + CEnumEnabled(pLogger->getEnabled()).toString();
-                strExpectedValue += ", LogLevel: " + CEnumLogDetailLevel(pLogger->getLogLevel()).toString();
-                strExpectedValue += ", DataFilter: " + pLogger->getDataFilter();
-                strExpectedValue += ", AddThreadName: " + bool2Str(pLogger->addThreadName());
-                strExpectedValue += ", AddDateTime: " + bool2Str(pLogger->addDateTime());
-                strExpectedValue += ", AddSystemTime: " + bool2Str(pLogger->addSystemTime());
-                strExpectedValue += ", NameSpace: " + pLogger->getNameSpace();
-                strExpectedValue += ", ClassName: " + pLogger->getClassName();
-                strExpectedValue += ", ObjName: " + pLogger->getObjectName();
-                strlstExpectedValues.append(strExpectedValue);
-            }
-        }
+        QStringList strlstExpectedValues = getExpectedValues(pLogger);
         i_pTestStep->setExpectedValues(strlstExpectedValues);
     }
 
     // Result Values
     //--------------
 
-    if( pLogServer != nullptr && pLogClient != nullptr )
-    {
-        m_pTmrTestStepTimeout->start(1000);
+    i_pTestStep->setInstruction("Check whether settings of logger in client have been changed as expected.");
 
-        if( !QObject::connect(
-            /* pObjSender   */ pLogClient,
-            /* szSignal     */ SIGNAL(loggerChanged(QObject*, const QString&)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onLogClientLoggerChanged(QObject*, const QString&)) ) )
-        {
-            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-        }
-    }
-#endif
+    m_pDlgTestStep = new CDlgTestStep(i_pTestStep);
+    m_pDlgTestStep->exec();
+    delete m_pDlgTestStep;
+    m_pDlgTestStep = nullptr;
+
 } // doTestStepModifyLogger
 
 //------------------------------------------------------------------------------
@@ -1894,7 +1816,7 @@ void CTest::doTestStepModifyLogServer( ZS::Test::CTestStep* i_pTestStep )
 
     QString strTestGroupPath = pTestGroup == nullptr ? "" : pTestGroup->path();
 
-    CIpcLogServer* pLogServer = CIpcLogServer::GetInstance();
+    DllIf::CIpcLogServer* pLogServer = DllIf::CIpcLogServer::GetInstance();
 
     if( pLogServer == nullptr )
     {
@@ -2004,7 +1926,7 @@ void CTest::doTestStepModifyLogServerLoggerFile( ZS::Test::CTestStep* i_pTestSte
 
     QString strTestGroupPath = pTestGroup == nullptr ? "" : pTestGroup->path();
 
-    CIpcLogServer* pLogServer = CIpcLogServer::GetInstance();
+    DllIf::CIpcLogServer* pLogServer = DllIf::CIpcLogServer::GetInstance();
 
     if( pLogServer == nullptr )
     {
@@ -2099,7 +2021,7 @@ void CTest::doTestStepModifyLogServerLocalLogFile( ZS::Test::CTestStep* i_pTestS
 
     QString strTestGroupPath = pTestGroup == nullptr ? "" : pTestGroup->path();
 
-    CIpcLogServer* pLogServer = CIpcLogServer::GetInstance();
+    DllIf::CIpcLogServer* pLogServer = DllIf::CIpcLogServer::GetInstance();
 
     if( pLogServer == nullptr )
     {
@@ -2210,7 +2132,7 @@ void CTest::doTestStepLoggerAddLogEntry( ZS::Test::CTestStep* i_pTestStep )
 
     splitMethodCallOperation(strOperation, strClassName, strSubClassName, strObjName, strMth, strlstInArgs, strMthRet);
 
-    CIpcLogServer* pLogServer = CIpcLogServer::GetInstance();
+    DllIf::CIpcLogServer* pLogServer = DllIf::CIpcLogServer::GetInstance();
 
     if( pLogServer == nullptr )
     {
@@ -2221,9 +2143,8 @@ void CTest::doTestStepLoggerAddLogEntry( ZS::Test::CTestStep* i_pTestStep )
         pLogServer->clearLocalLogFile();
     }
 
-    CLogger* pLogger = CIpcLogServer::GetLogger(strObjName.toStdString().c_str());
+    DllIf::CLogger* pLogger = DllIf::CIpcLogServer::GetLogger(strObjName.toStdString().c_str());
 
-#if 0
     if( strlstInArgs.size() != 2 )
     {
         i_pTestStep->setExpectedValue("Invalid Test Step Operation");
@@ -2233,7 +2154,7 @@ void CTest::doTestStepLoggerAddLogEntry( ZS::Test::CTestStep* i_pTestStep )
         try
         {
             CEnumLogDetailLevel logLevel = strlstInArgs[0];
-            pLogger->log(logLevel.enumerator(), strlstInArgs[1]);
+            pLogger->log(static_cast<DllIf::ELogDetailLevel>(logLevel.enumerator()), strlstInArgs[1].toStdString().c_str());
         }
         catch(CException&)
         {
@@ -2244,36 +2165,13 @@ void CTest::doTestStepLoggerAddLogEntry( ZS::Test::CTestStep* i_pTestStep )
     // Result Values
     //--------------
 
-    CWidgetCentral* pWdgtCentral = CWidgetCentral::GetInstance();
+    i_pTestStep->setInstruction("Check whether client received the expected log output.");
 
-    CWdgtLog* pWdgtLog = pWdgtCentral->getLogWdgt();
+    m_pDlgTestStep = new CDlgTestStep(i_pTestStep);
+    m_pDlgTestStep->exec();
+    delete m_pDlgTestStep;
+    m_pDlgTestStep = nullptr;
 
-    if( pWdgtLog != nullptr )
-    {
-        pWdgtLog->getTextEdit()->clear();
-
-        if( strlstExpectedValues.isEmpty() )
-        {
-            m_pTmrCheckLogClientLogWdgtIsEmpty->start(100);
-        }
-        else
-        {
-            if( !QObject::connect(
-                /* pObjSender   */ pWdgtLog,
-                /* szSignal     */ SIGNAL(textItemAdded(const QString&)),
-                /* pObjReceiver */ this,
-                /* szSlot       */ SLOT(onLogClientLogWdgtTextItemAdded(const QString&)) ) )
-            {
-                throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-            }
-            m_pTmrTestStepTimeout->start(1000);
-        }
-    }
-    else
-    {
-        i_pTestStep->setResultValue("No log widget");
-    }
-#endif
 } // doTestStepLoggerAddLogEntry
 
 //------------------------------------------------------------------------------
@@ -2319,7 +2217,7 @@ void CTest::doTestStepLoggerAddLogEntryMyThread( ZS::Test::CTestStep* i_pTestSte
 
     splitMethodCallOperation(strOperation, strClassName, strSubClassName, strObjName, strMth, strlstInArgs, strMthRet);
 
-    CIpcLogServer* pLogServer = CIpcLogServer::GetInstance();
+    DllIf::CIpcLogServer* pLogServer = DllIf::CIpcLogServer::GetInstance();
 
     if( pLogServer == nullptr )
     {
@@ -2330,7 +2228,6 @@ void CTest::doTestStepLoggerAddLogEntryMyThread( ZS::Test::CTestStep* i_pTestSte
         pLogServer->clearLocalLogFile();
     }
 
-#if 0
     if( strlstInArgs.size() != 2 )
     {
         i_pTestStep->setExpectedValue("Invalid Test Step Operation");
@@ -2340,7 +2237,7 @@ void CTest::doTestStepLoggerAddLogEntryMyThread( ZS::Test::CTestStep* i_pTestSte
         try
         {
             CEnumLogDetailLevel logLevel = strlstInArgs[0];
-            CMyThread myThread(strObjName, logLevel.enumerator(), strlstInArgs[1]);
+            CMyThread myThread(strObjName, static_cast<DllIf::ELogDetailLevel>(logLevel.enumerator()), strlstInArgs[1]);
             myThread.start();
             myThread.waitForWorkDone();
         }
@@ -2353,36 +2250,13 @@ void CTest::doTestStepLoggerAddLogEntryMyThread( ZS::Test::CTestStep* i_pTestSte
     // Result Values
     //--------------
 
-    CWidgetCentral* pWdgtCentral = CWidgetCentral::GetInstance();
+    i_pTestStep->setInstruction("Check whether client received the expected log output.");
 
-    CWdgtLog* pWdgtLog = pWdgtCentral->getLogWdgt();
+    m_pDlgTestStep = new CDlgTestStep(i_pTestStep);
+    m_pDlgTestStep->exec();
+    delete m_pDlgTestStep;
+    m_pDlgTestStep = nullptr;
 
-    if( pWdgtLog != nullptr )
-    {
-        pWdgtLog->getTextEdit()->clear();
-
-        if( strlstExpectedValues.isEmpty() )
-        {
-            m_pTmrCheckLogClientLogWdgtIsEmpty->start(100);
-        }
-        else
-        {
-            if( !QObject::connect(
-                /* pObjSender   */ pWdgtLog,
-                /* szSignal     */ SIGNAL(textItemAdded(const QString&)),
-                /* pObjReceiver */ this,
-                /* szSlot       */ SLOT(onLogClientLogWdgtTextItemAdded(const QString&)) ) )
-            {
-                throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-            }
-            m_pTmrTestStepTimeout->start(1000);
-        }
-    }
-    else
-    {
-        i_pTestStep->setResultValue("No log widget");
-    }
-#endif
 } // doTestStepLoggerAddLogEntryMyThread
 
 //------------------------------------------------------------------------------
@@ -2428,9 +2302,8 @@ void CTest::doTestStepLogServerAddLogEntry( ZS::Test::CTestStep* i_pTestStep )
 
     splitMethodCallOperation(strOperation, strClassName, strSubClassName, strObjName, strMth, strlstInArgs, strMthRet);
 
-    CIpcLogServer* pLogServer = CIpcLogServer::GetInstance();
+    DllIf::CIpcLogServer* pLogServer = DllIf::CIpcLogServer::GetInstance();
 
-#if 0
     if( pLogServer == nullptr )
     {
         i_pTestStep->setExpectedValue("Log server not existing");
@@ -2449,7 +2322,7 @@ void CTest::doTestStepLogServerAddLogEntry( ZS::Test::CTestStep* i_pTestStep )
         try
         {
             CEnumLogDetailLevel logLevel = strlstInArgs[0];
-            pLogServer->log(logLevel.enumerator(), strlstInArgs[1]);
+            pLogServer->log(static_cast<DllIf::ELogDetailLevel>(logLevel.enumerator()), strlstInArgs[1].toStdString().c_str());
         }
         catch(CException&)
         {
@@ -2460,36 +2333,18 @@ void CTest::doTestStepLogServerAddLogEntry( ZS::Test::CTestStep* i_pTestStep )
     // Result Values
     //--------------
 
-    CWidgetCentral* pWdgtCentral = CWidgetCentral::GetInstance();
-
-    CWdgtLog* pWdgtLog = pWdgtCentral->getLogWdgt();
-
-    if( pWdgtLog != nullptr )
+    QString strInstruction = "Check whether client received the expected log output.";
+    if( strlstExpectedValues.isEmpty() )
     {
-        pWdgtLog->getTextEdit()->clear();
+        strInstruction += " (No log output expected)";
+    }
+    i_pTestStep->setInstruction(strInstruction);
 
-        if( strlstExpectedValues.isEmpty() )
-        {
-            m_pTmrCheckLogClientLogWdgtIsEmpty->start(100);
-        }
-        else
-        {
-            if( !QObject::connect(
-                /* pObjSender   */ pWdgtLog,
-                /* szSignal     */ SIGNAL(textItemAdded(const QString&)),
-                /* pObjReceiver */ this,
-                /* szSlot       */ SLOT(onLogClientLogWdgtTextItemAdded(const QString&)) ) )
-            {
-                throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-            }
-            m_pTmrTestStepTimeout->start(1000);
-        }
-    }
-    else
-    {
-        i_pTestStep->setResultValue("No log widget");
-    }
-#endif
+    m_pDlgTestStep = new CDlgTestStep(i_pTestStep);
+    m_pDlgTestStep->exec();
+    delete m_pDlgTestStep;
+    m_pDlgTestStep = nullptr;
+
 } // doTestStepLogServerAddLogEntry
 
 /*==============================================================================
@@ -2627,3 +2482,55 @@ void CTest::splitMethodCallOperation(
         }
     }
 } // splitMethodCallOperation
+
+//------------------------------------------------------------------------------
+QStringList CTest::getExpectedValues( ZS::Log::DllIf::CLogger* i_pLogger ) const
+//------------------------------------------------------------------------------
+{
+    QStringList strlstExpectedValues;
+
+    char* szName = i_pLogger->name();
+    strlstExpectedValues += "Name:          " + QString(szName);
+    delete szName; szName = nullptr;
+
+    if( QString(szName) == "NewLoggerDisabledAsDefault" ) {
+        strlstExpectedValues += "Enabled:       " + CEnumEnabled(EEnabled::No).toString();
+    }
+    else if( QString(szName) == "NewLoggerDisabledAsDefault" ) {
+        strlstExpectedValues += "Enabled:       " + CEnumEnabled(EEnabled::Yes).toString();
+    }
+    else {
+        strlstExpectedValues += "Enabled:       " + CEnumEnabled(i_pLogger->isEnabled()).toString();
+    }
+    if( QString(szName) == "NewLoggerDefaultDetailLevelDebug" ) {
+        strlstExpectedValues += "LogLevel:      " + CEnumLogDetailLevel(ELogDetailLevel::Debug).toString();
+    }
+    else if( QString(szName) == "NewLoggerDefaultDetailLevelNone" ) {
+        strlstExpectedValues += "LogLevel:      " + CEnumLogDetailLevel(ELogDetailLevel::None).toString();
+    }
+    else {
+        strlstExpectedValues += "LogLevel:      " + CEnumLogDetailLevel(i_pLogger->getLogLevel()).toString();
+    }
+
+    szName = i_pLogger->getDataFilter();
+    strlstExpectedValues += "DataFilter:    " + QString(szName);
+    delete szName; szName = nullptr;
+
+    strlstExpectedValues += "AddThreadName: " + bool2Str(i_pLogger->addThreadName());
+    strlstExpectedValues += "AddDateTime:   " + bool2Str(i_pLogger->addDateTime());
+    strlstExpectedValues += "AddSystemTime: " + bool2Str(i_pLogger->addSystemTime());
+
+    szName = i_pLogger->getNameSpace();
+    strlstExpectedValues += "NameSpace:     " + QString(szName);
+    delete szName; szName = nullptr;
+
+    szName = i_pLogger->getClassName();
+    strlstExpectedValues += "ClassName:     " + QString(szName);
+    delete szName; szName = nullptr;
+
+    szName = i_pLogger->getObjectName();
+    strlstExpectedValues += "ObjName:       " + QString(szName);
+    delete szName; szName = nullptr;
+
+    return strlstExpectedValues;
+}

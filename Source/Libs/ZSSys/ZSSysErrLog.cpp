@@ -61,7 +61,7 @@ using namespace ZS::System;
 
 
 /*******************************************************************************
-struct SErrLogEntry : public QEvent
+struct SErrLogEntry
 *******************************************************************************/
 
 /*==============================================================================
@@ -559,8 +559,6 @@ CErrLog::CErrLog(
     }
 
     m_pMtx = new QMutex(QMutex::Recursive);
-
-    QMutexLocker mtxLockerInst(m_pMtx);
 
     // Create and/or recall error log file
     //------------------------------------

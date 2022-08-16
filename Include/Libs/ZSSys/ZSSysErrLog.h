@@ -308,27 +308,35 @@ private: // copy ctor not allowed
 private: // assignment operator not allowed
     CErrLog& operator = ( const CErrLog& );
 protected: // class members
-    static QMutex                   s_mtx;           /*!< Mutex to protect the class and instance methods of the class for multithreaded access. */
-    static QHash<QString, CErrLog*> s_hshpInstances; /*!< Hash with all created err log instances (key is name of instance). */
-    static int                      s_iMsgHandlerInstallCount;  /*!< Counts the number the class method InstallQtMsgHandler is called
-                                                                     to ensure that the Qt message handler is installed and removed just once. */
+    /*!< Mutex to protect the class variables for multithreaded access. */
+    static QMutex s_mtx;
+    /*!< Hash with all created err log instances (key is name of instance). */
+    static QHash<QString, CErrLog*> s_hshpInstances;
+    /*!< Counts the number the class method InstallQtMsgHandler is called
+         to ensure that the Qt message handler is installed and removed just once. */
+    static int s_iMsgHandlerInstallCount;
 protected: // instance members
-    // Please note that entries may be added from within different thread contexts
-    // to the error log object and that for this the list of entries of the error
-    // log object is protected by a mutex and entries will be "immediately" entered.
-    QMutex*                         m_pMtx;             /*!< Mutex to protect the static and instance methods of the class for multithreaded access. */
-    QString                         m_strAbsFilePath;   /*!< Absolute path including the file name and suffix of the error logs xml file. */
-    QFile*                          m_pFile;            /*!< Xml file of the error log instance. */
-    bool                            m_bRecallingModel;  /*!< Flag for internal state machine to indicate that currently error log entries are
-                                                             added because the content of the error log file is read to avoid that the new
-                                                             entries are saved in the xml file again causing an endless recursion. */
-    bool                            m_bClearingModel;   /*!< Flag for internal state machine to indicate that currently the content of the
-                                                             error log instance is cleared to avoid that for each removed entry a signal
-                                                             is emitted. */
-    int                             m_iAddEntryRecursionCounter; /*!< The recursion counter avoids endless recursion if there is a problem
-                                                                      when trying to write to the xml file (e.g. saving file not possible)
-                                                                      whereupon the qt message handler is called invoking addEntry_ again
-                                                                      whereupon again the save method would be called and so on. */
+    /*!< Mutex to protect the instance variables of the class for multithreaded access.
+         Please note that entries may be added from within different thread contexts
+         to the error log object and for this the list of entries of the error
+         log object is protected by a mutex and entries will be "immediately" entered. */
+    QMutex* m_pMtx;
+    /*!< Absolute path including the file name and suffix of the error logs xml file. */
+    QString m_strAbsFilePath;
+    /*!< Xml file of the error log instance. */
+    QFile* m_pFile;
+    /*!< Flag for internal state machine to indicate that currently error log entries are
+         added because the content of the error log file is read to avoid that the new
+         entries are saved in the xml file again causing an endless recursion. */
+    bool m_bRecallingModel;
+    /*!< Flag for internal state machine to indicate that currently the content of the
+         error log instance is cleared to avoid that for each removed entry a signal is emitted. */
+    bool m_bClearingModel;
+    /*!< The recursion counter avoids endless recursion if there is a problem
+         when trying to write to the xml file (e.g. saving file not possible)
+         whereupon the qt message handler is called invoking addEntry_ again
+         whereupon again the save method would be called and so on. */
+    int m_iAddEntryRecursionCounter;
     // Please note that shiboken crashes with error -1073741819 (access violation)
     // if array member variables are used defined by [] operators with fixed size.
     // Using vector initialized with fixed size in the ctor as a workaround.
@@ -337,10 +345,13 @@ protected: // instance members
     // As a workaround on linux to let shiboken generate the bindings the definition will be
     // temporarily changed to ">>". After shiboken has generated the bindings the definition
     // will be changed back to "> >" to compile the module with gcc on linux.
-    QVector<int>                    m_ariEntriesCountMax;   /*!< Defines for each result severity the maximum number of log entries. */
-    QVector< QList<SErrLogEntry*> > m_ararpEntries;         /*!< For each severity list of error log entries. */
-    bool                            m_bQtMsgHandlerInstalledByCtor; /*!< true, if this instance installed the Qt message hander and
-                                                                         therefore must be removed again when the dtor is called. */
+    /*!< Defines for each result severity the maximum number of log entries. */
+    QVector<int> m_ariEntriesCountMax;
+    /*!< For each severity list of error log entries. */
+    QVector< QList<SErrLogEntry*> > m_ararpEntries;
+    /*!< true, if this instance installed the Qt message hander and
+         therefore must be removed again when the dtor is called. */
+    bool m_bQtMsgHandlerInstalledByCtor;
 
 }; // class CErrLog
 

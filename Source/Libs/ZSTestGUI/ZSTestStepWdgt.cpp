@@ -171,6 +171,9 @@ CWdgtTestStep::CWdgtTestStep(
     //m_pEdtExpectedValues->setReadOnly(false);
     m_pEdtExpectedValues->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     m_pEdtExpectedValues->setSizeAdjustPolicy(QAbstractScrollArea::AdjustIgnored);
+    QFont fnt = m_pEdtExpectedValues->currentFont();
+    fnt.setFamily("Courier New");
+    m_pEdtExpectedValues->setFont(fnt);
     m_pLytGrpExpectedValues->addWidget(m_pEdtExpectedValues);
     m_pSplitterExpectedAndResultValues->addWidget(m_pGrpExpectedValues);
 

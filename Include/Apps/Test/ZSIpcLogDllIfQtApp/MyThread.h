@@ -31,6 +31,8 @@ may result in using the software modules.
 
 #include <QtCore/qthread.h>
 
+#include "ZSIpcLog/ZSIpcLogDllIf.h"
+
 class QMutex;
 class QWaitCondition;
 
@@ -52,21 +54,21 @@ public: // class methods
     static QString ClassName() { return "CMyThread"; }
 public: // ctors and dtor
     CMyThread(
-        const QString&              i_strLoggerName,
-        ZS::System::ELogDetailLevel i_logLevel,
-        const QString&              i_strLogEntry );
+        const QString&                  i_strLoggerName,
+        ZS::Log::DllIf::ELogDetailLevel i_logLevel,
+        const QString&                  i_strLogEntry );
     virtual ~CMyThread();
 public: // instance methods
     bool waitForWorkDone();
 public: // overridables of base class QThread
     void run();
 private: // instance members
-    QString                     m_strLoggerName;
-    ZS::System::ELogDetailLevel m_logLevel;
-    QString                     m_strLogEntry;
-    QMutex*                     m_pMtxWaitWorkDone;
-    QWaitCondition*             m_pWaitConditionWorkDone;
-    bool                        m_bWorkDone;
+    QString                         m_strLoggerName;
+    ZS::Log::DllIf::ELogDetailLevel m_logLevel;
+    QString                         m_strLogEntry;
+    QMutex*                         m_pMtxWaitWorkDone;
+    QWaitCondition*                 m_pWaitConditionWorkDone;
+    bool                            m_bWorkDone;
 
 }; // class CMyThread
 

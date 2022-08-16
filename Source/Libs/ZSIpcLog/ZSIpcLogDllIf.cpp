@@ -524,6 +524,9 @@ bool ZS::Log::DllIf::loadDll( EBuildConfiguration i_configuration, int i_iQtVers
         s_pFctLogServer_isActive = (TFctLogServer_isActive)GetProcAddress(s_hndDllIf, "LogServer_isActive");
         if( s_pFctLogServer_isActive == NULL ) bOk = false;
 
+        s_pFctLogServer_log = (TFctLogServer_log)GetProcAddress(s_hndDllIf, "LogServer_log");
+        if( s_pFctLogServer_log == NULL ) bOk = false;
+
         s_pFctLogServer_setNewLoggersEnabledAsDefault = (TFctLogServer_setNewLoggersEnabledAsDefault)GetProcAddress(s_hndDllIf, "LogServer_setNewLoggersEnabledAsDefault");
         if( s_pFctLogServer_setNewLoggersEnabledAsDefault == NULL ) bOk = false;
 

@@ -85,6 +85,7 @@ private: // instance auxiliary methods
         QString& o_strMth,
         QStringList& o_strlstInArgs,
         QString& o_strMthRet ) const;
+    QStringList getExpectedValues( ZS::Log::DllIf::CLogger* i_pLogger ) const;
 private: // instance members
     ZS::Test::GUI::CDlgTestStep*       m_pDlgTestStep;
     QTimer*                            m_pTmrTestStepTimeout;

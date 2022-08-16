@@ -134,7 +134,7 @@ public: // instance methods
     ELogDetailLevel getLogLevel() const;
     bool isActive( ELogDetailLevel i_eFilterDetailLevel ) const;
 public: // instance methods
-    void setDataFilter( const char* i_szFilter );
+    void setDataFilter( const char* i_szFilter = "" );
     char* getDataFilter() const;  // returned character string must be freed by caller
     bool isSuppressedByDataFilter( const char* i_szLogEntry ) const;
 public: // instance methods

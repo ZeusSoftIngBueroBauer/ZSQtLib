@@ -1,4 +1,4 @@
-Trace Method Client Rev v1.0.0-13-g3fbb72a<br><br>
+Trace Method Client Rev v1.0.0-14-g5a2d187<br><br>
 © 2022 ZeusSoft, Ing. Buero Bauer. All right reserved<br><br>
 
 This program is part of the ZSQtLib.<br>
