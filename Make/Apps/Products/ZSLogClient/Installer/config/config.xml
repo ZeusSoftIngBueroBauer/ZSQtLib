@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<Installer>
-    <Name>Logger Client</Name>
-    <Version>v1.0.0-15-ga4e27e9</Version>
-    <Title>Installation Log Client</Title>
-    <Publisher>ZeusSoft, Ing. Buero Bauer</Publisher>
-    <StartMenuDir>ZeusSoft</StartMenuDir>
-    <TargetDir>C:/Program Files/ZeusSoft/LogClient</TargetDir>
-</Installer>
