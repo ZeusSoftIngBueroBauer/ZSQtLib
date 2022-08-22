@@ -89,6 +89,11 @@ Makefile.*
 /Make/Apps/Products/ZSTrcMthClient/Installer/packages/de.zeussoft.TrcMthClient/meta/license.txt
 /Make/Apps/Products/ZSTrcMthClient/Installer/packages/de.zeussoft.TrcMthClient/meta/package.xml
 /Make/Apps/Products/ZSTrcMthClient/Installer/packages/de.zeussoft.TrcMthClient/data/*
+/Make/Apps/Products/ZSLogClient/Installer/config/config.xml
+/Make/Apps/Products/ZSLogClient/Installer/packages/de.zeussoft.LogClient/meta/installscript.qs
+/Make/Apps/Products/ZSLogClient/Installer/packages/de.zeussoft.LogClient/meta/license.txt
+/Make/Apps/Products/ZSLogClient/Installer/packages/de.zeussoft.LogClient/meta/package.xml
+/Make/Apps/Products/ZSLogClient/Installer/packages/de.zeussoft.LogClient/data/*
 
 #Explizit
 #RemoteRepositories.txt
