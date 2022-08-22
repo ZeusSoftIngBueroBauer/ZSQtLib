@@ -1023,7 +1023,7 @@ ZSIPCLOGDLL_EXTERN_API DllIf::ELogDetailLevel LogServer_getNewLoggersDefaultDeta
 }
 
 //------------------------------------------------------------------------------
-ZSIPCLOGDLL_EXTERN_API bool LogServer_recallLoggers()
+ZSIPCLOGDLL_EXTERN_API bool LogServer_recallLoggers( const char* i_szAbsFilePath )
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&DllIf_s_mtx);
@@ -1031,7 +1031,7 @@ ZSIPCLOGDLL_EXTERN_API bool LogServer_recallLoggers()
     CLogServer* pLogServer = CLogServer::GetInstance();
     if( pLogServer != nullptr )
     {
-        SErrResultInfo errResultInfo = pLogServer->recallLoggers();
+        SErrResultInfo errResultInfo = pLogServer->recallLoggers(i_szAbsFilePath);
         if( errResultInfo.isErrorResult() )
         {
             bOk = false;
@@ -1045,7 +1045,7 @@ ZSIPCLOGDLL_EXTERN_API bool LogServer_recallLoggers()
 }
 
 //------------------------------------------------------------------------------
-ZSIPCLOGDLL_EXTERN_API bool LogServer_saveLoggers()
+ZSIPCLOGDLL_EXTERN_API bool LogServer_saveLoggers( const char* i_szAbsFilePath )
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&DllIf_s_mtx);
@@ -1053,7 +1053,7 @@ ZSIPCLOGDLL_EXTERN_API bool LogServer_saveLoggers()
     CLogServer* pLogServer = CLogServer::GetInstance();
     if( pLogServer != nullptr )
     {
-        SErrResultInfo errResultInfo = pLogServer->saveLoggers();
+        SErrResultInfo errResultInfo = pLogServer->saveLoggers(i_szAbsFilePath);
 
         if( errResultInfo.isErrorResult() )
         {

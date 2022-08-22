@@ -40,6 +40,9 @@ may result in using the software modules.
 #include "ZSTestGUI/ZSTestStepDlg.h"
 #include "ZSSys/ZSSysApp.h"
 #include "ZSSys/ZSSysErrLog.h"
+#include "ZSSys/ZSSysLoggerIdxTree.h"
+#include "ZSSys/ZSSysLogger.h"
+#include "ZSSys/ZSSysLogServer.h"
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
@@ -1038,7 +1041,7 @@ CTest::CTest() :
 
     // Test Step Group - ModifyLogServer
     //----------------------------------
-#if 0
+
     ZS::Test::CTestStepGroup* pTestGroupModifyLogServer = new ZS::Test::CTestStepGroup(
         /* pTest           */ this,
         /* strName         */ "Group " + QString::number(++idxGroup) + " ModifyLogServer",
@@ -1197,7 +1200,6 @@ CTest::CTest() :
         /* strOperation    */ "LogServer::theInst.LocalLogFileMethods",
         /* pTSGrpParent    */ pTestGroupModifyLogServerLocalLogFile,
         /* szDoTestStepFct */ SLOT(doTestStepModifyLogServerLocalLogFile(ZS::Test::CTestStep*)) );
-#endif // #if 0
 
     // Test Step Group - Shutdown
     //---------------------------
@@ -1837,7 +1839,7 @@ void CTest::doTestStepModifyLogServer( ZS::Test::CTestStep* i_pTestStep )
     QString strMthRet;
 
     splitMethodCallOperation(strOperation, strClassName, strSubClassName, strObjName, strMth, strlstInArgs, strMthRet);
-#if 0
+
     if( strMth == "setEnabled" ) {
         if( strlstInArgs.size() != 1 ) {
             i_pTestStep->setExpectedValue("Invalid test step operation");
@@ -1891,8 +1893,8 @@ void CTest::doTestStepModifyLogServer( ZS::Test::CTestStep* i_pTestStep )
                 i_pTestStep->setExpectedValue("Invalid test step operation");
             }
             else {
-                pLogServer->setNewLoggersDefaultDetailLevel(eDetailLevel.enumerator());
-                if( pLogServer->getNewLoggersDefaultDetailLevel() != eDetailLevel.enumerator() ) {
+                pLogServer->setNewLoggersDefaultDetailLevel(static_cast<DllIf::ELogDetailLevel>(eDetailLevel.enumerator()));
+                if( pLogServer->getNewLoggersDefaultDetailLevel() != static_cast<DllIf::ELogDetailLevel>(eDetailLevel.enumerator()) ) {
                     i_pTestStep->setExpectedValue("getNewLoggersDefaultDetailLevel != " + eDetailLevel.toString());
                 }
                 else {
@@ -1905,17 +1907,13 @@ void CTest::doTestStepModifyLogServer( ZS::Test::CTestStep* i_pTestStep )
     // Result Values
     //--------------
 
-    m_pTmrTestStepTimeout->start(1000);
+    i_pTestStep->setInstruction("Check whether settings of log server in client have been changed as expected.");
 
-    if( !QObject::connect(
-        /* pObjSender   */ pLogClient,
-        /* szSignal     */ SIGNAL(logSettingsChanged(QObject*)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onLogClientLogSettingsChanged(QObject*)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-#endif
+    m_pDlgTestStep = new CDlgTestStep(i_pTestStep);
+    m_pDlgTestStep->exec();
+    delete m_pDlgTestStep;
+    m_pDlgTestStep = nullptr;
+
 } // doTestStepModifyLogServer
 
 //------------------------------------------------------------------------------
@@ -1935,13 +1933,15 @@ void CTest::doTestStepModifyLogServerLoggerFile( ZS::Test::CTestStep* i_pTestSte
 
     // Test Step
     //----------
-#if 0
+
     QStringList strlstExpectedValues;
     QStringList strlstResultValues;
     QString strExpectedValue;
     QString strResultValue;
 
-    QString strAbsFilePathPrev = CLogServer::GetLoggerFileAbsoluteFilePath();
+    char* szName = DllIf::CLogServer::GetLoggerFileAbsoluteFilePath();
+    QString strAbsFilePathPrev(szName);
+    delete szName; szName = nullptr;
 
     QString strAbsFilePathNew = "C:/Temp/ZSLogServer-Loggers.xml";
 
@@ -1958,9 +1958,9 @@ void CTest::doTestStepModifyLogServerLoggerFile( ZS::Test::CTestStep* i_pTestSte
     strlstExpectedValues.append("LoggerFileAbsolutePath: " + fileInfoFile.absolutePath());
     strlstExpectedValues.append("LoggerFileExists: true");
 
-    CLogServer::SetLoggerFileAbsoluteFilePath(strAbsFilePathNew);
+    DllIf::CLogServer::SetLoggerFileAbsoluteFilePath(strAbsFilePathNew.toStdString().c_str());
 
-    CIdxTreeLoggers* pIdxTreeServer = pLogServer->getLoggersIdxTree();
+    CIdxTreeLoggers* pIdxTreeServer = ZS::System::CLogServer::GetInstance()->getLoggersIdxTree();
 
     QVector<CIdxTreeEntry*> arpTreeEntriesServerSaved = pIdxTreeServer->treeEntriesVec();
 
@@ -1968,7 +1968,7 @@ void CTest::doTestStepModifyLogServerLoggerFile( ZS::Test::CTestStep* i_pTestSte
     {
         if( pTreeEntry != nullptr && pTreeEntry->entryType() == EIdxTreeEntryType::Leave)
         {
-            CLogger* pLogger = dynamic_cast<CLogger*>(pTreeEntry);
+            ZS::System::CLogger* pLogger = dynamic_cast<ZS::System::CLogger*>(pTreeEntry);
             strExpectedValue = pLogger->keyInTree() + ": ";
             strExpectedValue += "Enabled: " + CEnumEnabled(pLogger->getEnabled()).toString();
             strExpectedValue += ", LogLevel: " + CEnumLogDetailLevel(pLogger->getLogLevel()).toString();
@@ -1976,18 +1976,29 @@ void CTest::doTestStepModifyLogServerLoggerFile( ZS::Test::CTestStep* i_pTestSte
         }
     }
 
-    pLogServer->saveLoggers(strAbsFilePathNew);
+    pLogServer->saveLoggers(strAbsFilePathNew.toStdString().c_str());
 
-    strlstResultValues.append("LoggerFileAbsoluteFilePath: " + CLogServer::GetLoggerFileAbsoluteFilePath());
-    strlstResultValues.append("LoggerFileCompleteBaseName: " + CLogServer::GetLoggerFileCompleteBaseName());
-    strlstResultValues.append("LoggerFileAbsolutePath: " + CLogServer::GetLoggerFileAbsolutePath());
+    szName = DllIf::CLogServer::GetLoggerFileAbsoluteFilePath();
+    strlstResultValues.append("LoggerFileAbsoluteFilePath: " + QString(szName));
+    delete szName; szName = nullptr;
+
+    szName = DllIf::CLogServer::GetLoggerFileCompleteBaseName();
+    strlstResultValues.append("LoggerFileCompleteBaseName: " + QString(szName));
+    delete szName; szName = nullptr;
+
+    szName = DllIf::CLogServer::GetLoggerFileAbsolutePath();
+    strlstResultValues.append("LoggerFileAbsolutePath: " + QString(szName));
+    delete szName; szName = nullptr;
+
     strlstResultValues.append("LoggerFileExists: " + bool2Str(fileInfoFile.exists(strAbsFilePathNew)));
 
     pIdxTreeServer->clear();
 
+    QThread::msleep(1000);
+
     int iClearedIdxTreeEntries = pIdxTreeServer->treeEntriesVec().size();
 
-    pLogServer->recallLoggers(strAbsFilePathNew);
+    pLogServer->recallLoggers(strAbsFilePathNew.toStdString().c_str());
 
     QVector<CIdxTreeEntry*> arpTreeEntriesServerRecalled = pIdxTreeServer->treeEntriesVec();
 
@@ -1995,9 +2006,9 @@ void CTest::doTestStepModifyLogServerLoggerFile( ZS::Test::CTestStep* i_pTestSte
     {
         if( pTreeEntry != nullptr && pTreeEntry->entryType() == EIdxTreeEntryType::Leave)
         {
-            CLogger* pLogger = dynamic_cast<CLogger*>(pTreeEntry);
+            ZS::System::CLogger* pLogger = dynamic_cast<ZS::System::CLogger*>(pTreeEntry);
             strResultValue = pLogger->keyInTree() + ": ";
-            strResultValue += "Enabled: " + CEnumEnabled(pLogger->getEnabled()).toString();
+            strResultValue += "Enabled: " + CEnumEnabled(pLogger->isEnabled()).toString();
             strResultValue += ", LogLevel: " + CEnumLogDetailLevel(pLogger->getLogLevel()).toString();
             strlstResultValues.append(strResultValue);
         }
@@ -2009,8 +2020,8 @@ void CTest::doTestStepModifyLogServerLoggerFile( ZS::Test::CTestStep* i_pTestSte
     i_pTestStep->setExpectedValues(strlstExpectedValues);
     i_pTestStep->setResultValues(strlstResultValues);
 
-    CLogServer::SetLoggerFileAbsoluteFilePath(strAbsFilePathPrev);
-#endif
+    DllIf::CLogServer::SetLoggerFileAbsoluteFilePath(strAbsFilePathPrev.toStdString().c_str());
+
 } // doTestStepModifyLogServerLoggerFile
 
 //------------------------------------------------------------------------------
@@ -2030,13 +2041,15 @@ void CTest::doTestStepModifyLogServerLocalLogFile( ZS::Test::CTestStep* i_pTestS
 
     // Test Step
     //----------
-#if 0
+
     QStringList strlstExpectedValues;
     QStringList strlstResultValues;
     QString strExpectedValue;
     QString strResultValue;
 
-    QString strAbsFilePathPrev = CLogServer::GetLocalLogFileAbsoluteFilePath();
+    char* szName = DllIf::CLogServer::GetLocalLogFileAbsoluteFilePath();
+    QString strAbsFilePathPrev(szName);
+    delete szName; szName = nullptr;
 
     QString strAbsPathNew = "C:/Temp";
     QString strCompleteBaseName = "ZSLogServer";
@@ -2056,14 +2069,14 @@ void CTest::doTestStepModifyLogServerLocalLogFile( ZS::Test::CTestStep* i_pTestS
     strlstExpectedValues.append("LocalLogFileExists: true");
     strlstExpectedValues.append("LocalLogFileLines: Debug Message");
 
-    CLogServer::SetLocalLogFileAbsoluteFilePath(strAbsFilePathNew);
+    DllIf::CLogServer::SetLocalLogFileAbsoluteFilePath(strAbsFilePathNew.toStdString().c_str());
 
-    CLogger* pLogger = pLogServer->getLogger();
-    ELogDetailLevel logLevelPrev = pLogger->getLogLevel();
-    pLogger->setLogLevel(ELogDetailLevel::Debug);
+    DllIf::CLogger* pLogger = pLogServer->getLogger();
+    DllIf::ELogDetailLevel logLevelPrev = pLogger->getLogLevel();
+    pLogger->setLogLevel(static_cast<DllIf::ELogDetailLevel>(ELogDetailLevel::Debug));
 
     pLogServer->setLocalLogFileCloseFileAfterEachWrite(true);
-    pLogServer->log(ELogDetailLevel::Debug, "Debug Message");
+    pLogServer->log(static_cast<DllIf::ELogDetailLevel>(ELogDetailLevel::Debug), "Debug Message");
     pLogServer->setLocalLogFileCloseFileAfterEachWrite(false);
 
     QFile logFile(fileInfoLogFile.absoluteFilePath());
@@ -2075,18 +2088,27 @@ void CTest::doTestStepModifyLogServerLocalLogFile( ZS::Test::CTestStep* i_pTestS
         strLogFileLines = txtStreamLogFile.readAll().simplified();
     }
 
-    strlstResultValues.append("LocalLogFileAbsoluteFilePath: " + CLogServer::GetLocalLogFileAbsoluteFilePath());
-    strlstResultValues.append("LocalLogFileCompleteBaseName: " + CLogServer::GetLocalLogFileCompleteBaseName());
-    strlstResultValues.append("LocalLogFileAbsolutePath: " + CLogServer::GetLocalLogFileAbsolutePath());
+    szName = DllIf::CLogServer::GetLocalLogFileAbsoluteFilePath();
+    strlstResultValues.append("LocalLogFileAbsoluteFilePath: " + QString(szName));
+    delete szName; szName = nullptr;
+
+    szName = DllIf::CLogServer::GetLocalLogFileCompleteBaseName();
+    strlstResultValues.append("LocalLogFileCompleteBaseName: " + QString(szName));
+    delete szName; szName = nullptr;
+
+    szName = DllIf::CLogServer::GetLocalLogFileAbsolutePath();
+    strlstResultValues.append("LocalLogFileAbsolutePath: " + QString(szName));
+    delete szName; szName = nullptr;
+
     strlstResultValues.append("LocalLogFileExists: " + bool2Str(fileInfoLogFile.exists()));
     strlstResultValues.append("LocalLogFileLines: " + strLogFileLines);
 
     i_pTestStep->setExpectedValues(strlstExpectedValues);
     i_pTestStep->setResultValues(strlstResultValues);
 
-    CLogServer::SetLocalLogFileAbsoluteFilePath(strAbsFilePathPrev);
-    pLogger->setLogLevel(logLevelPrev);
-#endif
+    DllIf::CLogServer::SetLocalLogFileAbsoluteFilePath(strAbsFilePathPrev.toStdString().c_str());
+    pLogger->setLogLevel(static_cast<DllIf::ELogDetailLevel>(logLevelPrev));
+
 } // doTestStepModifyLogServerLocalLogFile
 
 //------------------------------------------------------------------------------

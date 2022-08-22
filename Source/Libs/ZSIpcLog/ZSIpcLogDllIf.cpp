@@ -129,8 +129,8 @@ typedef void (*TFctLogServer_setNewLoggersEnabledAsDefault)( bool i_bEnabled );
 typedef bool (*TFctLogServer_areNewLoggersEnabledAsDefault)();
 typedef void (*TFctLogServer_setNewLoggersDefaultDetailLevel)( DllIf::ELogDetailLevel i_eDetailLevel );
 typedef DllIf::ELogDetailLevel (*TFctLogServer_getNewLoggersDefaultDetailLevel)();
-typedef bool (*TFctLogServer_recallLoggers)();
-typedef bool (*TFctLogServer_saveLoggers)();
+typedef bool (*TFctLogServer_recallLoggers)( const char* i_szAbsFilePath );
+typedef bool (*TFctLogServer_saveLoggers)( const char* i_szAbsFilePath );
 typedef void (*TFctLogServer_setUseLocalLogFile)( bool i_bUse );
 typedef bool (*TFctLogServer_isLocalLogFileUsed)();
 typedef bool (*TFctLogServer_isLocalLogFileActive)();
@@ -1615,27 +1615,27 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-bool DllIf::CLogServer::recallLoggers()
+bool DllIf::CLogServer::recallLoggers( const char* i_szAbsFilePath )
 //------------------------------------------------------------------------------
 {
     bool bOk = false;
 
     if( s_hndDllIf != NULL && s_pFctLogServer_recallLoggers != NULL )
     {
-        bOk = s_pFctLogServer_recallLoggers();
+        bOk = s_pFctLogServer_recallLoggers(i_szAbsFilePath);
     }
     return bOk;
 }
 
 //------------------------------------------------------------------------------
-bool DllIf::CLogServer::saveLoggers()
+bool DllIf::CLogServer::saveLoggers( const char* i_szAbsFilePath )
 //------------------------------------------------------------------------------
 {
     bool bOk = false;
 
     if( s_hndDllIf != NULL && s_pFctLogServer_saveLoggers != NULL )
     {
-        bOk = s_pFctLogServer_saveLoggers();
+        bOk = s_pFctLogServer_saveLoggers(i_szAbsFilePath);
     }
     return bOk;
 }

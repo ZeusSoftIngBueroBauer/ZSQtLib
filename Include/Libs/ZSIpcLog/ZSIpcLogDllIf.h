@@ -305,8 +305,8 @@ public: // instance methods
     void setNewLoggersDefaultDetailLevel( ELogDetailLevel i_eDetailLevel );
     ELogDetailLevel getNewLoggersDefaultDetailLevel() const;
 public: // instance methods
-    bool recallLoggers();
-    bool saveLoggers();
+    bool recallLoggers( const char* i_szAbsFilePath = "" );
+    bool saveLoggers( const char* i_szAbsFilePath = "" );
 public: // instance methods
     void setUseLocalLogFile( bool i_bUse );
     bool isLocalLogFileUsed() const;

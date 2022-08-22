@@ -38,8 +38,8 @@ Component.prototype.createOperations = function()
 
     if (systemInfo.productType === "windows") {
         component.addOperation("CreateShortcut",
-            "C:/Program Files/ZeusSoft/LogClient/ZSAppLogClientd.exe",
-            "C:/Users/Chris/AppData/Roaming/Microsoft/Windows/Start Menu/Programs/ZeusSoft/LogClient/ZSAppLogClientd.lnk",
+            "C:/Program Files/ZeusSoft/LogClient/ZSAppLogClient.exe",
+            "C:/Users/Chris/AppData/Roaming/Microsoft/Windows/Start Menu/Programs/ZeusSoft/LogClient/ZSAppLogClient.lnk",
             "workingDirectory=C:/Program Files/ZeusSoft/LogClient",
             "iconPath=C:/Program Files/ZeusSoft/LogClient/ZSAppLogClient.ico");
     }

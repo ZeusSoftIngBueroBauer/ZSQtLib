@@ -204,13 +204,13 @@ CWdgtLogSettings::CWdgtLogSettings( const QString& i_strObjName, QWidget* i_pWdg
     // <ComboBox> New Loggers Default Detail Level
     //--------------------------------------------
 
-    m_pLblNewLoggersDefaultDetailLevel = new QLabel("Default Detail Level:");
+    m_pLblNewLoggersDefaultDetailLevel = new QLabel("New Loggers Default Detail Level:");
     m_pLblNewLoggersDefaultDetailLevel->setFixedWidth(iLblWidth);
     m_pCmbNewLoggersDefaultDetailLevel = new QComboBox();
-    CEnumLogDetailLevel eDetailLevelRuntimeInfo;
-    for( eDetailLevelRuntimeInfo = 0; eDetailLevelRuntimeInfo < CEnumMethodTraceDetailLevel::count(); ++eDetailLevelRuntimeInfo )
+    CEnumLogDetailLevel eLogDetailLevel;
+    for( eLogDetailLevel = 0; eLogDetailLevel < CEnumLogDetailLevel::count(); ++eLogDetailLevel )
     {
-        m_pCmbNewLoggersDefaultDetailLevel->addItem(eDetailLevelRuntimeInfo.toString());
+        m_pCmbNewLoggersDefaultDetailLevel->addItem(eLogDetailLevel.toString());
     }
     m_pCmbNewLoggersDefaultDetailLevel->setCurrentIndex(static_cast<int>(logSettings.m_eNewLoggersDefaultDetailLevel));
     m_pCmbNewLoggersDefaultDetailLevel->setEnabled(true);
