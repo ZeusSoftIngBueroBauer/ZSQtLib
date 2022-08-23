@@ -749,9 +749,9 @@ SErrResultInfo CIdxTreeLoggers::recall( const QString& i_strAbsFilePath )
                                 if( xmlStreamReader.attributes().hasAttribute("Enabled") )
                                 {
                                     strAttr = xmlStreamReader.attributes().value("Enabled").toString();
-                                    enabled = CEnumEnabled::toEnumerator(strAttr);
-                                    if( enabled == EEnabled::Undefined )
-                                    {
+                                    enabled = CEnumEnabled::toEnumerator(strAttr, &bOk);
+                                    if( !bOk ) {
+                                        enabled = EEnabled::Yes;
                                         xmlStreamReader.raiseError(
                                             "Attribute \"Enabled\" (" + strAttr + ") for \"" +
                                             strName + "\" is out of range");
@@ -760,9 +760,9 @@ SErrResultInfo CIdxTreeLoggers::recall( const QString& i_strAbsFilePath )
                                 if( xmlStreamReader.attributes().hasAttribute("LogLevel") )
                                 {
                                     strAttr = xmlStreamReader.attributes().value("LogLevel").toString();
-                                    eDetailLevel = CEnumLogDetailLevel::toEnumerator(strAttr);
-                                    if( eDetailLevel == ELogDetailLevel::Undefined )
-                                    {
+                                    eDetailLevel = CEnumLogDetailLevel::toEnumerator(strAttr, &bOk);
+                                    if( !bOk ) {
+                                        eDetailLevel = ELogDetailLevel::None;
                                         xmlStreamReader.raiseError(
                                             "Attribute \"LogLevel\" (" + strAttr + ") for \"" +
                                             strName + "\" is out of range");

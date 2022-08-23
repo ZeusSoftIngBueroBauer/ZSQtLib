@@ -208,10 +208,10 @@ CWdgtLog::CWdgtLog(
         throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
     }
 
-    // <CheckBox> Tracing Enabled (at Server)
+    // <CheckBox> Logging Enabled (at Server)
     //---------------------------------------
 
-    m_pLblServerLoggingEnabled = new QLabel("Tracing Enabled:");
+    m_pLblServerLoggingEnabled = new QLabel("Logging Enabled:");
     pLytBtnListWidget->addWidget(m_pLblServerLoggingEnabled);
     m_pChkServerLoggingEnabled = new QCheckBox();
     m_pChkServerLoggingEnabled->setChecked(false);

@@ -500,7 +500,7 @@ CTest::CTest() :
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " LogServer::theInst.setDataFilter($!I{Hello}I$)",
+        /* strName         */ "Step " + QString::number(++idxStep) + " LogServer::theInst.setDataFilter($!I{Hello}I!$)",
         /* strOperation    */ "LogServer::theInst.setDataFilter($!I{Hello}I!$)",
         /* pTSGrpParent    */ pTestGroupModifyLoggersSetDataFilter,
         /* szDoTestStepFct */ SLOT(doTestStepModifyLogger(ZS::Test::CTestStep*)) );
@@ -523,7 +523,7 @@ CTest::CTest() :
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " LogServer::theInst.setDataFilter($!I{Hello}I$$!I{World}I!$)",
+        /* strName         */ "Step " + QString::number(++idxStep) + " LogServer::theInst.setDataFilter($!I{Hello}I!$$!I{World}I!$)",
         /* strOperation    */ "LogServer::theInst.setDataFilter($!I{Hello}I!$$!I{World}I!$)",
         /* pTSGrpParent    */ pTestGroupModifyLoggersSetDataFilter,
         /* szDoTestStepFct */ SLOT(doTestStepModifyLogger(ZS::Test::CTestStep*)) );
@@ -547,7 +547,7 @@ CTest::CTest() :
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " LogServer::theInst.setDataFilter($I{Hello}I$$!I{World}I!$)",
-        /* strOperation    */ "LogServer::theInst.setDataFilter($I{Hello}I!$$!I{World}I!$)",
+        /* strOperation    */ "LogServer::theInst.setDataFilter($I{Hello}I$$!I{World}I!$)",
         /* pTSGrpParent    */ pTestGroupModifyLoggersSetDataFilter,
         /* szDoTestStepFct */ SLOT(doTestStepModifyLogger(ZS::Test::CTestStep*)) );
 

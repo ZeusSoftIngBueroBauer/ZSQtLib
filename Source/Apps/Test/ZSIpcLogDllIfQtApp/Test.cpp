@@ -492,7 +492,7 @@ CTest::CTest() :
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " LogServer::theInst.setDataFilter($!I{Hello}I$)",
+        /* strName         */ "Step " + QString::number(++idxStep) + " LogServer::theInst.setDataFilter($!I{Hello}I!$)",
         /* strOperation    */ "LogServer::theInst.setDataFilter($!I{Hello}I!$)",
         /* pTSGrpParent    */ pTestGroupModifyLoggersSetDataFilter,
         /* szDoTestStepFct */ SLOT(doTestStepModifyLogger(ZS::Test::CTestStep*)) );
@@ -515,7 +515,7 @@ CTest::CTest() :
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " LogServer::theInst.setDataFilter($!I{Hello}I$$!I{World}I!$)",
+        /* strName         */ "Step " + QString::number(++idxStep) + " LogServer::theInst.setDataFilter($!I{Hello}I!$$!I{World}I!$)",
         /* strOperation    */ "LogServer::theInst.setDataFilter($!I{Hello}I!$$!I{World}I!$)",
         /* pTSGrpParent    */ pTestGroupModifyLoggersSetDataFilter,
         /* szDoTestStepFct */ SLOT(doTestStepModifyLogger(ZS::Test::CTestStep*)) );
@@ -539,7 +539,7 @@ CTest::CTest() :
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " LogServer::theInst.setDataFilter($I{Hello}I$$!I{World}I!$)",
-        /* strOperation    */ "LogServer::theInst.setDataFilter($I{Hello}I!$$!I{World}I!$)",
+        /* strOperation    */ "LogServer::theInst.setDataFilter($I{Hello}I$$!I{World}I!$)",
         /* pTSGrpParent    */ pTestGroupModifyLoggersSetDataFilter,
         /* szDoTestStepFct */ SLOT(doTestStepModifyLogger(ZS::Test::CTestStep*)) );
 
@@ -1534,18 +1534,44 @@ void CTest::doTestStepLogClientConnect( ZS::Test::CTestStep* i_pTestStep )
     i_pTestStep->setDescription("Check whether client can connect.");
     i_pTestStep->setInstruction(
         "Start and connect the log method client.<br/>"
-        "Hide time info in log method client to be able to compare the expected with the actual result values.<br/>"
-        "By hiding the time info you may copy and paste the log output from the log client "
-        "to the result values edit widget of this dialog.<br/>"
-        "After copy and paste you may press the button 'Compare Expected With Result Values' below.");
-    i_pTestStep->setExpectedValue("Log Client Connected");
+        "Open Loggers Dialog and Log Client Settings Dialog.<br/>"
+        "Compare the settings on tab \"Log Settings\" with the expected values.");
+
+    DllIf::CIpcLogServer* pLogServer = DllIf::CIpcLogServer::GetInstance();
+
+    char* szFilePath = DllIf::CIpcLogServer::GetLoggerFileAbsoluteFilePath();
+    QString strLoggerFilePath(szFilePath);
+    delete szFilePath; szFilePath = nullptr;
+
+    szFilePath = DllIf::CIpcLogServer::GetLocalLogFileAbsoluteFilePath();
+    QString strLogFilePath(szFilePath);
+    delete szFilePath; szFilePath = nullptr;
+
+    QStringList strlstExpectedValues;
+
+    strlstExpectedValues.append("Log Client Connected");
+    strlstExpectedValues.append("ApplicationName:                  " + QCoreApplication::applicationName());
+    strlstExpectedValues.append("ServerName:                       theInst");
+    strlstExpectedValues.append("LoggingEnabled:                   true");
+    strlstExpectedValues.append("LoggersFile:                      " + strLoggerFilePath);
+    strlstExpectedValues.append("New Loggers Enabled as Default:   true");
+    strlstExpectedValues.append("New Loggers Default Detail Level: None");
+    strlstExpectedValues.append("RemoteTracing:                    enabled");
+    strlstExpectedValues.append("CacheData:                        disabled");
+    strlstExpectedValues.append("MaxArrLen:                        1000");
+    strlstExpectedValues.append("Use Local Log File:               true");
+    strlstExpectedValues.append("Local Log File:                   " + strLogFilePath);
+    strlstExpectedValues.append("Auto Save Interval:               1000");
+    strlstExpectedValues.append("Max File Count:                   5");
+    strlstExpectedValues.append("Max Line Count:                   2000");
+    strlstExpectedValues.append("Close File After Each Write:      true");
+
+    i_pTestStep->setExpectedValues(strlstExpectedValues);
 
     m_pDlgTestStep = new CDlgTestStep(i_pTestStep);
     m_pDlgTestStep->exec();
     delete m_pDlgTestStep;
     m_pDlgTestStep = nullptr;
-
-    DllIf::CIpcLogServer* pLogServer = DllIf::CIpcLogServer::GetInstance();
 
     // Check if really connected and correct test result if necessary.
     if( i_pTestStep->getTestResult() == ZS::Test::ETestResult::TestPassed )
@@ -2187,7 +2213,14 @@ void CTest::doTestStepLoggerAddLogEntry( ZS::Test::CTestStep* i_pTestStep )
     // Result Values
     //--------------
 
-    i_pTestStep->setInstruction("Check whether client received the expected log output.");
+    QString strInstruction = "Check whether client received the expected log output.\n";
+    if( strlstExpectedValues.isEmpty() ) {
+        strInstruction += "--- No log output expected ---";
+    }
+    else {
+        strInstruction += "Clear Log Output before continue with next test step.";
+    }
+    i_pTestStep->setInstruction(strInstruction);
 
     m_pDlgTestStep = new CDlgTestStep(i_pTestStep);
     m_pDlgTestStep->exec();
@@ -2272,7 +2305,14 @@ void CTest::doTestStepLoggerAddLogEntryMyThread( ZS::Test::CTestStep* i_pTestSte
     // Result Values
     //--------------
 
-    i_pTestStep->setInstruction("Check whether client received the expected log output.");
+    QString strInstruction = "Check whether client received the expected log output.\n";
+    if( strlstExpectedValues.isEmpty() ) {
+        strInstruction += "--- No log output expected ---";
+    }
+    else {
+        strInstruction += "Clear Log Output before continue with next test step.";
+    }
+    i_pTestStep->setInstruction(strInstruction);
 
     m_pDlgTestStep = new CDlgTestStep(i_pTestStep);
     m_pDlgTestStep->exec();
@@ -2355,10 +2395,12 @@ void CTest::doTestStepLogServerAddLogEntry( ZS::Test::CTestStep* i_pTestStep )
     // Result Values
     //--------------
 
-    QString strInstruction = "Check whether client received the expected log output.";
-    if( strlstExpectedValues.isEmpty() )
-    {
-        strInstruction += " (No log output expected)";
+    QString strInstruction = "Check whether client received the expected log output.\n";
+    if( strlstExpectedValues.isEmpty() ) {
+        strInstruction += "--- No log output expected ---";
+    }
+    else {
+        strInstruction += "Clear Log Output before continue with next test step.";
     }
     i_pTestStep->setInstruction(strInstruction);
 

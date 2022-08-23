@@ -481,6 +481,15 @@ void CLogger::setDataFilter( const QString& i_strFilter )
                 int idxEnd = strDataFilter.indexOf("}I$", idxStart);
                 if( idxEnd < 0 )
                 {
+                    SErrResultInfo errResultInfo(
+                        /* errSource         */ NameSpace(), ClassName(), keyInTree(), "setDataFilter",
+                        /* result            */ EResultArgOutOfRange,
+                        /* severity          */ EResultSeverityError,
+                        /* strAddErrInfoDscr */ "Invalid data filter expression " + i_strFilter + " (missing closing \"}I$\")");
+                    if( CErrLog::GetInstance() != nullptr )
+                    {
+                        CErrLog::GetInstance()->addEntry(errResultInfo);
+                    }
                     break;
                 }
                 idxStart += 3;
@@ -501,6 +510,15 @@ void CLogger::setDataFilter( const QString& i_strFilter )
                 int idxEnd = strDataFilter.indexOf("}I!$", idxStart);
                 if( idxEnd < 0 )
                 {
+                    SErrResultInfo errResultInfo(
+                        /* errSource         */ NameSpace(), ClassName(), keyInTree(), "setDataFilter",
+                        /* result            */ EResultArgOutOfRange,
+                        /* severity          */ EResultSeverityError,
+                        /* strAddErrInfoDscr */ "Invalid data filter expression " + i_strFilter + " (missing closing \"}I!$\")");
+                    if( CErrLog::GetInstance() != nullptr )
+                    {
+                        CErrLog::GetInstance()->addEntry(errResultInfo);
+                    }
                     break;
                 }
                 idxStart += 4;
@@ -517,7 +535,7 @@ void CLogger::setDataFilter( const QString& i_strFilter )
                     /* errSource         */ NameSpace(), ClassName(), keyInTree(), "setDataFilter",
                     /* result            */ EResultArgOutOfRange,
                     /* severity          */ EResultSeverityError,
-                    /* strAddErrInfoDscr */ "Invalid data filter expression");
+                    /* strAddErrInfoDscr */ "Invalid data filter expression " + i_strFilter + " (missing any valid \"$I{\" expressions)");
                 if( CErrLog::GetInstance() != nullptr )
                 {
                     CErrLog::GetInstance()->addEntry(errResultInfo);

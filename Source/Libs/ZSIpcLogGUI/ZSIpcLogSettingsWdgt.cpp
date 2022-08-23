@@ -264,22 +264,22 @@ CWdgtLogSettings::CWdgtLogSettings( const QString& i_strObjName, QWidget* i_pWdg
     pLine->setFrameShadow(QFrame::Sunken);
     m_pLytSettings->addRow(pLine);
 
-    // Local Trace File
+    // Local Log File
     //=================
 
-    // <CheckBox> Use Local Trace File
+    // <CheckBox> Use Local Log File
     //--------------------------------
 
-    m_pLblUseLocalLogFile = new QLabel("Use Local Trace File:");
+    m_pLblUseLocalLogFile = new QLabel("Use Local Log File:");
     m_pLblUseLocalLogFile->setFixedWidth(iLblWidth);
     m_pChkUseLocalLogFile = new QCheckBox();
     m_pChkUseLocalLogFile->setChecked(logSettings.m_bUseLocalLogFile);
     m_pLytSettings->addRow(m_pLblUseLocalLogFile, m_pChkUseLocalLogFile);
 
-    // <Label> Trace Method File
+    // <Label> Local Log File
     //--------------------------
 
-    m_pLblLocalLogFileAbsFilePath = new QLabel("Local Trace File:");
+    m_pLblLocalLogFileAbsFilePath = new QLabel("Local Log File:");
     m_pLblLocalLogFileAbsFilePath->setFixedWidth(iLblWidth);
     m_pEdtLocalLogFileAbsFilePath = new QLineEdit();
     m_pEdtLocalLogFileAbsFilePath->setEnabled(false);
