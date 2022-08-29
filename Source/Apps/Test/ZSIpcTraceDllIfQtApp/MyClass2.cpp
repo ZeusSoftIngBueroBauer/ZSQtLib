@@ -66,7 +66,7 @@ CMyClass2Thread::CMyClass2Thread( const QString& i_strMyClass2ObjName, CMyClass1
     m_pMyClass2(nullptr),
     m_pTrcAdminObj(nullptr)
 {
-    setObjectName(ClassName() + m_strMyClass2ObjName);
+    setObjectName("MyClass2Thread" + m_strMyClass2ObjName);
 
     m_pTrcAdminObj = Trace::DllIf::CIpcTrcServer::GetTraceAdminObj(
         NameSpace().toLatin1().data(),

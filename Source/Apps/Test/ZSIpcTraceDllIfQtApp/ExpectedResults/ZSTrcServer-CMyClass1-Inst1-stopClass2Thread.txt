@@ -16,5 +16,9 @@
 <GUIMain                 >    -> <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass2Thread> CMyClass2ThreadInst1.wait(30000 ms)
 <GUIMain                 >    <- <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass2Thread> CMyClass2ThreadInst1.wait(): true
 <GUIMain                 >    -> <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass2Thread> CMyClass2ThreadInst1.dtor()
+<GUIMain                 >       -> <ZS::System::CMutex> CMyClass2Thread::CMyClass2ThreadInst1::WaitClass2Created.dtor()
+<GUIMain                 >       <- <ZS::System::CMutex> CMyClass2Thread::CMyClass2ThreadInst1::WaitClass2Created.dtor()
+<GUIMain                 >       -> <ZS::System::CWaitCondition> CMyClass2Thread::CMyClass2ThreadInst1::WaitClass2Created.dtor()
+<GUIMain                 >       <- <ZS::System::CWaitCondition> CMyClass2Thread::CMyClass2ThreadInst1::WaitClass2Created.dtor()
 <GUIMain                 >    <- <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass2Thread> CMyClass2ThreadInst1.dtor()
 <GUIMain                 > <- <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass1> Inst1.stopClass2Thread()

@@ -1,0 +1,2 @@
+<GUIMain                 > -> <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass3Thread> MyClass3ThreadInst1.setObjectName(MyClass3ThreadNewName1)
+<GUIMain                 > <- <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass3Thread> MyClass3ThreadInst1.setObjectName()

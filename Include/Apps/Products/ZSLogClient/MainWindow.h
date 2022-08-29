@@ -87,7 +87,6 @@ protected slots:
 protected slots:
     void onActEditFindTriggered();
 protected slots:
-    void onActSettingsWdgtLogTriggered();
     void onActSettingsLogClientTriggered();
     void onActSettingsLoggersIdxTreeTriggered();
 protected slots:
@@ -122,7 +121,6 @@ protected: // instance members
     QMenu*                  m_pMnuEdit;
     QAction*                m_pActEditFind;
     QMenu*                  m_pMnuSettings;
-    QAction*                m_pActSettingsWdgtLog;
     QAction*                m_pActSettingsLogClient;
     QAction*                m_pActSettingsLoggersIdxTree;
     QMenu*                  m_pMnuDebug;

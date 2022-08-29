@@ -1,6 +1,2 @@
 <GUIMain                 > -> <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass1> Inst1.ctor(Inst1)
-<GUIMain                 >    -> <ZS::System::CMutex> CMyClass1::Inst1::WaitClass2ThreadRunning.ctor()
-<GUIMain                 >    <- <ZS::System::CMutex> CMyClass1::Inst1::WaitClass2ThreadRunning.ctor()
-<GUIMain                 >    -> <ZS::System::CWaitCondition> CMyClass1::Inst1::Class2ThreadRunning.ctor()
-<GUIMain                 >    <- <ZS::System::CWaitCondition> CMyClass1::Inst1::Class2ThreadRunning.ctor()
 <GUIMain                 > <- <ZS::Apps::Test::IpcTraceDllIfQtApp::CMyClass1> Inst1.ctor()

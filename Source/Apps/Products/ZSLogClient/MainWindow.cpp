@@ -51,7 +51,6 @@ may result in using the software modules.
 
 #include "ZSIpcLogGUI/ZSIpcLogClientDlg.h"
 #include "ZSIpcLogGUI/ZSIpcLogWdgt.h"
-#include "ZSIpcLogGUI/ZSIpcLogWdgtSettingsDlg.h"
 #include "ZSIpcLog/ZSIpcLogClient.h"
 #include "ZSSysGUI/ZSSysFindTextDlg.h"
 #include "ZSSysGUI/ZSSysErrLogDlg.h"
@@ -118,7 +117,6 @@ CMainWindow::CMainWindow(
     m_pMnuEdit(nullptr),
     m_pActEditFind(nullptr),
     m_pMnuSettings(nullptr),
-    m_pActSettingsWdgtLog(nullptr),
     m_pActSettingsLogClient(nullptr),
     m_pActSettingsLoggersIdxTree(nullptr),
     m_pMnuDebug(nullptr),
@@ -292,21 +290,6 @@ CMainWindow::CMainWindow(
     //================
 
     m_pMnuSettings = menuBar()->addMenu(tr("&Settings"));
-
-    // <MenuItem> Settings::WdgtLog
-    //-----------------------------
-
-    m_pActSettingsWdgtLog = new QAction("&Log Widget",this);
-    m_pMnuSettings->addAction(m_pActSettingsWdgtLog);
-
-    if( !connect(
-        /* pObjSender   */ m_pActSettingsWdgtLog,
-        /* szSignal     */ SIGNAL(triggered()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onActSettingsWdgtLogTriggered()) ) )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-    }
 
     // <MenuItem> Settings::LogClient
     //-------------------------------
@@ -559,7 +542,6 @@ CMainWindow::~CMainWindow()
     m_pMnuEdit = nullptr;
     m_pActEditFind = nullptr;
     m_pMnuSettings = nullptr;
-    m_pActSettingsWdgtLog = nullptr;
     m_pActSettingsLogClient = nullptr;
     m_pActSettingsLoggersIdxTree = nullptr;
     m_pMnuDebug = nullptr;
@@ -767,37 +749,6 @@ void CMainWindow::onActEditFindTriggered()
 /*==============================================================================
 protected slots:
 ==============================================================================*/
-
-//------------------------------------------------------------------------------
-void CMainWindow::onActSettingsWdgtLogTriggered()
-//------------------------------------------------------------------------------
-{
-    QString strDlgTitle = getMainWindowTitle() + ": Log Widget Settings";
-
-    CDlgWdgtLogSettings* pDlg = CDlgWdgtLogSettings::GetInstance(
-        m_pWdgtCentral->getLogWidget()->objectName());
-
-    if( pDlg == nullptr )
-    {
-        pDlg = CDlgWdgtLogSettings::CreateInstance(
-            /* strDlgTitle */ strDlgTitle,
-            /* strObjName  */ m_pWdgtCentral->getLogWidget()->objectName(),
-            /* pWdgtParent */ nullptr );
-        pDlg->setLogWidget(m_pWdgtCentral->getLogWidget());
-        pDlg->setAttribute(Qt::WA_DeleteOnClose, true);
-        pDlg->adjustSize();
-        pDlg->show();
-    }
-    else
-    {
-        if( pDlg->isHidden() )
-        {
-            pDlg->show();
-        }
-        pDlg->raise();
-        pDlg->activateWindow();
-    }
-} // onActSettingsWdgtLogTriggered
 
 //------------------------------------------------------------------------------
 void CMainWindow::onActSettingsLogClientTriggered()

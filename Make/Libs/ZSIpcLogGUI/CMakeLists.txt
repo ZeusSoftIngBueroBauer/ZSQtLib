@@ -35,7 +35,6 @@ list(APPEND _Headers
     ${_HeadersPath}/ZSSys/ZSSysVersion.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSIpcLogClientDlg.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSIpcLogGUIDllMain.h
-    ${_HeadersPath}/${PROJECT_NAME}/ZSIpcLogWdgtSettingsDlg.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSIpcLogWdgt.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSIpcLogServerDlg.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSIpcLogSettingsWdgt.h
@@ -44,7 +43,6 @@ list(APPEND _Headers
 list(APPEND _Sources
     ${_SourcesPath}/${PROJECT_NAME}/ZSIpcLogClientDlg.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSIpcLogGUIDllMain.cpp
-    ${_SourcesPath}/${PROJECT_NAME}/ZSIpcLogWdgtSettingsDlg.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSIpcLogWdgt.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSIpcLogServerDlg.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSIpcLogSettingsWdgt.cpp

@@ -160,20 +160,18 @@ CWdgtTestStep::CWdgtTestStep(
     m_pLytMain->addWidget(m_pSplitterExpectedAndResultValues, 1);
     m_pSplitterExpectedAndResultValues->hide();
 
-    // Without setMaximumHeight the text edit widget are resized to a very high value
-    // if a lot of text lines are inserted. Strange ....
-    //m_pWdgtGrpExpectedAndResultValues->setMaximumHeight(640);
-
     m_pGrpExpectedValues = new QGroupBox("Expected Values:");
     m_pLytGrpExpectedValues = new QVBoxLayout();
     m_pGrpExpectedValues->setLayout(m_pLytGrpExpectedValues);
     m_pEdtExpectedValues = new CTextEdit();
-    //m_pEdtExpectedValues->setReadOnly(false);
     m_pEdtExpectedValues->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     m_pEdtExpectedValues->setSizeAdjustPolicy(QAbstractScrollArea::AdjustIgnored);
     QFont fnt = m_pEdtExpectedValues->currentFont();
     fnt.setFamily("Courier New");
     m_pEdtExpectedValues->setFont(fnt);
+    // Without setMaximumHeight the text edit widget are resized to a very high value
+    // if a lot of text lines are inserted. Strange ....
+    m_pEdtExpectedValues->setMaximumHeight(640);
     m_pLytGrpExpectedValues->addWidget(m_pEdtExpectedValues);
     m_pSplitterExpectedAndResultValues->addWidget(m_pGrpExpectedValues);
 
@@ -181,9 +179,12 @@ CWdgtTestStep::CWdgtTestStep(
     m_pLytGrpResultValues = new QVBoxLayout();
     m_pGrpResultValues->setLayout(m_pLytGrpResultValues);
     m_pEdtResultValues = new CTextEdit();
-    //m_pEdtResultValues->setReadOnly(false);
     m_pEdtResultValues->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     m_pEdtResultValues->setSizeAdjustPolicy(QAbstractScrollArea::AdjustIgnored);
+    m_pEdtResultValues->setFont(fnt);
+    // Without setMaximumHeight the text edit widget are resized to a very high value
+    // if a lot of text lines are inserted. Strange ....
+    m_pEdtResultValues->setMaximumHeight(640);
     m_pLytGrpResultValues->addWidget(m_pEdtResultValues);
     m_pSplitterExpectedAndResultValues->addWidget(m_pGrpResultValues);
 

@@ -64,7 +64,7 @@ CMyClass3Thread::CMyClass3Thread( const QString& i_strMyClass3ObjName, CMyClass2
     m_pMyClass3(nullptr),
     m_pTrcAdminObj(nullptr)
 {
-    setObjectName(ClassName() + m_strMyClass3ObjName);
+    setObjectName("MyClass3Thread" + m_strMyClass3ObjName);
 
     m_pTrcAdminObj = Trace::DllIf::CTrcServer::GetTraceAdminObj(
         NameSpace().toLatin1().data(),
@@ -98,6 +98,8 @@ CMyClass3Thread::~CMyClass3Thread()
         /* eDetailLevel */ EMethodTraceDetailLevelEnterLeave,
         /* szMethod     */ "dtor",
         /* szMthInArgs  */ "" );
+
+    emit aboutToBeDestroyed(this, objectName());
 
     if( isRunning() )
     {
@@ -647,7 +649,19 @@ QString CMyClass3::instMethod(const QString& i_strMthInArgs)
         /* szMethod     */ "instMethod",
         /* szMthInArgs  */ strMthInArgs.toLatin1().data() );
 
-    strResult = "Hello World";
+    if( QThread::currentThread() != thread() )
+    {
+        CMsgReqTest* pMsgReq = new CMsgReqTest(this, this);
+        pMsgReq->setCommand("instMethod");
+        pMsgReq->setCommandArg(i_strMthInArgs);
+        POST_OR_DELETE_MESSAGE(pMsgReq);
+        pMsgReq = nullptr;
+        strResult = "You here from me later ...";
+    }
+    else // if( QThread::currentThread() == thread() )
+    {
+        strResult = "Hello World";
+    }
 
     if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevelArgsNormal) )
     {
@@ -678,7 +692,19 @@ QString CMyClass3::noisyInstMethod(const QString& i_strMthInArgs)
         /* szMethod     */ "noisyInstMethod",
         /* szMthInArgs  */ strMthInArgs.toLatin1().data() );
 
-    strResult = "Hello World";
+    if( QThread::currentThread() != thread() )
+    {
+        CMsgReqTest* pMsgReq = new CMsgReqTest(this, this);
+        pMsgReq->setCommand("noisyInstMethod");
+        pMsgReq->setCommandArg(i_strMthInArgs);
+        POST_OR_DELETE_MESSAGE(pMsgReq);
+        pMsgReq = nullptr;
+        strResult = "You here from me later ...";
+    }
+    else // if( QThread::currentThread() == thread() )
+    {
+        strResult = "Hello World";
+    }
 
     if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevelArgsNormal) )
     {
@@ -709,7 +735,19 @@ QString CMyClass3::veryNoisyInstMethod(const QString& i_strMthInArgs)
         /* szMethod     */ "veryNoisyInstMethod",
         /* szMthInArgs  */ strMthInArgs.toLatin1().data() );
 
-    strResult = "Hello World";
+    if( QThread::currentThread() != thread() )
+    {
+        CMsgReqTest* pMsgReq = new CMsgReqTest(this, this);
+        pMsgReq->setCommand("veryNoisyInstMethod");
+        pMsgReq->setCommandArg(i_strMthInArgs);
+        POST_OR_DELETE_MESSAGE(pMsgReq);
+        pMsgReq = nullptr;
+        strResult = "You here from me later ...";
+    }
+    else // if( QThread::currentThread() == thread() )
+    {
+        strResult = "Hello World";
+    }
 
     if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevelArgsNormal) )
     {
@@ -810,7 +848,19 @@ bool CMyClass3::event( QEvent* i_pEv )
 
         if( pMsgReq != nullptr )
         {
-            if( pMsgReq->getCommand() == "recursiveTraceMethod" )
+            if( pMsgReq->getCommand() == "instMethod" )
+            {
+                instMethod(pMsgReq->getCommandArg());
+            }
+            else if( pMsgReq->getCommand() == "noisyInstMethod" )
+            {
+                noisyInstMethod(pMsgReq->getCommandArg());
+            }
+            else if( pMsgReq->getCommand() == "veryNoisyInstMethod" )
+            {
+                veryNoisyInstMethod(pMsgReq->getCommandArg());
+            }
+            else if( pMsgReq->getCommand() == "recursiveTraceMethod" )
             {
                 recursiveTraceMethod();
             }

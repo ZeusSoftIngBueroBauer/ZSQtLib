@@ -102,9 +102,6 @@ public: // instance methods
 public: // instance methods
     void findText();
     bool find( const QString& i_strExp, QTextDocument::FindFlags i_findFlags = QTextDocument::FindFlags() );
-public: // instance methods
-    bool getShowTimeInfo() const;
-    void setShowTimeInfo( bool i_bShow );
 protected: // overridables of base class QWidget
     virtual bool eventFilter( QObject* i_pObjWatched, QEvent* i_pEv );
 protected slots: // connected to the signals of my user controls
@@ -140,7 +137,6 @@ private: // instance members
     QVector<int>                       m_ariDataRateDiffs_linesPerSec;
     ZS::System::CRequest*              m_pReqInProgress;
     QString                            m_strThreadClrFileAbsFilePath;
-    bool                               m_bShowTimeInfo;
     int                                m_iEdtItemsCountMax;
     int                                m_iEdtItems;
     int                                m_bEdtFull;

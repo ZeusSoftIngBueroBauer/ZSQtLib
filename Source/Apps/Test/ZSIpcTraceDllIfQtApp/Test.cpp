@@ -71,10 +71,14 @@ CTest::CTest() :
     m_pTrcServer(nullptr),
     m_hshpMyClass1InstancesByName(),
     m_hshpMyClass2InstancesByName(),
+    m_hshpMyClass2ThreadInstancesByName(),
     m_hshpMyClass3InstancesByName(),
+    m_hshpMyClass3ThreadInstancesByName(),
     m_multihshpMyClass1InstancesByName(),
     m_multihshpMyClass2InstancesByName(),
-    m_multihshpMyClass3InstancesByName()
+    m_multihshpMyClass2ThreadInstancesByName(),
+    m_multihshpMyClass3InstancesByName(),
+    m_multihshpMyClass3ThreadInstancesByName()
 {
     m_pTmrTestStepTimeout = new QTimer(this);
     m_pTmrTestStepTimeout->setSingleShot(true);
@@ -894,7 +898,7 @@ CTest::CTest() :
         /* strOperation    */ "CMyClass3::NoisyMethods::NewName1.noisyInstMethod(Hello Instance): Hello World",
         /* pTSGrpParent    */ pTestGroupRenameTraceAdminObjSeveralThreads,
         /* szDoTestStepFct */ SLOT(doTestStepTraceMethodCall(ZS::Test::CTestStep*)) );
-    pTestStep->setConfigValue("ExpectedResultsFileName", "ZSTrcServer-CMyClass2-NewName1-noisyInstMethod-queued");
+    pTestStep->setConfigValue("ExpectedResultsFileName", "ZSTrcServer-CMyClass3-NewName1-noisyInstMethod-queued");
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
@@ -902,7 +906,7 @@ CTest::CTest() :
         /* strOperation    */ "CMyClass3::VeryNoisyMethods::NewName1.veryNoisyInstMethod(Hello Instance): Hello World",
         /* pTSGrpParent    */ pTestGroupRenameTraceAdminObjSeveralThreads,
         /* szDoTestStepFct */ SLOT(doTestStepTraceMethodCall(ZS::Test::CTestStep*)) );
-    pTestStep->setConfigValue("ExpectedResultsFileName", "ZSTrcServer-CMyClass2-NewName1-veryNoisyInstMethod-queued");
+    pTestStep->setConfigValue("ExpectedResultsFileName", "ZSTrcServer-CMyClass3-NewName1-veryNoisyInstMethod-queued");
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
@@ -1037,6 +1041,26 @@ CTest::~CTest()
         m_hshpMyClass2InstancesByName[strObjName] = nullptr;
     }
 
+    for( auto& pObj : m_hshpMyClass2ThreadInstancesByName )
+    {
+        QObject::disconnect(
+            /* pObjSender   */ pObj,
+            /* szSignal     */ SIGNAL(aboutToBeDestroyed(QObject*, const QString&)),
+            /* pObjReceiver */ this,
+            /* szSlot       */ SLOT(onClass2ThreadAboutToBeDestroyed(QObject*, const QString&)) );
+
+        strObjName = pObj->objectName();
+
+        try
+        {
+            delete pObj;
+        }
+        catch(...)
+        {
+        }
+        m_hshpMyClass2ThreadInstancesByName[strObjName] = nullptr;
+    }
+
     for( auto& pObj : m_hshpMyClass3InstancesByName )
     {
         QObject::disconnect(
@@ -1055,6 +1079,26 @@ CTest::~CTest()
         {
         }
         m_hshpMyClass3InstancesByName[strObjName] = nullptr;
+    }
+
+    for( auto& pObj : m_hshpMyClass3ThreadInstancesByName )
+    {
+        QObject::disconnect(
+            /* pObjSender   */ pObj,
+            /* szSignal     */ SIGNAL(aboutToBeDestroyed(QObject*, const QString&)),
+            /* pObjReceiver */ this,
+            /* szSlot       */ SLOT(onClass3ThreadAboutToBeDestroyed(QObject*, const QString&)) );
+
+        strObjName = pObj->objectName();
+
+        try
+        {
+            delete pObj;
+        }
+        catch(...)
+        {
+        }
+        m_hshpMyClass3ThreadInstancesByName[strObjName] = nullptr;
     }
 
     while( !m_multihshpMyClass1InstancesByName.isEmpty() )
@@ -1105,6 +1149,30 @@ CTest::~CTest()
         }
     }
 
+    while( !m_multihshpMyClass2ThreadInstancesByName.isEmpty() )
+    {
+        QMultiHash<QString, CMyClass2Thread*>::iterator it = m_multihshpMyClass2ThreadInstancesByName.begin();
+
+        CMyClass2Thread* pObj = it.value();
+
+        QObject::disconnect(
+            /* pObjSender   */ pObj,
+            /* szSignal     */ SIGNAL(aboutToBeDestroyed(QObject*, const QString&)),
+            /* pObjReceiver */ this,
+            /* szSlot       */ SLOT(onClass2ThreadAboutToBeDestroyed(QObject*, const QString&)) );
+
+        strObjName = pObj->objectName();
+        m_multihshpMyClass2ThreadInstancesByName.remove(strObjName, pObj);
+
+        try
+        {
+            delete pObj;
+        }
+        catch(...)
+        {
+        }
+    }
+
     while( !m_multihshpMyClass3InstancesByName.isEmpty() )
     {
         QMultiHash<QString, CMyClass3*>::iterator it = m_multihshpMyClass3InstancesByName.begin();
@@ -1119,6 +1187,30 @@ CTest::~CTest()
 
         strObjName = pObj->objectName();
         m_multihshpMyClass3InstancesByName.remove(strObjName, pObj);
+
+        try
+        {
+            delete pObj;
+        }
+        catch(...)
+        {
+        }
+    }
+
+    while( !m_multihshpMyClass3ThreadInstancesByName.isEmpty() )
+    {
+        QMultiHash<QString, CMyClass3Thread*>::iterator it = m_multihshpMyClass3ThreadInstancesByName.begin();
+
+        CMyClass3Thread* pObj = it.value();
+
+        QObject::disconnect(
+            /* pObjSender   */ pObj,
+            /* szSignal     */ SIGNAL(aboutToBeDestroyed(QObject*, const QString&)),
+            /* pObjReceiver */ this,
+            /* szSlot       */ SLOT(onClass3ThreadAboutToBeDestroyed(QObject*, const QString&)) );
+
+        strObjName = pObj->objectName();
+        m_multihshpMyClass3ThreadInstancesByName.remove(strObjName, pObj);
 
         try
         {
@@ -1571,7 +1663,7 @@ void CTest::doTestStepTraceMethodCall( ZS::Test::CTestStep* i_pTestStep )
 
     ZS::Test::CTestStepGroup* pTestGroup = i_pTestStep->getParentGroup();
 
-    QString strTestGroupName = pTestGroup == nullptr ? "" : pTestGroup->name();
+    QString strTestGroupPath = pTestGroup == nullptr ? "" : pTestGroup->path();
 
     // Expected Values
     //----------------
@@ -1679,7 +1771,7 @@ void CTest::doTestStepTraceMethodCall( ZS::Test::CTestStep* i_pTestStep )
             {
                 strResultValue = "Invalid test step: ObjName not defined";
             }
-            else if( !strTestGroupName.contains("RenameTraceAdminObj") && m_hshpMyClass1InstancesByName.contains(strObjName) )
+            else if( !strTestGroupPath.contains("RenameTraceAdminObj") && m_hshpMyClass1InstancesByName.contains(strObjName) )
             {
                 strResultValue = "CMyClass1::" + strObjName + " is already existing";
             }
@@ -1689,7 +1781,7 @@ void CTest::doTestStepTraceMethodCall( ZS::Test::CTestStep* i_pTestStep )
 
                 CMyClass1* pObj = new CMyClass1(strlstInArgs[0]);
 
-                if( strTestGroupName.contains("RenameTraceAdminObj") )
+                if( strTestGroupPath.contains("RenameTraceAdminObj") )
                 {
                     m_multihshpMyClass1InstancesByName.insert(strObjName, pObj);
                 }
@@ -1715,18 +1807,18 @@ void CTest::doTestStepTraceMethodCall( ZS::Test::CTestStep* i_pTestStep )
             {
                 strResultValue = "Invalid test step: ObjName not defined";
             }
-            else if( !strTestGroupName.contains("RenameTraceAdminObj") && !m_hshpMyClass1InstancesByName.contains(strObjName) )
+            else if( !strTestGroupPath.contains("RenameTraceAdminObj") && !m_hshpMyClass1InstancesByName.contains(strObjName) )
             {
                 strResultValue = "CMyClass1::" + strObjName + " is not existing";
             }
-            else if( strTestGroupName.contains("RenameTraceAdminObj") && !m_multihshpMyClass1InstancesByName.contains(strObjName) )
+            else if( strTestGroupPath.contains("RenameTraceAdminObj") && !m_multihshpMyClass1InstancesByName.contains(strObjName) )
             {
                 strResultValue = "CMyClass1::" + strObjName + " is not existing";
             }
             else if( strlstInArgs.size() == 0 )
             {
                 bValidTestStep = true;
-                if( strTestGroupName.contains("RenameTraceAdminObj") )
+                if( strTestGroupPath.contains("RenameTraceAdminObj") )
                 {
                     delete m_multihshpMyClass1InstancesByName.value(strObjName);
                     // Slot onClass1AboutToBeDestroyed will remove the object from the hash.
@@ -1746,18 +1838,18 @@ void CTest::doTestStepTraceMethodCall( ZS::Test::CTestStep* i_pTestStep )
             {
                 strResultValue = "Invalid test step: ObjName not defined";
             }
-            else if( !strTestGroupName.contains("RenameTraceAdminObj") && !m_hshpMyClass1InstancesByName.contains(strObjName) )
+            else if( !strTestGroupPath.contains("RenameTraceAdminObj") && !m_hshpMyClass1InstancesByName.contains(strObjName) )
             {
                 strResultValue = "CMyClass1::" + strObjName + " is not existing";
             }
-            else if( strTestGroupName.contains("RenameTraceAdminObj") && !m_multihshpMyClass1InstancesByName.contains(strObjName) )
+            else if( strTestGroupPath.contains("RenameTraceAdminObj") && !m_multihshpMyClass1InstancesByName.contains(strObjName) )
             {
                 strResultValue = "CMyClass1::" + strObjName + " is not existing";
             }
             else if( strlstInArgs.size() == 1 )
             {
                 bValidTestStep = true;
-                if( strTestGroupName.contains("RenameTraceAdminObj") )
+                if( strTestGroupPath.contains("RenameTraceAdminObj") )
                 {
                     CMyClass1* pObj = m_multihshpMyClass1InstancesByName.take(strObjName);
                     pObj->setObjectName(strlstInArgs[0]);
@@ -1777,26 +1869,67 @@ void CTest::doTestStepTraceMethodCall( ZS::Test::CTestStep* i_pTestStep )
             {
                 strResultValue = "Invalid test step: ObjName not defined";
             }
-            else if( !m_hshpMyClass1InstancesByName.contains(strObjName) )
+            else if( !strTestGroupPath.contains("RenameTraceAdminObj") && !m_hshpMyClass1InstancesByName.contains(strObjName) )
+            {
+                strResultValue = "CMyClass1::" + strObjName + " is not existing";
+            }
+            else if( strTestGroupPath.contains("RenameTraceAdminObj") && !m_multihshpMyClass1InstancesByName.contains(strObjName) )
             {
                 strResultValue = "CMyClass1::" + strObjName + " is not existing";
             }
             else if( strlstInArgs.size() == 1 )
             {
-                m_hshpMyClass1InstancesByName[strObjName]->startClass2Thread(strlstInArgs[0]);
-                CMyClass2* myClass2 = m_hshpMyClass1InstancesByName[strObjName]->getMyClass2();
-                if( myClass2 == nullptr )
+                CMyClass1* pMyClass1 = nullptr;
+                if( strTestGroupPath.contains("RenameTraceAdminObj") )
+                {
+                    pMyClass1 = m_multihshpMyClass1InstancesByName.value(strObjName);
+                }
+                else
+                {
+                    pMyClass1 = m_hshpMyClass1InstancesByName.value(strObjName);
+                }
+                pMyClass1->startClass2Thread(strlstInArgs[0]);
+
+                CMyClass2Thread* pMyClass2Thread = pMyClass1->getMyClass2Thread();
+                CMyClass2* pMyClass2 = pMyClass1->getMyClass2();
+
+                if( pMyClass2Thread == nullptr )
+                {
+                    strResultValue = "CMyClass2Thread Instance not created";
+                }
+                else if( pMyClass2 == nullptr )
                 {
                     strResultValue = "CMyClass2 Instance not created";
                 }
                 else
                 {
                     bValidTestStep = true;
-                    QString strClass2ObjName = myClass2->objectName();
-                    m_hshpMyClass2InstancesByName[strClass2ObjName] = myClass2;
+
+                    QString strClass2ThreadObjName = pMyClass2Thread->objectName();
+                    QString strClass2ObjName = pMyClass2->objectName();
+
+                    if( strTestGroupPath.contains("RenameTraceAdminObj") )
+                    {
+                        m_multihshpMyClass2ThreadInstancesByName.insert(strClass2ThreadObjName, pMyClass2Thread);
+                        m_multihshpMyClass2InstancesByName.insert(strClass2ObjName, pMyClass2);
+                    }
+                    else
+                    {
+                        m_hshpMyClass2ThreadInstancesByName[strClass2ThreadObjName] = pMyClass2Thread;
+                        m_hshpMyClass2InstancesByName[strClass2ObjName] = pMyClass2;
+                    }
 
                     if( !QObject::connect(
-                        /* pObjSender   */ m_hshpMyClass2InstancesByName[strClass2ObjName],
+                        /* pObjSender   */ pMyClass2Thread,
+                        /* szSignal     */ SIGNAL(aboutToBeDestroyed(QObject*, const QString&)),
+                        /* pObjReceiver */ this,
+                        /* szSlot       */ SLOT(onClass2ThreadAboutToBeDestroyed(QObject*, const QString&)),
+                        /* cnctType     */ Qt::DirectConnection ) )
+                    {
+                        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
+                    }
+                    if( !QObject::connect(
+                        /* pObjSender   */ pMyClass2,
                         /* szSignal     */ SIGNAL(aboutToBeDestroyed(QObject*, const QString&)),
                         /* pObjReceiver */ this,
                         /* szSlot       */ SLOT(onClass2AboutToBeDestroyed(QObject*, const QString&)),
@@ -1813,24 +1946,47 @@ void CTest::doTestStepTraceMethodCall( ZS::Test::CTestStep* i_pTestStep )
             {
                 strResultValue = "Invalid test step: ObjName not defined";
             }
-            else if( !m_hshpMyClass1InstancesByName.contains(strObjName) )
+            else if( !strTestGroupPath.contains("RenameTraceAdminObj") && !m_hshpMyClass1InstancesByName.contains(strObjName) )
+            {
+                strResultValue = "CMyClass1::" + strObjName + " is not existing";
+            }
+            else if( strTestGroupPath.contains("RenameTraceAdminObj") && !m_multihshpMyClass1InstancesByName.contains(strObjName) )
             {
                 strResultValue = "CMyClass1::" + strObjName + " is not existing";
             }
             else if( strlstInArgs.size() == 0 )
             {
-                CMyClass2* myClass2 = m_hshpMyClass1InstancesByName[strObjName]->getMyClass2();
-                if( myClass2 == nullptr )
+                CMyClass1* pMyClass1 = nullptr;
+                CMyClass2* pMyClass2 = nullptr;
+                QString    strObjNameClass2;
+
+                if( strTestGroupPath.contains("RenameTraceAdminObj") )
+                {
+                    pMyClass1 = m_multihshpMyClass1InstancesByName.value(strObjName);
+                }
+                else
+                {
+                    pMyClass1 = m_hshpMyClass1InstancesByName.value(strObjName);
+                }
+                if( pMyClass1 != nullptr )
+                {
+                    pMyClass2 = pMyClass1->getMyClass2();
+                }
+
+                if( pMyClass1 == nullptr )
+                {
+                    strResultValue = "CMyClass1 Instance not created";
+                }
+                else if( pMyClass2 == nullptr )
                 {
                     strResultValue = "CMyClass2 Instance not created";
                 }
                 else
                 {
                     bValidTestStep = true;
-                    // Slot onClass3AboutToBeDestroyed will remove the object from the hash.
-                    //QString strClass2ObjName = myClass2->objectName();
-                    //m_hshpMyClass2InstancesByName.remove(strClass2ObjName);
-                    m_hshpMyClass1InstancesByName[strObjName]->stopClass2Thread();
+                    // Slots onClass2AboutToBeDestroyed will remove the
+                    // object from the hashes.
+                    pMyClass1->stopClass2Thread();
                 }
             }
         }
@@ -1844,7 +2000,7 @@ void CTest::doTestStepTraceMethodCall( ZS::Test::CTestStep* i_pTestStep )
             {
                 strResultValue = "Invalid test step: ObjName not defined";
             }
-            else if( !strTestGroupName.contains("RenameTraceAdminObj") && m_hshpMyClass2InstancesByName.contains(strObjName) )
+            else if( !strTestGroupPath.contains("RenameTraceAdminObj") && m_hshpMyClass2InstancesByName.contains(strObjName) )
             {
                 strResultValue = "CMyClass2::" + strObjName + " is already existing";
             }
@@ -1854,7 +2010,7 @@ void CTest::doTestStepTraceMethodCall( ZS::Test::CTestStep* i_pTestStep )
 
                 CMyClass2* pObj = new CMyClass2(strlstInArgs[0]);
 
-                if( strTestGroupName.contains("RenameTraceAdminObj") )
+                if( strTestGroupPath.contains("RenameTraceAdminObj") )
                 {
                     m_multihshpMyClass2InstancesByName.insert(strObjName, pObj);
                 }
@@ -1881,7 +2037,7 @@ void CTest::doTestStepTraceMethodCall( ZS::Test::CTestStep* i_pTestStep )
 
                     CMyClass2* pObj = new CMyClass2(strlstInArgs[0], nullptr);
 
-                    if( strTestGroupName.contains("RenameTraceAdminObj") )
+                    if( strTestGroupPath.contains("RenameTraceAdminObj") )
                     {
                         m_multihshpMyClass2InstancesByName.insert(strObjName, pObj);
                     }
@@ -1908,18 +2064,18 @@ void CTest::doTestStepTraceMethodCall( ZS::Test::CTestStep* i_pTestStep )
             {
                 strResultValue = "Invalid test step: ObjName not defined";
             }
-            else if( !strTestGroupName.contains("RenameTraceAdminObj") && !m_hshpMyClass2InstancesByName.contains(strObjName) )
+            else if( !strTestGroupPath.contains("RenameTraceAdminObj") && !m_hshpMyClass2InstancesByName.contains(strObjName) )
             {
                 strResultValue = "CMyClass2::" + strObjName + " is not existing";
             }
-            else if( strTestGroupName.contains("RenameTraceAdminObj") && !m_multihshpMyClass2InstancesByName.contains(strObjName) )
+            else if( strTestGroupPath.contains("RenameTraceAdminObj") && !m_multihshpMyClass2InstancesByName.contains(strObjName) )
             {
                 strResultValue = "CMyClass2::" + strObjName + " is not existing";
             }
             else if( strlstInArgs.size() == 0 )
             {
                 bValidTestStep = true;
-                if( strTestGroupName.contains("RenameTraceAdminObj") )
+                if( strTestGroupPath.contains("RenameTraceAdminObj") )
                 {
                     delete m_multihshpMyClass2InstancesByName.value(strObjName);
                     // Slot onClass2AboutToBeDestroyed will remove the object from the hash.
@@ -1939,18 +2095,18 @@ void CTest::doTestStepTraceMethodCall( ZS::Test::CTestStep* i_pTestStep )
             {
                 strResultValue = "Invalid test step: ObjName not defined";
             }
-            else if( !strTestGroupName.contains("RenameTraceAdminObj") && !m_hshpMyClass2InstancesByName.contains(strObjName) )
+            else if( !strTestGroupPath.contains("RenameTraceAdminObj") && !m_hshpMyClass2InstancesByName.contains(strObjName) )
             {
                 strResultValue = "CMyClass2::" + strObjName + " is not existing";
             }
-            else if( strTestGroupName.contains("RenameTraceAdminObj") && !m_multihshpMyClass2InstancesByName.contains(strObjName) )
+            else if( strTestGroupPath.contains("RenameTraceAdminObj") && !m_multihshpMyClass2InstancesByName.contains(strObjName) )
             {
                 strResultValue = "CMyClass2::" + strObjName + " is not existing";
             }
             else if( strlstInArgs.size() == 1 )
             {
                 bValidTestStep = true;
-                if( strTestGroupName.contains("RenameTraceAdminObj") )
+                if( strTestGroupPath.contains("RenameTraceAdminObj") )
                 {
                     CMyClass2* pObj = m_multihshpMyClass2InstancesByName.take(strObjName);
                     pObj->setObjectName(strlstInArgs[0]);
@@ -1970,14 +2126,27 @@ void CTest::doTestStepTraceMethodCall( ZS::Test::CTestStep* i_pTestStep )
             {
                 strResultValue = "Invalid test step: ObjName not defined";
             }
-            else if( !m_hshpMyClass2InstancesByName.contains(strObjName) )
+            else if( !strTestGroupPath.contains("RenameTraceAdminObj") && !m_hshpMyClass2InstancesByName.contains(strObjName) )
+            {
+                strResultValue = "CMyClass2::" + strObjName + " is not existing";
+            }
+            else if( strTestGroupPath.contains("RenameTraceAdminObj") && !m_multihshpMyClass2InstancesByName.contains(strObjName) )
             {
                 strResultValue = "CMyClass2::" + strObjName + " is not existing";
             }
             else if( strlstInArgs.size() == 1 )
             {
                 bValidTestStep = true;
-                m_hshpMyClass2InstancesByName[strObjName]->instMethod(strlstInArgs[0]);
+                CMyClass2* pObj = nullptr;
+                if( strTestGroupPath.contains("RenameTraceAdminObj") )
+                {
+                    pObj = m_multihshpMyClass2InstancesByName.value(strObjName);
+                }
+                else
+                {
+                    pObj = m_hshpMyClass2InstancesByName.value(strObjName);
+                }
+                pObj->instMethod(strlstInArgs[0]);
             }
         }
         else if( strMth == "recursiveTraceMethod" )
@@ -1986,14 +2155,27 @@ void CTest::doTestStepTraceMethodCall( ZS::Test::CTestStep* i_pTestStep )
             {
                 strResultValue = "Invalid test step: ObjName not defined";
             }
-            else if( !m_hshpMyClass2InstancesByName.contains(strObjName) )
+            else if( !strTestGroupPath.contains("RenameTraceAdminObj") && !m_hshpMyClass2InstancesByName.contains(strObjName) )
+            {
+                strResultValue = "CMyClass2::" + strObjName + " is not existing";
+            }
+            else if( strTestGroupPath.contains("RenameTraceAdminObj") && !m_multihshpMyClass2InstancesByName.contains(strObjName) )
             {
                 strResultValue = "CMyClass2::" + strObjName + " is not existing";
             }
             else if( strlstInArgs.size() == 0 )
             {
                 bValidTestStep = true;
-                m_hshpMyClass2InstancesByName[strObjName]->recursiveTraceMethod();
+                CMyClass2* pObj = nullptr;
+                if( strTestGroupPath.contains("RenameTraceAdminObj") )
+                {
+                    pObj = m_multihshpMyClass2InstancesByName.value(strObjName);
+                }
+                else
+                {
+                    pObj = m_hshpMyClass2InstancesByName.value(strObjName);
+                }
+                pObj->recursiveTraceMethod();
             }
         }
         else if( strMth == "startMessageTimer" )
@@ -2002,14 +2184,27 @@ void CTest::doTestStepTraceMethodCall( ZS::Test::CTestStep* i_pTestStep )
             {
                 strResultValue = "Invalid test step: ObjName not defined";
             }
-            else if( !m_hshpMyClass2InstancesByName.contains(strObjName) )
+            else if( !strTestGroupPath.contains("RenameTraceAdminObj") && !m_hshpMyClass2InstancesByName.contains(strObjName) )
+            {
+                strResultValue = "CMyClass2::" + strObjName + " is not existing";
+            }
+            else if( strTestGroupPath.contains("RenameTraceAdminObj") && !m_multihshpMyClass2InstancesByName.contains(strObjName) )
             {
                 strResultValue = "CMyClass2::" + strObjName + " is not existing";
             }
             else if( strlstInArgs.size() == 0 )
             {
                 bValidTestStep = true;
-                m_hshpMyClass2InstancesByName[strObjName]->startMessageTimer();
+                CMyClass2* pObj = nullptr;
+                if( strTestGroupPath.contains("RenameTraceAdminObj") )
+                {
+                    pObj = m_multihshpMyClass2InstancesByName.value(strObjName);
+                }
+                else
+                {
+                    pObj = m_hshpMyClass2InstancesByName.value(strObjName);
+                }
+                pObj->startMessageTimer();
             }
         }
         else if( strMth == "startClass3Thread" )
@@ -2018,26 +2213,67 @@ void CTest::doTestStepTraceMethodCall( ZS::Test::CTestStep* i_pTestStep )
             {
                 strResultValue = "Invalid test step: ObjName not defined";
             }
-            else if( !m_hshpMyClass2InstancesByName.contains(strObjName) )
+            else if( !strTestGroupPath.contains("RenameTraceAdminObj") && !m_hshpMyClass2InstancesByName.contains(strObjName) )
+            {
+                strResultValue = "CMyClass2::" + strObjName + " is not existing";
+            }
+            else if( strTestGroupPath.contains("RenameTraceAdminObj") && !m_multihshpMyClass2InstancesByName.contains(strObjName) )
             {
                 strResultValue = "CMyClass2::" + strObjName + " is not existing";
             }
             else if( strlstInArgs.size() == 1 )
             {
-                m_hshpMyClass2InstancesByName[strObjName]->startClass3Thread(strlstInArgs[0]);
-                CMyClass3* myClass3 = m_hshpMyClass2InstancesByName[strObjName]->getMyClass3();
-                if( myClass3 == nullptr )
+                CMyClass2* pMyClass2 = nullptr;
+                if( strTestGroupPath.contains("RenameTraceAdminObj") )
+                {
+                    pMyClass2 = m_multihshpMyClass2InstancesByName.value(strObjName);
+                }
+                else
+                {
+                    pMyClass2 = m_hshpMyClass2InstancesByName.value(strObjName);
+                }
+                pMyClass2->startClass3Thread(strlstInArgs[0]);
+
+                CMyClass3Thread* pMyClass3Thread = pMyClass2->getMyClass3Thread();
+                CMyClass3* pMyClass3 = pMyClass2->getMyClass3();
+
+                if( pMyClass3Thread == nullptr )
+                {
+                    strResultValue = "CMyClass3Thread Instance not created";
+                }
+                else if( pMyClass3 == nullptr )
                 {
                     strResultValue = "CMyClass3 Instance not created";
                 }
                 else
                 {
                     bValidTestStep = true;
-                    QString strClass3ObjName = myClass3->objectName();
-                    m_hshpMyClass3InstancesByName[strClass3ObjName] = myClass3;
+
+                    QString strClass3ThreadObjName = pMyClass3Thread->objectName();
+                    QString strClass3ObjName = pMyClass3->objectName();
+
+                    if( strTestGroupPath.contains("RenameTraceAdminObj") )
+                    {
+                        m_multihshpMyClass3ThreadInstancesByName.insert(strClass3ThreadObjName, pMyClass3Thread);
+                        m_multihshpMyClass3InstancesByName.insert(strClass3ObjName, pMyClass3);
+                    }
+                    else
+                    {
+                        m_hshpMyClass3ThreadInstancesByName[strClass3ThreadObjName] = pMyClass3Thread;
+                        m_hshpMyClass3InstancesByName[strClass3ObjName] = pMyClass3;
+                    }
 
                     if( !QObject::connect(
-                        /* pObjSender   */ m_hshpMyClass3InstancesByName[strClass3ObjName],
+                        /* pObjSender   */ pMyClass3Thread,
+                        /* szSignal     */ SIGNAL(aboutToBeDestroyed(QObject*, const QString&)),
+                        /* pObjReceiver */ this,
+                        /* szSlot       */ SLOT(onClass3ThreadAboutToBeDestroyed(QObject*, const QString&)),
+                        /* cnctType     */ Qt::DirectConnection ) )
+                    {
+                        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
+                    }
+                    if( !QObject::connect(
+                        /* pObjSender   */ pMyClass3,
                         /* szSignal     */ SIGNAL(aboutToBeDestroyed(QObject*, const QString&)),
                         /* pObjReceiver */ this,
                         /* szSlot       */ SLOT(onClass3AboutToBeDestroyed(QObject*, const QString&)),
@@ -2054,28 +2290,83 @@ void CTest::doTestStepTraceMethodCall( ZS::Test::CTestStep* i_pTestStep )
             {
                 strResultValue = "Invalid test step: ObjName not defined";
             }
-            else if( !m_hshpMyClass2InstancesByName.contains(strObjName) )
+            else if( !strTestGroupPath.contains("RenameTraceAdminObj") && !m_hshpMyClass2InstancesByName.contains(strObjName) )
+            {
+                strResultValue = "CMyClass2::" + strObjName + " is not existing";
+            }
+            else if( strTestGroupPath.contains("RenameTraceAdminObj") && !m_multihshpMyClass2InstancesByName.contains(strObjName) )
             {
                 strResultValue = "CMyClass2::" + strObjName + " is not existing";
             }
             else if( strlstInArgs.size() == 0 )
             {
-                CMyClass3* myClass3 = m_hshpMyClass2InstancesByName[strObjName]->getMyClass3();
-                if( myClass3 == nullptr )
+                CMyClass2* pMyClass2 = nullptr;
+                CMyClass3* pMyClass3 = nullptr;
+
+                if( strTestGroupPath.contains("RenameTraceAdminObj") )
+                {
+                    pMyClass2 = m_multihshpMyClass2InstancesByName.value(strObjName);
+                    pMyClass3 = m_multihshpMyClass3InstancesByName.value(strObjName);
+                }
+                else
+                {
+                    pMyClass2 = m_hshpMyClass2InstancesByName.value(strObjName);
+                    pMyClass3 = m_hshpMyClass3InstancesByName.value(strObjName);
+                }
+
+                if( pMyClass2 == nullptr )
+                {
+                    strResultValue = "CMyClass2 Instance not created";
+                }
+                else if( pMyClass3 == nullptr )
                 {
                     strResultValue = "CMyClass3 Instance not created";
                 }
                 else
                 {
                     bValidTestStep = true;
-                    // Slot onClass3AboutToBeDestroyed will remove the object from the hash.
-                    //QString strClass3ObjName = myClass3->objectName();
-                    //m_hshpMyClass3InstancesByName.remove(strClass3ObjName);
-                    m_hshpMyClass2InstancesByName[strObjName]->stopClass3Thread();
+                    // Slots onClass3ThreadAboutToBeDestroyed and onClass3AboutToBeDestroyed
+                    // will remove the objects from the hashes.
+                    pMyClass2->stopClass3Thread();
                 }
             }
         }
     } // if( strClassName == CMyClass2::ClassName() )
+
+    else if( strClassName == CMyClass2Thread::ClassName() )
+    {
+        if( strMth == "setObjectName" )
+        {
+            if( strObjName.isEmpty() )
+            {
+                strResultValue = "Invalid test step: ObjName not defined";
+            }
+            else if( !strTestGroupPath.contains("RenameTraceAdminObj") && !m_hshpMyClass2ThreadInstancesByName.contains(strObjName) )
+            {
+                strResultValue = "CMyClass2Thread::" + strObjName + " is not existing";
+            }
+            else if( strTestGroupPath.contains("RenameTraceAdminObj") && !m_multihshpMyClass2ThreadInstancesByName.contains(strObjName) )
+            {
+                strResultValue = "CMyClass2Thread::" + strObjName + " is not existing";
+            }
+            else if( strlstInArgs.size() == 1 )
+            {
+                bValidTestStep = true;
+                if( strTestGroupPath.contains("RenameTraceAdminObj") )
+                {
+                    CMyClass2Thread* pObj = m_multihshpMyClass2ThreadInstancesByName.take(strObjName);
+                    pObj->setObjectName(strlstInArgs[0]);
+                    m_multihshpMyClass2ThreadInstancesByName.insert(pObj->objectName(), pObj);
+                }
+                else
+                {
+                    CMyClass2Thread* pObj = m_hshpMyClass2ThreadInstancesByName.take(strObjName);
+                    pObj->setObjectName(strlstInArgs[0]);
+                    m_hshpMyClass2ThreadInstancesByName.insert(pObj->objectName(), pObj);
+                }
+            }
+        }
+    } // if( strClassName == CMyClass2Thread::ClassName() )
 
     else if( strClassName == CMyClass3::ClassName() )
     {
@@ -2109,7 +2400,7 @@ void CTest::doTestStepTraceMethodCall( ZS::Test::CTestStep* i_pTestStep )
             {
                 strResultValue = "Invalid test step: ObjName not defined";
             }
-            else if( !strTestGroupName.contains("RenameTraceAdminObj") && m_hshpMyClass3InstancesByName.contains(strObjName) )
+            else if( !strTestGroupPath.contains("RenameTraceAdminObj") && m_hshpMyClass3InstancesByName.contains(strObjName) )
             {
                 strResultValue = "CMyClass3::" + strObjName + " is already existing";
             }
@@ -2119,7 +2410,7 @@ void CTest::doTestStepTraceMethodCall( ZS::Test::CTestStep* i_pTestStep )
 
                 CMyClass3* pObj = new CMyClass3(strlstInArgs[0]);
 
-                if( strTestGroupName.contains("RenameTraceAdminObj") )
+                if( strTestGroupPath.contains("RenameTraceAdminObj") )
                 {
                     m_multihshpMyClass3InstancesByName.insert(strObjName, pObj);
                 }
@@ -2146,7 +2437,7 @@ void CTest::doTestStepTraceMethodCall( ZS::Test::CTestStep* i_pTestStep )
 
                     CMyClass3* pObj = new CMyClass3(strlstInArgs[0], nullptr);
 
-                    if( strTestGroupName.contains("RenameTraceAdminObj") )
+                    if( strTestGroupPath.contains("RenameTraceAdminObj") )
                     {
                         m_multihshpMyClass3InstancesByName.insert(strObjName, pObj);
                     }
@@ -2173,18 +2464,18 @@ void CTest::doTestStepTraceMethodCall( ZS::Test::CTestStep* i_pTestStep )
             {
                 strResultValue = "Invalid test step: ObjName not defined";
             }
-            else if( !strTestGroupName.contains("RenameTraceAdminObj") && !m_hshpMyClass3InstancesByName.contains(strObjName) )
+            else if( !strTestGroupPath.contains("RenameTraceAdminObj") && !m_hshpMyClass3InstancesByName.contains(strObjName) )
             {
                 strResultValue = "CMyClass3::" + strObjName + " is not existing";
             }
-            else if( strTestGroupName.contains("RenameTraceAdminObj") && !m_multihshpMyClass3InstancesByName.contains(strObjName) )
+            else if( strTestGroupPath.contains("RenameTraceAdminObj") && !m_multihshpMyClass3InstancesByName.contains(strObjName) )
             {
                 strResultValue = "CMyClass3::" + strObjName + " is not existing";
             }
             else if( strlstInArgs.size() == 0 )
             {
                 bValidTestStep = true;
-                if( strTestGroupName.contains("RenameTraceAdminObj") )
+                if( strTestGroupPath.contains("RenameTraceAdminObj") )
                 {
                     delete m_multihshpMyClass3InstancesByName.value(strObjName);
                     // Slot onClass3AboutToBeDestroyed will remove the object from the hash.
@@ -2204,18 +2495,18 @@ void CTest::doTestStepTraceMethodCall( ZS::Test::CTestStep* i_pTestStep )
             {
                 strResultValue = "Invalid test step: ObjName not defined";
             }
-            else if( !strTestGroupName.contains("RenameTraceAdminObj") && !m_hshpMyClass3InstancesByName.contains(strObjName) )
+            else if( !strTestGroupPath.contains("RenameTraceAdminObj") && !m_hshpMyClass3InstancesByName.contains(strObjName) )
             {
                 strResultValue = "CMyClass3::" + strObjName + " is not existing";
             }
-            else if( strTestGroupName.contains("RenameTraceAdminObj") && !m_multihshpMyClass3InstancesByName.contains(strObjName) )
+            else if( strTestGroupPath.contains("RenameTraceAdminObj") && !m_multihshpMyClass3InstancesByName.contains(strObjName) )
             {
                 strResultValue = "CMyClass3::" + strObjName + " is not existing";
             }
             else if( strlstInArgs.size() == 1 )
             {
                 bValidTestStep = true;
-                if( strTestGroupName.contains("RenameTraceAdminObj") )
+                if( strTestGroupPath.contains("RenameTraceAdminObj") )
                 {
                     CMyClass3* pObj = m_multihshpMyClass3InstancesByName.take(strObjName);
                     pObj->setObjectName(strlstInArgs[0]);
@@ -2235,14 +2526,27 @@ void CTest::doTestStepTraceMethodCall( ZS::Test::CTestStep* i_pTestStep )
             {
                 strResultValue = "Invalid test step: ObjName not defined";
             }
-            else if( !m_hshpMyClass3InstancesByName.contains(strObjName) )
+            else if( !strTestGroupPath.contains("RenameTraceAdminObj") && !m_hshpMyClass3InstancesByName.contains(strObjName) )
+            {
+                strResultValue = "CMyClass3::" + strObjName + " is not existing";
+            }
+            else if( strTestGroupPath.contains("RenameTraceAdminObj") && !m_multihshpMyClass3InstancesByName.contains(strObjName) )
             {
                 strResultValue = "CMyClass3::" + strObjName + " is not existing";
             }
             else if( strlstInArgs.size() == 1 )
             {
                 bValidTestStep = true;
-                m_hshpMyClass3InstancesByName[strObjName]->instMethod(strlstInArgs[0]);
+                CMyClass3* pObj = nullptr;
+                if( strTestGroupPath.contains("RenameTraceAdminObj") )
+                {
+                    pObj = m_multihshpMyClass3InstancesByName.value(strObjName);
+                }
+                else
+                {
+                    pObj = m_hshpMyClass3InstancesByName.value(strObjName);
+                }
+                pObj->instMethod(strlstInArgs[0]);
             }
         }
         else if( strMth == "noisyInstMethod" )
@@ -2251,14 +2555,27 @@ void CTest::doTestStepTraceMethodCall( ZS::Test::CTestStep* i_pTestStep )
             {
                 strResultValue = "Invalid test step: ObjName not defined";
             }
-            else if( !m_hshpMyClass3InstancesByName.contains(strObjName) )
+            else if( !strTestGroupPath.contains("RenameTraceAdminObj") && !m_hshpMyClass3InstancesByName.contains(strObjName) )
+            {
+                strResultValue = "CMyClass3::" + strObjName + " is not existing";
+            }
+            else if( strTestGroupPath.contains("RenameTraceAdminObj") && !m_multihshpMyClass3InstancesByName.contains(strObjName) )
             {
                 strResultValue = "CMyClass3::" + strObjName + " is not existing";
             }
             else if( strlstInArgs.size() == 1 )
             {
                 bValidTestStep = true;
-                m_hshpMyClass3InstancesByName[strObjName]->noisyInstMethod(strlstInArgs[0]);
+                CMyClass3* pObj = nullptr;
+                if( strTestGroupPath.contains("RenameTraceAdminObj") )
+                {
+                    pObj = m_multihshpMyClass3InstancesByName.value(strObjName);
+                }
+                else
+                {
+                    pObj = m_hshpMyClass3InstancesByName.value(strObjName);
+                }
+                pObj->noisyInstMethod(strlstInArgs[0]);
             }
         }
         else if( strMth == "veryNoisyInstMethod" )
@@ -2267,17 +2584,65 @@ void CTest::doTestStepTraceMethodCall( ZS::Test::CTestStep* i_pTestStep )
             {
                 strResultValue = "Invalid test step: ObjName not defined";
             }
-            else if( !m_hshpMyClass3InstancesByName.contains(strObjName) )
+            else if( !strTestGroupPath.contains("RenameTraceAdminObj") && !m_hshpMyClass3InstancesByName.contains(strObjName) )
+            {
+                strResultValue = "CMyClass3::" + strObjName + " is not existing";
+            }
+            else if( strTestGroupPath.contains("RenameTraceAdminObj") && !m_multihshpMyClass3InstancesByName.contains(strObjName) )
             {
                 strResultValue = "CMyClass3::" + strObjName + " is not existing";
             }
             else if( strlstInArgs.size() == 1 )
             {
                 bValidTestStep = true;
-                m_hshpMyClass3InstancesByName[strObjName]->veryNoisyInstMethod(strlstInArgs[0]);
+                CMyClass3* pObj = nullptr;
+                if( strTestGroupPath.contains("RenameTraceAdminObj") )
+                {
+                    pObj = m_multihshpMyClass3InstancesByName.value(strObjName);
+                }
+                else
+                {
+                    pObj = m_hshpMyClass3InstancesByName.value(strObjName);
+                }
+                pObj->veryNoisyInstMethod(strlstInArgs[0]);
             }
         }
     } // if( strClassName == CMyClass3::ClassName() )
+
+    else if( strClassName == CMyClass3Thread::ClassName() )
+    {
+        if( strMth == "setObjectName" )
+        {
+            if( strObjName.isEmpty() )
+            {
+                strResultValue = "Invalid test step: ObjName not defined";
+            }
+            else if( !strTestGroupPath.contains("RenameTraceAdminObj") && !m_hshpMyClass3ThreadInstancesByName.contains(strObjName) )
+            {
+                strResultValue = "CMyClass3Thread::" + strObjName + " is not existing";
+            }
+            else if( strTestGroupPath.contains("RenameTraceAdminObj") && !m_multihshpMyClass3ThreadInstancesByName.contains(strObjName) )
+            {
+                strResultValue = "CMyClass3Thread::" + strObjName + " is not existing";
+            }
+            else if( strlstInArgs.size() == 1 )
+            {
+                bValidTestStep = true;
+                if( strTestGroupPath.contains("RenameTraceAdminObj") )
+                {
+                    CMyClass3Thread* pObj = m_multihshpMyClass3ThreadInstancesByName.take(strObjName);
+                    pObj->setObjectName(strlstInArgs[0]);
+                    m_multihshpMyClass3ThreadInstancesByName.insert(pObj->objectName(), pObj);
+                }
+                else
+                {
+                    CMyClass3Thread* pObj = m_hshpMyClass3ThreadInstancesByName.take(strObjName);
+                    pObj->setObjectName(strlstInArgs[0]);
+                    m_hshpMyClass3ThreadInstancesByName.insert(pObj->objectName(), pObj);
+                }
+            }
+        }
+    } // if( strClassName == CMyClass2Thread::ClassName() )
 
     if( m_pTrcServer != nullptr )
     {
@@ -2390,6 +2755,32 @@ void CTest::onClass2AboutToBeDestroyed(QObject* i_pObj, const QString& i_strObjN
 }
 
 //------------------------------------------------------------------------------
+void CTest::onClass2ThreadAboutToBeDestroyed(QObject* i_pObj, const QString& i_strObjName)
+//------------------------------------------------------------------------------
+{
+    if( m_multihshpMyClass2ThreadInstancesByName.contains(i_strObjName) )
+    {
+        QList<CMyClass2Thread*> arpObjs = m_multihshpMyClass2ThreadInstancesByName.values(i_strObjName);
+
+        for( auto& pObj : arpObjs )
+        {
+            if( pObj == i_pObj )
+            {
+                m_multihshpMyClass2ThreadInstancesByName.remove(i_strObjName, pObj);
+            }
+        }
+    }
+
+    if( m_hshpMyClass2ThreadInstancesByName.contains(i_strObjName) )
+    {
+        if( m_hshpMyClass2ThreadInstancesByName.value(i_strObjName) == i_pObj )
+        {
+            m_hshpMyClass2ThreadInstancesByName.remove(i_strObjName);
+        }
+    }
+}
+
+//------------------------------------------------------------------------------
 void CTest::onClass3AboutToBeDestroyed(QObject* i_pObj, const QString& i_strObjName)
 //------------------------------------------------------------------------------
 {
@@ -2411,6 +2802,32 @@ void CTest::onClass3AboutToBeDestroyed(QObject* i_pObj, const QString& i_strObjN
         if( m_hshpMyClass3InstancesByName.value(i_strObjName) == i_pObj )
         {
             m_hshpMyClass3InstancesByName.remove(i_strObjName);
+        }
+    }
+}
+
+//------------------------------------------------------------------------------
+void CTest::onClass3ThreadAboutToBeDestroyed(QObject* i_pObj, const QString& i_strObjName)
+//------------------------------------------------------------------------------
+{
+    if( m_multihshpMyClass3ThreadInstancesByName.contains(i_strObjName) )
+    {
+        QList<CMyClass3Thread*> arpObjs = m_multihshpMyClass3ThreadInstancesByName.values(i_strObjName);
+
+        for( auto& pObj : arpObjs )
+        {
+            if( pObj == i_pObj )
+            {
+                m_multihshpMyClass3ThreadInstancesByName.remove(i_strObjName, pObj);
+            }
+        }
+    }
+
+    if( m_hshpMyClass3ThreadInstancesByName.contains(i_strObjName) )
+    {
+        if( m_hshpMyClass3ThreadInstancesByName.value(i_strObjName) == i_pObj )
+        {
+            m_hshpMyClass3ThreadInstancesByName.remove(i_strObjName);
         }
     }
 }

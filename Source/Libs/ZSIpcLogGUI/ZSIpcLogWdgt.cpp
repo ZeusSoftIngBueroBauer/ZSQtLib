@@ -136,7 +136,6 @@ CWdgtLog::CWdgtLog(
     m_ariDataRateDiffs_linesPerSec(),
     m_pReqInProgress(nullptr),
     m_strThreadClrFileAbsFilePath(),
-    m_bShowTimeInfo(true),
     m_iEdtItemsCountMax(i_iItemsCountMax),
     m_iEdtItems(0),
     m_bEdtFull(false),
@@ -414,7 +413,6 @@ CWdgtLog::~CWdgtLog()
     //m_ariDataRateDiffs_linesPerSec;
     m_pReqInProgress = nullptr;
     //m_strThreadClrFileAbsFilePath;
-    m_bShowTimeInfo = false;
     m_iEdtItemsCountMax = 0;
     m_iEdtItems = 0;
     m_bEdtFull = false;
@@ -811,36 +809,30 @@ SErrResultInfo CWdgtLog::readLogFile( const QString& i_strAbsFilePath )
             strLog += strThread;
 
             // Date Time
-            if( m_bShowTimeInfo )
-            {
-                idxBeg = idxPos;
-                idxEnd = strLine.indexOf(" (", idxPos);
-                if(idxBeg >= 0 && idxEnd >= 0 && idxEnd > idxBeg) {
-                    strDateTime = strLine.mid(idxBeg, idxEnd-idxBeg);
-                }
-                idxPos = idxEnd+2;
-                strLog += strDateTime;
+            idxBeg = idxPos;
+            idxEnd = strLine.indexOf(" (", idxPos);
+            if(idxBeg >= 0 && idxEnd >= 0 && idxEnd > idxBeg) {
+                strDateTime = strLine.mid(idxBeg, idxEnd-idxBeg);
             }
+            idxPos = idxEnd+2;
+            strLog += strDateTime;
 
             // System Time
-            if( m_bShowTimeInfo )
-            {
-                strLog += " (";
-                idxBeg = idxPos;
-                idxEnd = strLine.indexOf("): ", idxPos);
-                if( idxBeg >= 0 && idxEnd >= 0 && idxEnd > idxBeg) {
-                    strSysTime = strLine.mid(idxBeg, idxEnd-idxBeg);
-                    strSysTime = strSysTime.trimmed();
-                }
-                idxPos = idxEnd+3;
-                iStrLen = strSysTime.length();
-                for( idx = 0; idx < CLogServer::c_iStrLenSysTimeMax-iStrLen; idx++ )
-                {
-                    strSysTime.insert(0,"&nbsp;");
-                }
-                strLog += strSysTime;
-                strLog += "):&nbsp;";
+            strLog += " (";
+            idxBeg = idxPos;
+            idxEnd = strLine.indexOf("): ", idxPos);
+            if( idxBeg >= 0 && idxEnd >= 0 && idxEnd > idxBeg) {
+                strSysTime = strLine.mid(idxBeg, idxEnd-idxBeg);
+                strSysTime = strSysTime.trimmed();
             }
+            idxPos = idxEnd+3;
+            iStrLen = strSysTime.length();
+            for( idx = 0; idx < CLogServer::c_iStrLenSysTimeMax-iStrLen; idx++ )
+            {
+                strSysTime.insert(0,"&nbsp;");
+            }
+            strLog += strSysTime;
+            strLog += "):&nbsp;";
 
             idxBeg = idxPos;
             idxEnd = strLine.size();
@@ -934,24 +926,6 @@ bool CWdgtLog::find( const QString& i_strExp, QTextDocument::FindFlags i_findFla
 //------------------------------------------------------------------------------
 {
     return m_pEdt->find(i_strExp, i_findFlags);
-}
-
-/*==============================================================================
-public: // instance methods
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-bool CWdgtLog::getShowTimeInfo() const
-//------------------------------------------------------------------------------
-{
-    return m_bShowTimeInfo;
-}
-
-//------------------------------------------------------------------------------
-void CWdgtLog::setShowTimeInfo( bool i_bShow )
-//------------------------------------------------------------------------------
-{
-    m_bShowTimeInfo = i_bShow;
 }
 
 /*==============================================================================
@@ -1448,10 +1422,7 @@ void CWdgtLog::onLogDataReceived( QObject* /*i_pObjSender*/, const QString& i_st
                             }
                             if( !xmlStreamReader.hasError() && xmlStreamReader.attributes().hasAttribute("DateTime") )
                             {
-                                if( m_bShowTimeInfo )
-                                {
-                                    strDateTime = xmlStreamReader.attributes().value("DateTime").toString();
-                                }
+                                strDateTime = xmlStreamReader.attributes().value("DateTime").toString();
                             }
                             if( !xmlStreamReader.hasError() && xmlStreamReader.attributes().hasAttribute("SysTime") )
                             {
@@ -1465,8 +1436,6 @@ void CWdgtLog::onLogDataReceived( QObject* /*i_pObjSender*/, const QString& i_st
                                     m_dataRateCalculatorLines.addMeasurement(fSysTime_s, 1);
 
                                     showAndCheckDataRates();
-
-                                    if( !m_bShowTimeInfo ) fSysTime_s = -1.0;
                                 }
                             }
                             if( !xmlStreamReader.hasError() && xmlStreamReader.attributes().hasAttribute("NameSpace") )
