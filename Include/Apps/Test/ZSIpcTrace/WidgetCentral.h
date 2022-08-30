@@ -35,7 +35,6 @@ may result in using the software modules.
 #include <QtWidgets/qwidget.h>
 #endif
 
-class QGroupBox;
 class QSplitter;
 class QTabWidget;
 class QHBoxLayout;
@@ -78,6 +77,10 @@ public: // class methods
 public: // ctors and dtor
     CWidgetCentral( CTest* i_pTest, QWidget* i_pWdgtParent = nullptr, Qt::WindowFlags i_wflags = Qt::WindowFlags() );
     ~CWidgetCentral();
+protected slots:
+    void onProgressBarConnectDblClicked();
+signals:
+    void progressBarConnectDblClicked();
 public: // instance methods
     ZS::Trace::GUI::CWdgtTrcMthList* getTrcMthListWdgt();
 private: // class members

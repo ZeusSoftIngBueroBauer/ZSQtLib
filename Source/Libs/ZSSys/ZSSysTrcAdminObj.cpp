@@ -1336,6 +1336,25 @@ void CTrcAdminObjRefAnchor::setMethodCallsTraceDetailLevel( EMethodTraceDetailLe
 }
 
 //------------------------------------------------------------------------------
+/*! @brief Returns the trace detail level.
+
+    @return Trace detail level.
+*/
+EMethodTraceDetailLevel CTrcAdminObjRefAnchor::getMethodCallsTraceDetailLevel() const
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(&m_mtx);
+
+    EMethodTraceDetailLevel detailLevel = EMethodTraceDetailLevel::None;
+
+    if( m_pTrcAdminObj != nullptr )
+    {
+        detailLevel = m_pTrcAdminObj->getMethodCallsTraceDetailLevel();
+    }
+    return detailLevel;
+}
+
+//------------------------------------------------------------------------------
 /*! @brief Checks whether tracing is active for the given filter detail level.
 
     @param i_eFilterDetailLevel [in]
@@ -1374,6 +1393,25 @@ void CTrcAdminObjRefAnchor::setRuntimeInfoTraceDetailLevel( ELogDetailLevel i_eT
     {
         m_pTrcAdminObj->setRuntimeInfoTraceDetailLevel(i_eTrcDetailLevel);
     }
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the trace detail level.
+
+    @return Trace detail level.
+*/
+ELogDetailLevel CTrcAdminObjRefAnchor::getRuntimeInfoTraceDetailLevel() const
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(&m_mtx);
+
+    ELogDetailLevel detailLevel = ELogDetailLevel::None;
+
+    if( m_pTrcAdminObj != nullptr )
+    {
+        detailLevel = m_pTrcAdminObj->getRuntimeInfoTraceDetailLevel();
+    }
+    return detailLevel;
 }
 
 //------------------------------------------------------------------------------
@@ -1490,6 +1528,23 @@ void CTrcAdminObjRefGuard::setMethodCallsTraceDetailLevel(EMethodTraceDetailLeve
 }
 
 //------------------------------------------------------------------------------
+/*! @brief Returns the trace detail level.
+
+    @return Trace detail level.
+*/
+EMethodTraceDetailLevel CTrcAdminObjRefGuard::getMethodCallsTraceDetailLevel() const
+//------------------------------------------------------------------------------
+{
+    EMethodTraceDetailLevel detailLevel = EMethodTraceDetailLevel::None;
+
+    if( m_pRefAnchor != nullptr )
+    {
+        detailLevel = m_pRefAnchor->getMethodCallsTraceDetailLevel();
+    }
+    return detailLevel;
+}
+
+//------------------------------------------------------------------------------
 /*! @brief Checks whether tracing is active for the given filter detail level.
 
     @param i_eFilterDetailLevel [in]
@@ -1524,6 +1579,23 @@ void CTrcAdminObjRefGuard::setRuntimeInfoTraceDetailLevel(ELogDetailLevel i_eTrc
     {
         m_pRefAnchor->setRuntimeInfoTraceDetailLevel(i_eTrcDetailLevel);
     }
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the trace detail level.
+
+    @return Trace detail level.
+*/
+ELogDetailLevel CTrcAdminObjRefGuard::getRuntimeInfoTraceDetailLevel() const
+//------------------------------------------------------------------------------
+{
+    ELogDetailLevel detailLevel = ELogDetailLevel::None;
+
+    if( m_pRefAnchor != nullptr )
+    {
+        detailLevel = m_pRefAnchor->getRuntimeInfoTraceDetailLevel();
+    }
+    return detailLevel;
 }
 
 //------------------------------------------------------------------------------

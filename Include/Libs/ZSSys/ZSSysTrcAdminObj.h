@@ -33,9 +33,7 @@ may result in using the software modules.
 
 #include <QtCore/qobject.h>
 
-
 class QMutex;
-
 
 namespace ZS
 {
@@ -207,8 +205,10 @@ public: // instance methods
     void releaseTrcAdminObj();
     CTrcAdminObj* trcAdminObj();
     void setMethodCallsTraceDetailLevel(EMethodTraceDetailLevel i_eTrcDetailLevel);
+    EMethodTraceDetailLevel getMethodCallsTraceDetailLevel() const;
     bool areMethodCallsActive(EMethodTraceDetailLevel i_eFilterDetailLevel) const;
     void setRuntimeInfoTraceDetailLevel(ELogDetailLevel i_eTrcDetailLevel);
+    ELogDetailLevel getRuntimeInfoTraceDetailLevel() const;
     bool isRuntimeInfoActive(ELogDetailLevel i_eFilterDetailLevel) const;
 private slots:
     void onTrcAdminObjDestroyed(QObject* i_pTrcAdminObj);
@@ -234,8 +234,10 @@ public: // ctors and dtor
 public: // instance methods
     CTrcAdminObj* trcAdminObj();
     void setMethodCallsTraceDetailLevel(EMethodTraceDetailLevel i_eTrcDetailLevel);
+    EMethodTraceDetailLevel getMethodCallsTraceDetailLevel() const;
     bool areMethodCallsActive(EMethodTraceDetailLevel i_eFilterDetailLevel) const;
     void setRuntimeInfoTraceDetailLevel(ELogDetailLevel i_eTrcDetailLevel);
+    ELogDetailLevel getRuntimeInfoTraceDetailLevel() const;
     bool isRuntimeInfoActive(ELogDetailLevel i_eFilterDetailLevel) const;
 private: // instance members
     CTrcAdminObjRefAnchor* m_pRefAnchor;    /*!< Pointer to reference anchor which should be guarded. */

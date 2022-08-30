@@ -67,6 +67,8 @@ public: // instance methods
 public: // instance methods
     CMyClass2* startClass2Thread(const QString& i_strMyClass2ObjName);
     void stopClass2Thread();
+public: // instance methods
+    void sendTooMuchData();
 private: // class members
     static ZS::System::CTrcAdminObjRefAnchor s_trcAdminObjRefAnchor;
 private: // instance members

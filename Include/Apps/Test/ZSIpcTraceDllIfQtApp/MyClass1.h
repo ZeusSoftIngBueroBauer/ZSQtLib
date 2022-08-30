@@ -74,6 +74,10 @@ public: // instance methods
 public: // instance methods
     CMyClass2* startClass2Thread(const QString& i_strMyClass2ObjName);
     void stopClass2Thread();
+public: // instance methods
+    void sendTooMuchData();
+private: // instance methods
+    int sendData(const QString& i_strData, double i_fStartTime_s, double i_fCurrTime_s, double i_fDuration_s);
 private: // class members
     static ZS::Trace::DllIf::CTrcAdminObj* s_pTrcAdminObj;
     static int s_iInstCount;

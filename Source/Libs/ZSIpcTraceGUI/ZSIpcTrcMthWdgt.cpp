@@ -1209,6 +1209,7 @@ void CWdgtTrcMthList::onIpcClientConnected( QObject* /*i_pClient*/ )
 //------------------------------------------------------------------------------
 {
     m_pChkServerTracingEnabled->setEnabled(true);
+    m_pChkServerUseIpcServer->setEnabled(true);
 
     m_hashThreads.clear();
 
@@ -1228,6 +1229,8 @@ void CWdgtTrcMthList::onIpcClientDisconnected( QObject* /*i_pClient*/ )
 {
     m_pChkServerTracingEnabled->setEnabled(false);
     m_pChkServerTracingEnabled->setChecked(false);
+    m_pChkServerUseIpcServer->setEnabled(false);
+    m_pChkServerUseIpcServer->setChecked(false);
 
     #if QT_VERSION >= QT_VERSION_CHECK(4, 5, 1)
     saveThreadColors();
@@ -1356,6 +1359,7 @@ void CWdgtTrcMthList::onTraceSettingsChanged( QObject* /*i_pTrcClient*/ )
     }
 
     m_pChkServerTracingEnabled->setChecked( m_pTrcClient->getTraceSettings().m_bEnabled );
+    m_pChkServerUseIpcServer->setChecked( m_pTrcClient->getTraceSettings().m_bUseIpcServer );
 }
 
 //------------------------------------------------------------------------------

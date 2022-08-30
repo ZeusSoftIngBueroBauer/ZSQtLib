@@ -1181,6 +1181,7 @@ void CWdgtLog::onIpcClientConnected( QObject* /*i_pClient*/ )
 //------------------------------------------------------------------------------
 {
     m_pChkServerLoggingEnabled->setEnabled(true);
+    m_pChkServerUseIpcServer->setEnabled(true);
 
     m_hashThreadColors.clear();
 
@@ -1200,6 +1201,8 @@ void CWdgtLog::onIpcClientDisconnected( QObject* /*i_pClient*/ )
 {
     m_pChkServerLoggingEnabled->setEnabled(false);
     m_pChkServerLoggingEnabled->setChecked(false);
+    m_pChkServerUseIpcServer->setEnabled(false);
+    m_pChkServerUseIpcServer->setChecked(false);
 
     #if QT_VERSION >= QT_VERSION_CHECK(4, 5, 1)
     saveThreadColors();
@@ -1328,6 +1331,7 @@ void CWdgtLog::onLogSettingsChanged( QObject* /*i_pLogClient*/ )
     }
 
     m_pChkServerLoggingEnabled->setChecked( m_pLogClient->getLogSettings().m_bEnabled );
+    m_pChkServerUseIpcServer->setChecked( m_pLogClient->getLogSettings().m_bUseIpcServer );
 }
 
 //------------------------------------------------------------------------------

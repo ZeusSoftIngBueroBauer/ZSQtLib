@@ -1748,6 +1748,48 @@ void CTest::doTestStepTraceMethodCall( ZS::Test::CTestStep* i_pTestStep )
                 }
             }
         }
+        else if( strMth == "sendTooMuchData" )
+        {
+            if( strObjName.isEmpty() )
+            {
+                strResultValue = "Invalid test step: ObjName not defined";
+            }
+            else if( !strTestGroupPath.contains("RenameTraceAdminObj") && !m_hshpMyClass1InstancesByName.contains(strObjName) )
+            {
+                strResultValue = "CMyClass1::" + strObjName + " is not existing";
+            }
+            else if( strTestGroupPath.contains("RenameTraceAdminObj") && !m_multihshpMyClass1InstancesByName.contains(strObjName) )
+            {
+                strResultValue = "CMyClass1::" + strObjName + " is not existing";
+            }
+            else if( strlstInArgs.size() == 0 )
+            {
+                CMyClass1* pMyClass1 = nullptr;
+                CMyClass2* pMyClass2 = nullptr;
+                QString    strObjNameClass2;
+
+                if( strTestGroupPath.contains("RenameTraceAdminObj") )
+                {
+                    pMyClass1 = m_multihshpMyClass1InstancesByName.value(strObjName);
+                }
+                else
+                {
+                    pMyClass1 = m_hshpMyClass1InstancesByName.value(strObjName);
+                }
+
+                if( pMyClass1 == nullptr )
+                {
+                    strResultValue = "CMyClass1 Instance not created";
+                }
+                else
+                {
+                    bValidTestStep = true;
+                    // Slots onClass2ThreadAboutToBeDestroyed and onClass2AboutToBeDestroyed
+                    // will remove the objects from the hashes.
+                    pMyClass1->sendTooMuchData();
+                }
+            }
+        }
     } // if( strClassName == CMyClass1::ClassName() )
 
     else if( strClassName == CMyClass2::ClassName() )

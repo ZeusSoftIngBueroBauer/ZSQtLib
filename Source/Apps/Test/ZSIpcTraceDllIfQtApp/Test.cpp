@@ -970,6 +970,119 @@ CTest::CTest() :
         /* pTSGrpParent    */ pTestGroupRenameTraceAdminObjSeveralThreads,
         /* szDoTestStepFct */ SLOT(doTestStepReleaseDll(ZS::Test::CTestStep*)) );
 
+    // Test Step Group - Too much data
+    //================================
+
+    idxStep = 0;
+
+    ZS::Test::CTestStepGroup* pTestGroupTooMuchData = new ZS::Test::CTestStepGroup(
+        /* pTest           */ this,
+        /* strName         */ "Group " + QString::number(++idxGroup) + " Too much data",
+        /* pTSGrpParent    */ nullptr );
+
+    // Test Step Group - Too much data - Startup
+    //------------------------------------------
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " Load ZSIpcTrace Dll",
+        /* strOperation    */ "DllIf::loadDll",
+        /* pTSGrpParent    */ pTestGroupTooMuchData,
+        /* szDoTestStepFct */ SLOT(doTestStepLoadDll(ZS::Test::CTestStep*)) );
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " Trace Server Create Instance",
+        /* strOperation    */ "DllIf::CIpcTrcServer::CreateInstance",
+        /* pTSGrpParent    */ pTestGroupTooMuchData,
+        /* szDoTestStepFct */ SLOT(doTestStepTraceServerCreateInstance(ZS::Test::CTestStep*)) );
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " Trace Server Startup",
+        /* strOperation    */ "DllIf::CIpcTrcServer::startup",
+        /* pTSGrpParent    */ pTestGroupTooMuchData,
+        /* szDoTestStepFct */ SLOT(doTestStepTraceServerStartup(ZS::Test::CTestStep*)) );
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " Trace Server Recall Admin Objects",
+        /* strOperation    */ "DllIf::CIpcTrcServer::recallAdminObjs",
+        /* pTSGrpParent    */ pTestGroupTooMuchData,
+        /* szDoTestStepFct */ SLOT(doTestStepTraceServerRecallAdminObjs(ZS::Test::CTestStep*)) );
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " Trace Client Connect",
+        /* strOperation    */ "CIpcTrcClient::connect",
+        /* pTSGrpParent    */ pTestGroupTooMuchData,
+        /* szDoTestStepFct */ SLOT(doTestStepTraceClientConnect(ZS::Test::CTestStep*)) );
+
+    // Test Step Group - Too much data - Send Data
+    //--------------------------------------------
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " CMyClass1::ctor(Inst1)",
+        /* strOperation    */ "CMyClass1::ctor(Inst1)",
+        /* pTSGrpParent    */ pTestGroupTooMuchData,
+        /* szDoTestStepFct */ SLOT(doTestStepTraceMethodCall(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("ExpectedResultsFileName", "ZSTrcServer-CMyClass1-ctor-Inst1");
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " CMyClass1::sendTooMuchData()",
+        /* strOperation    */ "CMyClass1::Inst1.sendTooMuchData()",
+        /* pTSGrpParent    */ pTestGroupTooMuchData,
+        /* szDoTestStepFct */ SLOT(doTestStepTraceMethodCall(ZS::Test::CTestStep*)) );
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " CMyClass1::dtor(Inst1)",
+        /* strOperation    */ "CMyClass1::dtor(Inst1)",
+        /* pTSGrpParent    */ pTestGroupTooMuchData,
+        /* szDoTestStepFct */ SLOT(doTestStepTraceMethodCall(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("ExpectedResultsFileName", "ZSTrcServer-CMyClass1-dtor-Inst1");
+
+    // Test Step Group - Too much data - Shutdown
+    //-------------------------------------------
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " Trace Client Disconnect",
+        /* strOperation    */ "CIpcTrcClient::disconnect",
+        /* pTSGrpParent    */ pTestGroupTooMuchData,
+        /* szDoTestStepFct */ SLOT(doTestStepTraceClientDisconnect(ZS::Test::CTestStep*)) );
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " Trace Server Save Admin Objects",
+        /* strOperation    */ "DllIf::CIpcTrcServer::saveAdminObjs",
+        /* pTSGrpParent    */ pTestGroupTooMuchData,
+        /* szDoTestStepFct */ SLOT(doTestStepTraceServerSaveAdminObjs(ZS::Test::CTestStep*)) );
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " Trace Server Shutdown",
+        /* strOperation    */ "DllIf::CIpcTrcServer::shutdown",
+        /* pTSGrpParent    */ pTestGroupTooMuchData,
+        /* szDoTestStepFct */ SLOT(doTestStepTraceServerShutdown(ZS::Test::CTestStep*)) );
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " Trace Server Release Instance",
+        /* strOperation    */ "DllIf::CIpcTrcServer::ReleaseInstance",
+        /* pTSGrpParent    */ pTestGroupTooMuchData,
+        /* szDoTestStepFct */ SLOT(doTestStepTraceServerReleaseInstance(ZS::Test::CTestStep*)) );
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " Release ZSIpcTrace Dll",
+        /* strOperation    */ "DllIf::releaseDll",
+        /* pTSGrpParent    */ pTestGroupTooMuchData,
+        /* szDoTestStepFct */ SLOT(doTestStepReleaseDll(ZS::Test::CTestStep*)) );
+
+
     // Recall test step settings
     //==========================
 
@@ -1990,6 +2103,48 @@ void CTest::doTestStepTraceMethodCall( ZS::Test::CTestStep* i_pTestStep )
                 }
             }
         }
+        else if( strMth == "sendTooMuchData" )
+        {
+            if( strObjName.isEmpty() )
+            {
+                strResultValue = "Invalid test step: ObjName not defined";
+            }
+            else if( !strTestGroupPath.contains("RenameTraceAdminObj") && !m_hshpMyClass1InstancesByName.contains(strObjName) )
+            {
+                strResultValue = "CMyClass1::" + strObjName + " is not existing";
+            }
+            else if( strTestGroupPath.contains("RenameTraceAdminObj") && !m_multihshpMyClass1InstancesByName.contains(strObjName) )
+            {
+                strResultValue = "CMyClass1::" + strObjName + " is not existing";
+            }
+            else if( strlstInArgs.size() == 0 )
+            {
+                CMyClass1* pMyClass1 = nullptr;
+                CMyClass2* pMyClass2 = nullptr;
+                QString    strObjNameClass2;
+
+                if( strTestGroupPath.contains("RenameTraceAdminObj") )
+                {
+                    pMyClass1 = m_multihshpMyClass1InstancesByName.value(strObjName);
+                }
+                else
+                {
+                    pMyClass1 = m_hshpMyClass1InstancesByName.value(strObjName);
+                }
+
+                if( pMyClass1 == nullptr )
+                {
+                    strResultValue = "CMyClass1 Instance not created";
+                }
+                else
+                {
+                    bValidTestStep = true;
+                    // Slots onClass2ThreadAboutToBeDestroyed and onClass2AboutToBeDestroyed
+                    // will remove the objects from the hashes.
+                    pMyClass1->sendTooMuchData();
+                }
+            }
+        }
     } // if( strClassName == CMyClass1::ClassName() )
 
     else if( strClassName == CMyClass2::ClassName() )
@@ -2670,7 +2825,16 @@ void CTest::doTestStepTraceMethodCall( ZS::Test::CTestStep* i_pTestStep )
     }
     else
     {
-        i_pTestStep->setInstruction("Check whether client received the expected trace output.");
+        if( strMth == "sendTooMuchData" )
+        {
+            QString strInstruction = "Check whether client disabled remote tracing.\n";
+            strInstruction += "Enable remote tracing again afterwards.";
+            i_pTestStep->setInstruction(strInstruction);
+        }
+        else
+        {
+            i_pTestStep->setInstruction("Check whether client received the expected trace output.");
+        }
 
         m_pDlgTestStep = new CDlgTestStep(i_pTestStep);
         m_pDlgTestStep->exec();

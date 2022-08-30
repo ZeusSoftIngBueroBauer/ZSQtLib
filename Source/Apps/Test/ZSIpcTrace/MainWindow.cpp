@@ -464,6 +464,15 @@ CMainWindow::CMainWindow(
 
     setCentralWidget(m_pWdgtCentral);
 
+    if( !connect(
+        /* pObjSender   */ m_pWdgtCentral,
+        /* szSignal     */ SIGNAL(progressBarConnectDblClicked()),
+        /* pObjReceiver */ this,
+        /* szSlot       */ SLOT(onWidgetCentralProgressBarConnectDblClicked()) ) )
+    {
+        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
+    }
+
     // Restore geometry of widget
     //===========================
 
@@ -1048,3 +1057,14 @@ void CMainWindow::onTrcClientStateChanged( QObject* i_pClient, int /*i_iState*/ 
         m_pLblZSTrcClientStatusText->setToolTip(strToolTip);
     }
 } // onTrcClientStateChanged
+
+/*==============================================================================
+protected slots:
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CMainWindow::onWidgetCentralProgressBarConnectDblClicked()
+//------------------------------------------------------------------------------
+{
+    onActDebugZSTrcClientTriggered();
+}
