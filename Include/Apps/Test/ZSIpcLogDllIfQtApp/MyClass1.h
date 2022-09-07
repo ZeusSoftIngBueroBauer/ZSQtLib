@@ -24,26 +24,26 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#ifndef ZSApps_TestIpcTraceDllIfQtApp_TestClass1_h
-#define ZSApps_TestIpcTraceDllIfQtApp_TestClass1_h
+#ifndef ZSApps_TestIpcLogDllIfQtApp_MyClass1_h
+#define ZSApps_TestIpcLogDllIfQtApp_MyClass1_h
 
 #include <QtCore/qobject.h>
 #include <QtCore/qstring.h>
 
 namespace ZS
 {
-namespace Trace
+namespace Log
 {
 namespace DllIf
 {
-class CTrcAdminObj;
+class CLogger;
 }
 }
 namespace Apps
 {
 namespace Test
 {
-namespace IpcTraceDllIfQtApp
+namespace IpcLogDllIfQtApp
 {
 class CMyClass2Thread;
 class CMyClass2;
@@ -54,7 +54,7 @@ class CMyClass1 : public QObject
 {
     Q_OBJECT
 public: // class methods
-    static QString NameSpace() { return "ZS::Apps::Test::IpcTraceDllIfQtApp"; }
+    static QString NameSpace() { return "ZS::Apps::Test::IpcLogDllIfQtApp"; }
     static QString ClassName() { return "CMyClass1"; }
 public: // class methods
     static QString classMethod(const QString& i_strMthInArgs);
@@ -66,8 +66,6 @@ signals:
 public: // overridables
     virtual QString nameSpace() { return NameSpace(); }
     virtual QString className() { return ClassName(); }
-public: // instance methods (reimplementing methods of base class QObject)
-    void setObjectName(const QString& i_strObjName);
 public: // instance methods
     CMyClass2Thread* getMyClass2Thread() const { return m_pMyClass2Thread; }
     CMyClass2* getMyClass2() const { return m_pMyClass2; }
@@ -81,17 +79,16 @@ private: // instance methods
     int sendData2(const QString& i_strData, double i_fStartTime_s, double i_fCurrTime_s, double i_fDuration_s);
     int sendData3(const QString& i_strData, double i_fStartTime_s, double i_fCurrTime_s, double i_fDuration_s);
 private: // class members
-    static ZS::Trace::DllIf::CTrcAdminObj* s_pTrcAdminObj;
+    static ZS::Log::DllIf::CLogger* s_pLogger;
     static int s_iInstCount;
 private: // instance members
-    bool             m_bCtorReady;
     QString          m_strMyClass2ObjName;
     CMyClass2Thread* m_pMyClass2Thread;
     CMyClass2*       m_pMyClass2;
 
 }; // class CMyClass1
 
-} // namespace IpcTraceDllIfQtApp
+} // namespace IpcLogDllIfQtApp
 
 } // namespace Test
 
@@ -99,4 +96,4 @@ private: // instance members
 
 } // namespace ZS
 
-#endif // #ifndef ZSApps_TestIpcTraceDllIfQtApp_TestClass1_h
+#endif // #ifndef ZSApps_TestIpcLogDllIfQtApp_MyClass1_h

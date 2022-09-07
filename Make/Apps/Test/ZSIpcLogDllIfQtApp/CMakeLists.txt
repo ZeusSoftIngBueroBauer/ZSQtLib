@@ -36,6 +36,10 @@ list(APPEND _Headers
     ${_HeadersPath}/ZSIpcLogDllIfQtApp/App.h
     ${_HeadersPath}/ZSIpcLogDllIfQtApp/MainWindow.h
     ${_HeadersPath}/ZSIpcLogDllIfQtApp/WidgetCentral.h
+    ${_HeadersPath}/ZSIpcLogDllIfQtApp/MsgTest.h
+    ${_HeadersPath}/ZSIpcLogDllIfQtApp/MyClass1.h
+    ${_HeadersPath}/ZSIpcLogDllIfQtApp/MyClass2.h
+    ${_HeadersPath}/ZSIpcLogDllIfQtApp/MyClass3.h
     ${_HeadersPath}/ZSIpcLogDllIfQtApp/MyThread.h
     ${_HeadersPath}/ZSIpcLogDllIfQtApp/Test.h
 )
@@ -50,6 +54,10 @@ list(APPEND _Sources
     ${_SourcesPath}/ZSIpcLogDllIfQtApp/App.cpp
     ${_SourcesPath}/ZSIpcLogDllIfQtApp/MainWindow.cpp
     ${_SourcesPath}/ZSIpcLogDllIfQtApp/WidgetCentral.cpp
+    ${_SourcesPath}/ZSIpcLogDllIfQtApp/MsgTest.cpp
+    ${_SourcesPath}/ZSIpcLogDllIfQtApp/MyClass1.cpp
+    ${_SourcesPath}/ZSIpcLogDllIfQtApp/MyClass2.cpp
+    ${_SourcesPath}/ZSIpcLogDllIfQtApp/MyClass3.cpp
     ${_SourcesPath}/ZSIpcLogDllIfQtApp/MyThread.cpp
     ${_SourcesPath}/ZSIpcLogDllIfQtApp/Test.cpp
 )

@@ -479,7 +479,8 @@ QString SLogData::toXmlString() const
     if( !strObjName.isEmpty() ) {
         str += "ObjName=\"" + strObjName + "\" ";
     }
-    str += "Entry=\"" + m_strEntry + "\"";
+    strEntry = encodeForHtml(m_strEntry);
+    str += "Entry=\"" + strEntry + "\"";
     str += "/>";
 
     return str;

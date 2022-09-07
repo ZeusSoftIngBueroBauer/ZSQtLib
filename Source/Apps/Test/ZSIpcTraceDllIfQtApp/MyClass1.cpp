@@ -317,7 +317,7 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CMyClass1::sendTooMuchData()
+void CMyClass1::sendMuchData()
 //------------------------------------------------------------------------------
 {
     Trace::DllIf::ELogDetailLevel detailLevelPrev = Trace::DllIf::ELogDetailLevelNone;
@@ -335,17 +335,20 @@ void CMyClass1::sendTooMuchData()
         /* pAdminObj    */ s_pTrcAdminObj,
         /* eDetailLevel */ EMethodTraceDetailLevelEnterLeave,
         /* strObjName   */ objectName().toLatin1().data(),
-        /* strMethod    */ "sendTooMuchData",
+        /* strMethod    */ "sendMuchData",
         /* strMthInArgs */ strMthInArgs.toLatin1().data() );
+
+    CMyClass2* pMyClass2 = startClass2Thread(objectName());
+    pMyClass2->sendMuchData();
 
     QJsonObject jsonObj;
 
-    jsonObj.insert("Hello", "World");
+    jsonObj.insert("Hello", "Class1");
     jsonObj.insert("Zahl1", 1.0);
     jsonObj.insert("Text1", "Text1");
     jsonObj.insert("Zahl2", 2.0);
     jsonObj.insert("Text2", "Text2");
-    jsonObj.insert("Hello", "World");
+    jsonObj.insert("Hello", "Class1");
 
     double fStartTime_s = System::Time::getProcTimeInSec();
     double fCurrTime_s = System::Time::getProcTimeInSec();
@@ -363,8 +366,11 @@ void CMyClass1::sendTooMuchData()
             mthTracer.trace(strAddInfo.toLatin1().data());
         }
         fCurrTime_s = System::Time::getProcTimeInSec();
-        sendData(QJsonDocument(jsonObj).toJson(QJsonDocument::Compact), fStartTime_s, fCurrTime_s, fDuration_s);
+        sendData1(QJsonDocument(jsonObj).toJson(QJsonDocument::Compact), fStartTime_s, fCurrTime_s, fDuration_s);
     }
+
+    stopClass2Thread();
+    pMyClass2 = nullptr;
 
     if( s_pTrcAdminObj != nullptr )
     {
@@ -372,8 +378,12 @@ void CMyClass1::sendTooMuchData()
     }
 }
 
+/*==============================================================================
+private: // instance methods
+==============================================================================*/
+
 //------------------------------------------------------------------------------
-int CMyClass1::sendData( const QString& i_strData, double i_fStartTime_s, double i_fCurrTime_s, double i_fDuration_s )
+int CMyClass1::sendData1( const QString& i_strData, double i_fStartTime_s, double i_fCurrTime_s, double i_fDuration_s )
 //------------------------------------------------------------------------------
 {
     static int s_iCount = 0;
@@ -393,7 +403,87 @@ int CMyClass1::sendData( const QString& i_strData, double i_fStartTime_s, double
         /* pAdminObj    */ s_pTrcAdminObj,
         /* eDetailLevel */ EMethodTraceDetailLevelEnterLeave,
         /* strObjName   */ objectName().toLatin1().data(),
-        /* strMethod    */ "sendData",
+        /* strMethod    */ "sendData1",
+        /* strMthInArgs */ strMthInArgs.toLatin1().data() );
+
+    ++s_iCount;
+
+    sendData2(i_strData, i_fStartTime_s, i_fCurrTime_s, i_fDuration_s);
+
+    if( mthTracer.isRuntimeInfoActive(Trace::DllIf::ELogDetailLevelDebugVerbose) )
+    {
+        strAddInfo = "Time remaining: " + QString::number(i_fDuration_s - (i_fCurrTime_s - i_fStartTime_s), 'f', 3) + " seconds.";
+        mthTracer.trace(strAddInfo.toLatin1().data());
+    }
+    if( mthTracer.areMethodCallsActive(Trace::DllIf::EMethodTraceDetailLevelArgsNormal) )
+    {
+        mthTracer.setMethodReturn(s_iCount);
+    }
+    return s_iCount;
+}
+
+//------------------------------------------------------------------------------
+int CMyClass1::sendData2( const QString& i_strData, double i_fStartTime_s, double i_fCurrTime_s, double i_fDuration_s )
+//------------------------------------------------------------------------------
+{
+    static int s_iCount = 0;
+
+    QString strMthInArgs;
+    QString strAddInfo;
+
+    if( s_pTrcAdminObj != nullptr && s_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevelArgsNormal) )
+    {
+        strMthInArgs = "Data: " + i_strData;
+        strMthInArgs += ", StartTime: " + QString::number(i_fStartTime_s) + "s";
+        strMthInArgs += ", CurrTime: " + QString::number(i_fStartTime_s) + "s";
+        strMthInArgs += ", Duration: " + QString::number(i_fStartTime_s) + "s";
+    }
+
+    Trace::DllIf::CMethodTracer mthTracer(
+        /* pAdminObj    */ s_pTrcAdminObj,
+        /* eDetailLevel */ EMethodTraceDetailLevelEnterLeave,
+        /* strObjName   */ objectName().toLatin1().data(),
+        /* strMethod    */ "sendData2",
+        /* strMthInArgs */ strMthInArgs.toLatin1().data() );
+
+    ++s_iCount;
+
+    sendData3(i_strData, i_fStartTime_s, i_fCurrTime_s, i_fDuration_s);
+
+    if( mthTracer.isRuntimeInfoActive(Trace::DllIf::ELogDetailLevelDebugVerbose) )
+    {
+        strAddInfo = "Time remaining: " + QString::number(i_fDuration_s - (i_fCurrTime_s - i_fStartTime_s), 'f', 3) + " seconds.";
+        mthTracer.trace(strAddInfo.toLatin1().data());
+    }
+    if( mthTracer.areMethodCallsActive(Trace::DllIf::EMethodTraceDetailLevelArgsNormal) )
+    {
+        mthTracer.setMethodReturn(s_iCount);
+    }
+    return s_iCount;
+}
+
+//------------------------------------------------------------------------------
+int CMyClass1::sendData3( const QString& i_strData, double i_fStartTime_s, double i_fCurrTime_s, double i_fDuration_s )
+//------------------------------------------------------------------------------
+{
+    static int s_iCount = 0;
+
+    QString strMthInArgs;
+    QString strAddInfo;
+
+    if( s_pTrcAdminObj != nullptr && s_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevelArgsNormal) )
+    {
+        strMthInArgs = "Data: " + i_strData;
+        strMthInArgs += ", StartTime: " + QString::number(i_fStartTime_s) + "s";
+        strMthInArgs += ", CurrTime: " + QString::number(i_fStartTime_s) + "s";
+        strMthInArgs += ", Duration: " + QString::number(i_fStartTime_s) + "s";
+    }
+
+    Trace::DllIf::CMethodTracer mthTracer(
+        /* pAdminObj    */ s_pTrcAdminObj,
+        /* eDetailLevel */ EMethodTraceDetailLevelEnterLeave,
+        /* strObjName   */ objectName().toLatin1().data(),
+        /* strMethod    */ "sendData3",
         /* strMthInArgs */ strMthInArgs.toLatin1().data() );
 
     ++s_iCount;
@@ -402,6 +492,9 @@ int CMyClass1::sendData( const QString& i_strData, double i_fStartTime_s, double
     {
         strAddInfo = "Time remaining: " + QString::number(i_fDuration_s - (i_fCurrTime_s - i_fStartTime_s), 'f', 3) + " seconds.";
         mthTracer.trace(strAddInfo.toLatin1().data());
+    }
+    if( mthTracer.areMethodCallsActive(Trace::DllIf::EMethodTraceDetailLevelArgsNormal) )
+    {
         mthTracer.setMethodReturn(s_iCount);
     }
     return s_iCount;

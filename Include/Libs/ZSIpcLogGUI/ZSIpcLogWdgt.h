@@ -110,10 +110,6 @@ protected slots: // connected to the signals of my user controls
     void onChkServerUseIpcServerToggled( bool i_bChecked );
     void onBtnLoggerIdxTreeClicked( bool i_bChecked );
     void onBtnConnectClicked( bool i_bChecked );
-protected slots:
-    void onDlgEditTimeSpanTooMuchDataApplied();
-    void onDlgEditTimeSpanTooMuchDataAccepted();
-    void onDlgEditTimeSpanTooMuchDataRejected();
 protected slots: // connected to the signals of the IPC client
     void onIpcClientConnected( QObject* i_pClient );
     void onIpcClientDisconnected( QObject* i_pClient );
@@ -122,43 +118,27 @@ protected slots: // connected to the signals of the IPC client
 protected slots: // connected to the signals of the trace client
     void onLogSettingsChanged( QObject* i_pLogClient );
     void onLogDataReceived( QObject* i_pLogClient, const QString& i_str );
-    void onTmrDataRateRefreshTimeout();
 protected: // instance methods
     void addEdtItem( const QString& i_strText, const QString& i_strHtmlClrCode );
 protected: // instance methods
     void normalize( QString& i_str ) const;
-    void showAndCheckDataRates();
-    void showEditMaxDataRateDialog();
 private: // instance members
-    CIpcLogClient*                     m_pLogClient;
-    ZS::System::CDataRateCalculator    m_dataRateCalculatorBytes;
-    ZS::System::CDataRateCalculator    m_dataRateCalculatorLines;
-    QVector<double>                    m_arfDataRateDiffsProcTime_s;
-    QVector<int>                       m_ariDataRateDiffs_linesPerSec;
-    ZS::System::CRequest*              m_pReqInProgress;
-    QString                            m_strThreadClrFileAbsFilePath;
-    int                                m_iEdtItemsCountMax;
-    int                                m_iEdtItems;
-    int                                m_bEdtFull;
-    QTextEdit*                         m_pEdt;
-    QHash<QString, QString>            m_hashThreadColors;
-    QPushButton*                       m_pBtnClear;
-    QLabel*                            m_pLblServerLoggingEnabled;
-    QCheckBox*                         m_pChkServerLoggingEnabled;
-    QLabel*                            m_pLblServerUseIpcServer;
-    QCheckBox*                         m_pChkServerUseIpcServer;
-    QPushButton*                       m_pBtnLoggerIdxTree;
-    QPushButton*                       m_pBtnConnect;
-    ZS::System::GUI::CProgressBar*     m_pProgressBarCnct;
-    QTimer*                            m_pTmrDataRateRefresh;
-    int                                m_iTimeSpanTooMuchData_s;
-    QLabel*                            m_pLblTimeSpanTooMuchData;
-    QLineEdit*                         m_pEdtTimeSpanTooMuchData;
-    ZS::System::GUI::CDlgEditIntValue* m_pDlgEditTimeSpanTooMuchData;
-    QLabel*                            m_pLblCurrentDataRatesClient;
-    QLineEdit*                         m_pEdtCurrentDataRatesClient;
-    QLabel*                            m_pLblCurrentDataRatesServer;
-    QLineEdit*                         m_pEdtCurrentDataRatesServer;
+    CIpcLogClient*                 m_pLogClient;
+    ZS::System::CRequest*          m_pReqInProgress;
+    QString                        m_strThreadClrFileAbsFilePath;
+    int                            m_iEdtItemsCountMax;
+    int                            m_iEdtItems;
+    int                            m_bEdtFull;
+    QTextEdit*                     m_pEdt;
+    QHash<QString, QString>        m_hashThreadColors;
+    QPushButton*                   m_pBtnClear;
+    QLabel*                        m_pLblServerLoggingEnabled;
+    QCheckBox*                     m_pChkServerLoggingEnabled;
+    QLabel*                        m_pLblServerUseIpcServer;
+    QCheckBox*                     m_pChkServerUseIpcServer;
+    QPushButton*                   m_pBtnLoggerIdxTree;
+    QPushButton*                   m_pBtnConnect;
+    ZS::System::GUI::CProgressBar* m_pProgressBarCnct;
 
 }; // class CWdgtLog
 

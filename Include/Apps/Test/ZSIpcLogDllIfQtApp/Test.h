@@ -49,6 +49,8 @@ namespace Test
 {
 namespace IpcLogDllIfQtApp
 {
+class CMyClass1;
+
 //******************************************************************************
 class CTest : public ZS::Test::CTest
 //******************************************************************************
@@ -74,8 +76,10 @@ public slots: // test step methods
     void doTestStepLoggerAddLogEntry( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepLoggerAddLogEntryMyThread( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepLogServerAddLogEntry( ZS::Test::CTestStep* i_pTestStep );
+    void doTestStepLogMethodCall( ZS::Test::CTestStep* i_pTestStep );
 private slots:
     void onTimerTestStepTimeout();
+    void onClass1AboutToBeDestroyed(QObject* i_pObj, const QString& i_strObjName);
 private: // instance auxiliary methods
     void splitMethodCallOperation(
         const QString& i_strOperation,
@@ -91,6 +95,7 @@ private: // instance members
     QTimer*                            m_pTmrTestStepTimeout;
     ZS::Log::DllIf::SLogServerSettings m_logSettings;
     unsigned short                     m_uLogServerPort;
+    QHash<QString, CMyClass1*>         m_hshpMyClass1InstancesByName;
 
 }; // class CTest
 

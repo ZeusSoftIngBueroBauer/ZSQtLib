@@ -31,6 +31,7 @@ may result in using the software modules.
 
 #include "Test.h"
 #include "TestConfig.h"
+#include "MyClass1.h"
 #include "MyThread.h"
 #include "MainWindow.h"
 
@@ -68,7 +69,8 @@ CTest::CTest() :
     m_pDlgTestStep(nullptr),
     m_pTmrTestStepTimeout(nullptr),
     m_logSettings(),
-    m_uLogServerPort(24762)
+    m_uLogServerPort(24762),
+    m_hshpMyClass1InstancesByName()
 {
     m_pTmrTestStepTimeout = new QTimer(this);
     m_pTmrTestStepTimeout->setSingleShot(true);
@@ -1201,6 +1203,38 @@ CTest::CTest() :
         /* pTSGrpParent    */ pTestGroupModifyLogServerLocalLogFile,
         /* szDoTestStepFct */ SLOT(doTestStepModifyLogServerLocalLogFile(ZS::Test::CTestStep*)) );
 
+    // Test Step Group - Much Data
+    //----------------------------
+
+    ZS::Test::CTestStepGroup* pTestGroupMuchData = new ZS::Test::CTestStepGroup(
+        /* pTest           */ this,
+        /* strName         */ "Group " + QString::number(++idxGroup) + " Much data",
+        /* pTSGrpParent    */ nullptr );
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " CMyClass1::ctor(Inst1)",
+        /* strOperation    */ "CMyClass1::ctor(Inst1)",
+        /* pTSGrpParent    */ pTestGroupMuchData,
+        /* szDoTestStepFct */ SLOT(doTestStepLogMethodCall(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("ExpectedResultsFileName", "ZSLogServer-CMyClass1-ctor-Inst1");
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " CMyClass1::sendMuchData()",
+        /* strOperation    */ "CMyClass1::Inst1.sendMuchData()",
+        /* pTSGrpParent    */ pTestGroupMuchData,
+        /* szDoTestStepFct */ SLOT(doTestStepLogMethodCall(ZS::Test::CTestStep*)) );
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " CMyClass1::dtor(Inst1)",
+        /* strOperation    */ "CMyClass1::dtor(Inst1)",
+        /* pTSGrpParent    */ pTestGroupMuchData,
+        /* szDoTestStepFct */ SLOT(doTestStepLogMethodCall(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("ExpectedResultsFileName", "ZSLogServer-CMyClass1-dtor-Inst1");
+
+
     // Test Step Group - Shutdown
     //---------------------------
 
@@ -1266,6 +1300,28 @@ CTest::~CTest()
     {
     }
 
+    QString strObjName;
+
+    for( auto& pObj : m_hshpMyClass1InstancesByName )
+    {
+        QObject::disconnect(
+            /* pObjSender   */ pObj,
+            /* szSignal     */ SIGNAL(aboutToBeDestroyed(QObject*, const QString&)),
+            /* pObjReceiver */ this,
+            /* szSlot       */ SLOT(onClass1AboutToBeDestroyed(QObject*, const QString&)) );
+
+        strObjName = pObj->objectName();
+
+        try
+        {
+            delete pObj;
+        }
+        catch(...)
+        {
+        }
+        m_hshpMyClass1InstancesByName[strObjName] = nullptr;
+    }
+
     DllIf::CIpcLogServer* pLogServer = DllIf::CIpcLogServer::GetInstance();
 
     if( pLogServer != nullptr )
@@ -1277,6 +1333,7 @@ CTest::~CTest()
     m_pTmrTestStepTimeout = nullptr;
     SLogServerSettings_release(m_logSettings);
     m_uLogServerPort = 0;
+    m_hshpMyClass1InstancesByName.clear();
 
 } // dtor
 
@@ -2411,6 +2468,191 @@ void CTest::doTestStepLogServerAddLogEntry( ZS::Test::CTestStep* i_pTestStep )
 
 } // doTestStepLogServerAddLogEntry
 
+//------------------------------------------------------------------------------
+void CTest::doTestStepLogMethodCall( ZS::Test::CTestStep* i_pTestStep )
+//------------------------------------------------------------------------------
+{
+    ZS::Test::CTestStepGroup* pTestGroup = i_pTestStep->getParentGroup();
+
+    QString strTestGroupPath = pTestGroup == nullptr ? "" : pTestGroup->path();
+
+    // Expected Values
+    //----------------
+
+    QString     strExpectedValue;
+    QStringList strlstExpectedValues;
+    QString     strResultValue;
+    QStringList strlstResultValues;
+
+    QString strExpectedResultsAbsFilePath;
+    QVariant val = i_pTestStep->getConfigValue("ExpectedResultsFileName");
+    if( val.isValid() && val.canConvert(QVariant::String) )
+    {
+        strExpectedResultsAbsFilePath = c_strExpectedResultsAbsDirPath + QDir::separator() + val.toString() + ".txt";
+    }
+    if( !strExpectedResultsAbsFilePath.isEmpty() )
+    {
+        readExpectedTestResults(strExpectedResultsAbsFilePath, strlstExpectedValues);
+        i_pTestStep->setExpectedValues(strlstExpectedValues);
+    }
+
+    // Test Step
+    //----------
+
+    QString strOperation = i_pTestStep->getOperation();
+
+    QString strNameSpace;
+    QString strClassName;
+    QString strSubClassName;
+    QString strObjName;
+    QString strMth;
+    QStringList strlstInArgs;
+    QString strMthRet;
+
+    splitMethodCallOperation(strOperation, strClassName, strSubClassName, strObjName, strMth, strlstInArgs, strMthRet);
+
+    DllIf::CIpcLogServer* pLogServer = DllIf::CIpcLogServer::GetInstance();
+
+    if( pLogServer == nullptr )
+    {
+        i_pTestStep->setExpectedValue("Log server not existing");
+    }
+    else
+    {
+        pLogServer->clearLocalLogFile();
+    }
+
+    bool bValidTestStep = false;
+
+    if( strClassName == CMyClass1::ClassName() )
+    {
+        if( strMth == "ctor" )
+        {
+            if( strObjName.isEmpty() )
+            {
+                strResultValue = "Invalid test step: ObjName not defined";
+            }
+            else if( m_hshpMyClass1InstancesByName.contains(strObjName) )
+            {
+                strResultValue = "CMyClass1::" + strObjName + " is already existing";
+            }
+            else if( strlstInArgs.size() == 1 )
+            {
+                bValidTestStep = true;
+
+                CMyClass1* pObj = new CMyClass1(strlstInArgs[0]);
+                m_hshpMyClass1InstancesByName[strObjName] = pObj;
+
+                if( !QObject::connect(
+                    /* pObjSender   */ pObj,
+                    /* szSignal     */ SIGNAL(aboutToBeDestroyed(QObject*, const QString&)),
+                    /* pObjReceiver */ this,
+                    /* szSlot       */ SLOT(onClass1AboutToBeDestroyed(QObject*, const QString&)),
+                    /* cnctType     */ Qt::DirectConnection ) )
+                {
+                    throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
+                }
+            }
+        }
+        else if( strMth == "dtor" )
+        {
+            if( strObjName.isEmpty() )
+            {
+                strResultValue = "Invalid test step: ObjName not defined";
+            }
+            else if( !m_hshpMyClass1InstancesByName.contains(strObjName) )
+            {
+                strResultValue = "CMyClass1::" + strObjName + " is not existing";
+            }
+            else if( strlstInArgs.size() == 0 )
+            {
+                bValidTestStep = true;
+                delete m_hshpMyClass1InstancesByName[strObjName];
+                // Slot onClass1AboutToBeDestroyed will remove the object from the hash.
+                //m_hshpMyClass1InstancesByName.remove(strObjName);
+            }
+        }
+        else if( strMth == "sendMuchData" )
+        {
+            if( strObjName.isEmpty() )
+            {
+                strResultValue = "Invalid test step: ObjName not defined";
+            }
+            else if( !m_hshpMyClass1InstancesByName.contains(strObjName) )
+            {
+                strResultValue = "CMyClass1::" + strObjName + " is not existing";
+            }
+            else if( strlstInArgs.size() == 0 )
+            {
+                CMyClass1* pMyClass1 = m_hshpMyClass1InstancesByName.value(strObjName);
+
+                if( pMyClass1 == nullptr )
+                {
+                    strResultValue = "CMyClass1 Instance not created";
+                }
+                else
+                {
+                    bValidTestStep = true;
+                    pMyClass1->sendMuchData();
+
+                    i_pTestStep->setExpectedValue("---- Much log output ----");
+                }
+            }
+        }
+    }
+
+    // Result Values
+    //--------------
+
+    if( !bValidTestStep )
+    {
+        if( !strResultValue.isEmpty() )
+        {
+            strlstResultValues.append(strResultValue);
+            strResultValue = "";
+        }
+        strlstResultValues.append("Invalid test step operation");
+    }
+
+    if( !strlstResultValues.isEmpty() )
+    {
+        i_pTestStep->setResultValues(strlstResultValues);
+    }
+    else if( !strResultValue.isEmpty() )
+    {
+        i_pTestStep->setResultValue(strResultValue);
+    }
+    else
+    {
+        QString strInstruction;
+
+        if( strMth == "sendMuchData" )
+        {
+            strInstruction = "Check whether client received many log lines.\n";
+            strInstruction = "If the client received too much data and disabled remote logging\n";
+            strInstruction += "enable remote loggin again afterwards.";
+        }
+        else
+        {
+            strInstruction = "Check whether client received the expected log output.\n";
+            if( strlstExpectedValues.isEmpty() )
+            {
+                strInstruction += "--- No log output expected ---";
+            }
+            else
+            {
+                strInstruction += "Clear Log Output before continue with next test step.";
+            }
+        }
+        i_pTestStep->setInstruction(strInstruction);
+
+        m_pDlgTestStep = new CDlgTestStep(i_pTestStep);
+        m_pDlgTestStep->exec();
+        delete m_pDlgTestStep;
+        m_pDlgTestStep = nullptr;
+    }
+} // doTestStepLogMethodCall
+
 /*==============================================================================
 protected: // slots
 ==============================================================================*/
@@ -2432,6 +2674,19 @@ void CTest::onTimerTestStepTimeout()
         pTestStep->setResultValues(strlstResultValues);
     }
 } // onTimerTestStepTimeout()
+
+//------------------------------------------------------------------------------
+void CTest::onClass1AboutToBeDestroyed(QObject* i_pObj, const QString& i_strObjName)
+//------------------------------------------------------------------------------
+{
+    if( m_hshpMyClass1InstancesByName.contains(i_strObjName) )
+    {
+        if( m_hshpMyClass1InstancesByName.value(i_strObjName) == i_pObj )
+        {
+            m_hshpMyClass1InstancesByName.remove(i_strObjName);
+        }
+    }
+}
 
 /*==============================================================================
 private: // instance auxiliary methods
